@@ -1,17 +1,23 @@
               COPYRIGHT NOTICE
           Version 1, November 2005
 
-Content covered: 
-   1) Restlet API (org.restlet package)
-   2) Noelios Restlet Server (com.noelios.restlet package)
-   3) All other files containing a proper copyright notice
+   This software distribution is covered by this copyright notice. This
+includes the following software components:
+      1) Restlet API (org.restlet package)
+      2) Noelios Restlet Server (com.noelios.restlet package)
+      3) All other files containing a proper copyright notice
+      
+   All third-party libraries distributed with this software remain the
+property of their respective copyright owners and are subject to separate
+license agreements.
 
-Copyright holder:
-   Jérôme LOUVEL
-   69 rue Carnot
-   92300 Levallois Perret
-   FRANCE
-   jerome.louvel@noelios.com
+   For questions, please contact the copyright holder:
+   
+      Jerome LOUVEL
+      69 rue Carnot
+      92300 Levallois Perret
+      FRANCE
+      jerome.louvel@noelios.com
 
 __________________________________________________________________________
 
