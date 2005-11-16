@@ -1,7 +1,7 @@
 <?xml version="1.0"?>
 
 <!-- =======================================================
-     Restlet build file  -  Copyright (c) 2005 Jérôme LOUVEL
+     Restlet build file  -  Copyright (c) 2005 Jerome LOUVEL
      ======================================================= -->
 
 <project name="Restlet" default="dist" basedir=".">
@@ -50,7 +50,7 @@
         <section name="org.restlet">
           <attribute name="Specification-Title" value="Restlet API"/>
           <attribute name="Specification-Version" value="${version.restlet}"/>
-          <attribute name="Specification-Vendor" value="Noelios Conseil"/>
+          <attribute name="Specification-Vendor" value="Jerome Louvel"/>
         </section>
       </manifest>
     </jar>
@@ -60,33 +60,33 @@
       <manifest>
         <attribute name="Built-By" value="${user.name}"/>
         <section name="com.noelios.restlet">
-          <attribute name="Implementation-Title" value="Noelios Restlet Server"/>
+          <attribute name="Implementation-Title" value="Noelios Restlet Engine"/>
           <attribute name="Implementation-Version" value="${version.restlet} ${TODAY}"/> 
-          <attribute name="Implementation-Vendor" value="Noelios Consulting"/>
+          <attribute name="Implementation-Vendor" value="Jerome Louvel"/>
         </section>
       </manifest>
     </jar>
 
     <!-- Create Restlet API source jar file -->
-    <jar jarfile="${dist}/${DSTAMP}/src/org.restlet.jar" basedir="${src}" includes="org/restlet/**" excludes="**/.emptyDir">
+    <jar jarfile="${dist}/${DSTAMP}/src/org.restlet.jar" basedir="${src}" includes="org/restlet/**" excludes="**/.emptyDir **/package.html">
       <manifest>
         <attribute name="Built-By" value="${user.name}"/>
         <section name="org.restlet">
           <attribute name="Specification-Title" value="Restlet API"/>
           <attribute name="Specification-Version" value="${version.restlet}"/>
-          <attribute name="Specification-Vendor" value="Noelios Consulting"/>
+          <attribute name="Specification-Vendor" value="Jerome Louvel"/>
         </section>
       </manifest>
     </jar>
     
     <!-- Create Noelios Restlet Server source jar file -->
-    <jar jarfile="${dist}/${DSTAMP}/src/com.noelios.restlet.jar" basedir="${src}" includes="com/noelios/restlet/**" excludes="com/noelios/restlet/test/**;**/.emptyDir">
+    <jar jarfile="${dist}/${DSTAMP}/src/com.noelios.restlet.jar" basedir="${src}" includes="com/noelios/restlet/**" excludes="com/noelios/restlet/test/** **/.emptyDir **/package.html">
       <manifest>
         <attribute name="Built-By" value="${user.name}"/>
         <section name="com.noelios.restlet">
-          <attribute name="Implementation-Title" value="Noelios Restlet Server"/>
+          <attribute name="Implementation-Title" value="Noelios Restlet Engine"/>
           <attribute name="Implementation-Version" value="${version.restlet} ${TODAY}"/> 
-          <attribute name="Implementation-Vendor" value="Noelios Consulting"/>
+          <attribute name="Implementation-Vendor" value="Jerome Louvel"/>
         </section>
       </manifest>
     </jar>
