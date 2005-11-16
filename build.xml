@@ -1,0 +1,174 @@
+<?xml version="1.0"?>
+
+<!-- =======================================================
+     Restlet build file  -  Copyright (c) 2005 Jérôme LOUVEL
+     ======================================================= -->
+
+<project name="Restlet" default="dist" basedir=".">
+    
+  <!-- Set global properties -->
+  <property name="api"             location="api"/>
+  <property name="classes"         location="classes"/>
+  <property name="dist"            location="dist"/>
+  <property name="docs"            location="docs"/>
+  <property name="lib"             location="lib"/>
+  <property name="src"             location="source/impl"/>
+  <property name="version.restlet" value="0.10 beta"/>
+  
+
+  <!-- Set global paths -->
+  <path id="main.path">
+    <fileset dir="lib">
+      <include name="*.jar"/>
+    </fileset>
+  </path>
+
+
+  <target name="init">
+    <!-- Create the time stamp -->
+    <tstamp/>
+    
+    <!-- Create the directory used by compiler -->
+    <mkdir dir="${classes}"/>
+  </target>
+
+
+  <target name="compile" depends="init" description="Compile the source" >
+    <javac srcdir="${src}"  destdir="${classes}" classpathref="main.path"/>
+  </target>
+
+
+  <target name="dist" depends="test" description="Generate the distribution" >
+    <delete dir="${dist}/${DSTAMP}" verbose="false" quiet="true" includeEmptyDirs="true"/>
+    <mkdir dir="${dist}/${DSTAMP}/lib"/>
+    <mkdir dir="${dist}/${DSTAMP}/src"/>
+
+    <!-- Create Restlet API jar file -->
+    <jar jarfile="${dist}/${DSTAMP}/lib/org.restlet.jar" basedir="${classes}" includes="org/restlet/**">
+      <manifest>
+        <attribute name="Built-By" value="${user.name}"/>
+        <section name="org.restlet">
+          <attribute name="Specification-Title" value="Restlet API"/>
+          <attribute name="Specification-Version" value="${version.restlet}"/>
+          <attribute name="Specification-Vendor" value="Noelios Conseil"/>
+        </section>
+      </manifest>
+    </jar>
+    
+    <!-- Create Noelios Restlet Server jar file -->
+    <jar jarfile="${dist}/${DSTAMP}/lib/com.noelios.restlet.jar" basedir="${classes}" includes="com/noelios/restlet/**" excludes="com/noelios/restlet/test/**">
+      <manifest>
+        <attribute name="Built-By" value="${user.name}"/>
+        <section name="com.noelios.restlet">
+          <attribute name="Implementation-Title" value="Noelios Restlet Server"/>
+          <attribute name="Implementation-Version" value="${version.restlet} ${TODAY}"/> 
+          <attribute name="Implementation-Vendor" value="Noelios Consulting"/>
+        </section>
+      </manifest>
+    </jar>
+
+    <!-- Create Restlet API source jar file -->
+    <jar jarfile="${dist}/${DSTAMP}/src/org.restlet.jar" basedir="${src}" includes="org/restlet/**" excludes="**/.emptyDir">
+      <manifest>
+        <attribute name="Built-By" value="${user.name}"/>
+        <section name="org.restlet">
+          <attribute name="Specification-Title" value="Restlet API"/>
+          <attribute name="Specification-Version" value="${version.restlet}"/>
+          <attribute name="Specification-Vendor" value="Noelios Consulting"/>
+        </section>
+      </manifest>
+    </jar>
+    
+    <!-- Create Noelios Restlet Server source jar file -->
+    <jar jarfile="${dist}/${DSTAMP}/src/com.noelios.restlet.jar" basedir="${src}" includes="com/noelios/restlet/**" excludes="com/noelios/restlet/test/**;**/.emptyDir">
+      <manifest>
+        <attribute name="Built-By" value="${user.name}"/>
+        <section name="com.noelios.restlet">
+          <attribute name="Implementation-Title" value="Noelios Restlet Server"/>
+          <attribute name="Implementation-Version" value="${version.restlet} ${TODAY}"/> 
+          <attribute name="Implementation-Vendor" value="Noelios Consulting"/>
+        </section>
+      </manifest>
+    </jar>
+
+    <!-- Copy tha Javadocs -->    
+    <copy todir="${dist}/${DSTAMP}/api">
+      <fileset dir="${api}"/>
+    </copy>    
+
+    <!-- Copy the release notes -->    
+    <copy file="${docs}/Release notes.htm" todir="${dist}/${DSTAMP}"/>
+
+    <!-- Copy the FreeMarker library -->    
+    <copy file="${lib}/org.freemarker.jar" todir="${dist}/${DSTAMP}/lib/ext"/>
+
+    <!-- Copy the Jetty libraries -->    
+    <copy file="${lib}/org.mortbay.jar" todir="${dist}/${DSTAMP}/lib/ext"/>
+    <copy file="${lib}/javax.servlet.jar" todir="${dist}/${DSTAMP}/lib/ext"/>
+
+    <!-- Copy the JDBC client libraries -->    
+    <copy file="${lib}/org.apache.commons.dbcp.jar" todir="${dist}/${DSTAMP}/lib/ext"/>
+    <copy file="${lib}/org.apache.commons.logging.jar" todir="${dist}/${DSTAMP}/lib/ext"/>
+    <copy file="${lib}/org.apache.commons.pool.jar" todir="${dist}/${DSTAMP}/lib/ext"/>
+
+    <!-- Copy the Java Mail client libraries -->    
+    <copy file="${lib}/javax.mail.jar" todir="${dist}/${DSTAMP}/lib/ext"/>
+  </target>
+
+  
+  <target name="api" depends="init" description="Generate the Javadocs" >
+    <delete dir="${api}" verbose="false" quiet="true" includeEmptyDirs="true"/>
+    
+    <javadoc packagenames="org.restlet.*,com.noelios.restlet.*"
+           sourcepath="${src}"
+           destdir="${api}"
+           classpathref="main.path"
+           author="true"
+           version="true"
+           use="true"
+           windowtitle="Restlet ${version.restlet}"
+           doctitle="Restlet ${version.restlet}"
+           overview="${src}/overview.html"
+           verbose="false"
+           excludepackagenames="com.noelios.restlet.test">
+      
+      <bottom><![CDATA[<i>Copyright &#169; 2005 Jerome Louvel. All Rights Reserved.</i>]]></bottom>
+      
+      <tag name="associates"          scope="all" description="Design stereotype: " enabled="false"/>
+      <tag name="clientCardinality"   scope="all" description="Design stereotype: " enabled="false"/>
+      <tag name="label"               scope="all" description="Design stereotype: " enabled="false"/>
+      <tag name="stereotype"          scope="all" description="Design stereotype: " enabled="false"/>
+      <tag name="supplierCardinality" scope="all" description="Design stereotype: " enabled="false"/>
+      
+      <group title="Restlet API"><package name="org.restlet*" /></group>
+      <group title="Noelios Restlet Server" ><package name="com.noelios.restlet*" /></group>
+      
+      <link href="http://freemarker.org/docs/api/"/>
+      <link href="http://java.sun.com/j2se/1.5.0/docs/api/"/>
+      <link href="http://java.sun.com/products/javamail/javadocs/"/>
+      <link href="http://jetty.mortbay.org/javadoc/"/>
+    </javadoc>    
+    
+  </target>
+
+
+  <target name="test" depends="compile" description="Unit testing">
+    <junit printsummary="yes" fork="yes" haltonfailure="yes" filtertrace="yes" showoutput="yes">
+      <classpath>
+        <pathelement location="${classes}"/>
+      </classpath>
+  
+      <formatter type="plain"/>
+      <test name="com.noelios.restlet.test.RestletTestSuite" todir="${classes}" />
+    </junit>
+  </target>
+
+
+  <target name="clean" description="Clean up" >
+    <!-- Delete the ${classes} and ${dist} directory trees -->
+    <delete dir="${api}"/>
+    <delete dir="${classes}"/>
+    <!-- <delete dir="${dist}"/> -->
+  </target>
+
+</project>
