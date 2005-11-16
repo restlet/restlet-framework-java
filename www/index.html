@@ -20,19 +20,24 @@
 <p/>
 
 <h3>Features</h3>
+<h4>Restlet API</h4>
 <ul>
-   <li>Pure REST API specifying all concepts (Resource, Representation, Data, Connector, Components, etc.)</li>
-   <li>Restlet and Maplet concepts provide a powerful alternative to Servlets</li>
-   <li>Neutral Restlet API with no external dependency</li>
+   <li>Pure REST API supporting all REST concepts (resource, representation, data, connector, components, etc.)</li>
+   <li>Restlet and Maplet concepts allow easy processing of REST calls</li>
+   <li>Restlet servers and containers allow dynamic management of restlets</li>
+   <li>Protocol independance for connectors</li>
    <li>Support blocking and non-blocking input/output APIs (IO and NIO)</li>
-   <li>Reference implementation provided: Noelios Restlet Server</li>
-   <li>Protocol independance of the Restlet API. The reference implementation currently supports:
-      <ul>
+   <li>Clean API with no external dependency beside JSE 5.0</li>
+</ul>
+
+<h4>Noelios Restlet Server</h4>
+   <li>Reference implementation of the Restlet API</li>
+    The reference implementation currently supports:
          <li>Server connector: HTTP</li>
          <li>Client connectors: JDBC, SMTP, POP3</li>
+      </ul>
    <li>Server-driven content negociation</li>
    <li>Automatic MIME type, language and character set detection based on file extension</li>
-   <li></li>
 </ul>
 
 <h3>Requirements</h3>
@@ -46,14 +51,11 @@
 <h3>Related resources</h3>
 
 <ul>
-   <li>Link to other stuff that you know about.  It will help you
-   research requirements and provide a useful resource to potential
-   contributors.</li>
-
-   <li>Why reinvent the wheel? What is better about this wheel?  Is there
-   any existing project that you can partner with or reuse?</li>
-
-   <li>Where would you go to try to find potential contibutors?</li>
+   <li><a href="http://www.ics.uci.edu/~fielding/pubs/dissertation/rest_arch_style.htm">Original specification of REST (Roy T. Fielding)</a></li>
+   <li><a href="http://www.mortbay.com/MB/log/gregw/?permalink=NIOServlet.html">NIO and the Servlet API. (Greg Wilkins)</a></li>
+   <li><a href="http://www.mortbay.com/MB/log/gregw/?permalink=servletsMustDieSlowly.html">Servlets must DIE! Slowly!! (Greg Wilkins)</a></li>
+   <li><a href="http://jetty.mortbay.org/jetty/">Jetty (server HTTP connector supported by Noelios Restlet Server)</a></li>
+   <li><a href="http://freemarker.org/">FreeMarker (alternative to JSP supported by Noelios Restlet Server)</a></li>
 </ul>
 
 </body>
