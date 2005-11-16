@@ -1,0 +1,18 @@
+              TRADEMARKS NOTICE
+          Version 1, November 2005
+
+The trademarks "Restlet", "Noelios" can't be used to endorse or promote 
+products derived from this software without prior written permission from
+Jérôme LOUVEL.
+
+Products derived from this software may not be called "Restlet" or 
+"Noelios" nor may "Restlet" or "Noelios" appear in their names without 
+prior written permission of Jérôme LOUVEL. 
+
+For written permission, please contact:
+   Jérôme LOUVEL
+   69 rue Carnot
+   92300 Levallois Perret
+   FRANCE
+   jerome.louvel@noelios.com
+__________________________________________________________________________
