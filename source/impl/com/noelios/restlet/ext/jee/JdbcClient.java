@@ -132,7 +132,7 @@ public class JdbcClient extends AbstractConnector implements Client
    private DataSource createDataSource(String connectURI)
    {
       // Create an ObjectPool that will serve as the actual pool of connections
-      ObjectPool connectionPool = new GenericObjectPool(null);
+      // ObjectPool connectionPool = new GenericObjectPool(null);
 
       // Create a ConnectionFactory that the pool will use to create Connections.
       // ConnectionFactory connectionFactory = new DriverManagerConnectionFactory(connectURI, null);
@@ -143,7 +143,8 @@ public class JdbcClient extends AbstractConnector implements Client
       //    new PoolableConnectionFactory(connectionFactory, connectionPool, null, null, false, true);
 
       // Create the PoolingDataSource itself, passing in the object pool we created.
-      return new PoolingDataSource(connectionPool);
+      // return new PoolingDataSource(connectionPool);
+      return null;
    }
 
    /**
