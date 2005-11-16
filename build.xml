@@ -103,7 +103,7 @@
     <copy file="${lib}/org.freemarker.jar" todir="${dist}/${DSTAMP}/lib/ext"/>
 
     <!-- Copy the Jetty libraries -->    
-    <copy file="${lib}/org.mortbay.jar" todir="${dist}/${DSTAMP}/lib/ext"/>
+    <copy file="${lib}/org.mortbay.jetty.jar" todir="${dist}/${DSTAMP}/lib/ext"/>
     <copy file="${lib}/javax.servlet.jar" todir="${dist}/${DSTAMP}/lib/ext"/>
 
     <!-- Copy the JDBC client libraries -->    
@@ -152,7 +152,7 @@
   </target>
 
 
-  <target name="test" depends="compile" description="Unit testing">
+  <target name="test" description="Unit testing">
     <junit printsummary="yes" fork="yes" haltonfailure="yes" filtertrace="yes" showoutput="yes">
       <classpath>
         <pathelement location="${classes}"/>
