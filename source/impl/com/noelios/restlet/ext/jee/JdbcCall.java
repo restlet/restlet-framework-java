@@ -18,7 +18,6 @@
 
 package com.noelios.restlet.ext.jee;
 
-import org.restlet.RestletException;
 import org.restlet.data.Methods;
 import org.restlet.data.Representation;
 
@@ -33,11 +32,12 @@ public class JdbcCall extends CallImpl
    /**
     * Constructor.
     * @param jdbcURI The database's JDBC URI (ex: jdbc:mysql://[hostname]/[database]).
-    * @param query	The query to send (valid XML query).
+    * @param request	The request to send (valid XML request).
+    * @see com.noelios.restlet.ext.jee
     */
-   public JdbcCall(String jdbcURI, Representation query) throws RestletException
+   public JdbcCall(String jdbcURI, Representation request)
    {
-      super(null, "Semalink", null, null, null, Methods.POST, new ReferenceImpl(jdbcURI), null, query);
+      super(null, "Semalink", null, null, null, Methods.POST, new ReferenceImpl(jdbcURI), null, request);
    }
 
 }
