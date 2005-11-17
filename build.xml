@@ -45,7 +45,7 @@
   </target>
 
 
-  <target name="dist" depends="test,init" description="Generate the distribution" >
+  <target name="dist" depends="test" description="Generate the distribution" >
     <delete dir="${dist}/${DSTAMP}" verbose="false" quiet="true" includeEmptyDirs="true"/>
     <mkdir dir="${dist}/${DSTAMP}/lib"/>
     <mkdir dir="${dist}/${DSTAMP}/src"/>
@@ -169,7 +169,7 @@
   </target>
 
 
-  <target name="test" description="Unit testing">
+  <target name="test" depends="init" description="Unit testing">
     <junit printsummary="yes" fork="yes" haltonfailure="yes" filtertrace="yes" showoutput="yes">
       <classpath>
         <pathelement location="${classes}"/>
