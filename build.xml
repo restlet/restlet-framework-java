@@ -103,12 +103,6 @@
       <fileset dir="${api}"/>
     </copy>    
 
-    <!-- Copy the release notes -->    
-    <copy file="${docs}/release_notes.htm" todir="${dist}/${DSTAMP}"/>
-
-    <!-- Copy the changes log -->    
-    <copy file="${docs}/changes_log.htm" todir="${dist}/${DSTAMP}"/>
-
     <!-- Copy text notes -->    
     <copy file="changes.txt"    todir="${dist}/${DSTAMP}"/>
     <copy file="copyright.txt"  todir="${dist}/${DSTAMP}"/>
