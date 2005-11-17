@@ -27,7 +27,7 @@ import java.util.Map;
 import org.restlet.RestletException;
 import org.restlet.data.Form;
 import org.restlet.data.FormReader;
-import org.restlet.data.MediaTypeEnum;
+import org.restlet.data.MediaTypes;
 import org.restlet.data.Parameter;
 import org.restlet.data.Representation;
 
@@ -45,7 +45,7 @@ public class FormImpl extends InputRepresentation implements Form
     */
    public FormImpl(String queryParameters)
    {
-      super(new ByteArrayInputStream(queryParameters.getBytes()), MediaTypeEnum.APPLICATION_WWW_FORM);
+      super(new ByteArrayInputStream(queryParameters.getBytes()), MediaTypes.APPLICATION_WWW_FORM);
       this.firstReaderCreation = true;
    }
 
@@ -55,7 +55,7 @@ public class FormImpl extends InputRepresentation implements Form
     */
    public FormImpl(Representation requestContent) throws RestletException
    {
-      super(requestContent.getStream(), MediaTypeEnum.APPLICATION_WWW_FORM);
+      super(requestContent.getStream(), MediaTypes.APPLICATION_WWW_FORM);
       this.firstReaderCreation = true;
    }
 

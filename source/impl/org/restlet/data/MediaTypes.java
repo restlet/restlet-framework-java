@@ -10,7 +10,7 @@ import java.util.List;
  * The data format of a representation.
  * @see <a href="http://en.wikipedia.org/wiki/MIME">MIME types on Wikipedia<a/>
  */
-public enum MediaTypeEnum implements MediaType
+public enum MediaTypes implements MediaType
 {
    ALL,
    APPLICATION_ALL,

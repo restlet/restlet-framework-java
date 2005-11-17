@@ -499,7 +499,7 @@ public class CallImpl implements UniformCall
     */
    public void setTemporaryRedirect(String targetURI)
    {
-      setOutput(new StringRepresentation(targetURI, MediaTypeEnum.TEXT_URI));
+      setOutput(new StringRepresentation(targetURI, MediaTypes.TEXT_URI));
       setStatus(StatusEnum.REDIRECTION_MOVED_TEMPORARILY);
    }
 

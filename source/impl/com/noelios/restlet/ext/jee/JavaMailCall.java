@@ -19,7 +19,7 @@
 package com.noelios.restlet.ext.jee;
 
 import org.restlet.RestletException;
-import org.restlet.data.MethodEnum;
+import org.restlet.data.Methods;
 import org.restlet.data.Representation;
 
 import com.noelios.restlet.CallImpl;
@@ -37,7 +37,7 @@ public class JavaMailCall extends CallImpl
     */
    public JavaMailCall(String smtpURI, Representation email) throws RestletException
    {
-      super(null, "Semalink", null, null, null, MethodEnum.POST, new ReferenceImpl(smtpURI), null, email);
+      super(null, "Semalink", null, null, null, Methods.POST, new ReferenceImpl(smtpURI), null, email);
    }
 
 }

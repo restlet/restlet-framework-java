@@ -6,7 +6,7 @@ package org.restlet.data;
 
 /**
  * Character set used to encode characters representations.
- * @see org.restlet.data.CharacterSetEnum
+ * @see org.restlet.data.CharacterSets
  */
 public interface CharacterSet extends Metadata
 {

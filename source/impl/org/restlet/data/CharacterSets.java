@@ -7,7 +7,7 @@ package org.restlet.data;
 /**
  * Enumeration of common character sets.
  */
-public enum CharacterSetEnum implements CharacterSet
+public enum CharacterSets implements CharacterSet
 {
    /** All character sets acceptable. */
    ALL,

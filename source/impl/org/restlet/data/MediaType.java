@@ -8,7 +8,7 @@ import java.util.List;
 
 /**
  * The data format of a representation.
- * @see org.restlet.data.MediaTypeEnum
+ * @see org.restlet.data.MediaTypes
  * @see <a href="http://en.wikipedia.org/wiki/MIME">MIME types on Wikipedia<a/>
  */
 public interface MediaType extends Metadata

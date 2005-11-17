@@ -33,7 +33,7 @@ import org.mortbay.http.HttpRequest;
 import org.mortbay.http.HttpResponse;
 import org.restlet.UniformCall;
 import org.restlet.data.CookieSetting;
-import org.restlet.data.MediaTypeEnum;
+import org.restlet.data.MediaTypes;
 
 /**
  * Restlet handler for Jetty HTTP calls.
@@ -97,7 +97,7 @@ public class JettyConnection extends HttpConnection
              (response.getStatus() == HttpResponse.__303_See_Other) || (response.getStatus() == 307))
              {
                 // Extract the redirection URI from the call output
-                if ((call.getOutput() != null) && (call.getOutput().getMetadata().getMediaType().equals(MediaTypeEnum.TEXT_URI)))
+                if ((call.getOutput() != null) && (call.getOutput().getMetadata().getMediaType().equals(MediaTypes.TEXT_URI)))
                 {
                    response.setField(HttpFields.__Location, call.getOutput().toString());
                    call.setOutput(null);

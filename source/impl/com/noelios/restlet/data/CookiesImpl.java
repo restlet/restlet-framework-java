@@ -28,7 +28,7 @@ import org.restlet.RestletException;
 import org.restlet.data.Cookie;
 import org.restlet.data.Cookies;
 import org.restlet.data.CookiesReader;
-import org.restlet.data.MediaTypeEnum;
+import org.restlet.data.MediaTypes;
 
 /**
  * Default cookies implementation.
@@ -41,7 +41,7 @@ public class CookiesImpl extends InputRepresentation implements Cookies
     */
    public CookiesImpl(String cookiesHeader)
    {
-      super(new ByteArrayInputStream(cookiesHeader.getBytes()), MediaTypeEnum.APPLICATION_WWW_FORM);
+      super(new ByteArrayInputStream(cookiesHeader.getBytes()), MediaTypes.APPLICATION_WWW_FORM);
    }
 
    /**
@@ -50,7 +50,7 @@ public class CookiesImpl extends InputRepresentation implements Cookies
     */
    public CookiesImpl(InputStream cookiesInputStream) throws RestletException
    {
-      super(cookiesInputStream, MediaTypeEnum.APPLICATION_WWW_FORM);
+      super(cookiesInputStream, MediaTypes.APPLICATION_WWW_FORM);
    }
 
    /**

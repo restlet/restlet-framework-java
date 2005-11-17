@@ -2,7 +2,7 @@ package org.restlet.data;
 
 /**
  * Method to execute when handling a uniform call.
- * @see org.restlet.data.MethodEnum
+ * @see org.restlet.data.Methods
  */
 public interface Method extends ControlData
 {

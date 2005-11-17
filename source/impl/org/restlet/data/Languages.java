@@ -7,7 +7,7 @@ package org.restlet.data;
 /**
  * Language used in representations.
  */
-public enum LanguageEnum implements Language
+public enum Languages implements Language
 {
    /** All languages acceptable. */
    ALL,

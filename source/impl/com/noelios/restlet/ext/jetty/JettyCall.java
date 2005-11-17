@@ -24,11 +24,11 @@ import java.util.List;
 import org.mortbay.http.HttpFields;
 import org.mortbay.http.HttpRequest;
 import org.mortbay.http.HttpResponse;
-import org.restlet.data.CharacterSetEnum;
+import org.restlet.data.CharacterSets;
 import org.restlet.data.Cookies;
-import org.restlet.data.MediaTypeEnum;
+import org.restlet.data.MediaTypes;
 import org.restlet.data.Method;
-import org.restlet.data.MethodEnum;
+import org.restlet.data.Methods;
 import org.restlet.data.Preference;
 import org.restlet.data.Reference;
 import org.restlet.data.Representation;
@@ -105,13 +105,13 @@ public class JettyCall extends CallImpl
    {
       String method = request.getMethod();
       if (method.equals(HttpRequest.__DELETE))
-         return MethodEnum.DELETE;
+         return Methods.DELETE;
       else if (method.equals(HttpRequest.__GET))
-         return MethodEnum.GET;
+         return Methods.GET;
       else if (method.equals(HttpRequest.__POST))
-         return MethodEnum.POST;
+         return Methods.POST;
       else if (method.equals(HttpRequest.__PUT))
-         return MethodEnum.PUT;
+         return Methods.PUT;
       else
          return new MethodImpl(method);
    }
@@ -144,7 +144,7 @@ public class JettyCall extends CallImpl
       else
       {
          result = new ArrayList<Preference>();
-         result.add(new PreferenceImpl(MediaTypeEnum.ALL));
+         result.add(new PreferenceImpl(MediaTypes.ALL));
       }
 
       return result;
@@ -167,7 +167,7 @@ public class JettyCall extends CallImpl
          if (acceptCharset.length() == 0)
          {
             result = new ArrayList<Preference>();
-            result.add(new PreferenceImpl(CharacterSetEnum.ISO_8859_1));
+            result.add(new PreferenceImpl(CharacterSets.ISO_8859_1));
          }
          else
          {
@@ -179,7 +179,7 @@ public class JettyCall extends CallImpl
       else
       {
          result = new ArrayList<Preference>();
-         result.add(new PreferenceImpl(CharacterSetEnum.ALL));
+         result.add(new PreferenceImpl(CharacterSets.ALL));
       }
 
       return result;

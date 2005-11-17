@@ -7,7 +7,7 @@ package org.restlet.data;
 /**
  * Enumeration of call methods.
  */
-public enum MethodEnum implements Method
+public enum Methods implements Method
 {
    CONNECT,
    COPY,

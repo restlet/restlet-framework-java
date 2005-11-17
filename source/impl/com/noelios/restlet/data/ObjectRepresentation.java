@@ -24,7 +24,7 @@ import java.io.ObjectOutputStream;
 import java.io.OutputStream;
 
 import org.restlet.RestletException;
-import org.restlet.data.MediaTypeEnum;
+import org.restlet.data.MediaTypes;
 
 /**
  * Object instance representation.
@@ -41,7 +41,7 @@ public class ObjectRepresentation extends OutputRepresentation
     */
    public ObjectRepresentation(Object object)
    {
-      super(MediaTypeEnum.APPLICATION_JAVA_OBJECT);
+      super(MediaTypes.APPLICATION_JAVA_OBJECT);
       this.object = object;
    }
 

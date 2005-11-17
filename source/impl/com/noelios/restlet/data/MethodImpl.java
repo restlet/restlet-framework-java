@@ -22,7 +22,7 @@ import org.restlet.data.Method;
 
 /** 
  * Default method implementation. 
- * @see org.restlet.data.MethodEnum
+ * @see org.restlet.data.Methods
  */
 public class MethodImpl implements Method
 {

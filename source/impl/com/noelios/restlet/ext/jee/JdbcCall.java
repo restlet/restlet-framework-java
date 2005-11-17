@@ -19,7 +19,7 @@
 package com.noelios.restlet.ext.jee;
 
 import org.restlet.RestletException;
-import org.restlet.data.MethodEnum;
+import org.restlet.data.Methods;
 import org.restlet.data.Representation;
 
 import com.noelios.restlet.CallImpl;
@@ -32,12 +32,12 @@ public class JdbcCall extends CallImpl
 {
    /**
     * Constructor.
-    * @param jdbcURI The database's JDBC URI.
+    * @param jdbcURI The database's JDBC URI (ex: jdbc:mysql://[hostname]/[database]).
     * @param query	The query to send (valid XML query).
     */
    public JdbcCall(String jdbcURI, Representation query) throws RestletException
    {
-      super(null, "Semalink", null, null, null, MethodEnum.POST, new ReferenceImpl(jdbcURI), null, query);
+      super(null, "Semalink", null, null, null, Methods.POST, new ReferenceImpl(jdbcURI), null, query);
    }
 
 }
