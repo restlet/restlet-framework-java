@@ -110,6 +110,7 @@
     <copy file="${docs}/changes_log.htm" todir="${dist}/${DSTAMP}"/>
 
     <!-- Copy text notes -->    
+    <copy file="changes.txt"    todir="${dist}/${DSTAMP}"/>
     <copy file="copyright.txt"  todir="${dist}/${DSTAMP}"/>
     <copy file="license.txt"    todir="${dist}/${DSTAMP}"/>
     <copy file="readme.txt"     todir="${dist}/${DSTAMP}"/>

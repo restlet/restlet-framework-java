@@ -1,0 +1,50 @@
+
+-----------------------------
+---  Restlet changes log  ---
+-----------------------------
+
+
+0.10 beta
+ - Renamed all Default* classes in com.noelios.restlet into *Impl for clarity purpose.
+ - Added Status.getUri() method and improved Status.getDescription().
+ - Removed the NONE values from Status and Method enumerations, null is doing a better job.
+ - Added a DirectoryRestlet that behaves like a regular Web server. In addition, automatic media type, language and character set detection and setting is available in a way that hides technical names and extensions, allowing a clean content negotiation.
+ - Fixed issue with character encoding in the TemplateRepresentation (FreeMarker integration).
+ - Moved FileResource and FileRestlet to com.noelios.restlet
+ - Refactored the Jetty HTTP server connector to bypass their HTTP handler layer. Now we directly work out of the Jetty SocketListener and HttpConnection class. This will improve performances and reduce the memory consumed. Note that version 5.1.5 of Jetty is required as it contains a necessary fix.
+ - Moved classes in com.noelios.restlet.ext.jse into com.noelios.restlet (restlets, FileResource), com.noelios.restlet.data (representations and readers) or com.noelios.restlet.ext.jee (JDBC).
+ - Refactored com.noelios.restelt.RestletMappings into com.noelios.MapletImpl and used it as a delegate in org.restlet.DefaultMaplet.
+ - Added factory methods to the OriginServer and RestletContainer interface to let the developer override some default implementations and to prevent direct references to specific restlet API implementations.
+ - Added proper getName() and getDescription() implementations to Method enums
+ - Separated Method into Method, Methods and DefaultMethod to allow any method. Added getUri() method.
+ - Separated CharacterSet into CharacterSet and CharacterSets.
+ - Separated Language into Language and Languages.
+ - Added all HTTP and WebDAV methods in Methods.
+ - Separated Status into Status, Statuses and Default Status to allow any status. 
+ - Variant interface was renamed RepresentationMetadata to remove ambiguity. Also added "expirationDate", "modificationDate" and "tag" properties.
+ - Added Tag interface and TagImpl for cache validation purpose.
+ - Instead of deriving Variant, Representation now has a getMetadata() method returning an instance of RepresentationMetadata.
+ - Added all existing HTTP and WebDAV statuses in Statuses.
+ - Added a setTemporaryRedirect() method to UniformCall.
+ - Upgraded the JDBC Client to support multiple databases, drivers and connection pools.
+
+
+0.9 beta
+ - Moved com.restlet into com.noelios.restlet
+ - Moved  net.restlet into org.restlet
+ - Added a readParameter(String parameterName) method to Form and FormReader and their default implementations
+ - Allowed multiple invocations of the DefaultForm.getFormReader() method when it is possible to reset the underlying input stream.
+ - Added a logging in com.noelios.restlet.ext.jetty.RestletHandler using java.util.logging mechanism.
+ - Refactored all code to use J2SE 5.0 language features (generics, enums)
+ - Added Status and Method enumerations in org.restlet.data
+ - Renamed Call to UniformCall
+ - Added a RestletCall interface which extends UniformCall with a flexible way to get the path of each restlet in the stack of restlets that handled the call so far.
+ - Added a org.restlet.data.Reference interface to work around the limitation of java.net.URI which is not a mutable class.
+ - Moved Resource and Restlet interfaces at the root level (org.restlet). 
+ - Refactored the UniformInterface. Many methods where moved to the Reference interface. Added “referrerURI” and “resourceURI” properties.
+ - Separated the Restlet interface into Maplet and Restlet. Maplets are specialized restlets capable of delegating restlet calls to child restlets. RestletContainer now extends Maplet.
+ - Renamed DefaultRestlet into AbstractRestlet.
+
+
+0.8 beta
+ - First public release
