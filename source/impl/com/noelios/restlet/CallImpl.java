@@ -100,7 +100,7 @@ public class CallImpl implements UniformCall
       this.cookies = cookies;
       this.input = input;
 
-      this.status = StatusEnum.SUCCESS_OK;
+      this.status = Statuses.SUCCESS_OK;
       this.output = null;
       this.cookieSettings = null;
    }
@@ -340,7 +340,7 @@ public class CallImpl implements UniformCall
       List<RepresentationMetadata> variants = resource.getVariantsMetadata();
       if (variants == null)
       {
-         setStatus(StatusEnum.CLIENT_ERROR_NOT_FOUND);
+         setStatus(Statuses.CLIENT_ERROR_NOT_FOUND);
       }
       else
       {
@@ -437,7 +437,7 @@ public class CallImpl implements UniformCall
          if (bestVariant == null)
          {
             // No variant was found matchin the call preferences
-            setStatus(StatusEnum.CLIENT_ERROR_NOT_ACCEPTABLE);
+            setStatus(Statuses.CLIENT_ERROR_NOT_ACCEPTABLE);
          }
          else
          {
@@ -500,7 +500,7 @@ public class CallImpl implements UniformCall
    public void setTemporaryRedirect(String targetURI)
    {
       setOutput(new StringRepresentation(targetURI, MediaTypes.TEXT_URI));
-      setStatus(StatusEnum.REDIRECTION_MOVED_TEMPORARILY);
+      setStatus(Statuses.REDIRECTION_MOVED_TEMPORARILY);
    }
 
 }

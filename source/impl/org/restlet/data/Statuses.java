@@ -7,7 +7,7 @@ package org.restlet.data;
 /**
  * Enumeration of call status.
  */
-public enum StatusEnum implements Status
+public enum Statuses implements Status
 {
    INFO_CONTINUE,
    INFO_SWITCHING_PROTOCOL,

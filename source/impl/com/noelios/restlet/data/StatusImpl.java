@@ -22,7 +22,7 @@ import org.restlet.data.Status;
 
 /** 
  * Default status implementation. 
- * @see org.restlet.data.StatusEnum
+ * @see org.restlet.data.Statuses
  */
 public class StatusImpl implements Status
 {

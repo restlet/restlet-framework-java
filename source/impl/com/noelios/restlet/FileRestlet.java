@@ -23,7 +23,7 @@ import org.restlet.RestletCall;
 import org.restlet.RestletException;
 import org.restlet.component.RestletContainer;
 import org.restlet.data.MediaType;
-import org.restlet.data.StatusEnum;
+import org.restlet.data.Statuses;
 
 import com.noelios.restlet.data.FileRepresentation;
 
@@ -90,7 +90,7 @@ public class FileRestlet extends AbstractRestlet
       }
       else
       {
-         call.setStatus(StatusEnum.CLIENT_ERROR_NOT_FOUND);
+         call.setStatus(Statuses.CLIENT_ERROR_NOT_FOUND);
       }
    }
 }

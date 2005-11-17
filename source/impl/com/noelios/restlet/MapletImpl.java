@@ -30,7 +30,7 @@ import org.restlet.Restlet;
 import org.restlet.RestletCall;
 import org.restlet.RestletException;
 import org.restlet.component.RestletContainer;
-import org.restlet.data.StatusEnum;
+import org.restlet.data.Statuses;
 
 /** 
  * Represents a list of mappings for a parent maplet or for the container itself. 
@@ -189,7 +189,7 @@ public class MapletImpl extends ArrayList<Mapping> implements Maplet
       else
       {
          // No delegate was found
-         call.setStatus(StatusEnum.CLIENT_ERROR_NOT_FOUND);
+         call.setStatus(Statuses.CLIENT_ERROR_NOT_FOUND);
       }
    }
 
