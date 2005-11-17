@@ -40,10 +40,10 @@ import org.w3c.dom.NodeList;
 
 
 /**
- * Client of a mail server.<br/>
- * Currently only the SMTP protocol is handled.<br/>
- * To send an email, specify a SMTP URI as the ressource path of the call and use an XML email as the
- * content of the call.<br/>
+ * Client connector to a mail server.<br/>
+ * Currently only the SMTP protocol is supported.<br/>
+ * To send an email, specify a SMTP URI as the ressource reference of the call 
+ * and use an XML email as the content of the call.<br/>
  * <br/>
  * Sample XML email:<br/>
  * <br/>
