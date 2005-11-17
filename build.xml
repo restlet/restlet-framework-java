@@ -23,8 +23,8 @@
   
 
   <!-- Set global names -->
-  <property name="version.full"     value="0.10 beta"/>
-  <property name="version.compact"  value="0.10b"/>
+  <property name="version.full"     value="0.11 beta"/>
+  <property name="version.compact"  value="0.11b"/>
   <property name="restlet.api"      value="Restlet API"/>
   <property name="restlet.ri"       value="Noelios Restlet Engine"/>
   <property name="author"           value="Jerome Louvel"/>
@@ -110,20 +110,10 @@
     <copy file="readme.txt"     todir="${dist}/${DSTAMP}"/>
     <copy file="trademarks.txt" todir="${dist}/${DSTAMP}"/>
 
-    <!-- Copy the FreeMarker library -->    
-    <copy file="${lib}/org.freemarker.jar" todir="${dist}/${DSTAMP}/lib/ext"/>
-
-    <!-- Copy the Jetty libraries -->    
-    <copy file="${lib}/org.mortbay.jetty.jar" todir="${dist}/${DSTAMP}/lib/ext"/>
-    <copy file="${lib}/javax.servlet.jar" todir="${dist}/${DSTAMP}/lib/ext"/>
-
-    <!-- Copy the JDBC client libraries -->    
-    <copy file="${lib}/org.apache.commons.dbcp.jar" todir="${dist}/${DSTAMP}/lib/ext"/>
-    <copy file="${lib}/org.apache.commons.logging.jar" todir="${dist}/${DSTAMP}/lib/ext"/>
-    <copy file="${lib}/org.apache.commons.pool.jar" todir="${dist}/${DSTAMP}/lib/ext"/>
-
-    <!-- Copy the Java Mail client libraries -->    
-    <copy file="${lib}/javax.mail.jar" todir="${dist}/${DSTAMP}/lib/ext"/>
+    <!-- Copy the third party libraries -->    
+    <copy todir="${dist}/${DSTAMP}/lib">
+      <fileset dir="${lib}"/>
+    </copy>    
     
     <!-- Create the final zip file -->
     <zip destfile="${dist}/restlet-${version.compact}.zip" basedir="${dist}/${DSTAMP}" includes="**/*"/>
