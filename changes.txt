@@ -4,6 +4,18 @@
 -----------------------------
 
 
+0.11 beta
+ - Renamed JettyConnector to JettyServer
+ - Removed unnecessary HttpServer interface
+ - Replaced many RestletException by IOException in non Restlet specific classes and interfaces
+ - TemplateRepresentation no longer load the template upon creation as recommanded for performance reasons
+ - Completed the separation between the Resltet API and the implementations: added RestletFactory interface and RestletManager class.
+ - Restlet API implementations must register their RestletFactory with the RestletManager before usage of RestletManager
+ - Renamed CallImpl to UniformCallImpl
+ - Added setter methods to UniformCall for request field (useful when preparing a call for a client connector)
+ - Added org.restlet.component.DefaultRestletServer and DefaultRestletContainer for easy subclassing by developpers
+
+
 0.10 beta
  - Renamed all Default* classes in com.noelios.restlet into *Impl for clarity purpose.
  - Added Status.getUri() method and improved Status.getDescription().
