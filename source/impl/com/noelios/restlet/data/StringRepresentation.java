@@ -24,7 +24,6 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
 
-import org.restlet.RestletException;
 import org.restlet.data.MediaType;
 
 /**
@@ -50,24 +49,16 @@ public class StringRepresentation extends StreamRepresentation
     * Writes the datum as a stream of bytes.
     * @param outputStream The stream to use when writing.
     */
-   public void write(OutputStream outputStream) throws RestletException
+   public void write(OutputStream outputStream) throws IOException
    {
-      try
-      {
-         outputStream.write(value.getBytes());
-      }
-      catch (IOException ioe)
-      {
-         throw new RestletException("Unexpected I/O exception", "Please contact the administrator");
-
-      }
+      outputStream.write(value.getBytes());
    }
 
    /**
     * Returns an inputstream that can read the representation's content.
     * @return An inputstream that can read the representation's content.
     */
-   public InputStream getStream() throws RestletException
+   public InputStream getStream() throws IOException
    {
       return new ByteArrayInputStream(value.getBytes());
    }

@@ -27,7 +27,6 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
-import org.restlet.RestletException;
 import org.restlet.data.EmptyValue;
 import org.restlet.data.FormReader;
 import org.restlet.data.Parameter;
@@ -53,7 +52,7 @@ public class FormReaderImpl extends BufferedInputStream implements FormReader
     * @return     The parameter value or list of values.
     */
    @SuppressWarnings("unchecked")
-   public Object readParameter(String name) throws RestletException
+   public Object readParameter(String name) throws IOException
    {
       Parameter param = readParameter();
       Object result = null;
@@ -105,15 +104,7 @@ public class FormReaderImpl extends BufferedInputStream implements FormReader
          param = readParameter();
       }
 
-      try
-      {
-         close();
-      }
-      catch (IOException ioe)
-      {
-         throw new RestletException("Error while closing the input stream", ioe);
-      }
-
+      close();
       return result;
    }
 
@@ -124,7 +115,7 @@ public class FormReaderImpl extends BufferedInputStream implements FormReader
     * @param parameters The parameters map controlling the reading.
     */
    @SuppressWarnings("unchecked")
-   public void readParameters(Map<String, Object> parameters) throws RestletException
+   public void readParameters(Map<String, Object> parameters) throws IOException
    {
       Parameter param = readParameter();
       Object currentValue = null;
@@ -178,21 +169,14 @@ public class FormReaderImpl extends BufferedInputStream implements FormReader
          param = readParameter();
       }
 
-      try
-      {
-         close();
-      }
-      catch (IOException ioe)
-      {
-         throw new RestletException("Error while closing the input stream", ioe);
-      }
+      close();
    }
 
    /**
     * Reads the next parameter available or null.
     * @return The next parameter available or null.
     */
-   public Parameter readParameter() throws RestletException
+   public Parameter readParameter() throws IOException
    {
       Parameter result = null;
 
@@ -219,7 +203,7 @@ public class FormReaderImpl extends BufferedInputStream implements FormReader
                   }
                   else
                   {
-                     throw new RestletException("Empty parameter name detected", "Please check your form data");
+                     throw new IOException("Empty parameter name detected. Please check your form data");
                   }
                }
                else if ((nextChar == '&') || (nextChar == -1))
@@ -234,7 +218,7 @@ public class FormReaderImpl extends BufferedInputStream implements FormReader
                   }
                   else
                   {
-                     throw new RestletException("Empty parameter name detected", "Please check your form data");
+                     throw new IOException("Empty parameter name detected. Please check your form data");
                   }
                }
                else
@@ -264,11 +248,7 @@ public class FormReaderImpl extends BufferedInputStream implements FormReader
       }
       catch (UnsupportedEncodingException uee)
       {
-         throw new RestletException("Unsupported encoding", "Please contact the administrator");
-      }
-      catch (IOException ioe)
-      {
-         throw new RestletException("Error while creating the file input stream", ioe);
+         throw new IOException("Unsupported encoding. Please contact the administrator");
       }
 
       return result;
@@ -280,7 +260,7 @@ public class FormReaderImpl extends BufferedInputStream implements FormReader
     * @param value   The parameter value buffer (can be null).
     * @return        The created parameter.
     */
-   private Parameter createParameter(CharSequence name, CharSequence value) throws RestletException
+   private Parameter createParameter(CharSequence name, CharSequence value) throws IOException
    {
       Parameter result = null;
       final String encoding = "UTF-8";
@@ -302,7 +282,7 @@ public class FormReaderImpl extends BufferedInputStream implements FormReader
       }
       catch (UnsupportedEncodingException uee)
       {
-         throw new RestletException("Unsupported encoding exception", "Please contact the administrator");
+         throw new IOException("Unsupported encoding exception. Please contact the administrator");
       }
 
       return result;

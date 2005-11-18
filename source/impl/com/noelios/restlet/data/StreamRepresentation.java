@@ -18,14 +18,14 @@
 
 package com.noelios.restlet.data;
 
+import java.io.IOException;
 import java.io.OutputStream;
 import java.nio.channels.Channels;
 import java.nio.channels.ReadableByteChannel;
 import java.nio.channels.WritableByteChannel;
 
-import org.restlet.RestletException;
-import org.restlet.data.MediaType;
 import org.restlet.data.AbstractRepresentation;
+import org.restlet.data.MediaType;
 
 import com.noelios.restlet.util.ByteUtils;
 
@@ -47,7 +47,7 @@ public abstract class StreamRepresentation extends AbstractRepresentation
     * Writes the representation to a byte stream.
     * @param outputStream The output stream.
     */
-   public void write(OutputStream outputStream) throws RestletException
+   public void write(OutputStream outputStream) throws IOException
    {
       ByteUtils.write(getStream(), outputStream);
    }
@@ -56,7 +56,7 @@ public abstract class StreamRepresentation extends AbstractRepresentation
     * Writes the representation to a byte channel.
     * @param writableChannel A writable byte channel.
     */
-   public void write(WritableByteChannel writableChannel) throws RestletException
+   public void write(WritableByteChannel writableChannel) throws IOException
    {
       write(Channels.newOutputStream(writableChannel));
    }
@@ -66,7 +66,7 @@ public abstract class StreamRepresentation extends AbstractRepresentation
     * If it is supported by a file a read-only instance of FileChannel is returned.
     * @return A readable byte channel.
     */
-   public ReadableByteChannel getChannel() throws RestletException
+   public ReadableByteChannel getChannel() throws IOException
    {
       return Channels.newChannel(getStream());
    }
@@ -83,9 +83,9 @@ public abstract class StreamRepresentation extends AbstractRepresentation
       {
          result = ByteUtils.toString(getStream());
       }
-      catch(RestletException re)
+      catch (IOException ioe)
       {
-         re.printStackTrace();
+         ioe.printStackTrace();
       }
 
       return result;

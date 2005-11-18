@@ -19,12 +19,12 @@
 package com.noelios.restlet.data;
 
 import java.io.ByteArrayInputStream;
+import java.io.IOException;
 import java.io.InputStream;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
-import org.restlet.RestletException;
 import org.restlet.data.Cookie;
 import org.restlet.data.Cookies;
 import org.restlet.data.CookiesReader;
@@ -48,7 +48,7 @@ public class CookiesImpl extends InputRepresentation implements Cookies
     * Constructor.
     * @param cookiesInputStream The cookies stream to parse.
     */
-   public CookiesImpl(InputStream cookiesInputStream) throws RestletException
+   public CookiesImpl(InputStream cookiesInputStream) throws IOException
    {
       super(cookiesInputStream, MediaTypes.APPLICATION_WWW_FORM);
    }
@@ -58,7 +58,7 @@ public class CookiesImpl extends InputRepresentation implements Cookies
     * If a matching cookie is found, its value is put in the map.
     * @param cookies The cookies map controlling the reading.
     */
-   public void readCookies(Map<String, Cookie> cookies) throws RestletException
+   public void readCookies(Map<String, Cookie> cookies) throws IOException
    {
       getCookiesReader().readCookies(cookies);
    }
@@ -67,7 +67,7 @@ public class CookiesImpl extends InputRepresentation implements Cookies
     * Returns a new cookies reader to read the list.
     * @return A new cookies reader to read the list.
     */
-   public CookiesReader getCookiesReader() throws RestletException
+   public CookiesReader getCookiesReader() throws IOException
    {
       return new CookiesReaderImpl(getStream());
    }
@@ -76,26 +76,19 @@ public class CookiesImpl extends InputRepresentation implements Cookies
     * Returns the list of cookies.
     * @return The list of cookies.
     */
-   public List<Cookie> getCookies() throws RestletException
+   public List<Cookie> getCookies() throws IOException
    {
       List<Cookie> result = new ArrayList<Cookie>();
+      CookiesReader cis = getCookiesReader();
+      Cookie cookie = cis.readCookie();
 
-      try
+      while (cookie != null)
       {
-         CookiesReader cis = getCookiesReader();
-         Cookie cookie = cis.readCookie();
-         while (cookie != null)
-         {
-            result.add(cookie);
-            cis.readCookie();
-         }
-         cis.close();
-      }
-      catch (Exception e)
-      {
-         throw new RestletException("Error while reading the call's cookies", e);
+         result.add(cookie);
+         cis.readCookie();
       }
 
+      cis.close();
       return result;
    }
 

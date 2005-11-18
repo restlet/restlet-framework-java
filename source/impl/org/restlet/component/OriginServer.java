@@ -18,7 +18,8 @@
 
 package org.restlet.component;
 
-import org.restlet.RestletException;
+import java.io.IOException;
+
 import org.restlet.UniformCall;
 import org.restlet.connector.Client;
 import org.restlet.connector.Server;
@@ -67,7 +68,7 @@ public interface OriginServer extends Component
     * @param name	The name of the client connector.
     * @param call	The call to handle.
     */
-   public void callClient(String name, UniformCall call) throws RestletException;
+   public void callClient(String name, UniformCall call) throws IOException;
    
    /**
     * Returns a new cookie setting.
@@ -82,7 +83,7 @@ public interface OriginServer extends Component
     * @param content The form content to process.
     * @return        A new form with the given content.
     */
-   public Form createForm(Representation content) throws RestletException;
+   public Form createForm(Representation content) throws IOException;
 
 }
 

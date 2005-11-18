@@ -18,11 +18,11 @@
 
 package com.noelios.restlet.component;
 
+import java.io.IOException;
 import java.util.Iterator;
 import java.util.Map;
 import java.util.TreeMap;
 
-import org.restlet.RestletException;
 import org.restlet.UniformCall;
 import org.restlet.UniformInterface;
 import org.restlet.component.OriginServer;
@@ -114,13 +114,13 @@ public abstract class OriginServerImpl implements OriginServer
     * @param name	The name of the client connector.
     * @param call	The call to handle.
     */
-   public void callClient(String name, UniformCall call) throws RestletException
+   public void callClient(String name, UniformCall call) throws IOException
    {
       UniformInterface connector = (UniformInterface)this.clients.get(name);
 
       if (connector == null)
       {
-         throw new RestletException("Client connector \"" + name + "\" couldn't be found.");
+         throw new IOException("Client connector \"" + name + "\" couldn't be found.");
       }
       else
       {
@@ -185,7 +185,7 @@ public abstract class OriginServerImpl implements OriginServer
     * @param content The form content to process.
     * @return        A new form with the given content.
     */
-   public Form createForm(Representation content) throws RestletException
+   public Form createForm(Representation content) throws IOException
    {
       return new FormImpl(content);
    }

@@ -24,7 +24,6 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
-import org.restlet.RestletException;
 import org.restlet.data.Form;
 import org.restlet.data.FormReader;
 import org.restlet.data.MediaTypes;
@@ -53,7 +52,7 @@ public class FormImpl extends InputRepresentation implements Form
     * Construcotr.
     * @param requestContent The web form parameters as a representation.
     */
-   public FormImpl(Representation requestContent) throws RestletException
+   public FormImpl(Representation requestContent) throws IOException
    {
       super(requestContent.getStream(), MediaTypes.APPLICATION_WWW_FORM);
       this.firstReaderCreation = true;
@@ -65,7 +64,7 @@ public class FormImpl extends InputRepresentation implements Form
     * @param name The parameter name to match.
     * @return 		The parameter value or list of values.
     */
-   public Object readParameter(String name) throws RestletException
+   public Object readParameter(String name) throws IOException
    {
       return getFormReader().readParameter(name);
    }
@@ -76,7 +75,7 @@ public class FormImpl extends InputRepresentation implements Form
     * If multiple values are found, a list is created and set in the map.
     * @param parameters The parameters map controlling the reading.
     */
-   public void readParameters(Map<String, Object> parameters) throws RestletException
+   public void readParameters(Map<String, Object> parameters) throws IOException
    {
       getFormReader().readParameters(parameters);
    }
@@ -85,19 +84,12 @@ public class FormImpl extends InputRepresentation implements Form
     * Returns a new form reader to read the list.
     * @return A new form reader to read the list.
     */
-   public FormReader getFormReader() throws RestletException
+   public FormReader getFormReader() throws IOException
    {
       if (!firstReaderCreation && getStream().markSupported())
       {
-         try
-         {
-            // Allow multiple uses of the form when possible
-            getStream().reset();
-         }
-         catch (IOException ioe)
-         {
-            throw new RestletException("Couldn't reset the form stream", ioe);
-         }
+         // Allow multiple uses of the form when possible
+         getStream().reset();
       }
 
       firstReaderCreation = false;
@@ -109,26 +101,19 @@ public class FormImpl extends InputRepresentation implements Form
     * @return The list of parameters.
     * @see org.restlet.data.Parameter
     */
-   public List<Parameter> getParameters() throws RestletException
+   public List<Parameter> getParameters() throws IOException
    {
       List<Parameter> result = new ArrayList<Parameter>();
+      FormReader fis = getFormReader();
+      Parameter param = fis.readParameter();
 
-      try
+      while (param != null)
       {
-         FormReader fis = getFormReader();
-         Parameter param = fis.readParameter();
-         while (param != null)
-         {
-            result.add(param);
-            fis.readParameter();
-         }
-         fis.close();
-      }
-      catch (Exception e)
-      {
-         throw new RestletException("Error while reading the form parameters", e);
+         result.add(param);
+         fis.readParameter();
       }
 
+      fis.close();
       return result;
    }
 

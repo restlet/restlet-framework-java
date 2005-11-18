@@ -19,14 +19,14 @@
 package com.noelios.restlet.data;
 
 import java.io.ByteArrayOutputStream;
+import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
 import java.nio.channels.Channels;
 import java.nio.channels.WritableByteChannel;
 
-import org.restlet.RestletException;
-import org.restlet.data.MediaType;
 import org.restlet.data.AbstractRepresentation;
+import org.restlet.data.MediaType;
 
 import com.noelios.restlet.util.ByteUtils;
 
@@ -48,7 +48,7 @@ public abstract class ChannelRepresentation extends AbstractRepresentation
     * Writes the representation to a byte stream.
     * @param outputStream The output stream.
     */
-   public void write(OutputStream outputStream) throws RestletException
+   public void write(OutputStream outputStream) throws IOException
    {
       write(Channels.newChannel(outputStream));
    }
@@ -57,7 +57,7 @@ public abstract class ChannelRepresentation extends AbstractRepresentation
     * Writes the representation to a byte channel.
     * @param writableChannel A writable byte channel.
     */
-   public void write(WritableByteChannel writableChannel) throws RestletException
+   public void write(WritableByteChannel writableChannel) throws IOException
    {
       ByteUtils.write(getChannel(), writableChannel);
    }
@@ -66,7 +66,7 @@ public abstract class ChannelRepresentation extends AbstractRepresentation
     * Returns a stream with the representation's content.
     * @return A stream with the representation's content.
     */
-   public InputStream getStream() throws RestletException
+   public InputStream getStream() throws IOException
    {
       return Channels.newInputStream(getChannel());
    }

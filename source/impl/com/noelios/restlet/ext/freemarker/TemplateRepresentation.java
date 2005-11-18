@@ -22,10 +22,8 @@ import java.io.BufferedWriter;
 import java.io.IOException;
 import java.io.OutputStream;
 import java.io.OutputStreamWriter;
-import java.io.Reader;
 import java.io.Writer;
 
-import org.restlet.RestletException;
 import org.restlet.data.MediaType;
 
 import com.noelios.restlet.data.OutputRepresentation;
@@ -41,24 +39,14 @@ import freemarker.template.TemplateException;
  */
 public class TemplateRepresentation extends OutputRepresentation
 {
-   /** The FreeMarker template. */
-   protected Template template;
+   /** The FreeMarker template path. */
+   protected String templatePath;
 
+   /** The FreeMarker configuration. */
+   Configuration config;
+   
    /** The template's data model. */
    protected Object dataModel;
-
-   /**
-    * Constructor.
-    * @param template 		The FreeMarker template.
-    * @param dataModel		The FreeMarker template's data model.
-    * @param mediaType 		The representation's media type.
-    */
-   public TemplateRepresentation(Template template, Object dataModel, MediaType mediaType)
-       {
-          super(mediaType);
-          this.template = template;
-          this.dataModel = dataModel;
-   }
 
    /**
     * Constructor.
@@ -67,23 +55,12 @@ public class TemplateRepresentation extends OutputRepresentation
     * @param dataModel		The FreeMarker template's data model.
     * @param mediaType 		The representation's media type.
     */
-   public TemplateRepresentation(String templatePath, Configuration config, Object dataModel, MediaType mediaType) throws RestletException
+   public TemplateRepresentation(String templatePath, Configuration config, Object dataModel, MediaType mediaType)
    {
-      this(loadTemplate(templatePath, config), dataModel, mediaType);
-   }
-
-   /**
-    * Constructor.
-    * @param templateName		The FreeMarker template's name.
-    * @param templateReader	The FreeMarker template's reader.
-    * @param config				The FreeMarker configuration.
-    * @param dataModel			The FreeMarker template's data model.
-    * @param mediaType 			The representation's media type.
-    */
-   public TemplateRepresentation(String templateName, Reader templateReader, Configuration config, Object dataModel,
-       MediaType mediaType) throws RestletException
-       {
-          this(readTemplate(templateName, templateReader, config), dataModel, mediaType);
+      super(mediaType);
+      this.config = config;
+      this.dataModel = dataModel;
+      this.templatePath = templatePath;
    }
 
    /**
@@ -107,53 +84,27 @@ public class TemplateRepresentation extends OutputRepresentation
    }
 
    /**
-    * Reads a template from a stream.
-    * @param templateName		The FreeMarker template's name.
-    * @param templateReader	The FreeMarker template's reader.
-    * @param config				The FreeMarker configuration.
-    * @return						The read template.
-    */
-   private static Template readTemplate(String templateName, Reader templateReader,
-       Configuration config) throws RestletException
-       {
-          try
-          {
-             return new Template(templateName, templateReader, config);
-          }
-          catch (IOException ioe)
-          {
-             throw new RestletException(ioe);
-          }
-   }
-
-   /**
     * Loads a template from the file system.
     * @param templatePath	The FreeMarker template's path.
     * @param config			The FreeMarker configuration.
     * @return					The loaded template.
     */
-   private static Template loadTemplate(String templatePath, Configuration config) throws RestletException
+   private static Template loadTemplate(String templatePath, Configuration config) throws IOException
    {
-      try
-      {
-         return config.getTemplate(templatePath);
-      }
-      catch (IOException ioe)
-      {
-         throw new RestletException(ioe);
-      }
+      return config.getTemplate(templatePath);
    }
 
    /**
     * Writes the datum as a stream of bytes.
     * @param outputStream The stream to use when writing.
     */
-   public void write(OutputStream outputStream) throws RestletException
+   public void write(OutputStream outputStream) throws IOException
    {
       Writer tmplWriter = null;
 
       try
       {
+         Template template = loadTemplate(templatePath, config);
          if(getCharacterSet() != null)
          {
             tmplWriter = new BufferedWriter(new OutputStreamWriter(outputStream, getCharacterSet().getName()));
@@ -165,25 +116,14 @@ public class TemplateRepresentation extends OutputRepresentation
          
          template.process(getValues(), tmplWriter);
       }
-      catch (IOException ioe)
-      {
-         throw new RestletException("Template loading error", ioe);
-      }
       catch (TemplateException te)
       {
-         throw new RestletException("Template processing error", te);
+         throw new IOException("Template processing error");
       }
       finally
       {
-         try
-         {
-            if (tmplWriter != null)
-               tmplWriter.close();
-         }
-         catch (IOException ioe)
-         {
-            throw new RestletException("Can't close the writer", ioe);
-         }
+         if (tmplWriter != null)
+            tmplWriter.close();
       }
    }
 

@@ -22,7 +22,6 @@ import java.io.BufferedInputStream;
 import java.io.IOException;
 import java.io.InputStream;
 
-import org.restlet.RestletException;
 import org.restlet.data.Parameter;
 
 /**
@@ -43,7 +42,7 @@ public abstract class HeaderReaderImpl extends BufferedInputStream
     * Reads the next quoted string.
     * @return The next quoted string.
     */
-   protected String readQuotedString() throws RestletException
+   protected String readQuotedString() throws IOException
    {
       StringBuilder sb = new StringBuilder();
       appendQuotedString(sb);
@@ -54,54 +53,47 @@ public abstract class HeaderReaderImpl extends BufferedInputStream
     * Appends the next quoted string.
     * @param buffer The buffer to append.
     */
-   protected void appendQuotedString(Appendable buffer) throws RestletException
+   protected void appendQuotedString(Appendable buffer) throws IOException
    {
       boolean done = false;
       boolean quotedPair = false;
       int nextChar = 0;
 
-      try
+      while ((!done) && (nextChar != -1))
       {
-         while ((!done) && (nextChar != -1))
-         {
-            nextChar = read();
+         nextChar = read();
 
-            if (quotedPair)
-            {
-               // End of quoted pair (escape sequence)
-               if (isText(nextChar))
-               {
-                  buffer.append((char)nextChar);
-                  quotedPair = false;
-               }
-               else
-               {
-                  throw new RestletException("Invalid character detected in quoted string", "Please check your value");
-               }
-            }
-            else if (isDoubleQuote(nextChar))
-            {
-               // End of quoted string
-               done = true;
-            }
-            else if (nextChar == '\\')
-            {
-               // Begin of quoted pair (escape sequence)
-               quotedPair = true;
-            }
-            else if (isText(nextChar))
+         if (quotedPair)
+         {
+            // End of quoted pair (escape sequence)
+            if (isText(nextChar))
             {
                buffer.append((char)nextChar);
+               quotedPair = false;
             }
             else
             {
-               throw new RestletException("Invalid character detected in quoted string", "Please check your value");
+               throw new IOException("Invalid character detected in quoted string. Please check your value");
             }
          }
-      }
-      catch (IOException ioe)
-      {
-         throw new RestletException("Error while reading the header characters", "Please check your header");
+         else if (isDoubleQuote(nextChar))
+         {
+            // End of quoted string
+            done = true;
+         }
+         else if (nextChar == '\\')
+         {
+            // Begin of quoted pair (escape sequence)
+            quotedPair = true;
+         }
+         else if (isText(nextChar))
+         {
+            buffer.append((char)nextChar);
+         }
+         else
+         {
+            throw new IOException("Invalid character detected in quoted string. Please check your value");
+         }
       }
    }
 
@@ -111,7 +103,7 @@ public abstract class HeaderReaderImpl extends BufferedInputStream
     * @param value 	The parameter value buffer (can be null).
     * @return 			The created parameter.
     */
-   public static Parameter createParameter(CharSequence name, CharSequence value) throws RestletException
+   public static Parameter createParameter(CharSequence name, CharSequence value) throws IOException
    {
       if (value != null)
       {

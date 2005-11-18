@@ -26,8 +26,6 @@ import java.nio.channels.Channels;
 import java.nio.channels.ReadableByteChannel;
 import java.nio.channels.WritableByteChannel;
 
-import org.restlet.RestletException;
-
 /**
  * Byte manipulation utilities.
  */
@@ -38,30 +36,23 @@ public class ByteUtils
     * @param inputStream   The input stream.
     * @param outputStream  The output stream.
     */
-   public static void write(InputStream inputStream, OutputStream outputStream) throws RestletException
+   public static void write(InputStream inputStream, OutputStream outputStream) throws IOException
    {
-      try
+      InputStream is = (inputStream instanceof BufferedInputStream) ? inputStream : new BufferedInputStream(inputStream);
+      int nextByte = is.read();
+      while (nextByte != -1)
       {
-         InputStream is = (inputStream instanceof BufferedInputStream) ? inputStream : new BufferedInputStream(inputStream);
-         int nextByte = is.read();
-         while (nextByte != -1)
-         {
-            outputStream.write(nextByte);
-            nextByte = is.read();
-         }
-         is.close();
+         outputStream.write(nextByte);
+         nextByte = is.read();
       }
-      catch (IOException ioe)
-      {
-         throw new RestletException("Error while creating the file input stream", ioe);
-      }
+      is.close();
    }
    /**
     * Writes a readable channel to a writable channel.
     * @param readableChannel  The readable channel.
     * @param writableChannel  The writable channel.
     */
-   public static void write(ReadableByteChannel readableChannel, WritableByteChannel writableChannel) throws RestletException
+   public static void write(ReadableByteChannel readableChannel, WritableByteChannel writableChannel) throws IOException
    {
       write(Channels.newInputStream(readableChannel), Channels.newOutputStream(writableChannel));
    }

@@ -23,7 +23,6 @@ import java.io.IOException;
 import java.io.ObjectOutputStream;
 import java.io.OutputStream;
 
-import org.restlet.RestletException;
 import org.restlet.data.MediaTypes;
 
 /**
@@ -49,25 +48,18 @@ public class ObjectRepresentation extends OutputRepresentation
     * Writes the datum as a stream of bytes.
     * @param outputStream The stream to use when writing.
     */
-   public void write(OutputStream outputStream) throws RestletException
+   public void write(OutputStream outputStream) throws IOException
    {
-      try
-      {
-         ObjectOutputStream oos = new ObjectOutputStream(outputStream);
-         oos.writeObject(getObject());
-         oos.close();
-      }
-      catch (IOException ioe)
-      {
-         throw new RestletException("Unable to recreate Java object", ioe);
-      }
+      ObjectOutputStream oos = new ObjectOutputStream(outputStream);
+      oos.writeObject(getObject());
+      oos.close();
    }
 
    /**
     * Returns the represented object.
     * @return The represented object.
     */
-   public Object getObject() throws RestletException
+   public Object getObject() throws IOException
    {
       return this.object;
    }

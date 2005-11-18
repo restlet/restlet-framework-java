@@ -18,9 +18,9 @@
 
 package com.noelios.restlet.data;
 
+import java.io.IOException;
 import java.nio.channels.ReadableByteChannel;
 
-import org.restlet.RestletException;
 import org.restlet.data.MediaType;
 
 /**
@@ -47,7 +47,7 @@ public class ReadableRepresentation extends ChannelRepresentation
     * If it is supported by a file a read-only instance of FileChannel is returned.
     * @return A readable byte channel.
     */
-   public ReadableByteChannel getChannel() throws RestletException
+   public ReadableByteChannel getChannel() throws IOException
    {
       return readableChannel;
    }

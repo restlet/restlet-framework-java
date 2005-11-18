@@ -23,7 +23,6 @@ import java.io.InputStream;
 import java.io.UnsupportedEncodingException;
 import java.util.Map;
 
-import org.restlet.RestletException;
 import org.restlet.data.Cookie;
 import org.restlet.data.CookiesReader;
 import org.restlet.data.Parameter;
@@ -62,7 +61,7 @@ public class CookiesReaderImpl extends HeaderReaderImpl implements CookiesReader
     * If a matching cookie is found, its value is put in the map.
     * @param cookies The cookies map controlling the reading.
     */
-   public void readCookies(Map<String, Cookie> cookies) throws RestletException
+   public void readCookies(Map<String, Cookie> cookies) throws IOException
    {
       Cookie cookie = readCookie();
 
@@ -76,21 +75,14 @@ public class CookiesReaderImpl extends HeaderReaderImpl implements CookiesReader
          cookie = readCookie();
       }
 
-      try
-      {
-         close();
-      }
-      catch (IOException ioe)
-      {
-         throw new RestletException("Error while closing the input stream", ioe);
-      }
+      close();
    }
 
    /**
     * Reads the next cookie available or null.
     * @return The next cookie available or null.
     */
-   public Cookie readCookie() throws RestletException
+   public Cookie readCookie() throws IOException
    {
       Cookie result = null;
       Parameter pair = readPair();
@@ -106,7 +98,7 @@ public class CookiesReaderImpl extends HeaderReaderImpl implements CookiesReader
             }
             else
             {
-               throw new RestletException("Empty cookies version attribute detected", "Please check your cookie header");
+               throw new IOException("Empty cookies version attribute detected. Please check your cookie header");
             }
          }
          else
@@ -163,7 +155,7 @@ public class CookiesReaderImpl extends HeaderReaderImpl implements CookiesReader
     * Reads the next pair as a parameter.
     * @return The next pair as a parameter.
     */
-   private Parameter readPair() throws RestletException
+   private Parameter readPair() throws IOException
    {
       Parameter result = null;
 
@@ -204,7 +196,7 @@ public class CookiesReaderImpl extends HeaderReaderImpl implements CookiesReader
                      }
                      else
                      {
-                        throw new RestletException("Empty cookie name detected", "Please check your cookies");
+                        throw new IOException("Empty cookie name detected. Please check your cookies");
                      }
                   }
                   else if (nextChar == '=')
@@ -218,8 +210,7 @@ public class CookiesReaderImpl extends HeaderReaderImpl implements CookiesReader
                   }
                   else
                   {
-                     throw new RestletException("Separator and control characters are not allowed within a token",
-                         "Please check your cookie header");
+                     throw new IOException("Separator and control characters are not allowed within a token. Please check your cookie header");
                   }
                }
                else if (readingValue)
@@ -243,19 +234,14 @@ public class CookiesReaderImpl extends HeaderReaderImpl implements CookiesReader
                   }
                   else
                   {
-                     throw new RestletException("Separator and control characters are not allowed within a token",
-                         "Please check your cookie header");
+                     throw new IOException("Separator and control characters are not allowed within a token. Please check your cookie header");
                   }
                }
             }
          }
          catch (UnsupportedEncodingException uee)
          {
-            throw new RestletException("Unsupported encoding", "Please contact the administrator");
-         }
-         catch (IOException ioe)
-         {
-            throw new RestletException("Unexpected I/O exception", "Please contact the administrator");
+            throw new IOException("Unsupported encoding. Please contact the administrator");
          }
       }
 

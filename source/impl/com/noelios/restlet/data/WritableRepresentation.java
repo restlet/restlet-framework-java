@@ -23,7 +23,6 @@ import java.nio.channels.Pipe;
 import java.nio.channels.ReadableByteChannel;
 import java.nio.channels.WritableByteChannel;
 
-import org.restlet.RestletException;
 import org.restlet.data.MediaType;
 
 /**
@@ -46,47 +45,32 @@ public abstract class WritableRepresentation extends ChannelRepresentation
     * If it is supported by a file a read-only instance of FileChannel is returned.
     * @return A readable byte channel.
     */
-   public ReadableByteChannel getChannel() throws RestletException
+   public ReadableByteChannel getChannel() throws IOException
    {
-      try
-      {
-         final Pipe pipe = Pipe.open();
+      final Pipe pipe = Pipe.open();
 
-         // Create a thread that will handle the task of continuously
-         // writing the representation into the input side of the pipe
-         Thread writer = new Thread()
-         {
-            public void run()
-            {
-               try
-               {
-                  WritableByteChannel wbc = pipe.sink();
-                  write(wbc);
-                  
-                  try
-                  {
-                     wbc.close();
-                  }
-                  catch (IOException ioe)
-                  {
-                     throw new RestletException("Error while closing the output stream", ioe);
-                  }
-               }
-               catch (RestletException re)
-               {
-                  re.printStackTrace();
-               }
-            }
-         };
-         
-         // Start the writer thread
-         writer.start();
-         return pipe.source();
-      }
-      catch(IOException ioe)
+      // Create a thread that will handle the task of continuously
+      // writing the representation into the input side of the pipe
+      Thread writer = new Thread()
       {
-         throw new RestletException(ioe);
-      }
+         public void run()
+         {
+            try
+            {
+               WritableByteChannel wbc = pipe.sink();
+               write(wbc);
+               wbc.close();
+            }
+            catch (IOException ioe)
+            {
+               ioe.printStackTrace();
+            }
+         }
+      };
+         
+      // Start the writer thread
+      writer.start();
+      return pipe.source();
    }
    
 }

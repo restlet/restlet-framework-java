@@ -38,14 +38,14 @@ public interface Resource
     * Returns the representation variants metadata.
     * @return The representation variants metadata.
     */
-   public List<RepresentationMetadata> getVariantsMetadata() throws RestletException;
+   public List<RepresentationMetadata> getVariantsMetadata();
 
    /**
     * Returns the representation matching the given metadata.
     * @param metadata   The metadata to match.
     * @return 				The matching representation.
     */
-   public Representation getRepresentation(RepresentationMetadata metadata) throws RestletException;
+   public Representation getRepresentation(RepresentationMetadata metadata);
    
 }
 

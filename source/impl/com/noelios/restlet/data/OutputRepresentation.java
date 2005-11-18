@@ -23,7 +23,6 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
 
-import org.restlet.RestletException;
 import org.restlet.data.MediaType;
 
 import com.noelios.restlet.util.PipeStream;
@@ -47,14 +46,14 @@ public abstract class OutputRepresentation extends StreamRepresentation
     * Writes the representation to a byte stream.
     * @param outputStream The output stream.
     */
-   public abstract void write(OutputStream outputStream) throws RestletException;
+   public abstract void write(OutputStream outputStream) throws IOException;
 
    /**
     * Returns a stream with the representation's content.
     * Internally, it uses a writer thread and a pipe stream.
     * @return A stream with the representation's content.
     */
-   public InputStream getStream() throws RestletException
+   public InputStream getStream() throws IOException
    {
       final PipeStream pipe = new PipeStream();
 
@@ -68,20 +67,12 @@ public abstract class OutputRepresentation extends StreamRepresentation
             {
                OutputStream os = pipe.getOutputStream();
                write(os);
-
-               try
-               {
-                  os.write(-1);
-                  os.close();
-               }
-               catch (IOException ioe)
-               {
-                  throw new RestletException("Error while closing the output stream", ioe);
-               }
+               os.write(-1);
+               os.close();
             }
-            catch (RestletException re)
+            catch (IOException ioe)
             {
-               re.printStackTrace();
+               ioe.printStackTrace();
             }
          }
       };

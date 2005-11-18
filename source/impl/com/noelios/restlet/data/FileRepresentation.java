@@ -26,9 +26,8 @@ import java.io.RandomAccessFile;
 import java.nio.channels.FileChannel;
 import java.nio.channels.WritableByteChannel;
 
-import org.restlet.RestletException;
-import org.restlet.data.MediaType;
 import org.restlet.data.AbstractRepresentation;
+import org.restlet.data.MediaType;
 
 import com.noelios.restlet.util.ByteUtils;
 
@@ -55,7 +54,7 @@ public class FileRepresentation extends AbstractRepresentation
     * Writes the representation to a byte stream.
     * @param outputStream The output stream.
     */
-   public void write(OutputStream outputStream) throws RestletException
+   public void write(OutputStream outputStream) throws IOException
    {
       ByteUtils.write(getStream(), outputStream);
    }
@@ -65,25 +64,18 @@ public class FileRepresentation extends AbstractRepresentation
     * Optimizes using the file channel transferTo method.
     * @param writableChannel A writable byte channel.
     */
-   public void write(WritableByteChannel writableChannel) throws RestletException
+   public void write(WritableByteChannel writableChannel) throws IOException
    {
-      try
-      {
-         FileChannel fc = getChannel();
-         long position = 0;
-         long count = fc.size();
-         long written = 0;
+      FileChannel fc = getChannel();
+      long position = 0;
+      long count = fc.size();
+      long written = 0;
       
-         while(count > 0)
-         {
-            written = fc.transferTo(position, count, writableChannel);
-            position += written;
-            count -= written;
-         }
-      }
-      catch(IOException ioe)
+      while(count > 0)
       {
-         throw new RestletException(ioe);
+         written = fc.transferTo(position, count, writableChannel);
+         position += written;
+         count -= written;
       }
    }
 
@@ -91,7 +83,7 @@ public class FileRepresentation extends AbstractRepresentation
     * Returns a stream with the representation's content.
     * @return A stream with the representation's content.
     */
-   public FileInputStream getStream() throws RestletException
+   public FileInputStream getStream() throws IOException
    {
       try
       {
@@ -99,7 +91,7 @@ public class FileRepresentation extends AbstractRepresentation
       }
       catch (FileNotFoundException fnfe)
       {
-         throw new RestletException(fnfe);
+         throw new IOException("Couldn't get the stream. File not found");
       }
    }
 
@@ -108,7 +100,7 @@ public class FileRepresentation extends AbstractRepresentation
     * If it is supported by a file a read-only instance of FileChannel is returned.
     * @return A readable byte channel.
     */
-   public FileChannel getChannel() throws RestletException
+   public FileChannel getChannel() throws IOException
    {
       try
       {
@@ -117,7 +109,7 @@ public class FileRepresentation extends AbstractRepresentation
       }
       catch(FileNotFoundException fnfe)
       {
-         throw new RestletException(fnfe);
+         throw new IOException("Couldn't get the channel. File not found");
       }
    }
    
@@ -131,9 +123,9 @@ public class FileRepresentation extends AbstractRepresentation
       {
          return ByteUtils.toString(getStream());
       }
-      catch(RestletException re)
+      catch(IOException ioe)
       {
-         re.printStackTrace();
+         ioe.printStackTrace();
          return null;
       }
    }   

@@ -1,11 +1,28 @@
+/*
+ * Copyright © 2005 Jérôme LOUVEL.
+ *
+ * This program is free software; you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation; either version 2 of the License, or
+ * (at your option) any later version.
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ *
+ * You should have received a copy of the GNU General Public License
+ * along with this program; if not, write to the Free Software
+ * Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
+ */
+
 package org.restlet.data;
 
+import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
 import java.nio.channels.ReadableByteChannel;
 import java.nio.channels.WritableByteChannel;
-
-import org.restlet.RestletException;
 
 /**
  * Current or intended state of a resource.
@@ -30,25 +47,25 @@ public interface Representation extends Data
     * If it is supported by a file a read-only instance of FileChannel is returned.
     * @return A readable byte channel.
     */
-   public ReadableByteChannel getChannel() throws RestletException;
+   public ReadableByteChannel getChannel() throws IOException;
 
    /**
     * Returns a stream with the representation's content.
     * @return A stream with the representation's content.
     */
-   public InputStream getStream() throws RestletException;
+   public InputStream getStream() throws IOException;
 
    /**
     * Writes the representation to a byte channel.
     * @param writableChannel A writable byte channel.
     */
-   public void write(WritableByteChannel writableChannel) throws RestletException;
+   public void write(WritableByteChannel writableChannel) throws IOException;
 
    /**
     * Writes the representation to a byte stream.
     * @param outputStream The output stream.
     */
-   public void write(OutputStream outputStream) throws RestletException;
+   public void write(OutputStream outputStream) throws IOException;
 
    /**
     * Converts the representation to a string.

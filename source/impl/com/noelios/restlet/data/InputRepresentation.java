@@ -18,9 +18,9 @@
 
 package com.noelios.restlet.data;
 
+import java.io.IOException;
 import java.io.InputStream;
 
-import org.restlet.RestletException;
 import org.restlet.data.MediaType;
 
 /**
@@ -46,7 +46,7 @@ public class InputRepresentation extends StreamRepresentation
     * Returns a stream with the representation's content.
     * @return A stream with the representation's content.
     */
-   public InputStream getStream() throws RestletException
+   public InputStream getStream() throws IOException
    {
       return inputStream;
    }

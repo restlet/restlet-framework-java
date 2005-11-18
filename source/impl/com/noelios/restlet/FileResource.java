@@ -23,7 +23,6 @@ import java.util.ArrayList;
 import java.util.List;
 
 import org.restlet.Resource;
-import org.restlet.RestletException;
 import org.restlet.data.CharacterSet;
 import org.restlet.data.Language;
 import org.restlet.data.MediaType;
@@ -122,7 +121,7 @@ public class FileResource implements Resource
     * Returns the representation variants.
     * @return The representation variants.
     */
-   public List<RepresentationMetadata> getVariantsMetadata() throws RestletException
+   public List<RepresentationMetadata> getVariantsMetadata()
    {
       List<RepresentationMetadata> result = null;
 
@@ -191,7 +190,7 @@ public class FileResource implements Resource
     * @param metadata   The metadata to match.
     * @return           The matching representation.
     */
-   public Representation getRepresentation(RepresentationMetadata metadata) throws RestletException
+   public Representation getRepresentation(RepresentationMetadata metadata)
    {
       if(metadata instanceof Representation)
          return (Representation)metadata;
