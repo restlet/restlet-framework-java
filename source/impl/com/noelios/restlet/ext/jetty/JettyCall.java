@@ -33,7 +33,7 @@ import org.restlet.data.Preference;
 import org.restlet.data.Reference;
 import org.restlet.data.Representation;
 
-import com.noelios.restlet.CallImpl;
+import com.noelios.restlet.UniformCallImpl;
 import com.noelios.restlet.data.MediaTypeImpl;
 import com.noelios.restlet.data.MethodImpl;
 import com.noelios.restlet.data.PreferenceImpl;
@@ -44,7 +44,7 @@ import com.noelios.restlet.data.InputRepresentation;
 /**
  * Call that is used by the Jetty HTTP server connector.
  */
-public class JettyCall extends CallImpl
+public class JettyCall extends UniformCallImpl
 {
    /**
     * Constructor.

@@ -39,6 +39,12 @@ public interface RestletServer extends OriginServer
    public void removeContainer(String name);
 
    /**
+    * Returns the default container handling direct calls to the server.
+    * @return The default container.
+    */
+   public RestletContainer getDefaultContainer();
+
+   /**
     * Sets the default container handling direct calls to the server.
     * @param container The default container.
     */

@@ -92,7 +92,7 @@ public class RestletServerImpl extends OriginServerImpl implements RestletServer
     * Returns the default container handling direct calls to the server.
     * @return The default container.
     */
-   protected RestletContainer getDefaultContainer()
+   public RestletContainer getDefaultContainer()
    {
       return this.defaultContainer;
    }

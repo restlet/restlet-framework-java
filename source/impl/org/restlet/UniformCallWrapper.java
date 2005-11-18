@@ -65,12 +65,31 @@ public class UniformCallWrapper implements UniformCall
    }
 
    /**
+    * Sets the referrer reference if available.
+    * This reference shouldn't be modified during the call handling.
+    * @param referrerUri The referrer reference.
+    */
+   public void setReferrerUri(Reference referrerUri)
+   {
+      getWrappedCall().setReferrerUri(referrerUri);
+   }
+
+   /**
     * Returns the user agent name.
     * @return The user agent name.
     */
    public String getUserAgentName()
    {
       return getWrappedCall().getUserAgentName();
+   }
+
+   /**
+    * Sets the user agent name.
+    * @param name The user agent name.
+    */
+   public void setUserAgentName(String name)
+   {
+      getWrappedCall().setUserAgentName(name);
    }
 
    /**
@@ -83,12 +102,30 @@ public class UniformCallWrapper implements UniformCall
    }
 
    /**
+    * Sets the media type preferences of the user agent.
+    * @param prefs The media type preferences of the user agent.
+    */
+   public void setMediaTypePrefs(List<Preference> prefs)
+   {
+      getWrappedCall().setMediaTypePrefs(prefs);
+   }
+
+   /**
     * Returns the character set preferences of the user agent.
     * @return The character set preferences of the user agent.
     */
    public List<Preference> getCharacterSetPrefs()
    {
       return getWrappedCall().getCharacterSetPrefs();
+   }
+
+   /**
+    * Sets the character set preferences of the user agent.
+    * @param prefs The character set preferences of the user agent.
+    */
+   public void setCharacterSetPrefs(List<Preference> prefs)
+   {
+      getWrappedCall().setCharacterSetPrefs(prefs);
    }
 
    /**
@@ -101,12 +138,30 @@ public class UniformCallWrapper implements UniformCall
    }
 
    /**
+    * Sets the language preferences of the user agent.
+    * @param prefs The language preferences of the user agent.
+    */
+   public void setLanguagePrefs(List<Preference> prefs)
+   {
+      getWrappedCall().setLanguagePrefs(prefs);
+   }
+
+   /**
     * Returns the method called.
     * @return The method called.
     */
    public Method getMethod()
    {
       return getWrappedCall().getMethod();
+   }
+
+   /**
+    * Sets the method called.
+    * @param method The method called.
+    */
+   public void setMethod(Method method)
+   {
+      getWrappedCall().setMethod(method);
    }
 
    /**
@@ -120,6 +175,15 @@ public class UniformCallWrapper implements UniformCall
    }
 
    /**
+    * Sets the resource's reference.
+    * @param resourceUri The resource's reference.
+    */
+   public void setResourceUri(Reference resourceUri)
+   {
+      getWrappedCall().setResourceUri(resourceUri);
+   }
+
+   /**
     * Returns the cookies sent by the user agent.
     * @return The cookies sent by the user agent.
     */
@@ -129,12 +193,30 @@ public class UniformCallWrapper implements UniformCall
    }
 
    /**
+    * Sets the cookies sent by the user agent.
+    * @param cookies The cookies sent by the user agent.
+    */
+   public void setCookies(Cookies cookies)
+   {
+      getWrappedCall().setCookies(cookies);
+   }
+
+   /**
     * Returns the representation received from the user agent.
     * @return The representation received from the user agent.
     */
    public Representation getInput()
    {
       return getWrappedCall().getInput();
+   }
+
+   /**
+    * Sets the content received in the request.
+    * param input The content received in the request.
+    */
+   public void setInput(Representation input)
+   {
+      getWrappedCall().setInput(input);
    }
 
    // -------------------------------

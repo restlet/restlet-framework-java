@@ -32,13 +32,13 @@ import com.noelios.restlet.data.StringRepresentation;
 /**
  * Default call implementation.
  */
-public class CallImpl implements UniformCall
+public class UniformCallImpl implements UniformCall
 {
    /** The referrer reference. */
-   protected Reference referrer;
+   protected Reference referrerUri;
 
    /** The user agent name. */
-   protected String userAgent;
+   protected String userAgentName;
 
    /** The media preferences of the user agent. */
    protected List<Preference> mediaPrefs;
@@ -53,7 +53,7 @@ public class CallImpl implements UniformCall
    protected Method method;
 
    /** The resource reference. */
-   protected Reference resource;
+   protected Reference resourceUri;
 
    /** The existing cookies of the user agent. */
    protected Cookies cookies;
@@ -85,26 +85,31 @@ public class CallImpl implements UniformCall
     * @param cookies                The cookies sent by the user agent.
     * @param input                  The content received in the request.
     */
-   public CallImpl(Reference referrer, String userAgent,
+   public UniformCallImpl(Reference referrer, String userAgent,
          List<Preference> mediaPrefs, List<Preference> characterSetPrefs,
          List<Preference> languagePrefs, Method method, Reference resource,
          Cookies cookies, Representation input)
    {
-      this.referrer = referrer;
-      this.userAgent = userAgent;
+      this.referrerUri = referrer;
+      this.userAgentName = userAgent;
       this.mediaPrefs = mediaPrefs;
       this.characterSetPrefs = characterSetPrefs;
       this.languagePrefs = languagePrefs;
       this.method = method;
-      this.resource = resource;
+      this.resourceUri = resource;
       this.cookies = cookies;
       this.input = input;
 
-      this.status = Statuses.SUCCESS_OK;
+      this.status = null;
       this.output = null;
       this.cookieSettings = null;
    }
 
+   public UniformCallImpl()
+   {
+      //
+   }
+   
    // ------------------------------
    // Methods related to the request
    // ------------------------------
@@ -116,7 +121,17 @@ public class CallImpl implements UniformCall
     */
    public Reference getReferrerUri()
    {
-      return this.referrer;
+      return this.referrerUri;
+   }
+
+   /**
+    * Sets the referrer reference if available.
+    * This reference shouldn't be modified during the call handling.
+    * @param referrerUri The referrer reference.
+    */
+   public void setReferrerUri(Reference referrerUri)
+   {
+      this.referrerUri = referrerUri;
    }
 
    /**
@@ -125,7 +140,7 @@ public class CallImpl implements UniformCall
     */
    public void setReferrer(Reference referrer)
    {
-      this.referrer = referrer;
+      this.referrerUri = referrer;
    }
 
    /**
@@ -134,16 +149,16 @@ public class CallImpl implements UniformCall
     */
    public String getUserAgentName()
    {
-      return this.userAgent;
+      return this.userAgentName;
    }
 
    /**
     * Sets the user agent name.
-    * @param userAgent The user agent name.
+    * @param name The user agent name.
     */
-   public void setUserAgent(String userAgent)
+   public void setUserAgentName(String name)
    {
-      this.userAgent = userAgent;
+      this.userAgentName = name;
    }
 
    /**
@@ -225,16 +240,16 @@ public class CallImpl implements UniformCall
     */
    public Reference getResourceUri()
    {
-      return this.resource;
+      return this.resourceUri;
    }
 
    /**
     * Sets the resource's reference.
-    * @param resource The resource's reference.
+    * @param resourceUri The resource's reference.
     */
-   public void setResource(Reference resource)
+   public void setResourceUri(Reference resourceUri)
    {
-      this.resource = resource;
+      this.resourceUri = resourceUri;
    }
 
    /**

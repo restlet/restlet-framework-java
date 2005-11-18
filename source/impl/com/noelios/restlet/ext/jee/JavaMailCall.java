@@ -22,13 +22,13 @@ import org.restlet.RestletException;
 import org.restlet.data.Methods;
 import org.restlet.data.Representation;
 
-import com.noelios.restlet.CallImpl;
+import com.noelios.restlet.UniformCallImpl;
 import com.noelios.restlet.data.ReferenceImpl;
 
 /**
  * Call sending an email via a client mail connector.
  */
-public class JavaMailCall extends CallImpl
+public class JavaMailCall extends UniformCallImpl
 {
    /**
     * Constructor.

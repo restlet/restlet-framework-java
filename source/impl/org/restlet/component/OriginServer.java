@@ -23,9 +23,6 @@ import java.io.IOException;
 import org.restlet.UniformCall;
 import org.restlet.connector.Client;
 import org.restlet.connector.Server;
-import org.restlet.data.CookieSetting;
-import org.restlet.data.Form;
-import org.restlet.data.Representation;
 
 /**
  * Definitive source for representations of resources in a governed namespace.<br/><br/>
@@ -70,21 +67,6 @@ public interface OriginServer extends Component
     */
    public void callClient(String name, UniformCall call) throws IOException;
    
-   /**
-    * Returns a new cookie setting.
-    * @param name    The name.
-    * @param value   The value.
-    * @return        A new cookie setting.
-    */
-   public CookieSetting createCookieSetting(String name, String value);
-
-   /**
-    * Creates a new form able to process the given form content.
-    * @param content The form content to process.
-    * @return        A new form with the given content.
-    */
-   public Form createForm(Representation content) throws IOException;
-
 }
 
 

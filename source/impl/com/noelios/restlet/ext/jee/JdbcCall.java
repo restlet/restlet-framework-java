@@ -21,13 +21,13 @@ package com.noelios.restlet.ext.jee;
 import org.restlet.data.Methods;
 import org.restlet.data.Representation;
 
-import com.noelios.restlet.CallImpl;
+import com.noelios.restlet.UniformCallImpl;
 import com.noelios.restlet.data.ReferenceImpl;
 
 /**
  * Call sending a request via a JDBC client connector.
  */
-public class JdbcCall extends CallImpl
+public class JdbcCall extends UniformCallImpl
 {
    /**
     * Constructor.

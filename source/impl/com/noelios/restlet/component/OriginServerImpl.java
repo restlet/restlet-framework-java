@@ -28,12 +28,6 @@ import org.restlet.UniformInterface;
 import org.restlet.component.OriginServer;
 import org.restlet.connector.Client;
 import org.restlet.connector.Server;
-import org.restlet.data.CookieSetting;
-import org.restlet.data.Form;
-import org.restlet.data.Representation;
-
-import com.noelios.restlet.data.CookieSettingImpl;
-import com.noelios.restlet.data.FormImpl;
 
 /**
  * Abstract origin server implementation.
@@ -169,27 +163,6 @@ public abstract class OriginServerImpl implements OriginServer
       }
    }
    
-   /**
-    * Returns a new cookie setting.
-    * @param name    The name.
-    * @param value   The value.
-    * @return        A new cookie setting.
-    */
-   public CookieSetting createCookieSetting(String name, String value)
-   {
-      return new CookieSettingImpl(name, value);
-   }
-
-   /**
-    * Creates a new form able to process the given form content.
-    * @param content The form content to process.
-    * @return        A new form with the given content.
-    */
-   public Form createForm(Representation content) throws IOException
-   {
-      return new FormImpl(content);
-   }
-
 }
 
 

@@ -33,7 +33,7 @@ import com.noelios.restlet.util.StringUtils;
 /**
  * Default restlet call implementation.
  */
-public class RestletCallImpl extends CallImpl implements RestletCall
+public class RestletCallImpl extends UniformCallImpl implements RestletCall
 {
    /** The list of paths. */
    List<String> paths;

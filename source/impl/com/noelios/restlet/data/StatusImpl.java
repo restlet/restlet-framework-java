@@ -19,6 +19,7 @@
 package com.noelios.restlet.data;
 
 import org.restlet.data.Status;
+import org.restlet.data.Statuses;
 
 /** 
  * Default status implementation. 
@@ -72,7 +73,7 @@ public class StatusImpl implements Status
     */
    public String getDescription()
    {
-      return description;
+      return (description == null) ? Statuses.getDescription(getHttpCode()) : description;
    }
 
    /**
@@ -81,7 +82,7 @@ public class StatusImpl implements Status
     */
    public String getUri()
    {
-      return uri;
+      return (uri == null) ? Statuses.getUri(getHttpCode()) : uri;
    }
 
    /**

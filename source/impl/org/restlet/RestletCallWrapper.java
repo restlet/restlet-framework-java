@@ -21,6 +21,8 @@ package org.restlet;
 import java.util.ArrayList;
 import java.util.List;
 
+import org.restlet.data.Statuses;
+
 /**
  * Restlet call wrapper.
  * Useful for application developer who need to enrich the call with application related things.
@@ -39,6 +41,9 @@ public class RestletCallWrapper extends UniformCallWrapper implements RestletCal
    {
       super(wrappedCall);
       this.paths = new ArrayList<String>();
+
+      // Set the result status to success by default
+      wrappedCall.setStatus(Statuses.SUCCESS_OK);
       
       // Set the absolute resource path as the initial path in the list.
       getPaths().add(0, getResourceUri().toString(false, false));
