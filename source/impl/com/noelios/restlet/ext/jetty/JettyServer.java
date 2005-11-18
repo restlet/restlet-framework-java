@@ -25,13 +25,13 @@ import org.mortbay.http.HttpConnection;
 import org.mortbay.http.SocketListener;
 import org.mortbay.util.InetAddrPort;
 import org.restlet.UniformInterface;
-import org.restlet.connector.HttpServer;
+import org.restlet.connector.Server;
 
 /**
  * Jetty connector acting as a HTTP server.
  * @see <a href="http://jetty.mortbay.com/">Jetty home page</a>
  */
-public class JettyConnector extends SocketListener implements HttpServer
+public class JettyServer extends SocketListener implements Server
 {
    private static final long serialVersionUID = 1L;
 
@@ -47,7 +47,7 @@ public class JettyConnector extends SocketListener implements HttpServer
     * @param port		The HTTP port number.
     * @param target 	The target component handling calls.
     */
-   public JettyConnector(String name, int port, UniformInterface target)
+   public JettyServer(String name, int port, UniformInterface target)
    {
       setPort(port);
       this.name = name;
@@ -60,7 +60,7 @@ public class JettyConnector extends SocketListener implements HttpServer
     * @param address The IP address to listen to.
     * @param target  The target component handling calls.
     */
-   public JettyConnector(String name, InetAddrPort address, UniformInterface target)
+   public JettyServer(String name, InetAddrPort address, UniformInterface target)
    {
        super(address);
        this.name = name;

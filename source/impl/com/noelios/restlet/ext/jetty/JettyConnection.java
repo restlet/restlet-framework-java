@@ -54,7 +54,7 @@ public class JettyConnection extends HttpConnection
     * @param out           Output stream to write the response to.
     * @param connection    The underlying connection object.
     */
-   public JettyConnection(JettyConnector connector, InetAddress remoteAddress, InputStream in, OutputStream out, Object connection)
+   public JettyConnection(JettyServer connector, InetAddress remoteAddress, InputStream in, OutputStream out, Object connection)
    {
       super(connector, remoteAddress, in, out, connection);
    }
@@ -132,9 +132,9 @@ public class JettyConnection extends HttpConnection
       return null;
    }
 
-   private JettyConnector getJettyConnector()
+   private JettyServer getJettyConnector()
    {
-      return (JettyConnector)getListener();
+      return (JettyServer)getListener();
    }
    
 }
