@@ -7,7 +7,7 @@
 <project name="Restlet" default="dist" basedir=".">
     
   <!-- Set global paths -->
-  <property name="api"      location="api"/>
+  <property name="api"      location="www/api"/>
   <property name="classes"  location="classes"/>
   <property name="dist"     location="dist"/>
   <property name="docs"     location="docs"/>
