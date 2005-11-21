@@ -11,7 +11,7 @@ Home    : http://www.restlet.org
 
 Mission
 -------
-Bring the power and simplicity of the REST architectural style into the hands of Java developers.
+Bring the simplicity and efficiency of the REST architectural style to Java developers.
 
 
 Features
