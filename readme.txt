@@ -18,20 +18,21 @@ Features
 --------
 
 Restlet API:
-    * Supports all REST concepts (resource, representation, data, connector, components, etc.)
-    * Restlet concept allow easy handling of REST calls
-    * Connectors can be added for any protocol
-    * Blocking and non-blocking input/output are supported
-    * Suitable for development of REST clients and servers
-    * No external dependency
+   * Supports all REST concepts (resource, representation, data, connector, components, etc.)
+   * Complete alternative to the Servlet API
+   * No dependency to any third-party library
+   * Restlets and Maplets allow easy handling of hierarchical URIs
+   * Connectors can be added for any protocol
+   * Supports blocking and non-blocking inputs and outputs
+   * Suitable for both client and server REST applications
 
-Noelios Restlet Engine:
-    * Reference implementation of the Restlet API
-    * Server connector: HTTP
-    * Client connectors: SMTP, JDBC
-    * Automatic content negotiation
-    * Automatic metadata association based on file extensions
-    * Commercial license available if you can't redistribute in open source
+Noelios Restlet Engine (NRE):
+   * Reference implementation of the Restlet API
+   * Server connector: HTTP
+   * Client connectors: HTTP, JDBC, SMTP
+   * Automatic metadata association based on file name extensions
+   * Automatic server-side content negotiation
+   * FreeMarker template representations provide an excellent alternative to JSP pages
 
 
 Release notes
@@ -52,8 +53,8 @@ Major changes:
     * Major refactoring.
 
 To do list:
-    * Implement the cache control options for Jetty connector and for the FileRepresentation.
     * Integration with java.net.HttpUrlConnection as a client HTTP connector
+    * Implement the cache control options for Jetty connector and for the FileRepresentation.
     * Add support for SOAP (via Apache Axis?)
     * Add better logging of errors
     * Testing of the JDBC Client
