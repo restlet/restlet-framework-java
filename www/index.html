@@ -23,28 +23,30 @@
 <h4>Restlet API</h4>
 <ul>
    <li>Supports all REST concepts (resource, representation, data, connector, components, etc.)</li>
-   <li>Restlet concept allow easy handling of REST calls</li>
+   <li>Complete alternative to the Servlet API</li>
+   <li>No dependency to any third-party library</li>
+   <li>Restlets and Maplets allow easy handling of hierarchical URIs</li>
    <li>Connectors can be added for any protocol</li>
-   <li>Blocking and non-blocking input/output are supported</li>
-   <li>Suitable for development of REST clients and servers</li>
-   <li>No external dependency</li>
+   <li>Supports blocking and non-blocking inputs and outputs</li>
+   <li>Suitable for both client and server REST applications</li>
 </ul>
 
-<h4>Noelios Restlet Engine</h4>
+<h4>Noelios Restlet Engine (NRE)</h4>
 <ul>
    <li>Reference implementation of the Restlet API</li>
    <li>Server connector: HTTP</li>
-   <li>Client connectors: SMTP, JDBC</li>
-   <li>Automatic content negotiation</li>
-   <li>Automatic metadata association based on file extensions</li>
+   <li>Client connectors: HTTP, JDBC, SMTP</li>
+   <li>Automatic metadata association based on file name extensions</li>
+   <li>Automatic server-side content negotiation</li>
+   <li>FreeMarker template representations provide an excellent alternative to JSP pages</li>
 </ul>
 
 <h3>Requirements</h3>
 <ul>
    <li><a target="_top" href="http://java.sun.com/j2se/1.5.0/">J2SE 5.0</a></li>
-   <li><a target="_top" href="http://jetty.mortbay.org/jetty/">Jetty 5.1.5</a> (server HTTP connector used in Noelios Restlet Server)</li>
-   <li><a target="_top" href="http://freemarker.org/">FreeMarker 2.3</a> (alternative to JSP used in Noelios Restlet Server)</li>
-   <li><a target="_top" href="http://java.sun.com/products/javamail/">JavaMail 1.3</a> to use the client JavaMail connector</li>
+   <li><a target="_top" href="http://jetty.mortbay.org/jetty/">Jetty 5.1.5</a> (for the server HTTP connector in NRE)</li>
+   <li><a target="_top" href="http://freemarker.org/">FreeMarker 2.3</a> (alternative to JSP pages in NRE)</li>
+   <li><a target="_top" href="http://java.sun.com/products/javamail/">JavaMail 1.3</a> (for the client SMTP connector in NRE)</li>
 </ul>
 
 <h3>Related resources</h3>
