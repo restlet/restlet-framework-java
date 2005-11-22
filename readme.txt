@@ -80,4 +80,4 @@ Licensing
     * Otherwise, you need to contact me to purchase a commercial license.
 
 
-Copyright © 2005 Jérôme Louvel. Restlet is a trademark and servicemark of Jérôme Louvel.
+Copyright © 2005 Jérôme Louvel. Restlet is a trademark and servicemark of Noelios Consulting.
