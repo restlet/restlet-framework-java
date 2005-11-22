@@ -4,12 +4,12 @@
   This software distribution is provided to you under the GNU GPL license 
 which is reproduced below. 
 
-  Note that this agreement excludes any third-party library included in this
-distribution. Those libraries are provided to you for convenience purpose
-but remain under their respective license which are reproduced in the 
+  Note that this agreement doesn't cover the third-party libraries included 
+in this distribution. Those libraries are provided to you for convenience 
+purpose but remain under their respective license which are reproduced in the 
 "/lib/licenses" directory.
 
-  For questions, please contact the copyright holder:
+  For questions, please contact the license issuer:
   
       Jerome LOUVEL
       69 rue Carnot

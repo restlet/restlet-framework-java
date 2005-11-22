@@ -4,7 +4,7 @@
    This software distribution is covered by this copyright notice. This
 includes the following software components:
       1) Restlet API (org.restlet package)
-      2) Noelios Restlet Server (com.noelios.restlet package)
+      2) Noelios Restlet Engine (com.noelios.restlet package)
       3) All other files containing a proper copyright notice
       
    All third-party libraries distributed with this software remain the
@@ -41,4 +41,3 @@ __________________________________________________________________________
 
 This product includes the FreeMarker software developed by the Visigoth 
 Software Society (http://www.visigoths.org/).
-
