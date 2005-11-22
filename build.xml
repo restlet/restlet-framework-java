@@ -125,7 +125,9 @@
 
   
   <target name="api" depends="init" description="Generate the Javadocs" >
-    <delete dir="${api}" verbose="false" quiet="true" includeEmptyDirs="true"/>
+    <delete includeEmptyDirs="true" verbose="false" quiet="true">
+      <fileset dir="${api}" excludes="**/.svn"/>
+    </delete>    
     
     <javadoc packagenames="org.restlet.*,com.noelios.restlet.*"
            sourcepath="${src}"
@@ -140,7 +142,7 @@
            verbose="false"
            excludepackagenames="com.noelios.restlet.test">
       
-      <bottom><![CDATA[<i>Copyright &#169; 2005 J&eacute;r&ocirc;me Louvel. All Rights Reserved.</i>]]></bottom>
+      <bottom><![CDATA[<i>Copyright &#169; 2005 J&eacute;r&ocirc;me Louvel. All Rights Reserved. Restlet is a registered trademark and servicemark.</i>]]></bottom>
       
       <tag name="associates"          scope="all" description="Design stereotype: " enabled="false"/>
       <tag name="clientCardinality"   scope="all" description="Design stereotype: " enabled="false"/>
