@@ -1,9 +1,9 @@
               TRADEMARKS NOTICE
           Version 1, November 2005
 
-   The trademarks "Restlet" and "Noelios" can't be used to endorse or 
-promote products derived from this software without prior written 
-permission from the trademarks owner.
+   The registered trademarks "Restlet" and "Noelios" can't be used to 
+endorse or promote products derived from this software without prior 
+written permission from the trademarks owner.
 
    Products derived from this software may not be called "Restlet" or 
 "Noelios" nor may "Restlet" or "Noelios" appear in their names without 
