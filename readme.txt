@@ -4,7 +4,7 @@
 ------------------------------------------------
 
 Version : 0.11 beta
-Date    : 11/22/2005
+Date    : 11/23/2005
 Author  : Jerome Louvel (mailto:jerome.louvel@noelios.com)
 Home    : http://www.restlet.com
 
@@ -44,19 +44,13 @@ Dependencies
           o FreeMarker 2.3 (alternative to JSP pages provided by NRE)
           o JavaMail 1.3 (for the client SMTP connector provided by NRE)
           o Supporting third-party libraries
- 
-Major changes:
-    * Added a HTTP client connector based on the HttpURLConnection class.
-    * Added a DirectoryRestlet that behaves like a regular Web server. In addition, automatic media type, language and character set detection and setting is available in a way that hides technical names and extensions, allowing a clean content negotiation.
-    * Refactored the Jetty HTTP server connector to bypass their HTTP handler layer. Now we directly work out of the Jetty SocketListener and HttpConnection class. This will improve performances and reduce the memory consumed. Note that version 5.1.5 of Jetty is required as it contains a necessary fix.
-    * Upgraded the JDBC Client to support multiple databases, drivers and connection pools.
-    * Major refactoring.
 
 To do list:
+    * Finish the implementation of the client HTTP connector (cookies, user agent preferences)
     * Implement the cache control options for Jetty connector and for the FileRepresentation.
     * Add support for SOAP (via Apache Axis?)
     * Add better logging of errors
-    * Testing of the JDBC Client
+    * Testing of the JDBC and HTTP Client
     * Integration with Jetty 6 for efficient NIO usage
     * Add a SQLClient that provides a closer integration than the JdbcClient.
           o See the PHP REST SQL project at http://phprestsql.sourceforge.net/

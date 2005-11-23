@@ -14,6 +14,7 @@
  - Renamed CallImpl to UniformCallImpl
  - Added setter methods to UniformCall for request field (useful when preparing a call for a client connector)
  - Added org.restlet.component.DefaultRestletServer and DefaultRestletContainer for easy subclassing by developpers
+ - Added client HTTP connector in NRE
 
 
 0.10 beta
