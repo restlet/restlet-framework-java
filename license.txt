@@ -1,31 +1,19 @@
               LICENSE AGREEMENT
-          Version 1.1, November 2005
+          Version 1.2, November 2005
 
   This software distribution, including the "Restlet API" and the 
-"Noelios Restlet Engine", is freely provided to you under the GNU GPL 
-license version 2 which is reproduced below. 
+"Noelios Restlet Engine", is provided to you under the GNU GPL license 
+version 2 which is reproduced below.
 
-  We also define a special exception to the terms of the GPL license 
-that allows you to freely redistribute this software in another open source
-software as long as you respect the following conditions:
-   * Your software is licensed under one of the OSI approved open source
-     licenses listed at http://www.opensource.org/licenses/
-   * Your software only contains unmodified versions of this software
-     (any derivative work must comply with the GPL 2 license).
-   * Any redistribution of your software must also comply with this license
-     agreement (the conditions of this special exception must also be
-     respected by the redistributions of your software).
-
-  If your software or any redistribution of it includes or even simply uses
-this software and can't comply with this license agreement then a commercial
-license must be obtained.
+   For redistribution with other OSI approved open source software, a free
+license can be requested.
 
   Note that this agreement doesn't cover the third-party libraries included 
 in this distribution. Those libraries are provided to you for convenience 
 purpose but remain under their respective license which are reproduced in the 
 "/lib/licenses" directory.
 
-  For clarifications or commercial licenses, please contact:
+  For licensing requests, please contact:
   
       Jerome LOUVEL
       69 rue Carnot
