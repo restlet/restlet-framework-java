@@ -20,6 +20,7 @@ package com.noelios.restlet;
 
 import java.io.IOException;
 
+import org.restlet.RestletCall;
 import org.restlet.RestletFactory;
 import org.restlet.RestletManager;
 import org.restlet.UniformCall;
@@ -65,6 +66,16 @@ public class RestletFactoryImpl implements RestletFactory
    public RestletContainer createRestletContainer(String name)
    {
       return new RestletContainerImpl(name);
+   }
+
+   /**
+    * Returns a new restlet call wrapping a given uniform call.
+    * Developers who need to extend the default restlet calls should override it.
+    * @return A new restlet call.
+    */
+   public RestletCall createRestletCall(UniformCall call)
+   {
+      return new RestletCallImpl(call);
    }
 
    /**

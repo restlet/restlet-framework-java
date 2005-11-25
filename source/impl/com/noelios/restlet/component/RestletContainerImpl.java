@@ -21,8 +21,8 @@ package com.noelios.restlet.component;
 import org.restlet.Maplet;
 import org.restlet.Restlet;
 import org.restlet.RestletCall;
-import org.restlet.RestletCallWrapper;
 import org.restlet.RestletException;
+import org.restlet.RestletManager;
 import org.restlet.UniformCall;
 import org.restlet.component.RestletContainer;
 
@@ -56,16 +56,6 @@ public class RestletContainerImpl extends OriginServerImpl implements RestletCon
    public Maplet createMapletDelegate()
    {
       return new MapletImpl(this);
-   }
-
-   /**
-    * Returns a new restlet call wrapping a given uniform call.
-    * Developers who need to extend the default restlet calls should override it.
-    * @return A new restlet call.
-    */
-   public RestletCall createRestletCall(UniformCall call)
-   {
-      return new RestletCallWrapper(call);
    }
 
    /**
@@ -144,7 +134,7 @@ public class RestletContainerImpl extends OriginServerImpl implements RestletCon
    {
       try
       {
-         handle(createRestletCall(call));
+         handle(RestletManager.createRestletCall(call));
       }
       catch(RestletException re)
       {

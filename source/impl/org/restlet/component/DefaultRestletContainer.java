@@ -61,16 +61,6 @@ public class DefaultRestletContainer implements RestletContainer
    }
 
    /**
-    * Returns a new restlet call wrapping a given uniform call.
-    * Developers who need to extend the default restlet calls should override it.
-    * @return A new restlet call.
-    */
-   public RestletCall createRestletCall(UniformCall call)
-   {
-      return delegate.createRestletCall(call);
-   }
-
-   /**
     * Handles a call to a resource or a set of resources.
     * @param call The call to handle.
     * @throws RestletException

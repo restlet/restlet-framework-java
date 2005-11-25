@@ -19,8 +19,6 @@
 package org.restlet.component;
 
 import org.restlet.Maplet;
-import org.restlet.RestletCall;
-import org.restlet.UniformCall;
 
 /**
  * Origin server that contains restlets or maplets.
@@ -34,12 +32,5 @@ public interface RestletContainer extends OriginServer, Maplet
     * @return A new maplet.
     */
    public Maplet createMapletDelegate();
-
-   /**
-    * Returns a new restlet call wrapping a given uniform call.
-    * Developers who need to extend the default restlet calls should override it.
-    * @return A new restlet call.
-    */
-   public RestletCall createRestletCall(UniformCall call);
    
 }

@@ -22,18 +22,15 @@ import java.util.ArrayList;
 import java.util.List;
 
 import org.restlet.RestletCall;
-import org.restlet.data.Cookies;
-import org.restlet.data.Method;
-import org.restlet.data.Preference;
-import org.restlet.data.Reference;
-import org.restlet.data.Representation;
+import org.restlet.UniformCall;
+import org.restlet.UniformCallWrapper;
 
 import com.noelios.restlet.util.StringUtils;
 
 /**
  * Default restlet call implementation.
  */
-public class RestletCallImpl extends UniformCallImpl implements RestletCall
+public class RestletCallImpl extends UniformCallWrapper implements RestletCall
 {
    /** The list of paths. */
    List<String> paths;
@@ -50,10 +47,11 @@ public class RestletCallImpl extends UniformCallImpl implements RestletCall
     * @param cookies                The cookies sent by the user agent.
     * @param input                  The content received in the request.
     */
-   public RestletCallImpl(Reference referrer, String userAgent, List<Preference> mediaPrefs, List<Preference> characterSetPrefs,
-         List<Preference> languagePrefs, Method method, Reference resource, Cookies cookies, Representation input)
+   public RestletCallImpl(UniformCall call)
    {
-      super(referrer, userAgent, mediaPrefs, characterSetPrefs, languagePrefs, method, resource, cookies, input);
+      super(call);
+
+      // Creates the list of paths
       this.paths = new ArrayList<String>();
       
       // Set the absolute resource path as the initial path in the list.

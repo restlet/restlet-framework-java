@@ -55,7 +55,17 @@ public class RestletManager
    {
       return getRegisteredFactory().createRestletContainer(name);
    }
-   
+
+   /**
+    * Returns a new restlet call wrapping a given uniform call.
+    * Developers who need to extend the default restlet calls should override it.
+    * @return A new restlet call.
+    */
+   public static RestletCall createRestletCall(UniformCall call)
+   {
+      return getRegisteredFactory().createRestletCall(call);
+   }
+
    /**
     * Returns a new cookie setting.
     * @param name    The name.

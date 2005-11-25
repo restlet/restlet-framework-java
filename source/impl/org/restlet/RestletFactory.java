@@ -47,6 +47,13 @@ public interface RestletFactory
    public RestletContainer createRestletContainer(String name);
 
    /**
+    * Returns a new restlet call wrapping a given uniform call.
+    * Developers who need to extend the default restlet calls should override it.
+    * @return A new restlet call.
+    */
+   public RestletCall createRestletCall(UniformCall call);
+
+   /**
     * Returns a new cookie setting.
     * @param name    The name.
     * @param value   The value.
