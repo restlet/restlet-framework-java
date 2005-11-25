@@ -20,7 +20,7 @@ package org.restlet.component;
 
 import java.io.IOException;
 
-import org.restlet.RestletManager;
+import org.restlet.Manager;
 import org.restlet.UniformCall;
 import org.restlet.connector.Client;
 import org.restlet.connector.Server;
@@ -39,7 +39,7 @@ public class DefaultRestletServer implements RestletServer
     */
    public DefaultRestletServer(String name)
    {
-      this.delegate = RestletManager.createRestletServer(name);
+      this.delegate = Manager.createRestletServer(name);
    }
    
    /**

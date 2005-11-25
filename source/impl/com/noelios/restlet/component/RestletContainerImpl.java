@@ -22,7 +22,7 @@ import org.restlet.Maplet;
 import org.restlet.Restlet;
 import org.restlet.RestletCall;
 import org.restlet.RestletException;
-import org.restlet.RestletManager;
+import org.restlet.Manager;
 import org.restlet.UniformCall;
 import org.restlet.component.RestletContainer;
 
@@ -134,7 +134,7 @@ public class RestletContainerImpl extends OriginServerImpl implements RestletCon
    {
       try
       {
-         handle(RestletManager.createRestletCall(call));
+         handle(Manager.createRestletCall(call));
       }
       catch(RestletException re)
       {

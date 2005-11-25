@@ -24,7 +24,7 @@ import org.restlet.Maplet;
 import org.restlet.Restlet;
 import org.restlet.RestletCall;
 import org.restlet.RestletException;
-import org.restlet.RestletManager;
+import org.restlet.Manager;
 import org.restlet.UniformCall;
 import org.restlet.connector.Client;
 import org.restlet.connector.Server;
@@ -47,7 +47,7 @@ public class DefaultRestletContainer implements RestletContainer
     */
    public DefaultRestletContainer(String name)
    {
-      this.delegate = RestletManager.createRestletContainer(name);
+      this.delegate = Manager.createRestletContainer(name);
    }
    
    /**

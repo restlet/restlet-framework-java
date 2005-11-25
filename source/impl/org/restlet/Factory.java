@@ -28,43 +28,30 @@ import org.restlet.data.Reference;
 import org.restlet.data.Representation;
 
 /**
- * The main restlet manager that also acts as an instance 
- * factory for common restlet interfaces.
+ * Factory implemented by Restlet API implementations.
  */
-public class RestletManager
+public interface Factory
 {
-   /** The registered factory. */
-   protected static RestletFactory registeredFactory = null;
-
    /**
     * Returns a new restlet server.
     * @param name The server's name.
     * @return     The new restlet server.
     */
-   public static RestletServer createRestletServer(String name)
-   {
-      return getRegisteredFactory().createRestletServer(name);
-   }
-   
+   public RestletServer createRestletServer(String name);
+
    /**
     * Returns a new restlet container.
     * @param name The container's name.
     * @return     The new restlet container.
     */
-   public static RestletContainer createRestletContainer(String name)
-   {
-      return getRegisteredFactory().createRestletContainer(name);
-   }
+   public RestletContainer createRestletContainer(String name);
 
    /**
     * Returns a new restlet call wrapping a given uniform call.
     * Developers who need to extend the default restlet calls should override it.
     * @return A new restlet call.
     */
-   public static RestletCall createRestletCall(UniformCall call)
-   {
-      return getRegisteredFactory().createRestletCall(call);
-   }
+   public RestletCall createRestletCall(UniformCall call);
 
    /**
     * Returns a new cookie setting.
@@ -72,63 +59,26 @@ public class RestletManager
     * @param value   The value.
     * @return        A new cookie setting.
     */
-   public static CookieSetting createCookieSetting(String name, String value)
-   {
-      return getRegisteredFactory().createCookieSetting(name, value);
-   }
+   public CookieSetting createCookieSetting(String name, String value);
 
    /**
     * Creates a new form able to process the given form content.
     * @param content The form content to process.
     * @return        A new form with the given content.
     */
-   public static Form createForm(Representation content) throws IOException
-   {
-      return getRegisteredFactory().createForm(content);
-   }
+   public Form createForm(Representation content) throws IOException;
 
    /**
     * Creates a new reference from a URI reference.
     * @param uriReference  The URI reference.
     * @return              The new URI reference.
     */
-   public static Reference createReference(String uriReference)
-   {
-      return getRegisteredFactory().createReference(uriReference);
-   }
+   public Reference createReference(String uriReference);
 
    /**
     * Creates a new uniform call.
     * @return A new uniform call.
     */
-   public static UniformCall createCall()
-   {
-      return getRegisteredFactory().createCall();
-   }
-   
-   /**
-    * Register a new restlet implementation.
-    * @param factory The restlet factory to register.
-    */
-   public static void registerFactory(RestletFactory factory)
-   {
-      registeredFactory = factory;
-   }
-
-   /**
-    * Returns the registered factory.
-    * @return The registered factory.
-    */
-   protected static RestletFactory getRegisteredFactory()
-   {
-      if(registeredFactory == null)
-      {
-         throw new RuntimeException("No restlet factory was registered");
-      }
-      else
-      {
-         return registeredFactory;
-      }
-   }
+   public UniformCall createCall();
    
 }

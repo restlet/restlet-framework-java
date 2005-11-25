@@ -16,10 +16,14 @@
  * Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
  */
 
-package org.restlet;
+package com.noelios.restlet;
 
 import java.io.IOException;
 
+import org.restlet.RestletCall;
+import org.restlet.Factory;
+import org.restlet.Manager;
+import org.restlet.UniformCall;
 import org.restlet.component.RestletContainer;
 import org.restlet.component.RestletServer;
 import org.restlet.data.CookieSetting;
@@ -27,31 +31,55 @@ import org.restlet.data.Form;
 import org.restlet.data.Reference;
 import org.restlet.data.Representation;
 
+import com.noelios.restlet.component.RestletContainerImpl;
+import com.noelios.restlet.component.RestletServerImpl;
+import com.noelios.restlet.data.CookieSettingImpl;
+import com.noelios.restlet.data.FormImpl;
+import com.noelios.restlet.data.ReferenceImpl;
+
 /**
- * Factory for common restlet objects.
+ * Noelios Restlet Engine.
+ * Also acts as a factory implementation.
  */
-public interface RestletFactory
+public class Engine implements Factory
 {
+   /**
+    * Registers the Noelios Restlet Engine
+    */
+   public static void register()
+   {
+      Manager.registerFactory(new Engine());
+   }
+
    /**
     * Returns a new restlet server.
     * @param name The server's name.
     * @return     The new restlet server.
     */
-   public RestletServer createRestletServer(String name);
-
+   public RestletServer createRestletServer(String name)
+   {
+      return new RestletServerImpl(name);
+   }
+   
    /**
     * Returns a new restlet container.
     * @param name The container's name.
     * @return     The new restlet container.
     */
-   public RestletContainer createRestletContainer(String name);
+   public RestletContainer createRestletContainer(String name)
+   {
+      return new RestletContainerImpl(name);
+   }
 
    /**
     * Returns a new restlet call wrapping a given uniform call.
     * Developers who need to extend the default restlet calls should override it.
     * @return A new restlet call.
     */
-   public RestletCall createRestletCall(UniformCall call);
+   public RestletCall createRestletCall(UniformCall call)
+   {
+      return new RestletCallImpl(call);
+   }
 
    /**
     * Returns a new cookie setting.
@@ -59,26 +87,38 @@ public interface RestletFactory
     * @param value   The value.
     * @return        A new cookie setting.
     */
-   public CookieSetting createCookieSetting(String name, String value);
+   public CookieSetting createCookieSetting(String name, String value)
+   {
+      return new CookieSettingImpl(name, value);
+   }
 
    /**
     * Creates a new form able to process the given form content.
     * @param content The form content to process.
     * @return        A new form with the given content.
     */
-   public Form createForm(Representation content) throws IOException;
+   public Form createForm(Representation content) throws IOException
+   {
+      return new FormImpl(content);
+   }
 
    /**
     * Creates a new reference from a URI reference.
     * @param uriReference  The URI reference.
     * @return              The new URI reference.
     */
-   public Reference createReference(String uriReference);
+   public Reference createReference(String uriReference)
+   {
+      return new ReferenceImpl(uriReference);
+   }
 
    /**
     * Creates a new uniform call.
     * @return A new uniform call.
     */
-   public UniformCall createCall();
+   public UniformCall createCall()
+   {
+      return new UniformCallImpl();
+   }
    
 }
