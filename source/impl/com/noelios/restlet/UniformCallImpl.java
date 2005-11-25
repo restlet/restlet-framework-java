@@ -404,8 +404,7 @@ public class UniformCallImpl implements UniformCall
                   {
                      // 3) Compare the parameters
                      // If current media type is compatible with the current
-                     // media range
-                     // then the parameters need to be checked too
+                     // media range then the parameters need to be checked too
                      for(Iterator iter3 = currentVariant.getMediaType().getParameters().iterator(); iter3
                            .hasNext();)
                      {
