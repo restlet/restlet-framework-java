@@ -18,7 +18,6 @@
 
 package com.noelios.restlet.data;
 
-
 import java.io.ByteArrayInputStream;
 import java.io.IOException;
 import java.io.InputStream;
@@ -36,8 +35,8 @@ public class StringRepresentation extends StreamRepresentation
 
    /**
     * Constructor.
-    * @param value 		The represented string.
-    * @param mediaType	The representation's media type.
+    * @param value The represented string.
+    * @param mediaType The representation's media type.
     */
    public StringRepresentation(String value, MediaType mediaType)
    {
@@ -73,7 +72,3 @@ public class StringRepresentation extends StreamRepresentation
    }
 
 }
-
-
-
-

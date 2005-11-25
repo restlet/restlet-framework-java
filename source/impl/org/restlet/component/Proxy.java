@@ -19,15 +19,12 @@
 package org.restlet.component;
 
 /**
- * Intermediary component, selected by a client, providing encapsulation of other services.<br/><br/>
- * "A proxy component is an intermediary selected by a client to provide interface encapsulation of other services, data
- * translation, performance enhancement, or security protection." Roy T. Fielding
- * @see <a href="http://www.ics.uci.edu/~fielding/pubs/dissertation/rest_arch_style.htm#sec_5_2_3">Source dissertation</a>
+ * Intermediary component, selected by a client, providing encapsulation of other services.<br/><br/> "A
+ * proxy component is an intermediary selected by a client to provide interface encapsulation of other
+ * services, data translation, performance enhancement, or security protection." Roy T. Fielding
+ * @see <a href="http://www.ics.uci.edu/~fielding/pubs/dissertation/rest_arch_style.htm#sec_5_2_3">Source
+ * dissertation</a>
  */
 public interface Proxy extends Component
 {
 }
-
-
-
-

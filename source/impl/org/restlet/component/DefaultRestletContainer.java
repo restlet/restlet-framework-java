@@ -20,44 +20,31 @@ package org.restlet.component;
 
 import java.io.IOException;
 
-import org.restlet.Maplet;
+import org.restlet.Manager;
 import org.restlet.Restlet;
 import org.restlet.RestletCall;
 import org.restlet.RestletException;
-import org.restlet.Manager;
 import org.restlet.UniformCall;
 import org.restlet.connector.Client;
 import org.restlet.connector.Server;
 
 /**
- * Default restlet container that can be easily subclassed.<br/>
- * <br/>
- * Component acting as a container for call handlers named restlets.
- * Calls are first intercepted by the container which can do various checks before effectively
- * delegating it to one of the registered root maplets or restlets.
+ * Default restlet container that can be easily subclassed.<br/> <br/> Component acting as a container for
+ * call handlers named restlets. Calls are first intercepted by the container which can do various checks
+ * before effectively delegating it to one of the registered root maplets or restlets.
  */
 public class DefaultRestletContainer implements RestletContainer
 {
    /** The delegate restlet container. */
    protected RestletContainer delegate;
-   
+
    /**
     * Constructor.
     * @param name The unique name of the container.
     */
    public DefaultRestletContainer(String name)
    {
-      this.delegate = Manager.createRestletContainer(name);
-   }
-   
-   /**
-    * Returns a new maplet acting as a delegate for maplets.
-    * Developers who need to extend the default maplets should override it.
-    * @return A new maplet.
-    */
-   public Maplet createMapletDelegate()
-   {
-      return delegate.createMapletDelegate();
+      this.delegate = Manager.createRestletContainer(this, name);
    }
 
    /**
@@ -78,11 +65,11 @@ public class DefaultRestletContainer implements RestletContainer
    {
       return this;
    }
-   
+
    /**
     * Adds a server connector to this component.
-    * @param server  The server connector to add.
-    * @return        The server connector added.
+    * @param server The server connector to add.
+    * @return The server connector added.
     */
    public Server addServer(Server server)
    {
@@ -100,8 +87,8 @@ public class DefaultRestletContainer implements RestletContainer
 
    /**
     * Adds a client connector to this component.
-    * @param client  The client connector to add.
-    * @return        The client connector added.
+    * @param client The client connector to add.
+    * @return The client connector added.
     */
    public Client addClient(Client client)
    {
@@ -130,7 +117,7 @@ public class DefaultRestletContainer implements RestletContainer
    /**
     * Attaches a restlet instance shared by all calls.
     * @param pathPattern The path pattern used to map calls.
-    * @param restlet     The restlet to attach.
+    * @param restlet The restlet to attach.
     * @see java.util.regex.Pattern
     */
    public void attach(String pathPattern, Restlet restlet)
@@ -140,8 +127,9 @@ public class DefaultRestletContainer implements RestletContainer
 
    /**
     * Attaches a restlet class. A new instance will be created for each call.
-    * @param pathPattern   The path pattern used to map calls.
-    * @param restletClass  The restlet class to attach (must have a constructor taking a RestletContainer parameter).
+    * @param pathPattern The path pattern used to map calls.
+    * @param restletClass The restlet class to attach (must have a constructor taking a RestletContainer
+    * parameter).
     * @see java.util.regex.Pattern
     */
    public void attach(String pathPattern, Class<? extends Restlet> restletClass)
@@ -160,7 +148,7 @@ public class DefaultRestletContainer implements RestletContainer
 
    /**
     * Detaches a restlet class.
-    * @param restletClass  The restlet class to detach.
+    * @param restletClass The restlet class to detach.
     */
    public void detach(Class<? extends Restlet> restletClass)
    {
@@ -174,7 +162,7 @@ public class DefaultRestletContainer implements RestletContainer
    public void delegate(RestletCall call) throws RestletException
    {
       delegate.delegate(call);
-   }   
+   }
 
    /** Start hook. */
    public void start()
@@ -205,7 +193,7 @@ public class DefaultRestletContainer implements RestletContainer
    {
       return delegate.getName();
    }
-   
+
    /**
     * Returns the description of this REST element.
     * @return The description of this REST element.
@@ -214,5 +202,5 @@ public class DefaultRestletContainer implements RestletContainer
    {
       return delegate.getDescription();
    }
-   
+
 }

@@ -19,23 +19,23 @@
 package org.restlet;
 
 /**
- * Mapper of calls to other restlets.
- * Automatic delegation is provided for attached restlets.
+ * Mapper of calls to other restlets. Automatic delegation is provided for attached restlets.
  */
 public interface Maplet extends Restlet
 {
    /**
     * Attaches a restlet instance shared by all calls.
     * @param pathPattern The path pattern used to map calls.
-    * @param restlet     The restlet to attach.
+    * @param restlet The restlet to attach.
     * @see java.util.regex.Pattern
     */
    public void attach(String pathPattern, Restlet restlet);
 
    /**
     * Attaches a restlet class. A new instance will be created for each call.
-    * @param pathPattern   The path pattern used to map calls.
-    * @param restletClass  The restlet class to attach (must have a constructor taking a RestletContainer parameter).
+    * @param pathPattern The path pattern used to map calls.
+    * @param restletClass The restlet class to attach (must have a constructor taking a RestletContainer
+    * parameter).
     * @see java.util.regex.Pattern
     */
    public void attach(String pathPattern, Class<? extends Restlet> restletClass);
@@ -48,14 +48,15 @@ public interface Maplet extends Restlet
 
    /**
     * Detaches a restlet class.
-    * @param restletClass  The restlet class to detach.
+    * @param restletClass The restlet class to detach.
     */
    public void detach(Class<? extends Restlet> restletClass);
 
    /**
     * Delegates a call to attached restlets.
     * @param call The call to delegate.
+    * @throws RestletException
     */
    public void delegate(RestletCall call) throws RestletException;
-   
+
 }

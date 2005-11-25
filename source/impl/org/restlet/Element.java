@@ -19,10 +19,11 @@
 package org.restlet;
 
 /**
- * Element of a software architecture.<br/><br/>
- * "A software architecture is defined by a configuration of architectural elements--components, connectors, and
- * data--constrained in their relationships in order to achieve a desired set of architectural properties." R.Fielding
- * @see <a href="http://www.ics.uci.edu/~fielding/pubs/dissertation/software_arch.htm#sec_1_2">Source dissertation</a>
+ * Element of a software architecture.<br/><br/> "A software architecture is defined by a configuration of
+ * architectural elements--components, connectors, and data--constrained in their relationships in order to
+ * achieve a desired set of architectural properties." R.Fielding
+ * @see <a href="http://www.ics.uci.edu/~fielding/pubs/dissertation/software_arch.htm#sec_1_2">Source
+ * dissertation</a>
  */
 public interface Element
 {
@@ -32,6 +33,3 @@ public interface Element
     */
    public String getDescription();
 }
-
-
-

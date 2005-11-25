@@ -43,7 +43,7 @@ public enum CharacterSets implements CharacterSet
     * @see <a href="http://en.wikipedia.org/wiki/UTF-8">Wikipedia page</a>
     */
    UTF_8,
-   
+
    /**
     * The UTF-16 character set.
     * @see <a href="http://en.wikipedia.org/wiki/UTF-16">Wikipedia page</a>
@@ -57,7 +57,7 @@ public enum CharacterSets implements CharacterSet
    public String getName()
    {
       String result = null;
-      
+
       switch(this)
       {
          case ALL:
@@ -76,7 +76,7 @@ public enum CharacterSets implements CharacterSet
             result = "UTF-16";
             break;
       }
-      
+
       return result;
    }
 
@@ -87,7 +87,7 @@ public enum CharacterSets implements CharacterSet
    public String getDescription()
    {
       String result = null;
-      
+
       switch(this)
       {
          case ALL:
@@ -106,14 +106,14 @@ public enum CharacterSets implements CharacterSet
             result = "UTF 16 character set";
             break;
       }
-      
+
       return result;
    }
 
    /**
     * Indicates if the character set is equal to a given one.
-    * @param characterSet  The character set to compare to.
-    * @return              True if the character set is equal to a given one.
+    * @param characterSet The character set to compare to.
+    * @return True if the character set is equal to a given one.
     */
    public boolean equals(CharacterSet characterSet)
    {

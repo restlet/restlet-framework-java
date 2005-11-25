@@ -37,7 +37,7 @@ public abstract class ChannelRepresentation extends AbstractRepresentation
 {
    /**
     * Constructor.
-    * @param mediaType  The representation's media type.
+    * @param mediaType The representation's media type.
     */
    public ChannelRepresentation(MediaType mediaType)
    {
@@ -85,12 +85,12 @@ public abstract class ChannelRepresentation extends AbstractRepresentation
          write(baos);
          result = baos.toString();
       }
-      catch (Exception ioe)
+      catch(Exception ioe)
       {
          // Return an empty string
       }
 
       return result;
    }
-   
+
 }

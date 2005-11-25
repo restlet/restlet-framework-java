@@ -40,7 +40,7 @@ public abstract class AbstractRepresentation extends DefaultRepresentationMetada
    {
       return this;
    }
-   
+
    /**
     * Returns the description of this REST element.
     * @return The description of this REST element.
@@ -60,7 +60,3 @@ public abstract class AbstractRepresentation extends DefaultRepresentationMetada
    }
 
 }
-
-
-
-

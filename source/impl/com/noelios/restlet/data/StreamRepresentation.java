@@ -36,7 +36,7 @@ public abstract class StreamRepresentation extends AbstractRepresentation
 {
    /**
     * Constructor.
-    * @param mediaType     The representation's media type.
+    * @param mediaType The representation's media type.
     */
    public StreamRepresentation(MediaType mediaType)
    {
@@ -62,8 +62,8 @@ public abstract class StreamRepresentation extends AbstractRepresentation
    }
 
    /**
-    * Returns a readable byte channel.
-    * If it is supported by a file a read-only instance of FileChannel is returned.
+    * Returns a readable byte channel. If it is supported by a file a read-only instance of FileChannel is
+    * returned.
     * @return A readable byte channel.
     */
    public ReadableByteChannel getChannel() throws IOException
@@ -78,12 +78,12 @@ public abstract class StreamRepresentation extends AbstractRepresentation
    public String toString()
    {
       String result = null;
-      
+
       try
       {
          result = ByteUtils.toString(getStream());
       }
-      catch (IOException ioe)
+      catch(IOException ioe)
       {
          ioe.printStackTrace();
       }

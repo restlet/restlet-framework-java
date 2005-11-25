@@ -25,8 +25,8 @@ import java.util.concurrent.ArrayBlockingQueue;
 import java.util.concurrent.BlockingQueue;
 
 /**
- * Pipe stream that pipes output streams into input streams.
- * Implementation based on a shared synchronized queue.
+ * Pipe stream that pipes output streams into input streams. Implementation based on a shared synchronized
+ * queue.
  */
 public class PipeStream
 {
@@ -53,7 +53,7 @@ public class PipeStream
             {
                queue.put(new Integer(b));
             }
-            catch (InterruptedException ie)
+            catch(InterruptedException ie)
             {
                throw new IOException("Interruption occurred while writing in the queue");
             }
@@ -75,13 +75,12 @@ public class PipeStream
          {
             try
             {
-               if (endReached)
-                  return -1;
+               if(endReached) return -1;
                int value = ((Integer)queue.take()).intValue();
                endReached = (value == -1);
                return value;
             }
-            catch (InterruptedException ie)
+            catch(InterruptedException ie)
             {
                throw new IOException("Interruption occurred while writing in the queue");
             }
@@ -90,7 +89,3 @@ public class PipeStream
    }
 
 }
-
-
-
-

@@ -27,17 +27,16 @@ import org.restlet.component.RestletContainer;
 import org.restlet.component.RestletServer;
 
 /**
- * Component acting as a container for other components called restlets containers.
- * Incoming calls are normally handled via pluggable server connectors.
- * Outcoming calls are normally handled via pluggable client connectors.
- * Other direct calls are handled by the default container.
+ * Component acting as a container for other components called restlets containers. Incoming calls are
+ * normally handled via pluggable server connectors. Outcoming calls are normally handled via pluggable client
+ * connectors. Other direct calls are handled by the default container.
  */
 public class RestletServerImpl extends OriginServerImpl implements RestletServer
 {
    /**
     * The restlets containers.
-    *@link aggregationByValue
-    *      @associates <{DefaultContainer}>
+    * @link aggregationByValue
+    * @associates <{DefaultContainer}>
     * @supplierCardinality 0..*
     * @clientCardinality 1
     * @label containers
@@ -60,9 +59,9 @@ public class RestletServerImpl extends OriginServerImpl implements RestletServer
 
    /**
     * Adds a restlet container.
-    * @param name 		The unique name of the container.
-    * @param container 	The container to add.
-    * @return 				The added container.
+    * @param name The unique name of the container.
+    * @param container The container to add.
+    * @return The added container.
     */
    public RestletContainer addContainer(String name, RestletContainer container)
    {
@@ -72,7 +71,7 @@ public class RestletServerImpl extends OriginServerImpl implements RestletServer
 
    /**
     * Removes a restlet container.
-    * @param name	The name of the container to remove.
+    * @param name The name of the container to remove.
     */
    public void removeContainer(String name)
    {
@@ -103,7 +102,7 @@ public class RestletServerImpl extends OriginServerImpl implements RestletServer
     */
    public void handle(UniformCall call)
    {
-      if (getDefaultContainer() != null)
+      if(getDefaultContainer() != null)
       {
          getDefaultContainer().handle(call);
       }
@@ -114,35 +113,29 @@ public class RestletServerImpl extends OriginServerImpl implements RestletServer
    }
 
    /**
-    * Start hook.
-    * Starts all containers.
+    * Start hook. Starts all containers.
     */
    public void start()
    {
       super.start();
 
-      for (Iterator iter = this.containers.keySet().iterator(); iter.hasNext(); )
+      for(Iterator iter = this.containers.keySet().iterator(); iter.hasNext();)
       {
          this.containers.get(iter.next()).start();
       }
    }
 
    /**
-    * Stop hook.
-    * Stops all containers.
+    * Stop hook. Stops all containers.
     */
    public void stop()
    {
       super.stop();
 
-      for (Iterator iter = this.containers.keySet().iterator(); iter.hasNext(); )
+      for(Iterator iter = this.containers.keySet().iterator(); iter.hasNext();)
       {
          this.containers.get(iter.next()).stop();
       }
    }
 
 }
-
-
-
-

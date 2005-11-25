@@ -19,22 +19,21 @@
 package org.restlet.component;
 
 /**
- * Origin server composed of restlets containers.
- * Each container is managing a resources namespace.
+ * Origin server composed of restlets containers. Each container is managing a resources namespace.
  */
 public interface RestletServer extends OriginServer
 {
    /**
     * Adds a restlet container.
-    * @param name 		The unique name of the container.
-    * @param container 	The container to add.
-    * @return 				The added container.
+    * @param name The unique name of the container.
+    * @param container The container to add.
+    * @return The added container.
     */
    public RestletContainer addContainer(String name, RestletContainer container);
 
    /**
     * Removes a restlet container.
-    * @param name	The name of the container to remove.
+    * @param name The name of the container to remove.
     */
    public void removeContainer(String name);
 
@@ -51,6 +50,3 @@ public interface RestletServer extends OriginServer
    public void setDefaultContainer(RestletContainer container);
 
 }
-
-
-

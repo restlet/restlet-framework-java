@@ -45,8 +45,8 @@ public class CharacterSetImpl extends MetadataImpl implements CharacterSet
 
    /**
     * Indicates if the character set is equal to a given one.
-    * @param characterSet  The character set to compare to.
-    * @return              True if the character set is equal to a given one.
+    * @param characterSet The character set to compare to.
+    * @return True if the character set is equal to a given one.
     */
    public boolean equals(CharacterSet characterSet)
    {
@@ -54,7 +54,3 @@ public class CharacterSetImpl extends MetadataImpl implements CharacterSet
    }
 
 }
-
-
-
-

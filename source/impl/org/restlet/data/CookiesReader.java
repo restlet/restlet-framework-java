@@ -27,22 +27,23 @@ import java.util.Map;
 public interface CookiesReader
 {
    /**
-    * Reads the cookies whose name is a key in the given map.
-    * If a matching cookie is found, its value is put in the map.
+    * Reads the cookies whose name is a key in the given map. If a matching cookie is found, its value is put
+    * in the map.
     * @param cookies The cookies map controlling the reading.
+    * @throws IOException
     */
    public void readCookies(Map<String, Cookie> cookies) throws IOException;
 
    /**
     * Reads the next cookie available or null.
     * @return The next cookie available or null.
+    * @throws IOException
     */
    public Cookie readCookie() throws IOException;
 
-   /** Closes the reader. */
+   /**
+    * Closes the reader.
+    * @throws IOException
+    */
    public void close() throws IOException;
 }
-
-
-
-

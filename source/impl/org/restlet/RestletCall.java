@@ -21,27 +21,25 @@ package org.restlet;
 import java.util.List;
 
 /**
- * Represents a call to be handled by restlets.
- * In addition to a uniform call, a restlet call contains the parsing
- * stack of the resource's URI done by parent restlets or maplets.
+ * Represents a call to be handled by restlets. In addition to a uniform call, a restlet call contains the
+ * parsing stack of the resource's URI done by parent restlets or maplets.
  */
-public interface RestletCall extends UniformCall 
+public interface RestletCall extends UniformCall
 {
    /**
-    * Returns the list of paths dividing the initial resource path.  
-    * The list is sorted according to the restlets hierarchy.
+    * Returns the list of paths dividing the initial resource path. The list is sorted according to the
+    * restlets hierarchy.
     * @return The list of restlets paths.
     */
    public List<String> getPaths();
 
    /**
-    * Returns one of the paths in the list.
-    * The first path is the resource path relatively to the current restlet.
-    * The second path is the current reslet path relatively to the parent restlet.
-    * All the hierarchy of restlet paths is also available depending on the restlet tree.
-    * @param index   Index of the path in the list.
-    * @param strip   Indicates if leading and ending slashes should be stripped.
-    * @return        The path at the given index.
+    * Returns one of the paths in the list. The first path is the resource path relatively to the current
+    * restlet. The second path is the current reslet path relatively to the parent restlet. All the hierarchy
+    * of restlet paths is also available depending on the restlet tree.
+    * @param index Index of the path in the list.
+    * @param strip Indicates if leading and ending slashes should be stripped.
+    * @return The path at the given index.
     */
    public String getPath(int index, boolean strip);
 

@@ -35,13 +35,13 @@ public class DefaultMaplet extends AbstractRestlet implements Maplet
    public DefaultMaplet(RestletContainer container)
    {
       super(container);
-      this.delegate = container.createMapletDelegate();
+      this.delegate = Manager.createMaplet(this, container);
    }
 
    /**
     * Attaches a restlet instance shared by all calls.
     * @param pathPattern The path pattern used to map calls.
-    * @param restlet     The restlet to attach.
+    * @param restlet The restlet to attach.
     * @see java.util.regex.Pattern
     */
    public void attach(String pathPattern, Restlet restlet)
@@ -51,8 +51,9 @@ public class DefaultMaplet extends AbstractRestlet implements Maplet
 
    /**
     * Attaches a restlet class. A new instance will be created for each call.
-    * @param pathPattern   The path pattern used to map calls.
-    * @param restletClass  The restlet class to attach (must have a constructor taking a RestletContainer parameter).
+    * @param pathPattern The path pattern used to map calls.
+    * @param restletClass The restlet class to attach (must have a constructor taking a RestletContainer
+    * parameter).
     * @see java.util.regex.Pattern
     */
    public void attach(String pathPattern, Class<? extends Restlet> restletClass)
@@ -71,7 +72,7 @@ public class DefaultMaplet extends AbstractRestlet implements Maplet
 
    /**
     * Detaches a restlet class.
-    * @param restletClass  The restlet class to detach.
+    * @param restletClass The restlet class to detach.
     */
    public void detach(Class<? extends Restlet> restletClass)
    {
@@ -79,8 +80,8 @@ public class DefaultMaplet extends AbstractRestlet implements Maplet
    }
 
    /**
-    * Handles a call to a resource or a set of resources.
-    * Default behavior to be overriden: delegation to attached handlers.
+    * Handles a call to a resource or a set of resources. Default behavior to be overriden: delegation to
+    * attached handlers.
     * @param call The call to handle.
     * @throws RestletException
     */
@@ -88,7 +89,7 @@ public class DefaultMaplet extends AbstractRestlet implements Maplet
    {
       delegate.handle(call);
    }
-   
+
    /**
     * Delegates a call to attached restlets.
     * @param call The call to delegate.

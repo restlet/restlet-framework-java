@@ -41,6 +41,7 @@ public abstract class HeaderReaderImpl extends BufferedInputStream
    /**
     * Reads the next quoted string.
     * @return The next quoted string.
+    * @throws IOException
     */
    protected String readQuotedString() throws IOException
    {
@@ -52,6 +53,7 @@ public abstract class HeaderReaderImpl extends BufferedInputStream
    /**
     * Appends the next quoted string.
     * @param buffer The buffer to append.
+    * @throws IOException
     */
    protected void appendQuotedString(Appendable buffer) throws IOException
    {
@@ -59,14 +61,14 @@ public abstract class HeaderReaderImpl extends BufferedInputStream
       boolean quotedPair = false;
       int nextChar = 0;
 
-      while ((!done) && (nextChar != -1))
+      while((!done) && (nextChar != -1))
       {
          nextChar = read();
 
-         if (quotedPair)
+         if(quotedPair)
          {
             // End of quoted pair (escape sequence)
-            if (isText(nextChar))
+            if(isText(nextChar))
             {
                buffer.append((char)nextChar);
                quotedPair = false;
@@ -76,17 +78,17 @@ public abstract class HeaderReaderImpl extends BufferedInputStream
                throw new IOException("Invalid character detected in quoted string. Please check your value");
             }
          }
-         else if (isDoubleQuote(nextChar))
+         else if(isDoubleQuote(nextChar))
          {
             // End of quoted string
             done = true;
          }
-         else if (nextChar == '\\')
+         else if(nextChar == '\\')
          {
             // Begin of quoted pair (escape sequence)
             quotedPair = true;
          }
-         else if (isText(nextChar))
+         else if(isText(nextChar))
          {
             buffer.append((char)nextChar);
          }
@@ -99,13 +101,14 @@ public abstract class HeaderReaderImpl extends BufferedInputStream
 
    /**
     * Creates a parameter.
-    * @param name 	The parameter name buffer.
-    * @param value 	The parameter value buffer (can be null).
-    * @return 			The created parameter.
+    * @param name The parameter name buffer.
+    * @param value The parameter value buffer (can be null).
+    * @return The created parameter.
+    * @throws IOException
     */
    public static Parameter createParameter(CharSequence name, CharSequence value) throws IOException
    {
-      if (value != null)
+      if(value != null)
       {
          return new ParameterImpl(name.toString().toLowerCase(), value.toString());
       }
@@ -117,8 +120,8 @@ public abstract class HeaderReaderImpl extends BufferedInputStream
 
    /**
     * Indicates if the given character is in ASCII range.
-    * @param character	The character to test.
-    * @return 				True if the given character is in ASCII range.
+    * @param character The character to test.
+    * @return True if the given character is in ASCII range.
     */
    public static boolean isAsciiChar(int character)
    {
@@ -127,8 +130,8 @@ public abstract class HeaderReaderImpl extends BufferedInputStream
 
    /**
     * Indicates if the given character is upper case (A-Z).
-    * @param character	The character to test.
-    * @return 				True if the given character is upper case (A-Z).
+    * @param character The character to test.
+    * @return True if the given character is upper case (A-Z).
     */
    public static boolean isUpperCase(int character)
    {
@@ -137,8 +140,8 @@ public abstract class HeaderReaderImpl extends BufferedInputStream
 
    /**
     * Indicates if the given character is lower case (a-z).
-    * @param character	The character to test.
-    * @return 				True if the given character is lower case (a-z).
+    * @param character The character to test.
+    * @return True if the given character is lower case (a-z).
     */
    public static boolean isLowerCase(int character)
    {
@@ -147,8 +150,8 @@ public abstract class HeaderReaderImpl extends BufferedInputStream
 
    /**
     * Indicates if the given character is alphabetical (a-z or A-Z).
-    * @param character	The character to test.
-    * @return 				True if the given character is alphabetical (a-z or A-Z).
+    * @param character The character to test.
+    * @return True if the given character is alphabetical (a-z or A-Z).
     */
    public static boolean isAlpha(int character)
    {
@@ -157,8 +160,8 @@ public abstract class HeaderReaderImpl extends BufferedInputStream
 
    /**
     * Indicates if the given character is a digit (0-9).
-    * @param character	The character to test.
-    * @return 				True if the given character is a digit (0-9).
+    * @param character The character to test.
+    * @return True if the given character is a digit (0-9).
     */
    public static boolean isDigit(int character)
    {
@@ -167,8 +170,8 @@ public abstract class HeaderReaderImpl extends BufferedInputStream
 
    /**
     * Indicates if the given character is a control character.
-    * @param character	The character to test.
-    * @return 				True if the given character is a control character.
+    * @param character The character to test.
+    * @return True if the given character is a control character.
     */
    public static boolean isControlChar(int character)
    {
@@ -177,8 +180,8 @@ public abstract class HeaderReaderImpl extends BufferedInputStream
 
    /**
     * Indicates if the given character is a carriage return.
-    * @param character	The character to test.
-    * @return 				True if the given character is a carriage return.
+    * @param character The character to test.
+    * @return True if the given character is a carriage return.
     */
    public static boolean isCarriageReturn(int character)
    {
@@ -187,8 +190,8 @@ public abstract class HeaderReaderImpl extends BufferedInputStream
 
    /**
     * Indicates if the given character is a line feed.
-    * @param character	The character to test.
-    * @return 				True if the given character is a line feed.
+    * @param character The character to test.
+    * @return True if the given character is a line feed.
     */
    public static boolean isLineFeed(int character)
    {
@@ -197,8 +200,8 @@ public abstract class HeaderReaderImpl extends BufferedInputStream
 
    /**
     * Indicates if the given character is a space.
-    * @param character	The character to test.
-    * @return 				True if the given character is a space.
+    * @param character The character to test.
+    * @return True if the given character is a space.
     */
    public static boolean isSpace(int character)
    {
@@ -207,8 +210,8 @@ public abstract class HeaderReaderImpl extends BufferedInputStream
 
    /**
     * Indicates if the given character is an horizontal tab.
-    * @param character	The character to test.
-    * @return 				True if the given character is an horizontal tab.
+    * @param character The character to test.
+    * @return True if the given character is an horizontal tab.
     */
    public static boolean isHorizontalTab(int character)
    {
@@ -217,8 +220,8 @@ public abstract class HeaderReaderImpl extends BufferedInputStream
 
    /**
     * Indicates if the given character is a double quote.
-    * @param character	The character to test.
-    * @return 				True if the given character is a double quote.
+    * @param character The character to test.
+    * @return True if the given character is a double quote.
     */
    public static boolean isDoubleQuote(int character)
    {
@@ -227,8 +230,8 @@ public abstract class HeaderReaderImpl extends BufferedInputStream
 
    /**
     * Indicates if the given character is textual (ASCII and not a control character).
-    * @param character	The character to test.
-    * @return 				True if the given character is textual (ASCII and not a control character).
+    * @param character The character to test.
+    * @return True if the given character is textual (ASCII and not a control character).
     */
    public static boolean isText(int character)
    {
@@ -237,12 +240,12 @@ public abstract class HeaderReaderImpl extends BufferedInputStream
 
    /**
     * Indicates if the given character is a separator.
-    * @param character	The character to test.
-    * @return 				True if the given character is a separator.
+    * @param character The character to test.
+    * @return True if the given character is a separator.
     */
    public static boolean isSeparator(int character)
    {
-      switch (character)
+      switch(character)
       {
          case '(':
          case ')':
@@ -272,8 +275,8 @@ public abstract class HeaderReaderImpl extends BufferedInputStream
 
    /**
     * Indicates if the given character is a token character (text and not a separator).
-    * @param character	The character to test.
-    * @return 				True if the given character is a token character (text and not a separator).
+    * @param character The character to test.
+    * @return True if the given character is a token character (text and not a separator).
     */
    public static boolean isTokenChar(int character)
    {
@@ -281,5 +284,3 @@ public abstract class HeaderReaderImpl extends BufferedInputStream
    }
 
 }
-
-

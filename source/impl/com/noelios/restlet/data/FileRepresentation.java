@@ -41,8 +41,8 @@ public class FileRepresentation extends AbstractRepresentation
 
    /**
     * Constructor.
-    * @param filePath		The file's path.
-    * @param mediaType 		The representation's media type.
+    * @param filePath The file's path.
+    * @param mediaType The representation's media type.
     */
    public FileRepresentation(String filePath, MediaType mediaType)
    {
@@ -60,8 +60,7 @@ public class FileRepresentation extends AbstractRepresentation
    }
 
    /**
-    * Writes the representation to a byte channel.
-    * Optimizes using the file channel transferTo method.
+    * Writes the representation to a byte channel. Optimizes using the file channel transferTo method.
     * @param writableChannel A writable byte channel.
     */
    public void write(WritableByteChannel writableChannel) throws IOException
@@ -70,7 +69,7 @@ public class FileRepresentation extends AbstractRepresentation
       long position = 0;
       long count = fc.size();
       long written = 0;
-      
+
       while(count > 0)
       {
          written = fc.transferTo(position, count, writableChannel);
@@ -89,15 +88,15 @@ public class FileRepresentation extends AbstractRepresentation
       {
          return new FileInputStream(filePath);
       }
-      catch (FileNotFoundException fnfe)
+      catch(FileNotFoundException fnfe)
       {
          throw new IOException("Couldn't get the stream. File not found");
       }
    }
 
    /**
-    * Returns a readable byte channel.
-    * If it is supported by a file a read-only instance of FileChannel is returned.
+    * Returns a readable byte channel. If it is supported by a file a read-only instance of FileChannel is
+    * returned.
     * @return A readable byte channel.
     */
    public FileChannel getChannel() throws IOException
@@ -112,7 +111,7 @@ public class FileRepresentation extends AbstractRepresentation
          throw new IOException("Couldn't get the channel. File not found");
       }
    }
-   
+
    /**
     * Converts the representation to a string.
     * @return The representation as a string.
@@ -128,10 +127,6 @@ public class FileRepresentation extends AbstractRepresentation
          ioe.printStackTrace();
          return null;
       }
-   }   
+   }
 
 }
-
-
-
-

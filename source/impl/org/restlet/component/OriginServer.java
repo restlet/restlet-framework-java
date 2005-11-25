@@ -25,19 +25,20 @@ import org.restlet.connector.Client;
 import org.restlet.connector.Server;
 
 /**
- * Definitive source for representations of resources in a governed namespace.<br/><br/>
- * "An origin server uses a server connector to govern the namespace for a requested resource. It is the definitive source for
- * representations of its resources and must be the ultimate recipient of any request that intends to modify the value of its
- * resources. Each origin server provides a generic interface to its services as a resource hierarchy. The resource
- * implementation details are hidden behind the interface." Roy T. Fielding
- * @see <a href="http://www.ics.uci.edu/~fielding/pubs/dissertation/rest_arch_style.htm#sec_5_2_3">Source dissertation</a>
+ * Definitive source for representations of resources in a governed namespace.<br/><br/> "An origin server
+ * uses a server connector to govern the namespace for a requested resource. It is the definitive source for
+ * representations of its resources and must be the ultimate recipient of any request that intends to modify
+ * the value of its resources. Each origin server provides a generic interface to its services as a resource
+ * hierarchy. The resource implementation details are hidden behind the interface." Roy T. Fielding
+ * @see <a href="http://www.ics.uci.edu/~fielding/pubs/dissertation/rest_arch_style.htm#sec_5_2_3">Source
+ * dissertation</a>
  */
 public interface OriginServer extends Component
 {
    /**
     * Adds a server connector to this component.
-    * @param server 	The server connector to add.
-    * @return 			The server connector added.
+    * @param server The server connector to add.
+    * @return The server connector added.
     */
    public Server addServer(Server server);
 
@@ -49,8 +50,8 @@ public interface OriginServer extends Component
 
    /**
     * Adds a client connector to this component.
-    * @param client 	The client connector to add.
-    * @return 			The client connector added.
+    * @param client The client connector to add.
+    * @return The client connector added.
     */
    public Client addClient(Client client);
 
@@ -62,13 +63,10 @@ public interface OriginServer extends Component
 
    /**
     * Calls a client connector.
-    * @param name	The name of the client connector.
-    * @param call	The call to handle.
+    * @param name The name of the client connector.
+    * @param call The call to handle.
+    * @throws IOException
     */
    public void callClient(String name, UniformCall call) throws IOException;
-   
+
 }
-
-
-
-

@@ -23,7 +23,7 @@ import java.util.List;
 /**
  * The data format of a representation.
  * @see org.restlet.data.MediaTypes
- * @see <a href="http://en.wikipedia.org/wiki/MIME">MIME types on Wikipedia<a/>
+ * @see <a href="http://en.wikipedia.org/wiki/MIME">MIME types on Wikipedia</a>
  */
 public interface MediaType extends Metadata
 {
@@ -48,12 +48,8 @@ public interface MediaType extends Metadata
    /**
     * Returns the value of a parameter with a given name.
     * @param name The name of the parameter to return.
-    * @return 		The value of the parameter with a given name.
+    * @return The value of the parameter with a given name.
     */
    public String getParameterValue(String name);
 
 }
-
-
-
-

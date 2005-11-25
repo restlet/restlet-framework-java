@@ -47,35 +47,23 @@ import org.w3c.dom.NodeList;
 import com.noelios.restlet.data.ObjectRepresentation;
 
 /**
- * Client connector to a JDBC database.<br/><br/>
- * To send a request to the server create a new instance of JdbcCall and invoke the handle() method.
- * Alteratively you can create a new Call with the JDBC URI as the resource reference 
- * and use an XML request as the input representation.<br/><br/>
- * Database connections are optionally pooled using Apache Commons DBCP. 
- * In this case, a different connection pool is created for each unique 
- * combination of JDBC URI and connection properties.<br/><br/>
- * Do not forget to register your JDBC drivers before using this client.
- * See <a href="http://java.sun.com/j2se/1.5.0/docs/api/java/sql/DriverManager.html">
- * JDBC DriverManager API</a> for details<br/>
- * <br/>
- * Sample XML request:<br/>
- * <br/>
- * {@code <?xml version="1.0" encoding="ISO-8851-1" ?>}<br/>
- * {@code <request>}<br/>
- * &nbsp;&nbsp;{@code <header>}<br/>
- * &nbsp;&nbsp;&nbsp;&nbsp;{@code <connection>}<br/>
+ * Client connector to a JDBC database.<br/><br/> To send a request to the server create a new instance of
+ * JdbcCall and invoke the handle() method. Alteratively you can create a new Call with the JDBC URI as the
+ * resource reference and use an XML request as the input representation.<br/><br/> Database connections are
+ * optionally pooled using Apache Commons DBCP. In this case, a different connection pool is created for each
+ * unique combination of JDBC URI and connection properties.<br/><br/> Do not forget to register your JDBC
+ * drivers before using this client. See <a
+ * href="http://java.sun.com/j2se/1.5.0/docs/api/java/sql/DriverManager.html"> JDBC DriverManager API</a> for
+ * details<br/> <br/> Sample XML request:<br/> <br/> {@code <?xml version="1.0" encoding="ISO-8851-1" ?>}<br/>
+ * {@code <request>}<br/> &nbsp;&nbsp;{@code <header>}<br/> &nbsp;&nbsp;&nbsp;&nbsp;{@code <connection>}<br/>
  * &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;{@code <usePooling>true</usePooling>}<br/>
  * &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;{@code <property name="user">scott</property >}<br/>
  * &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;{@code <property name="password">tiger</property >}<br/>
  * &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;{@code <property name="...">1234</property >}<br/>
  * &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;{@code <property name="...">true</property >}<br/>
- * &nbsp;&nbsp;&nbsp;&nbsp;{@code </connection>}<br/>
- * &nbsp;&nbsp;&nbsp;&nbsp;{@code <returnGeneratedKeys>true</returnGeneratedKeys>}<br/>
- * &nbsp;&nbsp;{@code </header>}<br/>
- * &nbsp;&nbsp;{@code <body>}<br/>
- * &nbsp;&nbsp;&nbsp;&nbsp;{@code SELECT * FROM customers}<br/>
- * &nbsp;&nbsp;{@code </body>}<br/>
- * {@code </request>}
+ * &nbsp;&nbsp;&nbsp;&nbsp;{@code </connection>}<br/> &nbsp;&nbsp;&nbsp;&nbsp;{@code <returnGeneratedKeys>true</returnGeneratedKeys>}<br/>
+ * &nbsp;&nbsp;{@code </header>}<br/> &nbsp;&nbsp;{@code <body>}<br/> &nbsp;&nbsp;&nbsp;&nbsp;{@code SELECT * FROM customers}<br/>
+ * &nbsp;&nbsp;{@code </body>}<br/> {@code </request>}
  */
 public class JdbcClient extends AbstractConnector implements Client
 {
@@ -128,13 +116,13 @@ public class JdbcClient extends AbstractConnector implements Client
          for(int i = 0; i < propertyNodes.getLength(); i++)
          {
             propertyNode = propertyNodes.item(i);
-            
+
             if(properties == null) properties = new Properties();
             name = propertyNode.getAttributes().getNamedItem("name").getTextContent();
             value = propertyNode.getTextContent();
             properties.setProperty(name, value);
-         }         
-         
+         }
+
          Node returnGeneratedKeysNode = headerElt.getElementsByTagName("returnGeneratedKeys").item(0);
          boolean returnGeneratedKeys = returnGeneratedKeysNode.getTextContent().equals("true") ? true : false;
 
@@ -147,10 +135,11 @@ public class JdbcClient extends AbstractConnector implements Client
             // Execute the SQL request
             connection = getConnection(connectionURI, properties, usePooling);
             Statement statement = connection.createStatement();
-            statement.execute(sqlRequest, returnGeneratedKeys ? Statement.RETURN_GENERATED_KEYS : Statement.NO_GENERATED_KEYS);
+            statement.execute(sqlRequest, returnGeneratedKeys ? Statement.RETURN_GENERATED_KEYS
+                  : Statement.NO_GENERATED_KEYS);
             JdbcResult result = new JdbcResult(statement);
             call.setOutput(new ObjectRepresentation(result));
-         
+
             // Commit any changes to the database
             connection.commit();
          }
@@ -159,7 +148,7 @@ public class JdbcClient extends AbstractConnector implements Client
             throw new IllegalArgumentException("Only the POST method is supported");
          }
       }
-      catch (Exception e)
+      catch(Exception e)
       {
          e.printStackTrace();
       }
@@ -167,23 +156,26 @@ public class JdbcClient extends AbstractConnector implements Client
       {
          try
          {
-            if (connection != null) connection.close();
+            if(connection != null) connection.close();
          }
-         catch (SQLException se)
+         catch(SQLException se)
          {
-            // LOG ERROR throw new "An error occured while trying to close a database connection", se);
+            // LOG ERROR throw new "An error occured while trying to close a
+            // database connection", se);
          }
       }
    }
 
    /**
     * Returns a JDBC connection.
-    * @param uri        The connection URI.
+    * @param uri The connection URI.
     * @param properties The connection properties.
     * @param usePooling Indicates if the connection pooling should be used.
-    * @return           The JDBC connection.
+    * @return The JDBC connection.
+    * @throws SQLException
     */
-   protected Connection getConnection(String uri, Properties properties, boolean usePooling) throws SQLException
+   protected Connection getConnection(String uri, Properties properties, boolean usePooling)
+         throws SQLException
    {
       Connection result = null;
 
@@ -193,7 +185,8 @@ public class JdbcClient extends AbstractConnector implements Client
          {
             // Check if the connection URI is identical
             // and if the same number of properties is present
-            if((result == null) && c.getUri().equalsIgnoreCase(uri) && (properties.size() == c.getProperties().size()))
+            if((result == null) && c.getUri().equalsIgnoreCase(uri)
+                  && (properties.size() == c.getProperties().size()))
             {
                // Check that the properties tables are equivalent
                boolean equal = true;
@@ -208,14 +201,14 @@ public class JdbcClient extends AbstractConnector implements Client
                      equal = false;
                   }
                }
-            
+
                if(equal)
                {
                   result = c.getConnection();
                }
             }
          }
-      
+
          if(result == null)
          {
             // No existing connection source found
@@ -234,18 +227,18 @@ public class JdbcClient extends AbstractConnector implements Client
 
    /**
     * Escapes quotes in a SQL query.
-    * @param query   The SQL query to escape.
-    * @return        The escaped SQL query.
+    * @param query The SQL query to escape.
+    * @return The escaped SQL query.
     */
    public static String sqlEncode(String query)
    {
       StringBuilder result = new StringBuilder(query.length() + 10);
       char currentChar;
 
-      for (int i = 0; i < query.length(); i++)
+      for(int i = 0; i < query.length(); i++)
       {
          currentChar = query.charAt(i);
-         if (currentChar == '\'')
+         if(currentChar == '\'')
          {
             result.append("''");
          }
@@ -260,9 +253,9 @@ public class JdbcClient extends AbstractConnector implements Client
 
    /**
     * Creates a connection pool for a given connection configuration.
-    * @param uri        The connection URI.
+    * @param uri The connection URI.
     * @param properties The connection properties.
-    * @return           The new connection pool.
+    * @return The new connection pool.
     */
    protected static ObjectPool createConnectionPool(String uri, Properties properties)
    {
@@ -271,12 +264,14 @@ public class JdbcClient extends AbstractConnector implements Client
 
       // Create a ConnectionFactory that the pool will use to create Connections
       ConnectionFactory connectionFactory = new DriverManagerConnectionFactory(uri, properties);
-      
-      // Create the PoolableConnectionFactory, which wraps the "real" Connections created by the ConnectionFactory with
+
+      // Create the PoolableConnectionFactory, which wraps the "real"
+      // Connections created by the ConnectionFactory with
       // the classes that implement the pooling functionality.
-      @SuppressWarnings("unused") 
-      PoolableConnectionFactory poolableConnectionFactory = new PoolableConnectionFactory(connectionFactory, result, null, null, false, false);
-      
+      @SuppressWarnings("unused")
+      PoolableConnectionFactory poolableConnectionFactory = new PoolableConnectionFactory(connectionFactory,
+            result, null, null, false, false);
+
       return result;
    }
 
@@ -290,10 +285,10 @@ public class JdbcClient extends AbstractConnector implements Client
 
       /** The connection properties. */
       protected Properties properties;
-      
+
       /**
        * Constructor.
-       * @param uri        The connection URI.
+       * @param uri The connection URI.
        * @param properties The connection properties.
        */
       public ConnectionSource(String uri, Properties properties)
@@ -311,7 +306,7 @@ public class JdbcClient extends AbstractConnector implements Client
       {
          return uri;
       }
-      
+
       /**
        * Returns the connection properties.
        * @return The connection properties.

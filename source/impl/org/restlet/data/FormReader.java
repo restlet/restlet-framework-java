@@ -27,30 +27,31 @@ import java.util.Map;
 public interface FormReader
 {
    /**
-    * Reads the parameters with the given name.
-    * If multiple values are found, a list is returned created.
+    * Reads the parameters with the given name. If multiple values are found, a list is returned created.
     * @param name The parameter name to match.
-    * @return 		The parameter value or list of values.
+    * @return The parameter value or list of values.
+    * @throws IOException
     */
    public Object readParameter(String name) throws IOException;
 
    /**
-    * Reads the parameters whose name is a key in the given map.
-    * If a matching parameter is found, its value is put in the map.
-    * If multiple values are found, a list is created and set in the map.
+    * Reads the parameters whose name is a key in the given map. If a matching parameter is found, its value
+    * is put in the map. If multiple values are found, a list is created and set in the map.
     * @param parameters The parameters map controlling the reading.
+    * @throws IOException
     */
    public void readParameters(Map<String, Object> parameters) throws IOException;
 
    /**
     * Reads the next parameter available or null.
     * @return The next parameter available or null.
+    * @throws IOException
     */
    public Parameter readParameter() throws IOException;
 
-   /** Closes the reader. */
+   /**
+    * Closes the reader.
+    * @throws IOException
+    */
    public void close() throws IOException;
 }
-
-
-

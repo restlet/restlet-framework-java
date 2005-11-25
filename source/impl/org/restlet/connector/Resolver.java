@@ -19,15 +19,12 @@
 package org.restlet.connector;
 
 /**
- * Connector that translates resource identifiers into network address information.<br/><br/>
- * "A resolver translates partial or complete resource identifiers into the network address information needed to establish an
- * inter-component connection." Roy T. Fielding
- * @see <a href="http://www.ics.uci.edu/~fielding/pubs/dissertation/rest_arch_style.htm#sec_5_2_2">Source dissertation</a>
+ * Connector that translates resource identifiers into network address information.<br/><br/> "A resolver
+ * translates partial or complete resource identifiers into the network address information needed to
+ * establish an inter-component connection." Roy T. Fielding
+ * @see <a href="http://www.ics.uci.edu/~fielding/pubs/dissertation/rest_arch_style.htm#sec_5_2_2">Source
+ * dissertation</a>
  */
 public interface Resolver extends Connector
 {
 }
-
-
-
-

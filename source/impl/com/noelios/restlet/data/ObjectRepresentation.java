@@ -18,7 +18,6 @@
 
 package com.noelios.restlet.data;
 
-
 import java.io.IOException;
 import java.io.ObjectOutputStream;
 import java.io.OutputStream;
@@ -26,8 +25,7 @@ import java.io.OutputStream;
 import org.restlet.data.MediaTypes;
 
 /**
- * Object instance representation.
- * Based on Java object serialization.
+ * Object instance representation. Based on Java object serialization.
  */
 public class ObjectRepresentation extends OutputRepresentation
 {
@@ -58,6 +56,7 @@ public class ObjectRepresentation extends OutputRepresentation
    /**
     * Returns the represented object.
     * @return The represented object.
+    * @throws IOException
     */
    public Object getObject() throws IOException
    {
@@ -65,7 +64,3 @@ public class ObjectRepresentation extends OutputRepresentation
    }
 
 }
-
-
-
-

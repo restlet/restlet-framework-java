@@ -21,16 +21,8 @@ package org.restlet.component;
 import org.restlet.Maplet;
 
 /**
- * Origin server that contains restlets or maplets.
- * Note that the container is a maplet itself.
+ * Origin server that contains restlets or maplets. Note that the container is a maplet itself.
  */
 public interface RestletContainer extends OriginServer, Maplet
 {
-   /**
-    * Returns a new maplet acting as a delegate for maplets.
-    * Developers who need to extend the default maplets should override it.
-    * @return A new maplet.
-    */
-   public Maplet createMapletDelegate();
-   
 }

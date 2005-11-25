@@ -28,8 +28,8 @@ import org.restlet.component.RestletContainer;
 import org.restlet.data.Metadata;
 
 /**
- * Restlet supported by a directory of files.
- * A content negotiation mechanism (similar to Apache HTTP server) is available for files.
+ * Restlet supported by a directory of files. A content negotiation mechanism (similar to Apache HTTP server)
+ * is available for files.
  * @see com.noelios.restlet.FileResource
  */
 public class DirectoryRestlet extends AbstractRestlet
@@ -48,10 +48,10 @@ public class DirectoryRestlet extends AbstractRestlet
 
    /**
     * Constructor.
-    * @param container 	         The parent container.
-    * @param rootPath            The directory's root path.
-    * @param deeply              Indicates if the sub-directories are deeply accessible.
-    * @param indexName           If no file name is specified, use the (optional) index name.
+    * @param container The parent container.
+    * @param rootPath The directory's root path.
+    * @param deeply Indicates if the sub-directories are deeply accessible.
+    * @param indexName If no file name is specified, use the (optional) index name.
     */
    public DirectoryRestlet(RestletContainer container, String rootPath, boolean deeply, String indexName)
    {
@@ -71,21 +71,37 @@ public class DirectoryRestlet extends AbstractRestlet
       return rootPath;
    }
 
+   /**
+    * Indicates if the subdirectories should be deeply exposed.
+    * @return True if the subdirectories should be deeply exposed.
+    */
    public boolean getDeeply()
    {
       return deeply;
    }
 
+   /**
+    * Indicates if the subdirectories should be deeply exposed.
+    * @param deeply True if the subdirectories should be deeply exposed.
+    */
    public void setDeeply(boolean deeply)
    {
       this.deeply = deeply;
    }
 
+   /**
+    * Returns the index name.
+    * @return The index name.
+    */
    public String getIndexName()
    {
       return indexName;
    }
 
+   /**
+    * Sets the index name.
+    * @param indexName The index name.
+    */
    public void setIndexName(String indexName)
    {
       this.indexName = indexName;
@@ -93,8 +109,8 @@ public class DirectoryRestlet extends AbstractRestlet
 
    /**
     * Maps an extension to some metadata (media type, language or character set) to an extension.
-    * @param extension  The extension name.
-    * @param metadata   The metadata to map.
+    * @param extension The extension name.
+    * @param metadata The metadata to map.
     */
    public void addExtension(String extension, Metadata metadata)
    {
@@ -103,8 +119,8 @@ public class DirectoryRestlet extends AbstractRestlet
 
    /**
     * Returns the metadata mapped to an extension.
-    * @param extension  The extension name.
-    * @return           The mapped metadata.
+    * @param extension The extension name.
+    * @return The mapped metadata.
     */
    public Metadata getMetadata(String extension)
    {

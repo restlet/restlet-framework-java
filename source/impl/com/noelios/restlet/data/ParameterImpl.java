@@ -32,7 +32,10 @@ public class ParameterImpl implements Parameter
    /** The value. */
    protected String value;
 
-   /** Default constructor. */
+   /**
+    * Default constructor.
+    * @throws RestletException
+    */
    public ParameterImpl() throws RestletException
    {
       this(null, null);
@@ -40,8 +43,8 @@ public class ParameterImpl implements Parameter
 
    /**
     * Preferred constructor.
-    * @param name 	The name.
-    * @param value	The value.
+    * @param name The name.
+    * @param value The value.
     */
    public ParameterImpl(String name, String value)
    {
@@ -88,13 +91,13 @@ public class ParameterImpl implements Parameter
    /**
     * Compares two parameters.
     * @param otherParam The other parameter to compare.
-    * @return 				True if the parameters are identical (name and value).
+    * @return True if the parameters are identical (name and value).
     */
    public boolean equals(Parameter otherParam)
    {
       boolean result = true;
 
-      if (getName() == null)
+      if(getName() == null)
       {
          result = (otherParam.getName() == null);
       }
@@ -103,7 +106,7 @@ public class ParameterImpl implements Parameter
          result = getName().equals(otherParam.getName());
       }
 
-      if (getValue() == null)
+      if(getValue() == null)
       {
          result &= (otherParam.getValue() == null);
       }
@@ -127,7 +130,8 @@ public class ParameterImpl implements Parameter
    /**
     * Compares this object with the specified object for order.
     * @param o The object to be compared.
-    * @return  A negative integer, zero, or a positive integer as this object is less than, equal to, or greater than the specified object.
+    * @return A negative integer, zero, or a positive integer as this object is less than, equal to, or
+    * greater than the specified object.
     */
    public int compareTo(Parameter o)
    {
@@ -135,7 +139,3 @@ public class ParameterImpl implements Parameter
    }
 
 }
-
-
-
-

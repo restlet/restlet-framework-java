@@ -33,7 +33,8 @@ public class JavaMailCall extends UniformCallImpl
    /**
     * Constructor.
     * @param smtpURI The SMTP server's URI (ex: smtp://localhost).
-    * @param email	The email to send (valid XML email).
+    * @param email The email to send (valid XML email).
+    * @throws RestletException
     */
    public JavaMailCall(String smtpURI, Representation email) throws RestletException
    {
@@ -41,7 +42,3 @@ public class JavaMailCall extends UniformCallImpl
    }
 
 }
-
-
-
-

@@ -48,25 +48,25 @@ public class JettyCall extends UniformCallImpl
 {
    /**
     * Constructor.
-    * @param request		The Jetty HTTP request.
-    * @param response	The Jetty HTTP response.
+    * @param request The Jetty HTTP request.
+    * @param response The Jetty HTTP response.
     */
    public JettyCall(HttpRequest request, HttpResponse response)
    {
-      super(getReferrer(request), request.getField("User-Agent"), getMediaPrefs(request), 
-            getCharacterSetPrefs(request), getLanguagePrefs(request), getMethod(request), 
+      super(getReferrer(request), request.getField("User-Agent"), getMediaPrefs(request),
+            getCharacterSetPrefs(request), getLanguagePrefs(request), getMethod(request),
             getResource(request), getCookies(request), getInput(request));
    }
 
    /**
     * Extracts the call's referrer from the HTTP request.
     * @param request The Jetty HTTP request.
-    * @return        The call's referrer.
+    * @return The call's referrer.
     */
    private static Reference getReferrer(HttpRequest request)
    {
       String referrer = request.getField("Referer");
-      
+
       if(referrer != null)
       {
          return new ReferenceImpl(referrer);
@@ -76,16 +76,16 @@ public class JettyCall extends UniformCallImpl
          return null;
       }
    }
-   
+
    /**
     * Extracts the call's resource from the HTTP request.
     * @param request The Jetty HTTP request.
-    * @return        The call's resource.
+    * @return The call's resource.
     */
    private static Reference getResource(HttpRequest request)
    {
       String resource = request.getRootURL() + request.getURI().toString();
-      
+
       if(resource != null)
       {
          return new ReferenceImpl(resource);
@@ -95,31 +95,26 @@ public class JettyCall extends UniformCallImpl
          return null;
       }
    }
-   
+
    /**
     * Extracts the call's method from the HTTP request.
-    * @param request	The Jetty HTTP request.
-    * @return 			The call's method.
+    * @param request The Jetty HTTP request.
+    * @return The call's method.
     */
    private static Method getMethod(HttpRequest request)
    {
       String method = request.getMethod();
-      if (method.equals(HttpRequest.__DELETE))
-         return Methods.DELETE;
-      else if (method.equals(HttpRequest.__GET))
-         return Methods.GET;
-      else if (method.equals(HttpRequest.__POST))
-         return Methods.POST;
-      else if (method.equals(HttpRequest.__PUT))
-         return Methods.PUT;
-      else
-         return new MethodImpl(method);
+      if(method.equals(HttpRequest.__DELETE)) return Methods.DELETE;
+      else if(method.equals(HttpRequest.__GET)) return Methods.GET;
+      else if(method.equals(HttpRequest.__POST)) return Methods.POST;
+      else if(method.equals(HttpRequest.__PUT)) return Methods.PUT;
+      else return new MethodImpl(method);
    }
 
    /**
     * Extracts the call's input representation from the HTTP request.
-    * @param request	The Jetty HTTP request.
-    * @return 			The call's input representation.
+    * @param request The Jetty HTTP request.
+    * @return The call's input representation.
     */
    private static Representation getInput(HttpRequest request)
    {
@@ -128,15 +123,15 @@ public class JettyCall extends UniformCallImpl
 
    /**
     * Extracts the call's media preferences from the HTTP request.
-    * @param request	The Jetty HTTP request.
-    * @return 			The call's media preferences.
+    * @param request The Jetty HTTP request.
+    * @return The call's media preferences.
     */
    private static List<Preference> getMediaPrefs(HttpRequest request)
    {
       List<Preference> result = null;
       String accept = request.getField(HttpFields.__Accept);
 
-      if (accept != null)
+      if(accept != null)
       {
          PreferenceReaderImpl pr = new PreferenceReaderImpl(PreferenceReaderImpl.TYPE_MEDIA_TYPE, accept);
          result = pr.readPreferences();
@@ -152,8 +147,8 @@ public class JettyCall extends UniformCallImpl
 
    /**
     * Extracts the call's character set preferences from the HTTP request.
-    * @param request	The Jetty HTTP request.
-    * @return 			The call's character set preferences.
+    * @param request The Jetty HTTP request.
+    * @return The call's character set preferences.
     */
    private static List<Preference> getCharacterSetPrefs(HttpRequest request)
    {
@@ -162,9 +157,9 @@ public class JettyCall extends UniformCallImpl
       List<Preference> result = null;
       String acceptCharset = request.getField(HttpFields.__AcceptCharset);
 
-      if (acceptCharset != null)
+      if(acceptCharset != null)
       {
-         if (acceptCharset.length() == 0)
+         if(acceptCharset.length() == 0)
          {
             result = new ArrayList<Preference>();
             result.add(new PreferenceImpl(CharacterSets.ISO_8859_1));
@@ -172,7 +167,7 @@ public class JettyCall extends UniformCallImpl
          else
          {
             PreferenceReaderImpl pr = new PreferenceReaderImpl(PreferenceReaderImpl.TYPE_CHARACTER_SET,
-                acceptCharset);
+                  acceptCharset);
             result = pr.readPreferences();
          }
       }
@@ -187,17 +182,18 @@ public class JettyCall extends UniformCallImpl
 
    /**
     * Extracts the call's language preferences from the HTTP request.
-    * @param request	The Jetty HTTP request.
-    * @return 			The call's language preferences.
+    * @param request The Jetty HTTP request.
+    * @return The call's language preferences.
     */
    private static List<Preference> getLanguagePrefs(HttpRequest request)
    {
       List<Preference> result = null;
       String acceptLanguage = request.getField(HttpFields.__AcceptLanguage);
 
-      if (acceptLanguage != null)
+      if(acceptLanguage != null)
       {
-         PreferenceReaderImpl pr = new PreferenceReaderImpl(PreferenceReaderImpl.TYPE_LANGUAGE, acceptLanguage);
+         PreferenceReaderImpl pr = new PreferenceReaderImpl(PreferenceReaderImpl.TYPE_LANGUAGE,
+               acceptLanguage);
          result = pr.readPreferences();
       }
 
@@ -206,14 +202,14 @@ public class JettyCall extends UniformCallImpl
 
    /**
     * Extracts the call's cookies from the HTTP request.
-    * @param request	The Jetty HTTP request.
-    * @return 			The call's cookies.
+    * @param request The Jetty HTTP request.
+    * @return The call's cookies.
     */
    private static Cookies getCookies(HttpRequest request)
    {
       Cookies result = null;
 
-      if (request.getField(HttpFields.__Cookie) != null)
+      if(request.getField(HttpFields.__Cookie) != null)
       {
          result = new com.noelios.restlet.data.CookiesImpl(request.getField(HttpFields.__Cookie));
       }
@@ -222,4 +218,3 @@ public class JettyCall extends UniformCallImpl
    }
 
 }
-

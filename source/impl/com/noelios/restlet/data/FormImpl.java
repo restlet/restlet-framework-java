@@ -51,6 +51,7 @@ public class FormImpl extends InputRepresentation implements Form
    /**
     * Construcotr.
     * @param requestContent The web form parameters as a representation.
+    * @throws IOException
     */
    public FormImpl(Representation requestContent) throws IOException
    {
@@ -59,10 +60,9 @@ public class FormImpl extends InputRepresentation implements Form
    }
 
    /**
-    * Reads the parameters with the given name.
-    * If multiple values are found, a list is returned created.
+    * Reads the parameters with the given name. If multiple values are found, a list is returned created.
     * @param name The parameter name to match.
-    * @return 		The parameter value or list of values.
+    * @return The parameter value or list of values.
     */
    public Object readParameter(String name) throws IOException
    {
@@ -70,9 +70,8 @@ public class FormImpl extends InputRepresentation implements Form
    }
 
    /**
-    * Reads the parameters whose name is a key in the given map.
-    * If a matching parameter is found, its value is put in the map.
-    * If multiple values are found, a list is created and set in the map.
+    * Reads the parameters whose name is a key in the given map. If a matching parameter is found, its value
+    * is put in the map. If multiple values are found, a list is created and set in the map.
     * @param parameters The parameters map controlling the reading.
     */
    public void readParameters(Map<String, Object> parameters) throws IOException
@@ -86,7 +85,7 @@ public class FormImpl extends InputRepresentation implements Form
     */
    public FormReader getFormReader() throws IOException
    {
-      if (!firstReaderCreation && getStream().markSupported())
+      if(!firstReaderCreation && getStream().markSupported())
       {
          // Allow multiple uses of the form when possible
          getStream().reset();
@@ -107,7 +106,7 @@ public class FormImpl extends InputRepresentation implements Form
       FormReader fis = getFormReader();
       Parameter param = fis.readParameter();
 
-      while (param != null)
+      while(param != null)
       {
          result.add(param);
          fis.readParameter();
@@ -118,6 +117,3 @@ public class FormImpl extends InputRepresentation implements Form
    }
 
 }
-
-
-

@@ -61,8 +61,8 @@ public abstract class AbstractRestlet implements Restlet, Comparable
 
    /**
     * Compares this object with the specified object for order.
-    * @param object  The object to compare.
-    * @return        The result of the comparison.            
+    * @param object The object to compare.
+    * @return The result of the comparison.
     * @see java.lang.Comparable
     */
    public int compareTo(Object object)
@@ -71,6 +71,3 @@ public abstract class AbstractRestlet implements Restlet, Comparable
    }
 
 }
-
-
-

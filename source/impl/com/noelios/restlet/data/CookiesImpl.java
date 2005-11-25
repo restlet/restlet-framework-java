@@ -47,6 +47,7 @@ public class CookiesImpl extends InputRepresentation implements Cookies
    /**
     * Constructor.
     * @param cookiesInputStream The cookies stream to parse.
+    * @throws IOException
     */
    public CookiesImpl(InputStream cookiesInputStream) throws IOException
    {
@@ -54,8 +55,8 @@ public class CookiesImpl extends InputRepresentation implements Cookies
    }
 
    /**
-    * Reads the cookies whose name is a key in the given map.
-    * If a matching cookie is found, its value is put in the map.
+    * Reads the cookies whose name is a key in the given map. If a matching cookie is found, its value is put
+    * in the map.
     * @param cookies The cookies map controlling the reading.
     */
    public void readCookies(Map<String, Cookie> cookies) throws IOException
@@ -82,7 +83,7 @@ public class CookiesImpl extends InputRepresentation implements Cookies
       CookiesReader cis = getCookiesReader();
       Cookie cookie = cis.readCookie();
 
-      while (cookie != null)
+      while(cookie != null)
       {
          result.add(cookie);
          cis.readCookie();
@@ -93,7 +94,3 @@ public class CookiesImpl extends InputRepresentation implements Cookies
    }
 
 }
-
-
-
-

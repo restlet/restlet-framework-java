@@ -33,8 +33,8 @@ public class ReadableRepresentation extends ChannelRepresentation
 
    /**
     * Constructor.
-    * @param readableChannel  The representation's channel.
-    * @param mediaType        The representation's media type.
+    * @param readableChannel The representation's channel.
+    * @param mediaType The representation's media type.
     */
    public ReadableRepresentation(ReadableByteChannel readableChannel, MediaType mediaType)
    {
@@ -43,8 +43,8 @@ public class ReadableRepresentation extends ChannelRepresentation
    }
 
    /**
-    * Returns a readable byte channel.
-    * If it is supported by a file a read-only instance of FileChannel is returned.
+    * Returns a readable byte channel. If it is supported by a file a read-only instance of FileChannel is
+    * returned.
     * @return A readable byte channel.
     */
    public ReadableByteChannel getChannel() throws IOException

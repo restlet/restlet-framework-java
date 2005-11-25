@@ -21,8 +21,8 @@ package org.restlet;
 import java.util.List;
 
 /**
- * Restlet call wrapper.
- * Useful for application developer who need to enrich the call with application related things.
+ * Restlet call wrapper. Useful for application developer who need to enrich the call with application related
+ * things.
  * @see <a href="http://c2.com/cgi/wiki?DecoratorPattern">The decorator (aka wrapper) pattern</a>
  */
 public class RestletCallWrapper extends UniformCallWrapper implements RestletCall
@@ -41,13 +41,12 @@ public class RestletCallWrapper extends UniformCallWrapper implements RestletCal
    }
 
    /**
-    * Returns one of the paths in the list.
-    * The first path is the resource path relatively to the current restlet.
-    * The second path is the current reslet path relatively to the parent restlet.
-    * All the hierarchy of restlet paths is also available depending on the restlet tree.
-    * @param index   Index of the path in the list.
-    * @param strip   Indicates if leading and ending slashes should be stripped.
-    * @return        The path at the given index.
+    * Returns one of the paths in the list. The first path is the resource path relatively to the current
+    * restlet. The second path is the current reslet path relatively to the parent restlet. All the hierarchy
+    * of restlet paths is also available depending on the restlet tree.
+    * @param index Index of the path in the list.
+    * @param strip Indicates if leading and ending slashes should be stripped.
+    * @return The path at the given index.
     */
    public String getPath(int index, boolean strip)
    {
@@ -62,8 +61,7 @@ public class RestletCallWrapper extends UniformCallWrapper implements RestletCal
    }
 
    /**
-    * Returns the list of restlets paths.  
-    * The list is sorted according to the handlers hierarchy.
+    * Returns the list of restlets paths. The list is sorted according to the handlers hierarchy.
     * @return The list of restlets paths.
     */
    public List<String> getPaths()
@@ -73,21 +71,21 @@ public class RestletCallWrapper extends UniformCallWrapper implements RestletCal
 
    /**
     * Strip the slashing from both ends of the source string.
-    * @param source  The source string to strip.
-    * @return        The stripped string.
+    * @param source The source string to strip.
+    * @return The stripped string.
     */
    public static String strip(String source)
    {
-      return strip(source, '/', true, true);      
+      return strip(source, '/', true, true);
    }
-   
+
    /**
-    * Strip a delimiter character from a source string. 
-    * @param source     The source string to strip.
-    * @param delimiter  The character to remove.
-    * @param start      Indicates if start of source should be stripped.
-    * @param end        Indicates if end of source should be stripped.
-    * @return           The stripped source string.
+    * Strip a delimiter character from a source string.
+    * @param source The source string to strip.
+    * @param delimiter The character to remove.
+    * @param start Indicates if start of source should be stripped.
+    * @param end Indicates if end of source should be stripped.
+    * @return The stripped source string.
     */
    public static String strip(String source, char delimiter, boolean start, boolean end)
    {
@@ -98,7 +96,7 @@ public class RestletCallWrapper extends UniformCallWrapper implements RestletCal
       // Strip beginning
       while(stripping && (beginIndex < endIndex))
       {
-         if(source.charAt(beginIndex) == delimiter) 
+         if(source.charAt(beginIndex) == delimiter)
          {
             beginIndex++;
          }
@@ -112,7 +110,7 @@ public class RestletCallWrapper extends UniformCallWrapper implements RestletCal
       stripping = true;
       while(stripping && (beginIndex < endIndex - 1))
       {
-         if(source.charAt(endIndex - 1) == delimiter) 
+         if(source.charAt(endIndex - 1) == delimiter)
          {
             endIndex--;
          }
@@ -121,12 +119,8 @@ public class RestletCallWrapper extends UniformCallWrapper implements RestletCal
             stripping = false;
          }
       }
-      
+
       return source.substring(beginIndex, endIndex);
    }
 
 }
-
-
-
-

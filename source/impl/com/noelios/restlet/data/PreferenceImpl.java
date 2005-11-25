@@ -50,8 +50,8 @@ public class PreferenceImpl implements Preference
 
    /**
     * Constructor.
-    * @param metadata 	The associated metadata.
-    * @param quality		The quality/preference level.
+    * @param metadata The associated metadata.
+    * @param quality The quality/preference level.
     */
    public PreferenceImpl(Metadata metadata, float quality)
    {
@@ -60,13 +60,13 @@ public class PreferenceImpl implements Preference
 
    /**
     * Constructor.
-    * @param metadata 	The associated metadata.
-    * @param quality		The quality/preference level.
-    * @param parameters	The list of parameters.
+    * @param metadata The associated metadata.
+    * @param quality The quality/preference level.
+    * @param parameters The list of parameters.
     */
    public PreferenceImpl(Metadata metadata, float quality, List<Parameter> parameters)
    {
-      if (metadata == null)
+      if(metadata == null)
       {
          throw new IllegalArgumentException("Metadata parameter can't be null");
       }
@@ -108,19 +108,19 @@ public class PreferenceImpl implements Preference
    /**
     * Returns the value of a parameter with a given name.
     * @param name The name of the parameter to return.
-    * @return 		The value of the parameter with a given name.
+    * @return The value of the parameter with a given name.
     */
    public String getParameterValue(String name)
    {
       String result = null;
 
-      if (getParameters() != null)
+      if(getParameters() != null)
       {
          Parameter current;
-         for (Iterator iter = getParameters().iterator(); iter.hasNext(); )
+         for(Iterator iter = getParameters().iterator(); iter.hasNext();)
          {
             current = (Parameter)iter.next();
-            if (current.getName().equals(name))
+            if(current.getName().equals(name))
             {
                result = current.getValue();
             }
@@ -139,7 +139,3 @@ public class PreferenceImpl implements Preference
       return "Metadata preference";
    }
 }
-
-
-
-

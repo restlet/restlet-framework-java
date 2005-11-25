@@ -66,7 +66,3 @@ public abstract class AbstractConnector implements Connector
    }
 
 }
-
-
-
-

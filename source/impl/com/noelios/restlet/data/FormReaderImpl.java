@@ -46,10 +46,9 @@ public class FormReaderImpl extends BufferedInputStream implements FormReader
    }
 
    /**
-    * Reads the parameters with the given name.
-    * If multiple values are found, a list is returned created.
+    * Reads the parameters with the given name. If multiple values are found, a list is returned created.
     * @param name The parameter name to match.
-    * @return     The parameter value or list of values.
+    * @return The parameter value or list of values.
     */
    @SuppressWarnings("unchecked")
    public Object readParameter(String name) throws IOException
@@ -57,15 +56,15 @@ public class FormReaderImpl extends BufferedInputStream implements FormReader
       Parameter param = readParameter();
       Object result = null;
 
-      while (param != null)
+      while(param != null)
       {
-         if (param.getName().equals(name))
+         if(param.getName().equals(name))
          {
-            if (result != null)
+            if(result != null)
             {
                List<Object> values = null;
 
-               if (result instanceof List)
+               if(result instanceof List)
                {
                   // Multiple values already found for this parameter
                   values = (List)result;
@@ -79,7 +78,7 @@ public class FormReaderImpl extends BufferedInputStream implements FormReader
                   result = values;
                }
 
-               if (param.getValue() == null)
+               if(param.getValue() == null)
                {
                   values.add(new EmptyValue());
                }
@@ -90,7 +89,7 @@ public class FormReaderImpl extends BufferedInputStream implements FormReader
             }
             else
             {
-               if (param.getValue() == null)
+               if(param.getValue() == null)
                {
                   result = new EmptyValue();
                }
@@ -109,9 +108,8 @@ public class FormReaderImpl extends BufferedInputStream implements FormReader
    }
 
    /**
-    * Reads the parameters whose name is a key in the given map.
-    * If a matching parameter is found, its value is put in the map.
-    * If multiple values are found, a list is created and set in the map.
+    * Reads the parameters whose name is a key in the given map. If a matching parameter is found, its value
+    * is put in the map. If multiple values are found, a list is created and set in the map.
     * @param parameters The parameters map controlling the reading.
     */
    @SuppressWarnings("unchecked")
@@ -120,17 +118,17 @@ public class FormReaderImpl extends BufferedInputStream implements FormReader
       Parameter param = readParameter();
       Object currentValue = null;
 
-      while (param != null)
+      while(param != null)
       {
-         if (parameters.containsKey(param.getName()))
+         if(parameters.containsKey(param.getName()))
          {
             currentValue = parameters.get(param.getName());
 
-            if (currentValue != null)
+            if(currentValue != null)
             {
                List<Object> values = null;
 
-               if (currentValue instanceof List)
+               if(currentValue instanceof List)
                {
                   // Multiple values already found for this parameter
                   values = (List)currentValue;
@@ -144,7 +142,7 @@ public class FormReaderImpl extends BufferedInputStream implements FormReader
                   parameters.put(param.getName(), values);
                }
 
-               if (param.getValue() == null)
+               if(param.getValue() == null)
                {
                   values.add(new EmptyValue());
                }
@@ -155,7 +153,7 @@ public class FormReaderImpl extends BufferedInputStream implements FormReader
             }
             else
             {
-               if (param.getValue() == null)
+               if(param.getValue() == null)
                {
                   parameters.put(param.getName(), new EmptyValue());
                }
@@ -188,15 +186,15 @@ public class FormReaderImpl extends BufferedInputStream implements FormReader
          StringBuilder valueBuffer = new StringBuilder();
 
          int nextChar = 0;
-         while ((result == null) && (nextChar != -1))
+         while((result == null) && (nextChar != -1))
          {
             nextChar = read();
 
-            if (readingName)
+            if(readingName)
             {
-               if (nextChar == '=')
+               if(nextChar == '=')
                {
-                  if (nameBuffer.length() > 0)
+                  if(nameBuffer.length() > 0)
                   {
                      readingName = false;
                      readingValue = true;
@@ -206,13 +204,13 @@ public class FormReaderImpl extends BufferedInputStream implements FormReader
                      throw new IOException("Empty parameter name detected. Please check your form data");
                   }
                }
-               else if ((nextChar == '&') || (nextChar == -1))
+               else if((nextChar == '&') || (nextChar == -1))
                {
-                  if (nameBuffer.length() > 0)
+                  if(nameBuffer.length() > 0)
                   {
                      result = createParameter(nameBuffer, null);
                   }
-                  else if (nextChar == -1)
+                  else if(nextChar == -1)
                   {
                      // Do nothing return null preference
                   }
@@ -226,11 +224,11 @@ public class FormReaderImpl extends BufferedInputStream implements FormReader
                   nameBuffer.append((char)nextChar);
                }
             }
-            else if (readingValue)
+            else if(readingValue)
             {
-               if ((nextChar == '&') || (nextChar == -1))
+               if((nextChar == '&') || (nextChar == -1))
                {
-                  if (valueBuffer.length() > 0)
+                  if(valueBuffer.length() > 0)
                   {
                      result = createParameter(nameBuffer, valueBuffer);
                   }
@@ -246,7 +244,7 @@ public class FormReaderImpl extends BufferedInputStream implements FormReader
             }
          }
       }
-      catch (UnsupportedEncodingException uee)
+      catch(UnsupportedEncodingException uee)
       {
          throw new IOException("Unsupported encoding. Please contact the administrator");
       }
@@ -256,9 +254,10 @@ public class FormReaderImpl extends BufferedInputStream implements FormReader
 
    /**
     * Creates a parameter.
-    * @param name    The parameter name buffer.
-    * @param value   The parameter value buffer (can be null).
-    * @return        The created parameter.
+    * @param name The parameter name buffer.
+    * @param value The parameter value buffer (can be null).
+    * @return The created parameter.
+    * @throws IOException
     */
    private Parameter createParameter(CharSequence name, CharSequence value) throws IOException
    {
@@ -267,12 +266,12 @@ public class FormReaderImpl extends BufferedInputStream implements FormReader
 
       try
       {
-         if (name != null)
+         if(name != null)
          {
-            if (value != null)
+            if(value != null)
             {
-               result = new ParameterImpl(URLDecoder.decode(name.toString(), encoding),
-                   URLDecoder.decode(value.toString(), encoding));
+               result = new ParameterImpl(URLDecoder.decode(name.toString(), encoding), URLDecoder.decode(
+                     value.toString(), encoding));
             }
             else
             {
@@ -280,7 +279,7 @@ public class FormReaderImpl extends BufferedInputStream implements FormReader
             }
          }
       }
-      catch (UnsupportedEncodingException uee)
+      catch(UnsupportedEncodingException uee)
       {
          throw new IOException("Unsupported encoding exception. Please contact the administrator");
       }
@@ -289,6 +288,3 @@ public class FormReaderImpl extends BufferedInputStream implements FormReader
    }
 
 }
-
-
-

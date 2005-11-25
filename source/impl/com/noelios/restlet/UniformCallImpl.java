@@ -75,20 +75,19 @@ public class UniformCallImpl implements UniformCall
 
    /**
     * Constructor.
-    * @param referrer               The referrer reference.
-    * @param userAgent              The user agent.
-    * @param mediaPrefs             The media preferences of the user agent.
-    * @param characterSetPrefs      The character set preferences of the user agent.
-    * @param languagePrefs          The language preferences of the user agent.
-    * @param method                 The method type.
-    * @param resource               The resource reference.
-    * @param cookies                The cookies sent by the user agent.
-    * @param input                  The content received in the request.
+    * @param referrer The referrer reference.
+    * @param userAgent The user agent.
+    * @param mediaPrefs The media preferences of the user agent.
+    * @param characterSetPrefs The character set preferences of the user agent.
+    * @param languagePrefs The language preferences of the user agent.
+    * @param method The method type.
+    * @param resource The resource reference.
+    * @param cookies The cookies sent by the user agent.
+    * @param input The content received in the request.
     */
-   public UniformCallImpl(Reference referrer, String userAgent,
-         List<Preference> mediaPrefs, List<Preference> characterSetPrefs,
-         List<Preference> languagePrefs, Method method, Reference resource,
-         Cookies cookies, Representation input)
+   public UniformCallImpl(Reference referrer, String userAgent, List<Preference> mediaPrefs,
+         List<Preference> characterSetPrefs, List<Preference> languagePrefs, Method method,
+         Reference resource, Cookies cookies, Representation input)
    {
       this.referrerUri = referrer;
       this.userAgentName = userAgent;
@@ -105,18 +104,21 @@ public class UniformCallImpl implements UniformCall
       this.cookieSettings = null;
    }
 
+   /**
+    * Constructor.
+    */
    public UniformCallImpl()
    {
       //
    }
-   
+
    // ------------------------------
    // Methods related to the request
    // ------------------------------
 
    /**
-    * Returns the referrer reference if available.
-    * This reference shouldn't be modified during the call handling.
+    * Returns the referrer reference if available. This reference shouldn't be modified during the call
+    * handling.
     * @return The referrer reference.
     */
    public Reference getReferrerUri()
@@ -125,8 +127,7 @@ public class UniformCallImpl implements UniformCall
    }
 
    /**
-    * Sets the referrer reference if available.
-    * This reference shouldn't be modified during the call handling.
+    * Sets the referrer reference if available. This reference shouldn't be modified during the call handling.
     * @param referrerUri The referrer reference.
     */
    public void setReferrerUri(Reference referrerUri)
@@ -234,8 +235,7 @@ public class UniformCallImpl implements UniformCall
    }
 
    /**
-    * Returns the resource's reference.
-    * This reference shouldn't be modified during the call handling.
+    * Returns the resource's reference. This reference shouldn't be modified during the call handling.
     * @return The resource's reference.
     */
    public Reference getResourceUri()
@@ -280,8 +280,7 @@ public class UniformCallImpl implements UniformCall
    }
 
    /**
-    * Sets the content received in the request.
-    * param input The content received in the request.
+    * Sets the content received in the request. param input The content received in the request.
     */
    public void setInput(Representation input)
    {
@@ -303,7 +302,7 @@ public class UniformCallImpl implements UniformCall
 
    /**
     * Sets the result status.
-    * @param status  The result status to set.
+    * @param status The result status to set.
     */
    public void setStatus(Status status)
    {
@@ -329,9 +328,9 @@ public class UniformCallImpl implements UniformCall
    }
 
    /**
-    * Sets the best representation of a given resource according to the user agent preferences.
-    * If no representation is found, sets the status to "Not found".
-    * If no acceptable representation is available, sets the status to "Not acceptable".
+    * Sets the best representation of a given resource according to the user agent preferences. If no
+    * representation is found, sets the status to "Not found". If no acceptable representation is available,
+    * sets the status to "Not acceptable".
     * @param resource The resource for which the best representation needs to be set.
     */
    public void setBestOutput(Resource resource) throws RestletException
@@ -353,69 +352,66 @@ public class UniformCallImpl implements UniformCall
 
       // For each media type supported by this resource
       List<RepresentationMetadata> variants = resource.getVariantsMetadata();
-      if (variants == null)
+      if(variants == null)
       {
          setStatus(Statuses.CLIENT_ERROR_NOT_FOUND);
       }
       else
       {
-         for (Iterator iter1 = variants.iterator(); iter1.hasNext();)
+         for(Iterator iter1 = variants.iterator(); iter1.hasNext();)
          {
-            currentVariant = (RepresentationMetadata) iter1.next();
+            currentVariant = (RepresentationMetadata)iter1.next();
 
             // For each media range preference defined in the call
             // Calculate the specificity score
-            for (Iterator iter2 = getMediaTypePrefs().iterator(); iter2
-                  .hasNext();)
+            for(Iterator iter2 = getMediaTypePrefs().iterator(); iter2.hasNext();)
             {
                compatible = true;
                currentSpecificity = 0;
-               currentPref = (Preference) iter2.next();
-               currentRange = (MediaType) currentPref.getMetadata();
+               currentPref = (Preference)iter2.next();
+               currentRange = (MediaType)currentPref.getMetadata();
 
                // 1) Compare the main types
-               if (currentVariant.getMediaType().getMainType().equals(
-                     currentRange.getMainType()))
+               if(currentVariant.getMediaType().getMainType().equals(currentRange.getMainType()))
                {
                   currentSpecificity += 1000;
                }
-               else if (!currentRange.getMainType().equals("*"))
+               else if(!currentRange.getMainType().equals("*"))
                {
                   compatible = false;
                }
-               else if (!currentRange.getSubtype().equals("*"))
+               else if(!currentRange.getSubtype().equals("*"))
                {
                   // Ranges such as "*/html" are not supported
                   // Only "*/*" is acceptable in this case
                   compatible = false;
                }
 
-               if (compatible)
+               if(compatible)
                {
                   // 2) Compare the sub types
-                  if (currentVariant.getMediaType().getSubtype().equals(
-                        currentRange.getSubtype()))
+                  if(currentVariant.getMediaType().getSubtype().equals(currentRange.getSubtype()))
                   {
                      currentSpecificity += 100;
                   }
-                  else if (!currentRange.getSubtype().equals("*"))
+                  else if(!currentRange.getSubtype().equals("*"))
                   {
                      // Subtype are different
                      compatible = false;
                   }
 
-                  if (compatible
-                        && (currentVariant.getMediaType().getParameters() != null))
+                  if(compatible && (currentVariant.getMediaType().getParameters() != null))
                   {
                      // 3) Compare the parameters
-                     // If current media type is compatible with the current media range
+                     // If current media type is compatible with the current
+                     // media range
                      // then the parameters need to be checked too
-                     for (Iterator iter3 = currentVariant.getMediaType()
-                           .getParameters().iterator(); iter3.hasNext();)
+                     for(Iterator iter3 = currentVariant.getMediaType().getParameters().iterator(); iter3
+                           .hasNext();)
                      {
-                        currentParam = (Parameter) iter3.next();
+                        currentParam = (Parameter)iter3.next();
 
-                        if (isParameterFound(currentParam, currentRange))
+                        if(isParameterFound(currentParam, currentRange))
                         {
                            currentSpecificity++;
                         }
@@ -423,24 +419,23 @@ public class UniformCallImpl implements UniformCall
                   }
 
                   // 3) Do we have a better preference?
-                  if (compatible
-                        && ((bestPref == null) || (currentSpecificity > bestSpecificity)))
+                  if(compatible && ((bestPref == null) || (currentSpecificity > bestSpecificity)))
                   {
                      bestPref = currentPref;
                   }
                }
             }
 
-            if (bestPref != null)
+            if(bestPref != null)
             {
-               if (bestVariant == null)
+               if(bestVariant == null)
                {
                   bestVariant = currentVariant;
                   bestQuality = bestPref.getQuality();
                }
                else
                {
-                  if (bestPref.getQuality() > bestQuality)
+                  if(bestPref.getQuality() > bestQuality)
                   {
                      bestVariant = currentVariant;
                      bestQuality = bestPref.getQuality();
@@ -449,7 +444,7 @@ public class UniformCallImpl implements UniformCall
             }
          }
 
-         if (bestVariant == null)
+         if(bestVariant == null)
          {
             // No variant was found matchin the call preferences
             setStatus(Statuses.CLIENT_ERROR_NOT_ACCEPTABLE);
@@ -465,31 +460,29 @@ public class UniformCallImpl implements UniformCall
    /**
     * Indicates if the searched parameter is specified in the given media range.
     * @param searchedParam The searched parameter.
-    * @param mediaRange    The media range to inspect.
-    * @return              True if the searched parameter is specified in the given media range.
+    * @param mediaRange The media range to inspect.
+    * @return True if the searched parameter is specified in the given media range.
     */
-   private boolean isParameterFound(Parameter searchedParam,
-         MediaType mediaRange)
+   private boolean isParameterFound(Parameter searchedParam, MediaType mediaRange)
    {
       boolean result = false;
 
-      for (Iterator iter = mediaRange.getParameters().iterator(); !result
-            && iter.hasNext();)
+      for(Iterator iter = mediaRange.getParameters().iterator(); !result && iter.hasNext();)
       {
-         result = searchedParam.equals((Parameter) iter.next());
+         result = searchedParam.equals((Parameter)iter.next());
       }
 
       return result;
    }
 
    /**
-    * Returns the list of cookies to be set in the user agent.
-    * Cookie settings can be browsed, added or removed.
+    * Returns the list of cookies to be set in the user agent. Cookie settings can be browsed, added or
+    * removed.
     * @return The list of cookies to be set in the user agent.
     */
    public List<CookieSetting> getCookieSettings()
    {
-      if (this.cookieSettings == null)
+      if(this.cookieSettings == null)
       {
          this.cookieSettings = new ArrayList<CookieSetting>();
       }
@@ -498,8 +491,7 @@ public class UniformCallImpl implements UniformCall
    }
 
    /**
-    * Sets the list of cookies to be set in the user agent.
-    * Cookie settings can be browsed, added or removed.
+    * Sets the list of cookies to be set in the user agent. Cookie settings can be browsed, added or removed.
     * @param cookieSettings The list of cookies to be set in the user agent.
     */
    public void setCookieSettings(List<CookieSetting> cookieSettings)
@@ -508,8 +500,8 @@ public class UniformCallImpl implements UniformCall
    }
 
    /**
-    * Asks the user agent to redirect itself to the given URI.
-    * Modifies the result output and status properties.
+    * Asks the user agent to redirect itself to the given URI. Modifies the result output and status
+    * properties.
     * @param targetURI The target URI.
     */
    public void setTemporaryRedirect(String targetURI)

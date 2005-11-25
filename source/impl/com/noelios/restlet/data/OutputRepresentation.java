@@ -28,8 +28,8 @@ import org.restlet.data.MediaType;
 import com.noelios.restlet.util.PipeStream;
 
 /**
- * Representation based on an output stream.
- * The write(OutputStream) method needs to be overriden in subclasses.
+ * Representation based on an output stream. The write(OutputStream) method needs to be overriden in
+ * subclasses.
  */
 public abstract class OutputRepresentation extends StreamRepresentation
 {
@@ -49,8 +49,8 @@ public abstract class OutputRepresentation extends StreamRepresentation
    public abstract void write(OutputStream outputStream) throws IOException;
 
    /**
-    * Returns a stream with the representation's content.
-    * Internally, it uses a writer thread and a pipe stream.
+    * Returns a stream with the representation's content. Internally, it uses a writer thread and a pipe
+    * stream.
     * @return A stream with the representation's content.
     */
    public InputStream getStream() throws IOException
@@ -70,7 +70,7 @@ public abstract class OutputRepresentation extends StreamRepresentation
                os.write(-1);
                os.close();
             }
-            catch (IOException ioe)
+            catch(IOException ioe)
             {
                ioe.printStackTrace();
             }
@@ -81,7 +81,7 @@ public abstract class OutputRepresentation extends StreamRepresentation
       writer.start();
       return pipe.getInputStream();
    }
-   
+
    /**
     * Converts the representation to a string.
     * @return The representation as a string.
@@ -96,7 +96,7 @@ public abstract class OutputRepresentation extends StreamRepresentation
          write(baos);
          result = baos.toString();
       }
-      catch (Exception ioe)
+      catch(Exception ioe)
       {
          // Return an empty string
       }
@@ -105,7 +105,3 @@ public abstract class OutputRepresentation extends StreamRepresentation
    }
 
 }
-
-
-
-

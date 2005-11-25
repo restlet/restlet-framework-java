@@ -32,8 +32,8 @@ import org.restlet.RestletException;
 import org.restlet.component.RestletContainer;
 import org.restlet.data.Statuses;
 
-/** 
- * Represents a list of mappings for a parent maplet or for the container itself. 
+/**
+ * Represents a list of mappings for a parent maplet or for the container itself.
  */
 public class MapletImpl extends ArrayList<Mapping> implements Maplet
 {
@@ -45,13 +45,14 @@ public class MapletImpl extends ArrayList<Mapping> implements Maplet
 
    /**
     * Constructor.
-    * @param container The parent container.
+    * @param parent The parent maplet.
+    * @param container The restlet container.
     */
-   public MapletImpl(RestletContainer container)
+   public MapletImpl(Maplet parent, RestletContainer container)
    {
       this.container = container;
    }
-   
+
    /**
     * Returns the container.
     * @return The container.
@@ -60,11 +61,11 @@ public class MapletImpl extends ArrayList<Mapping> implements Maplet
    {
       return container;
    }
-   
+
    /**
     * Adds a mapping with a path beginning with the given pattern.
-    * @param pathPattern 	The path pattern used to match objects.
-    * @param restlet       The restlet.
+    * @param pathPattern The path pattern used to match objects.
+    * @param restlet The restlet.
     */
    public void attach(String pathPattern, Restlet restlet)
    {
@@ -73,8 +74,8 @@ public class MapletImpl extends ArrayList<Mapping> implements Maplet
 
    /**
     * Adds a mapping with a path beginning with the given pattern.
-    * @param pathPattern 	The path pattern used to match objects.
-    * @param restletClass	The restlet class.
+    * @param pathPattern The path pattern used to match objects.
+    * @param restletClass The restlet class.
     */
    public void attach(String pathPattern, Class<? extends Restlet> restletClass)
    {
@@ -88,11 +89,10 @@ public class MapletImpl extends ArrayList<Mapping> implements Maplet
    public void detach(Restlet restlet)
    {
       Mapping mapping;
-      for (Iterator iter = iterator(); iter.hasNext(); )
+      for(Iterator iter = iterator(); iter.hasNext();)
       {
-         mapping = (Mapping) iter.next();
-         if (mapping.getRestlet() == restlet)
-            remove(mapping);
+         mapping = (Mapping)iter.next();
+         if(mapping.getRestlet() == restlet) remove(mapping);
       }
    }
 
@@ -103,17 +103,16 @@ public class MapletImpl extends ArrayList<Mapping> implements Maplet
    public void detach(Class<? extends Restlet> restletClass)
    {
       Mapping mapping;
-      for (Iterator iter = iterator(); iter.hasNext(); )
+      for(Iterator iter = iterator(); iter.hasNext();)
       {
-         mapping = (Mapping) iter.next();
-         if (mapping.getRestletClass() == restletClass)
-            remove(mapping);
+         mapping = (Mapping)iter.next();
+         if(mapping.getRestletClass() == restletClass) remove(mapping);
       }
    }
 
    /**
-    * Handles a call to a resource or a set of resources.
-    * Default behavior to be overriden: delegation to attached handlers.
+    * Handles a call to a resource or a set of resources. Default behavior to be overriden: delegation to
+    * attached handlers.
     * @param call The call to handle.
     * @throws RestletException
     */
@@ -134,14 +133,14 @@ public class MapletImpl extends ArrayList<Mapping> implements Maplet
       String resourcePath = call.getPath(0, false);
 
       // Match the path in the call context with one of the child restlet
-      for (Iterator iter = iterator(); !found && iter.hasNext(); )
+      for(Iterator iter = iterator(); !found && iter.hasNext();)
       {
-         mapping = (Mapping) iter.next();
+         mapping = (Mapping)iter.next();
          matcher = mapping.getPathPattern().matcher(resourcePath);
          found = matcher.lookingAt();
       }
 
-      if (found)
+      if(found)
       {
          String restletPath = resourcePath.substring(0, matcher.end());
          resourcePath = resourcePath.substring(matcher.end());
@@ -153,32 +152,28 @@ public class MapletImpl extends ArrayList<Mapping> implements Maplet
 
          try
          {
-            if (mapping.getRestlet() != null)
+            if(mapping.getRestlet() != null)
             {
                restlet = mapping.getRestlet();
             }
-            else if (mapping.isSetContainer())
+            else if(mapping.isSetContainer())
             {
-               restlet = (Restlet)mapping.getRestletConstructor().newInstance(
-                   new Object[]
-                   {
-                      getContainer()
-                   });
+               restlet = (Restlet)mapping.getRestletConstructor().newInstance(getContainer());
             }
             else
             {
                restlet = (Restlet)mapping.getRestletClass().newInstance();
             }
          }
-         catch (InstantiationException ie)
+         catch(InstantiationException ie)
          {
             throw new RestletException("Restlet can't be instantiated", ie);
          }
-         catch (IllegalAccessException iae)
+         catch(IllegalAccessException iae)
          {
             throw new RestletException("Restlet can't be accessed", iae);
          }
-         catch (InvocationTargetException ite)
+         catch(InvocationTargetException ite)
          {
             throw new RestletException("Restlet can't be invoked", ite);
          }
@@ -197,7 +192,7 @@ public class MapletImpl extends ArrayList<Mapping> implements Maplet
 
 /**
  * Represents a mapping between a path pattern and a restlet.
- * @see <{Pattern}>
+ * @see java.util.regex.Pattern
  */
 class Mapping
 {
@@ -213,18 +208,20 @@ class Mapping
    /** The restlet constructor. */
    Constructor restletConstructor;
 
+   /** The container class to set in the constructor. */
+   Class containerClass;
+
    /** Indicates if the container can be set in the constructor. */
    boolean setContainer;
 
    /**
     * Constructor.
     * @param pathPattern The path pattern.
-    * @param restlet     The restlet.
+    * @param restlet The restlet.
     */
    public Mapping(String pathPattern, Restlet restlet)
    {
-      this.pathPattern = Pattern.compile(pathPattern,
-            Pattern.CASE_INSENSITIVE);
+      this.pathPattern = Pattern.compile(pathPattern, Pattern.CASE_INSENSITIVE);
       this.restlet = restlet;
       this.restletClass = null;
       this.restletConstructor = null;
@@ -233,14 +230,12 @@ class Mapping
 
    /**
     * Constructor.
-    * @param pathPattern   The path pattern.
-    * @param restletClass  The restlet class.
+    * @param pathPattern The path pattern.
+    * @param restletClass The restlet class.
     */
-   Mapping(String pathPattern,
-         Class<? extends Restlet> restletClass)
+   Mapping(String pathPattern, Class<? extends Restlet> restletClass)
    {
-      this.pathPattern = Pattern.compile(pathPattern,
-            Pattern.CASE_INSENSITIVE);
+      this.pathPattern = Pattern.compile(pathPattern, Pattern.CASE_INSENSITIVE);
       this.restlet = null;
       this.restletClass = restletClass;
       this.setContainer = false;
@@ -249,14 +244,13 @@ class Mapping
       Constructor[] constructors = restletClass.getConstructors();
       Class[] parameters;
 
-      for (int i = 0; (this.restletConstructor == null)
-            && (i < constructors.length); i++)
+      for(int i = 0; (this.restletConstructor == null) && (i < constructors.length); i++)
       {
          parameters = constructors[i].getParameterTypes();
 
-         if (parameters.length == 1)
+         if(parameters.length == 1)
          {
-            if (RestletContainer.class.isAssignableFrom(parameters[0]))
+            if(RestletContainer.class.isAssignableFrom(parameters[0]))
             {
                this.restletConstructor = constructors[i];
                this.setContainer = true;
@@ -264,16 +258,14 @@ class Mapping
          }
       }
 
-      if (this.restletConstructor == null)
+      if(this.restletConstructor == null)
       {
          // Try to find an empty constructor
          try
          {
-            this.restletConstructor = restletClass
-                  .getConstructor(new Class[]
-                  {});
+            this.restletConstructor = restletClass.getConstructor(new Class[]{});
          }
-         catch (NoSuchMethodException nsme)
+         catch(NoSuchMethodException nsme)
          {
          }
       }
@@ -304,6 +296,15 @@ class Mapping
    public Constructor getRestletConstructor()
    {
       return this.restletConstructor;
+   }
+
+   /**
+    * Returns the container class.
+    * @return The container class.
+    */
+   public Class getContainerClass()
+   {
+      return this.containerClass;
    }
 
    /**

@@ -22,8 +22,7 @@ import junit.framework.Test;
 import junit.framework.TestSuite;
 
 /**
- * Suite of unit tests for the Restlet RI.
- * Based on JUnit framework.
+ * Suite of unit tests for the Restlet RI. Based on JUnit framework.
  */
 public class RestletTestSuite extends TestSuite
 {
@@ -33,7 +32,10 @@ public class RestletTestSuite extends TestSuite
       addTestSuite(PreferencesTest.class);
    }
 
-   /** JUnit constructor. */
+   /**
+    * JUnit constructor.
+    * @return The unit test.
+    */
    public static Test suite()
    {
       return new RestletTestSuite();
@@ -45,13 +47,13 @@ public class RestletTestSuite extends TestSuite
     */
    public static void main(String[] args)
    {
-      if (args.length > 0)
+      if(args.length > 0)
       {
-         if (args[0].equals("swing"))
+         if(args[0].equals("swing"))
          {
             junit.swingui.TestRunner.run(RestletTestSuite.class);
          }
-         else if (args[0].equals("text"))
+         else if(args[0].equals("text"))
          {
             junit.textui.TestRunner.run(suite());
          }
@@ -59,7 +61,3 @@ public class RestletTestSuite extends TestSuite
    }
 
 }
-
-
-
-

@@ -38,23 +38,13 @@ import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 import org.w3c.dom.NodeList;
 
-
 /**
- * Client connector to a mail server.<br/>
- * Currently only the SMTP protocol is supported.<br/>
- * To send an email, specify a SMTP URI as the ressource reference of the call 
- * and use an XML email as the content of the call.<br/>
- * <br/>
- * Sample XML email:<br/>
- * <br/>
- * {@code <?xml version="1.0" encoding="ISO-8851-1" ?>}<br/>
- * {@code <email>}<br/>
- * &nbsp;&nbsp;{@code   <header>}<br/>
- * &nbsp;&nbsp;&nbsp;&nbsp;{@code      <subject>Account activation</subject>}<br/>
- * &nbsp;&nbsp;&nbsp;&nbsp;{@code      <from>support@restlet.com</from>}<br/>
- * &nbsp;&nbsp;&nbsp;&nbsp;{@code      <to>user@domain.com</to>}<br/>
- * &nbsp;&nbsp;&nbsp;&nbsp;{@code      <cc>log@restlet.com</cc>}<br/>
- * &nbsp;&nbsp;{@code   </header>}<br/>
+ * Client connector to a mail server.<br/> Currently only the SMTP protocol is supported.<br/> To send an
+ * email, specify a SMTP URI as the ressource reference of the call and use an XML email as the content of the
+ * call.<br/> <br/> Sample XML email:<br/> <br/> {@code <?xml version="1.0" encoding="ISO-8851-1" ?>}<br/>
+ * {@code <email>}<br/> &nbsp;&nbsp;{@code   <header>}<br/> &nbsp;&nbsp;&nbsp;&nbsp;{@code      <subject>Account activation</subject>}<br/>
+ * &nbsp;&nbsp;&nbsp;&nbsp;{@code      <from>support@restlet.com</from>}<br/> &nbsp;&nbsp;&nbsp;&nbsp;{@code      <to>user@domain.com</to>}<br/>
+ * &nbsp;&nbsp;&nbsp;&nbsp;{@code      <cc>log@restlet.com</cc>}<br/> &nbsp;&nbsp;{@code   </header>}<br/>
  * &nbsp;&nbsp;{@code   <body><![CDATA[Your account was sucessfully created!]]></body>}<br/>
  * {@code </email>}
  */
@@ -81,15 +71,15 @@ public class JavaMailClient extends AbstractConnector implements Client
          URI smtpURI = new URI(call.getResourceUri().toString());
          String smtpHost = smtpURI.getHost();
          int smtpPort = smtpURI.getPort();
-//         String smtpUserInfo = smtpURI.getUserInfo();
+         // String smtpUserInfo = smtpURI.getUserInfo();
 
-         if (smtpPort == -1)
+         if(smtpPort == -1)
          {
             // Use the default SMTP port
             smtpPort = 25;
          }
 
-         if ((smtpHost == null) || (smtpHost.equals("")))
+         if((smtpHost == null) || (smtpHost.equals("")))
          {
             throw new RestletException("Invalid SMTP host specified");
          }
@@ -105,21 +95,21 @@ public class JavaMailClient extends AbstractConnector implements Client
 
          NodeList toList = header.getElementsByTagName("to");
          String[] to = new String[toList.getLength()];
-         for (int i = 0; i < toList.getLength(); i++)
+         for(int i = 0; i < toList.getLength(); i++)
          {
             to[i] = toList.item(i).getTextContent();
          }
 
          NodeList ccList = header.getElementsByTagName("cc");
          String[] cc = new String[ccList.getLength()];
-         for (int i = 0; i < ccList.getLength(); i++)
+         for(int i = 0; i < ccList.getLength(); i++)
          {
             cc[i] = ccList.item(i).getTextContent();
          }
 
          NodeList bccList = header.getElementsByTagName("bcc");
          String[] bcc = new String[bccList.getLength()];
-         for (int i = 0; i < bccList.getLength(); i++)
+         for(int i = 0; i < bccList.getLength(); i++)
          {
             bcc[i] = bccList.item(i).getTextContent();
          }
@@ -139,7 +129,7 @@ public class JavaMailClient extends AbstractConnector implements Client
          Transport transport = session.getTransport("smtp");
          transport.connect();
 
-         if (transport.isConnected())
+         if(transport.isConnected())
          {
             // Create a new message
             Message msg = new MimeMessage(session);
@@ -147,17 +137,17 @@ public class JavaMailClient extends AbstractConnector implements Client
             // Set the FROM and TO fields
             msg.setFrom(new InternetAddress(from));
 
-            for (int i = 0; i < to.length; i++)
+            for(int i = 0; i < to.length; i++)
             {
                msg.addRecipient(Message.RecipientType.TO, new InternetAddress(to[i]));
             }
 
-            for (int i = 0; i < cc.length; i++)
+            for(int i = 0; i < cc.length; i++)
             {
                msg.addRecipient(Message.RecipientType.CC, new InternetAddress(cc[i]));
             }
 
-            for (int i = 0; i < bcc.length; i++)
+            for(int i = 0; i < bcc.length; i++)
             {
                msg.addRecipient(Message.RecipientType.BCC, new InternetAddress(bcc[i]));
             }
@@ -176,7 +166,7 @@ public class JavaMailClient extends AbstractConnector implements Client
             transport.close();
          }
       }
-      catch (Exception e)
+      catch(Exception e)
       {
          e.printStackTrace();
       }
@@ -184,7 +174,3 @@ public class JavaMailClient extends AbstractConnector implements Client
    }
 
 }
-
-
-
-

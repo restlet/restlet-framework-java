@@ -60,7 +60,3 @@ public interface Cookie extends Parameter
    public void setDomain(String domain);
 
 }
-
-
-
-

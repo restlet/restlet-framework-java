@@ -48,7 +48,7 @@ public enum Languages implements Language
    public String getName()
    {
       String result = null;
-      
+
       switch(this)
       {
          case ALL:
@@ -70,7 +70,7 @@ public enum Languages implements Language
             result = "es";
             break;
       }
-      
+
       return result;
    }
 
@@ -81,7 +81,7 @@ public enum Languages implements Language
    public String getDescription()
    {
       String result = null;
-      
+
       switch(this)
       {
          case ALL:
@@ -103,7 +103,7 @@ public enum Languages implements Language
             result = "Spanish language";
             break;
       }
-      
+
       return result;
    }
 
@@ -115,7 +115,7 @@ public enum Languages implements Language
    {
       int separator = getName().indexOf('-');
 
-      if (separator == -1)
+      if(separator == -1)
       {
          return getName();
       }
@@ -133,7 +133,7 @@ public enum Languages implements Language
    {
       int separator = getName().indexOf('-');
 
-      if (separator == -1)
+      if(separator == -1)
       {
          return null;
       }
@@ -142,11 +142,11 @@ public enum Languages implements Language
          return getName().substring(separator + 1);
       }
    }
-   
+
    /**
     * Indicates if the language is equal to a given one.
-    * @param language   The language to compare to.
-    * @return           True if the language is equal to a given one.
+    * @param language The language to compare to.
+    * @return True if the language is equal to a given one.
     */
    public boolean equals(Language language)
    {
@@ -154,7 +154,3 @@ public enum Languages implements Language
    }
 
 }
-
-
-
-

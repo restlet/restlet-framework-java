@@ -22,26 +22,11 @@ import java.util.List;
 
 /**
  * The data format of a representation.
- * @see <a href="http://en.wikipedia.org/wiki/MIME">MIME types on Wikipedia<a/>
+ * @see <a href="http://en.wikipedia.org/wiki/MIME">MIME types on Wikipedia</a>
  */
 public enum MediaTypes implements MediaType
 {
-   ALL,
-   APPLICATION_ALL,
-   APPLICATION_HTTP_COOKIES,
-   APPLICATION_JAVA_OBJECT,
-   APPLICATION_WWW_FORM,
-   APPLICATION_XHTML_XML,
-   APPLICATION_XML,
-   IMAGE_ALL,
-   IMAGE_GIF,
-   IMAGE_ICON,
-   IMAGE_PNG,
-   TEXT_ALL,
-   TEXT_CSS,
-   TEXT_HTML,
-   TEXT_URI,
-   TEXT_XML;
+   ALL, APPLICATION_ALL, APPLICATION_HTTP_COOKIES, APPLICATION_JAVA_OBJECT, APPLICATION_WWW_FORM, APPLICATION_XHTML_XML, APPLICATION_XML, IMAGE_ALL, IMAGE_GIF, IMAGE_ICON, IMAGE_PNG, TEXT_ALL, TEXT_CSS, TEXT_HTML, TEXT_URI, TEXT_XML;
 
    /**
     * Returns the metadata name like "text/html" or "compress" or "iso-8851-1".
@@ -50,7 +35,7 @@ public enum MediaTypes implements MediaType
    public String getName()
    {
       String result = null;
-      
+
       switch(this)
       {
          case ALL:
@@ -102,7 +87,7 @@ public enum MediaTypes implements MediaType
             result = "text/xml";
             break;
       }
-      
+
       return result;
    }
 
@@ -123,7 +108,7 @@ public enum MediaTypes implements MediaType
    {
       int separator = getName().indexOf(';');
 
-      if (separator == -1)
+      if(separator == -1)
       {
          return getName().substring(getName().indexOf('/') + 1);
       }
@@ -140,7 +125,7 @@ public enum MediaTypes implements MediaType
    public String getDescription()
    {
       String result = null;
-      
+
       switch(this)
       {
          case ALL:
@@ -192,7 +177,7 @@ public enum MediaTypes implements MediaType
             result = "XML text";
             break;
       }
-      
+
       return result;
    }
 
@@ -208,7 +193,7 @@ public enum MediaTypes implements MediaType
    /**
     * Returns the value of a parameter with a given name.
     * @param name The name of the parameter to return.
-    * @return 		The value of the parameter with a given name.
+    * @return The value of the parameter with a given name.
     */
    public String getParameterValue(String name)
    {

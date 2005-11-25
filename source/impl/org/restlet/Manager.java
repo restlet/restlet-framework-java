@@ -28,8 +28,7 @@ import org.restlet.data.Reference;
 import org.restlet.data.Representation;
 
 /**
- * The main manager that also acts as an object factory.
- * Façade around the current Restlet API implementation.
+ * The main manager that also acts as an object factory. Façade around the current Restlet API implementation.
  */
 public class Manager
 {
@@ -37,28 +36,42 @@ public class Manager
    protected static Factory registeredFactory = null;
 
    /**
-    * Returns a new restlet server.
+    * Creates a delegate restlet server.
+    * @param parent The parent restlet server.
     * @param name The server's name.
-    * @return     The new restlet server.
+    * @return The new restlet server.
     */
-   public static RestletServer createRestletServer(String name)
+   public static RestletServer createRestletServer(RestletServer parent, String name)
    {
-      return getRegisteredFactory().createRestletServer(name);
-   }
-   
-   /**
-    * Returns a new restlet container.
-    * @param name The container's name.
-    * @return     The new restlet container.
-    */
-   public static RestletContainer createRestletContainer(String name)
-   {
-      return getRegisteredFactory().createRestletContainer(name);
+      return getRegisteredFactory().createRestletServer(parent, name);
    }
 
    /**
-    * Returns a new restlet call wrapping a given uniform call.
-    * Developers who need to extend the default restlet calls should override it.
+    * Creates a delegate restlet container.
+    * @param parent The parent restlet container.
+    * @param name The container's name.
+    * @return The new restlet container.
+    */
+   public static RestletContainer createRestletContainer(RestletContainer parent, String name)
+   {
+      return getRegisteredFactory().createRestletContainer(parent, name);
+   }
+
+   /**
+    * Creates a delegate maplet.
+    * @param parent The parent maplet.
+    * @param container The restlet container.
+    * @return A new maplet.
+    */
+   public static Maplet createMaplet(Maplet parent, RestletContainer container)
+   {
+      return getRegisteredFactory().createMaplet(parent, container);
+   }
+
+   /**
+    * Returns a new restlet call wrapping a given uniform call. Developers who need to extend the default
+    * restlet calls should override it.
+    * @param call The uniform call to wrap.
     * @return A new restlet call.
     */
    public static RestletCall createRestletCall(UniformCall call)
@@ -68,9 +81,9 @@ public class Manager
 
    /**
     * Returns a new cookie setting.
-    * @param name    The name.
-    * @param value   The value.
-    * @return        A new cookie setting.
+    * @param name The name.
+    * @param value The value.
+    * @return A new cookie setting.
     */
    public static CookieSetting createCookieSetting(String name, String value)
    {
@@ -80,7 +93,8 @@ public class Manager
    /**
     * Creates a new form able to process the given form content.
     * @param content The form content to process.
-    * @return        A new form with the given content.
+    * @return A new form with the given content.
+    * @throws IOException
     */
    public static Form createForm(Representation content) throws IOException
    {
@@ -89,8 +103,8 @@ public class Manager
 
    /**
     * Creates a new reference from a URI reference.
-    * @param uriReference  The URI reference.
-    * @return              The new URI reference.
+    * @param uriReference The URI reference.
+    * @return The new URI reference.
     */
    public static Reference createReference(String uriReference)
    {
@@ -105,7 +119,7 @@ public class Manager
    {
       return getRegisteredFactory().createCall();
    }
-   
+
    /**
     * Register a new restlet implementation.
     * @param factory The restlet factory to register.
@@ -130,5 +144,5 @@ public class Manager
          return registeredFactory;
       }
    }
-   
+
 }

@@ -50,11 +50,7 @@ public interface Parameter extends Data, Comparable<Parameter>
    /**
     * Compares two parameters.
     * @param otherParam The other parameter to compare.
-    * @return 				True if the parameters are identical (name and value).
+    * @return True if the parameters are identical (name and value).
     */
    public boolean equals(Parameter otherParam);
 }
-
-
-
-

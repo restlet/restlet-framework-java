@@ -33,19 +33,19 @@ public class DefaultRepresentationMetadata implements RepresentationMetadata
 
    /** The language or null if not applicable. */
    protected Language language;
-   
+
    /** The expiration date. */
    protected Date expirationDate;
-   
+
    /** The modification date. */
    protected Date modificationDate;
-   
+
    /** The tag. */
    protected Tag tag;
-   
+
    /**
     * Constructor.
-    * @param mediaType 		The media type.
+    * @param mediaType The media type.
     */
    public DefaultRepresentationMetadata(MediaType mediaType)
    {
@@ -130,8 +130,7 @@ public class DefaultRepresentationMetadata implements RepresentationMetadata
    }
 
    /**
-    * Returns the future date when this representation expire.
-    * If this information is not known, returns null.
+    * Returns the future date when this representation expire. If this information is not known, returns null.
     * @return The expiration date.
     */
    public Date getExpirationDate()
@@ -140,8 +139,7 @@ public class DefaultRepresentationMetadata implements RepresentationMetadata
    }
 
    /**
-    * Sets the future date when this representation expire.
-    * If this information is not known, pass null.
+    * Sets the future date when this representation expire. If this information is not known, pass null.
     * @param expirationDate The expiration date.
     */
    public void setExpirationDate(Date expirationDate)
@@ -150,8 +148,8 @@ public class DefaultRepresentationMetadata implements RepresentationMetadata
    }
 
    /**
-    * Returns the last date when this representation was modified.
-    * If this information is not known, returns null.
+    * Returns the last date when this representation was modified. If this information is not known, returns
+    * null.
     * @return The modification date.
     */
    public Date getModificationDate()
@@ -160,8 +158,7 @@ public class DefaultRepresentationMetadata implements RepresentationMetadata
    }
 
    /**
-    * Sets the last date when this representation was modified.
-    * If this information is not known, pass null.
+    * Sets the last date when this representation was modified. If this information is not known, pass null.
     * @param modificationDate The modification date.
     */
    public void setModificationDate(Date modificationDate)
@@ -186,9 +183,5 @@ public class DefaultRepresentationMetadata implements RepresentationMetadata
    {
       this.tag = tag;
    }
-   
+
 }
-
-
-
-

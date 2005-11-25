@@ -36,7 +36,10 @@ public class CookieImpl extends ParameterImpl implements Cookie
    /** The domain name. */
    protected String domain;
 
-   /** Constructor. */
+   /**
+    * Constructor.
+    * @throws RestletException
+    */
    public CookieImpl() throws RestletException
    {
       this(0, null, null, null, null);
@@ -44,7 +47,7 @@ public class CookieImpl extends ParameterImpl implements Cookie
 
    /**
     * Constructor.
-    * @param name  The name.
+    * @param name The name.
     * @param value The value.
     */
    public CookieImpl(String name, String value)
@@ -54,9 +57,9 @@ public class CookieImpl extends ParameterImpl implements Cookie
 
    /**
     * Constructor.
-    * @param version	The version number.
-    * @param name 	The name.
-    * @param value 	The value.
+    * @param version The version number.
+    * @param name The name.
+    * @param value The value.
     */
    public CookieImpl(int version, String name, String value)
    {
@@ -65,11 +68,11 @@ public class CookieImpl extends ParameterImpl implements Cookie
 
    /**
     * Constructor.
-    * @param version	The version number.
-    * @param name 	The name.
-    * @param value 	The value.
-    * @param path		The validity path.
-    * @param domain 	The domain name.
+    * @param version The version number.
+    * @param name The name.
+    * @param value The value.
+    * @param path The validity path.
+    * @param domain The domain name.
     */
    public CookieImpl(int version, String name, String value, String path, String domain)
    {
@@ -135,6 +138,7 @@ public class CookieImpl extends ParameterImpl implements Cookie
 
    /**
     * Compares two parameters.
+    * @param otherCookie The other cookie to compare to.
     * @return True if the parameters are identical (name and value).
     */
    public boolean equals(Cookie otherCookie)
@@ -143,7 +147,7 @@ public class CookieImpl extends ParameterImpl implements Cookie
 
       result &= (getVersion() == otherCookie.getVersion());
 
-      if (getPath() == null)
+      if(getPath() == null)
       {
          result &= (otherCookie.getPath() == null);
       }
@@ -152,7 +156,7 @@ public class CookieImpl extends ParameterImpl implements Cookie
          result &= getPath().equals(otherCookie.getPath());
       }
 
-      if (getDomain() == null)
+      if(getDomain() == null)
       {
          result &= (otherCookie.getDomain() == null);
       }
@@ -174,4 +178,3 @@ public class CookieImpl extends ParameterImpl implements Cookie
    }
 
 }
-

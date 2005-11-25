@@ -35,23 +35,16 @@ public class JettyCookie extends Cookie
    {
       super(cookieSetting.getName(), cookieSetting.getValue());
 
-      if (cookieSetting.getComment() != null)
-         setComment(cookieSetting.getComment());
+      if(cookieSetting.getComment() != null) setComment(cookieSetting.getComment());
 
-      if (cookieSetting.getDomain() != null)
-         setDomain(cookieSetting.getDomain());
+      if(cookieSetting.getDomain() != null) setDomain(cookieSetting.getDomain());
 
       setMaxAge(cookieSetting.getMaxAge());
 
-      if (cookieSetting.getPath() != null)
-         setPath(cookieSetting.getPath());
+      if(cookieSetting.getPath() != null) setPath(cookieSetting.getPath());
 
       setSecure(cookieSetting.isSecure());
       setVersion(cookieSetting.getVersion());
    }
 
 }
-
-
-
-

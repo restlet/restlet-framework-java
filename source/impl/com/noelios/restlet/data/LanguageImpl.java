@@ -27,7 +27,7 @@ public class LanguageImpl extends MetadataImpl implements Language
 {
    /**
     * Constructor.
-    * @param name The language name; 
+    * @param name The language name;
     */
    public LanguageImpl(String name)
    {
@@ -42,7 +42,7 @@ public class LanguageImpl extends MetadataImpl implements Language
    {
       int separator = getName().indexOf('-');
 
-      if (separator == -1)
+      if(separator == -1)
       {
          return getName();
       }
@@ -60,7 +60,7 @@ public class LanguageImpl extends MetadataImpl implements Language
    {
       int separator = getName().indexOf('-');
 
-      if (separator == -1)
+      if(separator == -1)
       {
          return null;
       }
@@ -81,8 +81,8 @@ public class LanguageImpl extends MetadataImpl implements Language
 
    /**
     * Indicates if the language is equal to a given one.
-    * @param language   The language to compare to.
-    * @return           True if the language is equal to a given one.
+    * @param language The language to compare to.
+    * @return True if the language is equal to a given one.
     */
    public boolean equals(Language language)
    {
@@ -90,7 +90,3 @@ public class LanguageImpl extends MetadataImpl implements Language
    }
 
 }
-
-
-
-

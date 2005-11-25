@@ -35,12 +35,12 @@ public interface Status extends ControlData
     * @return The URI of the specification describing the status.
     */
    public String getUri();
-   
+
    /**
     * Indicates if the status is equal to a given one.
-    * @param status  The status to compare to.
-    * @return        True if the status is equal to a given one.
+    * @param status The status to compare to.
+    * @return True if the status is equal to a given one.
     */
    public boolean equals(Status status);
-   
+
 }

@@ -27,10 +27,10 @@ public class TagImpl implements Tag
 {
    /** The opaque tag string. */
    protected String tag;
-   
+
    /** The tag weakness. */
    protected boolean weak;
-   
+
    /**
     * Constructor.
     * @param tag
@@ -71,7 +71,7 @@ public class TagImpl implements Tag
    {
       return weak;
    }
-   
+
    /**
     * Sets the tag weakness.
     * @param weak True if the tag is weak, false if the tag is strong.
@@ -80,7 +80,7 @@ public class TagImpl implements Tag
    {
       this.weak = weak;
    }
-   
+
    /**
     * Returns the opaque tag string.
     * @return The opaque tag string.

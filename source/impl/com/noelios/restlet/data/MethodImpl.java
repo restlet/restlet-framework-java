@@ -20,21 +20,21 @@ package com.noelios.restlet.data;
 
 import org.restlet.data.Method;
 
-/** 
- * Default method implementation. 
+/**
+ * Default method implementation.
  * @see org.restlet.data.Methods
  */
 public class MethodImpl implements Method
 {
    /** The technical name of the method. */
    private String name;
-   
+
    /** The description of this REST element. */
    private String description;
-   
+
    /** The URI of the specification describing the method. */
    private String uri;
-   
+
    /**
     * Constructor.
     * @param name The technical name of the method.
@@ -43,12 +43,12 @@ public class MethodImpl implements Method
    {
       this(name, null, null);
    }
-   
+
    /**
     * Constructor.
-    * @param name          The technical name of the method.
-    * @param description   The description of this REST element.
-    * @param uri           The URI of the specification describing the method.
+    * @param name The technical name of the method.
+    * @param description The description of this REST element.
+    * @param uri The URI of the specification describing the method.
     */
    public MethodImpl(String name, String description, String uri)
    {
@@ -56,7 +56,7 @@ public class MethodImpl implements Method
       this.description = description;
       this.uri = uri;
    }
-   
+
    /**
     * Returns the technical name of the method.
     * @return The technical name of the method.
@@ -86,8 +86,8 @@ public class MethodImpl implements Method
 
    /**
     * Indicates if the method is equal to a given one.
-    * @param method  The method to compare to.
-    * @return        True if the method is equal to a given one.
+    * @param method The method to compare to.
+    * @return True if the method is equal to a given one.
     */
    public boolean equals(Method method)
    {

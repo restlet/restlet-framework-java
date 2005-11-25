@@ -40,9 +40,9 @@ public class FileRestlet extends AbstractRestlet
 
    /**
     * Constructor.
-    * @param container 	The parent container.
-    * @param filePath	The file's path.
-    * @param mediaType  The file's media type.
+    * @param container The parent container.
+    * @param filePath The file's path.
+    * @param mediaType The file's media type.
     */
    public FileRestlet(RestletContainer container, String filePath, MediaType mediaType)
    {
@@ -84,7 +84,7 @@ public class FileRestlet extends AbstractRestlet
     */
    public void handle(RestletCall call) throws RestletException
    {
-      if (call.getPath(0, false).equals(""))
+      if(call.getPath(0, false).equals(""))
       {
          call.setOutput(new FileRepresentation(getPath(), getMediaType()));
       }

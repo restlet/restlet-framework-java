@@ -30,15 +30,17 @@ public class CookieSettingImpl extends CookieImpl implements CookieSetting
    protected String comment;
 
    /**
-    * The maximum age in seconds.
-    * Use 0 to discard an existing cookie.
+    * The maximum age in seconds. Use 0 to discard an existing cookie.
     */
    protected int maxAge;
 
    /** Indicates if cookie should only be transmitted by secure means. */
    protected boolean secure;
 
-   /** Default constructor. */
+   /**
+    * Default constructor.
+    * @throws RestletException
+    */
    public CookieSettingImpl() throws RestletException
    {
       this(0, null, null, null, null);
@@ -46,8 +48,8 @@ public class CookieSettingImpl extends CookieImpl implements CookieSetting
 
    /**
     * Preferred constructor.
-    * @param name 	The cookie's name.
-    * @param value 	The cookie's value.
+    * @param name The cookie's name.
+    * @param value The cookie's value.
     */
    public CookieSettingImpl(String name, String value)
    {
@@ -56,9 +58,9 @@ public class CookieSettingImpl extends CookieImpl implements CookieSetting
 
    /**
     * Preferred constructor.
-    * @param version	The cookie's version.
-    * @param name 	The cookie's name.
-    * @param value 	The cookie's value.
+    * @param version The cookie's version.
+    * @param name The cookie's name.
+    * @param value The cookie's value.
     */
    public CookieSettingImpl(int version, String name, String value)
    {
@@ -67,11 +69,11 @@ public class CookieSettingImpl extends CookieImpl implements CookieSetting
 
    /**
     * Preferred constructor.
-    * @param version	The cookie's version.
-    * @param name 	The cookie's name.
-    * @param value 	The cookie's value.
-    * @param path		The cookie's path.
-    * @param domain 	The cookie's domain name.
+    * @param version The cookie's version.
+    * @param name The cookie's name.
+    * @param value The cookie's value.
+    * @param path The cookie's path.
+    * @param domain The cookie's domain name.
     */
    public CookieSettingImpl(int version, String name, String value, String path, String domain)
    {
@@ -100,8 +102,7 @@ public class CookieSettingImpl extends CookieImpl implements CookieSetting
    }
 
    /**
-    * Returns the maximum age in seconds.
-    * Use 0 to discard an existing cookie.
+    * Returns the maximum age in seconds. Use 0 to discard an existing cookie.
     * @return The maximum age in seconds.
     */
    public int getMaxAge()
@@ -110,8 +111,7 @@ public class CookieSettingImpl extends CookieImpl implements CookieSetting
    }
 
    /**
-    * Sets the maximum age in seconds.
-    * Use 0 to discard an existing cookie.
+    * Sets the maximum age in seconds. Use 0 to discard an existing cookie.
     * @param maxAge The maximum age in seconds.
     */
    public void setMaxAge(int maxAge)
@@ -147,7 +147,3 @@ public class CookieSettingImpl extends CookieImpl implements CookieSetting
    }
 
 }
-
-
-
-

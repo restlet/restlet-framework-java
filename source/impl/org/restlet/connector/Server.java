@@ -19,16 +19,13 @@
 package org.restlet.connector;
 
 /**
- * Connector that listens for connections and responds to requests.<br/><br/>
- * "The primary connector types are client and server. The essential difference between the two is that a client initiates
- * communication by making a request, whereas a server listens for connections and responds to requests in order to supply
+ * Connector that listens for connections and responds to requests.<br/><br/> "The primary connector types
+ * are client and server. The essential difference between the two is that a client initiates communication by
+ * making a request, whereas a server listens for connections and responds to requests in order to supply
  * access to its services. A component may include both client and server connectors." Roy T. Fielding
- * @see <a href="http://www.ics.uci.edu/~fielding/pubs/dissertation/rest_arch_style.htm#sec_5_2_2">Source dissertation</a>
+ * @see <a href="http://www.ics.uci.edu/~fielding/pubs/dissertation/rest_arch_style.htm#sec_5_2_2">Source
+ * dissertation</a>
  */
 public interface Server extends Connector
 {
 }
-
-
-
-

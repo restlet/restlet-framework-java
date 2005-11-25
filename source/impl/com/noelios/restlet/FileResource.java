@@ -33,9 +33,9 @@ import org.restlet.data.RepresentationMetadata;
 import com.noelios.restlet.data.FileRepresentation;
 
 /**
- * Resource representing a file stored on the local file system.
- * A content negotiation mechanism (similar to Apache HTTP server) is available.
- * It is based on file extensions to specify variants (languages, media types or character sets).
+ * Resource representing a file stored on the local file system. A content negotiation mechanism (similar to
+ * Apache HTTP server) is available. It is based on file extensions to specify variants (languages, media
+ * types or character sets).
  * @see <a href="http://httpd.apache.org/docs/2.0/content-negotiation.html">Apache mod_negotiation module</a>
  */
 public class FileResource implements Resource
@@ -44,23 +44,21 @@ public class FileResource implements Resource
     * The parent directory restlet.
     */
    private DirectoryRestlet directoryRestlet;
-   
-   /** 
-    * The absolute base path of the file.
-    * For example, "foo.en" will match "foo.en.html" and "foo.en-GB.html".
+
+   /**
+    * The absolute base path of the file. For example, "foo.en" will match "foo.en.html" and "foo.en-GB.html".
     */
    private String basePath;
-   
-   /** 
-    * The local base name of the file. 
-    * For example, "foo.en" and "foo.en-GB.html" return "foo".
+
+   /**
+    * The local base name of the file. For example, "foo.en" and "foo.en-GB.html" return "foo".
     */
    private String baseName;
-   
+
    /**
     * Constructor.
     * @param directoryRestlet The parent directory restlet.
-    * @param basePath         The base path of the file.
+    * @param basePath The base path of the file.
     */
    public FileResource(DirectoryRestlet directoryRestlet, String basePath)
    {
@@ -71,14 +69,14 @@ public class FileResource implements Resource
       StringBuilder filePath = new StringBuilder(directoryRestlet.getRootPath());
       int lastIndex = -1;
       char nextChar;
-      for (int i = 0; i < basePath.length(); i++)
+      for(int i = 0; i < basePath.length(); i++)
       {
          nextChar = basePath.charAt(i);
-         if (nextChar == '/')
+         if(nextChar == '/')
          {
             // Remember the position of the last slash
             lastIndex = i;
-            
+
             // Convert the URI separator to the system dependent path separator
             filePath.append(File.separatorChar);
          }
@@ -87,7 +85,7 @@ public class FileResource implements Resource
             filePath.append(nextChar);
          }
       }
-      
+
       // Try to detect the presence of the file
       this.basePath = filePath.toString().toLowerCase();
       if(new File(this.basePath).isDirectory())
@@ -97,7 +95,7 @@ public class FileResource implements Resource
          if(indexName != null)
          {
             this.basePath = this.basePath + indexName;
-            this.baseName = indexName;   
+            this.baseName = indexName;
          }
       }
       else
@@ -111,12 +109,12 @@ public class FileResource implements Resource
             this.baseName = basePath.substring(lastIndex + 1);
          }
       }
-      
+
       // Remove the extensions from the base name
       int dotIndex = this.baseName.indexOf('.');
       if(dotIndex != -1) this.baseName = this.baseName.substring(0, dotIndex);
    }
-   
+
    /**
     * Returns the representation variants.
     * @return The representation variants.
@@ -135,7 +133,7 @@ public class FileResource implements Resource
          MediaType mediaType = null;
          CharacterSet characterSet = null;
          Language language = null;
-         
+
          for(int i = 0; i < files.length; i++)
          {
             currentFile = files[i];
@@ -144,7 +142,7 @@ public class FileResource implements Resource
             if(currentFile.getAbsolutePath().toLowerCase().startsWith(getBasePath()))
             {
                String[] tokens = currentFile.getName().split("\\.");
-               if(tokens[0].equalsIgnoreCase(getBaseName())) 
+               if(tokens[0].equalsIgnoreCase(getBaseName()))
                {
                   // We found a potential variant
                   for(int j = 1; j < tokens.length; j++)
@@ -153,19 +151,21 @@ public class FileResource implements Resource
                      if(metadata instanceof MediaType) mediaType = (MediaType)metadata;
                      if(metadata instanceof CharacterSet) characterSet = (CharacterSet)metadata;
                      if(metadata instanceof Language) language = (Language)metadata;
-                     
+
                      int dashIndex = tokens[j].indexOf('-');
                      if((metadata == null) && (dashIndex != -1))
                      {
-                        // We found a language extension with a region area specified
-                        // Try to find a language matching the primary part of the extension
+                        // We found a language extension with a region area
+                        // specified
+                        // Try to find a language matching the primary part of
+                        // the extension
                         String primaryPart = tokens[j].substring(0, dashIndex);
                         metadata = getDirectoryRestlet().getMetadata(primaryPart);
                         if(metadata instanceof Language) language = (Language)metadata;
                      }
                   }
 
-                  if(mediaType != null) 
+                  if(mediaType != null)
                   {
                      if(result == null) result = new ArrayList<RepresentationMetadata>();
                      FileRepresentation fr = new FileRepresentation(currentFile.getAbsolutePath(), mediaType);
@@ -181,21 +181,19 @@ public class FileResource implements Resource
             }
          }
       }
-     
-      return result;      
+
+      return result;
    }
 
    /**
     * Returns the representation matching the given metadata.
-    * @param metadata   The metadata to match.
-    * @return           The matching representation.
+    * @param metadata The metadata to match.
+    * @return The matching representation.
     */
    public Representation getRepresentation(RepresentationMetadata metadata)
    {
-      if(metadata instanceof Representation)
-         return (Representation)metadata;
-      else
-         return null;
+      if(metadata instanceof Representation) return (Representation)metadata;
+      else return null;
    }
 
    /**
@@ -216,29 +214,28 @@ public class FileResource implements Resource
       this.directoryRestlet = directoryRestlet;
    }
 
-   /** 
-    * Returns the absolute path of the file.
-    * For example, "foo.en" will match "foo.en.html" and "foo.en-GB.html".
-    * @return The base path of the file. 
+   /**
+    * Returns the absolute path of the file. For example, "foo.en" will match "foo.en.html" and
+    * "foo.en-GB.html".
+    * @return The base path of the file.
     */
    public String getBasePath()
    {
       return basePath;
    }
 
-   /** 
-    * Sets the absolute path of the file. 
-    * param absolutePath The absolute path of the file. 
+   /**
+    * Sets the absolute path of the file.
+    * @param absolutePath The absolute path of the file.
     */
    public void setBasePath(String absolutePath)
    {
       this.basePath = absolutePath;
    }
 
-   /** 
-    * Returns the local base name of the file. 
-    * For example, "foo.en" and "foo.en-GB.html" return "foo".
-    * @return The local name of the file. 
+   /**
+    * Returns the local base name of the file. For example, "foo.en" and "foo.en-GB.html" return "foo".
+    * @return The local name of the file.
     */
    public String getBaseName()
    {

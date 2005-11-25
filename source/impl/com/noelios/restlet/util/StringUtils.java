@@ -25,22 +25,22 @@ public class StringUtils
 {
    /**
     * Strip a delimiter character from both ends of the source string.
-    * @param source     The source string to strip.
-    * @param delimiter  The character to remove.
-    * @return           The stripped string.
+    * @param source The source string to strip.
+    * @param delimiter The character to remove.
+    * @return The stripped string.
     */
    public static String strip(String source, char delimiter)
    {
-      return strip(source, delimiter, true, true);      
+      return strip(source, delimiter, true, true);
    }
-   
+
    /**
-    * Strip a delimiter character from a source string. 
-    * @param source     The source string to strip.
-    * @param delimiter  The character to remove.
-    * @param start      Indicates if start of source should be stripped.
-    * @param end        Indicates if end of source should be stripped.
-    * @return           The stripped source string.
+    * Strip a delimiter character from a source string.
+    * @param source The source string to strip.
+    * @param delimiter The character to remove.
+    * @param start Indicates if start of source should be stripped.
+    * @param end Indicates if end of source should be stripped.
+    * @return The stripped source string.
     */
    public static String strip(String source, char delimiter, boolean start, boolean end)
    {
@@ -51,7 +51,7 @@ public class StringUtils
       // Strip beginning
       while(stripping && (beginIndex < endIndex))
       {
-         if(source.charAt(beginIndex) == delimiter) 
+         if(source.charAt(beginIndex) == delimiter)
          {
             beginIndex++;
          }
@@ -65,7 +65,7 @@ public class StringUtils
       stripping = true;
       while(stripping && (beginIndex < endIndex - 1))
       {
-         if(source.charAt(endIndex - 1) == delimiter) 
+         if(source.charAt(endIndex - 1) == delimiter)
          {
             endIndex--;
          }
@@ -74,7 +74,7 @@ public class StringUtils
             stripping = false;
          }
       }
-      
+
       return source.substring(beginIndex, endIndex);
    }
 

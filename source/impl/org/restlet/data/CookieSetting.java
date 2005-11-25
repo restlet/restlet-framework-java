@@ -36,15 +36,13 @@ public interface CookieSetting extends Cookie
    public void setComment(String comment);
 
    /**
-    * Returns the maximum age in seconds.
-    * Use 0 to discard an existing cookie.
+    * Returns the maximum age in seconds. Use 0 to discard an existing cookie.
     * @return The maximum age in seconds.
     */
    public int getMaxAge();
 
    /**
-    * Sets the maximum age in seconds.
-    * Use 0 to discard an existing cookie.
+    * Sets the maximum age in seconds. Use 0 to discard an existing cookie.
     * @param maxAge The maximum age in seconds.
     */
    public void setMaxAge(int maxAge);
@@ -62,7 +60,3 @@ public interface CookieSetting extends Cookie
    public void setSecure(boolean secure);
 
 }
-
-
-
-

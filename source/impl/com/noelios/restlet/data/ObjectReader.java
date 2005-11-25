@@ -26,14 +26,14 @@ import java.io.ObjectInputStream;
 import org.restlet.RestletException;
 
 /**
- * Object instance reader.
- * Based on Java object serialization.
+ * Object instance reader. Based on Java object serialization.
  */
 public class ObjectReader extends BufferedInputStream
 {
    /**
     * Constructor.
     * @param objectStream The object stream to deserialize.
+    * @throws RestletException
     */
    public ObjectReader(InputStream objectStream) throws RestletException
    {
@@ -43,6 +43,7 @@ public class ObjectReader extends BufferedInputStream
    /**
     * Returns the representation as a Java object.
     * @return The representation as a Java object.
+    * @throws RestletException
     */
    public Object readObject() throws RestletException
    {
@@ -54,11 +55,11 @@ public class ObjectReader extends BufferedInputStream
          result = ois.readObject();
          ois.close();
       }
-      catch (IOException ioe)
+      catch(IOException ioe)
       {
          throw new RestletException("Unable to recreate Java object", ioe);
       }
-      catch (ClassNotFoundException cnfe)
+      catch(ClassNotFoundException cnfe)
       {
          throw new RestletException("Unable to recreate Java object", cnfe);
       }
@@ -67,7 +68,3 @@ public class ObjectReader extends BufferedInputStream
    }
 
 }
-
-
-
-

@@ -43,8 +43,8 @@ public class MediaTypeImpl extends MetadataImpl implements MediaType
 
    /**
     * Constructor.
-    * @param name 		The media type name.
-    * @param parameters	The list of parameters.
+    * @param name The media type name.
+    * @param parameters The list of parameters.
     */
    public MediaTypeImpl(String name, List<Parameter> parameters)
    {
@@ -69,7 +69,7 @@ public class MediaTypeImpl extends MetadataImpl implements MediaType
    {
       int separator = getName().indexOf(';');
 
-      if (separator == -1)
+      if(separator == -1)
       {
          return getName().substring(getName().indexOf('/') + 1);
       }
@@ -91,19 +91,19 @@ public class MediaTypeImpl extends MetadataImpl implements MediaType
    /**
     * Returns the value of a parameter with a given name.
     * @param name The name of the parameter to return.
-    * @return 		The value of the parameter with a given name.
+    * @return The value of the parameter with a given name.
     */
    public String getParameterValue(String name)
    {
       String result = null;
 
-      if (getParameters() != null)
+      if(getParameters() != null)
       {
          Parameter current;
-         for (Iterator iter = getParameters().iterator(); iter.hasNext(); )
+         for(Iterator iter = getParameters().iterator(); iter.hasNext();)
          {
             current = (Parameter)iter.next();
-            if (current.getName().equals(name))
+            if(current.getName().equals(name))
             {
                result = current.getValue();
             }
@@ -123,6 +123,3 @@ public class MediaTypeImpl extends MetadataImpl implements MediaType
    }
 
 }
-
-
-

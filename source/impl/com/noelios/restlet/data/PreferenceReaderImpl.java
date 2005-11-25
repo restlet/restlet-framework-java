@@ -36,16 +36,18 @@ import org.restlet.data.Preference;
 public class PreferenceReaderImpl extends HeaderReaderImpl
 {
    public static final int TYPE_CHARACTER_SET = 1;
-   public static final int TYPE_LANGUAGE      = 2;
-   public static final int TYPE_MEDIA_TYPE    = 3;
+
+   public static final int TYPE_LANGUAGE = 2;
+
+   public static final int TYPE_MEDIA_TYPE = 3;
 
    /** The type of metadata read. */
    protected int type;
 
    /**
     * Constructor.
-    * @param type 			The type of metadata read.
-    * @param headerValue	The header value to read.
+    * @param type The type of metadata read.
+    * @param headerValue The header value to read.
     */
    public PreferenceReaderImpl(int type, String headerValue)
    {
@@ -54,8 +56,8 @@ public class PreferenceReaderImpl extends HeaderReaderImpl
 
    /**
     * Constructor.
-    * @param type 					The type of metadata read.
-    * @param headerInputStream	The header stream to read.
+    * @param type The type of metadata read.
+    * @param headerInputStream The header stream to read.
     */
    public PreferenceReaderImpl(int type, InputStream headerInputStream)
    {
@@ -75,13 +77,13 @@ public class PreferenceReaderImpl extends HeaderReaderImpl
       {
          Preference currentPref = readPreference();
 
-         while (currentPref != null)
+         while(currentPref != null)
          {
             result.add(currentPref);
             currentPref = readPreference();
          }
       }
-      catch (RestletException re)
+      catch(RestletException re)
       {
          re.printStackTrace();
       }
@@ -92,6 +94,7 @@ public class PreferenceReaderImpl extends HeaderReaderImpl
    /**
     * Read the next preference.
     * @return The next preference.
+    * @throws RestletException
     */
    public Preference readPreference() throws RestletException
    {
@@ -110,33 +113,34 @@ public class PreferenceReaderImpl extends HeaderReaderImpl
 
       try
       {
-         while ((result == null) && (nextChar != -1))
+         while((result == null) && (nextChar != -1))
          {
             nextChar = read();
 
-            if (readingMetadata)
+            if(readingMetadata)
             {
-               if ((nextChar == ',') || (nextChar == -1))
+               if((nextChar == ',') || (nextChar == -1))
                {
-                  if (metadataBuffer.length() > 0)
+                  if(metadataBuffer.length() > 0)
                   {
                      // End of metadata section
                      // No parameters detected
                      result = createPreference(metadataBuffer, null);
                      paramNameBuffer = new StringBuilder();
                   }
-                  else if (nextChar == -1)
+                  else if(nextChar == -1)
                   {
                      // Do nothing return null preference
                   }
                   else
                   {
-                     throw new RestletException("Empty metadata name detected", "Please check your metadata names");
+                     throw new RestletException("Empty metadata name detected",
+                           "Please check your metadata names");
                   }
                }
-               else if (nextChar == ';')
+               else if(nextChar == ';')
                {
-                  if (metadataBuffer.length() > 0)
+                  if(metadataBuffer.length() > 0)
                   {
                      // End of metadata section
                      // Parameters detected
@@ -147,28 +151,29 @@ public class PreferenceReaderImpl extends HeaderReaderImpl
                   }
                   else
                   {
-                     throw new RestletException("Empty metadata name detected", "Please check your metadata names");
+                     throw new RestletException("Empty metadata name detected",
+                           "Please check your metadata names");
                   }
                }
-               else if (nextChar == ' ')
+               else if(nextChar == ' ')
                {
                   // Ignore white spaces
                }
-               else if (isText(nextChar))
+               else if(isText(nextChar))
                {
                   metadataBuffer.append((char)nextChar);
                }
                else
                {
                   throw new RestletException("Control characters are not allowed within a metadata name",
-                      "Please check your metadata names");
+                        "Please check your metadata names");
                }
             }
-            else if (readingParamName)
+            else if(readingParamName)
             {
-               if (nextChar == '=')
+               if(nextChar == '=')
                {
-                  if (paramNameBuffer.length() > 0)
+                  if(paramNameBuffer.length() > 0)
                   {
                      // End of parameter name section
                      readingParamName = false;
@@ -177,12 +182,13 @@ public class PreferenceReaderImpl extends HeaderReaderImpl
                   }
                   else
                   {
-                     throw new RestletException("Empty parameter name detected", "Please check your parameter names");
+                     throw new RestletException("Empty parameter name detected",
+                           "Please check your parameter names");
                   }
                }
-               else if ((nextChar == ',') || (nextChar == -1))
+               else if((nextChar == ',') || (nextChar == -1))
                {
-                  if (paramNameBuffer.length() > 0)
+                  if(paramNameBuffer.length() > 0)
                   {
                      // End of parameters section
                      parameters.add(createParameter(paramNameBuffer, null));
@@ -190,10 +196,11 @@ public class PreferenceReaderImpl extends HeaderReaderImpl
                   }
                   else
                   {
-                     throw new RestletException("Empty parameter name detected", "Please check your parameter names");
+                     throw new RestletException("Empty parameter name detected",
+                           "Please check your parameter names");
                   }
                }
-               else if (nextChar == ';')
+               else if(nextChar == ';')
                {
                   // End of parameter
                   parameters.add(createParameter(paramNameBuffer, null));
@@ -201,21 +208,22 @@ public class PreferenceReaderImpl extends HeaderReaderImpl
                   readingParamName = true;
                   readingParamValue = false;
                }
-               else if (isTokenChar(nextChar))
+               else if(isTokenChar(nextChar))
                {
                   paramNameBuffer.append((char)nextChar);
                }
                else
                {
-                  throw new RestletException("Separator and control characters are not allowed within a token",
-                      "Please check your parameter names");
+                  throw new RestletException(
+                        "Separator and control characters are not allowed within a token",
+                        "Please check your parameter names");
                }
             }
-            else if (readingParamValue)
+            else if(readingParamValue)
             {
-               if ((nextChar == ',') || (nextChar == -1))
+               if((nextChar == ',') || (nextChar == -1))
                {
-                  if (paramValueBuffer.length() > 0)
+                  if(paramValueBuffer.length() > 0)
                   {
                      // End of parameters section
                      parameters.add(createParameter(paramNameBuffer, paramValueBuffer));
@@ -223,10 +231,11 @@ public class PreferenceReaderImpl extends HeaderReaderImpl
                   }
                   else
                   {
-                     throw new RestletException("Empty parameter value detected", "Please check your parameter values");
+                     throw new RestletException("Empty parameter value detected",
+                           "Please check your parameter values");
                   }
                }
-               else if (nextChar == ';')
+               else if(nextChar == ';')
                {
                   // End of parameter
                   parameters.add(createParameter(paramNameBuffer, paramValueBuffer));
@@ -234,23 +243,24 @@ public class PreferenceReaderImpl extends HeaderReaderImpl
                   readingParamName = true;
                   readingParamValue = false;
                }
-               else if ((nextChar == '"') && (paramValueBuffer.length() == 0))
+               else if((nextChar == '"') && (paramValueBuffer.length() == 0))
                {
                   paramValueBuffer.append(readQuotedString());
                }
-               else if (isTokenChar(nextChar))
+               else if(isTokenChar(nextChar))
                {
                   paramValueBuffer.append((char)nextChar);
                }
                else
                {
-                  throw new RestletException("Separator and control characters are not allowed within a token",
-                      "Please check your parameter values");
+                  throw new RestletException(
+                        "Separator and control characters are not allowed within a token",
+                        "Please check your parameter values");
                }
             }
          }
       }
-      catch (IOException ioe)
+      catch(IOException ioe)
       {
          throw new RestletException("Unexpected I/O exception", "Please contact the administrator");
       }
@@ -259,11 +269,9 @@ public class PreferenceReaderImpl extends HeaderReaderImpl
    }
 
    /**
-    * Extract the media parameters.
-    * Only leaveas the quality parameter if found.
-    * Modifies the parameters list.
-    * @param 	All the preference parameters.
-    * @return 	The media parameters.
+    * Extract the media parameters. Only leaveas the quality parameter if found. Modifies the parameters list.
+    * @param parameters All the preference parameters.
+    * @return The media parameters.
     */
    private List<Parameter> extractMediaParams(List<Parameter> parameters)
    {
@@ -271,15 +279,15 @@ public class PreferenceReaderImpl extends HeaderReaderImpl
       boolean qualityFound = false;
       Parameter param = null;
 
-      if (parameters != null)
+      if(parameters != null)
       {
          result = new ArrayList<Parameter>();
 
-         for (Iterator iter = parameters.iterator(); !qualityFound && iter.hasNext(); )
+         for(Iterator iter = parameters.iterator(); !qualityFound && iter.hasNext();)
          {
             param = (Parameter)iter.next();
 
-            if (param.getName().equals("q"))
+            if(param.getName().equals("q"))
             {
                qualityFound = true;
             }
@@ -295,22 +303,21 @@ public class PreferenceReaderImpl extends HeaderReaderImpl
    }
 
    /**
-    * Extract the quality value.
-    * If the value is not found, 1 is returned.
-    * @param 	The preference parameters.
-    * @return 	The quality value.
+    * Extract the quality value. If the value is not found, 1 is returned.
+    * @param parameters The preference parameters.
+    * @return The quality value.
     */
    private float extractQuality(List parameters)
    {
       Float result = null;
 
-      if (parameters != null)
+      if(parameters != null)
       {
          Parameter param = null;
-         for (Iterator iter = parameters.iterator(); (result == null) && iter.hasNext(); )
+         for(Iterator iter = parameters.iterator(); (result == null) && iter.hasNext();)
          {
             param = (Parameter)iter.next();
-            if (param.getName().equals("q"))
+            if(param.getName().equals("q"))
             {
                result = Float.valueOf(param.getValue());
 
@@ -321,12 +328,12 @@ public class PreferenceReaderImpl extends HeaderReaderImpl
          }
       }
 
-      if (result == null)
+      if(result == null)
       {
          result = new Float(1F);
       }
 
-      if ((result.floatValue() < 0F) || (result.floatValue() > 1F))
+      if((result.floatValue() < 0F) || (result.floatValue() > 1F))
       {
          throw new IllegalArgumentException("Quality value must be between 0 and 1");
       }
@@ -336,15 +343,15 @@ public class PreferenceReaderImpl extends HeaderReaderImpl
 
    /**
     * Creates a new preference.
-    * @param metadata 	The metadata name.
-    * @param parameters	The parameters list.
-    * @return 				The new preference.
+    * @param metadata The metadata name.
+    * @param parameters The parameters list.
+    * @return The new preference.
     */
    private Preference createPreference(CharSequence metadata, List<Parameter> parameters)
    {
       Preference result = null;
 
-      if (parameters == null)
+      if(parameters == null)
       {
          result = new PreferenceImpl(createMetadata(metadata, null));
       }
@@ -360,15 +367,15 @@ public class PreferenceReaderImpl extends HeaderReaderImpl
 
    /**
     * Creates a new metadata.
-    * @param metadata 	The metadata name.
-    * @param parameters	The parameters list.
-    * @return 				The new metadata.
+    * @param metadata The metadata name.
+    * @param parameters The parameters list.
+    * @return The new metadata.
     */
    private Metadata createMetadata(CharSequence metadata, List<Parameter> parameters)
    {
       Metadata result = null;
 
-      switch (type)
+      switch(type)
       {
          case TYPE_CHARACTER_SET:
             result = new CharacterSetImpl(metadata.toString());
@@ -387,4 +394,3 @@ public class PreferenceReaderImpl extends HeaderReaderImpl
    }
 
 }
-

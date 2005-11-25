@@ -21,21 +21,21 @@ package com.noelios.restlet.data;
 import org.restlet.data.Status;
 import org.restlet.data.Statuses;
 
-/** 
- * Default status implementation. 
+/**
+ * Default status implementation.
  * @see org.restlet.data.Statuses
  */
 public class StatusImpl implements Status
 {
    /** The specification code. */
    private int code;
-   
+
    /** The description of this REST element. */
    private String description;
-   
+
    /** The URI of the specification describing the method. */
    private String uri;
-   
+
    /**
     * Constructor.
     * @param code The specification code.
@@ -44,12 +44,12 @@ public class StatusImpl implements Status
    {
       this(code, null, null);
    }
-   
+
    /**
     * Constructor.
-    * @param code          The specification code.
-    * @param description   The description of this REST element.
-    * @param uri           The URI of the specification describing the method.
+    * @param code The specification code.
+    * @param description The description of this REST element.
+    * @param uri The URI of the specification describing the method.
     */
    public StatusImpl(int code, String description, String uri)
    {
@@ -57,7 +57,7 @@ public class StatusImpl implements Status
       this.description = description;
       this.uri = uri;
    }
-   
+
    /**
     * Returns the HTTP code.
     * @return The HTTP code.
@@ -87,8 +87,8 @@ public class StatusImpl implements Status
 
    /**
     * Indicates if the method is equal to a given one.
-    * @param status  The status to compare to.
-    * @return        True if the status is equal to a given one.
+    * @param status The status to compare to.
+    * @return True if the status is equal to a given one.
     */
    public boolean equals(Status status)
    {

@@ -21,10 +21,8 @@ package org.restlet;
 import org.restlet.component.RestletContainer;
 
 /**
- * Handler of calls to resources or sets of resources.
- * Restlets live inside a parent container and are selected by 
- * parsing the resource's URI. Restlets are attached to other
- * restlets using maplets.
+ * Handler of calls to resources or sets of resources. Restlets live inside a parent container and are
+ * selected by parsing the resource's URI. Restlets are attached to other restlets using maplets.
  * @see org.restlet.UniformInterface
  * @see org.restlet.Maplet
  */

@@ -53,16 +53,12 @@ public interface Language extends Metadata
     * @return The sub tag.
     */
    public String getSubTag();
-   
+
    /**
     * Indicates if the language is equal to a given one.
-    * @param language   The language to compare to.
-    * @return           True if the language is equal to a given one.
+    * @param language The language to compare to.
+    * @return True if the language is equal to a given one.
     */
    public boolean equals(Language language);
 
 }
-
-
-
-

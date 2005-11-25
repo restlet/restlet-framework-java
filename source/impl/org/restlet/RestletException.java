@@ -48,7 +48,7 @@ public class RestletException extends Exception
 
    /**
     * Constructor.
-    * @param cause	The nested error or exception that caused this new one.
+    * @param cause The nested error or exception that caused this new one.
     */
    public RestletException(Throwable cause)
    {
@@ -58,7 +58,7 @@ public class RestletException extends Exception
    /**
     * Constructor.
     * @param message The error message.
-    * @param cause	The nested error or exception that caused this new one.
+    * @param cause The nested error or exception that caused this new one.
     */
    public RestletException(String message, Throwable cause)
    {
@@ -67,8 +67,8 @@ public class RestletException extends Exception
 
    /**
     * Constructor.
-    * @param message 	The error message.
-    * @param suggestion	A suggestion on what to do with this exception.
+    * @param message The error message.
+    * @param suggestion A suggestion on what to do with this exception.
     */
    public RestletException(String message, String suggestion)
    {
@@ -77,9 +77,9 @@ public class RestletException extends Exception
 
    /**
     * Constructor.
-    * @param message 	The error message.
-    * @param cause		The nested error or exception that caused this new one.
-    * @param suggestion	A suggestion on what to do with this exception.
+    * @param message The error message.
+    * @param cause The nested error or exception that caused this new one.
+    * @param suggestion A suggestion on what to do with this exception.
     */
    public RestletException(String message, Throwable cause, String suggestion)
    {
@@ -88,9 +88,9 @@ public class RestletException extends Exception
 
    /**
     * Constructor.
-    * @param message 	The error message.
-    * @param source		The object at the source of the exception.
-    * @param suggestion	A suggestion on what to do with this exception.
+    * @param message The error message.
+    * @param source The object at the source of the exception.
+    * @param suggestion A suggestion on what to do with this exception.
     */
    public RestletException(String message, Object source, String suggestion)
    {
@@ -101,10 +101,10 @@ public class RestletException extends Exception
 
    /**
     * Constructor.
-    * @param message 	The error message.
-    * @param cause		The nested error or exception that caused this new one.
-    * @param source		The object at the source of the exception.
-    * @param suggestion	A suggestion on what to do with this exception.
+    * @param message The error message.
+    * @param cause The nested error or exception that caused this new one.
+    * @param source The object at the source of the exception.
+    * @param suggestion A suggestion on what to do with this exception.
     */
    public RestletException(String message, Throwable cause, Object source, String suggestion)
    {
@@ -132,4 +132,3 @@ public class RestletException extends Exception
    }
 
 }
-

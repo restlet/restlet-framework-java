@@ -33,7 +33,3 @@ public class EmptyValue implements ControlData
    }
 
 }
-
-
-
-

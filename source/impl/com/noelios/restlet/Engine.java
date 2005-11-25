@@ -20,6 +20,7 @@ package com.noelios.restlet;
 
 import java.io.IOException;
 
+import org.restlet.Maplet;
 import org.restlet.RestletCall;
 import org.restlet.Factory;
 import org.restlet.Manager;
@@ -38,8 +39,7 @@ import com.noelios.restlet.data.FormImpl;
 import com.noelios.restlet.data.ReferenceImpl;
 
 /**
- * Noelios Restlet Engine.
- * Also acts as a factory implementation.
+ * Noelios Restlet Engine. Also acts as a factory implementation.
  */
 public class Engine implements Factory
 {
@@ -52,28 +52,42 @@ public class Engine implements Factory
    }
 
    /**
-    * Returns a new restlet server.
+    * Creates a delegate restlet server.
+    * @param parent The parent restlet server.
     * @param name The server's name.
-    * @return     The new restlet server.
+    * @return The new restlet server.
     */
-   public RestletServer createRestletServer(String name)
+   public RestletServer createRestletServer(RestletServer parent, String name)
    {
       return new RestletServerImpl(name);
    }
-   
+
    /**
-    * Returns a new restlet container.
+    * Creates a delegate restlet container.
+    * @param parent The parent restlet container.
     * @param name The container's name.
-    * @return     The new restlet container.
+    * @return The new restlet container.
     */
-   public RestletContainer createRestletContainer(String name)
+   public RestletContainer createRestletContainer(RestletContainer parent, String name)
    {
-      return new RestletContainerImpl(name);
+      return new RestletContainerImpl(parent, name);
    }
 
    /**
-    * Returns a new restlet call wrapping a given uniform call.
-    * Developers who need to extend the default restlet calls should override it.
+    * Creates a delegate maplet.
+    * @param parent The parent maplet.
+    * @param container The restlet container.
+    * @return A new maplet.
+    */
+   public Maplet createMaplet(Maplet parent, RestletContainer container)
+   {
+      return new MapletImpl(parent, container);
+   }
+
+   /**
+    * Returns a new restlet call wrapping a given uniform call. Developers who need to extend the default
+    * restlet calls should override it.
+    * @param call The uniform call to wrap.
     * @return A new restlet call.
     */
    public RestletCall createRestletCall(UniformCall call)
@@ -83,9 +97,9 @@ public class Engine implements Factory
 
    /**
     * Returns a new cookie setting.
-    * @param name    The name.
-    * @param value   The value.
-    * @return        A new cookie setting.
+    * @param name The name.
+    * @param value The value.
+    * @return A new cookie setting.
     */
    public CookieSetting createCookieSetting(String name, String value)
    {
@@ -95,7 +109,7 @@ public class Engine implements Factory
    /**
     * Creates a new form able to process the given form content.
     * @param content The form content to process.
-    * @return        A new form with the given content.
+    * @return A new form with the given content.
     */
    public Form createForm(Representation content) throws IOException
    {
@@ -104,8 +118,8 @@ public class Engine implements Factory
 
    /**
     * Creates a new reference from a URI reference.
-    * @param uriReference  The URI reference.
-    * @return              The new URI reference.
+    * @param uriReference The URI reference.
+    * @return The new URI reference.
     */
    public Reference createReference(String uriReference)
    {
@@ -120,5 +134,5 @@ public class Engine implements Factory
    {
       return new UniformCallImpl();
    }
-   
+
 }

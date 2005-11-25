@@ -33,34 +33,39 @@ public class ByteUtils
 {
    /**
     * Writes an input stream to an output stream.
-    * @param inputStream   The input stream.
-    * @param outputStream  The output stream.
+    * @param inputStream The input stream.
+    * @param outputStream The output stream.
+    * @throws IOException
     */
    public static void write(InputStream inputStream, OutputStream outputStream) throws IOException
    {
-      InputStream is = (inputStream instanceof BufferedInputStream) ? inputStream : new BufferedInputStream(inputStream);
+      InputStream is = (inputStream instanceof BufferedInputStream) ? inputStream : new BufferedInputStream(
+            inputStream);
       int nextByte = is.read();
-      while (nextByte != -1)
+      while(nextByte != -1)
       {
          outputStream.write(nextByte);
          nextByte = is.read();
       }
       is.close();
    }
+
    /**
     * Writes a readable channel to a writable channel.
-    * @param readableChannel  The readable channel.
-    * @param writableChannel  The writable channel.
+    * @param readableChannel The readable channel.
+    * @param writableChannel The writable channel.
+    * @throws IOException
     */
-   public static void write(ReadableByteChannel readableChannel, WritableByteChannel writableChannel) throws IOException
+   public static void write(ReadableByteChannel readableChannel, WritableByteChannel writableChannel)
+         throws IOException
    {
       write(Channels.newInputStream(readableChannel), Channels.newOutputStream(writableChannel));
    }
-   
+
    /**
     * Converts an input stream to a string.
-    * @param inputStream   The input stream.
-    * @return              The converted string.
+    * @param inputStream The input stream.
+    * @return The converted string.
     */
    public static String toString(InputStream inputStream)
    {
@@ -71,7 +76,7 @@ public class ByteUtils
          StringBuilder sb = new StringBuilder();
          InputStream is = new BufferedInputStream(inputStream);
          int nextByte = is.read();
-         while (nextByte != -1)
+         while(nextByte != -1)
          {
             sb.append((char)nextByte);
             nextByte = is.read();
@@ -79,12 +84,12 @@ public class ByteUtils
          is.close();
          result = sb.toString();
       }
-      catch (Exception e)
+      catch(Exception e)
       {
          // Return an empty string
       }
 
       return result;
    }
-  
+
 }

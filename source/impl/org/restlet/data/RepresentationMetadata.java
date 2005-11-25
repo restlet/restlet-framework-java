@@ -21,8 +21,7 @@ package org.restlet.data;
 import java.util.Date;
 
 /**
- * Metadata describing a representation.
- * Resources can have multiple representations called variants.
+ * Metadata describing a representation. Resources can have multiple representations called variants.
  */
 public interface RepresentationMetadata extends Metadata
 {
@@ -63,29 +62,26 @@ public interface RepresentationMetadata extends Metadata
    public void setLanguage(Language language);
 
    /**
-    * Returns the future date when this representation expire.
-    * If this information is not known, returns null.
+    * Returns the future date when this representation expire. If this information is not known, returns null.
     * @return The expiration date.
     */
    public Date getExpirationDate();
 
    /**
-    * Sets the future date when this representation expire.
-    * If this information is not known, pass null.
+    * Sets the future date when this representation expire. If this information is not known, pass null.
     * @param expirationDate The expiration date.
     */
    public void setExpirationDate(Date expirationDate);
 
    /**
-    * Returns the last date when this representation was modified.
-    * If this information is not known, returns null.
+    * Returns the last date when this representation was modified. If this information is not known, returns
+    * null.
     * @return The modification date.
     */
    public Date getModificationDate();
 
    /**
-    * Sets the last date when this representation was modified.
-    * If this information is not known, pass null.
+    * Sets the last date when this representation was modified. If this information is not known, pass null.
     * @param modificationDate The modification date.
     */
    public void setModificationDate(Date modificationDate);
@@ -95,15 +91,11 @@ public interface RepresentationMetadata extends Metadata
     * @return The tag.
     */
    public Tag getTag();
-   
+
    /**
     * Sets the tag.
     * @param tag The tag.
     */
    public void setTag(Tag tag);
-   
+
 }
-
-
-
-

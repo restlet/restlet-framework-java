@@ -46,12 +46,8 @@ public interface Preference extends ControlData
    /**
     * Returns the value of a parameter with a given name.
     * @param name The name of the parameter to return.
-    * @return 		The value of the parameter with a given name.
+    * @return The value of the parameter with a given name.
     */
    public String getParameterValue(String name);
 
 }
-
-
-
-

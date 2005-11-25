@@ -30,8 +30,7 @@ import org.restlet.data.Preference;
 import junit.framework.TestCase;
 
 /**
- * Unit tests for the Preference related classes.
- * Based on JUnit framework.
+ * Unit tests for the Preference related classes. Based on JUnit framework.
  */
 public class PreferencesTest extends TestCase
 {
@@ -40,7 +39,10 @@ public class PreferencesTest extends TestCase
    {
    }
 
-   /** Tests the preferences parsing. */
+   /**
+    * Tests the preferences parsing.
+    * @throws RestletException
+    */
    public void testParsing() throws RestletException
    {
       String headerValue = "text/*;q=0.3, text/html;q=0.7, text/html;level=1, text/html;LEVEL=2;q=0.4;ext1, */*;q=0.5";
@@ -52,19 +54,20 @@ public class PreferencesTest extends TestCase
       {
          pref = pr.readPreference();
 
-         if (pref != null)
+         if(pref != null)
          {
-            System.out.println(pref.toString() + " = " + pref.getMetadata() + " , quality = " + pref.getQuality());
-            for (Iterator iter = pref.getParameters().iterator(); iter.hasNext(); )
+            System.out.println(pref.toString() + " = " + pref.getMetadata() + " , quality = "
+                  + pref.getQuality());
+            for(Iterator iter = pref.getParameters().iterator(); iter.hasNext();)
             {
                param = (Parameter)iter.next();
                System.out.println("Pref  param: " + param.getName() + " = " + param.getValue());
             }
 
-            if (pref.getMetadata() instanceof MediaType)
+            if(pref.getMetadata() instanceof MediaType)
             {
                MediaType mediaType = (MediaType)pref.getMetadata();
-               for (Iterator iter = mediaType.getParameters().iterator(); iter.hasNext(); )
+               for(Iterator iter = mediaType.getParameters().iterator(); iter.hasNext();)
                {
                   param = (Parameter)iter.next();
                   System.out.println("Media param: " + param.getName() + " = " + param.getValue());
@@ -74,12 +77,7 @@ public class PreferencesTest extends TestCase
             System.out.println("---------------------------------------------------------------------");
          }
       }
-      while (pref != null);
+      while(pref != null);
    }
 
-
 }
-
-
-
-

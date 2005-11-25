@@ -22,23 +22,23 @@ import org.restlet.data.Form;
 import org.restlet.data.Reference;
 
 /**
- * Default reference to a uniform resource identifier (URI).
- * Contrary to the java.net.URI class, this interface represents mutable references.
+ * Default reference to a uniform resource identifier (URI). Contrary to the java.net.URI class, this
+ * interface represents mutable references.
  */
 public class ReferenceImpl implements Reference
 {
    /** The internal reference. */
    protected String uri;
-   
+
    /** The scheme separator index. */
    protected int schemeIndex;
-   
+
    /** The fragment separator index. */
    protected int fragmentIndex;
-   
+
    /** The query separator index. */
    protected int queryIndex;
-   
+
    /**
     * Constructor from a URI reference.
     * @param uriReference The URI reference.
@@ -48,11 +48,11 @@ public class ReferenceImpl implements Reference
       this.uri = uriReference;
       updateIndexes();
    }
-   
+
    /**
     * Constructor from a URI reference.
     * @param identifier The absolute URI.
-    * @param fragment   The fragment identifier.
+    * @param fragment The fragment identifier.
     */
    public ReferenceImpl(String identifier, String fragment)
    {
@@ -77,7 +77,7 @@ public class ReferenceImpl implements Reference
       fragmentIndex = this.uri.indexOf('#');
       queryIndex = this.uri.indexOf('?');
    }
-   
+
    /**
     * Returns the absolute resource identifier.
     * @return The absolute resource identifier.
@@ -104,7 +104,7 @@ public class ReferenceImpl implements Reference
    {
       if(identifier.indexOf('#') == -1)
       {
-         throw new IllegalArgumentException("Illegal '#' character detected in parameter");         
+         throw new IllegalArgumentException("Illegal '#' character detected in parameter");
       }
       else
       {
@@ -118,7 +118,7 @@ public class ReferenceImpl implements Reference
             // No fragment found
             this.uri = identifier;
          }
-         
+
          updateIndexes();
       }
    }
@@ -164,7 +164,7 @@ public class ReferenceImpl implements Reference
             this.uri = scheme + ':' + this.uri;
          }
       }
-      
+
       updateIndexes();
    }
 
@@ -176,7 +176,7 @@ public class ReferenceImpl implements Reference
    {
       return (getScheme() != null);
    }
-   
+
    /**
     * Indicates if the reference is relative.
     * @return True if the reference is relative.
@@ -234,7 +234,8 @@ public class ReferenceImpl implements Reference
          if(fragmentIndex != -1)
          {
             // Fragment found
-            this.uri = this.uri.substring(0, schemeIndex + 1) + schemeSpecificPart + this.uri.substring(fragmentIndex);
+            this.uri = this.uri.substring(0, schemeIndex + 1) + schemeSpecificPart
+                  + this.uri.substring(fragmentIndex);
          }
          else
          {
@@ -256,21 +257,21 @@ public class ReferenceImpl implements Reference
             this.uri = schemeSpecificPart;
          }
       }
-      
+
       updateIndexes();
    }
-   
+
    /**
-    * Indicates if the identifier is hierarchical. 
+    * Indicates if the identifier is hierarchical.
     * @return True if the identifier is hierarchical, false if it is opaque.
     */
    public boolean isHierarchical()
    {
       return isRelative() || (getSchemeSpecificPart().charAt(0) == '/');
    }
-   
+
    /**
-    * Indicates if the identifier is opaque. 
+    * Indicates if the identifier is opaque.
     * @return True if the identifier is opaque, false if it is hierarchical.
     */
    public boolean isOpaque()
@@ -279,17 +280,17 @@ public class ReferenceImpl implements Reference
    }
 
    /**
-    * Returns the authority component for hierarchical identifiers. 
+    * Returns the authority component for hierarchical identifiers.
     * @return The authority component for hierarchical identifiers.
     */
    public String getAuthority()
    {
       String ssp = getSchemeSpecificPart();
-      
+
       if(ssp.startsWith("//"))
       {
          int index = ssp.indexOf('/', 2);
-         
+
          if(index != -1)
          {
             return ssp.substring(0, index);
@@ -314,18 +315,18 @@ public class ReferenceImpl implements Reference
    }
 
    /**
-    * Sets the authority component for hierarchical identifiers. 
+    * Sets the authority component for hierarchical identifiers.
     * @param authority The authority component for hierarchical identifiers.
     */
    public void setAuthority(String authority)
    {
       String ssp = getSchemeSpecificPart();
-      String newAuthority = (authority == null) ? "" : "//" + authority; 
+      String newAuthority = (authority == null) ? "" : "//" + authority;
 
       if(ssp.startsWith("//"))
       {
          int index = ssp.indexOf('/', 2);
-         
+
          if(index != -1)
          {
             setSchemeSpecificPart(newAuthority + ssp.substring(index));
@@ -357,10 +358,10 @@ public class ReferenceImpl implements Reference
    {
       String authority = getAuthority();
       int index = authority.indexOf('@');
-      
+
       if(index != -1)
       {
-         return authority.substring(0, index);         
+         return authority.substring(0, index);
       }
       else
       {
@@ -375,19 +376,19 @@ public class ReferenceImpl implements Reference
    public void setUserInfo(String userInfo)
    {
       String authority = getAuthority();
-      String newUserInfo = (userInfo == null) ? "" : userInfo + '@'; 
+      String newUserInfo = (userInfo == null) ? "" : userInfo + '@';
       int index = authority.indexOf('@');
-      
+
       if(index != -1)
       {
-         setAuthority(newUserInfo + authority.substring(index + 1));         
+         setAuthority(newUserInfo + authority.substring(index + 1));
       }
       else
       {
-         setAuthority(newUserInfo + authority);         
+         setAuthority(newUserInfo + authority);
       }
    }
-   
+
    /**
     * Returns the host component for server based hierarchical identifiers.
     * @return The host component for server based hierarchical identifiers.
@@ -397,19 +398,19 @@ public class ReferenceImpl implements Reference
       String authority = getAuthority();
       int index1 = authority.indexOf('@');
       int index2 = authority.indexOf(':');
-      
+
       if(index1 != -1)
       {
          // User info found
          if(index2 != -1)
          {
             // Port found
-            return authority.substring(index1 + 1, index2);         
+            return authority.substring(index1 + 1, index2);
          }
          else
          {
             // No port found
-            return authority.substring(index1 + 1);         
+            return authority.substring(index1 + 1);
          }
       }
       else
@@ -418,7 +419,7 @@ public class ReferenceImpl implements Reference
          if(index1 != -1)
          {
             // Port found
-            return authority.substring(0, index2);         
+            return authority.substring(0, index2);
          }
          else
          {
@@ -427,7 +428,7 @@ public class ReferenceImpl implements Reference
          }
       }
    }
-   
+
    /**
     * Sets the host component for server based hierarchical identifiers.
     * @param host The host component for server based hierarchical identifiers.
@@ -437,19 +438,19 @@ public class ReferenceImpl implements Reference
       String authority = getAuthority();
       int index1 = authority.indexOf('@');
       int index2 = authority.indexOf(':');
-      
+
       if(index1 != -1)
       {
          // User info found
          if(index2 != -1)
          {
             // Port found
-            setAuthority(authority.substring(0, index1 + 1) + host + authority.substring(index2));         
+            setAuthority(authority.substring(0, index1 + 1) + host + authority.substring(index2));
          }
          else
          {
             // No port found
-            setAuthority(authority.substring(0, index1 + 1) + host);         
+            setAuthority(authority.substring(0, index1 + 1) + host);
          }
       }
       else
@@ -458,16 +459,16 @@ public class ReferenceImpl implements Reference
          if(index1 != -1)
          {
             // Port found
-            setAuthority(host + authority.substring(index2));         
+            setAuthority(host + authority.substring(index2));
          }
          else
          {
             // No port found
-            setAuthority(host);         
+            setAuthority(host);
          }
       }
    }
-   
+
    /**
     * Returns the optional port number for server based hierarchical identifiers.
     * @return The optional port number for server based hierarchical identifiers.
@@ -476,17 +477,17 @@ public class ReferenceImpl implements Reference
    {
       String authority = getAuthority();
       int index = authority.indexOf(':');
-      
+
       if(index != -1)
       {
-         return Integer.valueOf(authority.substring(index + 1));         
+         return Integer.valueOf(authority.substring(index + 1));
       }
       else
       {
          return null;
       }
    }
-   
+
    /**
     * Sets the optional port number for server based hierarchical identifiers.
     * @param port The optional port number for server based hierarchical identifiers.
@@ -494,19 +495,19 @@ public class ReferenceImpl implements Reference
    public void setPort(Integer port)
    {
       String authority = getAuthority();
-      String newPort = (port == null) ? "" : ":" + port; 
+      String newPort = (port == null) ? "" : ":" + port;
       int index = authority.indexOf(':');
-      
+
       if(index != -1)
       {
-         setAuthority(authority.substring(0, index) + newPort);         
+         setAuthority(authority.substring(0, index) + newPort);
       }
       else
       {
-         setAuthority(authority + newPort);         
+         setAuthority(authority + newPort);
       }
    }
-   
+
    /**
     * Returns the path component for hierarchical identifiers.
     * @return The path component for hierarchical identifiers.
@@ -514,12 +515,12 @@ public class ReferenceImpl implements Reference
    public String getPath()
    {
       String ssp = getSchemeSpecificPart();
-      
+
       if(ssp.startsWith("//"))
       {
          // Authority found
          int index1 = ssp.indexOf('/', 2);
-         
+
          if(index1 != -1)
          {
             // Path found
@@ -557,7 +558,7 @@ public class ReferenceImpl implements Reference
          }
       }
    }
-   
+
    /**
     * Sets the path component for hierarchical identifiers.
     * @param path The path component for hierarchical identifiers.
@@ -565,12 +566,12 @@ public class ReferenceImpl implements Reference
    public void setPath(String path)
    {
       String ssp = getSchemeSpecificPart();
-      
+
       if(ssp.startsWith("//"))
       {
          // Authority found
          int index1 = ssp.indexOf('/', 2);
-         
+
          if(index1 != -1)
          {
             // Path found
@@ -618,7 +619,7 @@ public class ReferenceImpl implements Reference
          }
       }
    }
-   
+
    /**
     * Returns the optional query component for hierarchical identifiers.
     * @return The optional query component for hierarchical identifiers.
@@ -645,7 +646,7 @@ public class ReferenceImpl implements Reference
          return null;
       }
    }
-   
+
    /**
     * Returns the optional query component as a form submission.
     * @return The optional query component as a form submission.
@@ -653,7 +654,7 @@ public class ReferenceImpl implements Reference
    public Form getQueryAsForm()
    {
       String query = getQuery();
-      
+
       if(query != null)
       {
          return new FormImpl(query);
@@ -663,7 +664,7 @@ public class ReferenceImpl implements Reference
          return null;
       }
    }
-   
+
    /**
     * Returns the query component for hierarchical identifiers.
     * @param query The query component for hierarchical identifiers.
@@ -706,7 +707,8 @@ public class ReferenceImpl implements Reference
             // Fragment found
             if(query != null)
             {
-               this.uri = this.uri.substring(0, fragmentIndex) + '?' + query + this.uri.substring(fragmentIndex);
+               this.uri = this.uri.substring(0, fragmentIndex) + '?' + query
+                     + this.uri.substring(fragmentIndex);
             }
             else
             {
@@ -726,12 +728,12 @@ public class ReferenceImpl implements Reference
             }
          }
       }
-      
+
       updateIndexes();
    }
-   
+
    /**
-    * Returns the fragment identifier. 
+    * Returns the fragment identifier.
     * @return The fragment identifier.
     */
    public String getFragment()
@@ -747,20 +749,20 @@ public class ReferenceImpl implements Reference
    }
 
    /**
-    * Sets the fragment identifier. 
+    * Sets the fragment identifier.
     * @param fragment The fragment identifier.
     */
    public void setFragment(String fragment)
    {
       if(fragment.indexOf('#') == -1)
       {
-         throw new IllegalArgumentException("Illegal '#' character detected in parameter");         
+         throw new IllegalArgumentException("Illegal '#' character detected in parameter");
       }
       else
       {
          if(fragmentIndex != -1)
          {
-            //Existing fragment
+            // Existing fragment
             if(fragment != null)
             {
                this.uri = this.uri.substring(0, fragmentIndex + 1) + fragment;
@@ -772,7 +774,7 @@ public class ReferenceImpl implements Reference
          }
          else
          {
-            //No existing fragment
+            // No existing fragment
             if(fragment != null)
             {
                this.uri = this.uri + '#' + fragment;
@@ -783,7 +785,7 @@ public class ReferenceImpl implements Reference
             }
          }
       }
-      
+
       updateIndexes();
    }
 
@@ -798,9 +800,9 @@ public class ReferenceImpl implements Reference
 
    /**
     * Returns the URI reference string.
-    * @param query      Indicates if the query should be included;
-    * @param fragment   Indicates if the fragment should be included;
-    * @return           The URI reference string.
+    * @param query Indicates if the query should be included;
+    * @param fragment Indicates if the fragment should be included;
+    * @return The URI reference string.
     */
    public String toString(boolean query, boolean fragment)
    {
@@ -873,5 +875,5 @@ public class ReferenceImpl implements Reference
    {
       return "Resource reference equivalent to a URI";
    }
-   
+
 }

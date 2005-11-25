@@ -65,8 +65,8 @@ public abstract class OriginServerImpl implements OriginServer
 
    /**
     * Adds a server connector to this component.
-    * @param server 	The server connector to add.
-    * @return 			The server connector added.
+    * @param server The server connector to add.
+    * @return The server connector added.
     */
    public Server addServer(Server server)
    {
@@ -85,8 +85,8 @@ public abstract class OriginServerImpl implements OriginServer
 
    /**
     * Adds a client connector to this component.
-    * @param client 	The client connector to add.
-    * @return 			The client connector added.
+    * @param client The client connector to add.
+    * @return The client connector added.
     */
    public Client addClient(Client client)
    {
@@ -105,14 +105,14 @@ public abstract class OriginServerImpl implements OriginServer
 
    /**
     * Calls a client connector.
-    * @param name	The name of the client connector.
-    * @param call	The call to handle.
+    * @param name The name of the client connector.
+    * @param call The call to handle.
     */
    public void callClient(String name, UniformCall call) throws IOException
    {
       UniformInterface connector = (UniformInterface)this.clients.get(name);
 
-      if (connector == null)
+      if(connector == null)
       {
          throw new IOException("Client connector \"" + name + "\" couldn't be found.");
       }
@@ -132,39 +132,33 @@ public abstract class OriginServerImpl implements OriginServer
    }
 
    /**
-    * Start hook.
-    * Starts all client and server connectors.
+    * Start hook. Starts all client and server connectors.
     */
    public void start()
    {
-      for (Iterator iter = this.clients.keySet().iterator(); iter.hasNext(); )
+      for(Iterator iter = this.clients.keySet().iterator(); iter.hasNext();)
       {
          this.clients.get(iter.next()).start();
       }
-      for (Iterator iter = this.servers.keySet().iterator(); iter.hasNext(); )
+      for(Iterator iter = this.servers.keySet().iterator(); iter.hasNext();)
       {
          this.servers.get(iter.next()).start();
       }
    }
 
    /**
-    * Stop hook.
-    * Stops all client and server connectors.
+    * Stop hook. Stops all client and server connectors.
     */
    public void stop()
    {
-      for (Iterator iter = this.clients.keySet().iterator(); iter.hasNext(); )
+      for(Iterator iter = this.clients.keySet().iterator(); iter.hasNext();)
       {
          this.clients.get(iter.next()).stop();
       }
-      for (Iterator iter = this.servers.keySet().iterator(); iter.hasNext(); )
+      for(Iterator iter = this.servers.keySet().iterator(); iter.hasNext();)
       {
          this.servers.get(iter.next()).stop();
       }
    }
-   
+
 }
-
-
-
-

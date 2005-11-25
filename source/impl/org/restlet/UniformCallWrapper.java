@@ -23,8 +23,8 @@ import java.util.List;
 import org.restlet.data.*;
 
 /**
- * Uniform call wrapper.
- * Useful for application developer who need to enrich the call with application related things.
+ * Uniform call wrapper. Useful for application developer who need to enrich the call with application related
+ * things.
  * @see <a href="http://c2.com/cgi/wiki?DecoratorPattern">The decorator (aka wrapper) pattern</a>
  */
 public class UniformCallWrapper implements UniformCall
@@ -49,14 +49,14 @@ public class UniformCallWrapper implements UniformCall
    {
       return this.wrappedCall;
    }
-   
+
    // ------------------------------
    // Methods related to the request
    // ------------------------------
 
    /**
-    * Returns the referrer reference if available.
-    * This reference shouldn't be modified during the call handling.
+    * Returns the referrer reference if available. This reference shouldn't be modified during the call
+    * handling.
     * @return The referrer reference.
     */
    public Reference getReferrerUri()
@@ -65,8 +65,7 @@ public class UniformCallWrapper implements UniformCall
    }
 
    /**
-    * Sets the referrer reference if available.
-    * This reference shouldn't be modified during the call handling.
+    * Sets the referrer reference if available. This reference shouldn't be modified during the call handling.
     * @param referrerUri The referrer reference.
     */
    public void setReferrerUri(Reference referrerUri)
@@ -165,8 +164,7 @@ public class UniformCallWrapper implements UniformCall
    }
 
    /**
-    * Returns the resource's reference.
-    * This reference shouldn't be modified during the call handling.
+    * Returns the resource's reference. This reference shouldn't be modified during the call handling.
     * @return The resource's reference.
     */
    public Reference getResourceUri()
@@ -211,8 +209,7 @@ public class UniformCallWrapper implements UniformCall
    }
 
    /**
-    * Sets the content received in the request.
-    * param input The content received in the request.
+    * Sets the content received in the request. param input The content received in the request.
     */
    public void setInput(Representation input)
    {
@@ -234,7 +231,7 @@ public class UniformCallWrapper implements UniformCall
 
    /**
     * Sets the result status.
-    * @param status  The result status to set.
+    * @param status The result status to set.
     */
    public void setStatus(Status status)
    {
@@ -260,19 +257,19 @@ public class UniformCallWrapper implements UniformCall
    }
 
    /**
-    * Sets the best representation of a given resource according to the user agent preferences.
-    * If no representation is found, sets the status to "Not found".
-    * If no acceptable representation is available, sets the status to "Not acceptable".
+    * Sets the best representation of a given resource according to the user agent preferences. If no
+    * representation is found, sets the status to "Not found". If no acceptable representation is available,
+    * sets the status to "Not acceptable".
     * @param resource The resource for which the best representation needs to be set.
     */
    public void setBestOutput(Resource resource) throws RestletException
    {
       getWrappedCall().setBestOutput(resource);
    }
-   
+
    /**
-    * Returns the list of cookies to be set in the user agent.
-    * Cookie settings can be browsed, added or removed.
+    * Returns the list of cookies to be set in the user agent. Cookie settings can be browsed, added or
+    * removed.
     * @return The list of cookies to be set in the user agent.
     */
    public List<CookieSetting> getCookieSettings()
@@ -281,8 +278,8 @@ public class UniformCallWrapper implements UniformCall
    }
 
    /**
-    * Asks the user agent to redirect itself to the given URI.
-    * Modifies the result output and status properties.
+    * Asks the user agent to redirect itself to the given URI. Modifies the result output and status
+    * properties.
     * @param targetURI The target URI.
     */
    public void setTemporaryRedirect(String targetURI)
@@ -291,7 +288,3 @@ public class UniformCallWrapper implements UniformCall
    }
 
 }
-
-
-
-

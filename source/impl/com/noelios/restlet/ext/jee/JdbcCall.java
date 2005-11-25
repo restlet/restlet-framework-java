@@ -32,7 +32,7 @@ public class JdbcCall extends UniformCallImpl
    /**
     * Constructor.
     * @param jdbcURI The database's JDBC URI (ex: jdbc:mysql://[hostname]/[database]).
-    * @param request	The request to send (valid XML request).
+    * @param request The request to send (valid XML request).
     * @see com.noelios.restlet.ext.jee
     */
    public JdbcCall(String jdbcURI, Representation request)
@@ -41,7 +41,3 @@ public class JdbcCall extends UniformCallImpl
    }
 
 }
-
-
-
-

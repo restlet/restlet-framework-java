@@ -53,8 +53,8 @@ public class HttpClient extends AbstractConnector implements Client
    /**
     * Shortcut method that does a HTTP GET on a remote resource.
     * @param resourceUri The URI of the resource to get.
-    * @return            The representation returned.
-    */   
+    * @return The representation returned.
+    */
    public Representation doGet(String resourceUri)
    {
       UniformCall call = new UniformCallImpl();
@@ -67,9 +67,9 @@ public class HttpClient extends AbstractConnector implements Client
    /**
     * Shortcut method that does a HTTP POST on a remote resource.
     * @param resourceUri The URI of the resource to post to.
-    * @param input       The input representation to post.
-    * @return            The representation returned.
-    */   
+    * @param input The input representation to post.
+    * @return The representation returned.
+    */
    public Representation doPost(String resourceUri, Representation input)
    {
       UniformCall call = new UniformCallImpl();
@@ -79,7 +79,7 @@ public class HttpClient extends AbstractConnector implements Client
       handle(call);
       return call.getOutput();
    }
-   
+
    /**
     * Handles a uniform call.
     * @param call The uniform call to handle.
@@ -110,19 +110,19 @@ public class HttpClient extends AbstractConnector implements Client
 
          // Add the media type preferences
          // ...
-         
+
          // Add the character set preferences
          // ...
-         
+
          // Add the language preferences
          // ...
 
          // Set the request method
          huc.setRequestMethod(call.getMethod().getName());
-         
+
          // Add the cookies
          // ...
-         
+
          // Send the input representation
          if(call.getInput() != null)
          {
@@ -132,21 +132,36 @@ public class HttpClient extends AbstractConnector implements Client
          // Get the response status
          MediaType mediaType = new MediaTypeImpl(huc.getContentType());
          call.setStatus(new StatusImpl(huc.getResponseCode()));
-         
+
          // Get the response output
          call.setOutput(new InputRepresentation(huc.getInputStream(), mediaType));
-         
+
          // Get the cookie settings
          // ...
       }
-      catch (MalformedURLException e)
+      catch(MalformedURLException e)
       {
          e.printStackTrace();
       }
-      catch (IOException e)
+      catch(IOException e)
       {
          e.printStackTrace();
       }
    }
-   
+
+   public static void main(String[] args)
+   {
+      try
+      {
+         HttpClient client = new HttpClient("Test");
+         Representation result = client
+               .doGet("http://xml.amazon.com/onca/xml2?t=webservices-20&dev-t=D1UCR04XBIF4A6&page=1&f=xml&mode=books&type=lite&KeywordSearch='wombat'");
+         result.write(System.out);
+      }
+      catch(IOException ioe)
+      {
+         ioe.printStackTrace();
+      }
+   }
+
 }

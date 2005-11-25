@@ -21,15 +21,14 @@ package org.restlet.connector;
 import org.restlet.component.Component;
 
 /**
- * Local client connector.
- * Useful to call a component that resides inside the same JVM.
+ * Local client connector. Useful to call a component that resides inside the same JVM.
  */
 public class LocalClient extends LocalConnector implements Client
 {
    /**
     * Constructor.
-    * @param name 				The name of this REST client.
-    * @param targetComponent 	The target component.
+    * @param name The name of this REST client.
+    * @param targetComponent The target component.
     */
    public LocalClient(String name, Component targetComponent)
    {
@@ -37,7 +36,3 @@ public class LocalClient extends LocalConnector implements Client
    }
 
 }
-
-
-
-

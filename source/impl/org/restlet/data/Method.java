@@ -38,8 +38,8 @@ public interface Method extends ControlData
 
    /**
     * Indicates if the method is equal to a given one.
-    * @param method  The method to compare to.
-    * @return        True if the method is equal to a given one.
+    * @param method The method to compare to.
+    * @return True if the method is equal to a given one.
     */
    public boolean equals(Method method);
 

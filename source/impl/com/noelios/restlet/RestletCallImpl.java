@@ -34,7 +34,7 @@ public class RestletCallImpl extends UniformCallWrapper implements RestletCall
 {
    /** The list of paths. */
    List<String> paths;
-   
+
    /**
     * Constructor.
     * @param call The inform call to wrap.
@@ -45,14 +45,13 @@ public class RestletCallImpl extends UniformCallWrapper implements RestletCall
 
       // Creates the list of paths
       this.paths = new ArrayList<String>();
-      
+
       // Set the absolute resource path as the initial path in the list.
       getPaths().add(0, getResourceUri().toString(false, false));
    }
 
    /**
-    * Returns the list of restlets paths.  
-    * The list is sorted according to the handlers hierarchy.
+    * Returns the list of restlets paths. The list is sorted according to the handlers hierarchy.
     * @return The list of restlets paths.
     */
    public List<String> getPaths()
@@ -61,13 +60,12 @@ public class RestletCallImpl extends UniformCallWrapper implements RestletCall
    }
 
    /**
-    * Returns one of the paths in the list.
-    * The first path is the resource path relatively to the current restlet.
-    * The second path is the current reslet path relatively to the parent restlet.
-    * All the hierarchy of restlet paths is also available depending on the restlet tree.
-    * @param index   Index of the path in the list.
-    * @param strip   Indicates if leading and ending slashes should be stripped.
-    * @return        The path at the given index.
+    * Returns one of the paths in the list. The first path is the resource path relatively to the current
+    * restlet. The second path is the current reslet path relatively to the parent restlet. All the hierarchy
+    * of restlet paths is also available depending on the restlet tree.
+    * @param index Index of the path in the list.
+    * @param strip Indicates if leading and ending slashes should be stripped.
+    * @return The path at the given index.
     */
    public String getPath(int index, boolean strip)
    {
@@ -80,5 +78,5 @@ public class RestletCallImpl extends UniformCallWrapper implements RestletCall
          return getPaths().get(0);
       }
    }
-   
+
 }

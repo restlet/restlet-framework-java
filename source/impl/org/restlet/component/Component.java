@@ -22,10 +22,11 @@ import org.restlet.Element;
 import org.restlet.UniformInterface;
 
 /**
- * Abstract unit of software instructions and internal state.<br/><br/>
- * "A component is an abstract unit of software instructions and internal state that
- * provides a transformation of data via its interface." Roy T. Fielding
- * @see <a href="http://www.ics.uci.edu/~fielding/pubs/dissertation/software_arch.htm#sec_1_2_1">Source dissertation</a>
+ * Abstract unit of software instructions and internal state.<br/><br/> "A component is an abstract unit of
+ * software instructions and internal state that provides a transformation of data via its interface." Roy T.
+ * Fielding
+ * @see <a href="http://www.ics.uci.edu/~fielding/pubs/dissertation/software_arch.htm#sec_1_2_1">Source
+ * dissertation</a>
  */
 public interface Component extends Element, UniformInterface
 {
@@ -42,6 +43,3 @@ public interface Component extends Element, UniformInterface
    public String getName();
 
 }
-
-
-

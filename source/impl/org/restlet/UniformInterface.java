@@ -19,12 +19,13 @@
 package org.restlet;
 
 /**
- * Uniform interface between all architecture components.<br/><br/>
- * "The central feature that distinguishes the REST architectural style from other network-based styles is its emphasis on a
- * uniform interface between components. By applying the software engineering principle of generality to the component
- * interface, the overall system architecture is simplified and the visibility of interactions is improved. Implementations
+ * Uniform interface between all architecture components.<br/><br/> "The central feature that distinguishes
+ * the REST architectural style from other network-based styles is its emphasis on a uniform interface between
+ * components. By applying the software engineering principle of generality to the component interface, the
+ * overall system architecture is simplified and the visibility of interactions is improved. Implementations
  * are decoupled from the services they provide, which encourages independent evolvability." Roy T. Fielding
- * @see <a href="http://www.ics.uci.edu/~fielding/pubs/dissertation/rest_arch_style.htm#sec_5_1_5">Source dissertation</a>
+ * @see <a href="http://www.ics.uci.edu/~fielding/pubs/dissertation/rest_arch_style.htm#sec_5_1_5">Source
+ * dissertation</a>
  */
 public interface UniformInterface
 {
@@ -34,4 +35,3 @@ public interface UniformInterface
     */
    public void handle(UniformCall call);
 }
-

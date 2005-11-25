@@ -40,12 +40,12 @@ public class JettyServer extends SocketListener implements Server
 
    /** The target of Jetty calls. */
    private UniformInterface target;
-   
+
    /**
     * Constructor.
-    * @param name 	The unique connector name.
-    * @param port		The HTTP port number.
-    * @param target 	The target component handling calls.
+    * @param name The unique connector name.
+    * @param port The HTTP port number.
+    * @param target The target component handling calls.
     */
    public JettyServer(String name, int port, UniformInterface target)
    {
@@ -56,17 +56,17 @@ public class JettyServer extends SocketListener implements Server
 
    /**
     * Constructor.
-    * @param name    The unique connector name.
+    * @param name The unique connector name.
     * @param address The IP address to listen to.
-    * @param target  The target component handling calls.
+    * @param target The target component handling calls.
     */
    public JettyServer(String name, InetAddrPort address, UniformInterface target)
    {
-       super(address);
-       this.name = name;
-       this.target = target;
+      super(address);
+      this.name = name;
+      this.target = target;
    }
-   
+
    /** Start hook. */
    public void start()
    {
@@ -74,7 +74,7 @@ public class JettyServer extends SocketListener implements Server
       {
          super.start();
       }
-      catch (Exception e)
+      catch(Exception e)
       {
          e.printStackTrace();
       }
@@ -87,25 +87,26 @@ public class JettyServer extends SocketListener implements Server
       {
          super.stop();
       }
-      catch (Exception e)
+      catch(Exception e)
       {
          e.printStackTrace();
       }
    }
 
-   /** 
-    * Creates an HttpConnection instance. 
-    * This method can be used to override the connection instance.
+   /**
+    * Creates an HttpConnection instance. This method can be used to override the connection instance.
     * @param socket The underlying socket.
     */
    protected HttpConnection createConnection(Socket socket) throws IOException
    {
-      return new JettyConnection(this, socket.getInetAddress(),
-                                       socket.getInputStream(),
-                                       socket.getOutputStream(),
-                                       socket);
+      return new JettyConnection(this, socket.getInetAddress(), socket.getInputStream(), socket
+            .getOutputStream(), socket);
    }
-   
+
+   /**
+    * Returns the target interface.
+    * @return The target interface.
+    */
    public UniformInterface getTarget()
    {
       return target;
@@ -129,7 +130,3 @@ public class JettyServer extends SocketListener implements Server
       return "Jetty HTTP server";
    }
 }
-
-
-
-

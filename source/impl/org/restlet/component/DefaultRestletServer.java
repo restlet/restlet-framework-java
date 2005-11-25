@@ -32,21 +32,21 @@ public class DefaultRestletServer implements RestletServer
 {
    /** The deletate restlet server. */
    protected RestletServer delegate;
-   
+
    /**
     * Constructor.
     * @param name The origin server's name.
     */
    public DefaultRestletServer(String name)
    {
-      this.delegate = Manager.createRestletServer(name);
+      this.delegate = Manager.createRestletServer(this, name);
    }
-   
+
    /**
     * Adds a restlet container.
-    * @param name       The unique name of the container.
-    * @param container  The container to add.
-    * @return           The added container.
+    * @param name The unique name of the container.
+    * @param container The container to add.
+    * @return The added container.
     */
    public RestletContainer addContainer(String name, RestletContainer container)
    {
@@ -82,8 +82,8 @@ public class DefaultRestletServer implements RestletServer
 
    /**
     * Adds a server connector to this component.
-    * @param server  The server connector to add.
-    * @return        The server connector added.
+    * @param server The server connector to add.
+    * @return The server connector added.
     */
    public Server addServer(Server server)
    {
@@ -101,8 +101,8 @@ public class DefaultRestletServer implements RestletServer
 
    /**
     * Adds a client connector to this component.
-    * @param client  The client connector to add.
-    * @return        The client connector added.
+    * @param client The client connector to add.
+    * @return The client connector added.
     */
    public Client addClient(Client client)
    {
@@ -157,7 +157,7 @@ public class DefaultRestletServer implements RestletServer
    {
       return delegate.getName();
    }
-   
+
    /**
     * Returns the description of this REST element.
     * @return The description of this REST element.
@@ -166,5 +166,5 @@ public class DefaultRestletServer implements RestletServer
    {
       return delegate.getDescription();
    }
-   
+
 }

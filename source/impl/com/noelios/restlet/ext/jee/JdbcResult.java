@@ -25,8 +25,7 @@ import java.sql.Statement;
 import org.restlet.RestletException;
 
 /**
- * JDBC result wrapper.
- * Used by the JDBC client connector as an output of JDBC calls.
+ * JDBC result wrapper. Used by the JDBC client connector as an output of JDBC calls.
  */
 public class JdbcResult
 {
@@ -43,8 +42,8 @@ public class JdbcResult
    }
 
    /**
-    * Release the statement connection.
-    * To call when result navigation is done.
+    * Release the statement connection. To call when result navigation is done.
+    * @throws RestletException
     */
    public void release() throws RestletException
    {
@@ -52,7 +51,7 @@ public class JdbcResult
       {
          statement.getConnection().close();
       }
-      catch (SQLException se)
+      catch(SQLException se)
       {
          throw new RestletException("Couldn't release the database connection.", se);
       }
@@ -61,6 +60,7 @@ public class JdbcResult
    /**
     * Returns the result set.
     * @return The result set.
+    * @throws RestletException
     */
    public ResultSet getResultSet() throws RestletException
    {
@@ -68,7 +68,7 @@ public class JdbcResult
       {
          return statement.getResultSet();
       }
-      catch (SQLException se)
+      catch(SQLException se)
       {
          throw new RestletException("Couldn't get the result of the database request.", se);
       }
@@ -77,6 +77,7 @@ public class JdbcResult
    /**
     * Returns the generated keys.
     * @return The generated keys.
+    * @throws RestletException
     */
    public ResultSet getGeneratedKeys() throws RestletException
    {
@@ -84,7 +85,7 @@ public class JdbcResult
       {
          return statement.getGeneratedKeys();
       }
-      catch (SQLException se)
+      catch(SQLException se)
       {
          throw new RestletException("Couldn't get the generated keys for the database request.", se);
       }
@@ -93,6 +94,7 @@ public class JdbcResult
    /**
     * Returns the update count.
     * @return The update count.
+    * @throws RestletException
     */
    public int getUpdateCount() throws RestletException
    {
@@ -100,14 +102,10 @@ public class JdbcResult
       {
          return statement.getUpdateCount();
       }
-      catch (SQLException se)
+      catch(SQLException se)
       {
          throw new RestletException("Couldn't get the update count for the database request.", se);
       }
    }
 
 }
-
-
-
-

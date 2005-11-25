@@ -33,15 +33,14 @@ public interface UniformCall
    // ------------------------------
 
    /**
-    * Returns the referrer reference if available.
-    * This reference shouldn't be modified during the call handling.
+    * Returns the referrer reference if available. This reference shouldn't be modified during the call
+    * handling.
     * @return The referrer reference.
     */
    public Reference getReferrerUri();
 
    /**
-    * Sets the referrer reference if available.
-    * This reference shouldn't be modified during the call handling.
+    * Sets the referrer reference if available. This reference shouldn't be modified during the call handling.
     * @param referrerUri The referrer reference.
     */
    public void setReferrerUri(Reference referrerUri);
@@ -107,15 +106,13 @@ public interface UniformCall
    public void setMethod(Method method);
 
    /**
-    * Returns the resource's reference.
-    * This reference shouldn't be modified during the call handling.
+    * Returns the resource's reference. This reference shouldn't be modified during the call handling.
     * @return The resource's reference.
     */
    public Reference getResourceUri();
 
    /**
-    * Sets the resource's reference.
-    * This reference shouldn't be modified during the call handling.
+    * Sets the resource's reference. This reference shouldn't be modified during the call handling.
     * @param resourceUri The resource's reference.
     */
    public void setResourceUri(Reference resourceUri);
@@ -156,7 +153,7 @@ public interface UniformCall
 
    /**
     * Sets the result status.
-    * @param status 	The result status to set.
+    * @param status The result status to set.
     */
    public void setStatus(Status status);
 
@@ -173,23 +170,24 @@ public interface UniformCall
    public void setOutput(Representation output);
 
    /**
-    * Sets the best representation of a given resource according to the user agent preferences.
-    * If no representation is found, sets the status to "Not found".
-    * If no acceptable representation is available, sets the status to "Not acceptable".
+    * Sets the best representation of a given resource according to the user agent preferences. If no
+    * representation is found, sets the status to "Not found". If no acceptable representation is available,
+    * sets the status to "Not acceptable".
     * @param resource The resource for which the best representation needs to be set.
+    * @throws RestletException
     */
    public void setBestOutput(Resource resource) throws RestletException;
 
    /**
-    * Returns the list of cookies to be set in the user agent.
-    * Cookie settings can be browsed, added or removed.
+    * Returns the list of cookies to be set in the user agent. Cookie settings can be browsed, added or
+    * removed.
     * @return The list of cookies to be set in the user agent.
     */
    public List<CookieSetting> getCookieSettings();
 
    /**
-    * Asks the user agent to redirect itself to the given URI.
-    * Modifies the result output and status properties.
+    * Asks the user agent to redirect itself to the given URI. Modifies the result output and status
+    * properties.
     * @param targetURI The target URI.
     */
    public void setTemporaryRedirect(String targetURI);

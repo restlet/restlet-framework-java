@@ -24,13 +24,14 @@ import org.restlet.data.Representation;
 import org.restlet.data.RepresentationMetadata;
 
 /**
- * Intended conceptual target of a hypertext reference.<br/><br/>
- * "Any information that can be named can be a resource: a document or image, a temporal service (e.g. "today's weather in
- * Los Angeles"), a collection of other resources, a non-virtual object (e.g. a person), and so on. In other words, any
- * concept that might be the target of an author's hypertext reference must fit within the definition of a resource."<br/><br/>
- * "The only thing that is required to be static for a resource is the semantics of the mapping, since the semantics is what
- * distinguishes one resource from another." Roy T. Fielding
- * @see <a href="http://www.ics.uci.edu/~fielding/pubs/dissertation/rest_arch_style.htm#sec_5_2_1_1">Source dissertation</a>
+ * Intended conceptual target of a hypertext reference.<br/><br/> "Any information that can be named can be
+ * a resource: a document or image, a temporal service (e.g. "today's weather in Los Angeles"), a collection
+ * of other resources, a non-virtual object (e.g. a person), and so on. In other words, any concept that might
+ * be the target of an author's hypertext reference must fit within the definition of a resource."<br/><br/>
+ * "The only thing that is required to be static for a resource is the semantics of the mapping, since the
+ * semantics is what distinguishes one resource from another." Roy T. Fielding
+ * @see <a href="http://www.ics.uci.edu/~fielding/pubs/dissertation/rest_arch_style.htm#sec_5_2_1_1">Source
+ * dissertation</a>
  */
 public interface Resource
 {
@@ -42,13 +43,9 @@ public interface Resource
 
    /**
     * Returns the representation matching the given metadata.
-    * @param metadata   The metadata to match.
-    * @return 				The matching representation.
+    * @param metadata The metadata to match.
+    * @return The matching representation.
     */
    public Representation getRepresentation(RepresentationMetadata metadata);
-   
+
 }
-
-
-
-

@@ -18,44 +18,39 @@
 
 package com.noelios.restlet.component;
 
+import org.restlet.Manager;
 import org.restlet.Maplet;
 import org.restlet.Restlet;
 import org.restlet.RestletCall;
 import org.restlet.RestletException;
-import org.restlet.Manager;
 import org.restlet.UniformCall;
 import org.restlet.component.RestletContainer;
 
 import com.noelios.restlet.MapletImpl;
 
 /**
- * Component acting as a container for call handlers named restlets.
- * Calls are first intercepted by the container which can do various checks before effectively
- * delegating it to one of the registered root maplets or restlets.
+ * Component acting as a container for call handlers named restlets. Calls are first intercepted by the
+ * container which can do various checks before effectively delegating it to one of the registered root
+ * maplets or restlets.
  */
 public class RestletContainerImpl extends OriginServerImpl implements RestletContainer
 {
+   /** The parent container who delegates. */
+   protected RestletContainer parent;
+
    /** Delegate maplet handling root restlets. */
    protected Maplet delegate;
 
    /**
     * Constructor.
+    * @param parent The parent restlet container.
     * @param name The unique name of the container.
     */
-   public RestletContainerImpl(String name)
+   public RestletContainerImpl(RestletContainer parent, String name)
    {
       super(name);
-      this.delegate = createMapletDelegate();
-   }
-
-   /**
-    * Returns a new maplet acting as a delegate for maplets.
-    * Developers who need to extend the default maplets should override it.
-    * @return A new maplet.
-    */
-   public Maplet createMapletDelegate()
-   {
-      return new MapletImpl(this);
+      this.parent = parent;
+      this.delegate = new MapletImpl(this, parent);
    }
 
    /**
@@ -70,7 +65,7 @@ public class RestletContainerImpl extends OriginServerImpl implements RestletCon
    /**
     * Attaches a restlet instance shared by all calls.
     * @param pathPattern The path pattern used to map calls.
-    * @param restlet     The restlet to attach.
+    * @param restlet The restlet to attach.
     * @see java.util.regex.Pattern
     */
    public void attach(String pathPattern, Restlet restlet)
@@ -80,8 +75,9 @@ public class RestletContainerImpl extends OriginServerImpl implements RestletCon
 
    /**
     * Attaches a restlet class. A new instance will be created for each call.
-    * @param pathPattern   The path pattern used to map calls.
-    * @param restletClass  The restlet class to attach (must have a constructor taking a RestletContainer parameter).
+    * @param pathPattern The path pattern used to map calls.
+    * @param restletClass The restlet class to attach (must have a constructor taking a RestletContainer
+    * parameter).
     * @see java.util.regex.Pattern
     */
    public void attach(String pathPattern, Class<? extends Restlet> restletClass)
@@ -100,7 +96,7 @@ public class RestletContainerImpl extends OriginServerImpl implements RestletCon
 
    /**
     * Detaches a restlet class.
-    * @param restletClass  The restlet class to detach.
+    * @param restletClass The restlet class to detach.
     */
    public void detach(Class<? extends Restlet> restletClass)
    {
@@ -152,6 +148,3 @@ public class RestletContainerImpl extends OriginServerImpl implements RestletCon
    }
 
 }
-
-
-

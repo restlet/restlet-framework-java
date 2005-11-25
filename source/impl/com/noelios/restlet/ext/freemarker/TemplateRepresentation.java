@@ -33,8 +33,7 @@ import freemarker.template.Template;
 import freemarker.template.TemplateException;
 
 /**
- * FreeMarker template representation.
- * Useful for dynamic string-based representations.
+ * FreeMarker template representation. Useful for dynamic string-based representations.
  * @see <a href="http://freemarker.org/">FreeMarker home page</a>
  */
 public class TemplateRepresentation extends OutputRepresentation
@@ -44,18 +43,19 @@ public class TemplateRepresentation extends OutputRepresentation
 
    /** The FreeMarker configuration. */
    Configuration config;
-   
+
    /** The template's data model. */
    protected Object dataModel;
 
    /**
     * Constructor.
-    * @param templatePath	The FreeMarker template's path.
-    * @param config			The FreeMarker configuration.
-    * @param dataModel		The FreeMarker template's data model.
-    * @param mediaType 		The representation's media type.
+    * @param templatePath The FreeMarker template's path.
+    * @param config The FreeMarker configuration.
+    * @param dataModel The FreeMarker template's data model.
+    * @param mediaType The representation's media type.
     */
-   public TemplateRepresentation(String templatePath, Configuration config, Object dataModel, MediaType mediaType)
+   public TemplateRepresentation(String templatePath, Configuration config, Object dataModel,
+         MediaType mediaType)
    {
       super(mediaType);
       this.config = config;
@@ -74,8 +74,8 @@ public class TemplateRepresentation extends OutputRepresentation
 
    /**
     * Sets the FreeMarker template's data model.
-    * @param dataModel 	The FreeMarker template's data model.
-    * @return				The FreeMarker template's data model.
+    * @param dataModel The FreeMarker template's data model.
+    * @return The FreeMarker template's data model.
     */
    public Object setDataModel(Object dataModel)
    {
@@ -85,9 +85,10 @@ public class TemplateRepresentation extends OutputRepresentation
 
    /**
     * Loads a template from the file system.
-    * @param templatePath	The FreeMarker template's path.
-    * @param config			The FreeMarker configuration.
-    * @return					The loaded template.
+    * @param templatePath The FreeMarker template's path.
+    * @param config The FreeMarker configuration.
+    * @return The loaded template.
+    * @throws IOException
     */
    private static Template loadTemplate(String templatePath, Configuration config) throws IOException
    {
@@ -113,19 +114,17 @@ public class TemplateRepresentation extends OutputRepresentation
          {
             tmplWriter = new BufferedWriter(new OutputStreamWriter(outputStream, template.getEncoding()));
          }
-         
+
          template.process(getValues(), tmplWriter);
       }
-      catch (TemplateException te)
+      catch(TemplateException te)
       {
          throw new IOException("Template processing error");
       }
       finally
       {
-         if (tmplWriter != null)
-            tmplWriter.close();
+         if(tmplWriter != null) tmplWriter.close();
       }
    }
 
 }
-

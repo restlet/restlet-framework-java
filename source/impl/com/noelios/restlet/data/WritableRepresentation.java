@@ -26,14 +26,14 @@ import java.nio.channels.WritableByteChannel;
 import org.restlet.data.MediaType;
 
 /**
- * Representation based on a writable byte channel.
- * The write(WritableByteChannel) method needs to be overriden in subclasses.
+ * Representation based on a writable byte channel. The write(WritableByteChannel) method needs to be
+ * overriden in subclasses.
  */
 public abstract class WritableRepresentation extends ChannelRepresentation
 {
    /**
     * Constructor.
-    * @param mediaType  The representation's media type.
+    * @param mediaType The representation's media type.
     */
    public WritableRepresentation(MediaType mediaType)
    {
@@ -41,8 +41,8 @@ public abstract class WritableRepresentation extends ChannelRepresentation
    }
 
    /**
-    * Returns a readable byte channel.
-    * If it is supported by a file a read-only instance of FileChannel is returned.
+    * Returns a readable byte channel. If it is supported by a file a read-only instance of FileChannel is
+    * returned.
     * @return A readable byte channel.
     */
    public ReadableByteChannel getChannel() throws IOException
@@ -61,16 +61,16 @@ public abstract class WritableRepresentation extends ChannelRepresentation
                write(wbc);
                wbc.close();
             }
-            catch (IOException ioe)
+            catch(IOException ioe)
             {
                ioe.printStackTrace();
             }
          }
       };
-         
+
       // Start the writer thread
       writer.start();
       return pipe.source();
    }
-   
+
 }
