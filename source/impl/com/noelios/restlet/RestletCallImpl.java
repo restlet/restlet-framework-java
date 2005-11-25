@@ -37,15 +37,7 @@ public class RestletCallImpl extends UniformCallWrapper implements RestletCall
    
    /**
     * Constructor.
-    * @param referrer               The referrer reference.
-    * @param userAgent              The user agent.
-    * @param mediaPrefs             The media preferences of the user agent.
-    * @param characterSetPrefs      The character set preferences of the user agent.
-    * @param languagePrefs          The language preferences of the user agent.
-    * @param method                 The method type.
-    * @param resource               The resource reference.
-    * @param cookies                The cookies sent by the user agent.
-    * @param input                  The content received in the request.
+    * @param call The inform call to wrap.
     */
    public RestletCallImpl(UniformCall call)
    {

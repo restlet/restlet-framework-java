@@ -42,8 +42,10 @@ import com.noelios.restlet.data.ReferenceImpl;
  */
 public class RestletFactoryImpl implements RestletFactory
 {
-   // Class initializer : registers the Noelios Restlet Engine
-   static
+   /**
+    * Registers the Noelios Restlet Engine
+    */
+   public static void register()
    {
       RestletManager.registerFactory(new RestletFactoryImpl());
    }
