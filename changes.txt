@@ -9,8 +9,8 @@
  - Removed unnecessary HttpServer interface
  - Replaced many RestletException by IOException in non Restlet specific classes and interfaces
  - TemplateRepresentation no longer load the template upon creation as recommanded for performance reasons
- - Completed the separation between the Resltet API and the implementations: added RestletFactory interface and RestletManager class.
- - Restlet API implementations must register their RestletFactory with the RestletManager before usage of RestletManager
+ - Completed the separation between the Resltet API and the implementations: added org.restlet.Factory interface and org.restlet.Manager class.
+ - Restlet API implementations must register their implementation of org.restlet.Factory with the org.restlet.Manager before usage.
  - Renamed CallImpl to UniformCallImpl
  - Added setter methods to UniformCall for request field (useful when preparing a call for a client connector)
  - Added org.restlet.component.DefaultRestletServer and DefaultRestletContainer for easy subclassing by developpers

@@ -7,10 +7,11 @@
 <project name="Restlet" default="dist" basedir=".">
     
   <!-- Set global paths -->
-  <property name="api"      location="www/api"/>
+  <property name="docs"     location="www/docs"/>
+  <property name="docs.api" location="${docs}/api"/>
+  <property name="docs.nre" location="${docs}/nre"/>
   <property name="classes"  location="classes"/>
   <property name="dist"     location="www/downloads"/>
-  <property name="docs"     location="docs"/>
   <property name="lib"      location="lib"/>
   <property name="src"      location="source/impl"/>
   <property name="archives" location="e:/projets"/>
@@ -75,7 +76,7 @@
     </jar>
 
     <!-- Create Restlet API source jar file -->
-    <jar jarfile="${dist}/${DSTAMP}/src/org.restlet.jar" basedir="${src}" includes="org/restlet/**" excludes="**/.emptyDir **/package.html">
+    <jar jarfile="${dist}/${DSTAMP}/src/org.restlet.jar" basedir="${src}" includes="org/restlet/**" excludes="**/.emptyDir **/package.html **/overview.html">
       <manifest>
         <attribute name="Built-By" value="${author}"/>
         <section name="org.restlet">
@@ -87,7 +88,7 @@
     </jar>
     
     <!-- Create Noelios Restlet Server source jar file -->
-    <jar jarfile="${dist}/${DSTAMP}/src/com.noelios.restlet.jar" basedir="${src}" includes="com/noelios/restlet/**" excludes="com/noelios/restlet/test/** **/.emptyDir **/package.html">
+    <jar jarfile="${dist}/${DSTAMP}/src/com.noelios.restlet.jar" basedir="${src}" includes="com/noelios/restlet/**" excludes="com/noelios/restlet/test/** **/.emptyDir **/package.html **/overview.html">
       <manifest>
         <attribute name="Built-By" value="${author}"/>
         <section name="com.noelios.restlet">
@@ -99,8 +100,11 @@
     </jar>
 
     <!-- Copy tha Javadocs -->    
-    <copy todir="${dist}/${DSTAMP}/api">
-      <fileset dir="${api}"/>
+    <copy todir="${dist}/${DSTAMP}/docs/api">
+      <fileset dir="${docs.api}"/>
+    </copy>    
+    <copy todir="${dist}/${DSTAMP}/docs/nre">
+      <fileset dir="${docs.nre}"/>
     </copy>    
 
     <!-- Copy text notes -->    
@@ -124,25 +128,25 @@
   </target>
 
   
-  <target name="api" depends="init" description="Generate the Javadocs" >
+  <target name="javadocs" depends="init" description="Generate the Javadocs" >
     <delete includeEmptyDirs="true" verbose="false" quiet="true">
-      <fileset dir="${api}" excludes="**/.svn"/>
+      <fileset dir="${docs.api}" excludes="**/.svn"/>
+      <fileset dir="${docs.nre}" excludes="**/.svn"/>
     </delete>    
     
-    <javadoc packagenames="org.restlet.*,com.noelios.restlet.*"
+    <javadoc packagenames="org.restlet.*"
            sourcepath="${src}"
-           destdir="${api}"
+           destdir="${docs.api}"
            classpathref="main.path"
            author="true"
            version="true"
            use="true"
-           windowtitle="Restlet ${version.full}"
-           doctitle="Restlet ${version.full}"
-           overview="${src}/overview.html"
-           verbose="false"
-           excludepackagenames="com.noelios.restlet.test">
+           windowtitle="Restlet API ${version.full}"
+           doctitle="Restlet API ${version.full}"
+           overview="${src}/org/restlet/overview.html"
+           verbose="false">
       
-      <bottom><![CDATA[<i>Copyright &#169; 2005 J&eacute;r&ocirc;me Louvel. All Rights Reserved. Restlet is a registered trademark and servicemark.</i>]]></bottom>
+      <bottom><![CDATA[<i>Copyright &#169; 2005 J&eacute;r&ocirc;me Louvel. All Rights Reserved. Restlet is a registered trademark and servicemark of Noelios Consulting.</i>]]></bottom>
       
       <tag name="associates"          scope="all" description="Design stereotype: " enabled="false"/>
       <tag name="clientCardinality"   scope="all" description="Design stereotype: " enabled="false"/>
@@ -151,14 +155,42 @@
       <tag name="supplierCardinality" scope="all" description="Design stereotype: " enabled="false"/>
       
       <group title="${restlet.api}"><package name="org.restlet*" /></group>
-      <group title="${restlet.ri}" ><package name="com.noelios.restlet*" /></group>
       
       <link href="http://freemarker.org/docs/api/"/>
       <link href="http://java.sun.com/j2se/1.5.0/docs/api/"/>
       <link href="http://java.sun.com/products/javamail/javadocs/"/>
       <link href="http://jetty.mortbay.org/javadoc/"/>
     </javadoc>    
-    
+
+    <javadoc packagenames="com.noelios.restlet.*"
+           sourcepath="${src}"
+           destdir="${docs.nre}"
+           classpathref="main.path"
+           author="true"
+           version="true"
+           use="true"
+           windowtitle="Noelios Restlet Engine ${version.full}"
+           doctitle="Noelios Restlet Engine ${version.full}"
+           overview="${src}/com/noelios/restlet/overview.html"
+           verbose="false"
+           excludepackagenames="com.noelios.restlet.test">
+      
+      <bottom><![CDATA[<i>Copyright &#169; 2005 J&eacute;r&ocirc;me Louvel. All Rights Reserved. Restlet is a registered trademark and servicemark of Noelios Consulting.</i>]]></bottom>
+      
+      <tag name="associates"          scope="all" description="Design stereotype: " enabled="false"/>
+      <tag name="clientCardinality"   scope="all" description="Design stereotype: " enabled="false"/>
+      <tag name="label"               scope="all" description="Design stereotype: " enabled="false"/>
+      <tag name="stereotype"          scope="all" description="Design stereotype: " enabled="false"/>
+      <tag name="supplierCardinality" scope="all" description="Design stereotype: " enabled="false"/>
+      
+      <group title="${restlet.ri}" ><package name="com.noelios.restlet*" /></group>
+      
+      <link href="http://freemarker.org/docs/api/"/>
+      <link href="http://java.sun.com/j2se/1.5.0/docs/api/"/>
+      <link href="http://java.sun.com/products/javamail/javadocs/"/>
+      <link href="http://jetty.mortbay.org/javadoc/"/>
+      <link href="http://restlet.tigris.org/nonav/docs/api/"/>
+    </javadoc>    
   </target>
 
 
@@ -175,9 +207,10 @@
 
 
   <target name="clean" description="Clean up" >
-    <!-- Delete the ${classes} and ${api} directory trees -->
+    <!-- Delete the classes and Javadoc directories -->
     <delete dir="${classes}"/>
-    <delete dir="${api}"/>
+    <delete dir="${docs.api}"/>
+    <delete dir="${docs.nre}"/>
   </target>
 
 
@@ -189,7 +222,7 @@
 
   <target name="archive" depends="init" description="Daily archive" >
     <!-- Create the final zip file -->
-    <zip destfile="${archives}/Restlet ${DSTAMP}.zip" basedir="" includes="**/*" excludes="www/api/** classes/**"/>
+    <zip destfile="${archives}/Restlet ${DSTAMP}.zip" basedir="" includes="**/*" excludes="www/docs/api/** www/docs/nre/** classes/**"/>
   </target>
 
 </project>

@@ -4,7 +4,7 @@
 ------------------------------------------------
 
 Version : 0.11 beta
-Date    : 11/23/2005
+Date    : 11/25/2005
 Author  : Jerome Louvel (mailto:jerome.louvel@noelios.com)
 Home    : http://www.restlet.com
 
@@ -18,12 +18,12 @@ Features
 
 Restlet API:
     * Supports all REST concepts (resource, representation, data, connector, components, etc.)
-    * Complete alternative to the Servlet API
+    * Suitable for both client and server REST applications
+    * Complete replacement for the Servlet API
     * No dependency on any third-party library
     * Restlets and Maplets allow easy handling of hierarchical URIs
     * Connectors can be added for any protocol
     * Supports blocking and non-blocking inputs and outputs
-    * Suitable for both client and server REST applications
 
 Noelios Restlet Engine (NRE):
     * Reference implementation of the Restlet API
@@ -48,9 +48,9 @@ Dependencies
 To do list:
     * Finish the implementation of the client HTTP connector (cookies, user agent preferences)
     * Implement the cache control options for Jetty connector and for the FileRepresentation.
-    * Add support for SOAP (via Apache Axis?)
+    * Add support for SOAP XML message (via Apache Axis?)
     * Add better logging of errors
-    * Testing of the JDBC and HTTP Client
+    * More testing of the JDBC and HTTP client connectors
     * Integration with Jetty 6 for efficient NIO usage
     * Add a SQLClient that provides a closer integration than the JdbcClient.
           o See the PHP REST SQL project at http://phprestsql.sourceforge.net/
@@ -67,11 +67,11 @@ To do list:
 
 Licensing
 ---------
-    * "Restlet API" and "Noelios Restlet Engine" are freely available under the GPL license.
-    * You can internally use modified or unmodified versions for free and for any purpose.
-    * You can redistribute modified versions only under the same GPL license.
-    * You can redistribute unmodified versions under one of the OSI approved open source licenses.
-    * Otherwise, you need to contact me to purchase a commercial license.
+    * "Restlet API" and "Noelios Restlet Engine" are distributed under the GPL license.
+    * Internal use and modification is freely allowed for any purpose.
+    * Redistribution with GPL-compatible software is freely allowed.
+    * For redistribution with other OSI approved open source software, a free license can be requested.
+    * For redistribution with commercial software, a license can be purchased.
 
 
 Copyright © 2005 Jérôme Louvel. Restlet is a trademark and servicemark of Noelios Consulting.
