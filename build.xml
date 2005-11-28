@@ -24,8 +24,8 @@
   
 
   <!-- Set global names -->
-  <property name="version.full"     value="0.11 beta"/>
-  <property name="version.compact"  value="0.11b"/>
+  <property name="version.full"     value="0.12 beta"/>
+  <property name="version.compact"  value="0.12b"/>
   <property name="restlet.api"      value="Restlet API"/>
   <property name="restlet.ri"       value="Noelios Restlet Engine"/>
   <property name="author"           value="Jerome Louvel"/>
@@ -146,7 +146,7 @@
            overview="${src}/org/restlet/overview.html"
            verbose="false">
       
-      <bottom><![CDATA[<i>Copyright &#169; 2005 J&eacute;r&ocirc;me Louvel. All Rights Reserved. Restlet is a registered trademark and servicemark of Noelios Consulting.</i>]]></bottom>
+      <bottom><![CDATA[<i>Copyright &#169; 2005 J&eacute;r&ocirc;me Louvel. All Rights Reserved. Restlet is a trademark and servicemark of <a target="_top" href="http://www.noelios.com/en">Noelios Consulting</a>.</i>]]></bottom>
       
       <tag name="associates"          scope="all" description="Design stereotype: " enabled="false"/>
       <tag name="clientCardinality"   scope="all" description="Design stereotype: " enabled="false"/>
@@ -175,7 +175,7 @@
            verbose="false"
            excludepackagenames="com.noelios.restlet.test">
       
-      <bottom><![CDATA[<i>Copyright &#169; 2005 J&eacute;r&ocirc;me Louvel. All Rights Reserved. Restlet is a registered trademark and servicemark of Noelios Consulting.</i>]]></bottom>
+      <bottom><![CDATA[<i>Copyright &#169; 2005 J&eacute;r&ocirc;me Louvel. All Rights Reserved. Restlet is a trademark and servicemark of <a target="_top" href="http://www.noelios.com/en">Noelios Consulting</a>.</i>]]></bottom>
       
       <tag name="associates"          scope="all" description="Design stereotype: " enabled="false"/>
       <tag name="clientCardinality"   scope="all" description="Design stereotype: " enabled="false"/>

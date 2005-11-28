@@ -59,7 +59,6 @@ To do list:
     * Integration with Grizzly server HTTP connector (from Sun’s Glassfish project)
     * Integration with Apache Tomcat Coyote server HTTP connector
     * Integration with Apache Commons HttpClient client HTTP connector
-    * Allow configuration of a restlet server using an XML document (containers, connectors, maplets, restlets, etc.).
     * Dynamic management of restlet servers, containers, etc.
           o Web console
           o JMX handlers

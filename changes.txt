@@ -4,6 +4,10 @@
 -----------------------------
 
 
+0.12 beta
+ - ...
+ 
+
 0.11 beta
  - Renamed JettyConnector to JettyServer
  - Removed unnecessary HttpServer interface
