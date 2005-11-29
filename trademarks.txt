@@ -1,20 +1,21 @@
               TRADEMARKS NOTICE
           Version 1, November 2005
 
-   The trademarks "Restlet" and "Noelios" are the property of Jerome Louvel
-and can't be used to endorse or promote products derived from this software
-without prior written permission from the trademarks owner.
+   The trademarks and service marks "Restlet" and "Noelios" are the sole
+property of Jerome Louvel and can't be used to endorse or promote 
+products derived from this software without prior written permission from
+their owner.
 
-   Products derived from this software may not be called "Restlet" or 
-"Noelios" nor may "Restlet" or "Noelios" or similar confusing terms appear 
-in their names without prior written permission. 
+   Products or services derived from this software may not be called 
+"Restlet" or "Noelios" nor may "Restlet" or "Noelios" or similar confusing
+terms appear in their names without prior written permission. 
 
-   For written permission, please contact the trademarks owner:
+   For written permission, please contact the owner:
 
       Jerome LOUVEL
       69 rue Carnot
       92300 Levallois Perret
       FRANCE
-      jerome.louvel@noelios.com
+      contact@noelios.com
    
 __________________________________________________________________________

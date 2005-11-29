@@ -3,9 +3,9 @@
 ---  Restlet API and Noelios Restlet Engine  ---
 ------------------------------------------------
 
-Version : 0.11 beta
-Date    : 11/25/2005
-Author  : Jerome Louvel (mailto:jerome.louvel@noelios.com)
+Version : 0.12 beta
+Date    : 12/**/2005
+Author  : Jerome Louvel (mailto:contact@noelios.com)
 Home    : http://www.restlet.org
 
 Mission
@@ -74,4 +74,4 @@ Licensing
     * For redistribution with commercial software, a license can be purchased.
 
 
-Copyright © 2005 Jérôme Louvel. Restlet is a trademark and servicemark of Noelios Consulting.
+Copyright © 2005 Jérôme Louvel. Restlet is a trademark and service mark of Noelios Consulting.
