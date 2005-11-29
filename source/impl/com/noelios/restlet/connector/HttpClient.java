@@ -37,7 +37,7 @@ import com.noelios.restlet.data.ReferenceImpl;
 import com.noelios.restlet.data.StatusImpl;
 
 /**
- * HTTP client base on J2SE 5.0 HttpURLConnection class.
+ * HTTP client based on J2SE 5.0 HttpURLConnection class.
  */
 public class HttpClient extends AbstractConnector implements Client
 {

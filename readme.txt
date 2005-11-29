@@ -6,7 +6,7 @@
 Version : 0.11 beta
 Date    : 11/25/2005
 Author  : Jerome Louvel (mailto:jerome.louvel@noelios.com)
-Home    : http://www.restlet.com
+Home    : http://www.restlet.org
 
 Mission
 -------
@@ -51,14 +51,15 @@ To do list:
     * Add support for SOAP XML message (via Apache Axis?)
     * Add better logging of errors
     * More testing of the JDBC and HTTP client connectors
+    * Integration with Spring
+    * Integration with Hibernate
+    * Integration with Grizzly server HTTP connector (from Sun’s Glassfish project)
+    * Integration with Apache Commons HttpClient client HTTP connector
+    * Integration with Apache Tomcat Coyote server HTTP connector
     * Integration with Jetty 6 for efficient NIO usage
     * Add a SQLClient that provides a closer integration than the JdbcClient.
           o See the PHP REST SQL project at http://phprestsql.sourceforge.net/
-    * Add integration with Hibernate
-    * Add integration with EJB 3.0 and other useful JEE APIs
-    * Integration with Grizzly server HTTP connector (from Sun’s Glassfish project)
-    * Integration with Apache Tomcat Coyote server HTTP connector
-    * Integration with Apache Commons HttpClient client HTTP connector
+    * Integration with EJB 3.0 and other useful JEE APIs
     * Dynamic management of restlet servers, containers, etc.
           o Web console
           o JMX handlers
