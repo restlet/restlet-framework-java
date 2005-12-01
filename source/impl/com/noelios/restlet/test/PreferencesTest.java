@@ -1,33 +1,37 @@
 /*
- * Copyright © 2005 Jérôme LOUVEL.
- *
- * This program is free software; you can redistribute it and/or modify
- * it under the terms of the GNU General Public License as published by
- * the Free Software Foundation; either version 2 of the License, or
- * (at your option) any later version.
- *
- * This program is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU General Public License for more details.
- *
- * You should have received a copy of the GNU General Public License
- * along with this program; if not, write to the Free Software
- * Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
+ * Copyright 2005 Jérôme LOUVEL
+ * 
+ * The contents of this file are subject to the terms 
+ * of the Common Development and Distribution License 
+ * (the "License").  You may not use this file except 
+ * in compliance with the License.
+ * 
+ * You can obtain a copy of the license at 
+ * http://www.opensource.org/licenses/cddl1.txt 
+ * See the License for the specific language governing 
+ * permissions and limitations under the License.
+ * 
+ * When distributing Covered Code, include this CDDL 
+ * HEADER in each file and include the License file at 
+ * http://www.opensource.org/licenses/cddl1.txt
+ * If applicable, add the following below this CDDL 
+ * HEADER, with the fields enclosed by brackets "[]"
+ * replaced with your own identifying information: 
+ * Portions Copyright [yyyy] [name of copyright owner]
  */
 
 package com.noelios.restlet.test;
 
-import com.noelios.restlet.data.PreferenceReaderImpl;
-
+import java.io.IOException;
 import java.util.Iterator;
 
-import org.restlet.RestletException;
+import junit.framework.TestCase;
+
 import org.restlet.data.MediaType;
 import org.restlet.data.Parameter;
 import org.restlet.data.Preference;
 
-import junit.framework.TestCase;
+import com.noelios.restlet.data.PreferenceReaderImpl;
 
 /**
  * Unit tests for the Preference related classes. Based on JUnit framework.
@@ -43,7 +47,7 @@ public class PreferencesTest extends TestCase
     * Tests the preferences parsing.
     * @throws RestletException
     */
-   public void testParsing() throws RestletException
+   public void testParsing() throws IOException
    {
       String headerValue = "text/*;q=0.3, text/html;q=0.7, text/html;level=1, text/html;LEVEL=2;q=0.4;ext1, */*;q=0.5";
       PreferenceReaderImpl pr = new PreferenceReaderImpl(PreferenceReaderImpl.TYPE_MEDIA_TYPE, headerValue);

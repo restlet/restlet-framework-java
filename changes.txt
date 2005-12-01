@@ -5,7 +5,9 @@
 
 
 0.12 beta
- - ...
+ - Distribution license changed from GPL to CDDL (similar to Mozilla Public License).
+ - Added createCharacterSet() to Factory interface, Manager and Engine classes.
+ - HttpClient now correctly sets the output media type and character set when available.
  
 
 0.11 beta

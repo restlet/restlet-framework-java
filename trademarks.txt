@@ -1,5 +1,5 @@
               TRADEMARKS NOTICE
-          Version 1, November 2005
+         Version 2.0, November 2005
 
    The trademarks and service marks "Restlet" and "Noelios" are the sole
 property of Jerome Louvel and can't be used to endorse or promote 
@@ -10,12 +10,12 @@ their owner.
 "Restlet" or "Noelios" nor may "Restlet" or "Noelios" or similar confusing
 terms appear in their names without prior written permission. 
 
-   For written permission, please contact the owner:
+   For licensing, please contact the owner:
 
       Jerome LOUVEL
       69 rue Carnot
       92300 Levallois Perret
       FRANCE
-      contact@noelios.com
+      licensing@noelios.com
    
 __________________________________________________________________________

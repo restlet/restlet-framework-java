@@ -1,19 +1,23 @@
 /*
- * Copyright © 2005 Jérôme LOUVEL.
- *
- * This program is free software; you can redistribute it and/or modify
- * it under the terms of the GNU General Public License as published by
- * the Free Software Foundation; either version 2 of the License, or
- * (at your option) any later version.
- *
- * This program is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU General Public License for more details.
- *
- * You should have received a copy of the GNU General Public License
- * along with this program; if not, write to the Free Software
- * Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
+ * Copyright 2005 Jérôme LOUVEL
+ * 
+ * The contents of this file are subject to the terms 
+ * of the Common Development and Distribution License 
+ * (the "License").  You may not use this file except 
+ * in compliance with the License.
+ * 
+ * You can obtain a copy of the license at 
+ * http://www.opensource.org/licenses/cddl1.txt 
+ * See the License for the specific language governing 
+ * permissions and limitations under the License.
+ * 
+ * When distributing Covered Code, include this CDDL 
+ * HEADER in each file and include the License file at 
+ * http://www.opensource.org/licenses/cddl1.txt
+ * If applicable, add the following below this CDDL 
+ * HEADER, with the fields enclosed by brackets "[]"
+ * replaced with your own identifying information: 
+ * Portions Copyright [yyyy] [name of copyright owner]
  */
 
 package org.restlet;

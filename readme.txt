@@ -4,7 +4,7 @@
 ------------------------------------------------
 
 Version : 0.12 beta
-Date    : 12/**/2005
+Date    : 12/01/2005
 Author  : Jerome Louvel (mailto:contact@noelios.com)
 Home    : http://www.restlet.org
 
@@ -46,7 +46,7 @@ Dependencies
           o Supporting third-party libraries
 
 To do list:
-    * Finish the implementation of the client HTTP connector (cookies, user agent preferences)
+    * Complete the implementation of the client HTTP connector (cookies, user agent preferences)
     * Implement the cache control options for Jetty connector and for the FileRepresentation.
     * Add support for SOAP XML message (via Apache Axis?)
     * Add better logging of errors
@@ -65,13 +65,11 @@ To do list:
           o JMX handlers
 
 
-Licensing
----------
-    * "Restlet API" and "Noelios Restlet Engine" are distributed under the GPL license.
-    * Internal use and modification is freely allowed for any purpose.
-    * Redistribution with GPL-compatible software is freely allowed.
-    * For redistribution with other OSI approved open source software, a free license can be requested.
-    * For redistribution with commercial software, a license can be purchased.
-
+Legal
+-----
+    * "Restlet API" and "Noelios Restlet Engine" are distributed under the CDDL license (similar to Mozilla Public License).
+    * "Noelios" and "Restlet" are trademarks and service marks of Noelios Consulting. Registration in progress.
+    * Commercial licenses for source code or trademark can be purchased (mailto:licensing@noelios.com).
+    
 
 Copyright © 2005 Jérôme Louvel. Restlet is a trademark and service mark of Noelios Consulting.

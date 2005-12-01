@@ -1,13 +1,13 @@
               COPYRIGHT NOTICE
-          Version 1, November 2005
+         Version 2.0, December 2005
 
-   This software distribution is covered by this copyright notice. This
-includes the following software components:
+   This software distribution is covered by this copyright notice. 
+This includes the following software components:
       1) Restlet API (org.restlet package)
       2) Noelios Restlet Engine (com.noelios.restlet package)
       3) All other files containing a proper copyright notice
       
-   All third-party libraries distributed with this software remain the
+   All third-party libraries redistributed with this software remain the
 property of their respective copyright owners and are subject to separate
 license agreements.
 
@@ -21,21 +21,25 @@ license agreements.
 
 __________________________________________________________________________
 
-Copyright (C) 2005 Jérôme LOUVEL
+Copyright 2005 Jérôme LOUVEL
 
-This program is free software; you can redistribute it and/or modify
-it under the terms of the GNU General Public License as published by
-the Free Software Foundation; either version 2 of the License, or
-(at your option) any later version.
+The contents of this file are subject to the terms 
+of the Common Development and Distribution License 
+(the "License").  You may not use this file except 
+in compliance with the License.
+ 
+You can obtain a copy of the license at 
+http://www.opensource.org/licenses/cddl1.txt 
+See the License for the specific language governing 
+permissions and limitations under the License.
 
-This program is distributed in the hope that it will be useful,
-but WITHOUT ANY WARRANTY; without even the implied warranty of
-MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-GNU General Public License for more details.
-
-You should have received a copy of the GNU General Public License
-along with this program; if not, write to the Free Software
-Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
+When distributing Covered Code, include this CDDL 
+HEADER in each file and include the License file at 
+http://www.opensource.org/licenses/cddl1.txt
+If applicable, add the following below this CDDL 
+HEADER, with the fields enclosed by brackets "[]"
+replaced with your own identifying information: 
+Portions Copyright [yyyy] [name of copyright owner]
 __________________________________________________________________________
 
 

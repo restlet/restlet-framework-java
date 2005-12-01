@@ -1,19 +1,23 @@
 /*
- * Copyright © 2005 Jérôme LOUVEL.
- *
- * This program is free software; you can redistribute it and/or modify
- * it under the terms of the GNU General Public License as published by
- * the Free Software Foundation; either version 2 of the License, or
- * (at your option) any later version.
- *
- * This program is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU General Public License for more details.
- *
- * You should have received a copy of the GNU General Public License
- * along with this program; if not, write to the Free Software
- * Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
+ * Copyright 2005 Jérôme LOUVEL
+ * 
+ * The contents of this file are subject to the terms 
+ * of the Common Development and Distribution License 
+ * (the "License").  You may not use this file except 
+ * in compliance with the License.
+ * 
+ * You can obtain a copy of the license at 
+ * http://www.opensource.org/licenses/cddl1.txt 
+ * See the License for the specific language governing 
+ * permissions and limitations under the License.
+ * 
+ * When distributing Covered Code, include this CDDL 
+ * HEADER in each file and include the License file at 
+ * http://www.opensource.org/licenses/cddl1.txt
+ * If applicable, add the following below this CDDL 
+ * HEADER, with the fields enclosed by brackets "[]"
+ * replaced with your own identifying information: 
+ * Portions Copyright [yyyy] [name of copyright owner]
  */
 
 package com.noelios.restlet.data;
@@ -25,7 +29,6 @@ import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
 
-import org.restlet.RestletException;
 import org.restlet.data.Metadata;
 import org.restlet.data.Parameter;
 import org.restlet.data.Preference;
@@ -83,7 +86,7 @@ public class PreferenceReaderImpl extends HeaderReaderImpl
             currentPref = readPreference();
          }
       }
-      catch(RestletException re)
+      catch(IOException re)
       {
          re.printStackTrace();
       }
@@ -96,7 +99,7 @@ public class PreferenceReaderImpl extends HeaderReaderImpl
     * @return The next preference.
     * @throws RestletException
     */
-   public Preference readPreference() throws RestletException
+   public Preference readPreference() throws IOException
    {
       Preference result = null;
 
@@ -111,158 +114,145 @@ public class PreferenceReaderImpl extends HeaderReaderImpl
       List<Parameter> parameters = null;
       int nextChar = 0;
 
-      try
+      while((result == null) && (nextChar != -1))
       {
-         while((result == null) && (nextChar != -1))
-         {
-            nextChar = read();
+         nextChar = read();
 
-            if(readingMetadata)
+         if(readingMetadata)
+         {
+            if((nextChar == ',') || (nextChar == -1))
             {
-               if((nextChar == ',') || (nextChar == -1))
+               if(metadataBuffer.length() > 0)
                {
-                  if(metadataBuffer.length() > 0)
-                  {
-                     // End of metadata section
-                     // No parameters detected
-                     result = createPreference(metadataBuffer, null);
-                     paramNameBuffer = new StringBuilder();
-                  }
-                  else if(nextChar == -1)
-                  {
-                     // Do nothing return null preference
-                  }
-                  else
-                  {
-                     throw new RestletException("Empty metadata name detected",
-                           "Please check your metadata names");
-                  }
+                  // End of metadata section
+                  // No parameters detected
+                  result = createPreference(metadataBuffer, null);
+                  paramNameBuffer = new StringBuilder();
                }
-               else if(nextChar == ';')
+               else if(nextChar == -1)
                {
-                  if(metadataBuffer.length() > 0)
-                  {
-                     // End of metadata section
-                     // Parameters detected
-                     readingMetadata = false;
-                     readingParamName = true;
-                     paramNameBuffer = new StringBuilder();
-                     parameters = new ArrayList<Parameter>();
-                  }
-                  else
-                  {
-                     throw new RestletException("Empty metadata name detected",
-                           "Please check your metadata names");
-                  }
-               }
-               else if(nextChar == ' ')
-               {
-                  // Ignore white spaces
-               }
-               else if(isText(nextChar))
-               {
-                  metadataBuffer.append((char)nextChar);
+                  // Do nothing return null preference
                }
                else
                {
-                  throw new RestletException("Control characters are not allowed within a metadata name",
-                        "Please check your metadata names");
+                  throw new IOException("Empty metadata name detected.");
                }
             }
-            else if(readingParamName)
+            else if(nextChar == ';')
             {
-               if(nextChar == '=')
+               if(metadataBuffer.length() > 0)
                {
-                  if(paramNameBuffer.length() > 0)
-                  {
-                     // End of parameter name section
-                     readingParamName = false;
-                     readingParamValue = true;
-                     paramValueBuffer = new StringBuilder();
-                  }
-                  else
-                  {
-                     throw new RestletException("Empty parameter name detected",
-                           "Please check your parameter names");
-                  }
-               }
-               else if((nextChar == ',') || (nextChar == -1))
-               {
-                  if(paramNameBuffer.length() > 0)
-                  {
-                     // End of parameters section
-                     parameters.add(createParameter(paramNameBuffer, null));
-                     result = createPreference(metadataBuffer, parameters);
-                  }
-                  else
-                  {
-                     throw new RestletException("Empty parameter name detected",
-                           "Please check your parameter names");
-                  }
-               }
-               else if(nextChar == ';')
-               {
-                  // End of parameter
-                  parameters.add(createParameter(paramNameBuffer, null));
-                  paramNameBuffer = new StringBuilder();
+                  // End of metadata section
+                  // Parameters detected
+                  readingMetadata = false;
                   readingParamName = true;
-                  readingParamValue = false;
-               }
-               else if(isTokenChar(nextChar))
-               {
-                  paramNameBuffer.append((char)nextChar);
+                  paramNameBuffer = new StringBuilder();
+                  parameters = new ArrayList<Parameter>();
                }
                else
                {
-                  throw new RestletException(
-                        "Separator and control characters are not allowed within a token",
-                        "Please check your parameter names");
+                  throw new IOException("Empty metadata name detected.");
                }
             }
-            else if(readingParamValue)
+            else if(nextChar == ' ')
             {
-               if((nextChar == ',') || (nextChar == -1))
-               {
-                  if(paramValueBuffer.length() > 0)
-                  {
-                     // End of parameters section
-                     parameters.add(createParameter(paramNameBuffer, paramValueBuffer));
-                     result = createPreference(metadataBuffer, parameters);
-                  }
-                  else
-                  {
-                     throw new RestletException("Empty parameter value detected",
-                           "Please check your parameter values");
-                  }
-               }
-               else if(nextChar == ';')
-               {
-                  // End of parameter
-                  parameters.add(createParameter(paramNameBuffer, paramValueBuffer));
-                  paramNameBuffer = new StringBuilder();
-                  readingParamName = true;
-                  readingParamValue = false;
-               }
-               else if((nextChar == '"') && (paramValueBuffer.length() == 0))
-               {
-                  paramValueBuffer.append(readQuotedString());
-               }
-               else if(isTokenChar(nextChar))
-               {
-                  paramValueBuffer.append((char)nextChar);
-               }
-               else
-               {
-                  throw new RestletException(
-                        "Separator and control characters are not allowed within a token",
-                        "Please check your parameter values");
-               }
+               // Ignore white spaces
+            }
+            else if(isText(nextChar))
+            {
+               metadataBuffer.append((char)nextChar);
+            }
+            else
+            {
+               throw new IOException("Control characters are not allowed within a metadata name.");
             }
          }
-      }
-      catch(IOException ioe)
-      {
-         throw new RestletException("Unexpected I/O exception", "Please contact the administrator");
+         else if(readingParamName)
+         {
+            if(nextChar == '=')
+            {
+               if(paramNameBuffer.length() > 0)
+               {
+                  // End of parameter name section
+                  readingParamName = false;
+                  readingParamValue = true;
+                  paramValueBuffer = new StringBuilder();
+               }
+               else
+               {
+                  throw new IOException("Empty parameter name detected.");
+               }
+            }
+            else if((nextChar == ',') || (nextChar == -1))
+            {
+               if(paramNameBuffer.length() > 0)
+               {
+                  // End of parameters section
+                  parameters.add(createParameter(paramNameBuffer, null));
+                  result = createPreference(metadataBuffer, parameters);
+               }
+               else
+               {
+                  throw new IOException("Empty parameter name detected.");
+               }
+            }
+            else if(nextChar == ';')
+            {
+               // End of parameter
+               parameters.add(createParameter(paramNameBuffer, null));
+               paramNameBuffer = new StringBuilder();
+               readingParamName = true;
+               readingParamValue = false;
+            }
+            else if((nextChar == ' ') && (paramNameBuffer.length() == 0))
+            {
+               // Ignore white spaces
+            }
+            else if(isTokenChar(nextChar))
+            {
+               paramNameBuffer.append((char)nextChar);
+            }
+            else
+            {
+               throw new IOException("Separator and control characters are not allowed within a token.");
+            }
+         }
+         else if(readingParamValue)
+         {
+            if((nextChar == ',') || (nextChar == -1))
+            {
+               if(paramValueBuffer.length() > 0)
+               {
+                  // End of parameters section
+                  parameters.add(createParameter(paramNameBuffer, paramValueBuffer));
+                  result = createPreference(metadataBuffer, parameters);
+               }
+               else
+               {
+                  throw new IOException("Empty parameter value detected");
+               }
+            }
+            else if(nextChar == ';')
+            {
+               // End of parameter
+               parameters.add(createParameter(paramNameBuffer, paramValueBuffer));
+               paramNameBuffer = new StringBuilder();
+               readingParamName = true;
+               readingParamValue = false;
+            }
+            else if((nextChar == '"') && (paramValueBuffer.length() == 0))
+            {
+               paramValueBuffer.append(readQuotedString());
+            }
+            else if(isTokenChar(nextChar))
+            {
+               paramValueBuffer.append((char)nextChar);
+            }
+            else
+            {
+               throw new IOException("Separator and control characters are not allowed within a token");
+            }
+         }
       }
 
       return result;
