@@ -1,0 +1,115 @@
+<html>
+<head>
+ <style type="text/css">
+/* <![CDATA[ */
+@import "http://www.tigris.org/branding/css/tigris.css";
+@import "http://www.tigris.org/branding/css/inst.css";
+/*  ]]> */
+ </style>
+  <link rel="stylesheet" type="text/css" href="http://www.tigris.org/branding/css/print.css" media="print" />
+<script src="http://www.tigris.org/branding/scripts/tigris.js" type="text/javascript">
+</script>
+ <title>Restlet - Tutorial</title>
+</head>
+<body>
+
+<a target="_top" href="http://www.restlet.org"><img src="images/logo200.gif"/></a><br/>
+
+<br/>
+
+<h1>Tutorial</h1>
+
+<h3>1. Registering the Restlet API implementation</h3>
+
+<p>
+   The Restlet framework is composed of two parts. First, there is the "Restlet API", a neutral API supporting the concepts of REST and a mechanism called Restlet facilitating the handling of REST calls. This API must be supported by a "Restlet Implementation" before it can be effectively used. Multiple providers could provide an implementation (open source projects, commercial products).
+</p>
+<p>
+   This separation between the API and the implementation is similar to the one between the Servlet API and your preferred Web container or Servlet engine, or between the JDBC API and your JDBC driver.
+</p>
+<p>
+   Currently, only the Reference Implementation (RI) is available, the "Noelios Restlet Engine" (NRE), which is by the way an open source project. When you download the Restlet framework, the API and the NRE come bundled together, ready to be used. You only need to add the following line before working with the framework:
+</p>
+<pre>
+   com.noelios.restlet.Engine.register();
+</pre>
+<p>
+   Internally, the NRE registers itself as the current implementation by calling back <code>org.restlet.Manager.registerFactory()</code>, passing a new instance of itself as a parameter.
+</p>
+
+<h3>2. Outputting the content of a Web page</h3>
+
+<p>
+   As we mentionned in the introduction paper, the Restlet framework is at the same time a client and server framework. For example, NRE can easily work with remote resources using its HTTP client connector. A connector in REST, is a sofware component that enables the communication between resources, typically by implementing one side of a network protocol. Here we will get the representation of an existing resource and output it in the JVM console:
+</p>
+<pre>
+   import com.noelios.restlet.connector.HttpClient;
+
+   try
+   {
+      HttpClient client = new HttpClient("My Web client");
+      client.doGet("http://www.restlet.org").write(System.out);
+   }
+   catch(IOException e)
+   {
+      e.printStackTrace();
+   }
+</pre>
+<p>
+   Note that the example above uses a simplified way to issue calls via the HttpClient. A more flexible way is to create a new REST call and to ask the HTTP client to handle it. The Manager class also has a factory role ; it is a neutral access point to the registered Restlet implementation. The example below could be a good basis to set some preferences in your call, like the languages or media types you prefer to receive as a response:
+</p>
+<pre>
+   import java.io.IOException;
+   import org.restlet.Manager;
+   import org.restlet.UniformCall;
+   import org.restlet.data.Methods;
+   import org.restlet.data.Reference;
+   import org.restlet.data.Representation;
+   import com.noelios.restlet.connector.HttpClient;
+
+   try
+   {
+      // Prepare the REST call
+      UniformCall call = Manager.createCall();
+      Reference uri = Manager.createReference("http://www.restlet.org");
+      call.setResourceUri(uri);
+      call.setMethod(Methods.GET);
+
+      // Ask to the HTTP client connector to handle the call
+      HttpClient client = new HttpClient("My Web client");
+      client.handle(call);
+
+      // Output the result representation on the JVM console
+      Representation output = call.getOutput();
+      output.write(System.out);
+   }
+   catch(IOException e)
+   {
+      e.printStackTrace();
+   }
+</pre>
+
+<h3>3. The classic "Hello World!"</h3>
+
+<p>
+   Launch a simple server HTTP connector which returns a string representation "Hello World!".
+</p>
+
+<h3>4. Serving static files</h3>
+<p>
+   Show the usage of the DirectoryRestlet which localization.
+</p>
+
+<p>
+   <a href="mailto:contact@noelios.com">J&eacute;r&ocirc;me Louvel</a> (<a target="_top" href="http://noelios.wordpress.com">blog</a>)<br/>
+</p>
+
+<br/>
+
+<small>
+   Version 0.1, last modified on 2005/12/02<br/>
+   Copyright &copy; 2005 J&eacute;r&ocirc;me Louvel. Restlet is a trademark and service mark of <a target="_top" href="http://www.noelios.com/en">Noelios Consulting</a>.
+</small>
+
+</body>
+</html>
