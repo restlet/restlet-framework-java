@@ -4,6 +4,13 @@
 -----------------------------
 
 
+0.13 beta
+ - Added a detailled tutorial
+ - Added doPut and doDelete methods to NRE HTTP client
+ - Added MediaTypes.TEXT_PLAIN
+ - Added code of tutorial examples in the com.noelios.restlet.test package
+
+
 0.12 beta
  - Distribution license changed from GPL to CDDL (similar to Mozilla Public License).
  - Added createCharacterSet() to Factory interface, Manager and Engine classes.

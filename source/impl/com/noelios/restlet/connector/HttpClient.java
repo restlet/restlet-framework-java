@@ -33,7 +33,6 @@ import org.restlet.connector.Client;
 import org.restlet.data.Methods;
 import org.restlet.data.Representation;
 
-import com.noelios.restlet.Engine;
 import com.noelios.restlet.UniformCallImpl;
 import com.noelios.restlet.data.ContentType;
 import com.noelios.restlet.data.InputRepresentation;
@@ -80,6 +79,36 @@ public class HttpClient extends AbstractConnector implements Client
       call.setResourceUri(new ReferenceImpl(resourceUri));
       call.setMethod(Methods.POST);
       call.setInput(input);
+      handle(call);
+      return call.getOutput();
+   }
+
+   /**
+    * Shortcut method that does a HTTP PUT on a remote resource.
+    * @param resourceUri The URI of the resource to modify.
+    * @param input The input representation to put.
+    * @return The representation returned.
+    */
+   public Representation doPut(String resourceUri, Representation input)
+   {
+      UniformCall call = new UniformCallImpl();
+      call.setResourceUri(new ReferenceImpl(resourceUri));
+      call.setMethod(Methods.PUT);
+      call.setInput(input);
+      handle(call);
+      return call.getOutput();
+   }
+
+   /**
+    * Shortcut method that does a HTTP DELETE on a remote resource.
+    * @param resourceUri The URI of the resource to delete.
+    * @return The representation returned.
+    */
+   public Representation doDelete(String resourceUri)
+   {
+      UniformCall call = new UniformCallImpl();
+      call.setResourceUri(new ReferenceImpl(resourceUri));
+      call.setMethod(Methods.DELETE);
       handle(call);
       return call.getOutput();
    }
@@ -152,22 +181,6 @@ public class HttpClient extends AbstractConnector implements Client
       catch(IOException e)
       {
          e.printStackTrace();
-      }
-   }
-
-   public static void main(String[] args)
-   {
-      try
-      {
-         Engine.register();
-         HttpClient client = new HttpClient("Test");
-         Representation result = client
-               .doGet("http://xml.amazon.com/onca/xml2?t=webservices-20&dev-t=D1UCR04XBIF4A6&page=1&f=xml&mode=books&type=lite&KeywordSearch='wombat'");
-         result.write(System.out);
-      }
-      catch(IOException ioe)
-      {
-         ioe.printStackTrace();
       }
    }
 

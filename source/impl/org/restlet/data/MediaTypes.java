@@ -30,7 +30,9 @@ import java.util.List;
  */
 public enum MediaTypes implements MediaType
 {
-   ALL, APPLICATION_ALL, APPLICATION_HTTP_COOKIES, APPLICATION_JAVA_OBJECT, APPLICATION_WWW_FORM, APPLICATION_XHTML_XML, APPLICATION_XML, IMAGE_ALL, IMAGE_GIF, IMAGE_ICON, IMAGE_PNG, TEXT_ALL, TEXT_CSS, TEXT_HTML, TEXT_URI, TEXT_XML;
+   ALL, APPLICATION_ALL, APPLICATION_HTTP_COOKIES, APPLICATION_JAVA_OBJECT, APPLICATION_WWW_FORM, 
+   APPLICATION_XHTML_XML, APPLICATION_XML, IMAGE_ALL, IMAGE_GIF, IMAGE_ICON, IMAGE_PNG, TEXT_ALL, 
+   TEXT_CSS, TEXT_HTML, TEXT_PLAIN, TEXT_URI, TEXT_XML;
 
    /**
     * Returns the metadata name like "text/html" or "compress" or "iso-8851-1".
@@ -83,6 +85,9 @@ public enum MediaTypes implements MediaType
             break;
          case TEXT_HTML:
             result = "text/html";
+            break;
+         case TEXT_PLAIN:
+            result = "text/plain";
             break;
          case TEXT_URI:
             result = "text/uri";
@@ -173,6 +178,9 @@ public enum MediaTypes implements MediaType
             break;
          case TEXT_HTML:
             result = "HTML text document";
+            break;
+         case TEXT_PLAIN:
+            result = "Plain text";
             break;
          case TEXT_URI:
             result = "Uniform Resource Identifier";
