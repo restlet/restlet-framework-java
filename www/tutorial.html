@@ -118,7 +118,28 @@
 </pre>
 
 <p>
-   If you run this code and launch your server, you can open a Web browser and hit the <a target="_top" href="http://localhost:8182">http://localhost:8182</a>. Actually, any URI will work, try also <a target="_top" href="http://localhost:8182/test/tutorial">http://localhost:8182/test/tutorial</a>. The handler that we created is very primitive
+   If you run this code and launch your server, you can open a Web browser and hit the <a target="_top" href="http://localhost:8182">http://localhost:8182</a>. Actually, any URI will work, try also <a target="_top" href="http://localhost:8182/test/tutorial">http://localhost:8182/test/tutorial</a>. The handler that we created is very primitive because it only uses the pure REST part of the Restlet framework. We will see next, how to take advantage of the Restlets and Maplets components.
+</p>
+
+<h3>4. Restlets servers and containers</h3>
+<p>
+   First, let's consider a typical architecture from a REST point of view. In the diagram below, circles represent the connector that enable the communication between components which are represented by the boxes. The blue links represents the network communication using a particular protocol (HTTP, SMTP, etc.). Note that the same component can have any number of client and server connectors attached to it. Web Server B, for example, has both a server connector to respond to requests from the User Agent component, and client connectors to send requests to the Database Server, the Mail Server and the Web Server A.
+</p>
+<p>
+   <img src="images/rest-architecture.gif"/>
+</p>
+<p>
+   In addition to supporting the REST software architecture elements presented before, we can also use Restlets which are handlers of calls to resources which live inside a parent container (called a Restlet container) and are selected by parsing the resource's URI.
+</p>
+<p>
+   Maplets are a kind of Restlets that can have other Restlets attached to them and that can automatically delegate calls to them based on a URI pattern. See below how multiple Restlet containers can live within a Restlet server. For example, this is very useful if you want to separate you domain resources (managed by container C) from your web server resources (managed by container A) and your web services resources (managed by container B).
+</p>
+<p>
+   Also, note that servers and containers are REST components themselves. This means that if your Restlet server has only one container, you can simply use it as your origin server and attach connectors normally.
+</p>
+<p>
+   <img src="images/restlet-server.gif"/>
+
 </p>
 
 <h3>4. Serving static files</h3>
@@ -133,7 +154,7 @@
 <br/>
 
 <small>
-   Version 0.2, last modified on 2005/12/02<br/>
+   Version 0.3, last modified on 2005/12/02<br/>
    Copyright &copy; 2005 J&eacute;r&ocirc;me Louvel. Restlet is a trademark and service mark of <a target="_top" href="http://www.noelios.com/en">Noelios Consulting</a>.
 </small>
 
