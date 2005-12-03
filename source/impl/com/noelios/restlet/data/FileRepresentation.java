@@ -22,6 +22,7 @@
 
 package com.noelios.restlet.data;
 
+import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.IOException;
@@ -29,6 +30,7 @@ import java.io.OutputStream;
 import java.io.RandomAccessFile;
 import java.nio.channels.FileChannel;
 import java.nio.channels.WritableByteChannel;
+import java.util.Date;
 
 import org.restlet.data.AbstractRepresentation;
 import org.restlet.data.MediaType;
@@ -40,8 +42,8 @@ import com.noelios.restlet.util.ByteUtils;
  */
 public class FileRepresentation extends AbstractRepresentation
 {
-   /** The file's path. */
-   protected String filePath;
+   /** The file descriptor. */
+   protected File file;
 
    /**
     * Constructor.
@@ -51,7 +53,9 @@ public class FileRepresentation extends AbstractRepresentation
    public FileRepresentation(String filePath, MediaType mediaType)
    {
       super(mediaType);
-      this.filePath = filePath;
+      this.file = new File(filePath);
+      this.modificationDate = new Date(file.lastModified());
+      this.mediaType = mediaType;
    }
 
    /**
@@ -90,7 +94,7 @@ public class FileRepresentation extends AbstractRepresentation
    {
       try
       {
-         return new FileInputStream(filePath);
+         return new FileInputStream(file);
       }
       catch(FileNotFoundException fnfe)
       {
@@ -107,7 +111,7 @@ public class FileRepresentation extends AbstractRepresentation
    {
       try
       {
-         RandomAccessFile raf = new RandomAccessFile(filePath, "r");
+         RandomAccessFile raf = new RandomAccessFile(file, "r");
          return raf.getChannel();
       }
       catch(FileNotFoundException fnfe)

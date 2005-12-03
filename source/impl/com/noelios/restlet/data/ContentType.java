@@ -30,11 +30,18 @@ import org.restlet.data.MediaType;
 import org.restlet.data.Preference;
 
 /**
- * Represents a content type header.
+ * Represents a content type, associating a media type with a character set.
  */
 public class ContentType
 {
+   /**
+    * The content media type.
+    */
    protected MediaType mediaType;
+   
+   /**
+    * The content character set.
+    */
    protected CharacterSet characterSet;
    
    /**

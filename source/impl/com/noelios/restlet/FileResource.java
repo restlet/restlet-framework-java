@@ -31,6 +31,8 @@ import org.restlet.data.CharacterSet;
 import org.restlet.data.Language;
 import org.restlet.data.MediaType;
 import org.restlet.data.Metadata;
+import org.restlet.data.Method;
+import org.restlet.data.Methods;
 import org.restlet.data.Representation;
 import org.restlet.data.RepresentationMetadata;
 
@@ -117,6 +119,17 @@ public class FileResource implements Resource
       // Remove the extensions from the base name
       int dotIndex = this.baseName.indexOf('.');
       if(dotIndex != -1) this.baseName = this.baseName.substring(0, dotIndex);
+   }
+
+   /**
+    * Returns the list of allowed methods.
+    * @return The list of allowed methods.
+    */
+   public List<Method> getMethods()
+   {
+      List<Method> result = new ArrayList<Method>();
+      result.add(Methods.GET);
+      return result;
    }
 
    /**

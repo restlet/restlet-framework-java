@@ -3,8 +3,8 @@
 ---  Restlet API and Noelios Restlet Engine  ---
 ------------------------------------------------
 
-Version : 0.12 beta
-Date    : 12/01/2005
+Version : 0.13 beta
+Date    : 12/03/2005
 Author  : Jerome Louvel (mailto:contact@noelios.com)
 Home    : http://www.restlet.org
 
@@ -47,19 +47,16 @@ Dependencies
 
 To do list:
     * Complete the implementation of the client HTTP connector (cookies, user agent preferences)
-    * Implement the cache control options for Jetty connector and for the FileRepresentation.
     * Add support for SOAP XML message (via Apache Axis?)
-    * Add better logging of errors
-    * More testing of the JDBC and HTTP client connectors
     * Integration with Spring
-    * Integration with Hibernate
+    * Add better logging
+    * Integration with Jetty 6 for efficient NIO usage
     * Integration with Grizzly server HTTP connector (from Sun’s Glassfish project)
     * Integration with Apache Commons HttpClient client HTTP connector
     * Integration with Apache Tomcat Coyote server HTTP connector
-    * Integration with Jetty 6 for efficient NIO usage
     * Add a SQLClient that provides a closer integration than the JdbcClient.
           o See the PHP REST SQL project at http://phprestsql.sourceforge.net/
-    * Integration with EJB 3.0 and other useful JEE APIs
+    * Integration with Hibernate
     * Dynamic management of restlet servers, containers, etc.
           o Web console
           o JMX handlers

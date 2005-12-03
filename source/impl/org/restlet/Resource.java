@@ -24,6 +24,7 @@ package org.restlet;
 
 import java.util.List;
 
+import org.restlet.data.Method;
 import org.restlet.data.Representation;
 import org.restlet.data.RepresentationMetadata;
 
@@ -39,6 +40,12 @@ import org.restlet.data.RepresentationMetadata;
  */
 public interface Resource
 {
+   /**
+    * Returns the list of allowed methods.
+    * @return The list of allowed methods.
+    */
+   public List<Method> getMethods();
+   
    /**
     * Returns the representation variants metadata.
     * @return The representation variants metadata.

@@ -38,6 +38,7 @@ import org.mortbay.http.HttpResponse;
 import org.restlet.UniformCall;
 import org.restlet.data.CookieSetting;
 import org.restlet.data.MediaTypes;
+import org.restlet.data.RepresentationMetadata;
 
 /**
  * Restlet handler for Jetty HTTP calls.
@@ -114,7 +115,37 @@ public class JettyConnection extends HttpConnection
          // If an output was set during the call, copy it to the output stream;
          if(call.getOutput() != null)
          {
-            response.setContentType(call.getOutput().getMetadata().getMediaType().toString());
+            RepresentationMetadata meta = call.getOutput().getMetadata();
+            
+            if(meta.getMediaType() != null)
+            {
+               StringBuilder contentType = new StringBuilder(meta.getMediaType().toString());
+
+               if(meta.getCharacterSet() != null)
+               {
+                  // Specify the character set parameter
+                  contentType.append("; charset=").append(meta.getCharacterSet().getName());
+               }
+               
+               response.setContentType(contentType.toString());
+            }
+            
+            if(meta.getExpirationDate() != null)
+            {
+               response.addDateField("Expires", meta.getExpirationDate());
+            }
+            
+            if(meta.getModificationDate() != null)
+            {
+               response.addDateField("Last-Modified", meta.getModificationDate());
+            }
+            
+            if(meta.getTag() != null)
+            {
+               response.addField("ETag", meta.getTag().getName());
+            }
+            
+            // Send the output to the client
             call.getOutput().write(response.getOutputStream());
          }
 

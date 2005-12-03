@@ -28,6 +28,8 @@ import java.io.OutputStream;
 import java.nio.channels.ReadableByteChannel;
 import java.nio.channels.WritableByteChannel;
 
+import org.restlet.Resource;
+
 /**
  * Current or intended state of a resource. For performance purpose, it is essential that a minimal overhead
  * occurs upon initialization. Most overhead should occurs during invocation of content processing methods
@@ -41,6 +43,18 @@ import java.nio.channels.WritableByteChannel;
  */
 public interface Representation extends Data
 {
+   /**
+    * Returns the represented resource if available.
+    * @return The represented resource if available.
+    */
+   public Resource getResource();
+
+   /**
+    * Sets the represented resource.
+    * @param resource The represented resource.
+    */
+   public void setResource(Resource resource);
+   
    /**
     * Returns the metadata.
     * @return The metadata.

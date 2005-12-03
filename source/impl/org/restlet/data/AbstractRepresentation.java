@@ -22,11 +22,18 @@
 
 package org.restlet.data;
 
+import org.restlet.Resource;
+
 /**
  * Abstract resource representation.
  */
 public abstract class AbstractRepresentation extends DefaultRepresentationMetadata implements Representation
 {
+   /** 
+    * The represented resource, if available.
+    */
+   protected Resource resource;
+   
    /**
     * Constructor.
     * @param mediaType The media type.
@@ -34,6 +41,24 @@ public abstract class AbstractRepresentation extends DefaultRepresentationMetada
    public AbstractRepresentation(MediaType mediaType)
    {
       super(mediaType);
+   }
+
+   /**
+    * Returns the represented resource if available.
+    * @return The represented resource if available.
+    */
+   public Resource getResource()
+   {
+      return this.resource;
+   }
+
+   /**
+    * Sets the represented resource.
+    * @param resource The represented resource.
+    */
+   public void setResource(Resource resource)
+   {
+      this.resource = resource;
    }
 
    /**

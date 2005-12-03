@@ -5,10 +5,19 @@
 
 
 0.13 beta
- - Added a detailled tutorial
+ - Added a detailled tutorial (draft version)
  - Added doPut and doDelete methods to NRE HTTP client
  - Added MediaTypes.TEXT_PLAIN
  - Added code of tutorial examples in the com.noelios.restlet.test package
+ - Implemented the getLastModificationDate() for FileRepresentation
+ - Correctly sets the media type parameter passed to FileRepresentation
+ - JettyConnection now sets the charset parameter for content-type headers, when a character set is defined
+ - JettyConnection now sets the ETag header when a tag is defined
+ - JettyConnection now sets the Expires header when an expiration date is defined
+ - JettyConnection now sets the Last-Modified header when a modification date is defined
+ - Added getMethods() method to org.restlet.Resource and FileResource, to return allowed methods
+ - Added setResource() and getResource() to the Representation interface and AbstractRepresentation class
+ - Moved connector handling methods from OriginServer to Component as other components (proxies, user agents, etc.) can have connectors attached to them
 
 
 0.12 beta
