@@ -3,6 +3,7 @@ com.noelios.restlet.component
 com.noelios.restlet.connector
 com.noelios.restlet.data
 com.noelios.restlet.ext.freemarker
-com.noelios.restlet.ext.jee
+com.noelios.restlet.ext.javamail
+com.noelios.restlet.ext.jdbc
 com.noelios.restlet.ext.jetty
 com.noelios.restlet.util
