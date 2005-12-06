@@ -374,10 +374,10 @@
     </jar>
     
     <!-- Create the final zip file -->
-    <!-- <zip destfile="${dist}/restlet-${version.compact}.zip" basedir="${dist}/${DSTAMP}" includes="**/*"/> -->
+    <zip destfile="${dist}/restlet-${version.compact}.zip" basedir="${dist}/${DSTAMP}" includes="**/*"/>
 
     <!-- Remove the temporary files -->
-    <!-- <delete dir="${dist}/${DSTAMP}" verbose="false" quiet="true" includeEmptyDirs="true"/> -->
+    <delete dir="${dist}/${DSTAMP}" verbose="false" quiet="true" includeEmptyDirs="true"/>
    
   </target>
 
