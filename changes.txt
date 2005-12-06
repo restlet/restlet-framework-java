@@ -4,6 +4,14 @@
 -----------------------------
 
 
+0.14 beta
+ - Added integration with Jetty 6.0.0 beta 5
+ - Modified the build and packaging, especially for extensions
+      - needed to support the two versions of Jetty adapter (5.1 and 6.0 beta)
+      - allows ligth deployments of NRE (only one JAR file) 
+ - 
+ 
+
 0.13 beta
  - Added a detailled tutorial (draft version)
  - Added doPut and doDelete methods to NRE HTTP client
