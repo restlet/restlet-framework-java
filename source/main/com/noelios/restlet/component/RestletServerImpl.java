@@ -35,7 +35,7 @@ import org.restlet.component.RestletServer;
  * normally handled via pluggable server connectors. Outcoming calls are normally handled via pluggable client
  * connectors. Other direct calls are handled by the default container.
  */
-public class RestletServerImpl extends OriginServerImpl implements RestletServer
+public class RestletServerImpl extends ComponentImpl implements RestletServer
 {
    /**
     * The restlets containers.

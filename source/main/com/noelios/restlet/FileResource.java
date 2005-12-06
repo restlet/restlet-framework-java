@@ -158,7 +158,7 @@ public class FileResource implements Resource
             // Check if the current file is a valid variant
             if(currentFile.getAbsolutePath().toLowerCase().startsWith(getBasePath()))
             {
-               String[] tokens = currentFile.getName().split("\\.");
+               String[] tokens = currentFile.getName().split("" + File.separatorChar + '.');
                if(tokens[0].equalsIgnoreCase(getBaseName()))
                {
                   // We found a potential variant

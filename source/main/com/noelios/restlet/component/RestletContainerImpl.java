@@ -37,7 +37,7 @@ import com.noelios.restlet.MapletImpl;
  * container which can do various checks before effectively delegating it to one of the registered root
  * maplets or restlets.
  */
-public class RestletContainerImpl extends OriginServerImpl implements RestletContainer
+public class RestletContainerImpl extends ComponentImpl implements RestletContainer
 {
    /** The parent container who delegates. */
    protected RestletContainer parent;

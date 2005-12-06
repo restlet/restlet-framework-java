@@ -75,11 +75,11 @@ public class RestletCallImpl extends UniformCallWrapper implements RestletCall
    {
       if(strip)
       {
-         return StringUtils.strip(getPaths().get(0), '/');
+         return StringUtils.strip(getPaths().get(index), '/');
       }
       else
       {
-         return getPaths().get(0);
+         return getPaths().get(index);
       }
    }
 

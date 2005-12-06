@@ -31,6 +31,8 @@ import org.restlet.RestletException;
 import org.restlet.component.RestletContainer;
 import org.restlet.data.Metadata;
 
+import com.noelios.restlet.util.StringUtils;
+
 /**
  * Restlet supported by a directory of files. A content negotiation mechanism (similar to Apache HTTP server)
  * is available for files.
@@ -60,7 +62,7 @@ public class DirectoryRestlet extends AbstractRestlet
    public DirectoryRestlet(RestletContainer container, String rootPath, boolean deeply, String indexName)
    {
       super(container);
-      this.rootPath = rootPath;
+      this.rootPath = StringUtils.normalizePath(rootPath);
       this.deeply = deeply;
       this.indexName = (indexName == null) ? null : indexName.toLowerCase();
       this.metadataMappings = new TreeMap<String, Metadata>();

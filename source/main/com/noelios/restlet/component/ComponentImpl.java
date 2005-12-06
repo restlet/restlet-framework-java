@@ -29,14 +29,14 @@ import java.util.TreeMap;
 
 import org.restlet.UniformCall;
 import org.restlet.UniformInterface;
-import org.restlet.component.OriginServer;
+import org.restlet.component.Component;
 import org.restlet.connector.Client;
 import org.restlet.connector.Server;
 
 /**
- * Abstract origin server implementation.
+ * Abstract component implementation.
  */
-public abstract class OriginServerImpl implements OriginServer
+public abstract class ComponentImpl implements Component
 {
    /** The component name. */
    private String name;
@@ -51,7 +51,7 @@ public abstract class OriginServerImpl implements OriginServer
     * Constructor.
     * @param name The component name.
     */
-   public OriginServerImpl(String name)
+   public ComponentImpl(String name)
    {
       this.name = name;
       this.clients = new TreeMap<String, Client>();

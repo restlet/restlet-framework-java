@@ -58,13 +58,13 @@ public class HttpClient extends AbstractConnector implements Client
     * @param resourceUri The URI of the resource to get.
     * @return The representation returned.
     */
-   public Representation doGet(String resourceUri)
+   public UniformCall doGet(String resourceUri)
    {
       UniformCall call = new UniformCallImpl();
       call.setResourceUri(new ReferenceImpl(resourceUri));
       call.setMethod(Methods.GET);
       handle(call);
-      return call.getOutput();
+      return call;
    }
 
    /**
@@ -73,14 +73,14 @@ public class HttpClient extends AbstractConnector implements Client
     * @param input The input representation to post.
     * @return The representation returned.
     */
-   public Representation doPost(String resourceUri, Representation input)
+   public UniformCall doPost(String resourceUri, Representation input)
    {
       UniformCall call = new UniformCallImpl();
       call.setResourceUri(new ReferenceImpl(resourceUri));
       call.setMethod(Methods.POST);
       call.setInput(input);
       handle(call);
-      return call.getOutput();
+      return call;
    }
 
    /**
@@ -89,14 +89,14 @@ public class HttpClient extends AbstractConnector implements Client
     * @param input The input representation to put.
     * @return The representation returned.
     */
-   public Representation doPut(String resourceUri, Representation input)
+   public UniformCall doPut(String resourceUri, Representation input)
    {
       UniformCall call = new UniformCallImpl();
       call.setResourceUri(new ReferenceImpl(resourceUri));
       call.setMethod(Methods.PUT);
       call.setInput(input);
       handle(call);
-      return call.getOutput();
+      return call;
    }
 
    /**
@@ -104,13 +104,13 @@ public class HttpClient extends AbstractConnector implements Client
     * @param resourceUri The URI of the resource to delete.
     * @return The representation returned.
     */
-   public Representation doDelete(String resourceUri)
+   public UniformCall doDelete(String resourceUri)
    {
       UniformCall call = new UniformCallImpl();
       call.setResourceUri(new ReferenceImpl(resourceUri));
       call.setMethod(Methods.DELETE);
       handle(call);
-      return call.getOutput();
+      return call;
    }
 
    /**
