@@ -8,100 +8,100 @@
     
   <!-- Set global paths -->
   <property name="docs"     location="www/docs"/>
-  <property name="docs.api" location="${docs}/api"/>
-  <property name="docs.nre" location="${docs}/nre"/>
+  <property name="docs-api" location="${docs}/api"/>
+  <property name="docs-nre" location="${docs}/nre"/>
   <property name="dist"     location="www/downloads"/>
   <property name="archives" location="e:/projets"/>
   <property name="excludes" value="**/.emptyDir **/package.html **/overview.html"/>
 
   <property name="classes"                location="classes"/>
-  <property name="classes.main"           location="${classes}/main"/>
-  <property name="classes.freemarker2.3"  location="${classes}/ext/freemarker2.3"/>
-  <property name="classes.javamail1.3"    location="${classes}/ext/javamail1.3"/>
-  <property name="classes.jdbc3.0"        location="${classes}/ext/jdbc3.0"/>
-  <property name="classes.jetty5.1"       location="${classes}/ext/jetty5.1"/>
-  <property name="classes.jetty6.0"       location="${classes}/ext/jetty6.0"/>
-  <property name="classes.tutorial"       location="${classes}/tutorial"/>
-  <property name="classes.test"           location="${classes}/test"/>
+  <property name="classes-main"           location="${classes}/main"/>
+  <property name="classes-freemarker2.3"  location="${classes}/ext/freemarker2.3"/>
+  <property name="classes-javamail1.3"    location="${classes}/ext/javamail1.3"/>
+  <property name="classes-jdbc3.0"        location="${classes}/ext/jdbc3.0"/>
+  <property name="classes-jetty5.1"       location="${classes}/ext/jetty5.1"/>
+  <property name="classes-jetty6.0"       location="${classes}/ext/jetty6.0"/>
+  <property name="classes-tutorial"       location="${classes}/tutorial"/>
+  <property name="classes-test"           location="${classes}/test"/>
 
   <property name="src"                 location="source"/>
-  <property name="src.main"            location="${src}/main"/>
-  <property name="src.freemarker2.3"   location="${src}/ext/freemarker2.3"/>
-  <property name="src.javamail1.3"     location="${src}/ext/javamail1.3"/>
-  <property name="src.jdbc3.0"         location="${src}/ext/jdbc3.0"/>
-  <property name="src.jetty5.1"        location="${src}/ext/jetty5.1"/>
-  <property name="src.jetty6.0"        location="${src}/ext/jetty6.0"/>
-  <property name="src.tutorial"        location="${src}/tutorial"/>
-  <property name="src.test"            location="${src}/test"/>
+  <property name="src-main"            location="${src}/main"/>
+  <property name="src-freemarker2.3"   location="${src}/ext/freemarker2.3"/>
+  <property name="src-javamail1.3"     location="${src}/ext/javamail1.3"/>
+  <property name="src-jdbc3.0"         location="${src}/ext/jdbc3.0"/>
+  <property name="src-jetty5.1"        location="${src}/ext/jetty5.1"/>
+  <property name="src-jetty6.0"        location="${src}/ext/jetty6.0"/>
+  <property name="src-tutorial"        location="${src}/tutorial"/>
+  <property name="src-test"            location="${src}/test"/>
   
   <property name="lib" location="lib"/>
   
-  <path id="path.freemarker2.3">
-    <pathelement path="${classes.main}"/>
+  <path id="path-freemarker2.3">
+    <pathelement path="${classes-main}"/>
     <fileset dir="${lib}/freemarker2.3">
       <include name="*.jar"/>
     </fileset>
   </path>
   
-  <path id="path.javamail1.3">
-    <pathelement path="${classes.main}"/>
+  <path id="path-javamail1.3">
+    <pathelement path="${classes-main}"/>
     <fileset dir="${lib}/javamail1.3">
       <include name="*.jar"/>
     </fileset>
   </path>
   
-  <path id="path.jdbc3.0">
-    <pathelement path="${classes.main}"/>
+  <path id="path-jdbc3.0">
+    <pathelement path="${classes-main}"/>
     <fileset dir="${lib}/jdbc3.0">
       <include name="*.jar"/>
     </fileset>
   </path>
   
-  <path id="path.jetty5.1">
-    <pathelement path="${classes.main}"/>
+  <path id="path-jetty5.1">
+    <pathelement path="${classes-main}"/>
     <fileset dir="${lib}/jetty5.1">
       <include name="*.jar"/>
     </fileset>
   </path>
   
-  <path id="path.jetty6.0">
-    <pathelement path="${classes.main}"/>
+  <path id="path-jetty6.0">
+    <pathelement path="${classes-main}"/>
     <fileset dir="${lib}/jetty6.0">
       <include name="*.jar"/>
     </fileset>
   </path>
   
-  <path id="path.tutorial">
-    <pathelement path="${classes.main}"/>
-    <pathelement path="${classes.jetty5.1}"/>
-    <path refid="path.jetty5.1"/>
+  <path id="path-tutorial">
+    <pathelement path="${classes-main}"/>
+    <pathelement path="${classes-jetty5.1}"/>
+    <path refid="path-jetty5.1"/>
   </path>
   
-  <path id="path.test">
-    <pathelement path="${classes.main}"/>
+  <path id="path-test">
+    <pathelement path="${classes-main}"/>
     <fileset dir="${lib}/junit3.8">
       <include name="*.jar"/>
     </fileset>
   </path>
 
-  <path id="path.all">
-    <pathelement path="${classes.main}"/>
-    <pathelement path="${classes.freemarker2.3}"/>
-    <pathelement path="${classes.javamail1.3}"/>
-    <pathelement path="${classes.jdbc3.0}"/>
-    <pathelement path="${classes.jetty5.1}"/>
-    <path refid="path.freemarker2.3"/>
-    <path refid="path.javamail1.3"/>
-    <path refid="path.jdbc3.0"/>
-    <path refid="path.jetty5.1"/>
+  <path id="path-all">
+    <pathelement path="${classes-main}"/>
+    <pathelement path="${classes-freemarker2.3}"/>
+    <pathelement path="${classes-javamail1.3}"/>
+    <pathelement path="${classes-jdbc3.0}"/>
+    <pathelement path="${classes-jetty5.1}"/>
+    <path refid="path-freemarker2.3"/>
+    <path refid="path-javamail1.3"/>
+    <path refid="path-jdbc3.0"/>
+    <path refid="path-jetty5.1"/>
   </path>
   
 
   <!-- Set global names -->
-  <property name="version.full"     value="0.14 beta"/>
-  <property name="version.compact"  value="0.14b"/>
-  <property name="restlet.api"      value="Restlet API"/>
-  <property name="restlet.ri"       value="Noelios Restlet Engine"/>
+  <property name="version-full"     value="0.14 beta"/>
+  <property name="version-compact"  value="0.14b"/>
+  <property name="restlet-api"      value="Restlet API"/>
+  <property name="restlet-ri"       value="Noelios Restlet Engine"/>
   <property name="author"           value="Jerome Louvel"/>
 
 
@@ -116,36 +116,36 @@
     <mkdir dir="${classes}"/>
     
     <!-- Compiles main source files -->
-    <mkdir dir="${classes.main}"/>
-    <javac srcdir="${src.main}"  destdir="${classes.main}" classpathref="path.all"/>
+    <mkdir dir="${classes-main}"/>
+    <javac srcdir="${src-main}"  destdir="${classes-main}" classpathref="path-all"/>
     
     <!-- Compiles extension Freemarker 2.3 -->
-    <mkdir dir="${classes.freemarker2.3}"/>
-    <javac srcdir="${src.freemarker2.3}"  destdir="${classes.freemarker2.3}" classpathref="path.freemarker2.3"/>
+    <mkdir dir="${classes-freemarker2.3}"/>
+    <javac srcdir="${src-freemarker2.3}"  destdir="${classes-freemarker2.3}" classpathref="path-freemarker2.3"/>
     
     <!-- Compiles extension Javamail 1.3 -->
-    <mkdir dir="${classes.javamail1.3}"/>
-    <javac srcdir="${src.javamail1.3}"  destdir="${classes.javamail1.3}" classpathref="path.javamail1.3"/>
+    <mkdir dir="${classes-javamail1.3}"/>
+    <javac srcdir="${src-javamail1.3}"  destdir="${classes-javamail1.3}" classpathref="path-javamail1.3"/>
     
     <!-- Compiles extension JDBC 3.0 -->
-    <mkdir dir="${classes.jdbc3.0}"/>
-    <javac srcdir="${src.jdbc3.0}"  destdir="${classes.jdbc3.0}" classpathref="path.jdbc3.0"/>
+    <mkdir dir="${classes-jdbc3.0}"/>
+    <javac srcdir="${src-jdbc3.0}"  destdir="${classes-jdbc3.0}" classpathref="path-jdbc3.0"/>
     
     <!-- Compiles extension Jetty 5.1 -->
-    <mkdir dir="${classes.jetty5.1}"/>
-    <javac srcdir="${src.jetty5.1}"  destdir="${classes.jetty5.1}" classpathref="path.jetty5.1"/>
+    <mkdir dir="${classes-jetty5.1}"/>
+    <javac srcdir="${src-jetty5.1}"  destdir="${classes-jetty5.1}" classpathref="path-jetty5.1"/>
  
     <!-- Compiles extension Jetty 6.0 -->
-    <mkdir dir="${classes.jetty6.0}"/>
-    <javac srcdir="${src.jetty6.0}"  destdir="${classes.jetty6.0}" classpathref="path.jetty6.0"/>
+    <mkdir dir="${classes-jetty6.0}"/>
+    <javac srcdir="${src-jetty6.0}"  destdir="${classes-jetty6.0}" classpathref="path-jetty6.0"/>
     
     <!-- Compiles tutorial source files -->
-    <mkdir dir="${classes.tutorial}"/>
-    <javac srcdir="${src.tutorial}"  destdir="${classes.tutorial}" classpathref="path.tutorial"/>
+    <mkdir dir="${classes-tutorial}"/>
+    <javac srcdir="${src-tutorial}"  destdir="${classes-tutorial}" classpathref="path-tutorial"/>
     
     <!-- Compiles test source files -->
-    <mkdir dir="${classes.test}"/>
-    <javac srcdir="${src.test}"  destdir="${classes.test}" classpathref="path.test"/>
+    <mkdir dir="${classes-test}"/>
+    <javac srcdir="${src-test}"  destdir="${classes-test}" classpathref="path-test"/>
   </target>
 
 
@@ -155,48 +155,48 @@
     <mkdir dir="${dist}/${DSTAMP}/src"/>
 
     <!-- Create Restlet API jar file -->
-    <jar jarfile="${dist}/${DSTAMP}/lib/org.restlet.jar" basedir="${classes.main}" includes="org/restlet/**">
+    <jar jarfile="${dist}/${DSTAMP}/lib/org.restlet.jar" basedir="${classes-main}" includes="org/restlet/**">
       <manifest>
         <attribute name="Built-By" value="${author}"/>
         <section name="org.restlet">
-          <attribute name="Specification-Title" value="${restlet.api}"/>
-          <attribute name="Specification-Version" value="${version.full}"/>
+          <attribute name="Specification-Title" value="${restlet-api}"/>
+          <attribute name="Specification-Version" value="${version-full}"/>
           <attribute name="Specification-Vendor" value="${author}"/>
         </section>
       </manifest>
     </jar>
     
     <!-- Create Noelios Restlet Server jar file -->
-    <jar jarfile="${dist}/${DSTAMP}/lib/com.noelios.restlet.jar" basedir="${classes.main}" includes="com/noelios/restlet/**">
+    <jar jarfile="${dist}/${DSTAMP}/lib/com.noelios.restlet.jar" basedir="${classes-main}" includes="com/noelios/restlet/**">
       <manifest>
         <attribute name="Built-By" value="${author}"/>
         <section name="com.noelios.restlet">
-          <attribute name="Implementation-Title" value="${restlet.ri}"/>
-          <attribute name="Implementation-Version" value="${version.full} ${TODAY}"/> 
+          <attribute name="Implementation-Title" value="${restlet-ri}"/>
+          <attribute name="Implementation-Version" value="${version-full} ${TODAY}"/> 
           <attribute name="Implementation-Vendor" value="${author}"/>
         </section>
       </manifest>
     </jar>
 
     <!-- Create Restlet API source jar file -->
-    <jar jarfile="${dist}/${DSTAMP}/src/org.restlet.jar" basedir="${src.main}" includes="org/restlet/**" excludes="${excludes}">
+    <jar jarfile="${dist}/${DSTAMP}/src/org.restlet.jar" basedir="${src-main}" includes="org/restlet/**" excludes="${excludes}">
       <manifest>
         <attribute name="Built-By" value="${author}"/>
         <section name="org.restlet">
-          <attribute name="Specification-Title" value="${restlet.api}"/>
-          <attribute name="Specification-Version" value="${version.full}"/>
+          <attribute name="Specification-Title" value="${restlet-api}"/>
+          <attribute name="Specification-Version" value="${version-full}"/>
           <attribute name="Specification-Vendor" value="${author}"/>
         </section>
       </manifest>
     </jar>
     
     <!-- Create Noelios Restlet Server source jar file -->
-    <jar jarfile="${dist}/${DSTAMP}/src/com.noelios.restlet.jar" basedir="${src.main}" includes="com/noelios/restlet/**" excludes="${excludes}">
+    <jar jarfile="${dist}/${DSTAMP}/src/com.noelios.restlet.jar" basedir="${src-main}" includes="com/noelios/restlet/**" excludes="${excludes}">
       <manifest>
         <attribute name="Built-By" value="${author}"/>
         <section name="com.noelios.restlet">
-          <attribute name="Implementation-Title" value="${restlet.ri}"/>
-          <attribute name="Implementation-Version" value="${version.full} ${TODAY}"/> 
+          <attribute name="Implementation-Title" value="${restlet-ri}"/>
+          <attribute name="Implementation-Version" value="${version-full} ${TODAY}"/> 
           <attribute name="Implementation-Vendor" value="${author}"/>
         </section>
       </manifest>
@@ -204,12 +204,12 @@
     
     <!-- Create Tutorial jar file -->
     <mkdir dir="${dist}/${DSTAMP}/lib/tutorial"/>
-    <jar jarfile="${dist}/${DSTAMP}/lib/tutorial/restlet.tutorial.jar" basedir="${classes.tutorial}" includes="com/noelios/restlet/**" excludes="${excludes}">
+    <jar jarfile="${dist}/${DSTAMP}/lib/tutorial/restlet.tutorial.jar" basedir="${classes-tutorial}" includes="com/noelios/restlet/**" excludes="${excludes}">
       <manifest>
         <attribute name="Built-By" value="${author}"/>
         <section name="com.noelios.restlet.tutorial">
-          <attribute name="Implementation-Title" value="${restlet.ri}"/>
-          <attribute name="Implementation-Version" value="${version.full} ${TODAY}"/> 
+          <attribute name="Implementation-Title" value="${restlet-ri}"/>
+          <attribute name="Implementation-Version" value="${version-full} ${TODAY}"/> 
           <attribute name="Implementation-Vendor" value="${author}"/>
         </section>
       </manifest>
@@ -217,12 +217,12 @@
     
     <!-- Create Tutorial source jar file -->
     <mkdir dir="${dist}/${DSTAMP}/src/tutorial"/>
-    <jar jarfile="${dist}/${DSTAMP}/src/tutorial/restlet.tutorial.jar" basedir="${src.tutorial}" includes="com/noelios/restlet/**" excludes="${excludes}">
+    <jar jarfile="${dist}/${DSTAMP}/src/tutorial/restlet.tutorial.jar" basedir="${src-tutorial}" includes="com/noelios/restlet/**" excludes="${excludes}">
       <manifest>
         <attribute name="Built-By" value="${author}"/>
         <section name="com.noelios.restlet.tutorial">
-          <attribute name="Implementation-Title" value="${restlet.ri}"/>
-          <attribute name="Implementation-Version" value="${version.full} ${TODAY}"/> 
+          <attribute name="Implementation-Title" value="${restlet-ri}"/>
+          <attribute name="Implementation-Version" value="${version-full} ${TODAY}"/> 
           <attribute name="Implementation-Vendor" value="${author}"/>
         </section>
       </manifest>
@@ -230,10 +230,10 @@
 
     <!-- Copy tha Javadocs -->
     <copy todir="${dist}/${DSTAMP}/docs/api">
-      <fileset dir="${docs.api}"/>
+      <fileset dir="${docs-api}"/>
     </copy>    
     <copy todir="${dist}/${DSTAMP}/docs/nre">
-      <fileset dir="${docs.nre}"/>
+      <fileset dir="${docs-nre}"/>
     </copy>
 
     <!-- Copy text notes -->    
@@ -249,12 +249,12 @@
     </copy>    
     
     <!-- Create extension Freemarker 2.3 jar file -->
-    <jar jarfile="${dist}/${DSTAMP}/lib/freemarker2.3/restlet.freemarker.jar" basedir="${classes.freemarker2.3}">
+    <jar jarfile="${dist}/${DSTAMP}/lib/freemarker2.3/restlet.freemarker.jar" basedir="${classes-freemarker2.3}">
       <manifest>
         <attribute name="Built-By" value="${author}"/>
         <section name="com.noelios.restlet.ext.freemarker">
-          <attribute name="Implementation-Title" value="${restlet.ri}"/>
-          <attribute name="Implementation-Version" value="${version.full} ${TODAY}"/> 
+          <attribute name="Implementation-Title" value="${restlet-ri}"/>
+          <attribute name="Implementation-Version" value="${version-full} ${TODAY}"/> 
           <attribute name="Implementation-Vendor" value="${author}"/>
         </section>
       </manifest>
@@ -262,24 +262,24 @@
     
     <!-- Create extension Freemarker 2.3 source jar file -->
     <mkdir dir="${dist}/${DSTAMP}/src/freemarker2.3"/>
-    <jar jarfile="${dist}/${DSTAMP}/src/freemarker2.3/restlet.freemarker.jar" basedir="${src.freemarker2.3}" includes="com/noelios/restlet/**" excludes="${excludes}">
+    <jar jarfile="${dist}/${DSTAMP}/src/freemarker2.3/restlet.freemarker.jar" basedir="${src-freemarker2.3}" includes="com/noelios/restlet/**" excludes="${excludes}">
       <manifest>
         <attribute name="Built-By" value="${author}"/>
         <section name="com.noelios.restlet.ext.freemarker">
-          <attribute name="Implementation-Title" value="${restlet.ri}"/>
-          <attribute name="Implementation-Version" value="${version.full} ${TODAY}"/> 
+          <attribute name="Implementation-Title" value="${restlet-ri}"/>
+          <attribute name="Implementation-Version" value="${version-full} ${TODAY}"/> 
           <attribute name="Implementation-Vendor" value="${author}"/>
         </section>
       </manifest>
     </jar>
     
     <!-- Create extension Javamail 1.3 jar file -->
-    <jar jarfile="${dist}/${DSTAMP}/lib/javamail1.3/restlet.javamail.jar" basedir="${classes.javamail1.3}">
+    <jar jarfile="${dist}/${DSTAMP}/lib/javamail1.3/restlet.javamail.jar" basedir="${classes-javamail1.3}">
       <manifest>
         <attribute name="Built-By" value="${author}"/>
         <section name="com.noelios.restlet.ext.javamail">
-          <attribute name="Implementation-Title" value="${restlet.ri}"/>
-          <attribute name="Implementation-Version" value="${version.full} ${TODAY}"/> 
+          <attribute name="Implementation-Title" value="${restlet-ri}"/>
+          <attribute name="Implementation-Version" value="${version-full} ${TODAY}"/> 
           <attribute name="Implementation-Vendor" value="${author}"/>
         </section>
       </manifest>
@@ -287,24 +287,24 @@
     
     <!-- Create extension Javamail 1.3 source jar file -->
     <mkdir dir="${dist}/${DSTAMP}/src/javamail1.3"/>
-    <jar jarfile="${dist}/${DSTAMP}/src/javamail1.3/restlet.javamail.jar" basedir="${src.javamail1.3}" includes="com/noelios/restlet/**" excludes="${excludes}">
+    <jar jarfile="${dist}/${DSTAMP}/src/javamail1.3/restlet.javamail.jar" basedir="${src-javamail1.3}" includes="com/noelios/restlet/**" excludes="${excludes}">
       <manifest>
         <attribute name="Built-By" value="${author}"/>
         <section name="com.noelios.restlet.ext.javamail">
-          <attribute name="Implementation-Title" value="${restlet.ri}"/>
-          <attribute name="Implementation-Version" value="${version.full} ${TODAY}"/> 
+          <attribute name="Implementation-Title" value="${restlet-ri}"/>
+          <attribute name="Implementation-Version" value="${version-full} ${TODAY}"/> 
           <attribute name="Implementation-Vendor" value="${author}"/>
         </section>
       </manifest>
     </jar>
     
     <!-- Create extension JDBC 3.0 jar file -->
-    <jar jarfile="${dist}/${DSTAMP}/lib/jdbc3.0/restlet.jdbc.jar" basedir="${classes.jdbc3.0}">
+    <jar jarfile="${dist}/${DSTAMP}/lib/jdbc3.0/restlet.jdbc.jar" basedir="${classes-jdbc3.0}">
       <manifest>
         <attribute name="Built-By" value="${author}"/>
         <section name="com.noelios.restlet.ext.jdbc">
-          <attribute name="Implementation-Title" value="${restlet.ri}"/>
-          <attribute name="Implementation-Version" value="${version.full} ${TODAY}"/> 
+          <attribute name="Implementation-Title" value="${restlet-ri}"/>
+          <attribute name="Implementation-Version" value="${version-full} ${TODAY}"/> 
           <attribute name="Implementation-Vendor" value="${author}"/>
         </section>
       </manifest>
@@ -312,24 +312,24 @@
     
     <!-- Create extension JDBC 3.0 source jar file -->
     <mkdir dir="${dist}/${DSTAMP}/src/jdbc3.0"/>
-    <jar jarfile="${dist}/${DSTAMP}/src/jdbc3.0/restlet.jdbc.jar" basedir="${src.jdbc3.0}" includes="com/noelios/restlet/**" excludes="${excludes}">
+    <jar jarfile="${dist}/${DSTAMP}/src/jdbc3.0/restlet.jdbc.jar" basedir="${src-jdbc3.0}" includes="com/noelios/restlet/**" excludes="${excludes}">
       <manifest>
         <attribute name="Built-By" value="${author}"/>
         <section name="com.noelios.restlet.ext.jdbc">
-          <attribute name="Implementation-Title" value="${restlet.ri}"/>
-          <attribute name="Implementation-Version" value="${version.full} ${TODAY}"/> 
+          <attribute name="Implementation-Title" value="${restlet-ri}"/>
+          <attribute name="Implementation-Version" value="${version-full} ${TODAY}"/> 
           <attribute name="Implementation-Vendor" value="${author}"/>
         </section>
       </manifest>
     </jar>
     
     <!-- Create extension Jetty 5.1 jar file -->
-    <jar jarfile="${dist}/${DSTAMP}/lib/jetty5.1/restlet.jetty.jar" basedir="${classes.jetty5.1}">
+    <jar jarfile="${dist}/${DSTAMP}/lib/jetty5.1/restlet.jetty.jar" basedir="${classes-jetty5.1}">
       <manifest>
         <attribute name="Built-By" value="${author}"/>
         <section name="com.noelios.restlet.ext.jetty">
-          <attribute name="Implementation-Title" value="${restlet.ri}"/>
-          <attribute name="Implementation-Version" value="${version.full} ${TODAY}"/> 
+          <attribute name="Implementation-Title" value="${restlet-ri}"/>
+          <attribute name="Implementation-Version" value="${version-full} ${TODAY}"/> 
           <attribute name="Implementation-Vendor" value="${author}"/>
         </section>
       </manifest>
@@ -337,24 +337,24 @@
     
     <!-- Create extension Jetty 5.1 source jar file -->
     <mkdir dir="${dist}/${DSTAMP}/src/jetty5.1"/>
-    <jar jarfile="${dist}/${DSTAMP}/src/jetty5.1/restlet.jetty.jar" basedir="${src.jetty5.1}" includes="com/noelios/restlet/**" excludes="${excludes}">
+    <jar jarfile="${dist}/${DSTAMP}/src/jetty5.1/restlet.jetty.jar" basedir="${src-jetty5.1}" includes="com/noelios/restlet/**" excludes="${excludes}">
       <manifest>
         <attribute name="Built-By" value="${author}"/>
         <section name="com.noelios.restlet.ext.jetty">
-          <attribute name="Implementation-Title" value="${restlet.ri}"/>
-          <attribute name="Implementation-Version" value="${version.full} ${TODAY}"/> 
+          <attribute name="Implementation-Title" value="${restlet-ri}"/>
+          <attribute name="Implementation-Version" value="${version-full} ${TODAY}"/> 
           <attribute name="Implementation-Vendor" value="${author}"/>
         </section>
       </manifest>
     </jar>
     
     <!-- Create extension Jetty 6.0 jar file -->
-    <jar jarfile="${dist}/${DSTAMP}/lib/jetty6.0/restlet.jetty.jar" basedir="${classes.jetty6.0}">
+    <jar jarfile="${dist}/${DSTAMP}/lib/jetty6.0/restlet.jetty.jar" basedir="${classes-jetty6.0}">
       <manifest>
         <attribute name="Built-By" value="${author}"/>
         <section name="com.noelios.restlet.ext.jetty">
-          <attribute name="Implementation-Title" value="${restlet.ri}"/>
-          <attribute name="Implementation-Version" value="${version.full} ${TODAY}"/> 
+          <attribute name="Implementation-Title" value="${restlet-ri}"/>
+          <attribute name="Implementation-Version" value="${version-full} ${TODAY}"/> 
           <attribute name="Implementation-Vendor" value="${author}"/>
         </section>
       </manifest>
@@ -362,19 +362,19 @@
     
     <!-- Create extension Jetty 6.0 source jar file -->
     <mkdir dir="${dist}/${DSTAMP}/src/jetty6.0"/>
-    <jar jarfile="${dist}/${DSTAMP}/src/jetty6.0/restlet.jetty.jar" basedir="${src.jetty6.0}" includes="com/noelios/restlet/**" excludes="${excludes}">
+    <jar jarfile="${dist}/${DSTAMP}/src/jetty6.0/restlet.jetty.jar" basedir="${src-jetty6.0}" includes="com/noelios/restlet/**" excludes="${excludes}">
       <manifest>
         <attribute name="Built-By" value="${author}"/>
         <section name="com.noelios.restlet.ext.jetty">
-          <attribute name="Implementation-Title" value="${restlet.ri}"/>
-          <attribute name="Implementation-Version" value="${version.full} ${TODAY}"/> 
+          <attribute name="Implementation-Title" value="${restlet-ri}"/>
+          <attribute name="Implementation-Version" value="${version-full} ${TODAY}"/> 
           <attribute name="Implementation-Vendor" value="${author}"/>
         </section>
       </manifest>
     </jar>
     
     <!-- Create the final zip file -->
-    <zip destfile="${dist}/restlet-${version.compact}.zip" basedir="${dist}/${DSTAMP}" includes="**/*"/>
+    <zip destfile="${dist}/restlet-${version-compact}.zip" basedir="${dist}/${DSTAMP}" includes="**/*"/>
 
     <!-- Remove the temporary files -->
     <delete dir="${dist}/${DSTAMP}" verbose="false" quiet="true" includeEmptyDirs="true"/>
@@ -384,23 +384,23 @@
   
   <target name="javadocs" depends="init" description="Generate the Javadocs" >
     <delete includeEmptyDirs="true" verbose="false" quiet="true">
-      <fileset dir="${docs.api}" excludes="**/.svn"/>
-      <fileset dir="${docs.nre}" excludes="**/.svn"/>
+      <fileset dir="${docs-api}" excludes="**/.svn"/>
+      <fileset dir="${docs-nre}" excludes="**/.svn"/>
     </delete>    
     
     <javadoc packagenames="org.restlet.*"
-           destdir="${docs.api}"
-           classpathref="path.all"
+           destdir="${docs-api}"
+           classpathref="path-all"
            author="true"
            version="true"
            use="true"
-           windowtitle="Restlet API ${version.full}"
-           doctitle="Restlet API ${version.full}"
-           overview="${src.main}/org/restlet/overview.html"
+           windowtitle="Restlet API ${version-full}"
+           doctitle="Restlet API ${version-full}"
+           overview="${src-main}/org/restlet/overview.html"
            verbose="false">
      
       <sourcepath>
-         <pathelement path="${src.main}"/>
+         <pathelement path="${src-main}"/>
       </sourcepath>
 
       <bottom><![CDATA[<i>Copyright &#169; 2005 J&eacute;r&ocirc;me Louvel. Restlet is a trademark and service mark of <a target="_top" href="http://www.noelios.com/en">Noelios Consulting</a>.</i>]]></bottom>
@@ -411,28 +411,28 @@
       <tag name="stereotype"          scope="all" description="Design stereotype: " enabled="false"/>
       <tag name="supplierCardinality" scope="all" description="Design stereotype: " enabled="false"/>
       
-      <group title="${restlet.api}"><package name="org.restlet*" /></group>
+      <group title="${restlet-api}"><package name="org.restlet*" /></group>
       
       <link href="http://java.sun.com/j2se/1.5.0/docs/api/"/>
     </javadoc>    
 
     <javadoc packagenames="com.noelios.restlet.*"
-           destdir="${docs.nre}"
-           classpathref="path.all"
+           destdir="${docs-nre}"
+           classpathref="path-all"
            author="true"
            version="true"
            use="true"
-           windowtitle="Noelios Restlet Engine ${version.full}"
-           doctitle="Noelios Restlet Engine ${version.full}"
-           overview="${src.main}/com/noelios/restlet/overview.html"
+           windowtitle="Noelios Restlet Engine ${version-full}"
+           doctitle="Noelios Restlet Engine ${version-full}"
+           overview="${src-main}/com/noelios/restlet/overview.html"
            verbose="false">
      
       <sourcepath>
-         <pathelement path="${src.main}"/>
-         <pathelement path="${src.freemarker2.3}"/>
-         <pathelement path="${src.javamail1.3}"/>
-         <pathelement path="${src.jdbc3.0}"/>
-         <pathelement path="${src.jetty5.1}"/>
+         <pathelement path="${src-main}"/>
+         <pathelement path="${src-freemarker2.3}"/>
+         <pathelement path="${src-javamail1.3}"/>
+         <pathelement path="${src-jdbc3.0}"/>
+         <pathelement path="${src-jetty5.1}"/>
       </sourcepath>
       
       <bottom><![CDATA[<i>Copyright &#169; 2005 J&eacute;r&ocirc;me Louvel. Restlet is a trademark and service mark of <a target="_top" href="http://www.noelios.com/en">Noelios Consulting</a>.</i>]]></bottom>
@@ -443,9 +443,9 @@
       <tag name="stereotype"          scope="all" description="Design stereotype: " enabled="false"/>
       <tag name="supplierCardinality" scope="all" description="Design stereotype: " enabled="false"/>
       
-      <group title="${restlet.ri}" ><package name="com.noelios.restlet*" /></group>
+      <group title="${restlet-ri}" ><package name="com.noelios.restlet*" /></group>
       
-      <link href="http://restlet.tigris.org/nonav/docs/api/" packagelistLoc="${docs.api}" offline="true"/>
+      <link href="http://restlet.tigris.org/nonav/docs/api/" packagelistLoc="${docs-api}" offline="true"/>
       <link href="http://freemarker.org/docs/api/"/>
       <link href="http://java.sun.com/j2se/1.5.0/docs/api/"/>
       <link href="http://java.sun.com/products/javamail/javadocs/"/>
@@ -457,8 +457,8 @@
   <target name="test" depends="init" description="Unit testing">
     <junit printsummary="yes" fork="yes" haltonfailure="yes" filtertrace="yes" showoutput="yes">
       <classpath>
-        <pathelement location="${classes.main}"/>
-        <pathelement location="${classes.test}"/>
+        <pathelement location="${classes-main}"/>
+        <pathelement location="${classes-test}"/>
       </classpath>
   
       <formatter type="plain"/>
@@ -470,8 +470,8 @@
   <target name="clean" description="Clean up" >
     <!-- Delete the classes and Javadoc directories -->
     <delete dir="${classes}"/>
-    <delete dir="${docs.api}"/>
-    <delete dir="${docs.nre}"/>
+    <delete dir="${docs-api}"/>
+    <delete dir="${docs-nre}"/>
   </target>
 
 

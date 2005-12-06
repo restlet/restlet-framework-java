@@ -43,50 +43,26 @@
    As we mentionned in the introduction paper, the Restlet framework is at the same time a client and server framework. For example, NRE can easily work with remote resources using its HTTP client connector. A connector in REST, is a sofware component that enables the communication between resources, typically by implementing one side of a network protocol. Here we will get the representation of an existing resource and output it in the JVM console:
 </p>
 <pre>
-   import com.noelios.restlet.connector.HttpClient;
-
-   try
-   {
-      HttpClient client = new HttpClient("My Web client");
-      client.doGet("http://www.restlet.org").write(System.out);
-   }
-   catch(IOException e)
-   {
-      e.printStackTrace();
-   }
+   HttpClient client = new HttpClient("My Web client");
+   client.doGet("http://www.restlet.org").getOutput().write(System.out);
 </pre>
 <p>
    Note that the example above uses a simplified way to issue calls via the HttpClient. A more flexible way is to create a new REST call and to ask the HTTP client to handle it. The Manager class also has a factory role ; it is a neutral access point to the registered Restlet implementation. The example below could be a good basis to set some preferences in your call, like the languages or media types you prefer to receive as a response:
 </p>
 <pre>
-   import java.io.IOException;
-   import org.restlet.Manager;
-   import org.restlet.UniformCall;
-   import org.restlet.data.Methods;
-   import org.restlet.data.Reference;
-   import org.restlet.data.Representation;
-   import com.noelios.restlet.connector.HttpClient;
+   // Prepare the REST call
+   UniformCall call = Manager.createCall();
+   Reference uri = Manager.createReference("http://www.restlet.org");
+   call.setResourceUri(uri);
+   call.setMethod(Methods.GET);
 
-   try
-   {
-      // Prepare the REST call
-      UniformCall call = Manager.createCall();
-      Reference uri = Manager.createReference("http://www.restlet.org");
-      call.setResourceUri(uri);
-      call.setMethod(Methods.GET);
+   // Ask to the HTTP client connector to handle the call
+   HttpClient client = new HttpClient("My Web client");
+   client.handle(call);
 
-      // Ask to the HTTP client connector to handle the call
-      HttpClient client = new HttpClient("My Web client");
-      client.handle(call);
-
-      // Output the result representation on the JVM console
-      Representation output = call.getOutput();
-      output.write(System.out);
-   }
-   catch(IOException e)
-   {
-      e.printStackTrace();
-   }
+   // Output the result representation on the JVM console
+   Representation output = call.getOutput();
+   output.write(System.out);
 </pre>
 
 <h3>3. Listening to Web browsers</h3>
@@ -94,15 +70,7 @@
 <p>
    Now, we want to see how the Restlet framework can listen to client requests and reply to them. We will use the NRE HTTP server connector (supported by Mortbay's Jetty HTTP listener) and return a simple string representation "Hello World!" as plain text.
 </p>
-
 <pre>
-   import org.restlet.UniformCall;
-   import org.restlet.UniformInterface;
-   import org.restlet.data.MediaTypes;
-
-   import com.noelios.restlet.data.StringRepresentation;
-   import com.noelios.restlet.ext.jetty.JettyServer;
-
    // Creating a minimal handler returning "Hello World"
    UniformInterface handler = new UniformInterface()
    {
@@ -115,35 +83,145 @@
    // Create the HTTP server and listen on port 8182
    new JettyServer("My Web server", 8182, handler).start();
 </pre>
-
 <p>
    If you run this code and launch your server, you can open a Web browser and hit the <a target="_top" href="http://localhost:8182">http://localhost:8182</a>. Actually, any URI will work, try also <a target="_top" href="http://localhost:8182/test/tutorial">http://localhost:8182/test/tutorial</a>. The handler that we created is very primitive because it only uses the pure REST part of the Restlet framework. We will see next, how to take advantage of the Restlets and Maplets components.
 </p>
 
-<h3>4. Restlets servers and containers</h3>
+<h3>4. Overview of a REST architecture</h3>
 <p>
-   First, let's consider a typical architecture from a REST point of view. In the diagram below, circles represent the connector that enable the communication between components which are represented by the boxes. The blue links represents the network communication using a particular protocol (HTTP, SMTP, etc.). Note that the same component can have any number of client and server connectors attached to it. Web Server B, for example, has both a server connector to respond to requests from the User Agent component, and client connectors to send requests to the Database Server, the Mail Server and the Web Server A.
+   Let's step back a little bit and consider a typical web architecture from a REST point of view. In the diagram below, circles represent the connector that enable the communication between components which are represented by the boxes. The blue links represents the network communication using a particular protocol (HTTP, SMTP, etc.).
 </p>
 <p>
    <img src="images/rest-architecture.gif"/>
 </p>
 <p>
-   In addition to supporting the REST software architecture elements presented before, we can also use Restlets which are handlers of calls to resources which live inside a parent container (called a Restlet container) and are selected by parsing the resource's URI.
+   Note that the same component can have any number of client and server connectors attached to it. Web Server B, for example, has both a server connector to respond to requests from the User Agent component, and client connectors to send requests to the Database Server, the Mail Server and the Web Server A.
+</p>
+
+<h3>5. Restlets servers and containers</h3>
+<p>
+   In addition to supporting the standard REST software architecture elements as presented before, the Restlet framework also provides a set of components that facilitate the handling of REST call. The goal is to provide a powerful and RESTful alternative to existing Servlet frameworks.
+<p/>
+<p>
+   First, we can use Restlets which are simple call handlers living inside a parent restlet container. Restlets are selected when the URI of the requested resource matches a given URI pattern. Now, let's see how a restlet can reply to client requests. We will attach a restlet (myRestlet) to a parent restlet container (myContainer). In order for a Web client to invoke the restlet, the following URI will have to be entered: <a href="http://localhost:8182/tutorial">http://localhost:8182/tutorial</a>.
+</p>
+<pre>
+   // Create a new restlet container
+   RestletContainer myContainer = new DefaultRestletContainer("My container");
+
+   // Create the HTTP server connector, then add it as a server connector
+   // to the restlet container. Note that the container is the call handler.
+   JettyServer httpServer = new JettyServer("My connector", 8182, myContainer);
+   myContainer.addServer(httpServer);
+
+   // Create a new restlet that will display some path information.
+   // Note that restlets are call handlers similar to servlets.
+   Restlet myRestlet = new AbstractRestlet(myContainer)
+      {
+         public void handle(RestletCall call) throws RestletException
+         {
+            // Print the requested URI path
+            String output = "Resource path = " + call.getPath(0, false) + '\n' +
+                            "Restlet  path = " + call.getPath(1, false);
+
+            call.setOutput(new StringRepresentation(output, MediaTypes.TEXT_PLAIN));
+         }
+      };
+
+   // Then attach it to the container. Note that the restlet will be called
+   // only if the beginning of the requested URI matches the given pattern.
+   myContainer.attach("http://localhost:8182/tutorial", myRestlet);
+
+   // Now, let's start the container! Note that the HTTP server connector is
+   // also automatically started.
+   myContainer.start();
+</pre>
+<p>
+   In addition to Restlets, we can take advantage of Maplets. They are specialized Restlets that can have other Restlets attached to them and that can automatically delegate calls to them based on a URI pattern. Note that Restlet containers are Maplets themselves.
+</p>
+<pre>
+   // Create a new restlet container
+   RestletContainer myContainer = new DefaultRestletContainer("My container");
+
+   // Create the HTTP server connector, then add it as a server connector
+   // to the restlet container. Note that the container is the call handler.
+   JettyServer httpServer = new JettyServer("My connector", 8182, myContainer);
+   myContainer.addServer(httpServer);
+
+   // Create a new restlet that will display some path information.
+   // Note that restlets are call handlers similar to servlets.
+   Restlet myRestlet = new AbstractRestlet(myContainer)
+      {
+         public void handle(RestletCall call) throws RestletException
+         {
+            // Print the requested URI path
+            String output = "Resource path = " + call.getPath(0, false) + '\n' +
+                            "Restlet  path = " + call.getPath(1, false);
+
+            call.setOutput(new StringRepresentation(output, MediaTypes.TEXT_PLAIN));
+         }
+      };
+
+   // Create a new maplet and attach the restlet to it
+   // Note that the mapping string is a full Java 5.0 pattern (see java.util.regex.Pattern class).
+   Maplet myMaplet = new DefaultMaplet(myContainer);
+   myMaplet.attach("/tutorial$", myRestlet);
+
+   // Then attach the maplet to the container.
+   // Note that virtual hosting can be very easily supported if you need it,
+   // just attach multiple maplets, one for each virtual server.
+   myContainer.attach("http://localhost:8182", myMaplet);
+
+   // Now, let's start the container! Note that the HTTP server connector is
+   // also automatically started.
+   myContainer.start();
+</pre>
+<p>
+   Note, that the myRestlet will reply only to requests to <a href="http://localhost:8182/tutorial">http://localhost:8182/tutorial</a>. This is due to the usage of the '$' character at the end of the pattern, meaning that no other character can be left after. More powerful patterns can be specified as needed, but the Maplets will automatically take care of the URI matching and parsing.
 </p>
 <p>
-   Maplets are a kind of Restlets that can have other Restlets attached to them and that can automatically delegate calls to them based on a URI pattern. See below how multiple Restlet containers can live within a Restlet server. For example, this is very useful if you want to separate you domain resources (managed by container C) from your web server resources (managed by container A) and your web services resources (managed by container B).
+   Now, if your web application is becoming more complex, you may want to use multiple Restlet containers, all living within a single Restlet server. For example, this is very useful if you want to separate you domain resources (managed by container C) from your web server resources (managed by container A) and your web services resources (managed by container B):
+</p>
+<p>
+   <img src="images/restlet-server.gif"/>
 </p>
 <p>
    Also, note that servers and containers are REST components themselves. This means that if your Restlet server has only one container, you can simply use it as your origin server and attach connectors normally.
 </p>
-<p>
-   <img src="images/restlet-server.gif"/>
 
+<h3>6. Serving static files</h3>
+<p>
+   Do you having a part of your web application that serves static pages, like Javadocs? Well, no need to setup an Apache server just for that, the Noelios Restlet Engine provides a dedicated Restlet. See how simple it is to use it. Note, that no external configuration file is needed:
 </p>
+<pre>
+   // Create a new restlet container
+   RestletContainer myContainer = new DefaultRestletContainer("My container");
 
-<h3>5. Serving static files</h3>
+   // Create the HTTP server connector, then add it as a server connector
+   // to the restlet container. Note that the container is the call handler.
+   JettyServer httpServer = new JettyServer("My connector", 8182, myContainer);
+   myContainer.addServer(httpServer);
+
+   // Create a directory restlet able to return a deep hierarchy of Web files
+   // (HTML pages, CSS stylesheets or GIF images) from a local directory.
+   DirectoryRestlet dirRestlet = new DirectoryRestlet(myContainer, "D:/Restlet/www/docs/api/", true, "index");
+   dirRestlet.addExtension("html", MediaTypes.TEXT_HTML);
+   dirRestlet.addExtension("css", MediaTypes.TEXT_CSS);
+   dirRestlet.addExtension("gif", MediaTypes.IMAGE_GIF);
+
+   // Then attach the maplet to the container.
+   // Note that virtual hosting can be very easily supported if you need it,
+   // just attach multiple maplets, one for each virtual server.
+   myContainer.attach("http://localhost:8182/", dirRestlet);
+
+   // Now, let's start the container! Note that the HTTP server connector is
+   // also automatically started.
+   myContainer.start();
+</pre>
+
+<h3>7. Source code</h3>
 <p>
-   Show the usage of the DirectoryRestlet with content negotiation (language).
+   That's all for now. Feel free to test the examples of this tutorial. The full source code is available in the distribution or online at:
 </p>
 
 <p>
@@ -153,7 +231,7 @@
 <br/>
 
 <small>
-   Version 0.3, last modified on 2005/12/02<br/>
+   Version 1.0, last modified on 2005/12/06<br/>
    Copyright &copy; 2005 J&eacute;r&ocirc;me Louvel. Restlet is a trademark and service mark of <a target="_top" href="http://www.noelios.com/en">Noelios Consulting</a>.
 </small>
 

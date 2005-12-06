@@ -5,11 +5,16 @@
 
 
 0.14 beta
+ - Completed the tutorial
  - Added integration with Jetty 6.0.0 beta 5
  - Modified the build and packaging, especially for extensions
       - needed to support the two versions of Jetty adapter (5.1 and 6.0 beta)
       - allows ligth deployments of NRE (only one JAR file) 
- - 
+ - do* methods in HttpClient now returns the created and handled call so status can be tested
+ - Tutorial source code has been added (com.noelios.restlet.tutorial)
+ - Added normalizePath to StringUtils issues with file separators different between Unix and Windows 
+ - OriginServerImpl renamed ComponentImpl to follow the interfaces changes in 0.13beta
+ - Fixed issue in getPath(index, strip) method of RestletCallImpl not passing on the index parameter (0 instead)
  
 
 0.13 beta
