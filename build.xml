@@ -469,9 +469,11 @@
 
   <target name="clean" description="Clean up" >
     <!-- Delete the classes and Javadoc directories -->
-    <delete dir="${classes}"/>
-    <delete dir="${docs-api}"/>
-    <delete dir="${docs-nre}"/>
+    <delete includeEmptyDirs="true" verbose="false" quiet="true">
+      <fileset dir="${classes}"/>
+      <fileset dir="${docs-api}" excludes="**/.svn"/>
+      <fileset dir="${docs-nre}" excludes="**/.svn"/>
+    </delete>    
   </target>
 
 
