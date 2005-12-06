@@ -4,7 +4,7 @@
 ------------------------------------------------
 
 Version : 0.14 beta
-Date    : 12/**/2005
+Date    : 12/06/2005
 Author  : Jerome Louvel (mailto:contact@noelios.com)
 Home    : http://www.restlet.org
 
