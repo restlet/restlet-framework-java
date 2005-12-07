@@ -25,29 +25,26 @@
    The Restlet framework is composed of two parts. First, there is the "Restlet API", a neutral API supporting the concepts of REST and a mechanism called Restlet facilitating the handling of REST calls. This API must be supported by a "Restlet Implementation" before it can be effectively used. Multiple providers could provide an implementation (open source projects, commercial products).
 </p>
 <p>
-   This separation between the API and the implementation is similar to the one between the Servlet API and your preferred Web container or Servlet engine, or between the JDBC API and your JDBC driver.
-</p>
-<p>
-   Currently, only the Reference Implementation (RI) is available, the "Noelios Restlet Engine" (NRE), which is by the way an open source project. When you download the Restlet framework, the API and the NRE come bundled together, ready to be used. You only need to add the following line before working with the framework:
+   This separation between the API and the implementation is similar to the one between the Servlet API and your preferred Web container or Servlet engine, or between the JDBC API and your JDBC drivers. Currently, only the Reference Implementation (RI) is available, the "Noelios Restlet Engine" (NRE), which is by the way an open source project. When you download the Restlet framework, the API and the NRE come bundled together, ready to be used. You only need to add the following line before working with the framework:
 </p>
 <pre>
    com.noelios.restlet.Engine.register();
 </pre>
 <p>
-   Internally, the NRE registers itself as the current implementation by calling back <code>org.restlet.Manager.registerFactory()</code>, passing a new instance of itself as a parameter.
+   Internally, the NRE registers itself as the current implementation by calling back <code>org.restlet.Manager.registerFactory()</code>.
 </p>
 
 <h3>2. Retrieving the content of a Web page</h3>
 
 <p>
-   As we mentionned in the introduction paper, the Restlet framework is at the same time a client and server framework. For example, NRE can easily work with remote resources using its HTTP client connector. A connector in REST, is a sofware component that enables the communication between resources, typically by implementing one side of a network protocol. Here we will get the representation of an existing resource and output it in the JVM console:
+   As we mentionned in the <a target="_top" href="http://www.restlet.org/introduction.html">introduction paper</a>, the Restlet framework is at the same time a client and server framework. For example, NRE can easily work with remote resources using its HTTP client connector. A connector in REST, is a sofware component that enables the communication between components, typically by implementing one side of a network protocol. Here we will get the representation of an existing resource and output it in the JVM console:
 </p>
 <pre>
    HttpClient client = new HttpClient("My Web client");
    client.doGet("http://www.restlet.org").getOutput().write(System.out);
 </pre>
 <p>
-   Note that the example above uses a simplified way to issue calls via the HttpClient. A more flexible way is to create a new REST call and to ask the HTTP client to handle it. The Manager class also has a factory role ; it is a neutral access point to the registered Restlet implementation. The example below could be a good basis to set some preferences in your call, like the languages or media types you prefer to receive as a response:
+   Note that the example above uses a simplified way to issue calls via the HttpClient. A more flexible way is to create a new REST call and to ask the HTTP client to handle it. We will user the Manager class which also has a factory role. The example below could be a good basis to set some preferences in your call, like the languages or media types you prefer to receive as a response:
 </p>
 <pre>
    // Prepare the REST call
@@ -68,7 +65,7 @@
 <h3>3. Listening to Web browsers</h3>
 
 <p>
-   Now, we want to see how the Restlet framework can listen to client requests and reply to them. We will use the NRE HTTP server connector (supported by Mortbay's Jetty HTTP listener) and return a simple string representation "Hello World!" as plain text.
+   Now, we want to see how the Restlet framework can listen to client requests and reply to them. We will use the NRE HTTP server connector (supported by Mortbay's Jetty HTTP listener) and return a simple string representation "Hello World!" as plain text. Note that in a more realistic application, we would probably create a new handler class implementing UniformInterface instead of creating the instance on the fly.
 </p>
 <pre>
    // Creating a minimal handler returning "Hello World"
@@ -84,7 +81,7 @@
    new JettyServer("My Web server", 8182, handler).start();
 </pre>
 <p>
-   If you run this code and launch your server, you can open a Web browser and hit the <a target="_top" href="http://localhost:8182">http://localhost:8182</a>. Actually, any URI will work, try also <a target="_top" href="http://localhost:8182/test/tutorial">http://localhost:8182/test/tutorial</a>. The handler that we created is very primitive because it only uses the pure REST part of the Restlet framework. We will see next, how to take advantage of the Restlets and Maplets components.
+   If you run this code and launch your server, you can open a Web browser and hit the <a target="_top" href="http://localhost:8182">http://localhost:8182</a>. Actually, any URI will work, try also <a target="_top" href="http://localhost:8182/test/tutorial">http://localhost:8182/test/tutorial</a>. The handler that we created is very primitive and only takes advantage of the pure REST part of the Restlet framework. We will see next, how to take advantage of the Restlets and Maplets components.
 </p>
 
 <h3>4. Overview of a REST architecture</h3>
@@ -228,10 +225,17 @@
    <a href="mailto:contact@noelios.com">J&eacute;r&ocirc;me Louvel</a> (<a target="_top" href="http://noelios.wordpress.com">blog</a>)<br/>
 </p>
 
+<h4>Notes</h4>
+<p>
+   <ul>
+      <li>Thanks to <a target="_top" href="http://www.figer.com/">Jean-Paul Figer</a> for the feed-back on this tutorial.</li>
+   </ul>
+</p>
+
 <br/>
 
 <small>
-   Version 1.0, last modified on 2005/12/06<br/>
+   Version 1.1, last modified on 2005/12/06<br/>
    Copyright &copy; 2005 J&eacute;r&ocirc;me Louvel. Restlet is a trademark and service mark of <a target="_top" href="http://www.noelios.com/en">Noelios Consulting</a>.
 </small>
 
