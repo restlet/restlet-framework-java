@@ -3,8 +3,8 @@
 ---  Restlet API and Noelios Restlet Engine  ---
 ------------------------------------------------
 
-Version : 0.14 beta
-Date    : 12/06/2005
+Version : 0.15 beta
+Date    : 12/**/2005
 Author  : Jerome Louvel (mailto:contact@noelios.com)
 Home    : http://www.restlet.org
 
@@ -37,30 +37,18 @@ Noelios Restlet Engine (NRE):
 Release notes
 -------------
 
-Dependencies
+Requirements:
     * J2SE 5.0
-    * Extensions (included in distribution):
-          o JDBC 3.0 (JDBC client connector provided by NRE)
-          o Jetty 5.1.5 (HTTP server connector provided by NRE)
-          o Jetty 6.0 beta 5 (HTTP server connector provided by NRE)
-          o FreeMarker 2.3 (template representation provided by NRE, alternative to JSP pages)
-          o JavaMail 1.3 (SMTP client connector provided by NRE)
-          o Supporting third-party libraries
+    
+Dependencies:    
+    * Only when using NRE extensions:
+          o Jetty 5.1.5 (HTTP server connector)
+          o Jetty 6.0 beta 5 (HTTP server connector)
+          o FreeMarker 2.3 (template representation, alternative to JSP pages)
+          o JavaMail 1.3 RI (SMTP client connector)
 
-To do list:
-    * Complete the implementation of the client HTTP connector (cookies, user agent preferences)
-    * Add a representation for SOAP XML messages (via Apache Axis?)
-    * Add a simple HTTP server connector based on java.nio and java.util.concurrent packages
-    * Add better logging
-    * Integration with Spring
-    * Integration with Apache Commons HttpClient client HTTP connector
-    * Integration with Apache Tomcat Coyote server HTTP connector
-    * Integration with Grizzly server HTTP connector (from Sun’s Glassfish project)
-    * Add a SQLClient that provides a closer integration than the JdbcClient.
-          o See the PHP REST SQL project at http://phprestsql.sourceforge.net/
-    * Dynamic management of restlet servers, containers, etc.
-          o Web console
-          o JMX handlers
+Bugs, enhancements and new features: 
+    * Issues database: http://restlet.tigris.org/issues/
 
 
 Legal
