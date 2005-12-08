@@ -24,6 +24,7 @@ package com.noelios.restlet;
 
 import java.io.IOException;
 
+import org.restlet.Chainlet;
 import org.restlet.Maplet;
 import org.restlet.RestletCall;
 import org.restlet.Factory;
@@ -81,13 +82,22 @@ public class Engine implements Factory
 
    /**
     * Creates a delegate maplet.
-    * @param parent The parent maplet.
     * @param container The restlet container.
     * @return A new maplet.
     */
-   public Maplet createMaplet(Maplet parent, RestletContainer container)
+   public Maplet createMaplet(RestletContainer container)
    {
-      return new MapletImpl(parent, container);
+      return new MapletImpl(container);
+   }
+
+   /**
+    * Creates a delegate chainlet.
+    * @param container The restlet container.
+    * @return A new chainlet.
+    */
+   public Chainlet createChainlet(RestletContainer container)
+   {
+      return new ChainletImpl(container);
    }
 
    /**

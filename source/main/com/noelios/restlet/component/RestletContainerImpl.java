@@ -54,7 +54,7 @@ public class RestletContainerImpl extends ComponentImpl implements RestletContai
    {
       super(name);
       this.parent = parent;
-      this.delegate = new MapletImpl(this, parent);
+      this.delegate = new MapletImpl(parent);
    }
 
    /**

@@ -64,13 +64,22 @@ public class Manager
 
    /**
     * Creates a delegate maplet.
-    * @param parent The parent maplet.
     * @param container The restlet container.
     * @return A new maplet.
     */
-   public static Maplet createMaplet(Maplet parent, RestletContainer container)
+   public static Maplet createMaplet(RestletContainer container)
    {
-      return getRegisteredFactory().createMaplet(parent, container);
+      return getRegisteredFactory().createMaplet(container);
+   }
+
+   /**
+    * Creates a delegate chainlet.
+    * @param container The restlet container.
+    * @return A new chainlet.
+    */
+   public Chainlet createChainlet(RestletContainer container)
+   {
+      return getRegisteredFactory().createChainlet(container);
    }
 
    /**

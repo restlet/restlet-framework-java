@@ -4,6 +4,13 @@
 -----------------------------
 
 
+0.15 beta
+ - Added org.restlet.Chainlet interface and com.noelios.restlet.ChainletImpl
+ - Factorize common code between MapletImpl and ChainletImpl into com.noelios.restlet.util.RestletTarget
+ - Removed unused "parent" parameter for Maplet construction
+ - 
+ 
+
 0.14 beta
  - Completed the tutorial
  - Added integration with Jetty 6.0.0 beta 5

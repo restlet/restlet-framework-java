@@ -27,7 +27,7 @@ import org.restlet.component.RestletContainer;
 /**
  * Default maplet that can be easily subclassed.
  */
-public class DefaultMaplet extends AbstractRestlet implements Maplet
+public class AbstractChainlet extends AbstractRestlet implements Maplet
 {
    /** Delegate maplet actually implementing the Maplet methods. */
    protected Maplet delegate;
@@ -36,7 +36,7 @@ public class DefaultMaplet extends AbstractRestlet implements Maplet
     * Creates a new restlet in the given container.
     * @param container The parent container.
     */
-   public DefaultMaplet(RestletContainer container)
+   public AbstractChainlet(RestletContainer container)
    {
       super(container);
       this.delegate = Manager.createMaplet(container);

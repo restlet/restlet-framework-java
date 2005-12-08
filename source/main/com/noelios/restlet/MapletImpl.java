@@ -22,7 +22,6 @@
 
 package com.noelios.restlet;
 
-import java.lang.reflect.Constructor;
 import java.lang.reflect.InvocationTargetException;
 import java.util.ArrayList;
 import java.util.Iterator;
@@ -35,6 +34,8 @@ import org.restlet.RestletCall;
 import org.restlet.RestletException;
 import org.restlet.component.RestletContainer;
 import org.restlet.data.Statuses;
+
+import com.noelios.restlet.util.RestletTarget;
 
 /**
  * Represents a list of mappings for a parent maplet or for the container itself.
@@ -49,10 +50,9 @@ public class MapletImpl extends ArrayList<Mapping> implements Maplet
 
    /**
     * Constructor.
-    * @param parent The parent maplet.
     * @param container The restlet container.
     */
-   public MapletImpl(Maplet parent, RestletContainer container)
+   public MapletImpl(RestletContainer container)
    {
       this.container = container;
    }
@@ -198,25 +198,10 @@ public class MapletImpl extends ArrayList<Mapping> implements Maplet
  * Represents a mapping between a path pattern and a restlet.
  * @see java.util.regex.Pattern
  */
-class Mapping
+class Mapping extends RestletTarget
 {
    /** The path pattern. */
    Pattern pathPattern;
-
-   /** The restlet. */
-   Restlet restlet;
-
-   /** The restlet class. */
-   Class<? extends Restlet> restletClass;
-
-   /** The restlet constructor. */
-   Constructor restletConstructor;
-
-   /** The container class to set in the constructor. */
-   Class containerClass;
-
-   /** Indicates if the container can be set in the constructor. */
-   boolean setContainer;
 
    /**
     * Constructor.
@@ -225,11 +210,8 @@ class Mapping
     */
    public Mapping(String pathPattern, Restlet restlet)
    {
+      super(restlet);
       this.pathPattern = Pattern.compile(pathPattern, Pattern.CASE_INSENSITIVE);
-      this.restlet = restlet;
-      this.restletClass = null;
-      this.restletConstructor = null;
-      this.setContainer = false;
    }
 
    /**
@@ -239,76 +221,8 @@ class Mapping
     */
    Mapping(String pathPattern, Class<? extends Restlet> restletClass)
    {
+      super(restletClass);
       this.pathPattern = Pattern.compile(pathPattern, Pattern.CASE_INSENSITIVE);
-      this.restlet = null;
-      this.restletClass = restletClass;
-      this.setContainer = false;
-
-      // Try to find a constructor that accepts a RestletContainer parameter
-      Constructor[] constructors = restletClass.getConstructors();
-      Class[] parameters;
-
-      for(int i = 0; (this.restletConstructor == null) && (i < constructors.length); i++)
-      {
-         parameters = constructors[i].getParameterTypes();
-
-         if(parameters.length == 1)
-         {
-            if(RestletContainer.class.isAssignableFrom(parameters[0]))
-            {
-               this.restletConstructor = constructors[i];
-               this.setContainer = true;
-            }
-         }
-      }
-
-      if(this.restletConstructor == null)
-      {
-         // Try to find an empty constructor
-         try
-         {
-            this.restletConstructor = restletClass.getConstructor(new Class[]{});
-         }
-         catch(NoSuchMethodException nsme)
-         {
-         }
-      }
-   }
-
-   /**
-    * Returns the restlet.
-    * @return The restlet.
-    */
-   public Restlet getRestlet()
-   {
-      return this.restlet;
-   }
-
-   /**
-    * Returns the restlet class.
-    * @return The restlet class.
-    */
-   public Class<? extends Restlet> getRestletClass()
-   {
-      return this.restletClass;
-   }
-
-   /**
-    * Returns the restlet constructor.
-    * @return The restlet constructor.
-    */
-   public Constructor getRestletConstructor()
-   {
-      return this.restletConstructor;
-   }
-
-   /**
-    * Returns the container class.
-    * @return The container class.
-    */
-   public Class getContainerClass()
-   {
-      return this.containerClass;
    }
 
    /**
@@ -318,15 +232,6 @@ class Mapping
    public Pattern getPathPattern()
    {
       return this.pathPattern;
-   }
-
-   /**
-    * Indicates if the container can be set in the constructor.
-    * @return True if the container can be set in the constructor.
-    */
-   public boolean isSetContainer()
-   {
-      return this.setContainer;
    }
 
 }

@@ -23,42 +23,33 @@
 package org.restlet;
 
 /**
- * Mapper of calls to other restlets. Automatic delegation is provided for attached restlets.
- * Note that during the delegation, the restlet call paths are supposed to be modified.
+ * Chainer of calls to a target restlet. Automatic delegation is provided to the attached restlet.
+ * Filtering work can be done in the handle() method, just remember to call the delegate() method before or 
+ * after your custom handling.<br/>
+ * Note that during this handling, the restlet call paths are not supposed to be modified.
  */
-public interface Maplet extends Restlet
+public interface Chainlet extends Restlet
 {
    /**
     * Attaches a restlet instance shared by all calls.
-    * @param pathPattern The path pattern used to map calls.
     * @param restlet The restlet to attach.
-    * @see java.util.regex.Pattern
     */
-   public void attach(String pathPattern, Restlet restlet);
+   public void attach(Restlet restlet);
 
    /**
     * Attaches a restlet class. A new instance will be created for each call.
-    * @param pathPattern The path pattern used to map calls.
     * @param restletClass The restlet class to attach (must have a constructor taking a RestletContainer
     * parameter).
-    * @see java.util.regex.Pattern
     */
-   public void attach(String pathPattern, Class<? extends Restlet> restletClass);
+   public void attach(Class<? extends Restlet> restletClass);
 
    /**
-    * Detaches a restlet instance.
-    * @param restlet The restlet to detach.
+    * Detaches the current target restlet.
     */
-   public void detach(Restlet restlet);
+   public void detach();
 
    /**
-    * Detaches a restlet class.
-    * @param restletClass The restlet class to detach.
-    */
-   public void detach(Class<? extends Restlet> restletClass);
-
-   /**
-    * Delegates a call to attached restlets.
+    * Delegates a call to attached restlet.
     * @param call The call to delegate.
     * @throws RestletException
     */
