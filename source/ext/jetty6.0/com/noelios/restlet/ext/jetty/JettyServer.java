@@ -48,7 +48,7 @@ public class JettyServer extends org.mortbay.jetty.Server implements Server
    private static final long serialVersionUID = 1L;
 
    /** Obtain a suitable logger. */
-   private static Logger logger = Logger.getLogger("com.noelios.restlet.ext.jetty.JettyConnection");
+   private static Logger logger = Logger.getLogger("com.noelios.restlet.ext.jetty.JettyServer");
 
    /** The name of this REST connector. */
    private String name;
@@ -105,7 +105,7 @@ public class JettyServer extends org.mortbay.jetty.Server implements Server
          // Set the status code in the response
          if(call.getStatus() != null)
          {
-            connection.getResponse().setStatus(call.getStatus().getHttpCode());
+            connection.getResponse().setStatus(call.getStatus().getHttpCode(), call.getStatus().getDescription());
          }
 
          // Set cookies
@@ -140,7 +140,7 @@ public class JettyServer extends org.mortbay.jetty.Server implements Server
 
             if(meta.getMediaType() != null)
             {
-               StringBuilder contentType = new StringBuilder(meta.getMediaType().toString());
+               StringBuilder contentType = new StringBuilder(meta.getMediaType().getName());
 
                if(meta.getCharacterSet() != null)
                {

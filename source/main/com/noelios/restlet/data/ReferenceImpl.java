@@ -101,6 +101,17 @@ public class ReferenceImpl implements Reference
    }
 
    /**
+    * Returns the server identifier.
+    * @return The server identifier.
+    */
+   public String getServerIdentifier()
+   {
+      StringBuilder result = new StringBuilder();
+      result.append(getScheme()).append("://").append(getAuthority());
+      return result.toString();
+   }
+
+   /**
     * Sets the absolute resource identifier.
     * @param identifier The absolute resource identifier.
     */
@@ -297,18 +308,18 @@ public class ReferenceImpl implements Reference
 
          if(index != -1)
          {
-            return ssp.substring(0, index);
+            return ssp.substring(2, index);
          }
          else
          {
             index = ssp.indexOf('?');
             if(index != -1)
             {
-               return ssp.substring(0, index);
+               return ssp.substring(2, index);
             }
             else
             {
-               return ssp;
+               return ssp.substring(2);
             }
          }
       }
@@ -420,15 +431,15 @@ public class ReferenceImpl implements Reference
       else
       {
          // No user info found
-         if(index1 != -1)
+         if(index2 != -1)
          {
             // Port found
-            return authority.substring(0, index2);
+            return authority.substring(2, index2);
          }
          else
          {
             // No port found
-            return authority;
+            return authority.substring(2);
          }
       }
    }

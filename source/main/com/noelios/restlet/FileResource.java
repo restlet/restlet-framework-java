@@ -151,7 +151,7 @@ public class FileResource implements Resource
          CharacterSet characterSet = null;
          Language language = null;
 
-         for(int i = 0; i < files.length; i++)
+         for(int i = 0; (files != null) && (i < files.length); i++)
          {
             currentFile = files[i];
 

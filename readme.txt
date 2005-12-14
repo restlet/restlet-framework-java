@@ -4,7 +4,7 @@
 ------------------------------------------------
 
 Version : 0.15 beta
-Date    : 12/**/2005
+Date    : 12/14/2005
 Author  : Jerome Louvel (mailto:contact@noelios.com)
 Home    : http://www.restlet.org
 
@@ -43,7 +43,7 @@ Requirements:
 Dependencies:    
     * Only when using NRE extensions:
           o Jetty 5.1.5 (HTTP server connector)
-          o Jetty 6.0 beta 5 (HTTP server connector)
+          o Jetty 6.0 beta (HTTP server connector)
           o FreeMarker 2.3 (template representation, alternative to JSP pages)
           o JavaMail 1.3 RI (SMTP client connector)
 

@@ -132,9 +132,9 @@ public class HttpClient extends AbstractConnector implements Client
          }
 
          // Add the user agent header
-         if(call.getUserAgentName() != null)
+         if(call.getClientName() != null)
          {
-            huc.setRequestProperty("User-Agent", call.getUserAgentName());
+            huc.setRequestProperty("User-Agent", call.getClientName());
          }
          else
          {

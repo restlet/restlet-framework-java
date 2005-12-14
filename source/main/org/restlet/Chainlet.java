@@ -48,11 +48,4 @@ public interface Chainlet extends Restlet
     */
    public void detach();
 
-   /**
-    * Delegates a call to attached restlet.
-    * @param call The call to delegate.
-    * @throws RestletException
-    */
-   public void delegate(RestletCall call) throws RestletException;
-
 }

@@ -20,31 +20,25 @@
  * Portions Copyright [yyyy] [name of copyright owner]
  */
 
-package org.restlet.data;
+package com.noelios.restlet.util;
+
+import java.util.logging.Formatter;
+import java.util.logging.LogRecord;
 
 /**
- * Language used in representations.
- * @see org.restlet.data.Languages
+ * Log record formatter which only outputs the message on a new line.
+ * Useful for Web-style logs.
  */
-public interface Language extends Metadata
+public class LogFormatter extends Formatter
 {
    /**
-    * Returns the main tag.
-    * @return The main tag.
+    * Format the given log record and return the formatted string.
+    * @param logRecord The log record to be formatted.
+    * @return The formatted log record.
     */
-   public String getMainTag();
-
-   /**
-    * Returns the sub tag.
-    * @return The sub tag.
-    */
-   public String getSubTag();
-
-   /**
-    * Indicates if the language is equal to a given one.
-    * @param language The language to compare to.
-    * @return True if the language is equal to a given one.
-    */
-   public boolean equals(Language language);
+   public String format(LogRecord logRecord)
+   {
+      return logRecord.getMessage() + '\n';
+   }
 
 }

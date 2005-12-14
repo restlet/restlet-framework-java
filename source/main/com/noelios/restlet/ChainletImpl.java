@@ -81,21 +81,12 @@ public class ChainletImpl extends AbstractRestlet implements Chainlet
    }
 
    /**
-    * Handles a call to a resource or a set of resources. Default behavior to be overriden: delegation to
-    * attached handlers.
+    * Handles a call to a resource or a set of resources. 
+    * Default behavior to be overriden: delegation to the attached restlet.
     * @param call The call to handle.
     * @throws RestletException
     */
    public void handle(RestletCall call) throws RestletException
-   {
-      delegate(call);
-   }
-
-   /**
-    * Delegates a call to the attached restlet.
-    * @param call The call to delegate.
-    */
-   public void delegate(RestletCall call) throws RestletException
    {
       if(this.target != null)
       {

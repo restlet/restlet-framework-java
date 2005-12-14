@@ -71,6 +71,15 @@ public abstract class AbstractRepresentation extends DefaultRepresentationMetada
    }
 
    /**
+    * Returns the size in bytes if known, -1 otherwise.
+    * @return The size in bytes if known, -1 otherwise.
+    */
+   public long getSize()
+   {
+      return -1;
+   }
+
+   /**
     * Returns the description of this REST element.
     * @return The description of this REST element.
     */

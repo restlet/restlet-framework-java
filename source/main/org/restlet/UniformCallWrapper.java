@@ -78,23 +78,41 @@ public class UniformCallWrapper implements UniformCall
    }
 
    /**
-    * Returns the user agent name.
-    * @return The user agent name.
+    * Returns the client's name (ex: user agent name).
+    * @return The client's name.
     */
-   public String getUserAgentName()
+   public String getClientName()
    {
-      return getWrappedCall().getUserAgentName();
+      return getWrappedCall().getClientName();
    }
 
    /**
-    * Sets the user agent name.
-    * @param name The user agent name.
+    * Sets the client's name (ex: user agent name).
+    * @param name The client's name.
     */
-   public void setUserAgentName(String name)
+   public void setClientName(String name)
    {
-      getWrappedCall().setUserAgentName(name);
+      getWrappedCall().setClientName(name);
+   }
+   
+   /**
+    * Returns the client's IP address.
+    * @return The client's IP address.
+    */
+   public String getClientAddress()
+   {
+      return getWrappedCall().getClientAddress();
    }
 
+   /**
+    * Sets the client's IP address.
+    * @param address The client's IP address.
+    */
+   public void setClientAddress(String address)
+   {
+      getWrappedCall().setClientAddress(address);
+   }
+   
    /**
     * Returns the media type preferences of the user agent.
     * @return The media type preferences of the user agent.

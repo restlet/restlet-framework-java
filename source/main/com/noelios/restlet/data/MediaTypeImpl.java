@@ -69,7 +69,7 @@ public class MediaTypeImpl extends MetadataImpl implements MediaType
     * Returns the sub-type.
     * @return The sub-type.
     */
-   public String getSubtype()
+   public String getSubType()
    {
       int separator = getName().indexOf(';');
 

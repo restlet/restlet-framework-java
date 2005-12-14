@@ -30,9 +30,15 @@ import java.util.List;
  */
 public enum MediaTypes implements MediaType
 {
-   ALL, APPLICATION_ALL, APPLICATION_HTTP_COOKIES, APPLICATION_JAVA_OBJECT, APPLICATION_WWW_FORM, 
-   APPLICATION_XHTML_XML, APPLICATION_XML, IMAGE_ALL, IMAGE_GIF, IMAGE_ICON, IMAGE_PNG, TEXT_ALL, 
-   TEXT_CSS, TEXT_HTML, TEXT_PLAIN, TEXT_URI, TEXT_XML;
+   ALL, 
+   
+   APPLICATION_ALL, APPLICATION_HTTP_COOKIES, APPLICATION_JAVA_OBJECT, 
+   APPLICATION_PDF, APPLICATION_WORD, APPLICATION_WWW_FORM, 
+   APPLICATION_XHTML_XML, APPLICATION_XML, APPLICATION_ZIP, 
+   
+   IMAGE_ALL, IMAGE_GIF, IMAGE_ICON, IMAGE_PNG, 
+   
+   TEXT_ALL, TEXT_CSS, TEXT_HTML, TEXT_PLAIN, TEXT_URI, TEXT_XML;
 
    /**
     * Returns the metadata name like "text/html" or "compress" or "iso-8851-1".
@@ -56,6 +62,12 @@ public enum MediaTypes implements MediaType
          case APPLICATION_JAVA_OBJECT:
             result = "application/x-java-serialized-object";
             break;
+         case APPLICATION_PDF:
+            result = "application/pdf";
+            break;
+         case APPLICATION_WORD:
+            result = "application/msword";
+            break;
          case APPLICATION_WWW_FORM:
             result = "application/x-www-form-urlencoded";
             break;
@@ -64,6 +76,9 @@ public enum MediaTypes implements MediaType
             break;
          case APPLICATION_XML:
             result = "application/xml";
+            break;
+         case APPLICATION_ZIP:
+            result = "application/zip";
             break;
          case IMAGE_ALL:
             result = "image/*";
@@ -113,7 +128,7 @@ public enum MediaTypes implements MediaType
     * Returns the sub-type.
     * @return The sub-type.
     */
-   public String getSubtype()
+   public String getSubType()
    {
       int separator = getName().indexOf(';');
 
@@ -149,6 +164,12 @@ public enum MediaTypes implements MediaType
          case APPLICATION_JAVA_OBJECT:
             result = "Java serialized object";
             break;
+         case APPLICATION_PDF:
+            result = "Adobe PDF document";
+            break;
+         case APPLICATION_WORD:
+            result = "Microsoft Word document";
+            break;
          case APPLICATION_WWW_FORM:
             result = "Web form (URL encoded)";
             break;
@@ -157,6 +178,9 @@ public enum MediaTypes implements MediaType
             break;
          case APPLICATION_XML:
             result = "XML application document";
+            break;
+         case APPLICATION_ZIP:
+            result = "ZIP archive";
             break;
          case IMAGE_ALL:
             result = "All images";

@@ -35,6 +35,12 @@ public interface Reference extends Data
    public String getIdentifier();
 
    /**
+    * Returns the server identifier.
+    * @return The server identifier.
+    */
+   public String getServerIdentifier();
+
+   /**
     * Sets the absolute resource identifier.
     * @param identifier The absolute resource identifier.
     */

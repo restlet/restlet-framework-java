@@ -121,6 +121,15 @@ public class FileRepresentation extends AbstractRepresentation
    }
 
    /**
+    * Returns the size in bytes if known, -1 otherwise.
+    * @return The size in bytes if known, -1 otherwise.
+    */
+   public long getSize()
+   {
+      return this.file.length();
+   }
+
+   /**
     * Converts the representation to a string.
     * @return The representation as a string.
     */

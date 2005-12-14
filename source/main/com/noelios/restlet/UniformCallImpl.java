@@ -22,6 +22,8 @@
 
 package com.noelios.restlet;
 
+import java.net.InetAddress;
+import java.net.UnknownHostException;
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
@@ -41,8 +43,11 @@ public class UniformCallImpl implements UniformCall
    /** The referrer reference. */
    protected Reference referrerUri;
 
-   /** The user agent name. */
-   protected String userAgentName;
+   /** The client's name. */
+   protected String clientName;
+
+   /** The client's IP address. */
+   protected String clientAddress;
 
    /** The media preferences of the user agent. */
    protected List<Preference> mediaPrefs;
@@ -80,7 +85,7 @@ public class UniformCallImpl implements UniformCall
    /**
     * Constructor.
     * @param referrer The referrer reference.
-    * @param userAgent The user agent.
+    * @param clientName The client's name (ex: user agent name).
     * @param mediaPrefs The media preferences of the user agent.
     * @param characterSetPrefs The character set preferences of the user agent.
     * @param languagePrefs The language preferences of the user agent.
@@ -89,12 +94,22 @@ public class UniformCallImpl implements UniformCall
     * @param cookies The cookies sent by the user agent.
     * @param input The content received in the request.
     */
-   public UniformCallImpl(Reference referrer, String userAgent, List<Preference> mediaPrefs,
+   public UniformCallImpl(Reference referrer, String clientName, List<Preference> mediaPrefs,
          List<Preference> characterSetPrefs, List<Preference> languagePrefs, Method method,
          Reference resource, Cookies cookies, Representation input)
    {
       this.referrerUri = referrer;
-      this.userAgentName = userAgent;
+      this.clientName = clientName;
+
+      try
+      {
+         this.clientAddress = InetAddress.getLocalHost().getHostAddress();
+      }
+      catch(UnknownHostException e)
+      {
+         this.clientAddress = null;
+      }
+      
       this.mediaPrefs = mediaPrefs;
       this.characterSetPrefs = characterSetPrefs;
       this.languagePrefs = languagePrefs;
@@ -152,18 +167,36 @@ public class UniformCallImpl implements UniformCall
     * Returns the user agent name.
     * @return The user agent name.
     */
-   public String getUserAgentName()
+   public String getClientName()
    {
-      return this.userAgentName;
+      return this.clientName;
    }
 
    /**
     * Sets the user agent name.
     * @param name The user agent name.
     */
-   public void setUserAgentName(String name)
+   public void setClientName(String name)
    {
-      this.userAgentName = name;
+      this.clientName = name;
+   }
+
+   /**
+    * Returns the client's IP address.
+    * @return The client's IP address.
+    */
+   public String getClientAddress()
+   {
+      return this.clientAddress;  
+   }
+
+   /**
+    * Sets the client's IP address.
+    * @param address The client's IP address.
+    */
+   public void setClientAddress(String address)
+   {
+      this.clientAddress = address;
    }
 
    /**
@@ -336,23 +369,28 @@ public class UniformCallImpl implements UniformCall
     * representation is found, sets the status to "Not found". If no acceptable representation is available,
     * sets the status to "Not acceptable".
     * @param resource The resource for which the best representation needs to be set.
+    * @see <a href="http://httpd.apache.org/docs/2.2/en/content-negotiation.html#algorithm">Apache content negotiation algorithm</a> 
     */
    public void setBestOutput(Resource resource) throws RestletException
    {
       Parameter currentParam = null;
-      boolean compatible = false;
+      boolean compatiblePref = false;
+      boolean compatibleLanguage = false;
 
       RepresentationMetadata currentVariant = null;
-      MediaType currentRange = null;
+      Language currentLanguage = null;
+      MediaType currentMediaType = null;
 
       RepresentationMetadata bestVariant = null;
       float bestQuality = 0;
 
       Preference currentPref = null;
-      Preference bestPref = null;
+      Preference bestLanguagePref = null;
+      Preference bestMediaTypePref = null;
 
-      int currentSpecificity = 0;
-      int bestSpecificity = 0;
+      float currentScore = 0;
+      float bestLanguageScore = 0;
+      float bestMediaTypeScore = 0;
 
       // For each media type supported by this resource
       List<RepresentationMetadata> variants = resource.getVariantsMetadata();
@@ -362,49 +400,117 @@ public class UniformCallImpl implements UniformCall
       }
       else
       {
+         // For each available variant, we will compute the negotiation score
+         // which is dependant on the language score and on the media type score
          for(Iterator iter1 = variants.iterator(); iter1.hasNext();)
          {
             currentVariant = (RepresentationMetadata)iter1.next();
 
-            // For each media range preference defined in the call
-            // Calculate the specificity score
-            for(Iterator iter2 = getMediaTypePrefs().iterator(); iter2.hasNext();)
+            // For each language preference defined in the call
+            // Calculate the score and remember the best scoring preference
+            for(Iterator iter2 = getLanguagePrefs().iterator(); (currentVariant.getLanguage() != null) && iter2.hasNext();)
             {
-               compatible = true;
-               currentSpecificity = 0;
                currentPref = (Preference)iter2.next();
-               currentRange = (MediaType)currentPref.getMetadata();
+               currentLanguage = (Language)currentPref.getMetadata();
+               compatiblePref = true;
+               currentScore = 0;
+
+               // 1) Compare the main tag
+               if(currentVariant.getLanguage().getMainTag().equals(currentLanguage.getMainTag()))
+               {
+                  currentScore += 100;
+               }
+               else if(!currentLanguage.getMainTag().equals("*"))
+               {
+                  compatiblePref = false;
+               }
+               else if(currentLanguage.getSubTag() != null)
+               {
+                  // Only "*" is an acceptable language range
+                  compatiblePref = false;
+               }
+               else
+               {
+                  // The valid "*" range has the lowest valid score
+                  currentScore++;
+               }
+
+               if(compatiblePref)
+               {
+                  // 2) Compare the sub tags
+                  if((currentLanguage.getSubTag() == null) || (currentVariant.getLanguage().getSubTag() == null))
+                  {
+                     if(currentVariant.getLanguage().getSubTag() == currentLanguage.getSubTag())
+                     {
+                        currentScore += 10;
+                     }
+                     else
+                     {
+                        // Don't change the score
+                     }
+                  }
+                  else if(currentLanguage.getSubTag().equals(currentVariant.getLanguage().getSubTag()))
+                  {
+                     currentScore += 10;
+                  }
+                  else
+                  {
+                     // SubTags are different
+                     compatiblePref = false;
+                  }
+
+                  // 3) Do we have a better preference?
+                  // currentScore *= currentPref.getQuality();
+                  if(compatiblePref && ((bestLanguagePref == null) || (currentScore > bestLanguageScore)))
+                  {
+                     bestLanguagePref = currentPref;
+                     bestLanguageScore = currentScore;
+                  }
+               }
+            }
+            
+            // If the variant has a language set, do we have a compatible preference?
+            compatibleLanguage = (currentVariant.getLanguage() == null) || (bestLanguagePref != null); 
+               
+            // For each media range preference defined in the call
+            // Calculate the score and remember the best scoring preference
+            for(Iterator iter2 = getMediaTypePrefs().iterator(); compatibleLanguage && iter2.hasNext();)
+            {
+               currentPref = (Preference)iter2.next();
+               currentMediaType = (MediaType)currentPref.getMetadata();
+               compatiblePref = true;
+               currentScore = 0;
 
                // 1) Compare the main types
-               if(currentVariant.getMediaType().getMainType().equals(currentRange.getMainType()))
+               if(currentMediaType.getMainType().equals(currentVariant.getMediaType().getMainType()))
                {
-                  currentSpecificity += 1000;
+                  currentScore += 1000;
                }
-               else if(!currentRange.getMainType().equals("*"))
+               else if(!currentMediaType.getMainType().equals("*"))
                {
-                  compatible = false;
+                  compatiblePref = false;
                }
-               else if(!currentRange.getSubtype().equals("*"))
+               else if(!currentMediaType.getSubType().equals("*"))
                {
                   // Ranges such as "*/html" are not supported
                   // Only "*/*" is acceptable in this case
-                  compatible = false;
+                  compatiblePref = false;
                }
 
-               if(compatible)
+               if(compatiblePref)
                {
                   // 2) Compare the sub types
-                  if(currentVariant.getMediaType().getSubtype().equals(currentRange.getSubtype()))
+                  if(currentVariant.getMediaType().getSubType().equals(currentMediaType.getSubType()))
                   {
-                     currentSpecificity += 100;
+                     currentScore += 100;
                   }
-                  else if(!currentRange.getSubtype().equals("*"))
+                  else if(!currentMediaType.getSubType().equals("*"))
                   {
                      // Subtype are different
-                     compatible = false;
+                     compatiblePref = false;
                   }
 
-                  if(compatible && (currentVariant.getMediaType().getParameters() != null))
+                  if(compatiblePref && (currentVariant.getMediaType().getParameters() != null))
                   {
                      // 3) Compare the parameters
                      // If current media type is compatible with the current
@@ -414,36 +520,49 @@ public class UniformCallImpl implements UniformCall
                      {
                         currentParam = (Parameter)iter3.next();
 
-                        if(isParameterFound(currentParam, currentRange))
+                        if(isParameterFound(currentParam, currentMediaType))
                         {
-                           currentSpecificity++;
+                           currentScore++;
                         }
                      }
                   }
 
                   // 3) Do we have a better preference?
-                  if(compatible && ((bestPref == null) || (currentSpecificity > bestSpecificity)))
+                  // currentScore *= currentPref.getQuality();
+                  if(compatiblePref && ((bestMediaTypePref == null) || (currentScore > bestMediaTypeScore)))
                   {
-                     bestPref = currentPref;
+                     bestMediaTypePref = currentPref;
+                     bestMediaTypeScore = currentScore;
                   }
                }
             }
 
-            if(bestPref != null)
+            // Do we have a compatible media type?
+            if(bestMediaTypePref != null)
             {
+               // So, let's conclude on the current variant, its quality
+               float currentQuality = bestMediaTypePref.getQuality();
+               if(bestLanguagePref != null)
+               {
+                  currentQuality += (bestLanguagePref.getQuality() * 10F);
+               }
+            
                if(bestVariant == null)
                {
                   bestVariant = currentVariant;
-                  bestQuality = bestPref.getQuality();
+                  bestQuality = currentQuality;
                }
-               else
+               else if(currentQuality > bestQuality)
                {
-                  if(bestPref.getQuality() > bestQuality)
-                  {
-                     bestVariant = currentVariant;
-                     bestQuality = bestPref.getQuality();
-                  }
+                  bestVariant = currentVariant;
+                  bestQuality = currentQuality;
                }
+               
+               // Reset the preference variables
+               bestLanguagePref = null;
+               bestLanguageScore = 0;
+               bestMediaTypePref = null;
+               bestMediaTypeScore = 0;
             }
          }
 

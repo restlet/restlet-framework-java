@@ -37,7 +37,7 @@ public class Tutorial2a
       try
       {
          HttpClient client = new HttpClient("My Web client");
-         client.doGet("http://www.restlet.org").getOutput().write(System.out);
+         client.doGet("http://restlet.org").getOutput().write(System.out);
       }
       catch(IOException e)
       {

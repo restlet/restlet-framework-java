@@ -41,7 +41,7 @@ public interface MediaType extends Metadata
     * Returns the sub-type.
     * @return The sub-type.
     */
-   public String getSubtype();
+   public String getSubType();
 
    /**
     * Returns the list of parameters.

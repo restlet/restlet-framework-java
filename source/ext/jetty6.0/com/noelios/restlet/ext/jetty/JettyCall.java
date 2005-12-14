@@ -58,6 +58,7 @@ public class JettyCall extends UniformCallImpl
       super(getReferrer(connection), getUserAgentName(connection), getMediaPrefs(connection),
             getCharacterSetPrefs(connection), getLanguagePrefs(connection), getMethod(connection),
             getResource(connection), getCookies(connection), getInput(connection));
+      setClientAddress(connection.getRequest().getRemoteAddr());
    }
 
    /**
