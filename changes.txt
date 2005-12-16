@@ -10,15 +10,15 @@
  - Removed unused "parent" parameter for Maplet construction
  - Renamed UniformCall.userAgentName into clientName
  - Added UniformCall.clientAddress property to store the client's IP address
- - Updated the Jetty connectors to set the client IP address
+ - Updated the Jetty connectors to set the client IP address and return custom HTTP status messages
  - Added Representation.getSize method
  - Added com.noelios.restlet.LoggerChainlet to log restlet calls.
  - Added com.noelios.restlet.util.LogFileHandler and com.noelios.restlet.util.LogFormatter support classes.
  - Added Zip, PDF, Word entries in org.restlet.data.MediaTypes enumeration.
  - Greatly improved the content negotiation algorithm to take into account language preferences.
  - Added lightweight string template engine at com.noelios.restlet.util.StringTemplate.
+ - Added more logging traces (FileResource, etc.)
  
-
 0.14 beta
  - Completed the tutorial
  - Added integration with Jetty 6.0.0 beta 5
