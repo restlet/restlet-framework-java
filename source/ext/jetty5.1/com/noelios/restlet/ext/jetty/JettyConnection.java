@@ -27,7 +27,6 @@ import java.io.InputStream;
 import java.io.OutputStream;
 import java.net.InetAddress;
 import java.util.Iterator;
-import java.util.logging.Logger;
 
 import org.mortbay.http.HttpConnection;
 import org.mortbay.http.HttpContext;
@@ -47,9 +46,6 @@ public class JettyConnection extends HttpConnection
 {
    /** Serial version identifier. */
    private static final long serialVersionUID = 1L;
-
-   /** Obtain a suitable logger. */
-   private static Logger logger = Logger.getLogger("com.noelios.restlet.ext.jetty.JettyConnection");
 
    /**
     * Constructor.
@@ -76,8 +72,6 @@ public class JettyConnection extends HttpConnection
    protected HttpContext service(HttpRequest request, HttpResponse response) throws HttpException,
          IOException
    {
-      long startTime = System.currentTimeMillis();
-
       try
       {
          UniformCall call = new JettyCall(request, response);
@@ -86,7 +80,7 @@ public class JettyConnection extends HttpConnection
          // Set the status code in the response
          if(call.getStatus() != null)
          {
-            response.setStatus(call.getStatus().getHttpCode());
+            response.setStatus(call.getStatus().getHttpCode(), call.getStatus().getDescription());
          }
 
          // Set cookies
@@ -162,10 +156,6 @@ public class JettyConnection extends HttpConnection
          request.setHandled(true);
          re.printStackTrace();
       }
-
-      long endTime = System.currentTimeMillis();
-      int duration = (int)(endTime - startTime);
-      logger.info("Call duration=" + duration + "ms");
 
       // TOODO
       return null;

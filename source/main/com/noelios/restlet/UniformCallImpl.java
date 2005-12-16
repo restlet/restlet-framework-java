@@ -27,6 +27,7 @@ import java.net.UnknownHostException;
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
+import java.util.logging.Logger;
 
 import org.restlet.Resource;
 import org.restlet.RestletException;
@@ -40,6 +41,9 @@ import com.noelios.restlet.data.StringRepresentation;
  */
 public class UniformCallImpl implements UniformCall
 {
+   /** Obtain a suitable logger. */
+   private static Logger logger = Logger.getLogger("com.noelios.restlet.UniformCallImpl");
+
    /** The referrer reference. */
    protected Reference referrerUri;
 
@@ -396,10 +400,12 @@ public class UniformCallImpl implements UniformCall
       List<RepresentationMetadata> variants = resource.getVariantsMetadata();
       if(variants == null)
       {
+         logger.warning("No variant found for resource: " + getResourceUri().getIdentifier());
          setStatus(Statuses.CLIENT_ERROR_NOT_FOUND);
       }
       else
       {
+         logger.info(Integer.toString(variants.size()) + " variants found for resource: " + getResourceUri().getIdentifier());
          // For each available variant, we will compute the negotiation score
          // which is dependant on the language score and on the media type score
          for(Iterator iter1 = variants.iterator(); iter1.hasNext();)

@@ -57,16 +57,11 @@ public class LoggerChainlet extends ChainletImpl
     */
    public void handle(RestletCall call) throws RestletException
    {
+      long startTime = System.currentTimeMillis();
       super.handle(call);
-      log(call);
-   }
+      long endTime = System.currentTimeMillis();
+      int duration = (int)(endTime - startTime);
 
-   /**
-    * Logs a call.
-    * @param call The call to log.
-    */
-   public void log(RestletCall call)
-   {
       StringBuilder sb = new StringBuilder();
       
       // Append the time stamp
@@ -128,6 +123,10 @@ public class LoggerChainlet extends ChainletImpl
       // Append the virtual name
       sb.append('\t');
       sb.append((call.getResourceUri() == null) ? "-" : call.getResourceUri().getServerIdentifier());
+
+      // Append the duration
+      sb.append('\t');
+      sb.append(duration);
 
       // Add the log entry
       this.logger.log(Level.INFO, sb.toString());

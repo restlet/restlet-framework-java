@@ -25,6 +25,7 @@ package com.noelios.restlet;
 import java.io.File;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.logging.Logger;
 
 import org.restlet.Resource;
 import org.restlet.data.CharacterSet;
@@ -46,6 +47,9 @@ import com.noelios.restlet.data.FileRepresentation;
  */
 public class FileResource implements Resource
 {
+   /** Obtain a suitable logger. */
+   private static Logger logger = Logger.getLogger("com.noelios.restlet.data.FileRepresentation");
+
    /**
     * The parent directory restlet.
     */
@@ -71,6 +75,8 @@ public class FileResource implements Resource
       // Update the member variables
       this.directoryRestlet = directoryRestlet;
 
+      logger.info("Parameter base path: " + basePath);
+      
       // Compute the absolute file path
       StringBuilder filePath = new StringBuilder(directoryRestlet.getRootPath());
       int lastIndex = -1;
@@ -93,7 +99,7 @@ public class FileResource implements Resource
       }
 
       // Try to detect the presence of the file
-      this.basePath = filePath.toString().toLowerCase();
+      this.basePath = filePath.toString();
       if(new File(this.basePath).isDirectory())
       {
          // Append the index name
@@ -119,6 +125,10 @@ public class FileResource implements Resource
       // Remove the extensions from the base name
       int dotIndex = this.baseName.indexOf('.');
       if(dotIndex != -1) this.baseName = this.baseName.substring(0, dotIndex);
+
+      // Log results
+      logger.info("Converted base path: " + this.basePath);
+      logger.info("Converted base name: " + this.baseName);
    }
 
    /**
@@ -138,6 +148,7 @@ public class FileResource implements Resource
     */
    public List<RepresentationMetadata> getVariantsMetadata()
    {
+      logger.info("Getting variants for : " + getBasePath());
       List<RepresentationMetadata> result = null;
 
       // List all the file in the immediate parent directory
@@ -156,10 +167,10 @@ public class FileResource implements Resource
             currentFile = files[i];
 
             // Check if the current file is a valid variant
-            if(currentFile.getAbsolutePath().toLowerCase().startsWith(getBasePath()))
+            if(currentFile.getAbsolutePath().startsWith(getBasePath()))
             {
-               String[] tokens = currentFile.getName().split("" + File.separatorChar + '.');
-               if(tokens[0].equalsIgnoreCase(getBaseName()))
+               String[] tokens = currentFile.getName().split("\\.");
+               if(tokens[0].equals(getBaseName()))
                {
                   // We found a potential variant
                   for(int j = 1; j < tokens.length; j++)
@@ -184,6 +195,7 @@ public class FileResource implements Resource
 
                   if(mediaType != null)
                   {
+                     logger.info("Variant accepted: " + currentFile.getAbsolutePath());
                      if(result == null) result = new ArrayList<RepresentationMetadata>();
                      FileRepresentation fr = new FileRepresentation(currentFile.getAbsolutePath(), mediaType);
                      fr.setCharacterSet(characterSet);
@@ -193,6 +205,7 @@ public class FileResource implements Resource
                   else
                   {
                      // Ignore file without matching media type
+                     logger.info("Variant rejected: " + currentFile.getAbsolutePath());
                   }
                }
             }
