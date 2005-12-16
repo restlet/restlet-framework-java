@@ -1,22 +1,22 @@
 /*
  * Copyright 2005 Jérôme LOUVEL
- * 
- * The contents of this file are subject to the terms 
- * of the Common Development and Distribution License 
- * (the "License").  You may not use this file except 
+ *
+ * The contents of this file are subject to the terms
+ * of the Common Development and Distribution License
+ * (the "License").  You may not use this file except
  * in compliance with the License.
- * 
- * You can obtain a copy of the license at 
- * http://www.opensource.org/licenses/cddl1.txt 
- * See the License for the specific language governing 
- * permissions and limitations under the License.
- * 
- * When distributing Covered Code, include this CDDL 
- * HEADER in each file and include the License file at 
+ *
+ * You can obtain a copy of the license at
  * http://www.opensource.org/licenses/cddl1.txt
- * If applicable, add the following below this CDDL 
+ * See the License for the specific language governing
+ * permissions and limitations under the License.
+ *
+ * When distributing Covered Code, include this CDDL
+ * HEADER in each file and include the License file at
+ * http://www.opensource.org/licenses/cddl1.txt
+ * If applicable, add the following below this CDDL
  * HEADER, with the fields enclosed by brackets "[]"
- * replaced with your own identifying information: 
+ * replaced with your own identifying information:
  * Portions Copyright [yyyy] [name of copyright owner]
  */
 
@@ -110,35 +110,35 @@ public class JettyConnection extends HttpConnection
          if(call.getOutput() != null)
          {
             RepresentationMetadata meta = call.getOutput().getMetadata();
-            
+
             if(meta.getMediaType() != null)
             {
-               StringBuilder contentType = new StringBuilder(meta.getMediaType().toString());
+               StringBuilder contentType = new StringBuilder(meta.getMediaType().getName());
 
                if(meta.getCharacterSet() != null)
                {
                   // Specify the character set parameter
                   contentType.append("; charset=").append(meta.getCharacterSet().getName());
                }
-               
+
                response.setContentType(contentType.toString());
             }
-            
+
             if(meta.getExpirationDate() != null)
             {
                response.addDateField("Expires", meta.getExpirationDate());
             }
-            
+
             if(meta.getModificationDate() != null)
             {
                response.addDateField("Last-Modified", meta.getModificationDate());
             }
-            
+
             if(meta.getTag() != null)
             {
                response.addField("ETag", meta.getTag().getName());
             }
-            
+
             // Send the output to the client
             call.getOutput().write(response.getOutputStream());
          }

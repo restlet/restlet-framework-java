@@ -17,7 +17,8 @@
  - Added Zip, PDF, Word entries in org.restlet.data.MediaTypes enumeration.
  - Greatly improved the content negotiation algorithm to take into account language preferences.
  - Added lightweight string template engine at com.noelios.restlet.util.StringTemplate.
- - Added more logging traces (FileResource, etc.)
+ - Added more logging traces (FileResource, etc.).
+ - Fixed issue with case sensitive URIs when server is running on Unix (ex: Javadocs generated HTML files).
  
 0.14 beta
  - Completed the tutorial

@@ -64,7 +64,7 @@ public class DirectoryRestlet extends AbstractRestlet
       super(container);
       this.rootPath = StringUtils.normalizePath(rootPath);
       this.deeply = deeply;
-      this.indexName = (indexName == null) ? null : indexName.toLowerCase();
+      this.indexName = indexName;
       this.metadataMappings = new TreeMap<String, Metadata>();
    }
 
@@ -139,7 +139,7 @@ public class DirectoryRestlet extends AbstractRestlet
     */
    public void handle(RestletCall call) throws RestletException
    {
-      call.setBestOutput(new FileResource(this, call.getPath(0, false).toLowerCase()));
+      call.setBestOutput(new FileResource(this, call.getPath(0, false)));
    }
 
    /**

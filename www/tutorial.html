@@ -2,18 +2,14 @@
 <head>
  <style type="text/css">
 /* <![CDATA[ */
-@import "http://www.tigris.org/branding/css/tigris.css";
-@import "http://www.tigris.org/branding/css/inst.css";
+@import "stylesheets/tigris.css";
 /*  ]]> */
  </style>
-  <link rel="stylesheet" type="text/css" href="http://www.tigris.org/branding/css/print.css" media="print" />
-<script src="http://www.tigris.org/branding/scripts/tigris.js" type="text/javascript">
-</script>
  <title>Restlet - Tutorial</title>
 </head>
 <body>
 
-<a target="_top" href="http://www.restlet.org"><img src="images/logo200.gif"/></a><br/>
+<a target="_top" href="http://restlet.org"><img src="http://restlet.org/images/logo200"/></a><br/>
 
 <br/>
 
@@ -37,11 +33,11 @@
 <h3>2. Retrieving the content of a Web page</h3>
 
 <p>
-   As we mentionned in the <a target="_top" href="http://www.restlet.org/introduction.html">introduction paper</a>, the Restlet framework is at the same time a client and server framework. For example, NRE can easily work with remote resources using its HTTP client connector. A connector in REST, is a sofware component that enables the communication between components, typically by implementing one side of a network protocol. Here we will get the representation of an existing resource and output it in the JVM console:
+   As we mentionned in the <a target="_top" href="http://restlet.org/introduction">introduction paper</a>, the Restlet framework is at the same time a client and server framework. For example, NRE can easily work with remote resources using its HTTP client connector. A connector in REST, is a sofware component that enables the communication between components, typically by implementing one side of a network protocol. Here we will get the representation of an existing resource and output it in the JVM console:
 </p>
 <pre>
    HttpClient client = new HttpClient("My Web client");
-   client.doGet("http://www.restlet.org").getOutput().write(System.out);
+   client.doGet("http://restlet.org").getOutput().write(System.out);
 </pre>
 <p>
    Note that the example above uses a simplified way to issue calls via the HttpClient. A more flexible way is to create a new REST call and to ask the HTTP client to handle it. We will user the Manager class which also has a factory role. The example below could be a good basis to set some preferences in your call, like the languages or media types you prefer to receive as a response:
@@ -49,7 +45,7 @@
 <pre>
    // Prepare the REST call
    UniformCall call = Manager.createCall();
-   Reference uri = Manager.createReference("http://www.restlet.org");
+   Reference uri = Manager.createReference("http://restlet.org");
    call.setResourceUri(uri);
    call.setMethod(Methods.GET);
 
@@ -89,7 +85,7 @@
    Let's step back a little bit and consider a typical web architecture from a REST point of view. In the diagram below, circles represent the connector that enable the communication between components which are represented by the boxes. The blue links represents the network communication using a particular protocol (HTTP, SMTP, etc.).
 </p>
 <p>
-   <img src="images/rest-architecture.gif"/>
+   <img src="http://restlet.org/images/rest-architecture"/>
 </p>
 <p>
    Note that the same component can have any number of client and server connectors attached to it. Web Server B, for example, has both a server connector to respond to requests from the User Agent component, and client connectors to send requests to the Database Server, the Mail Server and the Web Server A.
@@ -180,7 +176,7 @@
    Now, if your web application is becoming more complex, you may want to use multiple Restlet containers, all living within a single Restlet server. For example, this is very useful if you want to separate you domain resources (managed by container C) from your web server resources (managed by container A) and your web services resources (managed by container B):
 </p>
 <p>
-   <img src="images/restlet-server.gif"/>
+   <img src="http://restlet.org/images/restlet-server"/>
 </p>
 <p>
    Also, note that servers and containers are REST components themselves. This means that if your Restlet server has only one container, you can simply use it as your origin server and attach connectors normally.
@@ -235,8 +231,8 @@
 <br/>
 
 <small>
-   Version 1.1, last modified on 2005/12/07<br/>
-   Copyright &copy; 2005 J&eacute;r&ocirc;me Louvel. Restlet is a trademark and service mark of <a target="_top" href="http://www.noelios.com/en">Noelios Consulting</a>.
+   Version 1.2, last modified on 2005/12/13<br/>
+   Copyright &copy; 2005 J&eacute;r&ocirc;me Louvel. Restlet is a trademark and service mark of <a target="_top" href="http://noelios.com">Noelios Consulting</a>.
 </small>
 
 </body>
