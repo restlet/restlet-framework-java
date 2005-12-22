@@ -30,7 +30,7 @@
    In 2000, the <a target="_top" href="http://struts.apache.org/struts-action/index.html">Struts</a> project defined standard controllers, called Actions, following the existing Model2/MVC pattern. Application state is exchanged between the model and the view using ActionForms. It quickly became successful as it provided a higher level of abstraction than pure Servlets, especially for forms handling. Later, numerous other frameworks appeared to address similar problems. The most notable is <a target="_top" href="http://www.springframework.org">Spring</a> which is a more comprehensive Java/J2EE application framework than Struts, also implementing the <a target="_top" href="http://static.springframework.org/spring/docs/1.2.x/reference/mvc.html">MVC approach</a>.
 </p>
 <p>
-   The same year, <a target="_top" href="http://roy.gbiv.com/">Roy T. Fielding</a>, who co-authored the <a target="_top" href="http://www.w3.org/Protocols/rfc2616/rfc2616.html">HTTP</a> & <a target="_top" href="http://www.ietf.org/rfc/rfc3986.txt">URI</a> specifications and co-founded the <a target="_top" href="http://httpd.apache.org/">Apache HTTP server</a>, wrote a <a target="_top" href="http://www.ics.uci.edu/~fielding/pubs/dissertation/top.htm">dissertation on software architectures</a>. In the <a target="_top" href="http://www.ics.uci.edu/~fielding/pubs/dissertation/rest_arch_style.htm">chapter 5</a> he formally defined the architecture style supporting the Web and called it <a target="_top" href="http://en.wikipedia.org/wiki/Representational_State_Transfer">REST</a>, for Representational State Transfer. It defines a new paradigm that could be called resource-orientation, in comparison to object-orientation, where resources represent  identifiable concepts of your domain (comparable to objects). The resources are referenced using the standard URIs (URLs or URNs) and manipulated by components (browsers, servers,  proxies, gateways, etc.) through an uniform interface. This interface has a limited list of verbs, essentially the <a target="_top" href="http://www.w3.org/Protocols/rfc2616/rfc2616-sec9.html#sec9">HTTP methods</a>. Also, resources are never exchanged directly, only representations of their state are. Connectors are the architecture elements that enable the communication of representations between components, implementing for example the client-side of the HTTP protocol.
+   The same year, <a target="_top" href="http://roy.gbiv.com/">Roy T. Fielding</a>, who co-authored the <a target="_top" href="http://www.w3.org/Protocols/rfc2616/rfc2616.html">HTTP</a> & <a target="_top" href="http://www.ietf.org/rfc/rfc3986.txt">URI</a> specifications and co-founded the <a target="_top" href="http://httpd.apache.org/">Apache HTTP server</a>, wrote a <a target="_top" href="http://www.ics.uci.edu/~fielding/pubs/dissertation/top.htm">dissertation on software architectures</a>. In the <a target="_top" href="http://www.ics.uci.edu/~fielding/pubs/dissertation/rest_arch_style.htm">chapter 5</a> he formally defined the architecture style supporting the Web and called it <a target="_top" href="http://en.wikipedia.org/wiki/Representational_State_Transfer">REST</a>, for Representational State Transfer. It defines a new paradigm that could be called resource-orientation, in comparison to object-orientation, where resources represent  identifiable concepts of your domain (comparable to objects). The resources are referenced using the standard URIs (URLs or URNs) and manipulated by components (browsers, servers,  proxies, gateways, etc.) through a uniform interface. This interface has a limited list of verbs, essentially the <a target="_top" href="http://www.w3.org/Protocols/rfc2616/rfc2616-sec9.html#sec9">HTTP methods</a>. Also, resources are never exchanged directly, only representations of their state are. Connectors are the architecture elements that enable the communication of representations between components, implementing for example the client-side of the HTTP protocol.
 </p>
 
 <h3>Servlet limitations</h3>
@@ -58,7 +58,7 @@
    Also, I wanted to get rid of the unnatural separation between the client-side and server-side view of the Web in Java, following the sound advice of Benjamin Carlyle in a recent <a target="_top" href="http://members.optusnet.com.au/benjamincarlyle/benjamin/blog/2005/11/12/#httpAPI">blog post</a>. In today's networked environment, we shouldn't have to make such differences ; anybody should be able to act, at the same time, as a Web client and as a Web server. In REST, every component can have as many client and server connectors as useful, so I simply developed a client HTTP connector based on the HttpURLConnection class mentioned above. Of course, other implementations could be provided, like one based on the more advanced <a target="_top" href="http://jakarta.apache.org/commons/httpclient/">Jakarta Commons HTTP Client</a>.
 </p>
 <p>
-   After several iterations, it became clear that it would be beneficial for developers to separate the Restlet project in two parts. The first part is a generic set of interfaces, called the Restlet API, including a few helper classes and a mechanism to register a Restlet implementation. The second part is a reference implementation, called the Noelios Restlet Engine, including a HTTP server connector ; HTTP, JDBC and SMTP client connectors ; a set of representations (based on strings, files, streams, channels or FreeMarker templates) and a DirectoryRestlet able to serve static files from a tree of directories with automatic content negotiation base on file extensions.
+   After several iterations, it became clear that it would be beneficial for developers to separate the Restlet project in two parts. The first part is a generic set of interfaces, called the Restlet API, including a few helper classes and a mechanism to register a Restlet implementation. The second part is a reference implementation, called the Noelios Restlet Engine, including a HTTP server connector; HTTP, JDBC and SMTP client connectors; a set of representations (based on strings, files, streams, channels or FreeMarker templates) and a DirectoryRestlet able to serve static files from a tree of directories with automatic content negotiation base on file extensions.
 </p>
 
 <h3>Conclusion</h3>
@@ -68,7 +68,7 @@
 <p/>
 
 <p>
-   <a href="mailto:contact@noelios.com">J&eacute;r&ocirc;me Louvel</a> (<a target="_top" href="http://noelios.wordpress.com">blog</a>)<br/>
+   <a href="mailto:contact@noelios.com">J&eacute;r&ocirc;me Louvel</a> (<a target="_top" href="http://blog.noelios.com">blog</a>)<br/>
 </p>
 
 <h4>Notes</h4>
@@ -83,7 +83,7 @@
 <br/>
 
 <small>
-   Version 1.3, last modified on 2005/12/16<br/>
+   Version 1.4, last modified on 2005/12/22<br/>
    Copyright &copy; 2005 J&eacute;r&ocirc;me Louvel. Restlet is a trademark and service mark of <a target="_top" href="http://www.noelios.com">Noelios Consulting</a>.
 </small>
 
