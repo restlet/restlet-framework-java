@@ -61,7 +61,7 @@ public class HttpClient extends AbstractConnector implements Client
    public UniformCall doGet(String resourceUri)
    {
       UniformCall call = new UniformCallImpl();
-      call.setResourceUri(new ReferenceImpl(resourceUri));
+      call.setResourceRef(new ReferenceImpl(resourceUri));
       call.setMethod(Methods.GET);
       handle(call);
       return call;
@@ -76,7 +76,7 @@ public class HttpClient extends AbstractConnector implements Client
    public UniformCall doPost(String resourceUri, Representation input)
    {
       UniformCall call = new UniformCallImpl();
-      call.setResourceUri(new ReferenceImpl(resourceUri));
+      call.setResourceRef(new ReferenceImpl(resourceUri));
       call.setMethod(Methods.POST);
       call.setInput(input);
       handle(call);
@@ -92,7 +92,7 @@ public class HttpClient extends AbstractConnector implements Client
    public UniformCall doPut(String resourceUri, Representation input)
    {
       UniformCall call = new UniformCallImpl();
-      call.setResourceUri(new ReferenceImpl(resourceUri));
+      call.setResourceRef(new ReferenceImpl(resourceUri));
       call.setMethod(Methods.PUT);
       call.setInput(input);
       handle(call);
@@ -107,7 +107,7 @@ public class HttpClient extends AbstractConnector implements Client
    public UniformCall doDelete(String resourceUri)
    {
       UniformCall call = new UniformCallImpl();
-      call.setResourceUri(new ReferenceImpl(resourceUri));
+      call.setResourceRef(new ReferenceImpl(resourceUri));
       call.setMethod(Methods.DELETE);
       handle(call);
       return call;
@@ -122,13 +122,13 @@ public class HttpClient extends AbstractConnector implements Client
       try
       {
          // Create a new HTTP connection
-         URL url = new URL(call.getResourceUri().toString());
+         URL url = new URL(call.getResourceRef().toString());
          HttpURLConnection huc = (HttpURLConnection)url.openConnection();
 
          // Add the referrer header
-         if(call.getReferrerUri() != null)
+         if(call.getReferrerRef() != null)
          {
-            huc.setRequestProperty("Referer", call.getReferrerUri().toString());
+            huc.setRequestProperty("Referer", call.getReferrerRef().toString());
          }
 
          // Add the user agent header

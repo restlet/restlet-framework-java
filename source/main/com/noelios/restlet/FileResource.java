@@ -193,20 +193,13 @@ public class FileResource implements Resource
                      }
                   }
 
-                  if(mediaType != null)
-                  {
-                     logger.info("Variant accepted: " + currentFile.getAbsolutePath());
-                     if(result == null) result = new ArrayList<RepresentationMetadata>();
-                     FileRepresentation fr = new FileRepresentation(currentFile.getAbsolutePath(), mediaType);
-                     fr.setCharacterSet(characterSet);
-                     fr.setLanguage(language);
-                     result.add(fr);
-                  }
-                  else
-                  {
-                     // Ignore file without matching media type
-                     logger.info("Variant rejected: " + currentFile.getAbsolutePath());
-                  }
+                  // Add the new variant to the result list
+                  if(result == null) result = new ArrayList<RepresentationMetadata>();
+                  if(mediaType == null) mediaType = getDirectoryRestlet().getDefaultMediaType();
+                  FileRepresentation fr = new FileRepresentation(currentFile.getAbsolutePath(), mediaType);
+                  fr.setCharacterSet(characterSet);
+                  fr.setLanguage(language);
+                  result.add(fr);
                }
             }
          }

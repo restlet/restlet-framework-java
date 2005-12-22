@@ -36,9 +36,12 @@ import com.noelios.restlet.util.StringUtils;
  */
 public class RestletCallImpl extends UniformCallWrapper implements RestletCall
 {
+   /** The list of matches. */
+   List<String> matches;
+
    /** The list of paths. */
    List<String> paths;
-
+   
    /**
     * Constructor.
     * @param call The inform call to wrap.
@@ -50,17 +53,21 @@ public class RestletCallImpl extends UniformCallWrapper implements RestletCall
       // Creates the list of paths
       this.paths = new ArrayList<String>();
 
+      // Creates the list of matches
+      this.matches = new ArrayList<String>();
+
       // Set the absolute resource path as the initial path in the list.
-      getPaths().add(0, getResourceUri().toString(false, false));
+      getPaths().add(0, getResourceRef().toString(false, false));
    }
 
    /**
-    * Returns the list of restlets paths. The list is sorted according to the handlers hierarchy.
-    * @return The list of restlets paths.
+    * Returns the list of substring matched in the current restlet's path.
+    * @return The list of substring matched.
+    * @see <a href="http://java.sun.com/j2se/1.5.0/docs/api/java/util/regex/Matcher.html#group(int)">Matcher.group()</a>
     */
-   public List<String> getPaths()
+   public List<String> getMatches()
    {
-      return this.paths;
+      return this.matches;
    }
 
    /**
@@ -81,6 +88,15 @@ public class RestletCallImpl extends UniformCallWrapper implements RestletCall
       {
          return getPaths().get(index);
       }
+   }
+
+   /**
+    * Returns the list of restlets paths. The list is sorted according to the handlers hierarchy.
+    * @return The list of restlets paths.
+    */
+   public List<String> getPaths()
+   {
+      return this.paths;
    }
 
 }

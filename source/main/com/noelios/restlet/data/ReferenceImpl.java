@@ -31,17 +31,17 @@ import org.restlet.data.Reference;
  */
 public class ReferenceImpl implements Reference
 {
-   /** The internal reference. */
-   protected String uri;
-
-   /** The scheme separator index. */
-   protected int schemeIndex;
-
    /** The fragment separator index. */
    protected int fragmentIndex;
 
    /** The query separator index. */
    protected int queryIndex;
+
+   /** The scheme separator index. */
+   protected int schemeIndex;
+
+   /** The internal reference. */
+   protected String uri;
 
    /**
     * Constructor from a URI reference.
@@ -73,229 +73,8 @@ public class ReferenceImpl implements Reference
    }
 
    /**
-    * Update internal indexes.
-    */
-   private void updateIndexes()
-   {
-      schemeIndex = this.uri.indexOf(':');
-      fragmentIndex = this.uri.indexOf('#');
-      queryIndex = this.uri.indexOf('?');
-   }
-
-   /**
-    * Returns the absolute resource identifier.
-    * @return The absolute resource identifier.
-    */
-   public String getIdentifier()
-   {
-      if(fragmentIndex != -1)
-      {
-         // Fragment found
-         return this.uri.substring(0, fragmentIndex);
-      }
-      else
-      {
-         // No fragment found
-         return this.uri;
-      }
-   }
-
-   /**
-    * Returns the server identifier.
-    * @return The server identifier.
-    */
-   public String getServerIdentifier()
-   {
-      StringBuilder result = new StringBuilder();
-      result.append(getScheme()).append("://").append(getAuthority());
-      return result.toString();
-   }
-
-   /**
-    * Sets the absolute resource identifier.
-    * @param identifier The absolute resource identifier.
-    */
-   public void setIdentifier(String identifier)
-   {
-      if(identifier.indexOf('#') == -1)
-      {
-         throw new IllegalArgumentException("Illegal '#' character detected in parameter");
-      }
-      else
-      {
-         if(fragmentIndex != -1)
-         {
-            // Fragment found
-            this.uri = identifier + this.uri.substring(fragmentIndex);
-         }
-         else
-         {
-            // No fragment found
-            this.uri = identifier;
-         }
-
-         updateIndexes();
-      }
-   }
-
-   /**
-    * Returns the scheme component.
-    * @return The scheme component.
-    */
-   public String getScheme()
-   {
-      if(schemeIndex != -1)
-      {
-         // Scheme found
-         return this.uri.substring(0, schemeIndex);
-      }
-      else
-      {
-         // No scheme found
-         return null;
-      }
-   }
-
-   /**
-    * Sets the scheme component.
-    * @param scheme The scheme component.
-    */
-   public void setScheme(String scheme)
-   {
-      if(schemeIndex != -1)
-      {
-         // Scheme found
-         this.uri = scheme + this.uri.substring(schemeIndex);
-      }
-      else
-      {
-         // No scheme found
-         if(this.uri == null)
-         {
-            this.uri = scheme + ':';
-         }
-         else
-         {
-            this.uri = scheme + ':' + this.uri;
-         }
-      }
-
-      updateIndexes();
-   }
-
-   /**
-    * Indicates if the reference is absolute.
-    * @return True if the reference is absolute.
-    */
-   public boolean isAbsolute()
-   {
-      return (getScheme() != null);
-   }
-
-   /**
-    * Indicates if the reference is relative.
-    * @return True if the reference is relative.
-    */
-   public boolean isRelative()
-   {
-      return (getScheme() == null);
-   }
-
-   /**
-    * Returns the scheme specific part.
-    * @return The scheme specific part.
-    */
-   public String getSchemeSpecificPart()
-   {
-      if(schemeIndex != -1)
-      {
-         // Scheme found
-         if(fragmentIndex != -1)
-         {
-            // Fragment found
-            return this.uri.substring(schemeIndex + 1, fragmentIndex);
-         }
-         else
-         {
-            // No fragment found
-            return this.uri.substring(schemeIndex + 1);
-         }
-      }
-      else
-      {
-         // No scheme found
-         if(fragmentIndex != -1)
-         {
-            // Fragment found
-            return this.uri.substring(0, fragmentIndex);
-         }
-         else
-         {
-            // No fragment found
-            return this.uri;
-         }
-      }
-   }
-
-   /**
-    * Sets the scheme specific part.
-    * @param schemeSpecificPart The scheme specific part.
-    */
-   public void setSchemeSpecificPart(String schemeSpecificPart)
-   {
-      if(schemeIndex != -1)
-      {
-         // Scheme found
-         if(fragmentIndex != -1)
-         {
-            // Fragment found
-            this.uri = this.uri.substring(0, schemeIndex + 1) + schemeSpecificPart
-                  + this.uri.substring(fragmentIndex);
-         }
-         else
-         {
-            // No fragment found
-            this.uri = this.uri.substring(0, schemeIndex + 1) + schemeSpecificPart;
-         }
-      }
-      else
-      {
-         // No scheme found
-         if(fragmentIndex != -1)
-         {
-            // Fragment found
-            this.uri = schemeSpecificPart + this.uri.substring(fragmentIndex);
-         }
-         else
-         {
-            // No fragment found
-            this.uri = schemeSpecificPart;
-         }
-      }
-
-      updateIndexes();
-   }
-
-   /**
-    * Indicates if the identifier is hierarchical.
-    * @return True if the identifier is hierarchical, false if it is opaque.
-    */
-   public boolean isHierarchical()
-   {
-      return isRelative() || (getSchemeSpecificPart().charAt(0) == '/');
-   }
-
-   /**
-    * Indicates if the identifier is opaque.
-    * @return True if the identifier is opaque, false if it is hierarchical.
-    */
-   public boolean isOpaque()
-   {
-      return isAbsolute() && (getSchemeSpecificPart().charAt(0) != '/');
-   }
-
-   /**
     * Returns the authority component for hierarchical identifiers.
+    * Includes the user info, host name and the host port number.
     * @return The authority component for hierarchical identifiers.
     */
    public String getAuthority()
@@ -330,53 +109,23 @@ public class ReferenceImpl implements Reference
    }
 
    /**
-    * Sets the authority component for hierarchical identifiers.
-    * @param authority The authority component for hierarchical identifiers.
+    * Returns the description of this REST element.
+    * @return The description of this REST element.
     */
-   public void setAuthority(String authority)
+   public String getDescription()
    {
-      String ssp = getSchemeSpecificPart();
-      String newAuthority = (authority == null) ? "" : "//" + authority;
-
-      if(ssp.startsWith("//"))
-      {
-         int index = ssp.indexOf('/', 2);
-
-         if(index != -1)
-         {
-            setSchemeSpecificPart(newAuthority + ssp.substring(index));
-         }
-         else
-         {
-            index = ssp.indexOf('?');
-            if(index != -1)
-            {
-               setSchemeSpecificPart(newAuthority + ssp.substring(index));
-            }
-            else
-            {
-               setSchemeSpecificPart(newAuthority);
-            }
-         }
-      }
-      else
-      {
-         setSchemeSpecificPart(newAuthority + ssp);
-      }
+      return "Resource reference equivalent to a URI";
    }
 
    /**
-    * Returns the user info component for server based hierarchical identifiers.
-    * @return The user info component for server based hierarchical identifiers.
+    * Returns the fragment identifier.
+    * @return The fragment identifier.
     */
-   public String getUserInfo()
+   public String getFragment()
    {
-      String authority = getAuthority();
-      int index = authority.indexOf('@');
-
-      if(index != -1)
+      if(fragmentIndex != -1)
       {
-         return authority.substring(0, index);
+         return this.uri.substring(fragmentIndex + 1);
       }
       else
       {
@@ -385,30 +134,22 @@ public class ReferenceImpl implements Reference
    }
 
    /**
-    * Sets the user info component for server based hierarchical identifiers.
-    * @param userInfo The user info component for server based hierarchical identifiers.
+    * Returns the host identifier.
+    * Includes the scheme, the host name and the host port number.
+    * @return The host identifier.
     */
-   public void setUserInfo(String userInfo)
+   public String getHostIdentifier()
    {
-      String authority = getAuthority();
-      String newUserInfo = (userInfo == null) ? "" : userInfo + '@';
-      int index = authority.indexOf('@');
-
-      if(index != -1)
-      {
-         setAuthority(newUserInfo + authority.substring(index + 1));
-      }
-      else
-      {
-         setAuthority(newUserInfo + authority);
-      }
+      StringBuilder result = new StringBuilder();
+      result.append(getScheme()).append("://").append(getAuthority());
+      return result.toString();
    }
 
    /**
-    * Returns the host component for server based hierarchical identifiers.
-    * @return The host component for server based hierarchical identifiers.
+    * Returns the host name component for server based hierarchical identifiers.
+    * @return The host name component for server based hierarchical identifiers.
     */
-   public String getHost()
+   public String getHostName()
    {
       String authority = getAuthority();
       int index1 = authority.indexOf('@');
@@ -445,50 +186,10 @@ public class ReferenceImpl implements Reference
    }
 
    /**
-    * Sets the host component for server based hierarchical identifiers.
-    * @param host The host component for server based hierarchical identifiers.
-    */
-   public void setHost(String host)
-   {
-      String authority = getAuthority();
-      int index1 = authority.indexOf('@');
-      int index2 = authority.indexOf(':');
-
-      if(index1 != -1)
-      {
-         // User info found
-         if(index2 != -1)
-         {
-            // Port found
-            setAuthority(authority.substring(0, index1 + 1) + host + authority.substring(index2));
-         }
-         else
-         {
-            // No port found
-            setAuthority(authority.substring(0, index1 + 1) + host);
-         }
-      }
-      else
-      {
-         // No user info found
-         if(index1 != -1)
-         {
-            // Port found
-            setAuthority(host + authority.substring(index2));
-         }
-         else
-         {
-            // No port found
-            setAuthority(host);
-         }
-      }
-   }
-
-   /**
     * Returns the optional port number for server based hierarchical identifiers.
     * @return The optional port number for server based hierarchical identifiers.
     */
-   public Integer getPort()
+   public Integer getHostPort()
    {
       String authority = getAuthority();
       int index = authority.indexOf(':');
@@ -504,23 +205,30 @@ public class ReferenceImpl implements Reference
    }
 
    /**
-    * Sets the optional port number for server based hierarchical identifiers.
-    * @param port The optional port number for server based hierarchical identifiers.
+    * Returns the absolute resource identifier, without the fragment.
+    * @return The absolute resource identifier, without the fragment.
     */
-   public void setPort(Integer port)
+   public String getIdentifier()
    {
-      String authority = getAuthority();
-      String newPort = (port == null) ? "" : ":" + port;
-      int index = authority.indexOf(':');
-
-      if(index != -1)
+      if(fragmentIndex != -1)
       {
-         setAuthority(authority.substring(0, index) + newPort);
+         // Fragment found
+         return this.uri.substring(0, fragmentIndex);
       }
       else
       {
-         setAuthority(authority + newPort);
+         // No fragment found
+         return this.uri;
       }
+   }
+
+   /**
+    * Returns the metadata name like "text/html" or "compress" or "iso-8851-1".
+    * @return The metadata name like "text/html" or "compress" or "iso-8851-1".
+    */
+   public String getName()
+   {
+      return "uri-reference";
    }
 
    /**
@@ -571,6 +279,324 @@ public class ReferenceImpl implements Reference
             // No query found
             return ssp;
          }
+      }
+   }
+
+   /**
+    * Returns the optional query component for hierarchical identifiers.
+    * @return The optional query component for hierarchical identifiers.
+    */
+   public String getQuery()
+   {
+      if(queryIndex != -1)
+      {
+         // Query found
+         if(fragmentIndex != -1)
+         {
+            // Fragment found
+            return this.uri.substring(queryIndex + 1, fragmentIndex);
+         }
+         else
+         {
+            // No fragment found
+            return this.uri.substring(queryIndex + 1);
+         }
+      }
+      else
+      {
+         // No query found
+         return null;
+      }
+   }
+
+   /**
+    * Returns the optional query component as a form submission.
+    * @return The optional query component as a form submission.
+    */
+   public Form getQueryAsForm()
+   {
+      String query = getQuery();
+
+      if(query != null)
+      {
+         return new FormImpl(query);
+      }
+      else
+      {
+         return null;
+      }
+   }
+
+   /**
+    * Returns the scheme component.
+    * @return The scheme component.
+    */
+   public String getScheme()
+   {
+      if(schemeIndex != -1)
+      {
+         // Scheme found
+         return this.uri.substring(0, schemeIndex);
+      }
+      else
+      {
+         // No scheme found
+         return null;
+      }
+   }
+
+   /**
+    * Returns the scheme specific part.
+    * @return The scheme specific part.
+    */
+   public String getSchemeSpecificPart()
+   {
+      if(schemeIndex != -1)
+      {
+         // Scheme found
+         if(fragmentIndex != -1)
+         {
+            // Fragment found
+            return this.uri.substring(schemeIndex + 1, fragmentIndex);
+         }
+         else
+         {
+            // No fragment found
+            return this.uri.substring(schemeIndex + 1);
+         }
+      }
+      else
+      {
+         // No scheme found
+         if(fragmentIndex != -1)
+         {
+            // Fragment found
+            return this.uri.substring(0, fragmentIndex);
+         }
+         else
+         {
+            // No fragment found
+            return this.uri;
+         }
+      }
+   }
+
+   /**
+    * Returns the user info component for server based hierarchical identifiers.
+    * @return The user info component for server based hierarchical identifiers.
+    */
+   public String getUserInfo()
+   {
+      String authority = getAuthority();
+      int index = authority.indexOf('@');
+
+      if(index != -1)
+      {
+         return authority.substring(0, index);
+      }
+      else
+      {
+         return null;
+      }
+   }
+
+   /**
+    * Indicates if the reference is absolute.
+    * @return True if the reference is absolute.
+    */
+   public boolean isAbsolute()
+   {
+      return (getScheme() != null);
+   }
+
+   /**
+    * Indicates if the identifier is hierarchical.
+    * @return True if the identifier is hierarchical, false if it is opaque.
+    */
+   public boolean isHierarchical()
+   {
+      return isRelative() || (getSchemeSpecificPart().charAt(0) == '/');
+   }
+
+   /**
+    * Indicates if the identifier is opaque.
+    * @return True if the identifier is opaque, false if it is hierarchical.
+    */
+   public boolean isOpaque()
+   {
+      return isAbsolute() && (getSchemeSpecificPart().charAt(0) != '/');
+   }
+
+   /**
+    * Indicates if the reference is relative.
+    * @return True if the reference is relative.
+    */
+   public boolean isRelative()
+   {
+      return (getScheme() == null);
+   }
+
+   /**
+    * Sets the authority component for hierarchical identifiers.
+    * @param authority The authority component for hierarchical identifiers.
+    */
+   public void setAuthority(String authority)
+   {
+      String ssp = getSchemeSpecificPart();
+      String newAuthority = (authority == null) ? "" : "//" + authority;
+
+      if(ssp.startsWith("//"))
+      {
+         int index = ssp.indexOf('/', 2);
+
+         if(index != -1)
+         {
+            setSchemeSpecificPart(newAuthority + ssp.substring(index));
+         }
+         else
+         {
+            index = ssp.indexOf('?');
+            if(index != -1)
+            {
+               setSchemeSpecificPart(newAuthority + ssp.substring(index));
+            }
+            else
+            {
+               setSchemeSpecificPart(newAuthority);
+            }
+         }
+      }
+      else
+      {
+         setSchemeSpecificPart(newAuthority + ssp);
+      }
+   }
+
+   /**
+    * Sets the fragment identifier.
+    * @param fragment The fragment identifier.
+    */
+   public void setFragment(String fragment)
+   {
+      if(fragment.indexOf('#') == -1)
+      {
+         throw new IllegalArgumentException("Illegal '#' character detected in parameter");
+      }
+      else
+      {
+         if(fragmentIndex != -1)
+         {
+            // Existing fragment
+            if(fragment != null)
+            {
+               this.uri = this.uri.substring(0, fragmentIndex + 1) + fragment;
+            }
+            else
+            {
+               this.uri = this.uri.substring(0, fragmentIndex);
+            }
+         }
+         else
+         {
+            // No existing fragment
+            if(fragment != null)
+            {
+               this.uri = this.uri + '#' + fragment;
+            }
+            else
+            {
+               // Do nothing
+            }
+         }
+      }
+
+      updateIndexes();
+   }
+
+   /**
+    * Sets the host component for server based hierarchical identifiers.
+    * @param host The host component for server based hierarchical identifiers.
+    */
+   public void setHostName(String host)
+   {
+      String authority = getAuthority();
+      int index1 = authority.indexOf('@');
+      int index2 = authority.indexOf(':');
+
+      if(index1 != -1)
+      {
+         // User info found
+         if(index2 != -1)
+         {
+            // Port found
+            setAuthority(authority.substring(0, index1 + 1) + host + authority.substring(index2));
+         }
+         else
+         {
+            // No port found
+            setAuthority(authority.substring(0, index1 + 1) + host);
+         }
+      }
+      else
+      {
+         // No user info found
+         if(index1 != -1)
+         {
+            // Port found
+            setAuthority(host + authority.substring(index2));
+         }
+         else
+         {
+            // No port found
+            setAuthority(host);
+         }
+      }
+   }
+
+   /**
+    * Sets the optional port number for server based hierarchical identifiers.
+    * @param port The optional port number for server based hierarchical identifiers.
+    */
+   public void setHostPort(Integer port)
+   {
+      String authority = getAuthority();
+      String newPort = (port == null) ? "" : ":" + port;
+      int index = authority.indexOf(':');
+
+      if(index != -1)
+      {
+         setAuthority(authority.substring(0, index) + newPort);
+      }
+      else
+      {
+         setAuthority(authority + newPort);
+      }
+   }
+
+   /**
+    * Sets the absolute resource identifier.
+    * @param identifier The absolute resource identifier.
+    */
+   public void setIdentifier(String identifier)
+   {
+      if(identifier.indexOf('#') == -1)
+      {
+         throw new IllegalArgumentException("Illegal '#' character detected in parameter");
+      }
+      else
+      {
+         if(fragmentIndex != -1)
+         {
+            // Fragment found
+            this.uri = identifier + this.uri.substring(fragmentIndex);
+         }
+         else
+         {
+            // No fragment found
+            this.uri = identifier;
+         }
+
+         updateIndexes();
       }
    }
 
@@ -632,51 +658,6 @@ public class ReferenceImpl implements Reference
             // No query found
             setSchemeSpecificPart(path);
          }
-      }
-   }
-
-   /**
-    * Returns the optional query component for hierarchical identifiers.
-    * @return The optional query component for hierarchical identifiers.
-    */
-   public String getQuery()
-   {
-      if(queryIndex != -1)
-      {
-         // Query found
-         if(fragmentIndex != -1)
-         {
-            // Fragment found
-            return this.uri.substring(queryIndex + 1, fragmentIndex);
-         }
-         else
-         {
-            // No fragment found
-            return this.uri.substring(queryIndex + 1);
-         }
-      }
-      else
-      {
-         // No query found
-         return null;
-      }
-   }
-
-   /**
-    * Returns the optional query component as a form submission.
-    * @return The optional query component as a form submission.
-    */
-   public Form getQueryAsForm()
-   {
-      String query = getQuery();
-
-      if(query != null)
-      {
-         return new FormImpl(query);
-      }
-      else
-      {
-         return null;
       }
    }
 
@@ -748,60 +729,89 @@ public class ReferenceImpl implements Reference
    }
 
    /**
-    * Returns the fragment identifier.
-    * @return The fragment identifier.
+    * Sets the scheme component.
+    * @param scheme The scheme component.
     */
-   public String getFragment()
+   public void setScheme(String scheme)
    {
-      if(fragmentIndex != -1)
+      if(schemeIndex != -1)
       {
-         return this.uri.substring(fragmentIndex + 1);
+         // Scheme found
+         this.uri = scheme + this.uri.substring(schemeIndex);
       }
       else
       {
-         return null;
-      }
-   }
-
-   /**
-    * Sets the fragment identifier.
-    * @param fragment The fragment identifier.
-    */
-   public void setFragment(String fragment)
-   {
-      if(fragment.indexOf('#') == -1)
-      {
-         throw new IllegalArgumentException("Illegal '#' character detected in parameter");
-      }
-      else
-      {
-         if(fragmentIndex != -1)
+         // No scheme found
+         if(this.uri == null)
          {
-            // Existing fragment
-            if(fragment != null)
-            {
-               this.uri = this.uri.substring(0, fragmentIndex + 1) + fragment;
-            }
-            else
-            {
-               this.uri = this.uri.substring(0, fragmentIndex);
-            }
+            this.uri = scheme + ':';
          }
          else
          {
-            // No existing fragment
-            if(fragment != null)
-            {
-               this.uri = this.uri + '#' + fragment;
-            }
-            else
-            {
-               // Do nothing
-            }
+            this.uri = scheme + ':' + this.uri;
          }
       }
 
       updateIndexes();
+   }
+
+   /**
+    * Sets the scheme specific part.
+    * @param schemeSpecificPart The scheme specific part.
+    */
+   public void setSchemeSpecificPart(String schemeSpecificPart)
+   {
+      if(schemeIndex != -1)
+      {
+         // Scheme found
+         if(fragmentIndex != -1)
+         {
+            // Fragment found
+            this.uri = this.uri.substring(0, schemeIndex + 1) + schemeSpecificPart
+                  + this.uri.substring(fragmentIndex);
+         }
+         else
+         {
+            // No fragment found
+            this.uri = this.uri.substring(0, schemeIndex + 1) + schemeSpecificPart;
+         }
+      }
+      else
+      {
+         // No scheme found
+         if(fragmentIndex != -1)
+         {
+            // Fragment found
+            this.uri = schemeSpecificPart + this.uri.substring(fragmentIndex);
+         }
+         else
+         {
+            // No fragment found
+            this.uri = schemeSpecificPart;
+         }
+      }
+
+      updateIndexes();
+   }
+
+   /**
+    * Sets the user info component for server based hierarchical identifiers.
+    * @param userInfo The user info component for server based hierarchical identifiers.
+    */
+   public void setUserInfo(String userInfo)
+   {
+      String authority = getAuthority();
+      String newUserInfo = (userInfo == null) ? "" : userInfo + '@';
+      int index = authority.indexOf('@');
+
+      if(index != -1)
+      {
+         setAuthority(newUserInfo + authority.substring(index + 1));
+      }
+      else
+      {
+         setAuthority(newUserInfo + authority);
+      }
    }
 
    /**
@@ -874,21 +884,13 @@ public class ReferenceImpl implements Reference
    }
 
    /**
-    * Returns the metadata name like "text/html" or "compress" or "iso-8851-1".
-    * @return The metadata name like "text/html" or "compress" or "iso-8851-1".
+    * Update internal indexes.
     */
-   public String getName()
+   private void updateIndexes()
    {
-      return "uri-reference";
-   }
-
-   /**
-    * Returns the description of this REST element.
-    * @return The description of this REST element.
-    */
-   public String getDescription()
-   {
-      return "Resource reference equivalent to a URI";
+      schemeIndex = this.uri.indexOf(':');
+      fragmentIndex = this.uri.indexOf('#');
+      queryIndex = this.uri.indexOf('?');
    }
 
 }

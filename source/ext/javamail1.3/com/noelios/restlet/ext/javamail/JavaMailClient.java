@@ -72,7 +72,7 @@ public class JavaMailClient extends AbstractConnector implements Client
       try
       {
          // Parse the SMTP URI
-         URI smtpURI = new URI(call.getResourceUri().toString());
+         URI smtpURI = new URI(call.getResourceRef().toString());
          String smtpHost = smtpURI.getHost();
          int smtpPort = smtpURI.getPort();
          // String smtpUserInfo = smtpURI.getUserInfo();

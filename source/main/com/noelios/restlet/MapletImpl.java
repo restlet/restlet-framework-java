@@ -146,10 +146,18 @@ public class MapletImpl extends ArrayList<Mapping> implements Maplet
 
       if(found)
       {
+         // Updates the paths
          String restletPath = resourcePath.substring(0, matcher.end());
          resourcePath = resourcePath.substring(matcher.end());
          call.getPaths().set(0, restletPath);
          call.getPaths().add(0, resourcePath);
+         
+         // Updates the matches
+         call.getMatches().clear();
+         for(int i = 0; i < matcher.groupCount(); i++)
+         {
+            call.getMatches().add(matcher.group(i + 1));
+         }
 
          // Find and prepare the call handler
          Restlet restlet = null;

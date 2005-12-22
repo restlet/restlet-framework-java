@@ -32,34 +32,11 @@ import org.restlet.data.*;
  */
 public interface UniformCall
 {
-   // ------------------------------
-   // Methods related to the request
-   // ------------------------------
-
    /**
-    * Returns the referrer reference if available. This reference shouldn't be modified during the call
-    * handling.
-    * @return The referrer reference.
+    * Returns the character set preferences of the user agent.
+    * @return The character set preferences of the user agent.
     */
-   public Reference getReferrerUri();
-
-   /**
-    * Sets the referrer reference if available. This reference shouldn't be modified during the call handling.
-    * @param referrerUri The referrer reference.
-    */
-   public void setReferrerUri(Reference referrerUri);
-
-   /**
-    * Returns the client's name (ex: user agent name).
-    * @return The client's name.
-    */
-   public String getClientName();
-
-   /**
-    * Sets the client's name (ex: user agent name).
-    * @param name The client's name.
-    */
-   public void setClientName(String name);
+   public List<Preference> getCharacterSetPrefs();
 
    /**
     * Returns the client's IP address.
@@ -68,70 +45,10 @@ public interface UniformCall
    public String getClientAddress();
 
    /**
-    * Sets the client's IP address.
-    * @param address The client's IP address.
+    * Returns the client's name (ex: user agent name).
+    * @return The client's name.
     */
-   public void setClientAddress(String address);
-
-   /**
-    * Returns the media type preferences of the user agent.
-    * @return The media type preferences of the user agent.
-    */
-   public List<Preference> getMediaTypePrefs();
-
-   /**
-    * Sets the media type preferences of the user agent.
-    * @param prefs The media type preferences of the user agent.
-    */
-   public void setMediaTypePrefs(List<Preference> prefs);
-
-   /**
-    * Returns the character set preferences of the user agent.
-    * @return The character set preferences of the user agent.
-    */
-   public List<Preference> getCharacterSetPrefs();
-
-   /**
-    * Sets the character set preferences of the user agent.
-    * @param prefs The character set preferences of the user agent.
-    */
-   public void setCharacterSetPrefs(List<Preference> prefs);
-
-   /**
-    * Returns the language preferences of the user agent.
-    * @return The language preferences of the user agent.
-    */
-   public List<Preference> getLanguagePrefs();
-
-   /**
-    * Sets the language preferences of the user agent.
-    * @param prefs The language preferences of the user agent.
-    */
-   public void setLanguagePrefs(List<Preference> prefs);
-
-   /**
-    * Returns the method called.
-    * @return The method called.
-    */
-   public Method getMethod();
-
-   /**
-    * Sets the method called.
-    * @param method The method called.
-    */
-   public void setMethod(Method method);
-
-   /**
-    * Returns the resource's reference. This reference shouldn't be modified during the call handling.
-    * @return The resource's reference.
-    */
-   public Reference getResourceUri();
-
-   /**
-    * Sets the resource's reference. This reference shouldn't be modified during the call handling.
-    * @param resourceUri The resource's reference.
-    */
-   public void setResourceUri(Reference resourceUri);
+   public String getClientName();
 
    /**
     * Returns the cookies sent by the user agent.
@@ -140,10 +57,11 @@ public interface UniformCall
    public Cookies getCookies();
 
    /**
-    * Sets the cookies sent by the user agent.
-    * @param cookies The cookies sent by the user agent.
+    * Returns the list of cookies to be set in the user agent. Cookie settings can be browsed, added or
+    * removed.
+    * @return The list of cookies to be set in the user agent.
     */
-   public void setCookies(Cookies cookies);
+   public List<CookieSetting> getCookieSettings();
 
    /**
     * Returns the representation received from the user agent.
@@ -152,26 +70,22 @@ public interface UniformCall
    public Representation getInput();
 
    /**
-    * Sets the representation received from the user agent.
-    * @param input The representation received from the user agent.
+    * Returns the language preferences of the user agent.
+    * @return The language preferences of the user agent.
     */
-   public void setInput(Representation input);
-
-   // -------------------------------
-   // Methods related to the response
-   // -------------------------------
+   public List<Preference> getLanguagePrefs();
 
    /**
-    * Returns the result status.
-    * @return The result status.
+    * Returns the media type preferences of the user agent.
+    * @return The media type preferences of the user agent.
     */
-   public Status getStatus();
+   public List<Preference> getMediaTypePrefs();
 
    /**
-    * Sets the result status.
-    * @param status The result status to set.
+    * Returns the method called.
+    * @return The method called.
     */
-   public void setStatus(Status status);
+   public Method getMethod();
 
    /**
     * Returns the representation to send to the user agent
@@ -180,10 +94,24 @@ public interface UniformCall
    public Representation getOutput();
 
    /**
-    * Sets the representation to send to the user agent.
-    * @param output The representation to send to the user agent.
+    * Returns the referrer reference if available.<br/>
+    * This reference shouldn't be modified during the call handling.
+    * @return The referrer reference.
     */
-   public void setOutput(Representation output);
+   public Reference getReferrerRef();
+
+   /**
+    * Returns the resource's reference.<br/>
+    * This reference shouldn't be modified during the call handling, exceptio for redirect rewritings.
+    * @return The resource's reference.
+    */
+   public Reference getResourceRef();
+
+   /**
+    * Returns the result status.
+    * @return The result status.
+    */
+   public Status getStatus();
 
    /**
     * Sets the best representation of a given resource according to the user agent preferences. If no
@@ -195,11 +123,78 @@ public interface UniformCall
    public void setBestOutput(Resource resource) throws RestletException;
 
    /**
-    * Returns the list of cookies to be set in the user agent. Cookie settings can be browsed, added or
-    * removed.
-    * @return The list of cookies to be set in the user agent.
+    * Sets the character set preferences of the user agent.
+    * @param prefs The character set preferences of the user agent.
     */
-   public List<CookieSetting> getCookieSettings();
+   public void setCharacterSetPrefs(List<Preference> prefs);
+
+   /**
+    * Sets the client's IP address.
+    * @param address The client's IP address.
+    */
+   public void setClientAddress(String address);
+
+   /**
+    * Sets the client's name (ex: user agent name).
+    * @param name The client's name.
+    */
+   public void setClientName(String name);
+
+   /**
+    * Sets the cookies sent by the user agent.
+    * @param cookies The cookies sent by the user agent.
+    */
+   public void setCookies(Cookies cookies);
+
+   /**
+    * Sets the representation received from the user agent.
+    * @param input The representation received from the user agent.
+    */
+   public void setInput(Representation input);
+
+   /**
+    * Sets the language preferences of the user agent.
+    * @param prefs The language preferences of the user agent.
+    */
+   public void setLanguagePrefs(List<Preference> prefs);
+
+   /**
+    * Sets the media type preferences of the user agent.
+    * @param prefs The media type preferences of the user agent.
+    */
+   public void setMediaTypePrefs(List<Preference> prefs);
+
+   /**
+    * Sets the method called.
+    * @param method The method called.
+    */
+   public void setMethod(Method method);
+
+   /**
+    * Sets the representation to send to the user agent.
+    * @param output The representation to send to the user agent.
+    */
+   public void setOutput(Representation output);
+
+   /**
+    * Sets the referrer reference if available.<br/>
+    * This reference shouldn't be modified during the call handling.
+    * @param referrerRef The referrer reference.
+    */
+   public void setReferrerRef(Reference referrerRef);
+
+   /**
+    * Sets the resource's reference.<br/>
+    * This reference shouldn't be modified during the call handling, except for redirection rewriting.
+    * @param resourceRef The resource's reference.
+    */
+   public void setResourceRef(Reference resourceRef);
+
+   /**
+    * Sets the result status.
+    * @param status The result status to set.
+    */
+   public void setStatus(Status status);
 
    /**
     * Asks the user agent to redirect itself to the given URI. Modifies the result output and status

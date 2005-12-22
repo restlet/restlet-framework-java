@@ -47,4 +47,11 @@ public interface RestletCall extends UniformCall
     */
    public String getPath(int index, boolean strip);
 
+   /**
+    * Returns the list of substring matched in the current restlet's path.
+    * @return The list of substring matched.
+    * @see <a href="http://java.sun.com/j2se/1.5.0/docs/api/java/util/regex/Matcher.html#group(int)">Matcher.group()</a>
+    */
+   public List<String> getMatches();
+   
 }

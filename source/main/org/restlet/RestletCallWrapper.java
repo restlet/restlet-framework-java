@@ -25,14 +25,14 @@ package org.restlet;
 import java.util.List;
 
 /**
- * Restlet call wrapper. Useful for application developer who need to enrich the call with application related
- * things.
+ * Restlet call wrapper.<br/>
+ * Useful for application developers who need to enrich the call with application related things.
  * @see <a href="http://c2.com/cgi/wiki?DecoratorPattern">The decorator (aka wrapper) pattern</a>
  */
 public class RestletCallWrapper extends UniformCallWrapper implements RestletCall
 {
-   /** The list of paths. */
-   List<String> paths;
+   /** The wrapped restlet call. */
+   RestletCall wrappedCall;
 
    /**
     * Constructor.
@@ -41,7 +41,24 @@ public class RestletCallWrapper extends UniformCallWrapper implements RestletCal
    public RestletCallWrapper(RestletCall wrappedCall)
    {
       super(wrappedCall);
-      this.paths = wrappedCall.getPaths();
+   }
+
+   /**
+    * Returns the wrapped call.
+    * @return The wrapped call
+    */
+   public RestletCall getWrappedCall()
+   {
+      return (RestletCall)super.getWrappedCall();
+   }
+   
+   /**
+    * Returns the list of restlets paths. The list is sorted according to the handlers hierarchy.
+    * @return The list of restlets paths.
+    */
+   public List<String> getPaths()
+   {
+      return getWrappedCall().getPaths();
    }
 
    /**
@@ -54,77 +71,17 @@ public class RestletCallWrapper extends UniformCallWrapper implements RestletCal
     */
    public String getPath(int index, boolean strip)
    {
-      if(strip)
-      {
-         return strip(getPaths().get(index));
-      }
-      else
-      {
-         return getPaths().get(index);
-      }
+      return getWrappedCall().getPath(index, strip);
    }
 
    /**
-    * Returns the list of restlets paths. The list is sorted according to the handlers hierarchy.
-    * @return The list of restlets paths.
+    * Returns the list of substring matched in the current restlet's path.
+    * @return The list of substring matched.
+    * @see <a href="http://java.sun.com/j2se/1.5.0/docs/api/java/util/regex/Matcher.html#group(int)">Matcher.group()</a>
     */
-   public List<String> getPaths()
+   public List<String> getMatches()
    {
-      return this.paths;
-   }
-
-   /**
-    * Strip the slashing from both ends of the source string.
-    * @param source The source string to strip.
-    * @return The stripped string.
-    */
-   public static String strip(String source)
-   {
-      return strip(source, '/', true, true);
-   }
-
-   /**
-    * Strip a delimiter character from a source string.
-    * @param source The source string to strip.
-    * @param delimiter The character to remove.
-    * @param start Indicates if start of source should be stripped.
-    * @param end Indicates if end of source should be stripped.
-    * @return The stripped source string.
-    */
-   public static String strip(String source, char delimiter, boolean start, boolean end)
-   {
-      int beginIndex = 0;
-      int endIndex = source.length();
-      boolean stripping = true;
-
-      // Strip beginning
-      while(stripping && (beginIndex < endIndex))
-      {
-         if(source.charAt(beginIndex) == delimiter)
-         {
-            beginIndex++;
-         }
-         else
-         {
-            stripping = false;
-         }
-      }
-
-      // Strip end
-      stripping = true;
-      while(stripping && (beginIndex < endIndex - 1))
-      {
-         if(source.charAt(endIndex - 1) == delimiter)
-         {
-            endIndex--;
-         }
-         else
-         {
-            stripping = false;
-         }
-      }
-
-      return source.substring(beginIndex, endIndex);
+      return getWrappedCall().getMatches();
    }
 
 }

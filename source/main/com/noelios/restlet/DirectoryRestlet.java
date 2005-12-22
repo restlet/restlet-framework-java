@@ -29,6 +29,8 @@ import org.restlet.AbstractRestlet;
 import org.restlet.RestletCall;
 import org.restlet.RestletException;
 import org.restlet.component.RestletContainer;
+import org.restlet.data.MediaType;
+import org.restlet.data.MediaTypes;
 import org.restlet.data.Metadata;
 
 import com.noelios.restlet.util.StringUtils;
@@ -41,16 +43,19 @@ import com.noelios.restlet.util.StringUtils;
 public class DirectoryRestlet extends AbstractRestlet
 {
    /** Indicates if the sub-directories are deeply accessible. */
-   private boolean deeply;
+   protected boolean deeply;
 
+   /** Default media type used when no media type extension is available. */
+   protected MediaType defaultMediaType;
+   
    /** If no file name is specified, use the (optional) index name. */
-   private String indexName;
+   protected String indexName;
 
    /** The directory's root path. */
-   private String rootPath;
+   protected String rootPath;
 
    /** Mappings from extensions to metadata. */
-   private Map<String, Metadata> metadataMappings;
+   protected Map<String, Metadata> metadataMappings;
 
    /**
     * Constructor.
@@ -64,6 +69,7 @@ public class DirectoryRestlet extends AbstractRestlet
       super(container);
       this.rootPath = StringUtils.normalizePath(rootPath);
       this.deeply = deeply;
+      this.defaultMediaType = MediaTypes.TEXT_PLAIN;
       this.indexName = indexName;
       this.metadataMappings = new TreeMap<String, Metadata>();
    }
@@ -131,6 +137,26 @@ public class DirectoryRestlet extends AbstractRestlet
    public Metadata getMetadata(String extension)
    {
       return this.metadataMappings.get(extension);
+   }
+
+   /**
+    * Set the default media type ("text/plain" by default).
+    * Used when no media type extension is available.
+    * @param mediaType The default media type.
+    */
+   public void setDefaultMediaType(MediaType mediaType)
+   {
+      this.defaultMediaType = mediaType;
+   }
+
+   /**
+    * Returns the default media type.
+    * Used when no media type extension is available.
+    * @return The default media type.
+    */
+   public MediaType getDefaultMediaType()
+   {
+      return this.defaultMediaType;
    }
 
    /**

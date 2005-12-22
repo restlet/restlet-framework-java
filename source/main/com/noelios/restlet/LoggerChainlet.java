@@ -77,7 +77,7 @@ public class LoggerChainlet extends ChainletImpl
 
       // Append the resource path
       sb.append('\t');
-      String resourcePath = call.getResourceUri().getPath();
+      String resourcePath = call.getResourceRef().getPath();
       sb.append((resourcePath == null) ? "-" : resourcePath);
 
       // Append the user name
@@ -98,7 +98,7 @@ public class LoggerChainlet extends ChainletImpl
 
       // Append the referrer
       sb.append('\t');
-      sb.append((call.getReferrerUri() == null) ? "-" : call.getReferrerUri().getIdentifier());
+      sb.append((call.getReferrerRef() == null) ? "-" : call.getReferrerRef().getIdentifier());
 
       // Append the status code
       sb.append('\t');
@@ -117,12 +117,12 @@ public class LoggerChainlet extends ChainletImpl
 
       // Append the resource query
       sb.append('\t');
-      String query = call.getResourceUri().getQuery();
+      String query = call.getResourceRef().getQuery();
       sb.append((query == null) ? "-" : query);
 
       // Append the virtual name
       sb.append('\t');
-      sb.append((call.getResourceUri() == null) ? "-" : call.getResourceUri().getServerIdentifier());
+      sb.append((call.getResourceRef() == null) ? "-" : call.getResourceRef().getHostIdentifier());
 
       // Append the duration
       sb.append('\t');

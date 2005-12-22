@@ -45,7 +45,7 @@ public class Tutorial2b
          // Prepare the REST call
          UniformCall call = Manager.createCall();
          Reference uri = Manager.createReference("http://www.restlet.org");
-         call.setResourceUri(uri);
+         call.setResourceRef(uri);
          call.setMethod(Methods.GET);
 
          // Ask to the HTTP client connector to handle the call

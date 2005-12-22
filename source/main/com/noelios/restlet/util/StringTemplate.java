@@ -23,13 +23,17 @@
 package com.noelios.restlet.util;
 
 import java.io.IOException;
-import java.util.Map;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
 /**
- * Simple template class that enforces a strict separation between the template and the data model.<br/>
- * It supports interpolation (replacement of variables) and conditions.
+ * String template that enforces a strict separation between the template pattern and the template model.<br/>
+ * It supports variable insertion and non-nestable conditions.<br/>
+ * The default delimiters are "${" and "}". For variable insertion, use "${variable_name}" and for conditions use:<br/>
+ *  1) "${if variable_name}" to test the availability of a variable (non null).<br/> 
+ *  2) "${else if variable_name}" to chain another test.<br/> 
+ *  3) "${else}" to chain a default operation.<br/> 
+ *  4) "${end if}" to close a condition.<br/> 
  */
 public class StringTemplate
 {
@@ -72,13 +76,13 @@ public class StringTemplate
 
    /**
     * Constructor.
-    * @param template The template to process.
+    * @param pattern The template pattern to process.
     * @param delimiterStart The string that defines instructions start delimiters.
     * @param delimiterEnd The string that defines instructions end delimiters.
     */
-   public StringTemplate(CharSequence template, String delimiterStart, String delimiterEnd)
+   public StringTemplate(CharSequence pattern, String delimiterStart, String delimiterEnd)
    {
-      this.template = template;
+      this.template = pattern;
       this.delimiterStart = delimiterStart;
       this.delimiterEnd = delimiterEnd;
    }
@@ -90,10 +94,10 @@ public class StringTemplate
 
    /**
     * Processes the template using the given data model.
-    * @param dataModel The data model to use.
+    * @param model The template model to use.
     * @return The generated string.
     */
-   public String process(Map dataModel)
+   public String process(ReadableModel model)
    {
       StringBuilder sb = new StringBuilder();
       char nextChar = 0;
@@ -117,7 +121,7 @@ public class StringTemplate
                {
                   if(delimiterStart.length() == 1)
                   {
-                     state = processText(state, textStart, i, sb, dataModel);
+                     state = processText(state, textStart, i, sb, model);
                      instructionStart = i + 1;
                      parseState = STATE_INSTRUCTION;
                   }
@@ -141,7 +145,7 @@ public class StringTemplate
                   if(delimiterStart.length() == potentialIndex + 1)
                   {
                      // End of delimiter reached
-                     state = processText(state, textStart, potentialStart, sb, dataModel);
+                     state = processText(state, textStart, potentialStart, sb, model);
                      instructionStart = i + 1;
                      parseState = STATE_INSTRUCTION;
                   }
@@ -165,7 +169,7 @@ public class StringTemplate
                {
                   if(delimiterEnd.length() == 1)
                   {
-                     state = processInstruction(state, instructionStart, i, sb, dataModel);
+                     state = processInstruction(state, instructionStart, i, sb, model);
                      textStart = i + 1;
                      parseState = STATE_TEXT;
                   }
@@ -190,7 +194,7 @@ public class StringTemplate
                   if(delimiterEnd.length() == potentialIndex + 1)
                   {
                      // End of delimiter reached
-                     state = processInstruction(state, instructionStart, potentialEnd, sb, dataModel);
+                     state = processInstruction(state, instructionStart, potentialEnd, sb, model);
                      textStart = i + 1;
                      parseState = STATE_TEXT;
                   }
@@ -215,7 +219,7 @@ public class StringTemplate
       // Flush any trailing text
       if(parseState == STATE_TEXT)
       {
-         processText(state, textStart, i, sb, dataModel);
+         processText(state, textStart, i, sb, model);
       }
 
       logger.log(Level.FINE, "Template result", sb);
@@ -228,10 +232,10 @@ public class StringTemplate
     * @param tokenStart The start index of the token to process.
     * @param tokenEnd The end index of the token to process.
     * @param buffer The string buffer containing the template result.
-    * @param dataModel The data model to use.
+    * @param model The template model to use.
     * @return The new state after processing.
     */
-   protected int processText(int state, int tokenStart, int tokenEnd, StringBuilder buffer, Map dataModel)
+   protected int processText(int state, int tokenStart, int tokenEnd, StringBuilder buffer, ReadableModel model)
    {
       logger.log(Level.FINER, "Process text", buffer);
 
@@ -249,11 +253,11 @@ public class StringTemplate
     * @param tokenStart The start index of the token to process.
     * @param tokenEnd The end index of the token to process.
     * @param buffer The string buffer containing the template result.
-    * @param dataModel The data model to use.
+    * @param model The template model to use.
     * @return The state after processing.
     */
    protected int processInstruction(int state, int tokenStart, int tokenEnd, StringBuilder buffer,
-         Map dataModel)
+         ReadableModel model)
    {
       String instruction = template.subSequence(tokenStart, tokenEnd).toString();
       logger.log(Level.FINER, "processInstruction: " + instruction, buffer);
@@ -262,7 +266,7 @@ public class StringTemplate
       {
          String condition = template.subSequence(tokenStart + 3, tokenEnd).toString();
 
-         if(evaluateCondition(condition, dataModel))
+         if(evaluateCondition(condition, model))
          {
             state = STATE_INSTRUCTION_CONDITION_APPEND;
          }
@@ -277,7 +281,7 @@ public class StringTemplate
          {
             String condition = template.subSequence(tokenStart + 4, tokenEnd).toString();
 
-            if(evaluateCondition(condition, dataModel))
+            if(evaluateCondition(condition, model))
             {
                state = STATE_INSTRUCTION_CONDITION_APPEND;
             }
@@ -302,9 +306,9 @@ public class StringTemplate
       {
          if((state == STATE_INSTRUCTION_APPEND) || (state == STATE_INSTRUCTION_CONDITION_APPEND))
          {
-            if((dataModel != null) && dataModel.containsKey(instruction))
+            if((model != null) && model.contains(instruction))
             {
-               buffer.append(dataModel.get(instruction));
+               buffer.append(model.get(instruction));
             }
          }
       }
@@ -315,24 +319,24 @@ public class StringTemplate
    /**
     * Evalutes an instruction's condition.
     * @param condition The condition to evaluate.
-    * @param dataModel The data model to use.
+    * @param model The template model to use.
     * @return The evaluation result.
     */
-   protected boolean evaluateCondition(String condition, Map dataModel)
+   protected boolean evaluateCondition(String condition, ReadableModel model)
    {
-      logger.log(Level.FINER, "evaluateCondition: " + condition, dataModel);
+      logger.log(Level.FINER, "evaluateCondition: " + condition, model);
       boolean result = false;
 
-      if(dataModel != null)
+      if(model != null)
       {
          if(condition.endsWith("?exists"))
          {
             String key = condition.subSequence(0, condition.length() - 7).toString();
-            result = dataModel.containsKey(key);
+            result = model.contains(key);
          }
-         else if(dataModel.containsKey(condition))
+         else if(model.contains(condition))
          {
-            Object value = dataModel.get(condition);
+            Object value = model.get(condition);
 
             if(value instanceof Boolean)
             {

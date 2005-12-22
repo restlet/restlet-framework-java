@@ -46,35 +46,21 @@ public class UniformCallWrapper implements UniformCall
    }
 
    /**
-    * Returns the wrapped call.
-    * @return The wrapped call
+    * Returns the character set preferences of the user agent.
+    * @return The character set preferences of the user agent.
     */
-   protected UniformCall getWrappedCall()
+   public List<Preference> getCharacterSetPrefs()
    {
-      return this.wrappedCall;
-   }
-
-   // ------------------------------
-   // Methods related to the request
-   // ------------------------------
-
-   /**
-    * Returns the referrer reference if available. This reference shouldn't be modified during the call
-    * handling.
-    * @return The referrer reference.
-    */
-   public Reference getReferrerUri()
-   {
-      return getWrappedCall().getReferrerUri();
+      return getWrappedCall().getCharacterSetPrefs();
    }
 
    /**
-    * Sets the referrer reference if available. This reference shouldn't be modified during the call handling.
-    * @param referrerUri The referrer reference.
+    * Returns the client's IP address.
+    * @return The client's IP address.
     */
-   public void setReferrerUri(Reference referrerUri)
+   public String getClientAddress()
    {
-      getWrappedCall().setReferrerUri(referrerUri);
+      return getWrappedCall().getClientAddress();
    }
 
    /**
@@ -87,30 +73,40 @@ public class UniformCallWrapper implements UniformCall
    }
 
    /**
-    * Sets the client's name (ex: user agent name).
-    * @param name The client's name.
+    * Returns the cookies sent by the user agent.
+    * @return The cookies sent by the user agent.
     */
-   public void setClientName(String name)
+   public Cookies getCookies()
    {
-      getWrappedCall().setClientName(name);
-   }
-   
-   /**
-    * Returns the client's IP address.
-    * @return The client's IP address.
-    */
-   public String getClientAddress()
-   {
-      return getWrappedCall().getClientAddress();
+      return getWrappedCall().getCookies();
    }
 
    /**
-    * Sets the client's IP address.
-    * @param address The client's IP address.
+    * Returns the list of cookies to be set in the user agent. Cookie settings can be browsed, added or
+    * removed.
+    * @return The list of cookies to be set in the user agent.
     */
-   public void setClientAddress(String address)
+   public List<CookieSetting> getCookieSettings()
    {
-      getWrappedCall().setClientAddress(address);
+      return getWrappedCall().getCookieSettings();
+   }
+   
+   /**
+    * Returns the representation received from the user agent.
+    * @return The representation received from the user agent.
+    */
+   public Representation getInput()
+   {
+      return getWrappedCall().getInput();
+   }
+
+   /**
+    * Returns the language preferences of the user agent.
+    * @return The language preferences of the user agent.
+    */
+   public List<Preference> getLanguagePrefs()
+   {
+      return getWrappedCall().getLanguagePrefs();
    }
    
    /**
@@ -123,141 +119,12 @@ public class UniformCallWrapper implements UniformCall
    }
 
    /**
-    * Sets the media type preferences of the user agent.
-    * @param prefs The media type preferences of the user agent.
-    */
-   public void setMediaTypePrefs(List<Preference> prefs)
-   {
-      getWrappedCall().setMediaTypePrefs(prefs);
-   }
-
-   /**
-    * Returns the character set preferences of the user agent.
-    * @return The character set preferences of the user agent.
-    */
-   public List<Preference> getCharacterSetPrefs()
-   {
-      return getWrappedCall().getCharacterSetPrefs();
-   }
-
-   /**
-    * Sets the character set preferences of the user agent.
-    * @param prefs The character set preferences of the user agent.
-    */
-   public void setCharacterSetPrefs(List<Preference> prefs)
-   {
-      getWrappedCall().setCharacterSetPrefs(prefs);
-   }
-
-   /**
-    * Returns the language preferences of the user agent.
-    * @return The language preferences of the user agent.
-    */
-   public List<Preference> getLanguagePrefs()
-   {
-      return getWrappedCall().getLanguagePrefs();
-   }
-
-   /**
-    * Sets the language preferences of the user agent.
-    * @param prefs The language preferences of the user agent.
-    */
-   public void setLanguagePrefs(List<Preference> prefs)
-   {
-      getWrappedCall().setLanguagePrefs(prefs);
-   }
-
-   /**
     * Returns the method called.
     * @return The method called.
     */
    public Method getMethod()
    {
       return getWrappedCall().getMethod();
-   }
-
-   /**
-    * Sets the method called.
-    * @param method The method called.
-    */
-   public void setMethod(Method method)
-   {
-      getWrappedCall().setMethod(method);
-   }
-
-   /**
-    * Returns the resource's reference. This reference shouldn't be modified during the call handling.
-    * @return The resource's reference.
-    */
-   public Reference getResourceUri()
-   {
-      return getWrappedCall().getResourceUri();
-   }
-
-   /**
-    * Sets the resource's reference.
-    * @param resourceUri The resource's reference.
-    */
-   public void setResourceUri(Reference resourceUri)
-   {
-      getWrappedCall().setResourceUri(resourceUri);
-   }
-
-   /**
-    * Returns the cookies sent by the user agent.
-    * @return The cookies sent by the user agent.
-    */
-   public Cookies getCookies()
-   {
-      return getWrappedCall().getCookies();
-   }
-
-   /**
-    * Sets the cookies sent by the user agent.
-    * @param cookies The cookies sent by the user agent.
-    */
-   public void setCookies(Cookies cookies)
-   {
-      getWrappedCall().setCookies(cookies);
-   }
-
-   /**
-    * Returns the representation received from the user agent.
-    * @return The representation received from the user agent.
-    */
-   public Representation getInput()
-   {
-      return getWrappedCall().getInput();
-   }
-
-   /**
-    * Sets the content received in the request. param input The content received in the request.
-    */
-   public void setInput(Representation input)
-   {
-      getWrappedCall().setInput(input);
-   }
-
-   // -------------------------------
-   // Methods related to the response
-   // -------------------------------
-
-   /**
-    * Returns the result status.
-    * @return The result status.
-    */
-   public Status getStatus()
-   {
-      return getWrappedCall().getStatus();
-   }
-
-   /**
-    * Sets the result status.
-    * @param status The result status to set.
-    */
-   public void setStatus(Status status)
-   {
-      getWrappedCall().setStatus(status);
    }
 
    /**
@@ -270,12 +137,41 @@ public class UniformCallWrapper implements UniformCall
    }
 
    /**
-    * Sets the representation to send to the user agent
-    * @param output The representation to send to the user agent
+    * Returns the referrer reference if available.<br/>
+    * This reference shouldn't be modified during the call handling.
+    * @return The referrer reference.
     */
-   public void setOutput(Representation output)
+   public Reference getReferrerRef()
    {
-      getWrappedCall().setOutput(output);
+      return getWrappedCall().getReferrerRef();
+   }
+
+   /**
+    * Returns the resource's reference.<br/>
+    * This reference shouldn't be modified during the call handling, exceptio for redirect rewritings.
+    * @return The resource's reference.
+    */
+   public Reference getResourceRef()
+   {
+      return getWrappedCall().getResourceRef();
+   }
+
+   /**
+    * Returns the result status.
+    * @return The result status.
+    */
+   public Status getStatus()
+   {
+      return getWrappedCall().getStatus();
+   }
+
+   /**
+    * Returns the wrapped call.
+    * @return The wrapped call
+    */
+   protected UniformCall getWrappedCall()
+   {
+      return this.wrappedCall;
    }
 
    /**
@@ -290,13 +186,112 @@ public class UniformCallWrapper implements UniformCall
    }
 
    /**
-    * Returns the list of cookies to be set in the user agent. Cookie settings can be browsed, added or
-    * removed.
-    * @return The list of cookies to be set in the user agent.
+    * Sets the character set preferences of the user agent.
+    * @param prefs The character set preferences of the user agent.
     */
-   public List<CookieSetting> getCookieSettings()
+   public void setCharacterSetPrefs(List<Preference> prefs)
    {
-      return getWrappedCall().getCookieSettings();
+      getWrappedCall().setCharacterSetPrefs(prefs);
+   }
+
+   /**
+    * Sets the client's IP address.
+    * @param address The client's IP address.
+    */
+   public void setClientAddress(String address)
+   {
+      getWrappedCall().setClientAddress(address);
+   }
+
+   /**
+    * Sets the client's name (ex: user agent name).
+    * @param name The client's name.
+    */
+   public void setClientName(String name)
+   {
+      getWrappedCall().setClientName(name);
+   }
+
+   /**
+    * Sets the cookies sent by the user agent.
+    * @param cookies The cookies sent by the user agent.
+    */
+   public void setCookies(Cookies cookies)
+   {
+      getWrappedCall().setCookies(cookies);
+   }
+
+   /**
+    * Sets the content received in the request. param input The content received in the request.
+    */
+   public void setInput(Representation input)
+   {
+      getWrappedCall().setInput(input);
+   }
+
+   /**
+    * Sets the language preferences of the user agent.
+    * @param prefs The language preferences of the user agent.
+    */
+   public void setLanguagePrefs(List<Preference> prefs)
+   {
+      getWrappedCall().setLanguagePrefs(prefs);
+   }
+
+   /**
+    * Sets the media type preferences of the user agent.
+    * @param prefs The media type preferences of the user agent.
+    */
+   public void setMediaTypePrefs(List<Preference> prefs)
+   {
+      getWrappedCall().setMediaTypePrefs(prefs);
+   }
+
+   /**
+    * Sets the method called.
+    * @param method The method called.
+    */
+   public void setMethod(Method method)
+   {
+      getWrappedCall().setMethod(method);
+   }
+
+   /**
+    * Sets the representation to send to the user agent
+    * @param output The representation to send to the user agent
+    */
+   public void setOutput(Representation output)
+   {
+      getWrappedCall().setOutput(output);
+   }
+
+   /**
+    * Sets the referrer reference if available.<br/>
+    * This reference shouldn't be modified during the call handling.
+    * @param referrerRef The referrer reference.
+    */
+   public void setReferrerRef(Reference referrerRef)
+   {
+      getWrappedCall().setReferrerRef(referrerRef);
+   }
+
+   /**
+    * Sets the resource's reference.<br/>
+    * This reference shouldn't be modified during the call handling, except for redirection rewriting.
+    * @param resourceRef The resource's reference.
+    */
+   public void setResourceRef(Reference resourceRef)
+   {
+      getWrappedCall().setResourceRef(resourceRef);
+   }
+
+   /**
+    * Sets the result status.
+    * @param status The result status to set.
+    */
+   public void setStatus(Status status)
+   {
+      getWrappedCall().setStatus(status);
    }
 
    /**

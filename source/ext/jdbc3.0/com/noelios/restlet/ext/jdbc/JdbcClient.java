@@ -97,7 +97,7 @@ public class JdbcClient extends AbstractConnector implements Client
       try
       {
          // Parse the JDBC URI
-         String connectionURI = call.getResourceUri().toString();
+         String connectionURI = call.getResourceRef().toString();
 
          // Parse the request to extract necessary info
          DocumentBuilder docBuilder = DocumentBuilderFactory.newInstance().newDocumentBuilder();
