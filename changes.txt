@@ -4,6 +4,19 @@
 -----------------------------
 
 
+0.16 beta
+ - Added RedirectRestlet to support advanced URI rewriting. Based on StringTemplate and Maplets.
+ - Added ReadableModel, WritableModel and Model interfaces to provide a pluggable data model for StringTemplate.
+ - Added DefaultModel with TreeMap based implementation
+ - Added RestletCallModel to wrap a RestletCall as a ReadableModel
+ - DirectoryRestlet now has a "defaultMediaType" property, set to "text/plain" by default.
+ - FileResource can now return files without extension using the default media type.
+ - Renamed Reference.host property into hostName
+ - Renamed Reference.serverIdentifier property into hostIdentifier
+ - Renamed Reference.port property into hostPort
+ - Renamed UniformCall.getReferrerUri to getReferrerRef
+ - Renamed UniformCall.getResourceUri to getResourceRef
+
 0.15 beta
  - Added org.restlet.Chainlet interface and com.noelios.restlet.ChainletImpl
  - Factorize common code between MapletImpl and ChainletImpl into com.noelios.restlet.util.RestletTarget

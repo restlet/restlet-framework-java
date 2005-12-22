@@ -445,7 +445,7 @@
       
       <group title="${restlet-ri}" ><package name="com.noelios.restlet*" /></group>
       
-      <link href="http://restlet.tigris.org/nonav/docs/api/" packagelistLoc="${docs-api}" offline="true"/>
+      <link href="http://www.restlet.org/docs/api/" packagelistLoc="${docs-api}" offline="true"/>
       <link href="http://freemarker.org/docs/api/"/>
       <link href="http://java.sun.com/j2se/1.5.0/docs/api/"/>
       <link href="http://java.sun.com/products/javamail/javadocs/"/>
