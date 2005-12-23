@@ -98,8 +98,8 @@
   
 
   <!-- Set global names -->
-  <property name="version-full"     value="0.16 beta"/>
-  <property name="version-compact"  value="0.16b"/>
+  <property name="version-full"     value="0.17 beta"/>
+  <property name="version-compact"  value="0.17b"/>
   <property name="restlet-api"      value="Restlet API"/>
   <property name="restlet-ri"       value="Noelios Restlet Engine"/>
   <property name="author"           value="Jerome Louvel"/>

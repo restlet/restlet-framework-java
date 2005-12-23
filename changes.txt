@@ -4,6 +4,11 @@
 -----------------------------
 
 
+0.17 beta
+ - DirectoryRestlet now correctly set the call status to SUCCESS_OK (200)
+ - Jetty connectors now correctly return the content-length header when the size is known (ex: static file)
+
+
 0.16 beta
  - Added RedirectRestlet to support advanced URI rewriting. Based on StringTemplate and Maplets.
  - Added ReadableModel, WritableModel and Model interfaces to provide a pluggable data model for StringTemplate.

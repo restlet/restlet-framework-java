@@ -138,6 +138,8 @@ public class JettyConnection extends HttpConnection
             {
                response.addField("ETag", meta.getTag().getName());
             }
+            
+            response.setContentLength((int)call.getOutput().getSize());
 
             // Send the output to the client
             call.getOutput().write(response.getOutputStream());

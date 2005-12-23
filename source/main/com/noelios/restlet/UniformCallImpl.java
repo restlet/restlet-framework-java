@@ -135,10 +135,6 @@ public class UniformCallImpl implements UniformCall
       this.cookieSettings = null;
    }
 
-   // ------------------------------
-   // Methods related to the request
-   // ------------------------------
-
    /**
     * Returns the character set preferences of the user agent.
     * @return The character set preferences of the user agent.
@@ -495,6 +491,7 @@ public class UniformCallImpl implements UniformCall
          {
             // Set the best representation as the call output
             setOutput(resource.getRepresentation(bestVariant));
+            setStatus(Statuses.SUCCESS_OK);
          }
       }
    }

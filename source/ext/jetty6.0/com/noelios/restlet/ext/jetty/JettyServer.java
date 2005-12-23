@@ -166,6 +166,8 @@ public class JettyServer extends org.mortbay.jetty.Server implements Server
                connection.getResponse().addHeader("ETag", meta.getTag().getName());
             }
 
+            connection.getResponse().setContentLength((int)call.getOutput().getSize());
+
             // Send the output to the client
             call.getOutput().write(connection.getResponse().getOutputStream());
          }
