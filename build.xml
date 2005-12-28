@@ -401,6 +401,10 @@
      
       <sourcepath>
          <pathelement path="${src-main}"/>
+         <pathelement path="${src-freemarker2.3}"/>
+         <pathelement path="${src-javamail1.3}"/>
+         <pathelement path="${src-jdbc3.0}"/>
+         <pathelement path="${src-jetty5.1}"/>
       </sourcepath>
 
       <bottom><![CDATA[<i>Copyright &#169; 2005 J&eacute;r&ocirc;me Louvel. Restlet is a trademark and service mark of <a target="_top" href="http://www.noelios.com/en">Noelios Consulting</a>.</i>]]></bottom>
@@ -413,6 +417,7 @@
       
       <group title="${restlet-api}"><package name="org.restlet*" /></group>
       
+      <link href="http://www.restlet.org/docs/nre/" packagelistLoc="${docs-nre}" offline="true"/>
       <link href="http://java.sun.com/j2se/1.5.0/docs/api/"/>
     </javadoc>    
 

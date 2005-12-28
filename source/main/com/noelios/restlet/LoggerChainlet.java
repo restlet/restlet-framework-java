@@ -30,6 +30,9 @@ import org.restlet.RestletCall;
 import org.restlet.RestletException;
 import org.restlet.component.RestletContainer;
 
+import com.noelios.restlet.util.RestletCallModel;
+import com.noelios.restlet.util.StringTemplate;
+
 /**
  * Chainlet logging all calls after handling by the attache restlet.
  * The current format is similar to IIS 6 logs.
@@ -40,8 +43,12 @@ public class LoggerChainlet extends AbstractChainlet
    /** Obtain a suitable logger. */
    protected Logger logger;
    
+   /** The log template to use. */
+   protected StringTemplate logTemplate;
+   
    /**
-    * Constructor.
+    * Constructor using the default format.<br/>
+    * Default format using <a href="http://analog.cx/docs/logfmt.html">Analog syntax</a>: %Y-%m-%d\t%h:%n:%j\t%j\t%r\t%u\t%s\t%j\t%B\t%f\t%c\t%b\t%q\t%v\t%T
     * @param container The parent container.
     * @param logName   The log name to used in the logging.properties file.
     */
@@ -49,6 +56,22 @@ public class LoggerChainlet extends AbstractChainlet
    {
       super(container);
       this.logger = Logger.getLogger(logName);
+      this.logTemplate = null;
+   }
+   
+   /**
+    * Constructor.
+    * @param container The parent container.
+    * @param logName The log name to used in the logging.properties file.
+    * @param logFormat The log format to use.
+    * @see com.noelios.restlet.util.RestletCallModel 
+    * @see com.noelios.restlet.util.StringTemplate 
+    */
+   public LoggerChainlet(RestletContainer container, String logName, String logFormat)
+   {
+      super(container);
+      this.logger = Logger.getLogger(logName);
+      this.logTemplate = new StringTemplate(logFormat);
    }
 
    /**
@@ -60,9 +83,27 @@ public class LoggerChainlet extends AbstractChainlet
    {
       long startTime = System.currentTimeMillis();
       super.handle(call);
-      long endTime = System.currentTimeMillis();
-      int duration = (int)(endTime - startTime);
+      int duration = (int)(System.currentTimeMillis() - startTime);
 
+      // Format the call into a log entry
+      if(this.logTemplate != null)
+      {
+         this.logger.log(Level.INFO, format(call));
+      }
+      else
+      {
+         this.logger.log(Level.INFO, formatDefault(call, duration));
+      }
+   }
+   
+   /**
+    * Format a log entry using the default format. 
+    * @param call The call to log.
+    * @param duration The call duration.
+    * @return The formatted log entry.
+    */
+   protected String formatDefault(RestletCall call, int duration)
+   {
       StringBuilder sb = new StringBuilder();
       
       // Append the time stamp
@@ -129,8 +170,17 @@ public class LoggerChainlet extends AbstractChainlet
       sb.append('\t');
       sb.append(duration);
 
-      // Add the log entry
-      this.logger.log(Level.INFO, sb.toString());
+      return sb.toString();
    }
-   
+
+   /**
+    * Format a log entry. 
+    * @param call The call to log.
+    * @return The formatted log entry.
+    */
+   protected String format(RestletCall call)
+   {
+      return this.logTemplate.process(new RestletCallModel(call, "-"));
+   }
+
 }

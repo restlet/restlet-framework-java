@@ -5,9 +5,21 @@
 
 
 0.17 beta
- - DirectoryRestlet now correctly set the call status to SUCCESS_OK (200)
+ - Added StatusChainlet as a customizable mechanism to handle all error and display status pages 
+ - RestletCallModel now supports indexed variables for query parameters and cookies. Ex: ${query["name"]}
+ - LoggerChainlet now accepts customized log formats based on RestletCallModel and StringTemplate
+ - The CLIENT mode in RedirectRestlet has beeen renamed CLIENT_TEMPORARY and CLIENT_PERMANENT has been added
  - Jetty connectors now correctly return the content-length header when the size is known (ex: static file)
-
+ - StringRepresentation now implements the getSize method
+ - DirectoryRestlet now correctly set the call status to SUCCESS_OK (200)
+ - Fixed AbstractChainlet and used it as super class of LoggerChainlet and StatusChainlet
+ - UniformCall.setTemporaryRedirect was renamed in setRedirect with a new "permanent" parameter
+ - A default value to return can now be specified in RestletCallModel. Ex: return "-" is variable is null for logs
+ - Cookies.readCookies was renamed to getCookies and getFirstCookie method was added
+ - CookiesReader.readCookie was renamed to readNextCookie and readFirstCookie method was added
+ - Form.readParameter was renamed to getParameter, readParameters to getParameters and getFirstParameter was added
+ - Added Status.isInfo, isSuccess, isRedirection, isClientError, isServerError, isError methods
+ - Manager.createChainlet is now a static method
 
 0.16 beta
  - Added RedirectRestlet to support advanced URI rewriting. Based on StringTemplate and Maplets.
