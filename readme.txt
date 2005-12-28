@@ -11,22 +11,22 @@ Home    : http://www.restlet.org
 Features
 --------
 
-Restlet API:
-   * Supports all REST concepts (resource, representation, data, connector, components, etc.)</li>
-   * Suitable for both client and server REST applications</li>
-   * Maplets handle hierarchical URIs with advanced pattern matching features</li>
-   * Chainlets filter calls to implement logging, authentication or compression features</li>
-   * Complete alternative to Servlet API with no external dependency (JAR < 50kb)</li>
-   * Supports blocking and non-blocking NIO modes</li>
+Restlet API
+    * Supports all REST concepts (resource, representation, data, connector, components, etc.)
+    * Suitable for both client and server REST applications
+    * Maplets support the concept of URIs as UI with advanced pattern matching features
+    * Chainlets filter calls to implement features like logging, authentication or compression
+    * Complete alternative to Servlet API with no external dependency (JAR < 50kb)
+    * Supports blocking and non-blocking NIO modes
 
-Noelios Restlet Engine (NRE):
-   * Reference implementation of the Restlet API provided by <a target="_top" href="http://www.noelios.com">Noelios Consulting</a> (core JAR < 60kb)</li>
-   * Server connector provided: HTTP (via Jetty connectors)</li>
-   * Client connectors provided: HTTP, JDBC, SMTP (via JavaMail)</li>
-   * Support for logging (LoggerChainlet) and URI rewriting (RedirectRestlet)</li>
-   * Static files serving (DirectoryRestlet) with metadata association based on file extensions</li>
-   * FreeMarker template representations as an alternative to JSP pages</li>
-   * Automatic server-side content negotiation based on media type and language</li>
+Noelios Restlet Engine (NRE)
+    * Reference implementation of the Restlet API provided by Noelios Consulting (core JAR < 60kb)
+    * Server connector provided: HTTP (via Jetty connectors)
+    * Client connectors provided: HTTP, JDBC, SMTP (via JavaMail)
+    * Support for logging (LoggerChainlet) and cool URIs rewriting (RedirectRestlet)
+    * Static files serving (DirectoryRestlet) with metadata association based on file extensions
+    * FreeMarker template representations as an alternative to JSP pages
+    * Automatic server-side content negotiation based on media type and language
 
 
 Release notes

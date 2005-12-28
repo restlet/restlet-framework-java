@@ -97,7 +97,7 @@ public class StatusChainlet extends AbstractChainlet
       }
 
       // Do we need to get an output representation for the current status?
-      if(!call.getStatus().equals(Statuses.SUCCESS_OK) && ((call.getOutput() != null) || overwrite))
+      if(!call.getStatus().equals(Statuses.SUCCESS_OK) && ((call.getOutput() == null) || overwrite))
       {
          call.setOutput(getRepresentation(call.getStatus(), call));
       }
