@@ -32,7 +32,10 @@ import org.restlet.data.Representation;
 
 import com.noelios.restlet.connector.HttpClient;
 
-public class Tutorial2b
+/**
+ * Retrieving the content of a Web page (detailled)
+ */
+public class Tutorial02b
 {
    public static void main(String[] args)
    {

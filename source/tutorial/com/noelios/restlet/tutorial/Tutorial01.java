@@ -22,7 +22,10 @@
 
 package com.noelios.restlet.tutorial;
 
-public class Tutorial1
+/**
+ * Registering the Restlet implementation
+ */
+public class Tutorial01
 {
    public static void main(String[] args)
    {

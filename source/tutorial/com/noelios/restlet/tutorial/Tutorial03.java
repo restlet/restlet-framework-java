@@ -29,7 +29,10 @@ import org.restlet.data.MediaTypes;
 import com.noelios.restlet.data.StringRepresentation;
 import com.noelios.restlet.ext.jetty.JettyServer;
 
-public class Tutorial3
+/**
+ * Listening to Web browsers
+ */
+public class Tutorial03
 {
    public static void main(String[] args)
    {

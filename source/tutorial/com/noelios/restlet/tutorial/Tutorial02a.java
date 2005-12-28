@@ -26,7 +26,10 @@ import java.io.IOException;
 
 import com.noelios.restlet.connector.HttpClient;
 
-public class Tutorial2a
+/**
+ * Retrieving the content of a Web page
+ */
+public class Tutorial02a
 {
    public static void main(String[] args)
    {

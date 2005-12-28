@@ -27,9 +27,14 @@ import org.restlet.component.RestletContainer;
 import org.restlet.data.MediaTypes;
 
 import com.noelios.restlet.DirectoryRestlet;
+import com.noelios.restlet.LoggerChainlet;
+import com.noelios.restlet.StatusChainlet;
 import com.noelios.restlet.ext.jetty.JettyServer;
 
-public class Tutorial6
+/**
+ * Displaying error pages.
+ */
+public class Tutorial08
 {
    public static void main(String[] args)
    {
@@ -45,6 +50,14 @@ public class Tutorial6
          // to the restlet container. Note that the container is the call handler.
          JettyServer httpServer = new JettyServer("My connector", 8182, myContainer);
          myContainer.addServer(httpServer);
+
+         // Attach a logger chainlet to the container
+         LoggerChainlet logger = new LoggerChainlet(myContainer, "com.noelios.restlet.tutorial");
+         myContainer.attach("http://localhost:8182/", logger);
+
+         // Attach a status chainlet to the logger
+         StatusChainlet status = new StatusChainlet(myContainer, true, "webmaster@mysite.org");
+         logger.attach(status);
          
          // Create a directory restlet able to return a deep hierarchy of Web files 
          // (HTML pages, CSS stylesheets or GIF images) from a local directory.
@@ -53,10 +66,8 @@ public class Tutorial6
          dirRestlet.addExtension("css", MediaTypes.TEXT_CSS);
          dirRestlet.addExtension("gif", MediaTypes.IMAGE_GIF);
 
-         // Then attach the maplet to the container.
-         // Note that virtual hosting can be very easily supported if you need it,
-         // just attach multiple maplets, one for each virtual server.
-         myContainer.attach("http://localhost:8182/", dirRestlet);
+         // Then attach the restlet to the logger chainlet.
+         status.attach(dirRestlet);
             
          // Now, let's start the container! Note that the HTTP server connector is
          // also automatically started.

@@ -22,20 +22,16 @@
 
 package com.noelios.restlet.tutorial;
 
-import org.restlet.AbstractRestlet;
-import org.restlet.DefaultMaplet;
-import org.restlet.Maplet;
-import org.restlet.Restlet;
-import org.restlet.RestletCall;
-import org.restlet.RestletException;
 import org.restlet.component.DefaultRestletContainer;
 import org.restlet.component.RestletContainer;
-import org.restlet.data.MediaTypes;
 
-import com.noelios.restlet.data.StringRepresentation;
+import com.noelios.restlet.RedirectRestlet;
 import com.noelios.restlet.ext.jetty.JettyServer;
 
-public class Tutorial5b
+/**
+ * URI rewriting and redirection
+ */
+public class Tutorial09
 {
    public static void main(String[] args)
    {
@@ -52,29 +48,11 @@ public class Tutorial5b
          JettyServer httpServer = new JettyServer("My connector", 8182, myContainer);
          myContainer.addServer(httpServer);
          
-         // Create a new restlet that will display some path information. 
-         // Note that restlets are call handlers similar to servlets.
-         Restlet myRestlet = new AbstractRestlet(myContainer)
-            {
-               public void handle(RestletCall call) throws RestletException
-               {
-                  // Print the requested URI path
-                  String output = "Resource path = " + call.getPath(0, false) + '\n' + 
-                                  "Restlet  path = " + call.getPath(1, false);
-                  
-                  call.setOutput(new StringRepresentation(output, MediaTypes.TEXT_PLAIN));
-               }
-            };
-
-         // Create a new maplet and attach the restlet to it
-         // Note that the mapping string is a full Java 5.0 pattern (see java.util.regex.Pattern class).
-         Maplet myMaplet = new DefaultMaplet(myContainer);
-         myMaplet.attach("/tutorial$", myRestlet);
-
-         // Then attach the maplet to the container.
-         // Note that virtual hosting can be very easily supported if you need it,
-         // just attach multiple maplets, one for each virtual server.
-         myContainer.attach("http://localhost:8182", myMaplet);
+         // Create a directory restlet able to return a deep hierarchy of Web files 
+         // (HTML pages, CSS stylesheets or GIF images) from a local directory.
+         String target = "http://www.google.com/search?q=site:mysite.org+${query[\"query\"]}";
+         RedirectRestlet searchRedirect = new RedirectRestlet(myContainer, target, RedirectRestlet.MODE_CLIENT_TEMPORARY);
+         myContainer.attach("http://localhost:8182/search", searchRedirect);
             
          // Now, let's start the container! Note that the HTTP server connector is
          // also automatically started.

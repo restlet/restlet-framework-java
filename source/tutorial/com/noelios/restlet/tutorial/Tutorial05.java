@@ -33,7 +33,10 @@ import org.restlet.data.MediaTypes;
 import com.noelios.restlet.data.StringRepresentation;
 import com.noelios.restlet.ext.jetty.JettyServer;
 
-public class Tutorial5a
+/**
+ * Restlets servers and containers
+ */
+public class Tutorial05
 {
    public static void main(String[] args)
    {
@@ -66,7 +69,7 @@ public class Tutorial5a
 
          // Then attach it to the container. Note that the restlet will be called 
          // only if the beginning of the requested URI matches the given pattern.
-         myContainer.attach("http://localhost:8182/tutorial", myRestlet);
+         myContainer.attach("http://localhost:8182/trace", myRestlet);
             
          // Now, let's start the container! Note that the HTTP server connector is
          // also automatically started.
