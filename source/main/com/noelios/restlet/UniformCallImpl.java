@@ -316,6 +316,7 @@ public class UniformCallImpl implements UniformCall
       else
       {
          logger.info(Integer.toString(variants.size()) + " variants found for resource: " + getResourceRef().getIdentifier());
+         
          // For each available variant, we will compute the negotiation score
          // which is dependant on the language score and on the media type score
          for(Iterator iter1 = variants.iterator(); iter1.hasNext();)
@@ -324,63 +325,66 @@ public class UniformCallImpl implements UniformCall
 
             // For each language preference defined in the call
             // Calculate the score and remember the best scoring preference
-            for(Iterator iter2 = getLanguagePrefs().iterator(); (currentVariant.getLanguage() != null) && iter2.hasNext();)
+            if(getLanguagePrefs() != null)
             {
-               currentPref = (Preference)iter2.next();
-               currentLanguage = (Language)currentPref.getMetadata();
-               compatiblePref = true;
-               currentScore = 0;
-
-               // 1) Compare the main tag
-               if(currentVariant.getLanguage().getMainTag().equals(currentLanguage.getMainTag()))
+               for(Iterator iter2 = getLanguagePrefs().iterator(); (currentVariant.getLanguage() != null) && iter2.hasNext();)
                {
-                  currentScore += 100;
-               }
-               else if(!currentLanguage.getMainTag().equals("*"))
-               {
-                  compatiblePref = false;
-               }
-               else if(currentLanguage.getSubTag() != null)
-               {
-                  // Only "*" is an acceptable language range
-                  compatiblePref = false;
-               }
-               else
-               {
-                  // The valid "*" range has the lowest valid score
-                  currentScore++;
-               }
-
-               if(compatiblePref)
-               {
-                  // 2) Compare the sub tags
-                  if((currentLanguage.getSubTag() == null) || (currentVariant.getLanguage().getSubTag() == null))
+                  currentPref = (Preference)iter2.next();
+                  currentLanguage = (Language)currentPref.getMetadata();
+                  compatiblePref = true;
+                  currentScore = 0;
+   
+                  // 1) Compare the main tag
+                  if(currentVariant.getLanguage().getMainTag().equals(currentLanguage.getMainTag()))
                   {
-                     if(currentVariant.getLanguage().getSubTag() == currentLanguage.getSubTag())
+                     currentScore += 100;
+                  }
+                  else if(!currentLanguage.getMainTag().equals("*"))
+                  {
+                     compatiblePref = false;
+                  }
+                  else if(currentLanguage.getSubTag() != null)
+                  {
+                     // Only "*" is an acceptable language range
+                     compatiblePref = false;
+                  }
+                  else
+                  {
+                     // The valid "*" range has the lowest valid score
+                     currentScore++;
+                  }
+   
+                  if(compatiblePref)
+                  {
+                     // 2) Compare the sub tags
+                     if((currentLanguage.getSubTag() == null) || (currentVariant.getLanguage().getSubTag() == null))
+                     {
+                        if(currentVariant.getLanguage().getSubTag() == currentLanguage.getSubTag())
+                        {
+                           currentScore += 10;
+                        }
+                        else
+                        {
+                           // Don't change the score
+                        }
+                     }
+                     else if(currentLanguage.getSubTag().equals(currentVariant.getLanguage().getSubTag()))
                      {
                         currentScore += 10;
                      }
                      else
                      {
-                        // Don't change the score
+                        // SubTags are different
+                        compatiblePref = false;
                      }
-                  }
-                  else if(currentLanguage.getSubTag().equals(currentVariant.getLanguage().getSubTag()))
-                  {
-                     currentScore += 10;
-                  }
-                  else
-                  {
-                     // SubTags are different
-                     compatiblePref = false;
-                  }
-
-                  // 3) Do we have a better preference?
-                  // currentScore *= currentPref.getQuality();
-                  if(compatiblePref && ((bestLanguagePref == null) || (currentScore > bestLanguageScore)))
-                  {
-                     bestLanguagePref = currentPref;
-                     bestLanguageScore = currentScore;
+   
+                     // 3) Do we have a better preference?
+                     // currentScore *= currentPref.getQuality();
+                     if(compatiblePref && ((bestLanguagePref == null) || (currentScore > bestLanguageScore)))
+                     {
+                        bestLanguagePref = currentPref;
+                        bestLanguageScore = currentScore;
+                     }
                   }
                }
             }
@@ -390,65 +394,68 @@ public class UniformCallImpl implements UniformCall
                
             // For each media range preference defined in the call
             // Calculate the score and remember the best scoring preference
-            for(Iterator iter2 = getMediaTypePrefs().iterator(); compatibleLanguage && iter2.hasNext();)
+            if(getMediaTypePrefs() != null)
             {
-               currentPref = (Preference)iter2.next();
-               currentMediaType = (MediaType)currentPref.getMetadata();
-               compatiblePref = true;
-               currentScore = 0;
-
-               // 1) Compare the main types
-               if(currentMediaType.getMainType().equals(currentVariant.getMediaType().getMainType()))
+               for(Iterator iter2 = getMediaTypePrefs().iterator(); compatibleLanguage && iter2.hasNext();)
                {
-                  currentScore += 1000;
-               }
-               else if(!currentMediaType.getMainType().equals("*"))
-               {
-                  compatiblePref = false;
-               }
-               else if(!currentMediaType.getSubType().equals("*"))
-               {
-                  // Ranges such as "*/html" are not supported
-                  // Only "*/*" is acceptable in this case
-                  compatiblePref = false;
-               }
-
-               if(compatiblePref)
-               {
-                  // 2) Compare the sub types
-                  if(currentVariant.getMediaType().getSubType().equals(currentMediaType.getSubType()))
+                  currentPref = (Preference)iter2.next();
+                  currentMediaType = (MediaType)currentPref.getMetadata();
+                  compatiblePref = true;
+                  currentScore = 0;
+   
+                  // 1) Compare the main types
+                  if(currentMediaType.getMainType().equals(currentVariant.getMediaType().getMainType()))
                   {
-                     currentScore += 100;
+                     currentScore += 1000;
+                  }
+                  else if(!currentMediaType.getMainType().equals("*"))
+                  {
+                     compatiblePref = false;
                   }
                   else if(!currentMediaType.getSubType().equals("*"))
                   {
-                     // Subtype are different
+                     // Ranges such as "*/html" are not supported
+                     // Only "*/*" is acceptable in this case
                      compatiblePref = false;
                   }
-
-                  if(compatiblePref && (currentVariant.getMediaType().getParameters() != null))
+   
+                  if(compatiblePref)
                   {
-                     // 3) Compare the parameters
-                     // If current media type is compatible with the current
-                     // media range then the parameters need to be checked too
-                     for(Iterator iter3 = currentVariant.getMediaType().getParameters().iterator(); iter3
-                           .hasNext();)
+                     // 2) Compare the sub types
+                     if(currentVariant.getMediaType().getSubType().equals(currentMediaType.getSubType()))
                      {
-                        currentParam = (Parameter)iter3.next();
-
-                        if(isParameterFound(currentParam, currentMediaType))
+                        currentScore += 100;
+                     }
+                     else if(!currentMediaType.getSubType().equals("*"))
+                     {
+                        // Subtype are different
+                        compatiblePref = false;
+                     }
+   
+                     if(compatiblePref && (currentVariant.getMediaType().getParameters() != null))
+                     {
+                        // 3) Compare the parameters
+                        // If current media type is compatible with the current
+                        // media range then the parameters need to be checked too
+                        for(Iterator iter3 = currentVariant.getMediaType().getParameters().iterator(); iter3
+                              .hasNext();)
                         {
-                           currentScore++;
+                           currentParam = (Parameter)iter3.next();
+   
+                           if(isParameterFound(currentParam, currentMediaType))
+                           {
+                              currentScore++;
+                           }
                         }
                      }
-                  }
-
-                  // 3) Do we have a better preference?
-                  // currentScore *= currentPref.getQuality();
-                  if(compatiblePref && ((bestMediaTypePref == null) || (currentScore > bestMediaTypeScore)))
-                  {
-                     bestMediaTypePref = currentPref;
-                     bestMediaTypeScore = currentScore;
+   
+                     // 3) Do we have a better preference?
+                     // currentScore *= currentPref.getQuality();
+                     if(compatiblePref && ((bestMediaTypePref == null) || (currentScore > bestMediaTypeScore)))
+                     {
+                        bestMediaTypePref = currentPref;
+                        bestMediaTypeScore = currentScore;
+                     }
                   }
                }
             }

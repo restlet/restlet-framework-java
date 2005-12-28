@@ -30,6 +30,7 @@ import org.mortbay.http.HttpRequest;
 import org.mortbay.http.HttpResponse;
 import org.restlet.data.CharacterSets;
 import org.restlet.data.Cookies;
+import org.restlet.data.Languages;
 import org.restlet.data.MediaTypes;
 import org.restlet.data.Method;
 import org.restlet.data.Methods;
@@ -201,6 +202,11 @@ public class JettyCall extends UniformCallImpl
          PreferenceReaderImpl pr = new PreferenceReaderImpl(PreferenceReaderImpl.TYPE_LANGUAGE,
                acceptLanguage);
          result = pr.readPreferences();
+      }
+      else
+      {
+         result = new ArrayList<Preference>();
+         result.add(new PreferenceImpl(Languages.ALL));
       }
 
       return result;

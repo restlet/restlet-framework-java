@@ -4,6 +4,10 @@
 -----------------------------
 
 
+0.18 beta
+ - Fixed NPE when no language preference was provided by the client (Jetty 5.1 and Jetty 6.0 connectors).
+ - 
+
 0.17 beta
  - Extended and reworked the tutorial. Also added new illustrations to clarify processing flow.
  - Added StatusChainlet as a customizable mechanism to handle all error and display status pages 
