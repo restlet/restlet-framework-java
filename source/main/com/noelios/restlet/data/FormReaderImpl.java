@@ -57,7 +57,7 @@ public class FormReaderImpl extends BufferedInputStream implements FormReader
    @SuppressWarnings("unchecked")
    public Object readParameter(String name) throws IOException
    {
-      Parameter param = readParameter();
+      Parameter param = readNextParameter();
       Object result = null;
 
       while(param != null)
@@ -104,7 +104,32 @@ public class FormReaderImpl extends BufferedInputStream implements FormReader
             }
          }
 
-         param = readParameter();
+         param = readNextParameter();
+      }
+
+      close();
+      return result;
+   }
+
+   /**
+    * Reads the first parameter with the given name.
+    * @param name The parameter name to match.
+    * @return The parameter value.
+    * @throws IOException
+    */
+   public Parameter readFirstParameter(String name) throws IOException
+   {
+      Parameter param = readNextParameter();
+      Parameter result = null;
+
+      while((param != null) && (result == null))
+      {
+         if(param.getName().equals(name))
+         {
+           result = param;
+         }
+
+         param = readNextParameter();
       }
 
       close();
@@ -119,7 +144,7 @@ public class FormReaderImpl extends BufferedInputStream implements FormReader
    @SuppressWarnings("unchecked")
    public void readParameters(Map<String, Object> parameters) throws IOException
    {
-      Parameter param = readParameter();
+      Parameter param = readNextParameter();
       Object currentValue = null;
 
       while(param != null)
@@ -168,7 +193,7 @@ public class FormReaderImpl extends BufferedInputStream implements FormReader
             }
          }
 
-         param = readParameter();
+         param = readNextParameter();
       }
 
       close();
@@ -178,7 +203,7 @@ public class FormReaderImpl extends BufferedInputStream implements FormReader
     * Reads the next parameter available or null.
     * @return The next parameter available or null.
     */
-   public Parameter readParameter() throws IOException
+   public Parameter readNextParameter() throws IOException
    {
       Parameter result = null;
 

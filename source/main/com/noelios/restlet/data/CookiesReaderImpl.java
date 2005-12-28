@@ -68,7 +68,7 @@ public class CookiesReaderImpl extends HeaderReaderImpl implements CookiesReader
     */
    public void readCookies(Map<String, Cookie> cookies) throws IOException
    {
-      Cookie cookie = readCookie();
+      Cookie cookie = readNextCookie();
 
       while(cookie != null)
       {
@@ -77,17 +77,40 @@ public class CookiesReaderImpl extends HeaderReaderImpl implements CookiesReader
             cookies.put(cookie.getName(), cookie);
          }
 
-         cookie = readCookie();
+         cookie = readNextCookie();
       }
 
       close();
    }
 
    /**
+    * Reads the first cookie available with the given name or null.
+    * @return The first cookie available or null.
+    * @throws IOException
+    */
+   public Cookie readFirstCookie(String name) throws IOException
+   {
+      Cookie result = null;
+      Cookie cookie = readNextCookie();
+
+      while((cookie != null) && (result == null))
+      {
+         if(cookie.getName().equals(name))
+         {
+            result = cookie;
+         }
+
+         cookie = readNextCookie();
+      }
+
+      return result;
+   }
+   
+   /**
     * Reads the next cookie available or null.
     * @return The next cookie available or null.
     */
-   public Cookie readCookie() throws IOException
+   public Cookie readNextCookie() throws IOException
    {
       Cookie result = null;
       Parameter pair = readPair();

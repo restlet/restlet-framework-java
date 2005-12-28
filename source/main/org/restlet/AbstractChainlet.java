@@ -25,82 +25,59 @@ package org.restlet;
 import org.restlet.component.RestletContainer;
 
 /**
- * Default maplet that can be easily subclassed.
+ * Abstract chainlet that can be easily subclassed.
  */
-public class AbstractChainlet extends AbstractRestlet implements Maplet
+public abstract class AbstractChainlet extends AbstractRestlet implements Chainlet
 {
-   /** Delegate maplet actually implementing the Maplet methods. */
-   protected Maplet delegate;
+   /** Delegate chainlet actually implementing the Chainlet methods. */
+   protected Chainlet delegate;
 
    /**
-    * Creates a new restlet in the given container.
+    * Creates a new chainlet in the given container.
     * @param container The parent container.
     */
    public AbstractChainlet(RestletContainer container)
    {
       super(container);
-      this.delegate = Manager.createMaplet(container);
+      this.delegate = Manager.createChainlet(container);
    }
 
    /**
     * Attaches a restlet instance shared by all calls.
-    * @param pathPattern The path pattern used to map calls.
     * @param restlet The restlet to attach.
-    * @see java.util.regex.Pattern
     */
-   public void attach(String pathPattern, Restlet restlet)
+   public void attach(Restlet restlet)
    {
-      delegate.attach(pathPattern, restlet);
+      delegate.attach(restlet);
    }
 
    /**
     * Attaches a restlet class. A new instance will be created for each call.
-    * @param pathPattern The path pattern used to map calls.
     * @param restletClass The restlet class to attach (must have a constructor taking a RestletContainer
     * parameter).
-    * @see java.util.regex.Pattern
     */
-   public void attach(String pathPattern, Class<? extends Restlet> restletClass)
+   public void attach(Class<? extends Restlet> restletClass)
    {
-      delegate.attach(pathPattern, restletClass);
+      delegate.attach(restletClass);
    }
 
    /**
-    * Detaches a restlet instance.
-    * @param restlet The restlet to detach.
+    * Detaches the current target restlet.
     */
-   public void detach(Restlet restlet)
+   public void detach()
    {
-      delegate.detach(restlet);
-   }
-
-   /**
-    * Detaches a restlet class.
-    * @param restletClass The restlet class to detach.
-    */
-   public void detach(Class<? extends Restlet> restletClass)
-   {
-      delegate.detach(restletClass);
+      delegate.detach();
    }
 
    /**
     * Handles a call to a resource or a set of resources. Default behavior to be overriden: delegation to
-    * attached handlers.
+    * attached restlet.
     * @param call The call to handle.
     * @throws RestletException
     */
    public void handle(RestletCall call) throws RestletException
    {
       delegate.handle(call);
-   }
-
-   /**
-    * Delegates a call to attached restlets.
-    * @param call The call to delegate.
-    */
-   public void delegate(RestletCall call) throws RestletException
-   {
-      delegate.delegate(call);
    }
 
 }

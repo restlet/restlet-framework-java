@@ -197,10 +197,11 @@ public interface UniformCall
    public void setStatus(Status status);
 
    /**
-    * Asks the user agent to redirect itself to the given URI. Modifies the result output and status
-    * properties.
+    * Asks the user agent to redirect itself to the given URI.<br/>
+    * Modifies the result output and status properties.
     * @param targetURI The target URI.
+    * @param permanent Indicates if this is a permanent redirection.
     */
-   public void setTemporaryRedirect(String targetURI);
+   public void setRedirect(String targetURI, boolean permanent);
 
 }

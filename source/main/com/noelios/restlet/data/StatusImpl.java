@@ -90,6 +90,60 @@ public class StatusImpl implements Status
    }
 
    /**
+    * Indicates if the status is an information status.
+    * @return True if the status is an information status. 
+    */
+   public boolean isInfo()
+   {
+      return Statuses.isInfo(getHttpCode());
+   }
+
+   /**
+    * Indicates if the status is a success status.
+    * @return True if the status is a success status. 
+    */
+   public boolean isSuccess()
+   {
+      return Statuses.isSuccess(getHttpCode());
+   }
+   
+   /**
+    * Indicates if the status is a redirection status.
+    * @return True if the status is a redirection status. 
+    */
+   public boolean isRedirection()
+   {
+      return Statuses.isRedirection(getHttpCode());
+   }
+   
+   /**
+    * Indicates if the status is a client error status.
+    * @return True if the status is a client error status. 
+    */
+   public boolean isClientError()
+   {
+      return Statuses.isClientError(getHttpCode());
+   }
+   
+   /**
+    * Indicates if the status is a server error status.
+    * @return True if the status is a server error status. 
+    */
+   public boolean isServerError()
+   {
+      return Statuses.isServerError(getHttpCode());
+   }
+   
+   /**
+    * Indicates if the status is an error (client or server) status.
+    * @return True if the status is an error (client or server) status. 
+    */
+   public boolean isError()
+   {
+      return Statuses.isError(getHttpCode());
+   }
+   
+   /**
     * Indicates if the method is equal to a given one.
     * @param status The status to compare to.
     * @return True if the status is equal to a given one.

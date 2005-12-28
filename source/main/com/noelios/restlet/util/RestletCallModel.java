@@ -22,6 +22,8 @@
 
 package com.noelios.restlet.util;
 
+import java.io.IOException;
+
 import org.restlet.RestletCall;
 
 /**
@@ -32,6 +34,7 @@ public class RestletCallModel implements ReadableModel
 {
    public static final String NAME_CLIENT_ADDRESS = "clientAddress";
    public static final String NAME_CLIENT_NAME = "clientName";
+   public static final String NAME_RESOURCE_COOKIE = "cookie[\"";
    public static final String NAME_METHOD = "method";
    public static final String NAME_REFERRER_URI = "referrerUri";
    public static final String NAME_RESOURCE_AUTHORITY = "authority";
@@ -42,6 +45,7 @@ public class RestletCallModel implements ReadableModel
    public static final String NAME_RESOURCE_IDENTIFIER = "identifier";
    public static final String NAME_RESOURCE_PATH = "path";
    public static final String NAME_RESOURCE_QUERY = "query";
+   public static final String NAME_RESOURCE_QUERY_PARAM = "query[\"";
    public static final String NAME_RESOURCE_SCHEME = "scheme";
    public static final String NAME_RESOURCE_URI = "uri";
    public static final String NAME_RESOURCE_USER_INFO = "userInfo";
@@ -49,13 +53,18 @@ public class RestletCallModel implements ReadableModel
    /** The wrapped restlet call. */
    protected RestletCall call;
    
+   /** The default value to return if a lookup fails or returns null. */
+   protected String defaultValue;
+   
    /**
     * Constructor.
     * @param call The wrapped restlet call.
+    * @param defaultValue The default value to return if a lookup fails or returns null.
     */
-   public RestletCallModel(RestletCall call)
+   public RestletCallModel(RestletCall call, String defaultValue)
    {
       this.call = call;
+      this.defaultValue = defaultValue;
    }
    
    /**
@@ -127,45 +136,48 @@ public class RestletCallModel implements ReadableModel
       {
          result = call.getResourceRef().getUserInfo();
       }
-      
-/*      
-      // Put cookies
-      if(call.getCookies() != null)
+      else if(name.startsWith(NAME_RESOURCE_QUERY_PARAM))
       {
-         List<Cookie> cookies;
-         try   
+         int beginIndex = NAME_RESOURCE_QUERY_PARAM.length();
+         int endIndex = name.indexOf("\"]");
+         
+         if(endIndex != -1)
          {
-            cookies = call.getCookies().getCookies();
-            for(int i = 0; i < cookies.size(); i++)
+            try
             {
-               data.put("cookie[" + i + "]", call.getClientName());
+               String paramName = name.substring(beginIndex, endIndex);
+               result = call.getResourceRef().getQueryAsForm().getFirstParameter(paramName).getValue();
+            }
+            catch(IOException e)
+            {
+               result = null;
             }
          }
-         catch(IOException e)
-         {
-            logger.log(Level.WARNING, "Unable to read the cookies", e);
-         }
       }
-      
-      // Put query params
-      if(call.getResourceUri().getQuery() != null)
+      else if(name.startsWith(NAME_RESOURCE_COOKIE))
       {
-         List<Parameter> params;
-         try   
+         int beginIndex = NAME_RESOURCE_COOKIE.length();
+         int endIndex = name.indexOf("\"]");
+         
+         if(endIndex != -1)
          {
-            params = call.getResourceUri().getQueryAsForm().getParameters();
-            for(int i = 0; i < params.size(); i++)
+            try
             {
-               data.put("resourceUri.query.name[" + i + "]", params.get(i).getName());
-               data.put("resourceUri.query.value[" + i + "]", params.get(i).getValue());
+               String cookieName = name.substring(beginIndex, endIndex);
+               result = call.getCookies().getFirstCookie(cookieName).getValue();
+            }
+            catch(IOException e)
+            {
+               result = null;
             }
          }
-         catch(IOException e)
-         {
-            logger.log(Level.WARNING, "Unable to read the cookies", e);
-         }
       }
-*/
+
+      // Check if the default value should be returned
+      if(result == null)
+      {
+         result = this.defaultValue;
+      }
       
       return result;
    }

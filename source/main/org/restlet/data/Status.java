@@ -46,5 +46,41 @@ public interface Status extends ControlData
     * @return True if the status is equal to a given one.
     */
    public boolean equals(Status status);
+   
+   /**
+    * Indicates if the status is an information status.
+    * @return True if the status is an information status. 
+    */
+   public boolean isInfo();
 
+   /**
+    * Indicates if the status is a success status.
+    * @return True if the status is a success status. 
+    */
+   public boolean isSuccess();
+   
+   /**
+    * Indicates if the status is a redirection status.
+    * @return True if the status is a redirection status. 
+    */
+   public boolean isRedirection();
+   
+   /**
+    * Indicates if the status is a client error status.
+    * @return True if the status is a client error status. 
+    */
+   public boolean isClientError();
+   
+   /**
+    * Indicates if the status is a server error status.
+    * @return True if the status is a server error status. 
+    */
+   public boolean isServerError();
+   
+   /**
+    * Indicates if the status is an error (client or server) status.
+    * @return True if the status is an error (client or server) status. 
+    */
+   public boolean isError();
+   
 }

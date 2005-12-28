@@ -58,6 +58,22 @@ public class StringRepresentation extends StreamRepresentation
    }
 
    /**
+    * Returns the size in bytes if known, -1 otherwise.
+    * @return The size in bytes if known, -1 otherwise.
+    */
+   public long getSize()
+   {
+      if(value == null)
+      {
+         return -1L;
+      }
+      else
+      {
+         return (long)value.length();
+      }
+   }
+
+   /**
     * Returns an inputstream that can read the representation's content.
     * @return An inputstream that can read the representation's content.
     */

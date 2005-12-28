@@ -40,12 +40,13 @@ import com.noelios.restlet.util.StringTemplate;
  */
 public class RedirectRestlet extends AbstractRestlet
 {
-   public static final int MODE_CLIENT = 1;
-   public static final int MODE_CONNECTOR = 2;
-   public static final int MODE_CONTAINER = 3;
+   public static final int MODE_CLIENT_PERMANENT = 1;
+   public static final int MODE_CLIENT_TEMPORARY = 2;
+   public static final int MODE_CONNECTOR = 3;
+   public static final int MODE_CONTAINER = 4;
       
    /** Obtain a suitable logger. */
-   private static Logger logger = Logger.getLogger("com.noelios.restlet.RewriterRestlet");
+   private static Logger logger = Logger.getLogger("com.noelios.restlet.RedirectRestlet");
    
    /** The target URI pattern. */
    protected String targetPattern;
@@ -91,13 +92,18 @@ public class RedirectRestlet extends AbstractRestlet
          StringTemplate te = new StringTemplate(this.targetPattern);
       
          // Create the template data model
-         String targetURI = te.process(new RestletCallModel(call));
+         String targetURI = te.process(new RestletCallModel(call, null));
       
          switch(this.mode)
          {
-            case MODE_CLIENT:
+            case MODE_CLIENT_PERMANENT:
                logger.log(Level.INFO, "Redirecting client: " + targetURI);
-               call.setTemporaryRedirect(targetURI);
+               call.setRedirect(targetURI, true);
+            break;
+
+            case MODE_CLIENT_TEMPORARY:
+               logger.log(Level.INFO, "Redirecting client: " + targetURI);
+               call.setRedirect(targetURI, false);
             break;
             
             case MODE_CONNECTOR:

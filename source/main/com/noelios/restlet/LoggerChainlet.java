@@ -25,6 +25,7 @@ package com.noelios.restlet;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
+import org.restlet.AbstractChainlet;
 import org.restlet.RestletCall;
 import org.restlet.RestletException;
 import org.restlet.component.RestletContainer;
@@ -34,7 +35,7 @@ import org.restlet.component.RestletContainer;
  * The current format is similar to IIS 6 logs.
  * The logging is based on the java.util.logging package.
  */
-public class LoggerChainlet extends ChainletImpl
+public class LoggerChainlet extends AbstractChainlet
 {
    /** Obtain a suitable logger. */
    protected Logger logger;

@@ -32,27 +32,28 @@ import java.util.Map;
 public interface Form extends Representation
 {
    /**
-    * Reads the parameters with the given name. If multiple values are found, a list is returned created.
+    * Gets the parameters with the given name. If multiple values are found, a list is returned created.
     * @param name The parameter name to match.
     * @return The parameter value or list of values.
     * @throws IOException
     */
-   public Object readParameter(String name) throws IOException;
+   public Object getParameter(String name) throws IOException;
 
    /**
-    * Reads the parameters whose name is a key in the given map. If a matching parameter is found, its value
+    * Gets the first parameter with the given name.
+    * @param name The parameter name to match.
+    * @return The parameter value.
+    * @throws IOException
+    */
+   public Parameter getFirstParameter(String name) throws IOException;
+
+   /**
+    * Gets the parameters whose name is a key in the given map. If a matching parameter is found, its value
     * is put in the map. If multiple values are found, a list is created and set in the map.
     * @param parameters The parameters map controlling the reading.
     * @throws IOException
     */
-   public void readParameters(Map<String, Object> parameters) throws IOException;
-
-   /**
-    * Returns a new form reader to read the list.
-    * @return A new form reader to read the list.
-    * @throws IOException
-    */
-   public FormReader getFormReader() throws IOException;
+   public void getParameters(Map<String, Object> parameters) throws IOException;
 
    /**
     * Returns the list of parameters.
@@ -60,5 +61,12 @@ public interface Form extends Representation
     * @throws IOException
     */
    public List<Parameter> getParameters() throws IOException;
+
+   /**
+    * Returns a new form reader to read the list.
+    * @return A new form reader to read the list.
+    * @throws IOException
+    */
+   public FormReader getFormReader() throws IOException;
 
 }

@@ -306,7 +306,7 @@ public class StringTemplate
       {
          if((state == STATE_INSTRUCTION_APPEND) || (state == STATE_INSTRUCTION_CONDITION_APPEND))
          {
-            if((model != null) && model.contains(instruction))
+            if(model != null)
             {
                buffer.append(model.get(instruction));
             }

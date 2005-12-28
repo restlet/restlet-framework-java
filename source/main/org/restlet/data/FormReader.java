@@ -39,6 +39,14 @@ public interface FormReader
    public Object readParameter(String name) throws IOException;
 
    /**
+    * Reads the first parameter with the given name.
+    * @param name The parameter name to match.
+    * @return The parameter value.
+    * @throws IOException
+    */
+   public Parameter readFirstParameter(String name) throws IOException;
+
+   /**
     * Reads the parameters whose name is a key in the given map. If a matching parameter is found, its value
     * is put in the map. If multiple values are found, a list is created and set in the map.
     * @param parameters The parameters map controlling the reading.
@@ -51,7 +59,7 @@ public interface FormReader
     * @return The next parameter available or null.
     * @throws IOException
     */
-   public Parameter readParameter() throws IOException;
+   public Parameter readNextParameter() throws IOException;
 
    /**
     * Closes the reader.

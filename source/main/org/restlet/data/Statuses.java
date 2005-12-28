@@ -542,7 +542,207 @@ public enum Statuses implements Status
 
       return result;
    }
+   
+   /**
+    * Indicates if the status is an information status.
+    * @return True if the status is an information status. 
+    */
+   public boolean isInfo()
+   {
+      return isInfo(getHttpCode());
+   }
 
+   /**
+    * Indicates if the status is a success status.
+    * @return True if the status is a success status. 
+    */
+   public boolean isSuccess()
+   {
+      return isSuccess(getHttpCode());
+   }
+   
+   /**
+    * Indicates if the status is a redirection status.
+    * @return True if the status is a redirection status. 
+    */
+   public boolean isRedirection()
+   {
+      return isRedirection(getHttpCode());
+   }
+   
+   /**
+    * Indicates if the status is a client error status.
+    * @return True if the status is a client error status. 
+    */
+   public boolean isClientError()
+   {
+      return isClientError(getHttpCode());
+   }
+   
+   /**
+    * Indicates if the status is a server error status.
+    * @return True if the status is a server error status. 
+    */
+   public boolean isServerError()
+   {
+      return isServerError(getHttpCode());
+   }
+   
+   /**
+    * Indicates if the status is an error (client or server) status.
+    * @return True if the status is an error (client or server) status. 
+    */
+   public boolean isError()
+   {
+      return isError(getHttpCode());
+   }
+   
+   /**
+    * Indicates if the status is an information status.
+    * @param httpCode The HTTP code of the status.
+    * @return True if the status is an information status. 
+    */
+   public static boolean isInfo(int httpCode)
+   {
+      boolean result = false;
+
+      switch(httpCode)
+      {
+         case 100:
+         case 101:
+         case 102:
+            result = true;
+         break;
+      }
+      
+      return result;
+   }
+   
+   /**
+    * Indicates if the status is a success status.
+    * @param httpCode The HTTP code of the status.
+    * @return True if the status is a success status. 
+    */
+   public static boolean isSuccess(int httpCode)
+   {
+      boolean result = false;
+
+      switch(httpCode)
+      {
+         case 200:
+         case 201:
+         case 202:
+         case 203:
+         case 204:
+         case 205:
+         case 206:
+         case 207:
+            result = true;
+         break;
+      }
+      
+      return result;
+   }
+   
+   /**
+    * Indicates if the status is a redirection status.
+    * @param httpCode The HTTP code of the status.
+    * @return True if the status is a redirection status. 
+    */
+   public static boolean isRedirection(int httpCode)
+   {
+      boolean result = false;
+
+      switch(httpCode)
+      {
+         case 300:
+         case 301:
+         case 302:
+         case 303:
+         case 304:
+         case 305:
+         case 307:
+            result = true;
+         break;
+      }
+      
+      return result;
+   }
+   
+   /**
+    * Indicates if the status is a client error status.
+    * @param httpCode The HTTP code of the status.
+    * @return True if the status is a client error status. 
+    */
+   public static boolean isClientError(int httpCode)
+   {
+      boolean result = false;
+
+      switch(httpCode)
+      {
+         case 400:
+         case 401:
+         case 402:
+         case 403:
+         case 404:
+         case 405:
+         case 406:
+         case 407:
+         case 408:
+         case 409:
+         case 410:
+         case 411:
+         case 412:
+         case 413:
+         case 414:
+         case 415:
+         case 416:
+         case 417:
+         case 422:
+         case 423:
+         case 424:
+            result = true;
+         break;
+      }
+      
+      return result;
+   }
+   
+   /**
+    * Indicates if the status is a server error status.
+    * @param httpCode The HTTP code of the status.
+    * @return True if the status is a server error status. 
+    */
+   public static boolean isServerError(int httpCode)
+   {
+      boolean result = false;
+
+      switch(httpCode)
+      {
+         case 500:
+         case 501:
+         case 502:
+         case 503:
+         case 504:
+         case 505:
+         case 507:
+            result = true;
+         break;
+      }
+      
+      return result;
+   }
+   
+   /**
+    * Indicates if the status is an error (client or server) status.
+    * @param httpCode The HTTP code of the status.
+    * @return True if the status is an error (client or server) status. 
+    */
+   public static boolean isError(int httpCode)
+   {
+      return isClientError(httpCode) || isServerError(httpCode);
+   }
+   
    /**
     * Indicates if the status is equal to a given one.
     * @param status The status to compare to.

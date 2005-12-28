@@ -77,7 +77,7 @@ public class Manager
     * @param container The restlet container.
     * @return A new chainlet.
     */
-   public Chainlet createChainlet(RestletContainer container)
+   public static Chainlet createChainlet(RestletContainer container)
    {
       return getRegisteredFactory().createChainlet(container);
    }

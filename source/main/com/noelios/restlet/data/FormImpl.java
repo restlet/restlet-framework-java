@@ -68,9 +68,20 @@ public class FormImpl extends InputRepresentation implements Form
     * @param name The parameter name to match.
     * @return The parameter value or list of values.
     */
-   public Object readParameter(String name) throws IOException
+   public Object getParameter(String name) throws IOException
    {
       return getFormReader().readParameter(name);
+   }
+
+   /**
+    * Reads the first parameter with the given name.
+    * @param name The parameter name to match.
+    * @return The parameter value.
+    * @throws IOException
+    */
+   public Parameter getFirstParameter(String name) throws IOException
+   {
+      return getFormReader().readFirstParameter(name);
    }
 
    /**
@@ -78,7 +89,7 @@ public class FormImpl extends InputRepresentation implements Form
     * is put in the map. If multiple values are found, a list is created and set in the map.
     * @param parameters The parameters map controlling the reading.
     */
-   public void readParameters(Map<String, Object> parameters) throws IOException
+   public void getParameters(Map<String, Object> parameters) throws IOException
    {
       getFormReader().readParameters(parameters);
    }
@@ -108,12 +119,12 @@ public class FormImpl extends InputRepresentation implements Form
    {
       List<Parameter> result = new ArrayList<Parameter>();
       FormReader fis = getFormReader();
-      Parameter param = fis.readParameter();
+      Parameter param = fis.readNextParameter();
 
       while(param != null)
       {
          result.add(param);
-         fis.readParameter();
+         fis.readNextParameter();
       }
 
       fis.close();

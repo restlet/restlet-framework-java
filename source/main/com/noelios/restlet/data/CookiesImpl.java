@@ -63,18 +63,19 @@ public class CookiesImpl extends InputRepresentation implements Cookies
     * in the map.
     * @param cookies The cookies map controlling the reading.
     */
-   public void readCookies(Map<String, Cookie> cookies) throws IOException
+   public void getCookies(Map<String, Cookie> cookies) throws IOException
    {
       getCookiesReader().readCookies(cookies);
    }
 
    /**
-    * Returns a new cookies reader to read the list.
-    * @return A new cookies reader to read the list.
+    * Gets the first cookie available with the given name or null.
+    * @return The first cookie available or null.
+    * @throws IOException
     */
-   public CookiesReader getCookiesReader() throws IOException
+   public Cookie getFirstCookie(String name) throws IOException
    {
-      return new CookiesReaderImpl(getStream());
+      return getCookiesReader().readFirstCookie(name);
    }
 
    /**
@@ -85,16 +86,25 @@ public class CookiesImpl extends InputRepresentation implements Cookies
    {
       List<Cookie> result = new ArrayList<Cookie>();
       CookiesReader cis = getCookiesReader();
-      Cookie cookie = cis.readCookie();
+      Cookie cookie = cis.readNextCookie();
 
       while(cookie != null)
       {
          result.add(cookie);
-         cis.readCookie();
+         cis.readNextCookie();
       }
 
       cis.close();
       return result;
+   }
+
+   /**
+    * Returns a new cookies reader to read the list.
+    * @return A new cookies reader to read the list.
+    */
+   public CookiesReader getCookiesReader() throws IOException
+   {
+      return new CookiesReaderImpl(getStream());
    }
 
 }

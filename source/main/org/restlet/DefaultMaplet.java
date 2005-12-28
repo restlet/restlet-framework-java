@@ -33,7 +33,7 @@ public class DefaultMaplet extends AbstractRestlet implements Maplet
    protected Maplet delegate;
 
    /**
-    * Creates a new restlet in the given container.
+    * Creates a new maplet in the given container.
     * @param container The parent container.
     */
    public DefaultMaplet(RestletContainer container)
