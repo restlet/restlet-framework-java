@@ -39,12 +39,11 @@ public class Tutorial02b
 {
    public static void main(String[] args)
    {
-      // Registering the Restlet API implementation
-      com.noelios.restlet.Engine.register();
-
-      // Outputting the content of a Web page
       try
       {
+         // Registering the Restlet API implementation
+         com.noelios.restlet.Engine.register();
+
          // Prepare the REST call
          UniformCall call = Manager.createCall();
          Reference uri = Manager.createReference("http://www.restlet.org");

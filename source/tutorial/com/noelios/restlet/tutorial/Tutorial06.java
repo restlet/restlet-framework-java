@@ -41,28 +41,27 @@ public class Tutorial06
          // Registering the Restlet API implementation
          com.noelios.restlet.Engine.register();
       
-         // Create a new restlet container
+         // Create a new Restlet container
          RestletContainer myContainer = new DefaultRestletContainer("My container");
 
          // Create the HTTP server connector, then add it as a server connector 
-         // to the restlet container. Note that the container is the call handler.
+         // to the Restlet container. Note that the container is the call handler.
          JettyServer httpServer = new JettyServer("My connector", 8182, myContainer);
          myContainer.addServer(httpServer);
          
-         // Create a directory restlet able to return a deep hierarchy of Web files 
+         // Create a directory Restlet able to return a deep hierarchy of Web files 
          // (HTML pages, CSS stylesheets or GIF images) from a local directory.
          DirectoryRestlet dirRestlet = new DirectoryRestlet(myContainer, "D:/Restlet/www/docs/api/", true, "index");
          dirRestlet.addExtension("html", MediaTypes.TEXT_HTML);
          dirRestlet.addExtension("css", MediaTypes.TEXT_CSS);
          dirRestlet.addExtension("gif", MediaTypes.IMAGE_GIF);
 
-         // Then attach the maplet to the container.
+         // Then attach the Restlet to the container.
          // Note that virtual hosting can be very easily supported if you need it,
-         // just attach multiple maplets, one for each virtual server.
+         // just attach multiple Restlets, one for each virtual server.
          myContainer.attach("http://localhost:8182/", dirRestlet);
             
-         // Now, let's start the container! Note that the HTTP server connector is
-         // also automatically started.
+         // Now, let's start the container! 
          myContainer.start();
       }
       catch(Exception e)

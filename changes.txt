@@ -5,6 +5,7 @@
 
 
 0.17 beta
+ - Extended and reworked the tutorial. Also added new illustrations to clarify processing flow.
  - Added StatusChainlet as a customizable mechanism to handle all error and display status pages 
  - RestletCallModel now supports indexed variables for query parameters and cookies. Ex: ${query["name"]}
  - LoggerChainlet now accepts customized log formats based on RestletCallModel and StringTemplate

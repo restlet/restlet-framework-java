@@ -43,34 +43,32 @@ public class Tutorial08
          // Registering the Restlet API implementation
          com.noelios.restlet.Engine.register();
       
-         // Create a new restlet container
+         // Create a new Restlet container
          RestletContainer myContainer = new DefaultRestletContainer("My container");
 
          // Create the HTTP server connector, then add it as a server connector 
-         // to the restlet container. Note that the container is the call handler.
+         // to the Restlet container. Note that the container is the call handler.
          JettyServer httpServer = new JettyServer("My connector", 8182, myContainer);
          myContainer.addServer(httpServer);
 
-         // Attach a logger chainlet to the container
+         // Attach a logger Chainlet to the container
          LoggerChainlet logger = new LoggerChainlet(myContainer, "com.noelios.restlet.tutorial");
          myContainer.attach("http://localhost:8182/", logger);
 
-         // Attach a status chainlet to the logger
+         // Attach a status Chainlet to the logger Chainlet
          StatusChainlet status = new StatusChainlet(myContainer, true, "webmaster@mysite.org");
          logger.attach(status);
          
-         // Create a directory restlet able to return a deep hierarchy of Web files 
-         // (HTML pages, CSS stylesheets or GIF images) from a local directory.
+         // Create a directory Restlet able to return a deep hierarchy of Web files 
          DirectoryRestlet dirRestlet = new DirectoryRestlet(myContainer, "D:/Restlet/www/docs/api/", true, "index");
          dirRestlet.addExtension("html", MediaTypes.TEXT_HTML);
          dirRestlet.addExtension("css", MediaTypes.TEXT_CSS);
          dirRestlet.addExtension("gif", MediaTypes.IMAGE_GIF);
 
-         // Then attach the restlet to the logger chainlet.
+         // Then attach the Restlet to the status Chainlet.
          status.attach(dirRestlet);
             
-         // Now, let's start the container! Note that the HTTP server connector is
-         // also automatically started.
+         // Now, let's start the container! 
          myContainer.start();
       }
       catch(Exception e)

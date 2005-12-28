@@ -50,28 +50,27 @@ public class Tutorial10
          // Registering the Restlet API implementation
          com.noelios.restlet.Engine.register();
       
-         // Create a new restlet container
+         // Create a new Restlet container
          RestletContainer myContainer = new DefaultRestletContainer("My container");
 
          // Create the HTTP server connector, then add it as a server connector 
-         // to the restlet container. Note that the container is the call handler.
+         // to the Restlet container. Note that the container is the call handler.
          JettyServer httpServer = new JettyServer("My connector", 8182, myContainer);
          myContainer.addServer(httpServer);
 
-         // Attach a logger chainlet to the container
+         // Attach a logger Chainlet to the container
          LoggerChainlet logger = new LoggerChainlet(myContainer, "com.noelios.restlet.tutorial");
          myContainer.attach("http://localhost:8182", logger);
 
-         // Attach a status chainlet to the logger
+         // Attach a status Chainlet to the logger Chainlet
          StatusChainlet status = new StatusChainlet(myContainer, true, "webmaster@mysite.org");
          logger.attach(status);
 
-         // Then attach the restlet to the logger chainlet.
+         // Attach a root Maplet to the status Chainlet.
          Maplet rootMaplet = new DefaultMaplet(myContainer);
          status.attach(rootMaplet);
          
          // Create a directory restlet able to return a deep hierarchy of Web files 
-         // (HTML pages, CSS stylesheets or GIF images) from a local directory.
          DirectoryRestlet dirRestlet = new DirectoryRestlet(myContainer, "D:/Restlet/www/docs/api/", true, "index");
          dirRestlet.addExtension("html", MediaTypes.TEXT_HTML);
          dirRestlet.addExtension("css", MediaTypes.TEXT_CSS);
@@ -94,7 +93,7 @@ public class Tutorial10
             };
          usersMaplet.attach("/[a-z]+", userMaplet);
 
-         // Create the orders restlet
+         // Create the orders Restlet
          Restlet ordersRestlet = new AbstractRestlet(myContainer)
             {
                public void handle(RestletCall call) throws RestletException
@@ -106,8 +105,7 @@ public class Tutorial10
             };
          userMaplet.attach("/orders$", ordersRestlet);
             
-         // Now, let's start the container! Note that the HTTP server connector is
-         // also automatically started.
+         // Now, let's start the container! 
          myContainer.start();
       }
       catch(Exception e)

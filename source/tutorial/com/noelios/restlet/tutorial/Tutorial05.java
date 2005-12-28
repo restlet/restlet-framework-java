@@ -45,16 +45,15 @@ public class Tutorial05
          // Registering the Restlet API implementation
          com.noelios.restlet.Engine.register();
       
-         // Create a new restlet container
+         // Create a new Restlet container
          RestletContainer myContainer = new DefaultRestletContainer("My container");
 
          // Create the HTTP server connector, then add it as a server connector 
-         // to the restlet container. Note that the container is the call handler.
+         // to the Restlet container. Note that the container is the call handler.
          JettyServer httpServer = new JettyServer("My connector", 8182, myContainer);
          myContainer.addServer(httpServer);
          
-         // Create a new restlet that will display some path information. 
-         // Note that restlets are call handlers similar to servlets.
+         // Create a new Restlet that will display some path information. 
          Restlet myRestlet = new AbstractRestlet(myContainer)
             {
                public void handle(RestletCall call) throws RestletException
@@ -67,12 +66,11 @@ public class Tutorial05
                }
             };
 
-         // Then attach it to the container. Note that the restlet will be called 
-         // only if the beginning of the requested URI matches the given pattern.
+         // Then attach it to the container. 
          myContainer.attach("http://localhost:8182/trace", myRestlet);
             
-         // Now, let's start the container! Note that the HTTP server connector is
-         // also automatically started.
+         // Now, let's start the container! 
+         // Note that the HTTP server connector is also automatically started.
          myContainer.start();
       }
       catch(Exception e)

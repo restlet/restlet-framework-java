@@ -33,12 +33,12 @@ public class Tutorial02a
 {
    public static void main(String[] args)
    {
-      // Registering the Restlet API implementation
-      com.noelios.restlet.Engine.register();
-
-      // Outputting the content of a Web page
       try
       {
+         // Registering the Restlet API implementation
+         com.noelios.restlet.Engine.register();
+
+         // Outputting the content of a Web page
          HttpClient client = new HttpClient("My Web client");
          client.doGet("http://www.restlet.org").getOutput().write(System.out);
       }

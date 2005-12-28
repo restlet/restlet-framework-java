@@ -25,7 +25,7 @@
       <li><a href="#part04">Overview of a REST architecture</a></li>
       <li><a href="#part05">Restlets servers and containers</a></li>
       <li><a href="#part06">Serving static files</a></li>
-      <li><a href="#part07">Logging calls</a></li>
+      <li><a href="#part07">Chainlets and call logging</a></li>
       <li><a href="#part08">Displaying error pages</a></li>
       <li><a href="#part09">URI rewriting and redirection</a></li>
       <li><a href="#part10">Maplets and hierarchical URIs</a></li>
@@ -37,30 +37,32 @@
 <h3><a name="part01">1. Registering the Restlet implementation</a></h3>
 
 <p>
-   The Restlet framework is composed of two parts. First, there is the "<a href="http://www.restlet.org/docs/api/">Restlet API</a>", a neutral API supporting the concepts of REST and a mechanism called Restlet facilitating the handling of REST calls. This API must be supported by a "Restlet Implementation" before it can be effectively used. Multiple providers could provide an implementation (open source projects, commercial products).
+   The Restlet framework is composed of two parts. First, there is the "<a href="http://www.restlet.org/docs/api/">Restlet API</a>", a neutral API supporting the concepts of REST and a mechanism called Restlet facilitating the handling of REST calls. This API must be supported by a "Restlet Implementation" before it can effectively be used. Multiple implementations could be provided (open source projects, commercial products).
 </p>
 <p>
-   This separation between the API and the implementation is similar to the one between the Servlet API and your preferred Web container or Servlet engine, or between the JDBC API and your JDBC drivers. Currently, the only Reference Implementation available is the "<a href="http://www.restlet.org/docs/nre/">Noelios Restlet Engine</a>" (NRE), which is also an open source project. When you download the Restlet framework, the API and the NRE come bundled together, ready to be used. You only need to add the following line before working with the framework:
+   This separation between the API and the implementation is similar to the one between the Servlet API and Web containers like Jetty or Tomcat, or between the JDBC API and actual JDBC drivers. Currently, only the "<a href="http://www.restlet.org/docs/nre/">Noelios Restlet Engine</a>" (NRE) is available and acts as the reference implementation. When you download the Restlet framework, the API and the NRE come bundled together, ready to be used. You only need to add the following line before starting to use the framework:
 </p>
 <pre>
-   com.noelios.restlet.Engine.register();
+         // Registering a Restlet API implementation
+         com.noelios.restlet.Engine.register();
 </pre>
 <p>
-   Internally, the NRE registers itself as the current implementation by calling back <code>org.restlet.Manager.registerFactory()</code>.
+   Internally, the implementation registers itself by calling back the <code>org.restlet.Manager.registerFactory()</code>.
 </p>
 <br/>
 
 <h3><a name="part02">2. Retrieving the content of a Web page</a></h3>
 
 <p>
-   As we mentionned in the <a target="_top" href="http://www.restlet.org/introduction">introduction paper</a>, the Restlet framework is at the same time a client and server framework. For example, NRE can easily work with remote resources using its HTTP client connector. A connector in REST, is a sofware component that enables the communication between components, typically by implementing one side of a network protocol. Here we will get the representation of an existing resource and output it in the JVM console:
+   As we mentionned in the <a target="_top" href="http://www.restlet.org/introduction">introduction paper</a>, the Restlet framework is at the same time a client and a server framework. For example, NRE can easily work with remote resources using its HTTP client connector. A connector in REST, is a sofware component that enables the communication between components, typically by implementing one side of a network protocol. Here we will get the representation of an existing resource and output it in the JVM console:
 </p>
 <pre>
+         // Outputting the content of a Web page
          HttpClient client = new HttpClient("My Web client");
          client.doGet("http://www.restlet.org").getOutput().write(System.out);
 </pre>
 <p>
-   Note that the example above uses a simplified way to issue calls via the HttpClient. A more flexible way is to create a new REST call and to ask the HTTP client to handle it. We will user the Manager class which also has a factory role. The example below could be a good basis to set some preferences in your call, like the languages or media types you prefer to receive as a response:
+   Note that the example above uses a simplified way to issue calls via the HttpClient. A more flexible way is to create a new REST call and to ask the HTTP client to handle it. In order to do that, we will use the Manager class, which also has a factory role. The example below could be a good basis to set some preferences in your call, like a referrer URI, the languages and media types you prefer to receive as a response:
 </p>
 <pre>
          // Prepare the REST call
@@ -98,7 +100,7 @@
          new JettyServer("My Web server", 8182, handler).start();
 </pre>
 <p>
-   If you run this code and launch your server, you can open a Web browser and hit the <a target="_top" href="http://localhost:8182">http://localhost:8182</a>. Actually, any URI will work, try also <a target="_top" href="http://localhost:8182/test/tutorial">http://localhost:8182/test/tutorial</a>. The handler that we created is very primitive and only takes advantage of the pure REST part of the Restlet framework. We will see next, how to take advantage of the Restlets and Maplets components.
+   If you run this code and launch your server, you can open a Web browser and hit the <a target="_top" href="http://localhost:8182">http://localhost:8182</a>. Actually, any URI will work, try also <a target="_top" href="http://localhost:8182/test/tutorial">http://localhost:8182/test/tutorial</a>. The handler that we created is very primitive and only takes advantage of the pure REST part of the Restlet framework. We will see later how to take advantage of the Restlets in order to facilitate this processing.
 </p>
 <br/>
 
@@ -116,22 +118,21 @@
 
 <h3><a name="part05">5. Restlets servers and containers</a></h3>
 <p>
-   In addition to supporting the standard REST software architecture elements as presented before, the Restlet framework also provides a set of components that facilitate the handling of REST call. The goal is to provide a powerful and RESTful alternative to existing Servlet frameworks.
+   In addition to supporting the standard REST software architecture elements as presented before, the Restlet framework also provides a set of components that facilitate the handling of REST calls. The goal is to provide a powerful and RESTful alternative to existing Servlet frameworks.
 <p/>
 <p>
-   First, we can use Restlets which are simple call handlers living inside a parent restlet container. Restlets are selected when the URI of the requested resource matches a given URI pattern. Now, let's see how a restlet can reply to client requests. We will attach a restlet (myRestlet) to a parent restlet container (myContainer). In order for a Web client to invoke the restlet, the following URI will have to be entered: <a href="http://localhost:8182/trace">http://localhost:8182/trace</a>.
+   First, we can use Restlets which are simple call handlers living inside a parent Restlet container. Restlets are selected when the URI of the requested resource matches a given URI pattern. In order to see how to reply to client requests, we will attach a Restlet (myRestlet) to a parent container (myContainer). In order for a Web client to invoke the Restlet, the following URI will have to be entered: <a href="http://localhost:8182/trace">http://localhost:8182/trace</a>.
 </p>
 <pre>
-         // Create a new restlet container
+         // Create a new Restlet container
          RestletContainer myContainer = new DefaultRestletContainer("My container");
 
          // Create the HTTP server connector, then add it as a server connector
-         // to the restlet container. Note that the container is the call handler.
+         // to the Restlet container. Note that the container is the call handler.
          JettyServer httpServer = new JettyServer("My connector", 8182, myContainer);
          myContainer.addServer(httpServer);
 
-         // Create a new restlet that will display some path information.
-         // Note that restlets are call handlers similar to servlets.
+         // Create a new Restlet that will display some path information.
          Restlet myRestlet = new AbstractRestlet(myContainer)
             {
                public void handle(RestletCall call) throws RestletException
@@ -144,12 +145,11 @@
                }
             };
 
-         // Then attach it to the container. Note that the restlet will be called
-         // only if the beginning of the requested URI matches the given pattern.
+         // Then attach it to the container.
          myContainer.attach("http://localhost:8182/trace", myRestlet);
 
-         // Now, let's start the container! Note that the HTTP server connector is
-         // also automatically started.
+         // Now, let's start the container!
+         // Note that the HTTP server connector is also automatically started.
          myContainer.start();
 </pre>
 <p>
@@ -159,25 +159,25 @@
    <img src="http://www.restlet.org/images/tutorial05" alt="Restlet servers and containers"/>
 </p>
 <p>
-   Also, note that servers and containers are REST components themselves. This means that if your Restlet server has only one container, you can simply use it as your origin server and attach connectors normally.
+   Also, note that servers and containers are REST components themselves. This means that if your Restlet server has only one container, you can simply use it as your origin server and attach connectors normally to it.
 </p>
 <br/>
 
 <h3><a name="part06">6. Serving static files</a></h3>
 <p>
-   Do you having a part of your web application that serves static pages, like Javadocs? Well, no need to setup an Apache server just for that, the Noelios Restlet Engine provides a dedicated Restlet. See how simple it is to use it:
+   Do you have a part of your web application that serves static pages like Javadocs? Well, no need to setup an Apache server just for that, the Noelios Restlet Engine provides a dedicated Restlet called DirectoryRestlet. See how simple it is to use it:
 </p>
 <pre>
-         // Create a directory restlet able to return a deep hierarchy of Web files
+         // Create a directory Restlet able to return a deep hierarchy of Web files
          // (HTML pages, CSS stylesheets or GIF images) from a local directory.
          DirectoryRestlet dirRestlet = new DirectoryRestlet(myContainer, "D:/Restlet/www/docs/api/", true, "index");
          dirRestlet.addExtension("html", MediaTypes.TEXT_HTML);
          dirRestlet.addExtension("css", MediaTypes.TEXT_CSS);
          dirRestlet.addExtension("gif", MediaTypes.IMAGE_GIF);
 
-         // Then attach the maplet to the container.
+         // Then attach the Restlet to the container.
          // Note that virtual hosting can be very easily supported if you need it,
-         // just attach multiple maplets, one for each virtual server.
+         // just attach multiple Restlets, one for each virtual server.
          myContainer.attach("http://localhost:8182/", dirRestlet);
 </pre>
 <p>
@@ -188,26 +188,25 @@
 </p>
 <br/>
 
-<h3><a name="part07">7. Logging calls</a></h3>
+<h3><a name="part07">7. Chainlets and call logging</a></h3>
 <p>
-   Being able to properly log the activity of a Web application is a common requirement. NRE provides a ready to use chainlet, the LoggerChainlet, that knows how to generate Apache-like logs. Taking advantage of the logging facility built-in the JDK, the logger can be configured like any standard JDK log to filter messages, format them and specify where to sent them. Rotation of logs is also supported. See the <a href="http://java.sun.com/j2se/1.5.0/docs/api/java/util/logging/package-summary.html">java.util.logging</a> package for details.
+   Being able to properly log the activity of a Web application is a common requirement. NRE has a class called the LoggerChainlet that knows how to generate Apache-like logs. By taking advantage of the logging facility built in the JDK, the logger can be configured like any standard JDK log to filter messages, reformat them and specify where to send them. Rotation of logs is also supported, see the <a href="http://java.sun.com/j2se/1.5.0/docs/api/java/util/logging/package-summary.html">java.util.logging</a> package for details.
 </p>
 <p>
-   A chainlet is a type of Restlet that filters calls passed to it, without modifying the requested resource URI. If you are familiar with the Servlet API, the concept is similar to the <a href="http://java.sun.com/j2ee/1.4/docs/api/javax/servlet/Filter.html">Filter</a> interface. Below is a simple example adding the logging facility to the previous example:
+   Chainlets are specialized Restlets that filter calls passed to them, without modifying the requested resource URI. If you are familiar with the Servlet API, the concept is similar to the <a href="http://java.sun.com/j2ee/1.4/docs/api/javax/servlet/Filter.html">Filter</a> interface. Below is a simple example adding the logging facility to the previous example:
 </p>
 <pre>
-         // Attach a logger chainlet to the container
+         // Attach a logger Chainlet to the container
          LoggerChainlet logger = new LoggerChainlet(myContainer, "com.noelios.restlet.tutorial");
          myContainer.attach("http://localhost:8182/", logger);
 
-         // Create a directory restlet able to return a deep hierarchy of Web files
-         // (HTML pages, CSS stylesheets or GIF images) from a local directory.
+         // Create a directory Restlet able to return a deep hierarchy of Web files
          DirectoryRestlet dirRestlet = new DirectoryRestlet(myContainer, "D:/Restlet/www/docs/api/", true, "index");
          dirRestlet.addExtension("html", MediaTypes.TEXT_HTML);
          dirRestlet.addExtension("css", MediaTypes.TEXT_CSS);
          dirRestlet.addExtension("gif", MediaTypes.IMAGE_GIF);
 
-         // Then attach the restlet to the logger chainlet.
+         // Then attach the Restlet to the logger Chainlet.
          logger.attach(dirRestlet);
 </pre>
 <p>
@@ -226,25 +225,24 @@
 
 <h3><a name="part08">8. Displaying error pages</a></h3>
 <p>
-   Another common requirement is the ability to customize the status pages returned when something didn't go as expected during the call handling. Maybe a resource was not found or an acceptable representation isn't available? In this case, or when any unhandled exceptions should be intercepted, the StatusChainlet can be used. Here we will simply attach one between the logger chainlet and the directory restlet:
+   Another common requirement is the ability to customize the status pages returned when something didn't go as expected during the call handling. Maybe a resource was not found or an acceptable representation isn't available? In this case, or when any unhandled exception must be intercepted, the StatusChainlet can be used. Here we will simply attach one between the logger Chainlet and the directory Restlet:
 </p>
 <pre>
-         // Attach a logger chainlet to the container
+         // Attach a logger Chainlet to the container
          LoggerChainlet logger = new LoggerChainlet(myContainer, "com.noelios.restlet.tutorial");
          myContainer.attach("http://localhost:8182/", logger);
 
-         // Attach a status chainlet to the logger
+         // Attach a status Chainlet to the logger Chainlet
          StatusChainlet status = new StatusChainlet(myContainer, true, "webmaster@mysite.org");
          logger.attach(status);
 
-         // Create a directory restlet able to return a deep hierarchy of Web files
-         // (HTML pages, CSS stylesheets or GIF images) from a local directory.
+         // Create a directory Restlet able to return a deep hierarchy of Web files
          DirectoryRestlet dirRestlet = new DirectoryRestlet(myContainer, "D:/Restlet/www/docs/api/", true, "index");
          dirRestlet.addExtension("html", MediaTypes.TEXT_HTML);
          dirRestlet.addExtension("css", MediaTypes.TEXT_CSS);
          dirRestlet.addExtension("gif", MediaTypes.IMAGE_GIF);
 
-         // Then attach the restlet to the logger chainlet.
+         // Then attach the Restlet to the status Chainlet.
          status.attach(dirRestlet);
 </pre>
 <p>
@@ -257,11 +255,10 @@
 
 <h3><a name="part09">9. URI rewriting and redirection</a></h3>
 <p>
-   One of the advantage of the Restlet framework is the built-in support for <a href="http://www.w3.org/Provider/Style/URI">cool URIs</a>. Another good description of the importance of proper URI design is given by Jacob Nielsen in this <a href="http://www.useit.com/alertbox/990321.html">AlertBox</a>. The first tool available is the RedirectRestlet, which allows the rewriting of a cool URI to another URI, followed by an automatic redirection. Several types of redirection are supported, the external redirection via the client/browser, the internal redirection at the container level and the connector redirection for proxy-like behavior. In the example below, we will define a search service for our web site (named "mysite.org") based on Google. The "/search" relative URI identifies the search service, accepting some keywords via the "query" parameter. :
+   One of the advantage of the Restlet framework is the built-in support for <a href="http://www.w3.org/Provider/Style/URI">cool URIs</a>. Another good description of the importance of proper URI design is given by Jacob Nielsen in his <a href="http://www.useit.com/alertbox/990321.html">AlertBox</a>. The first tool available is the RedirectRestlet, which allows the rewriting of a cool URI to another URI, followed by an automatic redirection. Several types of redirection are supported, the external redirection via the client/browser, the internal redirection at the container level and the connector redirection for proxy-like behavior. In the example below, we will define a search service for our web site (named "mysite.org") based on Google. The "/search" relative URI identifies the search service, accepting some keywords via the "query" parameter. :
 </p>
 <pre>
-         // Create a directory restlet able to return a deep hierarchy of Web files
-         // (HTML pages, CSS stylesheets or GIF images) from a local directory.
+         // Create a redirect Restlet then attach it to the container
          String target = "http://www.google.com/search?q=site:mysite.org+${query[\"query\"]}";
          RedirectRestlet searchRedirect = new RedirectRestlet(myContainer, target, RedirectRestlet.MODE_CLIENT_TEMPORARY);
          myContainer.attach("http://localhost:8182/search", searchRedirect);
@@ -276,19 +273,19 @@
 
 <h3><a name="part10">10. Maplets and hierarchical URIs</a></h3>
 <p>
-   In addition to the RedirectRestlet, we have another tool to manage cool URIs, especially the hierarchical ones. Maplets are specialized Restlets that can have other Restlets (or Maplets or Chainlets) attached to them and that can automatically delegate calls based on a URI pattern. Note that Restlet containers are also Maplets, so your already used them when attaching restlets to "myContainer".
+   In addition to the RedirectRestlet, we have another tool to manage cool URIs, especially the hierarchical ones. Maplets are specialized Restlets that can have other Restlets (or Maplets or Chainlets) attached to them and that can automatically delegate calls based on a URI pattern. Note that Restlet containers are also Maplets, so your already used them to attach Restlets to "myContainer".
 </p>
 <p>
    Here we want to explain how to handle the following URIs:
    <ol>
       <li>/docs/* to display static files</li>
-      <li>/users/$userName to display user accounts</li>
-      <li>/users/$userName/orders to display the orders of particular users</li>
+      <li>/users/$userName to display a user account</li>
+      <li>/users/$userName/orders to display the orders of a particular user</li>
    </ol>
-   The fact that these URIs contain some dynamic parts and that no file extension is used makes it harder to handle them in a typical Web container. Here we will simply rely on a tree of Maplets. In the processing flow below, you can see that when a call is received by the container (1), it is first filtered by two chainlets (2) and (3), then it reaches the RootMaplet. If the URI starts with /docs/ then the DirectoryRestlet will get the call (5), if it starts with /users then it is for the UsersMaplet, otherwise an error is returned to the client (404, not found).
+   The fact that these URIs contain some dynamic parts and that no file extension is used makes it harder to handle them in a typical Web container. Here we will simply rely on a tree of Maplets. In the processing flow below, you can see that when a call is received by the container (1), it is first filtered by two Chainlets (2) and (3), then it reaches the RootMaplet. If the URI starts with /docs/ then the DirectoryRestlet will get the call (5), if it starts with /users then it is for the UsersMaplet, otherwise an error is returned to the client (404, not found).
 </p>
 <p>
-   When a call reaches the UsersMaplet (6) we try to match the remaing part of the URI against the "/[a-z]+" pattern, representing a valid log name. If a match is found, then the UserMaplet is invoked (7). At that point it is possible to get the login name, because Maplets automatically build a list of all the URI parts matched during the delegation, just invoke "call.getPath(1, true)". Finally, if the "/orders$" URI pattern is matched, the OrdersRestlet is invoke (8), where we can still get the login name by calling "call.getPath(2, true)". Note that we use the '$' character at the end of the pattern in order to make sure that we match "/users/%userName%/orders" but not "/users/%userName%/orders123".
+   When a call reaches the UsersMaplet (6) we try to match the remaing part of the URI against the "/[a-z]+" pattern, representing a valid log name. If a match is found, then the UserMaplet is invoked (7). At that point it is possible to get the login name, because Maplets automatically build a list of all the URI parts matched during the delegation, just invoke "call.getPath(1, true)". Finally, if the "/orders$" URI pattern is matched, the OrdersRestlet is invoked (8), where we can still get the login name by calling "call.getPath(2, true)". Note that we use the '$' character at the end of the pattern in order to make sure that we match "/users/%userName%/orders" but not "/users/%userName%/orders123".
 </p>
 <p>
    <img src="http://www.restlet.org/images/tutorial10" alt="Call handling flow"/><br/>
@@ -297,20 +294,19 @@
    See the implementation code below. In a real application, you will probably want to create separate subclasses instead of the anonymous ones we use here:
 </p>
 <pre>
-         // Attach a logger chainlet to the container
+         // Attach a logger Chainlet to the container
          LoggerChainlet logger = new LoggerChainlet(myContainer, "com.noelios.restlet.tutorial");
          myContainer.attach("http://localhost:8182", logger);
 
-         // Attach a status chainlet to the logger
+         // Attach a status Chainlet to the logger Chainlet
          StatusChainlet status = new StatusChainlet(myContainer, true, "webmaster@mysite.org");
          logger.attach(status);
 
-         // Then attach the restlet to the logger chainlet.
+         // Attach a root Maplet to the status Chainlet.
          Maplet rootMaplet = new DefaultMaplet(myContainer);
          status.attach(rootMaplet);
 
          // Create a directory restlet able to return a deep hierarchy of Web files
-         // (HTML pages, CSS stylesheets or GIF images) from a local directory.
          DirectoryRestlet dirRestlet = new DirectoryRestlet(myContainer, "D:/Restlet/www/docs/api/", true, "index");
          dirRestlet.addExtension("html", MediaTypes.TEXT_HTML);
          dirRestlet.addExtension("css", MediaTypes.TEXT_CSS);
@@ -333,7 +329,7 @@
             };
          usersMaplet.attach("/[a-z]+", userMaplet);
 
-         // Create the orders restlet
+         // Create the orders Restlet
          Restlet ordersRestlet = new AbstractRestlet(myContainer)
             {
                public void handle(RestletCall call) throws RestletException
