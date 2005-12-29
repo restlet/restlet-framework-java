@@ -56,7 +56,7 @@ public class Tutorial08
          myContainer.attach("http://localhost:8182/", logger);
 
          // Attach a status Chainlet to the logger Chainlet
-         StatusChainlet status = new StatusChainlet(myContainer, true, "webmaster@mysite.org");
+         StatusChainlet status = new StatusChainlet(myContainer, true, "webmaster@mysite.org", "http://www.mysite.org");
          logger.attach(status);
          
          // Create a directory Restlet able to return a deep hierarchy of Web files 

@@ -58,18 +58,23 @@ public class StatusChainlet extends AbstractChainlet
 
    /** Email address of the administrator to contact in case of error. */
    protected String email;
+
+   /** The home URI to display in case the user got a "not found" exception. */
+   protected String homeURI;
    
    /**
     * Constructor.
     * @param container The parent container.
     * @param overwrite Indicates whether an existing representation should be overwritten.
     * @param email Email address of the administrator to contact in case of error.  
+    * @param homeURI The home URI to display in case the user got a "not found" exception.
     */
-   public StatusChainlet(RestletContainer container, boolean overwrite, String email)
+   public StatusChainlet(RestletContainer container, boolean overwrite, String email, String homeURI)
    {
       super(container);
       this.overwrite = overwrite;
       this.email = email;
+      this.homeURI = homeURI;
    }
 
    /**
@@ -137,9 +142,16 @@ public class StatusChainlet extends AbstractChainlet
       {
          sb.append("For further assistance, you can contact the <a href=\"mailto:");
          sb.append(email);
-         sb.append("\">administrator</a>.\n");
+         sb.append("\">administrator</a>.<br/>\n");
       }
       
+      if(homeURI != null)
+      {
+         sb.append("Please continue your visit at our <a href=\"");
+         sb.append(homeURI);
+         sb.append("\">home page</a>.\n");
+      }
+            
       sb.append("</p>\n");
       sb.append("</body>\n");
       sb.append("</html>\n");

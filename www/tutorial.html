@@ -233,7 +233,7 @@
          myContainer.attach("http://localhost:8182/", logger);
 
          // Attach a status Chainlet to the logger Chainlet
-         StatusChainlet status = new StatusChainlet(myContainer, true, "webmaster@mysite.org");
+         StatusChainlet status = new StatusChainlet(myContainer, true, "webmaster@mysite.org", "http://www.mysite.org");
          logger.attach(status);
 
          // Create a directory Restlet able to return a deep hierarchy of Web files
@@ -299,7 +299,7 @@
          myContainer.attach("http://localhost:8182", logger);
 
          // Attach a status Chainlet to the logger Chainlet
-         StatusChainlet status = new StatusChainlet(myContainer, true, "webmaster@mysite.org");
+         StatusChainlet status = new StatusChainlet(myContainer, true, "webmaster@mysite.org", "http://www.mysite.org");
          logger.attach(status);
 
          // Attach a root Maplet to the status Chainlet.
@@ -370,7 +370,7 @@
 <br/>
 
 <small>
-   Version 2.0, last modified on 2005/12/28<br/>
+   Version 2.1, last modified on 2005/12/29<br/>
    Copyright &copy; 2005 J&eacute;r&ocirc;me Louvel. Restlet is a trademark and service mark of <a target="_top" href="http://www.noelios.com">Noelios Consulting</a>.
 </small>
 
