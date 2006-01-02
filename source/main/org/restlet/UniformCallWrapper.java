@@ -157,6 +157,15 @@ public class UniformCallWrapper implements UniformCall
    }
 
    /**
+    * Returns the security data related to this call.
+    * @return The security data related to this call.
+    */
+   public Security getSecurity()
+   {
+      return getWrappedCall().getSecurity();
+   }
+   
+   /**
     * Returns the result status.
     * @return The result status.
     */
@@ -283,6 +292,15 @@ public class UniformCallWrapper implements UniformCall
    public void setResourceRef(Reference resourceRef)
    {
       getWrappedCall().setResourceRef(resourceRef);
+   }
+
+   /**
+    * Sets the security data related to this call.
+    * @param security The security data related to this call.
+    */
+   public void setSecurity(Security security)
+   {
+      getWrappedCall().setSecurity(security);
    }
 
    /**

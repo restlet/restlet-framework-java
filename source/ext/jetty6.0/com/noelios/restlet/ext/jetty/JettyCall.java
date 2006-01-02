@@ -27,6 +27,7 @@ import java.util.List;
 
 import org.mortbay.jetty.HttpConnection;
 import org.mortbay.jetty.HttpHeaders;
+import org.restlet.data.ChallengeResponse;
 import org.restlet.data.CharacterSets;
 import org.restlet.data.Cookies;
 import org.restlet.data.Languages;
@@ -35,14 +36,18 @@ import org.restlet.data.Method;
 import org.restlet.data.Preference;
 import org.restlet.data.Reference;
 import org.restlet.data.Representation;
+import org.restlet.data.Security;
 
 import com.noelios.restlet.UniformCallImpl;
+import com.noelios.restlet.data.ChallengeResponseImpl;
+import com.noelios.restlet.data.ChallengeSchemeImpl;
 import com.noelios.restlet.data.InputRepresentation;
 import com.noelios.restlet.data.MediaTypeImpl;
 import com.noelios.restlet.data.MethodImpl;
 import com.noelios.restlet.data.PreferenceImpl;
 import com.noelios.restlet.data.PreferenceReaderImpl;
 import com.noelios.restlet.data.ReferenceImpl;
+import com.noelios.restlet.data.SecurityImpl;
 
 /**
  * Call that is used by the Jetty HTTP server connector.
@@ -237,6 +242,33 @@ public class JettyCall extends UniformCallImpl
       if(cookieHeader != null)
       {
          result = new com.noelios.restlet.data.CookiesImpl(cookieHeader);
+      }
+
+      return result;
+   }
+
+   /**
+    * Ectracts the call's security data from the HTTP request.
+    * @param connection The Jetty HTTP request.
+    * @return The call's security data.
+    */
+   private static Security getSecurity(HttpConnection connection)
+   {
+      Security result = new SecurityImpl();
+      result.setConfidential(connection.getRequest().isSecure());
+
+      String authorization = connection.getRequest().getHeader(HttpHeaders.AUTHORIZATION);
+      if(authorization != null)
+      {
+         int space = authorization.indexOf(' ');
+
+         if(space != -1)
+         {
+            String scheme = authorization.substring(0, space);
+            String credentials = authorization.substring(space + 1);
+            ChallengeResponse challengeResponse = new ChallengeResponseImpl(new ChallengeSchemeImpl("HTTP_" + scheme, scheme), credentials);
+            result.setChallengeResponse(challengeResponse);
+         }
       }
 
       return result;

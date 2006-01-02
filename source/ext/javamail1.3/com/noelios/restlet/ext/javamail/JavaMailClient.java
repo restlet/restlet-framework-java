@@ -43,12 +43,20 @@ import org.w3c.dom.Element;
 import org.w3c.dom.NodeList;
 
 /**
- * Client connector to a mail server.<br/> Currently only the SMTP protocol is supported.<br/> To send an
- * email, specify a SMTP URI as the ressource reference of the call and use an XML email as the content of the
- * call.<br/> <br/> Sample XML email:<br/> <br/> {@code <?xml version="1.0" encoding="ISO-8851-1" ?>}<br/>
- * {@code <email>}<br/> &nbsp;&nbsp;{@code   <header>}<br/> &nbsp;&nbsp;&nbsp;&nbsp;{@code      <subject>Account activation</subject>}<br/>
- * &nbsp;&nbsp;&nbsp;&nbsp;{@code      <from>support@restlet.com</from>}<br/> &nbsp;&nbsp;&nbsp;&nbsp;{@code      <to>user@domain.com</to>}<br/>
- * &nbsp;&nbsp;&nbsp;&nbsp;{@code      <cc>log@restlet.com</cc>}<br/> &nbsp;&nbsp;{@code   </header>}<br/>
+ * Client connector to a mail server.<br/> 
+ * Currently only the SMTP protocol is supported.<br/> 
+ * To send an email, specify a SMTP URI as the ressource reference of the call and use an XML 
+ * email as the content of the call.<br/> 
+ * <br/> 
+ * Sample XML email:<br/> 
+ * <br/> 
+ * {@code <?xml version="1.0" encoding="ISO-8851-1" ?>}<br/>
+ * {@code <email>}<br/> &nbsp;&nbsp;{@code   <header>}<br/> 
+ * &nbsp;&nbsp;&nbsp;&nbsp;{@code      <subject>Account activation</subject>}<br/>
+ * &nbsp;&nbsp;&nbsp;&nbsp;{@code      <from>support@restlet.org</from>}<br/> 
+ * &nbsp;&nbsp;&nbsp;&nbsp;{@code      <to>user@domain.com</to>}<br/>
+ * &nbsp;&nbsp;&nbsp;&nbsp;{@code      <cc>log@restlet.org</cc>}<br/> 
+ * &nbsp;&nbsp;{@code   </header>}<br/>
  * &nbsp;&nbsp;{@code   <body><![CDATA[Your account was sucessfully created!]]></body>}<br/>
  * {@code </email>}
  */

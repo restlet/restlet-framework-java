@@ -35,6 +35,7 @@ import org.mortbay.http.HttpFields;
 import org.mortbay.http.HttpRequest;
 import org.mortbay.http.HttpResponse;
 import org.restlet.UniformCall;
+import org.restlet.data.ChallengeRequest;
 import org.restlet.data.CookieSetting;
 import org.restlet.data.MediaTypes;
 import org.restlet.data.RepresentationMetadata;
@@ -103,6 +104,14 @@ public class JettyConnection extends HttpConnection
             {
                response.setField(HttpFields.__Location, call.getOutput().toString());
                call.setOutput(null);
+            }
+         }
+         else if(response.getStatus() == HttpResponse.__401_Unauthorized)
+         {
+            if((call.getSecurity() != null) && (call.getSecurity().getChallengeRequest() != null))
+            {
+               ChallengeRequest challenge = call.getSecurity().getChallengeRequest();
+               response.setField(HttpFields.__WwwAuthenticate, challenge.getScheme().getTechnicalName() + " realm=\"" + challenge.getRealm() + '"');
             }
          }
 

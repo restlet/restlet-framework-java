@@ -57,8 +57,8 @@ public interface UniformCall
    public Cookies getCookies();
 
    /**
-    * Returns the list of cookies to be set in the user agent. Cookie settings can be browsed, added or
-    * removed.
+    * Returns the list of cookies to be set in the user agent.<br/>
+    * Cookie settings can be browsed, added or removed.
     * @return The list of cookies to be set in the user agent.
     */
    public List<CookieSetting> getCookieSettings();
@@ -107,6 +107,12 @@ public interface UniformCall
     */
    public Reference getResourceRef();
 
+   /**
+    * Returns the security data related to this call.
+    * @return The security data related to this call.
+    */
+   public Security getSecurity();
+   
    /**
     * Returns the result status.
     * @return The result status.
@@ -189,6 +195,12 @@ public interface UniformCall
     * @param resourceRef The resource's reference.
     */
    public void setResourceRef(Reference resourceRef);
+
+   /**
+    * Sets the security data related to this call.
+    * @param security The security data related to this call.
+    */
+   public void setSecurity(Security security);
 
    /**
     * Sets the result status.

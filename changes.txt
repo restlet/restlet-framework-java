@@ -5,8 +5,14 @@
 
 
 0.18 beta
- - Fixed NPE when no language preference was provided by the client (Jetty 5.1 and Jetty 6.0 connectors).
- - A home page can now be displayed on status pages.
+ - Added a GuardChainlet providing support for the HTTP basic authentication.
+ - Added coverage of GuardChainlet in the tutorial
+ - Added org.restlet.data.Security, ChallengeRequest, ChallengeResponse and ChallengeScheme interfaces to provide security support 
+   (authentication and confidentiality information). Added implementation classes in com.noelios.restlet.data package.
+ - Fixed NPE when no language preference was provided by the client (Jetty 5.1 and Jetty 6.0 connectors)
+ - A home page can now be displayed on status pages
+ - Fixed issue in MediaTypeImpl when clients send invalid media types (with no subtype for example)
+ - Renamed LoggerChainlet to LogChainlet for consistency and simplicity purpose
 
 0.17 beta
  - Extended and reworked the tutorial. Also added new illustrations to clarify processing flow.

@@ -22,6 +22,12 @@
 
 package com.noelios.restlet.tutorial;
 
+import org.restlet.AbstractRestlet;
+import org.restlet.DefaultMaplet;
+import org.restlet.Maplet;
+import org.restlet.Restlet;
+import org.restlet.RestletCall;
+import org.restlet.RestletException;
 import org.restlet.component.DefaultRestletContainer;
 import org.restlet.component.RestletContainer;
 import org.restlet.data.MediaTypes;
@@ -30,12 +36,13 @@ import com.noelios.restlet.DirectoryRestlet;
 import com.noelios.restlet.GuardChainlet;
 import com.noelios.restlet.LogChainlet;
 import com.noelios.restlet.StatusChainlet;
+import com.noelios.restlet.data.StringRepresentation;
 import com.noelios.restlet.ext.jetty.JettyServer;
 
 /**
- * Guard access to a restlet.
+ * Maplets and hierarchical URIs
  */
-public class Tutorial09
+public class Tutorial11
 {
    public static void main(String[] args)
    {
@@ -54,13 +61,17 @@ public class Tutorial09
 
          // Attach a log Chainlet to the container
          LogChainlet log = new LogChainlet(myContainer, "com.noelios.restlet.tutorial");
-         myContainer.attach("http://localhost:8182/", log);
+         myContainer.attach("http://localhost:8182", log);
 
          // Attach a status Chainlet to the log Chainlet
          StatusChainlet status = new StatusChainlet(myContainer, true, "webmaster@mysite.org", "http://www.mysite.org");
          log.attach(status);
 
-         // Attach a guard Chainlet to the container
+         // Attach a root Maplet to the status Chainlet.
+         Maplet rootMaplet = new DefaultMaplet(myContainer);
+         status.attach(rootMaplet);
+
+         // Attach a guard Chainlet to secure access the the chained directory Restlet 
          GuardChainlet guard = new GuardChainlet(myContainer, "com.noelios.restlet.tutorial", "Restlet tutorial")
             {
               protected boolean authorize(String userId, String password)
@@ -69,16 +80,42 @@ public class Tutorial09
                }
             };
          
-         status.attach(guard);
-
+         rootMaplet.attach("/docs/", guard);
+         
          // Create a directory Restlet able to return a deep hierarchy of Web files 
          DirectoryRestlet dirRestlet = new DirectoryRestlet(myContainer, "D:/Restlet/www/docs/api/", true, "index");
          dirRestlet.addExtension("html", MediaTypes.TEXT_HTML);
          dirRestlet.addExtension("css", MediaTypes.TEXT_CSS);
          dirRestlet.addExtension("gif", MediaTypes.IMAGE_GIF);
-
-         // Then attach the Restlet to the guard Chainlet.
          guard.attach(dirRestlet);
+
+         // Create the users Maplet
+         Maplet usersMaplet = new DefaultMaplet(myContainer);
+         rootMaplet.attach("/users", usersMaplet);
+
+         // Create the user Maplet
+         Maplet userMaplet = new DefaultMaplet(myContainer)
+            {
+               public void handle(RestletCall call) throws RestletException
+               {
+                  // Print the requested URI path
+                  String output = "Account of user named: " + call.getPath(1, true);
+                  call.setOutput(new StringRepresentation(output, MediaTypes.TEXT_PLAIN));
+               }
+            };
+         usersMaplet.attach("/[a-z]+", userMaplet);
+
+         // Create the orders Restlet
+         Restlet ordersRestlet = new AbstractRestlet(myContainer)
+            {
+               public void handle(RestletCall call) throws RestletException
+               {
+                  // Print the requested URI path
+                  String output = "Orders of user named: " + call.getPath(2, true);
+                  call.setOutput(new StringRepresentation(output, MediaTypes.TEXT_PLAIN));
+               }
+            };
+         userMaplet.attach("/orders$", ordersRestlet);
             
          // Now, let's start the container! 
          myContainer.start();

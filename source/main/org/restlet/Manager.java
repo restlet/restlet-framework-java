@@ -31,6 +31,7 @@ import org.restlet.data.CookieSetting;
 import org.restlet.data.Form;
 import org.restlet.data.Reference;
 import org.restlet.data.Representation;
+import org.restlet.data.Security;
 
 /**
  * The main manager that also acts as an object factory. Façade around the current Restlet API implementation.
@@ -142,6 +143,15 @@ public class Manager
    public static UniformCall createCall()
    {
       return getRegisteredFactory().createCall();
+   }
+
+   /**
+    * Creates new security data.
+    * @return New security data.
+    */
+   public static Security createSecurity()
+   {
+      return getRegisteredFactory().createSecurity();
    }
 
    /**

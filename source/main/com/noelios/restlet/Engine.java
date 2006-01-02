@@ -37,6 +37,7 @@ import org.restlet.data.CookieSetting;
 import org.restlet.data.Form;
 import org.restlet.data.Reference;
 import org.restlet.data.Representation;
+import org.restlet.data.Security;
 
 import com.noelios.restlet.component.RestletContainerImpl;
 import com.noelios.restlet.component.RestletServerImpl;
@@ -44,6 +45,7 @@ import com.noelios.restlet.data.CharacterSetImpl;
 import com.noelios.restlet.data.CookieSettingImpl;
 import com.noelios.restlet.data.FormImpl;
 import com.noelios.restlet.data.ReferenceImpl;
+import com.noelios.restlet.data.SecurityImpl;
 
 /**
  * Noelios Restlet Engine. Also acts as a factory implementation.
@@ -159,6 +161,15 @@ public class Engine implements Factory
    public UniformCall createCall()
    {
       return new UniformCallImpl();
+   }
+
+   /**
+    * Creates new security data.
+    * @return New security data.
+    */
+   public Security createSecurity()
+   {
+      return new SecurityImpl();
    }
 
 }

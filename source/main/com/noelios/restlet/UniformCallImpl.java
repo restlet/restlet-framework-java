@@ -83,6 +83,9 @@ public class UniformCallImpl implements UniformCall
    /** The resource reference. */
    protected Reference resourceUri;
 
+   /** The security data. */
+   protected Security security;
+
    /** The status. */
    protected Status status;
 
@@ -130,6 +133,7 @@ public class UniformCallImpl implements UniformCall
       this.cookies = cookies;
       this.input = input;
 
+      this.security = null;
       this.status = null;
       this.output = null;
       this.cookieSettings = null;
@@ -252,6 +256,15 @@ public class UniformCallImpl implements UniformCall
    }
 
    /**
+    * Returns the security data related to this call.
+    * @return The security data related to this call.
+    */
+   public Security getSecurity()
+   {
+      return this.security;
+   }
+   
+   /**
     * Returns the result status.
     * @return The result status.
     */
@@ -310,7 +323,7 @@ public class UniformCallImpl implements UniformCall
       List<RepresentationMetadata> variants = resource.getVariantsMetadata();
       if(variants == null)
       {
-         logger.warning("No variant found for resource: " + getResourceRef().getIdentifier());
+         logger.info("No variant found for resource: " + getResourceRef().getIdentifier());
          setStatus(Statuses.CLIENT_ERROR_NOT_FOUND);
       }
       else
@@ -619,6 +632,15 @@ public class UniformCallImpl implements UniformCall
    public void setResourceRef(Reference resourceRef)
    {
       this.resourceUri = resourceRef;
+   }
+
+   /**
+    * Sets the security data related to this call.
+    * @param security The security data related to this call.
+    */
+   public void setSecurity(Security security)
+   {
+      this.security = security;
    }
 
    /**

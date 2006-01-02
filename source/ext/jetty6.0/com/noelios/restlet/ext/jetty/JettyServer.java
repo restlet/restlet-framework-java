@@ -33,6 +33,7 @@ import org.mortbay.jetty.nio.SelectChannelConnector;
 import org.restlet.UniformCall;
 import org.restlet.UniformInterface;
 import org.restlet.connector.Server;
+import org.restlet.data.ChallengeRequest;
 import org.restlet.data.CookieSetting;
 import org.restlet.data.MediaTypes;
 import org.restlet.data.RepresentationMetadata;
@@ -130,6 +131,14 @@ public class JettyServer extends org.mortbay.jetty.Server implements Server
             {
                connection.getResponse().setHeader(HttpHeaders.LOCATION, call.getOutput().toString());
                call.setOutput(null);
+            }
+         }
+         else if(status == Statuses.CLIENT_ERROR_UNAUTHORIZED.getHttpCode())
+         {
+            if((call.getSecurity() != null) && (call.getSecurity().getChallengeRequest() != null))
+            {
+               ChallengeRequest challenge = call.getSecurity().getChallengeRequest();
+               connection.getResponse().setHeader(HttpHeaders.WWW_AUTHENTICATE, challenge.getScheme().getTechnicalName() + " realm=\"" + challenge.getRealm() + '"');
             }
          }
 

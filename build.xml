@@ -1,8 +1,8 @@
 <?xml version="1.0"?>
 
-<!-- ===================================================
-     Restlet build file  -  Copyright 2005 Jerome LOUVEL
-     =================================================== -->
+<!-- ========================================================
+     Restlet build file  -  Copyright 2005-2006 Jerome LOUVEL
+     ======================================================== -->
 
 <project name="Restlet" default="dist" basedir=".">
     
@@ -117,35 +117,35 @@
     
     <!-- Compiles main source files -->
     <mkdir dir="${classes-main}"/>
-    <javac srcdir="${src-main}"  destdir="${classes-main}" classpathref="path-all"/>
+    <javac debug="true" srcdir="${src-main}"  destdir="${classes-main}" classpathref="path-all"/>
     
     <!-- Compiles extension Freemarker 2.3 -->
     <mkdir dir="${classes-freemarker2.3}"/>
-    <javac srcdir="${src-freemarker2.3}"  destdir="${classes-freemarker2.3}" classpathref="path-freemarker2.3"/>
+    <javac debug="true" srcdir="${src-freemarker2.3}"  destdir="${classes-freemarker2.3}" classpathref="path-freemarker2.3"/>
     
     <!-- Compiles extension Javamail 1.3 -->
     <mkdir dir="${classes-javamail1.3}"/>
-    <javac srcdir="${src-javamail1.3}"  destdir="${classes-javamail1.3}" classpathref="path-javamail1.3"/>
+    <javac debug="true" srcdir="${src-javamail1.3}"  destdir="${classes-javamail1.3}" classpathref="path-javamail1.3"/>
     
     <!-- Compiles extension JDBC 3.0 -->
     <mkdir dir="${classes-jdbc3.0}"/>
-    <javac srcdir="${src-jdbc3.0}"  destdir="${classes-jdbc3.0}" classpathref="path-jdbc3.0"/>
+    <javac debug="true" srcdir="${src-jdbc3.0}"  destdir="${classes-jdbc3.0}" classpathref="path-jdbc3.0"/>
     
     <!-- Compiles extension Jetty 5.1 -->
     <mkdir dir="${classes-jetty5.1}"/>
-    <javac srcdir="${src-jetty5.1}"  destdir="${classes-jetty5.1}" classpathref="path-jetty5.1"/>
+    <javac debug="true" srcdir="${src-jetty5.1}"  destdir="${classes-jetty5.1}" classpathref="path-jetty5.1"/>
  
     <!-- Compiles extension Jetty 6.0 -->
     <mkdir dir="${classes-jetty6.0}"/>
-    <javac srcdir="${src-jetty6.0}"  destdir="${classes-jetty6.0}" classpathref="path-jetty6.0"/>
+    <javac debug="true" srcdir="${src-jetty6.0}"  destdir="${classes-jetty6.0}" classpathref="path-jetty6.0"/>
     
     <!-- Compiles tutorial source files -->
     <mkdir dir="${classes-tutorial}"/>
-    <javac srcdir="${src-tutorial}"  destdir="${classes-tutorial}" classpathref="path-tutorial"/>
+    <javac debug="true" srcdir="${src-tutorial}"  destdir="${classes-tutorial}" classpathref="path-tutorial"/>
     
     <!-- Compiles test source files -->
     <mkdir dir="${classes-test}"/>
-    <javac srcdir="${src-test}"  destdir="${classes-test}" classpathref="path-test"/>
+    <javac debug="true" srcdir="${src-test}"  destdir="${classes-test}" classpathref="path-test"/>
   </target>
 
 
@@ -407,7 +407,7 @@
          <pathelement path="${src-jetty5.1}"/>
       </sourcepath>
 
-      <bottom><![CDATA[<i>Copyright &#169; 2005 J&eacute;r&ocirc;me Louvel. Restlet is a trademark and service mark of <a target="_top" href="http://www.noelios.com/en">Noelios Consulting</a>.</i>]]></bottom>
+      <bottom><![CDATA[<i>Copyright &#169; 2005-2006 J&eacute;r&ocirc;me Louvel. Restlet is a trademark and service mark of <a target="_top" href="http://www.noelios.com/en">Noelios Consulting</a>.</i>]]></bottom>
       
       <tag name="associates"          scope="all" description="Design stereotype: " enabled="false"/>
       <tag name="clientCardinality"   scope="all" description="Design stereotype: " enabled="false"/>
@@ -440,7 +440,7 @@
          <pathelement path="${src-jetty5.1}"/>
       </sourcepath>
       
-      <bottom><![CDATA[<i>Copyright &#169; 2005 J&eacute;r&ocirc;me Louvel. Restlet is a trademark and service mark of <a target="_top" href="http://www.noelios.com/en">Noelios Consulting</a>.</i>]]></bottom>
+      <bottom><![CDATA[<i>Copyright &#169; 2005-2006 J&eacute;r&ocirc;me Louvel. Restlet is a trademark and service mark of <a target="_top" href="http://www.noelios.com/en">Noelios Consulting</a>.</i>]]></bottom>
       
       <tag name="associates"          scope="all" description="Design stereotype: " enabled="false"/>
       <tag name="clientCardinality"   scope="all" description="Design stereotype: " enabled="false"/>

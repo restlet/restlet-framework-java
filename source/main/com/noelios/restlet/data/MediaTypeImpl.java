@@ -62,7 +62,29 @@ public class MediaTypeImpl extends MetadataImpl implements MediaType
     */
    public String getMainType()
    {
-      return getName().substring(0, getName().indexOf('/'));
+      String result = null;
+      
+      if(getName() != null)
+      {
+         int index = getName().indexOf('/');
+   
+         // Some clients appear to use name types without subtypes
+         if(index == -1) 
+         {
+            index = getName().indexOf(';');
+         }
+   
+         if(index == -1)
+         {
+            result = getName();
+         }
+         else
+         {
+            result = getName().substring(0, index);
+         }
+      }
+      
+      return result;
    }
 
    /**
@@ -71,16 +93,32 @@ public class MediaTypeImpl extends MetadataImpl implements MediaType
     */
    public String getSubType()
    {
-      int separator = getName().indexOf(';');
-
-      if(separator == -1)
+      String result = null;
+      
+      if(getName() != null)
       {
-         return getName().substring(getName().indexOf('/') + 1);
+         int slash = getName().indexOf('/');
+   
+         if(slash == -1)
+         {
+            // No subtype found, assume that all subtypes are accepted
+            result = "*";
+         }
+         else
+         {
+            int separator = getName().indexOf(';');
+            if(separator == -1)
+            {
+               result = getName().substring(slash + 1);
+            }
+            else
+            {
+               result = getName().substring(slash + 1, separator);
+            }
+         }
       }
-      else
-      {
-         return getName().substring(getName().indexOf('/') + 1, separator);
-      }
+      
+      return result;
    }
 
    /**

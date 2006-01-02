@@ -31,6 +31,7 @@ import org.restlet.data.CookieSetting;
 import org.restlet.data.Form;
 import org.restlet.data.Reference;
 import org.restlet.data.Representation;
+import org.restlet.data.Security;
 
 /**
  * Factory implemented by Restlet API implementations.
@@ -110,5 +111,11 @@ public interface Factory
     * @return A new uniform call.
     */
    public UniformCall createCall();
+
+   /**
+    * Creates new security data.
+    * @return New security data.
+    */
+   public Security createSecurity();
 
 }
