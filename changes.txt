@@ -10,7 +10,7 @@
  - Added org.restlet.data.Security, ChallengeRequest, ChallengeResponse and ChallengeScheme interfaces to provide security support 
    (authentication and confidentiality information). Added implementation classes in com.noelios.restlet.data package.
  - Fixed NPE when no language preference was provided by the client (Jetty 5.1 and Jetty 6.0 connectors)
- - A home page can now be displayed on status pages
+ - A home page link can now be displayed on status pages
  - Fixed issue in MediaTypeImpl when clients send invalid media types (with no subtype for example)
  - Renamed LoggerChainlet to LogChainlet for consistency and simplicity purpose
 
