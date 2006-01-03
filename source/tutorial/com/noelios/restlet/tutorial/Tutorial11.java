@@ -101,6 +101,9 @@ public class Tutorial11
                   // Print the requested URI path
                   String output = "Account of user named: " + call.getPath(1, true);
                   call.setOutput(new StringRepresentation(output, MediaTypes.TEXT_PLAIN));
+                  
+                  // Continue processing
+                  delegate(call);
                }
             };
          usersMaplet.attach("/[a-z]+", userMaplet);
