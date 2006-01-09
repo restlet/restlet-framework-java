@@ -38,8 +38,11 @@ import org.restlet.connector.Server;
  */
 public abstract class ComponentImpl implements Component
 {
+   /** Indicates if the component was started. */
+   protected boolean started;
+   
    /** The component name. */
-   private String name;
+   protected String name;
 
    /** The map of client connectors. */
    protected Map<String, Client> clients;
@@ -53,6 +56,7 @@ public abstract class ComponentImpl implements Component
     */
    public ComponentImpl(String name)
    {
+      this.started = false;
       this.name = name;
       this.clients = new TreeMap<String, Client>();
       this.servers = new TreeMap<String, Server>();
@@ -148,6 +152,8 @@ public abstract class ComponentImpl implements Component
       {
          this.servers.get(iter.next()).start();
       }
+
+      this.started = true;
    }
 
    /**
@@ -163,6 +169,26 @@ public abstract class ComponentImpl implements Component
       {
          this.servers.get(iter.next()).stop();
       }
+
+      this.started = false;
+   }
+
+   /**
+    * Indicates if the component is started.
+    * @return True if the component is started.
+    */
+   public boolean isStarted()
+   {
+      return this.isStarted();
+   }
+
+   /**
+    * Indicates if the component is stopped.
+    * @return True if the component is stopped.
+    */
+   public boolean isStopped()
+   {
+      return !isStarted();
    }
 
 }

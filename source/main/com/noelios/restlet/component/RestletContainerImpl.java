@@ -118,12 +118,15 @@ public class RestletContainerImpl extends ComponentImpl implements RestletContai
    }
 
    /**
-    * Delegates a call to attached restlets.
+    * Delegates a call to attached restlets.<br/>
+    * If no delegation is possible, an error status (406, not found) will be returned.
     * @param call The call to delegate.
+    * @return True if the call was successfully delegated.
+    * @throws RestletException
     */
-   public void delegate(RestletCall call) throws RestletException
+   public boolean delegate(RestletCall call) throws RestletException
    {
-      delegate.delegate(call);
+      return delegate.delegate(call);
    }
 
    /**
