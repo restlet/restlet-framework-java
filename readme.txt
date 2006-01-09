@@ -13,8 +13,8 @@ Features
 
 Restlet API
     * Supports all REST concepts (resource, representation, data, connector, components, etc.)
-    * Suitable for both client and server REST applications
-    * Maplets support the concept of URIs as UI with advanced pattern matching features
+    * Suitable for both client and server Web applications
+    * Maplets support the concept of "URIs as UI" with advanced pattern matching features
     * Chainlets filter calls to implement features such as logging and authentication
     * Complete alternative to Servlet API with no external dependency (JAR < 50kb)
     * Supports blocking and non-blocking NIO modes
@@ -37,7 +37,7 @@ Requirements:
     
 Dependencies:    
     * Only when using NRE extensions:
-          o Jetty 5.1.5 or 6.0 beta (HTTP server connector)
+          o Jetty 5.1.10 or 6.0 beta 5 (HTTP server connector)
           o FreeMarker 2.3 (template representation, alternative to JSP pages)
           o JavaMail 1.3 RI (SMTP client connector)
 
@@ -52,4 +52,4 @@ Legal
     * Commercial licenses for source code or trademark can be purchased (mailto:licensing@noelios.com).
     
 
-Copyright © 2005 Jérôme Louvel. Restlet is a trademark and service mark of Noelios Consulting.
+Copyright 2005-2006 Jérôme Louvel. Restlet is a trademark and service mark of Noelios Consulting.
