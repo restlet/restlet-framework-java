@@ -1,5 +1,5 @@
 /*
- * Copyright 2005 Jérôme LOUVEL
+ * Copyright 2005-2006 Jérôme LOUVEL
  *
  * The contents of this file are subject to the terms
  * of the Common Development and Distribution License
@@ -38,10 +38,10 @@ import org.restlet.connector.Server;
  */
 public class ServerServlet extends HttpServlet implements Server
 {
-   /** The Servlet context initialization parameter's name containing the target's class name. */  
+   /** The Servlet context initialization parameter's name containing the target's class name. */
    public static final String NAME_TARGET_CLASS = "org.restlet.target.class";
    public static final String NAME_TARGET_ATTRIBUTE = "org.restlet.target.attribute";
-   
+
    /** Serial version identifier. */
    private static final long serialVersionUID = 1L;
 
@@ -98,7 +98,7 @@ public class ServerServlet extends HttpServlet implements Server
    protected void service(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException
    {
       ServletCall call = new ServletCall(request, response);
-      if(getTarget() != null) 
+      if(getTarget() != null)
       {
          getTarget().handle(call);
          call.reply();
@@ -108,11 +108,11 @@ public class ServerServlet extends HttpServlet implements Server
    /**
     * Returns the target interface.<br/>
     * For the first invocation, we look for an existing target in the application context, using the NAME_TARGET_ATTRIBUTE parameter.<br/>
-    * We lookup for the attribute name in the servlet configuration, then in the application context.<br/> 
+    * We lookup for the attribute name in the servlet configuration, then in the application context.<br/>
     * If no target exists, we try to instantiate one based on the class name set in the NAME_TARGET_CLASS parameter.<br/>
     * We lookup for the class name in the servlet configuration, then in the application context.<br/>
     * Once the target is found, we wrap the servlet request and response into a uniform call and ask the target to handle it.<br/>
-    * When the handling is done, we write the result back into the result object and return from the service method.  
+    * When the handling is done, we write the result back into the result object and return from the service method.
     * @return The target interface.
     */
    public UniformInterface getTarget()
@@ -133,7 +133,7 @@ public class ServerServlet extends HttpServlet implements Server
                // Then, look in the application context
                targetAttributeName = getServletContext().getInitParameter(NAME_TARGET_ATTRIBUTE);
             }
-   
+
             if(targetAttributeName != null)
             {
                // Look up the attribute for a target
@@ -149,14 +149,14 @@ public class ServerServlet extends HttpServlet implements Server
                      // Then, look in the web application context
                      targetClassName = getServletContext().getInitParameter(NAME_TARGET_CLASS);
                   }
-                  
+
                   if(targetClassName != null)
                   {
                      try
                      {
                         // Load the target class using the given class name
                         Class targetClass = Class.forName(targetClassName);
-                        
+
                         // Create a new instance of the target class
                         // and store it for reuse by other ServerServlets.
                         this.target = (UniformInterface)targetClass.newInstance();

@@ -1,22 +1,22 @@
 /*
- * Copyright 2005 Jérôme LOUVEL
- * 
- * The contents of this file are subject to the terms 
- * of the Common Development and Distribution License 
- * (the "License").  You may not use this file except 
+ * Copyright 2005-2006 Jérôme LOUVEL
+ *
+ * The contents of this file are subject to the terms
+ * of the Common Development and Distribution License
+ * (the "License").  You may not use this file except
  * in compliance with the License.
- * 
- * You can obtain a copy of the license at 
- * http://www.opensource.org/licenses/cddl1.txt 
- * See the License for the specific language governing 
- * permissions and limitations under the License.
- * 
- * When distributing Covered Code, include this CDDL 
- * HEADER in each file and include the License file at 
+ *
+ * You can obtain a copy of the license at
  * http://www.opensource.org/licenses/cddl1.txt
- * If applicable, add the following below this CDDL 
+ * See the License for the specific language governing
+ * permissions and limitations under the License.
+ *
+ * When distributing Covered Code, include this CDDL
+ * HEADER in each file and include the License file at
+ * http://www.opensource.org/licenses/cddl1.txt
+ * If applicable, add the following below this CDDL
  * HEADER, with the fields enclosed by brackets "[]"
- * replaced with your own identifying information: 
+ * replaced with your own identifying information:
  * Portions Copyright [yyyy] [name of copyright owner]
  */
 
@@ -42,10 +42,10 @@ public class LogChainlet extends AbstractChainlet
 {
    /** Obtain a suitable logger. */
    protected Logger logger;
-   
+
    /** The log template to use. */
    protected StringTemplate logTemplate;
-   
+
    /**
     * Constructor using the default format.<br/>
     * Default format using <a href="http://analog.cx/docs/logfmt.html">Analog syntax</a>: %Y-%m-%d\t%h:%n:%j\t%j\t%r\t%u\t%s\t%j\t%B\t%f\t%c\t%b\t%q\t%v\t%T
@@ -58,14 +58,14 @@ public class LogChainlet extends AbstractChainlet
       this.logger = Logger.getLogger(logName);
       this.logTemplate = null;
    }
-   
+
    /**
     * Constructor.
     * @param container The parent container.
     * @param logName The log name to used in the logging.properties file.
     * @param logFormat The log format to use.
-    * @see com.noelios.restlet.util.RestletCallModel 
-    * @see com.noelios.restlet.util.StringTemplate 
+    * @see com.noelios.restlet.util.RestletCallModel
+    * @see com.noelios.restlet.util.StringTemplate
     */
    public LogChainlet(RestletContainer container, String logName, String logFormat)
    {
@@ -95,9 +95,9 @@ public class LogChainlet extends AbstractChainlet
          this.logger.log(Level.INFO, formatDefault(call, duration));
       }
    }
-   
+
    /**
-    * Format a log entry using the default format. 
+    * Format a log entry using the default format.
     * @param call The call to log.
     * @param duration The call duration.
     * @return The formatted log entry.
@@ -105,7 +105,7 @@ public class LogChainlet extends AbstractChainlet
    protected String formatDefault(RestletCall call, int duration)
    {
       StringBuilder sb = new StringBuilder();
-      
+
       // Append the time stamp
       long currentTime = System.currentTimeMillis();
       sb.append(String.format("%tF", currentTime));
@@ -174,7 +174,7 @@ public class LogChainlet extends AbstractChainlet
    }
 
    /**
-    * Format a log entry. 
+    * Format a log entry.
     * @param call The call to log.
     * @return The formatted log entry.
     */

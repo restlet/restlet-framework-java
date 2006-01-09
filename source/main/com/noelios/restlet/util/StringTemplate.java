@@ -1,22 +1,22 @@
 /*
- * Copyright 2005 Jérôme LOUVEL
- * 
- * The contents of this file are subject to the terms 
- * of the Common Development and Distribution License 
- * (the "License").  You may not use this file except 
+ * Copyright 2005-2006 Jérôme LOUVEL
+ *
+ * The contents of this file are subject to the terms
+ * of the Common Development and Distribution License
+ * (the "License").  You may not use this file except
  * in compliance with the License.
- * 
- * You can obtain a copy of the license at 
- * http://www.opensource.org/licenses/cddl1.txt 
- * See the License for the specific language governing 
- * permissions and limitations under the License.
- * 
- * When distributing Covered Code, include this CDDL 
- * HEADER in each file and include the License file at 
+ *
+ * You can obtain a copy of the license at
  * http://www.opensource.org/licenses/cddl1.txt
- * If applicable, add the following below this CDDL 
+ * See the License for the specific language governing
+ * permissions and limitations under the License.
+ *
+ * When distributing Covered Code, include this CDDL
+ * HEADER in each file and include the License file at
+ * http://www.opensource.org/licenses/cddl1.txt
+ * If applicable, add the following below this CDDL
  * HEADER, with the fields enclosed by brackets "[]"
- * replaced with your own identifying information: 
+ * replaced with your own identifying information:
  * Portions Copyright [yyyy] [name of copyright owner]
  */
 
@@ -30,10 +30,10 @@ import java.util.logging.Logger;
  * String template that enforces a strict separation between the template pattern and the template model.<br/>
  * It supports variable insertion and non-nestable conditions.<br/>
  * The default delimiters are "${" and "}". For variable insertion, use "${variable_name}" and for conditions use:<br/>
- *  1) "${if variable_name}" to test the availability of a variable (non null).<br/> 
- *  2) "${else if variable_name}" to chain another test.<br/> 
- *  3) "${else}" to chain a default operation.<br/> 
- *  4) "${end if}" to close a condition.<br/> 
+ *  1) "${if variable_name}" to test the availability of a variable (non null).<br/>
+ *  2) "${else if variable_name}" to chain another test.<br/>
+ *  3) "${else}" to chain a default operation.<br/>
+ *  4) "${end if}" to close a condition.<br/>
  */
 public class StringTemplate
 {

@@ -1,22 +1,22 @@
 /*
- * Copyright 2005 Jérôme LOUVEL
- * 
- * The contents of this file are subject to the terms 
- * of the Common Development and Distribution License 
- * (the "License").  You may not use this file except 
+ * Copyright 2005-2006 Jérôme LOUVEL
+ *
+ * The contents of this file are subject to the terms
+ * of the Common Development and Distribution License
+ * (the "License").  You may not use this file except
  * in compliance with the License.
- * 
- * You can obtain a copy of the license at 
- * http://www.opensource.org/licenses/cddl1.txt 
- * See the License for the specific language governing 
- * permissions and limitations under the License.
- * 
- * When distributing Covered Code, include this CDDL 
- * HEADER in each file and include the License file at 
+ *
+ * You can obtain a copy of the license at
  * http://www.opensource.org/licenses/cddl1.txt
- * If applicable, add the following below this CDDL 
+ * See the License for the specific language governing
+ * permissions and limitations under the License.
+ *
+ * When distributing Covered Code, include this CDDL
+ * HEADER in each file and include the License file at
+ * http://www.opensource.org/licenses/cddl1.txt
+ * If applicable, add the following below this CDDL
  * HEADER, with the fields enclosed by brackets "[]"
- * replaced with your own identifying information: 
+ * replaced with your own identifying information:
  * Portions Copyright [yyyy] [name of copyright owner]
  */
 
@@ -29,24 +29,24 @@ public enum Statuses implements Status
 {
    INFO_CONTINUE, INFO_SWITCHING_PROTOCOL, INFO_PROCESSING,
 
-   SUCCESS_OK, SUCCESS_CREATED, SUCCESS_ACCEPTED, SUCCESS_NON_AUTHORITATIVE, SUCCESS_NO_CONTENT, 
+   SUCCESS_OK, SUCCESS_CREATED, SUCCESS_ACCEPTED, SUCCESS_NON_AUTHORITATIVE, SUCCESS_NO_CONTENT,
    SUCCESS_RESET_CONTENT, SUCCESS_PARTIAL_CONTENT, SUCCESS_MULTI_STATUS,
 
-   REDIRECTION_MULTIPLE_CHOICES, REDIRECTION_MOVED_PERMANENTLY, REDIRECTION_MOVED_TEMPORARILY, 
-   REDIRECTION_FOUND, REDIRECTION_SEE_OTHER, REDIRECTION_NOT_MODIFIED, REDIRECTION_USE_PROXY, 
+   REDIRECTION_MULTIPLE_CHOICES, REDIRECTION_MOVED_PERMANENTLY, REDIRECTION_MOVED_TEMPORARILY,
+   REDIRECTION_FOUND, REDIRECTION_SEE_OTHER, REDIRECTION_NOT_MODIFIED, REDIRECTION_USE_PROXY,
    REDIRECTION_TEMPORARY_REDIRECT,
 
-   CLIENT_ERROR_BAD_REQUEST, CLIENT_ERROR_UNAUTHORIZED, CLIENT_ERROR_PAYMENT_REQUIRED, 
-   CLIENT_ERROR_FORBIDDEN, CLIENT_ERROR_NOT_FOUND, CLIENT_ERROR_METHOD_NOT_ALLOWED, 
-   CLIENT_ERROR_NOT_ACCEPTABLE, CLIENT_ERROR_PROXY_AUTHENTIFICATION_REQUIRED, 
-   CLIENT_ERROR_REQUEST_TIMEOUT, CLIENT_ERROR_CONFLICT, CLIENT_ERROR_GONE, CLIENT_ERROR_LENGTH_REQUIRED, 
-   CLIENT_ERROR_PRECONDITION_FAILED, CLIENT_ERROR_REQUEST_ENTITY_TOO_LARGE, CLIENT_ERROR_REQUEST_URI_TOO_LONG, 
-   CLIENT_ERROR_UNSUPPORTED_MEDIA_TYPE, CLIENT_ERROR_REQUESTED_RANGE_NOT_SATISFIABLE, 
-   CLIENT_ERROR_EXPECTATION_FAILED, CLIENT_ERROR_UNPROCESSABLE_ENTITY, CLIENT_ERROR_LOCKED, 
+   CLIENT_ERROR_BAD_REQUEST, CLIENT_ERROR_UNAUTHORIZED, CLIENT_ERROR_PAYMENT_REQUIRED,
+   CLIENT_ERROR_FORBIDDEN, CLIENT_ERROR_NOT_FOUND, CLIENT_ERROR_METHOD_NOT_ALLOWED,
+   CLIENT_ERROR_NOT_ACCEPTABLE, CLIENT_ERROR_PROXY_AUTHENTIFICATION_REQUIRED,
+   CLIENT_ERROR_REQUEST_TIMEOUT, CLIENT_ERROR_CONFLICT, CLIENT_ERROR_GONE, CLIENT_ERROR_LENGTH_REQUIRED,
+   CLIENT_ERROR_PRECONDITION_FAILED, CLIENT_ERROR_REQUEST_ENTITY_TOO_LARGE, CLIENT_ERROR_REQUEST_URI_TOO_LONG,
+   CLIENT_ERROR_UNSUPPORTED_MEDIA_TYPE, CLIENT_ERROR_REQUESTED_RANGE_NOT_SATISFIABLE,
+   CLIENT_ERROR_EXPECTATION_FAILED, CLIENT_ERROR_UNPROCESSABLE_ENTITY, CLIENT_ERROR_LOCKED,
    CLIENT_ERROR_FAILED_DEPENDENCY,
 
-   SERVER_ERROR_INTERNAL, SERVER_ERROR_NOT_IMPLEMENTED, SERVER_ERROR_BAD_GATEWAY, 
-   SERVER_ERROR_SERVICE_UNAVAILABLE, SERVER_ERROR_GATEWAY_TIMEOUT, SERVER_ERROR_HTTP_VERSION_NOT_SUPPORTED, 
+   SERVER_ERROR_INTERNAL, SERVER_ERROR_NOT_IMPLEMENTED, SERVER_ERROR_BAD_GATEWAY,
+   SERVER_ERROR_SERVICE_UNAVAILABLE, SERVER_ERROR_GATEWAY_TIMEOUT, SERVER_ERROR_HTTP_VERSION_NOT_SUPPORTED,
    SERVER_ERROR_INSUFFICIENT_STORAGE;
 
    /**
@@ -542,10 +542,10 @@ public enum Statuses implements Status
 
       return result;
    }
-   
+
    /**
     * Indicates if the status is an information status.
-    * @return True if the status is an information status. 
+    * @return True if the status is an information status.
     */
    public boolean isInfo()
    {
@@ -554,53 +554,53 @@ public enum Statuses implements Status
 
    /**
     * Indicates if the status is a success status.
-    * @return True if the status is a success status. 
+    * @return True if the status is a success status.
     */
    public boolean isSuccess()
    {
       return isSuccess(getHttpCode());
    }
-   
+
    /**
     * Indicates if the status is a redirection status.
-    * @return True if the status is a redirection status. 
+    * @return True if the status is a redirection status.
     */
    public boolean isRedirection()
    {
       return isRedirection(getHttpCode());
    }
-   
+
    /**
     * Indicates if the status is a client error status.
-    * @return True if the status is a client error status. 
+    * @return True if the status is a client error status.
     */
    public boolean isClientError()
    {
       return isClientError(getHttpCode());
    }
-   
+
    /**
     * Indicates if the status is a server error status.
-    * @return True if the status is a server error status. 
+    * @return True if the status is a server error status.
     */
    public boolean isServerError()
    {
       return isServerError(getHttpCode());
    }
-   
+
    /**
     * Indicates if the status is an error (client or server) status.
-    * @return True if the status is an error (client or server) status. 
+    * @return True if the status is an error (client or server) status.
     */
    public boolean isError()
    {
       return isError(getHttpCode());
    }
-   
+
    /**
     * Indicates if the status is an information status.
     * @param httpCode The HTTP code of the status.
-    * @return True if the status is an information status. 
+    * @return True if the status is an information status.
     */
    public static boolean isInfo(int httpCode)
    {
@@ -614,14 +614,14 @@ public enum Statuses implements Status
             result = true;
          break;
       }
-      
+
       return result;
    }
-   
+
    /**
     * Indicates if the status is a success status.
     * @param httpCode The HTTP code of the status.
-    * @return True if the status is a success status. 
+    * @return True if the status is a success status.
     */
    public static boolean isSuccess(int httpCode)
    {
@@ -640,14 +640,14 @@ public enum Statuses implements Status
             result = true;
          break;
       }
-      
+
       return result;
    }
-   
+
    /**
     * Indicates if the status is a redirection status.
     * @param httpCode The HTTP code of the status.
-    * @return True if the status is a redirection status. 
+    * @return True if the status is a redirection status.
     */
    public static boolean isRedirection(int httpCode)
    {
@@ -665,14 +665,14 @@ public enum Statuses implements Status
             result = true;
          break;
       }
-      
+
       return result;
    }
-   
+
    /**
     * Indicates if the status is a client error status.
     * @param httpCode The HTTP code of the status.
-    * @return True if the status is a client error status. 
+    * @return True if the status is a client error status.
     */
    public static boolean isClientError(int httpCode)
    {
@@ -704,14 +704,14 @@ public enum Statuses implements Status
             result = true;
          break;
       }
-      
+
       return result;
    }
-   
+
    /**
     * Indicates if the status is a server error status.
     * @param httpCode The HTTP code of the status.
-    * @return True if the status is a server error status. 
+    * @return True if the status is a server error status.
     */
    public static boolean isServerError(int httpCode)
    {
@@ -729,20 +729,20 @@ public enum Statuses implements Status
             result = true;
          break;
       }
-      
+
       return result;
    }
-   
+
    /**
     * Indicates if the status is an error (client or server) status.
     * @param httpCode The HTTP code of the status.
-    * @return True if the status is an error (client or server) status. 
+    * @return True if the status is an error (client or server) status.
     */
    public static boolean isError(int httpCode)
    {
       return isClientError(httpCode) || isServerError(httpCode);
    }
-   
+
    /**
     * Indicates if the status is equal to a given one.
     * @param status The status to compare to.

@@ -1,22 +1,22 @@
 /*
- * Copyright 2005 Jérôme LOUVEL
- * 
- * The contents of this file are subject to the terms 
- * of the Common Development and Distribution License 
- * (the "License").  You may not use this file except 
+ * Copyright 2005-2006 Jérôme LOUVEL
+ *
+ * The contents of this file are subject to the terms
+ * of the Common Development and Distribution License
+ * (the "License").  You may not use this file except
  * in compliance with the License.
- * 
- * You can obtain a copy of the license at 
- * http://www.opensource.org/licenses/cddl1.txt 
- * See the License for the specific language governing 
- * permissions and limitations under the License.
- * 
- * When distributing Covered Code, include this CDDL 
- * HEADER in each file and include the License file at 
+ *
+ * You can obtain a copy of the license at
  * http://www.opensource.org/licenses/cddl1.txt
- * If applicable, add the following below this CDDL 
+ * See the License for the specific language governing
+ * permissions and limitations under the License.
+ *
+ * When distributing Covered Code, include this CDDL
+ * HEADER in each file and include the License file at
+ * http://www.opensource.org/licenses/cddl1.txt
+ * If applicable, add the following below this CDDL
  * HEADER, with the fields enclosed by brackets "[]"
- * replaced with your own identifying information: 
+ * replaced with your own identifying information:
  * Portions Copyright [yyyy] [name of copyright owner]
  */
 
@@ -30,14 +30,14 @@ import java.util.List;
  */
 public enum MediaTypes implements MediaType
 {
-   ALL, 
-   
-   APPLICATION_ALL, APPLICATION_HTTP_COOKIES, APPLICATION_JAVA_OBJECT, 
-   APPLICATION_PDF, APPLICATION_WORD, APPLICATION_WWW_FORM, 
-   APPLICATION_XHTML_XML, APPLICATION_XML, APPLICATION_ZIP, 
-   
-   IMAGE_ALL, IMAGE_GIF, IMAGE_ICON, IMAGE_PNG, 
-   
+   ALL,
+
+   APPLICATION_ALL, APPLICATION_HTTP_COOKIES, APPLICATION_JAVA_OBJECT,
+   APPLICATION_PDF, APPLICATION_WORD, APPLICATION_WWW_FORM,
+   APPLICATION_XHTML_XML, APPLICATION_XML, APPLICATION_ZIP,
+
+   IMAGE_ALL, IMAGE_GIF, IMAGE_ICON, IMAGE_PNG,
+
    TEXT_ALL, TEXT_CSS, TEXT_HTML, TEXT_PLAIN, TEXT_URI, TEXT_XML;
 
    /**

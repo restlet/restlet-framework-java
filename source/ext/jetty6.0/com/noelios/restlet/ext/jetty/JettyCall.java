@@ -1,5 +1,5 @@
 /*
- * Copyright 2005 Jérôme LOUVEL
+ * Copyright 2005-2006 Jérôme LOUVEL
  *
  * The contents of this file are subject to the terms
  * of the Common Development and Distribution License
@@ -40,7 +40,7 @@ public class JettyCall extends HttpCall
 {
    /** The wrapped Jetty HTTP connection. */
    protected HttpConnection connection;
-   
+
    /**
     * Constructor.
     * @param connection The wrapped Jetty HTTP connection.
@@ -59,7 +59,7 @@ public class JettyCall extends HttpCall
    {
       return this.connection;
    }
-   
+
    /**
     * Returns a header value.
     * @param name The name of the header.
@@ -69,7 +69,7 @@ public class JettyCall extends HttpCall
    {
       return getConnection().getRequest().getHeader(name);
    }
-   
+
    /**
     * Sets a response cookie.
     * @param cookie The cookie setting.
@@ -84,11 +84,11 @@ public class JettyCall extends HttpCall
       if(cookie.getPath() != null) servletCookie.setPath(cookie.getPath());
       servletCookie.setSecure(cookie.isSecure());
       servletCookie.setVersion(cookie.getVersion());
-            
+
       // Set the cookie in the response
       getConnection().getResponse().addCookie(servletCookie);
    }
-   
+
    /**
     * Sets a response header value.
     * @param name The name of the header.
@@ -118,17 +118,17 @@ public class JettyCall extends HttpCall
    {
       getConnection().getResponse().setStatus(code, description);
    }
-   
+
    /**
     * Gets the response stream.
     * @return The response stream.
-    * @throws IOException 
+    * @throws IOException
     */
    protected OutputStream getResponseStream() throws IOException
    {
       return getConnection().getResponse().getOutputStream();
    }
-   
+
    /**
     * Extracts the resource URI.
     * @return The resource URI.
@@ -136,7 +136,7 @@ public class JettyCall extends HttpCall
    protected String extractResourceURI()
    {
       String queryString = getConnection().getRequest().getQueryString();
-      
+
       if(queryString == null)
       {
          return getConnection().getRequest().getRequestURL().toString();
@@ -146,7 +146,7 @@ public class JettyCall extends HttpCall
          return getConnection().getRequest().getRequestURL().append('?').append(queryString).toString();
       }
    }
-   
+
    /**
     * Returns the request stream.
     * @return The request stream.
@@ -162,16 +162,16 @@ public class JettyCall extends HttpCall
          return null;
       }
    }
-   
+
    /**
     * Extracts the call confidentiality.
-    * @return True if the call is confidential. 
+    * @return True if the call is confidential.
     */
    protected boolean extractConfidentiality()
    {
       return getConnection().getRequest().isSecure();
    }
-   
+
    /**
     * Extracts the HTTP method name.
     * @return The HTTP method name.
@@ -180,7 +180,7 @@ public class JettyCall extends HttpCall
    {
       return getConnection().getRequest().getMethod();
    }
-   
+
    /**
     * Extracts the client IP address.
     * @return The client IP address.

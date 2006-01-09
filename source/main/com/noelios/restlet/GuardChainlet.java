@@ -1,22 +1,22 @@
 /*
- * Copyright 2005 Jérôme LOUVEL
- * 
- * The contents of this file are subject to the terms 
- * of the Common Development and Distribution License 
- * (the "License").  You may not use this file except 
+ * Copyright 2005-2006 Jérôme LOUVEL
+ *
+ * The contents of this file are subject to the terms
+ * of the Common Development and Distribution License
+ * (the "License").  You may not use this file except
  * in compliance with the License.
- * 
- * You can obtain a copy of the license at 
- * http://www.opensource.org/licenses/cddl1.txt 
- * See the License for the specific language governing 
- * permissions and limitations under the License.
- * 
- * When distributing Covered Code, include this CDDL 
- * HEADER in each file and include the License file at 
+ *
+ * You can obtain a copy of the license at
  * http://www.opensource.org/licenses/cddl1.txt
- * If applicable, add the following below this CDDL 
+ * See the License for the specific language governing
+ * permissions and limitations under the License.
+ *
+ * When distributing Covered Code, include this CDDL
+ * HEADER in each file and include the License file at
+ * http://www.opensource.org/licenses/cddl1.txt
+ * If applicable, add the following below this CDDL
  * HEADER, with the fields enclosed by brackets "[]"
- * replaced with your own identifying information: 
+ * replaced with your own identifying information:
  * Portions Copyright [yyyy] [name of copyright owner]
  */
 
@@ -39,7 +39,7 @@ import com.noelios.restlet.data.ChallengeRequestImpl;
 import com.noelios.restlet.util.Base64;
 
 /**
- * Chainlet guarding the access to another restlet. 
+ * Chainlet guarding the access to another restlet.
  * Supports the basic HTTP authentication and a
  * customizable authorization via the authorize method.
  */
@@ -47,10 +47,10 @@ public abstract class GuardChainlet extends AbstractChainlet
 {
    /** Obtain a suitable logger. */
    protected Logger logger;
-   
+
    /** The authentication realm. */
    protected String realm;
-   
+
    /**
     * Constructor.
     * @param container The parent container.
@@ -61,7 +61,7 @@ public abstract class GuardChainlet extends AbstractChainlet
    {
       super(container);
       this.logger = Logger.getLogger(logName);
-      this.realm = realm;     
+      this.realm = realm;
    }
 
    /**
@@ -72,7 +72,7 @@ public abstract class GuardChainlet extends AbstractChainlet
    public void handle(RestletCall call) throws RestletException
    {
       Security security = call.getSecurity();
-      
+
       if(security == null)
       {
          // Challenge the client
@@ -83,7 +83,7 @@ public abstract class GuardChainlet extends AbstractChainlet
       else
       {
          ChallengeResponse resp = security.getChallengeResponse();
-         
+
          if(resp == null)
          {
             // No challenge response available, challenge the client
@@ -95,7 +95,7 @@ public abstract class GuardChainlet extends AbstractChainlet
             {
                String credentials = new String(Base64.decode(resp.getCredentials()), "US-ASCII");
                int separator = credentials.indexOf(':');
-               
+
                if(separator == -1)
                {
                   // Log the blocking
@@ -108,12 +108,12 @@ public abstract class GuardChainlet extends AbstractChainlet
                {
                   String userId = credentials.substring(0, separator);
                   String password = credentials.substring(separator + 1);
-                  
+
                   if(authorize(userId, password))
                   {
                      // Log the authorization
                      logger.info("User: " + userId + " was authorized for client with IP: " + call.getClientAddress());
-                     
+
                      // Credentials accepted, authorize access to chained restlet
                      super.handle(call);
                   }
@@ -131,7 +131,7 @@ public abstract class GuardChainlet extends AbstractChainlet
             {
                throw new RestletException("Unsupported encoding error", e);
             }
-            
+
          }
          else
          {
@@ -140,8 +140,8 @@ public abstract class GuardChainlet extends AbstractChainlet
          }
       }
    }
-   
-   /** 
+
+   /**
     * Challenge a client.
     * @param call The current call.
     */
@@ -167,8 +167,8 @@ public abstract class GuardChainlet extends AbstractChainlet
     * Indicates if the given credentials authorize access to the attached restlet.
     * @param userId The user identifier.
     * @param password The password.
-    * @return True if the given credentials authorize access to the attached restlet. 
+    * @return True if the given credentials authorize access to the attached restlet.
     */
    protected abstract boolean authorize(String userId, String password);
-   
+
 }

@@ -1,22 +1,22 @@
 /*
- * Copyright 2005 Jérôme LOUVEL
- * 
- * The contents of this file are subject to the terms 
- * of the Common Development and Distribution License 
- * (the "License").  You may not use this file except 
+ * Copyright 2005-2006 Jérôme LOUVEL
+ *
+ * The contents of this file are subject to the terms
+ * of the Common Development and Distribution License
+ * (the "License").  You may not use this file except
  * in compliance with the License.
- * 
- * You can obtain a copy of the license at 
- * http://www.opensource.org/licenses/cddl1.txt 
- * See the License for the specific language governing 
- * permissions and limitations under the License.
- * 
- * When distributing Covered Code, include this CDDL 
- * HEADER in each file and include the License file at 
+ *
+ * You can obtain a copy of the license at
  * http://www.opensource.org/licenses/cddl1.txt
- * If applicable, add the following below this CDDL 
+ * See the License for the specific language governing
+ * permissions and limitations under the License.
+ *
+ * When distributing Covered Code, include this CDDL
+ * HEADER in each file and include the License file at
+ * http://www.opensource.org/licenses/cddl1.txt
+ * If applicable, add the following below this CDDL
  * HEADER, with the fields enclosed by brackets "[]"
- * replaced with your own identifying information: 
+ * replaced with your own identifying information:
  * Portions Copyright [yyyy] [name of copyright owner]
  */
 
@@ -124,7 +124,7 @@ public class UniformCallImpl implements UniformCall
       {
          this.clientAddress = null;
       }
-      
+
       this.mediaPrefs = mediaPrefs;
       this.characterSetPrefs = characterSetPrefs;
       this.languagePrefs = languagePrefs;
@@ -154,7 +154,7 @@ public class UniformCallImpl implements UniformCall
     */
    public String getClientAddress()
    {
-      return this.clientAddress;  
+      return this.clientAddress;
    }
 
    /**
@@ -263,7 +263,7 @@ public class UniformCallImpl implements UniformCall
    {
       return this.security;
    }
-   
+
    /**
     * Returns the result status.
     * @return The result status.
@@ -296,7 +296,7 @@ public class UniformCallImpl implements UniformCall
     * representation is found, sets the status to "Not found". If no acceptable representation is available,
     * sets the status to "Not acceptable".
     * @param resource The resource for which the best representation needs to be set.
-    * @see <a href="http://httpd.apache.org/docs/2.2/en/content-negotiation.html#algorithm">Apache content negotiation algorithm</a> 
+    * @see <a href="http://httpd.apache.org/docs/2.2/en/content-negotiation.html#algorithm">Apache content negotiation algorithm</a>
     */
    public void setBestOutput(Resource resource) throws RestletException
    {
@@ -329,7 +329,7 @@ public class UniformCallImpl implements UniformCall
       else
       {
          logger.info(Integer.toString(variants.size()) + " variants found for resource: " + getResourceRef().getIdentifier());
-         
+
          // For each available variant, we will compute the negotiation score
          // which is dependant on the language score and on the media type score
          for(Iterator iter1 = variants.iterator(); iter1.hasNext();)
@@ -346,7 +346,7 @@ public class UniformCallImpl implements UniformCall
                   currentLanguage = (Language)currentPref.getMetadata();
                   compatiblePref = true;
                   currentScore = 0;
-   
+
                   // 1) Compare the main tag
                   if(currentVariant.getLanguage().getMainTag().equals(currentLanguage.getMainTag()))
                   {
@@ -366,7 +366,7 @@ public class UniformCallImpl implements UniformCall
                      // The valid "*" range has the lowest valid score
                      currentScore++;
                   }
-   
+
                   if(compatiblePref)
                   {
                      // 2) Compare the sub tags
@@ -390,7 +390,7 @@ public class UniformCallImpl implements UniformCall
                         // SubTags are different
                         compatiblePref = false;
                      }
-   
+
                      // 3) Do we have a better preference?
                      // currentScore *= currentPref.getQuality();
                      if(compatiblePref && ((bestLanguagePref == null) || (currentScore > bestLanguageScore)))
@@ -401,10 +401,10 @@ public class UniformCallImpl implements UniformCall
                   }
                }
             }
-            
+
             // If the variant has a language set, do we have a compatible preference?
-            compatibleLanguage = (currentVariant.getLanguage() == null) || (bestLanguagePref != null); 
-               
+            compatibleLanguage = (currentVariant.getLanguage() == null) || (bestLanguagePref != null);
+
             // For each media range preference defined in the call
             // Calculate the score and remember the best scoring preference
             if(getMediaTypePrefs() != null)
@@ -415,7 +415,7 @@ public class UniformCallImpl implements UniformCall
                   currentMediaType = (MediaType)currentPref.getMetadata();
                   compatiblePref = true;
                   currentScore = 0;
-   
+
                   // 1) Compare the main types
                   if(currentMediaType.getMainType().equals(currentVariant.getMediaType().getMainType()))
                   {
@@ -431,7 +431,7 @@ public class UniformCallImpl implements UniformCall
                      // Only "*/*" is acceptable in this case
                      compatiblePref = false;
                   }
-   
+
                   if(compatiblePref)
                   {
                      // 2) Compare the sub types
@@ -444,7 +444,7 @@ public class UniformCallImpl implements UniformCall
                         // Subtype are different
                         compatiblePref = false;
                      }
-   
+
                      if(compatiblePref && (currentVariant.getMediaType().getParameters() != null))
                      {
                         // 3) Compare the parameters
@@ -454,14 +454,14 @@ public class UniformCallImpl implements UniformCall
                               .hasNext();)
                         {
                            currentParam = (Parameter)iter3.next();
-   
+
                            if(isParameterFound(currentParam, currentMediaType))
                            {
                               currentScore++;
                            }
                         }
                      }
-   
+
                      // 3) Do we have a better preference?
                      // currentScore *= currentPref.getQuality();
                      if(compatiblePref && ((bestMediaTypePref == null) || (currentScore > bestMediaTypeScore)))
@@ -482,7 +482,7 @@ public class UniformCallImpl implements UniformCall
                {
                   currentQuality += (bestLanguagePref.getQuality() * 10F);
                }
-            
+
                if(bestVariant == null)
                {
                   bestVariant = currentVariant;
@@ -493,7 +493,7 @@ public class UniformCallImpl implements UniformCall
                   bestVariant = currentVariant;
                   bestQuality = currentQuality;
                }
-               
+
                // Reset the preference variables
                bestLanguagePref = null;
                bestLanguageScore = 0;
@@ -652,7 +652,7 @@ public class UniformCallImpl implements UniformCall
    public void setRedirect(String targetURI, boolean permanent)
    {
       setOutput(new StringRepresentation(targetURI, MediaTypes.TEXT_URI));
-      
+
       if(permanent)
       {
          setStatus(Statuses.REDIRECTION_MOVED_PERMANENTLY);
