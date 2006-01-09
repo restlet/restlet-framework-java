@@ -4,6 +4,18 @@
 -----------------------------
 
 
+0.19 beta
+ - Fixed bugs in Tutoria11 example (reported by Roger Menday)
+ - Added isStarted and isStopped methods to connectors and components interfaces (suggested by Roger Menday)
+ - The Maplet.delegate method now returns a boolean to indicate if the delegation suceeded
+ - Updated Jetty connectors to versions 5.1.10 and 6.0 beta 5
+ - Added HTTP server connector based on Servlet API 2.4 to allow deployment of Restlets within a Web container instead 
+   of using the standalone mode based on Jetty HTTP server connectors. Added ServerServlet and ServletCall classes.
+   Note that there is a performance cost for the extra Servlet layer.
+ - Refactored all HTTP server connectors to use a common base HttpCall class. Removed JettyCookie classes.
+ - Renamed HttpClient.doGet, doPost, doPut and deDelete methods into HttpClient.get, post, put and delete for simplification purpose.
+ - Removed duplicate UniformCallImpl.setReferrer method.
+ 
 0.18 beta
  - Added a GuardChainlet providing support for the HTTP basic authentication.
  - Added coverage of GuardChainlet in the tutorial
