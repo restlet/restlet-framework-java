@@ -126,10 +126,13 @@ public class MapletImpl extends ArrayList<Mapping> implements Maplet
    }
 
    /**
-    * Delegates a call to attached restlets.
+    * Delegates a call to attached restlets.<br/>
+    * If no delegation is possible, an error status (406, not found) will be returned.
     * @param call The call to delegate.
+    * @return True if the call was successfully delegated.
+    * @throws RestletException
     */
-   public void delegate(RestletCall call) throws RestletException
+   public boolean delegate(RestletCall call) throws RestletException
    {
       Mapping mapping = null;
       Matcher matcher = null;
@@ -198,6 +201,8 @@ public class MapletImpl extends ArrayList<Mapping> implements Maplet
          // No delegate was found
          call.setStatus(Statuses.CLIENT_ERROR_NOT_FOUND);
       }
+      
+      return found;
    }
 
 }

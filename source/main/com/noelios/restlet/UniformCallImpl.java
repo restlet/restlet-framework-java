@@ -606,15 +606,6 @@ public class UniformCallImpl implements UniformCall
    }
 
    /**
-    * Sets the referrer reference.
-    * @param referrer The referrer reference.
-    */
-   public void setReferrer(Reference referrer)
-   {
-      this.referrerUri = referrer;
-   }
-
-   /**
     * Sets the referrer reference if available.<br/>
     * This reference shouldn't be modified during the call handling.
     * @param referrerRef The referrer reference.
