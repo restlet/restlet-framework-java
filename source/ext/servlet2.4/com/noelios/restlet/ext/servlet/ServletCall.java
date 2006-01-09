@@ -1,5 +1,5 @@
 /*
- * Copyright 2005 Jérôme LOUVEL
+ * Copyright 2005-2006 Jérôme LOUVEL
  *
  * The contents of this file are subject to the terms
  * of the Common Development and Distribution License
@@ -20,44 +20,59 @@
  * Portions Copyright [yyyy] [name of copyright owner]
  */
 
-package com.noelios.restlet.ext.jetty;
+package com.noelios.restlet.ext.servlet;
 
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
 
 import javax.servlet.http.Cookie;
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
 
-import org.mortbay.jetty.HttpConnection;
 import org.restlet.data.CookieSetting;
 
 import com.noelios.restlet.connector.HttpCall;
 
 /**
- * Call that is used by the Jetty 6 HTTP server connector.
+ * Call that is used by the Servlet HTTP server connector.
  */
-public class JettyCall extends HttpCall
+public class ServletCall extends HttpCall
 {
-   /** The wrapped Jetty HTTP connection. */
-   protected HttpConnection connection;
+   /** The HTTP servlet request to wrap. */
+   protected HttpServletRequest request;
    
+   /** The HTTP servlet response to wrap. */
+   protected HttpServletResponse response;
+
    /**
     * Constructor.
-    * @param connection The wrapped Jetty HTTP connection.
+    * @param request The HTTP servlet request to wrap.
+    * @param response The HTTP servlet response to wrap.
     */
-   public JettyCall(HttpConnection connection)
+   public ServletCall(HttpServletRequest request, HttpServletResponse response)
    {
-      this.connection = connection;
+      this.request = request;
+      this.response = response;
       init();
    }
 
    /**
-    * Returns the wrapped Jetty HTTP connection.
-    * @return The wrapped Jetty HTTP connection.
+    * Returns the HTTP Servlet request.
+    * @return The HTTP Servlet request.
     */
-   public HttpConnection getConnection()
+   public HttpServletRequest getRequest()
    {
-      return this.connection;
+      return this.request;
+   }
+
+   /**
+    * Returns the HTTP Servlet response.
+    * @return The HTTP Servlet response.
+    */
+   public HttpServletResponse getResponse()
+   {
+      return this.response;
    }
    
    /**
@@ -67,7 +82,33 @@ public class JettyCall extends HttpCall
     */
    public String getRequestHeader(String name)
    {
-      return getConnection().getRequest().getHeader(name);
+      return getRequest().getHeader(name);
+   }
+   
+   /**
+    * Returns the request stream.
+    * @return The request stream.
+    */
+   protected InputStream getRequestStream()
+   {
+      try
+      {
+         return getRequest().getInputStream();
+      }
+      catch(IOException e)
+      {
+         return null;
+      }
+   }
+   
+   /**
+    * Returns the response stream.
+    * @return The response stream.
+    * @throws IOException 
+    */
+   protected OutputStream getResponseStream() throws IOException
+   {
+      return getResponse().getOutputStream();
    }
    
    /**
@@ -86,9 +127,9 @@ public class JettyCall extends HttpCall
       servletCookie.setVersion(cookie.getVersion());
             
       // Set the cookie in the response
-      getConnection().getResponse().addCookie(servletCookie);
+      getResponse().addCookie(servletCookie);
    }
-   
+      
    /**
     * Sets a response header value.
     * @param name The name of the header.
@@ -96,9 +137,9 @@ public class JettyCall extends HttpCall
     */
    public void setResponseHeader(String name, String value)
    {
-      getConnection().getResponse().setHeader(name, value);
+      getResponse().setHeader(name, value);
    }
-
+   
    /**
     * Sets a response header value.
     * @param name The name of the header.
@@ -106,7 +147,7 @@ public class JettyCall extends HttpCall
     */
    public void setResponseHeader(String name, long date)
    {
-      getConnection().getResponse().setDateHeader(name, date);
+      getResponse().setDateHeader(name, date);
    }
 
    /**
@@ -116,60 +157,36 @@ public class JettyCall extends HttpCall
     */
    public void setResponseStatus(int code, String description)
    {
-      getConnection().getResponse().setStatus(code, description);
+      // Ignore the description parameter
+      // deprecated in the Servlet API
+      getResponse().setStatus(code);
    }
-   
-   /**
-    * Gets the response stream.
-    * @return The response stream.
-    * @throws IOException 
-    */
-   protected OutputStream getResponseStream() throws IOException
-   {
-      return getConnection().getResponse().getOutputStream();
-   }
-   
+
    /**
     * Extracts the resource URI.
     * @return The resource URI.
     */
    protected String extractResourceURI()
    {
-      String queryString = getConnection().getRequest().getQueryString();
+      String queryString = getRequest().getQueryString();
       
       if(queryString == null)
       {
-         return getConnection().getRequest().getRequestURL().toString();
+         return getRequest().getRequestURL().toString();
       }
       else
       {
-         return getConnection().getRequest().getRequestURL().append('?').append(queryString).toString();
+         return getRequest().getRequestURL().append('?').append(queryString).toString();
       }
    }
-   
-   /**
-    * Returns the request stream.
-    * @return The request stream.
-    */
-   protected InputStream getRequestStream()
-   {
-      try
-      {
-         return getConnection().getRequest().getInputStream();
-      }
-      catch(IOException e)
-      {
-         return null;
-      }
-   }
-   
+
    /**
     * Extracts the call confidentiality.
     * @return True if the call is confidential. 
     */
    protected boolean extractConfidentiality()
    {
-      return getConnection().getRequest().isSecure();
+      return getRequest().isSecure();
    }
    
    /**
@@ -178,7 +195,7 @@ public class JettyCall extends HttpCall
     */
    protected String extractMethodName()
    {
-      return getConnection().getRequest().getMethod();
+      return getRequest().getMethod();
    }
    
    /**
@@ -187,7 +204,7 @@ public class JettyCall extends HttpCall
     */
    protected String extractClientAddress()
    {
-      return getConnection().getRequest().getRemoteAddr();
+      return getRequest().getRemoteAddr();
    }
 
 }

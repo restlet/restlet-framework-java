@@ -23,21 +23,12 @@
 package com.noelios.restlet.ext.jetty;
 
 import java.net.InetSocketAddress;
-import java.util.Iterator;
-import java.util.logging.Logger;
 
 import org.mortbay.jetty.Connector;
 import org.mortbay.jetty.HttpConnection;
-import org.mortbay.jetty.HttpHeaders;
 import org.mortbay.jetty.nio.SelectChannelConnector;
-import org.restlet.UniformCall;
 import org.restlet.UniformInterface;
 import org.restlet.connector.Server;
-import org.restlet.data.ChallengeRequest;
-import org.restlet.data.CookieSetting;
-import org.restlet.data.MediaTypes;
-import org.restlet.data.RepresentationMetadata;
-import org.restlet.data.Statuses;
 
 /**
  * Jetty connector acting as a HTTP server.
@@ -47,9 +38,6 @@ public class JettyServer extends org.mortbay.jetty.Server implements Server
 {
    /** Serial version identifier. */
    private static final long serialVersionUID = 1L;
-
-   /** Obtain a suitable logger. */
-   private static Logger logger = Logger.getLogger("com.noelios.restlet.ext.jetty.JettyServer");
 
    /** The name of this REST connector. */
    private String name;
@@ -94,102 +82,24 @@ public class JettyServer extends org.mortbay.jetty.Server implements Server
       this.target = target;
    }
 
+   /**
+    * Handles a HTTP connection.
+    * @param connection The connection to handle.
+    */
    public void handle(HttpConnection connection)
    {
-      long startTime = System.currentTimeMillis();
+      JettyCall call = new JettyCall(connection);
+      getTarget().handle(call);
+      call.reply();
+   }
 
-      try
-      {
-         UniformCall call = new JettyCall(connection);
-         getTarget().handle(call);
-
-         // Set the status code in the response
-         if(call.getStatus() != null)
-         {
-            connection.getResponse().setStatus(call.getStatus().getHttpCode(), call.getStatus().getDescription());
-         }
-
-         // Set cookies
-         CookieSetting cookieSetting;
-         for(Iterator iter = call.getCookieSettings().iterator(); iter.hasNext();)
-         {
-            cookieSetting = (CookieSetting)iter.next();
-            connection.getResponse().addCookie(new JettyCookie(cookieSetting));
-         }
-
-         int status = connection.getResponse().getStatus();
-         if((status == Statuses.SUCCESS_CREATED.getHttpCode())
-               || (status == Statuses.REDIRECTION_MULTIPLE_CHOICES.getHttpCode())
-               || (status == Statuses.REDIRECTION_MOVED_PERMANENTLY.getHttpCode())
-               || (status == Statuses.REDIRECTION_MOVED_TEMPORARILY.getHttpCode())
-               || (status == Statuses.REDIRECTION_SEE_OTHER.getHttpCode())
-               || (status == Statuses.REDIRECTION_TEMPORARY_REDIRECT.getHttpCode()))
-         {
-            // Extract the redirection URI from the call output
-            if((call.getOutput() != null)
-                  && (call.getOutput().getMetadata().getMediaType().equals(MediaTypes.TEXT_URI)))
-            {
-               connection.getResponse().setHeader(HttpHeaders.LOCATION, call.getOutput().toString());
-               call.setOutput(null);
-            }
-         }
-         else if(status == Statuses.CLIENT_ERROR_UNAUTHORIZED.getHttpCode())
-         {
-            if((call.getSecurity() != null) && (call.getSecurity().getChallengeRequest() != null))
-            {
-               ChallengeRequest challenge = call.getSecurity().getChallengeRequest();
-               connection.getResponse().setHeader(HttpHeaders.WWW_AUTHENTICATE, challenge.getScheme().getTechnicalName() + " realm=\"" + challenge.getRealm() + '"');
-            }
-         }
-
-         // If an output was set during the call, copy it to the output stream;
-         if(call.getOutput() != null)
-         {
-            RepresentationMetadata meta = call.getOutput().getMetadata();
-
-            if(meta.getMediaType() != null)
-            {
-               StringBuilder contentType = new StringBuilder(meta.getMediaType().getName());
-
-               if(meta.getCharacterSet() != null)
-               {
-                  // Specify the character set parameter
-                  contentType.append("; charset=").append(meta.getCharacterSet().getName());
-               }
-
-               connection.getResponse().setContentType(contentType.toString());
-            }
-
-            if(meta.getExpirationDate() != null)
-            {
-               connection.getResponse().addDateHeader("Expires", meta.getExpirationDate().getTime());
-            }
-
-            if(meta.getModificationDate() != null)
-            {
-               connection.getResponse().addDateHeader("Last-Modified", meta.getModificationDate().getTime());
-            }
-
-            if(meta.getTag() != null)
-            {
-               connection.getResponse().addHeader("ETag", meta.getTag().getName());
-            }
-
-            connection.getResponse().setContentLength((int)call.getOutput().getSize());
-
-            // Send the output to the client
-            call.getOutput().write(connection.getResponse().getOutputStream());
-         }
-      }
-      catch(Exception re)
-      {
-         connection.getResponse().setStatus(Statuses.SERVER_ERROR_INTERNAL.getHttpCode());
-         re.printStackTrace();
-      }
-
-      long endTime = System.currentTimeMillis();
-      int duration = (int)(endTime - startTime);
-      logger.info("Call duration=" + duration + "ms");
+   /**
+    * Indicates if the connector is stopped.
+    * @return True if the connector is stopped.
+    */
+   public boolean isStopped()
+   {
+      return !isStarted();
    }
 
    /**

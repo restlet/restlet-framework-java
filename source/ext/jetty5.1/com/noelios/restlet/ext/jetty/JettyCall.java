@@ -1,5 +1,5 @@
 /*
- * Copyright 2005 Jérôme LOUVEL
+ * Copyright 2005-2006 Jérôme LOUVEL
  *
  * The contents of this file are subject to the terms
  * of the Common Development and Distribution License
@@ -22,40 +22,29 @@
 
 package com.noelios.restlet.ext.jetty;
 
-import java.util.ArrayList;
-import java.util.List;
+import java.io.IOException;
+import java.io.InputStream;
+import java.io.OutputStream;
 
-import org.mortbay.http.HttpFields;
+import javax.servlet.http.Cookie;
+
 import org.mortbay.http.HttpRequest;
 import org.mortbay.http.HttpResponse;
-import org.restlet.data.ChallengeResponse;
-import org.restlet.data.CharacterSets;
-import org.restlet.data.Cookies;
-import org.restlet.data.Languages;
-import org.restlet.data.MediaTypes;
-import org.restlet.data.Method;
-import org.restlet.data.Methods;
-import org.restlet.data.Preference;
-import org.restlet.data.Reference;
-import org.restlet.data.Representation;
-import org.restlet.data.Security;
+import org.restlet.data.CookieSetting;
 
-import com.noelios.restlet.UniformCallImpl;
-import com.noelios.restlet.data.ChallengeResponseImpl;
-import com.noelios.restlet.data.ChallengeSchemeImpl;
-import com.noelios.restlet.data.InputRepresentation;
-import com.noelios.restlet.data.MediaTypeImpl;
-import com.noelios.restlet.data.MethodImpl;
-import com.noelios.restlet.data.PreferenceImpl;
-import com.noelios.restlet.data.PreferenceReaderImpl;
-import com.noelios.restlet.data.ReferenceImpl;
-import com.noelios.restlet.data.SecurityImpl;
+import com.noelios.restlet.connector.HttpCall;
 
 /**
  * Call that is used by the Jetty HTTP server connector.
  */
-public class JettyCall extends UniformCallImpl
+public class JettyCall extends HttpCall
 {
+   /** The wrapped Jetty HTTP request. */
+   protected HttpRequest request;
+
+   /** The wrapped Jetty HTTP response. */
+   protected HttpResponse response;
+
    /**
     * Constructor.
     * @param request The Jetty HTTP request.
@@ -63,203 +52,150 @@ public class JettyCall extends UniformCallImpl
     */
    public JettyCall(HttpRequest request, HttpResponse response)
    {
-      super(getReferrer(request), request.getField("User-Agent"), getMediaPrefs(request),
-            getCharacterSetPrefs(request), getLanguagePrefs(request), getMethod(request),
-            getResource(request), getCookies(request), getInput(request));
-
-      setClientAddress(request.getRemoteAddr());
-      setSecurity(getSecurity(request));
+      this.request = request;
+      this.response = response;
+      init();
    }
 
    /**
-    * Extracts the call's referrer from the HTTP request.
-    * @param request The Jetty HTTP request.
-    * @return The call's referrer.
+    * Returns the HTTP Jetty request.
+    * @return The HTTP Jetty request.
     */
-   private static Reference getReferrer(HttpRequest request)
+   public HttpRequest getRequest()
    {
-      String referrer = request.getField("Referer");
+      return this.request;
+   }
 
-      if(referrer != null)
+   /**
+    * Returns the HTTP Jetty response.
+    * @return The HTTP Jetty response.
+    */
+   public HttpResponse getResponse()
+   {
+      return this.response;
+   }
+
+   /**
+    * Returns a header value.
+    * @param name The name of the header.
+    * @return A header value.
+    */
+   public String getRequestHeader(String name)
+   {
+      return getRequest().getField(name);
+   }
+
+   /**
+    * Extracts the request stream.
+    * @return The request stream.
+    */
+   protected InputStream getRequestStream()
+   {
+      return getRequest().getInputStream();
+   }
+   
+   /**
+    * Sets a response cookie.
+    * @param cookie The cookie setting.
+    */
+   public void setResponseCookie(CookieSetting cookie)
+   {
+      // Convert the cookie setting into a Servlet cookie
+      Cookie servletCookie = new Cookie(cookie.getName(), cookie.getValue());
+      if(cookie.getComment() != null) servletCookie.setComment(cookie.getComment());
+      if(cookie.getDomain() != null) servletCookie.setDomain(cookie.getDomain());
+      servletCookie.setMaxAge(cookie.getMaxAge());
+      if(cookie.getPath() != null) servletCookie.setPath(cookie.getPath());
+      servletCookie.setSecure(cookie.isSecure());
+      servletCookie.setVersion(cookie.getVersion());
+            
+      // Set the cookie in the response
+      getResponse().addSetCookie(servletCookie);
+   }
+
+   /**
+    * Sets a response header value.
+    * @param name The name of the header.
+    * @param value The value of the header.
+    */
+   public void setResponseHeader(String name, String value)
+   {
+      getResponse().setField(name, value);
+   }
+   
+   /**
+    * Sets a response header value.
+    * @param name The name of the header.
+    * @param date The value of the header.
+    */
+   public void setResponseHeader(String name, long date)
+   {
+      getResponse().setDateField(name, date);
+   }
+
+   /**
+    * Sets the response's status code.
+    * @param code The response's status code.
+    * @param description The status code description.
+    */
+   public void setResponseStatus(int code, String description)
+   {
+      getResponse().setStatus(code, description);
+   }
+   
+   /**
+    * Gets the response stream.
+    * @return The response stream.
+    * @throws IOException 
+    */
+   protected OutputStream getResponseStream() throws IOException
+   {
+      return getRequest().getOutputStream();
+   }
+
+   /**
+    * Extracts the resource URI.
+    * @return The resource URI.
+    */
+   protected String extractResourceURI()
+   {
+      String queryString = this.request.getQuery();
+
+      if(queryString == null)
       {
-         return new ReferenceImpl(referrer);
+         return this.request.getRequestURL().toString();
       }
       else
       {
-         return null;
+         return this.request.getRequestURL().append('?').append(queryString).toString();
       }
    }
 
    /**
-    * Extracts the call's resource from the HTTP request.
-    * @param request The Jetty HTTP request.
-    * @return The call's resource.
+    * Extracts the call confidentiality.
+    * @return True if the call is confidential.
     */
-   private static Reference getResource(HttpRequest request)
+   protected boolean extractConfidentiality()
    {
-      String resource = request.getRootURL() + request.getURI().toString();
-
-      if(resource != null)
-      {
-         return new ReferenceImpl(resource);
-      }
-      else
-      {
-         return null;
-      }
+      return this.request.isConfidential();
    }
 
    /**
-    * Extracts the call's method from the HTTP request.
-    * @param request The Jetty HTTP request.
-    * @return The call's method.
+    * Extracts the HTTP method name.
+    * @return The HTTP method name.
     */
-   private static Method getMethod(HttpRequest request)
+   protected String extractMethodName()
    {
-      String method = request.getMethod();
-      if(method.equals(HttpRequest.__DELETE)) return Methods.DELETE;
-      else if(method.equals(HttpRequest.__GET)) return Methods.GET;
-      else if(method.equals(HttpRequest.__POST)) return Methods.POST;
-      else if(method.equals(HttpRequest.__PUT)) return Methods.PUT;
-      else return new MethodImpl(method);
+      return this.request.getMethod();
    }
 
    /**
-    * Extracts the call's input representation from the HTTP request.
-    * @param request The Jetty HTTP request.
-    * @return The call's input representation.
+    * Extracts the client IP address.
+    * @return The client IP address.
     */
-   private static Representation getInput(HttpRequest request)
+   protected String extractClientAddress()
    {
-      return new InputRepresentation(request.getInputStream(), new MediaTypeImpl(request.getContentType()));
-   }
-
-   /**
-    * Extracts the call's media preferences from the HTTP request.
-    * @param request The Jetty HTTP request.
-    * @return The call's media preferences.
-    */
-   private static List<Preference> getMediaPrefs(HttpRequest request)
-   {
-      List<Preference> result = null;
-      String accept = request.getField(HttpFields.__Accept);
-
-      if(accept != null)
-      {
-         PreferenceReaderImpl pr = new PreferenceReaderImpl(PreferenceReaderImpl.TYPE_MEDIA_TYPE, accept);
-         result = pr.readPreferences();
-      }
-      else
-      {
-         result = new ArrayList<Preference>();
-         result.add(new PreferenceImpl(MediaTypes.ALL));
-      }
-
-      return result;
-   }
-
-   /**
-    * Extracts the call's character set preferences from the HTTP request.
-    * @param request The Jetty HTTP request.
-    * @return The call's character set preferences.
-    */
-   private static List<Preference> getCharacterSetPrefs(HttpRequest request)
-   {
-      // Implementation according to
-      // http://www.w3.org/Protocols/rfc2616/rfc2616-sec14.html#sec14.2
-      List<Preference> result = null;
-      String acceptCharset = request.getField(HttpFields.__AcceptCharset);
-
-      if(acceptCharset != null)
-      {
-         if(acceptCharset.length() == 0)
-         {
-            result = new ArrayList<Preference>();
-            result.add(new PreferenceImpl(CharacterSets.ISO_8859_1));
-         }
-         else
-         {
-            PreferenceReaderImpl pr = new PreferenceReaderImpl(PreferenceReaderImpl.TYPE_CHARACTER_SET,
-                  acceptCharset);
-            result = pr.readPreferences();
-         }
-      }
-      else
-      {
-         result = new ArrayList<Preference>();
-         result.add(new PreferenceImpl(CharacterSets.ALL));
-      }
-
-      return result;
-   }
-
-   /**
-    * Extracts the call's language preferences from the HTTP request.
-    * @param request The Jetty HTTP request.
-    * @return The call's language preferences.
-    */
-   private static List<Preference> getLanguagePrefs(HttpRequest request)
-   {
-      List<Preference> result = null;
-      String acceptLanguage = request.getField(HttpFields.__AcceptLanguage);
-
-      if(acceptLanguage != null)
-      {
-         PreferenceReaderImpl pr = new PreferenceReaderImpl(PreferenceReaderImpl.TYPE_LANGUAGE,
-               acceptLanguage);
-         result = pr.readPreferences();
-      }
-      else
-      {
-         result = new ArrayList<Preference>();
-         result.add(new PreferenceImpl(Languages.ALL));
-      }
-
-      return result;
-   }
-
-   /**
-    * Extracts the call's cookies from the HTTP request.
-    * @param request The Jetty HTTP request.
-    * @return The call's cookies.
-    */
-   private static Cookies getCookies(HttpRequest request)
-   {
-      Cookies result = null;
-
-      if(request.getField(HttpFields.__Cookie) != null)
-      {
-         result = new com.noelios.restlet.data.CookiesImpl(request.getField(HttpFields.__Cookie));
-      }
-
-      return result;
-   }
-
-   /**
-    * Ectracts the call's security data from the HTTP request.
-    * @param request The Jetty HTTP request.
-    * @return The call's security data.
-    */
-   private static Security getSecurity(HttpRequest request)
-   {
-      Security result = new SecurityImpl();
-      result.setConfidential(request.isConfidential());
-
-      String authorization = request.getField(HttpFields.__Authorization);
-      if(authorization != null)
-      {
-         int space = authorization.indexOf(' ');
-
-         if(space != -1)
-         {
-            String scheme = authorization.substring(0, space);
-            String credentials = authorization.substring(space + 1);
-            ChallengeResponse challengeResponse = new ChallengeResponseImpl(new ChallengeSchemeImpl("HTTP_" + scheme, scheme), credentials);
-            result.setChallengeResponse(challengeResponse);
-         }
-      }
-
-      return result;
+      return this.request.getRemoteAddr();
    }
 
 }

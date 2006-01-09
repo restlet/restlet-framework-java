@@ -26,19 +26,12 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
 import java.net.InetAddress;
-import java.util.Iterator;
 
 import org.mortbay.http.HttpConnection;
 import org.mortbay.http.HttpContext;
 import org.mortbay.http.HttpException;
-import org.mortbay.http.HttpFields;
 import org.mortbay.http.HttpRequest;
 import org.mortbay.http.HttpResponse;
-import org.restlet.UniformCall;
-import org.restlet.data.ChallengeRequest;
-import org.restlet.data.CookieSetting;
-import org.restlet.data.MediaTypes;
-import org.restlet.data.RepresentationMetadata;
 
 /**
  * Restlet handler for Jetty HTTP calls.
@@ -70,108 +63,25 @@ public class JettyConnection extends HttpConnection
     * @exception HttpException
     * @exception IOException
     */
-   protected HttpContext service(HttpRequest request, HttpResponse response) throws HttpException,
-         IOException
+   protected HttpContext service(HttpRequest request, HttpResponse response) throws HttpException, IOException
    {
-      try
-      {
-         UniformCall call = new JettyCall(request, response);
-         getJettyConnector().getTarget().handle(call);
+      JettyCall call = new JettyCall(request, response);
+      getJettyConnector().getTarget().handle(call);
+      call.reply();
 
-         // Set the status code in the response
-         if(call.getStatus() != null)
-         {
-            response.setStatus(call.getStatus().getHttpCode(), call.getStatus().getDescription());
-         }
+      // Commit the response and ensures that all data is flushed out to the caller
+      response.commit();
 
-         // Set cookies
-         CookieSetting cookieSetting;
-         for(Iterator iter = call.getCookieSettings().iterator(); iter.hasNext();)
-         {
-            cookieSetting = (CookieSetting)iter.next();
-            response.addSetCookie(new JettyCookie(cookieSetting));
-         }
+      // Indicates that the request fully handled
+      request.setHandled(true);
 
-         if((response.getStatus() == HttpResponse.__201_Created)
-               || (response.getStatus() == HttpResponse.__300_Multiple_Choices)
-               || (response.getStatus() == HttpResponse.__301_Moved_Permanently)
-               || (response.getStatus() == HttpResponse.__302_Moved_Temporarily)
-               || (response.getStatus() == HttpResponse.__303_See_Other) || (response.getStatus() == 307))
-         {
-            // Extract the redirection URI from the call output
-            if((call.getOutput() != null)
-                  && (call.getOutput().getMetadata().getMediaType().equals(MediaTypes.TEXT_URI)))
-            {
-               response.setField(HttpFields.__Location, call.getOutput().toString());
-               call.setOutput(null);
-            }
-         }
-         else if(response.getStatus() == HttpResponse.__401_Unauthorized)
-         {
-            if((call.getSecurity() != null) && (call.getSecurity().getChallengeRequest() != null))
-            {
-               ChallengeRequest challenge = call.getSecurity().getChallengeRequest();
-               response.setField(HttpFields.__WwwAuthenticate, challenge.getScheme().getTechnicalName() + " realm=\"" + challenge.getRealm() + '"');
-            }
-         }
-
-         // If an output was set during the call, copy it to the output stream;
-         if(call.getOutput() != null)
-         {
-            RepresentationMetadata meta = call.getOutput().getMetadata();
-
-            if(meta.getMediaType() != null)
-            {
-               StringBuilder contentType = new StringBuilder(meta.getMediaType().getName());
-
-               if(meta.getCharacterSet() != null)
-               {
-                  // Specify the character set parameter
-                  contentType.append("; charset=").append(meta.getCharacterSet().getName());
-               }
-
-               response.setContentType(contentType.toString());
-            }
-
-            if(meta.getExpirationDate() != null)
-            {
-               response.addDateField("Expires", meta.getExpirationDate());
-            }
-
-            if(meta.getModificationDate() != null)
-            {
-               response.addDateField("Last-Modified", meta.getModificationDate());
-            }
-
-            if(meta.getTag() != null)
-            {
-               response.addField("ETag", meta.getTag().getName());
-            }
-            
-            response.setContentLength((int)call.getOutput().getSize());
-
-            // Send the output to the client
-            call.getOutput().write(response.getOutputStream());
-         }
-
-         // Commit the response and ensures that all data is flushed out to the
-         // caller
-         response.commit();
-
-         // Indicates that the request fully handled
-         request.setHandled(true);
-      }
-      catch(Exception re)
-      {
-         response.setStatus(HttpResponse.__500_Internal_Server_Error);
-         request.setHandled(true);
-         re.printStackTrace();
-      }
-
-      // TOODO
       return null;
    }
 
+   /**
+    * Returns the Jetty connector.
+    * @return The Jetty connector.
+    */
    private JettyServer getJettyConnector()
    {
       return (JettyServer)getListener();

@@ -98,6 +98,15 @@ public class JettyServer extends SocketListener implements Server
    }
 
    /**
+    * Indicates if the connector is stopped.
+    * @return True if the connector is stopped.
+    */
+   public boolean isStopped()
+   {
+      return !isStarted();
+   }
+   
+   /**
     * Creates an HttpConnection instance. This method can be used to override the connection instance.
     * @param socket The underlying socket.
     */
