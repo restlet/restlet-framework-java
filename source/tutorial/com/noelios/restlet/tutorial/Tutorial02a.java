@@ -40,7 +40,7 @@ public class Tutorial02a
 
          // Outputting the content of a Web page
          HttpClient client = new HttpClient("My Web client");
-         client.doGet("http://www.restlet.org").getOutput().write(System.out);
+         client.get("http://www.restlet.org").getOutput().write(System.out);
       }
       catch(IOException e)
       {
