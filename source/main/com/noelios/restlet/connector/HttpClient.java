@@ -58,7 +58,7 @@ public class HttpClient extends AbstractConnector implements Client
     * @param resourceUri The URI of the resource to get.
     * @return The representation returned.
     */
-   public UniformCall doGet(String resourceUri)
+   public UniformCall get(String resourceUri)
    {
       UniformCall call = new UniformCallImpl();
       call.setResourceRef(new ReferenceImpl(resourceUri));
@@ -73,7 +73,7 @@ public class HttpClient extends AbstractConnector implements Client
     * @param input The input representation to post.
     * @return The representation returned.
     */
-   public UniformCall doPost(String resourceUri, Representation input)
+   public UniformCall post(String resourceUri, Representation input)
    {
       UniformCall call = new UniformCallImpl();
       call.setResourceRef(new ReferenceImpl(resourceUri));
@@ -89,7 +89,7 @@ public class HttpClient extends AbstractConnector implements Client
     * @param input The input representation to put.
     * @return The representation returned.
     */
-   public UniformCall doPut(String resourceUri, Representation input)
+   public UniformCall put(String resourceUri, Representation input)
    {
       UniformCall call = new UniformCallImpl();
       call.setResourceRef(new ReferenceImpl(resourceUri));
@@ -104,7 +104,7 @@ public class HttpClient extends AbstractConnector implements Client
     * @param resourceUri The URI of the resource to delete.
     * @return The representation returned.
     */
-   public UniformCall doDelete(String resourceUri)
+   public UniformCall delete(String resourceUri)
    {
       UniformCall call = new UniformCallImpl();
       call.setResourceRef(new ReferenceImpl(resourceUri));
