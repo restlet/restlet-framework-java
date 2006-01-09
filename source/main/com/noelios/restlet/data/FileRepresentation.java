@@ -49,12 +49,14 @@ public class FileRepresentation extends AbstractRepresentation
     * Constructor.
     * @param filePath The file's path.
     * @param mediaType The representation's media type.
+    * @param timeToLive The time to live before it expires.
     */
-   public FileRepresentation(String filePath, MediaType mediaType)
+   public FileRepresentation(String filePath, MediaType mediaType, int timeToLive)
    {
       super(mediaType);
       this.file = new File(filePath);
       this.modificationDate = new Date(file.lastModified());
+      this.expirationDate = new Date(file.lastModified() + timeToLive);
       this.mediaType = mediaType;
    }
 

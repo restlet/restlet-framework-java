@@ -41,6 +41,9 @@ public class FileRestlet extends AbstractRestlet
 
    /** The file's media type. */
    private MediaType mediaType;
+   
+   /** Indicates the time to live for a file representation before it expires (in seconds; default to 10 minutes). */
+   protected int timeToLive;
 
    /**
     * Constructor.
@@ -53,6 +56,7 @@ public class FileRestlet extends AbstractRestlet
       super(container);
       this.filePath = filePath;
       this.mediaType = mediaType;
+      this.timeToLive = 600;
    }
 
    /**
@@ -83,6 +87,24 @@ public class FileRestlet extends AbstractRestlet
    }
 
    /**
+    * Returns the time to live for a file representation before it expires (in seconds).
+    * @return The time to live for a file representation before it expires (in seconds).
+    */
+   public int getTimeToLive()
+   {
+      return this.timeToLive;
+   }
+
+   /**
+    * Sets the time to live for a file representation before it expires (in seconds).
+    * @param ttl The time to live for a file representation before it expires (in seconds).
+    */
+   public void setTimeToLive(int ttl)
+   {
+      this.timeToLive = ttl;
+   }
+
+   /**
     * Handles a REST call.
     * @param call The call to handle.
     */
@@ -90,7 +112,7 @@ public class FileRestlet extends AbstractRestlet
    {
       if(call.getPath(0, false).equals(""))
       {
-         call.setOutput(new FileRepresentation(getPath(), getMediaType()));
+         call.setOutput(new FileRepresentation(getPath(), getMediaType(), getTimeToLive()));
       }
       else
       {

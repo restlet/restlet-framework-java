@@ -196,7 +196,8 @@ public class FileResource implements Resource
                   // Add the new variant to the result list
                   if(result == null) result = new ArrayList<RepresentationMetadata>();
                   if(mediaType == null) mediaType = getDirectoryRestlet().getDefaultMediaType();
-                  FileRepresentation fr = new FileRepresentation(currentFile.getAbsolutePath(), mediaType);
+                  FileRepresentation fr = new FileRepresentation(currentFile.getAbsolutePath(), mediaType,
+                        getDirectoryRestlet().getTimeToLive());
                   fr.setCharacterSet(characterSet);
                   fr.setLanguage(language);
                   result.add(fr);

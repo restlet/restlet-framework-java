@@ -56,6 +56,9 @@ public class DirectoryRestlet extends AbstractRestlet
 
    /** Mappings from extensions to metadata. */
    protected Map<String, Metadata> metadataMappings;
+   
+   /** Indicates the time to live for a file representation before it expires (in seconds; default to 10 minutes). */
+   protected int timeToLive;
 
    /**
     * Constructor.
@@ -72,6 +75,7 @@ public class DirectoryRestlet extends AbstractRestlet
       this.defaultMediaType = MediaTypes.TEXT_PLAIN;
       this.indexName = indexName;
       this.metadataMappings = new TreeMap<String, Metadata>();
+      this.timeToLive = 600;
    }
 
    /**
@@ -159,6 +163,24 @@ public class DirectoryRestlet extends AbstractRestlet
       return this.defaultMediaType;
    }
 
+   /**
+    * Returns the time to live for a file representation before it expires (in seconds).
+    * @return The time to live for a file representation before it expires (in seconds).
+    */
+   public int getTimeToLive()
+   {
+      return this.timeToLive;
+   }
+
+   /**
+    * Sets the time to live for a file representation before it expires (in seconds).
+    * @param ttl The time to live for a file representation before it expires (in seconds).
+    */
+   public void setTimeToLive(int ttl)
+   {
+      this.timeToLive = ttl;
+   }
+   
    /**
     * Handles a REST call.
     * @param call The call to handle.
