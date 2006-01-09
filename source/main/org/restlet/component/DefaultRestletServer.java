@@ -145,6 +145,24 @@ public class DefaultRestletServer implements RestletServer
    }
 
    /**
+    * Indicates if the component is started.
+    * @return True if the component is started.
+    */
+   public boolean isStarted()
+   {
+      return delegate.isStarted();
+   }
+
+   /**
+    * Indicates if the component is stopped.
+    * @return True if the component is stopped.
+    */
+   public boolean isStopped()
+   {
+      return delegate.isStopped();
+   }
+
+   /**
     * Handles a uniform call.
     * @param call The uniform call to handle.
     */

@@ -46,6 +46,18 @@ public interface Component extends Element, UniformInterface
    public void stop() throws Exception;
 
    /**
+    * Indicates if the component is started.
+    * @return True if the component is started.
+    */
+   public boolean isStarted();
+
+   /**
+    * Indicates if the component is stopped.
+    * @return True if the component is stopped.
+    */
+   public boolean isStopped();
+   
+   /**
     * Returns the name of this REST component.
     * @return The name of this REST component.
     */

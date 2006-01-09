@@ -160,12 +160,15 @@ public class DefaultRestletContainer implements RestletContainer
    }
 
    /**
-    * Delegates a call to attached restlets.
+    * Delegates a call to attached restlets.<br/>
+    * If no delegation is possible, an error status (406, not found) will be returned.
     * @param call The call to delegate.
+    * @return True if the call was successfully delegated.
+    * @throws RestletException
     */
-   public void delegate(RestletCall call) throws RestletException
+   public boolean delegate(RestletCall call) throws RestletException
    {
-      delegate.delegate(call);
+      return delegate.delegate(call);
    }
 
    /** Start hook. */
@@ -178,6 +181,24 @@ public class DefaultRestletContainer implements RestletContainer
    public void stop() throws Exception
    {
       delegate.stop();
+   }
+
+   /**
+    * Indicates if the component is started.
+    * @return True if the component is started.
+    */
+   public boolean isStarted()
+   {
+      return delegate.isStarted();
+   }
+
+   /**
+    * Indicates if the component is stopped.
+    * @return True if the component is stopped.
+    */
+   public boolean isStopped()
+   {
+      return delegate.isStopped();
    }
 
    /**

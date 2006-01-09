@@ -46,6 +46,18 @@ public interface Connector extends Element
    public void stop() throws Exception;
 
    /**
+    * Indicates if the connector is started.
+    * @return True if the connector is started.
+    */
+   public boolean isStarted();
+
+   /**
+    * Indicates if the connector is stopped.
+    * @return True if the connector is stopped.
+    */
+   public boolean isStopped();
+
+   /**
     * Returns the name of this REST connector.
     * @return The name of this REST connector.
     */

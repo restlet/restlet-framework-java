@@ -27,8 +27,11 @@ package org.restlet.connector;
  */
 public abstract class AbstractConnector implements Connector
 {
+   /** Indicates if the connector was started. */
+   protected boolean started;
+
    /** The name of this REST connector. */
-   private String name;
+   protected String name;
 
    /**
     * Constructor.
@@ -36,6 +39,7 @@ public abstract class AbstractConnector implements Connector
     */
    public AbstractConnector(String name)
    {
+      this.started = false;
       this.name = name;
    }
 
@@ -60,13 +64,31 @@ public abstract class AbstractConnector implements Connector
    /** Start hook. */
    public void start()
    {
-      // No default action
+      this.started = true;
    }
 
    /** Stop hook. */
    public void stop()
    {
-      // No default action
+      this.started = false;
+   }
+
+   /**
+    * Indicates if the connector is started.
+    * @return True if the connector is started.
+    */
+   public boolean isStarted()
+   {
+      return this.started;
+   }
+
+   /**
+    * Indicates if the connector is stopped.
+    * @return True if the connector is stopped.
+    */
+   public boolean isStopped()
+   {
+      return !isStarted();
    }
 
 }
