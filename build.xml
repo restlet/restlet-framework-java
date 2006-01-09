@@ -21,6 +21,7 @@
   <property name="classes-jdbc3.0"        location="${classes}/ext/jdbc3.0"/>
   <property name="classes-jetty5.1"       location="${classes}/ext/jetty5.1"/>
   <property name="classes-jetty6.0"       location="${classes}/ext/jetty6.0"/>
+  <property name="classes-servlet2.4"     location="${classes}/ext/servlet2.4"/>
   <property name="classes-tutorial"       location="${classes}/tutorial"/>
   <property name="classes-test"           location="${classes}/test"/>
 
@@ -31,6 +32,7 @@
   <property name="src-jdbc3.0"         location="${src}/ext/jdbc3.0"/>
   <property name="src-jetty5.1"        location="${src}/ext/jetty5.1"/>
   <property name="src-jetty6.0"        location="${src}/ext/jetty6.0"/>
+  <property name="src-servlet2.4"      location="${src}/ext/servlet2.4"/>
   <property name="src-tutorial"        location="${src}/tutorial"/>
   <property name="src-test"            location="${src}/test"/>
   
@@ -71,6 +73,13 @@
     </fileset>
   </path>
   
+  <path id="path-servlet2.4">
+    <pathelement path="${classes-main}"/>
+    <fileset dir="${lib}/servlet2.4">
+      <include name="*.jar"/>
+    </fileset>
+  </path>
+  
   <path id="path-tutorial">
     <pathelement path="${classes-main}"/>
     <pathelement path="${classes-jetty5.1}"/>
@@ -90,10 +99,12 @@
     <pathelement path="${classes-javamail1.3}"/>
     <pathelement path="${classes-jdbc3.0}"/>
     <pathelement path="${classes-jetty5.1}"/>
+    <pathelement path="${classes-servlet2.4}"/>
     <path refid="path-freemarker2.3"/>
     <path refid="path-javamail1.3"/>
     <path refid="path-jdbc3.0"/>
     <path refid="path-jetty5.1"/>
+    <path refid="path-servlet2.4"/>
   </path>
   
 
@@ -138,6 +149,10 @@
     <!-- Compiles extension Jetty 6.0 -->
     <mkdir dir="${classes-jetty6.0}"/>
     <javac debug="true" srcdir="${src-jetty6.0}"  destdir="${classes-jetty6.0}" classpathref="path-jetty6.0"/>
+    
+    <!-- Compiles extension Servlet 2.4 -->
+    <mkdir dir="${classes-servlet2.4}"/>
+    <javac debug="true" srcdir="${src-servlet2.4}"  destdir="${classes-servlet2.4}" classpathref="path-servlet2.4"/>
     
     <!-- Compiles tutorial source files -->
     <mkdir dir="${classes-tutorial}"/>
@@ -373,6 +388,31 @@
       </manifest>
     </jar>
     
+    <!-- Create extension Servlet 2.4 jar file -->
+    <jar jarfile="${dist}/${DSTAMP}/lib/servlet2.4/restlet.servlet.jar" basedir="${classes-servlet2.4}">
+      <manifest>
+        <attribute name="Built-By" value="${author}"/>
+        <section name="com.noelios.restlet.ext.servlet">
+          <attribute name="Implementation-Title" value="${restlet-ri}"/>
+          <attribute name="Implementation-Version" value="${version-full} ${TODAY}"/> 
+          <attribute name="Implementation-Vendor" value="${author}"/>
+        </section>
+      </manifest>
+    </jar>
+    
+    <!-- Create extension Servlet 2.4 source jar file -->
+    <mkdir dir="${dist}/${DSTAMP}/src/servlet2.4"/>
+    <jar jarfile="${dist}/${DSTAMP}/src/servlet2.4/restlet.jetty.jar" basedir="${src-servlet2.4}" includes="com/noelios/restlet/**" excludes="${excludes}">
+      <manifest>
+        <attribute name="Built-By" value="${author}"/>
+        <section name="com.noelios.restlet.ext.servlet">
+          <attribute name="Implementation-Title" value="${restlet-ri}"/>
+          <attribute name="Implementation-Version" value="${version-full} ${TODAY}"/> 
+          <attribute name="Implementation-Vendor" value="${author}"/>
+        </section>
+      </manifest>
+    </jar>
+    
     <!-- Create the final zip file -->
     <zip destfile="${dist}/restlet-${version-compact}.zip" basedir="${dist}/${DSTAMP}" includes="**/*"/>
 
@@ -405,6 +445,7 @@
          <pathelement path="${src-javamail1.3}"/>
          <pathelement path="${src-jdbc3.0}"/>
          <pathelement path="${src-jetty5.1}"/>
+         <pathelement path="${src-servlet2.4}"/>
       </sourcepath>
 
       <bottom><![CDATA[<i>Copyright &#169; 2005-2006 J&eacute;r&ocirc;me Louvel. Restlet is a trademark and service mark of <a target="_top" href="http://www.noelios.com/en">Noelios Consulting</a>.</i>]]></bottom>
@@ -438,6 +479,7 @@
          <pathelement path="${src-javamail1.3}"/>
          <pathelement path="${src-jdbc3.0}"/>
          <pathelement path="${src-jetty5.1}"/>
+         <pathelement path="${src-servlet2.4}"/>
       </sourcepath>
       
       <bottom><![CDATA[<i>Copyright &#169; 2005-2006 J&eacute;r&ocirc;me Louvel. Restlet is a trademark and service mark of <a target="_top" href="http://www.noelios.com/en">Noelios Consulting</a>.</i>]]></bottom>
