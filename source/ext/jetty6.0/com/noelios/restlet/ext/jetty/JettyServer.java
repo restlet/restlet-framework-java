@@ -22,7 +22,10 @@
 
 package com.noelios.restlet.ext.jetty;
 
+import java.io.IOException;
 import java.net.InetSocketAddress;
+
+import javax.servlet.ServletException;
 
 import org.mortbay.jetty.Connector;
 import org.mortbay.jetty.HttpConnection;
@@ -86,7 +89,7 @@ public class JettyServer extends org.mortbay.jetty.Server implements Server
     * Handles a HTTP connection.
     * @param connection The connection to handle.
     */
-   public void handle(HttpConnection connection)
+   public void handle(HttpConnection connection) throws IOException, ServletException
    {
       JettyCall call = new JettyCall(connection);
       getTarget().handle(call);
