@@ -27,6 +27,7 @@ import java.io.IOException;
 import org.restlet.component.RestletContainer;
 import org.restlet.component.RestletServer;
 import org.restlet.data.CharacterSet;
+import org.restlet.data.Conditions;
 import org.restlet.data.CookieSetting;
 import org.restlet.data.Form;
 import org.restlet.data.Reference;
@@ -117,5 +118,11 @@ public interface Factory
     * @return New security data.
     */
    public Security createSecurity();
+
+   /**
+    * Creates new conditions data.
+    * @return New conditions data.
+    */
+   public Conditions createConditions();
 
 }

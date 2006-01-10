@@ -33,6 +33,14 @@ import org.restlet.data.*;
 public interface UniformCall
 {
    /**
+    * Returns the best variant representation for a given resource according the the client preferences.
+    * @param resource The resource for which the best representation needs to be set.
+    * @return The best variant representation. 
+    * @see <a href="http://httpd.apache.org/docs/2.2/en/content-negotiation.html#algorithm">Apache content negotiation algorithm</a>
+    */
+   public RepresentationMetadata getBestVariant(Resource resource);
+
+   /**
     * Returns the character set preferences of the user agent.
     * @return The character set preferences of the user agent.
     */
@@ -50,6 +58,12 @@ public interface UniformCall
     */
    public String getClientName();
 
+   /**
+    * Returns the conditions applying to this call.
+    * @return The conditions applying to this call.
+    */
+   public Conditions getConditions();
+   
    /**
     * Returns the cookies sent by the user agent.
     * @return The cookies sent by the user agent.
@@ -120,13 +134,13 @@ public interface UniformCall
    public Status getStatus();
 
    /**
-    * Sets the best representation of a given resource according to the user agent preferences. If no
-    * representation is found, sets the status to "Not found". If no acceptable representation is available,
-    * sets the status to "Not acceptable".
+    * Sets the best representation of a given resource according to the client preferences.<br/> 
+    * If no representation is found, sets the status to "Not found".<br/>
+    * If no acceptable representation is available, sets the status to "Not acceptable".<br/>
     * @param resource The resource for which the best representation needs to be set.
-    * @throws RestletException
+    * @see <a href="http://httpd.apache.org/docs/2.2/en/content-negotiation.html#algorithm">Apache content negotiation algorithm</a>
     */
-   public void setBestOutput(Resource resource) throws RestletException;
+   public void setBestOutput(Resource resource);
 
    /**
     * Sets the character set preferences of the user agent.
@@ -145,6 +159,12 @@ public interface UniformCall
     * @param name The client's name.
     */
    public void setClientName(String name);
+
+   /**
+    * Sets the conditions applying to this call.
+    * @param conditions The conditions applying to this call.
+    */
+   public void setConditions(Conditions conditions);
 
    /**
     * Sets the cookies sent by the user agent.

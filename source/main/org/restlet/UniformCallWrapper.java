@@ -46,6 +46,17 @@ public class UniformCallWrapper implements UniformCall
    }
 
    /**
+    * Returns the best variant representation for a given resource according the the client preferences.
+    * @param resource The resource for which the best representation needs to be set.
+    * @return The best variant representation. 
+    * @see <a href="http://httpd.apache.org/docs/2.2/en/content-negotiation.html#algorithm">Apache content negotiation algorithm</a>
+    */
+   public RepresentationMetadata getBestVariant(Resource resource)
+   {
+      return getWrappedCall().getBestVariant(resource);
+   }
+
+   /**
     * Returns the character set preferences of the user agent.
     * @return The character set preferences of the user agent.
     */
@@ -70,6 +81,15 @@ public class UniformCallWrapper implements UniformCall
    public String getClientName()
    {
       return getWrappedCall().getClientName();
+   }
+
+   /**
+    * Returns the conditions applying to this call if any.
+    * @return The conditions applying to this call if any.
+    */
+   public Conditions getConditions()
+   {
+      return getWrappedCall().getConditions();
    }
 
    /**
@@ -184,12 +204,13 @@ public class UniformCallWrapper implements UniformCall
    }
 
    /**
-    * Sets the best representation of a given resource according to the user agent preferences. If no
-    * representation is found, sets the status to "Not found". If no acceptable representation is available,
-    * sets the status to "Not acceptable".
+    * Sets the best representation of a given resource according to the client preferences.<br/> 
+    * If no representation is found, sets the status to "Not found".<br/>
+    * If no acceptable representation is available, sets the status to "Not acceptable".<br/>
     * @param resource The resource for which the best representation needs to be set.
+    * @see <a href="http://httpd.apache.org/docs/2.2/en/content-negotiation.html#algorithm">Apache content negotiation algorithm</a>
     */
-   public void setBestOutput(Resource resource) throws RestletException
+   public void setBestOutput(Resource resource)
    {
       getWrappedCall().setBestOutput(resource);
    }
@@ -219,6 +240,15 @@ public class UniformCallWrapper implements UniformCall
    public void setClientName(String name)
    {
       getWrappedCall().setClientName(name);
+   }
+
+   /**
+    * Sets the conditions applying to this call if any.
+    * @param conditions The conditions applying to this call if any.
+    */
+   public void setConditions(Conditions conditions)
+   {
+      getWrappedCall().setConditions(conditions);      
    }
 
    /**
