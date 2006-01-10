@@ -64,6 +64,9 @@
     <fileset dir="${lib}/jetty5.1">
       <include name="*.jar"/>
     </fileset>
+    <fileset dir="${lib}/servlet2.4">
+      <include name="*.jar"/>
+    </fileset>
   </path>
   
   <path id="path-jetty6.0">
@@ -71,11 +74,21 @@
     <fileset dir="${lib}/jetty6.0">
       <include name="*.jar"/>
     </fileset>
+    <fileset dir="${lib}/servlet2.5">
+      <include name="*.jar"/>
+    </fileset>
   </path>
   
   <path id="path-servlet2.4">
     <pathelement path="${classes-main}"/>
     <fileset dir="${lib}/servlet2.4">
+      <include name="*.jar"/>
+    </fileset>
+  </path>
+  
+  <path id="path-servlet2.5">
+    <pathelement path="${classes-main}"/>
+    <fileset dir="${lib}/servlet2.5">
       <include name="*.jar"/>
     </fileset>
   </path>

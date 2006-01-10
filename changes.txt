@@ -5,18 +5,22 @@
 
 
 0.19 beta
- - Added a Samples application page detailling the source code of the Restlet and Noelios Consulting Web sites (idea of Michael Mayer)
+ - Added a Samples application page detailling the source code of the Restlet and Noelios Consulting Web sites (suggested by Michael Mayer)
+ - Added "conditions" property to UniformCall and a Conditions interface to support conditional REST methods.
+   This is currently used by the server-side negotiation logic to prevent sending again an unmodified representation.
+ - Added getBestVariant() to UniformCall and related classes. Logic was internally used by the setBestOutput() method before.
  - Fixed bugs in Tutoria11 example (reported by Roger Menday)
  - Added isStarted and isStopped methods to connectors and components interfaces (suggested by Roger Menday)
  - The Maplet.delegate method now returns a boolean to indicate if the delegation suceeded
  - Updated Jetty connectors to versions 5.1.10 and 6.0 beta 5
- - Added HTTP server connector based on Servlet API 2.4 to allow deployment of Restlets within a Web container instead 
-   of using the standalone mode based on Jetty HTTP server connectors. Added ServerServlet and ServletCall classes
-   Note that there is a performance cost for the extra Servlet layer
+ - Added HTTP server connector based on Servlet API 2.4 to allow deployment of Restlets within existing Web container instead 
+   of using the standalone mode based on the much lighter Jetty HTTP server connectors. Added ServerServlet and ServletCall classes.
+   Be advised that there is a performance cost for the extra Servlet layer.
  - Refactored all HTTP server connectors to use a common base HttpCall class. Removed JettyCookie classes
  - Renamed HttpClient.doGet, doPost, doPut and deDelete methods into HttpClient.get, post, put and delete for simplification purpose
  - Removed duplicate UniformCallImpl.setReferrer method
  - Added a "timeToLive" property on FileRestlet and DirectoryRestlet to allow automatic setting of an expiration date
+ - Added DateUtils class to provide date comparison with only second precision (useful to compare with HTTP dates)
  
 0.18 beta
  - Added a GuardChainlet providing support for the HTTP basic authentication.
