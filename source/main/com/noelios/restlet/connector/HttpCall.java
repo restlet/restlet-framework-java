@@ -26,12 +26,14 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.Iterator;
 import java.util.List;
 
 import org.restlet.data.ChallengeRequest;
 import org.restlet.data.ChallengeResponse;
 import org.restlet.data.CharacterSets;
+import org.restlet.data.Conditions;
 import org.restlet.data.CookieSetting;
 import org.restlet.data.Cookies;
 import org.restlet.data.Languages;
@@ -43,10 +45,12 @@ import org.restlet.data.Reference;
 import org.restlet.data.Representation;
 import org.restlet.data.RepresentationMetadata;
 import org.restlet.data.Security;
+import org.restlet.data.Tag;
 
 import com.noelios.restlet.UniformCallImpl;
 import com.noelios.restlet.data.ChallengeResponseImpl;
 import com.noelios.restlet.data.ChallengeSchemeImpl;
+import com.noelios.restlet.data.ConditionsImpl;
 import com.noelios.restlet.data.CookiesImpl;
 import com.noelios.restlet.data.InputRepresentation;
 import com.noelios.restlet.data.MediaTypeImpl;
@@ -55,6 +59,7 @@ import com.noelios.restlet.data.PreferenceImpl;
 import com.noelios.restlet.data.PreferenceReaderImpl;
 import com.noelios.restlet.data.ReferenceImpl;
 import com.noelios.restlet.data.SecurityImpl;
+import com.noelios.restlet.data.TagImpl;
 
 /**
  * Base class for HTTP based uniform calls.
@@ -77,6 +82,12 @@ public abstract class HttpCall extends UniformCallImpl
    public static final String HEADER_CONTENT_LENGTH = "Content-Length";
    public static final String HEADER_CONTENT_TYPE = "Content-Type";
    public static final String HEADER_ETAG = "ETag";
+   public static final String HEADER_EXPIRES = "Expires";
+   public static final String HEADER_IF_MATCH = "If-Match";
+   public static final String HEADER_IF_MODIFIED_SINCE = "If-Modified-Since";
+   public static final String HEADER_IF_NONE_MATCH = "If-None-Match";
+   public static final String HEADER_IF_UNMODIFIED_SINCE = "If-Unmodified-Since";
+   public static final String HEADER_LAST_MODIFIED = "Last-Modified";
    public static final String HEADER_LOCATION = "Location";
    public static final String HEADER_REFERRER = "Referer";
    public static final String HEADER_USER_AGENT = "User-Agent";
@@ -98,6 +109,7 @@ public abstract class HttpCall extends UniformCallImpl
       setReferrerRef(extractReferrer());
       setResourceRef(extractResource());
       setSecurity(extractSecurity());
+      setConditions(extractConditions());
    }
 
    /**
@@ -165,12 +177,12 @@ public abstract class HttpCall extends UniformCallImpl
    
             if(meta.getExpirationDate() != null)
             {
-               setResponseHeader("Expires", meta.getExpirationDate().getTime());
+               setResponseDateHeader(HEADER_EXPIRES, meta.getExpirationDate().getTime());
             }
    
             if(meta.getModificationDate() != null)
             {
-               setResponseHeader("Last-Modified", meta.getModificationDate().getTime());
+               setResponseDateHeader(HEADER_LAST_MODIFIED, meta.getModificationDate().getTime());
             }
    
             if(meta.getTag() != null)
@@ -189,12 +201,18 @@ public abstract class HttpCall extends UniformCallImpl
       }
       catch(IOException ioe)
       {
-         
       }
    }
    
    /**
-    * Returns a request header value.
+    * Returns a request date header value.
+    * @param name The name of the header.
+    * @return A header value.
+    */
+   public abstract long getRequestDateHeader(String name);
+   
+   /**
+    * Returns a request date header value.
     * @param name The name of the header.
     * @return A header value.
     */
@@ -220,11 +238,11 @@ public abstract class HttpCall extends UniformCallImpl
    public abstract void setResponseHeader(String name, String value);
    
    /**
-    * Sets a response header value.
+    * Sets a response date header value.
     * @param name The name of the header.
     * @param date The value of the header.
     */
-   public abstract void setResponseHeader(String name, long date);
+   public abstract void setResponseDateHeader(String name, long date);
 
    /**
     * Sets the response's status code.
@@ -466,6 +484,67 @@ public abstract class HttpCall extends UniformCallImpl
          }
       }
 
+      return result;
+   }
+
+   /**
+    * Extracts the call's conditions from the HTTP request.
+    * @return The call's conditions.
+    */
+   protected Conditions extractConditions()
+   {
+      Conditions result = new ConditionsImpl();
+
+      // Extract the If-Modified-Since date
+      long ifModifiedSince = getRequestDateHeader(HEADER_IF_MODIFIED_SINCE);
+      if(ifModifiedSince != -1)
+      {
+         result.setModifiedSince(new Date(ifModifiedSince));
+      }
+
+      // Extract the If-Unmodified-Since date
+      long ifUnmodifiedSince = getRequestDateHeader(HEADER_IF_UNMODIFIED_SINCE);
+      if(ifUnmodifiedSince != -1)
+      {
+         result.setUnmodifiedSince(new Date(ifUnmodifiedSince));
+      }
+
+      // Extract the If-Match tags
+      List<Tag> match = null;
+      String matchHeader = getRequestHeader(HEADER_IF_MATCH);
+      if(matchHeader != null)
+      {
+         String[] tags = matchHeader.split(",");
+         for (int i = 0; i < tags.length; i++)
+         {
+            if(match == null) 
+            {
+               match = new ArrayList<Tag>();
+               result.setMatch(match);
+            }
+            
+            match.add(new TagImpl(tags[i]));
+         }
+      }
+
+      // Extract the If-None-Match tags
+      List<Tag> noneMatch = null;
+      String noneMatchHeader = getRequestHeader(HEADER_IF_NONE_MATCH);
+      if(noneMatchHeader != null)
+      {
+         String[] tags = noneMatchHeader.split(",");
+         for (int i = 0; i < tags.length; i++)
+         {
+            if(noneMatch == null) 
+            {
+               noneMatch = new ArrayList<Tag>();
+               result.setNoneMatch(noneMatch);
+            }
+            
+            noneMatch.add(new TagImpl(tags[i]));
+         }
+      }
+      
       return result;
    }
    

@@ -37,16 +37,12 @@ import org.restlet.data.Statuses;
 import com.noelios.restlet.data.StringRepresentation;
 
 /**
- * Chainlet associating an output representation to the filtered calls,
- * after the handling, based on the call status (error, information, etc.).<br/>
- * In order to customize the default representation, just subclass this class and
- * override the "getRepresentation" method.<br/>
- * If any exception occurs during the call handling, a "server internal error"
- * status is automatically associated to the call. Of course, you can personalize the
- * representation of this error. Also, if no status is set (null), then the
- * "success ok" status is assumed.<br/>
- * However, it is important to pay proper attention to
- * the
+ * Chainlet associating an output representation to the filtered calls, after the handling, based on the call
+ * status (error, information, etc.).<br/> In order to customize the default representation, just subclass
+ * this class and override the "getRepresentation" method.<br/> If any exception occurs during the call
+ * handling, a "server internal error" status is automatically associated to the call. Of course, you can
+ * personalize the representation of this error. Also, if no status is set (null), then the "success ok"
+ * status is assumed.<br/> However, it is important to pay proper attention to the
  */
 public class StatusChainlet extends AbstractChainlet
 {
@@ -102,15 +98,17 @@ public class StatusChainlet extends AbstractChainlet
       }
 
       // Do we need to get an output representation for the current status?
-      if(!call.getStatus().equals(Statuses.SUCCESS_OK) && ((call.getOutput() == null) || overwrite))
+      if(!call.getStatus().equals(Statuses.SUCCESS_OK)
+            && !call.getStatus().equals(Statuses.REDIRECTION_NOT_MODIFIED)
+            && ((call.getOutput() == null) || overwrite))
       {
          call.setOutput(getRepresentation(call.getStatus(), call));
       }
    }
 
    /**
-    * Returns a representation for the given status.<br/>
-    * In order to customize the default representation, this method can be overriden.
+    * Returns a representation for the given status.<br/> In order to customize the default representation,
+    * this method can be overriden.
     * @param status The status to represent.
     * @param call The related call that was handled.
     * @return The representation of the given status.

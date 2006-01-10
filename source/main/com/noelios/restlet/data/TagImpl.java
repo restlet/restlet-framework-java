@@ -37,13 +37,32 @@ public class TagImpl implements Tag
 
    /**
     * Constructor.
-    * @param tag
-    * @param weak
+    * @param tag The tag value.
+    * @param weak The weakness indicator.
     */
    public TagImpl(String tag, boolean weak)
    {
       this.tag = tag;
       this.weak = weak;
+   }
+
+   /**
+    * Constructor.
+    * @param name The tag name similar to the HTTP tag string.
+    */
+   public TagImpl(String name)
+   {
+      if(name.startsWith("W"))
+      {
+         this.weak = true;
+         name = name.substring(1);
+      }
+      else
+      {
+         this.weak = false;
+      }
+      
+      this.tag = name.substring(1, name.length() - 2);
    }
 
    /**

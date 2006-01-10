@@ -33,6 +33,7 @@ import org.restlet.UniformCall;
 import org.restlet.component.RestletContainer;
 import org.restlet.component.RestletServer;
 import org.restlet.data.CharacterSet;
+import org.restlet.data.Conditions;
 import org.restlet.data.CookieSetting;
 import org.restlet.data.Form;
 import org.restlet.data.Reference;
@@ -42,6 +43,7 @@ import org.restlet.data.Security;
 import com.noelios.restlet.component.RestletContainerImpl;
 import com.noelios.restlet.component.RestletServerImpl;
 import com.noelios.restlet.data.CharacterSetImpl;
+import com.noelios.restlet.data.ConditionsImpl;
 import com.noelios.restlet.data.CookieSettingImpl;
 import com.noelios.restlet.data.FormImpl;
 import com.noelios.restlet.data.ReferenceImpl;
@@ -170,6 +172,15 @@ public class Engine implements Factory
    public Security createSecurity()
    {
       return new SecurityImpl();
+   }
+
+   /**
+    * Creates new conditions data.
+    * @return New conditions data.
+    */
+   public Conditions createConditions()
+   {
+      return new ConditionsImpl();
    }
 
 }

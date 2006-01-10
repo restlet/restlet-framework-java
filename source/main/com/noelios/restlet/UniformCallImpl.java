@@ -25,16 +25,31 @@ package com.noelios.restlet;
 import java.net.InetAddress;
 import java.net.UnknownHostException;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.Iterator;
 import java.util.List;
 import java.util.logging.Logger;
 
 import org.restlet.Resource;
-import org.restlet.RestletException;
 import org.restlet.UniformCall;
-import org.restlet.data.*;
+import org.restlet.data.Conditions;
+import org.restlet.data.CookieSetting;
+import org.restlet.data.Cookies;
+import org.restlet.data.Language;
+import org.restlet.data.MediaType;
+import org.restlet.data.MediaTypes;
+import org.restlet.data.Method;
+import org.restlet.data.Parameter;
+import org.restlet.data.Preference;
+import org.restlet.data.Reference;
+import org.restlet.data.Representation;
+import org.restlet.data.RepresentationMetadata;
+import org.restlet.data.Security;
+import org.restlet.data.Status;
+import org.restlet.data.Statuses;
 
 import com.noelios.restlet.data.StringRepresentation;
+import com.noelios.restlet.util.DateUtils;
 
 /**
  * Default call implementation.
@@ -53,6 +68,9 @@ public class UniformCallImpl implements UniformCall
    /** The client's name. */
    protected String clientName;
 
+   /** The call's conditions. */
+   protected Conditions conditions;
+   
    /** The existing cookies of the user agent. */
    protected Cookies cookies;
 
@@ -164,6 +182,15 @@ public class UniformCallImpl implements UniformCall
    public String getClientName()
    {
       return this.clientName;
+   }
+
+   /**
+    * Returns the conditions applying to this call if any.
+    * @return The conditions applying to this call if any.
+    */
+   public Conditions getConditions()
+   {
+      return this.conditions;
    }
 
    /**
@@ -292,13 +319,12 @@ public class UniformCallImpl implements UniformCall
    }
 
    /**
-    * Sets the best representation of a given resource according to the user agent preferences. If no
-    * representation is found, sets the status to "Not found". If no acceptable representation is available,
-    * sets the status to "Not acceptable".
+    * Returns the best variant representation for a given resource according the the client preferences.
     * @param resource The resource for which the best representation needs to be set.
+    * @return The best variant representation. 
     * @see <a href="http://httpd.apache.org/docs/2.2/en/content-negotiation.html#algorithm">Apache content negotiation algorithm</a>
     */
-   public void setBestOutput(Resource resource) throws RestletException
+   public RepresentationMetadata getBestVariant(Resource resource)
    {
       Parameter currentParam = null;
       boolean compatiblePref = false;
@@ -501,21 +527,45 @@ public class UniformCallImpl implements UniformCall
                bestMediaTypeScore = 0;
             }
          }
-
-         if(bestVariant == null)
+      }
+      
+      return bestVariant;
+   }
+   
+   /**
+    * Sets the best representation of a given resource according to the client preferences.<br/> 
+    * If no representation is found, sets the status to "Not found".<br/>
+    * If no acceptable representation is available, sets the status to "Not acceptable".<br/>
+    * @param resource The resource for which the best representation needs to be set.
+    * @see <a href="http://httpd.apache.org/docs/2.2/en/content-negotiation.html#algorithm">Apache content negotiation algorithm</a>
+    */
+   public void setBestOutput(Resource resource)
+   {
+      RepresentationMetadata bestVariant = getBestVariant(resource);
+      
+      if(bestVariant == null)
+      {
+         // No variant was found matching the call preferences
+         setStatus(Statuses.CLIENT_ERROR_NOT_ACCEPTABLE);
+      }
+      else
+      {
+         // Was the representation modified since the last client call?
+         Date modifiedSince = (getConditions() == null) ? null : getConditions().getModifiedSince();
+         if((modifiedSince == null) || DateUtils.after(modifiedSince, bestVariant.getModificationDate()))
          {
-            // No variant was found matchin the call preferences
-            setStatus(Statuses.CLIENT_ERROR_NOT_ACCEPTABLE);
-         }
-         else
-         {
-            // Set the best representation as the call output
+            // Yes, set the best representation as the call output
             setOutput(resource.getRepresentation(bestVariant));
             setStatus(Statuses.SUCCESS_OK);
          }
+         else
+         {
+            // No, indicates it to the client
+            setStatus(Statuses.REDIRECTION_NOT_MODIFIED);
+         }
       }
    }
-
+   
    /**
     * Sets the character set preferences of the user agent.
     * @param prefs The character set preferences of the user agent.
@@ -541,6 +591,15 @@ public class UniformCallImpl implements UniformCall
    public void setClientName(String name)
    {
       this.clientName = name;
+   }
+
+   /**
+    * Sets the conditions applying to this call if any.
+    * @param conditions The conditions applying to this call if any.
+    */
+   public void setConditions(Conditions conditions)
+   {
+      this.conditions = conditions;      
    }
 
    /**
