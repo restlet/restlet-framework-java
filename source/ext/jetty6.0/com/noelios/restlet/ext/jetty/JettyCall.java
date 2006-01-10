@@ -71,6 +71,16 @@ public class JettyCall extends HttpCall
    }
 
    /**
+    * Returns a request date header value.
+    * @param name The name of the header.
+    * @return A header value.
+    */
+   public long getRequestDateHeader(String name)
+   {
+      return getConnection().getRequest().getDateHeader(name);
+   }
+
+   /**
     * Sets a response cookie.
     * @param cookie The cookie setting.
     */
@@ -100,11 +110,11 @@ public class JettyCall extends HttpCall
    }
 
    /**
-    * Sets a response header value.
+    * Sets a response date header value.
     * @param name The name of the header.
     * @param date The value of the header.
     */
-   public void setResponseHeader(String name, long date)
+   public void setResponseDateHeader(String name, long date)
    {
       getConnection().getResponse().setDateHeader(name, date);
    }
