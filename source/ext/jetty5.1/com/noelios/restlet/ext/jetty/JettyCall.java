@@ -84,6 +84,16 @@ public class JettyCall extends HttpCall
    {
       return getRequest().getField(name);
    }
+   
+   /**
+    * Returns a request date header value.
+    * @param name The name of the header.
+    * @return A header value.
+    */
+   public long getRequestDateHeader(String name)
+   {
+      return getRequest().getDateField(name);
+   }
 
    /**
     * Extracts the request stream.
@@ -128,7 +138,7 @@ public class JettyCall extends HttpCall
     * @param name The name of the header.
     * @param date The value of the header.
     */
-   public void setResponseHeader(String name, long date)
+   public void setResponseDateHeader(String name, long date)
    {
       getResponse().setDateField(name, date);
    }
