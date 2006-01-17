@@ -23,8 +23,9 @@
 package org.restlet;
 
 /**
- * Mapper of calls to other restlets. Automatic delegation is provided for attached restlets.
- * Note that during the delegation, the restlet call paths are supposed to be modified.
+ * Mapper of calls to attached handlers.<br/>
+ * Delegation is based on path matching pattterns.<br/>
+ * Note that during the delegation, the call paths are automatically modified.
  */
 public interface Maplet extends Restlet
 {

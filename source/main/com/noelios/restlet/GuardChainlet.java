@@ -39,9 +39,8 @@ import com.noelios.restlet.data.ChallengeRequestImpl;
 import com.noelios.restlet.util.Base64;
 
 /**
- * Chainlet guarding the access to another restlet.
- * Supports the basic HTTP authentication and a
- * customizable authorization via the authorize method.
+ * Chainlet guarding the access to another restlet.<br/>
+ * Supports the basic HTTP authentication and a customizable authorization via the authorize method.
  */
 public abstract class GuardChainlet extends AbstractChainlet
 {

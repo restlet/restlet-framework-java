@@ -40,7 +40,7 @@ import org.restlet.data.Statuses;
 import com.noelios.restlet.util.UniformTarget;
 
 /**
- * Implementation of a mapper of calls to other restlets.
+ * Implementation of a mapper of calls to attached handlers.
  */
 public class MapletImpl extends ArrayList<Mapping> implements Maplet
 {

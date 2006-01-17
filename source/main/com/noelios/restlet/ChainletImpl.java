@@ -37,7 +37,7 @@ import org.restlet.data.Statuses;
 import com.noelios.restlet.util.UniformTarget;
 
 /**
- * Implementation of a chainer of calls to a target restlet.
+ * Implementation of a chainer of calls to a target handler.
  */
 public class ChainletImpl extends AbstractRestlet implements Chainlet
 {

@@ -37,8 +37,8 @@ import org.restlet.data.Metadata;
 import com.noelios.restlet.util.StringUtils;
 
 /**
- * Restlet supported by a directory of files. A content negotiation mechanism (similar to Apache HTTP server)
- * is available for files.
+ * Restlet supported by a directory of files.<br/>
+ * An automatic content negotiation mechanism (similar to Apache HTTP server) is used for files serving.
  * @see com.noelios.restlet.FileResource
  */
 public class DirectoryRestlet extends AbstractRestlet
