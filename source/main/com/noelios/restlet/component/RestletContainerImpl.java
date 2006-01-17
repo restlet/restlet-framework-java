@@ -22,11 +22,8 @@
 
 package com.noelios.restlet.component;
 
-import org.restlet.Manager;
 import org.restlet.Maplet;
 import org.restlet.Restlet;
-import org.restlet.RestletCall;
-import org.restlet.RestletException;
 import org.restlet.UniformCall;
 import org.restlet.component.RestletContainer;
 
@@ -110,9 +107,8 @@ public class RestletContainerImpl extends ComponentImpl implements RestletContai
    /**
     * Handles a call to a resource or a set of resources.
     * @param call The call to handle.
-    * @throws RestletException
     */
-   public void handle(RestletCall call) throws RestletException
+   public void handle(UniformCall call)
    {
       delegate.handle(call);
    }
@@ -122,27 +118,10 @@ public class RestletContainerImpl extends ComponentImpl implements RestletContai
     * If no delegation is possible, an error status (406, not found) will be returned.
     * @param call The call to delegate.
     * @return True if the call was successfully delegated.
-    * @throws RestletException
     */
-   public boolean delegate(RestletCall call) throws RestletException
+   public boolean delegate(UniformCall call)
    {
       return delegate.delegate(call);
-   }
-
-   /**
-    * Asks one of the root restlets to handle a call.
-    * @param call The call to handle.
-    */
-   public void handle(UniformCall call)
-   {
-      try
-      {
-         handle(Manager.createRestletCall(call));
-      }
-      catch(RestletException re)
-      {
-         re.printStackTrace();
-      }
    }
 
    /**
