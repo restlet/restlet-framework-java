@@ -23,13 +23,15 @@
 package com.noelios.restlet.connector;
 
 import java.io.IOException;
-import java.io.InputStream;
-import java.io.OutputStream;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.Iterator;
 import java.util.List;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
+import org.restlet.UniformCall;
+import org.restlet.connector.HttpServerCall;
 import org.restlet.data.ChallengeRequest;
 import org.restlet.data.ChallengeResponse;
 import org.restlet.data.CharacterSets;
@@ -64,42 +66,20 @@ import com.noelios.restlet.data.TagImpl;
 /**
  * Base class for HTTP based uniform calls.
  */
-public abstract class HttpCall extends UniformCallImpl
+public abstract class HttpServerCallImpl extends UniformCallImpl implements HttpServerCall
 {
-   public static final int STATUS_SUCCESS_CREATED = 201;
-   public static final int STATUS_REDIRECTION_MULTIPLE_CHOICES = 300;
-   public static final int STATUS_REDIRECTION_MOVED_PERMANENTLY = 301;
-   public static final int STATUS_REDIRECTION_FOUND = 302;
-   public static final int STATUS_REDIRECTION_SEE_OTHER = 303;
-   public static final int STATUS_REDIRECTION_TEMPORARY_REDIRECT = 307;
-   public static final int STATUS_CLIENT_ERROR_UNAUTHORIZED = 401;
-
-   public static final String HEADER_ACCEPT = "Accept";
-   public static final String HEADER_ACCEPT_CHARSET = "Accept-Charset";
-   public static final String HEADER_ACCEPT_LANGUAGE = "Accept-Language";
-   public static final String HEADER_AUTHORIZATION = "Authorization";
-   public static final String HEADER_COOKIE = "Cookie";
-   public static final String HEADER_CONTENT_LENGTH = "Content-Length";
-   public static final String HEADER_CONTENT_TYPE = "Content-Type";
-   public static final String HEADER_ETAG = "ETag";
-   public static final String HEADER_EXPIRES = "Expires";
-   public static final String HEADER_IF_MATCH = "If-Match";
-   public static final String HEADER_IF_MODIFIED_SINCE = "If-Modified-Since";
-   public static final String HEADER_IF_NONE_MATCH = "If-None-Match";
-   public static final String HEADER_IF_UNMODIFIED_SINCE = "If-Unmodified-Since";
-   public static final String HEADER_LAST_MODIFIED = "Last-Modified";
-   public static final String HEADER_LOCATION = "Location";
-   public static final String HEADER_REFERRER = "Referer";
-   public static final String HEADER_USER_AGENT = "User-Agent";
-   public static final String HEADER_WWW_AUTHENTICATE = "WWW-Authenticate";
+   /** Obtain a suitable logger. */
+   private static Logger logger = Logger.getLogger("com.noelios.restlet.connector.HttpCallImpl");
 
    /**
-    * Initialization the call by extracting information from the underlying request object.
+    * Converts to an uniform call.
+    * @return An equivalent uniform call.
     */
-   protected void init()
+   public UniformCall toUniform()
    {
+      // Set the properties
       setCharacterSetPrefs(extractCharacterSetPrefs());
-      setClientAddress(extractClientAddress());
+      setClientAddress(getRequestAddress());
       setClientName(extractClientName());
       setCookies(extractCookies());
       setInput(extractInput());
@@ -110,21 +90,34 @@ public abstract class HttpCall extends UniformCallImpl
       setResourceRef(extractResource());
       setSecurity(extractSecurity());
       setConditions(extractConditions());
-   }
 
+      // Creates the list of paths
+      this.paths = new ArrayList<String>();
+
+      // Creates the list of matches
+      this.matches = new ArrayList<String>();
+
+      // Set the absolute resource path as the initial path in the list.
+      getPaths().add(0, getResourceRef().toString(false, false));
+      
+      return this;
+   }
+   
    /**
-    * Reply to the call by sending a response back to the client.
+    * Synchronizes from an uniform call.
+    * @param call The call to synchronize from.
     */
-   public void reply()
+   public void fromUniform(UniformCall call)
    {
       try
       {
          // Set the status code in the response
-         if(getStatus() != null)
+         if(call.getStatus() != null)
          {
-            setResponseStatus(getStatus().getHttpCode(), getStatus().getDescription());
+            setResponseStatus(call.getStatus().getHttpCode());
+            setResponseReasonPhrase(call.getStatus().getDescription());
    
-            switch(getStatus().getHttpCode())
+            switch(call.getStatus().getHttpCode())
             {
                case STATUS_SUCCESS_CREATED:
                case STATUS_REDIRECTION_MULTIPLE_CHOICES:
@@ -133,18 +126,18 @@ public abstract class HttpCall extends UniformCallImpl
                case STATUS_REDIRECTION_SEE_OTHER:
                case STATUS_REDIRECTION_TEMPORARY_REDIRECT:
                   // Extract the redirection URI from the call output
-                  if((getOutput() != null)
-                        && (getOutput().getMetadata().getMediaType().equals(MediaTypes.TEXT_URI)))
+                  if((call.getOutput() != null)
+                        && (call.getOutput().getMetadata().getMediaType().equals(MediaTypes.TEXT_URI)))
                   {
-                     setResponseHeader(HEADER_LOCATION, getOutput().toString());
-                     setOutput(null);
+                     setResponseHeader(HEADER_LOCATION, call.getOutput().toString());
+                     call.setOutput(null);
                   }
                break;
                
                case STATUS_CLIENT_ERROR_UNAUTHORIZED:
-                  if((getSecurity() != null) && (getSecurity().getChallengeRequest() != null))
+                  if((call.getSecurity() != null) && (call.getSecurity().getChallengeRequest() != null))
                   {
-                     ChallengeRequest challenge = getSecurity().getChallengeRequest();
+                     ChallengeRequest challenge = call.getSecurity().getChallengeRequest();
                      setResponseHeader(HEADER_WWW_AUTHENTICATE, challenge.getScheme().getTechnicalName() + " realm=\"" + challenge.getRealm() + '"');
                   }
                break;
@@ -152,15 +145,15 @@ public abstract class HttpCall extends UniformCallImpl
          }
          
          // Set cookies
-         for(Iterator iter = getCookieSettings().iterator(); iter.hasNext();)
+         for(Iterator iter = call.getCookieSettings().iterator(); iter.hasNext();)
          {
             setResponseCookie((CookieSetting)iter.next());
          }
    
          // If an output was set during the call, copy it to the output stream;
-         if(getOutput() != null)
+         if(call.getOutput() != null)
          {
-            RepresentationMetadata meta = getOutput().getMetadata();
+            RepresentationMetadata meta = call.getOutput().getMetadata();
    
             if(meta.getMediaType() != null)
             {
@@ -190,97 +183,21 @@ public abstract class HttpCall extends UniformCallImpl
                setResponseHeader(HEADER_ETAG, meta.getTag().getName());
             }
    
-            if(getOutput().getSize() != -1)
+            if(call.getOutput().getSize() != -1)
             {
-               setResponseHeader(HEADER_CONTENT_LENGTH, Long.toString(getOutput().getSize()));
+               setResponseHeader(HEADER_CONTENT_LENGTH, Long.toString(call.getOutput().getSize()));
             }
    
             // Send the output to the client
-            getOutput().write(getResponseStream());
+            call.getOutput().write(getResponseStream());
          }
       }
       catch(IOException ioe)
       {
+         logger.log(Level.WARNING, "IO exception intercepted", ioe);
+         setResponseStatus(500);
       }
    }
-   
-   /**
-    * Returns a request date header value.
-    * @param name The name of the header.
-    * @return A header value.
-    */
-   public abstract long getRequestDateHeader(String name);
-   
-   /**
-    * Returns a request date header value.
-    * @param name The name of the header.
-    * @return A header value.
-    */
-   public abstract String getRequestHeader(String name);
-   
-   /**
-    * Gets the request stream.
-    * @return The request stream.
-    */
-   protected abstract InputStream getRequestStream();
-   
-   /**
-    * Sets a response cookie.
-    * @param cookie The cookie setting.
-    */
-   public abstract void setResponseCookie(CookieSetting cookie);
-   
-   /**
-    * Sets a response header value.
-    * @param name The name of the header.
-    * @param value The value of the header.
-    */
-   public abstract void setResponseHeader(String name, String value);
-   
-   /**
-    * Sets a response date header value.
-    * @param name The name of the header.
-    * @param date The value of the header.
-    */
-   public abstract void setResponseDateHeader(String name, long date);
-
-   /**
-    * Sets the response's status code.
-    * @param code The response's status code.
-    * @param description The status code description.
-    */
-   public abstract void setResponseStatus(int code, String description);
-   
-   /**
-    * Gets the response stream.
-    * @return The response stream.
-    * @throws IOException 
-    */
-   protected abstract OutputStream getResponseStream() throws IOException;
-   
-   /**
-    * Extracts the resource URI.
-    * @return The resource URI.
-    */
-   protected abstract String extractResourceURI();
-   
-   /**
-    * Indicates if the confidentiality is ensured.
-    * @return True if the confidentiality is ensured. 
-    */
-   protected abstract boolean extractConfidentiality();
-   
-   /**
-    * Extracts the requested HTTP method name.
-    * @return The requested HTTP method name.
-    */
-   protected abstract String extractMethodName();
-   
-   /**
-    * Extracts the client IP address.
-    * @return The client IP address.
-    */
-   protected abstract String extractClientAddress();
 
    /**
     * Extracts the call's referrer from the HTTP header.
@@ -315,7 +232,7 @@ public abstract class HttpCall extends UniformCallImpl
     */
    protected Reference extractResource()
    {
-      String resource = extractResourceURI();
+      String resource = getRequestUri();
 
       if(resource != null)
       {
@@ -333,7 +250,7 @@ public abstract class HttpCall extends UniformCallImpl
     */
    protected Method extractMethod()
    {
-      String method = extractMethodName();
+      String method = getRequestMethod();
       if(method == null) return null;
       else if(method.equals(Methods.GET.getName())) return Methods.GET;
       else if(method.equals(Methods.POST.getName())) return Methods.POST;
@@ -468,7 +385,7 @@ public abstract class HttpCall extends UniformCallImpl
    protected Security extractSecurity()
    {
       Security result = new SecurityImpl();
-      result.setConfidential(extractConfidentiality());
+      result.setConfidential(isRequestConfidential());
 
       String authorization = getRequestHeader(HEADER_AUTHORIZATION);
       if(authorization != null)
@@ -496,34 +413,46 @@ public abstract class HttpCall extends UniformCallImpl
       Conditions result = new ConditionsImpl();
 
       // Extract the If-Modified-Since date
-      long ifModifiedSince = getRequestDateHeader(HEADER_IF_MODIFIED_SINCE);
-      if(ifModifiedSince != -1)
+      Date ifModifiedSince = getRequestDateHeader(HEADER_IF_MODIFIED_SINCE);
+      if((ifModifiedSince != null) && (ifModifiedSince.getTime() != -1))
       {
-         result.setModifiedSince(new Date(ifModifiedSince));
+         result.setModifiedSince(ifModifiedSince);
       }
 
       // Extract the If-Unmodified-Since date
-      long ifUnmodifiedSince = getRequestDateHeader(HEADER_IF_UNMODIFIED_SINCE);
-      if(ifUnmodifiedSince != -1)
+      Date ifUnmodifiedSince = getRequestDateHeader(HEADER_IF_UNMODIFIED_SINCE);
+      if((ifUnmodifiedSince != null) && (ifUnmodifiedSince.getTime() != -1))
       {
-         result.setUnmodifiedSince(new Date(ifUnmodifiedSince));
+         result.setUnmodifiedSince(ifUnmodifiedSince);
       }
 
       // Extract the If-Match tags
       List<Tag> match = null;
+      Tag current = null;
       String matchHeader = getRequestHeader(HEADER_IF_MATCH);
       if(matchHeader != null)
       {
          String[] tags = matchHeader.split(",");
          for (int i = 0; i < tags.length; i++)
          {
-            if(match == null) 
+            try
             {
-               match = new ArrayList<Tag>();
-               result.setMatch(match);
-            }
+               current = new TagImpl(tags[i]);
             
-            match.add(new TagImpl(tags[i]));
+               // Is it the first tag?
+               if(match == null) 
+               {
+                  match = new ArrayList<Tag>();
+                  result.setMatch(match);
+               }
+               
+               // Add the new tag
+               match.add(current);
+            }
+            catch(IllegalArgumentException iae)
+            {
+               logger.log(Level.WARNING, iae.getMessage(), iae);
+            }
          }
       }
 
