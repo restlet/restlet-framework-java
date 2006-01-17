@@ -61,8 +61,15 @@ public class TagImpl implements Tag
       {
          this.weak = false;
       }
-      
-      this.tag = name.substring(1, name.length() - 2);
+    
+      if(name.startsWith("\"") && name.endsWith("\""))
+      {
+         this.tag = name.substring(1, name.length() - 1);
+      }
+      else
+      {
+         throw new IllegalArgumentException("Invalid tag format detected: " + name);
+      }
    }
 
    /**
