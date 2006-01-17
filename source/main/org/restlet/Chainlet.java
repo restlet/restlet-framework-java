@@ -31,20 +31,20 @@ package org.restlet;
 public interface Chainlet extends Restlet
 {
    /**
-    * Attaches a restlet instance shared by all calls.
-    * @param restlet The restlet to attach.
+    * Attaches a target instance shared by all calls.
+    * @param target The target instance to attach.
     */
-   public void attach(Restlet restlet);
+   public void attach(UniformInterface target);
 
    /**
-    * Attaches a restlet class. A new instance will be created for each call.
-    * @param restletClass The restlet class to attach (must have a constructor taking a RestletContainer
+    * Attaches a target class. A new instance will be created for each call.
+    * @param targetClass The target class to attach (can have a constructor taking a RestletContainer
     * parameter).
     */
-   public void attach(Class<? extends Restlet> restletClass);
+   public void attach(Class<? extends Restlet> targetClass);
 
    /**
-    * Detaches the current target restlet.
+    * Detaches the current target.
     */
    public void detach();
 

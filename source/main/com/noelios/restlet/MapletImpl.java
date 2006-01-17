@@ -31,13 +31,13 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 import org.restlet.Maplet;
-import org.restlet.Restlet;
 import org.restlet.RestletException;
 import org.restlet.UniformCall;
+import org.restlet.UniformInterface;
 import org.restlet.component.RestletContainer;
 import org.restlet.data.Statuses;
 
-import com.noelios.restlet.util.RestletTarget;
+import com.noelios.restlet.util.UniformTarget;
 
 /**
  * Implementation of a mapper of calls to other restlets.
@@ -72,50 +72,53 @@ public class MapletImpl extends ArrayList<Mapping> implements Maplet
    }
 
    /**
-    * Adds a mapping with a path beginning with the given pattern.
-    * @param pathPattern The path pattern used to match objects.
-    * @param restlet The restlet.
+    * Attaches a target instance shared by all calls.
+    * @param pathPattern The path pattern used to map calls.
+    * @param target The target instance to attach.
+    * @see java.util.regex.Pattern
     */
-   public void attach(String pathPattern, Restlet restlet)
+   public void attach(String pathPattern, UniformInterface target)
    {
-      add(new Mapping(pathPattern, restlet));
+      add(new Mapping(pathPattern, target));
    }
 
    /**
-    * Adds a mapping with a path beginning with the given pattern.
-    * @param pathPattern The path pattern used to match objects.
-    * @param restletClass The restlet class.
+    * Attaches a target class. A new instance will be created for each call.
+    * @param pathPattern The path pattern used to map calls.
+    * @param targetClass The target class to attach (can have a constructor taking a RestletContainer
+    * parameter).
+    * @see java.util.regex.Pattern
     */
-   public void attach(String pathPattern, Class<? extends Restlet> restletClass)
+   public void attach(String pathPattern, Class<? extends UniformInterface> targetClass)
    {
-      add(new Mapping(pathPattern, restletClass));
+      add(new Mapping(pathPattern, targetClass));
    }
 
    /**
-    * Removes all mappings to a given restlet.
-    * @param restlet The restlet to look for.
+    * Detaches a target instance.
+    * @param target The target instance to detach.
     */
-   public void detach(Restlet restlet)
+   public void detach(UniformInterface target)
    {
       Mapping mapping;
       for(Iterator iter = iterator(); iter.hasNext();)
       {
          mapping = (Mapping)iter.next();
-         if(mapping.getRestlet() == restlet) remove(mapping);
+         if(mapping.getHandler() == target) remove(mapping);
       }
    }
 
    /**
-    * Removes all mappings to a given restlet class.
-    * @param restletClass The restlet class to look for.
+    * Detaches a target class.
+    * @param targetClass The restlet class to detach.
     */
-   public void detach(Class<? extends Restlet> restletClass)
+   public void detach(Class<? extends UniformInterface> targetClass)
    {
       Mapping mapping;
       for(Iterator iter = iterator(); iter.hasNext();)
       {
          mapping = (Mapping)iter.next();
-         if(mapping.getRestletClass() == restletClass) remove(mapping);
+         if(mapping.getHandlerClass() == targetClass) remove(mapping);
       }
    }
 
@@ -131,8 +134,8 @@ public class MapletImpl extends ArrayList<Mapping> implements Maplet
    }
 
    /**
-    * Delegates a call to attached restlets.<br/>
-    * If no delegation is possible, an error status (406, not found) will be returned.
+    * Delegates a call to one of the attached targets.<br/>
+    * If no delegation is possible, a 404 error status (Client error, Not found) will be returned.
     * @param call The call to delegate.
     * @return True if the call was successfully delegated.
     */
@@ -167,21 +170,21 @@ public class MapletImpl extends ArrayList<Mapping> implements Maplet
          }
 
          // Find and prepare the call handler
-         Restlet restlet = null;
+         UniformInterface target = null;
 
          try
          {
-            if(mapping.getRestlet() != null)
+            if(mapping.getHandler() != null)
             {
-               restlet = mapping.getRestlet();
+               target = mapping.getHandler();
             }
             else if(mapping.isSetContainer())
             {
-               restlet = (Restlet)mapping.getRestletConstructor().newInstance(getContainer());
+               target = (UniformInterface)mapping.getHandlerConstructor().newInstance(getContainer());
             }
             else
             {
-               restlet = (Restlet)mapping.getRestletClass().newInstance();
+               target = (UniformInterface)mapping.getHandlerClass().newInstance();
             }
          }
          catch(InstantiationException ie)
@@ -201,7 +204,7 @@ public class MapletImpl extends ArrayList<Mapping> implements Maplet
          }
 
          // Handle the call
-         restlet.handle(call);
+         target.handle(call);
       }
       else
       {
@@ -215,10 +218,10 @@ public class MapletImpl extends ArrayList<Mapping> implements Maplet
 }
 
 /**
- * Represents a mapping between a path pattern and a restlet.
+ * Represents a mapping between a path pattern and a target uniform interface.
  * @see java.util.regex.Pattern
  */
-class Mapping extends RestletTarget
+class Mapping extends UniformTarget
 {
    /** The path pattern. */
    Pattern pathPattern;
@@ -226,22 +229,22 @@ class Mapping extends RestletTarget
    /**
     * Constructor.
     * @param pathPattern The path pattern.
-    * @param restlet The restlet.
+    * @param target The target interface.
     */
-   public Mapping(String pathPattern, Restlet restlet)
+   public Mapping(String pathPattern, UniformInterface target)
    {
-      super(restlet);
+      super(target);
       this.pathPattern = Pattern.compile(pathPattern, Pattern.CASE_INSENSITIVE);
    }
 
    /**
     * Constructor.
     * @param pathPattern The path pattern.
-    * @param restletClass The restlet class.
+    * @param targetClass The target class.
     */
-   Mapping(String pathPattern, Class<? extends Restlet> restletClass)
+   Mapping(String pathPattern, Class<? extends UniformInterface> targetClass)
    {
-      super(restletClass);
+      super(targetClass);
       this.pathPattern = Pattern.compile(pathPattern, Pattern.CASE_INSENSITIVE);
    }
 

@@ -27,10 +27,10 @@ import java.io.IOException;
 import org.restlet.UniformCall;
 
 /**
- * Wraps a restlet call into a readable model
+ * Wraps an uniform call into a readable model
  * that can be passed to the string template.
  */
-public class RestletCallModel implements ReadableModel
+public class UniformModel implements ReadableModel
 {
    public static final String NAME_CLIENT_ADDRESS = "clientAddress";
    public static final String NAME_CLIENT_NAME = "clientName";
@@ -58,10 +58,10 @@ public class RestletCallModel implements ReadableModel
 
    /**
     * Constructor.
-    * @param call The wrapped restlet call.
+    * @param call The wrapped uniform call.
     * @param defaultValue The default value to return if a lookup fails or returns null.
     */
-   public RestletCallModel(UniformCall call, String defaultValue)
+   public UniformModel(UniformCall call, String defaultValue)
    {
       this.call = call;
       this.defaultValue = defaultValue;

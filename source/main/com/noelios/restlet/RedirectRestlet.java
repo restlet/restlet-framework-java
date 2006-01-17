@@ -30,12 +30,12 @@ import org.restlet.AbstractRestlet;
 import org.restlet.UniformCall;
 import org.restlet.component.RestletContainer;
 
-import com.noelios.restlet.util.RestletCallModel;
+import com.noelios.restlet.util.UniformModel;
 import com.noelios.restlet.util.StringTemplate;
 
 /**
  * Rewrites URIs then redirects the call or the client to a new destination.
- * @see com.noelios.restlet.util.RestletCallModel
+ * @see com.noelios.restlet.util.UniformModel
  */
 public class RedirectRestlet extends AbstractRestlet
 {
@@ -90,7 +90,7 @@ public class RedirectRestlet extends AbstractRestlet
          StringTemplate te = new StringTemplate(this.targetPattern);
 
          // Create the template data model
-         String targetURI = te.process(new RestletCallModel(call, null));
+         String targetURI = te.process(new UniformModel(call, null));
 
          switch(this.mode)
          {

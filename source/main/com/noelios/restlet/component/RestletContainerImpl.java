@@ -23,8 +23,8 @@
 package com.noelios.restlet.component;
 
 import org.restlet.Maplet;
-import org.restlet.Restlet;
 import org.restlet.UniformCall;
+import org.restlet.UniformInterface;
 import org.restlet.component.RestletContainer;
 
 import com.noelios.restlet.MapletImpl;
@@ -64,44 +64,44 @@ public class RestletContainerImpl extends ComponentImpl implements RestletContai
    }
 
    /**
-    * Attaches a restlet instance shared by all calls.
+    * Attaches a target instance shared by all calls.
     * @param pathPattern The path pattern used to map calls.
-    * @param restlet The restlet to attach.
+    * @param target The target instance to attach.
     * @see java.util.regex.Pattern
     */
-   public void attach(String pathPattern, Restlet restlet)
+   public void attach(String pathPattern, UniformInterface target)
    {
-      delegate.attach(pathPattern, restlet);
+      delegate.attach(pathPattern, target);
    }
 
    /**
-    * Attaches a restlet class. A new instance will be created for each call.
+    * Attaches a target class. A new instance will be created for each call.
     * @param pathPattern The path pattern used to map calls.
-    * @param restletClass The restlet class to attach (must have a constructor taking a RestletContainer
+    * @param targetClass The target class to attach (can have a constructor taking a RestletContainer
     * parameter).
     * @see java.util.regex.Pattern
     */
-   public void attach(String pathPattern, Class<? extends Restlet> restletClass)
+   public void attach(String pathPattern, Class<? extends UniformInterface> targetClass)
    {
-      delegate.attach(pathPattern, restletClass);
+      delegate.attach(pathPattern, targetClass);
    }
 
    /**
-    * Detaches a restlet instance.
-    * @param restlet The restlet to detach.
+    * Detaches a target instance.
+    * @param target The target instance to detach.
     */
-   public void detach(Restlet restlet)
+   public void detach(UniformInterface target)
    {
-      delegate.detach(restlet);
+      delegate.detach(target);
    }
 
    /**
-    * Detaches a restlet class.
-    * @param restletClass The restlet class to detach.
+    * Detaches a target class.
+    * @param targetClass The restlet class to detach.
     */
-   public void detach(Class<? extends Restlet> restletClass)
+   public void detach(Class<? extends UniformInterface> targetClass)
    {
-      delegate.detach(restletClass);
+      delegate.detach(targetClass);
    }
 
    /**
@@ -114,8 +114,8 @@ public class RestletContainerImpl extends ComponentImpl implements RestletContai
    }
 
    /**
-    * Delegates a call to attached restlets.<br/>
-    * If no delegation is possible, an error status (406, not found) will be returned.
+    * Delegates a call to one of the attached targets.<br/>
+    * If no delegation is possible, a 404 error status (Client error, Not found) will be returned.
     * @param call The call to delegate.
     * @return True if the call was successfully delegated.
     */

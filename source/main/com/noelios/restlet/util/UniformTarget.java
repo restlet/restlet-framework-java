@@ -24,22 +24,22 @@ package com.noelios.restlet.util;
 
 import java.lang.reflect.Constructor;
 
-import org.restlet.Restlet;
+import org.restlet.UniformInterface;
 import org.restlet.component.RestletContainer;
 
 /**
- * Represents a restlet target for maplet or chainlet attachments.
+ * Represents an uniform interface target for maplet or chainlet attachments.
  */
-public class RestletTarget
+public class UniformTarget
 {
-   /** The restlet. */
-   Restlet restlet;
+   /** The handler interface. */
+   UniformInterface handler;
 
-   /** The restlet class. */
-   Class<? extends Restlet> restletClass;
+   /** The handler class. */
+   Class<? extends UniformInterface> handlerClass;
 
-   /** The restlet constructor. */
-   Constructor restletConstructor;
+   /** The handler constructor. */
+   Constructor handlerConstructor;
 
    /** The container class to set in the constructor. */
    Class containerClass;
@@ -49,31 +49,31 @@ public class RestletTarget
 
    /**
     * Constructor.
-    * @param restlet The restlet.
+    * @param handler The handler interface.
     */
-   public RestletTarget(Restlet restlet)
+   public UniformTarget(UniformInterface handler)
    {
-      this.restlet = restlet;
-      this.restletClass = null;
-      this.restletConstructor = null;
+      this.handler = handler;
+      this.handlerClass = null;
+      this.handlerConstructor = null;
       this.setContainer = false;
    }
 
    /**
     * Constructor.
-    * @param restletClass The restlet class.
+    * @param handlerClass The handler class.
     */
-   public RestletTarget(Class<? extends Restlet> restletClass)
+   public UniformTarget(Class<? extends UniformInterface> handlerClass)
    {
-      this.restlet = null;
-      this.restletClass = restletClass;
+      this.handler = null;
+      this.handlerClass = handlerClass;
       this.setContainer = false;
 
       // Try to find a constructor that accepts a RestletContainer parameter
-      Constructor[] constructors = restletClass.getConstructors();
+      Constructor[] constructors = handlerClass.getConstructors();
       Class[] parameters;
 
-      for(int i = 0; (this.restletConstructor == null) && (i < constructors.length); i++)
+      for(int i = 0; (this.handlerConstructor == null) && (i < constructors.length); i++)
       {
          parameters = constructors[i].getParameterTypes();
 
@@ -81,18 +81,18 @@ public class RestletTarget
          {
             if(RestletContainer.class.isAssignableFrom(parameters[0]))
             {
-               this.restletConstructor = constructors[i];
+               this.handlerConstructor = constructors[i];
                this.setContainer = true;
             }
          }
       }
 
-      if(this.restletConstructor == null)
+      if(this.handlerConstructor == null)
       {
          // Try to find an empty constructor
          try
          {
-            this.restletConstructor = restletClass.getConstructor(new Class[]{});
+            this.handlerConstructor = handlerClass.getConstructor(new Class[]{});
          }
          catch(NoSuchMethodException nsme)
          {
@@ -101,30 +101,30 @@ public class RestletTarget
    }
 
    /**
-    * Returns the restlet.
-    * @return The restlet.
+    * Returns the handler interface.
+    * @return The handler interface.
     */
-   public Restlet getRestlet()
+   public UniformInterface getHandler()
    {
-      return this.restlet;
+      return this.handler;
    }
 
    /**
-    * Returns the restlet class.
-    * @return The restlet class.
+    * Returns the handler class.
+    * @return The handler class.
     */
-   public Class<? extends Restlet> getRestletClass()
+   public Class<? extends UniformInterface> getHandlerClass()
    {
-      return this.restletClass;
+      return this.handlerClass;
    }
 
    /**
-    * Returns the restlet constructor.
-    * @return The restlet constructor.
+    * Returns the handler constructor.
+    * @return The handler constructor.
     */
-   public Constructor getRestletConstructor()
+   public Constructor getHandlerConstructor()
    {
-      return this.restletConstructor;
+      return this.handlerConstructor;
    }
 
    /**

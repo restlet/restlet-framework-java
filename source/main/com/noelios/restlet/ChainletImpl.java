@@ -30,10 +30,11 @@ import org.restlet.AbstractRestlet;
 import org.restlet.Chainlet;
 import org.restlet.Restlet;
 import org.restlet.UniformCall;
+import org.restlet.UniformInterface;
 import org.restlet.component.RestletContainer;
 import org.restlet.data.Statuses;
 
-import com.noelios.restlet.util.RestletTarget;
+import com.noelios.restlet.util.UniformTarget;
 
 /**
  * Implementation of a chainer of calls to a target restlet.
@@ -46,8 +47,8 @@ public class ChainletImpl extends AbstractRestlet implements Chainlet
    /** Serial version identifier. */
    private static final long serialVersionUID = 1L;
 
-   /** The target restlet. */
-   private RestletTarget target;
+   /** The target handler. */
+   private UniformTarget target;
 
    /**
     * Constructor.
@@ -59,25 +60,26 @@ public class ChainletImpl extends AbstractRestlet implements Chainlet
    }
 
    /**
-    * Adds a mapping with a path beginning with the given pattern.
-    * @param restlet The restlet.
+    * Attaches a target instance shared by all calls.
+    * @param target The target instance to attach.
     */
-   public void attach(Restlet restlet)
+   public void attach(UniformInterface target)
    {
-      this.target = new RestletTarget(restlet);
+      this.target = new UniformTarget(target);
    }
 
    /**
-    * Adds a mapping with a path beginning with the given pattern.
-    * @param restletClass The restlet class.
+    * Attaches a target class. A new instance will be created for each call.
+    * @param targetClass The target class to attach (can have a constructor taking a RestletContainer
+    * parameter).
     */
-   public void attach(Class<? extends Restlet> restletClass)
+   public void attach(Class<? extends Restlet> targetClass)
    {
-      this.target = new RestletTarget(restletClass);
+      this.target = new UniformTarget(targetClass);
    }
 
    /**
-    * Detaches the current target restlet.
+    * Detaches the current target.
     */
    public void detach()
    {
@@ -86,7 +88,7 @@ public class ChainletImpl extends AbstractRestlet implements Chainlet
 
    /**
     * Handles a call to a resource or a set of resources.
-    * Default behavior to be overriden: delegation to the attached restlet.
+    * Default behavior to be overriden: delegation to the attached target.
     * @param call The call to handle.
     */
    public void handle(UniformCall call)
@@ -94,21 +96,21 @@ public class ChainletImpl extends AbstractRestlet implements Chainlet
       if(this.target != null)
       {
          // Find and prepare the call handler
-         Restlet restlet = null;
+         UniformInterface handler = null;
 
          try
          {
-            if(this.target.getRestlet() != null)
+            if(this.target.getHandler() != null)
             {
-               restlet = this.target.getRestlet();
+               handler = this.target.getHandler();
             }
             else if(this.target.isSetContainer())
             {
-               restlet = (Restlet)this.target.getRestletConstructor().newInstance(getContainer());
+               handler = (Restlet)this.target.getHandlerConstructor().newInstance(getContainer());
             }
             else
             {
-               restlet = (Restlet)this.target.getRestletClass().newInstance();
+               handler = (Restlet)this.target.getHandlerClass().newInstance();
             }
          }
          catch(InstantiationException ie)
@@ -128,7 +130,7 @@ public class ChainletImpl extends AbstractRestlet implements Chainlet
          }
 
          // Handle the call
-         restlet.handle(call);
+         handler.handle(call);
       }
       else
       {
