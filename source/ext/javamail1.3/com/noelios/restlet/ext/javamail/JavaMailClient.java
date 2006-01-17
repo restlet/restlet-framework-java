@@ -36,8 +36,7 @@ import javax.xml.parsers.DocumentBuilderFactory;
 
 import org.restlet.RestletException;
 import org.restlet.UniformCall;
-import org.restlet.connector.AbstractConnector;
-import org.restlet.connector.Client;
+import org.restlet.connector.AbstractClient;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 import org.w3c.dom.NodeList;
@@ -60,7 +59,7 @@ import org.w3c.dom.NodeList;
  * &nbsp;&nbsp;{@code   <body><![CDATA[Your account was sucessfully created!]]></body>}<br/>
  * {@code </email>}
  */
-public class JavaMailClient extends AbstractConnector implements Client
+public class JavaMailClient extends AbstractClient
 {
    /**
     * Constructor.

@@ -22,61 +22,158 @@
 
 package com.noelios.restlet.ext.jetty;
 
-import java.io.IOException;
-import java.net.Socket;
-
-import org.mortbay.http.HttpConnection;
-import org.mortbay.http.SocketListener;
 import org.mortbay.util.InetAddrPort;
+import org.restlet.UniformCall;
 import org.restlet.UniformInterface;
-import org.restlet.connector.Server;
+import org.restlet.connector.HttpServer;
+import org.restlet.connector.HttpServerCall;
 
 /**
- * Jetty connector acting as a HTTP server.
+ * Jetty HTTP server connector.
  * @see <a href="http://jetty.mortbay.com/">Jetty home page</a>
  */
-public class JettyServer extends SocketListener implements Server
+public class JettyServer implements HttpServer
 {
+   /** Serial version identifier. */
    private static final long serialVersionUID = 1L;
 
+   /** AJP 1.3 protocol listener. */
+   public static final int LISTENER_AJP = 1;
+   
+   /** HTTP listener. */
+   public static final int LISTENER_HTTP = 2;
+   
+   /** HTTPS (SSL) listener. */
+   public static final int LISTENER_HTTPS = 3;
+
    /** The name of this REST connector. */
-   private String name;
+   protected String name;
 
-   /** The target of Jetty calls. */
-   private UniformInterface target;
+   /** The target handler. */
+   protected UniformInterface target;
 
+   /** The Jetty listener type. */
+   protected int listenerType;
+   
+   /** The Jetty listener. */
+   protected org.mortbay.http.HttpListener listener;
+   
+   /** The Jetty listening port if specified. */
+   protected int port;
+   
+   /** The Jetty listening address if specified. */
+   protected InetAddrPort address;
+   
+   protected String keystorePath;
+   
+   protected String keystorePassword;
+   
+   protected String keyPassword;
+   
    /**
     * Constructor.
     * @param name The unique connector name.
-    * @param port The HTTP port number.
-    * @param target The target component handling calls.
+    * @param target The target handler.
+    * @param listenerType The listener type.
+    * @param port The Jetty listening port.
     */
-   public JettyServer(String name, int port, UniformInterface target)
+   public JettyServer(String name, UniformInterface target, int listenerType, int port)
    {
-      setPort(port);
       this.name = name;
       this.target = target;
+      this.listenerType = listenerType;
+      this.port = port;
+      this.address = null;
    }
 
    /**
     * Constructor.
     * @param name The unique connector name.
-    * @param address The IP address to listen to.
     * @param target The target component handling calls.
+    * @param listenerType The listener type.
+    * @param address The Jetty listening address.
     */
-   public JettyServer(String name, InetAddrPort address, UniformInterface target)
+   public JettyServer(String name, UniformInterface target, int listenerType, InetAddrPort address)
    {
-      super(address);
       this.name = name;
+      this.address = address;
       this.target = target;
+      this.listenerType = listenerType;
+      this.address = address;
+      this.port = -1;
    }
 
+   /**
+    * Configure the SSL listener.
+    * @param keystorePath
+    * @param keystorePassword
+    * @param keyPassword
+    */
+   public void configureSSL(String keystorePath, String keystorePassword, String keyPassword)
+   {
+      this.keystorePath = keystorePath;
+      this.keystorePassword = keystorePassword;
+      this.keyPassword = keyPassword;
+   }
+   
+   /**
+    * Returns the Jetty listener.
+    * @return The Jetty listener.
+    */
+   public org.mortbay.http.HttpListener getListener()
+   {
+      return this.listener;
+   }
+   
    /** Start hook. */
    public void start()
    {
       try
       {
-         super.start();
+         switch(this.listenerType)
+         {
+            case LISTENER_AJP:
+               if(this.address != null)
+               {
+                  this.listener = new AjpListener(this, this.address);
+               }
+               else
+               {
+                  this.listener = new AjpListener(this);
+                  this.listener.setPort(port);
+               }
+            break;
+            
+            case LISTENER_HTTP:
+               if(this.address != null)
+               {
+                  this.listener = new HttpListener(this, this.address);
+               }
+               else
+               {
+                  this.listener = new HttpListener(this);
+                  this.listener.setPort(port);
+               }
+            break;
+            
+            case LISTENER_HTTPS:
+               if(this.address != null)
+               {
+                  HttpsListener httpsListener = new HttpsListener(this, this.address);
+                  httpsListener.setKeystore(this.keystorePath);
+                  httpsListener.setPassword(this.keystorePassword);
+                  httpsListener.setKeyPassword(this.keyPassword);
+                  this.listener = httpsListener;
+               }
+               else
+               {
+                  this.listener = new HttpsListener(this);
+                  this.listener.setPort(port);
+               }
+            break;
+         }
+         
+         getListener().start();
       }
       catch(Exception e)
       {
@@ -89,12 +186,21 @@ public class JettyServer extends SocketListener implements Server
    {
       try
       {
-         super.stop();
+         getListener().stop();
       }
       catch(Exception e)
       {
          e.printStackTrace();
       }
+   }
+
+   /**
+    * Indicates if the connector is started.
+    * @return True if the connector is started.
+    */
+   public boolean isStarted()
+   {
+      return getListener().isStarted();
    }
 
    /**
@@ -107,22 +213,43 @@ public class JettyServer extends SocketListener implements Server
    }
 
    /**
-    * Creates an HttpConnection instance. This method can be used to override the connection instance.
-    * @param socket The underlying socket.
-    */
-   protected HttpConnection createConnection(Socket socket) throws IOException
-   {
-      return new JettyConnection(this, socket.getInetAddress(), socket.getInputStream(), socket
-            .getOutputStream(), socket);
-   }
-
-   /**
-    * Returns the target interface.
-    * @return The target interface.
+    * Returns the target handler.
+    * @return The target handler.
     */
    public UniformInterface getTarget()
    {
       return target;
+   }
+
+   /**
+    * Sets the target handler.
+    * @param target The target handler.
+    */
+   public void setTarget(UniformInterface target)
+   {
+      this.target = target;
+   }
+
+   /**
+    * Handles the HTTP protocol call.<br/>
+    * The default behavior is to create an UniformCall and invoke the "handle(UniformCall)" method.
+    * @param call The HTTP protocol call.
+    */
+   public void handle(HttpServerCall call)
+   {
+      UniformCall uniformCall = call.toUniform();
+      handle(uniformCall);
+      call.fromUniform(uniformCall);
+   }
+
+   /**
+    * Handles a uniform call.
+    * The default behavior is to as the attached handler to handle the call.
+    * @param call The uniform call to handle.
+    */
+   public void handle(UniformCall call)
+   {
+      getTarget().handle(call);
    }
 
    /**
@@ -142,4 +269,5 @@ public class JettyServer extends SocketListener implements Server
    {
       return "Jetty HTTP server";
    }
+   
 }

@@ -29,14 +29,16 @@ import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
+import org.restlet.UniformCall;
 import org.restlet.UniformInterface;
-import org.restlet.connector.Server;
+import org.restlet.connector.HttpServer;
+import org.restlet.connector.HttpServerCall;
 
 /**
  * Servlet connector acting as a HTTP server.
  * @see <a href="http://java.sun.com/j2ee/">J2EE home page</a>
  */
-public class ServerServlet extends HttpServlet implements Server
+public class ServerServlet extends HttpServlet implements HttpServer
 {
    /** The Servlet context initialization parameter's name containing the target's class name. */
    public static final String NAME_TARGET_CLASS = "org.restlet.target.class";
@@ -48,8 +50,8 @@ public class ServerServlet extends HttpServlet implements Server
    /** Indicates if the connector was started. */
    protected boolean started;
 
-   /** The target of Jetty calls. */
-   protected UniformInterface target;
+   /** The handler of Jetty calls. */
+   protected UniformInterface handler;
 
    /**
     * Constructor.
@@ -57,7 +59,7 @@ public class ServerServlet extends HttpServlet implements Server
    public ServerServlet()
    {
       this.started = false;
-      this.target = null;
+      this.handler = null;
    }
 
    /** Start hook. */
@@ -97,29 +99,24 @@ public class ServerServlet extends HttpServlet implements Server
     */
    protected void service(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException
    {
-      ServletCall call = new ServletCall(request, response);
-      if(getTarget() != null)
-      {
-         getTarget().handle(call);
-         call.reply();
-      }
+      handle((HttpServerCall)new ServletCall(request, response));
    }
 
    /**
-    * Returns the target interface.<br/>
+    * Returns the call handler.<br/>
     * For the first invocation, we look for an existing target in the application context, using the NAME_TARGET_ATTRIBUTE parameter.<br/>
     * We lookup for the attribute name in the servlet configuration, then in the application context.<br/>
     * If no target exists, we try to instantiate one based on the class name set in the NAME_TARGET_CLASS parameter.<br/>
     * We lookup for the class name in the servlet configuration, then in the application context.<br/>
     * Once the target is found, we wrap the servlet request and response into a uniform call and ask the target to handle it.<br/>
     * When the handling is done, we write the result back into the result object and return from the service method.
-    * @return The target interface.
+    * @return The call handler.
     */
    public UniformInterface getTarget()
    {
-      if(this.target != null)
+      if(this.handler != null)
       {
-         return this.target;
+         return this.handler;
       }
       else
       {
@@ -137,9 +134,9 @@ public class ServerServlet extends HttpServlet implements Server
             if(targetAttributeName != null)
             {
                // Look up the attribute for a target
-               this.target = (UniformInterface)getServletContext().getAttribute(targetAttributeName);
+               this.handler = (UniformInterface)getServletContext().getAttribute(targetAttributeName);
 
-               if(this.target == null)
+               if(this.handler == null)
                {
                   // Try to instantiate a new target
                   // First, look in the servlet configuration for the class name
@@ -159,8 +156,8 @@ public class ServerServlet extends HttpServlet implements Server
 
                         // Create a new instance of the target class
                         // and store it for reuse by other ServerServlets.
-                        this.target = (UniformInterface)targetClass.newInstance();
-                        getServletContext().setAttribute(NAME_TARGET_ATTRIBUTE, this.target);
+                        this.handler = (UniformInterface)targetClass.newInstance();
+                        getServletContext().setAttribute(NAME_TARGET_ATTRIBUTE, this.handler);
                      }
                      catch(ClassNotFoundException e)
                      {
@@ -187,8 +184,39 @@ public class ServerServlet extends HttpServlet implements Server
             }
          }
 
-         return this.target;
+         return this.handler;
       }
+   }
+
+   /**
+    * Sets the call handler.
+    * @param handler The call handler.
+    */
+   public void setTarget(UniformInterface handler)
+   {
+      this.handler = handler;
+   }
+
+   /**
+    * Handles the HTTP protocol call.<br/>
+    * The default behavior is to create an UniformCall and invoke the "handle(UniformCall)" method.
+    * @param call The HTTP protocol call.
+    */
+   public void handle(HttpServerCall call)
+   {
+      UniformCall uniformCall = call.toUniform();
+      handle(uniformCall);
+      call.fromUniform(uniformCall);
+   }
+
+   /**
+    * Handles a uniform call.
+    * The default behavior is to as the attached handler to handle the call. 
+    * @param call The uniform call to handle.
+    */
+   public void handle(UniformCall call)
+   {
+      getTarget().handle(call);
    }
 
    /**
@@ -208,4 +236,5 @@ public class ServerServlet extends HttpServlet implements Server
    {
       return "Servlet HTTP server";
    }
+
 }

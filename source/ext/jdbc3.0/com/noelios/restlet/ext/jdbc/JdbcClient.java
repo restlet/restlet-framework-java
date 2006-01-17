@@ -40,8 +40,7 @@ import org.apache.commons.dbcp.PoolingDataSource;
 import org.apache.commons.pool.ObjectPool;
 import org.apache.commons.pool.impl.GenericObjectPool;
 import org.restlet.UniformCall;
-import org.restlet.connector.AbstractConnector;
-import org.restlet.connector.Client;
+import org.restlet.connector.AbstractClient;
 import org.restlet.data.Methods;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
@@ -69,7 +68,7 @@ import com.noelios.restlet.data.ObjectRepresentation;
  * &nbsp;&nbsp;{@code </header>}<br/> &nbsp;&nbsp;{@code <body>}<br/> &nbsp;&nbsp;&nbsp;&nbsp;{@code SELECT * FROM customers}<br/>
  * &nbsp;&nbsp;{@code </body>}<br/> {@code </request>}
  */
-public class JdbcClient extends AbstractConnector implements Client
+public class JdbcClient extends AbstractClient
 {
    /** Map of connection factories. */
    private List<ConnectionSource> connectionSources;

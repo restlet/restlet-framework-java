@@ -27,32 +27,31 @@ import java.io.InputStream;
 import java.io.OutputStream;
 import java.net.InetAddress;
 
-import org.mortbay.http.HttpConnection;
 import org.mortbay.http.HttpContext;
 import org.mortbay.http.HttpException;
 import org.mortbay.http.HttpRequest;
 import org.mortbay.http.HttpResponse;
+import org.restlet.connector.HttpServerCall;
 
 /**
- * Restlet handler for Jetty HTTP calls.
+ * Jetty HTTPS connection.
  */
-public class JettyConnection extends HttpConnection
+public class HttpsConnection extends org.mortbay.http.HttpConnection
 {
    /** Serial version identifier. */
    private static final long serialVersionUID = 1L;
 
    /**
     * Constructor.
-    * @param connector The parent Jetty connector.
+    * @param listener The parent HTTP listener.
     * @param remoteAddress The address of the remote end or null.
     * @param in Input stream to read the request from.
     * @param out Output stream to write the response to.
     * @param connection The underlying connection object.
     */
-   public JettyConnection(JettyServer connector, InetAddress remoteAddress, InputStream in, OutputStream out,
-         Object connection)
+   public HttpsConnection(org.mortbay.http.HttpListener listener, InetAddress remoteAddress, InputStream in, OutputStream out, Object connection)
    {
-      super(connector, remoteAddress, in, out, connection);
+      super(listener, remoteAddress, in, out, connection);
    }
 
    /**
@@ -65,9 +64,7 @@ public class JettyConnection extends HttpConnection
     */
    protected HttpContext service(HttpRequest request, HttpResponse response) throws HttpException, IOException
    {
-      JettyCall call = new JettyCall(request, response);
-      getJettyConnector().getTarget().handle(call);
-      call.reply();
+      getJettyServer().handle((HttpServerCall)new JettyCall(request, response));
 
       // Commit the response and ensures that all data is flushed out to the caller
       response.commit();
@@ -82,9 +79,9 @@ public class JettyConnection extends HttpConnection
     * Returns the Jetty connector.
     * @return The Jetty connector.
     */
-   private JettyServer getJettyConnector()
+   private JettyServer getJettyServer()
    {
-      return (JettyServer)getListener();
+      return ((HttpsListener)getListener()).getServer();
    }
 
 }

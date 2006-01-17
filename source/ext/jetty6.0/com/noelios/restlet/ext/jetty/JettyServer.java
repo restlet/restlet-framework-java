@@ -30,14 +30,16 @@ import javax.servlet.ServletException;
 import org.mortbay.jetty.Connector;
 import org.mortbay.jetty.HttpConnection;
 import org.mortbay.jetty.nio.SelectChannelConnector;
+import org.restlet.UniformCall;
 import org.restlet.UniformInterface;
-import org.restlet.connector.Server;
+import org.restlet.connector.HttpServer;
+import org.restlet.connector.HttpServerCall;
 
 /**
  * Jetty connector acting as a HTTP server.
  * @see <a href="http://jetty.mortbay.com/">Jetty home page</a>
  */
-public class JettyServer extends org.mortbay.jetty.Server implements Server
+public class JettyServer extends org.mortbay.jetty.Server implements HttpServer
 {
    /** Serial version identifier. */
    private static final long serialVersionUID = 1L;
@@ -45,14 +47,14 @@ public class JettyServer extends org.mortbay.jetty.Server implements Server
    /** The name of this REST connector. */
    private String name;
 
-   /** The target of Jetty calls. */
+   /** The target handler. */
    private UniformInterface target;
 
    /**
     * Constructor.
     * @param name The unique connector name.
     * @param port The HTTP port number.
-    * @param target The target component handling calls.
+    * @param target The target handler.
     */
    public JettyServer(String name, int port, UniformInterface target)
    {
@@ -93,7 +95,17 @@ public class JettyServer extends org.mortbay.jetty.Server implements Server
    {
       JettyCall call = new JettyCall(connection);
       getTarget().handle(call);
-      call.reply();
+      call.fromUniform(call);
+   }
+
+   /**
+    * Handles a uniform call.
+    * The default behavior is to as the attached handler to handle the call.
+    * @param call The uniform call to handle.
+    */
+   public void handle(UniformCall call)
+   {
+      getTarget().handle(call);
    }
 
    /**
@@ -106,12 +118,33 @@ public class JettyServer extends org.mortbay.jetty.Server implements Server
    }
 
    /**
-    * Returns the target interface.
-    * @return The target interface.
+    * Returns the target handler.
+    * @return The target handler.
     */
    public UniformInterface getTarget()
    {
-      return target;
+      return this.target;
+   }
+
+   /**
+    * Sets the target handler.
+    * @param target The target handler.
+    */
+   public void setTarget(UniformInterface target)
+   {
+      this.target = target;
+   }
+
+   /**
+    * Handles the HTTP protocol call.<br/>
+    * The default behavior is to create an UniformCall and invoke the "handle(UniformCall)" method.
+    * @param call The HTTP protocol call.
+    */
+   public void handle(HttpServerCall call)
+   {
+      UniformCall uniformCall = call.toUniform();
+      handle(uniformCall);
+      call.fromUniform(uniformCall);
    }
 
    /**

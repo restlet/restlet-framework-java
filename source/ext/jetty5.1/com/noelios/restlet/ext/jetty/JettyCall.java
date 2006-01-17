@@ -22,9 +22,11 @@
 
 package com.noelios.restlet.ext.jetty;
 
-import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
+import java.nio.channels.ReadableByteChannel;
+import java.nio.channels.WritableByteChannel;
+import java.util.Date;
 
 import javax.servlet.http.Cookie;
 
@@ -32,12 +34,12 @@ import org.mortbay.http.HttpRequest;
 import org.mortbay.http.HttpResponse;
 import org.restlet.data.CookieSetting;
 
-import com.noelios.restlet.connector.HttpCall;
+import com.noelios.restlet.connector.HttpServerCallImpl;
 
 /**
  * Call that is used by the Jetty HTTP server connector.
  */
-public class JettyCall extends HttpCall
+public class JettyCall extends HttpServerCallImpl
 {
    /** The wrapped Jetty HTTP request. */
    protected HttpRequest request;
@@ -54,7 +56,6 @@ public class JettyCall extends HttpCall
    {
       this.request = request;
       this.response = response;
-      init();
    }
 
    /**
@@ -75,8 +76,59 @@ public class JettyCall extends HttpCall
       return this.response;
    }
 
+
+   // ----------------------
+   // ---  Request part  ---
+   // ----------------------
+
    /**
-    * Returns a header value.
+    * Returns the request address.<br/>
+    * Corresponds to the IP address of the requesting client.
+    * @return The request address.
+    */
+   public String getRequestAddress()
+   {
+      return getRequest().getRemoteAddr();
+   }
+
+   /**
+    * Indicates if the request was made using a confidential mean.<br/>
+    * @return True if the request was made using a confidential mean.<br/>
+    */
+   public boolean isRequestConfidential()
+   {
+      return getRequest().isConfidential();
+   }
+
+   /**
+    * Returns the request method.
+    * @return The request method.
+    */
+   public String getRequestMethod()
+   {
+      return getRequest().getMethod();
+   }
+
+   /**
+    * Returns the full request URI.
+    * @return The full request URI.
+    */
+   public String getRequestUri()
+   {
+      String queryString = getRequest().getQuery();
+
+      if(queryString == null)
+      {
+         return getRequest().getRequestURL().toString();
+      }
+      else
+      {
+         return getRequest().getRequestURL().append('?').append(queryString).toString();
+      }
+   }
+
+   /**
+    * Returns a request header value.
     * @param name The name of the header.
     * @return A header value.
     */
@@ -84,26 +136,115 @@ public class JettyCall extends HttpCall
    {
       return getRequest().getField(name);
    }
-   
+
    /**
     * Returns a request date header value.
     * @param name The name of the header.
-    * @return A header value.
+    * @return A header date.
     */
-   public long getRequestDateHeader(String name)
+   public Date getRequestDateHeader(String name)
    {
-      return getRequest().getDateField(name);
+      return new Date(getRequest().getDateField(name));
    }
 
    /**
-    * Extracts the request stream.
-    * @return The request stream.
+    * Returns the request entity channel if it exists.
+    * @return The request entity channel if it exists.
     */
-   protected InputStream getRequestStream()
+   public ReadableByteChannel getRequestChannel()
+   {
+      return null;
+   }
+
+   /**
+    * Returns the request entity stream if it exists.
+    * @return The request entity stream if it exists.
+    */
+   public InputStream getRequestStream()
    {
       return getRequest().getInputStream();
    }
-   
+
+   // -----------------------
+   // ---  Response part  ---
+   // -----------------------
+
+   /**
+    * Returns the response status code.
+    * @return The response status code.
+    */
+   public int getResponseStatusCode()
+   {
+      return getResponse().getStatus();
+   }
+
+   /**
+    * Sets the response status code.
+    * @param code The response status code.
+    */
+   public void setResponseStatus(int code)
+   {
+      getResponse().setStatus(code);
+   }
+
+   /**
+    * Returns the response reason phrase.
+    * @return The response reason phrase.
+    */
+   public String getResponseReasonPhrase()
+   {
+      return getResponse().getReason();
+   }
+
+   /**
+    * Sets the response reason phrase.
+    * @param reason The response reason phrase.
+    */
+   public void setResponseReasonPhrase(String reason)
+   {
+      getResponse().setReason(reason);
+   }
+
+   /**
+    * Returns a response header value.
+    * @param name The name of the header.
+    * @return A header value.
+    */
+   public String getResponseHeader(String name)
+   {
+      return getResponse().getField(name);
+   }
+
+   /**
+    * Returns a response date header value.
+    * @param name The name of the header.
+    * @return A header date.
+    */
+   public Date getResponseDateHeader(String name)
+   {
+      return new Date(getResponse().getDateField(name));
+   }
+
+   /**
+    * Sets a response header value.
+    * @param name The name of the header.
+    * @param value The value of the header.
+    */
+   public void setResponseHeader(String name, String value)
+   {
+      getResponse().setField(name, value);
+   }
+
+   /**
+    * Sets a response date header value.
+    * @param name The name of the header.
+    * @param date The value of the header.
+    */
+   public void setResponseDateHeader(String name, long date)
+   {
+      getResponse().setDateField(name, date);
+   }
+
    /**
     * Sets a response cookie.
     * @param cookie The cookie setting.
@@ -118,94 +259,27 @@ public class JettyCall extends HttpCall
       if(cookie.getPath() != null) servletCookie.setPath(cookie.getPath());
       servletCookie.setSecure(cookie.isSecure());
       servletCookie.setVersion(cookie.getVersion());
-            
+
       // Set the cookie in the response
       getResponse().addSetCookie(servletCookie);
    }
 
    /**
-    * Sets a response header value.
-    * @param name The name of the header.
-    * @param value The value of the header.
+    * Returns the response channel if it exists.
+    * @return The response channel if it exists.
     */
-   public void setResponseHeader(String name, String value)
+   public WritableByteChannel getResponseChannel()
    {
-      getResponse().setField(name, value);
-   }
-   
-   /**
-    * Sets a response header value.
-    * @param name The name of the header.
-    * @param date The value of the header.
-    */
-   public void setResponseDateHeader(String name, long date)
-   {
-      getResponse().setDateField(name, date);
+      return null;
    }
 
    /**
-    * Sets the response's status code.
-    * @param code The response's status code.
-    * @param description The status code description.
+    * Returns the response stream if it exists.
+    * @return The response stream if it exists.
     */
-   public void setResponseStatus(int code, String description)
+   public OutputStream getResponseStream()
    {
-      getResponse().setStatus(code, description);
-   }
-   
-   /**
-    * Gets the response stream.
-    * @return The response stream.
-    * @throws IOException 
-    */
-   protected OutputStream getResponseStream() throws IOException
-   {
-      return getRequest().getOutputStream();
-   }
-
-   /**
-    * Extracts the resource URI.
-    * @return The resource URI.
-    */
-   protected String extractResourceURI()
-   {
-      String queryString = this.request.getQuery();
-
-      if(queryString == null)
-      {
-         return this.request.getRequestURL().toString();
-      }
-      else
-      {
-         return this.request.getRequestURL().append('?').append(queryString).toString();
-      }
-   }
-
-   /**
-    * Extracts the call confidentiality.
-    * @return True if the call is confidential.
-    */
-   protected boolean extractConfidentiality()
-   {
-      return this.request.isConfidential();
-   }
-
-   /**
-    * Extracts the HTTP method name.
-    * @return The HTTP method name.
-    */
-   protected String extractMethodName()
-   {
-      return this.request.getMethod();
-   }
-
-   /**
-    * Extracts the client IP address.
-    * @return The client IP address.
-    */
-   protected String extractClientAddress()
-   {
-      return this.request.getRemoteAddr();
+      return getResponse().getOutputStream();
    }
 
 }
