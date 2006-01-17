@@ -4,6 +4,26 @@
 -----------------------------
 
 
+1.0 beta 1
+ - Merged RestletCall with UniformCall for simplification purpose, only UniformCall remains
+ - Renamed RestletCallModel into UniformModel
+ - Renamed RestletTarget into UniformTarget
+ - Maplets, Chainlets and Restlet Containers can now delegate to any UniformInterface handler, not just Restlets
+ - org.restlet.Restlet interface nows also implements the UniformInterface
+ - Added get, post, put and delete methods to org.restlet.connector.Client
+ - org.restlet.connector.Connector now implements UniformInterface
+ - Added "handler" property to LocalClient base class (default target handler)
+ - Deleted LocalConnector class
+ - Added AbstractClient providing the default implementation of get, post, put and delete Client methods
+ - Added org.restlet.connector.HttpCall, HttpClient, HttpClientCall, HttpServer, HttpServerCall interfaces
+   to provide a standardization of HTTP connectors and allow direct usage of those connectors without
+   using the UniformInterface and UniformCall interfaces (useful for writing protocol specific handlers)
+ - Fully refactored Jetty connectors to prevent duplicate logic and support multiple listener types (HTTP, HTTPS and AJP)
+ - Updated Jetty 6 connector to version 6.0 beta 7
+ - Added better syntax checks for representation Tags
+ - Added "defaultLanguage" property to DirectoryRestlet, used when no language is specified by a file extension
+ - Improved automatic server-side negotiation in UniformCallImpl (setBestOutput and getBestVariant methods)
+
 0.19 beta
  - Added a Samples application page detailling the source code of the Restlet and Noelios Consulting Web sites (suggested by Michael Mayer)
  - Added "conditions" property to UniformCall and a Conditions interface to support conditional REST methods.
