@@ -30,7 +30,7 @@ import org.restlet.data.Methods;
 import org.restlet.data.Reference;
 import org.restlet.data.Representation;
 
-import com.noelios.restlet.connector.HttpClient;
+import com.noelios.restlet.connector.HttpClientImpl;
 
 /**
  * Retrieving the content of a Web page (detailled)
@@ -51,7 +51,7 @@ public class Tutorial02b
          call.setMethod(Methods.GET);
 
          // Ask to the HTTP client connector to handle the call
-         HttpClient client = new HttpClient("My Web client");
+         HttpClientImpl client = new HttpClientImpl("My Web client");
          client.handle(call);
 
          // Output the result representation on the JVM console

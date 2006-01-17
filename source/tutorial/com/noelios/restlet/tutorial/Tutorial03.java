@@ -51,7 +51,7 @@ public class Tutorial03
          };
 
          // Create the HTTP server and listen on port 8182
-         new JettyServer("My Web server", 8182, handler).start();
+         new JettyServer("My Web server", handler, JettyServer.LISTENER_HTTP, 8182).start();
       }
       catch(Exception e)
       {

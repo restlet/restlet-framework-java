@@ -26,8 +26,7 @@ import org.restlet.AbstractRestlet;
 import org.restlet.DefaultMaplet;
 import org.restlet.Maplet;
 import org.restlet.Restlet;
-import org.restlet.RestletCall;
-import org.restlet.RestletException;
+import org.restlet.UniformCall;
 import org.restlet.component.DefaultRestletContainer;
 import org.restlet.component.RestletContainer;
 import org.restlet.data.MediaTypes;
@@ -56,7 +55,7 @@ public class Tutorial11
 
          // Create the HTTP server connector, then add it as a server connector
          // to the Restlet container. Note that the container is the call handler.
-         JettyServer httpServer = new JettyServer("My connector", 8182, myContainer);
+         JettyServer httpServer = new JettyServer("My connector", myContainer, JettyServer.LISTENER_HTTP, 8182);
          myContainer.addServer(httpServer);
 
          // Attach a log Chainlet to the container
@@ -96,7 +95,7 @@ public class Tutorial11
          // Create the user Maplet
          Maplet userMaplet = new DefaultMaplet(myContainer)
             {
-               public void handle(RestletCall call) throws RestletException
+               public void handle(UniformCall call)
                {
                   if(call.getPath(0, true).equals(""))
                   {
@@ -116,7 +115,7 @@ public class Tutorial11
          // Create the orders Restlet
          Restlet ordersRestlet = new AbstractRestlet(myContainer)
             {
-               public void handle(RestletCall call) throws RestletException
+               public void handle(UniformCall call)
                {
                   // Print the requested URI path
                   String output = "Orders of user named: " + call.getPath(2, true);

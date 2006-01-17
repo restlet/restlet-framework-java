@@ -24,8 +24,7 @@ package com.noelios.restlet.tutorial;
 
 import org.restlet.AbstractRestlet;
 import org.restlet.Restlet;
-import org.restlet.RestletCall;
-import org.restlet.RestletException;
+import org.restlet.UniformCall;
 import org.restlet.component.DefaultRestletContainer;
 import org.restlet.component.RestletContainer;
 import org.restlet.data.MediaTypes;
@@ -50,13 +49,13 @@ public class Tutorial05
 
          // Create the HTTP server connector, then add it as a server connector
          // to the Restlet container. Note that the container is the call handler.
-         JettyServer httpServer = new JettyServer("My connector", 8182, myContainer);
+         JettyServer httpServer = new JettyServer("My connector", myContainer, JettyServer.LISTENER_HTTP, 8182);
          myContainer.addServer(httpServer);
 
          // Create a new Restlet that will display some path information.
          Restlet myRestlet = new AbstractRestlet(myContainer)
             {
-               public void handle(RestletCall call) throws RestletException
+               public void handle(UniformCall call)
                {
                   // Print the requested URI path
                   String output = "Resource path = " + call.getPath(0, false) + '\n' +

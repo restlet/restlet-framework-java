@@ -47,7 +47,7 @@ public class Tutorial07
 
          // Create the HTTP server connector, then add it as a server connector
          // to the Restlet container. Note that the container is the call handler.
-         JettyServer httpServer = new JettyServer("My connector", 8182, myContainer);
+         JettyServer httpServer = new JettyServer("My connector", myContainer, JettyServer.LISTENER_HTTP, 8182);
          myContainer.addServer(httpServer);
 
          // Attach a logr Chainlet to the container
