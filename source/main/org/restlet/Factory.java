@@ -35,7 +35,7 @@ import org.restlet.data.Representation;
 import org.restlet.data.Security;
 
 /**
- * Factory implemented by Restlet API implementations.
+ * Factory implemented by Restlet implementations.
  */
 public interface Factory
 {
@@ -68,14 +68,6 @@ public interface Factory
     * @return A new chainlet.
     */
    public Chainlet createChainlet(RestletContainer container);
-
-   /**
-    * Returns a new restlet call wrapping a given uniform call.<br/> Developers who need to extend the
-    * default restlet calls should override it.
-    * @param call The uniform call to wrap.
-    * @return A new restlet call.
-    */
-   public RestletCall createRestletCall(UniformCall call);
 
    /**
     * Returns a new cookie setting.

@@ -30,15 +30,9 @@ import org.restlet.component.RestletContainer;
  * @see org.restlet.UniformInterface
  * @see org.restlet.Maplet
  */
-public interface Restlet
+public interface Restlet extends UniformInterface
 {
-   /**
-    * Handles a call to a resource or a set of resources.
-    * @param call The call to handle.
-    * @throws RestletException
-    */
-   public void handle(RestletCall call) throws RestletException;
-
+   
    /**
     * Returns the container.
     * @return The container.

@@ -62,8 +62,7 @@ public interface Maplet extends Restlet
     * If no delegation is possible, an error status (406, not found) will be returned.
     * @param call The call to delegate.
     * @return True if the call was successfully delegated.
-    * @throws RestletException
     */
-   public boolean delegate(RestletCall call) throws RestletException;
+   public boolean delegate(UniformCall call);
 
 }

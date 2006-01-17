@@ -87,9 +87,8 @@ public class DefaultMaplet extends AbstractRestlet implements Maplet
     * Handles a call to a resource or a set of resources. Default behavior to be overriden: delegation to
     * attached handlers.
     * @param call The call to handle.
-    * @throws RestletException
     */
-   public void handle(RestletCall call) throws RestletException
+   public void handle(UniformCall call)
    {
       delegate.handle(call);
    }
@@ -99,9 +98,8 @@ public class DefaultMaplet extends AbstractRestlet implements Maplet
     * If no delegation is possible, an error status (406, not found) will be returned.
     * @param call The call to delegate.
     * @return True if the call was successfully delegated.
-    * @throws RestletException
     */
-   public boolean delegate(RestletCall call) throws RestletException
+   public boolean delegate(UniformCall call)
    {
       return delegate.delegate(call);
    }

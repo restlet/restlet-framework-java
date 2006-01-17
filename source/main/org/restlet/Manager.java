@@ -85,17 +85,6 @@ public class Manager
    }
 
    /**
-    * Returns a new restlet call wrapping a given uniform call. Developers who need to extend the default
-    * restlet calls should override it.
-    * @param call The uniform call to wrap.
-    * @return A new restlet call.
-    */
-   public static RestletCall createRestletCall(UniformCall call)
-   {
-      return getRegisteredFactory().createRestletCall(call);
-   }
-
-   /**
     * Returns a new cookie setting.
     * @param name The name.
     * @param value The value.

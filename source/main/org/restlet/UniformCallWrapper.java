@@ -45,15 +45,50 @@ public class UniformCallWrapper implements UniformCall
       this.wrappedCall = wrappedCall;
    }
 
+
+   /**
+    * Returns the list of restlets paths. The list is sorted according to the handlers hierarchy.
+    * @return The list of restlets paths.
+    */
+   public List<String> getPaths()
+   {
+      return getWrappedCall().getPaths();
+   }
+
+   /**
+    * Returns one of the paths in the list. The first path is the resource path relatively to the current
+    * restlet. The second path is the current reslet path relatively to the parent restlet. All the hierarchy
+    * of restlet paths is also available depending on the restlet tree.
+    * @param index Index of the path in the list.
+    * @param strip Indicates if leading and ending slashes should be stripped.
+    * @return The path at the given index.
+    */
+   public String getPath(int index, boolean strip)
+   {
+      return getWrappedCall().getPath(index, strip);
+   }
+
+   /**
+    * Returns the list of substring matched in the current restlet's path.
+    * @return The list of substring matched.
+    * @see <a href="http://java.sun.com/j2se/1.5.0/docs/api/java/util/regex/Matcher.html#group(int)">Matcher.group()</a>
+    */
+   public List<String> getMatches()
+   {
+      return getWrappedCall().getMatches();
+   }
+   
+   
    /**
     * Returns the best variant representation for a given resource according the the client preferences.
     * @param resource The resource for which the best representation needs to be set.
+    * @param fallbackLanguage The language to use if no preference matches.
     * @return The best variant representation. 
     * @see <a href="http://httpd.apache.org/docs/2.2/en/content-negotiation.html#algorithm">Apache content negotiation algorithm</a>
     */
-   public RepresentationMetadata getBestVariant(Resource resource)
+   public RepresentationMetadata getBestVariant(Resource resource, Language fallbackLanguage)
    {
-      return getWrappedCall().getBestVariant(resource);
+      return getWrappedCall().getBestVariant(resource, fallbackLanguage);
    }
 
    /**
@@ -208,11 +243,12 @@ public class UniformCallWrapper implements UniformCall
     * If no representation is found, sets the status to "Not found".<br/>
     * If no acceptable representation is available, sets the status to "Not acceptable".<br/>
     * @param resource The resource for which the best representation needs to be set.
+    * @param fallbackLanguage The language to use if no preference matches.
     * @see <a href="http://httpd.apache.org/docs/2.2/en/content-negotiation.html#algorithm">Apache content negotiation algorithm</a>
     */
-   public void setBestOutput(Resource resource)
+   public void setBestOutput(Resource resource, Language fallbackLanguage)
    {
-      getWrappedCall().setBestOutput(resource);
+      getWrappedCall().setBestOutput(resource, fallbackLanguage);
    }
 
    /**

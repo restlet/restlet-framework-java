@@ -70,12 +70,11 @@ public abstract class AbstractChainlet extends AbstractRestlet implements Chainl
    }
 
    /**
-    * Handles a call to a resource or a set of resources. Default behavior to be overriden: delegation to
-    * attached restlet.
+    * Handles a call to a resource or a set of resources.<br/>
+    * Default behavior to be overriden: delegation to attached restlet.
     * @param call The call to handle.
-    * @throws RestletException
     */
-   public void handle(RestletCall call) throws RestletException
+   public void handle(UniformCall call)
    {
       delegate.handle(call);
    }
