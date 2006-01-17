@@ -26,15 +26,14 @@ import java.util.logging.Level;
 import java.util.logging.Logger;
 
 import org.restlet.AbstractChainlet;
-import org.restlet.RestletCall;
-import org.restlet.RestletException;
+import org.restlet.UniformCall;
 import org.restlet.component.RestletContainer;
 
 import com.noelios.restlet.util.RestletCallModel;
 import com.noelios.restlet.util.StringTemplate;
 
 /**
- * Chainlet logging all calls after handling by the attache restlet.
+ * Chainlet logging all calls after handling by the chained restlet.
  * The current format is similar to IIS 6 logs.
  * The logging is based on the java.util.logging package.
  */
@@ -77,9 +76,8 @@ public class LogChainlet extends AbstractChainlet
    /**
     * Handles a call to a resource or a set of resources.
     * @param call The call to handle.
-    * @throws RestletException
     */
-   public void handle(RestletCall call) throws RestletException
+   public void handle(UniformCall call)
    {
       long startTime = System.currentTimeMillis();
       super.handle(call);
@@ -102,7 +100,7 @@ public class LogChainlet extends AbstractChainlet
     * @param duration The call duration.
     * @return The formatted log entry.
     */
-   protected String formatDefault(RestletCall call, int duration)
+   protected String formatDefault(UniformCall call, int duration)
    {
       StringBuilder sb = new StringBuilder();
 
@@ -178,7 +176,7 @@ public class LogChainlet extends AbstractChainlet
     * @param call The call to log.
     * @return The formatted log entry.
     */
-   protected String format(RestletCall call)
+   protected String format(UniformCall call)
    {
       return this.logTemplate.process(new RestletCallModel(call, "-"));
    }

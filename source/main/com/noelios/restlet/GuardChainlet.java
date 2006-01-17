@@ -23,12 +23,12 @@
 package com.noelios.restlet;
 
 import java.io.UnsupportedEncodingException;
+import java.util.logging.Level;
 import java.util.logging.Logger;
 
 import org.restlet.AbstractChainlet;
 import org.restlet.Manager;
-import org.restlet.RestletCall;
-import org.restlet.RestletException;
+import org.restlet.UniformCall;
 import org.restlet.component.RestletContainer;
 import org.restlet.data.ChallengeResponse;
 import org.restlet.data.ChallengeSchemes;
@@ -67,9 +67,8 @@ public abstract class GuardChainlet extends AbstractChainlet
    /**
     * Handles a call to a resource or a set of resources.
     * @param call The call to handle.
-    * @throws RestletException
     */
-   public void handle(RestletCall call) throws RestletException
+   public void handle(UniformCall call)
    {
       Security security = call.getSecurity();
 
@@ -129,7 +128,7 @@ public abstract class GuardChainlet extends AbstractChainlet
             }
             catch(UnsupportedEncodingException e)
             {
-               throw new RestletException("Unsupported encoding error", e);
+               logger.log(Level.WARNING, "Unsupported encoding error", e);
             }
 
          }
@@ -145,7 +144,7 @@ public abstract class GuardChainlet extends AbstractChainlet
     * Challenge a client.
     * @param call The current call.
     */
-   protected void challengeClient(RestletCall call)
+   protected void challengeClient(UniformCall call)
    {
       call.setStatus(Statuses.CLIENT_ERROR_UNAUTHORIZED);
       call.getSecurity().setChallengeRequest(new ChallengeRequestImpl(ChallengeSchemes.HTTP_BASIC, this.realm));
@@ -158,7 +157,7 @@ public abstract class GuardChainlet extends AbstractChainlet
     * @param call The current call.
     * @param userId The user identifier.
     */
-   protected void block(RestletCall call, String userId)
+   protected void block(UniformCall call, String userId)
    {
       challengeClient(call);
    }

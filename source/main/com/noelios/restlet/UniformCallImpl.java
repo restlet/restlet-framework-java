@@ -28,7 +28,6 @@ import java.util.ArrayList;
 import java.util.Date;
 import java.util.Iterator;
 import java.util.List;
-import java.util.logging.Logger;
 
 import org.restlet.Resource;
 import org.restlet.UniformCall;
@@ -50,15 +49,13 @@ import org.restlet.data.Statuses;
 
 import com.noelios.restlet.data.StringRepresentation;
 import com.noelios.restlet.util.DateUtils;
+import com.noelios.restlet.util.StringUtils;
 
 /**
- * Default call implementation.
+ * Implementation of an uniform call.
  */
 public class UniformCallImpl implements UniformCall
 {
-   /** Obtain a suitable logger. */
-   private static Logger logger = Logger.getLogger("com.noelios.restlet.UniformCallImpl");
-
    /** The character set preferences of the user agent. */
    protected List<Preference> characterSetPrefs;
 
@@ -107,8 +104,14 @@ public class UniformCallImpl implements UniformCall
    /** The status. */
    protected Status status;
 
+   /** The list of matches. */
+   protected List<String> matches;
+
+   /** The list of paths. */
+   protected List<String> paths;
+
    /**
-    * Constructor.
+    * Empty constructor.
     */
    public UniformCallImpl()
    {
@@ -155,6 +158,15 @@ public class UniformCallImpl implements UniformCall
       this.status = null;
       this.output = null;
       this.cookieSettings = null;
+
+      // Creates the list of paths
+      this.paths = new ArrayList<String>();
+
+      // Creates the list of matches
+      this.matches = new ArrayList<String>();
+
+      // Set the absolute resource path as the initial path in the list.
+      getPaths().add(0, getResourceRef().toString(false, false));
    }
 
    /**
@@ -321,40 +333,48 @@ public class UniformCallImpl implements UniformCall
    /**
     * Returns the best variant representation for a given resource according the the client preferences.
     * @param resource The resource for which the best representation needs to be set.
+    * @param fallbackLanguage The language to use if no preference matches.
     * @return The best variant representation. 
     * @see <a href="http://httpd.apache.org/docs/2.2/en/content-negotiation.html#algorithm">Apache content negotiation algorithm</a>
     */
-   public RepresentationMetadata getBestVariant(Resource resource)
+   public RepresentationMetadata getBestVariant(Resource resource, Language fallbackLanguage)
    {
-      Parameter currentParam = null;
-      boolean compatiblePref = false;
-      boolean compatibleLanguage = false;
-
-      RepresentationMetadata currentVariant = null;
-      Language currentLanguage = null;
-      MediaType currentMediaType = null;
-
-      RepresentationMetadata bestVariant = null;
-      float bestQuality = 0;
-
-      Preference currentPref = null;
-      Preference bestLanguagePref = null;
-      Preference bestMediaTypePref = null;
-
-      float currentScore = 0;
-      float bestLanguageScore = 0;
-      float bestMediaTypeScore = 0;
-
-      // For each media type supported by this resource
-      List<RepresentationMetadata> variants = resource.getVariantsMetadata();
+      return getBestVariant(resource.getVariantsMetadata(), fallbackLanguage);
+   }
+   
+   /**
+    * Returns the best variant representation for a given resource according the the client preferences.
+    * @param variants The list of variants to compare.
+    * @param fallbackLanguage The language to use if no preference matches.
+    * @return The best variant representation. 
+    * @see <a href="http://httpd.apache.org/docs/2.2/en/content-negotiation.html#algorithm">Apache content negotiation algorithm</a>
+    */
+   protected RepresentationMetadata getBestVariant(List<RepresentationMetadata> variants, Language fallbackLanguage)
+   {
       if(variants == null)
       {
-         logger.info("No variant found for resource: " + getResourceRef().getIdentifier());
-         setStatus(Statuses.CLIENT_ERROR_NOT_FOUND);
+         return null;
       }
       else
       {
-         logger.info(Integer.toString(variants.size()) + " variants found for resource: " + getResourceRef().getIdentifier());
+         Parameter currentParam = null;
+         boolean compatiblePref = false;
+         boolean compatibleLanguage = false;
+
+         RepresentationMetadata currentVariant = null;
+         Language currentLanguage = null;
+         MediaType currentMediaType = null;
+
+         RepresentationMetadata bestVariant = null;
+         float bestQuality = 0;
+
+         Preference currentPref = null;
+         Preference bestLanguagePref = null;
+         Preference bestMediaTypePref = null;
+
+         float currentScore = 0;
+         float bestLanguageScore = 0;
+         float bestMediaTypeScore = 0;
 
          // For each available variant, we will compute the negotiation score
          // which is dependant on the language score and on the media type score
@@ -429,7 +449,9 @@ public class UniformCallImpl implements UniformCall
             }
 
             // If the variant has a language set, do we have a compatible preference?
-            compatibleLanguage = (currentVariant.getLanguage() == null) || (bestLanguagePref != null);
+            compatibleLanguage = (currentVariant.getLanguage() == null) || 
+                                 (bestLanguagePref != null) || 
+                                 (currentVariant.getLanguage().equals(fallbackLanguage));
 
             // For each media range preference defined in the call
             // Calculate the score and remember the best scoring preference
@@ -527,9 +549,9 @@ public class UniformCallImpl implements UniformCall
                bestMediaTypeScore = 0;
             }
          }
+
+         return bestVariant;
       }
-      
-      return bestVariant;
    }
    
    /**
@@ -537,31 +559,43 @@ public class UniformCallImpl implements UniformCall
     * If no representation is found, sets the status to "Not found".<br/>
     * If no acceptable representation is available, sets the status to "Not acceptable".<br/>
     * @param resource The resource for which the best representation needs to be set.
+    * @param fallbackLanguage The language to use if no preference matches.
     * @see <a href="http://httpd.apache.org/docs/2.2/en/content-negotiation.html#algorithm">Apache content negotiation algorithm</a>
     */
-   public void setBestOutput(Resource resource)
+   public void setBestOutput(Resource resource, Language fallbackLanguage)
    {
-      RepresentationMetadata bestVariant = getBestVariant(resource);
-      
-      if(bestVariant == null)
+      List<RepresentationMetadata> variants = resource.getVariantsMetadata();
+
+      if((variants == null) || (variants.size() < 1))
       {
-         // No variant was found matching the call preferences
-         setStatus(Statuses.CLIENT_ERROR_NOT_ACCEPTABLE);
+         // Resource not found
+         setStatus(Statuses.CLIENT_ERROR_NOT_FOUND);
       }
       else
       {
-         // Was the representation modified since the last client call?
-         Date modifiedSince = (getConditions() == null) ? null : getConditions().getModifiedSince();
-         if((modifiedSince == null) || DateUtils.after(modifiedSince, bestVariant.getModificationDate()))
+         // Compute the best variant
+         RepresentationMetadata bestVariant = getBestVariant(variants, fallbackLanguage);
+         
+         if(bestVariant == null)
          {
-            // Yes, set the best representation as the call output
-            setOutput(resource.getRepresentation(bestVariant));
-            setStatus(Statuses.SUCCESS_OK);
+            // No variant was found matching the call preferences
+            setStatus(Statuses.CLIENT_ERROR_NOT_ACCEPTABLE);
          }
          else
          {
-            // No, indicates it to the client
-            setStatus(Statuses.REDIRECTION_NOT_MODIFIED);
+            // Was the representation modified since the last client call?
+            Date modifiedSince = (getConditions() == null) ? null : getConditions().getModifiedSince();
+            if((modifiedSince == null) || DateUtils.after(modifiedSince, bestVariant.getModificationDate()))
+            {
+               // Yes, set the best representation as the call output
+               setOutput(resource.getRepresentation(bestVariant));
+               setStatus(Statuses.SUCCESS_OK);
+            }
+            else
+            {
+               // No, indicates it to the client
+               setStatus(Statuses.REDIRECTION_NOT_MODIFIED);
+            }
          }
       }
    }
@@ -720,6 +754,45 @@ public class UniformCallImpl implements UniformCall
       {
          setStatus(Statuses.REDIRECTION_MOVED_TEMPORARILY);
       }
+   }
+
+   /**
+    * Returns the list of substring matched in the current restlet's path.
+    * @return The list of substring matched.
+    * @see <a href="http://java.sun.com/j2se/1.5.0/docs/api/java/util/regex/Matcher.html#group(int)">Matcher.group()</a>
+    */
+   public List<String> getMatches()
+   {
+      return this.matches;
+   }
+
+   /**
+    * Returns one of the paths in the list. The first path is the resource path relatively to the current
+    * restlet. The second path is the current reslet path relatively to the parent restlet. All the hierarchy
+    * of restlet paths is also available depending on the restlet tree.
+    * @param index Index of the path in the list.
+    * @param strip Indicates if leading and ending slashes should be stripped.
+    * @return The path at the given index.
+    */
+   public String getPath(int index, boolean strip)
+   {
+      if(strip)
+      {
+         return StringUtils.strip(getPaths().get(index), '/');
+      }
+      else
+      {
+         return getPaths().get(index);
+      }
+   }
+
+   /**
+    * Returns the list of restlets paths. The list is sorted according to the handlers hierarchy.
+    * @return The list of restlets paths.
+    */
+   public List<String> getPaths()
+   {
+      return this.paths;
    }
 
 }

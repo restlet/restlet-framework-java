@@ -24,7 +24,7 @@ package com.noelios.restlet.util;
 
 import java.io.IOException;
 
-import org.restlet.RestletCall;
+import org.restlet.UniformCall;
 
 /**
  * Wraps a restlet call into a readable model
@@ -50,8 +50,8 @@ public class RestletCallModel implements ReadableModel
    public static final String NAME_RESOURCE_URI = "uri";
    public static final String NAME_RESOURCE_USER_INFO = "userInfo";
 
-   /** The wrapped restlet call. */
-   protected RestletCall call;
+   /** The wrapped call. */
+   protected UniformCall call;
 
    /** The default value to return if a lookup fails or returns null. */
    protected String defaultValue;
@@ -61,7 +61,7 @@ public class RestletCallModel implements ReadableModel
     * @param call The wrapped restlet call.
     * @param defaultValue The default value to return if a lookup fails or returns null.
     */
-   public RestletCallModel(RestletCall call, String defaultValue)
+   public RestletCallModel(UniformCall call, String defaultValue)
    {
       this.call = call;
       this.defaultValue = defaultValue;

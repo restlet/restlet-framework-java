@@ -25,10 +25,9 @@ package com.noelios.restlet;
 import java.io.IOException;
 
 import org.restlet.Chainlet;
-import org.restlet.Maplet;
-import org.restlet.RestletCall;
 import org.restlet.Factory;
 import org.restlet.Manager;
+import org.restlet.Maplet;
 import org.restlet.UniformCall;
 import org.restlet.component.RestletContainer;
 import org.restlet.component.RestletServer;
@@ -102,17 +101,6 @@ public class Engine implements Factory
    public Chainlet createChainlet(RestletContainer container)
    {
       return new ChainletImpl(container);
-   }
-
-   /**
-    * Returns a new restlet call wrapping a given uniform call. Developers who need to extend the default
-    * restlet calls should override it.
-    * @param call The uniform call to wrap.
-    * @return A new restlet call.
-    */
-   public RestletCall createRestletCall(UniformCall call)
-   {
-      return new RestletCallImpl(call);
    }
 
    /**

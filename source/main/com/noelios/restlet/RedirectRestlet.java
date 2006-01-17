@@ -27,8 +27,7 @@ import java.util.logging.Level;
 import java.util.logging.Logger;
 
 import org.restlet.AbstractRestlet;
-import org.restlet.RestletCall;
-import org.restlet.RestletException;
+import org.restlet.UniformCall;
 import org.restlet.component.RestletContainer;
 
 import com.noelios.restlet.util.RestletCallModel;
@@ -82,9 +81,8 @@ public class RedirectRestlet extends AbstractRestlet
    /**
     * Handles a call to a resource or a set of resources.
     * @param call The call to handle.
-    * @throws RestletException
     */
-   public void handle(RestletCall call) throws RestletException
+   public void handle(UniformCall call)
    {
       try
       {

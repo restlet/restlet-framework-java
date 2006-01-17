@@ -25,23 +25,28 @@ package com.noelios.restlet;
 import java.lang.reflect.InvocationTargetException;
 import java.util.ArrayList;
 import java.util.Iterator;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 import org.restlet.Maplet;
 import org.restlet.Restlet;
-import org.restlet.RestletCall;
 import org.restlet.RestletException;
+import org.restlet.UniformCall;
 import org.restlet.component.RestletContainer;
 import org.restlet.data.Statuses;
 
 import com.noelios.restlet.util.RestletTarget;
 
 /**
- * Represents a list of mappings for a parent maplet or for the container itself.
+ * Implementation of a mapper of calls to other restlets.
  */
 public class MapletImpl extends ArrayList<Mapping> implements Maplet
 {
+   /** Obtain a suitable logger. */
+   private static Logger logger = Logger.getLogger("com.noelios.restlet.MapletImpl");
+
    /** Serial version identifier. */
    private static final long serialVersionUID = 1L;
 
@@ -115,12 +120,12 @@ public class MapletImpl extends ArrayList<Mapping> implements Maplet
    }
 
    /**
-    * Handles a call to a resource or a set of resources. Default behavior to be overriden: delegation to
-    * attached handlers.
+    * Handles a call to a resource or a set of resources.<br/>
+    * Default behavior to be overriden: delegation to attached handlers.
     * @param call The call to handle.
     * @throws RestletException
     */
-   public void handle(RestletCall call) throws RestletException
+   public void handle(UniformCall call)
    {
       delegate(call);
    }
@@ -130,9 +135,8 @@ public class MapletImpl extends ArrayList<Mapping> implements Maplet
     * If no delegation is possible, an error status (406, not found) will be returned.
     * @param call The call to delegate.
     * @return True if the call was successfully delegated.
-    * @throws RestletException
     */
-   public boolean delegate(RestletCall call) throws RestletException
+   public boolean delegate(UniformCall call)
    {
       Mapping mapping = null;
       Matcher matcher = null;
@@ -182,15 +186,18 @@ public class MapletImpl extends ArrayList<Mapping> implements Maplet
          }
          catch(InstantiationException ie)
          {
-            throw new RestletException("Restlet can't be instantiated", ie);
+            call.setStatus(Statuses.SERVER_ERROR_INTERNAL);
+            logger.log(Level.WARNING, "Restlet can't be instantiated", ie);
          }
          catch(IllegalAccessException iae)
          {
-            throw new RestletException("Restlet can't be accessed", iae);
+            call.setStatus(Statuses.SERVER_ERROR_INTERNAL);
+            logger.log(Level.WARNING, "Restlet can't be accessed", iae);
          }
          catch(InvocationTargetException ite)
          {
-            throw new RestletException("Restlet can't be invoked", ite);
+            call.setStatus(Statuses.SERVER_ERROR_INTERNAL);
+            logger.log(Level.WARNING, "Restlet can't be invoked", ite);
          }
 
          // Handle the call

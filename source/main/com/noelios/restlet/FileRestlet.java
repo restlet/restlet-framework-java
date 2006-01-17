@@ -23,8 +23,7 @@
 package com.noelios.restlet;
 
 import org.restlet.AbstractRestlet;
-import org.restlet.RestletCall;
-import org.restlet.RestletException;
+import org.restlet.UniformCall;
 import org.restlet.component.RestletContainer;
 import org.restlet.data.MediaType;
 import org.restlet.data.Statuses;
@@ -105,10 +104,10 @@ public class FileRestlet extends AbstractRestlet
    }
 
    /**
-    * Handles a REST call.
-    * @param call The call to handle.
+    * Handles a uniform call.
+    * @param call The uniform call to handle.
     */
-   public void handle(RestletCall call) throws RestletException
+   public void handle(UniformCall call)
    {
       if(call.getPath(0, false).equals(""))
       {

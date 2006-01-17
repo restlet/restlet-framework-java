@@ -23,22 +23,26 @@
 package com.noelios.restlet;
 
 import java.lang.reflect.InvocationTargetException;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 import org.restlet.AbstractRestlet;
 import org.restlet.Chainlet;
 import org.restlet.Restlet;
-import org.restlet.RestletCall;
-import org.restlet.RestletException;
+import org.restlet.UniformCall;
 import org.restlet.component.RestletContainer;
 import org.restlet.data.Statuses;
 
 import com.noelios.restlet.util.RestletTarget;
 
 /**
- * Represents a list of mappings for a parent maplet or for the container itself.
+ * Implementation of a chainer of calls to a target restlet.
  */
 public class ChainletImpl extends AbstractRestlet implements Chainlet
 {
+   /** Obtain a suitable logger. */
+   private static Logger logger = Logger.getLogger("com.noelios.restlet.ChainletImpl");
+
    /** Serial version identifier. */
    private static final long serialVersionUID = 1L;
 
@@ -84,9 +88,8 @@ public class ChainletImpl extends AbstractRestlet implements Chainlet
     * Handles a call to a resource or a set of resources.
     * Default behavior to be overriden: delegation to the attached restlet.
     * @param call The call to handle.
-    * @throws RestletException
     */
-   public void handle(RestletCall call) throws RestletException
+   public void handle(UniformCall call)
    {
       if(this.target != null)
       {
@@ -110,15 +113,18 @@ public class ChainletImpl extends AbstractRestlet implements Chainlet
          }
          catch(InstantiationException ie)
          {
-            throw new RestletException("Restlet can't be instantiated", ie);
+            call.setStatus(Statuses.SERVER_ERROR_INTERNAL);
+            logger.log(Level.WARNING, "Restlet can't be instantiated", ie);
          }
          catch(IllegalAccessException iae)
          {
-            throw new RestletException("Restlet can't be accessed", iae);
+            call.setStatus(Statuses.SERVER_ERROR_INTERNAL);
+            logger.log(Level.WARNING, "Restlet can't be accessed", iae);
          }
          catch(InvocationTargetException ite)
          {
-            throw new RestletException("Restlet can't be invoked", ite);
+            call.setStatus(Statuses.SERVER_ERROR_INTERNAL);
+            logger.log(Level.WARNING, "Restlet can't be invoked", ite);
          }
 
          // Handle the call

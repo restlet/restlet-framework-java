@@ -26,9 +26,10 @@ import java.util.Map;
 import java.util.TreeMap;
 
 import org.restlet.AbstractRestlet;
-import org.restlet.RestletCall;
-import org.restlet.RestletException;
+import org.restlet.UniformCall;
 import org.restlet.component.RestletContainer;
+import org.restlet.data.Language;
+import org.restlet.data.Languages;
 import org.restlet.data.MediaType;
 import org.restlet.data.MediaTypes;
 import org.restlet.data.Metadata;
@@ -47,6 +48,9 @@ public class DirectoryRestlet extends AbstractRestlet
 
    /** Default media type used when no media type extension is available. */
    protected MediaType defaultMediaType;
+
+   /** Default language used when no language extension is available. */
+   protected Language defaultLanguage;
 
    /** If no file name is specified, use the (optional) index name. */
    protected String indexName;
@@ -73,6 +77,7 @@ public class DirectoryRestlet extends AbstractRestlet
       this.rootPath = StringUtils.normalizePath(rootPath);
       this.deeply = deeply;
       this.defaultMediaType = MediaTypes.TEXT_PLAIN;
+      this.defaultLanguage = Languages.ENGLISH_US;
       this.indexName = indexName;
       this.metadataMappings = new TreeMap<String, Metadata>();
       this.timeToLive = 600;
@@ -164,6 +169,26 @@ public class DirectoryRestlet extends AbstractRestlet
    }
 
    /**
+    * Set the default language ("en-us" by default).
+    * Used when no language extension is available.
+    * @param language The default language.
+    */
+   public void setDefaultLanguage(Language language)
+   {
+      this.defaultLanguage = language;
+   }
+
+   /**
+    * Returns the default language.
+    * Used when no language extension is available.
+    * @return The default language.
+    */
+   public Language getDefaultLanguage()
+   {
+      return this.defaultLanguage;
+   }
+
+   /**
     * Returns the time to live for a file representation before it expires (in seconds).
     * @return The time to live for a file representation before it expires (in seconds).
     */
@@ -182,12 +207,12 @@ public class DirectoryRestlet extends AbstractRestlet
    }
    
    /**
-    * Handles a REST call.
+    * Handles an uniform call.
     * @param call The call to handle.
     */
-   public void handle(RestletCall call) throws RestletException
+   public void handle(UniformCall call)
    {
-      call.setBestOutput(new FileResource(this, call.getPath(0, false)));
+      call.setBestOutput(new FileResource(this, call.getPath(0, false)), getDefaultLanguage());
    }
 
    /**
