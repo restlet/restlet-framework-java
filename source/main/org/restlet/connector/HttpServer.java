@@ -22,35 +22,15 @@
 
 package org.restlet.connector;
 
-import org.restlet.UniformCall;
-import org.restlet.UniformInterface;
-
 /**
- * Local connector implementation.
+ * Server connector for the HTTP protocol. 
  */
-public class LocalConnector extends AbstractConnector
+public interface HttpServer extends Server
 {
-   /** The target interface. */
-   private UniformInterface target;
-
    /**
-    * Constructor.
-    * @param name The name of this connector.
-    * @param target The target interface.
+    * Handles the HTTP protocol call.<br/>
+    * The default behavior is to create an UniformCall and delegate it to the attached handler.
+    * @param call The HTTP protocol call.
     */
-   public LocalConnector(String name, UniformInterface target)
-   {
-      super(name);
-      this.target = target;
-   }
-
-   /**
-    * Handles a call.
-    * @param call The call to handle.
-    */
-   public void handle(UniformCall call)
-   {
-      this.target.handle(call);
-   }
-
+   public void handle(HttpServerCall call);
 }

@@ -23,33 +23,55 @@
 package org.restlet.connector;
 
 import org.restlet.UniformCall;
+import org.restlet.data.Methods;
 import org.restlet.data.Representation;
 
+import com.noelios.restlet.UniformCallImpl;
+import com.noelios.restlet.data.ReferenceImpl;
+
 /**
- * Connector that initiates communication by making a request.<br/>By default, the handle(UniformCall)
- * method converts the call received into a connector call and handle it.<br/><br/>"The primary connector types are
- * client and server. The essential difference between the two is that a client initiates communication by
- * making a request, whereas a server listens for connections and responds to requests in order to supply
- * access to its services. A component may include both client and server connectors." Roy T. Fielding
- * @see <a href="http://www.ics.uci.edu/~fielding/pubs/dissertation/rest_arch_style.htm#sec_5_2_2">Source
- * dissertation</a>
+ * Local connector implementation.
  */
-public interface Client extends Connector
+public abstract class AbstractClient extends AbstractConnector implements Client
 {
+   /**
+    * Constructor.
+    * @param name The name of this connector.
+    */
+   public AbstractClient(String name)
+   {
+      super(name);
+   }
+
    /**
     * Gets the identified resource.
     * @param resourceUri The URI of the resource to get.
     * @return The returned uniform call.
     */
-   public UniformCall get(String resourceUri);
-   
+   public UniformCall get(String resourceUri)
+   {
+      UniformCall call = new UniformCallImpl();
+      call.setResourceRef(new ReferenceImpl(resourceUri));
+      call.setMethod(Methods.GET);
+      handle(call);
+      return call;
+   }
+
    /**
     * Post a representation to the identified resource.
     * @param resourceUri The URI of the resource to post to.
     * @param input The input representation to post.
     * @return The returned uniform call.
     */
-   public UniformCall post(String resourceUri, Representation input);
+   public UniformCall post(String resourceUri, Representation input)
+   {
+      UniformCall call = new UniformCallImpl();
+      call.setResourceRef(new ReferenceImpl(resourceUri));
+      call.setMethod(Methods.POST);
+      call.setInput(input);
+      handle(call);
+      return call;
+   }
 
    /**
     * Puts a representation in the identified resource.
@@ -57,12 +79,28 @@ public interface Client extends Connector
     * @param input The input representation to put.
     * @return The returned uniform call.
     */
-   public UniformCall put(String resourceUri, Representation input);
-   
+   public UniformCall put(String resourceUri, Representation input)
+   {
+      UniformCall call = new UniformCallImpl();
+      call.setResourceRef(new ReferenceImpl(resourceUri));
+      call.setMethod(Methods.PUT);
+      call.setInput(input);
+      handle(call);
+      return call;
+   }
+
    /**
     * Deletes the identified resource.
     * @param resourceUri The URI of the resource to delete.
     * @return The returned uniform call.
     */
-   public UniformCall delete(String resourceUri);
+   public UniformCall delete(String resourceUri)
+   {
+      UniformCall call = new UniformCallImpl();
+      call.setResourceRef(new ReferenceImpl(resourceUri));
+      call.setMethod(Methods.DELETE);
+      handle(call);
+      return call;
+   }
+
 }

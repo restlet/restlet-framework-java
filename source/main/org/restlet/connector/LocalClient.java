@@ -22,21 +22,54 @@
 
 package org.restlet.connector;
 
+import org.restlet.UniformCall;
+import org.restlet.UniformInterface;
 import org.restlet.component.Component;
 
 /**
  * Local client connector. Useful to call a component that resides inside the same JVM.
  */
-public class LocalClient extends LocalConnector implements Client
+public class LocalClient extends AbstractClient implements Client
 {
+   /** The local handler. */
+   protected UniformInterface handler;
+
    /**
     * Constructor.
     * @param name The name of this REST client.
-    * @param targetComponent The target component.
+    * @param handler The local handler.
     */
-   public LocalClient(String name, Component targetComponent)
+   public LocalClient(String name, Component handler)
    {
-      super(name, targetComponent);
+      super(name);
+      this.handler = handler;
+   }
+
+   /**
+    * Returns the call handler.
+    * @return The call handler.
+    */
+   public UniformInterface getHandler()
+   {
+      return this.handler;
+   }
+   
+   /**
+    * Sets the call handler.
+    * @param handler The call handler.
+    */
+   public void setHandler(UniformInterface handler)
+   {
+      this.handler = handler;
+   }
+
+   /**
+    * Handles a call.
+    * @param call The call to handle.
+    */
+   public void handle(UniformCall call)
+   {
+      getHandler().handle(call);
    }
 
 }
