@@ -37,15 +37,6 @@ public class JettyServer implements HttpServer
    /** Serial version identifier. */
    private static final long serialVersionUID = 1L;
 
-   /** AJP 1.3 protocol listener. */
-   public static final int LISTENER_AJP = 1;
-   
-   /** HTTP listener. */
-   public static final int LISTENER_HTTP = 2;
-   
-   /** HTTPS (SSL) listener. */
-   public static final int LISTENER_HTTPS = 3;
-
    /** The name of this REST connector. */
    protected String name;
 
@@ -58,56 +49,40 @@ public class JettyServer implements HttpServer
    /** The Jetty listener. */
    protected org.mortbay.http.HttpListener listener;
    
+   /** The Jetty listening address if specified. */
+   protected String address;
+   
    /** The Jetty listening port if specified. */
    protected int port;
-   
-   /** The Jetty listening address if specified. */
-   protected InetAddrPort address;
    
    protected String keystorePath;
    
    protected String keystorePassword;
    
    protected String keyPassword;
-   
+
    /**
     * Constructor.
     * @param name The unique connector name.
     * @param target The target handler.
     * @param listenerType The listener type.
-    * @param port The Jetty listening port.
+    * @param address The optional listening IP address (local host used if null).
+    * @param port The listening port.
     */
-   public JettyServer(String name, UniformInterface target, int listenerType, int port)
+   public JettyServer(String name, UniformInterface target, int listenerType, String address, int port)
    {
       this.name = name;
+      this.address = address;
       this.target = target;
       this.listenerType = listenerType;
+      this.address = address;
       this.port = port;
-      this.address = null;
    }
 
    /**
-    * Constructor.
-    * @param name The unique connector name.
-    * @param target The target component handling calls.
-    * @param listenerType The listener type.
-    * @param address The Jetty listening address.
-    */
-   public JettyServer(String name, UniformInterface target, int listenerType, InetAddrPort address)
-   {
-      this.name = name;
-      this.address = address;
-      this.target = target;
-      this.listenerType = listenerType;
-      this.address = address;
-      this.port = -1;
-   }
-
-   /**
-    * Configure the SSL listener.
-    * @param keystorePath
-    * @param keystorePassword
-    * @param keyPassword
+    * @param keystorePath The path of the keystore file. 
+    * @param keystorePassword The keystore password.
+    * @param keyPassword The password of the server key .
     */
    public void configureSSL(String keystorePath, String keystorePassword, String keyPassword)
    {
@@ -132,10 +107,10 @@ public class JettyServer implements HttpServer
       {
          switch(this.listenerType)
          {
-            case LISTENER_AJP:
+            case PROTOCOL_AJP:
                if(this.address != null)
                {
-                  this.listener = new AjpListener(this, this.address);
+                  this.listener = new AjpListener(this, new InetAddrPort(this.address, this.port));
                }
                else
                {
@@ -144,10 +119,10 @@ public class JettyServer implements HttpServer
                }
             break;
             
-            case LISTENER_HTTP:
+            case PROTOCOL_HTTP:
                if(this.address != null)
                {
-                  this.listener = new HttpListener(this, this.address);
+                  this.listener = new HttpListener(this, new InetAddrPort(this.address, this.port));
                }
                else
                {
@@ -156,10 +131,10 @@ public class JettyServer implements HttpServer
                }
             break;
             
-            case LISTENER_HTTPS:
+            case PROTOCOL_HTTPS:
                if(this.address != null)
                {
-                  HttpsListener httpsListener = new HttpsListener(this, this.address);
+                  HttpsListener httpsListener = new HttpsListener(this, new InetAddrPort(this.address, this.port));
                   httpsListener.setKeystore(this.keystorePath);
                   httpsListener.setPassword(this.keystorePassword);
                   httpsListener.setKeyPassword(this.keyPassword);
@@ -239,7 +214,7 @@ public class JettyServer implements HttpServer
    {
       UniformCall uniformCall = call.toUniform();
       handle(uniformCall);
-      call.fromUniform(uniformCall);
+      call.commitFrom(uniformCall);
    }
 
    /**
