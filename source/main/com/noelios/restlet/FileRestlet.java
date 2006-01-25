@@ -109,7 +109,7 @@ public class FileRestlet extends AbstractRestlet
     */
    public void handle(UniformCall call)
    {
-      if(call.getPath(0, false).equals(""))
+      if(call.getResourcePath(0, false).equals(""))
       {
          call.setOutput(new FileRepresentation(getPath(), getMediaType(), getTimeToLive()));
       }

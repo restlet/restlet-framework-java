@@ -31,7 +31,6 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 import org.restlet.Maplet;
-import org.restlet.RestletException;
 import org.restlet.UniformCall;
 import org.restlet.UniformInterface;
 import org.restlet.component.RestletContainer;
@@ -126,7 +125,6 @@ public class MapletImpl extends ArrayList<Mapping> implements Maplet
     * Handles a call to a resource or a set of resources.<br/>
     * Default behavior to be overriden: delegation to attached handlers.
     * @param call The call to handle.
-    * @throws RestletException
     */
    public void handle(UniformCall call)
    {
@@ -144,7 +142,7 @@ public class MapletImpl extends ArrayList<Mapping> implements Maplet
       Mapping mapping = null;
       Matcher matcher = null;
       boolean found = false;
-      String resourcePath = call.getPath(0, false);
+      String resourcePath = call.getResourcePath(0, false);
 
       // Match the path in the call context with one of the child restlet
       for(Iterator iter = iterator(); !found && iter.hasNext();)
@@ -159,14 +157,14 @@ public class MapletImpl extends ArrayList<Mapping> implements Maplet
          // Updates the paths
          String restletPath = resourcePath.substring(0, matcher.end());
          resourcePath = resourcePath.substring(matcher.end());
-         call.getPaths().set(0, restletPath);
-         call.getPaths().add(0, resourcePath);
+         call.getResourcePaths().set(0, restletPath);
+         call.getResourcePaths().add(0, resourcePath);
 
          // Updates the matches
-         call.getMatches().clear();
+         call.getResourceMatches().clear();
          for(int i = 0; i < matcher.groupCount(); i++)
          {
-            call.getMatches().add(matcher.group(i + 1));
+            call.getResourceMatches().add(matcher.group(i + 1));
          }
 
          // Find and prepare the call handler

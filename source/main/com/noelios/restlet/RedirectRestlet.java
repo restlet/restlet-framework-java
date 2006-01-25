@@ -27,8 +27,11 @@ import java.util.logging.Level;
 import java.util.logging.Logger;
 
 import org.restlet.AbstractRestlet;
+import org.restlet.Manager;
 import org.restlet.UniformCall;
 import org.restlet.component.RestletContainer;
+import org.restlet.data.Reference;
+import org.restlet.data.Statuses;
 
 import com.noelios.restlet.util.UniformModel;
 import com.noelios.restlet.util.StringTemplate;
@@ -40,9 +43,10 @@ import com.noelios.restlet.util.StringTemplate;
 public class RedirectRestlet extends AbstractRestlet
 {
    public static final int MODE_CLIENT_PERMANENT = 1;
-   public static final int MODE_CLIENT_TEMPORARY = 2;
-   public static final int MODE_CONNECTOR = 3;
-   public static final int MODE_CONTAINER = 4;
+   public static final int MODE_CLIENT_FOUND = 2;
+   public static final int MODE_CLIENT_TEMPORARY = 3;
+   public static final int MODE_CONNECTOR = 4;
+   public static final int MODE_CONTAINER = 5;
 
    /** Obtain a suitable logger. */
    private static Logger logger = Logger.getLogger("com.noelios.restlet.RedirectRestlet");
@@ -90,33 +94,42 @@ public class RedirectRestlet extends AbstractRestlet
          StringTemplate te = new StringTemplate(this.targetPattern);
 
          // Create the template data model
-         String targetURI = te.process(new UniformModel(call, null));
+         String targetUri = te.process(new UniformModel(call, null));
+         Reference target = Manager.createReference(targetUri);
 
          switch(this.mode)
          {
             case MODE_CLIENT_PERMANENT:
-               logger.log(Level.INFO, "Redirecting client: " + targetURI);
-               call.setRedirect(targetURI, true);
+               logger.log(Level.INFO, "Permanently redirecting client to: " + targetUri);
+               call.setRedirectRef(target);
+               call.setStatus(Statuses.REDIRECTION_MOVED_PERMANENTLY);
             break;
 
+            case MODE_CLIENT_FOUND:
+               logger.log(Level.INFO, "Redirecting client to found location: " + targetUri);
+               call.setRedirectRef(target);
+               call.setStatus(Statuses.REDIRECTION_FOUND);
+            break;
+            
             case MODE_CLIENT_TEMPORARY:
-               logger.log(Level.INFO, "Redirecting client: " + targetURI);
-               call.setRedirect(targetURI, false);
+               logger.log(Level.INFO, "Temporarily redirecting client to: " + targetUri);
+               call.setRedirectRef(target);
+               call.setStatus(Statuses.REDIRECTION_MOVED_TEMPORARILY);
             break;
 
             case MODE_CONNECTOR:
-               logger.log(Level.INFO, "Redirecting to connector " + this.connectorName + ": " + targetURI);
-               call.getResourceRef().setIdentifier(targetURI);
-               call.getMatches().clear();
-               call.getPaths().clear();
+               logger.log(Level.INFO, "Redirecting to connector " + this.connectorName + ": " + targetUri);
+               call.setResourceRef(target);
+               call.getResourcePaths().clear();
+               call.getResourceMatches().clear();
                getContainer().callClient(this.connectorName, call);
             break;
 
             case MODE_CONTAINER:
-               logger.log(Level.INFO, "Redirecting to container: " + targetURI);
-               call.getResourceRef().setIdentifier(targetURI);
-               call.getMatches().clear();
-               call.getPaths().clear();
+               logger.log(Level.INFO, "Redirecting to container: " + targetUri);
+               call.setResourceRef(target);
+               call.getResourcePaths().clear();
+               call.getResourceMatches().clear();
                getContainer().handle(call);
             break;
          }

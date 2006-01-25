@@ -22,8 +22,6 @@
 
 package com.noelios.restlet;
 
-import java.net.InetAddress;
-import java.net.UnknownHostException;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.Iterator;
@@ -31,23 +29,26 @@ import java.util.List;
 
 import org.restlet.Resource;
 import org.restlet.UniformCall;
-import org.restlet.data.Conditions;
+import org.restlet.data.ConditionData;
+import org.restlet.data.Cookie;
 import org.restlet.data.CookieSetting;
-import org.restlet.data.Cookies;
 import org.restlet.data.Language;
+import org.restlet.data.LanguagePref;
 import org.restlet.data.MediaType;
-import org.restlet.data.MediaTypes;
+import org.restlet.data.MediaTypePref;
 import org.restlet.data.Method;
 import org.restlet.data.Parameter;
-import org.restlet.data.Preference;
+import org.restlet.data.PreferenceData;
 import org.restlet.data.Reference;
 import org.restlet.data.Representation;
 import org.restlet.data.RepresentationMetadata;
-import org.restlet.data.Security;
+import org.restlet.data.SecurityData;
 import org.restlet.data.Status;
 import org.restlet.data.Statuses;
 
-import com.noelios.restlet.data.StringRepresentation;
+import com.noelios.restlet.data.ConditionDataImpl;
+import com.noelios.restlet.data.PreferenceDataImpl;
+import com.noelios.restlet.data.SecurityDataImpl;
 import com.noelios.restlet.util.DateUtils;
 import com.noelios.restlet.util.StringUtils;
 
@@ -56,279 +57,59 @@ import com.noelios.restlet.util.StringUtils;
  */
 public class UniformCallImpl implements UniformCall
 {
-   /** The character set preferences of the user agent. */
-   protected List<Preference> characterSetPrefs;
-
-   /** The client's IP address. */
+   /** The client IP address. */
    protected String clientAddress;
 
-   /** The client's name. */
+   /** The client name. */
    protected String clientName;
 
-   /** The call's conditions. */
-   protected Conditions conditions;
+   /** The condition data. */
+   protected ConditionData condition;
    
-   /** The existing cookies of the user agent. */
-   protected Cookies cookies;
+   /** The current cookies of the client. */
+   protected List<Cookie> cookies;
 
-   /**
-    * The list of cookies to be set in the user agent.
-    * @see org.restlet.data.CookieSetting
-    */
+   /** The cookies to set in the client. */
    protected List<CookieSetting> cookieSettings;
 
-   /** The representation received from the user agent. */
+   /** The representation provided by the client. */
    protected Representation input;
 
-   /** The language preferences of the user agent. */
-   protected List<Preference> languagePrefs;
-
-   /** The media preferences of the user agent. */
-   protected List<Preference> mediaPrefs;
-
-   /** The method type. */
+   /** The call method. */
    protected Method method;
 
-   /** The representation to send to the user agent. */
+   /** The representation provided by the server. */
    protected Representation output;
 
-   /** The referrer reference. */
-   protected Reference referrerUri;
-
-   /** The resource reference. */
-   protected Reference resourceUri;
-
-   /** The security data. */
-   protected Security security;
-
-   /** The status. */
-   protected Status status;
-
-   /** The list of matches. */
-   protected List<String> matches;
-
-   /** The list of paths. */
+   /** The list of handler paths. */
    protected List<String> paths;
 
-   /**
-    * Empty constructor.
-    */
-   public UniformCallImpl()
-   {
-      //
-   }
+   /** The list of substrings matched. */
+   protected List<String> pathMatches;
 
-   /**
-    * Constructor.
-    * @param referrer The referrer reference.
-    * @param clientName The client's name (ex: user agent name).
-    * @param mediaPrefs The media preferences of the user agent.
-    * @param characterSetPrefs The character set preferences of the user agent.
-    * @param languagePrefs The language preferences of the user agent.
-    * @param method The method type.
-    * @param resource The resource reference.
-    * @param cookies The cookies sent by the user agent.
-    * @param input The content received in the request.
-    */
-   public UniformCallImpl(Reference referrer, String clientName, List<Preference> mediaPrefs,
-         List<Preference> characterSetPrefs, List<Preference> languagePrefs, Method method,
-         Reference resource, Cookies cookies, Representation input)
-   {
-      this.referrerUri = referrer;
-      this.clientName = clientName;
+   /** The preference data. */
+   protected PreferenceData preference;
+   
+   /** The redirect reference. */
+   protected Reference redirectRef;
+   
+   /** The referrer reference. */
+   protected Reference referrerRef;
 
-      try
-      {
-         this.clientAddress = InetAddress.getLocalHost().getHostAddress();
-      }
-      catch(UnknownHostException e)
-      {
-         this.clientAddress = null;
-      }
+   /** The resource reference. */
+   protected Reference resourceRef;
 
-      this.mediaPrefs = mediaPrefs;
-      this.characterSetPrefs = characterSetPrefs;
-      this.languagePrefs = languagePrefs;
-      this.method = method;
-      this.resourceUri = resource;
-      this.cookies = cookies;
-      this.input = input;
+   /** The security data. */
+   protected SecurityData security;
 
-      this.security = null;
-      this.status = null;
-      this.output = null;
-      this.cookieSettings = null;
+   /** The server IP address. */
+   protected String serverAddress;
 
-      // Creates the list of paths
-      this.paths = new ArrayList<String>();
+   /** The server name. */
+   protected String serverName;
 
-      // Creates the list of matches
-      this.matches = new ArrayList<String>();
-
-      // Set the absolute resource path as the initial path in the list.
-      getPaths().add(0, getResourceRef().toString(false, false));
-   }
-
-   /**
-    * Returns the character set preferences of the user agent.
-    * @return The character set preferences of the user agent.
-    */
-   public List<Preference> getCharacterSetPrefs()
-   {
-      return this.characterSetPrefs;
-   }
-
-   /**
-    * Returns the client's IP address.
-    * @return The client's IP address.
-    */
-   public String getClientAddress()
-   {
-      return this.clientAddress;
-   }
-
-   /**
-    * Returns the user agent name.
-    * @return The user agent name.
-    */
-   public String getClientName()
-   {
-      return this.clientName;
-   }
-
-   /**
-    * Returns the conditions applying to this call if any.
-    * @return The conditions applying to this call if any.
-    */
-   public Conditions getConditions()
-   {
-      return this.conditions;
-   }
-
-   /**
-    * Returns the cookies sent by the user agent.
-    * @return The cookies sent by the user agent.
-    */
-   public Cookies getCookies()
-   {
-      return this.cookies;
-   }
-
-   /**
-    * Returns the list of cookies to be set in the user agent. Cookie settings can be browsed, added or
-    * removed.
-    * @return The list of cookies to be set in the user agent.
-    */
-   public List<CookieSetting> getCookieSettings()
-   {
-      if(this.cookieSettings == null)
-      {
-         this.cookieSettings = new ArrayList<CookieSetting>();
-      }
-
-      return this.cookieSettings;
-   }
-
-   /**
-    * Returns the representation received from the user agent.
-    * @return The representation received from the user agent.
-    */
-   public Representation getInput()
-   {
-      return this.input;
-   }
-
-   /**
-    * Returns the language preferences of the user agent.
-    * @return The language preferences of the user agent.
-    */
-   public List<Preference> getLanguagePrefs()
-   {
-      return this.languagePrefs;
-   }
-
-   /**
-    * Returns the media type preferences of the user agent.
-    * @return The media type preferences of the user agent.
-    */
-   public List<Preference> getMediaTypePrefs()
-   {
-      return this.mediaPrefs;
-   }
-
-   /**
-    * Returns the method called.
-    * @return The method called.
-    */
-   public Method getMethod()
-   {
-      return this.method;
-   }
-
-   /**
-    * Returns the representation to send to the user agent
-    * @return The representation to send to the user agent
-    */
-   public Representation getOutput()
-   {
-      return this.output;
-   }
-
-   /**
-    * Returns the referrer reference if available.<br/>
-    * This reference shouldn't be modified during the call handling.
-    * @return The referrer reference.
-    */
-   public Reference getReferrerRef()
-   {
-      return this.referrerUri;
-   }
-
-   /**
-    * Returns the resource's reference.<br/>
-    * This reference shouldn't be modified during the call handling, exceptio for redirect rewritings.
-    * @return The resource's reference.
-    */
-   public Reference getResourceRef()
-   {
-      return this.resourceUri;
-   }
-
-   /**
-    * Returns the security data related to this call.
-    * @return The security data related to this call.
-    */
-   public Security getSecurity()
-   {
-      return this.security;
-   }
-
-   /**
-    * Returns the result status.
-    * @return The result status.
-    */
-   public Status getStatus()
-   {
-      return this.status;
-   }
-
-   /**
-    * Indicates if the searched parameter is specified in the given media range.
-    * @param searchedParam The searched parameter.
-    * @param mediaRange The media range to inspect.
-    * @return True if the searched parameter is specified in the given media range.
-    */
-   private boolean isParameterFound(Parameter searchedParam, MediaType mediaRange)
-   {
-      boolean result = false;
-
-      for(Iterator iter = mediaRange.getParameters().iterator(); !result && iter.hasNext();)
-      {
-         result = searchedParam.equals((Parameter)iter.next());
-      }
-
-      return result;
-   }
+   /** The server status. */
+   protected Status status;
 
    /**
     * Returns the best variant representation for a given resource according the the client preferences.
@@ -341,7 +122,7 @@ public class UniformCallImpl implements UniformCall
    {
       return getBestVariant(resource.getVariantsMetadata(), fallbackLanguage);
    }
-   
+
    /**
     * Returns the best variant representation for a given resource according the the client preferences.
     * @param variants The list of variants to compare.
@@ -368,9 +149,10 @@ public class UniformCallImpl implements UniformCall
          RepresentationMetadata bestVariant = null;
          float bestQuality = 0;
 
-         Preference currentPref = null;
-         Preference bestLanguagePref = null;
-         Preference bestMediaTypePref = null;
+         LanguagePref currentLanguagePref = null;
+         LanguagePref bestLanguagePref = null;
+         MediaTypePref currentMediaTypePref = null;
+         MediaTypePref bestMediaTypePref = null;
 
          float currentScore = 0;
          float bestLanguageScore = 0;
@@ -384,12 +166,12 @@ public class UniformCallImpl implements UniformCall
 
             // For each language preference defined in the call
             // Calculate the score and remember the best scoring preference
-            if(getLanguagePrefs() != null)
+            if(getPreference().getLanguages() != null)
             {
-               for(Iterator iter2 = getLanguagePrefs().iterator(); (currentVariant.getLanguage() != null) && iter2.hasNext();)
+               for(Iterator<LanguagePref> iter2 = getPreference().getLanguages().iterator(); (currentVariant.getLanguage() != null) && iter2.hasNext();)
                {
-                  currentPref = (Preference)iter2.next();
-                  currentLanguage = (Language)currentPref.getMetadata();
+                  currentLanguagePref = iter2.next();
+                  currentLanguage = currentLanguagePref.getLanguage();
                   compatiblePref = true;
                   currentScore = 0;
 
@@ -441,7 +223,7 @@ public class UniformCallImpl implements UniformCall
                      // currentScore *= currentPref.getQuality();
                      if(compatiblePref && ((bestLanguagePref == null) || (currentScore > bestLanguageScore)))
                      {
-                        bestLanguagePref = currentPref;
+                        bestLanguagePref = currentLanguagePref;
                         bestLanguageScore = currentScore;
                      }
                   }
@@ -455,12 +237,12 @@ public class UniformCallImpl implements UniformCall
 
             // For each media range preference defined in the call
             // Calculate the score and remember the best scoring preference
-            if(getMediaTypePrefs() != null)
+            if(getPreference().getMediaTypes() != null)
             {
-               for(Iterator iter2 = getMediaTypePrefs().iterator(); compatibleLanguage && iter2.hasNext();)
+               for(Iterator<MediaTypePref> iter2 = getPreference().getMediaTypes().iterator(); compatibleLanguage && iter2.hasNext();)
                {
-                  currentPref = (Preference)iter2.next();
-                  currentMediaType = (MediaType)currentPref.getMetadata();
+                  currentMediaTypePref = iter2.next();
+                  currentMediaType = currentMediaTypePref.getMediaType();
                   compatiblePref = true;
                   currentScore = 0;
 
@@ -514,7 +296,7 @@ public class UniformCallImpl implements UniformCall
                      // currentScore *= currentPref.getQuality();
                      if(compatiblePref && ((bestMediaTypePref == null) || (currentScore > bestMediaTypeScore)))
                      {
-                        bestMediaTypePref = currentPref;
+                        bestMediaTypePref = currentMediaTypePref;
                         bestMediaTypeScore = currentScore;
                      }
                   }
@@ -553,6 +335,216 @@ public class UniformCallImpl implements UniformCall
          return bestVariant;
       }
    }
+
+   /**
+    * Indicates if the searched parameter is specified in the given media range.
+    * @param searchedParam The searched parameter.
+    * @param mediaRange The media range to inspect.
+    * @return True if the searched parameter is specified in the given media range.
+    */
+   private boolean isParameterFound(Parameter searchedParam, MediaType mediaRange)
+   {
+      boolean result = false;
+
+      for(Iterator iter = mediaRange.getParameters().iterator(); !result && iter.hasNext();)
+      {
+         result = searchedParam.equals((Parameter)iter.next());
+      }
+
+      return result;
+   }
+
+   /**
+    * Returns the client IP address.
+    * @return The client IP address.
+    */
+   public String getClientAddress()
+   {
+      return this.clientAddress;
+   }
+
+   /**
+    * Returns the client name.
+    * @return The client name.
+    */
+   public String getClientName()
+   {
+      return this.clientName;
+   }
+
+   /**
+    * Returns the condition data applying to this call.
+    * @return The condition data applying to this call.
+    */
+   public ConditionData getCondition()
+   {
+      if(this.condition == null) this.condition = new ConditionDataImpl();
+      return this.condition;
+   }
+
+   /**
+    * Returns the cookies provided by the client.
+    * @return The cookies provided by the client.
+    */
+   public List<Cookie> getCookies()
+   {
+      if(this.cookies == null) this.cookies = new ArrayList<Cookie>();
+      return this.cookies;
+   }
+
+   /**
+    * Returns the cookies provided to the client.
+    * @return The cookies provided to the client.
+    */
+   public List<CookieSetting> getCookieSettings()
+   {
+      if(this.cookieSettings == null) this.cookieSettings = new ArrayList<CookieSetting>();
+      return this.cookieSettings;
+   }
+
+   /**
+    * Returns the representation provided by the client.
+    * @return The representation provided by the client.
+    */
+   public Representation getInput()
+   {
+      return this.input;
+   }
+
+   /**
+    * Returns the call method.
+    * @return The call method.
+    */
+   public Method getMethod()
+   {
+      return this.method;
+   }
+
+   /**
+    * Returns the representation provided by the server.
+    * @return The representation provided by the server.
+    */
+   public Representation getOutput()
+   {
+      return this.output;
+   }
+
+   /**
+    * Returns the preference data of the client.
+    * @return The preference data of the client.
+    */
+   public PreferenceData getPreference()
+   {
+      if(this.preference == null) this.preference = new PreferenceDataImpl();
+      return this.preference;
+   }
+
+   /**
+    * Returns the reference for redirections or resource creations.
+    * @return The redirect reference.
+    */
+   public Reference getRedirectRef()
+   {
+      return this.redirectRef;
+   }
+
+   /**
+    * Returns the referrer reference if available.
+    * @return The referrer reference.
+    */
+   public Reference getReferrerRef()
+   {
+      return this.referrerRef;
+   }
+
+   /**
+    * Returns the list of substrings matched in the current resource path.
+    * @return The list of substrings matched.
+    * @see <a href="http://java.sun.com/j2se/1.5.0/docs/api/java/util/regex/Matcher.html#group(int)">Matcher.group()</a>
+    */
+   public List<String> getResourceMatches()
+   {
+      if(this.pathMatches == null) this.pathMatches = new ArrayList<String>();
+      return this.pathMatches;
+   }
+
+   /**
+    * Returns a path in the list of resource paths.<br/>
+    * The first path is the resource path relatively to the current maplet.<br/>
+    * The second path is the current maplet path relatively to the parent maplet.<br/> 
+    * All the list of remaining maplet paths is also available.
+    * @param index Index of the path in the list.
+    * @param strip Indicates if leading and ending slashes should be stripped.
+    * @return The path at the given index.
+    */
+   public String getResourcePath(int index, boolean strip)
+   {
+      if(strip)
+      {
+         return StringUtils.strip(getResourcePaths().get(index), '/');
+      }
+      else
+      {
+         return getResourcePaths().get(index);
+      }
+   }
+
+   /**
+    * Returns the list of paths dividing the initial resource path.<br/>
+    * The list is sorted according to the maplets hierarchy.
+    * @return The list of paths.
+    */
+   public List<String> getResourcePaths()
+   {
+      if(this.paths == null) this.paths = new ArrayList<String>();
+      return this.paths;
+   }
+
+   /**
+    * Returns the resource reference.
+    * @return The resource reference.
+    */
+   public Reference getResourceRef()
+   {
+      return this.resourceRef;
+   }
+
+   /**
+    * Returns the security data related to this call.
+    * @return The security data related to this call.
+    */
+   public SecurityData getSecurity()
+   {
+      if(this.security == null) this.security = new SecurityDataImpl();
+      return this.security;
+   }
+
+   /**
+    * Returns the server IP address.
+    * @return The server IP address.
+    */
+   public String getServerAddress()
+   {
+      return this.serverAddress;
+   }
+
+   /**
+    * Returns the server name (ex: web server name).
+    * @return The server name.
+    */
+   public String getServerName()
+   {
+      return this.serverName;
+   }
+
+   /**
+    * Returns the server status.
+    * @return The server status.
+    */
+   public Status getStatus()
+   {
+      return this.status;
+   }
    
    /**
     * Sets the best representation of a given resource according to the client preferences.<br/> 
@@ -584,7 +576,7 @@ public class UniformCallImpl implements UniformCall
          else
          {
             // Was the representation modified since the last client call?
-            Date modifiedSince = (getConditions() == null) ? null : getConditions().getModifiedSince();
+            Date modifiedSince = (getCondition() == null) ? null : getCondition().getModifiedSince();
             if((modifiedSince == null) || DateUtils.after(modifiedSince, bestVariant.getModificationDate()))
             {
                // Yes, set the best representation as the call output
@@ -601,17 +593,8 @@ public class UniformCallImpl implements UniformCall
    }
    
    /**
-    * Sets the character set preferences of the user agent.
-    * @param prefs The character set preferences of the user agent.
-    */
-   public void setCharacterSetPrefs(List<Preference> prefs)
-   {
-      this.characterSetPrefs = prefs;
-   }
-
-   /**
-    * Sets the client's IP address.
-    * @param address The client's IP address.
+    * Sets the client IP address.
+    * @param address The client IP address.
     */
    public void setClientAddress(String address)
    {
@@ -619,8 +602,8 @@ public class UniformCallImpl implements UniformCall
    }
 
    /**
-    * Sets the user agent name.
-    * @param name The user agent name.
+    * Sets the client name.
+    * @param name The client name.
     */
    public void setClientName(String name)
    {
@@ -628,56 +611,12 @@ public class UniformCallImpl implements UniformCall
    }
 
    /**
-    * Sets the conditions applying to this call if any.
-    * @param conditions The conditions applying to this call if any.
-    */
-   public void setConditions(Conditions conditions)
-   {
-      this.conditions = conditions;      
-   }
-
-   /**
-    * Sets the cookies sent by the user agent.
-    * @param cookies The cookies sent by the user agent.
-    */
-   public void setCookies(Cookies cookies)
-   {
-      this.cookies = cookies;
-   }
-
-   /**
-    * Sets the list of cookies to be set in the user agent. Cookie settings can be browsed, added or removed.
-    * @param cookieSettings The list of cookies to be set in the user agent.
-    */
-   public void setCookieSettings(List<CookieSetting> cookieSettings)
-   {
-      this.cookieSettings = cookieSettings;
-   }
-
-   /**
-    * Sets the content received in the request. param input The content received in the request.
+    * Sets the representation provided by the client.
+    * @param input The representation provided by the client.
     */
    public void setInput(Representation input)
    {
       this.input = input;
-   }
-
-   /**
-    * Sets the language preferences of the user agent.
-    * @param prefs The language preferences of the user agent.
-    */
-   public void setLanguagePrefs(List<Preference> prefs)
-   {
-      this.languagePrefs = prefs;
-   }
-
-   /**
-    * Sets the media type preferences of the user agent.
-    * @param prefs The media type preferences of the user agent.
-    */
-   public void setMediaTypePrefs(List<Preference> prefs)
-   {
-      this.mediaPrefs = prefs;
    }
 
    /**
@@ -690,8 +629,8 @@ public class UniformCallImpl implements UniformCall
    }
 
    /**
-    * Sets the representation to send to the user agent.
-    * @param output The representation to send to the user agent.
+    * Sets the representation provided by the server.
+    * @param output The representation provided by the server.
     */
    public void setOutput(Representation output)
    {
@@ -699,100 +638,57 @@ public class UniformCallImpl implements UniformCall
    }
 
    /**
-    * Sets the referrer reference if available.<br/>
-    * This reference shouldn't be modified during the call handling.
+    * Sets the reference for redirections or resource creations.
+    * @param redirectRef The redirect reference.
+    */
+   public void setRedirectRef(Reference redirectRef)
+   {
+      this.redirectRef = redirectRef;
+   }
+
+   /**
+    * Sets the referrer reference if available.
     * @param referrerRef The referrer reference.
     */
    public void setReferrerRef(Reference referrerRef)
    {
-      this.referrerUri = referrerRef;
+      this.referrerRef = referrerRef;
    }
 
    /**
-    * Sets the resource's reference.<br/>
-    * This reference shouldn't be modified during the call handling, except for redirection rewriting.
-    * @param resourceRef The resource's reference.
+    * Sets the resource reference.
+    * @param resourceRef The resource reference.
     */
    public void setResourceRef(Reference resourceRef)
    {
-      this.resourceUri = resourceRef;
+      this.resourceRef = resourceRef;
    }
 
    /**
-    * Sets the security data related to this call.
-    * @param security The security data related to this call.
+    * Sets the server IP address.
+    * @param address The server IP address.
     */
-   public void setSecurity(Security security)
+   public void setServerAddress(String address)
    {
-      this.security = security;
+      this.serverAddress = address;
    }
 
    /**
-    * Sets the result status.
-    * @param status The result status to set.
+    * Sets the server name (ex: web server name).
+    * @param name The server name.
+    */
+   public void setServerName(String name)
+   {
+      this.serverName = name;
+   }
+
+   /**
+    * Sets the server status.
+    * @param status The server status to set.
     */
    public void setStatus(Status status)
    {
       this.status = status;
-   }
-
-   /**
-    * Asks the user agent to redirect itself to the given URI.<br/>
-    * Modifies the result output and status properties.
-    * @param targetURI The target URI.
-    * @param permanent Indicates if this is a permanent redirection.
-    */
-   public void setRedirect(String targetURI, boolean permanent)
-   {
-      setOutput(new StringRepresentation(targetURI, MediaTypes.TEXT_URI));
-
-      if(permanent)
-      {
-         setStatus(Statuses.REDIRECTION_MOVED_PERMANENTLY);
-      }
-      else
-      {
-         setStatus(Statuses.REDIRECTION_MOVED_TEMPORARILY);
-      }
-   }
-
-   /**
-    * Returns the list of substring matched in the current restlet's path.
-    * @return The list of substring matched.
-    * @see <a href="http://java.sun.com/j2se/1.5.0/docs/api/java/util/regex/Matcher.html#group(int)">Matcher.group()</a>
-    */
-   public List<String> getMatches()
-   {
-      return this.matches;
-   }
-
-   /**
-    * Returns one of the paths in the list. The first path is the resource path relatively to the current
-    * restlet. The second path is the current reslet path relatively to the parent restlet. All the hierarchy
-    * of restlet paths is also available depending on the restlet tree.
-    * @param index Index of the path in the list.
-    * @param strip Indicates if leading and ending slashes should be stripped.
-    * @return The path at the given index.
-    */
-   public String getPath(int index, boolean strip)
-   {
-      if(strip)
-      {
-         return StringUtils.strip(getPaths().get(index), '/');
-      }
-      else
-      {
-         return getPaths().get(index);
-      }
-   }
-
-   /**
-    * Returns the list of restlets paths. The list is sorted according to the handlers hierarchy.
-    * @return The list of restlets paths.
-    */
-   public List<String> getPaths()
-   {
-      return this.paths;
    }
 
 }

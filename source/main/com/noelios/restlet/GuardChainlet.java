@@ -27,12 +27,11 @@ import java.util.logging.Level;
 import java.util.logging.Logger;
 
 import org.restlet.AbstractChainlet;
-import org.restlet.Manager;
 import org.restlet.UniformCall;
 import org.restlet.component.RestletContainer;
 import org.restlet.data.ChallengeResponse;
 import org.restlet.data.ChallengeSchemes;
-import org.restlet.data.Security;
+import org.restlet.data.SecurityData;
 import org.restlet.data.Statuses;
 
 import com.noelios.restlet.data.ChallengeRequestImpl;
@@ -69,73 +68,62 @@ public abstract class GuardChainlet extends AbstractChainlet
     */
    public void handle(UniformCall call)
    {
-      Security security = call.getSecurity();
+      SecurityData security = call.getSecurity();
+      ChallengeResponse resp = security.getChallengeResponse();
 
-      if(security == null)
+      if(resp == null)
       {
-         // Challenge the client
-         security = Manager.createSecurity();
-         call.setSecurity(security);
+         // No challenge response available, challenge the client
          challengeClient(call);
       }
-      else
+      else if(resp.getScheme().equals(ChallengeSchemes.HTTP_BASIC))
       {
-         ChallengeResponse resp = security.getChallengeResponse();
+         try
+         {
+            String credentials = new String(Base64.decode(resp.getCredentials()), "US-ASCII");
+            int separator = credentials.indexOf(':');
 
-         if(resp == null)
-         {
-            // No challenge response available, challenge the client
-            challengeClient(call);
-         }
-         else if(resp.getScheme().equals(ChallengeSchemes.HTTP_BASIC))
-         {
-            try
+            if(separator == -1)
             {
-               String credentials = new String(Base64.decode(resp.getCredentials()), "US-ASCII");
-               int separator = credentials.indexOf(':');
+               // Log the blocking
+               logger.warning("Invalid credentials given by client with IP: " + call.getClientAddress());
 
-               if(separator == -1)
+               // Invalid credentials
+               block(call, null);
+            }
+            else
+            {
+               String userId = credentials.substring(0, separator);
+               String password = credentials.substring(separator + 1);
+
+               if(authorize(userId, password))
                {
-                  // Log the blocking
-                  logger.warning("Invalid credentials given by client with IP: " + call.getClientAddress());
+                  // Log the authorization
+                  logger.info("User: " + userId + " was authorized for client with IP: " + call.getClientAddress());
 
-                  // Invalid credentials
-                  block(call, null);
+                  // Credentials accepted, authorize access to chained restlet
+                  super.handle(call);
                }
                else
                {
-                  String userId = credentials.substring(0, separator);
-                  String password = credentials.substring(separator + 1);
+                  // Log the blocking
+                  logger.warning("User: " + userId + " failed to get authorized for client with IP: " + call.getClientAddress());
 
-                  if(authorize(userId, password))
-                  {
-                     // Log the authorization
-                     logger.info("User: " + userId + " was authorized for client with IP: " + call.getClientAddress());
-
-                     // Credentials accepted, authorize access to chained restlet
-                     super.handle(call);
-                  }
-                  else
-                  {
-                     // Log the blocking
-                     logger.warning("User: " + userId + " failed to get authorized for client with IP: " + call.getClientAddress());
-
-                     // Invalid credentials
-                     block(call, userId);
-                  }
+                  // Invalid credentials
+                  block(call, userId);
                }
             }
-            catch(UnsupportedEncodingException e)
-            {
-               logger.log(Level.WARNING, "Unsupported encoding error", e);
-            }
-
          }
-         else
+         catch(UnsupportedEncodingException e)
          {
-            // Authentication mechanism not supported
-            challengeClient(call);
+            logger.log(Level.WARNING, "Unsupported encoding error", e);
          }
+
+      }
+      else
+      {
+         // Authentication mechanism not supported
+         challengeClient(call);
       }
    }
 

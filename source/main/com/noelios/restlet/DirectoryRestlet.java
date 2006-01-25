@@ -28,6 +28,8 @@ import java.util.TreeMap;
 import org.restlet.AbstractRestlet;
 import org.restlet.UniformCall;
 import org.restlet.component.RestletContainer;
+import org.restlet.data.Encoding;
+import org.restlet.data.Encodings;
 import org.restlet.data.Language;
 import org.restlet.data.Languages;
 import org.restlet.data.MediaType;
@@ -45,6 +47,9 @@ public class DirectoryRestlet extends AbstractRestlet
 {
    /** Indicates if the sub-directories are deeply accessible. */
    protected boolean deeply;
+
+   /** Default encoding used when no encoding extension is available. */
+   protected Encoding defaultEncoding;
 
    /** Default media type used when no media type extension is available. */
    protected MediaType defaultMediaType;
@@ -76,6 +81,7 @@ public class DirectoryRestlet extends AbstractRestlet
       super(container);
       this.rootPath = StringUtils.normalizePath(rootPath);
       this.deeply = deeply;
+      this.defaultEncoding = Encodings.IDENTITY;
       this.defaultMediaType = MediaTypes.TEXT_PLAIN;
       this.defaultLanguage = Languages.ENGLISH_US;
       this.indexName = indexName;
@@ -149,6 +155,26 @@ public class DirectoryRestlet extends AbstractRestlet
    }
 
    /**
+    * Set the default encoding ("identity" by default).
+    * Used when no encoding extension is available.
+    * @param encoding The default encoding.
+    */
+   public void setDefaultEncoding(Encoding encoding)
+   {
+      this.defaultEncoding = encoding;
+   }
+
+   /**
+    * Returns the default encoding.
+    * Used when no encoding extension is available.
+    * @return The default encoding.
+    */
+   public Encoding getDefaultEncoding()
+   {
+      return this.defaultEncoding;
+   }
+
+   /**
     * Set the default media type ("text/plain" by default).
     * Used when no media type extension is available.
     * @param mediaType The default media type.
@@ -212,7 +238,7 @@ public class DirectoryRestlet extends AbstractRestlet
     */
    public void handle(UniformCall call)
    {
-      call.setBestOutput(new FileResource(this, call.getPath(0, false)), getDefaultLanguage());
+      call.setBestOutput(new FileResource(this, call.getResourcePath(0, false)), getDefaultLanguage());
    }
 
    /**

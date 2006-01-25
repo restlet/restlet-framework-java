@@ -29,6 +29,7 @@ import java.util.logging.Logger;
 
 import org.restlet.Resource;
 import org.restlet.data.CharacterSet;
+import org.restlet.data.Encoding;
 import org.restlet.data.Language;
 import org.restlet.data.MediaType;
 import org.restlet.data.Metadata;
@@ -160,6 +161,7 @@ public class FileResource implements Resource
          Metadata metadata = null;
          MediaType mediaType = null;
          CharacterSet characterSet = null;
+         Encoding encoding = null;
          Language language = null;
 
          for(int i = 0; (files != null) && (i < files.length); i++)
@@ -178,6 +180,7 @@ public class FileResource implements Resource
                      metadata = getDirectoryRestlet().getMetadata(tokens[j]);
                      if(metadata instanceof MediaType) mediaType = (MediaType)metadata;
                      if(metadata instanceof CharacterSet) characterSet = (CharacterSet)metadata;
+                     if(metadata instanceof Encoding) encoding = (Encoding)metadata;
                      if(metadata instanceof Language) language = (Language)metadata;
 
                      int dashIndex = tokens[j].indexOf('-');
@@ -195,11 +198,13 @@ public class FileResource implements Resource
 
                   // Add the new variant to the result list
                   if(result == null) result = new ArrayList<RepresentationMetadata>();
+                  if(encoding == null) encoding = getDirectoryRestlet().getDefaultEncoding();
                   if(mediaType == null) mediaType = getDirectoryRestlet().getDefaultMediaType();
                   if(language == null) language = getDirectoryRestlet().getDefaultLanguage();
                   FileRepresentation fr = new FileRepresentation(currentFile.getAbsolutePath(), mediaType,
                         getDirectoryRestlet().getTimeToLive());
                   fr.setCharacterSet(characterSet);
+                  fr.setEncoding(encoding);
                   fr.setLanguage(language);
                   result.add(fr);
                }
