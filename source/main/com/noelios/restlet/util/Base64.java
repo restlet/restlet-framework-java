@@ -1019,7 +1019,7 @@ public class Base64
      * @see Base64
      * @since 1.3
      */
-    public static class InputStream extends java.io.FilterInputStream
+    private static class InputStream extends java.io.FilterInputStream
     {
         private boolean encode;         // Encoding or decoding
         private int     position;       // Current position in the buffer
@@ -1249,7 +1249,7 @@ public class Base64
      * @see Base64
      * @since 1.3
      */
-    public static class OutputStream extends java.io.FilterOutputStream
+    private static class OutputStream extends java.io.FilterOutputStream
     {
         private boolean encode;
         private int     position;

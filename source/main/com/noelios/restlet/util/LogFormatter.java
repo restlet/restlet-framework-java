@@ -26,7 +26,7 @@ import java.util.logging.Formatter;
 import java.util.logging.LogRecord;
 
 /**
- * Log record formatter which only outputs the message on a new line.
+ * Log record formatter which simply outputs the message on a new line.<br/>
  * Useful for Web-style logs.
  */
 public class LogFormatter extends Formatter

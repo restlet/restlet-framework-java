@@ -25,17 +25,20 @@ package com.noelios.restlet.util;
 import java.io.IOException;
 
 import org.restlet.UniformCall;
+import org.restlet.data.Cookie;
+import org.restlet.data.Parameter;;
 
 /**
- * Wraps an uniform call into a readable model
- * that can be passed to the string template.
+ * Readable model wrapping an uniform call.<br/>
+ * Can be passed directly passed to a string template.
  */
 public class UniformModel implements ReadableModel
 {
    public static final String NAME_CLIENT_ADDRESS = "clientAddress";
    public static final String NAME_CLIENT_NAME = "clientName";
-   public static final String NAME_RESOURCE_COOKIE = "cookie[\"";
+   public static final String NAME_COOKIE = "cookie[\"";
    public static final String NAME_METHOD = "method";
+   public static final String NAME_REDIRECT_URI = "redirectUri";
    public static final String NAME_REFERRER_URI = "referrerUri";
    public static final String NAME_RESOURCE_AUTHORITY = "authority";
    public static final String NAME_RESOURCE_FRAGMENT = "fragment";
@@ -49,6 +52,9 @@ public class UniformModel implements ReadableModel
    public static final String NAME_RESOURCE_SCHEME = "scheme";
    public static final String NAME_RESOURCE_URI = "uri";
    public static final String NAME_RESOURCE_USER_INFO = "userInfo";
+   public static final String NAME_SERVER_ADDRESS = "serverAddress";
+   public static final String NAME_SERVER_NAME = "serverName";
+   public static final String NAME_STATUS = "status";
 
    /** The wrapped call. */
    protected UniformCall call;
@@ -87,6 +93,10 @@ public class UniformModel implements ReadableModel
       else if(name.equals(NAME_METHOD))
       {
          result = call.getMethod().getName();
+      }
+      else if(name.equals(NAME_REDIRECT_URI))
+      {
+         result = call.getRedirectRef().toString();
       }
       else if(name.equals(NAME_REFERRER_URI))
       {
@@ -146,7 +156,12 @@ public class UniformModel implements ReadableModel
             try
             {
                String paramName = name.substring(beginIndex, endIndex);
-               result = call.getResourceRef().getQueryAsForm().getFirstParameter(paramName).getValue();
+               Parameter param = call.getResourceRef().getQueryAsForm().getFirstParameter(paramName);
+               
+               if(param != null)
+                  result = param.getValue();
+               else
+                  result = null;
             }
             catch(IOException e)
             {
@@ -154,23 +169,29 @@ public class UniformModel implements ReadableModel
             }
          }
       }
-      else if(name.startsWith(NAME_RESOURCE_COOKIE))
+      else if(name.startsWith(NAME_COOKIE))
       {
-         int beginIndex = NAME_RESOURCE_COOKIE.length();
+         int beginIndex = NAME_COOKIE.length();
          int endIndex = name.indexOf("\"]");
 
          if(endIndex != -1)
          {
-            try
-            {
-               String cookieName = name.substring(beginIndex, endIndex);
-               result = call.getCookies().getFirstCookie(cookieName).getValue();
-            }
-            catch(IOException e)
-            {
-               result = null;
-            }
+            String cookieName = name.substring(beginIndex, endIndex);
+            Cookie cookie = CookieUtils.getFirstCookie(call.getCookies(), cookieName);
+            if(cookie != null) result = cookie.getValue();
          }
+      }
+      else if(name.equals(NAME_SERVER_ADDRESS))
+      {
+         result = call.getServerAddress();
+      }
+      else if(name.equals(NAME_SERVER_NAME))
+      {
+         result = call.getServerName();
+      }
+      else if(name.equals(NAME_STATUS))
+      {
+         result = Integer.toString(call.getStatus().getHttpCode());
       }
 
       // Check if the default value should be returned
@@ -199,9 +220,17 @@ public class UniformModel implements ReadableModel
       {
          result = (call.getClientName() != null);
       }
+      else if(name.startsWith(NAME_COOKIE))
+      {
+         result = (call.getCookies() != null);
+      }
       else if(name.equals(NAME_METHOD))
       {
          result = (call.getMethod() != null);
+      }
+      else if(name.equals(NAME_REDIRECT_URI))
+      {
+         result = (call.getRedirectRef() != null);
       }
       else if(name.equals(NAME_REFERRER_URI))
       {
@@ -239,6 +268,10 @@ public class UniformModel implements ReadableModel
       {
          result = (call.getResourceRef() != null) && (call.getResourceRef().getQuery() != null);
       }
+      else if(name.startsWith(NAME_RESOURCE_QUERY_PARAM))
+      {
+         result = (call.getResourceRef() != null) && (call.getResourceRef().getQuery() != null);
+      }
       else if(name.equals(NAME_RESOURCE_SCHEME))
       {
          result = (call.getResourceRef() != null) && (call.getResourceRef().getScheme() != null);
@@ -250,6 +283,18 @@ public class UniformModel implements ReadableModel
       else if(name.equals(NAME_RESOURCE_USER_INFO))
       {
          result = (call.getResourceRef() != null) && (call.getResourceRef().getUserInfo() != null);
+      }
+      else if(name.equals(NAME_SERVER_ADDRESS))
+      {
+         result = (call.getServerAddress() != null);
+      }
+      else if(name.equals(NAME_SERVER_NAME))
+      {
+         result = (call.getServerName() != null);
+      }
+      else if(name.equals(NAME_STATUS))
+      {
+         result = (call.getStatus() != null);
       }
 
       return result;

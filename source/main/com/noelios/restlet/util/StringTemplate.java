@@ -27,7 +27,7 @@ import java.util.logging.Level;
 import java.util.logging.Logger;
 
 /**
- * String template that enforces a strict separation between the template pattern and the template model.<br/>
+ * String template that enforces a strict separation between the pattern and the model.<br/>
  * It supports variable insertion and non-nestable conditions.<br/>
  * The default delimiters are "${" and "}". For variable insertion, use "${variable_name}" and for conditions use:<br/>
  *  1) "${if variable_name}" to test the availability of a variable (non null).<br/>

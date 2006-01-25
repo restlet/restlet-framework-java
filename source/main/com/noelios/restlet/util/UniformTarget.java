@@ -28,7 +28,7 @@ import org.restlet.UniformInterface;
 import org.restlet.component.RestletContainer;
 
 /**
- * Represents an uniform interface target for maplet or chainlet attachments.
+ * Uniform interface target for maplet or chainlet attachments.
  */
 public class UniformTarget
 {
