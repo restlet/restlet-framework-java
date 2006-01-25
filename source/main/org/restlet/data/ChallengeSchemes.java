@@ -71,10 +71,10 @@ public enum ChallengeSchemes implements ChallengeScheme
       switch(this)
       {
          case HTTP_BASIC:
-            result = "BASIC";
+            result = "Basic";
             break;
          case HTTP_DIGEST:
-            result = "DIGEST";
+            result = "Digest";
             break;
          case HTTP_NTLM:
             result = "NTLM";

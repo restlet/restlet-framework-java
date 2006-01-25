@@ -258,7 +258,7 @@ public class HttpClientCallImpl extends HttpCallImpl implements HttpClientCall
       }
       catch(IOException e)
       {
-         logger.log(Level.WARNING, "Unable to get the response stream", e);
+         logger.log(Level.FINE, "Unable to get the response stream", e);
          return null;
       }
    }

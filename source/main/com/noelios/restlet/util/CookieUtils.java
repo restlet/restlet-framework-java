@@ -24,6 +24,7 @@ package com.noelios.restlet.util;
 
 import java.io.IOException;
 import java.net.URLEncoder;
+import java.util.Date;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
@@ -41,7 +42,7 @@ public class CookieUtils
     * @param cookies The list of cookies to format.
     * @return The HTTP header.
     */
-   public static String formatCookies(List<Cookie> cookies)
+   public static String format(List<Cookie> cookies)
    {
       StringBuilder sb = new StringBuilder();
       
@@ -54,7 +55,7 @@ public class CookieUtils
          {
             if(cookie.getVersion() > 0)
             {
-               sb.append("$Version=").append(cookie.getVersion());
+               sb.append("$Version=\"").append(cookie.getVersion()).append("\"; ");
             }
          }
          else
@@ -106,7 +107,7 @@ public class CookieUtils
       }
       else
       {
-         appendValue(name, version, destination).append('=');
+         destination.append(name).append('=');
          
          // Append the value
          if((value != null) && (value.length() > 0))
@@ -114,24 +115,52 @@ public class CookieUtils
             appendValue(value, version, destination);
          }
 
+         // Append the version 
+         if(version > 0)
+         {
+            destination.append("; Version=");
+            appendValue(Integer.toString(version), version, destination);
+         }
+         
+         // Append the path
+         String path = cookieSetting.getPath();
+         if((path != null) && (path.length() > 0))
+         {
+            destination.append("; Path=");
+
+            if(version == 0)
+            {
+               destination.append(path);
+            }
+            else
+            {
+               HeaderUtils.appendQuote(path, destination);
+            }
+         }
+
          // Append the expiration date
-         long maxAge = cookieSetting.getMaxAge();
+         int maxAge = cookieSetting.getMaxAge();
          if(maxAge >= 0)
          {
             if(version == 0)
             {
-               destination.append(";Expires=");
+               long currentTime = System.currentTimeMillis();
+               long maxTime = ((long)maxAge * 1000L);
+               long expiresTime = currentTime + maxTime;
+               Date expires = new Date(expiresTime);
+               destination.append("; Expires=");
+               appendValue(DateUtils.format(expires, DateUtils.FORMAT_RFC_1036), version, destination);
             }
             else
             {
-               destination.append(";Max-Age=");
-               destination.append(Integer.toString(cookieSetting.getMaxAge()));
+               destination.append("; Max-Age=");
+               appendValue(Integer.toString(cookieSetting.getMaxAge()), version, destination);
             }
          }
          else if((maxAge == -1) && (version > 0))
          {
             // Discard the cookie at the end of the user's session (RFC 2965)
-            destination.append(";Discard");
+            destination.append("; Discard");
          }
          else
          {
@@ -142,26 +171,14 @@ public class CookieUtils
          String domain = cookieSetting.getDomain();
          if((domain != null) && (domain.length() > 0))
          {
-            destination.append(";Domain=").append(domain.toLowerCase());
-         }
-         
-         // Append the path
-         String path = cookieSetting.getPath();
-         if((path != null) && (path.length() > 0))
-         {
-            destination.append(";Path=").append(path);
+            destination.append("; Domain=");
+            appendValue(domain.toLowerCase(), version, destination);
          }
 
          // Append the secure flag
          if(cookieSetting.isSecure())
          {
-            destination.append(";Secure");
-         }
-
-         // Append the version 
-         if(version > 0)
-         {
-            destination.append(";Version=").append(Integer.toString(version));
+            destination.append("; Secure");
          }
          
          // Append the comment
@@ -170,8 +187,8 @@ public class CookieUtils
             String comment = cookieSetting.getComment();
             if((comment != null) && (comment.length() > 0))
             {
-               destination.append(";Comment=");
-               HeaderUtils.appendQuote(comment, destination);
+               destination.append("; Comment=");
+               appendValue(comment, version, destination);
             }
          }
       }
@@ -208,7 +225,7 @@ public class CookieUtils
       {
          try
          {
-            appendValue(name, version, destination).append('=');
+            appendValue(name, 0, destination).append('=');
             
             // Append the value
             if((value != null) && (value.length() > 0))
@@ -222,7 +239,7 @@ public class CookieUtils
                String path = cookie.getPath();
                if((path != null) && (path.length() > 0))
                {
-                  destination.append("$Path=");
+                  destination.append("; $Path=");
                   HeaderUtils.appendQuote(path, destination);
                }
                
@@ -230,7 +247,7 @@ public class CookieUtils
                String domain = cookie.getDomain();
                if((domain != null) && (domain.length() > 0))
                {
-                  destination.append("$Domain=");
+                  destination.append("; $Domain=");
                   HeaderUtils.appendQuote(domain, destination);
                }
             }

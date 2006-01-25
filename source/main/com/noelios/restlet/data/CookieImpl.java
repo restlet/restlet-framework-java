@@ -78,7 +78,7 @@ public class CookieImpl extends ParameterImpl implements Cookie
     */
    public CookieImpl(int version, String name, String value, String path, String domain)
    {
-      super((name == null) ? null : name.toLowerCase(), value);
+      super(name, value);
       this.version = version;
       this.path = path;
       this.domain = domain;

@@ -40,5 +40,5 @@ public interface HttpServer extends Server
     * @param keystorePassword The keystore password.
     * @param keyPassword The password of the server key .
     */
-   public void configureSSL(String keystorePath, String keystorePassword, String keyPassword);
+   public void configureSsl(String keystorePath, String keystorePassword, String keyPassword);
 }

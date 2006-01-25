@@ -138,11 +138,11 @@ public class HeaderReader
    {
       if(value != null)
       {
-         return new ParameterImpl(name.toString().toLowerCase(), value.toString());
+         return new ParameterImpl(name.toString(), value.toString());
       }
       else
       {
-         return new ParameterImpl(name.toString().toLowerCase(), null);
+         return new ParameterImpl(name.toString(), null);
       }
    }
 

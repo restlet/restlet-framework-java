@@ -24,11 +24,14 @@ package com.noelios.restlet.util;
 
 import java.io.IOException;
 import java.io.UnsupportedEncodingException;
+import java.util.Date;
 
 import org.restlet.data.Cookie;
+import org.restlet.data.CookieSetting;
 import org.restlet.data.Parameter;
 
 import com.noelios.restlet.data.CookieImpl;
+import com.noelios.restlet.data.CookieSettingImpl;
 
 /**
  * Cookie header reader.
@@ -38,6 +41,17 @@ public class CookieReader extends HeaderReader
    private static final String NAME_VERSION = "$Version";
    private static final String NAME_PATH = "$Path";
    private static final String NAME_DOMAIN = "$Domain";
+
+   private static final String NAME_SET_COMMENT = "comment";
+   private static final String NAME_SET_COMMENT_URL = "commentURL";
+   private static final String NAME_SET_DISCARD = "discard";
+   private static final String NAME_SET_DOMAIN = "domain";
+   private static final String NAME_SET_EXPIRES = "expires";
+   private static final String NAME_SET_MAX_AGE = "max-age";
+   private static final String NAME_SET_PATH = "path";
+   private static final String NAME_SET_PORT = "port";
+   private static final String NAME_SET_SECURE = "secure";
+   private static final String NAME_SET_VERSION = "version";
 
    /**
     * The cached pair. Used by the readPair() method.
@@ -62,7 +76,7 @@ public class CookieReader extends HeaderReader
     * Reads the next cookie available or null.
     * @return The next cookie available or null.
     */
-   public Cookie readNextCookie() throws IOException
+   public Cookie readCookie() throws IOException
    {
       Cookie result = null;
       Parameter pair = readPair();
@@ -135,6 +149,105 @@ public class CookieReader extends HeaderReader
    }
 
    /**
+    * Reads the next cookie setting available or null.
+    * @return The next cookie setting available or null.
+    */
+   public CookieSetting readCookieSetting() throws IOException
+   {
+      CookieSetting result = null;
+      Parameter pair = readPair();
+
+      while((pair != null) && (pair.getName().charAt(0) == '$'))
+      {
+         // Unexpected special attribute
+         // Silently ignore it as it may have been introduced by new
+         // specifications
+         pair = readPair();
+      }
+
+      if(pair != null)
+      {
+         // Set the cookie name and value
+         result = new CookieSettingImpl(pair.getName(), pair.getValue());
+         pair = readPair();
+      }
+
+      while(pair != null)
+      {
+         if(pair.getName().equalsIgnoreCase(NAME_SET_PATH))
+         {
+            result.setPath(pair.getValue());
+         }
+         else if(pair.getName().equalsIgnoreCase(NAME_SET_DOMAIN))
+         {
+            result.setDomain(pair.getValue());
+         }
+         else if(pair.getName().equalsIgnoreCase(NAME_SET_COMMENT))
+         {
+            result.setComment(pair.getValue());
+         }
+         else if(pair.getName().equalsIgnoreCase(NAME_SET_COMMENT_URL))
+         {
+            // No yet supported
+         }
+         else if(pair.getName().equalsIgnoreCase(NAME_SET_DISCARD))
+         {
+            result.setMaxAge(-1);
+         }
+         else if(pair.getName().equalsIgnoreCase(NAME_SET_EXPIRES))
+         {
+            Date expires = DateUtils.parse(pair.getValue(), DateUtils.FORMAT_RFC_1036);
+            Date current = new Date(System.currentTimeMillis());
+            
+            if(DateUtils.after(current, expires))
+            {
+               result.setMaxAge((int)((expires.getTime() - current.getTime()) / 1000));
+            }
+            else
+            {
+               result.setMaxAge(0);
+            }
+         }
+         else if(pair.getName().equalsIgnoreCase(NAME_SET_MAX_AGE))
+         {
+            result.setMaxAge(Integer.valueOf(pair.getValue()));
+         }
+         else if(pair.getName().equalsIgnoreCase(NAME_SET_PORT))
+         {
+            // No yet supported
+         }
+         else if(pair.getName().equalsIgnoreCase(NAME_SET_SECURE))
+         {
+            if((pair.getValue() == null) || (pair.getValue().length() == 0))
+            {
+               result.setSecure(true);
+            }
+         }
+         else if(pair.getName().equalsIgnoreCase(NAME_SET_VERSION))
+         {
+            result.setVersion(Integer.valueOf(pair.getValue()));
+         }
+         else
+         {
+            // Unexpected special attribute
+            // Silently ignore it as it may have been introduced by new
+            // specifications
+         }
+
+         pair = readPair();
+      }
+
+      if(pair != null)
+      {
+         // We started to read the next cookie
+         // So let's put it back into the stream
+         this.cachedPair = pair;
+      }
+
+      return result;
+   }
+
+   /**
     * Reads the next pair as a parameter.
     * @return The next pair as a parameter.
     * @throws IOException
@@ -146,6 +259,7 @@ public class CookieReader extends HeaderReader
       if(cachedPair != null)
       {
          result = cachedPair;
+         cachedPair = null;
       }
       else
       {
@@ -188,7 +302,7 @@ public class CookieReader extends HeaderReader
                      readingName = false;
                      readingValue = true;
                   }
-                  else if(HeaderUtils.isTokenChar(nextChar))
+                  else if(HeaderUtils.isTokenChar(nextChar) || (this.globalVersion < 1))
                   {
                      nameBuffer.append((char)nextChar);
                   }
@@ -204,7 +318,7 @@ public class CookieReader extends HeaderReader
                   {
                      // Skip spaces
                   }
-                  else if((nextChar == -1) || (nextChar == ';') || (nextChar == ','))
+                  else if((nextChar == -1) || (nextChar == ';'))
                   {
                      // End of pair
                      result = createParameter(nameBuffer, valueBuffer);
@@ -213,7 +327,7 @@ public class CookieReader extends HeaderReader
                   {
                      valueBuffer.append(readQuotedString());
                   }
-                  else if(HeaderUtils.isTokenChar(nextChar))
+                  else if(HeaderUtils.isTokenChar(nextChar) || (this.globalVersion < 1))
                   {
                      valueBuffer.append((char)nextChar);
                   }

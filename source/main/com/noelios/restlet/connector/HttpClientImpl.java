@@ -23,9 +23,10 @@
 package com.noelios.restlet.connector;
 
 import java.io.IOException;
-import java.net.MalformedURLException;
 import java.util.Date;
 import java.util.Iterator;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 import org.restlet.Manager;
 import org.restlet.UniformCall;
@@ -33,6 +34,8 @@ import org.restlet.connector.AbstractClient;
 import org.restlet.connector.HttpCall;
 import org.restlet.connector.HttpClient;
 import org.restlet.connector.HttpClientCall;
+import org.restlet.data.ChallengeRequest;
+import org.restlet.data.ChallengeResponse;
 import org.restlet.data.ConditionData;
 import org.restlet.data.Encoding;
 import org.restlet.data.Language;
@@ -46,15 +49,20 @@ import com.noelios.restlet.data.ContentType;
 import com.noelios.restlet.data.InputRepresentation;
 import com.noelios.restlet.data.ReadableRepresentation;
 import com.noelios.restlet.data.StatusImpl;
+import com.noelios.restlet.util.CookieReader;
 import com.noelios.restlet.util.CookieUtils;
 import com.noelios.restlet.util.DateUtils;
 import com.noelios.restlet.util.PreferenceUtils;
+import com.noelios.restlet.util.SecurityUtils;
 
 /**
  * Implementation of a client connector for the HTTP protocol.
  */
 public class HttpClientImpl extends AbstractClient implements HttpClient
 {
+   /** Obtain a suitable logger. */
+   private static Logger logger = Logger.getLogger("com.noelios.restlet.connector.HttpClientImpl");
+
    /**
     * Create a new HTTP client connector.
     * @param name The unique connector name.
@@ -128,7 +136,7 @@ public class HttpClientImpl extends AbstractClient implements HttpClient
          // Add the cookies
          if(call.getCookies().size() > 0)
          {
-            String cookies = CookieUtils.formatCookies(call.getCookies());
+            String cookies = CookieUtils.format(call.getCookies());
             clientCall.addRequestHeader(HttpCall.HEADER_COOKIE, cookies);
          }
          
@@ -161,7 +169,11 @@ public class HttpClientImpl extends AbstractClient implements HttpClient
          }
 
          // Add the security
-         // ...
+         ChallengeResponse response = call.getSecurity().getChallengeResponse();
+         if(response != null)
+         {
+            clientCall.addRequestHeader(HttpCall.HEADER_AUTHORIZATION, SecurityUtils.format(response));
+         }
          
          // Commit the request headers
          clientCall.commitRequestHeaders();
@@ -229,12 +241,20 @@ public class HttpClientImpl extends AbstractClient implements HttpClient
             else if((header.getName().equalsIgnoreCase(HttpCall.HEADER_SET_COOKIE)) ||
                   (header.getName().equalsIgnoreCase(HttpCall.HEADER_SET_COOKIE2)))
             {
-               // TODO: parse the cookie settings
+               try
+               {
+                  CookieReader cr = new CookieReader(header.getValue());
+                  call.getCookieSettings().add(cr.readCookieSetting());
+               }
+               catch(Exception e)
+               {
+                  logger.log(Level.WARNING, "Error during cookie setting parsing. Header: " + header.getValue(), e);
+               }
             }
             else if(header.getName().equalsIgnoreCase(HttpCall.HEADER_WWW_AUTHENTICATE))
             {
-               // TODO : complete
-               // call.getSecurity().setChallengeRequest(new ChallengeRequestImpl());
+               ChallengeRequest request = SecurityUtils.parseRequest(header.getValue());
+               call.getSecurity().setChallengeRequest(request);
             }            
             else if(header.getName().equalsIgnoreCase(HttpCall.HEADER_SERVER))
             {
@@ -256,22 +276,21 @@ public class HttpClientImpl extends AbstractClient implements HttpClient
                output = new ReadableRepresentation(clientCall.getResponseChannel(), contentType.getMediaType());
             }
 
-            output.getMetadata().setCharacterSet(contentType.getCharacterSet());
-            output.getMetadata().setEncoding(encoding);
-            output.getMetadata().setExpirationDate(expires);
-            output.getMetadata().setLanguage(language);
-            output.getMetadata().setModificationDate(lastModified);
-            output.getMetadata().setTag(tag);
-            call.setOutput(output);
+            if(output != null)
+            {
+               if(contentType != null) output.getMetadata().setCharacterSet(contentType.getCharacterSet());
+               output.getMetadata().setEncoding(encoding);
+               output.getMetadata().setExpirationDate(expires);
+               output.getMetadata().setLanguage(language);
+               output.getMetadata().setModificationDate(lastModified);
+               output.getMetadata().setTag(tag);
+               call.setOutput(output);
+            }
          }
       }
-      catch(MalformedURLException e)
+      catch(Exception e)
       {
-         e.printStackTrace();
-      }
-      catch(IOException e)
-      {
-         e.printStackTrace();
+         logger.log(Level.WARNING, "An error occured during the handling of an HTTP client call.", e);
       }
    }
 

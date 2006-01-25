@@ -33,8 +33,6 @@ import org.restlet.Manager;
 import org.restlet.UniformCall;
 import org.restlet.connector.HttpCall;
 import org.restlet.connector.HttpServerCall;
-import org.restlet.data.ChallengeRequest;
-import org.restlet.data.ChallengeResponse;
 import org.restlet.data.CharacterSetPref;
 import org.restlet.data.CharacterSets;
 import org.restlet.data.ConditionData;
@@ -61,8 +59,6 @@ import org.restlet.data.Tag;
 
 import com.noelios.restlet.Engine;
 import com.noelios.restlet.UniformCallImpl;
-import com.noelios.restlet.data.ChallengeResponseImpl;
-import com.noelios.restlet.data.ChallengeSchemeImpl;
 import com.noelios.restlet.data.CharacterSetPrefImpl;
 import com.noelios.restlet.data.ConditionDataImpl;
 import com.noelios.restlet.data.EncodingPrefImpl;
@@ -79,6 +75,7 @@ import com.noelios.restlet.util.CookieReader;
 import com.noelios.restlet.util.CookieUtils;
 import com.noelios.restlet.util.DateUtils;
 import com.noelios.restlet.util.PreferenceReader;
+import com.noelios.restlet.util.SecurityUtils;
 
 /**
  * Implementation of a server call for the HTTP protocol.
@@ -162,8 +159,7 @@ public abstract class HttpServerCallImpl extends UniformCallImpl implements Http
          // Set the security data
          if(call.getSecurity().getChallengeRequest() != null)
          {
-            ChallengeRequest challenge = call.getSecurity().getChallengeRequest();
-            addResponseHeader(HEADER_WWW_AUTHENTICATE, challenge.getScheme().getTechnicalName() + " realm=\"" + challenge.getRealm() + '"');
+            addResponseHeader(HEADER_WWW_AUTHENTICATE, SecurityUtils.format(call.getSecurity().getChallengeRequest()));
          }
 
          // Set the server name again
@@ -446,11 +442,11 @@ public abstract class HttpServerCallImpl extends UniformCallImpl implements Http
                try
                {
                   CookieReader cr = new CookieReader(header.getValue());
-                  Cookie current = cr.readNextCookie();
+                  Cookie current = cr.readCookie();
                   while(current != null)
                   {
                      this.cookies.add(current);
-                     current = cr.readNextCookie();
+                     current = cr.readCookie();
                   }
                }
                catch(Exception e)
@@ -735,18 +731,7 @@ public abstract class HttpServerCallImpl extends UniformCallImpl implements Http
          }
 
          // Set the challenge response
-         if(authorization != null)
-         {
-            int space = authorization.indexOf(' ');
-
-            if(space != -1)
-            {
-               String scheme = authorization.substring(0, space);
-               String credentials = authorization.substring(space + 1);
-               ChallengeResponse challengeResponse = new ChallengeResponseImpl(new ChallengeSchemeImpl("HTTP_" + scheme, scheme), credentials);
-               getSecurity().setChallengeResponse(challengeResponse);
-            }
-         }
+         getSecurity().setChallengeResponse(SecurityUtils.parseResponse(authorization));
       }
 
       return this.security;
