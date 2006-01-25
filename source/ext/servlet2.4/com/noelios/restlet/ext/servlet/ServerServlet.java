@@ -206,7 +206,7 @@ public class ServerServlet extends HttpServlet implements HttpServer
    {
       UniformCall uniformCall = call.toUniform();
       handle(uniformCall);
-      call.fromUniform(uniformCall);
+      call.commitFrom(uniformCall);
    }
 
    /**
@@ -235,6 +235,15 @@ public class ServerServlet extends HttpServlet implements HttpServer
    public String getDescription()
    {
       return "Servlet HTTP server";
+   }
+
+   /**
+    * Not directly supported.<br/>
+    * SSL must be configured at the Servlet Container level. 
+    */
+   public void configureSSL(String keystorePath, String keystorePassword, String keyPassword)
+   {
+      throw new IllegalArgumentException("Not directly supported. SSL must be configured at the Servlet Container level.");
    }
 
 }

@@ -25,17 +25,18 @@ package com.noelios.restlet.ext.servlet;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
-import java.net.InetAddress;
-import java.net.UnknownHostException;
 import java.nio.channels.ReadableByteChannel;
 import java.nio.channels.WritableByteChannel;
-import java.util.Date;
+import java.util.ArrayList;
+import java.util.Enumeration;
+import java.util.Iterator;
+import java.util.List;
 
-import javax.servlet.http.Cookie;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
-import org.restlet.data.CookieSetting;
+import org.restlet.Manager;
+import org.restlet.data.Parameter;
 
 import com.noelios.restlet.connector.HttpServerCallImpl;
 
@@ -49,6 +50,9 @@ public class ServletCall extends HttpServerCallImpl
    
    /** The HTTP servlet response to wrap. */
    protected HttpServletResponse response;
+   
+   /** The request headers. */
+   protected List<Parameter> requestHeaders;
 
    /**
     * Constructor.
@@ -78,13 +82,16 @@ public class ServletCall extends HttpServerCallImpl
    {
       return this.response;
    }
-   
 
+   /**
+    * Indicates if the request was made using a confidential mean.<br/>
+    * @return True if the request was made using a confidential mean.<br/>
+    */
+   public boolean isConfidential()
+   {
+      return getRequest().isSecure();
+   }
    
-   // ----------------------
-   // ---  Request part  ---
-   // ----------------------
-
    /**
     * Returns the request address.<br/>
     * Corresponds to the IP address of the requesting client.
@@ -93,15 +100,6 @@ public class ServletCall extends HttpServerCallImpl
    public String getRequestAddress()
    {
       return getRequest().getRemoteAddr();
-   }
-
-   /**
-    * Indicates if the request was made using a confidential mean.<br/>
-    * @return True if the request was made using a confidential mean.<br/>
-    */
-   public boolean isRequestConfidential()
-   {
-      return getRequest().isSecure();
    }
 
    /**
@@ -132,23 +130,30 @@ public class ServletCall extends HttpServerCallImpl
    }
    
    /**
-    * Returns a request header value.
-    * @param name The name of the header.
-    * @return A header value.
+    * Returns the list of request headers.
+    * @return The list of request headers.
     */
-   public String getRequestHeader(String name)
+   public List<Parameter> getRequestHeaders()
    {
-      return getRequest().getHeader(name);
-   }
-   
-   /**
-    * Returns a request date header value.
-    * @param name The name of the header.
-    * @return A header date.
-    */
-   public Date getRequestDateHeader(String name)
-   {
-      return new Date(getRequest().getDateHeader(name));
+      if(this.requestHeaders == null)
+      {
+         this.requestHeaders = new ArrayList<Parameter>();
+
+         // Copy the headers from the request object
+         String headerName;
+         String headerValue;
+         for(Enumeration names = getRequest().getHeaderNames(); names.hasMoreElements(); )
+         {
+            headerName = (String)names.nextElement();
+            for(Enumeration values = getRequest().getHeaders(headerName); values.hasMoreElements(); )
+            {
+               headerValue = (String)values.nextElement();
+               this.requestHeaders.add(Manager.createParameter(headerName, headerValue));
+            }
+         }
+      }
+
+      return this.requestHeaders;
    }
 
    /**
@@ -157,6 +162,7 @@ public class ServletCall extends HttpServerCallImpl
     */
    public ReadableByteChannel getRequestChannel()
    {
+      // Can't do anything
       return null;
    }
    
@@ -176,10 +182,6 @@ public class ServletCall extends HttpServerCallImpl
       }
    }
 
-   // -----------------------
-   // ---  Response part  ---
-   // -----------------------
-   
    /**
     * Returns the reponse address.<br/>
     * Corresponds to the IP address of the responding server.
@@ -187,14 +189,7 @@ public class ServletCall extends HttpServerCallImpl
     */
    public String getResponseAddress()
    {
-      try
-      {
-         return InetAddress.getLocalHost().getHostAddress();
-      }
-      catch(UnknownHostException e)
-      {
-         return null;
-      }
+      return getRequest().getLocalAddr();
    }
    
    /**
@@ -203,16 +198,8 @@ public class ServletCall extends HttpServerCallImpl
     */
    public int getResponseStatusCode()
    {
-      return -1;
-   }
-
-   /**
-    * Sets the response status code.
-    * @param code The response status code.
-    */
-   public void setResponseStatus(int code)
-   {
-      getResponse().setStatus(code);
+      // Can't do anything
+      return 0;
    }
 
    /**
@@ -221,75 +208,32 @@ public class ServletCall extends HttpServerCallImpl
     */
    public String getResponseReasonPhrase()
    {
+      // Can't do anything
       return null;
    }
 
    /**
-    * Sets the response reason phrase.
+    * Sets the response status code.
+    * @param code The response status code.
     * @param reason The response reason phrase.
     */
-   public void setResponseReasonPhrase(String reason)
+   public void setResponseStatus(int code, String reason)
    {
-      // Can't do anything
+      getResponse().setStatus(code);
    }
-   
+
    /**
-    * Returns a response header value.
-    * @param name The name of the header.
-    * @return A header value.
+    * Commits the response headers.<br/>
+    * Must be called before writing the response entity.
     */
-   public String getResponseHeader(String name)
+   public void commitResponseHeaders()
    {
-      return null;
-   }
-   
-   /**
-    * Returns a response date header value.
-    * @param name The name of the header.
-    * @return A header date.
-    */
-   public Date getResponseDateHeader(String name)
-   {
-      return null;
-   }
-   
-   /**
-    * Sets a response header value.
-    * @param name The name of the header.
-    * @param value The value of the header.
-    */
-   public void setResponseHeader(String name, String value)
-   {
-      getResponse().setHeader(name, value);
-   }
-   
-   /**
-    * Sets a response date header value.
-    * @param name The name of the header.
-    * @param date The value of the header.
-    */
-   public void setResponseDateHeader(String name, long date)
-   {
-      getResponse().setDateHeader(name, date);
-   }
-   
-   /**
-    * Sets a response cookie. 
-    * @param cookie The cookie setting.
-    */
-   public void setResponseCookie(CookieSetting cookie)
-   {
-      // Convert the cookie setting into a Servlet cookie
-      Cookie servletCookie = new Cookie(cookie.getName(), cookie.getValue());
-      if(cookie.getComment() != null) servletCookie.setComment(cookie.getComment());
-      if(cookie.getDomain() != null) servletCookie.setDomain(cookie.getDomain());
-      servletCookie.setMaxAge(cookie.getMaxAge());
-      if(cookie.getPath() != null) servletCookie.setPath(cookie.getPath());
-      servletCookie.setSecure(cookie.isSecure());
-      servletCookie.setVersion(cookie.getVersion());
-            
-      // Set the cookie in the response
-      getResponse().addCookie(servletCookie);
+      Parameter header;
+      for(Iterator<Parameter> iter = getResponseHeaders().iterator(); iter.hasNext();)
+      {
+         header = iter.next();
+         getResponse().addHeader(header.getName(), header.getValue());
+      }
    }
 
    /**
@@ -298,6 +242,7 @@ public class ServletCall extends HttpServerCallImpl
     */
    public WritableByteChannel getResponseChannel()
    {
+      // Can't do anything
       return null;
    }
    
