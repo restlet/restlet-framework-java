@@ -241,7 +241,7 @@ public class ServerServlet extends HttpServlet implements HttpServer
     * Not directly supported.<br/>
     * SSL must be configured at the Servlet Container level. 
     */
-   public void configureSSL(String keystorePath, String keystorePassword, String keyPassword)
+   public void configureSsl(String keystorePath, String keystorePassword, String keyPassword)
    {
       throw new IllegalArgumentException("Not directly supported. SSL must be configured at the Servlet Container level.");
    }
