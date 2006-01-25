@@ -23,7 +23,7 @@
 package org.restlet.data;
 
 /**
- * Cookie received from a user agent.
+ * Cookie provided by a client.
  */
 public interface Cookie extends Parameter
 {

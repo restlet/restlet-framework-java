@@ -23,8 +23,8 @@
 package org.restlet.data;
 
 /**
- * Represents a reference to a uniform resource identifier (URI). Contrary to the java.net.URI class, this
- * interface represents mutable references.
+ * Represents a reference to a uniform resource identifier (URI).<br/>
+ * Contrary to the java.net.URI class, this interface represents mutable references.
  */
 public interface Reference extends Data
 {

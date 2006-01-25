@@ -25,7 +25,7 @@ package org.restlet.data;
 /**
  * Security data related to a uniform call.
  */
-public interface Security extends ControlData
+public interface SecurityData extends ControlData
 {
    /**
     * Returns the authentication request sent by an origin server to a client.

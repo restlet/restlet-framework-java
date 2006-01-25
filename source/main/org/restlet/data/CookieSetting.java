@@ -23,7 +23,7 @@
 package org.restlet.data;
 
 /**
- * Cookie to set in a user agent.
+ * Cookie setting provided by a server.
  */
 public interface CookieSetting extends Cookie
 {
@@ -40,13 +40,17 @@ public interface CookieSetting extends Cookie
    public void setComment(String comment);
 
    /**
-    * Returns the maximum age in seconds. Use 0 to discard an existing cookie.
+    * Returns the maximum age in seconds.<br/>
+    * Use 0 to immediately discard an existing cookie.
+    * Use -1 to discard the cookie at the end of the session (only if version > 0).
     * @return The maximum age in seconds.
     */
    public int getMaxAge();
 
    /**
-    * Sets the maximum age in seconds. Use 0 to discard an existing cookie.
+    * Sets the maximum age in seconds.<br/> 
+    * Use 0 to immediately discard an existing cookie.
+    * Use -1 to discard the cookie at the end of the session (only if version > 0).
     * @param maxAge The maximum age in seconds.
     */
    public void setMaxAge(int maxAge);

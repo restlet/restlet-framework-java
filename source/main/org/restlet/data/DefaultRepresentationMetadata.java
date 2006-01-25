@@ -29,17 +29,20 @@ import java.util.Date;
  */
 public class DefaultRepresentationMetadata implements RepresentationMetadata
 {
-   /** The media type. */
-   protected MediaType mediaType;
-
    /** The character set or null if not applicable. */
    protected CharacterSet characterSet;
 
-   /** The language or null if not applicable. */
-   protected Language language;
+   /** The encoding or null if not identity encoding applies. */
+   protected Encoding encoding;
 
    /** The expiration date. */
    protected Date expirationDate;
+   
+   /** The language or null if not applicable. */
+   protected Language language;
+
+   /** The media type. */
+   protected MediaType mediaType;
 
    /** The modification date. */
    protected Date modificationDate;
@@ -53,10 +56,11 @@ public class DefaultRepresentationMetadata implements RepresentationMetadata
     */
    public DefaultRepresentationMetadata(MediaType mediaType)
    {
-      this.mediaType = mediaType;
       this.characterSet = null;
-      this.language = null;
+      this.encoding = null;
       this.expirationDate = null;
+      this.language = null;
+      this.mediaType = mediaType;
       this.modificationDate = null;
       this.tag = null;
    }
@@ -80,24 +84,6 @@ public class DefaultRepresentationMetadata implements RepresentationMetadata
    }
 
    /**
-    * Returns the media type.
-    * @return The media type.
-    */
-   public MediaType getMediaType()
-   {
-      return mediaType;
-   }
-
-   /**
-    * Sets the media type.
-    * @param mediaType The media type.
-    */
-   public void setMediaType(MediaType mediaType)
-   {
-      this.mediaType = mediaType;
-   }
-
-   /**
     * Returns the character set or null if not applicable.
     * @return The character set or null if not applicable.
     */
@@ -113,6 +99,42 @@ public class DefaultRepresentationMetadata implements RepresentationMetadata
    public void setCharacterSet(CharacterSet characterSet)
    {
       this.characterSet = characterSet;
+   }
+
+   /**
+    * Returns the encoding or null if identity encoding applies.
+    * @return The encoding or null if identity encoding applies.
+    */
+   public Encoding getEncoding()
+   {
+      return this.encoding;
+   }
+
+   /**
+    * Sets the encoding or null if identity encoding applies.
+    * @param encoding The encoding or null if identity encoding applies.
+    */
+   public void setEncoding(Encoding encoding)
+   {
+      this.encoding = encoding;
+   }
+
+   /**
+    * Returns the future date when this representation expire. If this information is not known, returns null.
+    * @return The expiration date.
+    */
+   public Date getExpirationDate()
+   {
+      return expirationDate;
+   }
+
+   /**
+    * Sets the future date when this representation expire. If this information is not known, pass null.
+    * @param expirationDate The expiration date.
+    */
+   public void setExpirationDate(Date expirationDate)
+   {
+      this.expirationDate = expirationDate;
    }
 
    /**
@@ -134,21 +156,21 @@ public class DefaultRepresentationMetadata implements RepresentationMetadata
    }
 
    /**
-    * Returns the future date when this representation expire. If this information is not known, returns null.
-    * @return The expiration date.
+    * Returns the media type.
+    * @return The media type.
     */
-   public Date getExpirationDate()
+   public MediaType getMediaType()
    {
-      return expirationDate;
+      return mediaType;
    }
 
    /**
-    * Sets the future date when this representation expire. If this information is not known, pass null.
-    * @param expirationDate The expiration date.
+    * Sets the media type.
+    * @param mediaType The media type.
     */
-   public void setExpirationDate(Date expirationDate)
+   public void setMediaType(MediaType mediaType)
    {
-      this.expirationDate = expirationDate;
+      this.mediaType = mediaType;
    }
 
    /**

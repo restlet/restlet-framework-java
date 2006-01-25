@@ -23,36 +23,24 @@
 package org.restlet.data;
 
 /**
- * Enumeration of common character sets.
+ * Enumeration of common encodings.
  */
-public enum CharacterSets implements CharacterSet
+public enum Encodings implements Encoding
 {
-   /** All character sets acceptable. */
+   /** All encodings acceptable. */
    ALL,
 
-   /**
-    * The ISO/IEC 8859-1 or Latin 1 character set.
-    * @see <a href="http://en.wikipedia.org/wiki/ISO_8859-1">Wikipedia page</a>
-    */
-   ISO_8859_1,
+   /** The GNU Zip encoding. */
+   GZIP,
 
-   /**
-    * The US-ASCII character set.
-    * @see <a href="http://en.wikipedia.org/wiki/US-ASCII">Wikipedia page</a>
-    */
-   US_ASCII,
+   /** The common Unix file compression. */
+   COMPRESS,
 
-   /**
-    * The UTF-8 character set.
-    * @see <a href="http://en.wikipedia.org/wiki/UTF-8">Wikipedia page</a>
-    */
-   UTF_8,
+   /** The zlib format defined by RFC 1950 and 1951. */
+   DEFLATE,
 
-   /**
-    * The UTF-16 character set.
-    * @see <a href="http://en.wikipedia.org/wiki/UTF-16">Wikipedia page</a>
-    */
-   UTF_16;
+   /** The default (identity) encoding. */
+   IDENTITY;
 
    /**
     * Returns the metadata name like "text/html" or "compress" or "iso-8851-1".
@@ -67,17 +55,17 @@ public enum CharacterSets implements CharacterSet
          case ALL:
             result = "*";
             break;
-         case ISO_8859_1:
-            result = "ISO-8859-1";
+         case GZIP:
+            result = "gzip";
             break;
-         case US_ASCII:
-            result = "US-ASCII";
+         case COMPRESS:
+            result = "compress";
             break;
-         case UTF_8:
-            result = "UTF-8";
+         case DEFLATE:
+            result = "deflate";
             break;
-         case UTF_16:
-            result = "UTF-16";
+         case IDENTITY:
+            result = "identity";
             break;
       }
 
@@ -95,19 +83,19 @@ public enum CharacterSets implements CharacterSet
       switch(this)
       {
          case ALL:
-            result = "All character sets";
+            result = "All encodings";
             break;
-         case ISO_8859_1:
-            result = "ISO/IEC 8859-1 or Latin 1 character set";
+         case GZIP:
+            result = "GZip compression";
             break;
-         case US_ASCII:
-            result = "US ASCII character set";
+         case COMPRESS:
+            result = "Common Unix compression";
             break;
-         case UTF_8:
-            result = "UTF 8 character set";
+         case DEFLATE:
+            result = "Deflate compression using the zlib format";
             break;
-         case UTF_16:
-            result = "UTF 16 character set";
+         case IDENTITY:
+            result = "The default encoding with no transformation";
             break;
       }
 
@@ -115,13 +103,13 @@ public enum CharacterSets implements CharacterSet
    }
 
    /**
-    * Indicates if the character set is equal to a given one.
-    * @param characterSet The character set to compare to.
-    * @return True if the character set is equal to a given one.
+    * Indicates if the encoding is equal to a given one.
+    * @param encoding The encoding to compare to.
+    * @return True if the encoding is equal to a given one.
     */
-   public boolean equals(CharacterSet characterSet)
+   public boolean equals(Encoding encoding)
    {
-      return getName().equalsIgnoreCase(characterSet.getName());
+      return getName().equalsIgnoreCase(encoding.getName());
    }
    
 }

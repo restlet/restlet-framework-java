@@ -22,39 +22,34 @@
 
 package org.restlet.data;
 
-import java.io.IOException;
-import java.util.Map;
+import java.util.List;
 
 /**
- * Cookies reader.
+ * Preference data related to a uniform call.
  */
-public interface CookiesReader
+public interface PreferenceData extends ControlData
 {
    /**
-    * Reads the cookies whose name is a key in the given map.<br/>
-    * If a matching cookie is found, its value is put in the map.
-    * @param cookies The cookies map controlling the reading.
-    * @throws IOException
+    * Returns the character set preferences.
+    * @return The character set preferences.
     */
-   public void readCookies(Map<String, Cookie> cookies) throws IOException;
+   public List<CharacterSetPref> getCharacterSets();
 
    /**
-    * Reads the first cookie available with the given name or null.
-    * @return The first cookie available or null.
-    * @throws IOException
+    * Returns the encoding preferences.
+    * @return The encoding preferences.
     */
-   public Cookie readFirstCookie(String name) throws IOException;
+   public List<EncodingPref> getEncodings();
 
    /**
-    * Reads the next cookie available or null.
-    * @return The next cookie available or null.
-    * @throws IOException
+    * Returns the language preferences.
+    * @return The language preferences.
     */
-   public Cookie readNextCookie() throws IOException;
+   public List<LanguagePref> getLanguages();
 
    /**
-    * Closes the reader.
-    * @throws IOException
+    * Returns the media type preferences.
+    * @return The media type preferences.
     */
-   public void close() throws IOException;
+   public List<MediaTypePref> getMediaTypes();
 }

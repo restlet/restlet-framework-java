@@ -26,10 +26,10 @@ import java.util.Date;
 import java.util.List;
 
 /**
- * Defines a set of conditions applying to the parent uniform call.
- * This is directly inspired from the HTTP 1.1 conditional headers.  
+ * Set of conditions applying to an uniform call.<br/>
+ * This is equivalent to the HTTP conditional headers.  
  */
-public interface Conditions extends ControlData
+public interface ConditionData extends ControlData
 {
    /**
     * Returns the "if-modified-since" condition.

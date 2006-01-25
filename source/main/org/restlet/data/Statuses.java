@@ -32,9 +32,8 @@ public enum Statuses implements Status
    SUCCESS_OK, SUCCESS_CREATED, SUCCESS_ACCEPTED, SUCCESS_NON_AUTHORITATIVE, SUCCESS_NO_CONTENT,
    SUCCESS_RESET_CONTENT, SUCCESS_PARTIAL_CONTENT, SUCCESS_MULTI_STATUS,
 
-   REDIRECTION_MULTIPLE_CHOICES, REDIRECTION_MOVED_PERMANENTLY, REDIRECTION_MOVED_TEMPORARILY,
-   REDIRECTION_FOUND, REDIRECTION_SEE_OTHER, REDIRECTION_NOT_MODIFIED, REDIRECTION_USE_PROXY,
-   REDIRECTION_TEMPORARY_REDIRECT,
+   REDIRECTION_MULTIPLE_CHOICES, REDIRECTION_MOVED_PERMANENTLY, REDIRECTION_FOUND, 
+   REDIRECTION_SEE_OTHER, REDIRECTION_NOT_MODIFIED, REDIRECTION_USE_PROXY, REDIRECTION_MOVED_TEMPORARILY,
 
    CLIENT_ERROR_BAD_REQUEST, CLIENT_ERROR_UNAUTHORIZED, CLIENT_ERROR_PAYMENT_REQUIRED,
    CLIENT_ERROR_FORBIDDEN, CLIENT_ERROR_NOT_FOUND, CLIENT_ERROR_METHOD_NOT_ALLOWED,
@@ -100,7 +99,6 @@ public enum Statuses implements Status
          case REDIRECTION_MOVED_PERMANENTLY:
             result = 301;
             break;
-         case REDIRECTION_MOVED_TEMPORARILY:
          case REDIRECTION_FOUND:
             result = 302;
             break;
@@ -113,7 +111,7 @@ public enum Statuses implements Status
          case REDIRECTION_USE_PROXY:
             result = 305;
             break;
-         case REDIRECTION_TEMPORARY_REDIRECT:
+         case REDIRECTION_MOVED_TEMPORARILY:
             result = 307;
             break;
 
@@ -438,13 +436,13 @@ public enum Statuses implements Status
             result = "The requested resource has been assigned a new permanent URI";
             break;
          case 302:
-            result = "The requested resource resides temporarily under a different URI";
+            result = "The requested resource can be found under a different URI";
             break;
          case 303:
             result = "The response to the request can be found under a different URI";
             break;
          case 304:
-            result = "If the client has performed a conditional GET request and access is allowed";
+            result = "The client has performed a conditional GET request and access is allowed";
             break;
          case 305:
             result = "The requested resource must be accessed through the proxy given by the location field";

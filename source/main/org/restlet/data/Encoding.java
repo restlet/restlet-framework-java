@@ -22,38 +22,18 @@
 
 package org.restlet.data;
 
-import java.util.List;
-
 /**
- * Media type used in representations and preferences.
- * @see org.restlet.data.MediaTypes
- * @see <a href="http://en.wikipedia.org/wiki/MIME">MIME types on Wikipedia</a>
+ * Modifier of a representation's media type.<br>
+ * Useful to apply compression without losing the identity of the underlying media type.
+ * @see org.restlet.data.Encodings
  */
-public interface MediaType extends Metadata
+public interface Encoding extends Metadata
 {
    /**
-    * Returns the main type.
-    * @return The main type.
+    * Indicates if the encoding equal to a given one.
+    * @param encoding The encoding to compare to.
+    * @return True if the encoding is equal to a given one.
     */
-   public String getMainType();
-
-   /**
-    * Returns the sub-type.
-    * @return The sub-type.
-    */
-   public String getSubType();
-
-   /**
-    * Returns the list of parameters.
-    * @return The list of parameters.
-    */
-   public List<Parameter> getParameters();
-
-   /**
-    * Returns the value of a parameter with a given name.
-    * @param name The name of the parameter to return.
-    * @return The value of the parameter with a given name.
-    */
-   public String getParameterValue(String name);
+   public boolean equals(Encoding encoding);
 
 }

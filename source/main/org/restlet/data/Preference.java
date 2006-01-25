@@ -30,11 +30,11 @@ import java.util.List;
 public interface Preference extends ControlData
 {
    /**
-    * Returns the metadata associated with this preference.
-    * @return The metadata associated with this preference.
+    * Returns the associated metadata. 
+    * @return The associated metadata.
     */
    public Metadata getMetadata();
-
+   
    /**
     * Returns the quality/preference level.
     * @return The quality/preference level.

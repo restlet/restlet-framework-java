@@ -23,7 +23,7 @@
 package org.restlet.data;
 
 /**
- * Language used in representations.
+ * Language used in representations and preferences.
  * @see org.restlet.data.Languages
  */
 public interface Language extends Metadata

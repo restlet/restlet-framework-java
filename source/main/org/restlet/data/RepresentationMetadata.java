@@ -30,18 +30,6 @@ import java.util.Date;
 public interface RepresentationMetadata extends Metadata
 {
    /**
-    * Returns the media type.
-    * @return The media type.
-    */
-   public MediaType getMediaType();
-
-   /**
-    * Sets the media type.
-    * @param mediaType The media type.
-    */
-   public void setMediaType(MediaType mediaType);
-
-   /**
     * Returns the character set or null if not applicable.
     * @return The character set or null if not applicable.
     */
@@ -52,6 +40,30 @@ public interface RepresentationMetadata extends Metadata
     * @param characterSet The character set or null if not applicable.
     */
    public void setCharacterSet(CharacterSet characterSet);
+
+   /**
+    * Returns the encoding or null if identity encoding applies.
+    * @return The encoding or null if identity encoding applies.
+    */
+   public Encoding getEncoding();
+
+   /**
+    * Sets the encoding or null if identity encoding applies.
+    * @param encoding The encoding or null if identity encoding applies.
+    */
+   public void setEncoding(Encoding encoding);
+
+   /**
+    * Returns the future date when this representation expire. If this information is not known, returns null.
+    * @return The expiration date.
+    */
+   public Date getExpirationDate();
+
+   /**
+    * Sets the future date when this representation expire. If this information is not known, pass null.
+    * @param expirationDate The expiration date.
+    */
+   public void setExpirationDate(Date expirationDate);
 
    /**
     * Returns the language or null if not applicable.
@@ -66,16 +78,16 @@ public interface RepresentationMetadata extends Metadata
    public void setLanguage(Language language);
 
    /**
-    * Returns the future date when this representation expire. If this information is not known, returns null.
-    * @return The expiration date.
+    * Returns the media type.
+    * @return The media type.
     */
-   public Date getExpirationDate();
+   public MediaType getMediaType();
 
    /**
-    * Sets the future date when this representation expire. If this information is not known, pass null.
-    * @param expirationDate The expiration date.
+    * Sets the media type.
+    * @param mediaType The media type.
     */
-   public void setExpirationDate(Date expirationDate);
+   public void setMediaType(MediaType mediaType);
 
    /**
     * Returns the last date when this representation was modified. If this information is not known, returns
