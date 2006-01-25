@@ -23,15 +23,15 @@
 package com.noelios.restlet.test;
 
 import java.io.IOException;
-import java.util.Iterator;
+import java.util.ArrayList;
+import java.util.List;
 
 import junit.framework.TestCase;
 
-import org.restlet.data.MediaType;
-import org.restlet.data.Parameter;
 import org.restlet.data.Preference;
 
-import com.noelios.restlet.data.PreferenceReaderImpl;
+import com.noelios.restlet.util.PreferenceReader;
+import com.noelios.restlet.util.PreferenceUtils;
 
 /**
  * Unit tests for the Preference related classes. Based on JUnit framework.
@@ -45,43 +45,25 @@ public class PreferencesTest extends TestCase
 
    /**
     * Tests the preferences parsing.
-    * @throws RestletException
     */
    public void testParsing() throws IOException
    {
       String headerValue = "text/*;q=0.3, text/html;q=0.7, text/html;level=1, text/html;LEVEL=2;q=0.4;ext1, */*;q=0.5";
-      PreferenceReaderImpl pr = new PreferenceReaderImpl(PreferenceReaderImpl.TYPE_MEDIA_TYPE, headerValue);
-      Preference pref = null;
-      Parameter param = null;
+      PreferenceReader pr = new PreferenceReader(PreferenceReader.TYPE_MEDIA_TYPE, headerValue);
+      List<Preference> prefs = new ArrayList<Preference>();
+      Preference pref = pr.readPreference();
 
-      do
+      while(pref != null)
       {
+         prefs.add(pref);
          pref = pr.readPreference();
-
-         if(pref != null)
-         {
-            System.out.println(pref.toString() + " = " + pref.getMetadata() + " , quality = "
-                  + pref.getQuality());
-            for(Iterator iter = pref.getParameters().iterator(); iter.hasNext();)
-            {
-               param = (Parameter)iter.next();
-               System.out.println("Pref  param: " + param.getName() + " = " + param.getValue());
-            }
-
-            if(pref.getMetadata() instanceof MediaType)
-            {
-               MediaType mediaType = (MediaType)pref.getMetadata();
-               for(Iterator iter = mediaType.getParameters().iterator(); iter.hasNext();)
-               {
-                  param = (Parameter)iter.next();
-                  System.out.println("Media param: " + param.getName() + " = " + param.getValue());
-               }
-            }
-
-            System.out.println("---------------------------------------------------------------------");
-         }
       }
-      while(pref != null);
+      
+      // Rewrite the header
+      String newHeaderValue = PreferenceUtils.format(prefs);
+      
+      // Compare initial and new headers
+      assertTrue(headerValue.equalsIgnoreCase(newHeaderValue));
    }
 
 }
