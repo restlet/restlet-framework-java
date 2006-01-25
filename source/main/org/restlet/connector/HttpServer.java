@@ -33,4 +33,12 @@ public interface HttpServer extends Server
     * @param call The HTTP protocol call.
     */
    public void handle(HttpServerCall call);
+
+   /**
+    * Configure the SSL listener.
+    * @param keystorePath The path of the keystore file. 
+    * @param keystorePassword The keystore password.
+    * @param keyPassword The password of the server key .
+    */
+   public void configureSSL(String keystorePath, String keystorePassword, String keyPassword);
 }

@@ -26,44 +26,30 @@ import java.io.InputStream;
 import java.io.OutputStream;
 import java.nio.channels.ReadableByteChannel;
 import java.nio.channels.WritableByteChannel;
-import java.util.Date;
 
 /**
- * HTTP client call.
+ * Client call for the HTTP protocol.
  */
 public interface HttpClientCall extends HttpCall
 {
-   /**
-    * Returns the request method. 
-    * @return The request method.
-    */
-   public String getRequestMethod();
-
    /**
     * Sets the request method. 
     * @param method The request method.
     */
    public void setRequestMethod(String method);
-
-   /**
-    * Returns the full request URI. 
-    * @return The full request URI.
-    */
-   public String getRequestUri();
    
    /**
-    * Returns a request header value.
-    * @param name The name of the header.
-    * @return A header value.
+    * Adds a request header.
+    * @param name The header's name.
+    * @param value The header's value.
     */
-   public String getRequestHeader(String name);
+   public void addRequestHeader(String name, String value);
    
    /**
-    * Returns a request header value.
-    * @param name The header name.
-    * @param value The header value.
+    * Commits the request headers.<br/>
+    * Must be called before writing the request entity.
     */
-   public void setRequestHeader(String name, String value);
+   public void commitRequestHeaders();
 
    /**
     * Returns the request entity channel if it exists.
@@ -77,37 +63,6 @@ public interface HttpClientCall extends HttpCall
     */
    public OutputStream getRequestStream();
 
-   
-   // -----------------------
-   // ---  Response part  ---
-   // -----------------------
-   
-   /**
-    * Returns the response status code.
-    * @return The response status code.
-    */
-   public int getResponseStatusCode();
-
-   /**
-    * Returns the response reason phrase.
-    * @return The response reason phrase.
-    */
-   public String getResponseReasonPhrase();
-
-   /**
-    * Returns a response header value.
-    * @param name The name of the header.
-    * @return A header value.
-    */
-   public String getResponseHeader(String name);
-   
-   /**
-    * Returns a response date header value.
-    * @param name The name of the header.
-    * @return A header date.
-    */
-   public Date getResponseDateHeader(String name);
-
    /**
     * Returns the response channel if it exists.
     * @return The response channel if it exists.
@@ -119,5 +74,4 @@ public interface HttpClientCall extends HttpCall
     * @return The response stream if it exists.
     */
    public InputStream getResponseStream();
-   
 }

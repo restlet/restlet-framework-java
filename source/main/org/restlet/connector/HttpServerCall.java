@@ -26,13 +26,11 @@ import java.io.InputStream;
 import java.io.OutputStream;
 import java.nio.channels.ReadableByteChannel;
 import java.nio.channels.WritableByteChannel;
-import java.util.Date;
 
 import org.restlet.UniformCall;
-import org.restlet.data.CookieSetting;
 
 /**
- * HTTP server call.
+ * Server call for the HTTP protocol.
  */
 public interface HttpServerCall extends HttpCall
 {
@@ -43,54 +41,10 @@ public interface HttpServerCall extends HttpCall
    public UniformCall toUniform();
    
    /**
-    * Synchronizes from an uniform call.
-    * @param call The call to synchronize from.
+    * Commits after synchronization with an uniform call.
+    * @param call The call to synchronize with.
     */
-   public void fromUniform(UniformCall call);
-
-   
-   // ----------------------
-   // ---  Request part  ---
-   // ----------------------
-
-   /**
-    * Returns the request address.<br/>
-    * Corresponds to the IP address of the requesting client.
-    * @return The request address.
-    */
-   public String getRequestAddress();
-
-   /**
-    * Indicates if the request was made using a confidential mean.<br/>
-    * @return True if the request was made using a confidential mean.<br/>
-    */
-   public boolean isRequestConfidential();
-
-   /**
-    * Returns the request method. 
-    * @return The request method.
-    */
-   public String getRequestMethod();
-
-   /**
-    * Returns the full request URI. 
-    * @return The full request URI.
-    */
-   public String getRequestUri();
-   
-   /**
-    * Returns a request header value.
-    * @param name The name of the header.
-    * @return A header value.
-    */
-   public String getRequestHeader(String name);
-   
-   /**
-    * Returns a request date header value.
-    * @param name The name of the header.
-    * @return A header date.
-    */
-   public Date getRequestDateHeader(String name);
+   public void commitFrom(UniformCall call);
 
    /**
     * Returns the request entity channel if it exists.
@@ -104,68 +58,25 @@ public interface HttpServerCall extends HttpCall
     */
    public InputStream getRequestStream();
 
-   // -----------------------
-   // ---  Response part  ---
-   // -----------------------
-   
-   /**
-    * Returns the response status code.
-    * @return The response status code.
-    */
-   public int getResponseStatusCode();
-
    /**
     * Sets the response status code.
     * @param code The response status code.
-    */
-   public void setResponseStatus(int code);
-
-   /**
-    * Returns the response reason phrase.
-    * @return The response reason phrase.
-    */
-   public String getResponseReasonPhrase();
-
-   /**
-    * Sets the response reason phrase.
     * @param reason The response reason phrase.
     */
-   public void setResponseReasonPhrase(String reason);
+   public void setResponseStatus(int code, String reason);
    
    /**
-    * Returns a response header value.
-    * @param name The name of the header.
-    * @return A header value.
+    * Adds a response header.
+    * @param name The header's name.
+    * @param value The header's value.
     */
-   public String getResponseHeader(String name);
-   
+   public void addResponseHeader(String name, String value);
+
    /**
-    * Returns a response date header value.
-    * @param name The name of the header.
-    * @return A header date.
+    * Commits the response headers.<br/>
+    * Must be called before writing the response entity.
     */
-   public Date getResponseDateHeader(String name);
-   
-   /**
-    * Sets a response header value.
-    * @param name The name of the header.
-    * @param value The value of the header.
-    */
-   public void setResponseHeader(String name, String value);
-   
-   /**
-    * Sets a response date header value.
-    * @param name The name of the header.
-    * @param date The value of the header.
-    */
-   public void setResponseDateHeader(String name, long date);
-   
-   /**
-    * Sets a response cookie. 
-    * TO BE REMOVED WHEN COOKIE_WRITER IS COMPLETE
-    * @param cookie The cookie setting.
-    */
-   public void setResponseCookie(CookieSetting cookie);
+   public void commitResponseHeaders();
 
    /**
     * Returns the response channel if it exists.

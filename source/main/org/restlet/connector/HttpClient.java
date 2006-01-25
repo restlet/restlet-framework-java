@@ -29,7 +29,9 @@ public interface HttpClient extends Client
 {
    /**
     * Returns a new HTTP protocol call.
+    * @param method The request method.
+    * @param resourceUri The requested resource URI.
     * @return A new HTTP protocol call.
     */
-   public HttpClientCall createCall(String resourceUri);
+   public HttpClientCall createCall(String method, String resourceUri);
 }
