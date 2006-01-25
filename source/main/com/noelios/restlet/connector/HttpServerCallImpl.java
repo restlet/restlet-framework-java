@@ -22,7 +22,6 @@
 
 package com.noelios.restlet.connector;
 
-import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.Iterator;
@@ -30,46 +29,67 @@ import java.util.List;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
+import org.restlet.Manager;
 import org.restlet.UniformCall;
+import org.restlet.connector.HttpCall;
 import org.restlet.connector.HttpServerCall;
 import org.restlet.data.ChallengeRequest;
 import org.restlet.data.ChallengeResponse;
+import org.restlet.data.CharacterSetPref;
 import org.restlet.data.CharacterSets;
-import org.restlet.data.Conditions;
+import org.restlet.data.ConditionData;
+import org.restlet.data.Cookie;
 import org.restlet.data.CookieSetting;
-import org.restlet.data.Cookies;
+import org.restlet.data.Encoding;
+import org.restlet.data.EncodingPref;
+import org.restlet.data.Encodings;
+import org.restlet.data.Language;
+import org.restlet.data.LanguagePref;
 import org.restlet.data.Languages;
+import org.restlet.data.MediaType;
+import org.restlet.data.MediaTypePref;
 import org.restlet.data.MediaTypes;
-import org.restlet.data.Method;
 import org.restlet.data.Methods;
-import org.restlet.data.Preference;
+import org.restlet.data.Parameter;
+import org.restlet.data.PreferenceData;
 import org.restlet.data.Reference;
 import org.restlet.data.Representation;
 import org.restlet.data.RepresentationMetadata;
-import org.restlet.data.Security;
+import org.restlet.data.SecurityData;
+import org.restlet.data.Statuses;
 import org.restlet.data.Tag;
 
+import com.noelios.restlet.Engine;
 import com.noelios.restlet.UniformCallImpl;
 import com.noelios.restlet.data.ChallengeResponseImpl;
 import com.noelios.restlet.data.ChallengeSchemeImpl;
-import com.noelios.restlet.data.ConditionsImpl;
-import com.noelios.restlet.data.CookiesImpl;
+import com.noelios.restlet.data.CharacterSetPrefImpl;
+import com.noelios.restlet.data.ConditionDataImpl;
+import com.noelios.restlet.data.EncodingPrefImpl;
 import com.noelios.restlet.data.InputRepresentation;
-import com.noelios.restlet.data.MediaTypeImpl;
+import com.noelios.restlet.data.LanguagePrefImpl;
+import com.noelios.restlet.data.MediaTypePrefImpl;
 import com.noelios.restlet.data.MethodImpl;
-import com.noelios.restlet.data.PreferenceImpl;
-import com.noelios.restlet.data.PreferenceReaderImpl;
+import com.noelios.restlet.data.PreferenceDataImpl;
+import com.noelios.restlet.data.ReadableRepresentation;
 import com.noelios.restlet.data.ReferenceImpl;
-import com.noelios.restlet.data.SecurityImpl;
+import com.noelios.restlet.data.SecurityDataImpl;
 import com.noelios.restlet.data.TagImpl;
+import com.noelios.restlet.util.CookieReader;
+import com.noelios.restlet.util.CookieUtils;
+import com.noelios.restlet.util.DateUtils;
+import com.noelios.restlet.util.PreferenceReader;
 
 /**
- * Base class for HTTP based uniform calls.
+ * Implementation of a server call for the HTTP protocol.
  */
 public abstract class HttpServerCallImpl extends UniformCallImpl implements HttpServerCall
 {
    /** Obtain a suitable logger. */
-   private static Logger logger = Logger.getLogger("com.noelios.restlet.connector.HttpCallImpl");
+   private static Logger logger = Logger.getLogger("com.noelios.restlet.connector.HttpServerCallImpl");
+   
+   /** The response headers. */
+   protected List<Parameter> responseHeaders;
 
    /**
     * Converts to an uniform call.
@@ -78,76 +98,81 @@ public abstract class HttpServerCallImpl extends UniformCallImpl implements Http
    public UniformCall toUniform()
    {
       // Set the properties
-      setCharacterSetPrefs(extractCharacterSetPrefs());
       setClientAddress(getRequestAddress());
-      setClientName(extractClientName());
-      setCookies(extractCookies());
-      setInput(extractInput());
-      setLanguagePrefs(extractLanguagePrefs());
-      setMediaTypePrefs(extractMediaTypePrefs());
-      setMethod(extractMethod());
-      setReferrerRef(extractReferrer());
-      setResourceRef(extractResource());
-      setSecurity(extractSecurity());
-      setConditions(extractConditions());
+      setServerAddress(getResponseAddress());
+      setServerName(Engine.VERSION_HEADER);
+      setStatus(Statuses.SUCCESS_OK);
 
-      // Creates the list of paths
-      this.paths = new ArrayList<String>();
+      // Set the method
+      String method = getRequestMethod();
+      if(method != null)
+      {
+         if(method.equals(Methods.GET.getName())) setMethod(Methods.GET);
+         else if(method.equals(Methods.POST.getName())) setMethod(Methods.POST);
+         else if(method.equals(Methods.HEAD.getName())) setMethod(Methods.HEAD);
+         else if(method.equals(Methods.OPTIONS.getName())) setMethod(Methods.OPTIONS);
+         else if(method.equals(Methods.PUT.getName())) setMethod(Methods.PUT);
+         else if(method.equals(Methods.DELETE.getName())) setMethod(Methods.DELETE);
+         else if(method.equals(Methods.CONNECT.getName())) setMethod(Methods.CONNECT);
+         else if(method.equals(Methods.COPY.getName())) setMethod(Methods.COPY);
+         else if(method.equals(Methods.LOCK.getName())) setMethod(Methods.LOCK);
+         else if(method.equals(Methods.MKCOL.getName())) setMethod(Methods.MKCOL);
+         else if(method.equals(Methods.MOVE.getName())) setMethod(Methods.MOVE);
+         else if(method.equals(Methods.PROPFIND.getName())) setMethod(Methods.PROPFIND);
+         else if(method.equals(Methods.PROPPATCH.getName())) setMethod(Methods.PROPPATCH);
+         else if(method.equals(Methods.TRACE.getName())) setMethod(Methods.TRACE);
+         else if(method.equals(Methods.UNLOCK.getName())) setMethod(Methods.UNLOCK);
+         else setMethod(new MethodImpl(method));
+      }
 
-      // Creates the list of matches
-      this.matches = new ArrayList<String>();
+      // Set the resource reference
+      String resource = getRequestUri();
+      if(resource != null)
+      {
+         setResourceRef(new ReferenceImpl(resource));
 
-      // Set the absolute resource path as the initial path in the list.
-      getPaths().add(0, getResourceRef().toString(false, false));
-      
+         // Set the absolute resource path as the initial path in the list.
+         getResourcePaths().add(0, resource);
+      }
+
       return this;
    }
    
    /**
-    * Synchronizes from an uniform call.
-    * @param call The call to synchronize from.
+    * Commits after synchronization with an uniform call.
+    * @param call The call to synchronize with.
     */
-   public void fromUniform(UniformCall call)
+   public void commitFrom(UniformCall call)
    {
       try
       {
+         // Add the cookie settings
+         List<CookieSetting> cookies = call.getCookieSettings();
+         for(int i = 0; i < cookies.size(); i++)
+         {
+            addResponseHeader(HttpCall.HEADER_SET_COOKIE, CookieUtils.format(cookies.get(i)));
+         }
+         
+         // Set the redirection URI
+         if(call.getRedirectRef() != null)
+         {
+            addResponseHeader(HEADER_LOCATION, call.getRedirectRef().toString());
+         }
+
+         // Set the security data
+         if(call.getSecurity().getChallengeRequest() != null)
+         {
+            ChallengeRequest challenge = call.getSecurity().getChallengeRequest();
+            addResponseHeader(HEADER_WWW_AUTHENTICATE, challenge.getScheme().getTechnicalName() + " realm=\"" + challenge.getRealm() + '"');
+         }
+
+         // Set the server name again
+         addResponseHeader(HEADER_SERVER, call.getServerName());
+         
          // Set the status code in the response
          if(call.getStatus() != null)
          {
-            setResponseStatus(call.getStatus().getHttpCode());
-            setResponseReasonPhrase(call.getStatus().getDescription());
-   
-            switch(call.getStatus().getHttpCode())
-            {
-               case STATUS_SUCCESS_CREATED:
-               case STATUS_REDIRECTION_MULTIPLE_CHOICES:
-               case STATUS_REDIRECTION_MOVED_PERMANENTLY:
-               case STATUS_REDIRECTION_FOUND:
-               case STATUS_REDIRECTION_SEE_OTHER:
-               case STATUS_REDIRECTION_TEMPORARY_REDIRECT:
-                  // Extract the redirection URI from the call output
-                  if((call.getOutput() != null)
-                        && (call.getOutput().getMetadata().getMediaType().equals(MediaTypes.TEXT_URI)))
-                  {
-                     setResponseHeader(HEADER_LOCATION, call.getOutput().toString());
-                     call.setOutput(null);
-                  }
-               break;
-               
-               case STATUS_CLIENT_ERROR_UNAUTHORIZED:
-                  if((call.getSecurity() != null) && (call.getSecurity().getChallengeRequest() != null))
-                  {
-                     ChallengeRequest challenge = call.getSecurity().getChallengeRequest();
-                     setResponseHeader(HEADER_WWW_AUTHENTICATE, challenge.getScheme().getTechnicalName() + " realm=\"" + challenge.getRealm() + '"');
-                  }
-               break;
-            }
-         }
-         
-         // Set cookies
-         for(Iterator iter = call.getCookieSettings().iterator(); iter.hasNext();)
-         {
-            setResponseCookie((CookieSetting)iter.next());
+            setResponseStatus(call.getStatus().getHttpCode(), call.getStatus().getDescription());
          }
    
          // If an output was set during the call, copy it to the output stream;
@@ -155,6 +180,21 @@ public abstract class HttpServerCallImpl extends UniformCallImpl implements Http
          {
             RepresentationMetadata meta = call.getOutput().getMetadata();
    
+            if(meta.getExpirationDate() != null)
+            {
+               addResponseHeader(HEADER_EXPIRES, formatDate(meta.getExpirationDate(), false));
+            }
+            
+            if((meta.getEncoding() != null) && (!meta.getEncoding().equals(Encodings.IDENTITY)))
+            {
+               addResponseHeader(HEADER_CONTENT_ENCODING, meta.getEncoding().getName());
+            }
+            
+            if(meta.getLanguage() != null)
+            {
+               addResponseHeader(HEADER_CONTENT_LANGUAGE, meta.getLanguage().getName());
+            }
+            
             if(meta.getMediaType() != null)
             {
                StringBuilder contentType = new StringBuilder(meta.getMediaType().getName());
@@ -165,316 +205,551 @@ public abstract class HttpServerCallImpl extends UniformCallImpl implements Http
                   contentType.append("; charset=").append(meta.getCharacterSet().getName());
                }
    
-               setResponseHeader(HEADER_CONTENT_TYPE, contentType.toString());
-            }
-   
-            if(meta.getExpirationDate() != null)
-            {
-               setResponseDateHeader(HEADER_EXPIRES, meta.getExpirationDate().getTime());
+               addResponseHeader(HEADER_CONTENT_TYPE, contentType.toString());
             }
    
             if(meta.getModificationDate() != null)
             {
-               setResponseDateHeader(HEADER_LAST_MODIFIED, meta.getModificationDate().getTime());
+               addResponseHeader(HEADER_LAST_MODIFIED, formatDate(meta.getModificationDate(), false));
             }
    
             if(meta.getTag() != null)
             {
-               setResponseHeader(HEADER_ETAG, meta.getTag().getName());
+               addResponseHeader(HEADER_ETAG, meta.getTag().getName());
             }
-   
+            
             if(call.getOutput().getSize() != -1)
             {
-               setResponseHeader(HEADER_CONTENT_LENGTH, Long.toString(call.getOutput().getSize()));
+               addResponseHeader(HEADER_CONTENT_LENGTH, Long.toString(call.getOutput().getSize()));
             }
    
+            // Commit the headers
+            commitResponseHeaders();
+            
             // Send the output to the client
             call.getOutput().write(getResponseStream());
          }
-      }
-      catch(IOException ioe)
-      {
-         logger.log(Level.WARNING, "IO exception intercepted", ioe);
-         setResponseStatus(500);
-      }
-   }
-
-   /**
-    * Extracts the call's referrer from the HTTP header.
-    * @return The call's referrer.
-    */
-   protected Reference extractReferrer()
-   {
-      String referrer = getRequestHeader(HEADER_REFERRER);
-
-      if(referrer != null)
-      {
-         return new ReferenceImpl(referrer);
-      }
-      else
-      {
-         return null;
-      }
-   }
-
-   /**
-    * Extracts the client name from the HTTP header.
-    * @return The client name .
-    */
-   protected String extractClientName()
-   {
-      return getRequestHeader(HEADER_USER_AGENT);
-   }
-
-   /**
-    * Extracts the call's resource from the HTTP request.
-    * @return The call's resource.
-    */
-   protected Reference extractResource()
-   {
-      String resource = getRequestUri();
-
-      if(resource != null)
-      {
-         return new ReferenceImpl(resource);
-      }
-      else
-      {
-         return null;
-      }
-   }
-
-   /**
-    * Extracts the call's method from the HTTP request.
-    * @return The call's method.
-    */
-   protected Method extractMethod()
-   {
-      String method = getRequestMethod();
-      if(method == null) return null;
-      else if(method.equals(Methods.GET.getName())) return Methods.GET;
-      else if(method.equals(Methods.POST.getName())) return Methods.POST;
-      else if(method.equals(Methods.HEAD.getName())) return Methods.HEAD;
-      else if(method.equals(Methods.OPTIONS.getName())) return Methods.OPTIONS;
-      else if(method.equals(Methods.PUT.getName())) return Methods.PUT;
-      else if(method.equals(Methods.DELETE.getName())) return Methods.DELETE;
-      else if(method.equals(Methods.CONNECT.getName())) return Methods.CONNECT;
-      else if(method.equals(Methods.COPY.getName())) return Methods.COPY;
-      else if(method.equals(Methods.LOCK.getName())) return Methods.LOCK;
-      else if(method.equals(Methods.MKCOL.getName())) return Methods.MKCOL;
-      else if(method.equals(Methods.MOVE.getName())) return Methods.MOVE;
-      else if(method.equals(Methods.PROPFIND.getName())) return Methods.PROPFIND;
-      else if(method.equals(Methods.PROPPATCH.getName())) return Methods.PROPPATCH;
-      else if(method.equals(Methods.TRACE.getName())) return Methods.TRACE;
-      else if(method.equals(Methods.UNLOCK.getName())) return Methods.UNLOCK;
-      else return new MethodImpl(method);
-   }
-
-   /**
-    * Extracts the call's input representation from the HTTP request.
-    * @return The call's input representation.
-    */
-   protected Representation extractInput()
-   {
-      return new InputRepresentation(getRequestStream(),
-           new MediaTypeImpl(getRequestHeader(HEADER_CONTENT_TYPE)));
-   }
-
-   /**
-    * Extracts the call's media preferences from the HTTP request.
-    * @return The call's media preferences.
-    */
-   protected List<Preference> extractMediaTypePrefs()
-   {
-      List<Preference> result = null;
-      String accept = getRequestHeader(HEADER_ACCEPT);
-
-      if(accept != null)
-      {
-         PreferenceReaderImpl pr = new PreferenceReaderImpl(PreferenceReaderImpl.TYPE_MEDIA_TYPE, accept);
-         result = pr.readPreferences();
-      }
-      else
-      {
-         result = new ArrayList<Preference>();
-         result.add(new PreferenceImpl(MediaTypes.ALL));
-      }
-
-      return result;
-   }
-
-   /**
-    * Extracts the call's character set preferences from the HTTP request.
-    * @return The call's character set preferences.
-    */
-   protected List<Preference> extractCharacterSetPrefs()
-   {
-      // Implementation according to
-      // http://www.w3.org/Protocols/rfc2616/rfc2616-sec14.html#sec14.2
-      List<Preference> result = null;
-      String acceptCharset = getRequestHeader(HEADER_ACCEPT_CHARSET);
-
-      if(acceptCharset != null)
-      {
-         if(acceptCharset.length() == 0)
-         {
-            result = new ArrayList<Preference>();
-            result.add(new PreferenceImpl(CharacterSets.ISO_8859_1));
-         }
          else
          {
-            PreferenceReaderImpl pr = new PreferenceReaderImpl(PreferenceReaderImpl.TYPE_CHARACTER_SET,
-                  acceptCharset);
-            result = pr.readPreferences();
+            // Only commit the headers
+            commitResponseHeaders();
          }
+      }
+      catch(Exception e)
+      {
+         logger.log(Level.INFO, "Exception intercepted", e);
+         setResponseStatus(500, "An unexpected exception occured");
+      }
+   }
+   
+   /**
+    * Parses a date string.
+    * @param date The date string to parse.
+    * @param cookie Indicates if the date is in the cookie format.
+    * @return The parsed date.
+    */
+   public Date parseDate(String date, boolean cookie)
+   {
+      if(cookie)
+      {
+         return DateUtils.parse(date, DateUtils.FORMAT_RFC_1036);
       }
       else
       {
-         result = new ArrayList<Preference>();
-         result.add(new PreferenceImpl(CharacterSets.ALL));
+         return DateUtils.parse(date, DateUtils.FORMAT_RFC_1123);
       }
-
-      return result;
    }
-
+   
    /**
-    * Extracts the call's language preferences from the HTTP request.
-    * @return The call's language preferences.
+    * Formats a date as a header string.
+    * @param date The date to format.
+    * @param cookie Indicates if the date should be in the cookie format.
+    * @return The formatted date.
     */
-   protected List<Preference> extractLanguagePrefs()
+   public String formatDate(Date date, boolean cookie)
    {
-      List<Preference> result = null;
-      String acceptLanguage = getRequestHeader(HEADER_ACCEPT_LANGUAGE);
-
-      if(acceptLanguage != null)
+      if(cookie)
       {
-         PreferenceReaderImpl pr = new PreferenceReaderImpl(PreferenceReaderImpl.TYPE_LANGUAGE,
-               acceptLanguage);
-         result = pr.readPreferences();
+         return DateUtils.format(date, DateUtils.FORMAT_RFC_1036);
       }
       else
       {
-         result = new ArrayList<Preference>();
-         result.add(new PreferenceImpl(Languages.ALL));
+         return DateUtils.format(date, DateUtils.FORMAT_RFC_1123);
       }
-
-      return result;
+   }
+   
+   /**
+    * Returns the list of response headers.
+    * @return The list of response headers.
+    */
+   public List<Parameter> getResponseHeaders()
+   {
+      if(this.responseHeaders == null)
+      {
+         this.responseHeaders = new ArrayList<Parameter>();
+      }
+      
+      return this.responseHeaders;
    }
 
    /**
-    * Extracts the call's cookies from the HTTP header.
-    * @return The call's cookies.
+    * Adds a response header.
+    * @param name The header's name.
+    * @param value The header's value.
     */
-   protected Cookies extractCookies()
+   public void addResponseHeader(String name, String value)
    {
-      Cookies result = null;
-      String cookieHeader = getRequestHeader(HEADER_COOKIE);
-
-      if(cookieHeader != null)
-      {
-         result = new CookiesImpl(cookieHeader);
-      }
-
-      return result;
+      getResponseHeaders().add(Manager.createParameter(name, value));
    }
 
    /**
-    * Extracts the call's security data from the HTTP request.
-    * @return The call's security data.
+    * Returns the client name.
+    * @return The client name.
     */
-   protected Security extractSecurity()
+   public String getClientName()
    {
-      Security result = new SecurityImpl();
-      result.setConfidential(isRequestConfidential());
-
-      String authorization = getRequestHeader(HEADER_AUTHORIZATION);
-      if(authorization != null)
+      if(this.clientName == null)
       {
-         int space = authorization.indexOf(' ');
-
-         if(space != -1)
+         // Extract the header values
+         Parameter header;
+         for(Iterator<Parameter> iter = getRequestHeaders().iterator(); iter.hasNext(); )
          {
-            String scheme = authorization.substring(0, space);
-            String credentials = authorization.substring(space + 1);
-            ChallengeResponse challengeResponse = new ChallengeResponseImpl(new ChallengeSchemeImpl("HTTP_" + scheme, scheme), credentials);
-            result.setChallengeResponse(challengeResponse);
-         }
-      }
-
-      return result;
-   }
-
-   /**
-    * Extracts the call's conditions from the HTTP request.
-    * @return The call's conditions.
-    */
-   protected Conditions extractConditions()
-   {
-      Conditions result = new ConditionsImpl();
-
-      // Extract the If-Modified-Since date
-      Date ifModifiedSince = getRequestDateHeader(HEADER_IF_MODIFIED_SINCE);
-      if((ifModifiedSince != null) && (ifModifiedSince.getTime() != -1))
-      {
-         result.setModifiedSince(ifModifiedSince);
-      }
-
-      // Extract the If-Unmodified-Since date
-      Date ifUnmodifiedSince = getRequestDateHeader(HEADER_IF_UNMODIFIED_SINCE);
-      if((ifUnmodifiedSince != null) && (ifUnmodifiedSince.getTime() != -1))
-      {
-         result.setUnmodifiedSince(ifUnmodifiedSince);
-      }
-
-      // Extract the If-Match tags
-      List<Tag> match = null;
-      Tag current = null;
-      String matchHeader = getRequestHeader(HEADER_IF_MATCH);
-      if(matchHeader != null)
-      {
-         String[] tags = matchHeader.split(",");
-         for (int i = 0; i < tags.length; i++)
-         {
-            try
-            {
-               current = new TagImpl(tags[i]);
+            header = iter.next();
             
-               // Is it the first tag?
-               if(match == null) 
-               {
-                  match = new ArrayList<Tag>();
-                  result.setMatch(match);
-               }
-               
-               // Add the new tag
-               match.add(current);
-            }
-            catch(IllegalArgumentException iae)
+            if(header.getName().equalsIgnoreCase(HEADER_USER_AGENT))
             {
-               logger.log(Level.WARNING, iae.getMessage(), iae);
+               this.clientName = header.getValue();
             }
-         }
-      }
-
-      // Extract the If-None-Match tags
-      List<Tag> noneMatch = null;
-      String noneMatchHeader = getRequestHeader(HEADER_IF_NONE_MATCH);
-      if(noneMatchHeader != null)
-      {
-         String[] tags = noneMatchHeader.split(",");
-         for (int i = 0; i < tags.length; i++)
-         {
-            if(noneMatch == null) 
-            {
-               noneMatch = new ArrayList<Tag>();
-               result.setNoneMatch(noneMatch);
-            }
-            
-            noneMatch.add(new TagImpl(tags[i]));
          }
       }
       
-      return result;
+      return this.clientName;
+   }
+
+   /**
+    * Returns the condition data applying to this call.
+    * @return The condition data applying to this call.
+    */
+   public ConditionData getCondition()
+   {
+      if(this.condition == null) 
+      {
+         this.condition = new ConditionDataImpl();
+
+         // Extract the header values
+         Date ifModifiedSince = null;
+         Date ifUnmodifiedSince = null;
+         String ifMatchHeader = null;
+         String ifNoneMatchHeader = null;
+         Parameter header;
+         for(Iterator<Parameter> iter = getRequestHeaders().iterator(); iter.hasNext(); )
+         {
+            header = iter.next();
+            
+            if(header.getName().equalsIgnoreCase(HEADER_IF_MATCH))
+            {
+               ifMatchHeader = header.getValue();
+            }
+            else if(header.getName().equalsIgnoreCase(HEADER_IF_MODIFIED_SINCE))
+            {
+               ifModifiedSince = parseDate(header.getValue(), false);
+            }
+            else if(header.getName().equalsIgnoreCase(HEADER_IF_NONE_MATCH))
+            {
+               ifNoneMatchHeader = header.getValue();
+            }
+            else if(header.getName().equalsIgnoreCase(HEADER_IF_UNMODIFIED_SINCE))
+            {
+               ifUnmodifiedSince = parseDate(header.getValue(), false);
+            }
+         }
+         
+         // Set the If-Modified-Since date
+         if((ifModifiedSince != null) && (ifModifiedSince.getTime() != -1))
+         {
+            getCondition().setModifiedSince(ifModifiedSince);
+         }
+
+         // Set the If-Unmodified-Since date
+         if((ifUnmodifiedSince != null) && (ifUnmodifiedSince.getTime() != -1))
+         {
+            getCondition().setUnmodifiedSince(ifUnmodifiedSince);
+         }
+
+         // Set the If-Match tags
+         List<Tag> match = null;
+         Tag current = null;
+         if(ifMatchHeader != null)
+         {
+            String[] tags = ifMatchHeader.split(",");
+            for (int i = 0; i < tags.length; i++)
+            {
+               try
+               {
+                  current = new TagImpl(tags[i]);
+               
+                  // Is it the first tag?
+                  if(match == null) 
+                  {
+                     match = new ArrayList<Tag>();
+                     getCondition().setMatch(match);
+                  }
+                  
+                  // Add the new tag
+                  match.add(current);
+               }
+               catch(IllegalArgumentException iae)
+               {
+                  logger.log(Level.WARNING, iae.getMessage(), iae);
+               }
+            }
+         }
+
+         // Set the If-None-Match tags
+         List<Tag> noneMatch = null;
+         if(ifNoneMatchHeader != null)
+         {
+            String[] tags = ifNoneMatchHeader.split(",");
+            for (int i = 0; i < tags.length; i++)
+            {
+               if(noneMatch == null) 
+               {
+                  noneMatch = new ArrayList<Tag>();
+                  getCondition().setNoneMatch(noneMatch);
+               }
+               
+               noneMatch.add(new TagImpl(tags[i]));
+            }
+         }
+      }
+
+      return this.condition;
+   }
+
+   /**
+    * Returns the cookies provided by the client.
+    * @return The cookies provided by the client.
+    */
+   public List<Cookie> getCookies()
+   {
+      if(this.cookies == null) 
+      {
+         this.cookies = new ArrayList<Cookie>();
+
+         // Extract the header values
+         Parameter header;
+         for(Iterator<Parameter> iter = getRequestHeaders().iterator(); iter.hasNext(); )
+         {
+            header = iter.next();
+            if(header.getName().equalsIgnoreCase(HEADER_COOKIE))
+            {
+               try
+               {
+                  CookieReader cr = new CookieReader(header.getValue());
+                  Cookie current = cr.readNextCookie();
+                  while(current != null)
+                  {
+                     this.cookies.add(current);
+                     current = cr.readNextCookie();
+                  }
+               }
+               catch(Exception e)
+               {
+                  logger.log(Level.WARNING, "An exception occured during cookies parsing. Header: " + header.getValue(), e);
+               }
+            }
+         }
+      }
+      
+      return this.cookies;
+   }
+
+   /**
+    * Returns the representation provided by the client.
+    * @return The representation provided by the client.
+    */
+   public Representation getInput()
+   {
+      if((this.input == null) && ((getRequestStream() != null) || getRequestChannel() != null))
+      {
+         // Extract the header values
+         Encoding contentEncoding = null;
+         Language contentLanguage = null;
+         MediaType contentType = null;
+         Parameter header;
+         for(Iterator<Parameter> iter = getRequestHeaders().iterator(); iter.hasNext(); )
+         {
+            header = iter.next();
+            if(header.getName().equalsIgnoreCase(HEADER_CONTENT_ENCODING))
+            {
+               contentEncoding = Manager.createEncoding(header.getValue());
+            }
+            else if(header.getName().equalsIgnoreCase(HEADER_CONTENT_LANGUAGE))
+            {
+               contentLanguage = Manager.createLanguage(header.getValue());
+            }
+            else if(header.getName().equalsIgnoreCase(HEADER_CONTENT_TYPE))
+            {
+               contentType = Manager.createMediaType(header.getValue());
+            }
+         }
+
+         if(getRequestStream() != null)
+         {
+            this.input = new InputRepresentation(getRequestStream(), contentType);
+         }
+         else if(getRequestChannel() != null)
+         {
+            this.input = new ReadableRepresentation(getRequestChannel(), contentType);
+         }
+         
+         this.input.getMetadata().setEncoding(contentEncoding);
+         this.input.getMetadata().setLanguage(contentLanguage);
+      }
+      
+      return this.input;
+   }
+
+   /**
+    * Returns the preference data of the client.
+    * @return The preference data of the client.
+    */
+   public PreferenceData getPreference()
+   {
+      if(this.preference == null) 
+      {
+         this.preference = new PreferenceDataImpl();
+
+         // Extract the header values
+         String acceptCharset = null;
+         String acceptEncoding = null;
+         String acceptLanguage = null;
+         String acceptMediaType = null;
+         Parameter header;
+         for(Iterator<Parameter> iter = getRequestHeaders().iterator(); iter.hasNext(); )
+         {
+            header = iter.next();
+
+            if(header.getName().equalsIgnoreCase(HEADER_ACCEPT))
+            {
+               if(acceptMediaType == null)
+               {
+                  acceptMediaType = header.getValue();
+               }
+               else
+               {
+                  acceptMediaType = acceptMediaType + ", " + header.getValue();
+               }
+            }
+            else if(header.getName().equalsIgnoreCase(HEADER_ACCEPT_CHARSET))
+            {
+               if(acceptCharset == null)
+               {
+                  acceptCharset = header.getValue();
+               }
+               else
+               {
+                  acceptCharset = acceptCharset + ", " + header.getValue();
+               }
+            }
+            else if(header.getName().equalsIgnoreCase(HEADER_ACCEPT_ENCODING))
+            {
+               if(acceptEncoding == null)
+               {
+                  acceptEncoding = header.getValue();
+               }
+               else
+               {
+                  acceptEncoding = acceptEncoding + ", " + header.getValue();
+               }
+            }
+            else if(header.getName().equalsIgnoreCase(HEADER_ACCEPT_LANGUAGE))
+            {
+               if(acceptLanguage == null)
+               {
+                  acceptLanguage = header.getValue();
+               }
+               else
+               {
+                  acceptLanguage = acceptLanguage + ", " + header.getValue();
+               }
+            }
+         }         
+
+         if(acceptCharset != null)
+         {
+            // Implementation according to
+            // http://www.w3.org/Protocols/rfc2616/rfc2616-sec14.html#sec14.2
+            if(acceptCharset.length() == 0)
+            {
+               this.preference.getCharacterSets().add(new CharacterSetPrefImpl(CharacterSets.ISO_8859_1));
+            }
+            else
+            {
+               try
+               {
+                  PreferenceReader pr = new PreferenceReader(PreferenceReader.TYPE_CHARACTER_SET, acceptCharset);
+                  CharacterSetPref currentPref = (CharacterSetPref)pr.readPreference();
+                  while(currentPref != null)
+                  {
+                     this.preference.getCharacterSets().add(currentPref);
+                     currentPref = (CharacterSetPref)pr.readPreference();
+                  }
+               }
+               catch(Exception e)
+               {
+                  logger.log(Level.WARNING, "An exception occured during character set preferences parsing. Header: " + acceptCharset, e);
+               }
+            }
+         }
+         else
+         {
+            this.preference.getCharacterSets().add(new CharacterSetPrefImpl(CharacterSets.ALL));
+         }
+
+         if(acceptEncoding != null)
+         {
+            try
+            {
+               PreferenceReader pr = new PreferenceReader(PreferenceReader.TYPE_ENCODING, acceptEncoding);
+               EncodingPref currentPref = (EncodingPref)pr.readPreference();
+               while(currentPref != null)
+               {
+                  this.preference.getEncodings().add(currentPref);
+                  currentPref = (EncodingPref)pr.readPreference();
+               }
+            }
+            catch(Exception e)
+            {
+               logger.log(Level.WARNING, "An exception occured during encoding preferences parsing. Header: " + acceptEncoding, e);
+            }
+         }
+         else
+         {
+            this.preference.getEncodings().add(new EncodingPrefImpl(Encodings.ALL));
+         }
+
+         if(acceptLanguage != null)
+         {
+            try
+            {
+               PreferenceReader pr = new PreferenceReader(PreferenceReader.TYPE_LANGUAGE, acceptLanguage);
+               LanguagePref currentPref = (LanguagePref)pr.readPreference();
+               while(currentPref != null)
+               {
+                  this.preference.getLanguages().add(currentPref);
+                  currentPref = (LanguagePref)pr.readPreference();
+               }
+            }
+            catch(Exception e)
+            {
+               logger.log(Level.WARNING, "An exception occured during language preferences parsing. Header: " + acceptLanguage, e);
+            }
+         }
+         else
+         {
+            this.preference.getLanguages().add(new LanguagePrefImpl(Languages.ALL));
+         }
+
+         if(acceptMediaType != null)
+         {
+            try
+            {
+               PreferenceReader pr = new PreferenceReader(PreferenceReader.TYPE_MEDIA_TYPE, acceptMediaType);
+               MediaTypePref currentPref = (MediaTypePref)pr.readPreference();
+               while(currentPref != null)
+               {
+                  this.preference.getMediaTypes().add(currentPref);
+                  currentPref = (MediaTypePref)pr.readPreference();
+               }
+            }
+            catch(Exception e)
+            {
+               logger.log(Level.WARNING, "An exception occured during media type preferences parsing. Header: " + acceptMediaType, e);
+            }
+         }
+         else
+         {
+            this.preference.getMediaTypes().add(new MediaTypePrefImpl(MediaTypes.ALL));
+         }
+      }
+      
+      return this.preference;
+   }
+
+   /**
+    * Returns the referrer reference if available.
+    * @return The referrer reference.
+    */
+   public Reference getReferrerRef()
+   {
+      if(this.referrerRef == null)
+      {
+         // Extract the header values
+         Parameter header;
+         for(Iterator<Parameter> iter = getRequestHeaders().iterator(); (this.referrerRef == null) && iter.hasNext(); )
+         {
+            header = iter.next();
+            
+            if(header.getName().equalsIgnoreCase(HEADER_REFERRER))
+            {
+               this.referrerRef = new ReferenceImpl(header.getValue());
+            }
+         }
+      }
+      
+      return this.referrerRef;
+   }
+
+   /**
+    * Returns the security data related to this call.
+    * @return The security data related to this call.
+    */
+   public SecurityData getSecurity()
+   {
+      if(this.security == null) 
+      {
+         this.security = new SecurityDataImpl();
+
+         if(isConfidential()) 
+         {
+            getSecurity().setConfidential(isConfidential());
+         }
+         else
+         {
+            // We don't want to autocreate the security data just for this information
+            // Because that will by the default value of this property if read by someone.
+         }
+
+         // Extract the header values
+         String authorization = null;
+         Parameter header;
+         for(Iterator<Parameter> iter = getRequestHeaders().iterator(); (authorization == null) && iter.hasNext(); )
+         {
+            header = iter.next();
+            
+            if(header.getName().equalsIgnoreCase(HEADER_AUTHORIZATION))
+            {
+               authorization = header.getValue();
+            }
+         }
+
+         // Set the challenge response
+         if(authorization != null)
+         {
+            int space = authorization.indexOf(' ');
+
+            if(space != -1)
+            {
+               String scheme = authorization.substring(0, space);
+               String credentials = authorization.substring(space + 1);
+               ChallengeResponse challengeResponse = new ChallengeResponseImpl(new ChallengeSchemeImpl("HTTP_" + scheme, scheme), credentials);
+               getSecurity().setChallengeResponse(challengeResponse);
+            }
+         }
+      }
+
+      return this.security;
    }
    
 }

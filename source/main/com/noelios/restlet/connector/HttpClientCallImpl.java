@@ -26,49 +26,77 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
 import java.net.HttpURLConnection;
+import java.net.InetAddress;
 import java.net.ProtocolException;
 import java.net.URL;
+import java.net.UnknownHostException;
 import java.nio.channels.ReadableByteChannel;
 import java.nio.channels.WritableByteChannel;
-import java.util.Date;
+import java.util.ArrayList;
+import java.util.Iterator;
+import java.util.List;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
+import javax.net.ssl.HttpsURLConnection;
+
+import org.restlet.Manager;
 import org.restlet.connector.HttpClientCall;
+import org.restlet.data.Parameter;
 
 /**
- * Base class for HTTP based uniform calls.
+ * Implementation of a client call for the HTTP protocol.
  */
-public class HttpClientCallImpl implements HttpClientCall
+public class HttpClientCallImpl extends HttpCallImpl implements HttpClientCall
 {
    /** Obtain a suitable logger. */
    private static Logger logger = Logger.getLogger("com.noelios.restlet.connector.HttpClientCall");
 
+   /** The wrapped HTTP URL connection. */
    protected HttpURLConnection connection;
    
-   public HttpClientCallImpl(String resourceUri) throws IOException
+   /** The response headers. */
+   protected List<Parameter> responseHeaders;
+   
+   /**
+    * Constructor.
+    * @param method The method name.
+    * @param resourceUri The resource URI.
+    * @throws IOException
+    */
+   public HttpClientCallImpl(String method, String resourceUri) throws IOException
    {
-      URL url = new URL(resourceUri);
-      this.connection = (HttpURLConnection)url.openConnection();
+      this.requestMethod = method;
+      
+      if(resourceUri.startsWith("http"))
+      {
+         URL url = new URL(resourceUri);
+         this.connection = (HttpURLConnection)url.openConnection();
+         this.requestUri = resourceUri;
+         this.confidential = (this.connection instanceof HttpsURLConnection);
+      }
+      else
+      {
+         throw new IllegalArgumentException("Only HTTP or HTTPS resource URIs are allowed here");
+      }
+      
+      try
+      {
+         this.requestAddress = InetAddress.getLocalHost().getHostAddress();
+      }
+      catch(UnknownHostException e)
+      {
+         this.requestAddress = "127.0.0.1";
+      }
    }
    
+   /**
+    * Returns the connection.
+    * @return The connection.
+    */
    public HttpURLConnection getConnection()
    {
       return this.connection;
-   }
-   
-   
-   // ----------------------
-   // ---  Request part  ---
-   // ----------------------
-
-   /**
-    * Returns the request method. 
-    * @return The request method.
-    */
-   public String getRequestMethod()
-   {
-      return getConnection().getRequestMethod();
    }
 
    /**
@@ -77,43 +105,68 @@ public class HttpClientCallImpl implements HttpClientCall
     */
    public void setRequestMethod(String method)
    {
+      this.requestMethod = method;
+   }
+
+   /**
+    * Returns the modifiable list of response headers.
+    * @return The modifiable list of response headers.
+    */
+   public List<Parameter> getResponseHeaders()
+   {
+      if(this.responseHeaders == null) 
+      {
+         this.responseHeaders = new ArrayList<Parameter>();
+         
+         // Read the response headers
+         int i = 1;
+         String headerName = getConnection().getHeaderFieldKey(i);
+         String headerValue = getConnection().getHeaderField(i);
+         while(headerName != null)
+         {
+            this.responseHeaders.add(Manager.createParameter(headerName, headerValue));
+            i++;
+            headerName = getConnection().getHeaderFieldKey(i);
+            headerValue = getConnection().getHeaderField(i);
+         }
+      }
+      
+      return this.responseHeaders;
+   }
+
+   /**
+    * Adds a request header.
+    * @param name The header's name.
+    * @param value The header's value.
+    */
+   public void addRequestHeader(String name, String value)
+   {
+      getRequestHeaders().add(Manager.createParameter(name, value));
+   }
+
+   /**
+    * Commits the request headers.<br/>
+    * Must be called before writing the request entity.
+    */
+   public void commitRequestHeaders()
+   {
+      // Set the request method
       try
       {
-         getConnection().setRequestMethod(method);
+         getConnection().setRequestMethod(getRequestMethod());
       }
       catch(ProtocolException e)
       {
          logger.log(Level.WARNING, "Unable to set method", e);
       }
-   }
 
-   /**
-    * Returns the full request URI. 
-    * @return The full request URI.
-    */
-   public String getRequestUri()
-   {
-      return getConnection().getURL().toString();
-   }
-   
-   /**
-    * Returns a request header value.
-    * @param name The name of the header.
-    * @return A header value.
-    */
-   public String getRequestHeader(String name)
-   {
-      return getConnection().getRequestProperty(name);
-   }
-   
-   /**
-    * Returns a request header value.
-    * @param name The header name.
-    * @param value The header value.
-    */
-   public void setRequestHeader(String name, String value)
-   {
-      getConnection().setRequestProperty(name, value);
+      // Set the request headers
+      Parameter header;
+      for(Iterator<Parameter> iter = getRequestHeaders().iterator(); iter.hasNext();)
+      {
+         header = iter.next();
+         getConnection().addRequestProperty(header.getName(), header.getValue());
+      }
    }
 
    /**
@@ -142,9 +195,15 @@ public class HttpClientCallImpl implements HttpClientCall
       }
    }
 
-   // -----------------------
-   // ---  Response part  ---
-   // -----------------------
+   /**
+    * Returns the response address.<br/>
+    * Corresponds to the IP address of the responding server.
+    * @return The response address.
+    */
+   public String getResponseAddress()
+   {
+      return getConnection().getURL().getHost();
+   }
    
    /**
     * Returns the response status code.
@@ -177,35 +236,6 @@ public class HttpClientCallImpl implements HttpClientCall
          return null;
       }
    }
-   
-   /**
-    * Returns a response header value.
-    * @param name The name of the header.
-    * @return A header value.
-    */
-   public String getResponseHeader(String name)
-   {
-      return getConnection().getHeaderField(name);
-   }
-   
-   /**
-    * Returns a response date header value.
-    * @param name The name of the header.
-    * @return A header date.
-    */
-   public Date getResponseDateHeader(String name)
-   {
-      long result = getConnection().getHeaderFieldDate(name, -1);
-      
-      if(result != -1) 
-      {
-         return new Date(result);
-      }
-      else
-      {
-         return null;
-      }
-   }
 
    /**
     * Returns the response channel if it exists.
@@ -232,5 +262,4 @@ public class HttpClientCallImpl implements HttpClientCall
          return null;
       }
    }
-   
 }
