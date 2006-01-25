@@ -22,12 +22,13 @@
 
 package com.noelios.restlet.tutorial;
 
+import org.restlet.Manager;
 import org.restlet.UniformCall;
 import org.restlet.UniformInterface;
+import org.restlet.connector.HttpServer;
 import org.restlet.data.MediaTypes;
 
 import com.noelios.restlet.data.StringRepresentation;
-import com.noelios.restlet.ext.jetty.JettyServer;
 
 /**
  * Listening to Web browsers
@@ -38,9 +39,6 @@ public class Tutorial03
    {
       try
       {
-         // Registering the Restlet API implementation
-         com.noelios.restlet.Engine.register();
-
          // Creating a minimal handler returning "Hello World"
          UniformInterface handler = new UniformInterface()
          {
@@ -51,7 +49,7 @@ public class Tutorial03
          };
 
          // Create the HTTP server and listen on port 8182
-         new JettyServer("My Web server", handler, JettyServer.LISTENER_HTTP, 8182).start();
+         Manager.createHttpServer("My server", handler, HttpServer.PROTOCOL_HTTP, null, 8182).start();
       }
       catch(Exception e)
       {

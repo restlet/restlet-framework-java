@@ -23,14 +23,15 @@
 package com.noelios.restlet.tutorial;
 
 import org.restlet.AbstractRestlet;
+import org.restlet.Manager;
 import org.restlet.Restlet;
 import org.restlet.UniformCall;
 import org.restlet.component.DefaultRestletContainer;
 import org.restlet.component.RestletContainer;
+import org.restlet.connector.HttpServer;
 import org.restlet.data.MediaTypes;
 
 import com.noelios.restlet.data.StringRepresentation;
-import com.noelios.restlet.ext.jetty.JettyServer;
 
 /**
  * Restlets servers and containers
@@ -41,16 +42,13 @@ public class Tutorial05
    {
       try
       {
-         // Registering the Restlet API implementation
-         com.noelios.restlet.Engine.register();
-
          // Create a new Restlet container
          RestletContainer myContainer = new DefaultRestletContainer("My container");
 
          // Create the HTTP server connector, then add it as a server connector
          // to the Restlet container. Note that the container is the call handler.
-         JettyServer httpServer = new JettyServer("My connector", myContainer, JettyServer.LISTENER_HTTP, 8182);
-         myContainer.addServer(httpServer);
+         HttpServer server = Manager.createHttpServer("My connector", myContainer, HttpServer.PROTOCOL_HTTP, null, 8182);
+         myContainer.addServer(server);
 
          // Create a new Restlet that will display some path information.
          Restlet myRestlet = new AbstractRestlet(myContainer)
@@ -58,8 +56,8 @@ public class Tutorial05
                public void handle(UniformCall call)
                {
                   // Print the requested URI path
-                  String output = "Resource path = " + call.getPath(0, false) + '\n' +
-                                  "Restlet  path = " + call.getPath(1, false);
+                  String output = "Resource path = " + call.getResourcePath(0, false) + '\n' +
+                                  "Restlet path = " + call.getResourcePath(1, false);
 
                   call.setOutput(new StringRepresentation(output, MediaTypes.TEXT_PLAIN));
                }

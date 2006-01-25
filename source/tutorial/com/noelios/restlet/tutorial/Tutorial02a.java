@@ -24,7 +24,8 @@ package com.noelios.restlet.tutorial;
 
 import java.io.IOException;
 
-import com.noelios.restlet.connector.HttpClientImpl;
+import org.restlet.Manager;
+import org.restlet.connector.HttpClient;
 
 /**
  * Retrieving the content of a Web page
@@ -35,11 +36,8 @@ public class Tutorial02a
    {
       try
       {
-         // Registering the Restlet API implementation
-         com.noelios.restlet.Engine.register();
-
          // Outputting the content of a Web page
-         HttpClientImpl client = new HttpClientImpl("My Web client");
+         HttpClient client = Manager.createHttpClient("My client");
          client.get("http://www.restlet.org").getOutput().write(System.out);
       }
       catch(IOException e)

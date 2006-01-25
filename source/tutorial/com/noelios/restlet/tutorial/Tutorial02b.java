@@ -26,11 +26,9 @@ import java.io.IOException;
 
 import org.restlet.Manager;
 import org.restlet.UniformCall;
+import org.restlet.connector.HttpClient;
 import org.restlet.data.Methods;
-import org.restlet.data.Reference;
 import org.restlet.data.Representation;
-
-import com.noelios.restlet.connector.HttpClientImpl;
 
 /**
  * Retrieving the content of a Web page (detailled)
@@ -41,17 +39,14 @@ public class Tutorial02b
    {
       try
       {
-         // Registering the Restlet API implementation
-         com.noelios.restlet.Engine.register();
-
          // Prepare the REST call
          UniformCall call = Manager.createCall();
-         Reference uri = Manager.createReference("http://www.restlet.org");
-         call.setResourceRef(uri);
+         call.setResourceRef(Manager.createReference("http://www.restlet.org"));
+         call.setReferrerRef(Manager.createReference("http://www.mysite.org"));
          call.setMethod(Methods.GET);
 
          // Ask to the HTTP client connector to handle the call
-         HttpClientImpl client = new HttpClientImpl("My Web client");
+         HttpClient client = Manager.createHttpClient("My client");
          client.handle(call);
 
          // Output the result representation on the JVM console

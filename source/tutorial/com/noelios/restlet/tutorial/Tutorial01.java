@@ -29,7 +29,20 @@ public class Tutorial01
 {
    public static void main(String[] args)
    {
-      // Registering a Restlet API implementation
+      // Multiple options to register a Restlet API implementation
+      
+      // 1) By default, if no other implementation is registered,
+      //    the Noelios Restlet Engine is automatically used.
+            
+      // 2) Manually registers an implementation by calling 
+      //    the static register method on the implementation factory
       com.noelios.restlet.Engine.register();
+      
+      // 3) Set the factory class name in a system property
+      //    a) Manually in your main method 
+      System.setProperty("org.restlet.impl", "com.noelios.restlet.Engine");
+
+      //    b) As a JVM argument
+      // java -cp $CLASS_PATH -Dorg.restlet.impl=com.noelios.restlet.Engine $MAIN_CLASS $ARGS
    }
 }
