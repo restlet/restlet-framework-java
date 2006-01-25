@@ -33,30 +33,6 @@ import org.restlet.data.*;
 public interface UniformCall
 {
    /**
-    * Returns the list of paths dividing the initial resource path. The list is sorted according to the
-    * restlets hierarchy.
-    * @return The list of restlets paths.
-    */
-   public List<String> getPaths();
-
-   /**
-    * Returns one of the paths in the list. The first path is the resource path relatively to the current
-    * restlet. The second path is the current reslet path relatively to the parent restlet. All the hierarchy
-    * of restlet paths is also available depending on the restlet tree.
-    * @param index Index of the path in the list.
-    * @param strip Indicates if leading and ending slashes should be stripped.
-    * @return The path at the given index.
-    */
-   public String getPath(int index, boolean strip);
-
-   /**
-    * Returns the list of substring matched in the current restlet's path.
-    * @return The list of substring matched.
-    * @see <a href="http://java.sun.com/j2se/1.5.0/docs/api/java/util/regex/Matcher.html#group(int)">Matcher.group()</a>
-    */
-   public List<String> getMatches();
-   
-   /**
     * Returns the best variant representation for a given resource according the the client preferences.
     * @param resource The resource for which the best representation needs to be set.
     * @param fallbackLanguage The language to use if no preference matches.
@@ -66,83 +42,99 @@ public interface UniformCall
    public RepresentationMetadata getBestVariant(Resource resource, Language fallbackLanguage);
 
    /**
-    * Returns the character set preferences of the user agent.
-    * @return The character set preferences of the user agent.
-    */
-   public List<Preference> getCharacterSetPrefs();
-
-   /**
-    * Returns the client's IP address.
-    * @return The client's IP address.
+    * Returns the client IP address.
+    * @return The client IP address.
     */
    public String getClientAddress();
 
    /**
-    * Returns the client's name (ex: user agent name).
-    * @return The client's name.
+    * Returns the client name (ex: user agent name).
+    * @return The client name.
     */
    public String getClientName();
 
    /**
-    * Returns the conditions applying to this call.
-    * @return The conditions applying to this call.
+    * Returns the condition data applying to this call.
+    * @return The condition data applying to this call.
     */
-   public Conditions getConditions();
+   public ConditionData getCondition();
    
    /**
-    * Returns the cookies sent by the user agent.
-    * @return The cookies sent by the user agent.
+    * Returns the cookies provided by the client.
+    * @return The cookies provided by the client.
     */
-   public Cookies getCookies();
+   public List<Cookie> getCookies();
 
    /**
-    * Returns the list of cookies to be set in the user agent.<br/>
-    * Cookie settings can be browsed, added or removed.
-    * @return The list of cookies to be set in the user agent.
+    * Returns the cookies provided to the client.
+    * @return The cookies provided to the client.
     */
    public List<CookieSetting> getCookieSettings();
 
    /**
-    * Returns the representation received from the user agent.
-    * @return The representation received from the user agent.
+    * Returns the representation provided by the client.
+    * @return The representation provided by the client.
     */
    public Representation getInput();
 
    /**
-    * Returns the language preferences of the user agent.
-    * @return The language preferences of the user agent.
-    */
-   public List<Preference> getLanguagePrefs();
-
-   /**
-    * Returns the media type preferences of the user agent.
-    * @return The media type preferences of the user agent.
-    */
-   public List<Preference> getMediaTypePrefs();
-
-   /**
-    * Returns the method called.
-    * @return The method called.
+    * Returns the call method.
+    * @return The call method.
     */
    public Method getMethod();
 
    /**
-    * Returns the representation to send to the user agent
-    * @return The representation to send to the user agent
+    * Returns the representation provided by the server.
+    * @return The representation provided by the server.
     */
    public Representation getOutput();
 
    /**
-    * Returns the referrer reference if available.<br/>
-    * This reference shouldn't be modified during the call handling.
+    * Returns the preference data of the client.
+    * @return The preference data of the client.
+    */
+   public PreferenceData getPreference();
+   
+   /**
+    * Returns the reference for redirections or resource creations.
+    * @return The redirect reference.
+    */
+   public Reference getRedirectRef();
+
+   /**
+    * Returns the referrer reference if available.
     * @return The referrer reference.
     */
    public Reference getReferrerRef();
 
    /**
-    * Returns the resource's reference.<br/>
-    * This reference shouldn't be modified during the call handling, exceptio for redirect rewritings.
-    * @return The resource's reference.
+    * Returns the list of substrings matched in the current resource path.
+    * @return The list of substrings matched.
+    * @see <a href="http://java.sun.com/j2se/1.5.0/docs/api/java/util/regex/Matcher.html#group(int)">Matcher.group()</a>
+    */
+   public List<String> getResourceMatches();
+
+   /**
+    * Returns a path in the list of resource paths.<br/>
+    * The first path is the resource path relatively to the current maplet.<br/>
+    * The second path is the current maplet path relatively to the parent maplet.<br/> 
+    * All the list of remaining maplet paths is also available.
+    * @param index Index of the path in the list.
+    * @param strip Indicates if leading and ending slashes should be stripped.
+    * @return The path at the given index.
+    */
+   public String getResourcePath(int index, boolean strip);
+
+   /**
+    * Returns the list of paths dividing the initial resource path.<br/>
+    * The list is sorted according to the maplets hierarchy.
+    * @return The list of paths.
+    */
+   public List<String> getResourcePaths();
+
+   /**
+    * Returns the resource reference.
+    * @return The resource reference.
     */
    public Reference getResourceRef();
 
@@ -150,11 +142,23 @@ public interface UniformCall
     * Returns the security data related to this call.
     * @return The security data related to this call.
     */
-   public Security getSecurity();
+   public SecurityData getSecurity();
 
    /**
-    * Returns the result status.
-    * @return The result status.
+    * Returns the server IP address.
+    * @return The server IP address.
+    */
+   public String getServerAddress();
+
+   /**
+    * Returns the server name (ex: web server name).
+    * @return The server name.
+    */
+   public String getServerName();
+
+   /**
+    * Returns the server status.
+    * @return The server status.
     */
    public Status getStatus();
 
@@ -169,52 +173,22 @@ public interface UniformCall
    public void setBestOutput(Resource resource, Language fallbackLanguage);
 
    /**
-    * Sets the character set preferences of the user agent.
-    * @param prefs The character set preferences of the user agent.
-    */
-   public void setCharacterSetPrefs(List<Preference> prefs);
-
-   /**
-    * Sets the client's IP address.
-    * @param address The client's IP address.
+    * Sets the client IP address.
+    * @param address The client IP address.
     */
    public void setClientAddress(String address);
 
    /**
-    * Sets the client's name (ex: user agent name).
-    * @param name The client's name.
+    * Sets the client name (ex: user agent name).
+    * @param name The client name.
     */
    public void setClientName(String name);
 
    /**
-    * Sets the conditions applying to this call.
-    * @param conditions The conditions applying to this call.
-    */
-   public void setConditions(Conditions conditions);
-
-   /**
-    * Sets the cookies sent by the user agent.
-    * @param cookies The cookies sent by the user agent.
-    */
-   public void setCookies(Cookies cookies);
-
-   /**
-    * Sets the representation received from the user agent.
-    * @param input The representation received from the user agent.
+    * Sets the representation provided by the client.
+    * @param input The representation provided by the client.
     */
    public void setInput(Representation input);
-
-   /**
-    * Sets the language preferences of the user agent.
-    * @param prefs The language preferences of the user agent.
-    */
-   public void setLanguagePrefs(List<Preference> prefs);
-
-   /**
-    * Sets the media type preferences of the user agent.
-    * @param prefs The media type preferences of the user agent.
-    */
-   public void setMediaTypePrefs(List<Preference> prefs);
 
    /**
     * Sets the method called.
@@ -223,43 +197,45 @@ public interface UniformCall
    public void setMethod(Method method);
 
    /**
-    * Sets the representation to send to the user agent.
-    * @param output The representation to send to the user agent.
+    * Sets the representation provided by the server.
+    * @param output The representation provided by the server.
     */
    public void setOutput(Representation output);
 
    /**
-    * Sets the referrer reference if available.<br/>
-    * This reference shouldn't be modified during the call handling.
+    * Sets the reference for redirections or resource creations.
+    * @param redirectRef The redirect reference.
+    */
+   public void setRedirectRef(Reference redirectRef);
+
+   /**
+    * Sets the referrer reference if available.
     * @param referrerRef The referrer reference.
     */
    public void setReferrerRef(Reference referrerRef);
 
    /**
-    * Sets the resource's reference.<br/>
-    * This reference shouldn't be modified during the call handling, except for redirection rewriting.
-    * @param resourceRef The resource's reference.
+    * Sets the resource reference.
+    * @param resourceRef The resource reference.
     */
    public void setResourceRef(Reference resourceRef);
 
    /**
-    * Sets the security data related to this call.
-    * @param security The security data related to this call.
+    * Sets the server IP address.
+    * @param address The server IP address.
     */
-   public void setSecurity(Security security);
+   public void setServerAddress(String address);
 
    /**
-    * Sets the result status.
-    * @param status The result status to set.
+    * Sets the server name (ex: web server name).
+    * @param name The server name.
+    */
+   public void setServerName(String name);
+
+   /**
+    * Sets the server status.
+    * @param status The server status to set.
     */
    public void setStatus(Status status);
-
-   /**
-    * Asks the user agent to redirect itself to the given URI.<br/>
-    * Modifies the result output and status properties.
-    * @param targetURI The target URI.
-    * @param permanent Indicates if this is a permanent redirection.
-    */
-   public void setRedirect(String targetURI, boolean permanent);
 
 }

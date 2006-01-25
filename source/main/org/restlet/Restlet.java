@@ -32,11 +32,9 @@ import org.restlet.component.RestletContainer;
  */
 public interface Restlet extends UniformInterface
 {
-   
    /**
     * Returns the container.
     * @return The container.
     */
    public RestletContainer getContainer();
-
 }

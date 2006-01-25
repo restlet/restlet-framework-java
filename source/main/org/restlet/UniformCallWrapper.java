@@ -27,8 +27,8 @@ import java.util.List;
 import org.restlet.data.*;
 
 /**
- * Uniform call wrapper. Useful for application developer who need to enrich the call with application related
- * things.
+ * Uniform call wrapper.<br/>
+ * Useful for application developer who need to enrich the call with application related things.
  * @see <a href="http://c2.com/cgi/wiki?DecoratorPattern">The decorator (aka wrapper) pattern</a>
  */
 public class UniformCallWrapper implements UniformCall
@@ -45,40 +45,6 @@ public class UniformCallWrapper implements UniformCall
       this.wrappedCall = wrappedCall;
    }
 
-
-   /**
-    * Returns the list of restlets paths. The list is sorted according to the handlers hierarchy.
-    * @return The list of restlets paths.
-    */
-   public List<String> getPaths()
-   {
-      return getWrappedCall().getPaths();
-   }
-
-   /**
-    * Returns one of the paths in the list. The first path is the resource path relatively to the current
-    * restlet. The second path is the current reslet path relatively to the parent restlet. All the hierarchy
-    * of restlet paths is also available depending on the restlet tree.
-    * @param index Index of the path in the list.
-    * @param strip Indicates if leading and ending slashes should be stripped.
-    * @return The path at the given index.
-    */
-   public String getPath(int index, boolean strip)
-   {
-      return getWrappedCall().getPath(index, strip);
-   }
-
-   /**
-    * Returns the list of substring matched in the current restlet's path.
-    * @return The list of substring matched.
-    * @see <a href="http://java.sun.com/j2se/1.5.0/docs/api/java/util/regex/Matcher.html#group(int)">Matcher.group()</a>
-    */
-   public List<String> getMatches()
-   {
-      return getWrappedCall().getMatches();
-   }
-   
-   
    /**
     * Returns the best variant representation for a given resource according the the client preferences.
     * @param resource The resource for which the best representation needs to be set.
@@ -92,17 +58,8 @@ public class UniformCallWrapper implements UniformCall
    }
 
    /**
-    * Returns the character set preferences of the user agent.
-    * @return The character set preferences of the user agent.
-    */
-   public List<Preference> getCharacterSetPrefs()
-   {
-      return getWrappedCall().getCharacterSetPrefs();
-   }
-
-   /**
-    * Returns the client's IP address.
-    * @return The client's IP address.
+    * Returns the client IP address.
+    * @return The client IP address.
     */
    public String getClientAddress()
    {
@@ -110,8 +67,8 @@ public class UniformCallWrapper implements UniformCall
    }
 
    /**
-    * Returns the client's name (ex: user agent name).
-    * @return The client's name.
+    * Returns the client name (ex: user agent name).
+    * @return The client name.
     */
    public String getClientName()
    {
@@ -119,27 +76,26 @@ public class UniformCallWrapper implements UniformCall
    }
 
    /**
-    * Returns the conditions applying to this call if any.
-    * @return The conditions applying to this call if any.
+    * Returns the condition data applying to this call.
+    * @return The condition data applying to this call.
     */
-   public Conditions getConditions()
+   public ConditionData getCondition()
    {
-      return getWrappedCall().getConditions();
+      return getWrappedCall().getCondition();
    }
 
    /**
-    * Returns the cookies sent by the user agent.
-    * @return The cookies sent by the user agent.
+    * Returns the cookies provided by the client.
+    * @return The cookies provided by the client.
     */
-   public Cookies getCookies()
+   public List<Cookie> getCookies()
    {
       return getWrappedCall().getCookies();
    }
 
    /**
-    * Returns the list of cookies to be set in the user agent. Cookie settings can be browsed, added or
-    * removed.
-    * @return The list of cookies to be set in the user agent.
+    * Returns the cookies provided to the client.
+    * @return The cookies provided to the client.
     */
    public List<CookieSetting> getCookieSettings()
    {
@@ -147,8 +103,8 @@ public class UniformCallWrapper implements UniformCall
    }
 
    /**
-    * Returns the representation received from the user agent.
-    * @return The representation received from the user agent.
+    * Returns the representation provided by the client.
+    * @return The representation provided by the client.
     */
    public Representation getInput()
    {
@@ -156,26 +112,8 @@ public class UniformCallWrapper implements UniformCall
    }
 
    /**
-    * Returns the language preferences of the user agent.
-    * @return The language preferences of the user agent.
-    */
-   public List<Preference> getLanguagePrefs()
-   {
-      return getWrappedCall().getLanguagePrefs();
-   }
-
-   /**
-    * Returns the media type preferences of the user agent.
-    * @return The media type preferences of the user agent.
-    */
-   public List<Preference> getMediaTypePrefs()
-   {
-      return getWrappedCall().getMediaTypePrefs();
-   }
-
-   /**
-    * Returns the method called.
-    * @return The method called.
+    * Returns the call method.
+    * @return The call method.
     */
    public Method getMethod()
    {
@@ -183,8 +121,8 @@ public class UniformCallWrapper implements UniformCall
    }
 
    /**
-    * Returns the representation to send to the user agent
-    * @return The representation to send to the user agent
+    * Returns the representation provided by the server.
+    * @return The representation provided by the server.
     */
    public Representation getOutput()
    {
@@ -192,8 +130,25 @@ public class UniformCallWrapper implements UniformCall
    }
 
    /**
-    * Returns the referrer reference if available.<br/>
-    * This reference shouldn't be modified during the call handling.
+    * Returns the preference data of the client.
+    * @return The preference data of the client.
+    */
+   public PreferenceData getPreference()
+   {
+      return getWrappedCall().getPreference();
+   }
+
+   /**
+    * Returns the reference for redirections or resource creations.
+    * @return The redirect reference.
+    */
+   public Reference getRedirectRef()
+   {
+      return getWrappedCall().getRedirectRef();
+   }
+
+   /**
+    * Returns the referrer reference if available.
     * @return The referrer reference.
     */
    public Reference getReferrerRef()
@@ -202,9 +157,42 @@ public class UniformCallWrapper implements UniformCall
    }
 
    /**
-    * Returns the resource's reference.<br/>
-    * This reference shouldn't be modified during the call handling, exceptio for redirect rewritings.
-    * @return The resource's reference.
+    * Returns the list of substrings matched in the current resource path.
+    * @return The list of substrings matched.
+    * @see <a href="http://java.sun.com/j2se/1.5.0/docs/api/java/util/regex/Matcher.html#group(int)">Matcher.group()</a>
+    */
+   public List<String> getResourceMatches()
+   {
+      return getWrappedCall().getResourceMatches();
+   }
+
+   /**
+    * Returns a path in the list of resource paths.<br/>
+    * The first path is the resource path relatively to the current maplet.<br/>
+    * The second path is the current maplet path relatively to the parent maplet.<br/> 
+    * All the list of remaining maplet paths is also available.
+    * @param index Index of the path in the list.
+    * @param strip Indicates if leading and ending slashes should be stripped.
+    * @return The path at the given index.
+    */
+   public String getResourcePath(int index, boolean strip)
+   {
+      return getWrappedCall().getResourcePath(index, strip);
+   }
+
+   /**
+    * Returns the list of paths dividing the initial resource path.<br/>
+    * The list is sorted according to the maplets hierarchy.
+    * @return The list of paths.
+    */
+   public List<String> getResourcePaths()
+   {
+      return getWrappedCall().getResourcePaths();
+   }
+
+   /**
+    * Returns the resource reference.
+    * @return The resource reference.
     */
    public Reference getResourceRef()
    {
@@ -215,14 +203,32 @@ public class UniformCallWrapper implements UniformCall
     * Returns the security data related to this call.
     * @return The security data related to this call.
     */
-   public Security getSecurity()
+   public SecurityData getSecurity()
    {
       return getWrappedCall().getSecurity();
    }
 
    /**
-    * Returns the result status.
-    * @return The result status.
+    * Returns the server IP address.
+    * @return The server IP address.
+    */
+   public String getServerAddress()
+   {
+      return getWrappedCall().getServerAddress();
+   }
+
+   /**
+    * Returns the server name (ex: web server name).
+    * @return The server name.
+    */
+   public String getServerName()
+   {
+      return getWrappedCall().getServerName();
+   }
+
+   /**
+    * Returns the server status.
+    * @return The server status.
     */
    public Status getStatus()
    {
@@ -252,17 +258,8 @@ public class UniformCallWrapper implements UniformCall
    }
 
    /**
-    * Sets the character set preferences of the user agent.
-    * @param prefs The character set preferences of the user agent.
-    */
-   public void setCharacterSetPrefs(List<Preference> prefs)
-   {
-      getWrappedCall().setCharacterSetPrefs(prefs);
-   }
-
-   /**
-    * Sets the client's IP address.
-    * @param address The client's IP address.
+    * Sets the client IP address.
+    * @param address The client IP address.
     */
    public void setClientAddress(String address)
    {
@@ -270,8 +267,8 @@ public class UniformCallWrapper implements UniformCall
    }
 
    /**
-    * Sets the client's name (ex: user agent name).
-    * @param name The client's name.
+    * Sets the client name (ex: user agent name).
+    * @param name The client name.
     */
    public void setClientName(String name)
    {
@@ -279,47 +276,12 @@ public class UniformCallWrapper implements UniformCall
    }
 
    /**
-    * Sets the conditions applying to this call if any.
-    * @param conditions The conditions applying to this call if any.
-    */
-   public void setConditions(Conditions conditions)
-   {
-      getWrappedCall().setConditions(conditions);      
-   }
-
-   /**
-    * Sets the cookies sent by the user agent.
-    * @param cookies The cookies sent by the user agent.
-    */
-   public void setCookies(Cookies cookies)
-   {
-      getWrappedCall().setCookies(cookies);
-   }
-
-   /**
-    * Sets the content received in the request. param input The content received in the request.
+    * Sets the representation provided by the client.
+    * @param input The representation provided by the client.
     */
    public void setInput(Representation input)
    {
       getWrappedCall().setInput(input);
-   }
-
-   /**
-    * Sets the language preferences of the user agent.
-    * @param prefs The language preferences of the user agent.
-    */
-   public void setLanguagePrefs(List<Preference> prefs)
-   {
-      getWrappedCall().setLanguagePrefs(prefs);
-   }
-
-   /**
-    * Sets the media type preferences of the user agent.
-    * @param prefs The media type preferences of the user agent.
-    */
-   public void setMediaTypePrefs(List<Preference> prefs)
-   {
-      getWrappedCall().setMediaTypePrefs(prefs);
    }
 
    /**
@@ -332,8 +294,8 @@ public class UniformCallWrapper implements UniformCall
    }
 
    /**
-    * Sets the representation to send to the user agent
-    * @param output The representation to send to the user agent
+    * Sets the representation provided by the server.
+    * @param output The representation provided by the server.
     */
    public void setOutput(Representation output)
    {
@@ -341,8 +303,16 @@ public class UniformCallWrapper implements UniformCall
    }
 
    /**
-    * Sets the referrer reference if available.<br/>
-    * This reference shouldn't be modified during the call handling.
+    * Sets the reference for redirections or resource creations.
+    * @param redirectRef The redirect reference.
+    */
+   public void setRedirectRef(Reference redirectRef)
+   {
+      getWrappedCall().setRedirectRef(redirectRef);
+   }
+ 
+   /**
+    * Sets the referrer reference if available.
     * @param referrerRef The referrer reference.
     */
    public void setReferrerRef(Reference referrerRef)
@@ -351,9 +321,8 @@ public class UniformCallWrapper implements UniformCall
    }
 
    /**
-    * Sets the resource's reference.<br/>
-    * This reference shouldn't be modified during the call handling, except for redirection rewriting.
-    * @param resourceRef The resource's reference.
+    * Sets the resource reference.
+    * @param resourceRef The resource reference.
     */
    public void setResourceRef(Reference resourceRef)
    {
@@ -361,32 +330,30 @@ public class UniformCallWrapper implements UniformCall
    }
 
    /**
-    * Sets the security data related to this call.
-    * @param security The security data related to this call.
+    * Sets the server IP address.
+    * @param address The server IP address.
     */
-   public void setSecurity(Security security)
+   public void setServerAddress(String address)
    {
-      getWrappedCall().setSecurity(security);
+      getWrappedCall().setServerAddress(address);
    }
 
    /**
-    * Sets the result status.
-    * @param status The result status to set.
+    * Sets the server name (ex: web server name).
+    * @param name The server name.
+    */
+   public void setServerName(String name)
+   {
+      getWrappedCall().setServerName(name);
+   }
+
+   /**
+    * Sets the server status.
+    * @param status The server status to set.
     */
    public void setStatus(Status status)
    {
       getWrappedCall().setStatus(status);
-   }
-
-   /**
-    * Asks the user agent to redirect itself to the given URI.<br/>
-    * Modifies the result output and status properties.
-    * @param targetURI The target URI.
-    * @param permanent Indicates if this is a permanent redirection.
-    */
-   public void setRedirect(String targetURI, boolean permanent)
-   {
-      getWrappedCall().setRedirect(targetURI, permanent);
    }
 
 }
