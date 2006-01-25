@@ -23,42 +23,26 @@
 package com.noelios.restlet.test;
 
 import java.io.IOException;
-import java.util.ArrayList;
-import java.util.List;
 
 import junit.framework.TestCase;
 
-import org.restlet.data.Preference;
-
-import com.noelios.restlet.util.PreferenceReader;
-import com.noelios.restlet.util.PreferenceUtils;
+import com.noelios.restlet.util.SecurityUtils;
 
 /**
- * Unit tests for the Preference related classes.
+ * Unit tests for the SecurityData related classes.
  */
-public class PreferencesTest extends TestCase
+public class SecurityTest extends TestCase
 {
    /**
-    * Tests the preferences parsing.
+    * Tests the cookies parsing.
     */
    public void testParsing() throws IOException
    {
-      String headerValue = "text/*;q=0.3, text/html;q=0.7, text/html;level=1, text/html;LEVEL=2;q=0.4;ext1, */*;q=0.5";
-      PreferenceReader pr = new PreferenceReader(PreferenceReader.TYPE_MEDIA_TYPE, headerValue);
-      List<Preference> prefs = new ArrayList<Preference>();
-      Preference pref = pr.readPreference();
+      String authenticate1 = "Basic realm=\"Restlet tutorial\"";
+      String authorization1 = "Basic c2NvdHQ6dGlnZXI=";
 
-      while(pref != null)
-      {
-         prefs.add(pref);
-         pref = pr.readPreference();
-      }
-      
-      // Rewrite the header
-      String newHeaderValue = PreferenceUtils.format(prefs);
-      
-      // Compare initial and new headers
-      assertTrue(headerValue.equals(newHeaderValue));
+      assertEquals(authorization1, SecurityUtils.format(SecurityUtils.parseResponse(authorization1)));
+      assertEquals(authenticate1, SecurityUtils.format(SecurityUtils.parseRequest(authenticate1)));
    }
 
 }

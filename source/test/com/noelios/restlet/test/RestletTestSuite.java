@@ -26,7 +26,7 @@ import junit.framework.Test;
 import junit.framework.TestSuite;
 
 /**
- * Suite of unit tests for the Restlet RI. Based on JUnit framework.
+ * Suite of unit tests for the Restlet RI.
  */
 public class RestletTestSuite extends TestSuite
 {
@@ -34,6 +34,8 @@ public class RestletTestSuite extends TestSuite
    public RestletTestSuite()
    {
       addTestSuite(PreferencesTest.class);
+      addTestSuite(CookiesTest.class);
+      addTestSuite(SecurityTest.class);
    }
 
    /**
