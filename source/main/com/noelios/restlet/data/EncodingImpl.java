@@ -22,39 +22,40 @@
 
 package com.noelios.restlet.data;
 
-import java.io.BufferedInputStream;
-import java.io.IOException;
-import java.io.InputStream;
-import java.io.ObjectInputStream;
+import org.restlet.data.Encoding;
 
 /**
- * Object instance reader.<br/>
- * Based on Java object serialization.
+ * Modifier of a representation's media type.<br>
+ * Useful to apply compression without losing the identity of the underlying media type.
  */
-public class ObjectReader extends BufferedInputStream
+public class EncodingImpl extends MetadataImpl implements Encoding
 {
    /**
     * Constructor.
-    * @param objectStream The object stream to deserialize.
+    * @param name The name.
     */
-   public ObjectReader(InputStream objectStream)
+   public EncodingImpl(String name)
    {
-      super(objectStream);
+      super(name);
    }
 
    /**
-    * Returns the representation as a Java object.
-    * @return The representation as a Java object.
-    * @throws IOException 
-    * @throws ClassNotFoundException 
+    * Returns the description of this REST element.
+    * @return The description of this REST element.
     */
-   public Object readObject() throws IOException, ClassNotFoundException
+   public String getDescription()
    {
-      Object result = null;
-      ObjectInputStream ois = new ObjectInputStream(this);
-      result = ois.readObject();
-      ois.close();
-      return result;
+      return "Encoding applied to a representation";
+   }
+
+   /**
+    * Indicates if the encoding is equal to a given one.
+    * @param encoding The encoding to compare to.
+    * @return True if the encoding is equal to a given one.
+    */
+   public boolean equals(Encoding encoding)
+   {
+      return getName().equalsIgnoreCase(encoding.getName());
    }
 
 }

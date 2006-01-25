@@ -25,7 +25,7 @@ package com.noelios.restlet.data;
 import org.restlet.data.CharacterSet;
 
 /**
- * Default character set implementation.
+ * Character set used to encode characters representations.
  */
 public class CharacterSetImpl extends MetadataImpl implements CharacterSet
 {

@@ -26,8 +26,8 @@ import org.restlet.data.Form;
 import org.restlet.data.Reference;
 
 /**
- * Default reference to a uniform resource identifier (URI). Contrary to the java.net.URI class, this
- * interface represents mutable references.
+ * Represents a reference to a uniform resource identifier (URI).<br/>
+ * Contrary to the java.net.URI class, this interface represents mutable references.
  */
 public class ReferenceImpl implements Reference
 {

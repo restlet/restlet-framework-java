@@ -24,12 +24,12 @@ package com.noelios.restlet.data;
 
 import org.restlet.data.ChallengeRequest;
 import org.restlet.data.ChallengeResponse;
-import org.restlet.data.Security;
+import org.restlet.data.SecurityData;
 
 /**
- * Default security data implementation.
+ * Security data related to a uniform call.
  */
-public class SecurityImpl implements Security
+public class SecurityDataImpl implements SecurityData
 {
    /** The authentication request sent by an origin server to a client. */
    protected ChallengeRequest request;
@@ -43,7 +43,7 @@ public class SecurityImpl implements Security
    /**
     * Constructor.
     */
-   public SecurityImpl()
+   public SecurityDataImpl()
    {
       this.request = null;
       this.response = null;

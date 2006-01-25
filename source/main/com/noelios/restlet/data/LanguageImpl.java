@@ -25,7 +25,7 @@ package com.noelios.restlet.data;
 import org.restlet.data.Language;
 
 /**
- * Default language implementation.
+ * Language used in representations and preferences.
  */
 public class LanguageImpl extends MetadataImpl implements Language
 {

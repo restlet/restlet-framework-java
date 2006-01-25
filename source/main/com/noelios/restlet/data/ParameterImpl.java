@@ -22,11 +22,10 @@
 
 package com.noelios.restlet.data;
 
-import org.restlet.RestletException;
 import org.restlet.data.Parameter;
 
 /**
- * Default parameter implementation.
+ * Multi-usage parameter.
  */
 public class ParameterImpl implements Parameter
 {
@@ -38,9 +37,8 @@ public class ParameterImpl implements Parameter
 
    /**
     * Default constructor.
-    * @throws RestletException
     */
-   public ParameterImpl() throws RestletException
+   public ParameterImpl() 
    {
       this(null, null);
    }

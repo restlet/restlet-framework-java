@@ -29,8 +29,10 @@ import org.restlet.data.CharacterSet;
 import org.restlet.data.MediaType;
 import org.restlet.data.Preference;
 
+import com.noelios.restlet.util.PreferenceReader;
+
 /**
- * Represents a content type, associating a media type with a character set.
+ * Association of a media type and a character set.
  */
 public class ContentType
 {
@@ -52,7 +54,7 @@ public class ContentType
    {
       try
       {
-         PreferenceReaderImpl pr = new PreferenceReaderImpl(PreferenceReaderImpl.TYPE_MEDIA_TYPE, headerValue);
+         PreferenceReader pr = new PreferenceReader(PreferenceReader.TYPE_MEDIA_TYPE, headerValue);
          Preference pref;
          pref = pr.readPreference();
          this.mediaType = (MediaType)pref.getMetadata();

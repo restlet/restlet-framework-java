@@ -25,13 +25,14 @@ package com.noelios.restlet.data;
 import java.util.Date;
 import java.util.List;
 
-import org.restlet.data.Conditions;
+import org.restlet.data.ConditionData;
 import org.restlet.data.Tag;
 
 /**
- * Default implementation for the Conditions interface.
+ * Set of conditions applying to an uniform call.<br/>
+ * This is equivalent to the HTTP conditional headers.  
  */
-public class ConditionsImpl implements Conditions
+public class ConditionDataImpl implements ConditionData
 {
    /** The "if-modified-since" condition */
    protected Date modifiedSince;
@@ -48,7 +49,7 @@ public class ConditionsImpl implements Conditions
    /**
     * Constructor.
     */
-   public ConditionsImpl()
+   public ConditionDataImpl()
    {
       this.modifiedSince = null;
       this.unmodifiedSince = null;

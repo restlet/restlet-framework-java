@@ -25,7 +25,13 @@ package com.noelios.restlet.data;
 import org.restlet.data.Tag;
 
 /**
- * Default validation tag implementation.
+ * Validation tag equivalent to the HTTP entity tag.<br/><br/> "A strong entity tag may be shared by two
+ * entities of a resource only if they are equivalent by octet equality.<br/> A weak entity tag may be shared
+ * by two entities of a resource only if the entities are equivalent and could be substituted for each other
+ * with no significant change in semantics."
+ * @see <a href="http://www.w3.org/Protocols/rfc2616/rfc2616-sec3.html#sec3.11">HTTP Entity Tags</a>
+ * @see <a href="http://www.w3.org/Protocols/rfc2616/rfc2616-sec13.html#sec13.3.2">HTTP Entity Tag Cache
+ * Validators</a>
  */
 public class TagImpl implements Tag
 {

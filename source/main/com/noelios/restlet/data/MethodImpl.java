@@ -25,8 +25,7 @@ package com.noelios.restlet.data;
 import org.restlet.data.Method;
 
 /**
- * Default method implementation.
- * @see org.restlet.data.Methods
+ * Method to execute when handling a uniform call.
  */
 public class MethodImpl implements Method
 {

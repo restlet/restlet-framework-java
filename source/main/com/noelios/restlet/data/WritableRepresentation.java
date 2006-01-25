@@ -30,8 +30,8 @@ import java.nio.channels.WritableByteChannel;
 import org.restlet.data.MediaType;
 
 /**
- * Representation based on a writable byte channel. The write(WritableByteChannel) method needs to be
- * overriden in subclasses.
+ * Representation based on a writable byte channel.<br/>
+ * The write(WritableByteChannel) method needs to be overriden in subclasses.
  */
 public abstract class WritableRepresentation extends ChannelRepresentation
 {

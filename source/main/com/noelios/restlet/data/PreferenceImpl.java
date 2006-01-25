@@ -30,7 +30,7 @@ import org.restlet.data.Parameter;
 import org.restlet.data.Preference;
 
 /**
- * Default preference implementation.
+ * Metadata preference definition.
  */
 public class PreferenceImpl implements Preference
 {

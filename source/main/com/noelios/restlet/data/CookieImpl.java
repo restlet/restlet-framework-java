@@ -22,12 +22,11 @@
 
 package com.noelios.restlet.data;
 
-import org.restlet.RestletException;
 import org.restlet.data.Cookie;
 import org.restlet.data.Parameter;
 
 /**
- * Default cookie implementation.
+ * Cookie provided by a client.
  */
 public class CookieImpl extends ParameterImpl implements Cookie
 {
@@ -42,9 +41,8 @@ public class CookieImpl extends ParameterImpl implements Cookie
 
    /**
     * Constructor.
-    * @throws RestletException
     */
-   public CookieImpl() throws RestletException
+   public CookieImpl()
    {
       this(0, null, null, null, null);
    }

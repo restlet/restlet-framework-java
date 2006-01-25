@@ -35,7 +35,7 @@ import org.restlet.data.Parameter;
 import org.restlet.data.Representation;
 
 /**
- * Default form implementation.
+ * Submission form containing a list of parameters.
  */
 public class FormImpl extends InputRepresentation implements Form
 {

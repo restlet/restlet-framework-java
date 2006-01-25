@@ -29,7 +29,8 @@ import java.io.OutputStream;
 import org.restlet.data.MediaTypes;
 
 /**
- * Object instance representation. Based on Java object serialization.
+ * Object instance representation.<br/>
+ * Based on Java object serialization.
  */
 public class ObjectRepresentation extends OutputRepresentation
 {
