@@ -27,12 +27,14 @@ import java.io.InputStream;
 import java.io.OutputStream;
 import java.nio.channels.ReadableByteChannel;
 import java.nio.channels.WritableByteChannel;
-import java.util.Date;
-
-import javax.servlet.http.Cookie;
+import java.util.ArrayList;
+import java.util.Enumeration;
+import java.util.Iterator;
+import java.util.List;
 
 import org.mortbay.jetty.HttpConnection;
-import org.restlet.data.CookieSetting;
+import org.restlet.Manager;
+import org.restlet.data.Parameter;
 
 import com.noelios.restlet.connector.HttpServerCallImpl;
 
@@ -43,6 +45,9 @@ public class JettyCall extends HttpServerCallImpl
 {
    /** The wrapped Jetty HTTP connection. */
    protected HttpConnection connection;
+   
+   /** The request headers. */
+   protected List<Parameter> requestHeaders;
 
    /**
     * Constructor.
@@ -62,10 +67,14 @@ public class JettyCall extends HttpServerCallImpl
       return this.connection;
    }
 
-   
-   // ----------------------
-   // ---  Request part  ---
-   // ----------------------
+   /**
+    * Indicates if the request was made using a confidential mean.<br/>
+    * @return True if the request was made using a confidential mean.<br/>
+    */
+   public boolean isConfidential()
+   {
+      return getConnection().getRequest().isSecure();
+   }
 
    /**
     * Returns the request address.<br/>
@@ -78,16 +87,7 @@ public class JettyCall extends HttpServerCallImpl
    }
 
    /**
-    * Indicates if the request was made using a confidential mean.<br/>
-    * @return True if the request was made using a confidential mean.<br/>
-    */
-   public boolean isRequestConfidential()
-   {
-      return getConnection().getRequest().isSecure();
-   }
-
-   /**
-    * Returns the request method. 
+    * Returns the request method.
     * @return The request method.
     */
    public String getRequestMethod()
@@ -96,7 +96,7 @@ public class JettyCall extends HttpServerCallImpl
    }
 
    /**
-    * Returns the full request URI. 
+    * Returns the full request URI.
     * @return The full request URI.
     */
    public String getRequestUri()
@@ -114,23 +114,58 @@ public class JettyCall extends HttpServerCallImpl
    }
    
    /**
-    * Returns a request header value.
-    * @param name The name of the header.
-    * @return A header value.
+    * Returns the list of request headers.
+    * @return The list of request headers.
     */
-   public String getRequestHeader(String name)
+   public List<Parameter> getRequestHeaders()
    {
-      return getConnection().getRequest().getHeader(name);
+      if(this.requestHeaders == null)
+      {
+         this.requestHeaders = new ArrayList<Parameter>();
+
+         // Copy the headers from the request object
+         String headerName;
+         String headerValue;
+         for(Enumeration names = getConnection().getRequest().getHeaderNames(); names.hasMoreElements(); )
+         {
+            headerName = (String)names.nextElement();
+            for(Enumeration values = getConnection().getRequest().getHeaders(headerName); values.hasMoreElements(); )
+            {
+               headerValue = (String)values.nextElement();
+               this.requestHeaders.add(Manager.createParameter(headerName, headerValue));
+            }
+         }
+      }
+
+      return this.requestHeaders;
    }
-   
+
    /**
-    * Returns a request date header value.
-    * @param name The name of the header.
-    * @return A header date.
+    * Returns the response address.<br/>
+    * Corresponds to the IP address of the responding server.
+    * @return The response address.
     */
-   public Date getRequestDateHeader(String name)
+   public String getResponseAddress()
    {
-      return new Date(getConnection().getRequest().getDateHeader(name));
+      return getConnection().getEndPoint().getLocalAddr();
+   }
+
+   /**
+    * Returns the response status code.
+    * @return The response status code.
+    */
+   public int getResponseStatusCode()
+   {
+      return getConnection().getResponse().getStatus();
+   }
+
+   /**
+    * Returns the response reason phrase.
+    * @return The response reason phrase.
+    */
+   public String getResponseReasonPhrase()
+   {
+      return getConnection().getResponse().getReason();
    }
 
    /**
@@ -141,7 +176,7 @@ public class JettyCall extends HttpServerCallImpl
    {
       return null;
    }
-   
+
    /**
     * Returns the request entity stream if it exists.
     * @return The request entity stream if it exists.
@@ -158,103 +193,28 @@ public class JettyCall extends HttpServerCallImpl
       }
    }
 
-   // -----------------------
-   // ---  Response part  ---
-   // -----------------------
-   
-   /**
-    * Returns the response status code.
-    * @return The response status code.
-    */
-   public int getResponseStatusCode()
-   {
-      return getConnection().getResponse().getStatus();
-   }
-
    /**
     * Sets the response status code.
     * @param code The response status code.
-    */
-   public void setResponseStatus(int code)
-   {
-      getConnection().getResponse().setStatus(code);
-   }
-
-   /**
-    * Returns the response reason phrase.
-    * @return The response reason phrase.
-    */
-   public String getResponseReasonPhrase()
-   {
-      return getConnection().getResponse().getReason();
-   }
-
-   /**
-    * Sets the response reason phrase.
     * @param reason The response reason phrase.
     */
-   public void setResponseReasonPhrase(String reason)
+   public void setResponseStatus(int code, String reason)
    {
-      getConnection().getResponse().setStatus(getConnection().getResponse().getStatus(), reason);
+      getConnection().getResponse().setStatus(code, reason);
    }
-   
-   /**
-    * Returns a response header value.
-    * @param name The name of the header.
-    * @return A header value.
-    */
-   public String getResponseHeader(String name)
-   {
-      return getConnection().getResponseFields().getStringField(name);
-   }
-   
-   /**
-    * Returns a response date header value.
-    * @param name The name of the header.
-    * @return A header date.
-    */
-   public Date getResponseDateHeader(String name)
-   {
-      return new Date(getConnection().getResponseFields().getDateField(name));
-   }
-   
-   /**
-    * Sets a response header value.
-    * @param name The name of the header.
-    * @param value The value of the header.
-    */
-   public void setResponseHeader(String name, String value)
-   {
-      getConnection().getResponse().setHeader(name, value);
-   }
-   
-   /**
-    * Sets a response date header value.
-    * @param name The name of the header.
-    * @param date The value of the header.
-    */
-   public void setResponseDateHeader(String name, long date)
-   {
-      getConnection().getResponse().setDateHeader(name, date);
-   }
-   
-   /**
-    * Sets a response cookie. 
-    * @param cookie The cookie setting.
-    */
-   public void setResponseCookie(CookieSetting cookie)
-   {
-      // Convert the cookie setting into a Servlet cookie
-      Cookie servletCookie = new Cookie(cookie.getName(), cookie.getValue());
-      if(cookie.getComment() != null) servletCookie.setComment(cookie.getComment());
-      if(cookie.getDomain() != null) servletCookie.setDomain(cookie.getDomain());
-      servletCookie.setMaxAge(cookie.getMaxAge());
-      if(cookie.getPath() != null) servletCookie.setPath(cookie.getPath());
-      servletCookie.setSecure(cookie.isSecure());
-      servletCookie.setVersion(cookie.getVersion());
 
-      // Set the cookie in the response
-      getConnection().getResponse().addCookie(servletCookie);
+   /**
+    * Commits the response headers.<br/>
+    * Must be called before writing the response entity.
+    */
+   public void commitResponseHeaders()
+   {
+      Parameter header;
+      for(Iterator<Parameter> iter = getResponseHeaders().iterator(); iter.hasNext();)
+      {
+         header = iter.next();
+         getConnection().getResponse().addHeader(header.getName(), header.getValue());
+      }
    }
 
    /**
@@ -265,7 +225,7 @@ public class JettyCall extends HttpServerCallImpl
    {
       return null;
    }
-   
+
    /**
     * Returns the response stream if it exists.
     * @return The response stream if it exists.

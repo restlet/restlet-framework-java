@@ -88,6 +88,16 @@ public class JettyServer extends org.mortbay.jetty.Server implements HttpServer
    }
 
    /**
+    * @param keystorePath The path of the keystore file.
+    * @param keystorePassword The keystore password.
+    * @param keyPassword The password of the server key .
+    */
+   public void configureSSL(String keystorePath, String keystorePassword, String keyPassword)
+   {
+      throw new IllegalArgumentException("SSL not currently supported by Jetty 6 connector");
+   }
+
+   /**
     * Handles a HTTP connection.
     * @param connection The connection to handle.
     */
@@ -95,7 +105,7 @@ public class JettyServer extends org.mortbay.jetty.Server implements HttpServer
    {
       JettyCall call = new JettyCall(connection);
       getTarget().handle(call);
-      call.fromUniform(call);
+      call.commitFrom(call);
    }
 
    /**
@@ -144,7 +154,7 @@ public class JettyServer extends org.mortbay.jetty.Server implements HttpServer
    {
       UniformCall uniformCall = call.toUniform();
       handle(uniformCall);
-      call.fromUniform(uniformCall);
+      call.commitFrom(uniformCall);
    }
 
    /**
