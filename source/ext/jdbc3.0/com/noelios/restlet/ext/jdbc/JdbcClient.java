@@ -39,14 +39,17 @@ import org.apache.commons.dbcp.PoolableConnectionFactory;
 import org.apache.commons.dbcp.PoolingDataSource;
 import org.apache.commons.pool.ObjectPool;
 import org.apache.commons.pool.impl.GenericObjectPool;
+import org.restlet.Manager;
 import org.restlet.UniformCall;
 import org.restlet.connector.AbstractClient;
 import org.restlet.data.Methods;
+import org.restlet.data.Representation;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 import org.w3c.dom.Node;
 import org.w3c.dom.NodeList;
 
+import com.noelios.restlet.Engine;
 import com.noelios.restlet.data.ObjectRepresentation;
 
 /**
@@ -83,6 +86,21 @@ public class JdbcClient extends AbstractClient
 
       // Set up the list of factories
       this.connectionSources = new ArrayList<ConnectionSource>();
+   }
+   
+   /**
+    * Creates an uniform call.
+    * @param jdbcURI The database's JDBC URI (ex: jdbc:mysql://[hostname]/[database]).
+    * @param request The request to send (valid XML request).
+    */
+   public static UniformCall create(String jdbcURI, Representation request)
+   {
+      UniformCall result = Manager.createCall();
+      result.setClientName(Engine.VERSION_HEADER);
+      result.setMethod(Methods.POST);
+      result.setResourceRef(Manager.createReference(jdbcURI));
+      result.setInput(request);
+      return result;
    }
 
    /**
