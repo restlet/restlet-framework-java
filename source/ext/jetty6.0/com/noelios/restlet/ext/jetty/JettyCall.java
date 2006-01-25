@@ -45,7 +45,7 @@ public class JettyCall extends HttpServerCallImpl
 {
    /** The wrapped Jetty HTTP connection. */
    protected HttpConnection connection;
-   
+
    /** The request headers. */
    protected List<Parameter> requestHeaders;
 
@@ -112,7 +112,7 @@ public class JettyCall extends HttpServerCallImpl
          return getConnection().getRequest().getRequestURL().append('?').append(queryString).toString();
       }
    }
-   
+
    /**
     * Returns the list of request headers.
     * @return The list of request headers.
@@ -209,6 +209,7 @@ public class JettyCall extends HttpServerCallImpl
     */
    public void commitResponseHeaders()
    {
+      // Add call headers
       Parameter header;
       for(Iterator<Parameter> iter = getResponseHeaders().iterator(); iter.hasNext();)
       {
