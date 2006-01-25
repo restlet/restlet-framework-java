@@ -219,6 +219,13 @@ public class JettyCall extends HttpServerCallImpl
     */
    public void commitResponseHeaders()
    {
+      // Remove existings headers
+      for(Enumeration fields = getResponse().getFieldNames(); fields.hasMoreElements(); )
+      {
+         getResponse().removeField((String)fields.nextElement());
+      }
+      
+      // Add call headers
       Parameter header;
       for(Iterator<Parameter> iter = getResponseHeaders().iterator(); iter.hasNext();)
       {
