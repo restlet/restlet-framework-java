@@ -34,12 +34,16 @@ import javax.mail.internet.MimeMessage;
 import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
 
-import org.restlet.RestletException;
+import org.restlet.Manager;
 import org.restlet.UniformCall;
 import org.restlet.connector.AbstractClient;
+import org.restlet.data.Methods;
+import org.restlet.data.Representation;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 import org.w3c.dom.NodeList;
+
+import com.noelios.restlet.Engine;
 
 /**
  * Client connector to a mail server.<br/>
@@ -69,6 +73,21 @@ public class JavaMailClient extends AbstractClient
    {
       super(name);
    }
+   
+   /**
+    * Creates an uniform call.
+    * @param smtpURI The SMTP server's URI (ex: smtp://localhost).
+    * @param email The email to send (valid XML email).
+    */
+   public static UniformCall create(String smtpURI, Representation email)
+   {
+      UniformCall result = Manager.createCall();
+      result.setClientName(Engine.VERSION_HEADER);
+      result.setMethod(Methods.POST);
+      result.setResourceRef(Manager.createReference(smtpURI));
+      result.setInput(email);
+      return result;
+   }
 
    /**
     * Handles a REST call.
@@ -92,7 +111,7 @@ public class JavaMailClient extends AbstractClient
 
          if((smtpHost == null) || (smtpHost.equals("")))
          {
-            throw new RestletException("Invalid SMTP host specified");
+            throw new IllegalArgumentException("Invalid SMTP host specified");
          }
 
          // Parse the email to extract necessary info
