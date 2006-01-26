@@ -35,7 +35,7 @@ import org.restlet.data.MediaType;
 import com.noelios.restlet.util.ByteUtils;
 
 /**
- * Representation based on a byte channel.
+ * Representation based on a NIO byte channel.
  */
 public abstract class ChannelRepresentation extends AbstractRepresentation
 {

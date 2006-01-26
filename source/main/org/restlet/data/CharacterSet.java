@@ -23,7 +23,7 @@
 package org.restlet.data;
 
 /**
- * Character set used to encode characters representations.
+ * Character set used to encode characters in textual representations.
  * @see org.restlet.data.CharacterSets
  */
 public interface CharacterSet extends Metadata

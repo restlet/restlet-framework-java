@@ -36,8 +36,7 @@ import org.restlet.data.Statuses;
 import com.noelios.restlet.data.StringRepresentation;
 
 /**
- * Chainlet associating an output representation to the filtered calls, 
- * after the handling, based on the call status (error, information, etc.).<br/> 
+ * Chainlet associating an output representation based on the call status.<br/> 
  * In order to customize the default representation, just subclass this class 
  * and override the "getRepresentation" method.<br/> 
  * If any exception occurs during the call handling, a "server internal error" 

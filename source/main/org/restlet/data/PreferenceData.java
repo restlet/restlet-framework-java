@@ -25,7 +25,7 @@ package org.restlet.data;
 import java.util.List;
 
 /**
- * Preference data related to a uniform call.
+ * Client preference data related to a call.
  */
 public interface PreferenceData extends ControlData
 {

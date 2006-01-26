@@ -32,7 +32,7 @@ import org.restlet.data.MediaTypePref;
 import org.restlet.data.PreferenceData;
 
 /**
- * Preference data related to a uniform call.
+ * Client preference data related to a call.
  */
 public class PreferenceDataImpl implements PreferenceData
 {

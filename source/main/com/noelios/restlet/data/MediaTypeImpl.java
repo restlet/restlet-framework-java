@@ -29,7 +29,7 @@ import org.restlet.data.MediaType;
 import org.restlet.data.Parameter;
 
 /**
- * Default media type implementation.
+ * Media type used in representations and preferences.
  */
 public class MediaTypeImpl extends MetadataImpl implements MediaType
 {

@@ -29,7 +29,7 @@ import org.restlet.data.EncodingPref;
 import org.restlet.data.Parameter;
 
 /**
- * Character set preference.
+ * Encoding preference.
  */
 public class EncodingPrefImpl extends PreferenceImpl implements EncodingPref
 {

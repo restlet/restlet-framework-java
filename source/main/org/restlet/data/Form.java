@@ -27,7 +27,7 @@ import java.util.List;
 import java.util.Map;
 
 /**
- * Submission form containing a list of parameters.
+ * Representation of a Web form containing submitted parameters.
  */
 public interface Form extends Representation
 {

@@ -26,7 +26,7 @@ import org.restlet.data.Status;
 import org.restlet.data.Statuses;
 
 /**
- * Status to return after handling a uniform call.
+ * Status to return after handling a call.
  */
 public class StatusImpl implements Status
 {

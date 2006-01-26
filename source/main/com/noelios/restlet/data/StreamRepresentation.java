@@ -34,7 +34,7 @@ import org.restlet.data.MediaType;
 import com.noelios.restlet.util.ByteUtils;
 
 /**
- * Representation based on a stream.
+ * Representation based on a BIO stream.
  */
 public abstract class StreamRepresentation extends AbstractRepresentation
 {

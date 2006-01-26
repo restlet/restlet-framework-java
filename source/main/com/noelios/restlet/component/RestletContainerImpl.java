@@ -30,9 +30,9 @@ import org.restlet.component.RestletContainer;
 import com.noelios.restlet.MapletImpl;
 
 /**
- * Component acting as a container for call handlers named restlets. Calls are first intercepted by the
- * container which can do various checks before effectively delegating it to one of the registered root
- * maplets or restlets.
+ * Origin server that contains restlets.<br/>
+ * Note that a container is a maplet itself.<br/>
+ * Restlet containers can also be contained within a Restlet server.
  */
 public class RestletContainerImpl extends ComponentImpl implements RestletContainer
 {

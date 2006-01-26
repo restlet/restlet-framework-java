@@ -27,7 +27,7 @@ import org.restlet.data.ChallengeResponse;
 import org.restlet.data.SecurityData;
 
 /**
- * Security data related to a uniform call.
+ * Security data related to a call.
  */
 public class SecurityDataImpl implements SecurityData
 {

@@ -23,7 +23,7 @@
 package org.restlet.data;
 
 /**
- * Status to return after handling a uniform call.
+ * Status to return after handling a call.
  * @see org.restlet.data.Statuses
  */
 public interface Status extends ControlData

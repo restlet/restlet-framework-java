@@ -23,7 +23,7 @@
 package org.restlet.data;
 
 /**
- * Security data related to a uniform call.
+ * Security data related to a call.
  */
 public interface SecurityData extends ControlData
 {

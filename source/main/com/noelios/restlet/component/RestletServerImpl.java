@@ -31,9 +31,11 @@ import org.restlet.component.RestletContainer;
 import org.restlet.component.RestletServer;
 
 /**
- * Component acting as a container for other components called restlets containers. Incoming calls are
- * normally handled via pluggable server connectors. Outcoming calls are normally handled via pluggable client
- * connectors. Other direct calls are handled by the default container.
+ * Origin server containing Restlets containers.<br/>
+ * Each container is managing its own resource namespace.
+ * Incoming calls are normally handled via pluggable server connectors.<br/>
+ * Outcoming calls are normally handled via pluggable client connectors.<br/>
+ * Other direct calls are handled by the default container.
  */
 public class RestletServerImpl extends ComponentImpl implements RestletServer
 {

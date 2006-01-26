@@ -30,7 +30,7 @@ import com.noelios.restlet.data.ChallengeResponseImpl;
 import com.noelios.restlet.data.ChallengeSchemeImpl;
 
 /**
- * Date manipulation utilities.
+ * Security data manipulation utilities.
  */
 public class SecurityUtils
 {

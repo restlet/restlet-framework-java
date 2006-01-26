@@ -36,7 +36,7 @@ import org.restlet.data.FormReader;
 import org.restlet.data.Parameter;
 
 /**
- * Submission form reader.
+ * Web form reader.
  */
 public class FormReaderImpl extends BufferedInputStream implements FormReader
 {

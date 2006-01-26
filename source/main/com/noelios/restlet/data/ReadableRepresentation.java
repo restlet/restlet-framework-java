@@ -28,7 +28,7 @@ import java.nio.channels.ReadableByteChannel;
 import org.restlet.data.MediaType;
 
 /**
- * Representation based on a readable byte channel.
+ * Representation based on a readable NIO byte channel.
  */
 public class ReadableRepresentation extends ChannelRepresentation
 {

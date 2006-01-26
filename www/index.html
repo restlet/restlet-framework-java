@@ -1,5 +1,6 @@
 <html>
 <head>
+ <link rel="alternate" type="application/rss+xml" title="Noelios blog" href="http://blog.noelios.com/feed">
  <style type="text/css">
 /* <![CDATA[ */
 @import "http://www.restlet.org/stylesheets/tigris.css";
@@ -20,23 +21,23 @@
 
 <h3>Restlet API</h3>
 <ul>
-   <li>Supports all REST concepts (resource, representation, data, connector, components, etc.)</li>
+   <li>All REST concepts are supported (resource, representation, data, connector, components, etc.)</li>
    <li>Suitable for both client and server Web applications</li>
-   <li>Maplets support the concept of <a href="http://www.useit.com/alertbox/990321.html">URIs as UI</a> with advanced pattern matching features</li>
-   <li>Chainlets filter calls to implement features such as logging and authentication</li>
-   <li>Complete alternative to Servlet API with no external dependency (JAR < 60kb)</li>
+   <li>Maplets implement the concept of <a href="http://www.useit.com/alertbox/990321.html">URIs as UI</a> with advanced pattern matching features</li>
+   <li>Chainlets filter calls to implement features such as authentication and logging</li>
+   <li>Complete alternative to the Servlet API with no external dependency (JAR about 60kb)</li>
    <li>Supports blocking and non-blocking NIO modes</li>
 </ul>
 
 <h3>Noelios Restlet Engine (NRE)</h3>
 <ul>
-   <li>Reference implementation of the Restlet API provided by <a target="_top" href="http://www.noelios.com">Noelios Consulting</a> (core JAR < 110kb)</li>
-   <li>Server connector provided: HTTP (via Jetty connectors or Servlet connector)</li>
-   <li>Client connectors provided: HTTP, JDBC, SMTP (via JavaMail)</li>
+   <li>Reference implementation of the Restlet API provided by <a target="_top" href="http://www.noelios.com">Noelios Consulting</a> (core JAR about 120kb)</li>
+   <li>Server connectors for HTTP, HTTPS, <a href="http://tomcat.apache.org/connectors-doc/">AJP</a> (for Apache or IIS)</li>
+   <li>Client connectors for HTTP, HTTPS, SMTP, JDBC</li>
    <li>Supports logging (LogChainlet), authentication (GuardChainlet) and <a href="http://www.w3.org/Provider/Style/URI">cool URIs</a> rewriting (RedirectRestlet)</li>
    <li>Static files serving (DirectoryRestlet) with metadata association based on file extensions</li>
+   <li>Automatic server-side content negotiation based on media type and language preferences</li>
    <li>FreeMarker template representations as an alternative to JSP pages</li>
-   <li>Automatic server-side content negotiation based on media type and language</li>
 </ul>
 
 <h3>Documentation</h3>
@@ -50,7 +51,7 @@
 
 <h3>Development</h3>
 <ul>
-   <li><a target="_top" href="http://www.restlet.org/downloads/restlet-0.19b.zip">Download</a> the latest release (0.19 beta). <a target="_top" href="http://blog.noelios.com/2006/01/10/restlet-019-beta-released/">List of changes</a>.</li>
+   <li><a target="_top" href="http://www.restlet.org/downloads/restlet-1.0b1.zip">Download</a> the <b>1.0 beta 1</b> release (<a target="_top" href="http://blog.noelios.com/2006/01/26/restlet-10-beta-1-released/">announce</a>, <a target="_top" href="http://www.restlet.org/docs/changes">changes log</a>).</li>
    <li><a target="_top" href="http://www.restlet.org/discuss">Discuss</a> with users and developers.</li>
    <li><a target="_top" href="http://restlet.tigris.org/servlets/ProjectIssues">Report issues</a> (defects, feature, enhancement requests).</li>
    <li><a target="_top" href="http://restlet.tigris.org">Development site</a> at Tigris.org</li>
@@ -59,10 +60,11 @@
 
 <h3>Dependencies</h3>
 <ul>
-   <li><a target="_top" href="http://java.sun.com/j2se/1.5.0/">J2SE 5.0</a></li>
-   <li><a target="_top" href="http://jetty.mortbay.org">Jetty 5.1.10 or 6.0 beta 5</a></li>
-   <li><a target="_top" href="http://www.freemarker.org/">FreeMarker 2.3</a></li>
-   <li><a target="_top" href="http://java.sun.com/products/javamail/">JavaMail 1.3</a></li>
+   <li><a target="_top" href="http://java.sun.com/j2se/1.5.0/">Java SE 5.0</a></li>
+   <li><a target="_top" href="http://jetty.mortbay.org">Jetty 5.1 or 6.0: standalone mode</a></li>
+   <li><a target="_top" href="http://java.sun.com/products/servlet/">Servlet 2.4 container: embedded mode</a></li>
+   <li><a target="_top" href="http://www.freemarker.org/">FreeMarker 2.3: dynamic pages</a></li>
+   <li><a target="_top" href="http://java.sun.com/products/javamail/">JavaMail 1.3: email sending</a></li>
 </ul>
 
 <h3>Legal</h3>

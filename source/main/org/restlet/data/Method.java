@@ -23,7 +23,7 @@
 package org.restlet.data;
 
 /**
- * Method to execute when handling a uniform call.
+ * Method to execute when handling a call.
  * @see org.restlet.data.Methods
  */
 public interface Method extends ControlData

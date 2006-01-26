@@ -28,7 +28,7 @@ import java.io.InputStream;
 import org.restlet.data.MediaType;
 
 /**
- * Representation based on an input stream.
+ * Representation based on a BIO input stream.
  */
 public class InputRepresentation extends StreamRepresentation
 {
