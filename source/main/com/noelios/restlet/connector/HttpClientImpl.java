@@ -36,9 +36,13 @@ import org.restlet.connector.HttpClient;
 import org.restlet.connector.HttpClientCall;
 import org.restlet.data.ChallengeRequest;
 import org.restlet.data.ChallengeResponse;
+import org.restlet.data.CharacterSets;
 import org.restlet.data.ConditionData;
 import org.restlet.data.Encoding;
+import org.restlet.data.Encodings;
 import org.restlet.data.Language;
+import org.restlet.data.Languages;
+import org.restlet.data.MediaTypes;
 import org.restlet.data.Parameter;
 import org.restlet.data.PreferenceData;
 import org.restlet.data.Representation;
@@ -148,24 +152,40 @@ public class HttpClientImpl extends AbstractClient implements HttpClient
 
          // Add the preferences
          PreferenceData pref = call.getPreference();
-         if(pref.getMediaTypes() != null)
+         if(pref.getMediaTypes().size() > 0)
          {
             clientCall.addRequestHeader(HttpCall.HEADER_ACCEPT, PreferenceUtils.format(pref.getMediaTypes()));
          }
+         else
+         {
+            clientCall.addRequestHeader(HttpCall.HEADER_ACCEPT, MediaTypes.ALL.getName());
+         }
          
-         if(pref.getCharacterSets() != null)
+         if(pref.getCharacterSets().size() > 0)
          {
             clientCall.addRequestHeader(HttpCall.HEADER_ACCEPT_CHARSET, PreferenceUtils.format(pref.getCharacterSets()));
          }
+         else
+         {
+            clientCall.addRequestHeader(HttpCall.HEADER_ACCEPT_CHARSET, CharacterSets.ALL.getName());
+         }
          
-         if(pref.getEncodings() != null)
+         if(pref.getEncodings().size() > 0)
          {
             clientCall.addRequestHeader(HttpCall.HEADER_ACCEPT_ENCODING, PreferenceUtils.format(pref.getEncodings()));
          }
+         else
+         {
+            clientCall.addRequestHeader(HttpCall.HEADER_ACCEPT_ENCODING, Encodings.ALL.getName());
+         }
          
-         if(pref.getLanguages() != null)
+         if(pref.getLanguages().size() > 0)
          {
             clientCall.addRequestHeader(HttpCall.HEADER_ACCEPT_LANGUAGE, PreferenceUtils.format(pref.getLanguages()));
+         }
+         else
+         {
+            clientCall.addRequestHeader(HttpCall.HEADER_ACCEPT_LANGUAGE, Languages.ALL.getName());
          }
 
          // Add the security
