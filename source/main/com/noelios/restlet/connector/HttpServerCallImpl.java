@@ -377,10 +377,10 @@ public abstract class HttpServerCallImpl extends UniformCallImpl implements Http
          Tag current = null;
          if(ifMatchHeader != null)
          {
-            String[] tags = ifMatchHeader.split(",");
-            for (int i = 0; i < tags.length; i++)
+            try
             {
-               try
+               String[] tags = ifMatchHeader.split(",");
+               for (int i = 0; i < tags.length; i++)
                {
                   current = new TagImpl(tags[i]);
                
@@ -394,10 +394,10 @@ public abstract class HttpServerCallImpl extends UniformCallImpl implements Http
                   // Add the new tag
                   match.add(current);
                }
-               catch(IllegalArgumentException iae)
-               {
-                  logger.log(Level.WARNING, iae.getMessage(), iae);
-               }
+            }
+            catch(Exception e)
+            {
+               logger.log(Level.WARNING, "Unable to process the if-match header: " + ifNoneMatchHeader, e);
             }
          }
 
@@ -405,16 +405,26 @@ public abstract class HttpServerCallImpl extends UniformCallImpl implements Http
          List<Tag> noneMatch = null;
          if(ifNoneMatchHeader != null)
          {
-            String[] tags = ifNoneMatchHeader.split(",");
-            for (int i = 0; i < tags.length; i++)
+            try
             {
-               if(noneMatch == null) 
+               String[] tags = ifNoneMatchHeader.split(",");
+               for (int i = 0; i < tags.length; i++)
                {
-                  noneMatch = new ArrayList<Tag>();
-                  getCondition().setNoneMatch(noneMatch);
+                  current = new TagImpl(tags[i]);
+                  
+                  // Is it the first tag?
+                  if(noneMatch == null) 
+                  {
+                     noneMatch = new ArrayList<Tag>();
+                     getCondition().setNoneMatch(noneMatch);
+                  }
+                  
+                  noneMatch.add(current);
                }
-               
-               noneMatch.add(new TagImpl(tags[i]));
+            }
+            catch(Exception e)
+            {
+               logger.log(Level.WARNING, "Unable to process the if-none-match header: " + ifNoneMatchHeader, e);
             }
          }
       }
