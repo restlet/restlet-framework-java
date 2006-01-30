@@ -129,7 +129,7 @@ public abstract class HttpServerCallImpl extends UniformCallImpl implements Http
          setResourceRef(new ReferenceImpl(resource));
 
          // Set the absolute resource path as the initial path in the list.
-         getResourcePaths().add(0, resource);
+         getResourcePaths().add(0, getResourceRef().toString(false, false));
       }
 
       return this;
@@ -397,7 +397,7 @@ public abstract class HttpServerCallImpl extends UniformCallImpl implements Http
             }
             catch(Exception e)
             {
-               logger.log(Level.WARNING, "Unable to process the if-match header: " + ifNoneMatchHeader, e);
+               logger.log(Level.WARNING, "Unable to process the if-match header: " + ifMatchHeader);
             }
          }
 
@@ -424,7 +424,7 @@ public abstract class HttpServerCallImpl extends UniformCallImpl implements Http
             }
             catch(Exception e)
             {
-               logger.log(Level.WARNING, "Unable to process the if-none-match header: " + ifNoneMatchHeader, e);
+               logger.log(Level.WARNING, "Unable to process the if-none-match header: " + ifNoneMatchHeader);
             }
          }
       }
