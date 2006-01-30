@@ -43,7 +43,16 @@ public class PreferencesTest extends TestCase
     */
    public void testParsing() throws IOException
    {
-      String headerValue = "text/*;q=0.3, text/html;q=0.7, text/html;level=1, text/html;LEVEL=2;q=0.4;ext1, */*;q=0.5";
+      testMediaType("text/*;q=0.3, text/html;q=0.7, text/html;level=1, text/html;LEVEL=2;q=0.4;ext1, */*;q=0.5", true);      
+      testMediaType("text/xml,application/xml,application/xhtml+xml,text/html;q=0.9,text/plain;q=0.8,image/*,,*/*;q=0.5", false);
+   }
+
+   /**
+    * Tests the parsing of a single preference header.
+    * @param headerValue The preference header.
+    */
+   private void testMediaType(String headerValue, boolean testEquals) throws IOException
+   {
       PreferenceReader pr = new PreferenceReader(PreferenceReader.TYPE_MEDIA_TYPE, headerValue);
       List<Preference> prefs = new ArrayList<Preference>();
       Preference pref = pr.readPreference();
@@ -57,8 +66,10 @@ public class PreferencesTest extends TestCase
       // Rewrite the header
       String newHeaderValue = PreferenceUtils.format(prefs);
       
-      // Compare initial and new headers
-      assertTrue(headerValue.equals(newHeaderValue));
+      if(testEquals)
+      {
+         // Compare initial and new headers
+         assertEquals(headerValue, newHeaderValue);
+      }
    }
-
 }

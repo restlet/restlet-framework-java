@@ -73,18 +73,21 @@ public class PreferenceUtils
       {
          MediaType mediaType = (MediaType)pref.getMetadata();
          
-         Parameter param;
-         for(Iterator<Parameter> iter = mediaType.getParameters().iterator(); iter.hasNext(); )
+         if(mediaType.getParameters() != null)
          {
-            param = iter.next();
-            
-            if(param.getName() != null)
+            Parameter param;
+            for(Iterator<Parameter> iter = mediaType.getParameters().iterator(); iter.hasNext(); )
             {
-               destination.append(';').append(param.getName());
-            
-               if((param.getValue() != null) && (param.getValue().length() > 0))
+               param = iter.next();
+               
+               if(param.getName() != null)
                {
-                  destination.append('=').append(param.getValue());
+                  destination.append(';').append(param.getName());
+               
+                  if((param.getValue() != null) && (param.getValue().length() > 0))
+                  {
+                     destination.append('=').append(param.getValue());
+                  }
                }
             }
          }
@@ -96,18 +99,21 @@ public class PreferenceUtils
          formatQuality(pref.getQuality(), destination);
       }
       
-      Parameter param;
-      for(Iterator<Parameter> iter = pref.getParameters().iterator(); iter.hasNext(); )
+      if(pref.getParameters() != null)
       {
-         param = iter.next();
-         
-         if(param.getName() != null)
+         Parameter param;
+         for(Iterator<Parameter> iter = pref.getParameters().iterator(); iter.hasNext(); )
          {
-            destination.append(';').append(param.getName());
-         
-            if((param.getValue() != null) && (param.getValue().length() > 0))
+            param = iter.next();
+            
+            if(param.getName() != null)
             {
-               destination.append('=').append(param.getValue());
+               destination.append(';').append(param.getName());
+            
+               if((param.getValue() != null) && (param.getValue().length() > 0))
+               {
+                  destination.append('=').append(param.getValue());
+               }
             }
          }
       }

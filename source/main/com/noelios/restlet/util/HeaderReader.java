@@ -46,7 +46,7 @@ public class HeaderReader
    public HeaderReader(String header)
    {
       this.header = header;
-      this.index = (header == null) ? -1 : 0;
+      this.index = ((header == null) || (header.length() == 0)) ? -1 : 0;
    }
 
    /**

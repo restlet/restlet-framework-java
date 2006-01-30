@@ -104,7 +104,7 @@ public class PreferenceReader extends HeaderReader
                }
                else
                {
-                  throw new IOException("Empty metadata name detected.");
+                  // Ignore empty metadata name
                }
             }
             else if(nextChar == ';')
