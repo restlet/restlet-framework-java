@@ -35,6 +35,8 @@ import org.restlet.data.Languages;
 import org.restlet.data.MediaType;
 import org.restlet.data.MediaTypes;
 import org.restlet.data.Metadata;
+import org.restlet.data.Methods;
+import org.restlet.data.Statuses;
 
 import com.noelios.restlet.util.StringUtils;
 
@@ -238,7 +240,14 @@ public class DirectoryRestlet extends AbstractRestlet
     */
    public void handle(UniformCall call)
    {
-      call.setBestOutput(new FileResource(this, call.getResourcePath(0, false)), getDefaultLanguage());
+      if(call.getMethod().equals(Methods.GET))
+      {
+         call.setBestOutput(new FileResource(this, call.getResourcePath(0, false)), getDefaultLanguage());
+      }
+      else
+      {
+         call.setStatus(Statuses.CLIENT_ERROR_METHOD_NOT_ALLOWED);
+      }
    }
 
    /**
