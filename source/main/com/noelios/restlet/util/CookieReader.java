@@ -25,6 +25,8 @@ package com.noelios.restlet.util;
 import java.io.IOException;
 import java.io.UnsupportedEncodingException;
 import java.util.Date;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 import org.restlet.data.Cookie;
 import org.restlet.data.CookieSetting;
@@ -38,6 +40,9 @@ import com.noelios.restlet.data.CookieSettingImpl;
  */
 public class CookieReader extends HeaderReader
 {
+   /** Obtain a suitable logger. */
+   private static Logger logger = Logger.getLogger("com.noelios.restlet.util.CookieReader");
+
    private static final String NAME_VERSION = "$Version";
    private static final String NAME_PATH = "$Path";
    private static final String NAME_DOMAIN = "$Domain";
@@ -196,16 +201,34 @@ public class CookieReader extends HeaderReader
          }
          else if(pair.getName().equalsIgnoreCase(NAME_SET_EXPIRES))
          {
-            Date expires = DateUtils.parse(pair.getValue(), DateUtils.FORMAT_RFC_1036);
             Date current = new Date(System.currentTimeMillis());
+            Date expires = DateUtils.parse(pair.getValue(), DateUtils.FORMAT_RFC_1036);
             
-            if(DateUtils.after(current, expires))
+            if(expires == null)
             {
-               result.setMaxAge((int)((expires.getTime() - current.getTime()) / 1000));
+               expires = DateUtils.parse(pair.getValue(), DateUtils.FORMAT_RFC_1123);
+            }
+
+            if(expires == null)
+            {
+               expires = DateUtils.parse(pair.getValue(), DateUtils.FORMAT_ASC_TIME);
+            }
+
+            if(expires != null)
+            {
+               if(DateUtils.after(current, expires))
+               {
+                  result.setMaxAge((int)((expires.getTime() - current.getTime()) / 1000));
+               }
+               else
+               {
+                  result.setMaxAge(0);
+               }
             }
             else
             {
-               result.setMaxAge(0);
+               // Ignore the expires header
+               logger.log(Level.WARNING, "Ignoring cookie setting expiration date. Unable to parse the date: " + pair.getValue());
             }
          }
          else if(pair.getName().equalsIgnoreCase(NAME_SET_MAX_AGE))

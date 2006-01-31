@@ -52,10 +52,10 @@ public class CookiesTest extends TestCase
       testCookie("CUSTOMER=WILE_E_COYOTE; PART_NUMBER=ROCKET_LAUNCHER_0001; SHIPPING=FEDEX");
       testCookie("NUMBER=RIDING_ROCKET_0023; PART_NUMBER=ROCKET_LAUNCHER_0001");
       
-      testCookieSetting("CUSTOMER=WILE_E_COYOTE; path=/");
-      testCookieSetting("PART_NUMBER=ROCKET_LAUNCHER_0001; path=/");
-      testCookieSetting("SHIPPING=FEDEX; path=/foo");
-      testCookieSetting("NUMBER=RIDING_ROCKET_0023; path=/ammo");
+      testCookieSetting("CUSTOMER=WILE_E_COYOTE; path=/", true);
+      testCookieSetting("PART_NUMBER=ROCKET_LAUNCHER_0001; path=/", true);
+      testCookieSetting("SHIPPING=FEDEX; path=/foo", true);
+      testCookieSetting("NUMBER=RIDING_ROCKET_0023; path=/ammo", true);
       
       testCookieDate("Tuesday, 09-Nov-99 23:12:40 GMT");
       
@@ -65,11 +65,14 @@ public class CookiesTest extends TestCase
       testCookie("$Version=\"1\"; Customer=\"WILE_E_COYOTE\"; $Path=\"/acme\"; Part_Number=\"Rocket_Launcher_0001\"; $Path=\"/acme\"; Shipping=\"FedEx\"; $Path=\"/acme\"");
       testCookie("$Version=\"1\"; Part_Number=\"Riding_Rocket_0023\"; $Path=\"/acme/ammo\"; Part_Number=\"Rocket_Launcher_0001\"; $Path=\"/acme\"");
       
-      testCookieSetting("Customer=\"WILE_E_COYOTE\"; Version=\"1\"; Path=\"/acme\"");
-      testCookieSetting("Part_Number=\"Rocket_Launcher_0001\"; Version=\"1\"; Path=\"/acme\"");
-      testCookieSetting("Shipping=\"FedEx\"; Version=\"1\"; Path=\"/acme\"");
-      testCookieSetting("Part_Number=\"Rocket_Launcher_0001\"; Version=\"1\"; Path=\"/acme\"");
-      testCookieSetting("Part_Number=\"Riding_Rocket_0023\"; Version=\"1\"; Path=\"/acme/ammo\"");
+      testCookieSetting("Customer=\"WILE_E_COYOTE\"; Version=\"1\"; Path=\"/acme\"", true);
+      testCookieSetting("Part_Number=\"Rocket_Launcher_0001\"; Version=\"1\"; Path=\"/acme\"", true);
+      testCookieSetting("Shipping=\"FedEx\"; Version=\"1\"; Path=\"/acme\"", true);
+      testCookieSetting("Part_Number=\"Rocket_Launcher_0001\"; Version=\"1\"; Path=\"/acme\"", true);
+      testCookieSetting("Part_Number=\"Riding_Rocket_0023\"; Version=\"1\"; Path=\"/acme/ammo\"", true);
+      
+      // Bug #49
+      testCookieSetting("RMS_ADMETA_VISITOR_RMS=27756847%3A240105; expires=Thu, 02 Mar 2006 21:09:00 GMT; path=/; domain=.admeta.com", false);
    }
    
    /**
@@ -99,9 +102,10 @@ public class CookiesTest extends TestCase
    /**
     * Test one set cookie header.
     * @param headerValue The set cookie header value.
+    * @param compare Indicates if the new header should be compared with the old one.
     * @throws IOException
     */
-   private void testCookieSetting(String headerValue) throws IOException
+   private void testCookieSetting(String headerValue, boolean compare) throws IOException
    {
       CookieReader cr = new CookieReader(headerValue);
       CookieSetting cookie = cr.readCookieSetting();
@@ -110,8 +114,11 @@ public class CookiesTest extends TestCase
       String newHeaderValue = CookieUtils.format(cookie);
       
       // Compare initial and new headers
-      boolean result = newHeaderValue.toLowerCase().startsWith(headerValue.toLowerCase());
-      assertTrue(result);
+      if(compare)
+      {
+         boolean result = newHeaderValue.toLowerCase().startsWith(headerValue.toLowerCase());
+         assertTrue(result);
+      }
    }
    
    /**
