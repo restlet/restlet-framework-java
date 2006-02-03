@@ -22,6 +22,7 @@
 
 package com.noelios.restlet;
 
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.Iterator;
@@ -32,6 +33,7 @@ import org.restlet.UniformCall;
 import org.restlet.data.ConditionData;
 import org.restlet.data.Cookie;
 import org.restlet.data.CookieSetting;
+import org.restlet.data.Form;
 import org.restlet.data.Language;
 import org.restlet.data.LanguagePref;
 import org.restlet.data.MediaType;
@@ -47,6 +49,7 @@ import org.restlet.data.Status;
 import org.restlet.data.Statuses;
 
 import com.noelios.restlet.data.ConditionDataImpl;
+import com.noelios.restlet.data.FormImpl;
 import com.noelios.restlet.data.PreferenceDataImpl;
 import com.noelios.restlet.data.SecurityDataImpl;
 import com.noelios.restlet.util.DateUtils;
@@ -419,6 +422,24 @@ public class UniformCallImpl implements UniformCall
       return this.input;
    }
 
+   /**
+    * Returns the representation provided by the client as a form.<br/>
+    * Note that this triggers the parsing of the input representation.<br/>
+    * This method and the associated getInput method should be invoked only once. 
+    * @return The input form provided by the client.
+    */
+   public Form getInputAsForm()
+   {
+      try
+      {
+         return new FormImpl(getInput());
+      }
+      catch(IOException e)
+      {
+         return null;
+      }
+   }
+   
    /**
     * Returns the call method.
     * @return The call method.

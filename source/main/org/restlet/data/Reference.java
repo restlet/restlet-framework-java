@@ -22,6 +22,8 @@
 
 package org.restlet.data;
 
+import java.io.IOException;
+
 /**
  * Represents a reference to a uniform resource identifier (URI).<br/>
  * Contrary to the java.net.URI class, this interface represents mutable references.
@@ -81,8 +83,9 @@ public interface Reference extends Data
    /**
     * Returns the optional query component as a form submission.
     * @return The optional query component as a form submission.
+    * @throws IOException 
     */
-   public Form getQueryAsForm();
+   public Form getQueryAsForm() throws IOException;
 
    /**
     * Returns the scheme component.

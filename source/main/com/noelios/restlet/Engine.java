@@ -22,7 +22,6 @@
 
 package com.noelios.restlet;
 
-import java.io.IOException;
 import java.lang.reflect.Constructor;
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -47,7 +46,6 @@ import org.restlet.data.MediaType;
 import org.restlet.data.Method;
 import org.restlet.data.Parameter;
 import org.restlet.data.Reference;
-import org.restlet.data.Representation;
 import org.restlet.data.Status;
 import org.restlet.data.Tag;
 
@@ -211,13 +209,12 @@ public class Engine implements Factory
    }
 
    /**
-    * Creates a new form able to process the given form content.
-    * @param content The form content to process.
-    * @return A new form with the given content.
+    * Creates an empty form.
+    * @return A new form.
     */
-   public Form createForm(Representation content) throws IOException
+   public Form createForm()
    {
-      return new FormImpl(content);
+      return new FormImpl();
    }
 
    /**

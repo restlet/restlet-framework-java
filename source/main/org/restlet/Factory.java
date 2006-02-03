@@ -22,8 +22,6 @@
 
 package org.restlet;
 
-import java.io.IOException;
-
 import org.restlet.component.RestletContainer;
 import org.restlet.component.RestletServer;
 import org.restlet.connector.HttpClient;
@@ -38,7 +36,6 @@ import org.restlet.data.MediaType;
 import org.restlet.data.Method;
 import org.restlet.data.Parameter;
 import org.restlet.data.Reference;
-import org.restlet.data.Representation;
 import org.restlet.data.Status;
 import org.restlet.data.Tag;
 
@@ -91,12 +88,10 @@ public interface Factory
    public Encoding createEncoding(String name);
 
    /**
-    * Creates a new form able to process the given form content.
-    * @param content The form content to process.
-    * @return A new form with the given content.
-    * @throws IOException
+    * Creates an empty form.
+    * @return A new form.
     */
-   public Form createForm(Representation content) throws IOException;
+   public Form createForm();
 
    /**
     * Create a new HTTP client connector.

@@ -85,7 +85,7 @@ public class HttpClientImpl extends AbstractClient implements HttpClient
       try
       {
          // Create a new HTTP client call
-         HttpClientCall clientCall = createCall(call.getMethod().getName(), call.getResourceRef().toString());
+         HttpClientCall clientCall = createCall(call.getMethod().getName(), call.getResourceRef().toString(), (call.getInput() != null));
 
          // Add the user agent header
          if(call.getClientName() != null)
@@ -204,10 +204,12 @@ public class HttpClientImpl extends AbstractClient implements HttpClient
             if(clientCall.getRequestStream() != null)
             {
                call.getInput().write(clientCall.getRequestStream());
+               clientCall.getRequestStream().close();
             }
             else if(clientCall.getRequestChannel() != null)
             {
                call.getInput().write(clientCall.getRequestChannel());
+               clientCall.getRequestChannel().close();
             }
          }
 
@@ -318,13 +320,14 @@ public class HttpClientImpl extends AbstractClient implements HttpClient
     * Returns a new HTTP protocol call.
     * @param method The request method.
     * @param resourceUri The requested resource URI.
+    * @param hasInput Indicates if the call will have an input to send to the server.
     * @return A new HTTP protocol call.
     */
-   public HttpClientCall createCall(String method, String resourceUri)
+   public HttpClientCall createCall(String method, String resourceUri, boolean hasInput)
    {
       try
       {
-         return new HttpClientCallImpl(method, resourceUri);
+         return new HttpClientCallImpl(method, resourceUri, hasInput);
       }
       catch(IOException e)
       {

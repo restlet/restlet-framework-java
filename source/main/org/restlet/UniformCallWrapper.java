@@ -112,6 +112,17 @@ public class UniformCallWrapper implements UniformCall
    }
 
    /**
+    * Returns the representation provided by the client as a form.<br/>
+    * Note that this triggers the parsing of the input representation.<br/>
+    * This method and the associated getInput method should be invoked only once. 
+    * @return The input form provided by the client.
+    */
+   public Form getInputAsForm()
+   {
+      return getWrappedCall().getInputAsForm();
+   }
+
+   /**
     * Returns the call method.
     * @return The call method.
     */

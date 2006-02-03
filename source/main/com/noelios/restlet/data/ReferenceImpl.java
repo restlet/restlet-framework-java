@@ -22,6 +22,8 @@
 
 package com.noelios.restlet.data;
 
+import java.io.IOException;
+
 import org.restlet.data.Form;
 import org.restlet.data.Reference;
 
@@ -312,8 +314,9 @@ public class ReferenceImpl implements Reference
    /**
     * Returns the optional query component as a form submission.
     * @return The optional query component as a form submission.
+    * @throws IOException 
     */
-   public Form getQueryAsForm()
+   public Form getQueryAsForm() throws IOException
    {
       String query = getQuery();
 

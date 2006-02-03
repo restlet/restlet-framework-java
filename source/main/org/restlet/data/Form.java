@@ -22,51 +22,66 @@
 
 package org.restlet.data;
 
-import java.io.IOException;
 import java.util.List;
 import java.util.Map;
 
 /**
  * Representation of a Web form containing submitted parameters.
  */
-public interface Form extends Representation
+public interface Form extends Data
 {
    /**
-    * Gets the parameters with the given name. If multiple values are found, a list is returned created.
+    * Returns the modifiable list of parameters.
+    * @return The modifiable list of parameters.
+    */
+   public List<Parameter> getParameters();
+
+   /**
+    * Adds a new parameter.
+    * @param name The parameter name.
+    * @param value The parameter value.
+    */
+   public void addParameter(String name, String value);
+
+   /**
+    * Removes parameters with a given name.
+    * @param name The name of the parameters to remove.
+    */
+   public void removeParameters(String name);
+   
+   /**
+    * Gets the parameters with the given name.<br/>
+    * If multiple values are found, a list is returned created.
     * @param name The parameter name to match.
     * @return The parameter value or list of values.
-    * @throws IOException
     */
-   public Object getParameter(String name) throws IOException;
+   public List<Parameter> getParameters(String name);
 
    /**
     * Gets the first parameter with the given name.
     * @param name The parameter name to match.
     * @return The parameter value.
-    * @throws IOException
     */
-   public Parameter getFirstParameter(String name) throws IOException;
+   public Parameter getFirstParameter(String name);
 
    /**
-    * Gets the parameters whose name is a key in the given map. If a matching parameter is found, its value
-    * is put in the map. If multiple values are found, a list is created and set in the map.
+    * Gets the parameters whose name is a key in the given map.<br/>
+    * If a matching parameter is found, its value is put in the map.<br/>
+    * If multiple values are found, a list is created and set in the map.
     * @param parameters The parameters map controlling the reading.
-    * @throws IOException
     */
-   public void getParameters(Map<String, Object> parameters) throws IOException;
+   public void getParameters(Map<String, Object> parameters);
 
    /**
-    * Returns the list of parameters.
-    * @return The list of parameters.
-    * @throws IOException
+    * Returns the formatted query corresponding to the current list of parameters.
+    * @return The formatted query.
     */
-   public List<Parameter> getParameters() throws IOException;
+   public String getQuery();
 
    /**
-    * Returns a new form reader to read the list.
-    * @return A new form reader to read the list.
-    * @throws IOException
+    * Returns the formatted query corresponding to the current list of parameters.
+    * @return The formatted query.
     */
-   public FormReader getFormReader() throws IOException;
+   public Representation getRepresentation();
 
 }

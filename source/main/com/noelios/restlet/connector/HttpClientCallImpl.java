@@ -62,9 +62,10 @@ public class HttpClientCallImpl extends HttpCallImpl implements HttpClientCall
     * Constructor.
     * @param method The method name.
     * @param resourceUri The resource URI.
+    * @param hasInput Indicates if the call will have an input to send to the server.
     * @throws IOException
     */
-   public HttpClientCallImpl(String method, String resourceUri) throws IOException
+   public HttpClientCallImpl(String method, String resourceUri, boolean hasInput) throws IOException
    {
       this.requestMethod = method;
       
@@ -72,6 +73,10 @@ public class HttpClientCallImpl extends HttpCallImpl implements HttpClientCall
       {
          URL url = new URL(resourceUri);
          this.connection = (HttpURLConnection)url.openConnection();
+         this.connection.setAllowUserInteraction(false);
+         this.connection.setDoOutput(hasInput);
+         this.connection.setInstanceFollowRedirects(false);
+         this.connection.setUseCaches(false);
          this.requestUri = resourceUri;
          this.confidential = (this.connection instanceof HttpsURLConnection);
       }
@@ -166,6 +171,16 @@ public class HttpClientCallImpl extends HttpCallImpl implements HttpClientCall
       {
          header = iter.next();
          getConnection().addRequestProperty(header.getName(), header.getValue());
+      }
+
+      // Ensure that the connections is active
+      try
+      {
+         getConnection().connect();
+      }
+      catch(IOException ioe)
+      {
+         logger.log(Level.WARNING, "Unable to connect to the server", ioe);
       }
    }
 

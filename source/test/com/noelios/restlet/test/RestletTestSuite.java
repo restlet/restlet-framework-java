@@ -33,9 +33,11 @@ public class RestletTestSuite extends TestSuite
    /** Constructor. */
    public RestletTestSuite()
    {
-      addTestSuite(PreferencesTest.class);
       addTestSuite(CookiesTest.class);
+      addTestSuite(FormTest.class);
+      addTestSuite(PreferencesTest.class);
       addTestSuite(SecurityTest.class);
+      
    }
 
    /**

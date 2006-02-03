@@ -20,33 +20,44 @@
  * Portions Copyright [yyyy] [name of copyright owner]
  */
 
-package com.noelios.restlet.data;
+package com.noelios.restlet.util;
 
-import java.io.BufferedInputStream;
+import java.io.ByteArrayInputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.UnsupportedEncodingException;
-import java.net.URLDecoder;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
 import org.restlet.data.EmptyValue;
-import org.restlet.data.FormReader;
 import org.restlet.data.Parameter;
+import org.restlet.data.Representation;
 
 /**
  * Web form reader.
  */
-public class FormReaderImpl extends BufferedInputStream implements FormReader
+public class FormReader
 {
+   /** The form stream. */
+   protected InputStream stream;
+   
    /**
     * Constructor.
-    * @param contentStream The web form content stream.
+    * @param representation The web form content.
     */
-   public FormReaderImpl(InputStream contentStream)
+   public FormReader(Representation representation) throws IOException
    {
-      super(contentStream);
+      this.stream = representation.getStream();
+   }
+   
+   /**
+    * Constructor.
+    * @param query The query string.
+    */
+   public FormReader(String query) throws IOException
+   {
+      this.stream = new ByteArrayInputStream(query.getBytes());
    }
 
    /**
@@ -107,7 +118,7 @@ public class FormReaderImpl extends BufferedInputStream implements FormReader
          param = readNextParameter();
       }
 
-      close();
+      this.stream.close();
       return result;
    }
 
@@ -132,7 +143,7 @@ public class FormReaderImpl extends BufferedInputStream implements FormReader
          param = readNextParameter();
       }
 
-      close();
+      this.stream.close();
       return result;
    }
 
@@ -196,7 +207,7 @@ public class FormReaderImpl extends BufferedInputStream implements FormReader
          param = readNextParameter();
       }
 
-      close();
+      this.stream.close();
    }
 
    /**
@@ -217,7 +228,7 @@ public class FormReaderImpl extends BufferedInputStream implements FormReader
          int nextChar = 0;
          while((result == null) && (nextChar != -1))
          {
-            nextChar = read();
+            nextChar = this.stream.read();
 
             if(readingName)
             {
@@ -237,7 +248,7 @@ public class FormReaderImpl extends BufferedInputStream implements FormReader
                {
                   if(nameBuffer.length() > 0)
                   {
-                     result = createParameter(nameBuffer, null);
+                     result = FormUtils.create(nameBuffer, null);
                   }
                   else if(nextChar == -1)
                   {
@@ -259,11 +270,11 @@ public class FormReaderImpl extends BufferedInputStream implements FormReader
                {
                   if(valueBuffer.length() > 0)
                   {
-                     result = createParameter(nameBuffer, valueBuffer);
+                     result = FormUtils.create(nameBuffer, valueBuffer);
                   }
                   else
                   {
-                     result = createParameter(nameBuffer, null);
+                     result = FormUtils.create(nameBuffer, null);
                   }
                }
                else
@@ -282,37 +293,21 @@ public class FormReaderImpl extends BufferedInputStream implements FormReader
    }
 
    /**
-    * Creates a parameter.
-    * @param name The parameter name buffer.
-    * @param value The parameter value buffer (can be null).
-    * @return The created parameter.
-    * @throws IOException
+    * Returns the list of parameters.
+    * @return The list of parameters.
     */
-   private Parameter createParameter(CharSequence name, CharSequence value) throws IOException
+   public List<Parameter> readParameters() throws IOException
    {
-      Parameter result = null;
-      final String encoding = "UTF-8";
+      List<Parameter> result = new ArrayList<Parameter>();
+      Parameter param = readNextParameter();
 
-      try
+      while(param != null)
       {
-         if(name != null)
-         {
-            if(value != null)
-            {
-               result = new ParameterImpl(URLDecoder.decode(name.toString(), encoding), URLDecoder.decode(
-                     value.toString(), encoding));
-            }
-            else
-            {
-               result = new ParameterImpl(URLDecoder.decode(name.toString(), encoding), null);
-            }
-         }
-      }
-      catch(UnsupportedEncodingException uee)
-      {
-         throw new IOException("Unsupported encoding exception. Please contact the administrator");
+         result.add(param);
+         param = readNextParameter();
       }
 
+      this.stream.close();
       return result;
    }
 

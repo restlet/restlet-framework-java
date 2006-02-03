@@ -22,113 +22,234 @@
 
 package com.noelios.restlet.data;
 
-import java.io.ByteArrayInputStream;
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 
+import org.restlet.data.EmptyValue;
 import org.restlet.data.Form;
-import org.restlet.data.FormReader;
 import org.restlet.data.MediaTypes;
 import org.restlet.data.Parameter;
 import org.restlet.data.Representation;
 
+import com.noelios.restlet.util.FormUtils;
+
 /**
  * Representation of a Web form containing submitted parameters.
  */
-public class FormImpl extends InputRepresentation implements Form
+public class FormImpl implements Form
 {
-   /** Indicates if the reader for this form was already created. */
-   protected boolean firstReaderCreation;
-
+   /** The list of parameters. */
+   protected List<Parameter> parameters;
+   
+   /**
+    * Default constructor.
+    */
+   public FormImpl()
+   {
+      this.parameters = new ArrayList<Parameter>();
+   }
+   
    /**
     * Constructor.
-    * @param queryParameters The web form parameters as a string.
+    * @param query The web form parameters as a string.
+    * @throws IOException 
     */
-   public FormImpl(String queryParameters)
+   public FormImpl(String query) throws IOException
    {
-      super(new ByteArrayInputStream(queryParameters.getBytes()), MediaTypes.APPLICATION_WWW_FORM);
-      this.firstReaderCreation = true;
+      this.parameters = FormUtils.getParameters(query);
    }
 
    /**
     * Construcotr.
-    * @param requestContent The web form parameters as a representation.
+    * @param content The web form parameters as a representation.
     * @throws IOException
     */
-   public FormImpl(Representation requestContent) throws IOException
+   public FormImpl(Representation content) throws IOException
    {
-      super(requestContent.getStream(), MediaTypes.APPLICATION_WWW_FORM);
-      this.firstReaderCreation = true;
+      this.parameters = FormUtils.getParameters(content);
    }
 
    /**
-    * Reads the parameters with the given name. If multiple values are found, a list is returned created.
+    * Gets the parameters with the given name.<br/>
+    * If multiple values are found, a list is returned created.
     * @param name The parameter name to match.
     * @return The parameter value or list of values.
     */
-   public Object getParameter(String name) throws IOException
+   public List<Parameter> getParameters(String name) 
    {
-      return getFormReader().readParameter(name);
+      List<Parameter> result = null;
+      
+      Parameter current;
+      for(Iterator<Parameter> iter = getParameters().iterator(); (result == null) && iter.hasNext();)
+      {
+         current = iter.next();
+         
+         if(current.getName().equals(name))
+         {
+            if(result == null) result = new ArrayList<Parameter>();
+            result.add(current);
+         }
+      }
+      
+      return result;
    }
 
    /**
-    * Reads the first parameter with the given name.
+    * Gets the first parameter with the given name.
     * @param name The parameter name to match.
     * @return The parameter value.
-    * @throws IOException
     */
-   public Parameter getFirstParameter(String name) throws IOException
+   public Parameter getFirstParameter(String name) 
    {
-      return getFormReader().readFirstParameter(name);
-   }
-
-   /**
-    * Reads the parameters whose name is a key in the given map. If a matching parameter is found, its value
-    * is put in the map. If multiple values are found, a list is created and set in the map.
-    * @param parameters The parameters map controlling the reading.
-    */
-   public void getParameters(Map<String, Object> parameters) throws IOException
-   {
-      getFormReader().readParameters(parameters);
-   }
-
-   /**
-    * Returns a new form reader to read the list.
-    * @return A new form reader to read the list.
-    */
-   public FormReader getFormReader() throws IOException
-   {
-      if(!firstReaderCreation && getStream().markSupported())
+      Parameter result = null;
+      Parameter current;
+      for(Iterator<Parameter> iter = getParameters().iterator(); (result == null) && iter.hasNext();)
       {
-         // Allow multiple uses of the form when possible
-         getStream().reset();
+         current = iter.next();
+         
+         if(current.getName().equals(name))
+         {
+            result = current;
+         }
       }
-
-      firstReaderCreation = false;
-      return new FormReaderImpl(getStream());
-   }
-
-   /**
-    * Returns the list of parameters.
-    * @return The list of parameters.
-    * @see org.restlet.data.Parameter
-    */
-   public List<Parameter> getParameters() throws IOException
-   {
-      List<Parameter> result = new ArrayList<Parameter>();
-      FormReader fis = getFormReader();
-      Parameter param = fis.readNextParameter();
-
-      while(param != null)
-      {
-         result.add(param);
-         fis.readNextParameter();
-      }
-
-      fis.close();
+      
       return result;
+   }
+
+   /**
+    * Returns the modifiable list of parameters.
+    * @return The modifiable list of parameters.
+    */
+   public List<Parameter> getParameters()
+   {
+      return this.parameters;
+   }
+
+   /**
+    * Adds a new parameter.
+    * @param name The parameter name.
+    * @param value The parameter value.
+    */
+   public void addParameter(String name, String value)
+   {
+      getParameters().add(new ParameterImpl(name, value));
+   }
+
+   /**
+    * Removes parameters with a given name.
+    * @param name The name of the parameters to remove.
+    */
+   public void removeParameters(String name)
+   {
+      Parameter current;
+      for(Iterator<Parameter> iter = getParameters().iterator(); iter.hasNext();)
+      {
+         current = iter.next();
+         
+         if(current.getName().equals(name))
+         {
+            iter.remove();
+         }
+      }
+   }
+   
+   /**
+    * Gets the parameters whose name is a key in the given map.<br/>
+    * If a matching parameter is found, its value is put in the map.<br/>
+    * If multiple values are found, a list is created and set in the map.
+    * @param params The parameters map controlling the reading.
+    */
+   @SuppressWarnings("unchecked")
+   public void getParameters(Map<String, Object> params) 
+   {
+      Parameter param;
+      Object currentValue = null;
+      for(Iterator<Parameter> iter = getParameters().iterator(); iter.hasNext();)
+      {
+         param = iter.next();
+         
+         if(params.containsKey(param.getName()))
+         {
+            currentValue = params.get(param.getName());
+
+            if(currentValue != null)
+            {
+               List<Object> values = null;
+
+               if(currentValue instanceof List)
+               {
+                  // Multiple values already found for this parameter
+                  values = (List<Object>)currentValue;
+               }
+               else
+               {
+                  // Second value found for this parameter
+                  // Create a list of values
+                  values = new ArrayList<Object>();
+                  values.add(currentValue);
+                  params.put(param.getName(), values);
+               }
+
+               if(param.getValue() == null)
+               {
+                  values.add(new EmptyValue());
+               }
+               else
+               {
+                  values.add(param.getValue());
+               }
+            }
+            else
+            {
+               if(param.getValue() == null)
+               {
+                  params.put(param.getName(), new EmptyValue());
+               }
+               else
+               {
+                  params.put(param.getName(), param.getValue());
+               }
+            }
+         }
+      }
+      
+   }
+
+   /**
+    * Returns the formatted query corresponding to the current list of parameters.
+    * @return The formatted query.
+    */
+   public String getQuery() 
+   {
+      try
+      {
+         return FormUtils.format(this.parameters);
+      }
+      catch(IOException e)
+      {
+         return null;
+      }
+   }
+
+   /**
+    * Returns the formatted query corresponding to the current list of parameters.
+    * @return The formatted query.
+    */
+   public Representation getRepresentation() 
+   {
+      return new StringRepresentation(getQuery(), MediaTypes.APPLICATION_WWW_FORM);
+   }
+
+   /**
+    * Returns the description of this REST element.
+    * @return The description of this REST element.
+    */
+   public String getDescription()
+   {
+      return "Form data";
    }
 
 }

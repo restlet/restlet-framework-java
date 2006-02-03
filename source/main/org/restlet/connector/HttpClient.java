@@ -31,7 +31,8 @@ public interface HttpClient extends Client
     * Returns a new HTTP protocol call.
     * @param method The request method.
     * @param resourceUri The requested resource URI.
+    * @param hasInput Indicates if the call will have an input to send to the server.
     * @return A new HTTP protocol call.
     */
-   public HttpClientCall createCall(String method, String resourceUri);
+   public HttpClientCall createCall(String method, String resourceUri, boolean hasInput);
 }
