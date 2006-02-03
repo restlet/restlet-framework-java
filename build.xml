@@ -122,8 +122,8 @@
   
 
   <!-- Set global names -->
-  <property name="version-full"     value="1.0 beta 2"/>
-  <property name="version-compact"  value="1.0b2"/>
+  <property name="version-full"     value="1.0 beta 3"/>
+  <property name="version-compact"  value="1.0b3"/>
   <property name="restlet-api"      value="Restlet API"/>
   <property name="restlet-ri"       value="Noelios Restlet Engine"/>
   <property name="author"           value="Jerome Louvel"/>
