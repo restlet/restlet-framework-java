@@ -107,12 +107,21 @@ public class SecurityDataImpl implements SecurityData
    }
 
    /**
+    * Returns the name of this REST element.
+    * @return The name of this REST element.
+    */
+   public String getName()
+   {
+      return "Security data";
+   }
+
+   /**
     * Returns the description of this REST element.
     * @return The description of this REST element.
     */
    public String getDescription()
    {
-      return "Security data related to a call";
+      return "Security data related to a call such as authentification and confidentiality";
    }
 
 }

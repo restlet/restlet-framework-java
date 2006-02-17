@@ -74,8 +74,8 @@ public class Engine implements Factory
    /** Obtain a suitable logger. */
    private static Logger logger = Logger.getLogger("com.noelios.restlet.Engine");
 
-   public static final String VERSION_LONG = "1.0 beta 1";
-   public static final String VERSION_SHORT = "1.0b1";
+   public static final String VERSION_LONG = "1.0 beta 3";
+   public static final String VERSION_SHORT = "1.0b3";
    public static final String VERSION_HEADER = "Noelios-Restlet-Engine/" + VERSION_SHORT;
    
    /** 

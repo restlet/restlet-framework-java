@@ -48,7 +48,6 @@ public class PreferenceDataImpl implements PreferenceData
    /** The media preferences. */
    protected List<MediaTypePref> mediaTypes;
 
-
    /**
     * Constructor.
     */
@@ -101,12 +100,21 @@ public class PreferenceDataImpl implements PreferenceData
    }
 
    /**
+    * Returns the name of this REST element.
+    * @return The name of this REST element.
+    */
+   public String getName()
+   {
+      return "Preference data";
+   }
+
+   /**
     * Returns the description of this REST element.
     * @return The description of this REST element.
     */
    public String getDescription()
    {
-      return "Preference data related to a call";
+      return "Client preference data related to a call";
    }
 
 }

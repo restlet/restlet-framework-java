@@ -22,6 +22,12 @@
 
 package org.restlet.component;
 
+import java.io.IOException;
+
+import org.restlet.UniformCall;
+import org.restlet.connector.Client;
+import org.restlet.connector.Server;
+
 /**
  * Definitive source for representations of resources in a governed namespace.<br/><br/> "An origin server
  * uses a server connector to govern the namespace for a requested resource. It is the definitive source for
@@ -33,4 +39,37 @@ package org.restlet.component;
  */
 public interface OriginServer extends Component
 {
+   /**
+    * Adds a server connector to this component.
+    * @param server The server connector to add.
+    * @return The server connector added.
+    */
+   public Server addServer(Server server);
+
+   /**
+    * Removes a server connector from this component.
+    * @param name The name of the server connector to remove.
+    */
+   public void removeServer(String name);
+
+   /**
+    * Adds a client connector to this component.
+    * @param client The client connector to add.
+    * @return The client connector added.
+    */
+   public Client addClient(Client client);
+
+   /**
+    * Removes a client connector from this component.
+    * @param name The name of the client connector to remove.
+    */
+   public void removeClient(String name);
+
+   /**
+    * Calls a client connector.
+    * @param name The name of the client connector.
+    * @param call The call to handle.
+    * @throws IOException
+    */
+   public void callClient(String name, UniformCall call) throws IOException;
 }

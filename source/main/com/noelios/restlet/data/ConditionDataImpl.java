@@ -128,14 +128,23 @@ public class ConditionDataImpl implements ConditionData
    {
       this.noneMatch = tags;
    }
-   
+
+   /**
+    * Returns the name of this REST element.
+    * @return The name of this REST element.
+    */
+   public String getName()
+   {
+      return "Condition data";
+   }
+
    /**
     * Returns the description of this REST element.
     * @return The description of this REST element.
     */
    public String getDescription()
    {
-      return "Condition data for a parent uniform call";
+      return "Set of conditions applying to an uniform call";
    }
 
 }

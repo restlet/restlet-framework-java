@@ -49,28 +49,4 @@ public interface Connector extends Element, UniformInterface
    /** HTTPS protocol (via SSL sockets). */
    public static final int PROTOCOL_HTTPS = 3;
 
-   /** Start hook. */
-   public void start() throws Exception;
-
-   /** Stop hook. */
-   public void stop() throws Exception;
-
-   /**
-    * Indicates if the connector is started.
-    * @return True if the connector is started.
-    */
-   public boolean isStarted();
-
-   /**
-    * Indicates if the connector is stopped.
-    * @return True if the connector is stopped.
-    */
-   public boolean isStopped();
-
-   /**
-    * Returns the name of this REST connector.
-    * @return The name of this REST connector.
-    */
-   public String getName();
-
 }

@@ -33,6 +33,9 @@ public class StatusImpl implements Status
    /** The specification code. */
    private int code;
 
+   /** The name of this REST element. */
+   private String name;
+
    /** The description of this REST element. */
    private String description;
 
@@ -45,18 +48,20 @@ public class StatusImpl implements Status
     */
    public StatusImpl(int code)
    {
-      this(code, null, null);
+      this(code, null, null, null);
    }
 
    /**
     * Constructor.
     * @param code The specification code.
+    * @param name The name of this REST element.
     * @param description The description of this REST element.
     * @param uri The URI of the specification describing the method.
     */
-   public StatusImpl(int code, String description, String uri)
+   public StatusImpl(int code, String name, String description, String uri)
    {
       this.code = code;
+      this.name = name;
       this.description = description;
       this.uri = uri;
    }
@@ -68,6 +73,15 @@ public class StatusImpl implements Status
    public int getHttpCode()
    {
       return code;
+   }
+
+   /**
+    * Returns the name of this REST element.
+    * @return The name of this REST element.
+    */
+   public String getName()
+   {
+      return (name == null) ? Statuses.getName(getHttpCode()) : name;
    }
 
    /**

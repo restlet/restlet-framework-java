@@ -32,6 +32,12 @@ package org.restlet;
 public interface Element
 {
    /**
+    * Returns the name of this REST element.
+    * @return The name of this REST element.
+    */
+   public String getName();
+
+   /**
     * Returns the description of this REST element.
     * @return The description of this REST element.
     */

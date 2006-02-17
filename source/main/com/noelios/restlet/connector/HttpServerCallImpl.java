@@ -22,6 +22,7 @@
 
 package com.noelios.restlet.connector;
 
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.Iterator;
@@ -602,9 +603,9 @@ public abstract class HttpServerCallImpl extends UniformCallImpl implements Http
                      currentPref = (CharacterSetPref)pr.readPreference();
                   }
                }
-               catch(Exception e)
+               catch(IOException ioe)
                {
-                  logger.log(Level.WARNING, "An exception occured during character set preferences parsing. Header: " + acceptCharset, e);
+                  logger.log(Level.WARNING, "An exception occured during character set preferences parsing. Header: " + acceptCharset + ". Ignoring header.");
                }
             }
          }
@@ -625,9 +626,9 @@ public abstract class HttpServerCallImpl extends UniformCallImpl implements Http
                   currentPref = (EncodingPref)pr.readPreference();
                }
             }
-            catch(Exception e)
+            catch(IOException ioe)
             {
-               logger.log(Level.WARNING, "An exception occured during encoding preferences parsing. Header: " + acceptEncoding, e);
+               logger.log(Level.WARNING, "An exception occured during encoding preferences parsing. Header: " + acceptEncoding + ". Ignoring header.");
             }
          }
          else
@@ -647,9 +648,9 @@ public abstract class HttpServerCallImpl extends UniformCallImpl implements Http
                   currentPref = (LanguagePref)pr.readPreference();
                }
             }
-            catch(Exception e)
+            catch(IOException ioe)
             {
-               logger.log(Level.WARNING, "An exception occured during language preferences parsing. Header: " + acceptLanguage, e);
+               logger.log(Level.WARNING, "An exception occured during language preferences parsing. Header: " + acceptLanguage + ". Ignoring header.");
             }
          }
          else
@@ -669,9 +670,9 @@ public abstract class HttpServerCallImpl extends UniformCallImpl implements Http
                   currentPref = (MediaTypePref)pr.readPreference();
                }
             }
-            catch(Exception e)
+            catch(IOException ioe)
             {
-               logger.log(Level.WARNING, "An exception occured during media type preferences parsing. Header: " + acceptMediaType, e);
+               logger.log(Level.WARNING, "An exception occured during media type preferences parsing. Header: " + acceptMediaType + ". Ignoring header.");
             }
          }
          else

@@ -27,7 +27,7 @@ import org.restlet.component.RestletContainer;
 /**
  * Abstract restlet that can be easily subclassed.
  */
-public abstract class AbstractRestlet implements Restlet, Comparable
+public abstract class AbstractRestlet extends AbstractHandler implements Restlet, Comparable
 {
    /**
     * The container.

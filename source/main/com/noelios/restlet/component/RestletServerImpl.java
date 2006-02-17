@@ -25,20 +25,26 @@ package com.noelios.restlet.component;
 import java.util.Iterator;
 import java.util.Map;
 import java.util.TreeMap;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 import org.restlet.UniformCall;
 import org.restlet.component.RestletContainer;
 import org.restlet.component.RestletServer;
+import org.restlet.data.Statuses;
 
 /**
- * Origin server containing Restlets containers.<br/>
+ * Origin server composed of Restlets containers.<br/>
  * Each container is managing its own resource namespace.
  * Incoming calls are normally handled via pluggable server connectors.<br/>
  * Outcoming calls are normally handled via pluggable client connectors.<br/>
  * Other direct calls are handled by the default container.
  */
-public class RestletServerImpl extends ComponentImpl implements RestletServer
+public class RestletServerImpl extends OriginServerImpl implements RestletServer
 {
+   /** Obtain a suitable logger. */
+   private static Logger logger = Logger.getLogger("com.noelios.restlet.component.RestletServerImpl");
+
    /**
     * The restlets containers.
     * @link aggregationByValue
@@ -110,11 +116,25 @@ public class RestletServerImpl extends ComponentImpl implements RestletServer
    {
       if(getDefaultContainer() != null)
       {
+         if(getDefaultContainer().isStopped())
+         {
+            try
+            {
+               getDefaultContainer().start();
+            }
+            catch(Exception e)
+            {
+               call.setStatus(Statuses.SERVER_ERROR_INTERNAL);
+               logger.log(Level.SEVERE, "Default Restlet container can't be started", e);
+            }
+         }
+         
          getDefaultContainer().handle(call);
       }
       else
       {
-         // LOG PROBLEM
+         call.setStatus(Statuses.SERVER_ERROR_INTERNAL);
+         logger.log(Level.SEVERE, "No default Restlet container defined");
       }
    }
 

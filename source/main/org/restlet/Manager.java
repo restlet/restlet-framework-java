@@ -52,8 +52,8 @@ public class Manager
 
    /** Static fields. */
    public static final String PROPERTY_FACTORY = "org.restlet.impl";
-   public static final String VERSION_LONG = "1.0 beta 1";
-   public static final String VERSION_SHORT = "1.0b1";
+   public static final String VERSION_LONG = "1.0 beta 3";
+   public static final String VERSION_SHORT = "1.0b3";
    
    /** The registered factory. */
    protected static Factory registeredFactory = null;

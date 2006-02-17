@@ -22,6 +22,7 @@
 
 package com.noelios.restlet.tutorial;
 
+import org.restlet.AbstractHandler;
 import org.restlet.Manager;
 import org.restlet.UniformCall;
 import org.restlet.UniformInterface;
@@ -40,7 +41,7 @@ public class Tutorial03
       try
       {
          // Creating a minimal handler returning "Hello World"
-         UniformInterface handler = new UniformInterface()
+         UniformInterface handler = new AbstractHandler()
          {
             public void handle(UniformCall call)
             {

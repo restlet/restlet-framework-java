@@ -22,8 +22,8 @@
 
 package com.noelios.restlet.test;
 
+import org.restlet.AbstractHandler;
 import org.restlet.UniformCall;
-import org.restlet.UniformInterface;
 import org.restlet.data.MediaTypes;
 
 import com.noelios.restlet.data.StringRepresentation;
@@ -31,7 +31,7 @@ import com.noelios.restlet.data.StringRepresentation;
 /**
  * Trace target. 
  */
-public class TraceTarget implements UniformInterface
+public class TraceTarget extends AbstractHandler
 {
    /**
     * Handles a uniform call.

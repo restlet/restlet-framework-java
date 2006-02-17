@@ -164,6 +164,15 @@ public class DefaultRestletContainer implements RestletContainer
       delegate.start();
    }
 
+   /**
+    * Handles a uniform call.
+    * @param call The uniform call to handle.
+    */
+   public void handle(UniformCall call)
+   {
+      delegate.handle(call);
+   }
+
    /** Stop hook. */
    public void stop() throws Exception
    {
@@ -186,15 +195,6 @@ public class DefaultRestletContainer implements RestletContainer
    public boolean isStopped()
    {
       return delegate.isStopped();
-   }
-
-   /**
-    * Handles a uniform call.
-    * @param call The uniform call to handle.
-    */
-   public void handle(UniformCall call)
-   {
-      delegate.handle(call);
    }
 
    /**

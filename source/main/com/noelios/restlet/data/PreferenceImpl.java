@@ -135,11 +135,20 @@ public class PreferenceImpl implements Preference
    }
 
    /**
+    * Returns the name of this REST element.
+    * @return The name of this REST element.
+    */
+   public String getName()
+   {
+      return "Metadata preference";
+   }
+
+   /**
     * Returns the description of this REST element.
     * @return The description of this REST element.
     */
    public String getDescription()
    {
-      return "Metadata preference";
+      return "Metadata preference such as quality level";
    }
 }

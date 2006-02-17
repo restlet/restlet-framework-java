@@ -27,20 +27,18 @@ import java.util.Iterator;
 import java.util.Map;
 import java.util.TreeMap;
 
+import org.restlet.AbstractHandler;
 import org.restlet.UniformCall;
 import org.restlet.UniformInterface;
-import org.restlet.component.Component;
+import org.restlet.component.OriginServer;
 import org.restlet.connector.Client;
 import org.restlet.connector.Server;
 
 /**
- * Abstract component implementation.
+ * Abstract origin server implementation.
  */
-public abstract class ComponentImpl implements Component
+public abstract class OriginServerImpl extends AbstractHandler implements OriginServer
 {
-   /** Indicates if the component was started. */
-   protected boolean started;
-
    /** The component name. */
    protected String name;
 
@@ -54,17 +52,16 @@ public abstract class ComponentImpl implements Component
     * Constructor.
     * @param name The component name.
     */
-   public ComponentImpl(String name)
+   public OriginServerImpl(String name)
    {
-      this.started = false;
       this.name = name;
       this.clients = new TreeMap<String, Client>();
       this.servers = new TreeMap<String, Server>();
    }
 
    /**
-    * Returns the component name.
-    * @return The component name.
+    * Returns the name of this REST element.
+    * @return The name of this REST element.
     */
    public String getName()
    {
@@ -153,7 +150,7 @@ public abstract class ComponentImpl implements Component
          this.servers.get(iter.next()).start();
       }
 
-      this.started = true;
+      super.start();
    }
 
    /**
@@ -170,25 +167,7 @@ public abstract class ComponentImpl implements Component
          this.servers.get(iter.next()).stop();
       }
 
-      this.started = false;
-   }
-
-   /**
-    * Indicates if the component is started.
-    * @return True if the component is started.
-    */
-   public boolean isStarted()
-   {
-      return this.isStarted();
-   }
-
-   /**
-    * Indicates if the component is stopped.
-    * @return True if the component is stopped.
-    */
-   public boolean isStopped()
-   {
-      return !isStarted();
+      super.stop();
    }
 
 }

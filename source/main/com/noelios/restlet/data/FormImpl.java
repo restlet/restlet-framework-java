@@ -244,12 +244,21 @@ public class FormImpl implements Form
    }
 
    /**
+    * Returns the name of this REST element.
+    * @return The name of this REST element.
+    */
+   public String getName()
+   {
+      return "Web Form";
+   }
+
+   /**
     * Returns the description of this REST element.
     * @return The description of this REST element.
     */
    public String getDescription()
    {
-      return "Form data";
+      return "Representation of a Web form containing submitted parameters.";
    }
 
 }

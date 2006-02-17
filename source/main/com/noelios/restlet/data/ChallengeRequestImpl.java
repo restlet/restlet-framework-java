@@ -109,12 +109,21 @@ public class ChallengeRequestImpl implements ChallengeRequest
    }
 
    /**
+    * Returns the name of this REST element.
+    * @return The name of this REST element.
+    */
+   public String getName()
+   {
+      return "Authentication challenge request";
+   }
+
+   /**
     * Returns the description of this REST element.
     * @return The description of this REST element.
     */
    public String getDescription()
    {
-      return "Authentication challenge request";
+      return "Authentication challenge sent by an origin server to a client";
    }
 
 }

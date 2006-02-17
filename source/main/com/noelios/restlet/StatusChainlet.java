@@ -86,7 +86,7 @@ public class StatusChainlet extends AbstractChainlet
       }
       catch(Exception e)
       {
-         logger.log(Level.WARNING, "Unhandled error intercepted", e);
+         logger.log(Level.SEVERE, "Unhandled error intercepted", e);
          call.setStatus(Statuses.SERVER_ERROR_INTERNAL);
       }
 

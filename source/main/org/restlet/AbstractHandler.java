@@ -23,37 +23,51 @@
 package org.restlet;
 
 /**
- * Uniform interface for REST handlers.<br/><br/> "The central feature that distinguishes
- * the REST architectural style from other network-based styles is its emphasis on a uniform interface between
- * components. By applying the software engineering principle of generality to the component interface, the
- * overall system architecture is simplified and the visibility of interactions is improved. Implementations
- * are decoupled from the services they provide, which encourages independent evolvability." Roy T. Fielding
- * @see <a href="http://www.ics.uci.edu/~fielding/pubs/dissertation/rest_arch_style.htm#sec_5_1_5">Source
- * dissertation</a>
+ * Abstract implementation of a uniform interface handler.<br/>
+ * The start and stop state is managed by default but with no other action.<br/>
+ * Override the start and stop methods if needed.
  */
-public interface UniformInterface
+public abstract class AbstractHandler implements UniformInterface
 {
-   /** Starts the handler. */
-   public void start() throws Exception;
+   /** Indicates if the handler was started. */
+   protected boolean started;
 
    /**
-    * Handles a uniform call.
-    * @param call The uniform call to handle.
+    * Constructor.
     */
-   public void handle(UniformCall call);
+   public AbstractHandler()
+   {
+      this.started = false;
+   }
+
+   /** Starts the handler. */
+   public void start() throws Exception
+   {
+      this.started = true;
+   }
 
    /** Stops the handler. */
-   public void stop() throws Exception;
+   public void stop() throws Exception
+   {
+      this.started = false;
+   }
 
    /**
     * Indicates if the handler is started.
     * @return True if the handler is started.
     */
-   public boolean isStarted();
+   public boolean isStarted()
+   {
+      return this.started;
+   }
 
    /**
     * Indicates if the handler is stopped.
     * @return True if the handler is stopped.
     */
-   public boolean isStopped();
+   public boolean isStopped()
+   {
+      return !this.started;
+   }
+
 }

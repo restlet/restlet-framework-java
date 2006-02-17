@@ -138,6 +138,15 @@ public class DefaultRestletServer implements RestletServer
       delegate.start();
    }
 
+   /**
+    * Handles a uniform call.
+    * @param call The uniform call to handle.
+    */
+   public void handle(UniformCall call)
+   {
+      delegate.handle(call);
+   }
+
    /** Stop hook. */
    public void stop() throws Exception
    {
@@ -160,15 +169,6 @@ public class DefaultRestletServer implements RestletServer
    public boolean isStopped()
    {
       return delegate.isStopped();
-   }
-
-   /**
-    * Handles a uniform call.
-    * @param call The uniform call to handle.
-    */
-   public void handle(UniformCall call)
-   {
-      delegate.handle(call);
    }
 
    /**

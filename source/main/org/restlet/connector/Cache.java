@@ -22,6 +22,8 @@
 
 package org.restlet.connector;
 
+import org.restlet.UniformInterface;
+
 /**
  * Connector used to reduce interaction latency.<br/><br/> "The cache connector, can be located on the
  * interface to a client or server connector in order to save cacheable responses to current interactions so
@@ -34,4 +36,17 @@ package org.restlet.connector;
  */
 public interface Cache extends Connector
 {
+   /**
+    * Returns the cached target handler.<br/>
+    * This handler is invoked if a call can't be processed directly by the cache. 
+    * @return The cached target handler.
+    */
+   public UniformInterface getCachedTarget();
+
+   /**
+    * Sets the cached target handler.
+    * This handler is invoked if a call can't be processed directly by the cache. 
+    * @param target The cached target handler.
+    */
+   public void setCachedTarget(UniformInterface target);
 }
