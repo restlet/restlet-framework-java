@@ -32,7 +32,7 @@ import org.restlet.data.Parameter;;
  * Readable model wrapping an uniform call.<br/>
  * Can be passed directly passed to a string template.
  */
-public class UniformModel implements ReadableModel
+public class UniformCallModel implements ReadableModel
 {
    public static final String NAME_CLIENT_ADDRESS = "clientAddress";
    public static final String NAME_CLIENT_NAME = "clientName";
@@ -67,7 +67,7 @@ public class UniformModel implements ReadableModel
     * @param call The wrapped uniform call.
     * @param defaultValue The default value to return if a lookup fails or returns null.
     */
-   public UniformModel(UniformCall call, String defaultValue)
+   public UniformCallModel(UniformCall call, String defaultValue)
    {
       this.call = call;
       this.defaultValue = defaultValue;

@@ -29,7 +29,7 @@ import org.restlet.AbstractChainlet;
 import org.restlet.UniformCall;
 import org.restlet.component.RestletContainer;
 
-import com.noelios.restlet.util.UniformModel;
+import com.noelios.restlet.util.UniformCallModel;
 import com.noelios.restlet.util.StringTemplate;
 
 /**
@@ -63,7 +63,7 @@ public class LogChainlet extends AbstractChainlet
     * @param container The parent container.
     * @param logName The log name to used in the logging.properties file.
     * @param logFormat The log format to use.
-    * @see com.noelios.restlet.util.UniformModel
+    * @see com.noelios.restlet.util.UniformCallModel
     * @see com.noelios.restlet.util.StringTemplate
     */
    public LogChainlet(RestletContainer container, String logName, String logFormat)
@@ -178,7 +178,7 @@ public class LogChainlet extends AbstractChainlet
     */
    protected String format(UniformCall call)
    {
-      return this.logTemplate.process(new UniformModel(call, "-"));
+      return this.logTemplate.process(new UniformCallModel(call, "-"));
    }
 
 }

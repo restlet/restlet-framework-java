@@ -30,7 +30,7 @@ import org.restlet.component.RestletContainer;
 import com.noelios.restlet.MapletImpl;
 
 /**
- * Origin server that contains Restlets.<br/>
+ * Origin server composed of Restlets.<br/>
  * Note that a Restlet containers are Maplets themselves and can be contained in Restlet servers.
  */
 public class RestletContainerImpl extends OriginServerImpl implements RestletContainer

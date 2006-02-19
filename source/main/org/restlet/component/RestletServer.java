@@ -23,7 +23,7 @@
 package org.restlet.component;
 
 /**
- * Origin server containing Restlets containers.<br/>
+ * Origin server composed of Restlets containers.<br/>
  * Each container is managing its own resource namespace.
  */
 public interface RestletServer extends OriginServer
