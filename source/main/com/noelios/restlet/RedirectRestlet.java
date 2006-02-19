@@ -64,8 +64,8 @@ public class RedirectRestlet extends AbstractRestlet
    /**
     * In this mode, the call is sent to the connector indicated by the "connectorName" property. 
     * Once the connector has completed the call handling, the call is normally returned to the client.
-    * In this case, you can view the RedirectRestlet as acting as a proxying Restlet.<br/>
-    * Remember to attach the connector you want to use the the parent Restlet container using the exact same
+    * In this case, you can view the RedirectRestlet as acting as a proxy Restlet.<br/>
+    * Remember to attach the connector you want to use to the parent Restlet container, using the exact same
     * name as the one you provided to the setConnectorName method. 
     */
    public static final int MODE_CONNECTOR = 4;
