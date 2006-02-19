@@ -43,10 +43,38 @@ import com.noelios.restlet.util.StringTemplate;
  */
 public class RedirectRestlet extends AbstractRestlet
 {
+   /**
+    * In this mode, the client is permanently redirected to the URI generated from the target URI pattern.<br/>
+    * See Statuses.REDIRECTION_MOVED_PERMANENTLY.  
+    */
    public static final int MODE_CLIENT_PERMANENT = 1;
+
+   /**
+    * In this mode, the client is simply redirected to the URI generated from the target URI pattern.<br/>
+    * See Statuses.REDIRECTION_FOUND. 
+    */
    public static final int MODE_CLIENT_FOUND = 2;
+
+   /**
+    * In this mode, the client is temporarily redirected to the URI generated from the target URI pattern.<br/>
+    * See Statuses.REDIRECTION_MOVED_TEMPORARILY.  
+    */
    public static final int MODE_CLIENT_TEMPORARY = 3;
+
+   /**
+    * In this mode, the call is sent to the connector indicated using the "connectorName" property. 
+    * Once the connector has completed the call handling, the call is normally returned to the client.
+    * In this case, you can view the RedirectRestlet as acting as a proxying Restlet.<br/>
+    * Remember to attach the connector you want to use the the parent Restlet container using the exact same
+    * name as the one you provided to the setConnectorName method. 
+    */
    public static final int MODE_CONNECTOR = 4;
+
+   /**
+    * In this mode, the call is internally redirected within the current Restlet container. This is useful when 
+    * there are multiple ways to access to the same ressources.<br/>
+    * Be careful when specifying the target pattern or infinite loops may occur.
+    */
    public static final int MODE_CONTAINER = 5;
 
    /** Obtain a suitable logger. */
