@@ -38,7 +38,7 @@ import com.noelios.restlet.data.ChallengeRequestImpl;
 import com.noelios.restlet.util.Base64;
 
 /**
- * Chainlet guarding the access to another restlet.<br/>
+ * Chainlet guarding the access to another handler (Restlet, Chainlet, Maplet, etc.).<br/>
  * Supports the basic HTTP authentication and a customizable authorization via the authorize method.
  */
 public abstract class GuardChainlet extends AbstractChainlet
@@ -101,7 +101,7 @@ public abstract class GuardChainlet extends AbstractChainlet
                   // Log the authorization
                   logger.info("User: " + userId + " was authorized for client with IP: " + call.getClientAddress());
 
-                  // Credentials accepted, authorize access to chained restlet
+                  // Credentials accepted, authorize access to chained Restlet
                   super.handle(call);
                }
                else
@@ -150,10 +150,10 @@ public abstract class GuardChainlet extends AbstractChainlet
    }
 
    /**
-    * Indicates if the given credentials authorize access to the attached restlet.
+    * Indicates if the given credentials authorize access to the attached handler.
     * @param userId The user identifier.
     * @param password The password.
-    * @return True if the given credentials authorize access to the attached restlet.
+    * @return True if the given credentials authorize access to the attached handler.
     */
    protected abstract boolean authorize(String userId, String password);
 

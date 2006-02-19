@@ -51,9 +51,9 @@ public interface Factory
    public UniformCall createCall();
 
    /**
-    * Creates a delegate chainlet.
-    * @param container The restlet container.
-    * @return A new chainlet.
+    * Creates a delegate Chainlet.
+    * @param container The Restlet container.
+    * @return A new Chainlet.
     */
    public Chainlet createChainlet(RestletContainer container);
 
@@ -119,9 +119,9 @@ public interface Factory
    public Language createLanguage(String name);
 
    /**
-    * Creates a delegate maplet.
-    * @param container The restlet container.
-    * @return A new maplet.
+    * Creates a delegate Maplet.
+    * @param container The Restlet container.
+    * @return A new Maplet.
     */
    public Maplet createMaplet(RestletContainer container);
 
@@ -155,18 +155,18 @@ public interface Factory
    public Reference createReference(String uriReference);
 
    /**
-    * Creates a delegate restlet server.
-    * @param parent The parent restlet server.
+    * Creates a delegate Restlet server.
+    * @param parent The parent Restlet server.
     * @param name The server's name.
-    * @return The new restlet server.
+    * @return The new Restlet server.
     */
    public RestletServer createRestletServer(RestletServer parent, String name);
 
    /**
-    * Creates a delegate restlet container.
-    * @param parent The parent restlet container.
+    * Creates a delegate Restlet container.
+    * @param parent The parent Restlet container.
     * @param name The container's name.
-    * @return The new restlet container.
+    * @return The new Restlet container.
     */
    public RestletContainer createRestletContainer(RestletContainer parent, String name);
 

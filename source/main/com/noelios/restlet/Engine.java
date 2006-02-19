@@ -74,8 +74,8 @@ public class Engine implements Factory
    /** Obtain a suitable logger. */
    private static Logger logger = Logger.getLogger("com.noelios.restlet.Engine");
 
-   public static final String VERSION_LONG = "1.0 beta 3";
-   public static final String VERSION_SHORT = "1.0b3";
+   public static final String VERSION_LONG = "1.0 beta 4";
+   public static final String VERSION_SHORT = "1.0b4";
    public static final String VERSION_HEADER = "Noelios-Restlet-Engine/" + VERSION_SHORT;
    
    /** 
@@ -145,10 +145,10 @@ public class Engine implements Factory
    }
 
    /**
-    * Creates a delegate restlet server.
-    * @param parent The parent restlet server.
+    * Creates a delegate Restlet server.
+    * @param parent The parent Restlet server.
     * @param name The server's name.
-    * @return The new restlet server.
+    * @return The new Restlet server.
     */
    public RestletServer createRestletServer(RestletServer parent, String name)
    {
@@ -156,10 +156,10 @@ public class Engine implements Factory
    }
 
    /**
-    * Creates a delegate restlet container.
-    * @param parent The parent restlet container.
+    * Creates a delegate Restlet container.
+    * @param parent The parent Restlet container.
     * @param name The container's name.
-    * @return The new restlet container.
+    * @return The new Restlet container.
     */
    public RestletContainer createRestletContainer(RestletContainer parent, String name)
    {
@@ -167,9 +167,9 @@ public class Engine implements Factory
    }
 
    /**
-    * Creates a delegate maplet.
-    * @param container The restlet container.
-    * @return A new maplet.
+    * Creates a delegate Maplet.
+    * @param container The Restlet container.
+    * @return A new Maplet.
     */
    public Maplet createMaplet(RestletContainer container)
    {
@@ -177,9 +177,9 @@ public class Engine implements Factory
    }
 
    /**
-    * Creates a delegate chainlet.
-    * @param container The restlet container.
-    * @return A new chainlet.
+    * Creates a delegate Chainlet.
+    * @param container The Restlet container.
+    * @return A new Chainlet.
     */
    public Chainlet createChainlet(RestletContainer container)
    {

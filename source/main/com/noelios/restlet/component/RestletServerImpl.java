@@ -46,7 +46,7 @@ public class RestletServerImpl extends OriginServerImpl implements RestletServer
    private static Logger logger = Logger.getLogger("com.noelios.restlet.component.RestletServerImpl");
 
    /**
-    * The restlets containers.
+    * The Restlet containers.
     * @link aggregationByValue
     * @associates <{DefaultContainer}>
     * @supplierCardinality 0..*
@@ -70,7 +70,7 @@ public class RestletServerImpl extends OriginServerImpl implements RestletServer
    }
 
    /**
-    * Adds a restlet container.
+    * Adds a Restlet container.
     * @param name The unique name of the container.
     * @param container The container to add.
     * @return The added container.
@@ -82,7 +82,7 @@ public class RestletServerImpl extends OriginServerImpl implements RestletServer
    }
 
    /**
-    * Removes a restlet container.
+    * Removes a Restlet container.
     * @param name The name of the container to remove.
     */
    public void removeContainer(String name)

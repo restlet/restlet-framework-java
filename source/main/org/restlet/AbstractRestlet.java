@@ -25,7 +25,7 @@ package org.restlet;
 import org.restlet.component.RestletContainer;
 
 /**
- * Abstract restlet that can be easily subclassed.
+ * Abstract Restlet that can be easily subclassed.
  */
 public abstract class AbstractRestlet extends AbstractHandler implements Restlet, Comparable
 {
@@ -37,7 +37,7 @@ public abstract class AbstractRestlet extends AbstractHandler implements Restlet
    protected RestletContainer container;
 
    /**
-    * Creates a new restlet in the given container.
+    * Creates a new Restlet in the given container.
     * @param container The parent container.
     */
    public AbstractRestlet(RestletContainer container)

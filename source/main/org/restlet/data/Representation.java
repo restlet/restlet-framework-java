@@ -62,9 +62,9 @@ public interface Representation extends Data
    public RepresentationMetadata getMetadata();
 
    /**
-    * Returns a readable byte channel. <br/>
-    * If it is supported by a file a read-only instance of FileChannel is returned.
-    * @return A readable byte channel.
+    * Returns a channel with the representation's content.<br/>
+    * If it is supported by a file, a read-only instance of FileChannel is returned.
+    * @return A channel with the representation's content.
     * @throws IOException
     */
    public ReadableByteChannel getChannel() throws IOException;

@@ -52,7 +52,7 @@ public class FileResource implements Resource
    private static Logger logger = Logger.getLogger("com.noelios.restlet.data.FileRepresentation");
 
    /**
-    * The parent directory restlet.
+    * The parent directory Restlet.
     */
    private DirectoryRestlet directoryRestlet;
 
@@ -68,7 +68,7 @@ public class FileResource implements Resource
 
    /**
     * Constructor.
-    * @param directoryRestlet The parent directory restlet.
+    * @param directoryRestlet The parent directory Restlet.
     * @param basePath The base path of the file.
     */
    public FileResource(DirectoryRestlet directoryRestlet, String basePath)
@@ -227,8 +227,8 @@ public class FileResource implements Resource
    }
 
    /**
-    * Returns the parent directory restlet.
-    * @return The parent directory restlet.
+    * Returns the parent directory Restlet.
+    * @return The parent directory Restlet.
     */
    public DirectoryRestlet getDirectoryRestlet()
    {
@@ -236,8 +236,8 @@ public class FileResource implements Resource
    }
 
    /**
-    * Sets the parent directory restlet.
-    * @param directoryRestlet The parent directory restlet.
+    * Sets the parent directory Restlet.
+    * @param directoryRestlet The parent directory Restlet.
     */
    public void setDirectoryRestlet(DirectoryRestlet directoryRestlet)
    {

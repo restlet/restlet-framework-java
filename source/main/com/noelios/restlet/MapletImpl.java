@@ -49,7 +49,7 @@ public class MapletImpl extends AbstractRestlet implements Maplet
 
    /**
     * Constructor.
-    * @param container The restlet container.
+    * @param container The Restlet container.
     */
    public MapletImpl(RestletContainer container)
    {
@@ -108,7 +108,7 @@ public class MapletImpl extends AbstractRestlet implements Maplet
 
    /**
     * Detaches a target class.
-    * @param targetClass The restlet class to detach.
+    * @param targetClass The target class to detach.
     */
    public void detach(Class<? extends UniformInterface> targetClass)
    {
@@ -145,7 +145,7 @@ public class MapletImpl extends AbstractRestlet implements Maplet
       boolean found = false;
       String resourcePath = call.getResourcePath(0, false);
 
-      // Match the path in the call context with one of the child restlet
+      // Match the path in the call context with one of the child handler
       for(Iterator<HandlerMapping> iter = getMappings().iterator(); !found && iter.hasNext();)
       {
          mapping = iter.next();

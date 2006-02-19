@@ -96,7 +96,6 @@ public abstract class HttpServerCallImpl extends UniformCallImpl implements Http
    public UniformCall toUniform()
    {
       // Set the properties
-      setClientAddress(getRequestAddress());
       setServerAddress(getResponseAddress());
       setServerName(Engine.VERSION_HEADER);
       setStatus(Statuses.SUCCESS_OK);
@@ -152,9 +151,9 @@ public abstract class HttpServerCallImpl extends UniformCallImpl implements Http
          }
          
          // Set the redirection URI
-         if(call.getRedirectRef() != null)
+         if(call.getRedirectionRef() != null)
          {
-            addResponseHeader(HEADER_LOCATION, call.getRedirectRef().toString());
+            addResponseHeader(HEADER_LOCATION, call.getRedirectionRef().toString());
          }
 
          // Set the security data
@@ -299,6 +298,57 @@ public abstract class HttpServerCallImpl extends UniformCallImpl implements Http
       getResponseHeaders().add(Manager.createParameter(name, value));
    }
 
+   /**
+    * Returns the client IP address.
+    * @return The client IP address.
+    */
+   public String getClientAddress()
+   {
+      if(this.clientAddress == null)
+      {
+         boolean useForwardedFor = Boolean.valueOf(System.getProperty(PROPERTY_USE_FORWARDED_FOR));
+   
+         if(useForwardedFor)
+         {
+            // Lookup the "X-Forwarded-For" header
+            Parameter header;
+            for(Iterator<Parameter> iter = getRequestHeaders().iterator(); iter.hasNext(); )
+            {
+               header = iter.next();
+               
+               if(header.getName().equalsIgnoreCase(HEADER_X_FORWARDED_FOR))
+               {
+                  // If multiple proxies handled the call, multiple addresses could have used the
+                  // header, so we need to extract the last IP address
+                  int index = header.getValue().lastIndexOf(',');
+                  
+                  if(index == -1)
+                  {
+                     this.clientAddress = header.getValue().trim();
+                  }
+                  else
+                  {
+                     this.clientAddress = header.getValue().substring(index + 1).trim();
+                  }
+               }
+            }
+            
+            // Check whether the client IP address was known by the proxy
+            if((this.clientAddress == null) || this.clientAddress.equalsIgnoreCase("unknown"))
+            {
+               // Fall-back on the proxy IP address
+               this.clientAddress = getRequestAddress();            
+            }
+         }
+         else
+         {
+            this.clientAddress = getRequestAddress();            
+         }
+      }
+
+      return this.clientAddress;
+   }
+   
    /**
     * Returns the client name.
     * @return The client name.

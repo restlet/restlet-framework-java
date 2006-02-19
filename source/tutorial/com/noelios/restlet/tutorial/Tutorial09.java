@@ -34,7 +34,7 @@ import com.noelios.restlet.LogChainlet;
 import com.noelios.restlet.StatusChainlet;
 
 /**
- * Guard access to a restlet.
+ * Guard access to a Restlet.
  */
 public class Tutorial09
 {

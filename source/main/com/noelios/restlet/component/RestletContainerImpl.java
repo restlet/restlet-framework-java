@@ -38,12 +38,12 @@ public class RestletContainerImpl extends OriginServerImpl implements RestletCon
    /** The parent container who delegates. */
    protected RestletContainer parent;
 
-   /** Delegate maplet handling root restlets. */
+   /** Delegate Maplet handling root Restlets. */
    protected Maplet delegate;
 
    /**
     * Constructor.
-    * @param parent The parent restlet container.
+    * @param parent The parent Restlet container.
     * @param name The unique name of the container.
     */
    public RestletContainerImpl(RestletContainer parent, String name)
@@ -96,7 +96,7 @@ public class RestletContainerImpl extends OriginServerImpl implements RestletCon
 
    /**
     * Detaches a target class.
-    * @param targetClass The restlet class to detach.
+    * @param targetClass The Restlet class to detach.
     */
    public void detach(Class<? extends UniformInterface> targetClass)
    {

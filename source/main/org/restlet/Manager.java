@@ -52,8 +52,8 @@ public class Manager
 
    /** Static fields. */
    public static final String PROPERTY_FACTORY = "org.restlet.impl";
-   public static final String VERSION_LONG = "1.0 beta 3";
-   public static final String VERSION_SHORT = "1.0b3";
+   public static final String VERSION_LONG = "1.0 beta 4";
+   public static final String VERSION_SHORT = "1.0b4";
    
    /** The registered factory. */
    protected static Factory registeredFactory = null;
@@ -92,10 +92,10 @@ public class Manager
    }
 
    /**
-    * Creates a delegate restlet server.
-    * @param parent The parent restlet server.
+    * Creates a delegate Restlet server.
+    * @param parent The parent Restlet server.
     * @param name The server's name.
-    * @return The new restlet server.
+    * @return The new Restlet server.
     */
    public static RestletServer createRestletServer(RestletServer parent, String name)
    {
@@ -103,10 +103,10 @@ public class Manager
    }
 
    /**
-    * Creates a delegate restlet container.
-    * @param parent The parent restlet container.
+    * Creates a delegate Restlet container.
+    * @param parent The parent Restlet container.
     * @param name The container's name.
-    * @return The new restlet container.
+    * @return The new Restlet container.
     */
    public static RestletContainer createRestletContainer(RestletContainer parent, String name)
    {
@@ -114,9 +114,9 @@ public class Manager
    }
 
    /**
-    * Creates a delegate maplet.
-    * @param container The restlet container.
-    * @return A new maplet.
+    * Creates a delegate Maplet.
+    * @param container The Restlet container.
+    * @return A new Maplet.
     */
    public static Maplet createMaplet(RestletContainer container)
    {
@@ -124,9 +124,9 @@ public class Manager
    }
 
    /**
-    * Creates a delegate chainlet.
-    * @param container The restlet container.
-    * @return A new chainlet.
+    * Creates a delegate Chainlet.
+    * @param container The Restlet container.
+    * @return A new Chainlet.
     */
    public static Chainlet createChainlet(RestletContainer container)
    {

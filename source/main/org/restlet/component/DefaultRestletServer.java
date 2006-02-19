@@ -30,11 +30,11 @@ import org.restlet.connector.Client;
 import org.restlet.connector.Server;
 
 /**
- * Default restlet server that can be easily subclassed.
+ * Default Restlet server that can be easily subclassed.
  */
 public class DefaultRestletServer implements RestletServer
 {
-   /** The deletate restlet server. */
+   /** The deletate Restlet server. */
    protected RestletServer delegate;
 
    /**
@@ -47,7 +47,7 @@ public class DefaultRestletServer implements RestletServer
    }
 
    /**
-    * Adds a restlet container.
+    * Adds a Restlet container.
     * @param name The unique name of the container.
     * @param container The container to add.
     * @return The added container.
@@ -58,7 +58,7 @@ public class DefaultRestletServer implements RestletServer
    }
 
    /**
-    * Removes a restlet container.
+    * Removes a Restlet container.
     * @param name The name of the container to remove.
     */
    public void removeContainer(String name)

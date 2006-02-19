@@ -142,6 +142,7 @@ public interface HttpCall
    public static final String HEADER_VIA = "Via";
    public static final String HEADER_WARNING = "Warning";
    public static final String HEADER_WWW_AUTHENTICATE = "WWW-Authenticate";
+   public static final String HEADER_X_FORWARDED_FOR = "X-Forwarded-For";
 
    /**
     * Indicates if the confidentiality of the call is ensured (ex: via SSL).

@@ -101,19 +101,19 @@ public class RedirectRestlet extends AbstractRestlet
          {
             case MODE_CLIENT_PERMANENT:
                logger.log(Level.INFO, "Permanently redirecting client to: " + targetUri);
-               call.setRedirectRef(target);
+               call.setRedirectionRef(target);
                call.setStatus(Statuses.REDIRECTION_MOVED_PERMANENTLY);
             break;
 
             case MODE_CLIENT_FOUND:
                logger.log(Level.INFO, "Redirecting client to found location: " + targetUri);
-               call.setRedirectRef(target);
+               call.setRedirectionRef(target);
                call.setStatus(Statuses.REDIRECTION_FOUND);
             break;
             
             case MODE_CLIENT_TEMPORARY:
                logger.log(Level.INFO, "Temporarily redirecting client to: " + targetUri);
-               call.setRedirectRef(target);
+               call.setRedirectionRef(target);
                call.setStatus(Statuses.REDIRECTION_MOVED_TEMPORARILY);
             break;
 

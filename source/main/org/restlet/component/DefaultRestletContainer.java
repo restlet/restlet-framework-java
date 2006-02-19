@@ -31,13 +31,13 @@ import org.restlet.connector.Client;
 import org.restlet.connector.Server;
 
 /**
- * Default restlet container that can be easily subclassed.<br/> <br/> Component acting as a container for
- * call handlers named restlets. Calls are first intercepted by the container which can do various checks
- * before effectively delegating it to one of the registered root maplets or restlets.
+ * Default Restlet container that can be easily subclassed.<br/> <br/> Component acting as a container for
+ * call handlers (Restlets, Chainlets, Maplets, etc.). Calls are first intercepted by the container which can do various checks
+ * before effectively delegating it to one of the registered root handlers.
  */
 public class DefaultRestletContainer implements RestletContainer
 {
-   /** The delegate restlet container. */
+   /** The delegate Restlet container. */
    protected RestletContainer delegate;
 
    /**
@@ -140,7 +140,7 @@ public class DefaultRestletContainer implements RestletContainer
 
    /**
     * Detaches a target class.
-    * @param targetClass The restlet class to detach.
+    * @param targetClass The target class to detach.
     */
    public void detach(Class<? extends UniformInterface> targetClass)
    {

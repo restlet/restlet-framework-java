@@ -25,15 +25,15 @@ package org.restlet;
 import org.restlet.component.RestletContainer;
 
 /**
- * Default maplet that can be easily subclassed.
+ * Default Maplet that can be easily subclassed.
  */
 public class DefaultMaplet extends AbstractRestlet implements Maplet
 {
-   /** Delegate maplet actually implementing the Maplet methods. */
+   /** Delegate Maplet actually implementing the Maplet methods. */
    protected Maplet delegate;
 
    /**
-    * Creates a new maplet in the given container.
+    * Creates a new Maplet in the given container.
     * @param container The parent container.
     */
    public DefaultMaplet(RestletContainer container)
@@ -76,7 +76,7 @@ public class DefaultMaplet extends AbstractRestlet implements Maplet
 
    /**
     * Detaches a target class.
-    * @param targetClass The restlet class to detach.
+    * @param targetClass The target class to detach.
     */
    public void detach(Class<? extends UniformInterface> targetClass)
    {

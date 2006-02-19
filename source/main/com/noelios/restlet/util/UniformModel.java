@@ -96,7 +96,7 @@ public class UniformModel implements ReadableModel
       }
       else if(name.equals(NAME_REDIRECT_URI))
       {
-         result = call.getRedirectRef().toString();
+         result = call.getRedirectionRef().toString();
       }
       else if(name.equals(NAME_REFERRER_URI))
       {
@@ -230,7 +230,7 @@ public class UniformModel implements ReadableModel
       }
       else if(name.equals(NAME_REDIRECT_URI))
       {
-         result = (call.getRedirectRef() != null);
+         result = (call.getRedirectionRef() != null);
       }
       else if(name.equals(NAME_REFERRER_URI))
       {

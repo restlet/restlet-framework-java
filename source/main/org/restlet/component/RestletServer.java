@@ -29,7 +29,7 @@ package org.restlet.component;
 public interface RestletServer extends OriginServer
 {
    /**
-    * Adds a restlet container.
+    * Adds a Restlet container.
     * @param name The unique name of the container.
     * @param container The container to add.
     * @return The added container.
@@ -37,7 +37,7 @@ public interface RestletServer extends OriginServer
    public RestletContainer addContainer(String name, RestletContainer container);
 
    /**
-    * Removes a restlet container.
+    * Removes a Restlet container.
     * @param name The name of the container to remove.
     */
    public void removeContainer(String name);

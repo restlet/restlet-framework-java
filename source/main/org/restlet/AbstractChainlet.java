@@ -25,15 +25,15 @@ package org.restlet;
 import org.restlet.component.RestletContainer;
 
 /**
- * Abstract chainlet that can be easily subclassed.
+ * Abstract Chainlet that can be easily subclassed.
  */
 public abstract class AbstractChainlet extends AbstractRestlet implements Chainlet
 {
-   /** Delegate chainlet actually implementing the Chainlet methods. */
+   /** Delegate Chainlet actually implementing the Chainlet methods. */
    protected Chainlet delegate;
 
    /**
-    * Creates a new chainlet in the given container.
+    * Creates a new Chainlet in the given container.
     * @param container The parent container.
     */
    public AbstractChainlet(RestletContainer container)
@@ -56,7 +56,7 @@ public abstract class AbstractChainlet extends AbstractRestlet implements Chainl
     * @param targetClass The target class to attach (can have a constructor taking a RestletContainer
     * parameter).
     */
-   public void attach(Class<? extends Restlet> targetClass)
+   public void attach(Class<? extends UniformInterface> targetClass)
    {
       delegate.attach(targetClass);
    }

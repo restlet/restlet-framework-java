@@ -41,7 +41,7 @@ public interface Chainlet extends Restlet
     * @param targetClass The target class to attach (can have a constructor taking a RestletContainer
     * parameter).
     */
-   public void attach(Class<? extends Restlet> targetClass);
+   public void attach(Class<? extends UniformInterface> targetClass);
 
    /**
     * Detaches the current target.

@@ -258,7 +258,7 @@ public class HttpClientImpl extends AbstractClient implements HttpClient
             }
             else if(header.getName().equalsIgnoreCase(HttpCall.HEADER_LOCATION))
             {
-               call.setRedirectRef(Manager.createReference(header.getValue()));
+               call.setRedirectionRef(Manager.createReference(header.getValue()));
             }
             else if((header.getName().equalsIgnoreCase(HttpCall.HEADER_SET_COOKIE)) ||
                   (header.getName().equalsIgnoreCase(HttpCall.HEADER_SET_COOKIE2)))

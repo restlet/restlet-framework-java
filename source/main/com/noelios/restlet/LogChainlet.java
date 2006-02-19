@@ -33,7 +33,7 @@ import com.noelios.restlet.util.UniformModel;
 import com.noelios.restlet.util.StringTemplate;
 
 /**
- * Chainlet logging all calls after handling by the chained restlet.<br/>
+ * Chainlet logging all calls after handling by the chained handler.<br/>
  * The current format is similar to IIS 6 logs.<br/>
  * The logging is based on the java.util.logging package.
  */

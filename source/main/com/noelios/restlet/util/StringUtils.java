@@ -30,7 +30,7 @@ import java.io.File;
 public class StringUtils
 {
    /**
-    * Strip a delimiter character from both ends of the source string.
+    * Strips a delimiter character from both ends of the source string.
     * @param source The source string to strip.
     * @param delimiter The character to remove.
     * @return The stripped string.
@@ -41,7 +41,7 @@ public class StringUtils
    }
 
    /**
-    * Strip a delimiter character from a source string.
+    * Strips a delimiter character from a source string.
     * @param source The source string to strip.
     * @param delimiter The character to remove.
     * @param start Indicates if start of source should be stripped.

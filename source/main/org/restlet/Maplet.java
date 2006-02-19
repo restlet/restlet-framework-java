@@ -54,7 +54,7 @@ public interface Maplet extends Restlet
 
    /**
     * Detaches a target class.
-    * @param targetClass The restlet class to detach.
+    * @param targetClass The target class to detach.
     */
    public void detach(Class<? extends UniformInterface> targetClass);
 

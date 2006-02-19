@@ -24,7 +24,6 @@ package com.noelios.restlet;
 
 import org.restlet.AbstractRestlet;
 import org.restlet.Chainlet;
-import org.restlet.Restlet;
 import org.restlet.UniformCall;
 import org.restlet.UniformInterface;
 import org.restlet.component.RestletContainer;
@@ -45,7 +44,7 @@ public class ChainletImpl extends AbstractRestlet implements Chainlet
 
    /**
     * Constructor.
-    * @param container The restlet container.
+    * @param container The Restlet container.
     */
    public ChainletImpl(RestletContainer container)
    {
@@ -66,7 +65,7 @@ public class ChainletImpl extends AbstractRestlet implements Chainlet
     * @param targetClass The target class to attach (can have a constructor taking a RestletContainer
     * parameter).
     */
-   public void attach(Class<? extends Restlet> targetClass)
+   public void attach(Class<? extends UniformInterface> targetClass)
    {
       this.target = new HandlerTarget(targetClass);
    }

@@ -93,8 +93,8 @@ public class UniformCallImpl implements UniformCall
    /** The preference data. */
    protected PreferenceData preference;
    
-   /** The redirect reference. */
-   protected Reference redirectRef;
+   /** The redirection reference. */
+   protected Reference redirectionRef;
    
    /** The referrer reference. */
    protected Reference referrerRef;
@@ -394,8 +394,8 @@ public class UniformCallImpl implements UniformCall
    }
 
    /**
-    * Returns the cookies provided by the client.
-    * @return The cookies provided by the client.
+    * Returns the cookies provided by the client to the server.
+    * @return The cookies provided by the client to the server.
     */
    public List<Cookie> getCookies()
    {
@@ -404,8 +404,8 @@ public class UniformCallImpl implements UniformCall
    }
 
    /**
-    * Returns the cookies provided to the client.
-    * @return The cookies provided to the client.
+    * Returns the cookies provided by the server to the client.
+    * @return The cookies provided by the server to the client.
     */
    public List<CookieSetting> getCookieSettings()
    {
@@ -470,11 +470,11 @@ public class UniformCallImpl implements UniformCall
 
    /**
     * Returns the reference for redirections or resource creations.
-    * @return The redirect reference.
+    * @return The redirection reference.
     */
-   public Reference getRedirectRef()
+   public Reference getRedirectionRef()
    {
-      return this.redirectRef;
+      return this.redirectionRef;
    }
 
    /**
@@ -499,9 +499,9 @@ public class UniformCallImpl implements UniformCall
 
    /**
     * Returns a path in the list of resource paths.<br/>
-    * The first path is the resource path relatively to the current maplet.<br/>
-    * The second path is the current maplet path relatively to the parent maplet.<br/> 
-    * All the list of remaining maplet paths is also available.
+    * The first path is the resource path relatively to the current Maplet.<br/>
+    * The second path is the current Maplet path relatively to the parent Maplet.<br/> 
+    * All the list of remaining Maplet paths is also available.
     * @param index Index of the path in the list.
     * @param strip Indicates if leading and ending slashes should be stripped.
     * @return The path at the given index.
@@ -520,7 +520,7 @@ public class UniformCallImpl implements UniformCall
 
    /**
     * Returns the list of paths dividing the initial resource path.<br/>
-    * The list is sorted according to the maplets hierarchy.
+    * The list is sorted according to the Maplets hierarchy.
     * @return The list of paths.
     */
    public List<String> getResourcePaths()
@@ -567,8 +567,8 @@ public class UniformCallImpl implements UniformCall
    }
 
    /**
-    * Returns the server status.
-    * @return The server status.
+    * Returns the call status.
+    * @return The call status.
     */
    public Status getStatus()
    {
@@ -668,11 +668,11 @@ public class UniformCallImpl implements UniformCall
 
    /**
     * Sets the reference for redirections or resource creations.
-    * @param redirectRef The redirect reference.
+    * @param redirectionRef The redirection reference.
     */
-   public void setRedirectRef(Reference redirectRef)
+   public void setRedirectionRef(Reference redirectionRef)
    {
-      this.redirectRef = redirectRef;
+      this.redirectionRef = redirectionRef;
    }
 
    /**
@@ -712,8 +712,8 @@ public class UniformCallImpl implements UniformCall
    }
 
    /**
-    * Sets the server status.
-    * @param status The server status to set.
+    * Sets the call status.
+    * @param status The call status to set.
     */
    public void setStatus(Status status)
    {
