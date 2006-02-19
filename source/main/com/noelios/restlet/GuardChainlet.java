@@ -40,6 +40,7 @@ import com.noelios.restlet.util.Base64;
 /**
  * Chainlet guarding the access to another handler (Restlet, Chainlet, Maplet, etc.).<br/>
  * Supports the basic HTTP authentication and a customizable authorization via the authorize method.
+ * @see <a href="http://www.restlet.org/tutorial#part09">Tutorial: Guarding access to sensitive resources</a>
  */
 public abstract class GuardChainlet extends AbstractChainlet
 {

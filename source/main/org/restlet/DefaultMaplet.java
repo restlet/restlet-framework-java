@@ -26,6 +26,7 @@ import org.restlet.component.RestletContainer;
 
 /**
  * Default Maplet that can be easily subclassed.
+ * @see <a href="http://www.restlet.org/tutorial#part11">Tutorial: Maplets and hierarchical URIs</a>
  */
 public class DefaultMaplet extends AbstractRestlet implements Maplet
 {

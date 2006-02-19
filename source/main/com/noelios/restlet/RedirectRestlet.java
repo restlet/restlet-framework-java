@@ -39,6 +39,7 @@ import com.noelios.restlet.util.StringTemplate;
 /**
  * Rewrites URIs then redirects the call or the client to a new destination.
  * @see com.noelios.restlet.util.UniformCallModel
+ * @see <a href="http://www.restlet.org/tutorial#part10">Tutorial: URI rewriting and redirection</a>
  */
 public class RedirectRestlet extends AbstractRestlet
 {

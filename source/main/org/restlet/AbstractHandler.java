@@ -26,6 +26,7 @@ package org.restlet;
  * Abstract implementation of a uniform interface handler.<br/>
  * The start and stop state is managed by default but with no other action.<br/>
  * Override the start and stop methods if needed.
+ * @see <a href="http://www.restlet.org/tutorial#part03">Tutorial: Listening to Web browsers</a>
  */
 public abstract class AbstractHandler implements UniformInterface
 {

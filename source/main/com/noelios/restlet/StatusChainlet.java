@@ -43,6 +43,7 @@ import com.noelios.restlet.data.StringRepresentation;
  * status is automatically associated to the call. Of course, you can personalize 
  * the representation of this error. Also, if no status is set (null), then the "success ok"
  * status is assumed.<br/> 
+ * @see <a href="http://www.restlet.org/tutorial#part08">Tutorial: Displaying error pages</a>
  */
 public class StatusChainlet extends AbstractChainlet
 {

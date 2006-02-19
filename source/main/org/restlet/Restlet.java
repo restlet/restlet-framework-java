@@ -27,8 +27,7 @@ import org.restlet.component.RestletContainer;
 /**
  * Handler of calls to a resource or set of resources.<br/>
  * Restlets live inside a parent container and can be easily attached to Maplets and Chainlets.
- * @see org.restlet.UniformInterface
- * @see org.restlet.Maplet
+ * @see <a href="http://www.restlet.org/tutorial#part05">Tutorial: Restlets servers and containers</a>
  */
 public interface Restlet extends UniformInterface
 {

@@ -25,7 +25,11 @@ package org.restlet;
 /**
  * Mapper of calls to attached handlers.<br/>
  * Delegation is based on path matching pattterns.<br/>
- * Note that during the delegation, the call paths are automatically modified.
+ * Note that during the delegation, the call paths are automatically modified. 
+ * If you are handling hierarchical paths, remember to directly attach the child maplets to their parent maplet
+ * instead of the top level Restlet container. Also, remember to manually handle the path separator characters 
+ * in your path patterns otherwise the delegation will not work as expected. 
+ * @see <a href="http://www.restlet.org/tutorial#part11">Tutorial: Maplets and hierarchical URIs</a>
  */
 public interface Maplet extends Restlet
 {

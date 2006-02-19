@@ -36,6 +36,7 @@ import com.noelios.restlet.util.StringTemplate;
  * Chainlet logging all calls after handling by the chained handler.<br/>
  * The current format is similar to IIS 6 logs.<br/>
  * The logging is based on the java.util.logging package.
+ * @see <a href="http://www.restlet.org/tutorial#part07">Tutorial: Chainlets and call logging</a>
  */
 public class LogChainlet extends AbstractChainlet
 {

@@ -27,6 +27,7 @@ package org.restlet;
  * Interception or filtering can be done in the handle() method, just remember to call the delegate() method before or
  * after your custom handling.<br/>
  * Note that during this handling, the call paths are not supposed to be modified.
+ * @see <a href="http://www.restlet.org/tutorial#part07">Tutorial: Chainlets and call logging</a>
  */
 public interface Chainlet extends Restlet
 {

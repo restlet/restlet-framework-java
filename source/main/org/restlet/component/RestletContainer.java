@@ -28,6 +28,7 @@ import org.restlet.Maplet;
  * Origin server composed of Restlets.<br/>
  * Note that a container is a Maplet itself.<br/>
  * Restlet containers can also be contained within a Restlet server.
+ * @see <a href="http://www.restlet.org/tutorial#part05">Tutorial: Restlets servers and containers</a>
  */
 public interface RestletContainer extends OriginServer, Maplet
 {

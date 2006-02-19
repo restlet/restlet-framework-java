@@ -26,6 +26,7 @@ import org.restlet.component.RestletContainer;
 
 /**
  * Abstract Chainlet that can be easily subclassed.
+ * @see <a href="http://www.restlet.org/tutorial#part07">Tutorial: Chainlets and call logging</a>
  */
 public abstract class AbstractChainlet extends AbstractRestlet implements Chainlet
 {
