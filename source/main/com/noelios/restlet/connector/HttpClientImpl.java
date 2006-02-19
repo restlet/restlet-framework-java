@@ -43,6 +43,7 @@ import org.restlet.data.Encodings;
 import org.restlet.data.Language;
 import org.restlet.data.Languages;
 import org.restlet.data.MediaTypes;
+import org.restlet.data.Methods;
 import org.restlet.data.Parameter;
 import org.restlet.data.PreferenceData;
 import org.restlet.data.Representation;
@@ -85,7 +86,7 @@ public class HttpClientImpl extends AbstractClient implements HttpClient
       try
       {
          // Create a new HTTP client call
-         HttpClientCall clientCall = createCall(call.getMethod().getName(), call.getResourceRef().toString(), (call.getInput() != null));
+         HttpClientCall clientCall = createCall(call.getMethod().getName(), call.getResourceRef().toString(), hasInput(call));
 
          // Add the user agent header
          if(call.getClientName() != null)
@@ -199,7 +200,7 @@ public class HttpClientImpl extends AbstractClient implements HttpClient
          clientCall.commitRequestHeaders();
 
          // Send the input representation
-         if(call.getInput() != null)
+         if(hasInput(call))
          {
             if(clientCall.getRequestStream() != null)
             {
@@ -316,6 +317,35 @@ public class HttpClientImpl extends AbstractClient implements HttpClient
       }
    }
 
+   /**
+    * Determines if a call has any concrete input.
+    * @param call The call to analyze.
+    * @return True if the call has any concrete input.
+    */
+   private boolean hasInput(UniformCall call)
+   {
+      boolean result = true;
+      
+      if(call.getMethod().equals(Methods.GET) || call.getMethod().equals(Methods.HEAD) ||
+            call.getMethod().equals(Methods.DELETE))
+      {
+         result = false;
+      }
+      else
+      {
+         try
+         {
+            result = (call.getInput().getStream() != null) || (call.getInput().getChannel() != null);
+         }
+         catch(IOException e)
+         {
+            result = false;
+         }
+      }
+      
+      return result;
+   }
+   
    /**
     * Returns a new HTTP protocol call.
     * @param method The request method.
