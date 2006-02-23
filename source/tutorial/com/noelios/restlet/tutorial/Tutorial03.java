@@ -26,8 +26,8 @@ import org.restlet.AbstractHandler;
 import org.restlet.Manager;
 import org.restlet.UniformCall;
 import org.restlet.UniformInterface;
-import org.restlet.connector.HttpServer;
 import org.restlet.data.MediaTypes;
+import org.restlet.data.Protocols;
 
 import com.noelios.restlet.data.StringRepresentation;
 
@@ -50,7 +50,7 @@ public class Tutorial03
          };
 
          // Create the HTTP server and listen on port 8182
-         Manager.createHttpServer("My server", handler, HttpServer.PROTOCOL_HTTP, null, 8182).start();
+         Manager.createServer(Protocols.HTTP, "My server", handler, null, 8182).start();
       }
       catch(Exception e)
       {

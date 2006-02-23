@@ -22,15 +22,18 @@
 
 package org.restlet.connector;
 
+import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
 import java.nio.channels.ReadableByteChannel;
 import java.nio.channels.WritableByteChannel;
 
+import org.restlet.data.Representation;
+
 /**
- * Client call for the HTTP protocol.
+ * Client connector call.
  */
-public interface HttpClientCall extends HttpCall
+public interface ClientCall extends ConnectorCall
 {
    /**
     * Sets the request method. 
@@ -39,18 +42,17 @@ public interface HttpClientCall extends HttpCall
    public void setRequestMethod(String method);
    
    /**
-    * Adds a request header.
-    * @param name The header's name.
-    * @param value The header's value.
+    * Sends the request headers.<br/>
+    * Must be called before sending the request input.
     */
-   public void addRequestHeader(String name, String value);
-   
-   /**
-    * Commits the request headers.<br/>
-    * Must be called before writing the request entity.
-    */
-   public void commitRequestHeaders();
+   public void sendRequestHeaders();
 
+   /**
+    * Sends the request input.
+    * @param input The request input;
+    */
+   public void sendRequestInput(Representation input) throws IOException;
+   
    /**
     * Returns the request entity channel if it exists.
     * @return The request entity channel if it exists.

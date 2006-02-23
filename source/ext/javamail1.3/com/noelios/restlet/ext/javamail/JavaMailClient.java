@@ -37,7 +37,9 @@ import javax.xml.parsers.DocumentBuilderFactory;
 import org.restlet.Manager;
 import org.restlet.UniformCall;
 import org.restlet.connector.AbstractClient;
+import org.restlet.connector.ClientCall;
 import org.restlet.data.Methods;
+import org.restlet.data.Protocols;
 import org.restlet.data.Representation;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
@@ -50,16 +52,18 @@ import com.noelios.restlet.Engine;
  * Currently only the SMTP protocol is supported.<br/>
  * To send an email, specify a SMTP URI as the ressource reference of the call and use an XML
  * email as the content of the call.<br/>
+ * An SMTP URI has the following syntax: smtp://[user-info@]host[:port]<br/>
+ * The default port used is 25 and user-info for authentication is currently not supported.<br/>
  * <br/>
  * Sample XML email:<br/>
  * <br/>
  * {@code <?xml version="1.0" encoding="ISO-8851-1" ?>}<br/>
- * {@code <email>}<br/> &nbsp;&nbsp;{@code   <header>}<br/>
+ * {@code <email>}<br/> &nbsp;&nbsp;{@code   <head>}<br/>
  * &nbsp;&nbsp;&nbsp;&nbsp;{@code      <subject>Account activation</subject>}<br/>
  * &nbsp;&nbsp;&nbsp;&nbsp;{@code      <from>support@restlet.org</from>}<br/>
  * &nbsp;&nbsp;&nbsp;&nbsp;{@code      <to>user@domain.com</to>}<br/>
  * &nbsp;&nbsp;&nbsp;&nbsp;{@code      <cc>log@restlet.org</cc>}<br/>
- * &nbsp;&nbsp;{@code   </header>}<br/>
+ * &nbsp;&nbsp;{@code   </head>}<br/>
  * &nbsp;&nbsp;{@code   <body><![CDATA[Your account was sucessfully created!]]></body>}<br/>
  * {@code </email>}
  */
@@ -67,11 +71,23 @@ public class JavaMailClient extends AbstractClient
 {
    /**
     * Constructor.
-    * @param name The connector unique name.
+    * @param name The unique connector name.
     */
    public JavaMailClient(String name)
    {
-      super(name);
+      super(Protocols.SMTP, name);
+   }
+   
+   /**
+    * Returns a new client call.
+    * @param method The request method.
+    * @param resourceUri The requested resource URI.
+    * @param hasInput Indicates if the call will have an input to send to the server.
+    * @return A new client call.
+    */
+   public ClientCall createCall(String method, String resourceUri, boolean hasInput)
+   {
+      return null;
    }
    
    /**
@@ -119,7 +135,7 @@ public class JavaMailClient extends AbstractClient
          Document email = docBuilder.parse(call.getInput().getStream());
 
          Element root = (Element)email.getElementsByTagName("email").item(0);
-         Element header = (Element)root.getElementsByTagName("header").item(0);
+         Element header = (Element)root.getElementsByTagName("head").item(0);
          String subject = header.getElementsByTagName("subject").item(0).getTextContent();
          String from = header.getElementsByTagName("from").item(0).getTextContent();
 
@@ -187,7 +203,7 @@ public class JavaMailClient extends AbstractClient
             msg.setText(text);
 
             // Set some other header information
-            // msg.setHeader("X-Mailer", "Semalink Mailer");
+            // msg.setHeader("X-Mailer", "...");
             msg.setSentDate(new Date());
             msg.saveChanges();
 

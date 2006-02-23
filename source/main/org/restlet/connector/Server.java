@@ -22,6 +22,8 @@
 
 package org.restlet.connector;
 
+import java.io.IOException;
+
 import org.restlet.UniformInterface;
 
 /**
@@ -36,6 +38,13 @@ import org.restlet.UniformInterface;
 public interface Server extends Connector
 {
    /**
+    * Handles the HTTP protocol call.<br/>
+    * The default behavior is to create an UniformCall and delegate it to the attached handler.
+    * @param call The HTTP protocol call.
+    */
+   public void handle(ServerCall call) throws IOException;
+
+   /**
     * Returns the target handler.
     * @return The target handler.
     */
@@ -46,4 +55,12 @@ public interface Server extends Connector
     * @param target The target handler.
     */
    public void setTarget(UniformInterface target);
+
+   /**
+    * Configure the SSL properties for secure protocols like HTTPS.
+    * @param keystorePath The path of the keystore file. 
+    * @param keystorePassword The keystore password.
+    * @param keyPassword The password of the server key .
+    */
+   public void configureSsl(String keystorePath, String keystorePassword, String keyPassword);
 }

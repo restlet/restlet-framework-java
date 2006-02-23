@@ -22,17 +22,19 @@
 
 package org.restlet.connector;
 
+import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
 import java.nio.channels.ReadableByteChannel;
 import java.nio.channels.WritableByteChannel;
 
 import org.restlet.UniformCall;
+import org.restlet.data.Representation;
 
 /**
- * Server call for the HTTP protocol.
+ * Server connector call.
  */
-public interface HttpServerCall extends HttpCall
+public interface ServerCall extends ConnectorCall
 {
    /** 
     * Name of the system property to use in order to indicates whether the IP address contained in 
@@ -51,10 +53,23 @@ public interface HttpServerCall extends HttpCall
    public UniformCall toUniform();
    
    /**
-    * Commits after synchronization with an uniform call.
-    * @param call The call to synchronize with.
+    * Sets the response from an uniform call.<br>
+    * Sets the response headers and the response status. 
+    * @param call The call to update from.
     */
-   public void commitFrom(UniformCall call);
+   public void setResponse(UniformCall call);
+   
+   /**
+    * Sends the response headers.<br/>
+    * Must be called before sending the response output.
+    */
+   public void sendResponseHeaders();
+
+   /**
+    * Sends the response output.
+    * @param output The response output;
+    */
+   public void sendResponseOutput(Representation output) throws IOException;
 
    /**
     * Returns the request entity channel if it exists.
@@ -74,19 +89,6 @@ public interface HttpServerCall extends HttpCall
     * @param reason The response reason phrase.
     */
    public void setResponseStatus(int code, String reason);
-   
-   /**
-    * Adds a response header.
-    * @param name The header's name.
-    * @param value The header's value.
-    */
-   public void addResponseHeader(String name, String value);
-
-   /**
-    * Commits the response headers.<br/>
-    * Must be called before writing the response entity.
-    */
-   public void commitResponseHeaders();
 
    /**
     * Returns the response channel if it exists.

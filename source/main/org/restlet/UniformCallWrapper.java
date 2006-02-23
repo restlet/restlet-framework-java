@@ -24,6 +24,7 @@ package org.restlet;
 
 import java.util.List;
 
+import org.restlet.connector.ConnectorCall;
 import org.restlet.data.*;
 
 /**
@@ -82,6 +83,15 @@ public class UniformCallWrapper implements UniformCall
    public ConditionData getCondition()
    {
       return getWrappedCall().getCondition();
+   }
+   
+   /**
+    * Returns the low-level connector call.
+    * @return The low-level connector call.
+    */
+   public ConnectorCall getConnectorCall()
+   {
+      return getWrappedCall().getConnectorCall();
    }
 
    /**
@@ -284,6 +294,15 @@ public class UniformCallWrapper implements UniformCall
    public void setClientName(String name)
    {
       getWrappedCall().setClientName(name);
+   }
+
+   /**
+    * Sets the low-level connector call.
+    * @param call The low-level connector call.
+    */
+   public void setConnectorCall(ConnectorCall call)
+   {
+      getWrappedCall().setConnectorCall(call);
    }
 
    /**

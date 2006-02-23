@@ -22,10 +22,6 @@
 
 package com.noelios.restlet;
 
-import java.lang.reflect.Constructor;
-import java.util.logging.Level;
-import java.util.logging.Logger;
-
 import org.restlet.Chainlet;
 import org.restlet.Factory;
 import org.restlet.Manager;
@@ -34,8 +30,8 @@ import org.restlet.UniformCall;
 import org.restlet.UniformInterface;
 import org.restlet.component.RestletContainer;
 import org.restlet.component.RestletServer;
-import org.restlet.connector.HttpClient;
-import org.restlet.connector.HttpServer;
+import org.restlet.connector.Client;
+import org.restlet.connector.Server;
 import org.restlet.data.CharacterSet;
 import org.restlet.data.Cookie;
 import org.restlet.data.CookieSetting;
@@ -45,6 +41,8 @@ import org.restlet.data.Language;
 import org.restlet.data.MediaType;
 import org.restlet.data.Method;
 import org.restlet.data.Parameter;
+import org.restlet.data.Protocol;
+import org.restlet.data.Protocols;
 import org.restlet.data.Reference;
 import org.restlet.data.Status;
 import org.restlet.data.Tag;
@@ -64,6 +62,8 @@ import com.noelios.restlet.data.ParameterImpl;
 import com.noelios.restlet.data.ReferenceImpl;
 import com.noelios.restlet.data.StatusImpl;
 import com.noelios.restlet.data.TagImpl;
+import com.noelios.restlet.ext.javamail.JavaMailClient;
+import com.noelios.restlet.ext.jetty.JettyServer;
 
 /**
  * Noelios Restlet Engine.<br/>
@@ -71,18 +71,9 @@ import com.noelios.restlet.data.TagImpl;
  */
 public class Engine implements Factory
 {
-   /** Obtain a suitable logger. */
-   private static Logger logger = Logger.getLogger("com.noelios.restlet.Engine");
-
    public static final String VERSION_LONG = "1.0 beta 4";
    public static final String VERSION_SHORT = "1.0b4";
    public static final String VERSION_HEADER = "Noelios-Restlet-Engine/" + VERSION_SHORT;
-   
-   /** 
-    * The HTTP server class name.<br/>
-    * Uses Jetty 5.1 extension by default. 
-    */ 
-   protected String httpServerClassName = "com.noelios.restlet.ext.jetty.JettyServer";
    
    /**
     * Registers the Noelios Restlet Engine
@@ -91,48 +82,60 @@ public class Engine implements Factory
    {
       Manager.registerFactory(new Engine());
    }
-   
+
    /**
-    * Create a new HTTP client connector.
+    * Create a new client connector for a given protocol.
+    * @param protocol The connector protocol.
     * @param name The unique connector name.
-    * @return The new HTTP client.
+    * @return The new client connector.
     */
-   public HttpClient createHttpClient(String name)
+   public Client createClient(Protocol protocol, String name)
    {
-      return new HttpClientImpl(name);
+      Client result = null;
+      
+      if(Protocols.HTTP.equals(protocol)) 
+      {
+         result = new HttpClientImpl(name);
+      }
+      else if(Protocols.HTTPS.equals(protocol)) 
+      {
+         result = new HttpClientImpl(name);
+      }
+      else if(Protocols.SMTP.equals(protocol)) 
+      {
+         result = new JavaMailClient(name);
+      }
+      
+      return result;
    }
 
    /**
-    * Create a new HTTP server connector.
+    * Create a new server connector for a given protocol.
+    * @param protocol The connector protocol.
     * @param name The unique connector name.
     * @param target The target handler.
-    * @param protocolVariant The protocol variant (HTTP or HTTPS or AJP).
     * @param address The optional listening IP address (local host used if null).
     * @param port The listening port.
-    * @return The new HTTP server.
+    * @return The new server connector.
     */
-   public synchronized HttpServer createHttpServer(String name, UniformInterface target, int protocolVariant, String address, int port)
+   public Server createServer(Protocol protocol, String name, UniformInterface target, String address, int port)
    {
-      try
+      Server result = null;
+      
+      if(Protocols.AJP.equals(protocol))
       {
-         Class httpServerClass = Class.forName(httpServerClassName);
-         Constructor constr = httpServerClass.getConstructor(String.class, UniformInterface.class, int.class, String.class, int.class);
-         return (HttpServer)constr.newInstance(name, target, protocolVariant, address, port);
+         result = new JettyServer(protocol, name, target, address, port);
       }
-      catch(Exception e)
+      else if(Protocols.HTTP.equals(protocol)) 
       {
-         logger.log(Level.SEVERE, "Unable to create the HTTP server", e);
-         return null;
+         result = new JettyServer(protocol, name, target, address, port);
       }
-   }
-
-   /**
-    * Sets the class name of the HTTP server to use in createHttpServer method.
-    * @param className The class name of the HTTP server to use.
-    */
-   public void setHttpServerClassName(String className)
-   {
-      this.httpServerClassName = className;
+      else if(Protocols.HTTPS.equals(protocol)) 
+      {
+         result = new JettyServer(protocol, name, target, address, port);
+      }
+      
+      return result;
    }
    
    /**

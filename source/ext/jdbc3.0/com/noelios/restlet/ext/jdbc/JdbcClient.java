@@ -42,7 +42,9 @@ import org.apache.commons.pool.impl.GenericObjectPool;
 import org.restlet.Manager;
 import org.restlet.UniformCall;
 import org.restlet.connector.AbstractClient;
+import org.restlet.connector.ClientCall;
 import org.restlet.data.Methods;
+import org.restlet.data.Protocols;
 import org.restlet.data.Representation;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
@@ -82,10 +84,21 @@ public class JdbcClient extends AbstractClient
     */
    public JdbcClient(String name)
    {
-      super(name);
+      super(Protocols.JDBC, name);
 
       // Set up the list of factories
       this.connectionSources = new ArrayList<ConnectionSource>();
+   }
+   /**
+    * Returns a new client call.
+    * @param method The request method.
+    * @param resourceUri The requested resource URI.
+    * @param hasInput Indicates if the call will have an input to send to the server.
+    * @return A new client call.
+    */
+   public ClientCall createCall(String method, String resourceUri, boolean hasInput)
+   {
+      return null;
    }
    
    /**

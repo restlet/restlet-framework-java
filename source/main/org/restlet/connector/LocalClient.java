@@ -24,43 +24,54 @@ package org.restlet.connector;
 
 import org.restlet.UniformCall;
 import org.restlet.UniformInterface;
-import org.restlet.component.Component;
 
 /**
  * Local client connector. Useful to call a component that resides inside the same JVM.
  */
-public class LocalClient extends AbstractClient implements Client
+public class LocalClient extends AbstractClient
 {
    /** The local handler. */
-   protected UniformInterface handler;
+   protected UniformInterface target;
 
    /**
     * Constructor.
     * @param name The name of this REST client.
     * @param handler The local handler.
     */
-   public LocalClient(String name, Component handler)
+   public LocalClient(String name, UniformInterface handler)
    {
-      super(name);
-      this.handler = handler;
+      super(null, name);
+      this.target = handler;
    }
 
    /**
-    * Returns the call handler.
-    * @return The call handler.
+    * Returns a new client call.
+    * @param method The request method.
+    * @param resourceUri The requested resource URI.
+    * @param hasInput Indicates if the call will have an input to send to the server.
+    * @return A new client call.
     */
-   public UniformInterface getHandler()
+   public ClientCall createCall(String method, String resourceUri, boolean hasInput)
    {
-      return this.handler;
+      return null;
+   }
+
+   /**
+    * Returns the target handler.
+    * @return The target handler.
+    */
+   public UniformInterface getTarget()
+   {
+      return this.target;
    }
    
    /**
-    * Sets the call handler.
-    * @param handler The call handler.
+    * Sets the target handler.
+    * @param target The target handler.
     */
-   public void setHandler(UniformInterface handler)
+   public void setTarget(UniformInterface target)
    {
-      this.handler = handler;
+      this.target = target;
    }
 
    /**
@@ -69,7 +80,7 @@ public class LocalClient extends AbstractClient implements Client
     */
    public void handle(UniformCall call)
    {
-      getHandler().handle(call);
+      getTarget().handle(call);
    }
 
 }

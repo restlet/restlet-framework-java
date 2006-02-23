@@ -28,9 +28,9 @@ import java.util.List;
 import org.restlet.data.Parameter;
 
 /**
- * Connector call for the HTTP protocol.
+ * Connector call for all protocols.
  */
-public interface HttpCall
+public interface ConnectorCall
 {
    // ---------------------
    // ---  Status codes ---
@@ -143,6 +143,20 @@ public interface HttpCall
    public static final String HEADER_WARNING = "Warning";
    public static final String HEADER_WWW_AUTHENTICATE = "WWW-Authenticate";
    public static final String HEADER_X_FORWARDED_FOR = "X-Forwarded-For";
+   
+   /**
+    * Adds a request header.
+    * @param name The header's name.
+    * @param value The header's value.
+    */
+   public void addRequestHeader(String name, String value);
+   
+   /**
+    * Adds a response header.
+    * @param name The header's name.
+    * @param value The header's value.
+    */
+   public void addResponseHeader(String name, String value);
 
    /**
     * Indicates if the confidentiality of the call is ensured (ex: via SSL).

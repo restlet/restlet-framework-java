@@ -41,22 +41,20 @@ import java.util.logging.Logger;
 import javax.net.ssl.HttpsURLConnection;
 
 import org.restlet.Manager;
-import org.restlet.connector.HttpClientCall;
+import org.restlet.connector.ClientCall;
 import org.restlet.data.Parameter;
+import org.restlet.data.Representation;
 
 /**
- * Implementation of a client call for the HTTP protocol.
+ * Implementation of a client connector call.
  */
-public class HttpClientCallImpl extends HttpCallImpl implements HttpClientCall
+public class HttpClientCallImpl extends ConnectorCallImpl implements ClientCall
 {
    /** Obtain a suitable logger. */
    private static Logger logger = Logger.getLogger("com.noelios.restlet.connector.HttpClientCall");
 
    /** The wrapped HTTP URL connection. */
    protected HttpURLConnection connection;
-   
-   /** The response headers. */
-   protected List<Parameter> responseHeaders;
    
    /**
     * Constructor.
@@ -112,48 +110,12 @@ public class HttpClientCallImpl extends HttpCallImpl implements HttpClientCall
    {
       this.requestMethod = method;
    }
-
+   
    /**
-    * Returns the modifiable list of response headers.
-    * @return The modifiable list of response headers.
+    * Sends the request headers.<br/>
+    * Must be called before sending the request input.
     */
-   public List<Parameter> getResponseHeaders()
-   {
-      if(this.responseHeaders == null) 
-      {
-         this.responseHeaders = new ArrayList<Parameter>();
-         
-         // Read the response headers
-         int i = 1;
-         String headerName = getConnection().getHeaderFieldKey(i);
-         String headerValue = getConnection().getHeaderField(i);
-         while(headerName != null)
-         {
-            this.responseHeaders.add(Manager.createParameter(headerName, headerValue));
-            i++;
-            headerName = getConnection().getHeaderFieldKey(i);
-            headerValue = getConnection().getHeaderField(i);
-         }
-      }
-      
-      return this.responseHeaders;
-   }
-
-   /**
-    * Adds a request header.
-    * @param name The header's name.
-    * @param value The header's value.
-    */
-   public void addRequestHeader(String name, String value)
-   {
-      getRequestHeaders().add(Manager.createParameter(name, value));
-   }
-
-   /**
-    * Commits the request headers.<br/>
-    * Must be called before writing the request entity.
-    */
-   public void commitRequestHeaders()
+   public void sendRequestHeaders()
    {
       // Set the request method
       try
@@ -181,6 +143,24 @@ public class HttpClientCallImpl extends HttpCallImpl implements HttpClientCall
       catch(IOException ioe)
       {
          logger.log(Level.WARNING, "Unable to connect to the server", ioe);
+      }
+   }
+
+   /**
+    * Sends the request input.
+    * @param input The request input;
+    */
+   public void sendRequestInput(Representation input) throws IOException
+   {
+      if(getRequestStream() != null)
+      {
+         input.write(getRequestStream());
+         getRequestStream().close();
+      }
+      else if(getRequestChannel() != null)
+      {
+         input.write(getRequestChannel());
+         getRequestChannel().close();
       }
    }
 
@@ -218,6 +198,32 @@ public class HttpClientCallImpl extends HttpCallImpl implements HttpClientCall
    public String getResponseAddress()
    {
       return getConnection().getURL().getHost();
+   }
+
+   /**
+    * Returns the modifiable list of response headers.
+    * @return The modifiable list of response headers.
+    */
+   public List<Parameter> getResponseHeaders()
+   {
+      if(this.responseHeaders == null)
+      {
+         this.responseHeaders = new ArrayList<Parameter>();
+         
+         // Read the response headers
+         int i = 1;
+         String headerName = getConnection().getHeaderFieldKey(i);
+         String headerValue = getConnection().getHeaderField(i);
+         while(headerName != null)
+         {
+            this.responseHeaders.add(Manager.createParameter(headerName, headerValue));
+            i++;
+            headerName = getConnection().getHeaderFieldKey(i);
+            headerValue = getConnection().getHeaderField(i);
+         }
+      }
+
+      return this.responseHeaders;
    }
    
    /**

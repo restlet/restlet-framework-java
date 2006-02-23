@@ -31,9 +31,8 @@ import java.util.logging.Logger;
 import org.restlet.Manager;
 import org.restlet.UniformCall;
 import org.restlet.connector.AbstractClient;
-import org.restlet.connector.HttpCall;
-import org.restlet.connector.HttpClient;
-import org.restlet.connector.HttpClientCall;
+import org.restlet.connector.ClientCall;
+import org.restlet.connector.ConnectorCall;
 import org.restlet.data.ChallengeRequest;
 import org.restlet.data.ChallengeResponse;
 import org.restlet.data.CharacterSets;
@@ -46,6 +45,8 @@ import org.restlet.data.MediaTypes;
 import org.restlet.data.Methods;
 import org.restlet.data.Parameter;
 import org.restlet.data.PreferenceData;
+import org.restlet.data.Protocol;
+import org.restlet.data.Protocols;
 import org.restlet.data.Representation;
 import org.restlet.data.Tag;
 
@@ -61,9 +62,9 @@ import com.noelios.restlet.util.PreferenceUtils;
 import com.noelios.restlet.util.SecurityUtils;
 
 /**
- * Implementation of a client connector for the HTTP protocol.
+ * Implementation of a client HTTP connector.
  */
-public class HttpClientImpl extends AbstractClient implements HttpClient
+public class HttpClientImpl extends AbstractClient
 {
    /** Obtain a suitable logger. */
    private static Logger logger = Logger.getLogger("com.noelios.restlet.connector.HttpClientImpl");
@@ -74,7 +75,35 @@ public class HttpClientImpl extends AbstractClient implements HttpClient
     */
    public HttpClientImpl(String name)
    {
-      super(name);
+      super(Protocols.HTTP, name);
+   }
+   
+   /**
+    * Returns a new client call.
+    * @param method The request method.
+    * @param resourceUri The requested resource URI.
+    * @param hasInput Indicates if the call will have an input to send to the server.
+    * @return A new HTTP protocol call.
+    */
+   public ClientCall createCall(String method, String resourceUri, boolean hasInput)
+   {
+      try
+      {
+         return new HttpClientCallImpl(method, resourceUri, hasInput);
+      }
+      catch(IOException e)
+      {
+         return null;
+      }
+   }
+
+   /**
+    * Returns the connector's protocol.
+    * @return The connector's protocol.
+    */
+   public Protocol getProtocol()
+   {
+      return Protocols.HTTP;
    }
 
    /**
@@ -86,16 +115,16 @@ public class HttpClientImpl extends AbstractClient implements HttpClient
       try
       {
          // Create a new HTTP client call
-         HttpClientCall clientCall = createCall(call.getMethod().getName(), call.getResourceRef().toString(), hasInput(call));
+         ClientCall clientCall = createCall(call.getMethod().getName(), call.getResourceRef().toString(), hasInput(call));
 
          // Add the user agent header
          if(call.getClientName() != null)
          {
-            clientCall.addRequestHeader(HttpCall.HEADER_USER_AGENT, call.getClientName());
+            clientCall.addRequestHeader(ConnectorCall.HEADER_USER_AGENT, call.getClientName());
          }
          else
          {
-            clientCall.addRequestHeader(HttpCall.HEADER_USER_AGENT, Engine.VERSION_HEADER);
+            clientCall.addRequestHeader(ConnectorCall.HEADER_USER_AGENT, Engine.VERSION_HEADER);
          }
 
          // Add the conditions
@@ -110,13 +139,13 @@ public class HttpClientImpl extends AbstractClient implements HttpClient
                value.append(condition.getMatch().get(i).getName());
             }
 
-            clientCall.addRequestHeader(HttpCall.HEADER_IF_MATCH, value.toString());
+            clientCall.addRequestHeader(ConnectorCall.HEADER_IF_MATCH, value.toString());
          }
          
          if(condition.getModifiedSince() != null)
          {
             String imsDate = DateUtils.format(condition.getModifiedSince(), DateUtils.FORMAT_RFC_1123);
-            clientCall.addRequestHeader(HttpCall.HEADER_IF_MODIFIED_SINCE, imsDate);
+            clientCall.addRequestHeader(ConnectorCall.HEADER_IF_MODIFIED_SINCE, imsDate);
          }
          
          if(condition.getNoneMatch() != null)
@@ -129,96 +158,99 @@ public class HttpClientImpl extends AbstractClient implements HttpClient
                value.append(condition.getNoneMatch().get(i).getName());
             }
 
-            clientCall.addRequestHeader(HttpCall.HEADER_IF_NONE_MATCH, value.toString());
+            clientCall.addRequestHeader(ConnectorCall.HEADER_IF_NONE_MATCH, value.toString());
          }
 
          if(condition.getUnmodifiedSince() != null)
          {
             String iusDate = DateUtils.format(condition.getUnmodifiedSince(), DateUtils.FORMAT_RFC_1123);
-            clientCall.addRequestHeader(HttpCall.HEADER_IF_UNMODIFIED_SINCE, iusDate);
+            clientCall.addRequestHeader(ConnectorCall.HEADER_IF_UNMODIFIED_SINCE, iusDate);
          }
          
          // Add the cookies
          if(call.getCookies().size() > 0)
          {
             String cookies = CookieUtils.format(call.getCookies());
-            clientCall.addRequestHeader(HttpCall.HEADER_COOKIE, cookies);
+            clientCall.addRequestHeader(ConnectorCall.HEADER_COOKIE, cookies);
          }
          
          // Add the referrer header
          if(call.getReferrerRef() != null)
          {
-            clientCall.addRequestHeader(HttpCall.HEADER_REFERRER, call.getReferrerRef().toString());
+            clientCall.addRequestHeader(ConnectorCall.HEADER_REFERRER, call.getReferrerRef().toString());
          }
 
          // Add the preferences
          PreferenceData pref = call.getPreference();
          if(pref.getMediaTypes().size() > 0)
          {
-            clientCall.addRequestHeader(HttpCall.HEADER_ACCEPT, PreferenceUtils.format(pref.getMediaTypes()));
+            clientCall.addRequestHeader(ConnectorCall.HEADER_ACCEPT, PreferenceUtils.format(pref.getMediaTypes()));
          }
          else
          {
-            clientCall.addRequestHeader(HttpCall.HEADER_ACCEPT, MediaTypes.ALL.getName());
+            clientCall.addRequestHeader(ConnectorCall.HEADER_ACCEPT, MediaTypes.ALL.getName());
          }
          
          if(pref.getCharacterSets().size() > 0)
          {
-            clientCall.addRequestHeader(HttpCall.HEADER_ACCEPT_CHARSET, PreferenceUtils.format(pref.getCharacterSets()));
+            clientCall.addRequestHeader(ConnectorCall.HEADER_ACCEPT_CHARSET, PreferenceUtils.format(pref.getCharacterSets()));
          }
          else
          {
-            clientCall.addRequestHeader(HttpCall.HEADER_ACCEPT_CHARSET, CharacterSets.ALL.getName());
+            clientCall.addRequestHeader(ConnectorCall.HEADER_ACCEPT_CHARSET, CharacterSets.ALL.getName());
          }
          
          if(pref.getEncodings().size() > 0)
          {
-            clientCall.addRequestHeader(HttpCall.HEADER_ACCEPT_ENCODING, PreferenceUtils.format(pref.getEncodings()));
+            clientCall.addRequestHeader(ConnectorCall.HEADER_ACCEPT_ENCODING, PreferenceUtils.format(pref.getEncodings()));
          }
          else
          {
-            clientCall.addRequestHeader(HttpCall.HEADER_ACCEPT_ENCODING, Encodings.ALL.getName());
+            clientCall.addRequestHeader(ConnectorCall.HEADER_ACCEPT_ENCODING, Encodings.ALL.getName());
          }
          
          if(pref.getLanguages().size() > 0)
          {
-            clientCall.addRequestHeader(HttpCall.HEADER_ACCEPT_LANGUAGE, PreferenceUtils.format(pref.getLanguages()));
+            clientCall.addRequestHeader(ConnectorCall.HEADER_ACCEPT_LANGUAGE, PreferenceUtils.format(pref.getLanguages()));
          }
          else
          {
-            clientCall.addRequestHeader(HttpCall.HEADER_ACCEPT_LANGUAGE, Languages.ALL.getName());
+            clientCall.addRequestHeader(ConnectorCall.HEADER_ACCEPT_LANGUAGE, Languages.ALL.getName());
          }
 
          // Add the security
          ChallengeResponse response = call.getSecurity().getChallengeResponse();
          if(response != null)
          {
-            clientCall.addRequestHeader(HttpCall.HEADER_AUTHORIZATION, SecurityUtils.format(response));
+            clientCall.addRequestHeader(ConnectorCall.HEADER_AUTHORIZATION, SecurityUtils.format(response));
          }
          
+         // Add the custom headers that may have been set by the user
+         Parameter header;
+         for(Iterator<Parameter> iter = call.getConnectorCall().getRequestHeaders().iterator(); iter.hasNext();)
+         {
+            header = iter.next();
+            clientCall.addRequestHeader(header.getName(), header.getValue());
+         }         
+         
          // Commit the request headers
-         clientCall.commitRequestHeaders();
+         clientCall.sendRequestHeaders();
 
          // Send the input representation
          if(hasInput(call))
          {
-            if(clientCall.getRequestStream() != null)
-            {
-               call.getInput().write(clientCall.getRequestStream());
-               clientCall.getRequestStream().close();
-            }
-            else if(clientCall.getRequestChannel() != null)
-            {
-               call.getInput().write(clientCall.getRequestChannel());
-               clientCall.getRequestChannel().close();
-            }
+            clientCall.sendRequestInput(call.getInput());
          }
 
          // Get the response status
-         call.setStatus(new StatusImpl(clientCall.getResponseStatusCode()));
+         call.setStatus(new StatusImpl(clientCall.getResponseStatusCode(), null, clientCall.getResponseReasonPhrase(), null));
 
          // Get the server address
          call.setServerAddress(clientCall.getResponseAddress());
+
+         // Update the connector call associated with the uniform call
+         // so that advanced users can read the response headers, etc.
+         call.setConnectorCall(clientCall);
          
          // Get the response output
          ContentType contentType = null;
@@ -228,41 +260,40 @@ public class HttpClientImpl extends AbstractClient implements HttpClient
          Language language = null;
          Tag tag = null;
          
-         Parameter header;
          for(Iterator<Parameter> iter = clientCall.getResponseHeaders().iterator(); iter.hasNext(); )
          {
             header = iter.next();
             
-            if(header.getName().equalsIgnoreCase(HttpCall.HEADER_CONTENT_TYPE))
+            if(header.getName().equalsIgnoreCase(ConnectorCall.HEADER_CONTENT_TYPE))
             {
                contentType = new ContentType(header.getValue());
             }
-            else if(header.getName().equalsIgnoreCase(HttpCall.HEADER_EXPIRES))
+            else if(header.getName().equalsIgnoreCase(ConnectorCall.HEADER_EXPIRES))
             {
                expires = clientCall.parseDate(header.getValue(), false);
             }
-            else if(header.getName().equalsIgnoreCase(HttpCall.HEADER_CONTENT_ENCODING))
+            else if(header.getName().equalsIgnoreCase(ConnectorCall.HEADER_CONTENT_ENCODING))
             {
                encoding = Manager.createEncoding(header.getValue());
             }
-            else if(header.getName().equalsIgnoreCase(HttpCall.HEADER_CONTENT_LANGUAGE))
+            else if(header.getName().equalsIgnoreCase(ConnectorCall.HEADER_CONTENT_LANGUAGE))
             {
                language = Manager.createLanguage(header.getValue());
             }
-            else if(header.getName().equalsIgnoreCase(HttpCall.HEADER_LAST_MODIFIED))
+            else if(header.getName().equalsIgnoreCase(ConnectorCall.HEADER_LAST_MODIFIED))
             {
                lastModified = clientCall.parseDate(header.getValue(), false);
             }
-            else if(header.getName().equalsIgnoreCase(HttpCall.HEADER_ETAG))
+            else if(header.getName().equalsIgnoreCase(ConnectorCall.HEADER_ETAG))
             {
                tag = Manager.createTag(header.getValue());
             }
-            else if(header.getName().equalsIgnoreCase(HttpCall.HEADER_LOCATION))
+            else if(header.getName().equalsIgnoreCase(ConnectorCall.HEADER_LOCATION))
             {
                call.setRedirectionRef(Manager.createReference(header.getValue()));
             }
-            else if((header.getName().equalsIgnoreCase(HttpCall.HEADER_SET_COOKIE)) ||
-                  (header.getName().equalsIgnoreCase(HttpCall.HEADER_SET_COOKIE2)))
+            else if((header.getName().equalsIgnoreCase(ConnectorCall.HEADER_SET_COOKIE)) ||
+                  (header.getName().equalsIgnoreCase(ConnectorCall.HEADER_SET_COOKIE2)))
             {
                try
                {
@@ -274,12 +305,12 @@ public class HttpClientImpl extends AbstractClient implements HttpClient
                   logger.log(Level.WARNING, "Error during cookie setting parsing. Header: " + header.getValue(), e);
                }
             }
-            else if(header.getName().equalsIgnoreCase(HttpCall.HEADER_WWW_AUTHENTICATE))
+            else if(header.getName().equalsIgnoreCase(ConnectorCall.HEADER_WWW_AUTHENTICATE))
             {
                ChallengeRequest request = SecurityUtils.parseRequest(header.getValue());
                call.getSecurity().setChallengeRequest(request);
             }            
-            else if(header.getName().equalsIgnoreCase(HttpCall.HEADER_SERVER))
+            else if(header.getName().equalsIgnoreCase(ConnectorCall.HEADER_SERVER))
             {
                call.setServerName(header.getValue());
             }            
@@ -344,25 +375,6 @@ public class HttpClientImpl extends AbstractClient implements HttpClient
       }
       
       return result;
-   }
-   
-   /**
-    * Returns a new HTTP protocol call.
-    * @param method The request method.
-    * @param resourceUri The requested resource URI.
-    * @param hasInput Indicates if the call will have an input to send to the server.
-    * @return A new HTTP protocol call.
-    */
-   public HttpClientCall createCall(String method, String resourceUri, boolean hasInput)
-   {
-      try
-      {
-         return new HttpClientCallImpl(method, resourceUri, hasInput);
-      }
-      catch(IOException e)
-      {
-         return null;
-      }
    }
 
 }

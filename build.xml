@@ -141,7 +141,7 @@
     
     <!-- Compiles main source files -->
     <mkdir dir="${classes-main}"/>
-    <javac debug="true" srcdir="${src-main}"  destdir="${classes-main}" classpathref="path-all"/>
+    <javac debug="true" srcdir="${src-main};${src-jetty5.1};${src-javamail1.3}"  destdir="${classes-main}" classpathref="path-all"/>
     
     <!-- Compiles extension Freemarker 2.3 -->
     <mkdir dir="${classes-freemarker2.3}"/>
@@ -195,7 +195,7 @@
     </jar>
     
     <!-- Create Noelios Restlet Server jar file -->
-    <jar jarfile="${dist}/${DSTAMP}/lib/com.noelios.restlet.jar" basedir="${classes-main}" includes="com/noelios/restlet/**">
+    <jar jarfile="${dist}/${DSTAMP}/lib/com.noelios.restlet.jar" basedir="${classes-main}" includes="com/noelios/restlet/**" excludes="com/noelios/restlet/ext/**">
       <manifest>
         <attribute name="Built-By" value="${author}"/>
         <section name="com.noelios.restlet">

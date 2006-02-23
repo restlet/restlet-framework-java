@@ -24,6 +24,7 @@ package org.restlet.connector;
 
 import org.restlet.UniformCall;
 import org.restlet.data.Methods;
+import org.restlet.data.Protocol;
 import org.restlet.data.Representation;
 
 import com.noelios.restlet.UniformCallImpl;
@@ -36,11 +37,12 @@ public abstract class AbstractClient extends AbstractConnector implements Client
 {
    /**
     * Constructor.
-    * @param name The name of this connector.
+    * @param protocol The connector protocol.
+    * @param name The unique connector name.
     */
-   public AbstractClient(String name)
+   public AbstractClient(Protocol protocol, String name)
    {
-      super(name);
+      super(protocol, name);
    }
 
    /**
@@ -101,6 +103,15 @@ public abstract class AbstractClient extends AbstractConnector implements Client
       call.setMethod(Methods.DELETE);
       handle(call);
       return call;
+   }
+
+   /**
+    * Returns the description of this REST element.
+    * @return The description of this REST element.
+    */
+   public String getDescription()
+   {
+      return "Client connector";
    }
 
 }

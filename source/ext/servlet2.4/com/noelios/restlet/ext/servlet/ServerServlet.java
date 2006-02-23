@@ -31,14 +31,16 @@ import javax.servlet.http.HttpServletResponse;
 
 import org.restlet.UniformCall;
 import org.restlet.UniformInterface;
-import org.restlet.connector.HttpServer;
-import org.restlet.connector.HttpServerCall;
+import org.restlet.connector.Server;
+import org.restlet.connector.ServerCall;
+import org.restlet.data.Protocol;
+import org.restlet.data.Protocols;
 
 /**
  * Servlet connector acting as a HTTP server.
  * @see <a href="http://java.sun.com/j2ee/">J2EE home page</a>
  */
-public class ServerServlet extends HttpServlet implements HttpServer
+public class ServerServlet extends HttpServlet implements Server
 {
    /** The Servlet context initialization parameter's name containing the target's class name. */
    public static final String NAME_TARGET_CLASS = "org.restlet.target.class";
@@ -60,6 +62,15 @@ public class ServerServlet extends HttpServlet implements HttpServer
    {
       this.started = false;
       this.handler = null;
+   }
+   
+   /**
+    * Returns the connector's protocol.
+    * @return The connector's protocol.
+    */
+   public Protocol getProtocol()
+   {
+      return Protocols.HTTP;
    }
 
    /** Start hook. */
@@ -99,7 +110,7 @@ public class ServerServlet extends HttpServlet implements HttpServer
     */
    protected void service(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException
    {
-      handle((HttpServerCall)new ServletCall(request, response));
+      handle((ServerCall)new ServletCall(request, response));
    }
 
    /**
@@ -202,11 +213,13 @@ public class ServerServlet extends HttpServlet implements HttpServer
     * The default behavior is to create an UniformCall and invoke the "handle(UniformCall)" method.
     * @param call The HTTP protocol call.
     */
-   public void handle(HttpServerCall call)
+   public void handle(ServerCall call) throws IOException
    {
       UniformCall uniformCall = call.toUniform();
       handle(uniformCall);
-      call.commitFrom(uniformCall);
+      call.setResponse(uniformCall);
+      call.sendResponseHeaders();
+      call.sendResponseOutput(uniformCall.getOutput());
    }
 
    /**

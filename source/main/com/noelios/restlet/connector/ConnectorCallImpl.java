@@ -26,15 +26,16 @@ import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 
-import org.restlet.connector.HttpCall;
+import org.restlet.Manager;
+import org.restlet.connector.ConnectorCall;
 import org.restlet.data.Parameter;
 
 import com.noelios.restlet.util.DateUtils;
 
 /**
- * Implementation of a connector call for the HTTP protocol.
+ * Implementation of a connector call.
  */
-public abstract class HttpCallImpl implements HttpCall
+public class ConnectorCallImpl implements ConnectorCall
 {
    /** Indicates if the call is confidential. */
    protected boolean confidential;
@@ -42,7 +43,7 @@ public abstract class HttpCallImpl implements HttpCall
    /** The client IP address. */
    protected String requestAddress;
    
-   /* The request method. */
+   /** The request method. */
    protected String requestMethod;
    
    /** The request URI. */
@@ -54,6 +55,9 @@ public abstract class HttpCallImpl implements HttpCall
    /** The response address. */
    protected String responseAddress;
    
+   /** The response headers. */
+   protected List<Parameter> responseHeaders;
+   
    /** The response status code. */
    protected int responseStatusCode;
    
@@ -63,7 +67,7 @@ public abstract class HttpCallImpl implements HttpCall
    /**
     * Constructor.
     */
-   public HttpCallImpl()
+   public ConnectorCallImpl()
    {
       this.confidential = false;
       this.responseAddress = null;
@@ -71,8 +75,29 @@ public abstract class HttpCallImpl implements HttpCall
       this.requestUri = null;
       this.requestHeaders = null;
       this.responseAddress = null;
+      this.responseHeaders = null;
       this.responseStatusCode = 200;
       this.responseReasonPhrase = "";
+   }
+
+   /**
+    * Adds a request header.
+    * @param name The header's name.
+    * @param value The header's value.
+    */
+   public void addRequestHeader(String name, String value)
+   {
+      getRequestHeaders().add(Manager.createParameter(name, value));
+   }
+
+   /**
+    * Adds a response header.
+    * @param name The header's name.
+    * @param value The header's value.
+    */
+   public void addResponseHeader(String name, String value)
+   {
+      getResponseHeaders().add(Manager.createParameter(name, value));
    }
 
    /**
@@ -130,6 +155,16 @@ public abstract class HttpCallImpl implements HttpCall
    public String getResponseAddress()
    {
       return this.responseAddress;
+   }
+   
+   /**
+    * Returns the modifiable list of response headers.
+    * @return The modifiable list of response headers.
+    */
+   public List<Parameter> getResponseHeaders()
+   {
+      if(this.responseHeaders == null) this.responseHeaders = new ArrayList<Parameter>();
+      return this.responseHeaders;
    }
 
    /**

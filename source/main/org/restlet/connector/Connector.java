@@ -24,6 +24,7 @@ package org.restlet.connector;
 
 import org.restlet.Element;
 import org.restlet.UniformInterface;
+import org.restlet.data.Protocol;
 
 /**
  * Abstract mechanism that enables communication between components.<br/><br/> "A connector is an abstract
@@ -40,13 +41,9 @@ import org.restlet.UniformInterface;
  */
 public interface Connector extends Element, UniformInterface
 {
-   /** AJP 1.3 protocol to communicate with Apache HTTP server or Microsoft IIS. */
-   public static final int PROTOCOL_AJP = 1;
-   
-   /** HTTP protocol. */
-   public static final int PROTOCOL_HTTP = 2;
-   
-   /** HTTPS protocol (via SSL sockets). */
-   public static final int PROTOCOL_HTTPS = 3;
-
+   /**
+    * Returns the connector's protocol.
+    * @return The connector's protocol.
+    */
+   public Protocol getProtocol();   
 }

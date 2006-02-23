@@ -32,14 +32,16 @@ import org.mortbay.jetty.HttpConnection;
 import org.mortbay.jetty.nio.SelectChannelConnector;
 import org.restlet.UniformCall;
 import org.restlet.UniformInterface;
-import org.restlet.connector.HttpServer;
-import org.restlet.connector.HttpServerCall;
+import org.restlet.connector.Server;
+import org.restlet.connector.ServerCall;
+import org.restlet.data.Protocol;
+import org.restlet.data.Protocols;
 
 /**
  * Jetty connector acting as a HTTP server.
  * @see <a href="http://jetty.mortbay.com/">Jetty home page</a>
  */
-public class JettyServer extends org.mortbay.jetty.Server implements HttpServer
+public class JettyServer extends org.mortbay.jetty.Server implements Server
 {
    /** Serial version identifier. */
    private static final long serialVersionUID = 1L;
@@ -103,9 +105,7 @@ public class JettyServer extends org.mortbay.jetty.Server implements HttpServer
     */
    public void handle(HttpConnection connection) throws IOException, ServletException
    {
-      JettyCall call = new JettyCall(connection);
-      getTarget().handle(call);
-      call.commitFrom(call);
+      handle(new JettyCall(connection));
    }
 
    /**
@@ -150,11 +150,22 @@ public class JettyServer extends org.mortbay.jetty.Server implements HttpServer
     * The default behavior is to create an UniformCall and invoke the "handle(UniformCall)" method.
     * @param call The HTTP protocol call.
     */
-   public void handle(HttpServerCall call)
+   public void handle(ServerCall call) throws IOException
    {
       UniformCall uniformCall = call.toUniform();
       handle(uniformCall);
-      call.commitFrom(uniformCall);
+      call.setResponse(uniformCall);
+      call.sendResponseHeaders();
+      call.sendResponseOutput(uniformCall.getOutput());
+   }
+
+   /**
+    * Returns the connector's protocol.
+    * @return The connector's protocol.
+    */
+   public Protocol getProtocol()
+   {
+      return Protocols.HTTP;
    }
 
    /**

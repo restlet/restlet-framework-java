@@ -22,25 +22,41 @@
 
 package org.restlet.connector;
 
+import org.restlet.data.Protocol;
+
 /**
  * Abstract connector implementation.
  */
 public abstract class AbstractConnector implements Connector
 {
+   /** The connector protocol. */
+   protected Protocol protocol;
+
+   /** The unique connector name. */
+   protected String name;
+
    /** Indicates if the connector was started. */
    protected boolean started;
 
-   /** The name of this REST connector. */
-   protected String name;
-
    /**
     * Constructor.
-    * @param name The name of this REST connector.
+    * @param protocol The connector protocol.
+    * @param name The unique connector name.
     */
-   public AbstractConnector(String name)
+   public AbstractConnector(Protocol protocol, String name)
    {
-      this.started = false;
+      this.protocol = protocol;
       this.name = name;
+      this.started = false;
+   }
+
+   /**
+    * Returns the connector's protocol.
+    * @return The connector's protocol.
+    */
+   public Protocol getProtocol()
+   {
+      return this.protocol;
    }
 
    /**
@@ -50,15 +66,6 @@ public abstract class AbstractConnector implements Connector
    public String getName()
    {
       return this.name;
-   }
-
-   /**
-    * Returns the description of this REST element.
-    * @return The description of this REST element.
-    */
-   public String getDescription()
-   {
-      return "Default connector";
    }
 
    /** Start hook. */

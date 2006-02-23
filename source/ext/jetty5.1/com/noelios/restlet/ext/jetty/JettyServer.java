@@ -23,74 +23,36 @@
 package com.noelios.restlet.ext.jetty;
 
 import org.mortbay.util.InetAddrPort;
-import org.restlet.UniformCall;
 import org.restlet.UniformInterface;
-import org.restlet.connector.HttpServer;
-import org.restlet.connector.HttpServerCall;
+import org.restlet.connector.AbstractServer;
+import org.restlet.data.Protocol;
+import org.restlet.data.Protocols;
 
 /**
  * Jetty HTTP server connector.
  * @see <a href="http://jetty.mortbay.com/">Jetty home page</a>
  */
-public class JettyServer implements HttpServer
+public class JettyServer extends AbstractServer
 {
    /** Serial version identifier. */
    private static final long serialVersionUID = 1L;
 
-   /** The name of this REST connector. */
-   protected String name;
-
-   /** The target handler. */
-   protected UniformInterface target;
-
-   /** The Jetty listener type. */
-   protected int listenerType;
-   
    /** The Jetty listener. */
    protected org.mortbay.http.HttpListener listener;
-   
-   /** The Jetty listening address if specified. */
-   protected String address;
-   
-   /** The Jetty listening port if specified. */
-   protected int port;
-   
-   protected String keystorePath;
-   
-   protected String keystorePassword;
-   
-   protected String keyPassword;
 
    /**
     * Constructor.
+    * @param protocol The connector protocol.
     * @param name The unique connector name.
     * @param target The target handler.
-    * @param listenerType The listener type.
     * @param address The optional listening IP address (local host used if null).
     * @param port The listening port.
     */
-   public JettyServer(String name, UniformInterface target, int listenerType, String address, int port)
+   public JettyServer(Protocol protocol, String name, UniformInterface target, String address, int port)
    {
-      this.name = name;
-      this.address = address;
-      this.target = target;
-      this.listenerType = listenerType;
-      this.address = address;
-      this.port = port;
+      super(protocol, name, target, address, port);
    }
 
-   /**
-    * @param keystorePath The path of the keystore file. 
-    * @param keystorePassword The keystore password.
-    * @param keyPassword The password of the server key .
-    */
-   public void configureSsl(String keystorePath, String keystorePassword, String keyPassword)
-   {
-      this.keystorePath = keystorePath;
-      this.keystorePassword = keystorePassword;
-      this.keyPassword = keyPassword;
-   }
-   
    /**
     * Returns the Jetty listener.
     * @return The Jetty listener.
@@ -99,55 +61,54 @@ public class JettyServer implements HttpServer
    {
       return this.listener;
    }
-   
+
    /** Start hook. */
    public void start()
    {
       try
       {
-         switch(this.listenerType)
+         if(Protocols.AJP.equals(this.protocol))
          {
-            case PROTOCOL_AJP:
-               if(this.address != null)
-               {
-                  this.listener = new AjpListener(this, new InetAddrPort(this.address, this.port));
-               }
-               else
-               {
-                  this.listener = new AjpListener(this);
-                  this.listener.setPort(port);
-               }
-            break;
-            
-            case PROTOCOL_HTTP:
-               if(this.address != null)
-               {
-                  this.listener = new HttpListener(this, new InetAddrPort(this.address, this.port));
-               }
-               else
-               {
-                  this.listener = new HttpListener(this);
-                  this.listener.setPort(port);
-               }
-            break;
-            
-            case PROTOCOL_HTTPS:
-               if(this.address != null)
-               {
-                  HttpsListener httpsListener = new HttpsListener(this, new InetAddrPort(this.address, this.port));
-                  httpsListener.setKeystore(this.keystorePath);
-                  httpsListener.setPassword(this.keystorePassword);
-                  httpsListener.setKeyPassword(this.keyPassword);
-                  this.listener = httpsListener;
-               }
-               else
-               {
-                  this.listener = new HttpsListener(this);
-                  this.listener.setPort(port);
-               }
-            break;
+            if(this.address != null)
+            {
+               this.listener = new AjpListener(this, new InetAddrPort(this.address, this.port));
+            }
+            else
+            {
+               this.listener = new AjpListener(this);
+               this.listener.setPort(port);
+            }
          }
-         
+         else if(Protocols.HTTP.equals(this.protocol))
+         {
+            if(this.address != null)
+            {
+               this.listener = new HttpListener(this, new InetAddrPort(this.address, this.port));
+            }
+            else
+            {
+               this.listener = new HttpListener(this);
+               this.listener.setPort(port);
+            }
+         }
+         else if(Protocols.HTTPS.equals(this.protocol))
+         {
+            if(this.address != null)
+            {
+               HttpsListener httpsListener = new HttpsListener(this,
+                     new InetAddrPort(this.address, this.port));
+               httpsListener.setKeystore(this.keystorePath);
+               httpsListener.setPassword(this.keystorePassword);
+               httpsListener.setKeyPassword(this.keyPassword);
+               this.listener = httpsListener;
+            }
+            else
+            {
+               this.listener = new HttpsListener(this);
+               this.listener.setPort(port);
+            }
+         }
+
          getListener().start();
       }
       catch(Exception e)
@@ -188,61 +149,12 @@ public class JettyServer implements HttpServer
    }
 
    /**
-    * Returns the target handler.
-    * @return The target handler.
-    */
-   public UniformInterface getTarget()
-   {
-      return target;
-   }
-
-   /**
-    * Sets the target handler.
-    * @param target The target handler.
-    */
-   public void setTarget(UniformInterface target)
-   {
-      this.target = target;
-   }
-
-   /**
-    * Handles the HTTP protocol call.<br/>
-    * The default behavior is to create an UniformCall and invoke the "handle(UniformCall)" method.
-    * @param call The HTTP protocol call.
-    */
-   public void handle(HttpServerCall call)
-   {
-      UniformCall uniformCall = call.toUniform();
-      handle(uniformCall);
-      call.commitFrom(uniformCall);
-   }
-
-   /**
-    * Handles a uniform call.
-    * The default behavior is to as the attached handler to handle the call.
-    * @param call The uniform call to handle.
-    */
-   public void handle(UniformCall call)
-   {
-      getTarget().handle(call);
-   }
-
-   /**
-    * Returns the name of this REST connector.
-    * @return The name of this REST connector.
-    */
-   public String getName()
-   {
-      return this.name;
-   }
-
-   /**
     * Returns the description of this REST element.
     * @return The description of this REST element.
     */
    public String getDescription()
    {
-      return "Jetty HTTP server";
+      return "Jetty " + getProtocol().getName() + " server";
    }
-   
+
 }

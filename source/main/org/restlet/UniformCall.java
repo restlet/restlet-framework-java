@@ -24,6 +24,7 @@ package org.restlet;
 
 import java.util.List;
 
+import org.restlet.connector.ConnectorCall;
 import org.restlet.data.*;
 
 /**
@@ -58,6 +59,12 @@ public interface UniformCall
     * @return The condition data applying to this call.
     */
    public ConditionData getCondition();
+   
+   /**
+    * Returns the low-level connector call.
+    * @return The low-level connector call.
+    */
+   public ConnectorCall getConnectorCall();
    
    /**
     * Returns the cookies provided by the client to the server.
@@ -191,6 +198,12 @@ public interface UniformCall
     * @param name The client name.
     */
    public void setClientName(String name);
+
+   /**
+    * Sets the low-level connector call.
+    * @param call The low-level connector call.
+    */
+   public void setConnectorCall(ConnectorCall call);
 
    /**
     * Sets the representation provided by the client.

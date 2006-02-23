@@ -204,10 +204,10 @@ public class JettyCall extends HttpServerCallImpl
    }
 
    /**
-    * Commits the response headers.<br/>
-    * Must be called before writing the response entity.
+    * Sends the response headers.<br/>
+    * Must be called before sending the response output.
     */
-   public void commitResponseHeaders()
+   public void sendResponseHeaders()
    {
       // Add call headers
       Parameter header;

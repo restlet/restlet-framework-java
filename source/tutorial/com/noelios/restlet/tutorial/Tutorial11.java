@@ -30,8 +30,9 @@ import org.restlet.Restlet;
 import org.restlet.UniformCall;
 import org.restlet.component.DefaultRestletContainer;
 import org.restlet.component.RestletContainer;
-import org.restlet.connector.HttpServer;
+import org.restlet.connector.Server;
 import org.restlet.data.MediaTypes;
+import org.restlet.data.Protocols;
 
 import com.noelios.restlet.DirectoryRestlet;
 import com.noelios.restlet.GuardChainlet;
@@ -53,7 +54,7 @@ public class Tutorial11
 
          // Create the HTTP server connector, then add it as a server connector
          // to the Restlet container. Note that the container is the call handler.
-         HttpServer server = Manager.createHttpServer("My connector", myContainer, HttpServer.PROTOCOL_HTTP, null, 8182);
+         Server server = Manager.createServer(Protocols.HTTP, "My server", myContainer, null, 8182);
          myContainer.addServer(server);
 
          // Attach a log Chainlet to the container

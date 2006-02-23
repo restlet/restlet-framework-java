@@ -37,6 +37,15 @@ import org.restlet.data.Representation;
 public interface Client extends Connector
 {
    /**
+    * Returns a new client call.
+    * @param method The request method.
+    * @param resourceUri The requested resource URI.
+    * @param hasInput Indicates if the call will have an input to send to the server.
+    * @return A new client call.
+    */
+   public ClientCall createCall(String method, String resourceUri, boolean hasInput);
+
+   /**
     * Gets the identified resource.
     * @param resourceUri The URI of the resource to get.
     * @return The returned uniform call.

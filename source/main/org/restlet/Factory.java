@@ -24,8 +24,8 @@ package org.restlet;
 
 import org.restlet.component.RestletContainer;
 import org.restlet.component.RestletServer;
-import org.restlet.connector.HttpClient;
-import org.restlet.connector.HttpServer;
+import org.restlet.connector.Client;
+import org.restlet.connector.Server;
 import org.restlet.data.CharacterSet;
 import org.restlet.data.Cookie;
 import org.restlet.data.CookieSetting;
@@ -35,6 +35,7 @@ import org.restlet.data.Language;
 import org.restlet.data.MediaType;
 import org.restlet.data.Method;
 import org.restlet.data.Parameter;
+import org.restlet.data.Protocol;
 import org.restlet.data.Reference;
 import org.restlet.data.Status;
 import org.restlet.data.Tag;
@@ -94,22 +95,23 @@ public interface Factory
    public Form createForm();
 
    /**
-    * Create a new HTTP client connector.
+    * Create a new client connector for a given protocol.
+    * @param protocol The connector protocol.
     * @param name The unique connector name.
-    * @return The new HTTP client.
+    * @return The new client connector.
     */
-   public HttpClient createHttpClient(String name);
+   public Client createClient(Protocol protocol, String name);
 
    /**
-    * Create a new HTTP server connector.
+    * Create a new server connector for a given protocol.
+    * @param protocol The connector protocol.
     * @param name The unique connector name.
     * @param target The target handler.
-    * @param protocolVariant The protocol variant (HTTP or HTTPS or AJP).
     * @param address The optional listening IP address (local host used if null).
     * @param port The listening port.
-    * @return The new HTTP server.
+    * @return The new server connector.
     */
-   public HttpServer createHttpServer(String name, UniformInterface target, int protocolVariant, String address, int port);
+   public Server createServer(Protocol protocol, String name, UniformInterface target, String address, int port);
 
    /**
     * Creates a new language from its standard name.

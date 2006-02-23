@@ -25,8 +25,9 @@ package com.noelios.restlet.tutorial;
 import org.restlet.Manager;
 import org.restlet.component.DefaultRestletContainer;
 import org.restlet.component.RestletContainer;
-import org.restlet.connector.HttpServer;
+import org.restlet.connector.Server;
 import org.restlet.data.MediaTypes;
+import org.restlet.data.Protocols;
 
 import com.noelios.restlet.DirectoryRestlet;
 
@@ -44,7 +45,7 @@ public class Tutorial06
 
          // Create the HTTP server connector, then add it as a server connector
          // to the Restlet container. Note that the container is the call handler.
-         HttpServer server = Manager.createHttpServer("My connector", myContainer, HttpServer.PROTOCOL_HTTP, null, 8182);
+         Server server = Manager.createServer(Protocols.HTTP, "My server", myContainer, null, 8182);
          myContainer.addServer(server);
 
          // Create a directory Restlet able to return a deep hierarchy of Web files

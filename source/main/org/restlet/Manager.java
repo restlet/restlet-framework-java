@@ -27,8 +27,8 @@ import java.util.logging.Logger;
 
 import org.restlet.component.RestletContainer;
 import org.restlet.component.RestletServer;
-import org.restlet.connector.HttpClient;
-import org.restlet.connector.HttpServer;
+import org.restlet.connector.Client;
+import org.restlet.connector.Server;
 import org.restlet.data.CharacterSet;
 import org.restlet.data.Cookie;
 import org.restlet.data.CookieSetting;
@@ -38,6 +38,7 @@ import org.restlet.data.Language;
 import org.restlet.data.MediaType;
 import org.restlet.data.Method;
 import org.restlet.data.Parameter;
+import org.restlet.data.Protocol;
 import org.restlet.data.Reference;
 import org.restlet.data.Status;
 import org.restlet.data.Tag;
@@ -59,27 +60,28 @@ public class Manager
    protected static Factory registeredFactory = null;
    
    /**
-    * Create a new HTTP client connector.
+    * Create a new client connector for a given protocol.
+    * @param protocol The connector protocol.
     * @param name The unique connector name.
-    * @return The new HTTP client.
+    * @return The new client connector.
     */
-   public static HttpClient createHttpClient(String name)
+   public static Client createClient(Protocol protocol, String name)
    {
-      return getRegisteredFactory().createHttpClient(name);
+      return getRegisteredFactory().createClient(protocol, name);
    }
 
    /**
-    * Create a new HTTP server connector.
+    * Create a new server connector for a given protocol.
+    * @param protocol The connector protocol.
     * @param name The unique connector name.
     * @param target The target handler.
-    * @param listenerType The listener type.
     * @param address The optional listening IP address (local host used if null).
     * @param port The listening port.
-    * @return The new HTTP server.
+    * @return The new server connector.
     */
-   public static HttpServer createHttpServer(String name, UniformInterface target, int listenerType, String address, int port)
+   public static Server createServer(Protocol protocol, String name, UniformInterface target, String address, int port)
    {
-      return getRegisteredFactory().createHttpServer(name, target, listenerType, address, port);
+      return getRegisteredFactory().createServer(protocol, name, target, address, port);
    }
 
    /**

@@ -20,19 +20,13 @@
  * Portions Copyright [yyyy] [name of copyright owner]
  */
 
-package org.restlet.connector;
+package org.restlet.data;
+
 
 /**
- * Client connector for the HTTP protocol. 
+ * Protocol used by a client and a server connector to enable the communication
+ * between two distributed components.
  */
-public interface HttpClient extends Client
+public interface Protocol extends ControlData
 {
-   /**
-    * Returns a new HTTP protocol call.
-    * @param method The request method.
-    * @param resourceUri The requested resource URI.
-    * @param hasInput Indicates if the call will have an input to send to the server.
-    * @return A new HTTP protocol call.
-    */
-   public HttpClientCall createCall(String method, String resourceUri, boolean hasInput);
 }

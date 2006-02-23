@@ -30,6 +30,7 @@ import java.util.List;
 
 import org.restlet.Resource;
 import org.restlet.UniformCall;
+import org.restlet.connector.ConnectorCall;
 import org.restlet.data.ConditionData;
 import org.restlet.data.Cookie;
 import org.restlet.data.CookieSetting;
@@ -48,6 +49,7 @@ import org.restlet.data.SecurityData;
 import org.restlet.data.Status;
 import org.restlet.data.Statuses;
 
+import com.noelios.restlet.connector.ConnectorCallImpl;
 import com.noelios.restlet.data.ConditionDataImpl;
 import com.noelios.restlet.data.FormImpl;
 import com.noelios.restlet.data.PreferenceDataImpl;
@@ -68,6 +70,9 @@ public class UniformCallImpl implements UniformCall
 
    /** The condition data. */
    protected ConditionData condition;
+
+   /** The low-level connector call. */
+   protected ConnectorCall connectorCall;
    
    /** The current cookies of the client. */
    protected List<Cookie> cookies;
@@ -392,6 +397,16 @@ public class UniformCallImpl implements UniformCall
       if(this.condition == null) this.condition = new ConditionDataImpl();
       return this.condition;
    }
+   
+   /**
+    * Returns the low-level connector call.
+    * @return The low-level connector call.
+    */
+   public ConnectorCall getConnectorCall()
+   {
+      if(this.connectorCall == null) this.connectorCall = new ConnectorCallImpl();
+      return this.connectorCall;
+   }
 
    /**
     * Returns the cookies provided by the client to the server.
@@ -639,6 +654,15 @@ public class UniformCallImpl implements UniformCall
       this.clientName = name;
    }
 
+   /**
+    * Sets the low-level connector call.
+    * @param call The low-level connector call.
+    */
+   public void setConnectorCall(ConnectorCall call)
+   {
+      this.connectorCall = call;
+   }
+   
    /**
     * Sets the representation provided by the client.
     * @param input The representation provided by the client.
