@@ -172,15 +172,15 @@ public class ServerServlet extends HttpServlet implements Server
                      }
                      catch(ClassNotFoundException e)
                      {
-                        log("[Noelios Restlet Engine] - The ServerServlet couldn't find the class. Please check that your classpath includes " + NAME_TARGET_CLASS);
+                        log("[Noelios Restlet Engine] - The ServerServlet couldn't find the class. Please check that your classpath includes " + targetClassName);
                      }
                      catch(InstantiationException e)
                      {
-                        log("[Noelios Restlet Engine] - The ServerServlet couldn't instantiate the class. Please check this class has an empty constructor " + NAME_TARGET_CLASS);
+                        log("[Noelios Restlet Engine] - The ServerServlet couldn't instantiate the class. Please check this class has an empty constructor " + targetClassName);
                      }
                      catch(IllegalAccessException e)
                      {
-                        log("[Noelios Restlet Engine] - The ServerServlet couldn't instantiate the class. Please check that you have to proper access rights to " + NAME_TARGET_CLASS);
+                        log("[Noelios Restlet Engine] - The ServerServlet couldn't instantiate the class. Please check that you have to proper access rights to " + targetClassName);
                      }
                   }
                   else
