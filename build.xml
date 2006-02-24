@@ -7,6 +7,7 @@
 <project name="Restlet" default="dist" basedir=".">
     
   <!-- Set global paths -->
+  <property name="bin"      location="bin"/>
   <property name="docs"     location="www/docs"/>
   <property name="docs-api" location="${docs}/api"/>
   <property name="docs-nre" location="${docs}/nre"/>
@@ -179,8 +180,14 @@
 
   <target name="dist" depends="test" description="Generate the distribution" >
     <delete dir="${dist}/${DSTAMP}" verbose="false" quiet="true" includeEmptyDirs="true"/>
+    <mkdir dir="${dist}/${DSTAMP}/bin"/>
     <mkdir dir="${dist}/${DSTAMP}/lib"/>
     <mkdir dir="${dist}/${DSTAMP}/src"/>
+
+    <!-- Copy the binaries -->
+    <copy todir="${dist}/${DSTAMP}/bin">
+      <fileset dir="${bin}"/>
+    </copy>    
 
     <!-- Create Restlet API jar file -->
     <jar jarfile="${dist}/${DSTAMP}/lib/org.restlet.jar" basedir="${classes-main}" includes="org/restlet/**">
