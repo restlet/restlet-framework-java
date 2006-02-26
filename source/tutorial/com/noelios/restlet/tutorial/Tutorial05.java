@@ -58,8 +58,9 @@ public class Tutorial05
                {
                   // Print the requested URI path
                   String output = "Resource path = " + call.getResourcePath(0, false) + '\n' +
-                                  "Restlet path = " + call.getResourcePath(1, false);
-
+                                  "Handler path = " + call.getResourcePath(1, false) + '\n' +
+                                  "Query = " + call.getResourceRef().getQuery() + '\n' +
+                                  "Full URI = " + call.getResourceRef().toString(); 
                   call.setOutput(new StringRepresentation(output, MediaTypes.TEXT_PLAIN));
                }
             };
