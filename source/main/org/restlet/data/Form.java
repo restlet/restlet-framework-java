@@ -31,7 +31,8 @@ import java.util.Map;
 public interface Form extends Data
 {
    /**
-    * Returns the modifiable list of parameters.
+    * Returns the modifiable list of parameters.<br/>
+    * Note that multiple parameters with the the same name may occur in any order in the list returned.
     * @return The modifiable list of parameters.
     */
    public List<Parameter> getParameters();
@@ -50,10 +51,9 @@ public interface Form extends Data
    public void removeParameters(String name);
    
    /**
-    * Gets the parameters with the given name.<br/>
-    * If multiple values are found, a list is returned created.
+    * Gets the list of parameters with the given name.
     * @param name The parameter name to match.
-    * @return The parameter value or list of values.
+    * @return The list of parameters.
     */
    public List<Parameter> getParameters(String name);
 
