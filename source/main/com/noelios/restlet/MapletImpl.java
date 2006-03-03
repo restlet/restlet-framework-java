@@ -143,7 +143,7 @@ public class MapletImpl extends AbstractRestlet implements Maplet
       HandlerMapping mapping = null;
       Matcher matcher = null;
       boolean found = false;
-      String resourcePath = call.getResourcePath(0, false);
+      String resourcePath = call.getResourcePath();
 
       // Match the path in the call context with one of the child handler
       for(Iterator<HandlerMapping> iter = getMappings().iterator(); !found && iter.hasNext();)
@@ -156,16 +156,23 @@ public class MapletImpl extends AbstractRestlet implements Maplet
       if(found)
       {
          // Updates the paths
-         String restletPath = resourcePath.substring(0, matcher.end());
-         resourcePath = resourcePath.substring(matcher.end());
-         call.getResourcePaths().set(0, restletPath);
-         call.getResourcePaths().add(0, resourcePath);
+         String oldHandlerPath = call.getHandlerPath();
+         String handlerPath = resourcePath.substring(0, matcher.end());
+         
+         if(oldHandlerPath == null)
+         {
+            call.setHandlerPath(handlerPath);
+         }
+         else
+         {
+            call.setHandlerPath(oldHandlerPath + handlerPath);
+         }
 
          // Updates the matches
-         call.getResourceMatches().clear();
+         call.getHandlerMatches().clear();
          for(int i = 0; i < matcher.groupCount(); i++)
          {
-            call.getResourceMatches().add(matcher.group(i + 1));
+            call.getHandlerMatches().add(matcher.group(i + 1));
          }
 
          // Invoke the call handler

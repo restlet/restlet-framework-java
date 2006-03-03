@@ -79,6 +79,25 @@ public interface UniformCall
    public List<CookieSetting> getCookieSettings();
 
    /**
+    * Returns the list of substrings matched in the current handler path.
+    * @return The list of substrings matched.
+    * @see <a href="http://java.sun.com/j2se/1.5.0/docs/api/java/util/regex/Matcher.html#group(int)">Matcher.group()</a>
+    */
+   public List<String> getHandlerMatches();
+
+   /**
+    * Returns the part of the resource reference preceeding the resource path.
+    * @return The part of the resource reference preceeding the resource path.
+    */
+   public String getHandlerPath();
+
+   /**
+    * Returns the handler path as a reference.
+    * @return The handler path as a reference.
+    */
+   public Reference getHandlerRef();
+
+   /**
     * Returns the representation provided by the client.
     * @return The representation provided by the client.
     */
@@ -123,29 +142,10 @@ public interface UniformCall
    public Reference getReferrerRef();
 
    /**
-    * Returns the list of substrings matched in the current resource path.
-    * @return The list of substrings matched.
-    * @see <a href="http://java.sun.com/j2se/1.5.0/docs/api/java/util/regex/Matcher.html#group(int)">Matcher.group()</a>
+    * Returns the part of the resource reference following the handler path.
+    * @return The part of the resource reference following the handler path.
     */
-   public List<String> getResourceMatches();
-
-   /**
-    * Returns a path in the list of resource paths.<br/>
-    * The first path is the resource path relatively to the current Maplet.<br/>
-    * The second path is the current Maplet path relatively to the parent Maplet.<br/> 
-    * All the list of remaining Maplet paths is also available.
-    * @param index Index of the path in the list.
-    * @param strip Indicates if leading and ending slashes should be stripped.
-    * @return The path at the given index.
-    */
-   public String getResourcePath(int index, boolean strip);
-
-   /**
-    * Returns the list of paths dividing the initial resource path.<br/>
-    * The list is sorted according to the Maplets hierarchy.
-    * @return The list of paths.
-    */
-   public List<String> getResourcePaths();
+   public String getResourcePath();
 
    /**
     * Returns the resource reference.
@@ -204,6 +204,12 @@ public interface UniformCall
     * @param call The low-level connector call.
     */
    public void setConnectorCall(ConnectorCall call);
+
+   /**
+    * Sets the part of the resource reference preceeding the resource path.
+    * @param handlerPath The part of the resource reference preceeding the resource path.
+    */
+   public void setHandlerPath(String handlerPath);
 
    /**
     * Sets the representation provided by the client.

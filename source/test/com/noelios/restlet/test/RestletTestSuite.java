@@ -36,6 +36,7 @@ public class RestletTestSuite extends TestSuite
       addTestSuite(CookiesTest.class);
       addTestSuite(FormTest.class);
       addTestSuite(PreferencesTest.class);
+      addTestSuite(ReferenceTest.class);
       addTestSuite(SecurityTest.class);
       
    }

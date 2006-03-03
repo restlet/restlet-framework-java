@@ -26,6 +26,8 @@ import org.restlet.component.RestletContainer;
 import org.restlet.component.RestletServer;
 import org.restlet.connector.Client;
 import org.restlet.connector.Server;
+import org.restlet.data.ChallengeResponse;
+import org.restlet.data.ChallengeScheme;
 import org.restlet.data.CharacterSet;
 import org.restlet.data.Cookie;
 import org.restlet.data.CookieSetting;
@@ -58,6 +60,16 @@ public interface Factory
     */
    public Chainlet createChainlet(RestletContainer container);
 
+   /**
+    * Creates a challenge response for a specific scheme (ex: HTTP BASIC authentication) 
+    * using a login and a password as the credentials.
+    * @param scheme The challenge scheme to use.
+    * @param userId The user identifier to use.
+    * @param password The user password.
+    * @return The challenge response to attach to an uniform call.
+    */
+   public ChallengeResponse createChallengeResponse(ChallengeScheme scheme, String userId, String password);
+   
    /**
     * Creates a new character set from its standard name.
     * @param name The standard character set name.

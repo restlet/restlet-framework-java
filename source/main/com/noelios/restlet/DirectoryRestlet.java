@@ -243,7 +243,7 @@ public class DirectoryRestlet extends AbstractRestlet
    {
       if(call.getMethod().equals(Methods.GET))
       {
-         call.setBestOutput(new FileResource(this, call.getResourcePath(0, false)), getDefaultLanguage());
+         call.setBestOutput(new FileResource(this, call.getResourcePath()), getDefaultLanguage());
       }
       else
       {

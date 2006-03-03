@@ -24,6 +24,7 @@ package com.noelios.restlet.ext.javamail;
 
 import java.net.URI;
 import java.util.Date;
+import java.util.Iterator;
 import java.util.Properties;
 
 import javax.mail.Message;
@@ -39,6 +40,7 @@ import org.restlet.UniformCall;
 import org.restlet.connector.AbstractClient;
 import org.restlet.connector.ClientCall;
 import org.restlet.data.Methods;
+import org.restlet.data.Parameter;
 import org.restlet.data.Protocols;
 import org.restlet.data.Representation;
 import org.w3c.dom.Document;
@@ -201,9 +203,15 @@ public class JavaMailClient extends AbstractClient
             // Set the subject and content text
             msg.setSubject(subject);
             msg.setText(text);
+            
+            // Add the custom headers that may have been set by the user
+            Parameter customHeader;
+            for(Iterator<Parameter> iter = call.getConnectorCall().getRequestHeaders().iterator(); iter.hasNext();)
+            {
+               customHeader = iter.next();
+               msg.addHeader(customHeader.getName(), customHeader.getValue());
+            }         
 
-            // Set some other header information
-            // msg.setHeader("X-Mailer", "...");
             msg.setSentDate(new Date());
             msg.saveChanges();
 

@@ -22,6 +22,8 @@
 
 package com.noelios.restlet;
 
+import java.io.UnsupportedEncodingException;
+
 import org.restlet.Chainlet;
 import org.restlet.Factory;
 import org.restlet.Manager;
@@ -32,6 +34,9 @@ import org.restlet.component.RestletContainer;
 import org.restlet.component.RestletServer;
 import org.restlet.connector.Client;
 import org.restlet.connector.Server;
+import org.restlet.data.ChallengeResponse;
+import org.restlet.data.ChallengeScheme;
+import org.restlet.data.ChallengeSchemes;
 import org.restlet.data.CharacterSet;
 import org.restlet.data.Cookie;
 import org.restlet.data.CookieSetting;
@@ -50,6 +55,7 @@ import org.restlet.data.Tag;
 import com.noelios.restlet.component.RestletContainerImpl;
 import com.noelios.restlet.component.RestletServerImpl;
 import com.noelios.restlet.connector.HttpClientImpl;
+import com.noelios.restlet.data.ChallengeResponseImpl;
 import com.noelios.restlet.data.CharacterSetImpl;
 import com.noelios.restlet.data.CookieImpl;
 import com.noelios.restlet.data.CookieSettingImpl;
@@ -64,6 +70,7 @@ import com.noelios.restlet.data.StatusImpl;
 import com.noelios.restlet.data.TagImpl;
 import com.noelios.restlet.ext.javamail.JavaMailClient;
 import com.noelios.restlet.ext.jetty.JettyServer;
+import com.noelios.restlet.util.Base64;
 
 /**
  * Noelios Restlet Engine.<br/>
@@ -81,6 +88,64 @@ public class Engine implements Factory
    public static void register()
    {
       Manager.registerFactory(new Engine());
+   }
+
+   /**
+    * Creates a new uniform call.
+    * @return A new uniform call.
+    */
+   public UniformCall createCall()
+   {
+      return new UniformCallImpl();
+   }
+
+   /**
+    * Creates a delegate Chainlet.
+    * @param container The Restlet container.
+    * @return A new Chainlet.
+    */
+   public Chainlet createChainlet(RestletContainer container)
+   {
+      return new ChainletImpl(container);
+   }
+
+   /**
+    * Creates a challenge response for a specific scheme (ex: HTTP BASIC authentication) 
+    * using a login and a password as the credentials.
+    * @param scheme The challenge scheme to use.
+    * @param userId The user identifier to use.
+    * @param password The user password.
+    * @return The challenge response to attach to an uniform call.
+    */
+   public ChallengeResponse createChallengeResponse(ChallengeScheme scheme, String userId, String password)
+   {
+      if(scheme.equals(ChallengeSchemes.HTTP_BASIC))
+      {
+         String credentials = userId + ':' + password;
+         
+         try
+         {
+            return new ChallengeResponseImpl(scheme, Base64.encodeBytes(credentials.getBytes("US-ASCII")));
+         }
+         catch(UnsupportedEncodingException e)
+         {
+            throw new RuntimeException("Unsupported encoding, unable to encode credentials");
+         }
+      }
+      else
+      {
+         throw new IllegalArgumentException("Challenge scheme not supported by this implementation");
+      }
+   }
+
+   /**
+    * Creates a new character set from its standard name.
+    * @param name The standard character set name.
+    * @return The new character set.
+    */
+   public CharacterSet createCharacterSet(String name)
+   {
+      return new CharacterSetImpl(name);
    }
 
    /**
@@ -107,6 +172,130 @@ public class Engine implements Factory
       }
       
       return result;
+   }
+
+   /**
+    * Returns a new cookie.
+    * @param name The name.
+    * @param value The value.
+    * @return A new cookie.
+    */
+   public Cookie createCookie(String name, String value)
+   {
+      return new CookieImpl(name, value);
+   }
+
+   /**
+    * Returns a new cookie setting.
+    * @param name The name.
+    * @param value The value.
+    * @return A new cookie setting.
+    */
+   public CookieSetting createCookieSetting(String name, String value)
+   {
+      return new CookieSettingImpl(name, value);
+   }
+
+   /**
+    * Creates a new encoding from its standard name.
+    * @param name The standard encoding name.
+    * @return The new encoding.
+    */
+   public Encoding createEncoding(String name)
+   {
+      return new EncodingImpl(name);
+   }
+
+   /**
+    * Creates an empty form.
+    * @return A new form.
+    */
+   public Form createForm()
+   {
+      return new FormImpl();
+   }
+
+   /**
+    * Creates a new language from its standard name.
+    * @param name The standard language name.
+    * @return The new language.
+    */
+   public Language createLanguage(String name)
+   {
+      return new LanguageImpl(name);
+   }
+
+   /**
+    * Creates a delegate Maplet.
+    * @param container The Restlet container.
+    * @return A new Maplet.
+    */
+   public Maplet createMaplet(RestletContainer container)
+   {
+      return new MapletImpl(container);
+   }
+
+   /**
+    * Creates a new media type from its standard name.
+    * @param name The standard media type name.
+    * @return The new media type.
+    */
+   public MediaType createMediaType(String name)
+   {
+      return new MediaTypeImpl(name);
+   }
+
+   /**
+    * Creates a new method from its standard name.
+    * @param name The standard method name.
+    * @return The new method.
+    */
+   public Method createMethod(String name)
+   {
+      return new MethodImpl(name);
+   }
+
+   /**
+    * Creates a new parameter.
+    * @param name The parameter's name.
+    * @param value The parameter's value.
+    * @return The new parameter.
+    */
+   public Parameter createParameter(String name, String value)
+   {
+      return new ParameterImpl(name, value);
+   }
+
+   /**
+    * Creates a new reference from a URI reference.
+    * @param uriReference The URI reference.
+    * @return The new URI reference.
+    */
+   public Reference createReference(String uriReference)
+   {
+      return new ReferenceImpl(uriReference);
+   }
+
+   /**
+    * Creates a delegate Restlet container.
+    * @param parent The parent Restlet container.
+    * @param name The container's name.
+    * @return The new Restlet container.
+    */
+   public RestletContainer createRestletContainer(RestletContainer parent, String name)
+   {
+      return new RestletContainerImpl(parent, name);
+   }
+
+   /**
+    * Creates a delegate Restlet server.
+    * @param parent The parent Restlet server.
+    * @param name The server's name.
+    * @return The new Restlet server.
+    */
+   public RestletServer createRestletServer(RestletServer parent, String name)
+   {
+      return new RestletServerImpl(name);
    }
 
    /**
@@ -137,148 +326,6 @@ public class Engine implements Factory
       
       return result;
    }
-   
-   /**
-    * Creates a new uniform call.
-    * @return A new uniform call.
-    */
-   public UniformCall createCall()
-   {
-      return new UniformCallImpl();
-   }
-
-   /**
-    * Creates a delegate Restlet server.
-    * @param parent The parent Restlet server.
-    * @param name The server's name.
-    * @return The new Restlet server.
-    */
-   public RestletServer createRestletServer(RestletServer parent, String name)
-   {
-      return new RestletServerImpl(name);
-   }
-
-   /**
-    * Creates a delegate Restlet container.
-    * @param parent The parent Restlet container.
-    * @param name The container's name.
-    * @return The new Restlet container.
-    */
-   public RestletContainer createRestletContainer(RestletContainer parent, String name)
-   {
-      return new RestletContainerImpl(parent, name);
-   }
-
-   /**
-    * Creates a delegate Maplet.
-    * @param container The Restlet container.
-    * @return A new Maplet.
-    */
-   public Maplet createMaplet(RestletContainer container)
-   {
-      return new MapletImpl(container);
-   }
-
-   /**
-    * Creates a delegate Chainlet.
-    * @param container The Restlet container.
-    * @return A new Chainlet.
-    */
-   public Chainlet createChainlet(RestletContainer container)
-   {
-      return new ChainletImpl(container);
-   }
-
-   /**
-    * Returns a new cookie.
-    * @param name The name.
-    * @param value The value.
-    * @return A new cookie.
-    */
-   public Cookie createCookie(String name, String value)
-   {
-      return new CookieImpl(name, value);
-   }
-
-   /**
-    * Returns a new cookie setting.
-    * @param name The name.
-    * @param value The value.
-    * @return A new cookie setting.
-    */
-   public CookieSetting createCookieSetting(String name, String value)
-   {
-      return new CookieSettingImpl(name, value);
-   }
-
-   /**
-    * Creates an empty form.
-    * @return A new form.
-    */
-   public Form createForm()
-   {
-      return new FormImpl();
-   }
-
-   /**
-    * Creates a new reference from a URI reference.
-    * @param uriReference The URI reference.
-    * @return The new URI reference.
-    */
-   public Reference createReference(String uriReference)
-   {
-      return new ReferenceImpl(uriReference);
-   }
-
-   /**
-    * Creates a new character set from its standard name.
-    * @param name The standard character set name.
-    * @return The new character set.
-    */
-   public CharacterSet createCharacterSet(String name)
-   {
-      return new CharacterSetImpl(name);
-   }
-
-   /**
-    * Creates a new encoding from its standard name.
-    * @param name The standard encoding name.
-    * @return The new encoding.
-    */
-   public Encoding createEncoding(String name)
-   {
-      return new EncodingImpl(name);
-   }
-
-   /**
-    * Creates a new language from its standard name.
-    * @param name The standard language name.
-    * @return The new language.
-    */
-   public Language createLanguage(String name)
-   {
-      return new LanguageImpl(name);
-   }
-
-   /**
-    * Creates a new media type from its standard name.
-    * @param name The standard media type name.
-    * @return The new media type.
-    */
-   public MediaType createMediaType(String name)
-   {
-      return new MediaTypeImpl(name);
-   }
-
-   /**
-    * Creates a new method from its standard name.
-    * @param name The standard method name.
-    * @return The new method.
-    */
-   public Method createMethod(String name)
-   {
-      return new MethodImpl(name);
-   }
 
    /**
     * Creates a new status from its standard code.
@@ -298,17 +345,6 @@ public class Engine implements Factory
    public Tag createTag(String name)
    {
       return new TagImpl(name);
-   }
-
-   /**
-    * Creates a new parameter.
-    * @param name The parameter's name.
-    * @param value The parameter's value.
-    * @return The new parameter.
-    */
-   public Parameter createParameter(String name, String value)
-   {
-      return new ParameterImpl(name, value);
    }
 
 }

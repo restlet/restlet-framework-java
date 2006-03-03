@@ -23,6 +23,7 @@
 package org.restlet.data;
 
 import java.io.IOException;
+import java.util.List;
 
 /**
  * Represents a reference to a uniform resource identifier (URI).<br/>
@@ -88,6 +89,13 @@ public interface Reference extends Data
    public Form getQueryAsForm() throws IOException;
 
    /**
+    * Returns the current reference relatively to a base reference.
+    * @param base The base reference to use.
+    * @return The current reference relatively to a base reference.
+    */
+   public Reference getRelativeRef(Reference base);
+
+   /**
     * Returns the scheme component.
     * @return The scheme component.
     */
@@ -99,6 +107,20 @@ public interface Reference extends Data
     */
    public String getSchemeSpecificPart();
 
+   /**
+    * Returns the last segment of a hierarchical path.<br/>
+    * For example the "/a/b/c" path has three segments: "a", "b", "c.
+    * @return The last segment of a hierarchical path.
+    */
+   public String getLastSegment();
+
+   /**
+    * Returns the segments of a hierarchical path.<br/>
+    * A new list is created for each call.
+    * @return The segments of a hierarchical path.
+    */
+   public List<String> getSegments();
+   
    /**
     * Returns the user info component for server based hierarchical identifiers.
     * @return The user info component for server based hierarchical identifiers.
@@ -184,6 +206,13 @@ public interface Reference extends Data
     * @param schemeSpecificPart The scheme specific part.
     */
    public void setSchemeSpecificPart(String schemeSpecificPart);
+
+   /**
+    * Sets the segments of a hierarchical path.<br/>
+    * A new absolute path will replace any existing one.
+    * @param segments The segments of the hierarchical path.
+    */
+   public void setSegments(List<String> segments);
 
    /**
     * Sets the user info component for server based hierarchical identifiers.

@@ -37,7 +37,7 @@ import com.noelios.restlet.StatusChainlet;
 /**
  * Guard access to a Restlet.
  */
-public class Tutorial09
+public class Tutorial09a
 {
    public static void main(String[] args)
    {

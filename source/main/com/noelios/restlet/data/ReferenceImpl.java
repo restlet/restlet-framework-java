@@ -23,7 +23,10 @@
 package com.noelios.restlet.data;
 
 import java.io.IOException;
+import java.util.ArrayList;
+import java.util.List;
 
+import org.restlet.Manager;
 import org.restlet.data.Form;
 import org.restlet.data.Reference;
 
@@ -285,6 +288,191 @@ public class ReferenceImpl implements Reference
    }
 
    /**
+    * Returns the current reference relatively to a base reference.
+    * @param base The base reference to use.
+    * @return The current reference relatively to a base reference.
+    */
+   public Reference getRelativeRef(Reference base)
+   {
+      Reference result = null;
+    
+      if(base == null)
+      {
+         result = this;
+      }
+      else if(!isAbsolute() || !isHierarchical())
+      {
+         throw new IllegalArgumentException("The reference must have an absolute hierarchical path component");
+      }
+      else if(!base.isAbsolute() || !base.isHierarchical())
+      {
+         throw new IllegalArgumentException("The base reference must have an absolute hierarchical path component");
+      }
+      else if(!getHostIdentifier().equals(base.getHostIdentifier()))
+      {
+         result = this;
+      }
+      else
+      {
+         String localPath = getPath();
+         String basePath = base.getPath();
+         String relativePath = null;
+         
+         if((basePath == null) || (localPath == null))
+         {
+            relativePath = localPath;
+         }
+         else
+         {
+            // Find the junction point
+            boolean diffFound = false;
+            int lastSlashIndex = -1;
+            int i = 0;
+            char current;
+            while(!diffFound && (i < localPath.length()) && (i < basePath.length()))
+            {
+               current = localPath.charAt(i);
+               
+               if(current != basePath.charAt(i))
+               {
+                  diffFound = true;
+               }
+               else
+               {
+                  if(current == '/') lastSlashIndex = i;
+                  i++;
+               }
+            }
+            
+            if(!diffFound)
+            {
+               if(localPath.length() == basePath.length())
+               {
+                  // Both paths are strictely equivalent
+                  relativePath = ".";
+               }
+               else if(i == localPath.length())
+               {
+                  if(basePath.charAt(i) == '/')
+                  {
+                     if((i + 1) == basePath.length())
+                     {
+                        // Both paths are strictely equivalent
+                        relativePath = ".";
+                     }
+                     else
+                     {
+                        // The local path is a direct parent of the base path
+                        // We need to add enough ".." in the relative path
+                        StringBuilder sb = new StringBuilder();
+                        sb.append("..");
+                        boolean canAdd = false;
+                        
+                        for(int j = i + 1; j < basePath.length(); j++)
+                        {
+                           if(basePath.charAt(j) == '/')
+                           {
+                              canAdd = true;
+                           }
+                           else if(canAdd)
+                           {
+                              sb.append("/..");
+                              canAdd = false;
+                           }
+                        }
+   
+                        relativePath = sb.toString();
+                     }
+                  }
+                  else
+                  {
+                     // The base path has a segment that starts like the last local path segment 
+                     // But that is longer. Situation similar to a junction
+                     StringBuilder sb = new StringBuilder();
+                     sb.append("..");
+                     boolean canAdd = false;
+                     
+                     for(int j = i; j < basePath.length(); j++)
+                     {
+                        if(basePath.charAt(j) == '/')
+                        {
+                           canAdd = true;
+                        }
+                        else if(canAdd)
+                        {
+                           sb.append("/..");
+                           canAdd = false;
+                        }
+                     }
+                     
+                     sb.append('/').append(localPath.substring(lastSlashIndex + 1));
+                     relativePath = sb.toString();
+                  }               
+               }
+               else if(i == basePath.length())
+               {
+                  if(localPath.charAt(i) == '/')
+                  {
+                     if((i + 1) == localPath.length())
+                     {
+                        // Both paths are strictely equivalent
+                        relativePath = ".";
+                     }
+                     else
+                     {
+                        // The local path is a direct child of the base path
+                        relativePath = localPath.substring(i + 1);
+                     }
+                  }
+                  else
+                  {
+                     if(lastSlashIndex == (i -1))
+                     {
+                        // The local path is a direct subpath of the base path
+                        relativePath = localPath.substring(i);
+                     }
+                     else
+                     {
+                        relativePath = ".." + localPath.substring(lastSlashIndex);
+                     }
+                  }
+               }            
+            }
+            else
+            {
+               // We found a junction point,
+               // we need to add enough ".." in the relative path
+               // and append the rest of the local path
+               // the local path is a direct subpath of the base path
+               StringBuilder sb = new StringBuilder();
+               sb.append("..");
+               boolean canAdd = false;
+               
+               for(int j = i; j < basePath.length(); j++)
+               {
+                  if(basePath.charAt(j) == '/')
+                  {
+                     canAdd = true;
+                  }
+                  else if(canAdd)
+                  {
+                     sb.append("/..");
+                     canAdd = false;
+                  }
+               }
+               
+               sb.append('/').append(localPath.substring(lastSlashIndex + 1));
+               relativePath = sb.toString();
+            }
+         }
+         
+         result = Manager.createReference(relativePath);
+      }
+      
+      return result;
+   }
+
+   /**
     * Returns the optional query component for hierarchical identifiers.
     * @return The optional query component for hierarchical identifiers.
     */
@@ -382,6 +570,80 @@ public class ReferenceImpl implements Reference
             return this.uri;
          }
       }
+   }
+
+   /**
+    * Returns the last segment of a hierarchical path.<br/>
+    * For example the "/a/b/c" and "/a/b/c/" paths have the same segments: "a", "b", "c.
+    * @return The last segment of a hierarchical path.
+    */
+   public String getLastSegment()
+   {
+      String result = null;
+      int lastSlash = getPath().lastIndexOf('/');
+      
+      if(lastSlash != -1)
+      {
+         result = getPath().substring(lastSlash + 1);
+      }
+      
+      return result;
+   }
+
+   /**
+    * Returns the segments of a hierarchical path.<br/>
+    * A new list is created for each call.
+    * @return The segments of a hierarchical path.
+    */
+   public List<String> getSegments()
+   {
+      List<String> result = new ArrayList<String>();;
+      String path = getPath();
+      int start = -2; // The index of the slash starting the segment  
+      char current;
+      
+      if(path != null)
+      {
+         for(int i = 0; i < path.length(); i++)
+         {
+            current = path.charAt(i);
+            
+            if(current == '/')
+            {
+               if(start == -2)
+               {
+                  // Beginning of an absolute path or sequence of two separators
+                  start = i;
+               }
+               else
+               {
+                  // End of a segment
+                  result.add(path.substring(start + 1, i));
+                  start = i;
+               }
+            }
+            else
+            {
+               if(start == -2)
+               {
+                  // Starting a new segment for a relative path
+                  start = -1;
+               }
+               else
+               {
+                  // Looking for the next character
+               }
+            }
+         }
+         
+         if(start != -2)
+         {
+            // Add the last segment
+            result.add(path.substring(start + 1));
+         }
+      }
+      
+      return result;
    }
 
    /**
@@ -798,6 +1060,21 @@ public class ReferenceImpl implements Reference
    }
 
    /**
+    * Sets the segments of a hierarchical path.<br/>
+    * A new absolute path will replace any existing one.
+    * @param segments The segments of the hierarchical path.
+    */
+   public void setSegments(List<String> segments)
+   {
+      StringBuilder sb = new StringBuilder();
+      for(String segment : segments)
+      {
+         sb.append('/').append(segment);
+      }
+      setPath(sb.toString());
+   }
+
+   /**
     * Sets the user info component for server based hierarchical identifiers.
     * @param userInfo The user info component for server based hierarchical identifiers.
     */
@@ -891,9 +1168,12 @@ public class ReferenceImpl implements Reference
     */
    private void updateIndexes()
    {
-      schemeIndex = this.uri.indexOf(':');
-      fragmentIndex = this.uri.indexOf('#');
-      queryIndex = this.uri.indexOf('?');
+      if(uri != null)
+      {
+         schemeIndex = this.uri.indexOf(':');
+         fragmentIndex = this.uri.indexOf('#');
+         queryIndex = this.uri.indexOf('?');
+      }
    }
 
 }

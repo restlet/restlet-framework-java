@@ -53,9 +53,9 @@ import com.noelios.restlet.connector.ConnectorCallImpl;
 import com.noelios.restlet.data.ConditionDataImpl;
 import com.noelios.restlet.data.FormImpl;
 import com.noelios.restlet.data.PreferenceDataImpl;
+import com.noelios.restlet.data.ReferenceImpl;
 import com.noelios.restlet.data.SecurityDataImpl;
 import com.noelios.restlet.util.DateUtils;
-import com.noelios.restlet.util.StringUtils;
 
 /**
  * Implementation of an uniform call.
@@ -80,6 +80,12 @@ public class UniformCallImpl implements UniformCall
    /** The cookies to set in the client. */
    protected List<CookieSetting> cookieSettings;
 
+   /** The list of substrings matched in the handler path. */
+   protected List<String> handlerMatches;
+   
+   /** The handler path. */
+   protected String handlerPath;
+
    /** The representation provided by the client. */
    protected Representation input;
 
@@ -89,12 +95,6 @@ public class UniformCallImpl implements UniformCall
    /** The representation provided by the server. */
    protected Representation output;
 
-   /** The list of handler paths. */
-   protected List<String> paths;
-
-   /** The list of substrings matched. */
-   protected List<String> pathMatches;
-
    /** The preference data. */
    protected PreferenceData preference;
    
@@ -103,7 +103,7 @@ public class UniformCallImpl implements UniformCall
    
    /** The referrer reference. */
    protected Reference referrerRef;
-
+   
    /** The resource reference. */
    protected Reference resourceRef;
 
@@ -429,6 +429,35 @@ public class UniformCallImpl implements UniformCall
    }
 
    /**
+    * Returns the list of substrings matched in the current handler path.
+    * @return The list of substrings matched.
+    * @see <a href="http://java.sun.com/j2se/1.5.0/docs/api/java/util/regex/Matcher.html#group(int)">Matcher.group()</a>
+    */
+   public List<String> getHandlerMatches()
+   {
+      if(this.handlerMatches == null) this.handlerMatches = new ArrayList<String>();
+      return this.handlerMatches;
+   }
+
+   /**
+    * Returns the part of the resource reference preceeding the resource path.
+    * @return The part of the resource reference preceeding the resource path.
+    */
+   public String getHandlerPath()
+   {
+      return this.handlerPath;
+   }
+
+   /**
+    * Returns the handler path as a reference.
+    * @return The handler path as a reference.
+    */
+   public Reference getHandlerRef()
+   {
+      return new ReferenceImpl(getHandlerPath());
+   }
+
+   /**
     * Returns the representation provided by the client.
     * @return The representation provided by the client.
     */
@@ -502,46 +531,19 @@ public class UniformCallImpl implements UniformCall
    }
 
    /**
-    * Returns the list of substrings matched in the current resource path.
-    * @return The list of substrings matched.
-    * @see <a href="http://java.sun.com/j2se/1.5.0/docs/api/java/util/regex/Matcher.html#group(int)">Matcher.group()</a>
+    * Returns the part of the resource reference following the handler path.
+    * @return The part of the resource reference following the handler path.
     */
-   public List<String> getResourceMatches()
+   public String getResourcePath()
    {
-      if(this.pathMatches == null) this.pathMatches = new ArrayList<String>();
-      return this.pathMatches;
-   }
-
-   /**
-    * Returns a path in the list of resource paths.<br/>
-    * The first path is the resource path relatively to the current Maplet.<br/>
-    * The second path is the current Maplet path relatively to the parent Maplet.<br/> 
-    * All the list of remaining Maplet paths is also available.
-    * @param index Index of the path in the list.
-    * @param strip Indicates if leading and ending slashes should be stripped.
-    * @return The path at the given index.
-    */
-   public String getResourcePath(int index, boolean strip)
-   {
-      if(strip)
+      if(getHandlerPath() == null)
       {
-         return StringUtils.strip(getResourcePaths().get(index), '/');
+         return this.resourceRef.toString(false, false);
       }
       else
       {
-         return getResourcePaths().get(index);
+         return this.resourceRef.toString(false, false).substring(getHandlerPath().length());
       }
-   }
-
-   /**
-    * Returns the list of paths dividing the initial resource path.<br/>
-    * The list is sorted according to the Maplets hierarchy.
-    * @return The list of paths.
-    */
-   public List<String> getResourcePaths()
-   {
-      if(this.paths == null) this.paths = new ArrayList<String>();
-      return this.paths;
    }
 
    /**
@@ -661,6 +663,15 @@ public class UniformCallImpl implements UniformCall
    public void setConnectorCall(ConnectorCall call)
    {
       this.connectorCall = call;
+   }
+
+   /**
+    * Sets the part of the resource reference preceeding the resource path.
+    * @param handlerPath The part of the resource reference preceeding the resource path.
+    */
+   public void setHandlerPath(String handlerPath)
+   {
+      this.handlerPath = handlerPath;
    }
    
    /**

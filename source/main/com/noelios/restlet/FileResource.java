@@ -81,24 +81,28 @@ public class FileResource implements Resource
       // Compute the absolute file path
       StringBuilder filePath = new StringBuilder(directoryRestlet.getRootPath());
       int lastIndex = -1;
-      char nextChar;
-      for(int i = 0; i < basePath.length(); i++)
+      
+      if(!basePath.equals("."))
       {
-         nextChar = basePath.charAt(i);
-         if(nextChar == '/')
+         char nextChar;
+         for(int i = 0; i < basePath.length(); i++)
          {
-            // Remember the position of the last slash
-            lastIndex = i;
-
-            // Convert the URI separator to the system dependent path separator
-            filePath.append(File.separatorChar);
-         }
-         else
-         {
-            filePath.append(nextChar);
+            nextChar = basePath.charAt(i);
+            if(nextChar == '/')
+            {
+               // Remember the position of the last slash
+               lastIndex = i;
+   
+               // Convert the URI separator to the system dependent path separator
+               filePath.append(File.separatorChar);
+            }
+            else
+            {
+               filePath.append(nextChar);
+            }
          }
       }
-
+      
       // Try to detect the presence of the file
       this.basePath = filePath.toString();
       if(new File(this.basePath).isDirectory())

@@ -29,6 +29,8 @@ import org.restlet.component.RestletContainer;
 import org.restlet.component.RestletServer;
 import org.restlet.connector.Client;
 import org.restlet.connector.Server;
+import org.restlet.data.ChallengeResponse;
+import org.restlet.data.ChallengeScheme;
 import org.restlet.data.CharacterSet;
 import org.restlet.data.Cookie;
 import org.restlet.data.CookieSetting;
@@ -50,40 +52,16 @@ public class Manager
 {
    /** Obtain a suitable logger. */
    private static Logger logger = Logger.getLogger("org.restlet.Manager");
+   
+   public static final String VERSION_LONG = "1.0 beta 4";
+   public static final String VERSION_SHORT = "1.0b4";
 
    /** Static fields. */
    public static final String PROPERTY_FACTORY = "org.restlet.impl";
-   public static final String VERSION_LONG = "1.0 beta 4";
-   public static final String VERSION_SHORT = "1.0b4";
    
    /** The registered factory. */
    protected static Factory registeredFactory = null;
    
-   /**
-    * Create a new client connector for a given protocol.
-    * @param protocol The connector protocol.
-    * @param name The unique connector name.
-    * @return The new client connector.
-    */
-   public static Client createClient(Protocol protocol, String name)
-   {
-      return getRegisteredFactory().createClient(protocol, name);
-   }
-
-   /**
-    * Create a new server connector for a given protocol.
-    * @param protocol The connector protocol.
-    * @param name The unique connector name.
-    * @param target The target handler.
-    * @param address The optional listening IP address (local host used if null).
-    * @param port The listening port.
-    * @return The new server connector.
-    */
-   public static Server createServer(Protocol protocol, String name, UniformInterface target, String address, int port)
-   {
-      return getRegisteredFactory().createServer(protocol, name, target, address, port);
-   }
-
    /**
     * Creates a new uniform call.
     * @return A new uniform call.
@@ -94,38 +72,6 @@ public class Manager
    }
 
    /**
-    * Creates a delegate Restlet server.
-    * @param parent The parent Restlet server.
-    * @param name The server's name.
-    * @return The new Restlet server.
-    */
-   public static RestletServer createRestletServer(RestletServer parent, String name)
-   {
-      return getRegisteredFactory().createRestletServer(parent, name);
-   }
-
-   /**
-    * Creates a delegate Restlet container.
-    * @param parent The parent Restlet container.
-    * @param name The container's name.
-    * @return The new Restlet container.
-    */
-   public static RestletContainer createRestletContainer(RestletContainer parent, String name)
-   {
-      return getRegisteredFactory().createRestletContainer(parent, name);
-   }
-
-   /**
-    * Creates a delegate Maplet.
-    * @param container The Restlet container.
-    * @return A new Maplet.
-    */
-   public static Maplet createMaplet(RestletContainer container)
-   {
-      return getRegisteredFactory().createMaplet(container);
-   }
-
-   /**
     * Creates a delegate Chainlet.
     * @param container The Restlet container.
     * @return A new Chainlet.
@@ -133,6 +79,40 @@ public class Manager
    public static Chainlet createChainlet(RestletContainer container)
    {
       return getRegisteredFactory().createChainlet(container);
+   }
+
+   /**
+    * Creates a challenge response for a specific scheme (ex: HTTP BASIC authentication) 
+    * using a login and a password as the credentials.
+    * @param scheme The challenge scheme to use.
+    * @param userId The user identifier to use.
+    * @param password The user password.
+    * @return The challenge response to attach to an uniform call.
+    */
+   public static ChallengeResponse createChallengeResponse(ChallengeScheme scheme, String userId, String password)
+   {
+      return getRegisteredFactory().createChallengeResponse(scheme, userId, password);
+   }
+
+   /**
+    * Creates a new character set from its standard name.
+    * @param name The standard character set name.
+    * @return The new character set.
+    */
+   public static CharacterSet createCharacterSet(String name)
+   {
+      return getRegisteredFactory().createCharacterSet(name);
+   }
+
+   /**
+    * Create a new client connector for a given protocol.
+    * @param protocol The connector protocol.
+    * @param name The unique connector name.
+    * @return The new client connector.
+    */
+   public static Client createClient(Protocol protocol, String name)
+   {
+      return getRegisteredFactory().createClient(protocol, name);
    }
 
    /**
@@ -158,35 +138,6 @@ public class Manager
    }
 
    /**
-    * Creates an empty form.
-    * @return A new form.
-    */
-   public static Form createForm()
-   {
-      return getRegisteredFactory().createForm();
-   }
-
-   /**
-    * Creates a new reference from a URI reference.
-    * @param uriReference The URI reference.
-    * @return The new URI reference.
-    */
-   public static Reference createReference(String uriReference)
-   {
-      return getRegisteredFactory().createReference(uriReference);
-   }
-
-   /**
-    * Creates a new character set from its standard name.
-    * @param name The standard character set name.
-    * @return The new character set.
-    */
-   public static CharacterSet createCharacterSet(String name)
-   {
-      return getRegisteredFactory().createCharacterSet(name);
-   }
-
-   /**
     * Creates a new encoding from its standard name.
     * @param name The standard encoding name.
     * @return The new encoding.
@@ -197,6 +148,15 @@ public class Manager
    }
 
    /**
+    * Creates an empty form.
+    * @return A new form.
+    */
+   public static Form createForm()
+   {
+      return getRegisteredFactory().createForm();
+   }
+
+   /**
     * Creates a new language from its standard name.
     * @param name The standard language name.
     * @return The new language.
@@ -204,6 +164,16 @@ public class Manager
    public static Language createLanguage(String name)
    {
       return getRegisteredFactory().createLanguage(name);
+   }
+
+   /**
+    * Creates a delegate Maplet.
+    * @param container The Restlet container.
+    * @return A new Maplet.
+    */
+   public static Maplet createMaplet(RestletContainer container)
+   {
+      return getRegisteredFactory().createMaplet(container);
    }
 
    /**
@@ -238,6 +208,52 @@ public class Manager
    }
 
    /**
+    * Creates a new reference from a URI reference.
+    * @param uriReference The URI reference.
+    * @return The new URI reference.
+    */
+   public static Reference createReference(String uriReference)
+   {
+      return getRegisteredFactory().createReference(uriReference);
+   }
+
+   /**
+    * Creates a delegate Restlet container.
+    * @param parent The parent Restlet container.
+    * @param name The container's name.
+    * @return The new Restlet container.
+    */
+   public static RestletContainer createRestletContainer(RestletContainer parent, String name)
+   {
+      return getRegisteredFactory().createRestletContainer(parent, name);
+   }
+
+   /**
+    * Creates a delegate Restlet server.
+    * @param parent The parent Restlet server.
+    * @param name The server's name.
+    * @return The new Restlet server.
+    */
+   public static RestletServer createRestletServer(RestletServer parent, String name)
+   {
+      return getRegisteredFactory().createRestletServer(parent, name);
+   }
+
+   /**
+    * Create a new server connector for a given protocol.
+    * @param protocol The connector protocol.
+    * @param name The unique connector name.
+    * @param target The target handler.
+    * @param address The optional listening IP address (local host used if null).
+    * @param port The listening port.
+    * @return The new server connector.
+    */
+   public static Server createServer(Protocol protocol, String name, UniformInterface target, String address, int port)
+   {
+      return getRegisteredFactory().createServer(protocol, name, target, address, port);
+   }
+
+   /**
     * Creates a new status from its standard code.
     * @param code The standard status code.
     * @return The new status.
@@ -257,15 +273,6 @@ public class Manager
       return getRegisteredFactory().createTag(name);
    }
    
-   /**
-    * Register a new factory.
-    * @param factory The factory to register.
-    */
-   public static void registerFactory(Factory factory)
-   {
-      registeredFactory = factory;
-   }
-
    /**
     * Returns the registered factory.
     * @return The registered factory.
@@ -294,6 +301,15 @@ public class Manager
       {
          return registeredFactory;
       }
+   }
+
+   /**
+    * Register a new factory.
+    * @param factory The factory to register.
+    */
+   public static void registerFactory(Factory factory)
+   {
+      registeredFactory = factory;
    }
 
 }

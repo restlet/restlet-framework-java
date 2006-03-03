@@ -99,10 +99,7 @@ public class UniformHttpServerCall extends UniformCallImpl
       String resource = call.getRequestUri();
       if(resource != null)
       {
-         setResourceRef(new ReferenceImpl(resource));
-
-         // Set the absolute resource path as the initial path in the list.
-         getResourcePaths().add(0, getResourceRef().toString(false, false));
+         setResourceRef(Manager.createReference(resource));
       }
    }
    

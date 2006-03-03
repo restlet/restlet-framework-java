@@ -57,10 +57,10 @@ public class Tutorial05
                public void handle(UniformCall call)
                {
                   // Print the requested URI path
-                  String output = "Resource path = " + call.getResourcePath(0, false) + '\n' +
-                                  "Handler path = " + call.getResourcePath(1, false) + '\n' +
-                                  "Query = " + call.getResourceRef().getQuery() + '\n' +
-                                  "Full URI = " + call.getResourceRef().toString(); 
+                  String output = "Resource URI:  " + call.getResourceRef() + '\n' + 
+                                  "Handler path:  " + call.getHandlerPath() + '\n' +
+                                  "Resource path: " + call.getResourcePath() + '\n' +
+                                  "Query string:  " + call.getResourceRef().getQuery();
                   call.setOutput(new StringRepresentation(output, MediaTypes.TEXT_PLAIN));
                }
             };

@@ -37,7 +37,7 @@ import org.restlet.data.Representation;
 public interface ServerCall extends ConnectorCall
 {
    /** 
-    * Name of the system property to use in order to indicates whether the IP address contained in 
+    * Name of the system property to use in order to indicate whether the IP address contained in 
     * the "X-Forwarded-For" header should be used instead of the original client IP address.
     * This is particularly useful when the client calls are intercepted by one or more proxies
     * (such as Squid HTTP cache). Those proxies can remember the original client IP address and 

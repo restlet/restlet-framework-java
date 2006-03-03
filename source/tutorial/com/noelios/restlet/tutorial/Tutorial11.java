@@ -22,6 +22,8 @@
 
 package com.noelios.restlet.tutorial;
 
+import java.util.List;
+
 import org.restlet.AbstractRestlet;
 import org.restlet.DefaultMaplet;
 import org.restlet.Manager;
@@ -96,10 +98,10 @@ public class Tutorial11
             {
                public void handle(UniformCall call)
                {
-                  if(call.getResourcePath(0, true).equals(""))
+                  if(call.getResourcePath().equals(""))
                   {
                      // Print the requested URI path
-                     String output = "Account of user named: " + call.getResourcePath(1, true);
+                     String output = "Account of user named: " + call.getHandlerRef().getLastSegment();
                      call.setOutput(new StringRepresentation(output, MediaTypes.TEXT_PLAIN));
                   }
                   else
@@ -116,8 +118,9 @@ public class Tutorial11
             {
                public void handle(UniformCall call)
                {
-                  // Print the requested URI path
-                  String output = "Orders of user named: " + call.getResourcePath(2, true);
+                  // Print the user name of the requested orders
+                  List<String> segments = call.getHandlerRef().getSegments();
+                  String output = "Orders of user named: " + segments.get(segments.size() - 2);
                   call.setOutput(new StringRepresentation(output, MediaTypes.TEXT_PLAIN));
                }
             };
