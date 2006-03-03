@@ -78,8 +78,8 @@ import com.noelios.restlet.util.Base64;
  */
 public class Engine implements Factory
 {
-   public static final String VERSION_LONG = "1.0 beta 4";
-   public static final String VERSION_SHORT = "1.0b4";
+   public static final String VERSION_LONG = "1.0 beta 5";
+   public static final String VERSION_SHORT = "1.0b5";
    public static final String VERSION_HEADER = "Noelios-Restlet-Engine/" + VERSION_SHORT;
    
    /**
