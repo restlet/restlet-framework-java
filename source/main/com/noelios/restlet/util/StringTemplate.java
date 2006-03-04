@@ -33,7 +33,7 @@ import java.util.logging.Logger;
  *  1) "${if variable_name}" to test the availability of a variable (non null).<br/>
  *  2) "${else if variable_name}" to chain another test.<br/>
  *  3) "${else}" to chain a default operation.<br/>
- *  4) "${end if}" to close a condition.<br/>
+ *  4) "${end}" to close a condition.<br/>
  */
 public class StringTemplate
 {

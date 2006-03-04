@@ -61,8 +61,7 @@ public interface Factory
    public Chainlet createChainlet(RestletContainer container);
 
    /**
-    * Creates a challenge response for a specific scheme (ex: HTTP BASIC authentication) 
-    * using a login and a password as the credentials.
+    * Creates a challenge response for a specific scheme using a user ID and a password as the credentials.<br/>
     * @param scheme The challenge scheme to use.
     * @param userId The user identifier to use.
     * @param password The user password.

@@ -61,7 +61,8 @@ public interface UniformCall
    public ConditionData getCondition();
    
    /**
-    * Returns the low-level connector call.
+    * Returns the low-level connector call.<br/>
+    * This should be only used in exceptional cases where access to non-standard headers is necessary for example.
     * @return The low-level connector call.
     */
    public ConnectorCall getConnectorCall();
