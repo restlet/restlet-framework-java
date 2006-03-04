@@ -449,6 +449,8 @@
       <classpath>
         <pathelement location="${classes-main}"/>
         <pathelement location="${classes-test}"/>
+        <path refid="path-jetty5.1"/>
+        <pathelement location="${classes-jetty5.1}"/>
       </classpath>
   
       <formatter type="plain"/>
