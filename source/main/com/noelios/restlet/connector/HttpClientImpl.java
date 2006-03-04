@@ -366,7 +366,7 @@ public class HttpClientImpl extends AbstractClient
       {
          try
          {
-            result = (call.getInput().getStream() != null) || (call.getInput().getChannel() != null);
+            result = (call.getInput() != null) && ((call.getInput().getStream() != null) || (call.getInput().getChannel() != null));
          }
          catch(IOException e)
          {
