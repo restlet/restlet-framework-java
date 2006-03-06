@@ -506,16 +506,7 @@ public class ReferenceImpl implements Reference
     */
    public Form getQueryAsForm() throws IOException
    {
-      String query = getQuery();
-
-      if(query != null)
-      {
-         return new FormImpl(query);
-      }
-      else
-      {
-         return null;
-      }
+      return new FormImpl(getQuery());
    }
 
    /**
