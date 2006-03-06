@@ -27,6 +27,8 @@ import java.util.ArrayList;
 import java.util.Date;
 import java.util.Iterator;
 import java.util.List;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 import org.restlet.Resource;
 import org.restlet.UniformCall;
@@ -62,6 +64,9 @@ import com.noelios.restlet.util.DateUtils;
  */
 public class UniformCallImpl implements UniformCall
 {
+   /** Obtain a suitable logger. */
+   private static Logger logger = Logger.getLogger("com.noelios.restlet.UniformCallImpl");
+
    /** The client IP address. */
    protected String clientAddress;
 
@@ -542,7 +547,17 @@ public class UniformCallImpl implements UniformCall
       }
       else
       {
-         return this.resourceRef.toString(false, false).substring(getHandlerPath().length());
+         String resourceURI = this.resourceRef.toString(false, false);
+         int length = getHandlerPath().length();
+         
+         if(logger.isLoggable(Level.FINE))
+         {
+            logger.fine("Resource URI: " + resourceURI);
+            logger.fine("Handler path: " + getHandlerPath());
+            logger.fine("Handler path length: " + length);
+         }
+         
+         return resourceURI.substring(length);
       }
    }
 
@@ -671,6 +686,11 @@ public class UniformCallImpl implements UniformCall
     */
    public void setHandlerPath(String handlerPath)
    {
+      if((handlerPath != null) && (!this.resourceRef.toString(false, false).startsWith(handlerPath)))
+      {
+         logger.warning("Handler path doesn't match the start of the resource URI: " + handlerPath);
+      }
+      
       this.handlerPath = handlerPath;
    }
    
@@ -720,12 +740,17 @@ public class UniformCallImpl implements UniformCall
    }
 
    /**
-    * Sets the resource reference.
+    * Sets the resource reference.<br/>
+    * Also reset the current handler path and matches.
     * @param resourceRef The resource reference.
     */
    public void setResourceRef(Reference resourceRef)
    {
       this.resourceRef = resourceRef;
+      
+      // Reset the current handler
+      setHandlerPath(null);
+      getHandlerMatches().clear();
    }
 
    /**

@@ -99,6 +99,9 @@ public class RedirectTest extends TestCase
          testCall(myContainer, Methods.PUT, uri);
          testCall(myContainer, Methods.DELETE, uri);
          
+         uri = "http://localhost:8080/v1/client/kwse/CnJlNUQV9%252BNNqbUf7Lhs2BYEK2Y%253D/user/johnm/uVGYTDK4kK4zsu96VHGeTCzfwso%253D/";
+         testCall(myContainer, Methods.GET, uri);
+         
          // Stop the container
          myContainer.stop();
       }
@@ -116,7 +119,7 @@ public class RedirectTest extends TestCase
          call.setMethod(method);
          call.setResourceRef(Manager.createReference(uri));
          myContainer.callClient("Test client", call);
-         //call.getOutput().write(System.out);
+         call.getOutput().write(System.out);
       }
       catch(IOException e)
       {

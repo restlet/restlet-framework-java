@@ -149,16 +149,12 @@ public class RedirectRestlet extends AbstractRestlet
             case MODE_CONNECTOR:
                logger.log(Level.INFO, "Redirecting to connector " + this.connectorName + ": " + targetUri);
                call.setResourceRef(target);
-               call.setHandlerPath(null);
-               call.getHandlerMatches().clear();
                getContainer().callClient(this.connectorName, call);
             break;
 
             case MODE_CONTAINER:
                logger.log(Level.INFO, "Redirecting to container: " + targetUri);
                call.setResourceRef(target);
-               call.setHandlerPath(null);
-               call.getHandlerMatches().clear();
                getContainer().handle(call);
             break;
          }
