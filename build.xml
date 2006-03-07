@@ -5,13 +5,22 @@
      ======================================================== -->
 
 <project name="Restlet" default="dist" basedir=".">
+
+  <!-- Set global names -->
+  <property name="version-full"     value="1.0 beta 5"/>
+  <property name="version-compact"  value="1.0b5"/>
+  <property name="restlet-api"      value="Restlet API"/>
+  <property name="restlet-ri"       value="Noelios Restlet Engine"/>
+  <property name="author"           value="Jerome Louvel"/>
+
     
   <!-- Set global paths -->
   <property name="bin"      location="bin"/>
   <property name="docs"     location="www/docs"/>
   <property name="docs-api" location="${docs}/api"/>
   <property name="docs-nre" location="${docs}/nre"/>
-  <property name="dist"     location="www/downloads"/>
+  <property name="dist"     location="d:/maine/prod/dist/restlet-${version-compact}"/>
+  <property name="data"     location="d:/maine/prod/data"/>
   <property name="archives" location="e:/projets"/>
   <property name="excludes" value="**/.emptyDir **/package.html **/overview.html"/>
 
@@ -120,14 +129,6 @@
     <path refid="path-jetty5.1"/>
     <path refid="path-servlet2.4"/>
   </path>
-  
-
-  <!-- Set global names -->
-  <property name="version-full"     value="1.0 beta 5"/>
-  <property name="version-compact"  value="1.0b5"/>
-  <property name="restlet-api"      value="Restlet API"/>
-  <property name="restlet-ri"       value="Noelios Restlet Engine"/>
-  <property name="author"           value="Jerome Louvel"/>
 
 
   <target name="init">
@@ -179,18 +180,18 @@
 
 
   <target name="dist" depends="test" description="Generate the distribution" >
-    <delete dir="${dist}/${DSTAMP}" verbose="false" quiet="true" includeEmptyDirs="true"/>
-    <mkdir dir="${dist}/${DSTAMP}/bin"/>
-    <mkdir dir="${dist}/${DSTAMP}/lib"/>
-    <mkdir dir="${dist}/${DSTAMP}/src"/>
+    <delete dir="${dist}" verbose="false" quiet="true" includeEmptyDirs="true"/>
+    <mkdir dir="${dist}/bin"/>
+    <mkdir dir="${dist}/lib"/>
+    <mkdir dir="${dist}/src"/>
 
     <!-- Copy the binaries -->
-    <copy todir="${dist}/${DSTAMP}/bin">
+    <copy todir="${dist}/bin">
       <fileset dir="${bin}"/>
     </copy>    
 
     <!-- Create Restlet API jar file -->
-    <jar jarfile="${dist}/${DSTAMP}/lib/org.restlet.jar" basedir="${classes-main}" includes="org/restlet/**">
+    <jar jarfile="${dist}/lib/org.restlet.jar" basedir="${classes-main}" includes="org/restlet/**">
       <manifest>
         <attribute name="Built-By" value="${author}"/>
         <section name="org.restlet">
@@ -202,7 +203,7 @@
     </jar>
     
     <!-- Create Noelios Restlet Server jar file -->
-    <jar jarfile="${dist}/${DSTAMP}/lib/com.noelios.restlet.jar" basedir="${classes-main}" includes="com/noelios/restlet/**" excludes="com/noelios/restlet/ext/**">
+    <jar jarfile="${dist}/lib/com.noelios.restlet.jar" basedir="${classes-main}" includes="com/noelios/restlet/**" excludes="com/noelios/restlet/ext/**">
       <manifest>
         <attribute name="Built-By" value="${author}"/>
         <section name="com.noelios.restlet">
@@ -214,14 +215,14 @@
     </jar>
 
     <!-- Create Restlet API source jar file -->
-    <zip destfile="${dist}/${DSTAMP}/src/org.restlet.zip" basedir="${src-main}" includes="org/restlet/**" excludes="${excludes}"/>
+    <zip destfile="${dist}/src/org.restlet.zip" basedir="${src-main}" includes="org/restlet/**" excludes="${excludes}"/>
     
     <!-- Create Noelios Restlet Server source jar file -->
-    <zip destfile="${dist}/${DSTAMP}/src/com.noelios.restlet.zip" basedir="${src-main}" includes="com/noelios/restlet/**" excludes="${excludes}"/>
+    <zip destfile="${dist}/src/com.noelios.restlet.zip" basedir="${src-main}" includes="com/noelios/restlet/**" excludes="${excludes}"/>
     
     <!-- Create Tutorial jar file -->
-    <mkdir dir="${dist}/${DSTAMP}/lib/tutorial"/>
-    <jar jarfile="${dist}/${DSTAMP}/lib/tutorial/restlet.tutorial.jar" basedir="${classes-tutorial}" includes="com/noelios/restlet/**" excludes="${excludes}">
+    <mkdir dir="${dist}/lib/tutorial"/>
+    <jar jarfile="${dist}/lib/tutorial/restlet.tutorial.jar" basedir="${classes-tutorial}" includes="com/noelios/restlet/**" excludes="${excludes}">
       <manifest>
         <attribute name="Built-By" value="${author}"/>
         <section name="com.noelios.restlet.tutorial">
@@ -233,35 +234,35 @@
     </jar>
     
     <!-- Create Tutorial source jar file -->
-    <mkdir dir="${dist}/${DSTAMP}/src/tutorial"/>
-    <zip destfile="${dist}/${DSTAMP}/src/tutorial/restlet.tutorial.zip" basedir="${src-tutorial}" includes="com/noelios/restlet/**" excludes="${excludes}"/>
+    <mkdir dir="${dist}/src/tutorial"/>
+    <zip destfile="${dist}/src/tutorial/restlet.tutorial.zip" basedir="${src-tutorial}" includes="com/noelios/restlet/**" excludes="${excludes}"/>
     
     <!-- Create Test source jar file -->
-    <mkdir dir="${dist}/${DSTAMP}/src/test"/>
-    <zip destfile="${dist}/${DSTAMP}/src/test/restlet.test.zip" basedir="${src-test}" includes="com/noelios/restlet/**" excludes="${excludes}"/>
+    <mkdir dir="${dist}/src/test"/>
+    <zip destfile="${dist}/src/test/restlet.test.zip" basedir="${src-test}" includes="com/noelios/restlet/**" excludes="${excludes}"/>
 
     <!-- Copy tha Javadocs -->
-    <copy todir="${dist}/${DSTAMP}/docs/api">
+    <copy todir="${dist}/docs/api">
       <fileset dir="${docs-api}"/>
     </copy>    
-    <copy todir="${dist}/${DSTAMP}/docs/nre">
+    <copy todir="${dist}/docs/nre">
       <fileset dir="${docs-nre}"/>
     </copy>
 
     <!-- Copy text notes -->    
-    <copy file="${docs}/changes.txt"    todir="${dist}/${DSTAMP}"/>
-    <copy file="${docs}/copyright.txt"  todir="${dist}/${DSTAMP}"/>
-    <copy file="${docs}/license.txt"    todir="${dist}/${DSTAMP}"/>
-    <copy file="${docs}/readme.txt"     todir="${dist}/${DSTAMP}"/>
-    <copy file="${docs}/trademarks.txt" todir="${dist}/${DSTAMP}"/>
+    <copy file="${docs}/changes.txt"    todir="${dist}"/>
+    <copy file="${docs}/copyright.txt"  todir="${dist}"/>
+    <copy file="${docs}/license.txt"    todir="${dist}"/>
+    <copy file="${docs}/readme.txt"     todir="${dist}"/>
+    <copy file="${docs}/trademarks.txt" todir="${dist}"/>
 
     <!-- Copy the third party libraries -->    
-    <copy todir="${dist}/${DSTAMP}/lib">
+    <copy todir="${dist}/lib">
       <fileset dir="${lib}"/>
     </copy>    
     
     <!-- Create extension Freemarker 2.3 jar file -->
-    <jar jarfile="${dist}/${DSTAMP}/lib/freemarker2.3/restlet.freemarker.jar" basedir="${classes-freemarker2.3}">
+    <jar jarfile="${dist}/lib/freemarker2.3/restlet.freemarker.jar" basedir="${classes-freemarker2.3}">
       <manifest>
         <attribute name="Built-By" value="${author}"/>
         <section name="com.noelios.restlet.ext.freemarker">
@@ -273,11 +274,11 @@
     </jar>
     
     <!-- Create extension Freemarker 2.3 source jar file -->
-    <mkdir dir="${dist}/${DSTAMP}/src/freemarker2.3"/>
-    <zip destfile="${dist}/${DSTAMP}/src/freemarker2.3/restlet.freemarker.zip" basedir="${src-freemarker2.3}" includes="com/noelios/restlet/**" excludes="${excludes}"/>
+    <mkdir dir="${dist}/src/freemarker2.3"/>
+    <zip destfile="${dist}/src/freemarker2.3/restlet.freemarker.zip" basedir="${src-freemarker2.3}" includes="com/noelios/restlet/**" excludes="${excludes}"/>
     
     <!-- Create extension Javamail 1.3 jar file -->
-    <jar jarfile="${dist}/${DSTAMP}/lib/javamail1.3/restlet.javamail.jar" basedir="${classes-javamail1.3}">
+    <jar jarfile="${dist}/lib/javamail1.3/restlet.javamail.jar" basedir="${classes-javamail1.3}">
       <manifest>
         <attribute name="Built-By" value="${author}"/>
         <section name="com.noelios.restlet.ext.javamail">
@@ -289,11 +290,11 @@
     </jar>
     
     <!-- Create extension Javamail 1.3 source jar file -->
-    <mkdir dir="${dist}/${DSTAMP}/src/javamail1.3"/>
-    <zip destfile="${dist}/${DSTAMP}/src/javamail1.3/restlet.javamail.zip" basedir="${src-javamail1.3}" includes="com/noelios/restlet/**" excludes="${excludes}"/>
+    <mkdir dir="${dist}/src/javamail1.3"/>
+    <zip destfile="${dist}/src/javamail1.3/restlet.javamail.zip" basedir="${src-javamail1.3}" includes="com/noelios/restlet/**" excludes="${excludes}"/>
     
     <!-- Create extension JDBC 3.0 jar file -->
-    <jar jarfile="${dist}/${DSTAMP}/lib/jdbc3.0/restlet.jdbc.jar" basedir="${classes-jdbc3.0}">
+    <jar jarfile="${dist}/lib/jdbc3.0/restlet.jdbc.jar" basedir="${classes-jdbc3.0}">
       <manifest>
         <attribute name="Built-By" value="${author}"/>
         <section name="com.noelios.restlet.ext.jdbc">
@@ -305,11 +306,11 @@
     </jar>
     
     <!-- Create extension JDBC 3.0 source jar file -->
-    <mkdir dir="${dist}/${DSTAMP}/src/jdbc3.0"/>
-    <zip destfile="${dist}/${DSTAMP}/src/jdbc3.0/restlet.jdbc.zip" basedir="${src-jdbc3.0}" includes="com/noelios/restlet/**" excludes="${excludes}"/>
+    <mkdir dir="${dist}/src/jdbc3.0"/>
+    <zip destfile="${dist}/src/jdbc3.0/restlet.jdbc.zip" basedir="${src-jdbc3.0}" includes="com/noelios/restlet/**" excludes="${excludes}"/>
     
     <!-- Create extension Jetty 5.1 jar file -->
-    <jar jarfile="${dist}/${DSTAMP}/lib/jetty5.1/restlet.jetty.jar" basedir="${classes-jetty5.1}">
+    <jar jarfile="${dist}/lib/jetty5.1/restlet.jetty.jar" basedir="${classes-jetty5.1}">
       <manifest>
         <attribute name="Built-By" value="${author}"/>
         <section name="com.noelios.restlet.ext.jetty">
@@ -321,11 +322,11 @@
     </jar>
     
     <!-- Create extension Jetty 5.1 source jar file -->
-    <mkdir dir="${dist}/${DSTAMP}/src/jetty5.1"/>
-    <zip destfile="${dist}/${DSTAMP}/src/jetty5.1/restlet.jetty.zip" basedir="${src-jetty5.1}" includes="com/noelios/restlet/**" excludes="${excludes}"/>
+    <mkdir dir="${dist}/src/jetty5.1"/>
+    <zip destfile="${dist}/src/jetty5.1/restlet.jetty.zip" basedir="${src-jetty5.1}" includes="com/noelios/restlet/**" excludes="${excludes}"/>
     
     <!-- Create extension Jetty 6.0 jar file -->
-    <jar jarfile="${dist}/${DSTAMP}/lib/jetty6.0/restlet.jetty.jar" basedir="${classes-jetty6.0}">
+    <jar jarfile="${dist}/lib/jetty6.0/restlet.jetty.jar" basedir="${classes-jetty6.0}">
       <manifest>
         <attribute name="Built-By" value="${author}"/>
         <section name="com.noelios.restlet.ext.jetty">
@@ -337,11 +338,11 @@
     </jar>
     
     <!-- Create extension Jetty 6.0 source jar file -->
-    <mkdir dir="${dist}/${DSTAMP}/src/jetty6.0"/>
-    <zip destfile="${dist}/${DSTAMP}/src/jetty6.0/restlet.jetty.zip" basedir="${src-jetty6.0}" includes="com/noelios/restlet/**" excludes="${excludes}"/>
+    <mkdir dir="${dist}/src/jetty6.0"/>
+    <zip destfile="${dist}/src/jetty6.0/restlet.jetty.zip" basedir="${src-jetty6.0}" includes="com/noelios/restlet/**" excludes="${excludes}"/>
     
     <!-- Create extension Servlet 2.4 jar file -->
-    <jar jarfile="${dist}/${DSTAMP}/lib/servlet2.4/restlet.servlet.jar" basedir="${classes-servlet2.4}">
+    <jar jarfile="${dist}/lib/servlet2.4/restlet.servlet.jar" basedir="${classes-servlet2.4}">
       <manifest>
         <attribute name="Built-By" value="${author}"/>
         <section name="com.noelios.restlet.ext.servlet">
@@ -353,14 +354,14 @@
     </jar>
     
     <!-- Create extension Servlet 2.4 source jar file -->
-    <mkdir dir="${dist}/${DSTAMP}/src/servlet2.4"/>
-    <zip destfile="${dist}/${DSTAMP}/src/servlet2.4/restlet.servlet.zip" basedir="${src-servlet2.4}" includes="com/noelios/restlet/**" excludes="${excludes}"/>
+    <mkdir dir="${dist}/src/servlet2.4"/>
+    <zip destfile="${dist}/src/servlet2.4/restlet.servlet.zip" basedir="${src-servlet2.4}" includes="com/noelios/restlet/**" excludes="${excludes}"/>
     
     <!-- Create the final zip file -->
-    <zip destfile="${dist}/restlet-${version-compact}.zip" basedir="${dist}/${DSTAMP}" includes="**/*"/>
+    <zip destfile="${data}/archive/restlet/restlet-${version-compact}.zip" basedir="${dist}" includes="**/*"/>
 
     <!-- Remove the temporary files -->
-    <delete dir="${dist}/${DSTAMP}" verbose="false" quiet="true" includeEmptyDirs="true"/>
+    <!-- <delete dir="${dist}" verbose="false" quiet="true" includeEmptyDirs="true"/> -->
    
   </target>
 
