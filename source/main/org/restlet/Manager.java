@@ -53,8 +53,8 @@ public class Manager
    /** Obtain a suitable logger. */
    private static Logger logger = Logger.getLogger("org.restlet.Manager");
    
-   public static final String VERSION_LONG = "1.0 beta 5";
-   public static final String VERSION_SHORT = "1.0b5";
+   public static final String VERSION_LONG = "1.0 beta 6";
+   public static final String VERSION_SHORT = "1.0b6";
 
    /** Static fields. */
    public static final String PROPERTY_FACTORY = "org.restlet.impl";

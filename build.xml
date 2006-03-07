@@ -7,8 +7,8 @@
 <project name="Restlet" default="dist" basedir=".">
 
   <!-- Set global names -->
-  <property name="version-full"     value="1.0 beta 5"/>
-  <property name="version-compact"  value="1.0b5"/>
+  <property name="version-full"     value="1.0 beta 6"/>
+  <property name="version-compact"  value="1.0b6"/>
   <property name="restlet-api"      value="Restlet API"/>
   <property name="restlet-ri"       value="Noelios Restlet Engine"/>
   <property name="author"           value="Jerome Louvel"/>
