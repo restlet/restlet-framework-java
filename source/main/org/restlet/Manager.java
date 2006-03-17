@@ -42,6 +42,7 @@ import org.restlet.data.Method;
 import org.restlet.data.Parameter;
 import org.restlet.data.Protocol;
 import org.restlet.data.Reference;
+import org.restlet.data.RepresentationMetadata;
 import org.restlet.data.Status;
 import org.restlet.data.Tag;
 
@@ -215,6 +216,15 @@ public class Manager
    public static Reference createReference(String uriReference)
    {
       return getRegisteredFactory().createReference(uriReference);
+   }
+
+   /**
+    * Creates a new representation metadata.
+    * @param mediaType The representation mediatype.
+    */
+   public static RepresentationMetadata createRepresentationMetadata(MediaType mediaType)
+   {
+      return getRegisteredFactory().createRepresentationMetadata(mediaType);
    }
 
    /**

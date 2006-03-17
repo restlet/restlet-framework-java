@@ -29,8 +29,8 @@ import org.restlet.AbstractChainlet;
 import org.restlet.UniformCall;
 import org.restlet.component.RestletContainer;
 
-import com.noelios.restlet.util.UniformCallModel;
 import com.noelios.restlet.util.StringTemplate;
+import com.noelios.restlet.util.UniformCallModel;
 
 /**
  * Chainlet logging all calls after handling by the chained handler.<br/>

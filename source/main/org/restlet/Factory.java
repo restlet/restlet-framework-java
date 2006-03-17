@@ -26,21 +26,7 @@ import org.restlet.component.RestletContainer;
 import org.restlet.component.RestletServer;
 import org.restlet.connector.Client;
 import org.restlet.connector.Server;
-import org.restlet.data.ChallengeResponse;
-import org.restlet.data.ChallengeScheme;
-import org.restlet.data.CharacterSet;
-import org.restlet.data.Cookie;
-import org.restlet.data.CookieSetting;
-import org.restlet.data.Encoding;
-import org.restlet.data.Form;
-import org.restlet.data.Language;
-import org.restlet.data.MediaType;
-import org.restlet.data.Method;
-import org.restlet.data.Parameter;
-import org.restlet.data.Protocol;
-import org.restlet.data.Reference;
-import org.restlet.data.Status;
-import org.restlet.data.Tag;
+import org.restlet.data.*;
 
 /**
  * Factory implemented by Restlet implementations.
@@ -77,6 +63,14 @@ public interface Factory
    public CharacterSet createCharacterSet(String name);
 
    /**
+    * Create a new client connector for a given protocol.
+    * @param protocol The connector protocol.
+    * @param name The unique connector name.
+    * @return The new client connector.
+    */
+   public Client createClient(Protocol protocol, String name);
+
+   /**
     * Returns a new cookie.
     * @param name The name.
     * @param value The value.
@@ -104,25 +98,6 @@ public interface Factory
     * @return A new form.
     */
    public Form createForm();
-
-   /**
-    * Create a new client connector for a given protocol.
-    * @param protocol The connector protocol.
-    * @param name The unique connector name.
-    * @return The new client connector.
-    */
-   public Client createClient(Protocol protocol, String name);
-
-   /**
-    * Create a new server connector for a given protocol.
-    * @param protocol The connector protocol.
-    * @param name The unique connector name.
-    * @param target The target handler.
-    * @param address The optional listening IP address (local host used if null).
-    * @param port The listening port.
-    * @return The new server connector.
-    */
-   public Server createServer(Protocol protocol, String name, UniformInterface target, String address, int port);
 
    /**
     * Creates a new language from its standard name.
@@ -168,6 +143,20 @@ public interface Factory
    public Reference createReference(String uriReference);
 
    /**
+    * Creates a new representation metadata.
+    * @param mediaType The representation mediatype.
+    */
+   public RepresentationMetadata createRepresentationMetadata(MediaType mediaType);
+   
+   /**
+    * Creates a delegate Restlet container.
+    * @param parent The parent Restlet container.
+    * @param name The container's name.
+    * @return The new Restlet container.
+    */
+   public RestletContainer createRestletContainer(RestletContainer parent, String name);
+
+   /**
     * Creates a delegate Restlet server.
     * @param parent The parent Restlet server.
     * @param name The server's name.
@@ -176,12 +165,15 @@ public interface Factory
    public RestletServer createRestletServer(RestletServer parent, String name);
 
    /**
-    * Creates a delegate Restlet container.
-    * @param parent The parent Restlet container.
-    * @param name The container's name.
-    * @return The new Restlet container.
+    * Create a new server connector for a given protocol.
+    * @param protocol The connector protocol.
+    * @param name The unique connector name.
+    * @param target The target handler.
+    * @param address The optional listening IP address (local host used if null).
+    * @param port The listening port.
+    * @return The new server connector.
     */
-   public RestletContainer createRestletContainer(RestletContainer parent, String name);
+   public Server createServer(Protocol protocol, String name, UniformInterface target, String address, int port);
 
    /**
     * Creates a new status from its standard code.

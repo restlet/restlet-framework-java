@@ -33,8 +33,8 @@ import org.restlet.component.RestletContainer;
 import org.restlet.data.Reference;
 import org.restlet.data.Statuses;
 
-import com.noelios.restlet.util.UniformCallModel;
 import com.noelios.restlet.util.StringTemplate;
+import com.noelios.restlet.util.UniformCallModel;
 
 /**
  * Rewrites URIs then redirects the call or the client to a new destination.

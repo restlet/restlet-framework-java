@@ -39,7 +39,7 @@ public class RestletTestSuite extends TestSuite
       addTestSuite(RedirectTest.class);
       addTestSuite(ReferenceTest.class);
       addTestSuite(SecurityTest.class);
-      
+      addTestSuite(StringTemplateTest.class);
    }
 
    /**

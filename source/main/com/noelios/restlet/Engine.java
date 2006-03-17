@@ -34,23 +34,7 @@ import org.restlet.component.RestletContainer;
 import org.restlet.component.RestletServer;
 import org.restlet.connector.Client;
 import org.restlet.connector.Server;
-import org.restlet.data.ChallengeResponse;
-import org.restlet.data.ChallengeScheme;
-import org.restlet.data.ChallengeSchemes;
-import org.restlet.data.CharacterSet;
-import org.restlet.data.Cookie;
-import org.restlet.data.CookieSetting;
-import org.restlet.data.Encoding;
-import org.restlet.data.Form;
-import org.restlet.data.Language;
-import org.restlet.data.MediaType;
-import org.restlet.data.Method;
-import org.restlet.data.Parameter;
-import org.restlet.data.Protocol;
-import org.restlet.data.Protocols;
-import org.restlet.data.Reference;
-import org.restlet.data.Status;
-import org.restlet.data.Tag;
+import org.restlet.data.*;
 
 import com.noelios.restlet.component.RestletContainerImpl;
 import com.noelios.restlet.component.RestletServerImpl;
@@ -274,6 +258,15 @@ public class Engine implements Factory
    public Reference createReference(String uriReference)
    {
       return new ReferenceImpl(uriReference);
+   }
+
+   /**
+    * Creates a new representation metadata.
+    * @param mediaType The representation mediatype.
+    */
+   public RepresentationMetadata createRepresentationMetadata(MediaType mediaType)
+   {
+      return new DefaultRepresentationMetadata(mediaType);
    }
 
    /**
