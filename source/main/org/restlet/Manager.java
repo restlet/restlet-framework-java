@@ -56,13 +56,13 @@ public class Manager
 {
    /** Obtain a suitable logger. */
    private static Logger logger = Logger.getLogger("org.restlet.Manager");
-   
+
    public static final String VERSION_LONG = "1.0 beta 6";
    public static final String VERSION_SHORT = "1.0b6";
-   
+
    /** The registered factory. */
    protected static Factory registeredFactory = null;
-   
+
    /**
     * Creates a new uniform call.
     * @return A new uniform call.
@@ -83,7 +83,7 @@ public class Manager
    }
 
    /**
-    * Creates a challenge response for a specific scheme (ex: HTTP BASIC authentication) 
+    * Creates a challenge response for a specific scheme (ex: HTTP BASIC authentication)
     * using a login and a password as the credentials.
     * @param scheme The challenge scheme to use.
     * @param userId The user identifier to use.
@@ -282,57 +282,57 @@ public class Manager
    {
       return getRegisteredFactory().createTag(name);
    }
-   
+
    /**
     * Returns the registered factory.
     * @return The registered factory.
     */
    protected static Factory getRegisteredFactory()
    {
-   	Factory result = registeredFactory;
-   	
+      Factory result = registeredFactory;
+
       if(result == null)
       {
-      	// Find the factory class name
-      	String factoryClassName = null;
-    	  
-      	// Find the factory class name
-      	ClassLoader cl = Thread.currentThread().getContextClassLoader();
-      	URL configURL = cl.getResource("META-INF/services/org.restlet.Factory");
-      	if(configURL != null)
-      	{
-      		try 
-      		{
-      			BufferedReader reader = new BufferedReader(new InputStreamReader(configURL.openStream(), "utf-8"));
-      			String providerName = reader.readLine();
-      			factoryClassName = providerName.substring(0, providerName.indexOf('#')).trim();
-      		} 
-      		catch (Exception e) 
-      		{
-      			// Exception during resolution
-      		}
-      	}
-         
-      	if(factoryClassName == null)
-      	{
+         // Find the factory class name
+         String factoryClassName = null;
+
+         // Find the factory class name
+         ClassLoader cl = Thread.currentThread().getContextClassLoader();
+         URL configURL = cl.getResource("meta-inf/services/org.restlet.Factory");
+         if(configURL != null)
+         {
+            try
+            {
+               BufferedReader reader = new BufferedReader(new InputStreamReader(configURL.openStream(), "utf-8"));
+               String providerName = reader.readLine();
+               factoryClassName = providerName.substring(0, providerName.indexOf('#')).trim();
+            }
+            catch (Exception e)
+            {
+               // Exception during resolution
+            }
+         }
+
+         if(factoryClassName == null)
+         {
             logger.log(Level.SEVERE, "Unable to register the Restlet API implementation. Please check that the JAR file is in your classpath.");
-      	}
-      	else
-      	{
-	         // Instantiate the factory
-	         try
-	         {
-	            registeredFactory = (Factory)Class.forName(factoryClassName).newInstance();
-	            result = registeredFactory;
-	         }
-	         catch(Exception e)
-	         {
-	            logger.log(Level.SEVERE, "Unable to register the Restlet API implementation", e);
-	            throw new RuntimeException("Unable to register the Restlet API implementation");
-	         }
-      	}
+         }
+         else
+         {
+            // Instantiate the factory
+            try
+            {
+               registeredFactory = (Factory)Class.forName(factoryClassName).newInstance();
+               result = registeredFactory;
+            }
+            catch(Exception e)
+            {
+               logger.log(Level.SEVERE, "Unable to register the Restlet API implementation", e);
+               throw new RuntimeException("Unable to register the Restlet API implementation");
+            }
+         }
       }
-      
+
       return result;
    }
 
