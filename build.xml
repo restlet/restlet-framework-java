@@ -143,39 +143,39 @@
     
     <!-- Compiles main source files -->
     <mkdir dir="${classes-main}"/>
-    <javac debug="true" srcdir="${src-main};${src-jetty5.1};${src-javamail1.3}"  destdir="${classes-main}" classpathref="path-all"/>
+    <javac compiler="javac1.5" debug="true" srcdir="${src-main};${src-jetty5.1};${src-javamail1.3}"  destdir="${classes-main}" classpathref="path-all"/>
     
     <!-- Compiles extension Freemarker 2.3 -->
     <mkdir dir="${classes-freemarker2.3}"/>
-    <javac debug="true" srcdir="${src-freemarker2.3}"  destdir="${classes-freemarker2.3}" classpathref="path-freemarker2.3"/>
+    <javac compiler="javac1.5" debug="true" srcdir="${src-freemarker2.3}"  destdir="${classes-freemarker2.3}" classpathref="path-freemarker2.3"/>
     
     <!-- Compiles extension Javamail 1.3 -->
     <mkdir dir="${classes-javamail1.3}"/>
-    <javac debug="true" srcdir="${src-javamail1.3}"  destdir="${classes-javamail1.3}" classpathref="path-javamail1.3"/>
+    <javac compiler="javac1.5" debug="true" srcdir="${src-javamail1.3}"  destdir="${classes-javamail1.3}" classpathref="path-javamail1.3"/>
     
     <!-- Compiles extension JDBC 3.0 -->
     <mkdir dir="${classes-jdbc3.0}"/>
-    <javac debug="true" srcdir="${src-jdbc3.0}"  destdir="${classes-jdbc3.0}" classpathref="path-jdbc3.0"/>
+    <javac compiler="javac1.5" debug="true" srcdir="${src-jdbc3.0}"  destdir="${classes-jdbc3.0}" classpathref="path-jdbc3.0"/>
     
     <!-- Compiles extension Jetty 5.1 -->
     <mkdir dir="${classes-jetty5.1}"/>
-    <javac debug="true" srcdir="${src-jetty5.1}"  destdir="${classes-jetty5.1}" classpathref="path-jetty5.1"/>
+    <javac compiler="javac1.5" debug="true" srcdir="${src-jetty5.1}"  destdir="${classes-jetty5.1}" classpathref="path-jetty5.1"/>
  
     <!-- Compiles extension Jetty 6.0 -->
     <mkdir dir="${classes-jetty6.0}"/>
-    <javac debug="true" srcdir="${src-jetty6.0}"  destdir="${classes-jetty6.0}" classpathref="path-jetty6.0"/>
+    <javac compiler="javac1.5" debug="true" srcdir="${src-jetty6.0}"  destdir="${classes-jetty6.0}" classpathref="path-jetty6.0"/>
     
     <!-- Compiles extension Servlet 2.4 -->
     <mkdir dir="${classes-servlet2.4}"/>
-    <javac debug="true" srcdir="${src-servlet2.4}"  destdir="${classes-servlet2.4}" classpathref="path-servlet2.4"/>
+    <javac compiler="javac1.5" debug="true" srcdir="${src-servlet2.4}"  destdir="${classes-servlet2.4}" classpathref="path-servlet2.4"/>
     
     <!-- Compiles tutorial source files -->
     <mkdir dir="${classes-tutorial}"/>
-    <javac debug="true" srcdir="${src-tutorial}"  destdir="${classes-tutorial}" classpathref="path-tutorial"/>
+    <javac compiler="javac1.5" debug="true" srcdir="${src-tutorial}"  destdir="${classes-tutorial}" classpathref="path-tutorial"/>
     
     <!-- Compiles test source files -->
     <mkdir dir="${classes-test}"/>
-    <javac debug="true" srcdir="${src-test}"  destdir="${classes-test}" classpathref="path-test"/>
+    <javac compiler="javac1.5" debug="true" srcdir="${src-test}"  destdir="${classes-test}" classpathref="path-test"/>
   </target>
 
 
@@ -213,6 +213,9 @@
         </section>
       </manifest>
     </jar>
+
+  	<!-- Add the services manifest files -->
+  	<jar jarfile="${dist}/lib/com.noelios.restlet.jar" update="true" basedir="${src-main}" includes="META-INF/**"/>
 
     <!-- Create Restlet API source jar file -->
     <zip destfile="${dist}/src/org.restlet.zip" basedir="${src-main}" includes="org/restlet/**" excludes="${excludes}"/>
@@ -450,8 +453,9 @@
       <classpath>
         <pathelement location="${classes-main}"/>
         <pathelement location="${classes-test}"/>
-        <path refid="path-jetty5.1"/>
         <pathelement location="${classes-jetty5.1}"/>
+        <pathelement location="${src-main}"/>
+        <path refid="path-jetty5.1"/>
       </classpath>
   
       <formatter type="plain"/>

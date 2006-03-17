@@ -22,6 +22,9 @@
 
 package org.restlet;
 
+import java.io.BufferedReader;
+import java.io.InputStreamReader;
+import java.net.URL;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
@@ -56,9 +59,6 @@ public class Manager
    
    public static final String VERSION_LONG = "1.0 beta 6";
    public static final String VERSION_SHORT = "1.0b6";
-
-   /** Static fields. */
-   public static final String PROPERTY_FACTORY = "org.restlet.impl";
    
    /** The registered factory. */
    protected static Factory registeredFactory = null;
@@ -289,28 +289,51 @@ public class Manager
     */
    protected static Factory getRegisteredFactory()
    {
-      if(registeredFactory == null)
+   	Factory result = registeredFactory;
+   	
+      if(result == null)
       {
-         // Find the factory class name
-         String factoryClassName = System.getProperty(PROPERTY_FACTORY);
-         if(factoryClassName == null) factoryClassName = "com.noelios.restlet.Engine";
+      	// Find the factory class name
+      	String factoryClassName = null;
+    	  
+      	// Find the factory class name
+      	ClassLoader cl = Thread.currentThread().getContextClassLoader();
+      	URL configURL = cl.getResource("META-INF/services/org.restlet.Factory");
+      	if(configURL != null)
+      	{
+      		try 
+      		{
+      			BufferedReader reader = new BufferedReader(new InputStreamReader(configURL.openStream(), "utf-8"));
+      			String providerName = reader.readLine();
+      			factoryClassName = providerName.substring(0, providerName.indexOf('#')).trim();
+      		} 
+      		catch (Exception e) 
+      		{
+      			// Exception during resolution
+      		}
+      	}
          
-         // Instantiate the factory
-         try
-         {
-            registeredFactory = (Factory)Class.forName(factoryClassName).newInstance();
-            return registeredFactory;
-         }
-         catch(Exception e)
-         {
-            logger.log(Level.SEVERE, "Unable to register the Restlet API implementation", e);
-            throw new RuntimeException("Unable to register the Restlet API implementation");
-         }
+      	if(factoryClassName == null)
+      	{
+            logger.log(Level.SEVERE, "Unable to register the Restlet API implementation. Please check that the JAR file is in your classpath.");
+      	}
+      	else
+      	{
+	         // Instantiate the factory
+	         try
+	         {
+	            registeredFactory = (Factory)Class.forName(factoryClassName).newInstance();
+	            result = registeredFactory;
+	         }
+	         catch(Exception e)
+	         {
+	            logger.log(Level.SEVERE, "Unable to register the Restlet API implementation", e);
+	            throw new RuntimeException("Unable to register the Restlet API implementation");
+	         }
+      	}
       }
-      else
-      {
-         return registeredFactory;
-      }
+      
+      return result;
    }
 
    /**
