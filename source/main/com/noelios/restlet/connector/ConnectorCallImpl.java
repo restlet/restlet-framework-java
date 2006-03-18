@@ -146,7 +146,61 @@ public class ConnectorCallImpl implements ConnectorCall
       if(this.requestHeaders == null) this.requestHeaders = new ArrayList<Parameter>();
       return this.requestHeaders;
    }
+   
+   /**
+    * Returns the value for a request header name.<br/>
+    * If multiple headers with the same name are found, all values are returned separated by commas.
+    * @param headerName The header name.
+    * @return The value for a request header name.
+    */
+   public String getRequestHeaderValue(String headerName)
+   {
+   	return getHeaderValue(headerName, getRequestHeaders());
+   }
 
+   /**
+    * Returns the value for a header name.<br/>
+    * If multiple headers with the same name are found, all values are returned separated by commas.
+    * @param headerName The header name.
+    * @param headers The headers list.
+    * @return The value for a header name.
+    */
+   private String getHeaderValue(String headerName, List<Parameter> headers)
+   {
+   	String result = null;
+   	StringBuilder sb = null;
+   	
+   	for(Parameter header : getRequestHeaders())
+   	{
+   		if(header.getName().equalsIgnoreCase(headerName))
+   		{
+   			if(sb == null)
+   			{
+   				if(result == null)
+   				{
+   					result = header.getValue();
+   				}
+   				else
+   				{
+   					sb = new StringBuilder();
+      				sb.append(result).append(',').append(header.getValue());
+   				}
+   			}
+   			else
+   			{
+   				sb.append(',').append(header.getValue());
+   			}
+   		}
+   	}
+   	
+   	if(sb != null)
+   	{
+   		result = sb.toString();
+   	}
+   	
+   	return result;
+   }
+   
    /**
     * Returns the response address.<br/>
     * Corresponds to the IP address of the responding server.
@@ -165,6 +219,17 @@ public class ConnectorCallImpl implements ConnectorCall
    {
       if(this.responseHeaders == null) this.responseHeaders = new ArrayList<Parameter>();
       return this.responseHeaders;
+   }
+   
+   /**
+    * Returns the value for a response header name.<br/>
+    * If multiple headers with the same name are found, all values are returned separated by commas.
+    * @param headerName The header name.
+    * @return The value for a response header name.
+    */
+   public String getResponseHeaderValue(String headerName)
+   {
+   	return getHeaderValue(headerName, getResponseHeaders());
    }
 
    /**

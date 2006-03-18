@@ -215,7 +215,7 @@
     </jar>
 
   	<!-- Add the services manifest files -->
-  	<jar jarfile="${dist}/lib/com.noelios.restlet.jar" update="true" basedir="${src-main}" includes="META-INF/**"/>
+  	<jar jarfile="${dist}/lib/com.noelios.restlet.jar" update="true" basedir="${src-main}" includes="meta-inf/**"/>
 
     <!-- Create Restlet API source jar file -->
     <zip destfile="${dist}/src/org.restlet.zip" basedir="${src-main}" includes="org/restlet/**" excludes="${excludes}"/>

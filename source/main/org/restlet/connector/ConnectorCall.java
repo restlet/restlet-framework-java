@@ -188,6 +188,14 @@ public interface ConnectorCall
     * @return The list of request headers.
     */
    public List<Parameter> getRequestHeaders();
+   
+   /**
+    * Returns the value for a request header name.<br/>
+    * If multiple headers with the same name are found, all values are returned separated by commas.
+    * @param headerName The header name.
+    * @return The value for a request header name.
+    */
+   public String getRequestHeaderValue(String headerName);
 
    /**
     * Returns the response address.<br/>
@@ -213,6 +221,14 @@ public interface ConnectorCall
     * @return The list of response headers.
     */
    public List<Parameter> getResponseHeaders();
+   
+   /**
+    * Returns the value for a response header name.<br/>
+    * If multiple headers with the same name are found, all values are returned separated by commas.
+    * @param headerName The header name.
+    * @return The value for a response header name.
+    */
+   public String getResponseHeaderValue(String headerName);
    
    /**
     * Parses a date string.

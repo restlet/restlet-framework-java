@@ -1,3 +1,25 @@
+/*
+ * Copyright 2005-2006 Jérôme LOUVEL
+ *
+ * The contents of this file are subject to the terms
+ * of the Common Development and Distribution License
+ * (the "License").  You may not use this file except
+ * in compliance with the License.
+ *
+ * You can obtain a copy of the license at
+ * http://www.opensource.org/licenses/cddl1.txt
+ * See the License for the specific language governing
+ * permissions and limitations under the License.
+ *
+ * When distributing Covered Code, include this CDDL
+ * HEADER in each file and include the License file at
+ * http://www.opensource.org/licenses/cddl1.txt
+ * If applicable, add the following below this CDDL
+ * HEADER, with the fields enclosed by brackets "[]"
+ * replaced with your own identifying information:
+ * Portions Copyright [yyyy] [name of copyright owner]
+ */
+
 package com.noelios.restlet.connector;
 
 import java.io.IOException;
@@ -5,7 +27,6 @@ import java.io.InputStream;
 import java.nio.channels.ReadableByteChannel;
 import java.util.ArrayList;
 import java.util.Date;
-import java.util.Iterator;
 import java.util.List;
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -46,7 +67,6 @@ import com.noelios.restlet.data.MediaTypePrefImpl;
 import com.noelios.restlet.data.MethodImpl;
 import com.noelios.restlet.data.PreferenceDataImpl;
 import com.noelios.restlet.data.ReadableRepresentation;
-import com.noelios.restlet.data.ReferenceImpl;
 import com.noelios.restlet.data.SecurityDataImpl;
 import com.noelios.restlet.data.TagImpl;
 import com.noelios.restlet.util.CookieReader;
@@ -112,44 +132,7 @@ public class UniformHttpServerCall extends UniformCallImpl
    {
       if(this.clientAddress == null)
       {
-         boolean useForwardedFor = Boolean.valueOf(System.getProperty(ServerCall.PROPERTY_USE_FORWARDED_FOR));
-   
-         if(useForwardedFor)
-         {
-            // Lookup the "X-Forwarded-For" header
-            Parameter header;
-            for(Iterator<Parameter> iter = getConnectorCall().getRequestHeaders().iterator(); iter.hasNext(); )
-            {
-               header = iter.next();
-               
-               if(header.getName().equalsIgnoreCase(ConnectorCall.HEADER_X_FORWARDED_FOR))
-               {
-                  // If multiple proxies handled the call, multiple addresses could have used the
-                  // header, so we need to extract the last IP address
-                  int index = header.getValue().lastIndexOf(',');
-                  
-                  if(index == -1)
-                  {
-                     this.clientAddress = header.getValue().trim();
-                  }
-                  else
-                  {
-                     this.clientAddress = header.getValue().substring(index + 1).trim();
-                  }
-               }
-            }
-            
-            // Check whether the client IP address was known by the proxy
-            if((this.clientAddress == null) || this.clientAddress.equalsIgnoreCase("unknown"))
-            {
-               // Fall-back on the proxy IP address
-               this.clientAddress = getConnectorCall().getRequestAddress();            
-            }
-         }
-         else
-         {
-            this.clientAddress = getConnectorCall().getRequestAddress();            
-         }
+         this.clientAddress = getConnectorCall().getRequestAddress();            
       }
 
       return this.clientAddress;
@@ -164,16 +147,7 @@ public class UniformHttpServerCall extends UniformCallImpl
       if(this.clientName == null)
       {
          // Extract the header values
-         Parameter header;
-         for(Iterator<Parameter> iter = getConnectorCall().getRequestHeaders().iterator(); iter.hasNext(); )
-         {
-            header = iter.next();
-            
-            if(header.getName().equalsIgnoreCase(ConnectorCall.HEADER_USER_AGENT))
-            {
-               this.clientName = header.getValue();
-            }
-         }
+      	this.clientName = getConnectorCall().getRequestHeaderValue(ConnectorCall.HEADER_USER_AGENT);
       }
       
       return this.clientName;
@@ -190,26 +164,16 @@ public class UniformHttpServerCall extends UniformCallImpl
          this.condition = new ConditionDataImpl();
 
          // Extract the header values
+         String ifMatchHeader = getConnectorCall().getRequestHeaderValue(ConnectorCall.HEADER_IF_MATCH);
+         String ifNoneMatchHeader = getConnectorCall().getRequestHeaderValue(ConnectorCall.HEADER_IF_NONE_MATCH);
          Date ifModifiedSince = null;
          Date ifUnmodifiedSince = null;
-         String ifMatchHeader = null;
-         String ifNoneMatchHeader = null;
-         Parameter header;
-         for(Iterator<Parameter> iter = getConnectorCall().getRequestHeaders().iterator(); iter.hasNext(); )
+         
+         for(Parameter header : getConnectorCall().getRequestHeaders())
          {
-            header = iter.next();
-            
-            if(header.getName().equalsIgnoreCase(ConnectorCall.HEADER_IF_MATCH))
-            {
-               ifMatchHeader = header.getValue();
-            }
-            else if(header.getName().equalsIgnoreCase(ConnectorCall.HEADER_IF_MODIFIED_SINCE))
+            if(header.getName().equalsIgnoreCase(ConnectorCall.HEADER_IF_MODIFIED_SINCE))
             {
                ifModifiedSince = getConnectorCall().parseDate(header.getValue(), false);
-            }
-            else if(header.getName().equalsIgnoreCase(ConnectorCall.HEADER_IF_NONE_MATCH))
-            {
-               ifNoneMatchHeader = header.getValue();
             }
             else if(header.getName().equalsIgnoreCase(ConnectorCall.HEADER_IF_UNMODIFIED_SINCE))
             {
@@ -298,29 +262,24 @@ public class UniformHttpServerCall extends UniformCallImpl
       if(this.cookies == null) 
       {
          this.cookies = new ArrayList<Cookie>();
+         String cookiesValue = getConnectorCall().getRequestHeaderValue(ConnectorCall.HEADER_COOKIE);
 
-         // Extract the header values
-         Parameter header;
-         for(Iterator<Parameter> iter = getConnectorCall().getRequestHeaders().iterator(); iter.hasNext(); )
+         if(cookiesValue != null)
          {
-            header = iter.next();
-            if(header.getName().equalsIgnoreCase(ConnectorCall.HEADER_COOKIE))
-            {
-               try
-               {
-                  CookieReader cr = new CookieReader(header.getValue());
-                  Cookie current = cr.readCookie();
-                  while(current != null)
-                  {
-                     this.cookies.add(current);
-                     current = cr.readCookie();
-                  }
-               }
-               catch(Exception e)
-               {
-                  logger.log(Level.WARNING, "An exception occured during cookies parsing. Header: " + header.getValue(), e);
-               }
-            }
+	   		try
+	         {
+	            CookieReader cr = new CookieReader(cookiesValue);
+	            Cookie current = cr.readCookie();
+	            while(current != null)
+	            {
+	               this.cookies.add(current);
+	               current = cr.readCookie();
+	            }
+	         }
+	         catch(Exception e)
+	         {
+	            logger.log(Level.WARNING, "An exception occured during cookies parsing. Headers value: " + cookiesValue, e);
+	         }
          }
       }
       
@@ -342,10 +301,9 @@ public class UniformHttpServerCall extends UniformCallImpl
          Encoding contentEncoding = null;
          Language contentLanguage = null;
          MediaType contentType = null;
-         Parameter header;
-         for(Iterator<Parameter> iter = getConnectorCall().getRequestHeaders().iterator(); iter.hasNext(); )
+
+         for(Parameter header : getConnectorCall().getRequestHeaders())
          {
-            header = iter.next();
             if(header.getName().equalsIgnoreCase(ConnectorCall.HEADER_CONTENT_ENCODING))
             {
                contentEncoding = Manager.createEncoding(header.getValue());
@@ -387,60 +345,10 @@ public class UniformHttpServerCall extends UniformCallImpl
          this.preference = new PreferenceDataImpl();
 
          // Extract the header values
-         String acceptCharset = null;
-         String acceptEncoding = null;
-         String acceptLanguage = null;
-         String acceptMediaType = null;
-         Parameter header;
-         for(Iterator<Parameter> iter = getConnectorCall().getRequestHeaders().iterator(); iter.hasNext(); )
-         {
-            header = iter.next();
-
-            if(header.getName().equalsIgnoreCase(ConnectorCall.HEADER_ACCEPT))
-            {
-               if(acceptMediaType == null)
-               {
-                  acceptMediaType = header.getValue();
-               }
-               else
-               {
-                  acceptMediaType = acceptMediaType + ", " + header.getValue();
-               }
-            }
-            else if(header.getName().equalsIgnoreCase(ConnectorCall.HEADER_ACCEPT_CHARSET))
-            {
-               if(acceptCharset == null)
-               {
-                  acceptCharset = header.getValue();
-               }
-               else
-               {
-                  acceptCharset = acceptCharset + ", " + header.getValue();
-               }
-            }
-            else if(header.getName().equalsIgnoreCase(ConnectorCall.HEADER_ACCEPT_ENCODING))
-            {
-               if(acceptEncoding == null)
-               {
-                  acceptEncoding = header.getValue();
-               }
-               else
-               {
-                  acceptEncoding = acceptEncoding + ", " + header.getValue();
-               }
-            }
-            else if(header.getName().equalsIgnoreCase(ConnectorCall.HEADER_ACCEPT_LANGUAGE))
-            {
-               if(acceptLanguage == null)
-               {
-                  acceptLanguage = header.getValue();
-               }
-               else
-               {
-                  acceptLanguage = acceptLanguage + ", " + header.getValue();
-               }
-            }
-         }         
+         String acceptCharset = getConnectorCall().getRequestHeaderValue(ConnectorCall.HEADER_ACCEPT_CHARSET);
+         String acceptEncoding = getConnectorCall().getRequestHeaderValue(ConnectorCall.HEADER_ACCEPT_ENCODING);
+         String acceptLanguage = getConnectorCall().getRequestHeaderValue(ConnectorCall.HEADER_ACCEPT_LANGUAGE);
+         String acceptMediaType = getConnectorCall().getRequestHeaderValue(ConnectorCall.HEADER_ACCEPT);
 
          if(acceptCharset != null)
          {
@@ -551,17 +459,11 @@ public class UniformHttpServerCall extends UniformCallImpl
    {
       if(this.referrerRef == null)
       {
-         // Extract the header values
-         Parameter header;
-         for(Iterator<Parameter> iter = getConnectorCall().getRequestHeaders().iterator(); (this.referrerRef == null) && iter.hasNext(); )
-         {
-            header = iter.next();
-            
-            if(header.getName().equalsIgnoreCase(ConnectorCall.HEADER_REFERRER))
-            {
-               this.referrerRef = new ReferenceImpl(header.getValue());
-            }
-         }
+      	String referrerValue = getConnectorCall().getRequestHeaderValue(ConnectorCall.HEADER_REFERRER);
+      	if(referrerValue != null)
+      	{
+      		this.referrerRef = Manager.createReference(referrerValue);
+      	}
       }
       
       return this.referrerRef;
@@ -587,18 +489,8 @@ public class UniformHttpServerCall extends UniformCallImpl
             // Because that will by the default value of this property if read by someone.
          }
 
-         // Extract the header values
-         String authorization = null;
-         Parameter header;
-         for(Iterator<Parameter> iter = getConnectorCall().getRequestHeaders().iterator(); (authorization == null) && iter.hasNext(); )
-         {
-            header = iter.next();
-            
-            if(header.getName().equalsIgnoreCase(ConnectorCall.HEADER_AUTHORIZATION))
-            {
-               authorization = header.getValue();
-            }
-         }
+         // Extract the header value
+         String authorization = getConnectorCall().getRequestHeaderValue(ConnectorCall.HEADER_AUTHORIZATION);
 
          // Set the challenge response
          getSecurity().setChallengeResponse(SecurityUtils.parseResponse(authorization));
