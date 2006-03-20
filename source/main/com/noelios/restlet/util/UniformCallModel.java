@@ -118,7 +118,7 @@ public class UniformCallModel implements ReadableModel
 	
 	      		if((rest.charAt(0) == '[') && (rest.charAt(rest.length() - 1) == ']'))
 	      		{
-	      			rest = rest.substring(1, rest.length() - 2);
+	      			rest = rest.substring(1, rest.length() - 1);
 	      			
 	   				if(rest.equals("first"))
 	   				{
@@ -155,7 +155,7 @@ public class UniformCallModel implements ReadableModel
 	
 	   		if((rest.charAt(0) == '[') && (rest.charAt(rest.length() - 1) == ']'))
 	   		{
-	   			rest = rest.substring(1, rest.length() - 2);
+	   			rest = rest.substring(1, rest.length() - 1);
 	   			
 					if(rest.equals("first"))
 					{
@@ -168,7 +168,7 @@ public class UniformCallModel implements ReadableModel
 					else if((rest.charAt(0) == '"') && (rest.charAt(rest.length() - 1) == '"'))
 					{
 						// Lookup by name
-		   			rest = rest.substring(1, rest.length() - 2);
+		   			rest = rest.substring(1, rest.length() - 1);
 			         result = CookieUtils.getFirstCookie(call.getCookies(), rest).getValue();
 					}
 					else
@@ -234,7 +234,7 @@ public class UniformCallModel implements ReadableModel
 	
 	      		if((rest.charAt(0) == '[') && (rest.charAt(rest.length() - 1) == ']'))
 	      		{
-	      			rest = rest.substring(1, rest.length() - 2);
+	      			rest = rest.substring(1, rest.length() - 1);
 	      			
 	   				if(rest.equals("first"))
 	   				{
@@ -248,7 +248,7 @@ public class UniformCallModel implements ReadableModel
 	   				else if((rest.charAt(0) == '"') && (rest.charAt(rest.length() - 1) == '"'))
 	   				{
 							// Lookup by name
-			   			rest = rest.substring(1, rest.length() - 2);
+			   			rest = rest.substring(1, rest.length() - 1);
 				         result = call.getResourceRef().getQueryAsForm().getFirstParameter(rest).getValue();
 	   				}
 	   				else
