@@ -57,8 +57,8 @@ public class Manager
    /** Obtain a suitable logger. */
    private static Logger logger = Logger.getLogger("org.restlet.Manager");
 
-   public static final String VERSION_LONG = "1.0 beta 6";
-   public static final String VERSION_SHORT = "1.0b6";
+   public static final String VERSION_LONG = "1.0 beta 7";
+   public static final String VERSION_SHORT = "1.0b7";
 
    /** The registered factory. */
    protected static Factory registeredFactory = null;
