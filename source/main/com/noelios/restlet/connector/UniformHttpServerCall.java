@@ -79,7 +79,7 @@ import com.noelios.restlet.util.SecurityUtils;
 public class UniformHttpServerCall extends UniformCallImpl
 {
    /** Obtain a suitable logger. */
-   private static Logger logger = Logger.getLogger("com.noelios.restlet.connector.HttpServerCallImpl");
+   private static Logger logger = Logger.getLogger("com.noelios.restlet.connector.UniformHttpServerCall");
 
    /**
     * Constructor.
@@ -122,7 +122,6 @@ public class UniformHttpServerCall extends UniformCallImpl
          setResourceRef(Manager.createReference(resource));
       }
    }
-   
 
    /**
     * Returns the client IP address.
@@ -136,6 +135,39 @@ public class UniformHttpServerCall extends UniformCallImpl
       }
 
       return this.clientAddress;
+   }
+
+   /**
+    * Returns the list of client IP addresses.<br/>
+    * The first address is the one of the immediate client component as returned by the getClientAdress() method and
+    * the last address should correspond to the origin client (frequently a user agent). 
+    * This is useful when the user agent is separated from the origin server by a chain of intermediary components.<br/>
+    * This list of addresses is based on headers such as the "X-Forwarded-For" header supported by popular proxies and caches.<br/>
+    * However, this information is only safe for intermediary components within your local network.<br/>
+    * Other addresses could easily be changed by setting a fake header and should never be trusted for serious security checks.  
+    * @return The client IP addresses.
+    */
+   public List<String> getClientAddresses()
+   {
+   	if(this.clientAddresses == null)
+   	{
+   		// Initialize the list
+   		this.clientAddresses = super.getClientAddresses();
+   		
+	      // Lookup the "X-Forwarded-For" header
+	      String header = getConnectorCall().getRequestHeaderValue(ConnectorCall.HEADER_X_FORWARDED_FOR);
+
+	      if(header != null)
+	      {
+	      	String[] addresses = header.split(",");
+      		for(int i = addresses.length - 1; i >= 0; i--)
+      		{
+      			this.clientAddresses.add(addresses[i].trim());
+      		}
+	      }
+   	}
+   	
+   	return this.clientAddresses;
    }
    
    /**

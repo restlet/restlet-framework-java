@@ -70,6 +70,9 @@ public class UniformCallImpl implements UniformCall
    /** The client IP address. */
    protected String clientAddress;
 
+   /** The client IP addresses. */
+   protected List<String> clientAddresses;
+
    /** The client name. */
    protected String clientName;
 
@@ -385,6 +388,27 @@ public class UniformCallImpl implements UniformCall
    }
 
    /**
+    * Returns the list of client IP addresses.<br/>
+    * The first address is the one of the immediate client component as returned by the getClientAdress() method and
+    * the last address should correspond to the origin client (frequently a user agent). 
+    * This is useful when the user agent is separated from the origin server by a chain of intermediary components.<br/>
+    * This list of addresses is based on headers such as the "X-Forwarded-For" header supported by popular proxies and caches.<br/>
+    * However, this information is only safe for intermediary components within your local network.<br/>
+    * Other addresses could easily be changed by setting a fake header and should never be trusted for serious security checks.  
+    * @return The client IP addresses.
+    */
+   public List<String> getClientAddresses()
+   {
+   	if(this.clientAddresses == null)
+   	{
+   		this.clientAddresses = new ArrayList<String>();
+   		this.clientAddresses.add(getClientAddress());
+   	}
+   	
+      return this.clientAddresses;
+   }
+
+   /**
     * Returns the client name.
     * @return The client name.
     */
@@ -660,6 +684,15 @@ public class UniformCallImpl implements UniformCall
    public void setClientAddress(String address)
    {
       this.clientAddress = address;
+   }
+
+   /**
+    * Sets the list of client IP addresses.  
+    * @param addresses The list of client IP addresses.
+    */
+   public void setClientAddresses(List<String> addresses)
+   {
+      this.clientAddresses = addresses;
    }
 
    /**

@@ -22,21 +22,44 @@
 
 package com.noelios.restlet.util;
 
-import java.io.IOException;
+import java.util.List;
 
 import org.restlet.UniformCall;
-import org.restlet.data.Cookie;
 import org.restlet.data.Parameter;;
 
 /**
  * Readable model wrapping an uniform call.<br/>
- * Can be passed directly passed to a string template.
+ * It can be passed directly passed to a string template. Repeating values can be retrieved by appending 
+ * [index] or ["name"] after the variable's name. Note that [first] is equivalent to [0] and that [last] 
+ * returns the last value. Here is the list of currently supported variables:
+ * <ul>
+ *	<li>clientAddress (repeating and non-repeating, lookup by index only)</li>
+ * <li>clientName</li>
+ * <li>cookie (repeating, lookup by name and by index)</li>
+ * <li>method</li>
+ * <li>redirectUri</li>
+ * <li>referrerUri</li>
+ * <li>authority</li>
+ * <li>fragment</li>
+ * <li>hostName</li>
+ * <li>hostPort</li>
+ * <li>hostIdentifier</li>
+ * <li>identifier</li>
+ * <li>path</li>
+ * <li>query (repeating and non-repeating, lookup by name and by index)</li>
+ * <li>scheme</li>
+ * <li>uri</li>
+ * <li>userInfo</li>
+ * <li>serverAddress</li>
+ * <li>serverName</li>
+ * <li>status</li>
+ * </ul>
  */
 public class UniformCallModel implements ReadableModel
 {
    public static final String NAME_CLIENT_ADDRESS = "clientAddress";
    public static final String NAME_CLIENT_NAME = "clientName";
-   public static final String NAME_COOKIE = "cookie[\"";
+   public static final String NAME_COOKIE = "cookie";
    public static final String NAME_METHOD = "method";
    public static final String NAME_REDIRECT_URI = "redirectUri";
    public static final String NAME_REFERRER_URI = "referrerUri";
@@ -48,7 +71,6 @@ public class UniformCallModel implements ReadableModel
    public static final String NAME_RESOURCE_IDENTIFIER = "identifier";
    public static final String NAME_RESOURCE_PATH = "path";
    public static final String NAME_RESOURCE_QUERY = "query";
-   public static final String NAME_RESOURCE_QUERY_PARAM = "query[\"";
    public static final String NAME_RESOURCE_SCHEME = "scheme";
    public static final String NAME_RESOURCE_URI = "uri";
    public static final String NAME_RESOURCE_USER_INFO = "userInfo";
@@ -82,124 +104,201 @@ public class UniformCallModel implements ReadableModel
    {
       String result = null;
 
-      if(name.equals(NAME_CLIENT_ADDRESS))
+      try
       {
-         result = call.getClientAddress();
+	      if(name.startsWith(NAME_CLIENT_ADDRESS))
+	      {
+	      	if(name.equals(NAME_CLIENT_ADDRESS))
+	      	{
+	      		result = call.getClientAddress();
+	      	}
+	      	else
+	      	{
+	      		String rest = name.substring(NAME_CLIENT_ADDRESS.length());
+	
+	      		if((rest.charAt(0) == '[') && (rest.charAt(rest.length() - 1) == ']'))
+	      		{
+	      			rest = rest.substring(1, rest.length() - 2);
+	      			
+	   				if(rest.equals("first"))
+	   				{
+	   					result = call.getClientAddresses().get(0);
+	   				}
+	   				else if(rest.equals("last"))
+	   				{
+	   					result = call.getClientAddresses().get(call.getClientAddresses().size() - 1);
+	   				}
+	   				else if((rest.charAt(0) == '"') && (rest.charAt(rest.length() - 1) == '"'))
+	   				{
+	   					// Can't lookup by name
+	   					result = defaultValue;
+	   				}
+	   				else
+	   				{
+	   					// Lookup by index
+	   					result = call.getClientAddresses().get(Integer.parseInt(rest));
+	   				}
+	      		}
+	      		else
+	      		{
+	      			result = defaultValue;
+	      		}
+	      	}
+	      }
+	      else if(name.equals(NAME_CLIENT_NAME))
+	      {
+	         result = call.getClientName();
+	      }
+	      else if(name.startsWith(NAME_COOKIE))
+	      {
+	   		String rest = name.substring(NAME_COOKIE.length());
+	
+	   		if((rest.charAt(0) == '[') && (rest.charAt(rest.length() - 1) == ']'))
+	   		{
+	   			rest = rest.substring(1, rest.length() - 2);
+	   			
+					if(rest.equals("first"))
+					{
+			         result = call.getCookies().get(0).getValue();
+					}
+					else if(rest.equals("last"))
+					{
+						result = call.getCookies().get(call.getCookies().size() - 1).getValue();
+					}
+					else if((rest.charAt(0) == '"') && (rest.charAt(rest.length() - 1) == '"'))
+					{
+						// Lookup by name
+		   			rest = rest.substring(1, rest.length() - 2);
+			         result = CookieUtils.getFirstCookie(call.getCookies(), rest).getValue();
+					}
+					else
+					{
+						// Lookup by index
+						result = call.getCookies().get(Integer.parseInt(rest)).getValue();
+					}
+	   		}
+	   		else
+	   		{
+	   			result = defaultValue;
+	   		}
+	      }
+	      else if(name.equals(NAME_METHOD))
+	      {
+	         result = call.getMethod().getName();
+	      }
+	      else if(name.equals(NAME_REDIRECT_URI))
+	      {
+	         result = call.getRedirectionRef().toString();
+	      }
+	      else if(name.equals(NAME_REFERRER_URI))
+	      {
+	         result = call.getReferrerRef().toString();
+	      }
+	      else if(name.equals(NAME_RESOURCE_AUTHORITY))
+	      {
+	         result = call.getResourceRef().getAuthority();
+	      }
+	      else if(name.equals(NAME_RESOURCE_FRAGMENT))
+	      {
+	         result = call.getResourceRef().getFragment();
+	      }
+	      else if(name.equals(NAME_RESOURCE_HOST_NAME))
+	      {
+	         result = call.getResourceRef().getHostName();
+	      }
+	      else if(name.equals(NAME_RESOURCE_HOST_PORT))
+	      {
+	         result = call.getResourceRef().getHostPort().toString();
+	      }
+	      else if(name.equals(NAME_RESOURCE_HOST_IDENTIFIER))
+	      {
+	         result = call.getResourceRef().getHostIdentifier();
+	      }
+	      else if(name.equals(NAME_RESOURCE_IDENTIFIER))
+	      {
+	         result = call.getResourceRef().getIdentifier();
+	      }
+	      else if(name.equals(NAME_RESOURCE_PATH))
+	      {
+	         result = call.getResourceRef().getPath();
+	      }
+	      else if(name.startsWith(NAME_RESOURCE_QUERY))
+	      {
+	      	if(name.equals(NAME_RESOURCE_QUERY))
+	      	{
+		         result = call.getResourceRef().getQuery();
+	      	}
+	      	else
+	      	{
+	      		String rest = name.substring(NAME_RESOURCE_QUERY.length());
+	
+	      		if((rest.charAt(0) == '[') && (rest.charAt(rest.length() - 1) == ']'))
+	      		{
+	      			rest = rest.substring(1, rest.length() - 2);
+	      			
+	   				if(rest.equals("first"))
+	   				{
+	   					result = call.getResourceRef().getQueryAsForm().getParameters().get(0).getValue();
+	   				}
+	   				else if(rest.equals("last"))
+	   				{
+	   					List<Parameter> params = call.getResourceRef().getQueryAsForm().getParameters(); 
+	   					result = params.get(params.size() - 1).getValue();
+	   				}
+	   				else if((rest.charAt(0) == '"') && (rest.charAt(rest.length() - 1) == '"'))
+	   				{
+							// Lookup by name
+			   			rest = rest.substring(1, rest.length() - 2);
+				         result = call.getResourceRef().getQueryAsForm().getFirstParameter(rest).getValue();
+	   				}
+	   				else
+	   				{
+	   					// Lookup by index
+	   					result = call.getResourceRef().getQueryAsForm().getParameters().get(Integer.parseInt(rest)).getValue();
+	   				}
+	      		}
+	      		else
+	      		{
+	      			result = defaultValue;
+	      		}
+	      	}
+	      }
+	      else if(name.equals(NAME_RESOURCE_SCHEME))
+	      {
+	         result = call.getResourceRef().getScheme();
+	      }
+	      else if(name.equals(NAME_RESOURCE_URI))
+	      {
+	         result = call.getResourceRef().toString();
+	      }
+	      else if(name.equals(NAME_RESOURCE_USER_INFO))
+	      {
+	         result = call.getResourceRef().getUserInfo();
+	      }
+	      else if(name.equals(NAME_SERVER_ADDRESS))
+	      {
+	         result = call.getServerAddress();
+	      }
+	      else if(name.equals(NAME_SERVER_NAME))
+	      {
+	         result = call.getServerName();
+	      }
+	      else if(name.equals(NAME_STATUS))
+	      {
+	         result = Integer.toString(call.getStatus().getHttpCode());
+	      }
+	
+	      // Check if the default value should be returned
+	      if(result == null)
+	      {
+	         result = this.defaultValue;
+	      }
       }
-      else if(name.equals(NAME_CLIENT_NAME))
-      {
-         result = call.getClientName();
-      }
-      else if(name.equals(NAME_METHOD))
-      {
-         result = call.getMethod().getName();
-      }
-      else if(name.equals(NAME_REDIRECT_URI))
-      {
-         result = call.getRedirectionRef().toString();
-      }
-      else if(name.equals(NAME_REFERRER_URI))
-      {
-         result = call.getReferrerRef().toString();
-      }
-      else if(name.equals(NAME_RESOURCE_AUTHORITY))
-      {
-         result = call.getResourceRef().getAuthority();
-      }
-      else if(name.equals(NAME_RESOURCE_FRAGMENT))
-      {
-         result = call.getResourceRef().getFragment();
-      }
-      else if(name.equals(NAME_RESOURCE_HOST_NAME))
-      {
-         result = call.getResourceRef().getHostName();
-      }
-      else if(name.equals(NAME_RESOURCE_HOST_PORT))
-      {
-         result = call.getResourceRef().getHostPort().toString();
-      }
-      else if(name.equals(NAME_RESOURCE_HOST_IDENTIFIER))
-      {
-         result = call.getResourceRef().getHostIdentifier();
-      }
-      else if(name.equals(NAME_RESOURCE_IDENTIFIER))
-      {
-         result = call.getResourceRef().getIdentifier();
-      }
-      else if(name.equals(NAME_RESOURCE_PATH))
-      {
-         result = call.getResourceRef().getPath();
-      }
-      else if(name.equals(NAME_RESOURCE_QUERY))
-      {
-         result = call.getResourceRef().getQuery();
-      }
-      else if(name.equals(NAME_RESOURCE_SCHEME))
-      {
-         result = call.getResourceRef().getScheme();
-      }
-      else if(name.equals(NAME_RESOURCE_URI))
-      {
-         result = call.getResourceRef().toString();
-      }
-      else if(name.equals(NAME_RESOURCE_USER_INFO))
-      {
-         result = call.getResourceRef().getUserInfo();
-      }
-      else if(name.startsWith(NAME_RESOURCE_QUERY_PARAM))
-      {
-         int beginIndex = NAME_RESOURCE_QUERY_PARAM.length();
-         int endIndex = name.indexOf("\"]");
-
-         if(endIndex != -1)
-         {
-            try
-            {
-               String paramName = name.substring(beginIndex, endIndex);
-               Parameter param = call.getResourceRef().getQueryAsForm().getFirstParameter(paramName);
-               
-               if(param != null)
-                  result = param.getValue();
-               else
-                  result = null;
-            }
-            catch(IOException e)
-            {
-               result = null;
-            }
-         }
-      }
-      else if(name.startsWith(NAME_COOKIE))
-      {
-         int beginIndex = NAME_COOKIE.length();
-         int endIndex = name.indexOf("\"]");
-
-         if(endIndex != -1)
-         {
-            String cookieName = name.substring(beginIndex, endIndex);
-            Cookie cookie = CookieUtils.getFirstCookie(call.getCookies(), cookieName);
-            if(cookie != null) result = cookie.getValue();
-         }
-      }
-      else if(name.equals(NAME_SERVER_ADDRESS))
-      {
-         result = call.getServerAddress();
-      }
-      else if(name.equals(NAME_SERVER_NAME))
-      {
-         result = call.getServerName();
-      }
-      else if(name.equals(NAME_STATUS))
-      {
-         result = Integer.toString(call.getStatus().getHttpCode());
-      }
-
-      // Check if the default value should be returned
-      if(result == null)
+      catch(Exception e)
       {
          result = this.defaultValue;
       }
-
+   
       return result;
    }
 
@@ -212,7 +311,7 @@ public class UniformCallModel implements ReadableModel
    {
       boolean result = false;
 
-      if(name.equals(NAME_CLIENT_ADDRESS))
+      if(name.startsWith(NAME_CLIENT_ADDRESS))
       {
          result = (call.getClientAddress() != null);
       }
@@ -222,7 +321,7 @@ public class UniformCallModel implements ReadableModel
       }
       else if(name.startsWith(NAME_COOKIE))
       {
-         result = (call.getCookies() != null);
+         result = (call.getCookies() != null) && (call.getCookies().size() > 0);
       }
       else if(name.equals(NAME_METHOD))
       {
@@ -264,11 +363,7 @@ public class UniformCallModel implements ReadableModel
       {
          result = (call.getResourceRef() != null) && (call.getResourceRef().getPath() != null);
       }
-      else if(name.equals(NAME_RESOURCE_QUERY))
-      {
-         result = (call.getResourceRef() != null) && (call.getResourceRef().getQuery() != null);
-      }
-      else if(name.startsWith(NAME_RESOURCE_QUERY_PARAM))
+      else if(name.startsWith(NAME_RESOURCE_QUERY))
       {
          result = (call.getResourceRef() != null) && (call.getResourceRef().getQuery() != null);
       }

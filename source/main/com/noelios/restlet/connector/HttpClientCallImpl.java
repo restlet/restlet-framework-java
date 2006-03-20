@@ -51,7 +51,7 @@ import org.restlet.data.Representation;
 public class HttpClientCallImpl extends ConnectorCallImpl implements ClientCall
 {
    /** Obtain a suitable logger. */
-   private static Logger logger = Logger.getLogger("com.noelios.restlet.connector.HttpClientCall");
+   private static Logger logger = Logger.getLogger("com.noelios.restlet.connector.HttpClientCallImpl");
 
    /** The wrapped HTTP URL connection. */
    protected HttpURLConnection connection;
