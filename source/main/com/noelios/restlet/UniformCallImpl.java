@@ -326,7 +326,7 @@ public class UniformCallImpl implements UniformCall
                {
                   currentQuality += (bestLanguagePref.getQuality() * 10F);
                }
-               else if (currentVariant.getLanguage().equals(fallbackLanguage))
+               else if((currentVariant.getLanguage() != null) && currentVariant.getLanguage().equals(fallbackLanguage))
                {
                   currentQuality += 0.1F * 10F;
                }
