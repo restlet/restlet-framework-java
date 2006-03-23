@@ -25,9 +25,9 @@ package com.noelios.restlet.util;
 import org.restlet.data.ChallengeRequest;
 import org.restlet.data.ChallengeResponse;
 
-import com.noelios.restlet.data.ChallengeRequestImpl;
-import com.noelios.restlet.data.ChallengeResponseImpl;
-import com.noelios.restlet.data.ChallengeSchemeImpl;
+import com.noelios.restlet.impl.ChallengeRequestImpl;
+import com.noelios.restlet.impl.ChallengeResponseImpl;
+import com.noelios.restlet.impl.ChallengeSchemeImpl;
 
 /**
  * Security data manipulation utilities.

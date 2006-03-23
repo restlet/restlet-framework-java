@@ -1,1 +1,1 @@
-com.noelios.restlet.Engine		# The Noelios Restlet Engine
+com.noelios.restlet.impl.FactoryImpl    # The Noelios Restlet Engine

@@ -22,13 +22,11 @@
 
 package org.restlet.connector;
 
+import org.restlet.Manager;
 import org.restlet.UniformCall;
 import org.restlet.data.Methods;
 import org.restlet.data.Protocol;
 import org.restlet.data.Representation;
-
-import com.noelios.restlet.UniformCallImpl;
-import com.noelios.restlet.data.ReferenceImpl;
 
 /**
  * Local connector implementation.
@@ -52,8 +50,8 @@ public abstract class AbstractClient extends AbstractConnector implements Client
     */
    public UniformCall get(String resourceUri)
    {
-      UniformCall call = new UniformCallImpl();
-      call.setResourceRef(new ReferenceImpl(resourceUri));
+      UniformCall call = Manager.createCall();
+      call.setResourceRef(Manager.createReference(resourceUri));
       call.setMethod(Methods.GET);
       handle(call);
       return call;
@@ -67,8 +65,8 @@ public abstract class AbstractClient extends AbstractConnector implements Client
     */
    public UniformCall post(String resourceUri, Representation input)
    {
-      UniformCall call = new UniformCallImpl();
-      call.setResourceRef(new ReferenceImpl(resourceUri));
+      UniformCall call = Manager.createCall();
+      call.setResourceRef(Manager.createReference(resourceUri));
       call.setMethod(Methods.POST);
       call.setInput(input);
       handle(call);
@@ -83,8 +81,8 @@ public abstract class AbstractClient extends AbstractConnector implements Client
     */
    public UniformCall put(String resourceUri, Representation input)
    {
-      UniformCall call = new UniformCallImpl();
-      call.setResourceRef(new ReferenceImpl(resourceUri));
+      UniformCall call = Manager.createCall();
+      call.setResourceRef(Manager.createReference(resourceUri));
       call.setMethod(Methods.PUT);
       call.setInput(input);
       handle(call);
@@ -98,8 +96,8 @@ public abstract class AbstractClient extends AbstractConnector implements Client
     */
    public UniformCall delete(String resourceUri)
    {
-      UniformCall call = new UniformCallImpl();
-      call.setResourceRef(new ReferenceImpl(resourceUri));
+      UniformCall call = Manager.createCall();
+      call.setResourceRef(Manager.createReference(resourceUri));
       call.setMethod(Methods.DELETE);
       handle(call);
       return call;

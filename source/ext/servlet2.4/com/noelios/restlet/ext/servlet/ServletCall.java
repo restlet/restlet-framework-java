@@ -38,7 +38,7 @@ import javax.servlet.http.HttpServletResponse;
 import org.restlet.Manager;
 import org.restlet.data.Parameter;
 
-import com.noelios.restlet.connector.HttpServerCallImpl;
+import com.noelios.restlet.impl.HttpServerCallImpl;
 
 /**
  * Call that is used by the Servlet HTTP server connector.

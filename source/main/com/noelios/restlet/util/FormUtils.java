@@ -32,7 +32,7 @@ import java.util.Map;
 import org.restlet.data.Parameter;
 import org.restlet.data.Representation;
 
-import com.noelios.restlet.data.ParameterImpl;
+import com.noelios.restlet.impl.ParameterImpl;
 
 /**
  * Representation of a Web form containing submitted parameters.

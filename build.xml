@@ -25,7 +25,8 @@
   <property name="excludes" value="**/.emptyDir **/package.html **/overview.html"/>
 
   <property name="classes"                location="classes"/>
-  <property name="classes-main"           location="${classes}/main"/>
+  <property name="classes-api"            location="${classes}/api"/>
+  <property name="classes-nre"            location="${classes}/nre"/>
   <property name="classes-freemarker2.3"  location="${classes}/ext/freemarker2.3"/>
   <property name="classes-javamail1.3"    location="${classes}/ext/javamail1.3"/>
   <property name="classes-jdbc3.0"        location="${classes}/ext/jdbc3.0"/>
@@ -49,28 +50,32 @@
   <property name="lib" location="lib"/>
   
   <path id="path-freemarker2.3">
-    <pathelement path="${classes-main}"/>
+    <pathelement path="${classes-api}"/>
+    <pathelement path="${classes-nre}"/>
     <fileset dir="${lib}/freemarker2.3">
       <include name="*.jar"/>
     </fileset>
   </path>
   
   <path id="path-javamail1.3">
-    <pathelement path="${classes-main}"/>
+    <pathelement path="${classes-api}"/>
+    <pathelement path="${classes-nre}"/>
     <fileset dir="${lib}/javamail1.3">
       <include name="*.jar"/>
     </fileset>
   </path>
   
   <path id="path-jdbc3.0">
-    <pathelement path="${classes-main}"/>
+    <pathelement path="${classes-api}"/>
+    <pathelement path="${classes-nre}"/>
     <fileset dir="${lib}/jdbc3.0">
       <include name="*.jar"/>
     </fileset>
   </path>
   
   <path id="path-jetty5.1">
-    <pathelement path="${classes-main}"/>
+    <pathelement path="${classes-api}"/>
+    <pathelement path="${classes-nre}"/>
     <fileset dir="${lib}/jetty5.1">
       <include name="*.jar"/>
     </fileset>
@@ -80,7 +85,8 @@
   </path>
   
   <path id="path-jetty6.0">
-    <pathelement path="${classes-main}"/>
+    <pathelement path="${classes-api}"/>
+    <pathelement path="${classes-nre}"/>
     <fileset dir="${lib}/jetty6.0">
       <include name="*.jar"/>
     </fileset>
@@ -90,34 +96,37 @@
   </path>
   
   <path id="path-servlet2.4">
-    <pathelement path="${classes-main}"/>
+    <pathelement path="${classes-api}"/>
+    <pathelement path="${classes-nre}"/>
     <fileset dir="${lib}/servlet2.4">
       <include name="*.jar"/>
     </fileset>
   </path>
   
   <path id="path-servlet2.5">
-    <pathelement path="${classes-main}"/>
+    <pathelement path="${classes-api}"/>
+    <pathelement path="${classes-nre}"/>
     <fileset dir="${lib}/servlet2.5">
       <include name="*.jar"/>
     </fileset>
   </path>
   
   <path id="path-tutorial">
-    <pathelement path="${classes-main}"/>
-    <pathelement path="${classes-jetty5.1}"/>
-    <path refid="path-jetty5.1"/>
+    <pathelement path="${classes-api}"/>
+    <pathelement path="${classes-nre}"/>
   </path>
   
   <path id="path-test">
-    <pathelement path="${classes-main}"/>
+    <pathelement path="${classes-api}"/>
+    <pathelement path="${classes-nre}"/>
     <fileset dir="${lib}/junit3.8">
       <include name="*.jar"/>
     </fileset>
   </path>
 
   <path id="path-all">
-    <pathelement path="${classes-main}"/>
+    <pathelement path="${classes-api}"/>
+    <pathelement path="${classes-nre}"/>
     <pathelement path="${classes-freemarker2.3}"/>
     <pathelement path="${classes-javamail1.3}"/>
     <pathelement path="${classes-jdbc3.0}"/>
@@ -141,9 +150,13 @@
     <!-- Create the directory used by compiler -->
     <mkdir dir="${classes}"/>
     
-    <!-- Compiles main source files -->
-    <mkdir dir="${classes-main}"/>
-    <javac compiler="javac1.5" debug="true" srcdir="${src-main};${src-jetty5.1};${src-javamail1.3}"  destdir="${classes-main}" classpathref="path-all"/>
+    <!-- Compiles Restlet API -->
+    <mkdir dir="${classes-api}"/>
+    <javac compiler="javac1.5" debug="true" srcdir="${src-main}"  destdir="${classes-api}" includes="org/restlet/**"/>
+    
+    <!-- Compiles Noelios Restlet Engine core -->
+    <mkdir dir="${classes-nre}"/>
+    <javac compiler="javac1.5" debug="true" srcdir="${src-main};${src-jetty5.1};${src-javamail1.3}"  destdir="${classes-nre}" includes="com/noelios/restlet/**" classpathref="path-all"/>
     
     <!-- Compiles extension Freemarker 2.3 -->
     <mkdir dir="${classes-freemarker2.3}"/>
@@ -191,7 +204,7 @@
     </copy>    
 
     <!-- Create Restlet API jar file -->
-    <jar jarfile="${dist}/lib/org.restlet.jar" basedir="${classes-main}" includes="org/restlet/**">
+    <jar jarfile="${dist}/lib/org.restlet.jar" basedir="${classes-api}">
       <manifest>
         <attribute name="Built-By" value="${author}"/>
         <section name="org.restlet">
@@ -203,7 +216,7 @@
     </jar>
     
     <!-- Create Noelios Restlet Server jar file -->
-    <jar jarfile="${dist}/lib/com.noelios.restlet.jar" basedir="${classes-main}" includes="com/noelios/restlet/**" excludes="com/noelios/restlet/ext/**">
+    <jar jarfile="${dist}/lib/com.noelios.restlet.jar" basedir="${classes-nre}" excludes="com/noelios/restlet/ext/**">
       <manifest>
         <attribute name="Built-By" value="${author}"/>
         <section name="com.noelios.restlet">
@@ -451,7 +464,8 @@
   <target name="test" depends="init" description="Unit testing">
     <junit printsummary="yes" fork="yes" haltonfailure="yes" filtertrace="yes" showoutput="yes">
       <classpath>
-        <pathelement location="${classes-main}"/>
+        <pathelement location="${classes-api}"/>
+        <pathelement location="${classes-nre}"/>
         <pathelement location="${classes-test}"/>
         <pathelement location="${classes-jetty5.1}"/>
         <pathelement location="${src-main}"/>

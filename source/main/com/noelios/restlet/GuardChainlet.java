@@ -34,7 +34,7 @@ import org.restlet.data.ChallengeSchemes;
 import org.restlet.data.SecurityData;
 import org.restlet.data.Statuses;
 
-import com.noelios.restlet.data.ChallengeRequestImpl;
+import com.noelios.restlet.impl.ChallengeRequestImpl;
 import com.noelios.restlet.util.Base64;
 
 /**

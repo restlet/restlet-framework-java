@@ -32,8 +32,8 @@ import org.restlet.data.Cookie;
 import org.restlet.data.CookieSetting;
 import org.restlet.data.Parameter;
 
-import com.noelios.restlet.data.CookieImpl;
-import com.noelios.restlet.data.CookieSettingImpl;
+import com.noelios.restlet.impl.CookieImpl;
+import com.noelios.restlet.impl.CookieSettingImpl;
 
 /**
  * Cookie header reader.

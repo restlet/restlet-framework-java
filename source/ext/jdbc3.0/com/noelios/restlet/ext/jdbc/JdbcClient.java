@@ -51,8 +51,8 @@ import org.w3c.dom.Element;
 import org.w3c.dom.Node;
 import org.w3c.dom.NodeList;
 
-import com.noelios.restlet.Engine;
 import com.noelios.restlet.data.ObjectRepresentation;
+import com.noelios.restlet.impl.FactoryImpl;
 
 /**
  * Client connector to a JDBC database.<br/><br/> To send a request to the server create a new instance of
@@ -109,7 +109,7 @@ public class JdbcClient extends AbstractClient
    public static UniformCall create(String jdbcURI, Representation request)
    {
       UniformCall result = Manager.createCall();
-      result.setClientName(Engine.VERSION_HEADER);
+      result.setClientName(FactoryImpl.VERSION_HEADER);
       result.setMethod(Methods.POST);
       result.setResourceRef(Manager.createReference(jdbcURI));
       result.setInput(request);

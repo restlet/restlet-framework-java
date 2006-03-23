@@ -47,7 +47,7 @@ import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 import org.w3c.dom.NodeList;
 
-import com.noelios.restlet.Engine;
+import com.noelios.restlet.impl.FactoryImpl;
 
 /**
  * Client connector to a mail server.<br/>
@@ -100,7 +100,7 @@ public class JavaMailClient extends AbstractClient
    public static UniformCall create(String smtpURI, Representation email)
    {
       UniformCall result = Manager.createCall();
-      result.setClientName(Engine.VERSION_HEADER);
+      result.setClientName(FactoryImpl.VERSION_HEADER);
       result.setMethod(Methods.POST);
       result.setResourceRef(Manager.createReference(smtpURI));
       result.setInput(email);

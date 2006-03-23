@@ -26,7 +26,7 @@ import java.io.IOException;
 
 import org.restlet.data.Parameter;
 
-import com.noelios.restlet.data.ParameterImpl;
+import com.noelios.restlet.impl.ParameterImpl;
 
 /**
  * HTTP header reader.

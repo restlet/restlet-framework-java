@@ -30,14 +30,14 @@ import java.util.List;
 import org.restlet.data.Parameter;
 import org.restlet.data.Preference;
 
-import com.noelios.restlet.data.CharacterSetImpl;
-import com.noelios.restlet.data.CharacterSetPrefImpl;
-import com.noelios.restlet.data.EncodingImpl;
-import com.noelios.restlet.data.EncodingPrefImpl;
-import com.noelios.restlet.data.LanguageImpl;
-import com.noelios.restlet.data.LanguagePrefImpl;
-import com.noelios.restlet.data.MediaTypeImpl;
-import com.noelios.restlet.data.MediaTypePrefImpl;
+import com.noelios.restlet.impl.CharacterSetImpl;
+import com.noelios.restlet.impl.CharacterSetPrefImpl;
+import com.noelios.restlet.impl.EncodingImpl;
+import com.noelios.restlet.impl.EncodingPrefImpl;
+import com.noelios.restlet.impl.LanguageImpl;
+import com.noelios.restlet.impl.LanguagePrefImpl;
+import com.noelios.restlet.impl.MediaTypeImpl;
+import com.noelios.restlet.impl.MediaTypePrefImpl;
 
 /**
  * Preference header reader.<br/>
