@@ -46,10 +46,10 @@ import com.noelios.restlet.util.Base64;
  */
 public class FactoryImpl implements Factory
 {
-   public static final String VERSION_LONG = "1.0 beta 7";
-   public static final String VERSION_SHORT = "1.0b7";
+   public static final String VERSION_LONG = "1.0 beta 8";
+   public static final String VERSION_SHORT = "1.0b8";
    public static final String VERSION_HEADER = "Noelios-Restlet-Engine/" + VERSION_SHORT;
-   
+
    /**
     * Registers the Noelios Restlet Engine
     */
@@ -78,7 +78,7 @@ public class FactoryImpl implements Factory
    }
 
    /**
-    * Creates a challenge response for a specific scheme (ex: HTTP BASIC authentication) 
+    * Creates a challenge response for a specific scheme (ex: HTTP BASIC authentication)
     * using a login and a password as the credentials.
     * @param scheme The challenge scheme to use.
     * @param userId The user identifier to use.
@@ -90,7 +90,7 @@ public class FactoryImpl implements Factory
       if(scheme.equals(ChallengeSchemes.HTTP_BASIC))
       {
          String credentials = userId + ':' + password;
-         
+
          try
          {
             return new ChallengeResponseImpl(scheme, Base64.encodeBytes(credentials.getBytes("US-ASCII")));
@@ -125,20 +125,20 @@ public class FactoryImpl implements Factory
    public Client createClient(Protocol protocol, String name)
    {
       Client result = null;
-      
-      if(Protocols.HTTP.equals(protocol)) 
+
+      if(Protocols.HTTP.equals(protocol))
       {
          result = new HttpClientImpl(name);
       }
-      else if(Protocols.HTTPS.equals(protocol)) 
+      else if(Protocols.HTTPS.equals(protocol))
       {
          result = new HttpClientImpl(name);
       }
-      else if(Protocols.SMTP.equals(protocol)) 
+      else if(Protocols.SMTP.equals(protocol))
       {
          result = new JavaMailClient(name);
       }
-      
+
       return result;
    }
 
@@ -287,20 +287,20 @@ public class FactoryImpl implements Factory
    public Server createServer(Protocol protocol, String name, UniformInterface target, String address, int port)
    {
       Server result = null;
-      
+
       if(Protocols.AJP.equals(protocol))
       {
          result = new JettyServer(protocol, name, target, address, port);
       }
-      else if(Protocols.HTTP.equals(protocol)) 
+      else if(Protocols.HTTP.equals(protocol))
       {
          result = new JettyServer(protocol, name, target, address, port);
       }
-      else if(Protocols.HTTPS.equals(protocol)) 
+      else if(Protocols.HTTPS.equals(protocol))
       {
          result = new JettyServer(protocol, name, target, address, port);
       }
-      
+
       return result;
    }
 
