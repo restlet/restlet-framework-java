@@ -168,7 +168,7 @@ public class JavaMailClient extends AbstractClient
          Properties props = System.getProperties();
          props.put("mail.smtp.host", smtpHost);
          props.put("mail.smtp.port", Integer.toString(smtpPort));
-         // props.put("mail.smtp.auth", "false");
+         props.put("mail.smtp.auth", "false");
          // props.put("mail.smtp.auth", "true");
          // props.put("mail.smtp.starttls.enable", "true");
          // props.put("mail.smtp.debug", "true");
@@ -178,6 +178,7 @@ public class JavaMailClient extends AbstractClient
          // Connect to the SMTP server
          Session session = Session.getDefaultInstance(props);
          Transport transport = session.getTransport("smtp");
+         transport.connect();
          // transport.connect(smtpHost, "user", "pwd");
          
          if(transport.isConnected())
