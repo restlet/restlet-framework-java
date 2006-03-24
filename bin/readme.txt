@@ -5,7 +5,7 @@ Running Restlet services
 A common requirement for server-side Restlet applications is the ability to run 
 as a system service. For this purpose, the Restlet project recommmands the use 
 of the powerful Java Service Wrapper project developped by Tanuki Software:
-http://wrapper.tanukisoftware.org/
+http://wrapper.tanukisoftware.org
 
 This wrapper is based on a single multi-platform configuration file, a wrapper 
 JAR file and a set of platform-specific binary files to launch, install and 
