@@ -440,7 +440,6 @@
          <pathelement path="${src-jdbc3.0}"/>
          <pathelement path="${src-jetty5.1}"/>
          <pathelement path="${src-servlet2.4}"/>
-      </sourcepath>
       
       <bottom><![CDATA[<i>Copyright &#169; 2005-2006 J&eacute;r&ocirc;me Louvel. Restlet is a trademark and service mark of <a target="_top" href="http://www.noelios.com">Noelios Consulting</a>.</i>]]></bottom>
       
@@ -453,7 +452,7 @@
       <group title="${restlet-ri}" ><package name="com.noelios.restlet*" /></group>
       
       <link href="http://www.restlet.org/docs/api/" packagelistLoc="${docs-api}" offline="true"/>
-      <link href="http://freemarker.org/docs/api/"/>
+      <link href="http://freemarker.sourceforge.net/docs/api/"/>
       <link href="http://java.sun.com/j2se/1.5.0/docs/api/"/>
       <link href="http://java.sun.com/products/javamail/javadocs/"/>
       <link href="http://jetty.mortbay.org/javadoc/"/>
