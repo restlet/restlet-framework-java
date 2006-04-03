@@ -278,11 +278,11 @@ public class ConnectorCallImpl implements ConnectorCall
    {
       if(cookie)
       {
-         return DateUtils.format(date, DateUtils.FORMAT_RFC_1036);
+         return DateUtils.format(date, DateUtils.FORMAT_RFC_1036[0]);
       }
       else
       {
-         return DateUtils.format(date, DateUtils.FORMAT_RFC_1123);
+         return DateUtils.format(date, DateUtils.FORMAT_RFC_1123[0]);
       }
    }
 

@@ -918,4 +918,23 @@ public enum Statuses implements Status
       return getHttpCode() == status.getHttpCode();
    }
 
+   /**
+    * Returns the name of the status followed by its HTTP code.
+    * @param httpCode The HTTP code of the status.
+    * @return The name of the status followed by its HTTP code.
+    */
+   public static String toString(int httpCode)
+   {
+   	return getName(httpCode) + " (" + httpCode + ")";
+   }
+
+   /**
+    * Returns the name of the status followed by its HTTP code.
+    * @return The name of the status followed by its HTTP code.
+    */
+   public String toString()
+   {
+   	return toString(getHttpCode());
+   }
+
 }

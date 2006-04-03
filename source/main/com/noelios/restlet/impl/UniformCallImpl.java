@@ -30,6 +30,7 @@ import java.util.List;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
+import org.restlet.Manager;
 import org.restlet.Resource;
 import org.restlet.UniformCall;
 import org.restlet.connector.ConnectorCall;
@@ -778,6 +779,15 @@ public class UniformCallImpl implements UniformCall
       // Reset the current handler
       setHandlerPath(null);
       getHandlerMatches().clear();
+   }
+
+   /**
+    * Sets the resource reference using an URI string.
+    * @param resourceUri The resource URI.
+    */
+   public void setResourceRef(String resourceUri)
+   {
+   	setResourceRef(Manager.createReference(resourceUri));
    }
 
    /**

@@ -117,16 +117,7 @@ public class JettyCall extends HttpServerCallImpl
     */
    public String getRequestUri()
    {
-      String queryString = getRequest().getQuery();
-
-      if(queryString == null)
-      {
-         return getRequest().getRequestURL().toString();
-      }
-      else
-      {
-         return getRequest().getRequestURL().append('?').append(queryString).toString();
-      }
+   	return getRequest().getRootURL().append(getRequest().getURI().toString()).toString();
    }
    
    /**

@@ -49,12 +49,21 @@ public class StringRepresentation extends StreamRepresentation
    }
 
    /**
+    * Returns the internal value.
+    * @return The internal value.
+    */
+   public String getValue()
+   {
+   	return this.value;
+   }
+   
+   /**
     * Writes the datum as a stream of bytes.
     * @param outputStream The stream to use when writing.
     */
    public void write(OutputStream outputStream) throws IOException
    {
-      outputStream.write(value.getBytes());
+      outputStream.write(getValue().getBytes());
    }
 
    /**
@@ -63,13 +72,13 @@ public class StringRepresentation extends StreamRepresentation
     */
    public long getSize()
    {
-      if(value == null)
+      if(getValue() == null)
       {
          return -1L;
       }
       else
       {
-         return (long)value.length();
+         return (long)getValue().length();
       }
    }
 
@@ -79,16 +88,16 @@ public class StringRepresentation extends StreamRepresentation
     */
    public InputStream getStream() throws IOException
    {
-      return new ByteArrayInputStream(value.getBytes());
+      return new ByteArrayInputStream(getValue().getBytes());
    }
 
    /**
-    * Converts the representation to a string.
-    * @return The representation as a string.
+    * Returns the internal string.
+    * @return The internal string.
     */
    public String toString()
    {
-      return this.value;
+      return getValue();
    }
 
 }

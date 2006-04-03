@@ -38,10 +38,7 @@ import javax.xml.transform.stream.StreamSource;
 import org.restlet.data.MediaType;
 import org.restlet.data.Representation;
 import org.w3c.dom.Document;
-import org.xml.sax.Attributes;
 import org.xml.sax.ContentHandler;
-import org.xml.sax.Locator;
-import org.xml.sax.SAXException;
 
 import com.noelios.restlet.util.XmlWriter;
 
@@ -53,13 +50,8 @@ import com.noelios.restlet.util.XmlWriter;
  * Subclasses only need to override the ContentHandler methods required for the reading and also the 
  * write(XmlWriter writer) method when serialization is requested.<br/>
  */
-public abstract class SaxRepresentation extends OutputRepresentation implements ContentHandler 
+public abstract class SaxRepresentation extends OutputRepresentation 
 {
-	/**
-	 * The parser content handler (this instance by default).
-	 */
-	protected ContentHandler contentHandler;
-	
 	/**
 	 * The source to parse.
 	 */
@@ -68,12 +60,20 @@ public abstract class SaxRepresentation extends OutputRepresentation implements 
    /**
     * Constructor.
     * @param mediaType The representation's media type.
-    * @param xmlRepresentation A source XML representation to parse.
     */
-   public SaxRepresentation(MediaType mediaType, Representation xmlRepresentation) throws IOException
+   public SaxRepresentation(MediaType mediaType)
    {
       super(mediaType);
-      this.contentHandler = this;
+      this.source = null;
+   }
+	
+   /**
+    * Constructor.
+    * @param xmlRepresentation A source XML representation to parse.
+    */
+   public SaxRepresentation(Representation xmlRepresentation) throws IOException
+   {
+      super(xmlRepresentation.getMetadata().getMediaType());
       this.source = new StreamSource(xmlRepresentation.getStream());
    }
 
@@ -85,50 +85,40 @@ public abstract class SaxRepresentation extends OutputRepresentation implements 
    public SaxRepresentation(MediaType mediaType, Document xmlDocument)
    {
       super(mediaType);
-      this.contentHandler = this;
       this.source = new DOMSource(xmlDocument);
-   }
-
-   /**
-    * Returns a content handler (this instance by default).
-    * @return The content handler.
-    */
-   public ContentHandler getContentHandler()
-   {
-   	return this.contentHandler;
-   }
-
-   /**
-    * Sets a content handler (this instance by default).
-    * @param contentHandler The content handler.
-    */
-   public void setContentHandler(ContentHandler contentHandler)
-   {
-   	this.contentHandler = contentHandler;
    }
    
    /**
-    * Parses the source and sends SAX events to the current content handler (this instance by default). 
+    * Parses the source and sends SAX events to a content reader.
+    * @param contentReader The SAX content reader to use for parsing. 
     */
-   public void parse() throws IOException 
+   public void parse(ContentHandler contentReader) throws IOException 
    {
-      try
-		{
-      	Result result = new SAXResult(getContentHandler());
-			TransformerFactory.newInstance().newTransformer().transform(this.source, result);
-		}
-		catch (TransformerConfigurationException tce)
-		{
-			throw new IOException("Couldn't parse the source representation: " + tce.getMessage());
-		}
-		catch (TransformerException te)
-		{
-			throw new IOException("Couldn't parse the source representation: " + te.getMessage());
-		}
-		catch (TransformerFactoryConfigurationError tfce)
-		{
-			throw new IOException("Couldn't parse the source representation: " + tfce.getMessage());
-		}
+   	if(contentReader != null)
+   	{
+	      try
+			{
+	      	Result result = new SAXResult(contentReader);
+				TransformerFactory.newInstance().newTransformer().transform(this.source, result);
+			}
+			catch (TransformerConfigurationException tce)
+			{
+				throw new IOException("Couldn't parse the source representation: " + tce.getMessage());
+			}
+			catch (TransformerException te)
+			{
+				te.printStackTrace();
+				throw new IOException("Couldn't parse the source representation: " + te.getMessage());
+			}
+			catch (TransformerFactoryConfigurationError tfce)
+			{
+				throw new IOException("Couldn't parse the source representation: " + tfce.getMessage());
+			}
+   	}
+   	else
+   	{
+			throw new IOException("Couldn't parse the source representation: no content handler defined.");
+   	}
    }
    
    /**
@@ -146,113 +136,5 @@ public abstract class SaxRepresentation extends OutputRepresentation implements 
 	 * @throws IOException
 	 */
 	public abstract void write(XmlWriter writer) throws IOException;
-	
-	/**
-	 * Receive an object for locating the origin of SAX document events.
-	 * @param locator An object that can return the location of any SAX document event.
-	 */
-	public void setDocumentLocator(Locator locator)
-	{
-		// To override if necessary
-	}
-
-	/**
-	 * Receive notification of the beginning of a document.
-	 */
-	public void startDocument() throws SAXException
-	{
-		// To override if necessary
-	}
-
-	/**
-	 * Receive notification of the end of a document.
-	 */
-	public void endDocument() throws SAXException
-	{
-		// To override if necessary
-	}
-
-	/**
-	 * Begin the scope of a prefix-URI Namespace mapping.
-	 * @param prefix The Namespace prefix being declared. An empty string is used for the default element namespace, which has no prefix.
-	 * @param uri The Namespace URI the prefix is mapped to.
-	 */
-	public void startPrefixMapping(String prefix, String uri) throws SAXException
-	{
-		// To override if necessary
-	}
-
-	/**
-	 * End the scope of a prefix-URI mapping.
-	 * @param prefix The prefix that was being mapped. This is the empty string when a default mapping scope ends.
-	 */
-	public void endPrefixMapping(String prefix) throws SAXException
-	{
-		// To override if necessary
-	}
-
-	/**
-	 * Receive notification of the beginning of an element.
-	 * @param uri The Namespace URI, or the empty string if the element has no Namespace URI or if Namespace processing is not being performed.
-	 * @param localName The local name (without prefix), or the empty string if Namespace processing is not being performed.
-	 * @param qName The qualified name (with prefix), or the empty string if qualified names are not available.
-	 * @param attrs The attributes attached to the element. If there are no attributes, it shall be an empty Attributes object. The value of this object after startElement returns is undefined.
-	 */
-	public void startElement(String uri, String localName, String qName, Attributes attrs) throws SAXException
-	{
-		// To override if necessary
-	}
-
-	/**
-	 * Receive notification of the end of an element.
-	 * @param uri The Namespace URI, or the empty string if the element has no Namespace URI or if Namespace processing is not being performed.
-	 * @param localName The local name (without prefix), or the empty string if Namespace processing is not being performed.
-	 * @param qName The qualified XML name (with prefix), or the empty string if qualified names are not available.
-	 */
-	public void endElement(String uri, String localName, String qName) throws SAXException
-	{
-		// To override if necessary
-	}
-
-	/**
-	 * Receive notification of character data.
-	 * @param ch The characters from the XML document.
-	 * @param start The start position in the array.
-	 * @param length The number of characters to read from the array.
-	 */
-	public void characters(char[] ch, int start, int length) throws SAXException
-	{
-		// To override if necessary
-	}
-
-	/**
-	 * Receive notification of ignorable whitespace in element content. 
-	 * @param ch The characters from the XML document.
-	 * @param start The start position in the array.
-	 * @param length The number of characters to read from the array.
-	 */
-	public void ignorableWhitespace(char[] ch, int start, int length) throws SAXException
-	{
-		// To override if necessary
-	}
-
-	/**
-	 * Receive notification of a processing instruction.
-	 * @param target The processing instruction target.
-	 * @param data The processing instruction data, or null if none was supplied. The data does not include any whitespace separating it from the target.
-	 */
-	public void processingInstruction(String target, String data) throws SAXException
-	{
-		// To override if necessary
-	}
-
-	/**
-	 * Receive notification of a skipped entity.
-	 * @param name The name of the skipped entity. If it is a parameter entity, the name will begin with '%', and if it is the external DTD subset, it will be the string "[dtd]"
-	 */
-	public void skippedEntity(String name) throws SAXException
-	{
-		// To override if necessary
-	}
 	
 }

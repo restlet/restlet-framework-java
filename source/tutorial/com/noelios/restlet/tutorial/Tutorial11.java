@@ -33,6 +33,7 @@ import org.restlet.UniformCall;
 import org.restlet.component.DefaultRestletContainer;
 import org.restlet.component.RestletContainer;
 import org.restlet.connector.Server;
+import org.restlet.data.ChallengeSchemes;
 import org.restlet.data.MediaTypes;
 import org.restlet.data.Protocols;
 
@@ -72,9 +73,9 @@ public class Tutorial11
          status.attach(rootMaplet);
 
          // Attach a guard Chainlet to secure access the the chained directory Restlet
-         GuardChainlet guard = new GuardChainlet(myContainer, "com.noelios.restlet.tutorial", "Restlet tutorial")
+         GuardChainlet guard = new GuardChainlet(myContainer, ChallengeSchemes.HTTP_BASIC , "com.noelios.restlet.tutorial", "Restlet tutorial")
             {
-              protected boolean authorize(String userId, String password)
+              protected boolean authenticate(UniformCall call, String userId, String password)
                {
                   return userId.equals("scott") && password.equals("tiger");
                }

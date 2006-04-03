@@ -34,13 +34,21 @@ import java.util.TimeZone;
 public class DateUtils
 {
    /** Preferred HTTP date format (RFC 1123). */
-   public static final String FORMAT_RFC_1123 = "EEE, dd MMM yyyy HH:mm:ss zzz";
+   public static final String[] FORMAT_RFC_1123 = {"EEE, dd MMM yyyy HH:mm:ss zzz"};
 
    /** Obsoleted HTTP date format (RFC 1036). */
-   public static final String FORMAT_RFC_1036 = "EEEE, dd-MMM-yy HH:mm:ss zzz";
+   public static final String[] FORMAT_RFC_1036 = {"EEEE, dd-MMM-yy HH:mm:ss zzz"};
 
    /** Obsoleted HTTP date format (ANSI C asctime() format). */
-   public static final String FORMAT_ASC_TIME = "EEE MMM dd HH:mm:ss yyyy";
+   public static final String[] FORMAT_ASC_TIME = {"EEE MMM dd HH:mm:ss yyyy"};
+   
+   /** W3C date format (RFC 3339). */
+   public static final String[] FORMAT_RFC_3339 = {"yyyy-MM-dd'T'HH:mm:ssz", "yyyy-MM-dd'T'HH:mmz", 
+   	"yyyy-MM-dd", "yyyy-MM", "yyyy"};
+
+   /** Common date format (RFC 822). */
+   public static final String[] FORMAT_RFC_822 = {"EEE, dd MMM yy HH:mm:ss z", "EEE, dd MMM yy HH:mm z",
+   	"dd MMM yy HH:mm:ss z", "dd MMM yy HH:mm z"};
    
    /** Remember the often used GMT time zone. */
    private static final TimeZone gmtTimeZone = TimeZone.getTimeZone("GMT");
@@ -85,7 +93,7 @@ public class DateUtils
    }
 
    /**
-    * Formats a Date according to the HTTP or Cookie specification.
+    * Formats a Date according to the first format in the array.
     * @param date The date to format.
     * @param format The date format to use.
     * @return The formatted date.
@@ -105,31 +113,40 @@ public class DateUtils
    }
 
    /**
-    * Parses a HTTP date into a Date object.
-    * @param httpDate The HTTP date to parse.
-    * @param format The date format to use.
+    * Parses a formatted date into a Date object.
+    * @param date The date to parse.
+    * @param formats The date formats to use sorted by completeness.
     * @return The parsed date.
     */
-   public static Date parse(String httpDate, String format)
+   public static Date parse(String date, String[] formats)
    {
-      if(httpDate == null) 
+   	Date result = null;
+   	
+      if(date == null) 
       {
          throw new IllegalArgumentException("Date is null");
       }
       else
       {
-         SimpleDateFormat parser = new SimpleDateFormat(format, Locale.US);
-         parser.setTimeZone(gmtTimeZone);
-         
-         try
-         {
-            return parser.parse(httpDate);
-         }
-         catch(ParseException e)
-         {
-            return null;
-         }
+      	String format = null;
+      	for(int i = 0; (result == null) && (i < formats.length); i++)
+      	{
+      		format = formats[i];
+	         SimpleDateFormat parser = new SimpleDateFormat(format, Locale.US);
+	         parser.setTimeZone(gmtTimeZone);
+	         
+	         try
+	         {
+	            result = parser.parse(date);
+	         }
+	         catch(ParseException e)
+	         {
+	         	// Ignore error as the next format may work better
+	         }
+      	}
       }
+      
+      return result;
    }
    
 }

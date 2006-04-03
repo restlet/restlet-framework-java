@@ -33,6 +33,7 @@ import java.util.Iterator;
 import java.util.List;
 
 import org.mortbay.jetty.HttpConnection;
+import org.mortbay.jetty.HttpURI;
 import org.restlet.Manager;
 import org.restlet.data.Parameter;
 
@@ -101,16 +102,12 @@ public class JettyCall extends HttpServerCallImpl
     */
    public String getRequestUri()
    {
-      String queryString = getConnection().getRequest().getQueryString();
-
-      if(queryString == null)
-      {
-         return getConnection().getRequest().getRequestURL().toString();
-      }
-      else
-      {
-         return getConnection().getRequest().getRequestURL().append('?').append(queryString).toString();
-      }
+   	StringBuffer sb = getConnection().getRequest().getRootURL();
+   	HttpURI uri = getConnection().getRequest().getUri();
+   	sb.append(uri.getPathAndParam());
+   	sb.append('?');
+   	sb.append(uri.getQuery());
+   	return sb.toString();
    }
 
    /**

@@ -24,6 +24,8 @@ package com.noelios.restlet.ext.jetty;
 
 import java.io.IOException;
 import java.net.InetSocketAddress;
+import java.util.Arrays;
+import java.util.List;
 
 import javax.servlet.ServletException;
 
@@ -54,14 +56,22 @@ public class JettyServer extends org.mortbay.jetty.Server implements Server
 
    /**
     * Constructor.
+    * @param protocol The connector protocol.
     * @param name The unique connector name.
-    * @param port The HTTP port number.
-    * @param target The target handler.
+    * @param target The target component handling calls.
+    * @param address The optional listening IP address (local host used if null).
+    * @param port The listening port.
     */
-   public JettyServer(String name, int port, UniformInterface target)
+   public JettyServer(Protocol protocol, String name, UniformInterface target, String address, int port)
    {
       // Create and configure the Jetty HTTP connector
       Connector connector = new SelectChannelConnector(); // Uses non-blocking NIO
+      
+      if(address != null)
+      {
+      	connector.setHost(address);
+      }
+      
       connector.setPort(port);
       Connector[] connectors = new Connector[]{connector};
       setConnectors(connectors);
@@ -69,24 +79,38 @@ public class JettyServer extends org.mortbay.jetty.Server implements Server
       this.name = name;
       this.target = target;
    }
+   
+   /**
+    * Constructor.
+    * @param protocol The connector protocol.
+    * @param name The unique connector name.
+    * @param target The target component handling calls.
+    * @param address The IP address to listen to.
+    */
+   public JettyServer(Protocol protocol, String name, UniformInterface target, InetSocketAddress address)
+   {
+   	this(protocol, name, target, address.getHostName(), address.getPort());
+   }
 
    /**
     * Constructor.
+    * @param protocol The connector protocol.
     * @param name The unique connector name.
-    * @param address The IP address to listen to.
-    * @param target The target component handling calls.
+    * @param target The target handler.
+    * @param port The HTTP port number.
     */
-   public JettyServer(String name, InetSocketAddress address, UniformInterface target)
+   public JettyServer(Protocol protocol, String name, UniformInterface target, int port)
    {
-      // Create and configure the Jetty HTTP connector
-      Connector connector = new SelectChannelConnector(); // Uses non-blocking NIO
-      connector.setHost(address.getHostName());
-      connector.setPort(address.getPort());
-      Connector[] connectors = new Connector[]{connector};
-      setConnectors(connectors);
-
-      this.name = name;
-      this.target = target;
+   	this(protocol, name, target, null, port);
+   }
+   
+   /**
+    * Returns the supported protocols. 
+    * @return The supported protocols.
+    */
+   public static List<Protocol> getProtocols()
+   {
+   	return Arrays.asList(new Protocol[]{Protocols.HTTP});
    }
 
    /**

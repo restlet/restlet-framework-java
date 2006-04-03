@@ -22,7 +22,17 @@
 
 package com.noelios.restlet.impl;
 
+import java.io.BufferedReader;
+import java.io.IOException;
+import java.io.InputStreamReader;
 import java.io.UnsupportedEncodingException;
+import java.net.URL;
+import java.util.Enumeration;
+import java.util.List;
+import java.util.Map;
+import java.util.TreeMap;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 import org.restlet.Chainlet;
 import org.restlet.Factory;
@@ -36,8 +46,6 @@ import org.restlet.connector.Client;
 import org.restlet.connector.Server;
 import org.restlet.data.*;
 
-import com.noelios.restlet.ext.javamail.JavaMailClient;
-import com.noelios.restlet.ext.jetty.JettyServer;
 import com.noelios.restlet.util.Base64;
 
 /**
@@ -46,10 +54,143 @@ import com.noelios.restlet.util.Base64;
  */
 public class FactoryImpl implements Factory
 {
+   /** Obtain a suitable logger. */
+   private static Logger logger = Logger.getLogger("com.noelios.restlet.FactoryImpl");
+
    public static final String VERSION_LONG = "1.0 beta 8";
    public static final String VERSION_SHORT = "1.0b8";
    public static final String VERSION_HEADER = "Noelios-Restlet-Engine/" + VERSION_SHORT;
 
+   /**
+    * Map from protocol to client connector class.
+    */
+   protected Map<Protocol, Class<? extends Client>> clients;
+
+   /**
+    * Map from protocol to server connector class.
+    */
+   protected Map<Protocol, Class<? extends Server>> servers;
+
+   /**
+    * Constructor.
+    */
+   @SuppressWarnings("unchecked")
+	public FactoryImpl()
+   {
+   	this.clients = new TreeMap<Protocol, Class<? extends Client>>();
+   	this.servers = new TreeMap<Protocol, Class<? extends Server>>();
+
+      // Find the factory class name
+      String providerName = null;
+      String providerClassName = null;
+      
+      // Find the factory class name
+      ClassLoader cl = Thread.currentThread().getContextClassLoader();
+      URL configURL;
+
+      // Register the client connector providers
+      try
+		{
+			for(Enumeration<URL> configUrls = cl.getResources("meta-inf/services/org.restlet.connector.Client"); configUrls.hasMoreElements();)
+			{
+				configURL = configUrls.nextElement();
+				
+				try
+			   {
+			      BufferedReader reader = new BufferedReader(new InputStreamReader(configURL.openStream(), "utf-8"));
+			      providerName = reader.readLine();
+			      providerClassName = providerName.substring(0, providerName.indexOf('#')).trim();
+			   }
+			   catch (Exception e)
+			   {
+			      logger.log(Level.SEVERE, "Unable to read the provider descriptor: " + configURL.toString());
+			   }
+
+			   if(providerClassName == null)
+			   {
+			      logger.log(Level.SEVERE, "Unable to process the following connector provider: " + providerName + ". Please check your JAR file metadata.");
+			   }
+			   else
+			   {
+			      // Instantiate the factory
+			      try
+			      {
+			      	Class<? extends Client> providerClass = (Class<? extends Client>) Class.forName(providerClassName); 
+			      	java.lang.reflect.Method getMethod = providerClass.getMethod("getProtocols", (Class[])null);
+			         List<Protocol> supportedProtocols = (List<Protocol>)getMethod.invoke(null, (Object[])null);
+
+			         for(Protocol protocol : supportedProtocols)
+			         {
+			         	if(!this.clients.containsKey(protocol))
+			         	{
+			         		this.clients.put(protocol, providerClass);
+			         	}
+			         }
+			      }
+			      catch(Exception e)
+			      {
+			         logger.log(Level.SEVERE, "Unable to register the client connector " + providerClassName, e);
+			      }
+			   }
+			}
+		}
+		catch (IOException ioe)
+		{
+         logger.log(Level.SEVERE, "Exception while detecting the client connectors.", ioe);
+		}
+   	
+      // Register the server connector providers
+      try
+		{
+			for(Enumeration<URL> configUrls = cl.getResources("meta-inf/services/org.restlet.connector.Server"); configUrls.hasMoreElements();)
+			{
+				configURL = configUrls.nextElement();
+				
+				try
+			   {
+			      BufferedReader reader = new BufferedReader(new InputStreamReader(configURL.openStream(), "utf-8"));
+			      providerName = reader.readLine();
+			      providerClassName = providerName.substring(0, providerName.indexOf('#')).trim();
+			   }
+			   catch (Exception e)
+			   {
+			      logger.log(Level.SEVERE, "Unable to read the provider descriptor: " + configURL.toString());
+			   }
+
+			   if(providerClassName == null)
+			   {
+			      logger.log(Level.SEVERE, "Unable to process the following connector provider: " + providerName + ". Please check your JAR file metadata.");
+			   }
+			   else
+			   {
+			      // Instantiate the factory
+			      try
+			      {
+			      	Class<? extends Server> providerClass = (Class<? extends Server>) Class.forName(providerClassName); 
+			      	java.lang.reflect.Method getMethod = providerClass.getMethod("getProtocols", (Class[])null);
+			         List<Protocol> supportedProtocols = (List<Protocol>)getMethod.invoke(null, (Object[])null);
+
+			         for(Protocol protocol : supportedProtocols)
+			         {
+			         	if(!this.servers.containsKey(protocol))
+			         	{
+			         		this.servers.put(protocol, providerClass);
+			         	}
+			         }
+			      }
+			      catch(Exception e)
+			      {
+			         logger.log(Level.SEVERE, "Unable to register the server connector " + providerClassName, e);
+			      }
+			   }
+			}
+		}
+		catch (IOException ioe)
+		{
+         logger.log(Level.SEVERE, "Exception while detecting the client connectors.", ioe);
+		}
+   }
+   
    /**
     * Registers the Noelios Restlet Engine
     */
@@ -113,7 +254,7 @@ public class FactoryImpl implements Factory
     */
    public CharacterSet createCharacterSet(String name)
    {
-      return new CharacterSetImpl(name);
+      return (name == null) ? null : new CharacterSetImpl(name);
    }
 
    /**
@@ -126,18 +267,23 @@ public class FactoryImpl implements Factory
    {
       Client result = null;
 
-      if(Protocols.HTTP.equals(protocol))
-      {
-         result = new HttpClientImpl(name);
-      }
-      else if(Protocols.HTTPS.equals(protocol))
-      {
-         result = new HttpClientImpl(name);
-      }
-      else if(Protocols.SMTP.equals(protocol))
-      {
-         result = new JavaMailClient(name);
-      }
+      try
+		{
+         Class<? extends Client> providerClass = this.clients.get(protocol);
+         
+         if(protocol != null)
+         {
+         	result = providerClass.getConstructor(Protocol.class, String.class).newInstance(protocol, name);
+         }
+         else
+         {
+            logger.log(Level.WARNING, "No client connector supports the " + protocol.getName() + " protocol.");
+         }
+		}
+		catch (Exception e)
+		{
+         logger.log(Level.SEVERE, "Exception while instantiation the client connector.", e);
+		}
 
       return result;
    }
@@ -171,7 +317,7 @@ public class FactoryImpl implements Factory
     */
    public Encoding createEncoding(String name)
    {
-      return new EncodingImpl(name);
+      return (name == null) ? null : new EncodingImpl(name);
    }
 
    /**
@@ -190,7 +336,7 @@ public class FactoryImpl implements Factory
     */
    public Language createLanguage(String name)
    {
-      return new LanguageImpl(name);
+      return (name == null) ? null : new LanguageImpl(name);
    }
 
    /**
@@ -210,7 +356,7 @@ public class FactoryImpl implements Factory
     */
    public MediaType createMediaType(String name)
    {
-      return new MediaTypeImpl(name);
+      return (name == null) ? null : new MediaTypeImpl(name);
    }
 
    /**
@@ -220,7 +366,7 @@ public class FactoryImpl implements Factory
     */
    public Method createMethod(String name)
    {
-      return new MethodImpl(name);
+      return (name == null) ? null : new MethodImpl(name);
    }
 
    /**
@@ -241,7 +387,7 @@ public class FactoryImpl implements Factory
     */
    public Reference createReference(String uriReference)
    {
-      return new ReferenceImpl(uriReference);
+      return (uriReference == null) ? null : new ReferenceImpl(uriReference);
    }
 
    /**
@@ -288,18 +434,23 @@ public class FactoryImpl implements Factory
    {
       Server result = null;
 
-      if(Protocols.AJP.equals(protocol))
-      {
-         result = new JettyServer(protocol, name, target, address, port);
-      }
-      else if(Protocols.HTTP.equals(protocol))
-      {
-         result = new JettyServer(protocol, name, target, address, port);
-      }
-      else if(Protocols.HTTPS.equals(protocol))
-      {
-         result = new JettyServer(protocol, name, target, address, port);
-      }
+      try
+		{
+         Class<? extends Server> providerClass = this.servers.get(protocol);
+         
+         if(protocol != null)
+         {
+         	result = providerClass.getConstructor(Protocol.class, String.class, UniformInterface.class, String.class, int.class).newInstance(protocol, name, target, address, port);
+         }
+         else
+         {
+            logger.log(Level.WARNING, "No client connector supports the " + protocol.getName() + " protocol.");
+         }
+		}
+		catch (Exception e)
+		{
+         logger.log(Level.SEVERE, "Exception while instantiation the client connector.", e);
+		}
 
       return result;
    }
@@ -321,7 +472,7 @@ public class FactoryImpl implements Factory
     */
    public Tag createTag(String name)
    {
-      return new TagImpl(name);
+      return (name == null) ? null : new TagImpl(name);
    }
 
 }

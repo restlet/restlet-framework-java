@@ -22,6 +22,10 @@
 
 package com.noelios.restlet.ext.jetty;
 
+import java.net.InetSocketAddress;
+import java.util.Arrays;
+import java.util.List;
+
 import org.mortbay.util.InetAddrPort;
 import org.restlet.UniformInterface;
 import org.restlet.connector.AbstractServer;
@@ -51,6 +55,39 @@ public class JettyServer extends AbstractServer
    public JettyServer(Protocol protocol, String name, UniformInterface target, String address, int port)
    {
       super(protocol, name, target, address, port);
+   }
+   
+   /**
+    * Constructor.
+    * @param protocol The connector protocol.
+    * @param name The unique connector name.
+    * @param target The target component handling calls.
+    * @param address The IP address to listen to.
+    */
+   public JettyServer(Protocol protocol, String name, UniformInterface target, InetSocketAddress address)
+   {
+   	this(protocol, name, target, address.getHostName(), address.getPort());
+   }
+
+   /**
+    * Constructor.
+    * @param protocol The connector protocol.
+    * @param name The unique connector name.
+    * @param target The target handler.
+    * @param port The HTTP port number.
+    */
+   public JettyServer(Protocol protocol, String name, UniformInterface target, int port)
+   {
+   	this(protocol, name, target, null, port);
+   }
+   
+   /**
+    * Returns the supported protocols. 
+    * @return The supported protocols.
+    */
+   public static List<Protocol> getProtocols()
+   {
+   	return Arrays.asList(new Protocol[]{Protocols.HTTP, Protocols.HTTPS, Protocols.AJP});
    }
 
    /**

@@ -40,7 +40,10 @@ public enum Protocols implements Protocol
    JDBC,
    
    /** SMTP protocol. */
-   SMTP;
+   SMTP,
+   
+   /** SMTPS protocol. */
+   SMTPS;
 
    /**
     * Returns the unique name of the protocol (ex: HTTP).
@@ -66,6 +69,9 @@ public enum Protocols implements Protocol
             break;
          case SMTP:
             result = "SMTP";
+            break;
+         case SMTPS:
+            result = "SMTPS";
             break;
       }
 
@@ -96,6 +102,9 @@ public enum Protocols implements Protocol
             break;
          case SMTP:
             result = "Simple Mail Transfer Protocol";
+            break;
+         case SMTPS:
+            result = "Simple Mail Transfer Protocol (Secure)";
             break;
       }
 

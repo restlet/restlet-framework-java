@@ -267,6 +267,12 @@ public interface UniformCall
    public void setResourceRef(Reference resourceRef);
 
    /**
+    * Sets the resource reference using an URI string.
+    * @param resourceUri The resource URI.
+    */
+   public void setResourceRef(String resourceUri);
+
+   /**
     * Sets the server IP address.
     * @param address The server IP address.
     */

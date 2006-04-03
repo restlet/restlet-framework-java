@@ -23,8 +23,10 @@
 package com.noelios.restlet.impl;
 
 import java.io.IOException;
+import java.util.Arrays;
 import java.util.Date;
 import java.util.Iterator;
+import java.util.List;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
@@ -68,11 +70,21 @@ public class HttpClientImpl extends AbstractClient
 
    /**
     * Create a new HTTP client connector.
+    * @param protocol The protocol to use.
     * @param name The unique connector name.
     */
-   public HttpClientImpl(String name)
+   public HttpClientImpl(Protocol protocol, String name)
    {
-      super(Protocols.HTTP, name);
+      super(protocol, name);
+   }
+   
+   /**
+    * Returns the supported protocols. 
+    * @return The supported protocols.
+    */
+   public static List<Protocol> getProtocols()
+   {
+   	return Arrays.asList(new Protocol[]{Protocols.HTTP, Protocols.HTTPS});
    }
    
    /**
@@ -141,7 +153,7 @@ public class HttpClientImpl extends AbstractClient
          
          if(condition.getModifiedSince() != null)
          {
-            String imsDate = DateUtils.format(condition.getModifiedSince(), DateUtils.FORMAT_RFC_1123);
+            String imsDate = DateUtils.format(condition.getModifiedSince(), DateUtils.FORMAT_RFC_1123[0]);
             clientCall.addRequestHeader(ConnectorCall.HEADER_IF_MODIFIED_SINCE, imsDate);
          }
          
@@ -160,7 +172,7 @@ public class HttpClientImpl extends AbstractClient
 
          if(condition.getUnmodifiedSince() != null)
          {
-            String iusDate = DateUtils.format(condition.getUnmodifiedSince(), DateUtils.FORMAT_RFC_1123);
+            String iusDate = DateUtils.format(condition.getUnmodifiedSince(), DateUtils.FORMAT_RFC_1123[0]);
             clientCall.addRequestHeader(ConnectorCall.HEADER_IF_UNMODIFIED_SINCE, iusDate);
          }
          
@@ -229,6 +241,12 @@ public class HttpClientImpl extends AbstractClient
             header = iter.next();
             clientCall.addRequestHeader(header.getName(), header.getValue());
          }         
+
+         // Send the input representation
+         if(hasInput(call) && (call.getInput().getSize() > 0))
+         {
+        		clientCall.addRequestHeader(ConnectorCall.HEADER_CONTENT_LENGTH, Long.toString(call.getInput().getSize()));
+         }
          
          // Commit the request headers
          clientCall.sendRequestHeaders();

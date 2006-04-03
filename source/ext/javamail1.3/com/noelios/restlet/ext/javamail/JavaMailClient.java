@@ -23,8 +23,10 @@
 package com.noelios.restlet.ext.javamail;
 
 import java.net.URI;
+import java.util.Arrays;
 import java.util.Date;
 import java.util.Iterator;
+import java.util.List;
 import java.util.Properties;
 
 import javax.mail.Message;
@@ -41,6 +43,7 @@ import org.restlet.connector.AbstractClient;
 import org.restlet.connector.ClientCall;
 import org.restlet.data.Methods;
 import org.restlet.data.Parameter;
+import org.restlet.data.Protocol;
 import org.restlet.data.Protocols;
 import org.restlet.data.Representation;
 import org.w3c.dom.Document;
@@ -73,13 +76,23 @@ public class JavaMailClient extends AbstractClient
 {
    /**
     * Constructor.
+    * @param protocol The protocol to use.
     * @param name The unique connector name.
     */
-   public JavaMailClient(String name)
+   public JavaMailClient(Protocol protocol, String name)
    {
-      super(Protocols.SMTP, name);
+      super(protocol, name);
    }
    
+   /**
+    * Returns the supported protocols. 
+    * @return The supported protocols.
+    */
+   public static List<Protocol> getProtocols()
+   {
+   	return Arrays.asList(new Protocol[]{Protocols.SMTP, Protocols.SMTPS});
+   }
+
    /**
     * Returns a new client call.
     * @param method The request method.

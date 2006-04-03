@@ -396,6 +396,15 @@ public class UniformCallWrapper implements UniformCall
    }
 
    /**
+    * Sets the resource reference using an URI string.
+    * @param resourceUri The resource URI.
+    */
+   public void setResourceRef(String resourceUri)
+   {
+      getWrappedCall().setResourceRef(resourceUri);
+   }
+
+   /**
     * Sets the server IP address.
     * @param address The server IP address.
     */

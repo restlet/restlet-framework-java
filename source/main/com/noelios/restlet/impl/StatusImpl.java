@@ -166,4 +166,13 @@ public class StatusImpl implements Status
       return getHttpCode() == status.getHttpCode();
    }
 
+   /**
+    * Returns the name of the status followed by its HTTP code.
+    * @return The name of the status followed by its HTTP code.
+    */
+   public String toString()
+   {
+   	return Statuses.toString(getHttpCode());
+   }
+   
 }

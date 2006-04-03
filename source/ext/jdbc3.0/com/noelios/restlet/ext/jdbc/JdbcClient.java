@@ -27,6 +27,7 @@ import java.sql.DriverManager;
 import java.sql.SQLException;
 import java.sql.Statement;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 import java.util.Properties;
 
@@ -44,6 +45,7 @@ import org.restlet.UniformCall;
 import org.restlet.connector.AbstractClient;
 import org.restlet.connector.ClientCall;
 import org.restlet.data.Methods;
+import org.restlet.data.Protocol;
 import org.restlet.data.Protocols;
 import org.restlet.data.Representation;
 import org.w3c.dom.Document;
@@ -80,15 +82,26 @@ public class JdbcClient extends AbstractClient
 
    /**
     * Constructor.
+    * @param protocol The protocol to use.
     * @param name The connector's unique name.
     */
-   public JdbcClient(String name)
+   public JdbcClient(Protocol protocol, String name)
    {
-      super(Protocols.JDBC, name);
+      super(protocol, name);
 
       // Set up the list of factories
       this.connectionSources = new ArrayList<ConnectionSource>();
    }
+   
+   /**
+    * Returns the supported protocols. 
+    * @return The supported protocols.
+    */
+   public static List<Protocol> getProtocols()
+   {
+   	return Arrays.asList(new Protocol[]{Protocols.JDBC});
+   }
+   
    /**
     * Returns a new client call.
     * @param method The request method.
