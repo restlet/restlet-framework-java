@@ -28,7 +28,7 @@ import org.restlet.data.MediaTypes;
 import org.restlet.data.Reference;
 
 /**
- * Atom content.
+ * Either contains or links to the content of the entry.
  */
 public class Content
 {

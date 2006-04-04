@@ -41,7 +41,7 @@ import com.noelios.restlet.util.DateUtils;
 import com.noelios.restlet.util.XmlWriter;
 
 /**
- * Atom feed.
+ * Atom Feed Document, acting as a container for metadata and data associated with the feed.
  */
 public class Feed extends SaxRepresentation
 {

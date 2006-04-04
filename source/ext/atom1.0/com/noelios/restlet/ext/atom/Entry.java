@@ -28,7 +28,7 @@ import java.util.Iterator;
 import java.util.List;
 
 /**
- * Atom entry.
+ * Represents an individual entry, acting as a container for metadata and data associated with the entry.
  */
 public class Entry
 {
