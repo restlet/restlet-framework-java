@@ -40,11 +40,17 @@ import com.noelios.restlet.util.Base64;
 
 /**
  * Chainlet guarding the access to another handler (Restlet, Chainlet, Maplet, etc.).<br/>
- * Currently only supports the HTTP basic authentication scheme and a custome schemes (based on cookies, query params or IP address for example).
+ * Currently only supports the HTTP basic authentication scheme and a custom schemes (based on cookies, query params or IP address for example).
  * @see <a href="http://www.restlet.org/tutorial#part09">Tutorial: Guarding access to sensitive resources</a>
  */
 public abstract class GuardChainlet extends AbstractChainlet
 {
+	/** Indicates if the guard should attempt to authenticate the caller. */
+	protected boolean authentication;
+	
+	/** Indicates if the guard should attempt to authorize the caller. */
+	protected boolean authorization;
+	
 	/** The authentication scheme. */
 	protected ChallengeScheme scheme;
 	
@@ -56,17 +62,31 @@ public abstract class GuardChainlet extends AbstractChainlet
 
    /**
     * Constructor.
+    * If the authentication is not requested, the scheme and realm parameters are not necessary (pass null instead).
     * @param container The parent container.
-    * @param scheme The authentication scheme to use or null if this is a custom scheme (cookies, query params, etc.). 
     * @param logName The log name to used in the logging.properties file.
+    * @param authentication Indicates if the guard should attempt to authenticate the caller.
+    * @param scheme The authentication scheme to use. 
     * @param realm The authentication realm.
+    * @param authorization Indicates if the guard should attempt to authorize the caller.
     */
-   public GuardChainlet(RestletContainer container, ChallengeScheme scheme, String logName, String realm)
+   public GuardChainlet(RestletContainer container, String logName, boolean authentication, ChallengeScheme scheme, String realm, boolean authorization)
    {
       super(container);
-      this.scheme = scheme;
+
       this.logger = Logger.getLogger(logName);
-      this.realm = realm;
+      this.authentication = authentication;
+      
+      if(this.authentication && (scheme == null))
+      {
+      	throw new IllegalArgumentException("Please specify a challenge scheme. Use the 'None' challenge if no authentication is required.");
+      }
+      else
+      {
+      	this.scheme = scheme;
+         this.realm = realm;
+         this.authorization = authorization;
+      }
    }
 
    /**
@@ -75,55 +95,45 @@ public abstract class GuardChainlet extends AbstractChainlet
     */
    public void handle(UniformCall call)
    {
-      if(authenticate(call))
+   	if(this.authentication)
+   	{
+   		authenticate(call);
+   	}
+
+      if(!this.authorization || authorize(call))
       {
-         // Authentication succeeded
-      	// Invoke the chained Restlet
-         super.handle(call);
+      	accept(call);
       }
       else
       {
-         // Authentication failed
-         block(call);
+         reject(call);
       }
    }
 
    /**
-    * Authenticate the call using the specified challenge scheme or a custom scheme.
-    * By default, implement the standard challenge scheme (HTTP basic) then invoke the other abstract authenticate method. 
+    * Attempts to authenticate the caller.
+    * By default, it tries to interpret the challenge response using the Chainlet's challenge scheme.
+    * Subclasses could implement different authentication mechanisms, for example based on IP address or on
+    * a session cookie.<br/>
+    * The result of a successful authentication is the update of the call's security data: login, password properties.
+    * Subclasses could also set the additional role property.<br/>
+    * If you know that the caller has already been authenticated, you should set the challenge scheme to NONE
+    * in the constructor to silently skip this step. 
     * @param call The call to authenticate.
-    * @return True if the call was authenticated.
     */
-   protected boolean authenticate(UniformCall call)
+   public void authenticate(UniformCall call)
    {
-   	boolean result = false;
-   
-   	if(this.scheme == null)
-   	{
-			result = authenticate(call, null, null);
+      SecurityData security = call.getSecurity();
+      ChallengeResponse resp = security.getChallengeResponse();
 
-			if(result)
+      if(this.scheme.equals(ChallengeSchemes.HTTP_BASIC))
+      {
+         if(resp == null)
          {
-            // Log the authentication
-            logger.info("User authenticated for client with IP: " + call.getClientAddress());
+            // Authentication failed, no challenge response provided, maybe first authentication attempt 
+            logger.log(Level.INFO, "Authentication failed: no challenge response provided.");
          }
-         else
-         {
-            // Log the blocking
-            logger.warning("User couldn't be authenticated for client with IP: " + call.getClientAddress());
-         }
-   	}
-   	else
-   	{
-	      SecurityData security = call.getSecurity();
-	      ChallengeResponse resp = security.getChallengeResponse();
-	
-	      if(resp == null)
-	      {
-	         // No challenge response available, challenge the client
-	         challengeClient(call);
-	      }
-	      else if(resp.getScheme().equals(ChallengeSchemes.HTTP_BASIC))
+         else if(resp.getScheme().equals(ChallengeSchemes.HTTP_BASIC))
 	      {
 	         try
 	         {
@@ -134,26 +144,14 @@ public abstract class GuardChainlet extends AbstractChainlet
 	            {
 	               // Log the blocking
 	               logger.warning("Invalid credentials given by client with IP: " + call.getClientAddress());
-	
-	               // Invalid credentials
-	               block(call);
 	            }
 	            else
 	            {
-	               String userId = credentials.substring(0, separator);
-	               String password = credentials.substring(separator + 1);
-	               result = authenticate(call, userId, password); 
-	               
-	               if(result)
-	               {
-	                  // Log the authentication
-	                  logger.info("User: " + userId + " authenticated for client with IP: " + call.getClientAddress());
-	               }
-	               else
-	               {
-	                  // Log the blocking
-	                  logger.warning("User: " + userId + " couldn't be authenticated for client with IP: " + call.getClientAddress());
-	               }
+	               security.setLogin(credentials.substring(0, separator));
+	               security.setPassword(credentials.substring(separator + 1));
+	
+	               // Log the authentication result
+	               logger.info("Basic HTTP authentication succeeded: login=" + security.getLogin() + ", password=" + security.getPassword() + ".");
 	            }
 	         }
 	         catch(UnsupportedEncodingException e)
@@ -165,53 +163,78 @@ public abstract class GuardChainlet extends AbstractChainlet
 	      else
 	      {
 	         // Authentication mechanism not supported
-            logger.log(Level.WARNING, "Unsupported authentication mechanism: " + resp.getScheme().getName() + ". Challenging the client again.");
-	         challengeClient(call);
+	         logger.log(Level.WARNING, "Authentication failed: invalid authentication mechanism used: " + resp.getScheme().getName() + " instead of :" + this.scheme.getName() + ".");
 	      }
-   	}
-   	
-   	return result;
+      }
+      else
+      {
+         // Authentication failed, scheme not supported
+         logger.log(Level.WARNING, "Authentication failed: unsupported scheme used: " + this.scheme.getName() + ". Please override the authenticate method.");
+      }
    }
-
-   /**
-    * Authenticate the current user based on the given credentials.
-    * If the authentication succeed, then the attached handler will be invoked.
-    * The application should take care of authorizing and authenticated user based on application criteria 
-    * like the current user role. In case an unauthorized action is requested, a Statuses.CLIENT_ERROR_UNAUTHORIZED
-    * status should be returned.
-    * @param call The current call.
-    * @param userId The user identifier.
-    * @param password The password.
-    * @return True if the given credentials authorize access to the attached handler.
-    */
-   protected abstract boolean authenticate(UniformCall call, String userId, String password);
    
    /**
-    * Challenge a client.
+    * Indicates if the call is authorized to pass through the Guard Chainlet.
+    * At this point the caller should be authenticated and the security data should contain a valid login,
+    * password and optionnaly a role name.<br/>
+    * The application should take care of the authorization logic, based on custom criteria such as
+    * checking whether the current user has the proper role or access rights.<br/>
+    * By default, no call is authorized and subclasses requiring authorization must override this method.
     * @param call The current call.
+    * @return True if the given credentials authorize access to the attached handler.
     */
-   protected void challengeClient(UniformCall call)
+   protected boolean authorize(UniformCall call)
    {
-   	if(this.scheme != null)
-   	{
-   		call.setStatus(Statuses.CLIENT_ERROR_UNAUTHORIZED);
-   		call.getSecurity().setChallengeRequest(new ChallengeRequestImpl(this.scheme, this.realm));
-   	}
-   	else
-   	{
-         logger.log(Level.WARNING, "Unspecified client challenging mechanism. Please override the challengeClient method or use a standard challenge scheme.");
-   	}
+      return false;
    }
-
+   
    /**
-    * Blocks a call due to invalid credentials.
-    * This can be overriden to change the defaut behavior, for example to display an error page.
-    * Default behavior is to challenge the client.
+    * Accepts the call.
+    * By default, invokes the attached handler.
     * @param call The current call.
     */
-   protected void block(UniformCall call)
+   protected void accept(UniformCall call)
    {
-      challengeClient(call);
+   	// Invoke the chained Restlet
+      super.handle(call);
+   }
+   
+   /**
+    * Rejects the call call due to a failed authentication or authorization.
+    * This can be overriden to change the defaut behavior, for example to display an error page.
+    * By default, if authentication is required, the challenge method is invoked, otherwise the 
+    * call status is set to CLIENT_ERROR_FORBIDDEN.
+    * @param call The current call.
+    */
+   protected void reject(UniformCall call)
+   {
+      if(this.authentication)
+      {
+      	challenge(call);
+      }
+      else
+      {
+      	call.setStatus(Statuses.CLIENT_ERROR_FORBIDDEN);
+      }
+   }
+   
+   /**
+    * Sends a challenge request the caller in order to receive a (new) challenge response with caller's credentials.
+    * Application using a custom authentication should override this method in order to provide a useful
+    * challenging mechanism, such as displaying a login page.
+    * @param call The current call.
+    */
+   protected void challenge(UniformCall call)
+   {
+		if(this.scheme.equals(ChallengeSchemes.HTTP_BASIC))
+		{
+			call.setStatus(Statuses.CLIENT_ERROR_UNAUTHORIZED);
+			call.getSecurity().setChallengeRequest(new ChallengeRequestImpl(this.scheme, this.realm));
+		}
+		else
+		{
+         logger.log(Level.WARNING, "Unsupported challenging mechanism. Please override the challenge method or use a supported challenge scheme like HTTP Basic.");
+		}
    }
 
 }

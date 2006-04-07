@@ -62,11 +62,12 @@ public class Tutorial09a
          log.attach(status);
 
          // Attach a guard Chainlet to the container
-         GuardChainlet guard = new GuardChainlet(myContainer, ChallengeSchemes.HTTP_BASIC , "com.noelios.restlet.tutorial", "Restlet tutorial")
-            {
-              protected boolean authenticate(UniformCall call, String userId, String password)
+         GuardChainlet guard = new GuardChainlet(myContainer, "com.noelios.restlet.tutorial", true, ChallengeSchemes.HTTP_BASIC , "Restlet tutorial", true)
+         	{
+            	protected boolean authorize(UniformCall call)
                {
-                  return userId.equals("scott") && password.equals("tiger");
+            		return "scott".equals(call.getSecurity().getLogin()) && 
+            				 "tiger".equals(call.getSecurity().getPassword());
                }
             };
 

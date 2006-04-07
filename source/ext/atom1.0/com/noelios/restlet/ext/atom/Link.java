@@ -31,11 +31,22 @@ import org.restlet.data.Reference;
  */
 public class Link
 {
+	/** Contains the link's IRI. */
 	protected Reference href;
+
+	/** Indicates the link's relation type */
 	protected Relation rel;
+	
+	/** Advisory media type. */
 	protected MediaType type;
+	
+	/** Language of the resource pointed to by the href attribute. */
 	protected Language hrefLang;
+	
+	/** Human-readable information about the link. */
 	protected String title;
+	
+	/** Advisory length of the linked content in octets. */
 	protected long length;
 	
 	/**
@@ -51,39 +62,112 @@ public class Link
 		this.length = -1;
 	}
 
-	public Relation getRel()
+	/** 
+	 * Returns the link's IRI.
+	 * @return The link's IRI. 
+	 */
+	public Reference getHref()
 	{
-		return this.rel;
+		return this.href;
 	}
 	
+	/** 
+	 * Sets the link's IRI.
+	 * @param href The link's IRI. 
+	 */
 	public void setHref(Reference href)
 	{
 		this.href = href;
 	}
-	
-	public void setHrefLang(Language hrefLang)
+
+	/** 
+	 * Returns the link's relation type.
+	 * @return The link's relation type.
+	 */
+	public Relation getRel()
 	{
-		this.hrefLang = hrefLang;
-	}
-	
-	public void setLength(long length)
-	{
-		this.length = length;
+		return this.rel;
 	}
 
+	/** 
+	 * Sets the link's relation type.
+	 * @param rel The link's relation type.
+	 */
 	public void setRel(Relation rel)
 	{
 		this.rel = rel;
 	}
 	
+	/**
+	 * Returns the advisoty media type.
+	 * @return The advisoty media type.
+	 */
+	public MediaType getType()
+	{
+		return this.type;
+	}
+	
+	/**
+	 * Sets the advisoty media type.
+	 * @param type The advisoty media type.
+	 */
+	public void setType(MediaType type)
+	{
+		this.type = type;
+	}
+	
+	/**
+	 * Returns the language of the resource pointed to by the href attribute.
+	 * @return The language of the resource pointed to by the href attribute.
+	 */
+	public Language getHrefLang()
+	{
+		return this.hrefLang;
+	}
+
+	/**
+	 * Sets the language of the resource pointed to by the href attribute.
+	 * @param hrefLang The language of the resource pointed to by the href attribute.
+	 */
+	public void setHrefLang(Language hrefLang)
+	{
+		this.hrefLang = hrefLang;
+	}
+	
+	/**
+	 * Returns the human-readable information about the link.
+	 * @return The human-readable information about the link.
+	 */
+	public String getTitle()
+	{
+		return this.title;
+	}
+	
+	/**
+	 * Sets the human-readable information about the link.
+	 * @param title The human-readable information about the link.
+	 */
 	public void setTitle(String title)
 	{
 		this.title = title;
 	}
-	
-	public void setType(MediaType type)
+
+	/**
+	 * Returns the advisory length of the linked content in octets.
+	 * @return The advisory length of the linked content in octets.
+	 */
+	public long getLength()
 	{
-		this.type = type;
+		return this.length;
+	}
+	
+	/**
+	 * Sets the advisory length of the linked content in octets.
+	 * @param length The advisory length of the linked content in octets.
+	 */
+	public void setLength(long length)
+	{
+		this.length = length;
 	}
 	
 }

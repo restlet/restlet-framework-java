@@ -65,4 +65,40 @@ public interface SecurityData extends ControlData
     */
    public void setConfidential(boolean confidential);
 
+   /**
+    * Returns the login of the authenticated caller.
+    * @return The login of the authenticated caller.
+    */
+   public String getLogin();
+   
+   /**
+    * Returns the password of the authenticated caller.
+    * @return The password of the authenticated caller.
+    */
+   public String getPassword();
+   
+   /**
+    * Returns the role of the authenticated caller.
+    * @return The role of the authenticated caller.
+    */
+   public String getRole();
+
+   /**
+    * Sets the login of the authenticated caller.
+    * @param login The login of the authenticated caller.
+    */
+   public void setLogin(String login);
+   
+   /**
+    * Sets the password of the authenticated caller.
+    * @param password The password of the authenticated caller.
+    */
+   public void setPassword(String password);
+   
+   /**
+    * Sets the role of the authenticated caller.
+    * @param role The role of the authenticated caller.
+    */
+   public void setRole(String role);
+   
 }

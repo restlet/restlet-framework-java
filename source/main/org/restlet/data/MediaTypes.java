@@ -38,7 +38,7 @@ public enum MediaTypes implements MediaType
 
    IMAGE_ALL, IMAGE_GIF, IMAGE_ICON, IMAGE_PNG,
 
-   TEXT_ALL, TEXT_CSS, TEXT_HTML, TEXT_PLAIN, TEXT_URI, TEXT_XML;
+   TEXT_ALL, TEXT_CSS, TEXT_HTML, TEXT_PLAIN, TEXT_URI_LIST, TEXT_XML;
 
    /**
     * Returns the metadata name like "text/html" or "compress" or "iso-8851-1".
@@ -107,8 +107,8 @@ public enum MediaTypes implements MediaType
          case TEXT_PLAIN:
             result = "text/plain";
             break;
-         case TEXT_URI:
-            result = "text/uri";
+         case TEXT_URI_LIST:
+            result = "text/uri-list";
             break;
          case TEXT_XML:
             result = "text/xml";
@@ -212,8 +212,8 @@ public enum MediaTypes implements MediaType
          case TEXT_PLAIN:
             result = "Plain text";
             break;
-         case TEXT_URI:
-            result = "Uniform Resource Identifier";
+         case TEXT_URI_LIST:
+            result = "List of Uniform Resource Identifiers";
             break;
          case TEXT_XML:
             result = "XML text";

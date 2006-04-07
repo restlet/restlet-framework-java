@@ -37,6 +37,7 @@ import org.xml.sax.SAXException;
 import org.xml.sax.helpers.DefaultHandler;
 
 import com.noelios.restlet.data.SaxRepresentation;
+import com.noelios.restlet.data.StringRepresentation;
 import com.noelios.restlet.util.DateUtils;
 import com.noelios.restlet.util.XmlWriter;
 
@@ -45,23 +46,54 @@ import com.noelios.restlet.util.XmlWriter;
  */
 public class Feed extends SaxRepresentation
 {
+	/** Atom Syndication Format namespace. */
 	public final static String ATOM_NAMESPACE = "http://www.w3.org/2005/Atom";
+
+	/** XHTML namespace. */
 	public final static String XHTML_NAMESPACE = "http://www.w3.org/1999/xhtml";
 	
+	/** The authors of the feed. */
 	protected List<Person> authors;
+
+	/** The categories associated with the feed. */
 	protected List<Category> categories;
+
+	/** The contributors to the feed. */
 	protected List<Person> contributors;
+
+	/** The agent used to generate a feed. */
 	protected Generator generator;
-	protected String icon;
+	
+	/** Image that provides iconic visual identification for a feed. */
+	protected Reference icon;
+
+	/** Permanent, universally unique identifier for the feed. */
 	protected String id;
+
+	/** The references from the entry to Web resources. */
 	protected List<Link> links;
+	
+	/** Image that provides visual identification for a feed. */
 	protected Reference logo;
+	
+	/** Information about rights held in and over an entry. */
 	protected Text rights;
+	
+	/** Short summary, abstract, or excerpt of an entry. */
 	protected Text subtitle;
+	
+	/** The human-readable title for the entry. */
 	protected Text title;
+	
+	/** Most recent moment when the entry was modified in a significant way. */
 	protected Date updated;
+
+	/** Individual entries, acting as a containers for associated metadata and data. */
 	protected List<Entry> entries;
 
+	/**
+	 * Constructor.
+	 */
 	public Feed()
 	{
 		super(MediaTypes.APPLICATION_ATOM_XML);
@@ -98,117 +130,202 @@ public class Feed extends SaxRepresentation
 	 */
 	public void write(XmlWriter writer) throws IOException
 	{
-		
+		// TODO
 	}
 
+	
+	/** 
+	 * Returns the authors of the entry.
+	 * @return The authors of the entry.
+	 */
 	public List<Person> getAuthors()
 	{
 		if(this.authors == null) this.authors = new ArrayList<Person>();
 		return this.authors;
 	}
-	
+
+	/** 
+	 * Returns the categories associated with the entry.
+	 * @return The categories associated with the entry.
+	 */
 	public List<Category> getCategories()
 	{
 		if(this.categories == null) this.categories = new ArrayList<Category>();
 		return this.categories;
 	}
-
+	
+	/** 
+	 * Returns the contributors to the entry.
+	 * @return The contributors to the entry.
+	 */
 	public List<Person> getContributors()
 	{
 		if(this.contributors == null) this.contributors = new ArrayList<Person>();
 		return this.contributors;
 	}
 
-	public List<Entry> getEntries()
-	{
-		if(this.entries == null) this.entries = new ArrayList<Entry>();
-		return this.entries;
-	}
-
+	/** 
+	 * Returns the agent used to generate a feed.
+	 * @return The agent used to generate a feed.
+	 */
 	public Generator getGenerator()
 	{
 		return this.generator;
 	}
-	
-	public String getIcon()
+
+	/** 
+	 * Sets the agent used to generate a feed.
+	 * @param generator The agent used to generate a feed.
+	 */
+	public void setGenerator(Generator generator)
+	{
+		this.generator = generator;
+	}
+
+	/** 
+	 * Returns the image that provides iconic visual identification for a feed.
+	 * @return The image that provides iconic visual identification for a feed.
+	 */
+	public Reference getIcon()
 	{
 		return this.icon;
 	}
+
+	/** 
+	 * Sets the image that provides iconic visual identification for a feed.
+	 * @param icon The image that provides iconic visual identification for a feed.
+	 */
+	public void setIcon(Reference icon)
+	{
+		this.icon = icon;
+	}
 	
+	/** 
+	 * Returns the permanent, universally unique identifier for the entry.
+	 * @return The permanent, universally unique identifier for the entry.
+	 */
 	public String getId()
 	{
 		return this.id;
 	}
+	
+	/** 
+	 * Sets the permanent, universally unique identifier for the entry.
+	 * @param id The permanent, universally unique identifier for the entry.
+	 */
+	public void setId(String id)
+	{
+		this.id = id;
+	}
 
+	/** 
+	 * Returns the references from the entry to Web resources.
+	 * @return The references from the entry to Web resources.
+	 */
 	public List<Link> getLinks()
 	{
 		if(this.links == null) this.links = new ArrayList<Link>();
 		return this.links;
 	}
 
+	/**
+	 * Returns the image that provides visual identification for a feed.
+	 * @return The image that provides visual identification for a feed.
+	 */
 	public Reference getLogo()
 	{
 		return this.logo;
 	}
 	
-	public Text getRights()
-	{
-		return this.rights;
-	}
-	
-	public Text getSubtitle()
-	{
-		return this.subtitle;
-	}
-	
-	public Text getTitle()
-	{
-		return this.title;
-	}
-
-	public Date getUpdated()
-	{
-		return this.updated;
-	}
-	
-	public void setGenerator(Generator generator)
-	{
-		this.generator = generator;
-	}
-	
-	public void setIcon(String icon)
-	{
-		this.icon = icon;
-	}
-	
-	public void setId(String id)
-	{
-		this.id = id;
-	}
-
+	/**
+	 * Sets the image that provides visual identification for a feed.
+	 * @param logo The image that provides visual identification for a feed.
+	 */
 	public void setLogo(Reference logo)
 	{
 		this.logo = logo;
 	}
-	
+
+	/** 
+	 * Returns the information about rights held in and over an entry.
+	 * @return The information about rights held in and over an entry.
+	 */
+	public Text getRights()
+	{
+		return this.rights;
+	}
+
+	/** 
+	 * Sets the information about rights held in and over an entry.
+	 * @param rights The information about rights held in and over an entry.
+	 */
 	public void setRights(Text rights)
 	{
 		this.rights = rights;
 	}
-	
+
+	/** 
+	 * Returns the short summary, abstract, or excerpt of an entry.
+	 * @return The short summary, abstract, or excerpt of an entry.
+	 */
+	public Text getSubtitle()
+	{
+		return this.subtitle;
+	}
+
+	/** 
+	 * Sets the short summary, abstract, or excerpt of an entry.
+	 * @param subtitle The short summary, abstract, or excerpt of an entry.
+	 */
 	public void setSubtitle(Text subtitle)
 	{
 		this.subtitle = subtitle;
 	}
 	
+	/** 
+	 * Returns the human-readable title for the entry.
+	 * @return The human-readable title for the entry.
+	 */
+	public Text getTitle()
+	{
+		return this.title;
+	}
+
+	/** 
+	 * Sets the human-readable title for the entry.
+	 * @param title The human-readable title for the entry.
+	 */
 	public void setTitle(Text title)
 	{
 		this.title = title;
 	}
 
+	/** 
+	 * Returns the most recent moment when the entry was modified in a significant way.
+	 * @return The most recent moment when the entry was modified in a significant way.
+	 */
+	public Date getUpdated()
+	{
+		return this.updated;
+	}
+
+	/** 
+	 * Sets the most recent moment when the entry was modified in a significant way.
+	 * @param updated The most recent moment when the entry was modified in a significant way.
+	 */
 	public void setUpdated(Date updated)
 	{
 		this.updated = updated;
+	}
+
+	/**
+	 * Returns the individual entries, acting as a containers for associated metadata and data.
+	 * @return The individual entries, acting as a containers for associated metadata and data.
+	 */
+	public List<Entry> getEntries()
+	{
+		if(this.entries == null) this.entries = new ArrayList<Entry>();
+		return this.entries;
 	}
 	
 	// -------------------
@@ -452,6 +569,30 @@ public class Feed extends SaxRepresentation
 						state = State.FEED_ENTRY_SOURCE_CATEGORY;
 					}
 				}
+				else if(localName.equalsIgnoreCase("content"))
+				{
+					if(state == State.FEED_ENTRY)
+					{
+						MediaType type = getMediaType(attrs.getValue("", "type"));
+						String srcAttr = attrs.getValue("", "src");
+						Content currentContent = new Content();
+						
+						if(srcAttr == null)
+						{
+							// Content available inline
+							currentContent.setInlineContent(new StringRepresentation(null, type));
+						}
+						else
+						{
+							// Content available externally
+							currentContent.setExternalRef(Manager.createReference(srcAttr));
+							currentContent.setExternalType(type);
+						}
+						
+						currentEntry.setContent(currentContent);
+						state = State.FEED_ENTRY_CONTENT;
+					}
+				}
 			}
 		}
 		
@@ -461,27 +602,40 @@ public class Feed extends SaxRepresentation
 		 */
 		public void startTextElement(Attributes attrs)
 		{
-			MediaType type = null;
-			String typeAttr = attrs.getValue("", "type");
-			
-			if((typeAttr == null) || typeAttr.equals("text"))
+			currentText = new Text(getMediaType(attrs.getValue("", "type")));
+		}
+		
+		/**
+		 * Returns a media type from an Atom type attribute.
+		 * @param type The Atom type attribute.
+		 * @return The media type.
+		 */
+		private MediaType getMediaType(String type)
+		{
+			MediaType result = null;
+
+			if(type == null)
 			{
-				type = MediaTypes.TEXT_PLAIN;
+				// No type defined
 			}
-			else if(typeAttr.equals("html"))
+			else if(type.equals("text"))
 			{
-				type = MediaTypes.TEXT_HTML;
+				result = MediaTypes.TEXT_PLAIN;
 			}
-			else if(typeAttr.equals("xhtml"))
+			else if(type.equals("html"))
 			{
-				type = MediaTypes.APPLICATION_XHTML_XML;
+				result = MediaTypes.TEXT_HTML;
+			}
+			else if(type.equals("xhtml"))
+			{
+				result = MediaTypes.APPLICATION_XHTML_XML;
 			}
 			else
 			{
-				type = Manager.createMediaType(typeAttr);
+				result = Manager.createMediaType(type);
 			}
 			
-			currentText = new Text(type);
+			return result;
 		}
 		
 		/**
@@ -660,6 +814,19 @@ public class Feed extends SaxRepresentation
 					{
 						currentEntry.getSource().getCategories().add(currentCategory);
 						state = State.FEED_ENTRY_SOURCE;
+					}
+				}
+				else if(localName.equalsIgnoreCase("content"))
+				{
+					if(state == State.FEED_ENTRY_CONTENT)
+					{
+						if(currentEntry.getContent().isInline())
+						{
+							StringRepresentation sr = (StringRepresentation)currentEntry.getContent().getInlineContent();
+							sr.setValue(contentBuffer.toString());
+						}
+						
+						state = State.FEED_ENTRY;
 					}
 				}
 			}

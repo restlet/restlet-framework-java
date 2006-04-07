@@ -27,6 +27,9 @@ package org.restlet.data;
  */
 public enum ChallengeSchemes implements ChallengeScheme
 {
+	/** Custom scheme based on IP address or cookies or query params, etc. */
+	CUSTOM,
+	
    /** Basic HTTP scheme. */
    HTTP_BASIC,
 
@@ -46,6 +49,9 @@ public enum ChallengeSchemes implements ChallengeScheme
 
       switch(this)
       {
+         case CUSTOM:
+            result = "CUSTOM";
+            break;
          case HTTP_BASIC:
             result = "HTTP_BASIC";
             break;
@@ -70,6 +76,9 @@ public enum ChallengeSchemes implements ChallengeScheme
 
       switch(this)
       {
+         case CUSTOM:
+            result = "Custom";
+            break;
          case HTTP_BASIC:
             result = "Basic";
             break;
@@ -94,6 +103,9 @@ public enum ChallengeSchemes implements ChallengeScheme
 
       switch(this)
       {
+         case CUSTOM:
+            result = "Custom authentication";
+            break;
          case HTTP_BASIC:
             result = "Basic HTTP authentication";
             break;

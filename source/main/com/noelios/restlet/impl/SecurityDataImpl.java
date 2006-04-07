@@ -40,6 +40,15 @@ public class SecurityDataImpl implements SecurityData
    /** Indicates if the call came over a confidential channel. */
    protected boolean confidential;
 
+   /** The login of the authenticated caller. */
+   protected String login;
+   
+   /** The password of the authenticated caller. */
+   protected String password;
+   
+   /** The role of the authenticated caller. */
+   protected String role;
+   
    /**
     * Constructor.
     */
@@ -104,6 +113,60 @@ public class SecurityDataImpl implements SecurityData
    public void setConfidential(boolean confidential)
    {
       this.confidential = confidential;
+   }
+
+   /**
+    * Returns the login of the authenticated caller.
+    * @return The login of the authenticated caller.
+    */
+   public String getLogin()
+   {
+   	return this.login;
+   }
+   
+   /**
+    * Returns the password of the authenticated caller.
+    * @return The password of the authenticated caller.
+    */
+   public String getPassword()
+   {
+   	return this.password;
+   }
+   
+   /**
+    * Returns the role of the authenticated caller.
+    * @return The role of the authenticated caller.
+    */
+   public String getRole()
+   {
+   	return this.role;
+   }
+
+   /**
+    * Sets the login of the authenticated caller.
+    * @param login The login of the authenticated caller.
+    */
+   public void setLogin(String login)
+   {
+   	this.login = login;
+   }
+   
+   /**
+    * Sets the password of the authenticated caller.
+    * @param password The password of the authenticated caller.
+    */
+   public void setPassword(String password)
+   {
+   	this.password = password;
+   }
+   
+   /**
+    * Sets the role of the authenticated caller.
+    * @param role The role of the authenticated caller.
+    */
+   public void setRole(String role)
+   {
+   	this.role = role;
    }
 
    /**

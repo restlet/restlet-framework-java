@@ -29,9 +29,14 @@ import org.restlet.data.Reference;
  */
 public class Generator
 {
+	/** Reference of the generating agent. */
 	protected Reference uri;
+	
+	/** Version of the generationg agent. */
 	protected String version;
-	protected String value;
+	
+	/** Human-readable name for the generating agent. */
+	protected String name;
 	
 	/**
 	 * Constructor.
@@ -40,37 +45,61 @@ public class Generator
 	{
 		this.uri = null;
 		this.version = null;
-		this.value = null;
+		this.name = null;
 	}
-	
+
+	/**
+	 * Returns the reference of the generating agent.
+	 * @return The reference of the generating agent.
+	 */
 	public Reference getUri()
 	{
 		return this.uri;
 	}
 	
-	public String getVersion()
-	{
-		return this.version;
-	}
-	
-	public String getValue()
-	{
-		return this.value;
-	}	
-	
+	/**
+	 * Sets the reference of the generating agent.
+	 * @param uri The reference of the generating agent.
+	 */
 	public void setUri(Reference uri)
 	{
 		this.uri = uri;
 	}
 	
+	/**
+	 * Returns the version of the generating agent.
+	 * @return The version of the generating agent.
+	 */
+	public String getVersion()
+	{
+		return this.version;
+	}
+	
+	/**
+	 * Sets the version of the generating agent.
+	 * @param version The version of the generating agent.
+	 */
 	public void setVersion(String version)
 	{
 		this.version = version;
 	}
 	
-	public void setValue(String value)
+	/**
+	 * Returns the human-readable name for the generating agent.
+	 * @return The human-readable name for the generating agent.
+	 */
+	public String getName()
 	{
-		this.value = value;
+		return this.name;
+	}	
+	
+	/**
+	 * Sets the human-readable name for the generating agent.
+	 * @param name The human-readable name for the generating agent.
+	 */
+	public void setName(String name)
+	{
+		this.name = name;
 	}	
 	
 }

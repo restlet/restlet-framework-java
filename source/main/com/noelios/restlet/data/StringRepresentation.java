@@ -56,6 +56,15 @@ public class StringRepresentation extends StreamRepresentation
    {
    	return this.value;
    }
+
+   /**
+    * Sets the internal value.
+    * @param value The internal value.
+    */
+   public void setValue(String value)
+   {
+   	this.value = value;
+   }
    
    /**
     * Writes the datum as a stream of bytes.

@@ -44,6 +44,7 @@ import com.noelios.restlet.util.XmlWriter;
  */
 public class Service extends SaxRepresentation
 {
+	/** Atom Publishing Protocol namespace. */
 	public static final String NAMESPACE = "http://purl.org/atom/app#";
 	
 	/**

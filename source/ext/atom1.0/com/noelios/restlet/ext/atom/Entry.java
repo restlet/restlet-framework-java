@@ -32,17 +32,40 @@ import java.util.List;
  */
 public class Entry
 {
+	/** The authors of the entry. */
 	protected List<Person> authors;
+	
+	/** The categories associated with the entry. */
 	protected List<Category> categories;
+	
+	/** Contains or links to the content of the entry. */
 	protected Content content;
+
+	/** The contributors to the entry. */
 	protected List<Person> contributors;
+	
+	/** Permanent, universally unique identifier for the entry. */
 	protected String id;
+
+	/** The references from the entry to Web resources. */
 	protected List<Link> links;
+
+	/** Moment associated with an event early in the life cycle of the entry. */
 	protected Date published;
+
+	/** Information about rights held in and over an entry. */
 	protected Text rights;
+
+	/** Source feed's metadata if the entry was copied from another feed. */
 	protected Source source;
+	
+	/** Short summary, abstract, or excerpt of the entry. */
 	protected String summary;
+
+	/** The human-readable title for the entry. */
 	protected Text title;
+
+	/** Most recent moment when the entry was modified in a significant way. */
 	protected Date updated;
 
 	/**
@@ -50,20 +73,101 @@ public class Entry
 	 */
 	public Entry()
 	{
+		this.authors = null;
+		this.categories = null;
+		this.content = null;
+		this.contributors = null;
+		this.id = null;
+		this.links = null;
+		this.published = null;
+		this.rights = null;
+		this.source = null;
+		this.summary = null;
+		this.title = null;
+		this.updated = null;
 	}
 	
+	/** 
+	 * Returns the authors of the entry.
+	 * @return The authors of the entry.
+	 */
 	public List<Person> getAuthors()
 	{
 		if(this.authors == null) this.authors = new ArrayList<Person>();
 		return this.authors;
 	}
 
+	/** 
+	 * Returns the categories associated with the entry.
+	 * @return The categories associated with the entry.
+	 */
 	public List<Category> getCategories()
 	{
 		if(this.categories == null) this.categories = new ArrayList<Category>();
 		return this.categories;
 	}
 
+	/** 
+	 * Returns the content of the entry or links to it.
+	 * @return The content of the entry or links to it.
+	 */
+	public Content getContent()
+	{
+		return this.content;
+	}
+
+	/** 
+	 * Sets the content of the entry or links to it.
+	 * @param content The content of the entry or links to it.
+	 */
+	public void setContent(Content content)
+	{
+		this.content = content;
+	}
+
+	/** 
+	 * Returns the contributors to the entry.
+	 * @return The contributors to the entry.
+	 */
+	public List<Person> getContributors()
+	{
+		if(this.contributors == null) this.contributors = new ArrayList<Person>();
+		return this.contributors;
+	}
+
+	/** 
+	 * Returns the permanent, universally unique identifier for the entry.
+	 * @return The permanent, universally unique identifier for the entry.
+	 */
+	public String getId()
+	{
+		return this.id;
+	}
+
+	/** 
+	 * Sets the permanent, universally unique identifier for the entry.
+	 * @param id The permanent, universally unique identifier for the entry.
+	 */
+	public void setId(String id)
+	{
+		this.id = id;
+	}
+
+	/** 
+	 * Returns the references from the entry to Web resources.
+	 * @return The references from the entry to Web resources.
+	 */
+	public List<Link> getLinks()
+	{
+		if(this.links == null) this.links = new ArrayList<Link>();
+		return this.links;
+	}
+
+	/**
+	 * Returns the first available link with a given relation type.
+	 * @param rel The relation type to match.
+	 * @return The first available link with a given relation type.
+	 */
 	public Link getLink(Relation rel)
 	{
 		Link result = null;
@@ -81,36 +185,113 @@ public class Entry
 		
 		return result;
 	}
-	
-	public List<Link> getLinks()
+
+	/** 
+	 * Returns the moment associated with an event early in the life cycle of the entry.
+	 * @return The moment associated with an event early in the life cycle of the entry.
+	 */
+	public Date getPublished()
 	{
-		if(this.links == null) this.links = new ArrayList<Link>();
-		return this.links;
+		return this.published;
 	}
 
+	/** 
+	 * Sets the moment associated with an event early in the life cycle of the entry.
+	 * @param published The moment associated with an event early in the life cycle of the entry.
+	 */
+	public void setPublished(Date published)
+	{
+		this.published = published;
+	}
+
+	/** 
+	 * Returns the information about rights held in and over an entry.
+	 * @return The information about rights held in and over an entry.
+	 */
+	public Text getRights()
+	{
+		return this.rights;
+	}
+
+	/** 
+	 * Sets the information about rights held in and over an entry.
+	 * @param rights The information about rights held in and over an entry.
+	 */
+	public void setRights(Text rights)
+	{
+		this.rights = rights;
+	}
+
+	/** 
+	 * Returns the source feed's metadata if the entry was copied from another feed.
+	 * @return The source feed's metadata if the entry was copied from another feed.
+	 */
 	public Source getSource()
 	{
 		return this.source;
 	}
-	
+
+	/** 
+	 * Sets the source feed's metadata if the entry was copied from another feed.
+	 * @param source The source feed's metadata if the entry was copied from another feed.
+	 */
+	public void setSource(Source source)
+	{
+		this.source = source;
+	}
+
+	/** 
+	 * Returns the short summary, abstract, or excerpt of the entry.
+	 * @return The short summary, abstract, or excerpt of the entry.
+	 */
+	public String getSummary()
+	{
+		return this.summary;
+	}
+
+	/** 
+	 * Sets the short summary, abstract, or excerpt of the entry.
+	 * @param summary The short summary, abstract, or excerpt of the entry.
+	 */
+	public void setSummary(String summary)
+	{
+		this.summary = summary;
+	}
+
+	/** 
+	 * Returns the human-readable title for the entry.
+	 * @return The human-readable title for the entry.
+	 */
 	public Text getTitle()
 	{
 		return this.title;
 	}
-	
-	public void setId(String id)
-	{
-		this.id = id;
-	}
-	
+
+	/** 
+	 * Sets the human-readable title for the entry.
+	 * @param title The human-readable title for the entry.
+	 */
 	public void setTitle(Text title)
 	{
 		this.title = title;
 	}
-	
+
+	/** 
+	 * Returns the most recent moment when the entry was modified in a significant way.
+	 * @return The most recent moment when the entry was modified in a significant way.
+	 */
+	public Date getUpdated()
+	{
+		return this.updated;
+	}
+
+	/** 
+	 * Sets the most recent moment when the entry was modified in a significant way.
+	 * @param updated The most recent moment when the entry was modified in a significant way.
+	 */
 	public void setUpdated(Date updated)
 	{
 		this.updated = updated;
 	}
-	
+
 }
