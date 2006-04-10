@@ -169,6 +169,36 @@ public class DefaultRestletContainer extends AbstractRestlet implements RestletC
       delegate.handle(call);
    }
 
+   /** Starts the handler. */
+   public void start() throws Exception
+   {
+   	delegate.start();
+   }
+
+   /** Stops the handler. */
+   public void stop() throws Exception
+   {
+   	delegate.stop();
+   }
+
+   /**
+    * Indicates if the handler is started.
+    * @return True if the handler is started.
+    */
+   public boolean isStarted()
+   {
+   	return delegate.isStarted();
+   }
+
+   /**
+    * Indicates if the handler is stopped.
+    * @return True if the handler is stopped.
+    */
+   public boolean isStopped()
+   {
+   	return delegate.isStopped();
+   }
+
    /**
     * Returns the name of this REST component.
     * @return The name of this REST component.
