@@ -26,7 +26,7 @@ import java.io.IOException;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
-import org.restlet.AbstractRestlet;
+import org.restlet.AbstractHandler;
 import org.restlet.Manager;
 import org.restlet.UniformCall;
 import org.restlet.component.RestletContainer;
@@ -41,7 +41,7 @@ import com.noelios.restlet.util.UniformCallModel;
  * @see com.noelios.restlet.util.UniformCallModel
  * @see <a href="http://www.restlet.org/tutorial#part10">Tutorial: URI rewriting and redirection</a>
  */
-public class RedirectRestlet extends AbstractRestlet
+public class RedirectRestlet extends AbstractHandler
 {
    /**
     * In this mode, the client is permanently redirected to the URI generated from the target URI pattern.<br/>

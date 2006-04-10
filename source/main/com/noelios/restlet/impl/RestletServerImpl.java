@@ -40,7 +40,7 @@ import org.restlet.data.Statuses;
  * Outcoming calls are normally handled via pluggable client connectors.<br/>
  * Other direct calls are handled by the default container.
  */
-public class RestletServerImpl extends OriginServerImpl implements RestletServer
+public class RestletServerImpl extends ComponentImpl implements RestletServer
 {
    /** Obtain a suitable logger. */
    private static Logger logger = Logger.getLogger("com.noelios.restlet.component.RestletServerImpl");

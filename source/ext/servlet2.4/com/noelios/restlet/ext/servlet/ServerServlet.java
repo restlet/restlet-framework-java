@@ -31,6 +31,7 @@ import javax.servlet.http.HttpServletResponse;
 
 import org.restlet.UniformCall;
 import org.restlet.UniformInterface;
+import org.restlet.component.Component;
 import org.restlet.connector.Server;
 import org.restlet.connector.ServerCall;
 import org.restlet.data.Protocol;
@@ -101,6 +102,15 @@ public class ServerServlet extends HttpServlet implements Server
    public boolean isStopped()
    {
       return !isStarted();
+   }
+
+   /**
+    * Returns the container.
+    * @return The container.
+    */
+   public Component getContainer()
+   {
+   	return null;
    }
 
    /**

@@ -29,7 +29,7 @@ package org.restlet;
  * Note that during this handling, the call paths are not supposed to be modified.
  * @see <a href="http://www.restlet.org/tutorial#part07">Tutorial: Chainlets and call logging</a>
  */
-public interface Chainlet extends Restlet
+public interface Chainlet extends UniformInterface
 {
    /**
     * Attaches a target instance shared by all calls.

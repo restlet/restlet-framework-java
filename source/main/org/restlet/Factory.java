@@ -111,7 +111,7 @@ public interface Factory
     * @param container The Restlet container.
     * @return A new Maplet.
     */
-   public Maplet createMaplet(RestletContainer container);
+   public Maplet createRestlet(RestletContainer container);
 
    /**
     * Creates a new media type from its standard name.

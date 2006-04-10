@@ -32,7 +32,7 @@ import org.restlet.component.RestletContainer;
  * Origin server composed of Restlets.<br/>
  * Note that a Restlet containers are Maplets themselves and can be contained in Restlet servers.
  */
-public class RestletContainerImpl extends OriginServerImpl implements RestletContainer
+public class RestletContainerImpl extends ComponentImpl implements RestletContainer
 {
    /** The parent container who delegates. */
    protected RestletContainer parent;

@@ -24,12 +24,12 @@ package com.noelios.restlet.tutorial;
 
 import java.util.List;
 
-import org.restlet.AbstractRestlet;
-import org.restlet.DefaultMaplet;
+import org.restlet.AbstractHandler;
+import org.restlet.DefaultRestlet;
 import org.restlet.Manager;
 import org.restlet.Maplet;
-import org.restlet.Restlet;
 import org.restlet.UniformCall;
+import org.restlet.UniformInterface;
 import org.restlet.component.DefaultRestletContainer;
 import org.restlet.component.RestletContainer;
 import org.restlet.connector.Server;
@@ -69,7 +69,7 @@ public class Tutorial11
          log.attach(status);
 
          // Attach a root Maplet to the status Chainlet.
-         Maplet rootMaplet = new DefaultMaplet(myContainer);
+         Maplet rootMaplet = new DefaultRestlet(myContainer);
          status.attach(rootMaplet);
 
          // Attach a guard Chainlet to secure access the the chained directory Restlet
@@ -92,11 +92,11 @@ public class Tutorial11
          guard.attach(dirRestlet);
 
          // Create the users Maplet
-         Maplet usersMaplet = new DefaultMaplet(myContainer);
+         Maplet usersMaplet = new DefaultRestlet(myContainer);
          rootMaplet.attach("/users", usersMaplet);
 
          // Create the user Maplet
-         Maplet userMaplet = new DefaultMaplet(myContainer)
+         Maplet userMaplet = new DefaultRestlet(myContainer)
             {
                public void handle(UniformCall call)
                {
@@ -116,7 +116,7 @@ public class Tutorial11
          usersMaplet.attach("/[a-z]+", userMaplet);
 
          // Create the orders Restlet
-         Restlet ordersRestlet = new AbstractRestlet(myContainer)
+         UniformInterface ordersRestlet = new AbstractHandler(myContainer)
             {
                public void handle(UniformCall call)
                {

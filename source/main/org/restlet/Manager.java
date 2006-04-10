@@ -174,7 +174,7 @@ public class Manager
     */
    public static Maplet createMaplet(RestletContainer container)
    {
-      return getRegisteredFactory().createMaplet(container);
+      return getRegisteredFactory().createRestlet(container);
    }
 
    /**

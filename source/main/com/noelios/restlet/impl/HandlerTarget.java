@@ -29,6 +29,7 @@ import java.util.logging.Logger;
 
 import org.restlet.UniformCall;
 import org.restlet.UniformInterface;
+import org.restlet.component.Component;
 import org.restlet.component.RestletContainer;
 import org.restlet.data.Statuses;
 
@@ -113,7 +114,7 @@ public class HandlerTarget
     * @param call The call to handle.
     * @param container The parent container.
     */
-   public void handle(UniformCall call, RestletContainer container)
+   public void handle(UniformCall call, Component container)
    {
       // Find and prepare the call handler
       UniformInterface handler = null;

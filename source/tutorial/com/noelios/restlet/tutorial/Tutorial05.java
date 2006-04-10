@@ -22,10 +22,10 @@
 
 package com.noelios.restlet.tutorial;
 
-import org.restlet.AbstractRestlet;
+import org.restlet.AbstractHandler;
 import org.restlet.Manager;
-import org.restlet.Restlet;
 import org.restlet.UniformCall;
+import org.restlet.UniformInterface;
 import org.restlet.component.DefaultRestletContainer;
 import org.restlet.component.RestletContainer;
 import org.restlet.connector.Server;
@@ -52,7 +52,7 @@ public class Tutorial05
          myContainer.addServer(server);
 
          // Create a new Restlet that will display some path information.
-         Restlet myRestlet = new AbstractRestlet(myContainer)
+         UniformInterface myRestlet = new AbstractHandler(myContainer)
             {
                public void handle(UniformCall call)
                {

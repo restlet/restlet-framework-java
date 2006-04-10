@@ -27,7 +27,7 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.regex.Matcher;
 
-import org.restlet.AbstractRestlet;
+import org.restlet.AbstractHandler;
 import org.restlet.Maplet;
 import org.restlet.UniformCall;
 import org.restlet.UniformInterface;
@@ -38,7 +38,7 @@ import org.restlet.data.Statuses;
 /**
  * Implementation of a mapper of calls to attached handlers.
  */
-public class MapletImpl extends AbstractRestlet implements Maplet
+public class MapletImpl extends AbstractHandler implements Maplet
 {
    /** Serial version identifier. */
    private static final long serialVersionUID = 1L;

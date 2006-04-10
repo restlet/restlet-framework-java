@@ -22,22 +22,21 @@
 
 package org.restlet.connector;
 
+import org.restlet.AbstractHandler;
+import org.restlet.component.Component;
 import org.restlet.data.Protocol;
 
 /**
  * Abstract connector implementation.
  */
-public abstract class AbstractConnector implements Connector
+public abstract class AbstractConnector extends AbstractHandler implements Connector
 {
    /** The connector protocol. */
    protected Protocol protocol;
 
    /** The unique connector name. */
    protected String name;
-
-   /** Indicates if the connector was started. */
-   protected boolean started;
-
+   
    /**
     * Constructor.
     * @param protocol The connector protocol.
@@ -45,6 +44,18 @@ public abstract class AbstractConnector implements Connector
     */
    public AbstractConnector(Protocol protocol, String name)
    {
+      this(null, protocol, name);
+   }
+   
+   /**
+    * Constructor.
+    * @param container The parent container.
+    * @param protocol The connector protocol.
+    * @param name The unique connector name.
+    */
+   public AbstractConnector(Component container, Protocol protocol, String name)
+   {
+   	this.container = container;
       this.protocol = protocol;
       this.name = name;
       this.started = false;
@@ -66,36 +77,6 @@ public abstract class AbstractConnector implements Connector
    public String getName()
    {
       return this.name;
-   }
-
-   /** Start hook. */
-   public void start()
-   {
-      this.started = true;
-   }
-
-   /** Stop hook. */
-   public void stop()
-   {
-      this.started = false;
-   }
-
-   /**
-    * Indicates if the connector is started.
-    * @return True if the connector is started.
-    */
-   public boolean isStarted()
-   {
-      return this.started;
-   }
-
-   /**
-    * Indicates if the connector is stopped.
-    * @return True if the connector is stopped.
-    */
-   public boolean isStopped()
-   {
-      return !isStarted();
    }
 
 }

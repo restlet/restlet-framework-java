@@ -22,7 +22,7 @@
 
 package com.noelios.restlet.impl;
 
-import org.restlet.AbstractRestlet;
+import org.restlet.AbstractHandler;
 import org.restlet.Chainlet;
 import org.restlet.UniformCall;
 import org.restlet.UniformInterface;
@@ -33,7 +33,7 @@ import org.restlet.data.Statuses;
 /**
  * Implementation of a chainer of calls to a target handler.
  */
-public class ChainletImpl extends AbstractRestlet implements Chainlet
+public class ChainletImpl extends AbstractHandler implements Chainlet
 {
    /** Serial version identifier. */
    private static final long serialVersionUID = 1L;

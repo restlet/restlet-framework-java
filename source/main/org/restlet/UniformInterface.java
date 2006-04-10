@@ -22,6 +22,8 @@
 
 package org.restlet;
 
+import org.restlet.component.Component;
+
 /**
  * Uniform interface for REST handlers.<br/><br/> "The central feature that distinguishes
  * the REST architectural style from other network-based styles is its emphasis on a uniform interface between
@@ -37,14 +39,14 @@ public interface UniformInterface
    /** Starts the handler. */
    public void start() throws Exception;
 
+   /** Stops the handler. */
+   public void stop() throws Exception;
+
    /**
     * Handles a uniform call.
     * @param call The uniform call to handle.
     */
    public void handle(UniformCall call);
-
-   /** Stops the handler. */
-   public void stop() throws Exception;
 
    /**
     * Indicates if the handler is started.
@@ -57,4 +59,10 @@ public interface UniformInterface
     * @return True if the handler is stopped.
     */
    public boolean isStopped();
+
+   /**
+    * Returns the container.
+    * @return The container.
+    */
+   public Component getContainer();
 }

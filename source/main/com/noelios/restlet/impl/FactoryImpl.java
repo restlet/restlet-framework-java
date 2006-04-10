@@ -344,7 +344,7 @@ public class FactoryImpl implements Factory
     * @param container The Restlet container.
     * @return A new Maplet.
     */
-   public Maplet createMaplet(RestletContainer container)
+   public Maplet createRestlet(RestletContainer container)
    {
       return new MapletImpl(container);
    }

@@ -22,6 +22,9 @@
 
 package org.restlet;
 
+import org.restlet.component.Component;
+import org.restlet.component.RestletContainer;
+
 /**
  * Abstract implementation of a uniform interface handler.<br/>
  * The start and stop state is managed by default but with no other action.<br/>
@@ -33,11 +36,24 @@ public abstract class AbstractHandler implements UniformInterface
    /** Indicates if the handler was started. */
    protected boolean started;
 
+   /** The container. */
+   protected Component container;
+
    /**
     * Constructor.
     */
    public AbstractHandler()
    {
+      this(null);
+   }
+
+   /**
+    * Constructor.
+    * @param container The parent container.
+    */
+   public AbstractHandler(Component container)
+   {
+   	this.container = container;
       this.started = false;
    }
 
@@ -69,6 +85,35 @@ public abstract class AbstractHandler implements UniformInterface
    public boolean isStopped()
    {
       return !this.started;
+   }
+
+   /**
+    * Returns the container.
+    * @return The container.
+    */
+   public Component getContainer()
+   {
+      return this.container;
+   }
+
+   /**
+    * Sets the container.
+    * @param container The container.
+    */
+   protected void setContainer(RestletContainer container)
+   {
+      this.container = container;
+   }
+
+   /**
+    * Compares this object with the specified object for order.
+    * @param object The object to compare.
+    * @return The result of the comparison.
+    * @see java.lang.Comparable
+    */
+   public int compareTo(Object object)
+   {
+      return this.hashCode() - object.hashCode();
    }
 
 }

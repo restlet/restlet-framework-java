@@ -23,6 +23,10 @@
 package org.restlet;
 
 /**
+ * Handler of calls to a resource or set of resources.<br/>
+ * Restlets live inside a parent container and can be easily attached to Maplets and Chainlets.
+ * @see <a href="http://www.restlet.org/tutorial#part05">Tutorial: Restlets servers and containers</a>
+ *
  * Mapper of calls to attached handlers.<br/>
  * Delegation is based on path matching pattterns.<br/>
  * Note that during the delegation, the call paths are automatically modified. 
@@ -31,7 +35,7 @@ package org.restlet;
  * in your path patterns otherwise the delegation will not work as expected. 
  * @see <a href="http://www.restlet.org/tutorial#part11">Tutorial: Maplets and hierarchical URIs</a>
  */
-public interface Maplet extends Restlet
+public interface Maplet extends UniformInterface
 {
    /**
     * Attaches a target instance shared by all calls.

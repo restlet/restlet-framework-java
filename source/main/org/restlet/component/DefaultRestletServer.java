@@ -172,6 +172,15 @@ public class DefaultRestletServer implements RestletServer
    }
 
    /**
+    * Returns the container.
+    * @return The container.
+    */
+   public Component getContainer()
+   {
+   	return delegate.getContainer();
+   }
+
+   /**
     * Returns the name of this REST component.
     * @return The name of this REST component.
     */
