@@ -103,10 +103,7 @@ public class JettyCall extends HttpServerCallImpl
    public String getRequestUri()
    {
    	StringBuffer sb = getConnection().getRequest().getRootURL();
-   	HttpURI uri = getConnection().getRequest().getUri();
-   	sb.append(uri.getPathAndParam());
-   	sb.append('?');
-   	sb.append(uri.getQuery());
+   	sb.append(getConnection().getRequest().getUri().toString());
    	return sb.toString();
    }
 

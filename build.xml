@@ -210,10 +210,10 @@
 				<pathelement location="${classes-api}" />
 				<pathelement location="${classes-nre}" />
 				<pathelement location="${classes-test}" />
-				<pathelement location="${classes-jetty5.1}" />
+				<pathelement location="${classes-jetty6.0}" />
 				<pathelement location="${src-main}" />
-				<pathelement location="${src-jetty5.1}" />
-				<path refid="path-jetty5.1" />
+				<pathelement location="${src-jetty6.0}" />
+				<path refid="path-jetty6.0" />
 			</classpath>
 
 			<formatter type="plain" />
