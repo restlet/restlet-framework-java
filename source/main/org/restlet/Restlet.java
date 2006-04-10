@@ -34,7 +34,7 @@ import org.restlet.component.Component;
  * dissertation</a>
  * @see <a href="http://www.restlet.org/tutorial#part03">Tutorial: Listening to Web browsers</a>
  */
-public interface UniformInterface
+public interface Restlet
 {
    /** Starts the handler. */
    public void start() throws Exception;
@@ -46,7 +46,7 @@ public interface UniformInterface
     * Handles a uniform call.
     * @param call The uniform call to handle.
     */
-   public void handle(UniformCall call);
+   public void handle(RestletCall call);
 
    /**
     * Indicates if the handler is started.
@@ -61,8 +61,14 @@ public interface UniformInterface
    public boolean isStopped();
 
    /**
-    * Returns the container.
-    * @return The container.
+    * Returns the parent component.
+    * @return The parent component.
     */
-   public Component getContainer();
+   public Component getParent();
+
+   /**
+    * Sets the parent component.
+    * @param parent The parent component.
+    */
+   public void setParent(Component parent);
 }

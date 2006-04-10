@@ -26,10 +26,10 @@ import java.io.IOException;
 
 import junit.framework.TestCase;
 
-import org.restlet.AbstractHandler;
+import org.restlet.AbstractRestlet;
 import org.restlet.Manager;
-import org.restlet.UniformCall;
-import org.restlet.UniformInterface;
+import org.restlet.RestletCall;
+import org.restlet.Restlet;
 import org.restlet.component.DefaultRestletContainer;
 import org.restlet.component.RestletContainer;
 import org.restlet.data.MediaTypes;
@@ -65,9 +65,9 @@ public class RedirectTest extends TestCase
          proxy.setConnectorName("Proxy client");
 
          // Create a new Restlet that will display some path information.
-         UniformInterface trace = new AbstractHandler(myContainer)
+         Restlet trace = new AbstractRestlet(myContainer)
             {
-               public void handle(UniformCall call)
+               public void handle(RestletCall call)
                {
                   // Print the requested URI path
                   String output = "Resource URI:  " + call.getResourceRef() + '\n' + 
@@ -115,7 +115,7 @@ public class RedirectTest extends TestCase
    {
       try
       {
-         UniformCall call = Manager.createCall();
+         RestletCall call = Manager.createCall();
          call.setMethod(method);
          call.setResourceRef(Manager.createReference(uri));
          myContainer.callClient("Test client", call);

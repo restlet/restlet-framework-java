@@ -22,7 +22,7 @@
 
 package org.restlet.connector;
 
-import org.restlet.UniformInterface;
+import org.restlet.Restlet;
 
 /**
  * Connector used to reduce interaction latency.<br/><br/> "The cache connector, can be located on the
@@ -37,16 +37,16 @@ import org.restlet.UniformInterface;
 public interface Cache extends Connector
 {
    /**
-    * Returns the cached target handler.<br/>
-    * This handler is invoked if a call can't be processed directly by the cache. 
-    * @return The cached target handler.
+    * Returns the cached target Restlet.<br/>
+    * This Restlet is invoked if a call can't be processed directly by the cache. 
+    * @return The cached target Restlet.
     */
-   public UniformInterface getCachedTarget();
+   public Restlet getCachedTarget();
 
    /**
-    * Sets the cached target handler.
-    * This handler is invoked if a call can't be processed directly by the cache. 
-    * @param target The cached target handler.
+    * Sets the cached target Restlet.
+    * This Restlet is invoked if a call can't be processed directly by the cache. 
+    * @param target The cached target Restlet.
     */
-   public void setCachedTarget(UniformInterface target);
+   public void setCachedTarget(Restlet target);
 }

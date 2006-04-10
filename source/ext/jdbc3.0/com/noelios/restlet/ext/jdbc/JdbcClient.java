@@ -41,7 +41,7 @@ import org.apache.commons.dbcp.PoolingDataSource;
 import org.apache.commons.pool.ObjectPool;
 import org.apache.commons.pool.impl.GenericObjectPool;
 import org.restlet.Manager;
-import org.restlet.UniformCall;
+import org.restlet.RestletCall;
 import org.restlet.connector.AbstractClient;
 import org.restlet.connector.ClientCall;
 import org.restlet.data.Methods;
@@ -119,9 +119,9 @@ public class JdbcClient extends AbstractClient
     * @param jdbcURI The database's JDBC URI (ex: jdbc:mysql://[hostname]/[database]).
     * @param request The request to send (valid XML request).
     */
-   public static UniformCall create(String jdbcURI, Representation request)
+   public static RestletCall create(String jdbcURI, Representation request)
    {
-      UniformCall result = Manager.createCall();
+      RestletCall result = Manager.createCall();
       result.setClientName(FactoryImpl.VERSION_HEADER);
       result.setMethod(Methods.POST);
       result.setResourceRef(Manager.createReference(jdbcURI));
@@ -133,7 +133,7 @@ public class JdbcClient extends AbstractClient
     * Handles a REST call.
     * @param call The call to handle.
     */
-   public void handle(UniformCall call)
+   public void handle(RestletCall call)
    {
       Connection connection = null;
 

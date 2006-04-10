@@ -28,7 +28,7 @@ import org.restlet.component.RestletContainer;
  * Abstract Chainlet that can be easily subclassed.
  * @see <a href="http://www.restlet.org/tutorial#part07">Tutorial: Chainlets and call logging</a>
  */
-public abstract class AbstractChainlet extends AbstractHandler implements Chainlet
+public abstract class AbstractChainlet extends AbstractRestlet implements Chainlet
 {
    /** Delegate Chainlet actually implementing the Chainlet methods. */
    protected Chainlet delegate;
@@ -47,7 +47,7 @@ public abstract class AbstractChainlet extends AbstractHandler implements Chainl
     * Attaches a target instance shared by all calls.
     * @param target The target instance to attach.
     */
-   public void attach(UniformInterface target)
+   public void attach(Restlet target)
    {
       delegate.attach(target);
    }
@@ -57,7 +57,7 @@ public abstract class AbstractChainlet extends AbstractHandler implements Chainl
     * @param targetClass The target class to attach (can have a constructor taking a RestletContainer
     * parameter).
     */
-   public void attach(Class<? extends UniformInterface> targetClass)
+   public void attach(Class<? extends Restlet> targetClass)
    {
       delegate.attach(targetClass);
    }
@@ -75,7 +75,7 @@ public abstract class AbstractChainlet extends AbstractHandler implements Chainl
     * Default behavior to be overriden: delegation to one of the attached targets.
     * @param call The call to handle.
     */
-   public void handle(UniformCall call)
+   public void handle(RestletCall call)
    {
       delegate.handle(call);
    }

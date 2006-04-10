@@ -65,7 +65,7 @@ import com.noelios.restlet.util.SecurityUtils;
 /**
  * Uniform call wrapper for server HTTP calls.
  */
-public class UniformHttpServerCall extends UniformCallImpl
+public class HttpServerRestletCall extends RestletCallImpl
 {
    /** Obtain a suitable logger. */
    private static Logger logger = Logger.getLogger("com.noelios.restlet.connector.UniformHttpServerCall");
@@ -74,7 +74,7 @@ public class UniformHttpServerCall extends UniformCallImpl
     * Constructor.
     * @param call The wrapped HTTP server call.
     */
-   public UniformHttpServerCall(ServerCall call)
+   public HttpServerRestletCall(ServerCall call)
    {
       // Set the properties
       setConnectorCall(call);

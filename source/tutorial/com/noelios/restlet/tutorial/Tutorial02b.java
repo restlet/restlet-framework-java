@@ -25,7 +25,7 @@ package com.noelios.restlet.tutorial;
 import java.io.IOException;
 
 import org.restlet.Manager;
-import org.restlet.UniformCall;
+import org.restlet.RestletCall;
 import org.restlet.connector.Client;
 import org.restlet.data.Methods;
 import org.restlet.data.Protocols;
@@ -41,7 +41,7 @@ public class Tutorial02b
       try
       {
          // Prepare the REST call
-         UniformCall call = Manager.createCall();
+         RestletCall call = Manager.createCall();
          call.setResourceRef(Manager.createReference("http://www.restlet.org"));
          call.setReferrerRef(Manager.createReference("http://www.mysite.org"));
          call.setMethod(Methods.GET);

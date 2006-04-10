@@ -22,6 +22,7 @@
 
 package org.restlet;
 
+import org.restlet.component.Component;
 import org.restlet.component.RestletContainer;
 import org.restlet.component.RestletServer;
 import org.restlet.connector.Client;
@@ -37,7 +38,7 @@ public interface Factory
     * Creates a new uniform call.
     * @return A new uniform call.
     */
-   public UniformCall createCall();
+   public RestletCall createCall();
 
    /**
     * Creates a delegate Chainlet.
@@ -150,30 +151,30 @@ public interface Factory
    
    /**
     * Creates a delegate Restlet container.
-    * @param parent The parent Restlet container.
+    * @param parent The parent component.
     * @param name The container's name.
     * @return The new Restlet container.
     */
-   public RestletContainer createRestletContainer(RestletContainer parent, String name);
+   public RestletContainer createRestletContainer(Component parent, String name);
 
    /**
     * Creates a delegate Restlet server.
-    * @param parent The parent Restlet server.
+    * @param parent The parent component.
     * @param name The server's name.
     * @return The new Restlet server.
     */
-   public RestletServer createRestletServer(RestletServer parent, String name);
+   public RestletServer createRestletServer(Component parent, String name);
 
    /**
     * Create a new server connector for a given protocol.
     * @param protocol The connector protocol.
     * @param name The unique connector name.
-    * @param target The target handler.
+    * @param target The target Restlet.
     * @param address The optional listening IP address (local host used if null).
     * @param port The listening port.
     * @return The new server connector.
     */
-   public Server createServer(Protocol protocol, String name, UniformInterface target, String address, int port);
+   public Server createServer(Protocol protocol, String name, Restlet target, String address, int port);
 
    /**
     * Creates a new status from its standard code.

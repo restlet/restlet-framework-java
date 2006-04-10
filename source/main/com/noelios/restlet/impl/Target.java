@@ -27,25 +27,25 @@ import java.lang.reflect.InvocationTargetException;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
-import org.restlet.UniformCall;
-import org.restlet.UniformInterface;
+import org.restlet.RestletCall;
+import org.restlet.Restlet;
 import org.restlet.component.Component;
 import org.restlet.component.RestletContainer;
 import org.restlet.data.Statuses;
 
 /**
- * Handler target used for Maplet or Chainlet attachments.
+ * Restlet target used for Maplet or Chainlet attachments.
  */
-public class HandlerTarget
+public class Target
 {
    /** Obtain a suitable logger. */
    private static Logger logger = Logger.getLogger("com.noelios.restlet.util.UniformTarget");
 
    /** The handler interface. */
-   protected UniformInterface handler;
+   protected Restlet handler;
 
    /** The handler class. */
-   protected Class<? extends UniformInterface> handlerClass;
+   protected Class<? extends Restlet> handlerClass;
 
    /** The handler constructor. */
    protected Constructor handlerConstructor;
@@ -60,7 +60,7 @@ public class HandlerTarget
     * Constructor.
     * @param handler The handler interface.
     */
-   public HandlerTarget(UniformInterface handler)
+   public Target(Restlet handler)
    {
       this.handler = handler;
       this.handlerClass = null;
@@ -72,7 +72,7 @@ public class HandlerTarget
     * Constructor.
     * @param handlerClass The handler class.
     */
-   public HandlerTarget(Class<? extends UniformInterface> handlerClass)
+   public Target(Class<? extends Restlet> handlerClass)
    {
       this.handler = null;
       this.handlerClass = handlerClass;
@@ -112,12 +112,12 @@ public class HandlerTarget
    /**
     * Handles an uniform call.
     * @param call The call to handle.
-    * @param container The parent container.
+    * @param parent The parent component.
     */
-   public void handle(UniformCall call, Component container)
+   public void handle(RestletCall call, Component parent)
    {
       // Find and prepare the call handler
-      UniformInterface handler = null;
+      Restlet handler = null;
 
       try
       {
@@ -127,11 +127,11 @@ public class HandlerTarget
          }
          else if(isSetContainer())
          {
-            handler = (UniformInterface)getHandlerConstructor().newInstance(container);
+            handler = (Restlet)getHandlerConstructor().newInstance(parent);
          }
          else
          {
-            handler = (UniformInterface)getHandlerClass().newInstance();
+            handler = (Restlet)getHandlerClass().newInstance();
          }
       }
       catch(InstantiationException ie)
@@ -176,10 +176,10 @@ public class HandlerTarget
       }
    }
    /**
-    * Returns the handler interface.
-    * @return The handler interface.
+    * Returns the handler instance.
+    * @return The handler instance.
     */
-   public UniformInterface getHandler()
+   public Restlet getHandler()
    {
       return this.handler;
    }
@@ -188,7 +188,7 @@ public class HandlerTarget
     * Returns the handler class.
     * @return The handler class.
     */
-   public Class<? extends UniformInterface> getHandlerClass()
+   public Class<? extends Restlet> getHandlerClass()
    {
       return this.handlerClass;
    }

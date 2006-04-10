@@ -28,7 +28,7 @@ import java.util.TreeMap;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
-import org.restlet.UniformCall;
+import org.restlet.RestletCall;
 import org.restlet.component.RestletContainer;
 import org.restlet.component.RestletServer;
 import org.restlet.data.Statuses;
@@ -112,7 +112,7 @@ public class RestletServerImpl extends ComponentImpl implements RestletServer
     * Handles a direct call.
     * @param call The call to handle.
     */
-   public void handle(UniformCall call)
+   public void handle(RestletCall call)
    {
       if(getDefaultContainer() != null)
       {

@@ -27,7 +27,7 @@ import java.util.logging.Level;
 import java.util.logging.Logger;
 
 import org.restlet.AbstractChainlet;
-import org.restlet.UniformCall;
+import org.restlet.RestletCall;
 import org.restlet.component.RestletContainer;
 import org.restlet.data.ChallengeResponse;
 import org.restlet.data.ChallengeScheme;
@@ -39,7 +39,7 @@ import com.noelios.restlet.impl.ChallengeRequestImpl;
 import com.noelios.restlet.util.Base64;
 
 /**
- * Chainlet guarding the access to another handler (Restlet, Chainlet, Maplet, etc.).<br/>
+ * Chainlet guarding the access to another Restlet, Chainlet or Maplet<br/>
  * Currently only supports the HTTP basic authentication scheme and a custom schemes (based on cookies, query params or IP address for example).
  * @see <a href="http://www.restlet.org/tutorial#part09">Tutorial: Guarding access to sensitive resources</a>
  */
@@ -93,7 +93,7 @@ public abstract class GuardChainlet extends AbstractChainlet
     * Handles a call to a resource or a set of resources.
     * @param call The call to handle.
     */
-   public void handle(UniformCall call)
+   public void handle(RestletCall call)
    {
    	if(this.authentication)
    	{
@@ -121,7 +121,7 @@ public abstract class GuardChainlet extends AbstractChainlet
     * in the constructor to silently skip this step. 
     * @param call The call to authenticate.
     */
-   public void authenticate(UniformCall call)
+   public void authenticate(RestletCall call)
    {
       SecurityData security = call.getSecurity();
       ChallengeResponse resp = security.getChallengeResponse();
@@ -181,19 +181,19 @@ public abstract class GuardChainlet extends AbstractChainlet
     * checking whether the current user has the proper role or access rights.<br/>
     * By default, no call is authorized and subclasses requiring authorization must override this method.
     * @param call The current call.
-    * @return True if the given credentials authorize access to the attached handler.
+    * @return True if the given credentials authorize access to the attached Restlet.
     */
-   protected boolean authorize(UniformCall call)
+   protected boolean authorize(RestletCall call)
    {
       return false;
    }
    
    /**
     * Accepts the call.
-    * By default, invokes the attached handler.
+    * By default, invokes the attached Restlet.
     * @param call The current call.
     */
-   protected void accept(UniformCall call)
+   protected void accept(RestletCall call)
    {
    	// Invoke the chained Restlet
       super.handle(call);
@@ -206,7 +206,7 @@ public abstract class GuardChainlet extends AbstractChainlet
     * call status is set to CLIENT_ERROR_FORBIDDEN.
     * @param call The current call.
     */
-   protected void reject(UniformCall call)
+   protected void reject(RestletCall call)
    {
       if(this.authentication)
       {
@@ -224,7 +224,7 @@ public abstract class GuardChainlet extends AbstractChainlet
     * challenging mechanism, such as displaying a login page.
     * @param call The current call.
     */
-   protected void challenge(UniformCall call)
+   protected void challenge(RestletCall call)
    {
 		if(this.scheme.equals(ChallengeSchemes.HTTP_BASIC))
 		{

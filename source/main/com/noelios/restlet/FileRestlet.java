@@ -22,8 +22,8 @@
 
 package com.noelios.restlet;
 
-import org.restlet.AbstractHandler;
-import org.restlet.UniformCall;
+import org.restlet.AbstractRestlet;
+import org.restlet.RestletCall;
 import org.restlet.component.RestletContainer;
 import org.restlet.data.MediaType;
 import org.restlet.data.Statuses;
@@ -33,7 +33,7 @@ import com.noelios.restlet.data.FileRepresentation;
 /**
  * Restlet supported by a single file.
  */
-public class FileRestlet extends AbstractHandler
+public class FileRestlet extends AbstractRestlet
 {
    /** The file's path. */
    private String filePath;
@@ -107,7 +107,7 @@ public class FileRestlet extends AbstractHandler
     * Handles a uniform call.
     * @param call The uniform call to handle.
     */
-   public void handle(UniformCall call)
+   public void handle(RestletCall call)
    {
       if(call.getResourcePath().equals(""))
       {

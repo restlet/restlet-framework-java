@@ -26,9 +26,9 @@ import java.io.IOException;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
-import org.restlet.AbstractHandler;
+import org.restlet.AbstractRestlet;
 import org.restlet.Manager;
-import org.restlet.UniformCall;
+import org.restlet.RestletCall;
 import org.restlet.component.RestletContainer;
 import org.restlet.data.Reference;
 import org.restlet.data.Statuses;
@@ -41,7 +41,7 @@ import com.noelios.restlet.util.UniformCallModel;
  * @see com.noelios.restlet.util.UniformCallModel
  * @see <a href="http://www.restlet.org/tutorial#part10">Tutorial: URI rewriting and redirection</a>
  */
-public class RedirectRestlet extends AbstractHandler
+public class RedirectRestlet extends AbstractRestlet
 {
    /**
     * In this mode, the client is permanently redirected to the URI generated from the target URI pattern.<br/>
@@ -115,7 +115,7 @@ public class RedirectRestlet extends AbstractHandler
     * Handles a call to a resource or a set of resources.
     * @param call The call to handle.
     */
-   public void handle(UniformCall call)
+   public void handle(RestletCall call)
    {
       try
       {
@@ -149,13 +149,13 @@ public class RedirectRestlet extends AbstractHandler
             case MODE_CONNECTOR:
                logger.log(Level.INFO, "Redirecting to connector " + this.connectorName + ": " + targetUri);
                call.setResourceRef(target);
-               getContainer().callClient(this.connectorName, call);
+               getParent().callClient(this.connectorName, call);
             break;
 
             case MODE_CONTAINER:
                logger.log(Level.INFO, "Redirecting to container: " + targetUri);
                call.setResourceRef(target);
-               getContainer().handle(call);
+               getParent().handle(call);
             break;
          }
       }

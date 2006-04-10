@@ -23,37 +23,36 @@
 package org.restlet;
 
 import org.restlet.component.Component;
-import org.restlet.component.RestletContainer;
 
 /**
- * Abstract implementation of a uniform interface handler.<br/>
+ * Abstract Restlet that can be easily subclassed.<br/>
  * The start and stop state is managed by default but with no other action.<br/>
  * Override the start and stop methods if needed.
  * @see <a href="http://www.restlet.org/tutorial#part03">Tutorial: Listening to Web browsers</a>
  */
-public abstract class AbstractHandler implements UniformInterface
+public abstract class AbstractRestlet implements Restlet
 {
    /** Indicates if the handler was started. */
    protected boolean started;
 
    /** The container. */
-   protected Component container;
+   protected Component parent;
 
    /**
     * Constructor.
     */
-   public AbstractHandler()
+   public AbstractRestlet()
    {
       this(null);
    }
 
    /**
     * Constructor.
-    * @param container The parent container.
+    * @param parent The parent component.
     */
-   public AbstractHandler(Component container)
+   public AbstractRestlet(Component parent)
    {
-   	this.container = container;
+   	this.parent = parent;
       this.started = false;
    }
 
@@ -88,21 +87,21 @@ public abstract class AbstractHandler implements UniformInterface
    }
 
    /**
-    * Returns the container.
-    * @return The container.
+    * Returns the parent component.
+    * @return The parent component.
     */
-   public Component getContainer()
+   public Component getParent()
    {
-      return this.container;
+      return this.parent;
    }
 
    /**
-    * Sets the container.
-    * @param container The container.
+    * Sets the parent component.
+    * @param parent The parent component.
     */
-   protected void setContainer(RestletContainer container)
+   public void setParent(Component parent)
    {
-      this.container = container;
+      this.parent = parent;
    }
 
    /**

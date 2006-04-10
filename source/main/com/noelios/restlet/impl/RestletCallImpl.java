@@ -32,7 +32,7 @@ import java.util.logging.Logger;
 
 import org.restlet.Manager;
 import org.restlet.Resource;
-import org.restlet.UniformCall;
+import org.restlet.RestletCall;
 import org.restlet.connector.ConnectorCall;
 import org.restlet.data.ConditionData;
 import org.restlet.data.Cookie;
@@ -57,7 +57,7 @@ import com.noelios.restlet.util.DateUtils;
 /**
  * Implementation of an uniform call.
  */
-public class UniformCallImpl implements UniformCall
+public class RestletCallImpl implements RestletCall
 {
    /** Obtain a suitable logger. */
    private static Logger logger = Logger.getLogger("com.noelios.restlet.UniformCallImpl");

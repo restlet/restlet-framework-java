@@ -24,18 +24,19 @@ package org.restlet.component;
 
 import java.io.IOException;
 
+import org.restlet.AbstractRestlet;
 import org.restlet.Manager;
-import org.restlet.UniformCall;
-import org.restlet.UniformInterface;
+import org.restlet.Restlet;
+import org.restlet.RestletCall;
 import org.restlet.connector.Client;
 import org.restlet.connector.Server;
 
 /**
  * Default Restlet container that can be easily subclassed.<br/> <br/> Component acting as a container for
- * call handlers (Restlets, Chainlets, Maplets, etc.). Calls are first intercepted by the container which can do various checks
- * before effectively delegating it to one of the registered root handlers.
+ * Restlets, Chainlets and Maplets. Calls are first intercepted by the container which can do various checks
+ * before effectively delegating it to one of the registered root Restlets.
  */
-public class DefaultRestletContainer implements RestletContainer
+public class DefaultRestletContainer extends AbstractRestlet implements RestletContainer
 {
    /** The delegate Restlet container. */
    protected RestletContainer delegate;
@@ -46,16 +47,17 @@ public class DefaultRestletContainer implements RestletContainer
     */
    public DefaultRestletContainer(String name)
    {
-      this.delegate = Manager.createRestletContainer(this, name);
+      this(null, name);
    }
 
    /**
-    * Returns the container.
-    * @return The container.
+    * Constructor.
+    * @param server The parent Restlet server.
+    * @param name The unique name of the container.
     */
-   public RestletContainer getContainer()
+   public DefaultRestletContainer(RestletServer server, String name)
    {
-      return this;
+      this.delegate = Manager.createRestletContainer(server, name);
    }
 
    /**
@@ -101,7 +103,7 @@ public class DefaultRestletContainer implements RestletContainer
     * @param name The name of the client connector.
     * @param call The call to handle.
     */
-   public void callClient(String name, UniformCall call) throws IOException
+   public void callClient(String name, RestletCall call) throws IOException
    {
       delegate.callClient(name, call);
    }
@@ -112,7 +114,7 @@ public class DefaultRestletContainer implements RestletContainer
     * @param target The target instance to attach.
     * @see java.util.regex.Pattern
     */
-   public void attach(String pathPattern, UniformInterface target)
+   public void attach(String pathPattern, Restlet target)
    {
       delegate.attach(pathPattern, target);
    }
@@ -124,7 +126,7 @@ public class DefaultRestletContainer implements RestletContainer
     * parameter).
     * @see java.util.regex.Pattern
     */
-   public void attach(String pathPattern, Class<? extends UniformInterface> targetClass)
+   public void attach(String pathPattern, Class<? extends Restlet> targetClass)
    {
       delegate.attach(pathPattern, targetClass);
    }
@@ -133,7 +135,7 @@ public class DefaultRestletContainer implements RestletContainer
     * Detaches a target instance.
     * @param target The target instance to detach.
     */
-   public void detach(UniformInterface target)
+   public void detach(Restlet target)
    {
       delegate.detach(target);
    }
@@ -142,7 +144,7 @@ public class DefaultRestletContainer implements RestletContainer
     * Detaches a target class.
     * @param targetClass The target class to detach.
     */
-   public void detach(Class<? extends UniformInterface> targetClass)
+   public void detach(Class<? extends Restlet> targetClass)
    {
       delegate.detach(targetClass);
    }
@@ -153,48 +155,18 @@ public class DefaultRestletContainer implements RestletContainer
     * @param call The call to delegate.
     * @return True if the call was successfully delegated.
     */
-   public boolean delegate(UniformCall call)
+   public boolean delegate(RestletCall call)
    {
       return delegate.delegate(call);
-   }
-
-   /** Start hook. */
-   public void start() throws Exception
-   {
-      delegate.start();
    }
 
    /**
     * Handles a uniform call.
     * @param call The uniform call to handle.
     */
-   public void handle(UniformCall call)
+   public void handle(RestletCall call)
    {
       delegate.handle(call);
-   }
-
-   /** Stop hook. */
-   public void stop() throws Exception
-   {
-      delegate.stop();
-   }
-
-   /**
-    * Indicates if the component is started.
-    * @return True if the component is started.
-    */
-   public boolean isStarted()
-   {
-      return delegate.isStarted();
-   }
-
-   /**
-    * Indicates if the component is stopped.
-    * @return True if the component is stopped.
-    */
-   public boolean isStopped()
-   {
-      return delegate.isStopped();
    }
 
    /**

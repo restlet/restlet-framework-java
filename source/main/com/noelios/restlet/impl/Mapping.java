@@ -24,14 +24,14 @@ package com.noelios.restlet.impl;
 
 import java.util.regex.Pattern;
 
-import org.restlet.UniformInterface;
+import org.restlet.Restlet;
 
 
 /**
- * Represents a mapping between a path pattern and a target handler.
+ * Represents a mapping between a path pattern and a target Restlet.
  * @see java.util.regex.Pattern
  */
-public class HandlerMapping extends HandlerTarget
+public class Mapping extends Target
 {
    /** The path pattern. */
    Pattern pathPattern;
@@ -41,7 +41,7 @@ public class HandlerMapping extends HandlerTarget
     * @param pathPattern The path pattern.
     * @param target The target interface.
     */
-   public HandlerMapping(String pathPattern, UniformInterface target)
+   public Mapping(String pathPattern, Restlet target)
    {
       super(target);
       this.pathPattern = Pattern.compile(pathPattern, Pattern.CASE_INSENSITIVE);
@@ -52,7 +52,7 @@ public class HandlerMapping extends HandlerTarget
     * @param pathPattern The path pattern.
     * @param targetClass The target class.
     */
-   public HandlerMapping(String pathPattern, Class<? extends UniformInterface> targetClass)
+   public Mapping(String pathPattern, Class<? extends Restlet> targetClass)
    {
       super(targetClass);
       this.pathPattern = Pattern.compile(pathPattern, Pattern.CASE_INSENSITIVE);

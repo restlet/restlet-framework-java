@@ -29,8 +29,8 @@ import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
-import org.restlet.UniformCall;
-import org.restlet.UniformInterface;
+import org.restlet.RestletCall;
+import org.restlet.Restlet;
 import org.restlet.component.Component;
 import org.restlet.connector.Server;
 import org.restlet.connector.ServerCall;
@@ -50,11 +50,14 @@ public class ServerServlet extends HttpServlet implements Server
    /** Serial version identifier. */
    private static final long serialVersionUID = 1L;
 
+   /** The parent component. */
+   protected Component parent;
+   
    /** Indicates if the connector was started. */
    protected boolean started;
 
-   /** The handler of Jetty calls. */
-   protected UniformInterface handler;
+   /** The target Restlet for Jetty calls. */
+   protected Restlet target;
 
    /**
     * Constructor.
@@ -62,7 +65,7 @@ public class ServerServlet extends HttpServlet implements Server
    public ServerServlet()
    {
       this.started = false;
-      this.handler = null;
+      this.target = null;
    }
    
    /**
@@ -105,12 +108,21 @@ public class ServerServlet extends HttpServlet implements Server
    }
 
    /**
-    * Returns the container.
-    * @return The container.
+    * Returns the parent component.
+    * @return The parent component.
     */
-   public Component getContainer()
+   public Component getParent()
    {
-   	return null;
+   	return this.parent;
+   }
+
+   /**
+    * Sets the parent component.
+    * @param parent The parent component.
+    */
+   public void setParent(Component parent)
+   {
+   	this.parent = parent;
    }
 
    /**
@@ -124,20 +136,20 @@ public class ServerServlet extends HttpServlet implements Server
    }
 
    /**
-    * Returns the call handler.<br/>
+    * Returns the target Restlet handling calls.<br/>
     * For the first invocation, we look for an existing target in the application context, using the NAME_TARGET_ATTRIBUTE parameter.<br/>
     * We lookup for the attribute name in the servlet configuration, then in the application context.<br/>
     * If no target exists, we try to instantiate one based on the class name set in the NAME_TARGET_CLASS parameter.<br/>
     * We lookup for the class name in the servlet configuration, then in the application context.<br/>
     * Once the target is found, we wrap the servlet request and response into a uniform call and ask the target to handle it.<br/>
     * When the handling is done, we write the result back into the result object and return from the service method.
-    * @return The call handler.
+    * @return The target Restlet handling calls.
     */
-   public UniformInterface getTarget()
+   public Restlet getTarget()
    {
-      if(this.handler != null)
+      if(this.target != null)
       {
-         return this.handler;
+         return this.target;
       }
       else
       {
@@ -155,9 +167,9 @@ public class ServerServlet extends HttpServlet implements Server
             if(targetAttributeName != null)
             {
                // Look up the attribute for a target
-               this.handler = (UniformInterface)getServletContext().getAttribute(targetAttributeName);
+               this.target = (Restlet)getServletContext().getAttribute(targetAttributeName);
 
-               if(this.handler == null)
+               if(this.target == null)
                {
                   // Try to instantiate a new target
                   // First, look in the servlet configuration for the class name
@@ -177,8 +189,8 @@ public class ServerServlet extends HttpServlet implements Server
 
                         // Create a new instance of the target class
                         // and store it for reuse by other ServerServlets.
-                        this.handler = (UniformInterface)targetClass.newInstance();
-                        getServletContext().setAttribute(NAME_TARGET_ATTRIBUTE, this.handler);
+                        this.target = (Restlet)targetClass.newInstance();
+                        getServletContext().setAttribute(NAME_TARGET_ATTRIBUTE, this.target);
                      }
                      catch(ClassNotFoundException e)
                      {
@@ -195,27 +207,27 @@ public class ServerServlet extends HttpServlet implements Server
                   }
                   else
                   {
-                     log("[Noelios Restlet Engine] - The ServerServlet couldn't find the class name of the target handler. Please set the initialization parameter called " + NAME_TARGET_CLASS);
+                     log("[Noelios Restlet Engine] - The ServerServlet couldn't find the class name of the target Restlet. Please set the initialization parameter called " + NAME_TARGET_CLASS);
                   }
                }
             }
             else
             {
-               log("[Noelios Restlet Engine] - The ServerServlet couldn't find the attribute name of the target handler. Please set the initialization parameter called " + NAME_TARGET_ATTRIBUTE);
+               log("[Noelios Restlet Engine] - The ServerServlet couldn't find the attribute name of the target Restlet. Please set the initialization parameter called " + NAME_TARGET_ATTRIBUTE);
             }
          }
 
-         return this.handler;
+         return this.target;
       }
    }
 
    /**
-    * Sets the call handler.
-    * @param handler The call handler.
+    * Sets the target Restlet handling calls.
+    * @param target The target Restlet handling calls.
     */
-   public void setTarget(UniformInterface handler)
+   public void setTarget(Restlet target)
    {
-      this.handler = handler;
+      this.target = target;
    }
 
    /**
@@ -225,7 +237,7 @@ public class ServerServlet extends HttpServlet implements Server
     */
    public void handle(ServerCall call) throws IOException
    {
-      UniformCall uniformCall = call.toUniform();
+      RestletCall uniformCall = call.toUniform();
       handle(uniformCall);
       call.setResponse(uniformCall);
       call.sendResponseHeaders();
@@ -234,10 +246,10 @@ public class ServerServlet extends HttpServlet implements Server
 
    /**
     * Handles a uniform call.
-    * The default behavior is to as the attached handler to handle the call. 
-    * @param call The uniform call to handle.
+    * The default behavior is to invoke the target Restlet. 
+    * @param call The call to handle.
     */
-   public void handle(UniformCall call)
+   public void handle(RestletCall call)
    {
       getTarget().handle(call);
    }

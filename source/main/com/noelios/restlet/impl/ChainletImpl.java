@@ -22,24 +22,24 @@
 
 package com.noelios.restlet.impl;
 
-import org.restlet.AbstractHandler;
+import org.restlet.AbstractRestlet;
 import org.restlet.Chainlet;
-import org.restlet.UniformCall;
-import org.restlet.UniformInterface;
+import org.restlet.RestletCall;
+import org.restlet.Restlet;
 import org.restlet.component.RestletContainer;
 import org.restlet.data.Statuses;
 
 
 /**
- * Implementation of a chainer of calls to a target handler.
+ * Implementation of a chainer of calls to a target Restlet.
  */
-public class ChainletImpl extends AbstractHandler implements Chainlet
+public class ChainletImpl extends AbstractRestlet implements Chainlet
 {
    /** Serial version identifier. */
    private static final long serialVersionUID = 1L;
 
-   /** The target handler. */
-   protected HandlerTarget target;
+   /** The target Restlet. */
+   protected Target target;
 
    /**
     * Constructor.
@@ -54,9 +54,9 @@ public class ChainletImpl extends AbstractHandler implements Chainlet
     * Attaches a target instance shared by all calls.
     * @param target The target instance to attach.
     */
-   public void attach(UniformInterface target)
+   public void attach(Restlet target)
    {
-      this.target = new HandlerTarget(target);
+      this.target = new Target(target);
    }
 
    /**
@@ -64,9 +64,9 @@ public class ChainletImpl extends AbstractHandler implements Chainlet
     * @param targetClass The target class to attach (can have a constructor taking a RestletContainer
     * parameter).
     */
-   public void attach(Class<? extends UniformInterface> targetClass)
+   public void attach(Class<? extends Restlet> targetClass)
    {
-      this.target = new HandlerTarget(targetClass);
+      this.target = new Target(targetClass);
    }
 
    /**
@@ -82,12 +82,12 @@ public class ChainletImpl extends AbstractHandler implements Chainlet
     * Default behavior to be overriden: delegation to the attached target.
     * @param call The call to handle.
     */
-   public void handle(UniformCall call)
+   public void handle(RestletCall call)
    {
       if(this.target != null)
       {
          // Invoke the call handler
-         this.target.handle(call, getContainer());
+         this.target.handle(call, getParent());
       }
       else
       {

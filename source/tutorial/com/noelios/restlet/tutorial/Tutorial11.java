@@ -24,12 +24,12 @@ package com.noelios.restlet.tutorial;
 
 import java.util.List;
 
-import org.restlet.AbstractHandler;
-import org.restlet.DefaultRestlet;
+import org.restlet.AbstractRestlet;
+import org.restlet.DefaultMaplet;
 import org.restlet.Manager;
 import org.restlet.Maplet;
-import org.restlet.UniformCall;
-import org.restlet.UniformInterface;
+import org.restlet.RestletCall;
+import org.restlet.Restlet;
 import org.restlet.component.DefaultRestletContainer;
 import org.restlet.component.RestletContainer;
 import org.restlet.connector.Server;
@@ -69,13 +69,13 @@ public class Tutorial11
          log.attach(status);
 
          // Attach a root Maplet to the status Chainlet.
-         Maplet rootMaplet = new DefaultRestlet(myContainer);
+         Maplet rootMaplet = new DefaultMaplet(myContainer);
          status.attach(rootMaplet);
 
          // Attach a guard Chainlet to secure access the the chained directory Restlet
          GuardChainlet guard = new GuardChainlet(myContainer, "com.noelios.restlet.tutorial", true, ChallengeSchemes.HTTP_BASIC , "Restlet tutorial", true)
 	      	{
-		      	protected boolean authorize(UniformCall call)
+		      	protected boolean authorize(RestletCall call)
 		         {
             		return "scott".equals(call.getSecurity().getLogin()) && 
      				 			 "tiger".equals(call.getSecurity().getPassword());
@@ -92,13 +92,13 @@ public class Tutorial11
          guard.attach(dirRestlet);
 
          // Create the users Maplet
-         Maplet usersMaplet = new DefaultRestlet(myContainer);
+         Maplet usersMaplet = new DefaultMaplet(myContainer);
          rootMaplet.attach("/users", usersMaplet);
 
          // Create the user Maplet
-         Maplet userMaplet = new DefaultRestlet(myContainer)
+         Maplet userMaplet = new DefaultMaplet(myContainer)
             {
-               public void handle(UniformCall call)
+               public void handle(RestletCall call)
                {
                   if(call.getResourcePath().equals(""))
                   {
@@ -116,9 +116,9 @@ public class Tutorial11
          usersMaplet.attach("/[a-z]+", userMaplet);
 
          // Create the orders Restlet
-         UniformInterface ordersRestlet = new AbstractHandler(myContainer)
+         Restlet ordersRestlet = new AbstractRestlet(myContainer)
             {
-               public void handle(UniformCall call)
+               public void handle(RestletCall call)
                {
                   // Print the user name of the requested orders
                   List<String> segments = call.getHandlerRef().getSegments();

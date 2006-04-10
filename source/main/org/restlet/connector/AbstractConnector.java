@@ -22,14 +22,14 @@
 
 package org.restlet.connector;
 
-import org.restlet.AbstractHandler;
+import org.restlet.AbstractRestlet;
 import org.restlet.component.Component;
 import org.restlet.data.Protocol;
 
 /**
  * Abstract connector implementation.
  */
-public abstract class AbstractConnector extends AbstractHandler implements Connector
+public abstract class AbstractConnector extends AbstractRestlet implements Connector
 {
    /** The connector protocol. */
    protected Protocol protocol;
@@ -49,13 +49,13 @@ public abstract class AbstractConnector extends AbstractHandler implements Conne
    
    /**
     * Constructor.
-    * @param container The parent container.
+    * @param parent The parent component.
     * @param protocol The connector protocol.
     * @param name The unique connector name.
     */
-   public AbstractConnector(Component container, Protocol protocol, String name)
+   public AbstractConnector(Component parent, Protocol protocol, String name)
    {
-   	this.container = container;
+   	super(parent);
       this.protocol = protocol;
       this.name = name;
       this.started = false;

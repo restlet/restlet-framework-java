@@ -38,8 +38,9 @@ import org.restlet.Chainlet;
 import org.restlet.Factory;
 import org.restlet.Manager;
 import org.restlet.Maplet;
-import org.restlet.UniformCall;
-import org.restlet.UniformInterface;
+import org.restlet.RestletCall;
+import org.restlet.Restlet;
+import org.restlet.component.Component;
 import org.restlet.component.RestletContainer;
 import org.restlet.component.RestletServer;
 import org.restlet.connector.Client;
@@ -203,9 +204,9 @@ public class FactoryImpl implements Factory
     * Creates a new uniform call.
     * @return A new uniform call.
     */
-   public UniformCall createCall()
+   public RestletCall createCall()
    {
-      return new UniformCallImpl();
+      return new RestletCallImpl();
    }
 
    /**
@@ -401,22 +402,22 @@ public class FactoryImpl implements Factory
 
    /**
     * Creates a delegate Restlet container.
-    * @param parent The parent Restlet container.
+    * @param parent The parent component.
     * @param name The container's name.
     * @return The new Restlet container.
     */
-   public RestletContainer createRestletContainer(RestletContainer parent, String name)
+   public RestletContainer createRestletContainer(Component parent, String name)
    {
       return new RestletContainerImpl(parent, name);
    }
 
    /**
     * Creates a delegate Restlet server.
-    * @param parent The parent Restlet server.
+    * @param parent The parent component.
     * @param name The server's name.
     * @return The new Restlet server.
     */
-   public RestletServer createRestletServer(RestletServer parent, String name)
+   public RestletServer createRestletServer(Component parent, String name)
    {
       return new RestletServerImpl(name);
    }
@@ -425,12 +426,12 @@ public class FactoryImpl implements Factory
     * Create a new server connector for a given protocol.
     * @param protocol The connector protocol.
     * @param name The unique connector name.
-    * @param target The target handler.
+    * @param target The target Restlet.
     * @param address The optional listening IP address (local host used if null).
     * @param port The listening port.
     * @return The new server connector.
     */
-   public Server createServer(Protocol protocol, String name, UniformInterface target, String address, int port)
+   public Server createServer(Protocol protocol, String name, Restlet target, String address, int port)
    {
       Server result = null;
 
@@ -440,7 +441,7 @@ public class FactoryImpl implements Factory
          
          if((providerClass != null) && (protocol != null))
          {
-         	result = providerClass.getConstructor(Protocol.class, String.class, UniformInterface.class, String.class, int.class).newInstance(protocol, name, target, address, port);
+         	result = providerClass.getConstructor(Protocol.class, String.class, Restlet.class, String.class, int.class).newInstance(protocol, name, target, address, port);
          }
          else
          {

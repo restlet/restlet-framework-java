@@ -28,7 +28,7 @@ import java.io.OutputStream;
 import java.nio.channels.ReadableByteChannel;
 import java.nio.channels.WritableByteChannel;
 
-import org.restlet.UniformCall;
+import org.restlet.RestletCall;
 import org.restlet.data.Representation;
 
 /**
@@ -40,14 +40,14 @@ public interface ServerCall extends ConnectorCall
     * Converts to an uniform call.
     * @return An equivalent uniform call.
     */
-   public UniformCall toUniform();
+   public RestletCall toUniform();
    
    /**
     * Sets the response from an uniform call.<br>
     * Sets the response headers and the response status. 
     * @param call The call to update from.
     */
-   public void setResponse(UniformCall call);
+   public void setResponse(RestletCall call);
    
    /**
     * Sends the response headers.<br/>

@@ -22,8 +22,8 @@
 
 package com.noelios.restlet.test;
 
-import org.restlet.AbstractHandler;
-import org.restlet.UniformCall;
+import org.restlet.AbstractRestlet;
+import org.restlet.RestletCall;
 import org.restlet.data.MediaTypes;
 
 import com.noelios.restlet.data.StringRepresentation;
@@ -31,13 +31,13 @@ import com.noelios.restlet.data.StringRepresentation;
 /**
  * Trace target. 
  */
-public class TraceTarget extends AbstractHandler
+public class TraceTarget extends AbstractRestlet
 {
    /**
     * Handles a uniform call.
     * @param call The uniform call to handle.
     */
-   public void handle(UniformCall call)
+   public void handle(RestletCall call)
    {
       String output = "Hello World!" +
                       "\nYour IP address is " + call.getClientAddress() + 

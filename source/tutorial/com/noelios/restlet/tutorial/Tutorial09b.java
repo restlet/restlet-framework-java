@@ -25,7 +25,7 @@ package com.noelios.restlet.tutorial;
 import java.io.IOException;
 
 import org.restlet.Manager;
-import org.restlet.UniformCall;
+import org.restlet.RestletCall;
 import org.restlet.connector.Client;
 import org.restlet.data.ChallengeResponse;
 import org.restlet.data.ChallengeSchemes;
@@ -44,7 +44,7 @@ public class Tutorial09b
       try
       {
          // Prepare the REST call
-         UniformCall call = Manager.createCall();
+         RestletCall call = Manager.createCall();
          call.setResourceRef(Manager.createReference("http://localhost:8182/"));
          call.setMethod(Methods.GET);
          

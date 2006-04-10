@@ -27,7 +27,7 @@ import java.util.Arrays;
 import java.util.List;
 
 import org.mortbay.util.InetAddrPort;
-import org.restlet.UniformInterface;
+import org.restlet.Restlet;
 import org.restlet.connector.AbstractServer;
 import org.restlet.data.Protocol;
 import org.restlet.data.Protocols;
@@ -48,11 +48,11 @@ public class JettyServer extends AbstractServer
     * Constructor.
     * @param protocol The connector protocol.
     * @param name The unique connector name.
-    * @param target The target handler.
+    * @param target The target Restlet.
     * @param address The optional listening IP address (local host used if null).
     * @param port The listening port.
     */
-   public JettyServer(Protocol protocol, String name, UniformInterface target, String address, int port)
+   public JettyServer(Protocol protocol, String name, Restlet target, String address, int port)
    {
       super(protocol, name, target, address, port);
    }
@@ -64,7 +64,7 @@ public class JettyServer extends AbstractServer
     * @param target The target component handling calls.
     * @param address The IP address to listen to.
     */
-   public JettyServer(Protocol protocol, String name, UniformInterface target, InetSocketAddress address)
+   public JettyServer(Protocol protocol, String name, Restlet target, InetSocketAddress address)
    {
    	this(protocol, name, target, address.getHostName(), address.getPort());
    }
@@ -73,10 +73,10 @@ public class JettyServer extends AbstractServer
     * Constructor.
     * @param protocol The connector protocol.
     * @param name The unique connector name.
-    * @param target The target handler.
+    * @param target The target Restlet.
     * @param port The HTTP port number.
     */
-   public JettyServer(Protocol protocol, String name, UniformInterface target, int port)
+   public JettyServer(Protocol protocol, String name, Restlet target, int port)
    {
    	this(protocol, name, target, null, port);
    }

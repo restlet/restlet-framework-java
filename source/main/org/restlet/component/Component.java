@@ -25,8 +25,8 @@ package org.restlet.component;
 import java.io.IOException;
 
 import org.restlet.Element;
-import org.restlet.UniformCall;
-import org.restlet.UniformInterface;
+import org.restlet.RestletCall;
+import org.restlet.Restlet;
 import org.restlet.connector.Client;
 import org.restlet.connector.Server;
 
@@ -37,7 +37,7 @@ import org.restlet.connector.Server;
  * @see <a href="http://www.ics.uci.edu/~fielding/pubs/dissertation/software_arch.htm#sec_1_2_1">Source
  * dissertation</a>
  */
-public interface Component extends Element, UniformInterface
+public interface Component extends Element, Restlet
 {
    /**
     * Adds a server connector to this component.
@@ -71,5 +71,5 @@ public interface Component extends Element, UniformInterface
     * @param call The call to handle.
     * @throws IOException
     */
-   public void callClient(String name, UniformCall call) throws IOException;
+   public void callClient(String name, RestletCall call) throws IOException;
 }

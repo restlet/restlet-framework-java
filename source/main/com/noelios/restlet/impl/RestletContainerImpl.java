@@ -23,8 +23,9 @@
 package com.noelios.restlet.impl;
 
 import org.restlet.Maplet;
-import org.restlet.UniformCall;
-import org.restlet.UniformInterface;
+import org.restlet.RestletCall;
+import org.restlet.Restlet;
+import org.restlet.component.Component;
 import org.restlet.component.RestletContainer;
 
 
@@ -35,17 +36,17 @@ import org.restlet.component.RestletContainer;
 public class RestletContainerImpl extends ComponentImpl implements RestletContainer
 {
    /** The parent container who delegates. */
-   protected RestletContainer parent;
+   protected Component parent;
 
    /** Delegate Maplet handling root Restlets. */
    protected Maplet delegate;
 
    /**
     * Constructor.
-    * @param parent The parent Restlet container.
+    * @param parent The parent component.
     * @param name The unique name of the container.
     */
-   public RestletContainerImpl(RestletContainer parent, String name)
+   public RestletContainerImpl(Component parent, String name)
    {
       super(name);
       this.parent = parent;
@@ -67,7 +68,7 @@ public class RestletContainerImpl extends ComponentImpl implements RestletContai
     * @param target The target instance to attach.
     * @see java.util.regex.Pattern
     */
-   public void attach(String pathPattern, UniformInterface target)
+   public void attach(String pathPattern, Restlet target)
    {
       delegate.attach(pathPattern, target);
    }
@@ -79,7 +80,7 @@ public class RestletContainerImpl extends ComponentImpl implements RestletContai
     * parameter).
     * @see java.util.regex.Pattern
     */
-   public void attach(String pathPattern, Class<? extends UniformInterface> targetClass)
+   public void attach(String pathPattern, Class<? extends Restlet> targetClass)
    {
       delegate.attach(pathPattern, targetClass);
    }
@@ -88,7 +89,7 @@ public class RestletContainerImpl extends ComponentImpl implements RestletContai
     * Detaches a target instance.
     * @param target The target instance to detach.
     */
-   public void detach(UniformInterface target)
+   public void detach(Restlet target)
    {
       delegate.detach(target);
    }
@@ -97,7 +98,7 @@ public class RestletContainerImpl extends ComponentImpl implements RestletContai
     * Detaches a target class.
     * @param targetClass The Restlet class to detach.
     */
-   public void detach(Class<? extends UniformInterface> targetClass)
+   public void detach(Class<? extends Restlet> targetClass)
    {
       delegate.detach(targetClass);
    }
@@ -106,7 +107,7 @@ public class RestletContainerImpl extends ComponentImpl implements RestletContai
     * Handles a call to a resource or a set of resources.
     * @param call The call to handle.
     */
-   public void handle(UniformCall call)
+   public void handle(RestletCall call)
    {
       delegate.handle(call);
    }
@@ -117,7 +118,7 @@ public class RestletContainerImpl extends ComponentImpl implements RestletContai
     * @param call The call to delegate.
     * @return True if the call was successfully delegated.
     */
-   public boolean delegate(UniformCall call)
+   public boolean delegate(RestletCall call)
    {
       return delegate.delegate(call);
    }

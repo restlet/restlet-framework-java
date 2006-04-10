@@ -32,8 +32,10 @@ import javax.servlet.ServletException;
 import org.mortbay.jetty.Connector;
 import org.mortbay.jetty.HttpConnection;
 import org.mortbay.jetty.nio.SelectChannelConnector;
-import org.restlet.UniformCall;
-import org.restlet.UniformInterface;
+import org.restlet.Restlet;
+import org.restlet.RestletCall;
+import org.restlet.component.Component;
+import org.restlet.component.RestletContainer;
 import org.restlet.connector.Server;
 import org.restlet.connector.ServerCall;
 import org.restlet.data.Protocol;
@@ -51,8 +53,11 @@ public class JettyServer extends org.mortbay.jetty.Server implements Server
    /** The name of this REST connector. */
    private String name;
 
-   /** The target handler. */
-   private UniformInterface target;
+   /** The target Restlet. */
+   private Restlet target;
+
+   /** The parent component. */
+   protected Component parent;
 
    /**
     * Constructor.
@@ -62,7 +67,7 @@ public class JettyServer extends org.mortbay.jetty.Server implements Server
     * @param address The optional listening IP address (local host used if null).
     * @param port The listening port.
     */
-   public JettyServer(Protocol protocol, String name, UniformInterface target, String address, int port)
+   public JettyServer(Protocol protocol, String name, Restlet target, String address, int port)
    {
       // Create and configure the Jetty HTTP connector
       Connector connector = new SelectChannelConnector(); // Uses non-blocking NIO
@@ -87,7 +92,7 @@ public class JettyServer extends org.mortbay.jetty.Server implements Server
     * @param target The target component handling calls.
     * @param address The IP address to listen to.
     */
-   public JettyServer(Protocol protocol, String name, UniformInterface target, InetSocketAddress address)
+   public JettyServer(Protocol protocol, String name, Restlet target, InetSocketAddress address)
    {
    	this(protocol, name, target, address.getHostName(), address.getPort());
    }
@@ -96,10 +101,10 @@ public class JettyServer extends org.mortbay.jetty.Server implements Server
     * Constructor.
     * @param protocol The connector protocol.
     * @param name The unique connector name.
-    * @param target The target handler.
+    * @param target The target Restlet.
     * @param port The HTTP port number.
     */
-   public JettyServer(Protocol protocol, String name, UniformInterface target, int port)
+   public JettyServer(Protocol protocol, String name, Restlet target, int port)
    {
    	this(protocol, name, target, null, port);
    }
@@ -134,10 +139,10 @@ public class JettyServer extends org.mortbay.jetty.Server implements Server
 
    /**
     * Handles a uniform call.
-    * The default behavior is to as the attached handler to handle the call.
+    * The default behavior is to as the attached Restlet to handle the call.
     * @param call The uniform call to handle.
     */
-   public void handle(UniformCall call)
+   public void handle(RestletCall call)
    {
       getTarget().handle(call);
    }
@@ -152,19 +157,19 @@ public class JettyServer extends org.mortbay.jetty.Server implements Server
    }
 
    /**
-    * Returns the target handler.
-    * @return The target handler.
+    * Returns the target Restlet.
+    * @return The target Restlet.
     */
-   public UniformInterface getTarget()
+   public Restlet getTarget()
    {
       return this.target;
    }
 
    /**
-    * Sets the target handler.
-    * @param target The target handler.
+    * Sets the target Restlet.
+    * @param target The target Restlet.
     */
-   public void setTarget(UniformInterface target)
+   public void setTarget(Restlet target)
    {
       this.target = target;
    }
@@ -176,7 +181,7 @@ public class JettyServer extends org.mortbay.jetty.Server implements Server
     */
    public void handle(ServerCall call) throws IOException
    {
-      UniformCall uniformCall = call.toUniform();
+   	RestletCall uniformCall = call.toUniform();
       handle(uniformCall);
       call.setResponse(uniformCall);
       call.sendResponseHeaders();
@@ -190,6 +195,24 @@ public class JettyServer extends org.mortbay.jetty.Server implements Server
    public Protocol getProtocol()
    {
       return Protocols.HTTP;
+   }
+
+   /**
+    * Returns the parent component.
+    * @return The parent component.
+    */
+   public Component getParent()
+   {
+      return this.parent;
+   }
+
+   /**
+    * Sets the parent component.
+    * @param parent The parent component.
+    */
+   public void setParent(Component parent)
+   {
+      this.parent = parent;
    }
 
    /**

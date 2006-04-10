@@ -23,11 +23,7 @@
 package org.restlet;
 
 /**
- * Handler of calls to a resource or set of resources.<br/>
- * Restlets live inside a parent container and can be easily attached to Maplets and Chainlets.
- * @see <a href="http://www.restlet.org/tutorial#part05">Tutorial: Restlets servers and containers</a>
- *
- * Mapper of calls to attached handlers.<br/>
+ * Mapper of calls to attached Restlets.<br/>
  * Delegation is based on path matching pattterns.<br/>
  * Note that during the delegation, the call paths are automatically modified. 
  * If you are handling hierarchical paths, remember to directly attach the child maplets to their parent maplet
@@ -35,7 +31,7 @@ package org.restlet;
  * in your path patterns otherwise the delegation will not work as expected. 
  * @see <a href="http://www.restlet.org/tutorial#part11">Tutorial: Maplets and hierarchical URIs</a>
  */
-public interface Maplet extends UniformInterface
+public interface Maplet extends Restlet
 {
    /**
     * Attaches a target instance shared by all calls.
@@ -43,7 +39,7 @@ public interface Maplet extends UniformInterface
     * @param target The target instance to attach.
     * @see java.util.regex.Pattern
     */
-   public void attach(String pathPattern, UniformInterface target);
+   public void attach(String pathPattern, Restlet target);
 
    /**
     * Attaches a target class. A new instance will be created for each call.
@@ -52,19 +48,19 @@ public interface Maplet extends UniformInterface
     * parameter).
     * @see java.util.regex.Pattern
     */
-   public void attach(String pathPattern, Class<? extends UniformInterface> targetClass);
+   public void attach(String pathPattern, Class<? extends Restlet> targetClass);
 
    /**
     * Detaches a target instance.
     * @param target The target instance to detach.
     */
-   public void detach(UniformInterface target);
+   public void detach(Restlet target);
 
    /**
     * Detaches a target class.
     * @param targetClass The target class to detach.
     */
-   public void detach(Class<? extends UniformInterface> targetClass);
+   public void detach(Class<? extends Restlet> targetClass);
 
    /**
     * Delegates a call to one of the attached targets.<br/>
@@ -72,6 +68,6 @@ public interface Maplet extends UniformInterface
     * @param call The call to delegate.
     * @return True if the call was successfully delegated.
     */
-   public boolean delegate(UniformCall call);
+   public boolean delegate(RestletCall call);
 
 }

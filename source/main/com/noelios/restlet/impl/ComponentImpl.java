@@ -27,9 +27,9 @@ import java.util.Iterator;
 import java.util.Map;
 import java.util.TreeMap;
 
-import org.restlet.AbstractHandler;
-import org.restlet.UniformCall;
-import org.restlet.UniformInterface;
+import org.restlet.AbstractRestlet;
+import org.restlet.RestletCall;
+import org.restlet.Restlet;
 import org.restlet.component.Component;
 import org.restlet.connector.Client;
 import org.restlet.connector.Server;
@@ -37,7 +37,7 @@ import org.restlet.connector.Server;
 /**
  * Abstract origin server implementation.
  */
-public abstract class ComponentImpl extends AbstractHandler implements Component
+public abstract class ComponentImpl extends AbstractRestlet implements Component
 {
    /** The component name. */
    protected String name;
@@ -113,9 +113,9 @@ public abstract class ComponentImpl extends AbstractHandler implements Component
     * @param name The name of the client connector.
     * @param call The call to handle.
     */
-   public void callClient(String name, UniformCall call) throws IOException
+   public void callClient(String name, RestletCall call) throws IOException
    {
-      UniformInterface connector = (UniformInterface)this.clients.get(name);
+      Restlet connector = (Restlet)this.clients.get(name);
 
       if(connector == null)
       {

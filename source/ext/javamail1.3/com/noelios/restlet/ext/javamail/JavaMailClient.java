@@ -38,7 +38,7 @@ import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
 
 import org.restlet.Manager;
-import org.restlet.UniformCall;
+import org.restlet.RestletCall;
 import org.restlet.connector.AbstractClient;
 import org.restlet.connector.ClientCall;
 import org.restlet.data.Methods;
@@ -110,9 +110,9 @@ public class JavaMailClient extends AbstractClient
     * @param smtpURI The SMTP server's URI (ex: smtp://localhost).
     * @param email The email to send (valid XML email).
     */
-   public static UniformCall create(String smtpURI, Representation email)
+   public static RestletCall create(String smtpURI, Representation email)
    {
-      UniformCall result = Manager.createCall();
+      RestletCall result = Manager.createCall();
       result.setClientName(FactoryImpl.VERSION_HEADER);
       result.setMethod(Methods.POST);
       result.setResourceRef(Manager.createReference(smtpURI));
@@ -124,7 +124,7 @@ public class JavaMailClient extends AbstractClient
     * Handles a REST call.
     * @param call The call to handle.
     */
-   public void handle(UniformCall call)
+   public void handle(RestletCall call)
    {
       try
       {

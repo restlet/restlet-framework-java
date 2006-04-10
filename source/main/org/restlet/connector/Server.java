@@ -24,7 +24,7 @@ package org.restlet.connector;
 
 import java.io.IOException;
 
-import org.restlet.UniformInterface;
+import org.restlet.Restlet;
 
 /**
  * Connector that listens for connections and responds to requests.<br/>By default, the handle(UniformCall)
@@ -48,13 +48,13 @@ public interface Server extends Connector
     * Returns the target handler.
     * @return The target handler.
     */
-   public UniformInterface getTarget();
+   public Restlet getTarget();
 
    /**
     * Sets the target handler.
     * @param target The target handler.
     */
-   public void setTarget(UniformInterface target);
+   public void setTarget(Restlet target);
 
    /**
     * Configure the SSL properties for secure protocols like HTTPS.

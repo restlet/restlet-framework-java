@@ -28,6 +28,7 @@ import java.net.URL;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
+import org.restlet.component.Component;
 import org.restlet.component.RestletContainer;
 import org.restlet.component.RestletServer;
 import org.restlet.connector.Client;
@@ -67,7 +68,7 @@ public class Manager
     * Creates a new uniform call.
     * @return A new uniform call.
     */
-   public static UniformCall createCall()
+   public static RestletCall createCall()
    {
       return getRegisteredFactory().createCall();
    }
@@ -233,7 +234,7 @@ public class Manager
     * @param name The container's name.
     * @return The new Restlet container.
     */
-   public static RestletContainer createRestletContainer(RestletContainer parent, String name)
+   public static RestletContainer createRestletContainer(Component parent, String name)
    {
       return getRegisteredFactory().createRestletContainer(parent, name);
    }
@@ -253,12 +254,12 @@ public class Manager
     * Create a new server connector for a given protocol.
     * @param protocol The connector protocol.
     * @param name The unique connector name.
-    * @param target The target handler.
+    * @param target The target Restlet.
     * @param address The optional listening IP address (local host used if null).
     * @param port The listening port.
     * @return The new server connector.
     */
-   public static Server createServer(Protocol protocol, String name, UniformInterface target, String address, int port)
+   public static Server createServer(Protocol protocol, String name, Restlet target, String address, int port)
    {
       return getRegisteredFactory().createServer(protocol, name, target, address, port);
    }

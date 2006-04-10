@@ -24,8 +24,8 @@ package org.restlet.connector;
 
 import java.io.IOException;
 
-import org.restlet.UniformCall;
-import org.restlet.UniformInterface;
+import org.restlet.RestletCall;
+import org.restlet.Restlet;
 import org.restlet.data.Protocol;
 
 /**
@@ -33,8 +33,8 @@ import org.restlet.data.Protocol;
  */
 public abstract class AbstractServer extends AbstractConnector implements Server
 {
-   /** The target handler. */
-   protected UniformInterface target;
+   /** The target Restlet. */
+   protected Restlet target;
 
    /** The Jetty listening address if specified. */
    protected String address;
@@ -55,11 +55,11 @@ public abstract class AbstractServer extends AbstractConnector implements Server
     * Constructor.
     * @param protocol The connector protocol.
     * @param name The unique connector name.
-    * @param target The target handler.
+    * @param target The target Restlet.
     * @param address The optional listening IP address (local host used if null).
     * @param port The listening port.
     */
-   public AbstractServer(Protocol protocol, String name, UniformInterface target, String address, int port)
+   public AbstractServer(Protocol protocol, String name, Restlet target, String address, int port)
    {
       super(protocol, name);
       this.target = target;
@@ -69,22 +69,22 @@ public abstract class AbstractServer extends AbstractConnector implements Server
 
    /**
     * Handles a uniform call.<br/>
-    * The default behavior is to ask the attached handler to handle the call.
+    * The default behavior is to ask the attached Restlet to handle the call.
     * @param call The uniform call to handle.
     */
-   public void handle(UniformCall call)
+   public void handle(RestletCall call)
    {
       getTarget().handle(call);
    }
 
    /**
     * Handles the server connector call.<br/> 
-    * The default behavior is to create an UniformCall and invoke the target handler.
+    * The default behavior is to create an UniformCall and invoke the target Restlet.
     * @param call The server connector call.
     */
    public void handle(ServerCall call) throws IOException
    {
-      UniformCall uniformCall = call.toUniform();
+      RestletCall uniformCall = call.toUniform();
       handle(uniformCall);
       call.setResponse(uniformCall);
       call.sendResponseHeaders();
@@ -104,19 +104,19 @@ public abstract class AbstractServer extends AbstractConnector implements Server
    }
 
    /**
-    * Returns the target handler.
-    * @return The target handler.
+    * Returns the target Restlet.
+    * @return The target Restlet.
     */
-   public UniformInterface getTarget()
+   public Restlet getTarget()
    {
       return this.target;
    }
 
    /**
-    * Sets the target handler.
-    * @param target The target handler.
+    * Sets the target Restlet.
+    * @param target The target Restlet.
     */
-   public void setTarget(UniformInterface target)
+   public void setTarget(Restlet target)
    {
       this.target = target;
    }

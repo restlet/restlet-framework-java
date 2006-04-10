@@ -23,7 +23,7 @@
 package org.restlet.connector;
 
 import org.restlet.Element;
-import org.restlet.UniformInterface;
+import org.restlet.Restlet;
 import org.restlet.data.Protocol;
 
 /**
@@ -39,7 +39,7 @@ import org.restlet.data.Protocol;
  * @see <a href="http://www.ics.uci.edu/~fielding/pubs/dissertation/rest_arch_style.htm#sec_5_2_2">Source
  * dissertation</a>
  */
-public interface Connector extends Element, UniformInterface
+public interface Connector extends Element, Restlet
 {
    /**
     * Returns the connector's protocol.

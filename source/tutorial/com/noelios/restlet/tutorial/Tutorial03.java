@@ -22,10 +22,10 @@
 
 package com.noelios.restlet.tutorial;
 
-import org.restlet.AbstractHandler;
+import org.restlet.AbstractRestlet;
 import org.restlet.Manager;
-import org.restlet.UniformCall;
-import org.restlet.UniformInterface;
+import org.restlet.RestletCall;
+import org.restlet.Restlet;
 import org.restlet.data.MediaTypes;
 import org.restlet.data.Protocols;
 
@@ -41,9 +41,9 @@ public class Tutorial03
       try
       {
          // Creating a minimal handler returning "Hello World"
-         UniformInterface handler = new AbstractHandler()
+         Restlet handler = new AbstractRestlet()
          {
-            public void handle(UniformCall call)
+            public void handle(RestletCall call)
             {
                call.setOutput(new StringRepresentation("Hello World!", MediaTypes.TEXT_PLAIN));
             }

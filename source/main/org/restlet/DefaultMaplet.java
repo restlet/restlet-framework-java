@@ -28,7 +28,7 @@ import org.restlet.component.RestletContainer;
  * Default Maplet that can be easily subclassed.
  * @see <a href="http://www.restlet.org/tutorial#part11">Tutorial: Maplets and hierarchical URIs</a>
  */
-public class DefaultRestlet extends AbstractHandler implements Maplet
+public class DefaultMaplet extends AbstractRestlet implements Maplet
 {
    /** Delegate Maplet actually implementing the Maplet methods. */
    protected Maplet delegate;
@@ -37,7 +37,7 @@ public class DefaultRestlet extends AbstractHandler implements Maplet
     * Creates a new Maplet in the given container.
     * @param container The parent container.
     */
-   public DefaultRestlet(RestletContainer container)
+   public DefaultMaplet(RestletContainer container)
    {
       super(container);
       this.delegate = Manager.createMaplet(container);
@@ -49,7 +49,7 @@ public class DefaultRestlet extends AbstractHandler implements Maplet
     * @param target The target instance to attach.
     * @see java.util.regex.Pattern
     */
-   public void attach(String pathPattern, UniformInterface target)
+   public void attach(String pathPattern, Restlet target)
    {
       delegate.attach(pathPattern, target);
    }
@@ -61,7 +61,7 @@ public class DefaultRestlet extends AbstractHandler implements Maplet
     * parameter).
     * @see java.util.regex.Pattern
     */
-   public void attach(String pathPattern, Class<? extends UniformInterface> targetClass)
+   public void attach(String pathPattern, Class<? extends Restlet> targetClass)
    {
       delegate.attach(pathPattern, targetClass);
    }
@@ -70,7 +70,7 @@ public class DefaultRestlet extends AbstractHandler implements Maplet
     * Detaches a target instance.
     * @param target The target instance to detach.
     */
-   public void detach(UniformInterface target)
+   public void detach(Restlet target)
    {
       delegate.detach(target);
    }
@@ -79,17 +79,17 @@ public class DefaultRestlet extends AbstractHandler implements Maplet
     * Detaches a target class.
     * @param targetClass The target class to detach.
     */
-   public void detach(Class<? extends UniformInterface> targetClass)
+   public void detach(Class<? extends Restlet> targetClass)
    {
       delegate.detach(targetClass);
    }
 
    /**
     * Handles a call to a resource or a set of resources. 
-    * Default behavior to be overriden: delegation to one of the attached handlers.
+    * Default behavior to be overriden: delegation to one of the attached Restlets.
     * @param call The call to handle.
     */
-   public void handle(UniformCall call)
+   public void handle(RestletCall call)
    {
       delegate.handle(call);
    }
@@ -100,7 +100,7 @@ public class DefaultRestlet extends AbstractHandler implements Maplet
     * @param call The call to delegate.
     * @return True if the call was successfully delegated.
     */
-   public boolean delegate(UniformCall call)
+   public boolean delegate(RestletCall call)
    {
       return delegate.delegate(call);
    }

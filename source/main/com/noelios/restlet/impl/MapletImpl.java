@@ -27,30 +27,29 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.regex.Matcher;
 
-import org.restlet.AbstractHandler;
+import org.restlet.AbstractRestlet;
 import org.restlet.Maplet;
-import org.restlet.UniformCall;
-import org.restlet.UniformInterface;
-import org.restlet.component.RestletContainer;
+import org.restlet.RestletCall;
+import org.restlet.Restlet;
+import org.restlet.component.Component;
 import org.restlet.data.Statuses;
 
-
 /**
- * Implementation of a mapper of calls to attached handlers.
+ * Implementation of a mapper of calls to attached Restlets.
  */
-public class MapletImpl extends AbstractHandler implements Maplet
+public class MapletImpl extends AbstractRestlet implements Maplet
 {
    /** Serial version identifier. */
    private static final long serialVersionUID = 1L;
    
    /** The list of mappings. */
-   protected List<HandlerMapping> mappings;
+   protected List<Mapping> mappings;
 
    /**
     * Constructor.
     * @param container The Restlet container.
     */
-   public MapletImpl(RestletContainer container)
+   public MapletImpl(Component container)
    {
       super(container);
       this.mappings = null;
@@ -60,9 +59,9 @@ public class MapletImpl extends AbstractHandler implements Maplet
     * Returns the list of mappings.
     * @return The list of mappings.
     */
-   private List<HandlerMapping> getMappings()
+   private List<Mapping> getMappings()
    {
-      if(this.mappings == null) this.mappings = new ArrayList<HandlerMapping>();
+      if(this.mappings == null) this.mappings = new ArrayList<Mapping>();
       return this.mappings;
    }
    
@@ -72,9 +71,9 @@ public class MapletImpl extends AbstractHandler implements Maplet
     * @param target The target instance to attach.
     * @see java.util.regex.Pattern
     */
-   public void attach(String pathPattern, UniformInterface target)
+   public void attach(String pathPattern, Restlet target)
    {
-      getMappings().add(new HandlerMapping(pathPattern, target));
+      getMappings().add(new Mapping(pathPattern, target));
    }
 
    /**
@@ -84,19 +83,19 @@ public class MapletImpl extends AbstractHandler implements Maplet
     * parameter).
     * @see java.util.regex.Pattern
     */
-   public void attach(String pathPattern, Class<? extends UniformInterface> targetClass)
+   public void attach(String pathPattern, Class<? extends Restlet> targetClass)
    {
-      getMappings().add(new HandlerMapping(pathPattern, targetClass));
+      getMappings().add(new Mapping(pathPattern, targetClass));
    }
 
    /**
     * Detaches a target instance.
     * @param target The target instance to detach.
     */
-   public void detach(UniformInterface target)
+   public void detach(Restlet target)
    {
-      HandlerMapping mapping;
-      for(Iterator<HandlerMapping> iter = getMappings().iterator(); iter.hasNext();)
+      Mapping mapping;
+      for(Iterator<Mapping> iter = getMappings().iterator(); iter.hasNext();)
       {
          mapping = iter.next();
          if(mapping.getHandler() == target) iter.remove();
@@ -109,10 +108,10 @@ public class MapletImpl extends AbstractHandler implements Maplet
     * Detaches a target class.
     * @param targetClass The target class to detach.
     */
-   public void detach(Class<? extends UniformInterface> targetClass)
+   public void detach(Class<? extends Restlet> targetClass)
    {
-      HandlerMapping mapping;
-      for(Iterator<HandlerMapping> iter = getMappings().iterator(); iter.hasNext();)
+      Mapping mapping;
+      for(Iterator<Mapping> iter = getMappings().iterator(); iter.hasNext();)
       {
          mapping = iter.next();
          if(mapping.getHandlerClass() == targetClass) iter.remove();
@@ -126,7 +125,7 @@ public class MapletImpl extends AbstractHandler implements Maplet
     * Default behavior to be overriden: delegation to attached handlers.
     * @param call The call to handle.
     */
-   public void handle(UniformCall call)
+   public void handle(RestletCall call)
    {
       delegate(call);
    }
@@ -137,15 +136,15 @@ public class MapletImpl extends AbstractHandler implements Maplet
     * @param call The call to delegate.
     * @return True if the call was successfully delegated.
     */
-   public boolean delegate(UniformCall call)
+   public boolean delegate(RestletCall call)
    {
-      HandlerMapping mapping = null;
+      Mapping mapping = null;
       Matcher matcher = null;
       boolean found = false;
       String resourcePath = call.getResourcePath();
 
       // Match the path in the call context with one of the child handler
-      for(Iterator<HandlerMapping> iter = getMappings().iterator(); !found && iter.hasNext();)
+      for(Iterator<Mapping> iter = getMappings().iterator(); !found && iter.hasNext();)
       {
          mapping = iter.next();
          matcher = mapping.getPathPattern().matcher(resourcePath);
@@ -175,7 +174,7 @@ public class MapletImpl extends AbstractHandler implements Maplet
          }
 
          // Invoke the call handler
-         mapping.handle(call, getContainer());
+         mapping.handle(call, getParent());
       }
       else
       {

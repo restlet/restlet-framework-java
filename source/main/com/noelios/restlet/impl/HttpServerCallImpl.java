@@ -28,7 +28,7 @@ import java.util.List;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
-import org.restlet.UniformCall;
+import org.restlet.RestletCall;
 import org.restlet.connector.ConnectorCall;
 import org.restlet.connector.ServerCall;
 import org.restlet.data.CookieSetting;
@@ -52,9 +52,9 @@ public abstract class HttpServerCallImpl extends ConnectorCallImpl implements Se
     * Converts to an uniform call.
     * @return An equivalent uniform call.
     */
-   public UniformCall toUniform()
+   public RestletCall toUniform()
    {
-      return new UniformHttpServerCall(this);
+      return new HttpServerRestletCall(this);
    }
    
    /**
@@ -62,7 +62,7 @@ public abstract class HttpServerCallImpl extends ConnectorCallImpl implements Se
     * Sets the response headers and the response status. 
     * @param call The call to update from.
     */
-   public void setResponse(UniformCall call)
+   public void setResponse(RestletCall call)
    {
       try
       {

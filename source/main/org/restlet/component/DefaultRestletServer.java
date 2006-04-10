@@ -24,15 +24,16 @@ package org.restlet.component;
 
 import java.io.IOException;
 
+import org.restlet.AbstractRestlet;
 import org.restlet.Manager;
-import org.restlet.UniformCall;
+import org.restlet.RestletCall;
 import org.restlet.connector.Client;
 import org.restlet.connector.Server;
 
 /**
  * Default Restlet server that can be easily subclassed.
  */
-public class DefaultRestletServer implements RestletServer
+public class DefaultRestletServer extends AbstractRestlet implements RestletServer
 {
    /** The deletate Restlet server. */
    protected RestletServer delegate;
@@ -127,57 +128,18 @@ public class DefaultRestletServer implements RestletServer
     * @param name The name of the client connector.
     * @param call The call to handle.
     */
-   public void callClient(String name, UniformCall call) throws IOException
+   public void callClient(String name, RestletCall call) throws IOException
    {
       delegate.callClient(name, call);
-   }
-
-   /** Start hook. */
-   public void start() throws Exception
-   {
-      delegate.start();
    }
 
    /**
     * Handles a uniform call.
     * @param call The uniform call to handle.
     */
-   public void handle(UniformCall call)
+   public void handle(RestletCall call)
    {
       delegate.handle(call);
-   }
-
-   /** Stop hook. */
-   public void stop() throws Exception
-   {
-      delegate.stop();
-   }
-
-   /**
-    * Indicates if the component is started.
-    * @return True if the component is started.
-    */
-   public boolean isStarted()
-   {
-      return delegate.isStarted();
-   }
-
-   /**
-    * Indicates if the component is stopped.
-    * @return True if the component is stopped.
-    */
-   public boolean isStopped()
-   {
-      return delegate.isStopped();
-   }
-
-   /**
-    * Returns the container.
-    * @return The container.
-    */
-   public Component getContainer()
-   {
-   	return delegate.getContainer();
    }
 
    /**
