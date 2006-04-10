@@ -39,7 +39,7 @@ import com.noelios.restlet.impl.ChallengeRequestImpl;
 import com.noelios.restlet.util.Base64;
 
 /**
- * Chainlet guarding the access to another Restlet, Chainlet or Maplet<br/>
+ * Chainlet guarding the access to another Restlet, Chainlet or Maplet.<br/>
  * Currently only supports the HTTP basic authentication scheme and a custom schemes (based on cookies, query params or IP address for example).
  * @see <a href="http://www.restlet.org/tutorial#part09">Tutorial: Guarding access to sensitive resources</a>
  */
