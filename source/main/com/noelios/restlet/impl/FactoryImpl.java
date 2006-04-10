@@ -271,7 +271,7 @@ public class FactoryImpl implements Factory
 		{
          Class<? extends Client> providerClass = this.clients.get(protocol);
          
-         if(protocol != null)
+         if((providerClass != null) && (protocol != null))
          {
          	result = providerClass.getConstructor(Protocol.class, String.class).newInstance(protocol, name);
          }
@@ -438,18 +438,18 @@ public class FactoryImpl implements Factory
 		{
          Class<? extends Server> providerClass = this.servers.get(protocol);
          
-         if(protocol != null)
+         if((providerClass != null) && (protocol != null))
          {
          	result = providerClass.getConstructor(Protocol.class, String.class, UniformInterface.class, String.class, int.class).newInstance(protocol, name, target, address, port);
          }
          else
          {
-            logger.log(Level.WARNING, "No client connector supports the " + protocol.getName() + " protocol.");
+            logger.log(Level.WARNING, "No server connector supports the " + protocol.getName() + " protocol.");
          }
 		}
 		catch (Exception e)
 		{
-         logger.log(Level.SEVERE, "Exception while instantiation the client connector.", e);
+         logger.log(Level.SEVERE, "Exception while instantiation the server connector.", e);
 		}
 
       return result;
