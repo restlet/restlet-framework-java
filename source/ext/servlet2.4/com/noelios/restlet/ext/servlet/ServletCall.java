@@ -119,7 +119,7 @@ public class ServletCall extends HttpServerCallImpl
    {
       String queryString = getRequest().getQueryString();
 
-      if(queryString == null)
+      if((queryString == null) || (queryString.equals("")))
       {
          return getRequest().getRequestURL().toString();
       }

@@ -31,7 +31,7 @@ import org.restlet.Restlet;
  * Represents a mapping between a path pattern and a target Restlet.
  * @see java.util.regex.Pattern
  */
-public class Mapping extends Target
+public class RestletMapping extends RestletTarget
 {
    /** The path pattern. */
    Pattern pathPattern;
@@ -41,7 +41,7 @@ public class Mapping extends Target
     * @param pathPattern The path pattern.
     * @param target The target interface.
     */
-   public Mapping(String pathPattern, Restlet target)
+   public RestletMapping(String pathPattern, Restlet target)
    {
       super(target);
       this.pathPattern = Pattern.compile(pathPattern, Pattern.CASE_INSENSITIVE);
@@ -52,7 +52,7 @@ public class Mapping extends Target
     * @param pathPattern The path pattern.
     * @param targetClass The target class.
     */
-   public Mapping(String pathPattern, Class<? extends Restlet> targetClass)
+   public RestletMapping(String pathPattern, Class<? extends Restlet> targetClass)
    {
       super(targetClass);
       this.pathPattern = Pattern.compile(pathPattern, Pattern.CASE_INSENSITIVE);

@@ -39,7 +39,7 @@ public class ChainletImpl extends AbstractRestlet implements Chainlet
    private static final long serialVersionUID = 1L;
 
    /** The target Restlet. */
-   protected Target target;
+   protected RestletTarget target;
 
    /**
     * Constructor.
@@ -56,7 +56,7 @@ public class ChainletImpl extends AbstractRestlet implements Chainlet
     */
    public void attach(Restlet target)
    {
-      this.target = new Target(target);
+      this.target = new RestletTarget(target);
    }
 
    /**
@@ -66,7 +66,7 @@ public class ChainletImpl extends AbstractRestlet implements Chainlet
     */
    public void attach(Class<? extends Restlet> targetClass)
    {
-      this.target = new Target(targetClass);
+      this.target = new RestletTarget(targetClass);
    }
 
    /**

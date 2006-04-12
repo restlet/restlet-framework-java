@@ -36,7 +36,7 @@ import org.restlet.data.Statuses;
 /**
  * Restlet target used for Maplet or Chainlet attachments.
  */
-public class Target
+public class RestletTarget
 {
    /** Obtain a suitable logger. */
    private static Logger logger = Logger.getLogger("com.noelios.restlet.util.UniformTarget");
@@ -60,7 +60,7 @@ public class Target
     * Constructor.
     * @param handler The handler interface.
     */
-   public Target(Restlet handler)
+   public RestletTarget(Restlet handler)
    {
       this.handler = handler;
       this.handlerClass = null;
@@ -72,7 +72,7 @@ public class Target
     * Constructor.
     * @param handlerClass The handler class.
     */
-   public Target(Class<? extends Restlet> handlerClass)
+   public RestletTarget(Class<? extends Restlet> handlerClass)
    {
       this.handler = null;
       this.handlerClass = handlerClass;
