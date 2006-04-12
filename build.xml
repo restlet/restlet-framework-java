@@ -28,6 +28,7 @@
 	<property name="classes-api" location="${classes}/api" />
 	<property name="classes-nre" location="${classes}/nre" />
 	<property name="classes-atom1.0" location="${classes}/ext/atom1.0" />
+	<property name="classes-fileupload1.1" location="${classes}/ext/fileupload1.1" />
 	<property name="classes-freemarker2.3" location="${classes}/ext/freemarker2.3" />
 	<property name="classes-javamail1.3" location="${classes}/ext/javamail1.3" />
 	<property name="classes-jdbc3.0" location="${classes}/ext/jdbc3.0" />
@@ -40,6 +41,7 @@
 	<property name="src" location="source" />
 	<property name="src-main" location="${src}/main" />
 	<property name="src-atom1.0" location="${src}/ext/atom1.0" />
+	<property name="src-fileupload1.1" location="${src}/ext/fileupload1.1" />
 	<property name="src-freemarker2.3" location="${src}/ext/freemarker2.3" />
 	<property name="src-javamail1.3" location="${src}/ext/javamail1.3" />
 	<property name="src-jdbc3.0" location="${src}/ext/jdbc3.0" />
@@ -54,6 +56,17 @@
 	<path id="path-atom1.0">
 		<pathelement path="${classes-api}" />
 		<pathelement path="${classes-nre}" />
+	</path>
+
+	<path id="path-fileupload1.1">
+		<pathelement path="${classes-api}" />
+		<pathelement path="${classes-nre}" />
+		<fileset dir="${lib}/fileupload1.1">
+			<include name="*.jar" />
+		</fileset>
+		<fileset dir="${lib}/servlet2.4">
+			<include name="*.jar" />
+		</fileset>
 	</path>
 
 	<path id="path-freemarker2.3">
@@ -135,11 +148,13 @@
 	<path id="path-all">
 		<pathelement path="${classes-api}" />
 		<pathelement path="${classes-nre}" />
+		<pathelement path="${classes-fileupload1.1}" />
 		<pathelement path="${classes-freemarker2.3}" />
 		<pathelement path="${classes-javamail1.3}" />
 		<pathelement path="${classes-jdbc3.0}" />
 		<pathelement path="${classes-jetty5.1}" />
 		<pathelement path="${classes-servlet2.4}" />
+		<path refid="path-fileupload1.1" />
 		<path refid="path-freemarker2.3" />
 		<path refid="path-javamail1.3" />
 		<path refid="path-jdbc3.0" />
@@ -169,6 +184,10 @@
 		<!-- Compiles extension Atom 1.0 -->
 		<mkdir dir="${classes-atom1.0}" />
 		<javac compiler="javac1.5" debug="true" srcdir="${src-atom1.0}" destdir="${classes-atom1.0}" classpathref="path-atom1.0" />
+
+		<!-- Compiles extension FileUpload 1.1 -->
+		<mkdir dir="${classes-fileupload1.1}" />
+		<javac compiler="javac1.5" debug="true" srcdir="${src-fileupload1.1}" destdir="${classes-fileupload1.1}" classpathref="path-fileupload1.1" />
 
 		<!-- Compiles extension Freemarker 2.3 -->
 		<mkdir dir="${classes-freemarker2.3}" />
@@ -336,6 +355,35 @@
 			</manifest>
 		</jar>
 
+		<!-- Create extension FileUpload 1.1 jar file -->
+		<mkdir dir="${dist}/lib/fileupload1.1" />
+		<jar jarfile="${dist}/lib/fileupload1.1/restlet.fileupload.jar" basedir="${classes-fileupload1.1}">
+			<manifest>
+				<attribute name="Built-By" value="${author}" />
+				<section name="com.noelios.restlet.ext.fileupload">
+					<attribute name="Implementation-Title" value="${restlet-ri}" />
+					<attribute name="Implementation-Version" value="${version-full} ${TODAY}" />
+					<attribute name="Implementation-Vendor" value="${author}" />
+				</section>
+			</manifest>
+		</jar>
+
+		<!-- Create extension FileUpload 1.1 source jar file -->
+		<mkdir dir="${dist}/src/fileupload1.1" />
+		<zip destfile="${dist}/src/fileupload1.1/restlet.fileupload.zip" basedir="${src-fileupload1.1}" includes="com/noelios/restlet/**" excludes="${excludes}" />
+
+		<!-- Create extension Freemarker 2.3 jar file -->
+		<jar jarfile="${dist}/lib/freemarker2.3/restlet.freemarker.jar" basedir="${classes-freemarker2.3}">
+			<manifest>
+				<attribute name="Built-By" value="${author}" />
+				<section name="com.noelios.restlet.ext.freemarker">
+					<attribute name="Implementation-Title" value="${restlet-ri}" />
+					<attribute name="Implementation-Version" value="${version-full} ${TODAY}" />
+					<attribute name="Implementation-Vendor" value="${author}" />
+				</section>
+			</manifest>
+		</jar>
+
 		<!-- Create extension Freemarker 2.3 source jar file -->
 		<mkdir dir="${dist}/src/freemarker2.3" />
 		<zip destfile="${dist}/src/freemarker2.3/restlet.freemarker.zip" basedir="${src-freemarker2.3}" includes="com/noelios/restlet/**" excludes="${excludes}" />
@@ -475,6 +523,7 @@
 			<sourcepath>
 				<pathelement path="${src-main}" />
 				<pathelement path="${src-atom1.0}" />
+				<pathelement path="${src-fileupload1.1}" />
 				<pathelement path="${src-freemarker2.3}" />
 				<pathelement path="${src-javamail1.3}" />
 				<pathelement path="${src-jdbc3.0}" />
@@ -498,6 +547,7 @@
 
 			<link href="http://www.restlet.org/docs/api/" packagelistLoc="${docs-api}" offline="true" />
 			<link href="http://freemarker.org/docs/api/" />
+			<link href="http://jakarta.apache.org/commons/fileupload/apidocs/" />
 			<link href="http://java.sun.com/j2se/1.5.0/docs/api/" />
 			<link href="http://java.sun.com/products/javamail/javadocs/" />
 			<link href="http://jetty.mortbay.org/javadoc/" />

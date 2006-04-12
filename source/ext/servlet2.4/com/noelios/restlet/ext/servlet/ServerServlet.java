@@ -38,7 +38,8 @@ import org.restlet.data.Protocol;
 import org.restlet.data.Protocols;
 
 /**
- * Servlet connector acting as a HTTP server.
+ * Servlet connector acting as a HTTP server. See the getTarget() method for details 
+ * on how to provide a target for your server.
  * @see <a href="http://java.sun.com/j2ee/">J2EE home page</a>
  */
 public class ServerServlet extends HttpServlet implements Server
