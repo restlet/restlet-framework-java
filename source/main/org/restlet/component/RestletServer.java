@@ -39,7 +39,7 @@ import org.restlet.data.Statuses;
  * Other direct calls are handled by the default container.
  * @see <a href="http://www.restlet.org/tutorial#part05">Tutorial: Restlets servers and containers</a>
  */
-public class DefaultRestletServer extends AbstractComponent
+public class RestletServer extends AbstractComponent
 {
 	/** Obtain a suitable logger. */
    private static Logger logger = Logger.getLogger("com.noelios.restlet.component.RestletServerImpl");
@@ -52,19 +52,19 @@ public class DefaultRestletServer extends AbstractComponent
     * @clientCardinality 1
     * @label containers
     */
-   protected Map<String, DefaultRestletContainer> containers;
+   protected Map<String, RestletContainer> containers;
 
    /** The default container handling direct calls on the server. */
-   protected DefaultRestletContainer defaultContainer;
+   protected RestletContainer defaultContainer;
 
    /**
     * Constructor.
     * @param name The origin server's name.
     */
-   public DefaultRestletServer(String name)
+   public RestletServer(String name)
    {
       super(name);
-      this.containers = new TreeMap<String, DefaultRestletContainer>();
+      this.containers = new TreeMap<String, RestletContainer>();
       this.defaultContainer = null;
    }
 
@@ -73,7 +73,7 @@ public class DefaultRestletServer extends AbstractComponent
     * @param name The unique name of the container.
     * @param container The container to add.
     */
-   public void addContainer(String name, DefaultRestletContainer container)
+   public void addContainer(String name, RestletContainer container)
    {
       this.containers.put(name, container);
    }
@@ -91,7 +91,7 @@ public class DefaultRestletServer extends AbstractComponent
     * Sets the default container handling direct calls to the server.
     * @param container The default container.
     */
-   public void setDefaultTarget(DefaultRestletContainer container)
+   public void setDefaultTarget(RestletContainer container)
    {
       this.defaultContainer = container;
    }
@@ -100,7 +100,7 @@ public class DefaultRestletServer extends AbstractComponent
     * Returns the default container handling direct calls to the server.
     * @return The default container.
     */
-   public DefaultRestletContainer getDefaultTarget()
+   public RestletContainer getDefaultTarget()
    {
       return this.defaultContainer;
    }

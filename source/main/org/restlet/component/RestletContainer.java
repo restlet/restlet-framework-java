@@ -35,7 +35,7 @@ import com.noelios.restlet.impl.MapletImpl;
  * Restlet containers can also be contained within a Restlet server.
  * @see <a href="http://www.restlet.org/tutorial#part05">Tutorial: Restlets servers and containers</a>
  */
-public class DefaultRestletContainer extends AbstractComponent implements Maplet
+public class RestletContainer extends AbstractComponent implements Maplet
 {
    /** The parent container who delegates. */
    protected Component parent;
@@ -47,7 +47,7 @@ public class DefaultRestletContainer extends AbstractComponent implements Maplet
     * Constructor.
     * @param name The unique name of the container.
     */
-   public DefaultRestletContainer(String name)
+   public RestletContainer(String name)
    {
    	this(null, name);
    }
@@ -57,7 +57,7 @@ public class DefaultRestletContainer extends AbstractComponent implements Maplet
     * @param parent The parent component.
     * @param name The unique name of the container.
     */
-   public DefaultRestletContainer(Component parent, String name)
+   public RestletContainer(Component parent, String name)
    {
       super(name);
       this.parent = parent;

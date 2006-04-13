@@ -24,7 +24,7 @@ package com.noelios.restlet.tutorial;
 
 import org.restlet.Manager;
 import org.restlet.RestletCall;
-import org.restlet.component.DefaultRestletContainer;
+import org.restlet.component.RestletContainer;
 import org.restlet.connector.Server;
 import org.restlet.data.ChallengeSchemes;
 import org.restlet.data.MediaTypes;
@@ -45,7 +45,7 @@ public class Tutorial09a
       try
       {
          // Create a new Restlet container
-      	DefaultRestletContainer myContainer = new DefaultRestletContainer("My container");
+      	RestletContainer myContainer = new RestletContainer("My container");
 
          // Create the HTTP server connector, then add it as a server connector
          // to the Restlet container. Note that the container is the call handler.
