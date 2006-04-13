@@ -22,7 +22,7 @@
 
 package org.restlet;
 
-import org.restlet.component.RestletContainer;
+import org.restlet.component.Component;
 
 /**
  * Default Maplet that can be easily subclassed.
@@ -35,12 +35,12 @@ public class DefaultMaplet extends AbstractRestlet implements Maplet
 
    /**
     * Creates a new Maplet in the given container.
-    * @param container The parent container.
+    * @param parent The parent component.
     */
-   public DefaultMaplet(RestletContainer container)
+   public DefaultMaplet(Component parent)
    {
-      super(container);
-      this.delegate = Manager.createMaplet(container);
+      super(parent);
+      this.delegate = Manager.createDelegateMaplet(parent);
    }
 
    /**

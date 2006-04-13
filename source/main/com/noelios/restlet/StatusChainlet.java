@@ -27,7 +27,7 @@ import java.util.logging.Logger;
 
 import org.restlet.AbstractChainlet;
 import org.restlet.RestletCall;
-import org.restlet.component.RestletContainer;
+import org.restlet.component.Component;
 import org.restlet.data.MediaTypes;
 import org.restlet.data.Representation;
 import org.restlet.data.Status;
@@ -61,14 +61,14 @@ public class StatusChainlet extends AbstractChainlet
 
    /**
     * Constructor.
-    * @param container The parent container.
+    * @param parent The parent component.
     * @param overwrite Indicates whether an existing representation should be overwritten.
     * @param email Email address of the administrator to contact in case of error.
     * @param homeURI The home URI to display in case the user got a "not found" exception.
     */
-   public StatusChainlet(RestletContainer container, boolean overwrite, String email, String homeURI)
+   public StatusChainlet(Component parent, boolean overwrite, String email, String homeURI)
    {
-      super(container);
+      super(parent);
       this.overwrite = overwrite;
       this.email = email;
       this.homeURI = homeURI;

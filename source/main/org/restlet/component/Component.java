@@ -23,12 +23,14 @@
 package org.restlet.component;
 
 import java.io.IOException;
+import java.util.List;
 
 import org.restlet.Element;
 import org.restlet.RestletCall;
 import org.restlet.Restlet;
 import org.restlet.connector.Client;
 import org.restlet.connector.Server;
+import org.restlet.data.Parameter;
 
 /**
  * Abstract unit of software instructions and internal state.<br/><br/> 
@@ -39,7 +41,13 @@ import org.restlet.connector.Server;
  */
 public interface Component extends Element, Restlet
 {
-   /**
+	/**
+	 * Returns a modifiable list of initialization parameters
+	 * @return A modifiable list of initialization parameters
+	 */
+	public List<Parameter> getInitParameters();
+
+	/**
     * Adds a server connector to this component.
     * @param server The server connector to add.
     * @return The server connector added.

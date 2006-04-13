@@ -128,34 +128,6 @@ public class RestletCallWrapper implements RestletCall
    }
 
    /**
-    * Returns the list of substrings matched in the current handler path.
-    * @return The list of substrings matched.
-    * @see <a href="http://java.sun.com/j2se/1.5.0/docs/api/java/util/regex/Matcher.html#group(int)">Matcher.group()</a>
-    */
-   public List<String> getHandlerMatches()
-   {
-      return getWrappedCall().getHandlerMatches();
-   }
-
-   /**
-    * Returns the part of the resource reference preceeding the resource path.
-    * @return The part of the resource reference preceeding the resource path.
-    */
-   public String getHandlerPath()
-   {
-      return getWrappedCall().getHandlerPath();
-   }
-
-   /**
-    * Returns the handler path as a reference.
-    * @return The handler path as a reference.
-    */
-   public Reference getHandlerRef()
-   {
-      return getWrappedCall().getHandlerRef();
-   }
-
-   /**
     * Returns the representation provided by the client.
     * @return The representation provided by the client.
     */
@@ -221,8 +193,8 @@ public class RestletCallWrapper implements RestletCall
    }
 
    /**
-    * Returns the part of the resource reference following the handler path.
-    * @return The part of the resource reference following the handler path.
+    * Returns the relative resource path, following the absolute Restlet path in the resource reference.
+    * @return The relative resource path.
     */
    public String getResourcePath()
    {
@@ -230,12 +202,40 @@ public class RestletCallWrapper implements RestletCall
    }
 
    /**
-    * Returns the resource reference.
-    * @return The resource reference.
+    * Returns the absolute resource reference.
+    * @return The absolute resource reference.
     */
    public Reference getResourceRef()
    {
       return getWrappedCall().getResourceRef();
+   }
+
+   /**
+    * Returns the list of substrings matched in the current Restlet path.
+    * @return The list of substrings matched.
+    * @see <a href="http://java.sun.com/j2se/1.5.0/docs/api/java/util/regex/Matcher.html#group(int)">Matcher.group()</a>
+    */
+   public List<String> getRestletMatches()
+   {
+      return getWrappedCall().getRestletMatches();
+   }
+
+   /**
+    * Returns the absolute Restlet path, preceeding the relative resource path in the resource reference.
+    * @return The absolute Restlet path.
+    */
+   public String getRestletPath()
+   {
+      return getWrappedCall().getRestletPath();
+   }
+
+   /**
+    * Returns the Restlet path as a reference.
+    * @return The Restlet path as a reference.
+    */
+   public Reference getRestletRef()
+   {
+      return getWrappedCall().getRestletRef();
    }
 
    /**

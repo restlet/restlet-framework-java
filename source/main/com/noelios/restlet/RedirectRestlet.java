@@ -29,7 +29,7 @@ import java.util.logging.Logger;
 import org.restlet.AbstractRestlet;
 import org.restlet.Manager;
 import org.restlet.RestletCall;
-import org.restlet.component.RestletContainer;
+import org.restlet.component.Component;
 import org.restlet.data.Reference;
 import org.restlet.data.Statuses;
 
@@ -71,11 +71,11 @@ public class RedirectRestlet extends AbstractRestlet
    public static final int MODE_CONNECTOR = 4;
 
    /**
-    * In this mode, the call is internally redirected within the current Restlet container. This is useful when 
-    * there are multiple ways to access to the same ressources.<br/>
+    * In this mode, the call is internally redirected within the parent component. This is useful when 
+    * there are multiple ways to access to the same resource.<br/>
     * Be careful when specifying the target pattern or infinite loops may occur.
     */
-   public static final int MODE_CONTAINER = 5;
+   public static final int MODE_INTERNAL = 5;
 
    /** Obtain a suitable logger. */
    private static Logger logger = Logger.getLogger("com.noelios.restlet.RedirectRestlet");
@@ -91,13 +91,13 @@ public class RedirectRestlet extends AbstractRestlet
 
    /**
     * Constructor.
-    * @param container The parent container.
+    * @param parent The parent component.
     * @param targetPattern The pattern to build the target URI.
     * @param mode The redirection mode.
     */
-   public RedirectRestlet(RestletContainer container, String targetPattern, int mode)
+   public RedirectRestlet(Component parent, String targetPattern, int mode)
    {
-      super(container);
+      super(parent);
       this.targetPattern = targetPattern;
       this.mode = mode;
    }
@@ -152,8 +152,8 @@ public class RedirectRestlet extends AbstractRestlet
                getParent().callClient(this.connectorName, call);
             break;
 
-            case MODE_CONTAINER:
-               logger.log(Level.INFO, "Redirecting to container: " + targetUri);
+            case MODE_INTERNAL:
+               logger.log(Level.INFO, "Redirecting internally: " + targetUri);
                call.setResourceRef(target);
                getParent().handle(call);
             break;

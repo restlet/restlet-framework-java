@@ -27,7 +27,7 @@ import java.util.logging.Logger;
 
 import org.restlet.AbstractChainlet;
 import org.restlet.RestletCall;
-import org.restlet.component.RestletContainer;
+import org.restlet.component.Component;
 
 import com.noelios.restlet.util.StringTemplate;
 import com.noelios.restlet.util.UniformCallModel;
@@ -49,27 +49,27 @@ public class LogChainlet extends AbstractChainlet
    /**
     * Constructor using the default format.<br/>
     * Default format using <a href="http://analog.cx/docs/logfmt.html">Analog syntax</a>: %Y-%m-%d\t%h:%n:%j\t%j\t%r\t%u\t%s\t%j\t%B\t%f\t%c\t%b\t%q\t%v\t%T
-    * @param container The parent container.
+    * @param parent The parent component.
     * @param logName The log name to used in the logging.properties file.
     */
-   public LogChainlet(RestletContainer container, String logName)
+   public LogChainlet(Component parent, String logName)
    {
-      super(container);
+      super(parent);
       this.logger = Logger.getLogger(logName);
       this.logTemplate = null;
    }
 
    /**
     * Constructor.
-    * @param container The parent container.
+    * @param parent The parent component.
     * @param logName The log name to used in the logging.properties file.
     * @param logFormat The log format to use.
     * @see com.noelios.restlet.util.UniformCallModel
     * @see com.noelios.restlet.util.StringTemplate
     */
-   public LogChainlet(RestletContainer container, String logName, String logFormat)
+   public LogChainlet(Component parent, String logName, String logFormat)
    {
-      super(container);
+      super(parent);
       this.logger = Logger.getLogger(logName);
       this.logTemplate = new StringTemplate(logFormat);
    }

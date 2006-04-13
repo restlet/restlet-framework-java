@@ -23,8 +23,6 @@
 package org.restlet;
 
 import org.restlet.component.Component;
-import org.restlet.component.RestletContainer;
-import org.restlet.component.RestletServer;
 import org.restlet.connector.Client;
 import org.restlet.connector.Server;
 import org.restlet.data.*;
@@ -39,13 +37,6 @@ public interface Factory
     * @return A new uniform call.
     */
    public RestletCall createCall();
-
-   /**
-    * Creates a delegate Chainlet.
-    * @param container The Restlet container.
-    * @return A new Chainlet.
-    */
-   public Chainlet createChainlet(RestletContainer container);
 
    /**
     * Creates a challenge response for a specific scheme using a user ID and a password as the credentials.<br/>
@@ -88,6 +79,22 @@ public interface Factory
    public CookieSetting createCookieSetting(String name, String value);
 
    /**
+    * Creates a delegate Chainlet for internal usage by the AbstractChainlet.<br/>
+    * If you need a Chainlet for your application, you should be subclassing the AbstractChainlet instead. 
+    * @param parent The parent component.
+    * @return A new Chainlet.
+    */
+   public Chainlet createDelegateChainlet(Component parent);
+
+   /**
+    * Creates a delegate Maplet for internal usage by the DefaultMaplet.<br/>
+    * If you need a Maplet for your application, you should be using the DefaultMaplet instead. 
+    * @param parent The parent component.
+    * @return A new Maplet.
+    */
+   public Maplet createDelegateMaplet(Component parent);
+
+   /**
     * Creates a new encoding from its standard name.
     * @param name The standard encoding name.
     * @return The new encoding.
@@ -106,13 +113,6 @@ public interface Factory
     * @return The new language.
     */
    public Language createLanguage(String name);
-
-   /**
-    * Creates a delegate Maplet.
-    * @param container The Restlet container.
-    * @return A new Maplet.
-    */
-   public Maplet createRestlet(RestletContainer container);
 
    /**
     * Creates a new media type from its standard name.
@@ -148,22 +148,6 @@ public interface Factory
     * @param mediaType The representation mediatype.
     */
    public RepresentationMetadata createRepresentationMetadata(MediaType mediaType);
-   
-   /**
-    * Creates a delegate Restlet container.
-    * @param parent The parent component.
-    * @param name The container's name.
-    * @return The new Restlet container.
-    */
-   public RestletContainer createRestletContainer(Component parent, String name);
-
-   /**
-    * Creates a delegate Restlet server.
-    * @param parent The parent component.
-    * @param name The server's name.
-    * @return The new Restlet server.
-    */
-   public RestletServer createRestletServer(Component parent, String name);
 
    /**
     * Create a new server connector for a given protocol.

@@ -24,7 +24,7 @@ package com.noelios.restlet;
 
 import org.restlet.AbstractRestlet;
 import org.restlet.RestletCall;
-import org.restlet.component.RestletContainer;
+import org.restlet.component.Component;
 import org.restlet.data.MediaType;
 import org.restlet.data.Statuses;
 
@@ -46,13 +46,13 @@ public class FileRestlet extends AbstractRestlet
 
    /**
     * Constructor.
-    * @param container The parent container.
+    * @param parent The parent component.
     * @param filePath The file's path.
     * @param mediaType The file's media type.
     */
-   public FileRestlet(RestletContainer container, String filePath, MediaType mediaType)
+   public FileRestlet(Component parent, String filePath, MediaType mediaType)
    {
-      super(container);
+      super(parent);
       this.filePath = filePath;
       this.mediaType = mediaType;
       this.timeToLive = 600;

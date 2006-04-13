@@ -22,21 +22,40 @@
 
 package org.restlet.component;
 
-import java.io.IOException;
+import java.util.Iterator;
+import java.util.Map;
+import java.util.TreeMap;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
-import org.restlet.AbstractRestlet;
-import org.restlet.Manager;
 import org.restlet.RestletCall;
-import org.restlet.connector.Client;
-import org.restlet.connector.Server;
+import org.restlet.data.Statuses;
 
 /**
- * Default Restlet server that can be easily subclassed.
+ * Component composed of multiple Restlet containers.<br/>
+ * Each container is managing its own resource namespace.
+ * Incoming calls are normally handled via pluggable server connectors.<br/>
+ * Outcoming calls are normally handled via pluggable client connectors.<br/>
+ * Other direct calls are handled by the default container.
+ * @see <a href="http://www.restlet.org/tutorial#part05">Tutorial: Restlets servers and containers</a>
  */
-public class DefaultRestletServer extends AbstractRestlet implements RestletServer
+public class DefaultRestletServer extends AbstractComponent
 {
-   /** The deletate Restlet server. */
-   protected RestletServer delegate;
+	/** Obtain a suitable logger. */
+   private static Logger logger = Logger.getLogger("com.noelios.restlet.component.RestletServerImpl");
+
+   /**
+    * The Restlet containers.
+    * @link aggregationByValue
+    * @associates <{DefaultContainer}>
+    * @supplierCardinality 0..*
+    * @clientCardinality 1
+    * @label containers
+    */
+   protected Map<String, DefaultRestletContainer> containers;
+
+   /** The default container handling direct calls on the server. */
+   protected DefaultRestletContainer defaultContainer;
 
    /**
     * Constructor.
@@ -44,18 +63,19 @@ public class DefaultRestletServer extends AbstractRestlet implements RestletServ
     */
    public DefaultRestletServer(String name)
    {
-      this.delegate = Manager.createRestletServer(this, name);
+      super(name);
+      this.containers = new TreeMap<String, DefaultRestletContainer>();
+      this.defaultContainer = null;
    }
 
    /**
     * Adds a Restlet container.
     * @param name The unique name of the container.
     * @param container The container to add.
-    * @return The added container.
     */
-   public RestletContainer addContainer(String name, RestletContainer container)
+   public void addContainer(String name, DefaultRestletContainer container)
    {
-      return delegate.addContainer(name, container);
+      this.containers.put(name, container);
    }
 
    /**
@@ -64,130 +84,81 @@ public class DefaultRestletServer extends AbstractRestlet implements RestletServ
     */
    public void removeContainer(String name)
    {
-      delegate.removeContainer(name);
-   }
-
-   /**
-    * Returns the default container handling direct calls to the server.
-    * @return The default container.
-    */
-   public RestletContainer getDefaultContainer()
-   {
-      return delegate.getDefaultContainer();
+      this.containers.remove(name);
    }
 
    /**
     * Sets the default container handling direct calls to the server.
     * @param container The default container.
     */
-   public void setDefaultContainer(RestletContainer container)
+   public void setDefaultTarget(DefaultRestletContainer container)
    {
-      delegate.setDefaultContainer(container);
+      this.defaultContainer = container;
    }
 
    /**
-    * Adds a server connector to this component.
-    * @param server The server connector to add.
-    * @return The server connector added.
+    * Returns the default container handling direct calls to the server.
+    * @return The default container.
     */
-   public Server addServer(Server server)
+   public DefaultRestletContainer getDefaultTarget()
    {
-      return delegate.addServer(server);
+      return this.defaultContainer;
    }
 
    /**
-    * Removes a server connector from this component.
-    * @param name The name of the server connector to remove.
-    */
-   public void removeServer(String name)
-   {
-      delegate.removeServer(name);
-   }
-
-   /**
-    * Adds a client connector to this component.
-    * @param client The client connector to add.
-    * @return The client connector added.
-    */
-   public Client addClient(Client client)
-   {
-      return delegate.addClient(client);
-   }
-
-   /**
-    * Removes a client connector from this component.
-    * @param name The name of the client connector to remove.
-    */
-   public void removeClient(String name)
-   {
-      delegate.removeClient(name);
-   }
-
-   /**
-    * Calls a client connector.
-    * @param name The name of the client connector.
+    * Handles a direct call.
     * @param call The call to handle.
-    */
-   public void callClient(String name, RestletCall call) throws IOException
-   {
-      delegate.callClient(name, call);
-   }
-
-   /**
-    * Handles a uniform call.
-    * @param call The uniform call to handle.
     */
    public void handle(RestletCall call)
    {
-      delegate.handle(call);
+      if(getDefaultTarget() != null)
+      {
+         if(getDefaultTarget().isStopped())
+         {
+            try
+            {
+               getDefaultTarget().start();
+            }
+            catch(Exception e)
+            {
+               call.setStatus(Statuses.SERVER_ERROR_INTERNAL);
+               logger.log(Level.SEVERE, "Default Restlet container can't be started", e);
+            }
+         }
+         
+         getDefaultTarget().handle(call);
+      }
+      else
+      {
+         call.setStatus(Statuses.SERVER_ERROR_INTERNAL);
+         logger.log(Level.SEVERE, "No default Restlet container defined");
+      }
    }
 
-   /** Starts the handler. */
+   /**
+    * Start hook. Starts all containers.
+    */
    public void start() throws Exception
    {
-   	delegate.start();
+      super.start();
+
+      for(Iterator iter = this.containers.keySet().iterator(); iter.hasNext();)
+      {
+         this.containers.get(iter.next()).start();
+      }
    }
 
-   /** Stops the handler. */
+   /**
+    * Stop hook. Stops all containers.
+    */
    public void stop() throws Exception
    {
-   	delegate.stop();
-   }
+      super.stop();
 
-   /**
-    * Indicates if the handler is started.
-    * @return True if the handler is started.
-    */
-   public boolean isStarted()
-   {
-   	return delegate.isStarted();
-   }
-
-   /**
-    * Indicates if the handler is stopped.
-    * @return True if the handler is stopped.
-    */
-   public boolean isStopped()
-   {
-   	return delegate.isStopped();
-   }
-
-   /**
-    * Returns the name of this REST component.
-    * @return The name of this REST component.
-    */
-   public String getName()
-   {
-      return delegate.getName();
-   }
-
-   /**
-    * Returns the description of this REST element.
-    * @return The description of this REST element.
-    */
-   public String getDescription()
-   {
-      return delegate.getDescription();
+      for(Iterator iter = this.containers.keySet().iterator(); iter.hasNext();)
+      {
+         this.containers.get(iter.next()).stop();
+      }
    }
 
 }

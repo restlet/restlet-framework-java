@@ -154,7 +154,7 @@ public class MapletImpl extends AbstractRestlet implements Maplet
       if(found)
       {
          // Updates the paths
-         String oldHandlerPath = call.getHandlerPath();
+         String oldHandlerPath = call.getRestletPath();
          String handlerPath = resourcePath.substring(0, matcher.end());
          
          if(oldHandlerPath == null)
@@ -167,10 +167,10 @@ public class MapletImpl extends AbstractRestlet implements Maplet
          }
 
          // Updates the matches
-         call.getHandlerMatches().clear();
+         call.getRestletMatches().clear();
          for(int i = 0; i < matcher.groupCount(); i++)
          {
-            call.getHandlerMatches().add(matcher.group(i + 1));
+            call.getRestletMatches().add(matcher.group(i + 1));
          }
 
          // Invoke the call handler

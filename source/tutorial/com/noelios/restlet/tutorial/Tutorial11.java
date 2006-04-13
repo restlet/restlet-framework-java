@@ -31,7 +31,6 @@ import org.restlet.Maplet;
 import org.restlet.RestletCall;
 import org.restlet.Restlet;
 import org.restlet.component.DefaultRestletContainer;
-import org.restlet.component.RestletContainer;
 import org.restlet.connector.Server;
 import org.restlet.data.ChallengeSchemes;
 import org.restlet.data.MediaTypes;
@@ -53,7 +52,7 @@ public class Tutorial11
       try
       {
          // Create a new Restlet container
-         RestletContainer myContainer = new DefaultRestletContainer("My container");
+      	DefaultRestletContainer myContainer = new DefaultRestletContainer("My container");
 
          // Create the HTTP server connector, then add it as a server connector
          // to the Restlet container. Note that the container is the call handler.
@@ -103,7 +102,7 @@ public class Tutorial11
                   if(call.getResourcePath().equals(""))
                   {
                      // Print the requested URI path
-                     String output = "Account of user named: " + call.getHandlerRef().getLastSegment();
+                     String output = "Account of user named: " + call.getRestletRef().getLastSegment();
                      call.setOutput(new StringRepresentation(output, MediaTypes.TEXT_PLAIN));
                   }
                   else
@@ -121,7 +120,7 @@ public class Tutorial11
                public void handle(RestletCall call)
                {
                   // Print the user name of the requested orders
-                  List<String> segments = call.getHandlerRef().getSegments();
+                  List<String> segments = call.getRestletRef().getSegments();
                   String output = "Orders of user named: " + segments.get(segments.size() - 2);
                   call.setOutput(new StringRepresentation(output, MediaTypes.TEXT_PLAIN));
                }

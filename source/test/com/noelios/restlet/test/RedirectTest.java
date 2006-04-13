@@ -31,7 +31,6 @@ import org.restlet.Manager;
 import org.restlet.RestletCall;
 import org.restlet.Restlet;
 import org.restlet.component.DefaultRestletContainer;
-import org.restlet.component.RestletContainer;
 import org.restlet.data.MediaTypes;
 import org.restlet.data.Method;
 import org.restlet.data.Methods;
@@ -53,7 +52,7 @@ public class RedirectTest extends TestCase
       try
       {
          // Create a new Restlet container
-         RestletContainer myContainer = new DefaultRestletContainer("My container");
+      	DefaultRestletContainer myContainer = new DefaultRestletContainer("My container");
 
          // Create the client connectors
          myContainer.addClient(Manager.createClient(Protocols.HTTP, "Test client"));
@@ -71,7 +70,7 @@ public class RedirectTest extends TestCase
                {
                   // Print the requested URI path
                   String output = "Resource URI:  " + call.getResourceRef() + '\n' + 
-                                  "Handler path:  " + call.getHandlerPath() + '\n' +
+                                  "Handler path:  " + call.getRestletPath() + '\n' +
                                   "Resource path: " + call.getResourcePath() + '\n' +
                                   "Query string:  " + call.getResourceRef().getQuery() + '\n' + 
                                   "Method name:   " + call.getMethod() + '\n';
@@ -111,7 +110,7 @@ public class RedirectTest extends TestCase
       }
    }
    
-   private void testCall(RestletContainer myContainer, Method method, String uri)
+   private void testCall(DefaultRestletContainer myContainer, Method method, String uri)
    {
       try
       {

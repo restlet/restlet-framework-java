@@ -83,11 +83,11 @@ public class RestletCallImpl implements RestletCall
    /** The cookies to set in the client. */
    protected List<CookieSetting> cookieSettings;
 
-   /** The list of substrings matched in the handler path. */
-   protected List<String> handlerMatches;
+   /** The list of substrings matched in the Restlet path. */
+   protected List<String> restletMatches;
    
-   /** The handler path. */
-   protected String handlerPath;
+   /** The Restlet path. */
+   protected String restletPath;
 
    /** The representation provided by the client. */
    protected Representation input;
@@ -453,35 +453,6 @@ public class RestletCallImpl implements RestletCall
    }
 
    /**
-    * Returns the list of substrings matched in the current handler path.
-    * @return The list of substrings matched.
-    * @see <a href="http://java.sun.com/j2se/1.5.0/docs/api/java/util/regex/Matcher.html#group(int)">Matcher.group()</a>
-    */
-   public List<String> getHandlerMatches()
-   {
-      if(this.handlerMatches == null) this.handlerMatches = new ArrayList<String>();
-      return this.handlerMatches;
-   }
-
-   /**
-    * Returns the part of the resource reference preceeding the resource path.
-    * @return The part of the resource reference preceeding the resource path.
-    */
-   public String getHandlerPath()
-   {
-      return this.handlerPath;
-   }
-
-   /**
-    * Returns the handler path as a reference.
-    * @return The handler path as a reference.
-    */
-   public Reference getHandlerRef()
-   {
-      return new ReferenceImpl(getHandlerPath());
-   }
-
-   /**
     * Returns the representation provided by the client.
     * @return The representation provided by the client.
     */
@@ -555,24 +526,24 @@ public class RestletCallImpl implements RestletCall
    }
 
    /**
-    * Returns the part of the resource reference following the handler path.
-    * @return The part of the resource reference following the handler path.
+    * Returns the relative resource path, following the absolute Restlet path in the resource reference.
+    * @return The relative resource path.
     */
    public String getResourcePath()
    {
-      if(getHandlerPath() == null)
+      if(getRestletPath() == null)
       {
          return this.resourceRef.toString(false, false);
       }
       else
       {
          String resourceURI = this.resourceRef.toString(false, false);
-         int length = getHandlerPath().length();
+         int length = getRestletPath().length();
          
          if(logger.isLoggable(Level.FINE))
          {
             logger.fine("Resource URI: " + resourceURI);
-            logger.fine("Handler path: " + getHandlerPath());
+            logger.fine("Handler path: " + getRestletPath());
             logger.fine("Handler path length: " + length);
          }
          
@@ -581,12 +552,41 @@ public class RestletCallImpl implements RestletCall
    }
 
    /**
-    * Returns the resource reference.
-    * @return The resource reference.
+    * Returns the absolute resource reference.
+    * @return The absolute resource reference.
     */
    public Reference getResourceRef()
    {
       return this.resourceRef;
+   }
+
+   /**
+    * Returns the list of substrings matched in the current Restlet path.
+    * @return The list of substrings matched.
+    * @see <a href="http://java.sun.com/j2se/1.5.0/docs/api/java/util/regex/Matcher.html#group(int)">Matcher.group()</a>
+    */
+   public List<String> getRestletMatches()
+   {
+      if(this.restletMatches == null) this.restletMatches = new ArrayList<String>();
+      return this.restletMatches;
+   }
+
+   /**
+    * Returns the absolute Restlet path, preceeding the relative resource path in the resource reference.
+    * @return The absolute Restlet path.
+    */
+   public String getRestletPath()
+   {
+      return this.restletPath;
+   }
+
+   /**
+    * Returns the Restlet path as a reference.
+    * @return The Restlet path as a reference.
+    */
+   public Reference getRestletRef()
+   {
+      return new ReferenceImpl(getRestletPath());
    }
 
    /**
@@ -719,7 +719,7 @@ public class RestletCallImpl implements RestletCall
          logger.warning("Handler path doesn't match the start of the resource URI: " + handlerPath);
       }
       
-      this.handlerPath = handlerPath;
+      this.restletPath = handlerPath;
    }
    
    /**
@@ -778,7 +778,7 @@ public class RestletCallImpl implements RestletCall
       
       // Reset the current handler
       setHandlerPath(null);
-      getHandlerMatches().clear();
+      getRestletMatches().clear();
    }
 
    /**

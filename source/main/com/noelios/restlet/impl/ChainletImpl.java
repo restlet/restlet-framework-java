@@ -26,9 +26,8 @@ import org.restlet.AbstractRestlet;
 import org.restlet.Chainlet;
 import org.restlet.RestletCall;
 import org.restlet.Restlet;
-import org.restlet.component.RestletContainer;
+import org.restlet.component.Component;
 import org.restlet.data.Statuses;
-
 
 /**
  * Implementation of a chainer of calls to a target Restlet.
@@ -43,11 +42,11 @@ public class ChainletImpl extends AbstractRestlet implements Chainlet
 
    /**
     * Constructor.
-    * @param container The Restlet container.
+    * @param parent The parent component.
     */
-   public ChainletImpl(RestletContainer container)
+   public ChainletImpl(Component parent)
    {
-      super(container);
+      super(parent);
    }
 
    /**

@@ -20,26 +20,31 @@
  * Portions Copyright [yyyy] [name of copyright owner]
  */
 
-package com.noelios.restlet.impl;
+package org.restlet.component;
 
 import java.io.IOException;
+import java.util.ArrayList;
 import java.util.Iterator;
+import java.util.List;
 import java.util.Map;
 import java.util.TreeMap;
 
 import org.restlet.AbstractRestlet;
 import org.restlet.RestletCall;
 import org.restlet.Restlet;
-import org.restlet.component.Component;
 import org.restlet.connector.Client;
 import org.restlet.connector.Server;
+import org.restlet.data.Parameter;
 
 /**
- * Abstract origin server implementation.
+ * Abstract component implementation.
  */
-public abstract class ComponentImpl extends AbstractRestlet implements Component
+public abstract class AbstractComponent extends AbstractRestlet implements Component
 {
-   /** The component name. */
+	/** The initialization parameters. */
+	protected List<Parameter> initParameters;
+	
+	/** The component name. */
    protected String name;
 
    /** The map of client connectors. */
@@ -52,12 +57,23 @@ public abstract class ComponentImpl extends AbstractRestlet implements Component
     * Constructor.
     * @param name The component name.
     */
-   public ComponentImpl(String name)
+   public AbstractComponent(String name)
    {
+   	this.initParameters = null;
       this.name = name;
       this.clients = new TreeMap<String, Client>();
       this.servers = new TreeMap<String, Server>();
    }
+
+   /**
+	 * Returns a modifiable list of initialization parameters
+	 * @return A modifiable list of initialization parameters
+	 */
+	public List<Parameter> getInitParameters()
+	{
+		if(this.initParameters == null) this.initParameters = new ArrayList<Parameter>();
+		return this.initParameters;
+	}
 
    /**
     * Returns the name of this REST element.
@@ -133,7 +149,7 @@ public abstract class ComponentImpl extends AbstractRestlet implements Component
     */
    public String getDescription()
    {
-      return "Abstract origin server";
+      return "Abstract component";
    }
 
    /**

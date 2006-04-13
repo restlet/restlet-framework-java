@@ -22,24 +22,26 @@
 
 package org.restlet.component;
 
-import java.io.IOException;
-
-import org.restlet.AbstractRestlet;
-import org.restlet.Manager;
+import org.restlet.Maplet;
 import org.restlet.Restlet;
 import org.restlet.RestletCall;
-import org.restlet.connector.Client;
-import org.restlet.connector.Server;
+
+import com.noelios.restlet.impl.MapletImpl;
 
 /**
- * Default Restlet container that can be easily subclassed.<br/> <br/> Component acting as a container for
- * Restlets, Chainlets and Maplets. Calls are first intercepted by the container which can do various checks
- * before effectively delegating it to one of the registered root Restlets.
+ * Container for Maplets, Chainlets or Restlets.<br/>
+ * Note that a container is a Maplet itself and can be part of a larger RestletServer.<br/>
+ * Calls are first intercepted by the container which can do various checks before effectively delegating it to one of the registered root Restlets.
+ * Restlet containers can also be contained within a Restlet server.
+ * @see <a href="http://www.restlet.org/tutorial#part05">Tutorial: Restlets servers and containers</a>
  */
-public class DefaultRestletContainer extends AbstractRestlet implements RestletContainer
+public class DefaultRestletContainer extends AbstractComponent implements Maplet
 {
-   /** The delegate Restlet container. */
-   protected RestletContainer delegate;
+   /** The parent container who delegates. */
+   protected Component parent;
+
+   /** Delegate Maplet handling root Restlets. */
+   protected Maplet delegate;
 
    /**
     * Constructor.
@@ -47,65 +49,19 @@ public class DefaultRestletContainer extends AbstractRestlet implements RestletC
     */
    public DefaultRestletContainer(String name)
    {
-      this(null, name);
+   	this(null, name);
    }
 
    /**
     * Constructor.
-    * @param server The parent Restlet server.
+    * @param parent The parent component.
     * @param name The unique name of the container.
     */
-   public DefaultRestletContainer(RestletServer server, String name)
+   public DefaultRestletContainer(Component parent, String name)
    {
-      this.delegate = Manager.createRestletContainer(server, name);
-   }
-
-   /**
-    * Adds a server connector to this component.
-    * @param server The server connector to add.
-    * @return The server connector added.
-    */
-   public Server addServer(Server server)
-   {
-      return delegate.addServer(server);
-   }
-
-   /**
-    * Removes a server connector from this component.
-    * @param name The name of the server connector to remove.
-    */
-   public void removeServer(String name)
-   {
-      delegate.removeServer(name);
-   }
-
-   /**
-    * Adds a client connector to this component.
-    * @param client The client connector to add.
-    * @return The client connector added.
-    */
-   public Client addClient(Client client)
-   {
-      return delegate.addClient(client);
-   }
-
-   /**
-    * Removes a client connector from this component.
-    * @param name The name of the client connector to remove.
-    */
-   public void removeClient(String name)
-   {
-      delegate.removeClient(name);
-   }
-
-   /**
-    * Calls a client connector.
-    * @param name The name of the client connector.
-    * @param call The call to handle.
-    */
-   public void callClient(String name, RestletCall call) throws IOException
-   {
-      delegate.callClient(name, call);
+      super(name);
+      this.parent = parent;
+      this.delegate = new MapletImpl(parent);
    }
 
    /**
@@ -142,11 +98,20 @@ public class DefaultRestletContainer extends AbstractRestlet implements RestletC
 
    /**
     * Detaches a target class.
-    * @param targetClass The target class to detach.
+    * @param targetClass The Restlet class to detach.
     */
    public void detach(Class<? extends Restlet> targetClass)
    {
       delegate.detach(targetClass);
+   }
+
+   /**
+    * Handles a call to a resource or a set of resources.
+    * @param call The call to handle.
+    */
+   public void handle(RestletCall call)
+   {
+      delegate.handle(call);
    }
 
    /**
@@ -161,60 +126,12 @@ public class DefaultRestletContainer extends AbstractRestlet implements RestletC
    }
 
    /**
-    * Handles a uniform call.
-    * @param call The uniform call to handle.
-    */
-   public void handle(RestletCall call)
-   {
-      delegate.handle(call);
-   }
-
-   /** Starts the handler. */
-   public void start() throws Exception
-   {
-   	delegate.start();
-   }
-
-   /** Stops the handler. */
-   public void stop() throws Exception
-   {
-   	delegate.stop();
-   }
-
-   /**
-    * Indicates if the handler is started.
-    * @return True if the handler is started.
-    */
-   public boolean isStarted()
-   {
-   	return delegate.isStarted();
-   }
-
-   /**
-    * Indicates if the handler is stopped.
-    * @return True if the handler is stopped.
-    */
-   public boolean isStopped()
-   {
-   	return delegate.isStopped();
-   }
-
-   /**
-    * Returns the name of this REST component.
-    * @return The name of this REST component.
-    */
-   public String getName()
-   {
-      return delegate.getName();
-   }
-
-   /**
     * Returns the description of this REST element.
     * @return The description of this REST element.
     */
    public String getDescription()
    {
-      return delegate.getDescription();
+      return "Restlet container";
    }
 
 }

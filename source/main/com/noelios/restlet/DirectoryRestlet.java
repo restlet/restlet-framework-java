@@ -27,7 +27,7 @@ import java.util.TreeMap;
 
 import org.restlet.AbstractRestlet;
 import org.restlet.RestletCall;
-import org.restlet.component.RestletContainer;
+import org.restlet.component.Component;
 import org.restlet.data.Encoding;
 import org.restlet.data.Encodings;
 import org.restlet.data.Language;
@@ -74,14 +74,14 @@ public class DirectoryRestlet extends AbstractRestlet
 
    /**
     * Constructor.
-    * @param container The parent container.
+    * @param parent The parent component.
     * @param rootPath The directory's root path.
     * @param deeply Indicates if the sub-directories are deeply accessible.
     * @param indexName If no file name is specified, use the (optional) index name.
     */
-   public DirectoryRestlet(RestletContainer container, String rootPath, boolean deeply, String indexName)
+   public DirectoryRestlet(Component parent, String rootPath, boolean deeply, String indexName)
    {
-      super(container);
+      super(parent);
       this.rootPath = StringUtils.normalizePath(rootPath);
       this.deeply = deeply;
       this.defaultEncoding = Encodings.IDENTITY;

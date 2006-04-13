@@ -22,7 +22,7 @@
 
 package org.restlet;
 
-import org.restlet.component.RestletContainer;
+import org.restlet.component.Component;
 
 /**
  * Abstract Chainlet that can be easily subclassed.
@@ -35,12 +35,12 @@ public abstract class AbstractChainlet extends AbstractRestlet implements Chainl
 
    /**
     * Creates a new Chainlet in the given container.
-    * @param container The parent container.
+    * @param parent The parent component.
     */
-   public AbstractChainlet(RestletContainer container)
+   public AbstractChainlet(Component parent)
    {
-      super(container);
-      this.delegate = Manager.createChainlet(container);
+      super(parent);
+      this.delegate = Manager.createDelegateChainlet(parent);
    }
 
    /**

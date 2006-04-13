@@ -30,7 +30,6 @@ import java.util.logging.Logger;
 import org.restlet.RestletCall;
 import org.restlet.Restlet;
 import org.restlet.component.Component;
-import org.restlet.component.RestletContainer;
 import org.restlet.data.Statuses;
 
 /**
@@ -53,8 +52,8 @@ public class RestletTarget
    /** The container class to set in the constructor. */
    protected Class containerClass;
 
-   /** Indicates if the container can be set in the constructor. */
-   protected boolean setContainer;
+   /** Indicates if the parent component can be set in the constructor. */
+   protected boolean setParent;
 
    /**
     * Constructor.
@@ -65,7 +64,7 @@ public class RestletTarget
       this.handler = handler;
       this.handlerClass = null;
       this.handlerConstructor = null;
-      this.setContainer = false;
+      this.setParent = false;
    }
 
    /**
@@ -76,7 +75,7 @@ public class RestletTarget
    {
       this.handler = null;
       this.handlerClass = handlerClass;
-      this.setContainer = false;
+      this.setParent = false;
 
       // Try to find a constructor that accepts a RestletContainer parameter
       Constructor[] constructors = handlerClass.getConstructors();
@@ -88,10 +87,10 @@ public class RestletTarget
 
          if(parameters.length == 1)
          {
-            if(RestletContainer.class.isAssignableFrom(parameters[0]))
+            if(Component.class.isAssignableFrom(parameters[0]))
             {
                this.handlerConstructor = constructors[i];
-               this.setContainer = true;
+               this.setParent = true;
             }
          }
       }
@@ -125,7 +124,7 @@ public class RestletTarget
          {
             handler = getHandler();
          }
-         else if(isSetContainer())
+         else if(isSetParent())
          {
             handler = (Restlet)getHandlerConstructor().newInstance(parent);
          }
@@ -212,12 +211,12 @@ public class RestletTarget
    }
 
    /**
-    * Indicates if the container can be set in the constructor.
-    * @return True if the container can be set in the constructor.
+    * Indicates if the parent component can be set in the constructor.
+    * @return True if the parent component can be set in the constructor.
     */
-   public boolean isSetContainer()
+   public boolean isSetParent()
    {
-      return this.setContainer;
+      return this.setParent;
    }
 
 }

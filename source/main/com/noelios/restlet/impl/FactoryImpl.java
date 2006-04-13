@@ -41,8 +41,6 @@ import org.restlet.Maplet;
 import org.restlet.RestletCall;
 import org.restlet.Restlet;
 import org.restlet.component.Component;
-import org.restlet.component.RestletContainer;
-import org.restlet.component.RestletServer;
 import org.restlet.connector.Client;
 import org.restlet.connector.Server;
 import org.restlet.data.*;
@@ -210,16 +208,6 @@ public class FactoryImpl implements Factory
    }
 
    /**
-    * Creates a delegate Chainlet.
-    * @param container The Restlet container.
-    * @return A new Chainlet.
-    */
-   public Chainlet createChainlet(RestletContainer container)
-   {
-      return new ChainletImpl(container);
-   }
-
-   /**
     * Creates a challenge response for a specific scheme (ex: HTTP BASIC authentication)
     * using a login and a password as the credentials.
     * @param scheme The challenge scheme to use.
@@ -312,6 +300,28 @@ public class FactoryImpl implements Factory
    }
 
    /**
+    * Creates a delegate Chainlet for internal usage by the AbstractChainlet.<br/>
+    * If you need a Chainlet for your application, you should be subclassing the AbstractChainlet instead. 
+    * @param parent The parent component.
+    * @return A new Chainlet.
+    */
+   public Chainlet createDelegateChainlet(Component parent)
+   {
+      return new ChainletImpl(parent);
+   }
+
+   /**
+    * Creates a delegate Maplet for internal usage by the DefaultMaplet.<br/>
+    * If you need a Maplet for your application, you should be using the DefaultMaplet instead. 
+    * @param parent The parent component.
+    * @return A new Maplet.
+    */
+   public Maplet createDelegateMaplet(Component parent)
+   {
+      return new MapletImpl(parent);
+   }
+
+   /**
     * Creates a new encoding from its standard name.
     * @param name The standard encoding name.
     * @return The new encoding.
@@ -338,16 +348,6 @@ public class FactoryImpl implements Factory
    public Language createLanguage(String name)
    {
       return (name == null) ? null : new LanguageImpl(name);
-   }
-
-   /**
-    * Creates a delegate Maplet.
-    * @param container The Restlet container.
-    * @return A new Maplet.
-    */
-   public Maplet createRestlet(RestletContainer container)
-   {
-      return new MapletImpl(container);
    }
 
    /**
@@ -398,28 +398,6 @@ public class FactoryImpl implements Factory
    public RepresentationMetadata createRepresentationMetadata(MediaType mediaType)
    {
       return new DefaultRepresentationMetadata(mediaType);
-   }
-
-   /**
-    * Creates a delegate Restlet container.
-    * @param parent The parent component.
-    * @param name The container's name.
-    * @return The new Restlet container.
-    */
-   public RestletContainer createRestletContainer(Component parent, String name)
-   {
-      return new RestletContainerImpl(parent, name);
-   }
-
-   /**
-    * Creates a delegate Restlet server.
-    * @param parent The parent component.
-    * @param name The server's name.
-    * @return The new Restlet server.
-    */
-   public RestletServer createRestletServer(Component parent, String name)
-   {
-      return new RestletServerImpl(name);
    }
 
    /**

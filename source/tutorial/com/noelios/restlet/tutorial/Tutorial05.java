@@ -27,7 +27,6 @@ import org.restlet.Manager;
 import org.restlet.RestletCall;
 import org.restlet.Restlet;
 import org.restlet.component.DefaultRestletContainer;
-import org.restlet.component.RestletContainer;
 import org.restlet.connector.Server;
 import org.restlet.data.MediaTypes;
 import org.restlet.data.Protocols;
@@ -44,7 +43,7 @@ public class Tutorial05
       try
       {
          // Create a new Restlet container
-         RestletContainer myContainer = new DefaultRestletContainer("My container");
+      	DefaultRestletContainer myContainer = new DefaultRestletContainer("My container");
 
          // Create the HTTP server connector, then add it as a server connector
          // to the Restlet container. Note that the container is the call handler.
@@ -58,7 +57,7 @@ public class Tutorial05
                {
                   // Print the requested URI path
                   String output = "Resource URI:  " + call.getResourceRef() + '\n' + 
-                                  "Handler path:  " + call.getHandlerPath() + '\n' +
+                                  "Handler path:  " + call.getRestletPath() + '\n' +
                                   "Resource path: " + call.getResourcePath() + '\n' +
                                   "Query string:  " + call.getResourceRef().getQuery();
                   call.setOutput(new StringRepresentation(output, MediaTypes.TEXT_PLAIN));

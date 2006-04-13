@@ -35,7 +35,7 @@ public abstract class AbstractRestlet implements Restlet
    /** Indicates if the handler was started. */
    protected boolean started;
 
-   /** The container. */
+   /** The parent component. */
    protected Component parent;
 
    /**

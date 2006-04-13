@@ -29,26 +29,9 @@ import java.util.logging.Level;
 import java.util.logging.Logger;
 
 import org.restlet.component.Component;
-import org.restlet.component.RestletContainer;
-import org.restlet.component.RestletServer;
 import org.restlet.connector.Client;
 import org.restlet.connector.Server;
-import org.restlet.data.ChallengeResponse;
-import org.restlet.data.ChallengeScheme;
-import org.restlet.data.CharacterSet;
-import org.restlet.data.Cookie;
-import org.restlet.data.CookieSetting;
-import org.restlet.data.Encoding;
-import org.restlet.data.Form;
-import org.restlet.data.Language;
-import org.restlet.data.MediaType;
-import org.restlet.data.Method;
-import org.restlet.data.Parameter;
-import org.restlet.data.Protocol;
-import org.restlet.data.Reference;
-import org.restlet.data.RepresentationMetadata;
-import org.restlet.data.Status;
-import org.restlet.data.Tag;
+import org.restlet.data.*;
 
 /**
  * The main manager that also acts as an object factory. Façade around the current Restlet API implementation.
@@ -71,16 +54,6 @@ public class Manager
    public static RestletCall createCall()
    {
       return getRegisteredFactory().createCall();
-   }
-
-   /**
-    * Creates a delegate Chainlet.
-    * @param container The Restlet container.
-    * @return A new Chainlet.
-    */
-   public static Chainlet createChainlet(RestletContainer container)
-   {
-      return getRegisteredFactory().createChainlet(container);
    }
 
    /**
@@ -140,6 +113,28 @@ public class Manager
    }
 
    /**
+    * Creates a delegate Chainlet for internal usage by the AbstractChainlet.<br/>
+    * If you need a Chainlet for your application, you should be subclassing the AbstractChainlet instead. 
+    * @param parent The parent component.
+    * @return A new Chainlet.
+    */
+   public static Chainlet createDelegateChainlet(Component parent)
+   {
+      return getRegisteredFactory().createDelegateChainlet(parent);
+   }
+
+   /**
+    * Creates a delegate Maplet for internal usage by the DefaultMaplet.<br/>
+    * If you need a Maplet for your application, you should be using the DefaultMaplet instead. 
+    * @param parent The parent component.
+    * @return A new Maplet.
+    */
+   public static Maplet createDelegateMaplet(Component parent)
+   {
+      return getRegisteredFactory().createDelegateMaplet(parent);
+   }
+
+   /**
     * Creates a new encoding from its standard name.
     * @param name The standard encoding name.
     * @return The new encoding.
@@ -166,16 +161,6 @@ public class Manager
    public static Language createLanguage(String name)
    {
       return getRegisteredFactory().createLanguage(name);
-   }
-
-   /**
-    * Creates a delegate Maplet.
-    * @param container The Restlet container.
-    * @return A new Maplet.
-    */
-   public static Maplet createMaplet(RestletContainer container)
-   {
-      return getRegisteredFactory().createRestlet(container);
    }
 
    /**
@@ -226,28 +211,6 @@ public class Manager
    public static RepresentationMetadata createRepresentationMetadata(MediaType mediaType)
    {
       return getRegisteredFactory().createRepresentationMetadata(mediaType);
-   }
-
-   /**
-    * Creates a delegate Restlet container.
-    * @param parent The parent Restlet container.
-    * @param name The container's name.
-    * @return The new Restlet container.
-    */
-   public static RestletContainer createRestletContainer(Component parent, String name)
-   {
-      return getRegisteredFactory().createRestletContainer(parent, name);
-   }
-
-   /**
-    * Creates a delegate Restlet server.
-    * @param parent The parent Restlet server.
-    * @param name The server's name.
-    * @return The new Restlet server.
-    */
-   public static RestletServer createRestletServer(RestletServer parent, String name)
-   {
-      return getRegisteredFactory().createRestletServer(parent, name);
    }
 
    /**

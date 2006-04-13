@@ -28,7 +28,7 @@ import java.util.logging.Logger;
 
 import org.restlet.AbstractChainlet;
 import org.restlet.RestletCall;
-import org.restlet.component.RestletContainer;
+import org.restlet.component.Component;
 import org.restlet.data.ChallengeResponse;
 import org.restlet.data.ChallengeScheme;
 import org.restlet.data.ChallengeSchemes;
@@ -63,16 +63,16 @@ public abstract class GuardChainlet extends AbstractChainlet
    /**
     * Constructor.
     * If the authentication is not requested, the scheme and realm parameters are not necessary (pass null instead).
-    * @param container The parent container.
+    * @param parent The parent component.
     * @param logName The log name to used in the logging.properties file.
     * @param authentication Indicates if the guard should attempt to authenticate the caller.
     * @param scheme The authentication scheme to use. 
     * @param realm The authentication realm.
     * @param authorization Indicates if the guard should attempt to authorize the caller.
     */
-   public GuardChainlet(RestletContainer container, String logName, boolean authentication, ChallengeScheme scheme, String realm, boolean authorization)
+   public GuardChainlet(Component parent, String logName, boolean authentication, ChallengeScheme scheme, String realm, boolean authorization)
    {
-      super(container);
+      super(parent);
 
       this.logger = Logger.getLogger(logName);
       this.authentication = authentication;
