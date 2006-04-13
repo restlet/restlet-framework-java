@@ -117,7 +117,7 @@ public abstract class SaxRepresentation extends OutputRepresentation
    	}
    	else
    	{
-			throw new IOException("Couldn't parse the source representation: no content handler defined.");
+			throw new IOException("Couldn't parse the source representation: no content restlet defined.");
    	}
    }
    

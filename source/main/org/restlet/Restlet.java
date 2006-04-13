@@ -36,10 +36,10 @@ import org.restlet.component.Component;
  */
 public interface Restlet
 {
-   /** Starts the handler. */
+   /** Starts the restlet. */
    public void start() throws Exception;
 
-   /** Stops the handler. */
+   /** Stops the restlet. */
    public void stop() throws Exception;
 
    /**
@@ -49,14 +49,14 @@ public interface Restlet
    public void handle(RestletCall call);
 
    /**
-    * Indicates if the handler is started.
-    * @return True if the handler is started.
+    * Indicates if the restlet is started.
+    * @return True if the restlet is started.
     */
    public boolean isStarted();
 
    /**
-    * Indicates if the handler is stopped.
-    * @return True if the handler is stopped.
+    * Indicates if the restlet is stopped.
+    * @return True if the restlet is stopped.
     */
    public boolean isStopped();
 

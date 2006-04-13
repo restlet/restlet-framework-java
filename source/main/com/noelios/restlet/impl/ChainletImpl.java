@@ -85,7 +85,7 @@ public class ChainletImpl extends AbstractRestlet implements Chainlet
    {
       if(this.target != null)
       {
-         // Invoke the call handler
+         // Invoke the call restlet
          this.target.handle(call, getParent());
       }
       else

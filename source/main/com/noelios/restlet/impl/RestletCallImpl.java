@@ -769,14 +769,14 @@ public class RestletCallImpl implements RestletCall
 
    /**
     * Sets the resource reference.<br/>
-    * Also reset the current handler path and matches.
+    * Also reset the current restlet path and matches.
     * @param resourceRef The resource reference.
     */
    public void setResourceRef(Reference resourceRef)
    {
       this.resourceRef = resourceRef;
       
-      // Reset the current handler
+      // Reset the current restlet
       setHandlerPath(null);
       getRestletMatches().clear();
    }

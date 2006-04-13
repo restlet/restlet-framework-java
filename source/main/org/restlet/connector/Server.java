@@ -28,7 +28,7 @@ import org.restlet.Restlet;
 
 /**
  * Connector that listens for connections and responds to requests.<br/>By default, the handle(UniformCall)
- * method delegates the call received to the target handler<br/><br/>"The primary connector types are
+ * method delegates the call received to the target restlet<br/><br/>"The primary connector types are
  * client and server. The essential difference between the two is that a client initiates communication by
  * making a request, whereas a server listens for connections and responds to requests in order to supply
  * access to its services. A component may include both client and server connectors." Roy T. Fielding
@@ -39,20 +39,20 @@ public interface Server extends Connector
 {
    /**
     * Handles the HTTP protocol call.<br/>
-    * The default behavior is to create an UniformCall and delegate it to the attached handler.
+    * The default behavior is to create an UniformCall and delegate it to the attached restlet.
     * @param call The HTTP protocol call.
     */
    public void handle(ServerCall call) throws IOException;
 
    /**
-    * Returns the target handler.
-    * @return The target handler.
+    * Returns the target restlet.
+    * @return The target restlet.
     */
    public Restlet getTarget();
 
    /**
-    * Sets the target handler.
-    * @param target The target handler.
+    * Sets the target restlet.
+    * @param target The target restlet.
     */
    public void setTarget(Restlet target);
 

@@ -579,7 +579,7 @@ public class XmlWriter extends XMLFilterImpl
 	 * Write the XML declaration at the beginning of the document. Pass the event
 	 * on down the filter chain for further processing.
 	 * @exception org.xml.sax.SAXException If there is an error writing the XML
-	 * declaration, or if a handler further down the filter chain raises an
+	 * declaration, or if a restlet further down the filter chain raises an
 	 * exception.
 	 * @see org.xml.sax.ContentHandler#startDocument
 	 */
@@ -594,7 +594,7 @@ public class XmlWriter extends XMLFilterImpl
 	 * Write a newline at the end of the document. Pass the event on down the
 	 * filter chain for further processing.
 	 * @exception org.xml.sax.SAXException If there is an error writing the
-	 * newline, or if a handler further down the filter chain raises an
+	 * newline, or if a restlet further down the filter chain raises an
 	 * exception.
 	 * @see org.xml.sax.ContentHandler#endDocument
 	 */
@@ -623,7 +623,7 @@ public class XmlWriter extends XMLFilterImpl
 	 * qName.
 	 * @param atts The element's attribute list (must not be null).
 	 * @exception org.xml.sax.SAXException If there is an error writing the start
-	 * tag, or if a handler further down the filter chain raises an exception.
+	 * tag, or if a restlet further down the filter chain raises an exception.
 	 * @see org.xml.sax.ContentHandler#startElement
 	 */
 	public void startElement(String uri, String localName, String qName,
@@ -669,7 +669,7 @@ public class XmlWriter extends XMLFilterImpl
 	 * generating a prefix if necessary, but it is not guaranteed to use the same
 	 * qName.
 	 * @exception org.xml.sax.SAXException If there is an error writing the end
-	 * tag, or if a handler further down the filter chain raises an exception.
+	 * tag, or if a restlet further down the filter chain raises an exception.
 	 * @see org.xml.sax.ContentHandler#endElement
 	 */
 	public void endElement(String uri, String localName, String qName)
@@ -709,7 +709,7 @@ public class XmlWriter extends XMLFilterImpl
 	 * @param start The starting position in the array.
 	 * @param len The number of characters to write.
 	 * @exception org.xml.sax.SAXException If there is an error writing the
-	 * characters, or if a handler further down the filter chain raises an
+	 * characters, or if a restlet further down the filter chain raises an
 	 * exception.
 	 * @see org.xml.sax.ContentHandler#characters
 	 */
@@ -725,7 +725,7 @@ public class XmlWriter extends XMLFilterImpl
 	 * @param start The starting position in the array.
 	 * @param len The number of characters to write.
 	 * @exception org.xml.sax.SAXException If there is an error writing the
-	 * characters, or if a handler further down the filter chain raises an
+	 * characters, or if a restlet further down the filter chain raises an
 	 * exception.
 	 * @see org.xml.sax.ContentHandler#characters
 	 */
@@ -748,7 +748,7 @@ public class XmlWriter extends XMLFilterImpl
 	 * @param start The starting position in the array.
 	 * @param length The number of characters to write.
 	 * @exception org.xml.sax.SAXException If there is an error writing the
-	 * whitespace, or if a handler further down the filter chain raises an
+	 * whitespace, or if a restlet further down the filter chain raises an
 	 * exception.
 	 * @see org.xml.sax.ContentHandler#ignorableWhitespace
 	 */
@@ -765,7 +765,7 @@ public class XmlWriter extends XMLFilterImpl
 	 * @param target The PI target.
 	 * @param data The PI data.
 	 * @exception org.xml.sax.SAXException If there is an error writing the PI,
-	 * or if a handler further down the filter chain raises an exception.
+	 * or if a restlet further down the filter chain raises an exception.
 	 * @see org.xml.sax.ContentHandler#processingInstruction
 	 */
 	public void processingInstruction(String target, String data)
@@ -801,7 +801,7 @@ public class XmlWriter extends XMLFilterImpl
 	 * writer may or may not use the prefix attached.
 	 * @param atts The element's attribute list.
 	 * @exception org.xml.sax.SAXException If there is an error writing the empty
-	 * tag, or if a handler further down the filter chain raises an exception.
+	 * tag, or if a restlet further down the filter chain raises an exception.
 	 * @see #startElement
 	 * @see #endElement
 	 */
@@ -846,7 +846,7 @@ public class XmlWriter extends XMLFilterImpl
 	 * @param uri The element's Namespace URI.
 	 * @param localName The element's local name.
 	 * @exception org.xml.sax.SAXException If there is an error writing the start
-	 * tag, or if a handler further down the filter chain raises an exception.
+	 * tag, or if a restlet further down the filter chain raises an exception.
 	 * @see #startElement(String, String, String, Attributes)
 	 */
 	public void startElement(String uri, String localName) throws SAXException
@@ -863,7 +863,7 @@ public class XmlWriter extends XMLFilterImpl
 	 * 
 	 * @param localName The element's local name.
 	 * @exception org.xml.sax.SAXException If there is an error writing the start
-	 * tag, or if a handler further down the filter chain raises an exception.
+	 * tag, or if a restlet further down the filter chain raises an exception.
 	 * @see #startElement(String, String, String, Attributes)
 	 */
 	public void startElement(String localName) throws SAXException
@@ -880,7 +880,7 @@ public class XmlWriter extends XMLFilterImpl
 	 * @param uri The element's Namespace URI.
 	 * @param localName The element's local name.
 	 * @exception org.xml.sax.SAXException If there is an error writing the end
-	 * tag, or if a handler further down the filter chain raises an exception.
+	 * tag, or if a restlet further down the filter chain raises an exception.
 	 * @see #endElement(String, String, String)
 	 */
 	public void endElement(String uri, String localName) throws SAXException
@@ -897,7 +897,7 @@ public class XmlWriter extends XMLFilterImpl
 	 * 
 	 * @param localName The element's local name.
 	 * @exception org.xml.sax.SAXException If there is an error writing the end
-	 * tag, or if a handler further down the filter chain raises an exception.
+	 * tag, or if a restlet further down the filter chain raises an exception.
 	 * @see #endElement(String, String, String)
 	 */
 	public void endElement(String localName) throws SAXException
@@ -915,7 +915,7 @@ public class XmlWriter extends XMLFilterImpl
 	 * @param uri The element's Namespace URI.
 	 * @param localName The element's local name.
 	 * @exception org.xml.sax.SAXException If there is an error writing the empty
-	 * tag, or if a handler further down the filter chain raises an exception.
+	 * tag, or if a restlet further down the filter chain raises an exception.
 	 * @see #emptyElement(String, String, String, Attributes)
 	 */
 	public void emptyElement(String uri, String localName) throws SAXException
@@ -932,7 +932,7 @@ public class XmlWriter extends XMLFilterImpl
 	 * 
 	 * @param localName The element's local name.
 	 * @exception org.xml.sax.SAXException If there is an error writing the empty
-	 * tag, or if a handler further down the filter chain raises an exception.
+	 * tag, or if a restlet further down the filter chain raises an exception.
 	 * @see #emptyElement(String, String, String, Attributes)
 	 */
 	public void emptyElement(String localName) throws SAXException
@@ -957,7 +957,7 @@ public class XmlWriter extends XMLFilterImpl
 	 * @param atts The element's attributes.
 	 * @param content The character data content.
 	 * @exception org.xml.sax.SAXException If there is an error writing the empty
-	 * tag, or if a handler further down the filter chain raises an exception.
+	 * tag, or if a restlet further down the filter chain raises an exception.
 	 * @see #startElement(String, String, String, Attributes)
 	 * @see #characters(String)
 	 * @see #endElement(String, String, String)
@@ -986,7 +986,7 @@ public class XmlWriter extends XMLFilterImpl
 	 * @param localName The element's local name.
 	 * @param content The character data content.
 	 * @exception org.xml.sax.SAXException If there is an error writing the empty
-	 * tag, or if a handler further down the filter chain raises an exception.
+	 * tag, or if a restlet further down the filter chain raises an exception.
 	 * @see #startElement(String, String, String, Attributes)
 	 * @see #characters(String)
 	 * @see #endElement(String, String, String)
@@ -1014,7 +1014,7 @@ public class XmlWriter extends XMLFilterImpl
 	 * @param localName The element's local name.
 	 * @param content The character data content.
 	 * @exception org.xml.sax.SAXException If there is an error writing the empty
-	 * tag, or if a handler further down the filter chain raises an exception.
+	 * tag, or if a restlet further down the filter chain raises an exception.
 	 * @see #startElement(String, String, String, Attributes)
 	 * @see #characters(String)
 	 * @see #endElement(String, String, String)
@@ -1031,7 +1031,7 @@ public class XmlWriter extends XMLFilterImpl
 	 * array, then invokes {@link #characters(char[], int, int)}.</p>
 	 * @param data The character data.
 	 * @exception org.xml.sax.SAXException If there is an error writing the
-	 * string, or if a handler further down the filter chain raises an exception.
+	 * string, or if a restlet further down the filter chain raises an exception.
 	 * @see #characters(char[], int, int)
 	 */
 	public void characters(String data) throws SAXException
@@ -1045,7 +1045,7 @@ public class XmlWriter extends XMLFilterImpl
 	 * array, then invokes {@link #characters(char[], int, int)}.</p>
 	 * @param data The character data.
 	 * @exception org.xml.sax.SAXException If there is an error writing the
-	 * string, or if a handler further down the filter chain raises an exception.
+	 * string, or if a restlet further down the filter chain raises an exception.
 	 * @see #characters(char[], int, int)
 	 */
 	private void characters(boolean dataFormat, String data) throws SAXException

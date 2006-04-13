@@ -25,7 +25,7 @@ package com.noelios.restlet.util;
 import java.io.IOException;
 
 /**
- * Log file handler that uses the com.noelios.restlet.util.LogFormatter by default. Also useful in
+ * Log file restlet that uses the com.noelios.restlet.util.LogFormatter by default. Also useful in
  * configuration files to differentiate from the java.util.logging.FileHandler.
  */
 public class LogFileHandler extends java.util.logging.FileHandler

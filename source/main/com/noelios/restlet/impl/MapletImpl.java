@@ -98,7 +98,7 @@ public class MapletImpl extends AbstractRestlet implements Maplet
       for(Iterator<RestletMapping> iter = getMappings().iterator(); iter.hasNext();)
       {
          mapping = iter.next();
-         if(mapping.getHandler() == target) iter.remove();
+         if(mapping.getRestlet() == target) iter.remove();
       }
       
       if(getMappings().size() == 0) this.mappings = null;
@@ -114,7 +114,7 @@ public class MapletImpl extends AbstractRestlet implements Maplet
       for(Iterator<RestletMapping> iter = getMappings().iterator(); iter.hasNext();)
       {
          mapping = iter.next();
-         if(mapping.getHandlerClass() == targetClass) iter.remove();
+         if(mapping.getRestletClass() == targetClass) iter.remove();
       }
 
       if(getMappings().size() == 0) this.mappings = null;
@@ -143,7 +143,7 @@ public class MapletImpl extends AbstractRestlet implements Maplet
       boolean found = false;
       String resourcePath = call.getResourcePath();
 
-      // Match the path in the call context with one of the child handler
+      // Match the path in the call context with one of the child restlet
       for(Iterator<RestletMapping> iter = getMappings().iterator(); !found && iter.hasNext();)
       {
          mapping = iter.next();
@@ -173,7 +173,7 @@ public class MapletImpl extends AbstractRestlet implements Maplet
             call.getRestletMatches().add(matcher.group(i + 1));
          }
 
-         // Invoke the call handler
+         // Invoke the call restlet
          mapping.handle(call, getParent());
       }
       else

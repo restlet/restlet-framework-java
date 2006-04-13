@@ -32,7 +32,7 @@ import org.restlet.component.Component;
  */
 public abstract class AbstractRestlet implements Restlet
 {
-   /** Indicates if the handler was started. */
+   /** Indicates if the restlet was started. */
    protected boolean started;
 
    /** The parent component. */
@@ -56,21 +56,21 @@ public abstract class AbstractRestlet implements Restlet
       this.started = false;
    }
 
-   /** Starts the handler. */
+   /** Starts the restlet. */
    public void start() throws Exception
    {
       this.started = true;
    }
 
-   /** Stops the handler. */
+   /** Stops the restlet. */
    public void stop() throws Exception
    {
       this.started = false;
    }
 
    /**
-    * Indicates if the handler is started.
-    * @return True if the handler is started.
+    * Indicates if the restlet is started.
+    * @return True if the restlet is started.
     */
    public boolean isStarted()
    {
@@ -78,8 +78,8 @@ public abstract class AbstractRestlet implements Restlet
    }
 
    /**
-    * Indicates if the handler is stopped.
-    * @return True if the handler is stopped.
+    * Indicates if the restlet is stopped.
+    * @return True if the restlet is stopped.
     */
    public boolean isStopped()
    {

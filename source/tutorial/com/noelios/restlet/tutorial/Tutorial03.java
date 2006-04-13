@@ -40,7 +40,7 @@ public class Tutorial03
    {
       try
       {
-         // Creating a minimal handler returning "Hello World"
+         // Creating a minimal restlet returning "Hello World"
          Restlet handler = new AbstractRestlet()
          {
             public void handle(RestletCall call)
