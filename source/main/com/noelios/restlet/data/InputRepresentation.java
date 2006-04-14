@@ -47,6 +47,18 @@ public class InputRepresentation extends StreamRepresentation
    }
 
    /**
+    * Constructor.
+    * @param inputStream The representation's stream.
+    * @param mediaType The representation's media type.
+    * @param expectedSize The expected input stream size.
+    */
+   public InputRepresentation(InputStream inputStream, MediaType mediaType, long expectedSize)
+   {
+      super(mediaType, expectedSize);
+      this.inputStream = inputStream;
+   }
+
+   /**
     * Returns a stream with the representation's content.
     * @return A stream with the representation's content.
     */

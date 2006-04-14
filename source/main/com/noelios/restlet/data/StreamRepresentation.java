@@ -38,15 +38,50 @@ import com.noelios.restlet.util.ByteUtils;
  */
 public abstract class StreamRepresentation extends AbstractRepresentation
 {
+	/** 
+	 * The expected size. Even if, by definition, a stream can have any size,
+	 * sometimes we can say in advance what is the expectedSize. 
+	 */
+	protected long expectedSize;
+	
    /**
     * Constructor.
     * @param mediaType The representation's media type.
     */
    public StreamRepresentation(MediaType mediaType)
    {
+      this(mediaType, -1L);
+   }
+	
+   /**
+    * Constructor.
+    * @param mediaType The representation's media type.
+    * @param expectedSize The expected stream size. 
+    */
+   public StreamRepresentation(MediaType mediaType, long expectedSize)
+   {
       super(mediaType);
+      this.expectedSize = expectedSize;
    }
 
+   /**
+    * Returns the size in bytes if known, -1 otherwise.
+    * @return The size in bytes if known, -1 otherwise.
+    */
+   public long getSize()
+   {
+      return this.expectedSize;
+   }
+
+   /**
+    * Sets the expected size in bytes if known, -1 otherwise.
+    * @param expectedSize The expected size in bytes if known, -1 otherwise.
+    */
+   public void setSize(long expectedSize)
+   {
+      this.expectedSize = expectedSize;
+   }
+   
    /**
     * Writes the representation to a byte stream.
     * @param outputStream The output stream.

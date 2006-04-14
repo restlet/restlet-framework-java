@@ -322,6 +322,7 @@ public class HttpServerRestletCall extends RestletCallImpl
          Encoding contentEncoding = null;
          Language contentLanguage = null;
          MediaType contentType = null;
+         long contentLength = -1L;
 
          for(Parameter header : getConnectorCall().getRequestHeaders())
          {
@@ -337,15 +338,19 @@ public class HttpServerRestletCall extends RestletCallImpl
             {
                contentType = Manager.createMediaType(header.getValue());
             }
+            else if(header.getName().equalsIgnoreCase(ConnectorCall.HEADER_CONTENT_LENGTH))
+            {
+            	contentLength = Long.parseLong(header.getValue());
+            }
          }
 
          if(requestStream != null)
          {
-            this.input = new InputRepresentation(requestStream, contentType);
+            this.input = new InputRepresentation(requestStream, contentType, contentLength);
          }
          else if(requestChannel != null)
          {
-            this.input = new ReadableRepresentation(requestChannel, contentType);
+            this.input = new ReadableRepresentation(requestChannel, contentType, contentLength);
          }
          
          this.input.getMetadata().setEncoding(contentEncoding);

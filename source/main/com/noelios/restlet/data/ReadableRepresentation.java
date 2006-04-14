@@ -47,6 +47,18 @@ public class ReadableRepresentation extends ChannelRepresentation
    }
 
    /**
+    * Constructor.
+    * @param readableChannel The representation's channel.
+    * @param mediaType The representation's media type.
+    * @param expectedSize The expected stream size. 
+    */
+   public ReadableRepresentation(ReadableByteChannel readableChannel, MediaType mediaType, long expectedSize)
+   {
+      super(mediaType, expectedSize);
+      this.readableChannel = readableChannel;
+   }
+
+   /**
     * Returns a readable byte channel. If it is supported by a file a read-only instance of FileChannel is
     * returned.
     * @return A readable byte channel.

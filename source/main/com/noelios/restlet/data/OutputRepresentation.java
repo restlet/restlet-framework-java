@@ -47,6 +47,16 @@ public abstract class OutputRepresentation extends StreamRepresentation
    }
 
    /**
+    * Constructor.
+    * @param mediaType The representation's mediaType.
+    * @param expectedSize The expected input stream size.
+    */
+   public OutputRepresentation(MediaType mediaType, long expectedSize)
+   {
+      super(mediaType, expectedSize);
+   }
+   
+   /**
     * Writes the representation to a byte stream.
     * @param outputStream The output stream.
     */

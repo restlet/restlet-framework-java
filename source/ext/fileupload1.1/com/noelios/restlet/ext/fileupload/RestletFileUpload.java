@@ -29,6 +29,7 @@ import org.apache.commons.fileupload.FileItemFactory;
 import org.apache.commons.fileupload.FileUpload;
 import org.apache.commons.fileupload.FileUploadException;
 import org.restlet.RestletCall;
+import org.restlet.data.Representation;
 
 /**
  * High level API for processing file uploads.
@@ -67,7 +68,19 @@ public class RestletFileUpload extends FileUpload
 	@SuppressWarnings("unchecked")
 	public List<FileItem> parseCall(RestletCall call) throws FileUploadException
 	{
-		return parseRequest(new RestletCallContext(call));
+		return parseRequest(new RepresentationContext(call.getInput()));
+	}
+
+	/**
+	 * Processes an <a href="http://www.ietf.org/rfc/rfc1867.txt">RFC 1867</a> compliant <code>multipart/form-data</code> input representation.
+	 * @param multipartForm The multipart representation to be parsed.
+	 * @return A list of <code>FileItem</code> instances parsed, in the order that they were transmitted.
+	 * @throws FileUploadException if there are problems reading/parsing the request or storing files.
+	 */
+	@SuppressWarnings("unchecked")
+	public List<FileItem> parseRepresentation(Representation multipartForm) throws FileUploadException
+	{
+		return parseRequest(new RepresentationContext(multipartForm));
 	}
 
 }

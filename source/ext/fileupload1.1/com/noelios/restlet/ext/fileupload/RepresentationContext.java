@@ -26,24 +26,23 @@ import java.io.IOException;
 import java.io.InputStream;
 
 import org.apache.commons.fileupload.RequestContext;
-import org.restlet.RestletCall;
-import org.restlet.connector.ConnectorCall;
+import org.restlet.data.Representation;
 
 /**
- * Provides access to the call information needed by the FileUpload processor.  
+ * Provides access to the representation information needed by the FileUpload processor.  
  */
-public class RestletCallContext implements RequestContext
+public class RepresentationContext implements RequestContext
 {
-	/** The call to adapt. */
-	protected RestletCall call;
+	/** The representation to adapt. */
+	protected Representation multipartForm;
 	
 	/**
 	 * Constructor.
-	 * @param call The call to adapt.
+	 * @param multipartForm The multipart form to parse.
 	 */
-	public RestletCallContext(RestletCall call)
+	public RepresentationContext(Representation multipartForm)
 	{	
-		this.call = call;
+		this.multipartForm = multipartForm;
 	}
 	
 	/**
@@ -52,7 +51,7 @@ public class RestletCallContext implements RequestContext
 	 */
 	public String getCharacterEncoding()
 	{
-		return this.call.getInput().getMetadata().getEncoding().getName();
+		return this.multipartForm.getMetadata().getEncoding().getName();
 	}
 
 	/**
@@ -61,15 +60,7 @@ public class RestletCallContext implements RequestContext
 	 */
 	public int getContentLength()
 	{
-		int result = -1;
-		String contentLength = this.call.getConnectorCall().getRequestHeaderValue(ConnectorCall.HEADER_CONTENT_LENGTH);
-		
-		if((contentLength != null) && (!contentLength.equals("")))
-		{
-			result = Integer.parseInt(contentLength);
-		}
-		
-		return result;
+		return (int)this.multipartForm.getSize();
 	}
 
 	/**
@@ -78,7 +69,7 @@ public class RestletCallContext implements RequestContext
 	 */
 	public String getContentType()
 	{
-		return this.call.getInput().getMetadata().getMediaType().getName();
+		return this.multipartForm.getMetadata().getMediaType().getName();
 	}
 
 	/**
@@ -87,7 +78,7 @@ public class RestletCallContext implements RequestContext
 	 */
 	public InputStream getInputStream() throws IOException
 	{
-		return this.call.getInput().getStream();
+		return this.multipartForm.getStream();
 	}
 
 }

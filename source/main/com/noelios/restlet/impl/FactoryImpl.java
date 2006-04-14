@@ -56,8 +56,8 @@ public class FactoryImpl implements Factory
    /** Obtain a suitable logger. */
    private static Logger logger = Logger.getLogger("com.noelios.restlet.FactoryImpl");
 
-   public static final String VERSION_LONG = "1.0 beta 9";
-   public static final String VERSION_SHORT = "1.0b9";
+   public static final String VERSION_LONG = "1.0 beta 10";
+   public static final String VERSION_SHORT = "1.0b10";
    public static final String VERSION_HEADER = "Noelios-Restlet-Engine/" + VERSION_SHORT;
 
    /**
