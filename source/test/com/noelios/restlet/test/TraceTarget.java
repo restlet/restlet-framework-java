@@ -41,7 +41,7 @@ public class TraceTarget extends AbstractRestlet
    {
       String output = "Hello World!" +
                       "\nYour IP address is " + call.getClientAddress() + 
-                      "\nYour requested the following URI: " + call.getResourceRef().toString();
+                      "\nYour request URI is: " + call.getResourceRef().toString();
       call.setOutput(new StringRepresentation(output, MediaTypes.TEXT_PLAIN));
    }
 

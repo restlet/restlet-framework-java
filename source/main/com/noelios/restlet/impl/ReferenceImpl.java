@@ -76,6 +76,53 @@ public class ReferenceImpl implements Reference
 
       updateIndexes();
    }
+   
+   /**
+    * Constructor from the URI parts.
+    * @param scheme The scheme ("http", "https" or "ftp").
+    * @param hostName The host name or IP address.
+    * @param hostPort The host port (default ports are correctly ignored).
+    * @param path The path component for hierarchical identifiers.
+    * @param query The optional query component for hierarchical identifiers.
+    * @param fragment The optionale fragment identifier.
+    */
+   public ReferenceImpl(String scheme, String hostName, int hostPort, String path, String query, String fragment)
+   {
+   	StringBuilder sb = new StringBuilder();
+
+   	// Append the scheme and host name
+   	sb.append(scheme).append("://").append(hostName);
+
+   	// Append the host port number 
+   	if((scheme.equals("ftp")   && (hostPort != 21)) ||
+   		(scheme.equals("http")  && (hostPort != 80)) || 
+   		(scheme.equals("https") && (hostPort != 443)))
+   	{
+   		sb.append(':').append(hostPort);
+   	}
+
+   	// Append the path
+   	if(path != null)
+   	{
+   		sb.append(path);
+   	}
+   	
+   	// Append the query string 
+   	if(query != null)
+   	{
+   		sb.append('?').append(query);
+   	}
+   	
+   	// Append the fragment identifier
+   	if(fragment != null)
+   	{
+   		sb.append('#').append(fragment);
+   	}
+
+   	// Actually construct the reference
+      this.uri = sb.toString();
+      updateIndexes();
+   }
 
    /**
     * Returns the authority component for hierarchical identifiers.
@@ -1166,5 +1213,5 @@ public class ReferenceImpl implements Reference
          queryIndex = this.uri.indexOf('?');
       }
    }
-
+   
 }

@@ -30,7 +30,7 @@ import com.noelios.restlet.ext.atom.Feed;
 import com.noelios.restlet.ext.atom.Service;
 
 /**
- * Unit test case.
+ * Unit test case for the Atom extension.
  */
 public class AtomTest
 {

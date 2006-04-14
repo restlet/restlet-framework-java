@@ -29,6 +29,7 @@ import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
+import org.restlet.Manager;
 import org.restlet.RestletCall;
 import org.restlet.Restlet;
 import org.restlet.component.Component;
@@ -39,14 +40,71 @@ import org.restlet.data.Protocols;
 
 /**
  * Servlet connector acting as a HTTP server. See the getTarget() method for details 
- * on how to provide a target for your server.
+ * on how to provide a target for your server.<br/>
+ * Here is a sample configuration for your Restlet webapp:
+ * 
+ * <pre>
+ * &lt;?xml version="1.0" encoding="ISO-8859-1"?&gt;
+ * &lt;!DOCTYPE web-app PUBLIC "-//Sun Microsystems, Inc.//DTD Web Application 2.3//EN" "http://java.sun.com/dtd/web-app_2_3.dtd"&gt;
+ * &lt;web-app&gt;
+ * 	&lt;display-name&gt;Server Servlet&lt;/display-name&gt;
+ * 	&lt;description&gt;Servlet acting as a Restlet server connector&lt;/description&gt;
+ * 
+ * 	&lt;!-- Parameter indicating the target Restlet that will handle the call --&gt;
+ * 	&lt;context-param&gt;
+ * 		&lt;param-name&gt;org.restlet.target.class&lt;/param-name&gt;
+ * 		&lt;param-value&gt;com.noelios.restlet.test.TraceTarget&lt;/param-value&gt;
+ * 	&lt;/context-param&gt;
+ * 
+ * 	&lt;!-- Parameter indicating the Servlet attribute to use to store the target Restlet reference --&gt;
+ * 	&lt;context-param&gt;
+ * 		&lt;param-name&gt;org.restlet.target.attribute&lt;/param-name&gt;
+ * 		&lt;param-value&gt;org.restlet.target&lt;/param-value&gt;
+ * 	&lt;/context-param&gt;
+ * 
+ * 	&lt;!-- Parameter indicating the name of an initialization parameter that should be set with the ServerServlet context path --&gt;
+ * 	&lt;context-param&gt;
+ * 		&lt;param-name&gt;org.restlet.target.init.contextPath&lt;/param-name&gt;
+ * 		&lt;param-value&gt;contextPath&lt;/param-value&gt;
+ * 	&lt;/context-param&gt;
+ * 
+ * 	&lt;!-- Definition of the ServerServlet class or a subclass --&gt;
+ * 	&lt;servlet&gt;
+ * 		&lt;servlet-name&gt;ServerServlet&lt;/servlet-name&gt;
+ * 		&lt;servlet-class&gt;com.noelios.restlet.ext.servlet.ServerServlet&lt;/servlet-class&gt;
+ * 	&lt;/servlet&gt;
+ * 
+ * 	&lt;!-- Mapping of requests to the ServerServlet --&gt;
+ * 	&lt;servlet-mapping&gt;
+ * 		&lt;servlet-name&gt;ServerServlet&lt;/servlet-name&gt;
+ * 		&lt;url-pattern&gt;/*&lt;/url-pattern&gt;
+ * 	&lt;/servlet-mapping&gt;
+ * &lt;/web-app&gt;}
+ * </pre>
  * @see <a href="http://java.sun.com/j2ee/">J2EE home page</a>
  */
 public class ServerServlet extends HttpServlet implements Server
 {
-   /** The Servlet context initialization parameter's name containing the target's class name. */
+   /** 
+    * The Servlet context initialization parameter's name containing the target's 
+    * class name to use to create the target instance. 
+    */
    public static final String NAME_TARGET_CLASS = "org.restlet.target.class";
+   
+   /** 
+    * The Servlet context initialization parameter's name containing the name of the 
+    * Servlet context attribute that should be used to store the target instance. 
+    */ 
    public static final String NAME_TARGET_ATTRIBUTE = "org.restlet.target.attribute";
+   
+   /** 
+    * The Servlet context initialization parameter's name containing the name of the 
+    * target initialization parameter to use to store the context path. This context path
+    * is composed of the following parts: scheme, host name, [host port], webapp path,
+    * servlet path. If this initialization parameter is not set in the Servlet context 
+    * or config, then the setting is simply skipped. 
+    */ 
+   public static final String NAME_TARGET_INIT_CONTEXTPATH = "org.restlet.target.init.contextPath";
 
    /** Serial version identifier. */
    private static final long serialVersionUID = 1L;
@@ -125,7 +183,7 @@ public class ServerServlet extends HttpServlet implements Server
    {
    	this.parent = parent;
    }
-
+   
    /**
     * Services a HTTP Servlet request as an uniform call.
     * @param request The HTTP Servlet request.
@@ -133,7 +191,10 @@ public class ServerServlet extends HttpServlet implements Server
     */
    protected void service(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException
    {
-      handle((ServerCall)new ServletCall(request, response));
+   	if(getTarget(request) != null)
+      {
+      	handle((ServerCall)new ServletCall(request, response));
+      }
    }
 
    /**
@@ -144,42 +205,30 @@ public class ServerServlet extends HttpServlet implements Server
     * We lookup for the class name in the servlet configuration, then in the application context.<br/>
     * Once the target is found, we wrap the servlet request and response into a uniform call and ask the target to handle it.<br/>
     * When the handling is done, we write the result back into the result object and return from the service method.
+    * @param request The HTTP Servlet request.
     * @return The target Restlet handling calls.
     */
-   public Restlet getTarget()
+   public Restlet getTarget(HttpServletRequest request)
    {
-      if(this.target != null)
-      {
-         return this.target;
-      }
-      else
+   	Restlet result = this.target;
+   	
+      if(result == null)
       {
          synchronized(ServerServlet.class)
          {
-            // Look in the application context attribute if another servlet already set the target
-            // First, look in the servlet configuration for the attribute name
-            String targetAttributeName = getServletConfig().getInitParameter(NAME_TARGET_ATTRIBUTE);
-            if(targetAttributeName == null)
-            {
-               // Then, look in the application context
-               targetAttributeName = getServletContext().getInitParameter(NAME_TARGET_ATTRIBUTE);
-            }
+            // Find the attribute name to use to store the target reference
+            String targetAttributeName = findInitParameter(NAME_TARGET_ATTRIBUTE);
 
             if(targetAttributeName != null)
             {
                // Look up the attribute for a target
-               this.target = (Restlet)getServletContext().getAttribute(targetAttributeName);
+               result = (Restlet)getServletContext().getAttribute(targetAttributeName);
 
-               if(this.target == null)
+               if(result == null)
                {
                   // Try to instantiate a new target
-                  // First, look in the servlet configuration for the class name
-                  String targetClassName = getServletConfig().getInitParameter(NAME_TARGET_CLASS);
-                  if(targetClassName == null)
-                  {
-                     // Then, look in the web application context
-                     targetClassName = getServletContext().getInitParameter(NAME_TARGET_CLASS);
-                  }
+                  // First, find the target class name
+                  String targetClassName = findInitParameter(NAME_TARGET_CLASS);
 
                   if(targetClassName != null)
                   {
@@ -190,8 +239,39 @@ public class ServerServlet extends HttpServlet implements Server
 
                         // Create a new instance of the target class
                         // and store it for reuse by other ServerServlets.
-                        this.target = (Restlet)targetClass.newInstance();
-                        getServletContext().setAttribute(NAME_TARGET_ATTRIBUTE, this.target);
+                        result = (Restlet)targetClass.newInstance();
+                        getServletContext().setAttribute(NAME_TARGET_ATTRIBUTE, result);
+                        
+                        // Set if a context path needs to be transmitted
+                     	String initContextPathName = findInitParameter(NAME_TARGET_INIT_CONTEXTPATH);
+                     	if(initContextPathName != null)
+                     	{
+                        	// First, let's locate the closest component
+                        	Component component = null;
+                        	if(result instanceof Component)
+                        	{
+                        		// The target is probably a RestletContainer or RestletServer
+                        		component = (Component)result;
+                        	}
+                        	else
+                        	{
+                        		// The target is probably a standalone Restlet or Chainlet or Maplet
+                        		// Try to get its parent, even if chances to find one are low
+                        		component = result.getParent();
+                        	}
+                        	
+                        	// Provide the context path as an init parameter
+                        	if(component != null)
+                        	{
+                        		String scheme = request.getScheme();
+                        		String hostName = request.getServerName();
+                        		int hostPort = request.getServerPort();
+                        		String servletPath = request.getContextPath() + request.getServletPath();
+                        		String contextPath = Manager.createReference(scheme, hostName, hostPort, servletPath, null, null).toString();
+                        		component.getInitParameters().add(Manager.createParameter(initContextPathName, contextPath));
+                        		log("[Noelios Restlet Engine] - This context path has been provided to the target's init parameter \"" + initContextPathName + "\": " + contextPath);
+                        	}
+                     	}
                      }
                      catch(ClassNotFoundException e)
                      {
@@ -216,10 +296,21 @@ public class ServerServlet extends HttpServlet implements Server
             {
                log("[Noelios Restlet Engine] - The ServerServlet couldn't find the attribute name of the target Restlet. Please set the initialization parameter called " + NAME_TARGET_ATTRIBUTE);
             }
-         }
 
-         return this.target;
+            this.target = result;
+         }
       }
+      
+      return result;
+   }
+
+   /**
+    * Returns the target Restlet handling calls.
+    * @return The target Restlet handling calls.
+    */
+   public Restlet getTarget()
+   {
+      return this.target;
    }
 
    /**
@@ -252,7 +343,10 @@ public class ServerServlet extends HttpServlet implements Server
     */
    public void handle(RestletCall call)
    {
-      getTarget().handle(call);
+   	if(getTarget() != null)
+   	{
+   		getTarget().handle(call);
+   	}
    }
 
    /**
@@ -282,4 +376,21 @@ public class ServerServlet extends HttpServlet implements Server
       throw new IllegalArgumentException("Not directly supported. SSL must be configured at the Servlet Container level.");
    }
 
+   /**
+    * Finds an initialization parameter by first checking the Servlet context.
+    * If nothing is found, then it checks the Servlet config.
+    * @param name The parameter's name.
+    * @return The parameter's value or null.
+    */
+   protected String findInitParameter(String name)
+   {
+      String result = getServletContext().getInitParameter(name);
+      if(result == null)
+      {
+      	result = getServletConfig().getInitParameter(name);
+      }
+
+      return result;
+   }
+   
 }

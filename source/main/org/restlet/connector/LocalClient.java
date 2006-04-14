@@ -30,18 +30,18 @@ import org.restlet.Restlet;
  */
 public class LocalClient extends AbstractClient
 {
-   /** The local restlet. */
+   /** The target Restlet. */
    protected Restlet target;
 
    /**
     * Constructor.
     * @param name The name of this REST client.
-    * @param restlet The local restlet.
+    * @param target The target Restlet.
     */
-   public LocalClient(String name, Restlet handler)
+   public LocalClient(String name, Restlet target)
    {
       super(null, name);
-      this.target = handler;
+      this.target = target;
    }
 
    /**
@@ -57,8 +57,8 @@ public class LocalClient extends AbstractClient
    }
 
    /**
-    * Returns the target restlet.
-    * @return The target restlet.
+    * Returns the target Restlet.
+    * @return The target Restlet.
     */
    public Restlet getTarget()
    {
@@ -66,8 +66,8 @@ public class LocalClient extends AbstractClient
    }
    
    /**
-    * Sets the target restlet.
-    * @param target The target restlet.
+    * Sets the target Restlet.
+    * @param target The target Restlet.
     */
    public void setTarget(Restlet target)
    {
