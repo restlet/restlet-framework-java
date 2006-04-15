@@ -57,7 +57,7 @@ public class Tutorial05
                {
                   // Print the requested URI path
                   String output = "Resource URI:  " + call.getResourceRef() + '\n' + 
-                                  "Handler path:  " + call.getRestletPath() + '\n' +
+                                  "Context path:  " + call.getContextPath() + '\n' +
                                   "Resource path: " + call.getResourcePath() + '\n' +
                                   "Query string:  " + call.getResourceRef().getQuery();
                   call.setOutput(new StringRepresentation(output, MediaTypes.TEXT_PLAIN));

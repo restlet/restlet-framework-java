@@ -154,23 +154,23 @@ public class MapletImpl extends AbstractRestlet implements Maplet
       if(found)
       {
          // Updates the paths
-         String oldHandlerPath = call.getRestletPath();
-         String handlerPath = resourcePath.substring(0, matcher.end());
+         String oldRestletPath = call.getContextPath();
+         String restletPath = resourcePath.substring(0, matcher.end());
          
-         if(oldHandlerPath == null)
+         if(oldRestletPath == null)
          {
-            call.setHandlerPath(handlerPath);
+            call.setContextPath(restletPath);
          }
          else
          {
-            call.setHandlerPath(oldHandlerPath + handlerPath);
+            call.setContextPath(oldRestletPath + restletPath);
          }
 
          // Updates the matches
-         call.getRestletMatches().clear();
+         call.getContextMatches().clear();
          for(int i = 0; i < matcher.groupCount(); i++)
          {
-            call.getRestletMatches().add(matcher.group(i + 1));
+            call.getContextMatches().add(matcher.group(i + 1));
          }
 
          // Invoke the call restlet

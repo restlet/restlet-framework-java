@@ -78,6 +78,25 @@ public interface RestletCall
     * @return The low-level connector call.
     */
    public ConnectorCall getConnectorCall();
+
+   /**
+    * Returns the list of substrings matched in the current context path.
+    * @return The list of substrings matched.
+    * @see <a href="http://java.sun.com/j2se/1.5.0/docs/api/java/util/regex/Matcher.html#group(int)">Matcher.group()</a>
+    */
+   public List<String> getContextMatches();
+
+   /**
+    * Returns the absolute context path, preceeding the relative resource path in the resource reference.
+    * @return The absolute context path.
+    */
+   public String getContextPath();
+
+   /**
+    * Returns the context path as a reference.
+    * @return The context path as a reference.
+    */
+   public Reference getContextRef();
    
    /**
     * Returns the cookies provided by the client to the server.
@@ -148,25 +167,6 @@ public interface RestletCall
    public Reference getResourceRef();
 
    /**
-    * Returns the list of substrings matched in the current Restlet path.
-    * @return The list of substrings matched.
-    * @see <a href="http://java.sun.com/j2se/1.5.0/docs/api/java/util/regex/Matcher.html#group(int)">Matcher.group()</a>
-    */
-   public List<String> getRestletMatches();
-
-   /**
-    * Returns the absolute Restlet path, preceeding the relative resource path in the resource reference.
-    * @return The absolute Restlet path.
-    */
-   public String getRestletPath();
-
-   /**
-    * Returns the Restlet path as a reference.
-    * @return The Restlet path as a reference.
-    */
-   public Reference getRestletRef();
-
-   /**
     * Returns the security data related to this call.
     * @return The security data related to this call.
     */
@@ -225,10 +225,10 @@ public interface RestletCall
    public void setConnectorCall(ConnectorCall call);
 
    /**
-    * Sets the part of the resource reference preceeding the resource path.
-    * @param handlerPath The part of the resource reference preceeding the resource path.
+    * Sets the absolute context path, preceeding the relative resource path in the resource reference.
+    * @param contextPath The absolute context path.
     */
-   public void setHandlerPath(String handlerPath);
+   public void setContextPath(String contextPath);
 
    /**
     * Sets the representation provided by the client.

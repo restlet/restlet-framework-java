@@ -23,14 +23,13 @@
 package org.restlet.component;
 
 import java.io.IOException;
-import java.util.List;
+import java.util.Map;
 
 import org.restlet.Element;
-import org.restlet.RestletCall;
 import org.restlet.Restlet;
+import org.restlet.RestletCall;
 import org.restlet.connector.Client;
 import org.restlet.connector.Server;
-import org.restlet.data.Parameter;
 
 /**
  * Abstract unit of software instructions and internal state.<br/><br/> 
@@ -42,10 +41,10 @@ import org.restlet.data.Parameter;
 public interface Component extends Element, Restlet
 {
 	/**
-	 * Returns a modifiable list of initialization parameters
-	 * @return A modifiable list of initialization parameters
+	 * Returns a modifiable map of initialization parameters
+	 * @return A modifiable map of initialization parameters
 	 */
-	public List<Parameter> getInitParameters();
+	public Map<String, String> getInitParameters();
 
 	/**
     * Adds a server connector to this component.

@@ -102,7 +102,7 @@ public class Tutorial11
                   if(call.getResourcePath().equals(""))
                   {
                      // Print the requested URI path
-                     String output = "Account of user named: " + call.getRestletRef().getLastSegment();
+                     String output = "Account of user named: " + call.getContextRef().getLastSegment();
                      call.setOutput(new StringRepresentation(output, MediaTypes.TEXT_PLAIN));
                   }
                   else
@@ -120,7 +120,7 @@ public class Tutorial11
                public void handle(RestletCall call)
                {
                   // Print the user name of the requested orders
-                  List<String> segments = call.getRestletRef().getSegments();
+                  List<String> segments = call.getContextRef().getSegments();
                   String output = "Orders of user named: " + segments.get(segments.size() - 2);
                   call.setOutput(new StringRepresentation(output, MediaTypes.TEXT_PLAIN));
                }

@@ -23,18 +23,15 @@
 package org.restlet.component;
 
 import java.io.IOException;
-import java.util.ArrayList;
 import java.util.Iterator;
-import java.util.List;
 import java.util.Map;
 import java.util.TreeMap;
 
 import org.restlet.AbstractRestlet;
-import org.restlet.RestletCall;
 import org.restlet.Restlet;
+import org.restlet.RestletCall;
 import org.restlet.connector.Client;
 import org.restlet.connector.Server;
-import org.restlet.data.Parameter;
 
 /**
  * Abstract component implementation.
@@ -42,7 +39,7 @@ import org.restlet.data.Parameter;
 public abstract class AbstractComponent extends AbstractRestlet implements Component
 {
 	/** The initialization parameters. */
-	protected List<Parameter> initParameters;
+	protected Map<String, String> initParameters;
 	
 	/** The component name. */
    protected String name;
@@ -65,13 +62,13 @@ public abstract class AbstractComponent extends AbstractRestlet implements Compo
       this.servers = new TreeMap<String, Server>();
    }
 
-   /**
-	 * Returns a modifiable list of initialization parameters
-	 * @return A modifiable list of initialization parameters
+	/**
+	 * Returns a modifiable map of initialization parameters
+	 * @return A modifiable map of initialization parameters
 	 */
-	public List<Parameter> getInitParameters()
+	public Map<String, String> getInitParameters()
 	{
-		if(this.initParameters == null) this.initParameters = new ArrayList<Parameter>();
+		if(this.initParameters == null) this.initParameters = new TreeMap<String, String>();
 		return this.initParameters;
 	}
 

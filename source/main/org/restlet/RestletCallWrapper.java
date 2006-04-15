@@ -110,6 +110,34 @@ public class RestletCallWrapper implements RestletCall
    }
 
    /**
+    * Returns the list of substrings matched in the current context path.
+    * @return The list of substrings matched.
+    * @see <a href="http://java.sun.com/j2se/1.5.0/docs/api/java/util/regex/Matcher.html#group(int)">Matcher.group()</a>
+    */
+   public List<String> getContextMatches()
+   {
+      return getWrappedCall().getContextMatches();
+   }
+
+   /**
+    * Returns the absolute context path, preceeding the relative resource path in the resource reference.
+    * @return The absolute context path.
+    */
+   public String getContextPath()
+   {
+      return getWrappedCall().getContextPath();
+   }
+
+   /**
+    * Returns the context path as a reference.
+    * @return The context path as a reference.
+    */
+   public Reference getContextRef()
+   {
+      return getWrappedCall().getContextRef();
+   }
+
+   /**
     * Returns the cookies provided by the client to the server.
     * @return The cookies provided by the client to the server.
     */
@@ -211,34 +239,6 @@ public class RestletCallWrapper implements RestletCall
    }
 
    /**
-    * Returns the list of substrings matched in the current Restlet path.
-    * @return The list of substrings matched.
-    * @see <a href="http://java.sun.com/j2se/1.5.0/docs/api/java/util/regex/Matcher.html#group(int)">Matcher.group()</a>
-    */
-   public List<String> getRestletMatches()
-   {
-      return getWrappedCall().getRestletMatches();
-   }
-
-   /**
-    * Returns the absolute Restlet path, preceeding the relative resource path in the resource reference.
-    * @return The absolute Restlet path.
-    */
-   public String getRestletPath()
-   {
-      return getWrappedCall().getRestletPath();
-   }
-
-   /**
-    * Returns the Restlet path as a reference.
-    * @return The Restlet path as a reference.
-    */
-   public Reference getRestletRef()
-   {
-      return getWrappedCall().getRestletRef();
-   }
-
-   /**
     * Returns the security data related to this call.
     * @return The security data related to this call.
     */
@@ -333,12 +333,12 @@ public class RestletCallWrapper implements RestletCall
    }
 
    /**
-    * Sets the part of the resource reference preceeding the resource path.
-    * @param handlerPath The part of the resource reference preceeding the resource path.
+    * Sets the absolute context path, preceeding the relative resource path in the resource reference.
+    * @param contextPath The absolute context path.
     */
-   public void setHandlerPath(String handlerPath)
+   public void setContextPath(String contextPath)
    {
-      getWrappedCall().setHandlerPath(handlerPath);
+      getWrappedCall().setContextPath(contextPath);
    }
 
    /**
