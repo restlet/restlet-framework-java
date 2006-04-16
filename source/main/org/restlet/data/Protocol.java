@@ -29,4 +29,10 @@ package org.restlet.data;
  */
 public interface Protocol extends ControlData
 {
+   /**
+    * Indicates if the protocol is equal to a given one.
+    * @param protocol The protocol to compare to.
+    * @return True if the protocol is equal to a given one.
+    */
+   public boolean equals(Protocol protocol);
 }

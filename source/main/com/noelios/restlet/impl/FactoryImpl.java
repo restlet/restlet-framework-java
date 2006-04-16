@@ -98,38 +98,44 @@ public class FactoryImpl implements Factory
 			   {
 			      BufferedReader reader = new BufferedReader(new InputStreamReader(configURL.openStream(), "utf-8"));
 			      providerName = reader.readLine();
-			      providerClassName = providerName.substring(0, providerName.indexOf('#')).trim();
+			      
+			      while(providerName != null)
+			      {
+			      	providerClassName = providerName.substring(0, providerName.indexOf('#')).trim();
+			      	
+					   if(providerClassName == null)
+					   {
+					      logger.log(Level.SEVERE, "Unable to process the following connector provider: " + providerName + ". Please check your JAR file metadata.");
+					   }
+					   else
+					   {
+					      // Instantiate the factory
+					      try
+					      {
+					      	Class<? extends Client> providerClass = (Class<? extends Client>) Class.forName(providerClassName); 
+					      	java.lang.reflect.Method getMethod = providerClass.getMethod("getProtocols", (Class[])null);
+					         List<Protocol> supportedProtocols = (List<Protocol>)getMethod.invoke(null, (Object[])null);
+
+					         for(Protocol protocol : supportedProtocols)
+					         {
+					         	if(!this.clients.containsKey(protocol))
+					         	{
+					         		this.clients.put(protocol, providerClass);
+					         	}
+					         }
+					      }
+					      catch(Exception e)
+					      {
+					         logger.log(Level.SEVERE, "Unable to register the client connector " + providerClassName, e);
+					      }
+					   }
+					   
+				      providerName = reader.readLine();
+			      }
 			   }
 			   catch (Exception e)
 			   {
 			      logger.log(Level.SEVERE, "Unable to read the provider descriptor: " + configURL.toString());
-			   }
-
-			   if(providerClassName == null)
-			   {
-			      logger.log(Level.SEVERE, "Unable to process the following connector provider: " + providerName + ". Please check your JAR file metadata.");
-			   }
-			   else
-			   {
-			      // Instantiate the factory
-			      try
-			      {
-			      	Class<? extends Client> providerClass = (Class<? extends Client>) Class.forName(providerClassName); 
-			      	java.lang.reflect.Method getMethod = providerClass.getMethod("getProtocols", (Class[])null);
-			         List<Protocol> supportedProtocols = (List<Protocol>)getMethod.invoke(null, (Object[])null);
-
-			         for(Protocol protocol : supportedProtocols)
-			         {
-			         	if(!this.clients.containsKey(protocol))
-			         	{
-			         		this.clients.put(protocol, providerClass);
-			         	}
-			         }
-			      }
-			      catch(Exception e)
-			      {
-			         logger.log(Level.SEVERE, "Unable to register the client connector " + providerClassName, e);
-			      }
 			   }
 			}
 		}
