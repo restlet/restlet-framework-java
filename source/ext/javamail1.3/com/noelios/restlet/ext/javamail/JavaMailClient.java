@@ -1,5 +1,5 @@
 /*
- * Copyright 2005-2006 Jérôme LOUVEL
+ * Copyright 2005-2006 Jerome LOUVEL
  *
  * The contents of this file are subject to the terms
  * of the Common Development and Distribution License
@@ -46,6 +46,7 @@ import org.restlet.data.Parameter;
 import org.restlet.data.Protocol;
 import org.restlet.data.Protocols;
 import org.restlet.data.Representation;
+import org.restlet.data.SecurityData;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 import org.w3c.dom.NodeList;
@@ -90,7 +91,7 @@ public class JavaMailClient extends AbstractClient
     */
    public static List<Protocol> getProtocols()
    {
-   	return Arrays.asList(new Protocol[]{Protocols.SMTP, Protocols.SMTPS});
+   	return Arrays.asList(new Protocol[]{Protocols.SMTP, Protocols.SMTP_STARTTLS, Protocols.SMTPS});
    }
 
    /**
@@ -106,7 +107,22 @@ public class JavaMailClient extends AbstractClient
    }
    
    /**
-    * Creates an uniform call.
+    * Creates a Restlet call.
+    * @param smtpURI The SMTP server's URI (ex: smtp://localhost).
+    * @param email The email to send (valid XML email).
+    * @param login Authenticate using this login name.
+    * @param password Authenticate using this password.
+    */
+   public static RestletCall create(String smtpURI, Representation email, String login, String password)
+   {
+   	RestletCall call = create(smtpURI, email);
+   	call.getSecurity().setLogin(login);
+   	call.getSecurity().setPassword(password);
+   	return call;
+   }
+   
+   /**
+    * Creates a Restlet call.
     * @param smtpURI The SMTP server's URI (ex: smtp://localhost).
     * @param email The email to send (valid XML email).
     */
@@ -181,18 +197,38 @@ public class JavaMailClient extends AbstractClient
          Properties props = System.getProperties();
          props.put("mail.smtp.host", smtpHost);
          props.put("mail.smtp.port", Integer.toString(smtpPort));
-         props.put("mail.smtp.auth", "false");
-         // props.put("mail.smtp.auth", "true");
-         // props.put("mail.smtp.starttls.enable", "true");
-         // props.put("mail.smtp.debug", "true");
-         // props.put("mail.smtp.reportsuccess", "true");
-         // props.put("mail.smtp.ehlo", Boolean.FALSE);
-
+         
+         // Check if authentication required
+         SecurityData sd = call.getSecurity();
+         boolean authenticate = ((sd.getLogin() != null) && (sd.getPassword() != null));
+         props.put("mail.smtp.auth", Boolean.toString(authenticate).toLowerCase());
+         
          // Connect to the SMTP server
          Session session = Session.getDefaultInstance(props);
-         Transport transport = session.getTransport("smtp");
-         transport.connect();
-         // transport.connect(smtpHost, "user", "pwd");
+         Transport transport = null;
+         if(getProtocol().equals(Protocols.SMTP))
+         {
+	         transport = session.getTransport("smtp");
+         }
+         else if(getProtocol().equals(Protocols.SMTP_STARTTLS))
+         {
+	         transport = session.getTransport("smtp");
+	         props.put("mail.smtp.starttls.enable", "true");
+         }
+         else if(getProtocol().equals(Protocols.SMTPS))
+         {
+	         transport = session.getTransport("smtps");
+         }
+
+         // Check if authentication is needed
+         if(authenticate)
+         {
+            transport.connect(smtpHost, sd.getLogin(), sd.getPassword());
+         }
+         else
+         {
+         	transport.connect();
+         }
          
          if(transport.isConnected())
          {

@@ -33,7 +33,7 @@ public enum Protocols implements Protocol
    /** HTTP protocol. */
    HTTP,
    
-   /** HTTPS protocol (via SSL sockets). */
+   /** HTTPS protocol (via SSL socket). */
    HTTPS,
    
    /** JDBC protocol. */
@@ -42,7 +42,10 @@ public enum Protocols implements Protocol
    /** SMTP protocol. */
    SMTP,
    
-   /** SMTPS protocol. */
+   /** SMTP with STARTTLS protocol (started with a plain socket). */
+   SMTP_STARTTLS,
+   
+   /** SMTPS protocol (via SSL/TLS socket). */
    SMTPS;
 
    /**
@@ -70,6 +73,9 @@ public enum Protocols implements Protocol
          case SMTP:
             result = "SMTP";
             break;
+         case SMTP_STARTTLS:
+         	result = "SMTP_STARTTLS";
+         	break;
          case SMTPS:
             result = "SMTPS";
             break;
@@ -103,6 +109,9 @@ public enum Protocols implements Protocol
          case SMTP:
             result = "Simple Mail Transfer Protocol";
             break;
+         case SMTP_STARTTLS:
+         	result = "Simple Mail Transfer Protocol (starting a TLS encryption)";
+         	break;
          case SMTPS:
             result = "Simple Mail Transfer Protocol (Secure)";
             break;

@@ -37,7 +37,10 @@ public enum ChallengeSchemes implements ChallengeScheme
    HTTP_DIGEST,
 
    /** Microsoft NTML HTTP scheme. */
-   HTTP_NTLM;
+   HTTP_NTLM,
+	
+   /** Plain SMTP scheme. */
+   SMTP_PLAIN;
 
    /**
     * Returns the unique name of the scheme (ex: HTTP_BASIC).
@@ -61,6 +64,9 @@ public enum ChallengeSchemes implements ChallengeScheme
          case HTTP_NTLM:
             result = "HTTP_NTLM";
             break;
+         case SMTP_PLAIN:
+         	result = "SMTP_PLAIN";
+         	break;
       }
 
       return result;
@@ -88,6 +94,8 @@ public enum ChallengeSchemes implements ChallengeScheme
          case HTTP_NTLM:
             result = "NTLM";
             break;
+         case SMTP_PLAIN:
+         	result = "PLAIN";
       }
 
       return result;
@@ -115,6 +123,9 @@ public enum ChallengeSchemes implements ChallengeScheme
          case HTTP_NTLM:
             result = "Microsoft's NTLM HTTP authentication";
             break;
+         case SMTP_PLAIN:
+         	result = "Plain SMTP authentication";
+         	break;
       }
 
       return result;

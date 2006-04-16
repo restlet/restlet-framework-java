@@ -236,6 +236,19 @@ public class FactoryImpl implements Factory
             throw new RuntimeException("Unsupported encoding, unable to encode credentials");
          }
       }
+      else if(scheme.equals(ChallengeSchemes.SMTP_PLAIN))
+      {
+         String credentials = "^@" + userId + "^@" + password;
+
+         try
+         {
+            return new ChallengeResponseImpl(scheme, Base64.encodeBytes(credentials.getBytes("US-ASCII")));
+         }
+         catch(UnsupportedEncodingException e)
+         {
+            throw new RuntimeException("Unsupported encoding, unable to encode credentials");
+         }
+      }
       else
       {
          throw new IllegalArgumentException("Challenge scheme not supported by this implementation");
