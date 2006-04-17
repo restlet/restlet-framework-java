@@ -28,6 +28,8 @@ import java.util.Date;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Properties;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 import javax.mail.Message;
 import javax.mail.Session;
@@ -58,8 +60,9 @@ import com.noelios.restlet.impl.FactoryImpl;
  * Currently only the SMTP protocol is supported.<br/>
  * To send an email, specify a SMTP URI as the ressource reference of the call and use an XML
  * email as the content of the call.<br/>
- * An SMTP URI has the following syntax: smtp://[user-info@]host[:port]<br/>
- * The default port used is 25 and user-info for authentication is currently not supported.<br/>
+ * An SMTP URI has the following syntax: smtp://host[:port]<br/>
+ * The default port used is 25 for SMTP and 465 for SMTPS. Use the RestletCall.getSecurity().setLogin() and setPassword()
+ * methods for authentication.<br/>
  * <br/>
  * Sample XML email:<br/>
  * <br/>
@@ -75,6 +78,9 @@ import com.noelios.restlet.impl.FactoryImpl;
  */
 public class JavaMailClient extends AbstractClient
 {
+   /** Obtain a suitable logger. */
+   private static Logger logger = Logger.getLogger("com.noelios.restlet.ext.javamail.JavaMailClient");
+
    /**
     * Constructor.
     * @param protocol The protocol to use.
@@ -152,8 +158,15 @@ public class JavaMailClient extends AbstractClient
 
          if(smtpPort == -1)
          {
-            // Use the default SMTP port
-            smtpPort = 25;
+            if((getProtocol().equals(Protocols.SMTP)) || (getProtocol().equals(Protocols.SMTP_STARTTLS)))
+            {
+            	// Use the default SMTP port
+            	smtpPort = 25;
+            }
+            else if(getProtocol().equals(Protocols.SMTPS))
+            {
+            	smtpPort = 465;
+            }
          }
 
          if((smtpHost == null) || (smtpHost.equals("")))
@@ -194,29 +207,32 @@ public class JavaMailClient extends AbstractClient
          String text = root.getElementsByTagName("body").item(0).getTextContent();
 
          // Prepare the connection to the SMTP server
+         Session session = null; 
+         Transport transport = null;
          Properties props = System.getProperties();
-         props.put("mail.smtp.host", smtpHost);
-         props.put("mail.smtp.port", Integer.toString(smtpPort));
          
          // Check if authentication required
          SecurityData sd = call.getSecurity();
          boolean authenticate = ((sd.getLogin() != null) && (sd.getPassword() != null));
-         props.put("mail.smtp.auth", Boolean.toString(authenticate).toLowerCase());
          
          // Connect to the SMTP server
-         Session session = Session.getDefaultInstance(props);
-         Transport transport = null;
-         if(getProtocol().equals(Protocols.SMTP))
+         if(getProtocol().equals(Protocols.SMTP) || getProtocol().equals(Protocols.SMTP_STARTTLS))
          {
+            props.put("mail.smtp.host", smtpHost);
+            props.put("mail.smtp.port", Integer.toString(smtpPort));
+            props.put("mail.smtp.auth", Boolean.toString(authenticate).toLowerCase());
+	         props.put("mail.smtp.starttls.enable", Boolean.toString(getProtocol().equals(Protocols.SMTP_STARTTLS)).toLowerCase());
+            session = Session.getDefaultInstance(props);
+            // session.setDebug(true);
 	         transport = session.getTransport("smtp");
-         }
-         else if(getProtocol().equals(Protocols.SMTP_STARTTLS))
-         {
-	         transport = session.getTransport("smtp");
-	         props.put("mail.smtp.starttls.enable", "true");
          }
          else if(getProtocol().equals(Protocols.SMTPS))
          {
+            props.put("mail.smtps.host", smtpHost);
+            props.put("mail.smtps.port", Integer.toString(smtpPort));
+            props.put("mail.smtps.auth", Boolean.toString(authenticate).toLowerCase());
+            session = Session.getDefaultInstance(props);
+            // session.setDebug(true);
 	         transport = session.getTransport("smtps");
          }
 
@@ -229,9 +245,12 @@ public class JavaMailClient extends AbstractClient
          {
          	transport.connect();
          }
-         
+
+         // Actually send the message
          if(transport.isConnected())
          {
+         	logger.info("JavaMail client connection successfully established. Attempting to send the message");
+         	
             // Create a new message
             Message msg = new MimeMessage(session);
 
@@ -271,11 +290,13 @@ public class JavaMailClient extends AbstractClient
             // Send the message
             transport.sendMessage(msg, msg.getAllRecipients());
             transport.close();
+            
+         	logger.info("JavaMail client successfully sent the message.");
          }
       }
       catch(Exception e)
       {
-         e.printStackTrace();
+      	logger.log(Level.WARNING, "JavaMail client error", e);
       }
 
    }
