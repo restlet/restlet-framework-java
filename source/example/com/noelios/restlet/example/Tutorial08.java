@@ -20,7 +20,7 @@
  * Portions Copyright [yyyy] [name of copyright owner]
  */
 
-package com.noelios.restlet.tutorial;
+package com.noelios.restlet.example;
 
 import org.restlet.Manager;
 import org.restlet.component.RestletContainer;
@@ -50,7 +50,7 @@ public class Tutorial08
          myContainer.addServer(server);
 
          // Attach a log Chainlet to the container
-         LogChainlet log = new LogChainlet(myContainer, "com.noelios.restlet.tutorial");
+         LogChainlet log = new LogChainlet(myContainer, "com.noelios.restlet.example");
          myContainer.attach("http://localhost:8182/", log);
 
          // Attach a status Chainlet to the log Chainlet

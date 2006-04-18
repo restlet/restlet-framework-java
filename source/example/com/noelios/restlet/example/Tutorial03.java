@@ -20,28 +20,39 @@
  * Portions Copyright [yyyy] [name of copyright owner]
  */
 
-package com.noelios.restlet.tutorial;
+package com.noelios.restlet.example;
 
-import java.io.IOException;
-
+import org.restlet.AbstractRestlet;
 import org.restlet.Manager;
-import org.restlet.connector.Client;
+import org.restlet.RestletCall;
+import org.restlet.Restlet;
+import org.restlet.data.MediaTypes;
 import org.restlet.data.Protocols;
 
+import com.noelios.restlet.data.StringRepresentation;
+
 /**
- * Retrieving the content of a Web page
+ * Listening to Web browsers
  */
-public class Tutorial02a
+public class Tutorial03
 {
    public static void main(String[] args)
    {
       try
       {
-         // Outputting the content of a Web page
-         Client client = Manager.createClient(Protocols.HTTP, "My client");
-         client.get("http://www.restlet.org").getOutput().write(System.out);
+         // Creating a minimal Restlet returning "Hello World"
+         Restlet handler = new AbstractRestlet()
+         {
+            public void handle(RestletCall call)
+            {
+               call.setOutput(new StringRepresentation("Hello World!", MediaTypes.TEXT_PLAIN));
+            }
+         };
+
+         // Create the HTTP server and listen on port 8182
+         Manager.createServer(Protocols.HTTP, "My server", handler, null, 8182).start();
       }
-      catch(IOException e)
+      catch(Exception e)
       {
          e.printStackTrace();
       }

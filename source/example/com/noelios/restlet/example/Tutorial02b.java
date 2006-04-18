@@ -20,39 +20,41 @@
  * Portions Copyright [yyyy] [name of copyright owner]
  */
 
-package com.noelios.restlet.tutorial;
+package com.noelios.restlet.example;
 
-import org.restlet.AbstractRestlet;
+import java.io.IOException;
+
 import org.restlet.Manager;
 import org.restlet.RestletCall;
-import org.restlet.Restlet;
-import org.restlet.data.MediaTypes;
+import org.restlet.connector.Client;
+import org.restlet.data.Methods;
 import org.restlet.data.Protocols;
-
-import com.noelios.restlet.data.StringRepresentation;
+import org.restlet.data.Representation;
 
 /**
- * Listening to Web browsers
+ * Retrieving the content of a Web page (detailled)
  */
-public class Tutorial03
+public class Tutorial02b
 {
    public static void main(String[] args)
    {
       try
       {
-         // Creating a minimal Restlet returning "Hello World"
-         Restlet handler = new AbstractRestlet()
-         {
-            public void handle(RestletCall call)
-            {
-               call.setOutput(new StringRepresentation("Hello World!", MediaTypes.TEXT_PLAIN));
-            }
-         };
+         // Prepare the REST call
+         RestletCall call = Manager.createCall();
+         call.setResourceRef(Manager.createReference("http://www.restlet.org"));
+         call.setReferrerRef(Manager.createReference("http://www.mysite.org"));
+         call.setMethod(Methods.GET);
 
-         // Create the HTTP server and listen on port 8182
-         Manager.createServer(Protocols.HTTP, "My server", handler, null, 8182).start();
+         // Ask to the HTTP client connector to handle the call
+         Client client = Manager.createClient(Protocols.HTTP, "My client");
+         client.handle(call);
+
+         // Output the result representation on the JVM console
+         Representation output = call.getOutput();
+         output.write(System.out);
       }
-      catch(Exception e)
+      catch(IOException e)
       {
          e.printStackTrace();
       }

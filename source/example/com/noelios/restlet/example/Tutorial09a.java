@@ -20,20 +20,25 @@
  * Portions Copyright [yyyy] [name of copyright owner]
  */
 
-package com.noelios.restlet.tutorial;
+package com.noelios.restlet.example;
 
 import org.restlet.Manager;
+import org.restlet.RestletCall;
 import org.restlet.component.RestletContainer;
 import org.restlet.connector.Server;
+import org.restlet.data.ChallengeSchemes;
 import org.restlet.data.MediaTypes;
 import org.restlet.data.Protocols;
 
 import com.noelios.restlet.DirectoryRestlet;
+import com.noelios.restlet.GuardChainlet;
+import com.noelios.restlet.LogChainlet;
+import com.noelios.restlet.StatusChainlet;
 
 /**
- * Serving static files
+ * Guard access to a Restlet.
  */
-public class Tutorial06
+public class Tutorial09a
 {
    public static void main(String[] args)
    {
@@ -47,17 +52,34 @@ public class Tutorial06
          Server server = Manager.createServer(Protocols.HTTP, "My server", myContainer, null, 8182);
          myContainer.addServer(server);
 
+         // Attach a log Chainlet to the container
+         LogChainlet log = new LogChainlet(myContainer, "com.noelios.restlet.example");
+         myContainer.attach("http://localhost:8182/", log);
+
+         // Attach a status Chainlet to the log Chainlet
+         StatusChainlet status = new StatusChainlet(myContainer, true, "webmaster@mysite.org", "http://www.mysite.org");
+         log.attach(status);
+
+         // Attach a guard Chainlet to the container
+         GuardChainlet guard = new GuardChainlet(myContainer, "com.noelios.restlet.example", true, ChallengeSchemes.HTTP_BASIC , "Restlet tutorial", true)
+         	{
+            	protected boolean authorize(RestletCall call)
+               {
+            		return "scott".equals(call.getSecurity().getLogin()) && 
+            				 "tiger".equals(call.getSecurity().getPassword());
+               }
+            };
+
+         status.attach(guard);
+
          // Create a directory Restlet able to return a deep hierarchy of Web files
-         // (HTML pages, CSS stylesheets or GIF images) from a local directory.
          DirectoryRestlet dirRestlet = new DirectoryRestlet(myContainer, "D:/Restlet/www/docs/api/", true, "index");
          dirRestlet.addExtension("html", MediaTypes.TEXT_HTML);
          dirRestlet.addExtension("css", MediaTypes.TEXT_CSS);
          dirRestlet.addExtension("gif", MediaTypes.IMAGE_GIF);
 
-         // Then attach the Restlet to the container.
-         // Note that virtual hosting can be very easily supported if you need it,
-         // just attach multiple Restlets, one for each virtual server.
-         myContainer.attach("http://localhost:8182/", dirRestlet);
+         // Then attach the Restlet to the guard Chainlet.
+         guard.attach(dirRestlet);
 
          // Now, let's start the container!
          myContainer.start();

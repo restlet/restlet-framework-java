@@ -20,39 +20,26 @@
  * Portions Copyright [yyyy] [name of copyright owner]
  */
 
-package com.noelios.restlet.tutorial;
+package com.noelios.restlet.example;
 
 import java.io.IOException;
 
 import org.restlet.Manager;
-import org.restlet.RestletCall;
 import org.restlet.connector.Client;
-import org.restlet.data.Methods;
 import org.restlet.data.Protocols;
-import org.restlet.data.Representation;
 
 /**
- * Retrieving the content of a Web page (detailled)
+ * Retrieving the content of a Web page
  */
-public class Tutorial02b
+public class Tutorial02a
 {
    public static void main(String[] args)
    {
       try
       {
-         // Prepare the REST call
-         RestletCall call = Manager.createCall();
-         call.setResourceRef(Manager.createReference("http://www.restlet.org"));
-         call.setReferrerRef(Manager.createReference("http://www.mysite.org"));
-         call.setMethod(Methods.GET);
-
-         // Ask to the HTTP client connector to handle the call
+         // Outputting the content of a Web page
          Client client = Manager.createClient(Protocols.HTTP, "My client");
-         client.handle(call);
-
-         // Output the result representation on the JVM console
-         Representation output = call.getOutput();
-         output.write(System.out);
+         client.get("http://www.restlet.org").getOutput().write(System.out);
       }
       catch(IOException e)
       {

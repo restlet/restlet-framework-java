@@ -20,10 +20,16 @@
  * Portions Copyright [yyyy] [name of copyright owner]
  */
 
-package com.noelios.restlet.tutorial;
+package com.noelios.restlet.example;
 
+import java.util.List;
+
+import org.restlet.AbstractRestlet;
+import org.restlet.DefaultMaplet;
 import org.restlet.Manager;
+import org.restlet.Maplet;
 import org.restlet.RestletCall;
+import org.restlet.Restlet;
 import org.restlet.component.RestletContainer;
 import org.restlet.connector.Server;
 import org.restlet.data.ChallengeSchemes;
@@ -34,11 +40,12 @@ import com.noelios.restlet.DirectoryRestlet;
 import com.noelios.restlet.GuardChainlet;
 import com.noelios.restlet.LogChainlet;
 import com.noelios.restlet.StatusChainlet;
+import com.noelios.restlet.data.StringRepresentation;
 
 /**
- * Guard access to a Restlet.
+ * Maplets and hierarchical URIs
  */
-public class Tutorial09a
+public class Tutorial11
 {
    public static void main(String[] args)
    {
@@ -53,33 +60,72 @@ public class Tutorial09a
          myContainer.addServer(server);
 
          // Attach a log Chainlet to the container
-         LogChainlet log = new LogChainlet(myContainer, "com.noelios.restlet.tutorial");
-         myContainer.attach("http://localhost:8182/", log);
+         LogChainlet log = new LogChainlet(myContainer, "com.noelios.restlet.example");
+         myContainer.attach("http://localhost:8182", log);
 
          // Attach a status Chainlet to the log Chainlet
          StatusChainlet status = new StatusChainlet(myContainer, true, "webmaster@mysite.org", "http://www.mysite.org");
          log.attach(status);
 
-         // Attach a guard Chainlet to the container
-         GuardChainlet guard = new GuardChainlet(myContainer, "com.noelios.restlet.tutorial", true, ChallengeSchemes.HTTP_BASIC , "Restlet tutorial", true)
-         	{
-            	protected boolean authorize(RestletCall call)
-               {
-            		return "scott".equals(call.getSecurity().getLogin()) && 
-            				 "tiger".equals(call.getSecurity().getPassword());
-               }
-            };
+         // Attach a root Maplet to the status Chainlet.
+         Maplet rootMaplet = new DefaultMaplet(myContainer);
+         status.attach(rootMaplet);
 
-         status.attach(guard);
+         // Attach a guard Chainlet to secure access the the chained directory Restlet
+         GuardChainlet guard = new GuardChainlet(myContainer, "com.noelios.restlet.example", true, ChallengeSchemes.HTTP_BASIC , "Restlet tutorial", true)
+	      	{
+		      	protected boolean authorize(RestletCall call)
+		         {
+            		return "scott".equals(call.getSecurity().getLogin()) && 
+     				 			 "tiger".equals(call.getSecurity().getPassword());
+		         }
+	         };
+
+         rootMaplet.attach("/docs/", guard);
 
          // Create a directory Restlet able to return a deep hierarchy of Web files
          DirectoryRestlet dirRestlet = new DirectoryRestlet(myContainer, "D:/Restlet/www/docs/api/", true, "index");
          dirRestlet.addExtension("html", MediaTypes.TEXT_HTML);
          dirRestlet.addExtension("css", MediaTypes.TEXT_CSS);
          dirRestlet.addExtension("gif", MediaTypes.IMAGE_GIF);
-
-         // Then attach the Restlet to the guard Chainlet.
          guard.attach(dirRestlet);
+
+         // Create the users Maplet
+         Maplet usersMaplet = new DefaultMaplet(myContainer);
+         rootMaplet.attach("/users", usersMaplet);
+
+         // Create the user Maplet
+         Maplet userMaplet = new DefaultMaplet(myContainer)
+            {
+               public void handle(RestletCall call)
+               {
+                  if(call.getResourcePath().equals(""))
+                  {
+                     // Print the requested URI path
+                     String output = "Account of user named: " + call.getContextRef().getLastSegment();
+                     call.setOutput(new StringRepresentation(output, MediaTypes.TEXT_PLAIN));
+                  }
+                  else
+                  {
+                     // Continue processing
+                     delegate(call);
+                  }
+               }
+            };
+         usersMaplet.attach("/[a-z]+", userMaplet);
+
+         // Create the orders Restlet
+         Restlet ordersRestlet = new AbstractRestlet(myContainer)
+            {
+               public void handle(RestletCall call)
+               {
+                  // Print the user name of the requested orders
+                  List<String> segments = call.getContextRef().getSegments();
+                  String output = "Orders of user named: " + segments.get(segments.size() - 2);
+                  call.setOutput(new StringRepresentation(output, MediaTypes.TEXT_PLAIN));
+               }
+            };
+         userMaplet.attach("/orders$", ordersRestlet);
 
          // Now, let's start the container!
          myContainer.start();
