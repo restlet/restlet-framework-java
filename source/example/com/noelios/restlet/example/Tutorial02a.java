@@ -29,7 +29,7 @@ import org.restlet.connector.Client;
 import org.restlet.data.Protocols;
 
 /**
- * Retrieving the content of a Web page
+ * Retrieving the content of a Web page.
  */
 public class Tutorial02a
 {

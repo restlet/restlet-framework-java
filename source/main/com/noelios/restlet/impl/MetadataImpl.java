@@ -67,8 +67,8 @@ public class MetadataImpl implements Metadata
    }
 
    /**
-    * Returns the string representation.
-    * @return The string representation.
+    * Returns the metadata name.
+    * @return The metadata name.
     */
    public String toString()
    {

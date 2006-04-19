@@ -32,7 +32,7 @@ import org.restlet.data.Protocols;
 import org.restlet.data.Representation;
 
 /**
- * Retrieving the content of a Web page (detailled)
+ * Retrieving the content of a Web page (detailled).
  */
 public class Tutorial02b
 {

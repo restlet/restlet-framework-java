@@ -35,7 +35,7 @@
 	<property name="classes-jetty5.1" location="${classes}/ext/jetty5.1" />
 	<property name="classes-jetty6.0" location="${classes}/ext/jetty6.0" />
 	<property name="classes-servlet2.4" location="${classes}/ext/servlet2.4" />
-	<property name="classes-tutorial" location="${classes}/tutorial" />
+	<property name="classes-example" location="${classes}/example" />
 	<property name="classes-test" location="${classes}/test" />
 
 	<property name="src" location="source" />
@@ -48,7 +48,7 @@
 	<property name="src-jetty5.1" location="${src}/ext/jetty5.1" />
 	<property name="src-jetty6.0" location="${src}/ext/jetty6.0" />
 	<property name="src-servlet2.4" location="${src}/ext/servlet2.4" />
-	<property name="src-tutorial" location="${src}/tutorial" />
+	<property name="src-example" location="${src}/example" />
 	<property name="src-test" location="${src}/test" />
 
 	<property name="lib" location="lib" />
@@ -131,7 +131,7 @@
 		</fileset>
 	</path>
 
-	<path id="path-tutorial">
+	<path id="path-example">
 		<pathelement path="${classes-api}" />
 		<pathelement path="${classes-nre}" />
 	</path>
@@ -213,9 +213,9 @@
 		<mkdir dir="${classes-servlet2.4}" />
 		<javac compiler="javac1.5" debug="true" srcdir="${src-servlet2.4}" destdir="${classes-servlet2.4}" classpathref="path-servlet2.4" />
 
-		<!-- Compiles tutorial source files -->
-		<mkdir dir="${classes-tutorial}" />
-		<javac compiler="javac1.5" debug="true" srcdir="${src-tutorial}" destdir="${classes-tutorial}" classpathref="path-tutorial" />
+		<!-- Compiles example source files -->
+		<mkdir dir="${classes-example}" />
+		<javac compiler="javac1.5" debug="true" srcdir="${src-example}" destdir="${classes-example}" classpathref="path-example" />
 
 		<!-- Compiles test source files -->
 		<mkdir dir="${classes-test}" />
@@ -285,12 +285,12 @@
 		<!-- Create Noelios Restlet Server source jar file -->
 		<zip destfile="${dist}/src/com.noelios.restlet.zip" basedir="${src-main}" includes="com/noelios/restlet/**, meta-inf/**" excludes="${excludes}" />
 
-		<!-- Create Tutorial jar file -->
-		<mkdir dir="${dist}/lib/tutorial" />
-		<jar jarfile="${dist}/lib/tutorial/restlet.tutorial.jar" basedir="${classes-tutorial}" includes="com/noelios/restlet/**" excludes="${excludes}">
+		<!-- Create Examples jar file -->
+		<mkdir dir="${dist}/lib/example" />
+		<jar jarfile="${dist}/lib/example/restlet.example.jar" basedir="${classes-example}" includes="com/noelios/restlet/**" excludes="${excludes}">
 			<manifest>
 				<attribute name="Built-By" value="${author}" />
-				<section name="com.noelios.restlet.tutorial">
+				<section name="com.noelios.restlet.example">
 					<attribute name="Implementation-Title" value="${restlet-ri}" />
 					<attribute name="Implementation-Version" value="${version-full} ${TODAY}" />
 					<attribute name="Implementation-Vendor" value="${author}" />
@@ -298,9 +298,9 @@
 			</manifest>
 		</jar>
 
-		<!-- Create Tutorial source jar file -->
-		<mkdir dir="${dist}/src/tutorial" />
-		<zip destfile="${dist}/src/tutorial/restlet.tutorial.zip" basedir="${src-tutorial}" includes="com/noelios/restlet/**" excludes="${excludes}" />
+		<!-- Create Example source jar file -->
+		<mkdir dir="${dist}/src/example" />
+		<zip destfile="${dist}/src/example/restlet.example.zip" basedir="${src-example}" includes="com/noelios/restlet/**" excludes="${excludes}" />
 
 		<!-- Create Test source jar file -->
 		<mkdir dir="${dist}/src/test" />

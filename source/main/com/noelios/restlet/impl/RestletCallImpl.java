@@ -759,6 +759,15 @@ public class RestletCallImpl implements RestletCall
    }
 
    /**
+    * Sets the reference for redirections or resource creations using an URI string.
+    * @param redirectionUri The redirection URI.
+    */
+   public void setRedirectionRef(String redirectionUri)
+   {
+   	setRedirectionRef(Manager.createReference(redirectionUri));
+   }
+   
+   /**
     * Sets the referrer reference if available.
     * @param referrerRef The referrer reference.
     */
@@ -767,6 +776,15 @@ public class RestletCallImpl implements RestletCall
       this.referrerRef = referrerRef;
    }
 
+   /**
+    * Sets the referrer reference if available using an URI string.
+    * @param referrerUri The referrer URI.
+    */
+   public void setReferrerRef(String referrerUri)
+   {
+   	setReferrerRef(Manager.createReference(referrerUri));
+   }
+   
    /**
     * Sets the resource reference.<br/>
     * Also reset the current restlet path and matches.

@@ -242,4 +242,13 @@ public enum MediaTypes implements MediaType
       return null;
    }
 
+   /**
+    * Returns the media type name.
+    * @return The media type name.
+    */
+   public String toString()
+   {
+      return getName();
+   }
+
 }

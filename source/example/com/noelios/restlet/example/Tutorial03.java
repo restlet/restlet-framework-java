@@ -32,7 +32,7 @@ import org.restlet.data.Protocols;
 import com.noelios.restlet.data.StringRepresentation;
 
 /**
- * Listening to Web browsers
+ * Listening to Web browsers.
  */
 public class Tutorial03
 {

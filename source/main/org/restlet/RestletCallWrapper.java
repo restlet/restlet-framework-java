@@ -376,7 +376,16 @@ public class RestletCallWrapper implements RestletCall
    {
       getWrappedCall().setRedirectionRef(redirectionRef);
    }
- 
+
+   /**
+    * Sets the reference for redirections or resource creations using an URI string.
+    * @param redirectionUri The redirection URI.
+    */
+   public void setRedirectionRef(String redirectionUri)
+   {
+      getWrappedCall().setRedirectionRef(redirectionUri);
+   }
+
    /**
     * Sets the referrer reference if available.
     * @param referrerRef The referrer reference.
@@ -384,6 +393,15 @@ public class RestletCallWrapper implements RestletCall
    public void setReferrerRef(Reference referrerRef)
    {
       getWrappedCall().setReferrerRef(referrerRef);
+   }
+
+   /**
+    * Sets the referrer reference if available using an URI string.
+    * @param referrerUri The referrer URI.
+    */
+   public void setReferrerRef(String referrerUri)
+   {
+      getWrappedCall().setReferrerRef(referrerUri);
    }
 
    /**

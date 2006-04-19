@@ -243,9 +243,27 @@ public class HttpClientImpl extends AbstractClient
          }         
 
          // Send the input representation
-         if(hasInput(call) && (call.getInput().getSize() > 0))
+         if(hasInput(call))
          {
-        		clientCall.addRequestHeader(ConnectorCall.HEADER_CONTENT_LENGTH, Long.toString(call.getInput().getSize()));
+         	if(call.getInput().getSize() > 0)
+         	{
+         		clientCall.addRequestHeader(ConnectorCall.HEADER_CONTENT_LENGTH, Long.toString(call.getInput().getSize()));
+         	}
+         	
+         	if(call.getInput().getMetadata().getMediaType() != null)
+         	{
+         		clientCall.addRequestHeader(ConnectorCall.HEADER_CONTENT_TYPE, call.getInput().getMetadata().getMediaType().toString());
+         	}
+         	
+         	if(call.getInput().getMetadata().getEncoding() != null)
+         	{
+         		clientCall.addRequestHeader(ConnectorCall.HEADER_CONTENT_ENCODING, call.getInput().getMetadata().getEncoding().toString());
+         	}
+         	
+         	if(call.getInput().getMetadata().getLanguage() != null)
+         	{
+         		clientCall.addRequestHeader(ConnectorCall.HEADER_CONTENT_LANGUAGE, call.getInput().getMetadata().getLanguage().toString());
+         	}
          }
          
          // Commit the request headers

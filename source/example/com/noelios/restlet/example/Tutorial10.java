@@ -30,7 +30,7 @@ import org.restlet.data.Protocols;
 import com.noelios.restlet.RedirectRestlet;
 
 /**
- * URI rewriting and redirection
+ * URI rewriting and redirection.
  */
 public class Tutorial10
 {
@@ -39,7 +39,7 @@ public class Tutorial10
       try
       {
          // Create a new Restlet container
-      	RestletContainer myContainer = new RestletContainer("My container");
+         RestletContainer myContainer = new RestletContainer("My container");
 
          // Create the HTTP server connector, then add it as a server connector
          // to the Restlet container. Note that the container is the call restlet.

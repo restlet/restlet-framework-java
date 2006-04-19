@@ -31,7 +31,7 @@ import org.restlet.data.Protocols;
 import com.noelios.restlet.DirectoryRestlet;
 
 /**
- * Serving static files
+ * Serving static files.
  */
 public class Tutorial06
 {
@@ -40,7 +40,7 @@ public class Tutorial06
       try
       {
          // Create a new Restlet container
-      	RestletContainer myContainer = new RestletContainer("My container");
+         RestletContainer myContainer = new RestletContainer("My container");
 
          // Create the HTTP server connector, then add it as a server connector
          // to the Restlet container. Note that the container is the call restlet.

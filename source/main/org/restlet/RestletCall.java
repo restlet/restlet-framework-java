@@ -255,10 +255,22 @@ public interface RestletCall
    public void setRedirectionRef(Reference redirectionRef);
 
    /**
+    * Sets the reference for redirections or resource creations using an URI string.
+    * @param redirectionUri The redirection URI.
+    */
+   public void setRedirectionRef(String redirectionUri);
+
+   /**
     * Sets the referrer reference if available.
     * @param referrerRef The referrer reference.
     */
    public void setReferrerRef(Reference referrerRef);
+
+   /**
+    * Sets the referrer reference if available using an URI string.
+    * @param referrerUri The referrer URI.
+    */
+   public void setReferrerRef(String referrerUri);
 
    /**
     * Sets the resource reference.

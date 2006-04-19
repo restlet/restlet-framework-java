@@ -34,7 +34,7 @@ import org.restlet.data.Protocols;
 import com.noelios.restlet.data.StringRepresentation;
 
 /**
- * Restlets servers and containers
+ * Restlets servers and containers.
  */
 public class Tutorial05
 {
@@ -43,7 +43,7 @@ public class Tutorial05
       try
       {
          // Create a new Restlet container
-      	RestletContainer myContainer = new RestletContainer("My container");
+         RestletContainer myContainer = new RestletContainer("My container");
 
          // Create the HTTP server connector, then add it as a server connector
          // to the Restlet container. Note that the container is the call restlet.
@@ -56,7 +56,7 @@ public class Tutorial05
                public void handle(RestletCall call)
                {
                   // Print the requested URI path
-                  String output = "Resource URI:  " + call.getResourceRef() + '\n' + 
+                  String output = "Resource URI:  " + call.getResourceRef() + '\n' +
                                   "Context path:  " + call.getContextPath() + '\n' +
                                   "Resource path: " + call.getResourcePath() + '\n' +
                                   "Query string:  " + call.getResourceRef().getQuery();
