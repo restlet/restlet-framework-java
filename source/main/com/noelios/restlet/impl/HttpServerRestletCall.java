@@ -182,7 +182,7 @@ public class HttpServerRestletCall extends RestletCallImpl
    {
       if(this.condition == null) 
       {
-         this.condition = new ConditionDataImpl();
+         this.condition = new ConditionData();
 
          // Extract the header values
          String ifMatchHeader = getConnectorCall().getRequestHeaderValue(ConnectorCall.HEADER_IF_MATCH);

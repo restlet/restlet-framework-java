@@ -417,7 +417,7 @@ public class RestletCallImpl implements RestletCall
     */
    public ConditionData getCondition()
    {
-      if(this.condition == null) this.condition = new ConditionDataImpl();
+      if(this.condition == null) this.condition = new ConditionData();
       return this.condition;
    }
    
