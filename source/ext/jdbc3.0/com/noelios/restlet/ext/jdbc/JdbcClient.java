@@ -40,7 +40,7 @@ import org.apache.commons.dbcp.PoolableConnectionFactory;
 import org.apache.commons.dbcp.PoolingDataSource;
 import org.apache.commons.pool.ObjectPool;
 import org.apache.commons.pool.impl.GenericObjectPool;
-import org.restlet.Manager;
+import org.restlet.DefaultCall;
 import org.restlet.RestletCall;
 import org.restlet.connector.AbstractClient;
 import org.restlet.connector.ClientCall;
@@ -121,7 +121,7 @@ public class JdbcClient extends AbstractClient
     */
    public static RestletCall create(String jdbcURI, Representation request)
    {
-      RestletCall result = Manager.createCall();
+      RestletCall result = new DefaultCall();
       result.setClientName(FactoryImpl.VERSION_HEADER);
       result.setMethod(Methods.POST);
       result.setResourceRef(jdbcURI);

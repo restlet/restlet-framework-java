@@ -76,7 +76,7 @@ public class Manager
     * Creates a delegate Restlet call.
     * @return A delegate Restlet call.
     */
-   public RestletCall createDelegateCall()
+   public static RestletCall createDelegateCall()
    {
       return getRegisteredFactory().createDelegateCall();
    }

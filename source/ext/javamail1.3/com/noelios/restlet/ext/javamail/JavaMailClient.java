@@ -39,7 +39,7 @@ import javax.mail.internet.MimeMessage;
 import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
 
-import org.restlet.Manager;
+import org.restlet.DefaultCall;
 import org.restlet.RestletCall;
 import org.restlet.connector.AbstractClient;
 import org.restlet.connector.ClientCall;
@@ -134,7 +134,7 @@ public class JavaMailClient extends AbstractClient
     */
    public static RestletCall create(String smtpURI, Representation email)
    {
-      RestletCall result = Manager.createCall();
+   	RestletCall result = new DefaultCall();
       result.setClientName(FactoryImpl.VERSION_HEADER);
       result.setMethod(Methods.POST);
       result.setResourceRef(smtpURI);

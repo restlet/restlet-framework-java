@@ -33,6 +33,6 @@ public class DefaultCall extends WrapperCall
     */
    public DefaultCall()
    {
-      super(Manager.createCall());
+      super(Manager.createDelegateCall());
    }
 }

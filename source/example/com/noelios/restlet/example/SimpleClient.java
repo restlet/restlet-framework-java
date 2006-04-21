@@ -22,6 +22,7 @@
 
 package com.noelios.restlet.example;
 
+import org.restlet.DefaultCall;
 import org.restlet.Manager;
 import org.restlet.RestletCall;
 import org.restlet.connector.Client;
@@ -40,7 +41,7 @@ public class SimpleClient
       try
       {
          // Prepare the REST call.
-         RestletCall call = Manager.createCall();
+         RestletCall call = new DefaultCall();
 
          // Identify oursevles.
          call.setReferrerRef("http://www.foo.com/");
