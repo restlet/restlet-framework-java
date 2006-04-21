@@ -33,11 +33,11 @@ import org.restlet.connector.Server;
 import org.restlet.data.Form;
 import org.restlet.data.MediaTypes;
 import org.restlet.data.Methods;
-import org.restlet.data.Parameter;
 import org.restlet.data.Protocols;
 import org.restlet.data.Statuses;
 
 import com.noelios.restlet.data.StringRepresentation;
+import com.noelios.restlet.impl.ParameterImpl;
 
 /**
  * Simple HTTP server invoked by the simple client.
@@ -75,9 +75,9 @@ public class SimpleServer
                Form form = call.getInputAsForm();
 
                System.out.println("Trying to getParameters...");
-               List<Parameter> params = form.getParameters();
+               List<ParameterImpl> params = form.getParameters();
                StringBuffer sb = new StringBuffer("foo");
-               for(Parameter p : params)
+               for(ParameterImpl p : params)
                {
                   System.out.println(p);
 

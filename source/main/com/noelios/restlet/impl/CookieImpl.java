@@ -22,13 +22,10 @@
 
 package com.noelios.restlet.impl;
 
-import org.restlet.data.Cookie;
-import org.restlet.data.Parameter;
-
 /**
  * Cookie provided by a client.
  */
-public class CookieImpl extends ParameterImpl implements Cookie
+public class CookieImpl extends ParameterImpl
 {
    /** The version number. */
    protected int version;
@@ -143,9 +140,9 @@ public class CookieImpl extends ParameterImpl implements Cookie
     * @param otherCookie The other cookie to compare to.
     * @return True if the parameters are identical (name and value).
     */
-   public boolean equals(Cookie otherCookie)
+   public boolean equals(CookieImpl otherCookie)
    {
-      boolean result = super.equals((Parameter)otherCookie);
+      boolean result = super.equals((ParameterImpl)otherCookie);
 
       result &= (getVersion() == otherCookie.getVersion());
 

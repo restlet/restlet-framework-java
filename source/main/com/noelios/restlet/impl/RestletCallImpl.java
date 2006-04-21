@@ -35,15 +35,12 @@ import org.restlet.Resource;
 import org.restlet.RestletCall;
 import org.restlet.connector.ConnectorCall;
 import org.restlet.data.ConditionData;
-import org.restlet.data.Cookie;
-import org.restlet.data.CookieSetting;
 import org.restlet.data.Form;
 import org.restlet.data.Language;
 import org.restlet.data.LanguagePref;
 import org.restlet.data.MediaType;
 import org.restlet.data.MediaTypePref;
 import org.restlet.data.Method;
-import org.restlet.data.Parameter;
 import org.restlet.data.PreferenceData;
 import org.restlet.data.Reference;
 import org.restlet.data.Representation;
@@ -78,10 +75,10 @@ public class RestletCallImpl implements RestletCall
    protected ConnectorCall connectorCall;
    
    /** The current cookies of the client. */
-   protected List<Cookie> cookies;
+   protected List<CookieImpl> cookies;
 
    /** The cookies to set in the client. */
-   protected List<CookieSetting> cookieSettings;
+   protected List<CookieSettingImpl> cookieSettings;
 
    /** The list of substrings matched in the context path. */
    protected List<String> contextMatches;
@@ -149,7 +146,7 @@ public class RestletCallImpl implements RestletCall
       }
       else
       {
-         Parameter currentParam = null;
+         ParameterImpl currentParam = null;
          Language currentLanguage = null;
          MediaType currentMediaType = null;
 
@@ -290,7 +287,7 @@ public class RestletCallImpl implements RestletCall
                      for(Iterator iter3 = currentVariant.getMediaType().getParameters().iterator(); iter3
                            .hasNext();)
                      {
-                        currentParam = (Parameter)iter3.next();
+                        currentParam = (ParameterImpl)iter3.next();
 
                         if(isParameterFound(currentParam, currentMediaType))
                         {
@@ -361,13 +358,13 @@ public class RestletCallImpl implements RestletCall
     * @param mediaRange The media range to inspect.
     * @return True if the searched parameter is specified in the given media range.
     */
-   private boolean isParameterFound(Parameter searchedParam, MediaType mediaRange)
+   private boolean isParameterFound(ParameterImpl searchedParam, MediaType mediaRange)
    {
       boolean result = false;
 
       for(Iterator iter = mediaRange.getParameters().iterator(); !result && iter.hasNext();)
       {
-         result = searchedParam.equals((Parameter)iter.next());
+         result = searchedParam.equals((ParameterImpl)iter.next());
       }
 
       return result;
@@ -465,9 +462,9 @@ public class RestletCallImpl implements RestletCall
     * Returns the cookies provided by the client to the server.
     * @return The cookies provided by the client to the server.
     */
-   public List<Cookie> getCookies()
+   public List<CookieImpl> getCookies()
    {
-      if(this.cookies == null) this.cookies = new ArrayList<Cookie>();
+      if(this.cookies == null) this.cookies = new ArrayList<CookieImpl>();
       return this.cookies;
    }
 
@@ -475,9 +472,9 @@ public class RestletCallImpl implements RestletCall
     * Returns the cookies provided by the server to the client.
     * @return The cookies provided by the server to the client.
     */
-   public List<CookieSetting> getCookieSettings()
+   public List<CookieSettingImpl> getCookieSettings()
    {
-      if(this.cookieSettings == null) this.cookieSettings = new ArrayList<CookieSetting>();
+      if(this.cookieSettings == null) this.cookieSettings = new ArrayList<CookieSettingImpl>();
       return this.cookieSettings;
    }
 

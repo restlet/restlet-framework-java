@@ -25,7 +25,8 @@ package com.noelios.restlet.util;
 import java.util.List;
 
 import org.restlet.RestletCall;
-import org.restlet.data.Parameter;;
+
+import com.noelios.restlet.impl.ParameterImpl;
 
 /**
  * Readable model wrapping an uniform call.<br/>
@@ -242,7 +243,7 @@ public class UniformCallModel implements ReadableModel
 	   				}
 	   				else if(rest.equals("last"))
 	   				{
-	   					List<Parameter> params = call.getResourceRef().getQueryAsForm().getParameters(); 
+	   					List<ParameterImpl> params = call.getResourceRef().getQueryAsForm().getParameters(); 
 	   					result = params.get(params.size() - 1).getValue();
 	   				}
 	   				else if((rest.charAt(0) == '"') && (rest.charAt(rest.length() - 1) == '"'))

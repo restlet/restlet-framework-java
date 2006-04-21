@@ -28,9 +28,7 @@ import java.util.List;
 
 import junit.framework.TestCase;
 
-import org.restlet.Manager;
-import org.restlet.data.Parameter;
-
+import com.noelios.restlet.impl.ParameterImpl;
 import com.noelios.restlet.util.FormUtils;
 
 /**
@@ -43,13 +41,13 @@ public class FormTest extends TestCase
     */
    public void testParsing() throws IOException
    {
-      List<Parameter> params = new ArrayList<Parameter>();
-      params.add(Manager.createParameter("name", "John D. Mitchell"));
-      params.add(Manager.createParameter("email", "john@bob.net"));
-      params.add(Manager.createParameter("email2", "joe@bob.net"));
+      List<ParameterImpl> params = new ArrayList<ParameterImpl>();
+      params.add(new ParameterImpl("name", "John D. Mitchell"));
+      params.add(new ParameterImpl("email", "john@bob.net"));
+      params.add(new ParameterImpl("email2", "joe@bob.net"));
       
       String query = FormUtils.format(params);
-      List<Parameter> newParams = FormUtils.getParameters(query);
+      List<ParameterImpl> newParams = FormUtils.getParameters(query);
       String newQuery = FormUtils.format(newParams);
       assertEquals(query, newQuery);
    }

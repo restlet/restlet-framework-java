@@ -63,22 +63,6 @@ public interface Factory
    public Client createClient(Protocol protocol, String name);
 
    /**
-    * Returns a new cookie.
-    * @param name The name.
-    * @param value The value.
-    * @return A new cookie.
-    */
-   public Cookie createCookie(String name, String value);
-
-   /**
-    * Returns a new cookie setting.
-    * @param name The name.
-    * @param value The value.
-    * @return A new cookie setting.
-    */
-   public CookieSetting createCookieSetting(String name, String value);
-
-   /**
     * Creates a delegate Chainlet for internal usage by the AbstractChainlet.<br/>
     * If you need a Chainlet for your application, you should be subclassing the AbstractChainlet instead. 
     * @param parent The parent component.
@@ -127,14 +111,6 @@ public interface Factory
     * @return The new method.
     */
    public Method createMethod(String name);
-
-   /**
-    * Creates a new parameter.
-    * @param name The parameter's name.
-    * @param value The parameter's value.
-    * @return The new parameter.
-    */
-   public Parameter createParameter(String name, String value);
 
    /**
     * Creates a new reference from a URI reference.

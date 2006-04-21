@@ -26,7 +26,6 @@ import java.util.List;
 
 import org.restlet.data.Encoding;
 import org.restlet.data.EncodingPref;
-import org.restlet.data.Parameter;
 
 /**
  * Encoding preference.
@@ -58,7 +57,7 @@ public class EncodingPrefImpl extends PreferenceImpl implements EncodingPref
     * @param quality The quality/preference level.
     * @param parameters The list of parameters.
     */
-   public EncodingPrefImpl(Encoding encoding, float quality, List<Parameter> parameters)
+   public EncodingPrefImpl(Encoding encoding, float quality, List<ParameterImpl> parameters)
    {
       super(encoding, quality, parameters);
    }

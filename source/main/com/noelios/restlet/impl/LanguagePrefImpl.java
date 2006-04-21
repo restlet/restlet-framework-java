@@ -26,7 +26,6 @@ import java.util.List;
 
 import org.restlet.data.Language;
 import org.restlet.data.LanguagePref;
-import org.restlet.data.Parameter;
 
 /**
  * Language preference.
@@ -58,7 +57,7 @@ public class LanguagePrefImpl extends PreferenceImpl implements LanguagePref
     * @param quality The quality/preference level.
     * @param parameters The list of parameters.
     */
-   public LanguagePrefImpl(Language language, float quality, List<Parameter> parameters)
+   public LanguagePrefImpl(Language language, float quality, List<ParameterImpl> parameters)
    {
       super(language, quality, parameters);
    }

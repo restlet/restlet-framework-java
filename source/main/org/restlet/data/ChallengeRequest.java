@@ -24,6 +24,8 @@ package org.restlet.data;
 
 import java.util.List;
 
+import com.noelios.restlet.impl.ParameterImpl;
+
 /**
  * Authentication challenge sent by an origin server to a client.
  */
@@ -57,12 +59,12 @@ public interface ChallengeRequest extends ControlData
     * Returns the scheme parameters.
     * @return The scheme parameters.
     */
-   public List<Parameter> getParameters();
+   public List<ParameterImpl> getParameters();
 
    /**
     * Sets the scheme parameters.
     * @param parameters The scheme parameters.
     */
-   public void setParameters(List<Parameter> parameters);
+   public void setParameters(List<ParameterImpl> parameters);
 
 }

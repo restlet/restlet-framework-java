@@ -37,7 +37,6 @@ import org.restlet.connector.ServerCall;
 import org.restlet.data.CharacterSetPref;
 import org.restlet.data.CharacterSets;
 import org.restlet.data.ConditionData;
-import org.restlet.data.Cookie;
 import org.restlet.data.Encoding;
 import org.restlet.data.EncodingPref;
 import org.restlet.data.Encodings;
@@ -48,7 +47,6 @@ import org.restlet.data.MediaType;
 import org.restlet.data.MediaTypePref;
 import org.restlet.data.MediaTypes;
 import org.restlet.data.Methods;
-import org.restlet.data.Parameter;
 import org.restlet.data.PreferenceData;
 import org.restlet.data.Reference;
 import org.restlet.data.Representation;
@@ -190,7 +188,7 @@ public class HttpServerRestletCall extends RestletCallImpl
          Date ifModifiedSince = null;
          Date ifUnmodifiedSince = null;
          
-         for(Parameter header : getConnectorCall().getRequestHeaders())
+         for(ParameterImpl header : getConnectorCall().getRequestHeaders())
          {
             if(header.getName().equalsIgnoreCase(ConnectorCall.HEADER_IF_MODIFIED_SINCE))
             {
@@ -278,11 +276,11 @@ public class HttpServerRestletCall extends RestletCallImpl
     * Returns the cookies provided by the client.
     * @return The cookies provided by the client.
     */
-   public List<Cookie> getCookies()
+   public List<CookieImpl> getCookies()
    {
       if(this.cookies == null) 
       {
-         this.cookies = new ArrayList<Cookie>();
+         this.cookies = new ArrayList<CookieImpl>();
          String cookiesValue = getConnectorCall().getRequestHeaderValue(ConnectorCall.HEADER_COOKIE);
 
          if(cookiesValue != null)
@@ -290,7 +288,7 @@ public class HttpServerRestletCall extends RestletCallImpl
 	   		try
 	         {
 	            CookieReader cr = new CookieReader(cookiesValue);
-	            Cookie current = cr.readCookie();
+	            CookieImpl current = cr.readCookie();
 	            while(current != null)
 	            {
 	               this.cookies.add(current);
@@ -324,7 +322,7 @@ public class HttpServerRestletCall extends RestletCallImpl
          MediaType contentType = null;
          long contentLength = -1L;
 
-         for(Parameter header : getConnectorCall().getRequestHeaders())
+         for(ParameterImpl header : getConnectorCall().getRequestHeaders())
          {
             if(header.getName().equalsIgnoreCase(ConnectorCall.HEADER_CONTENT_ENCODING))
             {

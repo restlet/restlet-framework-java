@@ -30,8 +30,9 @@ import java.util.List;
 import java.util.Locale;
 
 import org.restlet.data.MediaType;
-import org.restlet.data.Parameter;
 import org.restlet.data.Preference;
+
+import com.noelios.restlet.impl.ParameterImpl;
 
 /**
  * Preference manipulation utilities.<br/>
@@ -75,8 +76,8 @@ public class PreferenceUtils
          
          if(mediaType.getParameters() != null)
          {
-            Parameter param;
-            for(Iterator<Parameter> iter = mediaType.getParameters().iterator(); iter.hasNext(); )
+            ParameterImpl param;
+            for(Iterator<ParameterImpl> iter = mediaType.getParameters().iterator(); iter.hasNext(); )
             {
                param = iter.next();
                
@@ -101,8 +102,8 @@ public class PreferenceUtils
       
       if(pref.getParameters() != null)
       {
-         Parameter param;
-         for(Iterator<Parameter> iter = pref.getParameters().iterator(); iter.hasNext(); )
+         ParameterImpl param;
+         for(Iterator<ParameterImpl> iter = pref.getParameters().iterator(); iter.hasNext(); )
          {
             param = iter.next();
             

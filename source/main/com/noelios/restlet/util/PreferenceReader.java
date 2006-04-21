@@ -27,7 +27,6 @@ import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
 
-import org.restlet.data.Parameter;
 import org.restlet.data.Preference;
 
 import com.noelios.restlet.impl.CharacterSetImpl;
@@ -38,6 +37,7 @@ import com.noelios.restlet.impl.LanguageImpl;
 import com.noelios.restlet.impl.LanguagePrefImpl;
 import com.noelios.restlet.impl.MediaTypeImpl;
 import com.noelios.restlet.impl.MediaTypePrefImpl;
+import com.noelios.restlet.impl.ParameterImpl;
 
 /**
  * Preference header reader.<br/>
@@ -80,7 +80,7 @@ public class PreferenceReader extends HeaderReader
       StringBuilder paramNameBuffer = null;
       StringBuilder paramValueBuffer = null;
 
-      List<Parameter> parameters = null;
+      List<ParameterImpl> parameters = null;
       int nextChar = 0;
 
       while((result == null) && (nextChar != -1))
@@ -116,7 +116,7 @@ public class PreferenceReader extends HeaderReader
                   readingMetadata = false;
                   readingParamName = true;
                   paramNameBuffer = new StringBuilder();
-                  parameters = new ArrayList<Parameter>();
+                  parameters = new ArrayList<ParameterImpl>();
                }
                else
                {
@@ -232,19 +232,19 @@ public class PreferenceReader extends HeaderReader
     * @param parameters All the preference parameters.
     * @return The media parameters.
     */
-   protected List<Parameter> extractMediaParams(List<Parameter> parameters)
+   protected List<ParameterImpl> extractMediaParams(List<ParameterImpl> parameters)
    {
-      List<Parameter> result = null;
+      List<ParameterImpl> result = null;
       boolean qualityFound = false;
-      Parameter param = null;
+      ParameterImpl param = null;
 
       if(parameters != null)
       {
-         result = new ArrayList<Parameter>();
+         result = new ArrayList<ParameterImpl>();
 
          for(Iterator iter = parameters.iterator(); !qualityFound && iter.hasNext();)
          {
-            param = (Parameter)iter.next();
+            param = (ParameterImpl)iter.next();
 
             if(param.getName().equals("q"))
             {
@@ -266,17 +266,17 @@ public class PreferenceReader extends HeaderReader
     * @param parameters The preference parameters.
     * @return The quality value.
     */
-   protected float extractQuality(List<Parameter> parameters)
+   protected float extractQuality(List<ParameterImpl> parameters)
    {
       float result = 1F;
       boolean found = false;
 
       if(parameters != null)
       {
-         Parameter param = null;
+         ParameterImpl param = null;
          for(Iterator iter = parameters.iterator(); !found && iter.hasNext();)
          {
-            param = (Parameter)iter.next();
+            param = (ParameterImpl)iter.next();
             if(param.getName().equals("q"))
             {
                result = PreferenceUtils.parseQuality(param.getValue());
@@ -298,7 +298,7 @@ public class PreferenceReader extends HeaderReader
     * @param parameters The parameters list.
     * @return The new preference.
     */
-   protected Preference createPreference(CharSequence metadata, List<Parameter> parameters)
+   protected Preference createPreference(CharSequence metadata, List<ParameterImpl> parameters)
    {
       Preference result = null;
 
@@ -325,7 +325,7 @@ public class PreferenceReader extends HeaderReader
       }
       else
       {
-         List<Parameter> mediaParams = extractMediaParams(parameters);
+         List<ParameterImpl> mediaParams = extractMediaParams(parameters);
          float quality = extractQuality(parameters);
          
          switch(type)

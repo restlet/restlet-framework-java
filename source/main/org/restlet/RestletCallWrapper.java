@@ -27,6 +27,9 @@ import java.util.List;
 import org.restlet.connector.ConnectorCall;
 import org.restlet.data.*;
 
+import com.noelios.restlet.impl.CookieImpl;
+import com.noelios.restlet.impl.CookieSettingImpl;
+
 /**
  * Restlet call wrapper that can be easily subclassed.<br/>
  * Useful for application developer who need to enrich the call with application related things.
@@ -141,7 +144,7 @@ public class RestletCallWrapper implements RestletCall
     * Returns the cookies provided by the client to the server.
     * @return The cookies provided by the client to the server.
     */
-   public List<Cookie> getCookies()
+   public List<CookieImpl> getCookies()
    {
       return getWrappedCall().getCookies();
    }
@@ -150,7 +153,7 @@ public class RestletCallWrapper implements RestletCall
     * Returns the cookies provided by the server to the client.
     * @return The cookies provided by the server to the client.
     */
-   public List<CookieSetting> getCookieSettings()
+   public List<CookieSettingImpl> getCookieSettings()
    {
       return getWrappedCall().getCookieSettings();
    }

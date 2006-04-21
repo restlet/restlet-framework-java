@@ -31,8 +31,9 @@ import java.util.List;
 import java.util.Map;
 
 import org.restlet.data.EmptyValue;
-import org.restlet.data.Parameter;
 import org.restlet.data.Representation;
+
+import com.noelios.restlet.impl.ParameterImpl;
 
 /**
  * Web form reader.
@@ -68,7 +69,7 @@ public class FormReader
    @SuppressWarnings("unchecked")
    public Object readParameter(String name) throws IOException
    {
-      Parameter param = readNextParameter();
+   	ParameterImpl param = readNextParameter();
       Object result = null;
 
       while(param != null)
@@ -128,10 +129,10 @@ public class FormReader
     * @return The parameter value.
     * @throws IOException
     */
-   public Parameter readFirstParameter(String name) throws IOException
+   public ParameterImpl readFirstParameter(String name) throws IOException
    {
-      Parameter param = readNextParameter();
-      Parameter result = null;
+   	ParameterImpl param = readNextParameter();
+   	ParameterImpl result = null;
 
       while((param != null) && (result == null))
       {
@@ -155,7 +156,7 @@ public class FormReader
    @SuppressWarnings("unchecked")
    public void readParameters(Map<String, Object> parameters) throws IOException
    {
-      Parameter param = readNextParameter();
+   	ParameterImpl param = readNextParameter();
       Object currentValue = null;
 
       while(param != null)
@@ -214,9 +215,9 @@ public class FormReader
     * Reads the next parameter available or null.
     * @return The next parameter available or null.
     */
-   public Parameter readNextParameter() throws IOException
+   public ParameterImpl readNextParameter() throws IOException
    {
-      Parameter result = null;
+   	ParameterImpl result = null;
 
       try
       {
@@ -296,10 +297,10 @@ public class FormReader
     * Returns the list of parameters.
     * @return The list of parameters.
     */
-   public List<Parameter> readParameters() throws IOException
+   public List<ParameterImpl> readParameters() throws IOException
    {
-      List<Parameter> result = new ArrayList<Parameter>();
-      Parameter param = readNextParameter();
+      List<ParameterImpl> result = new ArrayList<ParameterImpl>();
+      ParameterImpl param = readNextParameter();
 
       while(param != null)
       {

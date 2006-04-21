@@ -22,12 +22,10 @@
 
 package com.noelios.restlet.impl;
 
-import org.restlet.data.Parameter;
-
 /**
  * Multi-usage parameter.
  */
-public class ParameterImpl implements Parameter
+public class ParameterImpl
 {
    /** The name. */
    protected String name;
@@ -95,7 +93,7 @@ public class ParameterImpl implements Parameter
     * @param otherParam The other parameter to compare.
     * @return True if the parameters are identical (name and value).
     */
-   public boolean equals(Parameter otherParam)
+   public boolean equals(ParameterImpl otherParam)
    {
       boolean result = true;
 
@@ -135,7 +133,7 @@ public class ParameterImpl implements Parameter
     * @return A negative integer, zero, or a positive integer as this object is less than, equal to, or
     * greater than the specified object.
     */
-   public int compareTo(Parameter o)
+   public int compareTo(ParameterImpl o)
    {
       return getName().compareTo(o.getName());
    }

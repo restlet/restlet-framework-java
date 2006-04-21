@@ -91,28 +91,6 @@ public class Manager
    }
 
    /**
-    * Returns a new cookie.
-    * @param name The name.
-    * @param value The value.
-    * @return A new cookie.
-    */
-   public static Cookie createCookie(String name, String value)
-   {
-      return getRegisteredFactory().createCookie(name, value);
-   }
-
-   /**
-    * Returns a new cookie setting.
-    * @param name The name.
-    * @param value The value.
-    * @return A new cookie setting.
-    */
-   public static CookieSetting createCookieSetting(String name, String value)
-   {
-      return getRegisteredFactory().createCookieSetting(name, value);
-   }
-
-   /**
     * Creates a delegate Chainlet for internal usage by the AbstractChainlet.<br/>
     * If you need a Chainlet for your application, you should be subclassing the AbstractChainlet instead. 
     * @param parent The parent component.
@@ -181,17 +159,6 @@ public class Manager
    public static Method createMethod(String name)
    {
       return getRegisteredFactory().createMethod(name);
-   }
-
-   /**
-    * Creates a new parameter.
-    * @param name The parameter's name.
-    * @param value The parameter's value.
-    * @return The new parameter.
-    */
-   public static Parameter createParameter(String name, String value)
-   {
-      return getRegisteredFactory().createParameter(name, value);
    }
 
    /**

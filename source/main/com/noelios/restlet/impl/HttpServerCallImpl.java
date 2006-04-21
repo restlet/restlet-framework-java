@@ -31,7 +31,6 @@ import java.util.logging.Logger;
 import org.restlet.RestletCall;
 import org.restlet.connector.ConnectorCall;
 import org.restlet.connector.ServerCall;
-import org.restlet.data.CookieSetting;
 import org.restlet.data.Encodings;
 import org.restlet.data.Representation;
 import org.restlet.data.RepresentationMetadata;
@@ -67,7 +66,7 @@ public abstract class HttpServerCallImpl extends ConnectorCallImpl implements Se
       try
       {
          // Add the cookie settings
-         List<CookieSetting> cookies = call.getCookieSettings();
+         List<CookieSettingImpl> cookies = call.getCookieSettings();
          for(int i = 0; i < cookies.size(); i++)
          {
             addResponseHeader(ConnectorCall.HEADER_SET_COOKIE, CookieUtils.format(cookies.get(i)));

@@ -297,28 +297,6 @@ public class FactoryImpl implements Factory
    }
 
    /**
-    * Returns a new cookie.
-    * @param name The name.
-    * @param value The value.
-    * @return A new cookie.
-    */
-   public Cookie createCookie(String name, String value)
-   {
-      return new CookieImpl(name, value);
-   }
-
-   /**
-    * Returns a new cookie setting.
-    * @param name The name.
-    * @param value The value.
-    * @return A new cookie setting.
-    */
-   public CookieSetting createCookieSetting(String name, String value)
-   {
-      return new CookieSettingImpl(name, value);
-   }
-
-   /**
     * Creates a delegate Chainlet for internal usage by the AbstractChainlet.<br/>
     * If you need a Chainlet for your application, you should be subclassing the AbstractChainlet instead. 
     * @param parent The parent component.
@@ -387,17 +365,6 @@ public class FactoryImpl implements Factory
    public Method createMethod(String name)
    {
       return (name == null) ? null : new MethodImpl(name);
-   }
-
-   /**
-    * Creates a new parameter.
-    * @param name The parameter's name.
-    * @param value The parameter's value.
-    * @return The new parameter.
-    */
-   public Parameter createParameter(String name, String value)
-   {
-      return new ParameterImpl(name, value);
    }
 
    /**

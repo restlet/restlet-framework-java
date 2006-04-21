@@ -24,6 +24,8 @@ package org.restlet.data;
 
 import java.util.List;
 
+import com.noelios.restlet.impl.ParameterImpl;
+
 /**
  * Metadata preference definition.
  */
@@ -45,7 +47,7 @@ public interface Preference extends ControlData
     * Returns the list of parameters.
     * @return The list of parameters.
     */
-   public List<Parameter> getParameters();
+   public List<ParameterImpl> getParameters();
 
    /**
     * Returns the value of a parameter with a given name.

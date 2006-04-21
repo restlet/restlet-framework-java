@@ -45,7 +45,6 @@ import org.restlet.data.Language;
 import org.restlet.data.Languages;
 import org.restlet.data.MediaTypes;
 import org.restlet.data.Methods;
-import org.restlet.data.Parameter;
 import org.restlet.data.PreferenceData;
 import org.restlet.data.Protocol;
 import org.restlet.data.Protocols;
@@ -235,8 +234,8 @@ public class HttpClientImpl extends AbstractClient
          }
          
          // Add the custom headers that may have been set by the user
-         Parameter header;
-         for(Iterator<Parameter> iter = call.getConnectorCall().getRequestHeaders().iterator(); iter.hasNext();)
+         ParameterImpl header;
+         for(Iterator<ParameterImpl> iter = call.getConnectorCall().getRequestHeaders().iterator(); iter.hasNext();)
          {
             header = iter.next();
             clientCall.addRequestHeader(header.getName(), header.getValue());
@@ -293,7 +292,7 @@ public class HttpClientImpl extends AbstractClient
          Language language = null;
          Tag tag = null;
          
-         for(Iterator<Parameter> iter = clientCall.getResponseHeaders().iterator(); iter.hasNext(); )
+         for(Iterator<ParameterImpl> iter = clientCall.getResponseHeaders().iterator(); iter.hasNext(); )
          {
             header = iter.next();
             

@@ -81,7 +81,7 @@ public class MetadataImpl implements Metadata
     */
    public int hashCode()
    {
-      return getName().hashCode(); // No parameters taken into account!!
+      return getName().hashCode();
    }
 
    /**

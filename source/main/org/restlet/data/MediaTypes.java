@@ -24,6 +24,8 @@ package org.restlet.data;
 
 import java.util.List;
 
+import com.noelios.restlet.impl.ParameterImpl;
+
 /**
  * The data format of a representation.
  * @see <a href="http://en.wikipedia.org/wiki/MIME">MIME types on Wikipedia</a>
@@ -227,7 +229,7 @@ public enum MediaTypes implements MediaType
     * Returns the list of parameters.
     * @return The list of parameters.
     */
-   public List<Parameter> getParameters()
+   public List<ParameterImpl> getParameters()
    {
       return null;
    }

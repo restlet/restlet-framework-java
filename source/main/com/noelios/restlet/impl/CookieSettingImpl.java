@@ -22,12 +22,10 @@
 
 package com.noelios.restlet.impl;
 
-import org.restlet.data.CookieSetting;
-
 /**
  * Cookie setting provided by a server.
  */
-public class CookieSettingImpl extends CookieImpl implements CookieSetting
+public class CookieSettingImpl extends CookieImpl
 {
    /** The user's comment. */
    protected String comment;

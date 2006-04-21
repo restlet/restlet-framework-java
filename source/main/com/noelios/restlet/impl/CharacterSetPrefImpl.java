@@ -26,7 +26,6 @@ import java.util.List;
 
 import org.restlet.data.CharacterSet;
 import org.restlet.data.CharacterSetPref;
-import org.restlet.data.Parameter;
 
 /**
  * Character set preference.
@@ -58,7 +57,7 @@ public class CharacterSetPrefImpl extends PreferenceImpl implements CharacterSet
     * @param quality The quality/preference level.
     * @param parameters The list of parameters.
     */
-   public CharacterSetPrefImpl(CharacterSet characterSet, float quality, List<Parameter> parameters)
+   public CharacterSetPrefImpl(CharacterSet characterSet, float quality, List<ParameterImpl> parameters)
    {
       super(characterSet, quality, parameters);
    }

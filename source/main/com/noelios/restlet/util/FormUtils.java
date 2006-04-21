@@ -29,7 +29,6 @@ import java.net.URLEncoder;
 import java.util.List;
 import java.util.Map;
 
-import org.restlet.data.Parameter;
 import org.restlet.data.Representation;
 
 import com.noelios.restlet.impl.ParameterImpl;
@@ -46,7 +45,7 @@ public class FormUtils
     * @param query The query string.
     * @return The list of parameters of a query string.
     */
-   public static List<Parameter> getParameters(String query) throws IOException
+   public static List<ParameterImpl> getParameters(String query) throws IOException
    {
       return new FormReader(query).readParameters();
    }
@@ -56,7 +55,7 @@ public class FormUtils
     * @param form The web form representation.
     * @return The list of parameters of a web form representation.
     */
-   public static List<Parameter> getParameters(Representation form) throws IOException
+   public static List<ParameterImpl> getParameters(Representation form) throws IOException
    {
       return new FormReader(form).readParameters();
    }
@@ -92,7 +91,7 @@ public class FormUtils
     * @return The parameter.
     * @throws IOException
     */
-   public static Parameter getFirstParameter(String query, String name) throws IOException
+   public static ParameterImpl getFirstParameter(String query, String name) throws IOException
    {
       return new FormReader(query).readFirstParameter(name);
    }
@@ -104,7 +103,7 @@ public class FormUtils
     * @return The parameter.
     * @throws IOException
     */
-   public static Parameter getFirstParameter(Representation form, String name) throws IOException
+   public static ParameterImpl getFirstParameter(Representation form, String name) throws IOException
    {
       return new FormReader(form).readFirstParameter(name);
    }
@@ -140,9 +139,9 @@ public class FormUtils
     * @return The created parameter.
     * @throws IOException
     */
-   public static Parameter create(CharSequence name, CharSequence value) throws IOException
+   public static ParameterImpl create(CharSequence name, CharSequence value) throws IOException
    {
-      Parameter result = null;
+   	ParameterImpl result = null;
 
       try
       {
@@ -173,7 +172,7 @@ public class FormUtils
     * @return The encoded parameters string.
     * @throws IOException 
     */
-   public static String format(List<Parameter> parameters) throws IOException
+   public static String format(List<ParameterImpl> parameters) throws IOException
    {
       StringBuilder sb = new StringBuilder();
       for(int i = 0; i < parameters.size(); i++)
@@ -190,7 +189,7 @@ public class FormUtils
     * @return The encoded parameter string.
     * @throws IOException
     */
-   public static String format(Parameter parameter) throws IOException
+   public static String format(ParameterImpl parameter) throws IOException
    {
       StringBuilder sb = new StringBuilder();
       format(parameter, sb);
@@ -203,7 +202,7 @@ public class FormUtils
     * @param buffer The buffer to append.
     * @throws IOException
     */
-   public static void format(Parameter parameter, Appendable buffer) throws IOException
+   public static void format(ParameterImpl parameter, Appendable buffer) throws IOException
    {
       try
       {
