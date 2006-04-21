@@ -49,15 +49,6 @@ public class Manager
    protected static Factory registeredFactory = null;
 
    /**
-    * Creates a new uniform call.
-    * @return A new uniform call.
-    */
-   public static RestletCall createCall()
-   {
-      return getRegisteredFactory().createCall();
-   }
-
-   /**
     * Creates a challenge response for a specific scheme (ex: HTTP BASIC authentication)
     * using a login and a password as the credentials.
     * @param scheme The challenge scheme to use.
@@ -79,6 +70,15 @@ public class Manager
    public static Client createClient(Protocol protocol, String name)
    {
       return getRegisteredFactory().createClient(protocol, name);
+   }
+
+   /**
+    * Creates a delegate Restlet call.
+    * @return A delegate Restlet call.
+    */
+   public RestletCall createDelegateCall()
+   {
+      return getRegisteredFactory().createDelegateCall();
    }
 
    /**
@@ -114,16 +114,6 @@ public class Manager
    }
 
    /**
-    * Creates a new method from its standard name.
-    * @param name The standard method name.
-    * @return The new method.
-    */
-   public static Method createMethod(String name)
-   {
-      return getRegisteredFactory().createMethod(name);
-   }
-
-   /**
     * Create a new server connector for a given protocol.
     * @param protocol The connector protocol.
     * @param name The unique connector name.
@@ -135,16 +125,6 @@ public class Manager
    public static Server createServer(Protocol protocol, String name, Restlet target, String address, int port)
    {
       return getRegisteredFactory().createServer(protocol, name, target, address, port);
-   }
-
-   /**
-    * Creates a new status from its standard code.
-    * @param code The standard status code.
-    * @return The new status.
-    */
-   public static Status createStatus(int code)
-   {
-      return getRegisteredFactory().createStatus(code);
    }
 
    /**

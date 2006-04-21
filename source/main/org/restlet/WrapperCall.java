@@ -32,7 +32,7 @@ import org.restlet.data.*;
  * Useful for application developer who need to enrich the call with application related things.
  * @see <a href="http://c2.com/cgi/wiki?DecoratorPattern">The decorator (aka wrapper) pattern</a>
  */
-public class RestletCallWrapper implements RestletCall
+public class WrapperCall implements RestletCall
 {
    /** Wrapped call. */
    protected RestletCall wrappedCall;
@@ -41,7 +41,7 @@ public class RestletCallWrapper implements RestletCall
     * Constructor.
     * @param wrappedCall The wrapped call
     */
-   public RestletCallWrapper(RestletCall wrappedCall)
+   public WrapperCall(RestletCall wrappedCall)
    {
       this.wrappedCall = wrappedCall;
    }

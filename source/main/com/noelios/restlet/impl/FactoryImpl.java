@@ -205,15 +205,6 @@ public class FactoryImpl implements Factory
    }
 
    /**
-    * Creates a new uniform call.
-    * @return A new uniform call.
-    */
-   public RestletCall createCall()
-   {
-      return new RestletCallImpl();
-   }
-
-   /**
     * Creates a challenge response for a specific scheme (ex: HTTP BASIC authentication)
     * using a login and a password as the credentials.
     * @param scheme The challenge scheme to use.
@@ -287,6 +278,15 @@ public class FactoryImpl implements Factory
    }
 
    /**
+    * Creates a delegate Restlet call.
+    * @return A delegate Restlet call.
+    */
+   public RestletCall createDelegateCall()
+   {
+      return new RestletCallImpl();
+   }
+
+   /**
     * Creates a delegate Chainlet for internal usage by the AbstractChainlet.<br/>
     * If you need a Chainlet for your application, you should be subclassing the AbstractChainlet instead. 
     * @param parent The parent component.
@@ -316,16 +316,6 @@ public class FactoryImpl implements Factory
    public Form createForm(String query) throws IOException
    {
       return new FormImpl(query);
-   }
-
-   /**
-    * Creates a new method from its standard name.
-    * @param name The standard method name.
-    * @return The new method.
-    */
-   public Method createMethod(String name)
-   {
-      return (name == null) ? null : new DefaultMethod(name);
    }
 
    /**
@@ -360,16 +350,6 @@ public class FactoryImpl implements Factory
 		}
 
       return result;
-   }
-
-   /**
-    * Creates a new status from its standard code.
-    * @param code The standard status code.
-    * @return The new status.
-    */
-   public Status createStatus(int code)
-   {
-      return new DefaultStatus(code);
    }
 
 }

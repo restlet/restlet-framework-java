@@ -35,12 +35,6 @@ import org.restlet.data.*;
 public interface Factory
 {
    /**
-    * Creates a new uniform call.
-    * @return A new uniform call.
-    */
-   public RestletCall createCall();
-
-   /**
     * Creates a challenge response for a specific scheme using a user ID and a password as the credentials.<br/>
     * @param scheme The challenge scheme to use.
     * @param userId The user identifier to use.
@@ -56,6 +50,12 @@ public interface Factory
     * @return The new client connector.
     */
    public Client createClient(Protocol protocol, String name);
+
+   /**
+    * Creates a delegate Restlet call.
+    * @return A delegate Restlet call.
+    */
+   public RestletCall createDelegateCall();
 
    /**
     * Creates a delegate Chainlet for internal usage by the AbstractChainlet.<br/>
@@ -81,13 +81,6 @@ public interface Factory
    public Form createForm(String query) throws IOException;
 
    /**
-    * Creates a new method from its standard name.
-    * @param name The standard method name.
-    * @return The new method.
-    */
-   public Method createMethod(String name);
-
-   /**
     * Create a new server connector for a given protocol.
     * @param protocol The connector protocol.
     * @param name The unique connector name.
@@ -97,11 +90,4 @@ public interface Factory
     * @return The new server connector.
     */
    public Server createServer(Protocol protocol, String name, Restlet target, String address, int port);
-
-   /**
-    * Creates a new status from its standard code.
-    * @param code The standard status code.
-    * @return The new status.
-    */
-   public Status createStatus(int code);
 }
