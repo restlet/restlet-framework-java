@@ -23,6 +23,7 @@
 package org.restlet;
 
 import java.io.BufferedReader;
+import java.io.IOException;
 import java.io.InputStreamReader;
 import java.net.URL;
 import java.util.logging.Level;
@@ -124,11 +125,12 @@ public class Manager
 
    /**
     * Creates an empty form.
+    * @param query Query string to parse or null for an empty form.
     * @return A new form.
     */
-   public static Form createForm()
+   public static Form createForm(String query) throws IOException
    {
-      return getRegisteredFactory().createForm();
+      return getRegisteredFactory().createForm(query);
    }
 
    /**

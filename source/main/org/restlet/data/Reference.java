@@ -26,7 +26,7 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 
-import com.noelios.restlet.impl.FormImpl;
+import org.restlet.Manager;
 
 /**
  * Represents a reference to a uniform resource identifier (URI).<br/>
@@ -551,7 +551,7 @@ public class Reference implements Data
     */
    public Form getQueryAsForm() throws IOException
    {
-      return new FormImpl(getQuery());
+      return Manager.createForm(getQuery());
    }
 
    /**

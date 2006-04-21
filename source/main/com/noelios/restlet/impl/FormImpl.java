@@ -50,7 +50,7 @@ public class FormImpl implements Form
     */
    public FormImpl()
    {
-      this.parameters = new ArrayList<Parameter>();
+      this.parameters = null;
    }
    
    /**
@@ -60,7 +60,14 @@ public class FormImpl implements Form
     */
    public FormImpl(String query) throws IOException
    {
-      this.parameters = FormUtils.getParameters(query);
+   	if((query == null) || query.equals(""))
+   	{
+   		this.parameters = null;
+   	}
+   	else
+   	{
+   		this.parameters = FormUtils.getParameters(query);
+   	}
    }
 
    /**
@@ -126,6 +133,7 @@ public class FormImpl implements Form
     */
    public List<Parameter> getParameters()
    {
+   	if(this.parameters == null) this.parameters = new ArrayList<Parameter>();
       return this.parameters;
    }
 

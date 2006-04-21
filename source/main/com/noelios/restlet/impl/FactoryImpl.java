@@ -330,11 +330,12 @@ public class FactoryImpl implements Factory
 
    /**
     * Creates an empty form.
+    * @param query Query string to parse or null for an empty form.
     * @return A new form.
     */
-   public Form createForm()
+   public Form createForm(String query) throws IOException
    {
-      return new FormImpl();
+      return new FormImpl(query);
    }
 
    /**

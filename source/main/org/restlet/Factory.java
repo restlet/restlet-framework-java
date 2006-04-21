@@ -22,6 +22,8 @@
 
 package org.restlet;
 
+import java.io.IOException;
+
 import org.restlet.component.Component;
 import org.restlet.connector.Client;
 import org.restlet.connector.Server;
@@ -87,9 +89,10 @@ public interface Factory
 
    /**
     * Creates an empty form.
+    * @param query Query string to parse or null for an empty form.
     * @return A new form.
     */
-   public Form createForm();
+   public Form createForm(String query) throws IOException;
 
    /**
     * Creates a new language from its standard name.

@@ -51,7 +51,7 @@ public class SimpleClient
          // Action: Update
          call.setMethod(Methods.PUT);
 
-         Form form = Manager.createForm();
+         Form form = Manager.createForm(null);
          form.addParameter("name", "John D. Mitchell");
          form.addParameter("email", "john@bob.net");
          form.addParameter("email2", "joe@bob.net");
