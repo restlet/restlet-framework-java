@@ -108,7 +108,7 @@ public class HttpServerRestletCall extends RestletCallImpl
       String resource = call.getRequestUri();
       if(resource != null)
       {
-         setResourceRef(Manager.createReference(resource));
+         setResourceRef(resource);
       }
    }
 
@@ -488,7 +488,7 @@ public class HttpServerRestletCall extends RestletCallImpl
       	String referrerValue = getConnectorCall().getRequestHeaderValue(ConnectorCall.HEADER_REFERRER);
       	if(referrerValue != null)
       	{
-      		this.referrerRef = Manager.createReference(referrerValue);
+      		this.referrerRef = new Reference(referrerValue);
       	}
       }
       

@@ -27,7 +27,6 @@ import java.util.logging.Level;
 import java.util.logging.Logger;
 
 import org.restlet.AbstractRestlet;
-import org.restlet.Manager;
 import org.restlet.RestletCall;
 import org.restlet.component.Component;
 import org.restlet.data.Reference;
@@ -124,7 +123,7 @@ public class RedirectRestlet extends AbstractRestlet
 
          // Create the template data model
          String targetUri = te.process(new UniformCallModel(call, null));
-         Reference target = Manager.createReference(targetUri);
+         Reference target = new Reference(targetUri);
 
          switch(this.mode)
          {

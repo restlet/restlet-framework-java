@@ -51,7 +51,7 @@ public abstract class AbstractClient extends AbstractConnector implements Client
    public RestletCall get(String resourceUri)
    {
       RestletCall call = Manager.createCall();
-      call.setResourceRef(Manager.createReference(resourceUri));
+      call.setResourceRef(resourceUri);
       call.setMethod(Methods.GET);
       handle(call);
       return call;
@@ -66,7 +66,7 @@ public abstract class AbstractClient extends AbstractConnector implements Client
    public RestletCall post(String resourceUri, Representation input)
    {
       RestletCall call = Manager.createCall();
-      call.setResourceRef(Manager.createReference(resourceUri));
+      call.setResourceRef(resourceUri);
       call.setMethod(Methods.POST);
       call.setInput(input);
       handle(call);
@@ -82,7 +82,7 @@ public abstract class AbstractClient extends AbstractConnector implements Client
    public RestletCall put(String resourceUri, Representation input)
    {
       RestletCall call = Manager.createCall();
-      call.setResourceRef(Manager.createReference(resourceUri));
+      call.setResourceRef(resourceUri);
       call.setMethod(Methods.PUT);
       call.setInput(input);
       handle(call);
@@ -97,7 +97,7 @@ public abstract class AbstractClient extends AbstractConnector implements Client
    public RestletCall delete(String resourceUri)
    {
       RestletCall call = Manager.createCall();
-      call.setResourceRef(Manager.createReference(resourceUri));
+      call.setResourceRef(resourceUri);
       call.setMethod(Methods.DELETE);
       handle(call);
       return call;

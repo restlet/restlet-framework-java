@@ -42,8 +42,8 @@ public class Tutorial02b
       {
          // Prepare the REST call
          RestletCall call = Manager.createCall();
-         call.setResourceRef(Manager.createReference("http://www.restlet.org"));
-         call.setReferrerRef(Manager.createReference("http://www.mysite.org"));
+         call.setResourceRef("http://www.restlet.org");
+         call.setReferrerRef("http://www.mysite.org");
          call.setMethod(Methods.GET);
 
          // Ask to the HTTP client connector to handle the call

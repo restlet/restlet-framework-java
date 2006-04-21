@@ -29,7 +29,6 @@ import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
-import org.restlet.Manager;
 import org.restlet.RestletCall;
 import org.restlet.Restlet;
 import org.restlet.component.Component;
@@ -37,6 +36,7 @@ import org.restlet.connector.Server;
 import org.restlet.connector.ServerCall;
 import org.restlet.data.Protocol;
 import org.restlet.data.Protocols;
+import org.restlet.data.Reference;
 
 /**
  * Servlet connector acting as a HTTP server. See the getTarget() method for details 
@@ -267,7 +267,7 @@ public class ServerServlet extends HttpServlet implements Server
                         		String hostName = request.getServerName();
                         		int hostPort = request.getServerPort();
                         		String servletPath = request.getContextPath() + request.getServletPath();
-                        		String contextPath = Manager.createReference(scheme, hostName, hostPort, servletPath, null, null).toString();
+                        		String contextPath = new Reference(scheme, hostName, hostPort, servletPath, null, null).toString();
                         		component.getInitParameters().put(initContextPathName, contextPath);
                         		log("[Noelios Restlet Engine] - This context path has been provided to the target's init parameter \"" + initContextPathName + "\": " + contextPath);
                         	}

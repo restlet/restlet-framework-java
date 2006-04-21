@@ -115,7 +115,7 @@ public class Service extends SaxRepresentation
 	{
 		super(xmlService);
 		this.client = client;
-		this.reference = Manager.createReference(serviceUri);
+		this.reference = new Reference(serviceUri);
 		parse(new ContentReader(this));
 	}
 	

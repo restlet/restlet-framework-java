@@ -124,7 +124,7 @@ public class JdbcClient extends AbstractClient
       RestletCall result = Manager.createCall();
       result.setClientName(FactoryImpl.VERSION_HEADER);
       result.setMethod(Methods.POST);
-      result.setResourceRef(Manager.createReference(jdbcURI));
+      result.setResourceRef(jdbcURI);
       result.setInput(request);
       return result;
    }

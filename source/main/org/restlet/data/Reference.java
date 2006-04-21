@@ -20,21 +20,19 @@
  * Portions Copyright [yyyy] [name of copyright owner]
  */
 
-package com.noelios.restlet.impl;
+package org.restlet.data;
 
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 
-import org.restlet.Manager;
-import org.restlet.data.Form;
-import org.restlet.data.Reference;
+import com.noelios.restlet.impl.FormImpl;
 
 /**
  * Represents a reference to a uniform resource identifier (URI).<br/>
  * Contrary to the java.net.URI class, this interface represents mutable references.
  */
-public class ReferenceImpl implements Reference
+public class Reference implements Data
 {
    /** The fragment separator index. */
    protected int fragmentIndex;
@@ -52,7 +50,7 @@ public class ReferenceImpl implements Reference
     * Constructor from a URI reference.
     * @param uriReference The URI reference.
     */
-   public ReferenceImpl(String uriReference)
+   public Reference(String uriReference)
    {
       this.uri = uriReference;
       updateIndexes();
@@ -63,7 +61,7 @@ public class ReferenceImpl implements Reference
     * @param identifier The absolute URI.
     * @param fragment The fragment identifier.
     */
-   public ReferenceImpl(String identifier, String fragment)
+   public Reference(String identifier, String fragment)
    {
       if(fragment == null)
       {
@@ -86,7 +84,7 @@ public class ReferenceImpl implements Reference
     * @param query The optional query component for hierarchical identifiers.
     * @param fragment The optionale fragment identifier.
     */
-   public ReferenceImpl(String scheme, String hostName, int hostPort, String path, String query, String fragment)
+   public Reference(String scheme, String hostName, int hostPort, String path, String query, String fragment)
    {
    	StringBuilder sb = new StringBuilder();
 
@@ -513,7 +511,7 @@ public class ReferenceImpl implements Reference
             }
          }
          
-         result = Manager.createReference(relativePath);
+         result = new Reference(relativePath);
       }
       
       return result;

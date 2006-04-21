@@ -30,7 +30,6 @@ import java.util.List;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
-import org.restlet.Manager;
 import org.restlet.Resource;
 import org.restlet.RestletCall;
 import org.restlet.connector.ConnectorCall;
@@ -458,7 +457,7 @@ public class RestletCallImpl implements RestletCall
     */
    public Reference getContextRef()
    {
-      return new ReferenceImpl(getContextPath());
+      return new Reference(getContextPath());
    }
 
    /**
@@ -764,7 +763,7 @@ public class RestletCallImpl implements RestletCall
     */
    public void setRedirectionRef(String redirectionUri)
    {
-   	setRedirectionRef(Manager.createReference(redirectionUri));
+   	setRedirectionRef(new Reference(redirectionUri));
    }
    
    /**
@@ -782,7 +781,7 @@ public class RestletCallImpl implements RestletCall
     */
    public void setReferrerRef(String referrerUri)
    {
-   	setReferrerRef(Manager.createReference(referrerUri));
+   	setReferrerRef(new Reference(referrerUri));
    }
    
    /**
@@ -805,7 +804,7 @@ public class RestletCallImpl implements RestletCall
     */
    public void setResourceRef(String resourceUri)
    {
-   	setResourceRef(Manager.createReference(resourceUri));
+   	setResourceRef(new Reference(resourceUri));
    }
 
    /**

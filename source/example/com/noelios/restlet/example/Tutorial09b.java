@@ -45,7 +45,7 @@ public class Tutorial09b
       {
          // Prepare the REST call
          RestletCall call = Manager.createCall();
-         call.setResourceRef(Manager.createReference("http://localhost:8182/"));
+         call.setResourceRef("http://localhost:8182/");
          call.setMethod(Methods.GET);
          
          // Add the client authentication to the call 

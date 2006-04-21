@@ -520,7 +520,7 @@ public class Feed extends SaxRepresentation
 				else if(localName.equals("link"))
 				{
 					currentLink = new Link();
-					currentLink.setHref(Manager.createReference(attrs.getValue("", "href")));
+					currentLink.setHref(new Reference(attrs.getValue("", "href")));
 					currentLink.setRel(Relation.parse(attrs.getValue("", "rel")));
 					currentLink.setType(Manager.createMediaType(attrs.getValue("", "type")));
 					currentLink.setHrefLang(Manager.createLanguage(attrs.getValue("", "hreflang")));
@@ -553,7 +553,7 @@ public class Feed extends SaxRepresentation
 				{
 					currentCategory = new Category();
 					currentCategory.setTerm(attrs.getValue("", "term"));
-					currentCategory.setScheme(Manager.createReference(attrs.getValue("", "scheme")));
+					currentCategory.setScheme(new Reference(attrs.getValue("", "scheme")));
 					currentCategory.setLabel(attrs.getValue("", "label"));
 
 					if(state == State.FEED)
@@ -585,7 +585,7 @@ public class Feed extends SaxRepresentation
 						else
 						{
 							// Content available externally
-							currentContent.setExternalRef(Manager.createReference(srcAttr));
+							currentContent.setExternalRef(new Reference(srcAttr));
 							currentContent.setExternalType(type);
 						}
 						

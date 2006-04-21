@@ -113,24 +113,6 @@ public interface Factory
    public Method createMethod(String name);
 
    /**
-    * Creates a new reference from a URI reference.
-    * @param uriReference The URI reference.
-    * @return The new URI reference.
-    */
-   public Reference createReference(String uriReference);
-
-   /**
-    * Creates a new reference from the URI parts.
-    * @param scheme The scheme ("http", "https" or "ftp").
-    * @param hostName The host name or IP address.
-    * @param hostPort The host port (default ports are correctly ignored).
-    * @param path The path component for hierarchical identifiers.
-    * @param query The optional query component for hierarchical identifiers.
-    * @param fragment The optionale fragment identifier.
-    */
-   public Reference createReference(String scheme, String hostName, int hostPort, String path, String query, String fragment);
-
-   /**
     * Creates a new representation metadata.
     * @param mediaType The representation mediatype.
     */

@@ -116,7 +116,7 @@ public class RedirectTest extends TestCase
       {
          RestletCall call = Manager.createCall();
          call.setMethod(method);
-         call.setResourceRef(Manager.createReference(uri));
+         call.setResourceRef(uri);
          myContainer.callClient("Test client", call);
          call.getOutput().write(System.out);
       }

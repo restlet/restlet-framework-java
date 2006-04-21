@@ -64,7 +64,7 @@ public class Collection
 	{
 		this.workspace = workspace;
 		this.title = title;
-		this.href = Manager.createReference(href);
+		this.href = new Reference(href);
 		this.memberType = null;
 	}
 

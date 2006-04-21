@@ -26,7 +26,6 @@ import java.io.IOException;
 
 import junit.framework.TestCase;
 
-import org.restlet.Manager;
 import org.restlet.data.Reference;
 
 /**
@@ -68,8 +67,8 @@ public class ReferenceTest extends TestCase
    
    private void testRef(String baseUri, String absoluteUri, String expectedRelativeUri)
    {
-      Reference baseRef = Manager.createReference(baseUri);
-      Reference absoluteRef = Manager.createReference(absoluteUri);
+      Reference baseRef = new Reference(baseUri);
+      Reference absoluteRef = new Reference(absoluteUri);
       Reference relativeRef = absoluteRef.getRelativeRef(baseRef);
       assertEquals(expectedRelativeUri, relativeRef.toString());
    }

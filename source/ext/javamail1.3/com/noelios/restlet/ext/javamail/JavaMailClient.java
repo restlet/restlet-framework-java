@@ -137,7 +137,7 @@ public class JavaMailClient extends AbstractClient
       RestletCall result = Manager.createCall();
       result.setClientName(FactoryImpl.VERSION_HEADER);
       result.setMethod(Methods.POST);
-      result.setResourceRef(Manager.createReference(smtpURI));
+      result.setResourceRef(smtpURI);
       result.setInput(email);
       return result;
    }
