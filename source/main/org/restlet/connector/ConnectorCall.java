@@ -25,7 +25,7 @@ package org.restlet.connector;
 import java.util.Date;
 import java.util.List;
 
-import com.noelios.restlet.impl.ParameterImpl;
+import org.restlet.data.Parameter;
 
 /**
  * Connector call for all protocols.
@@ -187,7 +187,7 @@ public interface ConnectorCall
     * Returns the list of request headers.
     * @return The list of request headers.
     */
-   public List<ParameterImpl> getRequestHeaders();
+   public List<Parameter> getRequestHeaders();
    
    /**
     * Returns the value for a request header name.<br/>
@@ -220,7 +220,7 @@ public interface ConnectorCall
     * Returns the list of response headers.
     * @return The list of response headers.
     */
-   public List<ParameterImpl> getResponseHeaders();
+   public List<Parameter> getResponseHeaders();
    
    /**
     * Returns the value for a response header name.<br/>

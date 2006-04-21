@@ -33,9 +33,9 @@ import java.util.List;
 
 import org.mortbay.http.HttpRequest;
 import org.mortbay.http.HttpResponse;
+import org.restlet.data.Parameter;
 
 import com.noelios.restlet.impl.HttpServerCallImpl;
-import com.noelios.restlet.impl.ParameterImpl;
 
 /**
  * Call that is used by the Jetty HTTP server connector.
@@ -49,7 +49,7 @@ public class JettyCall extends HttpServerCallImpl
    protected HttpResponse response;
    
    /** The request headers. */
-   protected List<ParameterImpl> requestHeaders;
+   protected List<Parameter> requestHeaders;
    
    /**
     * Constructor.
@@ -123,11 +123,11 @@ public class JettyCall extends HttpServerCallImpl
     * Returns the list of request headers.
     * @return The list of request headers.
     */
-   public List<ParameterImpl> getRequestHeaders()
+   public List<Parameter> getRequestHeaders()
    {
       if(this.requestHeaders == null)
       {
-         this.requestHeaders = new ArrayList<ParameterImpl>();
+         this.requestHeaders = new ArrayList<Parameter>();
 
          // Copy the headers from the request object
          String headerName;
@@ -138,7 +138,7 @@ public class JettyCall extends HttpServerCallImpl
             for(Enumeration values = getRequest().getFieldValues(headerName); values.hasMoreElements(); )
             {
                headerValue = (String)values.nextElement();
-               this.requestHeaders.add(new ParameterImpl(headerName, headerValue));
+               this.requestHeaders.add(new Parameter(headerName, headerValue));
             }
          }
       }
@@ -216,8 +216,8 @@ public class JettyCall extends HttpServerCallImpl
       }
       
       // Add call headers
-      ParameterImpl header;
-      for(Iterator<ParameterImpl> iter = getResponseHeaders().iterator(); iter.hasNext();)
+      Parameter header;
+      for(Iterator<Parameter> iter = getResponseHeaders().iterator(); iter.hasNext();)
       {
          header = iter.next();
          getResponse().addField(header.getName(), header.getValue());

@@ -20,12 +20,12 @@
  * Portions Copyright [yyyy] [name of copyright owner]
  */
 
-package com.noelios.restlet.impl;
+package org.restlet.data;
 
 /**
  * Cookie setting provided by a server.
  */
-public class CookieSettingImpl extends CookieImpl
+public class CookieSetting extends Cookie
 {
    /** The user's comment. */
    protected String comment;
@@ -41,7 +41,7 @@ public class CookieSettingImpl extends CookieImpl
    /**
     * Default constructor.
     */
-   public CookieSettingImpl()
+   public CookieSetting()
    {
       this(0, null, null, null, null);
    }
@@ -51,7 +51,7 @@ public class CookieSettingImpl extends CookieImpl
     * @param name The cookie's name.
     * @param value The cookie's value.
     */
-   public CookieSettingImpl(String name, String value)
+   public CookieSetting(String name, String value)
    {
       this(0, name, value, null, null);
    }
@@ -62,7 +62,7 @@ public class CookieSettingImpl extends CookieImpl
     * @param name The cookie's name.
     * @param value The cookie's value.
     */
-   public CookieSettingImpl(int version, String name, String value)
+   public CookieSetting(int version, String name, String value)
    {
       this(version, name, value, null, null);
    }
@@ -75,7 +75,7 @@ public class CookieSettingImpl extends CookieImpl
     * @param path The cookie's path.
     * @param domain The cookie's domain name.
     */
-   public CookieSettingImpl(int version, String name, String value, String path, String domain)
+   public CookieSetting(int version, String name, String value, String path, String domain)
    {
       super(version, name, value, path, domain);
       this.comment = null;

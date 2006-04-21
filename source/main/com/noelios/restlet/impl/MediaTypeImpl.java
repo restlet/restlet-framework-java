@@ -26,6 +26,7 @@ import java.util.Iterator;
 import java.util.List;
 
 import org.restlet.data.MediaType;
+import org.restlet.data.Parameter;
 
 /**
  * Media type used in representations and preferences.
@@ -33,7 +34,7 @@ import org.restlet.data.MediaType;
 public class MediaTypeImpl extends MetadataImpl implements MediaType
 {
    /** The list of parameters. */
-   private List<ParameterImpl> parameters;
+   private List<Parameter> parameters;
 
    /**
     * Constructor.
@@ -49,7 +50,7 @@ public class MediaTypeImpl extends MetadataImpl implements MediaType
     * @param name The media type name.
     * @param parameters The list of parameters.
     */
-   public MediaTypeImpl(String name, List<ParameterImpl> parameters)
+   public MediaTypeImpl(String name, List<Parameter> parameters)
    {
       super((name == null) ? null : name.toLowerCase());
       this.parameters = parameters;
@@ -124,7 +125,7 @@ public class MediaTypeImpl extends MetadataImpl implements MediaType
     * Returns the list of parameters.
     * @return The list of parameters.
     */
-   public List<ParameterImpl> getParameters()
+   public List<Parameter> getParameters()
    {
       return parameters;
    }
@@ -140,10 +141,10 @@ public class MediaTypeImpl extends MetadataImpl implements MediaType
 
       if(getParameters() != null)
       {
-         ParameterImpl current;
+         Parameter current;
          for(Iterator iter = getParameters().iterator(); iter.hasNext();)
          {
-            current = (ParameterImpl)iter.next();
+            current = (Parameter)iter.next();
             if(current.getName().equals(name))
             {
                result = current.getValue();

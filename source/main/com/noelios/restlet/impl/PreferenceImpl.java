@@ -26,6 +26,7 @@ import java.util.Iterator;
 import java.util.List;
 
 import org.restlet.data.Metadata;
+import org.restlet.data.Parameter;
 import org.restlet.data.Preference;
 
 /**
@@ -40,7 +41,7 @@ public class PreferenceImpl implements Preference
    private float quality;
 
    /** The list of parameters. */
-   private List<ParameterImpl> parameters;
+   private List<Parameter> parameters;
 
    /**
     * Constructor.
@@ -67,7 +68,7 @@ public class PreferenceImpl implements Preference
     * @param quality The quality/preference level.
     * @param parameters The list of parameters.
     */
-   public PreferenceImpl(Metadata metadata, float quality, List<ParameterImpl> parameters)
+   public PreferenceImpl(Metadata metadata, float quality, List<Parameter> parameters)
    {
       if(metadata == null)
       {
@@ -103,7 +104,7 @@ public class PreferenceImpl implements Preference
     * Returns the list of parameters.
     * @return The list of parameters.
     */
-   public List<ParameterImpl> getParameters()
+   public List<Parameter> getParameters()
    {
       return parameters;
    }
@@ -119,10 +120,10 @@ public class PreferenceImpl implements Preference
 
       if(getParameters() != null)
       {
-      	ParameterImpl current;
+      	Parameter current;
          for(Iterator iter = getParameters().iterator(); iter.hasNext();)
          {
-            current = (ParameterImpl)iter.next();
+            current = (Parameter)iter.next();
             if(current.getName().equals(name))
             {
                result = current.getValue();

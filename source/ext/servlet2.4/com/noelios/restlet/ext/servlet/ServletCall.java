@@ -35,8 +35,9 @@ import java.util.List;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
+import org.restlet.data.Parameter;
+
 import com.noelios.restlet.impl.HttpServerCallImpl;
-import com.noelios.restlet.impl.ParameterImpl;
 
 /**
  * Call that is used by the Servlet HTTP server connector.
@@ -50,7 +51,7 @@ public class ServletCall extends HttpServerCallImpl
    protected HttpServletResponse response;
    
    /** The request headers. */
-   protected List<ParameterImpl> requestHeaders;
+   protected List<Parameter> requestHeaders;
 
    /**
     * Constructor.
@@ -131,11 +132,11 @@ public class ServletCall extends HttpServerCallImpl
     * Returns the list of request headers.
     * @return The list of request headers.
     */
-   public List<ParameterImpl> getRequestHeaders()
+   public List<Parameter> getRequestHeaders()
    {
       if(this.requestHeaders == null)
       {
-         this.requestHeaders = new ArrayList<ParameterImpl>();
+         this.requestHeaders = new ArrayList<Parameter>();
 
          // Copy the headers from the request object
          String headerName;
@@ -146,7 +147,7 @@ public class ServletCall extends HttpServerCallImpl
             for(Enumeration values = getRequest().getHeaders(headerName); values.hasMoreElements(); )
             {
                headerValue = (String)values.nextElement();
-               this.requestHeaders.add(new ParameterImpl(headerName, headerValue));
+               this.requestHeaders.add(new Parameter(headerName, headerValue));
             }
          }
       }
@@ -226,8 +227,8 @@ public class ServletCall extends HttpServerCallImpl
     */
    public void sendResponseHeaders()
    {
-      ParameterImpl header;
-      for(Iterator<ParameterImpl> iter = getResponseHeaders().iterator(); iter.hasNext();)
+      Parameter header;
+      for(Iterator<Parameter> iter = getResponseHeaders().iterator(); iter.hasNext();)
       {
          header = iter.next();
          getResponse().addHeader(header.getName(), header.getValue());

@@ -27,10 +27,11 @@ import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 
+import org.restlet.data.Cookie;
+import org.restlet.data.CookieSetting;
+
 import junit.framework.TestCase;
 
-import com.noelios.restlet.impl.CookieImpl;
-import com.noelios.restlet.impl.CookieSettingImpl;
 import com.noelios.restlet.util.CookieReader;
 import com.noelios.restlet.util.CookieUtils;
 import com.noelios.restlet.util.DateUtils;
@@ -82,8 +83,8 @@ public class CookiesTest extends TestCase
    private void testCookie(String headerValue) throws IOException
    {
       CookieReader cr = new CookieReader(headerValue);
-      List<CookieImpl> cookies = new ArrayList<CookieImpl>();
-      CookieImpl cookie = cr.readCookie();
+      List<Cookie> cookies = new ArrayList<Cookie>();
+      Cookie cookie = cr.readCookie();
 
       while(cookie != null)
       {
@@ -107,7 +108,7 @@ public class CookiesTest extends TestCase
    private void testCookieSetting(String headerValue, boolean compare) throws IOException
    {
       CookieReader cr = new CookieReader(headerValue);
-      CookieSettingImpl cookie = cr.readCookieSetting();
+      CookieSetting cookie = cr.readCookieSetting();
 
       // Rewrite the header
       String newHeaderValue = CookieUtils.format(cookie);

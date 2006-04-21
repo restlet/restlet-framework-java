@@ -24,8 +24,6 @@ package org.restlet.data;
 
 import java.util.List;
 
-import com.noelios.restlet.impl.ParameterImpl;
-
 /**
  * Media type used in representations and preferences.
  * @see org.restlet.data.MediaTypes
@@ -49,7 +47,7 @@ public interface MediaType extends Metadata
     * Returns the list of parameters.
     * @return The list of parameters.
     */
-   public List<ParameterImpl> getParameters();
+   public List<Parameter> getParameters();
 
    /**
     * Returns the value of a parameter with a given name.

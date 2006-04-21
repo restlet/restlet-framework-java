@@ -27,6 +27,7 @@ import java.util.Date;
 import java.util.List;
 
 import org.restlet.connector.ConnectorCall;
+import org.restlet.data.Parameter;
 
 import com.noelios.restlet.util.DateUtils;
 
@@ -48,13 +49,13 @@ public class ConnectorCallImpl implements ConnectorCall
    protected String requestUri;
    
    /** The request headers. */
-   protected List<ParameterImpl> requestHeaders;
+   protected List<Parameter> requestHeaders;
    
    /** The response address. */
    protected String responseAddress;
    
    /** The response headers. */
-   protected List<ParameterImpl> responseHeaders;
+   protected List<Parameter> responseHeaders;
    
    /** The response status code. */
    protected int responseStatusCode;
@@ -85,7 +86,7 @@ public class ConnectorCallImpl implements ConnectorCall
     */
    public void addRequestHeader(String name, String value)
    {
-      getRequestHeaders().add(new ParameterImpl(name, value));
+      getRequestHeaders().add(new Parameter(name, value));
    }
 
    /**
@@ -95,7 +96,7 @@ public class ConnectorCallImpl implements ConnectorCall
     */
    public void addResponseHeader(String name, String value)
    {
-      getResponseHeaders().add(new ParameterImpl(name, value));
+      getResponseHeaders().add(new Parameter(name, value));
    }
 
    /**
@@ -139,9 +140,9 @@ public class ConnectorCallImpl implements ConnectorCall
     * Returns the modifiable list of request headers.
     * @return The modifiable list of request headers.
     */
-   public List<ParameterImpl> getRequestHeaders()
+   public List<Parameter> getRequestHeaders()
    {
-      if(this.requestHeaders == null) this.requestHeaders = new ArrayList<ParameterImpl>();
+      if(this.requestHeaders == null) this.requestHeaders = new ArrayList<Parameter>();
       return this.requestHeaders;
    }
    
@@ -163,12 +164,12 @@ public class ConnectorCallImpl implements ConnectorCall
     * @param headers The headers list.
     * @return The value for a header name.
     */
-   private String getHeaderValue(String headerName, List<ParameterImpl> headers)
+   private String getHeaderValue(String headerName, List<Parameter> headers)
    {
    	String result = null;
    	StringBuilder sb = null;
    	
-   	for(ParameterImpl header : getRequestHeaders())
+   	for(Parameter header : getRequestHeaders())
    	{
    		if(header.getName().equalsIgnoreCase(headerName))
    		{
@@ -213,9 +214,9 @@ public class ConnectorCallImpl implements ConnectorCall
     * Returns the modifiable list of response headers.
     * @return The modifiable list of response headers.
     */
-   public List<ParameterImpl> getResponseHeaders()
+   public List<Parameter> getResponseHeaders()
    {
-      if(this.responseHeaders == null) this.responseHeaders = new ArrayList<ParameterImpl>();
+      if(this.responseHeaders == null) this.responseHeaders = new ArrayList<Parameter>();
       return this.responseHeaders;
    }
    

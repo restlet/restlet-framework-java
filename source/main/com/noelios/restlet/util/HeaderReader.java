@@ -24,7 +24,7 @@ package com.noelios.restlet.util;
 
 import java.io.IOException;
 
-import com.noelios.restlet.impl.ParameterImpl;
+import org.restlet.data.Parameter;
 
 /**
  * HTTP header reader.
@@ -132,15 +132,15 @@ public class HeaderReader
     * @return The created parameter.
     * @throws IOException
     */
-   public static ParameterImpl createParameter(CharSequence name, CharSequence value) throws IOException
+   public static Parameter createParameter(CharSequence name, CharSequence value) throws IOException
    {
       if(value != null)
       {
-         return new ParameterImpl(name.toString(), value.toString());
+         return new Parameter(name.toString(), value.toString());
       }
       else
       {
-         return new ParameterImpl(name.toString(), null);
+         return new Parameter(name.toString(), null);
       }
    }
 

@@ -28,9 +28,9 @@ import java.util.Date;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
-import com.noelios.restlet.impl.CookieImpl;
-import com.noelios.restlet.impl.CookieSettingImpl;
-import com.noelios.restlet.impl.ParameterImpl;
+import org.restlet.data.Cookie;
+import org.restlet.data.CookieSetting;
+import org.restlet.data.Parameter;
 
 /**
  * Cookie header reader.
@@ -58,7 +58,7 @@ public class CookieReader extends HeaderReader
    /**
     * The cached pair. Used by the readPair() method.
     */
-   protected ParameterImpl cachedPair;
+   protected Parameter cachedPair;
 
    /** The global cookie specification version. */
    protected int globalVersion;
@@ -78,10 +78,10 @@ public class CookieReader extends HeaderReader
     * Reads the next cookie available or null.
     * @return The next cookie available or null.
     */
-   public CookieImpl readCookie() throws IOException
+   public Cookie readCookie() throws IOException
    {
-      CookieImpl result = null;
-      ParameterImpl pair = readPair();
+      Cookie result = null;
+      Parameter pair = readPair();
 
       if(this.globalVersion == -1)
       {
@@ -116,7 +116,7 @@ public class CookieReader extends HeaderReader
       if(pair != null)
       {
          // Set the cookie name and value
-         result = new CookieImpl(this.globalVersion, pair.getName(), pair.getValue());
+         result = new Cookie(this.globalVersion, pair.getName(), pair.getValue());
          pair = readPair();
       }
 
@@ -154,10 +154,10 @@ public class CookieReader extends HeaderReader
     * Reads the next cookie setting available or null.
     * @return The next cookie setting available or null.
     */
-   public CookieSettingImpl readCookieSetting() throws IOException
+   public CookieSetting readCookieSetting() throws IOException
    {
-      CookieSettingImpl result = null;
-      ParameterImpl pair = readPair();
+      CookieSetting result = null;
+      Parameter pair = readPair();
 
       while((pair != null) && (pair.getName().charAt(0) == '$'))
       {
@@ -170,7 +170,7 @@ public class CookieReader extends HeaderReader
       if(pair != null)
       {
          // Set the cookie name and value
-         result = new CookieSettingImpl(pair.getName(), pair.getValue());
+         result = new CookieSetting(pair.getName(), pair.getValue());
          pair = readPair();
       }
 
@@ -272,9 +272,9 @@ public class CookieReader extends HeaderReader
     * @return The next pair as a parameter.
     * @throws IOException
     */
-   private ParameterImpl readPair() throws IOException
+   private Parameter readPair() throws IOException
    {
-   	ParameterImpl result = null;
+   	Parameter result = null;
 
       if(cachedPair != null)
       {

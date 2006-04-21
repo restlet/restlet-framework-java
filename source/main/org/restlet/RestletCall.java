@@ -27,9 +27,6 @@ import java.util.List;
 import org.restlet.connector.ConnectorCall;
 import org.restlet.data.*;
 
-import com.noelios.restlet.impl.CookieImpl;
-import com.noelios.restlet.impl.CookieSettingImpl;
-
 /**
  * Represents a uniform call handled by a Restlet.
  * @see org.restlet.Restlet
@@ -105,13 +102,13 @@ public interface RestletCall
     * Returns the cookies provided by the client to the server.
     * @return The cookies provided by the client to the server.
     */
-   public List<CookieImpl> getCookies();
+   public List<Cookie> getCookies();
 
    /**
     * Returns the cookies provided by the server to the client.
     * @return The cookies provided by the server to the client.
     */
-   public List<CookieSettingImpl> getCookieSettings();
+   public List<CookieSetting> getCookieSettings();
 
    /**
     * Returns the representation provided by the client.

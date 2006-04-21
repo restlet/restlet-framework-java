@@ -29,8 +29,8 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 
-import com.noelios.restlet.impl.CookieImpl;
-import com.noelios.restlet.impl.CookieSettingImpl;
+import org.restlet.data.Cookie;
+import org.restlet.data.CookieSetting;
 
 /**
  * Cookie manipulation utilities.
@@ -42,11 +42,11 @@ public class CookieUtils
     * @param cookies The list of cookies to format.
     * @return The HTTP header.
     */
-   public static String format(List<CookieImpl> cookies)
+   public static String format(List<Cookie> cookies)
    {
       StringBuilder sb = new StringBuilder();
       
-      CookieImpl cookie;
+      Cookie cookie;
       for(int i = 0; i < cookies.size(); i++)
       {
          cookie = cookies.get(i);
@@ -74,7 +74,7 @@ public class CookieUtils
     * @param cookieSetting The cookie setting to format.
     * @return The formatted cookie setting.
     */
-   public static String format(CookieSettingImpl cookieSetting)
+   public static String format(CookieSetting cookieSetting)
    {
       StringBuilder sb = new StringBuilder();
       
@@ -95,7 +95,7 @@ public class CookieUtils
     * @param cookieSetting The cookie setting to format.
     * @param destination The appendable destination.
     */
-   public static void format(CookieSettingImpl cookieSetting, Appendable destination) throws IOException
+   public static void format(CookieSetting cookieSetting, Appendable destination) throws IOException
    {
       String name = cookieSetting.getName();
       String value = cookieSetting.getValue();
@@ -199,7 +199,7 @@ public class CookieUtils
     * @param cookie The cookie to format.
     * @return The formatted cookie.
     */
-   public static String format(CookieImpl cookie)
+   public static String format(Cookie cookie)
    {
       StringBuilder sb = new StringBuilder();
       format(cookie, sb);
@@ -211,7 +211,7 @@ public class CookieUtils
     * @param cookie The cookie to format.
     * @param destination The appendable destination.
     */
-   public static void format(CookieImpl cookie, Appendable destination)
+   public static void format(Cookie cookie, Appendable destination)
    {
       String name = cookie.getName();
       String value = cookie.getValue();
@@ -287,11 +287,11 @@ public class CookieUtils
     * @param source The source list of cookies.
     * @param destination The cookies map controlling the reading.
     */
-   public static void getCookies(List<CookieImpl> source, Map<String, CookieImpl> destination)
+   public static void getCookies(List<Cookie> source, Map<String, Cookie> destination)
    {
-      CookieImpl cookie;
+      Cookie cookie;
       
-      for(Iterator<CookieImpl> iter = source.iterator(); iter.hasNext(); )
+      for(Iterator<Cookie> iter = source.iterator(); iter.hasNext(); )
       {
          cookie = iter.next();
 
@@ -308,12 +308,12 @@ public class CookieUtils
     * @param name The name of the cookie to return.
     * @return The first cookie available with the given name or null.
     */
-   public static CookieImpl getFirstCookie(List<CookieImpl> source, String name)
+   public static Cookie getFirstCookie(List<Cookie> source, String name)
    {
-      CookieImpl result = null;
-      CookieImpl cookie;
+      Cookie result = null;
+      Cookie cookie;
       
-      for(Iterator<CookieImpl> iter = source.iterator(); (result == null) && iter.hasNext(); )
+      for(Iterator<Cookie> iter = source.iterator(); (result == null) && iter.hasNext(); )
       {
          cookie = iter.next();
 

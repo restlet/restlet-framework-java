@@ -41,6 +41,7 @@ import java.util.logging.Logger;
 import javax.net.ssl.HttpsURLConnection;
 
 import org.restlet.connector.ClientCall;
+import org.restlet.data.Parameter;
 import org.restlet.data.Representation;
 
 /**
@@ -126,8 +127,8 @@ public class HttpClientCallImpl extends ConnectorCallImpl implements ClientCall
       }
 
       // Set the request headers
-      ParameterImpl header;
-      for(Iterator<ParameterImpl> iter = getRequestHeaders().iterator(); iter.hasNext();)
+      Parameter header;
+      for(Iterator<Parameter> iter = getRequestHeaders().iterator(); iter.hasNext();)
       {
          header = iter.next();
          getConnection().addRequestProperty(header.getName(), header.getValue());
@@ -202,11 +203,11 @@ public class HttpClientCallImpl extends ConnectorCallImpl implements ClientCall
     * Returns the modifiable list of response headers.
     * @return The modifiable list of response headers.
     */
-   public List<ParameterImpl> getResponseHeaders()
+   public List<Parameter> getResponseHeaders()
    {
       if(this.responseHeaders == null)
       {
-         this.responseHeaders = new ArrayList<ParameterImpl>();
+         this.responseHeaders = new ArrayList<Parameter>();
          
          // Read the response headers
          int i = 1;
@@ -214,7 +215,7 @@ public class HttpClientCallImpl extends ConnectorCallImpl implements ClientCall
          String headerValue = getConnection().getHeaderField(i);
          while(headerName != null)
          {
-            this.responseHeaders.add(new ParameterImpl(headerName, headerValue));
+            this.responseHeaders.add(new Parameter(headerName, headerValue));
             i++;
             headerName = getConnection().getHeaderFieldKey(i);
             headerValue = getConnection().getHeaderField(i);

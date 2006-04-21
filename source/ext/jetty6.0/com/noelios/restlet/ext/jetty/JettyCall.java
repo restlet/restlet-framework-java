@@ -126,7 +126,7 @@ public class JettyCall extends HttpServerCallImpl
             for(Enumeration values = getConnection().getRequest().getHeaders(headerName); values.hasMoreElements(); )
             {
                headerValue = (String)values.nextElement();
-               this.requestHeaders.add(Manager.createParameter(headerName, headerValue));
+               this.requestHeaders.add(new Parameter(headerName, headerValue));
             }
          }
       }

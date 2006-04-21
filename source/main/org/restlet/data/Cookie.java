@@ -20,12 +20,12 @@
  * Portions Copyright [yyyy] [name of copyright owner]
  */
 
-package com.noelios.restlet.impl;
+package org.restlet.data;
 
 /**
  * Cookie provided by a client.
  */
-public class CookieImpl extends ParameterImpl
+public class Cookie extends Parameter
 {
    /** The version number. */
    protected int version;
@@ -39,7 +39,7 @@ public class CookieImpl extends ParameterImpl
    /**
     * Constructor.
     */
-   public CookieImpl()
+   public Cookie()
    {
       this(0, null, null, null, null);
    }
@@ -49,7 +49,7 @@ public class CookieImpl extends ParameterImpl
     * @param name The name.
     * @param value The value.
     */
-   public CookieImpl(String name, String value)
+   public Cookie(String name, String value)
    {
       this(0, name, value, null, null);
    }
@@ -60,7 +60,7 @@ public class CookieImpl extends ParameterImpl
     * @param name The name.
     * @param value The value.
     */
-   public CookieImpl(int version, String name, String value)
+   public Cookie(int version, String name, String value)
    {
       this(version, name, value, null, null);
    }
@@ -73,7 +73,7 @@ public class CookieImpl extends ParameterImpl
     * @param path The validity path.
     * @param domain The domain name.
     */
-   public CookieImpl(int version, String name, String value, String path, String domain)
+   public Cookie(int version, String name, String value, String path, String domain)
    {
       super(name, value);
       this.version = version;
@@ -140,9 +140,9 @@ public class CookieImpl extends ParameterImpl
     * @param otherCookie The other cookie to compare to.
     * @return True if the parameters are identical (name and value).
     */
-   public boolean equals(CookieImpl otherCookie)
+   public boolean equals(Cookie otherCookie)
    {
-      boolean result = super.equals((ParameterImpl)otherCookie);
+      boolean result = super.equals((Parameter)otherCookie);
 
       result &= (getVersion() == otherCookie.getVersion());
 

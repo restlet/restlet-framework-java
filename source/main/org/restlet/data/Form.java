@@ -25,8 +25,6 @@ package org.restlet.data;
 import java.util.List;
 import java.util.Map;
 
-import com.noelios.restlet.impl.ParameterImpl;
-
 /**
  * Representation of a Web form containing submitted parameters.
  */
@@ -37,7 +35,7 @@ public interface Form extends Data
     * Note that multiple parameters with the the same name may occur in any order in the list returned.
     * @return The modifiable list of parameters.
     */
-   public List<ParameterImpl> getParameters();
+   public List<Parameter> getParameters();
 
    /**
     * Adds a new parameter.
@@ -57,14 +55,14 @@ public interface Form extends Data
     * @param name The parameter name to match.
     * @return The list of parameters.
     */
-   public List<ParameterImpl> getParameters(String name);
+   public List<Parameter> getParameters(String name);
 
    /**
     * Gets the first parameter with the given name.
     * @param name The parameter name to match.
     * @return The parameter value.
     */
-   public ParameterImpl getFirstParameter(String name);
+   public Parameter getFirstParameter(String name);
 
    /**
     * Gets the parameters whose name is a key in the given map.<br/>

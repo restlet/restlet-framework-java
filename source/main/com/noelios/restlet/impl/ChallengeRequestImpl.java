@@ -26,6 +26,7 @@ import java.util.List;
 
 import org.restlet.data.ChallengeRequest;
 import org.restlet.data.ChallengeScheme;
+import org.restlet.data.Parameter;
 
 /**
  * Authentication challenge sent by an origin server to a client.
@@ -39,7 +40,7 @@ public class ChallengeRequestImpl implements ChallengeRequest
    protected String realm;
 
    /** The scheme parameters. */
-   protected List<ParameterImpl> parameters;
+   protected List<Parameter> parameters;
 
    /**
     * Constructor.
@@ -93,7 +94,7 @@ public class ChallengeRequestImpl implements ChallengeRequest
     * Returns the scheme parameters.
     * @return The scheme parameters.
     */
-   public List<ParameterImpl> getParameters()
+   public List<Parameter> getParameters()
    {
       return this.parameters;
    }
@@ -102,7 +103,7 @@ public class ChallengeRequestImpl implements ChallengeRequest
     * Sets the scheme parameters.
     * @param parameters The scheme parameters.
     */
-   public void setParameters(List<ParameterImpl> parameters)
+   public void setParameters(List<Parameter> parameters)
    {
       this.parameters = parameters;
    }

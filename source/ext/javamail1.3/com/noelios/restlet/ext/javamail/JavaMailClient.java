@@ -44,6 +44,7 @@ import org.restlet.RestletCall;
 import org.restlet.connector.AbstractClient;
 import org.restlet.connector.ClientCall;
 import org.restlet.data.Methods;
+import org.restlet.data.Parameter;
 import org.restlet.data.Protocol;
 import org.restlet.data.Protocols;
 import org.restlet.data.Representation;
@@ -53,7 +54,6 @@ import org.w3c.dom.Element;
 import org.w3c.dom.NodeList;
 
 import com.noelios.restlet.impl.FactoryImpl;
-import com.noelios.restlet.impl.ParameterImpl;
 
 /**
  * Client connector to a mail server.<br/>
@@ -277,8 +277,8 @@ public class JavaMailClient extends AbstractClient
             msg.setText(text);
             
             // Add the custom headers that may have been set by the user
-            ParameterImpl customHeader;
-            for(Iterator<ParameterImpl> iter = call.getConnectorCall().getRequestHeaders().iterator(); iter.hasNext();)
+            Parameter customHeader;
+            for(Iterator<Parameter> iter = call.getConnectorCall().getRequestHeaders().iterator(); iter.hasNext();)
             {
                customHeader = iter.next();
                msg.addHeader(customHeader.getName(), customHeader.getValue());

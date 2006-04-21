@@ -31,6 +31,7 @@ import java.util.Map;
 import org.restlet.data.EmptyValue;
 import org.restlet.data.Form;
 import org.restlet.data.MediaTypes;
+import org.restlet.data.Parameter;
 import org.restlet.data.Representation;
 
 import com.noelios.restlet.data.StringRepresentation;
@@ -42,14 +43,14 @@ import com.noelios.restlet.util.FormUtils;
 public class FormImpl implements Form
 {
    /** The list of parameters. */
-   protected List<ParameterImpl> parameters;
+   protected List<Parameter> parameters;
    
    /**
     * Default constructor.
     */
    public FormImpl()
    {
-      this.parameters = new ArrayList<ParameterImpl>();
+      this.parameters = new ArrayList<Parameter>();
    }
    
    /**
@@ -78,18 +79,18 @@ public class FormImpl implements Form
     * @param name The parameter name to match.
     * @return The parameter value or list of values.
     */
-   public List<ParameterImpl> getParameters(String name) 
+   public List<Parameter> getParameters(String name) 
    {
-      List<ParameterImpl> result = null;
+      List<Parameter> result = null;
       
-      ParameterImpl current;
-      for(Iterator<ParameterImpl> iter = getParameters().iterator(); (result == null) && iter.hasNext();)
+      Parameter current;
+      for(Iterator<Parameter> iter = getParameters().iterator(); (result == null) && iter.hasNext();)
       {
          current = iter.next();
          
          if(current.getName().equals(name))
          {
-            if(result == null) result = new ArrayList<ParameterImpl>();
+            if(result == null) result = new ArrayList<Parameter>();
             result.add(current);
          }
       }
@@ -102,11 +103,11 @@ public class FormImpl implements Form
     * @param name The parameter name to match.
     * @return The parameter value.
     */
-   public ParameterImpl getFirstParameter(String name) 
+   public Parameter getFirstParameter(String name) 
    {
-   	ParameterImpl result = null;
-   	ParameterImpl current;
-      for(Iterator<ParameterImpl> iter = getParameters().iterator(); (result == null) && iter.hasNext();)
+   	Parameter result = null;
+   	Parameter current;
+      for(Iterator<Parameter> iter = getParameters().iterator(); (result == null) && iter.hasNext();)
       {
          current = iter.next();
          
@@ -123,7 +124,7 @@ public class FormImpl implements Form
     * Returns the modifiable list of parameters.
     * @return The modifiable list of parameters.
     */
-   public List<ParameterImpl> getParameters()
+   public List<Parameter> getParameters()
    {
       return this.parameters;
    }
@@ -135,7 +136,7 @@ public class FormImpl implements Form
     */
    public void addParameter(String name, String value)
    {
-      getParameters().add(new ParameterImpl(name, value));
+      getParameters().add(new Parameter(name, value));
    }
 
    /**
@@ -144,8 +145,8 @@ public class FormImpl implements Form
     */
    public void removeParameters(String name)
    {
-   	ParameterImpl current;
-      for(Iterator<ParameterImpl> iter = getParameters().iterator(); iter.hasNext();)
+   	Parameter current;
+      for(Iterator<Parameter> iter = getParameters().iterator(); iter.hasNext();)
       {
          current = iter.next();
          
@@ -165,9 +166,9 @@ public class FormImpl implements Form
    @SuppressWarnings("unchecked")
    public void getParameters(Map<String, Object> params) 
    {
-   	ParameterImpl param;
+   	Parameter param;
       Object currentValue = null;
-      for(Iterator<ParameterImpl> iter = getParameters().iterator(); iter.hasNext();)
+      for(Iterator<Parameter> iter = getParameters().iterator(); iter.hasNext();)
       {
          param = iter.next();
          

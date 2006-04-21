@@ -26,6 +26,7 @@ import java.util.List;
 
 import org.restlet.data.MediaType;
 import org.restlet.data.MediaTypePref;
+import org.restlet.data.Parameter;
 
 /**
  * Media type preference.
@@ -57,7 +58,7 @@ public class MediaTypePrefImpl extends PreferenceImpl implements MediaTypePref
     * @param quality The quality/preference level.
     * @param parameters The list of parameters.
     */
-   public MediaTypePrefImpl(MediaType mediaType, float quality, List<ParameterImpl> parameters)
+   public MediaTypePrefImpl(MediaType mediaType, float quality, List<Parameter> parameters)
    {
       super(mediaType, quality, parameters);
    }

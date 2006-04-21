@@ -20,12 +20,12 @@
  * Portions Copyright [yyyy] [name of copyright owner]
  */
 
-package com.noelios.restlet.impl;
+package org.restlet.data;
 
 /**
  * Multi-usage parameter.
  */
-public class ParameterImpl
+public class Parameter
 {
    /** The name. */
    protected String name;
@@ -36,7 +36,7 @@ public class ParameterImpl
    /**
     * Default constructor.
     */
-   public ParameterImpl() 
+   public Parameter() 
    {
       this(null, null);
    }
@@ -46,7 +46,7 @@ public class ParameterImpl
     * @param name The name.
     * @param value The value.
     */
-   public ParameterImpl(String name, String value)
+   public Parameter(String name, String value)
    {
       this.name = name;
       this.value = value;
@@ -93,7 +93,7 @@ public class ParameterImpl
     * @param otherParam The other parameter to compare.
     * @return True if the parameters are identical (name and value).
     */
-   public boolean equals(ParameterImpl otherParam)
+   public boolean equals(Parameter otherParam)
    {
       boolean result = true;
 
@@ -133,7 +133,7 @@ public class ParameterImpl
     * @return A negative integer, zero, or a positive integer as this object is less than, equal to, or
     * greater than the specified object.
     */
-   public int compareTo(ParameterImpl o)
+   public int compareTo(Parameter o)
    {
       return getName().compareTo(o.getName());
    }
