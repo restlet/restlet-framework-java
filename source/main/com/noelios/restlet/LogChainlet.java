@@ -26,7 +26,7 @@ import java.util.logging.Level;
 import java.util.logging.Logger;
 
 import org.restlet.AbstractChainlet;
-import org.restlet.RestletCall;
+import org.restlet.Call;
 import org.restlet.component.Component;
 
 import com.noelios.restlet.util.StringTemplate;
@@ -78,7 +78,7 @@ public class LogChainlet extends AbstractChainlet
     * Handles a call to a resource or a set of resources.
     * @param call The call to handle.
     */
-   public void handle(RestletCall call)
+   public void handle(Call call)
    {
       long startTime = System.currentTimeMillis();
       super.handle(call);
@@ -101,7 +101,7 @@ public class LogChainlet extends AbstractChainlet
     * @param duration The call duration.
     * @return The formatted log entry.
     */
-   protected String formatDefault(RestletCall call, int duration)
+   protected String formatDefault(Call call, int duration)
    {
       StringBuilder sb = new StringBuilder();
 
@@ -177,7 +177,7 @@ public class LogChainlet extends AbstractChainlet
     * @param call The call to log.
     * @return The formatted log entry.
     */
-   protected String format(RestletCall call)
+   protected String format(Call call)
    {
       return this.logTemplate.process(new UniformCallModel(call, "-"));
    }

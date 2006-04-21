@@ -38,7 +38,7 @@ import org.restlet.Chainlet;
 import org.restlet.Factory;
 import org.restlet.Manager;
 import org.restlet.Maplet;
-import org.restlet.RestletCall;
+import org.restlet.Call;
 import org.restlet.Restlet;
 import org.restlet.component.Component;
 import org.restlet.connector.Client;
@@ -278,12 +278,12 @@ public class FactoryImpl implements Factory
    }
 
    /**
-    * Creates a delegate Restlet call.
-    * @return A delegate Restlet call.
+    * Creates a delegate call.
+    * @return A delegate call.
     */
-   public RestletCall createDelegateCall()
+   public Call createCall()
    {
-      return new RestletCallImpl();
+      return new CallImpl();
    }
 
    /**
@@ -292,7 +292,7 @@ public class FactoryImpl implements Factory
     * @param parent The parent component.
     * @return A new Chainlet.
     */
-   public Chainlet createDelegateChainlet(Component parent)
+   public Chainlet createChainlet(Component parent)
    {
       return new ChainletImpl(parent);
    }
@@ -303,7 +303,7 @@ public class FactoryImpl implements Factory
     * @param parent The parent component.
     * @return A new Maplet.
     */
-   public Maplet createDelegateMaplet(Component parent)
+   public Maplet createMaplet(Component parent)
    {
       return new MapletImpl(parent);
    }

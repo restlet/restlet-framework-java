@@ -24,7 +24,7 @@ package com.noelios.restlet.util;
 
 import java.util.List;
 
-import org.restlet.RestletCall;
+import org.restlet.Call;
 import org.restlet.data.Parameter;
 
 /**
@@ -79,7 +79,7 @@ public class UniformCallModel implements ReadableModel
    public static final String NAME_STATUS = "status";
 
    /** The wrapped call. */
-   protected RestletCall call;
+   protected Call call;
 
    /** The default value to return if a lookup fails or returns null. */
    protected String defaultValue;
@@ -89,7 +89,7 @@ public class UniformCallModel implements ReadableModel
     * @param call The wrapped uniform call.
     * @param defaultValue The default value to return if a lookup fails or returns null.
     */
-   public UniformCallModel(RestletCall call, String defaultValue)
+   public UniformCallModel(Call call, String defaultValue)
    {
       this.call = call;
       this.defaultValue = defaultValue;

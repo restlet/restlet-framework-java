@@ -26,7 +26,7 @@ import java.util.Map;
 import java.util.TreeMap;
 
 import org.restlet.AbstractRestlet;
-import org.restlet.RestletCall;
+import org.restlet.Call;
 import org.restlet.component.Component;
 import org.restlet.data.Encoding;
 import org.restlet.data.Encodings;
@@ -239,7 +239,7 @@ public class DirectoryRestlet extends AbstractRestlet
     * Handles an uniform call.
     * @param call The call to handle.
     */
-   public void handle(RestletCall call)
+   public void handle(Call call)
    {
       if(call.getMethod().equals(Methods.GET))
       {

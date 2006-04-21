@@ -46,7 +46,7 @@ public interface Restlet
     * Handles a uniform call.
     * @param call The uniform call to handle.
     */
-   public void handle(RestletCall call);
+   public void handle(Call call);
 
    /**
     * Indicates if the restlet is started.

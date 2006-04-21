@@ -28,7 +28,7 @@ import java.util.TreeMap;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
-import org.restlet.RestletCall;
+import org.restlet.Call;
 import org.restlet.data.Statuses;
 
 /**
@@ -109,7 +109,7 @@ public class RestletServer extends AbstractComponent
     * Handles a direct call.
     * @param call The call to handle.
     */
-   public void handle(RestletCall call)
+   public void handle(Call call)
    {
       if(getDefaultTarget() != null)
       {

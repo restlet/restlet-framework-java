@@ -89,7 +89,7 @@ public class DefaultMaplet extends AbstractRestlet implements Maplet
     * Default behavior to be overriden: delegation to one of the attached Restlets.
     * @param call The call to handle.
     */
-   public void handle(RestletCall call)
+   public void handle(Call call)
    {
       delegate.handle(call);
    }
@@ -100,7 +100,7 @@ public class DefaultMaplet extends AbstractRestlet implements Maplet
     * @param call The call to delegate.
     * @return True if the call was successfully delegated.
     */
-   public boolean delegate(RestletCall call)
+   public boolean delegate(Call call)
    {
       return delegate.delegate(call);
    }

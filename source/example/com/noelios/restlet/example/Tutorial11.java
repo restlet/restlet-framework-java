@@ -28,7 +28,7 @@ import org.restlet.AbstractRestlet;
 import org.restlet.DefaultMaplet;
 import org.restlet.Manager;
 import org.restlet.Maplet;
-import org.restlet.RestletCall;
+import org.restlet.Call;
 import org.restlet.Restlet;
 import org.restlet.component.RestletContainer;
 import org.restlet.connector.Server;
@@ -74,7 +74,7 @@ public class Tutorial11
          // Attach a guard Chainlet to secure access the the chained directory Restlet
          GuardChainlet guard = new GuardChainlet(myContainer, "com.noelios.restlet.example", true, ChallengeSchemes.HTTP_BASIC , "Restlet tutorial", true)
 	      	{
-		      	protected boolean authorize(RestletCall call)
+		      	protected boolean authorize(Call call)
 		         {
             		return "scott".equals(call.getSecurity().getLogin()) && 
      				 			 "tiger".equals(call.getSecurity().getPassword());
@@ -97,7 +97,7 @@ public class Tutorial11
          // Create the user Maplet
          Maplet userMaplet = new DefaultMaplet(myContainer)
             {
-               public void handle(RestletCall call)
+               public void handle(Call call)
                {
                   if(call.getResourcePath().equals(""))
                   {
@@ -117,7 +117,7 @@ public class Tutorial11
          // Create the orders Restlet
          Restlet ordersRestlet = new AbstractRestlet(myContainer)
             {
-               public void handle(RestletCall call)
+               public void handle(Call call)
                {
                   // Print the user name of the requested orders
                   List<String> segments = call.getContextRef().getSegments();

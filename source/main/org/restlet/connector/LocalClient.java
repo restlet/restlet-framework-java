@@ -22,7 +22,7 @@
 
 package org.restlet.connector;
 
-import org.restlet.RestletCall;
+import org.restlet.Call;
 import org.restlet.Restlet;
 
 /**
@@ -78,7 +78,7 @@ public class LocalClient extends AbstractClient
     * Handles a call.
     * @param call The call to handle.
     */
-   public void handle(RestletCall call)
+   public void handle(Call call)
    {
       getTarget().handle(call);
    }

@@ -27,7 +27,7 @@ import java.lang.reflect.InvocationTargetException;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
-import org.restlet.RestletCall;
+import org.restlet.Call;
 import org.restlet.Restlet;
 import org.restlet.component.Component;
 import org.restlet.data.Statuses;
@@ -113,7 +113,7 @@ public class RestletTarget
     * @param call The call to handle.
     * @param parent The parent component.
     */
-   public void handle(RestletCall call, Component parent)
+   public void handle(Call call, Component parent)
    {
       // Find and prepare the call restlet
       Restlet handler = null;

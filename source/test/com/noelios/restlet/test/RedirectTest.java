@@ -29,7 +29,7 @@ import junit.framework.TestCase;
 import org.restlet.AbstractRestlet;
 import org.restlet.DefaultCall;
 import org.restlet.Manager;
-import org.restlet.RestletCall;
+import org.restlet.Call;
 import org.restlet.Restlet;
 import org.restlet.component.RestletContainer;
 import org.restlet.data.MediaTypes;
@@ -67,7 +67,7 @@ public class RedirectTest extends TestCase
          // Create a new Restlet that will display some path information.
          Restlet trace = new AbstractRestlet(myContainer)
             {
-               public void handle(RestletCall call)
+               public void handle(Call call)
                {
                   // Print the requested URI path
                   String output = "Resource URI:  " + call.getResourceRef() + '\n' + 
@@ -115,7 +115,7 @@ public class RedirectTest extends TestCase
    {
       try
       {
-         RestletCall call = new DefaultCall();
+         Call call = new DefaultCall();
          call.setMethod(method);
          call.setResourceRef(uri);
          myContainer.callClient("Test client", call);

@@ -25,7 +25,7 @@ package org.restlet.component;
 import org.restlet.DefaultMaplet;
 import org.restlet.Maplet;
 import org.restlet.Restlet;
-import org.restlet.RestletCall;
+import org.restlet.Call;
 
 /**
  * Container for Maplets, Chainlets or Restlets.<br/>
@@ -108,7 +108,7 @@ public class RestletContainer extends AbstractComponent implements Maplet
     * Handles a call to a resource or a set of resources.
     * @param call The call to handle.
     */
-   public void handle(RestletCall call)
+   public void handle(Call call)
    {
       delegate.handle(call);
    }
@@ -119,7 +119,7 @@ public class RestletContainer extends AbstractComponent implements Maplet
     * @param call The call to delegate.
     * @return True if the call was successfully delegated.
     */
-   public boolean delegate(RestletCall call)
+   public boolean delegate(Call call)
    {
       return delegate.delegate(call);
    }

@@ -31,7 +31,7 @@ import java.util.logging.Level;
 import java.util.logging.Logger;
 
 import org.restlet.Resource;
-import org.restlet.RestletCall;
+import org.restlet.Call;
 import org.restlet.connector.ConnectorCall;
 import org.restlet.data.ConditionData;
 import org.restlet.data.Cookie;
@@ -56,10 +56,10 @@ import com.noelios.restlet.util.DateUtils;
 /**
  * Implementation of an uniform call.
  */
-public class RestletCallImpl implements RestletCall
+public class CallImpl implements Call
 {
    /** Obtain a suitable logger. */
-   private static Logger logger = Logger.getLogger("com.noelios.restlet.UniformCallImpl");
+   private static Logger logger = Logger.getLogger("com.noelios.restlet.impl.CallImpl");
 
    /** The client IP address. */
    protected String clientAddress;

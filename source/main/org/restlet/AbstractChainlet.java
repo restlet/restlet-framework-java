@@ -75,7 +75,7 @@ public abstract class AbstractChainlet extends AbstractRestlet implements Chainl
     * Default behavior to be overriden: delegation to one of the attached targets.
     * @param call The call to handle.
     */
-   public void handle(RestletCall call)
+   public void handle(Call call)
    {
       delegate.handle(call);
    }

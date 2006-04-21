@@ -22,7 +22,7 @@
 
 package org.restlet.connector;
 
-import org.restlet.RestletCall;
+import org.restlet.Call;
 import org.restlet.data.Representation;
 
 /**
@@ -50,7 +50,7 @@ public interface Client extends Connector
     * @param resourceUri The URI of the resource to get.
     * @return The returned uniform call.
     */
-   public RestletCall get(String resourceUri);
+   public Call get(String resourceUri);
    
    /**
     * Post a representation to the identified resource.
@@ -58,7 +58,7 @@ public interface Client extends Connector
     * @param input The input representation to post.
     * @return The returned uniform call.
     */
-   public RestletCall post(String resourceUri, Representation input);
+   public Call post(String resourceUri, Representation input);
 
    /**
     * Puts a representation in the identified resource.
@@ -66,12 +66,12 @@ public interface Client extends Connector
     * @param input The input representation to put.
     * @return The returned uniform call.
     */
-   public RestletCall put(String resourceUri, Representation input);
+   public Call put(String resourceUri, Representation input);
    
    /**
     * Deletes the identified resource.
     * @param resourceUri The URI of the resource to delete.
     * @return The returned uniform call.
     */
-   public RestletCall delete(String resourceUri);
+   public Call delete(String resourceUri);
 }

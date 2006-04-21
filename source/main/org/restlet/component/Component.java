@@ -27,7 +27,7 @@ import java.util.Map;
 
 import org.restlet.Element;
 import org.restlet.Restlet;
-import org.restlet.RestletCall;
+import org.restlet.Call;
 import org.restlet.connector.Client;
 import org.restlet.connector.Server;
 
@@ -78,5 +78,5 @@ public interface Component extends Element, Restlet
     * @param call The call to handle.
     * @throws IOException
     */
-   public void callClient(String name, RestletCall call) throws IOException;
+   public void callClient(String name, Call call) throws IOException;
 }

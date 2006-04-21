@@ -73,12 +73,12 @@ public class Manager
    }
 
    /**
-    * Creates a delegate Restlet call.
-    * @return A delegate Restlet call.
+    * Creates a delegate call.
+    * @return A delegate call.
     */
-   public static RestletCall createDelegateCall()
+   public static Call createDelegateCall()
    {
-      return getRegisteredFactory().createDelegateCall();
+      return getRegisteredFactory().createCall();
    }
 
    /**
@@ -89,7 +89,7 @@ public class Manager
     */
    public static Chainlet createDelegateChainlet(Component parent)
    {
-      return getRegisteredFactory().createDelegateChainlet(parent);
+      return getRegisteredFactory().createChainlet(parent);
    }
 
    /**
@@ -100,7 +100,7 @@ public class Manager
     */
    public static Maplet createDelegateMaplet(Component parent)
    {
-      return getRegisteredFactory().createDelegateMaplet(parent);
+      return getRegisteredFactory().createMaplet(parent);
    }
 
    /**

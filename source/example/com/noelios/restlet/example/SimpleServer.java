@@ -26,7 +26,7 @@ import java.util.List;
 
 import org.restlet.AbstractRestlet;
 import org.restlet.Manager;
-import org.restlet.RestletCall;
+import org.restlet.Call;
 import org.restlet.Restlet;
 import org.restlet.component.RestletContainer;
 import org.restlet.connector.Server;
@@ -59,7 +59,7 @@ public class SimpleServer
 
          Restlet testRestlet = new AbstractRestlet(myContainer)
          {
-            public void handle(RestletCall call)
+            public void handle(Call call)
             {
                System.out.println("Handling the call...");
 

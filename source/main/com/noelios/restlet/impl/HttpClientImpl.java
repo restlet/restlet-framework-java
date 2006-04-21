@@ -30,7 +30,7 @@ import java.util.List;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
-import org.restlet.RestletCall;
+import org.restlet.Call;
 import org.restlet.connector.AbstractClient;
 import org.restlet.connector.ClientCall;
 import org.restlet.connector.ConnectorCall;
@@ -122,7 +122,7 @@ public class HttpClientImpl extends AbstractClient
     * Handles a uniform call.
     * @param call The uniform call to handle.
     */
-   public void handle(RestletCall call)
+   public void handle(Call call)
    {
       try
       {
@@ -389,7 +389,7 @@ public class HttpClientImpl extends AbstractClient
     * @param call The call to analyze.
     * @return True if the call has any concrete input.
     */
-   private boolean hasInput(RestletCall call)
+   private boolean hasInput(Call call)
    {
       boolean result = true;
       

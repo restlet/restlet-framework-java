@@ -24,7 +24,7 @@ package com.noelios.restlet.example;
 
 import org.restlet.AbstractRestlet;
 import org.restlet.Manager;
-import org.restlet.RestletCall;
+import org.restlet.Call;
 import org.restlet.Restlet;
 import org.restlet.component.RestletContainer;
 import org.restlet.connector.Server;
@@ -53,7 +53,7 @@ public class Tutorial05
          // Create a new Restlet that will display some path information.
          Restlet myRestlet = new AbstractRestlet(myContainer)
             {
-               public void handle(RestletCall call)
+               public void handle(Call call)
                {
                   // Print the requested URI path
                   String output = "Resource URI:  " + call.getResourceRef() + '\n' +

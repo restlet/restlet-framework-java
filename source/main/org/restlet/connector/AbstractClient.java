@@ -23,7 +23,7 @@
 package org.restlet.connector;
 
 import org.restlet.DefaultCall;
-import org.restlet.RestletCall;
+import org.restlet.Call;
 import org.restlet.data.Methods;
 import org.restlet.data.Protocol;
 import org.restlet.data.Representation;
@@ -48,9 +48,9 @@ public abstract class AbstractClient extends AbstractConnector implements Client
     * @param resourceUri The URI of the resource to get.
     * @return The returned uniform call.
     */
-   public RestletCall get(String resourceUri)
+   public Call get(String resourceUri)
    {
-      RestletCall call = new DefaultCall();
+      Call call = new DefaultCall();
       call.setResourceRef(resourceUri);
       call.setMethod(Methods.GET);
       handle(call);
@@ -63,9 +63,9 @@ public abstract class AbstractClient extends AbstractConnector implements Client
     * @param input The input representation to post.
     * @return The returned uniform call.
     */
-   public RestletCall post(String resourceUri, Representation input)
+   public Call post(String resourceUri, Representation input)
    {
-      RestletCall call = new DefaultCall();
+      Call call = new DefaultCall();
       call.setResourceRef(resourceUri);
       call.setMethod(Methods.POST);
       call.setInput(input);
@@ -79,9 +79,9 @@ public abstract class AbstractClient extends AbstractConnector implements Client
     * @param input The input representation to put.
     * @return The returned uniform call.
     */
-   public RestletCall put(String resourceUri, Representation input)
+   public Call put(String resourceUri, Representation input)
    {
-      RestletCall call = new DefaultCall();
+      Call call = new DefaultCall();
       call.setResourceRef(resourceUri);
       call.setMethod(Methods.PUT);
       call.setInput(input);
@@ -94,9 +94,9 @@ public abstract class AbstractClient extends AbstractConnector implements Client
     * @param resourceUri The URI of the resource to delete.
     * @return The returned uniform call.
     */
-   public RestletCall delete(String resourceUri)
+   public Call delete(String resourceUri)
    {
-      RestletCall call = new DefaultCall();
+      Call call = new DefaultCall();
       call.setResourceRef(resourceUri);
       call.setMethod(Methods.DELETE);
       handle(call);

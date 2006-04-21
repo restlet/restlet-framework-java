@@ -27,7 +27,7 @@ import java.util.logging.Level;
 import java.util.logging.Logger;
 
 import org.restlet.AbstractChainlet;
-import org.restlet.RestletCall;
+import org.restlet.Call;
 import org.restlet.component.Component;
 import org.restlet.data.ChallengeResponse;
 import org.restlet.data.ChallengeScheme;
@@ -93,7 +93,7 @@ public abstract class GuardChainlet extends AbstractChainlet
     * Handles a call to a resource or a set of resources.
     * @param call The call to handle.
     */
-   public void handle(RestletCall call)
+   public void handle(Call call)
    {
    	if(this.authentication)
    	{
@@ -121,7 +121,7 @@ public abstract class GuardChainlet extends AbstractChainlet
     * in the constructor to silently skip this step. 
     * @param call The call to authenticate.
     */
-   public void authenticate(RestletCall call)
+   public void authenticate(Call call)
    {
       SecurityData security = call.getSecurity();
       ChallengeResponse resp = security.getChallengeResponse();
@@ -183,7 +183,7 @@ public abstract class GuardChainlet extends AbstractChainlet
     * @param call The current call.
     * @return True if the given credentials authorize access to the attached Restlet.
     */
-   protected boolean authorize(RestletCall call)
+   protected boolean authorize(Call call)
    {
       return false;
    }
@@ -193,7 +193,7 @@ public abstract class GuardChainlet extends AbstractChainlet
     * By default, invokes the attached Restlet.
     * @param call The current call.
     */
-   protected void accept(RestletCall call)
+   protected void accept(Call call)
    {
    	// Invoke the chained Restlet
       super.handle(call);
@@ -206,7 +206,7 @@ public abstract class GuardChainlet extends AbstractChainlet
     * call status is set to CLIENT_ERROR_FORBIDDEN.
     * @param call The current call.
     */
-   protected void reject(RestletCall call)
+   protected void reject(Call call)
    {
       if(this.authentication)
       {
@@ -224,7 +224,7 @@ public abstract class GuardChainlet extends AbstractChainlet
     * challenging mechanism, such as displaying a login page.
     * @param call The current call.
     */
-   protected void challenge(RestletCall call)
+   protected void challenge(Call call)
    {
 		if(this.scheme.equals(ChallengeSchemes.HTTP_BASIC))
 		{

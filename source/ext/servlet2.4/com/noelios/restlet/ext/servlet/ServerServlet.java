@@ -29,7 +29,7 @@ import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
-import org.restlet.RestletCall;
+import org.restlet.Call;
 import org.restlet.Restlet;
 import org.restlet.component.Component;
 import org.restlet.connector.Server;
@@ -329,7 +329,7 @@ public class ServerServlet extends HttpServlet implements Server
     */
    public void handle(ServerCall call) throws IOException
    {
-      RestletCall uniformCall = call.toUniform();
+      Call uniformCall = call.toUniform();
       handle(uniformCall);
       call.setResponse(uniformCall);
       call.sendResponseHeaders();
@@ -341,7 +341,7 @@ public class ServerServlet extends HttpServlet implements Server
     * The default behavior is to invoke the target Restlet. 
     * @param call The call to handle.
     */
-   public void handle(RestletCall call)
+   public void handle(Call call)
    {
    	if(getTarget() != null)
    	{

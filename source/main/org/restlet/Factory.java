@@ -35,6 +35,20 @@ import org.restlet.data.*;
 public interface Factory
 {
    /**
+    * Creates a call.
+    * @return A call.
+    */
+   public Call createCall();
+
+   /**
+    * Creates a Chainlet for internal usage by the AbstractChainlet.<br/>
+    * If you need a Chainlet for your application, you should be subclassing the AbstractChainlet instead. 
+    * @param parent The parent component.
+    * @return A new Chainlet.
+    */
+   public Chainlet createChainlet(Component parent);
+
+   /**
     * Creates a challenge response for a specific scheme using a user ID and a password as the credentials.<br/>
     * @param scheme The challenge scheme to use.
     * @param userId The user identifier to use.
@@ -44,7 +58,7 @@ public interface Factory
    public ChallengeResponse createChallengeResponse(ChallengeScheme scheme, String userId, String password);
 
    /**
-    * Create a new client connector for a given protocol.
+    * Create a client connector for a given protocol.
     * @param protocol The connector protocol.
     * @param name The unique connector name.
     * @return The new client connector.
@@ -52,33 +66,19 @@ public interface Factory
    public Client createClient(Protocol protocol, String name);
 
    /**
-    * Creates a delegate Restlet call.
-    * @return A delegate Restlet call.
-    */
-   public RestletCall createDelegateCall();
-
-   /**
-    * Creates a delegate Chainlet for internal usage by the AbstractChainlet.<br/>
-    * If you need a Chainlet for your application, you should be subclassing the AbstractChainlet instead. 
-    * @param parent The parent component.
-    * @return A new Chainlet.
-    */
-   public Chainlet createDelegateChainlet(Component parent);
-
-   /**
-    * Creates a delegate Maplet for internal usage by the DefaultMaplet.<br/>
-    * If you need a Maplet for your application, you should be using the DefaultMaplet instead. 
-    * @param parent The parent component.
-    * @return A new Maplet.
-    */
-   public Maplet createDelegateMaplet(Component parent);
-
-   /**
-    * Creates an empty form.
+    * Creates a form.
     * @param query Query string to parse or null for an empty form.
     * @return A new form.
     */
    public Form createForm(String query) throws IOException;
+
+   /**
+    * Creates a Maplet for internal usage by the DefaultMaplet.<br/>
+    * If you need a Maplet for your application, you should be using the DefaultMaplet instead. 
+    * @param parent The parent component.
+    * @return A new Maplet.
+    */
+   public Maplet createMaplet(Component parent);
 
    /**
     * Create a new server connector for a given protocol.

@@ -23,7 +23,7 @@
 package com.noelios.restlet.example;
 
 import org.restlet.Manager;
-import org.restlet.RestletCall;
+import org.restlet.Call;
 import org.restlet.component.RestletContainer;
 import org.restlet.connector.Server;
 import org.restlet.data.ChallengeSchemes;
@@ -63,7 +63,7 @@ public class Tutorial09a
          // Attach a guard Chainlet to the container
          GuardChainlet guard = new GuardChainlet(myContainer, "com.noelios.restlet.example", true, ChallengeSchemes.HTTP_BASIC , "Restlet tutorial", true)
          	{
-            	protected boolean authorize(RestletCall call)
+            	protected boolean authorize(Call call)
                {
             		return "scott".equals(call.getSecurity().getLogin()) && 
             				 "tiger".equals(call.getSecurity().getPassword());

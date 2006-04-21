@@ -68,6 +68,6 @@ public interface Maplet extends Restlet
     * @param call The call to delegate.
     * @return True if the call was successfully delegated.
     */
-   public boolean delegate(RestletCall call);
+   public boolean delegate(Call call);
 
 }

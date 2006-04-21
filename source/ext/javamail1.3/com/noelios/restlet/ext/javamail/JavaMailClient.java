@@ -40,7 +40,7 @@ import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
 
 import org.restlet.DefaultCall;
-import org.restlet.RestletCall;
+import org.restlet.Call;
 import org.restlet.connector.AbstractClient;
 import org.restlet.connector.ClientCall;
 import org.restlet.data.Methods;
@@ -61,7 +61,7 @@ import com.noelios.restlet.impl.FactoryImpl;
  * To send an email, specify a SMTP URI as the ressource reference of the call and use an XML
  * email as the content of the call.<br/>
  * An SMTP URI has the following syntax: smtp://host[:port]<br/>
- * The default port used is 25 for SMTP and 465 for SMTPS. Use the RestletCall.getSecurity().setLogin() and setPassword()
+ * The default port used is 25 for SMTP and 465 for SMTPS. Use the Call.getSecurity().setLogin() and setPassword()
  * methods for authentication.<br/>
  * <br/>
  * Sample XML email:<br/>
@@ -119,9 +119,9 @@ public class JavaMailClient extends AbstractClient
     * @param login Authenticate using this login name.
     * @param password Authenticate using this password.
     */
-   public static RestletCall create(String smtpURI, Representation email, String login, String password)
+   public static Call create(String smtpURI, Representation email, String login, String password)
    {
-   	RestletCall call = create(smtpURI, email);
+   	Call call = create(smtpURI, email);
    	call.getSecurity().setLogin(login);
    	call.getSecurity().setPassword(password);
    	return call;
@@ -132,9 +132,9 @@ public class JavaMailClient extends AbstractClient
     * @param smtpURI The SMTP server's URI (ex: smtp://localhost).
     * @param email The email to send (valid XML email).
     */
-   public static RestletCall create(String smtpURI, Representation email)
+   public static Call create(String smtpURI, Representation email)
    {
-   	RestletCall result = new DefaultCall();
+   	Call result = new DefaultCall();
       result.setClientName(FactoryImpl.VERSION_HEADER);
       result.setMethod(Methods.POST);
       result.setResourceRef(smtpURI);
@@ -146,7 +146,7 @@ public class JavaMailClient extends AbstractClient
     * Handles a REST call.
     * @param call The call to handle.
     */
-   public void handle(RestletCall call)
+   public void handle(Call call)
    {
       try
       {

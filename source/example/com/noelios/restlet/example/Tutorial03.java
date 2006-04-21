@@ -24,7 +24,7 @@ package com.noelios.restlet.example;
 
 import org.restlet.AbstractRestlet;
 import org.restlet.Manager;
-import org.restlet.RestletCall;
+import org.restlet.Call;
 import org.restlet.Restlet;
 import org.restlet.data.MediaTypes;
 import org.restlet.data.Protocols;
@@ -43,7 +43,7 @@ public class Tutorial03
          // Creating a minimal Restlet returning "Hello World"
          Restlet handler = new AbstractRestlet()
          {
-            public void handle(RestletCall call)
+            public void handle(Call call)
             {
                call.setOutput(new StringRepresentation("Hello World!", MediaTypes.TEXT_PLAIN));
             }

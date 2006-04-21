@@ -24,7 +24,7 @@ package org.restlet.connector;
 
 import java.io.IOException;
 
-import org.restlet.RestletCall;
+import org.restlet.Call;
 import org.restlet.Restlet;
 import org.restlet.data.Protocol;
 
@@ -72,7 +72,7 @@ public abstract class AbstractServer extends AbstractConnector implements Server
     * The default behavior is to ask the attached Restlet to handle the call.
     * @param call The uniform call to handle.
     */
-   public void handle(RestletCall call)
+   public void handle(Call call)
    {
       getTarget().handle(call);
    }
@@ -84,7 +84,7 @@ public abstract class AbstractServer extends AbstractConnector implements Server
     */
    public void handle(ServerCall call) throws IOException
    {
-      RestletCall uniformCall = call.toUniform();
+      Call uniformCall = call.toUniform();
       handle(uniformCall);
       call.setResponse(uniformCall);
       call.sendResponseHeaders();

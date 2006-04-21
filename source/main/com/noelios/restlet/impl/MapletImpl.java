@@ -29,7 +29,7 @@ import java.util.regex.Matcher;
 
 import org.restlet.AbstractRestlet;
 import org.restlet.Maplet;
-import org.restlet.RestletCall;
+import org.restlet.Call;
 import org.restlet.Restlet;
 import org.restlet.component.Component;
 import org.restlet.data.Statuses;
@@ -125,7 +125,7 @@ public class MapletImpl extends AbstractRestlet implements Maplet
     * Default behavior to be overriden: delegation to attached handlers.
     * @param call The call to handle.
     */
-   public void handle(RestletCall call)
+   public void handle(Call call)
    {
       delegate(call);
    }
@@ -136,7 +136,7 @@ public class MapletImpl extends AbstractRestlet implements Maplet
     * @param call The call to delegate.
     * @return True if the call was successfully delegated.
     */
-   public boolean delegate(RestletCall call)
+   public boolean delegate(Call call)
    {
       RestletMapping mapping = null;
       Matcher matcher = null;

@@ -29,7 +29,7 @@ import java.util.TreeMap;
 
 import org.restlet.AbstractRestlet;
 import org.restlet.Restlet;
-import org.restlet.RestletCall;
+import org.restlet.Call;
 import org.restlet.connector.Client;
 import org.restlet.connector.Server;
 
@@ -126,7 +126,7 @@ public abstract class AbstractComponent extends AbstractRestlet implements Compo
     * @param name The name of the client connector.
     * @param call The call to handle.
     */
-   public void callClient(String name, RestletCall call) throws IOException
+   public void callClient(String name, Call call) throws IOException
    {
       Restlet connector = (Restlet)this.clients.get(name);
 

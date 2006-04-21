@@ -31,7 +31,7 @@ import org.restlet.data.*;
  * Represents a uniform call handled by a Restlet.
  * @see org.restlet.Restlet
  */
-public interface RestletCall
+public interface Call
 {
    /**
     * Returns the best variant representation for a given resource according the the client preferences.

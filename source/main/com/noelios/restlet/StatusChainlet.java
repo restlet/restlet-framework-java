@@ -26,7 +26,7 @@ import java.util.logging.Level;
 import java.util.logging.Logger;
 
 import org.restlet.AbstractChainlet;
-import org.restlet.RestletCall;
+import org.restlet.Call;
 import org.restlet.component.Component;
 import org.restlet.data.MediaTypes;
 import org.restlet.data.Representation;
@@ -78,7 +78,7 @@ public class StatusChainlet extends AbstractChainlet
     * Handles a call to a resource or a set of resources.
     * @param call The call to handle.
     */
-   public void handle(RestletCall call)
+   public void handle(Call call)
    {
       // Normally handle the call
       try
@@ -113,7 +113,7 @@ public class StatusChainlet extends AbstractChainlet
     * @param call The related call that was handled.
     * @return The representation of the given status.
     */
-   public Representation getRepresentation(Status status, RestletCall call)
+   public Representation getRepresentation(Status status, Call call)
    {
       StringBuilder sb = new StringBuilder();
       sb.append("<html>\n");

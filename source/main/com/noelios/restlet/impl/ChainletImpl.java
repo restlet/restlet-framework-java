@@ -24,7 +24,7 @@ package com.noelios.restlet.impl;
 
 import org.restlet.AbstractRestlet;
 import org.restlet.Chainlet;
-import org.restlet.RestletCall;
+import org.restlet.Call;
 import org.restlet.Restlet;
 import org.restlet.component.Component;
 import org.restlet.data.Statuses;
@@ -81,7 +81,7 @@ public class ChainletImpl extends AbstractRestlet implements Chainlet
     * Default behavior to be overriden: delegation to the attached target.
     * @param call The call to handle.
     */
-   public void handle(RestletCall call)
+   public void handle(Call call)
    {
       if(this.target != null)
       {
