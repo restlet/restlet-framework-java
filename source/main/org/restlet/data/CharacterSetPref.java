@@ -22,14 +22,49 @@
 
 package org.restlet.data;
 
+import java.util.List;
+
 /**
  * Character set preference.
  */
-public interface CharacterSetPref extends Preference
+public class CharacterSetPref extends Preference
 {
+   /**
+    * Constructor.
+    * @param characterSet The associated character set.
+    */
+   public CharacterSetPref(CharacterSet characterSet)
+   {
+      super(characterSet, 1F, null);
+   }
+
+   /**
+    * Constructor.
+    * @param characterSet The associated character set.
+    * @param quality The quality/preference level.
+    */
+   public CharacterSetPref(CharacterSet characterSet, float quality)
+   {
+      super(characterSet, quality, null);
+   }
+
+   /**
+    * Constructor.
+    * @param characterSet The associated character set.
+    * @param quality The quality/preference level.
+    * @param parameters The list of parameters.
+    */
+   public CharacterSetPref(CharacterSet characterSet, float quality, List<Parameter> parameters)
+   {
+      super(characterSet, quality, parameters);
+   }
+
    /**
     * Returns the character set associated with this preference.
     * @return The character set associated with this preference.
     */
-   public CharacterSet getCharacterSet();
+   public CharacterSet getCharacterSet()
+   {
+      return (CharacterSet)getMetadata();
+   }
 }

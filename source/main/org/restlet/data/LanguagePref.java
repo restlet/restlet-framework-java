@@ -22,14 +22,49 @@
 
 package org.restlet.data;
 
+import java.util.List;
+
 /**
  * Language preference.
  */
-public interface LanguagePref extends Preference
+public class LanguagePref extends Preference
 {
+   /**
+    * Constructor.
+    * @param language The associated language.
+    */
+   public LanguagePref(Language language)
+   {
+      super(language, 1F, null);
+   }
+
+   /**
+    * Constructor.
+    * @param language The associated language.
+    * @param quality The quality/preference level.
+    */
+   public LanguagePref(Language language, float quality)
+   {
+      super(language, quality, null);
+   }
+
+   /**
+    * Constructor.
+    * @param language The associated language.
+    * @param quality The quality/preference level.
+    * @param parameters The list of parameters.
+    */
+   public LanguagePref(Language language, float quality, List<Parameter> parameters)
+   {
+      super(language, quality, parameters);
+   }
+
    /**
     * Returns the language associated with this preference.
     * @return The language associated with this preference.
     */
-   public Language getLanguage();
+   public Language getLanguage()
+   {
+      return (Language)getMetadata();
+   }
 }

@@ -382,7 +382,7 @@ public class HttpServerRestletCall extends RestletCallImpl
             // http://www.w3.org/Protocols/rfc2616/rfc2616-sec14.html#sec14.2
             if(acceptCharset.length() == 0)
             {
-               this.preference.getCharacterSets().add(new CharacterSetPrefImpl(CharacterSets.ISO_8859_1));
+               this.preference.getCharacterSets().add(new CharacterSetPref(CharacterSets.ISO_8859_1));
             }
             else
             {
@@ -404,7 +404,7 @@ public class HttpServerRestletCall extends RestletCallImpl
          }
          else
          {
-            this.preference.getCharacterSets().add(new CharacterSetPrefImpl(CharacterSets.ALL));
+            this.preference.getCharacterSets().add(new CharacterSetPref(CharacterSets.ALL));
          }
 
          if(acceptEncoding != null)
@@ -426,7 +426,7 @@ public class HttpServerRestletCall extends RestletCallImpl
          }
          else
          {
-            this.preference.getEncodings().add(new EncodingPrefImpl(Encodings.ALL));
+            this.preference.getEncodings().add(new EncodingPref(Encodings.ALL));
          }
 
          if(acceptLanguage != null)
@@ -448,7 +448,7 @@ public class HttpServerRestletCall extends RestletCallImpl
          }
          else
          {
-            this.preference.getLanguages().add(new LanguagePrefImpl(Languages.ALL));
+            this.preference.getLanguages().add(new LanguagePref(Languages.ALL));
          }
 
          if(acceptMediaType != null)
@@ -470,7 +470,7 @@ public class HttpServerRestletCall extends RestletCallImpl
          }
          else
          {
-            this.preference.getMediaTypes().add(new MediaTypePrefImpl(MediaTypes.ALL));
+            this.preference.getMediaTypes().add(new MediaTypePref(MediaTypes.ALL));
          }
       }
       

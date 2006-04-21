@@ -22,14 +22,49 @@
 
 package org.restlet.data;
 
+import java.util.List;
+
 /**
  * Encoding preference.
  */
-public interface EncodingPref extends Preference
+public class EncodingPref extends Preference
 {
+   /**
+    * Constructor.
+    * @param encoding The associated encoding.
+    */
+   public EncodingPref(Encoding encoding)
+   {
+      super(encoding, 1F, null);
+   }
+
+   /**
+    * Constructor.
+    * @param encoding The associated encoding.
+    * @param quality The quality/preference level.
+    */
+   public EncodingPref(Encoding encoding, float quality)
+   {
+      super(encoding, quality, null);
+   }
+
+   /**
+    * Constructor.
+    * @param encoding The associated encoding.
+    * @param quality The quality/preference level.
+    * @param parameters The list of parameters.
+    */
+   public EncodingPref(Encoding encoding, float quality, List<Parameter> parameters)
+   {
+      super(encoding, quality, parameters);
+   }
+
    /**
     * Returns the encoding associated with this preference.
     * @return The encoding associated with this preference.
     */
-   public Encoding getEncoding();
+   public Encoding getEncoding()
+   {
+      return (Encoding)getMetadata();
+   }
 }

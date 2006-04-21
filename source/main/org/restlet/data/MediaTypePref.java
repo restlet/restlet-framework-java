@@ -22,14 +22,49 @@
 
 package org.restlet.data;
 
+import java.util.List;
+
 /**
  * Media type preference.
  */
-public interface MediaTypePref extends Preference
+public class MediaTypePref extends Preference
 {
+   /**
+    * Constructor.
+    * @param mediaType The associated media type.
+    */
+   public MediaTypePref(MediaType mediaType)
+   {
+      super(mediaType, 1F, null);
+   }
+
+   /**
+    * Constructor.
+    * @param mediaType The associated media type.
+    * @param quality The quality/preference level.
+    */
+   public MediaTypePref(MediaType mediaType, float quality)
+   {
+      super(mediaType, quality, null);
+   }
+
+   /**
+    * Constructor.
+    * @param mediaType The associated media type.
+    * @param quality The quality/preference level.
+    * @param parameters The list of parameters.
+    */
+   public MediaTypePref(MediaType mediaType, float quality, List<Parameter> parameters)
+   {
+      super(mediaType, quality, parameters);
+   }
+
    /**
     * Returns the media type associated with this preference.
     * @return The media type associated with this preference.
     */
-   public MediaType getMediaType();
+   public MediaType getMediaType()
+   {
+      return (MediaType)getMetadata();
+   }
 }
