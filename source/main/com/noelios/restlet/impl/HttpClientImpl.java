@@ -319,7 +319,7 @@ public class HttpClientImpl extends AbstractClient
             }
             else if(header.getName().equalsIgnoreCase(ConnectorCall.HEADER_ETAG))
             {
-               tag = Manager.createTag(header.getValue());
+               tag = new Tag(header.getValue());
             }
             else if(header.getName().equalsIgnoreCase(ConnectorCall.HEADER_LOCATION))
             {

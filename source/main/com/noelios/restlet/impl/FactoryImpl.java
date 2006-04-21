@@ -421,14 +421,4 @@ public class FactoryImpl implements Factory
       return new StatusImpl(code);
    }
 
-   /**
-    * Creates a new tag.
-    * @param name The tag name.
-    * @return The new tag.
-    */
-   public Tag createTag(String name)
-   {
-      return (name == null) ? null : new TagImpl(name);
-   }
-
 }

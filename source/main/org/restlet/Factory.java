@@ -138,11 +138,4 @@ public interface Factory
     * @return The new status.
     */
    public Status createStatus(int code);
-
-   /**
-    * Creates a new tag.
-    * @param name The tag name.
-    * @return The new tag.
-    */
-   public Tag createTag(String name);
 }

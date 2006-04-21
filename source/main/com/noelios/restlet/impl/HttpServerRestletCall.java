@@ -224,7 +224,7 @@ public class HttpServerRestletCall extends RestletCallImpl
                String[] tags = ifMatchHeader.split(",");
                for (int i = 0; i < tags.length; i++)
                {
-                  current = new TagImpl(tags[i]);
+                  current = new Tag(tags[i]);
                
                   // Is it the first tag?
                   if(match == null) 
@@ -252,7 +252,7 @@ public class HttpServerRestletCall extends RestletCallImpl
                String[] tags = ifNoneMatchHeader.split(",");
                for (int i = 0; i < tags.length; i++)
                {
-                  current = new TagImpl(tags[i]);
+                  current = new Tag(tags[i]);
                   
                   // Is it the first tag?
                   if(noneMatch == null) 

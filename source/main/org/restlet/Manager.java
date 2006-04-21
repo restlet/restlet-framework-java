@@ -197,16 +197,6 @@ public class Manager
    }
 
    /**
-    * Creates a new tag.
-    * @param name The tag name.
-    * @return The new tag.
-    */
-   public static Tag createTag(String name)
-   {
-      return getRegisteredFactory().createTag(name);
-   }
-
-   /**
     * Returns the registered factory.
     * @return The registered factory.
     */
