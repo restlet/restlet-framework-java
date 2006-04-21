@@ -25,7 +25,7 @@ package org.restlet.data;
 /**
  * Multi-usage parameter.
  */
-public class Parameter
+public class Parameter implements Data, Comparable<Parameter>
 {
    /** The name. */
    protected String name;
