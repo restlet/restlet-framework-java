@@ -20,14 +20,13 @@
  * Portions Copyright [yyyy] [name of copyright owner]
  */
 
-package com.noelios.restlet.impl;
+package org.restlet.data;
 
-import org.restlet.data.Method;
 
 /**
  * Method to execute when handling a call.
  */
-public class MethodImpl implements Method
+public class DefaultMethod implements Method
 {
    /** The technical name of the method. */
    private String name;
@@ -42,7 +41,7 @@ public class MethodImpl implements Method
     * Constructor.
     * @param name The technical name of the method.
     */
-   public MethodImpl(String name)
+   public DefaultMethod(String name)
    {
       this(name, null, null);
    }
@@ -53,7 +52,7 @@ public class MethodImpl implements Method
     * @param description The description of this REST element.
     * @param uri The URI of the specification describing the method.
     */
-   public MethodImpl(String name, String description, String uri)
+   public DefaultMethod(String name, String description, String uri)
    {
       this.name = name;
       this.description = description;

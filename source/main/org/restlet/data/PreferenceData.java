@@ -22,34 +22,93 @@
 
 package org.restlet.data;
 
+import java.util.ArrayList;
 import java.util.List;
 
 /**
  * Client preference data related to a call.
  */
-public interface PreferenceData extends ControlData
+public class PreferenceData implements ControlData
 {
+   /** The character set preferences. */
+   protected List<CharacterSetPref> characterSets;
+
+   /** The encoding preferences. */
+   protected List<EncodingPref> encodings;
+
+   /** The language preferences. */
+   protected List<LanguagePref> languages;
+
+   /** The media preferences. */
+   protected List<MediaTypePref> mediaTypes;
+
+   /**
+    * Constructor.
+    */
+   public PreferenceData()
+   {
+      this.characterSets = null;
+      this.encodings = null;
+      this.languages = null;
+      this.mediaTypes = null;
+   }
+
    /**
     * Returns the character set preferences.
     * @return The character set preferences.
     */
-   public List<CharacterSetPref> getCharacterSets();
+   public List<CharacterSetPref> getCharacterSets()
+   {
+      if(this.characterSets == null) this.characterSets = new ArrayList<CharacterSetPref>();
+      return this.characterSets;
+   }
 
    /**
     * Returns the encoding preferences.
     * @return The encoding preferences.
     */
-   public List<EncodingPref> getEncodings();
+   public List<EncodingPref> getEncodings()
+   {
+      if(this.encodings == null) this.encodings = new ArrayList<EncodingPref>();
+      return this.encodings;      
+   }
 
    /**
     * Returns the language preferences.
     * @return The language preferences.
     */
-   public List<LanguagePref> getLanguages();
+   public List<LanguagePref> getLanguages()
+   {
+      if(this.languages == null) this.languages = new ArrayList<LanguagePref>();
+      return this.languages;
+   }
 
    /**
     * Returns the media type preferences.
     * @return The media type preferences.
     */
-   public List<MediaTypePref> getMediaTypes();
+   public List<MediaTypePref> getMediaTypes()
+   {
+      if(this.mediaTypes == null) this.mediaTypes = new ArrayList<MediaTypePref>();
+      return this.mediaTypes;
+   }
+
+   /**
+    * Returns the name of this REST element.
+    * @return The name of this REST element.
+    */
+   public String getName()
+   {
+      return "Preference data";
+   }
+
+   /**
+    * Returns the description of this REST element.
+    * @return The description of this REST element.
+    */
+   public String getDescription()
+   {
+      return "Client preference data related to a call";
+   }
+
 }

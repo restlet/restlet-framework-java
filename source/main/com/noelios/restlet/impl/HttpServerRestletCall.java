@@ -31,13 +31,15 @@ import java.util.List;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
-import org.restlet.Manager;
 import org.restlet.connector.ConnectorCall;
 import org.restlet.connector.ServerCall;
 import org.restlet.data.CharacterSetPref;
 import org.restlet.data.CharacterSets;
 import org.restlet.data.ConditionData;
 import org.restlet.data.Cookie;
+import org.restlet.data.DefaultEncoding;
+import org.restlet.data.DefaultLanguage;
+import org.restlet.data.DefaultMediaType;
 import org.restlet.data.Encoding;
 import org.restlet.data.EncodingPref;
 import org.restlet.data.Encodings;
@@ -47,6 +49,7 @@ import org.restlet.data.Languages;
 import org.restlet.data.MediaType;
 import org.restlet.data.MediaTypePref;
 import org.restlet.data.MediaTypes;
+import org.restlet.data.DefaultMethod;
 import org.restlet.data.Methods;
 import org.restlet.data.Parameter;
 import org.restlet.data.PreferenceData;
@@ -101,7 +104,7 @@ public class HttpServerRestletCall extends RestletCallImpl
          else if(method.equals(Methods.PROPPATCH.getName())) setMethod(Methods.PROPPATCH);
          else if(method.equals(Methods.TRACE.getName())) setMethod(Methods.TRACE);
          else if(method.equals(Methods.UNLOCK.getName())) setMethod(Methods.UNLOCK);
-         else setMethod(new MethodImpl(method));
+         else setMethod(new DefaultMethod(method));
       }
 
       // Set the resource reference
@@ -328,15 +331,15 @@ public class HttpServerRestletCall extends RestletCallImpl
          {
             if(header.getName().equalsIgnoreCase(ConnectorCall.HEADER_CONTENT_ENCODING))
             {
-               contentEncoding = Manager.createEncoding(header.getValue());
+               contentEncoding = new DefaultEncoding(header.getValue());
             }
             else if(header.getName().equalsIgnoreCase(ConnectorCall.HEADER_CONTENT_LANGUAGE))
             {
-               contentLanguage = Manager.createLanguage(header.getValue());
+               contentLanguage = new DefaultLanguage(header.getValue());
             }
             else if(header.getName().equalsIgnoreCase(ConnectorCall.HEADER_CONTENT_TYPE))
             {
-               contentType = Manager.createMediaType(header.getValue());
+               contentType = new DefaultMediaType(header.getValue());
             }
             else if(header.getName().equalsIgnoreCase(ConnectorCall.HEADER_CONTENT_LENGTH))
             {
@@ -368,7 +371,7 @@ public class HttpServerRestletCall extends RestletCallImpl
    {
       if(this.preference == null) 
       {
-         this.preference = new PreferenceDataImpl();
+         this.preference = new PreferenceData();
 
          // Extract the header values
          String acceptCharset = getConnectorCall().getRequestHeaderValue(ConnectorCall.HEADER_ACCEPT_CHARSET);
@@ -503,7 +506,7 @@ public class HttpServerRestletCall extends RestletCallImpl
    {
       if(this.security == null) 
       {
-         this.security = new SecurityDataImpl();
+         this.security = new SecurityData();
 
          if(getConnectorCall().isConfidential()) 
          {

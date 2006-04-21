@@ -20,20 +20,19 @@
  * Portions Copyright [yyyy] [name of copyright owner]
  */
 
-package com.noelios.restlet.impl;
+package org.restlet.data;
 
-import org.restlet.data.Language;
 
 /**
  * Language used in representations and preferences.
  */
-public class LanguageImpl extends MetadataImpl implements Language
+public class DefaultLanguage extends DefaultMetadata implements Language
 {
    /**
     * Constructor.
     * @param name The language name;
     */
-   public LanguageImpl(String name)
+   public DefaultLanguage(String name)
    {
       super(name.toLowerCase());
    }

@@ -20,20 +20,19 @@
  * Portions Copyright [yyyy] [name of copyright owner]
  */
 
-package com.noelios.restlet.impl;
+package org.restlet.data;
 
-import org.restlet.data.CharacterSet;
 
 /**
  * Character set used to encode characters in textual representations.
  */
-public class CharacterSetImpl extends MetadataImpl implements CharacterSet
+public class DefaultCharacterSet extends DefaultMetadata implements CharacterSet
 {
    /**
     * Constructor.
     * @param name The name.
     */
-   public CharacterSetImpl(String name)
+   public DefaultCharacterSet(String name)
    {
       super(name.toUpperCase());
    }

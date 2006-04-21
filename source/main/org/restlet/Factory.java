@@ -48,13 +48,6 @@ public interface Factory
     * @return The challenge response to attach to an uniform call.
     */
    public ChallengeResponse createChallengeResponse(ChallengeScheme scheme, String userId, String password);
-   
-   /**
-    * Creates a new character set from its standard name.
-    * @param name The standard character set name.
-    * @return The new character set.
-    */
-   public CharacterSet createCharacterSet(String name);
 
    /**
     * Create a new client connector for a given protocol.
@@ -81,32 +74,11 @@ public interface Factory
    public Maplet createDelegateMaplet(Component parent);
 
    /**
-    * Creates a new encoding from its standard name.
-    * @param name The standard encoding name.
-    * @return The new encoding.
-    */
-   public Encoding createEncoding(String name);
-
-   /**
     * Creates an empty form.
     * @param query Query string to parse or null for an empty form.
     * @return A new form.
     */
    public Form createForm(String query) throws IOException;
-
-   /**
-    * Creates a new language from its standard name.
-    * @param name The standard language name.
-    * @return The new language.
-    */
-   public Language createLanguage(String name);
-
-   /**
-    * Creates a new media type from its standard name.
-    * @param name The standard media type name.
-    * @return The new media type.
-    */
-   public MediaType createMediaType(String name);
 
    /**
     * Creates a new method from its standard name.

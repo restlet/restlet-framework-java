@@ -28,6 +28,7 @@ import java.util.List;
 
 import org.restlet.Manager;
 import org.restlet.connector.Client;
+import org.restlet.data.DefaultMediaType;
 import org.restlet.data.Protocols;
 import org.restlet.data.Reference;
 import org.restlet.data.Representation;
@@ -68,7 +69,7 @@ public class Service extends SaxRepresentation
 	 */
 	public Service(Client client)
 	{
-		super(Manager.createMediaType("***"));
+		super(new DefaultMediaType("***"));
 		this.client = client;
 	}
 

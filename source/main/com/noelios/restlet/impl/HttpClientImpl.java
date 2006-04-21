@@ -30,7 +30,6 @@ import java.util.List;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
-import org.restlet.Manager;
 import org.restlet.RestletCall;
 import org.restlet.connector.AbstractClient;
 import org.restlet.connector.ClientCall;
@@ -39,6 +38,8 @@ import org.restlet.data.ChallengeRequest;
 import org.restlet.data.ChallengeResponse;
 import org.restlet.data.CharacterSets;
 import org.restlet.data.ConditionData;
+import org.restlet.data.DefaultEncoding;
+import org.restlet.data.DefaultLanguage;
 import org.restlet.data.Encoding;
 import org.restlet.data.Encodings;
 import org.restlet.data.Language;
@@ -50,8 +51,10 @@ import org.restlet.data.PreferenceData;
 import org.restlet.data.Protocol;
 import org.restlet.data.Protocols;
 import org.restlet.data.Representation;
+import org.restlet.data.DefaultStatus;
 import org.restlet.data.Tag;
 
+import com.noelios.restlet.data.ContentType;
 import com.noelios.restlet.data.InputRepresentation;
 import com.noelios.restlet.data.ReadableRepresentation;
 import com.noelios.restlet.util.CookieReader;
@@ -276,7 +279,7 @@ public class HttpClientImpl extends AbstractClient
          }
 
          // Get the response status
-         call.setStatus(new StatusImpl(clientCall.getResponseStatusCode(), null, clientCall.getResponseReasonPhrase(), null));
+         call.setStatus(new DefaultStatus(clientCall.getResponseStatusCode(), null, clientCall.getResponseReasonPhrase(), null));
 
          // Get the server address
          call.setServerAddress(clientCall.getResponseAddress());
@@ -307,11 +310,11 @@ public class HttpClientImpl extends AbstractClient
             }
             else if(header.getName().equalsIgnoreCase(ConnectorCall.HEADER_CONTENT_ENCODING))
             {
-               encoding = Manager.createEncoding(header.getValue());
+               encoding = new DefaultEncoding(header.getValue());
             }
             else if(header.getName().equalsIgnoreCase(ConnectorCall.HEADER_CONTENT_LANGUAGE))
             {
-               language = Manager.createLanguage(header.getValue());
+               language = new DefaultLanguage(header.getValue());
             }
             else if(header.getName().equalsIgnoreCase(ConnectorCall.HEADER_LAST_MODIFIED))
             {

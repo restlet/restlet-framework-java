@@ -20,18 +20,16 @@
  * Portions Copyright [yyyy] [name of copyright owner]
  */
 
-package com.noelios.restlet.impl;
+package org.restlet.data;
 
 import java.util.Iterator;
 import java.util.List;
 
-import org.restlet.data.MediaType;
-import org.restlet.data.Parameter;
 
 /**
  * Media type used in representations and preferences.
  */
-public class MediaTypeImpl extends MetadataImpl implements MediaType
+public class DefaultMediaType extends DefaultMetadata implements MediaType
 {
    /** The list of parameters. */
    private List<Parameter> parameters;
@@ -40,7 +38,7 @@ public class MediaTypeImpl extends MetadataImpl implements MediaType
     * Constructor.
     * @param name The media type name.
     */
-   public MediaTypeImpl(String name)
+   public DefaultMediaType(String name)
    {
       this(name, null);
    }
@@ -50,7 +48,7 @@ public class MediaTypeImpl extends MetadataImpl implements MediaType
     * @param name The media type name.
     * @param parameters The list of parameters.
     */
-   public MediaTypeImpl(String name, List<Parameter> parameters)
+   public DefaultMediaType(String name, List<Parameter> parameters)
    {
       super((name == null) ? null : name.toLowerCase());
       this.parameters = parameters;

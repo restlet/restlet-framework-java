@@ -20,21 +20,20 @@
  * Portions Copyright [yyyy] [name of copyright owner]
  */
 
-package com.noelios.restlet.impl;
+package org.restlet.data;
 
-import org.restlet.data.Encoding;
 
 /**
  * Modifier of a representation's media type.<br>
  * Useful to apply compression without losing the identity of the underlying media type.
  */
-public class EncodingImpl extends MetadataImpl implements Encoding
+public class DefaultEncoding extends DefaultMetadata implements Encoding
 {
    /**
     * Constructor.
     * @param name The name.
     */
-   public EncodingImpl(String name)
+   public DefaultEncoding(String name)
    {
       super(name);
    }

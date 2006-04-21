@@ -71,16 +71,6 @@ public class Manager
    }
 
    /**
-    * Creates a new character set from its standard name.
-    * @param name The standard character set name.
-    * @return The new character set.
-    */
-   public static CharacterSet createCharacterSet(String name)
-   {
-      return getRegisteredFactory().createCharacterSet(name);
-   }
-
-   /**
     * Create a new client connector for a given protocol.
     * @param protocol The connector protocol.
     * @param name The unique connector name.
@@ -114,16 +104,6 @@ public class Manager
    }
 
    /**
-    * Creates a new encoding from its standard name.
-    * @param name The standard encoding name.
-    * @return The new encoding.
-    */
-   public static Encoding createEncoding(String name)
-   {
-      return getRegisteredFactory().createEncoding(name);
-   }
-
-   /**
     * Creates an empty form.
     * @param query Query string to parse or null for an empty form.
     * @return A new form.
@@ -131,26 +111,6 @@ public class Manager
    public static Form createForm(String query) throws IOException
    {
       return getRegisteredFactory().createForm(query);
-   }
-
-   /**
-    * Creates a new language from its standard name.
-    * @param name The standard language name.
-    * @return The new language.
-    */
-   public static Language createLanguage(String name)
-   {
-      return getRegisteredFactory().createLanguage(name);
-   }
-
-   /**
-    * Creates a new media type from its standard name.
-    * @param name The standard media type name.
-    * @return The new media type.
-    */
-   public static MediaType createMediaType(String name)
-   {
-      return getRegisteredFactory().createMediaType(name);
    }
 
    /**

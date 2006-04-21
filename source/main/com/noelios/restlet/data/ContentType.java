@@ -20,14 +20,15 @@
  * Portions Copyright [yyyy] [name of copyright owner]
  */
 
-package com.noelios.restlet.impl;
+package com.noelios.restlet.data;
 
 import java.io.IOException;
 
-import org.restlet.Manager;
 import org.restlet.data.CharacterSet;
+import org.restlet.data.DefaultCharacterSet;
 import org.restlet.data.MediaType;
 import org.restlet.data.Preference;
+
 
 import com.noelios.restlet.util.PreferenceReader;
 
@@ -62,7 +63,7 @@ public class ContentType
          String charSet = this.mediaType.getParameterValue("charset");
          if(charSet != null)
          {
-            this.characterSet = Manager.createCharacterSet(charSet);
+            this.characterSet = new DefaultCharacterSet(charSet);
          }
       }
       catch(IOException ioe)

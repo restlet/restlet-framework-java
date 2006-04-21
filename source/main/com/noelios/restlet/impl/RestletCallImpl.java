@@ -531,7 +531,7 @@ public class RestletCallImpl implements RestletCall
     */
    public PreferenceData getPreference()
    {
-      if(this.preference == null) this.preference = new PreferenceDataImpl();
+      if(this.preference == null) this.preference = new PreferenceData();
       return this.preference;
    }
 
@@ -594,7 +594,7 @@ public class RestletCallImpl implements RestletCall
     */
    public SecurityData getSecurity()
    {
-      if(this.security == null) this.security = new SecurityDataImpl();
+      if(this.security == null) this.security = new SecurityData();
       return this.security;
    }
 

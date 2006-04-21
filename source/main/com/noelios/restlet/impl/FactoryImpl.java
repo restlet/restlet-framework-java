@@ -256,16 +256,6 @@ public class FactoryImpl implements Factory
    }
 
    /**
-    * Creates a new character set from its standard name.
-    * @param name The standard character set name.
-    * @return The new character set.
-    */
-   public CharacterSet createCharacterSet(String name)
-   {
-      return (name == null) ? null : new CharacterSetImpl(name);
-   }
-
-   /**
     * Create a new client connector for a given protocol.
     * @param protocol The connector protocol.
     * @param name The unique connector name.
@@ -319,16 +309,6 @@ public class FactoryImpl implements Factory
    }
 
    /**
-    * Creates a new encoding from its standard name.
-    * @param name The standard encoding name.
-    * @return The new encoding.
-    */
-   public Encoding createEncoding(String name)
-   {
-      return (name == null) ? null : new EncodingImpl(name);
-   }
-
-   /**
     * Creates an empty form.
     * @param query Query string to parse or null for an empty form.
     * @return A new form.
@@ -339,33 +319,13 @@ public class FactoryImpl implements Factory
    }
 
    /**
-    * Creates a new language from its standard name.
-    * @param name The standard language name.
-    * @return The new language.
-    */
-   public Language createLanguage(String name)
-   {
-      return (name == null) ? null : new LanguageImpl(name);
-   }
-
-   /**
-    * Creates a new media type from its standard name.
-    * @param name The standard media type name.
-    * @return The new media type.
-    */
-   public MediaType createMediaType(String name)
-   {
-      return (name == null) ? null : new MediaTypeImpl(name);
-   }
-
-   /**
     * Creates a new method from its standard name.
     * @param name The standard method name.
     * @return The new method.
     */
    public Method createMethod(String name)
    {
-      return (name == null) ? null : new MethodImpl(name);
+      return (name == null) ? null : new DefaultMethod(name);
    }
 
    /**
@@ -409,7 +369,7 @@ public class FactoryImpl implements Factory
     */
    public Status createStatus(int code)
    {
-      return new StatusImpl(code);
+      return new DefaultStatus(code);
    }
 
 }

@@ -25,80 +25,162 @@ package org.restlet.data;
 /**
  * Security data related to a call.
  */
-public interface SecurityData extends ControlData
+public class SecurityData implements ControlData
 {
+   /** The authentication request sent by an origin server to a client. */
+   protected ChallengeRequest request;
+
+   /** The authentication response sent by a client to an origin server. */
+   protected ChallengeResponse response;
+
+   /** Indicates if the call came over a confidential channel. */
+   protected boolean confidential;
+
+   /** The login of the authenticated caller. */
+   protected String login;
+   
+   /** The password of the authenticated caller. */
+   protected String password;
+   
+   /** The role of the authenticated caller. */
+   protected String role;
+   
+   /**
+    * Constructor.
+    */
+   public SecurityData()
+   {
+      this.request = null;
+      this.response = null;
+      this.confidential = false;
+   }
+
    /**
     * Returns the authentication request sent by an origin server to a client.
     * @return The authentication request sent by an origin server to a client.
     */
-   public ChallengeRequest getChallengeRequest();
+   public ChallengeRequest getChallengeRequest()
+   {
+      return this.request;
+   }
 
    /**
     * Sets the authentication request sent by an origin server to a client.
     * @param request The authentication request sent by an origin server to a client.
     */
-   public void setChallengeRequest(ChallengeRequest request);
+   public void setChallengeRequest(ChallengeRequest request)
+   {
+      this.request = request;
+   }
 
    /**
     * Returns the authentication response sent by a client to an origin server.
     * @return The authentication response sent by a client to an origin server.
     */
-   public ChallengeResponse getChallengeResponse();
+   public ChallengeResponse getChallengeResponse()
+   {
+      return this.response;
+   }
 
    /**
     * Sets the authentication response sent by a client to an origin server.
     * @param response The authentication response sent by a client to an origin server.
     */
-   public void setChallengeResponse(ChallengeResponse response);
+   public void setChallengeResponse(ChallengeResponse response)
+   {
+      this.response = response;
+   }
 
    /**
     * Indicates if the call came over a confidential channel
     * such as an SSL-secured connection.
     * @return True if the call came over a confidential channel.
     */
-   public boolean isConfidential();
+   public boolean isConfidential()
+   {
+      return this.confidential;
+   }
 
    /**
     * Indicates if the call came over a confidential channel
     * such as an SSL-secured connection.
     * @param confidential True if the call came over a confidential channel.
     */
-   public void setConfidential(boolean confidential);
+   public void setConfidential(boolean confidential)
+   {
+      this.confidential = confidential;
+   }
 
    /**
     * Returns the login of the authenticated caller.
     * @return The login of the authenticated caller.
     */
-   public String getLogin();
+   public String getLogin()
+   {
+   	return this.login;
+   }
    
    /**
     * Returns the password of the authenticated caller.
     * @return The password of the authenticated caller.
     */
-   public String getPassword();
+   public String getPassword()
+   {
+   	return this.password;
+   }
    
    /**
     * Returns the role of the authenticated caller.
     * @return The role of the authenticated caller.
     */
-   public String getRole();
+   public String getRole()
+   {
+   	return this.role;
+   }
 
    /**
     * Sets the login of the authenticated caller.
     * @param login The login of the authenticated caller.
     */
-   public void setLogin(String login);
+   public void setLogin(String login)
+   {
+   	this.login = login;
+   }
    
    /**
     * Sets the password of the authenticated caller.
     * @param password The password of the authenticated caller.
     */
-   public void setPassword(String password);
+   public void setPassword(String password)
+   {
+   	this.password = password;
+   }
    
    /**
     * Sets the role of the authenticated caller.
     * @param role The role of the authenticated caller.
     */
-   public void setRole(String role);
-   
+   public void setRole(String role)
+   {
+   	this.role = role;
+   }
+
+   /**
+    * Returns the name of this REST element.
+    * @return The name of this REST element.
+    */
+   public String getName()
+   {
+      return "Security data";
+   }
+
+   /**
+    * Returns the description of this REST element.
+    * @return The description of this REST element.
+    */
+   public String getDescription()
+   {
+      return "Security data related to a call such as authentification and confidentiality";
+   }
+
 }

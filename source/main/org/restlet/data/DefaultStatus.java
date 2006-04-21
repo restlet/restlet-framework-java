@@ -20,15 +20,13 @@
  * Portions Copyright [yyyy] [name of copyright owner]
  */
 
-package com.noelios.restlet.impl;
+package org.restlet.data;
 
-import org.restlet.data.Status;
-import org.restlet.data.Statuses;
 
 /**
  * Status to return after handling a call.
  */
-public class StatusImpl implements Status
+public class DefaultStatus implements Status
 {
    /** The specification code. */
    private int code;
@@ -46,7 +44,7 @@ public class StatusImpl implements Status
     * Constructor.
     * @param code The specification code.
     */
-   public StatusImpl(int code)
+   public DefaultStatus(int code)
    {
       this(code, null, null, null);
    }
@@ -58,7 +56,7 @@ public class StatusImpl implements Status
     * @param description The description of this REST element.
     * @param uri The URI of the specification describing the method.
     */
-   public StatusImpl(int code, String name, String description, String uri)
+   public DefaultStatus(int code, String name, String description, String uri)
    {
       this.code = code;
       this.name = name;

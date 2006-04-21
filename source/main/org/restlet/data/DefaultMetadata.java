@@ -20,9 +20,8 @@
  * Portions Copyright [yyyy] [name of copyright owner]
  */
 
-package com.noelios.restlet.impl;
+package org.restlet.data;
 
-import org.restlet.data.Metadata;
 
 /**
  * Description of data contained in a resource representation.<br/><br/> "A representation consists of data,
@@ -34,7 +33,7 @@ import org.restlet.data.Metadata;
  * @see <a href="http://www.ics.uci.edu/~fielding/pubs/dissertation/rest_arch_style.htm#sec_5_2_1_2">Source
  * dissertation</a>
  */
-public class MetadataImpl implements Metadata
+public class DefaultMetadata implements Metadata
 {
    /** The unique name. */
    private String name;
@@ -43,7 +42,7 @@ public class MetadataImpl implements Metadata
     * Constructor.
     * @param name The unique name.
     */
-   public MetadataImpl(String name)
+   public DefaultMetadata(String name)
    {
       this.name = name;
    }

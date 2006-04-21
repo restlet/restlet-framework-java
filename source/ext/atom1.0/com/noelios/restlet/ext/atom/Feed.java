@@ -27,7 +27,8 @@ import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 
-import org.restlet.Manager;
+import org.restlet.data.DefaultLanguage;
+import org.restlet.data.DefaultMediaType;
 import org.restlet.data.MediaType;
 import org.restlet.data.MediaTypes;
 import org.restlet.data.Reference;
@@ -522,8 +523,8 @@ public class Feed extends SaxRepresentation
 					currentLink = new Link();
 					currentLink.setHref(new Reference(attrs.getValue("", "href")));
 					currentLink.setRel(Relation.parse(attrs.getValue("", "rel")));
-					currentLink.setType(Manager.createMediaType(attrs.getValue("", "type")));
-					currentLink.setHrefLang(Manager.createLanguage(attrs.getValue("", "hreflang")));
+					currentLink.setType(new DefaultMediaType(attrs.getValue("", "type")));
+					currentLink.setHrefLang(new DefaultLanguage(attrs.getValue("", "hreflang")));
 					currentLink.setTitle(attrs.getValue("", "title"));
 					String attr = attrs.getValue("", "length");
 					currentLink.setLength((attr == null) ? -1L : Long.parseLong(attr));
@@ -632,7 +633,7 @@ public class Feed extends SaxRepresentation
 			}
 			else
 			{
-				result = Manager.createMediaType(type);
+				result = new DefaultMediaType(type);
 			}
 			
 			return result;

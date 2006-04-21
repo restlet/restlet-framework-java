@@ -27,17 +27,17 @@ import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
 
+import org.restlet.data.DefaultCharacterSet;
 import org.restlet.data.CharacterSetPref;
+import org.restlet.data.DefaultEncoding;
 import org.restlet.data.EncodingPref;
+import org.restlet.data.DefaultLanguage;
 import org.restlet.data.LanguagePref;
+import org.restlet.data.DefaultMediaType;
 import org.restlet.data.MediaTypePref;
 import org.restlet.data.Parameter;
 import org.restlet.data.Preference;
 
-import com.noelios.restlet.impl.CharacterSetImpl;
-import com.noelios.restlet.impl.EncodingImpl;
-import com.noelios.restlet.impl.LanguageImpl;
-import com.noelios.restlet.impl.MediaTypeImpl;
 
 /**
  * Preference header reader.<br/>
@@ -307,19 +307,19 @@ public class PreferenceReader extends HeaderReader
          switch(type)
          {
             case TYPE_CHARACTER_SET:
-               result = new CharacterSetPref(new CharacterSetImpl(metadata.toString()));
+               result = new CharacterSetPref(new DefaultCharacterSet(metadata.toString()));
                break;
 
             case TYPE_ENCODING:
-               result = new EncodingPref(new EncodingImpl(metadata.toString()));
+               result = new EncodingPref(new DefaultEncoding(metadata.toString()));
                break;
 
             case TYPE_LANGUAGE:
-               result = new LanguagePref(new LanguageImpl(metadata.toString()));
+               result = new LanguagePref(new DefaultLanguage(metadata.toString()));
                break;
 
             case TYPE_MEDIA_TYPE:
-               result = new MediaTypePref(new MediaTypeImpl(metadata.toString()));
+               result = new MediaTypePref(new DefaultMediaType(metadata.toString()));
                break;
          }
       }
@@ -331,19 +331,19 @@ public class PreferenceReader extends HeaderReader
          switch(type)
          {
             case TYPE_CHARACTER_SET:
-               result = new CharacterSetPref(new CharacterSetImpl(metadata.toString()), quality, parameters);
+               result = new CharacterSetPref(new DefaultCharacterSet(metadata.toString()), quality, parameters);
                break;
 
             case TYPE_ENCODING:
-               result = new EncodingPref(new EncodingImpl(metadata.toString()), quality, parameters);
+               result = new EncodingPref(new DefaultEncoding(metadata.toString()), quality, parameters);
                break;
 
             case TYPE_LANGUAGE:
-               result = new LanguagePref(new LanguageImpl(metadata.toString()), quality, parameters);
+               result = new LanguagePref(new DefaultLanguage(metadata.toString()), quality, parameters);
                break;
 
             case TYPE_MEDIA_TYPE:
-               result = new MediaTypePref(new MediaTypeImpl(metadata.toString(), mediaParams), quality, parameters);
+               result = new MediaTypePref(new DefaultMediaType(metadata.toString(), mediaParams), quality, parameters);
                break;
          }
       }
