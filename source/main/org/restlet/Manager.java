@@ -164,15 +164,6 @@ public class Manager
    }
 
    /**
-    * Creates a new representation metadata.
-    * @param mediaType The representation mediatype.
-    */
-   public static RepresentationMetadata createRepresentationMetadata(MediaType mediaType)
-   {
-      return getRegisteredFactory().createRepresentationMetadata(mediaType);
-   }
-
-   /**
     * Create a new server connector for a given protocol.
     * @param protocol The connector protocol.
     * @param name The unique connector name.

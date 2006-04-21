@@ -27,7 +27,7 @@ import org.restlet.Resource;
 /**
  * Abstract resource representation.
  */
-public abstract class AbstractRepresentation extends DefaultRepresentationMetadata implements Representation
+public abstract class AbstractRepresentation extends RepresentationMetadata implements Representation
 {
    /**
     * The represented resource, if available.

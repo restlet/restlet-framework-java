@@ -116,12 +116,6 @@ public interface Factory
    public Method createMethod(String name);
 
    /**
-    * Creates a new representation metadata.
-    * @param mediaType The representation mediatype.
-    */
-   public RepresentationMetadata createRepresentationMetadata(MediaType mediaType);
-
-   /**
     * Create a new server connector for a given protocol.
     * @param protocol The connector protocol.
     * @param name The unique connector name.

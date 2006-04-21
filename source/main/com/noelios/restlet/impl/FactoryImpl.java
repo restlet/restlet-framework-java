@@ -367,15 +367,6 @@ public class FactoryImpl implements Factory
    {
       return (name == null) ? null : new MethodImpl(name);
    }
-   
-   /**
-    * Creates a new representation metadata.
-    * @param mediaType The representation mediatype.
-    */
-   public RepresentationMetadata createRepresentationMetadata(MediaType mediaType)
-   {
-      return new DefaultRepresentationMetadata(mediaType);
-   }
 
    /**
     * Create a new server connector for a given protocol.
