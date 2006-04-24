@@ -41,7 +41,7 @@ import org.restlet.data.Protocol;
 import org.restlet.data.Representation;
 
 /**
- * The object factory and registration service for Restlet API implementations.
+ * Factory and registration service for API implementations.
  */
 public abstract class Factory
 {

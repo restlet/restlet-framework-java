@@ -23,7 +23,7 @@
 package org.restlet.data;
 
 /**
- * Default empty value implementation.
+ * Empty value marker.
  */
 public class EmptyValue implements ControlData
 {

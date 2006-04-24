@@ -28,7 +28,7 @@ import org.restlet.connector.ConnectorCall;
 import org.restlet.data.*;
 
 /**
- * Restlet call wrapper that can be easily subclassed.<br/>
+ * Restlet call wrapper.<br/>
  * Useful for application developer who need to enrich the call with application related things.
  * @see <a href="http://c2.com/cgi/wiki?DecoratorPattern">The decorator (aka wrapper) pattern</a>
  */
