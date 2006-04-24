@@ -22,7 +22,7 @@
 
 package org.restlet.component;
 
-import org.restlet.DefaultMaplet;
+import org.restlet.GenericMaplet;
 import org.restlet.Maplet;
 import org.restlet.Restlet;
 import org.restlet.Call;
@@ -60,7 +60,7 @@ public class RestletContainer extends AbstractComponent implements Maplet
    {
       super(name);
       this.parent = parent;
-      this.delegate = new DefaultMaplet(parent);
+      this.delegate = new GenericMaplet(parent);
    }
 
    /**

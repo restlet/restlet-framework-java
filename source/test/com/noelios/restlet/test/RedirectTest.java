@@ -27,7 +27,7 @@ import java.io.IOException;
 import junit.framework.TestCase;
 
 import org.restlet.AbstractRestlet;
-import org.restlet.DefaultCall;
+import org.restlet.GenericCall;
 import org.restlet.Call;
 import org.restlet.Restlet;
 import org.restlet.component.RestletContainer;
@@ -116,7 +116,7 @@ public class RedirectTest extends TestCase
    {
       try
       {
-         Call call = new DefaultCall();
+         Call call = new GenericCall();
          call.setMethod(method);
          call.setResourceRef(uri);
          myContainer.callClient("Test client", call);

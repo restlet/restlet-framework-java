@@ -25,7 +25,7 @@ package com.noelios.restlet.example;
 import java.util.List;
 
 import org.restlet.AbstractRestlet;
-import org.restlet.DefaultMaplet;
+import org.restlet.GenericMaplet;
 import org.restlet.Maplet;
 import org.restlet.Call;
 import org.restlet.Restlet;
@@ -68,7 +68,7 @@ public class Tutorial11
          log.attach(status);
 
          // Attach a root Maplet to the status Chainlet.
-         Maplet rootMaplet = new DefaultMaplet(myContainer);
+         Maplet rootMaplet = new GenericMaplet(myContainer);
          status.attach(rootMaplet);
 
          // Attach a guard Chainlet to secure access the the chained directory Restlet
@@ -91,11 +91,11 @@ public class Tutorial11
          guard.attach(dirRestlet);
 
          // Create the users Maplet
-         Maplet usersMaplet = new DefaultMaplet(myContainer);
+         Maplet usersMaplet = new GenericMaplet(myContainer);
          rootMaplet.attach("/users", usersMaplet);
 
          // Create the user Maplet
-         Maplet userMaplet = new DefaultMaplet(myContainer)
+         Maplet userMaplet = new GenericMaplet(myContainer)
             {
                public void handle(Call call)
                {
