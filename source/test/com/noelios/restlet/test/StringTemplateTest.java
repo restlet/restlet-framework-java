@@ -24,7 +24,7 @@ package com.noelios.restlet.test;
 
 import junit.framework.TestCase;
 
-import com.noelios.restlet.util.DefaultModel;
+import com.noelios.restlet.util.MapModel;
 import com.noelios.restlet.util.StringTemplate;
 
 /**
@@ -35,7 +35,7 @@ public class StringTemplateTest extends TestCase
    /** Tests the interpolation feature. */
    public void testInterpolation()
    {
-      DefaultModel dataModel = new DefaultModel();
+   	MapModel dataModel = new MapModel();
       dataModel.put("number", Integer.toString(12345));
       dataModel.put("string", "abcdef");
 

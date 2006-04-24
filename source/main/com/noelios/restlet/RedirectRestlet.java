@@ -33,11 +33,11 @@ import org.restlet.data.Reference;
 import org.restlet.data.Statuses;
 
 import com.noelios.restlet.util.StringTemplate;
-import com.noelios.restlet.util.UniformCallModel;
+import com.noelios.restlet.util.CallModel;
 
 /**
  * Rewrites URIs then redirects the call or the client to a new destination.
- * @see com.noelios.restlet.util.UniformCallModel
+ * @see com.noelios.restlet.util.CallModel
  * @see <a href="http://www.restlet.org/tutorial#part10">Tutorial: URI rewriting and redirection</a>
  */
 public class RedirectRestlet extends AbstractRestlet
@@ -122,7 +122,7 @@ public class RedirectRestlet extends AbstractRestlet
          StringTemplate te = new StringTemplate(this.targetPattern);
 
          // Create the template data model
-         String targetUri = te.process(new UniformCallModel(call, null));
+         String targetUri = te.process(new CallModel(call, null));
          Reference target = new Reference(targetUri);
 
          switch(this.mode)

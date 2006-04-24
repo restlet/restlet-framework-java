@@ -30,7 +30,7 @@ import org.restlet.Call;
 import org.restlet.component.Component;
 
 import com.noelios.restlet.util.StringTemplate;
-import com.noelios.restlet.util.UniformCallModel;
+import com.noelios.restlet.util.CallModel;
 
 /**
  * Chainlet logging all calls after their handling by the target Restlet.<br/>
@@ -64,7 +64,7 @@ public class LogChainlet extends AbstractChainlet
     * @param parent The parent component.
     * @param logName The log name to used in the logging.properties file.
     * @param logFormat The log format to use.
-    * @see com.noelios.restlet.util.UniformCallModel
+    * @see com.noelios.restlet.util.CallModel
     * @see com.noelios.restlet.util.StringTemplate
     */
    public LogChainlet(Component parent, String logName, String logFormat)
@@ -179,7 +179,7 @@ public class LogChainlet extends AbstractChainlet
     */
    protected String format(Call call)
    {
-      return this.logTemplate.process(new UniformCallModel(call, "-"));
+      return this.logTemplate.process(new CallModel(call, "-"));
    }
 
 }

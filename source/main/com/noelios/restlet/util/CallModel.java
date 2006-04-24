@@ -55,7 +55,7 @@ import org.restlet.data.Parameter;
  * <li>status</li>
  * </ul>
  */
-public class UniformCallModel implements ReadableModel
+public class CallModel implements ReadableModel
 {
    public static final String NAME_CLIENT_ADDRESS = "clientAddress";
    public static final String NAME_CLIENT_NAME = "clientName";
@@ -89,7 +89,7 @@ public class UniformCallModel implements ReadableModel
     * @param call The wrapped uniform call.
     * @param defaultValue The default value to return if a lookup fails or returns null.
     */
-   public UniformCallModel(Call call, String defaultValue)
+   public CallModel(Call call, String defaultValue)
    {
       this.call = call;
       this.defaultValue = defaultValue;
