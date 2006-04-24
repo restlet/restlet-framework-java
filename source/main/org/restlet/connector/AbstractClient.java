@@ -29,7 +29,7 @@ import org.restlet.data.Protocol;
 import org.restlet.data.Representation;
 
 /**
- * Local connector implementation.
+ * Abstract client connector.
  */
 public abstract class AbstractClient extends AbstractConnector implements Client
 {
