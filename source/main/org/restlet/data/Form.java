@@ -28,7 +28,7 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 
-import org.restlet.Manager;
+import org.restlet.Factory;
 
 import com.noelios.restlet.data.StringRepresentation;
 import com.noelios.restlet.util.FormUtils;
@@ -56,7 +56,7 @@ public class Form implements Data
     */
    public Form(String query) throws IOException
    {
-   	Manager.getInstance().parseQuery(this, query);
+   	Factory.getInstance().parseQuery(this, query);
    }
 
    /**
@@ -66,7 +66,7 @@ public class Form implements Data
     */
    public Form(Representation post) throws IOException
    {
-   	Manager.getInstance().parsePost(this, post);
+   	Factory.getInstance().parsePost(this, post);
    }
 
    /**

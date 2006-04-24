@@ -40,7 +40,7 @@ public abstract class AbstractChainlet extends AbstractRestlet implements Chainl
    public AbstractChainlet(Component parent)
    {
       super(parent);
-      this.delegate = Manager.getInstance().createChainlet(parent);
+      this.delegate = Factory.getInstance().createChainlet(parent);
    }
 
    /**

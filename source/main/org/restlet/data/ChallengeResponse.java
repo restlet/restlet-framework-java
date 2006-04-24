@@ -22,7 +22,7 @@
 
 package org.restlet.data;
 
-import org.restlet.Manager;
+import org.restlet.Factory;
 
 /**
  * Authentication response sent by client to an origin server.
@@ -55,7 +55,7 @@ public class ChallengeResponse implements ControlData
    public ChallengeResponse(ChallengeScheme scheme, String userId, String password)
    {
       this.scheme = scheme;
-      Manager.getInstance().setCredentials(this, userId, password);
+      Factory.getInstance().setCredentials(this, userId, password);
    }
 
    /**

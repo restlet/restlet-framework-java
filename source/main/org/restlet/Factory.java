@@ -40,24 +40,24 @@ import org.restlet.data.Representation;
 /**
  * The object factory and registration service for Restlet API implementations.
  */
-public abstract class Manager
+public abstract class Factory
 {
    /** Obtain a suitable logger. */
-   private static Logger logger = Logger.getLogger("org.restlet.Manager");
+   private static Logger logger = Logger.getLogger("org.restlet.Factory");
 
    public static final String VERSION_LONG = "1.0 beta 10";
    public static final String VERSION_SHORT = "1.0b10";
 
    /** The registered factory. */
-   protected static Manager instance = null;
+   protected static Factory instance = null;
 
    /**
     * Returns the factory registered by the Restlet implementation.
     * @return The factory registered by the Restlet implementation.
     */
-   public static Manager getInstance()
+   public static Factory getInstance()
    {
-   	Manager result = instance;
+   	Factory result = instance;
 
       if(result == null)
       {
@@ -90,7 +90,7 @@ public abstract class Manager
             // Instantiate the factory
             try
             {
-               instance = (Manager)Class.forName(factoryClassName).newInstance();
+               instance = (Factory)Class.forName(factoryClassName).newInstance();
                result = instance;
             }
             catch(Exception e)
@@ -108,7 +108,7 @@ public abstract class Manager
     * Register a factory.
     * @param factory The factory to register.
     */
-   public static void register(Manager factory)
+   public static void register(Factory factory)
    {
       instance = factory;
    }

@@ -35,7 +35,7 @@ import java.util.logging.Level;
 import java.util.logging.Logger;
 
 import org.restlet.Chainlet;
-import org.restlet.Manager;
+import org.restlet.Factory;
 import org.restlet.Maplet;
 import org.restlet.Call;
 import org.restlet.Restlet;
@@ -51,7 +51,7 @@ import com.noelios.restlet.util.FormUtils;
  * Noelios Restlet Engine.<br/>
  * Also acts as a factory implementation.
  */
-public class FactoryImpl extends Manager
+public class FactoryImpl extends Factory
 {
    /** Obtain a suitable logger. */
    private static Logger logger = Logger.getLogger("com.noelios.restlet.FactoryImpl");
@@ -201,7 +201,7 @@ public class FactoryImpl extends Manager
     */
    public static void register()
    {
-      Manager.register(new FactoryImpl());
+      Factory.register(new FactoryImpl());
    }
 
    /**

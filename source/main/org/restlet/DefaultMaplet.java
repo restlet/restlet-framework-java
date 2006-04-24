@@ -40,7 +40,7 @@ public class DefaultMaplet extends AbstractRestlet implements Maplet
    public DefaultMaplet(Component parent)
    {
       super(parent);
-      this.delegate = Manager.getInstance().createMaplet(parent);
+      this.delegate = Factory.getInstance().createMaplet(parent);
    }
 
    /**
