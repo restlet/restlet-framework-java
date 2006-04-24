@@ -24,10 +24,7 @@ package com.noelios.restlet.util;
 
 import org.restlet.data.ChallengeRequest;
 import org.restlet.data.ChallengeResponse;
-
-import com.noelios.restlet.impl.ChallengeRequestImpl;
-import com.noelios.restlet.impl.ChallengeResponseImpl;
-import com.noelios.restlet.impl.ChallengeSchemeImpl;
+import org.restlet.data.DefaultChallengeScheme;
 
 /**
  * Security data manipulation utilities.
@@ -79,7 +76,7 @@ public class SecurityUtils
             String realm = header.substring(space + 1);
             int equals = realm.indexOf('=');
             String realmValue = realm.substring(equals + 2, realm.length() - 1);
-            result = new ChallengeRequestImpl(new ChallengeSchemeImpl("HTTP_" + scheme, scheme), realmValue);
+            result = new ChallengeRequest(new DefaultChallengeScheme("HTTP_" + scheme, scheme), realmValue);
          }
       }
       
@@ -103,7 +100,7 @@ public class SecurityUtils
          {
             String scheme = header.substring(0, space);
             String credentials = header.substring(space + 1);
-            result = new ChallengeResponseImpl(new ChallengeSchemeImpl("HTTP_" + scheme, scheme), credentials);
+            result = new ChallengeResponse(new DefaultChallengeScheme("HTTP_" + scheme, scheme), credentials);
          }
       }
       

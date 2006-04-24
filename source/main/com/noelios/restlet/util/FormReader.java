@@ -31,6 +31,7 @@ import java.util.List;
 import java.util.Map;
 
 import org.restlet.data.EmptyValue;
+import org.restlet.data.Form;
 import org.restlet.data.Parameter;
 import org.restlet.data.Representation;
 
@@ -293,12 +294,12 @@ public class FormReader
    }
 
    /**
-    * Returns the list of parameters.
-    * @return The list of parameters.
+    * Reads all the parameters.
+    * @return The parameters read.
     */
    public List<Parameter> readParameters() throws IOException
    {
-      List<Parameter> result = new ArrayList<Parameter>();
+   	List<Parameter> result = new ArrayList<Parameter>();
       Parameter param = readNextParameter();
 
       while(param != null)
@@ -309,6 +310,23 @@ public class FormReader
 
       this.stream.close();
       return result;
+   }
+
+   /**
+    * Adds the parameters into a given form.
+    * @param form The target form.
+    */
+   public void addParameters(Form form) throws IOException
+   {
+      Parameter param = readNextParameter();
+
+      while(param != null)
+      {
+         form.getParameters().add(param);
+         param = readNextParameter();
+      }
+
+      this.stream.close();
    }
 
 }

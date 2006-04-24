@@ -35,7 +35,6 @@ import java.util.logging.Level;
 import java.util.logging.Logger;
 
 import org.restlet.Chainlet;
-import org.restlet.Factory;
 import org.restlet.Manager;
 import org.restlet.Maplet;
 import org.restlet.Call;
@@ -46,12 +45,13 @@ import org.restlet.connector.Server;
 import org.restlet.data.*;
 
 import com.noelios.restlet.util.Base64;
+import com.noelios.restlet.util.FormUtils;
 
 /**
  * Noelios Restlet Engine.<br/>
  * Also acts as a factory implementation.
  */
-public class FactoryImpl implements Factory
+public class FactoryImpl extends Manager
 {
    /** Obtain a suitable logger. */
    private static Logger logger = Logger.getLogger("com.noelios.restlet.FactoryImpl");
@@ -201,49 +201,7 @@ public class FactoryImpl implements Factory
     */
    public static void register()
    {
-      Manager.registerFactory(new FactoryImpl());
-   }
-
-   /**
-    * Creates a challenge response for a specific scheme (ex: HTTP BASIC authentication)
-    * using a login and a password as the credentials.
-    * @param scheme The challenge scheme to use.
-    * @param userId The user identifier to use.
-    * @param password The user password.
-    * @return The challenge response to attach to an uniform call.
-    */
-   public ChallengeResponse createChallengeResponse(ChallengeScheme scheme, String userId, String password)
-   {
-      if(scheme.equals(ChallengeSchemes.HTTP_BASIC))
-      {
-         String credentials = userId + ':' + password;
-
-         try
-         {
-            return new ChallengeResponseImpl(scheme, Base64.encodeBytes(credentials.getBytes("US-ASCII")));
-         }
-         catch(UnsupportedEncodingException e)
-         {
-            throw new RuntimeException("Unsupported encoding, unable to encode credentials");
-         }
-      }
-      else if(scheme.equals(ChallengeSchemes.SMTP_PLAIN))
-      {
-         String credentials = "^@" + userId + "^@" + password;
-
-         try
-         {
-            return new ChallengeResponseImpl(scheme, Base64.encodeBytes(credentials.getBytes("US-ASCII")));
-         }
-         catch(UnsupportedEncodingException e)
-         {
-            throw new RuntimeException("Unsupported encoding, unable to encode credentials");
-         }
-      }
-      else
-      {
-         throw new IllegalArgumentException("Challenge scheme not supported by this implementation");
-      }
+      Manager.register(new FactoryImpl());
    }
 
    /**
@@ -309,16 +267,6 @@ public class FactoryImpl implements Factory
    }
 
    /**
-    * Creates an empty form.
-    * @param query Query string to parse or null for an empty form.
-    * @return A new form.
-    */
-   public Form createForm(String query) throws IOException
-   {
-      return new FormImpl(query);
-   }
-
-   /**
     * Create a new server connector for a given protocol.
     * @param protocol The connector protocol.
     * @param name The unique connector name.
@@ -350,6 +298,63 @@ public class FactoryImpl implements Factory
 		}
 
       return result;
+   }
+
+   /**
+    * Parses a post into a given form.
+    * @param form The target form.
+    * @param post The posted form.
+    */
+   public void parsePost(Form form, Representation post) throws IOException
+   {
+   	if(post != null)
+   	{
+   		FormUtils.parsePost(form, post);
+   	}
+   }
+
+   /**
+    * Parses a query into a given form.
+    * @param form The target form.
+    * @param query Query string.
+    */
+   public void parseQuery(Form form, String query) throws IOException
+   {
+   	if((query != null) && !query.equals(""))
+   	{
+   		FormUtils.parseQuery(form, query);
+   	}
+   }
+
+   /**
+    * Sets the credentials of a challenge response using a user ID and a password.<br/>
+    * @param response The challenge response to set.
+    * @param userId The user identifier to use.
+    * @param password The user password.
+    */
+   public void setCredentials(ChallengeResponse response, String userId, String password)
+   {
+      try
+      {
+      	if(response.getScheme().equals(ChallengeSchemes.HTTP_BASIC))
+      	{
+      		String credentials = userId + ':' + password;
+            response.setCredentials(Base64.encodeBytes(credentials.getBytes("US-ASCII")));
+      	}
+      	else if(response.getScheme().equals(ChallengeSchemes.SMTP_PLAIN))
+      	{
+      		String credentials = "^@" + userId + "^@" + password;
+         	response.setCredentials(Base64.encodeBytes(credentials.getBytes("US-ASCII")));
+      	}
+      	else
+      	{
+      		throw new IllegalArgumentException("Challenge scheme not supported by this implementation");
+      	}
+   	}
+      catch(UnsupportedEncodingException e)
+      {
+         throw new RuntimeException("Unsupported encoding, unable to encode credentials");
+      }
    }
 
 }

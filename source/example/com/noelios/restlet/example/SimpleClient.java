@@ -23,9 +23,9 @@
 package com.noelios.restlet.example;
 
 import org.restlet.DefaultCall;
-import org.restlet.Manager;
 import org.restlet.Call;
 import org.restlet.connector.Client;
+import org.restlet.connector.GenericClient;
 import org.restlet.data.Form;
 import org.restlet.data.Methods;
 import org.restlet.data.Protocols;
@@ -52,14 +52,14 @@ public class SimpleClient
          // Action: Update
          call.setMethod(Methods.PUT);
 
-         Form form = Manager.createForm(null);
+         Form form = new Form();
          form.addParameter("name", "John D. Mitchell");
          form.addParameter("email", "john@bob.net");
          form.addParameter("email2", "joe@bob.net");
          call.setInput(form.getRepresentation());
 
          // Prepare HTTP client connector.
-         Client client = Manager.createClient(Protocols.HTTP, "tester");
+         Client client = new GenericClient(Protocols.HTTP, "tester");
 
          // Make the call.
          client.handle(call);

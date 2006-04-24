@@ -32,8 +32,8 @@ import javax.servlet.ServletException;
 import org.mortbay.jetty.Connector;
 import org.mortbay.jetty.HttpConnection;
 import org.mortbay.jetty.nio.SelectChannelConnector;
+import org.restlet.Call;
 import org.restlet.Restlet;
-import org.restlet.RestletCall;
 import org.restlet.component.Component;
 import org.restlet.component.RestletContainer;
 import org.restlet.connector.Server;
@@ -140,9 +140,9 @@ public class JettyServer extends org.mortbay.jetty.Server implements Server
    /**
     * Handles a uniform call.
     * The default behavior is to as the attached Restlet to handle the call.
-    * @param call The uniform call to handle.
+    * @param call The call to handle.
     */
-   public void handle(RestletCall call)
+   public void handle(Call call)
    {
       getTarget().handle(call);
    }
@@ -181,7 +181,7 @@ public class JettyServer extends org.mortbay.jetty.Server implements Server
     */
    public void handle(ServerCall call) throws IOException
    {
-   	RestletCall uniformCall = call.toUniform();
+   	Call uniformCall = call.toUniform();
       handle(uniformCall);
       call.setResponse(uniformCall);
       call.sendResponseHeaders();

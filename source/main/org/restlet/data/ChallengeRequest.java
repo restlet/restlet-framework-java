@@ -27,42 +27,99 @@ import java.util.List;
 /**
  * Authentication challenge sent by an origin server to a client.
  */
-public interface ChallengeRequest extends ControlData
+public class ChallengeRequest implements ControlData
 {
+   /** The challenge scheme. */
+   protected ChallengeScheme scheme;
+
+   /** The authentication realm. */
+   protected String realm;
+
+   /** The scheme parameters. */
+   protected List<Parameter> parameters;
+
+   /**
+    * Constructor.
+    * @param scheme The challenge scheme.
+    * @param realm The authentication realm.
+    */
+   public ChallengeRequest(ChallengeScheme scheme, String realm)
+   {
+      this.scheme = scheme;
+      this.realm = realm;
+      this.parameters = null;
+   }
+
    /**
     * Returns the scheme used.
     * @return The scheme used.
     */
-   public ChallengeScheme getScheme();
+   public ChallengeScheme getScheme()
+   {
+      return this.scheme;
+   }
 
    /**
     * Sets the scheme used.
     * @param scheme The scheme used.
     */
-   public void setScheme(ChallengeScheme scheme);
+   public void setScheme(ChallengeScheme scheme)
+   {
+      this.scheme = scheme;
+   }
 
    /**
     * Returns the realm name.
     * @return The realm name.
     */
-   public String getRealm();
+   public String getRealm()
+   {
+      return this.realm;
+   }
 
    /**
     * Sets the realm name.
     * @param realm The realm name.
     */
-   public void setRealm(String realm);
+   public void setRealm(String realm)
+   {
+      this.realm = realm;
+   }
 
    /**
     * Returns the scheme parameters.
     * @return The scheme parameters.
     */
-   public List<Parameter> getParameters();
+   public List<Parameter> getParameters()
+   {
+      return this.parameters;
+   }
 
    /**
     * Sets the scheme parameters.
     * @param parameters The scheme parameters.
     */
-   public void setParameters(List<Parameter> parameters);
+   public void setParameters(List<Parameter> parameters)
+   {
+      this.parameters = parameters;
+   }
+
+   /**
+    * Returns the name of this REST element.
+    * @return The name of this REST element.
+    */
+   public String getName()
+   {
+      return "Authentication challenge request";
+   }
+
+   /**
+    * Returns the description of this REST element.
+    * @return The description of this REST element.
+    */
+   public String getDescription()
+   {
+      return "Authentication challenge sent by an origin server to a client";
+   }
 
 }

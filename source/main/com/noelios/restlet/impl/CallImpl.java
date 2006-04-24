@@ -499,7 +499,7 @@ public class CallImpl implements Call
    {
       try
       {
-         return new FormImpl(getInput());
+         return new Form(getInput());
       }
       catch(IOException e)
       {

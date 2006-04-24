@@ -25,8 +25,8 @@ package com.noelios.restlet.example;
 import java.io.IOException;
 
 import org.restlet.DefaultCall;
-import org.restlet.Manager;
 import org.restlet.connector.Client;
+import org.restlet.connector.GenericClient;
 import org.restlet.data.ChallengeResponse;
 import org.restlet.data.ChallengeSchemes;
 import org.restlet.data.Methods;
@@ -49,11 +49,11 @@ public class Tutorial09b
          call.setMethod(Methods.GET);
          
          // Add the client authentication to the call 
-         ChallengeResponse authentication = Manager.createChallengeResponse(ChallengeSchemes.HTTP_BASIC, "scott", "tiger");
+         ChallengeResponse authentication = new ChallengeResponse(ChallengeSchemes.HTTP_BASIC, "scott", "tiger");
          call.getSecurity().setChallengeResponse(authentication);
 
          // Ask to the HTTP client connector to handle the call
-         Client client = Manager.createClient(Protocols.HTTP, "My client");
+         Client client = new GenericClient(Protocols.HTTP, "My client");
          client.handle(call);
 
          if(call.getStatus().equals(Statuses.SUCCESS_OK))

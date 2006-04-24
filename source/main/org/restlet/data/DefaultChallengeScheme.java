@@ -20,14 +20,13 @@
  * Portions Copyright [yyyy] [name of copyright owner]
  */
 
-package com.noelios.restlet.impl;
+package org.restlet.data;
 
-import org.restlet.data.ChallengeScheme;
 
 /**
  * Challenge scheme used to authenticate remote clients.
  */
-public class ChallengeSchemeImpl implements ChallengeScheme
+public class DefaultChallengeScheme implements ChallengeScheme
 {
    /** The unique name of the scheme. */
    protected String name;
@@ -40,7 +39,7 @@ public class ChallengeSchemeImpl implements ChallengeScheme
     * @param name The unique name of the scheme.
     * @param technicalName The technical name of the scheme.
     */
-   public ChallengeSchemeImpl(String name, String technicalName)
+   public DefaultChallengeScheme(String name, String technicalName)
    {
       this.name = name;
       this.technicalName = technicalName;

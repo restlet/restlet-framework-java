@@ -22,10 +22,6 @@
 
 package com.noelios.restlet.test;
 
-import org.restlet.Manager;
-import org.restlet.connector.Client;
-import org.restlet.data.Protocols;
-
 import com.noelios.restlet.ext.atom.Feed;
 import com.noelios.restlet.ext.atom.Service;
 
@@ -38,8 +34,7 @@ public class AtomTest
 	{
 		try
 		{
-			Client atomClient = Manager.createClient(Protocols.HTTP, "Atom client");
-			Service atomService = new Service(atomClient, "http://bitworking.org/projects/pyapp/collection.cgi?introspection=1");
+			Service atomService = new Service("http://bitworking.org/projects/pyapp/collection.cgi?introspection=1");
 			Feed atomFeed = atomService.getWorkspaces().get(0).getCollections().get(0).getFeed();
 			atomFeed.write(System.out);
 		}

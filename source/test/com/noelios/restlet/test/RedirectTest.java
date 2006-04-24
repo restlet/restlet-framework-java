@@ -28,10 +28,11 @@ import junit.framework.TestCase;
 
 import org.restlet.AbstractRestlet;
 import org.restlet.DefaultCall;
-import org.restlet.Manager;
 import org.restlet.Call;
 import org.restlet.Restlet;
 import org.restlet.component.RestletContainer;
+import org.restlet.connector.GenericClient;
+import org.restlet.connector.GenericServer;
 import org.restlet.data.MediaTypes;
 import org.restlet.data.Method;
 import org.restlet.data.Methods;
@@ -56,8 +57,8 @@ public class RedirectTest extends TestCase
       	RestletContainer myContainer = new RestletContainer("My container");
 
          // Create the client connectors
-         myContainer.addClient(Manager.createClient(Protocols.HTTP, "Test client"));
-         myContainer.addClient(Manager.createClient(Protocols.HTTP, "Proxy client"));
+         myContainer.addClient(new GenericClient(Protocols.HTTP, "Test client"));
+         myContainer.addClient(new GenericClient(Protocols.HTTP, "Proxy client"));
 
          // Create the proxy Restlet
          String target = "http://localhost:9090${path}${if query}?${query}${end}";
@@ -80,8 +81,8 @@ public class RedirectTest extends TestCase
             };
          
          // Create the server connectors
-         myContainer.addServer(Manager.createServer(Protocols.HTTP, "Proxy server", proxy, null, 8080));
-         myContainer.addServer(Manager.createServer(Protocols.HTTP, "Origin server", trace, null, 9090));
+         myContainer.addServer(new GenericServer(Protocols.HTTP, "Proxy server", proxy, null, 8080));
+         myContainer.addServer(new GenericServer(Protocols.HTTP, "Origin server", trace, null, 9090));
 
          // Now, let's start the container!
          myContainer.start();

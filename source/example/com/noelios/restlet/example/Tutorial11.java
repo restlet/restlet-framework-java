@@ -26,11 +26,11 @@ import java.util.List;
 
 import org.restlet.AbstractRestlet;
 import org.restlet.DefaultMaplet;
-import org.restlet.Manager;
 import org.restlet.Maplet;
 import org.restlet.Call;
 import org.restlet.Restlet;
 import org.restlet.component.RestletContainer;
+import org.restlet.connector.GenericServer;
 import org.restlet.connector.Server;
 import org.restlet.data.ChallengeSchemes;
 import org.restlet.data.MediaTypes;
@@ -56,7 +56,7 @@ public class Tutorial11
 
          // Create the HTTP server connector, then add it as a server connector
          // to the Restlet container. Note that the container is the call restlet.
-         Server server = Manager.createServer(Protocols.HTTP, "My server", myContainer, null, 8182);
+         Server server = new GenericServer(Protocols.HTTP, "My server", myContainer, null, 8182);
          myContainer.addServer(server);
 
          // Attach a log Chainlet to the container

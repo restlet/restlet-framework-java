@@ -22,66 +22,241 @@
 
 package org.restlet.data;
 
+import java.io.IOException;
+import java.util.ArrayList;
+import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
+
+import org.restlet.Manager;
+
+import com.noelios.restlet.data.StringRepresentation;
+import com.noelios.restlet.util.FormUtils;
 
 /**
  * Representation of a Web form containing submitted parameters.
  */
-public interface Form extends Data
+public class Form implements Data
 {
-   /**
-    * Returns the modifiable list of parameters.<br/>
-    * Note that multiple parameters with the the same name may occur in any order in the list returned.
-    * @return The modifiable list of parameters.
-    */
-   public List<Parameter> getParameters();
-
-   /**
-    * Adds a new parameter.
-    * @param name The parameter name.
-    * @param value The parameter value.
-    */
-   public void addParameter(String name, String value);
-
-   /**
-    * Removes parameters with a given name.
-    * @param name The name of the parameters to remove.
-    */
-   public void removeParameters(String name);
+   /** The list of parameters. */
+   protected List<Parameter> parameters;
    
    /**
-    * Gets the list of parameters with the given name.
-    * @param name The parameter name to match.
-    * @return The list of parameters.
+    * Default constructor.
     */
-   public List<Parameter> getParameters(String name);
+   public Form()
+   {
+      this.parameters = null;
+   }
+   
+   /**
+    * Constructor.
+    * @param query The web form parameters as a string.
+    * @throws IOException 
+    */
+   public Form(String query) throws IOException
+   {
+   	Manager.getInstance().parseQuery(this, query);
+   }
+
+   /**
+    * Construcotr.
+    * @param post The posted Web form.
+    * @throws IOException
+    */
+   public Form(Representation post) throws IOException
+   {
+   	Manager.getInstance().parsePost(this, post);
+   }
+
+   /**
+    * Gets the parameters with the given name.<br/>
+    * If multiple values are found, a list is returned created.
+    * @param name The parameter name to match.
+    * @return The parameter value or list of values.
+    */
+   public List<Parameter> getParameters(String name) 
+   {
+      List<Parameter> result = null;
+      
+      Parameter current;
+      for(Iterator<Parameter> iter = getParameters().iterator(); (result == null) && iter.hasNext();)
+      {
+         current = iter.next();
+         
+         if(current.getName().equals(name))
+         {
+            if(result == null) result = new ArrayList<Parameter>();
+            result.add(current);
+         }
+      }
+      
+      return result;
+   }
 
    /**
     * Gets the first parameter with the given name.
     * @param name The parameter name to match.
     * @return The parameter value.
     */
-   public Parameter getFirstParameter(String name);
+   public Parameter getFirstParameter(String name) 
+   {
+   	Parameter result = null;
+   	Parameter current;
+      for(Iterator<Parameter> iter = getParameters().iterator(); (result == null) && iter.hasNext();)
+      {
+         current = iter.next();
+         
+         if(current.getName().equals(name))
+         {
+            result = current;
+         }
+      }
+      
+      return result;
+   }
 
+   /**
+    * Returns the modifiable list of parameters.
+    * @return The modifiable list of parameters.
+    */
+   public List<Parameter> getParameters()
+   {
+   	if(this.parameters == null) this.parameters = new ArrayList<Parameter>();
+      return this.parameters;
+   }
+
+   /**
+    * Adds a new parameter.
+    * @param name The parameter name.
+    * @param value The parameter value.
+    */
+   public void addParameter(String name, String value)
+   {
+      getParameters().add(new Parameter(name, value));
+   }
+
+   /**
+    * Removes parameters with a given name.
+    * @param name The name of the parameters to remove.
+    */
+   public void removeParameters(String name)
+   {
+   	Parameter current;
+      for(Iterator<Parameter> iter = getParameters().iterator(); iter.hasNext();)
+      {
+         current = iter.next();
+         
+         if(current.getName().equals(name))
+         {
+            iter.remove();
+         }
+      }
+   }
+   
    /**
     * Gets the parameters whose name is a key in the given map.<br/>
     * If a matching parameter is found, its value is put in the map.<br/>
     * If multiple values are found, a list is created and set in the map.
-    * @param parameters The parameters map controlling the reading.
+    * @param params The parameters map controlling the reading.
     */
-   public void getParameters(Map<String, Object> parameters);
+   @SuppressWarnings("unchecked")
+   public void getParameters(Map<String, Object> params) 
+   {
+   	Parameter param;
+      Object currentValue = null;
+      for(Iterator<Parameter> iter = getParameters().iterator(); iter.hasNext();)
+      {
+         param = iter.next();
+         
+         if(params.containsKey(param.getName()))
+         {
+            currentValue = params.get(param.getName());
+
+            if(currentValue != null)
+            {
+               List<Object> values = null;
+
+               if(currentValue instanceof List)
+               {
+                  // Multiple values already found for this parameter
+                  values = (List<Object>)currentValue;
+               }
+               else
+               {
+                  // Second value found for this parameter
+                  // Create a list of values
+                  values = new ArrayList<Object>();
+                  values.add(currentValue);
+                  params.put(param.getName(), values);
+               }
+
+               if(param.getValue() == null)
+               {
+                  values.add(new EmptyValue());
+               }
+               else
+               {
+                  values.add(param.getValue());
+               }
+            }
+            else
+            {
+               if(param.getValue() == null)
+               {
+                  params.put(param.getName(), new EmptyValue());
+               }
+               else
+               {
+                  params.put(param.getName(), param.getValue());
+               }
+            }
+         }
+      }
+      
+   }
 
    /**
     * Returns the formatted query corresponding to the current list of parameters.
     * @return The formatted query.
     */
-   public String getQuery();
+   public String getQuery() 
+   {
+      try
+      {
+         return FormUtils.format(this.parameters);
+      }
+      catch(IOException e)
+      {
+         return null;
+      }
+   }
 
    /**
     * Returns the formatted query corresponding to the current list of parameters.
     * @return The formatted query.
     */
-   public Representation getRepresentation();
+   public Representation getRepresentation() 
+   {
+      return new StringRepresentation(getQuery(), MediaTypes.APPLICATION_WWW_FORM);
+   }
+
+   /**
+    * Returns the name of this REST element.
+    * @return The name of this REST element.
+    */
+   public String getName()
+   {
+      return "Web Form";
+   }
+
+   /**
+    * Returns the description of this REST element.
+    * @return The description of this REST element.
+    */
+   public String getDescription()
+   {
+      return "Representation of a Web form containing submitted parameters.";
+   }
 
 }

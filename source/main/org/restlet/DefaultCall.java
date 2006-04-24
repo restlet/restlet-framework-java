@@ -22,6 +22,9 @@
 
 package org.restlet;
 
+import org.restlet.data.Method;
+import org.restlet.data.Reference;
+
 /**
  * Default Restlet call that can be easily subclassed.<br/>
  * Useful for application developer who need to call client connectors.
@@ -33,6 +36,31 @@ public class DefaultCall extends WrapperCall
     */
    public DefaultCall()
    {
-      super(Manager.createDelegateCall());
+      super(Manager.getInstance().createCall());
    }
+   
+   /**
+    * Constructor.
+    * @param method The call's method.
+    * @param resourceRef The resource reference.
+    */
+   public DefaultCall(Method method, Reference resourceRef)
+   {
+   	this();
+   	setMethod(method);
+   	setResourceRef(resourceRef);
+   }
+   
+   /**
+    * Constructor.
+    * @param method The call's method.
+    * @param resourceUri The resource URI.
+    */
+   public DefaultCall(Method method, String resourceUri)
+   {
+   	this();
+   	setMethod(method);
+   	setResourceRef(resourceUri);
+   }
+   
 }

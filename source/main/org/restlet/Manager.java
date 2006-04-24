@@ -32,12 +32,15 @@ import java.util.logging.Logger;
 import org.restlet.component.Component;
 import org.restlet.connector.Client;
 import org.restlet.connector.Server;
-import org.restlet.data.*;
+import org.restlet.data.ChallengeResponse;
+import org.restlet.data.Form;
+import org.restlet.data.Protocol;
+import org.restlet.data.Representation;
 
 /**
- * The main manager that also acts as an object factory. Façade around the current Restlet API implementation.
+ * The object factory and registration service for Restlet API implementations.
  */
-public class Manager
+public abstract class Manager
 {
    /** Obtain a suitable logger. */
    private static Logger logger = Logger.getLogger("org.restlet.Manager");
@@ -46,94 +49,15 @@ public class Manager
    public static final String VERSION_SHORT = "1.0b10";
 
    /** The registered factory. */
-   protected static Factory registeredFactory = null;
+   protected static Manager instance = null;
 
    /**
-    * Creates a challenge response for a specific scheme (ex: HTTP BASIC authentication)
-    * using a login and a password as the credentials.
-    * @param scheme The challenge scheme to use.
-    * @param userId The user identifier to use.
-    * @param password The user password.
-    * @return The challenge response to attach to an uniform call.
+    * Returns the factory registered by the Restlet implementation.
+    * @return The factory registered by the Restlet implementation.
     */
-   public static ChallengeResponse createChallengeResponse(ChallengeScheme scheme, String userId, String password)
+   public static Manager getInstance()
    {
-      return getRegisteredFactory().createChallengeResponse(scheme, userId, password);
-   }
-
-   /**
-    * Create a new client connector for a given protocol.
-    * @param protocol The connector protocol.
-    * @param name The unique connector name.
-    * @return The new client connector.
-    */
-   public static Client createClient(Protocol protocol, String name)
-   {
-      return getRegisteredFactory().createClient(protocol, name);
-   }
-
-   /**
-    * Creates a delegate call.
-    * @return A delegate call.
-    */
-   public static Call createDelegateCall()
-   {
-      return getRegisteredFactory().createCall();
-   }
-
-   /**
-    * Creates a delegate Chainlet for internal usage by the AbstractChainlet.<br/>
-    * If you need a Chainlet for your application, you should be subclassing the AbstractChainlet instead. 
-    * @param parent The parent component.
-    * @return A new Chainlet.
-    */
-   public static Chainlet createDelegateChainlet(Component parent)
-   {
-      return getRegisteredFactory().createChainlet(parent);
-   }
-
-   /**
-    * Creates a delegate Maplet for internal usage by the DefaultMaplet.<br/>
-    * If you need a Maplet for your application, you should be using the DefaultMaplet instead. 
-    * @param parent The parent component.
-    * @return A new Maplet.
-    */
-   public static Maplet createDelegateMaplet(Component parent)
-   {
-      return getRegisteredFactory().createMaplet(parent);
-   }
-
-   /**
-    * Creates an empty form.
-    * @param query Query string to parse or null for an empty form.
-    * @return A new form.
-    */
-   public static Form createForm(String query) throws IOException
-   {
-      return getRegisteredFactory().createForm(query);
-   }
-
-   /**
-    * Create a new server connector for a given protocol.
-    * @param protocol The connector protocol.
-    * @param name The unique connector name.
-    * @param target The target Restlet.
-    * @param address The optional listening IP address (local host used if null).
-    * @param port The listening port.
-    * @return The new server connector.
-    */
-   public static Server createServer(Protocol protocol, String name, Restlet target, String address, int port)
-   {
-      return getRegisteredFactory().createServer(protocol, name, target, address, port);
-   }
-
-   /**
-    * Returns the registered factory.
-    * @return The registered factory.
-    */
-   protected static Factory getRegisteredFactory()
-   {
-      Factory result = registeredFactory;
+   	Manager result = instance;
 
       if(result == null)
       {
@@ -166,8 +90,8 @@ public class Manager
             // Instantiate the factory
             try
             {
-               registeredFactory = (Factory)Class.forName(factoryClassName).newInstance();
-               result = registeredFactory;
+               instance = (Manager)Class.forName(factoryClassName).newInstance();
+               result = instance;
             }
             catch(Exception e)
             {
@@ -181,12 +105,75 @@ public class Manager
    }
 
    /**
-    * Register a new factory.
+    * Register a factory.
     * @param factory The factory to register.
     */
-   public static void registerFactory(Factory factory)
+   public static void register(Manager factory)
    {
-      registeredFactory = factory;
+      instance = factory;
    }
+   
+   /**
+    * Creates a call.
+    * @return A call.
+    */
+   public abstract Call createCall();
+
+   /**
+    * Creates a Chainlet for internal usage by the AbstractChainlet.<br/>
+    * If you need a Chainlet for your application, you should be subclassing the AbstractChainlet instead. 
+    * @param parent The parent component.
+    * @return A new Chainlet.
+    */
+   public abstract Chainlet createChainlet(Component parent);
+
+   /**
+    * Create a client connector for internal usage by the GenericClient.
+    * @param protocol The connector protocol.
+    * @param name The unique connector name.
+    * @return The new client connector.
+    */
+   public abstract Client createClient(Protocol protocol, String name);
+
+   /**
+    * Creates a Maplet for internal usage by the DefaultMaplet.<br/>
+    * If you need a Maplet for your application, you should be using the DefaultMaplet instead. 
+    * @param parent The parent component.
+    * @return A new Maplet.
+    */
+   public abstract Maplet createMaplet(Component parent);
+
+   /**
+    * Create a new server connector for internal usage by the GenericClient.
+    * @param protocol The connector protocol.
+    * @param name The unique connector name.
+    * @param target The target Restlet.
+    * @param address The optional listening IP address (local host used if null).
+    * @param port The listening port.
+    * @return The new server connector.
+    */
+   public abstract Server createServer(Protocol protocol, String name, Restlet target, String address, int port);
+
+   /**
+    * Parses a post into a given form.
+    * @param form The target form.
+    * @param post The posted form.
+    */
+   public abstract void parsePost(Form form, Representation post) throws IOException;
+
+   /**
+    * Parses a query into a given form.
+    * @param form The target form.
+    * @param query Query string.
+    */
+   public abstract void parseQuery(Form form, String query) throws IOException;
+
+   /**
+    * Sets the credentials of a challenge response using a user ID and a password.<br/>
+    * @param response The challenge response to set.
+    * @param userId The user identifier to use.
+    * @param password The user password.
+    */
+   public abstract void setCredentials(ChallengeResponse response, String userId, String password);
 
 }

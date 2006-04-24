@@ -22,33 +22,94 @@
 
 package org.restlet.data;
 
+import org.restlet.Manager;
+
 /**
  * Authentication response sent by client to an origin server.
  */
-public interface ChallengeResponse extends ControlData
+public class ChallengeResponse implements ControlData
 {
+   /** The challenge scheme. */
+   protected ChallengeScheme scheme;
+
+   /** The credentials. */
+   protected String credentials;
+
+   /**
+    * Constructor.
+    * @param scheme The challenge scheme.
+    * @param credentials The credentials to use.
+    */
+   public ChallengeResponse(ChallengeScheme scheme, String credentials)
+   {
+      this.scheme = scheme;
+      this.credentials = credentials;
+   }
+
+   /**
+    * Constructor.
+    * @param scheme The challenge scheme.
+    * @param userId The user identifier to use.
+    * @param password The password to use.
+    */
+   public ChallengeResponse(ChallengeScheme scheme, String userId, String password)
+   {
+      this.scheme = scheme;
+      Manager.getInstance().setCredentials(this, userId, password);
+   }
+
    /**
     * Returns the scheme used.
     * @return The scheme used.
     */
-   public ChallengeScheme getScheme();
+   public ChallengeScheme getScheme()
+   {
+      return this.scheme;
+   }
 
    /**
     * Sets the scheme used.
     * @param scheme The scheme used.
     */
-   public void setScheme(ChallengeScheme scheme);
+   public void setScheme(ChallengeScheme scheme)
+   {
+      this.scheme = scheme;
+   }
 
    /**
     * Returns the credentials.
     * @return The credentials.
     */
-   public String getCredentials();
+   public String getCredentials()
+   {
+      return this.credentials;
+   }
 
    /**
     * Sets the credentials.
     * @param credentials The credentials.
     */
-   public void setCredentials(String credentials);
+   public void setCredentials(String credentials)
+   {
+      this.credentials = credentials;
+   }
+
+   /**
+    * Returns the name of this REST element.
+    * @return The name of this REST element.
+    */
+   public String getName()
+   {
+      return "Authentication challenge response";
+   }
+
+   /**
+    * Returns the description of this REST element.
+    * @return The description of this REST element.
+    */
+   public String getDescription()
+   {
+      return "Authentication response sent by client to an origin server";
+   }
 
 }

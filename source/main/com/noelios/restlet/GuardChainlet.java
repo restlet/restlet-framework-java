@@ -29,13 +29,13 @@ import java.util.logging.Logger;
 import org.restlet.AbstractChainlet;
 import org.restlet.Call;
 import org.restlet.component.Component;
+import org.restlet.data.ChallengeRequest;
 import org.restlet.data.ChallengeResponse;
 import org.restlet.data.ChallengeScheme;
 import org.restlet.data.ChallengeSchemes;
 import org.restlet.data.SecurityData;
 import org.restlet.data.Statuses;
 
-import com.noelios.restlet.impl.ChallengeRequestImpl;
 import com.noelios.restlet.util.Base64;
 
 /**
@@ -229,7 +229,7 @@ public abstract class GuardChainlet extends AbstractChainlet
 		if(this.scheme.equals(ChallengeSchemes.HTTP_BASIC))
 		{
 			call.setStatus(Statuses.CLIENT_ERROR_UNAUTHORIZED);
-			call.getSecurity().setChallengeRequest(new ChallengeRequestImpl(this.scheme, this.realm));
+			call.getSecurity().setChallengeRequest(new ChallengeRequest(this.scheme, this.realm));
 		}
 		else
 		{

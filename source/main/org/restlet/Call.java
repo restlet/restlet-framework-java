@@ -28,7 +28,7 @@ import org.restlet.connector.ConnectorCall;
 import org.restlet.data.*;
 
 /**
- * Represents a uniform call handled by a Restlet.
+ * Call handled by Restlets.
  * @see org.restlet.Restlet
  */
 public interface Call

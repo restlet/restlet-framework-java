@@ -29,6 +29,7 @@ import java.net.URLEncoder;
 import java.util.List;
 import java.util.Map;
 
+import org.restlet.data.Form;
 import org.restlet.data.Parameter;
 import org.restlet.data.Representation;
 
@@ -40,23 +41,23 @@ public class FormUtils
    private static final String encoding = "UTF-8";
 
    /**
-    * Returns the list of parameters of a query string.
-    * @param query The query string.
-    * @return The list of parameters of a query string.
+    * Parses a query into a given form.
+    * @param form The target form.
+    * @param query Query string.
     */
-   public static List<Parameter> getParameters(String query) throws IOException
+   public static void parseQuery(Form form, String query) throws IOException
    {
-      return new FormReader(query).readParameters();
+      new FormReader(query).addParameters(form);
    }
    
    /**
-    * Returns the list of parameters of a web form representation.
-    * @param form The web form representation.
-    * @return The list of parameters of a web form representation.
+    * Parses a post into a given form.
+    * @param form The target form.
+    * @param post The posted form.
     */
-   public static List<Parameter> getParameters(Representation form) throws IOException
+   public static void parsePost(Form form, Representation post) throws IOException
    {
-      return new FormReader(form).readParameters();
+      new FormReader(post).addParameters(form);
    }
 
    /**
@@ -75,12 +76,12 @@ public class FormUtils
     * Reads the parameters whose name is a key in the given map.<br/>
     * If a matching parameter is found, its value is put in the map.<br/>
     * If multiple values are found, a list is created and set in the map.
-    * @param form The web form representation.
+    * @param post The web form representation.
     * @param parameters The parameters map controlling the reading.
     */
-   public static void getParameters(Representation form, Map<String, Object> parameters) throws IOException
+   public static void getParameters(Representation post, Map<String, Object> parameters) throws IOException
    {
-      new FormReader(form).readParameters(parameters);
+      new FormReader(post).readParameters(parameters);
    }
    
    /**
@@ -97,14 +98,14 @@ public class FormUtils
    
    /**
     * Reads the first parameter with the given name.
-    * @param form The web form representation.
+    * @param post The web form representation.
     * @param name The parameter name to match.
     * @return The parameter.
     * @throws IOException
     */
-   public static Parameter getFirstParameter(Representation form, String name) throws IOException
+   public static Parameter getFirstParameter(Representation post, String name) throws IOException
    {
-      return new FormReader(form).readFirstParameter(name);
+      return new FormReader(post).readFirstParameter(name);
    }
    
    /**

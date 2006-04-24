@@ -26,8 +26,6 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 
-import org.restlet.Manager;
-
 /**
  * Represents a reference to a uniform resource identifier (URI).<br/>
  * Contrary to the java.net.URI class, this interface represents mutable references.
@@ -551,7 +549,7 @@ public class Reference implements Data
     */
    public Form getQueryAsForm() throws IOException
    {
-      return Manager.createForm(getQuery());
+      return new Form(getQuery());
    }
 
    /**

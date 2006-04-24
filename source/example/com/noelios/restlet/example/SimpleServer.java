@@ -25,11 +25,10 @@ package com.noelios.restlet.example;
 import java.util.List;
 
 import org.restlet.AbstractRestlet;
-import org.restlet.Manager;
 import org.restlet.Call;
 import org.restlet.Restlet;
 import org.restlet.component.RestletContainer;
-import org.restlet.connector.Server;
+import org.restlet.connector.GenericServer;
 import org.restlet.data.Form;
 import org.restlet.data.MediaTypes;
 import org.restlet.data.Methods;
@@ -54,8 +53,7 @@ public class SimpleServer
          // Create the HTTP server connector, then add it as a server
          // connector to the Restlet container. Note that the container
          // is the call restlet.
-         Server server = Manager.createServer(Protocols.HTTP, "My connector", myContainer, null, 9876);
-         myContainer.addServer(server);
+         myContainer.addServer(new GenericServer(Protocols.HTTP, "My connector", myContainer, null, 9876));
 
          Restlet testRestlet = new AbstractRestlet(myContainer)
          {

@@ -26,8 +26,8 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 
-import org.restlet.Manager;
 import org.restlet.connector.Client;
+import org.restlet.connector.GenericClient;
 import org.restlet.data.DefaultMediaType;
 import org.restlet.data.Protocols;
 import org.restlet.data.Reference;
@@ -80,7 +80,7 @@ public class Service extends SaxRepresentation
 	 */
 	public Service(String serviceUri) throws IOException
 	{
-		this(Manager.createClient(Protocols.HTTP, "Atom HTTP Client"), serviceUri);
+		this(new GenericClient(Protocols.HTTP, "Atom HTTP Client"), serviceUri);
 	}
 	
 	/**
@@ -102,7 +102,7 @@ public class Service extends SaxRepresentation
 	 */
 	public Service(String serviceUri, Representation xmlService) throws IOException
 	{
-		this(Manager.createClient(Protocols.HTTP, "Atom HTTP Client"), serviceUri, xmlService);
+		this(new GenericClient(Protocols.HTTP, "Atom HTTP Client"), serviceUri, xmlService);
 	}
 
 	/**

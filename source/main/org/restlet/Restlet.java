@@ -25,7 +25,7 @@ package org.restlet;
 import org.restlet.component.Component;
 
 /**
- * Uniform interface for REST handlers.<br/><br/> "The central feature that distinguishes
+ * Uniform REST handler interface.<br/><br/> "The central feature that distinguishes
  * the REST architectural style from other network-based styles is its emphasis on a uniform interface between
  * components. By applying the software engineering principle of generality to the component interface, the
  * overall system architecture is simplified and the visibility of interactions is improved. Implementations
@@ -36,27 +36,27 @@ import org.restlet.component.Component;
  */
 public interface Restlet
 {
-   /** Starts the restlet. */
+   /** Starts the Restlet. */
    public void start() throws Exception;
 
-   /** Stops the restlet. */
+   /** Stops the Restlet. */
    public void stop() throws Exception;
 
    /**
-    * Handles a uniform call.
-    * @param call The uniform call to handle.
+    * Handles a call.
+    * @param call The call to handle.
     */
    public void handle(Call call);
 
    /**
-    * Indicates if the restlet is started.
-    * @return True if the restlet is started.
+    * Indicates if the Restlet is started.
+    * @return True if the Restlet is started.
     */
    public boolean isStarted();
 
    /**
-    * Indicates if the restlet is stopped.
-    * @return True if the restlet is stopped.
+    * Indicates if the Restlet is stopped.
+    * @return True if the Restlet is stopped.
     */
    public boolean isStopped();
 

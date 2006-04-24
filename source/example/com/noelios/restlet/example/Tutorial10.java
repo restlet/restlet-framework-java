@@ -22,8 +22,8 @@
 
 package com.noelios.restlet.example;
 
-import org.restlet.Manager;
 import org.restlet.component.RestletContainer;
+import org.restlet.connector.GenericServer;
 import org.restlet.connector.Server;
 import org.restlet.data.Protocols;
 
@@ -43,7 +43,7 @@ public class Tutorial10
 
          // Create the HTTP server connector, then add it as a server connector
          // to the Restlet container. Note that the container is the call restlet.
-         Server server = Manager.createServer(Protocols.HTTP, "My server", myContainer, null, 8182);
+         Server server = new GenericServer(Protocols.HTTP, "My server", myContainer, null, 8182);
          myContainer.addServer(server);
 
          // Create a redirect Restlet then attach it to the container

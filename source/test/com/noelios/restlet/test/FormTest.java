@@ -30,6 +30,7 @@ import org.restlet.data.Parameter;
 
 import junit.framework.TestCase;
 
+import com.noelios.restlet.util.FormReader;
 import com.noelios.restlet.util.FormUtils;
 
 /**
@@ -48,7 +49,7 @@ public class FormTest extends TestCase
       params.add(new Parameter("email2", "joe@bob.net"));
       
       String query = FormUtils.format(params);
-      List<Parameter> newParams = FormUtils.getParameters(query);
+      List<Parameter> newParams = new FormReader(query).readParameters();
       String newQuery = FormUtils.format(newParams);
       assertEquals(query, newQuery);
    }
