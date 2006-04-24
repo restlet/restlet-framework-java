@@ -202,7 +202,7 @@ public class FactoryImpl extends Factory
     */
    public static void register()
    {
-      Factory.register(new FactoryImpl());
+      Factory.setInstance(new FactoryImpl());
    }
 
    /**

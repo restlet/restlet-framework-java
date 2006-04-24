@@ -28,7 +28,7 @@ import org.restlet.Call;
 import org.restlet.data.Parameter;
 
 /**
- * Readable model wrapping an uniform call.<br/>
+ * Readable model wrapping a REST call.<br/>
  * It can be passed directly passed to a string template. Repeating values can be retrieved by appending 
  * [index] or ["name"] after the variable's name. Note that [first] is equivalent to [0] and that [last] 
  * returns the last value. Here is the list of currently supported variables:

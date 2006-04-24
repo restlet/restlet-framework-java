@@ -24,7 +24,7 @@ package com.noelios.restlet.util;
 
 /**
  * Readable and writable model .
- * @see com.noelios.restlet.util.DefaultModel
+ * @see com.noelios.restlet.util.MapModel
  */
 public interface Model extends ReadableModel, WritableModel
 {

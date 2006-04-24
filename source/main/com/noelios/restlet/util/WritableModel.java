@@ -24,7 +24,7 @@ package com.noelios.restlet.util;
 
 /**
  * Writable template model.
- * @see com.noelios.restlet.util.DefaultModel
+ * @see com.noelios.restlet.util.MapModel
  */
 public interface WritableModel
 {

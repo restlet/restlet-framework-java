@@ -55,8 +55,8 @@ public abstract class Factory
    protected static Factory instance = null;
 
    /**
-    * Returns the factory registered by the Restlet implementation.
-    * @return The factory registered by the Restlet implementation.
+    * Returns the factory of the Restlet implementation.
+    * @return The factory of the Restlet implementation.
     */
    public static Factory getInstance()
    {
@@ -108,10 +108,10 @@ public abstract class Factory
    }
 
    /**
-    * Register a factory.
+    * Sets the factory of the Restlet implementation.
     * @param factory The factory to register.
     */
-   public static void register(Factory factory)
+   public static void setInstance(Factory factory)
    {
       instance = factory;
    }
