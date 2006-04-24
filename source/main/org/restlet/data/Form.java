@@ -30,9 +30,6 @@ import java.util.Map;
 
 import org.restlet.Factory;
 
-import com.noelios.restlet.data.StringRepresentation;
-import com.noelios.restlet.util.FormUtils;
-
 /**
  * Representation of a Web form containing submitted parameters.
  */
@@ -222,14 +219,7 @@ public class Form implements Data
     */
    public String getQuery() 
    {
-      try
-      {
-         return FormUtils.format(this.parameters);
-      }
-      catch(IOException e)
-      {
-         return null;
-      }
+   	return Factory.getInstance().format(this.parameters);
    }
 
    /**
@@ -238,7 +228,7 @@ public class Form implements Data
     */
    public Representation getRepresentation() 
    {
-      return new StringRepresentation(getQuery(), MediaTypes.APPLICATION_WWW_FORM);
+      return Factory.getInstance().createRepresentation(getQuery(), MediaTypes.APPLICATION_WWW_FORM);
    }
 
    /**

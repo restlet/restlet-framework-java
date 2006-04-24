@@ -34,7 +34,6 @@ import java.util.List;
 
 import org.mortbay.jetty.HttpConnection;
 import org.mortbay.jetty.HttpURI;
-import org.restlet.Manager;
 import org.restlet.data.Parameter;
 
 import com.noelios.restlet.impl.HttpServerCallImpl;
