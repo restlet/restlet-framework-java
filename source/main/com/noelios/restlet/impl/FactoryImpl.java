@@ -257,8 +257,8 @@ public class FactoryImpl extends Factory
    }
 
    /**
-    * Creates a delegate Maplet for internal usage by the GenericMaplet.<br/>
-    * If you need a Maplet for your application, you should be using the GenericMaplet instead. 
+    * Creates a delegate Maplet for internal usage by the DefaultMaplet.<br/>
+    * If you need a Maplet for your application, you should be using the DefaultMaplet instead. 
     * @param parent The parent component.
     * @return A new Maplet.
     */

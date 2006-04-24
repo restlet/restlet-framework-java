@@ -139,8 +139,8 @@ public abstract class Factory
    public abstract Client createClient(Protocol protocol, String name);
 
    /**
-    * Creates a Maplet for internal usage by the GenericMaplet.<br/>
-    * If you need a Maplet for your application, you should be using the GenericMaplet instead. 
+    * Creates a Maplet for internal usage by the DefaultMaplet.<br/>
+    * If you need a Maplet for your application, you should be using the DefaultMaplet instead. 
     * @param parent The parent component.
     * @return A new Maplet.
     */

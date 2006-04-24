@@ -26,7 +26,7 @@ import org.restlet.data.Method;
 import org.restlet.data.Reference;
 
 /**
- * Default Restlet call that can be easily subclassed.<br/>
+ * Generic Restlet call that can be easily subclassed.<br/>
  * Useful for application developer who need to call client connectors.
  */
 public class GenericCall extends WrapperCall

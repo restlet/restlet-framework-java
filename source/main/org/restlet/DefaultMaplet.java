@@ -28,7 +28,7 @@ import org.restlet.component.Component;
  * Default Maplet that can be easily subclassed.
  * @see <a href="http://www.restlet.org/tutorial#part11">Tutorial: Maplets and hierarchical URIs</a>
  */
-public class GenericMaplet extends AbstractRestlet implements Maplet
+public class DefaultMaplet extends AbstractRestlet implements Maplet
 {
    /** Delegate Maplet actually implementing the Maplet methods. */
    protected Maplet delegate;
@@ -37,7 +37,7 @@ public class GenericMaplet extends AbstractRestlet implements Maplet
     * Creates a new Maplet in the given container.
     * @param parent The parent component.
     */
-   public GenericMaplet(Component parent)
+   public DefaultMaplet(Component parent)
    {
       super(parent);
       this.delegate = Factory.getInstance().createMaplet(parent);
