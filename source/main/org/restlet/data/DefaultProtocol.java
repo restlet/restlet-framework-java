@@ -22,23 +22,61 @@
 
 package org.restlet.data;
 
-
 /**
- * Protocol used by a client and a server connector to enable the communication
- * between two distributed components.
+ * Default protocol to enable the communication between components..
  */
-public interface Protocol extends ControlData
+public class DefaultProtocol implements ControlData
 {
+	/** The scheme name. */
+	protected String schemeName;
+	
+	/** The unique protocol name. */
+	protected String uniqueName;
+	
+	/**
+	 * Constructor.
+	 * @param schemeName The scheme name.
+	 * @param uniqueName The unique protocol name.
+	 */
+	public DefaultProtocol(String schemeName, String uniqueName)
+	{
+		this.schemeName = schemeName;
+	}
+	
 	/**
 	 * Returns the URI scheme name. 
 	 * @return The URI scheme name.
 	 */
-	public String getSchemeName();
+	public String getSchemeName()
+	{
+		return this.schemeName;
+	}
 	
    /**
     * Indicates if the protocol is equal to a given one.
     * @param protocol The protocol to compare to.
     * @return True if the protocol is equal to a given one.
     */
-   public boolean equals(Protocol protocol);
+   public boolean equals(Protocol protocol)
+   {
+   	return getName().equalsIgnoreCase(protocol.getName());
+   }
+   
+   /**
+    * Returns the name of this REST element.
+    * @return The name of this REST element.
+    */
+   public String getName()
+   {
+   	return this.uniqueName;
+   }
+
+   /**
+    * Returns the description of this REST element.
+    * @return The description of this REST element.
+    */
+   public String getDescription()
+   {
+   	return "Protocol named " + getName();
+   }
 }

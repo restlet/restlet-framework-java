@@ -49,6 +49,42 @@ public enum Protocols implements Protocol
    SMTPS;
 
    /**
+	 * Returns the URI scheme name. 
+	 * @return The URI scheme name.
+	 */
+	public String getSchemeName()
+	{
+      String result = null;
+
+      switch(this)
+      {
+         case AJP:
+            result = "ajp";
+            break;
+         case HTTP:
+            result = "http";
+            break;
+         case HTTPS:
+            result = "https";
+            break;
+         case JDBC:
+            result = "jdbc";
+            break;
+         case SMTP:
+            result = "smtp";
+            break;
+         case SMTP_STARTTLS:
+         	result = "smtp";
+         	break;
+         case SMTPS:
+            result = "smtps";
+            break;
+      }
+
+      return result;
+	}
+
+   /**
     * Returns the unique name of the protocol (ex: HTTP).
     * @return The unique name of the protocol (ex: HTTP).
     */
