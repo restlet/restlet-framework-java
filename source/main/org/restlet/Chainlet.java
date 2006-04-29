@@ -23,9 +23,8 @@
 package org.restlet;
 
 /**
- * Chainer of calls to a target Restlet.<br/> 
- * Interception or filtering can be done in the handle() method, just remember to call the delegate() method before or
- * after your custom handling.<br/>
+ * Chainer of calls to a target Restlet. Interception or filtering can be done in the handle() 
+ * method, just remember to call the delegateMaplet() method before or after your custom handling.<br/>
  * Note that during this handling, the call paths are not supposed to be modified.
  * @see <a href="http://www.restlet.org/tutorial#part07">Tutorial: Chainlets and call logging</a>
  */
@@ -44,6 +43,12 @@ public interface Chainlet extends Restlet
     */
    public void attach(Class<? extends Restlet> targetClass);
 
+   /**
+    * Indicates if a target Restlet instance or class has been attached.
+    * @return True if a target Restlet instance or class has been attached.
+    */
+   public boolean hasTarget();
+      
    /**
     * Detaches the current target.
     */
