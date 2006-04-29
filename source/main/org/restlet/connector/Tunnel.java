@@ -23,7 +23,7 @@
 package org.restlet.connector;
 
 /**
- * Connector that simply relays communication across a connection boundary.<br/><br/> "Simply relays
+ * Connector that simply relays communication across a connection boundary. "Simply relays
  * communication across a connection boundary, such as a firewall or lower-level network gateway." Roy T.
  * Fielding
  * @see <a href="http://www.ics.uci.edu/~fielding/pubs/dissertation/rest_arch_style.htm#sec_5_2_2">Source

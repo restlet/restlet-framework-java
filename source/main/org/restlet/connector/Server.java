@@ -27,7 +27,7 @@ import java.io.IOException;
 import org.restlet.Restlet;
 
 /**
- * Connector that listens for connections and responds to requests.<br/>By default, the handle(UniformCall)
+ * Connector that listens for connections and responds to requests. By default, the handle(UniformCall)
  * method delegates the call received to the target restlet<br/><br/>"The primary connector types are
  * client and server. The essential difference between the two is that a client initiates communication by
  * making a request, whereas a server listens for connections and responds to requests in order to supply
@@ -58,7 +58,7 @@ public interface Server extends Connector
 
    /**
     * Configure the SSL properties for secure protocols like HTTPS.
-    * @param keystorePath The path of the keystore file. 
+    * @param keystorePath The path of the keystore file.
     * @param keystorePassword The keystore password.
     * @param keyPassword The password of the server key .
     */

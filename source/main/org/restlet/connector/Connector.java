@@ -27,7 +27,7 @@ import org.restlet.Restlet;
 import org.restlet.data.Protocol;
 
 /**
- * Abstract mechanism that enables communication between components.<br/><br/> "A connector is an abstract
+ * Abstract mechanism that enables communication between components. "A connector is an abstract
  * mechanism that mediates communication, coordination, or cooperation among components. Connectors enable
  * communication between components by transferring data elements from one interface to another without
  * changing the data." Roy T. Fielding </br> "Encapsulate the activities of accessing resources and

@@ -45,7 +45,7 @@ public interface ClientCall extends ConnectorCall
     * Sends the request headers.<br/>
     * Must be called before sending the request input.
     */
-   public void sendRequestHeaders();
+   public void sendRequestHeaders() throws IOException;
 
    /**
     * Sends the request input.
@@ -57,23 +57,23 @@ public interface ClientCall extends ConnectorCall
     * Returns the request entity channel if it exists.
     * @return The request entity channel if it exists.
     */
-   public WritableByteChannel getRequestChannel();
+   public WritableByteChannel getRequestChannel() throws IOException;
    
    /**
     * Returns the request entity stream if it exists.
     * @return The request entity stream if it exists.
     */
-   public OutputStream getRequestStream();
+   public OutputStream getRequestStream() throws IOException;
 
    /**
     * Returns the response channel if it exists.
     * @return The response channel if it exists.
     */
-   public ReadableByteChannel getResponseChannel();
+   public ReadableByteChannel getResponseChannel() throws IOException;
    
    /**
     * Returns the response stream if it exists.
     * @return The response stream if it exists.
     */
-   public InputStream getResponseStream();
+   public InputStream getResponseStream() throws IOException;
 }

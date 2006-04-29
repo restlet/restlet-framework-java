@@ -26,7 +26,7 @@ import org.restlet.Call;
 import org.restlet.data.Representation;
 
 /**
- * Connector that initiates communication by making a request.<br/>By default, the handle(UniformCall)
+ * Connector that initiates communication by making a request. By default, the handle(UniformCall)
  * method converts the call received into a connector call and handle it.<br/><br/>"The primary connector types are
  * client and server. The essential difference between the two is that a client initiates communication by
  * making a request, whereas a server listens for connections and responds to requests in order to supply

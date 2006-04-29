@@ -43,16 +43,29 @@ public class GenericServer implements Server
     * @param protocol The connector protocol.
     * @param name The unique connector name.
     * @param target The target Restlet.
-    * @param address The optional listening IP address (local host used if null).
+    * @param port The listening port.
+    */
+   public GenericServer(Protocol protocol, String name, Restlet target, int port)
+   {
+   	this.wrappedServer = Factory.getInstance().createServer(protocol, name, target, null, port);
+   }
+   
+   /**
+    * Constructor.
+    * @param protocol The connector protocol.
+    * @param name The unique connector name.
+    * @param target The target Restlet.
+    * @param address The optional listening IP address (useful if multiple IP addresses available).
     * @param port The listening port.
     */
    public GenericServer(Protocol protocol, String name, Restlet target, String address, int port)
    {
    	this.wrappedServer = Factory.getInstance().createServer(protocol, name, target, address, port);
    }
+
    /**
     * Handles the HTTP protocol call.<br/>
-    * The default behavior is to create an UniformCall and delegate it to the attached restlet.
+    * The default behavior is to create an REST call and delegate it to the attached Restlet.
     * @param call The HTTP protocol call.
     */
    public void handle(ServerCall call) throws IOException

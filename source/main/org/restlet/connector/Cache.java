@@ -25,7 +25,7 @@ package org.restlet.connector;
 import org.restlet.Restlet;
 
 /**
- * Connector used to reduce interaction latency.<br/><br/> "The cache connector, can be located on the
+ * Connector used to reduce interaction latency. "The cache connector, can be located on the
  * interface to a client or server connector in order to save cacheable responses to current interactions so
  * that they can be reused for later requested interactions. A cache may be used by a client to avoid
  * repetition of network communication, or by a server to avoid repeating the process of generating a
