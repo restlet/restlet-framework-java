@@ -40,8 +40,7 @@ import org.restlet.data.Preference;
 
 
 /**
- * Preference header reader.<br/>
- * Works for character sets, encodings, languages or media types.
+ * Preference header reader. Works for character sets, encodings, languages or media types.
  */
 public class PreferenceReader extends HeaderReader
 {
