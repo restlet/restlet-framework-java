@@ -45,25 +45,25 @@ public class DefaultMaplet extends AbstractRestlet implements Maplet
 
    /**
     * Attaches a target instance shared by all calls.
-    * @param pathPattern The path pattern used to map calls.
+    * @param pattern The URI pattern used to map calls.
     * @param target The target instance to attach.
     * @see java.util.regex.Pattern
     */
-   public void attach(String pathPattern, Restlet target)
+   public void attach(String pattern, Restlet target)
    {
-      delegate.attach(pathPattern, target);
+      delegate.attach(pattern, target);
    }
 
    /**
     * Attaches a target class. A new instance will be created for each call.
-    * @param pathPattern The path pattern used to map calls.
+    * @param pattern The URI pattern used to map calls.
     * @param targetClass The target class to attach (can have a constructor taking a RestletContainer
     * parameter).
     * @see java.util.regex.Pattern
     */
-   public void attach(String pathPattern, Class<? extends Restlet> targetClass)
+   public void attach(String pattern, Class<? extends Restlet> targetClass)
    {
-      delegate.attach(pathPattern, targetClass);
+      delegate.attach(pattern, targetClass);
    }
 
    /**

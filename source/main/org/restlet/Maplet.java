@@ -23,8 +23,8 @@
 package org.restlet;
 
 /**
- * Mapper of calls to attached Restlets.<br/>
- * Delegation is based on path matching pattterns.<br/>
+ * Mapper of calls to attached Restlets. Delegation is based on URI patterns matching the beginning of a the
+ * resource path in the current context (see Call.getResourcePath() method).<br/>
  * Note that during the delegation, the call paths are automatically modified. 
  * If you are handling hierarchical paths, remember to directly attach the child maplets to their parent maplet
  * instead of the top level Restlet container. Also, remember to manually handle the path separator characters 
@@ -35,20 +35,20 @@ public interface Maplet extends Restlet
 {
    /**
     * Attaches a target instance shared by all calls.
-    * @param pathPattern The path pattern used to map calls.
+    * @param pattern The URI pattern used to map calls.
     * @param target The target instance to attach.
     * @see java.util.regex.Pattern
     */
-   public void attach(String pathPattern, Restlet target);
+   public void attach(String pattern, Restlet target);
 
    /**
     * Attaches a target class. A new instance will be created for each call.
-    * @param pathPattern The path pattern used to map calls.
+    * @param pattern The URI pattern used to map calls.
     * @param targetClass The target class to attach (can have a constructor taking a RestletContainer
     * parameter).
     * @see java.util.regex.Pattern
     */
-   public void attach(String pathPattern, Class<? extends Restlet> targetClass);
+   public void attach(String pattern, Class<? extends Restlet> targetClass);
 
    /**
     * Detaches a target instance.
