@@ -57,7 +57,7 @@ import com.noelios.restlet.data.ObjectRepresentation;
 import com.noelios.restlet.impl.FactoryImpl;
 
 /**
- * Client connector to a JDBC database.<br/><br/> To send a request to the server create a new instance of
+ * Client connector to a JDBC database. To send a request to the server create a new instance of
  * JdbcCall and invoke the handle() method. Alteratively you can create a new Call with the JDBC URI as the
  * resource reference and use an XML request as the input representation.<br/><br/> Database connections are
  * optionally pooled using Apache Commons DBCP. In this case, a different connection pool is created for each
