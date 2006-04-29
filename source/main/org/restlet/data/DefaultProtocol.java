@@ -25,10 +25,13 @@ package org.restlet.data;
 /**
  * Default protocol to enable the communication between components..
  */
-public class DefaultProtocol implements ControlData
+public class DefaultProtocol implements Protocol
 {
 	/** The scheme name. */
 	protected String schemeName;
+	
+	/** The default port if known or -1. */
+	protected int defaultPort;
 	
 	/** The unique protocol name. */
 	protected String uniqueName;
@@ -37,10 +40,13 @@ public class DefaultProtocol implements ControlData
 	 * Constructor.
 	 * @param schemeName The scheme name.
 	 * @param uniqueName The unique protocol name.
+	 * @param defaultPort The default port.
 	 */
-	public DefaultProtocol(String schemeName, String uniqueName)
+	public DefaultProtocol(String schemeName, String uniqueName, int defaultPort)
 	{
 		this.schemeName = schemeName;
+		this.uniqueName = uniqueName;
+		this.defaultPort = defaultPort;
 	}
 	
 	/**
@@ -50,6 +56,15 @@ public class DefaultProtocol implements ControlData
 	public String getSchemeName()
 	{
 		return this.schemeName;
+	}
+
+	/**
+	 * Returns the default port number.
+	 * @return The default port number.
+	 */
+	public int getDefaultPort()
+	{
+		return this.defaultPort;
 	}
 	
    /**

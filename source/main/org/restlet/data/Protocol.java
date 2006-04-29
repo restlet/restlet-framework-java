@@ -35,6 +35,12 @@ public interface Protocol extends ControlData
 	 */
 	public String getSchemeName();
 	
+	/**
+	 * Returns the default port number.
+	 * @return The default port number.
+	 */
+	public int getDefaultPort();
+	
    /**
     * Indicates if the protocol is equal to a given one.
     * @param protocol The protocol to compare to.

@@ -84,6 +84,42 @@ public enum Protocols implements Protocol
       return result;
 	}
 
+	/**
+	 * Returns the default port number.
+	 * @return The default port number.
+	 */
+	public int getDefaultPort()
+	{
+      int result = -1;
+
+      switch(this)
+      {
+         case AJP:
+            result = 8009;
+            break;
+         case HTTP:
+            result = 80;
+            break;
+         case HTTPS:
+            result = 443;
+            break;
+         case JDBC:
+            result = -1;
+            break;
+         case SMTP:
+            result = 25;
+            break;
+         case SMTP_STARTTLS:
+         	result = 25;
+         	break;
+         case SMTPS:
+            result = 465;
+            break;
+      }
+
+      return result;
+	}
+
    /**
     * Returns the unique name of the protocol (ex: HTTP).
     * @return The unique name of the protocol (ex: HTTP).
