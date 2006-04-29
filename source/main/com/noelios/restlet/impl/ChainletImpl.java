@@ -69,6 +69,15 @@ public class ChainletImpl extends AbstractRestlet implements Chainlet
    }
 
    /**
+    * Indicates if a target Restlet instance or class has been attached.
+    * @return True if a target Restlet instance or class has been attached.
+    */
+   public boolean hasTarget()
+   {
+   	return (this.target != null);
+   }
+   
+   /**
     * Detaches the current target.
     */
    public void detach()
@@ -90,7 +99,7 @@ public class ChainletImpl extends AbstractRestlet implements Chainlet
       }
       else
       {
-         // No delegate was found
+         // No delegateMaplet was found
          call.setStatus(Statuses.CLIENT_ERROR_NOT_FOUND);
       }
    }
