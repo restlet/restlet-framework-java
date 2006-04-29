@@ -65,6 +65,16 @@ public class DefaultStatus implements Status
    }
 
    /**
+    * Constructor.
+    * @param status The status to copy.
+    * @param description The description to associate.
+    */
+   public DefaultStatus(Status status, String description)
+   {
+      this(status.getHttpCode(), status.getName(), description, status.getUri());
+   }
+
+   /**
     * Returns the HTTP code.
     * @return The HTTP code.
     */
@@ -83,12 +93,21 @@ public class DefaultStatus implements Status
    }
 
    /**
-    * Returns the description of this REST element.
-    * @return The description of this REST element.
+    * Returns the description.
+    * @return The description.
     */
    public String getDescription()
    {
       return (description == null) ? Statuses.getDescription(getHttpCode()) : description;
+   }
+
+   /**
+    * Sets the description.
+    * @param description The description.
+    */
+   public void setDescription(String description)
+   {
+      this.description = description;
    }
 
    /**
