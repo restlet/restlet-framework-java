@@ -27,7 +27,6 @@ import java.io.InputStream;
 import java.io.OutputStream;
 import java.net.HttpURLConnection;
 import java.net.InetAddress;
-import java.net.ProtocolException;
 import java.net.URL;
 import java.net.UnknownHostException;
 import java.nio.channels.ReadableByteChannel;
@@ -35,8 +34,6 @@ import java.nio.channels.WritableByteChannel;
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 
 import javax.net.ssl.HttpsURLConnection;
 
@@ -49,9 +46,6 @@ import org.restlet.data.Representation;
  */
 public class HttpClientCallImpl extends ConnectorCallImpl implements ClientCall
 {
-   /** Obtain a suitable logger. */
-   private static Logger logger = Logger.getLogger("com.noelios.restlet.connector.HttpClientCallImpl");
-
    /** The wrapped HTTP URL connection. */
    protected HttpURLConnection connection;
    
@@ -114,17 +108,10 @@ public class HttpClientCallImpl extends ConnectorCallImpl implements ClientCall
     * Sends the request headers.<br/>
     * Must be called before sending the request input.
     */
-   public void sendRequestHeaders()
+   public void sendRequestHeaders() throws IOException
    {
       // Set the request method
-      try
-      {
-         getConnection().setRequestMethod(getRequestMethod());
-      }
-      catch(ProtocolException e)
-      {
-         logger.log(Level.WARNING, "Unable to set method", e);
-      }
+      getConnection().setRequestMethod(getRequestMethod());
 
       // Set the request headers
       Parameter header;
@@ -135,14 +122,7 @@ public class HttpClientCallImpl extends ConnectorCallImpl implements ClientCall
       }
 
       // Ensure that the connections is active
-      try
-      {
-         getConnection().connect();
-      }
-      catch(IOException ioe)
-      {
-         logger.log(Level.WARNING, "Unable to connect to the server", ioe);
-      }
+      getConnection().connect();
    }
 
    /**
@@ -167,7 +147,7 @@ public class HttpClientCallImpl extends ConnectorCallImpl implements ClientCall
     * Returns the request entity channel if it exists.
     * @return The request entity channel if it exists.
     */
-   public WritableByteChannel getRequestChannel()
+   public WritableByteChannel getRequestChannel() throws IOException
    {
       return null;
    }
@@ -176,17 +156,9 @@ public class HttpClientCallImpl extends ConnectorCallImpl implements ClientCall
     * Returns the request entity stream if it exists.
     * @return The request entity stream if it exists.
     */
-   public OutputStream getRequestStream()
+   public OutputStream getRequestStream() throws IOException
    {
-      try
-      {
-         return getConnection().getOutputStream();
-      }
-      catch(IOException e)
-      {
-         logger.log(Level.WARNING, "Unable to get the request stream", e);
-         return null;
-      }
+      return getConnection().getOutputStream();
    }
 
    /**
@@ -261,7 +233,7 @@ public class HttpClientCallImpl extends ConnectorCallImpl implements ClientCall
     * Returns the response channel if it exists.
     * @return The response channel if it exists.
     */
-   public ReadableByteChannel getResponseChannel()
+   public ReadableByteChannel getResponseChannel() throws IOException
    {
       return null;
    }
@@ -270,16 +242,8 @@ public class HttpClientCallImpl extends ConnectorCallImpl implements ClientCall
     * Returns the response stream if it exists.
     * @return The response stream if it exists.
     */
-   public InputStream getResponseStream()
+   public InputStream getResponseStream() throws IOException
    {
-      try
-      {
-         return getConnection().getInputStream();
-      }
-      catch(IOException e)
-      {
-         logger.log(Level.FINE, "Unable to get the response stream", e);
-         return null;
-      }
+      return getConnection().getInputStream();
    }
 }

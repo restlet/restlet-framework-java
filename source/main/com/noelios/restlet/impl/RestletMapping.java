@@ -33,38 +33,38 @@ import org.restlet.Restlet;
  */
 public class RestletMapping extends RestletTarget
 {
-   /** The path pattern. */
-   Pattern pathPattern;
+   /** The URI pattern. */
+   Pattern pattern;
 
    /**
     * Constructor.
-    * @param pathPattern The path pattern.
+    * @param pattern The URI pattern.
     * @param target The target interface.
     */
-   public RestletMapping(String pathPattern, Restlet target)
+   public RestletMapping(String pattern, Restlet target)
    {
       super(target);
-      this.pathPattern = Pattern.compile(pathPattern, Pattern.CASE_INSENSITIVE);
+      this.pattern = Pattern.compile(pattern, Pattern.CASE_INSENSITIVE);
    }
 
    /**
     * Constructor.
-    * @param pathPattern The path pattern.
+    * @param pattern The URI pattern.
     * @param targetClass The target class.
     */
-   public RestletMapping(String pathPattern, Class<? extends Restlet> targetClass)
+   public RestletMapping(String pattern, Class<? extends Restlet> targetClass)
    {
       super(targetClass);
-      this.pathPattern = Pattern.compile(pathPattern, Pattern.CASE_INSENSITIVE);
+      this.pattern = Pattern.compile(pattern, Pattern.CASE_INSENSITIVE);
    }
 
    /**
-    * Returns the path pattern.
-    * @return The path pattern.
+    * Returns the URI pattern.
+    * @return The URI pattern.
     */
-   public Pattern getPathPattern()
+   public Pattern getPattern()
    {
-      return this.pathPattern;
+      return this.pattern;
    }
 
 }

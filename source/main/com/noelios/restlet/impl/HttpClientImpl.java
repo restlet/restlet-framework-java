@@ -23,6 +23,7 @@
 package com.noelios.restlet.impl;
 
 import java.io.IOException;
+import java.net.ConnectException;
 import java.util.Arrays;
 import java.util.Date;
 import java.util.Iterator;
@@ -52,6 +53,7 @@ import org.restlet.data.Protocol;
 import org.restlet.data.Protocols;
 import org.restlet.data.Representation;
 import org.restlet.data.DefaultStatus;
+import org.restlet.data.Statuses;
 import org.restlet.data.Tag;
 
 import com.noelios.restlet.data.ContentType;
@@ -378,9 +380,15 @@ public class HttpClientImpl extends AbstractClient
             }
          }
       }
+      catch(ConnectException ce)
+      {
+         logger.log(Level.FINE, "An error occured during the connection to the remote HTTP server.", ce);
+         call.setStatus(new DefaultStatus(Statuses.SERVER_ERROR_SERVICE_UNAVAILABLE, "Unable to connect to the remote server. " + ce.getMessage()));
+      }
       catch(Exception e)
       {
-         logger.log(Level.WARNING, "An error occured during the handling of an HTTP client call.", e);
+         logger.log(Level.FINE, "An error occured during the handling of the HTTP client call.", e);
+         call.setStatus(new DefaultStatus(Statuses.SERVER_ERROR_INTERNAL, "Unable to complete the call. " + e.getMessage()));
       }
    }
 
