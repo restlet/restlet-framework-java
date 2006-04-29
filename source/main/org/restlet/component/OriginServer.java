@@ -23,7 +23,7 @@
 package org.restlet.component;
 
 /**
- * Definitive source for representations of resources in a governed namespace.<br/><br/> "An origin server
+ * Definitive source for representations of resources in a governed namespace. "An origin server
  * uses a server connector to govern the namespace for a requested resource. It is the definitive source for
  * representations of its resources and must be the ultimate recipient of any request that intends to modify
  * the value of its resources. Each origin server provides a generic interface to its services as a resource

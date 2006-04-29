@@ -41,7 +41,7 @@ public class MapletImpl extends AbstractRestlet implements Maplet
 {
    /** Serial version identifier. */
    private static final long serialVersionUID = 1L;
-   
+
    /** The list of mappings. */
    protected List<RestletMapping> mappings;
 
@@ -64,28 +64,28 @@ public class MapletImpl extends AbstractRestlet implements Maplet
       if(this.mappings == null) this.mappings = new ArrayList<RestletMapping>();
       return this.mappings;
    }
-   
+
    /**
     * Attaches a target instance shared by all calls.
-    * @param pathPattern The path pattern used to map calls.
+    * @param pattern The URI pattern used to map calls.
     * @param target The target instance to attach.
     * @see java.util.regex.Pattern
     */
-   public void attach(String pathPattern, Restlet target)
+   public void attach(String pattern, Restlet target)
    {
-      getMappings().add(new RestletMapping(pathPattern, target));
+      getMappings().add(new RestletMapping(pattern, target));
    }
 
    /**
     * Attaches a target class. A new instance will be created for each call.
-    * @param pathPattern The path pattern used to map calls.
+    * @param pattern The URI pattern used to map calls.
     * @param targetClass The target class to attach (can have a constructor taking a RestletContainer
     * parameter).
     * @see java.util.regex.Pattern
     */
-   public void attach(String pathPattern, Class<? extends Restlet> targetClass)
+   public void attach(String pattern, Class<? extends Restlet> targetClass)
    {
-      getMappings().add(new RestletMapping(pathPattern, targetClass));
+      getMappings().add(new RestletMapping(pattern, targetClass));
    }
 
    /**
@@ -100,7 +100,7 @@ public class MapletImpl extends AbstractRestlet implements Maplet
          mapping = iter.next();
          if(mapping.getRestlet() == target) iter.remove();
       }
-      
+
       if(getMappings().size() == 0) this.mappings = null;
    }
 
@@ -147,7 +147,7 @@ public class MapletImpl extends AbstractRestlet implements Maplet
       for(Iterator<RestletMapping> iter = getMappings().iterator(); !found && iter.hasNext();)
       {
          mapping = iter.next();
-         matcher = mapping.getPathPattern().matcher(resourcePath);
+         matcher = mapping.getPattern().matcher(resourcePath);
          found = matcher.lookingAt();
       }
 
@@ -156,7 +156,7 @@ public class MapletImpl extends AbstractRestlet implements Maplet
          // Updates the paths
          String oldRestletPath = call.getContextPath();
          String restletPath = resourcePath.substring(0, matcher.end());
-         
+
          if(oldRestletPath == null)
          {
             call.setContextPath(restletPath);
@@ -178,7 +178,7 @@ public class MapletImpl extends AbstractRestlet implements Maplet
       }
       else
       {
-         // No delegate was found
+         // No delegateMaplet was found
          call.setStatus(Statuses.CLIENT_ERROR_NOT_FOUND);
       }
 

@@ -29,7 +29,7 @@ import org.restlet.data.Representation;
 import org.restlet.data.RepresentationMetadata;
 
 /**
- * Intended conceptual target of a hypertext reference.<br/><br/> "Any information that can be named can be
+ * Intended conceptual target of a hypertext reference. "Any information that can be named can be
  * a resource: a document or image, a temporal service (e.g. "today's weather in Los Angeles"), a collection
  * of other resources, a non-virtual object (e.g. a person), and so on. In other words, any concept that might
  * be the target of an author's hypertext reference must fit within the definition of a resource."<br/><br/>

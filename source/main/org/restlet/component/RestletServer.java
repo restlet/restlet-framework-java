@@ -32,9 +32,8 @@ import org.restlet.Call;
 import org.restlet.data.Statuses;
 
 /**
- * Component composed of multiple Restlet containers.<br/>
- * Each container is managing its own resource namespace.
- * Incoming calls are normally handled via pluggable server connectors.<br/>
+ * Component composed of multiple Restlet containers. Each container is managing its own resource 
+ * namespace. Incoming calls are normally handled via pluggable server connectors.<br/>
  * Outcoming calls are normally handled via pluggable client connectors.<br/>
  * Other direct calls are handled by the default container.
  * @see <a href="http://www.restlet.org/tutorial#part05">Tutorial: Restlets servers and containers</a>

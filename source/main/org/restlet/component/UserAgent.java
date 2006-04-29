@@ -23,7 +23,7 @@
 package org.restlet.component;
 
 /**
- * Request initiator and ultimate recipient of the response.<br/><br/> "A user agent uses a client connector
+ * Request initiator and ultimate recipient of the response. "A user agent uses a client connector
  * to initiate a request and becomes the ultimate recipient of the response. The most common example is a Web
  * browser, which provides access to information services and renders service responses according to the
  * application needs." Roy T. Fielding

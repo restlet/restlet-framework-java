@@ -24,8 +24,8 @@ package org.restlet.data;
 
 
 /**
- * Modifier of a representation's media type.<br>
- * Useful to apply compression without losing the identity of the underlying media type.
+ * Modifier of a representation's media type. Useful to apply compression without losing the 
+ * identity of the underlying media type.
  */
 public class DefaultEncoding extends DefaultMetadata implements Encoding
 {

@@ -24,7 +24,7 @@ package org.restlet.data;
 
 
 /**
- * Description of data contained in a resource representation.<br/><br/> "A representation consists of data,
+ * Description of data contained in a resource representation. "A representation consists of data,
  * metadata describing the data, and, on occasion, metadata to describe the metadata (usually for the purpose
  * of verifying message integrity). Metadata is in the form of name-value pairs, where the name corresponds to
  * a standard that defines the value's structure and semantics. Response messages may include both

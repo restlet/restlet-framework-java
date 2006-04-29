@@ -23,7 +23,7 @@
 package org.restlet.component;
 
 /**
- * Intermediary component providing transparent encapsulation of other services.<br/><br/> "A gateway
+ * Intermediary component providing transparent encapsulation of other services. "A gateway
  * (a.k.a., reverse proxy) component is an intermediary imposed by the network or origin server to provide an
  * interface encapsulation of other services, for data translation, performance enhancement, or security
  * enforcement. Note that the difference between a proxy and a gateway is that a client determines when it

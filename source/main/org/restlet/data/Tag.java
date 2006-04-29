@@ -23,7 +23,7 @@
 package org.restlet.data;
 
 /**
- * Validation tag equivalent to the HTTP entity tag.<br/><br/> "A strong entity tag may be shared by two
+ * Validation tag equivalent to the HTTP entity tag. "A strong entity tag may be shared by two
  * entities of a resource only if they are equivalent by octet equality.<br/> A weak entity tag may be shared
  * by two entities of a resource only if the entities are equivalent and could be substituted for each other
  * with no significant change in semantics."

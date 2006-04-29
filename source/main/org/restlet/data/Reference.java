@@ -27,8 +27,8 @@ import java.util.ArrayList;
 import java.util.List;
 
 /**
- * Represents a reference to a uniform resource identifier (URI).<br/>
- * Contrary to the java.net.URI class, this interface represents mutable references.
+ * Represents a reference to a uniform resource identifier (URI). Contrary to the java.net.URI 
+ * class, this interface represents mutable references.
  */
 public class Reference implements Data
 {

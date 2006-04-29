@@ -41,8 +41,8 @@ import org.restlet.data.Statuses;
 import com.noelios.restlet.util.StringUtils;
 
 /**
- * Restlet supported by a directory of files.<br/>
- * An automatic content negotiation mechanism (similar to Apache HTTP server) is used for files serving.
+ * Restlet supported by a directory of files. An automatic content negotiation mechanism 
+ * (similar to Apache HTTP server) is used for files serving.
  * @see com.noelios.restlet.FileResource
  * @see <a href="http://www.restlet.org/tutorial#part06">Tutorial: Serving static files</a>
  */

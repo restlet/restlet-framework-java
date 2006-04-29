@@ -26,8 +26,7 @@ import java.util.Date;
 import java.util.List;
 
 /**
- * Set of conditions applying to an uniform call.<br/>
- * This is equivalent to the HTTP conditional headers.  
+ * Set of conditions applying to an uniform call. This is equivalent to the HTTP conditional headers.  
  */
 public class ConditionData implements ControlData
 {

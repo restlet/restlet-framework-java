@@ -36,9 +36,9 @@ import org.restlet.data.Statuses;
 import com.noelios.restlet.data.StringRepresentation;
 
 /**
- * Chainlet associating an output representation based on the call status.<br/> 
- * In order to customize the default representation, just subclass this class 
- * and override the "getRepresentation" method.<br/> 
+ * Chainlet associating an output representation based on the call status. In order to 
+ * customize the default representation, just subclass this class and override the 
+ * "getRepresentation" method.<br/> 
  * If any exception occurs during the call handling, a "server internal error" 
  * status is automatically associated to the call. Of course, you can personalize 
  * the representation of this error. Also, if no status is set (null), then the "success ok"

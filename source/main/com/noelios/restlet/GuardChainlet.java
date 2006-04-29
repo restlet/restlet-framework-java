@@ -39,8 +39,9 @@ import org.restlet.data.Statuses;
 import com.noelios.restlet.util.Base64;
 
 /**
- * Chainlet guarding the access to another Restlet, Chainlet or Maplet.<br/>
- * Currently only supports the HTTP basic authentication scheme and a custom schemes (based on cookies, query params or IP address for example).
+ * Chainlet guarding the access to another Restlet, Chainlet or Maplet. Currently only 
+ * supports the HTTP basic authentication scheme and a custom schemes (based on cookies, 
+ * query params or IP address for example).
  * @see <a href="http://www.restlet.org/tutorial#part09">Tutorial: Guarding access to sensitive resources</a>
  */
 public abstract class GuardChainlet extends AbstractChainlet
