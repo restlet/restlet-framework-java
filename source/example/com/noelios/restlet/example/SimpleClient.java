@@ -47,7 +47,7 @@ public class SimpleClient
          call.setReferrerRef("http://www.foo.com/");
 
          // Target resource.
-         call.setResourceRef("http://localhost:9876/test");
+         call.setResourceRef("http://127.0.0.1:9876/test");
 
          // Action: Update
          call.setMethod(Methods.PUT);

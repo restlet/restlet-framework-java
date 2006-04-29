@@ -29,6 +29,7 @@ import org.restlet.data.MediaTypes;
 import org.restlet.data.Protocols;
 
 import com.noelios.restlet.DirectoryRestlet;
+import com.noelios.restlet.HostMaplet;
 import com.noelios.restlet.LogChainlet;
 
 /**
@@ -45,12 +46,16 @@ public class Tutorial07
 
          // Create the HTTP server connector, then add it as a server connector
          // to the Restlet container. Note that the container is the call restlet.
-         Server server = new GenericServer(Protocols.HTTP, "My server", myContainer, null, 8182);
+         Server server = new GenericServer(Protocols.HTTP, "My server", myContainer, 8182);
          myContainer.addServer(server);
 
          // Attach a log Chainlet to the container
          LogChainlet log = new LogChainlet(myContainer, "com.noelios.restlet.example");
-         myContainer.attach("http://localhost:8182/", log);
+         myContainer.attach(log);
+
+         // Create a host Maplet matching calls to the server
+         HostMaplet host = new HostMaplet(myContainer, 8182);
+         log.attach(host);
 
          // Create a directory Restlet able to return a deep hierarchy of Web files
          DirectoryRestlet dirRestlet = new DirectoryRestlet(myContainer, "D:/Restlet/www/docs/api/", true, "index");
@@ -59,7 +64,7 @@ public class Tutorial07
          dirRestlet.addExtension("gif", MediaTypes.IMAGE_GIF);
 
          // Then attach the Restlet to the log Chainlet.
-         log.attach(dirRestlet);
+         host.attach("/", dirRestlet);
 
          // Now, let's start the container!
          myContainer.start();

@@ -28,9 +28,9 @@ import org.restlet.Restlet;
 import org.restlet.component.RestletContainer;
 import org.restlet.connector.GenericServer;
 import org.restlet.connector.Server;
-import org.restlet.data.MediaTypes;
 import org.restlet.data.Protocols;
 
+import com.noelios.restlet.HostMaplet;
 import com.noelios.restlet.data.StringRepresentation;
 
 /**
@@ -47,8 +47,12 @@ public class Tutorial05
 
          // Create the HTTP server connector, then add it as a server connector
          // to the Restlet container. Note that the container is the call restlet.
-         Server server = new GenericServer(Protocols.HTTP, "My server", myContainer, null, 8182);
+         Server server = new GenericServer(Protocols.HTTP, "My server", myContainer, 8182);
          myContainer.addServer(server);
+
+         // Create a host Maplet matching calls to the server
+         HostMaplet rootMaplet = new HostMaplet(myContainer, 8182);
+         myContainer.attach(rootMaplet);
 
          // Create a new Restlet that will display some path information.
          Restlet myRestlet = new AbstractRestlet(myContainer)
@@ -60,12 +64,12 @@ public class Tutorial05
                                   "Context path:  " + call.getContextPath() + '\n' +
                                   "Resource path: " + call.getResourcePath() + '\n' +
                                   "Query string:  " + call.getResourceRef().getQuery();
-                  call.setOutput(new StringRepresentation(output, MediaTypes.TEXT_PLAIN));
+                  call.setOutput(new StringRepresentation(output));
                }
             };
 
-         // Then attach it to the container.
-         myContainer.attach("http://localhost:8182/trace", myRestlet);
+         // Then attach it to the root Maplet.
+         rootMaplet.attach("/trace", myRestlet);
 
          // Now, let's start the container!
          // Note that the HTTP server connector is also automatically started.

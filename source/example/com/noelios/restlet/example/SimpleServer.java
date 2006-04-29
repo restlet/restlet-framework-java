@@ -36,6 +36,7 @@ import org.restlet.data.Parameter;
 import org.restlet.data.Protocols;
 import org.restlet.data.Statuses;
 
+import com.noelios.restlet.HostMaplet;
 import com.noelios.restlet.data.StringRepresentation;
 
 /**
@@ -53,8 +54,13 @@ public class SimpleServer
          // Create the HTTP server connector, then add it as a server
          // connector to the Restlet container. Note that the container
          // is the call restlet.
-         myContainer.addServer(new GenericServer(Protocols.HTTP, "My connector", myContainer, null, 9876));
+         myContainer.addServer(new GenericServer(Protocols.HTTP, "My connector", myContainer, 9876));
 
+         // Attach a host Maplet as the root handler
+         HostMaplet rootMaplet = new HostMaplet(myContainer, 9876);
+         myContainer.attach(rootMaplet);
+
+         // Prepare and attach a test Restlet
          Restlet testRestlet = new AbstractRestlet(myContainer)
          {
             public void handle(Call call)
@@ -90,8 +96,9 @@ public class SimpleServer
                call.setOutput(new StringRepresentation(sb.toString(), MediaTypes.TEXT_PLAIN));
             }
          };
+         rootMaplet.attach("/test", testRestlet);
 
-         myContainer.attach("http://localhost:9876/test", testRestlet);
+         // Now, start the container
          myContainer.start();
       }
       catch(Exception e)

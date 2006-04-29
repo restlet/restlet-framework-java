@@ -50,7 +50,7 @@ public class Tutorial03
          };
 
          // Create the HTTP server and listen on port 8182
-         new GenericServer(Protocols.HTTP, "My server", handler, null, 8182).start();
+         new GenericServer(Protocols.HTTP, "My server", handler, 8182).start();
       }
       catch(Exception e)
       {
