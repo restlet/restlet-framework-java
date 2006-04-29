@@ -56,8 +56,7 @@ import org.w3c.dom.NodeList;
 import com.noelios.restlet.impl.FactoryImpl;
 
 /**
- * Client connector to a mail server.<br/>
- * Currently only the SMTP protocol is supported.<br/>
+ * Client connector to a mail server. Currently only the SMTP protocol is supported.<br/>
  * To send an email, specify a SMTP URI as the ressource reference of the call and use an XML
  * email as the content of the call.<br/>
  * An SMTP URI has the following syntax: smtp://host[:port]<br/>
