@@ -43,10 +43,10 @@ import org.xml.sax.ContentHandler;
 import com.noelios.restlet.util.XmlWriter;
 
 /**
- * Abstract representation based on SAX events processing.<br/>
- * The purpose is to create a streamable representation based on a custom Java object model instead
- * of a neutral DOM tree. This domain object can then be directly modified and efficiently serialized at a later time.
- * <br/>
+ * Abstract representation based on SAX events processing. The purpose is to create a 
+ * streamable representation based on a custom Java object model instead of a neutral 
+ * DOM tree. This domain object can then be directly modified and efficiently serialized 
+ * at a later time.<br/>
  * Subclasses only need to override the ContentHandler methods required for the reading and also the 
  * write(XmlWriter writer) method when serialization is requested.<br/>
  */

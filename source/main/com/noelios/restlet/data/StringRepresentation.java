@@ -28,6 +28,7 @@ import java.io.InputStream;
 import java.io.OutputStream;
 
 import org.restlet.data.MediaType;
+import org.restlet.data.MediaTypes;
 
 /**
  * Representation based on a simple string.
@@ -36,6 +37,15 @@ public class StringRepresentation extends StreamRepresentation
 {
    /** The represented string. */
    protected String value;
+
+   /**
+    * Constructor using the "plain/text" media type by default.
+    * @param value The represented string.
+    */
+   public StringRepresentation(String value)
+   {
+      this(value, MediaTypes.TEXT_PLAIN);
+   }
 
    /**
     * Constructor.

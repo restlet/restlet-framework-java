@@ -32,8 +32,8 @@ import org.restlet.data.MediaType;
 import com.noelios.restlet.util.PipeStream;
 
 /**
- * Representation based on a BIO output stream.<br/>
- * The write(OutputStream) method needs to be overriden in subclasses.
+ * Representation based on a BIO output stream. The write(OutputStream) 
+ * method needs to be overriden in subclasses.
  */
 public abstract class OutputRepresentation extends StreamRepresentation
 {
