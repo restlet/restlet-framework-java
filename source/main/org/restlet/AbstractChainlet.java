@@ -63,6 +63,15 @@ public abstract class AbstractChainlet extends AbstractRestlet implements Chainl
    }
 
    /**
+    * Indicates if a target Restlet instance or class has been attached.
+    * @return True if a target Restlet instance or class has been attached.
+    */
+   public boolean hasTarget()
+   {
+   	return delegate.hasTarget();
+   }
+
+   /**
     * Detaches the current target.
     */
    public void detach()
