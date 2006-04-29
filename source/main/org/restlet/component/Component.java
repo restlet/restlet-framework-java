@@ -32,9 +32,9 @@ import org.restlet.connector.Client;
 import org.restlet.connector.Server;
 
 /**
- * Abstract unit of software instructions and internal state.<br/><br/> 
- * "A component is an abstract unit of software instructions and internal state that provides 
- * a transformation of data via its interface." Roy T. Fielding
+ * Abstract unit of software instructions and internal state. "A component is an abstract 
+ * unit of software instructions and internal state that provides a transformation of data 
+ * via its interface." Roy T. Fielding
  * @see <a href="http://www.ics.uci.edu/~fielding/pubs/dissertation/software_arch.htm#sec_1_2_1">Source
  * dissertation</a>
  */
