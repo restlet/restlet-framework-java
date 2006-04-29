@@ -22,25 +22,31 @@
 
 package org.restlet.component;
 
-import org.restlet.DefaultMaplet;
+import org.restlet.Chainlet;
+import org.restlet.Factory;
 import org.restlet.Maplet;
 import org.restlet.Restlet;
 import org.restlet.Call;
 
 /**
- * Container for Maplets, Chainlets or Restlets.<br/>
- * Note that a container is a Maplet itself and can be part of a larger RestletServer.<br/>
- * Calls are first intercepted by the container which can do various checks before effectively delegating it to one of the registered root Restlets.
- * Restlet containers can also be contained within a Restlet server.
+ * Container for Maplets, Chainlets or Restlets. Note that a container is also a Chainlet and Maplet by itself.
+ * It can also be part of a larger RestletServer.<br/>
+ * If you chain a Restlet using one of the attach() methods with no URI pattern, then all the calls will be
+ * directed to it. In other words, the Chainlet role has a higher priority than the Maplet role.
+ * Calls are first intercepted by the container which can do various checks before effectively delegating it 
+ * to one of the registered root Restlets. Restlet containers can also be contained within a Restlet server.
  * @see <a href="http://www.restlet.org/tutorial#part05">Tutorial: Restlets servers and containers</a>
  */
-public class RestletContainer extends AbstractComponent implements Maplet
+public class RestletContainer extends AbstractComponent implements Chainlet, Maplet
 {
    /** The parent container who delegates. */
    protected Component parent;
 
+   /** Delegate Chainlet handling root Restlets. */
+   protected Chainlet delegateChainlet;
+
    /** Delegate Maplet handling root Restlets. */
-   protected Maplet delegate;
+   protected Maplet delegateMaplet;
 
    /**
     * Constructor.
@@ -60,30 +66,67 @@ public class RestletContainer extends AbstractComponent implements Maplet
    {
       super(name);
       this.parent = parent;
-      this.delegate = new DefaultMaplet(parent);
+      this.delegateChainlet = Factory.getInstance().createChainlet(parent);
+      this.delegateMaplet = Factory.getInstance().createMaplet(parent);
    }
 
    /**
     * Attaches a target instance shared by all calls.
-    * @param pathPattern The path pattern used to map calls.
     * @param target The target instance to attach.
-    * @see java.util.regex.Pattern
     */
-   public void attach(String pathPattern, Restlet target)
+   public void attach(Restlet target)
    {
-      delegate.attach(pathPattern, target);
+   	delegateChainlet.attach(target);
    }
 
    /**
     * Attaches a target class. A new instance will be created for each call.
-    * @param pathPattern The path pattern used to map calls.
+    * @param targetClass The target class to attach (can have a constructor taking a RestletContainer
+    * parameter).
+    */
+   public void attach(Class<? extends Restlet> targetClass)
+   {
+   	delegateChainlet.attach(targetClass);
+   }
+
+   /**
+    * Attaches a target instance shared by all calls.
+    * @param pattern The URI pattern used to map calls.
+    * @param target The target instance to attach.
+    * @see java.util.regex.Pattern
+    */
+   public void attach(String pattern, Restlet target)
+   {
+      delegateMaplet.attach(pattern, target);
+   }
+
+   /**
+    * Attaches a target class. A new instance will be created for each call.
+    * @param pattern The URI pattern used to map calls.
     * @param targetClass The target class to attach (can have a constructor taking a RestletContainer
     * parameter).
     * @see java.util.regex.Pattern
     */
-   public void attach(String pathPattern, Class<? extends Restlet> targetClass)
+   public void attach(String pattern, Class<? extends Restlet> targetClass)
    {
-      delegate.attach(pathPattern, targetClass);
+      delegateMaplet.attach(pattern, targetClass);
+   }
+
+   /**
+    * Indicates if a target Restlet instance or class has been attached.
+    * @return True if a target Restlet instance or class has been attached.
+    */
+   public boolean hasTarget()
+   {
+   	return delegateChainlet.hasTarget();
+   }
+
+   /**
+    * Detaches the chained target.
+    */
+   public void detach()
+   {
+   	delegateChainlet.detach();
    }
 
    /**
@@ -92,7 +135,7 @@ public class RestletContainer extends AbstractComponent implements Maplet
     */
    public void detach(Restlet target)
    {
-      delegate.detach(target);
+      delegateMaplet.detach(target);
    }
 
    /**
@@ -101,7 +144,7 @@ public class RestletContainer extends AbstractComponent implements Maplet
     */
    public void detach(Class<? extends Restlet> targetClass)
    {
-      delegate.detach(targetClass);
+      delegateMaplet.detach(targetClass);
    }
 
    /**
@@ -110,18 +153,25 @@ public class RestletContainer extends AbstractComponent implements Maplet
     */
    public void handle(Call call)
    {
-      delegate.handle(call);
+   	if(delegateChainlet.hasTarget())
+   	{
+   		delegateChainlet.handle(call);
+   	}
+   	else
+   	{
+   		delegateMaplet.handle(call);
+   	}
    }
 
    /**
     * Delegates a call to one of the attached targets.<br/>
     * If no delegation is possible, a 404 error status (Client error, Not found) will be returned.
-    * @param call The call to delegate.
+    * @param call The call to delegateMaplet.
     * @return True if the call was successfully delegated.
     */
    public boolean delegate(Call call)
    {
-      return delegate.delegate(call);
+      return delegateMaplet.delegate(call);
    }
 
    /**
