@@ -45,14 +45,16 @@ public enum Statuses implements Status
    CLIENT_ERROR_FAILED_DEPENDENCY,
 
    SERVER_ERROR_INTERNAL, SERVER_ERROR_NOT_IMPLEMENTED, SERVER_ERROR_BAD_GATEWAY,
-   SERVER_ERROR_SERVICE_UNAVAILABLE, SERVER_ERROR_GATEWAY_TIMEOUT, SERVER_ERROR_HTTP_VERSION_NOT_SUPPORTED,
-   SERVER_ERROR_INSUFFICIENT_STORAGE;
+   SERVER_ERROR_SERVICE_UNAVAILABLE, SERVER_ERROR_GATEWAY_TIMEOUT, SERVER_ERROR_VERSION_NOT_SUPPORTED,
+   SERVER_ERROR_INSUFFICIENT_STORAGE,
+   
+   CONNECTOR_ERROR_CONNECTION, CONNECTOR_ERROR_COMMUNICATION, CONNECTOR_ERROR_INTERNAL;
 
    /**
-    * Returns the HTTP code.
-    * @return The HTTP code.
+    * Returns the code, respecting the origin standard when available (HTTP or WebDAV).
+    * @return The code.
     */
-   public int getHttpCode()
+   public int getCode()
    {
       int result = 0;
 
@@ -194,12 +196,22 @@ public enum Statuses implements Status
          case SERVER_ERROR_GATEWAY_TIMEOUT:
             result = 504;
             break;
-         case SERVER_ERROR_HTTP_VERSION_NOT_SUPPORTED:
+         case SERVER_ERROR_VERSION_NOT_SUPPORTED:
             result = 505;
             break;
          case SERVER_ERROR_INSUFFICIENT_STORAGE:
             result = 507;
             break;
+            
+         case CONNECTOR_ERROR_CONNECTION:
+         	result = 10000;
+         	break;
+         case CONNECTOR_ERROR_COMMUNICATION:
+         	result = 10001;
+         	break;
+         case CONNECTOR_ERROR_INTERNAL:
+         	result = 10002;
+         	break;
       }
 
       return result;
@@ -211,21 +223,22 @@ public enum Statuses implements Status
     */
    public String getUri()
    {
-      return getUri(getHttpCode());
+      return getUri(getCode());
    }
 
    /**
     * Returns the URI of the specification describing the status.
-    * @param httpCode The HTTP code of the status.
+    * @param code The code of the status.
     * @return The URI of the specification describing the status.
     */
-   public static String getUri(int httpCode)
+   public static String getUri(int code)
    {
       String result = null;
       String httpRoot = "http://www.w3.org/Protocols/rfc2616/rfc2616-sec10.html";
       String webDavRoot = "http://www.webdav.org/specs/rfc2518.html";
+      String restletRoot = "http://www.restlet.org/docs/api/";
 
-      switch(httpCode)
+      switch(code)
       {
          case 100:
             result = httpRoot + "#sec10.1.1";
@@ -369,6 +382,16 @@ public enum Statuses implements Status
          case 507:
             result = webDavRoot + "#STATUS_507";
             break;
+            
+         case 1000:
+         	result = restletRoot + "org/restlet/data/Statuses.html#CONNECTOR_ERROR_CONNECTION";
+         	break;
+         case 1001:
+         	result = restletRoot + "org/restlet/data/Statuses.html#CONNECTOR_ERROR_COMMUNICATION";
+         	break;
+         case 1002:
+         	result = restletRoot + "org/restlet/data/Statuses.html#CONNECTOR_ERROR_INTERNAL";
+         	break;
       }
 
       return result;
@@ -380,7 +403,7 @@ public enum Statuses implements Status
     */
    public String getName()
    {
-      return getName(getHttpCode());
+      return getName(getCode());
    }
 
    /**
@@ -389,19 +412,19 @@ public enum Statuses implements Status
     */
    public String getDescription()
    {
-      return getDescription(getHttpCode());
+      return getDescription(getCode());
    }
 
    /**
     * Returns the name of this REST element.
-    * @param httpCode The HTTP code of the status.
+    * @param code The code of the status.
     * @return The name of this REST element.
     */
-   public static String getName(int httpCode)
+   public static String getName(int code)
    {
       String result = null;
 
-      switch(httpCode)
+      switch(code)
       {
          case 100:
             result = "Continue";
@@ -540,11 +563,21 @@ public enum Statuses implements Status
             result = "Gateway Timeout";
             break;
          case 505:
-            result = "HTTP Version Not Supported";
+            result = "Version Not Supported";
             break;
          case 507:
             result = "Insufficient Storage";
             break;
+
+         case 1000:
+         	result = "Connection Error";
+         	break;
+         case 1001:
+         	result = "Communication Error";
+         	break;
+         case 1002:
+         	result = "Internal Connector Error";
+         	break;
       }
 
       return result;
@@ -552,14 +585,14 @@ public enum Statuses implements Status
 
    /**
     * Returns the description of this REST element.
-    * @param httpCode The HTTP code of the status.
+    * @param code The code of the status.
     * @return The description of this REST element.
     */
-   public static String getDescription(int httpCode)
+   public static String getDescription(int code)
    {
       String result = null;
 
-      switch(httpCode)
+      switch(code)
       {
          case 100:
             result = "The client should continue with its request";
@@ -698,11 +731,21 @@ public enum Statuses implements Status
             result = "The server, while acting as a gateway or proxy, did not receive a timely response from the upstream server specified by the URI (e.g. HTTP, FTP, LDAP) or some other auxiliary server (e.g. DNS) it needed to access in attempting to complete the request";
             break;
          case 505:
-            result = "The server does not support, or refuses to support, the HTTP protocol version that was used in the request message";
+            result = "The server does not support, or refuses to support, the protocol version that was used in the request message";
             break;
          case 507:
             result = "The method could not be performed on the resource because the server is unable to store the representation needed to successfully complete the request";
             break;
+            
+         case 1000:
+         	result = "The connector failed to connect to the server";
+         	break;
+         case 1001:
+         	result = "The connector failed to complete the communication with the server";
+         	break;
+         case 1002:
+            result = "The connector encountered an unexpected condition which prevented it from fulfilling the request";
+         	break;
       }
 
       return result;
@@ -714,7 +757,7 @@ public enum Statuses implements Status
     */
    public boolean isInfo()
    {
-      return isInfo(getHttpCode());
+      return isInfo(getCode());
    }
 
    /**
@@ -723,7 +766,7 @@ public enum Statuses implements Status
     */
    public boolean isSuccess()
    {
-      return isSuccess(getHttpCode());
+      return isSuccess(getCode());
    }
 
    /**
@@ -732,7 +775,7 @@ public enum Statuses implements Status
     */
    public boolean isRedirection()
    {
-      return isRedirection(getHttpCode());
+      return isRedirection(getCode());
    }
 
    /**
@@ -741,7 +784,16 @@ public enum Statuses implements Status
     */
    public boolean isClientError()
    {
-      return isClientError(getHttpCode());
+      return isClientError(getCode());
+   }
+
+   /**
+    * Indicates if the status is a connector error status.
+    * @return True if the status is a connector error status.
+    */
+   public boolean isConnectorError()
+   {
+      return isConnectorError(getCode());
    }
 
    /**
@@ -750,7 +802,7 @@ public enum Statuses implements Status
     */
    public boolean isServerError()
    {
-      return isServerError(getHttpCode());
+      return isServerError(getCode());
    }
 
    /**
@@ -759,19 +811,19 @@ public enum Statuses implements Status
     */
    public boolean isError()
    {
-      return isError(getHttpCode());
+      return isError(getCode());
    }
 
    /**
     * Indicates if the status is an information status.
-    * @param httpCode The HTTP code of the status.
+    * @param code The code of the status.
     * @return True if the status is an information status.
     */
-   public static boolean isInfo(int httpCode)
+   public static boolean isInfo(int code)
    {
       boolean result = false;
 
-      switch(httpCode)
+      switch(code)
       {
          case 100:
          case 101:
@@ -785,14 +837,14 @@ public enum Statuses implements Status
 
    /**
     * Indicates if the status is a success status.
-    * @param httpCode The HTTP code of the status.
+    * @param code The code of the status.
     * @return True if the status is a success status.
     */
-   public static boolean isSuccess(int httpCode)
+   public static boolean isSuccess(int code)
    {
       boolean result = false;
 
-      switch(httpCode)
+      switch(code)
       {
          case 200:
          case 201:
@@ -811,14 +863,14 @@ public enum Statuses implements Status
 
    /**
     * Indicates if the status is a redirection status.
-    * @param httpCode The HTTP code of the status.
+    * @param code The code of the status.
     * @return True if the status is a redirection status.
     */
-   public static boolean isRedirection(int httpCode)
+   public static boolean isRedirection(int code)
    {
       boolean result = false;
 
-      switch(httpCode)
+      switch(code)
       {
          case 300:
          case 301:
@@ -836,14 +888,14 @@ public enum Statuses implements Status
 
    /**
     * Indicates if the status is a client error status.
-    * @param httpCode The HTTP code of the status.
+    * @param code The code of the status.
     * @return True if the status is a client error status.
     */
-   public static boolean isClientError(int httpCode)
+   public static boolean isClientError(int code)
    {
       boolean result = false;
 
-      switch(httpCode)
+      switch(code)
       {
          case 400:
          case 401:
@@ -875,14 +927,14 @@ public enum Statuses implements Status
 
    /**
     * Indicates if the status is a server error status.
-    * @param httpCode The HTTP code of the status.
+    * @param code The code of the status.
     * @return True if the status is a server error status.
     */
-   public static boolean isServerError(int httpCode)
+   public static boolean isServerError(int code)
    {
       boolean result = false;
 
-      switch(httpCode)
+      switch(code)
       {
          case 500:
          case 501:
@@ -899,13 +951,34 @@ public enum Statuses implements Status
    }
 
    /**
+    * Indicates if the status is a connector error status.
+    * @param code The code of the status.
+    * @return True if the status is a server error status.
+    */
+   public static boolean isConnectorError(int code)
+   {
+      boolean result = false;
+
+      switch(code)
+      {
+         case 1000:
+         case 1001:
+         case 1002:
+            result = true;
+         break;
+      }
+
+      return result;
+   }
+
+   /**
     * Indicates if the status is an error (client or server) status.
-    * @param httpCode The HTTP code of the status.
+    * @param code The code of the status.
     * @return True if the status is an error (client or server) status.
     */
-   public static boolean isError(int httpCode)
+   public static boolean isError(int code)
    {
-      return isClientError(httpCode) || isServerError(httpCode);
+      return isClientError(code) || isServerError(code) || isConnectorError(code);
    }
 
    /**
@@ -915,26 +988,26 @@ public enum Statuses implements Status
     */
    public boolean equals(Status status)
    {
-      return getHttpCode() == status.getHttpCode();
+      return getCode() == status.getCode();
    }
 
    /**
-    * Returns the name of the status followed by its HTTP code.
-    * @param httpCode The HTTP code of the status.
-    * @return The name of the status followed by its HTTP code.
+    * Returns the name of the status followed by its code.
+    * @param code The code of the status.
+    * @return The name of the status followed by its code.
     */
-   public static String toString(int httpCode)
+   public static String toString(int code)
    {
-   	return getName(httpCode) + " (" + httpCode + ")";
+   	return getName(code) + " (" + code + ")";
    }
 
    /**
-    * Returns the name of the status followed by its HTTP code.
-    * @return The name of the status followed by its HTTP code.
+    * Returns the name of the status followed by its code.
+    * @return The name of the status followed by its code.
     */
    public String toString()
    {
-   	return toString(getHttpCode());
+   	return toString(getCode());
    }
 
 }

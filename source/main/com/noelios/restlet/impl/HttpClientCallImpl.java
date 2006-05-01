@@ -37,6 +37,7 @@ import java.util.List;
 
 import javax.net.ssl.HttpsURLConnection;
 
+import org.restlet.connector.Client;
 import org.restlet.connector.ClientCall;
 import org.restlet.data.Parameter;
 import org.restlet.data.Representation;
@@ -51,12 +52,13 @@ public class HttpClientCallImpl extends ConnectorCallImpl implements ClientCall
    
    /**
     * Constructor.
+    * @param client The client connector.
     * @param method The method name.
     * @param resourceUri The resource URI.
     * @param hasInput Indicates if the call will have an input to send to the server.
     * @throws IOException
     */
-   public HttpClientCallImpl(String method, String resourceUri, boolean hasInput) throws IOException
+   public HttpClientCallImpl(Client client, String method, String resourceUri, boolean hasInput) throws IOException
    {
       this.requestMethod = method;
       
@@ -64,6 +66,13 @@ public class HttpClientCallImpl extends ConnectorCallImpl implements ClientCall
       {
          URL url = new URL(resourceUri);
          this.connection = (HttpURLConnection)url.openConnection();
+         
+         if(client.getTimeout() != -1)
+         {
+         	this.connection.setConnectTimeout(client.getTimeout());
+         	this.connection.setReadTimeout(client.getTimeout());
+         }
+         
          this.connection.setAllowUserInteraction(false);
          this.connection.setDoOutput(hasInput);
          this.connection.setInstanceFollowRedirects(false);

@@ -24,6 +24,7 @@ package com.noelios.restlet.impl;
 
 import java.io.IOException;
 import java.net.ConnectException;
+import java.net.SocketTimeoutException;
 import java.util.Arrays;
 import java.util.Date;
 import java.util.Iterator;
@@ -103,7 +104,7 @@ public class HttpClientImpl extends AbstractClient
    {
       try
       {
-         return new HttpClientCallImpl(method, resourceUri, hasInput);
+         return new HttpClientCallImpl(this, method, resourceUri, hasInput);
       }
       catch(IOException e)
       {
@@ -126,22 +127,24 @@ public class HttpClientImpl extends AbstractClient
     */
    public void handle(Call call)
    {
-      try
-      {
-         // Create a new HTTP client call
-         ClientCall clientCall = createCall(call.getMethod().getName(), call.getResourceRef().toString(), hasInput(call));
+   	ClientCall clientCall = null; 
+   	
+   	try
+   	{
+      	// Create a new HTTP client call
+      	clientCall = createCall(call.getMethod().getName(), call.getResourceRef().toString(), hasInput(call));
 
-         // Add the user agent header
-         if(call.getClientName() != null)
-         {
-            clientCall.addRequestHeader(ConnectorCall.HEADER_USER_AGENT, call.getClientName());
-         }
-         else
-         {
-            clientCall.addRequestHeader(ConnectorCall.HEADER_USER_AGENT, FactoryImpl.VERSION_HEADER);
+      	// Add the user agent header
+      	if(call.getClientName() != null)
+      	{
+      		clientCall.addRequestHeader(ConnectorCall.HEADER_USER_AGENT, call.getClientName());
+      	}
+      	else
+      	{
+      		clientCall.addRequestHeader(ConnectorCall.HEADER_USER_AGENT, FactoryImpl.VERSION_HEADER);
          }
 
-         // Add the conditions
+      	// Add the conditions
          ConditionData condition = call.getCondition(); 
          if(condition.getMatch() != null)
          {
@@ -270,7 +273,15 @@ public class HttpClientImpl extends AbstractClient
          		clientCall.addRequestHeader(ConnectorCall.HEADER_CONTENT_LANGUAGE, call.getInput().getMetadata().getLanguage().toString());
          	}
          }
+   	}
+      catch(Exception e)
+      {
+         logger.log(Level.FINE, "An unexpected error occured during the preparation of the HTTP client call.", e);
+         call.setStatus(new DefaultStatus(Statuses.CONNECTOR_ERROR_INTERNAL, "Unable to create the HTTP call and its headers. " + e.getMessage()));
+      }
          
+      try
+      {
          // Commit the request headers
          clientCall.sendRequestHeaders();
 
@@ -279,7 +290,30 @@ public class HttpClientImpl extends AbstractClient
          {
             clientCall.sendRequestInput(call.getInput());
          }
-
+      }
+      catch(ConnectException ce)
+      {
+         logger.log(Level.FINE, "An error occured during the connection to the remote HTTP server.", ce);
+         call.setStatus(new DefaultStatus(Statuses.CONNECTOR_ERROR_CONNECTION, "Unable to connect to the remote server. " + ce.getMessage()));
+      }
+      catch(SocketTimeoutException ste)
+      {
+         logger.log(Level.FINE, "An timeout error occured during the communication with the remote HTTP server.", ste);
+         call.setStatus(new DefaultStatus(Statuses.CONNECTOR_ERROR_COMMUNICATION, "Unable to complete the HTTP call due to a communication timeout error. " + ste.getMessage()));
+      }
+      catch(IOException ioe)
+      {
+         logger.log(Level.FINE, "An error occured during the communication with the remote HTTP server.", ioe);
+         call.setStatus(new DefaultStatus(Statuses.CONNECTOR_ERROR_COMMUNICATION, "Unable to complete the HTTP call due to a communication error with the remote server. " + ioe.getMessage()));
+      }
+      catch(Exception e)
+      {
+         logger.log(Level.FINE, "An unexpected error occured during the sending of the HTTP request.", e);
+         call.setStatus(new DefaultStatus(Statuses.CONNECTOR_ERROR_INTERNAL, "Unable to send the HTTP request. " + e.getMessage()));
+      }
+      
+      try
+      {
          // Get the response status
          call.setStatus(new DefaultStatus(clientCall.getResponseStatusCode(), null, clientCall.getResponseReasonPhrase(), null));
 
@@ -297,6 +331,7 @@ public class HttpClientImpl extends AbstractClient
          Encoding encoding = null;
          Language language = null;
          Tag tag = null;
+         Parameter header = null;
          
          for(Iterator<Parameter> iter = clientCall.getResponseHeaders().iterator(); iter.hasNext(); )
          {
@@ -380,15 +415,10 @@ public class HttpClientImpl extends AbstractClient
             }
          }
       }
-      catch(ConnectException ce)
-      {
-         logger.log(Level.FINE, "An error occured during the connection to the remote HTTP server.", ce);
-         call.setStatus(new DefaultStatus(Statuses.SERVER_ERROR_SERVICE_UNAVAILABLE, "Unable to connect to the remote server. " + ce.getMessage()));
-      }
       catch(Exception e)
       {
-         logger.log(Level.FINE, "An error occured during the handling of the HTTP client call.", e);
-         call.setStatus(new DefaultStatus(Statuses.SERVER_ERROR_INTERNAL, "Unable to complete the call. " + e.getMessage()));
+         logger.log(Level.FINE, "An error occured during the processing of the HTTP response.", e);
+         call.setStatus(new DefaultStatus(Statuses.CONNECTOR_ERROR_INTERNAL, "Unable to process the response. " + e.getMessage()));
       }
    }
 

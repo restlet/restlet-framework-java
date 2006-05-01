@@ -285,7 +285,7 @@ public class CallModel implements ReadableModel
 	      }
 	      else if(name.equals(NAME_STATUS))
 	      {
-	         result = Integer.toString(call.getStatus().getHttpCode());
+	         result = Integer.toString(call.getStatus().getCode());
 	      }
 	
 	      // Check if the default value should be returned

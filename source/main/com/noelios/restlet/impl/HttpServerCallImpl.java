@@ -91,7 +91,7 @@ public abstract class HttpServerCallImpl extends ConnectorCallImpl implements Se
          // Set the status code in the response
          if(call.getStatus() != null)
          {
-            setResponseStatus(call.getStatus().getHttpCode(), call.getStatus().getDescription());
+            setResponseStatus(call.getStatus().getCode(), call.getStatus().getDescription());
          }
    
          // If an output was set during the call, copy it to the output stream;

@@ -142,7 +142,7 @@ public class LogChainlet extends AbstractChainlet
 
       // Append the status code
       sb.append('\t');
-      sb.append((call.getStatus() == null) ? "-" : Integer.toString(call.getStatus().getHttpCode()));
+      sb.append((call.getStatus() == null) ? "-" : Integer.toString(call.getStatus().getCode()));
 
       // Append the returned size
       sb.append('\t');

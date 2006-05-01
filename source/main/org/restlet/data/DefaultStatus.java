@@ -71,14 +71,14 @@ public class DefaultStatus implements Status
     */
    public DefaultStatus(Status status, String description)
    {
-      this(status.getHttpCode(), status.getName(), description, status.getUri());
+      this(status.getCode(), status.getName(), description, status.getUri());
    }
 
    /**
     * Returns the HTTP code.
     * @return The HTTP code.
     */
-   public int getHttpCode()
+   public int getCode()
    {
       return code;
    }
@@ -89,7 +89,7 @@ public class DefaultStatus implements Status
     */
    public String getName()
    {
-      return (name == null) ? Statuses.getName(getHttpCode()) : name;
+      return (name == null) ? Statuses.getName(getCode()) : name;
    }
 
    /**
@@ -98,7 +98,7 @@ public class DefaultStatus implements Status
     */
    public String getDescription()
    {
-      return (description == null) ? Statuses.getDescription(getHttpCode()) : description;
+      return (description == null) ? Statuses.getDescription(getCode()) : description;
    }
 
    /**
@@ -116,7 +116,7 @@ public class DefaultStatus implements Status
     */
    public String getUri()
    {
-      return (uri == null) ? Statuses.getUri(getHttpCode()) : uri;
+      return (uri == null) ? Statuses.getUri(getCode()) : uri;
    }
 
    /**
@@ -125,7 +125,7 @@ public class DefaultStatus implements Status
     */
    public boolean isInfo()
    {
-      return Statuses.isInfo(getHttpCode());
+      return Statuses.isInfo(getCode());
    }
 
    /**
@@ -134,7 +134,7 @@ public class DefaultStatus implements Status
     */
    public boolean isSuccess()
    {
-      return Statuses.isSuccess(getHttpCode());
+      return Statuses.isSuccess(getCode());
    }
 
    /**
@@ -143,7 +143,16 @@ public class DefaultStatus implements Status
     */
    public boolean isRedirection()
    {
-      return Statuses.isRedirection(getHttpCode());
+      return Statuses.isRedirection(getCode());
+   }
+
+   /**
+    * Indicates if the status is a connector error status.
+    * @return True if the status is a connector error status.
+    */
+   public boolean isConnectorError()
+   {
+      return Statuses.isConnectorError(getCode());
    }
 
    /**
@@ -152,7 +161,7 @@ public class DefaultStatus implements Status
     */
    public boolean isClientError()
    {
-      return Statuses.isClientError(getHttpCode());
+      return Statuses.isClientError(getCode());
    }
 
    /**
@@ -161,7 +170,7 @@ public class DefaultStatus implements Status
     */
    public boolean isServerError()
    {
-      return Statuses.isServerError(getHttpCode());
+      return Statuses.isServerError(getCode());
    }
 
    /**
@@ -170,7 +179,7 @@ public class DefaultStatus implements Status
     */
    public boolean isError()
    {
-      return Statuses.isError(getHttpCode());
+      return Statuses.isError(getCode());
    }
 
    /**
@@ -180,7 +189,7 @@ public class DefaultStatus implements Status
     */
    public boolean equals(Status status)
    {
-      return getHttpCode() == status.getHttpCode();
+      return getCode() == status.getCode();
    }
 
    /**
@@ -189,7 +198,7 @@ public class DefaultStatus implements Status
     */
    public String toString()
    {
-   	return Statuses.toString(getHttpCode());
+   	return Statuses.toString(getCode());
    }
    
 }

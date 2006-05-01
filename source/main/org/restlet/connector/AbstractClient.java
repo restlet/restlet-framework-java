@@ -33,6 +33,12 @@ import org.restlet.data.Representation;
  */
 public abstract class AbstractClient extends AbstractConnector implements Client
 {
+	/** 
+	 * The communication timeout during the communication with the remote server.
+	 * To keep the default timeouts, lease the value to -1. 
+	 */
+	protected int timeout;
+	
    /**
     * Constructor.
     * @param protocol The connector protocol.
@@ -41,6 +47,7 @@ public abstract class AbstractClient extends AbstractConnector implements Client
    public AbstractClient(Protocol protocol, String name)
    {
       super(protocol, name);
+      this.timeout = -1;
    }
 
    /**
@@ -101,6 +108,30 @@ public abstract class AbstractClient extends AbstractConnector implements Client
       call.setMethod(Methods.DELETE);
       handle(call);
       return call;
+   }
+   
+   /**
+    * Sets the communication timeout during the communication with the remote server.
+    * The unit used is the millisecond.
+	 * To keep the default timeouts, lease the value to -1. 
+	 * For infinite timeouts, use the value 0. 
+    * @param timeout The communication timeout.
+    */
+   public void setTimeout(int timeout)
+   {
+   	this.timeout = timeout;
+   }
+   
+   /**
+    * Return the communication timeout during the communication with the remote server.
+    * The unit used is the millisecond.
+	 * The value -1 means that the default timeouts are used. 
+	 * The value 0 means that an infinite timeout is used. 
+    * @return The communication timeout.
+    */
+   public int getTimeout()
+   {
+   	return this.timeout;
    }
 
    /**

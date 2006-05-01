@@ -32,7 +32,7 @@ public interface Status extends ControlData
     * Returns the HTTP code.
     * @return The HTTP code.
     */
-   public int getHttpCode();
+   public int getCode();
 
    /**
     * Returns the URI of the specification describing the status.
@@ -70,6 +70,12 @@ public interface Status extends ControlData
     * @return True if the status is a client error status.
     */
    public boolean isClientError();
+
+   /**
+    * Indicates if the status is a connector error status.
+    * @return True if the status is a connector error status.
+    */
+   public boolean isConnectorError();
 
    /**
     * Indicates if the status is a server error status.
