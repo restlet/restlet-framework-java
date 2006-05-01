@@ -60,8 +60,6 @@ public class Tutorial06
          dirRestlet.addExtension("gif", MediaTypes.IMAGE_GIF);
 
          // Then attach the Restlet to the container.
-         // Note that virtual hosting can be very easily supported if you need it,
-         // just attach multiple Restlets, one for each virtual server.
          rootMaplet.attach("/", dirRestlet);
 
          // Now, let's start the container!

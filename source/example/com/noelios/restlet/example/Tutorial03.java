@@ -26,7 +26,6 @@ import org.restlet.AbstractRestlet;
 import org.restlet.Call;
 import org.restlet.Restlet;
 import org.restlet.connector.GenericServer;
-import org.restlet.data.MediaTypes;
 import org.restlet.data.Protocols;
 
 import com.noelios.restlet.data.StringRepresentation;
@@ -45,7 +44,7 @@ public class Tutorial03
          {
             public void handle(Call call)
             {
-               call.setOutput(new StringRepresentation("Hello World!", MediaTypes.TEXT_PLAIN));
+               call.setOutput(new StringRepresentation("Hello World!"));
             }
          };
 
