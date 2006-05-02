@@ -31,7 +31,7 @@ import org.restlet.component.Component;
 import org.restlet.data.Protocol;
 
 /**
- * Generic server.
+ * Default server connector supporting multiples protocols.
  */
 public class DefaultServer implements Server
 {

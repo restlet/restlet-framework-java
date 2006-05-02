@@ -29,7 +29,7 @@ import org.restlet.data.Protocol;
 import org.restlet.data.Representation;
 
 /**
- * Generic client.
+ * Default client connector supporting multiples protocols.
  */
 public class DefaultClient implements Client
 {
