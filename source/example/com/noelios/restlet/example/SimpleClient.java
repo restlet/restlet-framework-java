@@ -22,10 +22,10 @@
 
 package com.noelios.restlet.example;
 
-import org.restlet.GenericCall;
+import org.restlet.DefaultCall;
 import org.restlet.Call;
 import org.restlet.connector.Client;
-import org.restlet.connector.GenericClient;
+import org.restlet.connector.DefaultClient;
 import org.restlet.data.Form;
 import org.restlet.data.Methods;
 import org.restlet.data.Protocols;
@@ -41,7 +41,7 @@ public class SimpleClient
       try
       {
          // Prepare the REST call.
-         Call call = new GenericCall();
+         Call call = new DefaultCall();
 
          // Identify oursevles.
          call.setReferrerRef("http://www.foo.com/");
@@ -59,7 +59,7 @@ public class SimpleClient
          call.setInput(form.getRepresentation());
 
          // Prepare HTTP client connector.
-         Client client = new GenericClient(Protocols.HTTP, "tester");
+         Client client = new DefaultClient(Protocols.HTTP, "tester");
 
          // Make the call.
          client.handle(call);

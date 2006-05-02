@@ -25,9 +25,9 @@ package com.noelios.restlet.example;
 import java.io.IOException;
 
 import org.restlet.Call;
-import org.restlet.GenericCall;
+import org.restlet.DefaultCall;
 import org.restlet.connector.Client;
-import org.restlet.connector.GenericClient;
+import org.restlet.connector.DefaultClient;
 import org.restlet.data.ChallengeResponse;
 import org.restlet.data.ChallengeSchemes;
 import org.restlet.data.Methods;
@@ -45,7 +45,7 @@ public class Tutorial09b
       try
       {
          // Prepare the REST call
-      	Call call = new GenericCall();
+      	Call call = new DefaultCall();
          call.setResourceRef("http://localhost:8182/");
          call.setMethod(Methods.GET);
          
@@ -54,7 +54,7 @@ public class Tutorial09b
          call.getSecurity().setChallengeResponse(authentication);
 
          // Ask to the HTTP client connector to handle the call
-         Client client = new GenericClient(Protocols.HTTP, "My client");
+         Client client = new DefaultClient(Protocols.HTTP, "My client");
          client.handle(call);
 
          if(call.getStatus().equals(Statuses.SUCCESS_OK))

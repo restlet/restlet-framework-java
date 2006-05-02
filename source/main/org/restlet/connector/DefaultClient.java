@@ -31,7 +31,7 @@ import org.restlet.data.Representation;
 /**
  * Generic client.
  */
-public class GenericClient implements Client
+public class DefaultClient implements Client
 {
 	/** The wrapped client. */
 	Client wrappedClient;
@@ -41,7 +41,7 @@ public class GenericClient implements Client
     * @param protocol The connector protocol.
     * @param name The unique connector name.
 	 */
-	public GenericClient(Protocol protocol, String name)
+	public DefaultClient(Protocol protocol, String name)
 	{
 		this.wrappedClient = Factory.getInstance().createClient(protocol, name);
 	}

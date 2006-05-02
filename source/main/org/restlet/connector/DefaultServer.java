@@ -33,7 +33,7 @@ import org.restlet.data.Protocol;
 /**
  * Generic server.
  */
-public class GenericServer implements Server
+public class DefaultServer implements Server
 {
    /** The wrapped server. */
    protected Server wrappedServer;
@@ -45,7 +45,7 @@ public class GenericServer implements Server
     * @param target The target Restlet.
     * @param port The listening port.
     */
-   public GenericServer(Protocol protocol, String name, Restlet target, int port)
+   public DefaultServer(Protocol protocol, String name, Restlet target, int port)
    {
    	this.wrappedServer = Factory.getInstance().createServer(protocol, name, target, null, port);
    }
@@ -58,7 +58,7 @@ public class GenericServer implements Server
     * @param address The optional listening IP address (useful if multiple IP addresses available).
     * @param port The listening port.
     */
-   public GenericServer(Protocol protocol, String name, Restlet target, String address, int port)
+   public DefaultServer(Protocol protocol, String name, Restlet target, String address, int port)
    {
    	this.wrappedServer = Factory.getInstance().createServer(protocol, name, target, address, port);
    }

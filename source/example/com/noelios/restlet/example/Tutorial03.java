@@ -25,7 +25,7 @@ package com.noelios.restlet.example;
 import org.restlet.AbstractRestlet;
 import org.restlet.Call;
 import org.restlet.Restlet;
-import org.restlet.connector.GenericServer;
+import org.restlet.connector.DefaultServer;
 import org.restlet.data.Protocols;
 
 import com.noelios.restlet.data.StringRepresentation;
@@ -49,7 +49,7 @@ public class Tutorial03
          };
 
          // Create the HTTP server and listen on port 8182
-         new GenericServer(Protocols.HTTP, "My server", handler, 8182).start();
+         new DefaultServer(Protocols.HTTP, "My server", handler, 8182).start();
       }
       catch(Exception e)
       {

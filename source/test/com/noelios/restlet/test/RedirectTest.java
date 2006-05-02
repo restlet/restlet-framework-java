@@ -27,12 +27,12 @@ import java.io.IOException;
 import junit.framework.TestCase;
 
 import org.restlet.AbstractRestlet;
-import org.restlet.GenericCall;
+import org.restlet.DefaultCall;
 import org.restlet.Call;
 import org.restlet.Restlet;
 import org.restlet.component.RestletContainer;
-import org.restlet.connector.GenericClient;
-import org.restlet.connector.GenericServer;
+import org.restlet.connector.DefaultClient;
+import org.restlet.connector.DefaultServer;
 import org.restlet.data.MediaTypes;
 import org.restlet.data.Method;
 import org.restlet.data.Methods;
@@ -57,8 +57,8 @@ public class RedirectTest extends TestCase
       	RestletContainer myContainer = new RestletContainer("My container");
 
          // Create the client connectors
-         myContainer.addClient(new GenericClient(Protocols.HTTP, "Test client"));
-         myContainer.addClient(new GenericClient(Protocols.HTTP, "Proxy client"));
+         myContainer.addClient(new DefaultClient(Protocols.HTTP, "Test client"));
+         myContainer.addClient(new DefaultClient(Protocols.HTTP, "Proxy client"));
 
          // Create the proxy Restlet
          String target = "http://localhost:9090${path}${if query}?${query}${end}";
@@ -81,8 +81,8 @@ public class RedirectTest extends TestCase
             };
          
          // Create the server connectors
-         myContainer.addServer(new GenericServer(Protocols.HTTP, "Proxy server", proxy, null, 8080));
-         myContainer.addServer(new GenericServer(Protocols.HTTP, "Origin server", trace, null, 9090));
+         myContainer.addServer(new DefaultServer(Protocols.HTTP, "Proxy server", proxy, null, 8080));
+         myContainer.addServer(new DefaultServer(Protocols.HTTP, "Origin server", trace, null, 9090));
 
          // Now, let's start the container!
          myContainer.start();
@@ -116,7 +116,7 @@ public class RedirectTest extends TestCase
    {
       try
       {
-         Call call = new GenericCall();
+         Call call = new DefaultCall();
          call.setMethod(method);
          call.setResourceRef(uri);
          myContainer.callClient("Test client", call);

@@ -28,7 +28,7 @@ import org.restlet.AbstractRestlet;
 import org.restlet.Call;
 import org.restlet.Restlet;
 import org.restlet.component.RestletContainer;
-import org.restlet.connector.GenericServer;
+import org.restlet.connector.DefaultServer;
 import org.restlet.data.Form;
 import org.restlet.data.MediaTypes;
 import org.restlet.data.Methods;
@@ -54,7 +54,7 @@ public class SimpleServer
          // Create the HTTP server connector, then add it as a server
          // connector to the Restlet container. Note that the container
          // is the call restlet.
-         myContainer.addServer(new GenericServer(Protocols.HTTP, "My connector", myContainer, 9876));
+         myContainer.addServer(new DefaultServer(Protocols.HTTP, "My connector", myContainer, 9876));
 
          // Attach a host Maplet as the root handler
          HostMaplet rootMaplet = new HostMaplet(myContainer, 9876);

@@ -23,7 +23,7 @@
 package com.noelios.restlet.example;
 
 import org.restlet.component.RestletContainer;
-import org.restlet.connector.GenericServer;
+import org.restlet.connector.DefaultServer;
 import org.restlet.connector.Server;
 import org.restlet.data.MediaTypes;
 import org.restlet.data.Protocols;
@@ -45,7 +45,7 @@ public class Tutorial06
 
          // Create the HTTP server connector, then add it as a server connector
          // to the Restlet container. Note that the container is the call restlet.
-         Server server = new GenericServer(Protocols.HTTP, "My server", myContainer, 8182);
+         Server server = new DefaultServer(Protocols.HTTP, "My server", myContainer, 8182);
          myContainer.addServer(server);
 
          // Create a host Maplet matching calls to the server

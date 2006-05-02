@@ -26,15 +26,15 @@ import org.restlet.data.Method;
 import org.restlet.data.Reference;
 
 /**
- * Generic Restlet call that can be easily subclassed. Useful for application developer who 
- * need to call client connectors.
+ * Default Call that can be easily subclassed. Useful for application developer who 
+ * need to invoke client connectors.
  */
-public class GenericCall extends WrapperCall
+public class DefaultCall extends WrapperCall
 {
    /**
     * Constructor.
     */
-   public GenericCall()
+   public DefaultCall()
    {
       super(Factory.getInstance().createCall());
    }
@@ -44,7 +44,7 @@ public class GenericCall extends WrapperCall
     * @param method The call's method.
     * @param resourceRef The resource reference.
     */
-   public GenericCall(Method method, Reference resourceRef)
+   public DefaultCall(Method method, Reference resourceRef)
    {
    	this();
    	setMethod(method);
@@ -56,7 +56,7 @@ public class GenericCall extends WrapperCall
     * @param method The call's method.
     * @param resourceUri The resource URI.
     */
-   public GenericCall(Method method, String resourceUri)
+   public DefaultCall(Method method, String resourceUri)
    {
    	this();
    	setMethod(method);
