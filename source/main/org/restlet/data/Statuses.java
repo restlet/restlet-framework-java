@@ -204,13 +204,13 @@ public enum Statuses implements Status
             break;
             
          case CONNECTOR_ERROR_CONNECTION:
-         	result = 10000;
+         	result = 1000;
          	break;
          case CONNECTOR_ERROR_COMMUNICATION:
-         	result = 10001;
+         	result = 1001;
          	break;
          case CONNECTOR_ERROR_INTERNAL:
-         	result = 10002;
+         	result = 1002;
          	break;
       }
 

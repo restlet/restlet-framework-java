@@ -253,6 +253,23 @@ public class HttpClientCallImpl extends ConnectorCallImpl implements ClientCall
     */
    public InputStream getResponseStream() throws IOException
    {
-      return getConnection().getInputStream();
+      InputStream result = null;
+      
+      try
+      {
+      	result = getConnection().getInputStream();
+      }
+      catch(IOException ioe)
+      {
+       	result = getConnection().getErrorStream();
+      }
+      
+      if(result == null)
+      {
+      	// Maybe an error stream is available instead
+        	result = getConnection().getErrorStream();
+      }
+      
+      return result;
    }
 }

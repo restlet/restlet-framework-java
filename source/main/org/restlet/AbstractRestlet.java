@@ -55,6 +55,19 @@ public abstract class AbstractRestlet implements Restlet
       this.started = false;
    }
 
+	/**
+	 * Forwards a call to the parent component for processing. This can be useful when some sort of internal 
+	 * redirection or dispatching is needed. Note that you can pass either an existing call or a fresh call 
+	 * instance to this method. When the method returns, verification and further processing can still be 
+	 * done, the client will only receive the response to the call when the Restlet handle method returns. 
+	 * @param call The call to forward.
+	 */
+	public void forward(Call call)
+	{
+		call.setContextPath(null);
+		getParent().handle(call);
+	}
+   
    /** Starts the restlet. */
    public void start() throws Exception
    {
