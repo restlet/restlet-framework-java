@@ -324,6 +324,7 @@ public class HttpClientImpl extends AbstractClient
          
          // Get the response output
          ContentType contentType = null;
+         int size = -1;
          Date expires = null;
          Date lastModified = null;
          Encoding encoding = null;
@@ -338,6 +339,10 @@ public class HttpClientImpl extends AbstractClient
             if(header.getName().equalsIgnoreCase(ConnectorCall.HEADER_CONTENT_TYPE))
             {
                contentType = new ContentType(header.getValue());
+            }
+            else if(header.getName().equalsIgnoreCase(ConnectorCall.HEADER_CONTENT_LENGTH))
+            {
+               size = Integer.parseInt(header.getValue());
             }
             else if(header.getName().equalsIgnoreCase(ConnectorCall.HEADER_EXPIRES))
             {
@@ -404,6 +409,7 @@ public class HttpClientImpl extends AbstractClient
             if(output != null)
             {
                if(contentType != null) output.getMetadata().setCharacterSet(contentType.getCharacterSet());
+               output.setSize(size);               
                output.getMetadata().setEncoding(encoding);
                output.getMetadata().setExpirationDate(expires);
                output.getMetadata().setLanguage(language);

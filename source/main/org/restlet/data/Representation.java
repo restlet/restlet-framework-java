@@ -97,6 +97,12 @@ public interface Representation extends Data
    public long getSize();
 
    /**
+    * Sets the expected size in bytes if known, -1 otherwise.
+    * @param expectedSize The expected size in bytes if known, -1 otherwise.
+    */
+   public void setSize(long expectedSize);
+
+   /**
     * Converts the representation to a string.
     * @return The representation as a string.
     */
