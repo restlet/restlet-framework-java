@@ -123,10 +123,8 @@ public class HttpClientCallImpl extends ConnectorCallImpl implements ClientCall
       getConnection().setRequestMethod(getRequestMethod());
 
       // Set the request headers
-      Parameter header;
-      for(Iterator<Parameter> iter = getRequestHeaders().iterator(); iter.hasNext();)
+      for(Parameter header : getRequestHeaders())
       {
-         header = iter.next();
          getConnection().addRequestProperty(header.getName(), header.getValue());
       }
 

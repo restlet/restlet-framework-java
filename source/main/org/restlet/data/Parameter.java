@@ -119,6 +119,15 @@ public class Parameter implements Data, Comparable<Parameter>
    }
 
    /**
+    * Returns a string with the name and value of the parameter.
+    * @return A string with the name and value of the parameter.
+    */
+   public String toString()
+   {
+   	return getName() + ": " + getValue();
+   }
+   
+   /**
     * Returns the description of this REST element.
     * @return The description of this REST element.
     */
