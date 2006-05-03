@@ -25,8 +25,8 @@ package com.noelios.restlet;
 import java.util.Map;
 import java.util.TreeMap;
 
-import org.restlet.AbstractRestlet;
 import org.restlet.Call;
+import org.restlet.DefaultRestlet;
 import org.restlet.component.Component;
 import org.restlet.data.Encoding;
 import org.restlet.data.Encodings;
@@ -35,8 +35,6 @@ import org.restlet.data.Languages;
 import org.restlet.data.MediaType;
 import org.restlet.data.MediaTypes;
 import org.restlet.data.Metadata;
-import org.restlet.data.Methods;
-import org.restlet.data.Statuses;
 
 import com.noelios.restlet.util.StringUtils;
 
@@ -46,7 +44,7 @@ import com.noelios.restlet.util.StringUtils;
  * @see com.noelios.restlet.FileResource
  * @see <a href="http://www.restlet.org/tutorial#part06">Tutorial: Serving static files</a>
  */
-public class DirectoryRestlet extends AbstractRestlet
+public class DirectoryRestlet extends DefaultRestlet
 {
    /** Indicates if the sub-directories are deeply accessible. */
    protected boolean deeply;
@@ -236,19 +234,12 @@ public class DirectoryRestlet extends AbstractRestlet
    }
    
    /**
-    * Handles an uniform call.
+    * Handles a GET call.
     * @param call The call to handle.
     */
-   public void handle(Call call)
+   public void handleGet(Call call)
    {
-      if(call.getMethod().equals(Methods.GET))
-      {
-         call.setBestOutput(new FileResource(this, call.getResourcePath()), getDefaultLanguage());
-      }
-      else
-      {
-         call.setStatus(Statuses.CLIENT_ERROR_METHOD_NOT_ALLOWED);
-      }
+      call.setBestOutput(new FileResource(this, call.getResourcePath()), getDefaultLanguage());
    }
 
    /**

@@ -24,10 +24,10 @@ package com.noelios.restlet.example;
 
 import java.util.List;
 
-import org.restlet.AbstractRestlet;
-import org.restlet.DefaultMaplet;
-import org.restlet.Maplet;
 import org.restlet.Call;
+import org.restlet.DefaultMaplet;
+import org.restlet.DefaultRestlet;
+import org.restlet.Maplet;
 import org.restlet.Restlet;
 import org.restlet.component.RestletContainer;
 import org.restlet.connector.DefaultServer;
@@ -116,9 +116,9 @@ public class Tutorial11
          usersMaplet.attach("/[a-z]+", userMaplet);
 
          // Create the orders Restlet
-         Restlet ordersRestlet = new AbstractRestlet(myContainer)
+         Restlet ordersRestlet = new DefaultRestlet(myContainer)
             {
-               public void handle(Call call)
+               public void handleGet(Call call)
                {
                   // Print the user name of the requested orders
                   List<String> segments = call.getContextRef().getSegments();

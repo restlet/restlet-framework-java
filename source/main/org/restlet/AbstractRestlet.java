@@ -25,8 +25,11 @@ package org.restlet;
 import org.restlet.component.Component;
 
 /**
- * Abstract Restlet that can be easily subclassed. The start and stop state is managed by 
- * default but with no other action. Override the start and stop methods if needed.
+ * Abstract Restlet that can be easily subclassed. Concrete classes must only implement the handle(Call)
+ * method. Another option is to derive the DefaultRestlet to override only the supported handle methods. 
+ * The start and stop state is managed by default but with no other action. Override the start and stop 
+ * methods if needed.
+ * @see org.restlet.DefaultRestlet
  * @see <a href="http://www.restlet.org/tutorial#part03">Tutorial: Listening to Web browsers</a>
  */
 public abstract class AbstractRestlet implements Restlet

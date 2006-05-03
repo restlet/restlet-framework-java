@@ -24,17 +24,15 @@ package com.noelios.restlet.example;
 
 import java.util.List;
 
-import org.restlet.AbstractRestlet;
 import org.restlet.Call;
+import org.restlet.DefaultRestlet;
 import org.restlet.Restlet;
 import org.restlet.component.RestletContainer;
 import org.restlet.connector.DefaultServer;
 import org.restlet.data.Form;
 import org.restlet.data.MediaTypes;
-import org.restlet.data.Methods;
 import org.restlet.data.Parameter;
 import org.restlet.data.Protocols;
-import org.restlet.data.Statuses;
 
 import com.noelios.restlet.HostMaplet;
 import com.noelios.restlet.data.StringRepresentation;
@@ -61,20 +59,11 @@ public class SimpleServer
          myContainer.attach(rootMaplet);
 
          // Prepare and attach a test Restlet
-         Restlet testRestlet = new AbstractRestlet(myContainer)
+         Restlet testRestlet = new DefaultRestlet(myContainer)
          {
-            public void handle(Call call)
+            public void handlePut(Call call)
             {
                System.out.println("Handling the call...");
-
-               if(!call.getMethod().equals(Methods.PUT))
-               {
-                  System.out.println("Not a PUT!");
-                  call.setStatus(Statuses.CLIENT_ERROR_METHOD_NOT_ALLOWED);
-                  call.setOutput(new StringRepresentation("Sorry, only PUT is supported.", MediaTypes.TEXT_PLAIN));
-                  return;
-               }
-
                System.out.println("Trying to get the input as a form...");
                Form form = call.getInputAsForm();
 
