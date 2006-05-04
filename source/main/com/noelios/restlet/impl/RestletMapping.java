@@ -26,7 +26,6 @@ import java.util.regex.Pattern;
 
 import org.restlet.Restlet;
 
-
 /**
  * Represents a mapping between a path pattern and a target Restlet.
  * @see java.util.regex.Pattern

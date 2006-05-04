@@ -22,8 +22,8 @@
 
 package com.noelios.restlet;
 
+import org.restlet.AbstractRestlet;
 import org.restlet.Call;
-import org.restlet.DefaultRestlet;
 import org.restlet.component.Component;
 import org.restlet.data.MediaType;
 import org.restlet.data.Statuses;
@@ -33,7 +33,7 @@ import com.noelios.restlet.data.FileRepresentation;
 /**
  * Restlet supported by a single file.
  */
-public class FileRestlet extends DefaultRestlet
+public class FileRestlet extends AbstractRestlet
 {
    /** The file's path. */
    private String filePath;

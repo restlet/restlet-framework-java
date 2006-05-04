@@ -25,8 +25,8 @@ package com.noelios.restlet;
 import java.util.Map;
 import java.util.TreeMap;
 
+import org.restlet.AbstractRestlet;
 import org.restlet.Call;
-import org.restlet.DefaultRestlet;
 import org.restlet.component.Component;
 import org.restlet.data.Encoding;
 import org.restlet.data.Encodings;
@@ -44,7 +44,7 @@ import com.noelios.restlet.util.StringUtils;
  * @see com.noelios.restlet.FileResource
  * @see <a href="http://www.restlet.org/tutorial#part06">Tutorial: Serving static files</a>
  */
-public class DirectoryRestlet extends DefaultRestlet
+public class DirectoryRestlet extends AbstractRestlet
 {
    /** Indicates if the sub-directories are deeply accessible. */
    protected boolean deeply;

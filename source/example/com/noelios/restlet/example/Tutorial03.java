@@ -22,8 +22,8 @@
 
 package com.noelios.restlet.example;
 
+import org.restlet.AbstractRestlet;
 import org.restlet.Call;
-import org.restlet.DefaultRestlet;
 import org.restlet.Restlet;
 import org.restlet.connector.DefaultServer;
 import org.restlet.data.Protocols;
@@ -40,7 +40,7 @@ public class Tutorial03
       try
       {
          // Creating a minimal Restlet returning "Hello World"
-         Restlet handler = new DefaultRestlet()
+         Restlet handler = new AbstractRestlet()
          {
             public void handleGet(Call call)
             {

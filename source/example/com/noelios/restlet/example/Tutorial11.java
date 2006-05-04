@@ -24,9 +24,9 @@ package com.noelios.restlet.example;
 
 import java.util.List;
 
+import org.restlet.AbstractRestlet;
 import org.restlet.Call;
 import org.restlet.DefaultMaplet;
-import org.restlet.DefaultRestlet;
 import org.restlet.Maplet;
 import org.restlet.Restlet;
 import org.restlet.component.RestletContainer;
@@ -116,7 +116,7 @@ public class Tutorial11
          usersMaplet.attach("/[a-z]+", userMaplet);
 
          // Create the orders Restlet
-         Restlet ordersRestlet = new DefaultRestlet(myContainer)
+         Restlet ordersRestlet = new AbstractRestlet(myContainer)
             {
                public void handleGet(Call call)
                {

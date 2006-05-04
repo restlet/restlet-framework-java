@@ -23,6 +23,8 @@
 package org.restlet;
 
 import org.restlet.component.Component;
+import org.restlet.data.Methods;
+import org.restlet.data.Statuses;
 
 /**
  * Abstract Restlet that can be easily subclassed. Concrete classes must only implement the handle(Call)
@@ -56,6 +58,219 @@ public abstract class AbstractRestlet implements Restlet
    {
    	this.parent = parent;
       this.started = false;
+   }
+
+   /**
+    * Handles a call.
+    * @param call The call to handle.
+    */
+   public void handle(Call call)
+   {
+		if(call.getMethod().equals(Methods.GET))
+		{
+			handleGet(call);
+		}
+		else if(call.getMethod().equals(Methods.POST))
+		{
+			handlePost(call);
+		}
+		else if(call.getMethod().equals(Methods.PUT))
+		{
+			handlePut(call);
+		}
+		else if(call.getMethod().equals(Methods.DELETE))
+		{
+			handleDelete(call);
+		}
+		else if(call.getMethod().equals(Methods.HEAD))
+		{
+			handleHead(call);
+		}
+		else if(call.getMethod().equals(Methods.CONNECT))
+		{
+			handleConnect(call);
+		}
+		else if(call.getMethod().equals(Methods.OPTIONS))
+		{
+			handleOptions(call);
+		}
+		else if(call.getMethod().equals(Methods.TRACE))
+		{
+			handleTrace(call);
+		}
+		else if(call.getMethod().equals(Methods.MOVE))
+		{
+			handleMove(call);
+		}
+		else if(call.getMethod().equals(Methods.COPY))
+		{
+			handleCopy(call);
+		}
+		else if(call.getMethod().equals(Methods.LOCK))
+		{
+			handleLock(call);
+		}
+		else if(call.getMethod().equals(Methods.MKCOL))
+		{
+			handleMakeCollection(call);
+		}
+		else if(call.getMethod().equals(Methods.PROPFIND))
+		{
+			handleFindProperties(call);
+		}
+		else if(call.getMethod().equals(Methods.PROPPATCH))
+		{
+			handlePatchProperties(call);
+		}
+		else if(call.getMethod().equals(Methods.UNLOCK))
+		{
+			handleUnlock(call);
+		}
+   }
+
+   /**
+    * Handles a CONNECT call.
+    * @param call The call to handle.
+    */
+   public void handleConnect(Call call)
+   {
+   	defaultHandle(call);
+   }
+
+   /**
+    * Handles a COPY call.
+    * @param call The call to handle.
+    */
+   public void handleCopy(Call call)
+   {
+   	defaultHandle(call);
+   }
+
+   /**
+    * Handles a DELETE call.
+    * @param call The call to handle.
+    */
+   public void handleDelete(Call call)
+   {
+   	defaultHandle(call);
+   }
+
+   /**
+    * Handles a GET call.
+    * @param call The call to handle.
+    */
+   public void handleGet(Call call)
+   {
+   	defaultHandle(call);
+   }
+
+   /**
+    * Handles a HEAD call.
+    * @param call The call to handle.
+    */
+   public void handleHead(Call call)
+   {
+   	defaultHandle(call);
+   }
+
+   /**
+    * Handles a LOCK call.
+    * @param call The call to handle.
+    */
+   public void handleLock(Call call)
+   {
+   	defaultHandle(call);
+   }
+
+   /**
+    * Handles a MKCOL call.
+    * @param call The call to handle.
+    */
+   public void handleMakeCollection(Call call)
+   {
+   	defaultHandle(call);
+   }
+
+   /**
+    * Handles a MOVE call.
+    * @param call The call to handle.
+    */
+   public void handleMove(Call call)
+   {
+   	defaultHandle(call);
+   }
+
+   /**
+    * Handles a OPTIONS call.
+    * @param call The call to handle.
+    */
+   public void handleOptions(Call call)
+   {
+   	defaultHandle(call);
+   }
+
+   /**
+    * Handles a POST call.
+    * @param call The call to handle.
+    */
+   public void handlePost(Call call)
+   {
+   	defaultHandle(call);
+   }
+
+   /**
+    * Handles a PROPFIND call.
+    * @param call The call to handle.
+    */
+   public void handleFindProperties(Call call)
+   {
+   	defaultHandle(call);
+   }
+
+   /**
+    * Handles a PROPPATCH call.
+    * @param call The call to handle.
+    */
+   public void handlePatchProperties(Call call)
+   {
+   	defaultHandle(call);
+   }
+
+   /**
+    * Handles a PUT call.
+    * @param call The call to handle.
+    */
+   public void handlePut(Call call)
+   {
+   	defaultHandle(call);
+   }
+
+   /**
+    * Handles a TRACE call.
+    * @param call The call to handle.
+    */
+   public void handleTrace(Call call)
+   {
+   	defaultHandle(call);
+   }
+
+   /**
+    * Handles a UNLOCK call.
+    * @param call The call to handle.
+    */
+   public void handleUnlock(Call call)
+   {
+   	defaultHandle(call);
+   }
+   
+   /**
+    * Default implementation for the handle*() methods that simply throws
+    * and "illegal access error" that is intercepted by the handle() method. 
+    * @param call The call to handle.
+    */
+   protected void defaultHandle(Call call)
+   {
+		call.setStatus(Statuses.CLIENT_ERROR_METHOD_NOT_ALLOWED);
    }
 
 	/**

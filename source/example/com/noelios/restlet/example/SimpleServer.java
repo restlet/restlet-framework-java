@@ -24,8 +24,8 @@ package com.noelios.restlet.example;
 
 import java.util.List;
 
+import org.restlet.AbstractRestlet;
 import org.restlet.Call;
-import org.restlet.DefaultRestlet;
 import org.restlet.Restlet;
 import org.restlet.component.RestletContainer;
 import org.restlet.connector.DefaultServer;
@@ -59,7 +59,7 @@ public class SimpleServer
          myContainer.attach(rootMaplet);
 
          // Prepare and attach a test Restlet
-         Restlet testRestlet = new DefaultRestlet(myContainer)
+         Restlet testRestlet = new AbstractRestlet(myContainer)
          {
             public void handlePut(Call call)
             {
