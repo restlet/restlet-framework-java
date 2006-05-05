@@ -27,6 +27,8 @@ import java.util.ArrayList;
 import java.util.Date;
 import java.util.Iterator;
 import java.util.List;
+import java.util.Map;
+import java.util.TreeMap;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
@@ -61,6 +63,9 @@ public class CallImpl implements Call
    /** Obtain a suitable logger. */
    private static Logger logger = Logger.getLogger("com.noelios.restlet.impl.CallImpl");
 
+   /** The modifiable map of attributes. */
+   protected Map<String, Object> attributes;
+   
    /** The client IP address. */
    protected String clientAddress;
 
@@ -121,6 +126,22 @@ public class CallImpl implements Call
    /** The server status. */
    protected Status status;
 
+	/**
+	 * Returns a map of attributes that can be used by developer to save information relative
+	 * to the current call. This is a quicker alternative to the creation of wrapper class.
+	 * @return The modifiable attributes map.
+	 * @see org.restlet.WrapperCall
+	 */
+	public Map<String, Object> getAttributes()
+	{
+		if(attributes == null)
+		{
+			attributes = new TreeMap<String, Object>();
+		}
+		
+		return attributes;
+	}
+	
    /**
     * Returns the best variant representation for a given resource according the the client preferences.
     * @param resource The resource for which the best representation needs to be set.

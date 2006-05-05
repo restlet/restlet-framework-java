@@ -23,6 +23,7 @@
 package org.restlet;
 
 import java.util.List;
+import java.util.Map;
 
 import org.restlet.connector.ConnectorCall;
 import org.restlet.data.*;
@@ -33,6 +34,14 @@ import org.restlet.data.*;
  */
 public interface Call
 {
+	/**
+	 * Returns a map of attributes that can be used by developers to save information relative
+	 * to the current call. This is a quicker alternative to the creation of wrapper class.
+	 * @return The modifiable attributes map.
+	 * @see org.restlet.WrapperCall
+	 */
+	public Map<String, Object> getAttributes();
+	
    /**
     * Returns the best variant representation for a given resource according the the client preferences.
     * @param resource The resource for which the best representation needs to be set.
