@@ -37,6 +37,8 @@ public enum MediaTypes implements MediaType
    APPLICATION_XML, APPLICATION_ZIP,
 
    IMAGE_ALL, IMAGE_GIF, IMAGE_ICON, IMAGE_PNG,
+   
+   MULTIPART_FORM_DATA,
 
    TEXT_ALL, TEXT_CSS, TEXT_HTML, TEXT_PLAIN, TEXT_URI_LIST, TEXT_XML;
 
@@ -95,6 +97,9 @@ public enum MediaTypes implements MediaType
          case IMAGE_PNG:
             result = "image/png";
             break;
+         case MULTIPART_FORM_DATA:
+         	result = "multipart/form-data";
+         	break;
          case TEXT_ALL:
             result = "text/*";
             break;
@@ -200,6 +205,9 @@ public enum MediaTypes implements MediaType
          case IMAGE_PNG:
             result = "PNG image";
             break;
+         case MULTIPART_FORM_DATA:
+         	result = "Multipart form data";
+         	break;
          case TEXT_ALL:
             result = "All texts";
             break;
