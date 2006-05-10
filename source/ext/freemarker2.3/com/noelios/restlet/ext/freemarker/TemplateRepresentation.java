@@ -42,8 +42,8 @@ import freemarker.template.TemplateException;
  */
 public class TemplateRepresentation extends OutputRepresentation
 {
-   /** The FreeMarker template path. */
-   protected String templatePath;
+   /** The FreeMarker template's name. */
+   protected String templateName;
 
    /** The FreeMarker configuration. */
    Configuration config;
@@ -53,18 +53,18 @@ public class TemplateRepresentation extends OutputRepresentation
 
    /**
     * Constructor.
-    * @param templatePath The FreeMarker template's path.
+    * @param templateName The FreeMarker template's name. The full path is resolved by the configuration. 
     * @param config The FreeMarker configuration.
     * @param dataModel The FreeMarker template's data model.
     * @param mediaType The representation's media type.
     */
-   public TemplateRepresentation(String templatePath, Configuration config, Object dataModel,
+   public TemplateRepresentation(String templateName, Configuration config, Object dataModel,
          MediaType mediaType)
    {
       super(mediaType);
       this.config = config;
       this.dataModel = dataModel;
-      this.templatePath = templatePath;
+      this.templateName = templateName;
    }
 
    /**
@@ -89,14 +89,14 @@ public class TemplateRepresentation extends OutputRepresentation
 
    /**
     * Loads a template from the file system.
-    * @param templatePath The FreeMarker template's path.
+    * @param templateName The FreeMarker template's name. The full path is resolved by the configuration. 
     * @param config The FreeMarker configuration.
     * @return The loaded template.
     * @throws IOException
     */
-   private static Template loadTemplate(String templatePath, Configuration config) throws IOException
+   private static Template loadTemplate(String templateName, Configuration config) throws IOException
    {
-      return config.getTemplate(templatePath);
+      return config.getTemplate(templateName);
    }
 
    /**
@@ -109,7 +109,7 @@ public class TemplateRepresentation extends OutputRepresentation
 
       try
       {
-         Template template = loadTemplate(templatePath, config);
+         Template template = loadTemplate(templateName, config);
          if(getCharacterSet() != null)
          {
             tmplWriter = new BufferedWriter(new OutputStreamWriter(outputStream, getCharacterSet().getName()));
