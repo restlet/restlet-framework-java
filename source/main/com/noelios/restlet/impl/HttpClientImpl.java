@@ -22,6 +22,7 @@
 
 package com.noelios.restlet.impl;
 
+import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.net.ConnectException;
 import java.net.SocketTimeoutException;
@@ -38,22 +39,18 @@ import org.restlet.connector.ClientCall;
 import org.restlet.connector.ConnectorCall;
 import org.restlet.data.ChallengeRequest;
 import org.restlet.data.ChallengeResponse;
-import org.restlet.data.CharacterSets;
 import org.restlet.data.ConditionData;
 import org.restlet.data.DefaultEncoding;
 import org.restlet.data.DefaultLanguage;
+import org.restlet.data.DefaultStatus;
 import org.restlet.data.Encoding;
-import org.restlet.data.Encodings;
 import org.restlet.data.Language;
-import org.restlet.data.Languages;
-import org.restlet.data.MediaTypes;
 import org.restlet.data.Methods;
 import org.restlet.data.Parameter;
 import org.restlet.data.PreferenceData;
 import org.restlet.data.Protocol;
 import org.restlet.data.Protocols;
 import org.restlet.data.Representation;
-import org.restlet.data.DefaultStatus;
 import org.restlet.data.Statuses;
 import org.restlet.data.Tag;
 
@@ -203,36 +200,20 @@ public class HttpClientImpl extends AbstractClient
          {
             clientCall.addRequestHeader(ConnectorCall.HEADER_ACCEPT, PreferenceUtils.format(pref.getMediaTypes()));
          }
-         else
-         {
-            clientCall.addRequestHeader(ConnectorCall.HEADER_ACCEPT, MediaTypes.ALL.getName());
-         }
          
          if(pref.getCharacterSets().size() > 0)
          {
             clientCall.addRequestHeader(ConnectorCall.HEADER_ACCEPT_CHARSET, PreferenceUtils.format(pref.getCharacterSets()));
-         }
-         else
-         {
-            clientCall.addRequestHeader(ConnectorCall.HEADER_ACCEPT_CHARSET, CharacterSets.ALL.getName());
          }
          
          if(pref.getEncodings().size() > 0)
          {
             clientCall.addRequestHeader(ConnectorCall.HEADER_ACCEPT_ENCODING, PreferenceUtils.format(pref.getEncodings()));
          }
-         else
-         {
-            clientCall.addRequestHeader(ConnectorCall.HEADER_ACCEPT_ENCODING, Encodings.ALL.getName());
-         }
          
          if(pref.getLanguages().size() > 0)
          {
             clientCall.addRequestHeader(ConnectorCall.HEADER_ACCEPT_LANGUAGE, PreferenceUtils.format(pref.getLanguages()));
-         }
-         else
-         {
-            clientCall.addRequestHeader(ConnectorCall.HEADER_ACCEPT_LANGUAGE, Languages.ALL.getName());
          }
 
          // Add the security
@@ -298,6 +279,11 @@ public class HttpClientImpl extends AbstractClient
       {
          logger.log(Level.FINE, "An timeout error occured during the communication with the remote HTTP server.", ste);
          call.setStatus(new DefaultStatus(Statuses.CONNECTOR_ERROR_COMMUNICATION, "Unable to complete the HTTP call due to a communication timeout error. " + ste.getMessage()));
+      }
+      catch(FileNotFoundException fnfe)
+      {
+         logger.log(Level.FINE, "An unexpected error occured during the sending of the HTTP request.", fnfe);
+         call.setStatus(new DefaultStatus(Statuses.CONNECTOR_ERROR_INTERNAL, "Unable to find a local file for sending. " + fnfe.getMessage()));
       }
       catch(IOException ioe)
       {
