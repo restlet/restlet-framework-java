@@ -45,11 +45,6 @@ public class RestletServer extends AbstractComponent
 
    /**
     * The Restlet containers.
-    * @link aggregationByValue
-    * @associates <{DefaultContainer}>
-    * @supplierCardinality 0..*
-    * @clientCardinality 1
-    * @label containers
     */
    protected Map<String, RestletContainer> containers;
 

@@ -35,6 +35,7 @@
 	<property name="classes-jetty5.1" location="${classes}/ext/jetty5.1" />
 	<property name="classes-jetty6.0" location="${classes}/ext/jetty6.0" />
 	<property name="classes-servlet2.4" location="${classes}/ext/servlet2.4" />
+	<property name="classes-simple3.1" location="${classes}/ext/simple3.1" />
 	<property name="classes-example" location="${classes}/example" />
 	<property name="classes-test" location="${classes}/test" />
 
@@ -48,6 +49,7 @@
 	<property name="src-jetty5.1" location="${src}/ext/jetty5.1" />
 	<property name="src-jetty6.0" location="${src}/ext/jetty6.0" />
 	<property name="src-servlet2.4" location="${src}/ext/servlet2.4" />
+	<property name="src-simple3.1" location="${src}/ext/simple3.1" />
 	<property name="src-example" location="${src}/example" />
 	<property name="src-test" location="${src}/test" />
 
@@ -131,6 +133,14 @@
 		</fileset>
 	</path>
 
+	<path id="path-simple3.1">
+		<pathelement path="${classes-api}" />
+		<pathelement path="${classes-nre}" />
+		<fileset dir="${lib}/simple3.1">
+			<include name="*.jar" />
+		</fileset>
+	</path>
+
 	<path id="path-example">
 		<pathelement path="${classes-api}" />
 		<pathelement path="${classes-nre}" />
@@ -148,18 +158,20 @@
 	<path id="path-all">
 		<pathelement path="${classes-api}" />
 		<pathelement path="${classes-nre}" />
-		<pathelement path="${classes-fileupload1.1}" />
+		<pathelement path="${classes-simple3.1}" />
 		<pathelement path="${classes-freemarker2.3}" />
+		<pathelement path="${classes-fileupload1.1}" />
 		<pathelement path="${classes-javamail1.3}" />
 		<pathelement path="${classes-jdbc3.0}" />
 		<pathelement path="${classes-jetty5.1}" />
 		<pathelement path="${classes-servlet2.4}" />
-		<path refid="path-fileupload1.1" />
+		<path refid="path-simple3.1" />
 		<path refid="path-freemarker2.3" />
+		<path refid="path-fileupload1.1" />
 		<path refid="path-javamail1.3" />
 		<path refid="path-jdbc3.0" />
-		<path refid="path-jetty5.1" />
 		<path refid="path-servlet2.4" />
+		<path refid="path-jetty5.1" />
 	</path>
 
 
@@ -213,6 +225,10 @@
 		<mkdir dir="${classes-servlet2.4}" />
 		<javac compiler="javac1.5" debug="true" srcdir="${src-servlet2.4}" destdir="${classes-servlet2.4}" classpathref="path-servlet2.4" />
 
+		<!-- Compiles extension Simple 3.1 -->
+		<mkdir dir="${classes-simple3.1}" />
+		<javac compiler="javac1.5" debug="true" srcdir="${src-simple3.1}" destdir="${classes-simple3.1}" classpathref="path-simple3.1" />
+
 		<!-- Compiles example source files -->
 		<mkdir dir="${classes-example}" />
 		<javac compiler="javac1.5" debug="true" srcdir="${src-example}" destdir="${classes-example}" classpathref="path-example" />
@@ -229,10 +245,10 @@
 				<pathelement location="${classes-api}" />
 				<pathelement location="${classes-nre}" />
 				<pathelement location="${classes-test}" />
-				<pathelement location="${classes-jetty5.1}" />
+				<pathelement location="${classes-simple3.1}" />
 				<pathelement location="${src-main}" />
-				<pathelement location="${src-jetty5.1}" />
-				<path refid="path-jetty5.1" />
+				<pathelement location="${src-simple3.1}" />
+				<path refid="path-simple3.1" />
 			</classpath>
 
 			<formatter type="plain" />
@@ -480,6 +496,25 @@
 		<mkdir dir="${dist}/src/servlet2.4" />
 		<zip destfile="${dist}/src/servlet2.4/restlet.servlet.zip" basedir="${src-servlet2.4}" includes="com/noelios/restlet/**" excludes="${excludes}" />
 
+		<!-- Create extension Simple 3.1 jar file -->
+		<jar jarfile="${dist}/lib/simple3.1/restlet.simple.jar" basedir="${classes-simple3.1}">
+			<manifest>
+				<attribute name="Built-By" value="${author}" />
+				<section name="com.noelios.restlet.ext.simple">
+					<attribute name="Implementation-Title" value="${restlet-ri}" />
+					<attribute name="Implementation-Version" value="${version-full} ${TODAY}" />
+					<attribute name="Implementation-Vendor" value="${author}" />
+				</section>
+			</manifest>
+		</jar>
+
+		<!-- Add the services manifest files -->
+		<jar jarfile="${dist}/lib/simple3.1/restlet.simple.jar" update="true" basedir="${src-simple3.1}" includes="meta-inf/**" />
+
+		<!-- Create extension Simple 3.1 source jar file -->
+		<mkdir dir="${dist}/src/simple3.1" />
+		<zip destfile="${dist}/src/simple3.1/restlet.simple.zip" basedir="${src-simple3.1}" includes="com/noelios/restlet/**, meta-inf/**" excludes="${excludes}" />
+
 		<!-- Create the final zip file -->
 		<zip destfile="${data}/archive/restlet/restlet-${version-compact}.zip" basedir="${dist}" includes="**/*" />
 
@@ -504,12 +539,6 @@
 				<![CDATA[<i>Copyright &#169; 2005-2006 J&eacute;r&ocirc;me Louvel. Restlet is a trademark and service mark of <a target="_top" href="http://www.noelios.com">Noelios Consulting</a>.</i>]]>
 			</bottom>
 
-			<tag name="associates" scope="all" description="Design stereotype: " enabled="false" />
-			<tag name="clientCardinality" scope="all" description="Design stereotype: " enabled="false" />
-			<tag name="label" scope="all" description="Design stereotype: " enabled="false" />
-			<tag name="stereotype" scope="all" description="Design stereotype: " enabled="false" />
-			<tag name="supplierCardinality" scope="all" description="Design stereotype: " enabled="false" />
-
 			<group title="${restlet-api}">
 				<package name="org.restlet*" />
 			</group>
@@ -529,17 +558,12 @@
 				<pathelement path="${src-jdbc3.0}" />
 				<pathelement path="${src-jetty5.1}" />
 				<pathelement path="${src-servlet2.4}" />
+				<pathelement path="${src-simple3.1}" />
 			</sourcepath>
 
 			<bottom>
 				<![CDATA[<i>Copyright &#169; 2005-2006 J&eacute;r&ocirc;me Louvel. Restlet is a trademark and service mark of <a target="_top" href="http://www.noelios.com">Noelios Consulting</a>.</i>]]>
 			</bottom>
-
-			<tag name="associates" scope="all" description="Design stereotype: " enabled="false" />
-			<tag name="clientCardinality" scope="all" description="Design stereotype: " enabled="false" />
-			<tag name="label" scope="all" description="Design stereotype: " enabled="false" />
-			<tag name="stereotype" scope="all" description="Design stereotype: " enabled="false" />
-			<tag name="supplierCardinality" scope="all" description="Design stereotype: " enabled="false" />
 
 			<group title="${restlet-ri}">
 				<package name="com.noelios.restlet*" />
@@ -551,6 +575,7 @@
 			<link href="http://java.sun.com/j2se/1.5.0/docs/api/" />
 			<link href="http://java.sun.com/products/javamail/javadocs/" />
 			<link href="http://jetty.mortbay.org/javadoc/" />
+			<link href="http://www.simpleframework.org/javadoc/" />
 		</javadoc>
 	</target>
 
