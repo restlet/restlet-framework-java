@@ -75,7 +75,6 @@ public class HttpClientCallImpl extends ConnectorCallImpl implements ClientCall
          this.connection.setAllowUserInteraction(false);
          this.connection.setDoOutput(hasInput);
          this.connection.setInstanceFollowRedirects(false);
-         this.connection.setUseCaches(false);
          this.requestUri = resourceUri;
          this.confidential = (this.connection instanceof HttpsURLConnection);
       }

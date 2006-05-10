@@ -45,6 +45,7 @@ import org.restlet.data.DefaultLanguage;
 import org.restlet.data.DefaultStatus;
 import org.restlet.data.Encoding;
 import org.restlet.data.Language;
+import org.restlet.data.MediaTypes;
 import org.restlet.data.Methods;
 import org.restlet.data.Parameter;
 import org.restlet.data.PreferenceData;
@@ -79,6 +80,7 @@ public class HttpClientImpl extends AbstractClient
    public HttpClientImpl(Protocol protocol, String name)
    {
       super(protocol, name);
+      System.setProperty("http.keepAlive", "false");
    }
    
    /**
@@ -199,6 +201,10 @@ public class HttpClientImpl extends AbstractClient
          if(pref.getMediaTypes().size() > 0)
          {
             clientCall.addRequestHeader(ConnectorCall.HEADER_ACCEPT, PreferenceUtils.format(pref.getMediaTypes()));
+         }
+         else
+         {
+        	 clientCall.addRequestHeader(ConnectorCall.HEADER_ACCEPT, MediaTypes.ALL.getName());
          }
          
          if(pref.getCharacterSets().size() > 0)
