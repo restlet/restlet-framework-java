@@ -121,8 +121,8 @@ final class SimpleCall extends HttpServerCallImpl
 	{
 		if (super.requestHeaders == null)
 		{
-			super.requestHeaders = new ArrayList<Parameter>();
 			int headerCount = request.headerCount();
+			super.requestHeaders = new ArrayList<Parameter>(headerCount);
 			for (int i = 0; i < headerCount; i++)
 			{
 				super.requestHeaders.add(new Parameter(request.getName(i), request
