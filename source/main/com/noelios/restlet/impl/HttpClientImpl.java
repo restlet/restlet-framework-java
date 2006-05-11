@@ -28,7 +28,6 @@ import java.net.ConnectException;
 import java.net.SocketTimeoutException;
 import java.util.Arrays;
 import java.util.Date;
-import java.util.Iterator;
 import java.util.List;
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -45,6 +44,7 @@ import org.restlet.data.DefaultLanguage;
 import org.restlet.data.DefaultStatus;
 import org.restlet.data.Encoding;
 import org.restlet.data.Language;
+import org.restlet.data.MediaType;
 import org.restlet.data.MediaTypes;
 import org.restlet.data.Methods;
 import org.restlet.data.Parameter;
@@ -322,12 +322,9 @@ public class HttpClientImpl extends AbstractClient
          Encoding encoding = null;
          Language language = null;
          Tag tag = null;
-         Parameter header = null;
          
-         for(Iterator<Parameter> iter = clientCall.getResponseHeaders().iterator(); iter.hasNext(); )
+         for(Parameter header : clientCall.getResponseHeaders())
          {
-            header = iter.next();
-            
             if(header.getName().equalsIgnoreCase(ConnectorCall.HEADER_CONTENT_TYPE))
             {
                contentType = new ContentType(header.getValue());
@@ -385,30 +382,29 @@ public class HttpClientImpl extends AbstractClient
          }
          
          // Set the output representation
-         if(contentType != null)
+         Representation output = null;
+
+         if(clientCall.getResponseStream() != null)
          {
-            Representation output = null;
+         	MediaType mediaType = null;
+         	if(contentType != null) mediaType = contentType.getMediaType();
+            output = new InputRepresentation(clientCall.getResponseStream(), mediaType);
+         }
+         else if(clientCall.getResponseChannel() != null)
+         {
+            output = new ReadableRepresentation(clientCall.getResponseChannel(), contentType.getMediaType());
+         }
 
-            if(clientCall.getResponseStream() != null)
-            {
-               output = new InputRepresentation(clientCall.getResponseStream(), contentType.getMediaType());
-            }
-            else if(clientCall.getResponseChannel() != null)
-            {
-               output = new ReadableRepresentation(clientCall.getResponseChannel(), contentType.getMediaType());
-            }
-
-            if(output != null)
-            {
-               if(contentType != null) output.getMetadata().setCharacterSet(contentType.getCharacterSet());
-               output.setSize(size);               
-               output.getMetadata().setEncoding(encoding);
-               output.getMetadata().setExpirationDate(expires);
-               output.getMetadata().setLanguage(language);
-               output.getMetadata().setModificationDate(lastModified);
-               output.getMetadata().setTag(tag);
-               call.setOutput(output);
-            }
+         if(output != null)
+         {
+            if(contentType != null) output.getMetadata().setCharacterSet(contentType.getCharacterSet());
+            output.setSize(size);               
+            output.getMetadata().setEncoding(encoding);
+            output.getMetadata().setExpirationDate(expires);
+            output.getMetadata().setLanguage(language);
+            output.getMetadata().setModificationDate(lastModified);
+            output.getMetadata().setTag(tag);
+            call.setOutput(output);
          }
       }
       catch(Exception e)
