@@ -1,5 +1,5 @@
 /*
- * Copyright 2005-2006 Noelios Consulting
+ * Copyright 2005-2006 Noelios Consulting.
  *
  * The contents of this file are subject to the terms
  * of the Common Development and Distribution License
@@ -19,6 +19,7 @@
  * replaced with your own identifying information:
  * Portions Copyright [yyyy] [name of copyright owner]
  */
+
 package com.noelios.restlet.ext.simple;
 
 import java.io.IOException;
