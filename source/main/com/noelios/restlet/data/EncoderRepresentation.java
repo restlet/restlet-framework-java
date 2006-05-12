@@ -24,34 +24,36 @@ package com.noelios.restlet.data;
 
 import java.io.IOException;
 import java.io.OutputStream;
+import java.util.zip.DeflaterOutputStream;
 import java.util.zip.GZIPOutputStream;
+import java.util.zip.ZipOutputStream;
 
 import org.restlet.Resource;
+import org.restlet.data.Encoding;
 import org.restlet.data.Encodings;
-import org.restlet.data.MediaTypes;
 import org.restlet.data.Representation;
 import org.restlet.data.RepresentationMetadata;
 
 /**
- * Representation that compresses a wrapped representation using the GZIP algorithm. 
- * @author Lars Heuer (heuer[at]semagia.com) <a href="http://semagia.com/">Semagia</a>
- * @author Jerome Louvel (contact[at]noelios.com) <a href="http://www.noelios.com/">Noelios Consulting</a>
+ * Representation that encodes a wrapped representation. 
  */
-public class GzipRepresentation extends OutputRepresentation
+public class EncoderRepresentation extends OutputRepresentation
 {
    /** Wrapped representation. */
    protected Representation wrappedRepresentation;
 
    /**
     * Constructor.
+    * @param encoding Encoder algorithm.
     * @param wrappedRepresentation The wrapped representation.
     */
-   public GzipRepresentation(Representation wrappedRepresentation)
+   public EncoderRepresentation(Encoding encoding, Representation wrappedRepresentation)
    {
-   	super(MediaTypes.APPLICATION_ZIP);
+   	super(null);
+   	this.encoding = encoding;
       this.wrappedRepresentation = wrappedRepresentation;
    }
-	
+   
    /**
     * Returns the represented resource if available.
     * @return The represented resource if available.
@@ -77,7 +79,7 @@ public class GzipRepresentation extends OutputRepresentation
    public RepresentationMetadata getMetadata()
    {
    	RepresentationMetadata result = new RepresentationMetadata(this.wrappedRepresentation.getMetadata());
-   	result.setEncoding(Encodings.GZIP);
+   	result.setEncoding(getEncoding());
    	return result;
    }
    
@@ -105,9 +107,31 @@ public class GzipRepresentation extends OutputRepresentation
     */
 	public void write(OutputStream out) throws IOException
 	{
-		GZIPOutputStream gzipOutput = new GZIPOutputStream(out);
-		this.wrappedRepresentation.write(gzipOutput);
-		gzipOutput.finish();
+		DeflaterOutputStream encoderOutputStream = null;
+
+		if(getEncoding().equals(Encodings.GZIP))
+		{
+			encoderOutputStream = new GZIPOutputStream(out);
+		}
+		else if(getEncoding().equals(Encodings.DEFLATE))
+		{
+			encoderOutputStream = new DeflaterOutputStream(out);
+		}
+		else if(getEncoding().equals(Encodings.ZIP))
+		{
+			encoderOutputStream = new ZipOutputStream(out);
+		}
+		else if(getEncoding().equals(Encodings.IDENTITY))
+		{
+			throw new IOException("Encoder unecessary for identity encoding");
+		}
+		else
+		{
+			throw new IOException("Unsupported encoding");
+		}
+
+		this.wrappedRepresentation.write(encoderOutputStream);
+		encoderOutputStream.finish();
 	}
 
 }

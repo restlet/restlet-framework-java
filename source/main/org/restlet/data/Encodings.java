@@ -33,6 +33,9 @@ public enum Encodings implements Encoding
    /** The GNU Zip encoding. */
    GZIP,
 
+   /** The Zip encoding. */
+   ZIP,
+
    /** The common Unix file compression. */
    COMPRESS,
 
@@ -57,6 +60,9 @@ public enum Encodings implements Encoding
             break;
          case GZIP:
             result = "gzip";
+            break;
+         case ZIP:
+            result = "zip";
             break;
          case COMPRESS:
             result = "compress";
@@ -87,6 +93,9 @@ public enum Encodings implements Encoding
             break;
          case GZIP:
             result = "GZip compression";
+            break;
+         case ZIP:
+            result = "Zip compression";
             break;
          case COMPRESS:
             result = "Common Unix compression";
