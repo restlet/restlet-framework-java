@@ -22,7 +22,6 @@
 
 package com.noelios.restlet.data;
 
-import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
@@ -94,28 +93,6 @@ public abstract class OutputRepresentation extends StreamRepresentation
       // Start the writer thread
       writer.start();
       return pipe.getInputStream();
-   }
-
-   /**
-    * Converts the representation to a string.
-    * @return The representation as a string.
-    */
-   public String toString()
-   {
-      String result = null;
-
-      try
-      {
-         ByteArrayOutputStream baos = new ByteArrayOutputStream();
-         write(baos);
-         result = baos.toString();
-      }
-      catch(Exception ioe)
-      {
-         // Return an empty string
-      }
-
-      return result;
    }
 
 }

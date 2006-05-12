@@ -123,21 +123,19 @@ public class FileRepresentation extends AbstractRepresentation
    }
 
    /**
-    * Returns the size in bytes if known, -1 otherwise.
-    * @return The size in bytes if known, -1 otherwise.
+    * Returns the size in bytes if known, UNKNOWN_SIZE (-1) otherwise.
+    * @return The size in bytes if known, UNKNOWN_SIZE (-1) otherwise.
     */
    public long getSize()
    {
-      return this.file.length();
-   }
-
-   /**
-    * Sets the expected size in bytes if known, -1 otherwise.
-    * @param expectedSize The expected size in bytes if known, -1 otherwise.
-    */
-   public void setSize(long expectedSize)
-   {
-   	// Not supported.
+   	if(this.expectedSize != UNKNOWN_SIZE)
+   	{
+   		return this.expectedSize;
+   	}
+   	else
+   	{
+   		return this.file.length();
+   	}
    }
 
    /**

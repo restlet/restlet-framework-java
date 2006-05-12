@@ -75,6 +75,15 @@ public class StringRepresentation extends StreamRepresentation
    {
    	this.value = value;
    }
+
+   /**
+    * Returns an inputstream that can read the representation's content.
+    * @return An inputstream that can read the representation's content.
+    */
+   public InputStream getStream() throws IOException
+   {
+      return new ByteArrayInputStream(getValue().getBytes());
+   }
    
    /**
     * Writes the datum as a stream of bytes.
@@ -86,28 +95,19 @@ public class StringRepresentation extends StreamRepresentation
    }
 
    /**
-    * Returns the size in bytes if known, -1 otherwise.
-    * @return The size in bytes if known, -1 otherwise.
+    * Returns the size in bytes if known, UNKNOWN_SIZE (-1) otherwise.
+    * @return The size in bytes if known, UNKNOWN_SIZE (-1) otherwise.
     */
    public long getSize()
    {
       if(getValue() == null)
       {
-         return -1L;
+         return UNKNOWN_SIZE;
       }
       else
       {
          return (long)getValue().length();
       }
-   }
-
-   /**
-    * Returns an inputstream that can read the representation's content.
-    * @return An inputstream that can read the representation's content.
-    */
-   public InputStream getStream() throws IOException
-   {
-      return new ByteArrayInputStream(getValue().getBytes());
    }
 
    /**

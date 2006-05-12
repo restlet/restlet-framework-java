@@ -24,8 +24,11 @@ package com.noelios.restlet.data;
 
 import java.io.IOException;
 import java.nio.channels.ReadableByteChannel;
+import java.nio.channels.WritableByteChannel;
 
 import org.restlet.data.MediaType;
+
+import com.noelios.restlet.util.ByteUtils;
 
 /**
  * Representation based on a readable NIO byte channel.
@@ -66,6 +69,15 @@ public class ReadableRepresentation extends ChannelRepresentation
    public ReadableByteChannel getChannel() throws IOException
    {
       return readableChannel;
+   }
+
+   /**
+    * Writes the representation to a byte channel.
+    * @param writableChannel A writable byte channel.
+    */
+   public void write(WritableByteChannel writableChannel) throws IOException
+   {
+      ByteUtils.write(getChannel(), writableChannel);
    }
 
 }

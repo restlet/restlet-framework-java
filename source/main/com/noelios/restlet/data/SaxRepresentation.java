@@ -59,14 +59,13 @@ public abstract class SaxRepresentation extends OutputRepresentation
 	
    /**
     * Constructor.
-    * @param mediaType The representation's media type.
+    * @param mediaType The representation media type.
     */
    public SaxRepresentation(MediaType mediaType)
    {
-      super(mediaType);
-      this.source = null;
+   	super(mediaType);
    }
-	
+   
    /**
     * Constructor.
     * @param xmlRepresentation A source XML representation to parse.

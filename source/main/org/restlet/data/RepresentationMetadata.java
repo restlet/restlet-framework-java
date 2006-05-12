@@ -66,6 +66,21 @@ public class RepresentationMetadata implements Metadata
    }
 
    /**
+    * Clone constructor.
+    * @param clonedMetadata The representation metadata to clone.
+    */
+   public RepresentationMetadata(RepresentationMetadata clonedMetadata)
+   {
+      this.characterSet = clonedMetadata.getCharacterSet();
+      this.encoding = clonedMetadata.getEncoding();
+      this.expirationDate = clonedMetadata.getExpirationDate();
+      this.language = clonedMetadata.getLanguage();
+      this.mediaType = clonedMetadata.getMediaType();
+      this.modificationDate = clonedMetadata.getModificationDate();
+      this.tag = clonedMetadata.getTag();
+   }
+
+   /**
     * Returns the description of this REST element.
     * @return The description of this REST element.
     */

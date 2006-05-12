@@ -32,9 +32,9 @@ public enum MediaTypes implements MediaType
 {
    ALL,
 
-   APPLICATION_ALL, APPLICATION_ATOM_XML, APPLICATION_HTTP_COOKIES, APPLICATION_JAVA_OBJECT,
-   APPLICATION_PDF, APPLICATION_WORD, APPLICATION_WWW_FORM, APPLICATION_XHTML_XML, 
-   APPLICATION_XML, APPLICATION_ZIP,
+   APPLICATION_ALL, APPLICATION_ATOM_XML, APPLICATION_GZIP, APPLICATION_HTTP_COOKIES, 
+   APPLICATION_JAVA_OBJECT, APPLICATION_PDF, APPLICATION_WORD, APPLICATION_WWW_FORM, 
+   APPLICATION_XHTML_XML, APPLICATION_XML, APPLICATION_ZIP,
 
    IMAGE_ALL, IMAGE_GIF, IMAGE_ICON, IMAGE_PNG,
    
@@ -61,6 +61,9 @@ public enum MediaTypes implements MediaType
          case APPLICATION_ATOM_XML:
             result = "application/atom+xml";
             break;
+         case APPLICATION_GZIP:
+         	result = "application/x-gzip";
+         	break;
          case APPLICATION_HTTP_COOKIES:
             result = "application/x-http-cookies"; // Guessed!
             break;
@@ -169,6 +172,9 @@ public enum MediaTypes implements MediaType
          case APPLICATION_ATOM_XML:
             result = "Atom syndication documents";
             break;
+         case APPLICATION_GZIP:
+         	result = "GZIP archive";
+         	break;
          case APPLICATION_HTTP_COOKIES:
             result = "HTTP cookies"; // Guessed!
             break;

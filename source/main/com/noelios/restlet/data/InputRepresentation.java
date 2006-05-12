@@ -24,8 +24,11 @@ package com.noelios.restlet.data;
 
 import java.io.IOException;
 import java.io.InputStream;
+import java.io.OutputStream;
 
 import org.restlet.data.MediaType;
+
+import com.noelios.restlet.util.ByteUtils;
 
 /**
  * Representation based on a BIO input stream.
@@ -65,6 +68,35 @@ public class InputRepresentation extends StreamRepresentation
    public InputStream getStream() throws IOException
    {
       return inputStream;
+   }
+   
+   /**
+    * Writes the representation to a byte stream.
+    * @param outputStream The output stream.
+    */
+   public void write(OutputStream outputStream) throws IOException
+   {
+      ByteUtils.write(getStream(), outputStream);
+   }
+   
+   /**
+    * Converts the representation to a string.
+    * @return The representation as a string.
+    */
+   public String toString()
+   {
+      String result = null;
+
+      try
+      {
+         result = ByteUtils.toString(getStream());
+      }
+      catch(IOException ioe)
+      {
+         ioe.printStackTrace();
+      }
+
+      return result;
    }
 
 }

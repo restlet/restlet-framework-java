@@ -31,40 +31,50 @@ import java.nio.channels.WritableByteChannel;
 import org.restlet.Resource;
 
 /**
- * Current or intended state of a resource. For performance purpose, it is essential that a minimal overhead
- * occurs upon initialization. Most overhead should occurs during invocation of content processing methods
- * (write, getStream, getChannel and toString)<br/><br/> "REST components perform actions on a resource by
- * using a representation to capture the current or intended state of that resource and transferring that
- * representation between components. A representation is a sequence of bytes, plus representation metadata to
- * describe those bytes. Other commonly used but less precise names for a representation include: document,
- * file, and HTTP message entity, instance, or variant." Roy T. Fielding
- * @see <a href="http://www.ics.uci.edu/~fielding/pubs/dissertation/rest_arch_style.htm#sec_5_2_1_2">Source
- * dissertation</a>
+ * Representation wrapper. Useful for application developer who need to enrich the representation 
+ * with application related properties and behavior.
+ * @see <a href="http://c2.com/cgi/wiki?DecoratorPattern">The decorator (aka wrapper) pattern</a>
  */
-public interface Representation extends Data
+public class WrapperRepresentation implements Representation
 {
-	/**
-	 * Inidicates that the size of the representation can't be known in advance. 
-	 */
-	public static final long UNKNOWN_SIZE = -1L;
+   /** Wrapped representation. */
+   protected Representation wrappedRepresentation;
 
-	/**
+   /**
+    * Constructor.
+    * @param wrappedRepresentation The wrapped representation.
+    */
+   public WrapperRepresentation(Representation wrappedRepresentation)
+   {
+      this.wrappedRepresentation = wrappedRepresentation;
+   }
+	
+   /**
     * Returns the represented resource if available.
     * @return The represented resource if available.
     */
-   public Resource getResource();
+   public Resource getResource()
+   {
+   	return this.wrappedRepresentation.getResource();
+   }
 
    /**
     * Sets the represented resource.
     * @param resource The represented resource.
     */
-   public void setResource(Resource resource);
+   public void setResource(Resource resource)
+   {
+   	this.wrappedRepresentation.setResource(resource);
+   }
 
    /**
     * Returns the metadata.
     * @return The metadata.
     */
-   public RepresentationMetadata getMetadata();
+   public RepresentationMetadata getMetadata()
+   {
+   	return this.wrappedRepresentation.getMetadata();
+   }
 
    /**
     * Returns a channel with the representation's content.<br/>
@@ -72,44 +82,84 @@ public interface Representation extends Data
     * @return A channel with the representation's content.
     * @throws IOException
     */
-   public ReadableByteChannel getChannel() throws IOException;
+   public ReadableByteChannel getChannel() throws IOException
+   {
+   	return this.wrappedRepresentation.getChannel();
+   }
 
    /**
     * Returns a stream with the representation's content.
     * @return A stream with the representation's content.
     * @throws IOException
     */
-   public InputStream getStream() throws IOException;
+   public InputStream getStream() throws IOException
+   {
+   	return this.wrappedRepresentation.getStream();
+   }
 
    /**
     * Writes the representation to a byte channel.
     * @param writableChannel A writable byte channel.
     * @throws IOException
     */
-   public void write(WritableByteChannel writableChannel) throws IOException;
+   public void write(WritableByteChannel writableChannel) throws IOException
+   {
+   	this.wrappedRepresentation.write(writableChannel);
+   }
 
    /**
     * Writes the representation to a byte stream.
     * @param outputStream The output stream.
     * @throws IOException
     */
-   public void write(OutputStream outputStream) throws IOException;
+   public void write(OutputStream outputStream) throws IOException
+   {
+   	this.wrappedRepresentation.write(outputStream);
+   }
 
    /**
     * Returns the size in bytes if known, -1 otherwise.
     * @return The size in bytes if known, -1 otherwise.
     */
-   public long getSize();
+   public long getSize()
+   {
+   	return this.wrappedRepresentation.getSize();
+   }
 
    /**
     * Sets the expected size in bytes if known, -1 otherwise.
     * @param expectedSize The expected size in bytes if known, -1 otherwise.
     */
-   public void setSize(long expectedSize);
+   public void setSize(long expectedSize)
+   {
+   	this.wrappedRepresentation.setSize(expectedSize);
+   }
 
    /**
     * Converts the representation to a string.
     * @return The representation as a string.
     */
-   public String toString();
+   public String toString()
+   {
+   	return this.wrappedRepresentation.toString();
+   }
+   
+   /**
+    * Returns the name of this REST element.
+    * @return The name of this REST element.
+    */
+   public String getName()
+   {
+   	return this.wrappedRepresentation.getName();
+   }
+
+   /**
+    * Returns the description of this REST element.
+    * @return The description of this REST element.
+    */
+   public String getDescription()
+   {
+   	return this.wrappedRepresentation.getDescription();
+   }
+   
 }

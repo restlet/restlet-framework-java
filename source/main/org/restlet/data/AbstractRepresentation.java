@@ -22,6 +22,8 @@
 
 package org.restlet.data;
 
+import java.io.ByteArrayOutputStream;
+
 import org.restlet.Resource;
 
 /**
@@ -29,18 +31,54 @@ import org.restlet.Resource;
  */
 public abstract class AbstractRepresentation extends RepresentationMetadata implements Representation
 {
-   /**
+	/** 
+	 * The expected size. Dynamic representations can have any size, but sometimes we can know in 
+	 * advance the expected size. If this expected size is specified by the user, it has a higher priority
+	 * than any size that can be guessed by the representation (like a file size).
+	 */
+	protected long expectedSize;
+
+	/**
     * The represented resource, if available.
     */
    protected Resource resource;
 
-   /**
+	/**
     * Constructor.
-    * @param mediaType The media type.
+    * @param mediaType The representation's media type.
     */
    public AbstractRepresentation(MediaType mediaType)
    {
+      this(mediaType, UNKNOWN_SIZE);
+   }
+
+	/**
+    * Constructor.
+    * @param mediaType The representation's media type.
+    * @param expectedSize The expected stream size. 
+    */
+   public AbstractRepresentation(MediaType mediaType, long expectedSize)
+   {
       super(mediaType);
+      this.expectedSize = expectedSize;
+   }
+
+   /**
+    * Returns the size in bytes if known, UNKNOWN_SIZE (-1) otherwise.
+    * @return The size in bytes if known, UNKNOWN_SIZE (-1) otherwise.
+    */
+   public long getSize()
+   {
+      return this.expectedSize;
+   }
+
+   /**
+    * Sets the expected size in bytes if known, -1 otherwise.
+    * @param expectedSize The expected size in bytes if known, -1 otherwise.
+    */
+   public void setSize(long expectedSize)
+   {
+      this.expectedSize = expectedSize;
    }
 
    /**
@@ -71,15 +109,6 @@ public abstract class AbstractRepresentation extends RepresentationMetadata impl
    }
 
    /**
-    * Returns the size in bytes if known, -1 otherwise.
-    * @return The size in bytes if known, -1 otherwise.
-    */
-   public long getSize()
-   {
-      return -1;
-   }
-
-   /**
     * Returns the description of this REST element.
     * @return The description of this REST element.
     */
@@ -95,6 +124,28 @@ public abstract class AbstractRepresentation extends RepresentationMetadata impl
    public String getName()
    {
       return "representation";
+   }
+
+   /**
+    * Converts the representation to a string.
+    * @return The representation as a string.
+    */
+   public String toString()
+   {
+      String result = null;
+
+      try
+      {
+         ByteArrayOutputStream baos = new ByteArrayOutputStream();
+         write(baos);
+         result = baos.toString();
+      }
+      catch(Exception ioe)
+      {
+         // Return an empty string
+      }
+
+      return result;
    }
 
 }

@@ -40,7 +40,7 @@ public class WrapperCall implements Call
 
    /**
     * Constructor.
-    * @param wrappedCall The wrapped call
+    * @param wrappedCall The wrapped call.
     */
    public WrapperCall(Call wrappedCall)
    {
