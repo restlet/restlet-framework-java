@@ -24,6 +24,8 @@ package com.noelios.restlet.data;
 
 import java.io.IOException;
 import java.io.OutputStream;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.zip.DeflaterOutputStream;
 import java.util.zip.GZIPOutputStream;
 import java.util.zip.ZipOutputStream;
@@ -105,21 +107,21 @@ public class EncoderRepresentation extends OutputRepresentation
     * Writes the representation to a byte stream.
     * @param outputStream The output stream.
     */
-	public void write(OutputStream out) throws IOException
+	public void write(OutputStream outputStream) throws IOException
 	{
 		DeflaterOutputStream encoderOutputStream = null;
 
 		if(getEncoding().equals(Encodings.GZIP))
 		{
-			encoderOutputStream = new GZIPOutputStream(out);
+			encoderOutputStream = new GZIPOutputStream(outputStream);
 		}
 		else if(getEncoding().equals(Encodings.DEFLATE))
 		{
-			encoderOutputStream = new DeflaterOutputStream(out);
+			encoderOutputStream = new DeflaterOutputStream(outputStream);
 		}
 		else if(getEncoding().equals(Encodings.ZIP))
 		{
-			encoderOutputStream = new ZipOutputStream(out);
+			encoderOutputStream = new ZipOutputStream(outputStream);
 		}
 		else if(getEncoding().equals(Encodings.IDENTITY))
 		{
@@ -134,4 +136,17 @@ public class EncoderRepresentation extends OutputRepresentation
 		encoderOutputStream.finish();
 	}
 
+	/**
+	 * Returns the list of supported encodings.
+	 * @return The list of supported encodings.
+	 */
+	public static List<Encoding> getSupportedEncodings()
+	{
+		List<Encoding> result = new ArrayList<Encoding>();
+		result.add(Encodings.GZIP);
+		result.add(Encodings.DEFLATE);
+		result.add(Encodings.ZIP);
+		result.add(Encodings.IDENTITY);
+		return result;
+	}
 }

@@ -448,6 +448,64 @@ public enum MediaTypes implements MediaType
    }
 
    /**
+    * Indicates if a given media type is included in the current one.
+    * The test is true if both types are equal or if the given media type is within the range of the 
+    * current one. For example, @link{ALL} includes all media types. 
+    * Parameters are ignored for this comparison. 
+    * @param included The media type to test for inclusion.
+    * @return True if the given media type is included in the current one.
+    */
+   public boolean includes(MediaType included)
+   {
+   	return includes(this, included);
+   }
+   
+   /**
+    * Indicates if a given media type is included in the current one.
+    * The test is true if both types are equal or if the given media type is within the range of the 
+    * current one. For example, @link{ALL} includes all media types. 
+    * Parameters are ignored for this comparison. 
+    * @param including The including media type.
+    * @param included The media type to test for inclusion.
+    * @return True if the given media type is included in the current one.
+    */
+   public static boolean includes(MediaType including, MediaType included)
+   {
+   	boolean result = including.equals(ALL);
+   	
+   	if(result)
+   	{
+   		// The ALL media type includes all other types.
+   	}
+   	else
+   	{
+   		result = including.equals(included);
+   		
+   		if(result)
+   		{
+   			// Both media types are equal
+   		}
+   		else
+   		{
+   			result = including.getMainType().equals(included.getMainType()) && 
+   						including.getSubType().equals("*");
+   			
+   			if(result)
+   			{
+   				// Both media types have the same main type
+   				// and the subtype of current media type includes all subtypes. 
+   			}
+   			else
+   			{
+					// Both media types are not equal
+   			}
+   		}
+   	}
+   	
+   	return result;
+   }
+
+   /**
     * Returns the media type name.
     * @return The media type name.
     */

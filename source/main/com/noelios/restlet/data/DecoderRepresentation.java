@@ -24,6 +24,8 @@ package com.noelios.restlet.data;
 
 import java.io.IOException;
 import java.io.InputStream;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.zip.GZIPInputStream;
 import java.util.zip.InflaterInputStream;
 import java.util.zip.ZipInputStream;
@@ -46,7 +48,7 @@ public class DecoderRepresentation extends InputRepresentation
     * Constructor.
     * @param wrappedRepresentation The wrapped representation.
     */
-   public DecoderRepresentation(Encoding encoding, Representation wrappedRepresentation)
+   public DecoderRepresentation(Representation wrappedRepresentation)
    {
    	super(null, null);
       this.wrappedRepresentation = wrappedRepresentation;
@@ -131,4 +133,17 @@ public class DecoderRepresentation extends InputRepresentation
 		return result;
 	}
 
+	/**
+	 * Returns the list of supported encodings.
+	 * @return The list of supported encodings.
+	 */
+	public static List<Encoding> getSupportedEncodings()
+	{
+		List<Encoding> result = new ArrayList<Encoding>();
+		result.add(Encodings.GZIP);
+		result.add(Encodings.DEFLATE);
+		result.add(Encodings.ZIP);
+		result.add(Encodings.IDENTITY);
+		return result;
+	}
 }

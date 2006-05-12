@@ -154,6 +154,19 @@ public class DefaultMediaType extends DefaultMetadata implements MediaType
    }
 
    /**
+    * Indicates if a given media type is included in the current one.
+    * The test is true if both types are equal or if the given media type is within the range of the 
+    * current one. For example, @link{ALL} includes all media types. 
+    * Parameters are ignored for this comparison. 
+    * @param included The media type to test for inclusion.
+    * @return True if the given media type is included in the current one.
+    */
+   public boolean includes(MediaType included)
+   {
+   	return MediaTypes.includes(this, included);
+   }
+
+   /**
     * Returns the description of this REST element.
     * @return The description of this REST element.
     */
