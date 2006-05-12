@@ -47,6 +47,9 @@ import org.restlet.data.Statuses;
  */
 public class HostMaplet extends DefaultMaplet
 {
+	/**
+	 * Attachment mode for HostMaplet. 
+	 */
 	public enum AttachmentMode 
 	{
 		/**

@@ -32,15 +32,24 @@ public enum MediaTypes implements MediaType
 {
    ALL,
 
-   APPLICATION_ALL, APPLICATION_ATOM_XML, APPLICATION_GZIP, APPLICATION_HTTP_COOKIES, 
-   APPLICATION_JAVA_OBJECT, APPLICATION_PDF, APPLICATION_WORD, APPLICATION_WWW_FORM, 
-   APPLICATION_XHTML_XML, APPLICATION_XML, APPLICATION_ZIP,
-
-   IMAGE_ALL, IMAGE_GIF, IMAGE_ICON, IMAGE_PNG,
+   APPLICATION_ALL, APPLICATION_ATOM_XML, APPLICATION_CABINET, APPLICATION_EXCEL, APPLICATION_GNU_TAR, 
+   APPLICATION_GNU_ZIP, APPLICATION_HTTP_COOKIES, APPLICATION_JAVA_ARCHIVE, APPLICATION_JAVA_OBJECT, 
+   APPLICATION_JAVASCRIPT, APPLICATION_OCTET_STREAM, APPLICATION_PDF, APPLICATION_POSTSCRIPT, 
+   APPLICATION_POWERPOINT, APPLICATION_PROJECT, APPLICATION_RICH_TEXT_FORMAT, APPLICATION_SHOCKWAVE_FLASH, 
+   APPLICATION_STUFFIT, APPLICATION_TAR, APPLICATION_WORD, APPLICATION_WWW_FORM, APPLICATION_XHTML_XML, 
+   APPLICATION_XML, APPLICATION_ZIP,
    
-   MULTIPART_FORM_DATA,
+   AUDIO_ALL, AUDIO_MPEG, AUDIO_REAL, AUDIO_WAV,
 
-   TEXT_ALL, TEXT_CSS, TEXT_HTML, TEXT_PLAIN, TEXT_URI_LIST, TEXT_XML;
+   IMAGE_ALL, IMAGE_BMP, IMAGE_GIF, IMAGE_ICON, IMAGE_JPEG, IMAGE_PNG,
+   
+   MESSAGE_ALL, MODEL_ALL, 
+   
+   MULTIPART_ALL, MULTIPART_FORM_DATA,
+
+   TEXT_ALL, TEXT_CSS, TEXT_HTML, TEXT_PLAIN, TEXT_URI_LIST, TEXT_VCARD, TEXT_XML,
+   
+   VIDEO_ALL, VIDEO_MPEG, VIDEO_QUICKTIME, VIDEO_AVI, VIDEO_WMV;
 
    /**
     * Returns the metadata name like "text/html" or "compress" or "iso-8851-1".
@@ -61,18 +70,57 @@ public enum MediaTypes implements MediaType
          case APPLICATION_ATOM_XML:
             result = "application/atom+xml";
             break;
-         case APPLICATION_GZIP:
+         case APPLICATION_CABINET:
+         	result = "application/vnd.ms-cab-compressed";
+         	break;
+         case APPLICATION_EXCEL:
+         	result = "application/vnd.ms-excel";
+         	break;
+         case APPLICATION_GNU_TAR:
+         	result = "application/x-gtar";
+         	break;
+         case APPLICATION_GNU_ZIP:
          	result = "application/x-gzip";
          	break;
          case APPLICATION_HTTP_COOKIES:
             result = "application/x-http-cookies"; // Guessed!
             break;
+         case APPLICATION_JAVA_ARCHIVE:
+         	result = "application/java-archive";
+         	break;
          case APPLICATION_JAVA_OBJECT:
             result = "application/x-java-serialized-object";
             break;
+         case APPLICATION_JAVASCRIPT:
+         	result = "application/x-javascript";
+         	break;
+         case APPLICATION_OCTET_STREAM:
+         	result = "application/octet-stream";
+         	break;
          case APPLICATION_PDF:
             result = "application/pdf";
             break;
+         case APPLICATION_POSTSCRIPT:
+         	result = "application/postscript";
+         	break;
+         case APPLICATION_POWERPOINT:
+         	result = "application/vnd.ms-powerpoint";
+         	break;
+         case APPLICATION_PROJECT:
+         	result = "application/vnd.ms-project";
+         	break;
+         case APPLICATION_RICH_TEXT_FORMAT:
+         	result = "application/rtf";
+         	break;
+         case APPLICATION_SHOCKWAVE_FLASH:
+         	result = "application/x-shockwave-flash";
+         	break;
+         case APPLICATION_STUFFIT:
+         	result = "application/x-stuffit";
+         	break;
+         case APPLICATION_TAR:
+         	result = "application/x-tar";
+         	break;
          case APPLICATION_WORD:
             result = "application/msword";
             break;
@@ -88,21 +136,54 @@ public enum MediaTypes implements MediaType
          case APPLICATION_ZIP:
             result = "application/zip";
             break;
+            
+         case AUDIO_ALL:
+            result = "audio/*";
+            break;
+         case AUDIO_MPEG:
+            result = "audio/mpeg";
+            break;
+         case AUDIO_REAL:
+            result = "audio/x-pn-realaudio";
+            break;
+         case AUDIO_WAV:
+            result = "audio/x-wav";
+            break;
+            
          case IMAGE_ALL:
             result = "image/*";
             break;
+         case IMAGE_BMP:
+         	result = "image/bmp";
+         	break;
          case IMAGE_GIF:
             result = "image/gif";
             break;
          case IMAGE_ICON:
             result = "image/x-icon";
             break;
+         case IMAGE_JPEG:
+            result = "image/jpeg";
+            break;
          case IMAGE_PNG:
             result = "image/png";
+            break;
+            
+         case MESSAGE_ALL:
+            result = "message/*";
+            break;
+            
+         case MODEL_ALL:
+            result = "model/*";
+            break;
+            
+         case MULTIPART_ALL:
+            result = "multipart/*";
             break;
          case MULTIPART_FORM_DATA:
          	result = "multipart/form-data";
          	break;
+         	
          case TEXT_ALL:
             result = "text/*";
             break;
@@ -118,8 +199,27 @@ public enum MediaTypes implements MediaType
          case TEXT_URI_LIST:
             result = "text/uri-list";
             break;
+         case TEXT_VCARD:
+         	result = "text/x-vcard";
+         	break;
          case TEXT_XML:
             result = "text/xml";
+            break;
+            
+         case VIDEO_ALL:
+            result = "video/*";
+            break;
+         case VIDEO_AVI:
+            result = "video/x-msvideo";
+            break;
+         case VIDEO_MPEG:
+            result = "video/mpeg";
+            break;
+         case VIDEO_QUICKTIME:
+            result = "video/quicktime";
+            break;
+         case VIDEO_WMV:
+            result = "video/x-ms-wmv";
             break;
       }
 
@@ -172,18 +272,57 @@ public enum MediaTypes implements MediaType
          case APPLICATION_ATOM_XML:
             result = "Atom syndication documents";
             break;
-         case APPLICATION_GZIP:
-         	result = "GZIP archive";
+         case APPLICATION_CABINET:
+         	result = "Microsoft Cabinet archive";
+         	break;
+         case APPLICATION_EXCEL:
+         	result = "Microsoft Excel document";
+         	break;
+         case APPLICATION_GNU_TAR:
+         	result = "GNU Tar archive";
+         	break;
+         case APPLICATION_GNU_ZIP:
+         	result = "GNU Zip archive";
          	break;
          case APPLICATION_HTTP_COOKIES:
             result = "HTTP cookies"; // Guessed!
             break;
+         case APPLICATION_JAVA_ARCHIVE:
+         	result = "Java archive";
+         	break;
          case APPLICATION_JAVA_OBJECT:
             result = "Java serialized object";
             break;
+         case APPLICATION_JAVASCRIPT:
+         	result = "Javascript document";
+         	break;
+         case APPLICATION_OCTET_STREAM:
+         	result = "Raw octet stream";
+         	break;
          case APPLICATION_PDF:
             result = "Adobe PDF document";
             break;
+         case APPLICATION_POSTSCRIPT:
+         	result = "Postscript document";
+         	break;
+         case APPLICATION_POWERPOINT:
+         	result = "Microsoft Powerpoint document";
+         	break;
+         case APPLICATION_PROJECT:
+         	result = "Microsoft Project document";
+         	break;
+         case APPLICATION_RICH_TEXT_FORMAT:
+         	result = "Rich Text Format document";
+         	break;
+         case APPLICATION_SHOCKWAVE_FLASH:
+         	result = "Shockwave Flash object";
+         	break;
+         case APPLICATION_STUFFIT:
+         	result = "Stuffit archive";
+         	break;
+         case APPLICATION_TAR:
+         	result = "Tar archive";
+         	break;
          case APPLICATION_WORD:
             result = "Microsoft Word document";
             break;
@@ -197,8 +336,22 @@ public enum MediaTypes implements MediaType
             result = "XML application document";
             break;
          case APPLICATION_ZIP:
-            result = "ZIP archive";
+            result = "Zip archive";
             break;
+            
+         case AUDIO_ALL:
+            result = "All audios";
+            break;
+         case AUDIO_MPEG:
+            result = "MPEG audio (MP3)";
+            break;
+         case AUDIO_REAL:
+            result = "Real audio";
+            break;
+         case AUDIO_WAV:
+            result = "Waveform audio";
+            break;
+            
          case IMAGE_ALL:
             result = "All images";
             break;
@@ -206,14 +359,33 @@ public enum MediaTypes implements MediaType
             result = "GIF image";
             break;
          case IMAGE_ICON:
-            result = "Favicon image";
+            result = "Windows icon (Favicon)";
+            break;
+         case IMAGE_JPEG:
+            result = "JPEG image";
             break;
          case IMAGE_PNG:
             result = "PNG image";
             break;
+         case IMAGE_BMP:
+         	result = "Windows bitmap";
+         	break;
+            
+         case MESSAGE_ALL:
+            result = "All messages";
+            break;
+            
+         case MODEL_ALL:
+            result = "All models";
+            break;
+            
+         case MULTIPART_ALL:
+            result = "All multipart data";
+            break;
          case MULTIPART_FORM_DATA:
          	result = "Multipart form data";
          	break;
+         	
          case TEXT_ALL:
             result = "All texts";
             break;
@@ -227,11 +399,30 @@ public enum MediaTypes implements MediaType
             result = "Plain text";
             break;
          case TEXT_URI_LIST:
-            result = "List of Uniform Resource Identifiers";
+            result = "List of URIs";
             break;
+         case TEXT_VCARD:
+         	result = "vCard";
+         	break;
          case TEXT_XML:
             result = "XML text";
             break;
+            
+         case VIDEO_ALL:
+            result = "All videos";
+            break;
+         case VIDEO_AVI:
+         	result = "AVI video";
+         	break;
+         case VIDEO_MPEG:
+         	result = "MPEG video";
+         	break;
+         case VIDEO_QUICKTIME:
+         	result = "Quicktime video";
+         	break;
+         case VIDEO_WMV:
+         	result = "Windows movie";
+         	break;
       }
 
       return result;
