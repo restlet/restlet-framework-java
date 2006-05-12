@@ -30,6 +30,7 @@ import org.restlet.AbstractChainlet;
 import org.restlet.Call;
 import org.restlet.component.Component;
 import org.restlet.data.Encoding;
+import org.restlet.data.Encodings;
 import org.restlet.data.Representation;
 
 import com.noelios.restlet.data.DecoderRepresentation;
@@ -115,11 +116,13 @@ public class DecodeChainlet extends AbstractChainlet
 		Representation result = representation;
 		Encoding currentEncoding = null;
 		
-		for(Iterator<Encoding> iter = DecoderRepresentation.getSupportedEncodings().iterator(); iter.hasNext(); )
+		for(Iterator<Encoding> iter = DecoderRepresentation.getSupportedEncodings().iterator(); 
+			 (result == representation) && iter.hasNext(); )
 		{
 			currentEncoding = iter.next();
 			
-			if(representation.getMetadata().getEncoding().equals(currentEncoding))
+			if(!currentEncoding.equals(Encodings.IDENTITY) && 
+				representation.getMetadata().getEncoding().equals(currentEncoding))
 			{
 				result = new DecoderRepresentation(representation);
 			}
