@@ -68,55 +68,71 @@ final class SimpleCall extends HttpServerCallImpl
 		super.confidential = confidential;
 	}
 
-	/**
-	 * 
-	 */
+   /**
+    * Returns the full request URI. 
+    * @return The full request URI.
+    */
 	public String getRequestUri()
 	{
-		StringBuffer buffer = new StringBuffer(super.confidential ? "https://"
-				: "http://");
+		StringBuffer buffer = new StringBuffer(super.confidential ? "https://" : "http://");
 		buffer.append(request.getValue("host"));
 		buffer.append(request.getURI());
 		return buffer.toString();
 	}
 
-	/**
-	 */
-	public String getRequestHeaderValue(String name)
+   /**
+    * Returns the value for a request header name.<br/>
+    * If multiple headers with the same name are found, all values are returned separated by commas.
+    * @param headerName The header name.
+    * @return The value for a request header name.
+    */
+	public String getRequestHeaderValue(String headerName)
 	{
-		return request.getValue(name);
+		return request.getValue(headerName);
 	}
 
-	/**
-	 */
+   /**
+    * Returns the request method. 
+    * @return The request method.
+    */
 	public String getRequestMethod()
 	{
 		return request.getMethod();
 	}
 
-	/**
-	 */
+   /**
+    * Returns the request address.<br/>
+    * Corresponds to the IP address of the requesting client.
+    * @return The request address.
+    */
 	public String getResponseAddress()
 	{
 		return response.getInetAddress().getHostAddress();
 	}
 
-	/**
-	 */
+   /**
+    * Returns the response status code.
+    * @return The response status code.
+    */
 	public int getResponseStatusCode()
 	{
 		return response.getCode();
 	}
 
-	/**
-	 */
+   /**
+    * Returns the request address.<br/>
+    * Corresponds to the IP address of the requesting client.
+    * @return The request address.
+    */
 	public String getRequestAddress()
 	{
 		return request.getInetAddress().getHostAddress();
 	}
 
-	/**
-	 */
+   /**
+    * Returns the list of request headers.
+    * @return The list of request headers.
+    */
 	public List<Parameter> getRequestHeaders()
 	{
 		if (super.requestHeaders == null)
@@ -132,8 +148,10 @@ final class SimpleCall extends HttpServerCallImpl
 		return super.requestHeaders;
 	}
 
-	/**
-	 */
+   /**
+    * Sends the response headers.<br/>
+    * Must be called before sending the response output.
+    */
 	public void sendResponseHeaders()
 	{
 		response.clear();
@@ -143,16 +161,20 @@ final class SimpleCall extends HttpServerCallImpl
 		}
 	}
 
-	/**
-	 */
+   /**
+    * Returns the request entity channel if it exists.
+    * @return The request entity channel if it exists.
+    */
 	public ReadableByteChannel getRequestChannel()
 	{
 		// Unsupported.
 		return null;
 	}
 
-	/**
-	 */
+   /**
+    * Returns the request entity stream if it exists.
+    * @return The request entity stream if it exists.
+    */
 	public InputStream getRequestStream()
 	{
 		try
@@ -165,24 +187,31 @@ final class SimpleCall extends HttpServerCallImpl
 		}
 	}
 
-	/**
-	 */
+   /**
+    * Sets the response status code.
+    * @param code The response status code.
+    * @param reason The response reason phrase.
+    */
 	public void setResponseStatus(int code, String reason)
 	{
 		response.setCode(code);
 		response.setText(reason);
 	}
 
-	/**
-	 */
+   /**
+    * Returns the response channel if it exists.
+    * @return The response channel if it exists.
+    */
 	public WritableByteChannel getResponseChannel()
 	{
 		// Unsupported.
 		return null;
 	}
 
-	/**
-	 */
+   /**
+    * Returns the response stream if it exists.
+    * @return The response stream if it exists.
+    */
 	public OutputStream getResponseStream()
 	{
 		try
