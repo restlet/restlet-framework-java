@@ -38,7 +38,6 @@ import org.restlet.Chainlet;
 import org.restlet.Factory;
 import org.restlet.Maplet;
 import org.restlet.Call;
-import org.restlet.Restlet;
 import org.restlet.component.Component;
 import org.restlet.connector.Client;
 import org.restlet.connector.Server;
@@ -268,15 +267,15 @@ public class FactoryImpl extends Factory
    }
 
    /**
-    * Create a new server connector for a given protocol.
+    * Create a new server connector for internal usage by the GenericClient.
     * @param protocol The connector protocol.
     * @param name The unique connector name.
-    * @param target The target Restlet.
+    * @param delegate The target Server that will provide the actual handle(ServerCall) implementation.
     * @param address The optional listening IP address (local host used if null).
     * @param port The listening port.
     * @return The new server connector.
     */
-   public Server createServer(Protocol protocol, String name, Restlet target, String address, int port)
+   public Server createServer(Protocol protocol, String name, Server delegate, String address, int port)
    {
       Server result = null;
 
@@ -286,7 +285,7 @@ public class FactoryImpl extends Factory
          
          if((providerClass != null) && (protocol != null))
          {
-         	result = providerClass.getConstructor(Protocol.class, String.class, Restlet.class, String.class, int.class).newInstance(protocol, name, target, address, port);
+         	result = providerClass.getConstructor(Protocol.class, String.class, Server.class, String.class, int.class).newInstance(protocol, name, delegate, address, port);
          }
          else
          {

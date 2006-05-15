@@ -34,8 +34,8 @@ import java.util.logging.Logger;
 import javax.net.ssl.KeyManagerFactory;
 import javax.net.ssl.SSLContext;
 
-import org.restlet.Restlet;
 import org.restlet.connector.AbstractServer;
+import org.restlet.connector.Server;
 import org.restlet.data.Protocol;
 import org.restlet.data.Protocols;
 
@@ -70,17 +70,17 @@ public class SimpleServer extends AbstractServer implements ProtocolHandler
 	 */
 	protected Connection connection;
 
-	/**
-	 * Constructor.
-	 * @param protocol The connector protocol.
-	 * @param name The unique connector name.
-	 * @param target The target Restlet.
-	 * @param address The optional listening IP address (local host used if null).
-	 * @param port The listening port.
-	 */
-	public SimpleServer(Protocol protocol, String name, Restlet target, String address, int port)
-	{
-		super(protocol, name, target, address, port);
+   /**
+    * Constructor.
+    * @param protocol The connector protocol.
+    * @param name The unique connector name.
+    * @param delegate The delegate Server.
+    * @param address The optional listening IP address (local host used if null).
+    * @param port The listening port.
+    */
+   public SimpleServer(Protocol protocol, String name, Server delegate, String address, int port)
+   {
+		super(protocol, name, delegate, address, port);
 	}
 
 	/**
@@ -93,19 +93,16 @@ public class SimpleServer extends AbstractServer implements ProtocolHandler
 		return Arrays.asList(new Protocol[]{Protocols.HTTP, Protocols.HTTPS});
 	}
 
-	/* (non-Javadoc)
-	 * @see org.restlet.connector.AbstractServer#getDescription()
-	 */
-	@Override
+   /**
+    * Returns the description of this REST element.
+    * @return The description of this REST element.
+    */
 	public String getDescription()
 	{
 		return "Simple " + super.protocol.getName() + " server";
 	}
 
-	/* (non-Javadoc)
-	 * @see org.restlet.AbstractRestlet#start()
-	 */
-	@Override
+   /** Starts the Restlet. */
 	public void start() throws Exception
 	{
 		if (super.started)
@@ -141,10 +138,7 @@ public class SimpleServer extends AbstractServer implements ProtocolHandler
 		super.started = true;
 	}
 
-	/* (non-Javadoc)
-	 * @see org.restlet.AbstractRestlet#stop()
-	 */
-	@Override
+   /** Stops the Restlet. */
 	public void stop() throws Exception
 	{
 		if (!super.started)
@@ -157,6 +151,11 @@ public class SimpleServer extends AbstractServer implements ProtocolHandler
 		super.started = false;
 	}
 
+	/**
+	 * Handles a Simple request/response transaction.
+	 * @param request The Simple request.
+	 * @param response The Simple response.
+	 */
 	public void handle(Request request, Response response)
 	{
 		try

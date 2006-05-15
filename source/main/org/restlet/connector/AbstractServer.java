@@ -33,13 +33,16 @@ import org.restlet.data.Protocol;
  */
 public abstract class AbstractServer extends AbstractConnector implements Server
 {
-   /** The target Restlet. */
-   protected Restlet target;
+	/** The target Restlet. */
+	protected Restlet target;
+	
+   /** The delegate Server. */
+   protected Server delegate;
 
-   /** The Jetty listening address if specified. */
+   /** The listening address if specified. */
    protected String address;
 
-   /** The Jetty listening port if specified. */
+   /** The listening port if specified. */
    protected int port;
 
    /** The SSL keystore path. */
@@ -55,22 +58,40 @@ public abstract class AbstractServer extends AbstractConnector implements Server
     * Constructor.
     * @param protocol The connector protocol.
     * @param name The unique connector name.
-    * @param target The target Restlet.
+    * @param delegate The delegate Server.
     * @param address The optional listening IP address (local host used if null).
     * @param port The listening port.
     */
-   public AbstractServer(Protocol protocol, String name, Restlet target, String address, int port)
+   public AbstractServer(Protocol protocol, String name, Server delegate, String address, int port)
    {
       super(protocol, name);
-      this.target = target;
+      this.delegate = delegate;
       this.address = address;
       this.port = port;
    }
 
    /**
-    * Handles a uniform call.<br/>
-    * The default behavior is to ask the attached Restlet to handle the call.
-    * @param call The uniform call to handle.
+    * Returns the delegate server.
+    * @return The delegate server.
+    */
+   public Server getDelegate()
+   {
+   	return this.delegate;
+   }
+
+   /**
+    * Sets the delegate server.
+    * @param delegate The delegate server.
+    */
+   public void setDelegate(Server delegate)
+   {
+   	this.delegate = delegate;
+   }
+   
+   /**
+    * Handles a call.<br/>
+    * The default behavior is to ask the target Restlet to handle the call.
+    * @param call The call to handle.
     */
    public void handle(Call call)
    {
@@ -78,20 +99,17 @@ public abstract class AbstractServer extends AbstractConnector implements Server
    }
 
    /**
-    * Handles the server connector call.<br/> 
-    * The default behavior is to create an UniformCall and invoke the target Restlet.
-    * @param call The server connector call.
+    * Handles the connector protocol call.<br/>
+    * The default behavior is to create an REST call and delegate it to the attached Restlet.
+    * @param call The connector call.
     */
    public void handle(ServerCall call) throws IOException
    {
-      Call uniformCall = call.toUniform();
-      handle(uniformCall);
-      call.setResponse(uniformCall);
-      call.sendResponseHeaders();
-      call.sendResponseOutput(uniformCall.getOutput());
+   	getDelegate().handle(call);
    }
 
    /**
+    * Configure the SSL properties for secure protocols like HTTPS.
     * @param keystorePath The path of the keystore file.
     * @param keystorePassword The keystore password.
     * @param keyPassword The password of the server key .

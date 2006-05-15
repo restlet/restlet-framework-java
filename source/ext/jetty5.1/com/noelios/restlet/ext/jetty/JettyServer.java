@@ -27,8 +27,8 @@ import java.util.Arrays;
 import java.util.List;
 
 import org.mortbay.util.InetAddrPort;
-import org.restlet.Restlet;
 import org.restlet.connector.AbstractServer;
+import org.restlet.connector.Server;
 import org.restlet.data.Protocol;
 import org.restlet.data.Protocols;
 
@@ -48,37 +48,37 @@ public class JettyServer extends AbstractServer
     * Constructor.
     * @param protocol The connector protocol.
     * @param name The unique connector name.
-    * @param target The target Restlet.
+    * @param delegate The delegate Server.
     * @param address The optional listening IP address (local host used if null).
     * @param port The listening port.
     */
-   public JettyServer(Protocol protocol, String name, Restlet target, String address, int port)
+   public JettyServer(Protocol protocol, String name, Server delegate, String address, int port)
    {
-      super(protocol, name, target, address, port);
+      super(protocol, name, delegate, address, port);
    }
    
    /**
     * Constructor.
     * @param protocol The connector protocol.
     * @param name The unique connector name.
-    * @param target The target component handling calls.
+    * @param delegate The delegate Server.
     * @param address The IP address to listen to.
     */
-   public JettyServer(Protocol protocol, String name, Restlet target, InetSocketAddress address)
+   public JettyServer(Protocol protocol, String name, Server delegate, InetSocketAddress address)
    {
-   	this(protocol, name, target, address.getHostName(), address.getPort());
+   	this(protocol, name, delegate, address.getHostName(), address.getPort());
    }
 
    /**
     * Constructor.
     * @param protocol The connector protocol.
     * @param name The unique connector name.
-    * @param target The target Restlet.
+    * @param delegate The delegate Server.
     * @param port The HTTP port number.
     */
-   public JettyServer(Protocol protocol, String name, Restlet target, int port)
+   public JettyServer(Protocol protocol, String name, Server delegate, int port)
    {
-   	this(protocol, name, target, null, port);
+   	this(protocol, name, delegate, null, port);
    }
    
    /**

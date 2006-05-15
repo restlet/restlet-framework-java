@@ -38,21 +38,21 @@ import org.restlet.Restlet;
 public interface Server extends Connector
 {
    /**
-    * Handles the HTTP protocol call.<br/>
-    * The default behavior is to create an UniformCall and delegate it to the attached restlet.
-    * @param call The HTTP protocol call.
+    * Handles the connector call.<br/>
+    * The default behavior is to create a Call instance and delegate it to the target Restlet.
+    * @param call The connector call.
     */
    public void handle(ServerCall call) throws IOException;
 
    /**
-    * Returns the target restlet.
-    * @return The target restlet.
+    * Returns the target Restlet.
+    * @return The target Restlet.
     */
    public Restlet getTarget();
 
    /**
-    * Sets the target restlet.
-    * @param target The target restlet.
+    * Sets the target Restlet.
+    * @param target The target Restlet.
     */
    public void setTarget(Restlet target);
 

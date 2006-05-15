@@ -47,7 +47,7 @@ public class DefaultServer implements Server
     */
    public DefaultServer(Protocol protocol, String name, Restlet target, int port)
    {
-   	this.wrappedServer = Factory.getInstance().createServer(protocol, name, target, null, port);
+   	this(protocol, name, target, null, port);
    }
    
    /**
@@ -60,7 +60,8 @@ public class DefaultServer implements Server
     */
    public DefaultServer(Protocol protocol, String name, Restlet target, String address, int port)
    {
-   	this.wrappedServer = Factory.getInstance().createServer(protocol, name, target, address, port);
+   	this.wrappedServer = Factory.getInstance().createServer(protocol, name, this, address, port);
+   	setTarget(target);
    }
 
    /**
@@ -70,7 +71,11 @@ public class DefaultServer implements Server
     */
    public void handle(ServerCall call) throws IOException
    {
-   	this.wrappedServer.handle(call);
+      Call restletCall = call.toUniform();
+      handle(restletCall);
+      call.setResponse(restletCall);
+      call.sendResponseHeaders();
+      call.sendResponseOutput(restletCall.getOutput());
    }
 
    /**

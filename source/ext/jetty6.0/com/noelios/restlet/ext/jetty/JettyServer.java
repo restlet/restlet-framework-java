@@ -51,10 +51,13 @@ public class JettyServer extends org.mortbay.jetty.Server implements Server
    private static final long serialVersionUID = 1L;
 
    /** The name of this REST connector. */
-   private String name;
+   protected String name;
+	
+   /** The delegate Server. */
+   protected Server delegate;
 
    /** The target Restlet. */
-   private Restlet target;
+   protected Restlet target;
 
    /** The parent component. */
    protected Component parent;
@@ -63,11 +66,11 @@ public class JettyServer extends org.mortbay.jetty.Server implements Server
     * Constructor.
     * @param protocol The connector protocol.
     * @param name The unique connector name.
-    * @param target The target component handling calls.
+    * @param delegate The delegate Server.
     * @param address The optional listening IP address (local host used if null).
     * @param port The listening port.
     */
-   public JettyServer(Protocol protocol, String name, Restlet target, String address, int port)
+   public JettyServer(Protocol protocol, String name, Server delegate, String address, int port)
    {
       // Create and configure the Jetty HTTP connector
       Connector connector = new SelectChannelConnector(); // Uses non-blocking NIO
@@ -82,31 +85,50 @@ public class JettyServer extends org.mortbay.jetty.Server implements Server
       setConnectors(connectors);
 
       this.name = name;
-      this.target = target;
+      this.delegate = delegate;
+      this.target = null;
    }
    
    /**
     * Constructor.
     * @param protocol The connector protocol.
     * @param name The unique connector name.
-    * @param target The target component handling calls.
+    * @param delegate The delegate Server.
     * @param address The IP address to listen to.
     */
-   public JettyServer(Protocol protocol, String name, Restlet target, InetSocketAddress address)
+   public JettyServer(Protocol protocol, String name, Server delegate, InetSocketAddress address)
    {
-   	this(protocol, name, target, address.getHostName(), address.getPort());
+   	this(protocol, name, delegate, address.getHostName(), address.getPort());
    }
 
    /**
     * Constructor.
     * @param protocol The connector protocol.
     * @param name The unique connector name.
-    * @param target The target Restlet.
+    * @param delegate The delegate Server.
     * @param port The HTTP port number.
     */
-   public JettyServer(Protocol protocol, String name, Restlet target, int port)
+   public JettyServer(Protocol protocol, String name, Server delegate, int port)
    {
-   	this(protocol, name, target, null, port);
+   	this(protocol, name, delegate, null, port);
+   }
+
+   /**
+    * Returns the delegate server.
+    * @return The delegate server.
+    */
+   public Server getDelegate()
+   {
+   	return this.delegate;
+   }
+
+   /**
+    * Sets the delegate server.
+    * @param delegate The delegate server.
+    */
+   public void setDelegate(Server delegate)
+   {
+   	this.delegate = delegate;
    }
    
    /**
@@ -135,6 +157,7 @@ public class JettyServer extends org.mortbay.jetty.Server implements Server
    public void handle(HttpConnection connection) throws IOException, ServletException
    {
       handle(new JettyCall(connection));
+      connection.completeResponse();
    }
 
    /**
@@ -181,11 +204,7 @@ public class JettyServer extends org.mortbay.jetty.Server implements Server
     */
    public void handle(ServerCall call) throws IOException
    {
-   	Call uniformCall = call.toUniform();
-      handle(uniformCall);
-      call.setResponse(uniformCall);
-      call.sendResponseHeaders();
-      call.sendResponseOutput(uniformCall.getOutput());
+   	getDelegate().handle(call);
    }
 
    /**
