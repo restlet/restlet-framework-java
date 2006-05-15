@@ -41,7 +41,7 @@ import com.noelios.restlet.impl.HttpServerCallImpl;
  * Call that is used by the Simple HTTP server.
  * @author Lars Heuer (heuer[at]semagia.com) <a href="http://semagia.com/">Semagia</a>
  */
-final class SimpleCall extends HttpServerCallImpl
+public class SimpleCall extends HttpServerCallImpl
 {
 	/**
 	 * Simple Request.
