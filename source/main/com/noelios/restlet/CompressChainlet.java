@@ -41,7 +41,7 @@ import org.restlet.data.Representation;
 import com.noelios.restlet.data.EncoderRepresentation;
 
 /**
- * Chainlet compressing the input or output representation of calls. The best encoding is automatically 
+ * Chainlet compressing input or output representations. The best encoding is automatically 
  * selected based on the preferences of the client and on the encoding supported by NRE: GZip, Zip and 
  * Deflate.<br/>
  * If the {@link org.restlet.data.Representation} has an unknown size, it will always be a candidate for

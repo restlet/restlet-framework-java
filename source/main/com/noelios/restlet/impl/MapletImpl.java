@@ -79,6 +79,20 @@ public class MapletImpl extends AbstractRestlet implements Maplet
    }
 
    /**
+    * Attaches at a specific a target instance shared by all calls.
+    * @param pattern The URI pattern used to map calls.
+    * @param target The target instance to attach.
+    * @param override Indicates if this attachment should have a higher priority that existing ones.
+    * @return The current Maplet for further attachments.
+    * @see java.util.regex.Pattern
+    */
+   public synchronized Maplet attach(String pattern, Restlet target, boolean override)
+   {
+      getMappings().add(0, new RestletMapping(pattern, target));
+      return this;
+   }
+   
+   /**
     * Attaches a target class. A new instance will be created for each call.
     * @param pattern The URI pattern used to map calls.
     * @param targetClass The target class to attach (can have a constructor taking a RestletContainer parameter).
@@ -88,6 +102,20 @@ public class MapletImpl extends AbstractRestlet implements Maplet
    public synchronized Maplet attach(String pattern, Class<? extends Restlet> targetClass)
    {
       getMappings().add(new RestletMapping(pattern, targetClass));
+      return this;
+   }
+
+   /**
+    * Attaches a target class. A new instance will be created for each call.
+    * @param pattern The URI pattern used to map calls.
+    * @param targetClass The target class to attach (can have a constructor taking a RestletContainer parameter).
+    * @param override Indicates if this attachment should have a higher priority that existing ones.
+    * @return The current Maplet for further attachments.
+    * @see java.util.regex.Pattern
+    */
+   public synchronized Maplet attach(String pattern, Class<? extends Restlet> targetClass, boolean override)
+   {
+      getMappings().add(0, new RestletMapping(pattern, targetClass));
       return this;
    }
 

@@ -36,7 +36,7 @@ import org.restlet.data.Representation;
 import com.noelios.restlet.data.DecoderRepresentation;
 
 /**
- * Chainlet decompressing the input or output representation of calls. 
+ * Chainlet decompressing input or output representations. 
  */
 public class DecompressChainlet extends AbstractChainlet
 {
