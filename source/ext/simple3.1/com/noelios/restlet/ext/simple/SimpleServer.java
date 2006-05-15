@@ -149,6 +149,10 @@ public class SimpleServer extends AbstractServer implements ProtocolHandler
 		socket = null;
 		connection = null;
 		super.started = false;
+
+		// For further information on how to shutdown a Simple
+		// server, see http://sourceforge.net/mailarchive/forum.php?thread_id=10138257&forum_id=38791
+		// There seems to be place for improvement in this method.
 	}
 
 	/**
