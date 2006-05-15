@@ -41,16 +41,16 @@ import org.restlet.data.Representation;
 import com.noelios.restlet.data.EncoderRepresentation;
 
 /**
- * Chainlet encoding the input or output representation of calls. It is mainly used to automatically 
- * compress those representations. The best encoding is automatically selected based on the preferences 
- * of the client and on the encoding supported by NRE: GZip, Zip and Deflate.<br/>
+ * Chainlet compressing the input or output representation of calls. The best encoding is automatically 
+ * selected based on the preferences of the client and on the encoding supported by NRE: GZip, Zip and 
+ * Deflate.<br/>
  * If the {@link org.restlet.data.Representation} has an unknown size, it will always be a candidate for
  * encoding. Candidate representations need to respect media type criteria by the lists of accepted and
  * ignored media types. 
  * @author Lars Heuer (heuer[at]semagia.com) <a href="http://semagia.com/">Semagia</a>
  * @author Jerome Louvel (contact@noelios.com) <a href="http://www.noelios.com">Noelios Consulting</a>
  */
-public class EncodeChainlet extends AbstractChainlet
+public class CompressChainlet extends AbstractChainlet
 {
 	/**
 	 * Indicates if the encoding should always occur, regardless of the size. 
@@ -87,7 +87,7 @@ public class EncodeChainlet extends AbstractChainlet
 	 * This constructor will only encode output representations after call handling.
 	 * @param parent The parent component.
 	 */
-	public EncodeChainlet(Component parent)
+	public CompressChainlet(Component parent)
 	{
 		this(parent, false, true, ALWAYS_ENCODE, getDefaultAcceptedMediaTypes(),
 				getDefaultIgnoredMediaTypes());
@@ -102,7 +102,7 @@ public class EncodeChainlet extends AbstractChainlet
 	 * @param acceptedMediaTypes The media types that should be encoded.
 	 * @param ignoredMediaTypes The media types that should be ignored.
 	 */
-	public EncodeChainlet(Component parent, boolean encodeInput, boolean encodeOutput, 
+	public CompressChainlet(Component parent, boolean encodeInput, boolean encodeOutput, 
 			long minimumSize, List<MediaType> acceptedMediaTypes, List<MediaType> ignoredMediaTypes)
 	{
 		super(parent);
@@ -176,7 +176,8 @@ public class EncodeChainlet extends AbstractChainlet
 	public boolean canEncode(Representation representation)
 	{
 		// Test the existance of the representation and that no existing encoding applies
-		boolean result = (representation != null) && (representation.getMetadata().getEncoding() == null);
+		boolean result = ((representation != null) && (representation.getMetadata().getEncoding() == null)) ||
+							  ((representation != null) && representation.getMetadata().getEncoding().equals(Encodings.IDENTITY));
 		
 		if(result)
 		{

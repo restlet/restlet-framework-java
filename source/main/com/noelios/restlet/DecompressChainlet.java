@@ -36,10 +36,9 @@ import org.restlet.data.Representation;
 import com.noelios.restlet.data.DecoderRepresentation;
 
 /**
- * Chainlet decoding the input or output representation of calls. It is mainly used to automatically 
- * decompress those representations. 
+ * Chainlet decompressing the input or output representation of calls. 
  */
-public class DecodeChainlet extends AbstractChainlet
+public class DecompressChainlet extends AbstractChainlet
 {
 	/**
 	 * Indicates if the input representation should be decoded.
@@ -55,7 +54,7 @@ public class DecodeChainlet extends AbstractChainlet
 	 * Constructor to only decode input representations before call handling.
 	 * @param parent The parent component.
 	 */
-	public DecodeChainlet(Component parent)
+	public DecompressChainlet(Component parent)
 	{
 		this(parent, true, false);
 	}
@@ -66,7 +65,7 @@ public class DecodeChainlet extends AbstractChainlet
 	 * @param decodeInput Indicates if the input representation should be decoded.
 	 * @param decodeOutput Indicates if the output representation should be decoded.
 	 */
-	public DecodeChainlet(Component parent, boolean decodeInput, boolean decodeOutput)
+	public DecompressChainlet(Component parent, boolean decodeInput, boolean decodeOutput)
 	{
 		super(parent);
 		this.decodeInput = decodeInput;
@@ -103,7 +102,8 @@ public class DecodeChainlet extends AbstractChainlet
 	public boolean canDecode(Representation representation)
 	{
 		// Test the existance of the representation and that an encoding applies
-		return (representation != null) && (representation.getMetadata().getEncoding() != null);
+		return (representation != null) && (representation.getMetadata().getEncoding() != null) && 
+				 !representation.getMetadata().getEncoding().equals(Encodings.IDENTITY);
 	}
 
 	/**
