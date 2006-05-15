@@ -143,6 +143,7 @@ public interface ConnectorCall
    public static final String HEADER_WARNING = "Warning";
    public static final String HEADER_WWW_AUTHENTICATE = "WWW-Authenticate";
    public static final String HEADER_X_FORWARDED_FOR = "X-Forwarded-For";
+   public static final String HEADER_X_HTTP_METHOD_OVERRIDE = "X-HTTP-Method-Override";
    
    /**
     * Adds a request header.
