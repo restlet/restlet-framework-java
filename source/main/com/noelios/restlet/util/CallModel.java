@@ -47,6 +47,8 @@ import org.restlet.data.Parameter;
  * <li>identifier</li>
  * <li>path</li>
  * <li>query (repeating and non-repeating, lookup by name and by index)</li>
+ * <li>requestHeader (repeating, lookup by name)</li>
+ * <li>responseHeader (repeating, lookup by name)</li>
  * <li>scheme</li>
  * <li>uri</li>
  * <li>userInfo</li>
@@ -59,6 +61,8 @@ public class CallModel implements ReadableModel
 {
    public static final String NAME_CLIENT_ADDRESS = "clientAddress";
    public static final String NAME_CLIENT_NAME = "clientName";
+   public static final String NAME_CONNECTOR_REQUEST_HEADER = "requestHeader";
+   public static final String NAME_CONNECTOR_RESPONSE_HEADER = "responseHeader";
    public static final String NAME_COOKIE = "cookie";
    public static final String NAME_METHOD = "method";
    public static final String NAME_REDIRECT_URI = "redirectUri";
@@ -148,6 +152,54 @@ public class CallModel implements ReadableModel
 	      else if(name.equals(NAME_CLIENT_NAME))
 	      {
 	         result = call.getClientName();
+	      }
+	      else if(name.startsWith(NAME_CONNECTOR_REQUEST_HEADER))
+	      {
+	   		String rest = name.substring(NAME_CONNECTOR_REQUEST_HEADER.length());
+	
+	   		if((rest.charAt(0) == '[') && (rest.charAt(rest.length() - 1) == ']'))
+	   		{
+	   			rest = rest.substring(1, rest.length() - 1);
+	   			
+					if((rest.charAt(0) == '"') && (rest.charAt(rest.length() - 1) == '"'))
+					{
+						// Lookup by name
+		   			rest = rest.substring(1, rest.length() - 1);
+			         result = call.getConnectorCall().getRequestHeaderValue(rest);
+					}
+					else
+					{
+		   			result = defaultValue;
+					}
+	   		}
+	   		else
+	   		{
+	   			result = defaultValue;
+	   		}
+	      }
+	      else if(name.startsWith(NAME_CONNECTOR_RESPONSE_HEADER))
+	      {
+	   		String rest = name.substring(NAME_CONNECTOR_RESPONSE_HEADER.length());
+	
+	   		if((rest.charAt(0) == '[') && (rest.charAt(rest.length() - 1) == ']'))
+	   		{
+	   			rest = rest.substring(1, rest.length() - 1);
+	   			
+					if((rest.charAt(0) == '"') && (rest.charAt(rest.length() - 1) == '"'))
+					{
+						// Lookup by name
+		   			rest = rest.substring(1, rest.length() - 1);
+			         result = call.getConnectorCall().getResponseHeaderValue(rest);
+					}
+					else
+					{
+		   			result = defaultValue;
+					}
+	   		}
+	   		else
+	   		{
+	   			result = defaultValue;
+	   		}
 	      }
 	      else if(name.startsWith(NAME_COOKIE))
 	      {
