@@ -198,8 +198,8 @@ public class TunnelChainlet extends ExtractChainlet
 	}
 
 	/**
-	 * Returns the method attribute name.
-	 * @return The method attribute name.
+	 * Sets the method attribute name.
+	 * @param attributeName The method attribute name.
 	 */
 	public void setMethodAttribute(String attributeName)
 	{
