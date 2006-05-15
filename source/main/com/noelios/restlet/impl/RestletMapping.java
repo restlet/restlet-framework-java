@@ -43,7 +43,7 @@ public class RestletMapping extends RestletTarget
    public RestletMapping(String pattern, Restlet target)
    {
       super(target);
-      this.pattern = Pattern.compile(pattern, Pattern.CASE_INSENSITIVE);
+      this.pattern = Pattern.compile(pattern);
    }
 
    /**
@@ -54,7 +54,7 @@ public class RestletMapping extends RestletTarget
    public RestletMapping(String pattern, Class<? extends Restlet> targetClass)
    {
       super(targetClass);
-      this.pattern = Pattern.compile(pattern, Pattern.CASE_INSENSITIVE);
+      this.pattern = Pattern.compile(pattern);
    }
 
    /**

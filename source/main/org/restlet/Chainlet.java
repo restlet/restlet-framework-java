@@ -25,7 +25,9 @@ package org.restlet;
 /**
  * Chainer of calls to a target Restlet. Interception or filtering can be done in the handle() 
  * method, just remember to call the delegateMaplet() method before or after your custom handling.<br/>
- * Note that during this handling, the call paths are not supposed to be modified.
+ * Note that during this handling, the call paths are not supposed to be modified.<br/>
+ * Also note that you can attach and detach targets while handling incoming calls as the delegation code 
+ * is ensured to be thread-safe and atomic.
  * @see <a href="http://www.restlet.org/tutorial#part07">Tutorial: Chainlets and call logging</a>
  */
 public interface Chainlet extends Restlet

@@ -151,6 +151,15 @@ public class RestletContainer extends AbstractComponent implements Chainlet, Map
    }
 
    /**
+    * Detaches all targets, including mapped and chained targets.
+    */
+   public void detachAll()
+   {
+   	delegateChainlet.detach();
+   	delegateMaplet.detachAll();
+   }
+
+   /**
     * Handles a call to a resource or a set of resources.
     * @param call The call to handle.
     */

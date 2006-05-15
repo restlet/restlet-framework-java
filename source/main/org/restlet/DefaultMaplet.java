@@ -88,6 +88,14 @@ public class DefaultMaplet extends AbstractRestlet implements Maplet
    }
 
    /**
+    * Detaches all targets.
+    */
+   public void detachAll()
+   {
+   	delegate.detachAll();
+   }
+
+   /**
     * Handles a call to a resource or a set of resources. 
     * Default behavior to be overriden: delegation to one of the attached Restlets.
     * @param call The call to handle.

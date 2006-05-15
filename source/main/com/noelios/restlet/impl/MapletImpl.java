@@ -35,7 +35,7 @@ import org.restlet.component.Component;
 import org.restlet.data.Statuses;
 
 /**
- * Implementation of a mapper of calls to attached Restlets.
+ * Implementation of a mapper of calls to attached Restlets. 
  */
 public class MapletImpl extends AbstractRestlet implements Maplet
 {
@@ -72,7 +72,7 @@ public class MapletImpl extends AbstractRestlet implements Maplet
     * @return The current Maplet for further attachments.
     * @see java.util.regex.Pattern
     */
-   public Maplet attach(String pattern, Restlet target)
+   public synchronized Maplet attach(String pattern, Restlet target)
    {
       getMappings().add(new RestletMapping(pattern, target));
       return this;
@@ -85,7 +85,7 @@ public class MapletImpl extends AbstractRestlet implements Maplet
     * @return The current Maplet for further attachments.
     * @see java.util.regex.Pattern
     */
-   public Maplet attach(String pattern, Class<? extends Restlet> targetClass)
+   public synchronized Maplet attach(String pattern, Class<? extends Restlet> targetClass)
    {
       getMappings().add(new RestletMapping(pattern, targetClass));
       return this;
@@ -95,7 +95,7 @@ public class MapletImpl extends AbstractRestlet implements Maplet
     * Detaches a target instance.
     * @param target The target instance to detach.
     */
-   public void detach(Restlet target)
+   public synchronized void detach(Restlet target)
    {
       RestletMapping mapping;
       for(Iterator<RestletMapping> iter = getMappings().iterator(); iter.hasNext();)
@@ -111,7 +111,7 @@ public class MapletImpl extends AbstractRestlet implements Maplet
     * Detaches a target class.
     * @param targetClass The target class to detach.
     */
-   public void detach(Class<? extends Restlet> targetClass)
+   public synchronized void detach(Class<? extends Restlet> targetClass)
    {
       RestletMapping mapping;
       for(Iterator<RestletMapping> iter = getMappings().iterator(); iter.hasNext();)
@@ -121,6 +121,14 @@ public class MapletImpl extends AbstractRestlet implements Maplet
       }
 
       if(getMappings().size() == 0) this.mappings = null;
+   }
+
+   /**
+    * Detaches all targets.
+    */
+   public synchronized void detachAll()
+   {
+   	getMappings().clear();
    }
 
    /**
@@ -147,11 +155,14 @@ public class MapletImpl extends AbstractRestlet implements Maplet
       String resourcePath = call.getResourcePath();
 
       // Match the path in the call context with one of the child restlet
-      for(Iterator<RestletMapping> iter = getMappings().iterator(); !found && iter.hasNext();)
+      synchronized(this)
       {
-         mapping = iter.next();
-         matcher = mapping.getPattern().matcher(resourcePath);
-         found = matcher.lookingAt();
+	      for(Iterator<RestletMapping> iter = getMappings().iterator(); !found && iter.hasNext();)
+	      {
+	         mapping = iter.next();
+	         matcher = mapping.getPattern().matcher(resourcePath);
+	         found = matcher.lookingAt();
+	      }
       }
 
       if(found)

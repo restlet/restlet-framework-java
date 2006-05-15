@@ -38,7 +38,7 @@ import org.restlet.data.Statuses;
 public class RestletTarget
 {
    /** Obtain a suitable logger. */
-   private static Logger logger = Logger.getLogger("com.noelios.restlet.util.UniformTarget");
+   private static Logger logger = Logger.getLogger("com.noelios.restlet.impl.RestletTarget");
 
    /** The Restlet handler. */
    protected Restlet restlet;

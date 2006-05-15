@@ -92,10 +92,15 @@ public class ChainletImpl extends AbstractRestlet implements Chainlet
     */
    public void handle(Call call)
    {
-      if(this.target != null)
+   	// First, copy the current target to prevent to
+   	// need to synchronized the rest of the call as 
+   	// the target could change after the NPE test.
+   	RestletTarget target = this.target;
+   	
+      if(target != null)
       {
          // Invoke the call restlet
-         this.target.handle(call, getParent());
+         target.handle(call, getParent());
       }
       else
       {
