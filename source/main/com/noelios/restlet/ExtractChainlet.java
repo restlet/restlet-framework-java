@@ -22,6 +22,7 @@
 
 package com.noelios.restlet;
 
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.logging.Level;
@@ -79,6 +80,75 @@ public class ExtractChainlet extends AbstractChainlet
    }
 
    /**
+    * Extracts the attributes value from the call. 
+    * @param call The call to process.
+    * @throws IOException
+    */
+   protected void extractAttributes(Call call) throws IOException
+   {
+      // Extract the query parameters
+      if(this.queryExtracts != null)
+      {
+         Form input = call.getResourceRef().getQueryAsForm();
+
+         if(input != null)
+         {
+            for(ExtractInfo qe : getQueryExtracts())
+            {
+               if(qe.multiple)
+               {
+                  call.getAttributes().put(qe.attribute, input.getParameters(qe.value));
+               }
+               else
+               {
+                  call.getAttributes().put(qe.attribute, input.getFirstParameter(qe.value));
+               }
+            }
+         }
+      }
+
+      // Extract the input parameters
+      if(this.inputExtracts != null)
+      {
+         Form input = call.getInputAsForm();
+
+         if(input != null)
+         {
+            for(ExtractInfo ie : getInputExtracts())
+            {
+               if(ie.multiple)
+               {
+                  call.getAttributes().put(ie.attribute, input.getParameters(ie.value));
+               }
+               else
+               {
+                  call.getAttributes().put(ie.attribute, input.getFirstParameter(ie.value));
+               }
+            }
+         }
+      }
+
+      // Extract the context matches
+      if(this.contextExtracts != null)
+      {
+         for(ExtractInfo ce : getContextExtracts())
+         {
+            call.getAttributes().put(ce.attribute, call.getContextMatches().get(ce.index));
+         }
+      }
+
+      // Extract the model patterns
+      if(this.modelExtracts != null)
+      {
+         CallModel model = new CallModel(call, null);
+         for(ExtractInfo me : getModelExtracts())
+         {
+            call.getAttributes().put(me.attribute, model.get(me.value));
+         }
+      }
+   }
+   
+   /**
     * Handles a call to a resource or a set of resources.
     * @param call The call to handle.
     */
@@ -86,67 +156,7 @@ public class ExtractChainlet extends AbstractChainlet
    {
       try
       {
-         // Extract the query parameters
-         if(this.queryExtracts != null)
-         {
-            Form input = call.getResourceRef().getQueryAsForm();
-
-            if(input != null)
-            {
-               for(ExtractInfo qe : getQueryExtracts())
-               {
-                  if(qe.multiple)
-                  {
-                     call.getAttributes().put(qe.attribute, input.getParameters(qe.value));
-                  }
-                  else
-                  {
-                     call.getAttributes().put(qe.attribute, input.getFirstParameter(qe.value));
-                  }
-               }
-            }
-         }
-
-         // Extract the input parameters
-         if(this.inputExtracts != null)
-         {
-            Form input = call.getInputAsForm();
-
-            if(input != null)
-            {
-               for(ExtractInfo ie : getInputExtracts())
-               {
-                  if(ie.multiple)
-                  {
-                     call.getAttributes().put(ie.attribute, input.getParameters(ie.value));
-                  }
-                  else
-                  {
-                     call.getAttributes().put(ie.attribute, input.getFirstParameter(ie.value));
-                  }
-               }
-            }
-         }
-
-         // Extract the context matches
-         if(this.contextExtracts != null)
-         {
-            for(ExtractInfo ce : getContextExtracts())
-            {
-               call.getAttributes().put(ce.attribute, call.getContextMatches().get(ce.index));
-            }
-         }
-
-         // Extract the model patterns
-         if(this.modelExtracts != null)
-         {
-            CallModel model = new CallModel(call, null);
-            for(ExtractInfo me : getModelExtracts())
-            {
-               call.getAttributes().put(me.attribute, model.get(me.value));
-            }
-         }
-
+   		extractAttributes(call);	
          super.handle(call);
       }
       catch(Exception e)

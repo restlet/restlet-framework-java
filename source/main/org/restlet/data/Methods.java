@@ -218,7 +218,39 @@ public enum Methods implements Method
     */
    public boolean equals(Method method)
    {
-      return getName() == method.getName();
+      return getName().equalsIgnoreCase(method.getName());
    }
 
+   /**
+    * Creates a new method by attempting to reuse an existing enumeration entry.
+    * @param methodName The method name.
+    * @return The new method.
+    */
+   public static Method create(String methodName)
+   {
+   	Method result = null;
+   	
+      if(methodName != null)
+      {
+         if(methodName.equalsIgnoreCase(Methods.GET.getName())) result = Methods.GET;
+         else if(methodName.equalsIgnoreCase(Methods.POST.getName())) result = Methods.POST;
+         else if(methodName.equalsIgnoreCase(Methods.HEAD.getName())) result = Methods.HEAD;
+         else if(methodName.equalsIgnoreCase(Methods.OPTIONS.getName())) result = Methods.OPTIONS;
+         else if(methodName.equalsIgnoreCase(Methods.PUT.getName())) result = Methods.PUT;
+         else if(methodName.equalsIgnoreCase(Methods.DELETE.getName())) result = Methods.DELETE;
+         else if(methodName.equalsIgnoreCase(Methods.CONNECT.getName())) result = Methods.CONNECT;
+         else if(methodName.equalsIgnoreCase(Methods.COPY.getName())) result = Methods.COPY;
+         else if(methodName.equalsIgnoreCase(Methods.LOCK.getName())) result = Methods.LOCK;
+         else if(methodName.equalsIgnoreCase(Methods.MKCOL.getName())) result = Methods.MKCOL;
+         else if(methodName.equalsIgnoreCase(Methods.MOVE.getName())) result = Methods.MOVE;
+         else if(methodName.equalsIgnoreCase(Methods.PROPFIND.getName())) result = Methods.PROPFIND;
+         else if(methodName.equalsIgnoreCase(Methods.PROPPATCH.getName())) result = Methods.PROPPATCH;
+         else if(methodName.equalsIgnoreCase(Methods.TRACE.getName())) result = Methods.TRACE;
+         else if(methodName.equalsIgnoreCase(Methods.UNLOCK.getName())) result = Methods.UNLOCK;
+         else result = new DefaultMethod(methodName);
+      }
+   	
+      return result;
+   }
+   
 }

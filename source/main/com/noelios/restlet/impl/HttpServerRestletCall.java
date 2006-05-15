@@ -22,7 +22,6 @@
 
 package com.noelios.restlet.impl;
 
-import java.io.IOException;
 import java.io.InputStream;
 import java.nio.channels.ReadableByteChannel;
 import java.util.ArrayList;
@@ -33,23 +32,14 @@ import java.util.logging.Logger;
 
 import org.restlet.connector.ConnectorCall;
 import org.restlet.connector.ServerCall;
-import org.restlet.data.CharacterSetPref;
-import org.restlet.data.CharacterSets;
 import org.restlet.data.ConditionData;
 import org.restlet.data.Cookie;
 import org.restlet.data.DefaultEncoding;
 import org.restlet.data.DefaultLanguage;
 import org.restlet.data.DefaultMediaType;
 import org.restlet.data.Encoding;
-import org.restlet.data.EncodingPref;
-import org.restlet.data.Encodings;
 import org.restlet.data.Language;
-import org.restlet.data.LanguagePref;
-import org.restlet.data.Languages;
 import org.restlet.data.MediaType;
-import org.restlet.data.MediaTypePref;
-import org.restlet.data.MediaTypes;
-import org.restlet.data.DefaultMethod;
 import org.restlet.data.Methods;
 import org.restlet.data.Parameter;
 import org.restlet.data.PreferenceData;
@@ -62,7 +52,7 @@ import org.restlet.data.Tag;
 import com.noelios.restlet.data.InputRepresentation;
 import com.noelios.restlet.data.ReadableRepresentation;
 import com.noelios.restlet.util.CookieReader;
-import com.noelios.restlet.util.PreferenceReader;
+import com.noelios.restlet.util.PreferenceUtils;
 import com.noelios.restlet.util.SecurityUtils;
 
 /**
@@ -84,28 +74,7 @@ public class HttpServerRestletCall extends CallImpl
       setServerAddress(call.getResponseAddress());
       setServerName(FactoryImpl.VERSION_HEADER);
       setStatus(Statuses.SUCCESS_OK);
-
-      // Set the method
-      String method = call.getRequestMethod();
-      if(method != null)
-      {
-         if(method.equals(Methods.GET.getName())) setMethod(Methods.GET);
-         else if(method.equals(Methods.POST.getName())) setMethod(Methods.POST);
-         else if(method.equals(Methods.HEAD.getName())) setMethod(Methods.HEAD);
-         else if(method.equals(Methods.OPTIONS.getName())) setMethod(Methods.OPTIONS);
-         else if(method.equals(Methods.PUT.getName())) setMethod(Methods.PUT);
-         else if(method.equals(Methods.DELETE.getName())) setMethod(Methods.DELETE);
-         else if(method.equals(Methods.CONNECT.getName())) setMethod(Methods.CONNECT);
-         else if(method.equals(Methods.COPY.getName())) setMethod(Methods.COPY);
-         else if(method.equals(Methods.LOCK.getName())) setMethod(Methods.LOCK);
-         else if(method.equals(Methods.MKCOL.getName())) setMethod(Methods.MKCOL);
-         else if(method.equals(Methods.MOVE.getName())) setMethod(Methods.MOVE);
-         else if(method.equals(Methods.PROPFIND.getName())) setMethod(Methods.PROPFIND);
-         else if(method.equals(Methods.PROPPATCH.getName())) setMethod(Methods.PROPPATCH);
-         else if(method.equals(Methods.TRACE.getName())) setMethod(Methods.TRACE);
-         else if(method.equals(Methods.UNLOCK.getName())) setMethod(Methods.UNLOCK);
-         else setMethod(new DefaultMethod(method));
-      }
+      setMethod(Methods.create(call.getRequestMethod()));
 
       // Set the resource reference
       String resource = call.getRequestUri();
@@ -379,102 +348,11 @@ public class HttpServerRestletCall extends CallImpl
          String acceptLanguage = getConnectorCall().getRequestHeaderValue(ConnectorCall.HEADER_ACCEPT_LANGUAGE);
          String acceptMediaType = getConnectorCall().getRequestHeaderValue(ConnectorCall.HEADER_ACCEPT);
 
-         if(acceptCharset != null)
-         {
-            // Implementation according to
-            // http://www.w3.org/Protocols/rfc2616/rfc2616-sec14.html#sec14.2
-            if(acceptCharset.length() == 0)
-            {
-               this.preference.getCharacterSets().add(new CharacterSetPref(CharacterSets.ISO_8859_1));
-            }
-            else
-            {
-               try
-               {
-                  PreferenceReader pr = new PreferenceReader(PreferenceReader.TYPE_CHARACTER_SET, acceptCharset);
-                  CharacterSetPref currentPref = (CharacterSetPref)pr.readPreference();
-                  while(currentPref != null)
-                  {
-                     this.preference.getCharacterSets().add(currentPref);
-                     currentPref = (CharacterSetPref)pr.readPreference();
-                  }
-               }
-               catch(IOException ioe)
-               {
-                  logger.log(Level.WARNING, "An exception occured during character set preferences parsing. Header: " + acceptCharset + ". Ignoring header.");
-               }
-            }
-         }
-         else
-         {
-            this.preference.getCharacterSets().add(new CharacterSetPref(CharacterSets.ALL));
-         }
-
-         if(acceptEncoding != null)
-         {
-            try
-            {
-               PreferenceReader pr = new PreferenceReader(PreferenceReader.TYPE_ENCODING, acceptEncoding);
-               EncodingPref currentPref = (EncodingPref)pr.readPreference();
-               while(currentPref != null)
-               {
-                  this.preference.getEncodings().add(currentPref);
-                  currentPref = (EncodingPref)pr.readPreference();
-               }
-            }
-            catch(IOException ioe)
-            {
-               logger.log(Level.WARNING, "An exception occured during encoding preferences parsing. Header: " + acceptEncoding + ". Ignoring header.");
-            }
-         }
-         else
-         {
-            this.preference.getEncodings().add(new EncodingPref(Encodings.ALL));
-         }
-
-         if(acceptLanguage != null)
-         {
-            try
-            {
-               PreferenceReader pr = new PreferenceReader(PreferenceReader.TYPE_LANGUAGE, acceptLanguage);
-               LanguagePref currentPref = (LanguagePref)pr.readPreference();
-               while(currentPref != null)
-               {
-                  this.preference.getLanguages().add(currentPref);
-                  currentPref = (LanguagePref)pr.readPreference();
-               }
-            }
-            catch(IOException ioe)
-            {
-               logger.log(Level.WARNING, "An exception occured during language preferences parsing. Header: " + acceptLanguage + ". Ignoring header.");
-            }
-         }
-         else
-         {
-            this.preference.getLanguages().add(new LanguagePref(Languages.ALL));
-         }
-
-         if(acceptMediaType != null)
-         {
-            try
-            {
-               PreferenceReader pr = new PreferenceReader(PreferenceReader.TYPE_MEDIA_TYPE, acceptMediaType);
-               MediaTypePref currentPref = (MediaTypePref)pr.readPreference();
-               while(currentPref != null)
-               {
-                  this.preference.getMediaTypes().add(currentPref);
-                  currentPref = (MediaTypePref)pr.readPreference();
-               }
-            }
-            catch(IOException ioe)
-            {
-               logger.log(Level.WARNING, "An exception occured during media type preferences parsing. Header: " + acceptMediaType + ". Ignoring header.");
-            }
-         }
-         else
-         {
-            this.preference.getMediaTypes().add(new MediaTypePref(MediaTypes.ALL));
-         }
+         // Parse the headers and update the call preferences
+         PreferenceUtils.parseCharacterSets(acceptCharset, this.preference);
+         PreferenceUtils.parseEncodings(acceptEncoding, this.preference);
+         PreferenceUtils.parseLanguages(acceptLanguage, this.preference);
+         PreferenceUtils.parseMediaTypes(acceptMediaType, this.preference);
       }
       
       return this.preference;

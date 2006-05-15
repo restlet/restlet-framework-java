@@ -29,9 +29,18 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Locale;
 
+import org.restlet.data.CharacterSetPref;
+import org.restlet.data.CharacterSets;
+import org.restlet.data.EncodingPref;
+import org.restlet.data.Encodings;
+import org.restlet.data.LanguagePref;
+import org.restlet.data.Languages;
 import org.restlet.data.MediaType;
+import org.restlet.data.MediaTypePref;
+import org.restlet.data.MediaTypes;
 import org.restlet.data.Parameter;
 import org.restlet.data.Preference;
+import org.restlet.data.PreferenceData;
 
 /**
  * Preference manipulation utilities.<br/>
@@ -174,6 +183,135 @@ public class PreferenceUtils
    public static boolean isQuality(float quality)
    {
       return (quality >= 0F) && (quality <= 1F);
+   }
+   
+   /**
+    * Parses character set preferences from a header.
+    * @param acceptCharsetHeader The header to parse.  
+    * @param preference The client preferences to update. 
+    */
+   public static void parseCharacterSets(String acceptCharsetHeader, PreferenceData preference)
+   {
+      if(acceptCharsetHeader != null)
+      {
+         // Implementation according to
+         // http://www.w3.org/Protocols/rfc2616/rfc2616-sec14.html#sec14.2
+         if(acceptCharsetHeader.length() == 0)
+         {
+         	preference.getCharacterSets().add(new CharacterSetPref(CharacterSets.ISO_8859_1));
+         }
+         else
+         {
+            try
+            {
+               PreferenceReader pr = new PreferenceReader(PreferenceReader.TYPE_CHARACTER_SET, acceptCharsetHeader);
+               CharacterSetPref currentPref = (CharacterSetPref)pr.readPreference();
+               while(currentPref != null)
+               {
+               	preference.getCharacterSets().add(currentPref);
+                  currentPref = (CharacterSetPref)pr.readPreference();
+               }
+            }
+            catch(IOException ioe)
+            {
+            	throw new IllegalArgumentException("An exception occured during character set preferences parsing. Header: " + acceptCharsetHeader + ". Ignoring header.");
+            }
+         }
+      }
+      else
+      {
+         preference.getCharacterSets().add(new CharacterSetPref(CharacterSets.ALL));
+      }
+   }
+
+   /**
+    * Parses encoding preferences from a header.
+    * @param acceptEncodingHeader The header to parse.  
+    * @param preference The client preferences to update. 
+    */
+   public static void parseEncodings(String acceptEncodingHeader, PreferenceData preference)
+   {
+      if(acceptEncodingHeader != null)
+      {
+         try
+         {
+            PreferenceReader pr = new PreferenceReader(PreferenceReader.TYPE_ENCODING, acceptEncodingHeader);
+            EncodingPref currentPref = (EncodingPref)pr.readPreference();
+            while(currentPref != null)
+            {
+               preference.getEncodings().add(currentPref);
+               currentPref = (EncodingPref)pr.readPreference();
+            }
+         }
+         catch(IOException ioe)
+         {
+         	throw new IllegalArgumentException("An exception occured during encoding preferences parsing. Header: " + acceptEncodingHeader + ". Ignoring header.");
+         }
+      }
+      else
+      {
+         preference.getEncodings().add(new EncodingPref(Encodings.ALL));
+      }
+   }
+
+   /**
+    * Parses language preferences from a header.
+    * @param acceptLanguageHeader The header to parse.  
+    * @param preference The client preferences to update. 
+    */
+   public static void parseLanguages(String acceptLanguageHeader, PreferenceData preference)
+   {
+      if(acceptLanguageHeader != null)
+      {
+         try
+         {
+            PreferenceReader pr = new PreferenceReader(PreferenceReader.TYPE_LANGUAGE, acceptLanguageHeader);
+            LanguagePref currentPref = (LanguagePref)pr.readPreference();
+            while(currentPref != null)
+            {
+               preference.getLanguages().add(currentPref);
+               currentPref = (LanguagePref)pr.readPreference();
+            }
+         }
+         catch(IOException ioe)
+         {
+         	throw new IllegalArgumentException("An exception occured during language preferences parsing. Header: " + acceptLanguageHeader + ". Ignoring header.");
+         }
+      }
+      else
+      {
+         preference.getLanguages().add(new LanguagePref(Languages.ALL));
+      }
+   }
+
+   /**
+    * Parses media type preferences from a header.
+    * @param acceptMediaTypeHeader The header to parse.  
+    * @param preference The client preferences to update. 
+    */
+   public static void parseMediaTypes(String acceptMediaTypeHeader, PreferenceData preference)
+   {
+      if(acceptMediaTypeHeader != null)
+      {
+         try
+         {
+            PreferenceReader pr = new PreferenceReader(PreferenceReader.TYPE_MEDIA_TYPE, acceptMediaTypeHeader);
+            MediaTypePref currentPref = (MediaTypePref)pr.readPreference();
+            while(currentPref != null)
+            {
+               preference.getMediaTypes().add(currentPref);
+               currentPref = (MediaTypePref)pr.readPreference();
+            }
+         }
+         catch(IOException ioe)
+         {
+         	throw new IllegalArgumentException("An exception occured during media type preferences parsing. Header: " + acceptMediaTypeHeader + ". Ignoring header.");
+         }
+      }
+      else
+      {
+         preference.getMediaTypes().add(new MediaTypePref(MediaTypes.ALL));
+      }
    }
    
 }

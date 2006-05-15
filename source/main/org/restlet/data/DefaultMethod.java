@@ -40,6 +40,7 @@ public class DefaultMethod implements Method
    /**
     * Constructor.
     * @param name The technical name of the method.
+    * @see org.restlet.data.Methods#create(String)
     */
    public DefaultMethod(String name)
    {
@@ -51,6 +52,7 @@ public class DefaultMethod implements Method
     * @param name The technical name of the method.
     * @param description The description of this REST element.
     * @param uri The URI of the specification describing the method.
+    * @see org.restlet.data.Methods#create(String)
     */
    public DefaultMethod(String name, String description, String uri)
    {
