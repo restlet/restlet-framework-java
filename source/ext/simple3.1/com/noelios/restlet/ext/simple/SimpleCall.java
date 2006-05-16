@@ -155,9 +155,9 @@ public class SimpleCall extends HttpServerCallImpl
 	public void sendResponseHeaders()
 	{
 		response.clear();
-		for (Parameter param : getResponseHeaders())
+		for(Parameter header : getResponseHeaders())
 		{
-			response.add(param.getName(), param.getValue());
+			response.add(header.getName(), header.getValue());
 		}
 	}
 

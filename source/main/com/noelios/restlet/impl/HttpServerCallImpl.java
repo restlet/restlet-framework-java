@@ -137,7 +137,7 @@ public abstract class HttpServerCallImpl extends ConnectorCallImpl implements Se
                addResponseHeader(HEADER_ETAG, meta.getTag().getName());
             }
             
-            if(call.getOutput().getSize() != -1)
+            if(call.getOutput().getSize() != Representation.UNKNOWN_SIZE)
             {
                addResponseHeader(HEADER_CONTENT_LENGTH, Long.toString(call.getOutput().getSize()));
             }

@@ -61,7 +61,7 @@ import com.noelios.restlet.util.SecurityUtils;
 public class HttpServerRestletCall extends CallImpl
 {
    /** Obtain a suitable logger. */
-   private static Logger logger = Logger.getLogger("com.noelios.restlet.connector.UniformHttpServerCall");
+   private static Logger logger = Logger.getLogger("com.noelios.restlet.impl.HttpServerRestletCall");
 
    /**
     * Constructor.
