@@ -48,8 +48,8 @@ public abstract class Factory
    /** Obtain a suitable logger. */
    private static Logger logger = Logger.getLogger("org.restlet.Factory");
 
-   public static final String VERSION_LONG = "1.0 beta 11";
-   public static final String VERSION_SHORT = "1.0b11";
+   public static final String VERSION_LONG = "1.0 beta 12";
+   public static final String VERSION_SHORT = "1.0b12";
 
    /** The registered factory. */
    protected static Factory instance = null;
@@ -60,7 +60,7 @@ public abstract class Factory
     */
    public static Factory getInstance()
    {
-   	Factory result = instance;
+      Factory result = instance;
 
       if(result == null)
       {
@@ -115,7 +115,7 @@ public abstract class Factory
    {
       instance = factory;
    }
-   
+
    /**
     * Creates a call.
     * @return A call.
@@ -124,7 +124,7 @@ public abstract class Factory
 
    /**
     * Creates a Chainlet for internal usage by the AbstractChainlet.<br/>
-    * If you need a Chainlet for your application, you should be subclassing the AbstractChainlet instead. 
+    * If you need a Chainlet for your application, you should be subclassing the AbstractChainlet instead.
     * @param parent The parent component.
     * @return A new Chainlet.
     */
@@ -140,7 +140,7 @@ public abstract class Factory
 
    /**
     * Creates a Maplet for internal usage by the DefaultMaplet.<br/>
-    * If you need a Maplet for your application, you should be using the DefaultMaplet instead. 
+    * If you need a Maplet for your application, you should be using the DefaultMaplet instead.
     * @param parent The parent component.
     * @return A new Maplet.
     */
@@ -156,16 +156,16 @@ public abstract class Factory
     * @return The new server connector.
     */
    public abstract Server createServer(Protocol protocol, String name, Server delegate, String address, int port);
-   
+
    /**
     * Creates a string-base representation.
     * @param value The represented string.
     * @param mediaType The representation's media type.
     */
    public abstract Representation createRepresentation(String value, MediaType mediaType);
-   
+
    /**
-    * Formats a list of parameters. 
+    * Formats a list of parameters.
     * @param parameters The list of parameters.
     * @return The encoded parameters string.
     */

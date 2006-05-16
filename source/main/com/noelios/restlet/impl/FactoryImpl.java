@@ -56,8 +56,8 @@ public class FactoryImpl extends Factory
    /** Obtain a suitable logger. */
    private static Logger logger = Logger.getLogger("com.noelios.restlet.FactoryImpl");
 
-   public static final String VERSION_LONG = "1.0 beta 11";
-   public static final String VERSION_SHORT = "1.0b11";
+   public static final String VERSION_LONG = "1.0 beta 12";
+   public static final String VERSION_SHORT = "1.0b12";
    public static final String VERSION_HEADER = "Noelios-Restlet-Engine/" + VERSION_SHORT;
 
    /**
@@ -74,128 +74,128 @@ public class FactoryImpl extends Factory
     * Constructor.
     */
    @SuppressWarnings("unchecked")
-	public FactoryImpl()
+   public FactoryImpl()
    {
-   	this.clients = new TreeMap<Protocol, Class<? extends Client>>();
-   	this.servers = new TreeMap<Protocol, Class<? extends Server>>();
+      this.clients = new TreeMap<Protocol, Class<? extends Client>>();
+      this.servers = new TreeMap<Protocol, Class<? extends Server>>();
 
       // Find the factory class name
       String providerName = null;
       String providerClassName = null;
-      
+
       // Find the factory class name
       ClassLoader cl = Thread.currentThread().getContextClassLoader();
       URL configURL;
 
       // Register the client connector providers
       try
-		{
-			for(Enumeration<URL> configUrls = cl.getResources("meta-inf/services/org.restlet.connector.Client"); configUrls.hasMoreElements();)
-			{
-				configURL = configUrls.nextElement();
-				
-				try
-			   {
-			      BufferedReader reader = new BufferedReader(new InputStreamReader(configURL.openStream(), "utf-8"));
-			      providerName = reader.readLine();
-			      
-			      while(providerName != null)
-			      {
-			      	providerClassName = providerName.substring(0, providerName.indexOf('#')).trim();
-			      	
-					   if(providerClassName == null)
-					   {
-					      logger.log(Level.SEVERE, "Unable to process the following connector provider: " + providerName + ". Please check your JAR file metadata.");
-					   }
-					   else
-					   {
-					      // Instantiate the factory
-					      try
-					      {
-					      	Class<? extends Client> providerClass = (Class<? extends Client>) Class.forName(providerClassName); 
-					      	java.lang.reflect.Method getMethod = providerClass.getMethod("getProtocols", (Class[])null);
-					         List<Protocol> supportedProtocols = (List<Protocol>)getMethod.invoke(null, (Object[])null);
+      {
+         for(Enumeration<URL> configUrls = cl.getResources("meta-inf/services/org.restlet.connector.Client"); configUrls.hasMoreElements();)
+         {
+            configURL = configUrls.nextElement();
 
-					         for(Protocol protocol : supportedProtocols)
-					         {
-					         	if(!this.clients.containsKey(protocol))
-					         	{
-					         		this.clients.put(protocol, providerClass);
-					         	}
-					         }
-					      }
-					      catch(Exception e)
-					      {
-					         logger.log(Level.SEVERE, "Unable to register the client connector " + providerClassName, e);
-					      }
-					   }
-					   
-				      providerName = reader.readLine();
-			      }
-			   }
-			   catch (Exception e)
-			   {
-			      logger.log(Level.SEVERE, "Unable to read the provider descriptor: " + configURL.toString());
-			   }
-			}
-		}
-		catch (IOException ioe)
-		{
+            try
+            {
+               BufferedReader reader = new BufferedReader(new InputStreamReader(configURL.openStream(), "utf-8"));
+               providerName = reader.readLine();
+
+               while(providerName != null)
+               {
+                  providerClassName = providerName.substring(0, providerName.indexOf('#')).trim();
+
+                  if(providerClassName == null)
+                  {
+                     logger.log(Level.SEVERE, "Unable to process the following connector provider: " + providerName + ". Please check your JAR file metadata.");
+                  }
+                  else
+                  {
+                     // Instantiate the factory
+                     try
+                     {
+                        Class<? extends Client> providerClass = (Class<? extends Client>) Class.forName(providerClassName);
+                        java.lang.reflect.Method getMethod = providerClass.getMethod("getProtocols", (Class[])null);
+                        List<Protocol> supportedProtocols = (List<Protocol>)getMethod.invoke(null, (Object[])null);
+
+                        for(Protocol protocol : supportedProtocols)
+                        {
+                           if(!this.clients.containsKey(protocol))
+                           {
+                              this.clients.put(protocol, providerClass);
+                           }
+                        }
+                     }
+                     catch(Exception e)
+                     {
+                        logger.log(Level.SEVERE, "Unable to register the client connector " + providerClassName, e);
+                     }
+                  }
+
+                  providerName = reader.readLine();
+               }
+            }
+            catch (Exception e)
+            {
+               logger.log(Level.SEVERE, "Unable to read the provider descriptor: " + configURL.toString());
+            }
+         }
+      }
+      catch (IOException ioe)
+      {
          logger.log(Level.SEVERE, "Exception while detecting the client connectors.", ioe);
-		}
-   	
+      }
+
       // Register the server connector providers
       try
-		{
-			for(Enumeration<URL> configUrls = cl.getResources("meta-inf/services/org.restlet.connector.Server"); configUrls.hasMoreElements();)
-			{
-				configURL = configUrls.nextElement();
-				
-				try
-			   {
-			      BufferedReader reader = new BufferedReader(new InputStreamReader(configURL.openStream(), "utf-8"));
-			      providerName = reader.readLine();
-			      providerClassName = providerName.substring(0, providerName.indexOf('#')).trim();
-			   }
-			   catch (Exception e)
-			   {
-			      logger.log(Level.SEVERE, "Unable to read the provider descriptor: " + configURL.toString());
-			   }
+      {
+         for(Enumeration<URL> configUrls = cl.getResources("meta-inf/services/org.restlet.connector.Server"); configUrls.hasMoreElements();)
+         {
+            configURL = configUrls.nextElement();
 
-			   if(providerClassName == null)
-			   {
-			      logger.log(Level.SEVERE, "Unable to process the following connector provider: " + providerName + ". Please check your JAR file metadata.");
-			   }
-			   else
-			   {
-			      // Instantiate the factory
-			      try
-			      {
-			      	Class<? extends Server> providerClass = (Class<? extends Server>) Class.forName(providerClassName); 
-			      	java.lang.reflect.Method getMethod = providerClass.getMethod("getProtocols", (Class[])null);
-			         List<Protocol> supportedProtocols = (List<Protocol>)getMethod.invoke(null, (Object[])null);
+            try
+            {
+               BufferedReader reader = new BufferedReader(new InputStreamReader(configURL.openStream(), "utf-8"));
+               providerName = reader.readLine();
+               providerClassName = providerName.substring(0, providerName.indexOf('#')).trim();
+            }
+            catch (Exception e)
+            {
+               logger.log(Level.SEVERE, "Unable to read the provider descriptor: " + configURL.toString());
+            }
 
-			         for(Protocol protocol : supportedProtocols)
-			         {
-			         	if(!this.servers.containsKey(protocol))
-			         	{
-			         		this.servers.put(protocol, providerClass);
-			         	}
-			         }
-			      }
-			      catch(Exception e)
-			      {
-			         logger.log(Level.SEVERE, "Unable to register the server connector " + providerClassName, e);
-			      }
-			   }
-			}
-		}
-		catch (IOException ioe)
-		{
+            if(providerClassName == null)
+            {
+               logger.log(Level.SEVERE, "Unable to process the following connector provider: " + providerName + ". Please check your JAR file metadata.");
+            }
+            else
+            {
+               // Instantiate the factory
+               try
+               {
+                  Class<? extends Server> providerClass = (Class<? extends Server>) Class.forName(providerClassName);
+                  java.lang.reflect.Method getMethod = providerClass.getMethod("getProtocols", (Class[])null);
+                  List<Protocol> supportedProtocols = (List<Protocol>)getMethod.invoke(null, (Object[])null);
+
+                  for(Protocol protocol : supportedProtocols)
+                  {
+                     if(!this.servers.containsKey(protocol))
+                     {
+                        this.servers.put(protocol, providerClass);
+                     }
+                  }
+               }
+               catch(Exception e)
+               {
+                  logger.log(Level.SEVERE, "Unable to register the server connector " + providerClassName, e);
+               }
+            }
+         }
+      }
+      catch (IOException ioe)
+      {
          logger.log(Level.SEVERE, "Exception while detecting the client connectors.", ioe);
-		}
+      }
    }
-   
+
    /**
     * Registers the Noelios Restlet Engine
     */
@@ -215,22 +215,22 @@ public class FactoryImpl extends Factory
       Client result = null;
 
       try
-		{
+      {
          Class<? extends Client> providerClass = this.clients.get(protocol);
-         
+
          if((providerClass != null) && (protocol != null))
          {
-         	result = providerClass.getConstructor(Protocol.class, String.class).newInstance(protocol, name);
+            result = providerClass.getConstructor(Protocol.class, String.class).newInstance(protocol, name);
          }
          else
          {
             logger.log(Level.WARNING, "No client connector supports the " + protocol.getName() + " protocol.");
          }
-		}
-		catch (Exception e)
-		{
+      }
+      catch (Exception e)
+      {
          logger.log(Level.SEVERE, "Exception while instantiation the client connector.", e);
-		}
+      }
 
       return result;
    }
@@ -246,7 +246,7 @@ public class FactoryImpl extends Factory
 
    /**
     * Creates a delegate Chainlet for internal usage by the AbstractChainlet.<br/>
-    * If you need a Chainlet for your application, you should be subclassing the AbstractChainlet instead. 
+    * If you need a Chainlet for your application, you should be subclassing the AbstractChainlet instead.
     * @param parent The parent component.
     * @return A new Chainlet.
     */
@@ -257,7 +257,7 @@ public class FactoryImpl extends Factory
 
    /**
     * Creates a delegate Maplet for internal usage by the DefaultMaplet.<br/>
-    * If you need a Maplet for your application, you should be using the DefaultMaplet instead. 
+    * If you need a Maplet for your application, you should be using the DefaultMaplet instead.
     * @param parent The parent component.
     * @return A new Maplet.
     */
@@ -280,26 +280,26 @@ public class FactoryImpl extends Factory
       Server result = null;
 
       try
-		{
+      {
          Class<? extends Server> providerClass = this.servers.get(protocol);
-         
+
          if((providerClass != null) && (protocol != null))
          {
-         	result = providerClass.getConstructor(Protocol.class, String.class, Server.class, String.class, int.class).newInstance(protocol, name, delegate, address, port);
+            result = providerClass.getConstructor(Protocol.class, String.class, Server.class, String.class, int.class).newInstance(protocol, name, delegate, address, port);
          }
          else
          {
             logger.log(Level.WARNING, "No server connector supports the " + protocol.getName() + " protocol.");
          }
-		}
-		catch (Exception e)
-		{
+      }
+      catch (Exception e)
+      {
          logger.log(Level.SEVERE, "Exception while instantiation the server connector.", e);
-		}
+      }
 
       return result;
    }
-   
+
    /**
     * Creates a string-base representation.
     * @param value The represented string.
@@ -307,30 +307,30 @@ public class FactoryImpl extends Factory
     */
    public Representation createRepresentation(String value, MediaType mediaType)
    {
-   	return new StringRepresentation(value, mediaType);
+      return new StringRepresentation(value, mediaType);
    }
-   
+
    /**
-    * Formats a list of parameters. 
+    * Formats a list of parameters.
     * @param parameters The list of parameters.
     * @return The encoded parameters string.
     */
    public String format(List<Parameter> parameters)
    {
-   	String result = null;
-   	
-   	try
-		{
-			result = FormUtils.format(parameters);
-		}
-		catch (IOException e)
-		{
-			logger.log(Level.WARNING, "Unexpected error while formating a query string.", e);
-		}
-		
-		return result;
+      String result = null;
+
+      try
+      {
+         result = FormUtils.format(parameters);
+      }
+      catch (IOException e)
+      {
+         logger.log(Level.WARNING, "Unexpected error while formating a query string.", e);
+      }
+
+      return result;
    }
-   
+
    /**
     * Parses a post into a given form.
     * @param form The target form.
@@ -338,10 +338,10 @@ public class FactoryImpl extends Factory
     */
    public void parsePost(Form form, Representation post) throws IOException
    {
-   	if(post != null)
-   	{
-   		FormUtils.parsePost(form, post);
-   	}
+      if(post != null)
+      {
+         FormUtils.parsePost(form, post);
+      }
    }
 
    /**
@@ -351,10 +351,10 @@ public class FactoryImpl extends Factory
     */
    public void parseQuery(Form form, String query) throws IOException
    {
-   	if((query != null) && !query.equals(""))
-   	{
-   		FormUtils.parseQuery(form, query);
-   	}
+      if((query != null) && !query.equals(""))
+      {
+         FormUtils.parseQuery(form, query);
+      }
    }
 
    /**
@@ -367,21 +367,21 @@ public class FactoryImpl extends Factory
    {
       try
       {
-      	if(response.getScheme().equals(ChallengeSchemes.HTTP_BASIC))
-      	{
-      		String credentials = userId + ':' + password;
+         if(response.getScheme().equals(ChallengeSchemes.HTTP_BASIC))
+         {
+            String credentials = userId + ':' + password;
             response.setCredentials(Base64.encodeBytes(credentials.getBytes("US-ASCII")));
-      	}
-      	else if(response.getScheme().equals(ChallengeSchemes.SMTP_PLAIN))
-      	{
-      		String credentials = "^@" + userId + "^@" + password;
-         	response.setCredentials(Base64.encodeBytes(credentials.getBytes("US-ASCII")));
-      	}
-      	else
-      	{
-      		throw new IllegalArgumentException("Challenge scheme not supported by this implementation");
-      	}
-   	}
+         }
+         else if(response.getScheme().equals(ChallengeSchemes.SMTP_PLAIN))
+         {
+            String credentials = "^@" + userId + "^@" + password;
+            response.setCredentials(Base64.encodeBytes(credentials.getBytes("US-ASCII")));
+         }
+         else
+         {
+            throw new IllegalArgumentException("Challenge scheme not supported by this implementation");
+         }
+      }
       catch(UnsupportedEncodingException e)
       {
          throw new RuntimeException("Unsupported encoding, unable to encode credentials");
