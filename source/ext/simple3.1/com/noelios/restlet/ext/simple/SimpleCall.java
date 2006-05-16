@@ -74,10 +74,10 @@ public class SimpleCall extends HttpServerCallImpl
     */
 	public String getRequestUri()
 	{
-		StringBuffer buffer = new StringBuffer(super.confidential ? "https://" : "http://");
-		buffer.append(request.getValue("host"));
-		buffer.append(request.getURI());
-		return buffer.toString();
+		StringBuilder sb = new StringBuilder(super.confidential ? "https://" : "http://");
+		sb.append(request.getValue("host"));
+		sb.append(request.getURI());
+		return sb.toString();
 	}
 
    /**
