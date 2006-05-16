@@ -71,7 +71,7 @@ public class TemplateRepresentation extends OutputRepresentation
     * Returns the FreeMarker template's data model.
     * @return The FreeMarker template's data model.
     */
-   public Object getValues()
+   public Object getDataModel()
    {
       return this.dataModel;
    }
@@ -119,7 +119,7 @@ public class TemplateRepresentation extends OutputRepresentation
             tmplWriter = new BufferedWriter(new OutputStreamWriter(outputStream, template.getEncoding()));
          }
 
-         template.process(getValues(), tmplWriter);
+         template.process(getDataModel(), tmplWriter);
       }
       catch(TemplateException te)
       {
