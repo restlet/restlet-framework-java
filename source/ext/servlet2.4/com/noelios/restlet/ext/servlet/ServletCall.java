@@ -32,6 +32,7 @@ import java.util.Enumeration;
 import java.util.Iterator;
 import java.util.List;
 
+import javax.servlet.ServletContext;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
@@ -44,24 +45,29 @@ import com.noelios.restlet.impl.HttpServerCallImpl;
  */
 public class ServletCall extends HttpServerCallImpl
 {
-   /** The HTTP servlet request to wrap. */
+   /** The HTTP Servlet request to wrap. */
    protected HttpServletRequest request;
    
-   /** The HTTP servlet response to wrap. */
+   /** The HTTP Servlet response to wrap. */
    protected HttpServletResponse response;
    
+   /** The Servlet context to wrap. */
+   protected ServletContext context;
+      
    /** The request headers. */
    protected List<Parameter> requestHeaders;
 
    /**
     * Constructor.
-    * @param request The HTTP servlet request to wrap.
-    * @param response The HTTP servlet response to wrap.
+    * @param request The HTTP Servlet request to wrap.
+    * @param response The HTTP Servlet response to wrap.
+    * @param context The Servlet context to wrap.
     */
-   public ServletCall(HttpServletRequest request, HttpServletResponse response)
+   public ServletCall(HttpServletRequest request, HttpServletResponse response, ServletContext context)
    {
       this.request = request;
       this.response = response;
+      this.context = context;
    }
 
    /**
@@ -80,6 +86,15 @@ public class ServletCall extends HttpServerCallImpl
    public HttpServletResponse getResponse()
    {
       return this.response;
+   }
+
+   /**
+    * Returns the Servlet context.
+    * @return The Servlet context.
+    */
+   public ServletContext getContext()
+   {
+      return this.context;
    }
 
    /**

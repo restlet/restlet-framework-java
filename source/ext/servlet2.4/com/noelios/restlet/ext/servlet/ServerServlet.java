@@ -193,7 +193,7 @@ public class ServerServlet extends HttpServlet implements Server
    {
    	if(getTarget(request) != null)
       {
-      	handle((ServerCall)new ServletCall(request, response));
+      	handle((ServerCall)new ServletCall(request, response, getServletContext()));
       }
    }
 
