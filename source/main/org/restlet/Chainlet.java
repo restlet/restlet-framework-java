@@ -35,15 +35,16 @@ public interface Chainlet extends Restlet
    /**
     * Attaches a target instance shared by all calls.
     * @param target The target instance to attach.
+    * @return The current Chainlet.
     */
-   public void attach(Restlet target);
+   public Chainlet attach(Restlet target);
 
    /**
     * Attaches a target class. A new instance will be created for each call.
-    * @param targetClass The target class to attach (can have a constructor taking a RestletContainer
-    * parameter).
+    * @param targetClass The target class to attach (can have a constructor taking a RestletContainer parameter).
+    * @return The current Chainlet.
     */
-   public void attach(Class<? extends Restlet> targetClass);
+   public Chainlet attach(Class<? extends Restlet> targetClass);
 
    /**
     * Indicates if a target Restlet instance or class has been attached.
@@ -53,7 +54,8 @@ public interface Chainlet extends Restlet
       
    /**
     * Detaches the current target.
+    * @return The current Chainlet.
     */
-   public void detach();
+   public Chainlet detach();
 
 }

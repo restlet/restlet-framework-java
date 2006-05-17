@@ -122,8 +122,9 @@ public class MapletImpl extends AbstractRestlet implements Maplet
    /**
     * Detaches a target instance.
     * @param target The target instance to detach.
+    * @return The current Maplet for further attachments.
     */
-   public synchronized void detach(Restlet target)
+   public synchronized Maplet detach(Restlet target)
    {
       RestletMapping mapping;
       for(Iterator<RestletMapping> iter = getMappings().iterator(); iter.hasNext();)
@@ -133,13 +134,15 @@ public class MapletImpl extends AbstractRestlet implements Maplet
       }
 
       if(getMappings().size() == 0) this.mappings = null;
+      return this;
    }
 
    /**
     * Detaches a target class.
     * @param targetClass The target class to detach.
+    * @return The current Maplet for further attachments.
     */
-   public synchronized void detach(Class<? extends Restlet> targetClass)
+   public synchronized Maplet detach(Class<? extends Restlet> targetClass)
    {
       RestletMapping mapping;
       for(Iterator<RestletMapping> iter = getMappings().iterator(); iter.hasNext();)
@@ -149,14 +152,17 @@ public class MapletImpl extends AbstractRestlet implements Maplet
       }
 
       if(getMappings().size() == 0) this.mappings = null;
+      return this;
    }
 
    /**
     * Detaches all targets.
+    * @return The current Maplet for further attachments.
     */
-   public synchronized void detachAll()
+   public synchronized Maplet detachAll()
    {
    	getMappings().clear();
+      return this;
    }
 
    /**

@@ -100,27 +100,33 @@ public class DefaultMaplet extends AbstractRestlet implements Maplet
    /**
     * Detaches a target instance.
     * @param target The target instance to detach.
+    * @return The current Maplet for further attachments.
     */
-   public void detach(Restlet target)
+   public Maplet detach(Restlet target)
    {
       delegate.detach(target);
+      return this;
    }
 
    /**
     * Detaches a target class.
     * @param targetClass The target class to detach.
+    * @return The current Maplet for further attachments.
     */
-   public void detach(Class<? extends Restlet> targetClass)
+   public Maplet detach(Class<? extends Restlet> targetClass)
    {
       delegate.detach(targetClass);
+      return this;
    }
 
    /**
     * Detaches all targets.
+    * @return The current Maplet for further attachments.
     */
-   public void detachAll()
+   public Maplet detachAll()
    {
    	delegate.detachAll();
+   	return this;
    }
 
    /**

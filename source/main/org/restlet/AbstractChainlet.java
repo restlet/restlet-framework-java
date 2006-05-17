@@ -46,20 +46,23 @@ public abstract class AbstractChainlet extends AbstractRestlet implements Chainl
    /**
     * Attaches a target instance shared by all calls.
     * @param target The target instance to attach.
+    * @return The current Chainlet.
     */
-   public void attach(Restlet target)
+   public Chainlet attach(Restlet target)
    {
       delegate.attach(target);
+      return this;
    }
 
    /**
     * Attaches a target class. A new instance will be created for each call.
-    * @param targetClass The target class to attach (can have a constructor taking a RestletContainer
-    * parameter).
+    * @param targetClass The target class to attach (can have a constructor taking a RestletContainer parameter).
+    * @return The current Chainlet.
     */
-   public void attach(Class<? extends Restlet> targetClass)
+   public Chainlet attach(Class<? extends Restlet> targetClass)
    {
       delegate.attach(targetClass);
+      return this;
    }
 
    /**
@@ -73,10 +76,12 @@ public abstract class AbstractChainlet extends AbstractRestlet implements Chainl
 
    /**
     * Detaches the current target.
+    * @return The current Chainlet.
     */
-   public void detach()
+   public Chainlet detach()
    {
       delegate.detach();
+      return this;
    }
 
    /**

@@ -73,30 +73,33 @@ public class RestletContainer extends AbstractComponent implements Chainlet, Map
    /**
     * Attaches a target instance shared by all calls.
     * @param target The target instance to attach.
+    * @return The current container.
     */
-   public void attach(Restlet target)
+   public RestletContainer attach(Restlet target)
    {
    	delegateChainlet.attach(target);
+   	return this;
    }
 
    /**
     * Attaches a target class. A new instance will be created for each call.
-    * @param targetClass The target class to attach (can have a constructor taking a RestletContainer
-    * parameter).
+    * @param targetClass The target class to attach (can have a constructor taking a RestletContainer parameter).
+    * @return The current container.
     */
-   public void attach(Class<? extends Restlet> targetClass)
+   public RestletContainer attach(Class<? extends Restlet> targetClass)
    {
    	delegateChainlet.attach(targetClass);
+   	return this;
    }
 
    /**
     * Attaches a target instance shared by all calls.
     * @param pattern The URI pattern used to map calls.
     * @param target The target instance to attach.
-    * @return The current Maplet for further attachments.
+    * @return The current container.
     * @see java.util.regex.Pattern
     */
-   public Maplet attach(String pattern, Restlet target)
+   public RestletContainer attach(String pattern, Restlet target)
    {
       delegateMaplet.attach(pattern, target);
       return this;
@@ -107,10 +110,10 @@ public class RestletContainer extends AbstractComponent implements Chainlet, Map
     * @param pattern The URI pattern used to map calls.
     * @param target The target instance to attach.
     * @param override Indicates if this attachment should have a higher priority that existing ones.
-    * @return The current Maplet for further attachments.
+    * @return The current container.
     * @see java.util.regex.Pattern
     */
-   public Maplet attach(String pattern, Restlet target, boolean override)
+   public RestletContainer attach(String pattern, Restlet target, boolean override)
    {
    	delegateMaplet.attach(pattern, target, override);
       return this;
@@ -120,10 +123,10 @@ public class RestletContainer extends AbstractComponent implements Chainlet, Map
     * Attaches a target class. A new instance will be created for each call.
     * @param pattern The URI pattern used to map calls.
     * @param targetClass The target class to attach (can have a constructor taking a RestletContainer parameter).
-    * @return The current Maplet for further attachments.
+    * @return The current container.
     * @see java.util.regex.Pattern
     */
-   public Maplet attach(String pattern, Class<? extends Restlet> targetClass)
+   public RestletContainer attach(String pattern, Class<? extends Restlet> targetClass)
    {
       delegateMaplet.attach(pattern, targetClass);
       return this;
@@ -134,10 +137,10 @@ public class RestletContainer extends AbstractComponent implements Chainlet, Map
     * @param pattern The URI pattern used to map calls.
     * @param targetClass The target class to attach (can have a constructor taking a RestletContainer parameter).
     * @param override Indicates if this attachment should have a higher priority that existing ones.
-    * @return The current Maplet for further attachments.
+    * @return The current container.
     * @see java.util.regex.Pattern
     */
-   public Maplet attach(String pattern, Class<? extends Restlet> targetClass, boolean override)
+   public RestletContainer attach(String pattern, Class<? extends Restlet> targetClass, boolean override)
    {
    	delegateMaplet.attach(pattern, targetClass, override);
       return this;
@@ -154,37 +157,45 @@ public class RestletContainer extends AbstractComponent implements Chainlet, Map
 
    /**
     * Detaches the chained target.
+    * @return The current container.
     */
-   public void detach()
+   public RestletContainer detach()
    {
    	delegateChainlet.detach();
+      return this;
    }
 
    /**
     * Detaches a target instance.
     * @param target The target instance to detach.
+    * @return The current container.
     */
-   public void detach(Restlet target)
+   public RestletContainer detach(Restlet target)
    {
       delegateMaplet.detach(target);
+      return this;
    }
 
    /**
     * Detaches a target class.
     * @param targetClass The Restlet class to detach.
+    * @return The current container.
     */
-   public void detach(Class<? extends Restlet> targetClass)
+   public RestletContainer detach(Class<? extends Restlet> targetClass)
    {
       delegateMaplet.detach(targetClass);
+      return this;
    }
 
    /**
     * Detaches all targets, including mapped and chained targets.
+    * @return The current container.
     */
-   public void detachAll()
+   public RestletContainer detachAll()
    {
    	delegateChainlet.detach();
    	delegateMaplet.detachAll();
+      return this;
    }
 
    /**
