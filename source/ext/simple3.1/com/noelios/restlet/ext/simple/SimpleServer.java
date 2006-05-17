@@ -39,6 +39,7 @@ import org.restlet.connector.Server;
 import org.restlet.data.Protocol;
 import org.restlet.data.Protocols;
 
+import simple.http.BufferedPipelineFactory;
 import simple.http.ProtocolHandler;
 import simple.http.Request;
 import simple.http.Response;
@@ -133,7 +134,7 @@ public class SimpleServer extends AbstractServer implements ProtocolHandler
 		}
 
 		this.confidential = Protocols.HTTPS.equals(getProtocol());
-		this.connection = ConnectionFactory.getConnection(this);
+		this.connection = ConnectionFactory.getConnection(this, new BufferedPipelineFactory());
 		this.connection.connect(socket);
 		super.started = true;
 	}
