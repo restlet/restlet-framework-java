@@ -51,7 +51,7 @@ public class ComponentBuilder extends RestletBuilder
     */
    public Component getNode()
    {
-      return (Component)getNode();
+      return (Component)super.getNode();
    }
 
    /**

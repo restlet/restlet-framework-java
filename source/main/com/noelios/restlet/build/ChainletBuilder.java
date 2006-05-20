@@ -62,7 +62,7 @@ public class ChainletBuilder extends RestletBuilder
     */
    public Chainlet getNode()
    {
-      return (Chainlet)getNode();
+      return (Chainlet)super.getNode();
    }
 
    /**

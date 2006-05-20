@@ -46,7 +46,7 @@ public class ExtractChainletBuilder extends ChainletBuilder
     */
    public ExtractChainlet getNode()
    {
-      return (ExtractChainlet)getNode();
+      return (ExtractChainlet)super.getNode();
    }
 
    /**

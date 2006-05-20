@@ -46,7 +46,7 @@ public class GuardChainletBuilder extends ChainletBuilder
     */
    public GuardChainlet getNode()
    {
-      return (GuardChainlet)getNode();
+      return (GuardChainlet)super.getNode();
    }
 
    /**
