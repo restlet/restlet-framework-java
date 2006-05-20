@@ -250,7 +250,7 @@ public class PreferenceUtils
       }
       else
       {
-         preference.getEncodings().add(new EncodingPref(Encodings.ALL));
+         preference.getEncodings().add(new EncodingPref(Encodings.IDENTITY));
       }
    }
 

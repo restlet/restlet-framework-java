@@ -69,13 +69,11 @@ public class MapletImpl extends AbstractRestlet implements Maplet
     * Attaches a target instance shared by all calls.
     * @param pattern The URI pattern used to map calls.
     * @param target The target instance to attach.
-    * @return The current Maplet for further attachments.
     * @see java.util.regex.Pattern
     */
-   public synchronized Maplet attach(String pattern, Restlet target)
+   public synchronized void attach(String pattern, Restlet target)
    {
       getMappings().add(new RestletMapping(pattern, target));
-      return this;
    }
 
    /**
@@ -83,26 +81,22 @@ public class MapletImpl extends AbstractRestlet implements Maplet
     * @param pattern The URI pattern used to map calls.
     * @param target The target instance to attach.
     * @param override Indicates if this attachment should have a higher priority that existing ones.
-    * @return The current Maplet for further attachments.
     * @see java.util.regex.Pattern
     */
-   public synchronized Maplet attach(String pattern, Restlet target, boolean override)
+   public synchronized void attach(String pattern, Restlet target, boolean override)
    {
       getMappings().add(0, new RestletMapping(pattern, target));
-      return this;
    }
    
    /**
     * Attaches a target class. A new instance will be created for each call.
     * @param pattern The URI pattern used to map calls.
     * @param targetClass The target class to attach (can have a constructor taking a RestletContainer parameter).
-    * @return The current Maplet for further attachments.
     * @see java.util.regex.Pattern
     */
-   public synchronized Maplet attach(String pattern, Class<? extends Restlet> targetClass)
+   public synchronized void attach(String pattern, Class<? extends Restlet> targetClass)
    {
       getMappings().add(new RestletMapping(pattern, targetClass));
-      return this;
    }
 
    /**
@@ -110,21 +104,18 @@ public class MapletImpl extends AbstractRestlet implements Maplet
     * @param pattern The URI pattern used to map calls.
     * @param targetClass The target class to attach (can have a constructor taking a RestletContainer parameter).
     * @param override Indicates if this attachment should have a higher priority that existing ones.
-    * @return The current Maplet for further attachments.
     * @see java.util.regex.Pattern
     */
-   public synchronized Maplet attach(String pattern, Class<? extends Restlet> targetClass, boolean override)
+   public synchronized void attach(String pattern, Class<? extends Restlet> targetClass, boolean override)
    {
       getMappings().add(0, new RestletMapping(pattern, targetClass));
-      return this;
    }
 
    /**
     * Detaches a target instance.
     * @param target The target instance to detach.
-    * @return The current Maplet for further attachments.
     */
-   public synchronized Maplet detach(Restlet target)
+   public synchronized void detach(Restlet target)
    {
       RestletMapping mapping;
       for(Iterator<RestletMapping> iter = getMappings().iterator(); iter.hasNext();)
@@ -134,15 +125,13 @@ public class MapletImpl extends AbstractRestlet implements Maplet
       }
 
       if(getMappings().size() == 0) this.mappings = null;
-      return this;
    }
 
    /**
     * Detaches a target class.
     * @param targetClass The target class to detach.
-    * @return The current Maplet for further attachments.
     */
-   public synchronized Maplet detach(Class<? extends Restlet> targetClass)
+   public synchronized void detach(Class<? extends Restlet> targetClass)
    {
       RestletMapping mapping;
       for(Iterator<RestletMapping> iter = getMappings().iterator(); iter.hasNext();)
@@ -152,17 +141,14 @@ public class MapletImpl extends AbstractRestlet implements Maplet
       }
 
       if(getMappings().size() == 0) this.mappings = null;
-      return this;
    }
 
    /**
     * Detaches all targets.
-    * @return The current Maplet for further attachments.
     */
-   public synchronized Maplet detachAll()
+   public synchronized void detachAll()
    {
    	getMappings().clear();
-      return this;
    }
 
    /**
@@ -222,7 +208,7 @@ public class MapletImpl extends AbstractRestlet implements Maplet
          }
 
          // Invoke the call restlet
-         mapping.handle(call, getParent());
+         mapping.handle(call, getOwner());
       }
       else
       {

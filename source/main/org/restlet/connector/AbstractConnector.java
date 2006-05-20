@@ -31,11 +31,11 @@ import org.restlet.data.Protocol;
  */
 public abstract class AbstractConnector extends AbstractRestlet implements Connector
 {
+	/** The name of this connector. */
+   protected String name;
+
    /** The connector protocol. */
    protected Protocol protocol;
-
-   /** The unique connector name. */
-   protected String name;
    
    /**
     * Constructor.
@@ -49,16 +49,33 @@ public abstract class AbstractConnector extends AbstractRestlet implements Conne
    
    /**
     * Constructor.
-    * @param parent The parent component.
+    * @param owner The owner component.
     * @param protocol The connector protocol.
     * @param name The unique connector name.
     */
-   public AbstractConnector(Component parent, Protocol protocol, String name)
+   public AbstractConnector(Component owner, Protocol protocol, String name)
    {
-   	super(parent);
+   	super(owner);
+   	this.name = name;
       this.protocol = protocol;
-      this.name = name;
-      this.started = false;
+   }
+
+   /**
+    * Returns the name of this connector.
+    * @return The name of this connector.
+    */
+   public String getName()
+   {
+   	return this.name;
+   }
+
+   /**
+    * Sets the name of this connector.
+    * @param name The name of this connector.
+    */
+   public void setName(String name)
+   {
+   	this.name = name;
    }
 
    /**
@@ -68,15 +85,6 @@ public abstract class AbstractConnector extends AbstractRestlet implements Conne
    public Protocol getProtocol()
    {
       return this.protocol;
-   }
-
-   /**
-    * Returns the name of this REST connector.
-    * @return The name of this REST connector.
-    */
-   public String getName()
-   {
-      return this.name;
    }
 
 }

@@ -93,7 +93,7 @@ public abstract class AbstractServer extends AbstractConnector implements Server
     * The default behavior is to ask the target Restlet to handle the call.
     * @param call The call to handle.
     */
-   public void handle(Call call)
+	public void handle(Call call)
    {
       getTarget().handle(call);
    }
@@ -137,15 +137,6 @@ public abstract class AbstractServer extends AbstractConnector implements Server
    public void setTarget(Restlet target)
    {
       this.target = target;
-   }
-
-   /**
-    * Returns the description of this REST element.
-    * @return The description of this REST element.
-    */
-   public String getDescription()
-   {
-      return "Server connector";
    }
 
 }

@@ -84,24 +84,6 @@ public class EncoderRepresentation extends OutputRepresentation
    	result.setEncoding(getEncoding());
    	return result;
    }
-   
-   /**
-    * Returns the name of this REST element.
-    * @return The name of this REST element.
-    */
-   public String getName()
-   {
-   	return this.wrappedRepresentation.getName();
-   }
-
-   /**
-    * Returns the description of this REST element.
-    * @return The description of this REST element.
-    */
-   public String getDescription()
-   {
-   	return this.wrappedRepresentation.getDescription();
-   }
 
    /**
     * Writes the representation to a byte stream.

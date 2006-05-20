@@ -108,9 +108,9 @@ public class ServerServlet extends HttpServlet implements Server
 
    /** Serial version identifier. */
    private static final long serialVersionUID = 1L;
-
-   /** The parent component. */
-   protected Component parent;
+   
+   /** The owner component. */
+   protected Component owner;
    
    /** Indicates if the connector was started. */
    protected boolean started;
@@ -167,21 +167,21 @@ public class ServerServlet extends HttpServlet implements Server
    }
 
    /**
-    * Returns the parent component.
-    * @return The parent component.
+    * Returns the owner component.
+    * @return The owner component.
     */
-   public Component getParent()
+   public Component getOwner()
    {
-   	return this.parent;
+   	return this.owner;
    }
 
    /**
-    * Sets the parent component.
-    * @param parent The parent component.
+    * Sets the owner component.
+    * @param owner The owner component.
     */
-   public void setParent(Component parent)
+   public void setOwner(Component owner)
    {
-   	this.parent = parent;
+   	this.owner = owner;
    }
    
    /**
@@ -257,7 +257,7 @@ public class ServerServlet extends HttpServlet implements Server
                         	{
                         		// The target is probably a standalone Restlet or Chainlet or Maplet
                         		// Try to get its parent, even if chances to find one are low
-                        		component = result.getParent();
+                        		component = result.getOwner();
                         	}
                         	
                         	// Provide the context path as an init parameter
@@ -337,11 +337,11 @@ public class ServerServlet extends HttpServlet implements Server
    }
 
    /**
-    * Handles a uniform call.
+    * Handles a call.
     * The default behavior is to invoke the target Restlet. 
     * @param call The call to handle.
     */
-   public void handle(Call call)
+	public void handle(Call call)
    {
    	if(getTarget() != null)
    	{
@@ -350,8 +350,8 @@ public class ServerServlet extends HttpServlet implements Server
    }
 
    /**
-    * Returns the name of this REST connector.
-    * @return The name of this REST connector.
+    * Returns the name of this connector.
+    * @return The name of this connector.
     */
    public String getName()
    {
@@ -359,12 +359,12 @@ public class ServerServlet extends HttpServlet implements Server
    }
 
    /**
-    * Returns the description of this REST element.
-    * @return The description of this REST element.
+    * Sets the name of this connector.
+    * @param name The name of this connector.
     */
-   public String getDescription()
+   public void setName(String name)
    {
-      return "Servlet HTTP server";
+   	// Read-only
    }
 
    /**

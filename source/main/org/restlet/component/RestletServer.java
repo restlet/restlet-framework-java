@@ -53,11 +53,9 @@ public class RestletServer extends AbstractComponent
 
    /**
     * Constructor.
-    * @param name The origin server's name.
     */
-   public RestletServer(String name)
+   public RestletServer()
    {
-      super(name);
       this.containers = new TreeMap<String, RestletContainer>();
       this.defaultContainer = null;
    }

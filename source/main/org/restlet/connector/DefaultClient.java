@@ -140,21 +140,21 @@ public class DefaultClient implements Client
    }
 
    /**
-    * Returns the parent component.
-    * @return The parent component.
+    * Returns the owner component.
+    * @return The owner component.
     */
-   public Component getParent()
+   public Component getOwner()
    {
-   	return this.wrappedClient.getParent();
+   	return this.wrappedClient.getOwner();
    }
 
    /**
-    * Sets the parent component.
-    * @param parent The parent component.
+    * Sets the owner component.
+    * @param owner The owner component.
     */
-   public void setParent(Component parent)
+   public void setOwner(Component owner)
    {
-   	this.wrappedClient.setParent(parent);   	
+   	this.wrappedClient.setOwner(owner);   	
    }
 
    /**
@@ -191,8 +191,8 @@ public class DefaultClient implements Client
    }
 
    /**
-    * Returns the name of this REST element.
-    * @return The name of this REST element.
+    * Returns the name of this connector.
+    * @return The name of this connector.
     */
    public String getName()
    {
@@ -200,12 +200,12 @@ public class DefaultClient implements Client
    }
 
    /**
-    * Returns the description of this REST element.
-    * @return The description of this REST element.
+    * Sets the name of this connector.
+    * @param name The name of this connector.
     */
-   public String getDescription()
+   public void setName(String name)
    {
-   	return this.wrappedClient.getDescription();
+   	this.wrappedClient.setName(name);
    }
    
 }

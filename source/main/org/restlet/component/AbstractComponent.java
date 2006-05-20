@@ -40,9 +40,6 @@ public abstract class AbstractComponent extends AbstractRestlet implements Compo
 {
 	/** The initialization parameters. */
 	protected Map<String, String> initParameters;
-	
-	/** The component name. */
-   protected String name;
 
    /** The map of client connectors. */
    protected Map<String, Client> clients;
@@ -52,12 +49,20 @@ public abstract class AbstractComponent extends AbstractRestlet implements Compo
 
    /**
     * Constructor.
-    * @param name The component name.
     */
-   public AbstractComponent(String name)
+   public AbstractComponent()
    {
+      this((Component)null);
+   }
+
+   /**
+    * Constructor.
+    * @param owner The owner component.
+    */
+   public AbstractComponent(Component owner)
+   {
+      super(owner);
    	this.initParameters = null;
-      this.name = name;
       this.clients = new TreeMap<String, Client>();
       this.servers = new TreeMap<String, Server>();
    }
@@ -73,23 +78,12 @@ public abstract class AbstractComponent extends AbstractRestlet implements Compo
 	}
 
    /**
-    * Returns the name of this REST element.
-    * @return The name of this REST element.
-    */
-   public String getName()
-   {
-      return this.name;
-   }
-
-   /**
     * Adds a server connector to this component.
     * @param server The server connector to add.
-    * @return The server connector added.
     */
-   public Server addServer(Server server)
+   public void addServer(Server server)
    {
       this.servers.put(server.getName(), server);
-      return server;
    }
 
    /**
@@ -104,12 +98,10 @@ public abstract class AbstractComponent extends AbstractRestlet implements Compo
    /**
     * Adds a client connector to this component.
     * @param client The client connector to add.
-    * @return The client connector added.
     */
-   public Client addClient(Client client)
+   public void addClient(Client client)
    {
       this.clients.put(client.getName(), client);
-      return client;
    }
 
    /**
@@ -138,15 +130,6 @@ public abstract class AbstractComponent extends AbstractRestlet implements Compo
       {
          connector.handle(call);
       }
-   }
-
-   /**
-    * Returns the description of this REST element.
-    * @return The description of this REST element.
-    */
-   public String getDescription()
-   {
-      return "Abstract component";
    }
 
    /**

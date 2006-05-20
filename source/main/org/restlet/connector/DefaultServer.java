@@ -147,21 +147,21 @@ public class DefaultServer implements Server
    }
 
    /**
-    * Returns the parent component.
-    * @return The parent component.
+    * Returns the owner component.
+    * @return The owner component.
     */
-   public Component getParent()
+   public Component getOwner()
    {
-   	return this.wrappedServer.getParent();
+   	return this.wrappedServer.getOwner();
    }
 
    /**
-    * Sets the parent component.
-    * @param parent The parent component.
+    * Sets the owner component.
+    * @param owner The owner component.
     */
-   public void setParent(Component parent)
+   public void setOwner(Component owner)
    {
-   	this.wrappedServer.setParent(parent);   	
+   	this.wrappedServer.setOwner(owner);   	
    }
 
    /**
@@ -174,8 +174,8 @@ public class DefaultServer implements Server
    }
 
    /**
-    * Returns the name of this REST element.
-    * @return The name of this REST element.
+    * Returns the name of this connector.
+    * @return The name of this connector.
     */
    public String getName()
    {
@@ -183,12 +183,12 @@ public class DefaultServer implements Server
    }
 
    /**
-    * Returns the description of this REST element.
-    * @return The description of this REST element.
+    * Sets the name of this connector.
+    * @param name The name of this connector.
     */
-   public String getDescription()
+   public void setName(String name)
    {
-   	return this.wrappedServer.getDescription();
+   	this.wrappedServer.setName(name);
    }
-   
+  
 }

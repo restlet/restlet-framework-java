@@ -70,7 +70,7 @@ public abstract class AbstractClient extends AbstractConnector implements Client
     * @param input The input representation to post.
     * @return The returned uniform call.
     */
-   public Call post(String resourceUri, Representation input)
+	public Call post(String resourceUri, Representation input)
    {
       Call call = new DefaultCall();
       call.setResourceRef(resourceUri);

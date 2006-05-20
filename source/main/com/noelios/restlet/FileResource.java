@@ -47,7 +47,7 @@ import com.noelios.restlet.data.FileRepresentation;
 public class FileResource implements Resource
 {
    /** Obtain a suitable logger. */
-   private static Logger logger = Logger.getLogger("com.noelios.restlet.data.FileRepresentation");
+   private static Logger logger = Logger.getLogger("com.noelios.restlet.FileResource");
 
    /**
     * The parent directory Restlet.

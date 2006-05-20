@@ -34,35 +34,39 @@ public abstract class AbstractChainlet extends AbstractRestlet implements Chainl
    protected Chainlet delegate;
 
    /**
-    * Creates a new Chainlet in the given container.
-    * @param parent The parent component.
+    * Constructor.
     */
-   public AbstractChainlet(Component parent)
+   public AbstractChainlet()
    {
-      super(parent);
-      this.delegate = Factory.getInstance().createChainlet(parent);
+      this(null);
+   }
+
+   /**
+    * Constructor.
+    * @param owner The owner component.
+    */
+   public AbstractChainlet(Component owner)
+   {
+      super(owner);
+      this.delegate = Factory.getInstance().createChainlet(owner);
    }
 
    /**
     * Attaches a target instance shared by all calls.
     * @param target The target instance to attach.
-    * @return The current Chainlet.
     */
-   public Chainlet attach(Restlet target)
+   public void attach(Restlet target)
    {
       delegate.attach(target);
-      return this;
    }
 
    /**
     * Attaches a target class. A new instance will be created for each call.
     * @param targetClass The target class to attach (can have a constructor taking a RestletContainer parameter).
-    * @return The current Chainlet.
     */
-   public Chainlet attach(Class<? extends Restlet> targetClass)
+   public void attach(Class<? extends Restlet> targetClass)
    {
       delegate.attach(targetClass);
-      return this;
    }
 
    /**
@@ -76,12 +80,10 @@ public abstract class AbstractChainlet extends AbstractRestlet implements Chainl
 
    /**
     * Detaches the current target.
-    * @return The current Chainlet.
     */
-   public Chainlet detach()
+   public void detach()
    {
       delegate.detach();
-      return this;
    }
 
    /**
@@ -89,7 +91,7 @@ public abstract class AbstractChainlet extends AbstractRestlet implements Chainl
     * Default behavior to be overriden: delegation to one of the attached targets.
     * @param call The call to handle.
     */
-   public void handle(Call call)
+	public void handle(Call call)
    {
       delegate.handle(call);
    }

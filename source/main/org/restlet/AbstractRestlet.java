@@ -33,13 +33,13 @@ import org.restlet.data.Statuses;
  * methods if needed.
  * @see <a href="http://www.restlet.org/tutorial#part03">Tutorial: Listening to Web browsers</a>
  */
-public abstract class AbstractRestlet implements Restlet
+public abstract class AbstractRestlet<T extends Call> implements Restlet
 {
    /** Indicates if the restlet was started. */
    protected boolean started;
 
-   /** The parent component. */
-   protected Component parent;
+   /** The owner component. */
+   protected Component owner;
 
    /**
     * Constructor.
@@ -51,11 +51,11 @@ public abstract class AbstractRestlet implements Restlet
 
    /**
     * Constructor.
-    * @param parent The parent component.
+    * @param owner The owner component.
     */
-   public AbstractRestlet(Component parent)
+   public AbstractRestlet(Component owner)
    {
-   	this.parent = parent;
+   	this.owner = owner;
       this.started = false;
    }
 
@@ -63,67 +63,70 @@ public abstract class AbstractRestlet implements Restlet
     * Handles a call.
     * @param call The call to handle.
     */
-   public void handle(Call call)
+   @SuppressWarnings("unchecked")
+	public void handle(Call call)
    {
+   	T genericCall = (T)call;
+   	
 		if(call.getMethod().equals(Methods.GET))
 		{
-			handleGet(call);
+			handleGet(genericCall);
 		}
 		else if(call.getMethod().equals(Methods.POST))
 		{
-			handlePost(call);
+			handlePost(genericCall);
 		}
 		else if(call.getMethod().equals(Methods.PUT))
 		{
-			handlePut(call);
+			handlePut(genericCall);
 		}
 		else if(call.getMethod().equals(Methods.DELETE))
 		{
-			handleDelete(call);
+			handleDelete(genericCall);
 		}
 		else if(call.getMethod().equals(Methods.HEAD))
 		{
-			handleHead(call);
+			handleHead(genericCall);
 		}
 		else if(call.getMethod().equals(Methods.CONNECT))
 		{
-			handleConnect(call);
+			handleConnect(genericCall);
 		}
 		else if(call.getMethod().equals(Methods.OPTIONS))
 		{
-			handleOptions(call);
+			handleOptions(genericCall);
 		}
 		else if(call.getMethod().equals(Methods.TRACE))
 		{
-			handleTrace(call);
+			handleTrace(genericCall);
 		}
 		else if(call.getMethod().equals(Methods.MOVE))
 		{
-			handleMove(call);
+			handleMove(genericCall);
 		}
 		else if(call.getMethod().equals(Methods.COPY))
 		{
-			handleCopy(call);
+			handleCopy(genericCall);
 		}
 		else if(call.getMethod().equals(Methods.LOCK))
 		{
-			handleLock(call);
+			handleLock(genericCall);
 		}
 		else if(call.getMethod().equals(Methods.MKCOL))
 		{
-			handleMakeCollection(call);
+			handleMakeCollection(genericCall);
 		}
 		else if(call.getMethod().equals(Methods.PROPFIND))
 		{
-			handleFindProperties(call);
+			handleFindProperties(genericCall);
 		}
 		else if(call.getMethod().equals(Methods.PROPPATCH))
 		{
-			handlePatchProperties(call);
+			handlePatchProperties(genericCall);
 		}
 		else if(call.getMethod().equals(Methods.UNLOCK))
 		{
-			handleUnlock(call);
+			handleUnlock(genericCall);
 		}
    }
 
@@ -131,7 +134,7 @@ public abstract class AbstractRestlet implements Restlet
     * Handles a CONNECT call.
     * @param call The call to handle.
     */
-   public void handleConnect(Call call)
+   public void handleConnect(T call)
    {
    	defaultHandle(call);
    }
@@ -140,7 +143,7 @@ public abstract class AbstractRestlet implements Restlet
     * Handles a COPY call.
     * @param call The call to handle.
     */
-   public void handleCopy(Call call)
+   public void handleCopy(T call)
    {
    	defaultHandle(call);
    }
@@ -149,7 +152,7 @@ public abstract class AbstractRestlet implements Restlet
     * Handles a DELETE call.
     * @param call The call to handle.
     */
-   public void handleDelete(Call call)
+   public void handleDelete(T call)
    {
    	defaultHandle(call);
    }
@@ -158,7 +161,7 @@ public abstract class AbstractRestlet implements Restlet
     * Handles a GET call.
     * @param call The call to handle.
     */
-   public void handleGet(Call call)
+   public void handleGet(T call)
    {
    	defaultHandle(call);
    }
@@ -167,7 +170,7 @@ public abstract class AbstractRestlet implements Restlet
     * Handles a HEAD call.
     * @param call The call to handle.
     */
-   public void handleHead(Call call)
+   public void handleHead(T call)
    {
    	defaultHandle(call);
    }
@@ -176,7 +179,7 @@ public abstract class AbstractRestlet implements Restlet
     * Handles a LOCK call.
     * @param call The call to handle.
     */
-   public void handleLock(Call call)
+   public void handleLock(T call)
    {
    	defaultHandle(call);
    }
@@ -185,7 +188,7 @@ public abstract class AbstractRestlet implements Restlet
     * Handles a MKCOL call.
     * @param call The call to handle.
     */
-   public void handleMakeCollection(Call call)
+   public void handleMakeCollection(T call)
    {
    	defaultHandle(call);
    }
@@ -194,7 +197,7 @@ public abstract class AbstractRestlet implements Restlet
     * Handles a MOVE call.
     * @param call The call to handle.
     */
-   public void handleMove(Call call)
+   public void handleMove(T call)
    {
    	defaultHandle(call);
    }
@@ -203,7 +206,7 @@ public abstract class AbstractRestlet implements Restlet
     * Handles a OPTIONS call.
     * @param call The call to handle.
     */
-   public void handleOptions(Call call)
+   public void handleOptions(T call)
    {
    	defaultHandle(call);
    }
@@ -212,7 +215,7 @@ public abstract class AbstractRestlet implements Restlet
     * Handles a POST call.
     * @param call The call to handle.
     */
-   public void handlePost(Call call)
+   public void handlePost(T call)
    {
    	defaultHandle(call);
    }
@@ -221,7 +224,7 @@ public abstract class AbstractRestlet implements Restlet
     * Handles a PROPFIND call.
     * @param call The call to handle.
     */
-   public void handleFindProperties(Call call)
+   public void handleFindProperties(T call)
    {
    	defaultHandle(call);
    }
@@ -230,7 +233,7 @@ public abstract class AbstractRestlet implements Restlet
     * Handles a PROPPATCH call.
     * @param call The call to handle.
     */
-   public void handlePatchProperties(Call call)
+   public void handlePatchProperties(T call)
    {
    	defaultHandle(call);
    }
@@ -239,7 +242,7 @@ public abstract class AbstractRestlet implements Restlet
     * Handles a PUT call.
     * @param call The call to handle.
     */
-   public void handlePut(Call call)
+   public void handlePut(T call)
    {
    	defaultHandle(call);
    }
@@ -248,7 +251,7 @@ public abstract class AbstractRestlet implements Restlet
     * Handles a TRACE call.
     * @param call The call to handle.
     */
-   public void handleTrace(Call call)
+   public void handleTrace(T call)
    {
    	defaultHandle(call);
    }
@@ -257,7 +260,7 @@ public abstract class AbstractRestlet implements Restlet
     * Handles a UNLOCK call.
     * @param call The call to handle.
     */
-   public void handleUnlock(Call call)
+   public void handleUnlock(T call)
    {
    	defaultHandle(call);
    }
@@ -267,7 +270,7 @@ public abstract class AbstractRestlet implements Restlet
     * and "illegal access error" that is intercepted by the handle() method. 
     * @param call The call to handle.
     */
-   protected void defaultHandle(Call call)
+   protected void defaultHandle(T call)
    {
 		call.setStatus(Statuses.CLIENT_ERROR_METHOD_NOT_ALLOWED);
    }
@@ -279,10 +282,10 @@ public abstract class AbstractRestlet implements Restlet
 	 * done, the client will only receive the response to the call when the Restlet handle method returns. 
 	 * @param call The call to forward.
 	 */
-	public void forward(Call call)
+	public void forward(T call)
 	{
 		call.setContextPath(null);
-		getParent().handle(call);
+		getOwner().handle(call);
 	}
    
    /** Starts the restlet. */
@@ -316,21 +319,21 @@ public abstract class AbstractRestlet implements Restlet
    }
 
    /**
-    * Returns the parent component.
-    * @return The parent component.
+    * Returns the owner component.
+    * @return The owner component.
     */
-   public Component getParent()
+   public Component getOwner()
    {
-      return this.parent;
+      return this.owner;
    }
 
    /**
-    * Sets the parent component.
-    * @param parent The parent component.
+    * Sets the owner component.
+    * @param owner The owner component.
     */
-   public void setParent(Component parent)
+   public void setOwner(Component owner)
    {
-      this.parent = parent;
+      this.owner = owner;
    }
 
    /**
@@ -339,7 +342,7 @@ public abstract class AbstractRestlet implements Restlet
     * @return The result of the comparison.
     * @see java.lang.Comparable
     */
-   public int compareTo(Object object)
+   public int compareTo(Restlet object)
    {
       return this.hashCode() - object.hashCode();
    }

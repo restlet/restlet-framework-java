@@ -99,6 +99,21 @@ public class RedirectRestlet extends AbstractRestlet
       super(parent);
       this.targetPattern = targetPattern;
       this.mode = mode;
+      this.connectorName = null;
+   }
+
+   /**
+    * Constructor for the connector mode.
+    * @param parent The parent component.
+    * @param targetPattern The pattern to build the target URI.
+    * @param connectorName The connector name.
+    */
+   public RedirectRestlet(Component parent, String targetPattern, String connectorName)
+   {
+      super(parent);
+      this.targetPattern = targetPattern;
+      this.mode = MODE_CONNECTOR;
+      this.connectorName = connectorName;
    }
 
    /**
@@ -114,7 +129,7 @@ public class RedirectRestlet extends AbstractRestlet
     * Handles a call to a resource or a set of resources.
     * @param call The call to handle.
     */
-   public void handle(Call call)
+	public void handle(Call call)
    {
       try
       {
@@ -148,13 +163,13 @@ public class RedirectRestlet extends AbstractRestlet
             case MODE_CONNECTOR:
                logger.log(Level.INFO, "Redirecting to connector " + this.connectorName + ": " + targetUri);
                call.setResourceRef(target);
-               getParent().callClient(this.connectorName, call);
+               getOwner().callClient(this.connectorName, call);
             break;
 
             case MODE_INTERNAL:
                logger.log(Level.INFO, "Redirecting internally: " + targetUri);
                call.setResourceRef(target);
-               getParent().handle(call);
+               getOwner().handle(call);
             break;
          }
       }

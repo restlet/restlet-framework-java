@@ -25,7 +25,6 @@ package org.restlet.component;
 import java.io.IOException;
 import java.util.Map;
 
-import org.restlet.Element;
 import org.restlet.Restlet;
 import org.restlet.Call;
 import org.restlet.connector.Client;
@@ -38,7 +37,7 @@ import org.restlet.connector.Server;
  * @see <a href="http://www.ics.uci.edu/~fielding/pubs/dissertation/software_arch.htm#sec_1_2_1">Source
  * dissertation</a>
  */
-public interface Component extends Element, Restlet
+public interface Component extends Restlet
 {
 	/**
 	 * Returns a modifiable map of initialization parameters
@@ -49,9 +48,8 @@ public interface Component extends Element, Restlet
 	/**
     * Adds a server connector to this component.
     * @param server The server connector to add.
-    * @return The server connector added.
     */
-   public Server addServer(Server server);
+   public void addServer(Server server);
 
    /**
     * Removes a server connector from this component.
@@ -62,9 +60,8 @@ public interface Component extends Element, Restlet
    /**
     * Adds a client connector to this component.
     * @param client The client connector to add.
-    * @return The client connector added.
     */
-   public Client addClient(Client client);
+   public void addClient(Client client);
 
    /**
     * Removes a client connector from this component.

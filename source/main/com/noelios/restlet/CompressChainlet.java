@@ -55,7 +55,7 @@ public class CompressChainlet extends AbstractChainlet
 	/**
 	 * Indicates if the encoding should always occur, regardless of the size. 
 	 */
-	public static final int ALWAYS_ENCODE = -1;
+	public static final int ENCODE_ALL_SIZES = -1;
 	
 	/**
 	 * Indicates if the input representation should be encoded.
@@ -83,13 +83,13 @@ public class CompressChainlet extends AbstractChainlet
 	protected List<MediaType> ignoredMediaTypes;
 
 	/**
-	 * Constructor using the default media types and with {@link #ALWAYS_ENCODE} setting.
+	 * Constructor using the default media types and with {@link #ENCODE_ALL_SIZES} setting.
 	 * This constructor will only encode output representations after call handling.
 	 * @param parent The parent component.
 	 */
 	public CompressChainlet(Component parent)
 	{
-		this(parent, false, true, ALWAYS_ENCODE, getDefaultAcceptedMediaTypes(),
+		this(parent, false, true, ENCODE_ALL_SIZES, getDefaultAcceptedMediaTypes(),
 				getDefaultIgnoredMediaTypes());
 	}
 
@@ -182,7 +182,7 @@ public class CompressChainlet extends AbstractChainlet
 		if(result)
 		{
 			// Test the size of the representation
-			result = (getMinimumSize() == ALWAYS_ENCODE) || 
+			result = (getMinimumSize() == ENCODE_ALL_SIZES) || 
 						(representation.getSize() == Representation.UNKNOWN_SIZE) ||
 						(representation.getSize() >= getMinimumSize());
 		}

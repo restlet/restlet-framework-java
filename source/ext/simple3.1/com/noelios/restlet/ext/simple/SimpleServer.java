@@ -106,54 +106,53 @@ public class SimpleServer extends AbstractServer implements ProtocolHandler
    /** Starts the Restlet. */
 	public void start() throws Exception
 	{
-		if (super.started)
+		if(!isStarted())
 		{
-			return;
+			if (Protocols.HTTP.equals(super.protocol))
+			{
+				socket = new ServerSocket(port);
+			}
+			else if (Protocols.HTTPS.equals(super.protocol))
+			{
+				KeyStore keyStore = KeyStore.getInstance("JKS");
+				keyStore.load(new FileInputStream(keystorePath), keystorePassword
+						.toCharArray());
+				KeyManagerFactory keyManagerFactory = KeyManagerFactory
+						.getInstance("SunX509");
+				keyManagerFactory.init(keyStore, keyPassword.toCharArray());
+				SSLContext sslContext = SSLContext.getInstance("TLS");
+				sslContext.init(keyManagerFactory.getKeyManagers(), null, null);
+				socket = sslContext.getServerSocketFactory().createServerSocket(port);
+				socket.setSoTimeout(60000);
+			}
+			else
+			{
+				// Should never happen.
+				throw new RuntimeException("Unsupported protocol: " + super.protocol);
+			}
+	
+			this.confidential = Protocols.HTTPS.equals(getProtocol());
+			this.connection = ConnectionFactory.getConnection(this, new BufferedPipelineFactory());
+			this.connection.connect(socket);
+			super.start();
 		}
-		if (Protocols.HTTP.equals(super.protocol))
-		{
-			socket = new ServerSocket(port);
-		}
-		else if (Protocols.HTTPS.equals(super.protocol))
-		{
-			KeyStore keyStore = KeyStore.getInstance("JKS");
-			keyStore.load(new FileInputStream(keystorePath), keystorePassword
-					.toCharArray());
-			KeyManagerFactory keyManagerFactory = KeyManagerFactory
-					.getInstance("SunX509");
-			keyManagerFactory.init(keyStore, keyPassword.toCharArray());
-			SSLContext sslContext = SSLContext.getInstance("TLS");
-			sslContext.init(keyManagerFactory.getKeyManagers(), null, null);
-			socket = sslContext.getServerSocketFactory().createServerSocket(port);
-			socket.setSoTimeout(60000);
-		}
-		else
-		{
-			// Should never happen.
-			throw new RuntimeException("Unsupported protocol: " + super.protocol);
-		}
-
-		this.confidential = Protocols.HTTPS.equals(getProtocol());
-		this.connection = ConnectionFactory.getConnection(this, new BufferedPipelineFactory());
-		this.connection.connect(socket);
-		super.started = true;
 	}
 
    /** Stops the Restlet. */
 	public void stop() throws Exception
 	{
-		if (!super.started)
+		if(isStarted())
 		{
-			return;
-		}
-		socket.close();
-		socket = null;
-		connection = null;
-		super.started = false;
+			socket.close();
+			socket = null;
+			connection = null;
+			
+			// For further information on how to shutdown a Simple
+			// server, see http://sourceforge.net/mailarchive/forum.php?thread_id=10138257&forum_id=38791
+			// There seems to be place for improvement in this method.
 
-		// For further information on how to shutdown a Simple
-		// server, see http://sourceforge.net/mailarchive/forum.php?thread_id=10138257&forum_id=38791
-		// There seems to be place for improvement in this method.
+			super.stop();
+		}
 	}
 
 	/**

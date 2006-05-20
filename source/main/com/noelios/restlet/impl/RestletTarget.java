@@ -52,8 +52,8 @@ public class RestletTarget
    /** The container class to set in the constructor. */
    protected Class containerClass;
 
-   /** Indicates if the parent component can be set in the constructor. */
-   protected boolean setParent;
+   /** Indicates if the owner component can be set in the constructor. */
+   protected boolean setOwner;
 
    /**
     * Constructor.
@@ -64,7 +64,7 @@ public class RestletTarget
       this.restlet = restlet;
       this.restletClass = null;
       this.restletConstructor = null;
-      this.setParent = false;
+      this.setOwner = false;
    }
 
    /**
@@ -75,7 +75,7 @@ public class RestletTarget
    {
       this.restlet = null;
       this.restletClass = restletClass;
-      this.setParent = false;
+      this.setOwner = false;
 
       // Try to find a constructor that accepts a RestletContainer parameter
       Constructor[] constructors = restletClass.getConstructors();
@@ -90,7 +90,7 @@ public class RestletTarget
             if(Component.class.isAssignableFrom(parameters[0]))
             {
                this.restletConstructor = constructors[i];
-               this.setParent = true;
+               this.setOwner = true;
             }
          }
       }
@@ -109,11 +109,11 @@ public class RestletTarget
    }
 
    /**
-    * Handles an uniform call.
+    * Handles a call.
     * @param call The call to handle.
-    * @param parent The parent component.
+    * @param owner The owner component.
     */
-   public void handle(Call call, Component parent)
+	public void handle(Call call, Component owner)
    {
       // Find and prepare the call restlet
       Restlet handler = null;
@@ -124,9 +124,9 @@ public class RestletTarget
          {
             handler = getRestlet();
          }
-         else if(isSetParent())
+         else if(isSetOwner())
          {
-            handler = (Restlet)getRestletConstructor().newInstance(parent);
+            handler = (Restlet)getRestletConstructor().newInstance(owner);
          }
          else
          {
@@ -211,12 +211,12 @@ public class RestletTarget
    }
 
    /**
-    * Indicates if the parent component can be set in the constructor.
-    * @return True if the parent component can be set in the constructor.
+    * Indicates if the owner component can be set in the constructor.
+    * @return True if the owner component can be set in the constructor.
     */
-   public boolean isSetParent()
+   public boolean isSetOwner()
    {
-      return this.setParent;
+      return this.setOwner;
    }
 
 }

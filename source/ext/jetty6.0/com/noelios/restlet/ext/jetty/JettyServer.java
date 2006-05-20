@@ -59,8 +59,8 @@ public class JettyServer extends org.mortbay.jetty.Server implements Server
    /** The target Restlet. */
    protected Restlet target;
 
-   /** The parent component. */
-   protected Component parent;
+   /** The owner component. */
+   protected Component owner;
 
    /**
     * Constructor.
@@ -217,26 +217,26 @@ public class JettyServer extends org.mortbay.jetty.Server implements Server
    }
 
    /**
-    * Returns the parent component.
-    * @return The parent component.
+    * Returns the owner component.
+    * @return The owner component.
     */
-   public Component getParent()
+   public Component getOwner()
    {
-      return this.parent;
+      return this.owner;
    }
 
    /**
-    * Sets the parent component.
-    * @param parent The parent component.
+    * Sets the owner component.
+    * @param owner The owner component.
     */
-   public void setParent(Component parent)
+   public void setOwner(Component owner)
    {
-      this.parent = parent;
+      this.owner = owner;
    }
 
    /**
-    * Returns the name of this REST connector.
-    * @return The name of this REST connector.
+    * Returns the name of this connector.
+    * @return The name of this connector.
     */
    public String getName()
    {
@@ -244,11 +244,11 @@ public class JettyServer extends org.mortbay.jetty.Server implements Server
    }
 
    /**
-    * Returns the description of this REST element.
-    * @return The description of this REST element.
+    * Sets the name of this REST element.
+    * @param name The name of this REST element.
     */
-   public String getDescription()
+   public void setName(String name)
    {
-      return "Jetty HTTP server";
+   	this.name = name;
    }
 }

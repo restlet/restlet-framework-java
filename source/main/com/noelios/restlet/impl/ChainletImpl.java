@@ -52,23 +52,19 @@ public class ChainletImpl extends AbstractRestlet implements Chainlet
    /**
     * Attaches a target instance shared by all calls.
     * @param target The target instance to attach.
-    * @return The current Chainlet.
     */
-   public Chainlet attach(Restlet target)
+   public void attach(Restlet target)
    {
       this.target = new RestletTarget(target);
-      return this;
    }
 
    /**
     * Attaches a target class. A new instance will be created for each call.
     * @param targetClass The target class to attach (can have a constructor taking a RestletContainer parameter).
-    * @return The current Chainlet.
     */
-   public Chainlet attach(Class<? extends Restlet> targetClass)
+   public void attach(Class<? extends Restlet> targetClass)
    {
       this.target = new RestletTarget(targetClass);
-      return this;
    }
 
    /**
@@ -82,12 +78,10 @@ public class ChainletImpl extends AbstractRestlet implements Chainlet
    
    /**
     * Detaches the current target.
-    * @return The current Chainlet.
     */
-   public Chainlet detach()
+   public void detach()
    {
       this.target = null;
-      return this;
    }
 
    /**
@@ -105,7 +99,7 @@ public class ChainletImpl extends AbstractRestlet implements Chainlet
       if(target != null)
       {
          // Invoke the call restlet
-         target.handle(call, getParent());
+         target.handle(call, getOwner());
       }
       else
       {

@@ -22,7 +22,6 @@
 
 package org.restlet.connector;
 
-import org.restlet.Element;
 import org.restlet.Restlet;
 import org.restlet.data.Protocol;
 
@@ -39,8 +38,20 @@ import org.restlet.data.Protocol;
  * @see <a href="http://www.ics.uci.edu/~fielding/pubs/dissertation/rest_arch_style.htm#sec_5_2_2">Source
  * dissertation</a>
  */
-public interface Connector extends Element, Restlet
+public interface Connector extends Restlet
 {
+   /**
+    * Returns the name of this connector.
+    * @return The name of this connector.
+    */
+   public String getName();
+
+   /**
+    * Sets the name of this connector.
+    * @param name The name of this connector.
+    */
+   public void setName(String name);
+
    /**
     * Returns the connector's protocol.
     * @return The connector's protocol.

@@ -23,6 +23,8 @@
 package com.noelios.restlet;
 
 import java.io.UnsupportedEncodingException;
+import java.util.Map;
+import java.util.TreeMap;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
@@ -44,13 +46,16 @@ import com.noelios.restlet.util.Base64;
  * query params or IP address for example).
  * @see <a href="http://www.restlet.org/tutorial#part09">Tutorial: Guarding access to sensitive resources</a>
  */
-public abstract class GuardChainlet extends AbstractChainlet
+public class GuardChainlet extends AbstractChainlet
 {
 	/** Indicates if the guard should attempt to authenticate the caller. */
 	protected boolean authentication;
 	
 	/** Indicates if the guard should attempt to authorize the caller. */
 	protected boolean authorization;
+
+	/** Map of authorizations (login/password combinations). */
+	protected Map<String, String> authorizations;
 	
 	/** The authentication scheme. */
 	protected ChallengeScheme scheme;
@@ -77,6 +82,7 @@ public abstract class GuardChainlet extends AbstractChainlet
 
       this.logger = Logger.getLogger(logName);
       this.authentication = authentication;
+      this.authorizations = null;
       
       if(this.authentication && (scheme == null))
       {
@@ -173,20 +179,40 @@ public abstract class GuardChainlet extends AbstractChainlet
          logger.log(Level.WARNING, "Authentication failed: unsupported scheme used: " + this.scheme.getName() + ". Please override the authenticate method.");
       }
    }
-   
+
+   /**
+    * Returns the map of authorizations (login/password combinations).
+    * @return The map of authorizations (login/password combinations).
+    */
+   public Map<String, String> getAuthorizations()
+   {
+   	if(this.authorizations == null) this.authorizations = new TreeMap<String, String>();
+   	return this.authorizations;
+   }
+
    /**
     * Indicates if the call is authorized to pass through the Guard Chainlet.
     * At this point the caller should be authenticated and the security data should contain a valid login,
     * password and optionnaly a role name.<br/>
     * The application should take care of the authorization logic, based on custom criteria such as
     * checking whether the current user has the proper role or access rights.<br/>
-    * By default, no call is authorized and subclasses requiring authorization must override this method.
+    * By default, a call is authorized if the call's login/password couple is available in the map of authorizations. 
+    * Of course, this method is meant to be overriden by subclasses requiring a custom authorization mechanism.
     * @param call The current call.
     * @return True if the given credentials authorize access to the attached Restlet.
     */
    protected boolean authorize(Call call)
    {
-      return false;
+   	boolean result = false;
+   	String login = call.getSecurity().getLogin();
+   	String password = call.getSecurity().getPassword();
+   	
+   	if((login != null) && (password != null))
+   	{
+   		result = password.equals(getAuthorizations().get(login));
+   	}
+   	
+   	return result;
    }
    
    /**

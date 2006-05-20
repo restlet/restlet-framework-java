@@ -355,7 +355,7 @@ public class HostMaplet extends DefaultMaplet
     * Handles a call.
     * @param call The call to handle.
     */
-   public void handle(Call call)
+	public void handle(Call call)
    {
    	boolean handle = true;
    	
@@ -389,7 +389,7 @@ public class HostMaplet extends DefaultMaplet
 	   	{
 	   		if(this.frontMaplet == null)
 	   		{
-	   			this.frontMaplet = Factory.getInstance().createMaplet(getParent());
+	   			this.frontMaplet = Factory.getInstance().createMaplet(getOwner());
 	   			this.frontMaplet.attach(getPattern(), this.delegate);
 	   		}
 	   		

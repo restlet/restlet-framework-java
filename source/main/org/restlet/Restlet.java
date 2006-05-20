@@ -36,17 +36,17 @@ import org.restlet.component.Component;
  */
 public interface Restlet
 {
-   /** Starts the Restlet. */
-   public void start() throws Exception;
-
-   /** Stops the Restlet. */
-   public void stop() throws Exception;
-
    /**
     * Handles a call.
     * @param call The call to handle.
     */
    public void handle(Call call);
+
+   /** Starts the Restlet. */
+   public void start() throws Exception;
+
+   /** Stops the Restlet. */
+   public void stop() throws Exception;
 
    /**
     * Indicates if the Restlet is started.
@@ -61,14 +61,14 @@ public interface Restlet
    public boolean isStopped();
 
    /**
-    * Returns the parent component.
-    * @return The parent component.
+    * Returns the owner component.
+    * @return The owner component.
     */
-   public Component getParent();
+   public Component getOwner();
 
    /**
-    * Sets the parent component.
-    * @param parent The parent component.
+    * Sets the owner component.
+    * @param owner The owner component.
     */
-   public void setParent(Component parent);
+   public void setOwner(Component owner);
 }

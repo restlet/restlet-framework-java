@@ -39,59 +39,52 @@ public interface Maplet extends Restlet
     * Attaches a target instance shared by all calls. 
     * @param pattern The URI pattern used to map calls.
     * @param target The target instance to attach.
-    * @return The current Maplet for further attachments.
     * @see java.util.regex.Pattern
     */
-   public Maplet attach(String pattern, Restlet target);
+   public void attach(String pattern, Restlet target);
 
    /**
     * Attaches at a specific a target instance shared by all calls.
     * @param pattern The URI pattern used to map calls.
     * @param target The target instance to attach.
     * @param override Indicates if this attachment should have a higher priority that existing ones.
-    * @return The current Maplet for further attachments.
     * @see java.util.regex.Pattern
     */
-   public Maplet attach(String pattern, Restlet target, boolean override);
+   public void attach(String pattern, Restlet target, boolean override);
 
    /**
     * Attaches a target class. A new instance will be created for each call.
     * @param pattern The URI pattern used to map calls.
     * @param targetClass The target class to attach (can have a constructor taking a RestletContainer parameter).
-    * @return The current Maplet for further attachments.
     * @see java.util.regex.Pattern
     */
-   public Maplet attach(String pattern, Class<? extends Restlet> targetClass);
+   public void attach(String pattern, Class<? extends Restlet> targetClass);
 
    /**
     * Attaches a target class. A new instance will be created for each call.
     * @param pattern The URI pattern used to map calls.
     * @param targetClass The target class to attach (can have a constructor taking a RestletContainer parameter).
     * @param override Indicates if this attachment should have a higher priority that existing ones.
-    * @return The current Maplet for further attachments.
     * @see java.util.regex.Pattern
     */
-   public Maplet attach(String pattern, Class<? extends Restlet> targetClass, boolean override);
+   public void attach(String pattern, Class<? extends Restlet> targetClass, boolean override);
    
    /**
     * Detaches a target instance.
     * @param target The target instance to detach.
-    * @return The current Maplet for further attachments.
     */
-   public Maplet detach(Restlet target);
+   public void detach(Restlet target);
 
    /**
     * Detaches a target class.
     * @param targetClass The target class to detach.
-    * @return The current Maplet for further attachments.
     */
-   public Maplet detach(Class<? extends Restlet> targetClass);
+   public void detach(Class<? extends Restlet> targetClass);
 
    /**
     * Detaches all targets.
-    * @return The current Maplet for further attachments.
     */
-   public Maplet detachAll();
+   public void detachAll();
    
    /**
     * Delegates a call to one of the attached targets.<br/>
