@@ -39,5 +39,11 @@ public interface Metadata extends Data
     * @return The metadata name like "text/html" or "compress" or "iso-8851-1".
     */
    public String getName();
+   
+   /**
+    * Returns the description of this metadata.
+    * @return The description of this metadata.
+    */
+   public String getDescription();
 
 }

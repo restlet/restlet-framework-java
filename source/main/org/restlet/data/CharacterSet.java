@@ -34,5 +34,4 @@ public interface CharacterSet extends Metadata
     * @return True if the character set is equal to a given one.
     */
    public boolean equals(CharacterSet characterSet);
-
 }

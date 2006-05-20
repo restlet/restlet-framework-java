@@ -27,22 +27,4 @@ package org.restlet.data;
  */
 public class EmptyValue implements ControlData
 {
-   /**
-    * Returns the name of this REST element.
-    * @return The name of this REST element.
-    */
-   public String getName()
-   {
-      return "Empty value";
-   }
-
-   /**
-    * Returns the description of this REST element.
-    * @return The description of this REST element.
-    */
-   public String getDescription()
-   {
-      return "Indicates the absence of value";
-   }
-
 }

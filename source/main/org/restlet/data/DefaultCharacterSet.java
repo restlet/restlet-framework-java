@@ -34,16 +34,17 @@ public class DefaultCharacterSet extends DefaultMetadata implements CharacterSet
     */
    public DefaultCharacterSet(String name)
    {
-      super(name.toUpperCase());
+      this(name, "Character set or range of character sets");
    }
 
    /**
-    * Returns the description of this REST element.
-    * @return The description of this REST element.
+    * Constructor.
+    * @param name The name.
+    * @param description The description. 
     */
-   public String getDescription()
+   public DefaultCharacterSet(String name, String description)
    {
-      return "Character set or range of character sets";
+      super(name.toUpperCase(), description);
    }
 
    /**

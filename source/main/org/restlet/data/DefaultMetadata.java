@@ -22,7 +22,6 @@
 
 package org.restlet.data;
 
-
 /**
  * Description of data contained in a resource representation. "A representation consists of data,
  * metadata describing the data, and, on occasion, metadata to describe the metadata (usually for the purpose
@@ -35,16 +34,30 @@ package org.restlet.data;
  */
 public class DefaultMetadata implements Metadata
 {
-   /** The unique name. */
-   private String name;
+	/** The metadata name like "text/html" or "compress" or "iso-8851-1". */
+	protected String name;
+	
+   /** The description of this metadata. */
+   protected String description;
 
-   /**
+	/**
     * Constructor.
     * @param name The unique name.
     */
    public DefaultMetadata(String name)
    {
+      this(name, null);
+   }
+
+	/**
+    * Constructor.
+    * @param name The unique name.
+    * @param description The description.
+    */
+   public DefaultMetadata(String name, String description)
+   {
       this.name = name;
+      this.description = description;
    }
 
    /**
@@ -53,16 +66,16 @@ public class DefaultMetadata implements Metadata
     */
    public String getName()
    {
-      return this.name;
+   	return this.name;
    }
 
    /**
-    * Returns the description of this REST element.
-    * @return The description of this REST element.
+    * Returns the description of this metadata.
+    * @return The description of this metadata.
     */
    public String getDescription()
    {
-      return "Metadata or range of metadata";
+   	return this.description;
    }
 
    /**
@@ -71,7 +84,7 @@ public class DefaultMetadata implements Metadata
     */
    public String toString()
    {
-      return name;
+      return getName();
    }
 
    /**

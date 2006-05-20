@@ -32,25 +32,46 @@ import java.util.List;
 public class DefaultMediaType extends DefaultMetadata implements MediaType
 {
    /** The list of parameters. */
-   private List<Parameter> parameters;
+   protected List<Parameter> parameters;
 
    /**
     * Constructor.
-    * @param name The media type name.
+    * @param name The name.
     */
    public DefaultMediaType(String name)
    {
-      this(name, null);
+      this(name, null, "Media type or range of media types");
    }
 
    /**
     * Constructor.
-    * @param name The media type name.
+    * @param name The name.
+    * @param description The description. 
+    */
+   public DefaultMediaType(String name, String description)
+   {
+      this(name, null, description);
+   }
+
+   /**
+    * Constructor.
+    * @param name The name.
     * @param parameters The list of parameters.
     */
    public DefaultMediaType(String name, List<Parameter> parameters)
    {
-      super((name == null) ? null : name.toLowerCase());
+      this(name, parameters, "Media type or range of media types");
+   }
+
+   /**
+    * Constructor.
+    * @param name The name.
+    * @param parameters The list of parameters.
+    * @param description The description.
+    */
+   public DefaultMediaType(String name, List<Parameter> parameters, String description)
+   {
+      super((name == null) ? null : name.toLowerCase(), description);
       this.parameters = parameters;
    }
 
@@ -164,15 +185,6 @@ public class DefaultMediaType extends DefaultMetadata implements MediaType
    public boolean includes(MediaType included)
    {
    	return MediaTypes.includes(this, included);
-   }
-
-   /**
-    * Returns the description of this REST element.
-    * @return The description of this REST element.
-    */
-   public String getDescription()
-   {
-      return "Media type or range of media types";
    }
 
 }

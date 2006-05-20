@@ -143,23 +143,5 @@ public class WrapperRepresentation implements Representation
    {
    	return this.wrappedRepresentation.toString();
    }
-   
-   /**
-    * Returns the name of this REST element.
-    * @return The name of this REST element.
-    */
-   public String getName()
-   {
-   	return this.wrappedRepresentation.getName();
-   }
 
-   /**
-    * Returns the description of this REST element.
-    * @return The description of this REST element.
-    */
-   public String getDescription()
-   {
-   	return this.wrappedRepresentation.getDescription();
-   }
-   
 }

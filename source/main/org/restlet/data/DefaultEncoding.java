@@ -35,16 +35,17 @@ public class DefaultEncoding extends DefaultMetadata implements Encoding
     */
    public DefaultEncoding(String name)
    {
-      super(name);
+      this(name, "Encoding applied to a representation");
    }
 
    /**
-    * Returns the description of this REST element.
-    * @return The description of this REST element.
+    * Constructor.
+    * @param name The name.
+    * @param description The description. 
     */
-   public String getDescription()
+   public DefaultEncoding(String name, String description)
    {
-      return "Encoding applied to a representation";
+      super(name, description);
    }
 
    /**

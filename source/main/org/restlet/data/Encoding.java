@@ -35,5 +35,4 @@ public interface Encoding extends Metadata
     * @return True if the encoding is equal to a given one.
     */
    public boolean equals(Encoding encoding);
-
 }

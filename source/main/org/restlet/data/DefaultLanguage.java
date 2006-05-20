@@ -30,11 +30,21 @@ public class DefaultLanguage extends DefaultMetadata implements Language
 {
    /**
     * Constructor.
-    * @param name The language name;
+    * @param name The name.
     */
    public DefaultLanguage(String name)
    {
-      super(name.toLowerCase());
+      this(name, "Language or range of languages");
+   }
+
+   /**
+    * Constructor.
+    * @param name The name.
+    * @param description The description. 
+    */
+   public DefaultLanguage(String name, String description)
+   {
+      super(name, description);
    }
 
    /**
@@ -71,15 +81,6 @@ public class DefaultLanguage extends DefaultMetadata implements Language
       {
          return getName().substring(separator + 1);
       }
-   }
-
-   /**
-    * Returns the description of this REST element.
-    * @return The description of this REST element.
-    */
-   public String getDescription()
-   {
-      return "Language or range of languages";
    }
 
    /**

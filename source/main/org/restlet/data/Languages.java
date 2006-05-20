@@ -79,8 +79,8 @@ public enum Languages implements Language
    }
 
    /**
-    * Returns the description of this REST element.
-    * @return The description of this REST element.
+    * Returns the description of this metadata.
+    * @return The description of this metadata.
     */
    public String getDescription()
    {
