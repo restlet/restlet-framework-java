@@ -22,45 +22,68 @@
 
 package org.restlet.data;
 
-
 /**
  * Challenge scheme used to authenticate remote clients.
  */
 public class DefaultChallengeScheme implements ChallengeScheme
 {
-   /** The unique name of the scheme. */
-   protected String name;
-
-   /** The technical name of the scheme. */
+	/** The unique name. */
+	protected String name;
+	
+   /** The technical name. */
    protected String technicalName;
 
+   /** The description. */
+   protected String description;
+   
    /**
     * Constructor.
-    * @param name The unique name of the scheme.
-    * @param technicalName The technical name of the scheme.
+    * @param name The unique name.
+    * @param technicalName The technical name.
     */
    public DefaultChallengeScheme(String name, String technicalName)
    {
-      this.name = name;
+   	this(name, technicalName, null);
+   }
+   
+   /**
+    * Constructor.
+    * @param name The unique name.
+    * @param technicalName The technical name.
+    * @param description The description.
+    */
+   public DefaultChallengeScheme(String name, String technicalName, String description)
+   {
+   	this.name = name;
       this.technicalName = technicalName;
+      this.description = description;
    }
 
    /**
-    * Returns the technical name of the scheme.
-    * @return The technical name of the scheme.
+    * Returns the unique name.
+    * @return The unique name.
     */
    public String getName()
    {
-      return this.name;
+   	return this.name;
    }
 
    /**
-    * Returns the technical name of the scheme (ex: BASIC).
-    * @return The technical name of the scheme (ex: BASIC).
+    * Returns the technical name (ex: BASIC).
+    * @return The technical name (ex: BASIC).
     */
    public String getTechnicalName()
    {
       return this.technicalName;
+   }
+
+   /**
+    * Returns the description.
+    * @return The description.
+    */
+   public String getDescription()
+   {
+   	return this.description;
    }
 
    /**
@@ -71,15 +94,6 @@ public class DefaultChallengeScheme implements ChallengeScheme
    public boolean equals(ChallengeScheme scheme)
    {
       return scheme.getName().equalsIgnoreCase(getName());
-   }
-
-   /**
-    * Returns the description of this REST element.
-    * @return The description of this REST element.
-    */
-   public String getDescription()
-   {
-      return "Authentication challenge scheme";
    }
 
 }

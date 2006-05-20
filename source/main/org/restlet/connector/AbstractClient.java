@@ -134,13 +134,4 @@ public abstract class AbstractClient extends AbstractConnector implements Client
    	return this.timeout;
    }
 
-   /**
-    * Returns the description of this REST element.
-    * @return The description of this REST element.
-    */
-   public String getDescription()
-   {
-      return "Client connector";
-   }
-
 }

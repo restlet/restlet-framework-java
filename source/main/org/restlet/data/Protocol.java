@@ -30,6 +30,18 @@ package org.restlet.data;
 public interface Protocol extends ControlData
 {
 	/**
+	 * Returns the name.
+	 * @return The name.
+	 */
+	public String getName();
+
+	/**
+	 * Returns the description.
+	 * @return The description.
+	 */
+   public String getDescription();
+	
+	/**
 	 * Returns the URI scheme name. 
 	 * @return The URI scheme name.
 	 */

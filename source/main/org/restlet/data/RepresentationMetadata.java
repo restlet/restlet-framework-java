@@ -27,7 +27,7 @@ import java.util.Date;
 /**
  * Metadata describing a representation. Resources can have multiple representations called variants.
  */
-public class RepresentationMetadata implements Metadata
+public class RepresentationMetadata extends DefaultMetadata implements Metadata
 {
    /** The character set or null if not applicable. */
    protected CharacterSet characterSet;
@@ -56,6 +56,7 @@ public class RepresentationMetadata implements Metadata
     */
    public RepresentationMetadata(MediaType mediaType)
    {
+   	super("Representation metadata");
       this.characterSet = null;
       this.encoding = null;
       this.expirationDate = null;
@@ -71,6 +72,7 @@ public class RepresentationMetadata implements Metadata
     */
    public RepresentationMetadata(RepresentationMetadata clonedMetadata)
    {
+   	super(clonedMetadata.getName(), clonedMetadata.getDescription());
       this.characterSet = clonedMetadata.getCharacterSet();
       this.encoding = clonedMetadata.getEncoding();
       this.expirationDate = clonedMetadata.getExpirationDate();
@@ -78,24 +80,6 @@ public class RepresentationMetadata implements Metadata
       this.mediaType = clonedMetadata.getMediaType();
       this.modificationDate = clonedMetadata.getModificationDate();
       this.tag = clonedMetadata.getTag();
-   }
-
-   /**
-    * Returns the description of this REST element.
-    * @return The description of this REST element.
-    */
-   public String getDescription()
-   {
-      return "Representation variant";
-   }
-
-   /**
-    * Returns the metadata name like "text/html" or "compress" or "iso-8851-1".
-    * @return The metadata name like "text/html" or "compress" or "iso-8851-1".
-    */
-   public String getName()
-   {
-      return "Representation metadata";
    }
 
    /**

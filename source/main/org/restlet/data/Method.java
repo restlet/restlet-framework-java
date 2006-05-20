@@ -29,10 +29,16 @@ package org.restlet.data;
 public interface Method extends ControlData
 {
    /**
-    * Returns the technical name of the method.
-    * @return The technical name of the method.
+    * Returns the technical name.
+    * @return The technical name.
     */
    public String getName();
+
+   /**
+    * Returns the description.
+    * @return The description.
+    */
+   public String getDescription();
 
    /**
     * Returns the URI of the specification describing the method.

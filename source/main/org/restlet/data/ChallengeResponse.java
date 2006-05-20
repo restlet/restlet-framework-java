@@ -94,22 +94,4 @@ public class ChallengeResponse implements ControlData
       this.credentials = credentials;
    }
 
-   /**
-    * Returns the name of this REST element.
-    * @return The name of this REST element.
-    */
-   public String getName()
-   {
-      return "Authentication challenge response";
-   }
-
-   /**
-    * Returns the description of this REST element.
-    * @return The description of this REST element.
-    */
-   public String getDescription()
-   {
-      return "Authentication response sent by client to an origin server";
-   }
-
 }

@@ -27,9 +27,9 @@ package org.restlet.data;
  */
 public class Parameter implements Data, Comparable<Parameter>
 {
-   /** The name. */
-   protected String name;
-
+	/** The name. */
+	protected String name;
+	
    /** The value. */
    protected String value;
 
@@ -50,24 +50,6 @@ public class Parameter implements Data, Comparable<Parameter>
    {
       this.name = name;
       this.value = value;
-   }
-
-   /**
-    * Returns the name.
-    * @return The name.
-    */
-   public String getName()
-   {
-      return this.name;
-   }
-
-   /**
-    * Sets the name.
-    * @param name The name.
-    */
-   public void setName(String name)
-   {
-      this.name = name;
    }
 
    /**
@@ -119,21 +101,21 @@ public class Parameter implements Data, Comparable<Parameter>
    }
 
    /**
+    * Returns the name of this parameter.
+    * @return The name of this parameter.
+    */
+   public String getName()
+   {
+   	return this.name;
+   }
+   
+   /**
     * Returns a string with the name and value of the parameter.
     * @return A string with the name and value of the parameter.
     */
    public String toString()
    {
    	return getName() + ": " + getValue();
-   }
-   
-   /**
-    * Returns the description of this REST element.
-    * @return The description of this REST element.
-    */
-   public String getDescription()
-   {
-      return "Parameter";
    }
 
    /**

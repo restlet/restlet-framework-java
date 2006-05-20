@@ -242,13 +242,4 @@ public class DirectoryRestlet extends AbstractRestlet
       call.setBestOutput(new FileResource(this, call.getResourcePath()), getDefaultLanguage());
    }
 
-   /**
-    * Returns the description of this REST element.
-    * @return The description of this REST element.
-    */
-   public String getDescription()
-   {
-      return "Directory Restlet";
-   }
-
 }

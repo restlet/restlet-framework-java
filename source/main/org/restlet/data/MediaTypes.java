@@ -52,8 +52,8 @@ public enum MediaTypes implements MediaType
    VIDEO_ALL, VIDEO_MPEG, VIDEO_QUICKTIME, VIDEO_AVI, VIDEO_WMV;
 
    /**
-    * Returns the metadata name like "text/html" or "compress" or "iso-8851-1".
-    * @return The metadata name like "text/html" or "compress" or "iso-8851-1".
+    * Returns the name (ex: "text/html" or "application/x-gzip" or "application/*").
+    * @return The name (ex: "text/html" or "application/x-gzip" or "application/*").
     */
    public String getName()
    {
@@ -254,8 +254,8 @@ public enum MediaTypes implements MediaType
    }
 
    /**
-    * Returns the description of this metadata.
-    * @return The description of this metadata.
+    * Returns the description.
+    * @return The description.
     */
    public String getDescription()
    {

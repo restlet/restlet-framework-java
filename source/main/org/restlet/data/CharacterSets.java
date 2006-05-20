@@ -55,8 +55,8 @@ public enum CharacterSets implements CharacterSet
    UTF_16;
 
    /**
-    * Returns the metadata name like "text/html" or "compress" or "iso-8851-1".
-    * @return The metadata name like "text/html" or "compress" or "iso-8851-1".
+    * Returns the name (ex. "*" or "ISO-8859-1" or "US-ASCII").
+    * @return The name (ex. "*" or "ISO-8859-1" or "US-ASCII").
     */
    public String getName()
    {
@@ -85,8 +85,8 @@ public enum CharacterSets implements CharacterSet
    }
 
    /**
-    * Returns the description of this metadata.
-    * @return The description of this metadata.
+    * Returns the description.
+    * @return The description.
     */
    public String getDescription()
    {

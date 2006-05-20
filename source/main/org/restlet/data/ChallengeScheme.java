@@ -28,16 +28,22 @@ package org.restlet.data;
 public interface ChallengeScheme extends ControlData
 {
    /**
-    * Returns the unique name of the scheme.
-    * @return The unique name of the scheme.
+    * Returns the unique name.
+    * @return The unique name.
     */
    public String getName();
 
    /**
-    * Returns the technical name of the scheme.
-    * @return The technical name of the scheme.
+    * Returns the technical name.
+    * @return The technical name.
     */
    public String getTechnicalName();
+
+   /**
+    * Returns the description.
+    * @return The description.
+    */
+   public String getDescription();
 
    /**
     * Indicates if the scheme is equal to a given one.

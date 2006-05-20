@@ -30,8 +30,8 @@ public enum Methods implements Method
    CONNECT, COPY, DELETE, GET, HEAD, LOCK, MKCOL, MOVE, OPTIONS, POST, PROPFIND, PROPPATCH, PUT, TRACE, UNLOCK;
 
    /**
-    * Returns the technical name of the method.
-    * @return The technical name of the method.
+    * Returns the technical name (ex: "DELETE", "PUT", "MOVE").
+    * @return The technical name (ex: "DELETE", "PUT", "MOVE").
     */
    public String getName()
    {
@@ -90,8 +90,8 @@ public enum Methods implements Method
    }
 
    /**
-    * Returns the description of this REST element.
-    * @return The description of this REST element.
+    * Returns the description.
+    * @return The description.
     */
    public String getDescription()
    {
@@ -147,6 +147,24 @@ public enum Methods implements Method
       }
 
       return result;
+   }
+
+   /**
+    * Sets the name of this REST element.
+    * @param name The name of this REST element.
+    */
+   public void setName(String name)
+   {
+   	// Read-only
+   }
+
+   /**
+    * Sets the description of this REST element.
+    * @param description The description of this REST element.
+    */
+   public void setDescription(String description)
+   {
+   	// Read-only
    }
 
    /**

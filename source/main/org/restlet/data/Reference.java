@@ -46,30 +46,21 @@ public class Reference implements Data
 
    /**
     * Constructor from a URI reference.
-    * @param uriReference The URI reference.
-    */
-   public Reference(String uriReference)
-   {
-      this.uri = uriReference;
-      updateIndexes();
-   }
-
-   /**
-    * Constructor from a URI reference.
     * @param identifier The absolute URI.
     * @param fragment The fragment identifier.
     */
    public Reference(String identifier, String fragment)
    {
-      if(fragment == null)
-      {
-         this.uri = identifier;
-      }
-      else
-      {
-         this.uri = identifier + '#' + fragment;
-      }
+      this((fragment == null) ? identifier : identifier + '#' + fragment);
+   }
 
+   /**
+    * Constructor from a URI reference.
+    * @param uriReference The URI reference.
+    */
+   public Reference(String uriReference)
+   {
+      this.uri = uriReference;
       updateIndexes();
    }
    
@@ -154,15 +145,6 @@ public class Reference implements Data
       {
          return null;
       }
-   }
-
-   /**
-    * Returns the description of this REST element.
-    * @return The description of this REST element.
-    */
-   public String getDescription()
-   {
-      return "Resource reference equivalent to a URI";
    }
 
    /**
@@ -268,15 +250,6 @@ public class Reference implements Data
          // No fragment found
          return this.uri;
       }
-   }
-
-   /**
-    * Returns the metadata name like "text/html" or "compress" or "iso-8851-1".
-    * @return The metadata name like "text/html" or "compress" or "iso-8851-1".
-    */
-   public String getName()
-   {
-      return "uri-reference";
    }
 
    /**

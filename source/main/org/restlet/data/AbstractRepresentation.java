@@ -109,24 +109,6 @@ public abstract class AbstractRepresentation extends RepresentationMetadata impl
    }
 
    /**
-    * Returns the description of this REST element.
-    * @return The description of this REST element.
-    */
-   public String getDescription()
-   {
-      return "Resource representation";
-   }
-
-   /**
-    * Returns the metadata name like "text/html" or "compress" or "iso-8851-1".
-    * @return The metadata name like "text/html" or "compress" or "iso-8851-1".
-    */
-   public String getName()
-   {
-      return "representation";
-   }
-
-   /**
     * Converts the representation to a string.
     * @return The representation as a string.
     */

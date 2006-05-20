@@ -35,14 +35,14 @@ package org.restlet.data;
 public interface Metadata extends Data
 {
    /**
-    * Returns the metadata name like "text/html" or "compress" or "iso-8851-1".
-    * @return The metadata name like "text/html" or "compress" or "iso-8851-1".
+    * Returns the name (ex: "text/html" or "compress" or "iso-8851-1").
+    * @return The name (ex: "text/html" or "compress" or "iso-8851-1").
     */
    public String getName();
    
    /**
-    * Returns the description of this metadata.
-    * @return The description of this metadata.
+    * Returns the description.
+    * @return The description.
     */
    public String getDescription();
 

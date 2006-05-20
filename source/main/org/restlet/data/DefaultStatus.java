@@ -22,23 +22,22 @@
 
 package org.restlet.data;
 
-
 /**
  * Status to return after handling a call.
  */
 public class DefaultStatus implements Status
 {
    /** The specification code. */
-   private int code;
+   protected int code;
+	
+   /** The name. */
+   protected String name;
 
-   /** The name of this REST element. */
-   private String name;
-
-   /** The description of this REST element. */
-   private String description;
+   /** The description. */
+   protected String description;
 
    /** The URI of the specification describing the method. */
-   private String uri;
+   protected String uri;
 
    /**
     * Constructor.
@@ -47,21 +46,6 @@ public class DefaultStatus implements Status
    public DefaultStatus(int code)
    {
       this(code, null, null, null);
-   }
-
-   /**
-    * Constructor.
-    * @param code The specification code.
-    * @param name The name of this REST element.
-    * @param description The description of this REST element.
-    * @param uri The URI of the specification describing the method.
-    */
-   public DefaultStatus(int code, String name, String description, String uri)
-   {
-      this.code = code;
-      this.name = name;
-      this.description = description;
-      this.uri = uri;
    }
 
    /**
@@ -75,6 +59,21 @@ public class DefaultStatus implements Status
    }
 
    /**
+    * Constructor.
+    * @param code The specification code.
+    * @param name The name.
+    * @param description The description.
+    * @param uri The URI of the specification describing the method.
+    */
+   public DefaultStatus(int code, String name, String description, String uri)
+   {
+      this.code = code;
+      this.name = name;
+      this.description = description;
+      this.uri = uri;
+   }
+
+   /**
     * Returns the HTTP code.
     * @return The HTTP code.
     */
@@ -84,12 +83,12 @@ public class DefaultStatus implements Status
    }
 
    /**
-    * Returns the name of this REST element.
-    * @return The name of this REST element.
+    * Returns the name.
+    * @return The name.
     */
    public String getName()
    {
-      return (name == null) ? Statuses.getName(getCode()) : name;
+      return (this.name == null) ? Statuses.getName(getCode()) : this.name;
    }
 
    /**
@@ -98,16 +97,7 @@ public class DefaultStatus implements Status
     */
    public String getDescription()
    {
-      return (description == null) ? Statuses.getDescription(getCode()) : description;
-   }
-
-   /**
-    * Sets the description.
-    * @param description The description.
-    */
-   public void setDescription(String description)
-   {
-      this.description = description;
+      return (this.description == null) ? Statuses.getDescription(getCode()) : this.description;
    }
 
    /**

@@ -167,13 +167,4 @@ public class Cookie extends Parameter
       return result;
    }
 
-   /**
-    * Returns the description of this REST element.
-    * @return The description of this REST element.
-    */
-   public String getDescription()
-   {
-      return "User agent cookie";
-   }
-
 }

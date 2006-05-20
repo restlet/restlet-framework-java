@@ -185,13 +185,4 @@ public class JettyServer extends AbstractServer
       return !isStarted();
    }
 
-   /**
-    * Returns the description of this REST element.
-    * @return The description of this REST element.
-    */
-   public String getDescription()
-   {
-      return "Jetty " + getProtocol().getName() + " server";
-   }
-
 }

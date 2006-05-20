@@ -93,22 +93,4 @@ public class PreferenceData implements ControlData
       return this.mediaTypes;
    }
 
-   /**
-    * Returns the name of this REST element.
-    * @return The name of this REST element.
-    */
-   public String getName()
-   {
-      return "Preference data";
-   }
-
-   /**
-    * Returns the description of this REST element.
-    * @return The description of this REST element.
-    */
-   public String getDescription()
-   {
-      return "Client preference data related to a call";
-   }
-
 }

@@ -94,15 +94,6 @@ public class SimpleServer extends AbstractServer implements ProtocolHandler
 		return Arrays.asList(new Protocol[]{Protocols.HTTP, Protocols.HTTPS});
 	}
 
-   /**
-    * Returns the description of this REST element.
-    * @return The description of this REST element.
-    */
-	public String getDescription()
-	{
-		return "Simple " + super.protocol.getName() + " server";
-	}
-
    /** Starts the Restlet. */
 	public void start() throws Exception
 	{

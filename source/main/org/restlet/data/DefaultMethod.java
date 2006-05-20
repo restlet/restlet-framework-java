@@ -22,20 +22,19 @@
 
 package org.restlet.data;
 
-
 /**
  * Method to execute when handling a call.
  */
 public class DefaultMethod implements Method
 {
-   /** The technical name of the method. */
-   private String name;
+	/** The technical name of this method. */
+	protected String name;
 
-   /** The description of this REST element. */
-   private String description;
+	/** The description. */
+	protected String description;
 
    /** The URI of the specification describing the method. */
-   private String uri;
+	protected String uri;
 
    /**
     * Constructor.
@@ -50,7 +49,18 @@ public class DefaultMethod implements Method
    /**
     * Constructor.
     * @param name The technical name of the method.
-    * @param description The description of this REST element.
+    * @param description The description.
+    * @see org.restlet.data.Methods#create(String)
+    */
+   public DefaultMethod(String name, String description)
+   {
+      this(name, description, null);
+   }
+
+   /**
+    * Constructor.
+    * @param name The technical name.
+    * @param description The description.
     * @param uri The URI of the specification describing the method.
     * @see org.restlet.data.Methods#create(String)
     */
@@ -67,16 +77,16 @@ public class DefaultMethod implements Method
     */
    public String getName()
    {
-      return name;
+   	return this.name;
    }
 
    /**
-    * Returns the description of this REST element.
-    * @return The description of this REST element.
+    * Returns the description.
+    * @return The description.
     */
    public String getDescription()
    {
-      return description;
+   	return this.description;
    }
 
    /**
@@ -85,7 +95,7 @@ public class DefaultMethod implements Method
     */
    public String getUri()
    {
-      return uri;
+      return this.uri;
    }
 
    /**

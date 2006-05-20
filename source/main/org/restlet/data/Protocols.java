@@ -120,10 +120,10 @@ public enum Protocols implements Protocol
       return result;
 	}
 
-   /**
-    * Returns the unique name of the protocol (ex: HTTP).
-    * @return The unique name of the protocol (ex: HTTP).
-    */
+	/**
+	 * Returns the name (ex: "HTTP", "SMTP").
+	 * @return The name (ex: "HTTP", "SMTP").
+	 */
    public String getName()
    {
       String result = null;
@@ -156,10 +156,10 @@ public enum Protocols implements Protocol
       return result;
    }
 
-   /**
-    * Returns the description of this REST element.
-    * @return The description of this REST element.
-    */
+	/**
+	 * Returns the description.
+	 * @return The description.
+	 */
    public String getDescription()
    {
       String result = null;
@@ -190,6 +190,24 @@ public enum Protocols implements Protocol
       }
 
       return result;
+   }
+
+   /**
+    * Sets the name of this REST element.
+    * @param name The name of this REST element.
+    */
+   public void setName(String name)
+   {
+   	// Read-only
+   }
+
+   /**
+    * Sets the description of this REST element.
+    * @param description The description of this REST element.
+    */
+   public void setDescription(String description)
+   {
+   	// Read-only
    }
 
    /**

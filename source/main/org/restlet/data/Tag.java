@@ -77,15 +77,6 @@ public class Tag implements Metadata
    }
 
    /**
-    * Returns the description of this REST element.
-    * @return The description of this REST element.
-    */
-   public String getDescription()
-   {
-      return "Representation tag";
-   }
-
-   /**
     * Returns the equivalent HTTP string.
     * @return The equivalent HTTP string.
     * @see <a href="http://www.w3.org/Protocols/rfc2616/rfc2616-sec3.html#sec3.11">HTTP Entity Tags</a>
@@ -95,6 +86,15 @@ public class Tag implements Metadata
       StringBuilder sb = new StringBuilder();
       if(isWeak()) sb.append("W/");
       return sb.append('"').append(getOpaqueTag()).append('"').toString();
+   }
+   
+   /**
+    * Returns the description.
+    * @return The description.
+    */
+   public String getDescription()
+   {
+   	return "Validation tag equivalent to the HTTP entity tag";
    }
 
    /**

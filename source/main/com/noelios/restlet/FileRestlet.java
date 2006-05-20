@@ -77,15 +77,6 @@ public class FileRestlet extends AbstractRestlet
    }
 
    /**
-    * Returns the description of this REST element.
-    * @return The description of this REST element.
-    */
-   public String getDescription()
-   {
-      return "File Restlet";
-   }
-
-   /**
     * Returns the time to live for a file representation before it expires (in seconds).
     * @return The time to live for a file representation before it expires (in seconds).
     */

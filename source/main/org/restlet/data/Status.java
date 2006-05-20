@@ -35,6 +35,18 @@ public interface Status extends ControlData
    public int getCode();
 
    /**
+    * Returns the name.
+    * @return The name.
+    */
+   public String getName();
+
+   /**
+    * Returns the description.
+    * @return The description.
+    */
+   public String getDescription();
+   
+   /**
     * Returns the URI of the specification describing the status.
     * @return The URI of the specification describing the status.
     */

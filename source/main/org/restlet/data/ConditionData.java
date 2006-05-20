@@ -125,22 +125,4 @@ public class ConditionData implements ControlData
       this.noneMatch = tags;
    }
 
-   /**
-    * Returns the name of this REST element.
-    * @return The name of this REST element.
-    */
-   public String getName()
-   {
-      return "Condition data";
-   }
-
-   /**
-    * Returns the description of this REST element.
-    * @return The description of this REST element.
-    */
-   public String getDescription()
-   {
-      return "Set of conditions applying to an uniform call";
-   }
-
 }

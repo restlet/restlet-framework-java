@@ -43,8 +43,8 @@ public enum ChallengeSchemes implements ChallengeScheme
    SMTP_PLAIN;
 
    /**
-    * Returns the unique name of the scheme (ex: HTTP_BASIC).
-    * @return The unique name of the scheme (ex: HTTP_BASIC).
+    * Returns the unique name (ex: HTTP_BASIC).
+    * @return The unique name (ex: HTTP_BASIC).
     */
    public String getName()
    {
@@ -73,8 +73,8 @@ public enum ChallengeSchemes implements ChallengeScheme
    }
 
    /**
-    * Returns the technical name of the scheme (ex: BASIC).
-    * @return The technical name of the scheme (ex: BASIC).
+    * Returns the technical name (ex: Basic).
+    * @return The technical name (ex: Basic).
     */
    public String getTechnicalName()
    {
@@ -102,8 +102,8 @@ public enum ChallengeSchemes implements ChallengeScheme
    }
 
    /**
-    * Returns the description of this REST element.
-    * @return The description of this REST element.
+    * Returns the description.
+    * @return The description.
     */
    public String getDescription()
    {

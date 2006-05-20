@@ -46,8 +46,8 @@ public enum Languages implements Language
    SPANISH;
 
    /**
-    * Returns the metadata name like "text/html" or "compress" or "iso-8851-1".
-    * @return The metadata name like "text/html" or "compress" or "iso-8851-1".
+    * Returns the name (ex: "*" or "en" or "en-us").
+    * @return The name (ex: "*" or "en" or "en-us").
     */
    public String getName()
    {
@@ -79,8 +79,8 @@ public enum Languages implements Language
    }
 
    /**
-    * Returns the description of this metadata.
-    * @return The description of this metadata.
+    * Returns the description.
+    * @return The description.
     */
    public String getDescription()
    {

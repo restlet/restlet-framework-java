@@ -46,8 +46,8 @@ public enum Encodings implements Encoding
    IDENTITY;
 
    /**
-    * Returns the metadata name like "text/html" or "compress" or "iso-8851-1".
-    * @return The metadata name like "text/html" or "compress" or "iso-8851-1".
+    * Returns the name (ex: "*" or "compress" or "gzip").
+    * @return The name (ex: "*" or "compress" or "gzip").
     */
    public String getName()
    {
@@ -79,8 +79,8 @@ public enum Encodings implements Encoding
    }
 
    /**
-    * Returns the description of this metadata.
-    * @return The description of this metadata.
+    * Returns the description.
+    * @return The description.
     */
    public String getDescription()
    {

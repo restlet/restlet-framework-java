@@ -398,8 +398,8 @@ public enum Statuses implements Status
    }
 
    /**
-    * Returns the name of this REST element.
-    * @return The name of this REST element.
+    * Returns the name of this status.
+    * @return The name of this status.
     */
    public String getName()
    {
@@ -407,8 +407,8 @@ public enum Statuses implements Status
    }
 
    /**
-    * Returns the description of this REST element.
-    * @return The description of this REST element.
+    * Returns the description.
+    * @return The description.
     */
    public String getDescription()
    {
@@ -416,9 +416,9 @@ public enum Statuses implements Status
    }
 
    /**
-    * Returns the name of this REST element.
-    * @param code The code of the status.
-    * @return The name of this REST element.
+    * Returns the name.
+    * @param code The status code.
+    * @return The name.
     */
    public static String getName(int code)
    {
@@ -584,9 +584,9 @@ public enum Statuses implements Status
    }
 
    /**
-    * Returns the description of this REST element.
-    * @param code The code of the status.
-    * @return The description of this REST element.
+    * Returns the description.
+    * @param code The status code.
+    * @return The description.
     */
    public static String getDescription(int code)
    {

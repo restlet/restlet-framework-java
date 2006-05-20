@@ -27,27 +27,50 @@ package org.restlet.data;
  */
 public class DefaultProtocol implements Protocol
 {
+	/** The name. */
+	protected String name;
+	
+	/** The description. */
+	protected String description;
+	
 	/** The scheme name. */
 	protected String schemeName;
 	
 	/** The default port if known or -1. */
 	protected int defaultPort;
 	
-	/** The unique protocol name. */
-	protected String uniqueName;
-	
 	/**
 	 * Constructor.
 	 * @param schemeName The scheme name.
-	 * @param uniqueName The unique protocol name.
+	 * @param name The unique name.
+	 * @param description The description.
 	 * @param defaultPort The default port.
 	 */
-	public DefaultProtocol(String schemeName, String uniqueName, int defaultPort)
+	public DefaultProtocol(String schemeName, String name, String description, int defaultPort)
 	{
+		this.name = name;
+		this.description = description;
 		this.schemeName = schemeName;
-		this.uniqueName = uniqueName;
 		this.defaultPort = defaultPort;
 	}
+
+	/**
+	 * Returns the name.
+	 * @return The name.
+	 */
+	public String getName()
+	{
+		return this.name;
+	}
+
+	/**
+	 * Returns the description.
+	 * @return The description.
+	 */
+   public String getDescription()
+   {
+   	return this.description;
+   }
 	
 	/**
 	 * Returns the URI scheme name. 
@@ -76,22 +99,5 @@ public class DefaultProtocol implements Protocol
    {
    	return getName().equalsIgnoreCase(protocol.getName());
    }
-   
-   /**
-    * Returns the name of this REST element.
-    * @return The name of this REST element.
-    */
-   public String getName()
-   {
-   	return this.uniqueName;
-   }
 
-   /**
-    * Returns the description of this REST element.
-    * @return The description of this REST element.
-    */
-   public String getDescription()
-   {
-   	return "Protocol named " + getName();
-   }
 }
