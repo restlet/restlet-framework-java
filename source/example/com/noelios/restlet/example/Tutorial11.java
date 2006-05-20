@@ -73,15 +73,8 @@ public class Tutorial11
          status.attach(host);
 
          // Attach a guard Chainlet to secure access the the chained directory Restlet
-         GuardChainlet guard = new GuardChainlet(myContainer, "com.noelios.restlet.example", true, ChallengeSchemes.HTTP_BASIC , "Restlet tutorial", true)
-	      	{
-		      	protected boolean authorize(Call call)
-		         {
-            		return "scott".equals(call.getSecurity().getLogin()) && 
-     				 			 "tiger".equals(call.getSecurity().getPassword());
-		         }
-	         };
-
+         GuardChainlet guard = new GuardChainlet(myContainer, "com.noelios.restlet.example", true, ChallengeSchemes.HTTP_BASIC , "Restlet tutorial", true);
+         guard.getAuthorizations().put("scott", "tiger");
          host.attach("/docs/", guard);
 
          // Create a directory Restlet able to return a deep hierarchy of Web files

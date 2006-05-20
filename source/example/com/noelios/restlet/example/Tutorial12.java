@@ -35,7 +35,7 @@ import com.noelios.restlet.build.RestletContainerBuilder;
 import com.noelios.restlet.data.StringRepresentation;
 
 /**
- * Using Builders to simplify configuration. 
+ * Fluent Builders to simplify configuration. 
  */
 public class Tutorial12
 {
@@ -78,8 +78,7 @@ public class Tutorial12
       							.addExtension("html", MediaTypes.TEXT_HTML)
       							.addExtension("css", MediaTypes.TEXT_CSS)
       							.addExtension("gif", MediaTypes.IMAGE_GIF)
-      						.up()
-   						.up().toMaplet()
+      							.up(2).toMaplet()
    						.attachMaplet("/users")
    							.attachMaplet("/[a-z]+")
    								.attach("$", userRestlet)

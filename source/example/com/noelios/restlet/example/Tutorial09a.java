@@ -22,7 +22,6 @@
 
 package com.noelios.restlet.example;
 
-import org.restlet.Call;
 import org.restlet.component.RestletContainer;
 import org.restlet.connector.DefaultServer;
 import org.restlet.connector.Server;
@@ -62,14 +61,8 @@ public class Tutorial09a
          log.attach(status);
 
          // Attach a guard Chainlet to the container
-         GuardChainlet guard = new GuardChainlet(myContainer, "com.noelios.restlet.example", true, ChallengeSchemes.HTTP_BASIC , "Restlet tutorial", true)
-         	{
-            	protected boolean authorize(Call call)
-               {
-            		return "scott".equals(call.getSecurity().getLogin()) && 
-            				 "tiger".equals(call.getSecurity().getPassword());
-               }
-            };
+         GuardChainlet guard = new GuardChainlet(myContainer, "com.noelios.restlet.example", true, ChallengeSchemes.HTTP_BASIC , "Restlet tutorial", true);
+         guard.getAuthorizations().put("scott", "tiger");
          status.attach(guard);
 
          // Create a host Maplet matching calls to the server
