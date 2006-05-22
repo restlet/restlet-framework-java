@@ -1,0 +1,166 @@
+<html>
+<head>
+ <style type="text/css">
+/* <![CDATA[ */
+@import "http://www.restlet.org/stylesheets/tigris.css";
+/*  ]]> */
+ </style>
+ <title>Restlet - Glossary</title>
+</head>
+<body>
+
+<a target="_top" href="http://www.restlet.org"><img src="http://www.restlet.org/images/logo200"/></a><br/>
+
+<br/>
+
+<h1>Glossary</h1>
+<br/>
+
+<h3><a name="toc">Table of contents</a></h3>
+<p>
+   <ol>
+      <li><a href="#call">Call</a></li>
+      <li><a href="#chainlet">Chainlet</a></li>
+      <li><a href="#component">Component</a></li>
+      <li><a href="#connector">Connector</a></li>
+      <li><a href="#directory-restlet">Directory Restlet</a></li>
+      <li><a href="#guard-restlet">Guard Chainlet</a></li>
+      <li><a href="#host-maplet">Host Maplet</a></li>
+      <li><a href="#log-chainlet">Log Chainlet</a></li>
+      <li><a href="#maplet">Maplet</a></li>
+      <li><a href="#redirect-restlet">Redirect Restlet</a></li>
+      <li><a href="#representation">Representation</a></li>
+      <li><a href="#resource">Resource</a></li>
+      <li><a href="#restlet">Restlet</a></li>
+      <li><a href="#restlet-container">Restlet Container</a></li>
+      <li><a href="#restlet-engine">Restlet Engine</a></li>
+      <li><a href="#status-chainlet">Status Chainlet</a></li>
+   </ol>
+</p>
+<br/>
+
+<h3><a name="call">Call</a></h3>
+
+<p>
+   Issued by a client to a server and handled by Restlets. Restlet calls are uniform across all type of connectors (client or server), protocols and component. If you are familiar with the Servlet API, a Restlet call merges and abstract the of Servlet HTTP request and response.
+</p>
+
+<h3><a name="chainlet">Chainlet</a></h3>
+
+<p>
+   Chainer of calls to a target Restlet. This concept is similar to Servlet Filters and Apache Modules if you are familiar with those technologies. Interception or filtering can be done in the handle() method, just remember to call the delegateMaplet() method before or after your custom handling. Note that during this handling, the call paths (context path and resource path) are not supposed to be modified. See also this FAQ entry: <a href="http://www.restlet.org/faq#19">What is the difference between a Chainlet and a Maplet?</a>.
+</p>
+
+<h3><a name="component">Component</a></h3>
+
+<p>
+   Abstract unit of software instructions and internal state. Examples are Restlet Container, Restlet Server, Gateway, OriginServer, Proxy and UserAgent. "A component is an abstract unit of software instructions and internal state that provides a transformation of data via its interface." Roy T. Fielding
+</p>
+
+<h3><a name="connector">Connector</a></h3>
+
+<p>
+   Abstract mechanism that enables communication between components. "A connector is an abstract mechanism that mediates communication, coordination, or cooperation among components. Connectors enable communication between components by transferring data elements from one interface to another without changing the data." Roy T. Fielding "Encapsulate the activities of accessing resources and transferring resource representations. The connectors present an abstract interface for component communication, enhancing simplicity by providing a clean separation of concerns and hiding the underlying implementation of resources and communication mechanisms" Roy T. Fielding
+</p>
+
+<h3><a name="directory-restlet">Directory Restlet</a></h3>
+
+<p>
+   Restlet supported by a directory of files. An automatic content negotiation mechanism (similar to Apache HTTP server) is used for files serving.
+</p>
+
+<h3><a name="guard-restlet">Guard Chainlet</a></h3>
+
+<p>
+   Chainlet guarding the access to another Restlet, Chainlet or Maplet. Currently only supports the HTTP basic authentication scheme and a custom schemes (based on cookies, query params or IP address for example).
+</p>
+
+<h3><a name="host-maplet">Host Maplet</a></h3>
+
+<p>
+   Maplet associated with a host and allowing different equivalent URI patterns. After configuration , you can use the getPattern() method to attach your HostMaplet to a RestletContainer or a root Maplet. Child Restlet can also be attached to a HostMaplet for further delegation. By default, the supported protocol is HTTP, "localhost" URIs and IP-based URIs are allowed. However, client redirections to the preferred format are not issued. Also, note that just before delegating a call to a mapped Restlet, the Maplet will advance the context path of the call, which will modify the relative resource path as well.
+</p>
+
+<h3><a name="log-chainlet">Log Chainlet</a></h3>
+
+<p>
+   Chainlet logging all calls after their handling by the target Restlet. The current format is similar to IIS 6 logs. The logging is based on the java.util.logging package.
+</p>
+
+<h3><a name="maplet">Maplet</a></h3>
+
+<p>
+   Mapper of calls to attached Restlets. Delegation is based on URI patterns matching the beginning of a the resource path in the current context (see Call.getResourcePath() method). Note that during the delegation, the call paths are automatically modified. If you are handling hierarchical paths, remember to directly attach the child maplets to their parent maplet instead of the top level Restlet container. Also, remember to manually handle the path separator characters in your path patterns otherwise the delegation will not work as expected. Some describe Maplets as smart URI cutters. See also this FAQ entry: <a href="http://www.restlet.org/faq#19">What is the difference between a Chainlet and a Maplet?</a>.
+</p>
+
+<h3><a name="redirect-restlet">Redirect Restlet</a></h3>
+
+<p>
+   Rewrites URIs then redirects the call or the client to a new destination.
+</p>
+
+<h3><a name="representation">Representation</a></h3>
+
+<p>
+   Current or intended state of a resource. For performance purpose, it is essential that a minimal overhead occurs upon initialization. Most overhead should occurs during invocation of content processing methods (write, getStream, getChannel and toString).
+</p>
+<p>
+   "REST components perform actions on a resource by using a representation to capture the current or intended state of that resource and transferring that representation between components. A representation is a sequence of bytes, plus representation metadata to describe those bytes. Other commonly used but less precise names for a representation include: document, file, and HTTP message entity, instance, or variant." Roy T. Fielding
+</p>
+
+<h3><a name="resource">Resource</a></h3>
+
+<p>
+   Intended conceptual target of a hypertext reference. "Any information that can be named can be a resource: a document or image, a temporal service (e.g. "today's weather in Los Angeles"), a collection of other resources, a non-virtual object (e.g. a person), and so on. In other words, any concept that might be the target of an author's hypertext reference must fit within the definition of a resource."
+</p>
+<p>
+   "The only thing that is required to be static for a resource is the semantics of the mapping, since the semantics is what distinguishes one resource from another." Roy T. Fielding
+</p>
+
+<h3><a name="restlet">Restlet</a></h3>
+
+<p>
+   Uniform REST handler interface. "The central feature that distinguishes the REST architectural style from other network-based styles is its emphasis on a uniform interface between components. By applying the software engineering principle of generality to the component interface, the overall system architecture is simplified and the visibility of interactions is improved. Implementations are decoupled from the services they provide, which encourages independent evolvability." Roy T. Fielding
+</p>
+
+<h3><a name="restlet-container">Restlet Container</a></h3>
+
+<p>
+   Container for Maplets, Chainlets or Restlets. Note that a container is also a Chainlet and Maplet by itself. It can also be part of a larger RestletServer.
+</p>
+<p>
+   If you chain a Restlet using one of the attach() methods with no URI pattern, then all the calls will be directed to it. In other words, the Chainlet role has a higher priority than the Maplet role. Calls are first intercepted by the container which can do various checks before effectively delegating it to one of the registered root Restlets. Restlet containers can also be contained within a Restlet server.
+</p>
+
+<h3><a name="restlet-engine">Restlet Engine</a></h3>
+
+<p>
+   Name of an implementation of the Restlet API. The reference implementation, provided by Noelios Consulting, is therefore called the Noelios Restlet Engine (NRE).
+</p>
+
+<h3><a name="status-chainlet">Status Chainlet</a></h3>
+
+<p>
+   Chainlet associating an output representation based on the call status. In order to customize the default representation, just subclass this class and override the "getRepresentation" method.
+</p>
+
+<p>
+   <a href="mailto:contact@noelios.com">J&eacute;r&ocirc;me Louvel</a> (<a target="_top" href="http://blog.noelios.com">blog</a>)<br/>
+</p>
+
+<h4>Notes</h4>
+<p>
+   <ul>
+      <li>Thanks to Dave Pawson proposing this Glossary.</li>
+   </ul>
+</p>
+
+<br/>
+
+<small>
+   Version 1.1, last modified on 2006/05/04<br/>
+   Copyright &copy; 2005-2006 <a href="mailto:contact@noelios.com">J&eacute;r&ocirc;me Louvel</a>. Restlet is a registered trademark of <a target="_top" href="http://www.noelios.com">Noelios Consulting</a>.
+</small>
+
+</body>
+</html>
