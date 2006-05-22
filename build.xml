@@ -16,7 +16,10 @@
 
 	<!-- Set global paths -->
 	<property name="bin" location="bin" />
-	<property name="docs" location="www/docs" />
+	<property name="lib" location="lib" />
+	<property name="tmpl" location="tmpl" />
+	<property name="www" location="www" />
+	<property name="docs" location="${www}/docs" />
 	<property name="docs-api" location="${docs}/api" />
 	<property name="docs-nre" location="${docs}/nre" />
 	<property name="excludes" value="**/.emptyDir **/package.html **/overview.html" />
@@ -49,8 +52,6 @@
 	<property name="src-simple3.1" location="${src}/ext/simple3.1" />
 	<property name="src-example" location="${src}/example" />
 	<property name="src-test" location="${src}/test" />
-
-	<property name="lib" location="lib" />
 
 	<path id="path-atom1.0">
 		<pathelement path="${classes-api}" />
@@ -174,7 +175,9 @@
 
 	<target name="init">
 		<!-- Create the time stamp -->
-		<tstamp />
+		<tstamp>
+	      <format property="release-date" pattern="yyyy-MM-dd"/>
+	    </tstamp>
 	</target>
 
 
@@ -254,7 +257,7 @@
 	</target>
 
 
-	<target name="dist" depends="test" description="Generate the distribution">
+	<target name="dist" depends="test, generate" description="Generate the distribution">
 		<delete dir="${dist}" verbose="false" quiet="true" includeEmptyDirs="true" />
 		<mkdir dir="${dist}/bin" />
 		<mkdir dir="${dist}/lib" />
@@ -596,6 +599,29 @@
 	<target name="archive" depends="init" description="Daily archive">
 		<!-- Create the final zip file -->
 		<zip destfile="${archives}/Restlet ${DSTAMP}.zip" basedir="" includes="**/*" excludes="www/docs/api/** www/docs/nre/** classes/**" />
+	</target>
+
+	<target name="generate" depends="init" description="Generate template-based files">
+		<!-- Generate the DOAP file -->
+		<copy file="tmpl/doap.rdf" todir="${www}" overwrite="true"/>
+		<replace file="${www}/doap.rdf" token="@stability@" value="${stability}"/>
+		<replace file="${www}/doap.rdf" token="@release-date@" value="${release-date}"/>
+		<replace file="${www}/doap.rdf" token="@version-full@" value="${version-full}"/>
+		<replace file="${www}/doap.rdf" token="@version-compact@" value="${version-compact}"/>
+
+		<!-- Generate the home page -->
+		<copy file="tmpl/index.html" todir="${www}" overwrite="true"/>
+		<replace file="${www}/index.html" token="@stability@" value="${stability}"/>
+		<replace file="${www}/index.html" token="@release-date@" value="${release-date}"/>
+		<replace file="${www}/index.html" token="@version-full@" value="${version-full}"/>
+		<replace file="${www}/index.html" token="@version-compact@" value="${version-compact}"/>
+
+		<!-- Generate the Changes file -->
+		<copy file="tmpl/changes.txt" todir="${docs}" overwrite="true"/>
+		<replace file="${docs}/changes.txt" token="@stability@" value="${stability}"/>
+		<replace file="${docs}/changes.txt" token="@release-date@" value="${release-date}"/>
+		<replace file="${docs}/changes.txt" token="@version-full@" value="${version-full}"/>
+		<replace file="${docs}/changes.txt" token="@version-compact@" value="${version-compact}"/>
 	</target>
 
 </project>

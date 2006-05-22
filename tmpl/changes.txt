@@ -3,7 +3,7 @@
 Restlet changes log  
 ===================
 
-1.0 beta 13 (2006-05-22)
+@version-full@ (@release-date@)
  - Added static Reference.toUri() method to construct an URI string from its parts. Better than doing: new Reference(parts...).toString().
  - Fixed bug in SimpleCall forgetting to add the port number in the request URIs.
  - Optimized response time of the Simple HTTP server connector. Suggested by Niall Gallagher.
@@ -15,6 +15,7 @@ Restlet changes log
  - Added new attachHost(domain) method to ChainletBuilder, MapletBuilder and RestletContainerBuilder (refactored other attachHost() methods too).
  - Added "redirectStatus" property to HostMaplet.
  - Added a DOAP description for the Restlet project: http://www.restlet.org/docs/doap
+ - Added RDF (APPLICATION_RESOURCE_DESCRIPTION_FRAMEWORK) to org.restlet.data.MediaTypes.
 
 1.0 beta 12 (2006-05-20)
  - Added com.noelios.restlet.build package containing builder classes allowing a compact construction of Restlet applications base of the Fluent design

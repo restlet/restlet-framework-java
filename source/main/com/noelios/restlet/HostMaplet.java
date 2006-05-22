@@ -119,9 +119,9 @@ public class HostMaplet extends DefaultMaplet
 
 	/**
 	 * Indicates the redirection status to use.
-	 * @see Statuses.REDIRECTION_MOVED_PERMANENTLY
-	 * @see Statuses.REDIRECTION_FOUND
-	 * @see Statuses.REDIRECTION_MOVED_TEMPORARILY
+	 * @see org.restlet.data.Statuses.REDIRECTION_MOVED_PERMANENTLY
+	 * @see org.restlet.data.Statuses.REDIRECTION_FOUND
+	 * @see org.restlet.data.Statuses.REDIRECTION_MOVED_TEMPORARILY
 	 */
 	protected Status redirectStatus;
 	
