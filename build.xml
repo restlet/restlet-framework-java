@@ -4,7 +4,7 @@
      Restlet build file  -  Copyright 2005-2006 Jerome LOUVEL
      ======================================================== -->
 
-<project name="Restlet" default="dist" basedir=".">
+<project name="Restlet" default="dist">
 
 	<!-- Set global names -->
 	<property name="version-full" value="1.0 beta 13" />
@@ -13,15 +13,14 @@
 	<property name="restlet-ri" value="Noelios Restlet Engine" />
 	<property name="author" value="Jerome Louvel" />
 
+	<!-- Load system specific paths -->
+	<property file="build.properties" />
 
 	<!-- Set global paths -->
 	<property name="bin" location="bin" />
 	<property name="docs" location="www/docs" />
 	<property name="docs-api" location="${docs}/api" />
 	<property name="docs-nre" location="${docs}/nre" />
-	<property name="dist" location="d:/maine/prod/dist/restlet-${version-compact}" />
-	<property name="data" location="d:/maine/prod/data" />
-	<property name="archives" location="e:/projets" />
 	<property name="excludes" value="**/.emptyDir **/package.html **/overview.html" />
 
 	<property name="classes" location="classes" />
@@ -516,7 +515,7 @@
 		<zip destfile="${dist}/src/simple3.1/restlet.simple.zip" basedir="${src-simple3.1}" includes="com/noelios/restlet/**, meta-inf/**" excludes="${excludes}" />
 
 		<!-- Create the final zip file -->
-		<zip destfile="${data}/archive/restlet/restlet-${version-compact}.zip" basedir="${dist}" includes="**/*" />
+		<zip destfile="${dist-zip}/restlet-${version-compact}.zip" basedir="${dist}" includes="**/*" />
 
 		<!-- Remove the temporary files -->
 		<!-- <delete dir="${dist}" verbose="false" quiet="true" includeEmptyDirs="true"/> -->
@@ -598,7 +597,7 @@
 
 	<target name="archive" depends="init" description="Daily archive">
 		<!-- Create the final zip file -->
-		<zip destfile="${archives}/Restlet ${DSTAMP}.zip" basedir="" includes="**/*" excludes="www/docs/api/** www/docs/nre/** www/downloads/** classes/**" />
+		<zip destfile="${archives}/Restlet ${DSTAMP}.zip" basedir="" includes="**/*" excludes="www/docs/api/** www/docs/nre/** classes/**" />
 	</target>
 
 </project>
