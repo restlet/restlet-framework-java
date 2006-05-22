@@ -180,11 +180,11 @@ public class ChainletBuilder extends RestletBuilder
     * @param port The host port.
     * @return The builder for the created node.
     */
-   public MapletBuilder attachHost(int port)
+   public HostMapletBuilder attachHost(int port)
    {
       HostMaplet node = new HostMaplet(getNode().getOwner(), port);
       getNode().attach(node);
-      return new MapletBuilder(this, node);
+      return new HostMapletBuilder(this, node);
    }
    
    /**
@@ -192,11 +192,11 @@ public class ChainletBuilder extends RestletBuilder
     * @param port The host port.
     * @return The builder for the created node.
     */
-   public MapletBuilder attachHost(String domain, int port)
+   public HostMapletBuilder attachHost(String domain, int port)
    {
       HostMaplet node = new HostMaplet(getNode().getOwner(), port);
       getNode().attach(node);
-      return new MapletBuilder(this, node);
+      return new HostMapletBuilder(this, node);
    }
 
    /**

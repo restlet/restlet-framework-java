@@ -35,6 +35,7 @@ import com.noelios.restlet.ExtractChainlet;
 import com.noelios.restlet.FileRestlet;
 import com.noelios.restlet.GuardChainlet;
 import com.noelios.restlet.HostMaplet;
+import com.noelios.restlet.HostMaplet.AttachmentMode;
 import com.noelios.restlet.LogChainlet;
 import com.noelios.restlet.RedirectRestlet;
 import com.noelios.restlet.StatusChainlet;
@@ -124,6 +125,7 @@ public class MapletBuilder extends RestletBuilder
 
    /**
     * Attaches a Compress Chainlet.
+    * @param pattern The URI pattern used to map calls.
     * @return The builder for the created node.
     */
    public ChainletBuilder attachCompress(String pattern)
@@ -135,6 +137,7 @@ public class MapletBuilder extends RestletBuilder
 
    /**
     * Attaches a Decompress Chainlet. Only decodes input representations before call handling.
+    * @param pattern The URI pattern used to map calls.
     * @return The builder for the created node.
     */
    public ChainletBuilder attachDecompress(String pattern)
@@ -144,6 +147,7 @@ public class MapletBuilder extends RestletBuilder
 
    /**
     * Attaches a Decompress Chainlet.
+    * @param pattern The URI pattern used to map calls.
 	 * @param decodeInput Indicates if the input representation should be decoded.
 	 * @param decodeOutput Indicates if the output representation should be decoded.
     * @return The builder for the created node.
@@ -157,6 +161,7 @@ public class MapletBuilder extends RestletBuilder
    
    /**
     *	Attaches a Directory Restlet.
+    * @param pattern The URI pattern used to map calls.
     * @param rootPath The directory's root path.
     * @param deeply Indicates if the sub-directories are deeply accessible.
     * @param indexName If no file name is specified, use the (optional) index name.
@@ -171,6 +176,7 @@ public class MapletBuilder extends RestletBuilder
 
    /**
     * Attaches an Extract Chainlet.
+    * @param pattern The URI pattern used to map calls.
     * @return The builder for the created node.
     */
    public ExtractChainletBuilder attachExtract(String pattern)
@@ -182,6 +188,7 @@ public class MapletBuilder extends RestletBuilder
 
    /**
     * Attaches a File Restlet.
+    * @param pattern The URI pattern used to map calls.
     * @param filePath The file's path.
     * @param mediaType The file's media type.
     */
@@ -194,6 +201,7 @@ public class MapletBuilder extends RestletBuilder
 
    /**
     * Attaches an Guard Chainlet.
+    * @param pattern The URI pattern used to map calls.
     * @param logName The log name to used in the logging.properties file.
     * @param authentication Indicates if the guard should attempt to authenticate the caller.
     * @param scheme The authentication scheme to use. 
@@ -213,11 +221,12 @@ public class MapletBuilder extends RestletBuilder
     * @param port The host port.
     * @return The builder for the created node.
     */
-   public MapletBuilder attachHost(String pattern, int port)
+   public HostMapletBuilder attachHost(int port)
    {
       HostMaplet node = new HostMaplet(getNode().getOwner(), port);
-      getNode().attach(pattern, node);
-      return new MapletBuilder(this, node);
+      node.setMode(AttachmentMode.MAPLET);
+      getNode().attach(node.getPattern(), node);
+      return new HostMapletBuilder(this, node);
    }
    
    /**
@@ -225,16 +234,18 @@ public class MapletBuilder extends RestletBuilder
     * @param port The host port.
     * @return The builder for the created node.
     */
-   public MapletBuilder attachHost(String pattern, String domain, int port)
+   public HostMapletBuilder attachHost(String domain, int port)
    {
       HostMaplet node = new HostMaplet(getNode().getOwner(), port);
-      getNode().attach(pattern, node);
-      return new MapletBuilder(this, node);
+      node.setMode(AttachmentMode.MAPLET);
+      getNode().attach(node.getPattern(), node);
+      return new HostMapletBuilder(this, node);
    }
 
    /**
     * Attaches Log Chainlet using the default format.<br/>
     * Default format using <a href="http://analog.cx/docs/logfmt.html">Analog syntax</a>: %Y-%m-%d\t%h:%n:%j\t%j\t%r\t%u\t%s\t%j\t%B\t%f\t%c\t%b\t%q\t%v\t%T
+    * @param pattern The URI pattern used to map calls.
     * @param logName The log name to used in the logging.properties file.
     * @return The builder for the created node.
     */
@@ -247,6 +258,7 @@ public class MapletBuilder extends RestletBuilder
 
    /**
     * Attaches Log Chainlet.
+    * @param pattern The URI pattern used to map calls.
     * @param logName The log name to used in the logging.properties file.
     * @param logFormat The log format to use.
     * @return The builder for the created node.
@@ -262,6 +274,7 @@ public class MapletBuilder extends RestletBuilder
 
    /**
     * Attaches a Maplet. 
+    * @param pattern The URI pattern used to map calls.
     * @return The builder for the created node.
     */
    public MapletBuilder attachMaplet(String pattern)
@@ -273,6 +286,7 @@ public class MapletBuilder extends RestletBuilder
 
    /**
     * Attaches a Redirect Restlet.
+    * @param pattern The URI pattern used to map calls.
     * @param targetPattern The pattern to build the target URI.
     * @param mode The redirection mode.
     * @return The builder for the created node.
@@ -286,6 +300,7 @@ public class MapletBuilder extends RestletBuilder
 
    /**
     * Attaches a Redirect Restlet in the Connector mode.
+    * @param pattern The URI pattern used to map calls.
     * @param targetPattern The pattern to build the target URI.
     * @param connectorName The connector Name.
     * @return The builder for the created node.
@@ -299,6 +314,7 @@ public class MapletBuilder extends RestletBuilder
    
    /**
     * Attaches a Status Chainlet.
+    * @param pattern The URI pattern used to map calls.
     * @param overwrite Indicates whether an existing representation should be overwritten.
     * @param email Email address of the administrator to contact in case of error.
     * @param homeURI The home URI to display in case the user got a "not found" exception.

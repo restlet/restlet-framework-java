@@ -563,6 +563,7 @@ public class HostMaplet extends DefaultMaplet
 
    /**
     * Indicates if client warnings should be issued when the host URI doesn't match the preferred format.
+	 * This will materialize as a Not Found status with a detailled explanation.
     * @return True if client warnings should be issued.
     */
    public boolean isWarnClient()
@@ -572,6 +573,7 @@ public class HostMaplet extends DefaultMaplet
 
    /**
     * Indicates if client warnings should be issued when the host URI doesn't match the preferred format.
+	 * This will materialize as a Not Found status with a detailled explanation.
     * @param warnClient True if client warnings should be issued.
     */
    public void setWarnClient(boolean warnClient)
