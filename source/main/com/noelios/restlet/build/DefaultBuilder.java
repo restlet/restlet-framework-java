@@ -98,6 +98,30 @@ public class DefaultBuilder
 	}
 
 	/**
+	 * Go up to a specified ancestor Maplet builder.
+	 * @param level The ancestor level (1 = first parent)
+	 * @return The parent Maplet builder.
+	 */
+	public MapletBuilder upMaplet(int level)
+	{
+		MapletBuilder result = null;
+
+		for(int i = 0; i < level; i++)
+		{
+			if(result == null) 
+			{
+				result = upMaplet();
+			}
+			else
+			{
+				result = result.upMaplet();
+			}
+		}
+		
+		return result;
+	}
+
+	/**
 	 * Go to the root of the builders tree.
 	 * @return The root builder.
 	 */

@@ -23,6 +23,7 @@
 package com.noelios.restlet.build;
 
 import org.restlet.data.Protocol;
+import org.restlet.data.Status;
 
 import com.noelios.restlet.HostMaplet;
 
@@ -138,6 +139,17 @@ public class HostMapletBuilder extends MapletBuilder
    	return this;
    }
 
+	/**
+	 * Indicates the redirection status used.
+	 * @param status The redirection status used.
+    * @return The current builder.
+	 */
+	public HostMapletBuilder redirectStatus(Status status)
+	{
+   	getNode().setRedirectStatus(status);
+   	return this;
+	}
+
    /**
     * Indicates that client warnings should be issued when the host URI doesn't match the preferred format.
 	 * This will materialize as a Not Found status with a detailled explanation.
@@ -161,7 +173,7 @@ public class HostMapletBuilder extends MapletBuilder
    
    /**
     * Indicates that "localhost" is accepted as a valid domain name.
-	 * In addition, if IP addresses are allowed, "127.0.0.1" is also allowed.
+	 * In addition, if IP addresses are allowed, "127.0.0.1" is also denied.
     * @return The current builder.
     */
    public HostMapletBuilder denyLocalHost()
@@ -172,7 +184,7 @@ public class HostMapletBuilder extends MapletBuilder
    
    /**
 	 * Indicates that default ports for the allowed protocols are not allowed.
-	 * Concretely allow the usage of any URI without explicit port number.
+	 * Concretely deny the usage of any URI without explicit port number.
     * @return The current builder.
     */
    public HostMapletBuilder denyDefaultPorts()

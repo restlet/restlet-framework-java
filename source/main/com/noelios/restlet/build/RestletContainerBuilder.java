@@ -283,20 +283,7 @@ public class RestletContainerBuilder extends ComponentBuilder
     * @param port The host port.
     * @return The builder for the created node.
     */
-   public MapletBuilder attachHost(int port)
-   {
-      HostMaplet node = new HostMaplet(getNode().getOwner(), port);
-      getNode().attach(node);
-      return new MapletBuilder(this, node);
-   }
-   
-   /**
-    * Attaches a Host Maplet. 
-    * @param port The host port.
-    * @param mode The attachment mode.
-    * @return The builder for the created node.
-    */
-   public MapletBuilder attachHost(String domain, int port, AttachmentMode mode)
+   public HostMapletBuilder attachHost(int port, AttachmentMode mode)
    {
       HostMaplet node = new HostMaplet(getNode().getOwner(), port);
       node.setMode(mode);
@@ -309,8 +296,52 @@ public class RestletContainerBuilder extends ComponentBuilder
       {
       	getNode().attach(node.getPattern(), node);
       }
+      return new HostMapletBuilder(this, node);
+   }
+   
+   /**
+    * Attaches a Host Maplet. 
+    * @param domain The domain name. 
+    * @return The builder for the created node.
+    */
+   public HostMapletBuilder attachHost(String domain, AttachmentMode mode)
+   {
+      HostMaplet node = new HostMaplet(getNode().getOwner(), domain);
+      node.setMode(mode);
+      
+      if(mode.equals(AttachmentMode.CHAINLET))
+      {
+      	getNode().attach(node);
+      }
+      else if(mode.equals(AttachmentMode.MAPLET))
+      {
+      	getNode().attach(node.getPattern(), node);
+      }
+      return new HostMapletBuilder(this, node);
+   }
+   
+   /**
+    * Attaches a Host Maplet.
+    * @param domain The domain name. 
+    * @param port The host port.
+    * @param mode The attachment mode.
+    * @return The builder for the created node.
+    */
+   public HostMapletBuilder attachHost(String domain, int port, AttachmentMode mode)
+   {
+      HostMaplet node = new HostMaplet(getNode().getOwner(), domain, port);
+      node.setMode(mode);
+      
+      if(mode.equals(AttachmentMode.CHAINLET))
+      {
+      	getNode().attach(node);
+      }
+      else if(mode.equals(AttachmentMode.MAPLET))
+      {
+      	getNode().attach(node.getPattern(), node);
+      }
 
-      return new MapletBuilder(this, node);
+      return new HostMapletBuilder(this, node);
    }
 
    /**

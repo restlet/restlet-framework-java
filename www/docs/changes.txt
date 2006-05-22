@@ -7,12 +7,14 @@ Restlet changes log
  - Added static Reference.toUri() method to construct an URI string from its parts. Better than doing: new Reference(parts...).toString().
  - Fixed bug in SimpleCall forgetting to add the port number in the request URIs.
  - Optimized response time of the Simple HTTP server connector. Suggested by Niall Gallagher.
- - Added DefaultBuilder.upMaplet() to go up to the first parent Maplet builder without having to count the exact number of levels and without casting.
+ - Added DefaultBuilder.upMaplet() and upMaplet(level) to go up to parent Maplet builders without the need to count non Maplet builders and having to cast.
  - Added new RestletContainerBuilder constructor taking an existing RestletContainer instance.
- - Added empty RestletContainer constructor.
+ - Added empty RestletContainer constructor in case the name is never used.
  - Added HostMapletBuilder to facilitate the fluent configuration of Host Maplets.
  - Added a build.properties file containing the machine specific directories in order to have a universal build.xml Ant file. Suggested by Lars Heuer.
- 
+ - Added new attachHost(domain) method to ChainletBuilder, MapletBuilder and RestletContainerBuilder (refactored other attachHost() methods too).
+ - Added "redirectStatus" property to HostMaplet.
+  
 1.0 beta 12 (2006-05-20)
  - Added com.noelios.restlet.build package containing builder classes allowing a compact construction of Restlet applications base of the Fluent design
 	pattern coined by Martin Fowler. Based on suggestion and contribution from Lars Heuer and Yuri de Witt.

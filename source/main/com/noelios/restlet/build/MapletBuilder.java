@@ -231,12 +231,26 @@ public class MapletBuilder extends RestletBuilder
    
    /**
     * Attaches a Host Maplet. 
+    * @param domain The domain name. 
+    * @return The builder for the created node.
+    */
+   public HostMapletBuilder attachHost(String domain)
+   {
+      HostMaplet node = new HostMaplet(getNode().getOwner(), domain);
+      node.setMode(AttachmentMode.MAPLET);
+      getNode().attach(node.getPattern(), node);
+      return new HostMapletBuilder(this, node);
+   }
+   
+   /**
+    * Attaches a Host Maplet. 
+    * @param domain The domain name. 
     * @param port The host port.
     * @return The builder for the created node.
     */
    public HostMapletBuilder attachHost(String domain, int port)
    {
-      HostMaplet node = new HostMaplet(getNode().getOwner(), port);
+      HostMaplet node = new HostMaplet(getNode().getOwner(), domain, port);
       node.setMode(AttachmentMode.MAPLET);
       getNode().attach(node.getPattern(), node);
       return new HostMapletBuilder(this, node);
