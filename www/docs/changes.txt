@@ -11,7 +11,7 @@ Restlet changes log
  - Added new RestletContainerBuilder constructor taking an existing RestletContainer instance.
  - Added empty RestletContainer constructor.
  - Added HostMapletBuilder to facilitate the fluent configuration of Host Maplets.
- - 
+ - Added a build.properties file containing the machine specific directories in order to have a universal build.xml Ant file. Suggested by Lars Heuer.
  
 1.0 beta 12 (2006-05-20)
  - Added com.noelios.restlet.build package containing builder classes allowing a compact construction of Restlet applications base of the Fluent design
