@@ -50,6 +50,14 @@ public class RestletContainer extends AbstractComponent implements Chainlet, Map
 
    /**
     * Constructor.
+    */
+   public RestletContainer()
+   {
+   	this(null, null);
+   }
+
+   /**
+    * Constructor.
     * @param name The unique name of the container.
     */
    public RestletContainer(String name)

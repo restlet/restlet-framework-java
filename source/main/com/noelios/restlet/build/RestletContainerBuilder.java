@@ -61,6 +61,15 @@ public class RestletContainerBuilder extends ComponentBuilder
 	
 	/**
 	 * Constructor for existing containers.
+	 * @param node The wrapped Restlet Container.
+	 */
+	public RestletContainerBuilder(RestletContainer node)
+	{
+		this(null, node);
+	}
+	
+	/**
+	 * Constructor for existing containers.
 	 * @param parent The parent builder.
 	 * @param node The wrapped Restlet Container.
 	 */

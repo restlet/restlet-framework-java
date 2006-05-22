@@ -40,6 +40,8 @@ import org.restlet.data.Protocol;
 import org.restlet.data.Protocols;
 
 import simple.http.BufferedPipelineFactory;
+import simple.http.PipelineHandler;
+import simple.http.PipelineHandlerFactory;
 import simple.http.ProtocolHandler;
 import simple.http.Request;
 import simple.http.Response;
@@ -66,6 +68,11 @@ public class SimpleServer extends AbstractServer implements ProtocolHandler
 	 */
 	protected ServerSocket socket;
 
+	/**
+	 * Simple pipeline handler.
+	 */
+	protected PipelineHandler handler;
+	
 	/**
 	 * Simple connection.
 	 */
@@ -123,7 +130,8 @@ public class SimpleServer extends AbstractServer implements ProtocolHandler
 			}
 	
 			this.confidential = Protocols.HTTPS.equals(getProtocol());
-			this.connection = ConnectionFactory.getConnection(this, new BufferedPipelineFactory());
+			this.handler = PipelineHandlerFactory.getInstance(this, 20, 200);
+			this.connection = ConnectionFactory.getConnection(handler, new BufferedPipelineFactory());
 			this.connection.connect(socket);
 			super.start();
 		}
@@ -134,9 +142,10 @@ public class SimpleServer extends AbstractServer implements ProtocolHandler
 	{
 		if(isStarted())
 		{
-			socket.close();
-			socket = null;
-			connection = null;
+			this.socket.close();
+			this.socket = null;
+			this.handler = null;
+			this.connection = null;
 			
 			// For further information on how to shutdown a Simple
 			// server, see http://sourceforge.net/mailarchive/forum.php?thread_id=10138257&forum_id=38791
@@ -155,7 +164,7 @@ public class SimpleServer extends AbstractServer implements ProtocolHandler
 	{
 		try
 		{
-			handle(new SimpleCall(request, response, this.confidential));
+			handle(new SimpleCall(request, response, this.confidential, this.port));
 			response.getOutputStream().close();
 		}
 		catch (IOException ioe)

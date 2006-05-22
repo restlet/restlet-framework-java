@@ -75,6 +75,21 @@ public class Reference implements Data
     */
    public Reference(String scheme, String hostName, int hostPort, String path, String query, String fragment)
    {
+      this.uri = toUri(scheme, hostName, hostPort, path, query, fragment);
+      updateIndexes();
+   }
+   
+   /**
+    * Creates an URI from its parts.
+    * @param scheme The scheme ("http", "https" or "ftp").
+    * @param hostName The host name or IP address.
+    * @param hostPort The host port (default ports are correctly ignored).
+    * @param path The path component for hierarchical identifiers.
+    * @param query The optional query component for hierarchical identifiers.
+    * @param fragment The optionale fragment identifier.
+    */
+   public static String toUri(String scheme, String hostName, int hostPort, String path, String query, String fragment)
+   {
    	StringBuilder sb = new StringBuilder();
 
    	// Append the scheme and host name
@@ -107,8 +122,7 @@ public class Reference implements Data
    	}
 
    	// Actually construct the reference
-      this.uri = sb.toString();
-      updateIndexes();
+      return sb.toString();
    }
 
    /**

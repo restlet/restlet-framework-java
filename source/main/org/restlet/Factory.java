@@ -48,8 +48,8 @@ public abstract class Factory
    /** Obtain a suitable logger. */
    private static Logger logger = Logger.getLogger("org.restlet.Factory");
 
-   public static final String VERSION_LONG = "1.0 beta 12";
-   public static final String VERSION_SHORT = "1.0b12";
+   public static final String VERSION_LONG = "1.0 beta 13";
+   public static final String VERSION_SHORT = "1.0b13";
 
    /** The registered factory. */
    protected static Factory instance = null;

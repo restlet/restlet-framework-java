@@ -267,7 +267,7 @@ public class ServerServlet extends HttpServlet implements Server
                         		String hostName = request.getServerName();
                         		int hostPort = request.getServerPort();
                         		String servletPath = request.getContextPath() + request.getServletPath();
-                        		String contextPath = new Reference(scheme, hostName, hostPort, servletPath, null, null).toString();
+                        		String contextPath = Reference.toUri(scheme, hostName, hostPort, servletPath, null, null);
                         		component.getInitParameters().put(initContextPathName, contextPath);
                         		log("[Noelios Restlet Engine] - This context path has been provided to the target's init parameter \"" + initContextPathName + "\": " + contextPath);
                         	}

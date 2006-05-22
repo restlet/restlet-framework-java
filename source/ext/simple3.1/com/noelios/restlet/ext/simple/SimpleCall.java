@@ -31,6 +31,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import org.restlet.data.Parameter;
+import org.restlet.data.Reference;
 
 import simple.http.Request;
 import simple.http.Response;
@@ -52,6 +53,11 @@ public class SimpleCall extends HttpServerCallImpl
 	 * Simple Response.
 	 */
 	protected Response response;
+	
+	/**
+	 * The listening port used.
+	 */
+	protected int hostPort;
 
 	/**
 	 * Constructs this class with the specified {@link simple.http.Request}
@@ -59,13 +65,15 @@ public class SimpleCall extends HttpServerCallImpl
 	 * @param request Request to wrap.
 	 * @param response Response to wrap.
 	 * @param confidential Inidicates if this call is acting in HTTP or HTTPS mode.
+	 * @param hostPort The listening port used.
 	 */
-	SimpleCall(Request request, Response response, boolean confidential)
+	SimpleCall(Request request, Response response, boolean confidential, int hostPort)
 	{
 		super();
 		this.request = request;
 		this.response = response;
-		super.confidential = confidential;
+		this.confidential = confidential;
+		this.hostPort = hostPort;
 	}
 
    /**
@@ -74,10 +82,8 @@ public class SimpleCall extends HttpServerCallImpl
     */
 	public String getRequestUri()
 	{
-		StringBuilder sb = new StringBuilder(super.confidential ? "https://" : "http://");
-		sb.append(request.getValue("host"));
-		sb.append(request.getURI());
-		return sb.toString();
+		return Reference.toUri(isConfidential() ? "https://" : "http://", request.getValue("host"), hostPort, 
+				request.getURI(), null, null);
 	}
 
    /**

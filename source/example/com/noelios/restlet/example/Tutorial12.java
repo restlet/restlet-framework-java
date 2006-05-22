@@ -77,14 +77,12 @@ public class Tutorial12
       						.attachDirectory("D:/Restlet/www/docs/api/", true, "index")
       							.addExtension("html", MediaTypes.TEXT_HTML)
       							.addExtension("css", MediaTypes.TEXT_CSS)
-      							.addExtension("gif", MediaTypes.IMAGE_GIF)
-      							.up(2).toMaplet()
+      							.addExtension("gif", MediaTypes.IMAGE_GIF).upMaplet()
    						.attachMaplet("/users")
    							.attachMaplet("/[a-z]+")
-   								.attach("$", userRestlet)
-   									.up().toMaplet()
-									.attach("/orders$", ordersRestlet)
-										.owner().start();
+   								.attach("$", userRestlet).upMaplet()
+									.attach("/orders$", ordersRestlet).owner()
+				.start();
       }
       catch(Exception e)
       {

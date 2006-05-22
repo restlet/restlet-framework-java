@@ -77,7 +77,26 @@ public class DefaultBuilder
 		
 		return result;
 	}
-	
+
+	/**
+	 * Go up to the first parent Maplet builder.
+	 * @return The parent Maplet builder.
+	 */
+	public MapletBuilder upMaplet()
+	{
+		MapletBuilder result = null;
+		DefaultBuilder current = this;
+
+		for(boolean goUp = true; (result == null) && goUp; )
+		{
+			goUp = (current.up() != null);
+			if(goUp) current = current.up();
+			if(current instanceof MapletBuilder) result = (MapletBuilder)current;
+		}
+		
+		return result;
+	}
+
 	/**
 	 * Go to the root of the builders tree.
 	 * @return The root builder.
