@@ -75,11 +75,8 @@
 <h3><a name="03">3. Can the Restlets composing a site be defined in an XML file?</a></h3>
 
 <p>
-   Not directly yet. The configuration of Restlets in code is very simple and self-describing, so using XML configurations was our top priority so far.
-   Alternatively, A.J. Barnes has done some nice work to integrate Restlets with Spring autowiring service which is based on an XML configuration.
-   You can find some details of this effort <a href="http://restlet.tigris.org/issues/show_bug.cgi?id=12">here</a>. Also, there is a
-   <a href="http://restlet.tigris.org/issues/show_bug.cgi?id=9">feature request</a> entered to add support for XML configuration. You can track of it
-   and comment if you want.
+   The recommended way to configure Restlets is by using the <a href="http://www.restlet.org/docs/nre/com/noelios/restlet/build/package-summary.html">fluent builders</a>. There is a <a href="http://www.restlet.org/tutorial#part12">tutorial entry</a> illustrating this approach. The resulting Java code is both compact and self-describing, so using XML configurations isn't our top priority. Alternatively, A.J. Barnes has done some nice work to integrate Restlets with Spring autowiring service which is based on an XML configuration.
+   You can find some details of this effort <a href="http://restlet.tigris.org/issues/show_bug.cgi?id=12">here</a>.
 </p>
 
 <h3><a name="04">4. What JAR files must I have in my classpath for a minimal application?</a></h3>

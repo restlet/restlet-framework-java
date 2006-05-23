@@ -3,7 +3,7 @@
 Restlet changes log  
 ===================
 
-1.0 beta 13 (2006-05-22)
+1.0 beta 13 (2006-05-23)
  - Added static Reference.toUri() method to construct an URI string from its parts. Better than doing: new Reference(parts...).toString().
  - Fixed bug in SimpleCall forgetting to add the port number in the request URIs.
  - Optimized response time of the Simple HTTP server connector. Suggested by Niall Gallagher.
@@ -15,10 +15,12 @@ Restlet changes log
  - Added new attachHost(domain) method to ChainletBuilder, MapletBuilder and RestletContainerBuilder (refactored other attachHost() methods too).
  - Added "redirectStatus" property to HostMaplet.
  - Added a DOAP description for the Restlet project: http://www.restlet.org/docs/doap
+ - Added RDF (APPLICATION_RESOURCE_DESCRIPTION_FRAMEWORK) to org.restlet.data.MediaTypes.
+ - Added MapModel.remove() method.
 
 1.0 beta 12 (2006-05-20)
  - Added com.noelios.restlet.build package containing builder classes allowing a compact construction of Restlet applications base of the Fluent design
-	pattern coined by Martin Fowler. Based on suggestion and contribution from Lars Heuer and Yuri de Witt.
+	pattern coined by Martin Fowler. Based on suggestion and contribution from Lars Heuer and Yuri de Wit.
  - Added Tutorial 12 illustrating the used of builders to reimplement Tutorial 11.
  - Added buffering to Simple server to solve the performance issue.
  - Removed the Element interface which doesn't bring value to the framework.
@@ -37,21 +39,21 @@ Restlet changes log
  
 1.0 beta 11 (2006-05-16)
  - Added HTTP server connector based on the very efficient Simple framework. Contributed by Lars Heuer (Semagia).
- - Added handle*(Call) methods to AbstractRestlet for common methods: handleGet(Call), handleDelete(Call), etc. Sugested by Yuri de Witt and others.
+ - Added handle*(Call) methods to AbstractRestlet for common methods: handleGet(Call), handleDelete(Call), etc. Sugested by Yuri de Wit and others.
  - Added fully configurable CompressChainlet and DecompressChainlet to support automatic compression and decompression of input and output 
  - Added EncoderRepresentation allowing the transparent encoding of a wrapped representation (supports GZip, Zip and Deflate).
  - Added DecoderRepresentation allowing the transparent decoding of a wrapped representation (supports GZip, Zip and Deflate).
  - Added an ExtractChainlet to extract some attributes from a call (query string parameters, input form parameters, call's template model 
-   or context matches). The extracted attributes are available via the Call.getAttributes() map. Suggested by Yuri de Witt.
+   or context matches). The extracted attributes are available via the Call.getAttributes() map. Suggested by Yuri de Wit.
  - Added TunnelChainlet, subclass of ExtractChainlet that can tunnel method name, accept headers and resource URI for clients unable to make full REST
- 	calls (like browsers restricted to GET and POST methods). Suggested by Yuri de Witt. 
+ 	calls (like browsers restricted to GET and POST methods). Suggested by Yuri de Wit. 
  - Added a forward(Call) method to AbstractRestlet to facilitate the internal forwarding and dispatching of calls (similar to Servlet forwarding).
    Suggested by John D. Mitchell.
  - Fixed issue with HTTP client connector when getting the response stream in error cases (404 not found, etc.).
  - The HTTP client connector nows correctly reads the "contentLength" headers and use the value to set the "size" property of the call output object.
  - Fixed bug in Statuses using an invalid code for CONNECTOR_* statuses.
  - Added an "attributes" map to the Call interface that can be used by developers to store information relative to the current call.
- - Added a return parameter to the Maplet.attach() methods to facilitate multiple attachments in a single call. Suggested by Yuri de Witt.
+ - Added a return parameter to the Maplet.attach() methods to facilitate multiple attachments in a single call. Suggested by Yuri de Wit.
  - Removed getMethods() from the Resource interface as this is the responsability of Restlet handlers.
  - Added "multipart/form" media type to MediaTypes.
  - Do not add anymore the "acceptCharset/Encoding/Language" headers with "*" values if call has no preference defined. Reported by Dave Pawson.

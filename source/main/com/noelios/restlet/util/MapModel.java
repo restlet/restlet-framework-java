@@ -73,4 +73,13 @@ public class MapModel implements Model
 		this.map.put(name, value);
 	}
 
+   /**
+    * Removes the model value for a given name.
+    * @param name The name to look-up.
+    */
+	public void remove(String name)
+	{
+		this.map.remove(name);
+	}
+	
 }

@@ -43,7 +43,7 @@
 	<release>
 		<Version>
 			<name>unstable</name>
-			<created>2006-05-22</created>
+			<created>2006-05-23</created>
 			<revision>1.0 beta 13</revision>
 			<file-release rdf:resource="http://www.restlet.org/downloads/restlet-1.0b13.zip" /> 
 		</Version>
