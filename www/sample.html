@@ -172,7 +172,7 @@
 
                         // Serve logs report from a guarded directory
                         .attachGuard("/logs/report", "com.noelios.maine.WebContainer", true, ChallengeSchemes.HTTP_BASIC , "Log report", true)
-                           .authorize("report", "analog")
+                           .authorize("***", "***")
                            .attachDirectory(reportPath, true, "index", true).upMaplet()
 
                         // Serve other files from the Noelios path
