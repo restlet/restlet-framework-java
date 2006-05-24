@@ -53,6 +53,16 @@ public class HostMapletBuilder extends MapletBuilder
    }
 
    /**
+    * Attaches the configured Host Maplet to its parent Maplet.
+    * @return The current builder.
+    */
+   public HostMapletBuilder attachParent()
+   {
+   	upMaplet().attach(getNode().getPattern(), getNode());
+   	return this;
+   }
+   
+   /**
     * Adds an allowed protocol.
     * @param protocol The protocol to allow.
     * @return The current builder.

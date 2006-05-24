@@ -124,6 +124,43 @@ public class Reference implements Data
    	// Actually construct the reference
       return sb.toString();
    }
+   
+   /**
+    * Creates an URI from its parts.
+    * @param scheme The scheme ("http", "https" or "ftp").
+    * @param host The host name or IP address and optional port number (with ':' separator character).
+    * @param path The path component for hierarchical identifiers.
+    * @param query The optional query component for hierarchical identifiers.
+    * @param fragment The optionale fragment identifier.
+    */
+   public static String toUri(String scheme, String host, String path, String query, String fragment)
+   {
+   	StringBuilder sb = new StringBuilder();
+
+   	// Append the scheme and host name
+   	sb.append(scheme).append("://").append(host);
+
+   	// Append the path
+   	if(path != null)
+   	{
+   		sb.append(path);
+   	}
+   	
+   	// Append the query string 
+   	if(query != null)
+   	{
+   		sb.append('?').append(query);
+   	}
+   	
+   	// Append the fragment identifier
+   	if(fragment != null)
+   	{
+   		sb.append('#').append(fragment);
+   	}
+
+   	// Actually construct the reference
+      return sb.toString();
+   }
 
    /**
     * Returns the authority component for hierarchical identifiers.

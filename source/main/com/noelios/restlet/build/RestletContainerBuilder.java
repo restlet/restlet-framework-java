@@ -301,6 +301,21 @@ public class RestletContainerBuilder extends ComponentBuilder
    }
    
    /**
+    * Creates a Host Maplet for attachment in Maplet mode. 
+    * This variant of attachHost is necessary if all the configuration of the Host Maplet requires 
+    * more than a domain name and a port number. This is because the Maplet attachment pattern 
+    * is computed dynamically based many properties (allowed domains, ports, etc.).  
+    * @param port The host port.
+    * @return The builder for the created node.
+    */
+   public HostMapletBuilder createHost(int port)
+   {
+      HostMaplet node = new HostMaplet(getNode().getOwner(), port);
+      node.setMode(AttachmentMode.MAPLET);
+      return new HostMapletBuilder(this, node);
+   }
+   
+   /**
     * Attaches a Host Maplet. 
     * @param domain The domain name. 
     * @return The builder for the created node.
@@ -322,6 +337,21 @@ public class RestletContainerBuilder extends ComponentBuilder
    }
    
    /**
+    * Creates a Host Maplet for attachment in Maplet mode. 
+    * This variant of attachHost is necessary if all the configuration of the Host Maplet requires 
+    * more than a domain name and a port number. This is because the Maplet attachment pattern 
+    * is computed dynamically based many properties (allowed domains, ports, etc.).  
+    * @param domain The domain name. 
+    * @return The builder for the created node.
+    */
+   public HostMapletBuilder createHost(String domain)
+   {
+      HostMaplet node = new HostMaplet(getNode().getOwner(), domain);
+      node.setMode(AttachmentMode.MAPLET);
+      return new HostMapletBuilder(this, node);
+   }
+
+   /**
     * Attaches a Host Maplet.
     * @param domain The domain name. 
     * @param port The host port.
@@ -342,6 +372,22 @@ public class RestletContainerBuilder extends ComponentBuilder
       	getNode().attach(node.getPattern(), node);
       }
 
+      return new HostMapletBuilder(this, node);
+   }
+   
+   /**
+    * Creates a Host Maplet for attachment in Maplet mode. 
+    * This variant of attachHost is necessary if all the configuration of the Host Maplet requires 
+    * more than a domain name and a port number. This is because the Maplet attachment pattern 
+    * is computed dynamically based many properties (allowed domains, ports, etc.).  
+    * @param domain The domain name. 
+    * @param port The host port.
+    * @return The builder for the created node.
+    */
+   public HostMapletBuilder createHost(String domain, int port)
+   {
+      HostMaplet node = new HostMaplet(getNode().getOwner(), domain, port);
+      node.setMode(AttachmentMode.MAPLET);
       return new HostMapletBuilder(this, node);
    }
 
@@ -571,18 +617,6 @@ public class RestletContainerBuilder extends ComponentBuilder
    	GuardChainlet node = new GuardChainlet(getNode().getOwner(), logName, authentication, scheme, realm, authorization);
       getNode().attach(pattern, node);
       return new GuardChainletBuilder(this, node);
-   }
-   
-   /**
-    * Attaches a Host Maplet. 
-    * @param port The host port.
-    * @return The builder for the created node.
-    */
-   public MapletBuilder attachHost(String pattern, String domain, int port)
-   {
-      HostMaplet node = new HostMaplet(getNode().getOwner(), port);
-      getNode().attach(pattern, node);
-      return new MapletBuilder(this, node);
    }
 
    /**

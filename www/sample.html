@@ -115,7 +115,7 @@
    <img src="images/sample01" alt="Call handling flow"/><br/>
 </p>
 <p>
-   You can see on the left the two <a href="http://www.simpleframework.org">Simple</a> HTTP connectors listening to separate IP addresses. They share two Chainlets and a root Maplet that we presented above. Then we add three Host Maplets, one for the www.restlet.org domain, one for the www.noelios.com domain and a last one for the blog.noelios.com domain. We also declared related domain names for each of them (ex: restlet.net) in order to automatically redirect calls to the preferred domain, using the redirectClient() and redirectStatus() methods.
+   You can see on the left the two <a href="http://www.simpleframework.org">Simple</a> HTTP connectors listening to separate IP addresses. They share two Chainlets and a root Maplet that we presented above. Then we add three Host Maplets, one for the www.restlet.org domain, one for the www.noelios.com domain and a last one for the blog.noelios.com domain. We also declared related domain names for each of them (ex: restlet.net) in order to automatically redirect calls to the preferred domain, using the redirectClient() and redirectStatus() methods. Note that in this case we need to first create the Host Maplet, then configure them and finally attach them to their parent Maplet (attachParent() method). This is due to the fact that the attachment pattern use by the parent Maplet is dependent one the complete Maplet configuration.
 </p>
 <p>
    To each Host Maplet, we add several Directory Restlets to server static files from local directories. One of them is serving log reports and requires authentication by the client. For this purpose, we add a Guard Chainlet in front of the Directory Restlet. Finally, we go up the tree of builders using the owner() method with returns the current RestletContainerBuilder instance and we start everything.
@@ -147,7 +147,7 @@
                   .attachMaplet()
 
                      // Restlet domains Maplet
-                     .attachHost("www.restlet.org", restletPort)
+                     .createHost("www.restlet.org", restletPort)
                         .allowDomain("restlet.org")
                         .allowDomain("www.restlet.com")
                         .allowDomain("restlet.com")
@@ -155,6 +155,7 @@
                         .allowDomain("restlet.net")
                         .redirectClient()
                         .redirectStatus(Statuses.REDIRECTION_MOVED_PERMANENTLY)
+                        .attachParent()
 
                         // Serve download files from a specific directory
                         .attachDirectory("/downloads", downloadsPath, true, "index", true).upMaplet()
@@ -163,24 +164,26 @@
                         .attachDirectory("", restletPath, true, "index", true).upMaplet(2)
 
                      // Noelios domain Maplet
-                     .attachHost("www.noelios.com", noeliosPort)
+                     .createHost("www.noelios.com", noeliosPort)
                         .allowDomain("noelios.com")
                         .redirectClient()
                         .redirectStatus(Statuses.REDIRECTION_MOVED_PERMANENTLY)
+                        .attachParent()
 
                         // Serve logs report from a guarded directory
                         .attachGuard("/logs/report", "com.noelios.maine.WebContainer", true, ChallengeSchemes.HTTP_BASIC , "Log report", true)
-                           .authorize("***", "***")
+                           .authorize("report", "analog")
                            .attachDirectory(reportPath, true, "index", true).upMaplet()
 
                         // Serve other files from the Noelios path
                         .attachDirectory("", noeliosPath, true, "index", true).upMaplet(2)
 
                      // Noelios blog Maplet
-                     .attachHost("blog.noelios.com", noeliosPort)
+                     .createHost("blog.noelios.com", noeliosPort)
                         .preferDomain("noelios.wordpress.com")
                         .redirectClient()
                         .redirectStatus(Statuses.REDIRECTION_MOVED_TEMPORARILY)
+                        .attachParent()
 
                      // Start the container
                      .owner().start();

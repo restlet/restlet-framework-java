@@ -397,10 +397,18 @@ public class HostMaplet extends DefaultMaplet
 			// Actually handles the call.
 	   	if(getMode() == AttachmentMode.CHAINLET)
 	   	{
+	   		// First test outside the synchronized block
 	   		if(this.frontMaplet == null)
 	   		{
-	   			this.frontMaplet = Factory.getInstance().createMaplet(getOwner());
-	   			this.frontMaplet.attach(getPattern(), this.delegate);
+	   			synchronized(this)
+	   			{
+	   				// We test again after synchronization
+	   	   		if(this.frontMaplet == null)
+	   	   		{
+	   	   			this.frontMaplet = Factory.getInstance().createMaplet(getOwner());
+	   	   			this.frontMaplet.attach(getPattern(), this.delegate);
+	   	   		}
+	   			}
 	   		}
 	   		
 	   		this.frontMaplet.handle(call);
