@@ -78,8 +78,7 @@ public class Tutorial12
    						.attachMaplet("/users")
    							.attachMaplet("/[a-z]+")
    								.attach("$", userRestlet).upMaplet()
-									.attach("/orders$", ordersRestlet).owner()
-				.start();
+									.attach("/orders$", ordersRestlet).owner().start();
       }
       catch(Exception e)
       {

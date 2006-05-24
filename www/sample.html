@@ -23,18 +23,15 @@
       <li><a href="#part02">Imported classes</a></li>
       <li><a href="#part03">Declaring the Main class</a></li>
       <li><a href="#part04">Main method</a></li>
-      <li><a href="#part05">Member variables</a></li>
-      <li><a href="#part06">Constructor method</a></li>
-      <li><a href="#part07">RootMaplet inner class</a></li>
-      <li><a href="#part08">Static addExtensions method</a></li>
-      <li><a href="#part09">Conclusion</a></li>
+      <li><a href="#part05">Fluently build the container</a></li>
+      <li><a href="#part06">Conclusion</a></li>
    </ol>
 </p>
 <br/>
 
 <h3><a name="part01">1. Introduction</a></h3>
 <p>
-   The Restlet Web site that you are currently navigating is powered by the Noelios Restlet Engine, the reference implementation of the Restlet API. In order to serve HTTP calls, we rely on a production-ready Jetty 5.1 HTTP connector. As you will see below, running basic Web sites with Restlets is straightforward. The required code consists of less than 200 lines of Java code, including comments.
+   The Restlet Web site that you are currently navigating is powered by the Noelios Restlet Engine, the reference implementation of the Restlet API. In order to serve HTTP calls, we rely on a production-ready Simple 3.1 HTTP connector. As you will see below, running basic Web sites with Restlets is very simple. The required code consists of less than 140 lines of Java code, including blank lines and comments.
 </p>
 <br/>
 
@@ -45,33 +42,25 @@
 <pre>
       import java.io.File;
 
-      import org.restlet.Call;
-      import org.restlet.DefaultMaplet;
       import org.restlet.component.RestletContainer;
-      import org.restlet.connector.GenericServer;
       import org.restlet.data.ChallengeSchemes;
-      import org.restlet.data.Languages;
-      import org.restlet.data.MediaTypes;
       import org.restlet.data.Protocols;
+      import org.restlet.data.Statuses;
 
-      import com.noelios.restlet.DirectoryRestlet;
-      import com.noelios.restlet.GuardChainlet;
-      import com.noelios.restlet.LogChainlet;
-      import com.noelios.restlet.RedirectRestlet;
-      import com.noelios.restlet.StatusChainlet;
+      import com.noelios.restlet.build.RestletContainerBuilder;
       import com.noelios.restlet.util.StringUtils;
 </pre>
 <br/>
 
 <h3><a name="part03">3. Declaring the Main class</a></h3>
 <p>
-   Now, we declare the main class, called the WebContainer, extending the org.restlet.component.DefaultRestletContainer. Note that this container hosts two Web servers, one for the Restlet project and one for the Noelios Consulting Web site. For more complex Web sites we could perfectly use two Restlet Containers, one for each Web site, all contained with a root Restlet Server.
+   Now, we declare the main class, called the WebContainer, extending the org.restlet.component.RestletContainer. Note that this container hosts two Web servers, one for the Restlet project and one for the Noelios Consulting Web site. For more complex Web sites we could perfectly use two Restlet Containers, one for each Web site, all contained with a root Restlet Server.
 </p>
 <pre>
       /**
-       * The web server hosting the Restlet and Noelios Consulting Web servers.<br/>
-       * One server connector is listening to the noelios.com domain.<br/>
-       * Another connector is listening to the restlet.com, restlet.org and restlet.net domains.
+       * The web server hosting the Restlet and Noelios Consulting Web servers.
+       * One server connector is listening to the *.noelios.com domains,
+       * and another one to the *.restlet.com, *.restlet.org and *.restlet.net domains.
        */
       public class WebContainer extends RestletContainer
       {
@@ -90,52 +79,46 @@
        */
       public static void main(String[] args)
       {
-         if((args == null) || (args.length != 7))
+         try
          {
-            System.err.println(
-                  "Can't launch the Maine web server. List of required arguments:\n" +
-                  " 1) Restlet root path   (where web files are located)\n" +
-                  " 2) Restlet IP address  (local IP address to listen on)\n" +
-                  " 3) Restlet port number (local port to listen on)\n" +
-                  " 4) Noelios root path   (where web files are located)\n" +
-                  " 5) Noelios IP address  (local IP address to listen on)\n" +
-                  " 6) Noelios port number (local port to listen on)\n" +
-                  " 7) Data root path      (where stable data files are located)");
-         }
-         else
-         {
-            try
+            if((args == null) || (args.length != 7))
             {
-               // Create an start the server
+               // Display program arguments
+               System.err.println("Can't launch the Maine web server. List of required arguments:\n" +
+                                  " 1) Restlet root path   (where web files are located)\n" +
+                                  " 2) Restlet IP address  (local IP address to listen on)\n" +
+                                  " 3) Restlet port number (local port to listen on)\n" +
+                                  " 4) Noelios root path   (where web files are located)\n" +
+                                  " 5) Noelios IP address  (local IP address to listen on)\n" +
+                                  " 6) Noelios port number (local port to listen on)\n" +
+                                  " 7) Data root path      (where stable data files are located)");
+            }
+            else
+            {
+               // Create and start the server
                new WebContainer(args[0], args[1], Integer.parseInt(args[2]), args[3], args[4], Integer.parseInt(args[5]), args[6]).start();
             }
-            catch(Exception e)
-            {
-               System.err.println("Can't launch the Web server.\nAn unexpected exception occured:");
-               e.printStackTrace(System.err);
-            }
          }
-      }
+         catch(Exception e)
+         {
+            System.err.println("Can't launch the Web server.\nAn unexpected exception occured:");
+            e.printStackTrace(System.err);
+         }
 </pre>
 <br/>
 
-<h3><a name="part05">5. Member variables</a></h3>
+<h3><a name="part05">5. Fluently build the container</a></h3>
 <p>
-   As we will declare an inner Maplet class, we need to store some arguments in member variables.
+   We the recent addition of fluent builders, it has never been easier to configure and start a Web server. Here we will build the WebContainer using the RestletContainerBuilder class and passing a reference to our container instance. First, we add two server HTTP connectors (one for IP address we are listening to) using addServer() method. Then, we add a LogChainlet to write all calls into Apache-like log files, we chain a typical StatusChainlet for error pages and a Maplet to it. Note that all the Chainlet instances and the RootMaplet instance are shared by all client calls. In fact, multiple concurrent threads can execute the same code in parallel. The root Maplet added by the addMaplet() method will then be the main responsible for the dispatching of the client calls to the proper Restlets. First, let's see an overview of the call handling flow:
 </p>
-<pre>
-      /** Member variables. */
-      private String noeliosPath;
-      private int noeliosPort;
-      private String restletPath;
-      private int restletPort;
-      private String dataPath;
-</pre>
-<br/>
-
-<h3><a name="part06">6. Constructor method</a></h3>
 <p>
-   After saving some arguments as member variables, we will initialize the logging mechanism by specifying the location of our properties file (standard java.util.logging practice). Then, we create two server HTTP connectors (one for each Web site) that we attach to the Restlet container using the addServer() method. Then, we create a LogChainlet to write all calls into Apache-like log files, we chain a typical StatusChainlet and a Maplet to it. Note that all the Chainlet instances and the RootMaplet instance are shared by all client calls. In fact, multiple concurrent threads can execute the same code in parallel.
+   <img src="images/sample01" alt="Call handling flow"/><br/>
+</p>
+<p>
+   You can see on the left the two <a href="http://www.simpleframework.org">Simple</a> HTTP connectors listening to separate IP addresses. They share two Chainlets and a root Maplet that we presented above. Then we add three Host Maplets, one for the www.restlet.org domain, one for the www.noelios.com domain and a last one for the blog.noelios.com domain. We also declared related domain names for each of them (ex: restlet.net) in order to automatically redirect calls to the preferred domain, using the redirectClient() and redirectStatus() methods.
+</p>
+<p>
+   To each Host Maplet, we add several Directory Restlets to server static files from local directories. One of them is serving log reports and requires authentication by the client. For this purpose, we add a Guard Chainlet in front of the Directory Restlet. Finally, we go up the tree of builders using the owner() method with returns the current RestletContainerBuilder instance and we start everything.
 </p>
 <pre>
       /**
@@ -149,139 +132,65 @@
        * @param dataPath Path where data files are located.
        */
       public WebContainer(String restletPath, String restletAddress, int restletPort,
-                          String noeliosPath, String noeliosAddress, int noeliosPort,
-                          String dataPath)
+                          String noeliosPath, String noeliosAddress, int noeliosPort, String dataPath) throws Exception
       {
-         super("Maine web server");
-         this.restletPath = restletPath;
-         this.restletPort = restletPort;
-         this.noeliosPath = noeliosPath;
-         this.noeliosPort = noeliosPort;
-         this.dataPath = StringUtils.normalizePath(dataPath);
+         dataPath = StringUtils.normalizePath(dataPath);
+         String downloadsPath = dataPath + File.separatorChar + "archive" + File.separatorChar + "restlet";
+         String reportPath = dataPath + File.separatorChar + "log" + File.separatorChar + "report";
 
-         // Create the HTTP server connector for the Restlet domains
-         addServer(new GenericServer(Protocols.HTTP, "Restlet HTTP server", this, restletAddress, restletPort));
+         // Fluently build the container
+         new RestletContainerBuilder(this)
+            .addServer(Protocols.HTTP, "Restlet server", restletAddress, restletPort)
+            .addServer(Protocols.HTTP, "Noelios server", noeliosAddress, noeliosPort)
+            .attachLog("com.noelios.maine.WebContainer.www")
+               .attachStatus(false, "contact@noelios.com", "http://www.noelios.com")
+                  .attachMaplet()
 
-         // Create the HTTP server connector for the Noelios domain
-         addServer(new GenericServer(Protocols.HTTP, "Noelios HTTP server", this, noeliosAddress, noeliosPort));
+                     // Restlet domains Maplet
+                     .attachHost("www.restlet.org", restletPort)
+                        .allowDomain("restlet.org")
+                        .allowDomain("www.restlet.com")
+                        .allowDomain("restlet.com")
+                        .allowDomain("www.restlet.net")
+                        .allowDomain("restlet.net")
+                        .redirectClient()
+                        .redirectStatus(Statuses.REDIRECTION_MOVED_PERMANENTLY)
 
-         // Attach the logger Chainlet
-         LogChainlet logger = new LogChainlet(this, "com.noelios.maine.WebContainer.www");
-         attach("http://", logger);
+                        // Serve download files from a specific directory
+                        .attachDirectory("/downloads", downloadsPath, true, "index", true).upMaplet()
 
-         // Attach the status Chainlet
-         StatusChainlet status = new StatusChainlet(this, false, "contact@noelios.com", "http://www.noelios.com");
-         logger.attach(status);
+                        // Serve other files from the Restlet path
+                        .attachDirectory("", restletPath, true, "index", true).upMaplet(2)
 
-         // Attach the root Maplet to the logger
-         status.attach(new RootMaplet(this));
+                     // Noelios domain Maplet
+                     .attachHost("www.noelios.com", noeliosPort)
+                        .allowDomain("noelios.com")
+                        .redirectClient()
+                        .redirectStatus(Statuses.REDIRECTION_MOVED_PERMANENTLY)
+
+                        // Serve logs report from a guarded directory
+                        .attachGuard("/logs/report", "com.noelios.maine.WebContainer", true, ChallengeSchemes.HTTP_BASIC , "Log report", true)
+                           .authorize("***", "***")
+                           .attachDirectory(reportPath, true, "index", true).upMaplet()
+
+                        // Serve other files from the Noelios path
+                        .attachDirectory("", noeliosPath, true, "index", true).upMaplet(2)
+
+                     // Noelios blog Maplet
+                     .attachHost("blog.noelios.com", noeliosPort)
+                        .preferDomain("noelios.wordpress.com")
+                        .redirectClient()
+                        .redirectStatus(Statuses.REDIRECTION_MOVED_TEMPORARILY)
+
+                     // Start the container
+                     .owner().start();
       }
 </pre>
 <br/>
 
-<h3><a name="part07">7. RootMaplet inner class</a></h3>
+<h3><a name="part06">6. Conclusion</a></h3>
 <p>
-   The root maplet is the main responsible for the dispatching of the client calls to the proper handler. First, let's see an overview of the call handling flow:
-</p>
-<p>
-   <img src="images/sample01" alt="Call handling flow"/><br/>
-</p>
-<p>
-   You see on the left the two Jetty connectors listening to separate IP addresses. They share two chainlets and the root maplet that we will see in details below. The "restletDir" was mapped to the "http://www.restlet.org" URI and will serve the static file from a given directory. The "restletRedirect" will permanently redirect clients from the side domains (restlet.com, restlet.net) to the proper "www.restlet.org" server in order to force the clients to use consistent URIs. We also have "noeliosDir" and "noeliosRedirect" Restlets behaving similarly for the Noelios Consulting domain. Finally, there is an interesting "blogRedirect" based on the RedirectRestlet which will temporarily redirect the clients from "http://blog.noelios.com/*" to "http://noelios.wordpress.com/*" while keeping the rest of the URI intact, including any query parameter. Finally, a "downloadsDir" was added recently to server the files under "http://www.restlet.org/donwloads" from a different location.
-</p>
-<pre>
-      /**
-       * Root Maplet dispatching the call to the correct final handler.
-       * Handles virtual domains naturally.
-       */
-      class RootMaplet extends DefaultMaplet
-      {
-         /**
-          * Constructor.
-          * @param container The parent Restlet container.
-          */
-         public RootMaplet(SampleContainer container)
-         {
-            super(container);
-
-            // Map URIs for the Restlet domains
-            String defaultPattern = "${path}${if query}?${query}${end}";
-            String portPath = (restletPort == 80) ? "" : (":" + restletPort);
-            String rootUri = "www.restlet.org" + portPath;
-
-            // Create the directory Restlet
-            DirectoryRestlet restletDir = new DirectoryRestlet(container, restletPath, true, "index");
-            addExtensions(restletDir);
-
-            // Create the downloads directory Restlet
-            String downloadsPath = dataPath + File.separatorChar + "archive" + File.separatorChar + "restlet";
-            DirectoryRestlet downloadsDir = new DirectoryRestlet(container, downloadsPath, true, "index");
-            downloadsDir.addExtension("zip", MediaTypes.APPLICATION_ZIP);
-
-            // Create the redirect Restlet
-            String targetPattern = "http://www.restlet.org" + defaultPattern;
-            RedirectRestlet restletRedirect = new RedirectRestlet(container, targetPattern, RedirectRestlet.MODE_CLIENT_PERMANENT);
-
-            // Attach as root Restlets
-            attach(rootUri + "/downloads", downloadsDir);
-            attach(rootUri, restletDir);
-            attach("restlet.com" + portPath, restletRedirect);
-            attach("www.restlet.com" + portPath, restletRedirect);
-            attach("restlet.net" + portPath, restletRedirect);
-            attach("www.restlet.net" + portPath, restletRedirect);
-            attach("restlet.org" + portPath, restletRedirect);
-
-            // Map URIs for the Noelios domain
-            portPath = (container.noeliosPort == 80) ? "" : (":" + noeliosPort);
-            rootUri = "www.noelios.com" + portPath;
-
-            // Create the directory Restlet
-            DirectoryRestlet noeliosDir = new DirectoryRestlet(container, noeliosPath, true, "index");
-            addExtensions(noeliosDir);
-
-            // Create the redirection Restlets
-            targetPattern = "http://www.noelios.com" + defaultPattern;
-            RedirectRestlet noeliosRedirect = new RedirectRestlet(container, targetPattern, RedirectRestlet.MODE_CLIENT_PERMANENT);
-            targetPattern = "http://noelios.wordpress.com" + defaultPattern;
-            RedirectRestlet blogRedirect = new RedirectRestlet(container, targetPattern, RedirectRestlet.MODE_CLIENT_TEMPORARY);
-
-            // Attach as root Restlets
-            attach(rootUri, noeliosDir);
-            attach("blog.noelios.com" + portPath, blogRedirect);
-            attach("noelios.com" + portPath, noeliosRedirect);
-         }
-      }
-</pre>
-
-<h3><a name="part08">8. Static addExtensions method</a></h3>
-<p>
-   We centralize the association of file extensions to metadata in this static method. Note that we use the same mechanism to associate languages or MIME media types. Therefore you can have in the same directory multiple variants like "index.fr.html", "index.fr.pdf", "index.en.txt", etc. The Noelios Restlet Engine will do its best to negotiate the best representation for the "index" resource based on the client preferences, see the <a href="http://www.restlet.org/docs/api/org/restlet/RestletCall.html#setBestOutput(org.restlet.Resource)">RestletCall.setBestOutput()</a> method for details.
-</p>
-<pre>
-      /**
-       * Adds a common list of extensions to a directory Restlet.
-       * @param dir The directory Restlet to update.
-       */
-      public static void addExtensions(DirectoryRestlet dir)
-      {
-         dir.addExtension("en",   Languages.ENGLISH_US);
-         dir.addExtension("fr",   Languages.FRENCH_FRANCE);
-         dir.addExtension("html", MediaTypes.TEXT_HTML);
-         dir.addExtension("css",  MediaTypes.TEXT_CSS);
-         dir.addExtension("doc",  MediaTypes.APPLICATION_WORD);
-         dir.addExtension("gif",  MediaTypes.IMAGE_GIF);
-         dir.addExtension("ico",  MediaTypes.IMAGE_ICON);
-         dir.addExtension("pdf",  MediaTypes.APPLICATION_PDF);
-         dir.addExtension("png",  MediaTypes.IMAGE_PNG);
-         dir.addExtension("txt",  MediaTypes.TEXT_PLAIN);
-         dir.addExtension("zip",  MediaTypes.APPLICATION_ZIP);
-      }
-</pre>
-<br/>
-
-<h3><a name="part09">9. Conclusion</a></h3>
-<p>
-   That's all! Beside the standard logging properties, no additional XML configuration is required. Feel free to copy this sample source code in order to run your own Web sites.
+   That's all! Beside the standard JDK logging properties, zero additional XML configuration is required. Feel free to copy this sample source code in order to run your own Web sites.
 </p>
 <br/>
 
@@ -299,7 +208,7 @@
 <br/>
 
 <small>
-   Version 1.5, last modified on 2006-05-01<br/>
+   Version 2.0, last modified on 2006-05-24<br/>
    Copyright &copy; 2005-2006 <a href="mailto:contact@noelios.com">J&eacute;r&ocirc;me Louvel</a>. Restlet is a registered trademark of <a target="_top" href="http://www.noelios.com">Noelios Consulting</a>.
 </small>
 
