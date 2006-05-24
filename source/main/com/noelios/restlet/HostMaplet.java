@@ -372,7 +372,7 @@ public class HostMaplet extends DefaultMaplet
 		if(isRedirectClient() || isWarnClient())
 		{
 	   	// Check if the preferred URI format was respected 
-	   	if(!call.getRedirectionRef().toString(false, false).startsWith(getPreferredUri()))
+	   	if(!call.getResourceRef().toString(false, false).startsWith(getPreferredUri()))
 	   	{
 				if(isRedirectClient())
 			   {

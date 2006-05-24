@@ -25,7 +25,6 @@ package com.noelios.restlet.example;
 import org.restlet.component.RestletContainer;
 import org.restlet.connector.DefaultServer;
 import org.restlet.connector.Server;
-import org.restlet.data.MediaTypes;
 import org.restlet.data.Protocols;
 
 import com.noelios.restlet.DirectoryRestlet;
@@ -63,10 +62,7 @@ public class Tutorial08
          status.attach(host);
 
          // Create a directory Restlet able to return a deep hierarchy of Web files
-         DirectoryRestlet dirRestlet = new DirectoryRestlet(myContainer, "D:/Restlet/www/docs/api/", true, "index");
-         dirRestlet.addExtension("html", MediaTypes.TEXT_HTML);
-         dirRestlet.addExtension("css", MediaTypes.TEXT_CSS);
-         dirRestlet.addExtension("gif", MediaTypes.IMAGE_GIF);
+         DirectoryRestlet dirRestlet = new DirectoryRestlet(myContainer, "D:/Restlet/www/docs/api/", true, "index", true);
 
          // Then attach the Restlet to the status Chainlet.
          host.attach("/", dirRestlet);

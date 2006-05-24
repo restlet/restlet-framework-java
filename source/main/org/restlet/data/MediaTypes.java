@@ -315,7 +315,7 @@ public enum MediaTypes implements MediaType
          	result = "Microsoft Project document";
          	break;
          case APPLICATION_RESOURCE_DESCRIPTION_FRAMEWORK:
-         	result = "Resource Description Framework";
+         	result = "Resource Description Framework document";
          	break;
          case APPLICATION_RICH_TEXT_FORMAT:
          	result = "Rich Text Format document";
@@ -336,10 +336,10 @@ public enum MediaTypes implements MediaType
             result = "Web form (URL encoded)";
             break;
          case APPLICATION_XHTML_XML:
-            result = "XHTML/XML application document";
+            result = "XHTML document";
             break;
          case APPLICATION_XML:
-            result = "XML application document";
+            result = "XML document";
             break;
          case APPLICATION_ZIP:
             result = "Zip archive";
@@ -399,7 +399,7 @@ public enum MediaTypes implements MediaType
             result = "CSS stylesheet";
             break;
          case TEXT_HTML:
-            result = "HTML text document";
+            result = "HTML document";
             break;
          case TEXT_PLAIN:
             result = "Plain text";

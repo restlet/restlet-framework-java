@@ -76,8 +76,9 @@ public class DirectoryRestlet extends AbstractRestlet
     * @param rootPath The directory's root path.
     * @param deeply Indicates if the sub-directories are deeply accessible.
     * @param indexName If no file name is specified, use the (optional) index name.
+    * @param commonExtensions Indicates if the common extensions should be added.
     */
-   public DirectoryRestlet(Component parent, String rootPath, boolean deeply, String indexName)
+   public DirectoryRestlet(Component parent, String rootPath, boolean deeply, String indexName, boolean commonExtensions)
    {
       super(parent);
       this.rootPath = StringUtils.normalizePath(rootPath);
@@ -88,6 +89,7 @@ public class DirectoryRestlet extends AbstractRestlet
       this.indexName = indexName;
       this.metadataMappings = new TreeMap<String, Metadata>();
       this.timeToLive = 600;
+      if(commonExtensions) addCommonExtensions();      	
    }
 
    /**
@@ -143,6 +145,59 @@ public class DirectoryRestlet extends AbstractRestlet
    public void addExtension(String extension, Metadata metadata)
    {
       this.metadataMappings.put(extension, metadata);
+   }
+
+   /**
+    * Adds a common list of extensions to a directory Restlet.
+    * The list of languages extensions:<br/>
+    * <ul>
+    *  <li>en: English</li>
+    *  <li>es: Spanish</li>
+    *  <li>fr: French</li>
+    * </ul><br/>
+    * The list of media type extensions:<br/>
+    * <ul>
+    *  <li>css: CSS stylesheet</li>
+    *  <li>doc: Microsoft Word document</li>
+    *  <li>gif: GIF image</li>
+    *  <li>html: HTML document</li>
+    *  <li>ico: Windows icon (Favicon)</li>
+    *  <li>jpeg, jpg: JPEG image</li>
+    *  <li>js: Javascript document</li>
+    *  <li>pdf: Adobe PDF document</li>
+    *  <li>png: PNG image</li>
+    *  <li>ppt: Microsoft Powerpoint document</li>
+    *  <li>rdf:  Description Framework document</li>
+    *  <li>txt: Plain text</li>
+    *  <li>swf: Shockwave Flash object</li>
+    *  <li>xhtml: XHTML document</li>
+    *  <li>xml: XML document</li>
+    *  <li>zip: Zip archive</li>
+    * </ul>
+    */
+   public void addCommonExtensions()
+   {
+      addExtension("en",   Languages.ENGLISH);
+      addExtension("es",   Languages.SPANISH);
+      addExtension("fr",   Languages.FRENCH);
+      
+      addExtension("css",  MediaTypes.TEXT_CSS);
+      addExtension("doc",  MediaTypes.APPLICATION_WORD);
+      addExtension("gif",  MediaTypes.IMAGE_GIF);
+      addExtension("html", MediaTypes.TEXT_HTML);
+      addExtension("ico",  MediaTypes.IMAGE_ICON);
+      addExtension("jpeg", MediaTypes.IMAGE_JPEG);
+      addExtension("jpg",  MediaTypes.IMAGE_JPEG);
+      addExtension("js",   MediaTypes.APPLICATION_JAVASCRIPT);
+      addExtension("pdf",  MediaTypes.APPLICATION_PDF);
+      addExtension("png",  MediaTypes.IMAGE_PNG);
+      addExtension("ppt",  MediaTypes.APPLICATION_POWERPOINT);
+      addExtension("rdf",  MediaTypes.APPLICATION_RESOURCE_DESCRIPTION_FRAMEWORK);
+      addExtension("txt",  MediaTypes.TEXT_PLAIN);
+      addExtension("swf",  MediaTypes.APPLICATION_SHOCKWAVE_FLASH);
+      addExtension("xhtml",MediaTypes.APPLICATION_XHTML_XML);
+      addExtension("xml",  MediaTypes.TEXT_XML);
+      addExtension("zip",	MediaTypes.APPLICATION_ZIP);
    }
 
    /**
