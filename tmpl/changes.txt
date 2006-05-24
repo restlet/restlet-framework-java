@@ -17,6 +17,10 @@ Restlet changes log
  - Added a DOAP description for the Restlet project: http://www.restlet.org/docs/doap
  - Added RDF (APPLICATION_RESOURCE_DESCRIPTION_FRAMEWORK) to org.restlet.data.MediaTypes.
  - Added MapModel.remove() method.
+ - Added DirectoryRestlet.addCommonExtensions() method to add common language and media type mappings to file extensions.
+ - Added new parameter to DirectoryRestlet constructor to add common extensions.
+ - Simplified tutorial examples based on the new addCommonExtensions() method.
+ - Fixed bug in HostMaplet causing NPE when redirection to preferred URI was enabled.
 
 1.0 beta 12 (2006-05-20)
  - Added com.noelios.restlet.build package containing builder classes allowing a compact construction of Restlet applications base of the Fluent design
