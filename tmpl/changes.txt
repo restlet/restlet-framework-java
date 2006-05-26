@@ -4,6 +4,10 @@ Restlet changes log
 ===================
 
 @version-full@ (@release-date@)
+ - Updated StringTemplate and StringTemplateRepresentation to allow the usage of different delimiters for variable insertion and instructions like conditions.
+   The goal is to prevent conflict between variable names and (future) instruction names.
+   Now the delimiters must be different and default to ${variableName} and #[if test1]...#[else if test2]...#[else]...#[end].
+   WARNING: this has a potential impact on existing application using the old delimiters for instructions such as for the RedirectResltet target URI pattern.
  - Added static Reference.toUri() method to construct an URI string from its parts. Better than doing: new Reference(parts...).toString().
  - Fixed bug in SimpleCall forgetting to add the port number in the request URIs.
  - Optimized response time of the Simple HTTP server connector. Suggested by Niall Gallagher.

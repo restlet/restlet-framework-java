@@ -54,7 +54,7 @@ public class StringTemplateTest extends TestCase
       dataModel.put("number", Integer.toString(12345));
       dataModel.put("string", "abcdef");
 
-      StringTemplate st = new StringTemplate("${if number}Number exists: ${number}${else}Number doesn't exist${end}");
+      StringTemplate st = new StringTemplate("#[if number]Number exists: ${number}#[else]Number doesn't exist#[end]");
       assertEquals(st.process(dataModel), "Number exists: 12345");
       
       dataModel.remove("number");

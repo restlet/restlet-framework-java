@@ -37,6 +37,7 @@ import com.noelios.restlet.util.CallModel;
 
 /**
  * Rewrites URIs then redirects the call or the client to a new destination.
+ * @see com.noelios.restlet.util.StringTemplate
  * @see com.noelios.restlet.util.CallModel
  * @see <a href="http://www.restlet.org/tutorial#part10">Tutorial: URI rewriting and redirection</a>
  * @author Jerome Louvel (contact@noelios.com) <a href="http://www.noelios.com/">Noelios Consulting</a>
@@ -92,8 +93,10 @@ public class RedirectRestlet extends AbstractRestlet
    /**
     * Constructor.
     * @param parent The parent component.
-    * @param targetPattern The pattern to build the target URI.
+    * @param targetPattern The pattern to build the target URI (using StringTemplate syntax and the CallModel for variables).
     * @param mode The redirection mode.
+    * @see com.noelios.restlet.util.StringTemplate
+    * @see com.noelios.restlet.util.CallModel
     */
    public RedirectRestlet(Component parent, String targetPattern, int mode)
    {
@@ -106,8 +109,10 @@ public class RedirectRestlet extends AbstractRestlet
    /**
     * Constructor for the connector mode.
     * @param parent The parent component.
-    * @param targetPattern The pattern to build the target URI.
+    * @param targetPattern The pattern to build the target URI (using StringTemplate syntax and the CallModel for variables).
     * @param connectorName The connector name.
+    * @see com.noelios.restlet.util.StringTemplate
+    * @see com.noelios.restlet.util.CallModel
     */
    public RedirectRestlet(Component parent, String targetPattern, String connectorName)
    {

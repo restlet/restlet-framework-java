@@ -28,65 +28,80 @@ import java.util.logging.Logger;
 
 /**
  * String template that enforces a strict separation between the pattern and the model. It supports 
- * variable insertion and non-nestable conditions. The default delimiters are "${" and "}". 
- * For variable insertion, use "${variable_name}" and for conditions use:<br/>
- *  1) "${if variable_name}" to test the availability of a variable (non null).<br/>
- *  2) "${else if variable_name}" to chain another test.<br/>
- *  3) "${else}" to chain a default operation.<br/>
- *  4) "${end}" to close a condition.<br/>
+ * variable insertion and non-nestable conditions. The default delimiters are "${" and "}" for variables and "#[" and "]" for instructions. 
+ * Currently, the only instructions supported are conditions:<br/>
+ *  1) "#[if variable_name]" to test the availability of a variable (non null).<br/>
+ *  2) "#[else if variable_name]" to chain another test.<br/>
+ *  3) "#[else]" to chain a default operation.<br/>
+ *  4) "#[end]" to close a condition.<br/>
+ * @author Jerome Louvel (contact@noelios.com) <a href="http://www.noelios.com/">Noelios Consulting</a>
  */
 public class StringTemplate
 {
    /** Obtain a suitable logger. */
-   private static Logger logger = Logger.getLogger("com.noelios.restlet.util.StringTemplate");
+   protected static Logger logger = Logger.getLogger("com.noelios.restlet.util.StringTemplate");
 
-   protected static final int STATE_TEXT = 1;
+   private static final int STATE_INSTRUCTION = 1;
+   private static final int STATE_INSTRUCTION_POTENTIAL_DELIMITER_START = 2;
+   private static final int STATE_INSTRUCTION_POTENTIAL_DELIMITER_END = 3;
+   private static final int STATE_TEXT = 4;
+   private static final int STATE_VARIABLE = 5;
+   private static final int STATE_VARIABLE_POTENTIAL_DELIMITER_START = 6;
+   private static final int STATE_VARIABLE_POTENTIAL_DELIMITER_END = 7;
 
-   protected static final int STATE_POTENTIAL_DELIMITER_START = 2;
-
-   protected static final int STATE_INSTRUCTION = 3;
-
-   protected static final int STATE_POTENTIAL_DELIMITER_END = 4;
-
-   protected static final int STATE_INSTRUCTION_APPEND = 1;
-
-   protected static final int STATE_INSTRUCTION_CONDITION_APPEND = 2;
-
-   protected static final int STATE_INSTRUCTION_CONDITION_SKIP = 3;
-
-   protected static final int STATE_INSTRUCTION_CONDITION_DONE = 4;
-
+   private static final int TEXT_APPEND = 1;
+   private static final int TEXT_SKIP = 2;
+   
    /** The template to process. */
    protected CharSequence template;
 
-   /** The string that defines instructions start delimiters. */
-   protected String delimiterStart;
+   /** The string that defines variable start delimiters. */
+   protected String variableStart;
 
-   /** The string that defines instructions end delimiters. */
-   protected String delimiterEnd;
+   /** The string that defines variable end delimiters. */
+   protected String variableEnd;
+
+   /** The string that defines instruction start delimiters. */
+   protected String instructionStart;
+
+   /** The string that defines instruction end delimiters. */
+   protected String instructionEnd;
 
    /**
-    * Constructor. Uses the default delimiters "${" and "}".
+    * Constructor. Uses the default delimiters "${" and "}" for variables, "#[" and "]" for instructions.
     * @param template The template to process.
     */
    public StringTemplate(CharSequence template)
    {
-      this(template, "${", "}");
+      this(template, "${", "}", "#[", "]");
    }
 
    /**
     * Constructor.
     * @param pattern The template pattern to process.
-    * @param delimiterStart The string that defines instructions start delimiters.
-    * @param delimiterEnd The string that defines instructions end delimiters.
+    * @param variableStart The string that defines instructions start delimiters.
+    * @param variableEnd The string that defines instructions end delimiters.
+    * @param instructionStart The string that defines instructions start delimiters.
+    * @param instructionEnd The string that defines instructions end delimiters.
     */
-   public StringTemplate(CharSequence pattern, String delimiterStart, String delimiterEnd)
+   public StringTemplate(CharSequence pattern, String variableStart, String variableEnd, String instructionStart, String instructionEnd)
    {
       this.template = pattern;
-      this.delimiterStart = delimiterStart;
-      this.delimiterEnd = delimiterEnd;
+      this.variableStart = variableStart;
+      this.variableEnd = variableEnd;
+      this.instructionStart = instructionStart;
+      this.instructionEnd = instructionEnd;
+      
+      if((variableStart.charAt(0) == instructionStart.charAt(0)) || (variableEnd.charAt(0) == instructionEnd.charAt(0)))
+      {
+      	throw new IllegalArgumentException("Variable and instruction delimiters must start with a different character");
+      }
    }
 
+   /**
+    * Returns the template to process.
+    * @return The template to process.
+    */
    public String getTemplate()
    {
       return this.template.toString();
@@ -101,14 +116,32 @@ public class StringTemplate
    {
       StringBuilder sb = new StringBuilder();
       char nextChar = 0;
+      
+      /** Potential start index of an instruction or variable. */
       int potentialStart = 0;
-      int potentialEnd = 0;
-      int potentialIndex = 0;
-      int textStart = 0;
-      int instructionStart = 0;
-      int parseState = STATE_TEXT;
-      int state = STATE_INSTRUCTION_APPEND;
 
+      /** Potential end index of the current instruction or variable. */
+      int potentialEnd = 0;
+
+      /** Current index of a potential instruction or variable. */
+      int potentialIndex = 0;
+      
+      /** Start index of the current text token. */
+      int textStartIndex = 0;
+
+      /** Start index of the current instruction. */
+      int instructionStartIndex = 0;
+
+      /** Start index of the current variable. */
+      int variableStartIndex = 0;
+
+      /** Current parsing state. */
+      int parseState = STATE_TEXT;
+      
+      /** Current text state. */
+      int textState = TEXT_APPEND;
+
+      // Start parsing the template
       int i = 0;
       for(; i < template.length(); i++)
       {
@@ -117,18 +150,32 @@ public class StringTemplate
          switch(parseState)
          {
             case STATE_TEXT:
-               if(nextChar == delimiterStart.charAt(0))
+               if(nextChar == instructionStart.charAt(0))
                {
-                  if(delimiterStart.length() == 1)
+                  if(instructionStart.length() == 1)
                   {
-                     state = processText(state, textStart, i, sb, model);
-                     instructionStart = i + 1;
+                     processText(textState, textStartIndex, i, sb, model);
+                     instructionStartIndex = i + 1;
                      parseState = STATE_INSTRUCTION;
                   }
                   else
                   {
                      potentialStart = i;
-                     parseState = STATE_POTENTIAL_DELIMITER_START;
+                     parseState = STATE_INSTRUCTION_POTENTIAL_DELIMITER_START;
+                  }
+               }
+               else if(nextChar == variableStart.charAt(0))
+               {
+                  if(variableStart.length() == 1)
+                  {
+                     processText(textState, textStartIndex, i, sb, model);
+                     variableStartIndex = i + 1;
+                     parseState = STATE_VARIABLE;
+                  }
+                  else
+                  {
+                     potentialStart = i;
+                     parseState = STATE_VARIABLE_POTENTIAL_DELIMITER_START;
                   }
                }
                else
@@ -137,16 +184,16 @@ public class StringTemplate
                }
                break;
 
-            case STATE_POTENTIAL_DELIMITER_START:
+            case STATE_INSTRUCTION_POTENTIAL_DELIMITER_START:
                potentialIndex = i - potentialStart;
 
-               if(nextChar == delimiterStart.charAt(potentialIndex))
+               if(nextChar == instructionStart.charAt(potentialIndex))
                {
-                  if(delimiterStart.length() == potentialIndex + 1)
+                  if(instructionStart.length() == potentialIndex + 1)
                   {
                      // End of delimiter reached
-                     state = processText(state, textStart, potentialStart, sb, model);
-                     instructionStart = i + 1;
+                     processText(textState, textStartIndex, potentialStart, sb, model);
+                     instructionStartIndex = i + 1;
                      parseState = STATE_INSTRUCTION;
                   }
                   else
@@ -164,19 +211,46 @@ public class StringTemplate
                }
                break;
 
-            case STATE_INSTRUCTION:
-               if(nextChar == delimiterEnd.charAt(0))
+            case STATE_VARIABLE_POTENTIAL_DELIMITER_START:
+               potentialIndex = i - potentialStart;
+
+               if(nextChar == variableStart.charAt(potentialIndex))
                {
-                  if(delimiterEnd.length() == 1)
+                  if(variableStart.length() == potentialIndex + 1)
                   {
-                     state = processInstruction(state, instructionStart, i, sb, model);
-                     textStart = i + 1;
+                     // End of delimiter reached
+                     processText(textState, textStartIndex, potentialStart, sb, model);
+                     variableStartIndex = i + 1;
+                     parseState = STATE_VARIABLE;
+                  }
+                  else
+                  {
+                     // Continue
+                  }
+               }
+               else
+               {
+                  // This was not a start delimiter
+                  parseState = STATE_TEXT;
+
+                  // Go back to the potential start
+                  i = potentialStart;
+               }
+               break;
+
+            case STATE_INSTRUCTION:
+               if(nextChar == instructionEnd.charAt(0))
+               {
+                  if(instructionEnd.length() == 1)
+                  {
+                     textState = processInstruction(textState, instructionStartIndex, i, sb, model);
+                     textStartIndex = i + 1;
                      parseState = STATE_TEXT;
                   }
                   else
                   {
                      potentialEnd = i;
-                     parseState = STATE_POTENTIAL_DELIMITER_END;
+                     parseState = STATE_INSTRUCTION_POTENTIAL_DELIMITER_END;
                   }
                }
                else
@@ -186,16 +260,38 @@ public class StringTemplate
 
                break;
 
-            case STATE_POTENTIAL_DELIMITER_END:
+            case STATE_VARIABLE:
+               if(nextChar == variableEnd.charAt(0))
+               {
+                  if(variableEnd.length() == 1)
+                  {
+                     textState = processVariable(textState, variableStartIndex, i, sb, model);
+                     textStartIndex = i + 1;
+                     parseState = STATE_TEXT;
+                  }
+                  else
+                  {
+                     potentialEnd = i;
+                     parseState = STATE_VARIABLE_POTENTIAL_DELIMITER_END;
+                  }
+               }
+               else
+               {
+                  // Continue inside instruction
+               }
+
+               break;
+
+            case STATE_INSTRUCTION_POTENTIAL_DELIMITER_END:
                potentialIndex = i - potentialEnd;
 
-               if(nextChar == delimiterEnd.charAt(potentialIndex))
+               if(nextChar == instructionEnd.charAt(potentialIndex))
                {
-                  if(delimiterEnd.length() == potentialIndex + 1)
+                  if(instructionEnd.length() == potentialIndex + 1)
                   {
                      // End of delimiter reached
-                     state = processInstruction(state, instructionStart, potentialEnd, sb, model);
-                     textStart = i + 1;
+                     textState = processInstruction(textState, instructionStartIndex, potentialEnd, sb, model);
+                     textStartIndex = i + 1;
                      parseState = STATE_TEXT;
                   }
                   else
@@ -212,14 +308,40 @@ public class StringTemplate
                   i = potentialEnd;
                }
                break;
-         }
 
+            case STATE_VARIABLE_POTENTIAL_DELIMITER_END:
+               potentialIndex = i - potentialEnd;
+
+               if(nextChar == variableEnd.charAt(potentialIndex))
+               {
+                  if(variableEnd.length() == potentialIndex + 1)
+                  {
+                     // End of delimiter reached
+                     textState = processVariable(textState, variableStartIndex, potentialEnd, sb, model);
+                     textStartIndex = i + 1;
+                     parseState = STATE_TEXT;
+                  }
+                  else
+                  {
+                     // Continue
+                  }
+               }
+               else
+               {
+                  // This was not an end delimiter
+                  parseState = STATE_VARIABLE;
+
+                  // Go back to the potential end
+                  i = potentialEnd;
+               }
+               break;
+         }
       }
 
       // Flush any trailing text
       if(parseState == STATE_TEXT)
       {
-         processText(state, textStart, i, sb, model);
+         processText(textState, textStartIndex, i, sb, model);
       }
 
       logger.log(Level.FINE, "Template result", sb);
@@ -228,36 +350,35 @@ public class StringTemplate
 
    /**
     * Processes a text token.
-    * @param state The current instruction state. (see STATE_INSTRUCTION_* constants).
+    * @param state The current instruction state. (see STATE_* constants).
     * @param tokenStart The start index of the token to process.
     * @param tokenEnd The end index of the token to process.
     * @param buffer The string buffer containing the template result.
     * @param model The template model to use.
-    * @return The new state after processing.
     */
-   protected int processText(int state, int tokenStart, int tokenEnd, StringBuilder buffer, ReadableModel model)
+   protected void processText(int state, int tokenStart, int tokenEnd, StringBuilder buffer, ReadableModel model)
    {
-      logger.log(Level.FINER, "Process text", buffer);
-
-      if((state == STATE_INSTRUCTION_APPEND) || (state == STATE_INSTRUCTION_CONDITION_APPEND))
+      if(state == TEXT_APPEND)
       {
+         logger.log(Level.FINER, "Appending text", buffer);
          append(tokenStart, tokenEnd, buffer);
       }
-
-      return state;
+      else
+      {
+         logger.log(Level.FINER, "Ignoring text", buffer);
+      }
    }
 
    /**
     * Processes an instruction token.
-    * @param state The current instruction state. (see STATE_INSTRUCTION_* constants).
+    * @param textState The current text state. (see TEXT_* constants).
     * @param tokenStart The start index of the token to process.
     * @param tokenEnd The end index of the token to process.
     * @param buffer The string buffer containing the template result.
     * @param model The template model to use.
     * @return The state after processing.
     */
-   protected int processInstruction(int state, int tokenStart, int tokenEnd, StringBuilder buffer,
-         ReadableModel model)
+   protected int processInstruction(int textState, int tokenStart, int tokenEnd, StringBuilder buffer, ReadableModel model)
    {
       String instruction = template.subSequence(tokenStart, tokenEnd).toString();
       logger.log(Level.FINER, "processInstruction: " + instruction, buffer);
@@ -268,54 +389,70 @@ public class StringTemplate
 
          if(evaluateCondition(condition, model))
          {
-            state = STATE_INSTRUCTION_CONDITION_APPEND;
+            textState = TEXT_APPEND;
          }
          else
          {
-            state = STATE_INSTRUCTION_CONDITION_SKIP;
+            textState = TEXT_SKIP;
          }
       }
       else if(instruction.startsWith("else if "))
       {
-         if(state == STATE_INSTRUCTION_CONDITION_SKIP)
+         if(textState == TEXT_SKIP)
          {
             String condition = template.subSequence(tokenStart + 4, tokenEnd).toString();
 
             if(evaluateCondition(condition, model))
             {
-               state = STATE_INSTRUCTION_CONDITION_APPEND;
+               textState = TEXT_APPEND;
             }
          }
       }
       else if(instruction.equals("else"))
       {
-         if(state == STATE_INSTRUCTION_CONDITION_SKIP)
+         if(textState == TEXT_SKIP)
          {
-            state = STATE_INSTRUCTION_CONDITION_APPEND;
+            textState = TEXT_APPEND;
          }
-         else if(state == STATE_INSTRUCTION_CONDITION_APPEND)
+         else if(textState == TEXT_APPEND)
          {
-            state = STATE_INSTRUCTION_CONDITION_SKIP;
+            textState = TEXT_SKIP;
          }
       }
       else if(instruction.equals("end"))
       {
-         state = STATE_INSTRUCTION_APPEND;
+         textState = TEXT_APPEND;
       }
       else
       {
-         if((state == STATE_INSTRUCTION_APPEND) || (state == STATE_INSTRUCTION_CONDITION_APPEND))
-         {
-            if(model != null)
-            {
-               buffer.append(model.get(instruction));
-            }
-         }
+         logger.log(Level.WARNING, "Unsupported instruction ignored: ", instruction);
       }
 
-      return state;
+      return textState;
    }
 
+   /**
+    * Processes a variable token.
+    * @param textState The current text state. (see TEXT_* constants).
+    * @param tokenStart The start index of the token to process.
+    * @param tokenEnd The end index of the token to process.
+    * @param buffer The string buffer containing the template result.
+    * @param model The template model to use.
+    * @return The state after processing.
+    */
+   protected int processVariable(int textState, int tokenStart, int tokenEnd, StringBuilder buffer, ReadableModel model)
+   {
+      String variable = template.subSequence(tokenStart, tokenEnd).toString();
+      logger.log(Level.FINER, "processVariable: " + variable, buffer);
+      
+      if(textState == TEXT_APPEND)
+      {
+      	buffer.append(model.get(variable));
+      }
+      
+      return textState;
+   }
+   
    /**
     * Evalutes an instruction's condition.
     * @param condition The condition to evaluate.

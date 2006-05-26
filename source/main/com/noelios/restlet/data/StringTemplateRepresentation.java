@@ -71,28 +71,32 @@ public class StringTemplateRepresentation extends StringRepresentation implement
    /**
     * Constructor.
     * @param pattern The template pattern to process.
-    * @param delimiterStart The string that defines instructions start delimiters.
-    * @param delimiterEnd The string that defines instructions end delimiters.
-    * @param model The template model to use.
+    * @param variableStart The string that defines instructions start delimiters.
+    * @param variableEnd The string that defines instructions end delimiters.
+    * @param instructionStart The string that defines instructions start delimiters.
+    * @param instructionEnd The string that defines instructions end delimiters.
+    * @param model The template model.
     * @param mediaType The representation's media type.
     */
-   public StringTemplateRepresentation(CharSequence pattern, String delimiterStart, String delimiterEnd, Model model, MediaType mediaType)
+   public StringTemplateRepresentation(CharSequence pattern, String variableStart, String variableEnd, String instructionStart, String instructionEnd, Model model, MediaType mediaType)
    {
       super(null, mediaType);
-      this.template = new StringTemplate(pattern, delimiterStart, delimiterEnd);
+      this.template = new StringTemplate(pattern, variableStart, variableEnd, instructionStart, instructionEnd);
       this.model = model;
    }
 	
    /**
     * Constructor.
     * @param pattern The template pattern to process.
-    * @param delimiterStart The string that defines instructions start delimiters.
-    * @param delimiterEnd The string that defines instructions end delimiters.
+    * @param variableStart The string that defines instructions start delimiters.
+    * @param variableEnd The string that defines instructions end delimiters.
+    * @param instructionStart The string that defines instructions start delimiters.
+    * @param instructionEnd The string that defines instructions end delimiters.
     * @param mediaType The representation's media type.
     */
-   public StringTemplateRepresentation(CharSequence pattern, String delimiterStart, String delimiterEnd, MediaType mediaType)
+   public StringTemplateRepresentation(CharSequence pattern, String variableStart, String variableEnd, String instructionStart, String instructionEnd, MediaType mediaType)
    {
-      this(pattern, delimiterStart, delimiterEnd, new MapModel(), mediaType);
+      this(pattern, variableStart, variableEnd, instructionStart, instructionEnd, new MapModel(), mediaType);
    }
 
    /**
