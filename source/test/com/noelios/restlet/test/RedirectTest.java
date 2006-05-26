@@ -62,7 +62,7 @@ public class RedirectTest extends TestCase
          myContainer.addClient(new DefaultClient(Protocols.HTTP, "Proxy client"));
 
          // Create the proxy Restlet
-         String target = "http://localhost:9090${path}${if query}?${query}${end}";
+         String target = "http://localhost:9090${path}#[if query]?${query}#[end]";
          RedirectRestlet proxy = new RedirectRestlet(myContainer, target, RedirectRestlet.MODE_CONNECTOR);
          proxy.setConnectorName("Proxy client");
 

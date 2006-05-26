@@ -29,7 +29,7 @@ import org.restlet.data.Parameter;
 
 /**
  * Readable model wrapping a REST call. It can be passed directly passed to a string template. 
- * Repeating values can be retrieved by appending [index] or ["name"] after the variable's name. 
+ * Repeating values can be retrieved by appending [index] or ["name"]  or ['name'] after the variable's name. 
  * Note that [first] is equivalent to [0] and that [last] returns the last value. 
  * Here is the list of currently supported variables:
  * <ul>
@@ -133,7 +133,7 @@ public class CallModel implements ReadableModel
 	   				{
 	   					result = call.getClientAddresses().get(call.getClientAddresses().size() - 1);
 	   				}
-	   				else if((rest.charAt(0) == '"') && (rest.charAt(rest.length() - 1) == '"'))
+	   				else if(isVariableName(rest))
 	   				{
 	   					// Can't lookup by name
 	   					result = defaultValue;
@@ -162,10 +162,10 @@ public class CallModel implements ReadableModel
 	   		{
 	   			rest = rest.substring(1, rest.length() - 1);
 	   			
-					if((rest.charAt(0) == '"') && (rest.charAt(rest.length() - 1) == '"'))
+   				if(isVariableName(rest))
 					{
 						// Lookup by name
-		   			rest = rest.substring(1, rest.length() - 1);
+		   			rest = getVariableName(rest);
 			         result = call.getConnectorCall().getRequestHeaderValue(rest);
 					}
 					else
@@ -186,10 +186,10 @@ public class CallModel implements ReadableModel
 	   		{
 	   			rest = rest.substring(1, rest.length() - 1);
 	   			
-					if((rest.charAt(0) == '"') && (rest.charAt(rest.length() - 1) == '"'))
+   				if(isVariableName(rest))
 					{
 						// Lookup by name
-		   			rest = rest.substring(1, rest.length() - 1);
+		   			rest = getVariableName(rest);
 			         result = call.getConnectorCall().getResponseHeaderValue(rest);
 					}
 					else
@@ -218,10 +218,10 @@ public class CallModel implements ReadableModel
 					{
 						result = call.getCookies().get(call.getCookies().size() - 1).getValue();
 					}
-					else if((rest.charAt(0) == '"') && (rest.charAt(rest.length() - 1) == '"'))
+   				else if(isVariableName(rest))
 					{
 						// Lookup by name
-		   			rest = rest.substring(1, rest.length() - 1);
+		   			rest = getVariableName(rest);
 			         result = CookieUtils.getFirstCookie(call.getCookies(), rest).getValue();
 					}
 					else
@@ -298,10 +298,10 @@ public class CallModel implements ReadableModel
 	   					List<Parameter> params = call.getResourceRef().getQueryAsForm().getParameters(); 
 	   					result = params.get(params.size() - 1).getValue();
 	   				}
-	   				else if((rest.charAt(0) == '"') && (rest.charAt(rest.length() - 1) == '"'))
+	   				else if(isVariableName(rest))
 	   				{
 							// Lookup by name
-			   			rest = rest.substring(1, rest.length() - 1);
+			   			rest = getVariableName(rest);
 				         result = call.getResourceRef().getQueryAsForm().getFirstParameter(rest).getValue();
 	   				}
 	   				else
@@ -355,6 +355,27 @@ public class CallModel implements ReadableModel
       return result;
    }
 
+   /**
+    * Indicates if the token contains a variable name.
+    * @param token The token to test.
+    * @return True if the token contains a variable name.
+    */
+   public boolean isVariableName(String token)
+   {
+   	return (((token.charAt(0) == '"') && (token.charAt(token.length() - 1) == '"')) ||
+			     ((token.charAt(0) == '\'') && (token.charAt(token.length() - 1) == '\'')));
+   }   
+
+   /**
+    * Returns the variable name contained in the token.
+    * @param token The token containing the variable name.
+    * @return The variable name.
+    */
+   public String getVariableName(String token)
+   {
+		return token.substring(1, token.length() - 1);
+   }
+   
    /**
     * Indicates if the model contains a value for a given name.
     * @param name The name to look-up.

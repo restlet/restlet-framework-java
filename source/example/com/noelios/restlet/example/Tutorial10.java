@@ -53,7 +53,7 @@ public class Tutorial10
          myContainer.attach(host);
 
          // Create a redirect Restlet then attach it to the container
-         String target = "http://www.google.com/search?q=site:mysite.org+${query[\"query\"]}";
+         String target = "http://www.google.com/search?q=site:mysite.org+${query['query']}";
          RedirectRestlet searchRedirect = new RedirectRestlet(myContainer, target, RedirectRestlet.MODE_CLIENT_TEMPORARY);
          host.attach("/search", searchRedirect);
 
