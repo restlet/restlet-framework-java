@@ -49,9 +49,9 @@ public class ChainletBuilder extends RestletBuilder
 	/**
 	 * Constructor.
 	 * @param parent The parent builder.
-	 * @param node The wrapped chainlet.
+	 * @param node The wrapped node.
 	 */
-   public ChainletBuilder(DefaultBuilder parent, Chainlet node)
+   public ChainletBuilder(ObjectBuilder parent, Chainlet node)
    {
       super(parent, node);
    }
@@ -75,7 +75,7 @@ public class ChainletBuilder extends RestletBuilder
    {
    	target.setOwner(getNode().getOwner());
       getNode().attach(target);
-      return new RestletBuilder(this, target);
+      return Builders.buildRestlet(this, target);
    }
 
    /**
@@ -83,10 +83,10 @@ public class ChainletBuilder extends RestletBuilder
     * @param targetClass The target class to attach (can have a constructor taking a RestletContainer parameter).
     * @return The builder for the attached target.
     */
-   public DefaultBuilder attach(Class<? extends Restlet> targetClass)
+   public ObjectBuilder attach(Class<? extends Restlet> targetClass)
    {
       getNode().attach(targetClass);
-      return new DefaultBuilder(this, targetClass);
+      return Builders.buildObject(this, targetClass);
    }
 
    /**
@@ -97,7 +97,7 @@ public class ChainletBuilder extends RestletBuilder
    {
       CompressChainlet node = new CompressChainlet(getNode().getOwner());
       getNode().attach(node);
-      return new ChainletBuilder(this, node);
+      return Builders.buildChainlet(this, node);
    }
 
    /**
@@ -119,7 +119,7 @@ public class ChainletBuilder extends RestletBuilder
 	{
       DecompressChainlet node = new DecompressChainlet(getNode().getOwner(), decodeInput, decodeOutput);
       getNode().attach(node);
-      return new ChainletBuilder(this, node);
+      return Builders.buildChainlet(this, node);
 	}
    
    /**
@@ -134,7 +134,7 @@ public class ChainletBuilder extends RestletBuilder
    {
       DirectoryRestlet node = new DirectoryRestlet(getNode().getOwner(), rootPath, deeply, indexName, commonExtensions);
       getNode().attach(node);
-      return new DirectoryRestletBuilder(this, node);
+      return Builders.buildDirectory(this, node);
    }
 
    /**
@@ -145,7 +145,7 @@ public class ChainletBuilder extends RestletBuilder
    {
       ExtractChainlet node = new ExtractChainlet(getNode().getOwner());
       getNode().attach(node);
-      return new ExtractChainletBuilder(this, node);
+      return Builders.buildExtract(this, node);
    }
 
    /**
@@ -157,7 +157,7 @@ public class ChainletBuilder extends RestletBuilder
    {
       FileRestlet node = new FileRestlet(getNode().getOwner(), filePath, mediaType);
       getNode().attach(node);
-      return new RestletBuilder(this, node);
+      return Builders.buildRestlet(this, node);
    }
 
    /**
@@ -173,7 +173,7 @@ public class ChainletBuilder extends RestletBuilder
    {
    	GuardChainlet node = new GuardChainlet(getNode().getOwner(), logName, authentication, scheme, realm, authorization);
       getNode().attach(node);
-      return new GuardChainletBuilder(this, node);
+      return Builders.buildGuard(this, node);
    }
    
    /**
@@ -185,7 +185,7 @@ public class ChainletBuilder extends RestletBuilder
    {
       HostMaplet node = new HostMaplet(getNode().getOwner(), port);
       getNode().attach(node);
-      return new HostMapletBuilder(this, node);
+      return Builders.buildHost(this, node);
    }
    
    /**
@@ -197,7 +197,7 @@ public class ChainletBuilder extends RestletBuilder
    {
       HostMaplet node = new HostMaplet(getNode().getOwner(), domain);
       getNode().attach(node);
-      return new HostMapletBuilder(this, node);
+      return Builders.buildHost(this, node);
    }
    
    /**
@@ -210,7 +210,7 @@ public class ChainletBuilder extends RestletBuilder
    {
       HostMaplet node = new HostMaplet(getNode().getOwner(), domain, port);
       getNode().attach(node);
-      return new HostMapletBuilder(this, node);
+      return Builders.buildHost(this, node);
    }
 
    /**
@@ -223,7 +223,7 @@ public class ChainletBuilder extends RestletBuilder
    {
       LogChainlet node = new LogChainlet(getNode().getOwner(), logName);
       getNode().attach(node);
-      return new ChainletBuilder(this, node);
+      return Builders.buildChainlet(this, node);
    }
 
    /**
@@ -238,7 +238,7 @@ public class ChainletBuilder extends RestletBuilder
    {
       LogChainlet node = new LogChainlet(getNode().getOwner(), logName, logFormat);
       getNode().attach(node);
-      return new ChainletBuilder(this, node);
+      return Builders.buildChainlet(this, node);
    }
 
    /**
@@ -249,7 +249,7 @@ public class ChainletBuilder extends RestletBuilder
    {
       Maplet node = new DefaultMaplet(getNode().getOwner());
       getNode().attach(node);
-      return new MapletBuilder(this, node);
+      return Builders.buildMaplet(this, node);
    }
 
    /**
@@ -262,7 +262,7 @@ public class ChainletBuilder extends RestletBuilder
    {
       RedirectRestlet node = new RedirectRestlet(getNode().getOwner(), targetPattern, mode);
       getNode().attach(node);
-      return new RestletBuilder(this, node);
+      return Builders.buildRestlet(this, node);
    }
 
    /**
@@ -275,7 +275,7 @@ public class ChainletBuilder extends RestletBuilder
    {
       RedirectRestlet node = new RedirectRestlet(getNode().getOwner(), targetPattern, connectorName);
       getNode().attach(node);
-      return new RestletBuilder(this, node);
+      return Builders.buildRestlet(this, node);
    }
    
    /**
@@ -289,7 +289,7 @@ public class ChainletBuilder extends RestletBuilder
    {
       StatusChainlet node = new StatusChainlet(getNode().getOwner(), overwrite, email, homeURI);
       getNode().attach(node);
-      return new ChainletBuilder(this, node);
+      return Builders.buildChainlet(this, node);
    }
 
 }

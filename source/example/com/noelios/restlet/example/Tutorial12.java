@@ -31,7 +31,7 @@ import org.restlet.data.ChallengeSchemes;
 import org.restlet.data.MediaTypes;
 import org.restlet.data.Protocols;
 
-import com.noelios.restlet.build.RestletContainerBuilder;
+import com.noelios.restlet.build.Builders;
 import com.noelios.restlet.data.StringRepresentation;
 
 /**
@@ -67,7 +67,7 @@ public class Tutorial12
             };
       	
          // Build and start the container
-      	new RestletContainerBuilder("My container")
+      	Builders.buildContainer()
       		.addServer(Protocols.HTTP, "My server", 8182)
       		.attachLog("com.noelios.restlet.example")
       			.attachStatus(true, "webmaster@mysite.org", "http://www.mysite.org")

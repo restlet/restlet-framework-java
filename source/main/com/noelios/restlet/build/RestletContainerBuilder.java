@@ -52,6 +52,14 @@ public class RestletContainerBuilder extends ComponentBuilder
 {
 	/**
 	 * Constructor for new containers.
+	 */
+	public RestletContainerBuilder()
+	{
+		this(null, new RestletContainer());
+	}
+	
+	/**
+	 * Constructor for new containers.
 	 * @param containerName The name of the new container.
 	 */
 	public RestletContainerBuilder(String containerName)
@@ -61,7 +69,7 @@ public class RestletContainerBuilder extends ComponentBuilder
 	
 	/**
 	 * Constructor for existing containers.
-	 * @param node The wrapped Restlet Container.
+	 * @param node The wrapped node.
 	 */
 	public RestletContainerBuilder(RestletContainer node)
 	{
@@ -71,9 +79,9 @@ public class RestletContainerBuilder extends ComponentBuilder
 	/**
 	 * Constructor for existing containers.
 	 * @param parent The parent builder.
-	 * @param node The wrapped Restlet Container.
+	 * @param node The wrapped node.
 	 */
-	public RestletContainerBuilder(DefaultBuilder parent, RestletContainer node)
+	public RestletContainerBuilder(ObjectBuilder parent, RestletContainer node)
 	{
 		super(parent, node);
 	}
@@ -178,7 +186,7 @@ public class RestletContainerBuilder extends ComponentBuilder
    {
    	target.setOwner(getNode().getOwner());
       getNode().attach(target);
-      return new RestletBuilder(this, target);
+      return Builders.buildRestlet(this, target);
    }
 
    /**
@@ -186,10 +194,10 @@ public class RestletContainerBuilder extends ComponentBuilder
     * @param targetClass The target class to attach (can have a constructor taking a RestletContainer parameter).
     * @return The builder for the attached target.
     */
-   public DefaultBuilder attach(Class<? extends Restlet> targetClass)
+   public ObjectBuilder attach(Class<? extends Restlet> targetClass)
    {
       getNode().attach(targetClass);
-      return new DefaultBuilder(this, targetClass);
+      return Builders.buildObject(this, targetClass);
    }
 
    /**
@@ -200,7 +208,7 @@ public class RestletContainerBuilder extends ComponentBuilder
    {
       CompressChainlet node = new CompressChainlet(getNode().getOwner());
       getNode().attach(node);
-      return new ChainletBuilder(this, node);
+      return Builders.buildChainlet(this, node);
    }
 
    /**
@@ -222,7 +230,7 @@ public class RestletContainerBuilder extends ComponentBuilder
 	{
       DecompressChainlet node = new DecompressChainlet(getNode().getOwner(), decodeInput, decodeOutput);
       getNode().attach(node);
-      return new ChainletBuilder(this, node);
+      return Builders.buildChainlet(this, node);
 	}
    
    /**
@@ -237,7 +245,7 @@ public class RestletContainerBuilder extends ComponentBuilder
    {
       DirectoryRestlet node = new DirectoryRestlet(getNode().getOwner(), rootPath, deeply, indexName, commonExtensions);
       getNode().attach(node);
-      return new DirectoryRestletBuilder(this, node);
+      return Builders.buildDirectory(this, node);
    }
 
    /**
@@ -248,7 +256,7 @@ public class RestletContainerBuilder extends ComponentBuilder
    {
       ExtractChainlet node = new ExtractChainlet(getNode().getOwner());
       getNode().attach(node);
-      return new ExtractChainletBuilder(this, node);
+      return Builders.buildExtract(this, node);
    }
 
    /**
@@ -260,7 +268,7 @@ public class RestletContainerBuilder extends ComponentBuilder
    {
       FileRestlet node = new FileRestlet(getNode().getOwner(), filePath, mediaType);
       getNode().attach(node);
-      return new RestletBuilder(this, node);
+      return Builders.buildRestlet(this, node);
    }
 
    /**
@@ -276,7 +284,7 @@ public class RestletContainerBuilder extends ComponentBuilder
    {
    	GuardChainlet node = new GuardChainlet(getNode().getOwner(), logName, authentication, scheme, realm, authorization);
       getNode().attach(node);
-      return new GuardChainletBuilder(this, node);
+      return Builders.buildGuard(this, node);
    }
    
    /**
@@ -297,7 +305,7 @@ public class RestletContainerBuilder extends ComponentBuilder
       {
       	getNode().attach(node.getPattern(), node);
       }
-      return new HostMapletBuilder(this, node);
+      return Builders.buildHost(this, node);
    }
    
    /**
@@ -312,7 +320,7 @@ public class RestletContainerBuilder extends ComponentBuilder
    {
       HostMaplet node = new HostMaplet(getNode().getOwner(), port);
       node.setMode(AttachmentMode.MAPLET);
-      return new HostMapletBuilder(this, node);
+      return Builders.buildHost(this, node);
    }
    
    /**
@@ -333,7 +341,7 @@ public class RestletContainerBuilder extends ComponentBuilder
       {
       	getNode().attach(node.getPattern(), node);
       }
-      return new HostMapletBuilder(this, node);
+      return Builders.buildHost(this, node);
    }
    
    /**
@@ -348,7 +356,7 @@ public class RestletContainerBuilder extends ComponentBuilder
    {
       HostMaplet node = new HostMaplet(getNode().getOwner(), domain);
       node.setMode(AttachmentMode.MAPLET);
-      return new HostMapletBuilder(this, node);
+      return Builders.buildHost(this, node);
    }
 
    /**
@@ -372,7 +380,7 @@ public class RestletContainerBuilder extends ComponentBuilder
       	getNode().attach(node.getPattern(), node);
       }
 
-      return new HostMapletBuilder(this, node);
+      return Builders.buildHost(this, node);
    }
    
    /**
@@ -388,7 +396,7 @@ public class RestletContainerBuilder extends ComponentBuilder
    {
       HostMaplet node = new HostMaplet(getNode().getOwner(), domain, port);
       node.setMode(AttachmentMode.MAPLET);
-      return new HostMapletBuilder(this, node);
+      return Builders.buildHost(this, node);
    }
 
    /**
@@ -401,7 +409,7 @@ public class RestletContainerBuilder extends ComponentBuilder
    {
       LogChainlet node = new LogChainlet(getNode().getOwner(), logName);
       getNode().attach(node);
-      return new ChainletBuilder(this, node);
+      return Builders.buildChainlet(this, node);
    }
 
    /**
@@ -416,7 +424,7 @@ public class RestletContainerBuilder extends ComponentBuilder
    {
       LogChainlet node = new LogChainlet(getNode().getOwner(), logName, logFormat);
       getNode().attach(node);
-      return new ChainletBuilder(this, node);
+      return Builders.buildChainlet(this, node);
    }
 
    /**
@@ -427,7 +435,7 @@ public class RestletContainerBuilder extends ComponentBuilder
    {
       Maplet node = new DefaultMaplet(getNode().getOwner());
       getNode().attach(node);
-      return new MapletBuilder(this, node);
+      return Builders.buildMaplet(this, node);
    }
 
    /**
@@ -440,7 +448,7 @@ public class RestletContainerBuilder extends ComponentBuilder
    {
       RedirectRestlet node = new RedirectRestlet(getNode().getOwner(), targetPattern, mode);
       getNode().attach(node);
-      return new RestletBuilder(this, node);
+      return Builders.buildRestlet(this, node);
    }
 
    /**
@@ -453,7 +461,7 @@ public class RestletContainerBuilder extends ComponentBuilder
    {
       RedirectRestlet node = new RedirectRestlet(getNode().getOwner(), targetPattern, connectorName);
       getNode().attach(node);
-      return new RestletBuilder(this, node);
+      return Builders.buildRestlet(this, node);
    }
    
    /**
@@ -467,7 +475,7 @@ public class RestletContainerBuilder extends ComponentBuilder
    {
       StatusChainlet node = new StatusChainlet(getNode().getOwner(), overwrite, email, homeURI);
       getNode().attach(node);
-      return new ChainletBuilder(this, node);
+      return Builders.buildChainlet(this, node);
    }
 
    // -------------------------------------
@@ -486,7 +494,7 @@ public class RestletContainerBuilder extends ComponentBuilder
    {
    	target.setOwner(getNode().getOwner());
       getNode().attach(pattern, target);
-      return new RestletBuilder(this, target);
+      return Builders.buildRestlet(this, target);
    }
 
    /**
@@ -502,7 +510,7 @@ public class RestletContainerBuilder extends ComponentBuilder
    {
    	target.setOwner(getNode().getOwner());
       getNode().attach(pattern, target, override);
-      return new RestletBuilder(this, target);
+      return Builders.buildRestlet(this, target);
    }
 
    /**
@@ -512,10 +520,10 @@ public class RestletContainerBuilder extends ComponentBuilder
     * @return The current Maplet for further attachments.
     * @see java.util.regex.Pattern
     */
-   public DefaultBuilder attach(String pattern, Class<? extends Restlet> targetClass)
+   public ObjectBuilder attach(String pattern, Class<? extends Restlet> targetClass)
    {
       getNode().attach(pattern, targetClass);
-      return new DefaultBuilder(this, (Object)targetClass);
+      return Builders.buildObject(this, (Object)targetClass);
    }
 
    /**
@@ -526,10 +534,10 @@ public class RestletContainerBuilder extends ComponentBuilder
     * @return The current Maplet for further attachments.
     * @see java.util.regex.Pattern
     */
-   public DefaultBuilder attach(String pattern, Class<? extends Restlet> targetClass, boolean override)
+   public ObjectBuilder attach(String pattern, Class<? extends Restlet> targetClass, boolean override)
    {
       getNode().attach(pattern, targetClass, override);
-      return new DefaultBuilder((DefaultBuilder)this, (Object)targetClass);
+      return Builders.buildObject((ObjectBuilder)this, (Object)targetClass);
    }
 
    /**
@@ -540,7 +548,7 @@ public class RestletContainerBuilder extends ComponentBuilder
    {
       CompressChainlet node = new CompressChainlet(getNode().getOwner());
       getNode().attach(pattern, node);
-      return new ChainletBuilder(this, node);
+      return Builders.buildChainlet(this, node);
    }
 
    /**
@@ -562,7 +570,7 @@ public class RestletContainerBuilder extends ComponentBuilder
 	{
       DecompressChainlet node = new DecompressChainlet(getNode().getOwner(), decodeInput, decodeOutput);
       getNode().attach(pattern, node);
-      return new ChainletBuilder(this, node);
+      return Builders.buildChainlet(this, node);
 	}
    
    /**
@@ -577,7 +585,7 @@ public class RestletContainerBuilder extends ComponentBuilder
    {
       DirectoryRestlet node = new DirectoryRestlet(getNode().getOwner(), rootPath, deeply, indexName, commonExtensions);
       getNode().attach(pattern, node);
-      return new DirectoryRestletBuilder(this, node);
+      return Builders.buildDirectory(this, node);
    }
 
    /**
@@ -588,7 +596,7 @@ public class RestletContainerBuilder extends ComponentBuilder
    {
       ExtractChainlet node = new ExtractChainlet(getNode().getOwner());
       getNode().attach(pattern, node);
-      return new ExtractChainletBuilder(this, node);
+      return Builders.buildExtract(this, node);
    }
 
    /**
@@ -600,7 +608,7 @@ public class RestletContainerBuilder extends ComponentBuilder
    {
       FileRestlet node = new FileRestlet(getNode().getOwner(), filePath, mediaType);
       getNode().attach(pattern, node);
-      return new RestletBuilder(this, node);
+      return Builders.buildRestlet(this, node);
    }
 
    /**
@@ -616,7 +624,7 @@ public class RestletContainerBuilder extends ComponentBuilder
    {
    	GuardChainlet node = new GuardChainlet(getNode().getOwner(), logName, authentication, scheme, realm, authorization);
       getNode().attach(pattern, node);
-      return new GuardChainletBuilder(this, node);
+      return Builders.buildGuard(this, node);
    }
 
    /**
@@ -631,7 +639,7 @@ public class RestletContainerBuilder extends ComponentBuilder
    {
       LogChainlet node = new LogChainlet(getNode().getOwner(), logName, logFormat);
       getNode().attach(pattern, node);
-      return new ChainletBuilder(this, node);
+      return Builders.buildChainlet(this, node);
    }
 
    /**
@@ -642,7 +650,7 @@ public class RestletContainerBuilder extends ComponentBuilder
    {
       Maplet node = new DefaultMaplet(getNode().getOwner());
       getNode().attach(pattern, node);
-      return new MapletBuilder(this, node);
+      return Builders.buildMaplet(this, node);
    }
 
    /**
@@ -655,7 +663,7 @@ public class RestletContainerBuilder extends ComponentBuilder
    {
       RedirectRestlet node = new RedirectRestlet(getNode().getOwner(), targetPattern, mode);
       getNode().attach(pattern, node);
-      return new RestletBuilder(this, node);
+      return Builders.buildRestlet(this, node);
    }
 
    /**
@@ -668,7 +676,7 @@ public class RestletContainerBuilder extends ComponentBuilder
    {
       RedirectRestlet node = new RedirectRestlet(getNode().getOwner(), targetPattern, connectorName);
       getNode().attach(pattern, node);
-      return new RestletBuilder(this, node);
+      return Builders.buildRestlet(this, node);
    }
    
    /**
@@ -682,7 +690,7 @@ public class RestletContainerBuilder extends ComponentBuilder
    {
       StatusChainlet node = new StatusChainlet(getNode().getOwner(), overwrite, email, homeURI);
       getNode().attach(pattern, node);
-      return new ChainletBuilder(this, node);
+      return Builders.buildChainlet(this, node);
    }
 
 }

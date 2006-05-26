@@ -38,9 +38,9 @@ public class ComponentBuilder extends RestletBuilder
 	/**
 	 * Constructor.
 	 * @param parent The parent builder.
-	 * @param node The wrapped component.
+	 * @param node The wrapped node.
 	 */
-   public ComponentBuilder(DefaultBuilder parent, Component node)
+   public ComponentBuilder(ObjectBuilder parent, Component node)
    {
       super(parent, node);
    }

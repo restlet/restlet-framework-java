@@ -33,9 +33,9 @@ public class ExtractChainletBuilder extends ChainletBuilder
 	/**
 	 * Constructor.
 	 * @param parent The parent builder.
-	 * @param node The wrapped Extract Chainlet.
+	 * @param node The wrapped node.
 	 */
-   public ExtractChainletBuilder(DefaultBuilder parent, ExtractChainlet node)
+   public ExtractChainletBuilder(ObjectBuilder parent, ExtractChainlet node)
    {
       super(parent, node);
    }

@@ -26,10 +26,10 @@ package com.noelios.restlet.build;
  * Fluent builder for any object.
  * @author Jerome Louvel (contact[at]noelios.com) <a href="http://www.noelios.com/">Noelios Consulting</a>
  */
-public class DefaultBuilder
+public class ObjectBuilder
 {
 	/** The parent builder. */
-	protected DefaultBuilder parent;
+	protected ObjectBuilder parent;
 	
 	/** The wrapped node. */
 	protected Object node;
@@ -39,7 +39,7 @@ public class DefaultBuilder
 	 * @param parent The parent builder.
 	 * @param node The wrapped node.
 	 */
-	public DefaultBuilder(DefaultBuilder parent, Object node)
+	public ObjectBuilder(ObjectBuilder parent, Object node)
 	{
 		this.parent = parent;
 		this.node = node;
@@ -58,7 +58,7 @@ public class DefaultBuilder
 	 * Go up one level in the builders tree.
 	 * @return The parent builder.
 	 */
-	public DefaultBuilder up()
+	public ObjectBuilder up()
 	{
 		return parent;
 	}
@@ -67,9 +67,9 @@ public class DefaultBuilder
 	 * Go up several levels in the builders tree.
 	 * @return The ancestor builder.
 	 */
-	public DefaultBuilder up(int levels)
+	public ObjectBuilder up(int levels)
 	{
-		DefaultBuilder result = parent;
+		ObjectBuilder result = parent;
 		for(int i = 0; (result != null) && (i < levels - 1); i++)
 		{
 			result = result.up();
@@ -85,7 +85,7 @@ public class DefaultBuilder
 	public MapletBuilder upMaplet()
 	{
 		MapletBuilder result = null;
-		DefaultBuilder current = this;
+		ObjectBuilder current = this;
 
 		for(boolean goUp = true; (result == null) && goUp; )
 		{
@@ -125,9 +125,9 @@ public class DefaultBuilder
 	 * Go to the root of the builders tree.
 	 * @return The root builder.
 	 */
-	public DefaultBuilder root()
+	public ObjectBuilder root()
 	{
-		DefaultBuilder result = this;
+		ObjectBuilder result = this;
 
 		for(boolean goUp = true; goUp; )
 		{

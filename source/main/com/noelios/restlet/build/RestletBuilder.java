@@ -28,14 +28,14 @@ import org.restlet.Restlet;
  * Fluent builder for Restlets.
  * @author Jerome Louvel (contact[at]noelios.com) <a href="http://www.noelios.com/">Noelios Consulting</a>
  */
-public class RestletBuilder extends DefaultBuilder
+public class RestletBuilder extends ObjectBuilder
 {
 	/**
 	 * Constructor.
 	 * @param parent The parent builder.
-	 * @param node The wrapped Restlet.
+	 * @param node The wrapped node.
 	 */
-   public RestletBuilder(DefaultBuilder parent, Restlet node)
+   public RestletBuilder(ObjectBuilder parent, Restlet node)
    {
       super(parent, node);
    }
@@ -49,9 +49,13 @@ public class RestletBuilder extends DefaultBuilder
       return (Restlet)super.getNode();
    }
 
+   /**
+    * Returns the owner component builder.
+    * @return The owner component builder.
+    */
    public ComponentBuilder owner()
    {
-      DefaultBuilder result = this;
+      ObjectBuilder result = this;
 
       for(boolean goUp = true; goUp; )
       {

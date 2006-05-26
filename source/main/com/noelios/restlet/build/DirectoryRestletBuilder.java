@@ -35,9 +35,9 @@ public class DirectoryRestletBuilder extends RestletBuilder
 	/**
 	 * Constructor.
 	 * @param parent The parent builder.
-	 * @param node The wrapped Directory Restlet.
+	 * @param node The wrapped node.
 	 */
-   public DirectoryRestletBuilder(DefaultBuilder parent, DirectoryRestlet node)
+   public DirectoryRestletBuilder(ObjectBuilder parent, DirectoryRestlet node)
    {
       super(parent, node);
    }

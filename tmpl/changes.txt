@@ -25,6 +25,8 @@ Restlet changes log
  - Greatly simplified the sample application (http://www.restlet.org/sample) by using fluent builders.
  - Added createHost() and attachParent() methods to MapletBuilder and RestletContainerBuilder to delay the attachment (dynamic URI pattern) to the 
    parent Maplet after the complete configuration.
+ - Renamed DefaultBuilder into ObjectBuilder.
+ - Added BuilderFactory and Builders classes to facilitate the instantiation of builders and their eventual subclassing by applications.
    
 1.0 beta 12 (2006-05-20)
  - Added com.noelios.restlet.build package containing builder classes allowing a compact construction of Restlet applications base of the Fluent design

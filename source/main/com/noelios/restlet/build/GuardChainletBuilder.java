@@ -33,9 +33,9 @@ public class GuardChainletBuilder extends ChainletBuilder
 	/**
 	 * Constructor.
 	 * @param parent The parent builder.
-	 * @param node The wrapped Guard Chainlet.
+	 * @param node The wrapped node.
 	 */
-   public GuardChainletBuilder(DefaultBuilder parent, GuardChainlet node)
+   public GuardChainletBuilder(ObjectBuilder parent, GuardChainlet node)
    {
       super(parent, node);
    }

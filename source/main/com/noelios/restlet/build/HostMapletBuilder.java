@@ -36,9 +36,9 @@ public class HostMapletBuilder extends MapletBuilder
 	/**
 	 * Constructor.
 	 * @param parent The parent builder.
-	 * @param node The wrapped Host Maplet.
+	 * @param node The wrapped node.
 	 */
-   public HostMapletBuilder(DefaultBuilder parent, HostMaplet node)
+   public HostMapletBuilder(ObjectBuilder parent, HostMaplet node)
    {
       super(parent, node);
    }
