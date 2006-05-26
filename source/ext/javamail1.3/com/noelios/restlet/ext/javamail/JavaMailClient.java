@@ -74,6 +74,7 @@ import com.noelios.restlet.impl.FactoryImpl;
  * &nbsp;&nbsp;{@code   </head>}<br/>
  * &nbsp;&nbsp;{@code   <body><![CDATA[Your account was sucessfully created!]]></body>}<br/>
  * {@code </email>}
+ * @author Jerome Louvel (contact@noelios.com) <a href="http://www.noelios.com/">Noelios Consulting</a>
  */
 public class JavaMailClient extends AbstractClient
 {

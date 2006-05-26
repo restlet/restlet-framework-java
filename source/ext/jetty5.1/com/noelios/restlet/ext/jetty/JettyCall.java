@@ -39,6 +39,7 @@ import com.noelios.restlet.impl.HttpServerCallImpl;
 
 /**
  * Call that is used by the Jetty HTTP server connector.
+ * @author Jerome Louvel (contact@noelios.com) <a href="http://www.noelios.com/">Noelios Consulting</a>
  */
 public class JettyCall extends HttpServerCallImpl
 {

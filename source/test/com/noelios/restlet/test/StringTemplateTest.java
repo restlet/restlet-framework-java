@@ -29,6 +29,7 @@ import com.noelios.restlet.util.StringTemplate;
 
 /**
  * Unit tests for the SemaTemplate class.
+ * @author Jerome Louvel (contact@noelios.com) <a href="http://www.noelios.com/">Noelios Consulting</a>
  */
 public class StringTemplateTest extends TestCase
 {
@@ -39,17 +40,25 @@ public class StringTemplateTest extends TestCase
       dataModel.put("number", Integer.toString(12345));
       dataModel.put("string", "abcdef");
 
-      StringTemplate st;
-      String result;
+      StringTemplate st = new StringTemplate("The number is ${number} and the string is ${string}");
+      assertEquals(st.process(dataModel), "The number is 12345 and the string is abcdef");
 
-      st = new StringTemplate("The number is ${number} and the string is ${string}");
-      result = st.process(dataModel);
-      assertEquals(result, "The number is 12345 and the string is abcdef");
+      st = new StringTemplate("The number is $$$ {{{${number}${number} and the string is ${string}$${string}$i{ng}");
+      assertEquals(st.process(dataModel), "The number is $$$ {{{1234512345 and the string is abcdef$abcdef$i{ng}");
+   }
+   
+   /** Tests the conditions feature. */
+   public void testConditions()
+   {
+   	MapModel dataModel = new MapModel();
+      dataModel.put("number", Integer.toString(12345));
+      dataModel.put("string", "abcdef");
 
-      st = new StringTemplate(
-            "The number is $$$ {{{${number}${number} and the string is ${string}$${string}$i{ng}");
-      result = st.process(dataModel);
-      assertEquals(result, "The number is $$$ {{{1234512345 and the string is abcdef$abcdef$i{ng}");
+      StringTemplate st = new StringTemplate("${if number}Number exists: ${number}${else}Number doesn't exist${end}");
+      assertEquals(st.process(dataModel), "Number exists: 12345");
+      
+      dataModel.remove("number");
+      assertEquals(st.process(dataModel), "Number doesn't exist");
    }
 
 }

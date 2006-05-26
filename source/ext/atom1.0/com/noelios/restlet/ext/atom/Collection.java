@@ -31,6 +31,7 @@ import org.restlet.data.Statuses;
 
 /**
  * Atom Protocol collection, part of a workspace.
+ * @author Jerome Louvel (contact@noelios.com) <a href="http://www.noelios.com/">Noelios Consulting</a>
  */
 public class Collection
 {

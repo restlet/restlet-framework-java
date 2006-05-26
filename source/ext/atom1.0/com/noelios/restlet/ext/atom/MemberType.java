@@ -24,6 +24,7 @@ package com.noelios.restlet.ext.atom;
 
 /**
  * Collection member types.
+ * @author Jerome Louvel (contact@noelios.com) <a href="http://www.noelios.com/">Noelios Consulting</a>
  */
 public enum MemberType
 {

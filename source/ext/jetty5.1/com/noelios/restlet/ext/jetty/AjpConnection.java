@@ -36,6 +36,7 @@ import org.restlet.connector.ServerCall;
 
 /**
  * Jetty AJP 1.3 connection.
+ * @author Jerome Louvel (contact@noelios.com) <a href="http://www.noelios.com/">Noelios Consulting</a>
  */
 public class AjpConnection extends AJP13Connection
 {

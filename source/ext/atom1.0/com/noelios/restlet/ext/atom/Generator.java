@@ -26,6 +26,7 @@ import org.restlet.data.Reference;
 
 /**
  * Identifies the agent used to generate a feed, for debugging and other purposes.
+ * @author Jerome Louvel (contact@noelios.com) <a href="http://www.noelios.com/">Noelios Consulting</a>
  */
 public class Generator
 {

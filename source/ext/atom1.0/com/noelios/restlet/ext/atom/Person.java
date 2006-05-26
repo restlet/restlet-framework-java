@@ -26,6 +26,7 @@ import org.restlet.data.Reference;
 
 /**
  * Element that describes a person, corporation, or similar entity (hereafter, 'person').
+ * @author Jerome Louvel (contact@noelios.com) <a href="http://www.noelios.com/">Noelios Consulting</a>
  */
 public class Person
 {

@@ -37,6 +37,7 @@ import org.restlet.data.Representation;
  * as specified by RFC 1867. Use parseRequest(Call) to acquire a list of FileItems associated with 
  * a given HTML widget.How the data for individual parts is stored is determined by the factory used to 
  * create them; a given part may be in memory, on disk, or somewhere else. 
+ * @author Jerome Louvel (contact@noelios.com) <a href="http://www.noelios.com/">Noelios Consulting</a>
  */
 public class RestletFileUpload extends FileUpload
 {

@@ -27,6 +27,7 @@ import junit.framework.TestSuite;
 
 /**
  * Suite of unit tests for the Restlet RI.
+ * @author Jerome Louvel (contact@noelios.com) <a href="http://www.noelios.com/">Noelios Consulting</a>
  */
 public class RestletTestSuite extends TestSuite
 {

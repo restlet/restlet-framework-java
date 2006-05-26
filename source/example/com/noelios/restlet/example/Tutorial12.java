@@ -36,6 +36,7 @@ import com.noelios.restlet.data.StringRepresentation;
 
 /**
  * Fluent Builders to simplify configuration. 
+ * @author Jerome Louvel (contact@noelios.com) <a href="http://www.noelios.com/">Noelios Consulting</a>
  */
 public class Tutorial12
 {

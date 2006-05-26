@@ -28,6 +28,7 @@ import org.restlet.data.Reference;
 
 /**
  * Defines a reference from an entry or feed to a Web resource.
+ * @author Jerome Louvel (contact@noelios.com) <a href="http://www.noelios.com/">Noelios Consulting</a>
  */
 public class Link
 {

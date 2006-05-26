@@ -33,6 +33,7 @@ import org.restlet.data.Representation;
 
 /**
  * Simple HTTP client calling the simple server.
+ * @author Jerome Louvel (contact@noelios.com) <a href="http://www.noelios.com/">Noelios Consulting</a>
  */
 public class SimpleClient
 {

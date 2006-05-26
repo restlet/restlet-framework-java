@@ -28,6 +28,7 @@ import java.sql.Statement;
 
 /**
  * JDBC result wrapper. Used by the JDBC client connector as an output of JDBC calls.
+ * @author Jerome Louvel (contact@noelios.com) <a href="http://www.noelios.com/">Noelios Consulting</a>
  */
 public class JdbcResult
 {

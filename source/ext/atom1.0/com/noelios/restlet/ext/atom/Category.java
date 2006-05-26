@@ -26,6 +26,7 @@ import org.restlet.data.Reference;
 
 /**
  * Conveys information about a category associated with an entry or feed.
+ * @author Jerome Louvel (contact@noelios.com) <a href="http://www.noelios.com/">Noelios Consulting</a>
  */
 public class Category
 {

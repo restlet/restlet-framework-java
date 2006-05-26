@@ -37,6 +37,7 @@ import org.restlet.data.Statuses;
 
 /**
  * Authenticating to an HTTP server.
+ * @author Jerome Louvel (contact@noelios.com) <a href="http://www.noelios.com/">Noelios Consulting</a>
  */
 public class Tutorial09b
 {

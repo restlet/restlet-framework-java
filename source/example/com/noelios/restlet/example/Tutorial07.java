@@ -33,6 +33,7 @@ import com.noelios.restlet.LogChainlet;
 
 /**
  * Logging calls.
+ * @author Jerome Louvel (contact@noelios.com) <a href="http://www.noelios.com/">Noelios Consulting</a>
  */
 public class Tutorial07
 {

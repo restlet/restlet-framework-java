@@ -30,6 +30,7 @@ import org.mortbay.util.InetAddrPort;
 
 /**
  * Jetty HTTP listener.
+ * @author Jerome Louvel (contact@noelios.com) <a href="http://www.noelios.com/">Noelios Consulting</a>
  */
 public class HttpListener extends SocketListener
 {

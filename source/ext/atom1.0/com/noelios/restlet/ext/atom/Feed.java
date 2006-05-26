@@ -44,6 +44,7 @@ import com.noelios.restlet.util.XmlWriter;
 
 /**
  * Atom Feed Document, acting as a container for metadata and data associated with the feed.
+ * @author Jerome Louvel (contact@noelios.com) <a href="http://www.noelios.com/">Noelios Consulting</a>
  */
 public class Feed extends SaxRepresentation
 {

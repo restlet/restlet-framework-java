@@ -32,6 +32,7 @@ import com.noelios.restlet.data.StringRepresentation;
 
 /**
  * Listening to Web browsers.
+ * @author Jerome Louvel (contact@noelios.com) <a href="http://www.noelios.com/">Noelios Consulting</a>
  */
 public class Tutorial03
 {

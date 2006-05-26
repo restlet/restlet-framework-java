@@ -42,6 +42,7 @@ import com.noelios.restlet.util.XmlWriter;
 
 /**
  * Represents an Atom introspection document.
+ * @author Jerome Louvel (contact@noelios.com) <a href="http://www.noelios.com/">Noelios Consulting</a>
  */
 public class Service extends SaxRepresentation
 {

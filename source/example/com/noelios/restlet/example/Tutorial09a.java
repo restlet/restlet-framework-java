@@ -36,6 +36,7 @@ import com.noelios.restlet.StatusChainlet;
 
 /**
  * Guard access to a Restlet.
+ * @author Jerome Louvel (contact@noelios.com) <a href="http://www.noelios.com/">Noelios Consulting</a>
  */
 public class Tutorial09a
 {

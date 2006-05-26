@@ -30,6 +30,7 @@ import com.noelios.restlet.data.StringRepresentation;
 
 /**
  * Trace target. 
+ * @author Jerome Louvel (contact@noelios.com) <a href="http://www.noelios.com/">Noelios Consulting</a>
  */
 public class TraceTarget extends AbstractRestlet
 {

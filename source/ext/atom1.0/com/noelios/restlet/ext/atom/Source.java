@@ -30,6 +30,7 @@ import org.restlet.data.Reference;
 
 /**
  * Source feed's metadata for entries copied from another feed. 
+ * @author Jerome Louvel (contact@noelios.com) <a href="http://www.noelios.com/">Noelios Consulting</a>
  */
 public class Source
 {

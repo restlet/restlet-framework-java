@@ -82,6 +82,7 @@ import org.restlet.data.Reference;
  * &lt;/web-app&gt;}
  * </pre>
  * @see <a href="http://java.sun.com/j2ee/">J2EE home page</a>
+ * @author Jerome Louvel (contact@noelios.com) <a href="http://www.noelios.com/">Noelios Consulting</a>
  */
 public class ServerServlet extends HttpServlet implements Server
 {

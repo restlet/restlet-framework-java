@@ -30,6 +30,7 @@ import org.restlet.data.Protocols;
 
 /**
  * Retrieving the content of a Web page.
+ * @author Jerome Louvel (contact@noelios.com) <a href="http://www.noelios.com/">Noelios Consulting</a>
  */
 public class Tutorial02a
 {
