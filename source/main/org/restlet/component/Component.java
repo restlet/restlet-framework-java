@@ -36,6 +36,7 @@ import org.restlet.connector.Server;
  * via its interface." Roy T. Fielding
  * @see <a href="http://www.ics.uci.edu/~fielding/pubs/dissertation/software_arch.htm#sec_1_2_1">Source
  * dissertation</a>
+ * @author Jerome Louvel (contact@noelios.com) <a href="http://www.noelios.com/">Noelios Consulting</a>
  */
 public interface Component extends Restlet
 {

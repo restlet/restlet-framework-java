@@ -24,6 +24,7 @@ package org.restlet.data;
 
 /**
  * Enumeration of common encodings.
+ * @author Jerome Louvel (contact@noelios.com) <a href="http://www.noelios.com/">Noelios Consulting</a>
  */
 public enum Encodings implements Encoding
 {

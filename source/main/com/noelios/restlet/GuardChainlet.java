@@ -45,6 +45,7 @@ import com.noelios.restlet.util.Base64;
  * supports the HTTP basic authentication scheme and a custom schemes (based on cookies, 
  * query params or IP address for example).
  * @see <a href="http://www.restlet.org/tutorial#part09">Tutorial: Guarding access to sensitive resources</a>
+ * @author Jerome Louvel (contact@noelios.com) <a href="http://www.noelios.com/">Noelios Consulting</a>
  */
 public class GuardChainlet extends AbstractChainlet
 {

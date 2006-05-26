@@ -56,6 +56,7 @@ import org.restlet.data.Parameter;
  * <li>serverName</li>
  * <li>status</li>
  * </ul>
+ * @author Jerome Louvel (contact@noelios.com) <a href="http://www.noelios.com/">Noelios Consulting</a>
  */
 public class CallModel implements ReadableModel
 {

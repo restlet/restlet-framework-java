@@ -31,6 +31,7 @@ import org.restlet.data.MediaTypes;
 /**
  * Object instance representation.<br/>
  * Based on Java object serialization.
+ * @author Jerome Louvel (contact@noelios.com) <a href="http://www.noelios.com/">Noelios Consulting</a>
  */
 public class ObjectRepresentation extends OutputRepresentation
 {

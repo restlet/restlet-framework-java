@@ -26,6 +26,7 @@ import java.util.List;
 
 /**
  * Character set preference.
+ * @author Jerome Louvel (contact@noelios.com) <a href="http://www.noelios.com/">Noelios Consulting</a>
  */
 public class CharacterSetPref extends Preference
 {

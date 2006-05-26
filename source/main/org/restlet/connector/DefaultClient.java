@@ -30,6 +30,7 @@ import org.restlet.data.Representation;
 
 /**
  * Default client connector supporting multiples protocols.
+ * @author Jerome Louvel (contact@noelios.com) <a href="http://www.noelios.com/">Noelios Consulting</a>
  */
 public class DefaultClient implements Client
 {

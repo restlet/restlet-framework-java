@@ -27,6 +27,7 @@ import java.util.List;
 /**
  * The data format of a representation.
  * @see <a href="http://en.wikipedia.org/wiki/MIME">MIME types on Wikipedia</a>
+ * @author Jerome Louvel (contact@noelios.com) <a href="http://www.noelios.com/">Noelios Consulting</a>
  */
 public enum MediaTypes implements MediaType
 {

@@ -28,6 +28,7 @@ import org.restlet.data.Protocol;
 
 /**
  * Abstract connector implementation.
+ * @author Jerome Louvel (contact@noelios.com) <a href="http://www.noelios.com/">Noelios Consulting</a>
  */
 public abstract class AbstractConnector extends AbstractRestlet implements Connector
 {

@@ -32,6 +32,7 @@ import org.restlet.data.MediaTypes;
 
 /**
  * Representation based on a simple string.
+ * @author Jerome Louvel (contact@noelios.com) <a href="http://www.noelios.com/">Noelios Consulting</a>
  */
 public class StringRepresentation extends StreamRepresentation
 {

@@ -44,6 +44,7 @@ import com.noelios.restlet.data.StringRepresentation;
  * the representation of this error. Also, if no status is set (null), then the "success ok"
  * status is assumed.<br/> 
  * @see <a href="http://www.restlet.org/tutorial#part08">Tutorial: Displaying error pages</a>
+ * @author Jerome Louvel (contact@noelios.com) <a href="http://www.noelios.com/">Noelios Consulting</a>
  */
 public class StatusChainlet extends AbstractChainlet
 {

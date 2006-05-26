@@ -28,6 +28,7 @@ import java.util.List;
  * Media type used in representations and preferences.
  * @see org.restlet.data.MediaTypes
  * @see <a href="http://en.wikipedia.org/wiki/MIME">MIME types on Wikipedia</a>
+ * @author Jerome Louvel (contact@noelios.com) <a href="http://www.noelios.com/">Noelios Consulting</a>
  */
 public interface MediaType extends Metadata
 {

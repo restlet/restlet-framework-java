@@ -27,7 +27,8 @@ import java.io.IOException;
 import org.restlet.data.Parameter;
 
 /**
- * HTTP header reader.
+ * HTTP-style header reader.
+ * @author Jerome Louvel (contact@noelios.com) <a href="http://www.noelios.com/">Noelios Consulting</a>
  */
 public class HeaderReader
 {

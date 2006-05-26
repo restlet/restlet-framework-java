@@ -24,6 +24,7 @@ package org.restlet.data;
 
 /**
  * Multi-usage parameter.
+ * @author Jerome Louvel (contact@noelios.com) <a href="http://www.noelios.com/">Noelios Consulting</a>
  */
 public class Parameter implements Data, Comparable<Parameter>
 {

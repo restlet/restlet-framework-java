@@ -34,6 +34,7 @@ import org.restlet.data.Statuses;
 
 /**
  * Restlet target used for Maplet or Chainlet attachments.
+ * @author Jerome Louvel (contact@noelios.com) <a href="http://www.noelios.com/">Noelios Consulting</a>
  */
 public class RestletTarget
 {

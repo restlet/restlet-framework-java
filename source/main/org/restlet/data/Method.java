@@ -25,6 +25,7 @@ package org.restlet.data;
 /**
  * Method to execute when handling a call.
  * @see org.restlet.data.Methods
+ * @author Jerome Louvel (contact@noelios.com) <a href="http://www.noelios.com/">Noelios Consulting</a>
  */
 public interface Method extends ControlData
 {

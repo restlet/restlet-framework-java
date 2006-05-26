@@ -33,6 +33,7 @@ import com.noelios.restlet.util.PipeStream;
 /**
  * Representation based on a BIO output stream. The write(OutputStream) 
  * method needs to be overriden in subclasses.
+ * @author Jerome Louvel (contact@noelios.com) <a href="http://www.noelios.com/">Noelios Consulting</a>
  */
 public abstract class OutputRepresentation extends StreamRepresentation
 {

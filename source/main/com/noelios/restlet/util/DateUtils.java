@@ -30,6 +30,7 @@ import java.util.TimeZone;
 
 /**
  * Date manipulation utilities.
+ * @author Jerome Louvel (contact@noelios.com) <a href="http://www.noelios.com/">Noelios Consulting</a>
  */
 public class DateUtils
 {

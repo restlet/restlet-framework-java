@@ -40,6 +40,7 @@ import org.restlet.Resource;
  * file, and HTTP message entity, instance, or variant." Roy T. Fielding
  * @see <a href="http://www.ics.uci.edu/~fielding/pubs/dissertation/rest_arch_style.htm#sec_5_2_1_2">Source
  * dissertation</a>
+ * @author Jerome Louvel (contact@noelios.com) <a href="http://www.noelios.com/">Noelios Consulting</a>
  */
 public interface Representation extends Data
 {

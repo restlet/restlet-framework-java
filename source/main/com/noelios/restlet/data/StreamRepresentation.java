@@ -32,6 +32,7 @@ import org.restlet.data.MediaType;
 
 /**
  * Representation based on a BIO stream.
+ * @author Jerome Louvel (contact@noelios.com) <a href="http://www.noelios.com/">Noelios Consulting</a>
  */
 public abstract class StreamRepresentation extends AbstractRepresentation
 {

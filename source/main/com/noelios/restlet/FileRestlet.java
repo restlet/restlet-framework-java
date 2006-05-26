@@ -32,6 +32,7 @@ import com.noelios.restlet.data.FileRepresentation;
 
 /**
  * Restlet supported by a single file.
+ * @author Jerome Louvel (contact@noelios.com) <a href="http://www.noelios.com/">Noelios Consulting</a>
  */
 public class FileRestlet extends AbstractRestlet
 {

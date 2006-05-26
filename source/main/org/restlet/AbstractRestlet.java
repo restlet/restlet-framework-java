@@ -32,6 +32,7 @@ import org.restlet.data.Statuses;
  * The start and stop state is managed by default but with no other action. Override the start and stop 
  * methods if needed.
  * @see <a href="http://www.restlet.org/tutorial#part03">Tutorial: Listening to Web browsers</a>
+ * @author Jerome Louvel (contact@noelios.com) <a href="http://www.noelios.com/">Noelios Consulting</a>
  */
 public abstract class AbstractRestlet<T extends Call> implements Restlet
 {

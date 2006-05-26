@@ -26,6 +26,7 @@ package org.restlet.data;
  * Modifier of a representation's media type. Useful to apply compression without losing the 
  * identity of the underlying media type.
  * @see org.restlet.data.Encodings
+ * @author Jerome Louvel (contact@noelios.com) <a href="http://www.noelios.com/">Noelios Consulting</a>
  */
 public interface Encoding extends Metadata
 {

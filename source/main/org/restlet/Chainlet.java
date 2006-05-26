@@ -29,6 +29,7 @@ package org.restlet;
  * Also note that you can attach and detach targets while handling incoming calls as the delegation code 
  * is ensured to be thread-safe and atomic.
  * @see <a href="http://www.restlet.org/tutorial#part07">Tutorial: Chainlets and call logging</a>
+ * @author Jerome Louvel (contact@noelios.com) <a href="http://www.noelios.com/">Noelios Consulting</a>
  */
 public interface Chainlet extends Restlet
 {

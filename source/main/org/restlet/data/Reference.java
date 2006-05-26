@@ -29,6 +29,7 @@ import java.util.List;
 /**
  * Represents a reference to a uniform resource identifier (URI). Contrary to the java.net.URI 
  * class, this interface represents mutable references.
+ * @author Jerome Louvel (contact@noelios.com) <a href="http://www.noelios.com/">Noelios Consulting</a>
  */
 public class Reference implements Data
 {

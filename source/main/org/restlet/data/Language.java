@@ -25,6 +25,7 @@ package org.restlet.data;
 /**
  * Language used in representations and preferences.
  * @see org.restlet.data.Languages
+ * @author Jerome Louvel (contact@noelios.com) <a href="http://www.noelios.com/">Noelios Consulting</a>
  */
 public interface Language extends Metadata
 {

@@ -28,6 +28,7 @@ import org.restlet.data.Reference;
 /**
  * Default Call that can be easily subclassed. Useful for application developer who 
  * need to invoke client connectors.
+ * @author Jerome Louvel (contact@noelios.com) <a href="http://www.noelios.com/">Noelios Consulting</a>
  */
 public class DefaultCall extends WrapperCall
 {

@@ -25,6 +25,7 @@ package com.noelios.restlet.util;
 /**
  * Readable model that can be used by the template engine.
  * @see com.noelios.restlet.util.StringTemplate
+ * @author Jerome Louvel (contact@noelios.com) <a href="http://www.noelios.com/">Noelios Consulting</a>
  */
 public interface ReadableModel
 {

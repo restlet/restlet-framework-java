@@ -25,6 +25,7 @@ package com.noelios.restlet.util;
 /**
  * Readable and writable model .
  * @see com.noelios.restlet.util.MapModel
+ * @author Jerome Louvel (contact@noelios.com) <a href="http://www.noelios.com/">Noelios Consulting</a>
  */
 public interface Model extends ReadableModel, WritableModel
 {

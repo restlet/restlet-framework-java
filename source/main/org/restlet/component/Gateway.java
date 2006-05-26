@@ -30,6 +30,7 @@ package org.restlet.component;
  * will use a proxy." Roy T. Fielding
  * @see <a href="http://www.ics.uci.edu/~fielding/pubs/dissertation/rest_arch_style.htm#sec_5_2_3">Source
  * dissertation</a>
+ * @author Jerome Louvel (contact@noelios.com) <a href="http://www.noelios.com/">Noelios Consulting</a>
  */
 public interface Gateway extends Component
 {

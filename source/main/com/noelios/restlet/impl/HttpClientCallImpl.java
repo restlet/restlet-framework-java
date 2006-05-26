@@ -43,6 +43,7 @@ import org.restlet.data.Representation;
 
 /**
  * Implementation of a client connector call.
+ * @author Jerome Louvel (contact@noelios.com) <a href="http://www.noelios.com/">Noelios Consulting</a>
  */
 public class HttpClientCallImpl extends ConnectorCallImpl implements ClientCall
 {

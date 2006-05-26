@@ -32,6 +32,7 @@ import org.restlet.data.*;
  * Restlet call wrapper. Useful for application developer who need to enrich the call with 
  * application related things.
  * @see <a href="http://c2.com/cgi/wiki?DecoratorPattern">The decorator (aka wrapper) pattern</a>
+ * @author Jerome Louvel (contact@noelios.com) <a href="http://www.noelios.com/">Noelios Consulting</a>
  */
 public class WrapperCall implements Call
 {

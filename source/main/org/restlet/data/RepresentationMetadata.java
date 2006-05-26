@@ -26,6 +26,7 @@ import java.util.Date;
 
 /**
  * Metadata describing a representation. Resources can have multiple representations called variants.
+ * @author Jerome Louvel (contact@noelios.com) <a href="http://www.noelios.com/">Noelios Consulting</a>
  */
 public class RepresentationMetadata extends DefaultMetadata implements Metadata
 {

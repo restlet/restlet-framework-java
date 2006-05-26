@@ -39,6 +39,7 @@ import com.noelios.restlet.util.CallModel;
  * Rewrites URIs then redirects the call or the client to a new destination.
  * @see com.noelios.restlet.util.CallModel
  * @see <a href="http://www.restlet.org/tutorial#part10">Tutorial: URI rewriting and redirection</a>
+ * @author Jerome Louvel (contact@noelios.com) <a href="http://www.noelios.com/">Noelios Consulting</a>
  */
 public class RedirectRestlet extends AbstractRestlet
 {

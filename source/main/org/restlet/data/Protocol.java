@@ -26,6 +26,7 @@ package org.restlet.data;
 /**
  * Protocol used by a client and a server connector to enable the communication
  * between two distributed components.
+ * @author Jerome Louvel (contact@noelios.com) <a href="http://www.noelios.com/">Noelios Consulting</a>
  */
 public interface Protocol extends ControlData
 {

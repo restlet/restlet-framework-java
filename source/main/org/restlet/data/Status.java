@@ -25,6 +25,7 @@ package org.restlet.data;
 /**
  * Status to return after handling a call.
  * @see org.restlet.data.Statuses
+ * @author Jerome Louvel (contact@noelios.com) <a href="http://www.noelios.com/">Noelios Consulting</a>
  */
 public interface Status extends ControlData
 {

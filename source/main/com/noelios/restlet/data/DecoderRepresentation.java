@@ -38,6 +38,7 @@ import org.restlet.data.RepresentationMetadata;
 
 /**
  * Representation that decodes a wrapped representation. 
+ * @author Jerome Louvel (contact@noelios.com) <a href="http://www.noelios.com/">Noelios Consulting</a>
  */
 public class DecoderRepresentation extends InputRepresentation
 {

@@ -34,6 +34,7 @@ import com.noelios.restlet.util.PreferenceReader;
 
 /**
  * Association of a media type and a character set.
+ * @author Jerome Louvel (contact@noelios.com) <a href="http://www.noelios.com/">Noelios Consulting</a>
  */
 public class ContentType
 {

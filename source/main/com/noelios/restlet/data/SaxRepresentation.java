@@ -49,6 +49,7 @@ import com.noelios.restlet.util.XmlWriter;
  * at a later time.<br/>
  * Subclasses only need to override the ContentHandler methods required for the reading and also the 
  * write(XmlWriter writer) method when serialization is requested.<br/>
+ * @author Jerome Louvel (contact@noelios.com) <a href="http://www.noelios.com/">Noelios Consulting</a>
  */
 public abstract class SaxRepresentation extends OutputRepresentation 
 {

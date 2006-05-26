@@ -34,6 +34,7 @@ import org.restlet.data.Parameter;
 
 /**
  * Cookie header reader.
+ * @author Jerome Louvel (contact@noelios.com) <a href="http://www.noelios.com/">Noelios Consulting</a>
  */
 public class CookieReader extends HeaderReader
 {

@@ -31,6 +31,7 @@ import org.restlet.data.*;
 /**
  * Call handled by Restlets.
  * @see org.restlet.Restlet
+ * @author Jerome Louvel (contact@noelios.com) <a href="http://www.noelios.com/">Noelios Consulting</a>
  */
 public interface Call
 {

@@ -36,6 +36,7 @@ import com.noelios.restlet.util.CallModel;
  * Chainlet logging all calls after their handling by the target Restlet. The current format 
  * is similar to IIS 6 logs. The logging is based on the java.util.logging package.
  * @see <a href="http://www.restlet.org/tutorial#part07">Tutorial: Chainlets and call logging</a>
+ * @author Jerome Louvel (contact@noelios.com) <a href="http://www.noelios.com/">Noelios Consulting</a>
  */
 public class LogChainlet extends AbstractChainlet
 {

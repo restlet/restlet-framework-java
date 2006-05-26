@@ -27,6 +27,7 @@ import org.restlet.component.Component;
 /**
  * Default Maplet that can directly be used.
  * @see <a href="http://www.restlet.org/tutorial#part11">Tutorial: Maplets and hierarchical URIs</a>
+ * @author Jerome Louvel (contact@noelios.com) <a href="http://www.noelios.com/">Noelios Consulting</a>
  */
 public class DefaultMaplet extends AbstractRestlet implements Maplet
 {

@@ -56,7 +56,8 @@ import com.noelios.restlet.util.PreferenceUtils;
 import com.noelios.restlet.util.SecurityUtils;
 
 /**
- * Uniform call wrapper for server HTTP calls.
+ * Call wrapper for server HTTP calls.
+ * @author Jerome Louvel (contact@noelios.com) <a href="http://www.noelios.com/">Noelios Consulting</a>
  */
 public class HttpServerRestletCall extends CallImpl
 {

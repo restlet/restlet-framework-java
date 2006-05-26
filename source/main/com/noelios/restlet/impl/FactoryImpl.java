@@ -50,6 +50,7 @@ import com.noelios.restlet.util.FormUtils;
 /**
  * Noelios Restlet Engine.<br/>
  * Also acts as a factory implementation.
+ * @author Jerome Louvel (contact@noelios.com) <a href="http://www.noelios.com/">Noelios Consulting</a>
  */
 public class FactoryImpl extends Factory
 {

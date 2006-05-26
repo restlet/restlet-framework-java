@@ -33,6 +33,7 @@ import org.restlet.data.Representation;
 
 /**
  * Server connector call.
+ * @author Jerome Louvel (contact@noelios.com) <a href="http://www.noelios.com/">Noelios Consulting</a>
  */
 public interface ServerCall extends ConnectorCall
 {

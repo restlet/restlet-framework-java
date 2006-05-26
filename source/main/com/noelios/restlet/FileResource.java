@@ -43,6 +43,7 @@ import com.noelios.restlet.data.FileRepresentation;
  * Apache HTTP server) is available. It is based on file extensions to specify variants (languages, media
  * types or character sets).
  * @see <a href="http://httpd.apache.org/docs/2.0/content-negotiation.html">Apache mod_negotiation module</a>
+ * @author Jerome Louvel (contact@noelios.com) <a href="http://www.noelios.com/">Noelios Consulting</a>
  */
 public class FileResource implements Resource
 {

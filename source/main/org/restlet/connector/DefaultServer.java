@@ -32,6 +32,7 @@ import org.restlet.data.Protocol;
 
 /**
  * Default server connector supporting multiples protocols.
+ * @author Jerome Louvel (contact@noelios.com) <a href="http://www.noelios.com/">Noelios Consulting</a>
  */
 public class DefaultServer implements Server
 {

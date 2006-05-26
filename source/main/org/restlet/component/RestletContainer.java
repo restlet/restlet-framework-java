@@ -36,6 +36,7 @@ import org.restlet.Call;
  * Calls are first intercepted by the container which can do various checks before effectively delegating it 
  * to one of the registered root Restlets. Restlet containers can also be contained within a Restlet server.
  * @see <a href="http://www.restlet.org/tutorial#part05">Tutorial: Restlets servers and containers</a>
+ * @author Jerome Louvel (contact@noelios.com) <a href="http://www.noelios.com/">Noelios Consulting</a>
  */
 public class RestletContainer extends AbstractComponent implements Chainlet, Maplet
 {

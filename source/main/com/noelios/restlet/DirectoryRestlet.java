@@ -43,6 +43,7 @@ import com.noelios.restlet.util.StringUtils;
  * (similar to Apache HTTP server) is used for files serving.
  * @see com.noelios.restlet.FileResource
  * @see <a href="http://www.restlet.org/tutorial#part06">Tutorial: Serving static files</a>
+ * @author Jerome Louvel (contact@noelios.com) <a href="http://www.noelios.com/">Noelios Consulting</a>
  */
 public class DirectoryRestlet extends AbstractRestlet
 {

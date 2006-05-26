@@ -42,6 +42,7 @@ import org.restlet.data.Representation;
 
 /**
  * Factory and registration service for Restlet API implementations.
+ * @author Jerome Louvel (contact@noelios.com) <a href="http://www.noelios.com/">Noelios Consulting</a>
  */
 public abstract class Factory
 {

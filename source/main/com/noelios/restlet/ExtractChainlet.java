@@ -40,6 +40,7 @@ import com.noelios.restlet.util.CallModel;
  * Chainlet extracting some attributes from a call. Multiple extractions can be defined, based on the query 
  * string of the resource reference, on the input form (posted from a browser), on the context URI matches 
  * or on the call's template model.
+ * @author Jerome Louvel (contact@noelios.com) <a href="http://www.noelios.com/">Noelios Consulting</a>
  */
 public class ExtractChainlet extends AbstractChainlet
 {

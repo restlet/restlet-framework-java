@@ -29,6 +29,7 @@ import java.io.ObjectInputStream;
 
 /**
  * Object instance reader. Based on Java object serialization.
+ * @author Jerome Louvel (contact@noelios.com) <a href="http://www.noelios.com/">Noelios Consulting</a>
  */
 public class ObjectReader extends BufferedInputStream
 {

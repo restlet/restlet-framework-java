@@ -25,6 +25,7 @@ package org.restlet.data;
 /**
  * Character set used to encode characters in textual representations.
  * @see org.restlet.data.CharacterSets
+ * @author Jerome Louvel (contact@noelios.com) <a href="http://www.noelios.com/">Noelios Consulting</a>
  */
 public interface CharacterSet extends Metadata
 {

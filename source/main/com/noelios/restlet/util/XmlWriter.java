@@ -289,6 +289,7 @@ import org.xml.sax.helpers.XMLFilterImpl;
  * </pre>
  * @see org.xml.sax.XMLFilter
  * @see org.xml.sax.ContentHandler
+ * @author Jerome Louvel (contact@noelios.com) <a href="http://www.noelios.com/">Noelios Consulting</a>
  */
 public class XmlWriter extends XMLFilterImpl
 {

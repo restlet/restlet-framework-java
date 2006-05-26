@@ -44,6 +44,7 @@ import org.restlet.data.PreferenceData;
 
 /**
  * Preference manipulation utilities.<br/>
+ * @author Jerome Louvel (contact@noelios.com) <a href="http://www.noelios.com/">Noelios Consulting</a>
  */
 public class PreferenceUtils
 {

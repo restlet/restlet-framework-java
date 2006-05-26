@@ -26,7 +26,8 @@ import java.io.IOException;
 import java.net.URLEncoder;
 
 /**
- * HTTP header manipulation utilities. 
+ * HTTP-style header manipulation utilities. 
+ * @author Jerome Louvel (contact@noelios.com) <a href="http://www.noelios.com/">Noelios Consulting</a>
  */
 public class HeaderUtils
 {

@@ -24,6 +24,7 @@ package org.restlet.data;
 
 /**
  * Cookie setting provided by a server.
+ * @author Jerome Louvel (contact@noelios.com) <a href="http://www.noelios.com/">Noelios Consulting</a>
  */
 public class CookieSetting extends Cookie
 {

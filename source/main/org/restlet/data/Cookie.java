@@ -24,6 +24,7 @@ package org.restlet.data;
 
 /**
  * Cookie provided by a client.
+ * @author Jerome Louvel (contact@noelios.com) <a href="http://www.noelios.com/">Noelios Consulting</a>
  */
 public class Cookie extends Parameter
 {

@@ -28,6 +28,7 @@ import java.util.List;
 
 /**
  * Media type used in representations and preferences.
+ * @author Jerome Louvel (contact@noelios.com) <a href="http://www.noelios.com/">Noelios Consulting</a>
  */
 public class DefaultMediaType extends DefaultMetadata implements MediaType
 {

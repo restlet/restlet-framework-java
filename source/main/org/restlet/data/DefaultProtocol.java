@@ -24,6 +24,7 @@ package org.restlet.data;
 
 /**
  * Default protocol to enable the communication between components..
+ * @author Jerome Louvel (contact@noelios.com) <a href="http://www.noelios.com/">Noelios Consulting</a>
  */
 public class DefaultProtocol implements Protocol
 {

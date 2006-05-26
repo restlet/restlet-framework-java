@@ -45,6 +45,7 @@ import org.restlet.data.Statuses;
  * or a root Maplet. Child Restlet can also be attached to a HostMaplet for further delegation.
  * By default, the supported protocol is HTTP, "localhost" URIs and IP-based URIs are allowed. 
  * However, client redirections to the preferred format are not issued. 
+ * @author Jerome Louvel (contact@noelios.com) <a href="http://www.noelios.com/">Noelios Consulting</a>
  */
 public class HostMaplet extends DefaultMaplet
 {

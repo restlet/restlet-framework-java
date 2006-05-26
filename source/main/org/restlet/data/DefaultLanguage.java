@@ -25,6 +25,7 @@ package org.restlet.data;
 
 /**
  * Language used in representations and preferences.
+ * @author Jerome Louvel (contact@noelios.com) <a href="http://www.noelios.com/">Noelios Consulting</a>
  */
 public class DefaultLanguage extends DefaultMetadata implements Language
 {

@@ -31,6 +31,7 @@ import org.restlet.data.Statuses;
 
 /**
  * Implementation of a chainer of calls to a target Restlet.
+ * @author Jerome Louvel (contact@noelios.com) <a href="http://www.noelios.com/">Noelios Consulting</a>
  */
 public class ChainletImpl extends AbstractRestlet implements Chainlet
 {

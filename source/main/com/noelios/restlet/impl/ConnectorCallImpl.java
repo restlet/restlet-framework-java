@@ -33,6 +33,7 @@ import com.noelios.restlet.util.DateUtils;
 
 /**
  * Implementation of a connector call.
+ * @author Jerome Louvel (contact@noelios.com) <a href="http://www.noelios.com/">Noelios Consulting</a>
  */
 public class ConnectorCallImpl implements ConnectorCall
 {

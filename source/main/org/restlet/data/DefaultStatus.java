@@ -24,6 +24,7 @@ package org.restlet.data;
 
 /**
  * Status to return after handling a call.
+ * @author Jerome Louvel (contact@noelios.com) <a href="http://www.noelios.com/">Noelios Consulting</a>
  */
 public class DefaultStatus implements Status
 {

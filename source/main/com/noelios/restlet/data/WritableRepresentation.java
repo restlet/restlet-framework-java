@@ -32,6 +32,7 @@ import org.restlet.data.MediaType;
 /**
  * Representation based on a writable NIO byte channel. The write(WritableByteChannel) 
  * method needs to be overriden in subclasses.
+ * @author Jerome Louvel (contact@noelios.com) <a href="http://www.noelios.com/">Noelios Consulting</a>
  */
 public abstract class WritableRepresentation extends ChannelRepresentation
 {

@@ -36,6 +36,7 @@ import org.restlet.data.RepresentationMetadata;
  * semantics is what distinguishes one resource from another." Roy T. Fielding
  * @see <a href="http://www.ics.uci.edu/~fielding/pubs/dissertation/rest_arch_style.htm#sec_5_2_1_1">Source
  * dissertation</a>
+ * @author Jerome Louvel (contact@noelios.com) <a href="http://www.noelios.com/">Noelios Consulting</a>
  */
 public interface Resource
 {

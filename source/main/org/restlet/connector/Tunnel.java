@@ -28,6 +28,7 @@ package org.restlet.connector;
  * Fielding
  * @see <a href="http://www.ics.uci.edu/~fielding/pubs/dissertation/rest_arch_style.htm#sec_5_2_2">Source
  * dissertation</a>
+ * @author Jerome Louvel (contact@noelios.com) <a href="http://www.noelios.com/">Noelios Consulting</a>
  */
 public interface Tunnel extends Connector
 {

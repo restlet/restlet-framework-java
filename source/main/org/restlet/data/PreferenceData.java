@@ -27,6 +27,7 @@ import java.util.List;
 
 /**
  * Client preference data related to a call.
+ * @author Jerome Louvel (contact@noelios.com) <a href="http://www.noelios.com/">Noelios Consulting</a>
  */
 public class PreferenceData implements ControlData
 {

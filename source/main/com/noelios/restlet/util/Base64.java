@@ -65,8 +65,7 @@ package com.noelios.restlet.util;
  * periodically to check for updates or to contribute improvements.
  * </p>
  *
- * @author Robert Harder
- * @author rob@iharder.net
+ * @author Robert Harder (rob@iharder.net)
  * @version 2.1
  */
 public class Base64

@@ -36,7 +36,8 @@ import org.restlet.data.Parameter;
 import org.restlet.data.Representation;
 
 /**
- * Web form reader.
+ * Form reader.
+ * @author Jerome Louvel (contact@noelios.com) <a href="http://www.noelios.com/">Noelios Consulting</a>
  */
 public class FormReader
 {

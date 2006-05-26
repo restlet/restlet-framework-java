@@ -37,6 +37,7 @@ import org.restlet.data.Statuses;
  * Outcoming calls are normally handled via pluggable client connectors.<br/>
  * Other direct calls are handled by the default container.
  * @see <a href="http://www.restlet.org/tutorial#part05">Tutorial: Restlets servers and containers</a>
+ * @author Jerome Louvel (contact@noelios.com) <a href="http://www.noelios.com/">Noelios Consulting</a>
  */
 public class RestletServer extends AbstractComponent
 {

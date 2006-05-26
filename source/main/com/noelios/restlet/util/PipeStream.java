@@ -31,6 +31,7 @@ import java.util.concurrent.BlockingQueue;
 /**
  * Pipe stream that pipes output streams into input streams. Implementation based on a shared synchronized
  * queue.
+ * @author Jerome Louvel (contact@noelios.com) <a href="http://www.noelios.com/">Noelios Consulting</a>
  */
 public class PipeStream
 {

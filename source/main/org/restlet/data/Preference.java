@@ -27,6 +27,7 @@ import java.util.List;
 
 /**
  * Metadata preference definition.
+ * @author Jerome Louvel (contact@noelios.com) <a href="http://www.noelios.com/">Noelios Consulting</a>
  */
 public class Preference implements ControlData
 {

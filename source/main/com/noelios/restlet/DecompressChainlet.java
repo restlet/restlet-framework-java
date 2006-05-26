@@ -37,6 +37,7 @@ import com.noelios.restlet.data.DecoderRepresentation;
 
 /**
  * Chainlet decompressing input or output representations. 
+ * @author Jerome Louvel (contact@noelios.com) <a href="http://www.noelios.com/">Noelios Consulting</a>
  */
 public class DecompressChainlet extends AbstractChainlet
 {
