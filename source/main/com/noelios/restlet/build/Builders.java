@@ -34,7 +34,7 @@ import com.noelios.restlet.GuardChainlet;
 import com.noelios.restlet.HostMaplet;
 
 /**
- * Utility methods for builder classes using the current builder factory.
+ * Utility methods using the current factory.
  * @author Jerome Louvel (contact@noelios.com) <a href="http://www.noelios.com/">Noelios Consulting</a>
  */
 public class Builders
