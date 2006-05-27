@@ -27,12 +27,30 @@ import java.util.ArrayList;
 import java.util.List;
 
 /**
- * Represents a reference to a uniform resource identifier (URI). Contrary to the java.net.URI 
- * class, this interface represents mutable references.
+ * Represents a reference to a Uniform Resource Identifier (URI). Contrary to the java.net.URI 
+ * class, this interface represents mutable references. It strictly conforms to the RFC 3986
+ * specifying URIs and follow its naming conventions.<br/>
+ * <pre>
+ * 	URI reference			= absolute-reference | relative-reference
+ * 
+ * 	absolute-reference   = scheme ":" scheme-specific-part [ "#" fragment ]
+ * 	scheme-specific-part = hierarchical-part [ "?" query ] | opaque-part
+ * 	hierarchical-part    = "//" authority path-abempty | path-absolute | path-rootless | path-empty
+ * 	authority            = [ user-info "@" ] host-name [ ":" host-port ]
+ * 
+ * 	relative-reference	= relative-part [ "?" query ] [ "#" fragment ]
+ *  </pre>
  * @author Jerome Louvel (contact@noelios.com) <a href="http://www.noelios.com/">Noelios Consulting</a>
+ * @see <a href="http://www.faqs.org/rfcs/rfc3986.html">RFC 3986</a>
  */
 public class Reference implements Data
 {
+   /** The base reference for relative references. */
+   protected Reference baseRef;
+
+   /** The internal reference. */
+   protected String uri;
+
    /** The fragment separator index. */
    protected int fragmentIndex;
 
@@ -41,32 +59,47 @@ public class Reference implements Data
 
    /** The scheme separator index. */
    protected int schemeIndex;
-
-   /** The internal reference. */
-   protected String uri;
+   
+   /**
+    * Empty constructor.
+    */
+   public Reference()
+   {
+   	this.baseRef = null;
+   	this.uri = null;
+   	updateIndexes();
+   }
+   
+   /**
+    * Clone constructor.
+    * @param ref The reference to clone.
+    */
+   public Reference(Reference ref)
+   {
+      this(ref.baseRef, ref.uri);
+   }
+   
+   /**
+    * Constructor from an absolute URI.
+    * @param absoluteUri The absolute URI.
+    */
+   public Reference(String absoluteUri)
+   {
+      this((Reference)null, absoluteUri);
+   }
 
    /**
-    * Constructor from a URI reference.
-    * @param identifier The absolute URI.
+    * Constructor from an identifier and a fragment.
+    * @param identifier The resource identifier.
     * @param fragment The fragment identifier.
     */
    public Reference(String identifier, String fragment)
    {
       this((fragment == null) ? identifier : identifier + '#' + fragment);
    }
-
-   /**
-    * Constructor from a URI reference.
-    * @param uriReference The URI reference.
-    */
-   public Reference(String uriReference)
-   {
-      this.uri = uriReference;
-      updateIndexes();
-   }
    
    /**
-    * Constructor from the URI parts.
+    * Constructor of absolute reference from its parts.
     * @param scheme The scheme ("http", "https" or "ftp").
     * @param hostName The host name or IP address.
     * @param hostPort The host port (default ports are correctly ignored).
@@ -76,91 +109,31 @@ public class Reference implements Data
     */
    public Reference(String scheme, String hostName, int hostPort, String path, String query, String fragment)
    {
-      this.uri = toUri(scheme, hostName, hostPort, path, query, fragment);
+      this(toUri(scheme, hostName, hostPort, path, query, fragment));
+   }
+
+   /**
+    * Constructor from a relative URI.
+    * @param baseRef The base reference. 
+    * @param relativeUri The relative URI.
+    */
+   public Reference(Reference baseRef, String relativeUri)
+   {
+      this.baseRef = baseRef;
+      this.uri = relativeUri;
       updateIndexes();
    }
    
    /**
-    * Creates an URI from its parts.
-    * @param scheme The scheme ("http", "https" or "ftp").
-    * @param hostName The host name or IP address.
-    * @param hostPort The host port (default ports are correctly ignored).
-    * @param path The path component for hierarchical identifiers.
+    * Constructor of relative reference from its parts.
+    * @param baseRef The base reference. 
+    * @param relativePart The relative part component (most of the time it is the path component).
     * @param query The optional query component for hierarchical identifiers.
     * @param fragment The optionale fragment identifier.
     */
-   public static String toUri(String scheme, String hostName, int hostPort, String path, String query, String fragment)
+   public Reference(Reference baseRef, String relativePart, String query, String fragment)
    {
-   	StringBuilder sb = new StringBuilder();
-
-   	// Append the scheme and host name
-   	sb.append(scheme).append("://").append(hostName);
-
-   	// Append the host port number 
-   	if((scheme.equals("ftp")   && (hostPort != 21)) ||
-   		(scheme.equals("http")  && (hostPort != 80)) || 
-   		(scheme.equals("https") && (hostPort != 443)))
-   	{
-   		sb.append(':').append(hostPort);
-   	}
-
-   	// Append the path
-   	if(path != null)
-   	{
-   		sb.append(path);
-   	}
-   	
-   	// Append the query string 
-   	if(query != null)
-   	{
-   		sb.append('?').append(query);
-   	}
-   	
-   	// Append the fragment identifier
-   	if(fragment != null)
-   	{
-   		sb.append('#').append(fragment);
-   	}
-
-   	// Actually construct the reference
-      return sb.toString();
-   }
-   
-   /**
-    * Creates an URI from its parts.
-    * @param scheme The scheme ("http", "https" or "ftp").
-    * @param host The host name or IP address and optional port number (with ':' separator character).
-    * @param path The path component for hierarchical identifiers.
-    * @param query The optional query component for hierarchical identifiers.
-    * @param fragment The optionale fragment identifier.
-    */
-   public static String toUri(String scheme, String host, String path, String query, String fragment)
-   {
-   	StringBuilder sb = new StringBuilder();
-
-   	// Append the scheme and host name
-   	sb.append(scheme).append("://").append(host);
-
-   	// Append the path
-   	if(path != null)
-   	{
-   		sb.append(path);
-   	}
-   	
-   	// Append the query string 
-   	if(query != null)
-   	{
-   		sb.append('?').append(query);
-   	}
-   	
-   	// Append the fragment identifier
-   	if(fragment != null)
-   	{
-   		sb.append('#').append(fragment);
-   	}
-
-   	// Actually construct the reference
-      return sb.toString();
+   	this(baseRef, toUri(relativePart, query, fragment));
    }
 
    /**
@@ -170,26 +143,26 @@ public class Reference implements Data
     */
    public String getAuthority()
    {
-      String ssp = getSchemeSpecificPart();
+      String part = isRelative() ? getRelativePart() : getSchemeSpecificPart();
 
-      if(ssp.startsWith("//"))
+      if(part.startsWith("//"))
       {
-         int index = ssp.indexOf('/', 2);
+         int index = part.indexOf('/', 2);
 
          if(index != -1)
          {
-            return ssp.substring(2, index);
+            return part.substring(2, index);
          }
          else
          {
-            index = ssp.indexOf('?');
+            index = part.indexOf('?');
             if(index != -1)
             {
-               return ssp.substring(2, index);
+               return part.substring(2, index);
             }
             else
             {
-               return ssp.substring(2);
+               return part.substring(2);
             }
          }
       }
@@ -199,6 +172,261 @@ public class Reference implements Data
       }
    }
 
+   /**
+    * Returns the base reference for relative references.
+    * @return The base reference for relative references.
+    */
+   public Reference getBaseRef()
+   {
+   	return this.baseRef;
+   }
+
+   /**
+    * Sets the base reference for relative references.
+    * @param baseRef The base reference for relative references.
+    */
+   public void setBaseRef(Reference baseRef)
+   {
+   	this.baseRef = baseRef;
+   }
+
+   /**
+    * Returns true if both reference are strictly equals, character-to-character.
+    * @param ref The reference to compare.
+    * @return True if both reference are strictly equals, character-to-character.
+    */
+   public boolean equals(Reference ref)
+   {
+   	return this.uri.equals(ref.uri);
+   }
+
+   /**
+    * Returns true if both reference are equivalent, meaning that they resolve to the same target reference.
+    * @param ref The reference to compare.
+    * @return True if both reference are equivalent.
+    */
+   public boolean isEquivalentTo(Reference ref)
+   {
+   	return getTargetRef().equals(ref.getTargetRef());
+   }
+   
+   /**
+    * Normalizes the reference. Useful before comparison between references or when building 
+    * a target reference from a base and a relative references. 
+    */
+   public void normalize()
+   {
+      // 1. The input buffer is initialized with the now-appended path components 
+   	//    and the output buffer is initialized to the empty string.
+   	StringBuilder output = new StringBuilder();
+   	StringBuilder input = new StringBuilder();
+   	String path = getPath();
+   	if(path != null) input.append(path);
+   	
+   	// 2. While the input buffer is not empty, loop as follows:
+   	while(input.length() > 0)
+   	{
+   		// A. If the input buffer begins with a prefix of "../" or "./",
+         //    then remove that prefix from the input buffer; otherwise,
+   		if((input.length() >= 3) && input.substring(0, 3).equals("../"))
+   		{
+   			input.delete(0, 3);
+   		}
+   		else if((input.length() >= 2) && input.substring(0, 2).equals("./"))
+   		{
+   			input.delete(0, 2);
+   		}
+   		
+   		// B. if the input buffer begins with a prefix of "/./" or "/.",
+         //    where "." is a complete path segment, then replace that
+         //    prefix with "/" in the input buffer; otherwise,
+   		else if((input.length() >= 3) && input.substring(0, 3).equals("/./"))
+   		{
+   			input.delete(0, 2);
+   		}
+   		else if((input.length() == 2) && input.substring(0, 2).equals("/."))
+   		{
+   			input.delete(1, 2);
+   		}
+   		
+         // C. if the input buffer begins with a prefix of "/../" or "/..",
+         // where ".." is a complete path segment, then replace that
+         // prefix with "/" in the input buffer and remove the last
+         // segment and its preceding "/" (if any) from the output
+         // buffer; otherwise,
+   		else if((input.length() >= 4) && input.substring(0, 4).equals("/../"))
+   		{
+   			input.delete(0, 3);
+   			removeLastSegment(output);
+   		}
+   		else if((input.length() == 3) && input.substring(0, 3).equals("/.."))
+   		{
+   			input.delete(1, 3);
+   			removeLastSegment(output);
+   		}
+   		
+         // D.  if the input buffer consists only of "." or "..", then remove
+         // that from the input buffer; otherwise,
+   		else if((input.length() == 1) && input.substring(0, 1).equals("."))
+   		{
+   			input.delete(0, 1);
+   		}
+   		else if((input.length() == 2) && input.substring(0, 2).equals(".."))
+   		{
+   			input.delete(0, 2);
+   		}
+   		
+         // E.  move the first path segment in the input buffer to the end of
+         // the output buffer, including the initial "/" character (if
+         // any) and any subsequent characters up to, but not including,
+         // the next "/" character or the end of the input buffer.   		
+   		else
+   		{
+   			int max = -1;
+   			for(int i = 1; (max == -1) && (i < input.length()); i++)
+   			{
+   				if(input.charAt(i) == '/') max = i;
+   			}
+   			
+   			if(max != -1)
+   			{
+   				// We found the next "/" character.
+   				output.append(input.substring(0, max));
+   				input.delete(0, max);
+   			}
+   			else
+   			{
+   				// End of input buffer reached
+   				output.append(input);
+   				input.delete(0, input.length());
+   			}
+   		}
+   	}
+		
+		// Finally, the output buffer is returned as the result
+		setPath(output.toString());
+   }
+
+   /**
+    * Removes the last segement from the output builder.
+    * @param output The output builder to update.
+    */
+   private void removeLastSegment(StringBuilder output)
+   {
+		int min = -1;
+		for(int i = output.length() - 1; (min == -1) && (i >= 0); i--)
+		{
+			if(output.charAt(i) == '/') min = i;
+		}
+		
+		if(min != -1)
+		{
+			// We found the previous "/" character.
+			output.delete(min, output.length());
+		}
+		else
+		{
+			// End of output buffer reached
+			output.delete(0, output.length());
+		}
+   	
+   }
+   
+   /**
+    * Returns the target reference. This method resolves relative references against the base reference
+    * then normalize them.
+    * @return The target reference. 
+    */
+   public Reference getTargetRef()
+   {
+   	Reference result = null;
+   	String scheme = getScheme();
+   	
+   	// Step 1 - Resolve relative reference against their base reference
+   	if(scheme != null)
+   	{
+   		// Absolute URI detected
+   		result = new Reference(this);
+   	}
+   	else
+   	{
+      	String authority = getAuthority();
+      	String path = getPath();
+      	String query = getQuery();
+      	String fragment = getFragment();
+
+      	// Create an empty reference
+   		result = new Reference();
+      	result.setScheme(baseRef.getScheme());
+   		
+      	if(authority != null)
+      	{
+      		result.setAuthority(authority);
+      		result.setPath(path);
+      		result.setQuery(query);
+      	}
+      	else
+   		{
+      		result.setAuthority(baseRef.getAuthority());
+
+      		if((path == null) || (path.equals("")))
+      		{
+      			result.setPath(baseRef.getPath());
+      			
+               if(query != null)
+               {
+               	result.setQuery(query);
+               }
+               else
+               {
+               	result.setQuery(baseRef.getQuery());
+               }
+      		}
+      		else
+      		{
+               if(path.startsWith("/"))
+               {
+               	result.setPath(path);
+               }
+               else
+               {
+            		String basePath = baseRef.getPath();
+            		String mergedPath = null;
+            		
+            		if((baseRef.getAuthority() != null) && ((basePath == null) || (basePath.equals(""))))
+            		{
+            			mergedPath = "/" + path;
+            		}
+            		else
+            		{
+               		// Remove the last segment which may be empty if the path is ending with a slash
+               		int lastSlash = basePath.lastIndexOf('/');
+               		if(lastSlash == -1)
+               		{
+               			mergedPath = path;
+               		}
+               		else
+               		{
+               			mergedPath = basePath.substring(0, lastSlash + 1) + path;
+               		}
+            		}               	
+               	
+               	result.setPath(mergedPath);
+               }
+            
+               result.setQuery(query);      			
+      		}
+   		}
+      	
+      	result.setFragment(fragment);
+   	}
+   	
+   	// Step 2 - Normalize the target reference
+   	result.normalize();
+  	
+   	return result;
+   }
+   
    /**
     * Returns the fragment identifier.
     * @return The fragment identifier.
@@ -233,38 +461,45 @@ public class Reference implements Data
     */
    public String getHostName()
    {
+   	String result = null;
       String authority = getAuthority();
-      int index1 = authority.indexOf('@');
-      int index2 = authority.indexOf(':');
-
-      if(index1 != -1)
+      
+      if(authority != null)
       {
-         // User info found
-         if(index2 != -1)
-         {
-            // Port found
-            return authority.substring(index1 + 1, index2);
-         }
-         else
-         {
-            // No port found
-            return authority.substring(index1 + 1);
-         }
+	      int index1 = authority.indexOf('@');
+	      int index2 = authority.indexOf(':');
+	
+	      if(index1 != -1)
+	      {
+	         // User info found
+	         if(index2 != -1)
+	         {
+	            // Port found
+	            result = authority.substring(index1 + 1, index2);
+	         }
+	         else
+	         {
+	            // No port found
+	         	result = authority.substring(index1 + 1);
+	         }
+	      }
+	      else
+	      {
+	         // No user info found
+	         if(index2 != -1)
+	         {
+	            // Port found
+	         	result = authority.substring(0, index2);
+	         }
+	         else
+	         {
+	            // No port found
+	         	result = authority;
+	         }
+	      }
       }
-      else
-      {
-         // No user info found
-         if(index2 != -1)
-         {
-            // Port found
-            return authority.substring(2, index2);
-         }
-         else
-         {
-            // No port found
-            return authority.substring(2);
-         }
-      }
+      
+      return result;
    }
 
    /**
@@ -273,17 +508,20 @@ public class Reference implements Data
     */
    public Integer getHostPort()
    {
+   	Integer result = null;
       String authority = getAuthority();
-      int index = authority.indexOf(':');
-
-      if(index != -1)
+      
+      if(authority != null)
       {
-         return Integer.valueOf(authority.substring(index + 1));
+	      int index = authority.indexOf(':');
+	
+	      if(index != -1)
+	      {
+	         result = Integer.valueOf(authority.substring(index + 1));
+	      }
       }
-      else
-      {
-         return null;
-      }
+      
+      return result;
    }
 
    /**
@@ -310,49 +548,54 @@ public class Reference implements Data
     */
    public String getPath()
    {
-      String ssp = getSchemeSpecificPart();
-
-      if(ssp.startsWith("//"))
+   	String result = null;
+      String part = isRelative() ? getRelativePart() : getSchemeSpecificPart();
+	
+      if(part != null)
       {
-         // Authority found
-         int index1 = ssp.indexOf('/', 2);
-
-         if(index1 != -1)
-         {
-            // Path found
-            int index2 = ssp.indexOf('?');
-            if(index2 != -1)
-            {
-               // Query found
-               return ssp.substring(index1, index2);
-            }
-            else
-            {
-               // No query found
-               return ssp.substring(index1);
-            }
-         }
-         else
-         {
-            // No path found
-            return null;
-         }
+	      if(part.startsWith("//"))
+	      {
+	         // Authority found
+	         int index1 = part.indexOf('/', 2);
+	
+	         if(index1 != -1)
+	         {
+	            // Path found
+	            int index2 = part.indexOf('?');
+	            if(index2 != -1)
+	            {
+	               // Query found
+	            	result = part.substring(index1, index2);
+	            }
+	            else
+	            {
+	               // No query found
+	            	result = part.substring(index1);
+	            }
+	         }
+	         else
+	         {
+	         	// Path must be empty in this case
+	         }
+	      }
+	      else
+	      {
+	         // No authority found
+	         int index = part.indexOf('?');
+	         if(index != -1)
+	         {
+	            // Query found
+	         	result = part.substring(0, index);
+	         }
+	         else
+	         {
+	            // No query found
+	         	result = part;
+	         }
+	      }
       }
-      else
-      {
-         // No authority found
-         int index = ssp.indexOf('?');
-         if(index != -1)
-         {
-            // Query found
-            return ssp.substring(0, index);
-         }
-         else
-         {
-            // No query found
-            return ssp;
-         }
-      }
+      
+      return result;
    }
 
    /**
@@ -421,6 +664,7 @@ public class Reference implements Data
                }
                else if(i == localPath.length())
                {
+               	// End of local path reached
                   if(basePath.charAt(i) == '/')
                   {
                      if((i + 1) == basePath.length())
@@ -457,7 +701,7 @@ public class Reference implements Data
                      // The base path has a segment that starts like the last local path segment 
                      // But that is longer. Situation similar to a junction
                      StringBuilder sb = new StringBuilder();
-                     sb.append("..");
+                     boolean firstAdd = true;
                      boolean canAdd = false;
                      
                      for(int j = i; j < basePath.length(); j++)
@@ -468,13 +712,29 @@ public class Reference implements Data
                         }
                         else if(canAdd)
                         {
-                           sb.append("/..");
+                        	if(firstAdd)
+                        	{
+                     			firstAdd = false;
+                        	}
+                        	else
+                        	{
+                        		sb.append("/");
+                        	}
+
+                        	sb.append("..");
                            canAdd = false;
                         }
                      }
                      
-                     sb.append('/').append(localPath.substring(lastSlashIndex + 1));
+                     if(lastSlashIndex + 1 < localPath.length())
+                     {
+                     	if(!firstAdd) sb.append('/');
+                     	sb.append(localPath.substring(lastSlashIndex + 1));
+                     }
+                     
                      relativePath = sb.toString();
+                     
+                     if(relativePath.equals("")) relativePath = ".";
                   }               
                }
                else if(i == basePath.length())
@@ -513,8 +773,8 @@ public class Reference implements Data
                // and append the rest of the local path
                // the local path is a direct subpath of the base path
                StringBuilder sb = new StringBuilder();
-               sb.append("..");
                boolean canAdd = false;
+               boolean firstAdd = true;
                
                for(int j = i; j < basePath.length(); j++)
                {
@@ -524,17 +784,48 @@ public class Reference implements Data
                   }
                   else if(canAdd)
                   {
-                     sb.append("/..");
+                  	if(firstAdd)
+                  	{
+               			firstAdd = false;
+                  	}
+                  	else
+                  	{
+                  		sb.append("/");
+                  	}
+                  	
+                     sb.append("..");
                      canAdd = false;
                   }
                }
                
-               sb.append('/').append(localPath.substring(lastSlashIndex + 1));
+            	if(!firstAdd) sb.append('/');
+            	sb.append(localPath.substring(lastSlashIndex + 1));
                relativePath = sb.toString();
             }
          }
          
-         result = new Reference(relativePath);
+         // Builde the result reference
+         result = new Reference();
+      	String query = getQuery();
+      	String fragment = getFragment();
+         boolean modified = false;
+         
+      	if((query != null) && (!query.equals(base.getQuery())))
+      	{
+      		result.setQuery(query);
+      		modified = true;
+      	}
+      	
+      	if((fragment != null) && (!fragment.equals(base.getFragment())))
+      	{
+      		result.setFragment(fragment); 
+      		modified = true;
+      	}
+      	
+      	if(!modified || !relativePath.equals("."))
+      	{
+         	result.setPath(relativePath);
+      	}
       }
       
       return result;
@@ -601,34 +892,58 @@ public class Reference implements Data
     */
    public String getSchemeSpecificPart()
    {
+   	String result = null;
+   	
       if(schemeIndex != -1)
       {
          // Scheme found
          if(fragmentIndex != -1)
          {
             // Fragment found
-            return this.uri.substring(schemeIndex + 1, fragmentIndex);
+            result = this.uri.substring(schemeIndex + 1, fragmentIndex);
          }
          else
          {
             // No fragment found
-            return this.uri.substring(schemeIndex + 1);
+         	result = this.uri.substring(schemeIndex + 1);
          }
       }
-      else
+      
+      return result;
+   }
+
+   /**
+    * Returns the relative part for relative references only.
+    * @return The relative part for relative references only.
+    */
+   public String getRelativePart()
+   {
+   	String result = null;
+   	
+      if(schemeIndex == -1)
       {
-         // No scheme found
-         if(fragmentIndex != -1)
-         {
-            // Fragment found
-            return this.uri.substring(0, fragmentIndex);
-         }
-         else
-         {
-            // No fragment found
-            return this.uri;
-         }
+         // This is a relative reference, no scheme found
+      	if(queryIndex != -1)
+      	{
+      		// Query found
+      		result = this.uri.substring(0, queryIndex);
+      	}
+      	else
+      	{
+	         if(fragmentIndex != -1)
+	         {
+	            // Fragment found
+	         	result = this.uri.substring(0, fragmentIndex);
+	         }
+	         else
+	         {
+	            // No fragment found
+	         	result = this.uri;
+	         }
+      	}
       }
+      
+      return result;
    }
 
    /**
@@ -647,6 +962,59 @@ public class Reference implements Data
       }
       
       return result;
+   }
+
+   /**
+    * Returns the hierarchical part which is equivalent to the scheme specific part less the query component.
+    * @return The hierarchical part .
+    */
+   public String getHierarchicalPart()
+   {
+      if(schemeIndex != -1)
+      {
+         // Scheme found
+      	if(queryIndex != -1)
+      	{
+      		// Query found
+      		return this.uri.substring(schemeIndex + 1, queryIndex);
+      	}
+      	else
+      	{
+      		// No query found
+	         if(fragmentIndex != -1)
+	         {
+	            // Fragment found
+	            return this.uri.substring(schemeIndex + 1, fragmentIndex);
+	         }
+	         else
+	         {
+	            // No fragment found
+	            return this.uri.substring(schemeIndex + 1);
+	         }
+      	}
+      }
+      else
+      {
+         // No scheme found
+      	if(queryIndex != -1)
+      	{
+      		// Query found
+      		return this.uri.substring(0, queryIndex);
+      	}
+      	else
+      	{
+	         if(fragmentIndex != -1)
+	         {
+	            // Fragment found
+	            return this.uri.substring(0, fragmentIndex);
+	         }
+	         else
+	         {
+	            // No fragment found
+	            return this.uri;
+	         }
+      	}
+      }
    }
 
    /**
@@ -711,17 +1079,20 @@ public class Reference implements Data
     */
    public String getUserInfo()
    {
+   	String result = null;
       String authority = getAuthority();
-      int index = authority.indexOf('@');
-
-      if(index != -1)
+      
+      if(authority != null)
       {
-         return authority.substring(0, index);
+	      int index = authority.indexOf('@');
+	
+	      if(index != -1)
+	      {
+	         result = authority.substring(0, index);
+	      }
       }
-      else
-      {
-         return null;
-      }
+      
+      return result;
    }
 
    /**
@@ -766,34 +1137,44 @@ public class Reference implements Data
     */
    public void setAuthority(String authority)
    {
-      String ssp = getSchemeSpecificPart();
+      String oldPart = isRelative() ? getRelativePart() : getSchemeSpecificPart();
+   	String newPart;
       String newAuthority = (authority == null) ? "" : "//" + authority;
 
-      if(ssp.startsWith("//"))
+      if(oldPart.startsWith("//"))
       {
-         int index = ssp.indexOf('/', 2);
+         int index = oldPart.indexOf('/', 2);
 
          if(index != -1)
          {
-            setSchemeSpecificPart(newAuthority + ssp.substring(index));
+            newPart = newAuthority + oldPart.substring(index);
          }
          else
          {
-            index = ssp.indexOf('?');
+            index = oldPart.indexOf('?');
             if(index != -1)
             {
-               setSchemeSpecificPart(newAuthority + ssp.substring(index));
+            	newPart = newAuthority + oldPart.substring(index);
             }
             else
             {
-               setSchemeSpecificPart(newAuthority);
+            	newPart = newAuthority;
             }
          }
       }
       else
       {
-         setSchemeSpecificPart(newAuthority + ssp);
+      	newPart = newAuthority + oldPart;
       }
+      
+   	if(isAbsolute())
+   	{
+	      setSchemeSpecificPart(newPart);
+   	}
+   	else
+   	{
+   		setRelativePart(newPart);
+   	}
    }
 
    /**
@@ -802,7 +1183,7 @@ public class Reference implements Data
     */
    public void setFragment(String fragment)
    {
-      if(fragment.indexOf('#') == -1)
+      if((fragment != null) && (fragment.indexOf('#') != -1))
       {
          throw new IllegalArgumentException("Illegal '#' character detected in parameter");
       }
@@ -825,7 +1206,14 @@ public class Reference implements Data
             // No existing fragment
             if(fragment != null)
             {
-               this.uri = this.uri + '#' + fragment;
+            	if(this.uri != null)
+            	{
+            		this.uri = this.uri + '#' + fragment;
+            	}
+            	else
+            	{
+            		this.uri = '#' + fragment;
+            	}
             }
             else
             {
@@ -843,6 +1231,7 @@ public class Reference implements Data
     */
    public void setHostName(String host)
    {
+   	if(host == null) host = "";
       String authority = getAuthority();
       int index1 = authority.indexOf('@');
       int index2 = authority.indexOf(':');
@@ -884,16 +1273,24 @@ public class Reference implements Data
    public void setHostPort(Integer port)
    {
       String authority = getAuthority();
-      String newPort = (port == null) ? "" : ":" + port;
-      int index = authority.indexOf(':');
-
-      if(index != -1)
+      
+      if(authority != null)
       {
-         setAuthority(authority.substring(0, index) + newPort);
+	      int index = authority.indexOf(':');
+	      String newPort = (port == null) ? "" : ":" + port;
+	
+	      if(index != -1)
+	      {
+	         setAuthority(authority.substring(0, index) + newPort);
+	      }
+	      else
+	      {
+	         setAuthority(authority + newPort);
+	      }
       }
       else
       {
-         setAuthority(authority + newPort);
+      	throw new IllegalArgumentException("No authority defined, please define a host name first");
       }
    }
 
@@ -903,6 +1300,7 @@ public class Reference implements Data
     */
    public void setIdentifier(String identifier)
    {
+   	if(identifier == null) identifier = "";
       if(identifier.indexOf('#') == -1)
       {
          throw new IllegalArgumentException("Illegal '#' character detected in parameter");
@@ -930,59 +1328,78 @@ public class Reference implements Data
     */
    public void setPath(String path)
    {
-      String ssp = getSchemeSpecificPart();
+      String oldPart = isRelative() ? getRelativePart() : getSchemeSpecificPart();
+   	String newPart = null;
+   	
+   	if(oldPart != null)
+   	{
+      	if(path == null) path = "";
 
-      if(ssp.startsWith("//"))
-      {
-         // Authority found
-         int index1 = ssp.indexOf('/', 2);
-
-         if(index1 != -1)
-         {
-            // Path found
-            int index2 = ssp.indexOf('?');
-            if(index2 != -1)
-            {
-               // Query found
-               setSchemeSpecificPart(ssp.substring(0, index1) + path + ssp.substring(index2));
-            }
-            else
-            {
-               // No query found
-               setSchemeSpecificPart(ssp.substring(0, index1) + path);
-            }
-         }
-         else
-         {
-            // No path found
-            int index2 = ssp.indexOf('?');
-            if(index2 != -1)
-            {
-               // Query found
-               setSchemeSpecificPart(ssp.substring(0, index2) + path + ssp.substring(index2));
-            }
-            else
-            {
-               // No query found
-               setSchemeSpecificPart(ssp + path);
-            }
-         }
-      }
-      else
-      {
-         // No authority found
-         int index = ssp.indexOf('?');
-         if(index != -1)
-         {
-            // Query found
-            setSchemeSpecificPart(path + ssp.substring(index));
-         }
-         else
-         {
-            // No query found
-            setSchemeSpecificPart(path);
-         }
-      }
+      	if(oldPart.startsWith("//"))
+	      {
+	         // Authority found
+	         int index1 = oldPart.indexOf('/', 2);
+	
+	         if(index1 != -1)
+	         {
+	            // Path found
+	            int index2 = oldPart.indexOf('?');
+	            if(index2 != -1)
+	            {
+	               // Query found
+	            	newPart = oldPart.substring(0, index1) + path + oldPart.substring(index2);
+	            }
+	            else
+	            {
+	               // No query found
+	            	newPart = oldPart.substring(0, index1) + path;
+	            }
+	         }
+	         else
+	         {
+	            // No path found
+	            int index2 = oldPart.indexOf('?');
+	            if(index2 != -1)
+	            {
+	               // Query found
+	            	newPart = oldPart.substring(0, index2) + path + oldPart.substring(index2);
+	            }
+	            else
+	            {
+	               // No query found
+	            	newPart = oldPart + path;
+	            }
+	         }
+	      }
+	      else
+	      {
+	         // No authority found
+	         int index = oldPart.indexOf('?');
+	         if(index != -1)
+	         {
+	            // Query found
+	         	newPart = path + oldPart.substring(index);
+	         }
+	         else
+	         {
+	            // No query found
+	         	newPart = path;
+	         }
+	      }
+   	}
+   	else
+   	{
+   		newPart = path;
+   	}
+   	
+   	if(isAbsolute())
+   	{
+	      setSchemeSpecificPart(newPart);
+   	}
+   	else
+   	{
+   		setRelativePart(newPart);
+   	}
    }
 
    /**
@@ -1040,7 +1457,14 @@ public class Reference implements Data
             // No fragment found
             if(query != null)
             {
-               this.uri = this.uri + '?' + query;
+            	if(this.uri != null)
+            	{
+            		this.uri = this.uri + '?' + query;
+            	}
+            	else
+            	{
+            		this.uri = '?' + query;
+            	}
             }
             else
             {
@@ -1061,19 +1485,29 @@ public class Reference implements Data
       if(schemeIndex != -1)
       {
          // Scheme found
-         this.uri = scheme + this.uri.substring(schemeIndex);
+      	if(scheme != null)
+      	{
+      		this.uri = scheme + this.uri.substring(schemeIndex);
+      	}
+      	else
+      	{
+      		this.uri = this.uri.substring(schemeIndex + 1);
+      	}
       }
       else
       {
          // No scheme found
-         if(this.uri == null)
-         {
-            this.uri = scheme + ':';
-         }
-         else
-         {
-            this.uri = scheme + ':' + this.uri;
-         }
+      	if(scheme != null)
+      	{
+	         if(this.uri == null)
+	         {
+	            this.uri = scheme + ':';
+	         }
+	         else
+	         {
+	            this.uri = scheme + ':' + this.uri;
+	         }
+      	}
       }
 
       updateIndexes();
@@ -1085,6 +1519,7 @@ public class Reference implements Data
     */
    public void setSchemeSpecificPart(String schemeSpecificPart)
    {
+   	if(schemeSpecificPart == null) schemeSpecificPart = "";
       if(schemeIndex != -1)
       {
          // Scheme found
@@ -1119,6 +1554,36 @@ public class Reference implements Data
    }
 
    /**
+    * Sets the relative part for relative references only.
+    * @param relativePart The relative part to set.
+    */
+   public void setRelativePart(String relativePart)
+   {
+   	if(relativePart == null) relativePart = "";
+      if(schemeIndex == -1)
+      {
+         // This is a relative reference, no scheme found
+      	if(queryIndex != -1)
+      	{
+      		// Query found
+      		this.uri = relativePart + this.uri.substring(queryIndex);
+      	}
+      	else if(fragmentIndex != -1)
+	      {
+	      	// Fragment found
+	         this.uri = relativePart + this.uri.substring(fragmentIndex);
+	      }
+	      else
+	      {
+	      	// No fragment found
+	         this.uri = relativePart;
+      	}
+      }
+
+      updateIndexes();
+   }
+
+   /**
     * Sets the segments of a hierarchical path.<br/>
     * A new absolute path will replace any existing one.
     * @param segments The segments of the hierarchical path.
@@ -1140,17 +1605,25 @@ public class Reference implements Data
    public void setUserInfo(String userInfo)
    {
       String authority = getAuthority();
-      String newUserInfo = (userInfo == null) ? "" : userInfo + '@';
-      int index = authority.indexOf('@');
+      
+      if(authority != null)
+      {
+	      int index = authority.indexOf('@');
+	      String newUserInfo = (userInfo == null) ? "" : userInfo + '@';
 
-      if(index != -1)
-      {
-         setAuthority(newUserInfo + authority.substring(index + 1));
-      }
-      else
-      {
-         setAuthority(newUserInfo + authority);
-      }
+	      if(index != -1)
+	      {
+	         setAuthority(newUserInfo + authority.substring(index + 1));
+	      }
+	      else
+	      {
+	         setAuthority(newUserInfo + authority);
+	      }
+   	}
+	   else
+	   {
+	   	throw new IllegalArgumentException("No authority defined, please define a host name first");
+	   }
    }
 
    /**
@@ -1229,10 +1702,97 @@ public class Reference implements Data
    {
       if(uri != null)
       {
-         schemeIndex = this.uri.indexOf(':');
-         fragmentIndex = this.uri.indexOf('#');
-         queryIndex = this.uri.indexOf('?');
+         this.schemeIndex = this.uri.indexOf(':');
+         this.queryIndex = this.uri.indexOf('?');
+         this.fragmentIndex = this.uri.indexOf('#');
       }
+      else
+      {
+         this.schemeIndex = -1;
+         this.queryIndex = -1;
+         this.fragmentIndex = -1;
+      }
+   }
+   
+   /**
+    * Creates an URI from its parts.
+    * @param scheme The scheme ("http", "https" or "ftp").
+    * @param hostName The host name or IP address.
+    * @param hostPort The host port (default ports are correctly ignored).
+    * @param path The path component for hierarchical identifiers.
+    * @param query The optional query component for hierarchical identifiers.
+    * @param fragment The optionale fragment identifier.
+    */
+   public static String toUri(String scheme, String hostName, Integer hostPort, String path, String query, String fragment)
+   {
+   	StringBuilder sb = new StringBuilder();
+
+   	// Append the scheme and host name
+   	sb.append(scheme).append("://").append(hostName);
+
+   	// Append the host port number
+   	if(hostPort != null)
+   	{
+   		if((scheme.equals("ftp")   && (hostPort != 21)) ||
+   			(scheme.equals("http")  && (hostPort != 80)) || 
+   			(scheme.equals("https") && (hostPort != 443)))
+   		{
+   			sb.append(':').append(hostPort);
+   		}
+   	}
+
+   	// Append the path
+   	if(path != null)
+   	{
+   		sb.append(path);
+   	}
+   	
+   	// Append the query string 
+   	if(query != null)
+   	{
+   		sb.append('?').append(query);
+   	}
+   	
+   	// Append the fragment identifier
+   	if(fragment != null)
+   	{
+   		sb.append('#').append(fragment);
+   	}
+
+   	// Actually construct the reference
+      return sb.toString();
+   }
+   
+   /**
+    * Creates a relative URI from its parts.
+    * @param relativePart The relative part component.
+    * @param query The optional query component for hierarchical identifiers.
+    * @param fragment The optionale fragment identifier.
+    */
+   public static String toUri(String relativePart, String query, String fragment)
+   {
+   	StringBuilder sb = new StringBuilder();
+
+   	// Append the path
+   	if(relativePart != null)
+   	{
+   		sb.append(relativePart);
+   	}
+   	
+   	// Append the query string 
+   	if(query != null)
+   	{
+   		sb.append('?').append(query);
+   	}
+   	
+   	// Append the fragment identifier
+   	if(fragment != null)
+   	{
+   		sb.append('#').append(fragment);
+   	}
+
+   	// Actually construct the reference
+      return sb.toString();
    }
    
 }

@@ -265,7 +265,8 @@ public interface Call
    public void setRedirectionRef(Reference redirectionRef);
 
    /**
-    * Sets the reference for redirections or resource creations using an URI string.
+    * Sets the reference for redirections or resource creations using an URI string. Note that
+    * the redirection URI can be either absolute or relative to the current context reference.
     * @param redirectionUri The redirection URI.
     */
    public void setRedirectionRef(String redirectionUri);
@@ -289,7 +290,8 @@ public interface Call
    public void setResourceRef(Reference resourceRef);
 
    /**
-    * Sets the resource reference using an URI string.
+    * Sets the resource reference using an URI string. Note that the resource URI can be either 
+    * absolute or relative to the current context reference.
     * @param resourceUri The resource URI.
     */
    public void setResourceRef(String resourceUri);

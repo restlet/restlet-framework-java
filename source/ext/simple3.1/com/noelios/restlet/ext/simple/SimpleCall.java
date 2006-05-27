@@ -83,7 +83,7 @@ public class SimpleCall extends HttpServerCallImpl
     */
 	public String getRequestUri()
 	{
-		return Reference.toUri(isConfidential() ? "https" : "http", request.getValue("host"), 
+		return Reference.toUri(isConfidential() ? "https" : "http", request.getValue("host"), null,
 				request.getURI(), null, null);
 	}
 

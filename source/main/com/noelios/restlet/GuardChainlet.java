@@ -159,7 +159,7 @@ public class GuardChainlet extends AbstractChainlet
 	               security.setPassword(credentials.substring(separator + 1));
 	
 	               // Log the authentication result
-	               logger.info("Basic HTTP authentication succeeded: login=" + security.getLogin() + ", password=" + security.getPassword() + ".");
+	               logger.info("Basic HTTP authentication succeeded: login=" + security.getLogin() + ".");
 	            }
 	         }
 	         catch(UnsupportedEncodingException e)
