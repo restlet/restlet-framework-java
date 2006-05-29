@@ -221,4 +221,27 @@ public enum Protocols implements Protocol
       return protocol.getName().equalsIgnoreCase(getName());
    }
 
+   /**
+    * Creates a new method by attempting to reuse an existing enumeration entry.
+    * @param schemeName The scheme name.
+    * @return The new method.
+    */
+   public static Protocol create(String schemeName)
+   {
+   	Protocol result = null;
+   	
+      if(schemeName != null)
+      {
+         if(schemeName.equalsIgnoreCase(Protocols.AJP.getSchemeName())) result = Protocols.AJP;
+         else if(schemeName.equalsIgnoreCase(Protocols.HTTP.getSchemeName())) result = Protocols.HTTP;
+         else if(schemeName.equalsIgnoreCase(Protocols.HTTPS.getSchemeName())) result = Protocols.HTTPS;
+         else if(schemeName.equalsIgnoreCase(Protocols.JDBC.getSchemeName())) result = Protocols.JDBC;
+         else if(schemeName.equalsIgnoreCase(Protocols.SMTP.getSchemeName())) result = Protocols.SMTP;
+         else if(schemeName.equalsIgnoreCase(Protocols.SMTPS.getSchemeName())) result = Protocols.SMTPS;
+         else result = new DefaultProtocol(schemeName);
+      }
+   	
+      return result;
+   }
+
 }

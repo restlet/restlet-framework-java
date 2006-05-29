@@ -40,7 +40,9 @@ Restlet changes log
  - Fixed bug with Call.getClientAddress() not being consistent with Call.getClientAddresses(). Reported by Lars Heuer.
  - Removed unecessary Call.setClientAddresses(List) method. Use the modifiable list returned by Call.getClientAddresses() instead.
  - Removed "parseDate" and "formatDate" from HttpServerCallImpl which are already in super class. Reported and fixed by Lars Heuer.
-
+ - Added Reference.getProtocol() and setProtocol() method to manipulate the URI scheme component via the Protocol interface.
+ - Added Protocols.create(schemeName) static method to allow reuse of Protocols enums.
+ 
 1.0 beta 12 (2006-05-20)
  - Added com.noelios.restlet.build package containing builder classes allowing a compact construction of Restlet applications base of the Fluent design
 	pattern coined by Martin Fowler. Based on suggestion and contribution from Lars Heuer and Yuri de Wit.

@@ -906,6 +906,15 @@ public class Reference implements Data
    }
 
    /**
+    * Returns the protocol associated to the scheme component.
+    * @return The protocol associated to the scheme component.
+    */
+   public Protocol getProtocol()
+   {
+   	return Protocols.create(getScheme());
+   }
+   
+   /**
     * Returns the scheme specific part.
     * @return The scheme specific part.
     */
@@ -1530,6 +1539,15 @@ public class Reference implements Data
       }
 
       updateIndexes();
+   }
+
+   /**
+    * Sets the scheme component based on this protocol.
+    * @param protocol The protocol of the scheme component.
+    */
+   public void setProtocol(Protocol protocol)
+   {
+   	setScheme(protocol.getSchemeName());
    }
 
    /**

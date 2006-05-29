@@ -43,6 +43,15 @@ public class DefaultProtocol implements Protocol
 	/**
 	 * Constructor.
 	 * @param schemeName The scheme name.
+	 */
+	public DefaultProtocol(String schemeName)
+	{
+		this(schemeName, schemeName.toUpperCase(), schemeName.toUpperCase() + " Protocol", -1);
+	}
+	
+	/**
+	 * Constructor.
+	 * @param schemeName The scheme name.
 	 * @param name The unique name.
 	 * @param description The description.
 	 * @param defaultPort The default port.
