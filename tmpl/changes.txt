@@ -9,7 +9,9 @@ Restlet changes log
    Now the delimiters must be different and default to ${variableName} and #[if test1]...#[else if test2]...#[else]...#[end].
    WARNING: this has a potential impact on existing application using the old delimiters for instructions such as for the RedirectResltet target URI pattern.
  - Added support for single quotes to delimit the variable names in CallModel instances. Prevents the needs for double quote escaping in Java strings.
- - Added static Reference.toUri() method to construct an URI string from its parts. Better than doing: new Reference(parts...).toString().
+ - Enhanced the Reference to strictly conform to the URI RFC 3896. New methods, normalization code, resolution of relative URIs and relativization.
+ - GuardChainlet doesn't log the password anymore. Reported by AJ Barnes.
+ - Call.setRedirectionRef() and setResourceRef() now accept relative URIs (like ".."). The base URi is the current context. Suggested by Yuri de Wit.
  - Fixed bug in SimpleCall forgetting to add the port number in the request URIs.
  - Optimized response time of the Simple HTTP server connector. Suggested by Niall Gallagher.
  - Added DefaultBuilder.upMaplet() and upMaplet(level) to go up to parent Maplet builders without the need to count non Maplet builders 
@@ -17,6 +19,8 @@ Restlet changes log
  - Added new RestletContainerBuilder constructor taking an existing RestletContainer instance.
  - Added empty RestletContainer constructor in case the name is never used.
  - Added HostMapletBuilder to facilitate the fluent configuration of Host Maplets.
+ - Fully refactored the Ant build process using macro tasks.
+ - Added support for Retroweaver in the build process to backport the classes to older JDKs than 5.0. Contributed by Lars Heuer.
  - Added a build.properties file containing the machine specific directories in order to have a universal build.xml Ant file. Suggested by Lars Heuer.
  - Added new attachHost(domain) method to ChainletBuilder, MapletBuilder and RestletContainerBuilder (refactored other attachHost() methods too).
  - Added "redirectStatus" property to HostMaplet.
