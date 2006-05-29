@@ -209,12 +209,9 @@
 		<attribute name="name" />
 		<attribute name="version" />
 	   	<sequential>
-	   		<property name="dist.lib" value="${dist}/lib/@{name}@{version}" />
-	   		<property name="dist.src" value="${dist}/src/@{name}@{version}" />
-	   		
 	   		<!-- Create extension binary jar file -->
-			<mkdir dir="${dist.lib}" />
-			<jar jarfile="${dist.lib}/restlet.@{name}.jar" basedir="${classes}/ext/@{name}@{version}">
+			<mkdir dir="${dist}/lib/@{name}@{version}" />
+			<jar jarfile="${dist}/lib/@{name}@{version}/restlet.@{name}.jar" basedir="${classes}/ext/@{name}@{version}">
 				<manifest>
 					<attribute name="Built-By" value="${author}" />
 					<section name="com.noelios.restlet.ext.@{name}">
@@ -226,11 +223,11 @@
 			</jar>
 
 	   		<!-- Add the manifest files -->
-			<jar jarfile="${dist.lib}/restlet.@{name}.jar" update="true" basedir="${src}/ext/@{name}@{version}" includes="meta-inf/**" />
+			<jar jarfile="${dist}/lib/@{name}@{version}/restlet.@{name}.jar" update="true" basedir="${src}/ext/@{name}@{version}" includes="meta-inf/**" />
 		
 			<!-- Create extension source jar file -->
-			<mkdir dir="${dist.src}" />
-			<zip destfile="${dist.src}/restlet.@{name}.zip" basedir="${src}/ext/@{name}@{version}" 
+			<mkdir dir="${dist}/src/@{name}@{version}" />
+			<zip destfile="${dist}/src/@{name}@{version}/restlet.@{name}.zip" basedir="${src}/ext/@{name}@{version}" 
 				includes="com/noelios/restlet/**" excludes="${excludes}" />
 	   	</sequential>
 	</macrodef>
@@ -451,8 +448,8 @@
 		<zip destfile="${dist}/src/test/restlet.test.zip" basedir="${src-test}" includes="com/noelios/restlet/**" excludes="${excludes}" />
 
 		<!-- Copy the third party libraries -->
-		<copy todir="${dist}/lib">
-			<fileset dir="${lib}" />
+		<copy todir="${dist}/lib" includeemptydirs="false">
+			<fileset dir="${lib}" excludes="retroweaver*/**,junit*/**"/>
 		</copy>
 
 		<!-- Make extensions -->
