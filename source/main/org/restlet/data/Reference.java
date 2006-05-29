@@ -197,9 +197,28 @@ public class Reference implements Data
     */
    public boolean equals(Reference ref)
    {
-   	return this.uri.equals(ref.uri);
+   	return (ref == null) ? false : this.uri.equals(ref.uri);
    }
-
+   
+   /**
+    * Indicates whether some other object is "equal to" this one.
+    * @param obj The reference object with which to compare.
+    * @return True if this object is the same as the obj argument. 
+    */
+   public boolean equals(Object obj) 
+   {
+   	return (obj instanceof Reference) ? equals((Reference) obj) : false;
+   }
+      
+   /**
+    * Returns a hash code value for the object.
+    * @return A hash code value for the object.
+    */
+   public int hashCode() 
+   {
+   	return this.uri.hashCode();
+	}
+   	
    /**
     * Returns true if both reference are equivalent, meaning that they resolve to the same target reference.
     * @param ref The reference to compare.
