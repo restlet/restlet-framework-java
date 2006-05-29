@@ -23,7 +23,6 @@
 package com.noelios.restlet.impl;
 
 import java.io.IOException;
-import java.util.Date;
 import java.util.List;
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -37,7 +36,6 @@ import org.restlet.data.Representation;
 import org.restlet.data.RepresentationMetadata;
 
 import com.noelios.restlet.util.CookieUtils;
-import com.noelios.restlet.util.DateUtils;
 import com.noelios.restlet.util.SecurityUtils;
 
 /**
@@ -161,42 +159,6 @@ public abstract class HttpServerCallImpl extends ConnectorCallImpl implements Se
       {
          // Send the output to the client
          output.write(getResponseStream());
-      }
-   }
-   
-   /**
-    * Parses a date string.
-    * @param date The date string to parse.
-    * @param cookie Indicates if the date is in the cookie format.
-    * @return The parsed date.
-    */
-   public Date parseDate(String date, boolean cookie)
-   {
-      if(cookie)
-      {
-         return DateUtils.parse(date, DateUtils.FORMAT_RFC_1036);
-      }
-      else
-      {
-         return DateUtils.parse(date, DateUtils.FORMAT_RFC_1123);
-      }
-   }
-   
-   /**
-    * Formats a date as a header string.
-    * @param date The date to format.
-    * @param cookie Indicates if the date should be in the cookie format.
-    * @return The formatted date.
-    */
-   public String formatDate(Date date, boolean cookie)
-   {
-      if(cookie)
-      {
-         return DateUtils.format(date, DateUtils.FORMAT_RFC_1036[0]);
-      }
-      else
-      {
-         return DateUtils.format(date, DateUtils.FORMAT_RFC_1123[0]);
       }
    }
    
