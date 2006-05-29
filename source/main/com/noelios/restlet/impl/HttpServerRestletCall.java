@@ -103,7 +103,7 @@ public class HttpServerRestletCall extends CallImpl
    		this.clientAddresses = super.getClientAddresses();
 
    		// Add the request address as the first client address
-   		this.clientAddresses.add(getConnectorCall().getRequestAddress());
+   		setClientAddress(getConnectorCall().getRequestAddress());
    		
 	      // Lookup the "X-Forwarded-For" header
 	      String header = getConnectorCall().getRequestHeaderValue(ConnectorCall.HEADER_X_FORWARDED_FOR);
