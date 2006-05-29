@@ -50,7 +50,7 @@ public class Tutorial03
          };
 
          // Create the HTTP server and listen on port 8182
-         new DefaultServer(Protocols.HTTP, "My server", handler, 8182).start();
+         new DefaultServer(Protocols.HTTP, handler, 8182).start();
       }
       catch(Exception e)
       {

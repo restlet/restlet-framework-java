@@ -43,13 +43,11 @@ public class Tutorial02b
       try
       {
          // Prepare the REST call
-      	Call call = new DefaultCall();
-         call.setResourceRef("http://www.restlet.org");
+      	Call call = new DefaultCall(Methods.GET, "http://www.restlet.org");
          call.setReferrerRef("http://www.mysite.org");
-         call.setMethod(Methods.GET);
 
          // Ask to the HTTP client connector to handle the call
-         Client client = new DefaultClient(Protocols.HTTP, "My client");
+         Client client = new DefaultClient(Protocols.HTTP);
          client.handle(call);
 
          // Output the result representation on the JVM console

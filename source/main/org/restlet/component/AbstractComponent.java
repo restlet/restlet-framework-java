@@ -84,7 +84,14 @@ public abstract class AbstractComponent extends AbstractRestlet implements Compo
     */
    public void addServer(Server server)
    {
-      this.servers.put(server.getName(), server);
+   	if(server.getName() != null)
+   	{
+   		this.servers.put(server.getName(), server);
+		}
+		else
+		{
+			throw new IllegalArgumentException("The server connector has no name set");
+		}
    }
 
    /**
@@ -102,7 +109,14 @@ public abstract class AbstractComponent extends AbstractRestlet implements Compo
     */
    public void addClient(Client client)
    {
-      this.clients.put(client.getName(), client);
+   	if(client.getName() != null)
+   	{
+   		this.clients.put(client.getName(), client);
+   	}
+   	else
+   	{
+   		throw new IllegalArgumentException("The client connector has no name set");
+   	}
    }
 
    /**

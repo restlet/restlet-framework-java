@@ -46,9 +46,7 @@ public class Tutorial09b
       try
       {
          // Prepare the REST call
-      	Call call = new DefaultCall();
-         call.setResourceRef("http://localhost:8182/");
-         call.setMethod(Methods.GET);
+      	Call call = new DefaultCall(Methods.GET, "http://localhost:8182/");
          
          // Add the client authentication to the call 
          ChallengeResponse authentication = new ChallengeResponse(ChallengeSchemes.HTTP_BASIC, "scott", "tiger");
@@ -58,7 +56,7 @@ public class Tutorial09b
          Client client = new DefaultClient(Protocols.HTTP, "My client");
          client.handle(call);
 
-         if(call.getStatus().equals(Statuses.SUCCESS_OK))
+         if(call.getStatus().isSuccess())
          {
             // Output the result representation on the JVM console
             Representation output = call.getOutput();
@@ -68,6 +66,11 @@ public class Tutorial09b
          {
             // Unauthorized access
             System.out.println("Your access was not authorized by the server, check your credentials");
+         }
+         else
+         {
+            // Unexpected status
+            System.out.println("An unexpected status was returned: " + call.getStatus());
          }
       }
       catch(IOException e)

@@ -276,6 +276,9 @@ public class HttpClientImpl extends AbstractClient
          {
             clientCall.sendRequestInput(call.getInput());
          }
+
+         // Get the response status
+         call.setStatus(new DefaultStatus(clientCall.getResponseStatusCode(), null, clientCall.getResponseReasonPhrase(), null));
       }
       catch(ConnectException ce)
       {
@@ -305,9 +308,6 @@ public class HttpClientImpl extends AbstractClient
       
       try
       {
-         // Get the response status
-         call.setStatus(new DefaultStatus(clientCall.getResponseStatusCode(), null, clientCall.getResponseReasonPhrase(), null));
-
          // Get the server address
          call.setServerAddress(clientCall.getResponseAddress());
 

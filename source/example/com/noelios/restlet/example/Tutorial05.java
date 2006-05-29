@@ -46,8 +46,8 @@ public class Tutorial05
          // Create a new Restlet container
          RestletContainer myContainer = new RestletContainer();
 
-         // Create the HTTP server connector, then add it as a server connector
-         // to the Restlet container. Note that the container is the call restlet.
+         // Create the HTTP server connector, then add it to the container. 
+         // Note that the container will act as the initial Restlet call's handler.
          Server server = new DefaultServer(Protocols.HTTP, "My server", myContainer, 8182);
          myContainer.addServer(server);
 

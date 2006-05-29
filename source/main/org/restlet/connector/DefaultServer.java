@@ -42,6 +42,29 @@ public class DefaultServer implements Server
    /**
     * Constructor.
     * @param protocol The connector protocol.
+    * @param target The target Restlet.
+    * @param port The listening port.
+    */
+   public DefaultServer(Protocol protocol, Restlet target, int port)
+   {
+   	this(protocol, null, target, null, port);
+   }
+   
+   /**
+    * Constructor.
+    * @param protocol The connector protocol.
+    * @param target The target Restlet.
+    * @param address The optional listening IP address (useful if multiple IP addresses available).
+    * @param port The listening port.
+    */
+   public DefaultServer(Protocol protocol, Restlet target, String address, int port)
+   {
+   	this(protocol, null, target, address, port);
+   }
+   
+   /**
+    * Constructor.
+    * @param protocol The connector protocol.
     * @param name The unique connector name.
     * @param target The target Restlet.
     * @param port The listening port.

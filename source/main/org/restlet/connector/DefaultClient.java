@@ -40,6 +40,15 @@ public class DefaultClient implements Client
 	/**
     * Constructor.
     * @param protocol The connector protocol.
+	 */
+	public DefaultClient(Protocol protocol)
+	{
+		this(protocol, null);
+	}
+	
+	/**
+    * Constructor.
+    * @param protocol The connector protocol.
     * @param name The unique connector name.
 	 */
 	public DefaultClient(Protocol protocol, String name)

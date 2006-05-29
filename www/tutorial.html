@@ -56,7 +56,7 @@
 </p>
 <pre>
          // Outputting the content of a Web page
-         Client client = new DefaultClient(Protocols.HTTP, "My client");
+         Client client = new DefaultClient(Protocols.HTTP);
          client.get("http://www.restlet.org").getOutput().write(System.out);
 </pre>
 <p>
@@ -64,13 +64,11 @@
 </p>
 <pre>
          // Prepare the REST call
-         Call call = new DefaultCall();
-         call.setResourceRef("http://www.restlet.org");
+         Call call = new DefaultCall(Methods.GET, "http://www.restlet.org");
          call.setReferrerRef("http://www.mysite.org");
-         call.setMethod(Methods.GET);
 
          // Ask to the HTTP client connector to handle the call
-         Client client = new DefaultClient(Protocols.HTTP, "My client");
+         Client client = new DefaultClient(Protocols.HTTP);
          client.handle(call);
 
          // Output the result representation on the JVM console
@@ -95,7 +93,7 @@
          };
 
          // Create the HTTP server and listen on port 8182
-         new DefaultServer(Protocols.HTTP, "My server", handler, 8182).start();
+         new DefaultServer(Protocols.HTTP, handler, 8182).start();
 </pre>
 <p>
    If you run this code and launch your server, you can open a Web browser and hit the <a target="_top" href="http://localhost:8182">http://localhost:8182</a>. Actually, any URI will work, try also <a target="_top" href="http://localhost:8182/test/tutorial">http://localhost:8182/test/tutorial</a>. Note that if you test your server from a different machine, you need to replace "localhost" by either the IP address of your server or its domain name. The handler that we created is very primitive. We will see later how to take more advantage of the Restlet framework.
@@ -123,10 +121,10 @@
 </p>
 <pre>
          // Create a new Restlet container
-         RestletContainer myContainer = new RestletContainer("My container");
+         RestletContainer myContainer = new RestletContainer();
 
-         // Create the HTTP server connector, then add it as a server connector
-         // to the Restlet container. Note that the container is the call restlet.
+         // Create the HTTP server connector, then add it to the container.
+         // Note that the container will act as the initial Restlet call's handler.
          Server server = new DefaultServer(Protocols.HTTP, "My server", myContainer, 8182);
          myContainer.addServer(server);
 
@@ -287,9 +285,7 @@
 </p>
 <pre>
          // Prepare the REST call
-         Call call = new DefaultCall();
-         call.setResourceRef("http://localhost:8182/");
-         call.setMethod(Methods.GET);
+         Call call = new DefaultCall(Methods.GET, "http://localhost:8182/");
 
          // Add the client authentication to the call
          ChallengeResponse authentication = new ChallengeResponse(ChallengeSchemes.HTTP_BASIC, "scott", "tiger");
@@ -299,7 +295,7 @@
          Client client = new DefaultClient(Protocols.HTTP, "My client");
          client.handle(call);
 
-         if(call.getStatus().equals(Statuses.SUCCESS_OK))
+         if(call.getStatus().isSuccess())
          {
             // Output the result representation on the JVM console
             Representation output = call.getOutput();
@@ -309,6 +305,11 @@
          {
             // Unauthorized access
             System.out.println("Your access was not authorized by the server, check your credentials");
+         }
+         else
+         {
+            // Unexpected status
+            System.out.println("An unexpected status was returned: " + call.getStatus());
          }
 </pre>
 <p>
@@ -322,7 +323,7 @@
 </p>
 <pre>
          // Create a redirect Restlet then attach it to the container
-         String target = "http://www.google.com/search?q=site:mysite.org+${query[\"query\"]}";
+         String target = "http://www.google.com/search?q=site:mysite.org+${query['query']}";
          RedirectRestlet searchRedirect = new RedirectRestlet(myContainer, target, RedirectRestlet.MODE_CLIENT_TEMPORARY);
          host.attach("/search", searchRedirect);
 </pre>
@@ -358,7 +359,7 @@
 </p>
 <pre>
          // Create a new Restlet container
-         RestletContainer myContainer = new RestletContainer("My container");
+         RestletContainer myContainer = new RestletContainer();
 
          // Create the HTTP server connector, then add it as a server connector
          // to the Restlet container. Note that the container is the call restlet.
@@ -437,7 +438,7 @@
 </p>
 <pre>
          // Build and start the container
-         new RestletContainerBuilder("My container")
+         Builders.buildContainer()
             .addServer(Protocols.HTTP, "My server", 8182)
             .attachLog("com.noelios.restlet.example")
                .attachStatus(true, "webmaster@mysite.org", "http://www.mysite.org")
@@ -482,7 +483,7 @@
 <br/>
 
 <small>
-   Version 4.2, last modified on 2006-05-24<br/>
+   Version 4.3, last modified on 2006-05-29<br/>
    Copyright &copy; 2005-2006 <a href="mailto:contact@noelios.com">J&eacute;r&ocirc;me Louvel</a>. Restlet is a registered trademark of <a target="_top" href="http://www.noelios.com">Noelios Consulting</a>.
 </small>
 

@@ -39,7 +39,7 @@ public class Tutorial02a
       try
       {
          // Outputting the content of a Web page
-         Client client = new DefaultClient(Protocols.HTTP, "My client");
+         Client client = new DefaultClient(Protocols.HTTP);
          client.get("http://www.restlet.org").getOutput().write(System.out);
       }
       catch(IOException e)
