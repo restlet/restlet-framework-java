@@ -86,20 +86,6 @@ public class HttpServerRestletCall extends CallImpl
    }
 
    /**
-    * Returns the client IP address.
-    * @return The client IP address.
-    */
-   public String getClientAddress()
-   {
-      if(this.clientAddress == null)
-      {
-         this.clientAddress = getConnectorCall().getRequestAddress();            
-      }
-
-      return this.clientAddress;
-   }
-
-   /**
     * Returns the list of client IP addresses.<br/>
     * The first address is the one of the immediate client component as returned by the getClientAdress() method and
     * the last address should correspond to the origin client (frequently a user agent). 
@@ -115,6 +101,9 @@ public class HttpServerRestletCall extends CallImpl
    	{
    		// Initialize the list
    		this.clientAddresses = super.getClientAddresses();
+
+   		// Add the request address as the first client address
+   		this.clientAddresses.add(getConnectorCall().getRequestAddress());
    		
 	      // Lookup the "X-Forwarded-For" header
 	      String header = getConnectorCall().getRequestHeaderValue(ConnectorCall.HEADER_X_FORWARDED_FOR);

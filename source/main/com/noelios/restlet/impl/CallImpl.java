@@ -66,9 +66,6 @@ public class CallImpl implements Call
 
    /** The modifiable map of attributes. */
    protected Map<String, Object> attributes;
-   
-   /** The client IP address. */
-   protected String clientAddress;
 
    /** The client IP addresses. */
    protected List<String> clientAddresses;
@@ -400,7 +397,7 @@ public class CallImpl implements Call
     */
    public String getClientAddress()
    {
-      return this.clientAddress;
+      return (getClientAddresses().size() > 0) ? getClientAddresses().get(0) : null;
    }
 
    /**
@@ -699,16 +696,14 @@ public class CallImpl implements Call
     */
    public void setClientAddress(String address)
    {
-      this.clientAddress = address;
-   }
-
-   /**
-    * Sets the list of client IP addresses.  
-    * @param addresses The list of client IP addresses.
-    */
-   public void setClientAddresses(List<String> addresses)
-   {
-      this.clientAddresses = addresses;
+      if(getClientAddresses().size() > 0)
+      {
+      	getClientAddresses().set(0, address);
+      }
+      else
+      {
+      	getClientAddresses().add(address);
+      }
    }
 
    /**

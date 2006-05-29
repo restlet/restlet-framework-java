@@ -36,7 +36,8 @@ Restlet changes log
    parent Maplet after the complete configuration.
  - Renamed DefaultBuilder into ObjectBuilder.
  - Added BuilderFactory and Builders classes to facilitate the instantiation of builders and their eventual subclassing by applications.
- - Added Reference.equals(Object) nad Reference.hashCode() methods. Contributed by Lars Heuer.
+ - Added Reference.equals(Object) and Reference.hashCode() methods. Contributed by Lars Heuer.
+ - Fixed bug with Call.getClientAddress() not being consistent with Call.getClientAddresses(). Reported by Lars Heuer.
    
 1.0 beta 12 (2006-05-20)
  - Added com.noelios.restlet.build package containing builder classes allowing a compact construction of Restlet applications base of the Fluent design

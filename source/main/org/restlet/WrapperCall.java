@@ -319,15 +319,6 @@ public class WrapperCall implements Call
    }
 
    /**
-    * Sets the list of client IP addresses.  
-    * @param addresses The list of client IP addresses.
-    */
-   public void setClientAddresses(List<String> addresses)
-   {
-      getWrappedCall().setClientAddresses(addresses);
-   }
-
-   /**
     * Sets the client name (ex: user agent name).
     * @param name The client name.
     */
