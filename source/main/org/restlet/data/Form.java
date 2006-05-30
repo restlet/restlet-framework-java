@@ -23,10 +23,6 @@
 package org.restlet.data;
 
 import java.io.IOException;
-import java.util.ArrayList;
-import java.util.Iterator;
-import java.util.List;
-import java.util.Map;
 
 import org.restlet.Factory;
 
@@ -46,86 +42,28 @@ public class Form extends ParameterList
 	
    /**
     * Constructor.
-    * @param query The web form parameters as a string.
+    * @param queryString The Web form parameters as a string.
     * @throws IOException 
     */
-   public Form(String query) throws IOException
+   public Form(String queryString) throws IOException
    {
-   	Factory.getInstance().parseQuery(this, query);
+   	Factory.getInstance().parse(this, queryString);
    }
 
    /**
     * Constructor.
-    * @param post The posted Web form.
+    * @param webForm The URL encoded Web form.
     * @throws IOException
     */
-   public Form(Representation post) throws IOException
+   public Form(Representation webForm) throws IOException
    {
-   	Factory.getInstance().parsePost(this, post);
+   	Factory.getInstance().parse(this, webForm);
    }
-   
+
    /**
-    * Gets the parameters whose name is a key in the given map.<br/>
-    * If a matching parameter is found, its value is put in the map.<br/>
-    * If multiple values are found, a list is created and set in the map.
-    * @param params The parameters map controlling the reading.
+    * Formats the form as a query string. 
+    * @return The form as a query string.
     */
-   @SuppressWarnings("unchecked")
-   public void getParameters(Map<String, Object> params) 
-   {
-   	Parameter param;
-      Object currentValue = null;
-      for(Iterator<Parameter> iter = iterator(); iter.hasNext();)
-      {
-         param = iter.next();
-         
-         if(params.containsKey(param.getName()))
-         {
-            currentValue = params.get(param.getName());
-
-            if(currentValue != null)
-            {
-               List<Object> values = null;
-
-               if(currentValue instanceof List)
-               {
-                  // Multiple values already found for this parameter
-                  values = (List<Object>)currentValue;
-               }
-               else
-               {
-                  // Second value found for this parameter
-                  // Create a list of values
-                  values = new ArrayList<Object>();
-                  values.add(currentValue);
-                  params.put(param.getName(), values);
-               }
-
-               if(param.getValue() == null)
-               {
-                  values.add(new EmptyValue());
-               }
-               else
-               {
-                  values.add(param.getValue());
-               }
-            }
-            else
-            {
-               if(param.getValue() == null)
-               {
-                  params.put(param.getName(), new EmptyValue());
-               }
-               else
-               {
-                  params.put(param.getName(), param.getValue());
-               }
-            }
-         }
-      }
-      
-   }
-
    public String getQueryString()
    {
     	try
@@ -136,6 +74,15 @@ public class Form extends ParameterList
    	{
    		return null;
    	}
+   }
+
+   /**
+    * Returns the formatted query corresponding to the current list of parameters.
+    * @return The formatted query.
+    */
+   public Representation getWebForm() 
+   {
+      return Factory.getInstance().createRepresentation(getQueryString(), MediaTypes.APPLICATION_WWW_FORM);
    }
 
    /**
@@ -152,15 +99,6 @@ public class Form extends ParameterList
 	         get(i).urlEncode(sb);
 	      }
 	      return sb.toString();
-   }
-
-   /**
-    * Returns the formatted query corresponding to the current list of parameters.
-    * @return The formatted query.
-    */
-   public Representation getWebForm() 
-   {
-      return Factory.getInstance().createRepresentation(getQueryString(), MediaTypes.APPLICATION_WWW_FORM);
    }
 
 }

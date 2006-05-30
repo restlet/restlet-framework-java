@@ -28,6 +28,7 @@ import java.util.HashSet;
 import java.util.Iterator;
 import java.util.List;
 import java.util.ListIterator;
+import java.util.Map;
 import java.util.Set;
 
 /**
@@ -91,27 +92,45 @@ public class ParameterList implements List<Parameter>, Data
 	
 	/**
 	 * Adds a parameter at the end of the list.
+	 * @return True (as per the general contract of the Collection.add method).
 	 */
 	public boolean add(Parameter parameter)
 	{
 		return getDelegate().add(parameter);
 	}
 
-	public void add(int index, Parameter element)
+	/**
+	 * Inserts the specified parameter at the specified position in this list.
+	 * @param index The insertion position.
+	 * @param parameter The parameter to insert.
+	 */
+	public void add(int index, Parameter parameter)
 	{
-		getDelegate().add(index, element);
+		getDelegate().add(index, parameter);
 	}
 
-	public boolean addAll(Collection<? extends Parameter> c)
+	/**
+	 * Appends all of the parameters in the specified collection to the end of this list.
+	 * @param parameters The collection of parameters to append.
+	 */
+	public boolean addAll(Collection<? extends Parameter> parameters)
 	{
-		return getDelegate().addAll(c);
+		return getDelegate().addAll(parameters);
 	}
 
-	public boolean addAll(int index, Collection<? extends Parameter> c)
+	/**
+	 * Inserts all of the parameters in the specified collection into this list at the specified position.
+	 * @param index The insertion position.
+	 * @param parameters The collection of parameters to insert.
+	 */
+	public boolean addAll(int index, Collection<? extends Parameter> parameters)
 	{
-		return getDelegate().addAll(index, c);
+		return getDelegate().addAll(index, parameters);
 	}
 
+	/**
+	 * Removes all of the parameters from this list.
+	 */
 	public void clear()
 	{
 		if(this.delegate != null)
@@ -121,11 +140,16 @@ public class ParameterList implements List<Parameter>, Data
 		}
 	}
 
-	public boolean contains(Object o)
+	/**
+	 * Returns true if this list contains the specified element.
+	 * @param element The element to find.
+	 * @return True if this list contains the specified element.
+	 */
+	public boolean contains(Object element)
 	{
 		if(this.delegate != null)
 		{
-			return this.delegate.contains(o);
+			return this.delegate.contains(element);
 		}
 		else
 		{
@@ -133,11 +157,16 @@ public class ParameterList implements List<Parameter>, Data
 		}
 	}
 
-	public boolean containsAll(Collection<?> c)
+	/**
+	 * Returns true if this list contains all of the elements of the specified collection.
+	 * @param elements The collection of elements to find.
+	 * @return True if this list contains all of the elements of the specified collection.
+	 */
+	public boolean containsAll(Collection<?> elements)
 	{
 		if(this.delegate != null)
 		{
-			return this.delegate.containsAll(c);
+			return this.delegate.containsAll(elements);
 		}
 		else
 		{
@@ -146,11 +175,11 @@ public class ParameterList implements List<Parameter>, Data
 	}
 	
 	/**
-	 * 
-	 * @param value1
-	 * @param value2
-	 * @param ignoreCase
-	 * @return
+	 * Tests the equality of two string, potentially null, which a case sensitivity flag.  
+	 * @param value1 The first value.
+	 * @param value2 The second value.
+	 * @param ignoreCase Indicates if the test should be case insensitive.
+	 * @return True if both values are equal.
 	 */
 	private boolean equals(String value1, String value2, boolean ignoreCase)
 	{
@@ -174,6 +203,11 @@ public class ParameterList implements List<Parameter>, Data
 		return result;
 	}
 
+	/**
+	 * Returns the parameter at the specified position in this list.
+	 * @param index The parameter position.
+	 * @return The parameter at the specified position in this list.
+	 */
 	public Parameter get(int index)
 	{
 		if(this.delegate != null)
@@ -216,12 +250,12 @@ public class ParameterList implements List<Parameter>, Data
 	}
 	
 	/**
-    * Returns the header values with a given name. If multiple headers with the same name are found, 
-    * all values are concatenated and separated by a comma. 
-    * @param name The header name (case insensitive).
-	 * @return The header values with a given name.
+    * Returns the values of the parameters with a given name. If multiple parameters with the same name are 
+    * found, all values are concatenated and separated by a comma (like for HTTP message headers). 
+    * @param name The parameter name (case insensitive).
+	 * @return The values of the parameters with a given name.
 	 */
-	public String getHeader(String name)
+	public String getValues(String name)
 	{
 		return getValues(name, ",", true);
 	}
@@ -286,11 +320,17 @@ public class ParameterList implements List<Parameter>, Data
    	return result;
    }
 
-	public int indexOf(Object o)
+   /**
+    * Returns the index in this list of the first occurrence of the specified element, 
+    * or -1 if this list does not contain this element.
+    * @param element The element to find.
+    * @return The index of the first occurrence.
+    */
+	public int indexOf(Object element)
 	{
 		if(this.delegate != null)
 		{
-			return this.delegate.indexOf(o);
+			return this.delegate.indexOf(element);
 		}
 		else
 		{
@@ -298,6 +338,9 @@ public class ParameterList implements List<Parameter>, Data
 		}
 	}
 
+	/**
+	 * Returns true if this list contains no elements.
+	 */
 	public boolean isEmpty()
 	{
 		if(this.delegate != null)
@@ -310,16 +353,24 @@ public class ParameterList implements List<Parameter>, Data
 		}
 	}
 
+	/**
+	 * Returns an iterator over the parameters in this list in proper sequence.
+	 * @return An iterator over the parameters in this list in proper sequence.
+	 */
 	public Iterator<Parameter> iterator()
 	{
 		return getDelegate().iterator();
 	}
 
-	public int lastIndexOf(Object o)
+	/**
+	 * Returns the index in this list of the last occurrence of the specified element, 
+	 * or -1 if this list does not contain this element.
+	 */
+	public int lastIndexOf(Object element)
 	{
 		if(this.delegate != null)
 		{
-			return this.delegate.lastIndexOf(o);
+			return this.delegate.lastIndexOf(element);
 		}
 		else
 		{
@@ -327,21 +378,34 @@ public class ParameterList implements List<Parameter>, Data
 		}
 	}
 
+	/**
+	 * Returns a list iterator of the parameters in this list (in proper sequence).
+	 * @return A list iterator of the parameters in this list (in proper sequence).
+	 */
 	public ListIterator<Parameter> listIterator()
 	{
 		return getDelegate().listIterator();
 	}
 
+	/**
+	 * Returns a list iterator of the parameters in this list (in proper sequence), starting at the 
+	 * specified position in this list.
+	 * @param index The starting position.
+	 */
 	public ListIterator<Parameter> listIterator(int index)
 	{
 		return getDelegate().listIterator(index);
 	}
 
-	public boolean remove(Object o)
+	/**
+	 * Removes the first occurrence in this list of the specified element.
+	 * @return True if the list was changed.
+	 */
+	public boolean remove(Object element)
 	{
 		if(this.delegate != null)
 		{
-			return this.delegate.remove(o);
+			return this.delegate.remove(element);
 		}
 		else
 		{
@@ -349,6 +413,10 @@ public class ParameterList implements List<Parameter>, Data
 		}
 	}
 
+	/**
+	 * Removes the parameter at the specified position in this list.
+	 * @return The removed parameter.
+	 */
 	public Parameter remove(int index)
 	{
 		if(this.delegate != null)
@@ -395,11 +463,16 @@ public class ParameterList implements List<Parameter>, Data
 		return changed;
 	}
 	
-	public boolean removeAll(Collection<?> c)
+	/**
+	 * Removes from this list all the elements that are contained in the specified collection.
+	 * @param elements The collection of element to remove.
+	 * @return True if the list changed.
+	 */
+	public boolean removeAll(Collection<?> elements)
 	{
 		if(this.delegate != null)
 		{
-			return this.delegate.removeAll(c);
+			return this.delegate.removeAll(elements);
 		}
 		else
 		{
@@ -407,11 +480,16 @@ public class ParameterList implements List<Parameter>, Data
 		}
 	}
 
-	public boolean retainAll(Collection<?> c)
+	/**
+	 * RemovesRetains only the elements in this list that are contained in the specified collection.
+	 * @param elements The collection of element to retain.
+	 * @return True if the list changed.
+	 */
+	public boolean retainAll(Collection<?> elements)
 	{
 		if(this.delegate != null)
 		{
-			return this.delegate.retainAll(c);
+			return this.delegate.retainAll(elements);
 		}
 		else
 		{
@@ -419,11 +497,16 @@ public class ParameterList implements List<Parameter>, Data
 		}
 	}
 
-	public Parameter set(int index, Parameter element)
+	/**
+	 * Replaces the parameter at the specified position in this list with the specified parameter.
+	 * @param index The position of the parameter to replace.
+	 * @param parameter The new parameter.
+	 */
+	public Parameter set(int index, Parameter parameter)
 	{
 		if(this.delegate != null)
 		{
-			return this.delegate.set(index, element);
+			return this.delegate.set(index, parameter);
 		}
 		else
 		{
@@ -474,6 +557,10 @@ public class ParameterList implements List<Parameter>, Data
 		return result;
 	}
 	
+	/**
+	 * Returns the number of parameters in this list.
+	 * @return The number of parameters in this list.
+	 */
 	public int size()
 	{
 		if(this.delegate != null)
@@ -486,6 +573,13 @@ public class ParameterList implements List<Parameter>, Data
 		}
 	}
 
+	/**
+	 * Returns a view of the portion of this list between the specified fromIndex, 
+	 * inclusive, and toIndex, exclusive.
+	 * @param fromIndex The start position.
+	 * @param toIndex The end position (exclusive).
+	 * @return The sub-list.
+	 */
 	public ParameterList subList(int fromIndex, int toIndex)
 	{
 		return new ParameterList(getDelegate().subList(fromIndex, toIndex));
@@ -522,14 +616,84 @@ public class ParameterList implements List<Parameter>, Data
 		return result;
 	}
 
+	/**
+	 * Returns an array containing all of the elements in this list in proper sequence.
+	 * @return An array containing all of the elements in this list in proper sequence.
+	 */
 	public Object[] toArray()
 	{
 		return getDelegate().toArray();
 	}
 
+	/**
+	 * Returns an array containing all of the elements in this list in proper sequence; 
+	 * the runtime type of the returned array is that of the specified array.
+	 * @param a The sample array.
+	 */
 	public <T> T[] toArray(T[] a)
 	{
 		return getDelegate().toArray(a);
 	}
+   
+   /**
+    * Copies the parameters whose name is a key in the given map.<br/>
+    * If a matching parameter is found, its value is put in the map.<br/>
+    * If multiple values are found, a list is created and set in the map.
+    * @param params The map controlling the copy.
+    */
+   @SuppressWarnings("unchecked")
+   public void toMap(Map<String, Object> params) 
+   {
+   	Parameter param;
+      Object currentValue = null;
+      for(Iterator<Parameter> iter = iterator(); iter.hasNext();)
+      {
+         param = iter.next();
+         
+         if(params.containsKey(param.getName()))
+         {
+            currentValue = params.get(param.getName());
+
+            if(currentValue != null)
+            {
+               List<Object> values = null;
+
+               if(currentValue instanceof List)
+               {
+                  // Multiple values already found for this parameter
+                  values = (List<Object>)currentValue;
+               }
+               else
+               {
+                  // Second value found for this parameter
+                  // Create a list of values
+                  values = new ArrayList<Object>();
+                  values.add(currentValue);
+                  params.put(param.getName(), values);
+               }
+
+               if(param.getValue() == null)
+               {
+                  values.add(new EmptyValue());
+               }
+               else
+               {
+                  values.add(param.getValue());
+               }
+            }
+            else
+            {
+               if(param.getValue() == null)
+               {
+                  params.put(param.getName(), new EmptyValue());
+               }
+               else
+               {
+                  params.put(param.getName(), param.getValue());
+               }
+            }
+         }
+      }
+   }
 	
 }

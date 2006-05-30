@@ -164,7 +164,7 @@ public class CallModel implements ReadableModel
 					{
 						// Lookup by name
 		   			rest = getVariableName(rest);
-			         result = call.getConnectorCall().getRequestHeaders().getHeader(rest);
+			         result = call.getConnectorCall().getRequestHeaders().getValues(rest);
 					}
 					else
 					{
@@ -188,7 +188,7 @@ public class CallModel implements ReadableModel
 					{
 						// Lookup by name
 		   			rest = getVariableName(rest);
-			         result = call.getConnectorCall().getRequestHeaders().getHeader(rest);
+			         result = call.getConnectorCall().getRequestHeaders().getValues(rest);
 					}
 					else
 					{

@@ -312,28 +312,28 @@ public class FactoryImpl extends Factory
    }
 
    /**
-    * Parses a post into a given form.
+    * Parses an URL encoded Web form.
     * @param form The target form.
-    * @param post The posted form.
+    * @param webForm The posted form.
     */
-   public void parsePost(Form form, Representation post) throws IOException
+   public void parse(Form form, Representation webForm) throws IOException
    {
-      if(post != null)
+      if(webForm != null)
       {
-         FormUtils.parsePost(form, post);
+         FormUtils.parsePost(form, webForm);
       }
    }
 
    /**
-    * Parses a query into a given form.
+    * Parses an URL encoded query string into a given form.
     * @param form The target form.
-    * @param query Query string.
+    * @param queryString Query string.
     */
-   public void parseQuery(Form form, String query) throws IOException
+   public void parse(Form form, String queryString) throws IOException
    {
-      if((query != null) && !query.equals(""))
+      if((queryString != null) && !queryString.equals(""))
       {
-         FormUtils.parseQuery(form, query);
+         FormUtils.parseQuery(form, queryString);
       }
    }
 

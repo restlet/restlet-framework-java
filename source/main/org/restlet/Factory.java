@@ -164,18 +164,18 @@ public abstract class Factory
    public abstract Representation createRepresentation(String value, MediaType mediaType);
 
    /**
-    * Parses a post into a given form.
+    * Parses an URL encoded Web form.
     * @param form The target form.
-    * @param post The posted form.
+    * @param webForm The posted form.
     */
-   public abstract void parsePost(Form form, Representation post) throws IOException;
+   public abstract void parse(Form form, Representation webForm) throws IOException;
 
    /**
-    * Parses a query into a given form.
+    * Parses an URL encoded query string into a given form.
     * @param form The target form.
-    * @param query Query string.
+    * @param queryString Query string.
     */
-   public abstract void parseQuery(Form form, String query) throws IOException;
+   public abstract void parse(Form form, String queryString) throws IOException;
 
    /**
     * Sets the credentials of a challenge response using a user ID and a password.<br/>
