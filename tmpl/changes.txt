@@ -4,7 +4,12 @@ Restlet changes log
 ===================
 
 @version-full@ (@release-date@)
- - Adjusted build.properties so that default values work directly
+ - Adjusted build.properties so that default values work directly.
+ - Refactored the usage of parameter lists by using a new ParameterList (implementing List<Parameter>) and adding helper methods.
+ - Form now derives from ParameterList.
+ - ConnectorCall.getRequestHeaders() and getResponseHeaders() now return a ParameterList, other helper methods removed.
+ - Added urlEncode() on Parameter.
+ - Reference now sets new scheme names in lower case to respect normalization rules.
 
 1.0 beta 13 (2006-05-29)
  - Updated StringTemplate and StringTemplateRepresentation to allow the usage of different delimiters for variable insertion and instructions like conditions.
