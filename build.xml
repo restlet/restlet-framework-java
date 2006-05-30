@@ -4,7 +4,7 @@
      Restlet build file  -  Copyright 2005-2006 Jerome LOUVEL
      ======================================================== -->
 
-<project name="Restlet" default="dist">
+<project name="Restlet" default="distribute">
 
 	<!-- Set general properties -->
 	<property name="restlet-api" value="Restlet API" />
@@ -15,43 +15,43 @@
 	<property file="build.properties" />
 
 	<!-- Set path location properties -->
-	<property name="bin" location="bin" />
-	<property name="lib" location="lib" />
-	<property name="tmpl" location="tmpl" />
-	<property name="www" location="www" />
-	<property name="docs" location="${www}/docs" />
-	<property name="docs-api" location="${docs}/api" />
-	<property name="docs-nre" location="${docs}/nre" />
+	<property name="bin" value="bin" />
+	<property name="lib" value="lib" />
+	<property name="tmpl" value="tmpl" />
+	<property name="www" value="www" />
+	<property name="docs" value="${www}/docs" />
+	<property name="docs-api" value="${docs}/api" />
+	<property name="docs-nre" value="${docs}/nre" />
 	<property name="excludes" value="**/.emptyDir **/package.html **/overview.html" />
 
-	<property name="classes" location="classes" />
-	<property name="classes-api" location="${classes}/api" />
-	<property name="classes-nre" location="${classes}/nre" />
-	<property name="classes-atom1.0" location="${classes}/ext/atom1.0" />
-	<property name="classes-fileupload1.1" location="${classes}/ext/fileupload1.1" />
-	<property name="classes-freemarker2.3" location="${classes}/ext/freemarker2.3" />
-	<property name="classes-javamail1.3" location="${classes}/ext/javamail1.3" />
-	<property name="classes-jdbc3.0" location="${classes}/ext/jdbc3.0" />
-	<property name="classes-jetty5.1" location="${classes}/ext/jetty5.1" />
-	<property name="classes-jetty6.0" location="${classes}/ext/jetty6.0" />
-	<property name="classes-servlet2.4" location="${classes}/ext/servlet2.4" />
-	<property name="classes-simple3.1" location="${classes}/ext/simple3.1" />
-	<property name="classes-example" location="${classes}/example" />
-	<property name="classes-test" location="${classes}/test" />
+	<property name="classes" value="classes" />
+	<property name="classes-api" value="${classes}/api" />
+	<property name="classes-nre" value="${classes}/nre" />
+	<property name="classes-atom1.0" value="${classes}/ext/atom1.0" />
+	<property name="classes-fileupload1.1" value="${classes}/ext/fileupload1.1" />
+	<property name="classes-freemarker2.3" value="${classes}/ext/freemarker2.3" />
+	<property name="classes-javamail1.3" value="${classes}/ext/javamail1.3" />
+	<property name="classes-jdbc3.0" value="${classes}/ext/jdbc3.0" />
+	<property name="classes-jetty5.1" value="${classes}/ext/jetty5.1" />
+	<property name="classes-jetty6.0" value="${classes}/ext/jetty6.0" />
+	<property name="classes-servlet2.4" value="${classes}/ext/servlet2.4" />
+	<property name="classes-simple3.1" value="${classes}/ext/simple3.1" />
+	<property name="classes-example" value="${classes}/example" />
+	<property name="classes-test" value="${classes}/test" />
 
-	<property name="src" location="source" />
-	<property name="src-main" location="${src}/main" />
-	<property name="src-atom1.0" location="${src}/ext/atom1.0" />
-	<property name="src-fileupload1.1" location="${src}/ext/fileupload1.1" />
-	<property name="src-freemarker2.3" location="${src}/ext/freemarker2.3" />
-	<property name="src-javamail1.3" location="${src}/ext/javamail1.3" />
-	<property name="src-jdbc3.0" location="${src}/ext/jdbc3.0" />
-	<property name="src-jetty5.1" location="${src}/ext/jetty5.1" />
-	<property name="src-jetty6.0" location="${src}/ext/jetty6.0" />
-	<property name="src-servlet2.4" location="${src}/ext/servlet2.4" />
-	<property name="src-simple3.1" location="${src}/ext/simple3.1" />
-	<property name="src-example" location="${src}/example" />
-	<property name="src-test" location="${src}/test" />
+	<property name="src" value="source" />
+	<property name="src-main" value="${src}/main" />
+	<property name="src-atom1.0" value="${src}/ext/atom1.0" />
+	<property name="src-fileupload1.1" value="${src}/ext/fileupload1.1" />
+	<property name="src-freemarker2.3" value="${src}/ext/freemarker2.3" />
+	<property name="src-javamail1.3" value="${src}/ext/javamail1.3" />
+	<property name="src-jdbc3.0" value="${src}/ext/jdbc3.0" />
+	<property name="src-jetty5.1" value="${src}/ext/jetty5.1" />
+	<property name="src-jetty6.0" value="${src}/ext/jetty6.0" />
+	<property name="src-servlet2.4" value="${src}/ext/servlet2.4" />
+	<property name="src-simple3.1" value="${src}/ext/simple3.1" />
+	<property name="src-example" value="${src}/example" />
+	<property name="src-test" value="${src}/test" />
 
 
 	<!-- Ant paths -->
@@ -246,9 +246,9 @@
 			<istrue value="${backport}"/>
 		</condition>
 		
-		<!-- Set the property that will enable the Javadocs target -->
-		<condition property="do-javadocs">
-			<istrue value="${javadocs}"/>
+		<!-- Set the property that will enable the Javadoc target -->
+		<condition property="do-javadoc">
+			<istrue value="${javadoc}"/>
 		</condition>
 
 		<!-- Set the debug level property -->
@@ -322,7 +322,7 @@
         </retroweave>
     </target>
 
-	<target name="test" depends="retroweave" description="Unit testing">
+	<target name="test" depends="retroweave" description="Execute the test suites">
 		<junit printsummary="true" fork="true" haltonfailure="true" filtertrace="true" showoutput="${verbose}">
 			<classpath>
 				<pathelement location="${classes-api}" />
@@ -363,7 +363,7 @@
 		<replace file="${docs}/changes.txt" token="@version-compact@" value="${version-compact}" />
 	</target>
 
-	<target name="dist" depends="test, generate, javadocs" description="Generate the distribution">
+	<target name="distribute" depends="test, generate, javadoc" description="Generate the distribution">
 		<!-- Prepare distribution directories -->
 		<delete dir="${dist}" verbose="false" quiet="true" includeEmptyDirs="true" />
 		<mkdir dir="${dist}/bin" />
@@ -378,7 +378,7 @@
 			<fileset dir="${bin}" />
 		</copy>
 
-		<!-- Copy tha Javadocs -->
+		<!-- Copy the Javadoc -->
 		<copy todir="${dist}/docs/api">
 			<fileset dir="${docs-api}" />
 		</copy>
@@ -467,7 +467,7 @@
 		<zip destfile="${dist-zip}/restlet-${version-compact}.zip" basedir="${dist}" includes="**/*" />
 	</target>
 
-	<target name="javadocs" if="do-javadocs" depends="init" description="Generate the Javadocs">
+	<target name="javadoc" if="do-javadoc" depends="init" description="Generate the Javadoc">
 		<delete includeEmptyDirs="true" verbose="false" quiet="true">
 			<fileset dir="${docs-api}" excludes="**/.svn" />
 			<fileset dir="${docs-nre}" excludes="**/.svn" />
@@ -521,7 +521,7 @@
 		</javadoc>
 	</target>
 
-	<target name="clean" description="Clean up the classes and Javadocs">
+	<target name="clean" description="Clean up the classes and Javadoc">
 		<!-- Delete the classes and Javadoc directories -->
 		<delete includeEmptyDirs="true" verbose="false" quiet="true">
 			<fileset dir="${classes}" />
@@ -530,9 +530,10 @@
 		</delete>
 	</target>
 
-	<target name="archive" depends="init" description="Archive all but classes and Javadocs">
-		<!-- Create the final zip file -->
-		<zip destfile="${archives}/Restlet ${DSTAMP}.zip" basedir="" includes="**/*" excludes="www/docs/api/** www/docs/nre/** classes/**" />
+	<target name="archive" depends="init" description="Archive the content of the project">
+		<!-- Archive the content of the project, except for some generated directories -->
+		<mkdir dir="${arc}" />
+		<zip destfile="${arc}/Restlet ${DSTAMP}.zip" basedir="" includes="**/*" excludes="${arc}/** classes/** ${dist}/** ${dist-zip}/** ${docs-api}/** ${docs-nre}/**" />
 	</target>
 
 </project>
