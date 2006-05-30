@@ -171,8 +171,8 @@ public interface ConnectorCall
    public String getRequestUri();
    
    /**
-    * Returns the *modifiable* list of request headers.
-    * @return The *modifiable* list of request headers.
+    * Returns the modifiable list of request headers.
+    * @return The modifiable list of request headers.
     */
    public ParameterList getRequestHeaders();
 
@@ -196,8 +196,8 @@ public interface ConnectorCall
    public String getResponseReasonPhrase();
    
    /**
-    * Returns the *modifiable* list of response headers.
-    * @return The *modifiable* list of response headers.
+    * Returns the modifiable list of response headers.
+    * @return The modifiable list of response headers.
     */
    public ParameterList getResponseHeaders();
    

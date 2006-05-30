@@ -36,9 +36,9 @@ import org.restlet.data.*;
 public interface Call
 {
 	/**
-	 * Returns a map of attributes that can be used by developers to save information relative
+	 * Returns a modifiable map of attributes that can be used by developers to save information relative
 	 * to the current call. This is a quicker alternative to the creation of wrapper class.
-	 * @return The modifiable attributes map.
+	 * @return The modifiable map of attributes.
 	 * @see org.restlet.WrapperCall
 	 */
 	public Map<String, Object> getAttributes();
