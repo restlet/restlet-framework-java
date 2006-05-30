@@ -57,8 +57,8 @@ public class FactoryImpl extends Factory
    /** Obtain a suitable logger. */
    private static Logger logger = Logger.getLogger("com.noelios.restlet.FactoryImpl");
 
-   public static final String VERSION_LONG = "1.0 beta 13";
-   public static final String VERSION_SHORT = "1.0b13";
+   public static final String VERSION_LONG = "1.0 beta 14";
+   public static final String VERSION_SHORT = "1.0b14";
    public static final String VERSION_HEADER = "Noelios-Restlet-Engine/" + VERSION_SHORT;
 
    /**
@@ -75,7 +75,7 @@ public class FactoryImpl extends Factory
     * Constructor.
     */
    @SuppressWarnings("unchecked")
-	public FactoryImpl()
+   public FactoryImpl()
    {
       this.clients = new TreeMap<Protocol, Class<? extends Client>>();
       this.servers = new TreeMap<Protocol, Class<? extends Server>>();
