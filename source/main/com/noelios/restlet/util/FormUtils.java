@@ -25,8 +25,6 @@ package com.noelios.restlet.util;
 import java.io.IOException;
 import java.io.UnsupportedEncodingException;
 import java.net.URLDecoder;
-import java.net.URLEncoder;
-import java.util.List;
 import java.util.Map;
 
 import org.restlet.data.Form;
@@ -39,8 +37,6 @@ import org.restlet.data.Representation;
  */
 public class FormUtils
 {
-   private static final String encoding = "UTF-8";
-
    /**
     * Parses a query into a given form.
     * @param form The target form.
@@ -150,12 +146,12 @@ public class FormUtils
          {
             if(value != null)
             {
-               result = new Parameter(URLDecoder.decode(name.toString(), encoding), URLDecoder.decode(
-                     value.toString(), encoding));
+               result = new Parameter(URLDecoder.decode(name.toString(), "UTF-8"), URLDecoder.decode(
+                     value.toString(), "UTF-8"));
             }
             else
             {
-               result = new Parameter(URLDecoder.decode(name.toString(), encoding), null);
+               result = new Parameter(URLDecoder.decode(name.toString(), "UTF-8"), null);
             }
          }
       }
@@ -166,65 +162,5 @@ public class FormUtils
 
       return result;
    }
-   
-   /**
-    * Formats a list of parameters. 
-    * @param parameters The list of parameters.
-    * @return The encoded parameters string.
-    * @throws IOException 
-    */
-   public static String format(List<Parameter> parameters) throws IOException
-   {
-      StringBuilder sb = new StringBuilder();
-      for(int i = 0; i < parameters.size(); i++)
-      {
-         if(i > 0) sb.append('&');
-         format(parameters.get(i), sb);
-      }
-      return sb.toString();
-   }
-   
-   /**
-    * Formats a parameter.
-    * @param parameter The parameter to format.
-    * @return The encoded parameter string.
-    * @throws IOException
-    */
-   public static String format(Parameter parameter) throws IOException
-   {
-      StringBuilder sb = new StringBuilder();
-      format(parameter, sb);
-      return sb.toString();
-   }
 
-   /**
-    * Formats a parameter and append the result to the given buffer.
-    * @param parameter The parameter to format.
-    * @param buffer The buffer to append.
-    * @throws IOException
-    */
-   public static void format(Parameter parameter, Appendable buffer) throws IOException
-   {
-      try
-      {
-         if(parameter != null)
-         {
-            if(parameter.getName() != null)
-            {
-               buffer.append(URLEncoder.encode(parameter.getName(), encoding));
-               
-               if(parameter.getValue() != null)
-               {
-                  buffer.append('=');
-                  buffer.append(URLEncoder.encode(parameter.getValue(), encoding));
-               }
-            }
-         }
-      }
-      catch(UnsupportedEncodingException uee)
-      {
-         throw new IOException("Unsupported encoding exception. Please contact the administrator");
-      }
-   }
-   
 }

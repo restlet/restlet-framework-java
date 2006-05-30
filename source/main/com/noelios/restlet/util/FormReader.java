@@ -296,11 +296,11 @@ public class FormReader
 
    /**
     * Reads all the parameters.
-    * @return The parameters read.
+    * @return The form read.
     */
-   public List<Parameter> readParameters() throws IOException
+   public Form read() throws IOException
    {
-   	List<Parameter> result = new ArrayList<Parameter>();
+   	Form result = new Form();
       Parameter param = readNextParameter();
 
       while(param != null)
@@ -323,7 +323,7 @@ public class FormReader
 
       while(param != null)
       {
-         form.getParameters().add(param);
+         form.add(param);
          param = readNextParameter();
       }
 

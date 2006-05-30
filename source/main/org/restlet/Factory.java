@@ -26,7 +26,6 @@ import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.net.URL;
-import java.util.List;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
@@ -36,7 +35,6 @@ import org.restlet.connector.Server;
 import org.restlet.data.ChallengeResponse;
 import org.restlet.data.Form;
 import org.restlet.data.MediaType;
-import org.restlet.data.Parameter;
 import org.restlet.data.Protocol;
 import org.restlet.data.Representation;
 
@@ -164,13 +162,6 @@ public abstract class Factory
     * @param mediaType The representation's media type.
     */
    public abstract Representation createRepresentation(String value, MediaType mediaType);
-
-   /**
-    * Formats a list of parameters.
-    * @param parameters The list of parameters.
-    * @return The encoded parameters string.
-    */
-   public abstract String format(List<Parameter> parameters);
 
    /**
     * Parses a post into a given form.

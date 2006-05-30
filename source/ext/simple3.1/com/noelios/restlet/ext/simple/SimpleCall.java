@@ -27,10 +27,9 @@ import java.io.InputStream;
 import java.io.OutputStream;
 import java.nio.channels.ReadableByteChannel;
 import java.nio.channels.WritableByteChannel;
-import java.util.ArrayList;
-import java.util.List;
 
 import org.restlet.data.Parameter;
+import org.restlet.data.ParameterList;
 import org.restlet.data.Reference;
 
 import simple.http.Request;
@@ -140,12 +139,12 @@ public class SimpleCall extends HttpServerCallImpl
     * Returns the list of request headers.
     * @return The list of request headers.
     */
-	public List<Parameter> getRequestHeaders()
+	public ParameterList getRequestHeaders()
 	{
 		if (super.requestHeaders == null)
 		{
 			int headerCount = request.headerCount();
-			super.requestHeaders = new ArrayList<Parameter>(headerCount);
+			super.requestHeaders = new ParameterList(headerCount);
 			for (int i = 0; i < headerCount; i++)
 			{
 				super.requestHeaders.add(new Parameter(request.getName(i), request

@@ -31,14 +31,13 @@ import java.net.URL;
 import java.net.UnknownHostException;
 import java.nio.channels.ReadableByteChannel;
 import java.nio.channels.WritableByteChannel;
-import java.util.ArrayList;
-import java.util.List;
 
 import javax.net.ssl.HttpsURLConnection;
 
 import org.restlet.connector.Client;
 import org.restlet.connector.ClientCall;
 import org.restlet.data.Parameter;
+import org.restlet.data.ParameterList;
 import org.restlet.data.Representation;
 
 /**
@@ -181,11 +180,11 @@ public class HttpClientCallImpl extends ConnectorCallImpl implements ClientCall
     * Returns the modifiable list of response headers.
     * @return The modifiable list of response headers.
     */
-   public List<Parameter> getResponseHeaders()
+   public ParameterList getResponseHeaders()
    {
       if(this.responseHeaders == null)
       {
-         this.responseHeaders = new ArrayList<Parameter>();
+         this.responseHeaders = new ParameterList();
          
          // Read the response headers
          int i = 1;
@@ -193,7 +192,7 @@ public class HttpClientCallImpl extends ConnectorCallImpl implements ClientCall
          String headerValue = getConnection().getHeaderField(i);
          while(headerName != null)
          {
-            this.responseHeaders.add(new Parameter(headerName, headerValue));
+            this.responseHeaders.add(headerName, headerValue);
             i++;
             headerName = getConnection().getHeaderFieldKey(i);
             headerValue = getConnection().getHeaderField(i);

@@ -22,10 +22,8 @@
 
 package com.noelios.restlet.util;
 
-import java.util.List;
-
 import org.restlet.Call;
-import org.restlet.data.Parameter;
+import org.restlet.data.Form;
 
 /**
  * Readable model wrapping a REST call. It can be passed directly passed to a string template. 
@@ -166,7 +164,7 @@ public class CallModel implements ReadableModel
 					{
 						// Lookup by name
 		   			rest = getVariableName(rest);
-			         result = call.getConnectorCall().getRequestHeaderValue(rest);
+			         result = call.getConnectorCall().getRequestHeaders().getHeader(rest);
 					}
 					else
 					{
@@ -190,7 +188,7 @@ public class CallModel implements ReadableModel
 					{
 						// Lookup by name
 		   			rest = getVariableName(rest);
-			         result = call.getConnectorCall().getResponseHeaderValue(rest);
+			         result = call.getConnectorCall().getRequestHeaders().getHeader(rest);
 					}
 					else
 					{
@@ -291,23 +289,23 @@ public class CallModel implements ReadableModel
 	      			
 	   				if(rest.equals("first"))
 	   				{
-	   					result = call.getResourceRef().getQueryAsForm().getParameters().get(0).getValue();
+	   					result = call.getResourceRef().getQueryAsForm().get(0).getValue();
 	   				}
 	   				else if(rest.equals("last"))
 	   				{
-	   					List<Parameter> params = call.getResourceRef().getQueryAsForm().getParameters(); 
-	   					result = params.get(params.size() - 1).getValue();
+	   					Form form = call.getResourceRef().getQueryAsForm(); 
+	   					result = form.get(form.size() - 1).getValue();
 	   				}
 	   				else if(isVariableName(rest))
 	   				{
 							// Lookup by name
 			   			rest = getVariableName(rest);
-				         result = call.getResourceRef().getQueryAsForm().getFirstParameter(rest).getValue();
+				         result = call.getResourceRef().getQueryAsForm().getFirst(rest).getValue();
 	   				}
 	   				else
 	   				{
 	   					// Lookup by index
-	   					result = call.getResourceRef().getQueryAsForm().getParameters().get(Integer.parseInt(rest)).getValue();
+	   					result = call.getResourceRef().getQueryAsForm().get(Integer.parseInt(rest)).getValue();
 	   				}
 	      		}
 	      		else

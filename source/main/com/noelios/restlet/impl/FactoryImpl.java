@@ -312,27 +312,6 @@ public class FactoryImpl extends Factory
    }
 
    /**
-    * Formats a list of parameters.
-    * @param parameters The list of parameters.
-    * @return The encoded parameters string.
-    */
-   public String format(List<Parameter> parameters)
-   {
-      String result = null;
-
-      try
-      {
-         result = FormUtils.format(parameters);
-      }
-      catch (IOException e)
-      {
-         logger.log(Level.WARNING, "Unexpected error while formating a query string.", e);
-      }
-
-      return result;
-   }
-
-   /**
     * Parses a post into a given form.
     * @param form The target form.
     * @param post The posted form.

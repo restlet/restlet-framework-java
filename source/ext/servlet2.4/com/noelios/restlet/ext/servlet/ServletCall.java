@@ -27,16 +27,15 @@ import java.io.InputStream;
 import java.io.OutputStream;
 import java.nio.channels.ReadableByteChannel;
 import java.nio.channels.WritableByteChannel;
-import java.util.ArrayList;
 import java.util.Enumeration;
 import java.util.Iterator;
-import java.util.List;
 
 import javax.servlet.ServletContext;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
 import org.restlet.data.Parameter;
+import org.restlet.data.ParameterList;
 
 import com.noelios.restlet.impl.HttpServerCallImpl;
 
@@ -56,7 +55,7 @@ public class ServletCall extends HttpServerCallImpl
    protected ServletContext context;
       
    /** The request headers. */
-   protected List<Parameter> requestHeaders;
+   protected ParameterList requestHeaders;
 
    /**
     * Constructor.
@@ -148,11 +147,11 @@ public class ServletCall extends HttpServerCallImpl
     * Returns the list of request headers.
     * @return The list of request headers.
     */
-   public List<Parameter> getRequestHeaders()
+   public ParameterList getRequestHeaders()
    {
       if(this.requestHeaders == null)
       {
-         this.requestHeaders = new ArrayList<Parameter>();
+         this.requestHeaders = new ParameterList();
 
          // Copy the headers from the request object
          String headerName;

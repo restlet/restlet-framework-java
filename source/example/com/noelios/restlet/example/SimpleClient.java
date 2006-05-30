@@ -54,10 +54,10 @@ public class SimpleClient
          call.setMethod(Methods.PUT);
 
          Form form = new Form();
-         form.addParameter("name", "John D. Mitchell");
-         form.addParameter("email", "john@bob.net");
-         form.addParameter("email2", "joe@bob.net");
-         call.setInput(form.getRepresentation());
+         form.add("name", "John D. Mitchell");
+         form.add("email", "john@bob.net");
+         form.add("email2", "joe@bob.net");
+         call.setInput(form.getWebForm());
 
          // Prepare HTTP client connector.
          Client client = new DefaultClient(Protocols.HTTP, "tester");

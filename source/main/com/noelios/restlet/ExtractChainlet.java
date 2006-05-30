@@ -98,11 +98,11 @@ public class ExtractChainlet extends AbstractChainlet
             {
                if(qe.multiple)
                {
-                  call.getAttributes().put(qe.attribute, input.getParameters(qe.value));
+                  call.getAttributes().put(qe.attribute, input.subList(qe.value));
                }
                else
                {
-                  call.getAttributes().put(qe.attribute, input.getFirstParameter(qe.value));
+                  call.getAttributes().put(qe.attribute, input.getFirst(qe.value));
                }
             }
          }
@@ -119,11 +119,11 @@ public class ExtractChainlet extends AbstractChainlet
             {
                if(ie.multiple)
                {
-                  call.getAttributes().put(ie.attribute, input.getParameters(ie.value));
+                  call.getAttributes().put(ie.attribute, input.subList(ie.value));
                }
                else
                {
-                  call.getAttributes().put(ie.attribute, input.getFirstParameter(ie.value));
+                  call.getAttributes().put(ie.attribute, input.getFirst(ie.value));
                }
             }
          }

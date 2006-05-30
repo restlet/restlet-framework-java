@@ -39,9 +39,13 @@ import java.util.List;
  * 	authority            = [ user-info "@" ] host-name [ ":" host-port ]
  * 
  * 	relative-reference	= relative-part [ "?" query ] [ "#" fragment ]
- *  </pre>
+ * </pre><br/>
+ * Note that this class doesn't encode or decode the reserved characters. It assumes that the URI passed in are
+ * properly encoded using the "%??" sequences. Use the JDK's URLEncoder and URLDecoder classes for this purpose.  
  * @author Jerome Louvel (contact@noelios.com) <a href="http://www.noelios.com/">Noelios Consulting</a>
  * @see <a href="http://www.faqs.org/rfcs/rfc3986.html">RFC 3986</a>
+ * @see java.net.URLDecoder
+ * @see java.net.URLEncoder
  */
 public class Reference implements Data
 {
@@ -1515,7 +1519,7 @@ public class Reference implements Data
          // Scheme found
       	if(scheme != null)
       	{
-      		this.uri = scheme + this.uri.substring(schemeIndex);
+      		this.uri = scheme.toLowerCase() + this.uri.substring(schemeIndex);
       	}
       	else
       	{
@@ -1527,6 +1531,8 @@ public class Reference implements Data
          // No scheme found
       	if(scheme != null)
       	{
+      		scheme = scheme.toLowerCase();
+      		
 	         if(this.uri == null)
 	         {
 	            this.uri = scheme + ':';

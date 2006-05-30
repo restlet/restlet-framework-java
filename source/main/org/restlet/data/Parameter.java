@@ -22,13 +22,17 @@
 
 package org.restlet.data;
 
+import java.io.IOException;
+import java.io.UnsupportedEncodingException;
+import java.net.URLEncoder;
+
 /**
  * Multi-usage parameter.
  * @author Jerome Louvel (contact@noelios.com) <a href="http://www.noelios.com/">Noelios Consulting</a>
  */
 public class Parameter implements Data, Comparable<Parameter>
 {
-	/** The name. */
+   /** The name. */
 	protected String name;
 	
    /** The value. */
@@ -130,4 +134,42 @@ public class Parameter implements Data, Comparable<Parameter>
       return getName().compareTo(o.getName());
    }
 
+   /**
+    * Encodes the parameter.
+    * @return The encoded string.
+    * @throws IOException
+    */
+   public String urlEncode() throws IOException
+   {
+      StringBuilder sb = new StringBuilder();
+      urlEncode(sb);
+      return sb.toString();
+   }
+
+   /**
+    * Encodes the parameter and append the result to the given buffer.
+    * @param buffer The buffer to append.
+    * @throws IOException
+    */
+   public void urlEncode(Appendable buffer) throws IOException
+   {
+      try
+      {
+      	if(getName() != null)
+      	{
+         	buffer.append(URLEncoder.encode(getName(), "UTF-8"));
+               
+            if(getValue() != null)
+            {
+            	buffer.append('=');
+               buffer.append(URLEncoder.encode(getValue(), "UTF-8"));
+            }
+         }
+      }
+      catch(UnsupportedEncodingException uee)
+      {
+         throw new IOException("Unsupported encoding exception. Please contact the administrator");
+      }
+   }
+   
 }

@@ -23,9 +23,8 @@
 package org.restlet.connector;
 
 import java.util.Date;
-import java.util.List;
 
-import org.restlet.data.Parameter;
+import org.restlet.data.ParameterList;
 
 /**
  * Connector call for all protocols.
@@ -145,20 +144,6 @@ public interface ConnectorCall
    public static final String HEADER_WWW_AUTHENTICATE = "WWW-Authenticate";
    public static final String HEADER_X_FORWARDED_FOR = "X-Forwarded-For";
    public static final String HEADER_X_HTTP_METHOD_OVERRIDE = "X-HTTP-Method-Override";
-   
-   /**
-    * Adds a request header.
-    * @param name The header's name.
-    * @param value The header's value.
-    */
-   public void addRequestHeader(String name, String value);
-   
-   /**
-    * Adds a response header.
-    * @param name The header's name.
-    * @param value The header's value.
-    */
-   public void addResponseHeader(String name, String value);
 
    /**
     * Indicates if the confidentiality of the call is ensured (ex: via SSL).
@@ -186,18 +171,10 @@ public interface ConnectorCall
    public String getRequestUri();
    
    /**
-    * Returns the list of request headers.
-    * @return The list of request headers.
+    * Returns the *modifiable* list of request headers.
+    * @return The *modifiable* list of request headers.
     */
-   public List<Parameter> getRequestHeaders();
-   
-   /**
-    * Returns the value for a request header name.<br/>
-    * If multiple headers with the same name are found, all values are returned separated by commas.
-    * @param headerName The header name.
-    * @return The value for a request header name.
-    */
-   public String getRequestHeaderValue(String headerName);
+   public ParameterList getRequestHeaders();
 
    /**
     * Returns the response address.<br/>
@@ -219,18 +196,10 @@ public interface ConnectorCall
    public String getResponseReasonPhrase();
    
    /**
-    * Returns the list of response headers.
-    * @return The list of response headers.
+    * Returns the *modifiable* list of response headers.
+    * @return The *modifiable* list of response headers.
     */
-   public List<Parameter> getResponseHeaders();
-   
-   /**
-    * Returns the value for a response header name.<br/>
-    * If multiple headers with the same name are found, all values are returned separated by commas.
-    * @param headerName The header name.
-    * @return The value for a response header name.
-    */
-   public String getResponseHeaderValue(String headerName);
+   public ParameterList getResponseHeaders();
    
    /**
     * Parses a date string.

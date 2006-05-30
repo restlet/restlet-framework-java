@@ -26,14 +26,13 @@ import java.io.InputStream;
 import java.io.OutputStream;
 import java.nio.channels.ReadableByteChannel;
 import java.nio.channels.WritableByteChannel;
-import java.util.ArrayList;
 import java.util.Enumeration;
 import java.util.Iterator;
-import java.util.List;
 
 import org.mortbay.http.HttpRequest;
 import org.mortbay.http.HttpResponse;
 import org.restlet.data.Parameter;
+import org.restlet.data.ParameterList;
 
 import com.noelios.restlet.impl.HttpServerCallImpl;
 
@@ -50,7 +49,7 @@ public class JettyCall extends HttpServerCallImpl
    protected HttpResponse response;
    
    /** The request headers. */
-   protected List<Parameter> requestHeaders;
+   protected ParameterList requestHeaders;
    
    /**
     * Constructor.
@@ -124,11 +123,11 @@ public class JettyCall extends HttpServerCallImpl
     * Returns the list of request headers.
     * @return The list of request headers.
     */
-   public List<Parameter> getRequestHeaders()
+   public ParameterList getRequestHeaders()
    {
       if(this.requestHeaders == null)
       {
-         this.requestHeaders = new ArrayList<Parameter>();
+         this.requestHeaders = new ParameterList();
 
          // Copy the headers from the request object
          String headerName;

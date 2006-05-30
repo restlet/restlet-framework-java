@@ -34,19 +34,16 @@ import org.restlet.Factory;
  * Representation of a Web form containing submitted parameters.
  * @author Jerome Louvel (contact@noelios.com) <a href="http://www.noelios.com/">Noelios Consulting</a>
  */
-public class Form implements Data
+public class Form extends ParameterList
 {
-   /** The list of parameters. */
-   protected List<Parameter> parameters;
-   
-   /**
-    * Default constructor.
-    */
-   public Form()
-   {
-      this.parameters = null;
-   }
-   
+	/**
+	 * Empty constructor.
+	 */
+	public Form()
+	{
+		super();
+	}
+	
    /**
     * Constructor.
     * @param query The web form parameters as a string.
@@ -58,98 +55,13 @@ public class Form implements Data
    }
 
    /**
-    * Construcotr.
+    * Constructor.
     * @param post The posted Web form.
     * @throws IOException
     */
    public Form(Representation post) throws IOException
    {
    	Factory.getInstance().parsePost(this, post);
-   }
-
-   /**
-    * Gets the parameters with the given name.<br/>
-    * If multiple values are found, a list is returned created.
-    * @param name The parameter name to match.
-    * @return The parameter value or list of values.
-    */
-   public List<Parameter> getParameters(String name) 
-   {
-      List<Parameter> result = null;
-      
-      Parameter current;
-      for(Iterator<Parameter> iter = getParameters().iterator(); (result == null) && iter.hasNext();)
-      {
-         current = iter.next();
-         
-         if(current.getName().equals(name))
-         {
-            if(result == null) result = new ArrayList<Parameter>();
-            result.add(current);
-         }
-      }
-      
-      return result;
-   }
-
-   /**
-    * Gets the first parameter with the given name.
-    * @param name The parameter name to match.
-    * @return The parameter value.
-    */
-   public Parameter getFirstParameter(String name) 
-   {
-   	Parameter result = null;
-   	Parameter current;
-      for(Iterator<Parameter> iter = getParameters().iterator(); (result == null) && iter.hasNext();)
-      {
-         current = iter.next();
-         
-         if(current.getName().equals(name))
-         {
-            result = current;
-         }
-      }
-      
-      return result;
-   }
-
-   /**
-    * Returns the modifiable list of parameters.
-    * @return The modifiable list of parameters.
-    */
-   public List<Parameter> getParameters()
-   {
-   	if(this.parameters == null) this.parameters = new ArrayList<Parameter>();
-      return this.parameters;
-   }
-
-   /**
-    * Adds a new parameter.
-    * @param name The parameter name.
-    * @param value The parameter value.
-    */
-   public void addParameter(String name, String value)
-   {
-      getParameters().add(new Parameter(name, value));
-   }
-
-   /**
-    * Removes parameters with a given name.
-    * @param name The name of the parameters to remove.
-    */
-   public void removeParameters(String name)
-   {
-   	Parameter current;
-      for(Iterator<Parameter> iter = getParameters().iterator(); iter.hasNext();)
-      {
-         current = iter.next();
-         
-         if(current.getName().equals(name))
-         {
-            iter.remove();
-         }
-      }
    }
    
    /**
@@ -163,7 +75,7 @@ public class Form implements Data
    {
    	Parameter param;
       Object currentValue = null;
-      for(Iterator<Parameter> iter = getParameters().iterator(); iter.hasNext();)
+      for(Iterator<Parameter> iter = iterator(); iter.hasNext();)
       {
          param = iter.next();
          
@@ -214,22 +126,41 @@ public class Form implements Data
       
    }
 
-   /**
-    * Returns the formatted query corresponding to the current list of parameters.
-    * @return The formatted query.
-    */
-   public String getQuery() 
+   public String getQueryString()
    {
-   	return Factory.getInstance().format(this.parameters);
+    	try
+     	{
+    		return urlEncode();
+   	}
+   	catch(IOException ioe)
+   	{
+   		return null;
+   	}
+   }
+
+   /**
+    * URL encodes the form. 
+    * @return The encoded form.
+    * @throws IOException
+    */
+   public String urlEncode() throws IOException
+   {
+	      StringBuilder sb = new StringBuilder();
+	      for(int i = 0; i < size(); i++)
+	      {
+	         if(i > 0) sb.append('&');
+	         get(i).urlEncode(sb);
+	      }
+	      return sb.toString();
    }
 
    /**
     * Returns the formatted query corresponding to the current list of parameters.
     * @return The formatted query.
     */
-   public Representation getRepresentation() 
+   public Representation getWebForm() 
    {
-      return Factory.getInstance().createRepresentation(getQuery(), MediaTypes.APPLICATION_WWW_FORM);
+      return Factory.getInstance().createRepresentation(getQueryString(), MediaTypes.APPLICATION_WWW_FORM);
    }
 
 }

@@ -137,11 +137,11 @@ public class HttpClientImpl extends AbstractClient
       	// Add the user agent header
       	if(call.getClientName() != null)
       	{
-      		clientCall.addRequestHeader(ConnectorCall.HEADER_USER_AGENT, call.getClientName());
+      		clientCall.getRequestHeaders().add(ConnectorCall.HEADER_USER_AGENT, call.getClientName());
       	}
       	else
       	{
-      		clientCall.addRequestHeader(ConnectorCall.HEADER_USER_AGENT, FactoryImpl.VERSION_HEADER);
+      		clientCall.getRequestHeaders().add(ConnectorCall.HEADER_USER_AGENT, FactoryImpl.VERSION_HEADER);
          }
 
       	// Add the conditions
@@ -156,13 +156,13 @@ public class HttpClientImpl extends AbstractClient
                value.append(condition.getMatch().get(i).getName());
             }
 
-            clientCall.addRequestHeader(ConnectorCall.HEADER_IF_MATCH, value.toString());
+            clientCall.getRequestHeaders().add(ConnectorCall.HEADER_IF_MATCH, value.toString());
          }
          
          if(condition.getModifiedSince() != null)
          {
             String imsDate = DateUtils.format(condition.getModifiedSince(), DateUtils.FORMAT_RFC_1123[0]);
-            clientCall.addRequestHeader(ConnectorCall.HEADER_IF_MODIFIED_SINCE, imsDate);
+            clientCall.getRequestHeaders().add(ConnectorCall.HEADER_IF_MODIFIED_SINCE, imsDate);
          }
          
          if(condition.getNoneMatch() != null)
@@ -175,65 +175,65 @@ public class HttpClientImpl extends AbstractClient
                value.append(condition.getNoneMatch().get(i).getName());
             }
 
-            clientCall.addRequestHeader(ConnectorCall.HEADER_IF_NONE_MATCH, value.toString());
+            clientCall.getRequestHeaders().add(ConnectorCall.HEADER_IF_NONE_MATCH, value.toString());
          }
 
          if(condition.getUnmodifiedSince() != null)
          {
             String iusDate = DateUtils.format(condition.getUnmodifiedSince(), DateUtils.FORMAT_RFC_1123[0]);
-            clientCall.addRequestHeader(ConnectorCall.HEADER_IF_UNMODIFIED_SINCE, iusDate);
+            clientCall.getRequestHeaders().add(ConnectorCall.HEADER_IF_UNMODIFIED_SINCE, iusDate);
          }
          
          // Add the cookies
          if(call.getCookies().size() > 0)
          {
             String cookies = CookieUtils.format(call.getCookies());
-            clientCall.addRequestHeader(ConnectorCall.HEADER_COOKIE, cookies);
+            clientCall.getRequestHeaders().add(ConnectorCall.HEADER_COOKIE, cookies);
          }
          
          // Add the referrer header
          if(call.getReferrerRef() != null)
          {
-            clientCall.addRequestHeader(ConnectorCall.HEADER_REFERRER, call.getReferrerRef().toString());
+            clientCall.getRequestHeaders().add(ConnectorCall.HEADER_REFERRER, call.getReferrerRef().toString());
          }
 
          // Add the preferences
          PreferenceData pref = call.getPreference();
          if(pref.getMediaTypes().size() > 0)
          {
-            clientCall.addRequestHeader(ConnectorCall.HEADER_ACCEPT, PreferenceUtils.format(pref.getMediaTypes()));
+            clientCall.getRequestHeaders().add(ConnectorCall.HEADER_ACCEPT, PreferenceUtils.format(pref.getMediaTypes()));
          }
          else
          {
-        	 clientCall.addRequestHeader(ConnectorCall.HEADER_ACCEPT, MediaTypes.ALL.getName());
+        	 clientCall.getRequestHeaders().add(ConnectorCall.HEADER_ACCEPT, MediaTypes.ALL.getName());
          }
          
          if(pref.getCharacterSets().size() > 0)
          {
-            clientCall.addRequestHeader(ConnectorCall.HEADER_ACCEPT_CHARSET, PreferenceUtils.format(pref.getCharacterSets()));
+            clientCall.getRequestHeaders().add(ConnectorCall.HEADER_ACCEPT_CHARSET, PreferenceUtils.format(pref.getCharacterSets()));
          }
          
          if(pref.getEncodings().size() > 0)
          {
-            clientCall.addRequestHeader(ConnectorCall.HEADER_ACCEPT_ENCODING, PreferenceUtils.format(pref.getEncodings()));
+            clientCall.getRequestHeaders().add(ConnectorCall.HEADER_ACCEPT_ENCODING, PreferenceUtils.format(pref.getEncodings()));
          }
          
          if(pref.getLanguages().size() > 0)
          {
-            clientCall.addRequestHeader(ConnectorCall.HEADER_ACCEPT_LANGUAGE, PreferenceUtils.format(pref.getLanguages()));
+            clientCall.getRequestHeaders().add(ConnectorCall.HEADER_ACCEPT_LANGUAGE, PreferenceUtils.format(pref.getLanguages()));
          }
 
          // Add the security
          ChallengeResponse response = call.getSecurity().getChallengeResponse();
          if(response != null)
          {
-            clientCall.addRequestHeader(ConnectorCall.HEADER_AUTHORIZATION, SecurityUtils.format(response));
+            clientCall.getRequestHeaders().add(ConnectorCall.HEADER_AUTHORIZATION, SecurityUtils.format(response));
          }
          
          // Add the custom headers that may have been set by the user
          for(Parameter header : call.getConnectorCall().getRequestHeaders())
          {
-            clientCall.addRequestHeader(header.getName(), header.getValue());
+            clientCall.getRequestHeaders().add(header.getName(), header.getValue());
          }         
 
          // Send the input representation
@@ -241,22 +241,22 @@ public class HttpClientImpl extends AbstractClient
          {
          	if(call.getInput().getSize() > 0)
          	{
-         		clientCall.addRequestHeader(ConnectorCall.HEADER_CONTENT_LENGTH, Long.toString(call.getInput().getSize()));
+         		clientCall.getRequestHeaders().add(ConnectorCall.HEADER_CONTENT_LENGTH, Long.toString(call.getInput().getSize()));
          	}
          	
          	if(call.getInput().getMetadata().getMediaType() != null)
          	{
-         		clientCall.addRequestHeader(ConnectorCall.HEADER_CONTENT_TYPE, call.getInput().getMetadata().getMediaType().toString());
+         		clientCall.getRequestHeaders().add(ConnectorCall.HEADER_CONTENT_TYPE, call.getInput().getMetadata().getMediaType().toString());
          	}
          	
          	if(call.getInput().getMetadata().getEncoding() != null)
          	{
-         		clientCall.addRequestHeader(ConnectorCall.HEADER_CONTENT_ENCODING, call.getInput().getMetadata().getEncoding().toString());
+         		clientCall.getRequestHeaders().add(ConnectorCall.HEADER_CONTENT_ENCODING, call.getInput().getMetadata().getEncoding().toString());
          	}
          	
          	if(call.getInput().getMetadata().getLanguage() != null)
          	{
-         		clientCall.addRequestHeader(ConnectorCall.HEADER_CONTENT_LANGUAGE, call.getInput().getMetadata().getLanguage().toString());
+         		clientCall.getRequestHeaders().add(ConnectorCall.HEADER_CONTENT_LANGUAGE, call.getInput().getMetadata().getLanguage().toString());
          	}
          }
    	}

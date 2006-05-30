@@ -22,12 +22,11 @@
 
 package com.noelios.restlet.impl;
 
-import java.util.ArrayList;
 import java.util.Date;
-import java.util.List;
 
 import org.restlet.connector.ConnectorCall;
 import org.restlet.data.Parameter;
+import org.restlet.data.ParameterList;
 
 import com.noelios.restlet.util.DateUtils;
 
@@ -50,13 +49,13 @@ public class ConnectorCallImpl implements ConnectorCall
    protected String requestUri;
    
    /** The request headers. */
-   protected List<Parameter> requestHeaders;
+   protected ParameterList requestHeaders;
    
    /** The response address. */
    protected String responseAddress;
    
    /** The response headers. */
-   protected List<Parameter> responseHeaders;
+   protected ParameterList responseHeaders;
    
    /** The response status code. */
    protected int responseStatusCode;
@@ -141,64 +140,10 @@ public class ConnectorCallImpl implements ConnectorCall
     * Returns the modifiable list of request headers.
     * @return The modifiable list of request headers.
     */
-   public List<Parameter> getRequestHeaders()
+   public ParameterList getRequestHeaders()
    {
-      if(this.requestHeaders == null) this.requestHeaders = new ArrayList<Parameter>();
+      if(this.requestHeaders == null) this.requestHeaders = new ParameterList();
       return this.requestHeaders;
-   }
-   
-   /**
-    * Returns the value for a request header name.<br/>
-    * If multiple headers with the same name are found, all values are returned separated by commas.
-    * @param headerName The header name.
-    * @return The value for a request header name.
-    */
-   public String getRequestHeaderValue(String headerName)
-   {
-   	return getHeaderValue(headerName, getRequestHeaders());
-   }
-
-   /**
-    * Returns the value for a header name.<br/>
-    * If multiple headers with the same name are found, all values are returned separated by commas.
-    * @param headerName The header name.
-    * @param headers The headers list.
-    * @return The value for a header name.
-    */
-   private String getHeaderValue(String headerName, List<Parameter> headers)
-   {
-   	String result = null;
-   	StringBuilder sb = null;
-   	
-   	for(Parameter header : getRequestHeaders())
-   	{
-   		if(header.getName().equalsIgnoreCase(headerName))
-   		{
-   			if(sb == null)
-   			{
-   				if(result == null)
-   				{
-   					result = header.getValue();
-   				}
-   				else
-   				{
-   					sb = new StringBuilder();
-      				sb.append(result).append(',').append(header.getValue());
-   				}
-   			}
-   			else
-   			{
-   				sb.append(',').append(header.getValue());
-   			}
-   		}
-   	}
-   	
-   	if(sb != null)
-   	{
-   		result = sb.toString();
-   	}
-   	
-   	return result;
    }
    
    /**
@@ -215,21 +160,10 @@ public class ConnectorCallImpl implements ConnectorCall
     * Returns the modifiable list of response headers.
     * @return The modifiable list of response headers.
     */
-   public List<Parameter> getResponseHeaders()
+   public ParameterList getResponseHeaders()
    {
-      if(this.responseHeaders == null) this.responseHeaders = new ArrayList<Parameter>();
+      if(this.responseHeaders == null) this.responseHeaders = new ParameterList();
       return this.responseHeaders;
-   }
-   
-   /**
-    * Returns the value for a response header name.<br/>
-    * If multiple headers with the same name are found, all values are returned separated by commas.
-    * @param headerName The header name.
-    * @return The value for a response header name.
-    */
-   public String getResponseHeaderValue(String headerName)
-   {
-   	return getHeaderValue(headerName, getResponseHeaders());
    }
 
    /**

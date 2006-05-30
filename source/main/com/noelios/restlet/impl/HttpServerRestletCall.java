@@ -106,7 +106,7 @@ public class HttpServerRestletCall extends CallImpl
    		setClientAddress(getConnectorCall().getRequestAddress());
    		
 	      // Lookup the "X-Forwarded-For" header
-	      String header = getConnectorCall().getRequestHeaderValue(ConnectorCall.HEADER_X_FORWARDED_FOR);
+	      String header = getConnectorCall().getRequestHeaders().getHeader(ConnectorCall.HEADER_X_FORWARDED_FOR);
 
 	      if(header != null)
 	      {
@@ -130,7 +130,7 @@ public class HttpServerRestletCall extends CallImpl
       if(this.clientName == null)
       {
          // Extract the header values
-      	this.clientName = getConnectorCall().getRequestHeaderValue(ConnectorCall.HEADER_USER_AGENT);
+      	this.clientName = getConnectorCall().getRequestHeaders().getHeader(ConnectorCall.HEADER_USER_AGENT);
       }
       
       return this.clientName;
@@ -147,8 +147,8 @@ public class HttpServerRestletCall extends CallImpl
          this.condition = new ConditionData();
 
          // Extract the header values
-         String ifMatchHeader = getConnectorCall().getRequestHeaderValue(ConnectorCall.HEADER_IF_MATCH);
-         String ifNoneMatchHeader = getConnectorCall().getRequestHeaderValue(ConnectorCall.HEADER_IF_NONE_MATCH);
+         String ifMatchHeader = getConnectorCall().getRequestHeaders().getHeader(ConnectorCall.HEADER_IF_MATCH);
+         String ifNoneMatchHeader = getConnectorCall().getRequestHeaders().getHeader(ConnectorCall.HEADER_IF_NONE_MATCH);
          Date ifModifiedSince = null;
          Date ifUnmodifiedSince = null;
          
@@ -245,7 +245,7 @@ public class HttpServerRestletCall extends CallImpl
       if(this.cookies == null) 
       {
          this.cookies = new ArrayList<Cookie>();
-         String cookiesValue = getConnectorCall().getRequestHeaderValue(ConnectorCall.HEADER_COOKIE);
+         String cookiesValue = getConnectorCall().getRequestHeaders().getHeader(ConnectorCall.HEADER_COOKIE);
 
          if(cookiesValue != null)
          {
@@ -333,10 +333,10 @@ public class HttpServerRestletCall extends CallImpl
          this.preference = new PreferenceData();
 
          // Extract the header values
-         String acceptCharset = getConnectorCall().getRequestHeaderValue(ConnectorCall.HEADER_ACCEPT_CHARSET);
-         String acceptEncoding = getConnectorCall().getRequestHeaderValue(ConnectorCall.HEADER_ACCEPT_ENCODING);
-         String acceptLanguage = getConnectorCall().getRequestHeaderValue(ConnectorCall.HEADER_ACCEPT_LANGUAGE);
-         String acceptMediaType = getConnectorCall().getRequestHeaderValue(ConnectorCall.HEADER_ACCEPT);
+         String acceptCharset = getConnectorCall().getRequestHeaders().getHeader(ConnectorCall.HEADER_ACCEPT_CHARSET);
+         String acceptEncoding = getConnectorCall().getRequestHeaders().getHeader(ConnectorCall.HEADER_ACCEPT_ENCODING);
+         String acceptLanguage = getConnectorCall().getRequestHeaders().getHeader(ConnectorCall.HEADER_ACCEPT_LANGUAGE);
+         String acceptMediaType = getConnectorCall().getRequestHeaders().getHeader(ConnectorCall.HEADER_ACCEPT);
 
          // Parse the headers and update the call preferences
          PreferenceUtils.parseCharacterSets(acceptCharset, this.preference);
@@ -356,7 +356,7 @@ public class HttpServerRestletCall extends CallImpl
    {
       if(this.referrerRef == null)
       {
-      	String referrerValue = getConnectorCall().getRequestHeaderValue(ConnectorCall.HEADER_REFERRER);
+      	String referrerValue = getConnectorCall().getRequestHeaders().getHeader(ConnectorCall.HEADER_REFERRER);
       	if(referrerValue != null)
       	{
       		this.referrerRef = new Reference(referrerValue);
@@ -387,7 +387,7 @@ public class HttpServerRestletCall extends CallImpl
          }
 
          // Extract the header value
-         String authorization = getConnectorCall().getRequestHeaderValue(ConnectorCall.HEADER_AUTHORIZATION);
+         String authorization = getConnectorCall().getRequestHeaders().getHeader(ConnectorCall.HEADER_AUTHORIZATION);
 
          // Set the challenge response
          getSecurity().setChallengeResponse(SecurityUtils.parseResponse(authorization));

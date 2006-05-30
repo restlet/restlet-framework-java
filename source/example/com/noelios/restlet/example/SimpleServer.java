@@ -22,8 +22,6 @@
 
 package com.noelios.restlet.example;
 
-import java.util.List;
-
 import org.restlet.AbstractRestlet;
 import org.restlet.Call;
 import org.restlet.Restlet;
@@ -69,9 +67,8 @@ public class SimpleServer
                Form form = call.getInputAsForm();
 
                System.out.println("Trying to getParameters...");
-               List<Parameter> params = form.getParameters();
                StringBuffer sb = new StringBuffer("foo");
-               for(Parameter p : params)
+               for(Parameter p : form)
                {
                   System.out.println(p);
 
