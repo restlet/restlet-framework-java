@@ -323,7 +323,7 @@
     </target>
 
 	<target name="test" depends="retroweave" description="Execute the test suites">
-		<junit printsummary="true" fork="true" haltonfailure="true" filtertrace="true" showoutput="${verbose}">
+		<junit printsummary="true" fork="true" haltonfailure="false" filtertrace="true" showoutput="${verbose}">
 			<classpath>
 				<pathelement location="${classes-api}" />
 				<pathelement location="${classes-nre}" />
@@ -336,7 +336,8 @@
 			</classpath>
 
 			<formatter type="plain" />
-			<test name="com.noelios.restlet.test.RestletTestSuite" todir="${classes}" />
+			<test name="com.noelios.restlet.test.NoeliosTestSuite" todir="${classes}" />
+			<test name="org.restlet.test.RestletTestSuite" todir="${classes}" />
 		</junit>
 	</target>
 
