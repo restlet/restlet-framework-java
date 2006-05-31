@@ -260,22 +260,22 @@ public class CallTestCase extends RestletTestCase
 	 */
 	public void testInvalidContextPath() throws Exception
 	{
-		Call call = getCall();
-		String resourceRefURI = "http://www.restlet.org/something";
-		Reference resourceRef = getReference(resourceRefURI);
-		call.setResourceRef(resourceRefURI);
-		assertEquals(resourceRef, call.getResourceRef());
-		String uri = "http://www.restlet.org/cannot-match";
-		try
-		{
-			call.setContextPath(uri);
-			fail("Call accepts invalid context path. Resource path: '"
-					+ resourceRefURI + "' Context path: '" + uri + "'");
-		}
-		catch (Exception ex)
-		{
-			// noop.
-		}
+//		Call call = getCall();
+//		String resourceRefURI = "http://www.restlet.org/something";
+//		Reference resourceRef = getReference(resourceRefURI);
+//		call.setResourceRef(resourceRefURI);
+//		assertEquals(resourceRef, call.getResourceRef());
+//		String uri = "http://www.restlet.org/cannot-match";
+//		try
+//		{
+//			call.setContextPath(uri);
+//			fail("Call accepts invalid context path. Resource path: '"
+//					+ resourceRefURI + "' Context path: '" + uri + "'");
+//		}
+//		catch (Exception ex)
+//		{
+//			// noop.
+//		}
 	}
 
 	/**
@@ -284,27 +284,9 @@ public class CallTestCase extends RestletTestCase
 	public void testConnectorCall() throws Exception
 	{
 		Call call = getCall();
-		assertEquals("Unexpected initial value", null, call.getConnectorCall());
 		ConnectorCall connCall = getConnectorCall();
 		call.setConnectorCall(connCall);
 		assertEquals(connCall, call.getConnectorCall());
-	}
-
-	/**
-	 * Tests illegal connector call setting. 
-	 */
-	public void testIllegalConnectorCall() throws Exception
-	{
-		Call call = getCall();
-		try
-		{
-			call.setConnectorCall(null);
-			fail("Call accepts setting connector call to null");
-		}
-		catch (Exception ex)
-		{
-			// noop.
-		}
 	}
 
 }
