@@ -231,10 +231,10 @@ public class ParameterList implements List<Parameter>, Data
 	}
 	
 	/**
-	 * Returns the value of the first parameter found with the given name. 
-	 * @param name The parameter name (case sensitive).
+	 * Returns the first parameter found with the given name. 
+	 * @param name The parameter name.
     * @param ignoreCase Indicates if the name comparison is case sensitive.
-	 * @return The value of the first parameter found with the given name.
+	 * @return The first parameter found with the given name.
 	 */
 	public Parameter getFirst(String name, boolean ignoreCase)
 	{
@@ -247,6 +247,35 @@ public class ParameterList implements List<Parameter>, Data
 		}
 		
 		return null;
+	}
+
+	/**
+	 * Returns the value of the first parameter found with the given name. 
+	 * @param name The parameter name (case sensitive).
+	 * @return The value of the first parameter found with the given name.
+	 */
+	public String getFirstValue(String name)
+	{
+		return getFirstValue(name, false);
+	}
+	
+	/**
+	 * Returns the value of the first parameter found with the given name. 
+	 * @param name The parameter name.
+    * @param ignoreCase Indicates if the name comparison is case sensitive.
+	 * @return The value of the first parameter found with the given name.
+	 */
+	public String getFirstValue(String name, boolean ignoreCase)
+	{
+		String result = null;
+		Parameter param = getFirst(name);
+		
+		if(param != null)
+		{
+			result = param.getValue();
+		}
+		
+		return result;
 	}
 	
 	/**

@@ -31,7 +31,7 @@ import com.noelios.restlet.util.StringTemplate;
  * Unit tests for the SemaTemplate class.
  * @author Jerome Louvel (contact@noelios.com) <a href="http://www.noelios.com/">Noelios Consulting</a>
  */
-public class StringTemplateTest extends TestCase
+public class StringTemplateTestCase extends TestCase
 {
    /** Tests the interpolation feature. */
    public void testInterpolation()

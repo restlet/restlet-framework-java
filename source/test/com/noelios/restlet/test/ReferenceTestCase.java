@@ -32,7 +32,7 @@ import org.restlet.data.Reference;
  * Unit tests for the Cookie related classes.
  * @author Jerome Louvel (contact@noelios.com) <a href="http://www.noelios.com/">Noelios Consulting</a>
  */
-public class ReferenceTest extends TestCase
+public class ReferenceTestCase extends TestCase
 {
    /**
     * Tests the cookies parsing.

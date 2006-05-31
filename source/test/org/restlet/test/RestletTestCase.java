@@ -19,34 +19,20 @@
  * replaced with your own identifying information:
  * Portions Copyright [yyyy] [name of copyright owner]
  */
+package org.restlet.test;
 
-package com.noelios.restlet.test;
-
-import java.io.IOException;
 import junit.framework.TestCase;
-import org.restlet.data.Form;
-import com.noelios.restlet.util.FormReader;
 
 /**
- * Unit tests for the Cookie related classes.
- * @author Jerome Louvel (contact@noelios.com) <a href="http://www.noelios.com/">Noelios Consulting</a>
+ * Marker class.
+ * 
+ * All Restlet tests should be derived from this class. 
+ * 
+ * @author Lars Heuer (heuer[at]semagia.com) <a href="http://www.semagia.com/">Semagia</a>
+ * @version $Rev:$ - $Date:$
  */
-public class FormTest extends TestCase
+public abstract class RestletTestCase extends TestCase
 {
-   /**
-    * Tests the cookies parsing.
-    */
-   public void testParsing() throws IOException
-   {
-      Form form = new Form();
-      form.add("name", "John D. Mitchell");
-      form.add("email", "john@bob.net");
-      form.add("email2", "joe@bob.net");
-      
-      String query = form.urlEncode();
-      Form newForm = new FormReader(query).read();
-      String newQuery = newForm.urlEncode();
-      assertEquals(query, newQuery);
-   }
 
+	// Currently emtpy.
 }

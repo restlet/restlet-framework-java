@@ -45,7 +45,7 @@ import com.noelios.restlet.data.StringRepresentation;
  * Unit tests for the Cookie related classes.
  * @author Jerome Louvel (contact@noelios.com) <a href="http://www.noelios.com/">Noelios Consulting</a>
  */
-public class RedirectTest extends TestCase
+public class RedirectTestCase extends TestCase
 {
    /**
     * Tests the cookies parsing.
@@ -133,7 +133,7 @@ public class RedirectTest extends TestCase
    {
       try
       {
-         new RedirectTest().testRedirect();
+         new RedirectTestCase().testRedirect();
       }
       catch(IOException e)
       {

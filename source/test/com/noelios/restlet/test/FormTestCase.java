@@ -23,27 +23,30 @@
 package com.noelios.restlet.test;
 
 import java.io.IOException;
-
 import junit.framework.TestCase;
-
-import com.noelios.restlet.util.SecurityUtils;
+import org.restlet.data.Form;
+import com.noelios.restlet.util.FormReader;
 
 /**
- * Unit tests for the SecurityData related classes.
+ * Unit tests for the Cookie related classes.
  * @author Jerome Louvel (contact@noelios.com) <a href="http://www.noelios.com/">Noelios Consulting</a>
  */
-public class SecurityTest extends TestCase
+public class FormTestCase extends TestCase
 {
    /**
     * Tests the cookies parsing.
     */
    public void testParsing() throws IOException
    {
-      String authenticate1 = "Basic realm=\"Restlet tutorial\"";
-      String authorization1 = "Basic c2NvdHQ6dGlnZXI=";
-
-      assertEquals(authorization1, SecurityUtils.format(SecurityUtils.parseResponse(authorization1)));
-      assertEquals(authenticate1, SecurityUtils.format(SecurityUtils.parseRequest(authenticate1)));
+      Form form = new Form();
+      form.add("name", "John D. Mitchell");
+      form.add("email", "john@bob.net");
+      form.add("email2", "joe@bob.net");
+      
+      String query = form.urlEncode();
+      Form newForm = new FormReader(query).read();
+      String newQuery = newForm.urlEncode();
+      assertEquals(query, newQuery);
    }
 
 }

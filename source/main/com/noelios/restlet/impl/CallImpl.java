@@ -397,7 +397,8 @@ public class CallImpl implements Call
     */
    public String getClientAddress()
    {
-      return getClientAddresses().get(0);
+      return (this.clientAddresses == null) ? null : 
+      	(this.clientAddresses.isEmpty() ? null : this.clientAddresses.get(0));
    }
 
    /**
@@ -412,15 +413,7 @@ public class CallImpl implements Call
     */
    public List<String> getClientAddresses()
    {
-   	if(this.clientAddresses == null)
-   	{
-   		this.clientAddresses = new ArrayList<String>();
-   		
-   		// Add a null value for the immediate client address
-   		// This can be changed by subclasses like HttpServerRestletCall
-   		this.clientAddresses.add(null);
-   	}
-   	
+   	if(this.clientAddresses == null) this.clientAddresses = new ArrayList<String>();
       return this.clientAddresses;
    }
 
@@ -699,7 +692,14 @@ public class CallImpl implements Call
     */
    public void setClientAddress(String address)
    {
-     	getClientAddresses().set(0, address);
+     	if(getClientAddresses().isEmpty())
+     	{
+     		getClientAddresses().add(address);
+     	}
+     	else
+     	{
+     		getClientAddresses().set(0, address);
+     	}
    }
 
    /**

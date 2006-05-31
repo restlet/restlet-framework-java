@@ -20,7 +20,7 @@
  * Portions Copyright [yyyy] [name of copyright owner]
  */
 
-package com.noelios.restlet.test;
+package org.restlet.test;
 
 import junit.framework.Test;
 import junit.framework.TestSuite;
@@ -34,13 +34,9 @@ public class RestletTestSuite extends TestSuite
    /** Constructor. */
    public RestletTestSuite()
    {
-      addTestSuite(CookiesTest.class);
-      addTestSuite(FormTest.class);
-      addTestSuite(PreferencesTest.class);
-      addTestSuite(RedirectTest.class);
-      addTestSuite(ReferenceTest.class);
-      addTestSuite(SecurityTest.class);
-      addTestSuite(StringTemplateTest.class);
+      addTestSuite(CallTestCase.class);
+      addTestSuite(ChainletTestCase.class);
+      addTestSuite(ReferenceTestCase.class);
    }
 
    /**

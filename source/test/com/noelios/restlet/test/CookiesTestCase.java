@@ -40,7 +40,7 @@ import com.noelios.restlet.util.DateUtils;
  * Unit tests for the Cookie related classes.
  * @author Jerome Louvel (contact@noelios.com) <a href="http://www.noelios.com/">Noelios Consulting</a>
  */
-public class CookiesTest extends TestCase
+public class CookiesTestCase extends TestCase
 {
    /**
     * Tests the cookies parsing.
