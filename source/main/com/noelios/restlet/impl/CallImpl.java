@@ -78,7 +78,7 @@ public class CallImpl implements Call
 
    /** The low-level connector call. */
    protected ConnectorCall connectorCall;
-   
+
    /** The current cookies of the client. */
    protected List<Cookie> cookies;
 
@@ -87,7 +87,7 @@ public class CallImpl implements Call
 
    /** The list of substrings matched in the context path. */
    protected List<String> contextMatches;
-   
+
    /** The context path. */
    protected String contextPath;
 
@@ -102,13 +102,13 @@ public class CallImpl implements Call
 
    /** The preference data. */
    protected PreferenceData preference;
-   
+
    /** The redirection reference. */
    protected Reference redirectionRef;
-   
+
    /** The referrer reference. */
    protected Reference referrerRef;
-   
+
    /** The resource reference. */
    protected Reference resourceRef;
 
@@ -124,27 +124,27 @@ public class CallImpl implements Call
    /** The server status. */
    protected Status status;
 
-	/**
-	 * Returns a modifiable attributes map that can be used by developers to save information relative
-	 * to the current call. This is an easier alternative to the creation of wrapper class around the whole call.
-	 * @return The modifiable attributes map.
-	 * @see org.restlet.WrapperCall
-	 */
-	public Map<String, Object> getAttributes()
-	{
-		if(attributes == null)
-		{
-			attributes = new TreeMap<String, Object>();
-		}
-		
-		return attributes;
-	}
-	
+   /**
+    * Returns a modifiable attributes map that can be used by developers to save information relative
+    * to the current call. This is an easier alternative to the creation of a wrapper around the whole call.
+    * @return The modifiable attributes map.
+    * @see org.restlet.WrapperCall
+    */
+   public Map<String, Object> getAttributes()
+   {
+      if(attributes == null)
+      {
+         attributes = new TreeMap<String, Object>();
+      }
+
+      return attributes;
+   }
+
    /**
     * Returns the best variant representation for a given resource according the the client preferences.
     * @param resource The resource for which the best representation needs to be set.
     * @param fallbackLanguage The language to use if no preference matches.
-    * @return The best variant representation. 
+    * @return The best variant representation.
     * @see <a href="http://httpd.apache.org/docs/2.2/en/content-negotiation.html#algorithm">Apache content negotiation algorithm</a>
     */
    public RepresentationMetadata getBestVariant(Resource resource, Language fallbackLanguage)
@@ -156,7 +156,7 @@ public class CallImpl implements Call
     * Returns the best variant representation for a given resource according the the client preferences.
     * @param variants The list of variants to compare.
     * @param fallbackLanguage The language to use if no preference matches.
-    * @return The best variant representation. 
+    * @return The best variant representation.
     * @see <a href="http://httpd.apache.org/docs/2.2/en/content-negotiation.html#algorithm">Apache content negotiation algorithm</a>
     */
    protected RepresentationMetadata getBestVariant(List<RepresentationMetadata> variants, Language fallbackLanguage)
@@ -258,8 +258,8 @@ public class CallImpl implements Call
             }
 
             // Are the preferences compatible with the current variant language?
-            compatibleLanguage = (currentVariant.getLanguage() == null) || 
-                                 (bestLanguagePref != null) || 
+            compatibleLanguage = (currentVariant.getLanguage() == null) ||
+                                 (bestLanguagePref != null) ||
                                  (currentVariant.getLanguage().equals(fallbackLanguage));
 
             // For each media range preference defined in the call
@@ -328,8 +328,8 @@ public class CallImpl implements Call
             }
 
             // Are the preferences compatible with the current media type?
-            compatibleMediaType = (currentVariant.getMediaType() == null) || 
-                                  (bestMediaTypePref != null); 
+            compatibleMediaType = (currentVariant.getMediaType() == null) ||
+                                  (bestMediaTypePref != null);
 
             if(compatibleLanguage && compatibleMediaType)
             {
@@ -343,13 +343,13 @@ public class CallImpl implements Call
                {
                   currentQuality += 0.1F * 10F;
                }
-   
+
                if(bestMediaTypePref != null)
                {
                   // So, let's conclude on the current variant, its quality
                   currentQuality += bestMediaTypePref.getQuality();
                }
-               
+
                if(bestVariant == null)
                {
                   bestVariant = currentVariant;
@@ -397,23 +397,23 @@ public class CallImpl implements Call
     */
    public String getClientAddress()
    {
-      return (this.clientAddresses == null) ? null : 
-      	(this.clientAddresses.isEmpty() ? null : this.clientAddresses.get(0));
+      return (this.clientAddresses == null) ? null :
+         (this.clientAddresses.isEmpty() ? null : this.clientAddresses.get(0));
    }
 
    /**
     * Returns the list of client IP addresses.<br/>
     * The first address is the one of the immediate client component as returned by the getClientAdress() method and
-    * the last address should correspond to the origin client (frequently a user agent). 
+    * the last address should correspond to the origin client (frequently a user agent).
     * This is useful when the user agent is separated from the origin server by a chain of intermediary components.<br/>
     * This list of addresses is based on headers such as the "X-Forwarded-For" header supported by popular proxies and caches.<br/>
     * However, this information is only safe for intermediary components within your local network.<br/>
-    * Other addresses could easily be changed by setting a fake header and should never be trusted for serious security checks.  
+    * Other addresses could easily be changed by setting a fake header and should never be trusted for serious security checks.
     * @return The client IP addresses.
     */
    public List<String> getClientAddresses()
    {
-   	if(this.clientAddresses == null) this.clientAddresses = new ArrayList<String>();
+      if(this.clientAddresses == null) this.clientAddresses = new ArrayList<String>();
       return this.clientAddresses;
    }
 
@@ -435,7 +435,7 @@ public class CallImpl implements Call
       if(this.condition == null) this.condition = new ConditionData();
       return this.condition;
    }
-   
+
    /**
     * Returns the low-level connector call.
     * @return The low-level connector call.
@@ -507,7 +507,7 @@ public class CallImpl implements Call
    /**
     * Returns the representation provided by the client as a form.<br/>
     * Note that this triggers the parsing of the input representation.<br/>
-    * This method and the associated getInput method should be invoked only once. 
+    * This method and the associated getInput method should be invoked only once.
     * @return The input form provided by the client.
     */
    public Form getInputAsForm()
@@ -521,7 +521,7 @@ public class CallImpl implements Call
          return null;
       }
    }
-   
+
    /**
     * Returns the call method.
     * @return The call method.
@@ -582,14 +582,14 @@ public class CallImpl implements Call
       {
          String resourceURI = this.resourceRef.toString(false, false);
          int length = getContextPath().length();
-         
+
          if(logger.isLoggable(Level.FINE))
          {
             logger.fine("Resource URI: " + resourceURI);
             logger.fine("Context path: " + getContextPath());
             logger.fine("Context path length: " + length);
          }
-         
+
          return resourceURI.substring(length);
       }
    }
@@ -639,9 +639,9 @@ public class CallImpl implements Call
    {
       return this.status;
    }
-   
+
    /**
-    * Sets the best representation of a given resource according to the client preferences.<br/> 
+    * Sets the best representation of a given resource according to the client preferences.<br/>
     * If no representation is found, sets the status to "Not found".<br/>
     * If no acceptable representation is available, sets the status to "Not acceptable".<br/>
     * @param resource The resource for which the best representation needs to be set.
@@ -661,7 +661,7 @@ public class CallImpl implements Call
       {
          // Compute the best variant
          RepresentationMetadata bestVariant = getBestVariant(variants, fallbackLanguage);
-         
+
          if(bestVariant == null)
          {
             // No variant was found matching the call preferences
@@ -685,21 +685,21 @@ public class CallImpl implements Call
          }
       }
    }
-   
+
    /**
     * Sets the client IP address.
     * @param address The client IP address.
     */
    public void setClientAddress(String address)
    {
-     	if(getClientAddresses().isEmpty())
-     	{
-     		getClientAddresses().add(address);
-     	}
-     	else
-     	{
-     		getClientAddresses().set(0, address);
-     	}
+      if(getClientAddresses().isEmpty())
+      {
+         getClientAddresses().add(address);
+      }
+      else
+      {
+         getClientAddresses().set(0, address);
+      }
    }
 
    /**
@@ -730,10 +730,10 @@ public class CallImpl implements Call
       {
          logger.warning("Context path doesn't match the start of the resource URI: " + contextPath);
       }
-      
+
       this.contextPath = contextPath;
    }
-   
+
    /**
     * Sets the representation provided by the client.
     * @param input The representation provided by the client.
@@ -777,9 +777,9 @@ public class CallImpl implements Call
     */
    public void setRedirectionRef(String redirectionUri)
    {
-   	setRedirectionRef(new Reference(getContextRef(), redirectionUri).getTargetRef());
+      setRedirectionRef(new Reference(getContextRef(), redirectionUri).getTargetRef());
    }
-   
+
    /**
     * Sets the referrer reference if available.
     * @param referrerRef The referrer reference.
@@ -795,9 +795,9 @@ public class CallImpl implements Call
     */
    public void setReferrerRef(String referrerUri)
    {
-   	setReferrerRef(new Reference(referrerUri));
+      setReferrerRef(new Reference(referrerUri));
    }
-   
+
    /**
     * Sets the resource reference.<br/>
     * Also reset the current restlet path and matches.
@@ -806,20 +806,20 @@ public class CallImpl implements Call
    public void setResourceRef(Reference resourceRef)
    {
       this.resourceRef = resourceRef;
-      
+
       // Reset the current restlet
       setContextPath(null);
       getContextMatches().clear();
    }
 
    /**
-    * Sets the resource reference using an URI string. Note that the resource URI can be either 
+    * Sets the resource reference using an URI string. Note that the resource URI can be either
     * absolute or relative to the current context reference.
     * @param resourceUri The resource URI.
     */
    public void setResourceRef(String resourceUri)
    {
-   	setResourceRef(new Reference(getContextRef(), resourceUri).getTargetRef());
+      setResourceRef(new Reference(getContextRef(), resourceUri).getTargetRef());
    }
 
    /**

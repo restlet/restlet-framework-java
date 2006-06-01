@@ -29,7 +29,7 @@ import org.restlet.connector.ConnectorCall;
 import org.restlet.data.*;
 
 /**
- * Restlet call wrapper. Useful for application developer who need to enrich the call with 
+ * Restlet call wrapper. Useful for application developer who need to enrich the call with
  * application related things.
  * @see <a href="http://c2.com/cgi/wiki?DecoratorPattern">The decorator (aka wrapper) pattern</a>
  * @author Jerome Louvel (contact@noelios.com) <a href="http://www.noelios.com/">Noelios Consulting</a>
@@ -48,22 +48,22 @@ public class WrapperCall implements Call
       this.wrappedCall = wrappedCall;
    }
 
-	/**
-	 * Returns a modifiable attributes map that can be used by developers to save information relative
-	 * to the current call. This is an easier alternative to the creation of wrapper class around the whole call.
-	 * @return The modifiable attributes map.
-	 * @see org.restlet.WrapperCall
-	 */
-	public Map<String, Object> getAttributes()
-	{
-		return getWrappedCall().getAttributes();
-	}
-	
+   /**
+    * Returns a modifiable attributes map that can be used by developers to save information relative
+    * to the current call. This is an easier alternative to the creation of a wrapper around the whole call.
+    * @return The modifiable attributes map.
+    * @see org.restlet.WrapperCall
+    */
+   public Map<String, Object> getAttributes()
+   {
+      return getWrappedCall().getAttributes();
+   }
+
    /**
     * Returns the best variant representation for a given resource according the the client preferences.
     * @param resource The resource for which the best representation needs to be set.
     * @param fallbackLanguage The language to use if no preference matches.
-    * @return The best variant representation. 
+    * @return The best variant representation.
     * @see <a href="http://httpd.apache.org/docs/2.2/en/content-negotiation.html#algorithm">Apache content negotiation algorithm</a>
     */
    public RepresentationMetadata getBestVariant(Resource resource, Language fallbackLanguage)
@@ -83,11 +83,11 @@ public class WrapperCall implements Call
    /**
     * Returns the list of client IP addresses.<br/>
     * The first address is the one of the immediate client component as returned by the getClientAdress() method and
-    * the last address should correspond to the origin client (frequently a user agent). 
+    * the last address should correspond to the origin client (frequently a user agent).
     * This is useful when the user agent is separated from the origin server by a chain of intermediary components.<br/>
     * This list of addresses is based on headers such as the "X-Forwarded-For" header supported by popular proxies and caches.<br/>
     * However, this information is only safe for intermediary components within your local network.<br/>
-    * Other addresses could easily be changed by setting a fake header and should never be trusted for serious security checks.  
+    * Other addresses could easily be changed by setting a fake header and should never be trusted for serious security checks.
     * @return The client IP addresses.
     */
    public List<String> getClientAddresses()
@@ -112,7 +112,7 @@ public class WrapperCall implements Call
    {
       return getWrappedCall().getCondition();
    }
-   
+
    /**
     * Returns the low-level connector call.
     * @return The low-level connector call.
@@ -180,7 +180,7 @@ public class WrapperCall implements Call
    /**
     * Returns the representation provided by the client as a form.<br/>
     * Note that this triggers the parsing of the input representation.<br/>
-    * This method and the associated getInput method should be invoked only once. 
+    * This method and the associated getInput method should be invoked only once.
     * @return The input form provided by the client.
     */
    public Form getInputAsForm()
@@ -297,7 +297,7 @@ public class WrapperCall implements Call
    }
 
    /**
-    * Sets the best representation of a given resource according to the client preferences.<br/> 
+    * Sets the best representation of a given resource according to the client preferences.<br/>
     * If no representation is found, sets the status to "Not found".<br/>
     * If no acceptable representation is available, sets the status to "Not acceptable".<br/>
     * @param resource The resource for which the best representation needs to be set.
