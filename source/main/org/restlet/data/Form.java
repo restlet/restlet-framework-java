@@ -27,7 +27,7 @@ import java.io.IOException;
 import org.restlet.Factory;
 
 /**
- * Representation of a Web form containing submitted parameters.
+ * Form which is a specialized modifiable list of parameters.
  * @author Jerome Louvel (contact@noelios.com) <a href="http://www.noelios.com/">Noelios Consulting</a>
  */
 public class Form extends ParameterList

@@ -49,8 +49,8 @@ public class WrapperCall implements Call
    }
 
 	/**
-	 * Returns a map of attributes that can be used by developer to save information relative
-	 * to the current call. This is a quicker alternative to the creation of wrapper class.
+	 * Returns a modifiable attributes map that can be used by developers to save information relative
+	 * to the current call. This is an easier alternative to the creation of wrapper class around the whole call.
 	 * @return The modifiable attributes map.
 	 * @see org.restlet.WrapperCall
 	 */

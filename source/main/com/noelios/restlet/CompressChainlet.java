@@ -25,6 +25,7 @@
 package com.noelios.restlet;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Iterator;
 import java.util.List;
 
@@ -132,17 +133,10 @@ public class CompressChainlet extends AbstractChainlet
 	 */
 	public static List<MediaType> getDefaultIgnoredMediaTypes()
 	{
-		List<MediaType> result = new ArrayList<MediaType>();
-		result.add(MediaTypes.APPLICATION_CABINET);
-		result.add(MediaTypes.APPLICATION_GNU_ZIP);
-		result.add(MediaTypes.APPLICATION_ZIP);
-		result.add(MediaTypes.APPLICATION_GNU_TAR);
-		result.add(MediaTypes.APPLICATION_JAVA_ARCHIVE);
-		result.add(MediaTypes.APPLICATION_STUFFIT);
-		result.add(MediaTypes.APPLICATION_TAR);
-		result.add(MediaTypes.AUDIO_ALL);
-		result.add(MediaTypes.IMAGE_ALL);
-		result.add(MediaTypes.VIDEO_ALL);
+		List<MediaType> result = Arrays.<MediaType> asList(MediaTypes.APPLICATION_CABINET, 
+				MediaTypes.APPLICATION_GNU_ZIP, MediaTypes.APPLICATION_ZIP, MediaTypes.APPLICATION_GNU_TAR, 
+				MediaTypes.APPLICATION_JAVA_ARCHIVE, MediaTypes.APPLICATION_STUFFIT, MediaTypes.APPLICATION_TAR,
+				MediaTypes.AUDIO_ALL, MediaTypes.IMAGE_ALL, MediaTypes.VIDEO_ALL);
 		return result;
 	}
 	

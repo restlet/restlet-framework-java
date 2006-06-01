@@ -69,23 +69,23 @@ public abstract class HttpServerCallImpl extends ConnectorCallImpl implements Se
          List<CookieSetting> cookies = call.getCookieSettings();
          for(int i = 0; i < cookies.size(); i++)
          {
-            addResponseHeader(ConnectorCall.HEADER_SET_COOKIE, CookieUtils.format(cookies.get(i)));
+            getResponseHeaders().add(ConnectorCall.HEADER_SET_COOKIE, CookieUtils.format(cookies.get(i)));
          }
          
          // Set the redirection URI
          if(call.getRedirectionRef() != null)
          {
-            addResponseHeader(HEADER_LOCATION, call.getRedirectionRef().toString());
+         	getResponseHeaders().add(HEADER_LOCATION, call.getRedirectionRef().toString());
          }
 
          // Set the security data
          if(call.getSecurity().getChallengeRequest() != null)
          {
-            addResponseHeader(HEADER_WWW_AUTHENTICATE, SecurityUtils.format(call.getSecurity().getChallengeRequest()));
+         	getResponseHeaders().add(HEADER_WWW_AUTHENTICATE, SecurityUtils.format(call.getSecurity().getChallengeRequest()));
          }
 
          // Set the server name again
-         addResponseHeader(HEADER_SERVER, call.getServerName());
+         getResponseHeaders().add(HEADER_SERVER, call.getServerName());
          
          // Set the status code in the response
          if(call.getStatus() != null)
@@ -100,17 +100,17 @@ public abstract class HttpServerCallImpl extends ConnectorCallImpl implements Se
    
             if(meta.getExpirationDate() != null)
             {
-               addResponseHeader(HEADER_EXPIRES, formatDate(meta.getExpirationDate(), false));
+            	getResponseHeaders().add(HEADER_EXPIRES, formatDate(meta.getExpirationDate(), false));
             }
             
             if((meta.getEncoding() != null) && (!meta.getEncoding().equals(Encodings.IDENTITY)))
             {
-               addResponseHeader(HEADER_CONTENT_ENCODING, meta.getEncoding().getName());
+            	getResponseHeaders().add(HEADER_CONTENT_ENCODING, meta.getEncoding().getName());
             }
             
             if(meta.getLanguage() != null)
             {
-               addResponseHeader(HEADER_CONTENT_LANGUAGE, meta.getLanguage().getName());
+            	getResponseHeaders().add(HEADER_CONTENT_LANGUAGE, meta.getLanguage().getName());
             }
             
             if(meta.getMediaType() != null)
@@ -123,22 +123,22 @@ public abstract class HttpServerCallImpl extends ConnectorCallImpl implements Se
                   contentType.append("; charset=").append(meta.getCharacterSet().getName());
                }
    
-               addResponseHeader(HEADER_CONTENT_TYPE, contentType.toString());
+               getResponseHeaders().add(HEADER_CONTENT_TYPE, contentType.toString());
             }
    
             if(meta.getModificationDate() != null)
             {
-               addResponseHeader(HEADER_LAST_MODIFIED, formatDate(meta.getModificationDate(), false));
+            	getResponseHeaders().add(HEADER_LAST_MODIFIED, formatDate(meta.getModificationDate(), false));
             }
    
             if(meta.getTag() != null)
             {
-               addResponseHeader(HEADER_ETAG, meta.getTag().getName());
+            	getResponseHeaders().add(HEADER_ETAG, meta.getTag().getName());
             }
             
             if(call.getOutput().getSize() != Representation.UNKNOWN_SIZE)
             {
-               addResponseHeader(HEADER_CONTENT_LENGTH, Long.toString(call.getOutput().getSize()));
+            	getResponseHeaders().add(HEADER_CONTENT_LENGTH, Long.toString(call.getOutput().getSize()));
             }
          }
       }

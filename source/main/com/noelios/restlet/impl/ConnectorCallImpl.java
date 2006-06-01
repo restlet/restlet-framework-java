@@ -25,7 +25,6 @@ package com.noelios.restlet.impl;
 import java.util.Date;
 
 import org.restlet.connector.ConnectorCall;
-import org.restlet.data.Parameter;
 import org.restlet.data.ParameterList;
 
 import com.noelios.restlet.util.DateUtils;
@@ -77,26 +76,6 @@ public class ConnectorCallImpl implements ConnectorCall
       this.responseHeaders = null;
       this.responseStatusCode = 200;
       this.responseReasonPhrase = "";
-   }
-
-   /**
-    * Adds a request header.
-    * @param name The header's name.
-    * @param value The header's value.
-    */
-   public void addRequestHeader(String name, String value)
-   {
-      getRequestHeaders().add(new Parameter(name, value));
-   }
-
-   /**
-    * Adds a response header.
-    * @param name The header's name.
-    * @param value The header's value.
-    */
-   public void addResponseHeader(String name, String value)
-   {
-      getResponseHeaders().add(new Parameter(name, value));
    }
 
    /**

@@ -323,7 +323,7 @@
     </target>
 
 	<target name="test" depends="retroweave" description="Execute the test suites">
-		<junit printsummary="true" fork="true" haltonfailure="false" filtertrace="true" showoutput="${verbose}">
+		<junit printsummary="true" fork="true" haltonfailure="true" filtertrace="true" showoutput="${verbose}">
 			<classpath>
 				<pathelement location="${classes-api}" />
 				<pathelement location="${classes-nre}" />

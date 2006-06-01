@@ -24,7 +24,7 @@ package com.noelios.restlet.data;
 
 import java.io.IOException;
 import java.io.OutputStream;
-import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 import java.util.zip.DeflaterOutputStream;
 import java.util.zip.GZIPOutputStream;
@@ -125,11 +125,6 @@ public class EncoderRepresentation extends OutputRepresentation
 	 */
 	public static List<Encoding> getSupportedEncodings()
 	{
-		List<Encoding> result = new ArrayList<Encoding>();
-		result.add(Encodings.GZIP);
-		result.add(Encodings.DEFLATE);
-		result.add(Encodings.ZIP);
-		result.add(Encodings.IDENTITY);
-		return result;
+		return Arrays.<Encoding>asList(Encodings.GZIP, Encodings.DEFLATE, Encodings.ZIP, Encodings.IDENTITY);
 	}
 }

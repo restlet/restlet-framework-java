@@ -32,8 +32,12 @@ import java.util.Map;
 import java.util.Set;
 
 /**
- * List of parameters with many helper methods.
+ * Modifiable list of parameters with many helper methods. Note that this class implements the java.util.List
+ * interface using the Parameter class as the template type. This allows you to use an instance of this class
+ * as any other java.util.List, in particular all the helper methods in java.util.Collections.
  * @author Jerome Louvel (contact@noelios.com) <a href="http://www.noelios.com/">Noelios Consulting</a>
+ * @see java.util.Collections
+ * @see java.util.List
  */
 public class ParameterList implements List<Parameter>, Data
 {
