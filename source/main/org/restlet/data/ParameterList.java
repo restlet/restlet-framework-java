@@ -675,7 +675,7 @@ public class ParameterList implements List<Parameter>, Data
     * @param params The map controlling the copy.
     */
    @SuppressWarnings("unchecked")
-   public void toMap(Map<String, Object> params) 
+   public void copyTo(Map<String, Object> params) 
    {
    	Parameter param;
       Object currentValue = null;

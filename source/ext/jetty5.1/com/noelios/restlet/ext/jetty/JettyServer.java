@@ -131,20 +131,22 @@ public class JettyServer extends AbstractServer
          }
          else if(Protocols.HTTPS.equals(this.protocol))
          {
+         	HttpsListener httpsListener = null;
+         	
             if(this.address != null)
             {
-               HttpsListener httpsListener = new HttpsListener(this,
-                     new InetAddrPort(this.address, this.port));
-               httpsListener.setKeystore(this.keystorePath);
-               httpsListener.setPassword(this.keystorePassword);
-               httpsListener.setKeyPassword(this.keyPassword);
-               this.listener = httpsListener;
+               httpsListener = new HttpsListener(this, new InetAddrPort(this.address, this.port));
             }
             else
             {
-               this.listener = new HttpsListener(this);
-               this.listener.setPort(port);
+            	httpsListener = new HttpsListener(this);
+            	httpsListener.setPort(port);
             }
+            
+            httpsListener.setKeystore(this.keystorePath);
+            httpsListener.setPassword(this.keystorePassword);
+            httpsListener.setKeyPassword(this.keyPassword);
+            this.listener = httpsListener;
          }
 
          getListener().start();

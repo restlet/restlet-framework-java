@@ -11,6 +11,7 @@ Restlet changes log
  - Added urlEncode() on Parameter.
  - Reference now sets new scheme names in lower case to respect normalization rules.
  - Added more unit tests for the Resltet API; Contributed by Lars Heuer.
+ - Fixed bug in Jetty 5 HTTPS connector preventing the usage of the specified SSL keystore in certain cases. Found by Dave Pawson.
 
 1.0 beta 13 (2006-05-29)
  - Updated StringTemplate and StringTemplateRepresentation to allow the usage of different delimiters for variable insertion and instructions like conditions.
