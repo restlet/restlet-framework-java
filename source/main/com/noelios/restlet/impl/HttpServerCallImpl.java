@@ -57,7 +57,7 @@ public abstract class HttpServerCallImpl extends ConnectorCallImpl implements Se
    }
    
    /**
-    * Sets the response from an uniform call.<br>
+    * Sets the response from a Restlet call.<br>
     * Sets the response headers and the response status. 
     * @param call The call to update from.
     */

@@ -40,6 +40,16 @@ public class DefaultServer implements Server
    protected Server wrappedServer;
    
    /**
+    * Constructor using the protocol's default port.
+    * @param protocol The connector protocol.
+    * @param target The target Restlet.
+    */
+   public DefaultServer(Protocol protocol, Restlet target)
+   {
+   	this(protocol, null, target, null, protocol.getDefaultPort());
+   }
+   
+   /**
     * Constructor.
     * @param protocol The connector protocol.
     * @param target The target Restlet.
@@ -60,6 +70,17 @@ public class DefaultServer implements Server
    public DefaultServer(Protocol protocol, Restlet target, String address, int port)
    {
    	this(protocol, null, target, address, port);
+   }
+   
+   /**
+    * Constructor using the protocol's default port.
+    * @param protocol The connector protocol.
+    * @param name The unique connector name.
+    * @param target The target Restlet.
+    */
+   public DefaultServer(Protocol protocol, String name, Restlet target)
+   {
+   	this(protocol, name, target, null, protocol.getDefaultPort());
    }
    
    /**
