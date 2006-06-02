@@ -70,7 +70,7 @@
 
 <h3><a name="part04">4. Main method</a></h3>
 <p>
-   Below, you have the main method that is invoked by our startup scripts. Note that we take arguments in order to parameterize several aspects like IP addresses and listening ports. Each Web site (Restlet and Noelios Consulting) uses a separate IP address and TCP port combination. You will understand later how we support multiple virtual hosts at the same time.
+   Below, you have the main method that is invoked by our startup scripts. Note that we take arguments in order to parameterize several aspects like IP addresses and listening ports. Each Web site (Restlet and Noelios Consulting) uses a separate IP address and TCP port combination. You will understand later how we support multiple virtual hosts at the same time. Note that we use public and private port number because our Linux server internally redirects the public port to a private port in order to run without root privileges.
 </p>
 <pre>
       /**
@@ -81,22 +81,28 @@
       {
          try
          {
-            if((args == null) || (args.length != 7))
+            if((args == null) || (args.length != 9))
             {
                // Display program arguments
                System.err.println("Can't launch the Maine web server. List of required arguments:\n" +
-                                  " 1) Restlet root path   (where web files are located)\n" +
-                                  " 2) Restlet IP address  (local IP address to listen on)\n" +
-                                  " 3) Restlet port number (local port to listen on)\n" +
-                                  " 4) Noelios root path   (where web files are located)\n" +
-                                  " 5) Noelios IP address  (local IP address to listen on)\n" +
-                                  " 6) Noelios port number (local port to listen on)\n" +
-                                  " 7) Data root path      (where stable data files are located)");
+                                  " 1) Restlet root path (where web files are located)\n" +
+                                  " 2) Restlet IP address (IP address to listen on)\n" +
+                                  " 3) Restlet private port (port to listen on)\n" +
+                                  " 4) Restlet public port (port which initially receives the TCP connections)\n" +
+
+                                  " 5) Noelios root path (where web files are located)\n" +
+                                  " 6) Noelios IP address (IP address to listen on)\n" +
+                                  " 7) Noelios private port (port to listen on)\n" +
+                                  " 8) Noelios public port (port which initially receives the TCP connections)\n" +
+
+                                  " 9) Data root path      (where stable data files are located)");
             }
             else
             {
                // Create and start the server
-               new WebContainer(args[0], args[1], Integer.parseInt(args[2]), args[3], args[4], Integer.parseInt(args[5]), args[6]).start();
+               new WebContainer(args[0], args[1], Integer.parseInt(args[2]), Integer.parseInt(args[3]),
+                                args[4], args[5], Integer.parseInt(args[6]), Integer.parseInt(args[7]),
+                                args[8]).start();
             }
          }
          catch(Exception e)
@@ -104,6 +110,7 @@
             System.err.println("Can't launch the Web server.\nAn unexpected exception occured:");
             e.printStackTrace(System.err);
          }
+      }
 </pre>
 <br/>
 
@@ -124,30 +131,33 @@
       /**
        * Constructor.
        * @param restletPath Path where the Restlet web files are located.
-       * @param restletAddress Local IP address to listen on.
-       * @param restletPort Local port address to listen on.
+       * @param restletAddress IP address to listen on.
+       * @param privateRestletPort Port to listen on for Restlet HTTP requests.
+       * @param publicRestletPort Port which initially receives the TCP connections.
        * @param noeliosPath Path where the Noelios web files are located.
-       * @param noeliosAddress Local IP address to listen on.
-       * @param noeliosPort Local port address to listen on.
+       * @param noeliosAddress IP address to listen on.
+       * @param privateNoeliosPort Port to listen on for Noelios HTTP requests.
+       * @param publicNoeliosPort Port which initially receives the TCP connections.
        * @param dataPath Path where data files are located.
        */
-      public WebContainer(String restletPath, String restletAddress, int restletPort,
-                          String noeliosPath, String noeliosAddress, int noeliosPort, String dataPath) throws Exception
+      public WebContainer(String restletPath, String restletAddress, int privateRestletPort, int publicRestletPort,
+                          String noeliosPath, String noeliosAddress, int privateNoeliosPort, int publicNoeliosPort,
+                          String dataPath) throws Exception
       {
          dataPath = StringUtils.normalizePath(dataPath);
          String downloadsPath = dataPath + File.separatorChar + "archive" + File.separatorChar + "restlet";
          String reportPath = dataPath + File.separatorChar + "log" + File.separatorChar + "report";
 
          // Fluently build the container
-         new RestletContainerBuilder(this)
-            .addServer(Protocols.HTTP, "Restlet server", restletAddress, restletPort)
-            .addServer(Protocols.HTTP, "Noelios server", noeliosAddress, noeliosPort)
+         Builders.buildContainer(this)
+            .addServer(Protocols.HTTP, "Restlet server", restletAddress, privateRestletPort)
+            .addServer(Protocols.HTTP, "Noelios server", noeliosAddress, privateNoeliosPort)
             .attachLog("com.noelios.maine.WebContainer.www")
                .attachStatus(false, "contact@noelios.com", "http://www.noelios.com")
                   .attachMaplet()
 
                      // Restlet domains Maplet
-                     .createHost("www.restlet.org", restletPort)
+                     .createHost("www.restlet.org", publicRestletPort)
                         .allowDomain("restlet.org")
                         .allowDomain("www.restlet.com")
                         .allowDomain("restlet.com")
@@ -164,7 +174,7 @@
                         .attachDirectory("", restletPath, true, "index", true).upMaplet(2)
 
                      // Noelios domain Maplet
-                     .createHost("www.noelios.com", noeliosPort)
+                     .createHost("www.noelios.com", publicNoeliosPort)
                         .allowDomain("noelios.com")
                         .redirectClient()
                         .redirectStatus(Statuses.REDIRECTION_MOVED_PERMANENTLY)
@@ -179,7 +189,7 @@
                         .attachDirectory("", noeliosPath, true, "index", true).upMaplet(2)
 
                      // Noelios blog Maplet
-                     .createHost("blog.noelios.com", noeliosPort)
+                     .createHost("blog.noelios.com", publicNoeliosPort)
                         .preferDomain("noelios.wordpress.com")
                         .redirectClient()
                         .redirectStatus(Statuses.REDIRECTION_MOVED_TEMPORARILY)
@@ -211,7 +221,7 @@
 <br/>
 
 <small>
-   Version 2.0, last modified on 2006-05-24<br/>
+   Version 2.1, last modified on 2006-06-02<br/>
    Copyright &copy; 2005-2006 <a href="mailto:contact@noelios.com">J&eacute;r&ocirc;me Louvel</a>. Restlet is a registered trademark of <a target="_top" href="http://www.noelios.com">Noelios Consulting</a>.
 </small>
 
