@@ -55,73 +55,75 @@ public class ComponentBuilder extends RestletBuilder
    }
 
    /**
-    * Adds a server connector to this component.
-    * @param server The server connector to add.
+    * Sets a property.
+    * @param name The property name.
+    * @param value The property value.
     * @return The current builder.
     */
-   public ComponentBuilder addServer(Server server)
+   public ComponentBuilder setProperty(String name, String value)
    {
-      getNode().addServer(server);
+      getNode().getProperties().put(name, value);
       return this;
    }
 
    /**
     * Adds a server connector to this component.
-    * @param protocol The connector protocol.
     * @param name The unique connector name.
-    * @param port The listening port.
+    * @param server The server connector to add.
     * @return The current builder.
     */
-   public ComponentBuilder addServer(Protocol protocol, String name, int port)
+   public ComponentBuilder addServer(String name, Server server)
    {
-      return addServer(new DefaultServer(protocol, name, getNode(), port));
+      getNode().getServers().put(name, server);
+      return this;
    }
 
    /**
     * Adds a server connector to this component.
-    * @param protocol The connector protocol.
     * @param name The unique connector name.
+    * @param protocol The connector protocol.
+    * @param port The listening port.
+    * @return The current builder.
+    */
+   public ComponentBuilder addServer(String name, Protocol protocol, int port)
+   {
+      return addServer(name, new DefaultServer(protocol, getNode(), port));
+   }
+
+   /**
+    * Adds a server connector to this component.
+    * @param name The unique connector name.
+    * @param protocol The connector protocol.
     * @param address The optional listening IP address (useful if multiple IP addresses available).
     * @param port The listening port.
     * @return The current builder.
     */
-   public ComponentBuilder addServer(Protocol protocol, String name, String address, int port)
+   public ComponentBuilder addServer(String name, Protocol protocol, String address, int port)
    {
-      return addServer(new DefaultServer(protocol, name, getNode(), address, port));
+      return addServer(name, new DefaultServer(protocol, getNode(), address, port));
    }
 
    /**
     * Adds a client connector to this component.
+    * @param name The unique connector name.
     * @param client The client connector to add.
     * @return The current builder.
     */
-   public ComponentBuilder addClient(Client client)
+   public ComponentBuilder addClient(String name, Client client)
    {
-      getNode().addClient(client);
+      getNode().getClients().put(name, client);
       return this;
    }
 
    /**
     * Adds a new client connector to this component. 
-    * @param protocol The connector protocol.
     * @param name The unique connector name.
+    * @param protocol The connector protocol.
     * @return The current builder.
     */
-   public ComponentBuilder addClient(Protocol protocol, String name)
+   public ComponentBuilder addClient(String name, Protocol protocol)
    {
-      return addClient(new DefaultClient(protocol, name));
-   }
-
-   /**
-    * Sets an initialization parameter.
-    * @param name The parameter name.
-    * @param value The parameter value.
-    * @return The current builder.
-    */
-   public ComponentBuilder setInitParameter(String name, String value)
-   {
-      getNode().getInitParameters().put(name, value);
-      return this;
+      return addClient(name, new DefaultClient(protocol));
    }
 
    /** 

@@ -28,7 +28,6 @@ import org.restlet.Restlet;
 import org.restlet.component.Component;
 import org.restlet.component.RestletContainer;
 
-import com.noelios.restlet.DirectoryRestlet;
 import com.noelios.restlet.ExtractChainlet;
 import com.noelios.restlet.GuardChainlet;
 import com.noelios.restlet.HostMaplet;
@@ -58,16 +57,6 @@ public class BuilderFactory
 	{
 		return new ComponentBuilder(parent, node);
 	}
-
-	/**
-	 * Creates a Directory Restlet builder.
-	 * @param parent The parent builder.
-	 * @param node The wrapped node.
-	 */
-   public DirectoryRestletBuilder createDirectoryRestletBuilder(ObjectBuilder parent, DirectoryRestlet node)
-   {
-   	return new DirectoryRestletBuilder(parent, node);
-   }
 
 	/**
 	 * Creates an Extract Chainlet builder.
@@ -135,15 +124,6 @@ public class BuilderFactory
    public RestletContainerBuilder createRestletContainerBuilder()
    {
    	return new RestletContainerBuilder(null, new RestletContainer());
-   }
-
-	/**
-	 * Creates a Restlet Container builder.
-	 * @param containerName The name of the new container.
-	 */
-   public RestletContainerBuilder createRestletContainerBuilder(String containerName)
-   {
-   	return new RestletContainerBuilder(null, new RestletContainer(containerName));
    }
 
 	/**

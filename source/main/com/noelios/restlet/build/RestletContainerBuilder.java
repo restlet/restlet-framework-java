@@ -59,15 +59,6 @@ public class RestletContainerBuilder extends ComponentBuilder
 	}
 	
 	/**
-	 * Constructor for new containers.
-	 * @param containerName The name of the new container.
-	 */
-	public RestletContainerBuilder(String containerName)
-	{
-		this(null, new RestletContainer(containerName));
-	}
-	
-	/**
 	 * Constructor for existing containers.
 	 * @param node The wrapped node.
 	 */
@@ -97,69 +88,71 @@ public class RestletContainerBuilder extends ComponentBuilder
 
    /**
     * Adds a server connector to this component.
+    * @param name The unique connector name.
     * @param server The server connector to add.
     * @return The current builder.
     */
-   public RestletContainerBuilder addServer(Server server)
+   public RestletContainerBuilder addServer(String name, Server server)
    {
-      return (RestletContainerBuilder)super.addServer(server);
+      return (RestletContainerBuilder)super.addServer(name, server);
    }
 
    /**
     * Adds a server connector to this component.
-    * @param protocol The connector protocol.
     * @param name The unique connector name.
+    * @param protocol The connector protocol.
     * @param port The listening port.
     * @return The current builder.
     */
-   public RestletContainerBuilder addServer(Protocol protocol, String name, int port)
+   public RestletContainerBuilder addServer(String name, Protocol protocol, int port)
    {
-      return (RestletContainerBuilder)super.addServer(protocol, name, port);
+      return (RestletContainerBuilder)super.addServer(name, protocol, port);
    }
 
    /**
     * Adds a server connector to this component.
-    * @param protocol The connector protocol.
     * @param name The unique connector name.
+    * @param protocol The connector protocol.
     * @param address The optional listening IP address (useful if multiple IP addresses available).
     * @param port The listening port.
     * @return The current builder.
     */
-   public RestletContainerBuilder addServer(Protocol protocol, String name, String address, int port)
+   public RestletContainerBuilder addServer(String name, Protocol protocol, String address, int port)
    {
-      return (RestletContainerBuilder)super.addServer(protocol, name, address, port);
+      return (RestletContainerBuilder)super.addServer(name, protocol, address, port);
    }
 
    /**
     * Adds a client connector to this component.
+    * @param name The unique connector name.
     * @param client The client connector to add.
     * @return The current builder.
     */
-   public RestletContainerBuilder addClient(Client client)
+   public RestletContainerBuilder addClient(String name, Client client)
    {
-      return (RestletContainerBuilder)super.addClient(client);
+      return (RestletContainerBuilder)super.addClient(name, client);
    }
 
    /**
     * Adds a new client connector to this component. 
-    * @param protocol The connector protocol.
     * @param name The unique connector name.
+    * @param protocol The connector protocol.
     * @return The current builder.
     */
-   public RestletContainerBuilder addClient(Protocol protocol, String name)
+   public RestletContainerBuilder addClient(String name, Protocol protocol)
    {
-      return (RestletContainerBuilder)super.addClient(protocol, name);
+      return (RestletContainerBuilder)super.addClient(name, protocol);
    }
 
    /**
-    * Sets an initialization parameter.
-    * @param name The parameter name.
-    * @param value The parameter value.
+    * Sets a property.
+    * @param name The property name.
+    * @param value The property value.
     * @return The current builder.
     */
-   public RestletContainerBuilder setInitParameter(String name, String value)
+   public RestletContainerBuilder setProperty(String name, String value)
    {
-      return (RestletContainerBuilder)super.setInitParameter(name, value);
+      return (RestletContainerBuilder)super.setProperty(name, value);
    }
 
    /** 
@@ -194,7 +187,8 @@ public class RestletContainerBuilder extends ComponentBuilder
     * @param targetClass The target class to attach (can have a constructor taking a RestletContainer parameter).
     * @return The builder for the attached target.
     */
-   public ObjectBuilder attach(Class<? extends Restlet> targetClass)
+   @SuppressWarnings("unchecked")
+	public ObjectBuilder attach(Class<? extends Restlet> targetClass)
    {
       getNode().attach(targetClass);
       return Builders.buildObject(this, targetClass);
@@ -235,17 +229,17 @@ public class RestletContainerBuilder extends ComponentBuilder
    
    /**
     *	Attaches a Directory Restlet.
+    * @param fileClientName The file client connector name.
     * @param rootPath The directory's root path.
     * @param deeply Indicates if the sub-directories are deeply accessible.
     * @param indexName If no file name is specified, use the (optional) index name.
-    * @param commonExtensions Indicates if the common extensions should be added.
     * @return The builder for the created node.
     */
-   public DirectoryRestletBuilder attachDirectory(String rootPath, boolean deeply, String indexName, boolean commonExtensions)
+   public RestletBuilder attachDirectory(String fileClientName, String rootPath, boolean deeply, String indexName)
    {
-      DirectoryRestlet node = new DirectoryRestlet(getNode().getOwner(), rootPath, deeply, indexName, commonExtensions);
+      DirectoryRestlet node = new DirectoryRestlet(getNode().getOwner(), fileClientName, rootPath, deeply, indexName);
       getNode().attach(node);
-      return Builders.buildDirectory(this, node);
+      return Builders.buildRestlet(this, node);
    }
 
    /**
@@ -520,7 +514,8 @@ public class RestletContainerBuilder extends ComponentBuilder
     * @return The current Maplet for further attachments.
     * @see java.util.regex.Pattern
     */
-   public ObjectBuilder attach(String pattern, Class<? extends Restlet> targetClass)
+   @SuppressWarnings("unchecked")
+	public ObjectBuilder attach(String pattern, Class<? extends Restlet> targetClass)
    {
       getNode().attach(pattern, targetClass);
       return Builders.buildObject(this, (Object)targetClass);
@@ -534,7 +529,8 @@ public class RestletContainerBuilder extends ComponentBuilder
     * @return The current Maplet for further attachments.
     * @see java.util.regex.Pattern
     */
-   public ObjectBuilder attach(String pattern, Class<? extends Restlet> targetClass, boolean override)
+   @SuppressWarnings("unchecked")
+	public ObjectBuilder attach(String pattern, Class<? extends Restlet> targetClass, boolean override)
    {
       getNode().attach(pattern, targetClass, override);
       return Builders.buildObject((ObjectBuilder)this, (Object)targetClass);
@@ -575,17 +571,17 @@ public class RestletContainerBuilder extends ComponentBuilder
    
    /**
     *	Attaches a Directory Restlet.
+    * @param fileClientName The file client connector name.
     * @param rootPath The directory's root path.
     * @param deeply Indicates if the sub-directories are deeply accessible.
     * @param indexName If no file name is specified, use the (optional) index name.
-    * @param commonExtensions Indicates if the common extensions should be added.
     * @return The builder for the created node.
     */
-   public DirectoryRestletBuilder attachDirectory(String pattern, String rootPath, boolean deeply, String indexName, boolean commonExtensions)
+   public RestletBuilder attachDirectory(String pattern, String fileClientName, String rootPath, boolean deeply, String indexName)
    {
-      DirectoryRestlet node = new DirectoryRestlet(getNode().getOwner(), rootPath, deeply, indexName, commonExtensions);
+      DirectoryRestlet node = new DirectoryRestlet(getNode().getOwner(), fileClientName, rootPath, deeply, indexName);
       getNode().attach(pattern, node);
-      return Builders.buildDirectory(this, node);
+      return Builders.buildRestlet(this, node);
    }
 
    /**

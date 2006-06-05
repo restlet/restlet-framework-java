@@ -125,16 +125,16 @@ public class ChainletBuilder extends RestletBuilder
    /**
     *	Attaches a Directory Restlet.
     * @param rootPath The directory's root path.
+    * @param fileClientName The file client connector name.
     * @param deeply Indicates if the sub-directories are deeply accessible.
     * @param indexName If no file name is specified, use the (optional) index name.
-    * @param commonExtensions Indicates if the common extensions should be added.
     * @return The builder for the created node.
     */
-   public DirectoryRestletBuilder attachDirectory(String rootPath, boolean deeply, String indexName, boolean commonExtensions)
+   public RestletBuilder attachDirectory(String rootPath, String fileClientName, boolean deeply, String indexName)
    {
-      DirectoryRestlet node = new DirectoryRestlet(getNode().getOwner(), rootPath, deeply, indexName, commonExtensions);
+      DirectoryRestlet node = new DirectoryRestlet(getNode().getOwner(), fileClientName, rootPath, deeply, indexName);
       getNode().attach(node);
-      return Builders.buildDirectory(this, node);
+      return Builders.buildRestlet(this, node);
    }
 
    /**
