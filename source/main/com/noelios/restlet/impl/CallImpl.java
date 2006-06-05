@@ -149,7 +149,7 @@ public class CallImpl implements Call
     */
    public RepresentationMetadata getBestVariant(Resource resource, Language fallbackLanguage)
    {
-      return getBestVariant(resource.getVariantsMetadata(), fallbackLanguage);
+      return getBestVariant(resource.getVariants(), fallbackLanguage);
    }
 
    /**
@@ -650,7 +650,7 @@ public class CallImpl implements Call
     */
    public void setBestOutput(Resource resource, Language fallbackLanguage)
    {
-      List<RepresentationMetadata> variants = resource.getVariantsMetadata();
+      List<RepresentationMetadata> variants = resource.getVariants();
 
       if((variants == null) || (variants.size() < 1))
       {

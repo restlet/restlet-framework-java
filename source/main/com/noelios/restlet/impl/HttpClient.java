@@ -27,7 +27,6 @@ import java.io.IOException;
 import java.net.ConnectException;
 import java.net.SocketTimeoutException;
 import java.util.Arrays;
-import java.util.Date;
 import java.util.List;
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -39,25 +38,15 @@ import org.restlet.connector.ConnectorCall;
 import org.restlet.data.ChallengeRequest;
 import org.restlet.data.ChallengeResponse;
 import org.restlet.data.ConditionData;
-import org.restlet.data.DefaultEncoding;
-import org.restlet.data.DefaultLanguage;
 import org.restlet.data.DefaultStatus;
-import org.restlet.data.Encoding;
-import org.restlet.data.Language;
-import org.restlet.data.MediaType;
 import org.restlet.data.MediaTypes;
 import org.restlet.data.Methods;
 import org.restlet.data.Parameter;
 import org.restlet.data.PreferenceData;
 import org.restlet.data.Protocol;
 import org.restlet.data.Protocols;
-import org.restlet.data.Representation;
 import org.restlet.data.Statuses;
-import org.restlet.data.Tag;
 
-import com.noelios.restlet.data.ContentType;
-import com.noelios.restlet.data.InputRepresentation;
-import com.noelios.restlet.data.ReadableRepresentation;
 import com.noelios.restlet.util.CookieReader;
 import com.noelios.restlet.util.CookieUtils;
 import com.noelios.restlet.util.DateUtils;
@@ -68,19 +57,18 @@ import com.noelios.restlet.util.SecurityUtils;
  * Implementation of a client HTTP connector.
  * @author Jerome Louvel (contact@noelios.com) <a href="http://www.noelios.com/">Noelios Consulting</a>
  */
-public class HttpClientImpl extends AbstractClient
+public class HttpClient extends AbstractClient
 {
    /** Obtain a suitable logger. */
-   private static Logger logger = Logger.getLogger("com.noelios.restlet.connector.HttpClientImpl");
+   private static Logger logger = Logger.getLogger("com.noelios.restlet.connector.HttpClient");
 
    /**
     * Create a new HTTP client connector.
     * @param protocol The protocol to use.
-    * @param name The unique connector name.
     */
-   public HttpClientImpl(Protocol protocol, String name)
+   public HttpClient(Protocol protocol)
    {
-      super(protocol, name);
+      super(protocol);
       System.setProperty("http.keepAlive", "false");
    }
    
@@ -100,11 +88,11 @@ public class HttpClientImpl extends AbstractClient
     * @param hasInput Indicates if the call will have an input to send to the server.
     * @return A new HTTP protocol call.
     */
-   public ClientCall createCall(String method, String resourceUri, boolean hasInput)
+   public HttpClientCall createCall(String method, String resourceUri, boolean hasInput)
    {
       try
       {
-         return new HttpClientCallImpl(this, method, resourceUri, hasInput);
+         return new HttpClientCall(this, method, resourceUri, hasInput);
       }
       catch(IOException e)
       {
@@ -315,46 +303,11 @@ public class HttpClientImpl extends AbstractClient
          // so that advanced users can read the response headers, etc.
          call.setConnectorCall(clientCall);
          
-         // Get the response output
-         ContentType contentType = null;
-         int size = -1;
-         Date expires = null;
-         Date lastModified = null;
-         Encoding encoding = null;
-         Language language = null;
-         Tag tag = null;
+         // Extract info from headers
          
          for(Parameter header : clientCall.getResponseHeaders())
          {
-            if(header.getName().equalsIgnoreCase(ConnectorCall.HEADER_CONTENT_TYPE))
-            {
-               contentType = new ContentType(header.getValue());
-            }
-            else if(header.getName().equalsIgnoreCase(ConnectorCall.HEADER_CONTENT_LENGTH))
-            {
-               size = Integer.parseInt(header.getValue());
-            }
-            else if(header.getName().equalsIgnoreCase(ConnectorCall.HEADER_EXPIRES))
-            {
-               expires = clientCall.parseDate(header.getValue(), false);
-            }
-            else if(header.getName().equalsIgnoreCase(ConnectorCall.HEADER_CONTENT_ENCODING))
-            {
-               encoding = new DefaultEncoding(header.getValue());
-            }
-            else if(header.getName().equalsIgnoreCase(ConnectorCall.HEADER_CONTENT_LANGUAGE))
-            {
-               language = new DefaultLanguage(header.getValue());
-            }
-            else if(header.getName().equalsIgnoreCase(ConnectorCall.HEADER_LAST_MODIFIED))
-            {
-               lastModified = clientCall.parseDate(header.getValue(), false);
-            }
-            else if(header.getName().equalsIgnoreCase(ConnectorCall.HEADER_ETAG))
-            {
-               tag = new Tag(header.getValue());
-            }
-            else if(header.getName().equalsIgnoreCase(ConnectorCall.HEADER_LOCATION))
+            if(header.getName().equalsIgnoreCase(ConnectorCall.HEADER_LOCATION))
             {
                call.setRedirectionRef(header.getValue());
             }
@@ -383,30 +336,7 @@ public class HttpClientImpl extends AbstractClient
          }
          
          // Set the output representation
-         Representation output = null;
-
-         if(clientCall.getResponseStream() != null)
-         {
-         	MediaType mediaType = null;
-         	if(contentType != null) mediaType = contentType.getMediaType();
-            output = new InputRepresentation(clientCall.getResponseStream(), mediaType);
-         }
-         else if(clientCall.getResponseChannel() != null)
-         {
-            output = new ReadableRepresentation(clientCall.getResponseChannel(), contentType.getMediaType());
-         }
-
-         if(output != null)
-         {
-            if(contentType != null) output.getMetadata().setCharacterSet(contentType.getCharacterSet());
-            output.setSize(size);               
-            output.getMetadata().setEncoding(encoding);
-            output.getMetadata().setExpirationDate(expires);
-            output.getMetadata().setLanguage(language);
-            output.getMetadata().setModificationDate(lastModified);
-            output.getMetadata().setTag(tag);
-            call.setOutput(output);
-         }
+         call.setOutput(clientCall.getResponseOutput());
       }
       catch(Exception e)
       {

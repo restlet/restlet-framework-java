@@ -26,25 +26,29 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
 import java.net.HttpURLConnection;
-import java.net.InetAddress;
 import java.net.URL;
-import java.net.UnknownHostException;
 import java.nio.channels.ReadableByteChannel;
 import java.nio.channels.WritableByteChannel;
 
 import javax.net.ssl.HttpsURLConnection;
 
 import org.restlet.connector.Client;
-import org.restlet.connector.ClientCall;
+import org.restlet.connector.ConnectorCall;
+import org.restlet.data.DefaultEncoding;
+import org.restlet.data.DefaultLanguage;
 import org.restlet.data.Parameter;
 import org.restlet.data.ParameterList;
 import org.restlet.data.Representation;
+import org.restlet.data.RepresentationMetadata;
+import org.restlet.data.Tag;
+
+import com.noelios.restlet.data.ContentType;
 
 /**
- * Implementation of a client connector call.
+ * HTTP client connector call.
  * @author Jerome Louvel (contact@noelios.com) <a href="http://www.noelios.com/">Noelios Consulting</a>
  */
-public class HttpClientCallImpl extends ConnectorCallImpl implements ClientCall
+public class HttpClientCall extends ClientCallImpl 
 {
    /** The wrapped HTTP URL connection. */
    protected HttpURLConnection connection;
@@ -57,9 +61,9 @@ public class HttpClientCallImpl extends ConnectorCallImpl implements ClientCall
     * @param hasInput Indicates if the call will have an input to send to the server.
     * @throws IOException
     */
-   public HttpClientCallImpl(Client client, String method, String resourceUri, boolean hasInput) throws IOException
+   public HttpClientCall(Client client, String method, String resourceUri, boolean hasInput) throws IOException
    {
-      this.requestMethod = method;
+      super(method);
       
       if(resourceUri.startsWith("http"))
       {
@@ -82,15 +86,6 @@ public class HttpClientCallImpl extends ConnectorCallImpl implements ClientCall
       {
          throw new IllegalArgumentException("Only HTTP or HTTPS resource URIs are allowed here");
       }
-      
-      try
-      {
-         this.requestAddress = InetAddress.getLocalHost().getHostAddress();
-      }
-      catch(UnknownHostException e)
-      {
-         this.requestAddress = "127.0.0.1";
-      }
    }
    
    /**
@@ -100,15 +95,6 @@ public class HttpClientCallImpl extends ConnectorCallImpl implements ClientCall
    public HttpURLConnection getConnection()
    {
       return this.connection;
-   }
-
-   /**
-    * Sets the request method. 
-    * @param method The request method.
-    */
-   public void setRequestMethod(String method)
-   {
-      this.requestMethod = method;
    }
    
    /**
@@ -131,28 +117,10 @@ public class HttpClientCallImpl extends ConnectorCallImpl implements ClientCall
    }
 
    /**
-    * Sends the request input.
-    * @param input The request input;
-    */
-   public void sendRequestInput(Representation input) throws IOException
-   {
-      if(getRequestStream() != null)
-      {
-         input.write(getRequestStream());
-         getRequestStream().close();
-      }
-      else if(getRequestChannel() != null)
-      {
-         input.write(getRequestChannel());
-         getRequestChannel().close();
-      }
-   }
-
-   /**
     * Returns the request entity channel if it exists.
     * @return The request entity channel if it exists.
     */
-   public WritableByteChannel getRequestChannel() throws IOException
+   public WritableByteChannel getRequestChannel()
    {
       return null;
    }
@@ -161,9 +129,16 @@ public class HttpClientCallImpl extends ConnectorCallImpl implements ClientCall
     * Returns the request entity stream if it exists.
     * @return The request entity stream if it exists.
     */
-   public OutputStream getRequestStream() throws IOException
+   public OutputStream getRequestStream()
    {
-      return getConnection().getOutputStream();
+   	try
+   	{
+   		return getConnection().getOutputStream();
+   	}
+   	catch(IOException ioe)
+   	{
+   		return null;
+   	}
    }
 
    /**
@@ -233,12 +208,66 @@ public class HttpClientCallImpl extends ConnectorCallImpl implements ClientCall
          return null;
       }
    }
+   
+   /**
+    * Returns the response output representation if available. Note that no metadata is associated by default, 
+    * you have to manually set them from your headers.
+    * @return The response output representation if available.
+    */
+   public Representation getResponseOutput()
+   {
+   	Representation result = super.getResponseOutput();
+
+      if(result != null)
+      {
+      	RepresentationMetadata metadata = result.getMetadata();
+
+      	for(Parameter header : getResponseHeaders())
+         {
+            if(header.getName().equalsIgnoreCase(ConnectorCall.HEADER_CONTENT_TYPE))
+            {
+               ContentType contentType = new ContentType(header.getValue());
+               if(contentType != null) 
+               {
+               	metadata.setMediaType(contentType.getMediaType());
+               	metadata.setCharacterSet(contentType.getCharacterSet());
+               }
+            }
+            else if(header.getName().equalsIgnoreCase(ConnectorCall.HEADER_CONTENT_LENGTH))
+            {
+               result.setSize(Long.parseLong(header.getValue()));
+            }
+            else if(header.getName().equalsIgnoreCase(ConnectorCall.HEADER_EXPIRES))
+            {
+            	metadata.setExpirationDate(parseDate(header.getValue(), false));
+            }
+            else if(header.getName().equalsIgnoreCase(ConnectorCall.HEADER_CONTENT_ENCODING))
+            {
+            	metadata.setEncoding(new DefaultEncoding(header.getValue()));
+            }
+            else if(header.getName().equalsIgnoreCase(ConnectorCall.HEADER_CONTENT_LANGUAGE))
+            {
+            	metadata.setLanguage(new DefaultLanguage(header.getValue()));
+            }
+            else if(header.getName().equalsIgnoreCase(ConnectorCall.HEADER_LAST_MODIFIED))
+            {
+            	metadata.setModificationDate(parseDate(header.getValue(), false));
+            }
+            else if(header.getName().equalsIgnoreCase(ConnectorCall.HEADER_ETAG))
+            {
+            	metadata.setTag(new Tag(header.getValue()));
+            }
+         }
+      }
+   	
+   	return result;
+   }
 
    /**
     * Returns the response channel if it exists.
     * @return The response channel if it exists.
     */
-   public ReadableByteChannel getResponseChannel() throws IOException
+   public ReadableByteChannel getResponseChannel()
    {
       return null;
    }
@@ -247,7 +276,7 @@ public class HttpClientCallImpl extends ConnectorCallImpl implements ClientCall
     * Returns the response stream if it exists.
     * @return The response stream if it exists.
     */
-   public InputStream getResponseStream() throws IOException
+   public InputStream getResponseStream()
    {
       InputStream result = null;
       
