@@ -23,6 +23,8 @@
 package com.noelios.restlet.impl;
 
 import java.io.IOException;
+import java.io.InputStream;
+import java.nio.channels.ReadableByteChannel;
 import java.util.List;
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -31,10 +33,19 @@ import org.restlet.Call;
 import org.restlet.connector.ConnectorCall;
 import org.restlet.connector.ServerCall;
 import org.restlet.data.CookieSetting;
+import org.restlet.data.DefaultEncoding;
+import org.restlet.data.DefaultLanguage;
+import org.restlet.data.DefaultMediaType;
+import org.restlet.data.Encoding;
 import org.restlet.data.Encodings;
+import org.restlet.data.Language;
+import org.restlet.data.MediaType;
+import org.restlet.data.Parameter;
 import org.restlet.data.Representation;
 import org.restlet.data.RepresentationMetadata;
 
+import com.noelios.restlet.data.InputRepresentation;
+import com.noelios.restlet.data.ReadableRepresentation;
 import com.noelios.restlet.util.CookieUtils;
 import com.noelios.restlet.util.SecurityUtils;
 
@@ -42,7 +53,7 @@ import com.noelios.restlet.util.SecurityUtils;
  * Implementation of a server HTTP call.
  * @author Jerome Louvel (contact@noelios.com) <a href="http://www.noelios.com/">Noelios Consulting</a>
  */
-public abstract class HttpServerCallImpl extends ConnectorCallImpl implements ServerCall
+public abstract class HttpServerCall extends ConnectorCallImpl implements ServerCall
 {
    /** Obtain a suitable logger. */
    private static Logger logger = Logger.getLogger("com.noelios.restlet.connector.HttpServerCallImpl");
@@ -54,6 +65,60 @@ public abstract class HttpServerCallImpl extends ConnectorCallImpl implements Se
    public Call toUniform()
    {
       return new HttpServerRestletCall(this);
+   }
+
+   /**
+    * Returns the request input representation if available.
+    * @return The request input representation if available.
+    */
+   public Representation getRequestInput()
+   {
+   	Representation result = null;
+      InputStream requestStream = getRequestStream();
+      ReadableByteChannel requestChannel = getRequestChannel();
+      
+      if((requestStream != null || requestChannel != null))
+      {
+         // Extract the header values
+         Encoding contentEncoding = null;
+         Language contentLanguage = null;
+         MediaType contentType = null;
+         long contentLength = -1L;
+
+         for(Parameter header : getRequestHeaders())
+         {
+            if(header.getName().equalsIgnoreCase(ConnectorCall.HEADER_CONTENT_ENCODING))
+            {
+               contentEncoding = new DefaultEncoding(header.getValue());
+            }
+            else if(header.getName().equalsIgnoreCase(ConnectorCall.HEADER_CONTENT_LANGUAGE))
+            {
+               contentLanguage = new DefaultLanguage(header.getValue());
+            }
+            else if(header.getName().equalsIgnoreCase(ConnectorCall.HEADER_CONTENT_TYPE))
+            {
+               contentType = new DefaultMediaType(header.getValue());
+            }
+            else if(header.getName().equalsIgnoreCase(ConnectorCall.HEADER_CONTENT_LENGTH))
+            {
+            	contentLength = Long.parseLong(header.getValue());
+            }
+         }
+
+         if(requestStream != null)
+         {
+         	result = new InputRepresentation(requestStream, contentType, contentLength);
+         }
+         else if(requestChannel != null)
+         {
+         	result = new ReadableRepresentation(requestChannel, contentType, contentLength);
+         }
+         
+         result.getMetadata().setEncoding(contentEncoding);
+         result.getMetadata().setLanguage(contentLanguage);
+      }
+   	
+      return result;
    }
    
    /**

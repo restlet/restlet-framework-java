@@ -48,38 +48,35 @@ public class JettyServer extends AbstractServer
    /**
     * Constructor.
     * @param protocol The connector protocol.
-    * @param name The unique connector name.
     * @param delegate The delegate Server.
     * @param address The optional listening IP address (local host used if null).
     * @param port The listening port.
     */
-   public JettyServer(Protocol protocol, String name, Server delegate, String address, int port)
+   public JettyServer(Protocol protocol, Server delegate, String address, int port)
    {
-      super(protocol, name, delegate, address, port);
+      super(protocol, delegate, address, port);
    }
    
    /**
     * Constructor.
     * @param protocol The connector protocol.
-    * @param name The unique connector name.
     * @param delegate The delegate Server.
     * @param address The IP address to listen to.
     */
-   public JettyServer(Protocol protocol, String name, Server delegate, InetSocketAddress address)
+   public JettyServer(Protocol protocol, Server delegate, InetSocketAddress address)
    {
-   	this(protocol, name, delegate, address.getHostName(), address.getPort());
+   	this(protocol, delegate, address.getHostName(), address.getPort());
    }
 
    /**
     * Constructor.
     * @param protocol The connector protocol.
-    * @param name The unique connector name.
     * @param delegate The delegate Server.
     * @param port The HTTP port number.
     */
-   public JettyServer(Protocol protocol, String name, Server delegate, int port)
+   public JettyServer(Protocol protocol, Server delegate, int port)
    {
-   	this(protocol, name, delegate, null, port);
+   	this(protocol, delegate, null, port);
    }
    
    /**

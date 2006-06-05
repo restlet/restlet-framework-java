@@ -35,14 +35,14 @@ import org.restlet.data.Reference;
 import simple.http.Request;
 import simple.http.Response;
 
-import com.noelios.restlet.impl.HttpServerCallImpl;
+import com.noelios.restlet.impl.HttpServerCall;
 
 /**
  * Call that is used by the Simple HTTP server.
  * @author Lars Heuer (heuer[at]semagia.com) <a href="http://semagia.com/">Semagia</a>
  * @author Jerome Louvel (contact@noelios.com) <a href="http://www.noelios.com/">Noelios Consulting</a>
  */
-public class SimpleCall extends HttpServerCallImpl
+public class SimpleCall extends HttpServerCall
 {
 	/**
 	 * Simple Request.

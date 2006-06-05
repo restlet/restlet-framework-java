@@ -39,14 +39,12 @@ import org.restlet.data.Statuses;
  * @see <a href="http://www.restlet.org/tutorial#part05">Tutorial: Restlets servers and containers</a>
  * @author Jerome Louvel (contact@noelios.com) <a href="http://www.noelios.com/">Noelios Consulting</a>
  */
-public class RestletServer extends AbstractComponent
+public class RestletServer<T extends Call> extends AbstractComponent<T>
 {
 	/** Obtain a suitable logger. */
    private static Logger logger = Logger.getLogger("org.restlet.component.RestletServer");
 
-   /**
-    * The Restlet containers.
-    */
+   /** The Restlet containers. */
    protected Map<String, RestletContainer> containers;
 
    /** The default container handling direct calls on the server. */
@@ -57,27 +55,40 @@ public class RestletServer extends AbstractComponent
     */
    public RestletServer()
    {
-      this.containers = new TreeMap<String, RestletContainer>();
+      this.containers = null;
       this.defaultContainer = null;
    }
 
    /**
+    * Returns the modifiable map of containers.
+    * @return The modifiable map of containers.
+    */
+   public Map<String, RestletContainer> getContainers()
+   {
+   	if(this.containers == null) new TreeMap<String, RestletContainer>();
+   	return this.containers;
+   }
+   
+   /**
     * Adds a Restlet container.
     * @param name The unique name of the container.
     * @param container The container to add.
+    * @return The added container.
     */
-   public void addContainer(String name, RestletContainer container)
+   public RestletContainer addContainer(String name, RestletContainer container)
    {
       this.containers.put(name, container);
+      return container;
    }
-
+   
    /**
-    * Removes a Restlet container.
-    * @param name The name of the container to remove.
+    * Adds a new Restlet container.
+    * @param name The unique name of the container.
+    * @return The added container.
     */
-   public void removeContainer(String name)
+   public RestletContainer addContainer(String name)
    {
-      this.containers.remove(name);
+      return addContainer(name, new RestletContainer(this));
    }
 
    /**

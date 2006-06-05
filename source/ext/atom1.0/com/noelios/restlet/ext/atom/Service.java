@@ -81,7 +81,7 @@ public class Service extends SaxRepresentation
 	 */
 	public Service(String serviceUri) throws IOException
 	{
-		this(new DefaultClient(Protocols.HTTP, "Atom HTTP Client"), serviceUri);
+		this(new DefaultClient(Protocols.HTTP), serviceUri);
 	}
 	
 	/**
@@ -103,7 +103,7 @@ public class Service extends SaxRepresentation
 	 */
 	public Service(String serviceUri, Representation xmlService) throws IOException
 	{
-		this(new DefaultClient(Protocols.HTTP, "Atom HTTP Client"), serviceUri, xmlService);
+		this(new DefaultClient(Protocols.HTTP), serviceUri, xmlService);
 	}
 
 	/**

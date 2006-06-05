@@ -22,6 +22,8 @@
 
 package org.restlet.connector;
 
+import java.util.Map;
+
 import org.restlet.Restlet;
 import org.restlet.data.Protocol;
 
@@ -41,17 +43,11 @@ import org.restlet.data.Protocol;
  */
 public interface Connector extends Restlet
 {
-   /**
-    * Returns the name of this connector.
-    * @return The name of this connector.
-    */
-   public String getName();
-
-   /**
-    * Sets the name of this connector.
-    * @param name The name of this connector.
-    */
-   public void setName(String name);
+	/**
+	 * Returns the modifiable map of properties.
+	 * @return The modifiable map of properties.
+	 */
+	public Map<String, String> getProperties();
 
    /**
     * Returns the connector's protocol.

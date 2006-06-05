@@ -57,8 +57,8 @@ public class FactoryImpl extends Factory
    /** Obtain a suitable logger. */
    private static Logger logger = Logger.getLogger("com.noelios.restlet.FactoryImpl");
 
-   public static final String VERSION_LONG = "1.0 beta 14";
-   public static final String VERSION_SHORT = "1.0b14";
+   public static final String VERSION_LONG = Factory.VERSION_LONG;
+   public static final String VERSION_SHORT = Factory.VERSION_SHORT;
    public static final String VERSION_HEADER = "Noelios-Restlet-Engine/" + VERSION_SHORT;
 
    /**
@@ -208,10 +208,9 @@ public class FactoryImpl extends Factory
    /**
     * Create a new client connector for a given protocol.
     * @param protocol The connector protocol.
-    * @param name The unique connector name.
     * @return The new client connector.
     */
-   public Client createClient(Protocol protocol, String name)
+   public Client createClient(Protocol protocol)
    {
       Client result = null;
 
@@ -221,7 +220,7 @@ public class FactoryImpl extends Factory
 
          if((providerClass != null) && (protocol != null))
          {
-            result = providerClass.getConstructor(Protocol.class, String.class).newInstance(protocol, name);
+            result = providerClass.getConstructor(Protocol.class, String.class).newInstance(protocol);
          }
          else
          {
@@ -270,13 +269,12 @@ public class FactoryImpl extends Factory
    /**
     * Create a new server connector for internal usage by the GenericClient.
     * @param protocol The connector protocol.
-    * @param name The unique connector name.
     * @param delegate The target Server that will provide the actual handle(ServerCall) implementation.
     * @param address The optional listening IP address (local host used if null).
     * @param port The listening port.
     * @return The new server connector.
     */
-   public Server createServer(Protocol protocol, String name, Server delegate, String address, int port)
+   public Server createServer(Protocol protocol, Server delegate, String address, int port)
    {
       Server result = null;
 
@@ -286,7 +284,7 @@ public class FactoryImpl extends Factory
 
          if((providerClass != null) && (protocol != null))
          {
-            result = providerClass.getConstructor(Protocol.class, String.class, Server.class, String.class, int.class).newInstance(protocol, name, delegate, address, port);
+            result = providerClass.getConstructor(Protocol.class, String.class, Server.class, String.class, int.class).newInstance(protocol, delegate, address, port);
          }
          else
          {

@@ -84,11 +84,10 @@ public class JdbcClient extends AbstractClient
    /**
     * Constructor.
     * @param protocol The protocol to use.
-    * @param name The connector's unique name.
     */
-   public JdbcClient(Protocol protocol, String name)
+   public JdbcClient(Protocol protocol)
    {
-      super(protocol, name);
+      super(protocol);
 
       // Set up the list of factories
       this.connectionSources = new ArrayList<ConnectionSource>();

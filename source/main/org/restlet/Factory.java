@@ -47,8 +47,9 @@ public abstract class Factory
    /** Obtain a suitable logger. */
    private static Logger logger = Logger.getLogger("org.restlet.Factory");
 
-   public static final String VERSION_LONG = "1.0 beta 14";
-   public static final String VERSION_SHORT = "1.0b14";
+   public static final String BETA_NUMBER = "15";
+   public static final String VERSION_LONG = "1.0 beta " + BETA_NUMBER;
+   public static final String VERSION_SHORT = "1.0b" + BETA_NUMBER;
 
    /** The registered factory. */
    protected static Factory instance = null;
@@ -132,10 +133,9 @@ public abstract class Factory
    /**
     * Create a client connector for internal usage by the GenericClient.
     * @param protocol The connector protocol.
-    * @param name The unique connector name.
     * @return The new client connector.
     */
-   public abstract Client createClient(Protocol protocol, String name);
+   public abstract Client createClient(Protocol protocol);
 
    /**
     * Creates a Maplet for internal usage by the DefaultMaplet.<br/>
@@ -148,13 +148,12 @@ public abstract class Factory
    /**
     * Create a new server connector for internal usage by the GenericClient.
     * @param protocol The connector protocol.
-    * @param name The unique connector name.
     * @param delegate The target Server that will provide the actual handle(ServerCall) implementation.
     * @param address The optional listening IP address (local host used if null).
     * @param port The listening port.
     * @return The new server connector.
     */
-   public abstract Server createServer(Protocol protocol, String name, Server delegate, String address, int port);
+   public abstract Server createServer(Protocol protocol, Server delegate, String address, int port);
 
    /**
     * Creates a string-base representation.

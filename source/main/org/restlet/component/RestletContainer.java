@@ -38,11 +38,8 @@ import org.restlet.Call;
  * @see <a href="http://www.restlet.org/tutorial#part05">Tutorial: Restlets servers and containers</a>
  * @author Jerome Louvel (contact@noelios.com) <a href="http://www.noelios.com/">Noelios Consulting</a>
  */
-public class RestletContainer extends AbstractComponent implements Chainlet, Maplet
+public class RestletContainer<T extends Call> extends AbstractComponent<T> implements Chainlet, Maplet
 {
-	/** The name of this container. */
-   protected String name;
-
    /** Delegate Chainlet handling root Restlets. */
    protected Chainlet delegateChainlet;
 
@@ -54,47 +51,18 @@ public class RestletContainer extends AbstractComponent implements Chainlet, Map
     */
    public RestletContainer()
    {
-   	this(null, null);
-   }
-
-   /**
-    * Constructor.
-    * @param name The unique name of the container.
-    */
-   public RestletContainer(String name)
-   {
-   	this(null, name);
+   	this(null);
    }
 
    /**
     * Constructor.
     * @param owner The owner component.
-    * @param name The unique name of the container.
     */
-   public RestletContainer(Component owner, String name)
+   public RestletContainer(Component owner)
    {
       super(owner);
-      this.name = name;
       this.delegateChainlet = Factory.getInstance().createChainlet(owner);
       this.delegateMaplet = Factory.getInstance().createMaplet(owner);
-   }
-
-   /**
-    * Returns the name of this container.
-    * @return The name of this container.
-    */
-   public String getName()
-   {
-   	return this.name;
-   }
-
-   /**
-    * Sets the name of this container.
-    * @param name The name of this container.
-    */
-   public void setName(String name)
-   {
-   	this.name = name;
    }
 
    /**

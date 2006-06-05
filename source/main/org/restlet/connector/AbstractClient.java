@@ -24,6 +24,7 @@ package org.restlet.connector;
 
 import org.restlet.DefaultCall;
 import org.restlet.Call;
+import org.restlet.component.Component;
 import org.restlet.data.Methods;
 import org.restlet.data.Protocol;
 import org.restlet.data.Representation;
@@ -43,12 +44,21 @@ public abstract class AbstractClient extends AbstractConnector implements Client
    /**
     * Constructor.
     * @param protocol The connector protocol.
-    * @param name The unique connector name.
     */
-   public AbstractClient(Protocol protocol, String name)
+   public AbstractClient(Protocol protocol)
    {
-      super(protocol, name);
+      super(protocol);
       this.timeout = -1;
+   }
+   
+   /**
+    * Constructor.
+    * @param owner The owner component.
+    * @param protocol The connector protocol.
+    */
+   public AbstractClient(Component owner, Protocol protocol)
+   {
+   	super(owner,protocol);
    }
 
    /**

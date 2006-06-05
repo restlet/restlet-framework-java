@@ -22,25 +22,26 @@
 
 package org.restlet.component;
 
-import java.io.IOException;
 import java.util.Iterator;
 import java.util.Map;
 import java.util.TreeMap;
 
 import org.restlet.AbstractRestlet;
-import org.restlet.Restlet;
 import org.restlet.Call;
 import org.restlet.connector.Client;
+import org.restlet.connector.DefaultClient;
+import org.restlet.connector.DefaultServer;
 import org.restlet.connector.Server;
+import org.restlet.data.Protocol;
 
 /**
  * Abstract component implementation.
  * @author Jerome Louvel (contact@noelios.com) <a href="http://www.noelios.com/">Noelios Consulting</a>
  */
-public abstract class AbstractComponent extends AbstractRestlet implements Component
+public abstract class AbstractComponent<T extends Call> extends AbstractRestlet<T> implements Component
 {
-	/** The initialization parameters. */
-	protected Map<String, String> initParameters;
+	/** The modifiable map of properties. */
+	protected Map<String, String> properties;
 
    /** The map of client connectors. */
    protected Map<String, Client> clients;
@@ -63,89 +64,130 @@ public abstract class AbstractComponent extends AbstractRestlet implements Compo
    public AbstractComponent(Component owner)
    {
       super(owner);
-   	this.initParameters = null;
-      this.clients = new TreeMap<String, Client>();
-      this.servers = new TreeMap<String, Server>();
+   	this.properties = null;
+      this.clients = null;
+      this.servers = null;
    }
 
 	/**
-	 * Returns a modifiable map of initialization parameters
-	 * @return A modifiable map of initialization parameters
+	 * Returns the modifiable map of properties.
+	 * @return The modifiable map of properties.
 	 */
-	public Map<String, String> getInitParameters()
+	public Map<String, String> getProperties()
 	{
-		if(this.initParameters == null) this.initParameters = new TreeMap<String, String>();
-		return this.initParameters;
+		if(this.properties == null) this.properties = new TreeMap<String, String>();
+		return this.properties;
 	}
 
-   /**
-    * Adds a server connector to this component.
-    * @param server The server connector to add.
-    */
-   public void addServer(Server server)
-   {
-   	if(server.getName() != null)
-   	{
-   		this.servers.put(server.getName(), server);
-		}
-		else
-		{
-			throw new IllegalArgumentException("The server connector has no name set");
-		}
-   }
+	/**
+	 * Returns the modifiable map of client connectors.
+	 * @return The modifiable map of client connectors.
+	 */
+	public Map<String, Client> getClients()
+	{
+		if(this.clients == null) this.clients = new TreeMap<String, Client>();
+		return this.clients;
+	}
 
-   /**
-    * Removes a server connector from this component.
-    * @param name The name of the server connector to remove.
-    */
-   public void removeServer(String name)
-   {
-      this.servers.remove(name);
-   }
+	/**
+	 * Adds a new client connector to the component.
+	 * @param name The connector name.
+	 * @param client The client connector to add.
+	 * @return The added client.
+	 */
+	public Client addClient(String name, Client client)
+	{
+		getClients().put(name, client);
+		return client;
+	}
 
-   /**
-    * Adds a client connector to this component.
-    * @param client The client connector to add.
-    */
-   public void addClient(Client client)
-   {
-   	if(client.getName() != null)
-   	{
-   		this.clients.put(client.getName(), client);
-   	}
-   	else
-   	{
-   		throw new IllegalArgumentException("The client connector has no name set");
-   	}
-   }
-
-   /**
-    * Removes a client connector from this component.
-    * @param name The name of the client connector to remove.
-    */
-   public void removeClient(String name)
-   {
-      this.clients.remove(name);
-   }
-
-   /**
+	/**
+	 * Adds a new client connector to the component.
+	 * @param name The connector name.
+	 * @param protocol The connector protocol.
+	 * @return The added client.
+	 */
+	public Client addClient(String name, Protocol protocol)
+	{
+		return addClient(name, new DefaultClient(protocol));
+	}
+	
+	/**
     * Calls a client connector.
     * @param name The name of the client connector.
     * @param call The call to handle.
     */
-   public void callClient(String name, Call call) throws IOException
+   public void callClient(String name, Call call)
    {
-      Restlet connector = (Restlet)this.clients.get(name);
+      Client connector = getClients().get(name);
 
       if(connector == null)
       {
-         throw new IOException("Client connector \"" + name + "\" couldn't be found.");
+         throw new IllegalArgumentException("Client connector \"" + name + "\" couldn't be found.");
       }
       else
       {
          connector.handle(call);
       }
    }
+
+	/**
+	 * Returns the modifiable map of server connectors.
+	 * @return The modifiable map of server connectors.
+	 */
+	public Map<String, Server> getServers()
+	{
+		if(this.servers == null) this.servers = new TreeMap<String, Server>();
+		return this.servers;
+	}
+
+	/**
+	 * Adds a new server connector to the component.
+	 * @param name The connector name.
+	 * @param server The server connector to add.
+	 * @return The added server.
+	 */
+	public Server addServer(String name, Server server)
+	{
+		getServers().put(name, server);
+		return server;
+	}
+
+	/**
+	 * Adds a new server connector to the component.
+	 * @param name The connector name.
+	 * @param protocol The connector protocol.
+	 * @return The added server.
+	 */
+	public Server addServer(String name, Protocol protocol)
+	{
+		return addServer(name, new DefaultServer(protocol, this));
+	}
+
+	/**
+	 * Adds a new server connector to the component.
+	 * @param name The connector name.
+	 * @param protocol The connector protocol.
+    * @param port The listening port.
+	 * @return The added server.
+	 */
+	public Server addServer(String name, Protocol protocol, int port)
+	{
+		return addServer(name, new DefaultServer(protocol, this, port));
+	}
+
+	/**
+	 * Adds a new server connector to the component.
+	 * @param name The connector name.
+	 * @param protocol The connector protocol.
+    * @param address The optional listening IP address (useful if multiple IP addresses available).
+    * @param port The listening port.
+	 * @return The added server.
+	 */
+	public Server addServer(String name, Protocol protocol, String address, int port)
+	{
+		return addServer(name, new DefaultServer(protocol, this, address, port));
+	}
 
    /**
     * Start hook. Starts all client and server connectors.

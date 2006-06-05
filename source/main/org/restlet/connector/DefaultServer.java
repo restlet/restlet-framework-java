@@ -23,6 +23,7 @@
 package org.restlet.connector;
 
 import java.io.IOException;
+import java.util.Map;
 
 import org.restlet.Call;
 import org.restlet.Factory;
@@ -46,7 +47,7 @@ public class DefaultServer implements Server
     */
    public DefaultServer(Protocol protocol, Restlet target)
    {
-   	this(protocol, null, target, null, protocol.getDefaultPort());
+   	this(protocol, target, null, protocol.getDefaultPort());
    }
    
    /**
@@ -57,7 +58,7 @@ public class DefaultServer implements Server
     */
    public DefaultServer(Protocol protocol, Restlet target, int port)
    {
-   	this(protocol, null, target, null, port);
+   	this(protocol, target, null, port);
    }
    
    /**
@@ -69,43 +70,7 @@ public class DefaultServer implements Server
     */
    public DefaultServer(Protocol protocol, Restlet target, String address, int port)
    {
-   	this(protocol, null, target, address, port);
-   }
-   
-   /**
-    * Constructor using the protocol's default port.
-    * @param protocol The connector protocol.
-    * @param name The unique connector name.
-    * @param target The target Restlet.
-    */
-   public DefaultServer(Protocol protocol, String name, Restlet target)
-   {
-   	this(protocol, name, target, null, protocol.getDefaultPort());
-   }
-   
-   /**
-    * Constructor.
-    * @param protocol The connector protocol.
-    * @param name The unique connector name.
-    * @param target The target Restlet.
-    * @param port The listening port.
-    */
-   public DefaultServer(Protocol protocol, String name, Restlet target, int port)
-   {
-   	this(protocol, name, target, null, port);
-   }
-   
-   /**
-    * Constructor.
-    * @param protocol The connector protocol.
-    * @param name The unique connector name.
-    * @param target The target Restlet.
-    * @param address The optional listening IP address (useful if multiple IP addresses available).
-    * @param port The listening port.
-    */
-   public DefaultServer(Protocol protocol, String name, Restlet target, String address, int port)
-   {
-   	this.wrappedServer = Factory.getInstance().createServer(protocol, name, this, address, port);
+   	this.wrappedServer = Factory.getInstance().createServer(protocol, this, address, port);
    	setTarget(target);
    }
 
@@ -208,6 +173,15 @@ public class DefaultServer implements Server
    {
    	this.wrappedServer.setOwner(owner);   	
    }
+   
+	/**
+	 * Returns the modifiable map of properties.
+	 * @return The modifiable map of properties.
+	 */
+	public Map<String, String> getProperties()
+	{
+		return this.wrappedServer.getProperties();
+	}
 
    /**
     * Returns the connector's protocol.
@@ -218,22 +192,4 @@ public class DefaultServer implements Server
    	return this.wrappedServer.getProtocol();
    }
 
-   /**
-    * Returns the name of this connector.
-    * @return The name of this connector.
-    */
-   public String getName()
-   {
-   	return this.wrappedServer.getName();
-   }
-
-   /**
-    * Sets the name of this connector.
-    * @param name The name of this connector.
-    */
-   public void setName(String name)
-   {
-   	this.wrappedServer.setName(name);
-   }
-  
 }

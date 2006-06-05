@@ -22,6 +22,9 @@
 
 package org.restlet.connector;
 
+import java.util.Map;
+import java.util.TreeMap;
+
 import org.restlet.AbstractRestlet;
 import org.restlet.component.Component;
 import org.restlet.data.Protocol;
@@ -32,8 +35,8 @@ import org.restlet.data.Protocol;
  */
 public abstract class AbstractConnector extends AbstractRestlet implements Connector
 {
-	/** The name of this connector. */
-   protected String name;
+	/** The modifiable map of properties. */
+   protected Map<String, String> properties;
 
    /** The connector protocol. */
    protected Protocol protocol;
@@ -41,43 +44,33 @@ public abstract class AbstractConnector extends AbstractRestlet implements Conne
    /**
     * Constructor.
     * @param protocol The connector protocol.
-    * @param name The unique connector name.
     */
-   public AbstractConnector(Protocol protocol, String name)
+   public AbstractConnector(Protocol protocol)
    {
-      this(null, protocol, name);
+      this(null, protocol);
    }
    
    /**
     * Constructor.
     * @param owner The owner component.
     * @param protocol The connector protocol.
-    * @param name The unique connector name.
     */
-   public AbstractConnector(Component owner, Protocol protocol, String name)
+   public AbstractConnector(Component owner, Protocol protocol)
    {
    	super(owner);
-   	this.name = name;
+   	this.properties = null;
       this.protocol = protocol;
    }
-
-   /**
-    * Returns the name of this connector.
-    * @return The name of this connector.
-    */
-   public String getName()
-   {
-   	return this.name;
-   }
-
-   /**
-    * Sets the name of this connector.
-    * @param name The name of this connector.
-    */
-   public void setName(String name)
-   {
-   	this.name = name;
-   }
+   
+	/**
+	 * Returns the modifiable map of properties.
+	 * @return The modifiable map of properties.
+	 */
+	public Map<String, String> getProperties()
+	{
+		if(this.properties == null) this.properties = new TreeMap<String, String>();
+		return this.properties;
+	}
 
    /**
     * Returns the connector's protocol.

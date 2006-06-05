@@ -23,6 +23,8 @@
 package com.noelios.restlet.ext.servlet;
 
 import java.io.IOException;
+import java.util.Map;
+import java.util.TreeMap;
 
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServlet;
@@ -113,6 +115,9 @@ public class ServerServlet extends HttpServlet implements Server
    /** The owner component. */
    protected Component owner;
    
+	/** The modifiable map of properties. */
+   protected Map<String, String> properties;
+
    /** Indicates if the connector was started. */
    protected boolean started;
 
@@ -127,6 +132,16 @@ public class ServerServlet extends HttpServlet implements Server
       this.started = false;
       this.target = null;
    }
+
+   /**
+	 * Returns the modifiable map of properties.
+	 * @return The modifiable map of properties.
+	 */
+	public Map<String, String> getProperties()
+	{
+		if(this.properties == null) this.properties = new TreeMap<String, String>();
+		return this.properties;
+	}
    
    /**
     * Returns the connector's protocol.
@@ -269,7 +284,7 @@ public class ServerServlet extends HttpServlet implements Server
                         		int hostPort = request.getServerPort();
                         		String servletPath = request.getContextPath() + request.getServletPath();
                         		String contextPath = Reference.toUri(scheme, hostName, hostPort, servletPath, null, null);
-                        		component.getInitParameters().put(initContextPathName, contextPath);
+                        		component.getProperties().put(initContextPathName, contextPath);
                         		log("[Noelios Restlet Engine] - This context path has been provided to the target's init parameter \"" + initContextPathName + "\": " + contextPath);
                         	}
                      	}
@@ -348,24 +363,6 @@ public class ServerServlet extends HttpServlet implements Server
    	{
    		getTarget().handle(call);
    	}
-   }
-
-   /**
-    * Returns the name of this connector.
-    * @return The name of this connector.
-    */
-   public String getName()
-   {
-      return getServletConfig().getServletName();
-   }
-
-   /**
-    * Sets the name of this connector.
-    * @param name The name of this connector.
-    */
-   public void setName(String name)
-   {
-   	// Read-only
    }
 
    /**

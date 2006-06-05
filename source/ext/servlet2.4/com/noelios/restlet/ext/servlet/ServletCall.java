@@ -37,13 +37,13 @@ import javax.servlet.http.HttpServletResponse;
 import org.restlet.data.Parameter;
 import org.restlet.data.ParameterList;
 
-import com.noelios.restlet.impl.HttpServerCallImpl;
+import com.noelios.restlet.impl.HttpServerCall;
 
 /**
  * Call that is used by the Servlet HTTP server connector.
  * @author Jerome Louvel (contact@noelios.com) <a href="http://www.noelios.com/">Noelios Consulting</a>
  */
-public class ServletCall extends HttpServerCallImpl
+public class ServletCall extends HttpServerCall
 {
    /** The HTTP Servlet request to wrap. */
    protected HttpServletRequest request;

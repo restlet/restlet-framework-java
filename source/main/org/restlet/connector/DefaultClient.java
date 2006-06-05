@@ -22,6 +22,8 @@
 
 package org.restlet.connector;
 
+import java.util.Map;
+
 import org.restlet.Call;
 import org.restlet.Factory;
 import org.restlet.component.Component;
@@ -43,17 +45,7 @@ public class DefaultClient implements Client
 	 */
 	public DefaultClient(Protocol protocol)
 	{
-		this(protocol, null);
-	}
-	
-	/**
-    * Constructor.
-    * @param protocol The connector protocol.
-    * @param name The unique connector name.
-	 */
-	public DefaultClient(Protocol protocol, String name)
-	{
-		this.wrappedClient = Factory.getInstance().createClient(protocol, name);
+		this.wrappedClient = Factory.getInstance().createClient(protocol);
 	}
 	
    /**
@@ -166,6 +158,15 @@ public class DefaultClient implements Client
    {
    	this.wrappedClient.setOwner(owner);   	
    }
+   
+	/**
+	 * Returns the modifiable map of properties.
+	 * @return The modifiable map of properties.
+	 */
+	public Map<String, String> getProperties()
+	{
+		return this.wrappedClient.getProperties();
+	}
 
    /**
     * Returns the connector's protocol.
@@ -198,24 +199,6 @@ public class DefaultClient implements Client
    public int getTimeout()
    {
    	return this.wrappedClient.getTimeout();
-   }
-
-   /**
-    * Returns the name of this connector.
-    * @return The name of this connector.
-    */
-   public String getName()
-   {
-   	return this.wrappedClient.getName();
-   }
-
-   /**
-    * Sets the name of this connector.
-    * @param name The name of this connector.
-    */
-   public void setName(String name)
-   {
-   	this.wrappedClient.setName(name);
    }
    
 }

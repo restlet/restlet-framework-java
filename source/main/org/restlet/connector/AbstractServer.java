@@ -58,14 +58,13 @@ public abstract class AbstractServer extends AbstractConnector implements Server
    /**
     * Constructor.
     * @param protocol The connector protocol.
-    * @param name The unique connector name.
     * @param delegate The delegate Server.
     * @param address The optional listening IP address (local host used if null).
     * @param port The listening port.
     */
-   public AbstractServer(Protocol protocol, String name, Server delegate, String address, int port)
+   public AbstractServer(Protocol protocol, Server delegate, String address, int port)
    {
-      super(protocol, name);
+      super(protocol);
       this.delegate = delegate;
       this.address = address;
       this.port = port;

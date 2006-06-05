@@ -34,13 +34,13 @@ import org.mortbay.http.HttpResponse;
 import org.restlet.data.Parameter;
 import org.restlet.data.ParameterList;
 
-import com.noelios.restlet.impl.HttpServerCallImpl;
+import com.noelios.restlet.impl.HttpServerCall;
 
 /**
  * Call that is used by the Jetty HTTP server connector.
  * @author Jerome Louvel (contact@noelios.com) <a href="http://www.noelios.com/">Noelios Consulting</a>
  */
-public class JettyCall extends HttpServerCallImpl
+public class JettyCall extends HttpServerCall
 {
    /** The wrapped Jetty HTTP request. */
    protected HttpRequest request;

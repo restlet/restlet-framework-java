@@ -81,14 +81,13 @@ public class SimpleServer extends AbstractServer implements ProtocolHandler
    /**
     * Constructor.
     * @param protocol The connector protocol.
-    * @param name The unique connector name.
     * @param delegate The delegate Server.
     * @param address The optional listening IP address (local host used if null).
     * @param port The listening port.
     */
-   public SimpleServer(Protocol protocol, String name, Server delegate, String address, int port)
+   public SimpleServer(Protocol protocol, Server delegate, String address, int port)
    {
-		super(protocol, name, delegate, address, port);
+		super(protocol, delegate, address, port);
 	}
 
 	/**

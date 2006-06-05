@@ -36,12 +36,11 @@ public class LocalClient extends AbstractClient
 
    /**
     * Constructor.
-    * @param name The name of this REST client.
     * @param target The target Restlet.
     */
-   public LocalClient(String name, Restlet target)
+   public LocalClient(Restlet target)
    {
-      super(null, name);
+      super(null);
       this.target = target;
    }
 

@@ -22,8 +22,6 @@
 
 package com.noelios.restlet.impl;
 
-import java.io.InputStream;
-import java.nio.channels.ReadableByteChannel;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
@@ -34,12 +32,6 @@ import org.restlet.connector.ConnectorCall;
 import org.restlet.connector.ServerCall;
 import org.restlet.data.ConditionData;
 import org.restlet.data.Cookie;
-import org.restlet.data.DefaultEncoding;
-import org.restlet.data.DefaultLanguage;
-import org.restlet.data.DefaultMediaType;
-import org.restlet.data.Encoding;
-import org.restlet.data.Language;
-import org.restlet.data.MediaType;
 import org.restlet.data.Methods;
 import org.restlet.data.Parameter;
 import org.restlet.data.PreferenceData;
@@ -49,8 +41,6 @@ import org.restlet.data.SecurityData;
 import org.restlet.data.Statuses;
 import org.restlet.data.Tag;
 
-import com.noelios.restlet.data.InputRepresentation;
-import com.noelios.restlet.data.ReadableRepresentation;
 import com.noelios.restlet.util.CookieReader;
 import com.noelios.restlet.util.PreferenceUtils;
 import com.noelios.restlet.util.SecurityUtils;
@@ -275,49 +265,10 @@ public class HttpServerRestletCall extends CallImpl
     */
    public Representation getInput()
    {
-      InputStream requestStream = ((ServerCall)getConnectorCall()).getRequestStream();
-      ReadableByteChannel requestChannel = ((ServerCall)getConnectorCall()).getRequestChannel();
-      
-      if((this.input == null) && (requestStream != null || requestChannel != null))
-      {
-         // Extract the header values
-         Encoding contentEncoding = null;
-         Language contentLanguage = null;
-         MediaType contentType = null;
-         long contentLength = -1L;
-
-         for(Parameter header : getConnectorCall().getRequestHeaders())
-         {
-            if(header.getName().equalsIgnoreCase(ConnectorCall.HEADER_CONTENT_ENCODING))
-            {
-               contentEncoding = new DefaultEncoding(header.getValue());
-            }
-            else if(header.getName().equalsIgnoreCase(ConnectorCall.HEADER_CONTENT_LANGUAGE))
-            {
-               contentLanguage = new DefaultLanguage(header.getValue());
-            }
-            else if(header.getName().equalsIgnoreCase(ConnectorCall.HEADER_CONTENT_TYPE))
-            {
-               contentType = new DefaultMediaType(header.getValue());
-            }
-            else if(header.getName().equalsIgnoreCase(ConnectorCall.HEADER_CONTENT_LENGTH))
-            {
-            	contentLength = Long.parseLong(header.getValue());
-            }
-         }
-
-         if(requestStream != null)
-         {
-            this.input = new InputRepresentation(requestStream, contentType, contentLength);
-         }
-         else if(requestChannel != null)
-         {
-            this.input = new ReadableRepresentation(requestChannel, contentType, contentLength);
-         }
-         
-         this.input.getMetadata().setEncoding(contentEncoding);
-         this.input.getMetadata().setLanguage(contentLanguage);
-      }
+   	if(this.input == null)
+   	{
+   		this.input = ((ServerCall)getConnectorCall()).getRequestInput();
+   	}
       
       return this.input;
    }

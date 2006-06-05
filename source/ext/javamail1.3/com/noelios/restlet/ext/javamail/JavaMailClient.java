@@ -84,11 +84,10 @@ public class JavaMailClient extends AbstractClient
    /**
     * Constructor.
     * @param protocol The protocol to use.
-    * @param name The unique connector name.
     */
-   public JavaMailClient(Protocol protocol, String name)
+   public JavaMailClient(Protocol protocol)
    {
-      super(protocol, name);
+      super(protocol);
    }
    
    /**
