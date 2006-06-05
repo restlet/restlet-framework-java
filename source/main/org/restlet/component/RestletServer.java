@@ -39,7 +39,7 @@ import org.restlet.data.Statuses;
  * @see <a href="http://www.restlet.org/tutorial#part05">Tutorial: Restlets servers and containers</a>
  * @author Jerome Louvel (contact@noelios.com) <a href="http://www.noelios.com/">Noelios Consulting</a>
  */
-public class RestletServer<T extends Call> extends AbstractComponent<T>
+public class RestletServer extends AbstractComponent
 {
 	/** Obtain a suitable logger. */
    private static Logger logger = Logger.getLogger("org.restlet.component.RestletServer");

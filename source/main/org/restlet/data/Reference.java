@@ -31,14 +31,14 @@ import java.util.List;
  * class, this interface represents mutable references. It strictly conforms to the RFC 3986
  * specifying URIs and follow its naming conventions.<br/>
  * <pre>
- * 	URI reference			= absolute-reference | relative-reference
+ * 	URI reference        = absolute-reference | relative-reference
  * 
  * 	absolute-reference   = scheme ":" scheme-specific-part [ "#" fragment ]
  * 	scheme-specific-part = hierarchical-part [ "?" query ] | opaque-part
  * 	hierarchical-part    = "//" authority path-abempty | path-absolute | path-rootless | path-empty
  * 	authority            = [ user-info "@" ] host-name [ ":" host-port ]
  * 
- * 	relative-reference	= relative-part [ "?" query ] [ "#" fragment ]
+ * 	relative-reference   = relative-part [ "?" query ] [ "#" fragment ]
  * </pre><br/>
  * Note that this class doesn't encode or decode the reserved characters. It assumes that the URI passed in are
  * properly encoded using the "%??" sequences. Use the JDK's URLEncoder and URLDecoder classes for this purpose.  

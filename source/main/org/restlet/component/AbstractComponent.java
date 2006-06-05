@@ -38,7 +38,7 @@ import org.restlet.data.Protocol;
  * Abstract component implementation.
  * @author Jerome Louvel (contact@noelios.com) <a href="http://www.noelios.com/">Noelios Consulting</a>
  */
-public abstract class AbstractComponent<T extends Call> extends AbstractRestlet<T> implements Component
+public abstract class AbstractComponent extends AbstractRestlet implements Component
 {
 	/** The modifiable map of properties. */
 	protected Map<String, String> properties;
