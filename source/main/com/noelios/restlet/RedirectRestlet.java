@@ -22,7 +22,6 @@
 
 package com.noelios.restlet;
 
-import java.io.IOException;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
@@ -32,8 +31,8 @@ import org.restlet.component.Component;
 import org.restlet.data.Reference;
 import org.restlet.data.Statuses;
 
-import com.noelios.restlet.util.StringTemplate;
 import com.noelios.restlet.util.CallModel;
+import com.noelios.restlet.util.StringTemplate;
 
 /**
  * Rewrites URIs then redirects the call or the client to a new destination.
@@ -137,53 +136,45 @@ public class RedirectRestlet extends AbstractRestlet
     */
 	public void handle(Call call)
    {
-      try
+      // Create the template engine
+      StringTemplate te = new StringTemplate(this.targetPattern);
+
+      // Create the template data model
+      String targetUri = te.process(new CallModel(call, null));
+      Reference target = new Reference(targetUri);
+
+      switch(this.mode)
       {
-         // Create the template engine
-         StringTemplate te = new StringTemplate(this.targetPattern);
+         case MODE_CLIENT_PERMANENT:
+            logger.log(Level.INFO, "Permanently redirecting client to: " + targetUri);
+            call.setRedirectionRef(target);
+            call.setStatus(Statuses.REDIRECTION_MOVED_PERMANENTLY);
+         break;
 
-         // Create the template data model
-         String targetUri = te.process(new CallModel(call, null));
-         Reference target = new Reference(targetUri);
+         case MODE_CLIENT_FOUND:
+            logger.log(Level.INFO, "Redirecting client to found location: " + targetUri);
+            call.setRedirectionRef(target);
+            call.setStatus(Statuses.REDIRECTION_FOUND);
+         break;
+         
+         case MODE_CLIENT_TEMPORARY:
+            logger.log(Level.INFO, "Temporarily redirecting client to: " + targetUri);
+            call.setRedirectionRef(target);
+            call.setStatus(Statuses.REDIRECTION_MOVED_TEMPORARILY);
+         break;
 
-         switch(this.mode)
-         {
-            case MODE_CLIENT_PERMANENT:
-               logger.log(Level.INFO, "Permanently redirecting client to: " + targetUri);
-               call.setRedirectionRef(target);
-               call.setStatus(Statuses.REDIRECTION_MOVED_PERMANENTLY);
-            break;
+         case MODE_CONNECTOR:
+            logger.log(Level.INFO, "Redirecting to connector " + this.connectorName + ": " + targetUri);
+            call.setResourceRef(target);
+            getOwner().callClient(this.connectorName, call);
+         break;
 
-            case MODE_CLIENT_FOUND:
-               logger.log(Level.INFO, "Redirecting client to found location: " + targetUri);
-               call.setRedirectionRef(target);
-               call.setStatus(Statuses.REDIRECTION_FOUND);
-            break;
-            
-            case MODE_CLIENT_TEMPORARY:
-               logger.log(Level.INFO, "Temporarily redirecting client to: " + targetUri);
-               call.setRedirectionRef(target);
-               call.setStatus(Statuses.REDIRECTION_MOVED_TEMPORARILY);
-            break;
-
-            case MODE_CONNECTOR:
-               logger.log(Level.INFO, "Redirecting to connector " + this.connectorName + ": " + targetUri);
-               call.setResourceRef(target);
-               getOwner().callClient(this.connectorName, call);
-            break;
-
-            case MODE_INTERNAL:
-               logger.log(Level.INFO, "Redirecting internally: " + targetUri);
-               call.setResourceRef(target);
-               getOwner().handle(call);
-            break;
-         }
-      }
-      catch(IOException ioe)
-      {
-         logger.log(Level.WARNING, "Error during redirection", ioe);
+         case MODE_INTERNAL:
+            logger.log(Level.INFO, "Redirecting internally: " + targetUri);
+            call.setResourceRef(target);
+            getOwner().handle(call);
+         break;
       }
    }
 
 }
-
