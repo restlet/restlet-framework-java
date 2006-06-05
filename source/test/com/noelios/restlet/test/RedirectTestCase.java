@@ -31,7 +31,6 @@ import org.restlet.DefaultCall;
 import org.restlet.Call;
 import org.restlet.Restlet;
 import org.restlet.component.RestletContainer;
-import org.restlet.connector.DefaultClient;
 import org.restlet.connector.DefaultServer;
 import org.restlet.data.MediaTypes;
 import org.restlet.data.Method;
@@ -55,16 +54,16 @@ public class RedirectTestCase extends TestCase
       try
       {
          // Create a new Restlet container
-      	RestletContainer myContainer = new RestletContainer("My container");
+      	RestletContainer myContainer = new RestletContainer();
 
          // Create the client connectors
-         myContainer.addClient(new DefaultClient(Protocols.HTTP, "Test client"));
-         myContainer.addClient(new DefaultClient(Protocols.HTTP, "Proxy client"));
+         myContainer.addClient("Test Client", Protocols.HTTP);
+         myContainer.addClient("Proxy Client", Protocols.HTTP);
 
          // Create the proxy Restlet
          String target = "http://localhost:9090${path}#[if query]?${query}#[end]";
          RedirectRestlet proxy = new RedirectRestlet(myContainer, target, RedirectRestlet.MODE_CONNECTOR);
-         proxy.setConnectorName("Proxy client");
+         proxy.setConnectorName("Proxy Client");
 
          // Create a new Restlet that will display some path information.
          Restlet trace = new AbstractRestlet(myContainer)
@@ -82,8 +81,8 @@ public class RedirectTestCase extends TestCase
             };
          
          // Create the server connectors
-         myContainer.addServer(new DefaultServer(Protocols.HTTP, "Proxy server", proxy, null, 8080));
-         myContainer.addServer(new DefaultServer(Protocols.HTTP, "Origin server", trace, null, 9090));
+         myContainer.addServer("Proxy server", new DefaultServer(Protocols.HTTP, proxy, 8080));
+         myContainer.addServer("Origin server", new DefaultServer(Protocols.HTTP, trace, 9090));
 
          // Now, let's start the container!
          myContainer.start();
