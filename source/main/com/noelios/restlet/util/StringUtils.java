@@ -22,8 +22,6 @@
 
 package com.noelios.restlet.util;
 
-import java.io.File;
-
 /**
  * String manipulation utilities.
  * @author Jerome Louvel (contact@noelios.com) <a href="http://www.noelios.com/">Noelios Consulting</a>
@@ -83,33 +81,6 @@ public class StringUtils
       }
 
       return source.substring(beginIndex, endIndex);
-   }
-
-   /**
-    * Normalizes a path by converting all the separator character
-    * to the system-dependant character.
-    * @param path The path to normalize.
-    * @return     The normalized path.
-    */
-   public static String normalizePath(String path)
-   {
-      StringBuilder result = new StringBuilder();
-      char nextChar;
-      for(int i = 0; i < path.length(); i++)
-      {
-         nextChar = path.charAt(i);
-         if((nextChar == '/') || (nextChar == '\\'))
-         {
-            // Convert the URI separator to the system dependent path separator
-            result.append(File.separatorChar);
-         }
-         else
-         {
-            result.append(nextChar);
-         }
-      }
-
-      return result.toString();
    }
    
 }
