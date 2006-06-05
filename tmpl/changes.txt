@@ -34,6 +34,8 @@ Restlet changes log
  - Added ClientCall.getResponseOutput() method to factorize common logic among HTTP and FILE connectors.
  - Moved StringUtils.normalizePath() method to FileReference.
  - Added JarReference supporting the JAR URIs defined by JDK's JarUrlConnection.
+ - Added ContextReference supporting the custom context URIs. Those URIs allow the loading of representation from various contextual locations
+   like the current class's classloader, the system's classloader, the Web application's context and the current thread's classloader.
  
 1.0 beta 13 (2006-05-29)
  - Updated StringTemplate and StringTemplateRepresentation to allow the usage of different delimiters for variable insertion and instructions like conditions.
