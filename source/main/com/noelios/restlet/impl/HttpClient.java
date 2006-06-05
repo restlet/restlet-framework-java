@@ -40,7 +40,6 @@ import org.restlet.data.ChallengeResponse;
 import org.restlet.data.ConditionData;
 import org.restlet.data.DefaultStatus;
 import org.restlet.data.MediaTypes;
-import org.restlet.data.Methods;
 import org.restlet.data.Parameter;
 import org.restlet.data.PreferenceData;
 import org.restlet.data.Protocol;
@@ -99,16 +98,7 @@ public class HttpClient extends AbstractClient
          return null;
       }
    }
-
-   /**
-    * Returns the connector's protocol.
-    * @return The connector's protocol.
-    */
-   public Protocol getProtocol()
-   {
-      return Protocols.HTTP;
-   }
-
+   
    /**
     * Handles a uniform call.
     * @param call The uniform call to handle.
@@ -343,35 +333,6 @@ public class HttpClient extends AbstractClient
          logger.log(Level.FINE, "An error occured during the processing of the HTTP response.", e);
          call.setStatus(new DefaultStatus(Statuses.CONNECTOR_ERROR_INTERNAL, "Unable to process the response. " + e.getMessage()));
       }
-   }
-
-   /**
-    * Determines if a call has any concrete input.
-    * @param call The call to analyze.
-    * @return True if the call has any concrete input.
-    */
-   private boolean hasInput(Call call)
-   {
-      boolean result = true;
-      
-      if(call.getMethod().equals(Methods.GET) || call.getMethod().equals(Methods.HEAD) ||
-            call.getMethod().equals(Methods.DELETE))
-      {
-         result = false;
-      }
-      else
-      {
-         try
-         {
-            result = (call.getInput() != null) && ((call.getInput().getStream() != null) || (call.getInput().getChannel() != null));
-         }
-         catch(IOException e)
-         {
-            result = false;
-         }
-      }
-      
-      return result;
    }
 
 }

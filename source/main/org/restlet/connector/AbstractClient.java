@@ -22,6 +22,8 @@
 
 package org.restlet.connector;
 
+import java.io.IOException;
+
 import org.restlet.DefaultCall;
 import org.restlet.Call;
 import org.restlet.component.Component;
@@ -143,6 +145,35 @@ public abstract class AbstractClient extends AbstractConnector implements Client
    public int getTimeout()
    {
    	return this.timeout;
+   }
+
+   /**
+    * Determines if a call has any concrete input.
+    * @param call The call to analyze.
+    * @return True if the call has any concrete input.
+    */
+   protected boolean hasInput(Call call)
+   {
+      boolean result = true;
+      
+      if(call.getMethod().equals(Methods.GET) || call.getMethod().equals(Methods.HEAD) ||
+            call.getMethod().equals(Methods.DELETE))
+      {
+         result = false;
+      }
+      else
+      {
+         try
+         {
+            result = (call.getInput() != null) && ((call.getInput().getStream() != null) || (call.getInput().getChannel() != null));
+         }
+         catch(IOException e)
+         {
+            result = false;
+         }
+      }
+      
+      return result;
    }
 
 }

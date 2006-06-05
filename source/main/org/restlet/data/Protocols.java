@@ -31,6 +31,9 @@ public enum Protocols implements Protocol
    /** AJP 1.3 protocol to communicate with Apache HTTP server or Microsoft IIS. */
    AJP,
    
+   /** Context access protocol base on Java classloaders, Web application context loaders. */
+   CONTEXT,
+   
    /** Local file system access protocol. */
    FILE,
    
@@ -65,6 +68,9 @@ public enum Protocols implements Protocol
          case AJP:
             result = "ajp";
             break;
+         case CONTEXT:
+         	result = "context";
+         	break;
          case FILE:
             result = "file";
             break;
@@ -104,6 +110,9 @@ public enum Protocols implements Protocol
          case AJP:
             result = 8009;
             break;
+         case CONTEXT:
+         	result = -1;
+         	break;
          case FILE:
             result = -1;
             break;
@@ -143,6 +152,9 @@ public enum Protocols implements Protocol
          case AJP:
             result = "AJP";
             break;
+         case CONTEXT:
+         	result = "CONTEXT";
+         	break;
          case FILE:
             result = "FILE";
             break;
@@ -182,6 +194,9 @@ public enum Protocols implements Protocol
          case AJP:
             result = "Apache Jakarta Protocol";
             break;
+         case CONTEXT:
+         	result = "Context Access Protocol";
+         	break;
          case FILE:
             result = "Local File System Protocol";
             break;
@@ -209,24 +224,6 @@ public enum Protocols implements Protocol
    }
 
    /**
-    * Sets the name of this REST element.
-    * @param name The name of this REST element.
-    */
-   public void setName(String name)
-   {
-   	// Read-only
-   }
-
-   /**
-    * Sets the description of this REST element.
-    * @param description The description of this REST element.
-    */
-   public void setDescription(String description)
-   {
-   	// Read-only
-   }
-
-   /**
     * Indicates if the protocol is equal to a given one.
     * @param protocol The protocol to compare to.
     * @return True if the protocol is equal to a given one.
@@ -248,6 +245,7 @@ public enum Protocols implements Protocol
       if(schemeName != null)
       {
          if(schemeName.equalsIgnoreCase(Protocols.AJP.getSchemeName())) result = Protocols.AJP;
+         else if(schemeName.equalsIgnoreCase(Protocols.CONTEXT.getSchemeName())) result = Protocols.CONTEXT;
          else if(schemeName.equalsIgnoreCase(Protocols.FILE.getSchemeName())) result = Protocols.FILE;
          else if(schemeName.equalsIgnoreCase(Protocols.HTTP.getSchemeName())) result = Protocols.HTTP;
          else if(schemeName.equalsIgnoreCase(Protocols.HTTPS.getSchemeName())) result = Protocols.HTTPS;

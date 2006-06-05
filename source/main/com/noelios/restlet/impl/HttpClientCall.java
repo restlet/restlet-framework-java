@@ -57,17 +57,17 @@ public class HttpClientCall extends ClientCallImpl
     * Constructor.
     * @param client The client connector.
     * @param method The method name.
-    * @param resourceUri The resource URI.
+    * @param requestUri The request URI.
     * @param hasInput Indicates if the call will have an input to send to the server.
     * @throws IOException
     */
-   public HttpClientCall(Client client, String method, String resourceUri, boolean hasInput) throws IOException
+   public HttpClientCall(Client client, String method, String requestUri, boolean hasInput) throws IOException
    {
-      super(method);
+      super(method, requestUri);
       
-      if(resourceUri.startsWith("http"))
+      if(requestUri.startsWith("http"))
       {
-         URL url = new URL(resourceUri);
+         URL url = new URL(requestUri);
          this.connection = (HttpURLConnection)url.openConnection();
          
          if(client.getTimeout() != -1)
@@ -79,7 +79,6 @@ public class HttpClientCall extends ClientCallImpl
          this.connection.setAllowUserInteraction(false);
          this.connection.setDoOutput(hasInput);
          this.connection.setInstanceFollowRedirects(false);
-         this.requestUri = resourceUri;
          this.confidential = (this.connection instanceof HttpsURLConnection);
       }
       else

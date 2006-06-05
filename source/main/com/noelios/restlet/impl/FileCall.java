@@ -35,7 +35,6 @@ import java.util.Date;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
-import org.restlet.data.ParameterList;
 import org.restlet.data.Representation;
 import org.restlet.data.RepresentationMetadata;
 
@@ -45,38 +44,26 @@ import com.noelios.restlet.data.FileReference;
  * File client connector call.
  * @author Jerome Louvel (contact@noelios.com) <a href="http://www.noelios.com/">Noelios Consulting</a>
  */
-public class FileClientCall extends ClientCallImpl 
+public class FileCall extends ContextCall
 {
    /** Obtain a suitable logger. */
-   private static Logger logger = Logger.getLogger("com.noelios.restlet.connector.FileClientCall");
+   private static Logger logger = Logger.getLogger("com.noelios.restlet.impl.FileCall");
 
    /** The wrapped File. */
    protected File file;
    
-   /** The status code. */
-   protected int statusCode;
-   
-   /** The reason phrase. */
-   protected String reasonPhrase;
-   
-   /** The file client connector. */
-   protected FileClient fileClient;
-   
    /**
     * Constructor.
-    * @param fileClient The file client connector.
     * @param method The method name.
-    * @param resourceUri The resource URI.
+    * @param requestUri The request URI.
     * @param hasInput Indicates if the call will have an input to send to the server.
     * @throws IOException
     */
-   public FileClientCall(FileClient fileClient, String method, String resourceUri, boolean hasInput) throws IOException
+   public FileCall(String method, String requestUri) throws IOException
    {
-      super(method);
+      super(method, requestUri);
 
-      this.fileClient = fileClient;
-      FileReference fr = new FileReference(resourceUri);
-      
+      FileReference fr = new FileReference(requestUri);
       if(fr.getScheme().equalsIgnoreCase("file"))
       {
          this.file = fr.getFile();
@@ -94,15 +81,6 @@ public class FileClientCall extends ClientCallImpl
    public File getFile()
    {
       return this.file;
-   }
-   
-   /**
-    * Sends the request headers.<br/>
-    * Must be called before sending the request input.
-    */
-   public void sendRequestHeaders() throws IOException
-   {
-      // Ignore, not applicable to local files
    }
 
    /**
@@ -138,44 +116,6 @@ public class FileClientCall extends ClientCallImpl
 			logger.log(Level.WARNING, "Couldn't get the request channel.", fnfe);
 			return null;
 		}
-   }
-
-   /**
-    * Returns the response address.<br/>
-    * Corresponds to the IP address of the responding server.
-    * @return The response address.
-    */
-   public String getResponseAddress()
-   {
-      return getLocalAddress();
-   }
-
-   /**
-    * Returns the modifiable list of response headers.
-    * @return The modifiable list of response headers.
-    */
-   public ParameterList getResponseHeaders()
-   {
-      // Ignore, not applicable to local files
-      return null;
-   }
-   
-   /**
-    * Returns the response status code.
-    * @return The response status code.
-    */
-   public int getResponseStatusCode()
-   {
-      return this.statusCode;
-   }
-
-   /**
-    * Returns the response reason phrase.
-    * @return The response reason phrase.
-    */
-   public String getResponseReasonPhrase()
-   {
-   	return this.reasonPhrase;
    }
    
    /**

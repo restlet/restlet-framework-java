@@ -41,10 +41,12 @@ public abstract class ClientCallImpl extends ConnectorCallImpl implements Client
 	/**
 	 * Constructor setting the request address to the local host.
     * @param method The method name.
+    * @param requestUri The request URI.
 	 */
-	public ClientCallImpl(String method)
+	public ClientCallImpl(String method, String requestUri)
 	{
 		this.requestMethod = method;
+		this.requestUri = requestUri;
       this.requestAddress = getLocalAddress();
 	}
 

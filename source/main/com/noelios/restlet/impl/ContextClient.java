@@ -26,6 +26,8 @@ import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
+import java.util.Arrays;
+import java.util.List;
 import java.util.Map;
 import java.util.TreeMap;
 import java.util.logging.Level;
@@ -44,6 +46,7 @@ import org.restlet.data.MediaType;
 import org.restlet.data.MediaTypes;
 import org.restlet.data.Metadata;
 import org.restlet.data.Methods;
+import org.restlet.data.Protocol;
 import org.restlet.data.Protocols;
 import org.restlet.data.Representation;
 import org.restlet.data.Statuses;
@@ -54,13 +57,13 @@ import com.noelios.restlet.data.ReferenceList;
 import com.noelios.restlet.util.ByteUtils;
 
 /**
- * Connector to the local file system.
+ * Connector to the contextual resources accessible via the classloaders and similar mechanism.
  * @author Jerome Louvel (contact@noelios.com) <a href="http://www.noelios.com/">Noelios Consulting</a>
  */
-public class FileClient extends AbstractClient
+public class ContextClient extends AbstractClient
 {
    /** Obtain a suitable logger. */
-   private static Logger logger = Logger.getLogger("com.noelios.restlet.connector.FileClient");
+   private static Logger logger = Logger.getLogger("com.noelios.restlet.impl.ContextClient");
 
    /** Default encoding used when no encoding extension is available. */
    protected Encoding defaultEncoding;
@@ -81,15 +84,24 @@ public class FileClient extends AbstractClient
     * Constructor.
     * @param commonExtensions Indicates if the common extensions should be added.
     */
-   public FileClient(boolean commonExtensions)
+   public ContextClient(boolean commonExtensions)
    {
-      super(Protocols.FILE);
+      super(Protocols.CONTEXT);
       this.defaultEncoding = Encodings.IDENTITY;
       this.defaultMediaType = MediaTypes.TEXT_PLAIN;
       this.defaultLanguage = Languages.ENGLISH_US;
       this.metadataMappings = new TreeMap<String, Metadata>();
       this.timeToLive = 600;
       if(commonExtensions) addCommonExtensions();
+   }
+   
+   /**
+    * Returns the supported protocols. 
+    * @return The supported protocols.
+    */
+   public static List<Protocol> getProtocols()
+   {
+   	return Arrays.asList(new Protocol[]{Protocols.CONTEXT, Protocols.FILE});
    }
 
    /**
@@ -332,7 +344,7 @@ public class FileClient extends AbstractClient
 	{
 		try
 		{
-			return new FileClientCall(this, method, resourceUri, hasInput);
+			return new FileCall(this, method, resourceUri, hasInput);
 		}
 		catch (IOException e)
 		{
