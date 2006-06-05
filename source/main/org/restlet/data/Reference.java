@@ -27,7 +27,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 /**
- * Represents a reference to a Uniform Resource Identifier (URI). Contrary to the java.net.URI 
+ * Reference to a Uniform Resource Identifier (URI). Contrary to the java.net.URI 
  * class, this interface represents mutable references. It strictly conforms to the RFC 3986
  * specifying URIs and follow its naming conventions.<br/>
  * <pre>

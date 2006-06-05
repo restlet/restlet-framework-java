@@ -64,7 +64,7 @@ import com.noelios.restlet.impl.FactoryImpl;
  * unique combination of JDBC URI and connection properties.<br/><br/> Do not forget to register your JDBC
  * drivers before using this client. See <a
  * href="http://java.sun.com/j2se/1.5.0/docs/api/java/sql/DriverManager.html"> JDBC DriverManager API</a> for
- * details<br/> <br/> Sample XML request:<br/> <br/> {@code <?xml version="1.0" encoding="ISO-8851-1" ?>}<br/>
+ * details<br/> <br/> Sample XML request:<br/> <br/> {@code <?xml version="1.0" encoding="ISO-8859-1" ?>}<br/>
  * {@code <request>}<br/> &nbsp;&nbsp;{@code <header>}<br/> &nbsp;&nbsp;&nbsp;&nbsp;{@code <connection>}<br/>
  * &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;{@code <usePooling>true</usePooling>}<br/>
  * &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;{@code <property name="user">scott</property >}<br/>

@@ -29,7 +29,7 @@ import org.restlet.component.Component;
  * @see <a href="http://www.restlet.org/tutorial#part07">Tutorial: Chainlets and call logging</a>
  * @author Jerome Louvel (contact@noelios.com) <a href="http://www.noelios.com/">Noelios Consulting</a>
  */
-public abstract class AbstractChainlet extends AbstractRestlet implements Chainlet
+public abstract class AbstractChainlet<T extends Call> extends AbstractRestlet<T> implements Chainlet
 {
    /** Delegate Chainlet actually implementing the Chainlet methods. */
    protected Chainlet delegate;

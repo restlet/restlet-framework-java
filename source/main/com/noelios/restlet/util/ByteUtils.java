@@ -23,6 +23,7 @@
 package com.noelios.restlet.util;
 
 import java.io.BufferedInputStream;
+import java.io.BufferedOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
@@ -44,12 +45,14 @@ public class ByteUtils
     */
    public static void write(InputStream inputStream, OutputStream outputStream) throws IOException
    {
-      InputStream is = (inputStream instanceof BufferedInputStream) ? inputStream : new BufferedInputStream(
-            inputStream);
+      InputStream is = (inputStream instanceof BufferedInputStream) ? inputStream : 
+      	new BufferedInputStream(inputStream);
+      OutputStream os = (outputStream instanceof BufferedOutputStream) ? outputStream : 
+      	new BufferedOutputStream(outputStream);
       int nextByte = is.read();
       while(nextByte != -1)
       {
-         outputStream.write(nextByte);
+         os.write(nextByte);
          nextByte = is.read();
       }
       is.close();

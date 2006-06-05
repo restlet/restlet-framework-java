@@ -129,6 +129,10 @@ public abstract class AbstractRestlet<T extends Call> implements Restlet
 		{
 			handleUnlock(genericCall);
 		}
+		else
+		{
+			defaultHandle(genericCall);
+		}
    }
 
    /**

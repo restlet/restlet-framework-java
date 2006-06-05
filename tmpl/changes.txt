@@ -13,6 +13,17 @@ Restlet changes log
  - Added more unit tests for the Resltet API; Contributed by Lars Heuer.
  - Fixed bug in Jetty 5 HTTPS connector preventing the usage of the specified SSL keystore in certain cases. Found by Dave Pawson.
  - Added constructors to DefaultServer using the protocol's default port
+ - Updated Jetty 6 to version beta 17.
+ - Fixed type in JdbcClient sample XML document. Reported by Thierry Boileau.
+ - Added new FileRepresentation constructor accepting a File instance.
+ - Improved ByteUtils.write() methods for streams by automatically buffering output streams if necessary.
+ - Templatized AbstractChainlet. Contributed by Lars Heuer.
+ - Fixed AbstractRestlet which was not reporting the proper error when non standard Method instances were called but not handled.
+ - Added FILE protocol to Protocols enumeration.
+ - Added com.noelios.restlet.data.FileReference.
+ - Added ReferenceList to handle "text/uri-list" representations.
+ - Added "destinationRef" property to Call, useful for methods such as COPY and MOVE.
+ - 
  
 1.0 beta 13 (2006-05-29)
  - Updated StringTemplate and StringTemplateRepresentation to allow the usage of different delimiters for variable insertion and instructions like conditions.

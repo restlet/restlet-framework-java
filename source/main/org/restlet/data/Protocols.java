@@ -31,6 +31,9 @@ public enum Protocols implements Protocol
    /** AJP 1.3 protocol to communicate with Apache HTTP server or Microsoft IIS. */
    AJP,
    
+   /** Local file system access protocol. */
+   FILE,
+   
    /** HTTP protocol. */
    HTTP,
    
@@ -61,6 +64,9 @@ public enum Protocols implements Protocol
       {
          case AJP:
             result = "ajp";
+            break;
+         case FILE:
+            result = "file";
             break;
          case HTTP:
             result = "http";
@@ -98,6 +104,9 @@ public enum Protocols implements Protocol
          case AJP:
             result = 8009;
             break;
+         case FILE:
+            result = -1;
+            break;
          case HTTP:
             result = 80;
             break;
@@ -134,6 +143,9 @@ public enum Protocols implements Protocol
          case AJP:
             result = "AJP";
             break;
+         case FILE:
+            result = "FILE";
+            break;
          case HTTP:
             result = "HTTP";
             break;
@@ -169,6 +181,9 @@ public enum Protocols implements Protocol
       {
          case AJP:
             result = "Apache Jakarta Protocol";
+            break;
+         case FILE:
+            result = "Local File System Protocol";
             break;
          case HTTP:
             result = "HyperText Transport Protocol";
@@ -233,6 +248,7 @@ public enum Protocols implements Protocol
       if(schemeName != null)
       {
          if(schemeName.equalsIgnoreCase(Protocols.AJP.getSchemeName())) result = Protocols.AJP;
+         else if(schemeName.equalsIgnoreCase(Protocols.FILE.getSchemeName())) result = Protocols.FILE;
          else if(schemeName.equalsIgnoreCase(Protocols.HTTP.getSchemeName())) result = Protocols.HTTP;
          else if(schemeName.equalsIgnoreCase(Protocols.HTTPS.getSchemeName())) result = Protocols.HTTPS;
          else if(schemeName.equalsIgnoreCase(Protocols.JDBC.getSchemeName())) result = Protocols.JDBC;

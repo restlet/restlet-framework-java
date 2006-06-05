@@ -41,6 +41,7 @@ import java.util.Set;
  */
 public class ParameterList implements List<Parameter>, Data
 {
+	/** The delegate list. */
 	protected List<Parameter> delegate;
 
 	/**
@@ -64,7 +65,7 @@ public class ParameterList implements List<Parameter>, Data
 	 * Constructor.
 	 * @param delegate The delegate list.
 	 */
-	protected ParameterList(List<Parameter> delegate)
+	public ParameterList(List<Parameter> delegate)
 	{
 		this.delegate = delegate;
 	}
@@ -653,9 +654,9 @@ public class ParameterList implements List<Parameter>, Data
 	 * Returns an array containing all of the elements in this list in proper sequence.
 	 * @return An array containing all of the elements in this list in proper sequence.
 	 */
-	public Object[] toArray()
+	public Parameter[] toArray()
 	{
-		return getDelegate().toArray();
+		return (Parameter[])getDelegate().toArray();
 	}
 
 	/**
