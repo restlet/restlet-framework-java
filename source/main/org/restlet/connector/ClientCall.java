@@ -58,23 +58,29 @@ public interface ClientCall extends ConnectorCall
     * Returns the request entity channel if it exists.
     * @return The request entity channel if it exists.
     */
-   public WritableByteChannel getRequestChannel() throws IOException;
+   public WritableByteChannel getRequestChannel();
    
    /**
     * Returns the request entity stream if it exists.
     * @return The request entity stream if it exists.
     */
-   public OutputStream getRequestStream() throws IOException;
+   public OutputStream getRequestStream();
+   
+   /**
+    * Returns the response output representation if available.
+    * @return The response output representation if available.
+    */
+   public Representation getResponseOutput();
 
    /**
     * Returns the response channel if it exists.
     * @return The response channel if it exists.
     */
-   public ReadableByteChannel getResponseChannel() throws IOException;
+   public ReadableByteChannel getResponseChannel();
    
    /**
     * Returns the response stream if it exists.
     * @return The response stream if it exists.
     */
-   public InputStream getResponseStream() throws IOException;
+   public InputStream getResponseStream();
 }

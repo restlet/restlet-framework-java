@@ -24,6 +24,7 @@ package org.restlet;
 
 import java.util.List;
 
+import org.restlet.data.Reference;
 import org.restlet.data.Representation;
 import org.restlet.data.RepresentationMetadata;
 
@@ -40,16 +41,22 @@ import org.restlet.data.RepresentationMetadata;
  */
 public interface Resource
 {
+	/**
+	 * Returns the identifier reference.
+	 * @return The identifier reference.
+	 */
+	public Reference getIdentifier();
+	
    /**
     * Returns the representation variants metadata.
     * @return The representation variants metadata.
     */
-   public List<RepresentationMetadata> getVariantsMetadata();
+   public List<RepresentationMetadata> getVariants();
 
    /**
     * Returns the representation matching the given metadata.
-    * @param metadata The metadata to match.
+    * @param variant The variant metadata to match.
     * @return The matching representation.
     */
-   public Representation getRepresentation(RepresentationMetadata metadata);
+   public Representation getRepresentation(RepresentationMetadata variant);
 }

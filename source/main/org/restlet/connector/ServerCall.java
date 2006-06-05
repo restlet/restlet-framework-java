@@ -54,7 +54,7 @@ public interface ServerCall extends ConnectorCall
     * Sends the response headers.<br/>
     * Must be called before sending the response output.
     */
-   public void sendResponseHeaders();
+   public void sendResponseHeaders() throws IOException;
 
    /**
     * Sends the response output.
@@ -62,6 +62,12 @@ public interface ServerCall extends ConnectorCall
     */
    public void sendResponseOutput(Representation output) throws IOException;
 
+   /**
+    * Returns the request input representation if available.
+    * @return The request input representation if available.
+    */
+   public Representation getRequestInput();
+   
    /**
     * Returns the request entity channel if it exists.
     * @return The request entity channel if it exists.
