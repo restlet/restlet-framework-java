@@ -30,8 +30,6 @@ import org.restlet.DefaultMaplet;
 import org.restlet.Maplet;
 import org.restlet.Restlet;
 import org.restlet.component.RestletContainer;
-import org.restlet.connector.DefaultServer;
-import org.restlet.connector.Server;
 import org.restlet.data.ChallengeSchemes;
 import org.restlet.data.MediaTypes;
 import org.restlet.data.Protocols;
@@ -56,10 +54,12 @@ public class Tutorial11
          // Create a new Restlet container
       	RestletContainer myContainer = new RestletContainer();
 
-         // Create the HTTP server connector, then add it as a server connector
-         // to the Restlet container. Note that the container is the call restlet.
-         Server server = new DefaultServer(Protocols.HTTP, "My server", myContainer, 8182);
-         myContainer.addServer(server);
+         // Add an HTTP server connector to the Restlet container. 
+         // Note that the container is the call restlet.
+         myContainer.addServer("HTTP Server", Protocols.HTTP, 8182);
+
+         // Add a file client connector to the Restlet container. 
+         myContainer.addClient("File Client", Protocols.FILE);
 
          // Attach a log Chainlet to the container
          LogChainlet log = new LogChainlet(myContainer, "com.noelios.restlet.example");
@@ -79,7 +79,7 @@ public class Tutorial11
          host.attach("/docs/", guard);
 
          // Create a directory Restlet able to return a deep hierarchy of Web files
-         DirectoryRestlet dirRestlet = new DirectoryRestlet(myContainer, "D:/Restlet/www/docs/api/", true, "index", true);
+         DirectoryRestlet dirRestlet = new DirectoryRestlet(myContainer, "File Client", "D:/Restlet/www/docs/api/", true, "index");
          guard.attach(dirRestlet);
 
          // Create the users Maplet

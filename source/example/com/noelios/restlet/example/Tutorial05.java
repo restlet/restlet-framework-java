@@ -26,8 +26,6 @@ import org.restlet.AbstractRestlet;
 import org.restlet.Call;
 import org.restlet.Restlet;
 import org.restlet.component.RestletContainer;
-import org.restlet.connector.DefaultServer;
-import org.restlet.connector.Server;
 import org.restlet.data.Protocols;
 
 import com.noelios.restlet.HostMaplet;
@@ -48,8 +46,7 @@ public class Tutorial05
 
          // Create the HTTP server connector, then add it to the container. 
          // Note that the container will act as the initial Restlet call's handler.
-         Server server = new DefaultServer(Protocols.HTTP, "My server", myContainer, 8182);
-         myContainer.addServer(server);
+         myContainer.addServer("HTTP Server", Protocols.HTTP, 8182);
 
          // Create a host Maplet matching calls to the server
          HostMaplet rootMaplet = new HostMaplet(myContainer, 8182);

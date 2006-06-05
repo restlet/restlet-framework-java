@@ -23,8 +23,6 @@
 package com.noelios.restlet.example;
 
 import org.restlet.component.RestletContainer;
-import org.restlet.connector.DefaultServer;
-import org.restlet.connector.Server;
 import org.restlet.data.Protocols;
 
 import com.noelios.restlet.DirectoryRestlet;
@@ -43,10 +41,12 @@ public class Tutorial06
          // Create a new Restlet container
          RestletContainer myContainer = new RestletContainer();
 
-         // Create the HTTP server connector, then add it as a server connector
-         // to the Restlet container. Note that the container is the call restlet.
-         Server server = new DefaultServer(Protocols.HTTP, "My server", myContainer, 8182);
-         myContainer.addServer(server);
+         // Add an HTTP server connector to the Restlet container. 
+         // Note that the container is the call restlet.
+         myContainer.addServer("HTTP Server", Protocols.HTTP, 8182);
+
+         // Add a file client connector to the Restlet container. 
+         myContainer.addClient("File Client", Protocols.FILE);
 
          // Create a host Maplet matching calls to the server
          HostMaplet rootMaplet = new HostMaplet(myContainer, 8182);
@@ -54,7 +54,7 @@ public class Tutorial06
 
          // Create a directory Restlet able to return a deep hierarchy of Web files
          // (HTML pages, CSS stylesheets or GIF images) from a local directory.
-         DirectoryRestlet dirRestlet = new DirectoryRestlet(myContainer, "D:/Restlet/www/docs/api/", true, "index", true);
+         DirectoryRestlet dirRestlet = new DirectoryRestlet(myContainer, "File Client", "D:/Restlet/www/docs/api/", true, "index");
 
          // Then attach the Restlet to the container.
          rootMaplet.attach("/", dirRestlet);

@@ -26,7 +26,6 @@ import org.restlet.AbstractRestlet;
 import org.restlet.Call;
 import org.restlet.Restlet;
 import org.restlet.component.RestletContainer;
-import org.restlet.connector.DefaultServer;
 import org.restlet.data.Form;
 import org.restlet.data.MediaTypes;
 import org.restlet.data.Parameter;
@@ -46,12 +45,12 @@ public class SimpleServer
       try
       {
          // Create a new Restlet container
-         RestletContainer myContainer = new RestletContainer("My container");
+         RestletContainer myContainer = new RestletContainer();
 
          // Create the HTTP server connector, then add it as a server
          // connector to the Restlet container. Note that the container
          // is the call restlet.
-         myContainer.addServer(new DefaultServer(Protocols.HTTP, "My connector", myContainer, 9876));
+         myContainer.addServer("My connector", Protocols.HTTP, 9876);
 
          // Attach a host Maplet as the root handler
          HostMaplet rootMaplet = new HostMaplet(myContainer, 9876);

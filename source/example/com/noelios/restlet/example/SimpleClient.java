@@ -60,7 +60,7 @@ public class SimpleClient
          call.setInput(form.getWebForm());
 
          // Prepare HTTP client connector.
-         Client client = new DefaultClient(Protocols.HTTP, "tester");
+         Client client = new DefaultClient(Protocols.HTTP);
 
          // Make the call.
          client.handle(call);

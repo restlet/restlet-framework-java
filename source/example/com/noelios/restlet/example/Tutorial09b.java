@@ -53,7 +53,7 @@ public class Tutorial09b
          call.getSecurity().setChallengeResponse(authentication);
 
          // Ask to the HTTP client connector to handle the call
-         Client client = new DefaultClient(Protocols.HTTP, "My client");
+         Client client = new DefaultClient(Protocols.HTTP);
          client.handle(call);
 
          if(call.getStatus().isSuccess())
