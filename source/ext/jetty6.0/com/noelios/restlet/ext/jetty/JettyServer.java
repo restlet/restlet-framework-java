@@ -26,6 +26,8 @@ import java.io.IOException;
 import java.net.InetSocketAddress;
 import java.util.Arrays;
 import java.util.List;
+import java.util.Map;
+import java.util.TreeMap;
 
 import javax.servlet.ServletException;
 
@@ -51,9 +53,9 @@ public class JettyServer extends org.mortbay.jetty.Server implements Server
    /** Serial version identifier. */
    private static final long serialVersionUID = 1L;
 
-   /** The name of this REST connector. */
-   protected String name;
-	
+	/** The modifiable map of properties. */
+   protected Map<String, String> properties;
+
    /** The delegate Server. */
    protected Server delegate;
 
@@ -66,12 +68,11 @@ public class JettyServer extends org.mortbay.jetty.Server implements Server
    /**
     * Constructor.
     * @param protocol The connector protocol.
-    * @param name The unique connector name.
     * @param delegate The delegate Server.
     * @param address The optional listening IP address (local host used if null).
     * @param port The listening port.
     */
-   public JettyServer(Protocol protocol, String name, Server delegate, String address, int port)
+   public JettyServer(Protocol protocol, Server delegate, String address, int port)
    {
       // Create and configure the Jetty HTTP connector
       Connector connector = new SelectChannelConnector(); // Uses non-blocking NIO
@@ -85,7 +86,7 @@ public class JettyServer extends org.mortbay.jetty.Server implements Server
       Connector[] connectors = new Connector[]{connector};
       setConnectors(connectors);
 
-      this.name = name;
+   	this.properties = null;
       this.delegate = delegate;
       this.target = null;
    }
@@ -93,26 +94,34 @@ public class JettyServer extends org.mortbay.jetty.Server implements Server
    /**
     * Constructor.
     * @param protocol The connector protocol.
-    * @param name The unique connector name.
     * @param delegate The delegate Server.
     * @param address The IP address to listen to.
     */
-   public JettyServer(Protocol protocol, String name, Server delegate, InetSocketAddress address)
+   public JettyServer(Protocol protocol, Server delegate, InetSocketAddress address)
    {
-   	this(protocol, name, delegate, address.getHostName(), address.getPort());
+   	this(protocol, delegate, address.getHostName(), address.getPort());
    }
 
    /**
     * Constructor.
     * @param protocol The connector protocol.
-    * @param name The unique connector name.
     * @param delegate The delegate Server.
     * @param port The HTTP port number.
     */
-   public JettyServer(Protocol protocol, String name, Server delegate, int port)
+   public JettyServer(Protocol protocol, Server delegate, int port)
    {
-   	this(protocol, name, delegate, null, port);
+   	this(protocol, delegate, null, port);
    }
+   
+	/**
+	 * Returns the modifiable map of properties.
+	 * @return The modifiable map of properties.
+	 */
+	public Map<String, String> getProperties()
+	{
+		if(this.properties == null) this.properties = new TreeMap<String, String>();
+		return this.properties;
+	}
 
    /**
     * Returns the delegate server.
@@ -235,21 +244,4 @@ public class JettyServer extends org.mortbay.jetty.Server implements Server
       this.owner = owner;
    }
 
-   /**
-    * Returns the name of this connector.
-    * @return The name of this connector.
-    */
-   public String getName()
-   {
-      return this.name;
-   }
-
-   /**
-    * Sets the name of this REST element.
-    * @param name The name of this REST element.
-    */
-   public void setName(String name)
-   {
-   	this.name = name;
-   }
 }
