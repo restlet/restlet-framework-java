@@ -84,26 +84,27 @@ import org.restlet.data.Reference;
  * </pre>
  * Note that using this configuration, you can dynamically retrieve a context path from within your 
  * Restlet application that will have no knowledge of your Servlet integration details. This is the purpose
- * of the "contextPath" initialization argument. It value will be dynamically provided by the ServerServlet
+ * of the "contextPath" initialization argument. Its value will be dynamically provided by the ServerServlet
  * using this format:<br/>
  * <pre>
  * 	ContextPath = http://hostname:hostPort + ServletContextPath + ServletPath
  * 	ServletContextPath = result of call to servletRequest.getContextPath()
- *    ServletPath = result of call to servletRequest.getServletPath()
+ * 	ServletPath = result of call to servletRequest.getServletPath()
  * </pre>
  * From within your RestletContainer subclass, you can retrieve this context path using this code:
  * <pre>
- * 	getInitParameters().get("contextPath")
+ * 	String contextPath = getInitParameters().get("contextPath")
  * </pre>
  * Just replace "contextPath" with the parameter name configured in your web.xml file under the 
  * "org.restlet.target.init.contextPath" Servlet context parameter.<br/>
- * Now that you have your Restlet context path in hand, you can use it to attach your top Restlet 
- * (or Maplet or Chainlet) to your target Restlet (or RestletContainer). If your target Restlet 
- * is a subclass of RestletContainer, you will typically do something like this in you constructor:
+ * Now that you have your Restlet context path in hand, you can use it to attach your root Restlet 
+ * (or Maplet or Chainlet) to your target Maplet or RestletContainer. You will typically do something 
+ * like this in you constructor:
  * <pre>
- * 	attach(contextPath, myTopRestlet);
+ * 	attach(contextPath, myRootRestlet);
  * </pre>
- * Starting from the myTopRestlet, the coding is strictly similar to standalone Restlet applications.
+ * Starting from "myRootRestlet", the coding is strictly similar to Restlet applications using the standalone 
+ * mode.
  * @see <a href="http://java.sun.com/j2ee/">J2EE home page</a>
  * @author Jerome Louvel (contact@noelios.com) <a href="http://www.noelios.com/">Noelios Consulting</a>
  */
