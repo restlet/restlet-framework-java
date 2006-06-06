@@ -69,7 +69,8 @@ public interface Component extends Restlet
 	public Client addClient(String name, Protocol protocol);
 	
    /**
-    * Calls a client connector.
+    * Calls a client connector. If no matching connector is available in this component, 
+    * the parent components will recursively be used in order to find the closest match.
     * @param name The name of the client connector.
     * @param call The call to handle.
     * @throws IOException

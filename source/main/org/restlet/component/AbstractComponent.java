@@ -113,7 +113,8 @@ public abstract class AbstractComponent extends AbstractRestlet implements Compo
 	}
 	
 	/**
-    * Calls a client connector.
+    * Calls a client connector. If no matching connector is available in this component, 
+    * the parent components will recursively be used in order to find the closest match.
     * @param name The name of the client connector.
     * @param call The call to handle.
     */
@@ -123,7 +124,14 @@ public abstract class AbstractComponent extends AbstractRestlet implements Compo
 
       if(connector == null)
       {
-         throw new IllegalArgumentException("Client connector \"" + name + "\" couldn't be found.");
+      	if(getOwner() != null)
+      	{
+      		getOwner().callClient(name, call);      		
+      	}
+      	else
+      	{
+      		throw new IllegalArgumentException("Client connector \"" + name + "\" couldn't be found in the components hierarchy.");
+      	}
       }
       else
       {

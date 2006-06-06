@@ -19,7 +19,7 @@ Restlet changes log
  - Improved ByteUtils.write() methods for streams by automatically buffering output streams if necessary.
  - Templatized AbstractChainlet. Contributed by Lars Heuer.
  - Fixed AbstractRestlet which was not reporting the proper error when non standard Method instances were called but not handled.
- - Added FILE protocol to Protocols enumeration.
+ - Added CONTEXT and FILE protocols to Protocols enumeration.
  - Added com.noelios.restlet.data.FileReference.
  - Added ReferenceList to handle "text/uri-list" representations.
  - Renamed Resource.getVariantsMetadata() to getVariants() for simplification purpose.
@@ -29,13 +29,14 @@ Restlet changes log
  - Refactored the methods allowing the attachment of connectors in Component interface and related classes.
  - Removed "name" property from Connector and Component interfaces and related classes.
  - Added modifiable "properties" map to the Connector interface.
- - Added FileClient implementing a client connector for the FILE protocol, allowing standard access to local file systems.
+ - Added ContextClient implementing a client connector for the CONTEXT and FILE protocols, allowing REST access to contextual resources.
  - Added ServerCall.getRequestInput() method to factorize common logic among HTTP server connectors.
  - Added ClientCall.getResponseOutput() method to factorize common logic among HTTP and FILE connectors.
  - Moved StringUtils.normalizePath() method to FileReference.
  - Added JarReference supporting the JAR URIs defined by JDK's JarUrlConnection.
  - Added ContextReference supporting the custom context URIs. Those URIs allow the loading of representation from various contextual locations
    like the current class's classloader, the system's classloader, the Web application's context and the current thread's classloader.
+ - Component.callClient(name, call) now recursively tries to find the closest match for the connector name by navigating in the hierarchy of owner components.
  
 1.0 beta 13 (2006-05-29)
  - Updated StringTemplate and StringTemplateRepresentation to allow the usage of different delimiters for variable insertion and instructions like conditions.
