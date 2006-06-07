@@ -202,15 +202,22 @@ public abstract class AbstractComponent extends AbstractRestlet implements Compo
     */
    public void start() throws Exception
    {
-      for(Iterator iter = this.clients.keySet().iterator(); iter.hasNext();)
-      {
-         this.clients.get(iter.next()).start();
-      }
-      for(Iterator iter = this.servers.keySet().iterator(); iter.hasNext();)
-      {
-         this.servers.get(iter.next()).start();
-      }
-
+   	if(this.clients != null)
+   	{
+	      for(Iterator iter = this.clients.keySet().iterator(); iter.hasNext();)
+	      {
+	         this.clients.get(iter.next()).start();
+	      }
+   	}
+   	
+   	if(this.servers != null)
+   	{
+	      for(Iterator iter = this.servers.keySet().iterator(); iter.hasNext();)
+	      {
+	         this.servers.get(iter.next()).start();
+	      }
+   	}
+   	
       super.start();
    }
 
@@ -219,15 +226,22 @@ public abstract class AbstractComponent extends AbstractRestlet implements Compo
     */
    public void stop() throws Exception
    {
-      for(Iterator iter = this.clients.keySet().iterator(); iter.hasNext();)
-      {
-         this.clients.get(iter.next()).stop();
-      }
-      for(Iterator iter = this.servers.keySet().iterator(); iter.hasNext();)
-      {
-         this.servers.get(iter.next()).stop();
-      }
-
+   	if(this.clients != null)
+   	{
+	      for(Iterator iter = this.clients.keySet().iterator(); iter.hasNext();)
+	      {
+	         this.clients.get(iter.next()).stop();
+	      }
+   	}
+   	
+   	if(this.servers != null)
+   	{
+	      for(Iterator iter = this.servers.keySet().iterator(); iter.hasNext();)
+	      {
+	         this.servers.get(iter.next()).stop();
+	      }
+   	}
+   	
       super.stop();
    }
 

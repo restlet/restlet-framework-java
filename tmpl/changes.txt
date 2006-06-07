@@ -37,7 +37,8 @@ Restlet changes log
  - Added ContextReference supporting the custom context URIs. Those URIs allow the loading of representation from various contextual locations
    like the current class's classloader, the system's classloader, the Web application's context and the current thread's classloader.
  - Component.callClient(name, call) now recursively tries to find the closest match for the connector name by navigating in the hierarchy of owner components.
- 
+ - Fixed bug in ServerServlet in order to auto-start the target Restlet. Problem identified by Bill Morone.
+
 1.0 beta 13 (2006-05-29)
  - Updated StringTemplate and StringTemplateRepresentation to allow the usage of different delimiters for variable insertion and instructions like conditions.
    The goal is to prevent conflict between variable names and (future) instruction names.

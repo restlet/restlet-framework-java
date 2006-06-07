@@ -284,7 +284,7 @@ public class FactoryImpl extends Factory
 
          if((providerClass != null) && (protocol != null))
          {
-            result = providerClass.getConstructor(Protocol.class, String.class, Server.class, String.class, int.class).newInstance(protocol, delegate, address, port);
+            result = providerClass.getConstructor(Protocol.class, Server.class, String.class, int.class).newInstance(protocol, delegate, address, port);
          }
          else
          {
