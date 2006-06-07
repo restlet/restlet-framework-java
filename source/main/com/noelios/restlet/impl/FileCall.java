@@ -56,7 +56,6 @@ public class FileCall extends ContextCall
     * Constructor.
     * @param method The method name.
     * @param requestUri The request URI.
-    * @param hasInput Indicates if the call will have an input to send to the server.
     * @throws IOException
     */
    public FileCall(String method, String requestUri) throws IOException

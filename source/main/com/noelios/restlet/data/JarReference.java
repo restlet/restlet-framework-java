@@ -33,7 +33,7 @@ public class JarReference extends Reference
 {
 	/**
 	 * Constructor.
-	 * @param ref JAR reference.
+	 * @param jarUri JAR URI reference.
 	 */
 	public JarReference(String jarUri)
 	{
@@ -59,7 +59,10 @@ public class JarReference extends Reference
 		super("jar:" + jarFile.toString() + "!/" + entryPath);
 	}
 	
-	
+	/**
+	 * Returns the JAR file reference.
+	 * @return The JAR file reference.
+	 */
 	public Reference getJarFileRef()
 	{
 		Reference result = null;

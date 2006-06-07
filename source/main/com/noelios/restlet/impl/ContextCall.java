@@ -23,8 +23,14 @@
 package com.noelios.restlet.impl;
 
 import java.io.IOException;
+import java.io.OutputStream;
+import java.nio.channels.ReadableByteChannel;
+import java.nio.channels.WritableByteChannel;
 
 import org.restlet.data.ParameterList;
+import org.restlet.data.Representation;
+
+import com.noelios.restlet.data.InputRepresentation;
 
 /**
  * Context client connector call.
@@ -32,6 +38,9 @@ import org.restlet.data.ParameterList;
  */
 public abstract class ContextCall extends ClientCallImpl 
 {
+   /** The resource name. */
+   protected String resourceName;
+
    /** The status code. */
    protected int statusCode;
    
@@ -46,6 +55,15 @@ public abstract class ContextCall extends ClientCallImpl
    public ContextCall(String method, String requestUri)
    {
       super(method, requestUri);
+   }
+   
+   /**
+    * Returns the resource name.
+    * @return The resource name.
+    */
+   public String getResourceName()
+   {
+   	return this.resourceName;
    }
    
    /**
@@ -93,6 +111,43 @@ public abstract class ContextCall extends ClientCallImpl
    public String getResponseReasonPhrase()
    {
    	return this.reasonPhrase;
+   }
+   
+   /**
+    * Returns the request entity channel if it exists.
+    * @return The request entity channel if it exists.
+    */
+   public WritableByteChannel getRequestChannel()
+   {
+		return null;
+   }
+   
+   /**
+    * Returns the request entity stream if it exists.
+    * @return The request entity stream if it exists.
+    */
+   public OutputStream getRequestStream()
+   {
+		return null;
+   }
+   
+   /**
+    * Returns the response output representation if available. Note that no metadata is associated by default, 
+    * you have to manually set them from your headers.
+    * @return The response output representation if available.
+    */
+   public Representation getResponseOutput()
+   {
+   	return new InputRepresentation(getResponseStream(), null);
+   }
+
+   /**
+    * Returns the response channel if it exists.
+    * @return The response channel if it exists.
+    */
+   public ReadableByteChannel getResponseChannel()
+   {
+      return null;
    }
 
 }

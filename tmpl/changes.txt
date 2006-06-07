@@ -29,6 +29,9 @@ Restlet changes log
    like the current class's classloader, the system's classloader, the Web application's context and the current thread's classloader.
  - Component.callClient(name, call) now recursively tries to find the closest match for the connector name by navigating in the hierarchy of owner components.
  - Fixed bug in ServerServlet in order to auto-start the target Restlet. Problem identified by Bill Morone.
+ - Added ServletContextClient to server as a specialized ContextClient when the ServerServlet server connector is used.
+ - Added ServletContextCall to handle context calls for a ServletContextClient.
+ - Added ClassLoaderCall to handle context calls for a ContextClient based on a given class loader.
 
 1.0 beta 14 (2006-06-02)
  - Adjusted build.properties so that default values work directly.

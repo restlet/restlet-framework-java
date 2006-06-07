@@ -51,13 +51,15 @@ import org.restlet.data.Protocols;
 import org.restlet.data.Representation;
 import org.restlet.data.Statuses;
 
+import com.noelios.restlet.data.ContextReference;
 import com.noelios.restlet.data.FileReference;
 import com.noelios.restlet.data.FileRepresentation;
 import com.noelios.restlet.data.ReferenceList;
+import com.noelios.restlet.data.ContextReference.AuthorityType;
 import com.noelios.restlet.util.ByteUtils;
 
 /**
- * Connector to the contextual resources accessible via the classloaders and similar mechanism.
+ * Connector to the contextual resources accessible via the file system, classloaders and similar mechanisms.
  * @author Jerome Louvel (contact@noelios.com) <a href="http://www.noelios.com/">Noelios Consulting</a>
  */
 public class ContextClient extends AbstractClient
@@ -84,9 +86,9 @@ public class ContextClient extends AbstractClient
     * Constructor.
     * @param commonExtensions Indicates if the common extensions should be added.
     */
-   public ContextClient(boolean commonExtensions)
+   public ContextClient(Protocol protocol, boolean commonExtensions)
    {
-      super(Protocols.CONTEXT);
+      super(protocol);
       this.defaultEncoding = Encodings.IDENTITY;
       this.defaultMediaType = MediaTypes.TEXT_PLAIN;
       this.defaultLanguage = Languages.ENGLISH_US;
@@ -110,6 +112,9 @@ public class ContextClient extends AbstractClient
     */
    public void handle(Call call)
    {
+   	ClientCall clientCall = createCall(call.getMethod().getName(), call.getResourceRef().toString(), hasInput(call));
+   	
+   	
    	FileReference fr = new FileReference(call.getResourceRef());
    	File file = fr.getFile();
    	
@@ -336,21 +341,57 @@ public class ContextClient extends AbstractClient
    /**
     * Returns a new client call.
     * @param method The request method.
-    * @param resourceUri The requested resource URI.
+    * @param requestUri The requested resource URI.
     * @param hasInput Indicates if the call will have an input to send to the server.
     * @return A new client call.
     */
-	public ClientCall createCall(String method, String resourceUri, boolean hasInput)
+	public ClientCall createCall(String method, String requestUri, boolean hasInput)
 	{
+		ClientCall result = null;
+		
 		try
 		{
-			return null; //new FileCall(this, method, resourceUri, hasInput);
+			if(getProtocol().equals(Protocols.FILE))
+			{
+				result = new FileCall(method, requestUri);
+			}
+			else if(getProtocol().equals(Protocols.CONTEXT))
+			{
+				ContextReference cr = new ContextReference(requestUri);
+				
+		      if(cr.getScheme().equalsIgnoreCase("context"))
+		      {
+		      	if(cr.getAuthorityType() == AuthorityType.CLASS)
+		      	{
+		      		result = new ClassLoaderCall(method, requestUri, getClass().getClassLoader());
+		      	}
+		      	else if(cr.getAuthorityType() == AuthorityType.SYSTEM)
+		      	{
+		      		result = new ClassLoaderCall(method, requestUri, ClassLoader.getSystemClassLoader());
+		      	}
+		      	else if(cr.getAuthorityType() == AuthorityType.THREAD)
+		      	{
+		      		result = new ClassLoaderCall(method, requestUri, Thread.currentThread().getContextClassLoader());
+		      	}
+		      	else if(cr.getAuthorityType() == AuthorityType.WEB_APPLICATION)
+		      	{
+		      		result = null; // TODO
+		      	}
+		      }
+		      else
+		      {
+		         throw new IllegalArgumentException("Only CONTEXT resource URIs are allowed here");
+		      }
+				
+				
+			}
 		}
 		catch (Exception e)
 		{
 			logger.log(Level.WARNING, "Unable to create the call", e);
-			return null;
 		}
+		
+		return result;
 	}
 
    /**
