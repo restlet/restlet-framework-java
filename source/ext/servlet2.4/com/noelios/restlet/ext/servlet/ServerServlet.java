@@ -96,7 +96,9 @@ import org.restlet.data.Reference;
  * 	String contextPath = getInitParameters().get("contextPath")
  * </pre>
  * Just replace "contextPath" with the parameter name configured in your web.xml file under the 
- * "org.restlet.target.init.contextPath" Servlet context parameter.<br/>
+ * "org.restlet.target.init.contextPath" Servlet context parameter. Also note that this init parameter
+ * is only set after the constructor of your target class returns. This means that you should move any 
+ * code that depends on the "contextPath" to the start() method.<br/>
  * Now that you have your Restlet context path in hand, you can use it to attach your root Restlet 
  * (or Maplet or Chainlet) to your target Maplet or RestletContainer. You will typically do something 
  * like this in you constructor:
@@ -310,19 +312,26 @@ public class ServerServlet extends HttpServlet implements Server
                         		log("[Noelios Restlet Engine] - This context path has been provided to the target's init parameter \"" + initContextPathName + "\": " + contextPath);
                         	}
                      	}
+                     	
+                     	// Starts the target Restlet
+                     	result.start();
                      }
                      catch(ClassNotFoundException e)
                      {
-                        log("[Noelios Restlet Engine] - The ServerServlet couldn't find the class. Please check that your classpath includes " + targetClassName);
+                        log("[Noelios Restlet Engine] - The ServerServlet couldn't find the class. Please check that your classpath includes " + targetClassName, e);
                      }
                      catch(InstantiationException e)
                      {
-                        log("[Noelios Restlet Engine] - The ServerServlet couldn't instantiate the class. Please check this class has an empty constructor " + targetClassName);
+                        log("[Noelios Restlet Engine] - The ServerServlet couldn't instantiate the class. Please check this class has an empty constructor " + targetClassName, e);
                      }
                      catch(IllegalAccessException e)
                      {
-                        log("[Noelios Restlet Engine] - The ServerServlet couldn't instantiate the class. Please check that you have to proper access rights to " + targetClassName);
+                        log("[Noelios Restlet Engine] - The ServerServlet couldn't instantiate the class. Please check that you have to proper access rights to " + targetClassName, e);
                      }
+							catch (Exception e)
+							{
+                        log("[Noelios Restlet Engine] - The ServerServlet couldn't start the target Restlet.", e);
+							}
                   }
                   else
                   {

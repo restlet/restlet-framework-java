@@ -344,9 +344,9 @@ public class ContextClient extends AbstractClient
 	{
 		try
 		{
-			return new FileCall(this, method, resourceUri, hasInput);
+			return null; //new FileCall(this, method, resourceUri, hasInput);
 		}
-		catch (IOException e)
+		catch (Exception e)
 		{
 			logger.log(Level.WARNING, "Unable to create the call", e);
 			return null;

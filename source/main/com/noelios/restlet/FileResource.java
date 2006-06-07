@@ -33,10 +33,12 @@ import org.restlet.data.Encoding;
 import org.restlet.data.Language;
 import org.restlet.data.MediaType;
 import org.restlet.data.Metadata;
+import org.restlet.data.Reference;
 import org.restlet.data.Representation;
 import org.restlet.data.RepresentationMetadata;
 
 import com.noelios.restlet.data.FileRepresentation;
+import com.noelios.restlet.impl.ContextClient;
 
 /**
  * Resource representing a file stored on the local file system. A content negotiation mechanism (similar to
@@ -53,7 +55,7 @@ public class FileResource implements Resource
    /**
     * The parent directory Restlet.
     */
-   private DirectoryRestlet directoryRestlet;
+   private ContextClient contextClient;
 
    /**
     * The absolute base path of the file. For example, "foo.en" will match "foo.en.html" and "foo.en-GB.html".
@@ -67,18 +69,18 @@ public class FileResource implements Resource
 
    /**
     * Constructor.
-    * @param directoryRestlet The parent directory Restlet.
+    * @param fileClient The parent connector.
     * @param basePath The base path of the file.
     */
-   public FileResource(DirectoryRestlet directoryRestlet, String basePath)
+   public FileResource(ContextClient fileClient, String basePath)
    {
       // Update the member variables
-      this.directoryRestlet = directoryRestlet;
+      this.contextClient = fileClient;
 
-      logger.info("Parameter base path: " + basePath);
+      logger.info("File base path: " + basePath);
 
       // Compute the absolute file path
-      StringBuilder filePath = new StringBuilder(directoryRestlet.getRootPath());
+      StringBuilder filePath = new StringBuilder();
       int lastIndex = -1;
       
       if(!basePath.equals("."))
@@ -107,12 +109,12 @@ public class FileResource implements Resource
       if(new File(this.basePath).isDirectory())
       {
          // Append the index name
-         String indexName = getDirectoryRestlet().getIndexName();
-         if(indexName != null)
-         {
-            this.basePath = this.basePath + indexName;
-            this.baseName = indexName;
-         }
+//         String indexName = getFileClient().getIndexName();
+//         if(indexName != null)
+//         {
+//            this.basePath = this.basePath + indexName;
+//            this.baseName = indexName;
+//         }
       }
       else
       {
@@ -135,11 +137,21 @@ public class FileResource implements Resource
       logger.info("Converted base name: " + this.baseName);
    }
 
+	/**
+	 * Returns the identifier reference.
+	 * @return The identifier reference.
+	 */
+	public Reference getIdentifier()
+	{
+		// TODO
+		return null;
+	}
+   
    /**
-    * Returns the representation variants.
-    * @return The representation variants.
+    * Returns the representation variants metadata.
+    * @return The representation variants metadata.
     */
-   public List<RepresentationMetadata> getVariantsMetadata()
+   public List<RepresentationMetadata> getVariants()
    {
       logger.info("Getting variants for : " + getBasePath());
       List<RepresentationMetadata> result = null;
@@ -169,7 +181,7 @@ public class FileResource implements Resource
                   // We found a potential variant
                   for(int j = 1; j < tokens.length; j++)
                   {
-                     metadata = getDirectoryRestlet().getMetadata(tokens[j]);
+                     metadata = getContextClient().getMetadata(tokens[j]);
                      if(metadata instanceof MediaType) mediaType = (MediaType)metadata;
                      if(metadata instanceof CharacterSet) characterSet = (CharacterSet)metadata;
                      if(metadata instanceof Encoding) encoding = (Encoding)metadata;
@@ -183,18 +195,18 @@ public class FileResource implements Resource
                         // Try to find a language matching the primary part of
                         // the extension
                         String primaryPart = tokens[j].substring(0, dashIndex);
-                        metadata = getDirectoryRestlet().getMetadata(primaryPart);
+                        metadata = getContextClient().getMetadata(primaryPart);
                         if(metadata instanceof Language) language = (Language)metadata;
                      }
                   }
 
                   // Add the new variant to the result list
                   if(result == null) result = new ArrayList<RepresentationMetadata>();
-                  if(encoding == null) encoding = getDirectoryRestlet().getDefaultEncoding();
-                  if(mediaType == null) mediaType = getDirectoryRestlet().getDefaultMediaType();
-                  if(language == null) language = getDirectoryRestlet().getDefaultLanguage();
+                  if(encoding == null) encoding = getContextClient().getDefaultEncoding();
+                  if(mediaType == null) mediaType = getContextClient().getDefaultMediaType();
+                  if(language == null) language = getContextClient().getDefaultLanguage();
                   FileRepresentation fr = new FileRepresentation(currentFile.getAbsolutePath(), mediaType,
-                        getDirectoryRestlet().getTimeToLive());
+                        getContextClient().getTimeToLive());
                   fr.setCharacterSet(characterSet);
                   fr.setEncoding(encoding);
                   fr.setLanguage(language);
@@ -209,31 +221,31 @@ public class FileResource implements Resource
 
    /**
     * Returns the representation matching the given metadata.
-    * @param metadata The metadata to match.
+    * @param variant The variant metadata to match.
     * @return The matching representation.
     */
-   public Representation getRepresentation(RepresentationMetadata metadata)
+   public Representation getRepresentation(RepresentationMetadata variant)
    {
-      if(metadata instanceof Representation) return (Representation)metadata;
+      if(variant instanceof Representation) return (Representation)variant;
       else return null;
    }
 
    /**
-    * Returns the parent directory Restlet.
-    * @return The parent directory Restlet.
+    * Returns the parent file client connector.
+    * @return The parent file client connector.
     */
-   public DirectoryRestlet getDirectoryRestlet()
+   public ContextClient getContextClient()
    {
-      return directoryRestlet;
+      return this.contextClient;
    }
 
    /**
     * Sets the parent directory Restlet.
-    * @param directoryRestlet The parent directory Restlet.
+    * @param contextClient The parent file client connector.
     */
-   public void setDirectoryRestlet(DirectoryRestlet directoryRestlet)
+   public void setContextClient(ContextClient contextClient)
    {
-      this.directoryRestlet = directoryRestlet;
+      this.contextClient = contextClient;
    }
 
    /**
