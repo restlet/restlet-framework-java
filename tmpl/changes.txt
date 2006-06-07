@@ -4,15 +4,6 @@ Restlet changes log
 ===================
 
 @version-full@ (@release-date@)
- - Adjusted build.properties so that default values work directly.
- - Refactored the usage of parameter lists by using a new ParameterList (implementing List<Parameter>) and adding helper methods.
- - Form now derives from ParameterList.
- - ConnectorCall.getRequestHeaders() and getResponseHeaders() now return a ParameterList, other helper methods removed.
- - Added urlEncode() on Parameter.
- - Reference now sets new scheme names in lower case to respect normalization rules.
- - Added more unit tests for the Resltet API; Contributed by Lars Heuer.
- - Fixed bug in Jetty 5 HTTPS connector preventing the usage of the specified SSL keystore in certain cases. Found by Dave Pawson.
- - Added constructors to DefaultServer using the protocol's default port
  - Updated Jetty 6 to version beta 17.
  - Fixed type in JdbcClient sample XML document. Reported by Thierry Boileau.
  - Added new FileRepresentation constructor accepting a File instance.
@@ -39,6 +30,17 @@ Restlet changes log
  - Component.callClient(name, call) now recursively tries to find the closest match for the connector name by navigating in the hierarchy of owner components.
  - Fixed bug in ServerServlet in order to auto-start the target Restlet. Problem identified by Bill Morone.
 
+1.0 beta 14 (2006-06-02)
+ - Adjusted build.properties so that default values work directly.
+ - Refactored the usage of parameter lists by using a new ParameterList (implementing List<Parameter>) and adding helper methods.
+ - Form now derives from ParameterList.
+ - ConnectorCall.getRequestHeaders() and getResponseHeaders() now return a ParameterList, other helper methods removed.
+ - Added urlEncode() on Parameter.
+ - Reference now sets new scheme names in lower case to respect normalization rules.
+ - Added more unit tests for the Resltet API; Contributed by Lars Heuer.
+ - Fixed bug in Jetty 5 HTTPS connector preventing the usage of the specified SSL keystore in certain cases. Found by Dave Pawson.
+ - Added constructors to DefaultServer using the protocol's default port
+ 
 1.0 beta 13 (2006-05-29)
  - Updated StringTemplate and StringTemplateRepresentation to allow the usage of different delimiters for variable insertion and instructions like conditions.
    The goal is to prevent conflict between variable names and (future) instruction names.
