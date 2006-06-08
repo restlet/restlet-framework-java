@@ -27,12 +27,15 @@ Restlet changes log
  - Added JarReference supporting the JAR URIs defined by JDK's JarUrlConnection.
  - Added ContextReference supporting the custom context URIs. Those URIs allow the loading of representation from various contextual locations
    like the current class's classloader, the system's classloader, the Web application's context and the current thread's classloader.
- - Component.callClient(name, call) now recursively tries to find the closest match for the connector name by navigating in the hierarchy of owner components.
+ - Component.callClient(name, call) now recursively tries to find the closest match for the connector name by navigating in the hierarchy 
+   of owner components.
  - Fixed bug in ServerServlet in order to auto-start the target Restlet. Problem identified by Bill Morone.
  - Added ServletContextClient to server as a specialized ContextClient when the ServerServlet server connector is used.
  - Added ServletContextCall to handle context calls for a ServletContextClient.
  - Added ClassLoaderCall to handle context calls for a ContextClient based on a given class loader.
-
+ - Added log traces with the Maplet call delegation logic (step by step URI matching and updating). 
+   Enable the log level FINE and FINER to see them in your log file. See JDK's logging mechanism for details. Reported by Bill Morone.
+   
 1.0 beta 14 (2006-06-02)
  - Adjusted build.properties so that default values work directly.
  - Refactored the usage of parameter lists by using a new ParameterList (implementing List<Parameter>) and adding helper methods.
@@ -45,10 +48,11 @@ Restlet changes log
  - Added constructors to DefaultServer using the protocol's default port
  
 1.0 beta 13 (2006-05-29)
- - Updated StringTemplate and StringTemplateRepresentation to allow the usage of different delimiters for variable insertion and instructions like conditions.
-   The goal is to prevent conflict between variable names and (future) instruction names.
+ - Updated StringTemplate and StringTemplateRepresentation to allow the usage of different delimiters for variable insertion and instructions 
+   like conditions. The goal is to prevent conflict between variable names and (future) instruction names.
    Now the delimiters must be different and default to ${variableName} and #[if test1]...#[else if test2]...#[else]...#[end].
-   WARNING: this has a potential impact on existing application using the old delimiters for instructions such as for the RedirectResltet target URI pattern.
+   WARNING: this has a potential impact on existing application using the old delimiters for instructions such as for the 
+   RedirectResltet target URI pattern.
  - Added support for single quotes to delimit the variable names in CallModel instances. Prevents the needs for double quote escaping in Java strings.
  - Enhanced the Reference to strictly conform to the URI RFC 3896. New methods, normalization code, resolution of relative URIs and relativization.
  - GuardChainlet doesn't log the password anymore. Reported by AJ Barnes.
@@ -521,13 +525,18 @@ Restlet changes log
  - Renamed all Default* classes in com.noelios.restlet into *Impl for clarity purpose.
  - Added Status.getUri() method and improved Status.getDescription().
  - Removed the NONE values from Status and Method enumerations, null is doing a better job.
- - Added a DirectoryRestlet that behaves like a regular Web server. In addition, automatic media type, language and character set detection and setting is available in a way that hides technical names and extensions, allowing a clean content negotiation.
+ - Added a DirectoryRestlet that behaves like a regular Web server. In addition, automatic media type, language and character set detection 
+   and setting is available in a way that hides technical names and extensions, allowing a clean content negotiation.
  - Fixed issue with character encoding in the TemplateRepresentation (FreeMarker integration).
  - Moved FileResource and FileRestlet to com.noelios.restlet
- - Refactored the Jetty HTTP server connector to bypass their HTTP handler layer. Now we directly work out of the Jetty SocketListener and HttpConnection class. This will improve performances and reduce the memory consumed. Note that version 5.1.5 of Jetty is required as it contains a necessary fix.
- - Moved classes in com.noelios.restlet.ext.jse into com.noelios.restlet (restlets, FileResource), com.noelios.restlet.data (representations and readers) or com.noelios.restlet.ext.jee (JDBC).
+ - Refactored the Jetty HTTP server connector to bypass their HTTP handler layer. Now we directly work out of the Jetty SocketListener and 
+   HttpConnection class. This will improve performances and reduce the memory consumed. Note that version 5.1.5 of Jetty is required as it 
+   contains a necessary fix.
+ - Moved classes in com.noelios.restlet.ext.jse into com.noelios.restlet (restlets, FileResource), com.noelios.restlet.data (representations 
+   and readers) or com.noelios.restlet.ext.jee (JDBC).
  - Refactored com.noelios.restelt.RestletMappings into com.noelios.MapletImpl and used it as a delegate in org.restlet.DefaultMaplet.
- - Added factory methods to the OriginServer and RestletContainer interface to let the developer override some default implementations and to prevent direct references to specific restlet API implementations.
+ - Added factory methods to the OriginServer and RestletContainer interface to let the developer override some default implementations and 
+   to prevent direct references to specific restlet API implementations.
  - Added proper getName() and getDescription() implementations to Method enums
  - Separated Method into Method, Methods and DefaultMethod to allow any method. Added getUri() method.
  - Separated CharacterSet into CharacterSet and CharacterSets.
@@ -551,9 +560,11 @@ Restlet changes log
  - Refactored all code to use J2SE 5.0 language features (generics, enums)
  - Added Status and Method enumerations in org.restlet.data
  - Renamed Call to UniformCall
- - Added a RestletCall interface which extends UniformCall with a flexible way to get the path of each restlet in the stack of restlets that handled the call so far.
+ - Added a RestletCall interface which extends UniformCall with a flexible way to get the path of each restlet in the stack of restlets that handled 
+   the call so far.
  - Added a org.restlet.data.Reference interface to work around the limitation of java.net.URI which is not a mutable class.
  - Moved Resource and Restlet interfaces at the root level (org.restlet). 
- - Refactored the UniformInterface. Many methods where moved to the Reference interface. Added “referrerURI” and “resourceURI” properties.
- - Separated the Restlet interface into Maplet and Restlet. Maplets are specialized restlets capable of delegating restlet calls to child restlets. RestletContainer now extends Maplet.
+ - Refactored the UniformInterface. Many methods where moved to the Reference interface. Added "referrerURI" and "resourceURI" properties.
+ - Separated the Restlet interface into Maplet and Restlet. Maplets are specialized restlets capable of delegating restlet calls to child restlets. 
+   RestletContainer now extends Maplet.
  - Renamed DefaultRestlet into AbstractRestlet.
