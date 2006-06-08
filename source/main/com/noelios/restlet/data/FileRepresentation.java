@@ -125,6 +125,9 @@ public class FileRepresentation extends AbstractRepresentation
    {
       try
       {
+      	// Alternative method
+      	// return new FileInputStream(getFile()).getChannel();
+      	
          RandomAccessFile raf = new RandomAccessFile(file, "r");
          return raf.getChannel();
       }

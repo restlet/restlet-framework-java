@@ -45,18 +45,6 @@ public class LocalClient extends AbstractClient
    }
 
    /**
-    * Returns a new client call.
-    * @param method The request method.
-    * @param resourceUri The requested resource URI.
-    * @param hasInput Indicates if the call will have an input to send to the server.
-    * @return A new client call.
-    */
-   public ClientCall createCall(String method, String resourceUri, boolean hasInput)
-   {
-      return null;
-   }
-
-   /**
     * Returns the target Restlet.
     * @return The target Restlet.
     */

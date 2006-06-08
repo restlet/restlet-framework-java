@@ -25,95 +25,72 @@ package com.noelios.restlet.impl;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
-import java.net.HttpURLConnection;
-import java.net.URL;
+import java.net.InetAddress;
+import java.net.UnknownHostException;
 import java.nio.channels.ReadableByteChannel;
 import java.nio.channels.WritableByteChannel;
 
-import javax.net.ssl.HttpsURLConnection;
-
-import org.restlet.connector.Client;
+import org.restlet.connector.ClientCall;
 import org.restlet.connector.ConnectorCall;
 import org.restlet.data.DefaultEncoding;
 import org.restlet.data.DefaultLanguage;
 import org.restlet.data.Parameter;
-import org.restlet.data.ParameterList;
 import org.restlet.data.Representation;
 import org.restlet.data.RepresentationMetadata;
 import org.restlet.data.Tag;
 
 import com.noelios.restlet.data.ContentType;
+import com.noelios.restlet.data.InputRepresentation;
+import com.noelios.restlet.data.ReadableRepresentation;
 
 /**
- * HTTP client connector call.
+ * Base HTTP client connector call.
  * @author Jerome Louvel (contact@noelios.com) <a href="http://www.noelios.com/">Noelios Consulting</a>
  */
-public class HttpClientCall extends ClientCallImpl 
+public abstract class HttpClientCall extends ConnectorCallImpl implements ClientCall
 {
-   /** The wrapped HTTP URL connection. */
-   protected HttpURLConnection connection;
-   
-   /**
-    * Constructor.
-    * @param client The client connector.
+	/**
+	 * Constructor setting the request address to the local host.
     * @param method The method name.
     * @param requestUri The request URI.
-    * @param hasInput Indicates if the call will have an input to send to the server.
-    * @throws IOException
-    */
-   public HttpClientCall(Client client, String method, String requestUri, boolean hasInput) throws IOException
-   {
-      super(method, requestUri);
-      
-      if(requestUri.startsWith("http"))
+	 */
+	public HttpClientCall(String method, String requestUri)
+	{
+		this.requestMethod = method;
+		this.requestUri = requestUri;
+      this.requestAddress = getLocalAddress();
+	}
+
+	/**
+	 * Returns the local IP address or 127.0.0.1 if the resolution fails.
+	 * @return The local IP address or 127.0.0.1 if the resolution fails.
+	 */
+	public static String getLocalAddress()
+	{
+      try
       {
-         URL url = new URL(requestUri);
-         this.connection = (HttpURLConnection)url.openConnection();
-         
-         if(client.getTimeout() != -1)
-         {
-         	this.connection.setConnectTimeout(client.getTimeout());
-         	this.connection.setReadTimeout(client.getTimeout());
-         }
-         
-         this.connection.setAllowUserInteraction(false);
-         this.connection.setDoOutput(hasInput);
-         this.connection.setInstanceFollowRedirects(false);
-         this.confidential = (this.connection instanceof HttpsURLConnection);
+         return InetAddress.getLocalHost().getHostAddress();
       }
-      else
+      catch(UnknownHostException e)
       {
-         throw new IllegalArgumentException("Only HTTP or HTTPS resource URIs are allowed here");
+         return "127.0.0.1";
       }
-   }
-   
+	}
+	
    /**
-    * Returns the connection.
-    * @return The connection.
+    * Sets the request method. 
+    * @param method The request method.
     */
-   public HttpURLConnection getConnection()
+   public void setRequestMethod(String method)
    {
-      return this.connection;
+      this.requestMethod = method;
    }
    
    /**
     * Sends the request headers.<br/>
     * Must be called before sending the request input.
     */
-   public void sendRequestHeaders() throws IOException
-   {
-      // Set the request method
-      getConnection().setRequestMethod(getRequestMethod());
-
-      // Set the request headers
-      for(Parameter header : getRequestHeaders())
-      {
-         getConnection().addRequestProperty(header.getName(), header.getValue());
-      }
-
-      // Ensure that the connections is active
-      getConnection().connect();
-   }
+   public abstract void sendRequestHeaders() throws IOException;
 
    /**
     * Returns the request entity channel if it exists.
@@ -130,84 +107,45 @@ public class HttpClientCall extends ClientCallImpl
     */
    public OutputStream getRequestStream()
    {
-   	try
-   	{
-   		return getConnection().getOutputStream();
-   	}
-   	catch(IOException ioe)
-   	{
-   		return null;
-   	}
+      return null;
    }
 
    /**
-    * Returns the response address.<br/>
-    * Corresponds to the IP address of the responding server.
-    * @return The response address.
+    * Sends the request input.
+    * @param input The request input;
     */
-   public String getResponseAddress()
+   public void sendRequestInput(Representation input) throws IOException
    {
-      return getConnection().getURL().getHost();
-   }
-
-   /**
-    * Returns the modifiable list of response headers.
-    * @return The modifiable list of response headers.
-    */
-   public ParameterList getResponseHeaders()
-   {
-      if(this.responseHeaders == null)
+      if(getRequestStream() != null)
       {
-         this.responseHeaders = new ParameterList();
-         
-         // Read the response headers
-         int i = 1;
-         String headerName = getConnection().getHeaderFieldKey(i);
-         String headerValue = getConnection().getHeaderField(i);
-         while(headerName != null)
-         {
-            this.responseHeaders.add(headerName, headerValue);
-            i++;
-            headerName = getConnection().getHeaderFieldKey(i);
-            headerValue = getConnection().getHeaderField(i);
-         }
+         input.write(getRequestStream());
+         getRequestStream().close();
       }
+      else if(getRequestChannel() != null)
+      {
+         input.write(getRequestChannel());
+         getRequestChannel().close();
+      }
+   }
 
-      return this.responseHeaders;
+   /**
+    * Returns the response channel if it exists.
+    * @return The response channel if it exists.
+    */
+   public ReadableByteChannel getResponseChannel()
+   {
+      return null;
    }
    
    /**
-    * Returns the response status code.
-    * @return The response status code.
+    * Returns the response stream if it exists.
+    * @return The response stream if it exists.
     */
-   public int getResponseStatusCode()
+   public InputStream getResponseStream()
    {
-      try
-      {
-         return getConnection().getResponseCode();
-      }
-      catch(IOException e)
-      {
-         return -1;
-      }
+      return null;
    }
 
-   /**
-    * Returns the response reason phrase.
-    * @return The response reason phrase.
-    */
-   public String getResponseReasonPhrase()
-   {
-      try
-      {
-         return getConnection().getResponseMessage();
-      }
-      catch(IOException e)
-      {
-         return null;
-      }
-   }
-   
    /**
     * Returns the response output representation if available. Note that no metadata is associated by default, 
     * you have to manually set them from your headers.
@@ -215,7 +153,16 @@ public class HttpClientCall extends ClientCallImpl
     */
    public Representation getResponseOutput()
    {
-   	Representation result = super.getResponseOutput();
+   	Representation result = null;
+   	
+      if(getResponseStream() != null)
+      {
+         result = new InputRepresentation(getResponseStream(), null);
+      }
+      else if(getResponseChannel() != null)
+      {
+         result = new ReadableRepresentation(getResponseChannel(), null);
+      }
 
       if(result != null)
       {
@@ -261,39 +208,5 @@ public class HttpClientCall extends ClientCallImpl
    	
    	return result;
    }
-
-   /**
-    * Returns the response channel if it exists.
-    * @return The response channel if it exists.
-    */
-   public ReadableByteChannel getResponseChannel()
-   {
-      return null;
-   }
    
-   /**
-    * Returns the response stream if it exists.
-    * @return The response stream if it exists.
-    */
-   public InputStream getResponseStream()
-   {
-      InputStream result = null;
-      
-      try
-      {
-      	result = getConnection().getInputStream();
-      }
-      catch(IOException ioe)
-      {
-       	result = getConnection().getErrorStream();
-      }
-      
-      if(result == null)
-      {
-      	// Maybe an error stream is available instead
-        	result = getConnection().getErrorStream();
-      }
-      
-      return result;
-   }
 }

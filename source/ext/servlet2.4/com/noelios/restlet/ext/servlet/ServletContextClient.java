@@ -29,12 +29,12 @@ import java.util.logging.Logger;
 
 import javax.servlet.ServletContext;
 
-import org.restlet.connector.ClientCall;
 import org.restlet.data.Protocol;
 import org.restlet.data.Protocols;
 
 import com.noelios.restlet.data.ContextReference;
 import com.noelios.restlet.data.ContextReference.AuthorityType;
+import com.noelios.restlet.impl.ContextCall;
 import com.noelios.restlet.impl.ContextClient;
 
 /**
@@ -85,9 +85,9 @@ public class ServletContextClient extends ContextClient
     * @param hasInput Indicates if the call will have an input to send to the server.
     * @return A new client call.
     */
-	public ClientCall createCall(String method, String requestUri, boolean hasInput)
+	public ContextCall createCall(String method, String requestUri, boolean hasInput)
 	{
-		ClientCall result = null;
+		ContextCall result = null;
 		
 		try
 		{

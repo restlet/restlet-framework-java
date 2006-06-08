@@ -22,15 +22,7 @@
 
 package com.noelios.restlet.impl;
 
-import java.io.IOException;
-import java.io.OutputStream;
-import java.nio.channels.ReadableByteChannel;
-import java.nio.channels.WritableByteChannel;
-
 import org.restlet.data.ParameterList;
-import org.restlet.data.Representation;
-
-import com.noelios.restlet.data.InputRepresentation;
 
 /**
  * Context client connector call.
@@ -67,15 +59,6 @@ public abstract class ContextCall extends ClientCallImpl
    }
    
    /**
-    * Sends the request headers.<br/>
-    * Must be called before sending the request input.
-    */
-   public void sendRequestHeaders() throws IOException
-   {
-      // Ignore, not applicable to context calls
-   }
-
-   /**
     * Returns the response address.<br/>
     * Corresponds to the IP address of the responding server.
     * @return The response address.
@@ -111,43 +94,6 @@ public abstract class ContextCall extends ClientCallImpl
    public String getResponseReasonPhrase()
    {
    	return this.reasonPhrase;
-   }
-   
-   /**
-    * Returns the request entity channel if it exists.
-    * @return The request entity channel if it exists.
-    */
-   public WritableByteChannel getRequestChannel()
-   {
-		return null;
-   }
-   
-   /**
-    * Returns the request entity stream if it exists.
-    * @return The request entity stream if it exists.
-    */
-   public OutputStream getRequestStream()
-   {
-		return null;
-   }
-   
-   /**
-    * Returns the response output representation if available. Note that no metadata is associated by default, 
-    * you have to manually set them from your headers.
-    * @return The response output representation if available.
-    */
-   public Representation getResponseOutput()
-   {
-   	return new InputRepresentation(getResponseStream(), null);
-   }
-
-   /**
-    * Returns the response channel if it exists.
-    * @return The response channel if it exists.
-    */
-   public ReadableByteChannel getResponseChannel()
-   {
-      return null;
    }
 
 }

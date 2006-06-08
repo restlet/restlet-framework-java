@@ -33,7 +33,6 @@ import java.util.logging.Logger;
 
 import org.restlet.Call;
 import org.restlet.connector.AbstractClient;
-import org.restlet.connector.ClientCall;
 import org.restlet.connector.ConnectorCall;
 import org.restlet.data.ChallengeRequest;
 import org.restlet.data.ChallengeResponse;
@@ -53,7 +52,7 @@ import com.noelios.restlet.util.PreferenceUtils;
 import com.noelios.restlet.util.SecurityUtils;
 
 /**
- * Implementation of a client HTTP connector.
+ * HTTP client connector using the HttpUrlConnectionCall.
  * @author Jerome Louvel (contact@noelios.com) <a href="http://www.noelios.com/">Noelios Consulting</a>
  */
 public class HttpClient extends AbstractClient
@@ -91,7 +90,7 @@ public class HttpClient extends AbstractClient
    {
       try
       {
-         return new HttpClientCall(this, method, resourceUri, hasInput);
+         return new HttpUrlConnectionCall(this, method, resourceUri, hasInput);
       }
       catch(IOException e)
       {
@@ -105,7 +104,7 @@ public class HttpClient extends AbstractClient
     */
    public void handle(Call call)
    {
-   	ClientCall clientCall = null; 
+   	HttpClientCall clientCall = null; 
    	
    	try
    	{

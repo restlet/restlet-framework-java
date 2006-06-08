@@ -35,7 +35,10 @@ Restlet changes log
  - Added ClassLoaderCall to handle context calls for a ContextClient based on a given class loader.
  - Added log traces with the Maplet call delegation logic (step by step URI matching and updating). 
    Enable the log level FINE and FINER to see them in your log file. See JDK's logging mechanism for details. Reported by Bill Morone.
-   
+ - Refactored the Client, ClientCall interfaces and related classes that were too HTTP oriented. 
+ - Added HttpUrlConnectionCall, subclass of the (now) generic HttpClientCall, that is based on JDK's HttpUrlConnection.
+ - Added FileClient connector to local files, subclass of ContextClient.
+ 
 1.0 beta 14 (2006-06-02)
  - Adjusted build.properties so that default values work directly.
  - Refactored the usage of parameter lists by using a new ParameterList (implementing List<Parameter>) and adding helper methods.

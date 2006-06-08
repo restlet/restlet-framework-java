@@ -22,10 +22,6 @@
 
 package com.noelios.restlet.impl;
 
-import java.io.File;
-import java.io.FileNotFoundException;
-import java.io.FileOutputStream;
-import java.io.IOException;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
@@ -35,9 +31,6 @@ import java.util.logging.Logger;
 
 import org.restlet.Call;
 import org.restlet.connector.AbstractClient;
-import org.restlet.connector.ClientCall;
-import org.restlet.data.CharacterSet;
-import org.restlet.data.DefaultStatus;
 import org.restlet.data.Encoding;
 import org.restlet.data.Encodings;
 import org.restlet.data.Language;
@@ -45,18 +38,11 @@ import org.restlet.data.Languages;
 import org.restlet.data.MediaType;
 import org.restlet.data.MediaTypes;
 import org.restlet.data.Metadata;
-import org.restlet.data.Methods;
 import org.restlet.data.Protocol;
 import org.restlet.data.Protocols;
-import org.restlet.data.Representation;
-import org.restlet.data.Statuses;
 
 import com.noelios.restlet.data.ContextReference;
-import com.noelios.restlet.data.FileReference;
-import com.noelios.restlet.data.FileRepresentation;
-import com.noelios.restlet.data.ReferenceList;
 import com.noelios.restlet.data.ContextReference.AuthorityType;
-import com.noelios.restlet.util.ByteUtils;
 
 /**
  * Connector to the contextual resources accessible via the file system, classloaders and similar mechanisms.
@@ -103,7 +89,7 @@ public class ContextClient extends AbstractClient
     */
    public static List<Protocol> getProtocols()
    {
-   	return Arrays.asList(new Protocol[]{Protocols.CONTEXT, Protocols.FILE});
+   	return Arrays.asList(new Protocol[]{Protocols.CONTEXT});
    }
 
    /**
@@ -112,230 +98,8 @@ public class ContextClient extends AbstractClient
     */
    public void handle(Call call)
    {
-   	ClientCall clientCall = createCall(call.getMethod().getName(), call.getResourceRef().toString(), hasInput(call));
+   	// TODO
    	
-   	
-   	FileReference fr = new FileReference(call.getResourceRef());
-   	File file = fr.getFile();
-   	
- 		if(call.getMethod().equals(Methods.GET) || call.getMethod().equals(Methods.HEAD))
-		{
- 			if((file != null) && file.exists())
- 			{
- 				Representation output = null;
- 				
- 				if(file.isDirectory())
- 				{
- 					// Return the directory listing
- 					File[] files = file.listFiles();
- 					ReferenceList rl = new ReferenceList(files.length);
- 					
- 					for(File entry : files)
- 					{
- 						try
-						{
-							rl.add(new FileReference(entry));
-						}
-						catch (IOException ioe)
-						{
-							logger.log(Level.WARNING, "Unable to create file reference", ioe);
-						}
- 					}
- 					
- 					output = rl.getRepresentation();
- 				}
- 				else
- 				{
- 					// Return the file content
-               output = new FileRepresentation(file, getDefaultMediaType(), getTimeToLive());
-               String[] tokens = file.getName().split("\\.");
-               Metadata metadata;
-               
-               // We found a potential variant
-               for(int j = 1; j < tokens.length; j++)
-               {
-               	metadata = getMetadata(tokens[j]);
-                  if(metadata instanceof MediaType) output.getMetadata().setMediaType((MediaType)metadata);
-                  if(metadata instanceof CharacterSet) output.getMetadata().setCharacterSet((CharacterSet)metadata);
-                  if(metadata instanceof Encoding) output.getMetadata().setEncoding((Encoding)metadata);
-                  if(metadata instanceof Language) output.getMetadata().setLanguage((Language)metadata);
-
-                  int dashIndex = tokens[j].indexOf('-');
-                  if((metadata == null) && (dashIndex != -1))
-                  {
-                     // We found a language extension with a region area specified
-                     // Try to find a language matching the primary part of the extension
-                     String primaryPart = tokens[j].substring(0, dashIndex);
-                     metadata = getMetadata(primaryPart);
-                     if(metadata instanceof Language) output.getMetadata().setLanguage((Language)metadata);
-                  }
-               }
- 				}
- 				
- 				call.setOutput(output);
- 				call.setStatus(Statuses.SUCCESS_OK);
- 			}
- 			else
- 			{
- 				call.setStatus(Statuses.CLIENT_ERROR_NOT_FOUND);
- 			}
-		}
-		else if(call.getMethod().equals(Methods.POST))
-		{
-			call.setStatus(Statuses.CLIENT_ERROR_METHOD_NOT_ALLOWED);
-		}
-		else if(call.getMethod().equals(Methods.PUT))
-		{
-			File tmp = null;
-
-			if(file.exists())
-			{
-				if(file.isDirectory())
-				{
-					call.setStatus(new DefaultStatus(Statuses.SERVER_ERROR_INTERNAL, "Can't put a new representation of a directory"));
-				}
-				else
-				{
-					// Replace the content of the file
-					// First, create a temporary file
-					try
-					{
-						tmp = File.createTempFile("restlet-upload", "bin");
-						
-						if(call.getInput() != null)
-						{
-							ByteUtils.write(call.getInput().getStream(), new FileOutputStream(tmp));
-						}
-					}
-					catch (IOException ioe)
-					{
-						logger.log(Level.WARNING, "Unable to create the temporary file", ioe);
-						call.setStatus(new DefaultStatus(Statuses.SERVER_ERROR_INTERNAL, "Unable to create a temporary file"));
-					}
-					
-					// Then delete the existing file
-					if(file.delete())
-					{
-						// Finally move the temporary file to the existing file location
-						if(tmp.renameTo(file))
-						{
-							if(call.getInput() == null)
-							{
-								call.setStatus(Statuses.SUCCESS_NO_CONTENT);
-							}
-							else
-							{
-								call.setStatus(Statuses.SUCCESS_OK);
-							}
-						}
-						else
-						{
-							logger.log(Level.WARNING, "Unable to move the temporary file to replace the existing file");
-							call.setStatus(new DefaultStatus(Statuses.SERVER_ERROR_INTERNAL, "Unable to move the temporary file to replace the existing file"));
-						}
-					}
-					else
-					{
-						logger.log(Level.WARNING, "Unable to delete the existing file");
-						call.setStatus(new DefaultStatus(Statuses.SERVER_ERROR_INTERNAL, "Unable to delete the existing file"));
-					}
-				}
-			}
-			else
-			{
-				// No existing file or directory found
-				if(fr.getPath().endsWith("/"))
-				{
-					// Create a new directory and its necessary parents
-					if(file.mkdirs())
-					{
-						call.setStatus(Statuses.SUCCESS_NO_CONTENT);
-					}
-					else
-					{
-						logger.log(Level.WARNING, "Unable to create the new directory");
-						call.setStatus(new DefaultStatus(Statuses.SERVER_ERROR_INTERNAL, "Unable to create the new directory"));
-					}
-				}
-				else
-				{
-					File parent = file.getParentFile(); 
-					if((parent != null) && parent.isDirectory())
-					{
-						if(!parent.exists())
-						{
-							// Create the parent directories then the new file
-							if(!parent.mkdirs())
-							{
-								logger.log(Level.WARNING, "Unable to create the parent directory");
-								call.setStatus(new DefaultStatus(Statuses.SERVER_ERROR_INTERNAL, "Unable to create the parent directory"));
-							}
-						}
-					}
-					
-					// Create the new file
-					try
-					{
-						if(file.createNewFile())
-						{
-							if(call.getInput() == null)
-							{
-								call.setStatus(Statuses.SUCCESS_NO_CONTENT);
-							}
-							else
-							{
-								ByteUtils.write(call.getInput().getStream(), new FileOutputStream(tmp));
-								call.setStatus(Statuses.SUCCESS_OK);
-							}
-						}
-						else
-						{
-							logger.log(Level.WARNING, "Unable to create the new file");
-							call.setStatus(new DefaultStatus(Statuses.SERVER_ERROR_INTERNAL, "Unable to create the new file"));
-						}
-					}
-					catch (FileNotFoundException fnfe)
-					{
-						logger.log(Level.WARNING, "Unable to create the new file", fnfe);
-						call.setStatus(new DefaultStatus(Statuses.SERVER_ERROR_INTERNAL, "Unable to create the new file"));
-					}
-					catch (IOException ioe)
-					{
-						logger.log(Level.WARNING, "Unable to create the new file", ioe);
-						call.setStatus(new DefaultStatus(Statuses.SERVER_ERROR_INTERNAL, "Unable to create the new file"));
-					}
-				}
-			}
-		}
-		else if(call.getMethod().equals(Methods.DELETE))
-		{
-			if(file.delete())
-			{
-				call.setStatus(Statuses.SUCCESS_NO_CONTENT);
-			}
-			else
-			{
-				if(file.isDirectory())
-				{
-					if(file.listFiles().length == 0)
-					{
-						call.setStatus(new DefaultStatus(Statuses.SERVER_ERROR_INTERNAL, "Couldn't delete the empty directory"));
-					}
-					else
-					{
-						call.setStatus(new DefaultStatus(Statuses.SERVER_ERROR_INTERNAL, "Couldn't delete the non-empty directory"));
-					}
-				}
-				else
-				{
-					call.setStatus(new DefaultStatus(Statuses.SERVER_ERROR_INTERNAL, "Couldn't delete the file"));
-				}
-			}
-		}
-		else
-		{
-			call.setStatus(Statuses.CLIENT_ERROR_METHOD_NOT_ALLOWED);
-		}
    }
    
    /**
@@ -345,17 +109,13 @@ public class ContextClient extends AbstractClient
     * @param hasInput Indicates if the call will have an input to send to the server.
     * @return A new client call.
     */
-	public ClientCall createCall(String method, String requestUri, boolean hasInput)
+	public ContextCall createCall(String method, String requestUri, boolean hasInput)
 	{
-		ClientCall result = null;
+		ContextCall result = null;
 		
 		try
 		{
-			if(getProtocol().equals(Protocols.FILE))
-			{
-				result = new FileCall(method, requestUri);
-			}
-			else if(getProtocol().equals(Protocols.CONTEXT))
+			if(getProtocol().equals(Protocols.CONTEXT))
 			{
 				ContextReference cr = new ContextReference(requestUri);
 				

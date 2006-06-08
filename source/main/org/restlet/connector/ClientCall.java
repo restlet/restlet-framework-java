@@ -22,14 +22,6 @@
 
 package org.restlet.connector;
 
-import java.io.IOException;
-import java.io.InputStream;
-import java.io.OutputStream;
-import java.nio.channels.ReadableByteChannel;
-import java.nio.channels.WritableByteChannel;
-
-import org.restlet.data.Representation;
-
 /**
  * Client connector call.
  * @author Jerome Louvel (contact@noelios.com) <a href="http://www.noelios.com/">Noelios Consulting</a>
@@ -41,46 +33,4 @@ public interface ClientCall extends ConnectorCall
     * @param method The request method.
     */
    public void setRequestMethod(String method);
-   
-   /**
-    * Sends the request headers.<br/>
-    * Must be called before sending the request input.
-    */
-   public void sendRequestHeaders() throws IOException;
-
-   /**
-    * Sends the request input.
-    * @param input The request input;
-    */
-   public void sendRequestInput(Representation input) throws IOException;
-   
-   /**
-    * Returns the request entity channel if it exists.
-    * @return The request entity channel if it exists.
-    */
-   public WritableByteChannel getRequestChannel();
-   
-   /**
-    * Returns the request entity stream if it exists.
-    * @return The request entity stream if it exists.
-    */
-   public OutputStream getRequestStream();
-   
-   /**
-    * Returns the response output representation if available.
-    * @return The response output representation if available.
-    */
-   public Representation getResponseOutput();
-
-   /**
-    * Returns the response channel if it exists.
-    * @return The response channel if it exists.
-    */
-   public ReadableByteChannel getResponseChannel();
-   
-   /**
-    * Returns the response stream if it exists.
-    * @return The response stream if it exists.
-    */
-   public InputStream getResponseStream();
 }

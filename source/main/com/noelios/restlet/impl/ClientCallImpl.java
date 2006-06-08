@@ -22,15 +22,10 @@
 
 package com.noelios.restlet.impl;
 
-import java.io.IOException;
 import java.net.InetAddress;
 import java.net.UnknownHostException;
 
 import org.restlet.connector.ClientCall;
-import org.restlet.data.Representation;
-
-import com.noelios.restlet.data.InputRepresentation;
-import com.noelios.restlet.data.ReadableRepresentation;
 
 /**
  * Client connector call implementation.
@@ -75,42 +70,4 @@ public abstract class ClientCallImpl extends ConnectorCallImpl implements Client
       this.requestMethod = method;
    }
 
-   /**
-    * Sends the request input.
-    * @param input The request input;
-    */
-   public void sendRequestInput(Representation input) throws IOException
-   {
-      if(getRequestStream() != null)
-      {
-         input.write(getRequestStream());
-         getRequestStream().close();
-      }
-      else if(getRequestChannel() != null)
-      {
-         input.write(getRequestChannel());
-         getRequestChannel().close();
-      }
-   }
-   
-   /**
-    * Returns the response output representation if available. Note that no metadata is associated by default, 
-    * you have to manually set them from your headers.
-    * @return The response output representation if available.
-    */
-   public Representation getResponseOutput()
-   {
-   	Representation result = null;
-   	
-      if(getResponseStream() != null)
-      {
-         result = new InputRepresentation(getResponseStream(), null);
-      }
-      else if(getResponseChannel() != null)
-      {
-         result = new ReadableRepresentation(getResponseChannel(), null);
-      }
-      
-      return result;
-   }
 }
