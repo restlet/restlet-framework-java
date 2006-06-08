@@ -25,6 +25,8 @@ package com.noelios.restlet.impl;
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 import java.util.regex.Matcher;
 
 import org.restlet.AbstractRestlet;
@@ -40,6 +42,9 @@ import org.restlet.data.Statuses;
  */
 public class MapletImpl extends AbstractRestlet implements Maplet
 {
+   /** Obtain a suitable logger. */
+   private static Logger logger = Logger.getLogger("com.noelios.restlet.impl.MapletImpl");
+
    /** Serial version identifier. */
    private static final long serialVersionUID = 1L;
 
@@ -175,6 +180,13 @@ public class MapletImpl extends AbstractRestlet implements Maplet
       boolean found = false;
       String resourcePath = call.getResourcePath();
 
+      if(logger.isLoggable(Level.FINE))
+      {
+	      logger.fine("The Maplet implementation starts the delegation of a call");
+	      logger.fine("Current context path: " + call.getContextPath());
+	      logger.fine("Current resource path: " + resourcePath);
+      }
+      
       // Match the path in the call context with one of the child restlet
       synchronized(this)
       {
@@ -183,11 +195,21 @@ public class MapletImpl extends AbstractRestlet implements Maplet
 	         mapping = iter.next();
 	         matcher = mapping.getPattern().matcher(resourcePath);
 	         found = matcher.lookingAt();
+	         
+	         if(logger.isLoggable(Level.FINER))
+	         {
+	         	logger.finer("Attempting to match this pattern: " + mapping.getPattern().toString() + " >> " + found);
+	         }
 	      }
       }
 
       if(found)
       {
+         if(logger.isLoggable(Level.FINER))
+         {
+         	logger.finer("A matching target was found");
+         }
+
          // Updates the paths
          String oldRestletPath = call.getContextPath();
          String restletPath = resourcePath.substring(0, matcher.end());
@@ -201,11 +223,22 @@ public class MapletImpl extends AbstractRestlet implements Maplet
             call.setContextPath(oldRestletPath + restletPath);
          }
 
+         if(logger.isLoggable(Level.FINE))
+         {
+         	logger.fine("New context path: " + call.getContextPath());
+         	logger.fine("New resource path: " + call.getResourcePath());
+         }
+
          // Updates the matches
          call.getContextMatches().clear();
          for(int i = 0; i < matcher.groupCount(); i++)
          {
             call.getContextMatches().add(matcher.group(i + 1));
+         }
+
+         if(logger.isLoggable(Level.FINE))
+         {
+         	logger.fine("Delegating the call to the target Restlet");
          }
 
          // Invoke the call restlet
@@ -215,6 +248,7 @@ public class MapletImpl extends AbstractRestlet implements Maplet
       {
          // No delegateMaplet was found
          call.setStatus(Statuses.CLIENT_ERROR_NOT_FOUND);
+         logger.fine("No matching target was found");
       }
 
       return found;

@@ -55,7 +55,7 @@ import com.noelios.restlet.util.FormUtils;
 public class FactoryImpl extends Factory
 {
    /** Obtain a suitable logger. */
-   private static Logger logger = Logger.getLogger("com.noelios.restlet.FactoryImpl");
+   private static Logger logger = Logger.getLogger("com.noelios.restlet.impl.FactoryImpl");
 
    public static final String VERSION_LONG = Factory.VERSION_LONG;
    public static final String VERSION_SHORT = Factory.VERSION_SHORT;
