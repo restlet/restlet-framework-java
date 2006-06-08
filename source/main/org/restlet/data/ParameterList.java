@@ -226,7 +226,7 @@ public class ParameterList implements List<Parameter>, Data
 	}
 
 	/**
-	 * Returns the value of the first parameter found with the given name. 
+	 * Returns the first parameter found with the given name. 
 	 * @param name The parameter name (case sensitive).
 	 * @return The first parameter found with the given name.
 	 */
