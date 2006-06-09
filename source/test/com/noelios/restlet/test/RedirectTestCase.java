@@ -41,7 +41,7 @@ import com.noelios.restlet.RedirectRestlet;
 import com.noelios.restlet.data.StringRepresentation;
 
 /**
- * Unit tests for the Cookie related classes.
+ * Unit tests for the RedirectRestlet.
  * @author Jerome Louvel (contact@noelios.com) <a href="http://www.noelios.com/">Noelios Consulting</a>
  */
 public class RedirectTestCase extends TestCase

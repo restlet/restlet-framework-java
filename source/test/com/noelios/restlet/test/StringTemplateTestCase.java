@@ -32,7 +32,7 @@ import com.noelios.restlet.util.MapModel;
 import com.noelios.restlet.util.StringTemplate;
 
 /**
- * Unit tests for the SemaTemplate class.
+ * Unit tests for the StringTemplate class.
  * @author Jerome Louvel (contact@noelios.com) <a href="http://www.noelios.com/">Noelios Consulting</a>
  */
 public class StringTemplateTestCase extends TestCase

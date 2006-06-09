@@ -28,7 +28,7 @@ import org.restlet.data.Form;
 import com.noelios.restlet.util.FormReader;
 
 /**
- * Unit tests for the Cookie related classes.
+ * Unit tests for the Form class.
  * @author Jerome Louvel (contact@noelios.com) <a href="http://www.noelios.com/">Noelios Consulting</a>
  */
 public class FormTestCase extends TestCase

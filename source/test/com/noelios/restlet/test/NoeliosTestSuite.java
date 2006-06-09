@@ -26,7 +26,7 @@ import junit.framework.Test;
 import junit.framework.TestSuite;
 
 /**
- * Suite of unit tests for the Restlet RI.
+ * Suite of unit tests for the Noelios Restlet Engine.
  * @author Jerome Louvel (contact@noelios.com) <a href="http://www.noelios.com/">Noelios Consulting</a>
  */
 public class NoeliosTestSuite extends TestSuite
