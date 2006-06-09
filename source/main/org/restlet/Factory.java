@@ -148,12 +148,11 @@ public abstract class Factory
    /**
     * Create a new server connector for internal usage by the GenericClient.
     * @param protocol The connector protocol.
-    * @param delegate The target Server that will provide the actual handle(ServerCall) implementation.
     * @param address The optional listening IP address (local host used if null).
     * @param port The listening port.
     * @return The new server connector.
     */
-   public abstract Server createServer(Protocol protocol, Server delegate, String address, int port);
+   public abstract Server createServer(Protocol protocol, String address, int port);
 
    /**
     * Creates a string-base representation.

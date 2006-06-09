@@ -35,10 +35,11 @@ import org.restlet.Call;
 import org.restlet.Restlet;
 import org.restlet.component.Component;
 import org.restlet.connector.Server;
-import org.restlet.connector.ServerCall;
 import org.restlet.data.Protocol;
 import org.restlet.data.Protocols;
 import org.restlet.data.Reference;
+
+import com.noelios.restlet.impl.HttpServer;
 
 /**
  * Servlet connector acting as a HTTP server. See the getTarget() method for details 
@@ -233,7 +234,7 @@ public class ServerServlet extends HttpServlet implements Server
    {
    	if(getTarget(request) != null)
       {
-      	handle((ServerCall)new ServletCall(request, response, getServletContext()));
+         HttpServer.handle(new ServletCall(request, response, getServletContext()), this);
       }
    }
 
@@ -367,20 +368,6 @@ public class ServerServlet extends HttpServlet implements Server
    public void setTarget(Restlet target)
    {
       this.target = target;
-   }
-
-   /**
-    * Handles the HTTP protocol call.<br/>
-    * The default behavior is to create an UniformCall and invoke the "handle(UniformCall)" method.
-    * @param call The HTTP protocol call.
-    */
-   public void handle(ServerCall call) throws IOException
-   {
-      Call uniformCall = call.toUniform();
-      handle(uniformCall);
-      call.setResponse(uniformCall);
-      call.sendResponseHeaders();
-      call.sendResponseOutput(uniformCall.getOutput());
    }
 
    /**

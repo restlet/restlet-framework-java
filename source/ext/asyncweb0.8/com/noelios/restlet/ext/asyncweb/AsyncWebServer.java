@@ -27,9 +27,6 @@ import java.util.List;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
-import org.restlet.connector.AbstractServer;
-import org.restlet.connector.Server;
-import org.restlet.connector.ServerCall;
 import org.restlet.data.Protocol;
 import org.restlet.data.Protocols;
 
@@ -41,6 +38,9 @@ import org.safehaus.asyncweb.request.AsyncWebRequest;
 import org.safehaus.asyncweb.transport.Transport;
 import org.safehaus.asyncweb.transport.TransportException;
 import org.safehaus.asyncweb.transport.nio.NIOTransport;
+
+import com.noelios.restlet.impl.HttpServer;
+import com.noelios.restlet.impl.HttpServerCall;
 
 /**
  * Represents a thin layer around AsyncWeb.
@@ -58,7 +58,7 @@ import org.safehaus.asyncweb.transport.nio.NIOTransport;
  * 
  * @author Lars Heuer (heuer[at]semagia.com) <a href="http://www.semagia.com/">Semagia</a>
  */
-public class AsyncWebServer extends AbstractServer implements ServiceContainer
+public class AsyncWebServer extends HttpServer implements ServiceContainer
 {
 	/**
 	 * Indicates if the server is acting in HTTPS mode.
@@ -79,13 +79,12 @@ public class AsyncWebServer extends AbstractServer implements ServiceContainer
 	 * Constructor.
 	 * 
 	 * @param protocol The connector protocol.
-	 * @param delegate The delegate Server.
 	 * @param address The optional listening IP address (local host used if null).
 	 * @param port The listening port.
 	 */
-	public AsyncWebServer(Protocol protocol, Server delegate, String address, int port)
+	public AsyncWebServer(Protocol protocol, String address, int port)
 	{
-		super(protocol, delegate, address, port);
+		super(protocol, address, port);
 	}
 
 	/**
@@ -123,7 +122,7 @@ public class AsyncWebServer extends AbstractServer implements ServiceContainer
 	public void dispatchRequest(AsyncWebRequest request)
 	{
 		HttpResponse response = request.createHttpResponse();
-		ServerCall call = new AsyncWebServerCall(request, response, confidential, super.address);
+		HttpServerCall call = new AsyncWebServerCall(request, response, confidential, super.address);
 		try
 		{
 			super.handle(call);

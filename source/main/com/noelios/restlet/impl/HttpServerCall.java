@@ -24,14 +24,15 @@ package com.noelios.restlet.impl;
 
 import java.io.IOException;
 import java.io.InputStream;
+import java.io.OutputStream;
 import java.nio.channels.ReadableByteChannel;
+import java.nio.channels.WritableByteChannel;
 import java.util.List;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
 import org.restlet.Call;
 import org.restlet.connector.ConnectorCall;
-import org.restlet.connector.ServerCall;
 import org.restlet.data.CookieSetting;
 import org.restlet.data.DefaultEncoding;
 import org.restlet.data.DefaultLanguage;
@@ -53,10 +54,47 @@ import com.noelios.restlet.util.SecurityUtils;
  * Implementation of a server HTTP call.
  * @author Jerome Louvel (contact@noelios.com) <a href="http://www.noelios.com/">Noelios Consulting</a>
  */
-public abstract class HttpServerCall extends ConnectorCallImpl implements ServerCall
+public abstract class HttpServerCall extends ConnectorCallImpl
 {
    /** Obtain a suitable logger. */
    private static Logger logger = Logger.getLogger("com.noelios.restlet.connector.HttpServerCallImpl");
+   
+   /**
+    * Sends the response headers.<br/>
+    * Must be called before sending the response output.
+    */
+   public abstract void sendResponseHeaders() throws IOException;
+   
+   /**
+    * Returns the request entity channel if it exists.
+    * @return The request entity channel if it exists.
+    */
+   public abstract ReadableByteChannel getRequestChannel();
+   
+   /**
+    * Returns the request entity stream if it exists.
+    * @return The request entity stream if it exists.
+    */
+   public abstract InputStream getRequestStream();
+
+   /**
+    * Sets the response status code.
+    * @param code The response status code.
+    * @param reason The response reason phrase.
+    */
+   public abstract void setResponseStatus(int code, String reason);
+
+   /**
+    * Returns the response channel if it exists.
+    * @return The response channel if it exists.
+    */
+   public abstract WritableByteChannel getResponseChannel();
+   
+   /**
+    * Returns the response stream if it exists.
+    * @return The response stream if it exists.
+    */
+   public abstract OutputStream getResponseStream();
    
    /**
     * Converts to an uniform call.

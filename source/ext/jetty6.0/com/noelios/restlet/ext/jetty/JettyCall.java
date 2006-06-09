@@ -31,7 +31,6 @@ import java.util.Enumeration;
 import java.util.Iterator;
 
 import org.mortbay.jetty.HttpConnection;
-import org.mortbay.jetty.HttpURI;
 import org.restlet.data.Parameter;
 import org.restlet.data.ParameterList;
 

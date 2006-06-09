@@ -22,7 +22,6 @@
 
 package org.restlet.connector;
 
-import java.io.IOException;
 import java.util.Map;
 
 import org.restlet.Call;
@@ -70,22 +69,8 @@ public class DefaultServer implements Server
     */
    public DefaultServer(Protocol protocol, Restlet target, String address, int port)
    {
-   	this.wrappedServer = Factory.getInstance().createServer(protocol, this, address, port);
+   	this.wrappedServer = Factory.getInstance().createServer(protocol, address, port);
    	setTarget(target);
-   }
-
-   /**
-    * Handles the HTTP protocol call.<br/>
-    * The default behavior is to create an REST call and delegate it to the attached Restlet.
-    * @param call The HTTP protocol call.
-    */
-   public void handle(ServerCall call) throws IOException
-   {
-      Call restletCall = call.toUniform();
-      handle(restletCall);
-      call.setResponse(restletCall);
-      call.sendResponseHeaders();
-      call.sendResponseOutput(restletCall.getOutput());
    }
 
    /**

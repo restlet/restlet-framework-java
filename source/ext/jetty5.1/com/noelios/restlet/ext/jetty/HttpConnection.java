@@ -31,7 +31,8 @@ import org.mortbay.http.HttpContext;
 import org.mortbay.http.HttpException;
 import org.mortbay.http.HttpRequest;
 import org.mortbay.http.HttpResponse;
-import org.restlet.connector.ServerCall;
+
+import com.noelios.restlet.impl.HttpServerCall;
 
 /**
  * Jetty HTTP connection.
@@ -65,7 +66,7 @@ public class HttpConnection extends org.mortbay.http.HttpConnection
     */
    protected HttpContext service(HttpRequest request, HttpResponse response) throws HttpException, IOException
    {
-      getJettyServer().handle((ServerCall)new JettyCall(request, response));
+      getJettyServer().handle((HttpServerCall)new JettyCall(request, response));
 
       // Commit the response and ensures that all data is flushed out to the caller
       response.commit();

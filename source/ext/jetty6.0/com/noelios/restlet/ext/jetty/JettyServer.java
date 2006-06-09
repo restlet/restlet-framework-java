@@ -37,11 +37,11 @@ import org.mortbay.jetty.nio.SelectChannelConnector;
 import org.restlet.Call;
 import org.restlet.Restlet;
 import org.restlet.component.Component;
-import org.restlet.component.RestletContainer;
 import org.restlet.connector.Server;
-import org.restlet.connector.ServerCall;
 import org.restlet.data.Protocol;
 import org.restlet.data.Protocols;
+
+import com.noelios.restlet.impl.HttpServer;
 
 /**
  * Jetty connector acting as a HTTP server.
@@ -166,7 +166,7 @@ public class JettyServer extends org.mortbay.jetty.Server implements Server
     */
    public void handle(HttpConnection connection) throws IOException, ServletException
    {
-      handle(new JettyCall(connection));
+      HttpServer.handle(new JettyCall(connection), this);
       connection.completeResponse();
    }
 
@@ -205,16 +205,6 @@ public class JettyServer extends org.mortbay.jetty.Server implements Server
    public void setTarget(Restlet target)
    {
       this.target = target;
-   }
-
-   /**
-    * Handles the HTTP protocol call.<br/>
-    * The default behavior is to create an UniformCall and invoke the "handle(UniformCall)" method.
-    * @param call The HTTP protocol call.
-    */
-   public void handle(ServerCall call) throws IOException
-   {
-   	getDelegate().handle(call);
    }
 
    /**

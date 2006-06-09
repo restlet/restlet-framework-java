@@ -29,7 +29,6 @@ import java.util.logging.Level;
 import java.util.logging.Logger;
 
 import org.restlet.connector.ConnectorCall;
-import org.restlet.connector.ServerCall;
 import org.restlet.data.ConditionData;
 import org.restlet.data.Cookie;
 import org.restlet.data.Methods;
@@ -58,7 +57,7 @@ public class HttpServerRestletCall extends CallImpl
     * Constructor.
     * @param call The wrapped HTTP server call.
     */
-   public HttpServerRestletCall(ServerCall call)
+   public HttpServerRestletCall(HttpServerCall call)
    {
       // Set the properties
       setConnectorCall(call);
@@ -267,7 +266,7 @@ public class HttpServerRestletCall extends CallImpl
    {
    	if(this.input == null)
    	{
-   		this.input = ((ServerCall)getConnectorCall()).getRequestInput();
+   		this.input = ((HttpServerCall)getConnectorCall()).getRequestInput();
    	}
       
       return this.input;

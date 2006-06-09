@@ -34,10 +34,10 @@ import java.util.logging.Logger;
 import javax.net.ssl.KeyManagerFactory;
 import javax.net.ssl.SSLContext;
 
-import org.restlet.connector.AbstractServer;
-import org.restlet.connector.Server;
 import org.restlet.data.Protocol;
 import org.restlet.data.Protocols;
+
+import com.noelios.restlet.impl.HttpServer;
 
 import simple.http.BufferedPipelineFactory;
 import simple.http.PipelineHandler;
@@ -53,7 +53,7 @@ import simple.http.connect.ConnectionFactory;
  * @author Lars Heuer (heuer[at]semagia.com) <a href="http://semagia.com/">Semagia</a>
  * @author Jerome Louvel (contact@noelios.com) <a href="http://www.noelios.com">Noelios Consulting</a>
  */
-public class SimpleServer extends AbstractServer implements ProtocolHandler
+public class SimpleServer extends HttpServer implements ProtocolHandler
 {
    /** Obtain a suitable logger. */
    private static Logger logger = Logger.getLogger("com.noelios.restlet.ext.simple.SimpleServer");
@@ -81,13 +81,12 @@ public class SimpleServer extends AbstractServer implements ProtocolHandler
    /**
     * Constructor.
     * @param protocol The connector protocol.
-    * @param delegate The delegate Server.
     * @param address The optional listening IP address (local host used if null).
     * @param port The listening port.
     */
-   public SimpleServer(Protocol protocol, Server delegate, String address, int port)
+   public SimpleServer(Protocol protocol, String address, int port)
    {
-		super(protocol, delegate, address, port);
+		super(protocol, address, port);
 	}
 
 	/**

@@ -22,8 +22,6 @@
 
 package org.restlet.connector;
 
-import java.io.IOException;
-
 import org.restlet.Call;
 import org.restlet.Restlet;
 import org.restlet.data.Protocol;
@@ -36,9 +34,6 @@ public abstract class AbstractServer extends AbstractConnector implements Server
 {
 	/** The target Restlet. */
 	protected Restlet target;
-	
-   /** The delegate Server. */
-   protected Server delegate;
 
    /** The listening address if specified. */
    protected String address;
@@ -58,34 +53,14 @@ public abstract class AbstractServer extends AbstractConnector implements Server
    /**
     * Constructor.
     * @param protocol The connector protocol.
-    * @param delegate The delegate Server.
     * @param address The optional listening IP address (local host used if null).
     * @param port The listening port.
     */
-   public AbstractServer(Protocol protocol, Server delegate, String address, int port)
+   public AbstractServer(Protocol protocol, String address, int port)
    {
       super(protocol);
-      this.delegate = delegate;
       this.address = address;
       this.port = port;
-   }
-
-   /**
-    * Returns the delegate server.
-    * @return The delegate server.
-    */
-   public Server getDelegate()
-   {
-   	return this.delegate;
-   }
-
-   /**
-    * Sets the delegate server.
-    * @param delegate The delegate server.
-    */
-   public void setDelegate(Server delegate)
-   {
-   	this.delegate = delegate;
    }
    
    /**
@@ -96,16 +71,6 @@ public abstract class AbstractServer extends AbstractConnector implements Server
 	public void handle(Call call)
    {
       getTarget().handle(call);
-   }
-
-   /**
-    * Handles the connector protocol call.<br/>
-    * The default behavior is to create an REST call and delegate it to the attached Restlet.
-    * @param call The connector call.
-    */
-   public void handle(ServerCall call) throws IOException
-   {
-   	getDelegate().handle(call);
    }
 
    /**

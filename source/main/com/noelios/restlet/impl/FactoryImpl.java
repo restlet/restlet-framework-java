@@ -269,12 +269,11 @@ public class FactoryImpl extends Factory
    /**
     * Create a new server connector for internal usage by the GenericClient.
     * @param protocol The connector protocol.
-    * @param delegate The target Server that will provide the actual handle(ServerCall) implementation.
     * @param address The optional listening IP address (local host used if null).
     * @param port The listening port.
     * @return The new server connector.
     */
-   public Server createServer(Protocol protocol, Server delegate, String address, int port)
+   public Server createServer(Protocol protocol, String address, int port)
    {
       Server result = null;
 
@@ -284,7 +283,7 @@ public class FactoryImpl extends Factory
 
          if((providerClass != null) && (protocol != null))
          {
-            result = providerClass.getConstructor(Protocol.class, Server.class, String.class, int.class).newInstance(protocol, delegate, address, port);
+            result = providerClass.getConstructor(Protocol.class, String.class, int.class).newInstance(protocol, address, port);
          }
          else
          {

@@ -47,6 +47,10 @@ Restlet changes log
  - Fixed bug in ByteUtils.write() that prevented the flushing of buffered output streams.
  - Removed the unecessary buffering of the input stream in ByteUtils.write(). We don't use the mark and set features.
  - Added HTTP server connector based on AsyncWeb 0.8 which is based on Apache Mina 0.8. Contributed by Lars Heuer. Suggested by John D. Mitchell.
+ - Updated Apache FileUpload extension to version 1.1.1.
+ - Removed the ServerCall interface and moved the contract/logic into a new com.noelios.restlet.impl.HttpServer. It was to HTTP oriented.
+   Refactored all Server related classes to adjust to the change. Provided a useful static handle(HttpServerCall, Restlet) method for classes that 
+   can't subclass HttpServer directly (Jetty 6 server and Servlet server).
  
 1.0 beta 14 (2006-06-02)
  - Adjusted build.properties so that default values work directly.

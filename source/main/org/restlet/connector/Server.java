@@ -22,8 +22,6 @@
 
 package org.restlet.connector;
 
-import java.io.IOException;
-
 import org.restlet.Restlet;
 
 /**
@@ -38,13 +36,6 @@ import org.restlet.Restlet;
  */
 public interface Server extends Connector
 {
-   /**
-    * Handles the server connector call.<br/>
-    * The default behavior is to create a uniform Call instance and delegate it to the target Restlet.
-    * @param call The connector call.
-    */
-   public void handle(ServerCall call) throws IOException;
-
    /**
     * Returns the target Restlet.
     * @return The target Restlet.

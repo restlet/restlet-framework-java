@@ -27,17 +27,18 @@ import java.util.Arrays;
 import java.util.List;
 
 import org.mortbay.util.InetAddrPort;
-import org.restlet.connector.AbstractServer;
 import org.restlet.connector.Server;
 import org.restlet.data.Protocol;
 import org.restlet.data.Protocols;
+
+import com.noelios.restlet.impl.HttpServer;
 
 /**
  * Jetty HTTP server connector.
  * @see <a href="http://jetty.mortbay.com/">Jetty home page</a>
  * @author Jerome Louvel (contact@noelios.com) <a href="http://www.noelios.com/">Noelios Consulting</a>
  */
-public class JettyServer extends AbstractServer
+public class JettyServer extends HttpServer
 {
    /** Serial version identifier. */
    private static final long serialVersionUID = 1L;
@@ -48,11 +49,10 @@ public class JettyServer extends AbstractServer
    /**
     * Constructor.
     * @param protocol The connector protocol.
-    * @param delegate The delegate Server.
     * @param address The optional listening IP address (local host used if null).
     * @param port The listening port.
     */
-   public JettyServer(Protocol protocol, Server delegate, String address, int port)
+   public JettyServer(Protocol protocol, String address, int port)
    {
       super(protocol, delegate, address, port);
    }
@@ -60,10 +60,9 @@ public class JettyServer extends AbstractServer
    /**
     * Constructor.
     * @param protocol The connector protocol.
-    * @param delegate The delegate Server.
     * @param address The IP address to listen to.
     */
-   public JettyServer(Protocol protocol, Server delegate, InetSocketAddress address)
+   public JettyServer(Protocol protocol, InetSocketAddress address)
    {
    	this(protocol, delegate, address.getHostName(), address.getPort());
    }
@@ -71,10 +70,9 @@ public class JettyServer extends AbstractServer
    /**
     * Constructor.
     * @param protocol The connector protocol.
-    * @param delegate The delegate Server.
     * @param port The HTTP port number.
     */
-   public JettyServer(Protocol protocol, Server delegate, int port)
+   public JettyServer(Protocol protocol, int port)
    {
    	this(protocol, delegate, null, port);
    }
