@@ -38,25 +38,24 @@ import java.nio.channels.WritableByteChannel;
 public class ByteUtils
 {
    /**
-    * Writes an input stream to an output stream.
+    * Writes an input stream to an output stream. When the reading is done, the input stream is closed. 
+    * Also, if the output stream is detected as a simple stream, then it is automatically wrapped by a 
+    * buffered output stream. 
     * @param inputStream The input stream.
     * @param outputStream The output stream.
     * @throws IOException
     */
    public static void write(InputStream inputStream, OutputStream outputStream) throws IOException
    {
-      InputStream is = (inputStream instanceof BufferedInputStream) ? inputStream : 
-      	new BufferedInputStream(inputStream);
-      OutputStream os = (outputStream instanceof BufferedOutputStream) ? outputStream : 
-      	new BufferedOutputStream(outputStream);
-      int nextByte = is.read();
+      OutputStream os = (outputStream instanceof BufferedOutputStream) ? outputStream : new BufferedOutputStream(outputStream);
+      int nextByte = inputStream.read();
       while(nextByte != -1)
       {
          os.write(nextByte);
-         nextByte = is.read();
+         nextByte = inputStream.read();
       }
       os.flush();
-      is.close();
+      inputStream.close();
    }
 
    /**

@@ -44,7 +44,8 @@ Restlet changes log
  - Added the possibility to add a local test for variable insertions: ${variableName?exists} in order to test the existence of the variable first.
    This is equivalent to #[if variableName]${variableName}#[end] but obviously shorter. Without this local test, the default model value will be inserted
    which may be "null" or some unfriendly string. Added related unit tests.
- - Fixed bug in ByteUtils that prevented the flushing of buffered output streams.
+ - Fixed bug in ByteUtils.write() that prevented the flushing of buffered output streams.
+ - Removed the unecessary buffering of the input stream in ByteUtils.write(). We don't use the mark and set features.
  
 1.0 beta 14 (2006-06-02)
  - Adjusted build.properties so that default values work directly.
