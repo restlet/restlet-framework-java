@@ -12,7 +12,7 @@ Restlet changes log
  - Fixed AbstractRestlet which was not reporting the proper error when non standard Method instances were called but not handled.
  - Added CONTEXT and FILE protocols to Protocols enumeration.
  - Added com.noelios.restlet.data.FileReference.
- - Added ReferenceList to handle "text/uri-list" representations.
+ - Added org.restlet.data.ReferenceList to handle "text/uri-list" representations.
  - Renamed Resource.getVariantsMetadata() to getVariants() for simplification purpose.
  - Added Resource.getIdentifier() : Reference method.
  - Renamed com.noelios.restlet.impl.HttpServerCallImpl to HttpServerCall.

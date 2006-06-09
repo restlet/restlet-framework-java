@@ -41,12 +41,12 @@ import org.restlet.data.Metadata;
 import org.restlet.data.Methods;
 import org.restlet.data.Protocol;
 import org.restlet.data.Protocols;
+import org.restlet.data.ReferenceList;
 import org.restlet.data.Representation;
 import org.restlet.data.Statuses;
 
 import com.noelios.restlet.data.FileReference;
 import com.noelios.restlet.data.FileRepresentation;
-import com.noelios.restlet.data.ReferenceList;
 import com.noelios.restlet.util.ByteUtils;
 
 /**
