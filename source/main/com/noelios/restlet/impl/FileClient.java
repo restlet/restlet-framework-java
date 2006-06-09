@@ -183,7 +183,7 @@ public class FileClient extends ContextClient
 			{
 				if(file.isDirectory())
 				{
-					call.setStatus(new DefaultStatus(Statuses.SERVER_ERROR_INTERNAL, "Can't put a new representation of a directory"));
+					call.setStatus(new DefaultStatus(Statuses.CLIENT_ERROR_FORBIDDEN, "Can't put a new representation of a directory"));
 				}
 				else
 				{
@@ -195,7 +195,9 @@ public class FileClient extends ContextClient
 						
 						if(call.getInput() != null)
 						{
-							ByteUtils.write(call.getInput().getStream(), new FileOutputStream(tmp));
+							FileOutputStream fos = new FileOutputStream(tmp);
+							ByteUtils.write(call.getInput().getStream(), fos);
+							fos.close();
 						}
 					}
 					catch (IOException ioe)
@@ -275,7 +277,9 @@ public class FileClient extends ContextClient
 							}
 							else
 							{
-								ByteUtils.write(call.getInput().getStream(), new FileOutputStream(file));
+								FileOutputStream fos = new FileOutputStream(file);
+								ByteUtils.write(call.getInput().getStream(), fos);
+								fos.close();
 								call.setStatus(Statuses.SUCCESS_OK);
 							}
 						}

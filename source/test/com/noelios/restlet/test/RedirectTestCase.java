@@ -57,13 +57,13 @@ public class RedirectTestCase extends TestCase
       	RestletContainer myContainer = new RestletContainer();
 
          // Create the client connectors
-         myContainer.addClient("Test Client", Protocols.HTTP);
-         myContainer.addClient("Proxy Client", Protocols.HTTP);
+         myContainer.addClient("TestClient", Protocols.HTTP);
+         myContainer.addClient("ProxyClient", Protocols.HTTP);
 
          // Create the proxy Restlet
          String target = "http://localhost:9090${path}#[if query]?${query}#[end]";
          RedirectRestlet proxy = new RedirectRestlet(myContainer, target, RedirectRestlet.MODE_CONNECTOR);
-         proxy.setConnectorName("Proxy Client");
+         proxy.setConnectorName("ProxyClient");
 
          // Create a new Restlet that will display some path information.
          Restlet trace = new AbstractRestlet(myContainer)
@@ -81,8 +81,8 @@ public class RedirectTestCase extends TestCase
             };
          
          // Create the server connectors
-         myContainer.addServer("Proxy server", new DefaultServer(Protocols.HTTP, proxy, 8080));
-         myContainer.addServer("Origin server", new DefaultServer(Protocols.HTTP, trace, 9090));
+         myContainer.addServer("ProxyServer", new DefaultServer(Protocols.HTTP, proxy, 8080));
+         myContainer.addServer("OriginServer", new DefaultServer(Protocols.HTTP, trace, 9090));
 
          // Now, let's start the container!
          myContainer.start();
@@ -119,7 +119,7 @@ public class RedirectTestCase extends TestCase
          Call call = new DefaultCall();
          call.setMethod(method);
          call.setResourceRef(uri);
-         myContainer.callClient("Test client", call);
+         myContainer.callClient("TestClient", call);
          call.getOutput().write(System.out);
       }
       catch(IOException e)
