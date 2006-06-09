@@ -38,7 +38,7 @@ public interface Maplet extends Restlet
 {
    /**
     * Attaches a target instance shared by all calls. 
-    * @param pattern The URI pattern used to map calls.
+    * @param pattern The URI pattern used to map calls (see {@link java.util.regex.Pattern} for the syntax).
     * @param target The target instance to attach.
     * @see java.util.regex.Pattern
     */
@@ -46,7 +46,7 @@ public interface Maplet extends Restlet
 
    /**
     * Attaches at a specific a target instance shared by all calls.
-    * @param pattern The URI pattern used to map calls.
+    * @param pattern The URI pattern used to map calls (see {@link java.util.regex.Pattern} for the syntax).
     * @param target The target instance to attach.
     * @param override Indicates if this attachment should have a higher priority that existing ones.
     * @see java.util.regex.Pattern
@@ -55,7 +55,7 @@ public interface Maplet extends Restlet
 
    /**
     * Attaches a target class. A new instance will be created for each call.
-    * @param pattern The URI pattern used to map calls.
+    * @param pattern The URI pattern used to map calls (see {@link java.util.regex.Pattern} for the syntax).
     * @param targetClass The target class to attach (can have a constructor taking a RestletContainer parameter).
     * @see java.util.regex.Pattern
     */
@@ -63,7 +63,7 @@ public interface Maplet extends Restlet
 
    /**
     * Attaches a target class. A new instance will be created for each call.
-    * @param pattern The URI pattern used to map calls.
+    * @param pattern The URI pattern used to map calls (see {@link java.util.regex.Pattern} for the syntax).
     * @param targetClass The target class to attach (can have a constructor taking a RestletContainer parameter).
     * @param override Indicates if this attachment should have a higher priority that existing ones.
     * @see java.util.regex.Pattern

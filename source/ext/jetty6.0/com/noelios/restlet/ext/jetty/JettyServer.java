@@ -56,9 +56,6 @@ public class JettyServer extends org.mortbay.jetty.Server implements Server
 	/** The modifiable map of properties. */
    protected Map<String, String> properties;
 
-   /** The delegate Server. */
-   protected Server delegate;
-
    /** The target Restlet. */
    protected Restlet target;
 
@@ -68,11 +65,10 @@ public class JettyServer extends org.mortbay.jetty.Server implements Server
    /**
     * Constructor.
     * @param protocol The connector protocol.
-    * @param delegate The delegate Server.
     * @param address The optional listening IP address (local host used if null).
     * @param port The listening port.
     */
-   public JettyServer(Protocol protocol, Server delegate, String address, int port)
+   public JettyServer(Protocol protocol, String address, int port)
    {
       // Create and configure the Jetty HTTP connector
       Connector connector = new SelectChannelConnector(); // Uses non-blocking NIO
@@ -87,30 +83,27 @@ public class JettyServer extends org.mortbay.jetty.Server implements Server
       setConnectors(connectors);
 
    	this.properties = null;
-      this.delegate = delegate;
       this.target = null;
    }
    
    /**
     * Constructor.
     * @param protocol The connector protocol.
-    * @param delegate The delegate Server.
     * @param address The IP address to listen to.
     */
-   public JettyServer(Protocol protocol, Server delegate, InetSocketAddress address)
+   public JettyServer(Protocol protocol, InetSocketAddress address)
    {
-   	this(protocol, delegate, address.getHostName(), address.getPort());
+   	this(protocol, address.getHostName(), address.getPort());
    }
 
    /**
     * Constructor.
     * @param protocol The connector protocol.
-    * @param delegate The delegate Server.
     * @param port The HTTP port number.
     */
-   public JettyServer(Protocol protocol, Server delegate, int port)
+   public JettyServer(Protocol protocol, int port)
    {
-   	this(protocol, delegate, null, port);
+   	this(protocol, null, port);
    }
    
 	/**
@@ -122,24 +115,6 @@ public class JettyServer extends org.mortbay.jetty.Server implements Server
 		if(this.properties == null) this.properties = new TreeMap<String, String>();
 		return this.properties;
 	}
-
-   /**
-    * Returns the delegate server.
-    * @return The delegate server.
-    */
-   public Server getDelegate()
-   {
-   	return this.delegate;
-   }
-
-   /**
-    * Sets the delegate server.
-    * @param delegate The delegate server.
-    */
-   public void setDelegate(Server delegate)
-   {
-   	this.delegate = delegate;
-   }
    
    /**
     * Returns the supported protocols. 
