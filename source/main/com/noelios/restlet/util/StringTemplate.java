@@ -29,8 +29,7 @@ import java.util.logging.Logger;
 /**
  * String template that enforces a strict separation between the pattern and the model. It supports 
  * variable insertion and non-nestable conditions. The default delimiters are "${" and "}" for variables 
- * and "#[" and "]" for instructions.<br/> 
- * Currently, the only instructions supported are conditions:<br/>
+ * and "#[" and "]" for instructions. Currently, the only instructions supported are conditions:<br/>
  *  1) "#[if variableName]" to test the availability of a variable (non null).<br/>
  *  2) "#[else if variableName]" to chain another test.<br/>
  *  3) "#[else]" to chain a default operation.<br/>
