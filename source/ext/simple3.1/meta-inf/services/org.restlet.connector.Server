@@ -1,1 +1,2 @@
-com.noelios.restlet.ext.simple.SimpleServer			 # HTTP and HTTPS
+com.noelios.restlet.ext.asyncweb.AsyncWebServer	# HTTP
+
