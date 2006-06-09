@@ -55,6 +55,7 @@ public class ByteUtils
          os.write(nextByte);
          nextByte = is.read();
       }
+      os.flush();
       is.close();
    }
 

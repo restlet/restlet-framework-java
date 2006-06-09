@@ -60,6 +60,20 @@ public class FileClient extends ContextClient
 
    /**
     * Constructor.
+    * @param protocol The protocol to use.
+    */
+   public FileClient(Protocol protocol)
+   {
+   	super(protocol, true);
+   	
+   	if(!protocol.equals(Protocols.FILE))
+   	{
+   		throw new IllegalArgumentException("Only the FILE protocol is supported");
+   	}
+   }
+
+   /**
+    * Constructor.
     * @param commonExtensions Indicates if the common extensions should be added.
     */
    public FileClient(boolean commonExtensions)
@@ -82,7 +96,7 @@ public class FileClient extends ContextClient
     */
    public void handle(Call call)
    {
-      FileReference fr = new FileReference(call.getResourcePath());
+      FileReference fr = new FileReference(call.getResourceRef());
       File file = null;
       
       if(fr.getScheme().equalsIgnoreCase("file"))
@@ -105,6 +119,7 @@ public class FileClient extends ContextClient
  					// Return the directory listing
  					File[] files = file.listFiles();
  					ReferenceList rl = new ReferenceList(files.length);
+ 					rl.setListRef(fr);
  					
  					for(File entry : files)
  					{
@@ -260,7 +275,7 @@ public class FileClient extends ContextClient
 							}
 							else
 							{
-								ByteUtils.write(call.getInput().getStream(), new FileOutputStream(tmp));
+								ByteUtils.write(call.getInput().getStream(), new FileOutputStream(file));
 								call.setStatus(Statuses.SUCCESS_OK);
 							}
 						}
@@ -299,7 +314,7 @@ public class FileClient extends ContextClient
 					}
 					else
 					{
-						call.setStatus(new DefaultStatus(Statuses.SERVER_ERROR_INTERNAL, "Couldn't delete the non-empty directory"));
+						call.setStatus(new DefaultStatus(Statuses.CLIENT_ERROR_FORBIDDEN, "Couldn't delete the non-empty directory"));
 					}
 				}
 				else
