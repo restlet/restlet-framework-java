@@ -51,7 +51,7 @@ import com.noelios.restlet.util.CookieUtils;
 import com.noelios.restlet.util.SecurityUtils;
 
 /**
- * Implementation of a server HTTP call.
+ * Base HTTP server connector call.
  * @author Jerome Louvel (contact@noelios.com) <a href="http://www.noelios.com/">Noelios Consulting</a>
  */
 public abstract class HttpServerCall extends ConnectorCallImpl

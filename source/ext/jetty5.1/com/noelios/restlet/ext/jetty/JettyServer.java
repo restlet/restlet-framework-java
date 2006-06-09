@@ -54,7 +54,7 @@ public class JettyServer extends HttpServer
     */
    public JettyServer(Protocol protocol, String address, int port)
    {
-      super(protocol, delegate, address, port);
+      super(protocol, address, port);
    }
    
    /**
@@ -64,7 +64,7 @@ public class JettyServer extends HttpServer
     */
    public JettyServer(Protocol protocol, InetSocketAddress address)
    {
-   	this(protocol, delegate, address.getHostName(), address.getPort());
+   	this(protocol, address.getHostName(), address.getPort());
    }
 
    /**
@@ -74,7 +74,7 @@ public class JettyServer extends HttpServer
     */
    public JettyServer(Protocol protocol, int port)
    {
-   	this(protocol, delegate, null, port);
+   	this(protocol, null, port);
    }
    
    /**
