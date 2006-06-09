@@ -27,6 +27,7 @@
 	<property name="classes" value="classes" />
 	<property name="classes-api" value="${classes}/api" />
 	<property name="classes-nre" value="${classes}/nre" />
+	<property name="classes-asyncweb0.8" value="${classes}/ext/asyncweb0.8" />
 	<property name="classes-atom1.0" value="${classes}/ext/atom1.0" />
 	<property name="classes-fileupload1.1" value="${classes}/ext/fileupload1.1" />
 	<property name="classes-freemarker2.3" value="${classes}/ext/freemarker2.3" />
@@ -41,6 +42,7 @@
 
 	<property name="src" value="source" />
 	<property name="src-main" value="${src}/main" />
+	<property name="src-asyncweb0.8" value="${src}/ext/asyncweb0.8" />
 	<property name="src-atom1.0" value="${src}/ext/atom1.0" />
 	<property name="src-fileupload1.1" value="${src}/ext/fileupload1.1" />
 	<property name="src-freemarker2.3" value="${src}/ext/freemarker2.3" />
@@ -55,6 +57,17 @@
 
 
 	<!-- Ant paths -->
+
+	<path id="path-asyncweb0.8">
+		<pathelement path="${classes-api}" />
+		<pathelement path="${classes-nre}" />
+		<fileset dir="${lib}/asyncweb0.8">
+			<include name="*.jar" />
+		</fileset>
+		<fileset dir="${lib}/mina0.8">
+			<include name="*.jar" />
+		</fileset>
+	</path>
 	
 	<path id="path-atom1.0">
 		<pathelement path="${classes-api}" />
@@ -159,7 +172,7 @@
 	<path id="path-all">
 		<pathelement path="${classes-api}" />
 		<pathelement path="${classes-nre}" />
-		<pathelement path="${classes-simple3.1}" />
+		<pathelement path="${classes-asyncweb0.8}" />
 		<pathelement path="${classes-freemarker2.3}" />
 		<pathelement path="${classes-fileupload1.1}" />
 		<pathelement path="${classes-javamail1.3}" />
@@ -298,19 +311,20 @@
 
 	<target name="compile" depends="init" description="Compile the Java source files">
 		<mkdir dir="${classes}" />
-		<compile srcdir="${src-main}" 			destdir="${classes-api}" 												includes="org/restlet/**" />
-		<compile srcdir="${src-main}" 			destdir="${classes-nre}" 			classpathref="path-all" 			includes="com/noelios/restlet/**"/>
-		<compile srcdir="${src-atom1.0}" 		destdir="${classes-atom1.0}" 		classpathref="path-atom1.0" />
-		<compile srcdir="${src-fileupload1.1}" 	destdir="${classes-fileupload1.1}" 	classpathref="path-fileupload1.1" />
-		<compile srcdir="${src-freemarker2.3}" 	destdir="${classes-freemarker2.3}" 	classpathref="path-freemarker2.3" />
+		<compile srcdir="${src-main}" 			destdir="${classes-api}" 				includes="org/restlet/**" />
+		<compile srcdir="${src-main}" 			destdir="${classes-nre}" 				classpathref="path-all" 			includes="com/noelios/restlet/**"/>
+		<compile srcdir="${src-asyncweb0.8}" 	destdir="${classes-asyncweb0.8}" 	classpathref="path-asyncweb0.8" />
+		<compile srcdir="${src-atom1.0}" 		destdir="${classes-atom1.0}" 			classpathref="path-atom1.0" />
+		<compile srcdir="${src-fileupload1.1}" destdir="${classes-fileupload1.1}" 	classpathref="path-fileupload1.1" />
+		<compile srcdir="${src-freemarker2.3}" destdir="${classes-freemarker2.3}" 	classpathref="path-freemarker2.3" />
 		<compile srcdir="${src-javamail1.3}" 	destdir="${classes-javamail1.3}" 	classpathref="path-javamail1.3" />
-		<compile srcdir="${src-jdbc3.0}" 		destdir="${classes-jdbc3.0}" 		classpathref="path-jdbc3.0" />
+		<compile srcdir="${src-jdbc3.0}" 		destdir="${classes-jdbc3.0}" 			classpathref="path-jdbc3.0" />
 		<compile srcdir="${src-jetty5.1}" 		destdir="${classes-jetty5.1}" 		classpathref="path-jetty5.1" />
 		<compile srcdir="${src-jetty6.0}" 		destdir="${classes-jetty6.0}" 		classpathref="path-jetty6.0" />
-		<compile srcdir="${src-servlet2.4}" 	destdir="${classes-servlet2.4}" 	classpathref="path-servlet2.4" />
+		<compile srcdir="${src-servlet2.4}" 	destdir="${classes-servlet2.4}" 		classpathref="path-servlet2.4" />
 		<compile srcdir="${src-simple3.1}" 		destdir="${classes-simple3.1}" 		classpathref="path-simple3.1" />
-		<compile srcdir="${src-example}" 		destdir="${classes-example}" 		classpathref="path-example" />
-		<compile srcdir="${src-test}" 			destdir="${classes-test}" 			classpathref="path-test" />
+		<compile srcdir="${src-example}" 		destdir="${classes-example}" 			classpathref="path-example" />
+		<compile srcdir="${src-test}" 			destdir="${classes-test}" 				classpathref="path-test" />
 	</target>
 
     <target name="retroweave" if="do-backport" depends="compile" description="Backport classes using Retroweaver">
@@ -454,6 +468,7 @@
 		</copy>
 
 		<!-- Make extensions -->
+		<mkext name="asyncweb" version="0.8"/>
 		<mkext name="atom" version="1.0"/>
 		<mkext name="fileupload" version="1.1"/>
 		<mkext name="freemarker" version="2.3"/>
@@ -494,6 +509,7 @@
 		<javadoc packagenames="com.noelios.restlet.*" destdir="${docs-nre}" classpathref="path-all" author="true" version="true" use="true" windowtitle="Noelios Restlet Engine ${version-full}" doctitle="Noelios Restlet Engine ${version-full}" overview="${src-main}/com/noelios/restlet/overview.html" verbose="${verbose}">
 			<sourcepath>
 				<pathelement path="${src-main}" />
+				<pathelement path="${src-asyncweb0.8}" />
 				<pathelement path="${src-atom1.0}" />
 				<pathelement path="${src-fileupload1.1}" />
 				<pathelement path="${src-freemarker2.3}" />
