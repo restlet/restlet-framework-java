@@ -27,8 +27,8 @@ import org.restlet.data.Form;
 
 /**
  * Readable model wrapping a REST call. It can be passed directly passed to a string template. 
- * Repeating values can be retrieved by appending [index] or ["name"]  or ['name'] after the variable's name. 
- * Note that [first] is equivalent to [0] and that [last] returns the last value. 
+ * Repeating values can be retrieved by appending (index) or ("name")  or ('name') after the variable's name. 
+ * Note that (first) is equivalent to (0) and that (last) returns the last value. 
  * Here is the list of currently supported variables:
  * <ul>
  *	<li>clientAddress (repeating and non-repeating, lookup by index only)</li>
@@ -119,7 +119,7 @@ public class CallModel implements ReadableModel
 	      	{
 	      		String rest = name.substring(NAME_CLIENT_ADDRESS.length());
 	
-	      		if((rest.charAt(0) == '[') && (rest.charAt(rest.length() - 1) == ']'))
+	      		if((rest.charAt(0) == '(') && (rest.charAt(rest.length() - 1) == ')'))
 	      		{
 	      			rest = rest.substring(1, rest.length() - 1);
 	      			
@@ -156,7 +156,7 @@ public class CallModel implements ReadableModel
 	      {
 	   		String rest = name.substring(NAME_CONNECTOR_REQUEST_HEADER.length());
 	
-	   		if((rest.charAt(0) == '[') && (rest.charAt(rest.length() - 1) == ']'))
+	   		if((rest.charAt(0) == '(') && (rest.charAt(rest.length() - 1) == ')'))
 	   		{
 	   			rest = rest.substring(1, rest.length() - 1);
 	   			
@@ -180,7 +180,7 @@ public class CallModel implements ReadableModel
 	      {
 	   		String rest = name.substring(NAME_CONNECTOR_RESPONSE_HEADER.length());
 	
-	   		if((rest.charAt(0) == '[') && (rest.charAt(rest.length() - 1) == ']'))
+	   		if((rest.charAt(0) == '(') && (rest.charAt(rest.length() - 1) == ')'))
 	   		{
 	   			rest = rest.substring(1, rest.length() - 1);
 	   			
@@ -204,7 +204,7 @@ public class CallModel implements ReadableModel
 	      {
 	   		String rest = name.substring(NAME_COOKIE.length());
 	
-	   		if((rest.charAt(0) == '[') && (rest.charAt(rest.length() - 1) == ']'))
+	   		if((rest.charAt(0) == '(') && (rest.charAt(rest.length() - 1) == ')'))
 	   		{
 	   			rest = rest.substring(1, rest.length() - 1);
 	   			
@@ -283,7 +283,7 @@ public class CallModel implements ReadableModel
 	      	{
 	      		String rest = name.substring(NAME_RESOURCE_QUERY.length());
 	
-	      		if((rest.charAt(0) == '[') && (rest.charAt(rest.length() - 1) == ']'))
+	      		if((rest.charAt(0) == '(') && (rest.charAt(rest.length() - 1) == ')'))
 	      		{
 	      			rest = rest.substring(1, rest.length() - 1);
 	      			

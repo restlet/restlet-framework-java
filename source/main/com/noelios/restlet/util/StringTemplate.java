@@ -28,12 +28,16 @@ import java.util.logging.Logger;
 
 /**
  * String template that enforces a strict separation between the pattern and the model. It supports 
- * variable insertion and non-nestable conditions. The default delimiters are "${" and "}" for variables and "#[" and "]" for instructions. 
+ * variable insertion and non-nestable conditions. The default delimiters are "${" and "}" for variables 
+ * and "#[" and "]" for instructions.<br/> 
  * Currently, the only instructions supported are conditions:<br/>
- *  1) "#[if variable_name]" to test the availability of a variable (non null).<br/>
- *  2) "#[else if variable_name]" to chain another test.<br/>
+ *  1) "#[if variableName]" to test the availability of a variable (non null).<br/>
+ *  2) "#[else if variableName]" to chain another test.<br/>
  *  3) "#[else]" to chain a default operation.<br/>
  *  4) "#[end]" to close a condition.<br/>
+ * Also, note that a condition can also be applied on variable insertions by using the following syntax: 
+ * "${variableName?exists}". This will ensure that the insertion only happens if the model contains such
+ * a variable.
  * @author Jerome Louvel (contact@noelios.com) <a href="http://www.noelios.com/">Noelios Consulting</a>
  */
 public class StringTemplate
@@ -445,7 +449,21 @@ public class StringTemplate
       String variable = template.subSequence(tokenStart, tokenEnd).toString();
       logger.log(Level.FINER, "processVariable: " + variable, buffer);
       
-      if(textState == TEXT_APPEND)
+      int conditionIndex = variable.indexOf('?');
+      boolean append = true;
+      
+      if(conditionIndex != -1)
+      {
+      	String condition = variable.substring(conditionIndex + 1);
+      	variable = variable.substring(0, conditionIndex);
+      	
+      	if(condition.equals("exists"))
+      	{
+      		append = model.contains(variable);
+      	}
+      }
+      
+      if(append && (textState == TEXT_APPEND))
       {
       	buffer.append(model.get(variable));
       }

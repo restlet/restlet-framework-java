@@ -38,6 +38,13 @@ Restlet changes log
  - Refactored the Client, ClientCall interfaces and related classes that were too HTTP oriented. 
  - Added HttpUrlConnectionCall, subclass of the (now) generic HttpClientCall, that is based on JDK's HttpUrlConnection.
  - Added FileClient connector to local files, subclass of ContextClient.
+ - Changed the default value inserted by the RedirectRestlet when a URI variable is not found: was "null" and now is an empty string.
+ - Changed the repeating variable delimiter in CallModel from "[" and "]" to "(" and ")" to prevent conflicts with the default instruction delimiter
+   characters in StringTemplate. Reported by John D. Mitchell.
+ - Added the possibility to add a local test for variable insertions: ${variableName?exists} in order to test the existence of the variable first.
+   This is equivalent to #[if variableName]${variableName}#[end] but obviously shorter. Without this local test, the default model value will be inserted
+   which may be "null" or some unfriendly string. Added related unit tests.
+ - 
  
 1.0 beta 14 (2006-06-02)
  - Adjusted build.properties so that default values work directly.

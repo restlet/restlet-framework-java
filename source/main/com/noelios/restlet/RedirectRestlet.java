@@ -140,7 +140,7 @@ public class RedirectRestlet extends AbstractRestlet
       StringTemplate te = new StringTemplate(this.targetPattern);
 
       // Create the template data model
-      String targetUri = te.process(new CallModel(call, null));
+      String targetUri = te.process(new CallModel(call, ""));
       Reference target = new Reference(targetUri);
 
       switch(this.mode)
