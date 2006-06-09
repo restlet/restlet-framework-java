@@ -28,7 +28,7 @@ import org.restlet.data.ParameterList;
  * Context client connector call.
  * @author Jerome Louvel (contact@noelios.com) <a href="http://www.noelios.com/">Noelios Consulting</a>
  */
-public abstract class ContextCall extends ClientCallImpl 
+public abstract class ContextCall extends ClientCall 
 {
    /** The resource name. */
    protected String resourceName;

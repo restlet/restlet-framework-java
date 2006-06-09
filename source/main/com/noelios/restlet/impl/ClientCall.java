@@ -25,20 +25,18 @@ package com.noelios.restlet.impl;
 import java.net.InetAddress;
 import java.net.UnknownHostException;
 
-import org.restlet.connector.ClientCall;
-
 /**
  * Client connector call implementation.
  * @author Jerome Louvel (contact@noelios.com) <a href="http://www.noelios.com/">Noelios Consulting</a>
  */
-public abstract class ClientCallImpl extends ConnectorCallImpl implements ClientCall
+public abstract class ClientCall extends ConnectorCallImpl
 {
 	/**
 	 * Constructor setting the request address to the local host.
     * @param method The method name.
     * @param requestUri The request URI.
 	 */
-	public ClientCallImpl(String method, String requestUri)
+	public ClientCall(String method, String requestUri)
 	{
 		this.requestMethod = method;
 		this.requestUri = requestUri;

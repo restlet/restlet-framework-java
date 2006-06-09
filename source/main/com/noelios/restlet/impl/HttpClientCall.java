@@ -25,12 +25,9 @@ package com.noelios.restlet.impl;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
-import java.net.InetAddress;
-import java.net.UnknownHostException;
 import java.nio.channels.ReadableByteChannel;
 import java.nio.channels.WritableByteChannel;
 
-import org.restlet.connector.ClientCall;
 import org.restlet.connector.ConnectorCall;
 import org.restlet.data.DefaultEncoding;
 import org.restlet.data.DefaultLanguage;
@@ -47,7 +44,7 @@ import com.noelios.restlet.data.ReadableRepresentation;
  * Base HTTP client connector call.
  * @author Jerome Louvel (contact@noelios.com) <a href="http://www.noelios.com/">Noelios Consulting</a>
  */
-public abstract class HttpClientCall extends ConnectorCallImpl implements ClientCall
+public abstract class HttpClientCall extends ClientCall
 {
 	/**
 	 * Constructor setting the request address to the local host.
@@ -56,36 +53,10 @@ public abstract class HttpClientCall extends ConnectorCallImpl implements Client
 	 */
 	public HttpClientCall(String method, String requestUri)
 	{
-		this.requestMethod = method;
-		this.requestUri = requestUri;
+		super(method, requestUri);
       this.requestAddress = getLocalAddress();
 	}
-
-	/**
-	 * Returns the local IP address or 127.0.0.1 if the resolution fails.
-	 * @return The local IP address or 127.0.0.1 if the resolution fails.
-	 */
-	public static String getLocalAddress()
-	{
-      try
-      {
-         return InetAddress.getLocalHost().getHostAddress();
-      }
-      catch(UnknownHostException e)
-      {
-         return "127.0.0.1";
-      }
-	}
-	
-   /**
-    * Sets the request method. 
-    * @param method The request method.
-    */
-   public void setRequestMethod(String method)
-   {
-      this.requestMethod = method;
-   }
-   
+ 
    /**
     * Sends the request headers.<br/>
     * Must be called before sending the request input.

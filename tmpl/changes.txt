@@ -46,7 +46,7 @@ Restlet changes log
    which may be "null" or some unfriendly string. Added related unit tests.
  - Fixed bug in ByteUtils.write() that prevented the flushing of buffered output streams.
  - Removed the unecessary buffering of the input stream in ByteUtils.write(). We don't use the mark and set features.
- - Added HTTP server connector based on AsyncWeb 0.8 which is based on Apache Mina 0.8 (NIO framework). Contributed by Lars Heuer.
+ - Added HTTP server connector based on AsyncWeb 0.8 which is based on Apache Mina 0.8. Contributed by Lars Heuer. Suggested by John D. Mitchell.
  
 1.0 beta 14 (2006-06-02)
  - Adjusted build.properties so that default values work directly.

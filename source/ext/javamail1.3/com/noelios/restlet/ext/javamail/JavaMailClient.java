@@ -42,7 +42,6 @@ import javax.xml.parsers.DocumentBuilderFactory;
 import org.restlet.DefaultCall;
 import org.restlet.Call;
 import org.restlet.connector.AbstractClient;
-import org.restlet.connector.ClientCall;
 import org.restlet.data.Methods;
 import org.restlet.data.Parameter;
 import org.restlet.data.Protocol;
@@ -97,18 +96,6 @@ public class JavaMailClient extends AbstractClient
    public static List<Protocol> getProtocols()
    {
    	return Arrays.asList(new Protocol[]{Protocols.SMTP, Protocols.SMTP_STARTTLS, Protocols.SMTPS});
-   }
-
-   /**
-    * Returns a new client call.
-    * @param method The request method.
-    * @param resourceUri The requested resource URI.
-    * @param hasInput Indicates if the call will have an input to send to the server.
-    * @return A new client call.
-    */
-   public ClientCall createCall(String method, String resourceUri, boolean hasInput)
-   {
-      return null;
    }
    
    /**
