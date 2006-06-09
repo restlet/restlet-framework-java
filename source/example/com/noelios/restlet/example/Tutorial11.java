@@ -82,29 +82,21 @@ public class Tutorial11
          DirectoryRestlet dirRestlet = new DirectoryRestlet(myContainer, "File Client", "D:/Restlet/www/docs/api/", true, "index");
          guard.attach(dirRestlet);
 
-         // Create the users Maplet
-         Maplet usersMaplet = new DefaultMaplet(myContainer);
-         host.attach("/users", usersMaplet);
-
          // Create the user Maplet
-         Maplet userMaplet = new DefaultMaplet(myContainer)
+         Maplet userMaplet = new DefaultMaplet(myContainer);
+         host.attach("/users/[a-z]+", userMaplet);
+
+         // Create the account Restlet
+         Restlet accountRestlet = new AbstractRestlet()
             {
-               public void handle(Call call)
+         		public void handleGet(Call call)
                {
-                  if(call.getResourcePath().equals(""))
-                  {
-                     // Print the requested URI path
-                     String output = "Account of user named: " + call.getContextRef().getLastSegment();
-                     call.setOutput(new StringRepresentation(output, MediaTypes.TEXT_PLAIN));
-                  }
-                  else
-                  {
-                     // Continue processing
-                     delegate(call);
-                  }
+                  // Print the requested URI path
+                  String output = "Account of user named: " + call.getContextRef().getLastSegment();
+                  call.setOutput(new StringRepresentation(output, MediaTypes.TEXT_PLAIN));
                }
             };
-         usersMaplet.attach("/[a-z]+", userMaplet);
+         userMaplet.attach("$", accountRestlet);
 
          // Create the orders Restlet
          Restlet ordersRestlet = new AbstractRestlet(myContainer)

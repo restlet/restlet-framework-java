@@ -337,7 +337,7 @@
 
 <h3><a name="part11">11. Maplets and hierarchical URIs</a></h3>
 <p>
-   In addition to the RedirectRestlet, we have another tool to manage cool URIs: Maplets. They are specialized Restlets that can have other handlers (Restlets, Maplets or Chainlets) attached to them and that can automatically delegate calls based on a URI pattern. Note that Restlet containers are also Maplets, so you could directly attach Restlets to "myContainer" using an adequate URI pattern. In general, it is easier to attach Chainlets then a HostMaplet to the container. Then you can attach you application Restlets or Maplets to this root HostMaplet.
+   In addition to the RedirectRestlet, we have another tool to manage cool URIs: Maplets. They are specialized Restlets that can have other handlers (Restlets, Maplets or Chainlets) attached to them and that can automatically delegate calls based on a URI pattern (a regular expression). Note that Restlet containers are also Maplets, so you could directly attach Restlets to "myContainer" using an adequate URI pattern. In general, it is easier to attach Chainlets followed by a HostMaplet to the container. Then you can attach your application Restlets or Maplets to this root HostMaplet.
 </p>
 <p>
    Here we want to explain how to handle the following URI patterns:
@@ -346,10 +346,10 @@
       <li>/users/[a-z]+ to display a user account</li>
       <li>/users/[a-z]+/orders to display the orders of a particular user</li>
    </ol>
-   The fact that these URIs contain some dynamic parts and that no file extension is used makes it harder to handle them in a typical Web container. Here we will simply rely on a tree of Maplets. In the processing flow below, you can see that when a call is received by the container (1), it is first filtered by two Chainlets (2) and (3), and then it reaches the RootMaplet. If the URI starts with /docs/ then the GuardChainlet will get the call (5) and pass it to the DirectoryRestlet (6) if the user credentials are authorized. Instead, if the URI starts with /users then it is for the UsersMaplet that gets the call, otherwise an error is returned to the client (404, not found).
+   The fact that these URIs contain some dynamic parts and that no file extension is used makes it harder to handle them in a typical Web container. Here we will simply rely on a tree of Maplets. In the processing flow below, you can see that when a call is received by the container (1), it is first filtered by two Chainlets (2) and (3), and then it reaches the root Host Maplet. If the URI starts with "/docs/" then the GuardChainlet will get the call (5) and pass it to the DirectoryRestlet (6) if the user credentials are authorized. Instead, if the URI starts with "/users/[a-z]+" (where "[a-z]+" is representing a valid user name) then it is the User Maplet that gets the call, otherwise an error is returned to the client (404, not found). Please, note that the User Maplet is directly attached to its parent Host Maplet and not to the top level container!
 </p>
 <p>
-   When a call reaches the UsersMaplet (7) we try to match the remaining part of the URI against the "/[a-z]+" pattern, representing a valid user name. If a match is found, then the UserMaplet is invoked (8). Please, note that the UserMaplet is directly attached to its parent UsersMaplet and not to the top level container! At that point it is possible to get the login name, because Maplets automatically build a list of all the URI parts matched during the delegation, just invoke "call.getPath(1, true)". Finally, if the "/orders$" URI pattern is matched, the OrdersRestlet is invoked (9), where we can still get the login name by calling "call.getPath(2, true)". Note that we use the '$' character at the end of the pattern in order to make sure that we match "/users/%userName%/orders" but not "/users/%userName%/orders123".
+   When a call reaches the User Maplet (7) we try to match the remaining part of the URI against the "$" pattern, meaning the the remaing resource path should be empty. If a match is found, then the Account Restlet is invoked (8). At this point it is possible to get the login name by getting the last URI segment. Otherwise, if the "/orders$" pattern matches, the Orders Restlet is invoked (9), where we can still get the login name from the list of URI segments. Note that again we use the '$' character at the end of the pattern in order to make sure that we match "/users/foo/orders" but not "/users/foo/orders123".
 </p>
 <p>
    <img src="images/tutorial11" alt="Call handling flow"/><br/>
@@ -361,10 +361,12 @@
          // Create a new Restlet container
          RestletContainer myContainer = new RestletContainer();
 
-         // Create the HTTP server connector, then add it as a server connector
-         // to the Restlet container. Note that the container is the call restlet.
-         Server server = new DefaultServer(Protocols.HTTP, "My server", myContainer, 8182);
-         myContainer.addServer(server);
+         // Add an HTTP server connector to the Restlet container.
+         // Note that the container is the call restlet.
+         myContainer.addServer("HTTP Server", Protocols.HTTP, 8182);
+
+         // Add a file client connector to the Restlet container.
+         myContainer.addClient("File Client", Protocols.FILE);
 
          // Attach a log Chainlet to the container
          LogChainlet log = new LogChainlet(myContainer, "com.noelios.restlet.example");
@@ -384,32 +386,24 @@
          host.attach("/docs/", guard);
 
          // Create a directory Restlet able to return a deep hierarchy of Web files
-         DirectoryRestlet dirRestlet = new DirectoryRestlet(myContainer, "D:/Restlet/www/docs/api/", true, "index", true);
+         DirectoryRestlet dirRestlet = new DirectoryRestlet(myContainer, "File Client", "D:/Restlet/www/docs/api/", true, "index");
          guard.attach(dirRestlet);
 
-         // Create the users Maplet
-         Maplet usersMaplet = new DefaultMaplet(myContainer);
-         host.attach("/users", usersMaplet);
-
          // Create the user Maplet
-         Maplet userMaplet = new DefaultMaplet(myContainer)
+         Maplet userMaplet = new DefaultMaplet(myContainer);
+         host.attach("/users/[a-z]+", userMaplet);
+
+         // Create the account Restlet
+         Restlet accountRestlet = new AbstractRestlet()
             {
-               public void handle(Call call)
+               public void handleGet(Call call)
                {
-                  if(call.getResourcePath().equals(""))
-                  {
-                     // Print the requested URI path
-                     String output = "Account of user named: " + call.getContextRef().getLastSegment();
-                     call.setOutput(new StringRepresentation(output, MediaTypes.TEXT_PLAIN));
-                  }
-                  else
-                  {
-                     // Continue processing
-                     delegate(call);
-                  }
+                  // Print the requested URI path
+                  String output = "Account of user named: " + call.getContextRef().getLastSegment();
+                  call.setOutput(new StringRepresentation(output, MediaTypes.TEXT_PLAIN));
                }
             };
-         usersMaplet.attach("/[a-z]+", userMaplet);
+         userMaplet.attach("$", accountRestlet);
 
          // Create the orders Restlet
          Restlet ordersRestlet = new AbstractRestlet(myContainer)
@@ -483,7 +477,7 @@
 <br/>
 
 <small>
-   Version 4.3, last modified on 2006-05-29<br/>
+   Version 4.4, last modified on 2006-06-09<br/>
    Copyright &copy; 2005-2006 <a href="mailto:contact@noelios.com">J&eacute;r&ocirc;me Louvel</a>. Restlet is a registered trademark of <a target="_top" href="http://www.noelios.com">Noelios Consulting</a>.
 </small>
 
