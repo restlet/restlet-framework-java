@@ -41,16 +41,16 @@ import com.noelios.restlet.data.FileRepresentation;
 import com.noelios.restlet.impl.ContextClient;
 
 /**
- * Resource representing a file stored on the local file system. A content negotiation mechanism (similar to
- * Apache HTTP server) is available. It is based on file extensions to specify variants (languages, media
- * types or character sets).
+ * Resource supported by a set of context representations (from file system, class loaders and webapp context). 
+ * A content negotiation mechanism (similar to Apache HTTP server) is available. It is based on path extensions 
+ * to detect variants (languages, media types or character sets).
  * @see <a href="http://httpd.apache.org/docs/2.0/content-negotiation.html">Apache mod_negotiation module</a>
  * @author Jerome Louvel (contact@noelios.com) <a href="http://www.noelios.com/">Noelios Consulting</a>
  */
 public class ContextResource implements Resource
 {
    /** Obtain a suitable logger. */
-   private static Logger logger = Logger.getLogger("com.noelios.restlet.FileResource");
+   private static Logger logger = Logger.getLogger("com.noelios.restlet.ContextResource");
 
    /**
     * The parent directory Restlet.
@@ -58,7 +58,7 @@ public class ContextResource implements Resource
    private ContextClient contextClient;
 
    /**
-    * The absolute base path of the file. For example, "foo.en" will match "foo.en.html" and "foo.en-GB.html".
+    * The absolute base path in the context. For example, "foo.en" will match "foo.en.html" and "foo.en-GB.html".
     */
    private String basePath;
 
@@ -69,17 +69,17 @@ public class ContextResource implements Resource
 
    /**
     * Constructor.
-    * @param fileClient The parent connector.
+    * @param contextClient The context client connector.
     * @param basePath The base path of the file.
     */
-   public ContextResource(ContextClient fileClient, String basePath)
+   public ContextResource(ContextClient contextClient, String basePath)
    {
       // Update the member variables
-      this.contextClient = fileClient;
+      this.contextClient = contextClient;
 
-      logger.info("File base path: " + basePath);
+      logger.info("Context base path: " + basePath);
 
-      // Compute the absolute file path
+      // Compute the absolute context path
       StringBuilder filePath = new StringBuilder();
       int lastIndex = -1;
       
