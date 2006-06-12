@@ -23,10 +23,8 @@
 package com.noelios.restlet.ext.javamail;
 
 import java.net.URI;
-import java.util.Arrays;
 import java.util.Date;
 import java.util.Iterator;
-import java.util.List;
 import java.util.Properties;
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -39,12 +37,13 @@ import javax.mail.internet.MimeMessage;
 import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
 
-import org.restlet.DefaultCall;
 import org.restlet.Call;
+import org.restlet.DefaultCall;
+import org.restlet.component.Component;
 import org.restlet.connector.AbstractClient;
 import org.restlet.data.Methods;
 import org.restlet.data.Parameter;
-import org.restlet.data.Protocol;
+import org.restlet.data.ParameterList;
 import org.restlet.data.Protocols;
 import org.restlet.data.Representation;
 import org.restlet.data.SecurityData;
@@ -75,29 +74,24 @@ import com.noelios.restlet.impl.FactoryImpl;
  * {@code </email>}
  * @author Jerome Louvel (contact@noelios.com) <a href="http://www.noelios.com/">Noelios Consulting</a>
  */
-public class JavaMailClient extends AbstractClient
+public abstract class JavaMailClient extends AbstractClient
 {
    /** Obtain a suitable logger. */
    private static Logger logger = Logger.getLogger("com.noelios.restlet.ext.javamail.JavaMailClient");
-
+   
    /**
     * Constructor.
-    * @param protocol The protocol to use.
+    * @param owner The owner component.
+    * @param parameters The initial parameters.
     */
-   public JavaMailClient(Protocol protocol)
+   public JavaMailClient(Component owner, ParameterList parameters)
    {
-      super(protocol);
+   	super(owner, parameters);
+      getProtocols().add(Protocols.SMTP);
+      getProtocols().add(Protocols.SMTP_STARTTLS);
+      getProtocols().add(Protocols.SMTPS);
    }
-   
-   /**
-    * Returns the supported protocols. 
-    * @return The supported protocols.
-    */
-   public static List<Protocol> getProtocols()
-   {
-   	return Arrays.asList(new Protocol[]{Protocols.SMTP, Protocols.SMTP_STARTTLS, Protocols.SMTPS});
-   }
-   
+
    /**
     * Creates a Restlet call.
     * @param smtpURI The SMTP server's URI (ex: smtp://localhost).
@@ -144,12 +138,12 @@ public class JavaMailClient extends AbstractClient
 
          if(smtpPort == -1)
          {
-            if((getProtocol().equals(Protocols.SMTP)) || (getProtocol().equals(Protocols.SMTP_STARTTLS)))
+            if((getProtocols().equals(Protocols.SMTP)) || (getProtocols().equals(Protocols.SMTP_STARTTLS)))
             {
             	// Use the default SMTP port
             	smtpPort = 25;
             }
-            else if(getProtocol().equals(Protocols.SMTPS))
+            else if(getProtocols().equals(Protocols.SMTPS))
             {
             	smtpPort = 465;
             }
@@ -202,17 +196,17 @@ public class JavaMailClient extends AbstractClient
          boolean authenticate = ((sd.getLogin() != null) && (sd.getPassword() != null));
          
          // Connect to the SMTP server
-         if(getProtocol().equals(Protocols.SMTP) || getProtocol().equals(Protocols.SMTP_STARTTLS))
+         if(getProtocols().equals(Protocols.SMTP) || getProtocols().equals(Protocols.SMTP_STARTTLS))
          {
             props.put("mail.smtp.host", smtpHost);
             props.put("mail.smtp.port", Integer.toString(smtpPort));
             props.put("mail.smtp.auth", Boolean.toString(authenticate).toLowerCase());
-	         props.put("mail.smtp.starttls.enable", Boolean.toString(getProtocol().equals(Protocols.SMTP_STARTTLS)).toLowerCase());
+	         props.put("mail.smtp.starttls.enable", Boolean.toString(getProtocols().equals(Protocols.SMTP_STARTTLS)).toLowerCase());
             session = Session.getDefaultInstance(props);
             // session.setDebug(true);
 	         transport = session.getTransport("smtp");
          }
-         else if(getProtocol().equals(Protocols.SMTPS))
+         else if(getProtocols().equals(Protocols.SMTPS))
          {
             props.put("mail.smtps.host", smtpHost);
             props.put("mail.smtps.port", Integer.toString(smtpPort));

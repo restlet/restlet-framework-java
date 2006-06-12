@@ -20,59 +20,52 @@
  * Portions Copyright [yyyy] [name of copyright owner]
  */
 
-package org.restlet.connector;
+package com.noelios.restlet.ext.jetty;
 
-import org.restlet.Call;
-import org.restlet.Restlet;
+import org.mortbay.util.InetAddrPort;
 import org.restlet.component.Component;
 import org.restlet.data.ParameterList;
+import org.restlet.data.Protocols;
 
 /**
- * Local client connector. Useful to call a component that resides inside the same JVM.
+ * Jetty HTTPS server connector.
+ * @see <a href="http://jetty.mortbay.com/">Jetty home page</a>
  * @author Jerome Louvel (contact@noelios.com) <a href="http://www.noelios.com/">Noelios Consulting</a>
  */
-public class LocalClient extends AbstractClient
+public class HttpsServer extends JettyServer
 {
-   /** The target Restlet. */
-   protected Restlet target;
-
    /**
     * Constructor.
     * @param owner The owner component.
     * @param parameters The initial parameters.
-    * @param target The target Restlet.
+    * @param address The optional listening IP address (local host used if null).
+    * @param port The listening port.
     */
-   public LocalClient(Component owner, ParameterList parameters, Restlet target)
+   public HttpsServer(Component owner, ParameterList parameters, String address, int port)
    {
-      super(owner, parameters);
-      this.target = target;
+      super(owner, parameters, address, port);
+      getProtocols().add(Protocols.HTTPS);
    }
 
-   /**
-    * Returns the target Restlet.
-    * @return The target Restlet.
-    */
-   public Restlet getTarget()
+   /** Start hook. */
+   public void start() throws Exception
    {
-      return this.target;
-   }
-   
-   /**
-    * Sets the target Restlet.
-    * @param target The target Restlet.
-    */
-   public void setTarget(Restlet target)
-   {
-      this.target = target;
-   }
-
-   /**
-    * Handles a call.
-    * @param call The call to handle.
-    */
-   public void handle(Call call)
-   {
-      getTarget().handle(call);
+   	HttpsListener httpsListener = null;
+      if(this.address != null)
+      {
+         httpsListener = new HttpsListener(this, new InetAddrPort(this.address, this.port));
+      }
+      else
+      {
+      	httpsListener = new HttpsListener(this);
+      	httpsListener.setPort(port);
+      }
+      httpsListener.setKeystore(this.keystorePath);
+      httpsListener.setPassword(this.keystorePassword);
+      httpsListener.setKeyPassword(this.keyPassword);
+      this.listener = httpsListener;
+      
+      super.start();
    }
 
 }

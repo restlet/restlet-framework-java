@@ -20,21 +20,24 @@
  * Portions Copyright [yyyy] [name of copyright owner]
  */
 
-package com.noelios.restlet.impl;
+package com.noelios.restlet.ext.simple;
 
-import java.io.IOException;
+import java.net.ServerSocket;
 
-import org.restlet.Call;
-import org.restlet.Restlet;
 import org.restlet.component.Component;
-import org.restlet.connector.AbstractServer;
 import org.restlet.data.ParameterList;
+import org.restlet.data.Protocols;
+
+import simple.http.BufferedPipelineFactory;
+import simple.http.PipelineHandlerFactory;
+import simple.http.connect.ConnectionFactory;
 
 /**
- * Base HTTP server connector.
- * @author Jerome Louvel (contact@noelios.com) <a href="http://www.noelios.com/">Noelios Consulting</a>
+ * Simple HTTPS server connector.
+ * @author Lars Heuer (heuer[at]semagia.com) <a href="http://semagia.com/">Semagia</a>
+ * @author Jerome Louvel (contact@noelios.com) <a href="http://www.noelios.com">Noelios Consulting</a>
  */
-public class HttpServer extends AbstractServer
+public class HttpServer extends SimpleServer
 {
    /**
     * Constructor.
@@ -46,31 +49,21 @@ public class HttpServer extends AbstractServer
    public HttpServer(Component owner, ParameterList parameters, String address, int port)
    {
       super(owner, parameters, address, port);
-   }
-	
-   /**
-    * Handles the connector call.<br/>
-    * The default behavior is to create an REST call and delegate it to the attached Restlet.
-    * @param call The connector call.
-    */
-   public void handle(HttpServerCall call) throws IOException
-   {
-   	handle(call, this);
+      getProtocols().add(Protocols.HTTP);
    }
 
-   /**
-    * Handles an HTTP server call for a given Restlet target. 
-    * @param call The connector call.
-    * @param target The target Restlet.
-    * @throws IOException 
-    */
-   public static void handle(HttpServerCall call, Restlet target) throws IOException
-   {
-      Call restletCall = call.toUniform();
-      target.handle(restletCall);
-      call.setResponse(restletCall);
-      call.sendResponseHeaders();
-      call.sendResponseOutput(restletCall.getOutput());
-   }
-   
+   /** Starts the Restlet. */
+	public void start() throws Exception
+	{
+		if(!isStarted())
+		{
+			socket = new ServerSocket(this.port);
+			this.confidential = false;
+			this.handler = PipelineHandlerFactory.getInstance(this, 20, 200);
+			this.connection = ConnectionFactory.getConnection(handler, new BufferedPipelineFactory());
+			this.connection.connect(socket);
+			super.start();
+		}
+	}
+
 }

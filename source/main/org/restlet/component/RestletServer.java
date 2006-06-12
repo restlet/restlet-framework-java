@@ -29,6 +29,7 @@ import java.util.logging.Level;
 import java.util.logging.Logger;
 
 import org.restlet.Call;
+import org.restlet.data.ParameterList;
 import org.restlet.data.Statuses;
 
 /**
@@ -55,6 +56,35 @@ public class RestletServer extends AbstractComponent
     */
    public RestletServer()
    {
+   	this(null, null);
+   }
+
+   /**
+    * Constructor.
+    * @param parameters The initial parameters.
+    */
+   public RestletServer(ParameterList parameters)
+   {
+      this(null, parameters);
+   }
+
+   /**
+    * Constructor.
+    * @param owner The owner component.
+    */
+   public RestletServer(Component owner)
+   {
+      this(owner, null);
+   }
+
+   /**
+    * Constructor.
+    * @param owner The owner component.
+    * @param parameters The initial parameters.
+    */
+   public RestletServer(Component owner, ParameterList parameters)
+   {
+      super(owner, parameters);
       this.containers = null;
       this.defaultContainer = null;
    }

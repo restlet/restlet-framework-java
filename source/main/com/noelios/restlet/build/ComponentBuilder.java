@@ -55,14 +55,14 @@ public class ComponentBuilder extends RestletBuilder
    }
 
    /**
-    * Sets a property.
-    * @param name The property name.
-    * @param value The property value.
+    * Adds a parameter.
+    * @param name The parameter name.
+    * @param value The parameter value.
     * @return The current builder.
     */
-   public ComponentBuilder setProperty(String name, String value)
+   public ComponentBuilder addParameter(String name, String value)
    {
-      getNode().getProperties().put(name, value);
+      getNode().getParameters().add(name, value);
       return this;
    }
 
@@ -75,6 +75,7 @@ public class ComponentBuilder extends RestletBuilder
    public ComponentBuilder addServer(String name, Server server)
    {
       getNode().getServers().put(name, server);
+      server.setOwner(getNode());
       return this;
    }
 
@@ -100,7 +101,7 @@ public class ComponentBuilder extends RestletBuilder
     */
    public ComponentBuilder addServer(String name, Protocol protocol, String address, int port)
    {
-      return addServer(name, new DefaultServer(protocol, getNode(), address, port));
+   	return addServer(name, new DefaultServer(protocol, getNode(), address, port));
    }
 
    /**
@@ -112,6 +113,7 @@ public class ComponentBuilder extends RestletBuilder
    public ComponentBuilder addClient(String name, Client client)
    {
       getNode().getClients().put(name, client);
+   	client.setOwner(getNode());
       return this;
    }
 

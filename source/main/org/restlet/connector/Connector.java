@@ -22,9 +22,10 @@
 
 package org.restlet.connector;
 
-import java.util.Map;
+import java.util.List;
 
 import org.restlet.Restlet;
+import org.restlet.data.ParameterList;
 import org.restlet.data.Protocol;
 
 /**
@@ -44,14 +45,14 @@ import org.restlet.data.Protocol;
 public interface Connector extends Restlet
 {
 	/**
-	 * Returns the modifiable map of properties.
-	 * @return The modifiable map of properties.
+	 * Returns the modifiable list of parameters.
+	 * @return The modifiable list of parameters.
 	 */
-	public Map<String, String> getProperties();
+	public ParameterList getParameters();
 
    /**
-    * Returns the connector's protocol.
-    * @return The connector's protocol.
+    * Returns the supported protocols. 
+    * @return The supported protocols.
     */
-   public Protocol getProtocol();   
+   public List<Protocol> getProtocols();
 }

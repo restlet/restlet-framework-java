@@ -26,12 +26,11 @@ import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.net.ConnectException;
 import java.net.SocketTimeoutException;
-import java.util.Arrays;
-import java.util.List;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
 import org.restlet.Call;
+import org.restlet.component.Component;
 import org.restlet.connector.AbstractClient;
 import org.restlet.connector.ConnectorCall;
 import org.restlet.data.ChallengeRequest;
@@ -40,8 +39,8 @@ import org.restlet.data.ConditionData;
 import org.restlet.data.DefaultStatus;
 import org.restlet.data.MediaTypes;
 import org.restlet.data.Parameter;
+import org.restlet.data.ParameterList;
 import org.restlet.data.PreferenceData;
-import org.restlet.data.Protocol;
 import org.restlet.data.Protocols;
 import org.restlet.data.Statuses;
 
@@ -61,22 +60,16 @@ public class HttpClient extends AbstractClient
    private static Logger logger = Logger.getLogger("com.noelios.restlet.connector.HttpClient");
 
    /**
-    * Create a new HTTP client connector.
-    * @param protocol The protocol to use.
+    * Constructor.
+    * @param owner The owner component.
+    * @param parameters The initial properties.
     */
-   public HttpClient(Protocol protocol)
+   public HttpClient(Component owner, ParameterList parameters)
    {
-      super(protocol);
+   	super(owner, parameters);
+      getProtocols().add(Protocols.HTTP);
+      getProtocols().add(Protocols.HTTPS);
       System.setProperty("http.keepAlive", "false");
-   }
-   
-   /**
-    * Returns the supported protocols. 
-    * @return The supported protocols.
-    */
-   public static List<Protocol> getProtocols()
-   {
-   	return Arrays.asList(new Protocol[]{Protocols.HTTP, Protocols.HTTPS});
    }
    
    /**

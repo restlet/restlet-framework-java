@@ -26,14 +26,13 @@ import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
-import java.util.Arrays;
-import java.util.List;
 import java.util.Map;
 import java.util.TreeMap;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
 import org.restlet.Call;
+import org.restlet.component.Component;
 import org.restlet.connector.AbstractClient;
 import org.restlet.data.CharacterSet;
 import org.restlet.data.DefaultStatus;
@@ -45,10 +44,11 @@ import org.restlet.data.MediaType;
 import org.restlet.data.MediaTypes;
 import org.restlet.data.Metadata;
 import org.restlet.data.Methods;
-import org.restlet.data.Protocol;
+import org.restlet.data.ParameterList;
 import org.restlet.data.Protocols;
 import org.restlet.data.ReferenceList;
 import org.restlet.data.Representation;
+import org.restlet.data.RepresentationMetadata;
 import org.restlet.data.Statuses;
 
 import com.noelios.restlet.data.ContextReference;
@@ -83,26 +83,20 @@ public class ContextClient extends AbstractClient
 
    /**
     * Constructor.
-    * @param commonExtensions Indicates if the common extensions should be added.
+    * @param owner The owner component.
+    * @param parameters The initial parameters.
     */
-   public ContextClient(Protocol protocol, boolean commonExtensions)
+   public ContextClient(Component owner, ParameterList parameters)
    {
-      super(protocol);
+   	super(owner, parameters);
+      getProtocols().add(Protocols.CONTEXT);
+      getProtocols().add(Protocols.FILE);
       this.defaultEncoding = Encodings.IDENTITY;
       this.defaultMediaType = MediaTypes.TEXT_PLAIN;
       this.defaultLanguage = Languages.ENGLISH_US;
       this.metadataMappings = new TreeMap<String, Metadata>();
       this.timeToLive = 600;
-      if(commonExtensions) addCommonExtensions();
-   }
-   
-   /**
-    * Returns the supported protocols. 
-    * @return The supported protocols.
-    */
-   public static List<Protocol> getProtocols()
-   {
-   	return Arrays.asList(new Protocol[]{Protocols.CONTEXT, Protocols.FILE});
+      // if(commonExtensions) addCommonExtensions();
    }
 
    /**
@@ -119,27 +113,24 @@ public class ContextClient extends AbstractClient
       }
       else if(scheme.equalsIgnoreCase("context"))
       {
-      	ClassLoader cl = null;
 			ContextReference cr = new ContextReference(call.getResourceRef());
 			
       	if(cr.getAuthorityType() == AuthorityType.CLASS)
       	{
-      		cl = getClass().getClassLoader();
+      		handleClassLoader(call, getClass().getClassLoader());
       	}
       	else if(cr.getAuthorityType() == AuthorityType.SYSTEM)
       	{
-      		cl = ClassLoader.getSystemClassLoader();
+      		handleClassLoader(call, ClassLoader.getSystemClassLoader());
       	}
       	else if(cr.getAuthorityType() == AuthorityType.THREAD)
       	{
-      		cl = Thread.currentThread().getContextClassLoader();
+      		handleClassLoader(call, Thread.currentThread().getContextClassLoader());
       	}
       	else if(cr.getAuthorityType() == AuthorityType.WEB_APPLICATION)
       	{
-      		cl = null; // TODO
+      		// TODO
 	      }
-      	
-      	handleClassLoader(call, cl);
       }
       else
       {
@@ -196,28 +187,7 @@ public class ContextClient extends AbstractClient
  				{
  					// Return the file content
                output = new FileRepresentation(file, getDefaultMediaType(), getTimeToLive());
-               String[] tokens = file.getName().split("\\.");
-               Metadata metadata;
-               
-               // We found a potential variant
-               for(int j = 1; j < tokens.length; j++)
-               {
-               	metadata = getMetadata(tokens[j]);
-                  if(metadata instanceof MediaType) output.getMetadata().setMediaType((MediaType)metadata);
-                  if(metadata instanceof CharacterSet) output.getMetadata().setCharacterSet((CharacterSet)metadata);
-                  if(metadata instanceof Encoding) output.getMetadata().setEncoding((Encoding)metadata);
-                  if(metadata instanceof Language) output.getMetadata().setLanguage((Language)metadata);
-
-                  int dashIndex = tokens[j].indexOf('-');
-                  if((metadata == null) && (dashIndex != -1))
-                  {
-                     // We found a language extension with a region area specified
-                     // Try to find a language matching the primary part of the extension
-                     String primaryPart = tokens[j].substring(0, dashIndex);
-                     metadata = getMetadata(primaryPart);
-                     if(metadata instanceof Language) output.getMetadata().setLanguage((Language)metadata);
-                  }
-               }
+               updateMetadata(file.getName(), output.getMetadata());
  				}
  				
  				call.setOutput(output);
@@ -502,6 +472,37 @@ public class ContextClient extends AbstractClient
       this.defaultMediaType = mediaType;
    }
 
+   /**
+    * Updates some representation metadata based on a given entry name with extensions. 
+    * @param entryName The entry name with extensions.
+    * @param metadata The representation metadata to update.
+    */
+   public void updateMetadata(String entryName, RepresentationMetadata metadata)
+   {
+      String[] tokens = entryName.split("\\.");
+      Metadata current;
+      
+      // We found a potential variant
+      for(int j = 1; j < tokens.length; j++)
+      {
+      	current = getMetadata(tokens[j]);
+         if(current instanceof MediaType) metadata.setMediaType((MediaType)metadata);
+         if(current instanceof CharacterSet) metadata.setCharacterSet((CharacterSet)metadata);
+         if(current instanceof Encoding) metadata.setEncoding((Encoding)metadata);
+         if(current instanceof Language) metadata.setLanguage((Language)metadata);
+
+         int dashIndex = tokens[j].indexOf('-');
+         if((metadata == null) && (dashIndex != -1))
+         {
+            // We found a language extension with a region area specified
+            // Try to find a language matching the primary part of the extension
+            String primaryPart = tokens[j].substring(0, dashIndex);
+            current = getMetadata(primaryPart);
+            if(metadata instanceof Language) metadata.setLanguage((Language)metadata);
+         }
+      }
+   }
+   
    /**
     * Returns the default media type.
     * Used when no media type extension is available.

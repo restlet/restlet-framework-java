@@ -28,6 +28,7 @@ import org.restlet.Call;
 import org.restlet.Restlet;
 import org.restlet.connector.Client;
 import org.restlet.connector.Server;
+import org.restlet.data.ParameterList;
 import org.restlet.data.Protocol;
 
 /**
@@ -41,10 +42,10 @@ import org.restlet.data.Protocol;
 public interface Component extends Restlet
 {
 	/**
-	 * Returns the modifiable map of properties.
-	 * @return The modifiable map of properties.
+	 * Returns the modifiable list of parameters.
+	 * @return The modifiable list of parameters.
 	 */
-	public Map<String, String> getProperties();
+	public ParameterList getParameters();
 	
 	/**
 	 * Returns the modifiable map of client connectors.

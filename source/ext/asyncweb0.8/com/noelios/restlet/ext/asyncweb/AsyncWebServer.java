@@ -22,14 +22,11 @@
 package com.noelios.restlet.ext.asyncweb;
 
 import java.io.IOException;
-import java.util.Collections;
-import java.util.List;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
-import org.restlet.data.Protocol;
-import org.restlet.data.Protocols;
-
+import org.restlet.component.Component;
+import org.restlet.data.ParameterList;
 import org.safehaus.asyncweb.container.ContainerLifecycleException;
 import org.safehaus.asyncweb.container.ServiceContainer;
 import org.safehaus.asyncweb.container.ServiceHandler;
@@ -37,7 +34,6 @@ import org.safehaus.asyncweb.http.HttpResponse;
 import org.safehaus.asyncweb.request.AsyncWebRequest;
 import org.safehaus.asyncweb.transport.Transport;
 import org.safehaus.asyncweb.transport.TransportException;
-import org.safehaus.asyncweb.transport.nio.NIOTransport;
 
 import com.noelios.restlet.impl.HttpServer;
 import com.noelios.restlet.impl.HttpServerCall;
@@ -58,8 +54,11 @@ import com.noelios.restlet.impl.HttpServerCall;
  * 
  * @author Lars Heuer (heuer[at]semagia.com) <a href="http://www.semagia.com/">Semagia</a>
  */
-public class AsyncWebServer extends HttpServer implements ServiceContainer
+public abstract class AsyncWebServer extends HttpServer implements ServiceContainer
 {
+	/** Logger. */
+	private static Logger logger = Logger.getLogger("com.noelios.restlet.ext.asyncweb.AsyncWebServer");
+
 	/**
 	 * Indicates if the server is acting in HTTPS mode.
 	 */
@@ -68,37 +67,19 @@ public class AsyncWebServer extends HttpServer implements ServiceContainer
 	/**
 	 * AyncWeb transport layer.
 	 */
-	protected NIOTransport transport;
+	protected Transport transport;
 
-	/**
-	 * Logger.
-	 */
-	private static Logger logger = Logger.getLogger("com.noelios.restlet.ext.asyncweb.AsyncWebServer");
-
-	/**
-	 * Constructor.
-	 * 
-	 * @param protocol The connector protocol.
-	 * @param address The optional listening IP address (local host used if null).
-	 * @param port The listening port.
-	 */
-	public AsyncWebServer(Protocol protocol, String address, int port)
-	{
-		super(protocol, address, port);
-	}
-
-	/**
-	 * Returns the supported protocols. 
-	 * 
-	 * This method is called by the {@link com.noelios.restlet.impl.FactoryImpl} 
-	 * to determine the supported protocols.
-	 * 
-	 * @return A list of supported protocols.
-	 */
-	public static List<Protocol> getProtocols()
-	{
-		return Collections.<Protocol>singletonList(Protocols.HTTP);
-	}
+   /**
+    * Constructor.
+    * @param owner The owner component.
+    * @param parameters The initial parameters.
+    * @param address The optional listening IP address (local host used if null).
+    * @param port The listening port.
+    */
+   public AsyncWebServer(Component owner, ParameterList parameters, String address, int port)
+   {
+      super(owner, parameters, address, port);
+   }
 
 	/* (non-Javadoc)
 	 * @see org.safehaus.asyncweb.container.ServiceContainer#addServiceHandler(org.safehaus.asyncweb.container.ServiceHandler)
@@ -123,6 +104,7 @@ public class AsyncWebServer extends HttpServer implements ServiceContainer
 	{
 		HttpResponse response = request.createHttpResponse();
 		HttpServerCall call = new AsyncWebServerCall(request, response, confidential, super.address);
+		
 		try
 		{
 			super.handle(call);
@@ -136,75 +118,45 @@ public class AsyncWebServer extends HttpServer implements ServiceContainer
 		}
 	}
 
-	/* (non-Javadoc)
-	 * @see org.restlet.Restlet#start()
-	 */
+   /** Starts the Connector. */
 	@SuppressWarnings("unchecked")
 	public void start() throws ContainerLifecycleException
 	{
-		if(isStarted())
+		if(!isStarted())
 		{
-			return;
-		}
-		if (Protocols.HTTPS.equals(super.protocol))
-		{
-			// Stub, we shouldn't run into this, because HTTPS is not exposed as
-			// supported protocol
-
-			// TODO: Support HTTPS.
-			throw new UnsupportedOperationException("HTTPS is currenly not supported");
-		}
-		else if (Protocols.HTTP.equals(super.protocol))
-		{
-			if (transport == null)
+			try
 			{
-				transport = new NIOTransport();
-				transport.setPort(super.port);
-				transport.setServiceContainer(this);
+				transport.start();
+
+				// Setting the flag directly to avoid catching an exception
+				this.started = true;
+			}
+			catch (TransportException ex)
+			{
+				logger.log(Level.WARNING, "Failed to start the transport", ex);
+				throw new ContainerLifecycleException("Failed to start the transport", ex);
 			}
 		}
-		else
-		{
-			// Should never happen.
-			throw new RuntimeException("Unsupported protocol: " + super.protocol);
-		}
-		try
-		{
-			transport.start();
-		}
-		catch (TransportException ex)
-		{
-			logger.log(Level.WARNING, "Failed to start the transport", ex);
-			throw new ContainerLifecycleException("Failed to start the transport", ex);
-		}
-		
-		this.confidential = Protocols.HTTPS.equals(super.protocol);
-		
-		// Setting the flag directly to avoid catching an exception
-		super.started = true;
 	}
 
-	/* (non-Javadoc)
-	 * @see org.restlet.Restlet#stop()
-	 */
+   /** Stops the Connector. */
 	@SuppressWarnings("unchecked")
 	public void stop()
 	{
-		if (!isStarted())
+		if(isStarted())
 		{
-			return;
+			try
+			{
+				transport.stop();
+
+				// Setting the flag directly to avoid catching an exception
+				this.started = false;
+			}
+			catch (TransportException ex)
+			{
+				logger.log(Level.WARNING, "Failed to stop transport", ex);
+			}
 		}
-		try
-		{
-			transport.stop();
-		}
-		catch (TransportException ex)
-		{
-			logger.log(Level.WARNING, "Failed to stop transport", ex);
-		}
-		
-		// Setting the flag directly to avoid catching an exception
-		super.started = false;
 	}
 
 }

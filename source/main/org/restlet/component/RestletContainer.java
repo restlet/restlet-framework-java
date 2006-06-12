@@ -22,11 +22,12 @@
 
 package org.restlet.component;
 
+import org.restlet.Call;
 import org.restlet.Chainlet;
 import org.restlet.Factory;
 import org.restlet.Maplet;
 import org.restlet.Restlet;
-import org.restlet.Call;
+import org.restlet.data.ParameterList;
 
 /**
  * Container for Maplets, Chainlets or Restlets. Note that a container is also a Chainlet and Maplet by itself.
@@ -51,7 +52,16 @@ public class RestletContainer extends AbstractComponent implements Chainlet, Map
     */
    public RestletContainer()
    {
-   	this(null);
+   	this(null, null);
+   }
+
+   /**
+    * Constructor.
+    * @param parameters The initial parameters.
+    */
+   public RestletContainer(ParameterList parameters)
+   {
+      this(null, parameters);
    }
 
    /**
@@ -60,7 +70,17 @@ public class RestletContainer extends AbstractComponent implements Chainlet, Map
     */
    public RestletContainer(Component owner)
    {
-      super(owner);
+      this(owner, null);
+   }
+
+   /**
+    * Constructor.
+    * @param owner The owner component.
+    * @param parameters The initial parameters.
+    */
+   public RestletContainer(Component owner, ParameterList parameters)
+   {
+      super(owner, parameters);
       this.delegateChainlet = Factory.getInstance().createChainlet(owner);
       this.delegateMaplet = Factory.getInstance().createMaplet(owner);
    }

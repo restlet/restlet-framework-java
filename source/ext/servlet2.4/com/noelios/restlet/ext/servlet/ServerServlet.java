@@ -23,27 +23,21 @@
 package com.noelios.restlet.ext.servlet;
 
 import java.io.IOException;
-import java.util.Map;
-import java.util.TreeMap;
 
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
-import org.restlet.Call;
 import org.restlet.Restlet;
 import org.restlet.component.Component;
-import org.restlet.connector.Server;
-import org.restlet.data.Protocol;
-import org.restlet.data.Protocols;
 import org.restlet.data.Reference;
 
 import com.noelios.restlet.impl.HttpServer;
 
 /**
- * Servlet connector acting as a HTTP server. See the getTarget() method for details 
- * on how to provide a target for your server.<br/> Here is a sample configuration for your Restlet webapp:
+ * Servlet acting like an HTTP server connector. See the getTarget() method for details on how 
+ * to provide a target for your server.<br/> Here is a sample configuration for your Restlet webapp:
  * 
  * <pre>
  * &lt;?xml version="1.0" encoding="ISO-8859-1"?&gt;
@@ -111,7 +105,7 @@ import com.noelios.restlet.impl.HttpServer;
  * @see <a href="http://java.sun.com/j2ee/">J2EE home page</a>
  * @author Jerome Louvel (contact@noelios.com) <a href="http://www.noelios.com/">Noelios Consulting</a>
  */
-public class ServerServlet extends HttpServlet implements Server
+public class ServerServlet extends HttpServlet
 {
    /** 
     * The Servlet context initialization parameter's name containing the target's 
@@ -136,15 +130,6 @@ public class ServerServlet extends HttpServlet implements Server
 
    /** Serial version identifier. */
    private static final long serialVersionUID = 1L;
-   
-   /** The owner component. */
-   protected Component owner;
-   
-	/** The modifiable map of properties. */
-   protected Map<String, String> properties;
-
-   /** Indicates if the connector was started. */
-   protected boolean started;
 
    /** The target Restlet for Jetty calls. */
    protected Restlet target;
@@ -154,75 +139,7 @@ public class ServerServlet extends HttpServlet implements Server
     */
    public ServerServlet()
    {
-      this.started = false;
       this.target = null;
-   }
-
-   /**
-	 * Returns the modifiable map of properties.
-	 * @return The modifiable map of properties.
-	 */
-	public Map<String, String> getProperties()
-	{
-		if(this.properties == null) this.properties = new TreeMap<String, String>();
-		return this.properties;
-	}
-   
-   /**
-    * Returns the connector's protocol.
-    * @return The connector's protocol.
-    */
-   public Protocol getProtocol()
-   {
-      return Protocols.HTTP;
-   }
-
-   /** Start hook. */
-   public void start()
-   {
-      this.started = true;
-   }
-
-   /** Stop hook. */
-   public void stop()
-   {
-      this.started = false;
-   }
-
-   /**
-    * Indicates if the connector is started.
-    * @return True if the connector is started.
-    */
-   public boolean isStarted()
-   {
-      return this.started;
-   }
-
-   /**
-    * Indicates if the connector is stopped.
-    * @return True if the connector is stopped.
-    */
-   public boolean isStopped()
-   {
-      return !isStarted();
-   }
-
-   /**
-    * Returns the owner component.
-    * @return The owner component.
-    */
-   public Component getOwner()
-   {
-   	return this.owner;
-   }
-
-   /**
-    * Sets the owner component.
-    * @param owner The owner component.
-    */
-   public void setOwner(Component owner)
-   {
-   	this.owner = owner;
    }
    
    /**
@@ -234,7 +151,7 @@ public class ServerServlet extends HttpServlet implements Server
    {
    	if(getTarget(request) != null)
       {
-         HttpServer.handle(new ServletCall(request, response, getServletContext()), this);
+         HttpServer.handle(new ServletCall(request, response, getServletContext()), getTarget());
       }
    }
 
@@ -309,7 +226,7 @@ public class ServerServlet extends HttpServlet implements Server
                         		int hostPort = request.getServerPort();
                         		String servletPath = request.getContextPath() + request.getServletPath();
                         		String contextPath = Reference.toUri(scheme, hostName, hostPort, servletPath, null, null);
-                        		component.getProperties().put(initContextPathName, contextPath);
+                        		component.getParameters().add(initContextPathName, contextPath);
                         		log("[Noelios Restlet Engine] - This context path has been provided to the target's init parameter \"" + initContextPathName + "\": " + contextPath);
                         	}
                      	}
@@ -368,28 +285,6 @@ public class ServerServlet extends HttpServlet implements Server
    public void setTarget(Restlet target)
    {
       this.target = target;
-   }
-
-   /**
-    * Handles a call.
-    * The default behavior is to invoke the target Restlet. 
-    * @param call The call to handle.
-    */
-	public void handle(Call call)
-   {
-   	if(getTarget() != null)
-   	{
-   		getTarget().handle(call);
-   	}
-   }
-
-   /**
-    * Not directly supported.<br/>
-    * SSL must be configured at the Servlet Container level. 
-    */
-   public void configureSsl(String keystorePath, String keystorePassword, String keyPassword)
-   {
-      throw new IllegalArgumentException("Not directly supported. SSL must be configured at the Servlet Container level.");
    }
 
    /**

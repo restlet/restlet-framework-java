@@ -22,12 +22,14 @@
 
 package org.restlet.connector;
 
-import java.util.Map;
+import java.util.Arrays;
+import java.util.List;
 
 import org.restlet.Call;
 import org.restlet.Factory;
 import org.restlet.Restlet;
 import org.restlet.component.Component;
+import org.restlet.data.ParameterList;
 import org.restlet.data.Protocol;
 
 /**
@@ -46,7 +48,18 @@ public class DefaultServer implements Server
     */
    public DefaultServer(Protocol protocol, Restlet target)
    {
-   	this(protocol, target, null, protocol.getDefaultPort());
+   	this(protocol, null, target, null, protocol.getDefaultPort());
+   }
+   
+   /**
+    * Constructor using the protocol's default port.
+    * @param protocol The connector protocol.
+    * @param parameters The initial parameters.
+    * @param target The target Restlet.
+    */
+   public DefaultServer(Protocol protocol, ParameterList parameters, Restlet target)
+   {
+   	this(protocol, parameters, target, null, protocol.getDefaultPort());
    }
    
    /**
@@ -57,7 +70,42 @@ public class DefaultServer implements Server
     */
    public DefaultServer(Protocol protocol, Restlet target, int port)
    {
-   	this(protocol, target, null, port);
+   	this(protocol, null, target, null, port);
+   }
+   
+   /**
+    * Constructor.
+    * @param protocol The connector protocol.
+    * @param parameters The initial parameters.
+    * @param target The target Restlet.
+    * @param port The listening port.
+    */
+   public DefaultServer(Protocol protocol, ParameterList parameters, Restlet target, int port)
+   {
+   	this(protocol, parameters, target, null, port);
+   }
+   
+   /**
+    * Constructor.
+    * @param protocols The connector protocols.
+    * @param target The target Restlet.
+    * @param port The listening port.
+    */
+   public DefaultServer(List<Protocol> protocols, Restlet target, int port)
+   {
+   	this(protocols, null, target, null, port);
+   }
+   
+   /**
+    * Constructor.
+    * @param protocols The connector protocols.
+    * @param parameters The initial parameters.
+    * @param target The target Restlet.
+    * @param port The listening port.
+    */
+   public DefaultServer(List<Protocol> protocols, ParameterList parameters, Restlet target, int port)
+   {
+   	this(protocols, parameters, target, null, port);
    }
    
    /**
@@ -69,7 +117,45 @@ public class DefaultServer implements Server
     */
    public DefaultServer(Protocol protocol, Restlet target, String address, int port)
    {
-   	this.wrappedServer = Factory.getInstance().createServer(protocol, address, port);
+   	this(protocol, null, target, address, port);
+   }
+   
+   /**
+    * Constructor.
+    * @param protocol The connector protocol.
+    * @param properties The initial properties.
+    * @param target The target Restlet.
+    * @param address The optional listening IP address (useful if multiple IP addresses available).
+    * @param port The listening port.
+    */
+   public DefaultServer(Protocol protocol, ParameterList properties, Restlet target, String address, int port)
+   {
+   	this(Arrays.asList(protocol), properties, target, address, port);
+   }
+
+   /**
+    * Constructor.
+    * @param protocols The connector protocols.
+    * @param target The target Restlet.
+    * @param address The optional listening IP address (useful if multiple IP addresses available).
+    * @param port The listening port.
+    */
+   public DefaultServer(List<Protocol> protocols, Restlet target, String address, int port)
+   {
+   	this(protocols, null, target, address, port);
+   }
+   
+   /**
+    * Constructor.
+    * @param protocols The connector protocols.
+    * @param parameters The initial parameters.
+    * @param target The target Restlet.
+    * @param address The optional listening IP address (useful if multiple IP addresses available).
+    * @param port The listening port.
+    */
+   public DefaultServer(List<Protocol> protocols, ParameterList parameters, Restlet target, String address, int port)
+   {
+   	this.wrappedServer = Factory.getInstance().createServer(protocols, null, parameters, address, port);
    	setTarget(target);
    }
 
@@ -160,21 +246,21 @@ public class DefaultServer implements Server
    }
    
 	/**
-	 * Returns the modifiable map of properties.
-	 * @return The modifiable map of properties.
+	 * Returns the modifiable list of parameters.
+	 * @return The modifiable list of parameters.
 	 */
-	public Map<String, String> getProperties()
+	public ParameterList getParameters()
 	{
-		return this.wrappedServer.getProperties();
+		return this.wrappedServer.getParameters();
 	}
 
    /**
-    * Returns the connector's protocol.
-    * @return The connector's protocol.
+    * Returns the protocols supported by the connector.
+    * @return The protocols supported by the connector.
     */
-   public Protocol getProtocol()
+   public List<Protocol> getProtocols()
    {
-   	return this.wrappedServer.getProtocol();
+   	return this.wrappedServer.getProtocols();
    }
 
 }

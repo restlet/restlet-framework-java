@@ -32,8 +32,8 @@ import java.util.TreeMap;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
-import org.restlet.Resource;
 import org.restlet.Call;
+import org.restlet.Resource;
 import org.restlet.connector.ConnectorCall;
 import org.restlet.data.ConditionData;
 import org.restlet.data.Cookie;

@@ -20,21 +20,31 @@
  * Portions Copyright [yyyy] [name of copyright owner]
  */
 
-package com.noelios.restlet.impl;
+package com.noelios.restlet.ext.asyncweb;
 
-import java.io.IOException;
-
-import org.restlet.Call;
-import org.restlet.Restlet;
 import org.restlet.component.Component;
-import org.restlet.connector.AbstractServer;
 import org.restlet.data.ParameterList;
+import org.restlet.data.Protocols;
+import org.safehaus.asyncweb.container.ContainerLifecycleException;
+import org.safehaus.asyncweb.transport.nio.NIOTransport;
 
 /**
- * Base HTTP server connector.
- * @author Jerome Louvel (contact@noelios.com) <a href="http://www.noelios.com/">Noelios Consulting</a>
+ * Represents a thin layer around AsyncWeb.
+ * 
+ * This implementation passes by all of AsyncWeb ServiceContainer, 
+ * HttpServiceHandler etc. mechanisms and implements a 
+ * {@link org.restlet.connector.Server} and a 
+ * {@link org.safehaus.asyncweb.container.ServiceContainer} directly. It takes
+ * care about setting up a {@link org.safehaus.asyncweb.transport.nio.NIOTransport}.
+ * <p>
+ * Note: This implementation is not usable inside an AsyncWeb standard 
+ * environment because it represents a container and not a handler; it takes
+ * full control over the container lifecycle.
+ * </p>
+ * 
+ * @author Lars Heuer (heuer[at]semagia.com) <a href="http://www.semagia.com/">Semagia</a>
  */
-public class HttpServer extends AbstractServer
+public class HttpServer extends AsyncWebServer
 {
    /**
     * Constructor.
@@ -46,31 +56,20 @@ public class HttpServer extends AbstractServer
    public HttpServer(Component owner, ParameterList parameters, String address, int port)
    {
       super(owner, parameters, address, port);
-   }
-	
-   /**
-    * Handles the connector call.<br/>
-    * The default behavior is to create an REST call and delegate it to the attached Restlet.
-    * @param call The connector call.
-    */
-   public void handle(HttpServerCall call) throws IOException
-   {
-   	handle(call, this);
+      getProtocols().add(Protocols.HTTP);
    }
 
-   /**
-    * Handles an HTTP server call for a given Restlet target. 
-    * @param call The connector call.
-    * @param target The target Restlet.
-    * @throws IOException 
-    */
-   public static void handle(HttpServerCall call, Restlet target) throws IOException
-   {
-      Call restletCall = call.toUniform();
-      target.handle(restletCall);
-      call.setResponse(restletCall);
-      call.sendResponseHeaders();
-      call.sendResponseOutput(restletCall.getOutput());
-   }
-   
+   /** Starts the Connector. */
+	public void start() throws ContainerLifecycleException
+	{
+		if(!isStarted())
+		{
+			NIOTransport nio = new NIOTransport();
+			nio.setPort(super.port);
+			nio.setServiceContainer(this);
+			this.transport = nio;
+			super.start();		
+		}
+	}
+
 }

@@ -1,2 +1,2 @@
-com.noelios.restlet.ext.asyncweb.AsyncWebServer	# HTTP
+com.noelios.restlet.ext.asyncweb.HttpServer		# HTTP
 

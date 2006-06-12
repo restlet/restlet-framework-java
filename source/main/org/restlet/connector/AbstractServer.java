@@ -24,7 +24,8 @@ package org.restlet.connector;
 
 import org.restlet.Call;
 import org.restlet.Restlet;
-import org.restlet.data.Protocol;
+import org.restlet.component.Component;
+import org.restlet.data.ParameterList;
 
 /**
  * Abstract server connector.
@@ -52,13 +53,14 @@ public abstract class AbstractServer extends AbstractConnector implements Server
    
    /**
     * Constructor.
-    * @param protocol The connector protocol.
+    * @param owner The owner component.
+    * @param parameters The initial parameters.
     * @param address The optional listening IP address (local host used if null).
     * @param port The listening port.
     */
-   public AbstractServer(Protocol protocol, String address, int port)
+   public AbstractServer(Component owner, ParameterList parameters, String address, int port)
    {
-      super(protocol);
+   	super(owner, parameters);
       this.address = address;
       this.port = port;
    }

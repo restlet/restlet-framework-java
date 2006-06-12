@@ -57,6 +57,9 @@ public class ContextResource implements Resource
     */
    private ContextClient contextClient;
 
+   /** If a directory is specified, use the (optional) index name. */
+   protected String indexName;
+
    /**
     * The absolute base path in the context. For example, "foo.en" will match "foo.en.html" and "foo.en-GB.html".
     */
@@ -71,11 +74,13 @@ public class ContextResource implements Resource
     * Constructor.
     * @param contextClient The context client connector.
     * @param basePath The base path of the file.
+    * @param indexName The optional index name.
     */
-   public ContextResource(ContextClient contextClient, String basePath)
+   public ContextResource(ContextClient contextClient, String basePath, String indexName)
    {
       // Update the member variables
       this.contextClient = contextClient;
+      this.indexName = indexName;
 
       logger.info("Context base path: " + basePath);
 
@@ -109,12 +114,11 @@ public class ContextResource implements Resource
       if(new File(this.basePath).isDirectory())
       {
          // Append the index name
-//         String indexName = getFileClient().getIndexName();
-//         if(indexName != null)
-//         {
-//            this.basePath = this.basePath + indexName;
-//            this.baseName = indexName;
-//         }
+         if(getIndexName() != null)
+         {
+            this.basePath = this.basePath + getIndexName();
+            this.baseName = getIndexName();
+         }
       }
       else
       {
@@ -135,6 +139,24 @@ public class ContextResource implements Resource
       // Log results
       logger.info("Converted base path: " + this.basePath);
       logger.info("Converted base name: " + this.baseName);
+   }
+
+   /**
+    * Returns the index name.
+    * @return The index name.
+    */
+   public String getIndexName()
+   {
+      return indexName;
+   }
+
+   /**
+    * Sets the index name.
+    * @param indexName The index name.
+    */
+   public void setIndexName(String indexName)
+   {
+      this.indexName = indexName;
    }
 
 	/**

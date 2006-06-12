@@ -27,7 +27,6 @@ import java.sql.DriverManager;
 import java.sql.SQLException;
 import java.sql.Statement;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.List;
 import java.util.Properties;
 
@@ -40,11 +39,12 @@ import org.apache.commons.dbcp.PoolableConnectionFactory;
 import org.apache.commons.dbcp.PoolingDataSource;
 import org.apache.commons.pool.ObjectPool;
 import org.apache.commons.pool.impl.GenericObjectPool;
-import org.restlet.DefaultCall;
 import org.restlet.Call;
+import org.restlet.DefaultCall;
+import org.restlet.component.Component;
 import org.restlet.connector.AbstractClient;
 import org.restlet.data.Methods;
-import org.restlet.data.Protocol;
+import org.restlet.data.ParameterList;
 import org.restlet.data.Protocols;
 import org.restlet.data.Representation;
 import org.w3c.dom.Document;
@@ -78,27 +78,20 @@ import com.noelios.restlet.impl.FactoryImpl;
 public class JdbcClient extends AbstractClient
 {
    /** Map of connection factories. */
-   private List<ConnectionSource> connectionSources;
-
+   protected List<ConnectionSource> connectionSources;
+   
    /**
     * Constructor.
-    * @param protocol The protocol to use.
+    * @param owner The owner component.
+    * @param parameters The initial parameters.
     */
-   public JdbcClient(Protocol protocol)
+   public JdbcClient(Component owner, ParameterList parameters)
    {
-      super(protocol);
+   	super(owner, parameters);
+   	getProtocols().add(Protocols.JDBC);
 
       // Set up the list of factories
       this.connectionSources = new ArrayList<ConnectionSource>();
-   }
-   
-   /**
-    * Returns the supported protocols. 
-    * @return The supported protocols.
-    */
-   public static List<Protocol> getProtocols()
-   {
-   	return Arrays.asList(new Protocol[]{Protocols.JDBC});
    }
      
    /**

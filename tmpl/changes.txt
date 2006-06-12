@@ -5,14 +5,16 @@ Restlet changes log
 
 @version-full@ (@release-date@)
  - Updated Jetty 6 to version beta 17.
- - Fixed type in JdbcClient sample XML document. Reported by Thierry Boileau.
+ - Updated Apache FileUpload extension to version 1.1.1.
+ - Fixed encoding name in JdbcClient sample XML document. Reported by Thierry Boileau.
  - Added new FileRepresentation constructor accepting a File instance.
  - Improved ByteUtils.write() methods for streams by automatically buffering output streams if necessary.
+ - Removed the unecessary buffering of the input stream in ByteUtils.write(). We don't use the mark and set features.
  - Templatized AbstractChainlet. Contributed by Lars Heuer.
  - Fixed AbstractRestlet which was not reporting the proper error when non standard Method instances were called but not handled.
  - Added CONTEXT and FILE protocols to Protocols enumeration.
  - Added com.noelios.restlet.data.FileReference.
- - Added org.restlet.data.ReferenceList to handle "text/uri-list" representations.
+ - Added org.restlet.data.ReferenceList to handle list of references, supporting the "text/uri-list" representations.
  - Renamed Resource.getVariantsMetadata() to getVariants() for simplification purpose.
  - Added Resource.getIdentifier() : Reference method.
  - Renamed com.noelios.restlet.impl.HttpServerCallImpl to HttpServerCall.
@@ -21,8 +23,6 @@ Restlet changes log
  - Removed "name" property from Connector and Component interfaces and related classes.
  - Added modifiable "properties" map to the Connector interface.
  - Added ContextClient implementing a client connector for the CONTEXT and FILE protocols, allowing REST access to contextual resources.
- - Added ServerCall.getRequestInput() method to factorize common logic among HTTP server connectors.
- - Added ClientCall.getResponseOutput() method to factorize common logic among HTTP and FILE connectors.
  - Moved StringUtils.normalizePath() method to FileReference.
  - Added JarReference supporting the JAR URIs defined by JDK's JarUrlConnection.
  - Added ContextReference supporting the custom context URIs. Those URIs allow the loading of representation from various contextual locations
@@ -31,23 +31,17 @@ Restlet changes log
    of owner components.
  - Fixed bug in ServerServlet in order to auto-start the target Restlet. Problem identified by Bill Morone.
  - Added ServletContextClient to server as a specialized ContextClient when the ServerServlet server connector is used.
- - Added ServletContextCall to handle context calls for a ServletContextClient.
- - Added ClassLoaderCall to handle context calls for a ContextClient based on a given class loader.
  - Added log traces with the Maplet call delegation logic (step by step URI matching and updating). 
    Enable the log level FINE and FINER to see them in your log file. See JDK's logging mechanism for details. Reported by Bill Morone.
- - Refactored the Client, ClientCall interfaces and related classes that were too HTTP oriented. 
  - Added HttpUrlConnectionCall, subclass of the (now) generic HttpClientCall, that is based on JDK's HttpUrlConnection.
- - Added FileClient connector to local files, subclass of ContextClient.
  - Changed the default value inserted by the RedirectRestlet when a URI variable is not found: was "null" and now is an empty string.
  - Changed the repeating variable delimiter in CallModel from "[" and "]" to "(" and ")" to prevent conflicts with the default instruction delimiter
    characters in StringTemplate. Reported by John D. Mitchell.
  - Added the possibility to add a local test for variable insertions: ${variableName?exists} in order to test the existence of the variable first.
    This is equivalent to #[if variableName]${variableName}#[end] but obviously shorter. Without this local test, the default model value will be inserted
    which may be "null" or some unfriendly string. Added related unit tests.
- - Fixed bug in ByteUtils.write() that prevented the flushing of buffered output streams.
- - Removed the unecessary buffering of the input stream in ByteUtils.write(). We don't use the mark and set features.
  - Added HTTP server connector based on AsyncWeb 0.8 which is based on Apache Mina 0.8. Contributed by Lars Heuer. Suggested by John D. Mitchell.
- - Updated Apache FileUpload extension to version 1.1.1.
+ - Removed ClientCall interface and refactored the Client interface and related classes that were too HTTP oriented. 
  - Removed the ServerCall interface and moved the contract/logic into a new com.noelios.restlet.impl.HttpServer. It was to HTTP oriented.
    Refactored all Server related classes to adjust to the change. Provided a useful static handle(HttpServerCall, Restlet) method for classes that 
    can't subclass HttpServer directly (Jetty 6 server and Servlet server).
@@ -55,6 +49,15 @@ Restlet changes log
    with the part 12 using the fluent builders. Suggested by Bill Morone.
  - Removed the FileRestlet which doesn't bring a lot of value now that we have a flexible DirectoryRestlet.
  - Renamed FileResource into ContextResource because it can now expose representation with all context authorities (file, class loaders, webapp context).
+ - Refactored all connector to be stricter with the concept of supported protocol: it now means that the connector instance simultaneously supports all
+   the protocols at the same time. When serveral protocols could be supported by a connector but in separate instances, a refactoring was done to create
+   a subclass for each protocol.
+ - The convention saying that each connector must provide a static getProtocols() method was replaced by a non-static getProtocols() method returning 
+   the list of protocol that can be simultaneously supported by the same instance. 
+ - For simplication purpose, the ServerServlet doesn't support implements the Server interface anymore. It's still a pseudo-connector.
+ - ComponentBuilder.setParameter() method was changed to addParameter() allowing repeating parameters.
+ - Components and Connectors now have a getParameters() method that exposes a modifiable list of parameters (ParameterList instance).
+ - 
  
 1.0 beta 14 (2006-06-02)
  - Adjusted build.properties so that default values work directly.

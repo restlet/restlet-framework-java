@@ -22,11 +22,13 @@
 
 package org.restlet.connector;
 
-import java.util.Map;
+import java.util.Arrays;
+import java.util.List;
 
 import org.restlet.Call;
 import org.restlet.Factory;
 import org.restlet.component.Component;
+import org.restlet.data.ParameterList;
 import org.restlet.data.Protocol;
 import org.restlet.data.Representation;
 
@@ -45,7 +47,36 @@ public class DefaultClient implements Client
 	 */
 	public DefaultClient(Protocol protocol)
 	{
-		this.wrappedClient = Factory.getInstance().createClient(protocol);
+		this(protocol, null);
+	}
+	
+	/**
+    * Constructor.
+    * @param protocols The connector protocols.
+	 */
+	public DefaultClient(List<Protocol> protocols)
+	{
+		this(protocols, null);
+	}
+	
+	/**
+    * Constructor.
+    * @param protocol The connector protocol.
+    * @param parameters The initial parameters.
+	 */
+	public DefaultClient(Protocol protocol, ParameterList parameters)
+	{
+		this.wrappedClient = Factory.getInstance().createClient(Arrays.asList(protocol), null, parameters);
+	}
+	
+	/**
+    * Constructor.
+    * @param protocols The connector protocols.
+    * @param parameters The initial parameters.
+	 */
+	public DefaultClient(List<Protocol> protocols, ParameterList parameters)
+	{
+		this.wrappedClient = Factory.getInstance().createClient(protocols, null, parameters);
 	}
 
    /**
@@ -151,18 +182,18 @@ public class DefaultClient implements Client
 	 * Returns the modifiable map of properties.
 	 * @return The modifiable map of properties.
 	 */
-	public Map<String, String> getProperties()
+	public ParameterList getParameters()
 	{
-		return this.wrappedClient.getProperties();
+		return this.wrappedClient.getParameters();
 	}
 
    /**
-    * Returns the connector's protocol.
-    * @return The connector's protocol.
+    * Returns the protocols supported by the connector.
+    * @return The protocols supported by the connector.
     */
-   public Protocol getProtocol()
+   public List<Protocol> getProtocols()
    {
-   	return this.wrappedClient.getProtocol();
+   	return this.wrappedClient.getProtocols();
    }
    
    /**

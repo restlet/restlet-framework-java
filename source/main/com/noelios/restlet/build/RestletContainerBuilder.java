@@ -148,9 +148,9 @@ public class RestletContainerBuilder extends ComponentBuilder
     * @param value The property value.
     * @return The current builder.
     */
-   public RestletContainerBuilder setProperty(String name, String value)
+   public RestletContainerBuilder addParameter(String name, String value)
    {
-      return (RestletContainerBuilder)super.setProperty(name, value);
+      return (RestletContainerBuilder)super.addParameter(name, value);
    }
 
    /** 

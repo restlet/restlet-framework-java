@@ -27,21 +27,27 @@ import java.io.IOException;
 import java.io.InputStreamReader;
 import java.io.UnsupportedEncodingException;
 import java.net.URL;
+import java.util.ArrayList;
 import java.util.Enumeration;
 import java.util.List;
 import java.util.Map;
-import java.util.TreeMap;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
+import org.restlet.Call;
 import org.restlet.Chainlet;
 import org.restlet.Factory;
 import org.restlet.Maplet;
-import org.restlet.Call;
 import org.restlet.component.Component;
 import org.restlet.connector.Client;
 import org.restlet.connector.Server;
-import org.restlet.data.*;
+import org.restlet.data.ChallengeResponse;
+import org.restlet.data.ChallengeSchemes;
+import org.restlet.data.Form;
+import org.restlet.data.MediaType;
+import org.restlet.data.ParameterList;
+import org.restlet.data.Protocol;
+import org.restlet.data.Representation;
 
 import com.noelios.restlet.data.StringRepresentation;
 import com.noelios.restlet.util.Base64;
@@ -61,15 +67,11 @@ public class FactoryImpl extends Factory
    public static final String VERSION_SHORT = Factory.VERSION_SHORT;
    public static final String VERSION_HEADER = "Noelios-Restlet-Engine/" + VERSION_SHORT;
 
-   /**
-    * Map from protocol to client connector class.
-    */
-   protected Map<Protocol, Class<? extends Client>> clients;
+   /** List of available client connectors. */
+   protected List<Client> clients;
 
-   /**
-    * Map from protocol to server connector class.
-    */
-   protected Map<Protocol, Class<? extends Server>> servers;
+   /** List of available server connectors. */
+   protected List<Server> servers;
 
    /**
     * Constructor.
@@ -77,8 +79,8 @@ public class FactoryImpl extends Factory
    @SuppressWarnings("unchecked")
    public FactoryImpl()
    {
-      this.clients = new TreeMap<Protocol, Class<? extends Client>>();
-      this.servers = new TreeMap<Protocol, Class<? extends Server>>();
+      this.clients = new ArrayList<Client>();
+      this.servers = new ArrayList<Server>();
 
       // Find the factory class name
       String providerName = null;
@@ -114,16 +116,7 @@ public class FactoryImpl extends Factory
                      try
                      {
                         Class<? extends Client> providerClass = (Class<? extends Client>) Class.forName(providerClassName);
-                        java.lang.reflect.Method getMethod = providerClass.getMethod("getProtocols", (Class[])null);
-                        List<Protocol> supportedProtocols = (List<Protocol>)getMethod.invoke(null, (Object[])null);
-
-                        for(Protocol protocol : supportedProtocols)
-                        {
-                           if(!this.clients.containsKey(protocol))
-                           {
-                              this.clients.put(protocol, providerClass);
-                           }
-                        }
+                        this.clients.add(providerClass.newInstance());
                      }
                      catch(Exception e)
                      {
@@ -173,16 +166,7 @@ public class FactoryImpl extends Factory
                try
                {
                   Class<? extends Server> providerClass = (Class<? extends Server>) Class.forName(providerClassName);
-                  java.lang.reflect.Method getMethod = providerClass.getMethod("getProtocols", (Class[])null);
-                  List<Protocol> supportedProtocols = (List<Protocol>)getMethod.invoke(null, (Object[])null);
-
-                  for(Protocol protocol : supportedProtocols)
-                  {
-                     if(!this.servers.containsKey(protocol))
-                     {
-                        this.servers.put(protocol, providerClass);
-                     }
-                  }
+                  this.servers.add(providerClass.newInstance());
                }
                catch(Exception e)
                {
@@ -207,32 +191,32 @@ public class FactoryImpl extends Factory
 
    /**
     * Create a new client connector for a given protocol.
-    * @param protocol The connector protocol.
+    * @param protocols The connector protocols.
+    * @param owner The owner component.
+    * @param parameters The initial parameters.
     * @return The new client connector.
     */
-   public Client createClient(Protocol protocol)
+   public Client createClient(List<Protocol> protocols, Component owner, ParameterList parameters)
    {
-      Client result = null;
+     	for(Client client : this.clients)
+     	{
+     		if(client.getProtocols().containsAll(protocols))
+     		{
+     	      try
+     	      {
+     	         return client.getClass().getConstructor(Component.class, Map.class).newInstance(owner, parameters);
+     	      }
+     	      catch (Exception e)
+     	      {
+     	         logger.log(Level.SEVERE, "Exception while instantiation the client connector.", e);
+     	      }
+     			
+     			return client;
+     		}
+     	}
 
-      try
-      {
-         Class<? extends Client> providerClass = this.clients.get(protocol);
-
-         if((providerClass != null) && (protocol != null))
-         {
-            result = providerClass.getConstructor(Protocol.class).newInstance(protocol);
-         }
-         else
-         {
-            logger.log(Level.WARNING, "No client connector supports the " + protocol.getName() + " protocol.");
-         }
-      }
-      catch (Exception e)
-      {
-         logger.log(Level.SEVERE, "Exception while instantiation the client connector.", e);
-      }
-
-      return result;
+     	logger.log(Level.WARNING, "No available client connector supports the required protocols.");
+      return null;
    }
 
    /**
@@ -247,55 +231,53 @@ public class FactoryImpl extends Factory
    /**
     * Creates a delegate Chainlet for internal usage by the AbstractChainlet.<br/>
     * If you need a Chainlet for your application, you should be subclassing the AbstractChainlet instead.
-    * @param parent The parent component.
+    * @param owner The owner component.
     * @return A new Chainlet.
     */
-   public Chainlet createChainlet(Component parent)
+   public Chainlet createChainlet(Component owner)
    {
-      return new ChainletImpl(parent);
+      return new ChainletImpl(owner);
    }
 
    /**
     * Creates a delegate Maplet for internal usage by the DefaultMaplet.<br/>
     * If you need a Maplet for your application, you should be using the DefaultMaplet instead.
-    * @param parent The parent component.
+    * @param owner The owner component.
     * @return A new Maplet.
     */
-   public Maplet createMaplet(Component parent)
+   public Maplet createMaplet(Component owner)
    {
-      return new MapletImpl(parent);
+      return new MapletImpl(owner);
    }
 
    /**
     * Create a new server connector for internal usage by the GenericClient.
-    * @param protocol The connector protocol.
+    * @param protocols The connector protocols.
+    * @param owner The owner component.
+    * @param parameters The initial parameters.
     * @param address The optional listening IP address (local host used if null).
     * @param port The listening port.
     * @return The new server connector.
     */
-   public Server createServer(Protocol protocol, String address, int port)
+   public Server createServer(List<Protocol> protocols, Component owner, ParameterList parameters, String address, int port)
    {
-      Server result = null;
+     	for(Server server : this.servers)
+     	{
+     		if(server.getProtocols().containsAll(protocols))
+     		{
+     	      try
+     	      {
+     	         return server.getClass().getConstructor(Component.class, Map.class, String.class, int.class).newInstance(owner, parameters, address, port);
+     	      }
+     	      catch (Exception e)
+     	      {
+     	         logger.log(Level.SEVERE, "Exception while instantiation the server connector.", e);
+     	      }
+     		}
+     	}
 
-      try
-      {
-         Class<? extends Server> providerClass = this.servers.get(protocol);
-
-         if((providerClass != null) && (protocol != null))
-         {
-            result = providerClass.getConstructor(Protocol.class, String.class, int.class).newInstance(protocol, address, port);
-         }
-         else
-         {
-            logger.log(Level.WARNING, "No server connector supports the " + protocol.getName() + " protocol.");
-         }
-      }
-      catch (Exception e)
-      {
-         logger.log(Level.SEVERE, "Exception while instantiation the server connector.", e);
-      }
-
-      return result;
+     	logger.log(Level.WARNING, "No available server connector supports the required protocols.");
+      return null;
    }
 
    /**

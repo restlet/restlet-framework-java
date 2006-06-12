@@ -22,11 +22,12 @@
 
 package org.restlet.connector;
 
-import java.util.Map;
-import java.util.TreeMap;
+import java.util.ArrayList;
+import java.util.List;
 
 import org.restlet.AbstractRestlet;
 import org.restlet.component.Component;
+import org.restlet.data.ParameterList;
 import org.restlet.data.Protocol;
 
 /**
@@ -35,50 +36,45 @@ import org.restlet.data.Protocol;
  */
 public abstract class AbstractConnector extends AbstractRestlet implements Connector
 {
-	/** The modifiable map of properties. */
-   protected Map<String, String> properties;
+	/** The modifiable list of parameters. */
+   protected ParameterList parameters;
 
-   /** The connector protocol. */
-   protected Protocol protocol;
-   
-   /**
-    * Constructor.
-    * @param protocol The connector protocol.
-    */
-   public AbstractConnector(Protocol protocol)
-   {
-      this(null, protocol);
-   }
+   /** The protocols supported by the connector. */
+   protected List<Protocol> protocols;
    
    /**
     * Constructor.
     * @param owner The owner component.
-    * @param protocol The connector protocol.
+    * @param parameters The initial parameters.
     */
-   public AbstractConnector(Component owner, Protocol protocol)
+   public AbstractConnector(Component owner, ParameterList parameters)
    {
    	super(owner);
-   	this.properties = null;
-      this.protocol = protocol;
+   	this.parameters = parameters;
    }
    
 	/**
-	 * Returns the modifiable map of properties.
-	 * @return The modifiable map of properties.
+	 * Returns the modifiable list of parameters.
+	 * @return The modifiable list of parameters.
 	 */
-	public Map<String, String> getProperties()
+	public ParameterList getParameters()
 	{
-		if(this.properties == null) this.properties = new TreeMap<String, String>();
-		return this.properties;
+		if(this.parameters == null) this.parameters = new ParameterList();
+		return this.parameters;
 	}
 
    /**
-    * Returns the connector's protocol.
-    * @return The connector's protocol.
+    * Returns the protocols supported by the connector.
+    * @return The protocols supported by the connector.
     */
-   public Protocol getProtocol()
+   public List<Protocol> getProtocols()
    {
-      return this.protocol;
+      if(this.protocols == null)
+      {
+      	this.protocols = new ArrayList<Protocol>();
+      }
+      
+      return this.protocols;
    }
 
 }

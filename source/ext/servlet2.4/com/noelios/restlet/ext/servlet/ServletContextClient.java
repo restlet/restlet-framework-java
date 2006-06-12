@@ -22,19 +22,24 @@
 
 package com.noelios.restlet.ext.servlet;
 
-import java.util.Arrays;
-import java.util.List;
-import java.util.logging.Level;
-import java.util.logging.Logger;
+import java.util.Iterator;
+import java.util.Set;
 
 import javax.servlet.ServletContext;
 
-import org.restlet.data.Protocol;
-import org.restlet.data.Protocols;
+import org.restlet.Call;
+import org.restlet.component.Component;
+import org.restlet.data.DefaultMediaType;
+import org.restlet.data.Methods;
+import org.restlet.data.ParameterList;
+import org.restlet.data.Reference;
+import org.restlet.data.ReferenceList;
+import org.restlet.data.Representation;
+import org.restlet.data.Statuses;
 
 import com.noelios.restlet.data.ContextReference;
+import com.noelios.restlet.data.InputRepresentation;
 import com.noelios.restlet.data.ContextReference.AuthorityType;
-import com.noelios.restlet.impl.ContextCall;
 import com.noelios.restlet.impl.ContextClient;
 
 /**
@@ -43,20 +48,18 @@ import com.noelios.restlet.impl.ContextClient;
  */
 public class ServletContextClient extends ContextClient
 {
-   /** Obtain a suitable logger. */
-   private static Logger logger = Logger.getLogger("com.noelios.restlet.ext.servlet.ServletContextClient");
-
    /** The Servlet context to use. */
    protected ServletContext context;
 
    /**
     * Constructor.
-    * @param commonExtensions Indicates if the common extensions should be added.
-    * @param context The Servlet context to use.
+    * @param owner The owner component.
+    * @param parameters The initial parameters.
+    * @param context The Servlet context.
     */
-   public ServletContextClient(boolean commonExtensions, ServletContext context)
+   public ServletContextClient(Component owner, ParameterList parameters, ServletContext context)
    {
-      super(Protocols.CONTEXT, commonExtensions);
+      super(owner, parameters);
       this.context = context;
    }
    
@@ -68,60 +71,92 @@ public class ServletContextClient extends ContextClient
    {
       return this.context;
    }
-   
+
    /**
-    * Returns the supported protocols. 
-    * @return The supported protocols.
+    * Handles a call.
+    * @param call The call to handle.
     */
-   public static List<Protocol> getProtocols()
+   public void handle(Call call)
    {
-   	return Arrays.asList(new Protocol[]{Protocols.CONTEXT});
+      String scheme = call.getResourceRef().getScheme();
+      
+      if(scheme.equalsIgnoreCase("file"))
+      {
+      	handleFile(call);
+      }
+      else if(scheme.equalsIgnoreCase("context"))
+      {
+			ContextReference cr = new ContextReference(call.getResourceRef());
+			
+      	if(cr.getAuthorityType() == AuthorityType.CLASS)
+      	{
+      		handleClassLoader(call, getClass().getClassLoader());
+      	}
+      	else if(cr.getAuthorityType() == AuthorityType.SYSTEM)
+      	{
+      		handleClassLoader(call, ClassLoader.getSystemClassLoader());
+      	}
+      	else if(cr.getAuthorityType() == AuthorityType.THREAD)
+      	{
+      		handleClassLoader(call, Thread.currentThread().getContextClassLoader());
+      	}
+      	else if(cr.getAuthorityType() == AuthorityType.WEB_APPLICATION)
+      	{
+      		handleServletContext(call);
+	      }
+      }
+      else
+      {
+         throw new IllegalArgumentException("Protocol not supported by the connector. Only FILE and CONTEXT are supported.");
+      }
    }
-   
-   /**
-    * Returns a new client call.
-    * @param method The request method.
-    * @param requestUri The requested resource URI.
-    * @param hasInput Indicates if the call will have an input to send to the server.
-    * @return A new client call.
-    */
-	public ContextCall createCall(String method, String requestUri, boolean hasInput)
-	{
-		ContextCall result = null;
-		
-		try
+
+   protected void handleServletContext(Call call)
+   {
+      if(call.getMethod().equals(Methods.GET) || call.getMethod().equals(Methods.HEAD))
 		{
-			if(getProtocol().equals(Protocols.CONTEXT))
+      	String basePath = call.getResourceRef().toString();
+      	int lastSlashIndex = basePath.lastIndexOf('/');
+      	String entry = (lastSlashIndex == -1) ? basePath : basePath.substring(lastSlashIndex + 1);
+			Representation output = null;
+			
+			if(basePath.endsWith("/"))
 			{
-				ContextReference cr = new ContextReference(requestUri);
+				// Return the directory listing
+				Set entries = getContext().getResourcePaths(basePath);
+				ReferenceList rl = new ReferenceList(entries.size());
+				rl.setListRef(call.getResourceRef());
 				
-		      if(cr.getScheme().equalsIgnoreCase("context"))
-		      {
-		      	if(cr.getAuthorityType() == AuthorityType.WEB_APPLICATION)
-		      	{
-		      		result = new ServletContextCall(method, requestUri, getContext());
-		      	}
-		      	else
-		      	{
-			         throw new IllegalArgumentException("Only the Web application authority type is allowed here");
-		      	}
-		      }
-		      else
-		      {
-		         throw new IllegalArgumentException("Only CONTEXT resource URIs are allowed here");
-		      }
+				for(Iterator iter = entries.iterator(); iter.hasNext();)
+				{
+					entry = (String)iter.next();
+					rl.add(new Reference(basePath + entry.substring(basePath.length())));
+				}
+				
+				output = rl.getRepresentation();
 			}
 			else
 			{
-	         throw new IllegalArgumentException("Only the CONTEXT protocol is supported by this connector");
+				// Return the entry content
+            output = new InputRepresentation(getContext().getResourceAsStream(basePath), getDefaultMediaType());
+            updateMetadata(entry, output.getMetadata());
+            
+            // See if the Servlet context specified a particular Mime Type
+            String mediaType = getContext().getMimeType(basePath);
+            
+            if(mediaType != null)
+            {
+            	output.getMetadata().setMediaType(new DefaultMediaType(mediaType));
+            }
 			}
+			
+			call.setOutput(output);
+			call.setStatus(Statuses.SUCCESS_OK);
 		}
-		catch (Exception e)
+		else
 		{
-			logger.log(Level.WARNING, "Unable to create the call", e);
+			call.setStatus(Statuses.CLIENT_ERROR_METHOD_NOT_ALLOWED);
 		}
-		
-		return result;
-	}
-	
+   }
+   
 }

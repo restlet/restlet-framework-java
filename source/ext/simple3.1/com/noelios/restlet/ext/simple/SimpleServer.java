@@ -26,18 +26,15 @@ import java.io.FileInputStream;
 import java.io.IOException;
 import java.net.ServerSocket;
 import java.security.KeyStore;
-import java.util.Arrays;
-import java.util.List;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
 import javax.net.ssl.KeyManagerFactory;
 import javax.net.ssl.SSLContext;
 
-import org.restlet.data.Protocol;
+import org.restlet.component.Component;
+import org.restlet.data.ParameterList;
 import org.restlet.data.Protocols;
-
-import com.noelios.restlet.impl.HttpServer;
 
 import simple.http.BufferedPipelineFactory;
 import simple.http.PipelineHandler;
@@ -48,12 +45,14 @@ import simple.http.Response;
 import simple.http.connect.Connection;
 import simple.http.connect.ConnectionFactory;
 
+import com.noelios.restlet.impl.HttpServer;
+
 /**
- * Simple HTTP(S) server connector.
+ * Abstract Simple Web server connector.
  * @author Lars Heuer (heuer[at]semagia.com) <a href="http://semagia.com/">Semagia</a>
  * @author Jerome Louvel (contact@noelios.com) <a href="http://www.noelios.com">Noelios Consulting</a>
  */
-public class SimpleServer extends HttpServer implements ProtocolHandler
+public abstract class SimpleServer extends HttpServer implements ProtocolHandler
 {
    /** Obtain a suitable logger. */
    private static Logger logger = Logger.getLogger("com.noelios.restlet.ext.simple.SimpleServer");
@@ -80,35 +79,26 @@ public class SimpleServer extends HttpServer implements ProtocolHandler
 
    /**
     * Constructor.
-    * @param protocol The connector protocol.
+    * @param owner The owner component.
+    * @param parameters The initial parameters.
     * @param address The optional listening IP address (local host used if null).
     * @param port The listening port.
     */
-   public SimpleServer(Protocol protocol, String address, int port)
+   public SimpleServer(Component owner, ParameterList parameters, String address, int port)
    {
-		super(protocol, address, port);
-	}
-
-	/**
-	 * Returns the supported protocols. This method is called by the {@link com.noelios.restlet.impl.FactoryImpl} 
-	 * to determine the supported protocols.
-	 * @return A list of supported protocols.
-	 */
-	public static List<Protocol> getProtocols()
-	{
-		return Arrays.asList(new Protocol[]{Protocols.HTTP, Protocols.HTTPS});
-	}
+      super(owner, parameters, address, port);
+   }
 
    /** Starts the Restlet. */
 	public void start() throws Exception
 	{
 		if(!isStarted())
 		{
-			if (Protocols.HTTP.equals(super.protocol))
+			if (Protocols.HTTP.equals(super.protocols))
 			{
 				socket = new ServerSocket(port);
 			}
-			else if (Protocols.HTTPS.equals(super.protocol))
+			else if (Protocols.HTTPS.equals(super.protocols))
 			{
 				KeyStore keyStore = KeyStore.getInstance("JKS");
 				keyStore.load(new FileInputStream(keystorePath), keystorePassword
@@ -124,10 +114,10 @@ public class SimpleServer extends HttpServer implements ProtocolHandler
 			else
 			{
 				// Should never happen.
-				throw new RuntimeException("Unsupported protocol: " + super.protocol);
+				throw new RuntimeException("Unsupported protocol: " + super.protocols);
 			}
 	
-			this.confidential = Protocols.HTTPS.equals(getProtocol());
+			this.confidential = Protocols.HTTPS.equals(getProtocols());
 			this.handler = PipelineHandlerFactory.getInstance(this, 20, 200);
 			this.connection = ConnectionFactory.getConnection(handler, new BufferedPipelineFactory());
 			this.connection.connect(socket);

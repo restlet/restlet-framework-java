@@ -26,6 +26,7 @@ import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.net.URL;
+import java.util.List;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
@@ -35,6 +36,7 @@ import org.restlet.connector.Server;
 import org.restlet.data.ChallengeResponse;
 import org.restlet.data.Form;
 import org.restlet.data.MediaType;
+import org.restlet.data.ParameterList;
 import org.restlet.data.Protocol;
 import org.restlet.data.Representation;
 
@@ -131,11 +133,13 @@ public abstract class Factory
    public abstract Chainlet createChainlet(Component parent);
 
    /**
-    * Create a client connector for internal usage by the GenericClient.
-    * @param protocol The connector protocol.
+    * Create a new client connector for a given protocol.
+    * @param protocols The connector protocols.
+    * @param owner The owner component.
+    * @param parameters The initial parameters.
     * @return The new client connector.
     */
-   public abstract Client createClient(Protocol protocol);
+   public abstract Client createClient(List<Protocol> protocols, Component owner, ParameterList parameters);
 
    /**
     * Creates a Maplet for internal usage by the DefaultMaplet.<br/>
@@ -147,12 +151,14 @@ public abstract class Factory
 
    /**
     * Create a new server connector for internal usage by the GenericClient.
-    * @param protocol The connector protocol.
+    * @param protocols The connector protocols.
+    * @param owner The owner component.
+    * @param parameters The initial parameters.
     * @param address The optional listening IP address (local host used if null).
     * @param port The listening port.
     * @return The new server connector.
     */
-   public abstract Server createServer(Protocol protocol, String address, int port);
+   public abstract Server createServer(List<Protocol> protocols, Component owner, ParameterList parameters, String address, int port);
 
    /**
     * Creates a string-base representation.

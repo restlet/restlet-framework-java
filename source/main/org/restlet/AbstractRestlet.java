@@ -293,21 +293,21 @@ public abstract class AbstractRestlet<T extends Call> implements Restlet
 		getOwner().handle(call);
 	}
    
-   /** Starts the restlet. */
+   /** Starts the Restlet. */
    public void start() throws Exception
    {
       this.started = true;
    }
 
-   /** Stops the restlet. */
+   /** Stops the Restlet. */
    public void stop() throws Exception
    {
       this.started = false;
    }
 
    /**
-    * Indicates if the restlet is started.
-    * @return True if the restlet is started.
+    * Indicates if the Restlet is started.
+    * @return True if the Restlet is started.
     */
    public boolean isStarted()
    {
@@ -315,8 +315,8 @@ public abstract class AbstractRestlet<T extends Call> implements Restlet
    }
 
    /**
-    * Indicates if the restlet is stopped.
-    * @return True if the restlet is stopped.
+    * Indicates if the Restlet is stopped.
+    * @return True if the Restlet is stopped.
     */
    public boolean isStopped()
    {

@@ -32,6 +32,7 @@ import org.restlet.connector.Client;
 import org.restlet.connector.DefaultClient;
 import org.restlet.connector.DefaultServer;
 import org.restlet.connector.Server;
+import org.restlet.data.ParameterList;
 import org.restlet.data.Protocol;
 
 /**
@@ -40,15 +41,15 @@ import org.restlet.data.Protocol;
  */
 public abstract class AbstractComponent extends AbstractRestlet implements Component
 {
-	/** The modifiable map of properties. */
-	protected Map<String, String> properties;
+	/** The modifiable list of parameters. */
+	protected ParameterList parameters;
 
    /** The map of client connectors. */
    protected Map<String, Client> clients;
 
    /** The map of server connectors. */
    protected Map<String, Server> servers;
-
+   
    /**
     * Constructor.
     */
@@ -59,24 +60,43 @@ public abstract class AbstractComponent extends AbstractRestlet implements Compo
 
    /**
     * Constructor.
+    * @param parameters The initial parameters.
+    */
+   public AbstractComponent(ParameterList parameters)
+   {
+      this(null, parameters);
+   }
+
+   /**
+    * Constructor.
     * @param owner The owner component.
     */
    public AbstractComponent(Component owner)
    {
+      this(owner, null);
+   }
+
+   /**
+    * Constructor.
+    * @param owner The owner component.
+    * @param parameters The initial parameters.
+    */
+   public AbstractComponent(Component owner, ParameterList parameters)
+   {
       super(owner);
-   	this.properties = null;
+   	this.parameters = parameters;
       this.clients = null;
       this.servers = null;
    }
 
 	/**
-	 * Returns the modifiable map of properties.
-	 * @return The modifiable map of properties.
+	 * Returns the modifiable list of parameters.
+	 * @return The modifiable list of parameters.
 	 */
-	public Map<String, String> getProperties()
+	public ParameterList getParameters()
 	{
-		if(this.properties == null) this.properties = new TreeMap<String, String>();
-		return this.properties;
+		if(this.parameters == null) this.parameters = new ParameterList();
+		return this.parameters;
 	}
 
 	/**

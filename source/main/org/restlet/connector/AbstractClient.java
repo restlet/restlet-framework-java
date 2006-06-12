@@ -24,11 +24,11 @@ package org.restlet.connector;
 
 import java.io.IOException;
 
-import org.restlet.DefaultCall;
 import org.restlet.Call;
+import org.restlet.DefaultCall;
 import org.restlet.component.Component;
 import org.restlet.data.Methods;
-import org.restlet.data.Protocol;
+import org.restlet.data.ParameterList;
 import org.restlet.data.Representation;
 
 /**
@@ -42,25 +42,16 @@ public abstract class AbstractClient extends AbstractConnector implements Client
 	 * To keep the default timeouts, lease the value to -1. 
 	 */
 	protected int timeout;
-	
-   /**
-    * Constructor.
-    * @param protocol The connector protocol.
-    */
-   public AbstractClient(Protocol protocol)
-   {
-      super(protocol);
-      this.timeout = -1;
-   }
    
    /**
     * Constructor.
     * @param owner The owner component.
-    * @param protocol The connector protocol.
+    * @param parameters The initial parameters.
     */
-   public AbstractClient(Component owner, Protocol protocol)
+   public AbstractClient(Component owner, ParameterList parameters)
    {
-   	super(owner,protocol);
+   	super(owner, parameters);
+      this.timeout = -1;
    }
 
    /**

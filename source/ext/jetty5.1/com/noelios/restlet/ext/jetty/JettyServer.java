@@ -22,68 +22,34 @@
 
 package com.noelios.restlet.ext.jetty;
 
-import java.net.InetSocketAddress;
-import java.util.Arrays;
-import java.util.List;
-
-import org.mortbay.util.InetAddrPort;
-import org.restlet.connector.Server;
-import org.restlet.data.Protocol;
-import org.restlet.data.Protocols;
+import org.restlet.component.Component;
+import org.restlet.data.ParameterList;
 
 import com.noelios.restlet.impl.HttpServer;
 
 /**
- * Jetty HTTP server connector.
+ * Abstract Jetty Web server connector.
  * @see <a href="http://jetty.mortbay.com/">Jetty home page</a>
  * @author Jerome Louvel (contact@noelios.com) <a href="http://www.noelios.com/">Noelios Consulting</a>
  */
-public class JettyServer extends HttpServer
+public abstract class JettyServer extends HttpServer
 {
    /** Serial version identifier. */
    private static final long serialVersionUID = 1L;
 
-   /** The Jetty listener. */
+   /** The Jetty listener (keep package prefixing). */
    protected org.mortbay.http.HttpListener listener;
-
+  
    /**
     * Constructor.
-    * @param protocol The connector protocol.
+    * @param owner The owner component.
+    * @param parameters The initial parameters.
     * @param address The optional listening IP address (local host used if null).
     * @param port The listening port.
     */
-   public JettyServer(Protocol protocol, String address, int port)
+   public JettyServer(Component owner, ParameterList parameters, String address, int port)
    {
-      super(protocol, address, port);
-   }
-   
-   /**
-    * Constructor.
-    * @param protocol The connector protocol.
-    * @param address The IP address to listen to.
-    */
-   public JettyServer(Protocol protocol, InetSocketAddress address)
-   {
-   	this(protocol, address.getHostName(), address.getPort());
-   }
-
-   /**
-    * Constructor.
-    * @param protocol The connector protocol.
-    * @param port The HTTP port number.
-    */
-   public JettyServer(Protocol protocol, int port)
-   {
-   	this(protocol, null, port);
-   }
-   
-   /**
-    * Returns the supported protocols. 
-    * @return The supported protocols.
-    */
-   public static List<Protocol> getProtocols()
-   {
-   	return Arrays.asList(new Protocol[]{Protocols.HTTP, Protocols.HTTPS, Protocols.AJP});
+      super(owner, parameters, address, port);
    }
 
    /**
@@ -95,92 +61,18 @@ public class JettyServer extends HttpServer
       return this.listener;
    }
 
-   /** Start hook. */
-   public void start()
+   /** Start connector. */
+   public void start() throws Exception
    {
-      try
-      {
-         if(Protocols.AJP.equals(this.protocol))
-         {
-            if(this.address != null)
-            {
-               this.listener = new AjpListener(this, new InetAddrPort(this.address, this.port));
-            }
-            else
-            {
-               this.listener = new AjpListener(this);
-               this.listener.setPort(port);
-            }
-         }
-         else if(Protocols.HTTP.equals(this.protocol))
-         {
-            if(this.address != null)
-            {
-               this.listener = new HttpListener(this, new InetAddrPort(this.address, this.port));
-            }
-            else
-            {
-               this.listener = new HttpListener(this);
-               this.listener.setPort(port);
-            }
-         }
-         else if(Protocols.HTTPS.equals(this.protocol))
-         {
-         	HttpsListener httpsListener = null;
-         	
-            if(this.address != null)
-            {
-               httpsListener = new HttpsListener(this, new InetAddrPort(this.address, this.port));
-            }
-            else
-            {
-            	httpsListener = new HttpsListener(this);
-            	httpsListener.setPort(port);
-            }
-            
-            httpsListener.setKeystore(this.keystorePath);
-            httpsListener.setPassword(this.keystorePassword);
-            httpsListener.setKeyPassword(this.keyPassword);
-            this.listener = httpsListener;
-         }
-
-         getListener().start();
-      }
-      catch(Exception e)
-      {
-         e.printStackTrace();
-      }
+      getListener().start();
+      super.start();
    }
 
-   /** Stop hook. */
-   public void stop()
+   /** Stop connector. */
+   public void stop() throws Exception
    {
-      try
-      {
-         getListener().stop();
-      }
-      catch(Exception e)
-      {
-         e.printStackTrace();
-      }
-   }
-
-   /**
-    * Indicates if the connector is started.
-    * @return True if the connector is started.
-    */
-   public boolean isStarted()
-   {
-      return getListener().isStarted();
-   }
-
-   /**
-    * Indicates if the connector is stopped.
-    * @return True if the connector is stopped.
-    */
-   public boolean isStopped()
-   {
-      return !isStarted();
+      getListener().stop();
+      super.stop();
    }
 
 }
