@@ -47,7 +47,7 @@ import com.noelios.restlet.impl.ContextClient;
  * @see <a href="http://httpd.apache.org/docs/2.0/content-negotiation.html">Apache mod_negotiation module</a>
  * @author Jerome Louvel (contact@noelios.com) <a href="http://www.noelios.com/">Noelios Consulting</a>
  */
-public class FileResource implements Resource
+public class ContextResource implements Resource
 {
    /** Obtain a suitable logger. */
    private static Logger logger = Logger.getLogger("com.noelios.restlet.FileResource");
@@ -72,7 +72,7 @@ public class FileResource implements Resource
     * @param fileClient The parent connector.
     * @param basePath The base path of the file.
     */
-   public FileResource(ContextClient fileClient, String basePath)
+   public ContextResource(ContextClient fileClient, String basePath)
    {
       // Update the member variables
       this.contextClient = fileClient;

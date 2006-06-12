@@ -53,6 +53,8 @@ Restlet changes log
    can't subclass HttpServer directly (Jetty 6 server and Servlet server).
  - Rewrote the tutorial part 11 (Maplets and hierarchical URIs) to follow the best practice of not subclassing DefaultMaplet. This is also more consistent 
    with the part 12 using the fluent builders. Suggested by Bill Morone.
+ - Removed the FileRestlet which doesn't bring a lot of value now that we have a flexible DirectoryRestlet.
+ - Renamed FileResource into ContextResource because it can now expose representation with all context authorities (file, class loaders, webapp context).
  
 1.0 beta 14 (2006-06-02)
  - Adjusted build.properties so that default values work directly.

@@ -29,14 +29,12 @@ import org.restlet.component.RestletContainer;
 import org.restlet.connector.Client;
 import org.restlet.connector.Server;
 import org.restlet.data.ChallengeScheme;
-import org.restlet.data.MediaType;
 import org.restlet.data.Protocol;
 
 import com.noelios.restlet.CompressChainlet;
 import com.noelios.restlet.DecompressChainlet;
 import com.noelios.restlet.DirectoryRestlet;
 import com.noelios.restlet.ExtractChainlet;
-import com.noelios.restlet.FileRestlet;
 import com.noelios.restlet.GuardChainlet;
 import com.noelios.restlet.HostMaplet;
 import com.noelios.restlet.LogChainlet;
@@ -251,18 +249,6 @@ public class RestletContainerBuilder extends ComponentBuilder
       ExtractChainlet node = new ExtractChainlet(getNode().getOwner());
       getNode().attach(node);
       return Builders.buildExtract(this, node);
-   }
-
-   /**
-    * Attaches a File Restlet.
-    * @param filePath The file's path.
-    * @param mediaType The file's media type.
-    */
-   public RestletBuilder attachFile(String filePath, MediaType mediaType)
-   {
-      FileRestlet node = new FileRestlet(getNode().getOwner(), filePath, mediaType);
-      getNode().attach(node);
-      return Builders.buildRestlet(this, node);
    }
 
    /**
@@ -593,18 +579,6 @@ public class RestletContainerBuilder extends ComponentBuilder
       ExtractChainlet node = new ExtractChainlet(getNode().getOwner());
       getNode().attach(pattern, node);
       return Builders.buildExtract(this, node);
-   }
-
-   /**
-    * Attaches a File Restlet.
-    * @param filePath The file's path.
-    * @param mediaType The file's media type.
-    */
-   public RestletBuilder attachFile(String pattern, String filePath, MediaType mediaType)
-   {
-      FileRestlet node = new FileRestlet(getNode().getOwner(), filePath, mediaType);
-      getNode().attach(pattern, node);
-      return Builders.buildRestlet(this, node);
    }
 
    /**

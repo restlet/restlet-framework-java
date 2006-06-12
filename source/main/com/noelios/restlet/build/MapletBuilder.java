@@ -26,19 +26,17 @@ import org.restlet.DefaultMaplet;
 import org.restlet.Maplet;
 import org.restlet.Restlet;
 import org.restlet.data.ChallengeScheme;
-import org.restlet.data.MediaType;
 
 import com.noelios.restlet.CompressChainlet;
 import com.noelios.restlet.DecompressChainlet;
 import com.noelios.restlet.DirectoryRestlet;
 import com.noelios.restlet.ExtractChainlet;
-import com.noelios.restlet.FileRestlet;
 import com.noelios.restlet.GuardChainlet;
 import com.noelios.restlet.HostMaplet;
-import com.noelios.restlet.HostMaplet.AttachmentMode;
 import com.noelios.restlet.LogChainlet;
 import com.noelios.restlet.RedirectRestlet;
 import com.noelios.restlet.StatusChainlet;
+import com.noelios.restlet.HostMaplet.AttachmentMode;
 
 /**
  * Fluent builder for Maplets.
@@ -185,19 +183,6 @@ public class MapletBuilder extends RestletBuilder
       ExtractChainlet node = new ExtractChainlet(getNode().getOwner());
       getNode().attach(pattern, node);
       return Builders.buildExtract(this, node);
-   }
-
-   /**
-    * Attaches a File Restlet.
-    * @param pattern The URI pattern used to map calls.
-    * @param filePath The file's path.
-    * @param mediaType The file's media type.
-    */
-   public RestletBuilder attachFile(String pattern, String filePath, MediaType mediaType)
-   {
-      FileRestlet node = new FileRestlet(getNode().getOwner(), filePath, mediaType);
-      getNode().attach(pattern, node);
-      return Builders.buildRestlet(this, node);
    }
 
    /**

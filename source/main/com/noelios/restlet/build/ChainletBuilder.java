@@ -27,13 +27,11 @@ import org.restlet.DefaultMaplet;
 import org.restlet.Maplet;
 import org.restlet.Restlet;
 import org.restlet.data.ChallengeScheme;
-import org.restlet.data.MediaType;
 
 import com.noelios.restlet.CompressChainlet;
 import com.noelios.restlet.DecompressChainlet;
 import com.noelios.restlet.DirectoryRestlet;
 import com.noelios.restlet.ExtractChainlet;
-import com.noelios.restlet.FileRestlet;
 import com.noelios.restlet.GuardChainlet;
 import com.noelios.restlet.HostMaplet;
 import com.noelios.restlet.LogChainlet;
@@ -146,18 +144,6 @@ public class ChainletBuilder extends RestletBuilder
       ExtractChainlet node = new ExtractChainlet(getNode().getOwner());
       getNode().attach(node);
       return Builders.buildExtract(this, node);
-   }
-
-   /**
-    * Attaches a File Restlet.
-    * @param filePath The file's path.
-    * @param mediaType The file's media type.
-    */
-   public RestletBuilder attachFile(String filePath, MediaType mediaType)
-   {
-      FileRestlet node = new FileRestlet(getNode().getOwner(), filePath, mediaType);
-      getNode().attach(node);
-      return Builders.buildRestlet(this, node);
    }
 
    /**
