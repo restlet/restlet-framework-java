@@ -30,7 +30,6 @@ import java.net.URL;
 import java.util.ArrayList;
 import java.util.Enumeration;
 import java.util.List;
-import java.util.Map;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
@@ -116,7 +115,7 @@ public class FactoryImpl extends Factory
                      try
                      {
                         Class<? extends Client> providerClass = (Class<? extends Client>) Class.forName(providerClassName);
-                        this.clients.add(providerClass.newInstance());
+                        this.clients.add(providerClass.getConstructor(Component.class, ParameterList.class).newInstance(null, null));
                      }
                      catch(Exception e)
                      {
@@ -166,7 +165,7 @@ public class FactoryImpl extends Factory
                try
                {
                   Class<? extends Server> providerClass = (Class<? extends Server>) Class.forName(providerClassName);
-                  this.servers.add(providerClass.newInstance());
+                  this.servers.add(providerClass.getConstructor(Component.class, ParameterList.class, String.class, int.class).newInstance(null, null, null, new Integer(-1)));
                }
                catch(Exception e)
                {
@@ -204,7 +203,7 @@ public class FactoryImpl extends Factory
      		{
      	      try
      	      {
-     	         return client.getClass().getConstructor(Component.class, Map.class).newInstance(owner, parameters);
+     	         return client.getClass().getConstructor(Component.class, ParameterList.class).newInstance(owner, parameters);
      	      }
      	      catch (Exception e)
      	      {
@@ -267,7 +266,7 @@ public class FactoryImpl extends Factory
      		{
      	      try
      	      {
-     	         return server.getClass().getConstructor(Component.class, Map.class, String.class, int.class).newInstance(owner, parameters, address, port);
+     	         return server.getClass().getConstructor(Component.class, ParameterList.class, String.class, int.class).newInstance(owner, parameters, address, port);
      	      }
      	      catch (Exception e)
      	      {

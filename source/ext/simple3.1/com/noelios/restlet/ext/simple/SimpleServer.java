@@ -22,28 +22,19 @@
 
 package com.noelios.restlet.ext.simple;
 
-import java.io.FileInputStream;
 import java.io.IOException;
 import java.net.ServerSocket;
-import java.security.KeyStore;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
-import javax.net.ssl.KeyManagerFactory;
-import javax.net.ssl.SSLContext;
-
 import org.restlet.component.Component;
 import org.restlet.data.ParameterList;
-import org.restlet.data.Protocols;
 
-import simple.http.BufferedPipelineFactory;
 import simple.http.PipelineHandler;
-import simple.http.PipelineHandlerFactory;
 import simple.http.ProtocolHandler;
 import simple.http.Request;
 import simple.http.Response;
 import simple.http.connect.Connection;
-import simple.http.connect.ConnectionFactory;
 
 import com.noelios.restlet.impl.HttpServer;
 
@@ -88,42 +79,6 @@ public abstract class SimpleServer extends HttpServer implements ProtocolHandler
    {
       super(owner, parameters, address, port);
    }
-
-   /** Starts the Restlet. */
-	public void start() throws Exception
-	{
-		if(!isStarted())
-		{
-			if (Protocols.HTTP.equals(super.protocols))
-			{
-				socket = new ServerSocket(port);
-			}
-			else if (Protocols.HTTPS.equals(super.protocols))
-			{
-				KeyStore keyStore = KeyStore.getInstance("JKS");
-				keyStore.load(new FileInputStream(keystorePath), keystorePassword
-						.toCharArray());
-				KeyManagerFactory keyManagerFactory = KeyManagerFactory
-						.getInstance("SunX509");
-				keyManagerFactory.init(keyStore, keyPassword.toCharArray());
-				SSLContext sslContext = SSLContext.getInstance("TLS");
-				sslContext.init(keyManagerFactory.getKeyManagers(), null, null);
-				socket = sslContext.getServerSocketFactory().createServerSocket(port);
-				socket.setSoTimeout(60000);
-			}
-			else
-			{
-				// Should never happen.
-				throw new RuntimeException("Unsupported protocol: " + super.protocols);
-			}
-	
-			this.confidential = Protocols.HTTPS.equals(getProtocols());
-			this.handler = PipelineHandlerFactory.getInstance(this, 20, 200);
-			this.connection = ConnectionFactory.getConnection(handler, new BufferedPipelineFactory());
-			this.connection.connect(socket);
-			super.start();
-		}
-	}
 
    /** Stops the Restlet. */
 	public void stop() throws Exception
