@@ -20,7 +20,7 @@
  * Portions Copyright [yyyy] [name of copyright owner]
  */
 
-package com.noelios.restlet;
+package com.noelios.restlet.impl;
 
 import java.io.File;
 import java.util.ArrayList;
@@ -38,7 +38,6 @@ import org.restlet.data.Representation;
 import org.restlet.data.RepresentationMetadata;
 
 import com.noelios.restlet.data.FileRepresentation;
-import com.noelios.restlet.impl.ContextClient;
 
 /**
  * Resource supported by a set of context representations (from file system, class loaders and webapp context). 
@@ -55,7 +54,7 @@ public class ContextResource implements Resource
    /**
     * The parent directory Restlet.
     */
-   private ContextClient contextClient;
+   protected ContextClient contextClient;
 
    /** If a directory is specified, use the (optional) index name. */
    protected String indexName;
