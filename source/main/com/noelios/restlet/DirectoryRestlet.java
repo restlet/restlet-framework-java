@@ -25,8 +25,9 @@ package com.noelios.restlet;
 import org.restlet.AbstractRestlet;
 import org.restlet.Call;
 import org.restlet.component.Component;
+import org.restlet.data.Methods;
+import org.restlet.data.Statuses;
 
-import com.noelios.restlet.data.FileReference;
 import com.noelios.restlet.impl.ContextClient;
 
 /**
@@ -38,7 +39,7 @@ import com.noelios.restlet.impl.ContextClient;
 public class DirectoryRestlet extends AbstractRestlet
 {
    /** The name of the context client. */
-   protected String contextName;
+   protected String contextClientName;
 
    /** If no file name is specified, use the (optional) index name. */
    protected String indexName;
@@ -49,6 +50,9 @@ public class DirectoryRestlet extends AbstractRestlet
    /** The absolute root URI, including the "file://" or "context://" scheme. */
    protected String rootUri;
    
+   /** Indicates if modifications to context resources are allowed. */
+   protected boolean readOnly;
+      
    /**
     * Constructor.
     * @param owner The owner component.
@@ -59,28 +63,47 @@ public class DirectoryRestlet extends AbstractRestlet
    public DirectoryRestlet(Component owner, String rootUri, boolean deeply, String indexName)
    {
       super(owner);
-      this.contextName = ContextClient.DEFAULT_NAME;
+      this.contextClientName = ContextClient.DEFAULT_NAME;
       this.indexName = indexName;
-      this.rootUri = FileReference.localizePath(rootUri);
+      this.rootUri = rootUri;
       this.deeply = deeply;
+      this.readOnly = true;
    }
 
+   /** 
+    * Indicates if modifications to context resources are allowed.
+    * @return False if modifications to context resources are allowed.
+    */
+   public boolean isReadOnly()
+   {
+   	return this.readOnly;
+   }
+
+   /** 
+    * Indicates if modifications to context resources are allowed.
+    * @param readOnly False if modifications to context resources are allowed.
+    */
+   public void setReadOnly(boolean readOnly)
+   {
+   	this.readOnly = readOnly;
+   }
+   
    /**
-    * Returns the context name.
-    * @return The context name.
+    * Returns the name of the context client.
+    * @return The name of the context client.
     */
    public String getContextName()
    {
-   	return this.contextName;
+   	return this.contextClientName;
    }
 
    /**
-    * Sets the context name.
-    * @param name The context name.
+    * Sets the name of the context client.
+    * @param name The name of the context client.
     */
    public void setContextName(String name)
    {
-   	this.contextName = name;
+   	this.contextClientName = name;
    }
    
    /**
@@ -102,10 +125,10 @@ public class DirectoryRestlet extends AbstractRestlet
    }
 
    /**
-    * Returns the directory's root path.
-    * @return The directory's root path.
+    * Returns the root URI.
+    * @return The root URI.
     */
-   public String getRootPath()
+   public String getRootUri()
    {
       return rootUri;
    }
@@ -129,12 +152,42 @@ public class DirectoryRestlet extends AbstractRestlet
    }
 
    /**
-    * Handles a GET call.
+    * Handles a REST call.
     * @param call The call to handle.
     */
-   public void handleGet(Call call)
+   public void handle(Call call)
    {
-		getOwner().callClient(this.contextName, call);
+   	if(call.getMethod().equals(Methods.GET) || call.getMethod().equals(Methods.HEAD))
+   	{
+   		getOwner().callClient(getContextName(), call);
+   	}
+   	else if(call.getMethod().equals(Methods.PUT) || call.getMethod().equals(Methods.DELETE))
+   	{
+   		if(isReadOnly())
+   		{
+      		call.setStatus(Statuses.CLIENT_ERROR_FORBIDDEN);
+   		}
+   		else
+   		{
+   			getOwner().callClient(getContextName(), call);
+   		}
+   	}
+   	else
+   	{
+   		call.setStatus(Statuses.CLIENT_ERROR_METHOD_NOT_ALLOWED);
+   	}
+   }
+
+   /**
+    * Handles a PUT call.
+    * @param call The call to handle.
+    */
+   public void handlePut(Call call)
+   {
+   	if(!isReadOnly())
+   	{
+   		getOwner().callClient(getContextName(), call);
+   	}
    }
 
 }

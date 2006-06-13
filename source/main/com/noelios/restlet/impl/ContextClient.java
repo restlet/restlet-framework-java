@@ -201,10 +201,6 @@ public class ContextClient extends AbstractClient
  				call.setStatus(Statuses.CLIENT_ERROR_NOT_FOUND);
  			}
 		}
-		else if(call.getMethod().equals(Methods.POST))
-		{
-			call.setStatus(Statuses.CLIENT_ERROR_METHOD_NOT_ALLOWED);
-		}
 		else if(call.getMethod().equals(Methods.PUT))
 		{
 			File tmp = null;
