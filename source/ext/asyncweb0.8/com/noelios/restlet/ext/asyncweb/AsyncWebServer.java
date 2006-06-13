@@ -39,7 +39,7 @@ import com.noelios.restlet.impl.HttpServer;
 import com.noelios.restlet.impl.HttpServerCall;
 
 /**
- * Represents a thin layer around AsyncWeb.
+ * Abstract AsyncWeb server connector.
  * 
  * This implementation passes by all of AsyncWeb ServiceContainer, 
  * HttpServiceHandler etc. mechanisms and implements a 

@@ -35,7 +35,7 @@ import org.mortbay.http.ajp.AJP13Connection;
 import com.noelios.restlet.impl.HttpServerCall;
 
 /**
- * Jetty AJP 1.3 connection.
+ * Jetty AJP connection.
  * @author Jerome Louvel (contact@noelios.com) <a href="http://www.noelios.com/">Noelios Consulting</a>
  */
 public class AjpConnection extends AJP13Connection

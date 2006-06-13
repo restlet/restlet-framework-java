@@ -30,7 +30,7 @@ import org.mortbay.http.ajp.AJP13Listener;
 import org.mortbay.util.InetAddrPort;
 
 /**
- * Jetty AJP 1.3 listener.
+ * Jetty AJP listener.
  * @author Jerome Louvel (contact@noelios.com) <a href="http://www.noelios.com/">Noelios Consulting</a>
  */
 public class AjpListener extends AJP13Listener

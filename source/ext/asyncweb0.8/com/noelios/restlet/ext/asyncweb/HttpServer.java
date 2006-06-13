@@ -29,7 +29,7 @@ import org.safehaus.asyncweb.container.ContainerLifecycleException;
 import org.safehaus.asyncweb.transport.nio.NIOTransport;
 
 /**
- * Represents a thin layer around AsyncWeb.
+ * AsyncWeb HTTP server connector.
  * 
  * This implementation passes by all of AsyncWeb ServiceContainer, 
  * HttpServiceHandler etc. mechanisms and implements a 

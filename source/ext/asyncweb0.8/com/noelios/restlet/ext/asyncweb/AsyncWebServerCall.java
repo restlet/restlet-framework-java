@@ -40,8 +40,7 @@ import org.safehaus.asyncweb.http.internal.Response;
 import com.noelios.restlet.impl.HttpServerCall;
 
 /**
- * ServerCall implementation that is used by the AsyncServer.
- * 
+ * HttpServerCall implementation used by the AsyncServer.
  * @author Lars Heuer (heuer[at]semagia.com) <a href="http://www.semagia.com/">Semagia</a>
  */
 public class AsyncWebServerCall extends HttpServerCall
