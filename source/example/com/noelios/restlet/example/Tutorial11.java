@@ -79,7 +79,7 @@ public class Tutorial11
          host.attach("/docs/", guard);
 
          // Create a directory Restlet able to return a deep hierarchy of Web files
-         DirectoryRestlet dirRestlet = new DirectoryRestlet(myContainer, "File Client", "D:/Restlet/www/docs/api/", true, "index");
+         DirectoryRestlet dirRestlet = new DirectoryRestlet(myContainer, "file:///D:/Restlet/www/docs/api/", true, "index");
          guard.attach(dirRestlet);
 
          // Create the user Maplet

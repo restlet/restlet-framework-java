@@ -33,6 +33,7 @@ import org.restlet.Restlet;
 import org.restlet.component.Component;
 import org.restlet.data.Reference;
 
+import com.noelios.restlet.impl.ContextClient;
 import com.noelios.restlet.impl.HttpServer;
 
 /**
@@ -228,6 +229,12 @@ public class ServerServlet extends HttpServlet
                         		String contextPath = Reference.toUri(scheme, hostName, hostPort, servletPath, null, null);
                         		component.getParameters().add(initContextPathName, contextPath);
                         		log("[Noelios Restlet Engine] - This context path has been provided to the target's init parameter \"" + initContextPathName + "\": " + contextPath);
+                        		
+                        		// Replace the default context client (if any)
+                        		// by a special ServletContextClient instance 
+                        		component.getClients().remove(ContextClient.DEFAULT_NAME);
+                        		component.addClient(ContextClient.DEFAULT_NAME, new ServletContextClient(component, null, getServletContext()));
+                        		log("[Noelios Restlet Engine] - The special ServletContextClient has been set on the target component under this name: " + ContextClient.DEFAULT_NAME);
                         	}
                      	}
                      	

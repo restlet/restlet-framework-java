@@ -27,19 +27,18 @@ import org.restlet.Call;
 import org.restlet.component.Component;
 
 import com.noelios.restlet.data.FileReference;
+import com.noelios.restlet.impl.ContextClient;
 
 /**
- * Restlet supported by a directory of files. An automatic content negotiation mechanism 
- * (similar to Apache HTTP server) is used for files serving.
- * @see com.noelios.restlet.impl.FileClient
- * @see com.noelios.restlet.impl.ContextResource
- * @see <a href="http://www.restlet.org/tutorial#part06">Tutorial: Serving static files</a>
+ * Restlet supported by a directory of resources. An automatic content negotiation mechanism 
+ * (similar to Apache HTTP server) is used to serve the best representations.
+ * @see <a href="http://www.restlet.org/tutorial#part06">Tutorial: Serving context resources</a>
  * @author Jerome Louvel (contact@noelios.com) <a href="http://www.noelios.com/">Noelios Consulting</a>
  */
 public class DirectoryRestlet extends AbstractRestlet
 {
-   /** The file client connector. */
-   protected String fileClientName;
+   /** The name of the context client. */
+   protected String contextName;
 
    /** If no file name is specified, use the (optional) index name. */
    protected String indexName;
@@ -47,26 +46,43 @@ public class DirectoryRestlet extends AbstractRestlet
    /** Indicates if the sub-directories are deeply accessible. */
    protected boolean deeply;
 
-   /** The directory's root path. */
-   protected String rootPath;
+   /** The absolute root URI, including the "file://" or "context://" scheme. */
+   protected String rootUri;
    
    /**
     * Constructor.
     * @param owner The owner component.
-    * @param fileClientName The file client connector name.
-    * @param rootPath The directory's root path.
+    * @param rootUri The absolute root Uri, including the "file://" or "context://" scheme.
     * @param deeply Indicates if the sub-directories are deeply accessible.
     * @param indexName If no file name is specified, use the (optional) index name.
     */
-   public DirectoryRestlet(Component owner, String fileClientName, String rootPath, boolean deeply, String indexName)
+   public DirectoryRestlet(Component owner, String rootUri, boolean deeply, String indexName)
    {
       super(owner);
-      this.fileClientName = fileClientName;
+      this.contextName = ContextClient.DEFAULT_NAME;
       this.indexName = indexName;
-      this.rootPath = FileReference.localizePath(rootPath);
+      this.rootUri = FileReference.localizePath(rootUri);
       this.deeply = deeply;
    }
 
+   /**
+    * Returns the context name.
+    * @return The context name.
+    */
+   public String getContextName()
+   {
+   	return this.contextName;
+   }
+
+   /**
+    * Sets the context name.
+    * @param name The context name.
+    */
+   public void setContextName(String name)
+   {
+   	this.contextName = name;
+   }
+   
    /**
     * Returns the index name.
     * @return The index name.
@@ -91,7 +107,7 @@ public class DirectoryRestlet extends AbstractRestlet
     */
    public String getRootPath()
    {
-      return rootPath;
+      return rootUri;
    }
 
    /**
@@ -118,7 +134,7 @@ public class DirectoryRestlet extends AbstractRestlet
     */
    public void handleGet(Call call)
    {
-		getOwner().callClient(this.fileClientName, call);
+		getOwner().callClient(this.contextName, call);
    }
 
 }

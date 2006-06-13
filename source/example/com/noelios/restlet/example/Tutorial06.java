@@ -54,7 +54,7 @@ public class Tutorial06
 
          // Create a directory Restlet able to return a deep hierarchy of Web files
          // (HTML pages, CSS stylesheets or GIF images) from a local directory.
-         DirectoryRestlet dirRestlet = new DirectoryRestlet(myContainer, "File Client", "D:/Restlet/www/docs/api/", true, "index");
+         DirectoryRestlet dirRestlet = new DirectoryRestlet(myContainer, "file:///D:/Restlet/www/docs/api/", true, "index");
 
          // Then attach the Restlet to the container.
          rootMaplet.attach("/", dirRestlet);

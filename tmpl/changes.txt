@@ -57,7 +57,7 @@ Restlet changes log
  - For simplication purpose, the ServerServlet doesn't support implements the Server interface anymore. It's still a pseudo-connector.
  - ComponentBuilder.setParameter() method was changed to addParameter() allowing repeating parameters.
  - Components and Connectors now have a getParameters() method that exposes a modifiable list of parameters (ParameterList instance).
- - 
+ - Moved ContextResource to "impl" package
  
 1.0 beta 14 (2006-06-02)
  - Adjusted build.properties so that default values work directly.

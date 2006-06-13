@@ -63,7 +63,7 @@ public class Tutorial08
          status.attach(host);
 
          // Create a directory Restlet able to return a deep hierarchy of Web files
-         DirectoryRestlet dirRestlet = new DirectoryRestlet(myContainer, "FileClient", "D:/Restlet/www/docs/api/", true, "index");
+         DirectoryRestlet dirRestlet = new DirectoryRestlet(myContainer, "file:///D:/Restlet/www/docs/api/", true, "index");
 
          // Then attach the Restlet to the status Chainlet.
          host.attach("/", dirRestlet);

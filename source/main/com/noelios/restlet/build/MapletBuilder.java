@@ -160,15 +160,14 @@ public class MapletBuilder extends RestletBuilder
    /**
     *	Attaches a Directory Restlet.
     * @param pattern The URI pattern used to map calls.
-    * @param fileClientName The file client connector name.
-    * @param rootPath The directory's root path.
+    * @param rootUri The directory's root URI.
     * @param deeply Indicates if the sub-directories are deeply accessible.
     * @param indexName If no file name is specified, use the (optional) index name.
     * @return The builder for the created node.
     */
-   public RestletBuilder attachDirectory(String pattern, String fileClientName, String rootPath, boolean deeply, String indexName)
+   public RestletBuilder attachDirectory(String pattern, String rootUri, boolean deeply, String indexName)
    {
-      DirectoryRestlet node = new DirectoryRestlet(getNode().getOwner(), fileClientName, rootPath, deeply, indexName);
+      DirectoryRestlet node = new DirectoryRestlet(getNode().getOwner(), rootUri, deeply, indexName);
       getNode().attach(pattern, node);
       return Builders.buildRestlet(this, node);
    }
