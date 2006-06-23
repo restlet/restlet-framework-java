@@ -60,9 +60,8 @@ public class DirectoryResource extends AbstractResource
 
    /**
     * Constructor.
-    * @param contextClient The context client connector.
+    * @param directory The parent directory handler.
     * @param basePath The base path of the file.
-    * @param indexName The optional index name.
     */
    public DirectoryResource(DirectoryHandler directory, String basePath)
    {
