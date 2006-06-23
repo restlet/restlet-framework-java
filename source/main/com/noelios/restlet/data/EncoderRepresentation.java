@@ -23,28 +23,35 @@
 package com.noelios.restlet.data;
 
 import java.io.IOException;
+import java.io.InputStream;
 import java.io.OutputStream;
+import java.nio.channels.ReadableByteChannel;
+import java.nio.channels.WritableByteChannel;
 import java.util.Arrays;
 import java.util.List;
 import java.util.zip.DeflaterOutputStream;
 import java.util.zip.GZIPOutputStream;
 import java.util.zip.ZipOutputStream;
 
-import org.restlet.Resource;
 import org.restlet.data.Encoding;
 import org.restlet.data.Encodings;
 import org.restlet.data.Representation;
-import org.restlet.data.RepresentationMetadata;
+import org.restlet.data.WrapperRepresentation;
+
+import com.noelios.restlet.util.ByteUtils;
 
 /**
- * Representation that encodes a wrapped representation. 
+ * Content that encodes a wrapped content. 
  * @author Jerome Louvel (contact@noelios.com) <a href="http://www.noelios.com/">Noelios Consulting</a>
  */
-public class EncoderRepresentation extends OutputRepresentation
+public class EncoderRepresentation extends WrapperRepresentation
 {
-   /** Wrapped representation. */
-   protected Representation wrappedRepresentation;
-
+	/** Indicates if the encoding can happen. */
+	protected boolean canEncode;
+	
+	/** The encoding to apply. */
+	protected Encoding encoding;
+	
    /**
     * Constructor.
     * @param encoding Encoder algorithm.
@@ -52,38 +59,93 @@ public class EncoderRepresentation extends OutputRepresentation
     */
    public EncoderRepresentation(Encoding encoding, Representation wrappedRepresentation)
    {
-   	super(null);
-   	this.encoding = encoding;
-      this.wrappedRepresentation = wrappedRepresentation;
+   	super(wrappedRepresentation);
+   	this.canEncode = getSupportedEncodings().contains(encoding);
+   	this.encoding = encoding;   	
    }
    
    /**
-    * Returns the represented resource if available.
-    * @return The represented resource if available.
+    * Indicates if the encoding can happen.
+    * @return True if the encoding can happen.
     */
-   public Resource getResource()
+   public boolean canEncode()
    {
-   	return this.wrappedRepresentation.getResource();
+   	return this.canEncode;
+   }
+   
+   /**
+    * Returns the encoding or null if identity encoding applies.
+    * @return The encoding or null if identity encoding applies.
+    */
+   public Encoding getEncoding()
+   {
+   	if(canEncode())
+   	{
+   		return this.encoding;
+   	}
+   	else
+   	{
+   		return getWrappedRepresentation().getEncoding();
+   	}
+   }
+   
+   /**
+    * Sets the encoding or null if identity encoding applies.
+    * @param encoding The encoding or null if identity encoding applies.
+    */
+   public void setEncoding(Encoding encoding)
+   {
+   	this.canEncode = getSupportedEncodings().contains(encoding);
+   	this.encoding = encoding;   	
    }
 
    /**
-    * Sets the represented resource.
-    * @param resource The represented resource.
+    * Returns a readable byte channel. If it is supported by a file a read-only instance of 
+    * FileChannel is returned.
+    * @return A readable byte channel.
     */
-   public void setResource(Resource resource)
+   public ReadableByteChannel getChannel() throws IOException
    {
-   	this.wrappedRepresentation.setResource(resource);
+		if(canEncode())
+		{
+			return ByteUtils.getChannel(getStream());
+		}
+		else
+		{
+			return getWrappedRepresentation().getChannel();
+		}
    }
 
    /**
-    * Returns the metadata.
-    * @return The metadata.
+    * Returns a stream with the representation's content.
+    * @return A stream with the representation's content.
     */
-   public RepresentationMetadata getMetadata()
+   public InputStream getStream() throws IOException
    {
-   	RepresentationMetadata result = new RepresentationMetadata(this.wrappedRepresentation.getMetadata());
-   	result.setEncoding(getEncoding());
-   	return result;
+		if(canEncode())
+		{
+			return ByteUtils.getStream(this);
+		}
+		else
+		{
+			return getWrappedRepresentation().getStream();
+		}
+   }
+   
+   /**
+    * Writes the representation to a byte channel.
+    * @param writableChannel A writable byte channel.
+    */
+   public void write(WritableByteChannel writableChannel) throws IOException
+   {
+		if(canEncode())
+		{
+			write(ByteUtils.getStream(writableChannel));
+		}
+		else
+		{
+			getWrappedRepresentation().write(writableChannel);
+		}
    }
 
    /**
@@ -92,32 +154,68 @@ public class EncoderRepresentation extends OutputRepresentation
     */
 	public void write(OutputStream outputStream) throws IOException
 	{
-		DeflaterOutputStream encoderOutputStream = null;
-
-		if(getEncoding().equals(Encodings.GZIP))
+		if(canEncode())
 		{
-			encoderOutputStream = new GZIPOutputStream(outputStream);
-		}
-		else if(getEncoding().equals(Encodings.DEFLATE))
-		{
-			encoderOutputStream = new DeflaterOutputStream(outputStream);
-		}
-		else if(getEncoding().equals(Encodings.ZIP))
-		{
-			encoderOutputStream = new ZipOutputStream(outputStream);
-		}
-		else if(getEncoding().equals(Encodings.IDENTITY))
-		{
-			throw new IOException("Encoder unecessary for identity encoding");
+			DeflaterOutputStream encoderOutputStream = null;
+	
+			if(getEncoding().equals(Encodings.GZIP))
+			{
+				encoderOutputStream = new GZIPOutputStream(outputStream);
+			}
+			else if(getEncoding().equals(Encodings.DEFLATE))
+			{
+				encoderOutputStream = new DeflaterOutputStream(outputStream);
+			}
+			else if(getEncoding().equals(Encodings.ZIP))
+			{
+				encoderOutputStream = new ZipOutputStream(outputStream);
+			}
+			else if(getEncoding().equals(Encodings.IDENTITY))
+			{
+				// Encoder unecessary for identity encoding
+			}
+			
+			if(encoderOutputStream != null)
+			{
+				getWrappedRepresentation().write(encoderOutputStream);
+				encoderOutputStream.finish();
+			}
+			else
+			{
+				getWrappedRepresentation().write(outputStream);
+			}
 		}
 		else
 		{
-			throw new IOException("Unsupported encoding");
+			getWrappedRepresentation().write(outputStream);
+		}
+	}
+   
+   /**
+    * Converts the representation to a string.
+    * @return The representation as a string.
+    */
+   public String toString()
+   {
+		String result = null;
+
+		if(canEncode())
+		{
+	      try
+	      {
+	         result = ByteUtils.toString(getStream());
+	      }
+	      catch(IOException ioe)
+	      {
+	      }
+		}
+		else
+		{
+			result = getWrappedRepresentation().toString();
 		}
 
-		this.wrappedRepresentation.write(encoderOutputStream);
-		encoderOutputStream.finish();
-	}
+      return result;
+   }
 
 	/**
 	 * Returns the list of supported encodings.

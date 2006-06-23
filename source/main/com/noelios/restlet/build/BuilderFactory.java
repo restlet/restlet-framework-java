@@ -22,15 +22,15 @@
 
 package com.noelios.restlet.build;
 
-import org.restlet.Chainlet;
-import org.restlet.Maplet;
+import org.restlet.Filter;
 import org.restlet.Restlet;
+import org.restlet.Router;
 import org.restlet.component.Component;
 import org.restlet.component.RestletContainer;
 
-import com.noelios.restlet.ExtractChainlet;
-import com.noelios.restlet.GuardChainlet;
-import com.noelios.restlet.HostMaplet;
+import com.noelios.restlet.ExtractFilter;
+import com.noelios.restlet.GuardFilter;
+import com.noelios.restlet.HostRouter;
 
 /**
  * Factory for builders.
@@ -39,13 +39,13 @@ import com.noelios.restlet.HostMaplet;
 public class BuilderFactory
 {
 	/**
-	 * Creates a Chainlet builder.
+	 * Creates a Filter builder.
 	 * @param parent The parent builder.
 	 * @param node The wrapped node.
 	 */
-	public ChainletBuilder createChainletBuilder(ObjectBuilder parent, Chainlet node)
+	public FilterBuilder createFilterBuilder(ObjectBuilder parent, Filter node)
 	{
-		return new ChainletBuilder(parent, node);
+		return new FilterBuilder(parent, node);
 	}
 
 	/**
@@ -59,47 +59,47 @@ public class BuilderFactory
 	}
 
 	/**
-	 * Creates an Extract Chainlet builder.
+	 * Creates an ExtractFilter builder.
 	 * @param parent The parent builder.
 	 * @param node The wrapped node.
 	 */
-   public ExtractChainletBuilder createExtractChainletBuilder(ObjectBuilder parent, ExtractChainlet node)
+   public ExtractFilterBuilder createExtractFilterBuilder(ObjectBuilder parent, ExtractFilter node)
    {
-   	return new ExtractChainletBuilder(parent, node);
+   	return new ExtractFilterBuilder(parent, node);
    }
 
 	/**
-	 * Creates a Guard Chainlet builder.
+	 * Creates a GuardFilter builder.
 	 * @param parent The parent builder.
 	 * @param node The wrapped node.
 	 */
-   public GuardChainletBuilder createGuardChainletBuilder(ObjectBuilder parent, GuardChainlet node)
+   public GuardFilterBuilder createGuardFilterBuilder(ObjectBuilder parent, GuardFilter node)
    {
-   	return new GuardChainletBuilder(parent, node);
+   	return new GuardFilterBuilder(parent, node);
    }
 
 	/**
-	 * Creates a Host Maplet builder.
+	 * Creates a HostRouter builder.
 	 * @param parent The parent builder.
 	 * @param node The wrapped node.
 	 */
-   public HostMapletBuilder createHostMapletBuilder(ObjectBuilder parent, HostMaplet node)
+   public HostRouterBuilder createHostRouterBuilder(ObjectBuilder parent, HostRouter node)
    {
-   	return new HostMapletBuilder(parent, node);
+   	return new HostRouterBuilder(parent, node);
    }
 
 	/**
-	 * Creates a Maplet builder.
+	 * Creates a PathRouter builder.
 	 * @param parent The parent builder.
 	 * @param node The wrapped node.
 	 */
-   public MapletBuilder createMapletBuilder(ObjectBuilder parent, Maplet node)
+   public RouterBuilder createRouterBuilder(ObjectBuilder parent, Router node)
    {
-   	return new MapletBuilder(parent, node);
+   	return new RouterBuilder(parent, node);
    }
    
 	/**
-	 * Creates an object builder.
+	 * Creates an Object builder.
 	 * @param parent The parent builder.
 	 * @param node The wrapped node.
 	 */

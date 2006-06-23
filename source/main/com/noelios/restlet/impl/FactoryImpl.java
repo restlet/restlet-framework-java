@@ -34,9 +34,10 @@ import java.util.logging.Level;
 import java.util.logging.Logger;
 
 import org.restlet.Call;
-import org.restlet.Chainlet;
 import org.restlet.Factory;
-import org.restlet.Maplet;
+import org.restlet.Restlet;
+import org.restlet.Router;
+import org.restlet.Scorer;
 import org.restlet.component.Component;
 import org.restlet.connector.Client;
 import org.restlet.connector.Server;
@@ -60,7 +61,7 @@ import com.noelios.restlet.util.FormUtils;
 public class FactoryImpl extends Factory
 {
    /** Obtain a suitable logger. */
-   private static Logger logger = Logger.getLogger("com.noelios.restlet.impl.FactoryImpl");
+   private static Logger logger = Logger.getLogger(FactoryImpl.class.getCanonicalName());
 
    public static final String VERSION_LONG = Factory.VERSION_LONG;
    public static final String VERSION_SHORT = Factory.VERSION_SHORT;
@@ -228,28 +229,6 @@ public class FactoryImpl extends Factory
    }
 
    /**
-    * Creates a delegate Chainlet for internal usage by the AbstractChainlet.<br/>
-    * If you need a Chainlet for your application, you should be subclassing the AbstractChainlet instead.
-    * @param owner The owner component.
-    * @return A new Chainlet.
-    */
-   public Chainlet createChainlet(Component owner)
-   {
-      return new ChainletImpl(owner);
-   }
-
-   /**
-    * Creates a delegate Maplet for internal usage by the DefaultMaplet.<br/>
-    * If you need a Maplet for your application, you should be using the DefaultMaplet instead.
-    * @param owner The owner component.
-    * @return A new Maplet.
-    */
-   public Maplet createMaplet(Component owner)
-   {
-      return new MapletImpl(owner);
-   }
-
-   /**
     * Create a new server connector for internal usage by the GenericClient.
     * @param protocols The connector protocols.
     * @param owner The owner component.
@@ -345,5 +324,19 @@ public class FactoryImpl extends Factory
          throw new RuntimeException("Unsupported encoding, unable to encode credentials");
       }
    }
+
+   /**
+    * Creates a URI-based handler attachment that will score target instance shared by all calls.
+    * The score will be proportional to the number of chararacters matched by the pattern, from the start
+    * of the context resource path.
+    * @param router The parent router.
+    * @param pattern The URI pattern used to map calls (see {@link java.util.regex.Pattern} for the syntax).
+    * @param target The target instance to attach.
+    * @see java.util.regex.Pattern
+    */
+	public Scorer createScorer(Router router, String pattern, Restlet target)
+	{
+		return new PatternScorer(router, pattern, target);
+	}
 
 }

@@ -25,24 +25,24 @@ package com.noelios.restlet.data;
 import java.io.IOException;
 import java.io.ObjectOutputStream;
 import java.io.OutputStream;
+import java.io.Serializable;
 
 import org.restlet.data.MediaTypes;
 
 /**
- * Object instance representation.<br/>
- * Based on Java object serialization.
+ * Representation based on a serializable Java object.
  * @author Jerome Louvel (contact@noelios.com) <a href="http://www.noelios.com/">Noelios Consulting</a>
  */
 public class ObjectRepresentation extends OutputRepresentation
 {
-   /** The represented object. */
-   private Object object;
+   /** The serializable object. */
+   protected Serializable object;
 
    /**
     * Constructor;
-    * @param object The represented object.
+    * @param object The serializable object.
     */
-   public ObjectRepresentation(Object object)
+   public ObjectRepresentation(Serializable object)
    {
       super(MediaTypes.APPLICATION_JAVA_OBJECT);
       this.object = object;

@@ -22,34 +22,34 @@
 
 package com.noelios.restlet.build;
 
-import org.restlet.Chainlet;
-import org.restlet.DefaultMaplet;
-import org.restlet.Maplet;
+import org.restlet.DefaultRouter;
+import org.restlet.Filter;
 import org.restlet.Restlet;
+import org.restlet.Router;
 import org.restlet.data.ChallengeScheme;
 
-import com.noelios.restlet.CompressChainlet;
-import com.noelios.restlet.DecompressChainlet;
+import com.noelios.restlet.CompressFilter;
+import com.noelios.restlet.DecompressFilter;
 import com.noelios.restlet.DirectoryRestlet;
-import com.noelios.restlet.ExtractChainlet;
-import com.noelios.restlet.GuardChainlet;
-import com.noelios.restlet.HostMaplet;
-import com.noelios.restlet.LogChainlet;
+import com.noelios.restlet.ExtractFilter;
+import com.noelios.restlet.GuardFilter;
+import com.noelios.restlet.HostRouter;
+import com.noelios.restlet.LogFilter;
 import com.noelios.restlet.RedirectRestlet;
-import com.noelios.restlet.StatusChainlet;
+import com.noelios.restlet.StatusFilter;
 
 /**
- * Fluent builder for Chainlets.
+ * Fluent builder for Filters.
  * @author Jerome Louvel (contact[at]noelios.com) <a href="http://www.noelios.com/">Noelios Consulting</a>
  */
-public class ChainletBuilder extends RestletBuilder
+public class FilterBuilder extends RestletBuilder
 {
 	/**
 	 * Constructor.
 	 * @param parent The parent builder.
 	 * @param node The wrapped node.
 	 */
-   public ChainletBuilder(ObjectBuilder parent, Chainlet node)
+   public FilterBuilder(ObjectBuilder parent, Filter node)
    {
       super(parent, node);
    }
@@ -58,15 +58,15 @@ public class ChainletBuilder extends RestletBuilder
     * Returns the node wrapped by the builder.
     * @return The node wrapped by the builder.
     */
-   public Chainlet getNode()
+   public Filter getNode()
    {
-      return (Chainlet)super.getNode();
+      return (Filter)super.getNode();
    }
 
    /**
-    * Attaches a target instance shared by all calls. Note that you don't need to specify an owner component 
-    * for your target as the chainlet's owner will automatically be set for you.
-    * @param target The target instance to attach.
+    * Attaches a target Restlet. Note that you don't need to specify an owner component 
+    * for your target as the filter's owner will automatically be set for you.
+    * @param target The target Restlet to attach.
     * @return The builder for the target.
     */
    public RestletBuilder attach(Restlet target)
@@ -77,47 +77,62 @@ public class ChainletBuilder extends RestletBuilder
    }
 
    /**
-    * Attaches a target class. A new instance will be created for each call.
-    * @param targetClass The target class to attach (can have a constructor taking a RestletContainer parameter).
-    * @return The builder for the attached target.
+    * Attaches a target Filter. Note that you don't need to specify an owner component 
+    * for your target as the filter's owner will automatically be set for you.
+    * @param target The target filter to attach.
+    * @return The builder for the target.
     */
-   public ObjectBuilder attach(Class<? extends Restlet> targetClass)
+   public FilterBuilder attach(Filter target)
    {
-      getNode().attach(targetClass);
-      return Builders.buildObject(this, targetClass);
+   	target.setOwner(getNode().getOwner());
+      getNode().attach(target);
+      return Builders.buildFilter(this, target);
    }
 
    /**
-    * Attaches a Compress Chainlet.
+    * Attaches a target Router. Note that you don't need to specify an owner component 
+    * for your target as the filter's owner will automatically be set for you.
+    * @param target The target router to attach.
+    * @return The builder for the target.
+    */
+   public RouterBuilder attach(Router target)
+   {
+   	target.setOwner(getNode().getOwner());
+      getNode().attach(target);
+      return Builders.buildRouter(this, target);
+   }
+
+   /**
+    * Attaches a Compress Filter.
     * @return The builder for the created node.
     */
-   public ChainletBuilder attachCompress()
+   public FilterBuilder attachCompress()
    {
-      CompressChainlet node = new CompressChainlet(getNode().getOwner());
+      CompressFilter node = new CompressFilter(getNode().getOwner());
       getNode().attach(node);
-      return Builders.buildChainlet(this, node);
+      return Builders.buildFilter(this, node);
    }
 
    /**
-    * Attaches a Decompress Chainlet. Only decodes input representations before call handling.
+    * Attaches a Decompress Filter. Only decodes input representations before call handling.
     * @return The builder for the created node.
     */
-   public ChainletBuilder attachDecompress()
+   public FilterBuilder attachDecompress()
    {
    	return attachDecompress(true, false);
    }
 
    /**
-    * Attaches a Decompress Chainlet.
+    * Attaches a Decompress Filter.
 	 * @param decodeInput Indicates if the input representation should be decoded.
 	 * @param decodeOutput Indicates if the output representation should be decoded.
     * @return The builder for the created node.
 	 */
-	public ChainletBuilder attachDecompress(boolean decodeInput, boolean decodeOutput)
+	public FilterBuilder attachDecompress(boolean decodeInput, boolean decodeOutput)
 	{
-      DecompressChainlet node = new DecompressChainlet(getNode().getOwner(), decodeInput, decodeOutput);
+      DecompressFilter node = new DecompressFilter(getNode().getOwner(), decodeInput, decodeOutput);
       getNode().attach(node);
-      return Builders.buildChainlet(this, node);
+      return Builders.buildFilter(this, node);
 	}
    
    /**
@@ -135,18 +150,18 @@ public class ChainletBuilder extends RestletBuilder
    }
 
    /**
-    * Attaches an Extract Chainlet.
+    * Attaches an Extract Filter.
     * @return The builder for the created node.
     */
-   public ExtractChainletBuilder attachExtract()
+   public ExtractFilterBuilder attachExtract()
    {
-      ExtractChainlet node = new ExtractChainlet(getNode().getOwner());
+      ExtractFilter node = new ExtractFilter(getNode().getOwner());
       getNode().attach(node);
       return Builders.buildExtract(this, node);
    }
 
    /**
-    * Attaches an Guard Chainlet.
+    * Attaches an Guard Filter.
     * @param logName The log name to used in the logging.properties file.
     * @param authentication Indicates if the guard should attempt to authenticate the caller.
     * @param scheme The authentication scheme to use. 
@@ -154,87 +169,87 @@ public class ChainletBuilder extends RestletBuilder
     * @param authorization Indicates if the guard should attempt to authorize the caller.
     * @return The builder for the created node.
     */
-   public GuardChainletBuilder attachGuard(String logName, boolean authentication, ChallengeScheme scheme, String realm, boolean authorization)
+   public GuardFilterBuilder attachGuard(String logName, boolean authentication, ChallengeScheme scheme, String realm, boolean authorization)
    {
-   	GuardChainlet node = new GuardChainlet(getNode().getOwner(), logName, authentication, scheme, realm, authorization);
+   	GuardFilter node = new GuardFilter(getNode().getOwner(), logName, authentication, scheme, realm, authorization);
       getNode().attach(node);
       return Builders.buildGuard(this, node);
    }
    
    /**
-    * Attaches a Host Maplet. 
+    * Attaches a host router. 
     * @param port The host port.
     * @return The builder for the created node.
     */
-   public HostMapletBuilder attachHost(int port)
+   public HostRouterBuilder attachHost(int port)
    {
-      HostMaplet node = new HostMaplet(getNode().getOwner(), port);
+      HostRouter node = new HostRouter(getNode().getOwner(), port);
       getNode().attach(node);
       return Builders.buildHost(this, node);
    }
    
    /**
-    * Attaches a Host Maplet. 
+    * Attaches a host router. 
     * @param domain The domain name. 
     * @return The builder for the created node.
     */
-   public HostMapletBuilder attachHost(String domain)
+   public HostRouterBuilder attachHost(String domain)
    {
-      HostMaplet node = new HostMaplet(getNode().getOwner(), domain);
+      HostRouter node = new HostRouter(getNode().getOwner(), domain);
       getNode().attach(node);
       return Builders.buildHost(this, node);
    }
    
    /**
-    * Attaches a Host Maplet. 
+    * Attaches a host router. 
     * @param domain The domain name. 
     * @param port The host port.
     * @return The builder for the created node.
     */
-   public HostMapletBuilder attachHost(String domain, int port)
+   public HostRouterBuilder attachHost(String domain, int port)
    {
-      HostMaplet node = new HostMaplet(getNode().getOwner(), domain, port);
+      HostRouter node = new HostRouter(getNode().getOwner(), domain, port);
       getNode().attach(node);
       return Builders.buildHost(this, node);
    }
 
    /**
-    * Attaches Log Chainlet using the default format.<br/>
+    * Attaches Log Filter using the default format.<br/>
     * Default format using <a href="http://analog.cx/docs/logfmt.html">Analog syntax</a>: %Y-%m-%d\t%h:%n:%j\t%j\t%r\t%u\t%s\t%j\t%B\t%f\t%c\t%b\t%q\t%v\t%T
     * @param logName The log name to used in the logging.properties file.
     * @return The builder for the created node.
     */
-   public ChainletBuilder attachLog(String logName)
+   public FilterBuilder attachLog(String logName)
    {
-      LogChainlet node = new LogChainlet(getNode().getOwner(), logName);
+      LogFilter node = new LogFilter(getNode().getOwner(), logName);
       getNode().attach(node);
-      return Builders.buildChainlet(this, node);
+      return Builders.buildFilter(this, node);
    }
 
    /**
-    * Attaches Log Chainlet.
+    * Attaches Log Filter.
     * @param logName The log name to used in the logging.properties file.
     * @param logFormat The log format to use.
     * @return The builder for the created node.
     * @see com.noelios.restlet.util.CallModel
     * @see com.noelios.restlet.util.StringTemplate
     */
-   public ChainletBuilder attachLog(String logName, String logFormat)
+   public FilterBuilder attachLog(String logName, String logFormat)
    {
-      LogChainlet node = new LogChainlet(getNode().getOwner(), logName, logFormat);
+      LogFilter node = new LogFilter(getNode().getOwner(), logName, logFormat);
       getNode().attach(node);
-      return Builders.buildChainlet(this, node);
+      return Builders.buildFilter(this, node);
    }
 
    /**
-    * Attaches a Maplet. 
+    * Attaches a Path Router. 
     * @return The builder for the created node.
     */
-   public MapletBuilder attachMaplet()
+   public RouterBuilder attachRouter()
    {
-      Maplet node = new DefaultMaplet(getNode().getOwner());
+   	DefaultRouter node = new DefaultRouter(getNode().getOwner());
       getNode().attach(node);
-      return Builders.buildMaplet(this, node);
+      return Builders.buildRouter(this, node);
    }
 
    /**
@@ -243,7 +258,7 @@ public class ChainletBuilder extends RestletBuilder
     * @param mode The redirection mode.
     * @return The builder for the created node.
     */
-   public RestletBuilder attachRedirectRestlet(String targetPattern, int mode)
+   public RestletBuilder attachRedirect(String targetPattern, int mode)
    {
       RedirectRestlet node = new RedirectRestlet(getNode().getOwner(), targetPattern, mode);
       getNode().attach(node);
@@ -256,7 +271,7 @@ public class ChainletBuilder extends RestletBuilder
     * @param connectorName The connector Name.
     * @return The builder for the created node.
     */
-   public RestletBuilder attachRedirectRestlet(String targetPattern, String connectorName)
+   public RestletBuilder attachRedirect(String targetPattern, String connectorName)
    {
       RedirectRestlet node = new RedirectRestlet(getNode().getOwner(), targetPattern, connectorName);
       getNode().attach(node);
@@ -264,17 +279,17 @@ public class ChainletBuilder extends RestletBuilder
    }
    
    /**
-    * Attaches a Status Chainlet.
+    * Attaches a Status Filter.
     * @param overwrite Indicates whether an existing representation should be overwritten.
     * @param email Email address of the administrator to contact in case of error.
     * @param homeURI The home URI to display in case the user got a "not found" exception.
     * @return The builder for the target.
     */
-   public ChainletBuilder attachStatus(boolean overwrite, String email, String homeURI)
+   public FilterBuilder attachStatus(boolean overwrite, String email, String homeURI)
    {
-      StatusChainlet node = new StatusChainlet(getNode().getOwner(), overwrite, email, homeURI);
+      StatusFilter node = new StatusFilter(getNode().getOwner(), overwrite, email, homeURI);
       getNode().attach(node);
-      return Builders.buildChainlet(this, node);
+      return Builders.buildFilter(this, node);
    }
 
 }

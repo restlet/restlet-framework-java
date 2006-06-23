@@ -48,7 +48,6 @@ import org.restlet.data.ParameterList;
 import org.restlet.data.Protocols;
 import org.restlet.data.ReferenceList;
 import org.restlet.data.Representation;
-import org.restlet.data.RepresentationMetadata;
 import org.restlet.data.Statuses;
 
 import com.noelios.restlet.data.ContextReference;
@@ -64,7 +63,7 @@ import com.noelios.restlet.util.ByteUtils;
 public class ContextClient extends AbstractClient
 {
    /** Obtain a suitable logger. */
-   private static Logger logger = Logger.getLogger("com.noelios.restlet.impl.ContextClient");
+   private static Logger logger = Logger.getLogger(ContextClient.class.getCanonicalName());
 
    /** The default context client name. */
    public static final String DEFAULT_NAME = "ContextClient";
@@ -190,7 +189,7 @@ public class ContextClient extends AbstractClient
  				{
  					// Return the file content
                output = new FileRepresentation(file, getDefaultMediaType(), getTimeToLive());
-               updateMetadata(file.getName(), output.getMetadata());
+               updateMetadata(file.getName(), output);
  				}
  				
  				call.setOutput(output);
@@ -474,9 +473,9 @@ public class ContextClient extends AbstractClient
    /**
     * Updates some representation metadata based on a given entry name with extensions. 
     * @param entryName The entry name with extensions.
-    * @param metadata The representation metadata to update.
+    * @param representation The representation to update.
     */
-   public void updateMetadata(String entryName, RepresentationMetadata metadata)
+   public void updateMetadata(String entryName, Representation representation)
    {
       String[] tokens = entryName.split("\\.");
       Metadata current;
@@ -485,19 +484,19 @@ public class ContextClient extends AbstractClient
       for(int j = 1; j < tokens.length; j++)
       {
       	current = getMetadata(tokens[j]);
-         if(current instanceof MediaType) metadata.setMediaType((MediaType)metadata);
-         if(current instanceof CharacterSet) metadata.setCharacterSet((CharacterSet)metadata);
-         if(current instanceof Encoding) metadata.setEncoding((Encoding)metadata);
-         if(current instanceof Language) metadata.setLanguage((Language)metadata);
+         if(current instanceof MediaType) representation.setMediaType((MediaType)representation);
+         if(current instanceof CharacterSet) representation.setCharacterSet((CharacterSet)representation);
+         if(current instanceof Encoding) representation.setEncoding((Encoding)representation);
+         if(current instanceof Language) representation.setLanguage((Language)representation);
 
          int dashIndex = tokens[j].indexOf('-');
-         if((metadata == null) && (dashIndex != -1))
+         if((representation == null) && (dashIndex != -1))
          {
             // We found a language extension with a region area specified
             // Try to find a language matching the primary part of the extension
             String primaryPart = tokens[j].substring(0, dashIndex);
             current = getMetadata(primaryPart);
-            if(metadata instanceof Language) metadata.setLanguage((Language)metadata);
+            if(representation instanceof Language) representation.setLanguage((Language)representation);
          }
       }
    }

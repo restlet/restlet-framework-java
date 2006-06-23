@@ -22,34 +22,35 @@
 
 package com.noelios.restlet.build;
 
-import org.restlet.DefaultMaplet;
-import org.restlet.Maplet;
+import org.restlet.DefaultRouter;
+import org.restlet.Filter;
 import org.restlet.Restlet;
+import org.restlet.Router;
 import org.restlet.data.ChallengeScheme;
 
-import com.noelios.restlet.CompressChainlet;
-import com.noelios.restlet.DecompressChainlet;
+import com.noelios.restlet.CompressFilter;
+import com.noelios.restlet.DecompressFilter;
 import com.noelios.restlet.DirectoryRestlet;
-import com.noelios.restlet.ExtractChainlet;
-import com.noelios.restlet.GuardChainlet;
-import com.noelios.restlet.HostMaplet;
-import com.noelios.restlet.LogChainlet;
+import com.noelios.restlet.ExtractFilter;
+import com.noelios.restlet.GuardFilter;
+import com.noelios.restlet.HostRouter;
+import com.noelios.restlet.LogFilter;
 import com.noelios.restlet.RedirectRestlet;
-import com.noelios.restlet.StatusChainlet;
-import com.noelios.restlet.HostMaplet.AttachmentMode;
+import com.noelios.restlet.StatusFilter;
+import com.noelios.restlet.HostRouter.UsageMode;
 
 /**
- * Fluent builder for Maplets.
+ * Fluent builder for routers.
  * @author Jerome Louvel (contact[at]noelios.com) <a href="http://www.noelios.com/">Noelios Consulting</a>
  */
-public class MapletBuilder extends RestletBuilder
+public class RouterBuilder extends RestletBuilder
 {
 	/**
 	 * Constructor.
 	 * @param parent The parent builder.
 	 * @param node The wrapped node.
 	 */
-   public MapletBuilder(ObjectBuilder parent, Maplet node)
+   public RouterBuilder(ObjectBuilder parent, Router node)
    {
       super(parent, node);
    }
@@ -58,17 +59,17 @@ public class MapletBuilder extends RestletBuilder
     * Returns the node wrapped by the builder.
     * @return The node wrapped by the builder.
     */
-   public Maplet getNode()
+   public Router getNode()
    {
-      return (Maplet)super.getNode();
+      return (Router)super.getNode();
    }
    
    /**
-    * Attaches a target instance shared by all calls. Note that you don't need to specify an owner component 
-    * for your target as the chainlet's owner will automatically be set for you.
+    * Attaches a target Restlet. Note that you don't need to specify an owner component 
+    * for your target as the Router's owner will automatically be set for you.
     * @param pattern The URI pattern used to map calls.
     * @param target The target instance to attach.
-    * @return The current Maplet for further attachments.
+    * @return The builder for the target.
     * @see java.util.regex.Pattern
     */
    public RestletBuilder attach(String pattern, Restlet target)
@@ -79,82 +80,117 @@ public class MapletBuilder extends RestletBuilder
    }
 
    /**
-    * Attaches at a specific a target instance shared by all calls. Note that you don't need to specify an 
-    * owner component for your target as the chainlet's owner will automatically be set for you.
+    * Attaches at a target Restlet. Note that you don't need to specify an 
+    * owner component for your target as the Router's owner will automatically be set for you.
     * @param pattern The URI pattern used to map calls.
-    * @param target The target instance to attach.
-    * @param override Indicates if this attachment should have a higher priority that existing ones.
-    * @return The current Maplet for further attachments.
+    * @param target The target Restlet to attach.
+    * @param index The insertion position in the list of attachments.
+    * @return The builder for the target.
     * @see java.util.regex.Pattern
     */
-   public RestletBuilder attach(String pattern, Restlet target, boolean override)
+   public RestletBuilder attach(String pattern, Restlet target, int index)
    {
    	target.setOwner(getNode().getOwner());
-      getNode().attach(pattern, target, override);
+      getNode().attach(pattern, target, index);
       return Builders.buildRestlet(this, target);
    }
-
+   
    /**
-    * Attaches a target class. A new instance will be created for each call.
+    * Attaches a target Filter. Note that you don't need to specify an owner component 
+    * for your target as the Router's owner will automatically be set for you.
     * @param pattern The URI pattern used to map calls.
-    * @param targetClass The target class to attach (can have a constructor taking a RestletContainer parameter).
-    * @return The current Maplet for further attachments.
+    * @param target The target Filter to attach.
+    * @return The builder for the target.
     * @see java.util.regex.Pattern
     */
-   public ObjectBuilder attach(String pattern, Class<? extends Restlet> targetClass)
+   public FilterBuilder attach(String pattern, Filter target)
    {
-      getNode().attach(pattern, targetClass);
-      return Builders.buildObject(this, (Object)targetClass);
+   	target.setOwner(getNode().getOwner());
+      getNode().attach(pattern, target);
+      return Builders.buildFilter(this, target);
    }
 
    /**
-    * Attaches a target class. A new instance will be created for each call.
+    * Attaches at a target Filter. Note that you don't need to specify an 
+    * owner component for your target as the Router's owner will automatically be set for you.
     * @param pattern The URI pattern used to map calls.
-    * @param targetClass The target class to attach (can have a constructor taking a RestletContainer parameter).
-    * @param override Indicates if this attachment should have a higher priority that existing ones.
-    * @return The current Maplet for further attachments.
+    * @param target The target Filter to attach.
+    * @param index The insertion position in the list of attachments.
+    * @return The builder for the target.
     * @see java.util.regex.Pattern
     */
-   public ObjectBuilder attach(String pattern, Class<? extends Restlet> targetClass, boolean override)
+   public FilterBuilder attach(String pattern, Filter target, int index)
    {
-      getNode().attach(pattern, targetClass, override);
-      return Builders.buildObject((ObjectBuilder)this, (Object)targetClass);
+   	target.setOwner(getNode().getOwner());
+      getNode().attach(pattern, target, index);
+      return Builders.buildFilter(this, target);
+   }
+   
+   /**
+    * Attaches a target Router. Note that you don't need to specify an owner component 
+    * for your target as the Router's owner will automatically be set for you.
+    * @param pattern The URI pattern used to map calls.
+    * @param target The target Router to attach.
+    * @return The builder for the target.
+    * @see java.util.regex.Pattern
+    */
+   public RestletBuilder attach(String pattern, Router target)
+   {
+   	target.setOwner(getNode().getOwner());
+      getNode().attach(pattern, target);
+      return Builders.buildRouter(this, target);
    }
 
    /**
-    * Attaches a Compress Chainlet.
+    * Attaches at a target Router. Note that you don't need to specify an 
+    * owner component for your target as the Router's owner will automatically be set for you.
+    * @param pattern The URI pattern used to map calls.
+    * @param target The target Router to attach.
+    * @param index The insertion position in the list of attachments.
+    * @return The builder for the target.
+    * @see java.util.regex.Pattern
+    */
+   public RouterBuilder attach(String pattern, Router target, int index)
+   {
+   	target.setOwner(getNode().getOwner());
+      getNode().attach(pattern, target, index);
+      return Builders.buildRouter(this, target);
+   }
+
+   /**
+    * Attaches a Compress Filter.
     * @param pattern The URI pattern used to map calls.
     * @return The builder for the created node.
     */
-   public ChainletBuilder attachCompress(String pattern)
+   public FilterBuilder attachCompress(String pattern)
    {
-      CompressChainlet node = new CompressChainlet(getNode().getOwner());
+      CompressFilter node = new CompressFilter(getNode().getOwner());
       getNode().attach(pattern, node);
-      return Builders.buildChainlet(this, node);
+      return Builders.buildFilter(this, node);
    }
 
    /**
-    * Attaches a Decompress Chainlet. Only decodes input representations before call handling.
+    * Attaches a Decompress Filter. Only decodes input representations before call handling.
     * @param pattern The URI pattern used to map calls.
     * @return The builder for the created node.
     */
-   public ChainletBuilder attachDecompress(String pattern)
+   public FilterBuilder attachDecompress(String pattern)
    {
    	return attachDecompress(pattern, true, false);
    }
 
    /**
-    * Attaches a Decompress Chainlet.
+    * Attaches a Decompress Filter.
     * @param pattern The URI pattern used to map calls.
 	 * @param decodeInput Indicates if the input representation should be decoded.
 	 * @param decodeOutput Indicates if the output representation should be decoded.
     * @return The builder for the created node.
 	 */
-	public ChainletBuilder attachDecompress(String pattern, boolean decodeInput, boolean decodeOutput)
+	public FilterBuilder attachDecompress(String pattern, boolean decodeInput, boolean decodeOutput)
 	{
-      DecompressChainlet node = new DecompressChainlet(getNode().getOwner(), decodeInput, decodeOutput);
+      DecompressFilter node = new DecompressFilter(getNode().getOwner(), decodeInput, decodeOutput);
       getNode().attach(pattern, node);
-      return Builders.buildChainlet(this, node);
+      return Builders.buildFilter(this, node);
 	}
    
    /**
@@ -173,19 +209,19 @@ public class MapletBuilder extends RestletBuilder
    }
 
    /**
-    * Attaches an Extract Chainlet.
+    * Attaches an Extract Filter.
     * @param pattern The URI pattern used to map calls.
     * @return The builder for the created node.
     */
-   public ExtractChainletBuilder attachExtract(String pattern)
+   public ExtractFilterBuilder attachExtract(String pattern)
    {
-      ExtractChainlet node = new ExtractChainlet(getNode().getOwner());
+      ExtractFilter node = new ExtractFilter(getNode().getOwner());
       getNode().attach(pattern, node);
       return Builders.buildExtract(this, node);
    }
 
    /**
-    * Attaches an Guard Chainlet.
+    * Attaches an Guard Filter.
     * @param pattern The URI pattern used to map calls.
     * @param logName The log name to used in the logging.properties file.
     * @param authentication Indicates if the guard should attempt to authenticate the caller.
@@ -194,106 +230,106 @@ public class MapletBuilder extends RestletBuilder
     * @param authorization Indicates if the guard should attempt to authorize the caller.
     * @return The builder for the created node.
     */
-   public GuardChainletBuilder attachGuard(String pattern, String logName, boolean authentication, ChallengeScheme scheme, String realm, boolean authorization)
+   public GuardFilterBuilder attachGuard(String pattern, String logName, boolean authentication, ChallengeScheme scheme, String realm, boolean authorization)
    {
-   	GuardChainlet node = new GuardChainlet(getNode().getOwner(), logName, authentication, scheme, realm, authorization);
+   	GuardFilter node = new GuardFilter(getNode().getOwner(), logName, authentication, scheme, realm, authorization);
       getNode().attach(pattern, node);
       return Builders.buildGuard(this, node);
    }
    
    /**
-    * Creates a Host Maplet. 
-    * This variant of attachHost is necessary if all the configuration of the Host Maplet requires 
-    * more than a domain name and a port number. This is because the Maplet attachment pattern 
+    * Creates a host router. 
+    * This variant of attachHost is necessary if all the configuration of the host router requires 
+    * more than a domain name and a port number. This is because the router attachment pattern 
     * is computed dynamically based many properties (allowed domains, ports, etc.).  
     * @param port The host port.
     * @return The builder for the created node.
     */
-   public HostMapletBuilder createHost(int port)
+   public HostRouterBuilder createHost(int port)
    {
-      HostMaplet node = new HostMaplet(getNode().getOwner(), port);
-      node.setMode(AttachmentMode.MAPLET);
+      HostRouter node = new HostRouter(getNode().getOwner(), port);
+      node.setMode(UsageMode.ROUTER);
       return Builders.buildHost(this, node);
    }
    
    /**
-    * Attaches a Host Maplet. 
+    * Attaches a host router. 
     * @param port The host port.
     * @return The builder for the created node.
     */
-   public HostMapletBuilder attachHost(int port)
+   public HostRouterBuilder attachHost(int port)
    {
    	return createHost(port).attachParent();
    }
    
    /**
-    * Creates a Host Maplet. 
-    * This variant of attachHost is necessary if all the configuration of the Host Maplet requires 
-    * more than a domain name and a port number. This is because the Maplet attachment pattern 
+    * Creates a host router. 
+    * This variant of attachHost is necessary if all the configuration of the host router requires 
+    * more than a domain name and a port number. This is because the router attachment pattern 
     * is computed dynamically based many properties (allowed domains, ports, etc.).  
     * @param domain The domain name. 
     * @return The builder for the created node.
     */
-   public HostMapletBuilder createHost(String domain)
+   public HostRouterBuilder createHost(String domain)
    {
-      HostMaplet node = new HostMaplet(getNode().getOwner(), domain);
-      node.setMode(AttachmentMode.MAPLET);
+      HostRouter node = new HostRouter(getNode().getOwner(), domain);
+      node.setMode(UsageMode.ROUTER);
       return Builders.buildHost(this, node);
    }
    
    /**
-    * Attaches a Host Maplet. 
+    * Attaches a host router. 
     * @param domain The domain name. 
     * @return The builder for the created node.
     */
-   public HostMapletBuilder attachHost(String domain)
+   public HostRouterBuilder attachHost(String domain)
    {
    	return createHost(domain).attachParent();
    }
    
    /**
-    * Creates a Host Maplet. 
-    * This variant of attachHost is necessary if all the configuration of the Host Maplet requires 
-    * more than a domain name and a port number. This is because the Maplet attachment pattern 
+    * Creates a host router. 
+    * This variant of attachHost is necessary if all the configuration of the host router requires 
+    * more than a domain name and a port number. This is because the router attachment pattern 
     * is computed dynamically based many properties (allowed domains, ports, etc.).  
     * @param domain The domain name. 
     * @param port The host port.
     * @return The builder for the created node.
     */
-   public HostMapletBuilder createHost(String domain, int port)
+   public HostRouterBuilder createHost(String domain, int port)
    {
-      HostMaplet node = new HostMaplet(getNode().getOwner(), domain, port);
-      node.setMode(AttachmentMode.MAPLET);
+      HostRouter node = new HostRouter(getNode().getOwner(), domain, port);
+      node.setMode(UsageMode.ROUTER);
       return Builders.buildHost(this, node);
    }
    
    /**
-    * Attaches a Host Maplet. 
+    * Attaches a host router. 
     * @param domain The domain name. 
     * @param port The host port.
     * @return The builder for the created node.
     */
-   public HostMapletBuilder attachHost(String domain, int port)
+   public HostRouterBuilder attachHost(String domain, int port)
    {
    	return createHost(domain, port).attachParent();
    }
 
    /**
-    * Attaches Log Chainlet using the default format.<br/>
+    * Attaches Log Filter using the default format.<br/>
     * Default format using <a href="http://analog.cx/docs/logfmt.html">Analog syntax</a>: %Y-%m-%d\t%h:%n:%j\t%j\t%r\t%u\t%s\t%j\t%B\t%f\t%c\t%b\t%q\t%v\t%T
     * @param pattern The URI pattern used to map calls.
     * @param logName The log name to used in the logging.properties file.
     * @return The builder for the created node.
     */
-   public ChainletBuilder attachLog(String pattern, String logName)
+   public FilterBuilder attachLog(String pattern, String logName)
    {
-      LogChainlet node = new LogChainlet(getNode().getOwner(), logName);
+      LogFilter node = new LogFilter(getNode().getOwner(), logName);
       getNode().attach(pattern, node);
-      return Builders.buildChainlet(this, node);
+      return Builders.buildFilter(this, node);
    }
 
    /**
-    * Attaches Log Chainlet.
+    * Attaches Log Filter.
     * @param pattern The URI pattern used to map calls.
     * @param logName The log name to used in the logging.properties file.
     * @param logFormat The log format to use.
@@ -301,23 +337,23 @@ public class MapletBuilder extends RestletBuilder
     * @see com.noelios.restlet.util.CallModel
     * @see com.noelios.restlet.util.StringTemplate
     */
-   public ChainletBuilder attachLog(String pattern, String logName, String logFormat)
+   public FilterBuilder attachLog(String pattern, String logName, String logFormat)
    {
-      LogChainlet node = new LogChainlet(getNode().getOwner(), logName, logFormat);
+      LogFilter node = new LogFilter(getNode().getOwner(), logName, logFormat);
       getNode().attach(pattern, node);
-      return Builders.buildChainlet(this, node);
+      return Builders.buildFilter(this, node);
    }
 
    /**
-    * Attaches a Maplet. 
+    * Attaches a Path Router. 
     * @param pattern The URI pattern used to map calls.
     * @return The builder for the created node.
     */
-   public MapletBuilder attachMaplet(String pattern)
+   public RouterBuilder attachPath(String pattern)
    {
-      Maplet node = new DefaultMaplet(getNode().getOwner());
+   	Router node = new DefaultRouter(getNode().getOwner());
       getNode().attach(pattern, node);
-      return Builders.buildMaplet(this, node);
+      return Builders.buildRouter(this, node);
    }
 
    /**
@@ -327,7 +363,7 @@ public class MapletBuilder extends RestletBuilder
     * @param mode The redirection mode.
     * @return The builder for the created node.
     */
-   public RestletBuilder attachRedirectRestlet(String pattern, String targetPattern, int mode)
+   public RestletBuilder attachRedirect(String pattern, String targetPattern, int mode)
    {
       RedirectRestlet node = new RedirectRestlet(getNode().getOwner(), targetPattern, mode);
       getNode().attach(pattern, node);
@@ -341,7 +377,7 @@ public class MapletBuilder extends RestletBuilder
     * @param connectorName The connector Name.
     * @return The builder for the created node.
     */
-   public RestletBuilder attachRedirectRestlet(String pattern, String targetPattern, String connectorName)
+   public RestletBuilder attachRedirect(String pattern, String targetPattern, String connectorName)
    {
       RedirectRestlet node = new RedirectRestlet(getNode().getOwner(), targetPattern, connectorName);
       getNode().attach(pattern, node);
@@ -349,18 +385,18 @@ public class MapletBuilder extends RestletBuilder
    }
    
    /**
-    * Attaches a Status Chainlet.
+    * Attaches a Status Filter.
     * @param pattern The URI pattern used to map calls.
     * @param overwrite Indicates whether an existing representation should be overwritten.
     * @param email Email address of the administrator to contact in case of error.
     * @param homeURI The home URI to display in case the user got a "not found" exception.
     * @return The builder for the target.
     */
-   public ChainletBuilder attachStatus(String pattern, boolean overwrite, String email, String homeURI)
+   public FilterBuilder attachStatus(String pattern, boolean overwrite, String email, String homeURI)
    {
-      StatusChainlet node = new StatusChainlet(getNode().getOwner(), overwrite, email, homeURI);
+      StatusFilter node = new StatusFilter(getNode().getOwner(), overwrite, email, homeURI);
       getNode().attach(pattern, node);
-      return Builders.buildChainlet(this, node);
+      return Builders.buildFilter(this, node);
    }
 
 }

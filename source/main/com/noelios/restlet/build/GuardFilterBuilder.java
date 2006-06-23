@@ -22,20 +22,20 @@
 
 package com.noelios.restlet.build;
 
-import com.noelios.restlet.GuardChainlet;
+import com.noelios.restlet.GuardFilter;
 
 /**
- * Fluent builder for Guard Chainlets.
+ * Fluent builder for guard filters.
  * @author Jerome Louvel (contact[at]noelios.com) <a href="http://www.noelios.com/">Noelios Consulting</a>
  */
-public class GuardChainletBuilder extends ChainletBuilder
+public class GuardFilterBuilder extends FilterBuilder
 {
 	/**
 	 * Constructor.
 	 * @param parent The parent builder.
 	 * @param node The wrapped node.
 	 */
-   public GuardChainletBuilder(ObjectBuilder parent, GuardChainlet node)
+   public GuardFilterBuilder(ObjectBuilder parent, GuardFilter node)
    {
       super(parent, node);
    }
@@ -44,9 +44,9 @@ public class GuardChainletBuilder extends ChainletBuilder
     * Returns the node wrapped by the builder.
     * @return The node wrapped by the builder.
     */
-   public GuardChainlet getNode()
+   public GuardFilter getNode()
    {
-      return (GuardChainlet)super.getNode();
+      return (GuardFilter)super.getNode();
    }
 
    /**
@@ -55,7 +55,7 @@ public class GuardChainletBuilder extends ChainletBuilder
     * @param password The password associated to the login.
     * @return The current builder.
     */
-   public GuardChainletBuilder authorize(String login, String password)
+   public GuardFilterBuilder authorize(String login, String password)
    {
    	getNode().getAuthorizations().put(login, password);
    	return this;

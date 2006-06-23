@@ -22,6 +22,12 @@
 
 package com.noelios.restlet.data;
 
+import java.io.ByteArrayInputStream;
+import java.io.IOException;
+import java.io.InputStream;
+import java.io.OutputStream;
+import java.io.OutputStreamWriter;
+
 import org.restlet.data.MediaType;
 
 import com.noelios.restlet.util.MapModel;
@@ -33,16 +39,12 @@ import com.noelios.restlet.util.StringTemplate;
  * Note that the string value is dynamically computed, each time it is accessed.
  * @author Jerome Louvel (contact@noelios.com) <a href="http://www.noelios.com/">Noelios Consulting</a>
  */
-public class StringTemplateRepresentation extends StringRepresentation implements Model
+public class StringTemplateRepresentation extends StreamRepresentation implements Model
 {
-	/**
-	 * The string template.
-	 */
+	/** The string template. */
 	protected StringTemplate template;
 	
-	/**
-	 * The template model.
-	 */
+	/** The template model. */
 	protected Model model;
    
    /**
@@ -53,7 +55,7 @@ public class StringTemplateRepresentation extends StringRepresentation implement
     */
    public StringTemplateRepresentation(CharSequence pattern, Model model, MediaType mediaType)
    {
-      super(null, mediaType);
+      super(mediaType);
       this.template = new StringTemplate(pattern);
       this.model = model;
    }
@@ -80,7 +82,7 @@ public class StringTemplateRepresentation extends StringRepresentation implement
     */
    public StringTemplateRepresentation(CharSequence pattern, String variableStart, String variableEnd, String instructionStart, String instructionEnd, Model model, MediaType mediaType)
    {
-      super(null, mediaType);
+      super(mediaType);
       this.template = new StringTemplate(pattern, variableStart, variableEnd, instructionStart, instructionEnd);
       this.model = model;
    }
@@ -136,6 +138,50 @@ public class StringTemplateRepresentation extends StringRepresentation implement
 	public void put(String name, String value)
 	{
 		this.model.put(name, value);
+	}
+	
+   /**
+    * Converts the representation to a string.
+    * @return The representation as a string.
+    */
+   public String toString()
+   {
+   	return getValue();
+   }
+
+   /**
+    * Returns a stream with the representation's content.
+    * This method is ensured to return a fresh stream for each invocation unless it 
+    * is a transient representation, in which case null is returned.
+    * @return A stream with the representation's content.
+    * @throws IOException
+    */
+	public InputStream getStream() throws IOException
+	{
+		if(getValue() != null)
+		{
+			return new ByteArrayInputStream(getValue().getBytes(getCharacterSet().getName()));
+		}
+		else
+		{
+			return null;
+		}
+	}
+
+   /**
+    * Writes the representation to a byte stream.
+    * This method is ensured to write the full content for each invocation unless it 
+    * is a transient representation, in which case an exception is thrown.
+    * @param outputStream The output stream.
+    * @throws IOException
+    */
+	public void write(OutputStream outputStream) throws IOException
+	{
+		if(getValue() != null)
+		{
+			OutputStreamWriter osw = new OutputStreamWriter(outputStream, getCharacterSet().getName());
+			osw.write(getValue());
+		}
 	}
 
 }

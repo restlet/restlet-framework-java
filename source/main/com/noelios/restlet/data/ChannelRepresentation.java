@@ -25,10 +25,11 @@ package com.noelios.restlet.data;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
-import java.nio.channels.Channels;
 
 import org.restlet.data.AbstractRepresentation;
 import org.restlet.data.MediaType;
+
+import com.noelios.restlet.util.ByteUtils;
 
 /**
  * Representation based on a NIO byte channel.
@@ -36,23 +37,13 @@ import org.restlet.data.MediaType;
  */
 public abstract class ChannelRepresentation extends AbstractRepresentation
 {
-	/**
+   /**
     * Constructor.
-    * @param mediaType The representation's media type.
+    * @param mediaType The media type.
     */
    public ChannelRepresentation(MediaType mediaType)
    {
-      super(mediaType);
-   }
-
-	/**
-    * Constructor.
-    * @param mediaType The representation's media type.
-    * @param expectedSize The expected stream size. 
-    */
-   public ChannelRepresentation(MediaType mediaType, long expectedSize)
-   {
-      super(mediaType, expectedSize);
+   	super(mediaType);
    }
 
    /**
@@ -61,7 +52,7 @@ public abstract class ChannelRepresentation extends AbstractRepresentation
     */
    public void write(OutputStream outputStream) throws IOException
    {
-      write(Channels.newChannel(outputStream));
+      write(ByteUtils.getChannel(outputStream));
    }
 
    /**
@@ -70,7 +61,6 @@ public abstract class ChannelRepresentation extends AbstractRepresentation
     */
    public InputStream getStream() throws IOException
    {
-      return Channels.newInputStream(getChannel());
+   	return ByteUtils.getStream(getChannel());
    }
-
 }

@@ -39,7 +39,7 @@ import org.restlet.data.Parameter;
 public class CookieReader extends HeaderReader
 {
    /** Obtain a suitable logger. */
-   private static Logger logger = Logger.getLogger("com.noelios.restlet.util.CookieReader");
+   private static Logger logger = Logger.getLogger(CookieReader.class.getCanonicalName());
 
    private static final String NAME_VERSION = "$Version";
    private static final String NAME_PATH = "$Path";

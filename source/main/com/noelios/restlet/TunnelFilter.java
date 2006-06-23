@@ -22,27 +22,20 @@
 
 package com.noelios.restlet;
 
-import java.util.logging.Level;
-import java.util.logging.Logger;
-
 import org.restlet.Call;
 import org.restlet.component.Component;
 import org.restlet.data.Methods;
-import org.restlet.data.Statuses;
 
 import com.noelios.restlet.util.PreferenceUtils;
 
 /**
- * Chainlet extracting some attributes from a call.
+ * Filter extracting some attributes from a call.
  * Multiple extractions can be defined, based on the query part of the resource reference, 
  * on the input form (posted from a browser), on the context matches or on the call's template model.  
  * @author Jerome Louvel (contact@noelios.com) <a href="http://www.noelios.com/">Noelios Consulting</a>
  */
-public class TunnelChainlet extends ExtractChainlet
+public class TunnelFilter extends ExtractFilter
 {
-   /** Obtain a suitable logger. */
-   private static Logger logger = Logger.getLogger("com.noelios.restlet.TunnelChainlet");
-
    /** Indicates if the method name can be tunneled. */
    protected boolean methodTunnel;
 
@@ -77,7 +70,7 @@ public class TunnelChainlet extends ExtractChainlet
     * @param preferencesTunnel Indicates if the client preferences can be tunneled.
     * @param uriTunnel Indicates if the resource reference can be tunneled.
     */
-   public TunnelChainlet(Component parent, boolean methodTunnel, boolean preferencesTunnel, boolean uriTunnel)
+   public TunnelFilter(Component parent, boolean methodTunnel, boolean preferencesTunnel, boolean uriTunnel)
    {
       super(parent);
       this.methodTunnel = methodTunnel;
@@ -90,32 +83,16 @@ public class TunnelChainlet extends ExtractChainlet
       this.uriTunnel = uriTunnel;
       this.uriAttribute = "uri";
    }
-   
-   /**
-    * Handles a call to a resource or a set of resources.
-    * @param call The call to handle.
-    */
-   public void handle(Call call)
-   {
-      try
-      {
-   		extractAttributes(call);
-   		tunnel(call);
-         super.handle(call);
-      }
-      catch(Exception e)
-      {
-         logger.log(Level.SEVERE, "Unhandled error intercepted", e);
-         call.setStatus(Statuses.SERVER_ERROR_INTERNAL);
-      }
-   }
 
    /**
-    * Tunnels the extracted attributes into the proper call objects.
-    * @param call The call to update.
+    * Allows filtering before its handling by the target Restlet. Does nothing by default.
+    * @param call The call to filter.
     */
-   protected void tunnel(Call call)
+   public void beforeHandle(Call call)
    {
+   	super.beforeHandle(call);
+
+   	// Tunnels the extracted attributes into the proper call objects.
    	if(isMethodTunnel())
    	{
    		String methodName = (String)call.getAttributes().get(getMethodAttribute());

@@ -25,7 +25,7 @@ package com.noelios.restlet;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
-import org.restlet.AbstractChainlet;
+import org.restlet.AbstractFilter;
 import org.restlet.Call;
 import org.restlet.component.Component;
 import org.restlet.data.MediaTypes;
@@ -36,7 +36,7 @@ import org.restlet.data.Statuses;
 import com.noelios.restlet.data.StringRepresentation;
 
 /**
- * Chainlet associating an output representation based on the call status. In order to 
+ * Filter associating an output representation based on the call status. In order to 
  * customize the default representation, just subclass this class and override the 
  * "getRepresentation" method.<br/> 
  * If any exception occurs during the call handling, a "server internal error" 
@@ -46,10 +46,10 @@ import com.noelios.restlet.data.StringRepresentation;
  * @see <a href="http://www.restlet.org/tutorial#part08">Tutorial: Displaying error pages</a>
  * @author Jerome Louvel (contact@noelios.com) <a href="http://www.noelios.com/">Noelios Consulting</a>
  */
-public class StatusChainlet extends AbstractChainlet
+public class StatusFilter extends AbstractFilter
 {
    /** Obtain a suitable logger. */
-   private static Logger logger = Logger.getLogger("com.noelios.restlet.RedirectRestlet");
+   private static Logger logger = Logger.getLogger(StatusFilter.class.getCanonicalName());
 
    /** Indicates whether an existing representation should be overwritten. */
    protected boolean overwrite;
@@ -67,7 +67,7 @@ public class StatusChainlet extends AbstractChainlet
     * @param email Email address of the administrator to contact in case of error.
     * @param homeURI The home URI to display in case the user got a "not found" exception.
     */
-   public StatusChainlet(Component parent, boolean overwrite, String email, String homeURI)
+   public StatusFilter(Component parent, boolean overwrite, String email, String homeURI)
    {
       super(parent);
       this.overwrite = overwrite;
@@ -91,7 +91,14 @@ public class StatusChainlet extends AbstractChainlet
          logger.log(Level.SEVERE, "Unhandled error intercepted", e);
          call.setStatus(Statuses.SERVER_ERROR_INTERNAL);
       }
+   }
 
+   /**
+    * Allows filtering after its handling by the target Restlet. Does nothing by default.
+    * @param call The call to filter.
+    */
+   public void afterHandle(Call call)
+   {
       // If no status is set, then the "success ok" status is assumed.
       if(call.getStatus() == null)
       {

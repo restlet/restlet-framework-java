@@ -79,42 +79,42 @@ public class ObjectBuilder
 	}
 
 	/**
-	 * Go up to the first parent Maplet builder.
-	 * @return The parent Maplet builder.
+	 * Go up to the first parent router builder.
+	 * @return The parent router builder.
 	 */
-	public MapletBuilder upMaplet()
+	public RouterBuilder upPath()
 	{
-		MapletBuilder result = null;
+		RouterBuilder result = null;
 		ObjectBuilder current = this;
 
 		for(boolean goUp = true; (result == null) && goUp; )
 		{
 			goUp = (current.up() != null);
 			if(goUp) current = current.up();
-			if(current instanceof MapletBuilder) result = (MapletBuilder)current;
+			if(current instanceof RouterBuilder) result = (RouterBuilder)current;
 		}
 		
 		return result;
 	}
 
 	/**
-	 * Go up to a specified ancestor Maplet builder.
+	 * Go up to a specified ancestor router builder.
 	 * @param level The ancestor level (1 = first parent)
-	 * @return The parent Maplet builder.
+	 * @return The parent router builder.
 	 */
-	public MapletBuilder upMaplet(int level)
+	public RouterBuilder upPath(int level)
 	{
-		MapletBuilder result = null;
+		RouterBuilder result = null;
 
 		for(int i = 0; i < level; i++)
 		{
 			if(result == null) 
 			{
-				result = upMaplet();
+				result = upPath();
 			}
 			else
 			{
-				result = result.upMaplet();
+				result = result.upPath();
 			}
 		}
 		
@@ -140,20 +140,20 @@ public class ObjectBuilder
 
 	/**
 	 * Casts the current builder. 
-	 * @return A Maplet builder.
+	 * @return A router builder.
 	 */
-	public MapletBuilder toMaplet()
+	public RouterBuilder toPath()
 	{
-		return (MapletBuilder)this;
+		return (RouterBuilder)this;
 	}
 
 	/**
 	 * Casts the current builder. 
-	 * @return A Chainlet builder.
+	 * @return A Filter builder.
 	 */
-	public ChainletBuilder toChainlet()
+	public FilterBuilder toFilter()
 	{
-		return (ChainletBuilder)this;
+		return (FilterBuilder)this;
 	}
 
 	/**

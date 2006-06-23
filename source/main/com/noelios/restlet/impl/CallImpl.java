@@ -33,7 +33,6 @@ import java.util.logging.Level;
 import java.util.logging.Logger;
 
 import org.restlet.Call;
-import org.restlet.Resource;
 import org.restlet.connector.ConnectorCall;
 import org.restlet.data.ConditionData;
 import org.restlet.data.Cookie;
@@ -48,7 +47,7 @@ import org.restlet.data.Parameter;
 import org.restlet.data.PreferenceData;
 import org.restlet.data.Reference;
 import org.restlet.data.Representation;
-import org.restlet.data.RepresentationMetadata;
+import org.restlet.data.Resource;
 import org.restlet.data.SecurityData;
 import org.restlet.data.Status;
 import org.restlet.data.Statuses;
@@ -104,7 +103,7 @@ public class CallImpl implements Call
    protected PreferenceData preference;
 
    /** The redirection reference. */
-   protected Reference redirectionRef;
+   protected Reference outputRef;
 
    /** The referrer reference. */
    protected Reference referrerRef;
@@ -147,7 +146,7 @@ public class CallImpl implements Call
     * @return The best variant representation.
     * @see <a href="http://httpd.apache.org/docs/2.2/en/content-negotiation.html#algorithm">Apache content negotiation algorithm</a>
     */
-   public RepresentationMetadata getBestVariant(Resource resource, Language fallbackLanguage)
+   public Representation getBestVariant(Resource resource, Language fallbackLanguage)
    {
       return getBestVariant(resource.getVariants(), fallbackLanguage);
    }
@@ -159,7 +158,7 @@ public class CallImpl implements Call
     * @return The best variant representation.
     * @see <a href="http://httpd.apache.org/docs/2.2/en/content-negotiation.html#algorithm">Apache content negotiation algorithm</a>
     */
-   protected RepresentationMetadata getBestVariant(List<RepresentationMetadata> variants, Language fallbackLanguage)
+   protected Representation getBestVariant(List<Representation> variants, Language fallbackLanguage)
    {
       if(variants == null)
       {
@@ -169,14 +168,16 @@ public class CallImpl implements Call
       {
          Parameter currentParam = null;
          Language currentLanguage = null;
+         Language variantLanguage = null;
          MediaType currentMediaType = null;
+         MediaType variantMediaType = null;
 
          boolean compatiblePref = false;
          boolean compatibleLanguage = false;
          boolean compatibleMediaType = false;
 
-         RepresentationMetadata currentVariant = null;
-         RepresentationMetadata bestVariant = null;
+         Representation currentVariant = null;
+         Representation bestVariant = null;
 
          LanguagePref currentLanguagePref = null;
          LanguagePref bestLanguagePref = null;
@@ -192,11 +193,13 @@ public class CallImpl implements Call
          // which is dependant on the language score and on the media type score
          for(Iterator iter1 = variants.iterator(); iter1.hasNext();)
          {
-            currentVariant = (RepresentationMetadata)iter1.next();
+            currentVariant = (Representation)iter1.next();
+            variantLanguage = currentVariant.getLanguage();
+            variantMediaType = currentVariant.getMediaType();
 
             // For each language preference defined in the call
             // Calculate the score and remember the best scoring preference
-            for(Iterator<LanguagePref> iter2 = getPreference().getLanguages().iterator(); (currentVariant.getLanguage() != null) && iter2.hasNext();)
+            for(Iterator<LanguagePref> iter2 = getPreference().getLanguages().iterator(); (variantLanguage != null) && iter2.hasNext();)
             {
                currentLanguagePref = iter2.next();
                currentLanguage = currentLanguagePref.getLanguage();
@@ -204,7 +207,7 @@ public class CallImpl implements Call
                currentScore = 0;
 
                // 1) Compare the main tag
-               if(currentVariant.getLanguage().getMainTag().equals(currentLanguage.getMainTag()))
+               if(variantLanguage.getMainTag().equals(currentLanguage.getMainTag()))
                {
                   currentScore += 100;
                }
@@ -226,9 +229,9 @@ public class CallImpl implements Call
                if(compatiblePref)
                {
                   // 2) Compare the sub tags
-                  if((currentLanguage.getSubTag() == null) || (currentVariant.getLanguage().getSubTag() == null))
+                  if((currentLanguage.getSubTag() == null) || (variantLanguage.getSubTag() == null))
                   {
-                     if(currentVariant.getLanguage().getSubTag() == currentLanguage.getSubTag())
+                     if(variantLanguage.getSubTag() == currentLanguage.getSubTag())
                      {
                         currentScore += 10;
                      }
@@ -237,7 +240,7 @@ public class CallImpl implements Call
                         // Don't change the score
                      }
                   }
-                  else if(currentLanguage.getSubTag().equals(currentVariant.getLanguage().getSubTag()))
+                  else if(currentLanguage.getSubTag().equals(variantLanguage.getSubTag()))
                   {
                      currentScore += 10;
                   }
@@ -258,9 +261,9 @@ public class CallImpl implements Call
             }
 
             // Are the preferences compatible with the current variant language?
-            compatibleLanguage = (currentVariant.getLanguage() == null) ||
+            compatibleLanguage = (variantLanguage == null) ||
                                  (bestLanguagePref != null) ||
-                                 (currentVariant.getLanguage().equals(fallbackLanguage));
+                                 (variantLanguage.equals(fallbackLanguage));
 
             // For each media range preference defined in the call
             // Calculate the score and remember the best scoring preference
@@ -272,7 +275,7 @@ public class CallImpl implements Call
                currentScore = 0;
 
                // 1) Compare the main types
-               if(currentMediaType.getMainType().equals(currentVariant.getMediaType().getMainType()))
+               if(currentMediaType.getMainType().equals(variantMediaType.getMainType()))
                {
                   currentScore += 1000;
                }
@@ -290,7 +293,7 @@ public class CallImpl implements Call
                if(compatiblePref)
                {
                   // 2) Compare the sub types
-                  if(currentVariant.getMediaType().getSubType().equals(currentMediaType.getSubType()))
+                  if(variantMediaType.getSubType().equals(currentMediaType.getSubType()))
                   {
                      currentScore += 100;
                   }
@@ -300,12 +303,12 @@ public class CallImpl implements Call
                      compatiblePref = false;
                   }
 
-                  if(compatiblePref && (currentVariant.getMediaType().getParameters() != null))
+                  if(compatiblePref && (variantMediaType.getParameters() != null))
                   {
                      // 3) Compare the parameters
                      // If current media type is compatible with the current
                      // media range then the parameters need to be checked too
-                     for(Iterator iter3 = currentVariant.getMediaType().getParameters().iterator(); iter3
+                     for(Iterator iter3 = variantMediaType.getParameters().iterator(); iter3
                            .hasNext();)
                      {
                         currentParam = (Parameter)iter3.next();
@@ -328,7 +331,7 @@ public class CallImpl implements Call
             }
 
             // Are the preferences compatible with the current media type?
-            compatibleMediaType = (currentVariant.getMediaType() == null) ||
+            compatibleMediaType = (variantMediaType == null) ||
                                   (bestMediaTypePref != null);
 
             if(compatibleLanguage && compatibleMediaType)
@@ -339,7 +342,7 @@ public class CallImpl implements Call
                {
                   currentQuality += (bestLanguagePref.getQuality() * 10F);
                }
-               else if((currentVariant.getLanguage() != null) && currentVariant.getLanguage().equals(fallbackLanguage))
+               else if((variantLanguage != null) && variantLanguage.equals(fallbackLanguage))
                {
                   currentQuality += 0.1F * 10F;
                }
@@ -541,6 +544,18 @@ public class CallImpl implements Call
    }
 
    /**
+    * Returns the reference of the output representation. This is used in several situations: when
+    * redirecting the client to a different URI, when creating a new resource after a POST call for
+    * example or when the output reference has a specific URI that is different from the identified
+    * resource URI.
+    * @return The redirection reference.
+    */
+   public Reference getOutputRef()
+   {
+      return this.outputRef;
+   }
+
+   /**
     * Returns the preference data of the client.
     * @return The preference data of the client.
     */
@@ -548,15 +563,6 @@ public class CallImpl implements Call
    {
       if(this.preference == null) this.preference = new PreferenceData();
       return this.preference;
-   }
-
-   /**
-    * Returns the reference for redirections or resource creations.
-    * @return The redirection reference.
-    */
-   public Reference getRedirectionRef()
-   {
-      return this.redirectionRef;
    }
 
    /**
@@ -650,7 +656,7 @@ public class CallImpl implements Call
     */
    public void setBestOutput(Resource resource, Language fallbackLanguage)
    {
-      List<RepresentationMetadata> variants = resource.getVariants();
+      List<Representation> variants = resource.getVariants();
 
       if((variants == null) || (variants.size() < 1))
       {
@@ -660,7 +666,7 @@ public class CallImpl implements Call
       else
       {
          // Compute the best variant
-         RepresentationMetadata bestVariant = getBestVariant(variants, fallbackLanguage);
+      	Representation bestVariant = getBestVariant(variants, fallbackLanguage);
 
          if(bestVariant == null)
          {
@@ -674,7 +680,7 @@ public class CallImpl implements Call
             if((modifiedSince == null) || DateUtils.after(modifiedSince, bestVariant.getModificationDate()))
             {
                // Yes, set the best representation as the call output
-               setOutput(resource.getRepresentation(bestVariant));
+               setOutput(bestVariant);
                setStatus(Statuses.SUCCESS_OK);
             }
             else
@@ -762,22 +768,25 @@ public class CallImpl implements Call
    }
 
    /**
-    * Sets the reference for redirections or resource creations.
-    * @param redirectionRef The redirection reference.
+    * Sets the reference of the output representation. This is used in several situations: when
+    * redirecting the client to a different URI, when creating a new resource after a POST call for
+    * example or when the output reference has a specific URI that is different from the identified
+    * resource URI.
+    * @param outputRef The output reference.
     */
-   public void setRedirectionRef(Reference redirectionRef)
+   public void setOutputRef(Reference outputRef)
    {
-      this.redirectionRef = redirectionRef;
+      this.outputRef = outputRef;
    }
 
    /**
-    * Sets the reference for redirections or resource creations using an URI string. Note that
-    * the redirection URI can be either absolute or relative to the current context reference.
-    * @param redirectionUri The redirection URI.
+    * Sets the reference of the output representation. Note that the output URI can be either 
+    * absolute or relative to the current call's context reference.
+    * @param outputUri The output URI.
     */
-   public void setRedirectionRef(String redirectionUri)
+   public void setOutputRef(String outputUri)
    {
-      setRedirectionRef(new Reference(getContextRef(), redirectionUri).getTargetRef());
+      setOutputRef(new Reference(getContextRef(), outputUri).getTargetRef());
    }
 
    /**

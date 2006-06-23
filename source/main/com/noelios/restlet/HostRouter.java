@@ -28,10 +28,13 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.regex.Pattern;
 
+import org.restlet.AbstractHandler;
+import org.restlet.Scorer;
 import org.restlet.Call;
-import org.restlet.DefaultMaplet;
-import org.restlet.Factory;
-import org.restlet.Maplet;
+import org.restlet.DefaultRouter;
+import org.restlet.Restlet;
+import org.restlet.Router;
+import org.restlet.RouterMode;
 import org.restlet.component.Component;
 import org.restlet.data.DefaultStatus;
 import org.restlet.data.Protocol;
@@ -40,40 +43,40 @@ import org.restlet.data.Status;
 import org.restlet.data.Statuses;
 
 /**
- * Maplet associated with a host and allowing different equivalent URI patterns.
- * After configuration , you can use the getPattern() method to attach your HostMaplet to a RestletContainer 
- * or a root Maplet. Child Restlet can also be attached to a HostMaplet for further delegation.
+ * Router associated with a host and allowing different equivalent URI patterns.
+ * After configuration , you can use the getPattern() method to attach your HostRouter to a RestletContainer 
+ * or a root router. Child Restlet can also be attached to a HostRouter for further delegation.
  * By default, the supported protocol is HTTP, "localhost" URIs and IP-based URIs are allowed. 
  * However, client redirections to the preferred format are not issued. 
  * @author Jerome Louvel (contact@noelios.com) <a href="http://www.noelios.com/">Noelios Consulting</a>
  */
-public class HostMaplet extends DefaultMaplet
+public class HostRouter extends AbstractHandler implements Router
 {
 	/**
-	 * Attachment mode for HostMaplet. 
+	 * Usage mode for the HostRouter. 
 	 */
-	public enum AttachmentMode 
+	public enum UsageMode 
 	{
 		/**
-		 * Default mode used when the HostMaplet is attached to a Chainlet (or to a RestletContainer using
-		 * an attach() method with no parameter. In this mode, the HostMaplet is setting the contextPath
+		 * Default mode used when the HostRouter is attached to a Filter (or to a RestletContainer using
+		 * an attach() method with no parameter. In this mode, the HostRouter is setting the contextPath
 		 * of the handler call itself.
 		 */
-		CHAINLET, 
+		FILTER, 
 		
 		/**
-		 * Mode used when the HostMaplet is attached to a parent Maplet (or to a RestletContainer using
-		 * an attach() method with a URI pattern parameter. In this mode, the parent Maplet is setting the
-		 * contextPath before delegating to call to the HostMaplet. When setting the URI pattern for the
-		 * parent Maplet, just use the getPattern() method after having configured your HostMaplet instance. 
+		 * Mode used when the HostRouter is attached to a parent router (or to a RestletContainer using
+		 * an attach() method with a URI pattern parameter. In this mode, the parent router is setting the
+		 * contextPath before delegating to call to the HostRouter. When setting the URI pattern for the
+		 * parent router, just use the getPattern() method after having configured your HostRouter instance. 
 		 */
-		MAPLET
+		ROUTER
 	};
 	
 	/**
 	 * The usage mode. 
 	 */
-	protected AttachmentMode mode;
+	protected UsageMode mode;
 	
 	/** 
 	 * The list of allowed protocols. 
@@ -151,16 +154,21 @@ public class HostMaplet extends DefaultMaplet
 	protected boolean allowDefaultPorts;
 	
 	/**
-	 * Front Maplet only used in the Chainlet attachment mode.
-	 * Its target is the internal delegate Maplet.
+	 * Front router only used in the Filter usage mode.
+	 * Its target is the internal delegate router.
 	 */
-	protected Maplet frontMaplet;
+	protected Router frontRouter;
+	
+	/**
+	 * Back router used in all usage modes.
+	 */
+	protected Router backRouter;
 	
    /**
     * Constructor to match the machine's host name on port 80.
     * @param parent The parent component.
     */
-   public HostMaplet(Component parent)
+   public HostRouter(Component parent)
    {
 		this(parent, 80);
    }
@@ -170,7 +178,7 @@ public class HostMaplet extends DefaultMaplet
     * @param parent The parent component.
     * @param domain The domain name.
     */
-   public HostMaplet(Component parent, String domain)
+   public HostRouter(Component parent, String domain)
    {
    	this(parent, domain, 80);
    }
@@ -180,7 +188,7 @@ public class HostMaplet extends DefaultMaplet
     * @param parent The parent component.
     * @param port The port number.
     */
-   public HostMaplet(Component parent, int port)
+   public HostRouter(Component parent, int port)
    {
 		this(parent, getLocalHostName(), port);
    }
@@ -191,10 +199,9 @@ public class HostMaplet extends DefaultMaplet
     * @param domain The domain name.
     * @param port The port number.
     */
-   public HostMaplet(Component parent, String domain, int port)
+   public HostRouter(Component parent, String domain, int port)
    {
-      super(parent);
-      this.mode = AttachmentMode.CHAINLET;
+      this.mode = UsageMode.FILTER;
       this.allowedProtocols = new ArrayList<Protocol>();
       this.allowedProtocols.add(Protocols.HTTP);
       this.allowedDomains = new ArrayList<String>();
@@ -210,7 +217,8 @@ public class HostMaplet extends DefaultMaplet
       this.allowIpAddresses = true;
       this.allowLocalHost = true;
       this.allowDefaultPorts = true;
-      this.frontMaplet = null;
+      this.frontRouter = null;
+      this.backRouter = new DefaultRouter(parent);
       updatePreferredUri();
    }
 
@@ -218,7 +226,7 @@ public class HostMaplet extends DefaultMaplet
     * Returns the attachment mode.
     * @return The attachment mode.
     */
-   public AttachmentMode getMode()
+   public UsageMode getUsageMode()
    {
    	return this.mode;
    }
@@ -227,15 +235,15 @@ public class HostMaplet extends DefaultMaplet
     * Sets the attachment mode.
     * @param mode The attachment mode.
     */
-   public void setMode(AttachmentMode mode)
+   public void setMode(UsageMode mode)
    {
    	this.mode = mode;
    }
    
    /**
-    * Returns the path pattern that can be used to attach the HostMaplet to a parent RestletContainer/Maplet.
+    * Returns the path pattern that can be used to attach the HostRouter to a parent RestletContainer/Router.
     * This pattern is dynamically generated based on the current configuration.
-    * @return The path pattern that can be used to attach the HostMaplet to a parent RestletContainer/Maplet.
+    * @return The path pattern that can be used to attach the HostRouter to a parent RestletContainer/Router.
     */
    public String getPattern()
    {
@@ -378,7 +386,7 @@ public class HostMaplet extends DefaultMaplet
 				if(isRedirectClient())
 			   {
 			   	// Redirect the caller to the preferred format
-					call.setRedirectionRef(getPreferredUri() + call.getResourcePath());
+					call.setOutputRef(getPreferredUri() + call.getResourcePath());
 					call.setStatus(getRedirectStatus());
 				}
 				else if(isWarnClient())
@@ -396,27 +404,27 @@ public class HostMaplet extends DefaultMaplet
 		if(handle)
 		{
 			// Actually handles the call.
-	   	if(getMode() == AttachmentMode.CHAINLET)
+	   	if(getUsageMode() == UsageMode.FILTER)
 	   	{
 	   		// First test outside the synchronized block
-	   		if(this.frontMaplet == null)
+	   		if(this.frontRouter == null)
 	   		{
 	   			synchronized(this)
 	   			{
 	   				// We test again after synchronization
-	   	   		if(this.frontMaplet == null)
+	   	   		if(this.frontRouter == null)
 	   	   		{
-	   	   			this.frontMaplet = Factory.getInstance().createMaplet(getOwner());
-	   	   			this.frontMaplet.attach(getPattern(), this.delegate);
+	   	   			this.frontRouter = new DefaultRouter(getOwner());
+	   	   			this.frontRouter.attach(getPattern(), this.backRouter);
 	   	   		}
 	   			}
 	   		}
 	   		
-	   		this.frontMaplet.handle(call);
+	   		this.frontRouter.handle(call);
 	   	}
-	   	else if(getMode() == AttachmentMode.MAPLET)
+	   	else if(getUsageMode() == UsageMode.ROUTER)
 	   	{
-	   		this.delegate.handle(call);
+	   		this.backRouter.handle(call);
 	   	}
 		}
    }
@@ -676,4 +684,134 @@ public class HostMaplet extends DefaultMaplet
 		this.allowDefaultPorts = allowDefaultPorts;
 	}
 	
+	
+	// -------------------------
+	// ROUTER METHODS DELEGATION
+	// -------------------------
+
+	/**
+	 * Finds the next Restlet if available.
+	 * @param call The current call.
+	 * @return The next Restlet if available or null.
+	 */
+	public Restlet findNext(Call call)
+	{
+		return this.backRouter.findNext(call);
+	}
+	
+	/**
+	 * Returns the modifiable list of attachments.
+	 * @return The modifiable list of attachments.
+	 */
+	public List<Scorer> getOptions()
+	{
+		return this.backRouter.getOptions();
+	}
+	
+   /**
+    * Attaches a target instance shared by all calls. 
+    * @param pattern The URI pattern used to map calls (see {@link java.util.regex.Pattern} for the syntax).
+    * @param target The target instance to attach.
+    * @see java.util.regex.Pattern
+    */
+   public void attach(String pattern, Restlet target)
+   {
+   	this.backRouter.attach(pattern, target);
+   }
+
+   /**
+    * Attaches at a specific a target instance shared by all calls.
+    * @param pattern The URI pattern used to map calls (see {@link java.util.regex.Pattern} for the syntax).
+    * @param target The target instance to attach.
+    * @param index The insertion position in the list of attachments.
+    * @see java.util.regex.Pattern
+    */
+   public void attach(String pattern, Restlet target, int index)
+   {
+   	this.backRouter.attach(pattern, target, index);
+   }
+
+   /**
+    * Detaches all attachments with a given target Restlet.
+    * @param target The target Restlet to detach.
+    */
+   public void detach(Restlet target)
+   {
+   	this.backRouter.detach(target);
+   }
+
+	/**
+	 * Returns the routing mode.
+	 * @return The routing mode.
+	 */
+	public RouterMode getMode()
+	{
+		return this.backRouter.getMode();
+	}
+	
+	/**
+	 * Sets the routing mode.
+	 * @param mode The routing mode.
+	 */
+	public void setMode(RouterMode mode)
+	{
+		this.backRouter.setMode(mode);
+	}
+	
+	/**
+	 * Returns the minimum score required to have a match.
+	 * @return The minimum score required to have a match.
+	 */
+	public float getRequiredScore()
+	{
+		return this.backRouter.getRequiredScore();
+	}
+	
+	/**
+	 * Sets the score required to have a match.
+	 * @param score The score required to have a match.
+	 */
+	public void setRequiredScore(float score)
+	{
+		this.backRouter.setRequiredScore(score);
+	}
+
+	/**
+	 * Returns the maximum number of attempts if no attachment could be matched on the first attempt.
+	 * This is useful when the attachment scoring is dynamic and therefore could change on a retry.
+	 * @return The maximum number of attempts if no attachment could be matched on the first attempt.
+	 */
+	public int getMaxAttempts()
+	{
+		return this.backRouter.getMaxAttempts();
+	}
+	
+	/**
+	 * Sets the maximum number of attempts if no attachment could be matched on the first attempt.
+	 * This is useful when the attachment scoring is dynamic and therefore could change on a retry.
+	 * @param maxAttempts The maximum number of attempts. 
+	 */
+	public void setMaxAttempts(int maxAttempts)
+	{
+		this.backRouter.setMaxAttempts(maxAttempts);
+	}
+
+	/**
+	 * Returns the delay (in seconds) before a new attempt.
+	 * @return The delay (in seconds) before a new attempt.
+	 */
+	public long getRetryDelay()
+	{
+		return this.backRouter.getRetryDelay();
+	}
+	
+	/**
+	 * Sets the delay (in seconds) before a new attempt.
+	 * @param delay The delay (in seconds) before a new attempt.
+	 */
+	public void setRetryDelay(long delay)
+	{
+		this.backRouter.setRetryDelay(delay);
+	}
+
 }

@@ -33,7 +33,6 @@ import org.restlet.data.DefaultEncoding;
 import org.restlet.data.DefaultLanguage;
 import org.restlet.data.Parameter;
 import org.restlet.data.Representation;
-import org.restlet.data.RepresentationMetadata;
 import org.restlet.data.Tag;
 
 import com.noelios.restlet.data.ContentType;
@@ -137,8 +136,6 @@ public abstract class HttpClientCall extends ClientCall
 
       if(result != null)
       {
-      	RepresentationMetadata metadata = result.getMetadata();
-
       	for(Parameter header : getResponseHeaders())
          {
             if(header.getName().equalsIgnoreCase(ConnectorCall.HEADER_CONTENT_TYPE))
@@ -146,8 +143,8 @@ public abstract class HttpClientCall extends ClientCall
                ContentType contentType = new ContentType(header.getValue());
                if(contentType != null) 
                {
-               	metadata.setMediaType(contentType.getMediaType());
-               	metadata.setCharacterSet(contentType.getCharacterSet());
+               	result.setMediaType(contentType.getMediaType());
+               	result.setCharacterSet(contentType.getCharacterSet());
                }
             }
             else if(header.getName().equalsIgnoreCase(ConnectorCall.HEADER_CONTENT_LENGTH))
@@ -156,23 +153,23 @@ public abstract class HttpClientCall extends ClientCall
             }
             else if(header.getName().equalsIgnoreCase(ConnectorCall.HEADER_EXPIRES))
             {
-            	metadata.setExpirationDate(parseDate(header.getValue(), false));
+            	result.setExpirationDate(parseDate(header.getValue(), false));
             }
             else if(header.getName().equalsIgnoreCase(ConnectorCall.HEADER_CONTENT_ENCODING))
             {
-            	metadata.setEncoding(new DefaultEncoding(header.getValue()));
+            	result.setEncoding(new DefaultEncoding(header.getValue()));
             }
             else if(header.getName().equalsIgnoreCase(ConnectorCall.HEADER_CONTENT_LANGUAGE))
             {
-            	metadata.setLanguage(new DefaultLanguage(header.getValue()));
+            	result.setLanguage(new DefaultLanguage(header.getValue()));
             }
             else if(header.getName().equalsIgnoreCase(ConnectorCall.HEADER_LAST_MODIFIED))
             {
-            	metadata.setModificationDate(parseDate(header.getValue(), false));
+            	result.setModificationDate(parseDate(header.getValue(), false));
             }
             else if(header.getName().equalsIgnoreCase(ConnectorCall.HEADER_ETAG))
             {
-            	metadata.setTag(new Tag(header.getValue()));
+            	result.setTag(new Tag(header.getValue()));
             }
          }
       }

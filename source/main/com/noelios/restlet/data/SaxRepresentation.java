@@ -44,7 +44,7 @@ import com.noelios.restlet.util.XmlWriter;
 
 /**
  * Abstract representation based on SAX events processing. The purpose is to create a 
- * streamable representation based on a custom Java object model instead of a neutral 
+ * streamable content based on a custom Java object model instead of a neutral 
  * DOM tree. This domain object can then be directly modified and efficiently serialized 
  * at a later time.<br/>
  * Subclasses only need to override the ContentHandler methods required for the reading and also the 
@@ -73,7 +73,7 @@ public abstract class SaxRepresentation extends OutputRepresentation
     */
    public SaxRepresentation(Representation xmlRepresentation) throws IOException
    {
-      super(xmlRepresentation.getMetadata().getMediaType());
+      super(xmlRepresentation.getMediaType());
       this.source = new StreamSource(xmlRepresentation.getStream());
    }
 

@@ -29,7 +29,7 @@ import java.util.Arrays;
 import java.util.Iterator;
 import java.util.List;
 
-import org.restlet.AbstractChainlet;
+import org.restlet.AbstractFilter;
 import org.restlet.Call;
 import org.restlet.component.Component;
 import org.restlet.data.Encoding;
@@ -42,16 +42,16 @@ import org.restlet.data.Representation;
 import com.noelios.restlet.data.EncoderRepresentation;
 
 /**
- * Chainlet compressing input or output representations. The best encoding is automatically 
+ * Filter compressing input or output representations. The best encoding is automatically 
  * selected based on the preferences of the client and on the encoding supported by NRE: GZip, Zip and 
  * Deflate.<br/>
- * If the {@link org.restlet.data.Representation} has an unknown size, it will always be a candidate for
+ * If the {@link org.restlet.data.Content} has an unknown size, it will always be a candidate for
  * encoding. Candidate representations need to respect media type criteria by the lists of accepted and
  * ignored media types. 
  * @author Lars Heuer (heuer[at]semagia.com) <a href="http://semagia.com/">Semagia</a>
  * @author Jerome Louvel (contact@noelios.com) <a href="http://www.noelios.com">Noelios Consulting</a>
  */
-public class CompressChainlet extends AbstractChainlet
+public class CompressFilter extends AbstractFilter
 {
 	/**
 	 * Indicates if the encoding should always occur, regardless of the size. 
@@ -88,7 +88,7 @@ public class CompressChainlet extends AbstractChainlet
 	 * This constructor will only encode output representations after call handling.
 	 * @param parent The parent component.
 	 */
-	public CompressChainlet(Component parent)
+	public CompressFilter(Component parent)
 	{
 		this(parent, false, true, ENCODE_ALL_SIZES, getDefaultAcceptedMediaTypes(),
 				getDefaultIgnoredMediaTypes());
@@ -103,7 +103,7 @@ public class CompressChainlet extends AbstractChainlet
 	 * @param acceptedMediaTypes The media types that should be encoded.
 	 * @param ignoredMediaTypes The media types that should be ignored.
 	 */
-	public CompressChainlet(Component parent, boolean encodeInput, boolean encodeOutput, 
+	public CompressFilter(Component parent, boolean encodeInput, boolean encodeOutput, 
 			long minimumSize, List<MediaType> acceptedMediaTypes, List<MediaType> ignoredMediaTypes)
 	{
 		super(parent);
@@ -139,22 +139,26 @@ public class CompressChainlet extends AbstractChainlet
 				MediaTypes.AUDIO_ALL, MediaTypes.IMAGE_ALL, MediaTypes.VIDEO_ALL);
 		return result;
 	}
-	
+
    /**
-    * Handles a call.
-    * @param call The call to handle.
+    * Allows filtering before its handling by the target Restlet. Does nothing by default.
+    * @param call The call to filter.
     */
-	public void handle(Call call)
-	{
+   public void beforeHandle(Call call)
+   {
 		// Check if encoding of the call input is needed
 		if(isEncodeInput() && canEncode(call.getInput()))
 		{
 			call.setInput(encode(call, call.getInput()));
 		}
-		
-		// Delegate the handling to the attached Restlet
-		super.handle(call);
-		
+   }
+
+   /**
+    * Allows filtering after its handling by the target Restlet. Does nothing by default.
+    * @param call The call to filter.
+    */
+   public void afterHandle(Call call)
+   {
 		// Check if encoding of the call output is needed
 		if(isEncodeOutput() && canEncode(call.getOutput()))
 		{
@@ -170,8 +174,8 @@ public class CompressChainlet extends AbstractChainlet
 	public boolean canEncode(Representation representation)
 	{
 		// Test the existance of the representation and that no existing encoding applies
-		boolean result = ((representation != null) && (representation.getMetadata().getEncoding() == null)) ||
-							  ((representation != null) && representation.getMetadata().getEncoding().equals(Encodings.IDENTITY));
+		boolean result = ((representation != null) && (representation.getEncoding() == null)) ||
+							  ((representation != null) && representation.getEncoding().equals(Encodings.IDENTITY));
 		
 		if(result)
 		{
@@ -184,7 +188,7 @@ public class CompressChainlet extends AbstractChainlet
 		if(result)
 		{
 			// Test the acceptance of the media type
-			MediaType mediaType = representation.getMetadata().getMediaType();
+			MediaType mediaType = representation.getMediaType();
 			boolean accepted = false;
 			for(Iterator<MediaType> iter = getAcceptedMediaTypes().iterator(); !accepted && iter.hasNext(); )
 			{
@@ -197,7 +201,7 @@ public class CompressChainlet extends AbstractChainlet
 		if(result)
 		{
 			// Test the rejection of the media type
-			MediaType mediaType = representation.getMetadata().getMediaType();
+			MediaType mediaType = representation.getMediaType();
 			boolean rejected = false;
 			for(Iterator<MediaType> iter = getIgnoredMediaTypes().iterator(); !rejected && iter.hasNext(); )
 			{

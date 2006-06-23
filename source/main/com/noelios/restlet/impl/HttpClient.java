@@ -57,7 +57,7 @@ import com.noelios.restlet.util.SecurityUtils;
 public class HttpClient extends AbstractClient
 {
    /** Obtain a suitable logger. */
-   private static Logger logger = Logger.getLogger("com.noelios.restlet.connector.HttpClient");
+   private static Logger logger = Logger.getLogger(HttpClient.class.getCanonicalName());
 
    /**
     * Constructor.
@@ -214,19 +214,19 @@ public class HttpClient extends AbstractClient
          		clientCall.getRequestHeaders().add(ConnectorCall.HEADER_CONTENT_LENGTH, Long.toString(call.getInput().getSize()));
          	}
          	
-         	if(call.getInput().getMetadata().getMediaType() != null)
+         	if(call.getInput().getMediaType() != null)
          	{
-         		clientCall.getRequestHeaders().add(ConnectorCall.HEADER_CONTENT_TYPE, call.getInput().getMetadata().getMediaType().toString());
+         		clientCall.getRequestHeaders().add(ConnectorCall.HEADER_CONTENT_TYPE, call.getInput().getMediaType().toString());
          	}
          	
-         	if(call.getInput().getMetadata().getEncoding() != null)
+         	if(call.getInput().getEncoding() != null)
          	{
-         		clientCall.getRequestHeaders().add(ConnectorCall.HEADER_CONTENT_ENCODING, call.getInput().getMetadata().getEncoding().toString());
+         		clientCall.getRequestHeaders().add(ConnectorCall.HEADER_CONTENT_ENCODING, call.getInput().getEncoding().toString());
          	}
          	
-         	if(call.getInput().getMetadata().getLanguage() != null)
+         	if(call.getInput().getLanguage() != null)
          	{
-         		clientCall.getRequestHeaders().add(ConnectorCall.HEADER_CONTENT_LANGUAGE, call.getInput().getMetadata().getLanguage().toString());
+         		clientCall.getRequestHeaders().add(ConnectorCall.HEADER_CONTENT_LANGUAGE, call.getInput().getLanguage().toString());
          	}
          }
    	}
@@ -291,7 +291,7 @@ public class HttpClient extends AbstractClient
          {
             if(header.getName().equalsIgnoreCase(ConnectorCall.HEADER_LOCATION))
             {
-               call.setRedirectionRef(header.getValue());
+               call.setOutputRef(header.getValue());
             }
             else if((header.getName().equalsIgnoreCase(ConnectorCall.HEADER_SET_COOKIE)) ||
                   (header.getName().equalsIgnoreCase(ConnectorCall.HEADER_SET_COOKIE2)))

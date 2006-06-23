@@ -23,11 +23,12 @@
 package com.noelios.restlet.data;
 
 import java.io.IOException;
-import java.nio.channels.Pipe;
 import java.nio.channels.ReadableByteChannel;
 import java.nio.channels.WritableByteChannel;
 
 import org.restlet.data.MediaType;
+
+import com.noelios.restlet.util.ByteUtils;
 
 /**
  * Representation based on a writable NIO byte channel. The write(WritableByteChannel) 
@@ -46,36 +47,22 @@ public abstract class WritableRepresentation extends ChannelRepresentation
    }
 
    /**
-    * Returns a readable byte channel. If it is supported by a file a read-only instance of FileChannel is
-    * returned.
+    * Writes the representation to a byte channel.
+    * This method is ensured to write the full content for each invocation unless it 
+    * is a transient representation, in which case an exception is thrown.
+    * @param writableChannel A writable byte channel.
+    * @throws IOException
+    */
+   public abstract void write(WritableByteChannel writableChannel) throws IOException;
+
+   /**
+    * Returns a readable byte channel. If it is supported by a file a read-only instance of 
+    * FileChannel is returned.
     * @return A readable byte channel.
     */
    public ReadableByteChannel getChannel() throws IOException
    {
-      final Pipe pipe = Pipe.open();
-
-      // Create a thread that will handle the task of continuously
-      // writing the representation into the input side of the pipe
-      Thread writer = new Thread()
-      {
-         public void run()
-         {
-            try
-            {
-               WritableByteChannel wbc = pipe.sink();
-               write(wbc);
-               wbc.close();
-            }
-            catch(IOException ioe)
-            {
-               ioe.printStackTrace();
-            }
-         }
-      };
-
-      // Start the writer thread
-      writer.start();
-      return pipe.source();
+   	return ByteUtils.getChannel(this);
    }
 
 }

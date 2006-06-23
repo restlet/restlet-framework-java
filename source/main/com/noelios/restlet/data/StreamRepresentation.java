@@ -23,12 +23,13 @@
 package com.noelios.restlet.data;
 
 import java.io.IOException;
-import java.nio.channels.Channels;
 import java.nio.channels.ReadableByteChannel;
 import java.nio.channels.WritableByteChannel;
 
 import org.restlet.data.AbstractRepresentation;
 import org.restlet.data.MediaType;
+
+import com.noelios.restlet.util.ByteUtils;
 
 /**
  * Representation based on a BIO stream.
@@ -38,21 +39,21 @@ public abstract class StreamRepresentation extends AbstractRepresentation
 {
    /**
     * Constructor.
-    * @param mediaType The representation's media type.
+    * @param mediaType The media type.
     */
    public StreamRepresentation(MediaType mediaType)
    {
-      super(mediaType);
+   	super(mediaType);
    }
-	
+
    /**
-    * Constructor.
-    * @param mediaType The representation's media type.
-    * @param expectedSize The expected stream size. 
+    * Returns a readable byte channel. If it is supported by a file a read-only instance of 
+    * FileChannel is returned.
+    * @return A readable byte channel.
     */
-   public StreamRepresentation(MediaType mediaType, long expectedSize)
+   public ReadableByteChannel getChannel() throws IOException
    {
-      super(mediaType, expectedSize);
+   	return ByteUtils.getChannel(getStream());
    }
 
    /**
@@ -61,17 +62,7 @@ public abstract class StreamRepresentation extends AbstractRepresentation
     */
    public void write(WritableByteChannel writableChannel) throws IOException
    {
-      write(Channels.newOutputStream(writableChannel));
+      write(ByteUtils.getStream(writableChannel));
    }
-
-   /**
-    * Returns a readable byte channel. If it is supported by a file a read-only instance of FileChannel is
-    * returned.
-    * @return A readable byte channel.
-    */
-   public ReadableByteChannel getChannel() throws IOException
-   {
-      return Channels.newChannel(getStream());
-   }
-
+   
 }

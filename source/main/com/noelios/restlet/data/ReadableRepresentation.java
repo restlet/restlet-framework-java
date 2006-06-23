@@ -31,7 +31,7 @@ import org.restlet.data.MediaType;
 import com.noelios.restlet.util.ByteUtils;
 
 /**
- * Representation based on a readable NIO byte channel.
+ * Transient representation based on a readable NIO byte channel.
  * @author Jerome Louvel (contact@noelios.com) <a href="http://www.noelios.com/">Noelios Consulting</a>
  */
 public class ReadableRepresentation extends ChannelRepresentation
@@ -46,8 +46,7 @@ public class ReadableRepresentation extends ChannelRepresentation
     */
    public ReadableRepresentation(ReadableByteChannel readableChannel, MediaType mediaType)
    {
-      super(mediaType);
-      this.readableChannel = readableChannel;
+      this(readableChannel, mediaType, UNKNOWN_SIZE);
    }
 
    /**
@@ -58,8 +57,11 @@ public class ReadableRepresentation extends ChannelRepresentation
     */
    public ReadableRepresentation(ReadableByteChannel readableChannel, MediaType mediaType, long expectedSize)
    {
-      super(mediaType, expectedSize);
+      super(mediaType);
+      this.expectedSize = expectedSize;
       this.readableChannel = readableChannel;
+      this.contentAvailable = (readableChannel != null);
+      this.contentTransient = true;
    }
 
    /**
@@ -67,9 +69,12 @@ public class ReadableRepresentation extends ChannelRepresentation
     * returned.
     * @return A readable byte channel.
     */
-   public ReadableByteChannel getChannel() throws IOException
+   public synchronized ReadableByteChannel getChannel() throws IOException
    {
-      return readableChannel;
+   	ReadableByteChannel result = this.readableChannel;
+   	this.readableChannel = null; 
+      this.contentAvailable = false;
+      return result;
    }
 
    /**

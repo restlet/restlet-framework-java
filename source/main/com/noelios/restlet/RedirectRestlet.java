@@ -43,6 +43,9 @@ import com.noelios.restlet.util.StringTemplate;
  */
 public class RedirectRestlet extends AbstractRestlet
 {
+   /** Obtain a suitable logger. */
+   private static Logger logger = Logger.getLogger(RedirectRestlet.class.getCanonicalName());
+
    /**
     * In this mode, the client is permanently redirected to the URI generated from the target URI pattern.<br/>
     * See Statuses.REDIRECTION_MOVED_PERMANENTLY.  
@@ -76,9 +79,6 @@ public class RedirectRestlet extends AbstractRestlet
     * Be careful when specifying the target pattern or infinite loops may occur.
     */
    public static final int MODE_INTERNAL = 5;
-
-   /** Obtain a suitable logger. */
-   private static Logger logger = Logger.getLogger("com.noelios.restlet.RedirectRestlet");
 
    /** The target URI pattern. */
    protected String targetPattern;
@@ -147,19 +147,19 @@ public class RedirectRestlet extends AbstractRestlet
       {
          case MODE_CLIENT_PERMANENT:
             logger.log(Level.INFO, "Permanently redirecting client to: " + targetUri);
-            call.setRedirectionRef(target);
+            call.setOutputRef(target);
             call.setStatus(Statuses.REDIRECTION_MOVED_PERMANENTLY);
          break;
 
          case MODE_CLIENT_FOUND:
             logger.log(Level.INFO, "Redirecting client to found location: " + targetUri);
-            call.setRedirectionRef(target);
+            call.setOutputRef(target);
             call.setStatus(Statuses.REDIRECTION_FOUND);
          break;
          
          case MODE_CLIENT_TEMPORARY:
             logger.log(Level.INFO, "Temporarily redirecting client to: " + targetUri);
-            call.setRedirectionRef(target);
+            call.setOutputRef(target);
             call.setStatus(Statuses.REDIRECTION_MOVED_TEMPORARILY);
          break;
 

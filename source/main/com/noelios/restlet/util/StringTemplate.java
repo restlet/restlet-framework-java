@@ -42,7 +42,7 @@ import java.util.logging.Logger;
 public class StringTemplate
 {
    /** Obtain a suitable logger. */
-   protected static Logger logger = Logger.getLogger("com.noelios.restlet.util.StringTemplate");
+   private static Logger logger = Logger.getLogger(StringTemplate.class.getCanonicalName());
 
    private static final int STATE_INSTRUCTION = 1;
    private static final int STATE_INSTRUCTION_POTENTIAL_DELIMITER_START = 2;

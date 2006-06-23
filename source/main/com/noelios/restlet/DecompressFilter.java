@@ -26,7 +26,7 @@ package com.noelios.restlet;
 
 import java.util.Iterator;
 
-import org.restlet.AbstractChainlet;
+import org.restlet.AbstractFilter;
 import org.restlet.Call;
 import org.restlet.component.Component;
 import org.restlet.data.Encoding;
@@ -36,10 +36,10 @@ import org.restlet.data.Representation;
 import com.noelios.restlet.data.DecoderRepresentation;
 
 /**
- * Chainlet decompressing input or output representations. 
+ * Filter decompressing input or output representations. 
  * @author Jerome Louvel (contact@noelios.com) <a href="http://www.noelios.com/">Noelios Consulting</a>
  */
-public class DecompressChainlet extends AbstractChainlet
+public class DecompressFilter extends AbstractFilter
 {
 	/**
 	 * Indicates if the input representation should be decoded.
@@ -55,7 +55,7 @@ public class DecompressChainlet extends AbstractChainlet
 	 * Constructor to only decode input representations before call handling.
 	 * @param parent The parent component.
 	 */
-	public DecompressChainlet(Component parent)
+	public DecompressFilter(Component parent)
 	{
 		this(parent, true, false);
 	}
@@ -66,34 +66,38 @@ public class DecompressChainlet extends AbstractChainlet
 	 * @param decodeInput Indicates if the input representation should be decoded.
 	 * @param decodeOutput Indicates if the output representation should be decoded.
 	 */
-	public DecompressChainlet(Component parent, boolean decodeInput, boolean decodeOutput)
+	public DecompressFilter(Component parent, boolean decodeInput, boolean decodeOutput)
 	{
 		super(parent);
 		this.decodeInput = decodeInput;
 		this.decodeOutput = decodeOutput;
 	}
-	
+
    /**
-    * Handles a call.
-    * @param call The call to handle.
+    * Allows filtering before its handling by the target Restlet. Does nothing by default.
+    * @param call The call to filter.
     */
-	public void handle(Call call)
-	{
+   public void beforeHandle(Call call)
+   {
 		// Check if decoding of the call input is needed
 		if(isDecodeInput() && canDecode(call.getInput()))
 		{
 			call.setInput(decode(call.getInput()));
 		}
-		
-		// Delegate the handling to the attached Restlet
-		super.handle(call);
-		
+   }
+
+   /**
+    * Allows filtering after its handling by the target Restlet. Does nothing by default.
+    * @param call The call to filter.
+    */
+   public void afterHandle(Call call)
+   {
 		// Check if decoding of the call output is needed
 		if(isDecodeOutput() && canDecode(call.getOutput()))
 		{
 			call.setOutput(decode(call.getOutput()));
 		}
-	}
+   }
 
 	/**
 	 * Indicates if a representation can be decoded.
@@ -103,8 +107,8 @@ public class DecompressChainlet extends AbstractChainlet
 	public boolean canDecode(Representation representation)
 	{
 		// Test the existance of the representation and that an encoding applies
-		return (representation != null) && (representation.getMetadata().getEncoding() != null) && 
-				 !representation.getMetadata().getEncoding().equals(Encodings.IDENTITY);
+		return (representation != null) && (representation.getEncoding() != null) && 
+				 !representation.getEncoding().equals(Encodings.IDENTITY);
 	}
 
 	/**
@@ -123,7 +127,7 @@ public class DecompressChainlet extends AbstractChainlet
 			currentEncoding = iter.next();
 			
 			if(!currentEncoding.equals(Encodings.IDENTITY) && 
-				representation.getMetadata().getEncoding().equals(currentEncoding))
+				representation.getEncoding().equals(currentEncoding))
 			{
 				result = new DecoderRepresentation(representation);
 			}

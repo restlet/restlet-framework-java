@@ -28,7 +28,7 @@ import java.util.List;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
-import org.restlet.AbstractChainlet;
+import org.restlet.AbstractFilter;
 import org.restlet.Call;
 import org.restlet.component.Component;
 import org.restlet.data.Form;
@@ -37,15 +37,15 @@ import org.restlet.data.Statuses;
 import com.noelios.restlet.util.CallModel;
 
 /**
- * Chainlet extracting some attributes from a call. Multiple extractions can be defined, based on the query 
+ * Filter extracting some attributes from a call. Multiple extractions can be defined, based on the query 
  * string of the resource reference, on the input form (posted from a browser), on the context URI matches 
  * or on the call's template model.
  * @author Jerome Louvel (contact@noelios.com) <a href="http://www.noelios.com/">Noelios Consulting</a>
  */
-public class ExtractChainlet extends AbstractChainlet
+public class ExtractFilter extends AbstractFilter
 {
    /** Obtain a suitable logger. */
-   private static Logger logger = Logger.getLogger("com.noelios.restlet.ExtractChainlet");
+   private static Logger logger = Logger.getLogger(ExtractFilter.class.getCanonicalName());
 
    /**
     * List of query parameters to extract.
@@ -71,7 +71,7 @@ public class ExtractChainlet extends AbstractChainlet
     * Constructor.
     * @param parent The parent component.
     */
-   public ExtractChainlet(Component parent)
+   public ExtractFilter(Component parent)
    {
       super(parent);
       this.queryExtracts = null;
@@ -148,17 +148,16 @@ public class ExtractChainlet extends AbstractChainlet
          }
       }
    }
-   
+
    /**
-    * Handles a call to a resource or a set of resources.
-    * @param call The call to handle.
+    * Allows filtering before its handling by the target Restlet. Does nothing by default.
+    * @param call The call to filter.
     */
-   public void handle(Call call)
+   public void beforeHandle(Call call)
    {
       try
       {
    		extractAttributes(call);	
-         super.handle(call);
       }
       catch(Exception e)
       {
@@ -212,9 +211,9 @@ public class ExtractChainlet extends AbstractChainlet
     * of a query string parameter is set.
     * @param attributeName The name of the call attribute to set.
     * @param parameterName The name of the query string parameter to extract.
-    * @return The current chainlet.
+    * @return The current Filter.
     */
-   public ExtractChainlet fromQuery(String attributeName, String parameterName)
+   public ExtractFilter fromQuery(String attributeName, String parameterName)
    {
       return fromQuery(attributeName, parameterName, false);
    }
@@ -224,9 +223,9 @@ public class ExtractChainlet extends AbstractChainlet
     * @param attributeName The name of the call attribute to set.
     * @param parameterName The name of the query string parameter to extract.
     * @param multiple Indicates if the parameters should be set as a List in the attribute value. Useful for repeating parameters.
-    * @return The current chainlet.
+    * @return The current Filter.
     */
-   public ExtractChainlet fromQuery(String attributeName, String parameterName, boolean multiple)
+   public ExtractFilter fromQuery(String attributeName, String parameterName, boolean multiple)
    {
       getQueryExtracts().add(new ExtractInfo(attributeName, parameterName, multiple));
       return this;
@@ -237,9 +236,9 @@ public class ExtractChainlet extends AbstractChainlet
     * of a query string parameter is set.
     * @param attributeName The name of the call attribute to set.
     * @param parameterName The name of the input form parameter to extract.
-    * @return The current chainlet.
+    * @return The current Filter.
     */
-   public ExtractChainlet fromInput(String attributeName, String parameterName)
+   public ExtractFilter fromInput(String attributeName, String parameterName)
    {
       return fromInput(attributeName, parameterName, false);
    }
@@ -249,9 +248,9 @@ public class ExtractChainlet extends AbstractChainlet
     * @param attributeName The name of the call attribute to set.
     * @param parameterName The name of the input form parameter to extract.
     * @param multiple Indicates if the parameters should be set as a List in the attribute value. Useful for repeating parameters.
-    * @return The current chainlet.
+    * @return The current Filter.
     */
-   public ExtractChainlet fromInput(String attributeName, String parameterName, boolean multiple)
+   public ExtractFilter fromInput(String attributeName, String parameterName, boolean multiple)
    {
       getInputExtracts().add(new ExtractInfo(attributeName, parameterName, multiple));
       return this;
@@ -261,9 +260,9 @@ public class ExtractChainlet extends AbstractChainlet
     * Extracts an attribute from the context matches.
     * @param attributeName The name of the call attribute to set.
     * @param matchIndex The index of the match to extract from the Call.getMatches() list.
-    * @return The current chainlet.
+    * @return The current Filter.
     */
-   public ExtractChainlet fromContext(String attributeName, int matchIndex)
+   public ExtractFilter fromContext(String attributeName, int matchIndex)
    {
       getContextExtracts().add(new ExtractInfo(attributeName, matchIndex));
       return this;
@@ -273,10 +272,10 @@ public class ExtractChainlet extends AbstractChainlet
     * Extracts an attribute from the call's model.
     * @param attributeName The name of the call attribute to set.
     * @param pattern The model pattern to resolve.
-    * @return The current chainlet.
+    * @return The current Filter.
     * @see com.noelios.restlet.util.CallModel
     */
-   public ExtractChainlet fromModel(String attributeName, String pattern)
+   public ExtractFilter fromModel(String attributeName, String pattern)
    {
       getModelExtracts().add(new ExtractInfo(attributeName, pattern));
       return this;

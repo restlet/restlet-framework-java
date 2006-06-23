@@ -25,7 +25,7 @@ package com.noelios.restlet;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
-import org.restlet.AbstractChainlet;
+import org.restlet.AbstractFilter;
 import org.restlet.Call;
 import org.restlet.component.Component;
 
@@ -33,12 +33,12 @@ import com.noelios.restlet.util.StringTemplate;
 import com.noelios.restlet.util.CallModel;
 
 /**
- * Chainlet logging all calls after their handling by the target Restlet. The current format 
+ * Filter logging all calls after their handling by the target Restlet. The current format 
  * is similar to IIS 6 logs. The logging is based on the java.util.logging package.
- * @see <a href="http://www.restlet.org/tutorial#part07">Tutorial: Chainlets and call logging</a>
+ * @see <a href="http://www.restlet.org/tutorial#part07">Tutorial: Filters and call logging</a>
  * @author Jerome Louvel (contact@noelios.com) <a href="http://www.noelios.com/">Noelios Consulting</a>
  */
-public class LogChainlet extends AbstractChainlet
+public class LogFilter extends AbstractFilter
 {
    /** Obtain a suitable logger. */
    protected Logger logger;
@@ -52,7 +52,7 @@ public class LogChainlet extends AbstractChainlet
     * @param parent The parent component.
     * @param logName The log name to used in the logging.properties file.
     */
-   public LogChainlet(Component parent, String logName)
+   public LogFilter(Component parent, String logName)
    {
       super(parent);
       this.logger = Logger.getLogger(logName);
@@ -67,7 +67,7 @@ public class LogChainlet extends AbstractChainlet
     * @see com.noelios.restlet.util.CallModel
     * @see com.noelios.restlet.util.StringTemplate
     */
-   public LogChainlet(Component parent, String logName, String logFormat)
+   public LogFilter(Component parent, String logName, String logFormat)
    {
       super(parent);
       this.logger = Logger.getLogger(logName);
@@ -80,6 +80,8 @@ public class LogChainlet extends AbstractChainlet
     */
    public void handle(Call call)
    {
+   	beforeHandle(call);
+   	
       long startTime = System.currentTimeMillis();
       super.handle(call);
       int duration = (int)(System.currentTimeMillis() - startTime);
@@ -93,6 +95,8 @@ public class LogChainlet extends AbstractChainlet
       {
          this.logger.log(Level.INFO, formatDefault(call, duration));
       }
+      
+      afterHandle(call);
    }
 
    /**

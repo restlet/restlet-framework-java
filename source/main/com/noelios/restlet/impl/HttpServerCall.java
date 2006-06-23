@@ -43,7 +43,6 @@ import org.restlet.data.Language;
 import org.restlet.data.MediaType;
 import org.restlet.data.Parameter;
 import org.restlet.data.Representation;
-import org.restlet.data.RepresentationMetadata;
 
 import com.noelios.restlet.data.InputRepresentation;
 import com.noelios.restlet.data.ReadableRepresentation;
@@ -57,7 +56,7 @@ import com.noelios.restlet.util.SecurityUtils;
 public abstract class HttpServerCall extends ConnectorCallImpl
 {
    /** Obtain a suitable logger. */
-   private static Logger logger = Logger.getLogger("com.noelios.restlet.connector.HttpServerCallImpl");
+   private static Logger logger = Logger.getLogger(HttpServerCall.class.getCanonicalName());
    
    /**
     * Sends the response headers.<br/>
@@ -152,8 +151,8 @@ public abstract class HttpServerCall extends ConnectorCallImpl
          	result = new ReadableRepresentation(requestChannel, contentType, contentLength);
          }
          
-         result.getMetadata().setEncoding(contentEncoding);
-         result.getMetadata().setLanguage(contentLanguage);
+         result.setEncoding(contentEncoding);
+         result.setLanguage(contentLanguage);
       }
    	
       return result;
@@ -176,9 +175,9 @@ public abstract class HttpServerCall extends ConnectorCallImpl
          }
          
          // Set the redirection URI
-         if(call.getRedirectionRef() != null)
+         if(call.getOutputRef() != null)
          {
-         	getResponseHeaders().add(HEADER_LOCATION, call.getRedirectionRef().toString());
+         	getResponseHeaders().add(HEADER_LOCATION, call.getOutputRef().toString());
          }
 
          // Set the security data
@@ -199,44 +198,44 @@ public abstract class HttpServerCall extends ConnectorCallImpl
          // If an output was set during the call, copy it to the output stream;
          if(call.getOutput() != null)
          {
-            RepresentationMetadata meta = call.getOutput().getMetadata();
+         	Representation output = call.getOutput();
    
-            if(meta.getExpirationDate() != null)
+            if(output.getExpirationDate() != null)
             {
-            	getResponseHeaders().add(HEADER_EXPIRES, formatDate(meta.getExpirationDate(), false));
+            	getResponseHeaders().add(HEADER_EXPIRES, formatDate(output.getExpirationDate(), false));
             }
             
-            if((meta.getEncoding() != null) && (!meta.getEncoding().equals(Encodings.IDENTITY)))
+            if((output.getEncoding() != null) && (!output.getEncoding().equals(Encodings.IDENTITY)))
             {
-            	getResponseHeaders().add(HEADER_CONTENT_ENCODING, meta.getEncoding().getName());
+            	getResponseHeaders().add(HEADER_CONTENT_ENCODING, output.getEncoding().getName());
             }
             
-            if(meta.getLanguage() != null)
+            if(output.getLanguage() != null)
             {
-            	getResponseHeaders().add(HEADER_CONTENT_LANGUAGE, meta.getLanguage().getName());
+            	getResponseHeaders().add(HEADER_CONTENT_LANGUAGE, output.getLanguage().getName());
             }
             
-            if(meta.getMediaType() != null)
+            if(output.getMediaType() != null)
             {
-               StringBuilder contentType = new StringBuilder(meta.getMediaType().getName());
+               StringBuilder contentType = new StringBuilder(output.getMediaType().getName());
    
-               if(meta.getCharacterSet() != null)
+               if(output.getCharacterSet() != null)
                {
                   // Specify the character set parameter
-                  contentType.append("; charset=").append(meta.getCharacterSet().getName());
+                  contentType.append("; charset=").append(output.getCharacterSet().getName());
                }
    
                getResponseHeaders().add(HEADER_CONTENT_TYPE, contentType.toString());
             }
    
-            if(meta.getModificationDate() != null)
+            if(output.getModificationDate() != null)
             {
-            	getResponseHeaders().add(HEADER_LAST_MODIFIED, formatDate(meta.getModificationDate(), false));
+            	getResponseHeaders().add(HEADER_LAST_MODIFIED, formatDate(output.getModificationDate(), false));
             }
    
-            if(meta.getTag() != null)
+            if(output.getTag() != null)
             {
-            	getResponseHeaders().add(HEADER_ETAG, meta.getTag().getName());
+            	getResponseHeaders().add(HEADER_ETAG, output.getTag().getName());
             }
             
             if(call.getOutput().getSize() != Representation.UNKNOWN_SIZE)

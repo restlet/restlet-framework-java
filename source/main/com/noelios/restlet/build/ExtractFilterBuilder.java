@@ -22,20 +22,20 @@
 
 package com.noelios.restlet.build;
 
-import com.noelios.restlet.ExtractChainlet;
+import com.noelios.restlet.ExtractFilter;
 
 /**
- * Fluent builder for Extract Chainlets.
+ * Fluent builder for Extract Filters.
  * @author Jerome Louvel (contact[at]noelios.com) <a href="http://www.noelios.com/">Noelios Consulting</a>
  */
-public class ExtractChainletBuilder extends ChainletBuilder
+public class ExtractFilterBuilder extends FilterBuilder
 {
 	/**
 	 * Constructor.
 	 * @param parent The parent builder.
 	 * @param node The wrapped node.
 	 */
-   public ExtractChainletBuilder(ObjectBuilder parent, ExtractChainlet node)
+   public ExtractFilterBuilder(ObjectBuilder parent, ExtractFilter node)
    {
       super(parent, node);
    }
@@ -44,9 +44,9 @@ public class ExtractChainletBuilder extends ChainletBuilder
     * Returns the node wrapped by the builder.
     * @return The node wrapped by the builder.
     */
-   public ExtractChainlet getNode()
+   public ExtractFilter getNode()
    {
-      return (ExtractChainlet)super.getNode();
+      return (ExtractFilter)super.getNode();
    }
 
    /**
@@ -56,7 +56,7 @@ public class ExtractChainletBuilder extends ChainletBuilder
     * @param parameterName The name of the query string parameter to extract.
     * @return The current builder.
     */
-   public ExtractChainletBuilder fromQuery(String attributeName, String parameterName)
+   public ExtractFilterBuilder fromQuery(String attributeName, String parameterName)
    {
    	getNode().fromQuery(attributeName, parameterName);
    	return this;
@@ -69,7 +69,7 @@ public class ExtractChainletBuilder extends ChainletBuilder
     * @param multiple Indicates if the parameters should be set as a List in the attribute value. Useful for repeating parameters.
     * @return The current builder.
     */
-   public ExtractChainletBuilder fromQuery(String attributeName, String parameterName, boolean multiple)
+   public ExtractFilterBuilder fromQuery(String attributeName, String parameterName, boolean multiple)
    {
    	getNode().fromQuery(attributeName, parameterName, multiple);
    	return this;
@@ -82,7 +82,7 @@ public class ExtractChainletBuilder extends ChainletBuilder
     * @param parameterName The name of the input form parameter to extract.
     * @return The current builder.
     */
-   public ExtractChainletBuilder fromInput(String attributeName, String parameterName)
+   public ExtractFilterBuilder fromInput(String attributeName, String parameterName)
    {
    	getNode().fromInput(attributeName, parameterName);
    	return this;
@@ -95,7 +95,7 @@ public class ExtractChainletBuilder extends ChainletBuilder
     * @param multiple Indicates if the parameters should be set as a List in the attribute value. Useful for repeating parameters.
     * @return The current builder.
     */
-   public ExtractChainletBuilder fromInput(String attributeName, String parameterName, boolean multiple)
+   public ExtractFilterBuilder fromInput(String attributeName, String parameterName, boolean multiple)
    {
    	getNode().fromInput(attributeName, parameterName, multiple);
    	return this;
@@ -106,7 +106,7 @@ public class ExtractChainletBuilder extends ChainletBuilder
     * @param matchIndex The index of the match to extract from the Call.getMatches() list.
     * @return The current builder.
     */
-   public ExtractChainletBuilder fromContext(String attributeName, int matchIndex)
+   public ExtractFilterBuilder fromContext(String attributeName, int matchIndex)
    {
    	getNode().fromContext(attributeName, matchIndex);
       return this;
@@ -119,7 +119,7 @@ public class ExtractChainletBuilder extends ChainletBuilder
     * @return The current builder.
     * @see com.noelios.restlet.util.CallModel
     */
-   public ExtractChainletBuilder fromModel(String attributeName, String pattern)
+   public ExtractFilterBuilder fromModel(String attributeName, String pattern)
    {
    	getNode().fromModel(attributeName, pattern);
       return this;

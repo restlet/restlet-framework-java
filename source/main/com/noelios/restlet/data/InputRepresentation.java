@@ -31,7 +31,7 @@ import org.restlet.data.MediaType;
 import com.noelios.restlet.util.ByteUtils;
 
 /**
- * Representation based on a BIO input stream.
+ * Transient representation based on a BIO input stream.
  * @author Jerome Louvel (contact@noelios.com) <a href="http://www.noelios.com/">Noelios Consulting</a>
  */
 public class InputRepresentation extends StreamRepresentation
@@ -46,8 +46,7 @@ public class InputRepresentation extends StreamRepresentation
     */
    public InputRepresentation(InputStream inputStream, MediaType mediaType)
    {
-      super(mediaType);
-      this.inputStream = inputStream;
+      this(inputStream, mediaType, UNKNOWN_SIZE);
    }
 
    /**
@@ -58,17 +57,23 @@ public class InputRepresentation extends StreamRepresentation
     */
    public InputRepresentation(InputStream inputStream, MediaType mediaType, long expectedSize)
    {
-      super(mediaType, expectedSize);
+      super(mediaType);
+      this.expectedSize = expectedSize;
       this.inputStream = inputStream;
+      this.contentAvailable = (inputStream != null);
+      this.contentTransient = true;
    }
 
    /**
     * Returns a stream with the representation's content.
     * @return A stream with the representation's content.
     */
-   public InputStream getStream() throws IOException
+   public synchronized InputStream getStream() throws IOException
    {
-      return inputStream;
+      InputStream result = this.inputStream;
+      this.inputStream = null;
+      this.contentAvailable = false;
+      return result;
    }
    
    /**
@@ -94,7 +99,6 @@ public class InputRepresentation extends StreamRepresentation
       }
       catch(IOException ioe)
       {
-         ioe.printStackTrace();
       }
 
       return result;

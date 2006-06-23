@@ -23,21 +23,13 @@
 package com.noelios.restlet.impl;
 
 import java.io.File;
-import java.util.ArrayList;
 import java.util.List;
 import java.util.logging.Logger;
 
-import org.restlet.Resource;
-import org.restlet.data.CharacterSet;
-import org.restlet.data.Encoding;
-import org.restlet.data.Language;
-import org.restlet.data.MediaType;
-import org.restlet.data.Metadata;
+import org.restlet.connector.Client;
+import org.restlet.data.AbstractRepresentation;
+import org.restlet.data.AbstractResource;
 import org.restlet.data.Reference;
-import org.restlet.data.Representation;
-import org.restlet.data.RepresentationMetadata;
-
-import com.noelios.restlet.data.FileRepresentation;
 
 /**
  * Resource supported by a set of context representations (from file system, class loaders and webapp context). 
@@ -46,15 +38,15 @@ import com.noelios.restlet.data.FileRepresentation;
  * @see <a href="http://httpd.apache.org/docs/2.0/content-negotiation.html">Apache mod_negotiation module</a>
  * @author Jerome Louvel (contact@noelios.com) <a href="http://www.noelios.com/">Noelios Consulting</a>
  */
-public class ContextResource implements Resource
+public abstract class ContextResource extends AbstractResource
 {
    /** Obtain a suitable logger. */
-   private static Logger logger = Logger.getLogger("com.noelios.restlet.ContextResource");
+   private static Logger logger = Logger.getLogger(ContextResource.class.getCanonicalName());
 
    /**
     * The parent directory Restlet.
     */
-   protected ContextClient contextClient;
+   protected Client contextClient;
 
    /** If a directory is specified, use the (optional) index name. */
    protected String indexName;
@@ -62,12 +54,12 @@ public class ContextResource implements Resource
    /**
     * The absolute base path in the context. For example, "foo.en" will match "foo.en.html" and "foo.en-GB.html".
     */
-   private String basePath;
+   protected String basePath;
 
    /**
     * The local base name of the file. For example, "foo.en" and "foo.en-GB.html" return "foo".
     */
-   private String baseName;
+   protected String baseName;
 
    /**
     * Constructor.
@@ -75,7 +67,7 @@ public class ContextResource implements Resource
     * @param basePath The base path of the file.
     * @param indexName The optional index name.
     */
-   public ContextResource(ContextClient contextClient, String basePath, String indexName)
+   public ContextResource(Client contextClient, String basePath, String indexName)
    {
       // Update the member variables
       this.contextClient = contextClient;
@@ -172,10 +164,10 @@ public class ContextResource implements Resource
     * Returns the representation variants metadata.
     * @return The representation variants metadata.
     */
-   public List<RepresentationMetadata> getVariants()
+   public List<AbstractRepresentation> getVariants2()
    {
       logger.info("Getting variants for : " + getBasePath());
-      List<RepresentationMetadata> result = null;
+      List<AbstractRepresentation> result = null;
 
       // List all the file in the immediate parent directory
       File baseDirectory = new File(getBasePath()).getParentFile();
@@ -183,11 +175,11 @@ public class ContextResource implements Resource
       {
          File[] files = baseDirectory.listFiles();
          File currentFile = null;
-         Metadata metadata = null;
-         MediaType mediaType = null;
-         CharacterSet characterSet = null;
-         Encoding encoding = null;
-         Language language = null;
+//         Metadata metadata = null;
+//         MediaType mediaType = null;
+//         CharacterSet characterSet = null;
+//         Encoding encoding = null;
+//         Language language = null;
 
          for(int i = 0; (files != null) && (i < files.length); i++)
          {
@@ -196,43 +188,43 @@ public class ContextResource implements Resource
             // Check if the current file is a valid variant
             if(currentFile.getAbsolutePath().startsWith(getBasePath()))
             {
-               String[] tokens = currentFile.getName().split("\\.");
-               if(tokens[0].equals(getBaseName()))
-               {
-                  // We found a potential variant
-                  for(int j = 1; j < tokens.length; j++)
-                  {
-                     metadata = getContextClient().getMetadata(tokens[j]);
-                     if(metadata instanceof MediaType) mediaType = (MediaType)metadata;
-                     if(metadata instanceof CharacterSet) characterSet = (CharacterSet)metadata;
-                     if(metadata instanceof Encoding) encoding = (Encoding)metadata;
-                     if(metadata instanceof Language) language = (Language)metadata;
-
-                     int dashIndex = tokens[j].indexOf('-');
-                     if((metadata == null) && (dashIndex != -1))
-                     {
-                        // We found a language extension with a region area
-                        // specified
-                        // Try to find a language matching the primary part of
-                        // the extension
-                        String primaryPart = tokens[j].substring(0, dashIndex);
-                        metadata = getContextClient().getMetadata(primaryPart);
-                        if(metadata instanceof Language) language = (Language)metadata;
-                     }
-                  }
-
-                  // Add the new variant to the result list
-                  if(result == null) result = new ArrayList<RepresentationMetadata>();
-                  if(encoding == null) encoding = getContextClient().getDefaultEncoding();
-                  if(mediaType == null) mediaType = getContextClient().getDefaultMediaType();
-                  if(language == null) language = getContextClient().getDefaultLanguage();
-                  FileRepresentation fr = new FileRepresentation(currentFile.getAbsolutePath(), mediaType,
-                        getContextClient().getTimeToLive());
-                  fr.setCharacterSet(characterSet);
-                  fr.setEncoding(encoding);
-                  fr.setLanguage(language);
-                  result.add(fr);
-               }
+//               String[] tokens = currentFile.getName().split("\\.");
+//               if(tokens[0].equals(getBaseName()))
+//               {
+//                  // We found a potential variant
+//                  for(int j = 1; j < tokens.length; j++)
+//                  {
+//                     metadata = getContextClient().getMetadata(tokens[j]);
+//                     if(metadata instanceof MediaType) mediaType = (MediaType)metadata;
+//                     if(metadata instanceof CharacterSet) characterSet = (CharacterSet)metadata;
+//                     if(metadata instanceof Encoding) encoding = (Encoding)metadata;
+//                     if(metadata instanceof Language) language = (Language)metadata;
+//
+//                     int dashIndex = tokens[j].indexOf('-');
+//                     if((metadata == null) && (dashIndex != -1))
+//                     {
+//                        // We found a language extension with a region area
+//                        // specified
+//                        // Try to find a language matching the primary part of
+//                        // the extension
+//                        String primaryPart = tokens[j].substring(0, dashIndex);
+//                        metadata = getContextClient().getMetadata(primaryPart);
+//                        if(metadata instanceof Language) language = (Language)metadata;
+//                     }
+//                  }
+//
+//                  // Add the new variant to the result list
+//                  if(result == null) result = new ArrayList<RepresentationMetadata>();
+//                  if(encoding == null) encoding = getContextClient().getDefaultEncoding();
+//                  if(mediaType == null) mediaType = getContextClient().getDefaultMediaType();
+//                  if(language == null) language = getContextClient().getDefaultLanguage();
+//                  FileRepresentation fr = new FileRepresentation(currentFile.getAbsolutePath(), mediaType,
+//                        getContextClient().getTimeToLive());
+//                  fr.setCharacterSet(characterSet);
+//                  fr.setEncoding(encoding);
+//                  fr.setLanguage(language);
+//                  result.add(fr);
+//               }
             }
          }
       }
@@ -241,21 +233,10 @@ public class ContextResource implements Resource
    }
 
    /**
-    * Returns the representation matching the given metadata.
-    * @param variant The variant metadata to match.
-    * @return The matching representation.
-    */
-   public Representation getRepresentation(RepresentationMetadata variant)
-   {
-      if(variant instanceof Representation) return (Representation)variant;
-      else return null;
-   }
-
-   /**
     * Returns the parent file client connector.
     * @return The parent file client connector.
     */
-   public ContextClient getContextClient()
+   public Client getContextClient()
    {
       return this.contextClient;
    }

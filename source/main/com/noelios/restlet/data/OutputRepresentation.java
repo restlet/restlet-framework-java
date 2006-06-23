@@ -28,7 +28,7 @@ import java.io.OutputStream;
 
 import org.restlet.data.MediaType;
 
-import com.noelios.restlet.util.PipeStream;
+import com.noelios.restlet.util.ByteUtils;
 
 /**
  * Representation based on a BIO output stream. The write(OutputStream) 
@@ -53,7 +53,8 @@ public abstract class OutputRepresentation extends StreamRepresentation
     */
    public OutputRepresentation(MediaType mediaType, long expectedSize)
    {
-      super(mediaType, expectedSize);
+      super(mediaType);
+      this.expectedSize = expectedSize;
    }
    
    /**
@@ -63,37 +64,13 @@ public abstract class OutputRepresentation extends StreamRepresentation
    public abstract void write(OutputStream outputStream) throws IOException;
 
    /**
-    * Returns a stream with the representation's content. Internally, it uses a writer thread and a pipe
-    * stream.
+    * Returns a stream with the representation's content. 
+    * Internally, it uses a writer thread and a pipe stream.
     * @return A stream with the representation's content.
     */
    public InputStream getStream() throws IOException
    {
-      final PipeStream pipe = new PipeStream();
-
-      // Create a thread that will handle the task of continuously
-      // writing the representation into the input side of the pipe
-      Thread writer = new Thread()
-      {
-         public void run()
-         {
-            try
-            {
-               OutputStream os = pipe.getOutputStream();
-               write(os);
-               os.write(-1);
-               os.close();
-            }
-            catch(IOException ioe)
-            {
-               ioe.printStackTrace();
-            }
-         }
-      };
-
-      // Start the writer thread
-      writer.start();
-      return pipe.getInputStream();
+   	return ByteUtils.getStream(this);
    }
 
 }

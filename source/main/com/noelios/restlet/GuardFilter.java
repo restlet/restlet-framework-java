@@ -28,7 +28,7 @@ import java.util.TreeMap;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
-import org.restlet.AbstractChainlet;
+import org.restlet.AbstractFilter;
 import org.restlet.Call;
 import org.restlet.component.Component;
 import org.restlet.data.ChallengeRequest;
@@ -41,15 +41,15 @@ import org.restlet.data.Statuses;
 import com.noelios.restlet.util.Base64;
 
 /**
- * Chainlet guarding the access to another Restlet, Chainlet or Maplet. Currently only 
+ * Filter guarding the access to another Restlet, Filter or Router. Currently only 
  * supports the HTTP basic authentication scheme and a custom schemes (based on cookies, 
  * query params or IP address for example).
  * @see <a href="http://www.restlet.org/tutorial#part09">Tutorial: Guarding access to sensitive resources</a>
  * @author Jerome Louvel (contact@noelios.com) <a href="http://www.noelios.com/">Noelios Consulting</a>
  */
-public class GuardChainlet extends AbstractChainlet
+public class GuardFilter extends AbstractFilter
 {
-	/** Indicates if the guard should attempt to authenticate the caller. */
+   /** Indicates if the guard should attempt to authenticate the caller. */
 	protected boolean authentication;
 	
 	/** Indicates if the guard should attempt to authorize the caller. */
@@ -77,10 +77,9 @@ public class GuardChainlet extends AbstractChainlet
     * @param realm The authentication realm.
     * @param authorization Indicates if the guard should attempt to authorize the caller.
     */
-   public GuardChainlet(Component parent, String logName, boolean authentication, ChallengeScheme scheme, String realm, boolean authorization)
+   public GuardFilter(Component parent, String logName, boolean authentication, ChallengeScheme scheme, String realm, boolean authorization)
    {
       super(parent);
-
       this.logger = Logger.getLogger(logName);
       this.authentication = authentication;
       this.authorizations = null;
@@ -98,17 +97,24 @@ public class GuardChainlet extends AbstractChainlet
    }
 
    /**
-    * Handles a call to a resource or a set of resources.
-    * @param call The call to handle.
+    * Allows filtering before its handling by the target Restlet. Does nothing by default.
+    * @param call The call to filter.
     */
-   public void handle(Call call)
+   public void beforeHandle(Call call)
    {
    	if(this.authentication)
    	{
    		authenticate(call);
    	}
+   }
 
-      if(!this.authorization || authorize(call))
+   /**
+    * Handles the call by distributing it to the target handler. 
+    * @param call The call to handle.
+    */
+   public void doHandle(Call call)
+   {
+		if(!this.authorization || authorize(call))
       {
       	accept(call);
       }
@@ -120,7 +126,7 @@ public class GuardChainlet extends AbstractChainlet
 
    /**
     * Attempts to authenticate the caller.
-    * By default, it tries to interpret the challenge response using the Chainlet's challenge scheme.
+    * By default, it tries to interpret the challenge response using the Filter's challenge scheme.
     * Subclasses could implement different authentication mechanisms, for example based on IP address or on
     * a session cookie.<br/>
     * The result of a successful authentication is the update of the call's security data: login, password properties.
@@ -192,7 +198,7 @@ public class GuardChainlet extends AbstractChainlet
    }
 
    /**
-    * Indicates if the call is authorized to pass through the Guard Chainlet.
+    * Indicates if the call is authorized to pass through the Guard Filter.
     * At this point the caller should be authenticated and the security data should contain a valid login,
     * password and optionnaly a role name.<br/>
     * The application should take care of the authorization logic, based on custom criteria such as

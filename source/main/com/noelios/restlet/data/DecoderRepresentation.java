@@ -24,64 +24,90 @@ package com.noelios.restlet.data;
 
 import java.io.IOException;
 import java.io.InputStream;
+import java.io.OutputStream;
+import java.nio.channels.ReadableByteChannel;
+import java.nio.channels.WritableByteChannel;
 import java.util.Arrays;
 import java.util.List;
 import java.util.zip.GZIPInputStream;
 import java.util.zip.InflaterInputStream;
 import java.util.zip.ZipInputStream;
 
-import org.restlet.Resource;
 import org.restlet.data.Encoding;
 import org.restlet.data.Encodings;
 import org.restlet.data.Representation;
-import org.restlet.data.RepresentationMetadata;
+import org.restlet.data.WrapperRepresentation;
+
+import com.noelios.restlet.util.ByteUtils;
 
 /**
- * Representation that decodes a wrapped representation. 
+ * Representation that decodes a wrapped representation if its encoding is supported. 
  * @author Jerome Louvel (contact@noelios.com) <a href="http://www.noelios.com/">Noelios Consulting</a>
  */
-public class DecoderRepresentation extends InputRepresentation
+public class DecoderRepresentation extends WrapperRepresentation
 {
-   /** Wrapped representation. */
-   protected Representation wrappedRepresentation;
-
+	/** Indicates if the decoding can happen. */
+	protected boolean canDecode;
+	
    /**
     * Constructor.
     * @param wrappedRepresentation The wrapped representation.
     */
    public DecoderRepresentation(Representation wrappedRepresentation)
    {
-   	super(null, null);
-      this.wrappedRepresentation = wrappedRepresentation;
+   	super(wrappedRepresentation);
+   	this.canDecode = getSupportedEncodings().contains(wrappedRepresentation.getEncoding());
    }
    
    /**
-    * Returns the represented resource if available.
-    * @return The represented resource if available.
+    * Indicates if the decoding can happen.
+    * @return True if the decoding can happen.
     */
-   public Resource getResource()
+   public boolean canDecode()
    {
-   	return this.wrappedRepresentation.getResource();
+   	return this.canDecode;
+   }
+   
+   /**
+    * Returns the encoding or null if identity encoding applies.
+    * @return The encoding or null if identity encoding applies.
+    */
+   public Encoding getEncoding()
+   {
+   	if(canDecode())
+   	{
+   		return null;
+   	}
+   	else
+   	{
+   		return getWrappedRepresentation().getEncoding();
+   	}
+   }
+   
+   /**
+    * Sets the encoding or null if identity encoding applies.
+    * @param encoding The encoding or null if identity encoding applies.
+    */
+   public void setEncoding(Encoding encoding)
+   {
+   	throw new IllegalArgumentException("The encoding can't be changed for a decoder representation");
    }
 
    /**
-    * Sets the represented resource.
-    * @param resource The represented resource.
+    * Returns a readable byte channel. If it is supported by a file a read-only instance of 
+    * FileChannel is returned.
+    * @return A readable byte channel.
     */
-   public void setResource(Resource resource)
+   public ReadableByteChannel getChannel() throws IOException
    {
-   	this.wrappedRepresentation.setResource(resource);
-   }
-
-   /**
-    * Returns the metadata.
-    * @return The metadata.
-    */
-   public RepresentationMetadata getMetadata()
-   {
-   	RepresentationMetadata result = new RepresentationMetadata(this.wrappedRepresentation.getMetadata());
-   	result.setEncoding(null);
-   	return result;
+		if(canDecode())
+		{
+			return ByteUtils.getChannel(getStream());
+		}
+		else
+		{
+			return getWrappedRepresentation().getChannel();
+		}
    }
 
    /**
@@ -92,29 +118,88 @@ public class DecoderRepresentation extends InputRepresentation
    {
 		InputStream result = null;
 
-		if(getEncoding().equals(Encodings.GZIP))
+		if(canDecode())
 		{
-			result = new GZIPInputStream(this.wrappedRepresentation.getStream());
+			Encoding we = getWrappedRepresentation().getEncoding();
+			
+			if(we.equals(Encodings.GZIP))
+			{
+				result = new GZIPInputStream(getWrappedRepresentation().getStream());
+			}
+			else if(we.equals(Encodings.DEFLATE))
+			{
+				result = new InflaterInputStream(getWrappedRepresentation().getStream());
+			}
+			else if(we.equals(Encodings.ZIP))
+			{
+				result = new ZipInputStream(getWrappedRepresentation().getStream());
+			}
+			else if(we.equals(Encodings.IDENTITY))
+			{
+				throw new IOException("Decoder unecessary for identity decoding");
+			}
 		}
-		else if(getEncoding().equals(Encodings.DEFLATE))
+		
+		return result;
+	}
+   
+   /**
+    * Writes the representation to a byte channel.
+    * @param writableChannel A writable byte channel.
+    */
+   public void write(WritableByteChannel writableChannel) throws IOException
+   {
+		if(canDecode())
 		{
-			result = new InflaterInputStream(this.wrappedRepresentation.getStream());
-		}
-		else if(getEncoding().equals(Encodings.ZIP))
-		{
-			result = new ZipInputStream(this.wrappedRepresentation.getStream());
-		}
-		else if(getEncoding().equals(Encodings.IDENTITY))
-		{
-			throw new IOException("Decoder unecessary for identity decoding");
+			write(ByteUtils.getStream(writableChannel));
 		}
 		else
 		{
-			throw new IOException("Unsupported decoding");
+			getWrappedRepresentation().write(writableChannel);
+		}
+   }
+   
+   /**
+    * Writes the representation to a byte stream.
+    * @param outputStream The output stream.
+    */
+   public void write(OutputStream outputStream) throws IOException
+   {
+		if(canDecode())
+		{
+			ByteUtils.write(getStream(), outputStream);
+		}
+		else
+		{
+			getWrappedRepresentation().write(outputStream);
+		}
+   }
+   
+   /**
+    * Converts the representation to a string.
+    * @return The representation as a string.
+    */
+   public String toString()
+   {
+		String result = null;
+
+		if(canDecode())
+		{
+	      try
+	      {
+	         result = ByteUtils.toString(getStream());
+	      }
+	      catch(IOException ioe)
+	      {
+	      }
+		}
+		else
+		{
+			result = getWrappedRepresentation().toString();
 		}
 
-		return result;
-	}
+      return result;
+   }
 
 	/**
 	 * Returns the list of supported encodings.

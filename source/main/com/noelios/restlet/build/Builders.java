@@ -22,15 +22,15 @@
 
 package com.noelios.restlet.build;
 
-import org.restlet.Chainlet;
-import org.restlet.Maplet;
+import org.restlet.Filter;
 import org.restlet.Restlet;
+import org.restlet.Router;
 import org.restlet.component.Component;
 import org.restlet.component.RestletContainer;
 
-import com.noelios.restlet.ExtractChainlet;
-import com.noelios.restlet.GuardChainlet;
-import com.noelios.restlet.HostMaplet;
+import com.noelios.restlet.ExtractFilter;
+import com.noelios.restlet.GuardFilter;
+import com.noelios.restlet.HostRouter;
 
 /**
  * Utility methods using the current factory.
@@ -60,13 +60,13 @@ public class Builders
 	}
 	
 	/**
-	 * Builds a Chainlet.
+	 * Builds a Filter.
 	 * @param parent The parent builder.
 	 * @param node The wrapped node.
 	 */
-	public static ChainletBuilder buildChainlet(ObjectBuilder parent, Chainlet node)
+	public static FilterBuilder buildFilter(ObjectBuilder parent, Filter node)
 	{
-		return getFactory().createChainletBuilder(parent, node);
+		return getFactory().createFilterBuilder(parent, node);
 	}
 
 	/**
@@ -80,7 +80,7 @@ public class Builders
 	}
 
 	/**
-	 * Builds a Restlet Container.
+	 * Builds a RestletContainer.
 	 */
    public static RestletContainerBuilder buildContainer()
    {
@@ -88,7 +88,7 @@ public class Builders
    }
 
 	/**
-	 * Builds a Restlet Container.
+	 * Builds a RestletContainer.
 	 * @param node The wrapped node.
 	 */
    public static RestletContainerBuilder buildContainer(RestletContainer node)
@@ -97,7 +97,7 @@ public class Builders
    }
 
 	/**
-	 * Builds a Restlet Container.
+	 * Builds a RestletContainer.
 	 * @param parent The parent builder.
 	 * @param node The wrapped node.
 	 */
@@ -107,47 +107,47 @@ public class Builders
    }
 
 	/**
-	 * Builds a Directory Restlet.
+	 * Builds an ExtractFilter.
 	 * @param parent The parent builder.
 	 * @param node The wrapped node.
 	 */
-   public static ExtractChainletBuilder buildExtract(ObjectBuilder parent, ExtractChainlet node)
+   public static ExtractFilterBuilder buildExtract(ObjectBuilder parent, ExtractFilter node)
    {
-   	return getFactory().createExtractChainletBuilder(parent, node);
+   	return getFactory().createExtractFilterBuilder(parent, node);
    }
 
 	/**
-	 * Builds a Guard Chainlet.
+	 * Builds a GuardFilter.
 	 * @param parent The parent builder.
 	 * @param node The wrapped node.
 	 */
-   public static GuardChainletBuilder buildGuard(ObjectBuilder parent, GuardChainlet node)
+   public static GuardFilterBuilder buildGuard(ObjectBuilder parent, GuardFilter node)
    {
-   	return getFactory().createGuardChainletBuilder(parent, node);
+   	return getFactory().createGuardFilterBuilder(parent, node);
    }
 
 	/**
-	 * Builds a Host Maplet.
+	 * Builds a HostRouter.
 	 * @param parent The parent builder.
 	 * @param node The wrapped node.
 	 */
-   public static HostMapletBuilder buildHost(ObjectBuilder parent, HostMaplet node)
+   public static HostRouterBuilder buildHost(ObjectBuilder parent, HostRouter node)
    {
-   	return getFactory().createHostMapletBuilder(parent, node);
+   	return getFactory().createHostRouterBuilder(parent, node);
    }
 
 	/**
-	 * Builds a Maplet.
+	 * Builds a Router.
 	 * @param parent The parent builder.
 	 * @param node The wrapped node.
 	 */
-   public static MapletBuilder buildMaplet(ObjectBuilder parent, Maplet node)
+   public static RouterBuilder buildRouter(ObjectBuilder parent, Router node)
    {
-   	return getFactory().createMapletBuilder(parent, node);
+   	return getFactory().createRouterBuilder(parent, node);
    }
    
 	/**
-	 * Builds an object.
+	 * Builds an Object.
 	 * @param parent The parent builder.
 	 * @param node The wrapped node.
 	 */
