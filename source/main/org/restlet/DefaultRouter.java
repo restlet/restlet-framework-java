@@ -76,6 +76,17 @@ public class DefaultRouter extends AbstractHandler implements Router
       this.retryDelay = 500L;
       this.lastIndex = -1;
    }
+   
+   /**
+    * Default implementation for all the handle*() methods that simply returns a client error 
+    * indicating that the method is not allowed. 
+    * @param call The call to handle.
+    */
+   protected void defaultHandle(Call call)
+   {
+		// Override the AbstractRestlet implementation which was setting the call's 
+   	// status to "method not allowed".
+   }
 
 	/**
 	 * Finds the next Restlet if available.
@@ -168,6 +179,7 @@ public class DefaultRouter extends AbstractHandler implements Router
 		
 		if(result == null)
 		{
+			// No routing option could be matched
 			call.setStatus(Statuses.CLIENT_ERROR_NOT_FOUND);
 		}
 		

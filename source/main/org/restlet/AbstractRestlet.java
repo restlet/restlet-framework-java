@@ -311,9 +311,9 @@ public abstract class AbstractRestlet implements Restlet
    	}
    	else
    	{
-   		// No additional Restlet available
-   		// stack moving up the stack of calls
-   		// and apply the post-handle filters.
+   		// No additional Restlet available,
+   		// moving up the stack of calls,
+   		// applying the post-handle filters.
    	}
 	}
 }
