@@ -56,8 +56,8 @@ import com.noelios.restlet.impl.HttpServerCall;
  */
 public abstract class AsyncWebServer extends HttpServer implements ServiceContainer
 {
-	/** Logger. */
-	private static Logger logger = Logger.getLogger("com.noelios.restlet.ext.asyncweb.AsyncWebServer");
+   /** Obtain a suitable logger. */
+   private static Logger logger = Logger.getLogger(AsyncWebServer.class.getCanonicalName());
 
 	/**
 	 * Indicates if the server is acting in HTTPS mode.
