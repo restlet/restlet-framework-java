@@ -26,6 +26,7 @@ import org.restlet.AbstractRestlet;
 import org.restlet.Call;
 import org.restlet.component.Component;
 import org.restlet.data.Methods;
+import org.restlet.data.Resource;
 import org.restlet.data.Statuses;
 
 import com.noelios.restlet.impl.ContextClient;
@@ -92,18 +93,18 @@ public class DirectoryRestlet extends AbstractRestlet
     * Returns the name of the context client.
     * @return The name of the context client.
     */
-   public String getContextName()
+   public String getContextClientName()
    {
    	return this.contextClientName;
    }
 
    /**
     * Sets the name of the context client.
-    * @param name The name of the context client.
+    * @param clientName The name of the context client.
     */
-   public void setContextName(String name)
+   public void setContextClientName(String clientName)
    {
-   	this.contextClientName = name;
+   	this.contextClientName = clientName;
    }
    
    /**
@@ -157,11 +158,15 @@ public class DirectoryRestlet extends AbstractRestlet
     */
    public void handle(Call call)
    {
+   	// Client contextClient = getOwner().getClients().get(getContextClientName());
+   	// String resourceRef = getRootUri() + call.getResourcePath();
+   	Resource resource = null; //new ContextResource(contextClient, resourceRef, getIndexName());
+   	   	
    	if(call.getMethod().equals(Methods.GET) || call.getMethod().equals(Methods.HEAD))
    	{
-   		getOwner().callClient(getContextName(), call);
+   		//call.setBestOutput(resource, null);
    	}
-   	else if(call.getMethod().equals(Methods.PUT) || call.getMethod().equals(Methods.DELETE))
+   	else if(call.getMethod().equals(Methods.DELETE))
    	{
    		if(isReadOnly())
    		{
@@ -169,24 +174,30 @@ public class DirectoryRestlet extends AbstractRestlet
    		}
    		else
    		{
-   			getOwner().callClient(getContextName(), call);
+//   			if(resource.delete())
+//   			{
+//   				
+//   			}
+//   			else
+//   			{
+//   				
+//   			}
+   		}
+   	}
+   	else if(call.getMethod().equals(Methods.PUT))
+   	{
+   		if(isReadOnly())
+   		{
+      		call.setStatus(Statuses.CLIENT_ERROR_FORBIDDEN);
+   		}
+   		else
+   		{
+//   			resource.put(call.getInput());
    		}
    	}
    	else
    	{
    		call.setStatus(Statuses.CLIENT_ERROR_METHOD_NOT_ALLOWED);
-   	}
-   }
-
-   /**
-    * Handles a PUT call.
-    * @param call The call to handle.
-    */
-   public void handlePut(Call call)
-   {
-   	if(!isReadOnly())
-   	{
-   		getOwner().callClient(getContextName(), call);
    	}
    }
 
