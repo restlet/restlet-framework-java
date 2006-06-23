@@ -76,7 +76,7 @@ public class ReferenceList implements List<Reference>
 	 * @param uriList The "text/uri-list" representation to parse.
 	 * @throws IOException 
 	 */
-	public ReferenceList(StringRepresentation uriList) throws IOException
+	public ReferenceList(Representation uriList) throws IOException
 	{
 		BufferedReader br = new BufferedReader(new InputStreamReader(uriList.getStream()));
 		String line = br.readLine();
