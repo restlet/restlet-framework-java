@@ -22,25 +22,25 @@
 
 package com.noelios.restlet;
 
-import org.restlet.AbstractRestlet;
+import org.restlet.AbstractHandler;
 import org.restlet.Call;
+import org.restlet.Restlet;
 import org.restlet.component.Component;
-import org.restlet.data.Methods;
-import org.restlet.data.Resource;
-import org.restlet.data.Statuses;
+import org.restlet.connector.Client;
 
 import com.noelios.restlet.impl.ContextClient;
+import com.noelios.restlet.impl.DirectoryResource;
 
 /**
- * Restlet supported by a directory of resources. An automatic content negotiation mechanism 
+ * Handler supported by a directory of resources. An automatic content negotiation mechanism 
  * (similar to Apache HTTP server) is used to serve the best representations.
  * @see <a href="http://www.restlet.org/tutorial#part06">Tutorial: Serving context resources</a>
  * @author Jerome Louvel (contact@noelios.com) <a href="http://www.noelios.com/">Noelios Consulting</a>
  */
-public class DirectoryRestlet extends AbstractRestlet
+public class DirectoryHandler extends AbstractHandler
 {
-   /** The name of the context client. */
-   protected String contextClientName;
+   /** The context client. */
+   protected Client contextClient;
 
    /** If no file name is specified, use the (optional) index name. */
    protected String indexName;
@@ -61,16 +61,25 @@ public class DirectoryRestlet extends AbstractRestlet
     * @param deeply Indicates if the sub-directories are deeply accessible.
     * @param indexName If no file name is specified, use the (optional) index name.
     */
-   public DirectoryRestlet(Component owner, String rootUri, boolean deeply, String indexName)
+   public DirectoryHandler(Component owner, String rootUri, boolean deeply, String indexName)
    {
       super(owner);
-      this.contextClientName = ContextClient.DEFAULT_NAME;
+      this.contextClient = getOwner().getClients().get(ContextClient.DEFAULT_NAME);
       this.indexName = indexName;
       this.rootUri = rootUri;
       this.deeply = deeply;
       this.readOnly = true;
    }
-
+   /**
+	 * Finds the next Restlet if available.
+	 * @param call The current call.
+	 * @return The next Restlet if available or null.
+	 */
+	public Restlet findNext(Call call)
+	{
+   	return new DirectoryResource(this, getRootUri() + call.getResourcePath());
+	}
+	
    /** 
     * Indicates if modifications to context resources are allowed.
     * @return False if modifications to context resources are allowed.
@@ -90,21 +99,21 @@ public class DirectoryRestlet extends AbstractRestlet
    }
    
    /**
-    * Returns the name of the context client.
-    * @return The name of the context client.
+    * Returns the context client.
+    * @return The context client.
     */
-   public String getContextClientName()
+   public Client getContextClient()
    {
-   	return this.contextClientName;
+   	return this.contextClient;
    }
 
    /**
-    * Sets the name of the context client.
-    * @param clientName The name of the context client.
+    * Sets the context client.
+    * @param contextClient The context client.
     */
-   public void setContextClientName(String clientName)
+   public void setContextClient(Client contextClient)
    {
-   	this.contextClientName = clientName;
+   	this.contextClient = contextClient;
    }
    
    /**
@@ -150,55 +159,6 @@ public class DirectoryRestlet extends AbstractRestlet
    public void setDeeply(boolean deeply)
    {
       this.deeply = deeply;
-   }
-
-   /**
-    * Handles a REST call.
-    * @param call The call to handle.
-    */
-   public void handle(Call call)
-   {
-   	// Client contextClient = getOwner().getClients().get(getContextClientName());
-   	// String resourceRef = getRootUri() + call.getResourcePath();
-   	Resource resource = null; //new ContextResource(contextClient, resourceRef, getIndexName());
-   	   	
-   	if(call.getMethod().equals(Methods.GET) || call.getMethod().equals(Methods.HEAD))
-   	{
-   		//call.setBestOutput(resource, null);
-   	}
-   	else if(call.getMethod().equals(Methods.DELETE))
-   	{
-   		if(isReadOnly())
-   		{
-      		call.setStatus(Statuses.CLIENT_ERROR_FORBIDDEN);
-   		}
-   		else
-   		{
-//   			if(resource.delete())
-//   			{
-//   				
-//   			}
-//   			else
-//   			{
-//   				
-//   			}
-   		}
-   	}
-   	else if(call.getMethod().equals(Methods.PUT))
-   	{
-   		if(isReadOnly())
-   		{
-      		call.setStatus(Statuses.CLIENT_ERROR_FORBIDDEN);
-   		}
-   		else
-   		{
-//   			resource.put(call.getInput());
-   		}
-   	}
-   	else
-   	{
-   		call.setStatus(Statuses.CLIENT_ERROR_METHOD_NOT_ALLOWED);
-   	}
    }
 
 }

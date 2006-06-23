@@ -26,10 +26,12 @@ import java.io.File;
 import java.util.List;
 import java.util.logging.Logger;
 
-import org.restlet.connector.Client;
-import org.restlet.data.AbstractRepresentation;
+import org.restlet.Call;
 import org.restlet.data.AbstractResource;
-import org.restlet.data.Reference;
+import org.restlet.data.Representation;
+import org.restlet.data.Statuses;
+
+import com.noelios.restlet.DirectoryHandler;
 
 /**
  * Resource supported by a set of context representations (from file system, class loaders and webapp context). 
@@ -38,18 +40,13 @@ import org.restlet.data.Reference;
  * @see <a href="http://httpd.apache.org/docs/2.0/content-negotiation.html">Apache mod_negotiation module</a>
  * @author Jerome Louvel (contact@noelios.com) <a href="http://www.noelios.com/">Noelios Consulting</a>
  */
-public abstract class ContextResource extends AbstractResource
+public class DirectoryResource extends AbstractResource
 {
    /** Obtain a suitable logger. */
-   private static Logger logger = Logger.getLogger(ContextResource.class.getCanonicalName());
+   private static Logger logger = Logger.getLogger(DirectoryResource.class.getCanonicalName());
 
-   /**
-    * The parent directory Restlet.
-    */
-   protected Client contextClient;
-
-   /** If a directory is specified, use the (optional) index name. */
-   protected String indexName;
+   /** The parent directory handler. */
+   protected DirectoryHandler directory;
 
    /**
     * The absolute base path in the context. For example, "foo.en" will match "foo.en.html" and "foo.en-GB.html".
@@ -67,11 +64,10 @@ public abstract class ContextResource extends AbstractResource
     * @param basePath The base path of the file.
     * @param indexName The optional index name.
     */
-   public ContextResource(Client contextClient, String basePath, String indexName)
+   public DirectoryResource(DirectoryHandler directory, String basePath)
    {
       // Update the member variables
-      this.contextClient = contextClient;
-      this.indexName = indexName;
+      this.directory = directory;
 
       logger.info("Context base path: " + basePath);
 
@@ -105,10 +101,10 @@ public abstract class ContextResource extends AbstractResource
       if(new File(this.basePath).isDirectory())
       {
          // Append the index name
-         if(getIndexName() != null)
+         if(getDirectory().getIndexName() != null)
          {
-            this.basePath = this.basePath + getIndexName();
-            this.baseName = getIndexName();
+            this.basePath = this.basePath + getDirectory().getIndexName();
+            this.baseName = getDirectory().getIndexName();
          }
       }
       else
@@ -131,43 +127,62 @@ public abstract class ContextResource extends AbstractResource
       logger.info("Converted base path: " + this.basePath);
       logger.info("Converted base name: " + this.baseName);
    }
-
-   /**
-    * Returns the index name.
-    * @return The index name.
-    */
-   public String getIndexName()
-   {
-      return indexName;
-   }
-
-   /**
-    * Sets the index name.
-    * @param indexName The index name.
-    */
-   public void setIndexName(String indexName)
-   {
-      this.indexName = indexName;
-   }
-
-	/**
-	 * Returns the identifier reference.
-	 * @return The identifier reference.
-	 */
-	public Reference getIdentifier()
-	{
-		// TODO
-		return null;
-	}
    
    /**
-    * Returns the representation variants metadata.
-    * @return The representation variants metadata.
+    * Returns the parent directory handler.
+    * @return The parent directory handler.
     */
-   public List<AbstractRepresentation> getVariants2()
+   public DirectoryHandler getDirectory()
+   {
+   	return this.directory;
+   }
+
+   /**
+    * Returns the absolute path of the file. For example, "foo.en" will match "foo.en.html" and
+    * "foo.en-GB.html".
+    * @return The base path of the file.
+    */
+   public String getBasePath()
+   {
+      return this.basePath;
+   }
+
+   /**
+    * Sets the absolute path of the file.
+    * @param absolutePath The absolute path of the file.
+    */
+   public void setBasePath(String absolutePath)
+   {
+      this.basePath = absolutePath;
+   }
+
+   /**
+    * Returns the local base name of the file. For example, "foo.en" and "foo.en-GB.html" return "foo".
+    * @return The local name of the file.
+    */
+   public String getBaseName()
+   {
+      return this.baseName;
+   }
+
+   /**
+    * Handles a GET call.
+    * @param call The call to handle.
+    */
+   protected void handleGet(Call call)
+   {
+   	// We always allow the transfer of the GET calls
+		
+   }
+   
+   /**
+    * Returns the representation variants.
+    * @return The representation variants.
+    */
+   public List<Representation> getVariants()
    {
       logger.info("Getting variants for : " + getBasePath());
-      List<AbstractRepresentation> result = null;
+      List<Representation> result = null;
 
       // List all the file in the immediate parent directory
       File baseDirectory = new File(getBasePath()).getParentFile();
@@ -233,49 +248,46 @@ public abstract class ContextResource extends AbstractResource
    }
 
    /**
-    * Returns the parent file client connector.
-    * @return The parent file client connector.
+    * Handles a DELETE call.
+    * @param call The call to handle.
     */
-   public Client getContextClient()
+   protected void handleDelete(Call call)
    {
-      return this.contextClient;
+   	// We allow the transfer of the DELETE calls only if the readOnly flag is not set
+		if(getDirectory().isReadOnly())
+		{
+   		call.setStatus(Statuses.CLIENT_ERROR_FORBIDDEN);
+		}
+		else
+		{
+			// TODO
+		}
    }
 
    /**
-    * Sets the parent directory Restlet.
-    * @param contextClient The parent file client connector.
+    * Handles a PUT call.
+    * @param call The call to handle.
     */
-   public void setContextClient(ContextClient contextClient)
+   protected void handlePut(Call call)
    {
-      this.contextClient = contextClient;
+   	// We allow the transfer of the PUT calls only if the readOnly flag is not set
+		if(getDirectory().isReadOnly())
+		{
+   		call.setStatus(Statuses.CLIENT_ERROR_FORBIDDEN);
+		}
+		else
+		{
+			// TODO
+		}
    }
-
+   
    /**
-    * Returns the absolute path of the file. For example, "foo.en" will match "foo.en.html" and
-    * "foo.en-GB.html".
-    * @return The base path of the file.
+    * Default implementation for all the handle*() methods that simply calls the nextHandle() method. 
+    * @param call The call to handle.
     */
-   public String getBasePath()
+   protected void defaultHandle(Call call)
    {
-      return basePath;
+   	call.setStatus(Statuses.CLIENT_ERROR_METHOD_NOT_ALLOWED);
    }
-
-   /**
-    * Sets the absolute path of the file.
-    * @param absolutePath The absolute path of the file.
-    */
-   public void setBasePath(String absolutePath)
-   {
-      this.basePath = absolutePath;
-   }
-
-   /**
-    * Returns the local base name of the file. For example, "foo.en" and "foo.en-GB.html" return "foo".
-    * @return The local name of the file.
-    */
-   public String getBaseName()
-   {
-      return baseName;
-   }
-
+   
 }

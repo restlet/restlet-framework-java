@@ -63,6 +63,15 @@ public abstract class AbstractResource extends AbstractRestlet implements Resour
    	super(owner);
    	this.identifiers = new ReferenceList();
    }
+   
+   /**
+    * Handles a GET call.
+    * @param call The call to handle.
+    */
+   protected void handleGet(Call call)
+   {
+   	call.setBestOutput(this, fallbackLanguage);
+   }
 
    /**
     * Returns the language to use if content negotiation fails.
@@ -80,15 +89,6 @@ public abstract class AbstractResource extends AbstractRestlet implements Resour
    public void setFallbackLanguage(Language fallbackLanguage)
    {
    	this.fallbackLanguage = fallbackLanguage;
-   }
-   
-   /**
-    * Handles a GET call.
-    * @param call The call to handle.
-    */
-   protected void handleGet(Call call)
-   {
-   	call.setBestOutput(this, fallbackLanguage);
    }
 
 	/**

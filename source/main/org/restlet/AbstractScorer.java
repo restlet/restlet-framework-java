@@ -44,17 +44,6 @@ public abstract class AbstractScorer extends AbstractHandler implements Scorer
    	this.router = router;
       this.target = target;
    }
-   
-   /**
-    * Default implementation for all the handle*() methods that simply returns a client error 
-    * indicating that the method is not allowed. 
-    * @param call The call to handle.
-    */
-   protected void defaultHandle(Call call)
-   {
-		// Override the AbstractRestlet implementation which was setting the call's 
-   	// status to "method not allowed".
-   }
 
    /**
 	 * Returns the parent router.

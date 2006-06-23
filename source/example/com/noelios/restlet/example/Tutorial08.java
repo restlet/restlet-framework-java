@@ -25,7 +25,7 @@ package com.noelios.restlet.example;
 import org.restlet.component.RestletContainer;
 import org.restlet.data.Protocols;
 
-import com.noelios.restlet.DirectoryRestlet;
+import com.noelios.restlet.DirectoryHandler;
 import com.noelios.restlet.HostRouter;
 import com.noelios.restlet.LogFilter;
 import com.noelios.restlet.StatusFilter;
@@ -63,7 +63,7 @@ public class Tutorial08
          status.attach(host);
 
          // Create a directory Restlet able to return a deep hierarchy of Web files
-         DirectoryRestlet directory = new DirectoryRestlet(myContainer, "file:///D:/Restlet/www/docs/api/", true, "index");
+         DirectoryHandler directory = new DirectoryHandler(myContainer, "file:///D:/Restlet/www/docs/api/", true, "index");
 
          // Then attach the directory Restlet to the host router.
          host.attach("/", directory);

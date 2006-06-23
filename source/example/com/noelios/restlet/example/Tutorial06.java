@@ -25,7 +25,7 @@ package com.noelios.restlet.example;
 import org.restlet.component.RestletContainer;
 import org.restlet.data.Protocols;
 
-import com.noelios.restlet.DirectoryRestlet;
+import com.noelios.restlet.DirectoryHandler;
 import com.noelios.restlet.HostRouter;
 
 /**
@@ -54,7 +54,7 @@ public class Tutorial06
 
          // Create a directory Restlet able to return a deep hierarchy of Web files
          // (HTML pages, CSS stylesheets or GIF images) from a local directory.
-         DirectoryRestlet directory = new DirectoryRestlet(myContainer, "file:///D:/Restlet/www/docs/api/", true, "index");
+         DirectoryHandler directory = new DirectoryHandler(myContainer, "file:///D:/Restlet/www/docs/api/", true, "index");
 
          // Then attach the Restlet to the container.
          host.attach("/", directory);

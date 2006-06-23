@@ -30,7 +30,7 @@ import org.restlet.data.ChallengeScheme;
 
 import com.noelios.restlet.CompressFilter;
 import com.noelios.restlet.DecompressFilter;
-import com.noelios.restlet.DirectoryRestlet;
+import com.noelios.restlet.DirectoryHandler;
 import com.noelios.restlet.ExtractFilter;
 import com.noelios.restlet.GuardFilter;
 import com.noelios.restlet.HostRouter;
@@ -203,7 +203,7 @@ public class RouterBuilder extends RestletBuilder
     */
    public RestletBuilder attachDirectory(String pattern, String rootUri, boolean deeply, String indexName)
    {
-      DirectoryRestlet node = new DirectoryRestlet(getNode().getOwner(), rootUri, deeply, indexName);
+      DirectoryHandler node = new DirectoryHandler(getNode().getOwner(), rootUri, deeply, indexName);
       getNode().attach(pattern, node);
       return Builders.buildRestlet(this, node);
    }
