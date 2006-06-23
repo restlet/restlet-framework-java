@@ -46,7 +46,7 @@ import com.noelios.restlet.impl.HttpServer;
 public abstract class SimpleServer extends HttpServer implements ProtocolHandler
 {
    /** Obtain a suitable logger. */
-   private static Logger logger = Logger.getLogger("com.noelios.restlet.ext.simple.SimpleServer");
+   private static Logger logger = Logger.getLogger(SimpleServer.class.getCanonicalName());
 
 	/**
 	 * Indicates if this service is acting in HTTP or HTTPS mode.
