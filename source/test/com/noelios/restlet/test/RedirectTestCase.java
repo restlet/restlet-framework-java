@@ -27,8 +27,8 @@ import java.io.IOException;
 import junit.framework.TestCase;
 
 import org.restlet.AbstractRestlet;
-import org.restlet.DefaultCall;
 import org.restlet.Call;
+import org.restlet.DefaultCall;
 import org.restlet.Restlet;
 import org.restlet.component.RestletContainer;
 import org.restlet.connector.DefaultServer;
