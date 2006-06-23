@@ -22,34 +22,34 @@
 package org.restlet.test;
 
 import org.restlet.Call;
-import org.restlet.Chainlet;
+import org.restlet.Filter;
 import org.restlet.DefaultCall;
 import org.restlet.Restlet;
 
 /**
- * Test {@link org.restlet.Chainlet}.
+ * Test {@link org.restlet.Filter}.
  * 
  * @author Lars Heuer (heuer[at]semagia.com) <a href="http://www.semagia.com/">Semagia</a>
  * @version $Rev:$ - $Date:$
  */
-public class ChainletTestCase extends AbstractChainletTestCase
+public class FilterTestCase extends AbstractFilterTestCase
 {
 
 	public static void main(String[] args)
 	{
-		junit.awtui.TestRunner.run(ChainletTestCase.class);
+		junit.awtui.TestRunner.run(FilterTestCase.class);
 	}
 
 	/* (non-Javadoc)
-	 * @see org.restlet.AbstractTestChainlet#getChainlet()
+	 * @see org.restlet.AbstractTestFilter#getFilter()
 	 */
-	protected Chainlet getChainlet()
+	protected Filter getFilter()
 	{
-		return new MockChainlet();
+		return new MockFilter();
 	}
 
 	/* (non-Javadoc)
-	 * @see org.restlet.AbstractTestChainlet#getCall()
+	 * @see org.restlet.AbstractTestFilter#getCall()
 	 */
 	protected Call getCall()
 	{
@@ -57,7 +57,7 @@ public class ChainletTestCase extends AbstractChainletTestCase
 	}
 
 	/* (non-Javadoc)
-	 * @see org.restlet.AbstractTestChainlet#getRestlet()
+	 * @see org.restlet.AbstractTestFilter#getRestlet()
 	 */
 	protected Restlet getRestlet()
 	{
@@ -65,7 +65,7 @@ public class ChainletTestCase extends AbstractChainletTestCase
 	}
 
 	/* (non-Javadoc)
-	 * @see org.restlet.AbstractTestChainlet#getRestletClass()
+	 * @see org.restlet.AbstractTestFilter#getRestletClass()
 	 */
 	protected Class getRestletClass()
 	{

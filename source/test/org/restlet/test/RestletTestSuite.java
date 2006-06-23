@@ -35,7 +35,7 @@ public class RestletTestSuite extends TestSuite
    public RestletTestSuite()
    {
       addTestSuite(CallTestCase.class);
-      addTestSuite(ChainletTestCase.class);
+      addTestSuite(FilterTestCase.class);
       addTestSuite(ReferenceTestCase.class);
    }
 

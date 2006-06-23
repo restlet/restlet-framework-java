@@ -22,41 +22,36 @@
 package org.restlet.test;
 
 import org.restlet.Call;
-import org.restlet.Chainlet;
+import org.restlet.Filter;
 import org.restlet.Restlet;
 
 /**
- * Tests where every chainlet should run through.
- * 
+ * Tests where every Filter should run through.
  * @author Lars Heuer (heuer[at]semagia.com) <a href="http://www.semagia.com/">Semagia</a>
  * @version $Rev:$ - $Date:$
  */
-public abstract class AbstractChainletTestCase extends RestletTestCase
+public abstract class AbstractFilterTestCase extends RestletTestCase
 {
 	/**
-	 * Returns a chainlet to be used for the tests. 
-	 *
-	 * @return Chainlet instance.
+	 * Returns a Filter to be used for the tests. 
+	 * @return Filter instance.
 	 */
-	protected abstract Chainlet getChainlet();
+	protected abstract Filter getFilter();
 
 	/**
 	 * Returns a call. 
-	 *
 	 * @return Call instance.
 	 */
 	protected abstract Call getCall();
 
 	/**
 	 * Returns a restlet. 
-	 *
 	 * @return Restlet instance.
 	 */
 	protected abstract Restlet getRestlet();
 
 	/**
 	 * Returns a restlet class. 
-	 *
 	 * @return Restlet class.
 	 */
 	protected abstract Class getRestletClass();
@@ -66,36 +61,17 @@ public abstract class AbstractChainletTestCase extends RestletTestCase
 	 */
 	public void testAttachDetachInstance() throws Exception
 	{
-		Chainlet chainlet = getChainlet();
-		assertFalse(chainlet.hasTarget());
-		chainlet.attach(getRestlet());
-		chainlet.start();
-		assertTrue(chainlet.isStarted());
-		assertFalse(chainlet.isStopped());
+		Filter filter = getFilter();
+		assertFalse(filter.hasTarget());
+		filter.attach(getRestlet());
+		filter.start();
+		assertTrue(filter.isStarted());
+		assertFalse(filter.isStopped());
 		Call call = getCall();
-		chainlet.handle(call);
-		assertTrue(chainlet.hasTarget());
-		chainlet.detach();
-		assertFalse(chainlet.hasTarget());
-	}
-
-	/**
-	 * Test Restlet class attaching/detaching. 
-	 */
-	@SuppressWarnings("unchecked")
-	public void testAttachDetachClass() throws Exception
-	{
-		Chainlet chainlet = getChainlet();
-		assertFalse(chainlet.hasTarget());
-		chainlet.attach(getRestletClass());
-		chainlet.start();
-		assertTrue(chainlet.isStarted());
-		assertFalse(chainlet.isStopped());
-		Call call = getCall();
-		chainlet.handle(call);
-		assertTrue(chainlet.hasTarget());
-		chainlet.detach();
-		assertFalse(chainlet.hasTarget());
+		filter.handle(call);
+		assertTrue(filter.hasTarget());
+		filter.detach();
+		assertFalse(filter.hasTarget());
 	}
 
 	/**
@@ -103,16 +79,16 @@ public abstract class AbstractChainletTestCase extends RestletTestCase
 	 */
 	public void testIllegalTarget() throws Exception
 	{
-		Chainlet chainlet = getChainlet();
-		chainlet.start();
-		assertTrue(chainlet.isStarted());
-		assertFalse(chainlet.isStopped());
-		assertFalse(chainlet.hasTarget());
+		Filter filter = getFilter();
+		filter.start();
+		assertTrue(filter.isStarted());
+		assertFalse(filter.isStopped());
+		assertFalse(filter.hasTarget());
 		Call call = getCall();
 		try
 		{
-			chainlet.handle(call);
-			fail("Chainlet handles call without a target");
+			filter.handle(call);
+			fail("Filter handles call without a target");
 		}
 		catch (Exception ex)
 		{
@@ -121,20 +97,20 @@ public abstract class AbstractChainletTestCase extends RestletTestCase
 	}
 
 	/**
-	 * Test not started chainlet. 
+	 * Test not started Filter. 
 	 */
 	public void testIllegalStartedState() throws Exception
 	{
-		Chainlet chainlet = getChainlet();
-		chainlet.attach(getRestlet());
-		assertTrue(chainlet.hasTarget());
-		assertFalse(chainlet.isStarted());
-		assertTrue(chainlet.isStopped());
+		Filter filter = getFilter();
+		filter.attach(getRestlet());
+		assertTrue(filter.hasTarget());
+		assertFalse(filter.isStarted());
+		assertTrue(filter.isStopped());
 		Call call = getCall();
 		try
 		{
-			chainlet.handle(call);
-			fail("Chainlet handles call without being started");
+			filter.handle(call);
+			fail("Filter handles call without being started");
 		}
 		catch (Exception ex)
 		{

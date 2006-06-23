@@ -21,29 +21,29 @@
  */
 package org.restlet.test;
 
-import org.restlet.AbstractChainlet;
+import org.restlet.AbstractFilter;
 import org.restlet.Call;
 
 /**
- * Thin layer around an AbstractChainlet.
+ * Thin layer around an AbstractFilter.
  * Takes care about being started and having a target when it should handle
  * a call.
  * 
  * @author Lars Heuer (heuer[at]semagia.com) <a href="http://www.semagia.com/">Semagia</a>
  * @version $Rev:$ - $Date:$
  */
-public class MockChainlet extends AbstractChainlet
+public class MockFilter extends AbstractFilter
 {
 
 	/* (non-Javadoc)
-	 * @see org.restlet.AbstractChainlet#handle(org.restlet.Call)
+	 * @see org.restlet.AbstractFilter#handle(org.restlet.Call)
 	 */
 	@Override
 	public void handle(Call call)
 	{
 		if (!super.isStarted())
 		{
-			throw new IllegalStateException("Chainlet is not started");
+			throw new IllegalStateException("Filter is not started");
 		}
 		if (!super.hasTarget())
 		{
