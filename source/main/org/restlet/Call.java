@@ -35,7 +35,7 @@ import org.restlet.data.Method;
 import org.restlet.data.PreferenceData;
 import org.restlet.data.Reference;
 import org.restlet.data.Representation;
-import org.restlet.data.RepresentationMetadata;
+import org.restlet.data.Resource;
 import org.restlet.data.SecurityData;
 import org.restlet.data.Status;
 
@@ -55,13 +55,13 @@ public interface Call
    public Map<String, Object> getAttributes();
 
    /**
-    * Returns the best variant representation for a given resource according the the client preferences.
+    * Returns the best variant for a given resource according the the client preferences.
     * @param resource The resource for which the best representation needs to be set.
     * @param fallbackLanguage The language to use if no preference matches.
-    * @return The best variant representation.
+    * @return The best variant.
     * @see <a href="http://httpd.apache.org/docs/2.2/en/content-negotiation.html#algorithm">Apache content negotiation algorithm</a>
     */
-   public RepresentationMetadata getBestVariant(Resource resource, Language fallbackLanguage);
+   public Representation getBestVariant(Resource resource, Language fallbackLanguage);
 
    /**
     * Returns the client IP address.
@@ -158,16 +158,19 @@ public interface Call
    public Representation getOutput();
 
    /**
+    * Returns the reference of the output representation. This is used in several situations: when
+    * redirecting the client to a different URI, when creating a new resource after a POST call for
+    * example or when the output reference has a specific URI that is different from the identified
+    * resource URI.
+    * @return The redirection reference.
+    */
+   public Reference getOutputRef();
+
+   /**
     * Returns the preference data of the client.
     * @return The preference data of the client.
     */
    public PreferenceData getPreference();
-
-   /**
-    * Returns the reference for redirections or resource creations.
-    * @return The redirection reference.
-    */
-   public Reference getRedirectionRef();
 
    /**
     * Returns the referrer reference if available.
@@ -264,17 +267,20 @@ public interface Call
    public void setOutput(Representation output);
 
    /**
-    * Sets the reference for redirections or resource creations.
-    * @param redirectionRef The redirection reference.
+    * Sets the reference of the output representation. This is used in several situations: when
+    * redirecting the client to a different URI, when creating a new resource after a POST call for
+    * example or when the output reference has a specific URI that is different from the identified
+    * resource URI.
+    * @param outputRef The output reference.
     */
-   public void setRedirectionRef(Reference redirectionRef);
+   public void setOutputRef(Reference outputRef);
 
    /**
-    * Sets the reference for redirections or resource creations using an URI string. Note that
-    * the redirection URI can be either absolute or relative to the current context reference.
-    * @param redirectionUri The redirection URI.
+    * Sets the reference of the output representation. Note that the output URI can be either 
+    * absolute or relative to the current call's context reference.
+    * @param outputUri The output URI.
     */
-   public void setRedirectionRef(String redirectionUri);
+   public void setOutputRef(String outputUri);
 
    /**
     * Sets the referrer reference if available.

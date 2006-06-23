@@ -22,45 +22,45 @@
 
 package org.restlet;
 
-import org.restlet.data.Method;
-import org.restlet.data.Reference;
-
 /**
- * Default Call that can directly be used. Useful for application developers needing to invoke client connectors.
+ * Abstract Scorer that can easily be subclassed.
  * @author Jerome Louvel (contact@noelios.com) <a href="http://www.noelios.com/">Noelios Consulting</a>
  */
-public class DefaultCall extends WrapperCall
+public abstract class AbstractScorer extends AbstractHandler implements Scorer
 {
+	/** The parent router. */
+	protected Router router;
+	
+   /** The Restlet target. */
+   protected Restlet target;
+
    /**
     * Constructor.
+    * @param router The parent router.
+    * @param target The Restlet target.
     */
-   public DefaultCall()
+   public AbstractScorer(Router router, Restlet target)
    {
-      super(Factory.getInstance().createCall());
+      this.target = target;
    }
-   
+
    /**
-    * Constructor.
-    * @param method The call's method.
-    * @param resourceRef The resource reference.
-    */
-   public DefaultCall(Method method, Reference resourceRef)
-   {
-   	this();
-   	setMethod(method);
-   	setResourceRef(resourceRef);
-   }
-   
-   /**
-    * Constructor.
-    * @param method The call's method.
-    * @param resourceUri The resource URI.
-    */
-   public DefaultCall(Method method, String resourceUri)
-   {
-   	this();
-   	setMethod(method);
-   	setResourceRef(resourceUri);
-   }
-   
+	 * Returns the parent router.
+	 * @return The parent router.
+	 */
+	public Router getRouter()
+	{
+		return this.router;
+	}
+
+	/**
+	 * Finds the next Restlet if available.
+	 * @param call The current call.
+	 * @return The next Restlet if available or null.
+	 */
+	public Restlet findNext(Call call)
+	{
+		return this.target;
+	}
+
 }

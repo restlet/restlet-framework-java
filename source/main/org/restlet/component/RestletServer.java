@@ -42,8 +42,8 @@ import org.restlet.data.Statuses;
  */
 public class RestletServer extends AbstractComponent
 {
-	/** Obtain a suitable logger. */
-   private static Logger logger = Logger.getLogger("org.restlet.component.RestletServer");
+   /** Obtain a suitable logger. */
+   private static Logger logger = Logger.getLogger(RestletServer.class.getCanonicalName());
 
    /** The Restlet containers. */
    protected Map<String, RestletContainer> containers;

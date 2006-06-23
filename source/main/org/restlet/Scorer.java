@@ -22,45 +22,23 @@
 
 package org.restlet;
 
-import org.restlet.data.Method;
-import org.restlet.data.Reference;
-
 /**
- * Default Call that can directly be used. Useful for application developers needing to invoke client connectors.
+ * Scoring handler typically attached to a Router. It is also able to score calls indicating its affinity. 
+ * The score is typically used by the Router in order to determine the best handler for a given call. 
  * @author Jerome Louvel (contact@noelios.com) <a href="http://www.noelios.com/">Noelios Consulting</a>
  */
-public class DefaultCall extends WrapperCall
+public interface Scorer extends Handler
 {
-   /**
-    * Constructor.
-    */
-   public DefaultCall()
-   {
-      super(Factory.getInstance().createCall());
-   }
-   
-   /**
-    * Constructor.
-    * @param method The call's method.
-    * @param resourceRef The resource reference.
-    */
-   public DefaultCall(Method method, Reference resourceRef)
-   {
-   	this();
-   	setMethod(method);
-   	setResourceRef(resourceRef);
-   }
-   
-   /**
-    * Constructor.
-    * @param method The call's method.
-    * @param resourceUri The resource URI.
-    */
-   public DefaultCall(Method method, String resourceUri)
-   {
-   	this();
-   	setMethod(method);
-   	setResourceRef(resourceUri);
-   }
-   
+	/**
+	 * Returns the parent router.
+	 * @return The parent router.
+	 */
+	public Router getRouter();
+	
+	/**
+	 * Returns the score for a given call (between 0.0 and 1.0).
+	 * @param call The call to score.
+	 * @return The score for a given call (between 0.0 and 1.0).
+	 */
+	public float score(Call call);
 }

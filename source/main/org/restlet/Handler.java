@@ -22,45 +22,17 @@
 
 package org.restlet;
 
-import org.restlet.data.Method;
-import org.restlet.data.Reference;
-
 /**
- * Default Call that can directly be used. Useful for application developers needing to invoke client connectors.
+ * Restlet that is part of a processing chain. The next handler is found for each call and can therefore 
+ * by either statically or dynamically resolved.  
  * @author Jerome Louvel (contact@noelios.com) <a href="http://www.noelios.com/">Noelios Consulting</a>
  */
-public class DefaultCall extends WrapperCall
+public interface Handler extends Restlet
 {
    /**
-    * Constructor.
-    */
-   public DefaultCall()
-   {
-      super(Factory.getInstance().createCall());
-   }
-   
-   /**
-    * Constructor.
-    * @param method The call's method.
-    * @param resourceRef The resource reference.
-    */
-   public DefaultCall(Method method, Reference resourceRef)
-   {
-   	this();
-   	setMethod(method);
-   	setResourceRef(resourceRef);
-   }
-   
-   /**
-    * Constructor.
-    * @param method The call's method.
-    * @param resourceUri The resource URI.
-    */
-   public DefaultCall(Method method, String resourceUri)
-   {
-   	this();
-   	setMethod(method);
-   	setResourceRef(resourceUri);
-   }
-   
+	 * Finds the next Restlet if available.
+	 * @param call The current call.
+	 * @return The next Restlet if available or null.
+	 */
+	public Restlet findNext(Call call);
 }

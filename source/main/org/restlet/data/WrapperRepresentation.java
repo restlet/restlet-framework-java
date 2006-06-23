@@ -27,8 +27,7 @@ import java.io.InputStream;
 import java.io.OutputStream;
 import java.nio.channels.ReadableByteChannel;
 import java.nio.channels.WritableByteChannel;
-
-import org.restlet.Resource;
+import java.util.Date;
 
 /**
  * Representation wrapper. Useful for application developer who need to enrich the representation 
@@ -36,27 +35,165 @@ import org.restlet.Resource;
  * @see <a href="http://c2.com/cgi/wiki?DecoratorPattern">The decorator (aka wrapper) pattern</a>
  * @author Jerome Louvel (contact@noelios.com) <a href="http://www.noelios.com/">Noelios Consulting</a>
  */
-public class WrapperRepresentation implements Representation
+public class WrapperRepresentation extends WrapperResource implements Representation
 {
-   /** Wrapped representation. */
-   protected Representation wrappedRepresentation;
-
    /**
     * Constructor.
     * @param wrappedRepresentation The wrapped representation.
     */
    public WrapperRepresentation(Representation wrappedRepresentation)
    {
-      this.wrappedRepresentation = wrappedRepresentation;
+      super(wrappedRepresentation);
    }
-	
+
    /**
+    * Returns the wrapped Resource.
+    * @return The wrapped Resource.
+    */
+   public Representation getWrappedRepresentation()
+   {
+   	return (Representation)getWrappedResource();
+   }
+
+   /**
+    * Returns the character set or null if not applicable.
+    * @return The character set or null if not applicable.
+    */
+   public CharacterSet getCharacterSet()
+   {
+   	return getWrappedRepresentation().getCharacterSet();
+   }
+   
+   /**
+    * Sets the character set or null if not applicable.
+    * @param characterSet The character set or null if not applicable.
+    */
+   public void setCharacterSet(CharacterSet characterSet)
+   {
+   	getWrappedRepresentation().setCharacterSet(characterSet);
+   }
+
+   /**
+    * Indicates if some fresh content is available, without having to actually call one of the content
+    * manipulation method like getStream() that would actually consume it. This is especially useful for
+    * transient representation whose content can only be accessed once. 
+    * @return True if some fresh content is available.
+    */
+   public boolean isContentAvailable()
+   {
+   	return getWrappedRepresentation().isContentAvailable();
+   }
+   
+   /**
+    * Indicates if the representation's content is transient, which means that it can 
+    * be obtained only once. This is often the case with representations transmitted
+    * via network sockets for example. In such case, if you need to read the content 
+    * several times, you need to cache it first, for example into memory or into a file.   
+    * @return True if the representation's content is transient.
+    */
+	public boolean isContentTransient()
+	{
+		return getWrappedRepresentation().isContentTransient();
+	}
+   
+   /**
+    * Returns the encoding or null if identity encoding applies.
+    * @return The encoding or null if identity encoding applies.
+    */
+   public Encoding getEncoding()
+   {
+   	return getWrappedRepresentation().getEncoding();
+   }
+   
+   /**
+    * Sets the encoding or null if identity encoding applies.
+    * @param encoding The encoding or null if identity encoding applies.
+    */
+   public void setEncoding(Encoding encoding)
+   {
+   	getWrappedRepresentation().setEncoding(encoding);
+   }
+   
+   /**
+    * Returns the future date when this representation expire. If this information is not known, returns null.
+    * @return The expiration date.
+    */
+   public Date getExpirationDate()
+   {
+   	return getWrappedRepresentation().getExpirationDate();
+   }
+   
+   /**
+    * Sets the future date when this representation expire. If this information is not known, pass null.
+    * @param expirationDate The expiration date.
+    */
+   public void setExpirationDate(Date expirationDate)
+   {
+   	getWrappedRepresentation().setExpirationDate(expirationDate);
+   }
+   
+   /**
+    * Returns the language or null if not applicable.
+    * @return The language or null if not applicable.
+    */
+   public Language getLanguage()
+   {
+   	return getWrappedRepresentation().getLanguage();
+   }
+   
+   /**
+    * Sets the language or null if not applicable.
+    * @param language The language or null if not applicable.
+    */
+   public void setLanguage(Language language)
+   {
+   	getWrappedRepresentation().setLanguage(language);
+   }
+   
+   /**
+    * Returns the media type.
+    * @return The media type.
+    */
+   public MediaType getMediaType()
+   {
+   	return getWrappedRepresentation().getMediaType();
+   }
+   
+   /**
+    * Sets the media type.
+    * @param mediaType The media type.
+    */
+   public void setMediaType(MediaType mediaType)
+   {
+   	getWrappedRepresentation().setMediaType(mediaType);
+   }
+   
+   /**
+    * Returns the last date when this representation was modified. If this information is not known, returns
+    * null.
+    * @return The modification date.
+    */
+   public Date getModificationDate()
+   {
+   	return getWrappedRepresentation().getModificationDate();
+   }
+   
+   /**
+    * Sets the last date when this representation was modified. If this information is not known, pass null.
+    * @param modificationDate The modification date.
+    */
+   public void setModificationDate(Date modificationDate)
+   {
+   	getWrappedRepresentation().setModificationDate(modificationDate);
+   }
+
+	/**
     * Returns the represented resource if available.
     * @return The represented resource if available.
     */
    public Resource getResource()
    {
-   	return this.wrappedRepresentation.getResource();
+   	return getWrappedRepresentation().getResource();
    }
 
    /**
@@ -65,16 +202,43 @@ public class WrapperRepresentation implements Representation
     */
    public void setResource(Resource resource)
    {
-   	this.wrappedRepresentation.setResource(resource);
+   	getWrappedRepresentation().setResource(resource);
+   }
+	
+   /**
+    * Returns the size in bytes if known, -1 otherwise.
+    * @return The size in bytes if known, -1 otherwise.
+    */
+   public long getSize()
+   {
+   	return getWrappedRepresentation().getSize();
+   }
+	
+   /**
+    * Sets the expected size in bytes if known, -1 otherwise.
+    * @param expectedSize The expected size in bytes if known, -1 otherwise.
+    */
+   public void setSize(long expectedSize)
+   {
+   	getWrappedRepresentation().setSize(expectedSize);
    }
 
    /**
-    * Returns the metadata.
-    * @return The metadata.
+    * Returns the tag.
+    * @return The tag.
     */
-   public RepresentationMetadata getMetadata()
+   public Tag getTag()
    {
-   	return this.wrappedRepresentation.getMetadata();
+   	return getWrappedRepresentation().getTag();
+   }
+   
+   /**
+    * Sets the tag.
+    * @param tag The tag.
+    */
+   public void setTag(Tag tag)
+   {
+   	getWrappedRepresentation().setTag(tag);
    }
 
    /**
@@ -85,7 +249,7 @@ public class WrapperRepresentation implements Representation
     */
    public ReadableByteChannel getChannel() throws IOException
    {
-   	return this.wrappedRepresentation.getChannel();
+   	return getWrappedRepresentation().getChannel();
    }
 
    /**
@@ -95,7 +259,7 @@ public class WrapperRepresentation implements Representation
     */
    public InputStream getStream() throws IOException
    {
-   	return this.wrappedRepresentation.getStream();
+   	return getWrappedRepresentation().getStream();
    }
 
    /**
@@ -105,7 +269,7 @@ public class WrapperRepresentation implements Representation
     */
    public void write(WritableByteChannel writableChannel) throws IOException
    {
-   	this.wrappedRepresentation.write(writableChannel);
+   	getWrappedRepresentation().write(writableChannel);
    }
 
    /**
@@ -115,25 +279,7 @@ public class WrapperRepresentation implements Representation
     */
    public void write(OutputStream outputStream) throws IOException
    {
-   	this.wrappedRepresentation.write(outputStream);
-   }
-
-   /**
-    * Returns the size in bytes if known, -1 otherwise.
-    * @return The size in bytes if known, -1 otherwise.
-    */
-   public long getSize()
-   {
-   	return this.wrappedRepresentation.getSize();
-   }
-
-   /**
-    * Sets the expected size in bytes if known, -1 otherwise.
-    * @param expectedSize The expected size in bytes if known, -1 otherwise.
-    */
-   public void setSize(long expectedSize)
-   {
-   	this.wrappedRepresentation.setSize(expectedSize);
+   	getWrappedRepresentation().write(outputStream);
    }
 
    /**
@@ -142,7 +288,7 @@ public class WrapperRepresentation implements Representation
     */
    public String toString()
    {
-   	return this.wrappedRepresentation.toString();
+   	return getWrappedRepresentation().toString();
    }
 
 }

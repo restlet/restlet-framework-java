@@ -22,45 +22,43 @@
 
 package org.restlet;
 
-import org.restlet.data.Method;
-import org.restlet.data.Reference;
+import org.restlet.component.Component;
 
 /**
- * Default Call that can directly be used. Useful for application developers needing to invoke client connectors.
+ * Abstract Handler that can easily be subclassed. Concrete classes only have to implement the 
+ * findNext(Call) method.
  * @author Jerome Louvel (contact@noelios.com) <a href="http://www.noelios.com/">Noelios Consulting</a>
  */
-public class DefaultCall extends WrapperCall
+public abstract class AbstractHandler extends AbstractRestlet implements Handler
 {
    /**
     * Constructor.
     */
-   public DefaultCall()
+   public AbstractHandler()
    {
-      super(Factory.getInstance().createCall());
+      super(null);
    }
-   
+
    /**
     * Constructor.
-    * @param method The call's method.
-    * @param resourceRef The resource reference.
+    * @param owner The owner component.
     */
-   public DefaultCall(Method method, Reference resourceRef)
+   public AbstractHandler(Component owner)
    {
-   	this();
-   	setMethod(method);
-   	setResourceRef(resourceRef);
+   	super(owner);
    }
-   
+
    /**
-    * Constructor.
-    * @param method The call's method.
-    * @param resourceUri The resource URI.
+    * Handles a call.
+    * @param call The call to handle.
     */
-   public DefaultCall(Method method, String resourceUri)
+	public void handle(Call call)
    {
-   	this();
-   	setMethod(method);
-   	setResourceRef(resourceUri);
+		// Allow normal Restlet handling
+   	super.handle(call);
+
+   	// Invokes the target Restlet if available
+   	handle(call, findNext(call));
    }
-   
+
 }

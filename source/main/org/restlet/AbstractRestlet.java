@@ -22,20 +22,28 @@
 
 package org.restlet;
 
+import java.util.logging.Level;
+import java.util.logging.Logger;
+
 import org.restlet.component.Component;
+import org.restlet.data.DefaultStatus;
+import org.restlet.data.Method;
 import org.restlet.data.Methods;
 import org.restlet.data.Statuses;
 
 /**
- * Abstract Restlet that can be easily subclassed. Concrete classes must only implement the handle(Call)
+ * Abstract Restlet that can easily be subclassed. Concrete classes must only implement the handle(Call)
  * method. Another option is to derive the DefaultRestlet to override only the supported handle methods. 
  * The start and stop state is managed by default but with no other action. Override the start and stop 
  * methods if needed.
  * @see <a href="http://www.restlet.org/tutorial#part03">Tutorial: Listening to Web browsers</a>
  * @author Jerome Louvel (contact@noelios.com) <a href="http://www.noelios.com/">Noelios Consulting</a>
  */
-public abstract class AbstractRestlet<T extends Call> implements Restlet
+public abstract class AbstractRestlet implements Restlet
 {
+   /** Obtain a suitable logger. */
+   private static Logger logger = Logger.getLogger(AbstractRestlet.class.getCanonicalName());
+
    /** Indicates if the restlet was started. */
    protected boolean started;
 
@@ -64,74 +72,49 @@ public abstract class AbstractRestlet<T extends Call> implements Restlet
     * Handles a call.
     * @param call The call to handle.
     */
-   @SuppressWarnings("unchecked")
 	public void handle(Call call)
    {
-   	T genericCall = (T)call;
+   	Method method = call.getMethod();
    	
-		if(call.getMethod().equals(Methods.GET))
+   	if(method == null)
+   	{
+   		handleOthers(call);
+   	}
+   	else if(method.equals(Methods.GET))
 		{
-			handleGet(genericCall);
+			handleGet(call);
 		}
-		else if(call.getMethod().equals(Methods.POST))
+		else if(method.equals(Methods.POST))
 		{
-			handlePost(genericCall);
+			handlePost(call);
 		}
-		else if(call.getMethod().equals(Methods.PUT))
+		else if(method.equals(Methods.PUT))
 		{
-			handlePut(genericCall);
+			handlePut(call);
 		}
-		else if(call.getMethod().equals(Methods.DELETE))
+		else if(method.equals(Methods.DELETE))
 		{
-			handleDelete(genericCall);
+			handleDelete(call);
 		}
-		else if(call.getMethod().equals(Methods.HEAD))
+		else if(method.equals(Methods.HEAD))
 		{
-			handleHead(genericCall);
+			handleHead(call);
 		}
-		else if(call.getMethod().equals(Methods.CONNECT))
+		else if(method.equals(Methods.CONNECT))
 		{
-			handleConnect(genericCall);
+			handleConnect(call);
 		}
-		else if(call.getMethod().equals(Methods.OPTIONS))
+		else if(method.equals(Methods.OPTIONS))
 		{
-			handleOptions(genericCall);
+			handleOptions(call);
 		}
-		else if(call.getMethod().equals(Methods.TRACE))
+		else if(method.equals(Methods.TRACE))
 		{
-			handleTrace(genericCall);
-		}
-		else if(call.getMethod().equals(Methods.MOVE))
-		{
-			handleMove(genericCall);
-		}
-		else if(call.getMethod().equals(Methods.COPY))
-		{
-			handleCopy(genericCall);
-		}
-		else if(call.getMethod().equals(Methods.LOCK))
-		{
-			handleLock(genericCall);
-		}
-		else if(call.getMethod().equals(Methods.MKCOL))
-		{
-			handleMakeCollection(genericCall);
-		}
-		else if(call.getMethod().equals(Methods.PROPFIND))
-		{
-			handleFindProperties(genericCall);
-		}
-		else if(call.getMethod().equals(Methods.PROPPATCH))
-		{
-			handlePatchProperties(genericCall);
-		}
-		else if(call.getMethod().equals(Methods.UNLOCK))
-		{
-			handleUnlock(genericCall);
+			handleTrace(call);
 		}
 		else
 		{
-			defaultHandle(genericCall);
+			handleOthers(call);
 		}
    }
 
@@ -139,16 +122,7 @@ public abstract class AbstractRestlet<T extends Call> implements Restlet
     * Handles a CONNECT call.
     * @param call The call to handle.
     */
-   public void handleConnect(T call)
-   {
-   	defaultHandle(call);
-   }
-
-   /**
-    * Handles a COPY call.
-    * @param call The call to handle.
-    */
-   public void handleCopy(T call)
+   protected void handleConnect(Call call)
    {
    	defaultHandle(call);
    }
@@ -157,7 +131,7 @@ public abstract class AbstractRestlet<T extends Call> implements Restlet
     * Handles a DELETE call.
     * @param call The call to handle.
     */
-   public void handleDelete(T call)
+   protected void handleDelete(Call call)
    {
    	defaultHandle(call);
    }
@@ -166,7 +140,7 @@ public abstract class AbstractRestlet<T extends Call> implements Restlet
     * Handles a GET call.
     * @param call The call to handle.
     */
-   public void handleGet(T call)
+   protected void handleGet(Call call)
    {
    	defaultHandle(call);
    }
@@ -175,34 +149,7 @@ public abstract class AbstractRestlet<T extends Call> implements Restlet
     * Handles a HEAD call.
     * @param call The call to handle.
     */
-   public void handleHead(T call)
-   {
-   	defaultHandle(call);
-   }
-
-   /**
-    * Handles a LOCK call.
-    * @param call The call to handle.
-    */
-   public void handleLock(T call)
-   {
-   	defaultHandle(call);
-   }
-
-   /**
-    * Handles a MKCOL call.
-    * @param call The call to handle.
-    */
-   public void handleMakeCollection(T call)
-   {
-   	defaultHandle(call);
-   }
-
-   /**
-    * Handles a MOVE call.
-    * @param call The call to handle.
-    */
-   public void handleMove(T call)
+   protected void handleHead(Call call)
    {
    	defaultHandle(call);
    }
@@ -211,7 +158,7 @@ public abstract class AbstractRestlet<T extends Call> implements Restlet
     * Handles a OPTIONS call.
     * @param call The call to handle.
     */
-   public void handleOptions(T call)
+   protected void handleOptions(Call call)
    {
    	defaultHandle(call);
    }
@@ -220,25 +167,7 @@ public abstract class AbstractRestlet<T extends Call> implements Restlet
     * Handles a POST call.
     * @param call The call to handle.
     */
-   public void handlePost(T call)
-   {
-   	defaultHandle(call);
-   }
-
-   /**
-    * Handles a PROPFIND call.
-    * @param call The call to handle.
-    */
-   public void handleFindProperties(T call)
-   {
-   	defaultHandle(call);
-   }
-
-   /**
-    * Handles a PROPPATCH call.
-    * @param call The call to handle.
-    */
-   public void handlePatchProperties(T call)
+   protected void handlePost(Call call)
    {
    	defaultHandle(call);
    }
@@ -247,7 +176,7 @@ public abstract class AbstractRestlet<T extends Call> implements Restlet
     * Handles a PUT call.
     * @param call The call to handle.
     */
-   public void handlePut(T call)
+   protected void handlePut(Call call)
    {
    	defaultHandle(call);
    }
@@ -256,26 +185,26 @@ public abstract class AbstractRestlet<T extends Call> implements Restlet
     * Handles a TRACE call.
     * @param call The call to handle.
     */
-   public void handleTrace(T call)
-   {
-   	defaultHandle(call);
-   }
-
-   /**
-    * Handles a UNLOCK call.
-    * @param call The call to handle.
-    */
-   public void handleUnlock(T call)
+   protected void handleTrace(Call call)
    {
    	defaultHandle(call);
    }
    
    /**
-    * Default implementation for the handle*() methods that simply throws
-    * and "illegal access error" that is intercepted by the handle() method. 
+    * Handles a call with a method that is not directly supported by a special handle*() method.
     * @param call The call to handle.
     */
-   protected void defaultHandle(T call)
+   protected void handleOthers(Call call)
+   {
+   	defaultHandle(call);
+   }
+   
+   /**
+    * Default implementation for all the handle*() methods that simply returns a client error 
+    * indicating that the method is not allowed. 
+    * @param call The call to handle.
+    */
+   protected void defaultHandle(Call call)
    {
 		call.setStatus(Statuses.CLIENT_ERROR_METHOD_NOT_ALLOWED);
    }
@@ -287,7 +216,7 @@ public abstract class AbstractRestlet<T extends Call> implements Restlet
 	 * done, the client will only receive the response to the call when the Restlet handle method returns. 
 	 * @param call The call to forward.
 	 */
-	public void forward(T call)
+	public void forward(Call call)
 	{
 		call.setContextPath(null);
 		getOwner().handle(call);
@@ -351,5 +280,40 @@ public abstract class AbstractRestlet<T extends Call> implements Restlet
    {
       return this.hashCode() - object.hashCode();
    }
-
+   
+   /**
+	 * Handles a call with a given target Restlet. 
+	 * @param call The call to handle.
+	 * @param target The target Restlet.
+	 */
+	public static void handle(Call call, Restlet target)
+	{
+   	if(target != null)
+   	{
+			if(target.isStopped())
+			{
+				try
+				{
+					target.start();
+				}
+				catch (Exception e)
+				{
+					logger.log(Level.WARNING, "Unable to start the next handler and to invoke it", e);
+					call.setStatus(new DefaultStatus(Statuses.SERVER_ERROR_INTERNAL, e.getMessage()));
+				}
+			}
+			
+			if(target.isStarted())
+			{
+				// Invoke the next handler
+				target.handle(call);
+			}
+   	}
+   	else
+   	{
+   		// No additional Restlet available
+   		// stack moving up the stack of calls
+   		// and apply the post-handle filters.
+   	}
+	}
 }

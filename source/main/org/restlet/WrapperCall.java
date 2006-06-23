@@ -35,13 +35,13 @@ import org.restlet.data.Method;
 import org.restlet.data.PreferenceData;
 import org.restlet.data.Reference;
 import org.restlet.data.Representation;
-import org.restlet.data.RepresentationMetadata;
+import org.restlet.data.Resource;
 import org.restlet.data.SecurityData;
 import org.restlet.data.Status;
 
 /**
- * Restlet call wrapper. Useful for application developer who need to enrich the call with
- * application related things.
+ * Wrapper for Restlet Call instances. Useful for application developer who need to enrich the call with
+ * some additional state or logic.
  * @see <a href="http://c2.com/cgi/wiki?DecoratorPattern">The decorator (aka wrapper) pattern</a>
  * @author Jerome Louvel (contact@noelios.com) <a href="http://www.noelios.com/">Noelios Consulting</a>
  */
@@ -71,13 +71,13 @@ public class WrapperCall implements Call
    }
 
    /**
-    * Returns the best variant representation for a given resource according the the client preferences.
+    * Returns the best variant for a given resource according the the client preferences.
     * @param resource The resource for which the best representation needs to be set.
     * @param fallbackLanguage The language to use if no preference matches.
     * @return The best variant representation.
     * @see <a href="http://httpd.apache.org/docs/2.2/en/content-negotiation.html#algorithm">Apache content negotiation algorithm</a>
     */
-   public RepresentationMetadata getBestVariant(Resource resource, Language fallbackLanguage)
+   public Representation getBestVariant(Resource resource, Language fallbackLanguage)
    {
       return getWrappedCall().getBestVariant(resource, fallbackLanguage);
    }
@@ -227,12 +227,15 @@ public class WrapperCall implements Call
    }
 
    /**
-    * Returns the reference for redirections or resource creations.
+    * Returns the reference of the output representation. This is used in several situations: when
+    * redirecting the client to a different URI, when creating a new resource after a POST call for
+    * example or when the output reference has a specific URI that is different from the identified
+    * resource URI.
     * @return The redirection reference.
     */
-   public Reference getRedirectionRef()
+   public Reference getOutputRef()
    {
-      return getWrappedCall().getRedirectionRef();
+      return getWrappedCall().getOutputRef();
    }
 
    /**
@@ -384,21 +387,25 @@ public class WrapperCall implements Call
    }
 
    /**
-    * Sets the reference for redirections or resource creations.
-    * @param redirectionRef The redirection reference.
+    * Sets the reference of the output representation. This is used in several situations: when
+    * redirecting the client to a different URI, when creating a new resource after a POST call for
+    * example or when the output reference has a specific URI that is different from the identified
+    * resource URI.
+    * @param outputRef The output reference.
     */
-   public void setRedirectionRef(Reference redirectionRef)
+   public void setOutputRef(Reference outputRef)
    {
-      getWrappedCall().setRedirectionRef(redirectionRef);
+      getWrappedCall().setOutputRef(outputRef);
    }
 
    /**
-    * Sets the reference for redirections or resource creations using an URI string.
-    * @param redirectionUri The redirection URI.
+    * Sets the reference of the output representation. Note that the output URI can be either 
+    * absolute or relative to the current call's context reference.
+    * @param outputUri The output URI.
     */
-   public void setRedirectionRef(String redirectionUri)
+   public void setOutputRef(String outputUri)
    {
-      getWrappedCall().setRedirectionRef(redirectionUri);
+      getWrappedCall().setOutputRef(outputUri);
    }
 
    /**

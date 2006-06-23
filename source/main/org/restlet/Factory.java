@@ -47,7 +47,7 @@ import org.restlet.data.Representation;
 public abstract class Factory
 {
    /** Obtain a suitable logger. */
-   private static Logger logger = Logger.getLogger("org.restlet.Factory");
+   private static Logger logger = Logger.getLogger(Factory.class.getCanonicalName());
 
    public static final String BETA_NUMBER = "15";
    public static final String VERSION_LONG = "1.0 beta " + BETA_NUMBER;
@@ -119,35 +119,30 @@ public abstract class Factory
    }
 
    /**
+    * Creates a URI-based handler attachment that will score target instance shared by all calls.
+    * The score will be proportional to the number of chararacters matched by the pattern, from the start
+    * of the context resource path.
+    * @param router The parent router.
+    * @param pattern The URI pattern used to map calls (see {@link java.util.regex.Pattern} for the syntax).
+    * @param target The target instance to attach.
+    * @see java.util.regex.Pattern
+    */
+	public abstract Scorer createScorer(Router router, String pattern, Restlet target);
+   
+   /**
     * Creates a call.
     * @return A call.
     */
    public abstract Call createCall();
 
    /**
-    * Creates a Chainlet for internal usage by the AbstractChainlet.<br/>
-    * If you need a Chainlet for your application, you should be subclassing the AbstractChainlet instead.
-    * @param parent The parent component.
-    * @return A new Chainlet.
-    */
-   public abstract Chainlet createChainlet(Component parent);
-
-   /**
-    * Create a new client connector for a given protocol.
+    * Creates a new client connector for a given protocol.
     * @param protocols The connector protocols.
     * @param owner The owner component.
     * @param parameters The initial parameters.
     * @return The new client connector.
     */
    public abstract Client createClient(List<Protocol> protocols, Component owner, ParameterList parameters);
-
-   /**
-    * Creates a Maplet for internal usage by the DefaultMaplet.<br/>
-    * If you need a Maplet for your application, you should be using the DefaultMaplet instead.
-    * @param parent The parent component.
-    * @return A new Maplet.
-    */
-   public abstract Maplet createMaplet(Component parent);
 
    /**
     * Create a new server connector for internal usage by the GenericClient.

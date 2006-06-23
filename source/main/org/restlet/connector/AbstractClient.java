@@ -22,8 +22,6 @@
 
 package org.restlet.connector;
 
-import java.io.IOException;
-
 import org.restlet.Call;
 import org.restlet.DefaultCall;
 import org.restlet.component.Component;
@@ -154,14 +152,7 @@ public abstract class AbstractClient extends AbstractConnector implements Client
       }
       else
       {
-         try
-         {
-            result = (call.getInput() != null) && ((call.getInput().getStream() != null) || (call.getInput().getChannel() != null));
-         }
-         catch(IOException e)
-         {
-            result = false;
-         }
+         result = (call.getInput() != null) && call.getInput().isContentAvailable();
       }
       
       return result;
