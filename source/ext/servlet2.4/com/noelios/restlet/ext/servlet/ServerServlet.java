@@ -96,7 +96,7 @@ import com.noelios.restlet.impl.HttpServer;
  * is only set after the constructor of your target class returns. This means that you should move any 
  * code that depends on the "contextPath" to the start() method.<br/>
  * Now that you have your Restlet context path in hand, you can use it to attach your root Restlet 
- * (or Maplet or Chainlet) to your target Maplet or RestletContainer. You will typically do something 
+ * (or Router or Filter) to your target router or RestletContainer. You will typically do something 
  * like this in you constructor:
  * <pre>
  * 	attach(contextPath, myRootRestlet);
@@ -214,7 +214,7 @@ public class ServerServlet extends HttpServlet
                         	}
                         	else
                         	{
-                        		// The target is probably a standalone Restlet or Chainlet or Maplet
+                        		// The target is probably a standalone Restlet or Filter or Router
                         		// Try to get its parent, even if chances to find one are low
                         		component = result.getOwner();
                         	}

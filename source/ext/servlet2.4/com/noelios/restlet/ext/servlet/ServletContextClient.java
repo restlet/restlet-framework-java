@@ -118,7 +118,7 @@ public class ServletContextClient extends ContextClient
       	String basePath = call.getResourceRef().toString();
       	int lastSlashIndex = basePath.lastIndexOf('/');
       	String entry = (lastSlashIndex == -1) ? basePath : basePath.substring(lastSlashIndex + 1);
-			Representation output = null;
+      	Representation output = null;
 			
 			if(basePath.endsWith("/"))
 			{
@@ -139,14 +139,14 @@ public class ServletContextClient extends ContextClient
 			{
 				// Return the entry content
             output = new InputRepresentation(getContext().getResourceAsStream(basePath), getDefaultMediaType());
-            updateMetadata(entry, output.getMetadata());
+            updateMetadata(entry, output);
             
             // See if the Servlet context specified a particular Mime Type
             String mediaType = getContext().getMimeType(basePath);
             
             if(mediaType != null)
             {
-            	output.getMetadata().setMediaType(new DefaultMediaType(mediaType));
+            	output.setMediaType(new DefaultMediaType(mediaType));
             }
 			}
 			
