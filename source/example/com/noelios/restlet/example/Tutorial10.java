@@ -25,7 +25,7 @@ package com.noelios.restlet.example;
 import org.restlet.component.RestletContainer;
 import org.restlet.data.Protocols;
 
-import com.noelios.restlet.HostMaplet;
+import com.noelios.restlet.HostRouter;
 import com.noelios.restlet.RedirectRestlet;
 
 /**
@@ -45,14 +45,14 @@ public class Tutorial10
          // Note that the container is the call restlet.
          myContainer.addServer("HTTP Server", Protocols.HTTP, 8182);
 
-         // Create a host Maplet matching calls to the server
-         HostMaplet host = new HostMaplet(myContainer, 8182);
+         // Create a host router matching calls to the server
+         HostRouter host = new HostRouter(myContainer, 8182);
          myContainer.attach(host);
 
          // Create a redirect Restlet then attach it to the container
          String target = "http://www.google.com/search?q=site:mysite.org+${query['query']}";
-         RedirectRestlet searchRedirect = new RedirectRestlet(myContainer, target, RedirectRestlet.MODE_CLIENT_TEMPORARY);
-         host.attach("/search", searchRedirect);
+         RedirectRestlet redirect = new RedirectRestlet(myContainer, target, RedirectRestlet.MODE_CLIENT_TEMPORARY);
+         host.attach("/search", redirect);
 
          // Now, let's start the container!
          myContainer.start();

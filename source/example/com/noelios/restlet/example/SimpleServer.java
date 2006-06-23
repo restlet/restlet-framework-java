@@ -31,7 +31,7 @@ import org.restlet.data.MediaTypes;
 import org.restlet.data.Parameter;
 import org.restlet.data.Protocols;
 
-import com.noelios.restlet.HostMaplet;
+import com.noelios.restlet.HostRouter;
 import com.noelios.restlet.data.StringRepresentation;
 
 /**
@@ -52,9 +52,9 @@ public class SimpleServer
          // is the call restlet.
          myContainer.addServer("My connector", Protocols.HTTP, 9876);
 
-         // Attach a host Maplet as the root handler
-         HostMaplet rootMaplet = new HostMaplet(myContainer, 9876);
-         myContainer.attach(rootMaplet);
+         // Attach a host router as the root handler
+         HostRouter host = new HostRouter(myContainer, 9876);
+         myContainer.attach(host);
 
          // Prepare and attach a test Restlet
          Restlet testRestlet = new AbstractRestlet(myContainer)
@@ -82,7 +82,7 @@ public class SimpleServer
                call.setOutput(new StringRepresentation(sb.toString(), MediaTypes.TEXT_PLAIN));
             }
          };
-         rootMaplet.attach("/test", testRestlet);
+         host.attach("/test", testRestlet);
 
          // Now, start the container
          myContainer.start();

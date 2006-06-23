@@ -26,7 +26,7 @@ import org.restlet.component.RestletContainer;
 import org.restlet.data.Protocols;
 
 import com.noelios.restlet.DirectoryRestlet;
-import com.noelios.restlet.HostMaplet;
+import com.noelios.restlet.HostRouter;
 
 /**
  * Serving static files.
@@ -48,16 +48,16 @@ public class Tutorial06
          // Add a file client connector to the Restlet container. 
          myContainer.addClient("File Client", Protocols.FILE);
 
-         // Create a host Maplet matching calls to the server
-         HostMaplet rootMaplet = new HostMaplet(myContainer, 8182);
-         myContainer.attach(rootMaplet);
+         // Create a host router matching calls to the server
+         HostRouter host = new HostRouter(myContainer, 8182);
+         myContainer.attach(host);
 
          // Create a directory Restlet able to return a deep hierarchy of Web files
          // (HTML pages, CSS stylesheets or GIF images) from a local directory.
-         DirectoryRestlet dirRestlet = new DirectoryRestlet(myContainer, "file:///D:/Restlet/www/docs/api/", true, "index");
+         DirectoryRestlet directory = new DirectoryRestlet(myContainer, "file:///D:/Restlet/www/docs/api/", true, "index");
 
          // Then attach the Restlet to the container.
-         rootMaplet.attach("/", dirRestlet);
+         host.attach("/", directory);
 
          // Now, let's start the container!
          myContainer.start();

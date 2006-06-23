@@ -26,23 +26,23 @@ import java.util.List;
 
 import org.restlet.AbstractRestlet;
 import org.restlet.Call;
-import org.restlet.DefaultMaplet;
-import org.restlet.Maplet;
+import org.restlet.DefaultRouter;
 import org.restlet.Restlet;
+import org.restlet.Router;
 import org.restlet.component.RestletContainer;
 import org.restlet.data.ChallengeSchemes;
 import org.restlet.data.MediaTypes;
 import org.restlet.data.Protocols;
 
 import com.noelios.restlet.DirectoryRestlet;
-import com.noelios.restlet.GuardChainlet;
-import com.noelios.restlet.HostMaplet;
-import com.noelios.restlet.LogChainlet;
-import com.noelios.restlet.StatusChainlet;
+import com.noelios.restlet.GuardFilter;
+import com.noelios.restlet.HostRouter;
+import com.noelios.restlet.LogFilter;
+import com.noelios.restlet.StatusFilter;
 import com.noelios.restlet.data.StringRepresentation;
 
 /**
- * Maplets and hierarchical URIs
+ * Routers and hierarchical URIs
  * @author Jerome Louvel (contact@noelios.com) <a href="http://www.noelios.com/">Noelios Consulting</a>
  */
 public class Tutorial11
@@ -61,33 +61,33 @@ public class Tutorial11
          // Add a file client connector to the Restlet container. 
          myContainer.addClient("File Client", Protocols.FILE);
 
-         // Attach a log Chainlet to the container
-         LogChainlet log = new LogChainlet(myContainer, "com.noelios.restlet.example");
+         // Attach a log Filter to the container
+         LogFilter log = new LogFilter(myContainer, "com.noelios.restlet.example");
          myContainer.attach(log);
 
-         // Attach a status Chainlet to the log Chainlet
-         StatusChainlet status = new StatusChainlet(myContainer, true, "webmaster@mysite.org", "http://www.mysite.org");
+         // Attach a status Filter to the log Filter
+         StatusFilter status = new StatusFilter(myContainer, true, "webmaster@mysite.org", "http://www.mysite.org");
          log.attach(status);
 
-         // Create a host Maplet matching calls to the server
-         HostMaplet host = new HostMaplet(myContainer, 8182);
+         // Create a host router matching calls to the server
+         HostRouter host = new HostRouter(myContainer, 8182);
          status.attach(host);
 
-         // Attach a guard Chainlet to secure access the the chained directory Restlet
-         GuardChainlet guard = new GuardChainlet(myContainer, "com.noelios.restlet.example", true, ChallengeSchemes.HTTP_BASIC , "Restlet tutorial", true);
+         // Attach a guard Filter to secure access the the chained directory Restlet
+         GuardFilter guard = new GuardFilter(myContainer, "com.noelios.restlet.example", true, ChallengeSchemes.HTTP_BASIC , "Restlet tutorial", true);
          guard.getAuthorizations().put("scott", "tiger");
          host.attach("/docs/", guard);
 
          // Create a directory Restlet able to return a deep hierarchy of Web files
-         DirectoryRestlet dirRestlet = new DirectoryRestlet(myContainer, "file:///D:/Restlet/www/docs/api/", true, "index");
-         guard.attach(dirRestlet);
+         DirectoryRestlet directory = new DirectoryRestlet(myContainer, "file:///D:/Restlet/www/docs/api/", true, "index");
+         guard.attach(directory);
 
-         // Create the user Maplet
-         Maplet userMaplet = new DefaultMaplet(myContainer);
-         host.attach("/users/[a-z]+", userMaplet);
+         // Create the user router
+         Router user = new DefaultRouter(myContainer);
+         host.attach("/users/[a-z]+", user);
 
          // Create the account Restlet
-         Restlet accountRestlet = new AbstractRestlet()
+         Restlet account = new AbstractRestlet()
             {
          		public void handleGet(Call call)
                {
@@ -96,10 +96,10 @@ public class Tutorial11
                   call.setOutput(new StringRepresentation(output, MediaTypes.TEXT_PLAIN));
                }
             };
-         userMaplet.attach("$", accountRestlet);
+         user.attach("$", account);
 
          // Create the orders Restlet
-         Restlet ordersRestlet = new AbstractRestlet(myContainer)
+         Restlet orders = new AbstractRestlet(myContainer)
             {
                public void handleGet(Call call)
                {
@@ -109,7 +109,7 @@ public class Tutorial11
                   call.setOutput(new StringRepresentation(output, MediaTypes.TEXT_PLAIN));
                }
             };
-         userMaplet.attach("/orders$", ordersRestlet);
+         user.attach("/orders$", orders);
 
          // Now, let's start the container!
          myContainer.start();

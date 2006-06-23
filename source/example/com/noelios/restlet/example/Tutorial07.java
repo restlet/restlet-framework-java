@@ -26,8 +26,8 @@ import org.restlet.component.RestletContainer;
 import org.restlet.data.Protocols;
 
 import com.noelios.restlet.DirectoryRestlet;
-import com.noelios.restlet.HostMaplet;
-import com.noelios.restlet.LogChainlet;
+import com.noelios.restlet.HostRouter;
+import com.noelios.restlet.LogFilter;
 
 /**
  * Logging calls.
@@ -49,19 +49,19 @@ public class Tutorial07
          // Add a file client connector to the Restlet container. 
          myContainer.addClient("File Client", Protocols.FILE);
 
-         // Attach a log Chainlet to the container
-         LogChainlet log = new LogChainlet(myContainer, "com.noelios.restlet.example");
+         // Attach a log Filter to the container
+         LogFilter log = new LogFilter(myContainer, "com.noelios.restlet.example");
          myContainer.attach(log);
 
-         // Create a host Maplet matching calls to the server
-         HostMaplet host = new HostMaplet(myContainer, 8182);
+         // Create a host router matching calls to the server
+         HostRouter host = new HostRouter(myContainer, 8182);
          log.attach(host);
 
          // Create a directory Restlet able to return a deep hierarchy of Web files
-         DirectoryRestlet dirRestlet = new DirectoryRestlet(myContainer, "file:///D:/Restlet/www/docs/api/", true, "index");
+         DirectoryRestlet directory = new DirectoryRestlet(myContainer, "file:///D:/Restlet/www/docs/api/", true, "index");
 
-         // Then attach the Restlet to the log Chainlet.
-         host.attach("/", dirRestlet);
+         // Then attach the Restlet to the log Filter.
+         host.attach("/", directory);
 
          // Now, let's start the container!
          myContainer.start();

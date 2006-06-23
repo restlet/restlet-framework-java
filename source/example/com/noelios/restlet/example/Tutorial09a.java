@@ -27,10 +27,10 @@ import org.restlet.data.ChallengeSchemes;
 import org.restlet.data.Protocols;
 
 import com.noelios.restlet.DirectoryRestlet;
-import com.noelios.restlet.GuardChainlet;
-import com.noelios.restlet.HostMaplet;
-import com.noelios.restlet.LogChainlet;
-import com.noelios.restlet.StatusChainlet;
+import com.noelios.restlet.GuardFilter;
+import com.noelios.restlet.HostRouter;
+import com.noelios.restlet.LogFilter;
+import com.noelios.restlet.StatusFilter;
 
 /**
  * Guard access to a Restlet.
@@ -52,28 +52,28 @@ public class Tutorial09a
          // Add a file client connector to the Restlet container. 
          myContainer.addClient("File Client", Protocols.FILE);
 
-         // Attach a log Chainlet to the container
-         LogChainlet log = new LogChainlet(myContainer, "com.noelios.restlet.example");
+         // Attach a log Filter to the container
+         LogFilter log = new LogFilter(myContainer, "com.noelios.restlet.example");
          myContainer.attach(log);
 
-         // Attach a status Chainlet to the log Chainlet
-         StatusChainlet status = new StatusChainlet(myContainer, true, "webmaster@mysite.org", "http://www.mysite.org");
+         // Attach a status Filter to the log Filter
+         StatusFilter status = new StatusFilter(myContainer, true, "webmaster@mysite.org", "http://www.mysite.org");
          log.attach(status);
 
-         // Attach a guard Chainlet to the container
-         GuardChainlet guard = new GuardChainlet(myContainer, "com.noelios.restlet.example", true, ChallengeSchemes.HTTP_BASIC , "Restlet tutorial", true);
+         // Attach a guard Filter to the container
+         GuardFilter guard = new GuardFilter(myContainer, "com.noelios.restlet.example", true, ChallengeSchemes.HTTP_BASIC , "Restlet tutorial", true);
          guard.getAuthorizations().put("scott", "tiger");
          status.attach(guard);
 
-         // Create a host Maplet matching calls to the server
-         HostMaplet host = new HostMaplet(myContainer, 8182);
+         // Create a host router matching calls to the server
+         HostRouter host = new HostRouter(myContainer, 8182);
          guard.attach(host);
 
          // Create a directory Restlet able to return a deep hierarchy of Web files
-         DirectoryRestlet dirRestlet = new DirectoryRestlet(myContainer, "file:///D:/Restlet/www/docs/api/", true, "index");
+         DirectoryRestlet directory = new DirectoryRestlet(myContainer, "file:///D:/Restlet/www/docs/api/", true, "index");
 
-         // Then attach the Restlet to the guard Chainlet.
-         host.attach("/", dirRestlet);
+         // Then attach the directory Restlet to the host router.
+         host.attach("/", directory);
 
          // Now, let's start the container!
          myContainer.start();
