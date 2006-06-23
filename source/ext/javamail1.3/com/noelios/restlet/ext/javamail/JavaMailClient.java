@@ -77,7 +77,7 @@ import com.noelios.restlet.impl.FactoryImpl;
 public abstract class JavaMailClient extends AbstractClient
 {
    /** Obtain a suitable logger. */
-   private static Logger logger = Logger.getLogger("com.noelios.restlet.ext.javamail.JavaMailClient");
+   private static Logger logger = Logger.getLogger(JavaMailClient.class.getCanonicalName());
    
    /**
     * Constructor.
