@@ -10,13 +10,10 @@ Restlet changes log
  - Added new FileRepresentation constructor accepting a File instance.
  - Improved ByteUtils.write() methods for streams by automatically buffering output streams if necessary.
  - Removed the unecessary buffering of the input stream in ByteUtils.write(). We don't use the mark and set features.
- - Templatized AbstractChainlet. Contributed by Lars Heuer.
  - Fixed AbstractRestlet which was not reporting the proper error when non standard Method instances were called but not handled.
  - Added CONTEXT and FILE protocols to Protocols enumeration.
  - Added com.noelios.restlet.data.FileReference.
  - Added org.restlet.data.ReferenceList to handle list of references, supporting the "text/uri-list" representations.
- - Renamed Resource.getVariantsMetadata() to getVariants() for simplification purpose.
- - Added Resource.getIdentifier() : Reference method.
  - Renamed com.noelios.restlet.impl.HttpServerCallImpl to HttpServerCall.
  - Renamed "initParameters" into "properties" for Component interface and related classes.
  - Refactored the methods allowing the attachment of connectors in Component interface and related classes.
@@ -31,7 +28,7 @@ Restlet changes log
    of owner components.
  - Fixed bug in ServerServlet in order to auto-start the target Restlet. Problem identified by Bill Morone.
  - Added ServletContextClient to server as a specialized ContextClient when the ServerServlet server connector is used.
- - Added log traces with the Maplet call delegation logic (step by step URI matching and updating). 
+ - Added log traces with the Router/PatternScorer logic with info on URI matching and context updating. 
    Enable the log level FINE and FINER to see them in your log file. See JDK's logging mechanism for details. Reported by Bill Morone.
  - Added HttpUrlConnectionCall, subclass of the (now) generic HttpClientCall, that is based on JDK's HttpUrlConnection.
  - Changed the default value inserted by the RedirectRestlet when a URI variable is not found: was "null" and now is an empty string.
@@ -45,22 +42,48 @@ Restlet changes log
  - Removed the ServerCall interface and moved the contract/logic into a new com.noelios.restlet.impl.HttpServer. It was to HTTP oriented.
    Refactored all Server related classes to adjust to the change. Provided a useful static handle(HttpServerCall, Restlet) method for classes that 
    can't subclass HttpServer directly (Jetty 6 server and Servlet server).
- - Rewrote the tutorial part 11 (Maplets and hierarchical URIs) to follow the best practice of not subclassing DefaultMaplet. This is also more consistent 
+ - Rewrote the tutorial part 11 (Routers and hierarchical URIs) to follow the best practice of not subclassing DefaultRouter. This is also more consistent 
    with the part 12 using the fluent builders. Suggested by Bill Morone.
- - Removed the FileRestlet which doesn't bring a lot of value now that we have a flexible DirectoryRestlet.
+ - Removed the FileRestlet which doesn't bring significant lot of value now that we have a flexible DirectoryRestlet and ContextResource.
  - Renamed FileResource into ContextResource because it can now expose representation with all context authorities (file, class loaders, webapp context).
  - Refactored all connector to be stricter with the concept of supported protocol: it now means that the connector instance simultaneously supports all
    the protocols at the same time. When serveral protocols could be supported by a connector but in separate instances, a refactoring was done to create
    a subclass for each protocol.
  - The convention saying that each connector must provide a static getProtocols() method was replaced by a non-static getProtocols() method returning 
    the list of protocol that can be simultaneously supported by the same instance. 
- - For simplication purpose, the ServerServlet doesn't support implements the Server interface anymore. It's still a pseudo-connector.
+ - For simplication purpose, the ServerServlet doesn't implements the Server interface anymore. It's still a pseudo-connector.
  - ComponentBuilder.setParameter() method was changed to addParameter() allowing repeating parameters.
  - Components and Connectors now have a getParameters() method that exposes a modifiable list of parameters (ParameterList instance).
  - Moved ContextResource to "impl" package
- - Added "readOnly" property to DirectoryRestlet to enable modifications from the client. By default, "readOnly" is set to true.
- - 
- 
+ - Added "readOnly" property to DirectoryRestlet to enable modifications from the client. By default, "readOnly" is set to true. Suggested by
+ 	Don Dwoske and John D. Mitchell.
+ - Refactored Resource interface to extend both Data and Restlet interfaces and moved it to the org.restlet.data package according to the REST classification.
+ - Renamed Resource.getVariantsMetadata() to getVariants() for simplification purpose.
+ - Added "identifier" and "identifiers" properties to the Resource interface (Reference instances), for the official and alias URIs.
+ - Renamed "Chainlet" to "Filter" for all related classes, method names, references, etc. 
+ - Detailled the Filter interface with three methods: beforeHandle(), doHandle() and afterHandle() to facilitate 
+   creation of concrete filters for pre- and post-filtering.
+ - Removed all templatization of Restlet related classes which caused too many warning now that both Resource and
+   Representation are also implementing the Restlet interface and deriving from AbstractRestlet.
+ - Added org.restlet.Scorer, org.restlet.AbstractScorer and com.noelios.restlet.impl.PatternScorer to formalize
+   the attachment of Restlets to Routers. 
+ - Renamed "refirectionRef" to "outputRef" in Call, as this can be used for more than just redirection (cf HTTP)
+ - Removed all attach() method that were accepting a Restlet class instead of a simple instance. The introduction
+   of Handlers reduces the need for them and they seemed to confuse people. Impact of Router, Filter and Restlet
+   Container interfaces and related classes (builders, etc.).
+ - Merged RepresentationMetadata with the parent Representation and introduced a cleaner contract for getting the
+   metadata information without loading in memory the actual representation's content. In particular, the 
+   "contentTransient" and "contentAvailable" properties were added to Representation and supported all over the place.
+ - Added or improved the wrapper classes: WrapperRestlet, WrapperResource, WrapperRepresentation.
+ - Improved the Router (ex-Maplet) interface, adding the "mode" (see RouterMode enum), "requiredScore" to consider
+   a routing option as a match, "maxAttempts" for dynamic routing, "retryDelay" between two attempts. Exposed a 
+   modifiable list of routing options (Scorer).
+ - Added the Handler interface and related classes as a parent interface for Router, Scorer and Filter interfaces.
+ - Added RouterMode enumeration containing available routing modes (round robin, first match, last match, best
+   match, random and custom). Those modes (except "custom") are directly supported by the DefaultRouter.
+ - Reviewed and improved all the NRE representation to better support character encodings (StringRepresentation),
+   serializable objects (ObjectRepresentation). Moved common logic to ByteUtils.  
+
 1.0 beta 14 (2006-06-02)
  - Adjusted build.properties so that default values work directly.
  - Refactored the usage of parameter lists by using a new ParameterList (implementing List<Parameter>) and adding helper methods.

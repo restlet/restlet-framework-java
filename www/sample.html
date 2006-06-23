@@ -116,16 +116,16 @@
 
 <h3><a name="part05">5. Fluently build the container</a></h3>
 <p>
-   We the recent addition of fluent builders, it has never been easier to configure and start a Web server. Here we will build the WebContainer using the RestletContainerBuilder class and passing a reference to our container instance. First, we add two server HTTP connectors (one for IP address we are listening to) using addServer() method. Then, we add a LogChainlet to write all calls into Apache-like log files, we chain a typical StatusChainlet for error pages and a Maplet to it. Note that all the Chainlet instances and the RootMaplet instance are shared by all client calls. In fact, multiple concurrent threads can execute the same code in parallel. The root Maplet added by the addMaplet() method will then be the main responsible for the dispatching of the client calls to the proper Restlets. First, let's see an overview of the call handling flow:
+   We the recent addition of fluent builders, it has never been easier to configure and start a Web server. Here we will build the WebContainer using the RestletContainerBuilder class and passing a reference to our container instance. First, we add two server HTTP connectors (one for IP address we are listening to) using addServer() method. Then, we add a LogFilter to write all calls into Apache-like log files, we chain a typical StatusFilter for error pages and a Router to it. Note that all the Filter instances and the RootRouter instance are shared by all client calls. In fact, multiple concurrent threads can execute the same code in parallel. The root Router added by the addRouter() method will then be the main responsible for the dispatching of the client calls to the proper Restlets. First, let's see an overview of the call handling flow:
 </p>
 <p>
    <img src="images/sample01" alt="Call handling flow"/><br/>
 </p>
 <p>
-   You can see on the left the two <a href="http://www.simpleframework.org">Simple</a> HTTP connectors listening to separate IP addresses. They share two Chainlets and a root Maplet that we presented above. Then we add three Host Maplets, one for the www.restlet.org domain, one for the www.noelios.com domain and a last one for the blog.noelios.com domain. We also declared related domain names for each of them (ex: restlet.net) in order to automatically redirect calls to the preferred domain, using the redirectClient() and redirectStatus() methods. Note that in this case we need to first create the Host Maplet, then configure them and finally attach them to their parent Maplet (attachParent() method). This is due to the fact that the attachment pattern use by the parent Maplet is dependent one the complete Maplet configuration.
+   You can see on the left the two <a href="http://www.simpleframework.org">Simple</a> HTTP connectors listening to separate IP addresses. They share two Filters and a root Router that we presented above. Then we add three Host Routers, one for the www.restlet.org domain, one for the www.noelios.com domain and a last one for the blog.noelios.com domain. We also declared related domain names for each of them (ex: restlet.net) in order to automatically redirect calls to the preferred domain, using the redirectClient() and redirectStatus() methods. Note that in this case we need to first create the Host Router, then configure them and finally attach them to their parent Router (attachParent() method). This is due to the fact that the attachment pattern use by the parent Router is dependent one the complete Router configuration.
 </p>
 <p>
-   To each Host Maplet, we add several Directory Restlets to server static files from local directories. One of them is serving log reports and requires authentication by the client. For this purpose, we add a Guard Chainlet in front of the Directory Restlet. Finally, we go up the tree of builders using the owner() method with returns the current RestletContainerBuilder instance and we start everything.
+   To each Host Router, we add several Directory Restlets to server static files from local directories. One of them is serving log reports and requires authentication by the client. For this purpose, we add a Guard Filter in front of the Directory Restlet. Finally, we go up the tree of builders using the owner() method with returns the current RestletContainerBuilder instance and we start everything.
 </p>
 <pre>
       /**
@@ -154,9 +154,9 @@
             .addServer(Protocols.HTTP, "Noelios server", noeliosAddress, privateNoeliosPort)
             .attachLog("com.noelios.maine.WebContainer.www")
                .attachStatus(false, "contact@noelios.com", "http://www.noelios.com")
-                  .attachMaplet()
+                  .attachRouter()
 
-                     // Restlet domains Maplet
+                     // Restlet domains Router
                      .createHost("www.restlet.org", publicRestletPort)
                         .allowDomain("restlet.org")
                         .allowDomain("www.restlet.com")
@@ -168,12 +168,12 @@
                         .attachParent()
 
                         // Serve download files from a specific directory
-                        .attachDirectory("/downloads", downloadsPath, true, "index", true).upMaplet()
+                        .attachDirectory("/downloads", downloadsPath, true, "index", true).upRouter()
 
                         // Serve other files from the Restlet path
-                        .attachDirectory("", restletPath, true, "index", true).upMaplet(2)
+                        .attachDirectory("", restletPath, true, "index", true).upRouter(2)
 
-                     // Noelios domain Maplet
+                     // Noelios domain Router
                      .createHost("www.noelios.com", publicNoeliosPort)
                         .allowDomain("noelios.com")
                         .redirectClient()
@@ -183,12 +183,12 @@
                         // Serve logs report from a guarded directory
                         .attachGuard("/logs/report", "com.noelios.maine.WebContainer", true, ChallengeSchemes.HTTP_BASIC , "Log report", true)
                            .authorize("***", "***")
-                           .attachDirectory(reportPath, true, "index", true).upMaplet()
+                           .attachDirectory(reportPath, true, "index", true).upRouter()
 
                         // Serve other files from the Noelios path
-                        .attachDirectory("", noeliosPath, true, "index", true).upMaplet(2)
+                        .attachDirectory("", noeliosPath, true, "index", true).upRouter(2)
 
-                     // Noelios blog Maplet
+                     // Noelios blog Router
                      .createHost("blog.noelios.com", publicNoeliosPort)
                         .preferDomain("noelios.wordpress.com")
                         .redirectClient()

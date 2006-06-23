@@ -179,6 +179,7 @@
 		<pathelement path="${classes-jdbc3.0}" />
 		<pathelement path="${classes-jetty5.1}" />
 		<pathelement path="${classes-servlet2.4}" />
+		<path refid="path-asyncweb0.8" />
 		<path refid="path-simple3.1" />
 		<path refid="path-freemarker2.3" />
 		<path refid="path-fileupload1.1" />

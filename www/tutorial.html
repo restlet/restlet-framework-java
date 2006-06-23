@@ -25,11 +25,11 @@
       <li><a href="#part04">Overview of a REST architecture</a></li>
       <li><a href="#part05">Restlets servers and containers</a></li>
       <li><a href="#part06">Serving context resources</a></li>
-      <li><a href="#part07">Chainlets and call logging</a></li>
+      <li><a href="#part07">Filters and call logging</a></li>
       <li><a href="#part08">Displaying error pages</a></li>
       <li><a href="#part09">Guarding access to sensitive resources</a></li>
       <li><a href="#part10">URI rewriting and redirection</a></li>
-      <li><a href="#part11">Maplets and hierarchical URIs</a></li>
+      <li><a href="#part11">Routers and hierarchical URIs</a></li>
       <li><a href="#part12">Simplify configuration with fluent builders</a></li>
       <li><a href="#conclusion">Conclusion</a></li>
    </ol>
@@ -128,9 +128,9 @@
          Server server = new DefaultServer(Protocols.HTTP, "My server", myContainer, 8182);
          myContainer.addServer(server);
 
-         // Create a host Maplet matching calls to the server
-         HostMaplet rootMaplet = new HostMaplet(myContainer, 8182);
-         myContainer.attach(rootMaplet);
+         // Create a host Router matching calls to the server
+         HostRouter rootRouter = new HostRouter(myContainer, 8182);
+         myContainer.attach(rootRouter);
 
          // Create a new Restlet that will display some path information.
          Restlet myRestlet = new AbstractRestlet(myContainer)
@@ -146,8 +146,8 @@
                }
             };
 
-         // Then attach it to the root Maplet.
-         rootMaplet.attach("/trace", myRestlet);
+         // Then attach it to the root Router.
+         rootRouter.attach("/trace", myRestlet);
 
          // Now, let's start the container!
          // Note that the HTTP server connector is also automatically started.
@@ -178,16 +178,16 @@
    Do you have a part of your web application that serves static pages like Javadocs? Well, no need to setup an Apache server just for that, the Noelios Restlet Engine provides a dedicated Restlet called DirectoryRestlet. See how simple it is to use it:
 </p>
 <pre>
-         // Create a host Maplet matching calls to the server
-         HostMaplet rootMaplet = new HostMaplet(myContainer, 8182);
-         myContainer.attach(rootMaplet);
+         // Create a host Router matching calls to the server
+         HostRouter rootRouter = new HostRouter(myContainer, 8182);
+         myContainer.attach(rootRouter);
 
          // Create a directory Restlet able to return a deep hierarchy of Web files
          // (HTML pages, CSS stylesheets or GIF images) from a local directory.
          DirectoryRestlet dirRestlet = new DirectoryRestlet(myContainer, "D:/Restlet/www/docs/api/", true, "index", true);
 
          // Then attach the Restlet to the container.
-         rootMaplet.attach("/", dirRestlet);
+         rootRouter.attach("/", dirRestlet);
 </pre>
 <p>
    <img src="images/tutorial06" alt="Call handling flow"/><br/>
@@ -197,26 +197,26 @@
 </p>
 <br/>
 
-<h3><a name="part07">7. Chainlets and call logging</a></h3>
+<h3><a name="part07">7. Filters and call logging</a></h3>
 <p>
-   Being able to properly log the activity of a Web application is a common requirement. NRE has a class called the LogChainlet that knows how to generate Apache-like logs. By taking advantage of the logging facility built in the JDK, the logger can be configured like any standard JDK log to filter messages, reformat them and specify where to send them. Rotation of logs is also supported; see the <a href="http://java.sun.com/j2se/1.5.0/docs/api/java/util/logging/package-summary.html">java.util.logging</a> package for details.
+   Being able to properly log the activity of a Web application is a common requirement. NRE has a class called the LogFilter that knows how to generate Apache-like logs. By taking advantage of the logging facility built in the JDK, the logger can be configured like any standard JDK log to filter messages, reformat them and specify where to send them. Rotation of logs is also supported; see the <a href="http://java.sun.com/j2se/1.5.0/docs/api/java/util/logging/package-summary.html">java.util.logging</a> package for details.
 </p>
 <p>
-   Chainlets are specialized Restlets that filter calls passed to them, without modifying the requested resource URI. If you are familiar with the Servlet API, the concept is similar to the <a href="http://java.sun.com/j2ee/1.4/docs/api/javax/servlet/Filter.html">Filter</a> interface. Below is a simple example adding the logging facility to the previous example:
+   Filters are specialized Restlets that filter calls passed to them, without modifying the requested resource URI. If you are familiar with the Servlet API, the concept is similar to the <a href="http://java.sun.com/j2ee/1.4/docs/api/javax/servlet/Filter.html">Filter</a> interface. Below is a simple example adding the logging facility to the previous example:
 </p>
 <pre>
-         // Attach a log Chainlet to the container
-         LogChainlet log = new LogChainlet(myContainer, "com.noelios.restlet.example");
+         // Attach a log Filter to the container
+         LogFilter log = new LogFilter(myContainer, "com.noelios.restlet.example");
          myContainer.attach(log);
 
-         // Create a host Maplet matching calls to the server
-         HostMaplet host = new HostMaplet(myContainer, 8182);
+         // Create a host Router matching calls to the server
+         HostRouter host = new HostRouter(myContainer, 8182);
          log.attach(host);
 
          // Create a directory Restlet able to return a deep hierarchy of Web files
          DirectoryRestlet dirRestlet = new DirectoryRestlet(myContainer, "D:/Restlet/www/docs/api/", true, "index", true);
 
-         // Then attach the Restlet to the log Chainlet.
+         // Then attach the Restlet to the log Filter.
          host.attach("/", dirRestlet);
 </pre>
 <p>
@@ -235,32 +235,32 @@
 
 <h3><a name="part08">8. Displaying error pages</a></h3>
 <p>
-   Another common requirement is the ability to customize the status pages returned when something didn't go as expected during the call handling. Maybe a resource was not found or an acceptable representation isn't available? In this case, or when any unhandled exception must be intercepted, the StatusChainlet can be used. Here we will simply attach one between the logger Chainlet and the directory Restlet. Try to get a non-existing resource to see a status message:
+   Another common requirement is the ability to customize the status pages returned when something didn't go as expected during the call handling. Maybe a resource was not found or an acceptable representation isn't available? In this case, or when any unhandled exception must be intercepted, the StatusFilter can be used. Here we will simply attach one between the logger Filter and the directory Restlet. Try to get a non-existing resource to see a status message:
 </p>
 <pre>
-         // Attach a log Chainlet to the container
-         LogChainlet log = new LogChainlet(myContainer, "com.noelios.restlet.example");
+         // Attach a log Filter to the container
+         LogFilter log = new LogFilter(myContainer, "com.noelios.restlet.example");
          myContainer.attach(log);
 
-         // Attach a status Chainlet to the log Chainlet
-         StatusChainlet status = new StatusChainlet(myContainer, true, "webmaster@mysite.org", "http://www.mysite.org");
+         // Attach a status Filter to the log Filter
+         StatusFilter status = new StatusFilter(myContainer, true, "webmaster@mysite.org", "http://www.mysite.org");
          log.attach(status);
 
-         // Create a host Maplet matching calls to the server
-         HostMaplet host = new HostMaplet(myContainer, 8182);
+         // Create a host Router matching calls to the server
+         HostRouter host = new HostRouter(myContainer, 8182);
          status.attach(host);
 
          // Create a directory Restlet able to return a deep hierarchy of Web files
          DirectoryRestlet dirRestlet = new DirectoryRestlet(myContainer, "D:/Restlet/www/docs/api/", true, "index", true);
 
-         // Then attach the Restlet to the status Chainlet.
+         // Then attach the Restlet to the status Filter.
          host.attach("/", dirRestlet);
 </pre>
 <p>
    <img src="images/tutorial08" alt="Call handling flow"/><br/>
 </p>
 <p>
-   In order to customize the default messages, you will simply need to subclass the StatusChainlet class and override the getRepresentation(status, call) method.
+   In order to customize the default messages, you will simply need to subclass the StatusFilter class and override the getRepresentation(status, call) method.
 </p>
 <br/>
 
@@ -269,11 +269,11 @@
    When you need to secure the access to some Restlets, several options are available. The most common way is to rely on cookies to identify clients (or client sessions) and to check a given user ID or session ID against your application state to determine if access should be granted. Restlets natively support cookies via the <a href="http://www.restlet.org/docs/api/org/restlet/data/Cookie.html">Cookie</a>, <a href="http://www.restlet.org/docs/api/org/restlet/data/Cookies.html">Cookies</a> and <a href="http://www.restlet.org/docs/api/org/restlet/data/CookieSetting.html">CookieSetting</a> objects accessible from a <a href="http://www.restlet.org/docs/api/org/restlet/Call.html">Call</a>.
 </p>
 <p>
-   Also, there is another way based on the standard HTTP authentication mechanism. The Restlet framework currently supports the basic HTTP authentication scheme via the GuardChainlet. See below how we would modify the previous example to secure the access to the directory restlet:
+   Also, there is another way based on the standard HTTP authentication mechanism. The Restlet framework currently supports the basic HTTP authentication scheme via the GuardFilter. See below how we would modify the previous example to secure the access to the directory restlet:
 </p>
 <pre>
-         // Attach a guard Chainlet to the container
-         GuardChainlet guard = new GuardChainlet(myContainer, "com.noelios.restlet.example", true, ChallengeSchemes.HTTP_BASIC , "Restlet tutorial", true);
+         // Attach a guard Filter to the container
+         GuardFilter guard = new GuardFilter(myContainer, "com.noelios.restlet.example", true, ChallengeSchemes.HTTP_BASIC , "Restlet tutorial", true);
          guard.getAuthorizations().put("scott", "tiger");
          status.attach(guard);
 </pre>
@@ -313,7 +313,7 @@
          }
 </pre>
 <p>
-   You can change the user ID or password sent by this test client in order to check the response returned by the server. Remember to launch the previous Restlet server before starting your client. Note that if you test your server from a different machine, you need to replace "localhost" by either the IP address of your server or its domain name when typing the URI in the browser. The server won't need any adjustment due to the usage of the HostMaplet which accepts all types of URI by default.
+   You can change the user ID or password sent by this test client in order to check the response returned by the server. Remember to launch the previous Restlet server before starting your client. Note that if you test your server from a different machine, you need to replace "localhost" by either the IP address of your server or its domain name when typing the URI in the browser. The server won't need any adjustment due to the usage of the HostRouter which accepts all types of URI by default.
 </p>
 <br/>
 
@@ -335,9 +335,9 @@
 </p>
 <br/>
 
-<h3><a name="part11">11. Maplets and hierarchical URIs</a></h3>
+<h3><a name="part11">11. Routers and hierarchical URIs</a></h3>
 <p>
-   In addition to the RedirectRestlet, we have another tool to manage cool URIs: Maplets. They are specialized Restlets that can have other handlers (Restlets, Maplets or Chainlets) attached to them and that can automatically delegate calls based on a URI pattern (a regular expression). Note that Restlet containers are also Maplets, so you could directly attach Restlets to "myContainer" using an adequate URI pattern. In general, it is easier to attach Chainlets followed by a HostMaplet to the container. Then you can attach your application Restlets or Maplets to this root HostMaplet.
+   In addition to the RedirectRestlet, we have another tool to manage cool URIs: Routers. They are specialized Restlets that can have other handlers (Restlets, Routers or Filters) attached to them and that can automatically delegate calls based on a URI pattern (a regular expression). Note that Restlet containers are also Routers, so you could directly attach Restlets to "myContainer" using an adequate URI pattern. In general, it is easier to attach Filters followed by a HostRouter to the container. Then you can attach your application Restlets or Routers to this root HostRouter.
 </p>
 <p>
    Here we want to explain how to handle the following URI patterns:
@@ -346,10 +346,10 @@
       <li>/users/[a-z]+ to display a user account</li>
       <li>/users/[a-z]+/orders to display the orders of a particular user</li>
    </ol>
-   The fact that these URIs contain some dynamic parts and that no file extension is used makes it harder to handle them in a typical Web container. Here we will simply rely on a tree of Maplets. In the processing flow below, you can see that when a call is received by the container (1), it is first filtered by two Chainlets (2) and (3), and then it reaches the root Host Maplet. If the URI starts with "/docs/" then the GuardChainlet will get the call (5) and pass it to the DirectoryRestlet (6) if the user credentials are authorized. Instead, if the URI starts with "/users/[a-z]+" (where "[a-z]+" is representing a valid user name) then it is the User Maplet that gets the call, otherwise an error is returned to the client (404, not found). Please, note that the User Maplet is directly attached to its parent Host Maplet and not to the top level container!
+   The fact that these URIs contain some dynamic parts and that no file extension is used makes it harder to handle them in a typical Web container. Here we will simply rely on a tree of Routers. In the processing flow below, you can see that when a call is received by the container (1), it is first filtered by two Filters (2) and (3), and then it reaches the root Host Router. If the URI starts with "/docs/" then the GuardFilter will get the call (5) and pass it to the DirectoryRestlet (6) if the user credentials are authorized. Instead, if the URI starts with "/users/[a-z]+" (where "[a-z]+" is representing a valid user name) then it is the User Router that gets the call, otherwise an error is returned to the client (404, not found). Please, note that the User Router is directly attached to its parent Host Router and not to the top level container!
 </p>
 <p>
-   When a call reaches the User Maplet (7) we try to match the remaining part of the URI against the "$" pattern, meaning the the remaing resource path should be empty. If a match is found, then the Account Restlet is invoked (8). At this point it is possible to get the login name by getting the last URI segment. Otherwise, if the "/orders$" pattern matches, the Orders Restlet is invoked (9), where we can still get the login name from the list of URI segments. Note that again we use the '$' character at the end of the pattern in order to make sure that we match "/users/foo/orders" but not "/users/foo/orders123".
+   When a call reaches the User Router (7) we try to match the remaining part of the URI against the "$" pattern, meaning the the remaing resource path should be empty. If a match is found, then the Account Restlet is invoked (8). At this point it is possible to get the login name by getting the last URI segment. Otherwise, if the "/orders$" pattern matches, the Orders Restlet is invoked (9), where we can still get the login name from the list of URI segments. Note that again we use the '$' character at the end of the pattern in order to make sure that we match "/users/foo/orders" but not "/users/foo/orders123".
 </p>
 <p>
    <img src="images/tutorial11" alt="Call handling flow"/><br/>
@@ -368,20 +368,20 @@
          // Add a file client connector to the Restlet container.
          myContainer.addClient("File Client", Protocols.FILE);
 
-         // Attach a log Chainlet to the container
-         LogChainlet log = new LogChainlet(myContainer, "com.noelios.restlet.example");
+         // Attach a log Filter to the container
+         LogFilter log = new LogFilter(myContainer, "com.noelios.restlet.example");
          myContainer.attach(log);
 
-         // Attach a status Chainlet to the log Chainlet
-         StatusChainlet status = new StatusChainlet(myContainer, true, "webmaster@mysite.org", "http://www.mysite.org");
+         // Attach a status Filter to the log Filter
+         StatusFilter status = new StatusFilter(myContainer, true, "webmaster@mysite.org", "http://www.mysite.org");
          log.attach(status);
 
-         // Create a host Maplet matching calls to the server
-         HostMaplet host = new HostMaplet(myContainer, 8182);
+         // Create a host Router matching calls to the server
+         HostRouter host = new HostRouter(myContainer, 8182);
          status.attach(host);
 
-         // Attach a guard Chainlet to secure access the the chained directory Restlet
-         GuardChainlet guard = new GuardChainlet(myContainer, "com.noelios.restlet.example", true, ChallengeSchemes.HTTP_BASIC , "Restlet tutorial", true);
+         // Attach a guard Filter to secure access the the chained directory Restlet
+         GuardFilter guard = new GuardFilter(myContainer, "com.noelios.restlet.example", true, ChallengeSchemes.HTTP_BASIC , "Restlet tutorial", true);
          guard.getAuthorizations().put("scott", "tiger");
          host.attach("/docs/", guard);
 
@@ -389,9 +389,9 @@
          DirectoryRestlet dirRestlet = new DirectoryRestlet(myContainer, "File Client", "D:/Restlet/www/docs/api/", true, "index");
          guard.attach(dirRestlet);
 
-         // Create the user Maplet
-         Maplet userMaplet = new DefaultMaplet(myContainer);
-         host.attach("/users/[a-z]+", userMaplet);
+         // Create the user Router
+         Router userRouter = new DefaultRouter(myContainer);
+         host.attach("/users/[a-z]+", userRouter);
 
          // Create the account Restlet
          Restlet accountRestlet = new AbstractRestlet()
@@ -403,7 +403,7 @@
                   call.setOutput(new StringRepresentation(output, MediaTypes.TEXT_PLAIN));
                }
             };
-         userMaplet.attach("$", accountRestlet);
+         userRouter.attach("$", accountRestlet);
 
          // Create the orders Restlet
          Restlet ordersRestlet = new AbstractRestlet(myContainer)
@@ -416,7 +416,7 @@
                   call.setOutput(new StringRepresentation(output, MediaTypes.TEXT_PLAIN));
                }
             };
-         userMaplet.attach("/orders$", ordersRestlet);
+         userRouter.attach("/orders$", ordersRestlet);
 
          // Now, let's start the container!
          myContainer.start();
@@ -425,7 +425,7 @@
 
 <h3><a name="part12">12. Simplify configuration with fluent builders</a></h3>
 <p>
-   At this point, you may feel like the configuration of a large application may not be as simple as it should be. It's especially difficult to keep track of the flow of Chainlets and Maplets when looking the the code of Tutorial 11. One solution would be to rely on a compact XML configuration file, similar to the J2EE application descriptors. The drawbacks is that you loose the benefits of Java's strong typing, you need to learn another XML language and the result application is harder to debug and to manage over time.
+   At this point, you may feel like the configuration of a large application may not be as simple as it should be. It's especially difficult to keep track of the flow of Filters and Routers when looking the the code of Tutorial 11. One solution would be to rely on a compact XML configuration file, similar to the J2EE application descriptors. The drawbacks is that you loose the benefits of Java's strong typing, you need to learn another XML language and the result application is harder to debug and to manage over time.
 </p>
 <p>
    This is were came the idea of Yuri de Wit and <a href="http://www.semagia.com/">Lars Heuer</a> to use the <a href="http://martinfowler.com/bliki/FluentInterface.html">Fluent Interface</a> design pattern. This pattern, formalized by Martin Fowler, aims to fluidify the combination of method calls. Here we use the pattern to progressively create new components, connectors, Restlets and to attach them to each other. The result is surprisingly compact and readable, especially if you organize your method calls into a tree. Here is a reimplementation of Tutorial 11 based on fluent builders:
@@ -439,10 +439,10 @@
                   .attachHost(8182)
                      .attachGuard("/docs/", "com.noelios.restlet.example", true, ChallengeSchemes.HTTP_BASIC , "Restlet tutorial", true)
                         .authorize("scott", "tiger")
-                        .attachDirectory("D:/Restlet/www/docs/api/", true, "index", true).upMaplet()
-                     .attachMaplet("/users")
-                        .attachMaplet("/[a-z]+")
-                           .attach("$", userRestlet).upMaplet()
+                        .attachDirectory("D:/Restlet/www/docs/api/", true, "index", true).upRouter()
+                     .attachRouter("/users")
+                        .attachRouter("/[a-z]+")
+                           .attach("$", userRestlet).upRouter()
                            .attach("/orders$", ordersRestlet).owner().start();
 </pre>
 <p>
