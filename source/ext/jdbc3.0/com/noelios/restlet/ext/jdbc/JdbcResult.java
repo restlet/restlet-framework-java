@@ -22,6 +22,7 @@
 
 package com.noelios.restlet.ext.jdbc;
 
+import java.io.Serializable;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
@@ -30,9 +31,11 @@ import java.sql.Statement;
  * JDBC result wrapper. Used by the JDBC client connector as an output of JDBC calls.
  * @author Jerome Louvel (contact@noelios.com) <a href="http://www.noelios.com/">Noelios Consulting</a>
  */
-public class JdbcResult
+public class JdbcResult implements Serializable
 {
-   /** The JDBC statement. */
+	private static final long serialVersionUID = 1L;
+	
+	/** The JDBC statement. */
    private Statement statement;
 
    /**
