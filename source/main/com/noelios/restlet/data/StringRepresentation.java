@@ -176,6 +176,7 @@ public class StringRepresentation extends StreamRepresentation
 		{
 			OutputStreamWriter osw = new OutputStreamWriter(outputStream, getCharacterSet().getName());
 			osw.write(getValue());
+			osw.flush();
 		}
 	}
 
