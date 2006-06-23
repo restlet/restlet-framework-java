@@ -87,7 +87,7 @@ public class PatternScorer extends AbstractScorer
       {
       	float totalLength = resourcePath.length();
       	float matchedLength = matcher.end();
-      	result = (1.0F - getRouter().getRequiredScore()) * (matchedLength/totalLength);
+      	result = getRouter().getRequiredScore() + (1.0F - getRouter().getRequiredScore()) * (matchedLength/totalLength);
       }
 
       return result;

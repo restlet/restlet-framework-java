@@ -41,6 +41,7 @@ public abstract class AbstractScorer extends AbstractHandler implements Scorer
     */
    public AbstractScorer(Router router, Restlet target)
    {
+   	this.router = router;
       this.target = target;
    }
 

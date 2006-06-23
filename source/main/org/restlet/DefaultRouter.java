@@ -27,6 +27,7 @@ import java.util.List;
 import java.util.Random;
 
 import org.restlet.component.Component;
+import org.restlet.data.Statuses;
 
 /**
  * Default Router that can directly be used.
@@ -164,6 +165,11 @@ public class DefaultRouter extends AbstractHandler implements Router
 				}
 			}
 		}		
+		
+		if(result == null)
+		{
+			call.setStatus(Statuses.CLIENT_ERROR_NOT_FOUND);
+		}
 		
 		return result;
 	}
