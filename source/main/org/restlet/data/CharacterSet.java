@@ -30,6 +30,12 @@ package org.restlet.data;
 public interface CharacterSet extends Metadata
 {
    /**
+    * Returns the name (ex. "*" or "ISO-8859-1" or "US-ASCII").
+    * @return The name (ex. "*" or "ISO-8859-1" or "US-ASCII").
+    */
+   public String getName();
+   
+   /**
     * Indicates if the character set is equal to a given one.
     * @param characterSet The character set to compare to.
     * @return True if the character set is equal to a given one.
