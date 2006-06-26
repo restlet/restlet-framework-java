@@ -78,39 +78,29 @@ public class ServletContextClient extends ContextClient
     */
    public void handle(Call call)
    {
-      String scheme = call.getResourceRef().getScheme();
-      
-      if(scheme.equalsIgnoreCase("file"))
-      {
-      	handleFile(call);
-      }
-      else if(scheme.equalsIgnoreCase("context"))
+      if(call.getResourceRef().getScheme().equalsIgnoreCase("context"))
       {
 			ContextReference cr = new ContextReference(call.getResourceRef());
 			
-      	if(cr.getAuthorityType() == AuthorityType.CLASS)
-      	{
-      		handleClassLoader(call, getClass().getClassLoader());
-      	}
-      	else if(cr.getAuthorityType() == AuthorityType.SYSTEM)
-      	{
-      		handleClassLoader(call, ClassLoader.getSystemClassLoader());
-      	}
-      	else if(cr.getAuthorityType() == AuthorityType.THREAD)
-      	{
-      		handleClassLoader(call, Thread.currentThread().getContextClassLoader());
-      	}
-      	else if(cr.getAuthorityType() == AuthorityType.WEB_APPLICATION)
+      	if(cr.getAuthorityType() == AuthorityType.WEB_APPLICATION)
       	{
       		handleServletContext(call);
 	      }
+      	else
+      	{
+      		super.handle(call);
+      	}
       }
-      else
-      {
-         throw new IllegalArgumentException("Protocol not supported by the connector. Only FILE and CONTEXT are supported.");
-      }
+   	else
+   	{
+   		super.handle(call);
+   	}
    }
 
+   /**
+    * Handles a call based on the Servlet context.
+    * @param call The call to handle.
+    */
    protected void handleServletContext(Call call)
    {
       if(call.getMethod().equals(Methods.GET) || call.getMethod().equals(Methods.HEAD))
