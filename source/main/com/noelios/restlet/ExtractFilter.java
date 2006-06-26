@@ -58,11 +58,6 @@ public class ExtractFilter extends AbstractFilter
    protected List<ExtractInfo> inputExtracts;
 
    /**
-    * List of context matches to extract.
-    */
-   protected List<ExtractInfo> contextExtracts;
-
-   /**
     * List of call's model attributes to extract.
     */
    protected List<ExtractInfo> modelExtracts;
@@ -76,7 +71,6 @@ public class ExtractFilter extends AbstractFilter
       super(owner);
       this.queryExtracts = null;
       this.inputExtracts = null;
-      this.contextExtracts = null;
       this.modelExtracts = null;
    }
 
@@ -129,15 +123,6 @@ public class ExtractFilter extends AbstractFilter
          }
       }
 
-      // Extract the context matches
-      if(this.contextExtracts != null)
-      {
-         for(ExtractInfo ce : getContextExtracts())
-         {
-            call.getAttributes().put(ce.attribute, call.getContextMatches().get(ce.index));
-         }
-      }
-
       // Extract the model patterns
       if(this.modelExtracts != null)
       {
@@ -184,16 +169,6 @@ public class ExtractFilter extends AbstractFilter
    {
       if(this.inputExtracts == null) this.inputExtracts = new ArrayList<ExtractInfo>();
       return this.inputExtracts;
-   }
-
-   /**
-    * Returns the list of query extracts.
-    * @return The list of query extracts.
-    */
-   private List<ExtractInfo> getContextExtracts()
-   {
-      if(this.contextExtracts == null) this.contextExtracts = new ArrayList<ExtractInfo>();
-      return this.contextExtracts;
    }
 
    /**
@@ -253,18 +228,6 @@ public class ExtractFilter extends AbstractFilter
    public ExtractFilter fromInput(String attributeName, String parameterName, boolean multiple)
    {
       getInputExtracts().add(new ExtractInfo(attributeName, parameterName, multiple));
-      return this;
-   }
-
-   /**
-    * Extracts an attribute from the context matches.
-    * @param attributeName The name of the call attribute to set.
-    * @param matchIndex The index of the match to extract from the Call.getMatches() list.
-    * @return The current Filter.
-    */
-   public ExtractFilter fromContext(String attributeName, int matchIndex)
-   {
-      getContextExtracts().add(new ExtractInfo(attributeName, matchIndex));
       return this;
    }
 

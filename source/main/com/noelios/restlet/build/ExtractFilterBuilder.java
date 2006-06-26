@@ -101,18 +101,6 @@ public class ExtractFilterBuilder extends FilterBuilder
    	return this;
    }
    /**
-    * Extracts an attribute from the context matches.
-    * @param attributeName The name of the call attribute to set.
-    * @param matchIndex The index of the match to extract from the Call.getMatches() list.
-    * @return The current builder.
-    */
-   public ExtractFilterBuilder fromContext(String attributeName, int matchIndex)
-   {
-   	getNode().fromContext(attributeName, matchIndex);
-      return this;
-   }
-
-   /**
     * Extracts an attribute from the call's model.
     * @param attributeName The name of the call attribute to set.
     * @param pattern The model pattern to resolve.

@@ -85,6 +85,7 @@ Restlet changes log
    serializable objects (ObjectRepresentation). Moved common logic to ByteUtils.
  - Renamed DirectoryRestlet into DirectoryHandler. No impact for those using the fluent builders.
  - A default ContextClient is automatically added to each RestletContainer created.
+ - Removed the "contextMatches" property from Call interface and related classes. This was not that much useful nor working as expected.
 
 1.0 beta 14 (2006-06-02)
  - Adjusted build.properties so that default values work directly.

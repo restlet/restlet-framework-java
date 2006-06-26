@@ -86,6 +86,8 @@ public abstract class AbstractRepresentation extends AbstractResource implements
       this.resource = null;
       this.tag = null;
       
+      // A representation is also a resource whose only 
+      // variant is the representation itself
       getVariants().add(this);
    }
 

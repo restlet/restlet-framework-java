@@ -142,13 +142,6 @@ public class PatternScorer extends AbstractScorer
 	      	logger.fine("New resource path: " + call.getResourcePath());
 	      }
 	
-	      // Updates the matches
-	      call.getContextMatches().clear();
-	      for(int i = 0; i < matcher.groupCount(); i++)
-	      {
-	         call.getContextMatches().add(matcher.group(i + 1));
-	      }
-	
 	      if(logger.isLoggable(Level.FINE))
 	      {
 	      	logger.fine("Delegating the call to the target Restlet");

@@ -134,16 +134,6 @@ public class WrapperCall implements Call
    }
 
    /**
-    * Returns the list of substrings matched in the current context path.
-    * @return The list of substrings matched.
-    * @see <a href="http://java.sun.com/j2se/1.5.0/docs/api/java/util/regex/Matcher.html#group(int)">Matcher.group()</a>
-    */
-   public List<String> getContextMatches()
-   {
-      return getWrappedCall().getContextMatches();
-   }
-
-   /**
     * Returns the absolute context path, preceeding the relative resource path in the resource reference.
     * @return The absolute context path.
     */

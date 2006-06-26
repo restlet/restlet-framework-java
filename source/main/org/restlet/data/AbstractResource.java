@@ -61,7 +61,7 @@ public abstract class AbstractResource extends AbstractRestlet implements Resour
    public AbstractResource(Component owner)
    {
    	super(owner);
-   	this.identifiers = new ReferenceList();
+   	this.identifiers = null;
    }
    
    /**
@@ -130,6 +130,7 @@ public abstract class AbstractResource extends AbstractRestlet implements Resour
 	 */
 	public ReferenceList getIdentifiers()
 	{
+		if(this.identifiers == null) this.identifiers = new ReferenceList();
 		return this.identifiers;
 	}
 	

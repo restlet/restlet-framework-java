@@ -84,9 +84,6 @@ public class CallImpl implements Call
    /** The cookies to set in the client. */
    protected List<CookieSetting> cookieSettings;
 
-   /** The list of substrings matched in the context path. */
-   protected List<String> contextMatches;
-
    /** The context path. */
    protected String contextPath;
 
@@ -450,17 +447,6 @@ public class CallImpl implements Call
    }
 
    /**
-    * Returns the list of substrings matched in the current context path.
-    * @return The list of substrings matched.
-    * @see <a href="http://java.sun.com/j2se/1.5.0/docs/api/java/util/regex/Matcher.html#group(int)">Matcher.group()</a>
-    */
-   public List<String> getContextMatches()
-   {
-      if(this.contextMatches == null) this.contextMatches = new ArrayList<String>();
-      return this.contextMatches;
-   }
-
-   /**
     * Returns the absolute context path, preceeding the relative resource path in the resource reference.
     * @return The absolute context path.
     */
@@ -816,9 +802,8 @@ public class CallImpl implements Call
    {
       this.resourceRef = resourceRef;
 
-      // Reset the current restlet
+      // Reset the current context path
       setContextPath(null);
-      getContextMatches().clear();
    }
 
    /**
