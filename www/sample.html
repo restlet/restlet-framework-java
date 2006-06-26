@@ -47,8 +47,8 @@
       import org.restlet.data.Protocols;
       import org.restlet.data.Statuses;
 
-      import com.noelios.restlet.build.RestletContainerBuilder;
-      import com.noelios.restlet.util.StringUtils;
+      import com.noelios.restlet.build.Builders;
+      import com.noelios.restlet.data.FileReference;
 </pre>
 <br/>
 
@@ -130,33 +130,33 @@
 <pre>
       /**
        * Constructor.
-       * @param restletPath         Path where the Restlet web files are located.
-       * @param restletAddress      IP address to listen on.
-       * @param privateRestletPort  Port to listen on for Restlet HTTP requests.
-       * @param publicRestletPort   Port which initially receives the TCP connections.
-       * @param noeliosPath         Path where the Noelios web files are located.
-       * @param noeliosAddress      IP address to listen on.
-       * @param privateNoeliosPort  Port to listen on for Noelios HTTP requests.
-       * @param publicNoeliosPort   Port which initially receives the TCP connections.
-       * @param dataPath            Path where data files are located.
+       * @param restletPath Path where the Restlet web files are located.
+       * @param restletAddress IP address to listen on.
+       * @param privateRestletPort Port to listen on for Restlet HTTP requests.
+       * @param publicRestletPort Port which initially receives the TCP connections.
+       * @param noeliosPath Path where the Noelios web files are located.
+       * @param noeliosAddress IP address to listen on.
+       * @param privateNoeliosPort Port to listen on for Noelios HTTP requests.
+       * @param publicNoeliosPort Port which initially receives the TCP connections.
+       * @param dataPath Path where data files are located.
        */
       public WebContainer(String restletPath, String restletAddress, int privateRestletPort, int publicRestletPort,
                           String noeliosPath, String noeliosAddress, int privateNoeliosPort, int publicNoeliosPort,
                           String dataPath) throws Exception
       {
-         dataPath = StringUtils.normalizePath(dataPath);
+         dataPath = FileReference.normalizePath(dataPath);
          String downloadsPath = dataPath + File.separatorChar + "archive" + File.separatorChar + "restlet";
          String reportPath = dataPath + File.separatorChar + "log" + File.separatorChar + "report";
 
          // Fluently build the container
          Builders.buildContainer(this)
-            .addServer(Protocols.HTTP, "Restlet server", restletAddress, privateRestletPort)
-            .addServer(Protocols.HTTP, "Noelios server", noeliosAddress, privateNoeliosPort)
+            .addServer("Restlet server", Protocols.HTTP, restletAddress, privateRestletPort)
+            .addServer("Noelios server", Protocols.HTTP, noeliosAddress, privateNoeliosPort)
             .attachLog("com.noelios.maine.WebContainer.www")
                .attachStatus(false, "contact@noelios.com", "http://www.noelios.com")
                   .attachRouter()
 
-                     // Restlet domains Router
+                     // Restlet domains Maplet
                      .createHost("www.restlet.org", publicRestletPort)
                         .allowDomain("restlet.org")
                         .allowDomain("www.restlet.com")
@@ -168,12 +168,12 @@
                         .attachParent()
 
                         // Serve download files from a specific directory
-                        .attachDirectory("/downloads", downloadsPath, true, "index", true).upRouter()
+                        .attachDirectory("/downloads", downloadsPath, true, "index").upRouter()
 
                         // Serve other files from the Restlet path
-                        .attachDirectory("", restletPath, true, "index", true).upRouter(2)
+                        .attachDirectory("", restletPath, true, "index").upRouter(2)
 
-                     // Noelios domain Router
+                     // Noelios domain Maplet
                      .createHost("www.noelios.com", publicNoeliosPort)
                         .allowDomain("noelios.com")
                         .redirectClient()
@@ -182,13 +182,13 @@
 
                         // Serve logs report from a guarded directory
                         .attachGuard("/logs/report", "com.noelios.maine.WebContainer", true, ChallengeSchemes.HTTP_BASIC , "Log report", true)
-                           .authorize("***", "***")
-                           .attachDirectory(reportPath, true, "index", true).upRouter()
+                           .authorize("report", "analog")
+                           .attachDirectory(reportPath, true, "index").upRouter()
 
                         // Serve other files from the Noelios path
-                        .attachDirectory("", noeliosPath, true, "index", true).upRouter(2)
+                        .attachDirectory("", noeliosPath, true, "index").upRouter(2)
 
-                     // Noelios blog Router
+                     // Noelios blog Maplet
                      .createHost("blog.noelios.com", publicNoeliosPort)
                         .preferDomain("noelios.wordpress.com")
                         .redirectClient()
@@ -221,7 +221,7 @@
 <br/>
 
 <small>
-   Version 2.1, last modified on 2006-06-02<br/>
+   Version 2.2, last modified on 2006-06-26<br/>
    Copyright &copy; 2005-2006 <a href="mailto:contact@noelios.com">J&eacute;r&ocirc;me Louvel</a>. Restlet is a registered trademark of <a target="_top" href="http://www.noelios.com">Noelios Consulting</a>.
 </small>
 

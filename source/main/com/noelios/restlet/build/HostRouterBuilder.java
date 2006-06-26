@@ -58,7 +58,7 @@ public class HostRouterBuilder extends RouterBuilder
     */
    public HostRouterBuilder attachParent()
    {
-   	upPath().attach(getNode().getPattern(), getNode());
+   	upRouter().attach(getNode().getPattern(), getNode());
    	return this;
    }
    

@@ -82,7 +82,7 @@ public class ObjectBuilder
 	 * Go up to the first parent router builder.
 	 * @return The parent router builder.
 	 */
-	public RouterBuilder upPath()
+	public RouterBuilder upRouter()
 	{
 		RouterBuilder result = null;
 		ObjectBuilder current = this;
@@ -102,7 +102,7 @@ public class ObjectBuilder
 	 * @param level The ancestor level (1 = first parent)
 	 * @return The parent router builder.
 	 */
-	public RouterBuilder upPath(int level)
+	public RouterBuilder upRouter(int level)
 	{
 		RouterBuilder result = null;
 
@@ -110,11 +110,11 @@ public class ObjectBuilder
 		{
 			if(result == null) 
 			{
-				result = upPath();
+				result = upRouter();
 			}
 			else
 			{
-				result = result.upPath();
+				result = result.upRouter();
 			}
 		}
 		
@@ -142,7 +142,7 @@ public class ObjectBuilder
 	 * Casts the current builder. 
 	 * @return A router builder.
 	 */
-	public RouterBuilder toPath()
+	public RouterBuilder toRouter()
 	{
 		return (RouterBuilder)this;
 	}
