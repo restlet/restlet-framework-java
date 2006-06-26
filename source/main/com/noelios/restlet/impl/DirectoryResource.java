@@ -29,6 +29,7 @@ import java.util.logging.Logger;
 import org.restlet.Call;
 import org.restlet.data.AbstractResource;
 import org.restlet.data.MediaTypes;
+import org.restlet.data.Reference;
 import org.restlet.data.Representation;
 import org.restlet.data.Statuses;
 
@@ -50,55 +51,35 @@ public class DirectoryResource extends AbstractResource
    protected DirectoryHandler directory;
 
    /**
-    * The absolute base path in the context. For example, "foo.en" will match "foo.en.html" and "foo.en-GB.html".
+    * The base context URI. For example, "file:///c:/dir/foo.en" or "context://webapp/dir/foo.en".
     */
-   protected String basePath;
+   protected String baseUri;
 
    /**
-    * The local base name of the file. For example, "foo.en" and "foo.en-GB.html" return "foo".
+    * The local base name of the resource. For example, "foo.en" and "foo.en-GB.html" return "foo".
     */
    protected String baseName;
 
    /**
     * Constructor.
     * @param directory The parent directory handler.
-    * @param basePath The base path of the file.
+    * @param resourcePath The relative resource path.
     */
-   public DirectoryResource(DirectoryHandler directory, String basePath)
+   public DirectoryResource(DirectoryHandler directory, String resourcePath)
    {
       // Update the member variables
       this.directory = directory;
 
-      logger.info("Directory resource's base path: " + basePath);
-
-      // Compute the absolute context path
-      StringBuilder filePath = new StringBuilder();
-      int lastIndex = -1;
-      
-      if(!basePath.equals("."))
+      // Compute the base resource URI
+      this.baseUri = new Reference(directory.getRootUri() + resourcePath).getTargetRef().toString();
+      if(!this.baseUri.startsWith(directory.getRootUri()))
       {
-         char nextChar;
-         for(int i = 0; i < basePath.length(); i++)
-         {
-            nextChar = basePath.charAt(i);
-            if(nextChar == '/')
-            {
-               // Remember the position of the last slash
-               lastIndex = i;
-   
-               // Convert the URI separator to the system dependent path separator
-               filePath.append(File.separatorChar);
-            }
-            else
-            {
-               filePath.append(nextChar);
-            }
-         }
+      	// Prevent the client from accessing resources in upper directories
+      	this.baseUri = directory.getRootUri();
       }
-      this.basePath = filePath.toString();
 
       // Try to detect the presence of the file
-      Call call = getDirectory().getContextClient().get(this.basePath);
+      Call call = getDirectory().getContextClient().get(this.baseUri);
       boolean isDirectory = (call.getOutput() != null) && (call.getOutput().getMediaType().equals(MediaTypes.TEXT_URI_LIST));
       
       if(isDirectory)
@@ -106,7 +87,7 @@ public class DirectoryResource extends AbstractResource
          // Append the index name
          if(getDirectory().getIndexName() != null)
          {
-            this.basePath = this.basePath + getDirectory().getIndexName();
+            this.baseUri = this.baseUri + getDirectory().getIndexName();
             this.baseName = getDirectory().getIndexName();
          }
       }
@@ -114,11 +95,11 @@ public class DirectoryResource extends AbstractResource
       {
          if(lastIndex == -1)
          {
-            this.baseName = basePath;
+            this.baseName = baseUri;
          }
          else
          {
-            this.baseName = basePath.substring(lastIndex + 1);
+            this.baseName = baseUri.substring(lastIndex + 1);
          }
       }
 
@@ -127,7 +108,7 @@ public class DirectoryResource extends AbstractResource
       if(dotIndex != -1) this.baseName = this.baseName.substring(0, dotIndex);
 
       // Log results
-      logger.info("Converted base path: " + this.basePath);
+      logger.info("Converted base path: " + this.baseUri);
       logger.info("Converted base name: " + this.baseName);
    }
    
@@ -147,7 +128,7 @@ public class DirectoryResource extends AbstractResource
     */
    public String getBasePath()
    {
-      return this.basePath;
+      return this.baseUri;
    }
 
    /**
@@ -156,7 +137,7 @@ public class DirectoryResource extends AbstractResource
     */
    public void setBasePath(String absolutePath)
    {
-      this.basePath = absolutePath;
+      this.baseUri = absolutePath;
    }
 
    /**
@@ -221,30 +202,42 @@ public class DirectoryResource extends AbstractResource
    {
       logger.info("Getting variants for : " + getBasePath());
       List<Representation> result = super.getVariants();
-      
-   	// We always allow the transfer of the GET calls
-		getDirectory().getContextClient().get(getBasePath());
 
-      // List all the file in the immediate parent directory
-      File baseDirectory = new File(getBasePath()).getParentFile();
-      if(baseDirectory != null)
+      if(getBasePath().startsWith("/"))
       {
-         File[] files = baseDirectory.listFiles();
-         File currentFile = null;
+   		// Get the parent directory's path
+   		int lastSlashIndex = getBasePath().lastIndexOf('/');
+   		String directoryPath = getBasePath().substring(0, lastSlashIndex + 1);
 
-         for(int i = 0; (files != null) && (i < files.length); i++)
+      	// Try to get the content of the directory
+   		getDirectory().getContextClient().get(directoryPath);
+   		
+         // List all the file in the immediate parent directory
+         File baseDirectory = new File(getBasePath()).getParentFile();
+         if(baseDirectory != null)
          {
-            currentFile = files[i];
+            File[] files = baseDirectory.listFiles();
+            File currentFile = null;
 
-            // Check if the current file is a valid variant
-            if(currentFile.getAbsolutePath().startsWith(getBasePath()))
+            for(int i = 0; (files != null) && (i < files.length); i++)
             {
-               // Add the new variant to the result list
-            	
-               // TODO
-               //result.add(fr);
+               currentFile = files[i];
+
+               // Check if the current file is a valid variant
+               if(currentFile.getAbsolutePath().startsWith(getBasePath()))
+               {
+                  // Add the new variant to the result list
+               	
+                  // TODO
+                  //result.add(fr);
+               }
             }
          }
+         
+      }
+      else
+      {
+      	
       }
 
       return result;

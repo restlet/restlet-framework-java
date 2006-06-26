@@ -77,7 +77,7 @@ public class DirectoryHandler extends AbstractHandler
 	 */
 	public Restlet findNext(Call call)
 	{
-   	return new DirectoryResource(this, getRootUri() + call.getResourcePath());
+   	return new DirectoryResource(this, call.getResourcePath());
 	}
 	
    /** 

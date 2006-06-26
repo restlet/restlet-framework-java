@@ -170,7 +170,7 @@ public class ContextClient extends AbstractClient
     */
    protected void handleFile(Call call, String path)
    {
-      File file = new File(path);
+      File file = new File(FileReference.localizePath(path));
 
       if(call.getMethod().equals(Methods.GET) || call.getMethod().equals(Methods.HEAD))
 		{
