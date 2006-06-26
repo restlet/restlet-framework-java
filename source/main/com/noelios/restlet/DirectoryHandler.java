@@ -117,7 +117,7 @@ public class DirectoryHandler extends AbstractHandler
 	
 	/**
 	 * Indicates if the display of directory listings is allowed when no index file is found.
-	 * @return True if the display of directory listings is allowed when no index file is found.
+	 * @param listingAllowed True if the display of directory listings is allowed when no index file is found.
 	 */
 	public void setListingAllowed(boolean listingAllowed)
 	{
