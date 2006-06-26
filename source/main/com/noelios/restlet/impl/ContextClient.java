@@ -26,8 +26,14 @@ import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
+import java.net.URL;
+import java.util.ArrayList;
+import java.util.Enumeration;
+import java.util.List;
 import java.util.Map;
 import java.util.TreeMap;
+import java.util.jar.JarEntry;
+import java.util.jar.JarFile;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
@@ -46,6 +52,7 @@ import org.restlet.data.Metadata;
 import org.restlet.data.Methods;
 import org.restlet.data.ParameterList;
 import org.restlet.data.Protocols;
+import org.restlet.data.Reference;
 import org.restlet.data.ReferenceList;
 import org.restlet.data.Representation;
 import org.restlet.data.Statuses;
@@ -53,11 +60,12 @@ import org.restlet.data.Statuses;
 import com.noelios.restlet.data.ContextReference;
 import com.noelios.restlet.data.FileReference;
 import com.noelios.restlet.data.FileRepresentation;
+import com.noelios.restlet.data.InputRepresentation;
 import com.noelios.restlet.data.ContextReference.AuthorityType;
 import com.noelios.restlet.util.ByteUtils;
 
 /**
- * Connector to the contextual resources accessible via the file system, classloaders and similar mechanisms.
+ * Connector to the contextual resources accessible via the file system, class loaders and similar mechanisms.
  * @author Jerome Louvel (contact@noelios.com) <a href="http://www.noelios.com/">Noelios Consulting</a>
  */
 public class ContextClient extends AbstractClient
@@ -82,6 +90,15 @@ public class ContextClient extends AbstractClient
    
    /** Indicates the time to live for a file representation before it expires (in seconds; default to 10 minutes). */
    protected int timeToLive;
+   
+   /** The location of the Web Application archive file or directory path. */
+   protected String webAppPath;
+   
+   /** Indicates if the Web Application path corresponds to an archive file or a directory path. */
+   protected boolean webAppArchive;
+   
+   /** Cache of all the WAR file entries to improve directory listing time. */
+   protected List<String> warEntries;
 
    /**
     * Constructor.
@@ -98,9 +115,11 @@ public class ContextClient extends AbstractClient
       this.defaultLanguage = Languages.ENGLISH_US;
       this.metadataMappings = new TreeMap<String, Metadata>();
       this.timeToLive = 600;
-      // if(commonExtensions) addCommonExtensions();
+      this.webAppPath = null;
+      this.webAppArchive = false;
+      this.warEntries = null;
    }
-
+   
    /**
     * Handles a call.
     * @param call The call to handle.
@@ -108,10 +127,14 @@ public class ContextClient extends AbstractClient
    public void handle(Call call)
    {
       String scheme = call.getResourceRef().getScheme();
+
+      // Ensure that all ".." and "." are normalized into the path
+   	// to preven unauthorized access to user directories.
+   	call.getResourceRef().normalize();
       
       if(scheme.equalsIgnoreCase("file"))
       {
-      	handleFile(call);
+      	handleFile(call, call.getResourceRef().getPath());
       }
       else if(scheme.equalsIgnoreCase("context"))
       {
@@ -131,7 +154,7 @@ public class ContextClient extends AbstractClient
       	}
       	else if(cr.getAuthorityType() == AuthorityType.WEB_APPLICATION)
       	{
-      		// TODO
+      		handleWebApplication(call);
 	      }
       }
       else
@@ -139,24 +162,15 @@ public class ContextClient extends AbstractClient
          throw new IllegalArgumentException("Protocol not supported by the connector. Only FILE and CONTEXT are supported.");
       }
 	}
-
+   
    /**
     * Handles a call for the FILE protocol.
     * @param call The call to handle.
+    * @param path The file or directory path.
     */
-   protected void handleFile(Call call)
+   protected void handleFile(Call call, String path)
    {
-      FileReference fr = new FileReference(call.getResourceRef());
-      File file = null;
-      
-      if(fr.getScheme().equalsIgnoreCase("file"))
-      {
-         file = fr.getFile();
-      }
-      else
-      {
-         throw new IllegalArgumentException("Only FILE resource URIs are allowed here");
-      }
+      File file = new File(path);
 
       if(call.getMethod().equals(Methods.GET) || call.getMethod().equals(Methods.HEAD))
 		{
@@ -169,7 +183,7 @@ public class ContextClient extends AbstractClient
  					// Return the directory listing
  					File[] files = file.listFiles();
  					ReferenceList rl = new ReferenceList(files.length);
- 					rl.setListRef(fr);
+ 					rl.setListRef(call.getResourceRef());
  					
  					for(File entry : files)
  					{
@@ -262,7 +276,7 @@ public class ContextClient extends AbstractClient
 			else
 			{
 				// No existing file or directory found
-				if(fr.getPath().endsWith("/"))
+				if(path.endsWith("/"))
 				{
 					// Create a new directory and its necessary parents
 					if(file.mkdirs())
@@ -359,12 +373,116 @@ public class ContextClient extends AbstractClient
    }
    
    /**
-    * Handles a call for the Cprotocol.
+    * Handles a call with a given class loader.
     * @param call The call to handle.
     */
    protected void handleClassLoader(Call call, ClassLoader classLoader)
    {
-   	
+      if(call.getMethod().equals(Methods.GET) || call.getMethod().equals(Methods.HEAD))
+		{
+      	URL url = classLoader.getResource(call.getResourceRef().getPath());
+      	
+      	if(url != null)
+      	{
+				try
+				{
+					call.setOutput(new InputRepresentation(url.openStream(), null));
+	 				call.setStatus(Statuses.SUCCESS_OK);
+				}
+				catch (IOException ioe)
+				{
+					logger.log(Level.WARNING, "Unable to open the representation's input stream", ioe);
+					call.setStatus(Statuses.SERVER_ERROR_INTERNAL);
+				}
+      	}
+      	else
+      	{
+      		call.setStatus(Statuses.CLIENT_ERROR_NOT_FOUND);
+      	}
+		}
+		else
+		{
+			call.setStatus(Statuses.CLIENT_ERROR_METHOD_NOT_ALLOWED);
+		}
+   }
+
+   /**
+    * Handles a call using the current Web Application.
+    * @param call The call to handle.
+    */
+   protected void handleWebApplication(Call call)
+   {
+		if(this.webAppArchive)
+		{
+			try
+			{
+				String path = call.getResourceRef().getPath();
+				JarFile war = new JarFile(getWebAppPath());
+				JarEntry entry = war.getJarEntry(path);
+				
+				if(entry.isDirectory())
+				{
+					if(warEntries == null)
+					{
+						// Cache of all the WAR file entries to improve directory listing time.
+						warEntries = new ArrayList<String>();
+						for(Enumeration<JarEntry> entries = war.entries(); entries.hasMoreElements(); )
+						{
+							warEntries.add(entries.nextElement().getName());
+						}
+					}
+					
+ 					// Return the directory listing
+ 					ReferenceList rl = new ReferenceList();
+ 					rl.setListRef(call.getResourceRef());
+ 					
+ 					for(String warEntry : warEntries)
+ 					{
+ 						if(warEntry.startsWith(path))
+ 						{
+							rl.add(new Reference(warEntry));
+ 						}
+ 					}
+ 					
+ 					call.setOutput(rl.getRepresentation());
+    				call.setStatus(Statuses.SUCCESS_OK);
+				}
+ 				else
+ 				{
+ 					// Return the file content
+               Representation output = new InputRepresentation(war.getInputStream(entry), null);
+               updateMetadata(path, output);
+    				call.setOutput(output);
+    				call.setStatus(Statuses.SUCCESS_OK);
+ 				}
+			}
+			catch (IOException e)
+			{
+				logger.log(Level.WARNING, "Unable to access to the WAR file", e);
+				call.setStatus(Statuses.SERVER_ERROR_INTERNAL);
+			}
+			
+		}
+		else
+		{
+			String path = call.getResourceRef().getPath();
+			
+			if(path.toUpperCase().startsWith("/WEB-INF/"))
+			{
+				logger.warning("Forbidden access to the WEB-INF directory detected. Path requested: " + path);
+				call.setStatus(Statuses.CLIENT_ERROR_NOT_FOUND);
+			}
+			else if(path.toUpperCase().startsWith("/META-INF/"))
+			{
+				logger.warning("Forbidden access to the META-INF directory detected. Path requested: " + path);
+				call.setStatus(Statuses.CLIENT_ERROR_NOT_FOUND);
+			}
+			else
+			{
+				path = getWebAppPath() + path;
+				handleFile(call, path);
+			}
+		}
    }
    
    /**
@@ -547,6 +665,37 @@ public class ContextClient extends AbstractClient
    public void setTimeToLive(int ttl)
    {
       this.timeToLive = ttl;
+   }
+
+   /**
+    * Returns the Web Application archive file or directory path.
+    * @return The Web Application archive file or directory path.
+    */
+   public String getWebAppPath()
+   {
+   	return this.webAppPath;
+   }
+
+   /**
+    * Sets the Web Application archive file or directory path.
+    * @param webAppPath The Web Application archive file or directory path.
+    */
+   public void setWebAppPath(String webAppPath)
+   {
+   	this.webAppPath = webAppPath;
+   	
+   	File file = new File(webAppPath);
+   	if(file.isDirectory())
+   	{
+   		this.webAppArchive = false;
+
+   		// Adjust the archive directory path if necessary
+   		if(webAppPath.endsWith("/")) this.webAppPath = this.webAppPath.substring(0, this.webAppPath.length() - 1);
+   	}
+   	else
+   	{
+   		this.webAppArchive = true;
+   	}
    }
 
 }

@@ -28,6 +28,7 @@ import java.util.logging.Logger;
 
 import org.restlet.Call;
 import org.restlet.data.AbstractResource;
+import org.restlet.data.MediaTypes;
 import org.restlet.data.Representation;
 import org.restlet.data.Statuses;
 
@@ -68,7 +69,7 @@ public class DirectoryResource extends AbstractResource
       // Update the member variables
       this.directory = directory;
 
-      logger.info("Context base path: " + basePath);
+      logger.info("Directory resource's base path: " + basePath);
 
       // Compute the absolute context path
       StringBuilder filePath = new StringBuilder();
@@ -94,10 +95,13 @@ public class DirectoryResource extends AbstractResource
             }
          }
       }
-      
-      // Try to detect the presence of the file
       this.basePath = filePath.toString();
-      if(new File(this.basePath).isDirectory())
+
+      // Try to detect the presence of the file
+      Call call = getDirectory().getContextClient().get(this.basePath);
+      boolean isDirectory = (call.getOutput() != null) && (call.getOutput().getMediaType().equals(MediaTypes.TEXT_URI_LIST));
+      
+      if(isDirectory)
       {
          // Append the index name
          if(getDirectory().getIndexName() != null)
@@ -165,88 +169,6 @@ public class DirectoryResource extends AbstractResource
    }
 
    /**
-    * Handles a GET call.
-    * @param call The call to handle.
-    */
-   protected void handleGet(Call call)
-   {
-   	// We always allow the transfer of the GET calls
-		
-   }
-   
-   /**
-    * Returns the representation variants.
-    * @return The representation variants.
-    */
-   public List<Representation> getVariants()
-   {
-      logger.info("Getting variants for : " + getBasePath());
-      List<Representation> result = null;
-
-      // List all the file in the immediate parent directory
-      File baseDirectory = new File(getBasePath()).getParentFile();
-      if(baseDirectory != null)
-      {
-         File[] files = baseDirectory.listFiles();
-         File currentFile = null;
-//         Metadata metadata = null;
-//         MediaType mediaType = null;
-//         CharacterSet characterSet = null;
-//         Encoding encoding = null;
-//         Language language = null;
-
-         for(int i = 0; (files != null) && (i < files.length); i++)
-         {
-            currentFile = files[i];
-
-            // Check if the current file is a valid variant
-            if(currentFile.getAbsolutePath().startsWith(getBasePath()))
-            {
-//               String[] tokens = currentFile.getName().split("\\.");
-//               if(tokens[0].equals(getBaseName()))
-//               {
-//                  // We found a potential variant
-//                  for(int j = 1; j < tokens.length; j++)
-//                  {
-//                     metadata = getContextClient().getMetadata(tokens[j]);
-//                     if(metadata instanceof MediaType) mediaType = (MediaType)metadata;
-//                     if(metadata instanceof CharacterSet) characterSet = (CharacterSet)metadata;
-//                     if(metadata instanceof Encoding) encoding = (Encoding)metadata;
-//                     if(metadata instanceof Language) language = (Language)metadata;
-//
-//                     int dashIndex = tokens[j].indexOf('-');
-//                     if((metadata == null) && (dashIndex != -1))
-//                     {
-//                        // We found a language extension with a region area
-//                        // specified
-//                        // Try to find a language matching the primary part of
-//                        // the extension
-//                        String primaryPart = tokens[j].substring(0, dashIndex);
-//                        metadata = getContextClient().getMetadata(primaryPart);
-//                        if(metadata instanceof Language) language = (Language)metadata;
-//                     }
-//                  }
-//
-//                  // Add the new variant to the result list
-//                  if(result == null) result = new ArrayList<RepresentationMetadata>();
-//                  if(encoding == null) encoding = getContextClient().getDefaultEncoding();
-//                  if(mediaType == null) mediaType = getContextClient().getDefaultMediaType();
-//                  if(language == null) language = getContextClient().getDefaultLanguage();
-//                  FileRepresentation fr = new FileRepresentation(currentFile.getAbsolutePath(), mediaType,
-//                        getContextClient().getTimeToLive());
-//                  fr.setCharacterSet(characterSet);
-//                  fr.setEncoding(encoding);
-//                  fr.setLanguage(language);
-//                  result.add(fr);
-//               }
-            }
-         }
-      }
-
-      return result;
-   }
-
-   /**
     * Handles a DELETE call.
     * @param call The call to handle.
     */
@@ -259,6 +181,7 @@ public class DirectoryResource extends AbstractResource
 		}
 		else
 		{
+			// Delete all the resource's representations
 			// TODO
 		}
    }
@@ -276,6 +199,7 @@ public class DirectoryResource extends AbstractResource
 		}
 		else
 		{
+			// Remplace a similar representation or create a new one
 			// TODO
 		}
    }
@@ -287,6 +211,43 @@ public class DirectoryResource extends AbstractResource
    protected void defaultHandle(Call call)
    {
    	call.setStatus(Statuses.CLIENT_ERROR_METHOD_NOT_ALLOWED);
+   }
+   
+   /**
+    * Returns the representation variants.
+    * @return The representation variants.
+    */
+   public List<Representation> getVariants()
+   {
+      logger.info("Getting variants for : " + getBasePath());
+      List<Representation> result = super.getVariants();
+      
+   	// We always allow the transfer of the GET calls
+		getDirectory().getContextClient().get(getBasePath());
+
+      // List all the file in the immediate parent directory
+      File baseDirectory = new File(getBasePath()).getParentFile();
+      if(baseDirectory != null)
+      {
+         File[] files = baseDirectory.listFiles();
+         File currentFile = null;
+
+         for(int i = 0; (files != null) && (i < files.length); i++)
+         {
+            currentFile = files[i];
+
+            // Check if the current file is a valid variant
+            if(currentFile.getAbsolutePath().startsWith(getBasePath()))
+            {
+               // Add the new variant to the result list
+            	
+               // TODO
+               //result.add(fr);
+            }
+         }
+      }
+
+      return result;
    }
    
 }
