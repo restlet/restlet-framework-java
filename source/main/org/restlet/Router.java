@@ -27,11 +27,11 @@ import java.util.List;
 /**
  * Router of calls to target Restlets. Internally, the targets are handled using attachments objects.
  * Some methods allow the creation of attachments based on URI path patterns matching the beginning of a the
- * resource path in the current context (see Call.getContextPath() method).<br/>
+ * resource path in the current context (see Call.getContextPath() method).<br/><br/>
  * Note that during the delegation, the call paths are automatically modified. 
  * If you are handling hierarchical paths, remember to directly attach the child routers to their parent router
  * instead of the top level Restlet container. Also, remember to manually handle the path separator characters 
- * in your path patterns otherwise the delegation will not work as expected.<br/>
+ * in your path patterns otherwise the delegation will not work as expected.<br/><br/>
  * Also note that you can attach and detach targets while handling incoming calls as the delegation code 
  * is ensured to be thread-safe and atomic.
  * @see <a href="http://www.restlet.org/tutorial#part11">Tutorial: Routers and hierarchical URIs</a>
