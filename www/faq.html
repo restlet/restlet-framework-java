@@ -48,45 +48,41 @@
 <h3><a name="01">1. Why do I need a framework for REST?</a></h3>
 
 <p>
-   The goal of a framework is to provide a reusable and extendable set of classes and interfaces that will provide a common foundation and structure on which you will be able to construct your specific application more quickly. The Restlet project was started from the observation that no Java framework was available to implement RESTful applications.<br/>
+   The goal of a framework is to provide a reusable and extendable set of classes and interfaces that will serve as a foundation on which you can construct your own applications more efficiently. The Restlet project was started from the observation that no Java framework was available to help developers building RESTful applications.<br/>
    <br/>
-   First, it's important that you familiarize yourself with the <a href="#21">REST architecture style</a>. Then you will realize that the Restlet API derived the name and purpose of its packages, interfaces and classes directly from the REST concepts (resource, representation, connector, component, media type, language, etc.). This means that you are able to think RESTfully and to translate your solution into code more naturally and efficiently.<br/><br/>
-   If you are not too familiar with REST you still gain the protocol abstraction provided by Restlets: the same set of interfaces is usable for multiple protocols (HTTP, SMTP, JDBC, file system...). For example, you don't need any knowledge of HTTP headers to do content negotiation. Also, you don't need to learn mutiple APIs (Servlet and HttpUrlConnection for example) to implement applications that act as both server and client at the same time.
+   First, it's important that you familiarize yourself with the <a href="#21">REST architecture style</a>. Then you will realize that the Restlet API derived the name and purpose of its packages, interfaces and classes directly from the REST concepts (resource, representation, connector, component, media type, language, etc.). This means that you are able to think RESTfully and to translate your solution into code more naturally.<br/><br/>
+   If you are not familiar with REST yet, you still gain the protocol abstraction provided by Restlets: the same set of interfaces is usable for multiple protocols (HTTP server, HTTP client, SMTP client, JDBC client, file system...). For example, you don't need to know the HTTP headers to do content negotiation. Also, you don't need to use and learn mutiple APIs (Servlet, HttpUrlConnection and JavaMail for example) to implement standard Web applications.
 </p>
 
 <h3><a name="02">2. What are the advantages of using Restlets instead of Servlets?</a></h3>
 
 <p>
-   The main advantage is that Restlets strictly follow the REST architecture style as defined by Roy T. Fielding, author of the HTTP protocol. This ensures that your application can easily be developped in a RESTful manner. Each concept of REST has a corresponding Java interface or class in the Restlet API. Also, Restlet removed the concepts of in-memory sessions which are not RESTful and a major bottleneck for availability and scalability in Servlet applications.<br/>
+   The main advantage is that Restlets strictly follow the REST architecture style as defined by Roy T. Fielding, author of the HTTP protocol. This ensures that your application can easily be developped in a RESTful manner. Each concept of REST has a corresponding Java interface or class in the Restlet API. Also, Restlet removed the concepts of in-memory user sessions which are not RESTful and are major bottleneck for availability and scalability in Servlet applications.<br/>
    <br/>
    Another advantage is the ability to work with multiple protocols (HTTP, JDBC, SMTP, etc.) using the exact same API. This is true for both client-side
    and server-side application. Of course, a Restlet application can naturally worked as a client and a server at the same time. It's a truly Web centric
    framework. If you compare it to the Servlet API, it's an HTTP-only API with support for server-side code. To do client-side code, you need to rely on
-   the low-level HttpURLConnection class from the JDK which uses a totally different API.<br/>
+   the low-level HttpURLConnection class from the JDK which uses a completely different API.<br/>
    <br/>
    Also, the Restlet API is cleanly separating the low-level protocol aspects from the application aspects. For most application, you won't need to
-   access to HTTP headers to get the media type of a request, you just use call.getMetadata().getMediaType(). This separation enables the protocol connectors to implement any optimization they need without interferring with the application code. With Servlet, everything is mixed as application can directly modify the HTTP headers and have the control over the output stream.<br/>
+   access to HTTP headers to get the media type of a request, you just use call.getInput().getMediaType(). This separation enables the protocol connectors to implement any optimization they need without interferring with the application code. With Servlet, everything is mixed as application can directly modify the HTTP headers and have the control over the output stream.<br/>
    <br/>
-   In addition, via the use of Routers, the Restlet API gives full control of the call dispatching to developers. In the Servlet world, the standard approach is to configure the URI mappings in the configuration file of the container, which is not as flexible. There is always to possibility to manually handle the dispatching or to rely on third-party frameworks like Struts and Spring, but it's just not as convenient and powerful as the integrated support with Routers.<br/>
+   In addition, via the use of Routers, the Restlet API gives full control of the call handling to developers. In the Servlet world, the standard approach is to configure the URI mappings in the configuration file of the container, which is not as flexible. There is always to possibility to manually handle the dispatching or to rely on third-party frameworks like Struts and Spring, but it's just not as convenient and powerful as the integrated support provided by Routers.<br/>
    <br/>
-   Finally, the Restlet API is IO agnostic as its core Representation interface can work equally well with BIO streams and NIO channels. This opens a
-   great potential of performance when fully NIO compliant connectors will become available. The main advantage will be the increase scalability by removing
-   the need to associate one thread for each opened connection which is a major bottleneck in Servlet containers.
+   Finally, the Restlet API is I/O agnostic as its core Representation interface can work equally well with BIO streams (java.io package) and NIO channels (java.nio package). This brings the potential of significant performance boosts when fully NIO compliant connectors will become available. The main advantage will be the increase scalability by removing the need to associate one thread for each opened connection which is a major bottleneck in current Servlet containers.
 </p>
 
 <h3><a name="03">3. Can I run Restlets inside my Servlet container?</a></h3>
 
 <p>
-   Yes, even if this is not required. If you can't use the standalone HTTP connectors provided in the Noelios Restlet Engine, you can use the ServerServlet
-   connector which is an adapter between the Servlet API and the Restlet API. See the <a href="file:///d:/Restlet/www/docs/nre/com/noelios/restlet/ext/servlet/ServerServlet.html">
+   Yes you can, even if this is not required. If you can't use the standalone HTTP connectors provided in the Noelios Restlet Engine, you can still use the ServerServlet connector which is an adapter between the Servlet API and the Restlet API. See the <a href="http://www.restlet.org/docs/nre/index.html?com/noelios/restlet/ext/servlet/ServerServlet.html">
    ServerServlet Javadocs</a> for details on how to configure your Servlet container.
 </p>
 
 <h3><a name="04">4. Can the Restlets composing a site be defined in an XML file?</a></h3>
 
 <p>
-   The recommended way to configure Restlets is by using the <a href="http://www.restlet.org/docs/nre/com/noelios/restlet/build/package-summary.html">fluent builders</a>. There is a <a href="http://www.restlet.org/tutorial#part12">tutorial entry</a> illustrating this approach. The resulting Java code is both compact and self-describing, so using XML configurations isn't our top priority. Alternatively, A.J. Barnes has done some nice work to integrate Restlets with Spring autowiring service which is based on an XML configuration.
-   You can find some details of this effort <a href="http://restlet.tigris.org/issues/show_bug.cgi?id=12">here</a>.
+   The recommended way to configure Restlets is by using the <a href="http://www.restlet.org/docs/nre/index.html?com/noelios/restlet/build/package-summary.html">fluent builders</a>. There is a <a href="http://www.restlet.org/tutorial#part12">tutorial entry</a> illustrating this approach. The resulting Java code is both compact and self-describing, so using XML configurations isn't our top priority. Alternatively, A.J. Barnes has done some nice work integrating Restlets with Spring autowiring service which is itself based on an XML configuration. You can find more details in this effort <a href="http://restlet.tigris.org/issues/show_bug.cgi?id=12">here</a>.
 </p>
 
 <h3><a name="05">5. What JAR files must I have in my classpath for a minimal application?</a></h3>
@@ -94,27 +90,21 @@
 <p>
    In a Restlet distribution, all JAR files are located under the "lib" directory. The <b>org.restlet.jar</b> file is containing the standard Restlet API.
    Even though you can compile your code with only this JAR file, is it very likely that you'll also want to use the additional features provided by the
-   reference implementation (Noelios Restlet Engine or NRE). In any case, to run a minimal application, you'll also need the <b>com.noelios.restlet.jar</b>
-   file containing the core of the NRE. This core JAR also contains the default HTTP client connector.
+   reference implementation (Noelios Restlet Engine or NRE). In any case, to run a minimal application, you'll also need the <b>com.noelios.restlet.jar</b> file containing the core of the NRE. This core JAR also contains the default HTTP client connector.
 </p>
 
 <h3><a name="06">6. What are the other JAR files for?</a></h3>
 
 <p>
    Beside the client HTTP connector which is part of the core NRE JAR, you need to add to your classpath the JAR file of each additional connector that
-   your application is using. If you want to act as an HTTP server, you can choose between three different connectors, two standalone based on Jetty 5
-   or Jetty 6, and one embedded if you want to use an existing Servlet container like Tomcat.
+   your application is using. If you want to act as an HTTP server, you can choose between several connectors, four standalone based on Jetty, Simple Framework and AsyncWeb, and one embedded if you want to use an existing Servlet container like Tomcat.
 </p>
-
 <p>
-   There are other optional extensions to the NRE, like SMTP and JDBC clients. Each one correspond to a seperate Java package under com.noelios.restlet.ext.*
-   and is packaged as a separate JAR file available under on of the "lib" subdirectories. For example, if you need to send emails, you must include the
-   following JAR files: /lib/javamail1.3/mail.jar (JavaMail) and /lib/javamail1.3/restlet.javamail.jar (NRE extension).
+   There are other optional extensions to the NRE, like SMTP and JDBC clients. Each one correspond to a seperate Java package under com.noelios.restlet.ext.* and is packaged as a separate JAR file available under on of the "lib" subdirectories. For example, if you need to send emails, you must include the following JAR files: /lib/javamail1.3/mail.jar (JavaMail) and /lib/javamail1.3/restlet.javamail.jar (NRE extension).
 </p>
-
 <p>
    No further configuration is needed as the NRE runtime will automatically detect the extensions present if the application classpath. That's why you
-   can rely on the standard Restlet API to create connector, for example: new DefaultServer(Protocols.HTTP, "My server", handler, 8182).
+   can rely on the standard Restlet API to create connector, for example: new DefaultServer(Protocols.HTTP, handler, 8182).
 </p>
 
 <h3><a name="07">7. Why are there two Jetty versions provided?</a></h3>
@@ -129,14 +119,14 @@
 <h3><a name="08">8. How do I provide password protection on a server?</a></h3>
 
 <p>
-   Currently, the Noelios Restlet Engine supports Basic HTTP authentication via the <a href="http://www.restlet.org/docs/nre/com/noelios/restlet/GuardFilter.html">GuardFilter</a>.
+   Currently, the Noelios Restlet Engine supports Basic HTTP authentication via the <a href="http://www.restlet.org/docs/nre/index.html?com/noelios/restlet/GuardFilter.html">GuardFilter</a>.
    For details on how to use this Filter, please check the <a href="http://www.restlet.org/tutorial#part09">part 9 of the tutorial</a>.
 </p>
 
 <h3><a name="09">9. How do I check the mime type of a document PUT on my server?</a></h3>
 
 <p>
-   This is simple: call.getInput().getMetadata().getMediaType() which returns an instance of the MediaType interface. From this instance you can get the
+   This is simple: call.getInput().getMediaType() which returns an instance of the MediaType interface. From this instance you can get the
    main and sub types as well as the optional type parameters.
 </p>
 
@@ -157,16 +147,13 @@
 
 <p>
    For a server connector such as Jetty HTTP, the main cost of Restlets resides in the creation of the Call (DefaultCall) object from the low-level
-   HTTP request headers and body. This cost is very low and is optimized to only parse the required headers when the application actually needs the
+   HTTP request headers and body. This cost is low and is optimized to only parse the required headers when the application actually needs the
    information when manipulating the Call object.
 <p/>
 <p>
-   For the rest, the Restlet cost happens upon initialization or first call. By default, Restlet objects (including Filters and Routers) are shared
-   by all calls, unless you specify it otherwise. As calls are leaving in separate threads that can be concurrently handled by the Restlets, you need
-   to be careful about using member variable to store temporary state. If at some point in your application, you need to have state that is specific
-   to your call, you should use a special Restlet attachment mode on the parent Router or RestletContainer. For example, if you have a MyRestlet class
-   that is stateful, you should attach it to the parent Router like this: parentRouter.attach(MyRestlet.class). When the call thread will reach the
-   parent Router and be routed to you MyRestlet, a new instance of this class will automatically be create before asking it to handle the call!
+   For the rest, the Restlet cost happens upon initialization or first call. By default, Restlet objects (including Handlers, Filters and Routers) are shared by all calls. As calls are living in separate threads that can be concurrently handled by the Restlets, you need
+   to be careful about using member variables to store temporary state. If at some point in your application, you need to have state that is specific
+   to your call, you can use the call.getAttributes() as a modifiable attributes map. In the final Handler that find the target Resource for your call, you can also easily create a new Resource instance and assotiate call's specific information to it.
 </p>
 
 <h3><a name="12">12. How do I implement the traditional MVC pattern?</a></h3>
@@ -174,10 +161,9 @@
 <p>
    Here is the basic proposition for implementing the MVC pattern with Restlets :
    <ol>
-      <li>Model == (Resource + custom data). Use a stateful Restlet (with the class attachment to a Router) that also implements the Resource interface. The handle method should do a call.setBestOutput(this, ..) after the processing. You could also be very strict and fully separate the Resource from the processing Restlet.</li>
-      <li>View == Representation. Create a Representation instance when the getRepresentation(variant) method is invoked on your Resource instance by the
-      setBestOutput() method. It can be dynamic and based on the current state of your Resource (see FreeMarker TemplateRepresentation)</li>
-      <li>Controller == (Routers + Restlet). The hierarchy of Routers leading to the actual service Restlet. The final Restlet can also be considered as part of the controller and could be fully separated from the Model as proposed above.</li>
+      <li>Controller == Routers + Filters + Handlers. When reaching a leaf of this controlling tree, you should have all the information necessary to locate the target Resource using a simple Handler and implementing its findNext(Call) method to return an instance of Resource.</li>
+      <li>Model == Resource + data objects. Just start from the org.restlet.data.AbstractResource class which is also a subclass of AbstractRestlet and override the handle*() method that you want, like handleDelete(). For the handleGet() method, you can rely on the default implementation to do server-side content negotiation. For this, you just need to override the getVariants() method and the rest will be transparent. Internally, we rely of the call.setBestOutput() method to trigger this content negotiation, which will compare the variant representations that you make available, with the client capabilities and preferences.</li>
+      <li>View == Representation variants. To create new representations for your resources, you can rely on one of the numerous Representation implementation classes (InputRepresentation for example) available in the NRE data package or in the extension packages like the one for FreeMarker (TemplateRepresentation).</li>
    </ol>
 </p>
 <h3><a name="13">13 Any recommendations/guidelines in terms of how to deal with caching?</a></h3>
@@ -199,12 +185,7 @@
 <h3><a name="14">14. What is the performance of the HTTP connectors?</a></h3>
 
 <p>
-   Note that, used as a server, the performance will depend on the actual
-   connector used (HTTP, HTTPS, AJP, Servlet adapter, etc.). So what would be
-   needed is a set of tests comparing the different options. Also, the results
-   will vary between the Jetty 5.1 connectors and the Jetty 6.0 one. For the
-   Servlet adapter the performance will vary with the actual Servlet container
-used and how it is configured.
+   For server connectors, the performance will depend on the actual provider used. So what would be really needed is a benchmark comparing the different providers. Also, the results  will vary between the Jetty 5.1 connectors and the Jetty 6.0 one. For the Servlet adapter the performance will vary with the actual Servlet container used and how it is configured.
 </p>
 
 <h3><a name="15">15. Why is my HTTP client sending unwanted "application/x-www-form-urlencoded" content type headers?</a></h3>
@@ -218,18 +199,14 @@ used and how it is configured.
 <h3><a name="16">16. Can a Filter modify the call like a Servlet Filter?</a></h3>
 
 <p>
-   Absolutely! What the tutorial says is that only the requested "URI" shouldn't be modified. Beside the URI, anything else in the call object can
-   be modified, before or after the delegation of the call to the attached Restlet.
+   Absolutely! What the tutorial only says is that call's context path shouldn't be modified. Beside that, anything else in the call object can be modified, before or after the handling of the call by the attached Restlet.
 </p>
 
 <h3><a name="17">17. My server is running behind a proxy, can I get the actual client IP address?</a></h3>
 
 <p>
    The immediate client IP address available is the only that is always available because its based on the underlying protocol connection.
-   In HTTP, certain proxies do transfer the original client IP address (or addresses) by using some extra HTTP headers like "X-Forwarded-for". In the recent Restlet
-   versions you can get all this information in a straightforward way. On the Call interface, you have two related methods <a href="http://www.restlet.org/docs/api/org/restlet/Call.html#getClientAddress()">getClientAddress()</a> and
-   <a href="http://www.restlet.org/docs/api/org/restlet/Call.html#getClientAddresses()">getClientAddresses()</a>. Please check the Javadocs for details as there are some security risks in using the second method, especially if you are not
-   controlling the intermediary proxies.
+   In HTTP, certain proxies do transfer the original client IP address (or addresses) by using some extra HTTP headers like "X-Forwarded-for". In the recent Restlet versions you can get all this information in a straightforward way. On the Call interface, you have two related methods <a href="http://www.restlet.org/docs/api/org/restlet/Call.html#getClientAddress()">getClientAddress()</a> and <a href="http://www.restlet.org/docs/api/org/restlet/Call.html#getClientAddresses()">getClientAddresses()</a>. Please check the Javadocs for details as there are some security risks when using the second method, especially if you are not controlling the intermediary proxies.
 </p>
 
 <h3><a name="18">18. Restlet calls abstract HTTP requests and responses, but can I get the low-level headers if I really need to?</a></h3>
@@ -251,7 +228,7 @@ used and how it is configured.
 <h3><a name="20">20. What is the difference between a Filter and a Router?</a></h3>
 
 <p>
-   On one hand, Filters support some processing between two and only two other Restlets. They are useful for actions like logging, caching, compressing or security checks. On the other hand, the purpose of Routers is to route calls based on the internal URI patterns of your application. Routers can distribute calls to one or more child Restlets. When the call is distributed, the context path is advanced and the context matches are updated before actually delegating the call. See also, <a href="#02">this FAQ entry</a> for a comparison of Routers with the Servlet API.
+   On one hand, Filters support some processing before or after the handling of a call by a target Restlet. They are useful for actions like logging, caching, compressing or security checks. On the other hand, the purpose of Routers is to route calls based on URIs hierarchy and patterns. Routers can distribute calls to one or more attached Restlets. When the call is distributed, its context path property is updated before actually invoking the selected target Restlet. See also, <a href="#02">this FAQ entry</a> for a comparison of Routers with the Servlet API.
 </p>
 
 <h3><a name="21">21. I have general questions about REST, where can I get help?</a></h3>
@@ -277,7 +254,7 @@ used and how it is configured.
 <h3><a name="22">22. How can I send and receive files with Restlets?</a></h3>
 
 <p>
-   To receive large files, from browsers for example, you can rely on the Apache FileUpload project which was integrated as an <a href="http://www.restlet.org/docs/nre/com/noelios/restlet/ext/fileupload/package-summary.html">extension to NRE</a>. To send a file using the HTTP client connector, just create a new <a href="http://www.restlet.org/docs/nre/com/noelios/restlet/data/FileRepresentation.html">FileRepresentation</a> and set is as the input of your call.
+   To receive large files, from browsers for example, you can rely on the Apache FileUpload project which was integrated as an <a href="http://www.restlet.org/docs/nre/index.html?com/noelios/restlet/ext/fileupload/package-summary.html">extension to NRE</a>. To send a file using the HTTP client connector, just create a new <a href="http://www.restlet.org/docs/nre/index.html?com/noelios/restlet/data/FileRepresentation.html">FileRepresentation</a> and set is as the input of your call.
 </p>
 
 <p>
@@ -294,7 +271,7 @@ used and how it is configured.
 <br/>
 
 <small>
-   Version 1.4, last modified on 2006-06-21<br/>
+   Version 1.5, last modified on 2006-06-26<br/>
    Copyright &copy; 2005-2006 <a href="mailto:contact@noelios.com">J&eacute;r&ocirc;me Louvel</a>. Restlet is a registered trademark of <a target="_top" href="http://www.noelios.com">Noelios Consulting</a>.
 </small>
 

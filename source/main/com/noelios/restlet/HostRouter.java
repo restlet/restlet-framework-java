@@ -43,11 +43,11 @@ import org.restlet.data.Status;
 import org.restlet.data.Statuses;
 
 /**
- * Router associated with a host and allowing different equivalent URI patterns.
- * After configuration , you can use the getPattern() method to attach your HostRouter to a RestletContainer 
- * or a root router. Child Restlet can also be attached to a HostRouter for further delegation.
- * By default, the supported protocol is HTTP, "localhost" URIs and IP-based URIs are allowed. 
- * However, client redirections to the preferred format are not issued. 
+ * Router associated with a host and allowing different alias URI patterns. After configuration , you can use 
+ * the getPattern() method to attach your HostRouter to a RestletContainer or a root router. Target Restlets 
+ * can also be attached to a HostRouter for further delegation. By default, the supported protocol is HTTP, 
+ * "localhost" URIs and IP-based URIs are allowed. However, client redirections to the preferred format are 
+ * not issued automatically. 
  * @author Jerome Louvel (contact@noelios.com) <a href="http://www.noelios.com/">Noelios Consulting</a>
  */
 public class HostRouter extends AbstractHandler implements Router

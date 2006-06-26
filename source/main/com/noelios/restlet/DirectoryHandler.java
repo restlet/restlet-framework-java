@@ -43,8 +43,10 @@ import com.noelios.restlet.impl.ContextClient;
 import com.noelios.restlet.impl.DirectoryResource;
 
 /**
- * Handler supported by a directory of resources. An automatic content negotiation mechanism 
- * (similar to Apache HTTP server) is used to serve the best representations.
+ * Call handler supported by a directory of resource (from the file system, the web application context or 
+ * class loaders). An automatic content negotiation mechanism (similar to the one in Apache HTTP server) is 
+ * used to select the best representation of a resource based on the available variants and on the client 
+ * capabilities and preferences.
  * @see <a href="http://www.restlet.org/tutorial#part06">Tutorial: Serving context resources</a>
  * @author Jerome Louvel (contact@noelios.com) <a href="http://www.noelios.com/">Noelios Consulting</a>
  */

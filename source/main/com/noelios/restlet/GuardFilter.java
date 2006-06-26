@@ -41,9 +41,8 @@ import org.restlet.data.Statuses;
 import com.noelios.restlet.util.Base64;
 
 /**
- * Filter guarding the access to another Restlet, Filter or Router. Currently only 
- * supports the HTTP basic authentication scheme and a custom schemes (based on cookies, 
- * query params or IP address for example).
+ * Filter guarding the access to another Restlet. Currently it only supports the HTTP basic authentication 
+ * scheme or custom schemes (based on cookies, query params or IP address for example).
  * @see <a href="http://www.restlet.org/tutorial#part09">Tutorial: Guarding access to sensitive resources</a>
  * @author Jerome Louvel (contact@noelios.com) <a href="http://www.noelios.com/">Noelios Consulting</a>
  */

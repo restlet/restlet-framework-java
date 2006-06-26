@@ -30,15 +30,15 @@ import java.nio.channels.WritableByteChannel;
 import java.util.Date;
 
 /**
- * Current or intended state of a resource. For performance purpose, it is essential that a minimal overhead
- * occurs upon initialization. Most overhead should occurs during invocation of content processing methods
- * (write, getStream, getChannel and toString)<br/><br/> "REST components perform actions on a resource by
- * using a representation to capture the current or intended state of that resource and transferring that
- * representation between components. A representation is a sequence of bytes, plus representation metadata to
- * describe those bytes. Other commonly used but less precise names for a representation include: document,
- * file, and HTTP message entity, instance, or variant." Roy T. Fielding
- * @see <a href="http://www.ics.uci.edu/~fielding/pubs/dissertation/rest_arch_style.htm#sec_5_2_1_2">Source
- * dissertation</a>
+ * Current or intended state of a resource. For performance purpose, it is essential that a minimal overhead 
+ * occurs upon initialization. The main overhead must only occur during invocation of content processing 
+ * methods (write, getStream, getChannel and toString).Current or intended state of a resource.<br/><br/> 
+ * "REST components perform actions on a resource by using a representation to capture the current or intended 
+ * state of that resource and transferring that representation between components. A representation is a 
+ * sequence of bytes, plus representation metadata to describe those bytes. Other commonly used but less 
+ * precise names for a representation include: document, file, and HTTP message entity, instance, or variant." 
+ * Roy T. Fielding
+ * @see <a href="http://www.ics.uci.edu/~fielding/pubs/dissertation/rest_arch_style.htm#sec_5_2_1_2">Source dissertation</a>
  * @author Jerome Louvel (contact@noelios.com) <a href="http://www.noelios.com/">Noelios Consulting</a>
  */
 public interface Representation extends Resource

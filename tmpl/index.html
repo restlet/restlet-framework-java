@@ -26,17 +26,17 @@
    <li>Suitable for both client and server Web applications</li>
    <li>Routers support the concept of <a href="http://www.useit.com/alertbox/990321.html">URIs as UI</a> with advanced pattern matching features</li>
    <li>Filters support features such as authentication and logging</li>
-   <li>Complete alternative to the Servlet API with no external dependency (JAR about 95kb)</li>
+   <li>Complete alternative to the Servlet API with no external dependency (JAR about 120kb)</li>
    <li>Supports blocking and non-blocking NIO modes</li>
 </ul>
 
 <h3>Noelios Restlet Engine (NRE)</h3>
 <ul>
-   <li>Reference implementation of the Restlet API provided by <a target="_top" href="http://www.noelios.com">Noelios Consulting</a> (core JAR about 130kb)</li>
+   <li>Reference implementation of the Restlet API provided by <a target="_top" href="http://www.noelios.com">Noelios Consulting</a> (core JAR about 140kb)</li>
    <li>Server connectors for HTTP, HTTPS, <a href="http://tomcat.apache.org/connectors-doc/">AJP</a> (for Apache or IIS)</li>
    <li>Client connectors for HTTP, HTTPS, SMTP, JDBC</li>
    <li>Supports logging (LogFilter), authentication (GuardFilter) and <a href="http://www.w3.org/Provider/Style/URI">cool URIs</a> rewriting (RedirectRestlet)</li>
-   <li>Static files serving (DirectoryRestlet) with metadata association based on file extensions</li>
+   <li>Static files serving (DirectoryHandler) with metadata association based on file extensions</li>
    <li>Automatic server-side content negotiation based on media type and language preferences</li>
    <li>FreeMarker template representations as an alternative to JSP pages</li>
    <li>Supports Restlet applications as native services using <a href="http://wrapper.tanukisoftware.org">Java Service Wrapper</a></li>
@@ -65,8 +65,8 @@
 <h3>Dependencies</h3>
 <ul>
    <li>For all applications: <a target="_top" href="http://java.sun.com/j2se/1.5.0/">Java SE 5.0</a> or above. Older versions also supported using <a href="http://retroweaver.sourceforge.net">Retroweaver</a>.</li>
-   <li>For standalone HTTP servers: <a target="_top" href="http://jetty.mortbay.org">Jetty 5.1 (stable)</a>, <a href="http://jetty.mortbay.org/jetty6/">Jetty 6.0 (beta)</a> or <a target="_top" href="http://www.simpleframework.org">Simple 3.1 (lightest)</a></li>
-   <li>For embedded HTTP servers: <a target="_top" href="http://java.sun.com/products/servlet/">Servlet 2.4 container</a></li>
+   <li>For standalone HTTP servers: <a target="_top" href="http://jetty.mortbay.org">Jetty 5.1 (stable)</a>, <a href="http://jetty.mortbay.org/jetty6/">Jetty 6.0 (beta)</a>, <a target="_top" href="http://www.simpleframework.org">Simple 3.1 (lightest)</a> and <a target="_top" href="http://asyncweb.safehaus.org">AsyncWeb 0.8 (based on <a href="http://directory.apache.org/subprojects/mina/">Apache Mina</a> NIO framework)</a></li>
+   <li>For embedded HTTP servers: <a target="_top" href="http://java.sun.com/products/servlet/">Servlet 2.4 containers</a> like <a href="http://tomcat.apache.org/">Apache Tomcat</a></li>
    <li>For dynamic documents: <a target="_top" href="http://www.freemarker.org/">FreeMarker 2.3</a></li>
    <li>For email sending: <a target="_top" href="http://java.sun.com/products/javamail/">JavaMail 1.3</a></li>
 </ul>

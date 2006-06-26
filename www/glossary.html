@@ -22,9 +22,10 @@
       <li><a href="#call">Call</a></li>
       <li><a href="#component">Component</a></li>
       <li><a href="#connector">Connector</a></li>
-      <li><a href="#directory-worker">Directory Worker</a></li>
+      <li><a href="#directory-handler">Directory Handler</a></li>
       <li><a href="#filter">Filter</a></li>
       <li><a href="#guard-filter">Guard Filter</a></li>
+      <li><a href="#handler">Handler</a></li>
       <li><a href="#host-router">Host Router</a></li>
       <li><a href="#log-filter">Log Filter</a></li>
       <li><a href="#redirect-restlet">Redirect Restlet</a></li>
@@ -42,7 +43,7 @@
 <h3><a name="call">Call</a></h3>
 
 <p>
-   Issued by a client to a server and handled by Restlets. Restlet calls are uniform across all type of connectors (client or server), protocols and component. If you are familiar with the Servlet API, a Restlet call merges and abstract the of Servlet HTTP request and response.
+   Issued by a client to a server and handled by one or more Restlets. Calls are uniform across all type of connectors (client or server), all types of protocols and component. If you are familiar with the Servlet API, a Restlet call merges and abstracts the Servlet HTTP request and response, as well as the HttpUrlConnection class from the JDK.
 </p>
 
 <h3><a name="component">Component</a></h3>
@@ -57,10 +58,10 @@
    Abstract mechanism that enables communication between components. "A connector is an abstract mechanism that mediates communication, coordination, or cooperation among components. Connectors enable communication between components by transferring data elements from one interface to another without changing the data." Roy T. Fielding "Encapsulate the activities of accessing resources and transferring resource representations. The connectors present an abstract interface for component communication, enhancing simplicity by providing a clean separation of concerns and hiding the underlying implementation of resources and communication mechanisms" Roy T. Fielding
 </p>
 
-<h3><a name="directory-worker">Directory Worker</a></h3>
+<h3><a name="directory-handler">Directory Handler</a></h3>
 
 <p>
-   Restlet supported by a directory of files. An automatic content negotiation mechanism (similar to Apache HTTP server) is used for files serving.
+   Call handler supported by a directory of resource (from the file system, the web application context or class loaders). An automatic content negotiation mechanism (similar to the one in Apache HTTP server) is used to select the best representation of a resource based on the available variants and on the client capabilities and preferences.
 </p>
 
 <h3><a name="filter">Filter</a></h3>
@@ -72,13 +73,19 @@
 <h3><a name="guard-filter">Guard Filter</a></h3>
 
 <p>
-   Filter guarding the access to another Restlet, Filter or Router. Currently only supports the HTTP basic authentication scheme and a custom schemes (based on cookies, query params or IP address for example).
+   Filter guarding the access to another Restlet. Currently it only supports the HTTP basic authentication scheme or custom schemes (based on cookies, query params or IP address for example).
+</p>
+
+<h3><a name="handler">Handler</a></h3>
+
+<p>
+   Restlet that is part of a processing chain. The next handler is found for each call and can therefore by either statically or dynamically resolved.
 </p>
 
 <h3><a name="host-router">Host Router</a></h3>
 
 <p>
-   Router associated with a host and allowing alias URI patterns. After configuration, you can use the getPattern() method to attach your HostRouter to a RestletContainer or a root Router. Child Restlets can also be attached to a HostRouter for further handling. By default, the supported protocol is HTTP, "localhost" URIs and IP-based URIs are allowed. However, client redirections to the preferred format are not issued. Also, note that just before delegating a call to a mapped Restlet, the Router will advance the context path of the call, which will modify the relative resource path as well.
+   Router associated with a host and allowing different alias URI patterns. After configuration , you can use the getPattern() method to attach your HostRouter to a RestletContainer or a root router. Target Restlets can also be attached to a HostRouter for further delegation. By default, the supported protocol is HTTP, "localhost" URIs and IP-based URIs are allowed. However, client redirections to the preferred format are not issued automatically
 </p>
 
 <h3><a name="log-filter">Log Filter</a></h3>
@@ -96,7 +103,8 @@
 <h3><a name="representation">Representation</a></h3>
 
 <p>
-   Current or intended state of a resource. For performance purpose, it is essential that a minimal overhead occurs upon initialization. Most overhead should occurs during invocation of content processing methods (write, getStream, getChannel and toString).
+   Current or intended state of a resource. For performance purpose, it is essential that a minimal overhead occurs upon initialization. The main
+   overhead must only occur during invocation of content processing methods (write, getStream, getChannel and toString).
 </p>
 <p>
    "REST components perform actions on a resource by using a representation to capture the current or intended state of that resource and transferring that representation between components. A representation is a sequence of bytes, plus representation metadata to describe those bytes. Other commonly used but less precise names for a representation include: document, file, and HTTP message entity, instance, or variant." Roy T. Fielding
@@ -110,20 +118,20 @@
 <p>
    "The only thing that is required to be static for a resource is the semantics of the mapping, since the semantics is what distinguishes one resource from another." Roy T. Fielding
 </p>
+<p>
+   Another definition adapted from the URI standard (RFC 3986): a resource is the conceptual mapping to a representation (also known as entity) or set of representations, not necessarily the representation which corresponds to that mapping at any particular instance in time. Thus, a resource can remain constant even when its content (the representations to which it currently corresponds) changes over time, provided that the conceptual mapping is not changed in the process. In addition, a resource is always identified by a URI.
+</p>
 
 <h3><a name="restlet">Restlet</a></h3>
 
 <p>
-   Uniform REST handler interface. "The central feature that distinguishes the REST architectural style from other network-based styles is its emphasis on a uniform interface between components. By applying the software engineering principle of generality to the component interface, the overall system architecture is simplified and the visibility of interactions is improved. Implementations are decoupled from the services they provide, which encourages independent evolvability." Roy T. Fielding
+   Uniform interface for REST handlers. "The central feature that distinguishes the REST architectural style from other network-based styles is its emphasis on a uniform interface between components. By applying the software engineering principle of generality to the component interface, the overall system architecture is simplified and the visibility of interactions is improved. Implementations are decoupled from the services they provide, which encourages independent evolvability." Roy T. Fielding
 </p>
 
 <h3><a name="restlet-container">Restlet Container</a></h3>
 
 <p>
-   Container for Routers, Filters or Restlets. Note that a container is also a Filter and Router by itself. It can also be part of a larger RestletServer.
-</p>
-<p>
-   If you chain a Restlet using one of the attach() methods with no URI pattern, then all the calls will be directed to it. In other words, the Filter role has a higher priority than the Router role. Calls are first intercepted by the container which can do various checks before effectively delegating it to one of the registered root Restlets. Restlet containers can also be contained within a Restlet server.
+   Container for Routers, Filters or Restlets. Note that a container is also a Filter by itself. It can also be part of a larger RestletServer.<br/> Restlet containers can also be contained within a parent Restlet server. Container for Routers, Filters or Restlets. Note that a container is also a Filter and Router by itself. It can also be part of a larger RestletServer.
 </p>
 
 <h3><a name="restlet-engine">Restlet Engine</a></h3>
@@ -135,7 +143,7 @@
 <h3><a name="router">Router</a></h3>
 
 <p>
-   Router of calls to attached Restlets. Dispatching is based on URI patterns matching the beginning of a the resource path in the current context (see Call.getResourcePath() method). Note that during the routing, the call paths are automatically modified. If you are handling hierarchical paths, remember to directly attach the child routers to their parent router instead of the top level Restlet container. Also, remember to properly handle the path separator characters in your path patterns otherwise the delegation will not work as expected. Some describe Routers as smart URI parsers or cutters. See also this FAQ entry: <a href="http://www.restlet.org/faq#19">What is the difference between a Filter and a Router?</a>.
+   Router of calls to target Restlets. Internally, the targets are handled using attachments objects. Some methods allow the creation of attachments based on URI path patterns matching the beginning of a the resource path in the current context (see Call.getContextPath() method).<br/> Note that during the delegation, the call paths are automatically modified. If you are handling hierarchical paths, remember to directly attach the child routers to their parent router instead of the top level Restlet container. Also, remember to manually handle the path separator characters in your path patterns otherwise the delegation will not work as expected.<br/> Also note that you can attach and detach targets while handling incoming calls as the delegation code is ensured to be thread-safe and atomic. See also this FAQ entry: <a href="http://www.restlet.org/faq#19">What is the difference between a Filter and a Router?</a>.
 </p>
 
 <h3><a name="status-filter">Status Filter</a></h3>
@@ -158,7 +166,7 @@
 <br/>
 
 <small>
-   Version 2.0, last modified on 2006-06-16<br/>
+   Version 2.1, last modified on 2006-06-26<br/>
    Copyright &copy; 2005-2006 <a href="mailto:contact@noelios.com">J&eacute;r&ocirc;me Louvel</a>. Restlet is a registered trademark of <a target="_top" href="http://www.noelios.com">Noelios Consulting</a>.
 </small>
 

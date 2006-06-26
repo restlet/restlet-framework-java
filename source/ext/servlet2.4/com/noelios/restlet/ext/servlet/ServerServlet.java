@@ -89,7 +89,7 @@ import com.noelios.restlet.impl.HttpServer;
  * </pre>
  * From within your RestletContainer subclass, you can retrieve this context path using this code:
  * <pre>
- * 	String contextPath = getInitParameters().get("contextPath")
+ * 	String contextPath = getParameters().get("contextPath")
  * </pre>
  * Just replace "contextPath" with the parameter name configured in your web.xml file under the 
  * "org.restlet.target.init.contextPath" Servlet context parameter. Also note that this init parameter
