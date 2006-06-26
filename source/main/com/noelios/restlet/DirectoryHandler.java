@@ -23,6 +23,7 @@
 package com.noelios.restlet;
 
 import java.io.IOException;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -32,9 +33,12 @@ import org.restlet.Call;
 import org.restlet.Restlet;
 import org.restlet.component.Component;
 import org.restlet.connector.Client;
+import org.restlet.data.MediaTypes;
+import org.restlet.data.Reference;
 import org.restlet.data.ReferenceList;
 import org.restlet.data.Representation;
 
+import com.noelios.restlet.data.StringRepresentation;
 import com.noelios.restlet.impl.ContextClient;
 import com.noelios.restlet.impl.DirectoryResource;
 
@@ -180,15 +184,26 @@ public class DirectoryHandler extends AbstractHandler
    }
    
    /**
-    * Returns the variant representations of a directory.
+    * Returns the variant representations of a directory. This method can be subclassed in order to provide
+    * alternative representations.
     * @param directoryContent The list of references contained in the directory.
     * @return The variant representations of a directory.
     */
    public List<Representation> getDirectoryVariants(ReferenceList directoryContent)
    {
-   	
-   	
-   	return null;
+   	// Create a simple HTML list
+   	StringBuilder sb = new StringBuilder();
+   	sb.append("<html><body>\n");
+   	for(Reference ref : directoryContent)
+   	{
+   		sb.append("<a href=\"" + ref.toString() + "\">" + ref.toString() + "</a>\n");
+   	}
+   	sb.append("</body></html>\n");
+
+   	// Create the variants list
+   	List<Representation> result = new ArrayList<Representation>();
+   	result.add(new StringRepresentation(sb.toString(), MediaTypes.TEXT_HTML));
+   	return result;
    }
 
 }
