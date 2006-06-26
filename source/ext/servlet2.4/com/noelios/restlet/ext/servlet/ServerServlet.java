@@ -23,6 +23,7 @@
 package com.noelios.restlet.ext.servlet;
 
 import java.io.IOException;
+import java.util.Enumeration;
 
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServlet;
@@ -94,15 +95,17 @@ import com.noelios.restlet.impl.HttpServer;
  * Just replace "contextPath" with the parameter name configured in your web.xml file under the 
  * "org.restlet.target.init.contextPath" Servlet context parameter. Also note that this init parameter
  * is only set after the constructor of your target class returns. This means that you should move any 
- * code that depends on the "contextPath" to the start() method.<br/>
- * Now that you have your Restlet context path in hand, you can use it to attach your root Restlet 
- * (or Router or Filter) to your target router or RestletContainer. You will typically do something 
- * like this in you constructor:
+ * code that depends on the "contextPath" to the start() method. Now that you have your Restlet context path 
+ * ready, you can use it to attach your root Restlet (or Router or Filter) to your target router or 
+ * RestletContainer. You will typically do something like this in you constructor:
  * <pre>
  * 	attach(contextPath, myRootRestlet);
  * </pre>
  * Starting from "myRootRestlet", the coding is strictly similar to Restlet applications using the standalone 
- * mode.
+ * mode.<br/><br/>
+ * Finally, the enumeration of initParameters of your Servlet will be copied to the "parameters" property of 
+ * your target component, or the closest owner component. This way, you can pass additional initialization 
+ * parameters to your Restlet application, and share them with existing Servlets.
  * @see <a href="http://java.sun.com/j2ee/">J2EE home page</a>
  * @author Jerome Louvel (contact@noelios.com) <a href="http://www.noelios.com/">Noelios Consulting</a>
  */
@@ -235,6 +238,14 @@ public class ServerServlet extends HttpServlet
                         		component.getClients().remove(ContextClient.DEFAULT_NAME);
                         		component.addClient(ContextClient.DEFAULT_NAME, new ServletContextClient(component, null, getServletContext()));
                         		log("[Noelios Restlet Engine] - The special ServletContextClient has been set on the target component under this name: " + ContextClient.DEFAULT_NAME);
+                        		
+                        		// Copy all initParameters in the component's parameters map
+                        		String name;
+                        		for(Enumeration names = getServletContext().getInitParameterNames(); names.hasMoreElements(); )
+                        		{
+                        			name = (String)names.nextElement();
+                        			component.getParameters().add(name, getServletContext().getInitParameter(name));
+                        		}
                         	}
                      	}
                      	

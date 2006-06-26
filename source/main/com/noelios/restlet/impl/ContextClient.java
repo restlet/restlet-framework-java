@@ -157,7 +157,7 @@ public class ContextClient extends AbstractClient
       	}
       	else if(cr.getAuthorityType() == AuthorityType.WEB_APPLICATION)
       	{
-      		handleWebApplication(call);
+      		handleWebApp(call);
 	      }
       }
       else
@@ -413,7 +413,7 @@ public class ContextClient extends AbstractClient
     * Handles a call using the current Web Application.
     * @param call The call to handle.
     */
-   protected void handleWebApplication(Call call)
+   protected void handleWebApp(Call call)
    {
 		if(this.webAppArchive)
 		{

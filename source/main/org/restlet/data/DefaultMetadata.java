@@ -88,22 +88,4 @@ public class DefaultMetadata implements Metadata
       return getName();
    }
 
-   /**
-    * Returns a hash code value for the object.
-    * @return A hash code value for the object.
-    */
-   public int hashCode()
-   {
-      return getName().hashCode();
-   }
-
-   /**
-    * Indicates whether some other object is "equal to" this one.
-    * @param object The reference object with which to compare.
-    */
-   public boolean equals(Object object)
-   {
-      return (object.hashCode() == this.hashCode());
-   }
-
 }
