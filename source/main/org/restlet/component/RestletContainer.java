@@ -27,6 +27,8 @@ import org.restlet.Call;
 import org.restlet.Restlet;
 import org.restlet.data.ParameterList;
 
+import com.noelios.restlet.impl.ContextClient;
+
 /**
  * Container for routers, Filters or Restlets. Note that a container is also a Filter and router by itself.
  * It can also be part of a larger RestletServer.<br/>
@@ -76,6 +78,9 @@ public class RestletContainer extends AbstractComponent
    public RestletContainer(Component owner, ParameterList parameters)
    {
       super(owner, parameters);
+
+      // Adds the default context client
+      getClients().put(ContextClient.DEFAULT_NAME, new ContextClient(this, null));
    }
 
    /**

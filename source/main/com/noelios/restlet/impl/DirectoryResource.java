@@ -22,9 +22,11 @@
 
 package com.noelios.restlet.impl;
 
-import java.io.File;
 import java.io.IOException;
 import java.util.List;
+import java.util.Set;
+import java.util.TreeSet;
+import java.util.logging.Level;
 import java.util.logging.Logger;
 
 import org.restlet.Call;
@@ -52,19 +54,19 @@ public class DirectoryResource extends AbstractResource
    /** The parent directory handler. */
    protected DirectoryHandler directory;
 
-   /**
-    * The base context URI. For example, "file:///c:/dir/foo.en" or "context://webapp/dir/foo.en".
-    */
-   protected String baseUri;
+   /** The context's target URI. For example, "file:///c:/dir/foo.en" or "context://webapp/dir/foo.en". */
+   protected String targetUri;
 
-   /**
-    * The local base name of the resource. For example, "foo.en" and "foo.en-GB.html" return "foo".
-    */
+   /** The context's directory URI. For example, "file:///c:/dir/" or "context://webapp/dir/". */
+   protected String directoryUri;
+   
+   /** The local base name of the resource. For example, "foo.en" and "foo.en-GB.html" return "foo". */
    protected String baseName;
    
-   /**
-    * If the resource is a directory, this contains its content.
-    */
+   /** The base set of extensions. */ 
+   protected Set<String> baseExtensions;
+   
+   /** If the resource is a directory, this contains its content. */
    protected ReferenceList directoryContent;
 
    /**
@@ -79,15 +81,15 @@ public class DirectoryResource extends AbstractResource
       this.directory = directory;
 
       // Compute the base resource URI
-      this.baseUri = new Reference(directory.getRootUri() + resourcePath).getTargetRef().toString();
-      if(!this.baseUri.startsWith(directory.getRootUri()))
+      this.targetUri = new Reference(directory.getRootUri() + resourcePath).getTargetRef().toString();
+      if(!this.targetUri.startsWith(directory.getRootUri()))
       {
       	// Prevent the client from accessing resources in upper directories
-      	this.baseUri = directory.getRootUri();
+      	this.targetUri = directory.getRootUri();
       }
 
-      // Try to detect the presence of the file
-      Call call = getDirectory().getContextClient().get(this.baseUri);
+      // Try to detect the presence of a directory
+      Call call = getDirectory().getContextClient().get(this.targetUri);
       if((call.getOutput() != null) && call.getOutput().getMediaType().equals(MediaTypes.TEXT_URI_LIST))
       {
       	this.directoryContent = new ReferenceList(call.getOutput());
@@ -95,29 +97,45 @@ public class DirectoryResource extends AbstractResource
          // Append the index name
       	if(getDirectory().getIndexName() != null)
          {
-            this.baseUri = this.baseUri + getDirectory().getIndexName();
+      		this.directoryUri = this.targetUri;
             this.baseName = getDirectory().getIndexName();
+            this.targetUri = this.directoryUri + this.baseName;
          }
       }
       else
       {
-      	int lastSlashIndex = baseUri.lastIndexOf('/');
+      	int lastSlashIndex = targetUri.lastIndexOf('/');
          if(lastSlashIndex == -1)
          {
-            this.baseName = baseUri;
+         	this.directoryUri = ""; 
+            this.baseName = targetUri;
          }
          else
          {
-            this.baseName = baseUri.substring(lastSlashIndex + 1);
+         	this.directoryUri = targetUri.substring(0, lastSlashIndex + 1); 
+            this.baseName = targetUri.substring(lastSlashIndex + 1);
+         }
+         
+         call = getDirectory().getContextClient().get(this.directoryUri);
+         if((call.getOutput() != null) && call.getOutput().getMediaType().equals(MediaTypes.TEXT_URI_LIST))
+         {
+         	this.directoryContent = new ReferenceList(call.getOutput());
          }
       }
 
       // Remove the extensions from the base name
-      int dotIndex = this.baseName.indexOf('.');
-      if(dotIndex != -1) this.baseName = this.baseName.substring(0, dotIndex);
+      int firstDotIndex = this.baseName.indexOf('.');
+      if(firstDotIndex != -1)
+      {
+	      // Store the set of extensions
+	      this.baseExtensions = getExtensions(this.baseName);
+
+	      // Remove stored extensions from the base name
+	      this.baseName = this.baseName.substring(0, firstDotIndex);
+      }
 
       // Log results
-      logger.info("Converted base path: " + this.baseUri);
+      logger.info("Converted base path: " + this.targetUri);
       logger.info("Converted base name: " + this.baseName);
    }
    
@@ -131,22 +149,30 @@ public class DirectoryResource extends AbstractResource
    }
 
    /**
-    * Returns the absolute path of the file. For example, "foo.en" will match "foo.en.html" and
-    * "foo.en-GB.html".
-    * @return The base path of the file.
+    * Returns the context's target URI. For example, "file:///c:/dir/foo.en" or "context://webapp/dir/foo.en".
+    * @return The context's target URI.
     */
-   public String getBasePath()
+   public String getTargetUri()
    {
-      return this.baseUri;
+      return this.targetUri;
    }
 
    /**
-    * Sets the absolute path of the file.
-    * @param absolutePath The absolute path of the file.
+    * Sets the context's target URI. For example, "file:///c:/dir/foo.en" or "context://webapp/dir/foo.en".
+    * @param baseUri The context's target URI.
     */
-   public void setBasePath(String absolutePath)
+   public void setTargetUri(String baseUri)
    {
-      this.baseUri = absolutePath;
+      this.targetUri = baseUri;
+   }
+
+   /**
+    * Returns the context's directory URI. For example, "file:///c:/dir/" or "context://webapp/dir/".
+    * @return The context's directory URI. For example, "file:///c:/dir/" or "context://webapp/dir/".
+    */
+   public String getDirectoryUri()
+   {
+      return this.directoryUri;
    }
 
    /**
@@ -209,47 +235,92 @@ public class DirectoryResource extends AbstractResource
     */
    public List<Representation> getVariants()
    {
-      logger.info("Getting variants for : " + getBasePath());
-      List<Representation> result = super.getVariants();
-
-      if(getBasePath().startsWith("/"))
+   	List<Representation> result = super.getVariants();
+      logger.info("Getting variants for : " + getTargetUri());
+      
+      if(this.directoryContent != null)
       {
-   		// Get the parent directory's path
-   		int lastSlashIndex = getBasePath().lastIndexOf('/');
-   		String directoryPath = getBasePath().substring(0, lastSlashIndex + 1);
-
       	// Try to get the content of the directory
-   		getDirectory().getContextClient().get(directoryPath);
-   		
-         // List all the file in the immediate parent directory
-         File baseDirectory = new File(getBasePath()).getParentFile();
-         if(baseDirectory != null)
+         Call call = getDirectory().getContextClient().get(getDirectoryUri());
+         if((call.getOutput() != null) && call.getOutput().getMediaType().equals(MediaTypes.TEXT_URI_LIST))
          {
-            File[] files = baseDirectory.listFiles();
-            File currentFile = null;
+         	try
+				{
+         		Set<String> extensions = null; 
+         		String entryUri;
+         		String fullEntryName;
+         		String baseEntryName;
+         		int lastSlashIndex;
+         		int firstDotIndex;
+         		
+					for(Reference ref : new ReferenceList(call.getOutput()))
+					{
+						entryUri = ref.toString();
+			      	lastSlashIndex = entryUri.lastIndexOf('/');
+			      	fullEntryName = (lastSlashIndex == -1) ? entryUri : entryUri.substring(lastSlashIndex + 1);
+		         	
+		         	// Remove the extensions from the base name
+		         	firstDotIndex = fullEntryName.indexOf('.');
+		         	if(firstDotIndex != -1)
+		         	{
+		         		baseEntryName = fullEntryName.substring(0, firstDotIndex);
+		         	}
+		         	else
+		         	{
+		         		baseEntryName = fullEntryName;
+		         	}
 
-            for(int i = 0; (files != null) && (i < files.length); i++)
-            {
-               currentFile = files[i];
+					   // Check if the current file is a valid variant
+					   if(baseEntryName.equals(this.baseName))
+					   {
+		         		extensions = getExtensions(fullEntryName);
 
-               // Check if the current file is a valid variant
-               if(currentFile.getAbsolutePath().startsWith(getBasePath()))
-               {
-                  // Add the new variant to the result list
-               	
-                  // TODO
-                  //result.add(fr);
-               }
-            }
+		         		// Verify that the extensions are compatible
+					   	if(((extensions == null) && (this.baseExtensions == null)) || 
+					   		(this.baseExtensions == null) || extensions.containsAll(this.baseExtensions))
+					   	{
+						      // Add the new variant to the result list
+						   	call = getDirectory().getContextClient().get(entryUri);
+						      
+						   	if(call.getStatus().isSuccess() && (call.getOutput() != null))
+						   	{
+						   		result.add(call.getOutput());
+						   	}
+					   	}
+					   }
+					}
+					
+					if(result.size() == 0)
+					{
+						if(getDirectory().isListingAllowed())
+						{
+							result = getDirectory().getDirectoryVariants(this.directoryContent);
+						}
+					}
+				}
+				catch (IOException e)
+				{
+			      logger.log(Level.WARNING, "Exception while looking up the list of variant representations for: " + this.targetUri);
+				}
          }
-         
       }
-      else
+      
+      return result;
+   }
+   
+   /**
+    * Returns the set of extensions contained in a given directory entry name.
+    * @param entryName The directory entry name.
+    * @return The set of extensions.
+    */
+   public static Set<String> getExtensions(String entryName)
+   {
+   	Set<String> result = new TreeSet<String>();
+      String[] tokens = entryName.split("\\.");
+      for(int i = 1; i < tokens.length; i++)
       {
-      	// Not an absolute path
-      	logger.warning("Unable to find the variant representations for: " + getBasePath());
+         result.add(tokens[i]);
       }
-
       return result;
    }
    

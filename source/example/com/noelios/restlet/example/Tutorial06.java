@@ -45,9 +45,6 @@ public class Tutorial06
          // Note that the container is the call restlet.
          myContainer.addServer("HTTP Server", Protocols.HTTP, 8182);
 
-         // Add a file client connector to the Restlet container. 
-         myContainer.addClient("File Client", Protocols.FILE);
-
          // Create a host router matching calls to the server
          HostRouter host = new HostRouter(myContainer, 8182);
          myContainer.attach(host);

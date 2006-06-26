@@ -101,7 +101,8 @@ public class ContextClient extends AbstractClient
    protected List<String> warEntries;
 
    /**
-    * Constructor.
+    * Constructor. Note that the common list of metadata associations based on extensions is added, see
+    * the addCommonExtensions() method.
     * @param owner The owner component.
     * @param parameters The initial parameters.
     */
@@ -118,6 +119,8 @@ public class ContextClient extends AbstractClient
       this.webAppPath = null;
       this.webAppArchive = false;
       this.warEntries = null;
+
+      addCommonExtensions();
    }
    
    /**
@@ -496,7 +499,7 @@ public class ContextClient extends AbstractClient
    }
 
    /**
-    * Adds a common list of extensions to a directory Restlet.
+    * Adds a common list of associations from extensions to metadata.
     * The list of languages extensions:<br/>
     * <ul>
     *  <li>en: English</li>
@@ -602,10 +605,10 @@ public class ContextClient extends AbstractClient
       for(int j = 1; j < tokens.length; j++)
       {
       	current = getMetadata(tokens[j]);
-         if(current instanceof MediaType) representation.setMediaType((MediaType)representation);
-         if(current instanceof CharacterSet) representation.setCharacterSet((CharacterSet)representation);
-         if(current instanceof Encoding) representation.setEncoding((Encoding)representation);
-         if(current instanceof Language) representation.setLanguage((Language)representation);
+         if(current instanceof MediaType) representation.setMediaType((MediaType)current);
+         if(current instanceof CharacterSet) representation.setCharacterSet((CharacterSet)current);
+         if(current instanceof Encoding) representation.setEncoding((Encoding)current);
+         if(current instanceof Language) representation.setLanguage((Language)current);
 
          int dashIndex = tokens[j].indexOf('-');
          if((representation == null) && (dashIndex != -1))

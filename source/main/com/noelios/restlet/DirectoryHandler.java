@@ -67,6 +67,9 @@ public class DirectoryHandler extends AbstractHandler
    
    /** Indicates if modifications to context resources are allowed. */
    protected boolean readOnly;
+   
+   /** Indicates if the display of directory listings is allowed when no index file is found. */
+   protected boolean listingAllowed;
       
    /**
     * Constructor.
@@ -83,6 +86,7 @@ public class DirectoryHandler extends AbstractHandler
       this.rootUri = rootUri;
       this.deeply = deeply;
       this.readOnly = true;
+      this.listingAllowed = false;
    }
    /**
 	 * Finds the next Restlet if available.
@@ -100,6 +104,24 @@ public class DirectoryHandler extends AbstractHandler
 			logger.log(Level.WARNING, "Unable to find the directory's resource", ioe);
 			return null;
 		}
+	}
+	
+	/**
+	 * Indicates if the display of directory listings is allowed when no index file is found.
+	 * @return True if the display of directory listings is allowed when no index file is found.
+	 */
+	public boolean isListingAllowed()
+	{
+		return this.listingAllowed;
+	}
+	
+	/**
+	 * Indicates if the display of directory listings is allowed when no index file is found.
+	 * @return True if the display of directory listings is allowed when no index file is found.
+	 */
+	public void setListingAllowed(boolean listingAllowed)
+	{
+		this.listingAllowed = listingAllowed;
 	}
 	
    /** 
@@ -196,7 +218,7 @@ public class DirectoryHandler extends AbstractHandler
    	sb.append("<html><body>\n");
    	for(Reference ref : directoryContent)
    	{
-   		sb.append("<a href=\"" + ref.toString() + "\">" + ref.toString() + "</a>\n");
+   		sb.append("<a href=\"" + ref.toString() + "\">" + ref.toString() + "</a><br/>\n");
    	}
    	sb.append("</body></html>\n");
 
