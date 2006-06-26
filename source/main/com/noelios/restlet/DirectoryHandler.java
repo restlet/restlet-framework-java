@@ -22,11 +22,18 @@
 
 package com.noelios.restlet;
 
+import java.io.IOException;
+import java.util.List;
+import java.util.logging.Level;
+import java.util.logging.Logger;
+
 import org.restlet.AbstractHandler;
 import org.restlet.Call;
 import org.restlet.Restlet;
 import org.restlet.component.Component;
 import org.restlet.connector.Client;
+import org.restlet.data.ReferenceList;
+import org.restlet.data.Representation;
 
 import com.noelios.restlet.impl.ContextClient;
 import com.noelios.restlet.impl.DirectoryResource;
@@ -39,6 +46,9 @@ import com.noelios.restlet.impl.DirectoryResource;
  */
 public class DirectoryHandler extends AbstractHandler
 {
+   /** Obtain a suitable logger. */
+   private static Logger logger = Logger.getLogger(DirectoryResource.class.getCanonicalName());
+
    /** The context client. */
    protected Client contextClient;
 
@@ -77,7 +87,15 @@ public class DirectoryHandler extends AbstractHandler
 	 */
 	public Restlet findNext(Call call)
 	{
-   	return new DirectoryResource(this, call.getResourcePath());
+   	try
+		{
+			return new DirectoryResource(this, call.getResourcePath());
+		}
+		catch (IOException ioe)
+		{
+			logger.log(Level.WARNING, "Unable to find the directory's resource", ioe);
+			return null;
+		}
 	}
 	
    /** 
@@ -159,6 +177,18 @@ public class DirectoryHandler extends AbstractHandler
    public void setDeeply(boolean deeply)
    {
       this.deeply = deeply;
+   }
+   
+   /**
+    * Returns the variant representations of a directory.
+    * @param directoryContent The list of references contained in the directory.
+    * @return The variant representations of a directory.
+    */
+   public List<Representation> getDirectoryVariants(ReferenceList directoryContent)
+   {
+   	
+   	
+   	return null;
    }
 
 }

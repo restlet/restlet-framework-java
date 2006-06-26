@@ -23,6 +23,7 @@
 package com.noelios.restlet.impl;
 
 import java.io.File;
+import java.io.IOException;
 import java.util.List;
 import java.util.logging.Logger;
 
@@ -30,6 +31,7 @@ import org.restlet.Call;
 import org.restlet.data.AbstractResource;
 import org.restlet.data.MediaTypes;
 import org.restlet.data.Reference;
+import org.restlet.data.ReferenceList;
 import org.restlet.data.Representation;
 import org.restlet.data.Statuses;
 
@@ -59,13 +61,19 @@ public class DirectoryResource extends AbstractResource
     * The local base name of the resource. For example, "foo.en" and "foo.en-GB.html" return "foo".
     */
    protected String baseName;
+   
+   /**
+    * If the resource is a directory, this contains its content.
+    */
+   protected ReferenceList directoryContent;
 
    /**
     * Constructor.
     * @param directory The parent directory handler.
     * @param resourcePath The relative resource path.
+    * @throws IOException 
     */
-   public DirectoryResource(DirectoryHandler directory, String resourcePath)
+   public DirectoryResource(DirectoryHandler directory, String resourcePath) throws IOException
    {
       // Update the member variables
       this.directory = directory;
@@ -80,12 +88,12 @@ public class DirectoryResource extends AbstractResource
 
       // Try to detect the presence of the file
       Call call = getDirectory().getContextClient().get(this.baseUri);
-      boolean isDirectory = (call.getOutput() != null) && (call.getOutput().getMediaType().equals(MediaTypes.TEXT_URI_LIST));
-      
-      if(isDirectory)
+      if((call.getOutput() != null) && call.getOutput().getMediaType().equals(MediaTypes.TEXT_URI_LIST))
       {
+      	this.directoryContent = new ReferenceList(call.getOutput());
+
          // Append the index name
-         if(getDirectory().getIndexName() != null)
+      	if(getDirectory().getIndexName() != null)
          {
             this.baseUri = this.baseUri + getDirectory().getIndexName();
             this.baseName = getDirectory().getIndexName();
@@ -93,13 +101,14 @@ public class DirectoryResource extends AbstractResource
       }
       else
       {
-         if(lastIndex == -1)
+      	int lastSlashIndex = baseUri.lastIndexOf('/');
+         if(lastSlashIndex == -1)
          {
             this.baseName = baseUri;
          }
          else
          {
-            this.baseName = baseUri.substring(lastIndex + 1);
+            this.baseName = baseUri.substring(lastSlashIndex + 1);
          }
       }
 
@@ -237,7 +246,8 @@ public class DirectoryResource extends AbstractResource
       }
       else
       {
-      	
+      	// Not an absolute path
+      	logger.warning("Unable to find the variant representations for: " + getBasePath());
       }
 
       return result;
