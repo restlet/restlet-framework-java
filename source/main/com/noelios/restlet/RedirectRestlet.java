@@ -74,7 +74,7 @@ public class RedirectRestlet extends AbstractRestlet
    public static final int MODE_CONNECTOR = 4;
 
    /**
-    * In this mode, the call is internally redirected within the parent component. This is useful when 
+    * In this mode, the call is internally redirected within the owner component. This is useful when 
     * there are multiple ways to access to the same resource.<br/>
     * Be careful when specifying the target pattern or infinite loops may occur.
     */
@@ -91,15 +91,15 @@ public class RedirectRestlet extends AbstractRestlet
 
    /**
     * Constructor.
-    * @param parent The parent component.
+    * @param owner The owner component.
     * @param targetPattern The pattern to build the target URI (using StringTemplate syntax and the CallModel for variables).
     * @param mode The redirection mode.
     * @see com.noelios.restlet.util.StringTemplate
     * @see com.noelios.restlet.util.CallModel
     */
-   public RedirectRestlet(Component parent, String targetPattern, int mode)
+   public RedirectRestlet(Component owner, String targetPattern, int mode)
    {
-      super(parent);
+      super(owner);
       this.targetPattern = targetPattern;
       this.mode = mode;
       this.connectorName = null;
@@ -107,15 +107,15 @@ public class RedirectRestlet extends AbstractRestlet
 
    /**
     * Constructor for the connector mode.
-    * @param parent The parent component.
+    * @param owner The owner component.
     * @param targetPattern The pattern to build the target URI (using StringTemplate syntax and the CallModel for variables).
     * @param connectorName The connector name.
     * @see com.noelios.restlet.util.StringTemplate
     * @see com.noelios.restlet.util.CallModel
     */
-   public RedirectRestlet(Component parent, String targetPattern, String connectorName)
+   public RedirectRestlet(Component owner, String targetPattern, String connectorName)
    {
-      super(parent);
+      super(owner);
       this.targetPattern = targetPattern;
       this.mode = MODE_CONNECTOR;
       this.connectorName = connectorName;

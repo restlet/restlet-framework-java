@@ -213,7 +213,7 @@ public class RestletContainerBuilder extends ComponentBuilder
     */
    public FilterBuilder attachCompress()
    {
-      CompressFilter node = new CompressFilter(getNode().getOwner());
+      CompressFilter node = new CompressFilter(getNode());
       getNode().attach(node);
       return Builders.buildFilter(this, node);
    }
@@ -235,7 +235,7 @@ public class RestletContainerBuilder extends ComponentBuilder
 	 */
 	public FilterBuilder attachDecompress(boolean decodeInput, boolean decodeOutput)
 	{
-      DecompressFilter node = new DecompressFilter(getNode().getOwner(), decodeInput, decodeOutput);
+      DecompressFilter node = new DecompressFilter(getNode(), decodeInput, decodeOutput);
       getNode().attach(node);
       return Builders.buildFilter(this, node);
 	}
@@ -249,7 +249,7 @@ public class RestletContainerBuilder extends ComponentBuilder
     */
    public RestletBuilder attachDirectory(String rootUri, boolean deeply, String indexName)
    {
-      DirectoryHandler node = new DirectoryHandler(getNode().getOwner(), rootUri, deeply, indexName);
+      DirectoryHandler node = new DirectoryHandler(getNode(), rootUri, deeply, indexName);
       getNode().attach(node);
       return Builders.buildRestlet(this, node);
    }
@@ -260,7 +260,7 @@ public class RestletContainerBuilder extends ComponentBuilder
     */
    public ExtractFilterBuilder attachExtract()
    {
-      ExtractFilter node = new ExtractFilter(getNode().getOwner());
+      ExtractFilter node = new ExtractFilter(getNode());
       getNode().attach(node);
       return Builders.buildExtract(this, node);
    }
@@ -276,7 +276,7 @@ public class RestletContainerBuilder extends ComponentBuilder
     */
    public GuardFilterBuilder attachGuard(String logName, boolean authentication, ChallengeScheme scheme, String realm, boolean authorization)
    {
-   	GuardFilter node = new GuardFilter(getNode().getOwner(), logName, authentication, scheme, realm, authorization);
+   	GuardFilter node = new GuardFilter(getNode(), logName, authentication, scheme, realm, authorization);
       getNode().attach(node);
       return Builders.buildGuard(this, node);
    }
@@ -291,7 +291,7 @@ public class RestletContainerBuilder extends ComponentBuilder
     */
    public HostRouterBuilder createHost(int port)
    {
-      HostRouter node = new HostRouter(getNode().getOwner(), port);
+      HostRouter node = new HostRouter(getNode(), port);
       node.setMode(UsageMode.ROUTER);
       return Builders.buildHost(this, node);
    }
@@ -306,7 +306,7 @@ public class RestletContainerBuilder extends ComponentBuilder
     */
    public HostRouterBuilder createHost(String domain)
    {
-      HostRouter node = new HostRouter(getNode().getOwner(), domain);
+      HostRouter node = new HostRouter(getNode(), domain);
       node.setMode(UsageMode.ROUTER);
       return Builders.buildHost(this, node);
    }
@@ -322,7 +322,7 @@ public class RestletContainerBuilder extends ComponentBuilder
     */
    public HostRouterBuilder createHost(String domain, int port)
    {
-      HostRouter node = new HostRouter(getNode().getOwner(), domain, port);
+      HostRouter node = new HostRouter(getNode(), domain, port);
       node.setMode(UsageMode.ROUTER);
       return Builders.buildHost(this, node);
    }
@@ -335,7 +335,7 @@ public class RestletContainerBuilder extends ComponentBuilder
     */
    public FilterBuilder attachLog(String logName)
    {
-      LogFilter node = new LogFilter(getNode().getOwner(), logName);
+      LogFilter node = new LogFilter(getNode(), logName);
       getNode().attach(node);
       return Builders.buildFilter(this, node);
    }
@@ -350,7 +350,7 @@ public class RestletContainerBuilder extends ComponentBuilder
     */
    public FilterBuilder attachLog(String logName, String logFormat)
    {
-      LogFilter node = new LogFilter(getNode().getOwner(), logName, logFormat);
+      LogFilter node = new LogFilter(getNode(), logName, logFormat);
       getNode().attach(node);
       return Builders.buildFilter(this, node);
    }
@@ -361,7 +361,7 @@ public class RestletContainerBuilder extends ComponentBuilder
     */
    public RouterBuilder attachRouter()
    {
-      DefaultRouter node = new DefaultRouter(getNode().getOwner());
+      DefaultRouter node = new DefaultRouter(getNode());
       getNode().attach(node);
       return Builders.buildRouter(this, node);
    }
@@ -374,7 +374,7 @@ public class RestletContainerBuilder extends ComponentBuilder
     */
    public RestletBuilder attachRedirect(String targetPattern, int mode)
    {
-      RedirectRestlet node = new RedirectRestlet(getNode().getOwner(), targetPattern, mode);
+      RedirectRestlet node = new RedirectRestlet(getNode(), targetPattern, mode);
       getNode().attach(node);
       return Builders.buildRestlet(this, node);
    }
@@ -387,7 +387,7 @@ public class RestletContainerBuilder extends ComponentBuilder
     */
    public RestletBuilder attachRedirect(String targetPattern, String connectorName)
    {
-      RedirectRestlet node = new RedirectRestlet(getNode().getOwner(), targetPattern, connectorName);
+      RedirectRestlet node = new RedirectRestlet(getNode(), targetPattern, connectorName);
       getNode().attach(node);
       return Builders.buildRestlet(this, node);
    }
@@ -401,7 +401,7 @@ public class RestletContainerBuilder extends ComponentBuilder
     */
    public FilterBuilder attachStatus(boolean overwrite, String email, String homeURI)
    {
-      StatusFilter node = new StatusFilter(getNode().getOwner(), overwrite, email, homeURI);
+      StatusFilter node = new StatusFilter(getNode(), overwrite, email, homeURI);
       getNode().attach(node);
       return Builders.buildFilter(this, node);
    }

@@ -86,27 +86,27 @@ public class CompressFilter extends AbstractFilter
 	/**
 	 * Constructor using the default media types and with {@link #ENCODE_ALL_SIZES} setting.
 	 * This constructor will only encode output representations after call handling.
-	 * @param parent The parent component.
+	 * @param owner The owner component.
 	 */
-	public CompressFilter(Component parent)
+	public CompressFilter(Component owner)
 	{
-		this(parent, false, true, ENCODE_ALL_SIZES, getDefaultAcceptedMediaTypes(),
+		this(owner, false, true, ENCODE_ALL_SIZES, getDefaultAcceptedMediaTypes(),
 				getDefaultIgnoredMediaTypes());
 	}
 
 	/**
 	 * Constructor.
-	 * @param parent The parent component.
+	 * @param owner The owner component.
 	 * @param encodeInput Indicates if the input representation should be encoded.
 	 * @param encodeOutput Indicates if the output representation should be encoded.
 	 * @param minimumSize The minimal size of the representation where compression should be used.
 	 * @param acceptedMediaTypes The media types that should be encoded.
 	 * @param ignoredMediaTypes The media types that should be ignored.
 	 */
-	public CompressFilter(Component parent, boolean encodeInput, boolean encodeOutput, 
+	public CompressFilter(Component owner, boolean encodeInput, boolean encodeOutput, 
 			long minimumSize, List<MediaType> acceptedMediaTypes, List<MediaType> ignoredMediaTypes)
 	{
-		super(parent);
+		super(owner);
 		this.encodeInput = encodeInput;
 		this.encodeOutput = encodeOutput;
 		this.mininumSize = minimumSize;

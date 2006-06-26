@@ -71,7 +71,7 @@ public interface Component extends Restlet
 	
    /**
     * Calls a client connector. If no matching connector is available in this component, 
-    * the parent components will recursively be used in order to find the closest match.
+    * the owner components will recursively be used in order to find the closest match.
     * @param name The name of the client connector.
     * @param call The call to handle.
     * @throws IOException

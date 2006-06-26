@@ -49,27 +49,27 @@ public class LogFilter extends AbstractFilter
    /**
     * Constructor using the default format.<br/>
     * Default format using <a href="http://analog.cx/docs/logfmt.html">Analog syntax</a>: %Y-%m-%d\t%h:%n:%j\t%j\t%r\t%u\t%s\t%j\t%B\t%f\t%c\t%b\t%q\t%v\t%T
-    * @param parent The parent component.
+    * @param owner The owner component.
     * @param logName The log name to used in the logging.properties file.
     */
-   public LogFilter(Component parent, String logName)
+   public LogFilter(Component owner, String logName)
    {
-      super(parent);
+      super(owner);
       this.logger = Logger.getLogger(logName);
       this.logTemplate = null;
    }
 
    /**
     * Constructor.
-    * @param parent The parent component.
+    * @param owner The owner component.
     * @param logName The log name to used in the logging.properties file.
     * @param logFormat The log format to use.
     * @see com.noelios.restlet.util.CallModel
     * @see com.noelios.restlet.util.StringTemplate
     */
-   public LogFilter(Component parent, String logName, String logFormat)
+   public LogFilter(Component owner, String logName, String logFormat)
    {
-      super(parent);
+      super(owner);
       this.logger = Logger.getLogger(logName);
       this.logTemplate = new StringTemplate(logFormat);
    }

@@ -65,14 +65,14 @@ public class TunnelFilter extends ExtractFilter
 
    /**
     * Constructor.
-    * @param parent The parent component.
+    * @param owner The owner component.
     * @param methodTunnel Indicates if the method name can be tunneled.
     * @param preferencesTunnel Indicates if the client preferences can be tunneled.
     * @param uriTunnel Indicates if the resource reference can be tunneled.
     */
-   public TunnelFilter(Component parent, boolean methodTunnel, boolean preferencesTunnel, boolean uriTunnel)
+   public TunnelFilter(Component owner, boolean methodTunnel, boolean preferencesTunnel, boolean uriTunnel)
    {
-      super(parent);
+      super(owner);
       this.methodTunnel = methodTunnel;
       this.methodAttribute= "method";
       this.preferencesTunnel = preferencesTunnel;

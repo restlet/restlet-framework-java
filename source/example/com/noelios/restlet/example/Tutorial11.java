@@ -58,9 +58,6 @@ public class Tutorial11
          // Note that the container is the call restlet.
          myContainer.addServer("HTTP Server", Protocols.HTTP, 8182);
 
-         // Add a file client connector to the Restlet container. 
-         myContainer.addClient("File Client", Protocols.FILE);
-
          // Attach a log Filter to the container
          LogFilter log = new LogFilter(myContainer, "com.noelios.restlet.example");
          myContainer.attach(log);

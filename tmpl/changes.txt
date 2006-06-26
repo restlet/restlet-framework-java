@@ -84,6 +84,7 @@ Restlet changes log
  - Reviewed and improved all the NRE representation to better support character encodings (StringRepresentation),
    serializable objects (ObjectRepresentation). Moved common logic to ByteUtils.
  - Renamed DirectoryRestlet into DirectoryHandler. No impact for those using the fluent builders.
+ - A default ContextClient is automatically added to each RestletContainer created.
 
 1.0 beta 14 (2006-06-02)
  - Adjusted build.properties so that default values work directly.

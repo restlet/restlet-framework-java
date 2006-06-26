@@ -62,14 +62,14 @@ public class StatusFilter extends AbstractFilter
 
    /**
     * Constructor.
-    * @param parent The parent component.
+    * @param owner The owner component.
     * @param overwrite Indicates whether an existing representation should be overwritten.
     * @param email Email address of the administrator to contact in case of error.
     * @param homeURI The home URI to display in case the user got a "not found" exception.
     */
-   public StatusFilter(Component parent, boolean overwrite, String email, String homeURI)
+   public StatusFilter(Component owner, boolean overwrite, String email, String homeURI)
    {
-      super(parent);
+      super(owner);
       this.overwrite = overwrite;
       this.email = email;
       this.homeURI = homeURI;

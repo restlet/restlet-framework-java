@@ -53,22 +53,22 @@ public class DecompressFilter extends AbstractFilter
 
 	/**
 	 * Constructor to only decode input representations before call handling.
-	 * @param parent The parent component.
+	 * @param owner The owner component.
 	 */
-	public DecompressFilter(Component parent)
+	public DecompressFilter(Component owner)
 	{
-		this(parent, true, false);
+		this(owner, true, false);
 	}
 
 	/**
 	 * Constructor.
-	 * @param parent The parent component.
+	 * @param owner The owner component.
 	 * @param decodeInput Indicates if the input representation should be decoded.
 	 * @param decodeOutput Indicates if the output representation should be decoded.
 	 */
-	public DecompressFilter(Component parent, boolean decodeInput, boolean decodeOutput)
+	public DecompressFilter(Component owner, boolean decodeInput, boolean decodeOutput)
 	{
-		super(parent);
+		super(owner);
 		this.decodeInput = decodeInput;
 		this.decodeOutput = decodeOutput;
 	}

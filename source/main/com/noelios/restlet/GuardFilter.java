@@ -70,16 +70,16 @@ public class GuardFilter extends AbstractFilter
    /**
     * Constructor.
     * If the authentication is not requested, the scheme and realm parameters are not necessary (pass null instead).
-    * @param parent The parent component.
+    * @param owner The owner component.
     * @param logName The log name to used in the logging.properties file.
     * @param authentication Indicates if the guard should attempt to authenticate the caller.
     * @param scheme The authentication scheme to use. 
     * @param realm The authentication realm.
     * @param authorization Indicates if the guard should attempt to authorize the caller.
     */
-   public GuardFilter(Component parent, String logName, boolean authentication, ChallengeScheme scheme, String realm, boolean authorization)
+   public GuardFilter(Component owner, String logName, boolean authentication, ChallengeScheme scheme, String realm, boolean authorization)
    {
-      super(parent);
+      super(owner);
       this.logger = Logger.getLogger(logName);
       this.authentication = authentication;
       this.authorizations = null;
@@ -230,7 +230,7 @@ public class GuardFilter extends AbstractFilter
    protected void accept(Call call)
    {
    	// Invoke the chained Restlet
-      super.handle(call);
+      super.doHandle(call);
    }
    
    /**

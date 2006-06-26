@@ -70,13 +70,12 @@ public class Tutorial12
          // Build and start the container
       	Builders.buildContainer()
       		.addServer("HTTP server", Protocols.HTTP, 8182)
-      		.addClient("File Client", Protocols.FILE)
       		.attachLog("com.noelios.restlet.example")
       			.attachStatus(true, "webmaster@mysite.org", "http://www.mysite.org")
       				.attachHost(8182)
       					.attachGuard("/docs/", "com.noelios.restlet.example", true, ChallengeSchemes.HTTP_BASIC , "Restlet tutorial", true)
       						.authorize("scott", "tiger")
-      						.attachDirectory("D:/Restlet/www/docs/api/", true, "index").upPath()
+      						.attachDirectory("file:///D:/Restlet/www/docs/api/", true, "index").upPath()
    						.attachPath("/users/[a-z]+")
    								.attach("$", userRestlet).upPath()
 									.attach("/orders$", ordersRestlet).owner().start();

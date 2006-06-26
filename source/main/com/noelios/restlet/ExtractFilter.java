@@ -69,11 +69,11 @@ public class ExtractFilter extends AbstractFilter
 
    /**
     * Constructor.
-    * @param parent The parent component.
+    * @param owner The owner component.
     */
-   public ExtractFilter(Component parent)
+   public ExtractFilter(Component owner)
    {
-      super(parent);
+      super(owner);
       this.queryExtracts = null;
       this.inputExtracts = null;
       this.contextExtracts = null;

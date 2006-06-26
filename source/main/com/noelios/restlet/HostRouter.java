@@ -166,41 +166,42 @@ public class HostRouter extends AbstractHandler implements Router
 	
    /**
     * Constructor to match the machine's host name on port 80.
-    * @param parent The parent component.
+    * @param owner The owner component.
     */
-   public HostRouter(Component parent)
+   public HostRouter(Component owner)
    {
-		this(parent, 80);
+		this(owner, 80);
    }
 	
    /**
     * Constructor to match a given host name on port 80.
-    * @param parent The parent component.
+    * @param owner The owner component.
     * @param domain The domain name.
     */
-   public HostRouter(Component parent, String domain)
+   public HostRouter(Component owner, String domain)
    {
-   	this(parent, domain, 80);
+   	this(owner, domain, 80);
    }
 	
    /**
     * Constructor to match the machine's host name on a given port.
-    * @param parent The parent component.
+    * @param owner The owner component.
     * @param port The port number.
     */
-   public HostRouter(Component parent, int port)
+   public HostRouter(Component owner, int port)
    {
-		this(parent, getLocalHostName(), port);
+		this(owner, getLocalHostName(), port);
    }
    
    /**
     * Constructor to match a given host name on a given port.
-    * @param parent The parent component.
+    * @param owner The owner component.
     * @param domain The domain name.
     * @param port The port number.
     */
-   public HostRouter(Component parent, String domain, int port)
+   public HostRouter(Component owner, String domain, int port)
    {
+   	super(owner);
       this.mode = UsageMode.FILTER;
       this.allowedProtocols = new ArrayList<Protocol>();
       this.allowedProtocols.add(Protocols.HTTP);
@@ -218,7 +219,7 @@ public class HostRouter extends AbstractHandler implements Router
       this.allowLocalHost = true;
       this.allowDefaultPorts = true;
       this.frontRouter = null;
-      this.backRouter = new DefaultRouter(parent);
+      this.backRouter = new DefaultRouter(owner);
       updatePreferredUri();
    }
 
