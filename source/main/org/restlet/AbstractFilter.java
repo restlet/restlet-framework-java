@@ -106,7 +106,7 @@ public abstract class AbstractFilter extends AbstractHandler implements Filter
     * Allows filtering before its handling by the target Restlet. Does nothing by default.
     * @param call The call to filter.
     */
-   public void beforeHandle(Call call)
+   protected void beforeHandle(Call call)
    {
    	// To be overriden
    }
@@ -115,7 +115,7 @@ public abstract class AbstractFilter extends AbstractHandler implements Filter
     * Handles the call by distributing it to the target handler. 
     * @param call The call to handle.
     */
-   public void doHandle(Call call)
+   protected void doHandle(Call call)
    {
       super.handle(call);
    }
@@ -124,7 +124,7 @@ public abstract class AbstractFilter extends AbstractHandler implements Filter
     * Allows filtering after its handling by the target Restlet. Does nothing by default.
     * @param call The call to filter.
     */
-   public void afterHandle(Call call)
+   protected void afterHandle(Call call)
    {
    	// To be overriden
    }

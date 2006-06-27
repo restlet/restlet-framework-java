@@ -57,23 +57,4 @@ public interface Filter extends Handler
     * @param call The call to handle.
     */
 	public void handle(Call call);
-
-   /**
-    * Allows filtering before its handling by the target Restlet. Does nothing by default.
-    * @param call The call to filter.
-    */
-   public void beforeHandle(Call call);
-
-   /**
-    * Handles the call by distributing it to the target handler. 
-    * @param call The call to handle.
-    */
-   public void doHandle(Call call);
-
-   /**
-    * Allows filtering after its handling by the target Restlet. Does nothing by default.
-    * @param call The call to filter.
-    */
-   public void afterHandle(Call call);
-	
 }
