@@ -30,9 +30,8 @@ import org.restlet.data.ParameterList;
 import com.noelios.restlet.impl.ContextClient;
 
 /**
- * Container for Routers, Filters or Restlets. Note that a container is also a Filter by itself. It can also 
- * be part of a larger RestletServer.<br/> Restlet containers can also be contained within a parent Restlet 
- * server.
+ * Container for Restlets like Handlers, Routers and Filters. Restlet containers can also be contained 
+ * within a parent Restlet server.
  * @see <a href="http://www.restlet.org/tutorial#part05">Tutorial: Restlets servers and containers</a>
  * @author Jerome Louvel (contact@noelios.com) <a href="http://www.noelios.com/">Noelios Consulting</a>
  */
