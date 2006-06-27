@@ -349,7 +349,7 @@ public class RouterBuilder extends RestletBuilder
     * @param pattern The URI pattern used to map calls.
     * @return The builder for the created node.
     */
-   public RouterBuilder attachPath(String pattern)
+   public RouterBuilder attachRouter(String pattern)
    {
    	Router node = new DefaultRouter(getNode().getOwner());
       getNode().attach(pattern, node);

@@ -76,7 +76,7 @@ public class Tutorial12
       					.attachGuard("/docs/", "com.noelios.restlet.example", true, ChallengeSchemes.HTTP_BASIC , "Restlet tutorial", true)
       						.authorize("scott", "tiger")
       						.attachDirectory("file:///D:/Restlet/www/docs/api/", true, "index").upRouter()
-   						.attachPath("/users/[a-z]+")
+   						.attachRouter("/users/[a-z]+")
    								.attach("$", userRestlet).upRouter()
 									.attach("/orders$", ordersRestlet).owner().start();
       }
