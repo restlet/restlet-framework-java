@@ -1,2 +1,0 @@
-com.noelios.restlet.impl.HttpClient			# HTTP, HTTPS
-com.noelios.restlet.impl.ContextClient		# CONTEXT, FILE
