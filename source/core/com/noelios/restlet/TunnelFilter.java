@@ -30,8 +30,8 @@ import com.noelios.restlet.util.PreferenceUtils;
 
 /**
  * Filter extracting some attributes from a call.
- * Multiple extractions can be defined, based on the query part of the resource reference, 
- * on the input form (posted from a browser), on the context matches or on the call's template model.  
+ * Multiple extractions can be defined, based on the query part of the resource reference,
+ * on the input form (posted from a browser), on the context matches or on the call's template model.
  * @author Jerome Louvel (contact@noelios.com) <a href="http://www.noelios.com/">Noelios Consulting</a>
  */
 public class TunnelFilter extends ExtractFilter
@@ -41,22 +41,22 @@ public class TunnelFilter extends ExtractFilter
 
    /** The name of the attribute containing the method name. */
    protected String methodAttribute;
-   
+
    /** Indicates if the client preferences can be tunneled. */
    protected boolean preferencesTunnel;
-   
+
    /** The name of the attribute containing the accepted character sets. */
    protected String characterSetsAttribute;
-   
+
    /** The name of the attribute containing the accepted encodings. */
    protected String encodingsAttribute;
-   
+
    /** The name of the attribute containing the accepted languages. */
    protected String languagesAttribute;
-   
+
    /** The name of the attribute containing the accepted media types. */
    protected String mediaTypesAttribute;
-   
+
    /** Indicates if the resource reference can be tunneled. */
    protected boolean uriTunnel;
 
@@ -90,223 +90,223 @@ public class TunnelFilter extends ExtractFilter
     */
    public void beforeHandle(Call call)
    {
-   	super.beforeHandle(call);
+      super.beforeHandle(call);
 
-   	// Tunnels the extracted attributes into the proper call objects.
-   	if(isMethodTunnel())
-   	{
-   		String methodName = (String)call.getAttributes().get(getMethodAttribute());
-   		
-   		if(methodName != null)
-   		{
-   			call.setMethod(Methods.create(methodName));
-   		}
-   	}
-   	
-   	if(isPreferencesTunnel())
-   	{
+      // Tunnels the extracted attributes into the proper call objects.
+      if(isMethodTunnel())
+      {
+         String methodName = (String)call.getAttributes().get(getMethodAttribute());
+
+         if(methodName != null)
+         {
+            call.setMethod(Methods.create(methodName));
+         }
+      }
+
+      if(isPreferencesTunnel())
+      {
          // Extract the header values
          String acceptCharset = (String)call.getAttributes().get(getCharacterSetsAttribute());
-         String acceptEncoding = (String)call.getAttributes().get(getCharacterSetsAttribute());
-         String acceptLanguage = (String)call.getAttributes().get(getCharacterSetsAttribute());
-         String acceptMediaType = (String)call.getAttributes().get(getCharacterSetsAttribute());
+         String acceptEncoding = (String)call.getAttributes().get(getEncodingsAttribute());
+         String acceptLanguage = (String)call.getAttributes().get(getLanguagesAttribute());
+         String acceptMediaType = (String)call.getAttributes().get(getMediaTypesAttribute());
 
          // Parse the headers and update the call preferences
          if(acceptCharset != null)
          {
-         	call.getPreference().getCharacterSets().clear();
-         	PreferenceUtils.parseCharacterSets(acceptCharset, call.getPreference());
+            call.getPreference().getCharacterSets().clear();
+            PreferenceUtils.parseCharacterSets(acceptCharset, call.getPreference());
          }
-         
+
          if(acceptEncoding != null)
          {
-         	call.getPreference().getEncodings().clear();
-         	PreferenceUtils.parseEncodings(acceptEncoding, call.getPreference());
+            call.getPreference().getEncodings().clear();
+            PreferenceUtils.parseEncodings(acceptEncoding, call.getPreference());
          }
-         
+
          if(acceptLanguage != null)
          {
-         	call.getPreference().getLanguages().clear();
-         	PreferenceUtils.parseLanguages(acceptLanguage, call.getPreference());
+            call.getPreference().getLanguages().clear();
+            PreferenceUtils.parseLanguages(acceptLanguage, call.getPreference());
          }
-         
+
          if(acceptMediaType != null)
          {
-         	call.getPreference().getMediaTypes().clear();
-         	PreferenceUtils.parseMediaTypes(acceptMediaType, call.getPreference());
+            call.getPreference().getMediaTypes().clear();
+            PreferenceUtils.parseMediaTypes(acceptMediaType, call.getPreference());
          }
-   	}
-   	
-   	if(isUriTunnel())
-   	{
-   		String uri = (String)call.getAttributes().get(getUriAttribute());
-   		
-   		if(uri != null)
-   		{
-   			call.setResourceRef(uri);
-   		}
-   	}
+      }
+
+      if(isUriTunnel())
+      {
+         String uri = (String)call.getAttributes().get(getUriAttribute());
+
+         if(uri != null)
+         {
+            call.setResourceRef(uri);
+         }
+      }
    }
-   
-	/**
-	 * Indicates if the method name can be tunneled.
-	 * @return True if the method name can be tunneled.
-	 */
-	public boolean isMethodTunnel()
-	{
-		return this.methodTunnel;
-	}
 
-	/**
-	 * Indicates if the method name can be tunneled.
-	 * @param methodTunnel True if the method name can be tunneled.
-	 */
-	public void setMethodTunnel(boolean methodTunnel)
-	{
-		this.methodTunnel = methodTunnel;
-	}
+   /**
+    * Indicates if the method name can be tunneled.
+    * @return True if the method name can be tunneled.
+    */
+   public boolean isMethodTunnel()
+   {
+      return this.methodTunnel;
+   }
 
-	/**
-	 * Returns the method attribute name.
-	 * @return The method attribute name.
-	 */
-	public String getMethodAttribute()
-	{
-		return this.methodAttribute;
-	}
+   /**
+    * Indicates if the method name can be tunneled.
+    * @param methodTunnel True if the method name can be tunneled.
+    */
+   public void setMethodTunnel(boolean methodTunnel)
+   {
+      this.methodTunnel = methodTunnel;
+   }
 
-	/**
-	 * Sets the method attribute name.
-	 * @param attributeName The method attribute name.
-	 */
-	public void setMethodAttribute(String attributeName)
-	{
-		this.methodAttribute = attributeName;
-	}
+   /**
+    * Returns the method attribute name.
+    * @return The method attribute name.
+    */
+   public String getMethodAttribute()
+   {
+      return this.methodAttribute;
+   }
 
-	/**
-	 * Returns the character sets attribute name.
-	 * @return The character sets attribute name.
-	 */
-	public String getCharacterSetsAttribute()
-	{
-		return this.characterSetsAttribute;
-	}
+   /**
+    * Sets the method attribute name.
+    * @param attributeName The method attribute name.
+    */
+   public void setMethodAttribute(String attributeName)
+   {
+      this.methodAttribute = attributeName;
+   }
 
-	/**
-	 * Sets the character sets attribute name.
-	 * @param attributeName The character sets attribute name.
-	 */
-	public void setCharacterSetsAttribute(String attributeName)
-	{
-		this.characterSetsAttribute = attributeName;
-	}
+   /**
+    * Returns the character sets attribute name.
+    * @return The character sets attribute name.
+    */
+   public String getCharacterSetsAttribute()
+   {
+      return this.characterSetsAttribute;
+   }
 
-	/**
-	 * Indicates if the client preferences can be tunneled.
-	 * @return True if the client preferences can be tunneled.
-	 */
-	public boolean isPreferencesTunnel()
-	{
-		return this.preferencesTunnel;
-	}
+   /**
+    * Sets the character sets attribute name.
+    * @param attributeName The character sets attribute name.
+    */
+   public void setCharacterSetsAttribute(String attributeName)
+   {
+      this.characterSetsAttribute = attributeName;
+   }
 
-	/**
-	 * Indicates if the client preferences can be tunneled.
-	 * @param preferencesTunnel True if the client preferences can be tunneled.
-	 */
-	public void setPreferencesTunnel(boolean preferencesTunnel)
-	{
-		this.preferencesTunnel = preferencesTunnel;
-	}
+   /**
+    * Indicates if the client preferences can be tunneled.
+    * @return True if the client preferences can be tunneled.
+    */
+   public boolean isPreferencesTunnel()
+   {
+      return this.preferencesTunnel;
+   }
 
-	/**
-	 * Returns the name of the attribute containing the accepted encodings.
-	 * @return The name of the attribute containing the accepted encodings.
-	 */
-	public String getEncodingsAttribute()
-	{
-		return this.encodingsAttribute;
-	}
+   /**
+    * Indicates if the client preferences can be tunneled.
+    * @param preferencesTunnel True if the client preferences can be tunneled.
+    */
+   public void setPreferencesTunnel(boolean preferencesTunnel)
+   {
+      this.preferencesTunnel = preferencesTunnel;
+   }
 
-	/**
-	 * Sets the name of the attribute containing the accepted encodings.
-	 * @param attributeName The name of the attribute containing the accepted encodings.
-	 */
-	public void setEncodingsAttribute(String attributeName)
-	{
-		this.encodingsAttribute = attributeName;
-	}
+   /**
+    * Returns the name of the attribute containing the accepted encodings.
+    * @return The name of the attribute containing the accepted encodings.
+    */
+   public String getEncodingsAttribute()
+   {
+      return this.encodingsAttribute;
+   }
 
-	/**
-	 * Returns the name of the attribute containing the accepted languages.
-	 * @return The name of the attribute containing the accepted languages.
-	 */
-	public String getLanguagesAttribute()
-	{
-		return this.languagesAttribute;
-	}
+   /**
+    * Sets the name of the attribute containing the accepted encodings.
+    * @param attributeName The name of the attribute containing the accepted encodings.
+    */
+   public void setEncodingsAttribute(String attributeName)
+   {
+      this.encodingsAttribute = attributeName;
+   }
 
-	/**
-	 * Sets the name of the attribute containing the accepted languages.
-	 * @param attributeName The name of the attribute containing the accepted languages.
-	 */
-	public void setLanguagesAttribute(String attributeName)
-	{
-		this.languagesAttribute = attributeName;
-	}
+   /**
+    * Returns the name of the attribute containing the accepted languages.
+    * @return The name of the attribute containing the accepted languages.
+    */
+   public String getLanguagesAttribute()
+   {
+      return this.languagesAttribute;
+   }
 
-	/**
-	 * Returns the name of the attribute containing the accepted media types.
-	 * @return The name of the attribute containing the accepted media types.
-	 */
-	public String getMediaTypesAttribute()
-	{
-		return this.mediaTypesAttribute;
-	}
+   /**
+    * Sets the name of the attribute containing the accepted languages.
+    * @param attributeName The name of the attribute containing the accepted languages.
+    */
+   public void setLanguagesAttribute(String attributeName)
+   {
+      this.languagesAttribute = attributeName;
+   }
 
-	/**
-	 * Sets the name of the attribute containing the accepted media types.
-	 * @param attributeName The name of the attribute containing the accepted media types.
-	 */
-	public void setMediaTypesAttribute(String attributeName)
-	{
-		this.mediaTypesAttribute = attributeName;
-	}
+   /**
+    * Returns the name of the attribute containing the accepted media types.
+    * @return The name of the attribute containing the accepted media types.
+    */
+   public String getMediaTypesAttribute()
+   {
+      return this.mediaTypesAttribute;
+   }
 
-	/**
-	 * Indicates if the resource reference can be tunneled.
-	 * @return True if the resource reference can be tunneled.
-	 */
-	public boolean isUriTunnel()
-	{
-		return this.uriTunnel;
-	}
+   /**
+    * Sets the name of the attribute containing the accepted media types.
+    * @param attributeName The name of the attribute containing the accepted media types.
+    */
+   public void setMediaTypesAttribute(String attributeName)
+   {
+      this.mediaTypesAttribute = attributeName;
+   }
 
-	/**
-	 * @param uriTunnel the uriTunnel to set
-	 */
-	public void setUriTunnel(boolean uriTunnel)
-	{
-		this.uriTunnel = uriTunnel;
-	}
+   /**
+    * Indicates if the resource reference can be tunneled.
+    * @return True if the resource reference can be tunneled.
+    */
+   public boolean isUriTunnel()
+   {
+      return this.uriTunnel;
+   }
 
-	/**
-	 * Returns the name of the attribute containing the resource reference.
-	 * @return The name of the attribute containing the resource reference.
-	 */
-	public String getUriAttribute()
-	{
-		return this.uriAttribute;
-	}
+   /**
+    * @param uriTunnel the uriTunnel to set
+    */
+   public void setUriTunnel(boolean uriTunnel)
+   {
+      this.uriTunnel = uriTunnel;
+   }
 
-	/**
-	 * Sets the name of the attribute containing the resource reference.
-	 * @param attributeName The name of the attribute containing the resource reference.
-	 */
-	public void setUriAttribute(String attributeName)
-	{
-		this.uriAttribute = attributeName;
-	}
- 
+   /**
+    * Returns the name of the attribute containing the resource reference.
+    * @return The name of the attribute containing the resource reference.
+    */
+   public String getUriAttribute()
+   {
+      return this.uriAttribute;
+   }
+
+   /**
+    * Sets the name of the attribute containing the resource reference.
+    * @param attributeName The name of the attribute containing the resource reference.
+    */
+   public void setUriAttribute(String attributeName)
+   {
+      this.uriAttribute = attributeName;
+   }
+
 }

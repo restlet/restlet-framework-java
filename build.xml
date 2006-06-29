@@ -21,12 +21,13 @@
 	<property name="www" value="www" />
 	<property name="docs" value="${www}/docs" />
 	<property name="docs-api" value="${docs}/api" />
-	<property name="docs-nre" value="${docs}/nre" />
+	<property name="docs-core" value="${docs}/nre" />
+	<property name="docs-ext" value="${docs}/ext" />
 	<property name="excludes" value="**/.emptyDir **/package.html **/overview.html" />
 
 	<property name="classes" value="classes" />
 	<property name="classes-api" value="${classes}/api" />
-	<property name="classes-nre" value="${classes}/nre" />
+	<property name="classes-core" value="${classes}/core" />
 	<property name="classes-asyncweb0.8" value="${classes}/ext/asyncweb0.8" />
 	<property name="classes-atom1.0" value="${classes}/ext/atom1.0" />
 	<property name="classes-fileupload1.1" value="${classes}/ext/fileupload1.1" />
@@ -41,7 +42,8 @@
 	<property name="classes-test" value="${classes}/test" />
 
 	<property name="src" value="source" />
-	<property name="src-main" value="${src}/main" />
+	<property name="src-api" value="${src}/api" />
+	<property name="src-core" value="${src}/core" />
 	<property name="src-asyncweb0.8" value="${src}/ext/asyncweb0.8" />
 	<property name="src-atom1.0" value="${src}/ext/atom1.0" />
 	<property name="src-fileupload1.1" value="${src}/ext/fileupload1.1" />
@@ -60,7 +62,7 @@
 
 	<path id="path-asyncweb0.8">
 		<pathelement path="${classes-api}" />
-		<pathelement path="${classes-nre}" />
+		<pathelement path="${classes-core}" />
 		<fileset dir="${lib}/asyncweb0.8">
 			<include name="*.jar" />
 		</fileset>
@@ -71,12 +73,12 @@
 	
 	<path id="path-atom1.0">
 		<pathelement path="${classes-api}" />
-		<pathelement path="${classes-nre}" />
+		<pathelement path="${classes-core}" />
 	</path>
 
 	<path id="path-fileupload1.1">
 		<pathelement path="${classes-api}" />
-		<pathelement path="${classes-nre}" />
+		<pathelement path="${classes-core}" />
 		<fileset dir="${lib}/fileupload1.1">
 			<include name="*.jar" />
 		</fileset>
@@ -87,7 +89,7 @@
 
 	<path id="path-freemarker2.3">
 		<pathelement path="${classes-api}" />
-		<pathelement path="${classes-nre}" />
+		<pathelement path="${classes-core}" />
 		<fileset dir="${lib}/freemarker2.3">
 			<include name="*.jar" />
 		</fileset>
@@ -95,7 +97,7 @@
 
 	<path id="path-javamail1.3">
 		<pathelement path="${classes-api}" />
-		<pathelement path="${classes-nre}" />
+		<pathelement path="${classes-core}" />
 		<fileset dir="${lib}/javamail1.3">
 			<include name="*.jar" />
 		</fileset>
@@ -103,7 +105,7 @@
 
 	<path id="path-jdbc3.0">
 		<pathelement path="${classes-api}" />
-		<pathelement path="${classes-nre}" />
+		<pathelement path="${classes-core}" />
 		<fileset dir="${lib}/jdbc3.0">
 			<include name="*.jar" />
 		</fileset>
@@ -111,7 +113,7 @@
 
 	<path id="path-jetty5.1">
 		<pathelement path="${classes-api}" />
-		<pathelement path="${classes-nre}" />
+		<pathelement path="${classes-core}" />
 		<fileset dir="${lib}/jetty5.1">
 			<include name="*.jar" />
 		</fileset>
@@ -122,7 +124,7 @@
 
 	<path id="path-jetty6.0">
 		<pathelement path="${classes-api}" />
-		<pathelement path="${classes-nre}" />
+		<pathelement path="${classes-core}" />
 		<fileset dir="${lib}/jetty6.0">
 			<include name="*.jar" />
 		</fileset>
@@ -133,7 +135,7 @@
 
 	<path id="path-servlet2.4">
 		<pathelement path="${classes-api}" />
-		<pathelement path="${classes-nre}" />
+		<pathelement path="${classes-core}" />
 		<fileset dir="${lib}/servlet2.4">
 			<include name="*.jar" />
 		</fileset>
@@ -141,7 +143,7 @@
 
 	<path id="path-servlet2.5">
 		<pathelement path="${classes-api}" />
-		<pathelement path="${classes-nre}" />
+		<pathelement path="${classes-core}" />
 		<fileset dir="${lib}/servlet2.5">
 			<include name="*.jar" />
 		</fileset>
@@ -149,7 +151,7 @@
 
 	<path id="path-simple3.1">
 		<pathelement path="${classes-api}" />
-		<pathelement path="${classes-nre}" />
+		<pathelement path="${classes-core}" />
 		<fileset dir="${lib}/simple3.1">
 			<include name="*.jar" />
 		</fileset>
@@ -157,12 +159,12 @@
 
 	<path id="path-example">
 		<pathelement path="${classes-api}" />
-		<pathelement path="${classes-nre}" />
+		<pathelement path="${classes-core}" />
 	</path>
 
 	<path id="path-test">
 		<pathelement path="${classes-api}" />
-		<pathelement path="${classes-nre}" />
+		<pathelement path="${classes-core}" />
 		<pathelement path="${classes-atom1.0}" />
 		<fileset dir="${lib}/junit3.8">
 			<include name="*.jar" />
@@ -171,7 +173,7 @@
 
 	<path id="path-all">
 		<pathelement path="${classes-api}" />
-		<pathelement path="${classes-nre}" />
+		<pathelement path="${classes-core}" />
 		<pathelement path="${classes-asyncweb0.8}" />
 		<pathelement path="${classes-freemarker2.3}" />
 		<pathelement path="${classes-fileupload1.1}" />
@@ -312,8 +314,8 @@
 
 	<target name="compile" depends="init" description="Compile the Java source files">
 		<mkdir dir="${classes}" />
-		<compile srcdir="${src-main}" 			destdir="${classes-api}" 				includes="org/restlet/**" />
-		<compile srcdir="${src-main}" 			destdir="${classes-nre}" 				classpathref="path-all" 			includes="com/noelios/restlet/**"/>
+		<compile srcdir="${src-api}" 				destdir="${classes-api}" 				/>
+		<compile srcdir="${src-core}" 			destdir="${classes-core}" 				classpathref="path-all" />
 		<compile srcdir="${src-asyncweb0.8}" 	destdir="${classes-asyncweb0.8}" 	classpathref="path-asyncweb0.8" />
 		<compile srcdir="${src-atom1.0}" 		destdir="${classes-atom1.0}" 			classpathref="path-atom1.0" />
 		<compile srcdir="${src-fileupload1.1}" destdir="${classes-fileupload1.1}" 	classpathref="path-fileupload1.1" />
@@ -341,10 +343,11 @@
 		<junit printsummary="true" fork="true" haltonfailure="true" filtertrace="true" showoutput="${verbose}">
 			<classpath>
 				<pathelement location="${classes-api}" />
-				<pathelement location="${classes-nre}" />
+				<pathelement location="${classes-core}" />
 				<pathelement location="${classes-test}" />
 				<pathelement location="${classes-simple3.1}" />
-				<pathelement location="${src-main}" />
+				<pathelement location="${src-api}" />
+				<pathelement location="${src-core}" />
 				<pathelement location="${src-simple3.1}" />
 				<path refid="path-simple3.1" />
 				<pathelement location="${lib}/retroweaver1.2/com.rc.retroweaver.runtime.jar" />
@@ -398,8 +401,11 @@
 		<copy todir="${dist}/docs/api">
 			<fileset dir="${docs-api}" />
 		</copy>
-		<copy todir="${dist}/docs/nre">
-			<fileset dir="${docs-nre}" />
+		<copy todir="${dist}/docs/core">
+			<fileset dir="${docs-core}" />
+		</copy>
+		<copy todir="${dist}/docs/ext">
+			<fileset dir="${docs-ext}" />
 		</copy>
 
 		<!-- Copy text notes -->
@@ -422,10 +428,10 @@
 		</jar>
 
 		<!-- Create Restlet API source jar file -->
-		<zip destfile="${dist}/src/org.restlet.zip" basedir="${src-main}" includes="org/restlet/**" excludes="${excludes}" />
+		<zip destfile="${dist}/src/org.restlet.zip" basedir="${src-api}" excludes="${excludes}" />
 
 		<!-- Create Noelios Restlet Server jar file -->
-		<jar jarfile="${dist}/lib/com.noelios.restlet.jar" basedir="${classes-nre}" excludes="com/noelios/restlet/ext/**">
+		<jar jarfile="${dist}/lib/com.noelios.restlet.jar" basedir="${classes-core}" excludes="com/noelios/restlet/ext/**">
 			<manifest>
 				<attribute name="Built-By" value="${author}" />
 				<section name="com.noelios.restlet">
@@ -437,10 +443,10 @@
 		</jar>
 
 		<!-- Add the services manifest files -->
-		<jar jarfile="${dist}/lib/com.noelios.restlet.jar" update="true" basedir="${src-main}" includes="meta-inf/**" />
+		<jar jarfile="${dist}/lib/com.noelios.restlet.jar" update="true" basedir="${src-core}" includes="meta-inf/**" />
 
 		<!-- Create Noelios Restlet Server source jar file -->
-		<zip destfile="${dist}/src/com.noelios.restlet.zip" basedir="${src-main}" includes="com/noelios/restlet/**, meta-inf/**" excludes="${excludes}" />
+		<zip destfile="${dist}/src/com.noelios.restlet.zip" basedir="${src-core}" excludes="${excludes}" />
 
 		<!-- Create Examples jar file -->
 		<mkdir dir="${dist}/lib/example" />
@@ -486,13 +492,14 @@
 
 	<target name="javadoc" if="do-javadoc" depends="init" description="Generate the Javadoc">
 		<delete includeEmptyDirs="true" verbose="false" quiet="true">
-			<fileset dir="${docs-api}" excludes="**/.svn" />
-			<fileset dir="${docs-nre}" excludes="**/.svn" />
+			<fileset dir="${docs-api}"  excludes="**/.svn" />
+			<fileset dir="${docs-core}" excludes="**/.svn" />
+			<fileset dir="${docs-ext}"  excludes="**/.svn" />
 		</delete>
 
-		<javadoc packagenames="org.restlet.*" destdir="${docs-api}" classpathref="path-all" author="true" version="true" use="true" windowtitle="Restlet API ${version-full}" doctitle="Restlet API ${version-full}" overview="${src-main}/org/restlet/overview.html" verbose="${verbose}">
+		<javadoc packagenames="org.restlet.*" destdir="${docs-api}" classpathref="path-all" author="true" version="true" use="true" windowtitle="Restlet API ${version-full}" doctitle="Restlet API ${version-full}" overview="${src-api}/org/restlet/overview.html" verbose="${verbose}">
 			<sourcepath>
-				<pathelement path="${src-main}" />
+				<pathelement path="${src-api}" />
 			</sourcepath>
 
 			<bottom>
@@ -503,13 +510,29 @@
 				<package name="org.restlet*" />
 			</group>
 	
-			<link href="http://www.restlet.org/docs/nre/" packagelistLoc="${docs-nre}" offline="true" />
+			<link href="http://www.restlet.org/docs/core/" packagelistLoc="${docs-core}" offline="true" />
 			<link href="http://java.sun.com/j2se/1.5.0/docs/api/" />
 		</javadoc>
 
-		<javadoc packagenames="com.noelios.restlet.*" destdir="${docs-nre}" classpathref="path-all" author="true" version="true" use="true" windowtitle="Noelios Restlet Engine ${version-full}" doctitle="Noelios Restlet Engine ${version-full}" overview="${src-main}/com/noelios/restlet/overview.html" verbose="${verbose}">
+		<javadoc packagenames="com.noelios.restlet.*" destdir="${docs-core}" classpathref="path-all" author="true" version="true" use="true" windowtitle="Noelios Restlet Engine ${version-full}" doctitle="Noelios Restlet Engine ${version-full}" overview="${src-core}/com/noelios/restlet/overview.html" verbose="${verbose}">
 			<sourcepath>
-				<pathelement path="${src-main}" />
+				<pathelement path="${src-core}" />
+			</sourcepath>
+
+			<bottom>
+				<![CDATA[<i>Copyright &#169; 2005-2006 J&eacute;r&ocirc;me Louvel. Restlet is a trademark and service mark of <a target="_top" href="http://www.noelios.com">Noelios Consulting</a>.</i>]]>
+			</bottom>
+
+			<group title="${restlet-core}">
+				<package name="com.noelios.restlet*" />
+			</group>
+
+			<link href="http://www.restlet.org/docs/api/" packagelistLoc="${docs-api}" offline="true" />
+			<link href="http://java.sun.com/j2se/1.5.0/docs/api/" />
+		</javadoc>
+
+		<javadoc packagenames="com.noelios.restlet.ext.*" destdir="${docs-ext}" classpathref="path-all" author="true" version="true" use="true" windowtitle="Noelios Restlet Engine ${version-full}" doctitle="Noelios Restlet Engine ${version-full}" overview="${src-ext}/com/noelios/restlet/ext/overview.html" verbose="${verbose}">
+			<sourcepath>
 				<pathelement path="${src-asyncweb0.8}" />
 				<pathelement path="${src-atom1.0}" />
 				<pathelement path="${src-fileupload1.1}" />
@@ -525,11 +548,12 @@
 				<![CDATA[<i>Copyright &#169; 2005-2006 J&eacute;r&ocirc;me Louvel. Restlet is a trademark and service mark of <a target="_top" href="http://www.noelios.com">Noelios Consulting</a>.</i>]]>
 			</bottom>
 
-			<group title="${restlet-ri}">
-				<package name="com.noelios.restlet*" />
+			<group title="${restlet-ext}">
+				<package name="com.noelios.restlet.ext*" />
 			</group>
 
-			<link href="http://www.restlet.org/docs/api/" packagelistLoc="${docs-api}" offline="true" />
+			<link href="http://www.restlet.org/docs/api/"  packagelistLoc="${docs-api}"  offline="true" />
+			<link href="http://www.restlet.org/docs/core/" packagelistLoc="${docs-core}" offline="true" />
 			<link href="http://freemarker.org/docs/api/" />
 			<link href="http://jakarta.apache.org/commons/fileupload/apidocs/" />
 			<link href="http://java.sun.com/j2se/1.5.0/docs/api/" />
@@ -543,15 +567,16 @@
 		<!-- Delete the classes and Javadoc directories -->
 		<delete includeEmptyDirs="true" verbose="false" quiet="true">
 			<fileset dir="${classes}" />
-			<fileset dir="${docs-api}" excludes="**/.svn" />
-			<fileset dir="${docs-nre}" excludes="**/.svn" />
+			<fileset dir="${docs-api}"  excludes="**/.svn" />
+			<fileset dir="${docs-core}" excludes="**/.svn" />
+			<fileset dir="${docs-ext}"  excludes="**/.svn" />
 		</delete>
 	</target>
 
 	<target name="archive" depends="init" description="Archive the content of the project">
 		<!-- Archive the content of the project, except for some generated directories -->
 		<mkdir dir="${arc}" />
-		<zip destfile="${arc}/Restlet ${DSTAMP}.zip" basedir="" includes="**/*" excludes="${arc}/** classes/** ${dist}/** ${dist-zip}/** ${docs-api}/** ${docs-nre}/**" />
+		<zip destfile="${arc}/Restlet ${DSTAMP}.zip" basedir="" includes="**/*" excludes="${arc}/** classes/** ${dist}/** ${dist-zip}/** ${docs-api}/** ${docs-core}/** ${docs-ext}/**" />
 	</target>
 
 </project>

@@ -6,7 +6,11 @@ Restlet changes log
 @version-full@ (@release-date@)
  - Renamed attachPath() to attachRouter() in RouterBuilder.
  - Updated all tutorial code snippets (some were slightly outdated)
- 
+ - Removed dependency of API on NRE in ReferenceList
+ - Fixed bug in TunnelFilter (see issue 68). Reported by A.J. Barnes.
+ - Restructured code source to split the "source/main" directory into "source/api" and "source/core".
+ - Split NRE Javadocs into NRE Core Javadocs and NRE Extensions Javadocs.
+
 1.0 beta 15 (2006-06-26)
  - Updated Jetty 6 to version beta 17.
  - Updated Apache FileUpload extension to version 1.1.1.
