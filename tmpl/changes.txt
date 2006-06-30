@@ -4,6 +4,9 @@ Restlet changes log
 ===================
 
 @version-full@ (@release-date@)
+ - 
+
+1.0 beta 16 (2006-06-30)
  - Renamed attachPath() to attachRouter() in RouterBuilder.
  - Updated all tutorial code snippets (some were slightly outdated)
  - Removed dependency of API on NRE in ReferenceList and RestletContainer.

@@ -53,7 +53,7 @@ public abstract class Factory
 	public static final String CONTEXT_CLIENT_NAME = "ContextClient";
 
 	/** Common version info. */
-   public static final String BETA_NUMBER = "16";
+   public static final String BETA_NUMBER = "17";
    public static final String VERSION_LONG = "1.0 beta " + BETA_NUMBER;
    public static final String VERSION_SHORT = "1.0b" + BETA_NUMBER;
 
