@@ -56,7 +56,7 @@ public class DefaultEncoding extends DefaultMetadata implements Encoding
     */
    public boolean equals(Encoding encoding)
    {
-      return getName().equalsIgnoreCase(encoding.getName());
+      return (encoding != null) && getName().equalsIgnoreCase(encoding.getName());
    }
 
 }

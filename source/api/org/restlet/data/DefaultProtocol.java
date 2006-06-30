@@ -107,7 +107,7 @@ public class DefaultProtocol implements Protocol
     */
    public boolean equals(Protocol protocol)
    {
-   	return getName().equalsIgnoreCase(protocol.getName());
+   	return (protocol != null) && getName().equalsIgnoreCase(protocol.getName());
    }
 
 }

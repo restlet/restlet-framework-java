@@ -139,7 +139,7 @@ public enum ChallengeSchemes implements ChallengeScheme
     */
    public boolean equals(ChallengeScheme scheme)
    {
-      return scheme.getName().equalsIgnoreCase(getName());
+      return (scheme != null) && scheme.getName().equalsIgnoreCase(getName());
    }
 
 }

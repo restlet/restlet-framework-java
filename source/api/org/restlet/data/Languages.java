@@ -155,7 +155,7 @@ public enum Languages implements Language
     */
    public boolean equals(Language language)
    {
-      return getName().equalsIgnoreCase(language.getName());
+      return (language != null) && getName().equalsIgnoreCase(language.getName());
    }
 
 }

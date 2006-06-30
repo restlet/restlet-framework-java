@@ -237,7 +237,7 @@ public enum Methods implements Method
     */
    public boolean equals(Method method)
    {
-      return getName().equalsIgnoreCase(method.getName());
+      return (method != null) && getName().equalsIgnoreCase(method.getName());
    }
 
    /**

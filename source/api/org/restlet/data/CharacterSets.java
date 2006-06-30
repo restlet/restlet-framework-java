@@ -122,7 +122,7 @@ public enum CharacterSets implements CharacterSet
     */
    public boolean equals(CharacterSet characterSet)
    {
-      return getName().equalsIgnoreCase(characterSet.getName());
+      return (characterSet != null) && getName().equalsIgnoreCase(characterSet.getName());
    }
    
 }

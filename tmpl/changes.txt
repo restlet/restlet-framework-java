@@ -4,7 +4,7 @@ Restlet changes log
 ===================
 
 @version-full@ (@release-date@)
- - 
+ - Fixed potential NPE exceptions in the equals() methods of many metadata classes.
 
 1.0 beta 16 (2006-06-30)
  - Renamed attachPath() to attachRouter() in RouterBuilder.

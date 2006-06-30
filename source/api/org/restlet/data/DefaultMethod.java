@@ -106,7 +106,7 @@ public class DefaultMethod implements Method
     */
    public boolean equals(Method method)
    {
-      return getName().equals(method.getName());
+      return (method != null) && getName().equals(method.getName());
    }
 
 }

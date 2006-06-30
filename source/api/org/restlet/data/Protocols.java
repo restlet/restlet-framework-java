@@ -230,7 +230,7 @@ public enum Protocols implements Protocol
     */
    public boolean equals(Protocol protocol)
    {
-      return protocol.getName().equalsIgnoreCase(getName());
+      return (protocol != null) && protocol.getName().equalsIgnoreCase(getName());
    }
 
    /**

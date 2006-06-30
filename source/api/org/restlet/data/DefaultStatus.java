@@ -180,7 +180,7 @@ public class DefaultStatus implements Status
     */
    public boolean equals(Status status)
    {
-      return getCode() == status.getCode();
+      return (status != null) && (getCode() == status.getCode());
    }
 
    /**
