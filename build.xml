@@ -8,7 +8,8 @@
 
 	<!-- Set general properties -->
 	<property name="restlet-api" value="Restlet API" />
-	<property name="restlet-ri" value="Noelios Restlet Engine" />
+	<property name="restlet-core" value="Noelios Restlet Engine - Core" />
+	<property name="restlet-ext" value="Noelios Restlet Engine - Extensions" />
 	<property name="author" value="Jerome Louvel" />
 
 	<!-- Load system specific paths -->
