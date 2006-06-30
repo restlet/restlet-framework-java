@@ -83,7 +83,7 @@ public class DirectoryHandler extends AbstractHandler
    public DirectoryHandler(Component owner, String rootUri, boolean deeply, String indexName)
    {
       super(owner);
-      this.contextClient = getOwner().getClients().get(Factory.DEFAULT_NAME);
+      this.contextClient = getOwner().getClients().get(Factory.CONTEXT_CLIENT_NAME);
       this.indexName = indexName;
       this.rootUri = rootUri;
       this.deeply = deeply;

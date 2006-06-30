@@ -235,9 +235,9 @@ public class ServerServlet extends HttpServlet
                         		
                         		// Replace the default context client (if any)
                         		// by a special ServletContextClient instance 
-                        		component.getClients().remove(Factory.DEFAULT_NAME);
-                        		component.addClient(Factory.DEFAULT_NAME, new ServletContextClient(component, null, getServletContext()));
-                        		log("[Noelios Restlet Engine] - The special ServletContextClient has been set on the target component under this name: " + Factory.DEFAULT_NAME);
+                        		component.getClients().remove(Factory.CONTEXT_CLIENT_NAME);
+                        		component.addClient(Factory.CONTEXT_CLIENT_NAME, new ServletContextClient(component, null, getServletContext()));
+                        		log("[Noelios Restlet Engine] - The special ServletContextClient has been set on the target component under this name: " + Factory.CONTEXT_CLIENT_NAME);
                         		
                         		// Copy all initParameters in the component's parameters map
                         		String name;

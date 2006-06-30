@@ -86,7 +86,7 @@ public class RestletContainer extends AbstractComponent
       List<Protocol> protocols = new ArrayList<Protocol>();
       protocols.add(Protocols.CONTEXT);
       protocols.add(Protocols.FILE);
-      getClients().put(Factory.DEFAULT_NAME, new DefaultClient(protocols));
+      getClients().put(Factory.CONTEXT_CLIENT_NAME, new DefaultClient(protocols));
    }
 
    /**
