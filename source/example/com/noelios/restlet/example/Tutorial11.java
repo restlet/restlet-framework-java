@@ -76,7 +76,7 @@ public class Tutorial11
          host.attach("/docs/", guard);
 
          // Create a directory Restlet able to return a deep hierarchy of Web files
-         DirectoryHandler directory = new DirectoryHandler(myContainer, "file:///D:/Restlet/www/docs/api/", true, "index");
+         DirectoryHandler directory = new DirectoryHandler(myContainer, "file:///D:/Restlet/standard/www/docs/api/", true, "index");
          guard.attach(directory);
 
          // Create the user router
