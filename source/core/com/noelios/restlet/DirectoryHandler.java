@@ -30,6 +30,7 @@ import java.util.logging.Logger;
 
 import org.restlet.AbstractHandler;
 import org.restlet.Call;
+import org.restlet.Factory;
 import org.restlet.Restlet;
 import org.restlet.component.Component;
 import org.restlet.connector.Client;
@@ -39,7 +40,6 @@ import org.restlet.data.ReferenceList;
 import org.restlet.data.Representation;
 
 import com.noelios.restlet.data.StringRepresentation;
-import com.noelios.restlet.impl.ContextClient;
 import com.noelios.restlet.impl.DirectoryResource;
 
 /**
@@ -83,7 +83,7 @@ public class DirectoryHandler extends AbstractHandler
    public DirectoryHandler(Component owner, String rootUri, boolean deeply, String indexName)
    {
       super(owner);
-      this.contextClient = getOwner().getClients().get(ContextClient.DEFAULT_NAME);
+      this.contextClient = getOwner().getClients().get(Factory.DEFAULT_NAME);
       this.indexName = indexName;
       this.rootUri = rootUri;
       this.deeply = deeply;

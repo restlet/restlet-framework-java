@@ -30,11 +30,11 @@ import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
+import org.restlet.Factory;
 import org.restlet.Restlet;
 import org.restlet.component.Component;
 import org.restlet.data.Reference;
 
-import com.noelios.restlet.impl.ContextClient;
 import com.noelios.restlet.impl.HttpServer;
 
 /**
@@ -235,9 +235,9 @@ public class ServerServlet extends HttpServlet
                         		
                         		// Replace the default context client (if any)
                         		// by a special ServletContextClient instance 
-                        		component.getClients().remove(ContextClient.DEFAULT_NAME);
-                        		component.addClient(ContextClient.DEFAULT_NAME, new ServletContextClient(component, null, getServletContext()));
-                        		log("[Noelios Restlet Engine] - The special ServletContextClient has been set on the target component under this name: " + ContextClient.DEFAULT_NAME);
+                        		component.getClients().remove(Factory.DEFAULT_NAME);
+                        		component.addClient(Factory.DEFAULT_NAME, new ServletContextClient(component, null, getServletContext()));
+                        		log("[Noelios Restlet Engine] - The special ServletContextClient has been set on the target component under this name: " + Factory.DEFAULT_NAME);
                         		
                         		// Copy all initParameters in the component's parameters map
                         		String name;

@@ -49,6 +49,10 @@ public abstract class Factory
    /** Obtain a suitable logger. */
    private static Logger logger = Logger.getLogger(Factory.class.getCanonicalName());
 
+	/** The default context client name. */
+	public static final String DEFAULT_NAME = "ContextClient";
+
+	/** Common version info. */
    public static final String BETA_NUMBER = "16";
    public static final String VERSION_LONG = "1.0 beta " + BETA_NUMBER;
    public static final String VERSION_SHORT = "1.0b" + BETA_NUMBER;

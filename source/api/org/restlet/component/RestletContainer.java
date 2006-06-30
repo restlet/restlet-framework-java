@@ -22,12 +22,17 @@
 
 package org.restlet.component;
 
+import java.util.ArrayList;
+import java.util.List;
+
 import org.restlet.AbstractRestlet;
 import org.restlet.Call;
+import org.restlet.Factory;
 import org.restlet.Restlet;
+import org.restlet.connector.DefaultClient;
 import org.restlet.data.ParameterList;
-
-import com.noelios.restlet.impl.ContextClient;
+import org.restlet.data.Protocol;
+import org.restlet.data.Protocols;
 
 /**
  * Component whose main purpose is to contain and manage a set of Restlets (Handlers, Routers or Filters) in
@@ -78,7 +83,10 @@ public class RestletContainer extends AbstractComponent
       super(owner, parameters);
 
       // Adds the default context client
-      getClients().put(ContextClient.DEFAULT_NAME, new ContextClient(this, null));
+      List<Protocol> protocols = new ArrayList<Protocol>();
+      protocols.add(Protocols.CONTEXT);
+      protocols.add(Protocols.FILE);
+      getClients().put(Factory.DEFAULT_NAME, new DefaultClient(protocols));
    }
 
    /**

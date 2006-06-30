@@ -73,9 +73,6 @@ public class ContextClient extends AbstractClient
    /** Obtain a suitable logger. */
    private static Logger logger = Logger.getLogger(ContextClient.class.getCanonicalName());
 
-   /** The default context client name. */
-   public static final String DEFAULT_NAME = "ContextClient";
-   
    /** Default encoding used when no encoding extension is available. */
    protected Encoding defaultEncoding;
 

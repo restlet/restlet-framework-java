@@ -21,7 +21,7 @@
 	<property name="www" value="www" />
 	<property name="docs" value="${www}/docs" />
 	<property name="docs-api" value="${docs}/api" />
-	<property name="docs-core" value="${docs}/nre" />
+	<property name="docs-core" value="${docs}/core" />
 	<property name="docs-ext" value="${docs}/ext" />
 	<property name="excludes" value="**/.emptyDir **/package.html **/overview.html" />
 
@@ -44,16 +44,17 @@
 	<property name="src" value="source" />
 	<property name="src-api" value="${src}/api" />
 	<property name="src-core" value="${src}/core" />
-	<property name="src-asyncweb0.8" value="${src}/ext/asyncweb0.8" />
-	<property name="src-atom1.0" value="${src}/ext/atom1.0" />
-	<property name="src-fileupload1.1" value="${src}/ext/fileupload1.1" />
-	<property name="src-freemarker2.3" value="${src}/ext/freemarker2.3" />
-	<property name="src-javamail1.3" value="${src}/ext/javamail1.3" />
-	<property name="src-jdbc3.0" value="${src}/ext/jdbc3.0" />
-	<property name="src-jetty5.1" value="${src}/ext/jetty5.1" />
-	<property name="src-jetty6.0" value="${src}/ext/jetty6.0" />
-	<property name="src-servlet2.4" value="${src}/ext/servlet2.4" />
-	<property name="src-simple3.1" value="${src}/ext/simple3.1" />
+	<property name="src-ext" value="${src}/ext" />
+	<property name="src-asyncweb0.8" value="${src-ext}/asyncweb0.8" />
+	<property name="src-atom1.0" value="${src-ext}/atom1.0" />
+	<property name="src-fileupload1.1" value="${src-ext}/fileupload1.1" />
+	<property name="src-freemarker2.3" value="${src-ext}/freemarker2.3" />
+	<property name="src-javamail1.3" value="${src-ext}/javamail1.3" />
+	<property name="src-jdbc3.0" value="${src-ext}/jdbc3.0" />
+	<property name="src-jetty5.1" value="${src-ext}/jetty5.1" />
+	<property name="src-jetty6.0" value="${src-ext}/jetty6.0" />
+	<property name="src-servlet2.4" value="${src-ext}/servlet2.4" />
+	<property name="src-simple3.1" value="${src-ext}/simple3.1" />
 	<property name="src-example" value="${src}/example" />
 	<property name="src-test" value="${src}/test" />
 
@@ -497,7 +498,7 @@
 			<fileset dir="${docs-ext}"  excludes="**/.svn" />
 		</delete>
 
-		<javadoc packagenames="org.restlet.*" destdir="${docs-api}" classpathref="path-all" author="true" version="true" use="true" windowtitle="Restlet API ${version-full}" doctitle="Restlet API ${version-full}" overview="${src-api}/org/restlet/overview.html" verbose="${verbose}">
+		<javadoc packagenames="org.restlet.*" destdir="${docs-api}" classpathref="path-all" author="true" version="true" use="true" windowtitle="Restlet API ${version-full}" doctitle="Restlet API ${version-full}" overview="${src-api}/overview.html" verbose="${verbose}">
 			<sourcepath>
 				<pathelement path="${src-api}" />
 			</sourcepath>
@@ -514,7 +515,7 @@
 			<link href="http://java.sun.com/j2se/1.5.0/docs/api/" />
 		</javadoc>
 
-		<javadoc packagenames="com.noelios.restlet.*" destdir="${docs-core}" classpathref="path-all" author="true" version="true" use="true" windowtitle="Noelios Restlet Engine ${version-full}" doctitle="Noelios Restlet Engine ${version-full}" overview="${src-core}/com/noelios/restlet/overview.html" verbose="${verbose}">
+		<javadoc packagenames="com.noelios.restlet.*" destdir="${docs-core}" classpathref="path-all" author="true" version="true" use="true" windowtitle="Noelios Restlet Engine ${version-full}" doctitle="Noelios Restlet Engine ${version-full}" overview="${src-core}/overview.html" verbose="${verbose}">
 			<sourcepath>
 				<pathelement path="${src-core}" />
 			</sourcepath>
@@ -531,7 +532,7 @@
 			<link href="http://java.sun.com/j2se/1.5.0/docs/api/" />
 		</javadoc>
 
-		<javadoc packagenames="com.noelios.restlet.ext.*" destdir="${docs-ext}" classpathref="path-all" author="true" version="true" use="true" windowtitle="Noelios Restlet Engine ${version-full}" doctitle="Noelios Restlet Engine ${version-full}" overview="${src-ext}/com/noelios/restlet/ext/overview.html" verbose="${verbose}">
+		<javadoc packagenames="com.noelios.restlet.ext.*" destdir="${docs-ext}" classpathref="path-all" author="true" version="true" use="true" windowtitle="Noelios Restlet Engine ${version-full}" doctitle="Noelios Restlet Engine ${version-full}" overview="${src-ext}/overview.html" verbose="${verbose}">
 			<sourcepath>
 				<pathelement path="${src-asyncweb0.8}" />
 				<pathelement path="${src-atom1.0}" />
