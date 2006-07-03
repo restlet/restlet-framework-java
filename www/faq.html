@@ -42,6 +42,7 @@
       <li><a href="#21">Is there a mechanism to pass data sets to downstream Restlets?</a></li>
       <li><a href="#22">What is the difference between a Filter and a Router?</a></li>
       <li><a href="#23">How can I send and receive files with Restlets?</a></li>
+      <li><a href="#24">How can I make PUT or DELETE calls from browsers?</a></li>
    </ol>
 </p>
 <br/>
@@ -265,6 +266,12 @@
 
 <p>
    To receive large files, from browsers for example, you can rely on the Apache FileUpload project which was integrated as an <a href="http://www.restlet.org/docs/nre/index.html?com/noelios/restlet/ext/fileupload/package-summary.html">extension to NRE</a>. To send a file using the HTTP client connector, just create a new <a href="http://www.restlet.org/docs/nre/index.html?com/noelios/restlet/data/FileRepresentation.html">FileRepresentation</a> and set is as the input of your call.
+</p>
+
+<h3><a name="24">24. How can I make PUT or DELETE calls from browsers?</a></h3>
+
+<p>
+   There are two solutions to this problem. The first one is to tunnel the PUT or DELETE calls inside regular GET or POST calls. There is a <a href="http://www.restlet.org/docs/core/index.html?com/noelios/restlet/TunnelFilter.html">TunnelFilter</a> available in the NRE to help you with this task. Also, in the <a href="http://www.onlamp.com/lpt/a/6480">Using REST with Ajax</a> article, the author explains how to directly build the PUT and DELETE methods from a browser using some Javascript code.
 </p>
 
 <p>
