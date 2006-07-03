@@ -264,7 +264,7 @@ public class HostRouter extends AbstractHandler implements Router
       		sb.append('|');
    		}
 
-   		sb.append('(');
+   		sb.append("((?i)"); // Scheme names are case insensitive
    		sb.append(Pattern.quote(protocol.getSchemeName()));
    		sb.append(Pattern.quote("://"));
    		sb.append(')');
@@ -287,7 +287,7 @@ public class HostRouter extends AbstractHandler implements Router
       		sb.append('|');
    		}
 
-   		sb.append('(');
+   		sb.append("((?i)"); // Domain names are case insensitive
    		sb.append(Pattern.quote(domain));
    		sb.append(')');
    		
@@ -312,7 +312,7 @@ public class HostRouter extends AbstractHandler implements Router
       		sb.append('|');
    		}
 
-   		sb.append("(localhost)");
+   		sb.append("((?i)localhost)");
 
    		if(isAllowIpAddresses())
 			{
