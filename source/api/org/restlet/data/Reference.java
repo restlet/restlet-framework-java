@@ -328,6 +328,10 @@ public class Reference implements Data
 		
 		// Finally, the output buffer is returned as the result
 		setPath(output.toString());
+
+		// Ensure that the scheme and host names are reset in lower case
+		setScheme(getScheme());
+		setHostName(getHostName());
    }
 
    /**
@@ -1263,7 +1267,16 @@ public class Reference implements Data
     */
    public void setHostName(String host)
    {
-   	if(host == null) host = "";
+   	if(host == null) 
+   	{
+   		host = "";
+   	}
+   	else
+   	{
+   		// URI specification indicates that host names should be produced in lower case
+   		host = host.toLowerCase();
+   	}
+   	
       String authority = getAuthority();
       int index1 = authority.indexOf('@');
       int index2 = authority.indexOf(':');
@@ -1514,12 +1527,18 @@ public class Reference implements Data
     */
    public void setScheme(String scheme)
    {
+   	if(scheme != null)
+   	{
+   		// URI specification indicates that scheme names should be produced in lower case
+   		scheme = scheme.toLowerCase();
+   	}
+   	
       if(schemeIndex != -1)
       {
          // Scheme found
       	if(scheme != null)
       	{
-      		this.uri = scheme.toLowerCase() + this.uri.substring(schemeIndex);
+      		this.uri = scheme + this.uri.substring(schemeIndex);
       	}
       	else
       	{
@@ -1531,8 +1550,6 @@ public class Reference implements Data
          // No scheme found
       	if(scheme != null)
       	{
-      		scheme = scheme.toLowerCase();
-      		
 	         if(this.uri == null)
 	         {
 	            this.uri = scheme + ':';

@@ -6,6 +6,7 @@ Restlet changes log
 @version-full@ (@release-date@)
  - Fixed potential NPE exceptions in the equals() methods of many metadata classes.
  - When build its pattern, the HostRouter now adds case insensitive flags for scheme names and domain names, strictly following the URI specification. Bug reported by Jim.
+ - Ensured that Reference normalization, scheme name setting and host name setting use lower case according to URI specification.
  - Added new FAQ entry on "What are the underlying concepts?" and reorganized the questions a little.
 
 1.0 beta 16 (2006-06-30)
