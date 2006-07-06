@@ -130,5 +130,10 @@ public class Preference implements ControlData
 
       return result;
    }
-
+   
+   @Override
+   public String toString()
+   {
+   	return (getMetadata() == null) ? "" : (getMetadata().getName() + ":" + getQuality());
+   }
 }

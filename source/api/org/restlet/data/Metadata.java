@@ -46,5 +46,4 @@ public interface Metadata extends Data
     * @return The description.
     */
    public String getDescription();
-
 }

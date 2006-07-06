@@ -8,6 +8,9 @@ Restlet changes log
  - When build its pattern, the HostRouter now adds case insensitive flags for scheme names and domain names, strictly following the URI specification. Bug reported by Jim.
  - Ensured that Reference normalization, scheme name setting and host name setting use lower case according to URI specification.
  - Added new FAQ entry on "What are the underlying concepts?" and reorganized the questions a little.
+ - Updated FreeMarker to version 2.3.7.
+ - Updated Simple frameword to version 3.1.3.
+ - Added Preference.toString() implementation based on patch submitted by Chris Winters.
 
 1.0 beta 16 (2006-06-30)
  - Renamed attachPath() to attachRouter() in RouterBuilder.
