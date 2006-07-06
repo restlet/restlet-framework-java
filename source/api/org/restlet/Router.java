@@ -25,15 +25,28 @@ package org.restlet;
 import java.util.List;
 
 /**
- * Router of calls to target Restlets. Internally, the targets are handled using attachments objects.
- * Some methods allow the creation of attachments based on URI path patterns matching the beginning of a the
- * resource path in the current context (see Call.getContextPath() method).<br/><br/>
- * Note that during the delegation, the call paths are automatically modified. 
+ * Router of calls to one of several target Restlet options. Each Restlet option is represented by a scorer 
+ * handler that can give an affinity score for each call depending on various criteria. Some attach() methods 
+ * allow the creation of options based on URI path patterns matching the beginning of a the resource path in 
+ * the current context (see Call.getContextPath() and getResourcePath() methods).<br/>
+ * <br/>
+ * In addition, several routing modes are supported, implementing various algorithms like:
+ * <ul>
+ * <li>Best match (default)</li>
+ * <li>First match</li>
+ * <li>Last match</li>
+ * <li>Random match</li>
+ * <li>Round robin</li>
+ * <li>Custom</li>
+ * </ul>
+ * <br/>
+ * Note that for scorers using URI patterns will update the call paths during the routing if they are selected.
  * If you are handling hierarchical paths, remember to directly attach the child routers to their parent router
  * instead of the top level Restlet container. Also, remember to manually handle the path separator characters 
- * in your path patterns otherwise the delegation will not work as expected.<br/><br/>
- * Also note that you can attach and detach targets while handling incoming calls as the delegation code 
- * is ensured to be thread-safe and atomic.
+ * in your path patterns otherwise the delegation will not work as expected.<br/>
+ * <br/>
+ * Finally, you can attach and detach targets while handling incoming calls as the delegation code is ensured to 
+ * be thread-safe and atomic.
  * @see <a href="http://www.restlet.org/tutorial#part11">Tutorial: Routers and hierarchical URIs</a>
  * @author Jerome Louvel (contact@noelios.com) <a href="http://www.noelios.com/">Noelios Consulting</a>
  */
