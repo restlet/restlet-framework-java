@@ -75,7 +75,7 @@ public class RouterBuilder extends RestletBuilder
    public RestletBuilder attach(String pattern, Restlet target)
    {
    	target.setOwner(getNode().getOwner());
-      getNode().attach(pattern, target);
+      getNode().addOption(pattern, target);
       return Builders.buildRestlet(this, target);
    }
 
@@ -91,7 +91,7 @@ public class RouterBuilder extends RestletBuilder
    public RestletBuilder attach(String pattern, Restlet target, int index)
    {
    	target.setOwner(getNode().getOwner());
-      getNode().attach(pattern, target, index);
+      getNode().addOption(pattern, target, index);
       return Builders.buildRestlet(this, target);
    }
    
@@ -106,7 +106,7 @@ public class RouterBuilder extends RestletBuilder
    public FilterBuilder attach(String pattern, Filter target)
    {
    	target.setOwner(getNode().getOwner());
-      getNode().attach(pattern, target);
+      getNode().addOption(pattern, target);
       return Builders.buildFilter(this, target);
    }
 
@@ -122,7 +122,7 @@ public class RouterBuilder extends RestletBuilder
    public FilterBuilder attach(String pattern, Filter target, int index)
    {
    	target.setOwner(getNode().getOwner());
-      getNode().attach(pattern, target, index);
+      getNode().addOption(pattern, target, index);
       return Builders.buildFilter(this, target);
    }
    
@@ -137,7 +137,7 @@ public class RouterBuilder extends RestletBuilder
    public RestletBuilder attach(String pattern, Router target)
    {
    	target.setOwner(getNode().getOwner());
-      getNode().attach(pattern, target);
+      getNode().addOption(pattern, target);
       return Builders.buildRouter(this, target);
    }
 
@@ -153,7 +153,7 @@ public class RouterBuilder extends RestletBuilder
    public RouterBuilder attach(String pattern, Router target, int index)
    {
    	target.setOwner(getNode().getOwner());
-      getNode().attach(pattern, target, index);
+      getNode().addOption(pattern, target, index);
       return Builders.buildRouter(this, target);
    }
 
@@ -165,7 +165,7 @@ public class RouterBuilder extends RestletBuilder
    public FilterBuilder attachCompress(String pattern)
    {
       CompressFilter node = new CompressFilter(getNode().getOwner());
-      getNode().attach(pattern, node);
+      getNode().addOption(pattern, node);
       return Builders.buildFilter(this, node);
    }
 
@@ -189,7 +189,7 @@ public class RouterBuilder extends RestletBuilder
 	public FilterBuilder attachDecompress(String pattern, boolean decodeInput, boolean decodeOutput)
 	{
       DecompressFilter node = new DecompressFilter(getNode().getOwner(), decodeInput, decodeOutput);
-      getNode().attach(pattern, node);
+      getNode().addOption(pattern, node);
       return Builders.buildFilter(this, node);
 	}
    
@@ -204,7 +204,7 @@ public class RouterBuilder extends RestletBuilder
    public RestletBuilder attachDirectory(String pattern, String rootUri, boolean deeply, String indexName)
    {
       DirectoryHandler node = new DirectoryHandler(getNode().getOwner(), rootUri, deeply, indexName);
-      getNode().attach(pattern, node);
+      getNode().addOption(pattern, node);
       return Builders.buildRestlet(this, node);
    }
 
@@ -216,7 +216,7 @@ public class RouterBuilder extends RestletBuilder
    public ExtractFilterBuilder attachExtract(String pattern)
    {
       ExtractFilter node = new ExtractFilter(getNode().getOwner());
-      getNode().attach(pattern, node);
+      getNode().addOption(pattern, node);
       return Builders.buildExtract(this, node);
    }
 
@@ -233,7 +233,7 @@ public class RouterBuilder extends RestletBuilder
    public GuardFilterBuilder attachGuard(String pattern, String logName, boolean authentication, ChallengeScheme scheme, String realm, boolean authorization)
    {
    	GuardFilter node = new GuardFilter(getNode().getOwner(), logName, authentication, scheme, realm, authorization);
-      getNode().attach(pattern, node);
+      getNode().addOption(pattern, node);
       return Builders.buildGuard(this, node);
    }
    
@@ -324,7 +324,7 @@ public class RouterBuilder extends RestletBuilder
    public FilterBuilder attachLog(String pattern, String logName)
    {
       LogFilter node = new LogFilter(getNode().getOwner(), logName);
-      getNode().attach(pattern, node);
+      getNode().addOption(pattern, node);
       return Builders.buildFilter(this, node);
    }
 
@@ -340,7 +340,7 @@ public class RouterBuilder extends RestletBuilder
    public FilterBuilder attachLog(String pattern, String logName, String logFormat)
    {
       LogFilter node = new LogFilter(getNode().getOwner(), logName, logFormat);
-      getNode().attach(pattern, node);
+      getNode().addOption(pattern, node);
       return Builders.buildFilter(this, node);
    }
 
@@ -352,7 +352,7 @@ public class RouterBuilder extends RestletBuilder
    public RouterBuilder attachRouter(String pattern)
    {
    	Router node = new DefaultRouter(getNode().getOwner());
-      getNode().attach(pattern, node);
+      getNode().addOption(pattern, node);
       return Builders.buildRouter(this, node);
    }
 
@@ -366,7 +366,7 @@ public class RouterBuilder extends RestletBuilder
    public RestletBuilder attachRedirect(String pattern, String targetPattern, int mode)
    {
       RedirectRestlet node = new RedirectRestlet(getNode().getOwner(), targetPattern, mode);
-      getNode().attach(pattern, node);
+      getNode().addOption(pattern, node);
       return Builders.buildRestlet(this, node);
    }
 
@@ -380,7 +380,7 @@ public class RouterBuilder extends RestletBuilder
    public RestletBuilder attachRedirect(String pattern, String targetPattern, String connectorName)
    {
       RedirectRestlet node = new RedirectRestlet(getNode().getOwner(), targetPattern, connectorName);
-      getNode().attach(pattern, node);
+      getNode().addOption(pattern, node);
       return Builders.buildRestlet(this, node);
    }
    
@@ -395,7 +395,7 @@ public class RouterBuilder extends RestletBuilder
    public FilterBuilder attachStatus(String pattern, boolean overwrite, String email, String homeURI)
    {
       StatusFilter node = new StatusFilter(getNode().getOwner(), overwrite, email, homeURI);
-      getNode().attach(pattern, node);
+      getNode().addOption(pattern, node);
       return Builders.buildFilter(this, node);
    }
 

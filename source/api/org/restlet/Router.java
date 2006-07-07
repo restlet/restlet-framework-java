@@ -59,27 +59,21 @@ public interface Router extends Handler
 	public List<Scorer> getOptions();
 	
    /**
-    * Attaches a target instance shared by all calls. 
+    * Adds a target option based on an URI pattern at the end of the list of options. 
     * @param pattern The URI pattern used to map calls (see {@link java.util.regex.Pattern} for the syntax).
     * @param target The target instance to attach.
     * @see java.util.regex.Pattern
     */
-   public void attach(String pattern, Restlet target);
+   public void addOption(String pattern, Restlet target);
 
    /**
-    * Attaches at a specific a target instance shared by all calls.
+    * Adds a target option based on an URI pattern at a specific position.
     * @param pattern The URI pattern used to map calls (see {@link java.util.regex.Pattern} for the syntax).
     * @param target The target instance to attach.
     * @param index The insertion position in the list of attachments.
     * @see java.util.regex.Pattern
     */
-   public void attach(String pattern, Restlet target, int index);
-
-   /**
-    * Detaches all attachments with a given target Restlet.
-    * @param target The target Restlet to detach.
-    */
-   public void detach(Restlet target);
+   public void addOption(String pattern, Restlet target, int index);
 
 	/**
 	 * Returns the routing mode.

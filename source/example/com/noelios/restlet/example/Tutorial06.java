@@ -54,7 +54,7 @@ public class Tutorial06
          DirectoryHandler directory = new DirectoryHandler(myContainer, "file:///D:/Restlet/standard/www/docs/api/", true, "index");
 
          // Then attach the Restlet to the container.
-         host.attach("/", directory);
+         host.addOption("/", directory);
 
          // Now, let's start the container!
          myContainer.start();

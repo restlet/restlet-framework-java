@@ -36,7 +36,7 @@ import org.restlet.Router;
  * Router handler based on a URI pattern. Note that the matching is case sensitive unless some inline modifiers
  * were used in the pattern using the "(?i)" inline flag.
  * @see java.util.regex.Pattern
- * @see http://javaalmanac.com/egs/java.util.regex/pkg.html
+ * @see <a href="http://javaalmanac.com/egs/java.util.regex/pkg.html">Java Almanac on the Regex package</a>
  * @author Jerome Louvel (contact@noelios.com) <a href="http://www.noelios.com/">Noelios Consulting</a>
  */
 public class PatternScorer extends AbstractScorer

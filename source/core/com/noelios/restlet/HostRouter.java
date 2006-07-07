@@ -416,7 +416,7 @@ public class HostRouter extends AbstractHandler implements Router
 	   	   		if(this.frontRouter == null)
 	   	   		{
 	   	   			this.frontRouter = new DefaultRouter(getOwner());
-	   	   			this.frontRouter.attach(getPattern(), this.backRouter);
+	   	   			this.frontRouter.addOption(getPattern(), this.backRouter);
 	   	   		}
 	   			}
 	   		}
@@ -715,9 +715,9 @@ public class HostRouter extends AbstractHandler implements Router
     * @param target The target instance to attach.
     * @see java.util.regex.Pattern
     */
-   public void attach(String pattern, Restlet target)
+   public void addOption(String pattern, Restlet target)
    {
-   	this.backRouter.attach(pattern, target);
+   	this.backRouter.addOption(pattern, target);
    }
 
    /**
@@ -727,18 +727,9 @@ public class HostRouter extends AbstractHandler implements Router
     * @param index The insertion position in the list of attachments.
     * @see java.util.regex.Pattern
     */
-   public void attach(String pattern, Restlet target, int index)
+   public void addOption(String pattern, Restlet target, int index)
    {
-   	this.backRouter.attach(pattern, target, index);
-   }
-
-   /**
-    * Detaches all attachments with a given target Restlet.
-    * @param target The target Restlet to detach.
-    */
-   public void detach(Restlet target)
-   {
-   	this.backRouter.detach(target);
+   	this.backRouter.addOption(pattern, target, index);
    }
 
 	/**

@@ -36,8 +36,8 @@ import org.restlet.data.Statuses;
  */
 public class DefaultRouter extends AbstractHandler implements Router
 {
-	/** The modifiable list of attachments. */
-	protected List<Scorer> attachments;
+	/** The modifiable list of target options. */
+	protected List<Scorer> options;
 	
 	/** The routing mode. */
 	protected RouterMode mode;
@@ -69,7 +69,7 @@ public class DefaultRouter extends AbstractHandler implements Router
 	public DefaultRouter(Component owner)
    {
       super(owner);
-      this.attachments = null;
+      this.options = null;
       this.mode = RouterMode.BEST_MATCH;
       this.requiredScore = 0.5F;
       this.maxAttempts = 1;
@@ -86,7 +86,7 @@ public class DefaultRouter extends AbstractHandler implements Router
 	{
 		Scorer result = null;
 		
-		if(this.attachments != null)
+		if(this.options != null)
 		{
 			for(int i = 0; (result == null) && (i < getMaxAttempts()); i++)
 			{
@@ -176,49 +176,36 @@ public class DefaultRouter extends AbstractHandler implements Router
 	}
 	
 	/**
-	 * Returns the modifiable list of attachments.
-	 * @return The modifiable list of attachments.
+	 * Returns the modifiable list of options.
+	 * @return The modifiable list of options.
 	 */
 	public List<Scorer> getOptions()
 	{
-      if(this.attachments == null) this.attachments = new ArrayList<Scorer>();
-      return this.attachments;
+      if(this.options == null) this.options = new ArrayList<Scorer>();
+      return this.options;
 	}
+
    /**
-    * Attaches a target instance shared by all calls. 
+    * Adds a target option based on an URI pattern at the end of the list of options. 
     * @param pattern The URI pattern used to map calls (see {@link java.util.regex.Pattern} for the syntax).
     * @param target The target instance to attach.
     * @see java.util.regex.Pattern
     */
-   public void attach(String pattern, Restlet target)
+   public void addOption(String pattern, Restlet target)
    {
    	getOptions().add(Factory.getInstance().createScorer(this, pattern, target));
    }
 
    /**
-    * Attaches at a specific a target instance shared by all calls.
+    * Adds a target option based on an URI pattern at a specific position.
     * @param pattern The URI pattern used to map calls (see {@link java.util.regex.Pattern} for the syntax).
     * @param target The target instance to attach.
     * @param index The insertion position in the list of attachments.
     * @see java.util.regex.Pattern
     */
-   public void attach(String pattern, Restlet target, int index)
+   public void addOption(String pattern, Restlet target, int index)
    {
    	getOptions().add(index, Factory.getInstance().createScorer(this, pattern, target));
-   }
-
-   /**
-    * Detaches all attachments with a given target Restlet.
-    * @param target The target Restlet to detach.
-    */
-   public void detach(Restlet target)
-   {
-   	Scorer att;
-		for(int i = 0; i < getOptions().size(); i++)
-		{
-			att = getOptions().get(i);
-			if(att.findNext(null).equals(target)) getOptions().remove(i);
-		}
    }
 
 	/**

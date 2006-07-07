@@ -67,7 +67,7 @@ public class Tutorial05
             };
 
          // Then attach it to the host router.
-         host.attach("/trace", myRestlet);
+         host.addOption("/trace", myRestlet);
 
          // Now, let's start the container!
          // Note that the HTTP server connector is also automatically started.

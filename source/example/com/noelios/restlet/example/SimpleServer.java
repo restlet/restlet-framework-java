@@ -82,7 +82,7 @@ public class SimpleServer
                call.setOutput(new StringRepresentation(sb.toString(), MediaTypes.TEXT_PLAIN));
             }
          };
-         host.attach("/test", testRestlet);
+         host.addOption("/test", testRestlet);
 
          // Now, start the container
          myContainer.start();
