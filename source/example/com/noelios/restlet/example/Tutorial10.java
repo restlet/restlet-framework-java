@@ -47,7 +47,7 @@ public class Tutorial10
 
          // Create a host router matching calls to the server
          HostRouter host = new HostRouter(myContainer, 8182);
-         myContainer.attach(host);
+         myContainer.setRoot(host);
 
          // Create a redirect Restlet then attach it to the container
          String target = "http://www.google.com/search?q=site:mysite.org+${query('query')}";

@@ -1267,47 +1267,51 @@ public class Reference implements Data
     */
    public void setHostName(String host)
    {
-   	if(host == null) 
-   	{
-   		host = "";
-   	}
-   	else
-   	{
-   		// URI specification indicates that host names should be produced in lower case
-   		host = host.toLowerCase();
-   	}
-   	
       String authority = getAuthority();
-      int index1 = authority.indexOf('@');
-      int index2 = authority.indexOf(':');
-
-      if(index1 != -1)
+      
+      if(authority != null)
       {
-         // User info found
-         if(index2 != -1)
-         {
-            // Port found
-            setAuthority(authority.substring(0, index1 + 1) + host + authority.substring(index2));
-         }
-         else
-         {
-            // No port found
-            setAuthority(authority.substring(0, index1 + 1) + host);
-         }
-      }
-      else
-      {
-         // No user info found
-         if(index1 != -1)
-         {
-            // Port found
-            setAuthority(host + authority.substring(index2));
-         }
-         else
-         {
-            // No port found
-            setAuthority(host);
-         }
+	   	if(host == null) 
+	   	{
+	   		host = "";
+	   	}
+	   	else
+	   	{
+	   		// URI specification indicates that host names should be produced in lower case
+	   		host = host.toLowerCase();
+	   	}
+	   	
+	      int index1 = authority.indexOf('@');
+	      int index2 = authority.indexOf(':');
+	
+	      if(index1 != -1)
+	      {
+	         // User info found
+	         if(index2 != -1)
+	         {
+	            // Port found
+	            setAuthority(authority.substring(0, index1 + 1) + host + authority.substring(index2));
+	         }
+	         else
+	         {
+	            // No port found
+	            setAuthority(authority.substring(0, index1 + 1) + host);
+	         }
+	      }
+	      else
+	      {
+	         // No user info found
+	         if(index1 != -1)
+	         {
+	            // Port found
+	            setAuthority(host + authority.substring(index2));
+	         }
+	         else
+	         {
+	            // No port found
+	            setAuthority(host);
+	         }
+	      }
       }
    }
 

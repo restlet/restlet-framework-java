@@ -47,23 +47,23 @@ public abstract class AbstractHandler extends AbstractRestlet implements Handler
    {
    	super(owner);
    }
-	
-	/**
-	 * Finds the next Restlet then, if it is available, asks it to handle the call.  
-	 * @param call The current call.
-	 */
-	public void nextHandle(Call call)
-	{
-   	handle(call, findNext(call));
-	}
    
    /**
-    * Default implementation for all the handle*() methods that simply calls the nextHandle() method. 
+    * Default implementation for all the handle*() methods that calls the next handler if it is available. 
     * @param call The call to handle.
     */
    protected void defaultHandle(Call call)
    {
-   	nextHandle(call);
+   	Restlet target = findNext(call);
+   	
+   	if(target != null)
+   	{
+      	handle(call, target);
+   	}
+   	else
+   	{
+   		super.defaultHandle(call);
+   	}
    }
 
 }

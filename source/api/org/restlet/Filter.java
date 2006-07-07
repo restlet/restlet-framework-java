@@ -34,22 +34,23 @@ package org.restlet;
 public interface Filter extends Handler
 {
 	/**
-    * Attaches a target Restlet shared by all calls.
-    * @param target The target instance to attach.
+    * Sets the target Restlet shared by all calls going through this filter.
+    * @param target The target Restlet.
     */
-   public void attach(Restlet target);
+   public void setTarget(Restlet target);
 
    /**
-    * Indicates if a target Restlet has been attached.
-    * @return True if a target Restlet has been attached.
+    * Returns the target Restlet.
+    * @return The target Restlet or null.
+    */
+   public Restlet getTarget();
+
+   /**
+    * Indicates if there is a target Restlet.
+    * @return True if there is a target Restlet.
     */
    public boolean hasTarget();
-
-   /**
-    * Detaches the current target.
-    */
-   public void detach();
-
+   
    /**
     * Handles a call by first invoking the beforeHandle() method for pre-filtering, then distributing the call 
     * to the target Restlet via the doHandle() method. When the target handling is completed, it finally 

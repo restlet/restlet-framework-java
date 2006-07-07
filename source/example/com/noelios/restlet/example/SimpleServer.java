@@ -54,7 +54,7 @@ public class SimpleServer
 
          // Attach a host router as the root handler
          HostRouter host = new HostRouter(myContainer, 9876);
-         myContainer.attach(host);
+         myContainer.setRoot(host);
 
          // Prepare and attach a test Restlet
          Restlet testRestlet = new AbstractRestlet(myContainer)

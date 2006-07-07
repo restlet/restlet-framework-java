@@ -60,15 +60,15 @@ public class Tutorial11
 
          // Attach a log Filter to the container
          LogFilter log = new LogFilter(myContainer, "com.noelios.restlet.example");
-         myContainer.attach(log);
+         myContainer.setRoot(log);
 
          // Attach a status Filter to the log Filter
          StatusFilter status = new StatusFilter(myContainer, true, "webmaster@mysite.org", "http://www.mysite.org");
-         log.attach(status);
+         log.setTarget(status);
 
          // Create a host router matching calls to the server
          HostRouter host = new HostRouter(myContainer, 8182);
-         status.attach(host);
+         status.setTarget(host);
 
          // Attach a guard Filter to secure access the the chained directory Restlet
          GuardFilter guard = new GuardFilter(myContainer, "com.noelios.restlet.example", true, ChallengeSchemes.HTTP_BASIC , "Restlet tutorial", true);
@@ -77,7 +77,7 @@ public class Tutorial11
 
          // Create a directory Restlet able to return a deep hierarchy of Web files
          DirectoryHandler directory = new DirectoryHandler(myContainer, "file:///D:/Restlet/standard/www/docs/api/", true, "index");
-         guard.attach(directory);
+         guard.setTarget(directory);
 
          // Create the user router
          Router user = new DefaultRouter(myContainer);

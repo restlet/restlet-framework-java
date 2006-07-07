@@ -35,10 +35,4 @@ public interface Handler extends Restlet
 	 * @return The next Restlet if available or null.
 	 */
 	public Restlet findNext(Call call);
-	
-	/**
-	 * Finds the next Restlet then, if it is available, asks it to handle the call.  
-	 * @param call The current call.
-	 */
-	public void nextHandle(Call call);
 }

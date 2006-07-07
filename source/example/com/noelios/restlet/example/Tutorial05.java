@@ -50,7 +50,7 @@ public class Tutorial05
 
          // Create a host router matching calls to the server
          HostRouter host = new HostRouter(myContainer, 8182);
-         myContainer.attach(host);
+         myContainer.setRoot(host);
 
          // Create a new Restlet that will display some path information.
          Restlet myRestlet = new AbstractRestlet(myContainer)

@@ -47,7 +47,7 @@ public class Tutorial06
 
          // Create a host router matching calls to the server
          HostRouter host = new HostRouter(myContainer, 8182);
-         myContainer.attach(host);
+         myContainer.setRoot(host);
 
          // Create a directory Restlet able to return a deep hierarchy of Web files
          // (HTML pages, CSS stylesheets or GIF images) from a local directory.

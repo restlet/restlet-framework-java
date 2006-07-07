@@ -48,11 +48,11 @@ public class Tutorial07
 
          // Attach a log Filter to the container
          LogFilter log = new LogFilter(myContainer, "com.noelios.restlet.example");
-         myContainer.attach(log);
+         myContainer.setRoot(log);
 
          // Create a host router matching calls to the server
          HostRouter host = new HostRouter(myContainer, 8182);
-         log.attach(host);
+         log.setTarget(host);
 
          // Create a directory Restlet able to return a deep hierarchy of Web files
          DirectoryHandler directory = new DirectoryHandler(myContainer, "file:///D:/Restlet/www/docs/api/", true, "index");

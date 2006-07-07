@@ -60,35 +60,36 @@ public abstract class AbstractFilter extends AbstractHandler implements Filter
 	 */
 	public Restlet findNext(Call call)
 	{
-		return this.target;
+		return getTarget();
 	}
 
-   /**
-    * Attaches a target instance shared by all calls.
-    * @param target The target instance to attach.
+	/**
+    * Sets the target Restlet shared by all calls going through this filter.
+    * @param target The target Restlet.
     */
-   public void attach(Restlet target)
+   public void setTarget(Restlet target)
    {
    	this.target = target;
    }
 
    /**
-    * Indicates if a target Restlet instance or class has been attached.
-    * @return True if a target Restlet instance or class has been attached.
+    * Returns the target Restlet.
+    * @return The target Restlet or null.
     */
-   public boolean hasTarget()
+   public Restlet getTarget()
    {
-   	return (this.target != null);
+   	return this.target;
    }
 
    /**
-    * Detaches the current target.
+    * Indicates if there is a target Restlet.
+    * @return True if there is a target Restlet.
     */
-   public void detach()
+   public boolean hasTarget()
    {
-      this.target = null;
+   	return getTarget() != null;
    }
-   
+
    /**
     * Handles a call by first invoking the beforeHandle() method for pre-filtering, then distributing the call 
     * to the target Restlet via the doHandle() method. When the target handling is completed, it finally 

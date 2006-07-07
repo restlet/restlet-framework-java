@@ -90,23 +90,33 @@ public class RestletContainer extends AbstractComponent
    }
 
    /**
-    * Attaches the root Restlet that will receive all incoming calls. In general, instance of Router, 
+    * Sets the root Restlet that will receive all incoming calls. In general, instance of Router, 
     * Filter or Handler interfaces will be used as root of containers.
     * @param root The root Restlet to use.
     */
-   public void attach(Restlet root)
+   public void setRoot(Restlet root)
    {
    	this.root = root;
    }
 
    /**
-    * Detaches the root Restlet.
+    * Returns the root Restlet.
+    * @return The root Restlet.
     */
-   public void detach()
+   public Restlet getRoot()
    {
-   	this.root = null;
+   	return this.root;
    }
    
+   /**
+    * Indicates if a root Restlet is set. 
+    * @return True if a root Restlet is set. 
+    */
+   public boolean hasRoot()
+   {
+   	return this.root != null;
+   }
+
    /**
     * Handles a direct call.
     * @param call The call to handle.
