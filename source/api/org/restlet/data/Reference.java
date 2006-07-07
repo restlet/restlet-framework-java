@@ -1301,7 +1301,7 @@ public class Reference implements Data
 	      else
 	      {
 	         // No user info found
-	         if(index1 != -1)
+	         if(index2 != -1)
 	         {
 	            // Port found
 	            setAuthority(host + authority.substring(index2));
