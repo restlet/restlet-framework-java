@@ -73,7 +73,7 @@ public class Tutorial11
          // Attach a guard Filter to secure access the the chained directory Restlet
          GuardFilter guard = new GuardFilter(myContainer, "com.noelios.restlet.example", true, ChallengeSchemes.HTTP_BASIC , "Restlet tutorial", true);
          guard.getAuthorizations().put("scott", "tiger");
-         host.addOption("/docs/", guard);
+         host.getScorers().add("/docs/", guard);
 
          // Create a directory Restlet able to return a deep hierarchy of Web files
          DirectoryHandler directory = new DirectoryHandler(myContainer, "file:///D:/Restlet/standard/www/docs/api/", true, "index");
@@ -81,7 +81,7 @@ public class Tutorial11
 
          // Create the user router
          Router user = new DefaultRouter(myContainer);
-         host.addOption("/users/[a-z]+", user);
+         host.getScorers().add("/users/[a-z]+", user);
 
          // Create the account Restlet
          Restlet account = new AbstractRestlet()
@@ -93,7 +93,7 @@ public class Tutorial11
                   call.setOutput(new StringRepresentation(output, MediaTypes.TEXT_PLAIN));
                }
             };
-         user.addOption("$", account);
+         user.getScorers().add("$", account);
 
          // Create the orders Restlet
          Restlet orders = new AbstractRestlet(myContainer)
@@ -106,7 +106,7 @@ public class Tutorial11
                   call.setOutput(new StringRepresentation(output, MediaTypes.TEXT_PLAIN));
                }
             };
-         user.addOption("/orders$", orders);
+         user.getScorers().add("/orders$", orders);
 
          // Now, let's start the container!
          myContainer.start();

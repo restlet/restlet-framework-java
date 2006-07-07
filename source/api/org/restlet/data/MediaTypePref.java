@@ -22,8 +22,6 @@
 
 package org.restlet.data;
 
-import java.util.List;
-
 /**
  * Media type preference.
  * @author Jerome Louvel (contact@noelios.com) <a href="http://www.noelios.com/">Noelios Consulting</a>
@@ -55,7 +53,7 @@ public class MediaTypePref extends Preference
     * @param quality The quality/preference level.
     * @param parameters The list of parameters.
     */
-   public MediaTypePref(MediaType mediaType, float quality, List<Parameter> parameters)
+   public MediaTypePref(MediaType mediaType, float quality, ParameterList parameters)
    {
       super(mediaType, quality, parameters);
    }

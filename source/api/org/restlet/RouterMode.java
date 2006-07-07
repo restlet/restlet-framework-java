@@ -29,37 +29,39 @@ package org.restlet;
 public enum RouterMode
 {
 	/**
-	 * Each call will be routed to the next attachment if the required score is reached. The next attachment is
-	 * relative to the previous call routed. If the required score is not reached, then the attachment is 
-	 * skipped and the next one is considered. If the last attachment is reached, the first attachment will 
+	 * Each call will be routed to the scorer with the best score, if the required score is reached.
+	 */
+	BEST,
+	
+	/**
+	 * Each call is routed to the first scorer if the required score is reached. If the required score 
+	 * is not reached, then the scorer is skipped and the next one is considered. 
+	 */
+	FIRST,
+	
+	/**
+	 * Each call will be routed to the last scorer if the required score is reached. If the required score 
+	 * is not reached, then the scorer is skipped and the previous one is considered. 
+	 */
+	LAST,
+	
+	/**
+	 * Each call is be routed to the next scorer target if the required score is reached. The next scorer is 
+	 * relative to the previous call routed (round robin mode). If the required score is not reached, then the
+	 * scorer is skipped and the next one is considered. If the last scorer is reached, the first scorer will 
 	 * be considered.  
 	 */
-	ROUND_ROBIN,
+	NEXT,
 	
 	/**
-	 * Each call will be routed to the first attachment if the required score is reached. If the required score 
-	 * is not reached, then the attachment is skipped and the next one is considered. 
-	 */
-	FIRST_MATCH,
-	
-	/**
-	 * Each call will be routed to the last attachment if the required score is reached. If the required score 
-	 * is not reached, then the attachment is skipped and the previous one is considered. 
-	 */
-	LAST_MATCH,
-	
-	/**
-	 * Each call will be routed to the attachment with the best score, if the required score is reached.
-	 */
-	BEST_MATCH,
-	
-	/**
-	 * Each call will be randomly routed to one of the attachments that reached the required score.
+	 * Each call will be randomly routed to one of the scorers that reached the required score. If the random 
+	 * scorer selected is not a match then the immediate next scorer is evaluated until one matching scorer is 
+	 * found. If we get back to the inital random scorer selected with no match, then we return null.
 	 */
 	RANDOM,
 	
 	/**
-	 * Each call will be routed according to a custome mode.
+	 * Each call will be routed according to a custom mode.
 	 */
 	CUSTOM;	
 }

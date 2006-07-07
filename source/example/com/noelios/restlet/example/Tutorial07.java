@@ -58,7 +58,7 @@ public class Tutorial07
          DirectoryHandler directory = new DirectoryHandler(myContainer, "file:///D:/Restlet/www/docs/api/", true, "index");
 
          // Then attach the Restlet to the log Filter.
-         host.addOption("/", directory);
+         host.getScorers().add("/", directory);
 
          // Now, let's start the container!
          myContainer.start();

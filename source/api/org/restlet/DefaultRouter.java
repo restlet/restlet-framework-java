@@ -22,11 +22,8 @@
 
 package org.restlet;
 
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Random;
-
 import org.restlet.component.Component;
+import org.restlet.data.ScorerList;
 import org.restlet.data.Statuses;
 
 /**
@@ -36,8 +33,8 @@ import org.restlet.data.Statuses;
  */
 public class DefaultRouter extends AbstractHandler implements Router
 {
-	/** The modifiable list of target options. */
-	protected List<Scorer> options;
+	/** The modifiable list of scorers. */
+	protected ScorerList scorers;
 	
 	/** The routing mode. */
 	protected RouterMode mode;
@@ -50,9 +47,6 @@ public class DefaultRouter extends AbstractHandler implements Router
 	
 	/** The delay (in milliseconds) before a new attempt. */
 	protected long retryDelay;
-	
-	/** The index of the last attachment used in the round robin mode. */ 
-	protected int lastIndex;
 	
    /**
     * Constructor.
@@ -69,12 +63,11 @@ public class DefaultRouter extends AbstractHandler implements Router
 	public DefaultRouter(Component owner)
    {
       super(owner);
-      this.options = null;
-      this.mode = RouterMode.BEST_MATCH;
+      this.scorers = null;
+      this.mode = RouterMode.BEST;
       this.requiredScore = 0.5F;
       this.maxAttempts = 1;
       this.retryDelay = 500L;
-      this.lastIndex = -1;
    }
 
 	/**
@@ -86,7 +79,7 @@ public class DefaultRouter extends AbstractHandler implements Router
 	{
 		Scorer result = null;
 		
-		if(this.options != null)
+		if(this.scorers != null)
 		{
 			for(int i = 0; (result == null) && (i < getMaxAttempts()); i++)
 			{
@@ -104,63 +97,30 @@ public class DefaultRouter extends AbstractHandler implements Router
 				}
 				
 				// Select the routing mode
-				Scorer att;
 				switch(getMode())
 				{
-					case BEST_MATCH:
-						float bestScore = 0F;
-						float score;
-						for(Scorer current : getOptions())
-						{
-							score = current.score(call);
-
-							if((score > bestScore) && (score >= getRequiredScore()))
-							{
-								bestScore = score;
-								result = current;
-							}
-						}
+					case BEST:
+						result = getScorers().getBest(call, this.requiredScore);
 					break;
 					
-					case FIRST_MATCH:
-						for(int j = 0; (result == null) && (j < getOptions().size()); j++)
-						{
-							att = getOptions().get(j);
-							if(att.score(call) >= getRequiredScore()) result = att;
-						}
+					case FIRST:
+						result = getScorers().getFirst(call, this.requiredScore);
 					break;
 					
-					case LAST_MATCH:
-						for(int j = (getOptions().size() - 1); (result == null) && (j >= 0); j--)
-						{
-							att = getOptions().get(j);
-							if(att.score(call) >= getRequiredScore()) result = att;
-						}
+					case LAST:
+						result = getScorers().getLast(call, this.requiredScore);
+					break;
+					
+					case NEXT:
+						result = getScorers().getNext(call, this.requiredScore);
 					break;
 					
 					case RANDOM:
-						int j = new Random().nextInt(getOptions().size());
-						att = getOptions().get(j);
-						if(att.score(call) >= getRequiredScore()) result = att;
+						result = getScorers().getRandom(call, this.requiredScore);
 					break;
 					
-					case ROUND_ROBIN:
-						synchronized(this)
-						{
-							// Compute the next index
-							lastIndex++;
-							if(lastIndex >= getOptions().size())
-							{
-								lastIndex = 0;
-							}
-							
-							// Starting from the next index, find the first matching target
-							for(int k = lastIndex; (result == null) && (k < getOptions().size()); k++)
-							{
-								att = getOptions().get(k);
-								if(att.score(call) >= getRequiredScore()) result = att;
-							}
-						}						
+					case CUSTOM:
+						result = customFind(call);
 					break;
 				}
 			}
@@ -176,37 +136,25 @@ public class DefaultRouter extends AbstractHandler implements Router
 	}
 	
 	/**
-	 * Returns the modifiable list of options.
-	 * @return The modifiable list of options.
+	 * Returns the matched scorer according to a custom algorithm. To use in combination of the RouterMode.CUSTOM 
+	 * enumeration. The default implementation (to be overriden), returns null. 
+	 * @param call The current call.
+	 * @return The matched scorer if available or null.
 	 */
-	public List<Scorer> getOptions()
+	protected Scorer customFind(Call call)
 	{
-      if(this.options == null) this.options = new ArrayList<Scorer>();
-      return this.options;
+		return null;
 	}
-
-   /**
-    * Adds a target option based on an URI pattern at the end of the list of options. 
-    * @param pattern The URI pattern used to map calls (see {@link java.util.regex.Pattern} for the syntax).
-    * @param target The target instance to attach.
-    * @see java.util.regex.Pattern
-    */
-   public void addOption(String pattern, Restlet target)
-   {
-   	getOptions().add(Factory.getInstance().createScorer(this, pattern, target));
-   }
-
-   /**
-    * Adds a target option based on an URI pattern at a specific position.
-    * @param pattern The URI pattern used to map calls (see {@link java.util.regex.Pattern} for the syntax).
-    * @param target The target instance to attach.
-    * @param index The insertion position in the list of attachments.
-    * @see java.util.regex.Pattern
-    */
-   public void addOption(String pattern, Restlet target, int index)
-   {
-   	getOptions().add(index, Factory.getInstance().createScorer(this, pattern, target));
-   }
+	
+	/**
+	 * Returns the modifiable list of scorers.
+	 * @return The modifiable list of scorers.
+	 */
+	public ScorerList getScorers()
+	{
+      if(this.scorers == null) this.scorers = new ScorerList(this);
+      return this.scorers;
+	}
 
 	/**
 	 * Returns the routing mode.

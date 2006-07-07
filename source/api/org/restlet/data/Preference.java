@@ -22,9 +22,6 @@
 
 package org.restlet.data;
 
-import java.util.Iterator;
-import java.util.List;
-
 /**
  * Metadata preference definition.
  * @author Jerome Louvel (contact@noelios.com) <a href="http://www.noelios.com/">Noelios Consulting</a>
@@ -37,8 +34,8 @@ public class Preference implements ControlData
    /** The quality/preference level. */
    private float quality;
 
-   /** The list of parameters. */
-   private List<Parameter> parameters;
+   /** The modifiable list of parameters. */
+   private ParameterList parameters;
 
    /**
     * Constructor.
@@ -65,7 +62,7 @@ public class Preference implements ControlData
     * @param quality The quality/preference level.
     * @param parameters The list of parameters.
     */
-   public Preference(Metadata metadata, float quality, List<Parameter> parameters)
+   public Preference(Metadata metadata, float quality, ParameterList parameters)
    {
       if(metadata == null)
       {
@@ -89,6 +86,15 @@ public class Preference implements ControlData
    }
 
    /**
+    * Sets the metadata associated with this preference.
+    * @param metadata The metadata associated with this preference.
+    */
+   public void setMetadata(Metadata metadata)
+   {
+      this.metadata = metadata;
+   }
+
+   /**
     * Returns the quality/preference level.
     * @return The quality/preference level.
     */
@@ -98,37 +104,21 @@ public class Preference implements ControlData
    }
 
    /**
-    * Returns the list of parameters.
-    * @return The list of parameters.
+    * Sets the quality/preference level.
+    * @param quality The quality/preference level.
     */
-   public List<Parameter> getParameters()
+   public void setQuality(float quality)
    {
-      return parameters;
+      this.quality = quality;
    }
 
    /**
-    * Returns the value of a parameter with a given name.
-    * @param name The name of the parameter to return.
-    * @return The value of the parameter with a given name.
+    * Returns the modifiable list of parameters.
+    * @return The modifiable list of parameters.
     */
-   public String getParameterValue(String name)
+   public ParameterList getParameters()
    {
-      String result = null;
-
-      if(getParameters() != null)
-      {
-      	Parameter current;
-         for(Iterator iter = getParameters().iterator(); iter.hasNext();)
-         {
-            current = (Parameter)iter.next();
-            if(current.getName().equals(name))
-            {
-               result = current.getValue();
-            }
-         }
-      }
-
-      return result;
+      return parameters;
    }
    
    @Override

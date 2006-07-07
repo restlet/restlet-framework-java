@@ -22,8 +22,6 @@
 
 package org.restlet.data;
 
-import java.util.List;
-
 /**
  * Language preference.
  * @author Jerome Louvel (contact@noelios.com) <a href="http://www.noelios.com/">Noelios Consulting</a>
@@ -55,7 +53,7 @@ public class LanguagePref extends Preference
     * @param quality The quality/preference level.
     * @param parameters The list of parameters.
     */
-   public LanguagePref(Language language, float quality, List<Parameter> parameters)
+   public LanguagePref(Language language, float quality, ParameterList parameters)
    {
       super(language, quality, parameters);
    }

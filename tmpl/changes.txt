@@ -15,6 +15,14 @@ Restlet changes log
  - Removed nextHandle() method from Handler and AbstractHandler. Didn't bring much value.
  - Renamed RestletContainer.attach/detach into get/setRoot. 
  - Fixed potential NPE in Reference.setHostName().
+ - Added org.restlet.data.ScorerList implementing List<Scorer>.
+ - Renamed Router.getOptions() to getScorers() and changed the result type from List<Scorer> to ScorerList.
+ - Removed Router.attach() methods and added equivalent add() methods to ScorerList.
+ - Removed Router.detach() method. Use the getOptions().remove() methods instead.
+ - Moved some routing logic from DefaultRouter to ScorerList, see new getFirst(), getLast(), getBest(), getNext() and getRandom() methods.
+ - Changed Preference.parameters type from List<Parameter> to ParameterList and adjusted related classes.
+ - Added DefaultRouter.customFind() method as an easy hook for the RouteMode.CUSTOM routing mode.
+ - Renamed RouterMode.*_MATCH to RouterMode.* and ROUND_ROBIN to NEXT. Improved Javadocs.
 
 1.0 beta 16 (2006-06-30)
  - Renamed attachPath() to attachRouter() in RouterBuilder.

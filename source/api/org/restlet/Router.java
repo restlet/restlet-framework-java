@@ -22,13 +22,14 @@
 
 package org.restlet;
 
-import java.util.List;
+import org.restlet.data.ScorerList;
 
 /**
  * Router of calls to one of several target Restlet options. Each Restlet option is represented by a scorer 
- * handler that can give an affinity score for each call depending on various criteria. Some attach() methods 
- * allow the creation of options based on URI path patterns matching the beginning of a the resource path in 
- * the current context (see Call.getContextPath() and getResourcePath() methods).<br/>
+ * that can compute an affinity score for each call depending on various criteria. Some add() methods in the 
+ * modifiable ScorerList instance returned by getScorers() allow the creation of scorers based on URI path 
+ * patterns matching the beginning of a the resource path in the current context (see Call.getContextPath() 
+ * and getResourcePath() methods).<br/>
  * <br/>
  * In addition, several routing modes are supported, implementing various algorithms like:
  * <ul>
@@ -45,42 +46,25 @@ import java.util.List;
  * instead of the top level Restlet container. Also, remember to manually handle the path separator characters 
  * in your path patterns otherwise the delegation will not work as expected.<br/>
  * <br/>
- * Finally, you can attach and detach targets while handling incoming calls as the delegation code is ensured to 
- * be thread-safe and atomic.
+ * Finally, you can modify the scorers list while handling incoming calls as the delegation code is ensured to 
+ * be thread-safe.
  * @see <a href="http://www.restlet.org/tutorial#part11">Tutorial: Routers and hierarchical URIs</a>
  * @author Jerome Louvel (contact@noelios.com) <a href="http://www.noelios.com/">Noelios Consulting</a>
  */
 public interface Router extends Handler
 {
 	/**
-	 * Returns the modifiable list of options.
-	 * @return The modifiable list of options.
-	 */
-	public List<Scorer> getOptions();
-	
-   /**
-    * Adds a target option based on an URI pattern at the end of the list of options. 
-    * @param pattern The URI pattern used to map calls (see {@link java.util.regex.Pattern} for the syntax).
-    * @param target The target instance to attach.
-    * @see java.util.regex.Pattern
-    */
-   public void addOption(String pattern, Restlet target);
-
-   /**
-    * Adds a target option based on an URI pattern at a specific position.
-    * @param pattern The URI pattern used to map calls (see {@link java.util.regex.Pattern} for the syntax).
-    * @param target The target instance to attach.
-    * @param index The insertion position in the list of attachments.
-    * @see java.util.regex.Pattern
-    */
-   public void addOption(String pattern, Restlet target, int index);
-
-	/**
 	 * Returns the routing mode.
 	 * @return The routing mode.
 	 */
 	public RouterMode getMode();
 	
+	/**
+	 * Returns the modifiable list of scorers.
+	 * @return The modifiable list of scorers.
+	 */
+	public ScorerList getScorers();
+
 	/**
 	 * Sets the routing mode.
 	 * @param mode The routing mode.

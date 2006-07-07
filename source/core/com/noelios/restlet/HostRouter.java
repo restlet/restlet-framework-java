@@ -29,7 +29,6 @@ import java.util.List;
 import java.util.regex.Pattern;
 
 import org.restlet.AbstractHandler;
-import org.restlet.Scorer;
 import org.restlet.Call;
 import org.restlet.DefaultRouter;
 import org.restlet.Restlet;
@@ -39,6 +38,7 @@ import org.restlet.component.Component;
 import org.restlet.data.DefaultStatus;
 import org.restlet.data.Protocol;
 import org.restlet.data.Protocols;
+import org.restlet.data.ScorerList;
 import org.restlet.data.Status;
 import org.restlet.data.Statuses;
 
@@ -416,7 +416,7 @@ public class HostRouter extends AbstractHandler implements Router
 	   	   		if(this.frontRouter == null)
 	   	   		{
 	   	   			this.frontRouter = new DefaultRouter(getOwner());
-	   	   			this.frontRouter.addOption(getPattern(), this.backRouter);
+	   	   			this.frontRouter.getScorers().add(getPattern(), this.backRouter);
 	   	   		}
 	   			}
 	   		}
@@ -701,36 +701,13 @@ public class HostRouter extends AbstractHandler implements Router
 	}
 	
 	/**
-	 * Returns the modifiable list of attachments.
-	 * @return The modifiable list of attachments.
+	 * Returns the modifiable list of scorers.
+	 * @return The modifiable list of scorers.
 	 */
-	public List<Scorer> getOptions()
+	public ScorerList getScorers()
 	{
-		return this.backRouter.getOptions();
+		return this.backRouter.getScorers();
 	}
-	
-   /**
-    * Attaches a target instance shared by all calls. 
-    * @param pattern The URI pattern used to map calls (see {@link java.util.regex.Pattern} for the syntax).
-    * @param target The target instance to attach.
-    * @see java.util.regex.Pattern
-    */
-   public void addOption(String pattern, Restlet target)
-   {
-   	this.backRouter.addOption(pattern, target);
-   }
-
-   /**
-    * Attaches at a specific a target instance shared by all calls.
-    * @param pattern The URI pattern used to map calls (see {@link java.util.regex.Pattern} for the syntax).
-    * @param target The target instance to attach.
-    * @param index The insertion position in the list of attachments.
-    * @see java.util.regex.Pattern
-    */
-   public void addOption(String pattern, Restlet target, int index)
-   {
-   	this.backRouter.addOption(pattern, target, index);
-   }
 
 	/**
 	 * Returns the routing mode.

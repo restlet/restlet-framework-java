@@ -22,8 +22,6 @@
 
 package org.restlet.data;
 
-import java.util.List;
-
 /**
  * Encoding preference.
  * @author Jerome Louvel (contact@noelios.com) <a href="http://www.noelios.com/">Noelios Consulting</a>
@@ -55,7 +53,7 @@ public class EncodingPref extends Preference
     * @param quality The quality/preference level.
     * @param parameters The list of parameters.
     */
-   public EncodingPref(Encoding encoding, float quality, List<Parameter> parameters)
+   public EncodingPref(Encoding encoding, float quality, ParameterList parameters)
    {
       super(encoding, quality, parameters);
    }
