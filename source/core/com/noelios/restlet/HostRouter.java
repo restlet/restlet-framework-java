@@ -33,7 +33,6 @@ import org.restlet.Call;
 import org.restlet.DefaultRouter;
 import org.restlet.Restlet;
 import org.restlet.Router;
-import org.restlet.RouterMode;
 import org.restlet.component.Component;
 import org.restlet.data.DefaultStatus;
 import org.restlet.data.Protocol;
@@ -713,7 +712,7 @@ public class HostRouter extends AbstractHandler implements Router
 	 * Returns the routing mode.
 	 * @return The routing mode.
 	 */
-	public RouterMode getMode()
+	public Mode getMode()
 	{
 		return this.backRouter.getMode();
 	}
@@ -722,7 +721,7 @@ public class HostRouter extends AbstractHandler implements Router
 	 * Sets the routing mode.
 	 * @param mode The routing mode.
 	 */
-	public void setMode(RouterMode mode)
+	public void setMode(Mode mode)
 	{
 		this.backRouter.setMode(mode);
 	}

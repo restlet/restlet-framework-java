@@ -25,6 +25,14 @@ Restlet changes log
  - Added DefaultRouter.customFind() method as an easy hook for the RouteMode.CUSTOM routing mode.
  - Renamed RouterMode.*_MATCH to RouterMode.* and ROUND_ROBIN to NEXT. Improved Javadocs.
  - Fixed bug in Reference.setHostName() that was erasing existing host port number.
+ - Refactorized usage of modifiable lists and map for more consistency. Suggested by Lars Heuer.
+    - Added org.restlet.data.WrapperList and WrapperMap classes.
+    - Added org.restlet.connector.ClientMap and ServerMap classes. 
+    - Moved Component.addClient() and addServer() methods to ClientMap.put() and ServerMap.put().
+    - Updated tutorial examples to follow new syntax.
+    - ParameterList now extends WrapperList to factorize wrapping logic.
+    - RestletServer now uses a list of RestletContainer instead of a map. Removed unecessary add() methods.
+ - Moved enumeration org.restlet.RouterMode into Router.Mode.
 
 1.0 beta 16 (2006-06-30)
  - Renamed attachPath() to attachRouter() in RouterBuilder.

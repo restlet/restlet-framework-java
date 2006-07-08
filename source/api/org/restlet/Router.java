@@ -53,11 +53,52 @@ import org.restlet.data.ScorerList;
  */
 public interface Router extends Handler
 {
+	/** Enumeration of available router modes. */
+	public enum Mode
+	{
+		/**
+		 * Each call will be routed to the scorer with the best score, if the required score is reached.
+		 */
+		BEST,
+		
+		/**
+		 * Each call is routed to the first scorer if the required score is reached. If the required score 
+		 * is not reached, then the scorer is skipped and the next one is considered. 
+		 */
+		FIRST,
+		
+		/**
+		 * Each call will be routed to the last scorer if the required score is reached. If the required score 
+		 * is not reached, then the scorer is skipped and the previous one is considered. 
+		 */
+		LAST,
+		
+		/**
+		 * Each call is be routed to the next scorer target if the required score is reached. The next scorer is 
+		 * relative to the previous call routed (round robin mode). If the required score is not reached, then the
+		 * scorer is skipped and the next one is considered. If the last scorer is reached, the first scorer will 
+		 * be considered.  
+		 */
+		NEXT,
+		
+		/**
+		 * Each call will be randomly routed to one of the scorers that reached the required score. If the random 
+		 * scorer selected is not a match then the immediate next scorer is evaluated until one matching scorer is 
+		 * found. If we get back to the inital random scorer selected with no match, then we return null.
+		 */
+		RANDOM,
+		
+		/**
+		 * Each call will be routed according to a custom mode.
+		 */
+		CUSTOM;	
+	}
+	
 	/**
 	 * Returns the routing mode.
 	 * @return The routing mode.
 	 */
-	public RouterMode getMode();
+	public Mode getMode();
 	
 	/**
 	 * Returns the modifiable list of scorers.
@@ -69,7 +110,7 @@ public interface Router extends Handler
 	 * Sets the routing mode.
 	 * @param mode The routing mode.
 	 */
-	public void setMode(RouterMode mode);
+	public void setMode(Mode mode);
 	
 	/**
 	 * Returns the minimum score required to have a match.

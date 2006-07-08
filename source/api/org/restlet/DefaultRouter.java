@@ -37,7 +37,7 @@ public class DefaultRouter extends AbstractHandler implements Router
 	protected ScorerList scorers;
 	
 	/** The routing mode. */
-	protected RouterMode mode;
+	protected Mode mode;
 	
 	/** The minimum score required to have a match. */
 	protected float requiredScore;
@@ -64,7 +64,7 @@ public class DefaultRouter extends AbstractHandler implements Router
    {
       super(owner);
       this.scorers = null;
-      this.mode = RouterMode.BEST;
+      this.mode = Mode.BEST;
       this.requiredScore = 0.5F;
       this.maxAttempts = 1;
       this.retryDelay = 500L;
@@ -160,7 +160,7 @@ public class DefaultRouter extends AbstractHandler implements Router
 	 * Returns the routing mode.
 	 * @return The routing mode.
 	 */
-	public RouterMode getMode()
+	public Mode getMode()
 	{
 		return this.mode;
 	}
@@ -169,7 +169,7 @@ public class DefaultRouter extends AbstractHandler implements Router
 	 * Sets the routing mode.
 	 * @param mode The routing mode.
 	 */
-	public void setMode(RouterMode mode)
+	public void setMode(Mode mode)
 	{
 		this.mode = mode;
 	}
