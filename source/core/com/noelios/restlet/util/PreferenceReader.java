@@ -25,18 +25,17 @@ package com.noelios.restlet.util;
 import java.io.IOException;
 import java.util.Iterator;
 
-import org.restlet.data.DefaultCharacterSet;
 import org.restlet.data.CharacterSetPref;
+import org.restlet.data.DefaultCharacterSet;
 import org.restlet.data.DefaultEncoding;
-import org.restlet.data.EncodingPref;
 import org.restlet.data.DefaultLanguage;
-import org.restlet.data.LanguagePref;
 import org.restlet.data.DefaultMediaType;
+import org.restlet.data.EncodingPref;
+import org.restlet.data.LanguagePref;
 import org.restlet.data.MediaTypePref;
 import org.restlet.data.Parameter;
 import org.restlet.data.ParameterList;
 import org.restlet.data.Preference;
-
 
 /**
  * Preference header reader. Works for character sets, encodings, languages or media types.

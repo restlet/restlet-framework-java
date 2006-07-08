@@ -22,14 +22,14 @@
 
 package org.restlet.component;
 
+import java.io.IOException;
 import java.util.Map;
 
 import org.restlet.Call;
 import org.restlet.Restlet;
-import org.restlet.connector.Client;
+import org.restlet.connector.ClientMap;
 import org.restlet.connector.Server;
 import org.restlet.data.ParameterList;
-import org.restlet.data.Protocol;
 
 /**
  * Abstract unit of software instructions and internal state. "A component is an abstract 
@@ -41,7 +41,16 @@ import org.restlet.data.Protocol;
  */
 public interface Component extends Restlet
 {
-	/**
+   /**
+    * Calls a client connector. If no matching connector is available in this component, 
+    * the owner components will recursively be used in order to find the closest match.
+    * @param name The name of the client connector.
+    * @param call The call to handle.
+    * @throws IOException
+    */
+   public void callClient(String name, Call call);
+
+   /**
 	 * Returns the modifiable list of parameters.
 	 * @return The modifiable list of parameters.
 	 */
@@ -51,72 +60,11 @@ public interface Component extends Restlet
 	 * Returns the modifiable map of client connectors.
 	 * @return The modifiable map of client connectors.
 	 */
-	public Map<String, Client> getClients();
-
-	/**
-	 * Adds a new client connector to the component.
-	 * @param name The connector name.
-	 * @param client The client connector to add.
-	 * @return The added client.
-	 */
-	public Client addClient(String name, Client client);
-
-	/**
-	 * Adds a new client connector to the component.
-	 * @param name The connector name.
-	 * @param protocol The connector protocol.
-	 * @return The added client.
-	 */
-	public Client addClient(String name, Protocol protocol);
-	
-   /**
-    * Calls a client connector. If no matching connector is available in this component, 
-    * the owner components will recursively be used in order to find the closest match.
-    * @param name The name of the client connector.
-    * @param call The call to handle.
-    * @throws IOException
-    */
-   public void callClient(String name, Call call);
+	public ClientMap getClients();
 	
 	/**
 	 * Returns the modifiable map of server connectors.
 	 * @return The modifiable map of server connectors.
 	 */
 	public Map<String, Server> getServers();
-
-	/**
-	 * Adds a new server connector to the component.
-	 * @param name The connector name.
-	 * @param server The server connector to add.
-	 * @return The added server.
-	 */
-	public Server addServer(String name, Server server);
-
-	/**
-	 * Adds a new server connector to the component.
-	 * @param name The connector name.
-	 * @param protocol The connector protocol.
-	 * @return The added server.
-	 */
-	public Server addServer(String name, Protocol protocol);
-
-	/**
-	 * Adds a new server connector to the component.
-	 * @param name The connector name.
-	 * @param protocol The connector protocol.
-    * @param port The listening port.
-	 * @return The added server.
-	 */
-	public Server addServer(String name, Protocol protocol, int port);
-
-	/**
-	 * Adds a new server connector to the component.
-	 * @param name The connector name.
-	 * @param protocol The connector protocol.
-    * @param address The optional listening IP address (useful if multiple IP addresses available).
-    * @param port The listening port.
-	 * @return The added server.
-	 */
-	public Server addServer(String name, Protocol protocol, String address, int port);
-	
 }

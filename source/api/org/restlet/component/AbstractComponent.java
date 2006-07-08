@@ -23,17 +23,13 @@
 package org.restlet.component;
 
 import java.util.Iterator;
-import java.util.Map;
-import java.util.TreeMap;
 
 import org.restlet.AbstractRestlet;
 import org.restlet.Call;
 import org.restlet.connector.Client;
-import org.restlet.connector.DefaultClient;
-import org.restlet.connector.DefaultServer;
-import org.restlet.connector.Server;
+import org.restlet.connector.ClientMap;
+import org.restlet.connector.ServerMap;
 import org.restlet.data.ParameterList;
-import org.restlet.data.Protocol;
 
 /**
  * Abstract component implementation.
@@ -45,10 +41,10 @@ public abstract class AbstractComponent extends AbstractRestlet implements Compo
 	protected ParameterList parameters;
 
    /** The map of client connectors. */
-   protected Map<String, Client> clients;
+   protected ClientMap clients;
 
    /** The map of server connectors. */
-   protected Map<String, Server> servers;
+   protected ServerMap servers;
    
    /**
     * Constructor.
@@ -88,49 +84,6 @@ public abstract class AbstractComponent extends AbstractRestlet implements Compo
       this.clients = null;
       this.servers = null;
    }
-
-	/**
-	 * Returns the modifiable list of parameters.
-	 * @return The modifiable list of parameters.
-	 */
-	public ParameterList getParameters()
-	{
-		if(this.parameters == null) this.parameters = new ParameterList();
-		return this.parameters;
-	}
-
-	/**
-	 * Returns the modifiable map of client connectors.
-	 * @return The modifiable map of client connectors.
-	 */
-	public Map<String, Client> getClients()
-	{
-		if(this.clients == null) this.clients = new TreeMap<String, Client>();
-		return this.clients;
-	}
-
-	/**
-	 * Adds a new client connector to the component.
-	 * @param name The connector name.
-	 * @param client The client connector to add.
-	 * @return The added client.
-	 */
-	public Client addClient(String name, Client client)
-	{
-		getClients().put(name, client);
-		return client;
-	}
-
-	/**
-	 * Adds a new client connector to the component.
-	 * @param name The connector name.
-	 * @param protocol The connector protocol.
-	 * @return The added client.
-	 */
-	public Client addClient(String name, Protocol protocol)
-	{
-		return addClient(name, new DefaultClient(protocol));
-	}
 	
 	/**
     * Calls a client connector. If no matching connector is available in this component, 
@@ -160,61 +113,33 @@ public abstract class AbstractComponent extends AbstractRestlet implements Compo
    }
 
 	/**
+	 * Returns the modifiable map of client connectors.
+	 * @return The modifiable map of client connectors.
+	 */
+	public ClientMap getClients()
+	{
+		if(this.clients == null) this.clients = new ClientMap();
+		return this.clients;
+	}
+
+	/**
+	 * Returns the modifiable list of parameters.
+	 * @return The modifiable list of parameters.
+	 */
+	public ParameterList getParameters()
+	{
+		if(this.parameters == null) this.parameters = new ParameterList();
+		return this.parameters;
+	}
+
+	/**
 	 * Returns the modifiable map of server connectors.
 	 * @return The modifiable map of server connectors.
 	 */
-	public Map<String, Server> getServers()
+	public ServerMap getServers()
 	{
-		if(this.servers == null) this.servers = new TreeMap<String, Server>();
+		if(this.servers == null) this.servers = new ServerMap(this);
 		return this.servers;
-	}
-
-	/**
-	 * Adds a new server connector to the component.
-	 * @param name The connector name.
-	 * @param server The server connector to add.
-	 * @return The added server.
-	 */
-	public Server addServer(String name, Server server)
-	{
-		getServers().put(name, server);
-		return server;
-	}
-
-	/**
-	 * Adds a new server connector to the component.
-	 * @param name The connector name.
-	 * @param protocol The connector protocol.
-	 * @return The added server.
-	 */
-	public Server addServer(String name, Protocol protocol)
-	{
-		return addServer(name, new DefaultServer(protocol, this));
-	}
-
-	/**
-	 * Adds a new server connector to the component.
-	 * @param name The connector name.
-	 * @param protocol The connector protocol.
-    * @param port The listening port.
-	 * @return The added server.
-	 */
-	public Server addServer(String name, Protocol protocol, int port)
-	{
-		return addServer(name, new DefaultServer(protocol, this, port));
-	}
-
-	/**
-	 * Adds a new server connector to the component.
-	 * @param name The connector name.
-	 * @param protocol The connector protocol.
-    * @param address The optional listening IP address (useful if multiple IP addresses available).
-    * @param port The listening port.
-	 * @return The added server.
-	 */
-	public Server addServer(String name, Protocol protocol, String address, int port)
-	{
-		return addServer(name, new DefaultServer(protocol, this, address, port));
 	}
 
    /**

@@ -46,7 +46,7 @@ public class Tutorial05
 
          // Create the HTTP server connector, then add it to the container. 
          // Note that the container will act as the initial Restlet call's handler.
-         myContainer.addServer("HTTP Server", Protocols.HTTP, 8182);
+         myContainer.getServers().put("HTTP Server", Protocols.HTTP, 8182);
 
          // Create a host router matching calls to the server
          HostRouter host = new HostRouter(myContainer, 8182);

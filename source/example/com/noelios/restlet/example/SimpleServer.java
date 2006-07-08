@@ -50,7 +50,7 @@ public class SimpleServer
          // Create the HTTP server connector, then add it as a server
          // connector to the Restlet container. Note that the container
          // is the call restlet.
-         myContainer.addServer("My connector", Protocols.HTTP, 9876);
+         myContainer.getServers().put("My connector", Protocols.HTTP, 9876);
 
          // Attach a host router as the root handler
          HostRouter host = new HostRouter(myContainer, 9876);

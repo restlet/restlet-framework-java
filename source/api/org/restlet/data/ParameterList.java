@@ -23,11 +23,9 @@
 package org.restlet.data;
 
 import java.util.ArrayList;
-import java.util.Collection;
 import java.util.HashSet;
 import java.util.Iterator;
 import java.util.List;
-import java.util.ListIterator;
 import java.util.Map;
 import java.util.Set;
 
@@ -39,17 +37,14 @@ import java.util.Set;
  * @see java.util.Collections
  * @see java.util.List
  */
-public class ParameterList implements List<Parameter>, Data
+public class ParameterList extends WrapperList<Parameter> implements Data
 {
-	/** The delegate list. */
-	protected List<Parameter> delegate;
-
 	/**
 	 * Constructor.
 	 */
 	public ParameterList()
 	{
-		this.delegate = null;
+		super();
 	}
 
 	/**
@@ -58,7 +53,7 @@ public class ParameterList implements List<Parameter>, Data
 	 */
 	public ParameterList(int initialCapacity)
 	{
-		this(new ArrayList<Parameter>(initialCapacity));
+		super(initialCapacity);
 	}
 	
 	/**
@@ -67,21 +62,7 @@ public class ParameterList implements List<Parameter>, Data
 	 */
 	public ParameterList(List<Parameter> delegate)
 	{
-		this.delegate = delegate;
-	}
-
-	/**
-	 * Returns the delegate list.
-	 * @return The delegate list.
-	 */
-	protected List<Parameter> getDelegate()
-	{
-		if(this.delegate == null)
-		{
-			this.delegate = new ArrayList<Parameter>();
-		}
-		
-		return this.delegate;
+		super(delegate);
 	}
 	
 	/**
@@ -93,90 +74,6 @@ public class ParameterList implements List<Parameter>, Data
 	public boolean add(String name, String value)
 	{
 		return add(new Parameter(name, value));
-	}
-	
-	/**
-	 * Adds a parameter at the end of the list.
-	 * @return True (as per the general contract of the Collection.add method).
-	 */
-	public boolean add(Parameter parameter)
-	{
-		return getDelegate().add(parameter);
-	}
-
-	/**
-	 * Inserts the specified parameter at the specified position in this list.
-	 * @param index The insertion position.
-	 * @param parameter The parameter to insert.
-	 */
-	public void add(int index, Parameter parameter)
-	{
-		getDelegate().add(index, parameter);
-	}
-
-	/**
-	 * Appends all of the parameters in the specified collection to the end of this list.
-	 * @param parameters The collection of parameters to append.
-	 */
-	public boolean addAll(Collection<? extends Parameter> parameters)
-	{
-		return getDelegate().addAll(parameters);
-	}
-
-	/**
-	 * Inserts all of the parameters in the specified collection into this list at the specified position.
-	 * @param index The insertion position.
-	 * @param parameters The collection of parameters to insert.
-	 */
-	public boolean addAll(int index, Collection<? extends Parameter> parameters)
-	{
-		return getDelegate().addAll(index, parameters);
-	}
-
-	/**
-	 * Removes all of the parameters from this list.
-	 */
-	public void clear()
-	{
-		if(this.delegate != null)
-		{
-			getDelegate().clear();
-			this.delegate = null;
-		}
-	}
-
-	/**
-	 * Returns true if this list contains the specified element.
-	 * @param element The element to find.
-	 * @return True if this list contains the specified element.
-	 */
-	public boolean contains(Object element)
-	{
-		if(this.delegate != null)
-		{
-			return this.delegate.contains(element);
-		}
-		else
-		{
-			return false;
-		}
-	}
-
-	/**
-	 * Returns true if this list contains all of the elements of the specified collection.
-	 * @param elements The collection of elements to find.
-	 * @return True if this list contains all of the elements of the specified collection.
-	 */
-	public boolean containsAll(Collection<?> elements)
-	{
-		if(this.delegate != null)
-		{
-			return this.delegate.containsAll(elements);
-		}
-		else
-		{
-			return false;
-		}
 	}
 	
 	/**
@@ -206,23 +103,6 @@ public class ParameterList implements List<Parameter>, Data
 		}
 
 		return result;
-	}
-
-	/**
-	 * Returns the parameter at the specified position in this list.
-	 * @param index The parameter position.
-	 * @return The parameter at the specified position in this list.
-	 */
-	public Parameter get(int index)
-	{
-		if(this.delegate != null)
-		{
-			return this.delegate.get(index);
-		}
-		else
-		{
-			throw new IndexOutOfBoundsException();
-		}
 	}
 
 	/**
@@ -354,115 +234,6 @@ public class ParameterList implements List<Parameter>, Data
    	return result;
    }
 
-   /**
-    * Returns the index in this list of the first occurrence of the specified element, 
-    * or -1 if this list does not contain this element.
-    * @param element The element to find.
-    * @return The index of the first occurrence.
-    */
-	public int indexOf(Object element)
-	{
-		if(this.delegate != null)
-		{
-			return this.delegate.indexOf(element);
-		}
-		else
-		{
-			return -1;
-		}
-	}
-
-	/**
-	 * Returns true if this list contains no elements.
-	 */
-	public boolean isEmpty()
-	{
-		if(this.delegate != null)
-		{
-			return this.delegate.isEmpty();
-		}
-		else
-		{
-			return true;
-		}
-	}
-
-	/**
-	 * Returns an iterator over the parameters in this list in proper sequence.
-	 * @return An iterator over the parameters in this list in proper sequence.
-	 */
-	public Iterator<Parameter> iterator()
-	{
-		return getDelegate().iterator();
-	}
-
-	/**
-	 * Returns the index in this list of the last occurrence of the specified element, 
-	 * or -1 if this list does not contain this element.
-	 */
-	public int lastIndexOf(Object element)
-	{
-		if(this.delegate != null)
-		{
-			return this.delegate.lastIndexOf(element);
-		}
-		else
-		{
-			return -1;
-		}
-	}
-
-	/**
-	 * Returns a list iterator of the parameters in this list (in proper sequence).
-	 * @return A list iterator of the parameters in this list (in proper sequence).
-	 */
-	public ListIterator<Parameter> listIterator()
-	{
-		return getDelegate().listIterator();
-	}
-
-	/**
-	 * Returns a list iterator of the parameters in this list (in proper sequence), starting at the 
-	 * specified position in this list.
-	 * @param index The starting position.
-	 */
-	public ListIterator<Parameter> listIterator(int index)
-	{
-		return getDelegate().listIterator(index);
-	}
-
-	/**
-	 * Removes the first occurrence in this list of the specified element.
-	 * @return True if the list was changed.
-	 */
-	public boolean remove(Object element)
-	{
-		if(this.delegate != null)
-		{
-			return this.delegate.remove(element);
-		}
-		else
-		{
-			return false;
-		}
-	}
-
-	/**
-	 * Removes the parameter at the specified position in this list.
-	 * @return The removed parameter.
-	 */
-	public Parameter remove(int index)
-	{
-		if(this.delegate != null)
-		{
-			return this.delegate.remove(index);
-		}
-		else
-		{
-			return null;
-		}
-	}
-
 	/**
 	 * Removes all the parameters with a given name.
 	 * @param name The parameter name (case sensitive).
@@ -495,57 +266,6 @@ public class ParameterList implements List<Parameter>, Data
 		}
 		
 		return changed;
-	}
-	
-	/**
-	 * Removes from this list all the elements that are contained in the specified collection.
-	 * @param elements The collection of element to remove.
-	 * @return True if the list changed.
-	 */
-	public boolean removeAll(Collection<?> elements)
-	{
-		if(this.delegate != null)
-		{
-			return this.delegate.removeAll(elements);
-		}
-		else
-		{
-			return false;
-		}
-	}
-
-	/**
-	 * RemovesRetains only the elements in this list that are contained in the specified collection.
-	 * @param elements The collection of element to retain.
-	 * @return True if the list changed.
-	 */
-	public boolean retainAll(Collection<?> elements)
-	{
-		if(this.delegate != null)
-		{
-			return this.delegate.retainAll(elements);
-		}
-		else
-		{
-			return false;
-		}
-	}
-
-	/**
-	 * Replaces the parameter at the specified position in this list with the specified parameter.
-	 * @param index The position of the parameter to replace.
-	 * @param parameter The new parameter.
-	 */
-	public Parameter set(int index, Parameter parameter)
-	{
-		if(this.delegate != null)
-		{
-			return this.delegate.set(index, parameter);
-		}
-		else
-		{
-			throw new IndexOutOfBoundsException();
-		}
 	}
 
 	/**
@@ -590,22 +310,6 @@ public class ParameterList implements List<Parameter>, Data
 	
 		return result;
 	}
-	
-	/**
-	 * Returns the number of parameters in this list.
-	 * @return The number of parameters in this list.
-	 */
-	public int size()
-	{
-		if(this.delegate != null)
-		{
-			return this.delegate.size();
-		}
-		else
-		{
-			return 0;
-		}
-	}
 
 	/**
 	 * Returns a view of the portion of this list between the specified fromIndex, 
@@ -648,25 +352,6 @@ public class ParameterList implements List<Parameter>, Data
 		}
 		
 		return result;
-	}
-
-	/**
-	 * Returns an array containing all of the elements in this list in proper sequence.
-	 * @return An array containing all of the elements in this list in proper sequence.
-	 */
-	public Parameter[] toArray()
-	{
-		return (Parameter[])getDelegate().toArray();
-	}
-
-	/**
-	 * Returns an array containing all of the elements in this list in proper sequence; 
-	 * the runtime type of the returned array is that of the specified array.
-	 * @param a The sample array.
-	 */
-	public <T> T[] toArray(T[] a)
-	{
-		return getDelegate().toArray(a);
 	}
    
    /**

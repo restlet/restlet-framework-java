@@ -22,9 +22,8 @@
 
 package org.restlet.component;
 
-import java.util.Iterator;
-import java.util.Map;
-import java.util.TreeMap;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
@@ -46,7 +45,7 @@ public class RestletServer extends AbstractComponent
    private static Logger logger = Logger.getLogger(RestletServer.class.getCanonicalName());
 
    /** The Restlet containers. */
-   protected Map<String, RestletContainer> containers;
+   protected List<RestletContainer> containers;
 
    /** The default container handling direct calls on the server. */
    protected RestletContainer defaultContainer;
@@ -90,35 +89,13 @@ public class RestletServer extends AbstractComponent
    }
 
    /**
-    * Returns the modifiable map of containers.
-    * @return The modifiable map of containers.
+    * Returns the modifiable list of containers.
+    * @return The modifiable list of containers.
     */
-   public Map<String, RestletContainer> getContainers()
+   public List<RestletContainer> getContainers()
    {
-   	if(this.containers == null) new TreeMap<String, RestletContainer>();
+   	if(this.containers == null) new ArrayList<RestletContainer>();
    	return this.containers;
-   }
-   
-   /**
-    * Adds a Restlet container.
-    * @param name The unique name of the container.
-    * @param container The container to add.
-    * @return The added container.
-    */
-   public RestletContainer addContainer(String name, RestletContainer container)
-   {
-      this.containers.put(name, container);
-      return container;
-   }
-   
-   /**
-    * Adds a new Restlet container.
-    * @param name The unique name of the container.
-    * @return The added container.
-    */
-   public RestletContainer addContainer(String name)
-   {
-      return addContainer(name, new RestletContainer(this));
    }
 
    /**
@@ -163,9 +140,9 @@ public class RestletServer extends AbstractComponent
    {
       super.start();
 
-      for(Iterator iter = this.containers.keySet().iterator(); iter.hasNext();)
+      for(RestletContainer container : this.containers)
       {
-         this.containers.get(iter.next()).start();
+         container.start();
       }
    }
 
@@ -176,9 +153,9 @@ public class RestletServer extends AbstractComponent
    {
       super.stop();
 
-      for(Iterator iter = this.containers.keySet().iterator(); iter.hasNext();)
+      for(RestletContainer container : this.containers)
       {
-         this.containers.get(iter.next()).stop();
+         container.stop();
       }
    }
 
