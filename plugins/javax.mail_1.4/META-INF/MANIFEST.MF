@@ -2,7 +2,7 @@ Manifest-Version: 1.0
 Bundle-ManifestVersion: 2
 Bundle-Name: JavaMail Plug-in
 Bundle-SymbolicName: javax.mail
-Bundle-Version: 1.4.0
+Bundle-Version: 1.4
 Bundle-ClassPath: mail.jar
 Bundle-Vendor: Sun Microsystems Inc.
 Bundle-Localization: plugin
