@@ -2,7 +2,7 @@ Manifest-Version: 1.0
 Bundle-ManifestVersion: 2
 Bundle-Name: Servlet API Plug-in
 Bundle-SymbolicName: javax.servlet
-Bundle-Version: 2.4
+Bundle-Version: 2.4.0
 Bundle-ClassPath: javax.servlet.jar
 Bundle-Localization: plugin
 Export-Package: javax.servlet,
