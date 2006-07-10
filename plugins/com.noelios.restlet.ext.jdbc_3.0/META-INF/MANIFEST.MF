@@ -5,3 +5,7 @@ Bundle-SymbolicName: com.noelios.restlet.ext.jdbc
 Bundle-Version: 1.0.0
 Bundle-Vendor: Noelios Consulting
 Bundle-Localization: plugin
+Export-Package: com.noelios.restlet.ext.jdbc
+Require-Bundle: com.noelios.restlet;visibility:=reexport,
+ org.apache.commons.dbcp;visibility:=reexport,
+ org.apache.commons.pool;visibility:=reexport

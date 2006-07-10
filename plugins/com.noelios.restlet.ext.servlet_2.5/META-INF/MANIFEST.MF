@@ -5,3 +5,5 @@ Bundle-SymbolicName: com.noelios.restlet.ext.servlet
 Bundle-Version: 1.0.0
 Bundle-Vendor: Noelios Consulting
 Bundle-Localization: plugin
+Require-Bundle: javax.servlet;bundle-version="2.4.0";visibility:=reexport,
+ com.noelios.restlet;visibility:=reexport

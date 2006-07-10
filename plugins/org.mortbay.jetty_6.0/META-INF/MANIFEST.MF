@@ -25,3 +25,4 @@ Export-Package: org.mortbay.component,
  org.mortbay.util,
  org.mortbay.util.ajax,
  org.mortbay.xml
+Require-Bundle: javax.servlet;bundle-version="2.5.0"

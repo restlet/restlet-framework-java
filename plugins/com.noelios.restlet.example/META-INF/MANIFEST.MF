@@ -5,3 +5,5 @@ Bundle-SymbolicName: com.noelios.restlet.example
 Bundle-Version: 1.0.0
 Bundle-Vendor: Noelios Consulting
 Bundle-Localization: plugin
+Require-Bundle: com.noelios.restlet;visibility:=reexport
+Export-Package: com.noelios.restlet.example

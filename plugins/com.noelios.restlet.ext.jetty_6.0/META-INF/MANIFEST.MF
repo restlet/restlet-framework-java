@@ -5,3 +5,5 @@ Bundle-SymbolicName: com.noelios.restlet.ext.jetty
 Bundle-Version: 1.0.0
 Bundle-Vendor: Noelios Consulting
 Bundle-Localization: plugin
+Require-Bundle: org.mortbay.jetty;bundle-version="6.0.0";visibility:=reexport,
+ com.noelios.restlet;visibility:=reexport

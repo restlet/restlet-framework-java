@@ -34,12 +34,6 @@ import org.restlet.Restlet;
  */
 public class FilterTestCase extends AbstractFilterTestCase
 {
-
-	public static void main(String[] args)
-	{
-		junit.awtui.TestRunner.run(FilterTestCase.class);
-	}
-
 	/* (non-Javadoc)
 	 * @see org.restlet.AbstractTestFilter#getFilter()
 	 */

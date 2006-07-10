@@ -52,23 +52,4 @@ public class NoeliosTestSuite extends TestSuite
       return new NoeliosTestSuite();
    }
 
-   /**
-    * Main method to launch the TestRunner.
-    * @param args Pass "swing" to launch the graphical runner, "text" otherwise.
-    */
-   public static void main(String[] args)
-   {
-      if(args.length > 0)
-      {
-         if(args[0].equals("swing"))
-         {
-            junit.swingui.TestRunner.run(NoeliosTestSuite.class);
-         }
-         else if(args[0].equals("text"))
-         {
-            junit.textui.TestRunner.run(suite());
-         }
-      }
-   }
-
 }

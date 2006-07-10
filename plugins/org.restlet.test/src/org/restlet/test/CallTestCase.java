@@ -39,12 +39,6 @@ import org.restlet.data.Statuses;
  */
 public class CallTestCase extends RestletTestCase
 {
-
-	public static void main(String[] args)
-	{
-		junit.awtui.TestRunner.run(CallTestCase.class);
-	}
-
 	/**
 	 * Returns the call that is used for the tests.
 	 *
