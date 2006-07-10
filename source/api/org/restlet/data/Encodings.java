@@ -34,7 +34,7 @@ public enum Encodings implements Encoding
    /** The GNU Zip encoding. */
    GZIP,
 
-   /** The Zip encoding. */
+   /** The Info-Zip encoding. */
    ZIP,
 
    /** The common Unix file compression. */

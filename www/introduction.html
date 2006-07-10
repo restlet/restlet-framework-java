@@ -41,30 +41,30 @@
       <li>Unable to take full advantage of the non-blocking NIO due to blocking IO assumptions.</li>
       <li>Full Servlet Web containers are overkill for many applications like serving XML documents for Web services.</li>
    </ul>
-   He proposed to specify a new API that would be truly protocol-independent and define contentlets to expose content and its metadata. These ideas were both thought-provoking and inspiring for the creation of the Restlet project. In a <a target="_top" href="http://www.mortbay.com/MB/log/gregw/?permalink=NIOServlet.html">later post</a>, Greg Wilkins explains with detailed arguments why the current Servlet API, without a concept like contentlets, limits the efficient usage of the non-blocking NIO API. This traditionally imposes the use of a separate thread for each HTTP requests to handle. He goes even further in <a target="_top" href="http://www.mortbay.com/MB/log/gregw/?permalink=servletNG.html">this post</a> into specifying the next generation of Servlets.
+   He proposed to specify a new API that would be truly protocol-independent and define contentlets to expose content and its metadata. These ideas were both thought-provoking and inspiring for the creation of the Restlet project. In a <a target="_top" href="http://www.mortbay.com/MB/log/gregw/?permalink=NIOServlet.html">later post</a>, Greg Wilkins explains with detailed arguments why the current Servlet API, without a concept like contentlets, limits the efficient usage of the non-blocking NIO API. This traditionally imposes the use of a separate thread for each HTTP requests to handle. He goes even further in <a target="_top" href="http://www.mortbay.com/MB/log/gregw/?permalink=servletNG.html">this post</a>, specifying the next generation of Servlets.
 </p>
 <p>
-   Another major issue is the possibility for Servlets to store state in-memory, at the application or user session level. Even though it looks like a nice feature for Web application developers, it became a major issue for the scalability and high-availability of Servlet containers. To compensate, complex load-balancing, session replication and persistence mechanisms must be implemented. But in the end, scalability inevitably suffers.
+   Another major issue is that the API encourages application developpers to store session state directly in memory, at the application or user session level. Even though it looks like a nice feature, it became a major issue for the scalability and high-availability of Servlet containers. To compensate, complex load-balancing, session replication and persistence mechanisms must be implemented. But in the end, scalability inevitably suffers.
 </p>
 
 <h3>Restlet inception</h3>
 <p>
-   As I started the development of a new Web site, I wanted to comply with the REST architectural style as much as technically possible. After many researches, I noted the lack of a REST framework in Java. The only project that came close to it was <a target="_top" href="http://www.1060.org">1060 NetKernel</a> developed by <a target="_top" href="http://www.1060research.com/">1060 Research</a> but it had too many features for my needs and I found that the support of REST concepts was not as direct as I was expecting.
+   As I started the development of a new Web site, I wanted to comply with the REST architectural style as much as technically possible. After many researches, I noted the lack of a REST framework in Java. The only project that came close to it was <a target="_top" href="http://www.1060.org">1060 NetKernel</a> developed by <a target="_top" href="http://www.1060research.com/">1060 Research</a> but it had too many features for my needs and I found that the mapping of REST concepts was not as direct as I was expecting.
 </p>
 <p>
-   This led me to develop my own REST framework on top of the Servlet API. This worked well up to a point were the Servlet API was completely hidden. I remembered about Greg Wilkins's propositions and decided to completely bypass the Servlet API. Fortunately, Jetty 5 has a nice separation between its HTTP protocol implementation and its support for the Servlet API. In the end, I was able to develop the first Restlet connector, a HTTP server connector, directly issuing REST uniform calls.
+   This led me to develop my own REST framework on top of the Servlet API. This worked well up to a point were the Servlet API was completely hidden. I remembered about Greg Wilkins's propositions and decided to completely bypass the Servlet API. Fortunately, Jetty has a nice separation between its HTTP protocol implementation and its support for the Servlet API. In the end, I was able to develop the first Restlet connector, a HTTP server connector, directly issuing REST uniform calls.
 </p>
 <p>
-   Also, I wanted to get rid of the unnatural separation between the client-side and server-side view of the Web in Java, following the sound advice of Benjamin Carlyle in a recent <a target="_top" href="http://members.optusnet.com.au/benjamincarlyle/benjamin/blog/2005/11/12/#httpAPI">blog post</a>. In today's networked environment, we shouldn't have to make such differences; anybody should be able to act, at the same time, as a Web client and as a Web server. In REST, every component can have as many client and server connectors as useful, so I simply developed a client HTTP connector based on the HttpURLConnection class mentioned above. Of course, other implementations could be provided, like one based on the more advanced <a target="_top" href="http://jakarta.apache.org/commons/httpclient/">Jakarta Commons HTTP Client</a>.
+   Also, I wanted to get rid of the unnatural separation between the client-side and server-side view of the Web in Java, following the sound advice of Benjamin Carlyle in this <a target="_top" href="http://members.optusnet.com.au/benjamincarlyle/benjamin/blog/2005/11/12/#httpAPI">blog post</a>. In today's networked environment, we shouldn't have to make such differences; anybody should be able to act, at the same time, as a Web client and as a Web server. In REST, every component can have as many client and server connectors as useful, so I simply developed a client HTTP connector based on the HttpURLConnection class mentioned above. Of course, other implementations could be provided, like one based on the more advanced <a target="_top" href="http://jakarta.apache.org/commons/httpclient/">Jakarta Commons HTTP Client</a>.
 </p>
 <p>
-   After several iterations, it became clear that it would be beneficial for developers to separate the Restlet project in two parts. The first part is a generic set of interfaces, called the Restlet API, including a few helper classes and a mechanism to register a Restlet implementation. The second part is a reference implementation, called the Noelios Restlet Engine, including a HTTP server connector; HTTP, JDBC and SMTP client connectors; a set of representations (based on strings, files, streams, channels or FreeMarker templates) and a DirectoryRestlet able to serve static files from a tree of directories with automatic content negotiation base on file extensions.
+   After several iterations, it became clear that it would be beneficial for developers to separate the Restlet project in two parts. The first part is a generic set of interfaces, called the Restlet API, including a few helper classes and a mechanism to register a Restlet implementation. The second part is a reference implementation, called the Noelios Restlet Engine, including a HTTP server connector; HTTP, JDBC and SMTP client connectors; a set of representations (based on strings, files, streams, channels or FreeMarker templates) and a DirectoryHandler able to serve static files from a tree of directories with automatic content negotiation base on file extensions. Since the first public release in November 2005, the project keeps maturing thanks to the help of a community of users and developers.
 </p>
 
 <h3>Conclusion</h3>
 
 <p>
-   While powerful for complex centralized models, the object-oriented paradigm isn't the best suited for Web development. Java developers need realize this and start thinking more RESTfully when developing new Web services or new AJAX-based Web clients. The Restlet project is providing a simple yet solid foundation that can get you started right away on the Web 2.0.
+   While powerful for complex centralized models, the object-oriented paradigm isn't always the best suited for Web development. Java developers need realize this and start thinking more RESTfully when developing new Web services or new AJAX-based Web clients. The Restlet project is providing a simple yet solid foundation that can get you started right away on the Web 2.0.
 <p/>
 
 <p>
@@ -83,7 +83,7 @@
 <br/>
 
 <small>
-   Version 1.6, last modified on 2006-02-15<br/>
+   Version 1.7, last modified on 2006-07-08<br/>
    Copyright &copy; 2005-2006 <a href="mailto:contact@noelios.com">J&eacute;r&ocirc;me Louvel</a>. Restlet is a registered trademark of <a target="_top" href="http://www.noelios.com">Noelios Consulting</a>.
 </small>
 
