@@ -6,5 +6,6 @@ Bundle-Version: 1.0.0
 Bundle-Vendor: Noelios Consulting
 Bundle-Localization: plugin
 Require-Bundle: org.apache.commons.fileupload;visibility:=reexport,
- org.restlet;visibility:=reexport
+ org.restlet;visibility:=reexport,
+ javax.servlet;bundle-version="2.4.0"
 Export-Package: com.noelios.restlet.ext.fileupload
