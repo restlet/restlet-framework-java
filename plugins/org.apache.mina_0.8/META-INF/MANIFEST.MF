@@ -1,0 +1,31 @@
+Manifest-Version: 1.0
+Bundle-ManifestVersion: 2
+Bundle-Name: MINA Plug-in
+Bundle-SymbolicName: org.apache.mina
+Bundle-Version: 0.8.2
+Bundle-ClassPath: org.apache.mina.jar
+Bundle-Vendor: Apache Foundation
+Bundle-Localization: plugin
+Export-Package: org.apache.mina.common,
+ org.apache.mina.examples.echoserver,
+ org.apache.mina.examples.echoserver.ssl,
+ org.apache.mina.examples.httpserver,
+ org.apache.mina.examples.netcat,
+ org.apache.mina.examples.reverser,
+ org.apache.mina.examples.sumup,
+ org.apache.mina.examples.sumup.codec,
+ org.apache.mina.examples.sumup.message,
+ org.apache.mina.examples.tennis,
+ org.apache.mina.io,
+ org.apache.mina.io.datagram,
+ org.apache.mina.io.filter,
+ org.apache.mina.io.handler,
+ org.apache.mina.io.socket,
+ org.apache.mina.protocol,
+ org.apache.mina.protocol.codec,
+ org.apache.mina.protocol.filter,
+ org.apache.mina.protocol.handler,
+ org.apache.mina.protocol.io,
+ org.apache.mina.protocol.vmpipe,
+ org.apache.mina.registry,
+ org.apache.mina.util
