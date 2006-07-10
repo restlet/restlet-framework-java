@@ -7,4 +7,6 @@ Bundle-Vendor: Noelios Consulting
 Bundle-Localization: plugin
 Require-Bundle: org.restlet,
  com.noelios.restlet,
- org.junit;bundle-version="3.8.0"
+ org.junit;bundle-version="3.8.0",
+ org.eclipse.pde.junit.runtime,
+ org.eclipse.jdt.junit4.runtime
