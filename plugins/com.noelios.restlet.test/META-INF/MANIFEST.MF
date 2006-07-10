@@ -5,6 +5,7 @@ Bundle-SymbolicName: com.noelios.restlet.test
 Bundle-Version: 1.0.0
 Bundle-Vendor: Noelios Consulting
 Bundle-Localization: plugin
-Require-Bundle: org.junit;bundle-version="3.8.0";visibility:=reexport,
- com.noelios.restlet;visibility:=reexport,
- com.noelios.restlet.ext.atom;visibility:=reexport
+Require-Bundle: org.restlet,
+ com.noelios.restlet,
+ com.noelios.restlet.ext.atom,
+ org.junit;bundle-version="3.8.0"
