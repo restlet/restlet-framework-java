@@ -1,0 +1,14 @@
+Manifest-Version: 1.0
+Bundle-ManifestVersion: 2
+Bundle-Name: Servlet API Plug-in
+Bundle-SymbolicName: javax.servlet
+Bundle-Version: 2.4
+Bundle-ClassPath: javax.servlet.jar
+Bundle-Localization: plugin
+Export-Package: javax.servlet,
+ javax.servlet.http,
+ javax.servlet.jsp,
+ javax.servlet.jsp.el,
+ javax.servlet.jsp.resources,
+ javax.servlet.jsp.tagext,
+ javax.servlet.resources
