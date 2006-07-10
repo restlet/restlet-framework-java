@@ -1,0 +1,7 @@
+Manifest-Version: 1.0
+Bundle-ManifestVersion: 2
+Bundle-Name: Noelios Restlet Engine Plug-in
+Bundle-SymbolicName: com.noelios.restlet
+Bundle-Version: 1.0.0
+Bundle-Vendor: Noelios Consulting
+Bundle-Localization: plugin
