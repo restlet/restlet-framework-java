@@ -1,0 +1,12 @@
+Manifest-Version: 1.0
+Bundle-ManifestVersion: 2
+Bundle-Name: Commons FileUpload Plug-in
+Bundle-SymbolicName: org.apache.commons.fileupload
+Bundle-Version: 1.1.1
+Bundle-ClassPath: org.apache.commons.fileupload.jar
+Bundle-Vendor: Apache Foundation
+Bundle-Localization: plugin
+Export-Package: org.apache.commons.fileupload,
+ org.apache.commons.fileupload.disk,
+ org.apache.commons.fileupload.portlet,
+ org.apache.commons.fileupload.servlet
