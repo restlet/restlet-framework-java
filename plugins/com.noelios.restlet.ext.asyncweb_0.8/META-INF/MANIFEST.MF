@@ -5,6 +5,7 @@ Bundle-SymbolicName: com.noelios.restlet.ext.asyncweb
 Bundle-Version: 1.0.0
 Bundle-Vendor: Noelios Consulting
 Bundle-Localization: plugin
-Require-Bundle: org.safehaus.asyncweb;visibility:=reexport,
- com.noelios.restlet;visibility:=reexport
+Require-Bundle: org.restlet,
+ com.noelios.restlet,
+ org.safehaus.asyncweb
 Export-Package: com.noelios.restlet.ext.asyncweb
