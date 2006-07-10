@@ -1,0 +1,21 @@
+Manifest-Version: 1.0
+Bundle-ManifestVersion: 2
+Bundle-Name: JUnit Plug-in
+Bundle-SymbolicName: org.junit
+Bundle-Version: 4.1.0
+Bundle-ClassPath: org.junit.jar
+Bundle-Vendor: Object Mentor Inc.
+Bundle-Localization: plugin
+Export-Package: .,
+ .settings,
+ junit.extensions,
+ junit.framework,
+ junit.runner,
+ junit.textui,
+ org.junit,
+ org.junit.internal.requests,
+ org.junit.internal.runners,
+ org.junit.runner,
+ org.junit.runner.manipulation,
+ org.junit.runner.notification,
+ org.junit.runners
