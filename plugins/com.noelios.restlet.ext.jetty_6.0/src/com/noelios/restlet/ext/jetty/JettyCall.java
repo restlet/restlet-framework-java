@@ -33,6 +33,7 @@ import java.util.Iterator;
 import org.mortbay.jetty.HttpConnection;
 import org.restlet.data.Parameter;
 import org.restlet.data.ParameterList;
+import org.restlet.data.Representation;
 
 import com.noelios.restlet.impl.HttpServerCall;
 
@@ -235,4 +236,15 @@ public class JettyCall extends HttpServerCall
       }
    }
 
+   /**
+    * Sends the response output.
+    * @param output The response output;
+    */
+   public void sendResponseOutput(Representation output) throws IOException
+   {
+   	super.sendResponseOutput(output);
+   	this.connection.completeResponse();
+   	this.connection.commitResponse(true);
+   }
+   
 }
