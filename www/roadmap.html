@@ -56,8 +56,35 @@
    <ul>
       <li>2006 Q3
          <ul>
+            <li>Beta 17 release
+               <ul>
+                  <li>Reorganization of the source code base (not the java packages) into Eclipse plugins for easier development and distribution (issue #80).</li>
+                  <li>[API breaker] Introduce the concept of Restlet Application, similar to Web Application in the Servlet world (issues #76, #77, #105, #111).</li>
+                  <li>[API breaker] Allow standard parameterization of all connectors via the Connector.getParameterList() modifiable list (issue #95, #114)</li>
+                  <li>[API breaker] Refactor/group client data and server data in Call (issues #116, 117)</li>
+               </ul>
+            </li>
+            <li>Beta 18 release
+               <ul>
+                  <li>Add support for HTTPS in Jetty 6 (issue #93).</li>
+                  <li>Allow user language forcing when language extension found (issue #39)</li>
+                  <li>Add support for modifications to DirectoryHandler (issue #50)</li>
+                  <li>Add optional index page template for the DirectoryHandler (issue #82)</li>
+               </ul>
+            </li>
+            <li>Beta 19 release
+               <ul>
+                  <li>Complete Atom extension (issue #72, #73)</li>
+                  <li>Support tunnelling of repeating parameters (issue #89)</li>
+                  <li>Support extraction of segments (issue #120)</li>
+                  <li>etc.</li>
+               </ul>
+            </li>
+         </ul>
+         <ul>
             <li>Resolution of <a href="http://restlet.tigris.org/issues/buglist.cgi?Submit+query=Submit+query&issue_status=NEW&issue_status=STARTED&issue_status=REOPENED&priority=P1&priority=P2&email1=jlouvel&emailtype1=exact&emailassigned_to1=1&emailreporter1=1&emailqa_contact1=1&emailcc1=1&emaillongdesc1=1&email2=&emailtype2=exact&emailreporter2=1&issueidtype=include&issue_id=&changedin=&votes=&chfieldfrom=&chfieldto=Now&chfieldvalue=&short_desc=&short_desc_type=substring&long_desc=&long_desc_type=substring&issue_file_loc=&issue_file_loc_type=substring&status_whiteboard=&status_whiteboard_type=substring&field0-0-0=noop&type0-0-0=noop&value0-0-0=&cmdtype=doit&newqueryname=&order=Reuse+same+sort+as+last+time">issues with a P1 and P2 priority level</a></li>
             <li>Optional resolution of <a href="http://restlet.tigris.org/issues/buglist.cgi?Submit+query=Submit+query&issue_status=NEW&issue_status=STARTED&issue_status=REOPENED&priority=P3&email1=jlouvel&emailtype1=exact&emailassigned_to1=1&emailreporter1=1&emailqa_contact1=1&emailcc1=1&emaillongdesc1=1&email2=&emailtype2=exact&emailreporter2=1&issueidtype=include&issue_id=&changedin=&votes=&chfieldfrom=&chfieldto=Now&chfieldvalue=&short_desc=&short_desc_type=substring&long_desc=&long_desc_type=substring&issue_file_loc=&issue_file_loc_type=substring&status_whiteboard=&status_whiteboard_type=substring&field0-0-0=noop&type0-0-0=noop&value0-0-0=&cmdtype=doit&newqueryname=&order=Reuse+same+sort+as+last+time">issues with a P3 priority level</a></li>
+            <li>Moving from the current beta releases cycle to a candidate releases (RC0, RC1, etc.)</li>
          </ul>
       </li>
       <li>2006 Q4
@@ -105,7 +132,7 @@
 <br/>
 
 <small>
-   Version 1.0, last modified on 2006-07-11<br/>
+   Version 1.1, last modified on 2006-07-13<br/>
    Copyright &copy; 2005-2006 <a href="mailto:contact@noelios.com">J&eacute;r&ocirc;me Louvel</a>. Restlet is a registered trademark of <a target="_top" href="http://www.noelios.com">Noelios Consulting</a>.
 </small>
 
