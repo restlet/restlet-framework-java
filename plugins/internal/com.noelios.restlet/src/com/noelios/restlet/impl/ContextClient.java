@@ -159,7 +159,7 @@ public class ContextClient extends AbstractClient
       }
       else
       {
-         throw new IllegalArgumentException("Protocol not supported by the connector. Only FILE and CONTEXT are supported.");
+         throw new IllegalArgumentException("Protocol \"" + scheme + "\" not supported by the connector. Only FILE and CONTEXT are supported.");
       }
 	}
    

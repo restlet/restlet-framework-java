@@ -7,4 +7,4 @@ Bundle-Vendor: Noelios Consulting
 Bundle-Localization: plugin
 Require-Bundle: org.restlet,
  com.noelios.restlet,
- org.simpleframework
+ org.simpleframework;bundle-version="3.1.0"

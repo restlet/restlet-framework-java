@@ -1,0 +1,56 @@
+
+===========================
+Restlet Plugin Dependencies
+===========================
+
+
+com.noelios.restlet.ext.asyncweb_0.8
+------------------------------------
+ - edu.oswego.cs.dl.util.concurrent_1.3
+ - org.apache.commons.logging_1.1
+ - org.apache.mina_0.8
+ - org.safehaus.asyncweb_0.8
+ - org.slf4j_1.0
+
+
+com.noelios.restlet.ext.fileupload_1.1
+------------------------------------
+ - javax.servlet_2.4
+ - org.apache.commons.fileupload_1.1 
+
+
+com.noelios.restlet.ext.freemarker_2.3
+------------------------------------
+ - org.freemarker_2.3
+
+
+com.noelios.restlet.ext.javamail_1.4
+------------------------------------
+ - javax.mail_1.4
+
+
+com.noelios.restlet.ext.jdbc_3.0
+------------------------------------
+ - org.apache.commons.dbcp_1.2
+ - org.apache.commons.logging_1.1
+ - org.apache.commons.pool_1.3
+
+
+com.noelios.restlet.ext.jetty_5.1
+---------------------------------
+ - javax.servlet_2.4
+ - org.apache.commons.logging_1.1
+ - org.mortbay.jetty_5.1
+
+
+com.noelios.restlet.ext.jetty_6.0
+---------------------------------
+ - javax.servlet_2.5
+ - org.mortbay.jetty_6.0
+
+
+com.noelios.restlet.ext.simple_3.1
+----------------------------------
+ - org.simpleframework_3.1
+ 
+ 

@@ -7,11 +7,11 @@ Bundle-Vendor: Noelios Consulting
 Bundle-Localization: plugin
 Require-Bundle: org.restlet,
  com.noelios.restlet,
- com.noelios.restlet.ext.jetty,
- com.noelios.restlet.ext.asyncweb,
- com.noelios.restlet.ext.simple,
- org.apache.mina,
- org.apache.commons.logging,
- edu.oswego.cs.dl.util.concurrent,
- org.slf4j
+ com.noelios.restlet.ext.jetty;resolution:=optional,
+ com.noelios.restlet.ext.asyncweb;resolution:=optional,
+ com.noelios.restlet.ext.simple;resolution:=optional,
+ org.apache.mina;resolution:=optional,
+ org.apache.commons.logging;resolution:=optional,
+ edu.oswego.cs.dl.util.concurrent;resolution:=optional,
+ org.slf4j;resolution:=optional
 Export-Package: com.noelios.restlet.example

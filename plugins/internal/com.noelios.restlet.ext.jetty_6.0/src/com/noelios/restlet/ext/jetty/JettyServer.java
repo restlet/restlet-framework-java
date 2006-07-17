@@ -22,6 +22,11 @@
 
 package com.noelios.restlet.ext.jetty;
 
+import java.io.IOException;
+
+import javax.servlet.ServletException;
+
+import org.mortbay.jetty.HttpConnection;
 import org.mortbay.jetty.Server;
 import org.restlet.component.Component;
 import org.restlet.data.ParameterList;
@@ -36,7 +41,7 @@ public abstract class JettyServer extends com.noelios.restlet.impl.HttpServer
 	/**
 	 * The wrapped Jetty server.
 	 */
-	protected Server jettyServer;
+	protected Server wrappedServer;
 	
    /**
     * Constructor.
@@ -48,7 +53,7 @@ public abstract class JettyServer extends com.noelios.restlet.impl.HttpServer
    public JettyServer(Component owner, ParameterList parameters, String address, int port)
    {
    	super(owner, parameters, address, port);
-   	this.jettyServer = new org.mortbay.jetty.Server();
+   	this.wrappedServer = new WrappedServer(this);
    }
 
    /** Starts the Connector. */
@@ -56,7 +61,7 @@ public abstract class JettyServer extends com.noelios.restlet.impl.HttpServer
    {
    	if(!isStarted())
    	{
-   		this.jettyServer.start();
+   		this.wrappedServer.start();
 			super.start();
    	}
    }
@@ -66,9 +71,37 @@ public abstract class JettyServer extends com.noelios.restlet.impl.HttpServer
    {
    	if(isStarted())
    	{
-   		this.jettyServer.stop();
+   		this.wrappedServer.stop();
    		super.stop();
    	}
    }
+
+   /**
+    * Jetty server wrapped by a parent Restlet HTTP server connector.
+    * @author Jerome Louvel (contact@noelios.com) <a href="http://www.noelios.com/">Noelios Consulting</a>
+    */
+	private class WrappedServer extends org.mortbay.jetty.Server
+	{
+		JettyServer server;
+
+		/**
+		 * Constructor.
+		 * @param server The Jetty HTTP server.
+		 */
+		public WrappedServer(JettyServer server)
+		{
+			this.server = server;
+		}
+		
+		/**
+		 * Handler method converting a Jetty Connection into a Restlet Call.
+		 * @param connection The connection to handle.
+		 */
+	   public void handle(HttpConnection connection) throws IOException, ServletException
+	   {
+	      server.handle(new JettyCall(connection));
+	   }
+
+	};
 
 }

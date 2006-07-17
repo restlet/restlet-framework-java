@@ -57,7 +57,7 @@ public class HttpServer extends JettyServer
          Connector connector = new SelectChannelConnector(); // Uses non-blocking NIO
          if(address != null) connector.setHost(this.address);
          connector.setPort(this.port);
-         this.jettyServer.addConnector(connector);
+         this.wrappedServer.addConnector(connector);
    		super.start();
    	}
    }

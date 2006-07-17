@@ -23,6 +23,8 @@
 package com.noelios.restlet.impl;
 
 import java.io.IOException;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 import org.restlet.Call;
 import org.restlet.Restlet;
@@ -36,6 +38,9 @@ import org.restlet.data.ParameterList;
  */
 public class HttpServer extends AbstractServer
 {
+   /** Obtain a suitable logger. */
+   private static Logger logger = Logger.getLogger(HttpServer.class.getCanonicalName());
+
    /**
     * Constructor.
     * @param owner The owner component.
@@ -53,9 +58,17 @@ public class HttpServer extends AbstractServer
     * The default behavior is to create an REST call and delegate it to the attached Restlet.
     * @param call The connector call.
     */
-   public void handle(HttpServerCall call) throws IOException
+   public void handle(HttpServerCall call)
    {
-   	handle(call, this);
+   	try
+   	{
+   		handle(call, this);
+		}
+		catch (Exception e)
+		{
+			logger.log(Level.WARNING, "Error while handling an HTTP server call: ", e.getMessage());
+			logger.log(Level.INFO, "Error while handling an HTTP server call", e);
+		}
    }
 
    /**

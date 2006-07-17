@@ -37,6 +37,12 @@ Restlet changes log
     - RestletServer now uses a list of RestletContainer instead of a map. Removed unecessary add() methods.
  - Moved enumeration org.restlet.RouterMode into Router.Mode.
  - Fully reorganized the SVN code base to separate the packages and third-party into a set of Eclipse plugin projects with inter-dependencies.
+ - Fixed regression in Jetty 6.0 connector which prevented the handling of requests. 
+ - Factorized the handling of IO exception in various HTTP server connectors into the base com.noelios.restlet.impl.HttpServer class.
+ 	No, when an IO exception, a one line log entry is added at the WARNING level, and the full stack trace is added at the INFO level.
+ 	This is important to prevent excessive log entries for the Simple connector when the connection is closed by the client (Broken Pipe).
+ - Added a "dependency.txt" file to display the main dependencies between the various plugins (external libraries and internal modules).
+ - 
 
 1.0 beta 16 (2006-06-30)
  - Renamed attachPath() to attachRouter() in RouterBuilder.

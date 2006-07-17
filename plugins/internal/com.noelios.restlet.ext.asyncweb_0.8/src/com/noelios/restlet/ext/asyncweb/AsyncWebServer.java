@@ -21,7 +21,6 @@
  */
 package com.noelios.restlet.ext.asyncweb;
 
-import java.io.IOException;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
@@ -104,18 +103,8 @@ public abstract class AsyncWebServer extends HttpServer implements ServiceContai
 	{
 		HttpResponse response = request.createHttpResponse();
 		HttpServerCall call = new AsyncWebServerCall(request, response, confidential, super.address);
-		
-		try
-		{
-			super.handle(call);
-			request.commitResponse(response);
-		}
-		catch (IOException ex)
-		{
-			logger.log(Level.WARNING, "Error while handling server call", ex);
-			ex.printStackTrace();
-			throw new RuntimeException(ex.getMessage(), ex);
-		}
+		handle(call);
+		request.commitResponse(response);
 	}
 
    /** Starts the Connector. */

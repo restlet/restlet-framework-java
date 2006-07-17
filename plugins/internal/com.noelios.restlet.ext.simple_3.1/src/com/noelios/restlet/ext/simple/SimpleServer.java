@@ -22,11 +22,7 @@
 
 package com.noelios.restlet.ext.simple;
 
-import java.io.IOException;
 import java.net.ServerSocket;
-import java.util.logging.Level;
-import java.util.logging.Logger;
-
 import org.restlet.component.Component;
 import org.restlet.data.ParameterList;
 
@@ -45,10 +41,7 @@ import com.noelios.restlet.impl.HttpServer;
  */
 public abstract class SimpleServer extends HttpServer implements ProtocolHandler
 {
-   /** Obtain a suitable logger. */
-   private static Logger logger = Logger.getLogger(SimpleServer.class.getCanonicalName());
-
-	/**
+   /**
 	 * Indicates if this service is acting in HTTP or HTTPS mode.
 	 */
 	protected boolean confidential;
@@ -105,15 +98,7 @@ public abstract class SimpleServer extends HttpServer implements ProtocolHandler
 	 */
 	public void handle(Request request, Response response)
 	{
-		try
-		{
-			handle(new SimpleCall(request, response, this.confidential, this.port));
-			response.getOutputStream().close();
-		}
-		catch (IOException ioe)
-		{
-			logger.log(Level.WARNING, "Error while handling a SimpleServer request", ioe);
-		}
+		handle(new SimpleCall(request, response, this.confidential, this.port));
 	}
 
 }
