@@ -8,11 +8,12 @@ Restlet changes log
  - When build its pattern, the HostRouter now adds case insensitive flags for scheme names and domain names, strictly following the URI specification. Bug reported by Jim.
  - Ensured that Reference normalization, scheme name setting and host name setting use lower case according to URI specification.
  - Added new FAQ entry on "What are the underlying concepts?" and reorganized the questions a little.
- - Updated FreeMarker to version 2.3.7.
+ - Updated FreeMarker to version 2.3.8.
  - Updated Simple framework to version 3.1.3.
  - Updated Jetty 6 to version 6.0.0 RC0.
  - Updated JUnit to version 4.1.
  - Updated JavaMail to version 1.4.
+ - Updated SLF4J to version 1.0.2.
  - Added Preference.toString() implementation based on patch submitted by Chris Winters.
  - Renamed Filter.attach/detach to get/setTarget. Users won't assume that multiple targets can be attached, also the target can be looked up.
  - Removed nextHandle() method from Handler and AbstractHandler. Didn't bring much value.

@@ -8,5 +8,5 @@ Bundle-Localization: plugin
 Export-Package: com.noelios.restlet.ext.jetty
 Require-Bundle: org.restlet,
  com.noelios.restlet,
- javax.servlet;bundle-version="2.4.0",
+ javax.servlet;bundle-version="2.4",
  org.mortbay.jetty;bundle-version="5.1.0"

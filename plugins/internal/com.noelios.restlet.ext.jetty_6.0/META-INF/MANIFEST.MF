@@ -8,4 +8,4 @@ Bundle-Localization: plugin
 Require-Bundle: org.restlet,
  com.noelios.restlet,
  org.mortbay.jetty;bundle-version="6.0.0",
- javax.servlet;bundle-version="2.5.0"
+ javax.servlet;bundle-version="2.5"

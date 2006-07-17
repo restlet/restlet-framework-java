@@ -7,4 +7,4 @@ Bundle-Vendor: Noelios Consulting
 Bundle-Localization: plugin
 Require-Bundle: org.restlet,
  com.noelios.restlet,
- javax.servlet;bundle-version="2.4.0"
+ javax.servlet;bundle-version="2.4"
