@@ -72,7 +72,7 @@ public class DefaultMediaType extends DefaultMetadata implements MediaType
     */
    public DefaultMediaType(String name, List<Parameter> parameters, String description)
    {
-      super((name == null) ? null : name.toLowerCase(), description);
+      super((name == null) ? null : name, description);
       this.parameters = parameters;
    }
 

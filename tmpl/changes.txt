@@ -44,6 +44,7 @@ Restlet changes log
  	This is important to prevent excessive log entries for the Simple connector when the connection is closed by the client (Broken Pipe).
  - Added a "dependency.txt" file to display the main dependencies between the various plugins (external libraries and internal modules).
  - Fixed potential NPE in com.noelios.restlet.ext.fileupload.RepresentationContext. Reported by Mikkel Jensen.
+ - For some unknow reason we were lower casing the type name in DefaultMediaType's constructor. This causes issues with FileUpload. Reported by Mikkel Jensen.
 
 1.0 beta 16 (2006-06-30)
  - Renamed attachPath() to attachRouter() in RouterBuilder.
