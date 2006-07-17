@@ -31,6 +31,7 @@ import org.restlet.Call;
 import org.restlet.AbstractScorer;
 import org.restlet.Restlet;
 import org.restlet.Router;
+import org.restlet.data.Statuses;
 
 /**
  * Router handler based on a URI pattern. Note that the matching is case sensitive unless some inline modifiers
@@ -79,11 +80,6 @@ public class PatternScorer extends AbstractScorer
 		String resourcePath = call.getResourcePath();
 		Matcher matcher = getPattern().matcher(resourcePath);
       boolean matched = matcher.lookingAt();
-         
-      if(logger.isLoggable(Level.FINER))
-      {
-      	logger.finer("Attempting to match this pattern: " + getPattern().toString() + " >> " + matched);
-      }
 
       if(matched)
       {
@@ -98,6 +94,11 @@ public class PatternScorer extends AbstractScorer
       	{
       		result = 1.0F;
       	}
+      }
+      
+      if(logger.isLoggable(Level.FINER))
+      {
+      	logger.finer("Scoring this pattern: " + getPattern().toString() + " >> " + result);
       }
 
       return result;
@@ -120,11 +121,6 @@ public class PatternScorer extends AbstractScorer
 
       if(matched)
       {
-	      if(logger.isLoggable(Level.FINER))
-	      {
-	      	logger.finer("A matching target was found");
-	      }
-	
 	      // Updates the paths
 	      String oldContextPath = call.getContextPath();
 	      String newContextPath = resourcePath.substring(0, matcher.end());
@@ -152,5 +148,9 @@ public class PatternScorer extends AbstractScorer
 	      // Invoke the call restlet
 	      super.handle(call);
 	   }
+      else
+      {
+      	call.setStatus(Statuses.CLIENT_ERROR_NOT_FOUND);
+      }
 	}   
 }
