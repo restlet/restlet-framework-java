@@ -52,7 +52,14 @@ public class RepresentationContext implements RequestContext
 	 */
 	public String getCharacterEncoding()
 	{
-		return this.multipartForm.getEncoding().getName();
+		if(this.multipartForm.getEncoding() != null)
+		{
+			return this.multipartForm.getEncoding().getName();
+		}
+		else
+		{
+			return null;
+		}
 	}
 
 	/**
@@ -70,7 +77,14 @@ public class RepresentationContext implements RequestContext
 	 */
 	public String getContentType()
 	{
-		return this.multipartForm.getMediaType().getName();
+		if(this.multipartForm.getMediaType() != null)
+		{
+			return this.multipartForm.getMediaType().getName();
+		}
+		else
+		{
+			return null;
+		}
 	}
 
 	/**
