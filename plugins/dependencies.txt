@@ -49,6 +49,11 @@ com.noelios.restlet.ext.jetty_6.0
  - org.mortbay.jetty_6.0
 
 
+com.noelios.restlet.ext.servlet_2.4
+-----------------------------------
+ - javax.servlet_2.4
+
+
 com.noelios.restlet.ext.simple_3.1
 ----------------------------------
  - org.simpleframework_3.1
