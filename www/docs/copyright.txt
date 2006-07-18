@@ -1,10 +1,10 @@
               COPYRIGHT NOTICE
-         Version 2.0, December 2005
+          Version 2.1, July 2006
 
    This software distribution is covered by this copyright notice. 
 This includes the following software components:
       1) Restlet API (org.restlet package)
-      2) Noelios Restlet Engine (com.noelios.restlet package)
+      2) Noelios Restlet Engine (com.noelios.restlet.* packages)
       3) All other files containing a proper copyright notice
       
    All third-party libraries redistributed with this software remain the

@@ -17,8 +17,8 @@
 	<property name="author" value="Jerome Louvel" />
 	<property name="excludes" value="**/.emptyDir **/package.html **/overview.html" />
 	<property name="restlet-api" value="Restlet API" />
-	<property name="restlet-core" value="Noelios Restlet Engine - Core" />
-	<property name="restlet-ext" value="Noelios Restlet Engine - Extensions" />
+	<property name="restlet-core" value="NRE Core" />
+	<property name="restlet-ext" value="NRE Extensions" />
 
 	<!-- Location properties -->
 	<property name="bin" value="bin" />
@@ -117,11 +117,11 @@
 
 	<!-- Module properties (internal plugins) -->
 	<property name="mod-api-package" value="org.restlet" />
-	<property name="mod-api-version" value="${version-compact}" />
+	<property name="mod-api-version" value="${version-base}" />
 	<property name="mod-api-id" value="${mod-api-package}" />
 
 	<property name="mod-api-test-package" value="org.restlet.test" />
-	<property name="mod-api-test-version" value="${version-compact}" />
+	<property name="mod-api-test-version" value="${version-base}" />
 	<property name="mod-api-test-id" value="${mod-api-test-package}" />
 
 	<property name="mod-asyncweb-package" value="com.noelios.restlet.ext.asyncweb" />
@@ -133,7 +133,7 @@
 	<property name="mod-atom-id" value="${mod-atom-package}_${mod-atom-version}" />
 
 	<property name="mod-example-package" value="com.noelios.restlet.example" />
-	<property name="mod-example-version" value="${version-compact}" />
+	<property name="mod-example-version" value="${version-base}" />
 	<property name="mod-example-id" value="${mod-example-package}" />
 
 	<property name="mod-fileupload-package" value="com.noelios.restlet.ext.fileupload" />
@@ -161,12 +161,12 @@
 	<property name="mod-jetty6-id" value="${mod-jetty6-package}_${mod-jetty6-version}" />
 
 	<property name="mod-ri-package" value="com.noelios.restlet" />
-	<property name="mod-ri-version" value="${version-compact}" />
+	<property name="mod-ri-version" value="${version-base}" />
 	<property name="mod-ri-id" value="${mod-ri-package}" />
 
-	<property name="mod-ri-test-id" value="com.noelios.restlet.test" />
-	<property name="mod-ri-test-version" value="${version-compact}" />
-	<property name="mod-ri-test-id" value="${mod-ri-test-id}" />
+	<property name="mod-ri-test-package" value="com.noelios.restlet.test" />
+	<property name="mod-ri-test-version" value="${version-base}" />
+	<property name="mod-ri-test-id" value="${mod-ri-test-package}" />
 
 	<property name="mod-servlet-package" value="com.noelios.restlet.ext.servlet" />
 	<property name="mod-servlet-version" value="${lib-servlet4-version}" />
@@ -356,7 +356,7 @@
 		<sequential>
 			<!-- Create plugin jar -->
 			<mkdir dir="${dist}/lib" />
-			<jar jarfile="${dist}/lib/${mod-@{name}-package}_${mod-@{name}-version}.jar"
+			<jar jarfile="${dist}/lib/${mod-@{name}-id}.jar"
 			     basedir="${classes}/${mod-@{name}-id}">
 				<manifest>
 					<attribute name="Built-By" value="${author}" />
@@ -370,15 +370,14 @@
 			</jar>
 
 			<!-- Add the manifest files -->
-			<jar jarfile="${dist}/plugins/${mod-@{name}-package}_${mod-@{name}-version}.jar"
+			<jar jarfile="${dist}/lib/${mod-@{name}-id}.jar"
 			     update="true"
 			     basedir="${mod}/${mod-@{name}-id}"
 			     includes="META-INF/**" />
 
 			<!-- Create extension source jar file -->
 			<mkdir dir="${dist}/src" />
-			<zip destfile="${dist}/lib/${mod-@{name}-package}_${mod-@{name}-version}.zip"
-			     basedir="${mod}/${mod-@{name}-id}/src"
+			<copydir src="${mod}/${mod-@{name}-id}/src" dest="${dist}/src/${mod-@{name}-id}" 
 			     includes="**/*"
 			     excludes="${excludes}" />
 		</sequential>
@@ -390,11 +389,11 @@
 		<attribute name="name" />
 		<sequential>
 			<!-- Create a destination directory -->
-			<mkdir dir="${dist}/lib/${mod-@{name}-id}" />
+			<mkdir dir="${dist}/lib/${lib-@{name}-id}" />
 
 			<!-- Copy all plugin content into the destination folder -->
-			<copy todir="${mod-@{name}-id}">
-				<fileset dir="${lib}/${mod-@{name}-id}" />
+			<copy todir="${dist}/lib/${lib-@{name}-id}">
+				<fileset dir="${lib}/${lib-@{name}-id}" excludes="bin, .classpath, .project, build.properties"/>
 			</copy>
 		</sequential>
 	</macrodef>
@@ -575,12 +574,12 @@
 		</copy>
 
 		<!-- Copy text notes -->
-		<copy file="${docs}/changes.txt" todir="${dist}" />
-		<copy file="${docs}/copyright.txt" todir="${dist}" />
-		<copy file="${docs}/license.txt" todir="${dist}" />
-		<copy file="${docs}/readme.txt" todir="${dist}" />
-		<copy file="${docs}/trademarks.txt" todir="${dist}" />
-		<copy file="${plugins}/dependencies.txt" todir="${dist}/lib" />
+		<copy file="${docs}/changes.txt" tofile="${dist}/CHANGES.txt" />
+		<copy file="${docs}/copyright.txt" tofile="${dist}/COPYRIGHT.txt" />
+		<copy file="${docs}/license.txt" tofile="${dist}/LICENSE.txt" />
+		<copy file="${docs}/readme.txt" tofile="${dist}/README.txt" />
+		<copy file="${docs}/trademarks.txt" tofile="${dist}/TRADEMARKS.txt" />
+		<copy file="${plugins}/dependencies.txt" tofile="${dist}/README.txt" />
 
 		<!-- Packages libraries (external plugins) -->
 		<packageLibrary name="asyncweb" />
@@ -594,6 +593,7 @@
 		<packageLibrary name="logging" />
 		<packageLibrary name="mina" />
 		<packageLibrary name="pool" />
+		<packageLibrary name="retroweaver" />
 		<packageLibrary name="servlet4" />
 		<packageLibrary name="servlet5" />
 		<packageLibrary name="simple" />
@@ -657,10 +657,10 @@
 		         use="true"
 		         windowtitle="Restlet API ${version-full}"
 		         doctitle="Restlet API ${version-full}"
-		         overview="${mod-api-id}/src/overview.html"
+		         overview="${tmpl}/overview-api.html"
 		         verbose="${verbose}">
 			<sourcepath>
-				<pathelement path="${mod-api-id}/src/" />
+				<pathelement path="${mod}/${mod-api-id}/src/" />
 			</sourcepath>
 
 			<bottom>
@@ -681,12 +681,12 @@
 		         author="true"
 		         version="true"
 		         use="true"
-		         windowtitle="Noelios Restlet Engine ${version-full}"
-		         doctitle="Noelios Restlet Engine ${version-full}"
-		         overview="${mod-ri-id}/src/overview.html"
+		         windowtitle="Noelios Restlet Engine ${version-full} - Core"
+		         doctitle="Noelios Restlet Engine ${version-full} - Core"
+	             overview="${tmpl}/overview-core.html"
 		         verbose="${verbose}">
 			<sourcepath>
-				<pathelement path="${mod-ri-id}/src/" />
+				<pathelement path="${mod}/${mod-ri-id}/src/" />
 			</sourcepath>
 	
 			<bottom>
@@ -707,20 +707,20 @@
 		         author="true"
 		         version="true"
 		         use="true"
-		         windowtitle="Noelios Restlet Engine ${version-full}"
-		         doctitle="Noelios Restlet Engine ${version-full}"
-		         overview="${plugins}/overview.html"
+		         windowtitle="Noelios Restlet Engine ${version-full} - Extensions"
+		         doctitle="Noelios Restlet Engine ${version-full} - Extensions"
+		         overview="${tmpl}/overview-ext.html"
 		         verbose="${verbose}">
 			<sourcepath>
-				<pathelement path="${src-asyncweb0.8}" />
-				<pathelement path="${src-atom1.0}" />
-				<pathelement path="${src-fileupload1.1}" />
-				<pathelement path="${src-freemarker2.3}" />
-				<pathelement path="${src-javamail1.4}" />
-				<pathelement path="${src-jdbc3.0}" />
-				<pathelement path="${src-jetty5.1}" />
-				<pathelement path="${src-servlet2.4}" />
-				<pathelement path="${src-simple3.1}" />
+				<pathelement path="${mod}/${mod-asyncweb-id}/src/" />
+				<pathelement path="${mod}/${mod-atom-id}/src/" />
+				<pathelement path="${mod}/${mod-fileupload-id}/src/" />
+				<pathelement path="${mod}/${mod-freemarker-id}/src/" />
+				<pathelement path="${mod}/${mod-javamail-id}/src/" />
+				<pathelement path="${mod}/${mod-jdbc-id}/src/" />
+				<pathelement path="${mod}/${mod-jetty5-id}/src/" />
+				<pathelement path="${mod}/${mod-servlet-id}/src/" />
+				<pathelement path="${mod}/${mod-simple-id}/src/" />
 			</sourcepath>
 		
 			<bottom>
