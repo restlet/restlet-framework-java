@@ -93,7 +93,7 @@ public class FactoryImpl extends Factory
       // Register the client connector providers
       try
       {
-         for(Enumeration<URL> configUrls = cl.getResources("meta-inf/services/org.restlet.connector.Client"); configUrls.hasMoreElements();)
+         for(Enumeration<URL> configUrls = cl.getResources("META-INF/services/org.restlet.connector.Client"); configUrls.hasMoreElements();)
          {
             configURL = configUrls.nextElement();
 
@@ -141,7 +141,7 @@ public class FactoryImpl extends Factory
       // Register the server connector providers
       try
       {
-         for(Enumeration<URL> configUrls = cl.getResources("meta-inf/services/org.restlet.connector.Server"); configUrls.hasMoreElements();)
+         for(Enumeration<URL> configUrls = cl.getResources("META-INF/services/org.restlet.connector.Server"); configUrls.hasMoreElements();)
          {
             configURL = configUrls.nextElement();
 
@@ -254,7 +254,16 @@ public class FactoryImpl extends Factory
      		}
      	}
 
-     	logger.log(Level.WARNING, "No available server connector supports the required protocols.");
+     	// Couldn't find a matching connector
+     	StringBuilder sb = new StringBuilder();
+     	sb.append("No available server connector supports the required protocols: ");
+
+     	for(Protocol p : protocols)
+     	{
+     		sb.append(p.getName()).append(" ");
+     	}
+     	logger.log(Level.WARNING, sb.toString());
+     	
       return null;
    }
 

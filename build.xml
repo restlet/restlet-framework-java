@@ -15,6 +15,7 @@
 
 	<!-- General properties -->
 	<property name="author" value="Jerome Louvel" />
+	<property name="vendor" value="Noelios Consulting" />
 	<property name="excludes" value="**/.emptyDir **/package.html **/overview.html" />
 	<property name="restlet-api" value="Restlet API" />
 	<property name="restlet-core" value="NRE Core" />
@@ -354,32 +355,33 @@
 	<macrodef name="packageModule">
 		<attribute name="name" />
 		<sequential>
+			<!-- Create the Manifest by merging the Eclipse plugin Manifest and the default JAR's one -->
+			<mkdir dir="${build}/jar/META-INF" />
+			<delete failonerror="false" file="${build}/jar/META-INF/MANIFEST.MF" />
+			<copy failonerror="false" file="${mod}/${mod-@{name}-id}/META-INF/MANIFEST.MF" 
+				tofile="${build}/jar/META-INF/MANIFEST.MF" />
+			<manifest file="${build}/jar/META-INF/MANIFEST.MF" mode="update">
+				<section name="${mod-@{name}-package}">
+					<attribute name="Implementation-Title" value="${mod-@{name}-id}" />
+					<attribute name="Implementation-Version" 
+						value="${version-full} (build ${build.number})" />
+					<attribute name="Implementation-Vendor" value="${vendor}" />
+				</section>
+			</manifest>
+
 			<!-- Create plugin jar -->
 			<mkdir dir="${dist}/lib" />
-			<jar jarfile="${dist}/lib/${mod-@{name}-id}.jar"
-			     basedir="${classes}/${mod-@{name}-id}">
-				<manifest>
-					<attribute name="Built-By" value="${author}" />
-					<section name="${mod-@{name}-package}">
-						<attribute name="Implementation-Title" value="${restlet-ri}" />
-						<attribute name="Implementation-Version"
-						           value="${mod-@{name}-version} (build ${build.number})" />
-						<attribute name="Implementation-Vendor" value="${author}" />
-					</section>
-				</manifest>
+			<jar jarfile="${dist}/lib/${mod-@{name}-id}.jar" filesetmanifest="merge">
+				<fileset dir="${classes}/${mod-@{name}-id}" />
+				<fileset dir="${mod}/${mod-@{name}-id}/src" includes="META-INF/**" />
+				<fileset dir="${build}/jar/" />
 			</jar>
-
-			<!-- Add the manifest files -->
-			<jar jarfile="${dist}/lib/${mod-@{name}-id}.jar"
-			     update="true"
-			     basedir="${mod}/${mod-@{name}-id}"
-			     includes="META-INF/**" />
 
 			<!-- Create extension source jar file -->
 			<mkdir dir="${dist}/src" />
-			<copydir src="${mod}/${mod-@{name}-id}/src" dest="${dist}/src/${mod-@{name}-id}" 
-			     includes="**/*"
-			     excludes="${excludes}" />
+			<copy todir="${dist}/src/${mod-@{name}-id}">
+				<fileset dir="${mod}/${mod-@{name}-id}/src" excludes="${excludes}" />
+			</copy>
 		</sequential>
 	</macrodef>
 
@@ -579,7 +581,7 @@
 		<copy file="${docs}/license.txt" tofile="${dist}/LICENSE.txt" />
 		<copy file="${docs}/readme.txt" tofile="${dist}/README.txt" />
 		<copy file="${docs}/trademarks.txt" tofile="${dist}/TRADEMARKS.txt" />
-		<copy file="${plugins}/dependencies.txt" tofile="${dist}/README.txt" />
+		<copy file="${plugins}/dependencies.txt" tofile="${dist}/lib/README.txt" />
 
 		<!-- Packages libraries (external plugins) -->
 		<packageLibrary name="asyncweb" />
@@ -593,11 +595,11 @@
 		<packageLibrary name="logging" />
 		<packageLibrary name="mina" />
 		<packageLibrary name="pool" />
-		<packageLibrary name="retroweaver" />
 		<packageLibrary name="servlet4" />
 		<packageLibrary name="servlet5" />
 		<packageLibrary name="simple" />
 		<packageLibrary name="slf4j" />
+		<packageLibrary name="wrapper" />
 
 		<!-- Package modules (internal plugins) -->
 		<packageModule name="api" />
@@ -624,7 +626,7 @@
 	<target name="clean" description="Clean up the classes and Javadoc">
 		<!-- Delete the classes and Javadoc directories -->
 		<delete includeEmptyDirs="true" verbose="false" quiet="true">
-			<fileset dir="${classes}" />
+			<fileset dir="${build}" />
 			<fileset dir="${docs-api}" excludes="**/.svn" />
 			<fileset dir="${docs-core}" excludes="**/.svn" />
 			<fileset dir="${docs-ext}" excludes="**/.svn" />
@@ -638,7 +640,7 @@
 		<zip destfile="${arc}/Restlet ${DSTAMP}.zip"
 		     basedir=""
 		     includes="**/*"
-		     excludes="${arc}/** classes/** ${dist}/** ${dist-zip}/** ${docs-api}/** ${docs-core}/** ${docs-ext}/**" />
+		     excludes="${arc}/** ${build}/** ${dist}/** ${dist-zip}/** ${docs-api}/** ${docs-core}/** ${docs-ext}/**  ${plugins}/internal/**/*.class" />
 	</target>
 
 	<!-- Javadocs Target -->

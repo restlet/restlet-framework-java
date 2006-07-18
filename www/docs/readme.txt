@@ -35,10 +35,10 @@ Release notes
 
 Dependencies:    
     * For all applications: Java SE 5.0 or above. Older versions also supported using Retroweaver.
-    * For standalone HTTP servers: Jetty 5.1 (stable), Jetty 6.0 (beta) or Simple 3.1 (lightest)
-    * For embedded HTTP servers: Servlet 2.4 container
+    * For standalone HTTP servers: Jetty 5.1 (stable), Jetty 6.0 (beta), Simple 3.1 (lightest) and AsyncWeb 0.8 (based on Apache Mina NIO framework)
+    * For embedded HTTP servers: Servlet 2.4 containers like Apache Tomcat
     * For dynamic documents: FreeMarker 2.3
-    * For email sending: JavaMail 1.3
+    * For email sending: JavaMail 1.4
 
 Bugs, enhancements and new features: 
     * Issues database: http://restlet.tigris.org/issues/

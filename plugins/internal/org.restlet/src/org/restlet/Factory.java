@@ -75,7 +75,7 @@ public abstract class Factory
 
          // Find the factory class name
          ClassLoader cl = Thread.currentThread().getContextClassLoader();
-         URL configURL = cl.getResource("meta-inf/services/org.restlet.Factory");
+         URL configURL = cl.getResource("META-INF/services/org.restlet.Factory");
          if(configURL != null)
          {
             try

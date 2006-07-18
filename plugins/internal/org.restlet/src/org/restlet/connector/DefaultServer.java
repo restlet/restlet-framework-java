@@ -174,7 +174,10 @@ public class DefaultServer implements Server
     */
    public void setTarget(Restlet target)
    {
-   	this.wrappedServer.setTarget(target);
+   	if(this.wrappedServer != null)
+   	{
+   		this.wrappedServer.setTarget(target);
+   	}
    }
 
    /**
@@ -185,19 +188,28 @@ public class DefaultServer implements Server
     */
    public void configureSsl(String keystorePath, String keystorePassword, String keyPassword)
    {
-   	this.wrappedServer.configureSsl(keystorePath, keystorePassword, keyPassword);
+   	if(this.wrappedServer != null)
+   	{
+   		this.wrappedServer.configureSsl(keystorePath, keystorePassword, keyPassword);
+   	}
    }
    
    /** Starts the Restlet. */
    public void start() throws Exception
    {
-   	this.wrappedServer.start();
+   	if(this.wrappedServer != null)
+   	{
+   		this.wrappedServer.start();
+   	}
    }
 
    /** Stops the Restlet. */
    public void stop() throws Exception
    {
-   	this.wrappedServer.stop();
+   	if(this.wrappedServer != null)
+   	{
+   		this.wrappedServer.stop();
+   	}
    }
 
    /**
@@ -206,7 +218,10 @@ public class DefaultServer implements Server
     */
    public void handle(Call call)
    {
-   	this.wrappedServer.handle(call);
+   	if(this.wrappedServer != null)
+   	{
+   		this.wrappedServer.handle(call);
+   	}
    }
 
    /**
@@ -215,7 +230,14 @@ public class DefaultServer implements Server
     */
    public boolean isStarted()
    {
-   	return this.wrappedServer.isStarted();
+   	if(this.wrappedServer != null)
+   	{
+   		return this.wrappedServer.isStarted();
+   	}
+   	else
+   	{
+   		return false;
+   	}
    }
 
    /**
@@ -224,7 +246,14 @@ public class DefaultServer implements Server
     */
    public boolean isStopped()
    {
-   	return this.wrappedServer.isStopped();
+   	if(this.wrappedServer != null)
+   	{
+   		return this.wrappedServer.isStopped();
+   	}
+   	else
+   	{
+   		return true;
+   	}
    }
 
    /**
@@ -233,7 +262,7 @@ public class DefaultServer implements Server
     */
    public Component getOwner()
    {
-   	return this.wrappedServer.getOwner();
+  		return (this.wrappedServer != null) ? this.wrappedServer.getOwner() : null;
    }
 
    /**
@@ -242,7 +271,10 @@ public class DefaultServer implements Server
     */
    public void setOwner(Component owner)
    {
-   	this.wrappedServer.setOwner(owner);   	
+   	if(this.wrappedServer != null)
+   	{
+   		this.wrappedServer.setOwner(owner);
+   	}
    }
    
 	/**
@@ -251,7 +283,7 @@ public class DefaultServer implements Server
 	 */
 	public ParameterList getParameters()
 	{
-		return this.wrappedServer.getParameters();
+  		return (this.wrappedServer != null) ? this.wrappedServer.getParameters() : null;
 	}
 
    /**
@@ -260,7 +292,7 @@ public class DefaultServer implements Server
     */
    public List<Protocol> getProtocols()
    {
-   	return this.wrappedServer.getProtocols();
+  		return (this.wrappedServer != null) ? this.wrappedServer.getProtocols() : null;
    }
 
 }
