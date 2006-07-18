@@ -4,12 +4,11 @@ Restlet changes log
 ===================
 
 @version-full@ (@release-date@)
- - Fixed potential NPE exceptions in the equals() methods of many metadata classes. Was causing a bug on http://www.noelios.com with English only browsers.
-   Bug reported by Guillaume Laforge (Groovy).
- - When build its pattern, the HostRouter now adds case insensitive flags for scheme names and domain names, strictly following the URI specification. 
+ - When building its pattern, the HostRouter now adds case insensitive flags for scheme names and domain names, strictly following the URI specification. 
    Bug reported by Jim.
  - Ensured that Reference normalization, scheme name setting and host name setting use lower case according to URI specification.
  - Added new FAQ entry on "What are the underlying concepts?" and reorganized the questions a little.
+ - Added new RoadMap document at http://www.restlet.org/roadmap
  - Updated FreeMarker to version 2.3.8.
  - Updated Simple framework to version 3.1.3.
  - Updated Jetty 6 to version 6.0.0 RC0.
@@ -44,6 +43,8 @@ Restlet changes log
  	No, when an IO exception, a one line log entry is added at the WARNING level, and the full stack trace is added at the INFO level.
  	This is important to prevent excessive log entries for the Simple connector when the connection is closed by the client (Broken Pipe).
  - Added a "dependency.txt" file to display the main dependencies between the various plugins (external libraries and internal modules).
+ - Fixed potential NPE exceptions in the equals() methods of many metadata classes. Was causing a bug on http://www.noelios.com with English only browsers.
+   Bug reported by Guillaume Laforge (Groovy).
  - Fixed potential NPE in com.noelios.restlet.ext.fileupload.RepresentationContext. Reported by Mikkel Jensen.
  - For some unknown reason we were lower casing the type name in DefaultMediaType's constructor. This causes issues with FileUpload. 
    Reported by Mikkel Jensen.
