@@ -261,8 +261,9 @@ public abstract class HttpServerCall extends ConnectorCallImpl
       {
          // Send the output to the client
          output.write(getResponseStream());
-         getResponseStream().flush();
       }
+      
+      getResponseStream().flush();
    }
    
 }
