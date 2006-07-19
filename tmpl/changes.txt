@@ -4,22 +4,32 @@ Restlet changes log
 ===================
 
 @version-full@ (@release-date@)
+ - Fixed regression in Jetty 6.0 connector which prevented the handling of requests. 
  - When building its pattern, the HostRouter now adds case insensitive flags for scheme names and domain names, strictly following the URI specification. 
    Bug reported by Jim.
- - Ensured that Reference normalization, scheme name setting and host name setting use lower case according to URI specification.
- - Added new FAQ entry on "What are the underlying concepts?" and reorganized the questions a little.
+ - Fixed bugs in Reference.setHostName().
+ - Fixed potential NPE exceptions in the equals() methods of many metadata classes. Was causing a bug on http://www.noelios.com with English only browsers.
+ - For some unknown reason we were lower casing the type name in DefaultMediaType's constructor. This causes issues with FileUpload. 
+   Reported by Mikkel Jensen.
+   Bug reported by Guillaume Laforge (Groovy).
+ - Fixed potential NPE in Reference.getTargetRef(). Reported by Thierry Boileau.
+ - Fully reorganized the SVN code base to separate the packages and third-party into a set of Eclipse plugin projects with inter-dependencies.
+ - Improved the packaging in the distribution so that each module/extension JAR is also an Eclipse plugin. Third-party libraries are also available
+   as plugins directories. All the content of the "lib/" directory can be dropped in an Eclipse "plugins/" directory for direct usage in the IDE.
+ - Added a "dependency.txt" file to display the main dependencies between the various plugins (external libraries and internal modules).
  - Added new RoadMap document at http://www.restlet.org/roadmap
+ - Added new FAQ entry on "What are the underlying concepts?" and reorganized the questions a little.
  - Updated FreeMarker to version 2.3.8.
  - Updated Simple framework to version 3.1.3.
  - Updated Jetty 6 to version 6.0.0 RC0.
  - Updated JUnit to version 4.1.
  - Updated JavaMail to version 1.4.
  - Updated SLF4J to version 1.0.2.
+ - Ensured that Reference normalization, scheme name setting and host name setting use lower case according to URI specification.
  - Added Preference.toString() implementation based on patch submitted by Chris Winters.
  - Renamed Filter.attach/detach to get/setTarget. Users won't assume that multiple targets can be attached, also the target can be looked up.
  - Removed nextHandle() method from Handler and AbstractHandler. Didn't bring much value.
  - Renamed RestletContainer.attach/detach into get/setRoot. 
- - Fixed potential NPE in Reference.setHostName().
  - Added org.restlet.data.ScorerList implementing List<Scorer>.
  - Renamed Router.getOptions() to getScorers() and changed the result type from List<Scorer> to ScorerList.
  - Removed Router.attach() methods and added equivalent add() methods to ScorerList.
@@ -28,7 +38,6 @@ Restlet changes log
  - Changed Preference.parameters type from List<Parameter> to ParameterList and adjusted related classes.
  - Added DefaultRouter.customFind() method as an easy hook for the RouteMode.CUSTOM routing mode.
  - Renamed RouterMode.*_MATCH to RouterMode.* and ROUND_ROBIN to NEXT. Improved Javadocs.
- - Fixed bug in Reference.setHostName() that was erasing existing host port number.
  - Refactorized usage of modifiable lists and map for more consistency. Suggested by Lars Heuer.
     - Added org.restlet.data.WrapperList and WrapperMap classes.
     - Added org.restlet.connector.ClientMap and ServerMap classes. 
@@ -37,18 +46,12 @@ Restlet changes log
     - ParameterList now extends WrapperList to factorize wrapping logic.
     - RestletServer now uses a list of RestletContainer instead of a map. Removed unecessary add() methods.
  - Moved enumeration org.restlet.RouterMode into Router.Mode.
- - Fully reorganized the SVN code base to separate the packages and third-party into a set of Eclipse plugin projects with inter-dependencies.
- - Fixed regression in Jetty 6.0 connector which prevented the handling of requests. 
  - Factorized the handling of IO exception in various HTTP server connectors into the base com.noelios.restlet.impl.HttpServer class.
  	No, when an IO exception, a one line log entry is added at the WARNING level, and the full stack trace is added at the INFO level.
  	This is important to prevent excessive log entries for the Simple connector when the connection is closed by the client (Broken Pipe).
- - Added a "dependency.txt" file to display the main dependencies between the various plugins (external libraries and internal modules).
- - Fixed potential NPE exceptions in the equals() methods of many metadata classes. Was causing a bug on http://www.noelios.com with English only browsers.
-   Bug reported by Guillaume Laforge (Groovy).
  - Fixed potential NPE in com.noelios.restlet.ext.fileupload.RepresentationContext. Reported by Mikkel Jensen.
- - For some unknown reason we were lower casing the type name in DefaultMediaType's constructor. This causes issues with FileUpload. 
-   Reported by Mikkel Jensen.
  - Improved the logging of PatternScorer's logic. Adjust your logging properties to see the traces (FINE and FINER levels).
+ - Added log traces in CallImpl when a contextPath/Ref is specified before any resourcePath/Ref was specified. Reported by Thierry Boileau.
 
 1.0 beta 16 (2006-06-30)
  - Renamed attachPath() to attachRouter() in RouterBuilder.

@@ -718,9 +718,13 @@ public class CallImpl implements Call
     */
    public void setContextPath(String contextPath)
    {
-      if((contextPath != null) && (!this.resourceRef.toString(false, false).startsWith(contextPath)))
+      if(this.resourceRef == null)
       {
-         logger.warning("Context path doesn't match the start of the resource URI: " + contextPath);
+         logger.warning("You must specify a resource reference before you can set a context path");
+      }
+      else if((contextPath != null) && (!this.resourceRef.toString(false, false).startsWith(contextPath)))
+      {
+         logger.warning("The specified context path doesn't match the beginning of the resource reference: " + contextPath);
       }
 
       this.contextPath = contextPath;

@@ -370,13 +370,9 @@ public class Reference implements Data
    	String scheme = getScheme();
    	
    	// Step 1 - Resolve relative reference against their base reference
-   	if(scheme != null)
+   	if((scheme == null) && (baseRef != null))
    	{
-   		// Absolute URI detected
-   		result = new Reference(this);
-   	}
-   	else
-   	{
+   		// Relative URI detected
       	String authority = getAuthority();
       	String path = getPath();
       	String query = getQuery();
@@ -446,6 +442,11 @@ public class Reference implements Data
    		}
       	
       	result.setFragment(fragment);
+   	}
+   	else
+   	{
+   		// Absolute URI detected
+   		result = new Reference(this);
    	}
    	
    	// Step 2 - Normalize the target reference
