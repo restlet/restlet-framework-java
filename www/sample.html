@@ -182,7 +182,7 @@
 
                         // Serve logs report from a guarded directory
                         .attachGuard("/logs/report", "com.noelios.maine.WebContainer", true, ChallengeSchemes.HTTP_BASIC , "Log report", true)
-                           .authorize("report", "analog")
+                           .authorize("report", "")
                            .attachDirectory(reportPath, true, "index").upRouter()
 
                         // Serve other files from the Noelios path
@@ -221,7 +221,7 @@
 <br/>
 
 <small>
-   Version 2.2, last modified on 2006-06-26<br/>
+   Version 2.3, last modified on 2006-07-19<br/>
    Copyright &copy; 2005-2006 <a href="mailto:contact@noelios.com">J&eacute;r&ocirc;me Louvel</a>. Restlet is a registered trademark of <a target="_top" href="http://www.noelios.com">Noelios Consulting</a>.
 </small>
 

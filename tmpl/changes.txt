@@ -4,20 +4,42 @@ Restlet changes log
 ===================
 
 @version-full@ (@release-date@)
+[Bugs fixed]
  - Fixed regression in Jetty 6.0 connector which prevented the handling of requests. 
  - When building its pattern, the HostRouter now adds case insensitive flags for scheme names and domain names, strictly following the URI specification. 
    Bug reported by Jim.
  - Fixed bugs in Reference.setHostName().
+ - Fixed potential NPE in com.noelios.restlet.ext.fileupload.RepresentationContext. Reported by Mikkel Jensen.
  - Fixed potential NPE exceptions in the equals() methods of many metadata classes. Was causing a bug on http://www.noelios.com with English only browsers.
+   Bug reported by Guillaume Laforge (Groovy).
  - For some unknown reason we were lower casing the type name in DefaultMediaType's constructor. This causes issues with FileUpload. 
    Reported by Mikkel Jensen.
-   Bug reported by Guillaume Laforge (Groovy).
  - Fixed potential NPE in Reference.getTargetRef(). Reported by Thierry Boileau.
  - Fixed issue in ServletCall which was not setting the reason phrase for error statuses. Reported by Bill Morone.
+
+[API breaking changes]
+ - Renamed Filter.attach/detach to get/setTarget. Users won't assume that multiple targets can be attached, also the target can be looked up.
+ - Removed nextHandle() method from Handler and AbstractHandler. Didn't bring much value.
+ - Renamed RestletContainer.attach/detach into get/setRoot. 
+ - Renamed Router.getOptions() to getScorers() and changed the result type from List<Scorer> to ScorerList.
+ - Removed Router.attach() methods and added equivalent add() methods to ScorerList.
+ - Removed Router.detach() method. Use the getOptions().remove() methods instead.
+ - Moved some routing logic from DefaultRouter to ScorerList, see new getFirst(), getLast(), getBest(), getNext() and getRandom() methods.
+ - Renamed RouterMode.*_MATCH to RouterMode.* and ROUND_ROBIN to NEXT. Improved Javadocs.
+ - Moved enumeration org.restlet.RouterMode into Router.Mode.
+ - Refactorized usage of modifiable lists and map for more consistency. Suggested by Lars Heuer.
+    - Added org.restlet.data.WrapperList and WrapperMap classes.
+    - Added org.restlet.connector.ClientMap and ServerMap classes. 
+    - Moved Component.addClient() and addServer() methods to ClientMap.put() and ServerMap.put().
+    - Updated tutorial examples to follow new syntax.
+    - ParameterList now extends WrapperList to factorize wrapping logic.
+    - RestletServer now uses a list of RestletContainer instead of a map. Removed unecessary add() methods.
+
+[Other changes] 
  - Fully reorganized the SVN code base to separate the packages and third-party into a set of Eclipse plugin projects with inter-dependencies.
  - Improved the packaging in the distribution so that each module/extension JAR is also an Eclipse plugin. Third-party libraries are also available
    as plugins directories. All the content of the "lib/" directory can be dropped in an Eclipse "plugins/" directory for direct usage in the IDE.
- - Added a "dependency.txt" file to display the main dependencies between the various plugins (external libraries and internal modules).
+ - Added a "dependency.txt" file to list the main dependencies between the various plugins (external libraries and internal modules).
  - Added new RoadMap document at http://www.restlet.org/roadmap
  - Added new FAQ entry on "What are the underlying concepts?" and reorganized the questions a little.
  - Updated FreeMarker to version 2.3.8.
@@ -28,29 +50,12 @@ Restlet changes log
  - Updated SLF4J to version 1.0.2.
  - Ensured that Reference normalization, scheme name setting and host name setting use lower case according to URI specification.
  - Added Preference.toString() implementation based on patch submitted by Chris Winters.
- - Renamed Filter.attach/detach to get/setTarget. Users won't assume that multiple targets can be attached, also the target can be looked up.
- - Removed nextHandle() method from Handler and AbstractHandler. Didn't bring much value.
- - Renamed RestletContainer.attach/detach into get/setRoot. 
  - Added org.restlet.data.ScorerList implementing List<Scorer>.
- - Renamed Router.getOptions() to getScorers() and changed the result type from List<Scorer> to ScorerList.
- - Removed Router.attach() methods and added equivalent add() methods to ScorerList.
- - Removed Router.detach() method. Use the getOptions().remove() methods instead.
- - Moved some routing logic from DefaultRouter to ScorerList, see new getFirst(), getLast(), getBest(), getNext() and getRandom() methods.
  - Changed Preference.parameters type from List<Parameter> to ParameterList and adjusted related classes.
  - Added DefaultRouter.customFind() method as an easy hook for the RouteMode.CUSTOM routing mode.
- - Renamed RouterMode.*_MATCH to RouterMode.* and ROUND_ROBIN to NEXT. Improved Javadocs.
- - Refactorized usage of modifiable lists and map for more consistency. Suggested by Lars Heuer.
-    - Added org.restlet.data.WrapperList and WrapperMap classes.
-    - Added org.restlet.connector.ClientMap and ServerMap classes. 
-    - Moved Component.addClient() and addServer() methods to ClientMap.put() and ServerMap.put().
-    - Updated tutorial examples to follow new syntax.
-    - ParameterList now extends WrapperList to factorize wrapping logic.
-    - RestletServer now uses a list of RestletContainer instead of a map. Removed unecessary add() methods.
- - Moved enumeration org.restlet.RouterMode into Router.Mode.
  - Factorized the handling of IO exception in various HTTP server connectors into the base com.noelios.restlet.impl.HttpServer class.
- 	No, when an IO exception, a one line log entry is added at the WARNING level, and the full stack trace is added at the INFO level.
+ 	Now, when an IO exception, a one line log entry is added at the WARNING level, and the full stack trace is added at the INFO level.
  	This is important to prevent excessive log entries for the Simple connector when the connection is closed by the client (Broken Pipe).
- - Fixed potential NPE in com.noelios.restlet.ext.fileupload.RepresentationContext. Reported by Mikkel Jensen.
  - Improved the logging of PatternScorer's logic. Adjust your logging properties to see the traces (FINE and FINER levels).
  - Added log traces in CallImpl when a contextPath/Ref is specified before any resourcePath/Ref was specified. Reported by Thierry Boileau.
 

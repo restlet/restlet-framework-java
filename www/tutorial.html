@@ -55,7 +55,7 @@
    As we mentioned in the <a target="_top" href="http://www.restlet.org/introduction">introduction paper</a>, the Restlet framework is at the same time a client and a server framework. For example, NRE can easily work with remote resources using its HTTP client connector. A connector in REST is a software element that enables the communication between components, typically by implementing one side of a network protocol. Here we will get the representation of an existing resource and output it in the JVM console:
 </p>
 <pre>
-          // Outputting the content of a Web page
+         // Outputting the content of a Web page
          Client client = new DefaultClient(Protocols.HTTP);
          client.get("http://www.restlet.org").getOutput().write(System.out);
 </pre>
@@ -125,11 +125,11 @@
 
          // Create the HTTP server connector, then add it to the container.
          // Note that the container will act as the initial Restlet call's handler.
-         myContainer.addServer("HTTP Server", Protocols.HTTP, 8182);
+         myContainer.getServers().put("HTTP Server", Protocols.HTTP, 8182);
 
          // Create a host router matching calls to the server
          HostRouter host = new HostRouter(myContainer, 8182);
-         myContainer.attach(host);
+         myContainer.setRoot(host);
 
          // Create a new Restlet that will display some path information.
          Restlet myRestlet = new AbstractRestlet(myContainer)
@@ -146,7 +146,7 @@
             };
 
          // Then attach it to the host router.
-         host.attach("/trace", myRestlet);
+         host.getScorers().add("/trace", myRestlet);
 
          // Now, let's start the container!
          // Note that the HTTP server connector is also automatically started.
@@ -179,14 +179,14 @@
 <pre>
          // Create a host router matching calls to the server
          HostRouter host = new HostRouter(myContainer, 8182);
-         myContainer.attach(host);
+         myContainer.setRoot(host);
 
          // Create a directory Restlet able to return a deep hierarchy of Web files
          // (HTML pages, CSS stylesheets or GIF images) from a local directory.
          DirectoryHandler directory = new DirectoryHandler(myContainer, "file:///D:/Restlet/www/docs/api/", true, "index");
 
          // Then attach the Restlet to the container.
-         host.attach("/", directory);
+         host.getScorers().add("/", directory);
 </pre>
 <p>
    <img src="images/tutorial06" alt="Call handling flow"/><br/>
@@ -206,17 +206,17 @@
 <pre>
          // Attach a log Filter to the container
          LogFilter log = new LogFilter(myContainer, "com.noelios.restlet.example");
-         myContainer.attach(log);
+         myContainer.setRoot(log);
 
          // Create a host router matching calls to the server
          HostRouter host = new HostRouter(myContainer, 8182);
-         log.attach(host);
+         log.setTarget(host);
 
          // Create a directory Restlet able to return a deep hierarchy of Web files
          DirectoryHandler directory = new DirectoryHandler(myContainer, "file:///D:/Restlet/www/docs/api/", true, "index");
 
          // Then attach the Restlet to the log Filter.
-         host.attach("/", directory);
+         host.getScorers().add("/", directory);
 </pre>
 <p>
    <img src="images/tutorial07" alt="Call handling flow"/><br/>
@@ -239,21 +239,21 @@
 <pre>
          // Attach a log Filter to the container
          LogFilter log = new LogFilter(myContainer, "com.noelios.restlet.example");
-         myContainer.attach(log);
+         myContainer.setRoot(log);
 
          // Attach a status Filter to the log Filter
          StatusFilter status = new StatusFilter(myContainer, true, "webmaster@mysite.org", "http://www.mysite.org");
-         log.attach(status);
+         log.setTarget(status);
 
          // Create a host router matching calls to the server
          HostRouter host = new HostRouter(myContainer, 8182);
-         status.attach(host);
+         status.setTarget(host);
 
          // Create a directory Restlet able to return a deep hierarchy of Web files
          DirectoryHandler directory = new DirectoryHandler(myContainer, "file:///D:/Restlet/www/docs/api/", true, "index");
 
          // Then attach the directory Restlet to the host router.
-         host.attach("/", directory);
+         host.getScorers().add("/", directory);
 </pre>
 <p>
    <img src="images/tutorial08" alt="Call handling flow"/><br/>
@@ -274,7 +274,7 @@
          // Attach a guard Filter to the container
          GuardFilter guard = new GuardFilter(myContainer, "com.noelios.restlet.example", true, ChallengeSchemes.HTTP_BASIC , "Restlet tutorial", true);
          guard.getAuthorizations().put("scott", "tiger");
-         status.attach(guard);
+         status.setTarget(guard);
 </pre>
 <p>
    <img src="images/tutorial09" alt="Call handling flow"/><br/>
@@ -324,7 +324,7 @@
          // Create a redirect Restlet then attach it to the container
          String target = "http://www.google.com/search?q=site:mysite.org+${query('query')}";
          RedirectRestlet redirect = new RedirectRestlet(myContainer, target, RedirectRestlet.MODE_CLIENT_TEMPORARY);
-         host.attach("/search", redirect);
+         host.getScorers().add("/search", redirect);
 </pre>
 <p>
    <img src="images/tutorial10" alt="Call handling flow"/><br/>
@@ -362,32 +362,32 @@
 
          // Add an HTTP server connector to the Restlet container.
          // Note that the container is the call restlet.
-         myContainer.addServer("HTTP Server", Protocols.HTTP, 8182);
+         myContainer.getServers().put("HTTP Server", Protocols.HTTP, 8182);
 
          // Attach a log Filter to the container
          LogFilter log = new LogFilter(myContainer, "com.noelios.restlet.example");
-         myContainer.attach(log);
+         myContainer.setRoot(log);
 
          // Attach a status Filter to the log Filter
          StatusFilter status = new StatusFilter(myContainer, true, "webmaster@mysite.org", "http://www.mysite.org");
-         log.attach(status);
+         log.setTarget(status);
 
          // Create a host router matching calls to the server
          HostRouter host = new HostRouter(myContainer, 8182);
-         status.attach(host);
+         status.setTarget(host);
 
          // Attach a guard Filter to secure access the the chained directory Restlet
          GuardFilter guard = new GuardFilter(myContainer, "com.noelios.restlet.example", true, ChallengeSchemes.HTTP_BASIC , "Restlet tutorial", true);
          guard.getAuthorizations().put("scott", "tiger");
-         host.attach("/docs/", guard);
+         host.getScorers().add("/docs/", guard);
 
          // Create a directory Restlet able to return a deep hierarchy of Web files
          DirectoryHandler directory = new DirectoryHandler(myContainer, "file:///D:/Restlet/www/docs/api/", true, "index");
-         guard.attach(directory);
+         guard.setTarget(directory);
 
          // Create the user router
          Router user = new DefaultRouter(myContainer);
-         host.attach("/users/[a-z]+", user);
+         host.getScorers().add("/users/[a-z]+", user);
 
          // Create the account Restlet
          Restlet account = new AbstractRestlet()
@@ -399,7 +399,7 @@
                   call.setOutput(new StringRepresentation(output, MediaTypes.TEXT_PLAIN));
                }
             };
-         user.attach("$", account);
+         user.getScorers().add("$", account);
 
          // Create the orders Restlet
          Restlet orders = new AbstractRestlet(myContainer)
@@ -412,7 +412,7 @@
                   call.setOutput(new StringRepresentation(output, MediaTypes.TEXT_PLAIN));
                }
             };
-         user.attach("/orders$", orders);
+         user.getScorers().add("/orders$", orders);
 
          // Now, let's start the container!
          myContainer.start();
@@ -436,7 +436,7 @@
                      .attachGuard("/docs/", "com.noelios.restlet.example", true, ChallengeSchemes.HTTP_BASIC , "Restlet tutorial", true)
                         .authorize("scott", "tiger")
                         .attachDirectory("file:///D:/Restlet/www/docs/api/", true, "index").upRouter()
-                     .attachPath("/users/[a-z]+")
+                     .attachRouter("/users/[a-z]+")
                            .attach("$", userRestlet).upRouter()
                            .attach("/orders$", ordersRestlet).owner().start();
 </pre>
@@ -472,7 +472,7 @@
 <br/>
 
 <small>
-   Version 4.5, last modified on 2006-06-27<br/>
+   Version 4.6, last modified on 2006-07-19<br/>
    Copyright &copy; 2005-2006 <a href="mailto:contact@noelios.com">J&eacute;r&ocirc;me Louvel</a>. Restlet is a registered trademark of <a target="_top" href="http://www.noelios.com">Noelios Consulting</a>.
 </small>
 
