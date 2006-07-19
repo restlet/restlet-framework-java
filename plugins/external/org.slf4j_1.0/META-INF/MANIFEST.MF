@@ -1,6 +1,6 @@
 Manifest-Version: 1.0
 Bundle-ManifestVersion: 2
-Bundle-Name: SLF4J Plug-in
+Bundle-Name: SLF4J
 Bundle-SymbolicName: org.slf4j
 Bundle-Version: 1.0.2
 Bundle-ClassPath: org.slf4j.jar

@@ -1,6 +1,6 @@
 Manifest-Version: 1.0
 Bundle-ManifestVersion: 2
-Bundle-Name: Simple Framework Plug-in
+Bundle-Name: Simple Framework
 Bundle-SymbolicName: org.simpleframework
 Bundle-Version: 3.1.3
 Bundle-ClassPath: org.simpleframework.jar

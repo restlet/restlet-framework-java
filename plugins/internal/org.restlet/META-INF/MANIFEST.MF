@@ -1,6 +1,6 @@
 Manifest-Version: 1.0
 Bundle-ManifestVersion: 2
-Bundle-Name: Restlet API Plug-in
+Bundle-Name: Restlet API
 Bundle-SymbolicName: org.restlet
 Bundle-Version: 1.0.0
 Bundle-Vendor: Noelios Consulting

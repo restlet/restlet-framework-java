@@ -1,12 +1,15 @@
 Manifest-Version: 1.0
 Bundle-ManifestVersion: 2
-Bundle-Name: Example Plug-in
+Bundle-Name: Noelios Restlet Engine - Tests
 Bundle-SymbolicName: com.noelios.restlet.test
 Bundle-Version: 1.0.0
 Bundle-Vendor: Noelios Consulting
 Bundle-Localization: plugin
 Require-Bundle: org.restlet,
  com.noelios.restlet,
+ org.junit4,
  com.noelios.restlet.ext.atom,
- org.junit;bundle-version="3.8.0",
- com.noelios.restlet.ext.jetty
+ com.noelios.restlet.ext.simple;resolution:=optional,
+ com.noelios.restlet.ext.jetty5;resolution:=optional,
+ com.noelios.restlet.ext.jetty6;resolution:=optional,
+ com.noelios.restlet.ext.asyncweb;resolution:=optional

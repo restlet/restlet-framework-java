@@ -1,7 +1,7 @@
 Manifest-Version: 1.0
 Bundle-ManifestVersion: 2
-Bundle-Name: JUnit Plug-in
-Bundle-SymbolicName: org.junit
+Bundle-Name: JUnit Testing Framework 4
+Bundle-SymbolicName: org.junit4
 Bundle-Version: 4.1.0
 Bundle-ClassPath: org.junit.jar
 Bundle-Vendor: Object Mentor Inc.

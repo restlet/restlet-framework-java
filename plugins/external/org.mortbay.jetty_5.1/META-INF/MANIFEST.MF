@@ -1,7 +1,7 @@
 Manifest-Version: 1.0
 Bundle-ManifestVersion: 2
-Bundle-Name: Jetty Plug-in
-Bundle-SymbolicName: org.mortbay.jetty
+Bundle-Name: Jetty HTTP server 5
+Bundle-SymbolicName: org.mortbay.jetty5
 Bundle-Version: 5.1.10
 Bundle-ClassPath: org.mortbay.jetty.jar
 Bundle-Vendor: Mortbay Consulting
@@ -18,3 +18,5 @@ Export-Package: org.mortbay.html,
  org.mortbay.servlet,
  org.mortbay.util,
  org.mortbay.xml
+Require-Bundle: javax.servlet4,
+ org.apache.commons.logging

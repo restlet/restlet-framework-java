@@ -1,10 +1,10 @@
 Manifest-Version: 1.0
 Bundle-ManifestVersion: 2
-Bundle-Name: MINA Plug-in
+Bundle-Name: MINA network framework
 Bundle-SymbolicName: org.apache.mina
 Bundle-Version: 0.8.2
 Bundle-ClassPath: org.apache.mina.jar
-Bundle-Vendor: Apache Foundation
+Bundle-Vendor: Apache Software Foundation
 Bundle-Localization: plugin
 Export-Package: org.apache.mina.common,
  org.apache.mina.examples.echoserver,

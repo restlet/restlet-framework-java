@@ -1,6 +1,6 @@
 Manifest-Version: 1.0
 Bundle-ManifestVersion: 2
-Bundle-Name: JavaMail Plug-in
+Bundle-Name: JavaMail API and RI
 Bundle-SymbolicName: javax.mail
 Bundle-Version: 1.4
 Bundle-ClassPath: mail.jar

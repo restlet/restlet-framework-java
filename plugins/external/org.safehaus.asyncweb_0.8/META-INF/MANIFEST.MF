@@ -1,6 +1,6 @@
 Manifest-Version: 1.0
 Bundle-ManifestVersion: 2
-Bundle-Name: AsyncWeb Plug-in
+Bundle-Name: AsyncWeb
 Bundle-SymbolicName: org.safehaus.asyncweb
 Bundle-Version: 0.8
 Bundle-ClassPath: org.safehaus.asyncweb.jar
@@ -23,3 +23,7 @@ Export-Package: org.safehaus.asyncweb.codec,
  org.safehaus.asyncweb.transport,
  org.safehaus.asyncweb.transport.nio,
  org.safehaus.asyncweb.util
+Require-Bundle: edu.oswego.cs.dl.util.concurrent,
+ org.apache.commons.logging,
+ org.apache.mina,
+ org.slf4j

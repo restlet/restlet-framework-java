@@ -1,11 +1,11 @@
 Manifest-Version: 1.0
 Bundle-ManifestVersion: 2
-Bundle-Name: Example Plug-in
+Bundle-Name: Noelios Restlet Engine - Extension - FileUpload
 Bundle-SymbolicName: com.noelios.restlet.ext.fileupload
 Bundle-Version: 1.0.0
 Bundle-Vendor: Noelios Consulting
 Bundle-Localization: plugin
 Require-Bundle: org.restlet,
  org.apache.commons.fileupload,
- javax.servlet;bundle-version="2.4.0"
+ javax.servlet4
 Export-Package: com.noelios.restlet.ext.fileupload

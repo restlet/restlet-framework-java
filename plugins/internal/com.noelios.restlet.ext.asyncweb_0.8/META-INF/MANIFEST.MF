@@ -1,6 +1,6 @@
 Manifest-Version: 1.0
 Bundle-ManifestVersion: 2
-Bundle-Name: Example Plug-in
+Bundle-Name: Noelios Restlet Engine - Extension - AsyncWeb
 Bundle-SymbolicName: com.noelios.restlet.ext.asyncweb
 Bundle-Version: 1.0.0
 Bundle-Vendor: Noelios Consulting
