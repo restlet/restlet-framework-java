@@ -13,6 +13,7 @@ Restlet changes log
    Reported by Mikkel Jensen.
    Bug reported by Guillaume Laforge (Groovy).
  - Fixed potential NPE in Reference.getTargetRef(). Reported by Thierry Boileau.
+ - Fixed issue in ServletCall which was not setting the reason phrase for error statuses. Reported by Bill Morone.
  - Fully reorganized the SVN code base to separate the packages and third-party into a set of Eclipse plugin projects with inter-dependencies.
  - Improved the packaging in the distribution so that each module/extension JAR is also an Eclipse plugin. Third-party libraries are also available
    as plugins directories. All the content of the "lib/" directory can be dropped in an Eclipse "plugins/" directory for direct usage in the IDE.

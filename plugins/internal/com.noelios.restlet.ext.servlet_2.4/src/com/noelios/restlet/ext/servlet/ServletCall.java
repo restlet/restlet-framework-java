@@ -29,6 +29,8 @@ import java.nio.channels.ReadableByteChannel;
 import java.nio.channels.WritableByteChannel;
 import java.util.Enumeration;
 import java.util.Iterator;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 import javax.servlet.ServletContext;
 import javax.servlet.http.HttpServletRequest;
@@ -36,6 +38,7 @@ import javax.servlet.http.HttpServletResponse;
 
 import org.restlet.data.Parameter;
 import org.restlet.data.ParameterList;
+import org.restlet.data.Statuses;
 
 import com.noelios.restlet.impl.HttpServerCall;
 
@@ -45,6 +48,9 @@ import com.noelios.restlet.impl.HttpServerCall;
  */
 public class ServletCall extends HttpServerCall
 {
+   /** Obtain a suitable logger. */
+   private static Logger logger = Logger.getLogger(ServletCall.class.getCanonicalName());
+
    /** The HTTP Servlet request to wrap. */
    protected HttpServletRequest request;
    
@@ -233,7 +239,21 @@ public class ServletCall extends HttpServerCall
     */
    public void setResponseStatus(int code, String reason)
    {
-      getResponse().setStatus(code);
+   	if(Statuses.isError(code))
+   	{
+   		try
+			{
+				getResponse().sendError(code, reason);
+			}
+			catch (IOException ioe)
+			{
+				logger.log(Level.WARNING, "Unable to set the response error status", ioe);
+			}
+   	}
+   	else
+   	{
+   		getResponse().setStatus(code);
+   	}
    }
 
    /**
