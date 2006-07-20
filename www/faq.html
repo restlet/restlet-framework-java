@@ -24,7 +24,7 @@
       <li><a href="#03">What are the advantages of using Restlets instead of Servlets?</a></li>
       <li><a href="#04">I have general questions about REST, where can I get help?</a></li>
       <li><a href="#05">Restlet calls abstract HTTP requests and responses, but can I get the low-level headers if I really need to?</a></li>
-      <li><a href="#06">Can I run Restlets inside my Servlet container?</a></li>
+      <li><a href="#06">Can I run Restlets inside Tomcat or any Servlet container?</a></li>
       <li><a href="#07">Can the Restlets composing a site be defined in an XML file?</a></li>
       <li><a href="#08">What JAR files must I have in my classpath for a minimal application?</a></li>
       <li><a href="#09">What are the other JAR files for?</a></li>
@@ -109,11 +109,14 @@
    You access to the low-level call using: <a href="http://www.restlet.org/docs/api/org/restlet/Call.html#getConnectorCall()">Call.getConnectorCall()</a> then you have access to modified request and response header lists.
 </p>
 
-<h3><a name="06">6. Can I run Restlets inside my Servlet container?</a></h3>
+<h3><a name="06">6. Can I run Restlets inside Tomcat or any Servlet container?</a></h3>
 
 <p>
    Yes you can, even if this is not required. If you can't use the standalone HTTP connectors provided in the Noelios Restlet Engine, you can still use the ServerServlet connector which is an adapter between the Servlet API and the Restlet API. See the <a href="http://www.restlet.org/docs/nre/index.html?com/noelios/restlet/ext/servlet/ServerServlet.html">
    ServerServlet Javadocs</a> for details on how to configure your Servlet container.
+</p>
+<p>
+   Also, if you want to see a sample application, you can check out this blog post from Manohar Viswanathan: <a href="http://manoharviswanathan.com/blog/tech/developing-restful-web-services-in-java/">Developing RESTful Web Services in Java</a>. It illustrates the integration of Restlet with Spring and Tomcat.
 </p>
 
 <h3><a name="07">7. Can the Restlets composing a site be defined in an XML file?</a></h3>
