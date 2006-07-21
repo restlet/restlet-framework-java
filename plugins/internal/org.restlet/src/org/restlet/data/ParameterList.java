@@ -143,6 +143,17 @@ public class ParameterList extends WrapperList<Parameter> implements Data
 	{
 		return getFirstValue(name, false);
 	}
+
+	/**
+	 * Returns the value of the first parameter found with the given name. 
+	 * @param name The parameter name (case sensitive).
+	 * @param defaultValue The default value to return if no matching parameter found.
+	 * @return The value of the first parameter found with the given name or the default value.
+	 */
+	public String getFirstValue(String name, String defaultValue)
+	{
+		return getFirstValue(name, false, defaultValue);
+	}
 	
 	/**
 	 * Returns the value of the first parameter found with the given name. 
@@ -152,7 +163,19 @@ public class ParameterList extends WrapperList<Parameter> implements Data
 	 */
 	public String getFirstValue(String name, boolean ignoreCase)
 	{
-		String result = null;
+		return getFirstValue(name, ignoreCase, null);
+	}
+	
+	/**
+	 * Returns the value of the first parameter found with the given name. 
+	 * @param name The parameter name.
+    * @param ignoreCase Indicates if the name comparison is case sensitive.
+	 * @param defaultValue The default value to return if no matching parameter found.
+	 * @return The value of the first parameter found with the given name or the default value.
+	 */
+	public String getFirstValue(String name, boolean ignoreCase, String defaultValue)
+	{
+		String result = defaultValue;
 		Parameter param = getFirst(name);
 		
 		if(param != null)

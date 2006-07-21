@@ -30,7 +30,6 @@ import java.net.URL;
 
 import javax.net.ssl.HttpsURLConnection;
 
-import org.restlet.connector.Client;
 import org.restlet.data.Parameter;
 import org.restlet.data.ParameterList;
 
@@ -51,7 +50,7 @@ public class HttpUrlConnectionCall extends HttpClientCall
     * @param hasInput Indicates if the call will have an input to send to the server.
     * @throws IOException
     */
-   public HttpUrlConnectionCall(Client client, String method, String requestUri, boolean hasInput) throws IOException
+   public HttpUrlConnectionCall(HttpClient client, String method, String requestUri, boolean hasInput) throws IOException
    {
       super(method, requestUri);
       
@@ -59,16 +58,12 @@ public class HttpUrlConnectionCall extends HttpClientCall
       {
          URL url = new URL(requestUri);
          this.connection = (HttpURLConnection)url.openConnection();
-         
-         if(client.getTimeout() != -1)
-         {
-         	this.connection.setConnectTimeout(client.getTimeout());
-         	this.connection.setReadTimeout(client.getTimeout());
-         }
-         
-         this.connection.setAllowUserInteraction(false);
+        	this.connection.setConnectTimeout(client.getConnectTimeout());
+        	this.connection.setReadTimeout(client.getReadTimeout());
+         this.connection.setAllowUserInteraction(client.isAllowUserInteraction());
          this.connection.setDoOutput(hasInput);
-         this.connection.setInstanceFollowRedirects(false);
+         this.connection.setInstanceFollowRedirects(client.isFollowRedirects());
+         this.connection.setUseCaches(client.isUseCaches());
          this.confidential = (this.connection instanceof HttpsURLConnection);
       }
       else

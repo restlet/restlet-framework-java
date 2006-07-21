@@ -5,6 +5,20 @@ Restlet changes log
 
 @version-full@ (@release-date@)
 [Bugs fixed]
+ - Status descriptions are now sent back to Jetty 6 for error statuses. Reported by AJ Barnes.
+ 
+[API breaking changes]
+ - Removed get/setTimeout() methods from the Client interface and related classes. We will now use the modifiable "parameters" list instead. 
+ - NRE's HttpClient (based on HttpUrlConnection) now used these parameters: "chunkLength", "followRedirects", "allowUserInteraction", "useCaches"
+   "connectTimeout" and "readTimeout".
+ - NRE's HttpClient no longers sets the JDK's system property "http.keepalive" to "false". This could conflict with other classes using HttpUrlConnection.
+ 
+[Other changes] 
+ - Added ParameterList.getFirstValue() methods taking and additional "defaultValue" parameter.
+ - 
+
+1.0 beta 17 (2006-07-19)
+[Bugs fixed]
  - Fixed regression in Jetty 6.0 connector which prevented the handling of requests. 
  - When building its pattern, the HostRouter now adds case insensitive flags for scheme names and domain names, strictly following the URI specification. 
    Bug reported by Jim.

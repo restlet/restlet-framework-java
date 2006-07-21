@@ -66,22 +66,4 @@ public interface Client extends Connector
     * @return The returned uniform call.
     */
    public Call delete(String resourceUri);
-   
-   /**
-    * Sets the communication timeout during the communication with the remote server.
-    * The unit used is the millisecond.
-	 * To keep the default timeouts, lease the value to -1.
-	 * For infinite timeouts, use the value 0. 
-    * @param timeout The communication timeout.
-    */
-   public void setTimeout(int timeout);
-   
-   /**
-    * Return the communication timeout during the communication with the remote server.
-    * The unit used is the millisecond.
-	 * The value -1 means that the default timeouts are used. 
-	 * The value 0 means that an infinite timeout is used. 
-    * @return The communication timeout.
-    */
-   public int getTimeout();
 }
