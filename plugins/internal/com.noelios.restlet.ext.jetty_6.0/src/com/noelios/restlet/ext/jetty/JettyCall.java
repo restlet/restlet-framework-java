@@ -29,11 +29,14 @@ import java.nio.channels.ReadableByteChannel;
 import java.nio.channels.WritableByteChannel;
 import java.util.Enumeration;
 import java.util.Iterator;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 import org.mortbay.jetty.HttpConnection;
 import org.restlet.data.Parameter;
 import org.restlet.data.ParameterList;
 import org.restlet.data.Representation;
+import org.restlet.data.Statuses;
 
 import com.noelios.restlet.impl.HttpServerCall;
 
@@ -43,6 +46,9 @@ import com.noelios.restlet.impl.HttpServerCall;
  */
 public class JettyCall extends HttpServerCall
 {
+   /** Obtain a suitable logger. */
+   private static Logger logger = Logger.getLogger(JettyCall.class.getCanonicalName());
+
    /** The wrapped Jetty HTTP connection. */
    protected HttpConnection connection;
 
@@ -193,7 +199,21 @@ public class JettyCall extends HttpServerCall
     */
    public void setResponseStatus(int code, String reason)
    {
-      getConnection().getResponse().setStatus(code, reason);
+   	if(Statuses.isError(code))
+   	{
+   		try
+			{
+   			getConnection().getResponse().sendError(code, reason);
+			}
+			catch (IOException ioe)
+			{
+				logger.log(Level.WARNING, "Unable to set the response error status", ioe);
+			}
+   	}
+   	else
+   	{
+   		getConnection().getResponse().setStatus(code, reason);
+   	}
    }
 
    /**
