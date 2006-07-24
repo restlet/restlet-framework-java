@@ -28,7 +28,15 @@ import org.restlet.data.ParameterList;
 import org.restlet.data.Protocols;
 
 /**
- * Jetty HTTP server connector.
+ * Jetty HTTP server connector. Here is the list of additional parameters that are supported:
+ * <table>
+ * 	<tr>
+ * 		<td>lowResourcePersistTimeMs</td>
+ * 		<td>int</td>
+ * 		<td>2000</td>
+ * 		<td>Time in ms that connections will persist if listener is low on resources.</td>
+ * 	</tr>
+ * </table>
  * @see <a href="http://jetty.mortbay.com/">Jetty home page</a>
  * @author Jerome Louvel (contact@noelios.com) <a href="http://www.noelios.com/">Noelios Consulting</a>
  */
@@ -65,11 +73,20 @@ public class HttpServer extends JettyServer
       // Configure the listener
       listener.setMinThreads(getMinThreads());
       listener.setMaxThreads(getMaxThreads());
-      listener.setLowResourcePersistTimeMs(getLowResourcePersistTimeMs());
       listener.setMaxIdleTimeMs(getMaxIdleTimeMs());
+      listener.setLowResourcePersistTimeMs(getLowResourcePersistTimeMs());
 
       this.listener = listener;
       super.start();
+   }
+
+   /**
+    * Returns time in ms that connections will persist if listener is low on resources.
+    * @return Time in ms that connections will persist if listener is low on resources.
+    */
+   public int getLowResourcePersistTimeMs()
+   {
+   	return Integer.parseInt(getParameters().getFirstValue("lowResourcePersistTimeMs", "2000"));
    }
 
 }

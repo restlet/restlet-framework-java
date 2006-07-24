@@ -32,7 +32,39 @@ import org.restlet.component.Component;
 import org.restlet.data.ParameterList;
 
 /**
- * Abstract Jetty Web server connector.
+ * Abstract Jetty Web server connector. Here is the list of parameters that are supported:
+ * <table>
+ * 	<tr>
+ * 		<th>Parameter name</th>
+ * 		<th>Value type</th>
+ * 		<th>Default value</th>
+ * 		<th>Description</th>
+ * 	</tr>
+ * 	<tr>
+ * 		<td>minThreads</td>
+ * 		<td>int</td>
+ * 		<td>2</td>
+ * 		<td>Minumum threads waiting to service requests.</td>
+ * 	</tr>
+ * 	<tr>
+ * 		<td>maxThread</td>
+ * 		<td>int</td>
+ * 		<td>256</td>
+ * 		<td>Maximum threads that will service requests.</td>
+ * 	</tr>
+ * 	<tr>
+ * 		<td>maxIdleTimeMs</td>
+ * 		<td>int</td>
+ * 		<td>10000</td>
+ * 		<td>Time for an idle thread to wait for a request or read.</td>
+ * 	</tr>
+ * 	<tr>
+ * 		<td>lowResourcePersistTimeMs</td>
+ * 		<td>int</td>
+ * 		<td>2000</td>
+ * 		<td>Time in ms that connections will persist if listener is low on resources.</td>
+ * 	</tr>
+ * </table>
  * @see <a href="http://jetty.mortbay.org/jetty6/">Jetty home page</a>
  * @author Jerome Louvel (contact@noelios.com) <a href="http://www.noelios.com/">Noelios Consulting</a>
  */

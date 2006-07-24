@@ -54,12 +54,6 @@ import com.noelios.restlet.impl.HttpServer;
  * 		<td>10000</td>
  * 		<td>Time for an idle thread to wait for a request or read.</td>
  * 	</tr>
- * 	<tr>
- * 		<td>lowResourcePersistTimeMs</td>
- * 		<td>int</td>
- * 		<td>2000</td>
- * 		<td>Time in ms that connections will persist if listener is low on resources.</td>
- * 	</tr>
  * </table>
  * @see <a href="http://jetty.mortbay.com/">Jetty home page</a>
  * @author Jerome Louvel (contact@noelios.com) <a href="http://www.noelios.com/">Noelios Consulting</a>
@@ -132,15 +126,6 @@ public abstract class JettyServer extends HttpServer
    public int getMaxIdleTimeMs()
    {
    	return Integer.parseInt(getParameters().getFirstValue("maxIdleTimeMs", "10000"));
-   }
-
-   /**
-    * Returns time in ms that connections will persist if listener is low on resources.
-    * @return Time in ms that connections will persist if listener is low on resources.
-    */
-   public int getLowResourcePersistTimeMs()
-   {
-   	return Integer.parseInt(getParameters().getFirstValue("lowResourcePersistTimeMs", "2000"));
    }
    
 }

@@ -50,16 +50,24 @@ public class AjpServer extends JettyServer
    /** Start hook. */
    public void start() throws Exception
    {
+   	AjpListener listener;
+   	
       if(this.address != null)
       {
-         this.listener = new AjpListener(this, new InetAddrPort(this.address, this.port));
+         listener = new AjpListener(this, new InetAddrPort(this.address, this.port));
       }
       else
       {
-         this.listener = new AjpListener(this);
-         this.listener.setPort(port);
+         listener = new AjpListener(this);
+         listener.setPort(port);
       }
 
+      // Configure the listener
+      listener.setMinThreads(getMinThreads());
+      listener.setMaxThreads(getMaxThreads());
+      listener.setMaxIdleTimeMs(getMaxIdleTimeMs());
+      
+      this.listener = listener;
       super.start();
    }
 

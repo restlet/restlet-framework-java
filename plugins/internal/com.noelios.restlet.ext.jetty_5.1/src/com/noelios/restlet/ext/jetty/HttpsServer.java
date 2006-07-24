@@ -39,6 +39,12 @@ import org.restlet.data.Protocols;
  * 		<th>Description</th>
  * 	</tr>
  * 	<tr>
+ * 		<td>lowResourcePersistTimeMs</td>
+ * 		<td>int</td>
+ * 		<td>2000</td>
+ * 		<td>Time in ms that connections will persist if listener is low on resources.</td>
+ * 	</tr>
+ * 	<tr>
  * 		<td>keystorePath</td>
  * 		<td>String</td>
  * 		<td>${user.home}/.keystore</td>
@@ -101,8 +107,8 @@ public class HttpsServer extends JettyServer
       // Configure the listener
       listener.setMinThreads(getMinThreads());
       listener.setMaxThreads(getMaxThreads());
-      listener.setLowResourcePersistTimeMs(getLowResourcePersistTimeMs());
       listener.setMaxIdleTimeMs(getMaxIdleTimeMs());
+      listener.setLowResourcePersistTimeMs(getLowResourcePersistTimeMs());
       listener.setKeystore(getKeystorePath());
       listener.setPassword(getKeystorePassword());
       listener.setKeyPassword(getKeyPassword());
@@ -137,6 +143,15 @@ public class HttpsServer extends JettyServer
    public String getKeyPassword()
    {
    	return getParameters().getFirstValue("keyPassword", "");
+   }
+
+   /**
+    * Returns time in ms that connections will persist if listener is low on resources.
+    * @return Time in ms that connections will persist if listener is low on resources.
+    */
+   public int getLowResourcePersistTimeMs()
+   {
+   	return Integer.parseInt(getParameters().getFirstValue("lowResourcePersistTimeMs", "2000"));
    }
 
 }
