@@ -50,16 +50,25 @@ public class HttpServer extends JettyServer
    /** Start hook. */
    public void start() throws Exception
    {
+   	HttpListener listener;
+   	
       if(this.address != null)
       {
-         this.listener = new HttpListener(this, new InetAddrPort(this.address, this.port));
+         listener = new HttpListener(this, new InetAddrPort(this.address, this.port));
       }
       else
       {
-         this.listener = new HttpListener(this);
-         this.listener.setPort(port);
+      	listener = new HttpListener(this);
+      	listener.setPort(port);
       }
 
+      // Configure the listener
+      listener.setMinThreads(getMinThreads());
+      listener.setMaxThreads(getMaxThreads());
+      listener.setLowResourcePersistTimeMs(getLowResourcePersistTimeMs());
+      listener.setMaxIdleTimeMs(getMaxIdleTimeMs());
+
+      this.listener = listener;
       super.start();
    }
 

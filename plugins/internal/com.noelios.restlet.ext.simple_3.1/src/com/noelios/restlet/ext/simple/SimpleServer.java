@@ -39,7 +39,26 @@ import simple.http.connect.Connection;
 import com.noelios.restlet.impl.HttpServer;
 
 /**
- * Abstract Simple Web server connector.
+ * Abstract Simple Web server connector. Here is the list of parameters that are supported:
+ * <table>
+ * 	<tr>
+ * 		<th>Parameter name</th>
+ * 		<th>Value type</th>
+ * 		<th>Default value</th>
+ * 		<th>Description</th>
+ * 	</tr>
+ * 	<tr>
+ * 		<td>defaultThreads</td>
+ * 		<td>int</td>
+ * 		<td>20</td>
+ * 		<td>Default number of polling threads for a handler object.</td>
+ * 	</tr>
+ * 	<tr>
+ * 		<td>maxWaitTimeMs</td>
+ * 		<td>int</td>
+ * 		<td>200</td>
+ * 		<td>Maximum waiting time between polls of the input.</td>
+ * 	</tr>
  * @author Lars Heuer (heuer[at]semagia.com) <a href="http://semagia.com/">Semagia</a>
  * @author Jerome Louvel (contact@noelios.com) <a href="http://www.noelios.com">Noelios Consulting</a>
  */
@@ -116,5 +135,23 @@ public abstract class SimpleServer extends HttpServer implements ProtocolHandler
          logger.log(Level.WARNING, "Exception while closing the Simple response's output stream", ioe);
 		}
 	}
+
+   /**
+    * Returns the default number of polling threads for a handler object.
+    * @return The default number of polling threads for a handler object.
+    */
+   public int getDefaultThreads()
+   {
+   	return Integer.parseInt(getParameters().getFirstValue("defaultThreads", "20"));
+   }
+
+   /**
+    * Returns the maximum waiting time between polls of the input.
+    * @return The maximum waiting time between polls of the input.
+    */
+   public int getMaxWaitTimeMs()
+   {
+   	return Integer.parseInt(getParameters().getFirstValue("maxWaitTimeMs", "200"));
+   }
 
 }

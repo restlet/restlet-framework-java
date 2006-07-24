@@ -22,6 +22,7 @@
 
 package com.noelios.restlet.ext.simple;
 
+import java.io.File;
 import java.io.FileInputStream;
 import java.security.KeyStore;
 
@@ -37,37 +38,62 @@ import simple.http.PipelineHandlerFactory;
 import simple.http.connect.ConnectionFactory;
 
 /**
- * Simple HTTP server connector.
+ * Simple HTTP server connector. Here is the list of additional parameters that are supported:
+ * <table>
+ * 	<tr>
+ * 		<th>Parameter name</th>
+ * 		<th>Value type</th>
+ * 		<th>Default value</th>
+ * 		<th>Description</th>
+ * 	</tr>
+ * 	<tr>
+ * 		<td>keystorePath</td>
+ * 		<td>String</td>
+ * 		<td>${user.home}/.keystore</td>
+ * 		<td>The SSL keystore path.</td>
+ * 	</tr>
+ * 	<tr>
+ * 		<td>keystorePassword</td>
+ * 		<td>String</td>
+ * 		<td></td>
+ * 		<td>The SSL keystore password.</td>
+ * 	</tr>
+ * 	<tr>
+ * 		<td>keyPassword</td>
+ * 		<td>String</td>
+ * 		<td></td>
+ * 		<td>The SSL key password.</td>
+ * 	</tr>
+ * </table>
  * @author Lars Heuer (heuer[at]semagia.com) <a href="http://semagia.com/">Semagia</a>
  * @author Jerome Louvel (contact@noelios.com) <a href="http://www.noelios.com">Noelios Consulting</a>
  */
 public class HttpsServer extends SimpleServer
 {
-   /**
-    * Constructor.
-    * @param owner The owner component.
-    * @param parameters The initial parameters.
-    * @param address The optional listening IP address (local host used if null).
-    * @param port The listening port.
-    */
-   public HttpsServer(Component owner, ParameterList parameters, String address, int port)
-   {
-      super(owner, parameters, address, port);
-      getProtocols().add(Protocols.HTTPS);
-   }
+	/**
+	 * Constructor.
+	 * @param owner The owner component.
+	 * @param parameters The initial parameters.
+	 * @param address The optional listening IP address (local host used if null).
+	 * @param port The listening port.
+	 */
+	public HttpsServer(Component owner, ParameterList parameters,
+			String address, int port)
+	{
+		super(owner, parameters, address, port);
+		getProtocols().add(Protocols.HTTPS);
+	}
 
-   /** Starts the Restlet. */
+	/** Starts the Restlet. */
 	public void start() throws Exception
 	{
-		if(!isStarted())
+		if (!isStarted())
 		{
 			// Initialize the SSL context
 			KeyStore keyStore = KeyStore.getInstance("JKS");
-			keyStore.load(new FileInputStream(keystorePath), keystorePassword
-					.toCharArray());
-			KeyManagerFactory keyManagerFactory = KeyManagerFactory
-					.getInstance("SunX509");
-			keyManagerFactory.init(keyStore, keyPassword.toCharArray());
+			keyStore.load(new FileInputStream(getKeystorePath()), getKeystorePassword().toCharArray());
+			KeyManagerFactory keyManagerFactory = KeyManagerFactory.getInstance("SunX509");
+			keyManagerFactory.init(keyStore, getKeyPassword().toCharArray());
 			SSLContext sslContext = SSLContext.getInstance("TLS");
 			sslContext.init(keyManagerFactory.getKeyManagers(), null, null);
 			socket = sslContext.getServerSocketFactory().createServerSocket(port);
@@ -75,11 +101,38 @@ public class HttpsServer extends SimpleServer
 
 			// Complete initialization
 			this.confidential = true;
-			this.handler = PipelineHandlerFactory.getInstance(this, 20, 200);
+			this.handler = PipelineHandlerFactory.getInstance(this, getDefaultThreads(), getMaxWaitTimeMs());
 			this.connection = ConnectionFactory.getConnection(handler, new BufferedPipelineFactory());
 			this.connection.connect(socket);
 			super.start();
 		}
 	}
+
+   /**
+    * Returns the SSL keystore path.
+    * @return The SSL keystore path.
+    */
+   public String getKeystorePath()
+   {
+   	return getParameters().getFirstValue("keystorePath", System.getProperty("user.home") + File.separator + ".keystore");
+   }
+
+   /**
+    * Returns the SSL keystore password.
+    * @return The SSL keystore password.
+    */
+   public String getKeystorePassword()
+   {
+   	return getParameters().getFirstValue("keystorePassword", "");
+   }
+
+   /**
+    * Returns the SSL key password.
+    * @return The SSL key password.
+    */
+   public String getKeyPassword()
+   {
+   	return getParameters().getFirstValue("keyPassword", "");
+   }
 
 }

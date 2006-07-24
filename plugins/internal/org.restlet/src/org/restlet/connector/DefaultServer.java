@@ -179,20 +179,6 @@ public class DefaultServer implements Server
    		this.wrappedServer.setTarget(target);
    	}
    }
-
-   /**
-    * Configure the SSL properties for secure protocols like HTTPS.
-    * @param keystorePath The path of the keystore file. 
-    * @param keystorePassword The keystore password.
-    * @param keyPassword The password of the server key .
-    */
-   public void configureSsl(String keystorePath, String keystorePassword, String keyPassword)
-   {
-   	if(this.wrappedServer != null)
-   	{
-   		this.wrappedServer.configureSsl(keystorePath, keystorePassword, keyPassword);
-   	}
-   }
    
    /** Starts the Restlet. */
    public void start() throws Exception

@@ -8,10 +8,15 @@ Restlet changes log
  - Status descriptions are now sent back to Jetty 6 for error statuses. Reported by AJ Barnes.
  
 [API breaking changes]
- - Removed get/setTimeout() methods from the Client interface and related classes. We will now use the modifiable "parameters" list instead. 
+ - Removed get/setTimeout() methods from the Client interface and related classes. Also, removed the configureSsl() method from the Server interface.
+ 	We will now use connectors'parameters instead. Suggested by John D. Mitchell.
  - NRE's HttpClient (based on HttpUrlConnection) now used these parameters: "chunkLength", "followRedirects", "allowUserInteraction", "useCaches"
    "connectTimeout" and "readTimeout".
  - NRE's HttpClient no longers sets the JDK's system property "http.keepalive" to "false". This could conflict with other classes using HttpUrlConnection.
+ - Jetty 5.1 connector now supports parameters: "minThreads", "maxThreads", "lowResourcePersistTimeMs", "maxIdleTimeMs" for the HTTP server and
+   "keystorePath", "keystorePassword", "keyPassword" for the HTTPS one.
+ - Simple 3.1 connector now supports parameters: "defaultThreads", "waitTimeMs" for the HTTP server and "keystorePath", "keystorePassword",
+   "keyPassword" for the HTTPS one.
  
 [Other changes] 
  - Added ParameterList.getFirstValue() methods taking and additional "defaultValue" parameter.

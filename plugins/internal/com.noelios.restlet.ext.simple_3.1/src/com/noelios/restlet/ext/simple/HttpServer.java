@@ -59,7 +59,7 @@ public class HttpServer extends SimpleServer
 		{
 			socket = new ServerSocket(this.port);
 			this.confidential = false;
-			this.handler = PipelineHandlerFactory.getInstance(this, 20, 200);
+			this.handler = PipelineHandlerFactory.getInstance(this, getDefaultThreads(), getMaxWaitTimeMs());
 			this.connection = ConnectionFactory.getConnection(handler, new BufferedPipelineFactory());
 			this.connection.connect(socket);
 			super.start();

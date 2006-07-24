@@ -112,7 +112,7 @@
 <h3><a name="06">6. Can I run Restlets inside Tomcat or any Servlet container?</a></h3>
 
 <p>
-   Yes you can, even if this is not required. If you can't use the standalone HTTP connectors provided in the Noelios Restlet Engine, you can still use the ServerServlet connector which is an adapter between the Servlet API and the Restlet API. See the <a href="http://www.restlet.org/docs/nre/index.html?com/noelios/restlet/ext/servlet/ServerServlet.html">
+   Yes you can, even if this is not required. If you can't use the standalone HTTP connectors provided in the Noelios Restlet Engine, you can still use the ServerServlet connector which is an adapter between the Servlet API and the Restlet API. See the <a href="http://www.restlet.org/docs/ext/index.html?com/noelios/restlet/ext/servlet/ServerServlet.html">
    ServerServlet Javadocs</a> for details on how to configure your Servlet container.
 </p>
 <p>
@@ -122,7 +122,7 @@
 <h3><a name="07">7. Can the Restlets composing a site be defined in an XML file?</a></h3>
 
 <p>
-   The recommended way to configure Restlets is by using the <a href="http://www.restlet.org/docs/nre/index.html?com/noelios/restlet/build/package-summary.html">fluent builders</a>. There is a <a href="http://www.restlet.org/tutorial#part12">tutorial entry</a> illustrating this approach. The resulting Java code is both compact and self-describing, so using XML configurations isn't our top priority. Alternatively, A.J. Barnes has done some nice work integrating Restlets with Spring autowiring service which is itself based on an XML configuration. You can find more details in this effort <a href="http://restlet.tigris.org/issues/show_bug.cgi?id=12">here</a>.
+   The recommended way to configure Restlets is by using the <a href="http://www.restlet.org/docs/core/index.html?com/noelios/restlet/build/package-summary.html">fluent builders</a>. There is a <a href="http://www.restlet.org/tutorial#part12">tutorial entry</a> illustrating this approach. The resulting Java code is both compact and self-describing, so using XML configurations isn't our top priority. Alternatively, A.J. Barnes has done some nice work integrating Restlets with Spring autowiring service which is itself based on an XML configuration. You can find more details in this effort <a href="http://restlet.tigris.org/issues/show_bug.cgi?id=12">here</a>.
 </p>
 
 <h3><a name="08">8. What JAR files must I have in my classpath for a minimal application?</a></h3>
@@ -159,7 +159,7 @@
 <h3><a name="11">11. How do I provide password protection on a server?</a></h3>
 
 <p>
-   Currently, the Noelios Restlet Engine supports Basic HTTP authentication via the <a href="http://www.restlet.org/docs/nre/index.html?com/noelios/restlet/GuardFilter.html">GuardFilter</a>.
+   Currently, the Noelios Restlet Engine supports Basic HTTP authentication via the <a href="http://www.restlet.org/docs/core/index.html?com/noelios/restlet/GuardFilter.html">GuardFilter</a>.
    For details on how to use this Filter, please check the <a href="http://www.restlet.org/tutorial#part09">part 9 of the tutorial</a>.
 </p>
 
@@ -268,7 +268,7 @@
 <h3><a name="23">23. How can I send and receive files with Restlets?</a></h3>
 
 <p>
-   To receive large files, from browsers for example, you can rely on the Apache FileUpload project which was integrated as an <a href="http://www.restlet.org/docs/nre/index.html?com/noelios/restlet/ext/fileupload/package-summary.html">extension to NRE</a>. To send a file using the HTTP client connector, just create a new <a href="http://www.restlet.org/docs/nre/index.html?com/noelios/restlet/data/FileRepresentation.html">FileRepresentation</a> and set is as the input of your call.
+   To receive large files, from browsers for example, you can rely on the Apache FileUpload project which was integrated as an <a href="http://www.restlet.org/docs/ext/index.html?com/noelios/restlet/ext/fileupload/package-summary.html">extension to NRE</a>. To send a file using the HTTP client connector, just create a new <a href="http://www.restlet.org/docs/core/index.html?com/noelios/restlet/data/FileRepresentation.html">FileRepresentation</a> and set is as the input of your call.
 </p>
 
 <h3><a name="24">24. How can I make PUT or DELETE calls from browsers?</a></h3>
@@ -294,7 +294,7 @@
    <table>
       <tr>
          <td style="vertical-align: middle;" rowspan="2"><a href="http://www.java.net/"><img src="http://www.restlet.org/images/javanet.gif" alt="java.net member" /></a></td>
-         <td>Version 1.7, last modified on 2006-07-21</td>
+         <td>Version 1.8, last modified on 2006-07-22</td>
       </tr>
       <tr>
          <td>Copyright &copy; 2005-2006 <a href="mailto:contact@noelios.com">J&eacute;r&ocirc;me Louvel</a>. Restlet is a registered trademark of <a target="_top" href="http://www.noelios.com">Noelios Consulting</a>.</td>

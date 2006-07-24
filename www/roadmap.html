@@ -21,13 +21,13 @@
 <p>
    The Restlet project is first composed of the Restlet API which contains a set of interfaces and classes that developpers can use directly without being tied to a particular implementation. In addition, there is one implementation of this API, named the Noelios Restlet Engine (NRE), which is supported by Noelios Consulting. It also receives significant contributions from our community of users and developers.<br/>
    <br/>
-   Our first goal is to release a version 1.0 of the Restlet API and the NRE. A version that will be complete, stable and ready for production. Based on the current code base, we plan to provide two complementary editions of the NRE, a Community Edition and a Standard Edition. Here are the details of each subproject:
+   Our goal is to release a standardized version 1.0 of the Restlet API and at the same time a complete and stable version of the NRE. Based on the smae code base, we plan to provide two complementary editions of the NRE, a Community Edition and a Standard Edition. Here are the details of each subproject:
    <ul>
       <li><u>Restlet API</u>
          <ul>
             <li>open to multiple implementations and extensions</li>
             <li><a href="http://www.opensource.org/licenses/cddl1.php">CDDL license</a> which makes it freely available for all usages</li>
-            <li>standardization planned throught the <a href="http://www.jcp.org">Java Community Process (JCP)</a></li>
+            <li>standardization throught the <a href="http://www.jcp.org">Java Community Process (JCP)</a></li>
          </ul>
       </li>
       <li><u>NRE Community Edition</u>
@@ -40,7 +40,7 @@
       <li><u>NRE Standard Edition</u>
          <ul>
             <li>same code base as the Community Edition</li>
-            <li>direct support from Noelios Consulting</li>
+            <li>professional support from Noelios Consulting</li>
             <li>guaranted response time</li>
             <li>priority bug fixing</li>
             <li>personal alerts for new versions and security issues</li>
@@ -64,6 +64,11 @@
                   <li>Add support for HTTPS in Jetty 6 (issue #93).</li>
                </ul>
             </li>
+         </ul>
+         <ul>
+            <li><u>[JSR]</u> Submission of a proposal to standardize the Restlet API to the <a href="http://www.jcp.org">JCP</a>
+         </ul>
+         <ul>
             <li>Beta 19 release
                <ul>
                   <li>Allow user language forcing when language extension found (issue #39)</li>
@@ -73,6 +78,14 @@
                   <li>Support extraction of segments (issue #120)</li>
                </ul>
             </li>
+         </ul>
+      </li>
+      <li>2006 Q4
+         <ul>
+            <li><u>[JSR]</u> If submission is approved, formation of expert group</li>
+            <li><u>[JSR]</u> Write first draft</li>
+         </ul>
+         <ul>
             <li>Beta 20 release
                <ul>
                   <li>Complete Atom extension (issue #72, #73)</li>
@@ -83,43 +96,35 @@
                </ul>
             </li>
          </ul>
-         <ul>
-            <li>Resolution of all <a href="http://restlet.tigris.org/issues/buglist.cgi?Submit+query=Submit+query&issue_status=NEW&issue_status=STARTED&issue_status=REOPENED&priority=P1&priority=P2&email1=jlouvel&emailtype1=exact&emailassigned_to1=1&emailreporter1=1&emailqa_contact1=1&emailcc1=1&emaillongdesc1=1&email2=&emailtype2=exact&emailreporter2=1&issueidtype=include&issue_id=&changedin=&votes=&chfieldfrom=&chfieldto=Now&chfieldvalue=&short_desc=&short_desc_type=substring&long_desc=&long_desc_type=substring&issue_file_loc=&issue_file_loc_type=substring&status_whiteboard=&status_whiteboard_type=substring&field0-0-0=noop&type0-0-0=noop&value0-0-0=&cmdtype=doit&newqueryname=&order=Reuse+same+sort+as+last+time">issues with a P1 and P2 priority level</a></li>
-            <li>Optional resolution of <a href="http://restlet.tigris.org/issues/buglist.cgi?Submit+query=Submit+query&issue_status=NEW&issue_status=STARTED&issue_status=REOPENED&priority=P3&email1=jlouvel&emailtype1=exact&emailassigned_to1=1&emailreporter1=1&emailqa_contact1=1&emailcc1=1&emaillongdesc1=1&email2=&emailtype2=exact&emailreporter2=1&issueidtype=include&issue_id=&changedin=&votes=&chfieldfrom=&chfieldto=Now&chfieldvalue=&short_desc=&short_desc_type=substring&long_desc=&long_desc_type=substring&issue_file_loc=&issue_file_loc_type=substring&status_whiteboard=&status_whiteboard_type=substring&field0-0-0=noop&type0-0-0=noop&value0-0-0=&cmdtype=doit&newqueryname=&order=Reuse+same+sort+as+last+time">issues with a P3 priority level</a></li>
-            <li>Moving from the current beta releases cycle to a candidate releases (RC0, RC1, etc.)</li>
-         </ul>
-      </li>
-      <li>2006 Q4
-         <ul>
-            <li>Release of Restlet API 1.0</li>
-            <li>Release of Noelios Restlet Engine 1.0</li>
-         </ul>
       </li>
       <li>2007 Q1
          <ul>
-            <li>Work on Restlet API 1.1</li>
-            <li>Work on Noelios Restlet Engine 1.1</li>
+            <li><u>[JSR]</u> Updates to the draft (optional)</li>
+            <li><u>[JSR]</u> Public Review</li>
          </ul>
       </li>
       <li>2007 Q2
          <ul>
-            <li>Release of Restlet API 1.1</li>
-            <li>Release of Noelios Restlet Engine 1.1</li>
-            <li>Submission of a JSR covering the Restlet API to the <a href="http://www.jcp.org">JCP</a>
+            <li><u>[JSR]</u> Drafts updates (optional)</li>
+            <li><u>[JSR]</u> Draft Specification approval ballot by EC</li>
          </ul>
       </li>
       <li>2007 Q3
          <ul>
-            <li>If JSR approved, formation of expert group</li>
-            <li>Average duration to complete a JSR: one year</li>
-            <li>Writing of first draft of JSR</li>
+            <li><u>[JSR]</u> Proposed final draft</li>
          </ul>
       </li>
       <li>2007 Q4
          <ul>
-            <li>Creation of a Test Compatibility Kit (TCK) and test companion guide</li>
-            <li>Public Review of the JSR</li>
-            <li>etc.</li>
+            <li><u>[JSR]</u> Completion of RI and TCK    </li>
+         </ul>
+      </li>
+      <li>2008 Q1
+         <ul>
+            <li><u>[JSR]</u> Final draft Submission</li>
+            <li><u>[JSR]</u> Final approval ballot by EC</li>
+            <li><u>[JSR]</u> Final release of Restlet API 1.0</li>
+            <li>Final release of Noelios Restlet Engine 1.0</li>
          </ul>
       </li>
    </ul>
@@ -137,7 +142,7 @@
    <table>
       <tr>
          <td style="vertical-align: middle;" rowspan="2"><a href="http://www.java.net/"><img src="http://www.restlet.org/images/javanet.gif" alt="java.net member" /></a></td>
-         <td>Version 1.2, last modified on 2006-07-21</td>
+         <td>Version 1.3, last modified on 2006-07-23</td>
       </tr>
       <tr>
          <td>Copyright &copy; 2005-2006 <a href="mailto:contact@noelios.com">J&eacute;r&ocirc;me Louvel</a>. Restlet is a registered trademark of <a target="_top" href="http://www.noelios.com">Noelios Consulting</a>.</td>

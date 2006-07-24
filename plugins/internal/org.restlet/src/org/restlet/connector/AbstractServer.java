@@ -41,15 +41,6 @@ public abstract class AbstractServer extends AbstractConnector implements Server
 
    /** The listening port if specified. */
    protected int port;
-
-   /** The SSL keystore path. */
-   protected String keystorePath;
-
-   /** The SSL keystore password. */
-   protected String keystorePassword;
-
-   /** The SSL key password. */
-   protected String keyPassword;
    
    /**
     * Constructor.
@@ -73,19 +64,6 @@ public abstract class AbstractServer extends AbstractConnector implements Server
 	public void handle(Call call)
    {
       getTarget().handle(call);
-   }
-
-   /**
-    * Configure the SSL properties for secure protocols like HTTPS.
-    * @param keystorePath The path of the keystore file.
-    * @param keystorePassword The keystore password.
-    * @param keyPassword The password of the server key .
-    */
-   public void configureSsl(String keystorePath, String keystorePassword, String keyPassword)
-   {
-      this.keystorePath = keystorePath;
-      this.keystorePassword = keystorePassword;
-      this.keyPassword = keyPassword;
    }
 
    /**

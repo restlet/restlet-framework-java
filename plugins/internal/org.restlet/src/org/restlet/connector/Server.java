@@ -47,12 +47,4 @@ public interface Server extends Connector
     * @param target The target Restlet.
     */
    public void setTarget(Restlet target);
-
-   /**
-    * Configure the SSL properties for secure protocols like HTTPS.
-    * @param keystorePath The path of the keystore file.
-    * @param keystorePassword The keystore password.
-    * @param keyPassword The password of the server key .
-    */
-   public void configureSsl(String keystorePath, String keystorePassword, String keyPassword);
 }
