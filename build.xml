@@ -581,6 +581,7 @@
 		<copy file="${docs}/changes.txt" tofile="${dist}/CHANGES.txt" />
 		<copy file="${docs}/copyright.txt" tofile="${dist}/COPYRIGHT.txt" />
 		<copy file="${docs}/docs.txt" tofile="${dist}/docs/README.txt" />
+		<copy file="${docs}/src.txt" tofile="${dist}/src/README.txt" />
 		<copy file="${docs}/license.txt" tofile="${dist}/LICENSE.txt" />
 		<copy file="${docs}/readme.txt" tofile="${dist}/README.txt" />
 		<copy file="${docs}/trademarks.txt" tofile="${dist}/TRADEMARKS.txt" />
