@@ -22,7 +22,7 @@
 
 package com.noelios.restlet.ext.jetty;
 
-import org.mortbay.jetty.Connector;
+import org.mortbay.jetty.AbstractConnector;
 import org.mortbay.jetty.bio.SocketConnector;
 import org.mortbay.jetty.nio.BlockingChannelConnector;
 import org.mortbay.jetty.nio.SelectChannelConnector;
@@ -43,13 +43,10 @@ import org.restlet.data.Protocols;
  * 		<td>type</td>
  * 		<td>int</td>
  * 		<td>1</td>
- * 		<td>The type of Jetty connector to use.
- * 			<ul>
- * 				<li>1 : Selecting NIO connector (Jetty's SelectChannelConnector class).</li>
- * 				<li>2 : Blocking NIO connector (Jetty's BlockingChannelConnector class).</li>
- * 				<li>3 : Blocking BIO connector (Jetty's SocketConnector class).</li>
- * 			</ul>
- * 		</td>
+ * 		<td>The type of Jetty connector to use.<br/>
+ * 1 : Selecting NIO connector (Jetty's SelectChannelConnector class).<br/>
+ * 2 : Blocking NIO connector (Jetty's BlockingChannelConnector class).<br/>
+ * 3 : Blocking BIO connector (Jetty's SocketConnector class).</td>
  * 	</tr>
  * </table>
  * @see <a href="http://jetty.mortbay.org/jetty6/">Jetty home page</a>
@@ -76,7 +73,7 @@ public class HttpServer extends JettyServer
    	if(!isStarted())
    	{
          // Create and configure the Jetty HTTP connector
-   		Connector connector = null;
+   		AbstractConnector connector = null;
    		
    		switch(getType())
    		{
@@ -93,14 +90,13 @@ public class HttpServer extends JettyServer
    				connector = new SocketConnector();
 				break;
    		}
-   		
-         if(address != null) connector.setHost(this.address);
-         connector.setPort(this.port);
+
+   		configure(connector);
          this.wrappedServer.addConnector(connector);
    		super.start();
    	}
    }
-
+   
    /**
     * Returns the type of Jetty connector to use.
     * @return The type of Jetty connector to use.

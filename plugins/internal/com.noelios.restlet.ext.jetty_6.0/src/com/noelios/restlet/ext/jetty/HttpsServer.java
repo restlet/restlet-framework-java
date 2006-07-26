@@ -106,8 +106,9 @@ public class HttpsServer extends JettyServer
    	{
          // Create and configure the Jetty HTTP connector
    		SslSocketConnector connector = new SslSocketConnector();
-         if(address != null) connector.setHost(this.address);
-         connector.setPort(this.port);
+   		configure(connector);
+
+   		// Continue configuration with HTTPS specific parameters
          connector.setAlgorithm(getCertAlgorithm());
          connector.setKeyPassword(getKeyPassword());
          connector.setKeystore(getKeystorePath());

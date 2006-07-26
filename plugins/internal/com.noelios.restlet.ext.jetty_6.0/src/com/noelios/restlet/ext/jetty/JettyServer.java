@@ -26,6 +26,7 @@ import java.io.IOException;
 
 import javax.servlet.ServletException;
 
+import org.mortbay.jetty.AbstractConnector;
 import org.mortbay.jetty.HttpConnection;
 import org.mortbay.jetty.Server;
 import org.mortbay.thread.BoundedThreadPool;
@@ -54,9 +55,9 @@ import org.restlet.data.ParameterList;
  * 		<td>Maximum threads that will service requests.</td>
  * 	</tr>
  * 	<tr>
- * 		<td>maxIdleTimeMs</td>
+ * 		<td>threadMaxIdleTimeMs</td>
  * 		<td>int</td>
- * 		<td>30000</td>
+ * 		<td>60000</td>
  * 		<td>Time for an idle thread to wait for a request or read.</td>
  * 	</tr>
  * 	<tr>
@@ -102,6 +103,12 @@ import org.restlet.data.ParameterList;
  * 		<td>Size of the content buffer for sending responses.</td>
  * 	</tr>
  * 	<tr>
+ * 		<td>ioMaxIdleTimeMs</td>
+ * 		<td>int</td>
+ * 		<td>30000</td>
+ * 		<td>Maximum time to wait on an idle IO operation.</td>
+ * 	</tr>
+ * 	<tr>
  * 		<td>soLingerTime</td>
  * 		<td>int</td>
  * 		<td>1000</td>
@@ -133,7 +140,7 @@ public abstract class JettyServer extends com.noelios.restlet.impl.HttpServer
    	// Configuring the thread pool
       BoundedThreadPool btp=new BoundedThreadPool();
       btp.setLowThreads(getLowThreads());
-      btp.setMaxIdleTimeMs(getMaxIdleTimeMs());
+      btp.setMaxIdleTimeMs(getThreadMaxIdleTimeMs());
       btp.setMaxThreads(getMaxThreads());
       btp.setMinThreads(getMinThreads());
       this.wrappedServer.setThreadPool(btp);
@@ -157,6 +164,20 @@ public abstract class JettyServer extends com.noelios.restlet.impl.HttpServer
    		this.wrappedServer.stop();
    		super.stop();
    	}
+   }
+
+   protected void configure(AbstractConnector connector)
+   {
+      if(address != null) connector.setHost(this.address);
+      connector.setPort(this.port);
+      connector.setLowResourceMaxIdleTime(getLowResourceMaxIdleTimeMs());
+      connector.setAcceptors(getAcceptorThreads());
+      connector.setAcceptQueueSize(getAcceptQueueSize());
+      connector.setHeaderBufferSize(getHeaderBufferSize());
+      connector.setRequestBufferSize(getRequestBufferSize());
+      connector.setResponseBufferSize(getResponseBufferSize());
+      connector.setMaxIdleTime(getIoMaxIdleTimeMs());
+      connector.setSoLingerTime(getSoLingerTime());
    }
 
    /**
@@ -205,6 +226,15 @@ public abstract class JettyServer extends com.noelios.restlet.impl.HttpServer
    }
 
    /**
+    * Returns the time for an idle thread to wait for a request or read.
+    * @return The time for an idle thread to wait for a request or read.
+    */
+   public int getThreadMaxIdleTimeMs()
+   {
+   	return Integer.parseInt(getParameters().getFirstValue("threadMaxIdleTimeMs", "60000"));
+   }
+
+   /**
     * Returns the threshold of remaining threads at which the server is considered as running low on resources.
     * @return The threshold of remaining threads at which the server is considered as running low on resources.
     */
@@ -220,15 +250,6 @@ public abstract class JettyServer extends com.noelios.restlet.impl.HttpServer
    public int getLowResourceMaxIdleTimeMs()
    {
    	return Integer.parseInt(getParameters().getFirstValue("lowResourceMaxIdleTimeMs", "2500"));
-   }
-
-   /**
-    * Returns the time for an idle thread to wait for a request or read.
-    * @return The time for an idle thread to wait for a request or read.
-    */
-   public int getMaxIdleTimeMs()
-   {
-   	return Integer.parseInt(getParameters().getFirstValue("maxIdleTimeMs", "10000"));
    }
 
    /**
@@ -274,6 +295,15 @@ public abstract class JettyServer extends com.noelios.restlet.impl.HttpServer
    public int getResponseBufferSize()
    {
    	return Integer.parseInt(getParameters().getFirstValue("responseBufferSize", Integer.toString(32*1024)));
+   }
+
+   /**
+    * Returns the maximum time to wait on an idle IO operation.
+    * @return The maximum time to wait on an idle IO operation.
+    */
+   public int getIoMaxIdleTimeMs()
+   {
+   	return Integer.parseInt(getParameters().getFirstValue("ioMaxIdleTimeMs", "30000"));
    }
 
    /**
