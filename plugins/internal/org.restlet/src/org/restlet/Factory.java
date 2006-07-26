@@ -49,11 +49,11 @@ public abstract class Factory
    /** Obtain a suitable logger. */
    private static Logger logger = Logger.getLogger(Factory.class.getCanonicalName());
 
-	/** The default context client name. */
-	public static final String CONTEXT_CLIENT_NAME = "ContextClient";
+   /** The default context client name. */
+   public static final String CONTEXT_CLIENT_NAME = "ContextClient";
 
-	/** Common version info. */
-   public static final String BETA_NUMBER = "17";
+   /** Common version info. */
+   public static final String BETA_NUMBER = "18";
    public static final String VERSION_LONG = "1.0 beta " + BETA_NUMBER;
    public static final String VERSION_SHORT = "1.0b" + BETA_NUMBER;
 
@@ -131,8 +131,8 @@ public abstract class Factory
     * @param target The target instance to attach.
     * @see java.util.regex.Pattern
     */
-	public abstract Scorer createScorer(Router router, String pattern, Restlet target);
-   
+   public abstract Scorer createScorer(Router router, String pattern, Restlet target);
+
    /**
     * Creates a call.
     * @return A call.
