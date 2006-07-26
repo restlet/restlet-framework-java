@@ -77,7 +77,7 @@ import org.restlet.data.Protocols;
  * 	<tr>
  * 		<td>securityProvider</td>
  * 		<td>String</td>
- * 		<td>null (uses JDK's default provider, see javax.net.ssl.SSLContext)</td>
+ * 		<td>null (see javax.net.ssl.SSLContext)</td>
  * 		<td>Java security provider name (see java.security.Provider class).</td>
  * 	</tr>
  * </table>

@@ -59,6 +59,7 @@ import com.noelios.restlet.impl.HttpServer;
  * 		<td>200</td>
  * 		<td>Maximum waiting time between polls of the input.</td>
  * 	</tr>
+ * </table>
  * @author Lars Heuer (heuer[at]semagia.com) <a href="http://semagia.com/">Semagia</a>
  * @author Jerome Louvel (contact@noelios.com) <a href="http://www.noelios.com">Noelios Consulting</a>
  */

@@ -50,19 +50,37 @@ import simple.http.connect.ConnectionFactory;
  * 		<td>keystorePath</td>
  * 		<td>String</td>
  * 		<td>${user.home}/.keystore</td>
- * 		<td>The SSL keystore path.</td>
+ * 		<td>SSL keystore path.</td>
  * 	</tr>
  * 	<tr>
  * 		<td>keystorePassword</td>
  * 		<td>String</td>
  * 		<td></td>
- * 		<td>The SSL keystore password.</td>
+ * 		<td>SSL keystore password.</td>
+ * 	</tr>
+ * 	<tr>
+ * 		<td>keystoreType</td>
+ * 		<td>String</td>
+ * 		<td>JKS</td>
+ * 		<td>SSL keystore type</td>
  * 	</tr>
  * 	<tr>
  * 		<td>keyPassword</td>
  * 		<td>String</td>
  * 		<td></td>
- * 		<td>The SSL key password.</td>
+ * 		<td>SSL key password.</td>
+ * 	</tr>
+ * 	<tr>
+ * 		<td>certAlgorithm</td>
+ * 		<td>String</td>
+ * 		<td>SunX509</td>
+ * 		<td>SSL certificate algorithm.</td>
+ * 	</tr>
+ * 	<tr>
+ * 		<td>sslProtocol</td>
+ * 		<td>String</td>
+ * 		<td>TLS</td>
+ * 		<td>SSL protocol.</td>
  * 	</tr>
  * </table>
  * @author Lars Heuer (heuer[at]semagia.com) <a href="http://semagia.com/">Semagia</a>
@@ -90,11 +108,11 @@ public class HttpsServer extends SimpleServer
 		if (!isStarted())
 		{
 			// Initialize the SSL context
-			KeyStore keyStore = KeyStore.getInstance("JKS");
+			KeyStore keyStore = KeyStore.getInstance(getKeystoreType());
 			keyStore.load(new FileInputStream(getKeystorePath()), getKeystorePassword().toCharArray());
-			KeyManagerFactory keyManagerFactory = KeyManagerFactory.getInstance("SunX509");
+			KeyManagerFactory keyManagerFactory = KeyManagerFactory.getInstance(getCertAlgorithm());
 			keyManagerFactory.init(keyStore, getKeyPassword().toCharArray());
-			SSLContext sslContext = SSLContext.getInstance("TLS");
+			SSLContext sslContext = SSLContext.getInstance(getSslProtocol());
 			sslContext.init(keyManagerFactory.getKeyManagers(), null, null);
 			socket = sslContext.getServerSocketFactory().createServerSocket(port);
 			socket.setSoTimeout(60000);
@@ -127,12 +145,39 @@ public class HttpsServer extends SimpleServer
    }
 
    /**
+    * Returns the SSL keystore type.
+    * @return The SSL keystore type.
+    */
+   public String getKeystoreType()
+   {
+   	return getParameters().getFirstValue("keystoreType", "JKS");
+   }
+
+   /**
     * Returns the SSL key password.
     * @return The SSL key password.
     */
    public String getKeyPassword()
    {
    	return getParameters().getFirstValue("keyPassword", "");
+   }
+
+   /**
+    * Returns the SSL certificate algorithm.
+    * @return The SSL certificate algorithm.
+    */
+   public String getCertAlgorithm()
+   {
+   	return getParameters().getFirstValue("certAlgorithm", "SunX509");
+   }
+
+   /**
+    * Returns the SSL keystore type.
+    * @return The SSL keystore type.
+    */
+   public String getSslProtocol()
+   {
+   	return getParameters().getFirstValue("sslProtocol", "TLS");
    }
 
 }
