@@ -28,6 +28,7 @@ import java.util.List;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
+import org.restlet.connector.Connector;
 import org.restlet.connector.ConnectorCall;
 import org.restlet.data.ConditionData;
 import org.restlet.data.Cookie;
@@ -53,12 +54,18 @@ public class HttpServerRestletCall extends DefaultCall
    /** Obtain a suitable logger. */
    private static Logger logger = Logger.getLogger(HttpServerRestletCall.class.getCanonicalName());
 
+   /** The HTTP server connector that issued the call. */
+   protected Connector httpServer;
+   
    /**
     * Constructor.
+    * @param httpServer The HTTP server connector that issued the call.
     * @param call The wrapped HTTP server call.
     */
-   public HttpServerRestletCall(AbstractHttpServerCall call)
+   public HttpServerRestletCall(Connector httpServer, AbstractHttpServerCall call)
    {
+   	this.httpServer = httpServer;
+   	
       // Set the properties
       setConnectorCall(call);
       setServerAddress(call.getResponseAddress());

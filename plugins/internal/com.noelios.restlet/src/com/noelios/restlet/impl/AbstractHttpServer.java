@@ -30,6 +30,7 @@ import org.restlet.Call;
 import org.restlet.Restlet;
 import org.restlet.component.Component;
 import org.restlet.connector.AbstractServer;
+import org.restlet.connector.Connector;
 import org.restlet.data.ParameterList;
 
 /**
@@ -62,7 +63,7 @@ public abstract class AbstractHttpServer extends AbstractServer
    {
    	try
    	{
-   		handle(call, this);
+   		handle(this, call, this);
 		}
 		catch (Exception e)
 		{
@@ -73,13 +74,14 @@ public abstract class AbstractHttpServer extends AbstractServer
 
    /**
     * Handles an HTTP server call for a given Restlet target. 
+    * @param httpServer The HTTP server connector that issued the call.
     * @param call The connector call.
     * @param target The target Restlet.
     * @throws IOException 
     */
-   public static void handle(AbstractHttpServerCall call, Restlet target) throws IOException
+   public static void handle(Connector httpServer, AbstractHttpServerCall call, Restlet target) throws IOException
    {
-      Call restletCall = call.toUniform();
+      Call restletCall = call.toUniform(httpServer);
       target.handle(restletCall);
       call.setResponse(restletCall);
       call.sendResponseHeaders();

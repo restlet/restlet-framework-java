@@ -24,15 +24,20 @@ package com.noelios.restlet.ext.servlet;
 
 import java.io.IOException;
 import java.util.Enumeration;
+import java.util.List;
 
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
+import org.restlet.Call;
 import org.restlet.Factory;
 import org.restlet.Restlet;
 import org.restlet.component.Component;
+import org.restlet.connector.Connector;
+import org.restlet.data.ParameterList;
+import org.restlet.data.Protocol;
 import org.restlet.data.Reference;
 
 import com.noelios.restlet.impl.AbstractHttpServer;
@@ -109,7 +114,7 @@ import com.noelios.restlet.impl.AbstractHttpServer;
  * @see <a href="http://java.sun.com/j2ee/">J2EE home page</a>
  * @author Jerome Louvel (contact@noelios.com) <a href="http://www.noelios.com/">Noelios Consulting</a>
  */
-public class ServerServlet extends HttpServlet
+public class ServerServlet extends HttpServlet implements Connector
 {
    /** 
     * The Servlet context initialization parameter's name containing the target's 
@@ -137,6 +142,15 @@ public class ServerServlet extends HttpServlet
 
    /** The target Restlet for Jetty calls. */
    protected Restlet target;
+   
+   /** Indicates if the connector was started. */
+   protected boolean started;
+   
+   /** The owner component. */
+   protected Component owner;
+
+	/** The modifiable list of parameters. */
+   protected ParameterList parameters;
 
    /**
     * Constructor.
@@ -144,8 +158,138 @@ public class ServerServlet extends HttpServlet
    public ServerServlet()
    {
       this.target = null;
+      this.started = false;
+      this.owner = null;
+      this.parameters = null;
    }
    
+   /**
+    * Called by the servlet container to indicate to a servlet that the servlet is being placed into service.
+    */
+   public void init() throws ServletException
+   {
+   	try
+		{
+   		String initParam;
+
+   		// Copy all the Web Application initialization parameters
+   		for(Enumeration enum1 = getServletContext().getInitParameterNames(); enum1.hasMoreElements(); )
+   		{
+   			initParam = (String)enum1.nextElement();
+   			getParameters().add(initParam, getServletContext().getInitParameter(initParam));
+   		}
+
+   		// Copy all the Web Container initialization parameters
+   		for(Enumeration enum1 = getServletConfig().getInitParameterNames(); enum1.hasMoreElements(); )
+   		{
+   			initParam = (String)enum1.nextElement();
+   			getParameters().add(initParam, getServletConfig().getInitParameter(initParam));
+   		}
+   		
+			start();
+		}
+		catch (Exception e)
+		{
+			new ServletException(e);
+		}
+   }
+
+   /**
+    * Called by the servlet container to indicate to a servlet that the servlet is being taken out of service.
+    */
+   public void destroy()
+   {
+   	try
+		{
+			stop();
+		}
+		catch (Exception e)
+		{
+			new ServletException(e);
+		}
+   }
+   
+   /** Starts the Restlet. */
+   public void start() throws Exception
+   {
+   	this.started = true;
+   }
+
+   /**
+    * Indicates if the Restlet is started.
+    * @return True if the Restlet is started.
+    */
+   public boolean isStarted()
+   {
+   	return this.started; 
+   }
+
+   /**
+    * Handles a call.
+    * @param call The call to handle.
+    */
+   public void handle(Call call)
+   {
+   	if(getTarget() != null)
+   	{
+   		getTarget().handle(call);
+   	}
+   }
+
+   /** Stops the Restlet. */
+   public void stop() throws Exception
+   {
+   	this.started = false;
+   }
+
+   /**
+    * Indicates if the Restlet is stopped.
+    * @return True if the Restlet is stopped.
+    */
+   public boolean isStopped()
+   {
+   	return !this.started;
+   }
+
+   /**
+    * Returns the owner component.
+    * @return The owner component.
+    */
+   public Component getOwner()
+   {
+   	return this.owner;
+   }
+
+   /**
+    * Sets the owner component.
+    * @param owner The owner component.
+    */
+   public void setOwner(Component owner)
+   {
+   	this.owner = owner;
+   }
+   
+	/**
+	 * Returns the modifiable list of parameters.
+	 * @return The modifiable list of parameters.
+	 */
+	public ParameterList getParameters()
+	{
+		if(this.parameters == null) this.parameters = new ParameterList();
+		return this.parameters;
+	}
+
+   /**
+    * Returns the supported protocols. 
+    * @return The supported protocols.
+    */
+   public List<Protocol> getProtocols()
+   {
+   	// We can't answer to this as it depends on the 
+   	// parent Servlet container.
+      return null;
+   }
+
    /**
     * Services a HTTP Servlet request as an uniform call.
     * @param request The HTTP Servlet request.
@@ -155,7 +299,7 @@ public class ServerServlet extends HttpServlet
    {
    	if(getTarget(request) != null)
       {
-         AbstractHttpServer.handle(new ServletCall(request, response, getServletContext()), getTarget());
+         AbstractHttpServer.handle(this, new ServletCall(request, response, getServletContext()), getTarget());
       }
    }
 
@@ -179,7 +323,7 @@ public class ServerServlet extends HttpServlet
          synchronized(ServerServlet.class)
          {
             // Find the attribute name to use to store the target reference
-            String targetAttributeName = findInitParameter(NAME_TARGET_ATTRIBUTE);
+            String targetAttributeName = getParameters().getFirstValue(NAME_TARGET_ATTRIBUTE);
 
             if(targetAttributeName != null)
             {
@@ -190,7 +334,7 @@ public class ServerServlet extends HttpServlet
                {
                   // Try to instantiate a new target
                   // First, find the target class name
-                  String targetClassName = findInitParameter(NAME_TARGET_CLASS);
+                  String targetClassName = getParameters().getFirstValue(NAME_TARGET_CLASS);
 
                   if(targetClassName != null)
                   {
@@ -205,7 +349,7 @@ public class ServerServlet extends HttpServlet
                         getServletContext().setAttribute(NAME_TARGET_ATTRIBUTE, result);
                         
                         // Set if a context path needs to be transmitted
-                     	String initContextPathName = findInitParameter(NAME_TARGET_INIT_CONTEXTPATH);
+                     	String initContextPathName = getParameters().getFirstValue(NAME_TARGET_INIT_CONTEXTPATH);
                      	if(initContextPathName != null)
                      	{
                         	// First, let's locate the closest component
@@ -303,23 +447,6 @@ public class ServerServlet extends HttpServlet
    public void setTarget(Restlet target)
    {
       this.target = target;
-   }
-
-   /**
-    * Finds an initialization parameter by first checking the Servlet context.
-    * If nothing is found, then it checks the Servlet config.
-    * @param name The parameter's name.
-    * @return The parameter's value or null.
-    */
-   protected String findInitParameter(String name)
-   {
-      String result = getServletContext().getInitParameter(name);
-      if(result == null)
-      {
-      	result = getServletConfig().getInitParameter(name);
-      }
-
-      return result;
    }
    
 }

@@ -32,6 +32,7 @@ import java.util.logging.Level;
 import java.util.logging.Logger;
 
 import org.restlet.Call;
+import org.restlet.connector.Connector;
 import org.restlet.connector.ConnectorCall;
 import org.restlet.data.CookieSetting;
 import org.restlet.data.DefaultEncoding;
@@ -97,11 +98,12 @@ public abstract class AbstractHttpServerCall extends DefaultConnectorCall
    
    /**
     * Converts to an uniform call.
+    * @param httpServer The HTTP server connector that issued the call.
     * @return An equivalent uniform call.
     */
-   public Call toUniform()
+   public Call toUniform(Connector httpServer)
    {
-      return new HttpServerRestletCall(this);
+      return new HttpServerRestletCall(httpServer, this);
    }
 
    /**
