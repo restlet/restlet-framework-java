@@ -1,16 +1,19 @@
-              LICENSE AGREEMENT
-          Version 2.0, December 2005
 
-  This software distribution, including the "Restlet API" and the 
-"Noelios Restlet Engine", is provided to you under the CDDL license 
-version 1.0 which is reproduced below.
+=================
+License agreement
+=================
 
-  Note that this agreement doesn't cover the redistributed third-party 
-libraries. Those libraries are provided to you for convenience purpose 
-but remain under their respective license which are reproduced in the 
-"/lib/licenses" directory.
 
-  For licensing requests, please contact:
+Version 2.0, December 2005
+
+This software distribution, including the "Restlet API" and the "Noelios 
+Restlet Engine", is provided to you under the CDDL license version 1.0 which 
+is reproduced below.
+
+Note that this agreement doesn't cover the redistributed third-party libraries. 
+Those libraries are provided to you for convenience purpose but remain under 
+their respective license which are reproduced in the "/lib/licenses" directory. 
+For licensing requests, please contact:
   
       Jerome LOUVEL
       69 rue Carnot

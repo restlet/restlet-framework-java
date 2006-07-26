@@ -1,6 +1,8 @@
-------------------------
-Running Restlet services
-------------------------
+
+====================
+Running applications
+====================
+
 
 A common requirement for server-side Restlet applications is the ability to run 
 as a system service. For this purpose, the Restlet project recommmands the use 
@@ -22,6 +24,3 @@ supported as well. See the Java Service Wrapper web site for details.
 
 Thanks to Malcolm Sparks for suggesting the use of this great wrapper tool and 
 to Daniel Einspanjer for the feed-back.
-
-Best regards,
-Jerome Louvel

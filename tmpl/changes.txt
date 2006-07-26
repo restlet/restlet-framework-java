@@ -1,7 +1,8 @@
 
-===================
-Restlet changes log  
-===================
+===========
+Changes log  
+===========
+
 
 @version-full@ (@release-date@)
 [Bugs fixed]

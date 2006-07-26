@@ -1,17 +1,21 @@
-              COPYRIGHT NOTICE
-          Version 2.1, July 2006
 
-   This software distribution is covered by this copyright notice. 
-This includes the following software components:
+================
+Copyright notice
+================
+
+
+Version 2.1, July 2006
+
+This software distribution is covered by this copyright notice. This includes 
+the following software components:
+
       1) Restlet API (org.restlet package)
       2) Noelios Restlet Engine (com.noelios.restlet.* packages)
       3) All other files containing a proper copyright notice
       
-   All third-party libraries redistributed with this software remain the
-property of their respective copyright owners and are subject to separate
-license agreements.
-
-   For questions, please contact the copyright holder:
+All third-party libraries redistributed with this software remain the property 
+of their respective copyright owners and are subject to separate license 
+agreements. For questions, please contact the copyright holder:
    
       Jerome LOUVEL
       69 rue Carnot

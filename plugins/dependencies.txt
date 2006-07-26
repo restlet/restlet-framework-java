@@ -1,7 +1,20 @@
 
-===========================
-Restlet Plugin Dependencies
-===========================
+=================================
+Plugins and third-party libraries
+=================================
+
+
+The content of this directory can be directly copied inside the plugins 
+directory of your Eclipse IDE (see http://www.eclipse.org for details).
+When you restart the IDE, you will see that all the plugins were automatically
+registered and can directly be used within your applications and your own 
+plugins.
+
+Below is a list of the dependencies between Restlet plugins. If you use the 
+plugins (either as a JAR or as a directory) withing an Eclipse IDE, then the 
+dependencies are automatically declared. However, if you add them directly on 
+your classpath, you need to ensure that all the dependencies are also on the 
+classpath, otherwise ClassNotFound exceptions will be thrown.
 
 
 com.noelios.restlet.ext.asyncweb_0.8
