@@ -38,8 +38,22 @@ import com.noelios.restlet.impl.HttpServer;
 import com.noelios.restlet.impl.HttpServerCall;
 
 /**
- * Abstract AsyncWeb server connector.
- * 
+ * Abstract AsyncWeb server connector. Here is the list of parameters that are supported:
+ * <table>
+ * 	<tr>
+ * 		<th>Parameter name</th>
+ * 		<th>Value type</th>
+ * 		<th>Default value</th>
+ * 		<th>Description</th>
+ * 	</tr>
+ * 	<tr>
+ * 		<td>ioWorkerCount</td>
+ * 		<td>int</td>
+ * 		<td>2</td>
+ * 		<td>Number of worker threads to employ.</td>
+ * 	</tr>
+ *	</table>
+ *	<br/> 
  * This implementation passes by all of AsyncWeb ServiceContainer, 
  * HttpServiceHandler etc. mechanisms and implements a 
  * {@link org.restlet.connector.Server} and a 
@@ -52,6 +66,7 @@ import com.noelios.restlet.impl.HttpServerCall;
  * </p>
  * 
  * @author Lars Heuer (heuer[at]semagia.com) <a href="http://www.semagia.com/">Semagia</a>
+ * @author Jerome Louvel (contact@noelios.com) <a href="http://www.noelios.com/">Noelios Consulting</a>
  */
 public abstract class AsyncWebServer extends HttpServer implements ServiceContainer
 {
@@ -147,5 +162,14 @@ public abstract class AsyncWebServer extends HttpServer implements ServiceContai
 			}
 		}
 	}
+
+   /**
+    * Returns the number of worker threads to employ.
+    * @return The number of worker threads to employ.
+    */
+   public int getIoWorkerCount()
+   {
+   	return Integer.parseInt(getParameters().getFirstValue("ioWorkerCount", "2"));
+   }
 
 }

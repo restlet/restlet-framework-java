@@ -67,6 +67,7 @@ public class HttpServer extends AsyncWebServer
 			NIOTransport nio = new NIOTransport();
 			nio.setPort(super.port);
 			nio.setServiceContainer(this);
+			nio.setIoWorkerCount(getIoWorkerCount());
 			this.transport = nio;
 			super.start();		
 		}

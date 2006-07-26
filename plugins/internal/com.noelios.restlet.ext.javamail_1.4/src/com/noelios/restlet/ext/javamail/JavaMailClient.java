@@ -54,15 +54,14 @@ import org.w3c.dom.NodeList;
 import com.noelios.restlet.impl.FactoryImpl;
 
 /**
- * Client connector to a mail server. Currently only the SMTP protocol is supported.<br/>
- * To send an email, specify a SMTP URI as the ressource reference of the call and use an XML
- * email as the content of the call.<br/>
- * An SMTP URI has the following syntax: smtp://host[:port]<br/>
+ * Client connector to a mail server. Currently only the SMTP protocol is supported. To send an email, 
+ * specify a SMTP URI as the ressource reference of the call and use an XML email as the content of the 
+ * call. An SMTP URI has the following syntax: smtp://host[:port]<br/>
+ * <br/>
  * The default port used is 25 for SMTP and 465 for SMTPS. Use the Call.getSecurity().setLogin() and setPassword()
  * methods for authentication.<br/>
  * <br/>
  * Sample XML email:<br/>
- * <br/>
  * {@code <?xml version="1.0" encoding="ISO-8851-1" ?>}<br/>
  * {@code <email>}<br/> &nbsp;&nbsp;{@code   <head>}<br/>
  * &nbsp;&nbsp;&nbsp;&nbsp;{@code      <subject>Account activation</subject>}<br/>
