@@ -53,25 +53,27 @@ import com.noelios.restlet.impl.AbstractHttpServer;
  * 	&lt;display-name&gt;Server Servlet&lt;/display-name&gt;
  * 	&lt;description&gt;Servlet acting as a Restlet server connector&lt;/description&gt;
  * 
- * 	&lt;!-- Parameter indicating the target Restlet that will handle the call --&gt;
+ * 	&lt;!-- Class of the target Restlet that will handle the call --&gt;
  * 	&lt;context-param&gt;
  * 		&lt;param-name&gt;org.restlet.target.class&lt;/param-name&gt;
  * 		&lt;param-value&gt;com.noelios.restlet.test.TraceTarget&lt;/param-value&gt;
  * 	&lt;/context-param&gt;
  * 
- * 	&lt;!-- Parameter indicating the Servlet attribute to use to store the target Restlet reference --&gt;
- * 	&lt;context-param&gt;
- * 		&lt;param-name&gt;org.restlet.target.attribute&lt;/param-name&gt;
- * 		&lt;param-value&gt;org.restlet.target&lt;/param-value&gt;
- * 	&lt;/context-param&gt;
- * 
- * 	&lt;!-- Parameter indicating the name of an initialization parameter that should be set with the ServerServlet context path --&gt;
+ * 	&lt;!-- Name of the parameter that will contain the ServerServlet's context path --&gt;
+ * 	&lt;!-- This context-param element is optional. If absent, no parameter is created --&gt;
  * 	&lt;context-param&gt;
  * 		&lt;param-name&gt;org.restlet.target.init.contextPath&lt;/param-name&gt;
  * 		&lt;param-value&gt;contextPath&lt;/param-value&gt;
  * 	&lt;/context-param&gt;
  * 
- * 	&lt;!-- Definition of the ServerServlet class or a subclass --&gt;
+ * 	&lt;!-- Indicates if the "X-Forwarded-For" HTTP header should be used to get client addresses --&gt;
+ * 	&lt;!-- This context-param element is optional. If absent, it defaults to "false". --&gt;
+ * 	&lt;context-param&gt;
+ * 		&lt;param-name&gt;useForwardedForHeader&lt;/param-name&gt;
+ * 		&lt;param-value&gt;false&lt;/param-value&gt;
+ * 	&lt;/context-param&gt;
+ * 
+ * 	&lt;!-- Qualified name of ServerServlet class or a subclass --&gt;
  * 	&lt;servlet&gt;
  * 		&lt;servlet-name&gt;ServerServlet&lt;/servlet-name&gt;
  * 		&lt;servlet-class&gt;com.noelios.restlet.ext.servlet.ServerServlet&lt;/servlet-class&gt;

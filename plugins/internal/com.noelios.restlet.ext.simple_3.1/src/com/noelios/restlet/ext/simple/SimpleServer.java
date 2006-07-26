@@ -59,6 +59,12 @@ import com.noelios.restlet.impl.AbstractHttpServer;
  * 		<td>200</td>
  * 		<td>Maximum waiting time between polls of the input.</td>
  * 	</tr>
+ * 	<tr>
+ * 		<td>useForwardedForHeader</td>
+ * 		<td>boolean</td>
+ * 		<td>false</td>
+ * 		<td>True if the "X-Forwarded-For" HTTP header should be used to get client addresses.</td>
+ * 	</tr>
  * </table>
  * @author Lars Heuer (heuer[at]semagia.com) <a href="http://semagia.com/">Semagia</a>
  * @author Jerome Louvel (contact@noelios.com) <a href="http://www.noelios.com">Noelios Consulting</a>

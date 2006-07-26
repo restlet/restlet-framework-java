@@ -54,6 +54,12 @@ import com.noelios.restlet.impl.AbstractHttpServer;
  * 		<td>10000</td>
  * 		<td>Time for an idle thread to wait for a request or read.</td>
  * 	</tr>
+ * 	<tr>
+ * 		<td>useForwardedForHeader</td>
+ * 		<td>boolean</td>
+ * 		<td>false</td>
+ * 		<td>True if the "X-Forwarded-For" HTTP header should be used to get client addresses.</td>
+ * 	</tr>
  * </table>
  * @see <a href="http://jetty.mortbay.com/">Jetty home page</a>
  * @author Jerome Louvel (contact@noelios.com) <a href="http://www.noelios.com/">Noelios Consulting</a>

@@ -101,17 +101,20 @@ public class HttpServerRestletCall extends DefaultCall
    		// Add the request address as the first client address
    		setClientAddress(getConnectorCall().getRequestAddress());
    		
-	      // Lookup the "X-Forwarded-For" header
-	      String header = getConnectorCall().getRequestHeaders().getValues(ConnectorCall.HEADER_X_FORWARDED_FOR);
-
-	      if(header != null)
-	      {
-	      	String[] addresses = header.split(",");
-      		for(int i = addresses.length - 1; i >= 0; i--)
-      		{
-      			this.clientAddresses.add(addresses[i].trim());
-      		}
-	      }
+   		boolean useForwardedForHeader = Boolean.parseBoolean(this.httpServer.getParameters().getFirstValue("useForwardedForHeader", false)); 
+   		if(useForwardedForHeader)
+   		{
+		      // Lookup the "X-Forwarded-For" header
+		      String header = getConnectorCall().getRequestHeaders().getValues(ConnectorCall.HEADER_X_FORWARDED_FOR);
+		      if(header != null)
+		      {
+		      	String[] addresses = header.split(",");
+	      		for(int i = addresses.length - 1; i >= 0; i--)
+	      		{
+	      			this.clientAddresses.add(addresses[i].trim());
+	      		}
+		      }
+   		}
    	}
    	
    	return this.clientAddresses;

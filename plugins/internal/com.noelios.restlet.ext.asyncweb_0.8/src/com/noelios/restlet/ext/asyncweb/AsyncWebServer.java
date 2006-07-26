@@ -52,6 +52,12 @@ import com.noelios.restlet.impl.AbstractHttpServerCall;
  * 		<td>2</td>
  * 		<td>Number of worker threads to employ.</td>
  * 	</tr>
+ * 	<tr>
+ * 		<td>useForwardedForHeader</td>
+ * 		<td>boolean</td>
+ * 		<td>false</td>
+ * 		<td>True if the "X-Forwarded-For" HTTP header should be used to get client addresses.</td>
+ * 	</tr>
  *	</table>
  *	<br/> 
  * This implementation passes by all of AsyncWeb ServiceContainer, 

@@ -114,6 +114,12 @@ import org.restlet.data.ParameterList;
  * 		<td>1000</td>
  * 		<td>SO linger time (see Jetty 6 documentation).</td>
  * 	</tr>
+ * 	<tr>
+ * 		<td>useForwardedForHeader</td>
+ * 		<td>boolean</td>
+ * 		<td>false</td>
+ * 		<td>True if the "X-Forwarded-For" HTTP header should be used to get client addresses.</td>
+ * 	</tr>
  * </table>
  * @see <a href="http://jetty.mortbay.org/jetty6/">Jetty home page</a>
  * @author Jerome Louvel (contact@noelios.com) <a href="http://www.noelios.com/">Noelios Consulting</a>
