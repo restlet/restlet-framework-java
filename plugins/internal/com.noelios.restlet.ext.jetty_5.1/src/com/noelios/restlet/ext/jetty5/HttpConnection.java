@@ -20,7 +20,7 @@
  * Portions Copyright [yyyy] [name of copyright owner]
  */
 
-package com.noelios.restlet.ext.jetty;
+package com.noelios.restlet.ext.jetty5;
 
 import java.io.IOException;
 import java.io.InputStream;
@@ -35,10 +35,10 @@ import org.mortbay.http.HttpResponse;
 import com.noelios.restlet.impl.HttpServerCall;
 
 /**
- * Jetty HTTPS connection.
+ * Jetty HTTP connection.
  * @author Jerome Louvel (contact@noelios.com) <a href="http://www.noelios.com/">Noelios Consulting</a>
  */
-public class HttpsConnection extends org.mortbay.http.HttpConnection
+public class HttpConnection extends org.mortbay.http.HttpConnection
 {
    /** Serial version identifier. */
    private static final long serialVersionUID = 1L;
@@ -51,7 +51,7 @@ public class HttpsConnection extends org.mortbay.http.HttpConnection
     * @param out Output stream to write the response to.
     * @param connection The underlying connection object.
     */
-   public HttpsConnection(org.mortbay.http.HttpListener listener, InetAddress remoteAddress, InputStream in, OutputStream out, Object connection)
+   public HttpConnection(org.mortbay.http.HttpListener listener, InetAddress remoteAddress, InputStream in, OutputStream out, Object connection)
    {
       super(listener, remoteAddress, in, out, connection);
    }
@@ -83,7 +83,7 @@ public class HttpsConnection extends org.mortbay.http.HttpConnection
     */
    private JettyServer getJettyServer()
    {
-      return ((HttpsListener)getListener()).getServer();
+      return ((HttpListener)getListener()).getServer();
    }
 
 }

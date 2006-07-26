@@ -20,19 +20,19 @@
  * Portions Copyright [yyyy] [name of copyright owner]
  */
 
-package com.noelios.restlet.ext.jetty;
+package com.noelios.restlet.ext.jetty5;
 
 import java.io.IOException;
 import java.net.Socket;
 
-import org.mortbay.http.SocketListener;
+import org.mortbay.http.SslListener;
 import org.mortbay.util.InetAddrPort;
 
 /**
- * Jetty HTTP listener.
+ * Jetty HTTPS listener.
  * @author Jerome Louvel (contact@noelios.com) <a href="http://www.noelios.com/">Noelios Consulting</a>
  */
-public class HttpListener extends SocketListener
+public class HttpsListener extends SslListener
 {
    /** Serial version identifier. */
    private static final long serialVersionUID = 1L;
@@ -44,7 +44,7 @@ public class HttpListener extends SocketListener
     * Constructor.
     * @param server The parent Jetty server.
     */
-   public HttpListener(JettyServer server)
+   public HttpsListener(JettyServer server)
    {
       this.server = server;
    }
@@ -54,7 +54,7 @@ public class HttpListener extends SocketListener
     * @param server The parent Jetty server.
     * @param address The listening address.
     */
-   public HttpListener(JettyServer server, InetAddrPort address)
+   public HttpsListener(JettyServer server, InetAddrPort address)
    {
       super(address);
       this.server = server;
@@ -70,14 +70,14 @@ public class HttpListener extends SocketListener
    }
    
    /** 
-    * Creates an AJP13Connection instance. 
+    * Creates a HTTP connection instance. 
     * This method can be used to override the connection instance.
     * @param socket The underlying socket.
     * @return The created connection.
     */
-   protected HttpConnection createConnection(Socket socket) throws IOException
+   protected HttpsConnection createConnection(Socket socket) throws IOException
    {
-       return new HttpConnection(this, socket.getInetAddress(), socket.getInputStream(), socket.getOutputStream(), socket);
+       return new HttpsConnection(this, socket.getInetAddress(), socket.getInputStream(), socket.getOutputStream(), socket);
    }
 
 }

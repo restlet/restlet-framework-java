@@ -20,7 +20,7 @@
  * Portions Copyright [yyyy] [name of copyright owner]
  */
 
-package com.noelios.restlet.ext.jetty;
+package com.noelios.restlet.ext.jetty5;
 
 import org.mortbay.util.InetAddrPort;
 import org.restlet.component.Component;
@@ -28,19 +28,11 @@ import org.restlet.data.ParameterList;
 import org.restlet.data.Protocols;
 
 /**
- * Jetty HTTP server connector. Here is the list of additional parameters that are supported:
- * <table>
- * 	<tr>
- * 		<td>lowResourcePersistTimeMs</td>
- * 		<td>int</td>
- * 		<td>2000</td>
- * 		<td>Time in ms that connections will persist if listener is low on resources.</td>
- * 	</tr>
- * </table>
+ * Jetty AJP server connector.
  * @see <a href="http://jetty.mortbay.com/">Jetty home page</a>
  * @author Jerome Louvel (contact@noelios.com) <a href="http://www.noelios.com/">Noelios Consulting</a>
  */
-public class HttpServer extends JettyServer
+public class AjpServer extends JettyServer
 {
    /**
     * Constructor.
@@ -49,44 +41,34 @@ public class HttpServer extends JettyServer
     * @param address The optional listening IP address (local host used if null).
     * @param port The listening port.
     */
-   public HttpServer(Component owner, ParameterList parameters, String address, int port)
+   public AjpServer(Component owner, ParameterList parameters, String address, int port)
    {
       super(owner, parameters, address, port);
-      getProtocols().add(Protocols.HTTP);
+      getProtocols().add(Protocols.AJP);
    }
 
    /** Start hook. */
    public void start() throws Exception
    {
-   	HttpListener listener;
+   	AjpListener listener;
    	
       if(this.address != null)
       {
-         listener = new HttpListener(this, new InetAddrPort(this.address, this.port));
+         listener = new AjpListener(this, new InetAddrPort(this.address, this.port));
       }
       else
       {
-      	listener = new HttpListener(this);
-      	listener.setPort(port);
+         listener = new AjpListener(this);
+         listener.setPort(port);
       }
 
       // Configure the listener
       listener.setMinThreads(getMinThreads());
       listener.setMaxThreads(getMaxThreads());
       listener.setMaxIdleTimeMs(getMaxIdleTimeMs());
-      listener.setLowResourcePersistTimeMs(getLowResourcePersistTimeMs());
-
+      
       this.listener = listener;
       super.start();
-   }
-
-   /**
-    * Returns time in ms that connections will persist if listener is low on resources.
-    * @return Time in ms that connections will persist if listener is low on resources.
-    */
-   public int getLowResourcePersistTimeMs()
-   {
-   	return Integer.parseInt(getParameters().getFirstValue("lowResourcePersistTimeMs", "2000"));
    }
 
 }

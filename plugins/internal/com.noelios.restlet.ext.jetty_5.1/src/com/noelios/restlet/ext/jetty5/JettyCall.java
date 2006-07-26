@@ -20,7 +20,7 @@
  * Portions Copyright [yyyy] [name of copyright owner]
  */
 
-package com.noelios.restlet.ext.jetty;
+package com.noelios.restlet.ext.jetty5;
 
 import java.io.InputStream;
 import java.io.OutputStream;

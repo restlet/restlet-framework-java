@@ -20,7 +20,7 @@
  * Portions Copyright [yyyy] [name of copyright owner]
  */
 
-package com.noelios.restlet.ext.jetty;
+package com.noelios.restlet.ext.jetty5;
 
 import java.io.File;
 
@@ -68,15 +68,6 @@ import org.restlet.data.Protocols;
  */
 public class HttpsServer extends JettyServer
 {
-   /** The SSL keystore path. */
-   protected String keystorePath;
-
-   /** The SSL keystore password. */
-   protected String keystorePassword;
-
-   /** The SSL key password. */
-   protected String keyPassword;
-
    /**
     * Constructor.
     * @param owner The owner component.
