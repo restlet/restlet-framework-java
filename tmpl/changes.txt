@@ -25,7 +25,8 @@ Changes log
  - Parametrized connectors
  - Added HTTPS connector for Jetty 6.0
  - The Jetty 6 extension now appears in the Javadocs due to the package renaming of the Jetty 5 extension.
-
+ - Updated documentation, especially for the distribution. Suggested by Dave Pawson.
+ 
 1.0 beta 17 (2006-07-19)
 [Bugs fixed]
  - Fixed regression in Jetty 6.0 connector which prevented the handling of requests. 
