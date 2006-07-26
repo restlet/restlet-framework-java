@@ -21,6 +21,9 @@ Changes log
  - Moved Jetty5 to com.noelios.ext.jetty5 package so that Javadocs of both versions can be displayed.
  
 [Other changes] 
+ - Separated the HTTP client connector (based on JDK's HttpUrlConnection) previously integrated to the NRE core. This will allow future alternative
+   implementations like based on Apache HTTP Client or Apache MINA NIO framework. Please ensure that the new extension (com.noelios.restlet.ext.net) is
+   added to your classpath when the application is making HTTP client calls.
  - Added ParameterList.getFirstValue() methods taking and additional "defaultValue" parameter.
  - Parametrized connectors
  - Added HTTPS connector for Jetty 6.0
@@ -29,6 +32,7 @@ Changes log
  - Added more control on Simple HTTPS connector, see list of parameters.
  - Updated AsyncWeb to version 0.8.2.
  - The number of worker threads can now be configured for AsyncWeb.
+ - Refactored the names in the NRE's impl package, uses Abstract prefix for abstract classes and Default prefix for other ones implementing Restlet API.
  
 1.0 beta 17 (2006-07-19)
 [Bugs fixed]
