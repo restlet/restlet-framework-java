@@ -28,6 +28,7 @@ import javax.servlet.ServletException;
 
 import org.mortbay.jetty.HttpConnection;
 import org.mortbay.jetty.Server;
+import org.mortbay.thread.BoundedThreadPool;
 import org.restlet.component.Component;
 import org.restlet.data.ParameterList;
 
@@ -43,26 +44,68 @@ import org.restlet.data.ParameterList;
  * 	<tr>
  * 		<td>minThreads</td>
  * 		<td>int</td>
- * 		<td>2</td>
+ * 		<td>1</td>
  * 		<td>Minumum threads waiting to service requests.</td>
  * 	</tr>
  * 	<tr>
  * 		<td>maxThread</td>
  * 		<td>int</td>
- * 		<td>256</td>
+ * 		<td>255</td>
  * 		<td>Maximum threads that will service requests.</td>
  * 	</tr>
  * 	<tr>
  * 		<td>maxIdleTimeMs</td>
  * 		<td>int</td>
- * 		<td>10000</td>
+ * 		<td>30000</td>
  * 		<td>Time for an idle thread to wait for a request or read.</td>
  * 	</tr>
  * 	<tr>
- * 		<td>lowResourcePersistTimeMs</td>
+ * 		<td>lowThreads</td>
  * 		<td>int</td>
- * 		<td>2000</td>
+ * 		<td>25</td>
+ * 		<td>Threshold of remaining threads at which the server is considered as running low on resources.</td>
+ * 	</tr>
+ * 	<tr>
+ * 		<td>lowResourceMaxIdleTimeMs</td>
+ * 		<td>int</td>
+ * 		<td>2500</td>
  * 		<td>Time in ms that connections will persist if listener is low on resources.</td>
+ * 	</tr>
+ * 	<tr>
+ * 		<td>acceptorThreads</td>
+ * 		<td>int</td>
+ * 		<td>1</td>
+ * 		<td>Number of acceptor threads to set.</td>
+ * 	</tr>
+ * 	<tr>
+ * 		<td>acceptQueueSize</td>
+ * 		<td>int</td>
+ * 		<td>0</td>
+ * 		<td>Size of the accept queue.</td>
+ * 	</tr>
+ * 	<tr>
+ * 		<td>headerBufferSize</td>
+ * 		<td>int</td>
+ * 		<td>4*1024</td>
+ * 		<td>Size of the buffer to be used for request and response headers.</td>
+ * 	</tr>
+ * 	<tr>
+ * 		<td>requestBufferSize</td>
+ * 		<td>int</td>
+ * 		<td>8*1024</td>
+ * 		<td>Size of the content buffer for receiving requests.</td>
+ * 	</tr>
+ * 	<tr>
+ * 		<td>responseBufferSize</td>
+ * 		<td>int</td>
+ * 		<td>32*1024</td>
+ * 		<td>Size of the content buffer for sending responses.</td>
+ * 	</tr>
+ * 	<tr>
+ * 		<td>soLingerTime</td>
+ * 		<td>int</td>
+ * 		<td>1000</td>
+ * 		<td>SO linger time (see Jetty 6 documentation).</td>
  * 	</tr>
  * </table>
  * @see <a href="http://jetty.mortbay.org/jetty6/">Jetty home page</a>
@@ -86,6 +129,14 @@ public abstract class JettyServer extends com.noelios.restlet.impl.HttpServer
    {
    	super(owner, parameters, address, port);
    	this.wrappedServer = new WrappedServer(this);
+
+   	// Configuring the thread pool
+      BoundedThreadPool btp=new BoundedThreadPool();
+      btp.setLowThreads(getLowThreads());
+      btp.setMaxIdleTimeMs(getMaxIdleTimeMs());
+      btp.setMaxThreads(getMaxThreads());
+      btp.setMinThreads(getMinThreads());
+      this.wrappedServer.setThreadPool(btp);
    }
 
    /** Starts the Connector. */
@@ -133,7 +184,105 @@ public abstract class JettyServer extends com.noelios.restlet.impl.HttpServer
 	   {
 	      server.handle(new JettyCall(connection));
 	   }
-
 	};
 
+   /**
+    * Returns the minumum threads waiting to service requests.
+    * @return The minumum threads waiting to service requests.
+    */
+   public int getMinThreads()
+   {
+   	return Integer.parseInt(getParameters().getFirstValue("minThreads", "1"));
+   }
+
+   /**
+    * Returns the maximum threads that will service requests.
+    * @return The maximum threads that will service requests.
+    */
+   public int getMaxThreads()
+   {
+   	return Integer.parseInt(getParameters().getFirstValue("maxThreads", "255"));
+   }
+
+   /**
+    * Returns the threshold of remaining threads at which the server is considered as running low on resources.
+    * @return The threshold of remaining threads at which the server is considered as running low on resources.
+    */
+   public int getLowThreads()
+   {
+   	return Integer.parseInt(getParameters().getFirstValue("lowThreads", "25"));
+   }
+
+   /**
+    * Returns the time in ms that connections will persist if listener is low on resources.
+    * @return The time in ms that connections will persist if listener is low on resources.
+    */
+   public int getLowResourceMaxIdleTimeMs()
+   {
+   	return Integer.parseInt(getParameters().getFirstValue("lowResourceMaxIdleTimeMs", "2500"));
+   }
+
+   /**
+    * Returns the time for an idle thread to wait for a request or read.
+    * @return The time for an idle thread to wait for a request or read.
+    */
+   public int getMaxIdleTimeMs()
+   {
+   	return Integer.parseInt(getParameters().getFirstValue("maxIdleTimeMs", "10000"));
+   }
+
+   /**
+    * Returns the number of acceptor threads to set. 
+    * @return The number of acceptor threads to set.
+    */
+   public int getAcceptorThreads()
+   {
+   	return Integer.parseInt(getParameters().getFirstValue("acceptorThreads", "1"));
+   }
+
+   /**
+    * Returns the size of the accept queue.
+    * @return The size of the accept queue.
+    */
+   public int getAcceptQueueSize()
+   {
+   	return Integer.parseInt(getParameters().getFirstValue("acceptQueueSize", "0"));
+   }
+
+   /**
+    * Returns the size of the buffer to be used for request and response headers.
+    * @return The size of the buffer to be used for request and response headers.
+    */
+   public int getHeaderBufferSize()
+   {
+   	return Integer.parseInt(getParameters().getFirstValue("headerBufferSize", Integer.toString(4*1024)));
+   }
+
+   /**
+    * Returns the size of the content buffer for receiving requests.
+    * @return The size of the content buffer for receiving requests.
+    */
+   public int getRequestBufferSize()
+   {
+   	return Integer.parseInt(getParameters().getFirstValue("requestBufferSize", Integer.toString(8*1024)));
+   }
+
+   /**
+    * Returns the size of the content buffer for sending responses.
+    * @return The size of the content buffer for sending responses.
+    */
+   public int getResponseBufferSize()
+   {
+   	return Integer.parseInt(getParameters().getFirstValue("responseBufferSize", Integer.toString(32*1024)));
+   }
+
+   /**
+    * Returns the SO linger time (see Jetty 6 documentation).
+    * @return The SO linger time (see Jetty 6 documentation).
+    */
+   public int getSoLingerTime()
+   {
+   	return Integer.parseInt(getParameters().getFirstValue("soLingerTime", "1000"));
+   }
+  
 }
