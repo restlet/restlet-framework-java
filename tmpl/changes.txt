@@ -19,6 +19,10 @@ Changes log
  - Simple 3.1 connector now supports parameters: "defaultThreads", "waitTimeMs" for the HTTP server and "keystorePath", "keystorePassword",
    "keyPassword" for the HTTPS one.
  - Moved Jetty5 to com.noelios.ext.jetty5 package so that Javadocs of both versions can be displayed.
+ - The "X-Forwarded-For" header is not used anymore by default to get all client addresses, including intermediary proxies. However, there is now a 
+   standard way to enable this feature: by setting the "useForwardedForHeader" parameter to "true" for the HTTP server connector used. Be aware of the
+   potential security effects of using this header if you don't control all the intermediary proxies as the header could be faked otherwise. This change
+   was suggested by John D. Mitchell.
  
 [Other changes] 
  - Separated the HTTP client connector (based on JDK's HttpUrlConnection) previously integrated to the NRE core. This will allow future alternative

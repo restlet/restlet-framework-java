@@ -26,7 +26,7 @@ import java.net.InetAddress;
 import java.net.UnknownHostException;
 
 /**
- * Client connector call implementation.
+ * Abstract client connector call implementation.
  * @author Jerome Louvel (contact@noelios.com) <a href="http://www.noelios.com/">Noelios Consulting</a>
  */
 public abstract class AbstractClientCall extends DefaultConnectorCall
