@@ -286,6 +286,7 @@
 		<pathelement path="${classes}/${mod-javamail-id}" />
 		<pathelement path="${classes}/${mod-jdbc-id}" />
 		<pathelement path="${classes}/${mod-jetty5-id}" />
+		<pathelement path="${classes}/${mod-jetty6-id}" />
 		<pathelement path="${classes}/${mod-servlet-id}" />
 		<path refid="mod-asyncweb-path" />
 		<path refid="mod-freemarker-path" />
@@ -293,6 +294,7 @@
 		<path refid="mod-javamail-path" />
 		<path refid="mod-jdbc-path" />
 		<path refid="mod-jetty5-path" />
+		<path refid="mod-jetty6-path" />
 		<path refid="mod-servlet-path" />
 		<path refid="mod-simple-path" />
 	</path>
@@ -721,6 +723,7 @@
 				<pathelement path="${mod}/${mod-javamail-id}/src/" />
 				<pathelement path="${mod}/${mod-jdbc-id}/src/" />
 				<pathelement path="${mod}/${mod-jetty5-id}/src/" />
+				<pathelement path="${mod}/${mod-jetty6-id}/src/" />
 				<pathelement path="${mod}/${mod-servlet-id}/src/" />
 				<pathelement path="${mod}/${mod-simple-id}/src/" />
 			</sourcepath>
@@ -739,7 +742,7 @@
 			<link href="http://jakarta.apache.org/commons/fileupload/apidocs/" />
 			<link href="http://java.sun.com/j2se/1.5.0/docs/api/" />
 			<link href="http://java.sun.com/products/javamail/javadocs/" />
-			<link href="http://jetty.mortbay.org/javadoc/" />
+			<!-- <link href="http://jetty.mortbay.org/jetty6/apidocs/" /> -->
 			<link href="http://www.simpleframework.org/javadoc/" />
 		</javadoc>
 	</target>

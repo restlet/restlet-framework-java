@@ -23,6 +23,7 @@ Restlet changes log
  - Added ParameterList.getFirstValue() methods taking and additional "defaultValue" parameter.
  - Parametrized connectors
  - Added HTTPS connector for Jetty 6.0
+ - The Jetty 6 extension now appears in the Javadocs due to the package renaming of the Jetty 5 extension.
 
 1.0 beta 17 (2006-07-19)
 [Bugs fixed]
