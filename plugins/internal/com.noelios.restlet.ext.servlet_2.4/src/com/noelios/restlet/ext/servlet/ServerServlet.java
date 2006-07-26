@@ -35,7 +35,7 @@ import org.restlet.Restlet;
 import org.restlet.component.Component;
 import org.restlet.data.Reference;
 
-import com.noelios.restlet.impl.HttpServer;
+import com.noelios.restlet.impl.AbstractHttpServer;
 
 /**
  * Servlet acting like an HTTP server connector. See the getTarget() method for details on how 
@@ -155,7 +155,7 @@ public class ServerServlet extends HttpServlet
    {
    	if(getTarget(request) != null)
       {
-         HttpServer.handle(new ServletCall(request, response, getServletContext()), getTarget());
+         AbstractHttpServer.handle(new ServletCall(request, response, getServletContext()), getTarget());
       }
    }
 

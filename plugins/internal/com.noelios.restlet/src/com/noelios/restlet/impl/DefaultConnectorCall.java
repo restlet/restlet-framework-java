@@ -30,10 +30,10 @@ import org.restlet.data.ParameterList;
 import com.noelios.restlet.util.DateUtils;
 
 /**
- * Implementation of a connector call.
+ * Default implementation of a connector call.
  * @author Jerome Louvel (contact@noelios.com) <a href="http://www.noelios.com/">Noelios Consulting</a>
  */
-public class ConnectorCallImpl implements ConnectorCall
+public class DefaultConnectorCall implements ConnectorCall
 {
    /** Indicates if the call is confidential. */
    protected boolean confidential;
@@ -65,7 +65,7 @@ public class ConnectorCallImpl implements ConnectorCall
    /**
     * Constructor.
     */
-   public ConnectorCallImpl()
+   public DefaultConnectorCall()
    {
       this.confidential = false;
       this.responseAddress = null;

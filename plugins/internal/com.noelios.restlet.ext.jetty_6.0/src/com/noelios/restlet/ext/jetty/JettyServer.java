@@ -118,7 +118,7 @@ import org.restlet.data.ParameterList;
  * @see <a href="http://jetty.mortbay.org/jetty6/">Jetty home page</a>
  * @author Jerome Louvel (contact@noelios.com) <a href="http://www.noelios.com/">Noelios Consulting</a>
  */
-public abstract class JettyServer extends com.noelios.restlet.impl.HttpServer
+public abstract class JettyServer extends com.noelios.restlet.impl.AbstractHttpServer
 {
 	/**
 	 * The wrapped Jetty server.

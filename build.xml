@@ -161,6 +161,10 @@
 	<property name="mod-jetty6-version" value="${lib-jetty6-version}" />
 	<property name="mod-jetty6-id" value="${mod-jetty6-package}_${mod-jetty6-version}" />
 
+	<property name="mod-net-package" value="com.noelios.restlet.ext.net" />
+	<property name="mod-net-version" value="${version-base}" />
+	<property name="mod-net-id" value="${mod-net-package}" />
+
 	<property name="mod-ri-package" value="com.noelios.restlet" />
 	<property name="mod-ri-version" value="${version-base}" />
 	<property name="mod-ri-id" value="${mod-ri-package}" />
@@ -265,6 +269,11 @@
 		<fileset dir="${lib}/${lib-jetty6-id}" includes="*.jar" />
 	</path>
 
+	<path id="mod-net-path">
+		<path refid="mod-ri-path" />
+		<pathelement path="${classes}/${mod-ri-id}" />
+	</path>
+	
 	<path id="mod-servlet-path">
 		<path refid="mod-ri-path" />
 		<pathelement path="${classes}/${mod-ri-id}" />
@@ -287,6 +296,7 @@
 		<pathelement path="${classes}/${mod-jdbc-id}" />
 		<pathelement path="${classes}/${mod-jetty5-id}" />
 		<pathelement path="${classes}/${mod-jetty6-id}" />
+		<pathelement path="${classes}/${mod-net-id}" />
 		<pathelement path="${classes}/${mod-servlet-id}" />
 		<path refid="mod-asyncweb-path" />
 		<path refid="mod-freemarker-path" />
@@ -482,6 +492,7 @@
 		<compileModule name="jdbc" />
 		<compileModule name="jetty5" />
 		<compileModule name="jetty6" />
+		<compileModule name="net" />
 		<compileModule name="servlet" />
 		<compileModule name="simple" />
 		<compileModule name="example" />
@@ -616,6 +627,7 @@
 		<packageModule name="jdbc" />
 		<packageModule name="jetty5" />
 		<packageModule name="jetty6" />
+		<packageModule name="net" />
 		<packageModule name="servlet" />
 		<packageModule name="simple" />
 		<packageModule name="example" />
@@ -726,6 +738,7 @@
 				<pathelement path="${mod}/${mod-jdbc-id}/src/" />
 				<pathelement path="${mod}/${mod-jetty5-id}/src/" />
 				<pathelement path="${mod}/${mod-jetty6-id}/src/" />
+				<pathelement path="${mod}/${mod-net-id}/src/" />
 				<pathelement path="${mod}/${mod-servlet-id}/src/" />
 				<pathelement path="${mod}/${mod-simple-id}/src/" />
 			</sourcepath>

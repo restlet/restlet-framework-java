@@ -51,7 +51,7 @@ import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 import org.w3c.dom.NodeList;
 
-import com.noelios.restlet.impl.FactoryImpl;
+import com.noelios.restlet.impl.Factory;
 
 /**
  * Client connector to a mail server. Currently only the SMTP protocol is supported. To send an email, 
@@ -114,7 +114,7 @@ public abstract class JavaMailClient extends AbstractClient
    public static Call create(String smtpURI, Representation email)
    {
    	Call result = new DefaultCall();
-      result.setClientName(FactoryImpl.VERSION_HEADER);
+      result.setClientName(Factory.VERSION_HEADER);
       result.setMethod(Methods.POST);
       result.setResourceRef(smtpURI);
       result.setInput(email);

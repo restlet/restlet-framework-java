@@ -20,7 +20,7 @@
  * Portions Copyright [yyyy] [name of copyright owner]
  */
 
-package com.noelios.restlet.impl;
+package com.noelios.restlet.ext.net;
 
 import java.io.IOException;
 import java.io.InputStream;
@@ -33,11 +33,14 @@ import javax.net.ssl.HttpsURLConnection;
 import org.restlet.data.Parameter;
 import org.restlet.data.ParameterList;
 
+import com.noelios.restlet.ext.net.HttpClient;
+import com.noelios.restlet.impl.AbstractHttpClientCall;
+
 /**
- * HTTP client connector call.
+ * HTTP client connector call based on JDK's java.net.HttpUrlConnection class.
  * @author Jerome Louvel (contact@noelios.com) <a href="http://www.noelios.com/">Noelios Consulting</a>
  */
-public class HttpUrlConnectionCall extends HttpClientCall
+public class HttpUrlConnectionCall extends AbstractHttpClientCall
 {
    /** The wrapped HTTP URL connection. */
    protected HttpURLConnection connection;

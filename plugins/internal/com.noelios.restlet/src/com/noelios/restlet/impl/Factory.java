@@ -34,7 +34,6 @@ import java.util.logging.Level;
 import java.util.logging.Logger;
 
 import org.restlet.Call;
-import org.restlet.Factory;
 import org.restlet.Restlet;
 import org.restlet.Router;
 import org.restlet.Scorer;
@@ -58,10 +57,10 @@ import com.noelios.restlet.util.FormUtils;
  * Also acts as a factory implementation.
  * @author Jerome Louvel (contact@noelios.com) <a href="http://www.noelios.com/">Noelios Consulting</a>
  */
-public class FactoryImpl extends Factory
+public class Factory extends org.restlet.Factory
 {
    /** Obtain a suitable logger. */
-   private static Logger logger = Logger.getLogger(FactoryImpl.class.getCanonicalName());
+   private static Logger logger = Logger.getLogger(Factory.class.getCanonicalName());
 
    public static final String VERSION_LONG = Factory.VERSION_LONG;
    public static final String VERSION_SHORT = Factory.VERSION_SHORT;
@@ -77,7 +76,7 @@ public class FactoryImpl extends Factory
     * Constructor.
     */
    @SuppressWarnings("unchecked")
-   public FactoryImpl()
+   public Factory()
    {
       this.clients = new ArrayList<Client>();
       this.servers = new ArrayList<Server>();
@@ -186,7 +185,7 @@ public class FactoryImpl extends Factory
     */
    public static void register()
    {
-      Factory.setInstance(new FactoryImpl());
+      Factory.setInstance(new Factory());
    }
 
    /**
@@ -225,7 +224,7 @@ public class FactoryImpl extends Factory
     */
    public Call createCall()
    {
-      return new CallImpl();
+      return new DefaultCall();
    }
 
    /**

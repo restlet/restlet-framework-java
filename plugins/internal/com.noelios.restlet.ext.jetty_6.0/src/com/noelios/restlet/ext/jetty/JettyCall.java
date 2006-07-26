@@ -38,13 +38,13 @@ import org.restlet.data.ParameterList;
 import org.restlet.data.Representation;
 import org.restlet.data.Statuses;
 
-import com.noelios.restlet.impl.HttpServerCall;
+import com.noelios.restlet.impl.AbstractHttpServerCall;
 
 /**
  * Call that is used by the Jetty 6 HTTP server connector.
  * @author Jerome Louvel (contact@noelios.com) <a href="http://www.noelios.com/">Noelios Consulting</a>
  */
-public class JettyCall extends HttpServerCall
+public class JettyCall extends AbstractHttpServerCall
 {
    /** Obtain a suitable logger. */
    private static Logger logger = Logger.getLogger(JettyCall.class.getCanonicalName());

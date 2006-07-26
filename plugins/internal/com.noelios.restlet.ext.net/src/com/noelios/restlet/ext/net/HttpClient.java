@@ -20,7 +20,7 @@
  * Portions Copyright [yyyy] [name of copyright owner]
  */
 
-package com.noelios.restlet.impl;
+package com.noelios.restlet.ext.net;
 
 import java.io.FileNotFoundException;
 import java.io.IOException;
@@ -44,6 +44,8 @@ import org.restlet.data.PreferenceData;
 import org.restlet.data.Protocols;
 import org.restlet.data.Statuses;
 
+import com.noelios.restlet.impl.Factory;
+import com.noelios.restlet.impl.AbstractHttpClientCall;
 import com.noelios.restlet.util.CookieReader;
 import com.noelios.restlet.util.CookieUtils;
 import com.noelios.restlet.util.DateUtils;
@@ -123,7 +125,7 @@ public class HttpClient extends AbstractClient
     * @param hasInput Indicates if the call will have an input to send to the server.
     * @return A new HTTP protocol call.
     */
-   public HttpClientCall createCall(String method, String resourceUri, boolean hasInput)
+   public AbstractHttpClientCall createCall(String method, String resourceUri, boolean hasInput)
    {
       try
       {
@@ -141,7 +143,7 @@ public class HttpClient extends AbstractClient
     */
    public void handle(Call call)
    {
-   	HttpClientCall clientCall = null; 
+   	AbstractHttpClientCall clientCall = null; 
    	
    	try
    	{
@@ -155,7 +157,7 @@ public class HttpClient extends AbstractClient
       	}
       	else
       	{
-      		clientCall.getRequestHeaders().add(ConnectorCall.HEADER_USER_AGENT, FactoryImpl.VERSION_HEADER);
+      		clientCall.getRequestHeaders().add(ConnectorCall.HEADER_USER_AGENT, Factory.VERSION_HEADER);
          }
 
       	// Add the conditions

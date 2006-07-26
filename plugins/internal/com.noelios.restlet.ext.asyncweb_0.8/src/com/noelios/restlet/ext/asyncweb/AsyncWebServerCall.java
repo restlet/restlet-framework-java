@@ -37,13 +37,13 @@ import org.safehaus.asyncweb.http.internal.HttpHeaders;
 import org.safehaus.asyncweb.http.internal.Request;
 import org.safehaus.asyncweb.http.internal.Response;
 
-import com.noelios.restlet.impl.HttpServerCall;
+import com.noelios.restlet.impl.AbstractHttpServerCall;
 
 /**
  * HttpServerCall implementation used by the AsyncServer.
  * @author Lars Heuer (heuer[at]semagia.com) <a href="http://www.semagia.com/">Semagia</a>
  */
-public class AsyncWebServerCall extends HttpServerCall
+public class AsyncWebServerCall extends AbstractHttpServerCall
 {
 	/**
 	 * AsyncWeb request.

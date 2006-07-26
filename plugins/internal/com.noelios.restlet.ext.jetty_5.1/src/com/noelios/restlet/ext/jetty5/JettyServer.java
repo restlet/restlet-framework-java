@@ -25,7 +25,7 @@ package com.noelios.restlet.ext.jetty5;
 import org.restlet.component.Component;
 import org.restlet.data.ParameterList;
 
-import com.noelios.restlet.impl.HttpServer;
+import com.noelios.restlet.impl.AbstractHttpServer;
 
 /**
  * Abstract Jetty Web server connector. Here is the list of parameters that are supported:
@@ -58,7 +58,7 @@ import com.noelios.restlet.impl.HttpServer;
  * @see <a href="http://jetty.mortbay.com/">Jetty home page</a>
  * @author Jerome Louvel (contact@noelios.com) <a href="http://www.noelios.com/">Noelios Consulting</a>
  */
-public abstract class JettyServer extends HttpServer
+public abstract class JettyServer extends AbstractHttpServer
 {
    /** Serial version identifier. */
    private static final long serialVersionUID = 1L;

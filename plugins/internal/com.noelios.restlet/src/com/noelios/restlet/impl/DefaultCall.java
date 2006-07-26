@@ -55,10 +55,10 @@ import org.restlet.data.Statuses;
 import com.noelios.restlet.util.DateUtils;
 
 /**
- * Implementation of an uniform call.
+ * Default implementation of a Restlet uniform call.
  * @author Jerome Louvel (contact@noelios.com) <a href="http://www.noelios.com/">Noelios Consulting</a>
  */
-public class CallImpl implements Call
+public class DefaultCall implements Call
 {
    /** Obtain a suitable logger. */
    private static Logger logger = Logger.getLogger("com.noelios.restlet.impl.CallImpl");
@@ -442,7 +442,7 @@ public class CallImpl implements Call
     */
    public ConnectorCall getConnectorCall()
    {
-      if(this.connectorCall == null) this.connectorCall = new ConnectorCallImpl();
+      if(this.connectorCall == null) this.connectorCall = new DefaultConnectorCall();
       return this.connectorCall;
    }
 

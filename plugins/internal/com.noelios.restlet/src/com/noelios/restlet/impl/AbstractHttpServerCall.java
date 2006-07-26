@@ -50,13 +50,13 @@ import com.noelios.restlet.util.CookieUtils;
 import com.noelios.restlet.util.SecurityUtils;
 
 /**
- * Base HTTP server connector call.
+ * Abstract HTTP server connector call.
  * @author Jerome Louvel (contact@noelios.com) <a href="http://www.noelios.com/">Noelios Consulting</a>
  */
-public abstract class HttpServerCall extends ConnectorCallImpl
+public abstract class AbstractHttpServerCall extends DefaultConnectorCall
 {
    /** Obtain a suitable logger. */
-   private static Logger logger = Logger.getLogger(HttpServerCall.class.getCanonicalName());
+   private static Logger logger = Logger.getLogger(AbstractHttpServerCall.class.getCanonicalName());
    
    /**
     * Sends the response headers.<br/>

@@ -32,7 +32,7 @@ import org.mortbay.http.HttpException;
 import org.mortbay.http.HttpRequest;
 import org.mortbay.http.HttpResponse;
 import org.mortbay.http.ajp.AJP13Connection;
-import com.noelios.restlet.impl.HttpServerCall;
+import com.noelios.restlet.impl.AbstractHttpServerCall;
 
 /**
  * Jetty AJP connection.
@@ -66,7 +66,7 @@ public class AjpConnection extends AJP13Connection
     */
    protected HttpContext service(HttpRequest request, HttpResponse response) throws HttpException, IOException
    {
-      getJettyServer().handle((HttpServerCall)new JettyCall(request, response));
+      getJettyServer().handle((AbstractHttpServerCall)new JettyCall(request, response));
 
       // Commit the response and ensures that all data is flushed out to the caller
       response.commit();

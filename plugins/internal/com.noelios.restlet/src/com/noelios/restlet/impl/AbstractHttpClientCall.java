@@ -40,17 +40,17 @@ import com.noelios.restlet.data.InputRepresentation;
 import com.noelios.restlet.data.ReadableRepresentation;
 
 /**
- * Base HTTP client connector call.
+ * Abstract HTTP client connector call.
  * @author Jerome Louvel (contact@noelios.com) <a href="http://www.noelios.com/">Noelios Consulting</a>
  */
-public abstract class HttpClientCall extends ClientCall
+public abstract class AbstractHttpClientCall extends AbstractClientCall
 {
 	/**
 	 * Constructor setting the request address to the local host.
     * @param method The method name.
     * @param requestUri The request URI.
 	 */
-	public HttpClientCall(String method, String requestUri)
+	public AbstractHttpClientCall(String method, String requestUri)
 	{
 		super(method, requestUri);
       this.requestAddress = getLocalAddress();

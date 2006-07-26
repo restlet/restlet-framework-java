@@ -48,7 +48,7 @@ import com.noelios.restlet.util.SecurityUtils;
  * Call wrapper for server HTTP calls.
  * @author Jerome Louvel (contact@noelios.com) <a href="http://www.noelios.com/">Noelios Consulting</a>
  */
-public class HttpServerRestletCall extends CallImpl
+public class HttpServerRestletCall extends DefaultCall
 {
    /** Obtain a suitable logger. */
    private static Logger logger = Logger.getLogger(HttpServerRestletCall.class.getCanonicalName());
@@ -57,12 +57,12 @@ public class HttpServerRestletCall extends CallImpl
     * Constructor.
     * @param call The wrapped HTTP server call.
     */
-   public HttpServerRestletCall(HttpServerCall call)
+   public HttpServerRestletCall(AbstractHttpServerCall call)
    {
       // Set the properties
       setConnectorCall(call);
       setServerAddress(call.getResponseAddress());
-      setServerName(FactoryImpl.VERSION_HEADER);
+      setServerName(Factory.VERSION_HEADER);
       setStatus(Statuses.SUCCESS_OK);
       setMethod(Methods.create(call.getRequestMethod()));
 
@@ -266,7 +266,7 @@ public class HttpServerRestletCall extends CallImpl
    {
    	if(this.input == null)
    	{
-   		this.input = ((HttpServerCall)getConnectorCall()).getRequestInput();
+   		this.input = ((AbstractHttpServerCall)getConnectorCall()).getRequestInput();
    	}
       
       return this.input;

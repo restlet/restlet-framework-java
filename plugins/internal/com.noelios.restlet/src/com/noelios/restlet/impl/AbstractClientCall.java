@@ -29,14 +29,14 @@ import java.net.UnknownHostException;
  * Client connector call implementation.
  * @author Jerome Louvel (contact@noelios.com) <a href="http://www.noelios.com/">Noelios Consulting</a>
  */
-public abstract class ClientCall extends ConnectorCallImpl
+public abstract class AbstractClientCall extends DefaultConnectorCall
 {
 	/**
 	 * Constructor setting the request address to the local host.
     * @param method The method name.
     * @param requestUri The request URI.
 	 */
-	public ClientCall(String method, String requestUri)
+	public AbstractClientCall(String method, String requestUri)
 	{
 		this.requestMethod = method;
 		this.requestUri = requestUri;

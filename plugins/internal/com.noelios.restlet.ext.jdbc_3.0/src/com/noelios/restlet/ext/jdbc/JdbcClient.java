@@ -53,7 +53,7 @@ import org.w3c.dom.Node;
 import org.w3c.dom.NodeList;
 
 import com.noelios.restlet.data.ObjectRepresentation;
-import com.noelios.restlet.impl.FactoryImpl;
+import com.noelios.restlet.impl.Factory;
 
 /**
  * Client connector to a JDBC database. To send a request to the server create a new instance of
@@ -102,7 +102,7 @@ public class JdbcClient extends AbstractClient
    public static Call create(String jdbcURI, Representation request)
    {
       Call result = new DefaultCall();
-      result.setClientName(FactoryImpl.VERSION_HEADER);
+      result.setClientName(Factory.VERSION_HEADER);
       result.setMethod(Methods.POST);
       result.setResourceRef(jdbcURI);
       result.setInput(request);

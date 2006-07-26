@@ -40,13 +40,13 @@ import org.restlet.data.Parameter;
 import org.restlet.data.ParameterList;
 import org.restlet.data.Statuses;
 
-import com.noelios.restlet.impl.HttpServerCall;
+import com.noelios.restlet.impl.AbstractHttpServerCall;
 
 /**
  * Call that is used by the Servlet HTTP server connector.
  * @author Jerome Louvel (contact@noelios.com) <a href="http://www.noelios.com/">Noelios Consulting</a>
  */
-public class ServletCall extends HttpServerCall
+public class ServletCall extends AbstractHttpServerCall
 {
    /** Obtain a suitable logger. */
    private static Logger logger = Logger.getLogger(ServletCall.class.getCanonicalName());

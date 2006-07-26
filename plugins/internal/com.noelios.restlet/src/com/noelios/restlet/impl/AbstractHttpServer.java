@@ -33,13 +33,13 @@ import org.restlet.connector.AbstractServer;
 import org.restlet.data.ParameterList;
 
 /**
- * Base HTTP server connector.
+ * Abstract HTTP server connector.
  * @author Jerome Louvel (contact@noelios.com) <a href="http://www.noelios.com/">Noelios Consulting</a>
  */
-public class HttpServer extends AbstractServer
+public abstract class AbstractHttpServer extends AbstractServer
 {
    /** Obtain a suitable logger. */
-   private static Logger logger = Logger.getLogger(HttpServer.class.getCanonicalName());
+   private static Logger logger = Logger.getLogger(AbstractHttpServer.class.getCanonicalName());
 
    /**
     * Constructor.
@@ -48,7 +48,7 @@ public class HttpServer extends AbstractServer
     * @param address The optional listening IP address (local host used if null).
     * @param port The listening port.
     */
-   public HttpServer(Component owner, ParameterList parameters, String address, int port)
+   public AbstractHttpServer(Component owner, ParameterList parameters, String address, int port)
    {
       super(owner, parameters, address, port);
    }
@@ -58,7 +58,7 @@ public class HttpServer extends AbstractServer
     * The default behavior is to create an REST call and delegate it to the attached Restlet.
     * @param call The connector call.
     */
-   public void handle(HttpServerCall call)
+   public void handle(AbstractHttpServerCall call)
    {
    	try
    	{
@@ -77,7 +77,7 @@ public class HttpServer extends AbstractServer
     * @param target The target Restlet.
     * @throws IOException 
     */
-   public static void handle(HttpServerCall call, Restlet target) throws IOException
+   public static void handle(AbstractHttpServerCall call, Restlet target) throws IOException
    {
       Call restletCall = call.toUniform();
       target.handle(restletCall);
