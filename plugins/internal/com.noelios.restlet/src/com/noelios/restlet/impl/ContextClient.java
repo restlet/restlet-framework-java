@@ -41,9 +41,11 @@ import org.restlet.Call;
 import org.restlet.component.Component;
 import org.restlet.connector.AbstractClient;
 import org.restlet.data.CharacterSet;
+import org.restlet.data.DefaultEncoding;
+import org.restlet.data.DefaultLanguage;
+import org.restlet.data.DefaultMediaType;
 import org.restlet.data.DefaultStatus;
 import org.restlet.data.Encoding;
-import org.restlet.data.Encodings;
 import org.restlet.data.Language;
 import org.restlet.data.Languages;
 import org.restlet.data.MediaType;
@@ -65,7 +67,40 @@ import com.noelios.restlet.data.ContextReference.AuthorityType;
 import com.noelios.restlet.util.ByteUtils;
 
 /**
- * Connector to the contextual resources accessible via the file system, class loaders and similar mechanisms.
+ * Connector to the contextual resources accessible via file system, class loaders and similar mechanisms.
+ * Here is the list of parameters that are supported:
+ * <table>
+ * 	<tr>
+ * 		<th>Parameter name</th>
+ * 		<th>Value type</th>
+ * 		<th>Default value</th>
+ * 		<th>Description</th>
+ * 	</tr>
+ * 	<tr>
+ * 		<td>defaultEncoding</td>
+ * 		<td>String</td>
+ * 		<td>identity</td>
+ * 		<td>Default encoding used when no encoding extension is available.</td>
+ * 	</tr>
+ * 	<tr>
+ * 		<td>defaultMediaType</td>
+ * 		<td>String</td>
+ * 		<td>text/plain</td>
+ * 		<td>Default media type used when no media type extension is available.</td>
+ * 	</tr>
+ * 	<tr>
+ * 		<td>defaultLanguage</td>
+ * 		<td>String</td>
+ * 		<td>en-us</td>
+ * 		<td>Default language used when no language extension is available.</td>
+ * 	</tr>
+ * 	<tr>
+ * 		<td>timeToLive</td>
+ * 		<td>int</td>
+ * 		<td>600</td>
+ * 		<td>Time to live for a file representation before it expires (in seconds).</td>
+ * 	</tr>
+ *	</table>
  * @author Jerome Louvel (contact@noelios.com) <a href="http://www.noelios.com/">Noelios Consulting</a>
  */
 public class ContextClient extends AbstractClient
@@ -73,20 +108,8 @@ public class ContextClient extends AbstractClient
    /** Obtain a suitable logger. */
    private static Logger logger = Logger.getLogger(ContextClient.class.getCanonicalName());
 
-   /** Default encoding used when no encoding extension is available. */
-   protected Encoding defaultEncoding;
-
-   /** Default media type used when no media type extension is available. */
-   protected MediaType defaultMediaType;
-
-   /** Default language used when no language extension is available. */
-   protected Language defaultLanguage;
-
    /** Mappings from extensions to metadata. */
    protected Map<String, Metadata> metadataMappings;
-   
-   /** Indicates the time to live for a file representation before it expires (in seconds; default to 10 minutes). */
-   protected int timeToLive;
    
    /** The location of the Web Application archive file or directory path. */
    protected String webAppPath;
@@ -108,11 +131,7 @@ public class ContextClient extends AbstractClient
    	super(owner, parameters);
       getProtocols().add(Protocols.CONTEXT);
       getProtocols().add(Protocols.FILE);
-      this.defaultEncoding = Encodings.IDENTITY;
-      this.defaultMediaType = MediaTypes.TEXT_PLAIN;
-      this.defaultLanguage = Languages.ENGLISH_US;
       this.metadataMappings = new TreeMap<String, Metadata>();
-      this.timeToLive = 600;
       this.webAppPath = null;
       this.webAppArchive = false;
       this.warEntries = null;
@@ -559,36 +578,6 @@ public class ContextClient extends AbstractClient
    }
 
    /**
-    * Set the default encoding ("identity" by default).
-    * Used when no encoding extension is available.
-    * @param encoding The default encoding.
-    */
-   public void setDefaultEncoding(Encoding encoding)
-   {
-      this.defaultEncoding = encoding;
-   }
-
-   /**
-    * Returns the default encoding.
-    * Used when no encoding extension is available.
-    * @return The default encoding.
-    */
-   public Encoding getDefaultEncoding()
-   {
-      return this.defaultEncoding;
-   }
-
-   /**
-    * Set the default media type ("text/plain" by default).
-    * Used when no media type extension is available.
-    * @param mediaType The default media type.
-    */
-   public void setDefaultMediaType(MediaType mediaType)
-   {
-      this.defaultMediaType = mediaType;
-   }
-
-   /**
     * Updates some representation metadata based on a given entry name with extensions. 
     * @param entryName The entry name with extensions.
     * @param representation The representation to update.
@@ -618,6 +607,16 @@ public class ContextClient extends AbstractClient
          }
       }
    }
+
+   /**
+    * Returns the default encoding.
+    * Used when no encoding extension is available.
+    * @return The default encoding.
+    */
+   public Encoding getDefaultEncoding()
+   {
+   	return new DefaultEncoding(getParameters().getFirstValue("defaultEncoding", "identity"));
+   }
    
    /**
     * Returns the default media type.
@@ -626,17 +625,7 @@ public class ContextClient extends AbstractClient
     */
    public MediaType getDefaultMediaType()
    {
-      return this.defaultMediaType;
-   }
-
-   /**
-    * Set the default language ("en-us" by default).
-    * Used when no language extension is available.
-    * @param language The default language.
-    */
-   public void setDefaultLanguage(Language language)
-   {
-      this.defaultLanguage = language;
+   	return new DefaultMediaType(getParameters().getFirstValue("defaultMediaType", "text/plain"));
    }
 
    /**
@@ -646,7 +635,7 @@ public class ContextClient extends AbstractClient
     */
    public Language getDefaultLanguage()
    {
-      return this.defaultLanguage;
+   	return new DefaultLanguage(getParameters().getFirstValue("defaultLanguage", "en-us"));
    }
 
    /**
@@ -655,16 +644,7 @@ public class ContextClient extends AbstractClient
     */
    public int getTimeToLive()
    {
-      return this.timeToLive;
-   }
-
-   /**
-    * Sets the time to live for a file representation before it expires (in seconds).
-    * @param ttl The time to live for a file representation before it expires (in seconds).
-    */
-   public void setTimeToLive(int ttl)
-   {
-      this.timeToLive = ttl;
+   	return Integer.parseInt(getParameters().getFirstValue("timeToLive", "600"));
    }
 
    /**

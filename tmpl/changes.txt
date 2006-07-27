@@ -39,6 +39,7 @@ Changes log
  - Refactored the names in the NRE's impl package, uses Abstract prefix for abstract classes and Default prefix for other ones implementing Restlet API.
  - The ServerServlet connector now copies all Servlet initialization parameters (from the Web Application then from the Web Container) into the connector
    parameters list. This allows the settings of the parameters related to HTTP server connectors in all cases (standalone or embedded).
+ - ContextClient now uses parameters for its configuration (default encoding, language, mediatype, etc.).
  
 1.0 beta 17 (2006-07-19)
 [Bugs fixed]
