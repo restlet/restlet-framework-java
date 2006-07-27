@@ -100,6 +100,12 @@ import com.noelios.restlet.util.ByteUtils;
  * 		<td>600</td>
  * 		<td>Time to live for a file representation before it expires (in seconds).</td>
  * 	</tr>
+ * 	<tr>
+ * 		<td>webAppPath</td>
+ * 		<td>String</td>
+ * 		<td>${user.home}/restlet.war</td>
+ * 		<td>Path to the Web Application WAR file or directory.</td>
+ * 	</tr>
  *	</table>
  * @author Jerome Louvel (contact@noelios.com) <a href="http://www.noelios.com/">Noelios Consulting</a>
  */
@@ -135,7 +141,6 @@ public class ContextClient extends AbstractClient
       this.webAppPath = null;
       this.webAppArchive = false;
       this.warEntries = null;
-
       addCommonExtensions();
    }
    
@@ -653,29 +658,32 @@ public class ContextClient extends AbstractClient
     */
    public String getWebAppPath()
    {
-   	return this.webAppPath;
-   }
-
-   /**
-    * Sets the Web Application archive file or directory path.
-    * @param webAppPath The Web Application archive file or directory path.
-    */
-   public void setWebAppPath(String webAppPath)
-   {
-   	this.webAppPath = webAppPath;
+   	if(this.webAppPath == null)
+   	{
+      	this.webAppPath = getParameters().getFirstValue("webAppPath", System.getProperty("user.home") + File.separator + "restlet.war");
+      	File file = new File(this.webAppPath);
+      	
+      	if(file.exists())
+      	{
+   	   	if(file.isDirectory())
+   	   	{
+   	   		this.webAppArchive = false;
    	
-   	File file = new File(webAppPath);
-   	if(file.isDirectory())
-   	{
-   		this.webAppArchive = false;
-
-   		// Adjust the archive directory path if necessary
-   		if(webAppPath.endsWith("/")) this.webAppPath = this.webAppPath.substring(0, this.webAppPath.length() - 1);
+   	   		// Adjust the archive directory path if necessary
+   	   		if(webAppPath.endsWith("/")) this.webAppPath = this.webAppPath.substring(0, this.webAppPath.length() - 1);
+   	   	}
+   	   	else
+   	   	{
+   	   		this.webAppArchive = true;
+   	   	}
+      	}
+      	else
+      	{
+      		logger.warning("Unable to find an existing directory or archive at: " + this.webAppPath);
+      	}
    	}
-   	else
-   	{
-   		this.webAppArchive = true;
-   	}
+   	
+   	return this.webAppPath;
    }
 
 }
