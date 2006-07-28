@@ -1,7 +1,7 @@
-
 package com.noelios.restlet.test;
 
 import java.io.File;
+import java.io.IOException;
 
 import junit.framework.TestCase;
 
@@ -21,30 +21,24 @@ import com.noelios.restlet.data.StringRepresentation;
 public class FileClientTestCase extends TestCase
 {
 
-	public void testFileClient()
+	public void testFileClient() throws IOException
 	{
-		try
-		{
-			String text = "Test content\r\nLine 2\r\nLine2";
-			Client fc = new DefaultClient(Protocols.FILE);
-			FileReference fr = new FileReference(File.createTempFile("Restlet", ".txt"));
-			
-			// Write the text to temporary file
-			Call call = fc.put(fr.toString(), new StringRepresentation(text));
-			assertTrue(call.getStatus().equals(Statuses.SUCCESS_OK));
+		String text = "Test content\r\nLine 2\r\nLine2";
+		Client fc = new DefaultClient(Protocols.FILE);
+		FileReference fr = new FileReference(File.createTempFile("Restlet",
+				".txt"));
 
-			// Get the text and compare to the original
-			call = fc.get(fr.toString());
-			assertTrue(call.getStatus().equals(Statuses.SUCCESS_OK));
-			
-			// Delete the file
-			call = fc.delete(fr.toString());
-			assertTrue(call.getStatus().equals(Statuses.SUCCESS_NO_CONTENT));
-		}
-		catch (Exception e)
-		{
-			e.printStackTrace();
-		}
+		// Write the text to temporary file
+		Call call = fc.put(fr.toString(), new StringRepresentation(text));
+		assertTrue(call.getStatus().equals(Statuses.SUCCESS_OK));
+
+		// Get the text and compare to the original
+		call = fc.get(fr.toString());
+		assertTrue(call.getStatus().equals(Statuses.SUCCESS_OK));
+
+		// Delete the file
+		call = fc.delete(fr.toString());
+		assertTrue(call.getStatus().equals(Statuses.SUCCESS_NO_CONTENT));
 	}
-	
+
 }
