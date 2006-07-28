@@ -113,6 +113,7 @@ public class RedirectTestCase extends TestCase
 		call.setMethod(method);
 		call.setResourceRef(uri);
 		myContainer.callClient("TestClient", call);
+		assertNotNull(call.getOutput());
 		call.getOutput().write(System.out);
 	}
 

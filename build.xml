@@ -305,6 +305,7 @@
 		<path refid="mod-jdbc-path" />
 		<path refid="mod-jetty5-path" />
 		<path refid="mod-jetty6-path" />
+		<path refid="mod-net-path" />
 		<path refid="mod-servlet-path" />
 		<path refid="mod-simple-path" />
 	</path>
@@ -521,13 +522,23 @@
 		       filtertrace="true"
 		       showoutput="${verbose}">
 			<classpath>
-				<path refid="mod-api-test-path" />
-				<pathelement path="${classes}/${mod-api-test-id}" />
-				<path refid="mod-ri-test-path" />
+				<path refid="mod-ri-path" />
+				<pathelement path="${classes}/${mod-ri-id}" />
 				<pathelement path="${mod}/${mod-ri-id}/src" />
+
+				<pathelement path="${classes}/${mod-api-test-id}" />
+
+				<path refid="mod-ri-test-path" />
 				<pathelement path="${classes}/${mod-ri-test-id}" />
+
+				<path refid="mod-net-path" />
+				<pathelement path="${classes}/${mod-net-id}" />
+				<pathelement path="${mod}/${mod-net-id}/src" />
+
 				<path refid="mod-simple-path" />
 				<pathelement path="${classes}/${mod-simple-id}" />
+				<pathelement path="${mod}/${mod-simple-id}/src" />
+				
 				<pathelement location="tools/retroweaver/retroweaver-all.jar" />
 			</classpath>
 

@@ -86,7 +86,14 @@ public class DefaultClient implements Client
     */
    public Call get(String resourceUri)
    {
-   	return this.wrappedClient.get(resourceUri);
+   	if(this.wrappedClient != null)
+   	{
+   		return this.wrappedClient.get(resourceUri);
+   	}
+   	else
+   	{
+   		return null;
+   	}
    }
    
    /**
@@ -97,7 +104,14 @@ public class DefaultClient implements Client
     */
    public Call post(String resourceUri, Representation input)
    {
-   	return this.wrappedClient.post(resourceUri, input);
+   	if(this.wrappedClient != null)
+   	{
+      	return this.wrappedClient.post(resourceUri, input);
+   	}
+   	else
+   	{
+   		return null;
+   	}
    }
 
    /**
@@ -108,7 +122,14 @@ public class DefaultClient implements Client
     */
    public Call put(String resourceUri, Representation input)
    {
-   	return this.wrappedClient.put(resourceUri, input);
+   	if(this.wrappedClient != null)
+   	{
+      	return this.wrappedClient.put(resourceUri, input);
+   	}
+   	else
+   	{
+   		return null;
+   	}
    }
    
    /**
@@ -118,19 +139,32 @@ public class DefaultClient implements Client
     */
    public Call delete(String resourceUri)
    {
-   	return this.wrappedClient.delete(resourceUri);
+   	if(this.wrappedClient != null)
+   	{
+      	return this.wrappedClient.delete(resourceUri);
+   	}
+   	else
+   	{
+   		return null;
+   	}
    }
    
    /** Starts the Restlet. */
    public void start() throws Exception
    {
-   	this.wrappedClient.start();
+   	if(this.wrappedClient != null)
+   	{
+      	this.wrappedClient.start();
+   	}
    }
 
    /** Stops the Restlet. */
    public void stop() throws Exception
    {
-   	this.wrappedClient.stop();
+   	if(this.wrappedClient != null)
+   	{
+      	this.wrappedClient.stop();
+   	}
    }
 
    /**
@@ -139,7 +173,10 @@ public class DefaultClient implements Client
     */
    public void handle(Call call)
    {
-   	this.wrappedClient.handle(call);
+   	if(this.wrappedClient != null)
+   	{
+      	this.wrappedClient.handle(call);
+   	}
    }
 
    /**
@@ -148,7 +185,14 @@ public class DefaultClient implements Client
     */
    public boolean isStarted()
    {
-   	return this.wrappedClient.isStarted();
+   	if(this.wrappedClient != null)
+   	{
+      	return this.wrappedClient.isStarted();
+   	}
+   	else
+   	{
+   		return false;
+   	}
    }
 
    /**
@@ -157,7 +201,14 @@ public class DefaultClient implements Client
     */
    public boolean isStopped()
    {
-   	return this.wrappedClient.isStopped();
+   	if(this.wrappedClient != null)
+   	{
+      	return this.wrappedClient.isStopped();
+   	}
+   	else
+   	{
+   		return true;
+   	}
    }
 
    /**
@@ -166,7 +217,14 @@ public class DefaultClient implements Client
     */
    public Component getOwner()
    {
-   	return this.wrappedClient.getOwner();
+   	if(this.wrappedClient != null)
+   	{
+      	return this.wrappedClient.getOwner();
+   	}
+   	else
+   	{
+   		return null;
+   	}
    }
 
    /**
@@ -175,7 +233,10 @@ public class DefaultClient implements Client
     */
    public void setOwner(Component owner)
    {
-   	this.wrappedClient.setOwner(owner);   	
+   	if(this.wrappedClient != null)
+   	{
+   		this.wrappedClient.setOwner(owner);
+   	}
    }
    
 	/**
@@ -184,7 +245,14 @@ public class DefaultClient implements Client
 	 */
 	public ParameterList getParameters()
 	{
-		return this.wrappedClient.getParameters();
+   	if(this.wrappedClient != null)
+   	{
+   		return this.wrappedClient.getParameters();
+   	}
+   	else
+   	{
+   		return null;
+   	}
 	}
 
    /**
@@ -193,7 +261,14 @@ public class DefaultClient implements Client
     */
    public List<Protocol> getProtocols()
    {
-   	return this.wrappedClient.getProtocols();
+   	if(this.wrappedClient != null)
+   	{
+      	return this.wrappedClient.getProtocols();
+   	}
+   	else
+   	{
+   		return null;
+   	}
    }
    
 }

@@ -199,7 +199,7 @@ public class Factory extends org.restlet.Factory
    {
      	for(Client client : this.clients)
      	{
-     		if(client.getProtocols().containsAll(protocols))
+        	if(client.getProtocols().containsAll(protocols))
      		{
      	      try
      	      {
@@ -214,7 +214,7 @@ public class Factory extends org.restlet.Factory
      		}
      	}
 
-     	logger.log(Level.WARNING, "No available client connector supports the required protocols.");
+     	logger.log(Level.WARNING, "No available client connector supports the required protocols: " + protocols);
       return null;
    }
 

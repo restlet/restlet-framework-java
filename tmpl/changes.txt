@@ -9,6 +9,7 @@ Changes log
  - Status descriptions are now sent back to Jetty 6 for error statuses. Reported by AJ Barnes.
  - The DirectoryHandler was listing the directories twice to do the content negotiation, slowing down the process. 
  - The content negotiation was not properly handling the situation where no language and media type preferences are defined. Reported by Thierry Boileau.
+ - Fixed potential NPE in DefaultClient and RedirectTestCase when no connector found.
  
 [API breaking changes]
  - Removed get/setTimeout() methods from the Client interface and related classes. Also, removed the configureSsl() method from the Server interface.
@@ -42,6 +43,7 @@ Changes log
  - The ServerServlet connector now copies all Servlet initialization parameters (from the Web Application then from the Web Container) into the connector
    parameters list. This allows the settings of the parameters related to HTTP server connectors in all cases (standalone or embedded).
  - ContextClient now uses parameters for its configuration (default encoding, language, mediatype, etc.).
+ - Some unit test were catching exceptions, preventing JUnit from failing the tests.
  
 1.0 beta 17 (2006-07-19)
 [Bugs fixed]

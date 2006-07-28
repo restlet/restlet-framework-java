@@ -1,4 +1,4 @@
-com.noelios.restlet.ext.jetty.HttpServer	# HTTP
-com.noelios.restlet.ext.jetty.HttpsServer	# HTTPS 
-com.noelios.restlet.ext.jetty.AjpServer		# AJP
+com.noelios.restlet.ext.jetty5.HttpServer	# HTTP
+com.noelios.restlet.ext.jetty5.HttpsServer	# HTTPS 
+com.noelios.restlet.ext.jetty5.AjpServer		# AJP
 
