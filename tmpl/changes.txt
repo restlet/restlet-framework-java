@@ -7,6 +7,8 @@ Changes log
 @version-full@ (@release-date@)
 [Bugs fixed]
  - Status descriptions are now sent back to Jetty 6 for error statuses. Reported by AJ Barnes.
+ - The DirectoryHandler was listing the directories twice to do the content negotiation, slowing down the process. 
+ - The content negotiation was not properly handling the situation where no language and media type preferences are defined. Reported by Thierry Boileau.
  
 [API breaking changes]
  - Removed get/setTimeout() methods from the Client interface and related classes. Also, removed the configureSsl() method from the Server interface.

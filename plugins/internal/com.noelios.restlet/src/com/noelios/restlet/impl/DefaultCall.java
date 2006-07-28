@@ -40,8 +40,10 @@ import org.restlet.data.CookieSetting;
 import org.restlet.data.Form;
 import org.restlet.data.Language;
 import org.restlet.data.LanguagePref;
+import org.restlet.data.Languages;
 import org.restlet.data.MediaType;
 import org.restlet.data.MediaTypePref;
+import org.restlet.data.MediaTypes;
 import org.restlet.data.Method;
 import org.restlet.data.Parameter;
 import org.restlet.data.PreferenceData;
@@ -194,9 +196,13 @@ public class DefaultCall implements Call
             variantLanguage = currentVariant.getLanguage();
             variantMediaType = currentVariant.getMediaType();
 
+            // If no language preference is defined, assume that all languages are acceptable 
+            List<LanguagePref> languagePrefs = getPreference().getLanguages();
+            if(languagePrefs.size() == 0) languagePrefs.add(new LanguagePref(Languages.ALL));
+            
             // For each language preference defined in the call
             // Calculate the score and remember the best scoring preference
-            for(Iterator<LanguagePref> iter2 = getPreference().getLanguages().iterator(); (variantLanguage != null) && iter2.hasNext();)
+            for(Iterator<LanguagePref> iter2 = languagePrefs.iterator(); (variantLanguage != null) && iter2.hasNext();)
             {
                currentLanguagePref = iter2.next();
                currentLanguage = currentLanguagePref.getLanguage();
@@ -262,9 +268,13 @@ public class DefaultCall implements Call
                                  (bestLanguagePref != null) ||
                                  (variantLanguage.equals(fallbackLanguage));
 
+            // If no media type preference is defined, assume that all media types are acceptable 
+            List<MediaTypePref> mediaTypePrefs = getPreference().getMediaTypes();
+            if(mediaTypePrefs.size() == 0) mediaTypePrefs.add(new MediaTypePref(MediaTypes.ALL));
+
             // For each media range preference defined in the call
             // Calculate the score and remember the best scoring preference
-            for(Iterator<MediaTypePref> iter2 = getPreference().getMediaTypes().iterator(); compatibleLanguage && iter2.hasNext();)
+            for(Iterator<MediaTypePref> iter2 = mediaTypePrefs.iterator(); compatibleLanguage && iter2.hasNext();)
             {
                currentMediaTypePref = iter2.next();
                currentMediaType = currentMediaTypePref.getMediaType();
