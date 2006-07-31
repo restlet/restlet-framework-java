@@ -53,8 +53,7 @@ import com.noelios.restlet.util.Base64;
 import com.noelios.restlet.util.FormUtils;
 
 /**
- * Noelios Restlet Engine.<br/>
- * Also acts as a factory implementation.
+ * Factory for the Noelios Restlet Engine.
  * @author Jerome Louvel (contact@noelios.com) <a href="http://www.noelios.com/">Noelios Consulting</a>
  */
 public class Factory extends org.restlet.Factory

@@ -43,12 +43,17 @@ public class LogFilter extends AbstractFilter
    /** Obtain a suitable logger. */
    protected Logger logger;
 
-   /** The log template to use. */
+   /** 
+    * The log template to use. 
+    * @see com.noelios.restlet.util.CallModel
+    * @see com.noelios.restlet.util.StringTemplate
+    */
    protected StringTemplate logTemplate;
 
    /**
-    * Constructor using the default format.<br/>
-    * Default format using <a href="http://analog.cx/docs/logfmt.html">Analog syntax</a>: %Y-%m-%d\t%h:%n:%j\t%j\t%r\t%u\t%s\t%j\t%B\t%f\t%c\t%b\t%q\t%v\t%T
+    * Constructor using the default format. Here is the default format using the 
+    * <a href="http://analog.cx/docs/logfmt.html">Analog syntax</a>: 
+    * %Y-%m-%d\t%h:%n:%j\t%j\t%r\t%u\t%s\t%j\t%B\t%f\t%c\t%b\t%q\t%v\t%T
     * @param owner The owner component.
     * @param logName The log name to used in the logging.properties file.
     */
