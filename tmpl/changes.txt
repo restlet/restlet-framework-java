@@ -10,6 +10,7 @@ Changes log
  - The DirectoryHandler was listing the directories twice to do the content negotiation, slowing down the process. 
  - The content negotiation was not properly handling the situation where no language and media type preferences are defined. Reported by Thierry Boileau.
  - Fixed potential NPE in DefaultClient and RedirectTestCase when no connector found.
+ - Fixed bug in NRE's factory which prevented the detection of HTTPS connectors. Now all HTTPS connectors work fully (Simple, Jetty5 and Jetty6).
  
 [API breaking changes]
  - Removed get/setTimeout() methods from the Client interface and related classes. Also, removed the configureSsl() method from the Server interface.
