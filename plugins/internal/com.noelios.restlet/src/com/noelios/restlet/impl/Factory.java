@@ -61,8 +61,8 @@ public class Factory extends org.restlet.Factory
    /** Obtain a suitable logger. */
    private static Logger logger = Logger.getLogger(Factory.class.getCanonicalName());
 
-   public static final String VERSION_LONG = Factory.VERSION_LONG;
-   public static final String VERSION_SHORT = Factory.VERSION_SHORT;
+   public static final String VERSION_LONG = org.restlet.Factory.VERSION_LONG;
+   public static final String VERSION_SHORT = org.restlet.Factory.VERSION_SHORT;
    public static final String VERSION_HEADER = "Noelios-Restlet-Engine/" + VERSION_SHORT;
 
    /** List of available client connectors. */
@@ -81,8 +81,8 @@ public class Factory extends org.restlet.Factory
       this.servers = new ArrayList<Server>();
 
       // Find the factory class name
-      String providerName = null;
-      String providerClassName = null;
+      String line = null;
+      String provider = null;
 
       // Find the factory class name
       ClassLoader cl = Thread.currentThread().getContextClassLoader();
@@ -98,31 +98,27 @@ public class Factory extends org.restlet.Factory
             try
             {
                BufferedReader reader = new BufferedReader(new InputStreamReader(configURL.openStream(), "utf-8"));
-               providerName = reader.readLine();
+               line = reader.readLine();
 
-               while(providerName != null)
+               while(line != null)
                {
-                  providerClassName = providerName.substring(0, providerName.indexOf('#')).trim();
+                  provider = getProviderClassName(line);
 
-                  if(providerClassName == null)
-                  {
-                     logger.log(Level.SEVERE, "Unable to process the following connector provider: " + providerName + ". Please check your JAR file metadata.");
-                  }
-                  else
+                  if((provider != null) && (!provider.equals("")))
                   {
                      // Instantiate the factory
                      try
                      {
-                        Class<? extends Client> providerClass = (Class<? extends Client>) Class.forName(providerClassName);
+                        Class<? extends Client> providerClass = (Class<? extends Client>) Class.forName(provider);
                         this.clients.add(providerClass.getConstructor(Component.class, ParameterList.class).newInstance(null, null));
                      }
                      catch(Exception e)
                      {
-                        logger.log(Level.SEVERE, "Unable to register the client connector " + providerClassName, e);
+                        logger.log(Level.SEVERE, "Unable to register the client connector " + provider, e);
                      }
                   }
 
-                  providerName = reader.readLine();
+                  line = reader.readLine();
                }
             }
             catch (Exception e)
@@ -146,30 +142,32 @@ public class Factory extends org.restlet.Factory
             try
             {
                BufferedReader reader = new BufferedReader(new InputStreamReader(configURL.openStream(), "utf-8"));
-               providerName = reader.readLine();
-               providerClassName = providerName.substring(0, providerName.indexOf('#')).trim();
+               line = reader.readLine();
+
+               while(line != null)
+               {
+                  provider = getProviderClassName(line);
+
+                  if((provider != null) && (!provider.equals("")))
+                  {
+                     // Instantiate the factory
+                     try
+                     {
+                        Class<? extends Server> providerClass = (Class<? extends Server>) Class.forName(provider);
+                        this.servers.add(providerClass.getConstructor(Component.class, ParameterList.class, String.class, int.class).newInstance(null, null, null, new Integer(-1)));
+                     }
+                     catch(Exception e)
+                     {
+                        logger.log(Level.SEVERE, "Unable to register the server connector " + provider, e);
+                     }
+                  }
+
+                  line = reader.readLine();
+               }
             }
             catch (Exception e)
             {
                logger.log(Level.SEVERE, "Unable to read the provider descriptor: " + configURL.toString());
-            }
-
-            if(providerClassName == null)
-            {
-               logger.log(Level.SEVERE, "Unable to process the following connector provider: " + providerName + ". Please check your JAR file metadata.");
-            }
-            else
-            {
-               // Instantiate the factory
-               try
-               {
-                  Class<? extends Server> providerClass = (Class<? extends Server>) Class.forName(providerClassName);
-                  this.servers.add(providerClass.getConstructor(Component.class, ParameterList.class, String.class, int.class).newInstance(null, null, null, new Integer(-1)));
-               }
-               catch(Exception e)
-               {
-                  logger.log(Level.SEVERE, "Unable to register the server connector " + providerClassName, e);
-               }
             }
          }
       }
@@ -179,6 +177,19 @@ public class Factory extends org.restlet.Factory
       }
    }
 
+   /**
+    * Parses a line to extract the provider class name.
+    * @param line The line to parse.
+    * @return The provider's class name or an empty string.
+    */
+   private String getProviderClassName(String line)
+   {
+   	int index = line.indexOf('#');
+   	if(index != -1) line = line.substring(0, index);
+      return line.trim();
+   }
+   	
+   
    /**
     * Registers the Noelios Restlet Engine
     */
