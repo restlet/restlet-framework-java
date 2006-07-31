@@ -35,6 +35,7 @@
       <li><a href="#restlet-container">Restlet Container</a></li>
       <li><a href="#restlet-engine">Restlet Engine</a></li>
       <li><a href="#router">Router</a></li>
+      <li><a href="#scorer">Scorer</a></li>
       <li><a href="#status-filter">Status Filter</a></li>
    </ol>
 </p>
@@ -131,7 +132,7 @@
 <h3><a name="restlet-container">Restlet Container</a></h3>
 
 <p>
-   Container for Routers, Filters or Restlets. Note that a container is also a Filter by itself. It can also be part of a larger RestletServer.<br/> Restlet containers can also be contained within a parent Restlet server. Container for Routers, Filters or Restlets. Note that a container is also a Filter and Router by itself. It can also be part of a larger RestletServer.
+   Component whose main purpose is to contain and manage a set of Restlets (Handlers, Routers or Filters) in order to constitue a coherent processing chain for incoming REST calls. In addition, Restlet containers can also be contained within a parent Restlet server.
 </p>
 
 <h3><a name="restlet-engine">Restlet Engine</a></h3>
@@ -144,6 +145,12 @@
 
 <p>
    Router of calls to target Restlets. Internally, the targets are handled using attachments objects. Some methods allow the creation of attachments based on URI path patterns matching the beginning of a the resource path in the current context (see Call.getContextPath() method).<br/> Note that during the delegation, the call paths are automatically modified. If you are handling hierarchical paths, remember to directly attach the child routers to their parent router instead of the top level Restlet container. Also, remember to manually handle the path separator characters in your path patterns otherwise the delegation will not work as expected.<br/> Also note that you can attach and detach targets while handling incoming calls as the delegation code is ensured to be thread-safe and atomic. See also this FAQ entry: <a href="http://www.restlet.org/faq#19">What is the difference between a Filter and a Router?</a>.
+</p>
+
+<h3><a name="scorer">Scorer</a></h3>
+
+<p>
+   Scoring handler typically attached to a Router. It is also able to score calls indicating its affinity. The score is typically used by the Router in order to determine the best handler for a given call.
 </p>
 
 <h3><a name="status-filter">Status Filter</a></h3>
@@ -169,7 +176,7 @@
    <table>
       <tr>
          <td style="vertical-align: middle;" rowspan="2"><a href="http://www.java.net/"><img src="http://www.restlet.org/images/javanet.gif" alt="java.net member" /></a></td>
-         <td>Version 2.1, last modified on 2006-07-21</td>
+         <td>Version 2.2, last modified on 2006-07-31</td>
       </tr>
       <tr>
          <td>Copyright &copy; 2005-2006 <a href="mailto:contact@noelios.com">J&eacute;r&ocirc;me Louvel</a>. Restlet is a registered trademark of <a target="_top" href="http://www.noelios.com">Noelios Consulting</a>.</td>

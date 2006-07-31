@@ -36,9 +36,8 @@ import org.restlet.data.Protocols;
 
 /**
  * Component whose main purpose is to contain and manage a set of Restlets (Handlers, Routers or Filters) in
- * order to constitue a coherent processing chain for incoming REST calls. One of the cont 
- * Restlet containers can also be 
- * contained within a parent Restlet server.
+ * order to constitue a coherent processing chain for incoming REST calls. In addition, Restlet containers 
+ * can also be contained within a parent Restlet server.
  * @see <a href="http://www.restlet.org/tutorial#part05">Tutorial: Restlets servers and containers</a>
  * @author Jerome Louvel (contact@noelios.com) <a href="http://www.noelios.com/">Noelios Consulting</a>
  */
