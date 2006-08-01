@@ -38,7 +38,7 @@ import org.restlet.data.ParameterList;
 import org.restlet.data.Representation;
 import org.restlet.data.Statuses;
 
-import com.noelios.restlet.impl.AbstractHttpServerCall;
+import com.noelios.restlet.connector.AbstractHttpServerCall;
 
 /**
  * Call that is used by the Jetty 6 HTTP server connector.

@@ -52,8 +52,8 @@ import org.w3c.dom.Element;
 import org.w3c.dom.Node;
 import org.w3c.dom.NodeList;
 
+import com.noelios.restlet.Factory;
 import com.noelios.restlet.data.ObjectRepresentation;
-import com.noelios.restlet.impl.Factory;
 
 /**
  * Client connector to a JDBC database. To send a request to the server create a new instance of

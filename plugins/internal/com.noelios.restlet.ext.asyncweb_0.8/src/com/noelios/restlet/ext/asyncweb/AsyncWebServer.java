@@ -34,8 +34,8 @@ import org.safehaus.asyncweb.request.AsyncWebRequest;
 import org.safehaus.asyncweb.transport.Transport;
 import org.safehaus.asyncweb.transport.TransportException;
 
-import com.noelios.restlet.impl.AbstractHttpServer;
-import com.noelios.restlet.impl.AbstractHttpServerCall;
+import com.noelios.restlet.connector.AbstractHttpServer;
+import com.noelios.restlet.connector.AbstractHttpServerCall;
 
 /**
  * Abstract AsyncWeb server connector. Here is the list of parameters that are supported:

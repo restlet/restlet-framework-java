@@ -40,7 +40,7 @@ import org.restlet.data.ParameterList;
 import org.restlet.data.Protocol;
 import org.restlet.data.Reference;
 
-import com.noelios.restlet.impl.AbstractHttpServer;
+import com.noelios.restlet.connector.AbstractHttpServer;
 
 /**
  * Servlet acting like an HTTP server connector. See the getTarget() method for details on how 

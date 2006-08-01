@@ -20,13 +20,13 @@
  * Portions Copyright [yyyy] [name of copyright owner]
  */
 
-package com.noelios.restlet.impl;
+package com.noelios.restlet.connector;
 
 import java.net.InetAddress;
 import java.net.UnknownHostException;
 
 /**
- * Abstract client connector call implementation.
+ * Abstract client connector call.
  * @author Jerome Louvel (contact@noelios.com) <a href="http://www.noelios.com/">Noelios Consulting</a>
  */
 public abstract class AbstractClientCall extends DefaultConnectorCall

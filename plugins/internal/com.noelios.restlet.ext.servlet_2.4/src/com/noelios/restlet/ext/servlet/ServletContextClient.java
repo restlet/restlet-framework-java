@@ -37,10 +37,10 @@ import org.restlet.data.ReferenceList;
 import org.restlet.data.Representation;
 import org.restlet.data.Statuses;
 
+import com.noelios.restlet.connector.ContextClient;
 import com.noelios.restlet.data.ContextReference;
 import com.noelios.restlet.data.InputRepresentation;
 import com.noelios.restlet.data.ContextReference.AuthorityType;
-import com.noelios.restlet.impl.ContextClient;
 
 /**
  * Context client connector based on a Servlet context (JEE Web application context).

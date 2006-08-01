@@ -36,7 +36,7 @@ import simple.http.Request;
 import simple.http.Response;
 import simple.http.connect.Connection;
 
-import com.noelios.restlet.impl.AbstractHttpServer;
+import com.noelios.restlet.connector.AbstractHttpServer;
 
 /**
  * Abstract Simple Web server connector. Here is the list of parameters that are supported:

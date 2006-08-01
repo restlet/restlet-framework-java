@@ -25,7 +25,7 @@ package com.noelios.restlet.ext.jetty5;
 import org.restlet.component.Component;
 import org.restlet.data.ParameterList;
 
-import com.noelios.restlet.impl.AbstractHttpServer;
+import com.noelios.restlet.connector.AbstractHttpServer;
 
 /**
  * Abstract Jetty Web server connector. Here is the list of parameters that are supported:

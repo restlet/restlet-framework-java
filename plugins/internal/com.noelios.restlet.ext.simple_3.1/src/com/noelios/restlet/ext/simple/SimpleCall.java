@@ -35,7 +35,7 @@ import org.restlet.data.Reference;
 import simple.http.Request;
 import simple.http.Response;
 
-import com.noelios.restlet.impl.AbstractHttpServerCall;
+import com.noelios.restlet.connector.AbstractHttpServerCall;
 
 /**
  * Call that is used by the Simple HTTP server.

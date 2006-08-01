@@ -28,6 +28,7 @@ Changes log
    potential security effects of using this header if you don't control all the intermediary proxies as the header could be faked otherwise. This change
    was suggested by John D. Mitchell.
  - Removed unused org.restlet.connector.LocalClient connector.
+ - Moved content of com.noelios.restlet.impl to com.noelios.restlet, com.noelios.restlet.connector and com.noelios.restlet.data
  
 [Other changes] 
  - Separated the HTTP client connector (based on JDK's HttpUrlConnection) previously integrated to the NRE core. This will allow future alternative

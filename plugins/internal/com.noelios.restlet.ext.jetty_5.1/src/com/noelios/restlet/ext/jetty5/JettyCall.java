@@ -34,7 +34,7 @@ import org.mortbay.http.HttpResponse;
 import org.restlet.data.Parameter;
 import org.restlet.data.ParameterList;
 
-import com.noelios.restlet.impl.AbstractHttpServerCall;
+import com.noelios.restlet.connector.AbstractHttpServerCall;
 
 /**
  * Call that is used by the Jetty HTTP server connector.

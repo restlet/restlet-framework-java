@@ -39,8 +39,8 @@ import org.restlet.data.Reference;
 import org.restlet.data.ReferenceList;
 import org.restlet.data.Representation;
 
+import com.noelios.restlet.data.DirectoryResource;
 import com.noelios.restlet.data.StringRepresentation;
-import com.noelios.restlet.impl.DirectoryResource;
 
 /**
  * Call handler supported by a directory of resource (from the file system, the web application context or 

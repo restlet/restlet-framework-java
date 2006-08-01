@@ -20,7 +20,7 @@
  * Portions Copyright [yyyy] [name of copyright owner]
  */
 
-package com.noelios.restlet.impl;
+package com.noelios.restlet.connector;
 
 import java.util.ArrayList;
 import java.util.Date;
@@ -41,6 +41,8 @@ import org.restlet.data.SecurityData;
 import org.restlet.data.Statuses;
 import org.restlet.data.Tag;
 
+import com.noelios.restlet.DefaultCall;
+import com.noelios.restlet.Factory;
 import com.noelios.restlet.util.CookieReader;
 import com.noelios.restlet.util.PreferenceUtils;
 import com.noelios.restlet.util.SecurityUtils;

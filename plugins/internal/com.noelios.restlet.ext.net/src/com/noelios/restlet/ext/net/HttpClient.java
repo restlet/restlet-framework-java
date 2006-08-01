@@ -44,8 +44,8 @@ import org.restlet.data.PreferenceData;
 import org.restlet.data.Protocols;
 import org.restlet.data.Statuses;
 
-import com.noelios.restlet.impl.Factory;
-import com.noelios.restlet.impl.AbstractHttpClientCall;
+import com.noelios.restlet.Factory;
+import com.noelios.restlet.connector.AbstractHttpClientCall;
 import com.noelios.restlet.util.CookieReader;
 import com.noelios.restlet.util.CookieUtils;
 import com.noelios.restlet.util.DateUtils;

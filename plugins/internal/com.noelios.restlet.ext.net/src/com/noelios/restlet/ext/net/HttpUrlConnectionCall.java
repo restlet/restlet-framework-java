@@ -33,8 +33,8 @@ import javax.net.ssl.HttpsURLConnection;
 import org.restlet.data.Parameter;
 import org.restlet.data.ParameterList;
 
+import com.noelios.restlet.connector.AbstractHttpClientCall;
 import com.noelios.restlet.ext.net.HttpClient;
-import com.noelios.restlet.impl.AbstractHttpClientCall;
 
 /**
  * HTTP client connector call based on JDK's java.net.HttpUrlConnection class.
