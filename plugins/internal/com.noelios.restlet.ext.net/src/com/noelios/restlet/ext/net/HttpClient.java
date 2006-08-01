@@ -40,7 +40,7 @@ import org.restlet.data.DefaultStatus;
 import org.restlet.data.MediaTypes;
 import org.restlet.data.Parameter;
 import org.restlet.data.ParameterList;
-import org.restlet.data.PreferenceData;
+import org.restlet.data.ClientData;
 import org.restlet.data.Protocols;
 import org.restlet.data.Statuses;
 
@@ -151,9 +151,9 @@ public class HttpClient extends AbstractClient
       	clientCall = createCall(call.getMethod().getName(), call.getResourceRef().toString(), hasInput(call));
 
       	// Add the user agent header
-      	if(call.getClientName() != null)
+      	if(call.getClient().getName() != null)
       	{
-      		clientCall.getRequestHeaders().add(ConnectorCall.HEADER_USER_AGENT, call.getClientName());
+      		clientCall.getRequestHeaders().add(ConnectorCall.HEADER_USER_AGENT, call.getClient().getName());
       	}
       	else
       	{
@@ -214,29 +214,29 @@ public class HttpClient extends AbstractClient
          }
 
          // Add the preferences
-         PreferenceData pref = call.getPreference();
-         if(pref.getMediaTypes().size() > 0)
+         ClientData client = call.getClient();
+         if(client.getMediaTypePrefs().size() > 0)
          {
-            clientCall.getRequestHeaders().add(ConnectorCall.HEADER_ACCEPT, PreferenceUtils.format(pref.getMediaTypes()));
+            clientCall.getRequestHeaders().add(ConnectorCall.HEADER_ACCEPT, PreferenceUtils.format(client.getMediaTypePrefs()));
          }
          else
          {
         	 clientCall.getRequestHeaders().add(ConnectorCall.HEADER_ACCEPT, MediaTypes.ALL.getName());
          }
          
-         if(pref.getCharacterSets().size() > 0)
+         if(client.getCharacterSetPrefs().size() > 0)
          {
-            clientCall.getRequestHeaders().add(ConnectorCall.HEADER_ACCEPT_CHARSET, PreferenceUtils.format(pref.getCharacterSets()));
+            clientCall.getRequestHeaders().add(ConnectorCall.HEADER_ACCEPT_CHARSET, PreferenceUtils.format(client.getCharacterSetPrefs()));
          }
          
-         if(pref.getEncodings().size() > 0)
+         if(client.getEncodingPrefs().size() > 0)
          {
-            clientCall.getRequestHeaders().add(ConnectorCall.HEADER_ACCEPT_ENCODING, PreferenceUtils.format(pref.getEncodings()));
+            clientCall.getRequestHeaders().add(ConnectorCall.HEADER_ACCEPT_ENCODING, PreferenceUtils.format(client.getEncodingPrefs()));
          }
          
-         if(pref.getLanguages().size() > 0)
+         if(client.getLanguagePrefs().size() > 0)
          {
-            clientCall.getRequestHeaders().add(ConnectorCall.HEADER_ACCEPT_LANGUAGE, PreferenceUtils.format(pref.getLanguages()));
+            clientCall.getRequestHeaders().add(ConnectorCall.HEADER_ACCEPT_LANGUAGE, PreferenceUtils.format(client.getLanguagePrefs()));
          }
 
          // Add the security

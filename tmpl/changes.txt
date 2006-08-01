@@ -30,6 +30,7 @@ Changes log
  - Removed unused org.restlet.connector.LocalClient connector.
  - Moved content of com.noelios.restlet.impl to com.noelios.restlet, com.noelios.restlet.connector and com.noelios.restlet.data
  - Renamed Call's "outputRef" property back to "redirectRef" as we now have Representation's "identifier" property to get the location of the call's output.
+ - Factorized all client data in Call into the ClientData class (was PreferenceData). 
  
 [Other changes] 
  - Separated the HTTP client connector (based on JDK's HttpUrlConnection) previously integrated to the NRE core. This will allow future alternative
@@ -49,7 +50,8 @@ Changes log
  - ContextClient now uses parameters for its configuration (default encoding, language, mediatype, etc.).
  - Some unit test were catching exceptions, preventing JUnit from failing the tests.
  - Added a Resource.setIdentifier() method taking a URI as a String.
- - Now the "Content-Location" is supported, for both the HTTP client and server connectors. The corresponding property is call.getOutput().get/setIdentifier().
+ - Now the "Content-Location" is supported, for both the HTTP client and server connectors. The corresponding property is available via the 
+   call.getOutput().get/setIdentifier() method.
  
 1.0 beta 17 (2006-07-19)
 [Bugs fixed]

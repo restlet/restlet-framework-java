@@ -102,7 +102,7 @@ public class JdbcClient extends AbstractClient
    public static Call create(String jdbcURI, Representation request)
    {
       Call result = new DefaultCall();
-      result.setClientName(Factory.VERSION_HEADER);
+      result.getClient().setName(Factory.VERSION_HEADER);
       result.setMethod(Methods.POST);
       result.setResourceRef(jdbcURI);
       result.setInput(request);

@@ -135,7 +135,7 @@ public class LogFilter extends AbstractFilter
 
       // Append the client IP address
       sb.append('\t');
-      String clientAddress = call.getClientAddress();
+      String clientAddress = call.getClient().getAddress();
       sb.append((clientAddress == null) ? "-" : clientAddress);
 
       // Append the version
@@ -143,7 +143,7 @@ public class LogFilter extends AbstractFilter
 
       // Append the client name
       sb.append('\t');
-      String clientName = call.getClientName();
+      String clientName = call.getClient().getName();
       sb.append((clientName == null) ? "-" : clientName);
 
       // Append the referrer

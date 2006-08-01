@@ -114,7 +114,7 @@ public abstract class JavaMailClient extends AbstractClient
    public static Call create(String smtpURI, Representation email)
    {
    	Call result = new DefaultCall();
-      result.setClientName(Factory.VERSION_HEADER);
+      result.getClient().setName(Factory.VERSION_HEADER);
       result.setMethod(Methods.POST);
       result.setResourceRef(smtpURI);
       result.setInput(email);

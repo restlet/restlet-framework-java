@@ -32,7 +32,7 @@ import org.restlet.data.CookieSetting;
 import org.restlet.data.Form;
 import org.restlet.data.Language;
 import org.restlet.data.Method;
-import org.restlet.data.PreferenceData;
+import org.restlet.data.ClientData;
 import org.restlet.data.Reference;
 import org.restlet.data.Representation;
 import org.restlet.data.Resource;
@@ -65,30 +65,6 @@ public interface Call
     * @see <a href="http://httpd.apache.org/docs/2.2/en/content-negotiation.html#algorithm">Apache content negotiation algorithm</a>
     */
    public Representation getBestVariant(Resource resource, Language fallbackLanguage);
-
-   /**
-    * Returns the client IP address.
-    * @return The client IP address.
-    */
-   public String getClientAddress();
-
-   /**
-    * Returns the list of client IP addresses.<br/>
-    * The first address is the one of the immediate client component as returned by the getClientAdress() method and
-    * the last address should correspond to the origin client (frequently a user agent).
-    * This is useful when the user agent is separated from the origin server by a chain of intermediary components.<br/>
-    * This list of addresses is based on headers such as the "X-Forwarded-For" header supported by popular proxies and caches.<br/>
-    * However, this information is only safe for intermediary components within your local network.<br/>
-    * Other addresses could easily be changed by setting a fake header and should never be trusted for serious security checks.
-    * @return The client IP addresses.
-    */
-   public List<String> getClientAddresses();
-
-   /**
-    * Returns the client name (ex: user agent name).
-    * @return The client name.
-    */
-   public String getClientName();
 
    /**
     * Returns the condition data applying to this call.
@@ -160,10 +136,10 @@ public interface Call
    public Reference getRedirectRef();
 
    /**
-    * Returns the preference data of the client.
-    * @return The preference data of the client.
+    * Returns the client specific data.
+    * @return The client specific data.
     */
-   public PreferenceData getPreference();
+   public ClientData getClient();
 
    /**
     * Returns the referrer reference if available.
@@ -216,18 +192,6 @@ public interface Call
     * @see <a href="http://httpd.apache.org/docs/2.2/en/content-negotiation.html#algorithm">Apache content negotiation algorithm</a>
     */
    public void setBestOutput(Resource resource, Language fallbackLanguage);
-
-   /**
-    * Sets the client IP address.
-    * @param address The client IP address.
-    */
-   public void setClientAddress(String address);
-
-   /**
-    * Sets the client name (ex: user agent name).
-    * @param name The client name.
-    */
-   public void setClientName(String name);
 
    /**
     * Sets the low-level connector call.

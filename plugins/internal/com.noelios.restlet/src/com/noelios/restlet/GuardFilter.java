@@ -156,7 +156,7 @@ public class GuardFilter extends AbstractFilter
 	            if(separator == -1)
 	            {
 	               // Log the blocking
-	               logger.warning("Invalid credentials given by client with IP: " + call.getClientAddress());
+	               logger.warning("Invalid credentials given by client with IP: " + call.getClient().getAddress());
 	            }
 	            else
 	            {

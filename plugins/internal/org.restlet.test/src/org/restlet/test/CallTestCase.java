@@ -27,6 +27,7 @@ import java.util.List;
 import org.restlet.Call;
 import org.restlet.DefaultCall;
 import org.restlet.connector.ConnectorCall;
+import org.restlet.data.ClientData;
 import org.restlet.data.Methods;
 import org.restlet.data.Reference;
 import org.restlet.data.Statuses;
@@ -87,17 +88,17 @@ public class CallTestCase extends RestletTestCase
 	 */
 	public void testClientAddress() throws Exception
 	{
-		Call call = getCall();
+		ClientData client = getCall().getClient();
 		String address = "127.0.0.1";
-		call.setClientAddress(address);
-		assertEquals(address, call.getClientAddress());
-		assertEquals(1, call.getClientAddresses().size());
-		assertEquals(address, call.getClientAddresses().get(0));
+		client.setAddress(address);
+		assertEquals(address, client.getAddress());
+		assertEquals(1, client.getAddresses().size());
+		assertEquals(address, client.getAddresses().get(0));
 		address = "192.168.99.10";
-		call.setClientAddress(address);
-		assertEquals(address, call.getClientAddress());
-		assertEquals(1, call.getClientAddresses().size());
-		assertEquals(address, call.getClientAddresses().get(0));
+		client.setAddress(address);
+		assertEquals(address, client.getAddress());
+		assertEquals(1, client.getAddresses().size());
+		assertEquals(address, client.getAddresses().get(0));
 	}
 
 	/**
@@ -105,24 +106,24 @@ public class CallTestCase extends RestletTestCase
 	 */
 	public void testClientAddresses() throws Exception
 	{
-		Call call = getCall();
+		ClientData client = getCall().getClient();
 		String firstAddress = "127.0.0.1";
 		String secondAddress = "192.168.99.10";
 		List<String> addresses = Arrays.asList(new String[]{ firstAddress, secondAddress });
-		call.getClientAddresses().addAll(addresses);
-		assertEquals(addresses, call.getClientAddresses());
-		assertEquals(firstAddress, call.getClientAddress());
+		client.getAddresses().addAll(addresses);
+		assertEquals(addresses, client.getAddresses());
+		assertEquals(firstAddress, client.getAddress());
 		firstAddress = "192.168.99.20";
-		call.setClientAddress(firstAddress);
-		assertEquals(firstAddress, call.getClientAddress());
-		assertEquals(firstAddress, call.getClientAddresses().get(0));
-		assertEquals(secondAddress, call.getClientAddresses().get(1));
+		client.setAddress(firstAddress);
+		assertEquals(firstAddress, client.getAddress());
+		assertEquals(firstAddress, client.getAddresses().get(0));
+		assertEquals(secondAddress, client.getAddresses().get(1));
 		firstAddress = "127.0.0.1";
 		addresses = Arrays.asList(new String[] { firstAddress, secondAddress });
-		call.getClientAddresses().clear();
-		call.getClientAddresses().addAll(addresses);
-		assertEquals(addresses, call.getClientAddresses());
-		assertEquals(firstAddress, call.getClientAddress());
+		client.getAddresses().clear();
+		client.getAddresses().addAll(addresses);
+		assertEquals(addresses, client.getAddresses());
+		assertEquals(firstAddress, client.getAddress());
 	}
 
 	/**
@@ -130,13 +131,13 @@ public class CallTestCase extends RestletTestCase
 	 */
 	public void testClientName() throws Exception
 	{
-		Call call = getCall();
+		ClientData client = getCall().getClient();
 		String name = "Restlet";
-		call.setClientName(name);
-		assertEquals(name, call.getClientName());
+		client.setName(name);
+		assertEquals(name, client.getName());
 		name = "Restlet Client";
-		call.setClientName(name);
-		assertEquals(name, call.getClientName());
+		client.setName(name);
+		assertEquals(name, client.getName());
 	}
 
 	/**

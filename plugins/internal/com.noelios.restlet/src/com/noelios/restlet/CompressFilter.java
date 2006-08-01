@@ -249,7 +249,7 @@ public class CompressFilter extends AbstractFilter
 		{
 			currentEncoding = iter.next();
 			
-			for(Iterator<EncodingPref> iter2 = call.getPreference().getEncodings().iterator(); iter2.hasNext(); )
+			for(Iterator<EncodingPref> iter2 = call.getClient().getEncodingPrefs().iterator(); iter2.hasNext(); )
 			{
 				currentPref = iter2.next();
 				

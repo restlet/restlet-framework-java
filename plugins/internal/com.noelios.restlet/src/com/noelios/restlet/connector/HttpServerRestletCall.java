@@ -34,7 +34,7 @@ import org.restlet.data.ConditionData;
 import org.restlet.data.Cookie;
 import org.restlet.data.Methods;
 import org.restlet.data.Parameter;
-import org.restlet.data.PreferenceData;
+import org.restlet.data.ClientData;
 import org.restlet.data.Reference;
 import org.restlet.data.Representation;
 import org.restlet.data.SecurityData;
@@ -81,60 +81,6 @@ public class HttpServerRestletCall extends DefaultCall
       {
          setResourceRef(resource);
       }
-   }
-
-   /**
-    * Returns the list of client IP addresses.<br/>
-    * The first address is the one of the immediate client component as returned by the getClientAdress() method and
-    * the last address should correspond to the origin client (frequently a user agent). 
-    * This is useful when the user agent is separated from the origin server by a chain of intermediary components.<br/>
-    * This list of addresses is based on headers such as the "X-Forwarded-For" header supported by popular proxies and caches.<br/>
-    * However, this information is only safe for intermediary components within your local network.<br/>
-    * Other addresses could easily be changed by setting a fake header and should never be trusted for serious security checks.  
-    * @return The client IP addresses.
-    */
-   public List<String> getClientAddresses()
-   {
-   	if(this.clientAddresses == null)
-   	{
-   		// Initialize the list
-   		this.clientAddresses = super.getClientAddresses();
-
-   		// Add the request address as the first client address
-   		setClientAddress(getConnectorCall().getRequestAddress());
-   		
-   		boolean useForwardedForHeader = Boolean.parseBoolean(this.httpServer.getParameters().getFirstValue("useForwardedForHeader", false)); 
-   		if(useForwardedForHeader)
-   		{
-		      // Lookup the "X-Forwarded-For" header
-		      String header = getConnectorCall().getRequestHeaders().getValues(ConnectorCall.HEADER_X_FORWARDED_FOR);
-		      if(header != null)
-		      {
-		      	String[] addresses = header.split(",");
-	      		for(int i = addresses.length - 1; i >= 0; i--)
-	      		{
-	      			this.clientAddresses.add(addresses[i].trim());
-	      		}
-		      }
-   		}
-   	}
-   	
-   	return this.clientAddresses;
-   }
-   
-   /**
-    * Returns the client name.
-    * @return The client name.
-    */
-   public String getClientName()
-   {
-      if(this.clientName == null)
-      {
-         // Extract the header values
-      	this.clientName = getConnectorCall().getRequestHeaders().getValues(ConnectorCall.HEADER_USER_AGENT);
-      }
-      
-      return this.clientName;
    }
 
    /**
@@ -285,14 +231,14 @@ public class HttpServerRestletCall extends DefaultCall
    }
 
    /**
-    * Returns the preference data of the client.
-    * @return The preference data of the client.
+    * Returns the client specific data.
+    * @return The client specific data.
     */
-   public PreferenceData getPreference()
+   public ClientData getClient()
    {
-      if(this.preference == null) 
+      if(this.client == null) 
       {
-         this.preference = new PreferenceData();
+         this.client = new ClientData();
 
          // Extract the header values
          String acceptCharset = getConnectorCall().getRequestHeaders().getValues(ConnectorCall.HEADER_ACCEPT_CHARSET);
@@ -301,13 +247,33 @@ public class HttpServerRestletCall extends DefaultCall
          String acceptMediaType = getConnectorCall().getRequestHeaders().getValues(ConnectorCall.HEADER_ACCEPT);
 
          // Parse the headers and update the call preferences
-         PreferenceUtils.parseCharacterSets(acceptCharset, this.preference);
-         PreferenceUtils.parseEncodings(acceptEncoding, this.preference);
-         PreferenceUtils.parseLanguages(acceptLanguage, this.preference);
-         PreferenceUtils.parseMediaTypes(acceptMediaType, this.preference);
+         PreferenceUtils.parseCharacterSets(acceptCharset, this.client);
+         PreferenceUtils.parseEncodings(acceptEncoding, this.client);
+         PreferenceUtils.parseLanguages(acceptLanguage, this.client);
+         PreferenceUtils.parseMediaTypes(acceptMediaType, this.client);
+
+         // Set other properties
+         this.client.setName(getConnectorCall().getRequestHeaders().getValues(ConnectorCall.HEADER_USER_AGENT));
+         this.client.setAddress(getConnectorCall().getRequestAddress());
+
+         // Special handling for the non standard but common "X-Forwarded-For" header. 
+   		boolean useForwardedForHeader = Boolean.parseBoolean(this.httpServer.getParameters().getFirstValue("useForwardedForHeader", false)); 
+   		if(useForwardedForHeader)
+   		{
+		      // Lookup the "X-Forwarded-For" header
+		      String header = getConnectorCall().getRequestHeaders().getValues(ConnectorCall.HEADER_X_FORWARDED_FOR);
+		      if(header != null)
+		      {
+		      	String[] addresses = header.split(",");
+	      		for(int i = addresses.length - 1; i >= 0; i--)
+	      		{
+	      			this.client.getAddresses().add(addresses[i].trim());
+	      		}
+		      }
+   		}
       }
       
-      return this.preference;
+      return this.client;
    }
 
    /**

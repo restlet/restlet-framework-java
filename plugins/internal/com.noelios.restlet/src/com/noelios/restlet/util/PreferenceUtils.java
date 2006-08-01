@@ -40,7 +40,7 @@ import org.restlet.data.MediaTypePref;
 import org.restlet.data.MediaTypes;
 import org.restlet.data.Parameter;
 import org.restlet.data.Preference;
-import org.restlet.data.PreferenceData;
+import org.restlet.data.ClientData;
 
 /**
  * Preference manipulation utilities.<br/>
@@ -189,9 +189,9 @@ public class PreferenceUtils
    /**
     * Parses character set preferences from a header.
     * @param acceptCharsetHeader The header to parse.  
-    * @param preference The client preferences to update. 
+    * @param client The client preferences to update. 
     */
-   public static void parseCharacterSets(String acceptCharsetHeader, PreferenceData preference)
+   public static void parseCharacterSets(String acceptCharsetHeader, ClientData client)
    {
       if(acceptCharsetHeader != null)
       {
@@ -199,7 +199,7 @@ public class PreferenceUtils
          // http://www.w3.org/Protocols/rfc2616/rfc2616-sec14.html#sec14.2
          if(acceptCharsetHeader.length() == 0)
          {
-         	preference.getCharacterSets().add(new CharacterSetPref(CharacterSets.ISO_8859_1));
+         	client.getCharacterSetPrefs().add(new CharacterSetPref(CharacterSets.ISO_8859_1));
          }
          else
          {
@@ -209,7 +209,7 @@ public class PreferenceUtils
                CharacterSetPref currentPref = (CharacterSetPref)pr.readPreference();
                while(currentPref != null)
                {
-               	preference.getCharacterSets().add(currentPref);
+               	client.getCharacterSetPrefs().add(currentPref);
                   currentPref = (CharacterSetPref)pr.readPreference();
                }
             }
@@ -221,7 +221,7 @@ public class PreferenceUtils
       }
       else
       {
-         preference.getCharacterSets().add(new CharacterSetPref(CharacterSets.ALL));
+         client.getCharacterSetPrefs().add(new CharacterSetPref(CharacterSets.ALL));
       }
    }
 
@@ -230,7 +230,7 @@ public class PreferenceUtils
     * @param acceptEncodingHeader The header to parse.  
     * @param preference The client preferences to update. 
     */
-   public static void parseEncodings(String acceptEncodingHeader, PreferenceData preference)
+   public static void parseEncodings(String acceptEncodingHeader, ClientData preference)
    {
       if(acceptEncodingHeader != null)
       {
@@ -240,7 +240,7 @@ public class PreferenceUtils
             EncodingPref currentPref = (EncodingPref)pr.readPreference();
             while(currentPref != null)
             {
-               preference.getEncodings().add(currentPref);
+               preference.getEncodingPrefs().add(currentPref);
                currentPref = (EncodingPref)pr.readPreference();
             }
          }
@@ -251,7 +251,7 @@ public class PreferenceUtils
       }
       else
       {
-         preference.getEncodings().add(new EncodingPref(Encodings.IDENTITY));
+         preference.getEncodingPrefs().add(new EncodingPref(Encodings.IDENTITY));
       }
    }
 
@@ -260,7 +260,7 @@ public class PreferenceUtils
     * @param acceptLanguageHeader The header to parse.  
     * @param preference The client preferences to update. 
     */
-   public static void parseLanguages(String acceptLanguageHeader, PreferenceData preference)
+   public static void parseLanguages(String acceptLanguageHeader, ClientData preference)
    {
       if(acceptLanguageHeader != null)
       {
@@ -270,7 +270,7 @@ public class PreferenceUtils
             LanguagePref currentPref = (LanguagePref)pr.readPreference();
             while(currentPref != null)
             {
-               preference.getLanguages().add(currentPref);
+               preference.getLanguagePrefs().add(currentPref);
                currentPref = (LanguagePref)pr.readPreference();
             }
          }
@@ -281,7 +281,7 @@ public class PreferenceUtils
       }
       else
       {
-         preference.getLanguages().add(new LanguagePref(Languages.ALL));
+         preference.getLanguagePrefs().add(new LanguagePref(Languages.ALL));
       }
    }
 
@@ -290,7 +290,7 @@ public class PreferenceUtils
     * @param acceptMediaTypeHeader The header to parse.  
     * @param preference The client preferences to update. 
     */
-   public static void parseMediaTypes(String acceptMediaTypeHeader, PreferenceData preference)
+   public static void parseMediaTypes(String acceptMediaTypeHeader, ClientData preference)
    {
       if(acceptMediaTypeHeader != null)
       {
@@ -300,7 +300,7 @@ public class PreferenceUtils
             MediaTypePref currentPref = (MediaTypePref)pr.readPreference();
             while(currentPref != null)
             {
-               preference.getMediaTypes().add(currentPref);
+               preference.getMediaTypePrefs().add(currentPref);
                currentPref = (MediaTypePref)pr.readPreference();
             }
          }
@@ -311,7 +311,7 @@ public class PreferenceUtils
       }
       else
       {
-         preference.getMediaTypes().add(new MediaTypePref(MediaTypes.ALL));
+         preference.getMediaTypePrefs().add(new MediaTypePref(MediaTypes.ALL));
       }
    }
    

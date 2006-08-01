@@ -113,7 +113,7 @@ public class CallModel implements ReadableModel
 	      {
 	      	if(name.equals(NAME_CLIENT_ADDRESS))
 	      	{
-	      		result = call.getClientAddress();
+	      		result = call.getClient().getAddress();
 	      	}
 	      	else
 	      	{
@@ -125,11 +125,11 @@ public class CallModel implements ReadableModel
 	      			
 	   				if(rest.equals("first"))
 	   				{
-	   					result = call.getClientAddresses().get(0);
+	   					result = call.getClient().getAddresses().get(0);
 	   				}
 	   				else if(rest.equals("last"))
 	   				{
-	   					result = call.getClientAddresses().get(call.getClientAddresses().size() - 1);
+	   					result = call.getClient().getAddresses().get(call.getClient().getAddresses().size() - 1);
 	   				}
 	   				else if(isVariableName(rest))
 	   				{
@@ -139,7 +139,7 @@ public class CallModel implements ReadableModel
 	   				else
 	   				{
 	   					// Lookup by index
-	   					result = call.getClientAddresses().get(Integer.parseInt(rest));
+	   					result = call.getClient().getAddresses().get(Integer.parseInt(rest));
 	   				}
 	      		}
 	      		else
@@ -150,7 +150,7 @@ public class CallModel implements ReadableModel
 	      }
 	      else if(name.equals(NAME_CLIENT_NAME))
 	      {
-	         result = call.getClientName();
+	         result = call.getClient().getName();
 	      }
 	      else if(name.startsWith(NAME_CONNECTOR_REQUEST_HEADER))
 	      {
@@ -385,11 +385,11 @@ public class CallModel implements ReadableModel
 
       if(name.startsWith(NAME_CLIENT_ADDRESS))
       {
-         result = (call.getClientAddress() != null);
+         result = (call.getClient().getAddress() != null);
       }
       else if(name.equals(NAME_CLIENT_NAME))
       {
-         result = (call.getClientName() != null);
+         result = (call.getClient().getName() != null);
       }
       else if(name.startsWith(NAME_COOKIE))
       {

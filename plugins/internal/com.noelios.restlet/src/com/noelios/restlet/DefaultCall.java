@@ -46,7 +46,7 @@ import org.restlet.data.MediaTypePref;
 import org.restlet.data.MediaTypes;
 import org.restlet.data.Method;
 import org.restlet.data.Parameter;
-import org.restlet.data.PreferenceData;
+import org.restlet.data.ClientData;
 import org.restlet.data.Reference;
 import org.restlet.data.Representation;
 import org.restlet.data.Resource;
@@ -68,12 +68,6 @@ public class DefaultCall implements Call
 
    /** The modifiable attributes map. */
    protected Map<String, Object> attributes;
-
-   /** The client IP addresses. */
-   protected List<String> clientAddresses;
-
-   /** The client name. */
-   protected String clientName;
 
    /** The condition data. */
    protected ConditionData condition;
@@ -99,8 +93,8 @@ public class DefaultCall implements Call
    /** The representation provided by the server. */
    protected Representation output;
 
-   /** The preference data. */
-   protected PreferenceData preference;
+   /** The client data. */
+   protected ClientData client;
 
    /** The redirection reference. */
    protected Reference redirectRef;
@@ -198,7 +192,7 @@ public class DefaultCall implements Call
             variantMediaType = currentVariant.getMediaType();
 
             // If no language preference is defined, assume that all languages are acceptable 
-            List<LanguagePref> languagePrefs = getPreference().getLanguages();
+            List<LanguagePref> languagePrefs = getClient().getLanguagePrefs();
             if(languagePrefs.size() == 0) languagePrefs.add(new LanguagePref(Languages.ALL));
             
             // For each language preference defined in the call
@@ -270,7 +264,7 @@ public class DefaultCall implements Call
                                  (variantLanguage.equals(fallbackLanguage));
 
             // If no media type preference is defined, assume that all media types are acceptable 
-            List<MediaTypePref> mediaTypePrefs = getPreference().getMediaTypes();
+            List<MediaTypePref> mediaTypePrefs = getClient().getMediaTypePrefs();
             if(mediaTypePrefs.size() == 0) mediaTypePrefs.add(new MediaTypePref(MediaTypes.ALL));
 
             // For each media range preference defined in the call
@@ -403,41 +397,6 @@ public class DefaultCall implements Call
    }
 
    /**
-    * Returns the client IP address.
-    * @return The client IP address.
-    */
-   public String getClientAddress()
-   {
-      return (this.clientAddresses == null) ? null :
-         (this.clientAddresses.isEmpty() ? null : this.clientAddresses.get(0));
-   }
-
-   /**
-    * Returns the list of client IP addresses.<br/>
-    * The first address is the one of the immediate client component as returned by the getClientAdress() method and
-    * the last address should correspond to the origin client (frequently a user agent).
-    * This is useful when the user agent is separated from the origin server by a chain of intermediary components.<br/>
-    * This list of addresses is based on headers such as the "X-Forwarded-For" header supported by popular proxies and caches.<br/>
-    * However, this information is only safe for intermediary components within your local network.<br/>
-    * Other addresses could easily be changed by setting a fake header and should never be trusted for serious security checks.
-    * @return The client IP addresses.
-    */
-   public List<String> getClientAddresses()
-   {
-      if(this.clientAddresses == null) this.clientAddresses = new ArrayList<String>();
-      return this.clientAddresses;
-   }
-
-   /**
-    * Returns the client name.
-    * @return The client name.
-    */
-   public String getClientName()
-   {
-      return this.clientName;
-   }
-
-   /**
     * Returns the condition data applying to this call.
     * @return The condition data applying to this call.
     */
@@ -550,13 +509,13 @@ public class DefaultCall implements Call
    }
 
    /**
-    * Returns the preference data of the client.
-    * @return The preference data of the client.
+    * Returns the client specific data.
+    * @return The client specific data.
     */
-   public PreferenceData getPreference()
+   public ClientData getClient()
    {
-      if(this.preference == null) this.preference = new PreferenceData();
-      return this.preference;
+      if(this.client == null) this.client = new ClientData();
+      return this.client;
    }
 
    /**
@@ -684,31 +643,6 @@ public class DefaultCall implements Call
             }
          }
       }
-   }
-
-   /**
-    * Sets the client IP address.
-    * @param address The client IP address.
-    */
-   public void setClientAddress(String address)
-   {
-      if(getClientAddresses().isEmpty())
-      {
-         getClientAddresses().add(address);
-      }
-      else
-      {
-         getClientAddresses().set(0, address);
-      }
-   }
-
-   /**
-    * Sets the client name.
-    * @param name The client name.
-    */
-   public void setClientName(String name)
-   {
-      this.clientName = name;
    }
 
    /**
