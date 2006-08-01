@@ -25,7 +25,6 @@ package com.noelios.restlet.example;
 import java.io.IOException;
 
 import org.restlet.Call;
-import org.restlet.DefaultCall;
 import org.restlet.connector.Client;
 import org.restlet.connector.DefaultClient;
 import org.restlet.data.ChallengeResponse;
@@ -46,7 +45,7 @@ public class Tutorial09b
       try
       {
          // Prepare the REST call
-      	Call call = new DefaultCall(Methods.GET, "http://localhost:8182/");
+      	Call call = new Call(Methods.GET, "http://localhost:8182/");
          
          // Add the client authentication to the call 
          ChallengeResponse authentication = new ChallengeResponse(ChallengeSchemes.HTTP_BASIC, "scott", "tiger");

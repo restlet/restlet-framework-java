@@ -34,11 +34,14 @@ import org.restlet.component.Component;
 import org.restlet.connector.Client;
 import org.restlet.connector.Server;
 import org.restlet.data.ChallengeResponse;
+import org.restlet.data.ClientData;
 import org.restlet.data.Form;
+import org.restlet.data.Language;
 import org.restlet.data.MediaType;
 import org.restlet.data.ParameterList;
 import org.restlet.data.Protocol;
 import org.restlet.data.Representation;
+import org.restlet.data.Resource;
 
 /**
  * Factory and registration service for Restlet API implementations.
@@ -134,12 +137,6 @@ public abstract class Factory
    public abstract Scorer createScorer(Router router, String pattern, Restlet target);
 
    /**
-    * Creates a call.
-    * @return A call.
-    */
-   public abstract Call createCall();
-
-   /**
     * Creates a new client connector for a given protocol.
     * @param protocols The connector protocols.
     * @param owner The owner component.
@@ -167,6 +164,16 @@ public abstract class Factory
    public abstract Representation createRepresentation(String value, MediaType mediaType);
 
    /**
+    * Returns the best variant representation for a given resource according the the client preferences.
+    * @param client The client preferences.
+    * @param variants The list of variants to compare.
+    * @param fallbackLanguage The language to use if no preference matches.
+    * @return The best variant representation.
+    * @see <a href="http://httpd.apache.org/docs/2.2/en/content-negotiation.html#algorithm">Apache content negotiation algorithm</a>
+    */
+   public abstract Representation getBestVariant(ClientData client, List<Representation> variants, Language fallbackLanguage);
+
+   /**
     * Parses an URL encoded Web form.
     * @param form The target form.
     * @param webForm The posted form.
@@ -179,6 +186,16 @@ public abstract class Factory
     * @param queryString Query string.
     */
    public abstract void parse(Form form, String queryString) throws IOException;
+
+   /**
+    * Sets the best representation of a given resource according to the client preferences.<br/>
+    * If no representation is found, sets the status to "Not found".<br/>
+    * If no acceptable representation is available, sets the status to "Not acceptable".<br/>
+    * @param resource The resource for which the best representation needs to be set.
+    * @param fallbackLanguage The language to use if no preference matches.
+    * @see <a href="http://httpd.apache.org/docs/2.2/en/content-negotiation.html#algorithm">Apache content negotiation algorithm</a>
+    */
+   public abstract void setBestOutput(Call call, Resource resource, Language fallbackLanguage);
 
    /**
     * Sets the credentials of a challenge response using a user ID and a password.<br/>

@@ -20,47 +20,54 @@
  * Portions Copyright [yyyy] [name of copyright owner]
  */
 
-package org.restlet;
-
-import org.restlet.data.Method;
-import org.restlet.data.Reference;
+package org.restlet.data;
 
 /**
- * Default Call that can directly be used. Useful for application developers needing to invoke client connectors.
+ * Server specific data related to a call.
  * @author Jerome Louvel (contact@noelios.com) <a href="http://www.noelios.com/">Noelios Consulting</a>
  */
-public class DefaultCall extends WrapperCall
+public class ServerData
 {
+   /** The server IP address. */
+   protected String address;
+
+   /** The server name. */
+   protected String name;
+
    /**
-    * Constructor.
+    * Returns the server's IP address.
+    * @return The server's IP address.
     */
-   public DefaultCall()
+   public String getAddress()
    {
-      super(Factory.getInstance().createCall());
+      return this.address;
    }
-   
+
    /**
-    * Constructor.
-    * @param method The call's method.
-    * @param resourceRef The resource reference.
+    * Returns the server's name (ex: web server name).
+    * @return The server's name.
     */
-   public DefaultCall(Method method, Reference resourceRef)
+   public String getName()
    {
-   	this();
-   	setMethod(method);
-   	setResourceRef(resourceRef);
+      return this.name;
    }
-   
+
    /**
-    * Constructor.
-    * @param method The call's method.
-    * @param resourceUri The resource URI.
+    * Sets the server's IP address.
+    * @param address The server's IP address.
     */
-   public DefaultCall(Method method, String resourceUri)
+   public void setAddress(String address)
    {
-   	this();
-   	setMethod(method);
-   	setResourceRef(resourceUri);
+      this.address = address;
    }
-   
+
+   /**
+    * Sets the server's name (ex: web server name).
+    * @param name The server's name.
+    */
+   public void setName(String name)
+   {
+      this.name = name;
+   }
+
 }

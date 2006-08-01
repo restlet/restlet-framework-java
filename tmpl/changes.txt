@@ -30,7 +30,11 @@ Changes log
  - Removed unused org.restlet.connector.LocalClient connector.
  - Moved content of com.noelios.restlet.impl to com.noelios.restlet, com.noelios.restlet.connector and com.noelios.restlet.data
  - Renamed Call's "outputRef" property back to "redirectRef" as we now have Representation's "identifier" property to get the location of the call's output.
- - Factorized all client data in Call into the ClientData class (was PreferenceData). 
+ - Factorized all Call's client data into ClientData class (was PreferenceData). 
+ - Factorized all Call's server data into a new ServerData class.
+ - org.restlet.Call is now a class instead of an interface. Removed DefaultCall classes.
+ - Renamed Call.contextRef (again!) to baseRef this time.
+ - Removed "requestHeader" and "responseHeader" variables from CallModel.
  
 [Other changes] 
  - Separated the HTTP client connector (based on JDK's HttpUrlConnection) previously integrated to the NRE core. This will allow future alternative

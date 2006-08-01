@@ -246,11 +246,11 @@ public class HttpClient extends AbstractClient
             clientCall.getRequestHeaders().add(ConnectorCall.HEADER_AUTHORIZATION, SecurityUtils.format(response));
          }
          
-         // Add the custom headers that may have been set by the user
-         for(Parameter header : call.getConnectorCall().getRequestHeaders())
-         {
-            clientCall.getRequestHeaders().add(header.getName(), header.getValue());
-         }         
+//         // Add the custom headers that may have been set by the user
+//         for(Parameter header : call.getConnectorCall().getRequestHeaders())
+//         {
+//            clientCall.getRequestHeaders().add(header.getName(), header.getValue());
+//         }         
 
          // Send the input representation
          if(hasInput(call))
@@ -325,11 +325,11 @@ public class HttpClient extends AbstractClient
       try
       {
          // Get the server address
-         call.setServerAddress(clientCall.getResponseAddress());
+         call.getServer().setAddress(clientCall.getResponseAddress());
 
-         // Update the connector call associated with the uniform call
-         // so that advanced users can read the response headers, etc.
-         call.setConnectorCall(clientCall);
+//         // Update the connector call associated with the uniform call
+//         // so that advanced users can read the response headers, etc.
+//         call.setConnectorCall(clientCall);
          
          // Extract info from headers
          
@@ -359,7 +359,7 @@ public class HttpClient extends AbstractClient
             }            
             else if(header.getName().equalsIgnoreCase(ConnectorCall.HEADER_SERVER))
             {
-               call.setServerName(header.getValue());
+               call.getServer().setName(header.getValue());
             }            
          }
          

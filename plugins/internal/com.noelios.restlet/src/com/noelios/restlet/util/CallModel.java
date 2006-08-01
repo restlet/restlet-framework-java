@@ -45,8 +45,6 @@ import org.restlet.data.Form;
  * <li>identifier</li>
  * <li>path</li>
  * <li>query (repeating and non-repeating, lookup by name and by index)</li>
- * <li>requestHeader (repeating, lookup by name)</li>
- * <li>responseHeader (repeating, lookup by name)</li>
  * <li>scheme</li>
  * <li>uri</li>
  * <li>userInfo</li>
@@ -60,8 +58,6 @@ public class CallModel implements ReadableModel
 {
    public static final String NAME_CLIENT_ADDRESS = "clientAddress";
    public static final String NAME_CLIENT_NAME = "clientName";
-   public static final String NAME_CONNECTOR_REQUEST_HEADER = "requestHeader";
-   public static final String NAME_CONNECTOR_RESPONSE_HEADER = "responseHeader";
    public static final String NAME_COOKIE = "cookie";
    public static final String NAME_METHOD = "method";
    public static final String NAME_REDIRECT_URI = "redirectUri";
@@ -151,54 +147,6 @@ public class CallModel implements ReadableModel
 	      else if(name.equals(NAME_CLIENT_NAME))
 	      {
 	         result = call.getClient().getName();
-	      }
-	      else if(name.startsWith(NAME_CONNECTOR_REQUEST_HEADER))
-	      {
-	   		String rest = name.substring(NAME_CONNECTOR_REQUEST_HEADER.length());
-	
-	   		if((rest.charAt(0) == '(') && (rest.charAt(rest.length() - 1) == ')'))
-	   		{
-	   			rest = rest.substring(1, rest.length() - 1);
-	   			
-   				if(isVariableName(rest))
-					{
-						// Lookup by name
-		   			rest = getVariableName(rest);
-			         result = call.getConnectorCall().getRequestHeaders().getValues(rest);
-					}
-					else
-					{
-		   			result = defaultValue;
-					}
-	   		}
-	   		else
-	   		{
-	   			result = defaultValue;
-	   		}
-	      }
-	      else if(name.startsWith(NAME_CONNECTOR_RESPONSE_HEADER))
-	      {
-	   		String rest = name.substring(NAME_CONNECTOR_RESPONSE_HEADER.length());
-	
-	   		if((rest.charAt(0) == '(') && (rest.charAt(rest.length() - 1) == ')'))
-	   		{
-	   			rest = rest.substring(1, rest.length() - 1);
-	   			
-   				if(isVariableName(rest))
-					{
-						// Lookup by name
-		   			rest = getVariableName(rest);
-			         result = call.getConnectorCall().getRequestHeaders().getValues(rest);
-					}
-					else
-					{
-		   			result = defaultValue;
-					}
-	   		}
-	   		else
-	   		{
-	   			result = defaultValue;
-	   		}
 	      }
 	      else if(name.startsWith(NAME_COOKIE))
 	      {
@@ -328,11 +276,11 @@ public class CallModel implements ReadableModel
 	      }
 	      else if(name.equals(NAME_SERVER_ADDRESS))
 	      {
-	         result = call.getServerAddress();
+	         result = call.getServer().getAddress();
 	      }
 	      else if(name.equals(NAME_SERVER_NAME))
 	      {
-	         result = call.getServerName();
+	         result = call.getServer().getName();
 	      }
 	      else if(name.equals(NAME_STATUS))
 	      {
@@ -453,11 +401,11 @@ public class CallModel implements ReadableModel
       }
       else if(name.equals(NAME_SERVER_ADDRESS))
       {
-         result = (call.getServerAddress() != null);
+         result = (call.getServer().getAddress() != null);
       }
       else if(name.equals(NAME_SERVER_NAME))
       {
-         result = (call.getServerName() != null);
+         result = (call.getServer().getName() != null);
       }
       else if(name.equals(NAME_STATUS))
       {

@@ -28,20 +28,20 @@ import java.util.List;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
+import org.restlet.Call;
 import org.restlet.connector.Connector;
 import org.restlet.connector.ConnectorCall;
+import org.restlet.data.ClientData;
 import org.restlet.data.ConditionData;
 import org.restlet.data.Cookie;
 import org.restlet.data.Methods;
 import org.restlet.data.Parameter;
-import org.restlet.data.ClientData;
 import org.restlet.data.Reference;
 import org.restlet.data.Representation;
 import org.restlet.data.SecurityData;
 import org.restlet.data.Statuses;
 import org.restlet.data.Tag;
 
-import com.noelios.restlet.DefaultCall;
 import com.noelios.restlet.Factory;
 import com.noelios.restlet.util.CookieReader;
 import com.noelios.restlet.util.PreferenceUtils;
@@ -51,14 +51,17 @@ import com.noelios.restlet.util.SecurityUtils;
  * Call wrapper for server HTTP calls.
  * @author Jerome Louvel (contact@noelios.com) <a href="http://www.noelios.com/">Noelios Consulting</a>
  */
-public class HttpServerRestletCall extends DefaultCall
+public class HttpServerRestletCall extends Call
 {
    /** Obtain a suitable logger. */
    private static Logger logger = Logger.getLogger(HttpServerRestletCall.class.getCanonicalName());
 
    /** The HTTP server connector that issued the call. */
    protected Connector httpServer;
-   
+
+   /** The low-level connector call. */
+   protected ConnectorCall connectorCall;
+
    /**
     * Constructor.
     * @param httpServer The HTTP server connector that issued the call.
@@ -70,8 +73,8 @@ public class HttpServerRestletCall extends DefaultCall
    	
       // Set the properties
       setConnectorCall(call);
-      setServerAddress(call.getResponseAddress());
-      setServerName(Factory.VERSION_HEADER);
+      getServer().setAddress(call.getResponseAddress());
+      getServer().setName(Factory.VERSION_HEADER);
       setStatus(Statuses.SUCCESS_OK);
       setMethod(Methods.create(call.getRequestMethod()));
 
@@ -181,6 +184,15 @@ public class HttpServerRestletCall extends DefaultCall
       }
 
       return this.condition;
+   }
+
+   /**
+    * Returns the low-level connector call.
+    * @return The low-level connector call.
+    */
+   public ConnectorCall getConnectorCall()
+   {
+   	return this.connectorCall;
    }
 
    /**
@@ -323,5 +335,14 @@ public class HttpServerRestletCall extends DefaultCall
 
       return this.security;
    }
-   
+
+   /**
+    * Sets the low-level connector call.
+    * @param call The low-level connector call.
+    */
+   public void setConnectorCall(ConnectorCall call)
+   {
+      this.connectorCall = call;
+   }
+
 }

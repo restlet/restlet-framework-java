@@ -189,7 +189,7 @@ public abstract class AbstractHttpServerCall extends DefaultConnectorCall
          }
 
          // Set the server name again
-         getResponseHeaders().add(HEADER_SERVER, call.getServerName());
+         getResponseHeaders().add(HEADER_SERVER, call.getServer().getName());
          
          // Set the status code in the response
          if(call.getStatus() != null)

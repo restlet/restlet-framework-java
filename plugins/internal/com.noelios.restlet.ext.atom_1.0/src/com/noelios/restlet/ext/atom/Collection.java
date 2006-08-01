@@ -22,7 +22,6 @@
 
 package com.noelios.restlet.ext.atom;
 
-import org.restlet.DefaultCall;
 import org.restlet.Call;
 import org.restlet.data.Methods;
 import org.restlet.data.Reference;
@@ -149,7 +148,7 @@ public class Collection
 	 */
 	public Reference postMember(Representation member) throws Exception 
 	{
-		Call post = new DefaultCall();
+		Call post = new Call();
 		post.setMethod(Methods.POST);
 		post.setResourceRef(getHref());
 		post.setInput(member);
@@ -172,7 +171,7 @@ public class Collection
 	 */
 	public Feed getFeed() throws Exception
 	{
-		Call get = new DefaultCall();
+		Call get = new Call();
 		get.setMethod(Methods.GET);
 		get.setResourceRef(getHref());
 		getWorkspace().getService().getClient().handle(get);

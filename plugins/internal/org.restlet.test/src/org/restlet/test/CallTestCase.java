@@ -25,7 +25,6 @@ import java.util.Arrays;
 import java.util.List;
 
 import org.restlet.Call;
-import org.restlet.DefaultCall;
 import org.restlet.connector.ConnectorCall;
 import org.restlet.data.ClientData;
 import org.restlet.data.Methods;
@@ -47,7 +46,7 @@ public class CallTestCase extends RestletTestCase
 	 */
 	protected Call getCall()
 	{
-		return new DefaultCall();
+		return new Call();
 	}
 
 	/**
@@ -147,11 +146,11 @@ public class CallTestCase extends RestletTestCase
 	{
 		Call call = getCall();
 		String address = "127.0.0.1";
-		call.setServerAddress(address);
-		assertEquals(address, call.getServerAddress());
+		call.getServer().setAddress(address);
+		assertEquals(address, call.getServer().getAddress());
 		address = "192.168.99.10";
-		call.setServerAddress(address);
-		assertEquals(address, call.getServerAddress());
+		call.getServer().setAddress(address);
+		assertEquals(address, call.getServer().getAddress());
 	}
 
 	/**
@@ -161,11 +160,11 @@ public class CallTestCase extends RestletTestCase
 	{
 		Call call = getCall();
 		String name = "Restlet";
-		call.setServerName(name);
-		assertEquals(name, call.getServerName());
+		call.getServer().setName(name);
+		assertEquals(name, call.getServer().getName());
 		name = "Restlet Server";
-		call.setServerName(name);
-		assertEquals(name, call.getServerName());
+		call.getServer().setName(name);
+		assertEquals(name, call.getServer().getName());
 	}
 
 	/**
@@ -242,12 +241,12 @@ public class CallTestCase extends RestletTestCase
 		Reference reference = getReference(uri);
 		call.setContextPath(uri);
 		assertEquals(uri, call.getContextPath());
-		assertEquals(reference, call.getContextRef());
+		assertEquals(reference, call.getBaseRef());
 		uri = "http://www.restlet.org/path/to";
 		reference = getReference(uri);
 		call.setContextPath(uri);
 		assertEquals(uri, call.getContextPath());
-		assertEquals(reference, call.getContextRef());
+		assertEquals(reference, call.getBaseRef());
 	}
 
 	/**
@@ -271,17 +270,6 @@ public class CallTestCase extends RestletTestCase
 //		{
 //			// noop.
 //		}
-	}
-
-	/**
-	 * Tests connector call getting/setting. 
-	 */
-	public void testConnectorCall() throws Exception
-	{
-		Call call = getCall();
-		ConnectorCall connCall = getConnectorCall();
-		call.setConnectorCall(connCall);
-		assertEquals(connCall, call.getConnectorCall());
 	}
 
 }

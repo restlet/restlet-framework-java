@@ -22,7 +22,6 @@
 
 package com.noelios.restlet.example;
 
-import org.restlet.DefaultCall;
 import org.restlet.Call;
 import org.restlet.connector.Client;
 import org.restlet.connector.DefaultClient;
@@ -42,7 +41,7 @@ public class SimpleClient
       try
       {
          // Prepare the REST call.
-         Call call = new DefaultCall();
+         Call call = new Call();
 
          // Identify oursevles.
          call.setReferrerRef("http://www.foo.com/");

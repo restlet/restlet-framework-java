@@ -25,7 +25,6 @@ package com.noelios.restlet.test;
 import junit.framework.TestCase;
 
 import org.restlet.Call;
-import org.restlet.DefaultCall;
 
 import com.noelios.restlet.util.CallModel;
 import com.noelios.restlet.util.MapModel;
@@ -72,7 +71,7 @@ public class StringTemplateTestCase extends TestCase
    public void testUriPattern()
    {
    	// Create a test call
-      Call call = new DefaultCall();
+      Call call = new Call();
       call.setResourceRef("http://www.domain.com:8080/path1/path2/path3?param1&param2=123&query=abc");
 
       // Create the template engine

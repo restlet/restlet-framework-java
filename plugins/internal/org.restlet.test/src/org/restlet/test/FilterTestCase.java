@@ -23,7 +23,6 @@ package org.restlet.test;
 
 import org.restlet.Call;
 import org.restlet.Filter;
-import org.restlet.DefaultCall;
 import org.restlet.Restlet;
 
 /**
@@ -47,7 +46,7 @@ public class FilterTestCase extends AbstractFilterTestCase
 	 */
 	protected Call getCall()
 	{
-		return new DefaultCall();
+		return new Call();
 	}
 
 	/* (non-Javadoc)

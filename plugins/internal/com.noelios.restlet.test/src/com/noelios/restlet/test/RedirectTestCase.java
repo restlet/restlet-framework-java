@@ -26,7 +26,6 @@ import junit.framework.TestCase;
 
 import org.restlet.AbstractRestlet;
 import org.restlet.Call;
-import org.restlet.DefaultCall;
 import org.restlet.Restlet;
 import org.restlet.component.RestletContainer;
 import org.restlet.connector.DefaultServer;
@@ -109,7 +108,7 @@ public class RedirectTestCase extends TestCase
 
 	private void testCall(RestletContainer myContainer, Method method, String uri) throws Exception
 	{
-		Call call = new DefaultCall();
+		Call call = new Call();
 		call.setMethod(method);
 		call.setResourceRef(uri);
 		myContainer.callClient("TestClient", call);

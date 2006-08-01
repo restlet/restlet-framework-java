@@ -25,18 +25,18 @@ package org.restlet;
 import java.util.List;
 import java.util.Map;
 
-import org.restlet.connector.ConnectorCall;
+import org.restlet.data.ClientData;
 import org.restlet.data.ConditionData;
 import org.restlet.data.Cookie;
 import org.restlet.data.CookieSetting;
 import org.restlet.data.Form;
 import org.restlet.data.Language;
 import org.restlet.data.Method;
-import org.restlet.data.ClientData;
 import org.restlet.data.Reference;
 import org.restlet.data.Representation;
 import org.restlet.data.Resource;
 import org.restlet.data.SecurityData;
+import org.restlet.data.ServerData;
 import org.restlet.data.Status;
 
 /**
@@ -45,7 +45,7 @@ import org.restlet.data.Status;
  * @see <a href="http://c2.com/cgi/wiki?DecoratorPattern">The decorator (aka wrapper) pattern</a>
  * @author Jerome Louvel (contact@noelios.com) <a href="http://www.noelios.com/">Noelios Consulting</a>
  */
-public class WrapperCall implements Call
+public class WrapperCall extends Call
 {
    /** Wrapped call. */
    protected Call wrappedCall;
@@ -71,33 +71,12 @@ public class WrapperCall implements Call
    }
 
    /**
-    * Returns the best variant for a given resource according the the client preferences.
-    * @param resource The resource for which the best representation needs to be set.
-    * @param fallbackLanguage The language to use if no preference matches.
-    * @return The best variant representation.
-    * @see <a href="http://httpd.apache.org/docs/2.2/en/content-negotiation.html#algorithm">Apache content negotiation algorithm</a>
-    */
-   public Representation getBestVariant(Resource resource, Language fallbackLanguage)
-   {
-      return getWrappedCall().getBestVariant(resource, fallbackLanguage);
-   }
-
-   /**
     * Returns the condition data applying to this call.
     * @return The condition data applying to this call.
     */
    public ConditionData getCondition()
    {
       return getWrappedCall().getCondition();
-   }
-
-   /**
-    * Returns the low-level connector call.
-    * @return The low-level connector call.
-    */
-   public ConnectorCall getConnectorCall()
-   {
-      return getWrappedCall().getConnectorCall();
    }
 
    /**
@@ -113,9 +92,9 @@ public class WrapperCall implements Call
     * Returns the context path as a reference.
     * @return The context path as a reference.
     */
-   public Reference getContextRef()
+   public Reference getBaseRef()
    {
-      return getWrappedCall().getContextRef();
+      return getWrappedCall().getBaseRef();
    }
 
    /**
@@ -229,21 +208,12 @@ public class WrapperCall implements Call
    }
 
    /**
-    * Returns the server IP address.
-    * @return The server IP address.
+    * Returns the server specific data.
+    * @return The server specific data.
     */
-   public String getServerAddress()
+   public ServerData getServer()
    {
-      return getWrappedCall().getServerAddress();
-   }
-
-   /**
-    * Returns the server name (ex: web server name).
-    * @return The server name.
-    */
-   public String getServerName()
-   {
-      return getWrappedCall().getServerName();
+      return getWrappedCall().getServer();
    }
 
    /**
@@ -275,15 +245,6 @@ public class WrapperCall implements Call
    public void setBestOutput(Resource resource, Language fallbackLanguage)
    {
       getWrappedCall().setBestOutput(resource, fallbackLanguage);
-   }
-
-   /**
-    * Sets the low-level connector call.
-    * @param call The low-level connector call.
-    */
-   public void setConnectorCall(ConnectorCall call)
-   {
-      getWrappedCall().setConnectorCall(call);
    }
 
    /**
@@ -374,24 +335,6 @@ public class WrapperCall implements Call
    public void setResourceRef(String resourceUri)
    {
       getWrappedCall().setResourceRef(resourceUri);
-   }
-
-   /**
-    * Sets the server IP address.
-    * @param address The server IP address.
-    */
-   public void setServerAddress(String address)
-   {
-      getWrappedCall().setServerAddress(address);
-   }
-
-   /**
-    * Sets the server name (ex: web server name).
-    * @param name The server name.
-    */
-   public void setServerName(String name)
-   {
-      getWrappedCall().setServerName(name);
    }
 
    /**

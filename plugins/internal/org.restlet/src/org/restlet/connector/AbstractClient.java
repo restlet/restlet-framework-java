@@ -23,7 +23,6 @@
 package org.restlet.connector;
 
 import org.restlet.Call;
-import org.restlet.DefaultCall;
 import org.restlet.component.Component;
 import org.restlet.data.Methods;
 import org.restlet.data.ParameterList;
@@ -52,7 +51,7 @@ public abstract class AbstractClient extends AbstractConnector implements Client
     */
    public Call get(String resourceUri)
    {
-      Call call = new DefaultCall();
+      Call call = new Call();
       call.setResourceRef(resourceUri);
       call.setMethod(Methods.GET);
       handle(call);
@@ -67,7 +66,7 @@ public abstract class AbstractClient extends AbstractConnector implements Client
     */
 	public Call post(String resourceUri, Representation input)
    {
-      Call call = new DefaultCall();
+      Call call = new Call();
       call.setResourceRef(resourceUri);
       call.setMethod(Methods.POST);
       call.setInput(input);
@@ -83,7 +82,7 @@ public abstract class AbstractClient extends AbstractConnector implements Client
     */
    public Call put(String resourceUri, Representation input)
    {
-      Call call = new DefaultCall();
+      Call call = new Call();
       call.setResourceRef(resourceUri);
       call.setMethod(Methods.PUT);
       call.setInput(input);
@@ -98,7 +97,7 @@ public abstract class AbstractClient extends AbstractConnector implements Client
     */
    public Call delete(String resourceUri)
    {
-      Call call = new DefaultCall();
+      Call call = new Call();
       call.setResourceRef(resourceUri);
       call.setMethod(Methods.DELETE);
       handle(call);

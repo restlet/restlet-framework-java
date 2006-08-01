@@ -28,7 +28,9 @@ import java.io.InputStreamReader;
 import java.io.UnsupportedEncodingException;
 import java.net.URL;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.Enumeration;
+import java.util.Iterator;
 import java.util.List;
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -42,14 +44,24 @@ import org.restlet.connector.Client;
 import org.restlet.connector.Server;
 import org.restlet.data.ChallengeResponse;
 import org.restlet.data.ChallengeSchemes;
+import org.restlet.data.ClientData;
 import org.restlet.data.Form;
+import org.restlet.data.Language;
+import org.restlet.data.LanguagePref;
+import org.restlet.data.Languages;
 import org.restlet.data.MediaType;
+import org.restlet.data.MediaTypePref;
+import org.restlet.data.MediaTypes;
+import org.restlet.data.Parameter;
 import org.restlet.data.ParameterList;
 import org.restlet.data.Protocol;
 import org.restlet.data.Representation;
+import org.restlet.data.Resource;
+import org.restlet.data.Statuses;
 
 import com.noelios.restlet.data.StringRepresentation;
 import com.noelios.restlet.util.Base64;
+import com.noelios.restlet.util.DateUtils;
 import com.noelios.restlet.util.FormUtils;
 
 /**
@@ -229,15 +241,6 @@ public class Factory extends org.restlet.Factory
    }
 
    /**
-    * Creates a delegate call.
-    * @return A delegate call.
-    */
-   public Call createCall()
-   {
-      return new DefaultCall();
-   }
-
-   /**
     * Create a new server connector for internal usage by the GenericClient.
     * @param protocols The connector protocols.
     * @param owner The owner component.
@@ -287,6 +290,272 @@ public class Factory extends org.restlet.Factory
    }
 
    /**
+    * Creates a URI-based handler attachment that will score target instance shared by all calls.
+    * The score will be proportional to the number of chararacters matched by the pattern, from the start
+    * of the context resource path.
+    * @param router The parent router.
+    * @param pattern The URI pattern used to map calls (see {@link java.util.regex.Pattern} for the syntax).
+    * @param target The target instance to attach.
+    * @see java.util.regex.Pattern
+    */
+	public Scorer createScorer(Router router, String pattern, Restlet target)
+	{
+		return new PatternScorer(router, pattern, target);
+	}
+
+   /**
+    * Returns the best variant representation for a given resource according the the client preferences.
+    * @param client The client preferences.
+    * @param variants The list of variants to compare.
+    * @param fallbackLanguage The language to use if no preference matches.
+    * @return The best variant representation.
+    * @see <a href="http://httpd.apache.org/docs/2.2/en/content-negotiation.html#algorithm">Apache content negotiation algorithm</a>
+    */
+   public Representation getBestVariant(ClientData client, List<Representation> variants, Language fallbackLanguage)
+   {
+      if(variants == null)
+      {
+         return null;
+      }
+      else
+      {
+         Parameter currentParam = null;
+         Language currentLanguage = null;
+         Language variantLanguage = null;
+         MediaType currentMediaType = null;
+         MediaType variantMediaType = null;
+
+         boolean compatiblePref = false;
+         boolean compatibleLanguage = false;
+         boolean compatibleMediaType = false;
+
+         Representation currentVariant = null;
+         Representation bestVariant = null;
+
+         LanguagePref currentLanguagePref = null;
+         LanguagePref bestLanguagePref = null;
+         MediaTypePref currentMediaTypePref = null;
+         MediaTypePref bestMediaTypePref = null;
+
+         float bestQuality = 0;
+         float currentScore = 0;
+         float bestLanguageScore = 0;
+         float bestMediaTypeScore = 0;
+
+         // For each available variant, we will compute the negotiation score
+         // which is dependant on the language score and on the media type score
+         for(Iterator iter1 = variants.iterator(); iter1.hasNext();)
+         {
+            currentVariant = (Representation)iter1.next();
+            variantLanguage = currentVariant.getLanguage();
+            variantMediaType = currentVariant.getMediaType();
+
+            // If no language preference is defined, assume that all languages are acceptable 
+            List<LanguagePref> languagePrefs = client.getLanguagePrefs();
+            if(languagePrefs.size() == 0) languagePrefs.add(new LanguagePref(Languages.ALL));
+            
+            // For each language preference defined in the call
+            // Calculate the score and remember the best scoring preference
+            for(Iterator<LanguagePref> iter2 = languagePrefs.iterator(); (variantLanguage != null) && iter2.hasNext();)
+            {
+               currentLanguagePref = iter2.next();
+               currentLanguage = currentLanguagePref.getLanguage();
+               compatiblePref = true;
+               currentScore = 0;
+
+               // 1) Compare the main tag
+               if(variantLanguage.getMainTag().equals(currentLanguage.getMainTag()))
+               {
+                  currentScore += 100;
+               }
+               else if(!currentLanguage.getMainTag().equals("*"))
+               {
+                  compatiblePref = false;
+               }
+               else if(currentLanguage.getSubTag() != null)
+               {
+                  // Only "*" is an acceptable language range
+                  compatiblePref = false;
+               }
+               else
+               {
+                  // The valid "*" range has the lowest valid score
+                  currentScore++;
+               }
+
+               if(compatiblePref)
+               {
+                  // 2) Compare the sub tags
+                  if((currentLanguage.getSubTag() == null) || (variantLanguage.getSubTag() == null))
+                  {
+                     if(variantLanguage.getSubTag() == currentLanguage.getSubTag())
+                     {
+                        currentScore += 10;
+                     }
+                     else
+                     {
+                        // Don't change the score
+                     }
+                  }
+                  else if(currentLanguage.getSubTag().equals(variantLanguage.getSubTag()))
+                  {
+                     currentScore += 10;
+                  }
+                  else
+                  {
+                     // SubTags are different
+                     compatiblePref = false;
+                  }
+
+                  // 3) Do we have a better preference?
+                  // currentScore *= currentPref.getQuality();
+                  if(compatiblePref && ((bestLanguagePref == null) || (currentScore > bestLanguageScore)))
+                  {
+                     bestLanguagePref = currentLanguagePref;
+                     bestLanguageScore = currentScore;
+                  }
+               }
+            }
+
+            // Are the preferences compatible with the current variant language?
+            compatibleLanguage = (variantLanguage == null) ||
+                                 (bestLanguagePref != null) ||
+                                 (variantLanguage.equals(fallbackLanguage));
+
+            // If no media type preference is defined, assume that all media types are acceptable 
+            List<MediaTypePref> mediaTypePrefs = client.getMediaTypePrefs();
+            if(mediaTypePrefs.size() == 0) mediaTypePrefs.add(new MediaTypePref(MediaTypes.ALL));
+
+            // For each media range preference defined in the call
+            // Calculate the score and remember the best scoring preference
+            for(Iterator<MediaTypePref> iter2 = mediaTypePrefs.iterator(); compatibleLanguage && iter2.hasNext();)
+            {
+               currentMediaTypePref = iter2.next();
+               currentMediaType = currentMediaTypePref.getMediaType();
+               compatiblePref = true;
+               currentScore = 0;
+
+               // 1) Compare the main types
+               if(currentMediaType.getMainType().equals(variantMediaType.getMainType()))
+               {
+                  currentScore += 1000;
+               }
+               else if(!currentMediaType.getMainType().equals("*"))
+               {
+                  compatiblePref = false;
+               }
+               else if(!currentMediaType.getSubType().equals("*"))
+               {
+                  // Ranges such as "*/html" are not supported
+                  // Only "*/*" is acceptable in this case
+                  compatiblePref = false;
+               }
+
+               if(compatiblePref)
+               {
+                  // 2) Compare the sub types
+                  if(variantMediaType.getSubType().equals(currentMediaType.getSubType()))
+                  {
+                     currentScore += 100;
+                  }
+                  else if(!currentMediaType.getSubType().equals("*"))
+                  {
+                     // Subtype are different
+                     compatiblePref = false;
+                  }
+
+                  if(compatiblePref && (variantMediaType.getParameters() != null))
+                  {
+                     // 3) Compare the parameters
+                     // If current media type is compatible with the current
+                     // media range then the parameters need to be checked too
+                     for(Iterator iter3 = variantMediaType.getParameters().iterator(); iter3
+                           .hasNext();)
+                     {
+                        currentParam = (Parameter)iter3.next();
+
+                        if(isParameterFound(currentParam, currentMediaType))
+                        {
+                           currentScore++;
+                        }
+                     }
+                  }
+
+                  // 3) Do we have a better preference?
+                  // currentScore *= currentPref.getQuality();
+                  if(compatiblePref && ((bestMediaTypePref == null) || (currentScore > bestMediaTypeScore)))
+                  {
+                     bestMediaTypePref = currentMediaTypePref;
+                     bestMediaTypeScore = currentScore;
+                  }
+               }
+            }
+
+            // Are the preferences compatible with the current media type?
+            compatibleMediaType = (variantMediaType == null) ||
+                                  (bestMediaTypePref != null);
+
+            if(compatibleLanguage && compatibleMediaType)
+            {
+               // Do we have a compatible media type?
+               float currentQuality = 0;
+               if(bestLanguagePref != null)
+               {
+                  currentQuality += (bestLanguagePref.getQuality() * 10F);
+               }
+               else if((variantLanguage != null) && variantLanguage.equals(fallbackLanguage))
+               {
+                  currentQuality += 0.1F * 10F;
+               }
+
+               if(bestMediaTypePref != null)
+               {
+                  // So, let's conclude on the current variant, its quality
+                  currentQuality += bestMediaTypePref.getQuality();
+               }
+
+               if(bestVariant == null)
+               {
+                  bestVariant = currentVariant;
+                  bestQuality = currentQuality;
+               }
+               else if(currentQuality > bestQuality)
+               {
+                  bestVariant = currentVariant;
+                  bestQuality = currentQuality;
+               }
+            }
+
+            // Reset the preference variables
+            bestLanguagePref = null;
+            bestLanguageScore = 0;
+            bestMediaTypePref = null;
+            bestMediaTypeScore = 0;
+         }
+
+         return bestVariant;
+      }
+   }
+
+   /**
+    * Indicates if the searched parameter is specified in the given media range.
+    * @param searchedParam The searched parameter.
+    * @param mediaRange The media range to inspect.
+    * @return True if the searched parameter is specified in the given media range.
+    */
+   private boolean isParameterFound(Parameter searchedParam, MediaType mediaRange)
+   {
+      boolean result = false;
+
+      for(Iterator iter = mediaRange.getParameters().iterator(); !result && iter.hasNext();)
+      {
+         result = searchedParam.equals((Parameter)iter.next());
+      }
+
+      return result;
+   }
+
+   /**
     * Parses an URL encoded Web form.
     * @param form The target form.
     * @param webForm The posted form.
@@ -309,6 +578,52 @@ public class Factory extends org.restlet.Factory
       if((queryString != null) && !queryString.equals(""))
       {
          FormUtils.parseQuery(form, queryString);
+      }
+   }
+
+   /**
+    * Sets the best representation of a given resource according to the client preferences.<br/>
+    * If no representation is found, sets the status to "Not found".<br/>
+    * If no acceptable representation is available, sets the status to "Not acceptable".<br/>
+    * @param resource The resource for which the best representation needs to be set.
+    * @param fallbackLanguage The language to use if no preference matches.
+    * @see <a href="http://httpd.apache.org/docs/2.2/en/content-negotiation.html#algorithm">Apache content negotiation algorithm</a>
+    */
+   public void setBestOutput(Call call, Resource resource, Language fallbackLanguage)
+   {
+      List<Representation> variants = resource.getVariants();
+
+      if((variants == null) || (variants.size() < 1))
+      {
+         // Resource not found
+      	call.setStatus(Statuses.CLIENT_ERROR_NOT_FOUND);
+      }
+      else
+      {
+         // Compute the best variant
+      	Representation bestVariant = call.getClient().getBestVariant(variants, fallbackLanguage);
+
+         if(bestVariant == null)
+         {
+            // No variant was found matching the call preferences
+            call.setStatus(Statuses.CLIENT_ERROR_NOT_ACCEPTABLE);
+         }
+         else
+         {
+            // Was the representation modified since the last client call?
+            Date modifiedSince = (call.getCondition() == null) ? null : call.getCondition().getModifiedSince();
+            if((modifiedSince == null) || DateUtils.after(modifiedSince, bestVariant.getModificationDate()))
+            {
+               // Yes, set the best representation as the call output
+            	call.setOutput(bestVariant);
+            	call.setStatus(Statuses.SUCCESS_OK);
+            }
+            else
+            {
+               // No, indicates it to the client
+            	call.setStatus(Statuses.REDIRECTION_NOT_MODIFIED);
+            }
+         }
       }
    }
 
@@ -342,19 +657,5 @@ public class Factory extends org.restlet.Factory
          throw new RuntimeException("Unsupported encoding, unable to encode credentials");
       }
    }
-
-   /**
-    * Creates a URI-based handler attachment that will score target instance shared by all calls.
-    * The score will be proportional to the number of chararacters matched by the pattern, from the start
-    * of the context resource path.
-    * @param router The parent router.
-    * @param pattern The URI pattern used to map calls (see {@link java.util.regex.Pattern} for the syntax).
-    * @param target The target instance to attach.
-    * @see java.util.regex.Pattern
-    */
-	public Scorer createScorer(Router router, String pattern, Restlet target)
-	{
-		return new PatternScorer(router, pattern, target);
-	}
 
 }

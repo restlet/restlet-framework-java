@@ -24,7 +24,6 @@ package com.noelios.restlet.ext.javamail;
 
 import java.net.URI;
 import java.util.Date;
-import java.util.Iterator;
 import java.util.Properties;
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -38,11 +37,9 @@ import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
 
 import org.restlet.Call;
-import org.restlet.DefaultCall;
 import org.restlet.component.Component;
 import org.restlet.connector.AbstractClient;
 import org.restlet.data.Methods;
-import org.restlet.data.Parameter;
 import org.restlet.data.ParameterList;
 import org.restlet.data.Protocols;
 import org.restlet.data.Representation;
@@ -113,7 +110,7 @@ public abstract class JavaMailClient extends AbstractClient
     */
    public static Call create(String smtpURI, Representation email)
    {
-   	Call result = new DefaultCall();
+   	Call result = new Call();
       result.getClient().setName(Factory.VERSION_HEADER);
       result.setMethod(Methods.POST);
       result.setResourceRef(smtpURI);
@@ -254,14 +251,14 @@ public abstract class JavaMailClient extends AbstractClient
             // Set the subject and content text
             msg.setSubject(subject);
             msg.setText(text);
-            
-            // Add the custom headers that may have been set by the user
-            Parameter customHeader;
-            for(Iterator<Parameter> iter = call.getConnectorCall().getRequestHeaders().iterator(); iter.hasNext();)
-            {
-               customHeader = iter.next();
-               msg.addHeader(customHeader.getName(), customHeader.getValue());
-            }         
+//            
+//            // Add the custom headers that may have been set by the user
+//            Parameter customHeader;
+//            for(Iterator<Parameter> iter = call.getConnectorCall().getRequestHeaders().iterator(); iter.hasNext();)
+//            {
+//               customHeader = iter.next();
+//               msg.addHeader(customHeader.getName(), customHeader.getValue());
+//            }         
 
             msg.setSentDate(new Date());
             msg.saveChanges();

@@ -50,7 +50,7 @@ public class Tutorial12
          		public void handleGet(Call call)
                {
                   // Print the requested URI path
-                  String output = "Account of user named: " + call.getContextRef().getLastSegment();
+                  String output = "Account of user named: " + call.getBaseRef().getLastSegment();
                   call.setOutput(new StringRepresentation(output, MediaTypes.TEXT_PLAIN));
                }
             };
@@ -61,7 +61,7 @@ public class Tutorial12
             	public void handleGet(Call call)
                {
             		// Print the user name of the requested orders
-                  List<String> segments = call.getContextRef().getSegments();
+                  List<String> segments = call.getBaseRef().getSegments();
                   String output = "Orders of user named: " + segments.get(segments.size() - 2);
                   call.setOutput(new StringRepresentation(output, MediaTypes.TEXT_PLAIN));
                }

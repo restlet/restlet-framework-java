@@ -25,6 +25,8 @@ package org.restlet.data;
 import java.util.ArrayList;
 import java.util.List;
 
+import org.restlet.Factory;
+
 /**
  * Client specific data related to a call.
  * @author Jerome Louvel (contact@noelios.com) <a href="http://www.noelios.com/">Noelios Consulting</a>
@@ -158,6 +160,30 @@ public class ClientData implements ControlData
    {
       if(this.mediaTypePrefs == null) this.mediaTypePrefs = new ArrayList<MediaTypePref>();
       return this.mediaTypePrefs;
+   }
+
+   /**
+    * Returns the best variant representation for a given resource according the the client preferences.
+    * @param resource The resource for which the best representation needs to be set.
+    * @param fallbackLanguage The language to use if no preference matches.
+    * @return The best variant representation.
+    * @see <a href="http://httpd.apache.org/docs/2.2/en/content-negotiation.html#algorithm">Apache content negotiation algorithm</a>
+    */
+   public Representation getBestVariant(Resource resource, Language fallbackLanguage)
+   {
+      return getBestVariant(resource.getVariants(), fallbackLanguage);
+   }
+
+   /**
+    * Returns the best variant representation for a given resource according the the client preferences.
+    * @param variants The list of variants to compare.
+    * @param fallbackLanguage The language to use if no preference matches.
+    * @return The best variant representation.
+    * @see <a href="http://httpd.apache.org/docs/2.2/en/content-negotiation.html#algorithm">Apache content negotiation algorithm</a>
+    */
+   public Representation getBestVariant(List<Representation> variants, Language fallbackLanguage)
+   {
+   	return Factory.getInstance().getBestVariant(this, variants, fallbackLanguage);
    }
 
 }
