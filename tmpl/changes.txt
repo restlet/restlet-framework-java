@@ -49,6 +49,7 @@ Changes log
  - ContextClient now uses parameters for its configuration (default encoding, language, mediatype, etc.).
  - Some unit test were catching exceptions, preventing JUnit from failing the tests.
  - Added a Resource.setIdentifier() method taking a URI as a String.
+ - Now the "Content-Location" is supported, for both the HTTP client and server connectors. The corresponding property is call.getOutput().get/setIdentifier().
  
 1.0 beta 17 (2006-07-19)
 [Bugs fixed]

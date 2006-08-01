@@ -244,6 +244,11 @@ public abstract class AbstractHttpServerCall extends DefaultConnectorCall
             {
             	getResponseHeaders().add(HEADER_CONTENT_LENGTH, Long.toString(call.getOutput().getSize()));
             }
+
+            if(call.getOutput().getIdentifier() != null)
+            {
+            	getResponseHeaders().add(HEADER_CONTENT_LOCATION, call.getOutput().getIdentifier().toString());
+            }
          }
       }
       catch(Exception e)

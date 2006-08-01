@@ -171,6 +171,10 @@ public abstract class AbstractHttpClientCall extends AbstractClientCall
             {
             	result.setTag(new Tag(header.getValue()));
             }
+            else if(header.getName().equalsIgnoreCase(ConnectorCall.HEADER_CONTENT_LOCATION))
+            {
+            	result.setIdentifier(header.getValue());
+            }
          }
       }
    	
