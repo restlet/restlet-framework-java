@@ -107,6 +107,7 @@ import com.noelios.restlet.util.ByteUtils;
  * 		<td>Path to the Web Application WAR file or directory.</td>
  * 	</tr>
  *	</table>
+ * @see com.noelios.restlet.data.ContextReference
  * @author Jerome Louvel (contact@noelios.com) <a href="http://www.noelios.com/">Noelios Consulting</a>
  */
 public class ContextClient extends AbstractClient
