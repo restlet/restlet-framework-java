@@ -239,7 +239,7 @@ public class CallModel implements ReadableModel
 	      }
 	      else if(name.equals(NAME_REDIRECT_URI))
 	      {
-	         result = call.getOutputRef().toString();
+	         result = call.getRedirectRef().toString();
 	      }
 	      else if(name.equals(NAME_REFERRER_URI))
 	      {
@@ -401,7 +401,7 @@ public class CallModel implements ReadableModel
       }
       else if(name.equals(NAME_REDIRECT_URI))
       {
-         result = (call.getOutputRef() != null);
+         result = (call.getRedirectRef() != null);
       }
       else if(name.equals(NAME_REFERRER_URI))
       {

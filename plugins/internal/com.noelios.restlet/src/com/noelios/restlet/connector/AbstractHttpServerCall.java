@@ -177,9 +177,9 @@ public abstract class AbstractHttpServerCall extends DefaultConnectorCall
          }
          
          // Set the redirection URI
-         if(call.getOutputRef() != null)
+         if(call.getRedirectRef() != null)
          {
-         	getResponseHeaders().add(HEADER_LOCATION, call.getOutputRef().toString());
+         	getResponseHeaders().add(HEADER_LOCATION, call.getRedirectRef().toString());
          }
 
          // Set the security data

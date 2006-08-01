@@ -157,7 +157,7 @@ public class Collection
 		
 		if(post.getStatus().equals(Statuses.SUCCESS_CREATED))
 		{
-			return post.getOutputRef();
+			return post.getRedirectRef();
 		}
 		else
 		{

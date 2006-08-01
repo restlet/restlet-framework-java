@@ -11,7 +11,7 @@ Changes log
  - The content negotiation was not properly handling the situation where no language and media type preferences are defined. Reported by Thierry Boileau.
  - Fixed potential NPE in DefaultClient and RedirectTestCase when no connector found.
  - Fixed bug in NRE's factory which prevented the detection of HTTPS connectors. Now all HTTPS connectors work fully (Simple, Jetty5 and Jetty6).
- 
+
 [API breaking changes]
  - Removed get/setTimeout() methods from the Client interface and related classes. Also, removed the configureSsl() method from the Server interface.
  	We will now use connectors'parameters instead. Suggested by John D. Mitchell.
@@ -29,6 +29,7 @@ Changes log
    was suggested by John D. Mitchell.
  - Removed unused org.restlet.connector.LocalClient connector.
  - Moved content of com.noelios.restlet.impl to com.noelios.restlet, com.noelios.restlet.connector and com.noelios.restlet.data
+ - Renamed Call's "outputRef" property back to "redirectRef" as we now have Representation's "identifier" property to get the location of the call's output.
  
 [Other changes] 
  - Separated the HTTP client connector (based on JDK's HttpUrlConnection) previously integrated to the NRE core. This will allow future alternative
@@ -47,6 +48,7 @@ Changes log
    parameters list. This allows the settings of the parameters related to HTTP server connectors in all cases (standalone or embedded).
  - ContextClient now uses parameters for its configuration (default encoding, language, mediatype, etc.).
  - Some unit test were catching exceptions, preventing JUnit from failing the tests.
+ - Added a Resource.setIdentifier() method taking a URI as a String.
  
 1.0 beta 17 (2006-07-19)
 [Bugs fixed]

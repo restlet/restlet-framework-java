@@ -103,7 +103,7 @@ public class DefaultCall implements Call
    protected PreferenceData preference;
 
    /** The redirection reference. */
-   protected Reference outputRef;
+   protected Reference redirectRef;
 
    /** The referrer reference. */
    protected Reference referrerRef;
@@ -541,15 +541,12 @@ public class DefaultCall implements Call
    }
 
    /**
-    * Returns the reference of the output representation. This is used in several situations: when
-    * redirecting the client to a different URI, when creating a new resource after a POST call for
-    * example or when the output reference has a specific URI that is different from the identified
-    * resource URI.
+    * Returns the reference that the client should follow for redirections or creation of new resources.
     * @return The redirection reference.
     */
-   public Reference getOutputRef()
+   public Reference getRedirectRef()
    {
-      return this.outputRef;
+      return this.redirectRef;
    }
 
    /**
@@ -769,25 +766,21 @@ public class DefaultCall implements Call
    }
 
    /**
-    * Sets the reference of the output representation. This is used in several situations: when
-    * redirecting the client to a different URI, when creating a new resource after a POST call for
-    * example or when the output reference has a specific URI that is different from the identified
-    * resource URI.
-    * @param outputRef The output reference.
+    * Sets the reference that the client should follow for redirections or creation of new resources.
+    * @param redirectRef The redirection reference.
     */
-   public void setOutputRef(Reference outputRef)
+   public void setRedirectRef(Reference redirectRef)
    {
-      this.outputRef = outputRef;
+      this.redirectRef = redirectRef;
    }
 
    /**
-    * Sets the reference of the output representation. Note that the output URI can be either 
-    * absolute or relative to the current call's context reference.
-    * @param outputUri The output URI.
+    * Sets the reference that the client should follow for redirections or creation of new resources.
+    * @param redirectUri The redirection URI.
     */
-   public void setOutputRef(String outputUri)
+   public void setRedirectRef(String redirectUri)
    {
-      setOutputRef(new Reference(getContextRef(), outputUri).getTargetRef());
+      setRedirectRef(new Reference(getContextRef(), redirectUri).getTargetRef());
    }
 
    /**

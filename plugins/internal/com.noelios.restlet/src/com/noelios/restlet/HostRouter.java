@@ -386,7 +386,7 @@ public class HostRouter extends AbstractHandler implements Router
 				if(isRedirectClient())
 			   {
 			   	// Redirect the caller to the preferred format
-					call.setOutputRef(getPreferredUri() + call.getResourcePath());
+					call.setRedirectRef(getPreferredUri() + call.getResourcePath());
 					call.setStatus(getRedirectStatus());
 				}
 				else if(isWarnClient())

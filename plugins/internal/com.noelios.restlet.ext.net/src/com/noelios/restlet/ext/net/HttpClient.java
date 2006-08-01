@@ -337,7 +337,7 @@ public class HttpClient extends AbstractClient
          {
             if(header.getName().equalsIgnoreCase(ConnectorCall.HEADER_LOCATION))
             {
-               call.setOutputRef(header.getValue());
+               call.setRedirectRef(header.getValue());
             }
             else if((header.getName().equalsIgnoreCase(ConnectorCall.HEADER_SET_COOKIE)) ||
                   (header.getName().equalsIgnoreCase(ConnectorCall.HEADER_SET_COOKIE2)))

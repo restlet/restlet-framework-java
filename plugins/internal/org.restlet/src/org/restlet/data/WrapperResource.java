@@ -71,6 +71,15 @@ public class WrapperResource extends WrapperRestlet implements Resource
 	}
 	
 	/**
+	 * Sets the official identifier from a URI string.
+	 * @param identifierUri The official identifier to parse.
+	 */
+	public void setIdentifier(String identifierUri)
+	{
+		getWrappedResource().setIdentifier(identifierUri);
+	}
+
+	/**
 	 * Returns the list of all the identifiers for the resource. The list is composed of the official identifier
 	 * followed by all the alias identifiers.
 	 * @return The list of all the identifiers for the resource.
