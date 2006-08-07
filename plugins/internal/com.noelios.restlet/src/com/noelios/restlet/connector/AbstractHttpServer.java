@@ -31,6 +31,7 @@ import org.restlet.Restlet;
 import org.restlet.component.Component;
 import org.restlet.connector.AbstractServer;
 import org.restlet.connector.Connector;
+import org.restlet.data.Methods;
 import org.restlet.data.ParameterList;
 
 /**
@@ -85,7 +86,11 @@ public abstract class AbstractHttpServer extends AbstractServer
       target.handle(restletCall);
       call.setResponse(restletCall);
       call.sendResponseHeaders();
-      call.sendResponseOutput(restletCall.getOutput());
+      
+      if(!restletCall.getMethod().equals(Methods.HEAD))
+      {
+      	call.sendResponseOutput(restletCall.getOutput());
+      }
    }
    
 }

@@ -72,6 +72,15 @@ public abstract class AbstractResource extends AbstractRestlet implements Resour
    {
    	call.setBestOutput(this, fallbackLanguage);
    }
+   
+   /**
+    * Handles a HEAD call.
+    * @param call The call to handle.
+    */
+   protected void handleHead(Call call)
+   {
+   	handleGet(call);
+   }
 
    /**
     * Returns the language to use if content negotiation fails.

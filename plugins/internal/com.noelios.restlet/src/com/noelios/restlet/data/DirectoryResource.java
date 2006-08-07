@@ -52,10 +52,13 @@ public class DirectoryResource extends AbstractResource
 			.getCanonicalName());
 
 	/** The parent directory handler. */
-	protected DirectoryHandler directory;
+	protected DirectoryHandler handler;
 
 	/** The context's target URI. For example, "file:///c:/dir/foo.en" or "context://webapp/dir/foo.en". */
 	protected String targetUri;
+
+	/** Indicates if the target resource is a directory or a file. */
+	protected boolean targetDirectory;
 
 	/** The context's directory URI. For example, "file:///c:/dir/" or "context://webapp/dir/". */
 	protected String directoryUri;
@@ -71,23 +74,23 @@ public class DirectoryResource extends AbstractResource
 
 	/**
 	 * Constructor.
-	 * @param directory The parent directory handler.
+	 * @param handler The parent directory handler.
 	 * @param resourcePath The relative resource path.
 	 * @throws IOException 
 	 */
-	public DirectoryResource(DirectoryHandler directory, String resourcePath)
+	public DirectoryResource(DirectoryHandler handler, String resourcePath)
 			throws IOException
 	{
 		// Update the member variables
-		this.directory = directory;
+		this.handler = handler;
 
 		// Compute the base resource URI
-		this.targetUri = new Reference(directory.getRootUri() + resourcePath)
+		this.targetUri = new Reference(handler.getRootUri() + resourcePath)
 				.getTargetRef().toString();
-		if (!this.targetUri.startsWith(directory.getRootUri()))
+		if (!this.targetUri.startsWith(handler.getRootUri()))
 		{
 			// Prevent the client from accessing resources in upper directories
-			this.targetUri = directory.getRootUri();
+			this.targetUri = handler.getRootUri();
 		}
 
 		// Try to detect the presence of a directory
@@ -95,6 +98,7 @@ public class DirectoryResource extends AbstractResource
 		if ((call.getOutput() != null)
 				&& call.getOutput().getMediaType().equals(MediaTypes.TEXT_URI_LIST))
 		{
+			this.targetDirectory = true;
 			this.directoryContent = new ReferenceList(call.getOutput());
 
 			// Append the index name
@@ -107,6 +111,7 @@ public class DirectoryResource extends AbstractResource
 		}
 		else
 		{
+			this.targetDirectory = false;
 			int lastSlashIndex = targetUri.lastIndexOf('/');
 			if (lastSlashIndex == -1)
 			{
@@ -150,7 +155,7 @@ public class DirectoryResource extends AbstractResource
 	 */
 	public DirectoryHandler getDirectory()
 	{
-		return this.directory;
+		return this.handler;
 	}
 
 	/**
@@ -294,7 +299,7 @@ public class DirectoryResource extends AbstractResource
 
 			if (result.size() == 0)
 			{
-				if (getDirectory().isListingAllowed())
+				if (this.targetDirectory && getDirectory().isListingAllowed())
 				{
 					result = getDirectory().getDirectoryVariants(
 							this.directoryContent);
