@@ -197,13 +197,12 @@ public class RouterBuilder extends RestletBuilder
     *	Attaches a Directory Restlet.
     * @param pattern The URI pattern used to map calls.
     * @param rootUri The directory's root URI.
-    * @param deeply Indicates if the sub-directories are deeply accessible.
     * @param indexName If no file name is specified, use the (optional) index name.
     * @return The builder for the created node.
     */
-   public DirectoryHandlerBuilder attachDirectory(String pattern, String rootUri, boolean deeply, String indexName)
+   public DirectoryHandlerBuilder attachDirectory(String pattern, String rootUri, String indexName)
    {
-      DirectoryHandler node = new DirectoryHandler(getNode().getOwner(), rootUri, deeply, indexName);
+      DirectoryHandler node = new DirectoryHandler(getNode().getOwner(), rootUri, indexName);
       getNode().getScorers().add(pattern, node);
       return Builders.buildDirectory(this, node);
    }

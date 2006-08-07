@@ -110,6 +110,15 @@ public class ReferenceList implements List<Reference>
 
    /**
     * Sets the list reference.
+    * @param listUri The list reference as a URI.
+    */
+   public void setListRef(String listUri)
+   {
+      setListRef(new Reference(listUri));
+   }
+
+   /**
+    * Sets the list reference.
     * @param listRef The list reference.
     */
    public void setListRef(Reference listRef)

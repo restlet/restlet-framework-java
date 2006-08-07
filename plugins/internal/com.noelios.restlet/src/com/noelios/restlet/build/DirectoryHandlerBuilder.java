@@ -60,6 +60,38 @@ public class DirectoryHandlerBuilder extends RestletBuilder
    	getNode().setNegotiationEnabled(negotiate);
    	return this;
    }
-   
+
+	/**
+	 * Indicates if the display of directory listings is allowed when no index file is found.
+	 * @param allow True if the display of directory listings is allowed when no index file is found.
+    * @return The current builder.
+    */
+   public DirectoryHandlerBuilder listing(boolean allow)
+   {
+   	getNode().setListingAllowed(allow);
+   	return this;
+   }
+
+   /**
+    * Indicates if the subdirectories are deeply accessible (true by default).
+    * @param deeplyAccessible True if the subdirectories are deeply accessible.
+    * @return The current builder.
+    */
+   public DirectoryHandlerBuilder deeply(boolean deeplyAccessible)
+   {
+   	getNode().setDeeplyAccessible(deeplyAccessible);
+   	return this;
+   }
+
+   /** 
+    * Indicates if modifications to context resources are allowed.
+    * @param modifiable True if modifications to context resources are allowed.
+    */
+   public DirectoryHandlerBuilder modifiable(boolean modifiable)
+   {
+   	getNode().setModifiable(modifiable);
+   	return this;
+   }
+
 }
 

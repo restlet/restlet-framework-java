@@ -573,6 +573,39 @@ public class Reference implements Data
    }
 
    /**
+    * Returns the parent reference of a hierarchical reference. The last slash of the path will be considered
+    * as the end of the parent path.
+    * @return The parent reference of a hierarchical reference.
+    */
+   public Reference getParentRef()
+   {
+   	Reference result = null;
+   	
+   	if(isHierarchical())
+   	{
+   		String parentRef = null;
+	   	String path = getPath(); 
+	   	if(!path.equals("/") && !path.equals(""))
+	   	{
+	   		if(path.endsWith("/"))
+	   		{
+	   			path = path.substring(0, path.length() - 1);
+	   		}
+	   		
+	   		parentRef = getHostIdentifier() + path.substring(0, path.lastIndexOf('/') + 1);
+	   	}
+	   	else
+	   	{
+	   		parentRef = this.internalRef;
+	   	}
+	   	
+	   	result = new Reference(parentRef);
+   	}
+   	
+   	return result;
+   }
+   
+   /**
     * Returns the path component for hierarchical identifiers.
     * @return The path component for hierarchical identifiers.
     */

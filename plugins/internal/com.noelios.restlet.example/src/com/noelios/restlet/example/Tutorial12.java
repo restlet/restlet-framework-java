@@ -75,7 +75,7 @@ public class Tutorial12 implements Constants
       				.attachHost(8182)
       					.attachGuard("/docs/", "com.noelios.restlet.example", true, ChallengeSchemes.HTTP_BASIC , "Restlet tutorial", true)
       						.authorize("scott", "tiger")
-      						.attachDirectory(ROOT_URI, true, "index").upRouter()
+      						.attachDirectory(ROOT_URI, "index.html").upRouter()
    						.attachRouter("/users/[a-z]+")
    								.attach("$", userRestlet).upRouter()
 									.attach("/orders$", ordersRestlet).owner().start();

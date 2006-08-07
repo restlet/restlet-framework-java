@@ -68,6 +68,8 @@ Changes log
  - Added Eclipse code formatter and template styles used to SVN.
  - Added DirectoryHandlerBuilder to allow the setting of the contentNegotiation flag.
  - Added SVG media type constant to MediaTypes. Also part of the common extesions (*.svg) of ContextClient.
+ - Improved the default directory listing template to look more like Apache style of listing. Added the ".." link when possible, etc.
+ - Added Reference.getParentRef() method.
  
 1.0 beta 17 (2006-07-19)
 [Bugs fixed]

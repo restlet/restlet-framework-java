@@ -51,7 +51,7 @@ public class Tutorial06 implements Constants
 
          // Create a directory Restlet able to return a deep hierarchy of Web files
          // (HTML pages, CSS stylesheets or GIF images) from a local directory.
-         DirectoryHandler directory = new DirectoryHandler(myContainer, ROOT_URI, true, "index.html");
+         DirectoryHandler directory = new DirectoryHandler(myContainer, ROOT_URI, "index.html");
 
          // Then attach the Restlet to the container.
          host.getScorers().add("/", directory);

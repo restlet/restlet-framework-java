@@ -67,7 +67,7 @@ public class Tutorial09a implements Constants
          guard.setTarget(host);
 
          // Create a directory Restlet able to return a deep hierarchy of Web files
-         DirectoryHandler directory = new DirectoryHandler(myContainer, ROOT_URI, true, "index");
+         DirectoryHandler directory = new DirectoryHandler(myContainer, ROOT_URI, "index.html");
 
          // Then attach the directory Restlet to the host router.
          host.getScorers().add("/", directory);

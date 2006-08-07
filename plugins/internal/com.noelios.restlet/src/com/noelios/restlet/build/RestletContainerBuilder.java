@@ -243,13 +243,12 @@ public class RestletContainerBuilder extends ComponentBuilder
    /**
     *	Attaches a Directory Restlet.
     * @param rootUri The directory's root URI.
-    * @param deeply Indicates if the sub-directories are deeply accessible.
     * @param indexName If no file name is specified, use the (optional) index name.
     * @return The builder for the created node.
     */
-   public DirectoryHandlerBuilder attachDirectory(String rootUri, boolean deeply, String indexName)
+   public DirectoryHandlerBuilder attachDirectory(String rootUri, String indexName)
    {
-      DirectoryHandler node = new DirectoryHandler(getNode(), rootUri, deeply, indexName);
+      DirectoryHandler node = new DirectoryHandler(getNode(), rootUri, indexName);
       getNode().setRoot(node);
       return Builders.buildDirectory(this, node);
    }

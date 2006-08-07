@@ -61,14 +61,14 @@ public class DirectoryHandler extends AbstractHandler
    /** If no file name is specified, use the (optional) index name. */
    protected String indexName;
 
-   /** Indicates if the sub-directories are deeply accessible. */
-   protected boolean deeply;
+   /** Indicates if the subdirectories are deeply accessible (true by default). */
+   protected boolean deeplyAccessible;
 
    /** The absolute root URI, including the "file://" or "context://" scheme. */
    protected String rootUri;
    
-   /** Indicates if modifications to context resources are allowed. */
-   protected boolean readOnly;
+   /** Indicates if modifications to context resources are allowed (false by default). */
+   protected boolean modifiable;
    
    /** Indicates if the display of directory listings is allowed when no index file is found. */
    protected boolean listingAllowed;
@@ -80,17 +80,27 @@ public class DirectoryHandler extends AbstractHandler
     * Constructor.
     * @param owner The owner component.
     * @param rootUri The absolute root Uri, including the "file://" or "context://" scheme.
-    * @param deeply Indicates if the sub-directories are deeply accessible.
     * @param indexName If no file name is specified, use the (optional) index name.
     */
-   public DirectoryHandler(Component owner, String rootUri, boolean deeply, String indexName)
+   public DirectoryHandler(Component owner, String rootUri, String indexName)
    {
       super(owner);
       this.contextClient = getOwner().getClients().get(Factory.CONTEXT_CLIENT_NAME);
       this.indexName = indexName;
-      this.rootUri = rootUri;
-      this.deeply = deeply;
-      this.readOnly = true;
+      
+      if(rootUri.endsWith("/"))
+      {
+      	this.rootUri = rootUri;
+      }
+      else
+      {
+      	// We don't take the risk of exposing directory "file:///C:/AA" 
+      	// if only "file:///C:/A" was intended
+      	this.rootUri = rootUri + "/";
+      }
+      
+      this.deeplyAccessible = true;
+      this.modifiable = false;
       this.listingAllowed = false;
       this.negotiationEnabled = false;
    }
@@ -104,7 +114,7 @@ public class DirectoryHandler extends AbstractHandler
 	{
    	try
 		{
-			return new DirectoryResource(this, call.getContext().getRelativePath());
+			return new DirectoryResource(this, call);
 		}
 		catch (IOException ioe)
 		{
@@ -151,20 +161,20 @@ public class DirectoryHandler extends AbstractHandler
 	
    /** 
     * Indicates if modifications to context resources are allowed.
-    * @return False if modifications to context resources are allowed.
+    * @return True if modifications to context resources are allowed.
     */
-   public boolean isReadOnly()
+   public boolean isModifiable()
    {
-   	return this.readOnly;
+   	return this.modifiable;
    }
 
    /** 
     * Indicates if modifications to context resources are allowed.
-    * @param readOnly False if modifications to context resources are allowed.
+    * @param modifiable True if modifications to context resources are allowed.
     */
-   public void setReadOnly(boolean readOnly)
+   public void setModifiable(boolean modifiable)
    {
-   	this.readOnly = readOnly;
+   	this.modifiable = modifiable;
    }
    
    /**
@@ -213,21 +223,21 @@ public class DirectoryHandler extends AbstractHandler
    }
 
    /**
-    * Indicates if the subdirectories should be deeply exposed.
-    * @return True if the subdirectories should be deeply exposed.
+    * Indicates if the subdirectories are deeply accessible (true by default).
+    * @return True if the subdirectories are deeply accessible.
     */
-   public boolean getDeeply()
+   public boolean isDeeplyAccessible()
    {
-      return deeply;
+      return deeplyAccessible;
    }
 
    /**
-    * Indicates if the subdirectories should be deeply exposed.
-    * @param deeply True if the subdirectories should be deeply exposed.
+    * Indicates if the subdirectories are deeply accessible (true by default).
+    * @param deeplyAccessible True if the subdirectories are deeply accessible.
     */
-   public void setDeeply(boolean deeply)
+   public void setDeeplyAccessible(boolean deeplyAccessible)
    {
-      this.deeply = deeply;
+      this.deeplyAccessible = deeplyAccessible;
    }
    
    /**
@@ -241,9 +251,19 @@ public class DirectoryHandler extends AbstractHandler
    	// Create a simple HTML list
    	StringBuilder sb = new StringBuilder();
    	sb.append("<html><body>\n");
+   	
+   	sb.append("<h1>Listing of directory \"" + directoryContent.getListRef().getPath() + "\"</h1>\n");
+
+   	Reference parentRef = directoryContent.getListRef().getParentRef();
+   	
+   	if(!parentRef.equals(directoryContent.getListRef()))
+   	{
+   		sb.append("<a href=\"" + parentRef + "\">..</a><br/>\n");
+   	}
+   	
    	for(Reference ref : directoryContent)
    	{
-   		sb.append("<a href=\"" + ref.toString() + "\">" + ref.toString() + "</a><br/>\n");
+   		sb.append("<a href=\"" + ref.toString() + "\">" + ref.getRelativeRef(directoryContent.getListRef()) + "</a><br/>\n");
    	}
    	sb.append("</body></html>\n");
 
