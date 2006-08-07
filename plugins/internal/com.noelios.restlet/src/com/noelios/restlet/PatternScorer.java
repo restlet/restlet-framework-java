@@ -78,13 +78,13 @@ public class PatternScorer extends AbstractScorer
 	public float score(Call call)
 	{
 		float result = 0F;
-		String resourcePath = call.getContext().getRelativePath();
-		Matcher matcher = getPattern().matcher(resourcePath);
+		String relativeRef = call.getContext().getRelativeRef().toString();
+		Matcher matcher = getPattern().matcher(relativeRef);
       boolean matched = matcher.lookingAt();
 
       if(matched)
       {
-      	float totalLength = resourcePath.length();
+      	float totalLength = relativeRef.length();
       	
       	if(totalLength > 0.0F)
       	{
@@ -111,8 +111,8 @@ public class PatternScorer extends AbstractScorer
 	 */
 	public void handle(Call call)
 	{
-		String resourcePath = call.getContext().getRelativePath();
-		Matcher matcher = getPattern().matcher(resourcePath);
+		String relativeRef = call.getContext().getRelativeRef().toString();;
+		Matcher matcher = getPattern().matcher(relativeRef);
       boolean matched = matcher.lookingAt();
          
       if(logger.isLoggable(Level.FINER))
@@ -123,18 +123,17 @@ public class PatternScorer extends AbstractScorer
       if(matched)
       {
 	      // Updates the context
-	      String matchedPath = resourcePath.substring(0, matcher.end());
+	      String matchedPart = relativeRef.substring(0, matcher.end());
 	      Reference baseRef = call.getContext().getBaseRef();
 	
 	      if(baseRef == null)
 	      {
-	      	baseRef = new Reference(call.getResourceRef());
-		      baseRef.setPath(matchedPath);
+	      	baseRef = new Reference(matchedPart);
 	      	call.getContext().setBaseRef(baseRef);
 	      }
 	      else
 	      {
-	      	baseRef.setPath(baseRef.getPath() + matchedPath);
+	      	baseRef = new Reference(baseRef.toString(false, false) + matchedPart);
 	      }
 	
 	      if(logger.isLoggable(Level.FINE))

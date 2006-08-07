@@ -34,7 +34,7 @@ import com.noelios.restlet.StatusFilter;
  * Displaying error pages.
  * @author Jerome Louvel (contact@noelios.com) <a href="http://www.noelios.com/">Noelios Consulting</a>
  */
-public class Tutorial08
+public class Tutorial08 implements Constants
 {
    public static void main(String[] args)
    {
@@ -60,7 +60,7 @@ public class Tutorial08
          status.setTarget(host);
 
          // Create a directory Restlet able to return a deep hierarchy of Web files
-         DirectoryHandler directory = new DirectoryHandler(myContainer, "file:///D:/Restlet/www/docs/api/", true, "index");
+         DirectoryHandler directory = new DirectoryHandler(myContainer, ROOT_URI, true, "index");
 
          // Then attach the directory Restlet to the host router.
          host.getScorers().add("/", directory);

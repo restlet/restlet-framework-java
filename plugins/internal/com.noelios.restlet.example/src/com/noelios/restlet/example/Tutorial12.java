@@ -38,7 +38,7 @@ import com.noelios.restlet.data.StringRepresentation;
  * Fluent Builders to simplify configuration. 
  * @author Jerome Louvel (contact@noelios.com) <a href="http://www.noelios.com/">Noelios Consulting</a>
  */
-public class Tutorial12
+public class Tutorial12 implements Constants
 {
    public static void main(String[] args)
    {
@@ -75,7 +75,7 @@ public class Tutorial12
       				.attachHost(8182)
       					.attachGuard("/docs/", "com.noelios.restlet.example", true, ChallengeSchemes.HTTP_BASIC , "Restlet tutorial", true)
       						.authorize("scott", "tiger")
-      						.attachDirectory("file:///D:/Restlet/www/docs/api/", true, "index").upRouter()
+      						.attachDirectory(ROOT_URI, true, "index").upRouter()
    						.attachRouter("/users/[a-z]+")
    								.attach("$", userRestlet).upRouter()
 									.attach("/orders$", ordersRestlet).owner().start();

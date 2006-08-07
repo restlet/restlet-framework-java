@@ -72,7 +72,10 @@ public class DirectoryHandler extends AbstractHandler
    
    /** Indicates if the display of directory listings is allowed when no index file is found. */
    protected boolean listingAllowed;
-      
+
+	/** Indicates if content negotation should be enabled (false by default). */
+	protected boolean negotiationEnabled;
+  
    /**
     * Constructor.
     * @param owner The owner component.
@@ -89,7 +92,9 @@ public class DirectoryHandler extends AbstractHandler
       this.deeply = deeply;
       this.readOnly = true;
       this.listingAllowed = false;
+      this.negotiationEnabled = false;
    }
+   
    /**
 	 * Finds the next Restlet if available.
 	 * @param call The current call.
@@ -124,6 +129,24 @@ public class DirectoryHandler extends AbstractHandler
 	public void setListingAllowed(boolean listingAllowed)
 	{
 		this.listingAllowed = listingAllowed;
+	}
+
+	/** 
+	 * Indicates if content negotation should be enabled.
+	 * @return True if content negotation should be enabled.
+	 */
+	public boolean isNegotiationEnabled()
+	{
+		return this.negotiationEnabled;
+	}
+
+	/** 
+	 * Indicates if content negotation should be enabled.
+	 * @param negotiationEnabled True if content negotation should be enabled.
+	 */
+	public void setNegotiationEnabled(boolean negotiationEnabled)
+	{
+		this.negotiationEnabled = negotiationEnabled;
 	}
 	
    /** 

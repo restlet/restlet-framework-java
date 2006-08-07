@@ -32,7 +32,7 @@ import com.noelios.restlet.HostRouter;
  * Serving static files.
  * @author Jerome Louvel (contact@noelios.com) <a href="http://www.noelios.com/">Noelios Consulting</a>
  */
-public class Tutorial06
+public class Tutorial06 implements Constants
 {
    public static void main(String[] args)
    {
@@ -51,7 +51,7 @@ public class Tutorial06
 
          // Create a directory Restlet able to return a deep hierarchy of Web files
          // (HTML pages, CSS stylesheets or GIF images) from a local directory.
-         DirectoryHandler directory = new DirectoryHandler(myContainer, "file:///D:/Restlet/www/docs/api/", true, "index");
+         DirectoryHandler directory = new DirectoryHandler(myContainer, ROOT_URI, true, "index.html");
 
          // Then attach the Restlet to the container.
          host.getScorers().add("/", directory);

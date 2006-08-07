@@ -45,7 +45,7 @@ import com.noelios.restlet.data.StringRepresentation;
  * Routers and hierarchical URIs
  * @author Jerome Louvel (contact@noelios.com) <a href="http://www.noelios.com/">Noelios Consulting</a>
  */
-public class Tutorial11
+public class Tutorial11 implements Constants
 {
    public static void main(String[] args)
    {
@@ -76,7 +76,7 @@ public class Tutorial11
          host.getScorers().add("/docs/", guard);
 
          // Create a directory Restlet able to return a deep hierarchy of Web files
-         DirectoryHandler directory = new DirectoryHandler(myContainer, "file:///D:/Restlet/www/docs/api/", true, "index");
+         DirectoryHandler directory = new DirectoryHandler(myContainer, ROOT_URI, true, "index");
          guard.setTarget(directory);
 
          // Create the user router

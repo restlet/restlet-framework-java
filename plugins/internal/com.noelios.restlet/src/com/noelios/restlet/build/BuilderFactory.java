@@ -28,6 +28,7 @@ import org.restlet.Router;
 import org.restlet.component.Component;
 import org.restlet.component.RestletContainer;
 
+import com.noelios.restlet.DirectoryHandler;
 import com.noelios.restlet.ExtractFilter;
 import com.noelios.restlet.GuardFilter;
 import com.noelios.restlet.HostRouter;
@@ -57,7 +58,17 @@ public class BuilderFactory
 	{
 		return new ComponentBuilder(parent, node);
 	}
-
+	
+	/**
+	 * Creates an DirectoryHandler builder.
+	 * @param parent The parent builder.
+	 * @param node The wrapped node.
+	 */
+   public DirectoryHandlerBuilder createDirectoryHandlerBuilder(ObjectBuilder parent, DirectoryHandler node)
+   {
+   	return new DirectoryHandlerBuilder(parent, node);
+   }
+	
 	/**
 	 * Creates an ExtractFilter builder.
 	 * @param parent The parent builder.

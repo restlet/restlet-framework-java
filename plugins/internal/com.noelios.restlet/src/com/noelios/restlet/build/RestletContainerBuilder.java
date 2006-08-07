@@ -247,11 +247,11 @@ public class RestletContainerBuilder extends ComponentBuilder
     * @param indexName If no file name is specified, use the (optional) index name.
     * @return The builder for the created node.
     */
-   public RestletBuilder attachDirectory(String rootUri, boolean deeply, String indexName)
+   public DirectoryHandlerBuilder attachDirectory(String rootUri, boolean deeply, String indexName)
    {
       DirectoryHandler node = new DirectoryHandler(getNode(), rootUri, deeply, indexName);
       getNode().setRoot(node);
-      return Builders.buildRestlet(this, node);
+      return Builders.buildDirectory(this, node);
    }
 
    /**

@@ -42,7 +42,7 @@ public enum MediaTypes implements MediaType
    
    AUDIO_ALL, AUDIO_MPEG, AUDIO_REAL, AUDIO_WAV,
 
-   IMAGE_ALL, IMAGE_BMP, IMAGE_GIF, IMAGE_ICON, IMAGE_JPEG, IMAGE_PNG,
+   IMAGE_ALL, IMAGE_BMP, IMAGE_GIF, IMAGE_ICON, IMAGE_JPEG, IMAGE_PNG, IMAGE_SVG,
    
    MESSAGE_ALL, MODEL_ALL, 
    
@@ -172,6 +172,9 @@ public enum MediaTypes implements MediaType
          case IMAGE_PNG:
             result = "image/png";
             break;
+         case IMAGE_SVG:
+         	result = "image/svg+xml";
+         	break;
             
          case MESSAGE_ALL:
             result = "message/*";
@@ -376,6 +379,9 @@ public enum MediaTypes implements MediaType
             break;
          case IMAGE_BMP:
          	result = "Windows bitmap";
+         	break;
+         case IMAGE_SVG:
+         	result = "Scalable Vector Graphics";
          	break;
             
          case MESSAGE_ALL:

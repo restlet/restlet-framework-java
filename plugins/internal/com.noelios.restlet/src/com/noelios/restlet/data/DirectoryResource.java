@@ -78,14 +78,20 @@ public class DirectoryResource extends AbstractResource
 	 * @param resourcePath The relative resource path.
 	 * @throws IOException 
 	 */
-	public DirectoryResource(DirectoryHandler handler, String resourcePath) throws IOException
+	public DirectoryResource(DirectoryHandler handler, String resourcePath)
+			throws IOException
 	{
 		// Update the member variables
 		this.handler = handler;
 
 		// Compute the base resource URI
-		this.targetUri = new Reference(handler.getRootUri() + resourcePath)
-				.getTargetRef().toString();
+		if (handler.getRootUri().endsWith("/") && resourcePath.startsWith("/"))
+		{
+			resourcePath = resourcePath.substring(1);
+		}
+
+		this.targetUri = new Reference(handler.getRootUri() + resourcePath).normalize()
+				.toString();
 		if (!this.targetUri.startsWith(handler.getRootUri()))
 		{
 			// Prevent the client from accessing resources in upper directories
@@ -107,6 +113,11 @@ public class DirectoryResource extends AbstractResource
 				this.baseName = getDirectory().getIndexName();
 				this.targetUri = this.directoryUri + this.baseName;
 			}
+			else
+			{
+				this.directoryUri = this.targetUri;
+				this.baseName = null;
+			}
 		}
 		else
 		{
@@ -125,22 +136,24 @@ public class DirectoryResource extends AbstractResource
 
 			call = getDirectory().getContextClient().get(this.directoryUri);
 			if ((call.getOutput() != null)
-					&& call.getOutput().getMediaType().equals(
-							MediaTypes.TEXT_URI_LIST))
+					&& call.getOutput().getMediaType().equals(MediaTypes.TEXT_URI_LIST))
 			{
 				this.directoryContent = new ReferenceList(call.getOutput());
 			}
 		}
 
-		// Remove the extensions from the base name
-		int firstDotIndex = this.baseName.indexOf('.');
-		if (firstDotIndex != -1)
+		if (this.handler.isNegotiationEnabled())
 		{
-			// Store the set of extensions
-			this.baseExtensions = getExtensions(this.baseName);
+			// Remove the extensions from the base name
+			int firstDotIndex = this.baseName.indexOf('.');
+			if (firstDotIndex != -1)
+			{
+				// Store the set of extensions
+				this.baseExtensions = getExtensions(this.baseName);
 
-			// Remove stored extensions from the base name
-			this.baseName = this.baseName.substring(0, firstDotIndex);
+				// Remove stored extensions from the base name
+				this.baseName = this.baseName.substring(0, firstDotIndex);
+			}
 		}
 
 		// Log results
@@ -249,48 +262,55 @@ public class DirectoryResource extends AbstractResource
 
 		if (this.directoryContent != null)
 		{
-			Set<String> extensions = null;
-			String entryUri;
-			String fullEntryName;
-			String baseEntryName;
-			int lastSlashIndex;
-			int firstDotIndex;
-
-			for (Reference ref : this.directoryContent)
+			if (this.baseName != null)
 			{
-				entryUri = ref.toString();
-				lastSlashIndex = entryUri.lastIndexOf('/');
-				fullEntryName = (lastSlashIndex == -1) ? entryUri : entryUri
-						.substring(lastSlashIndex + 1);
+				Set<String> extensions = null;
+				String entryUri;
+				String fullEntryName;
+				String baseEntryName;
+				int lastSlashIndex;
+				int firstDotIndex;
 
-				// Remove the extensions from the base name
-				firstDotIndex = fullEntryName.indexOf('.');
-				if (firstDotIndex != -1)
+				for (Reference ref : this.directoryContent)
 				{
-					baseEntryName = fullEntryName.substring(0, firstDotIndex);
-				}
-				else
-				{
+					entryUri = ref.toString();
+					lastSlashIndex = entryUri.lastIndexOf('/');
+					fullEntryName = (lastSlashIndex == -1) ? entryUri : entryUri
+							.substring(lastSlashIndex + 1);
 					baseEntryName = fullEntryName;
-				}
 
-				// Check if the current file is a valid variant
-				if (baseEntryName.equals(this.baseName))
-				{
-					extensions = getExtensions(fullEntryName);
-
-					// Verify that the extensions are compatible
-					if (((extensions == null) && (this.baseExtensions == null))
-							|| (this.baseExtensions == null)
-							|| extensions.containsAll(this.baseExtensions))
+					if (this.handler.isNegotiationEnabled())
 					{
-						// Add the new variant to the result list
-						Call call = getDirectory().getContextClient().get(entryUri);
-
-						if (call.getStatus().isSuccess()
-								&& (call.getOutput() != null))
+						// Remove the extensions from the base name
+						firstDotIndex = fullEntryName.indexOf('.');
+						if (firstDotIndex != -1)
 						{
-							result.add(call.getOutput());
+							baseEntryName = fullEntryName.substring(0, firstDotIndex);
+						}
+					}
+
+					// Check if the current file is a valid variant
+					if (baseEntryName.equals(this.baseName))
+					{
+						boolean validVariant = true;
+
+						if (this.handler.isNegotiationEnabled())
+						{
+							// Verify that the extensions are compatible
+							extensions = getExtensions(fullEntryName);
+							validVariant = (((extensions == null) && (this.baseExtensions == null))
+									|| (this.baseExtensions == null) || extensions
+									.containsAll(this.baseExtensions));
+						}
+
+						if (validVariant)
+						{
+							// Add the new variant to the result list
+							Call call = getDirectory().getContextClient().get(entryUri);
+							if (call.getStatus().isSuccess() && (call.getOutput() != null))
+							{
+								result.add(call.getOutput());
+							}
 						}
 					}
 				}
@@ -300,8 +320,7 @@ public class DirectoryResource extends AbstractResource
 			{
 				if (this.targetDirectory && getDirectory().isListingAllowed())
 				{
-					result = getDirectory().getDirectoryVariants(
-							this.directoryContent);
+					result = getDirectory().getDirectoryVariants(this.directoryContent);
 				}
 			}
 		}

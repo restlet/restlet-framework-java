@@ -1172,7 +1172,7 @@ public class Reference implements Data
    	
    	if((childRef != null) && (childRef.isHierarchical()))
    	{
-		   result = childRef.getPath().startsWith(getPath());
+		   result = childRef.toString(false, false).startsWith(toString(false, false));
    	}
    	
    	return result;

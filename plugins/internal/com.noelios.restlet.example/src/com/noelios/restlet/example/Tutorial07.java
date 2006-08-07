@@ -33,7 +33,7 @@ import com.noelios.restlet.LogFilter;
  * Logging calls.
  * @author Jerome Louvel (contact@noelios.com) <a href="http://www.noelios.com/">Noelios Consulting</a>
  */
-public class Tutorial07
+public class Tutorial07 implements Constants
 {
    public static void main(String[] args)
    {
@@ -55,7 +55,7 @@ public class Tutorial07
          log.setTarget(host);
 
          // Create a directory Restlet able to return a deep hierarchy of Web files
-         DirectoryHandler directory = new DirectoryHandler(myContainer, "file:///D:/Restlet/www/docs/api/", true, "index");
+         DirectoryHandler directory = new DirectoryHandler(myContainer, ROOT_URI, true, "index");
 
          // Then attach the Restlet to the log Filter.
          host.getScorers().add("/", directory);

@@ -201,11 +201,11 @@ public class RouterBuilder extends RestletBuilder
     * @param indexName If no file name is specified, use the (optional) index name.
     * @return The builder for the created node.
     */
-   public RestletBuilder attachDirectory(String pattern, String rootUri, boolean deeply, String indexName)
+   public DirectoryHandlerBuilder attachDirectory(String pattern, String rootUri, boolean deeply, String indexName)
    {
       DirectoryHandler node = new DirectoryHandler(getNode().getOwner(), rootUri, deeply, indexName);
       getNode().getScorers().add(pattern, node);
-      return Builders.buildRestlet(this, node);
+      return Builders.buildDirectory(this, node);
    }
 
    /**
