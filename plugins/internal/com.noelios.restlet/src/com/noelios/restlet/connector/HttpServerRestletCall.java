@@ -53,296 +53,317 @@ import com.noelios.restlet.util.SecurityUtils;
  */
 public class HttpServerRestletCall extends Call
 {
-   /** Obtain a suitable logger. */
-   private static Logger logger = Logger.getLogger(HttpServerRestletCall.class.getCanonicalName());
+	/** Obtain a suitable logger. */
+	private static Logger logger = Logger.getLogger(HttpServerRestletCall.class
+			.getCanonicalName());
 
-   /** The HTTP server connector that issued the call. */
-   protected Connector httpServer;
+	/** The HTTP server connector that issued the call. */
+	protected Connector httpServer;
 
-   /** The low-level connector call. */
-   protected ConnectorCall connectorCall;
+	/** The low-level connector call. */
+	protected ConnectorCall connectorCall;
 
-   /**
-    * Constructor.
-    * @param httpServer The HTTP server connector that issued the call.
-    * @param call The wrapped HTTP server call.
-    */
-   public HttpServerRestletCall(Connector httpServer, AbstractHttpServerCall call)
-   {
-   	this.httpServer = httpServer;
-   	
-      // Set the properties
-      setConnectorCall(call);
-      getServer().setAddress(call.getResponseAddress());
-      getServer().setName(Factory.VERSION_HEADER);
-      setStatus(Statuses.SUCCESS_OK);
-      setMethod(Methods.create(call.getRequestMethod()));
+	/**
+	 * Constructor.
+	 * @param httpServer The HTTP server connector that issued the call.
+	 * @param call The wrapped HTTP server call.
+	 */
+	public HttpServerRestletCall(Connector httpServer, AbstractHttpServerCall call)
+	{
+		this.httpServer = httpServer;
 
-      // Set the resource reference
-      String resource = call.getRequestUri();
-      if(resource != null)
-      {
-         setResourceRef(resource);
-      }
-   }
+		// Set the properties
+		setConnectorCall(call);
+		getServer().setAddress(call.getResponseAddress());
+		getServer().setName(Factory.VERSION_HEADER);
+		setStatus(Statuses.SUCCESS_OK);
+		setMethod(Methods.create(call.getRequestMethod()));
 
-   /**
-    * Returns the condition data applying to this call.
-    * @return The condition data applying to this call.
-    */
-   public ConditionData getCondition()
-   {
-      if(this.condition == null) 
-      {
-         this.condition = new ConditionData();
+		// Set the resource reference
+		String resource = call.getRequestUri();
+		if (resource != null)
+		{
+			setResourceRef(resource);
+		}
+	}
 
-         // Extract the header values
-         String ifMatchHeader = getConnectorCall().getRequestHeaders().getValues(ConnectorCall.HEADER_IF_MATCH);
-         String ifNoneMatchHeader = getConnectorCall().getRequestHeaders().getValues(ConnectorCall.HEADER_IF_NONE_MATCH);
-         Date ifModifiedSince = null;
-         Date ifUnmodifiedSince = null;
-         
-         for(Parameter header : getConnectorCall().getRequestHeaders())
-         {
-            if(header.getName().equalsIgnoreCase(ConnectorCall.HEADER_IF_MODIFIED_SINCE))
-            {
-               ifModifiedSince = getConnectorCall().parseDate(header.getValue(), false);
-            }
-            else if(header.getName().equalsIgnoreCase(ConnectorCall.HEADER_IF_UNMODIFIED_SINCE))
-            {
-               ifUnmodifiedSince = getConnectorCall().parseDate(header.getValue(), false);
-            }
-         }
-         
-         // Set the If-Modified-Since date
-         if((ifModifiedSince != null) && (ifModifiedSince.getTime() != -1))
-         {
-            getCondition().setModifiedSince(ifModifiedSince);
-         }
+	/**
+	 * Returns the condition data applying to this call.
+	 * @return The condition data applying to this call.
+	 */
+	public ConditionData getCondition()
+	{
+		if (this.condition == null)
+		{
+			this.condition = new ConditionData();
 
-         // Set the If-Unmodified-Since date
-         if((ifUnmodifiedSince != null) && (ifUnmodifiedSince.getTime() != -1))
-         {
-            getCondition().setUnmodifiedSince(ifUnmodifiedSince);
-         }
+			// Extract the header values
+			String ifMatchHeader = getConnectorCall().getRequestHeaders().getValues(
+					ConnectorCall.HEADER_IF_MATCH);
+			String ifNoneMatchHeader = getConnectorCall().getRequestHeaders().getValues(
+					ConnectorCall.HEADER_IF_NONE_MATCH);
+			Date ifModifiedSince = null;
+			Date ifUnmodifiedSince = null;
 
-         // Set the If-Match tags
-         List<Tag> match = null;
-         Tag current = null;
-         if(ifMatchHeader != null)
-         {
-            try
-            {
-               String[] tags = ifMatchHeader.split(",");
-               for (int i = 0; i < tags.length; i++)
-               {
-                  current = new Tag(tags[i]);
-               
-                  // Is it the first tag?
-                  if(match == null) 
-                  {
-                     match = new ArrayList<Tag>();
-                     getCondition().setMatch(match);
-                  }
-                  
-                  // Add the new tag
-                  match.add(current);
-               }
-            }
-            catch(Exception e)
-            {
-               logger.log(Level.WARNING, "Unable to process the if-match header: " + ifMatchHeader);
-            }
-         }
+			for (Parameter header : getConnectorCall().getRequestHeaders())
+			{
+				if (header.getName().equalsIgnoreCase(ConnectorCall.HEADER_IF_MODIFIED_SINCE))
+				{
+					ifModifiedSince = getConnectorCall().parseDate(header.getValue(), false);
+				}
+				else if (header.getName().equalsIgnoreCase(
+						ConnectorCall.HEADER_IF_UNMODIFIED_SINCE))
+				{
+					ifUnmodifiedSince = getConnectorCall().parseDate(header.getValue(), false);
+				}
+			}
 
-         // Set the If-None-Match tags
-         List<Tag> noneMatch = null;
-         if(ifNoneMatchHeader != null)
-         {
-            try
-            {
-               String[] tags = ifNoneMatchHeader.split(",");
-               for (int i = 0; i < tags.length; i++)
-               {
-                  current = new Tag(tags[i]);
-                  
-                  // Is it the first tag?
-                  if(noneMatch == null) 
-                  {
-                     noneMatch = new ArrayList<Tag>();
-                     getCondition().setNoneMatch(noneMatch);
-                  }
-                  
-                  noneMatch.add(current);
-               }
-            }
-            catch(Exception e)
-            {
-               logger.log(Level.WARNING, "Unable to process the if-none-match header: " + ifNoneMatchHeader);
-            }
-         }
-      }
+			// Set the If-Modified-Since date
+			if ((ifModifiedSince != null) && (ifModifiedSince.getTime() != -1))
+			{
+				getCondition().setModifiedSince(ifModifiedSince);
+			}
 
-      return this.condition;
-   }
+			// Set the If-Unmodified-Since date
+			if ((ifUnmodifiedSince != null) && (ifUnmodifiedSince.getTime() != -1))
+			{
+				getCondition().setUnmodifiedSince(ifUnmodifiedSince);
+			}
 
-   /**
-    * Returns the low-level connector call.
-    * @return The low-level connector call.
-    */
-   public ConnectorCall getConnectorCall()
-   {
-   	return this.connectorCall;
-   }
+			// Set the If-Match tags
+			List<Tag> match = null;
+			Tag current = null;
+			if (ifMatchHeader != null)
+			{
+				try
+				{
+					String[] tags = ifMatchHeader.split(",");
+					for (int i = 0; i < tags.length; i++)
+					{
+						current = new Tag(tags[i]);
 
-   /**
-    * Returns the cookies provided by the client.
-    * @return The cookies provided by the client.
-    */
-   public List<Cookie> getCookies()
-   {
-      if(this.cookies == null) 
-      {
-         this.cookies = new ArrayList<Cookie>();
-         String cookiesValue = getConnectorCall().getRequestHeaders().getValues(ConnectorCall.HEADER_COOKIE);
+						// Is it the first tag?
+						if (match == null)
+						{
+							match = new ArrayList<Tag>();
+							getCondition().setMatch(match);
+						}
 
-         if(cookiesValue != null)
-         {
-	   		try
-	         {
-	            CookieReader cr = new CookieReader(cookiesValue);
-	            Cookie current = cr.readCookie();
-	            while(current != null)
-	            {
-	               this.cookies.add(current);
-	               current = cr.readCookie();
-	            }
-	         }
-	         catch(Exception e)
-	         {
-	            logger.log(Level.WARNING, "An exception occured during cookies parsing. Headers value: " + cookiesValue, e);
-	         }
-         }
-      }
-      
-      return this.cookies;
-   }
+						// Add the new tag
+						match.add(current);
+					}
+				}
+				catch (Exception e)
+				{
+					logger.log(Level.WARNING, "Unable to process the if-match header: "
+							+ ifMatchHeader);
+				}
+			}
 
-   /**
-    * Returns the representation provided by the client.
-    * @return The representation provided by the client.
-    */
-   public Representation getInput()
-   {
-   	if(this.input == null)
-   	{
-   		this.input = ((AbstractHttpServerCall)getConnectorCall()).getRequestInput();
-   	}
-      
-      return this.input;
-   }
+			// Set the If-None-Match tags
+			List<Tag> noneMatch = null;
+			if (ifNoneMatchHeader != null)
+			{
+				try
+				{
+					String[] tags = ifNoneMatchHeader.split(",");
+					for (int i = 0; i < tags.length; i++)
+					{
+						current = new Tag(tags[i]);
 
-   /**
-    * Returns the client specific data.
-    * @return The client specific data.
-    */
-   public ClientData getClient()
-   {
-      if(this.client == null) 
-      {
-         this.client = new ClientData();
+						// Is it the first tag?
+						if (noneMatch == null)
+						{
+							noneMatch = new ArrayList<Tag>();
+							getCondition().setNoneMatch(noneMatch);
+						}
 
-         // Extract the header values
-         String acceptCharset = getConnectorCall().getRequestHeaders().getValues(ConnectorCall.HEADER_ACCEPT_CHARSET);
-         String acceptEncoding = getConnectorCall().getRequestHeaders().getValues(ConnectorCall.HEADER_ACCEPT_ENCODING);
-         String acceptLanguage = getConnectorCall().getRequestHeaders().getValues(ConnectorCall.HEADER_ACCEPT_LANGUAGE);
-         String acceptMediaType = getConnectorCall().getRequestHeaders().getValues(ConnectorCall.HEADER_ACCEPT);
+						noneMatch.add(current);
+					}
+				}
+				catch (Exception e)
+				{
+					logger.log(Level.WARNING, "Unable to process the if-none-match header: "
+							+ ifNoneMatchHeader);
+				}
+			}
+		}
 
-         // Parse the headers and update the call preferences
-         PreferenceUtils.parseCharacterSets(acceptCharset, this.client);
-         PreferenceUtils.parseEncodings(acceptEncoding, this.client);
-         PreferenceUtils.parseLanguages(acceptLanguage, this.client);
-         PreferenceUtils.parseMediaTypes(acceptMediaType, this.client);
+		return this.condition;
+	}
 
-         // Set other properties
-         this.client.setName(getConnectorCall().getRequestHeaders().getValues(ConnectorCall.HEADER_USER_AGENT));
-         this.client.setAddress(getConnectorCall().getRequestAddress());
+	/**
+	 * Returns the low-level connector call.
+	 * @return The low-level connector call.
+	 */
+	public ConnectorCall getConnectorCall()
+	{
+		return this.connectorCall;
+	}
 
-         // Special handling for the non standard but common "X-Forwarded-For" header. 
-   		boolean useForwardedForHeader = Boolean.parseBoolean(this.httpServer.getParameters().getFirstValue("useForwardedForHeader", false)); 
-   		if(useForwardedForHeader)
-   		{
-		      // Lookup the "X-Forwarded-For" header
-		      String header = getConnectorCall().getRequestHeaders().getValues(ConnectorCall.HEADER_X_FORWARDED_FOR);
-		      if(header != null)
-		      {
-		      	String[] addresses = header.split(",");
-	      		for(int i = addresses.length - 1; i >= 0; i--)
-	      		{
-	      			this.client.getAddresses().add(addresses[i].trim());
-	      		}
-		      }
-   		}
-      }
-      
-      return this.client;
-   }
+	/**
+	 * Returns the cookies provided by the client.
+	 * @return The cookies provided by the client.
+	 */
+	public List<Cookie> getCookies()
+	{
+		if (this.cookies == null)
+		{
+			this.cookies = new ArrayList<Cookie>();
+			String cookiesValue = getConnectorCall().getRequestHeaders().getValues(
+					ConnectorCall.HEADER_COOKIE);
 
-   /**
-    * Returns the referrer reference if available.
-    * @return The referrer reference.
-    */
-   public Reference getReferrerRef()
-   {
-      if(this.referrerRef == null)
-      {
-      	String referrerValue = getConnectorCall().getRequestHeaders().getValues(ConnectorCall.HEADER_REFERRER);
-      	if(referrerValue != null)
-      	{
-      		this.referrerRef = new Reference(referrerValue);
-      	}
-      }
-      
-      return this.referrerRef;
-   }
+			if (cookiesValue != null)
+			{
+				try
+				{
+					CookieReader cr = new CookieReader(cookiesValue);
+					Cookie current = cr.readCookie();
+					while (current != null)
+					{
+						this.cookies.add(current);
+						current = cr.readCookie();
+					}
+				}
+				catch (Exception e)
+				{
+					logger.log(Level.WARNING,
+							"An exception occured during cookies parsing. Headers value: "
+									+ cookiesValue, e);
+				}
+			}
+		}
 
-   /**
-    * Returns the security data related to this call.
-    * @return The security data related to this call.
-    */
-   public SecurityData getSecurity()
-   {
-      if(this.security == null) 
-      {
-         this.security = new SecurityData();
+		return this.cookies;
+	}
 
-         if(getConnectorCall().isConfidential()) 
-         {
-            getSecurity().setConfidential(true);
-         }
-         else
-         {
-            // We don't want to autocreate the security data just for this information
-            // Because that will by the default value of this property if read by someone.
-         }
+	/**
+	 * Returns the representation provided by the client.
+	 * @return The representation provided by the client.
+	 */
+	public Representation getInput()
+	{
+		if (this.input == null)
+		{
+			this.input = ((AbstractHttpServerCall) getConnectorCall()).getRequestInput();
+		}
 
-         // Extract the header value
-         String authorization = getConnectorCall().getRequestHeaders().getValues(ConnectorCall.HEADER_AUTHORIZATION);
+		return this.input;
+	}
 
-         // Set the challenge response
-         getSecurity().setChallengeResponse(SecurityUtils.parseResponse(authorization));
-      }
+	/**
+	 * Returns the client specific data.
+	 * @return The client specific data.
+	 */
+	public ClientData getClient()
+	{
+		if (this.client == null)
+		{
+			this.client = new ClientData();
 
-      return this.security;
-   }
+			// Extract the header values
+			String acceptCharset = getConnectorCall().getRequestHeaders().getValues(
+					ConnectorCall.HEADER_ACCEPT_CHARSET);
+			String acceptEncoding = getConnectorCall().getRequestHeaders().getValues(
+					ConnectorCall.HEADER_ACCEPT_ENCODING);
+			String acceptLanguage = getConnectorCall().getRequestHeaders().getValues(
+					ConnectorCall.HEADER_ACCEPT_LANGUAGE);
+			String acceptMediaType = getConnectorCall().getRequestHeaders().getValues(
+					ConnectorCall.HEADER_ACCEPT);
 
-   /**
-    * Sets the low-level connector call.
-    * @param call The low-level connector call.
-    */
-   public void setConnectorCall(ConnectorCall call)
-   {
-      this.connectorCall = call;
-   }
+			// Parse the headers and update the call preferences
+			PreferenceUtils.parseCharacterSets(acceptCharset, this.client);
+			PreferenceUtils.parseEncodings(acceptEncoding, this.client);
+			PreferenceUtils.parseLanguages(acceptLanguage, this.client);
+			PreferenceUtils.parseMediaTypes(acceptMediaType, this.client);
+
+			// Set other properties
+			this.client.setName(getConnectorCall().getRequestHeaders().getValues(
+					ConnectorCall.HEADER_USER_AGENT));
+			this.client.setAddress(getConnectorCall().getRequestAddress());
+
+			// Special handling for the non standard but common "X-Forwarded-For" header. 
+			boolean useForwardedForHeader = Boolean.parseBoolean(this.httpServer
+					.getParameters().getFirstValue("useForwardedForHeader", false));
+			if (useForwardedForHeader)
+			{
+				// Lookup the "X-Forwarded-For" header supported by popular proxies and caches.
+				// This information is only safe for intermediary components within your local network.
+				// Other addresses could easily be changed by setting a fake header and should never 
+				// be trusted for serious security checks.
+				String header = getConnectorCall().getRequestHeaders().getValues(
+						ConnectorCall.HEADER_X_FORWARDED_FOR);
+				if (header != null)
+				{
+					String[] addresses = header.split(",");
+					for (int i = addresses.length - 1; i >= 0; i--)
+					{
+						this.client.getAddresses().add(addresses[i].trim());
+					}
+				}
+			}
+		}
+
+		return this.client;
+	}
+
+	/**
+	 * Returns the referrer reference if available.
+	 * @return The referrer reference.
+	 */
+	public Reference getReferrerRef()
+	{
+		if (this.referrerRef == null)
+		{
+			String referrerValue = getConnectorCall().getRequestHeaders().getValues(
+					ConnectorCall.HEADER_REFERRER);
+			if (referrerValue != null)
+			{
+				this.referrerRef = new Reference(referrerValue);
+			}
+		}
+
+		return this.referrerRef;
+	}
+
+	/**
+	 * Returns the security data related to this call.
+	 * @return The security data related to this call.
+	 */
+	public SecurityData getSecurity()
+	{
+		if (this.security == null)
+		{
+			this.security = new SecurityData();
+
+			if (getConnectorCall().isConfidential())
+			{
+				getSecurity().setConfidential(true);
+			}
+			else
+			{
+				// We don't want to autocreate the security data just for this information
+				// Because that will by the default value of this property if read by someone.
+			}
+
+			// Extract the header value
+			String authorization = getConnectorCall().getRequestHeaders().getValues(
+					ConnectorCall.HEADER_AUTHORIZATION);
+
+			// Set the challenge response
+			getSecurity().setChallengeResponse(SecurityUtils.parseResponse(authorization));
+		}
+
+		return this.security;
+	}
+
+	/**
+	 * Sets the low-level connector call.
+	 * @param call The low-level connector call.
+	 */
+	public void setConnectorCall(ConnectorCall call)
+	{
+		this.connectorCall = call;
+	}
 
 }

@@ -188,14 +188,14 @@ public abstract class Factory
    public abstract void parse(Form form, String queryString) throws IOException;
 
    /**
-    * Sets the best representation of a given resource according to the client preferences.<br/>
+    * Sets the best output representation of a given resource according to the client preferences.<br/>
     * If no representation is found, sets the status to "Not found".<br/>
     * If no acceptable representation is available, sets the status to "Not acceptable".<br/>
     * @param resource The resource for which the best representation needs to be set.
     * @param fallbackLanguage The language to use if no preference matches.
     * @see <a href="http://httpd.apache.org/docs/2.2/en/content-negotiation.html#algorithm">Apache content negotiation algorithm</a>
     */
-   public abstract void setBestOutput(Call call, Resource resource, Language fallbackLanguage);
+   public abstract void setOutput(Call call, Resource resource, Language fallbackLanguage);
 
    /**
     * Sets the credentials of a challenge response using a user ID and a password.<br/>

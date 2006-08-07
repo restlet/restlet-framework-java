@@ -589,7 +589,7 @@ public class Factory extends org.restlet.Factory
     * @param fallbackLanguage The language to use if no preference matches.
     * @see <a href="http://httpd.apache.org/docs/2.2/en/content-negotiation.html#algorithm">Apache content negotiation algorithm</a>
     */
-   public void setBestOutput(Call call, Resource resource, Language fallbackLanguage)
+   public void setOutput(Call call, Resource resource, Language fallbackLanguage)
    {
       List<Representation> variants = resource.getVariants();
 

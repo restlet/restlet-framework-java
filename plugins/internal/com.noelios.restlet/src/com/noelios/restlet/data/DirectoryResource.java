@@ -78,8 +78,7 @@ public class DirectoryResource extends AbstractResource
 	 * @param resourcePath The relative resource path.
 	 * @throws IOException 
 	 */
-	public DirectoryResource(DirectoryHandler handler, String resourcePath)
-			throws IOException
+	public DirectoryResource(DirectoryHandler handler, String resourcePath) throws IOException
 	{
 		// Update the member variables
 		this.handler = handler;

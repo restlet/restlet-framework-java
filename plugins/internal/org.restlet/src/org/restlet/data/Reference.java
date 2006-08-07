@@ -53,7 +53,7 @@ public class Reference implements Data
    protected Reference baseRef;
 
    /** The internal reference. */
-   protected String uri;
+   protected String internalRef;
 
    /** The fragment separator index. */
    protected int fragmentIndex;
@@ -70,7 +70,7 @@ public class Reference implements Data
    public Reference()
    {
    	this.baseRef = null;
-   	this.uri = null;
+   	this.internalRef = null;
    	updateIndexes();
    }
    
@@ -80,7 +80,7 @@ public class Reference implements Data
     */
    public Reference(Reference ref)
    {
-      this(ref.baseRef, ref.uri);
+      this(ref.baseRef, ref.internalRef);
    }
    
    /**
@@ -113,7 +113,7 @@ public class Reference implements Data
     */
    public Reference(String scheme, String hostName, int hostPort, String path, String query, String fragment)
    {
-      this(toUri(scheme, hostName, hostPort, path, query, fragment));
+      this(toString(scheme, hostName, hostPort, path, query, fragment));
    }
 
    /**
@@ -124,7 +124,7 @@ public class Reference implements Data
    public Reference(Reference baseRef, String relativeUri)
    {
       this.baseRef = baseRef;
-      this.uri = relativeUri;
+      this.internalRef = relativeUri;
       updateIndexes();
    }
    
@@ -137,7 +137,7 @@ public class Reference implements Data
     */
    public Reference(Reference baseRef, String relativePart, String query, String fragment)
    {
-   	this(baseRef, toUri(relativePart, query, fragment));
+   	this(baseRef, toString(relativePart, query, fragment));
    }
 
    /**
@@ -201,7 +201,7 @@ public class Reference implements Data
     */
    public boolean equals(Reference ref)
    {
-   	return (ref == null) ? false : this.uri.equals(ref.uri);
+   	return (ref == null) ? false : this.internalRef.equals(ref.internalRef);
    }
    
    /**
@@ -220,7 +220,7 @@ public class Reference implements Data
     */
    public int hashCode() 
    {
-   	return this.uri.hashCode();
+   	return this.internalRef.hashCode();
 	}
    	
    /**
@@ -235,9 +235,10 @@ public class Reference implements Data
    
    /**
     * Normalizes the reference. Useful before comparison between references or when building 
-    * a target reference from a base and a relative references. 
+    * a target reference from a base and a relative references.
+    * @return The current reference. 
     */
-   public void normalize()
+   public Reference normalize()
    {
       // 1. The input buffer is initialized with the now-appended path components 
    	//    and the output buffer is initialized to the empty string.
@@ -332,6 +333,8 @@ public class Reference implements Data
 		// Ensure that the scheme and host names are reset in lower case
 		setScheme(getScheme());
 		setHostName(getHostName());
+		
+		return this;
    }
 
    /**
@@ -367,10 +370,9 @@ public class Reference implements Data
    public Reference getTargetRef()
    {
    	Reference result = null;
-   	String scheme = getScheme();
    	
    	// Step 1 - Resolve relative reference against their base reference
-   	if((scheme == null) && (baseRef != null))
+   	if(isRelative() && (baseRef != null))
    	{
    		// Relative URI detected
       	String authority = getAuthority();
@@ -463,7 +465,7 @@ public class Reference implements Data
    {
       if(fragmentIndex != -1)
       {
-         return this.uri.substring(fragmentIndex + 1);
+         return this.internalRef.substring(fragmentIndex + 1);
       }
       else
       {
@@ -561,12 +563,12 @@ public class Reference implements Data
       if(fragmentIndex != -1)
       {
          // Fragment found
-         return this.uri.substring(0, fragmentIndex);
+         return this.internalRef.substring(0, fragmentIndex);
       }
       else
       {
          // No fragment found
-         return this.uri;
+         return this.internalRef;
       }
    }
 
@@ -871,12 +873,12 @@ public class Reference implements Data
          if(fragmentIndex != -1)
          {
             // Fragment found
-            return this.uri.substring(queryIndex + 1, fragmentIndex);
+            return this.internalRef.substring(queryIndex + 1, fragmentIndex);
          }
          else
          {
             // No fragment found
-            return this.uri.substring(queryIndex + 1);
+            return this.internalRef.substring(queryIndex + 1);
          }
       }
       else
@@ -905,7 +907,7 @@ public class Reference implements Data
       if(schemeIndex != -1)
       {
          // Scheme found
-         return this.uri.substring(0, schemeIndex);
+         return this.internalRef.substring(0, schemeIndex);
       }
       else
       {
@@ -937,12 +939,12 @@ public class Reference implements Data
          if(fragmentIndex != -1)
          {
             // Fragment found
-            result = this.uri.substring(schemeIndex + 1, fragmentIndex);
+            result = this.internalRef.substring(schemeIndex + 1, fragmentIndex);
          }
          else
          {
             // No fragment found
-         	result = this.uri.substring(schemeIndex + 1);
+         	result = this.internalRef.substring(schemeIndex + 1);
          }
       }
       
@@ -963,19 +965,19 @@ public class Reference implements Data
       	if(queryIndex != -1)
       	{
       		// Query found
-      		result = this.uri.substring(0, queryIndex);
+      		result = this.internalRef.substring(0, queryIndex);
       	}
       	else
       	{
 	         if(fragmentIndex != -1)
 	         {
 	            // Fragment found
-	         	result = this.uri.substring(0, fragmentIndex);
+	         	result = this.internalRef.substring(0, fragmentIndex);
 	         }
 	         else
 	         {
 	            // No fragment found
-	         	result = this.uri;
+	         	result = this.internalRef;
 	         }
       	}
       }
@@ -1013,7 +1015,7 @@ public class Reference implements Data
       	if(queryIndex != -1)
       	{
       		// Query found
-      		return this.uri.substring(schemeIndex + 1, queryIndex);
+      		return this.internalRef.substring(schemeIndex + 1, queryIndex);
       	}
       	else
       	{
@@ -1021,12 +1023,12 @@ public class Reference implements Data
 	         if(fragmentIndex != -1)
 	         {
 	            // Fragment found
-	            return this.uri.substring(schemeIndex + 1, fragmentIndex);
+	            return this.internalRef.substring(schemeIndex + 1, fragmentIndex);
 	         }
 	         else
 	         {
 	            // No fragment found
-	            return this.uri.substring(schemeIndex + 1);
+	            return this.internalRef.substring(schemeIndex + 1);
 	         }
       	}
       }
@@ -1036,19 +1038,19 @@ public class Reference implements Data
       	if(queryIndex != -1)
       	{
       		// Query found
-      		return this.uri.substring(0, queryIndex);
+      		return this.internalRef.substring(0, queryIndex);
       	}
       	else
       	{
 	         if(fragmentIndex != -1)
 	         {
 	            // Fragment found
-	            return this.uri.substring(0, fragmentIndex);
+	            return this.internalRef.substring(0, fragmentIndex);
 	         }
 	         else
 	         {
 	            // No fragment found
-	            return this.uri;
+	            return this.internalRef;
 	         }
       	}
       }
@@ -1160,6 +1162,23 @@ public class Reference implements Data
    }
 
    /**
+    * Indicates if the reference is a parent of the hierarchical child reference.
+    * @param childRef The hierarchical reference.
+    * @return True if the reference is a parent of the hierarchical child reference.
+    */
+   public boolean isParent(Reference childRef)
+   {
+   	boolean result = false;
+   	
+   	if((childRef != null) && (childRef.isHierarchical()))
+   	{
+		   result = childRef.getPath().startsWith(getPath());
+   	}
+   	
+   	return result;
+   }
+   
+   /**
     * Indicates if the reference is relative.
     * @return True if the reference is relative.
     */
@@ -1231,11 +1250,11 @@ public class Reference implements Data
             // Existing fragment
             if(fragment != null)
             {
-               this.uri = this.uri.substring(0, fragmentIndex + 1) + fragment;
+               this.internalRef = this.internalRef.substring(0, fragmentIndex + 1) + fragment;
             }
             else
             {
-               this.uri = this.uri.substring(0, fragmentIndex);
+               this.internalRef = this.internalRef.substring(0, fragmentIndex);
             }
          }
          else
@@ -1243,13 +1262,13 @@ public class Reference implements Data
             // No existing fragment
             if(fragment != null)
             {
-            	if(this.uri != null)
+            	if(this.internalRef != null)
             	{
-            		this.uri = this.uri + '#' + fragment;
+            		this.internalRef = this.internalRef + '#' + fragment;
             	}
             	else
             	{
-            		this.uri = '#' + fragment;
+            		this.internalRef = '#' + fragment;
             	}
             }
             else
@@ -1360,12 +1379,12 @@ public class Reference implements Data
          if(fragmentIndex != -1)
          {
             // Fragment found
-            this.uri = identifier + this.uri.substring(fragmentIndex);
+            this.internalRef = identifier + this.internalRef.substring(fragmentIndex);
          }
          else
          {
             // No fragment found
-            this.uri = identifier;
+            this.internalRef = identifier;
          }
 
          updateIndexes();
@@ -1466,11 +1485,11 @@ public class Reference implements Data
             // Fragment found
             if(query != null)
             {
-               this.uri = this.uri.substring(0, queryIndex + 1) + query + this.uri.substring(fragmentIndex);
+               this.internalRef = this.internalRef.substring(0, queryIndex + 1) + query + this.internalRef.substring(fragmentIndex);
             }
             else
             {
-               this.uri = this.uri.substring(0, queryIndex) + this.uri.substring(fragmentIndex);
+               this.internalRef = this.internalRef.substring(0, queryIndex) + this.internalRef.substring(fragmentIndex);
             }
          }
          else
@@ -1478,11 +1497,11 @@ public class Reference implements Data
             // No fragment found
             if(query != null)
             {
-               this.uri = this.uri.substring(0, queryIndex + 1) + query;
+               this.internalRef = this.internalRef.substring(0, queryIndex + 1) + query;
             }
             else
             {
-               this.uri = this.uri.substring(0, queryIndex);
+               this.internalRef = this.internalRef.substring(0, queryIndex);
             }
          }
       }
@@ -1494,8 +1513,8 @@ public class Reference implements Data
             // Fragment found
             if(query != null)
             {
-               this.uri = this.uri.substring(0, fragmentIndex) + '?' + query
-                     + this.uri.substring(fragmentIndex);
+               this.internalRef = this.internalRef.substring(0, fragmentIndex) + '?' + query
+                     + this.internalRef.substring(fragmentIndex);
             }
             else
             {
@@ -1507,13 +1526,13 @@ public class Reference implements Data
             // No fragment found
             if(query != null)
             {
-            	if(this.uri != null)
+            	if(this.internalRef != null)
             	{
-            		this.uri = this.uri + '?' + query;
+            		this.internalRef = this.internalRef + '?' + query;
             	}
             	else
             	{
-            		this.uri = '?' + query;
+            		this.internalRef = '?' + query;
             	}
             }
             else
@@ -1543,11 +1562,11 @@ public class Reference implements Data
          // Scheme found
       	if(scheme != null)
       	{
-      		this.uri = scheme + this.uri.substring(schemeIndex);
+      		this.internalRef = scheme + this.internalRef.substring(schemeIndex);
       	}
       	else
       	{
-      		this.uri = this.uri.substring(schemeIndex + 1);
+      		this.internalRef = this.internalRef.substring(schemeIndex + 1);
       	}
       }
       else
@@ -1555,13 +1574,13 @@ public class Reference implements Data
          // No scheme found
       	if(scheme != null)
       	{
-	         if(this.uri == null)
+	         if(this.internalRef == null)
 	         {
-	            this.uri = scheme + ':';
+	            this.internalRef = scheme + ':';
 	         }
 	         else
 	         {
-	            this.uri = scheme + ':' + this.uri;
+	            this.internalRef = scheme + ':' + this.internalRef;
 	         }
       	}
       }
@@ -1591,13 +1610,13 @@ public class Reference implements Data
          if(fragmentIndex != -1)
          {
             // Fragment found
-            this.uri = this.uri.substring(0, schemeIndex + 1) + schemeSpecificPart
-                  + this.uri.substring(fragmentIndex);
+            this.internalRef = this.internalRef.substring(0, schemeIndex + 1) + schemeSpecificPart
+                  + this.internalRef.substring(fragmentIndex);
          }
          else
          {
             // No fragment found
-            this.uri = this.uri.substring(0, schemeIndex + 1) + schemeSpecificPart;
+            this.internalRef = this.internalRef.substring(0, schemeIndex + 1) + schemeSpecificPart;
          }
       }
       else
@@ -1606,12 +1625,12 @@ public class Reference implements Data
          if(fragmentIndex != -1)
          {
             // Fragment found
-            this.uri = schemeSpecificPart + this.uri.substring(fragmentIndex);
+            this.internalRef = schemeSpecificPart + this.internalRef.substring(fragmentIndex);
          }
          else
          {
             // No fragment found
-            this.uri = schemeSpecificPart;
+            this.internalRef = schemeSpecificPart;
          }
       }
 
@@ -1631,17 +1650,17 @@ public class Reference implements Data
       	if(queryIndex != -1)
       	{
       		// Query found
-      		this.uri = relativePart + this.uri.substring(queryIndex);
+      		this.internalRef = relativePart + this.internalRef.substring(queryIndex);
       	}
       	else if(fragmentIndex != -1)
 	      {
 	      	// Fragment found
-	         this.uri = relativePart + this.uri.substring(fragmentIndex);
+	         this.internalRef = relativePart + this.internalRef.substring(fragmentIndex);
 	      }
 	      else
 	      {
 	      	// No fragment found
-	         this.uri = relativePart;
+	         this.internalRef = relativePart;
       	}
       }
 
@@ -1692,12 +1711,12 @@ public class Reference implements Data
    }
 
    /**
-    * Returns the URI reference string.
-    * @return The URI reference string.
+    * Returns the reference as an URI string.
+    * @return The reference as an URI string.
     */
    public String toString()
    {
-      return this.uri;
+      return this.internalRef;
    }
 
    /**
@@ -1712,17 +1731,17 @@ public class Reference implements Data
       {
          if(fragment)
          {
-            return this.uri;
+            return this.internalRef;
          }
          else
          {
             if(fragmentIndex != -1)
             {
-               return this.uri.substring(0, fragmentIndex);
+               return this.internalRef.substring(0, fragmentIndex);
             }
             else
             {
-               return this.uri;
+               return this.internalRef;
             }
          }
       }
@@ -1734,27 +1753,27 @@ public class Reference implements Data
             {
                if(fragmentIndex != -1)
                {
-                  return this.uri.substring(0, queryIndex) + "#" + getFragment();
+                  return this.internalRef.substring(0, queryIndex) + "#" + getFragment();
                }
                else
                {
-                  return this.uri.substring(0, queryIndex);
+                  return this.internalRef.substring(0, queryIndex);
                }
             }
             else
             {
-               return this.uri;
+               return this.internalRef;
             }
          }
          else
          {
             if(queryIndex != -1)
             {
-               return this.uri.substring(0, queryIndex);
+               return this.internalRef.substring(0, queryIndex);
             }
             else
             {
-               return this.uri;
+               return this.internalRef;
             }
          }
       }
@@ -1765,11 +1784,11 @@ public class Reference implements Data
     */
    private void updateIndexes()
    {
-      if(uri != null)
+      if(internalRef != null)
       {
-         this.schemeIndex = this.uri.indexOf(':');
-         this.queryIndex = this.uri.indexOf('?');
-         this.fragmentIndex = this.uri.indexOf('#');
+         this.schemeIndex = this.internalRef.indexOf(':');
+         this.queryIndex = this.internalRef.indexOf('?');
+         this.fragmentIndex = this.internalRef.indexOf('#');
       }
       else
       {
@@ -1780,7 +1799,7 @@ public class Reference implements Data
    }
    
    /**
-    * Creates an URI from its parts.
+    * Creates a reference string from its parts.
     * @param scheme The scheme ("http", "https" or "ftp").
     * @param hostName The host name or IP address.
     * @param hostPort The host port (default ports are correctly ignored).
@@ -1788,7 +1807,7 @@ public class Reference implements Data
     * @param query The optional query component for hierarchical identifiers.
     * @param fragment The optionale fragment identifier.
     */
-   public static String toUri(String scheme, String hostName, Integer hostPort, String path, String query, String fragment)
+   public static String toString(String scheme, String hostName, Integer hostPort, String path, String query, String fragment)
    {
    	StringBuilder sb = new StringBuilder();
 
@@ -1829,12 +1848,12 @@ public class Reference implements Data
    }
    
    /**
-    * Creates a relative URI from its parts.
+    * Creates a relative reference string from its parts.
     * @param relativePart The relative part component.
     * @param query The optional query component for hierarchical identifiers.
     * @param fragment The optionale fragment identifier.
     */
-   public static String toUri(String relativePart, String query, String fragment)
+   public static String toString(String relativePart, String query, String fragment)
    {
    	StringBuilder sb = new StringBuilder();
 

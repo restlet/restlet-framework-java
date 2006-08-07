@@ -209,19 +209,6 @@ public abstract class AbstractRestlet implements Restlet
    {
 		call.setStatus(Statuses.CLIENT_ERROR_METHOD_NOT_ALLOWED);
    }
-
-	/**
-	 * Forwards a call to the owner component for processing. This can be useful when some sort of internal 
-	 * redirection or dispatching is needed. Note that you can pass either an existing call or a fresh call 
-	 * instance to this method. When the method returns, verification and further processing can still be 
-	 * done, the client will only receive the response to the call when the Restlet handle method returns. 
-	 * @param call The call to forward.
-	 */
-	public void forward(Call call)
-	{
-		call.setContextPath(null);
-		getOwner().handle(call);
-	}
    
    /** Starts the Restlet. */
    public void start() throws Exception

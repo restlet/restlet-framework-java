@@ -67,13 +67,13 @@ public class RedirectTestCase extends TestCase
 			public void handle(Call call)
 			{
 				// Print the requested URI path
-				String output = "Resource URI:  " + call.getResourceRef() + '\n'
-						+ "Context path:  " + call.getContextPath() + '\n'
-						+ "Resource path: " + call.getResourcePath() + '\n'
+				String output = 
+					     "Resource URI:  " + call.getResourceRef() + '\n'
+						+ "Base URI:      " + call.getContext().getBaseRef() + '\n'
+						+ "Relative path: " + call.getContext().getRelativePath() + '\n'
 						+ "Query string:  " + call.getResourceRef().getQuery() + '\n'
 						+ "Method name:   " + call.getMethod() + '\n';
-				call.setOutput(new StringRepresentation(output,
-						MediaTypes.TEXT_PLAIN));
+				call.setOutput(new StringRepresentation(output, MediaTypes.TEXT_PLAIN));
 			}
 		};
 
@@ -106,7 +106,8 @@ public class RedirectTestCase extends TestCase
 		myContainer.stop();
 	}
 
-	private void testCall(RestletContainer myContainer, Method method, String uri) throws Exception
+	private void testCall(RestletContainer myContainer, Method method, String uri)
+			throws Exception
 	{
 		Call call = new Call();
 		call.setMethod(method);

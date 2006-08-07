@@ -11,6 +11,7 @@ Changes log
  - The content negotiation was not properly handling the situation where no language and media type preferences are defined. Reported by Thierry Boileau.
  - Fixed potential NPE in DefaultClient and RedirectTestCase when no connector found.
  - Fixed bug in NRE's factory which prevented the detection of HTTPS connectors. Now all HTTPS connectors work fully (Simple, Jetty5 and Jetty6).
+ - Fixed bug in DirectoryHandler preventing the return of a directory listing if an index file name was set but not found. Reported by Thierry Boileau.
 
 [API breaking changes]
  - Removed get/setTimeout() methods from the Client interface and related classes. Also, removed the configureSsl() method from the Server interface.
@@ -33,8 +34,13 @@ Changes log
  - Factorized all Call's client data into ClientData class (was PreferenceData). 
  - Factorized all Call's server data into a new ServerData class.
  - org.restlet.Call is now a class instead of an interface. Removed DefaultCall classes.
- - Renamed Call.contextRef (again!) to baseRef this time.
  - Removed "requestHeader" and "responseHeader" variables from CallModel.
+ - Fully refactored the context data of Call. Added a new org.restlet.data.ContextData class containing all data potentially varying with the current
+   Restlet handling the call. For example Call.getResourcePath() is now Call.getContext().getRelativePath(), Call.setContextPath() is now Call.getContext().
+   setBaseRef(), etc.
+ - Moved AbstractRestlet.forward() method to ContextData class.
+ - Renamed static Reference.toUri() method into Reference.toString() for consistency with existing Reference.toString() methods (non-static).
+ - Renamed Call.setBestOutput() into Call.setOutput() and adjusted the Javadocs to explain behavior (set best output for the given resource).
  
 [Other changes] 
  - Separated the HTTP client connector (based on JDK's HttpUrlConnection) previously integrated to the NRE core. This will allow future alternative
@@ -56,6 +62,9 @@ Changes log
  - Added a Resource.setIdentifier() method taking a URI as a String.
  - Now the "Content-Location" is supported, for both the HTTP client and server connectors. The corresponding property is available via the 
    call.getOutput().get/setIdentifier() method.
+ - Added a default implementation for the HEAD method in AbstractResource and AbstractHttpServer. Suggested by Thierry Boileau.
+ - Now, all calls' resource references are automatically normalized to ensure a consistent handling. Reported by Thierry Boileau.
+ - Added Eclipse code formatter and template styles used to SVN.
  
 1.0 beta 17 (2006-07-19)
 [Bugs fixed]

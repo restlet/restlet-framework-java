@@ -88,7 +88,7 @@ public class AsyncWebServerCall extends AbstractHttpServerCall
 	@Override
 	public String getRequestUri()
 	{
-		return Reference.toUri(isConfidential() ? "https" : "http", request.getHeader("host"), null,
+		return Reference.toString(isConfidential() ? "https" : "http", request.getHeader("host"), null,
 				request.getRequestURI(), null, null);
 	}
 

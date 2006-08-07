@@ -82,7 +82,7 @@ public class SimpleCall extends AbstractHttpServerCall
     */
 	public String getRequestUri()
 	{
-		return Reference.toUri(isConfidential() ? "https" : "http", request.getValue("host"), null,
+		return Reference.toString(isConfidential() ? "https" : "http", request.getValue("host"), null,
 				request.getURI(), null, null);
 	}
 

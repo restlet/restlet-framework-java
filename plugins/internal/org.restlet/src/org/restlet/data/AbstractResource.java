@@ -70,7 +70,7 @@ public abstract class AbstractResource extends AbstractRestlet implements Resour
     */
    protected void handleGet(Call call)
    {
-   	call.setBestOutput(this, fallbackLanguage);
+   	call.setOutput(this, fallbackLanguage);
    }
    
    /**

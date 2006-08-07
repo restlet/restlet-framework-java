@@ -386,13 +386,13 @@ public class HostRouter extends AbstractHandler implements Router
 				if(isRedirectClient())
 			   {
 			   	// Redirect the caller to the preferred format
-					call.setRedirectRef(getPreferredUri() + call.getResourcePath());
+					call.setRedirectRef(getPreferredUri() + call.getContext().getRelativeRef());
 					call.setStatus(getRedirectStatus());
 				}
 				else if(isWarnClient())
 				{
 		   		// Redirect the caller to the preferred format
-					String description = "Used this URI instead: " + getPreferredUri() + call.getResourcePath(); 
+					String description = "Used this URI instead: " + getPreferredUri() + call.getContext().getRelativeRef(); 
 					call.setStatus(new DefaultStatus(Statuses.CLIENT_ERROR_BAD_REQUEST, description));
 			   }
 

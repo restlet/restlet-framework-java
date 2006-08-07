@@ -27,12 +27,10 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 import java.util.TreeMap;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 
-import org.restlet.connector.ConnectorCall;
 import org.restlet.data.ClientData;
 import org.restlet.data.ConditionData;
+import org.restlet.data.ContextData;
 import org.restlet.data.Cookie;
 import org.restlet.data.CookieSetting;
 import org.restlet.data.Form;
@@ -55,413 +53,364 @@ import org.restlet.data.Status;
  */
 public class Call
 {
-   /** Obtain a suitable logger. */
-   private static Logger logger = Logger.getLogger("com.noelios.restlet.impl.CallImpl");
+	/** The modifiable attributes map. */
+	protected Map<String, Object> attributes;
 
-   /** The modifiable attributes map. */
-   protected Map<String, Object> attributes;
+	/** The client data. */
+	protected ClientData client;
 
-   /** The condition data. */
-   protected ConditionData condition;
+	/** The condition data. */
+	protected ConditionData condition;
 
-   /** The low-level connector call. */
-   protected ConnectorCall connectorCall;
+	/** The context data. */
+	protected ContextData context;
 
-   /** The current cookies of the client. */
-   protected List<Cookie> cookies;
+	/** The cookies provided by the client. */
+	protected List<Cookie> cookies;
 
-   /** The cookies to set in the client. */
-   protected List<CookieSetting> cookieSettings;
+	/** The cookie settings provided by the server. */
+	protected List<CookieSetting> cookieSettings;
 
-   /** The context path. */
-   protected String contextPath;
+	/** The representation provided by the client. */
+	protected Representation input;
 
-   /** The representation provided by the client. */
-   protected Representation input;
+	/** The method. */
+	protected Method method;
 
-   /** The call method. */
-   protected Method method;
+	/** The representation provided by the server. */
+	protected Representation output;
 
-   /** The representation provided by the server. */
-   protected Representation output;
+	/** The redirection reference. */
+	protected Reference redirectRef;
 
-   /** The client data. */
-   protected ClientData client;
+	/** The referrer reference. */
+	protected Reference referrerRef;
 
-   /** The redirection reference. */
-   protected Reference redirectRef;
+	/** The resource reference. */
+	protected Reference resourceRef;
 
-   /** The referrer reference. */
-   protected Reference referrerRef;
+	/** The security data. */
+	protected SecurityData security;
 
-   /** The resource reference. */
-   protected Reference resourceRef;
+	/** The server data. */
+	protected ServerData server;
 
-   /** The security data. */
-   protected SecurityData security;
+	/** The status. */
+	protected Status status;
 
-   /** The server data. */
-   protected ServerData server;
+	/**
+	 * Constructor.
+	 */
+	public Call()
+	{
+	}
 
-   /** The server status. */
-   protected Status status;
-   
-   /**
-    * Constructor.
-    */
-   public Call()
-   {
-   }
-   
-   /**
-    * Constructor.
-    * @param method The call's method.
-    * @param resourceRef The resource reference.
-    */
-   public Call(Method method, Reference resourceRef)
-   {
-   	this();
-   	setMethod(method);
-   	setResourceRef(resourceRef);
-   }
-   
-   /**
-    * Constructor.
-    * @param method The call's method.
-    * @param resourceUri The resource URI.
-    */
-   public Call(Method method, String resourceUri)
-   {
-   	this();
-   	setMethod(method);
-   	setResourceRef(resourceUri);
-   }
-   
-   /**
-    * Returns a modifiable attributes map that can be used by developers to save information relative
-    * to the current call. This is an easier alternative to the creation of a wrapper around the whole call.
-    * @return The modifiable attributes map.
-    * @see org.restlet.WrapperCall
-    */
-   public Map<String, Object> getAttributes()
-   {
-      if(attributes == null)
-      {
-         attributes = new TreeMap<String, Object>();
-      }
+	/**
+	 * Constructor.
+	 * @param method The call's method.
+	 * @param resourceRef The resource reference.
+	 */
+	public Call(Method method, Reference resourceRef)
+	{
+		this();
+		setMethod(method);
+		setResourceRef(resourceRef);
+	}
 
-      return attributes;
-   }
+	/**
+	 * Constructor.
+	 * @param method The call's method.
+	 * @param resourceUri The resource URI.
+	 */
+	public Call(Method method, String resourceUri)
+	{
+		this();
+		setMethod(method);
+		setResourceRef(resourceUri);
+	}
 
-   /**
-    * Returns the condition data applying to this call.
-    * @return The condition data applying to this call.
-    */
-   public ConditionData getCondition()
-   {
-      if(this.condition == null) this.condition = new ConditionData();
-      return this.condition;
-   }
+	/**
+	 * Returns a modifiable attributes map that can be used by developers to save information relative
+	 * to the current call. This is an easier alternative to the creation of a wrapper around the whole call.
+	 * @return The modifiable attributes map.
+	 * @see org.restlet.WrapperCall
+	 */
+	public Map<String, Object> getAttributes()
+	{
+		if (attributes == null)
+		{
+			attributes = new TreeMap<String, Object>();
+		}
 
-   /**
-    * Returns the absolute context path, preceeding the relative resource path in the resource reference.
-    * @return The absolute context path.
-    */
-   public String getContextPath()
-   {
-      return this.contextPath;
-   }
+		return attributes;
+	}
 
-   /**
-    * Returns the base reference.
-    * @return The base reference.
-    */
-   public Reference getBaseRef()
-   {
-      return new Reference(getContextPath());
-   }
+	/**
+	 * Returns the client specific data.
+	 * @return The client specific data.
+	 */
+	public ClientData getClient()
+	{
+		if (this.client == null) this.client = new ClientData();
+		return this.client;
+	}
 
-   /**
-    * Returns the cookies provided by the client.
-    * @return The cookies provided by the client.
-    */
-   public List<Cookie> getCookies()
-   {
-      if(this.cookies == null) this.cookies = new ArrayList<Cookie>();
-      return this.cookies;
-   }
+	/**
+	 * Returns the condition data applying to this call.
+	 * @return The condition data applying to this call.
+	 */
+	public ConditionData getCondition()
+	{
+		if (this.condition == null) this.condition = new ConditionData();
+		return this.condition;
+	}
 
-   /**
-    * Returns the cookies provided by the server.
-    * @return The cookies provided by the server to the client.
-    */
-   public List<CookieSetting> getCookieSettings()
-   {
-      if(this.cookieSettings == null) this.cookieSettings = new ArrayList<CookieSetting>();
-      return this.cookieSettings;
-   }
+	/**
+	 * Returns the context data of the current Restlet applying to this call.
+	 * @return The context data applying to this call.
+	 */
+	public ContextData getContext()
+	{
+		if (this.context == null) this.context = new ContextData(this);
+		return this.context;
+	}
 
-   /**
-    * Returns the representation provided by the client.
-    * @return The representation provided by the client.
-    */
-   public Representation getInput()
-   {
-      return this.input;
-   }
+	/**
+	 * Returns the cookies provided by the client.
+	 * @return The cookies provided by the client.
+	 */
+	public List<Cookie> getCookies()
+	{
+		if (this.cookies == null) this.cookies = new ArrayList<Cookie>();
+		return this.cookies;
+	}
 
-   /**
-    * Returns the representation provided by the client as a form.<br/>
-    * Note that this triggers the parsing of the input representation.<br/>
-    * This method and the associated getInput method should be invoked only once.
-    * @return The input form provided by the client.
-    */
-   public Form getInputAsForm()
-   {
-      try
-      {
-         return new Form(getInput());
-      }
-      catch(IOException e)
-      {
-         return null;
-      }
-   }
+	/**
+	 * Returns the cookie settings provided by the server.
+	 * @return The cookie settings provided by the server.
+	 */
+	public List<CookieSetting> getCookieSettings()
+	{
+		if (this.cookieSettings == null)
+			this.cookieSettings = new ArrayList<CookieSetting>();
+		return this.cookieSettings;
+	}
 
-   /**
-    * Returns the call method.
-    * @return The call method.
-    */
-   public Method getMethod()
-   {
-      return this.method;
-   }
+	/**
+	 * Returns the representation provided by the client.
+	 * @return The representation provided by the client.
+	 */
+	public Representation getInput()
+	{
+		return this.input;
+	}
 
-   /**
-    * Returns the representation provided by the server.
-    * @return The representation provided by the server.
-    */
-   public Representation getOutput()
-   {
-      return this.output;
-   }
+	/**
+	 * Returns the representation provided by the client as a form.<br/>
+	 * Note that this triggers the parsing of the input representation.<br/>
+	 * This method and the associated getInput method can only be invoked once.
+	 * @return The input form provided by the client.
+	 */
+	public Form getInputAsForm()
+	{
+		try
+		{
+			return new Form(getInput());
+		}
+		catch (IOException e)
+		{
+			return null;
+		}
+	}
 
-   /**
-    * Returns the reference that the client should follow for redirections or creation of new resources.
-    * @return The redirection reference.
-    */
-   public Reference getRedirectRef()
-   {
-      return this.redirectRef;
-   }
+	/**
+	 * Returns the method.
+	 * @return The method.
+	 */
+	public Method getMethod()
+	{
+		return this.method;
+	}
 
-   /**
-    * Returns the client specific data.
-    * @return The client specific data.
-    */
-   public ClientData getClient()
-   {
-      if(this.client == null) this.client = new ClientData();
-      return this.client;
-   }
+	/**
+	 * Returns the representation provided by the server.
+	 * @return The representation provided by the server.
+	 */
+	public Representation getOutput()
+	{
+		return this.output;
+	}
 
-   /**
-    * Returns the referrer reference if available.
-    * @return The referrer reference.
-    */
-   public Reference getReferrerRef()
-   {
-      return this.referrerRef;
-   }
+	/**
+	 * Returns the reference that the client should follow for redirections or resource creations.
+	 * @return The redirection reference.
+	 */
+	public Reference getRedirectRef()
+	{
+		return this.redirectRef;
+	}
 
-   /**
-    * Returns the relative resource path, following the absolute Restlet path in the resource reference.
-    * @return The relative resource path.
-    */
-   public String getResourcePath()
-   {
-      if(getContextPath() == null)
-      {
-         return this.resourceRef.toString(false, false);
-      }
-      else
-      {
-         String resourceURI = this.resourceRef.toString(false, false);
-         int length = getContextPath().length();
+	/**
+	 * Returns the referrer reference if available.
+	 * @return The referrer reference.
+	 */
+	public Reference getReferrerRef()
+	{
+		return this.referrerRef;
+	}
 
-         if(logger.isLoggable(Level.FINE))
-         {
-            logger.fine("Resource URI: " + resourceURI);
-            logger.fine("Context path: " + getContextPath());
-            logger.fine("Context path length: " + length);
-         }
+	/**
+	 * Returns the reference of the target resource.
+	 * @return The reference of the target resource.
+	 */
+	public Reference getResourceRef()
+	{
+		return this.resourceRef;
+	}
 
-         return resourceURI.substring(length);
-      }
-   }
+	/**
+	 * Returns the security data related to this call.
+	 * @return The security data related to this call.
+	 */
+	public SecurityData getSecurity()
+	{
+		if (this.security == null) this.security = new SecurityData();
+		return this.security;
+	}
 
-   /**
-    * Returns the absolute resource reference.
-    * @return The absolute resource reference.
-    */
-   public Reference getResourceRef()
-   {
-      return this.resourceRef;
-   }
+	/**
+	 * Returns the server specific data.
+	 * @return The server specific data.
+	 */
+	public ServerData getServer()
+	{
+		if (this.server == null) this.server = new ServerData();
+		return this.server;
+	}
 
-   /**
-    * Returns the security data related to this call.
-    * @return The security data related to this call.
-    */
-   public SecurityData getSecurity()
-   {
-      if(this.security == null) this.security = new SecurityData();
-      return this.security;
-   }
+	/**
+	 * Returns the call status.
+	 * @return The call status.
+	 */
+	public Status getStatus()
+	{
+		return this.status;
+	}
 
-   /**
-    * Returns the server specific data.
-    * @return The server specific data.
-    */
-   public ServerData getServer()
-   {
-      if(this.server == null) this.server = new ServerData();
-   	return this.server;
-   }
-   
-   /**
-    * Returns the call status.
-    * @return The call status.
-    */
-   public Status getStatus()
-   {
-      return this.status;
-   }
+	/**
+	 * Sets the representation provided by the client.
+	 * @param input The representation provided by the client.
+	 */
+	public void setInput(Representation input)
+	{
+		this.input = input;
+	}
 
-   /**
-    * Sets the best representation of a given resource according to the client preferences.<br/>
-    * If no representation is found, sets the status to "Not found".<br/>
-    * If no acceptable representation is available, sets the status to "Not acceptable".<br/>
-    * @param resource The resource for which the best representation needs to be set.
-    * @param fallbackLanguage The language to use if no preference matches.
-    * @see <a href="http://httpd.apache.org/docs/2.2/en/content-negotiation.html#algorithm">Apache content negotiation algorithm</a>
-    */
-   public void setBestOutput(Resource resource, Language fallbackLanguage)
-   {
-   	Factory.getInstance().setBestOutput(this, resource, fallbackLanguage);
-   }
+	/**
+	 * Sets the method called.
+	 * @param method The method called.
+	 */
+	public void setMethod(Method method)
+	{
+		this.method = method;
+	}
 
-   /**
-    * Sets the absolute context path, preceeding the relative resource path in the resource reference.
-    * @param contextPath The absolute context path.
-    */
-   public void setContextPath(String contextPath)
-   {
-      if(this.resourceRef == null)
-      {
-         logger.warning("You must specify a resource reference before you can set a context path");
-      }
-      else if((contextPath != null) && (!this.resourceRef.toString(false, false).startsWith(contextPath)))
-      {
-         logger.warning("The specified context path doesn't match the beginning of the resource reference: " + contextPath);
-      }
+	/**
+	 * Sets the representation provided by the server.
+	 * @param output The representation provided by the server.
+	 */
+	public void setOutput(Representation output)
+	{
+		this.output = output;
+	}
 
-      this.contextPath = contextPath;
-   }
+	/**
+	 * Sets the best output representation of a given resource according to the client preferences.<br/>
+	 * If no representation is found, sets the status to "Not found".<br/>
+	 * If no acceptable representation is available, sets the status to "Not acceptable".<br/>
+	 * @param resource The resource for which the best representation needs to be set.
+	 * @param fallbackLanguage The language to use if no preference matches.
+	 * @see <a href="http://httpd.apache.org/docs/2.2/en/content-negotiation.html#algorithm">Apache content negotiation algorithm</a>
+	 */
+	public void setOutput(Resource resource, Language fallbackLanguage)
+	{
+		Factory.getInstance().setOutput(this, resource, fallbackLanguage);
+	}
 
-   /**
-    * Sets the representation provided by the client.
-    * @param input The representation provided by the client.
-    */
-   public void setInput(Representation input)
-   {
-      this.input = input;
-   }
+	/**
+	 * Sets the reference that the client should follow for redirections or resource creations.
+	 * @param redirectUri The redirection URI.
+	 */
+	public void setRedirectRef(String redirectUri)
+	{
+		setRedirectRef(new Reference(getContext().getBaseRef(), redirectUri).getTargetRef());
+	}
 
-   /**
-    * Sets the method called.
-    * @param method The method called.
-    */
-   public void setMethod(Method method)
-   {
-      this.method = method;
-   }
+	/**
+	 * Sets the reference that the client should follow for redirections or resource creations.
+	 * @param redirectRef The redirection reference.
+	 */
+	public void setRedirectRef(Reference redirectRef)
+	{
+		this.redirectRef = redirectRef;
+	}
 
-   /**
-    * Sets the representation provided by the server.
-    * @param output The representation provided by the server.
-    */
-   public void setOutput(Representation output)
-   {
-      this.output = output;
-   }
+	/**
+	 * Sets the referrer reference if available using an URI string.
+	 * @param referrerUri The referrer URI.
+	 */
+	public void setReferrerRef(String referrerUri)
+	{
+		setReferrerRef(new Reference(referrerUri));
+	}
 
-   /**
-    * Sets the reference that the client should follow for redirections or creation of new resources.
-    * @param redirectRef The redirection reference.
-    */
-   public void setRedirectRef(Reference redirectRef)
-   {
-      this.redirectRef = redirectRef;
-   }
+	/**
+	 * Sets the referrer reference if available.
+	 * @param referrerRef The referrer reference.
+	 */
+	public void setReferrerRef(Reference referrerRef)
+	{
+		this.referrerRef = referrerRef;
+	}
 
-   /**
-    * Sets the reference that the client should follow for redirections or creation of new resources.
-    * @param redirectUri The redirection URI.
-    */
-   public void setRedirectRef(String redirectUri)
-   {
-      setRedirectRef(new Reference(getBaseRef(), redirectUri).getTargetRef());
-   }
+	/**
+	 * Sets the target resource reference using an URI string. Note that the URI can be either
+	 * absolute or relative to the context's base reference.
+	 * @param resourceUri The resource URI.
+	 */
+	public void setResourceRef(String resourceUri)
+	{
+		setResourceRef(new Reference(getContext().getBaseRef(), resourceUri));
+	}
 
-   /**
-    * Sets the referrer reference if available.
-    * @param referrerRef The referrer reference.
-    */
-   public void setReferrerRef(Reference referrerRef)
-   {
-      this.referrerRef = referrerRef;
-   }
+	/**
+	 * Sets the target resource reference. If the reference is relative, it will be resolved as an
+	 * absolute reference. Also, the context's base reference will be reset. Finally, the reference
+	 * will be normalized to ensure a consistent handling of the call.
+	 * @param resourceRef The resource reference.
+	 */
+	public void setResourceRef(Reference resourceRef)
+	{
+		if((resourceRef != null) && resourceRef.isRelative() && (resourceRef.getBaseRef() != null))
+		{
+			this.resourceRef = resourceRef.getTargetRef();
+		}
+		else
+		{
+			this.resourceRef = resourceRef.normalize();
+		}
+		
+		// Reset the context's base reference
+		getContext().setBaseRef((Reference)null);
+	}
 
-   /**
-    * Sets the referrer reference if available using an URI string.
-    * @param referrerUri The referrer URI.
-    */
-   public void setReferrerRef(String referrerUri)
-   {
-      setReferrerRef(new Reference(referrerUri));
-   }
+	/**
+	 * Sets the call status.
+	 * @param status The call status to set.
+	 */
+	public void setStatus(Status status)
+	{
+		this.status = status;
+	}
 
-   /**
-    * Sets the resource reference.<br/>
-    * Also reset the current restlet path and matches.
-    * @param resourceRef The resource reference.
-    */
-   public void setResourceRef(Reference resourceRef)
-   {
-      this.resourceRef = resourceRef;
-
-      // Reset the current context path
-      setContextPath(null);
-   }
-
-   /**
-    * Sets the resource reference using an URI string. Note that the resource URI can be either
-    * absolute or relative to the current context reference.
-    * @param resourceUri The resource URI.
-    */
-   public void setResourceRef(String resourceUri)
-   {
-      setResourceRef(new Reference(getBaseRef(), resourceUri).getTargetRef());
-   }
-
-   /**
-    * Sets the call status.
-    * @param status The call status to set.
-    */
-   public void setStatus(Status status)
-   {
-      this.status = status;
-   }
-	
 }

@@ -99,7 +99,7 @@ public class DirectoryHandler extends AbstractHandler
 	{
    	try
 		{
-			return new DirectoryResource(this, call.getResourcePath());
+			return new DirectoryResource(this, call.getContext().getRelativePath());
 		}
 		catch (IOException ioe)
 		{

@@ -31,6 +31,7 @@ import org.restlet.Call;
 import org.restlet.AbstractScorer;
 import org.restlet.Restlet;
 import org.restlet.Router;
+import org.restlet.data.Reference;
 import org.restlet.data.Statuses;
 
 /**
@@ -77,7 +78,7 @@ public class PatternScorer extends AbstractScorer
 	public float score(Call call)
 	{
 		float result = 0F;
-		String resourcePath = call.getResourcePath();
+		String resourcePath = call.getContext().getRelativePath();
 		Matcher matcher = getPattern().matcher(resourcePath);
       boolean matched = matcher.lookingAt();
 
@@ -110,7 +111,7 @@ public class PatternScorer extends AbstractScorer
 	 */
 	public void handle(Call call)
 	{
-		String resourcePath = call.getResourcePath();
+		String resourcePath = call.getContext().getRelativePath();
 		Matcher matcher = getPattern().matcher(resourcePath);
       boolean matched = matcher.lookingAt();
          
@@ -121,23 +122,25 @@ public class PatternScorer extends AbstractScorer
 
       if(matched)
       {
-	      // Updates the paths
-	      String oldContextPath = call.getContextPath();
-	      String newContextPath = resourcePath.substring(0, matcher.end());
+	      // Updates the context
+	      String matchedPath = resourcePath.substring(0, matcher.end());
+	      Reference baseRef = call.getContext().getBaseRef();
 	
-	      if(oldContextPath == null)
+	      if(baseRef == null)
 	      {
-	         call.setContextPath(newContextPath);
+	      	baseRef = new Reference(call.getResourceRef());
+		      baseRef.setPath(matchedPath);
+	      	call.getContext().setBaseRef(baseRef);
 	      }
 	      else
 	      {
-	         call.setContextPath(oldContextPath + newContextPath);
+	      	baseRef.setPath(baseRef.getPath() + matchedPath);
 	      }
 	
 	      if(logger.isLoggable(Level.FINE))
 	      {
-	      	logger.fine("New context path: " + call.getContextPath());
-	      	logger.fine("New resource path: " + call.getResourcePath());
+	      	logger.fine("New base URI: " + call.getContext().getBaseRef());
+	      	logger.fine("New relative path: " + call.getContext().getRelativePath());
 	      }
 	
 	      if(logger.isLoggable(Level.FINE))

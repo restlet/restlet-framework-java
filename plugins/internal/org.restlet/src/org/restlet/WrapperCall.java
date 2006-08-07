@@ -27,6 +27,7 @@ import java.util.Map;
 
 import org.restlet.data.ClientData;
 import org.restlet.data.ConditionData;
+import org.restlet.data.ContextData;
 import org.restlet.data.Cookie;
 import org.restlet.data.CookieSetting;
 import org.restlet.data.Form;
@@ -59,47 +60,46 @@ public class WrapperCall extends Call
       this.wrappedCall = wrappedCall;
    }
 
-   /**
-    * Returns a modifiable map of attributes that can be used by developers to save information relative
-    * to the current call. This is an easier alternative to the creation of a wrapper around the whole call.
-    * @return The modifiable modifiable map of attributes.
-    * @see org.restlet.WrapperCall
-    */
+	/**
+	 * Returns a modifiable attributes map that can be used by developers to save information relative
+	 * to the current call. This is an easier alternative to the creation of a wrapper around the whole call.
+	 * @return The modifiable attributes map.
+	 */
    public Map<String, Object> getAttributes()
    {
       return getWrappedCall().getAttributes();
    }
 
-   /**
-    * Returns the condition data applying to this call.
-    * @return The condition data applying to this call.
-    */
+	/**
+	 * Returns the client specific data.
+	 * @return The client specific data.
+	 */
+	public ClientData getClient()
+	{
+      return getWrappedCall().getClient();
+	}
+
+	/**
+	 * Returns the condition data applying to this call.
+	 * @return The condition data applying to this call.
+	 */
    public ConditionData getCondition()
    {
       return getWrappedCall().getCondition();
    }
 
-   /**
-    * Returns the absolute context path, preceeding the relative resource path in the resource reference.
-    * @return The absolute context path.
-    */
-   public String getContextPath()
-   {
-      return getWrappedCall().getContextPath();
-   }
+	/**
+	 * Returns the context data of the current Restlet applying to this call.
+	 * @return The context data applying to this call.
+	 */
+	public ContextData getContext()
+	{
+      return getWrappedCall().getContext();
+	}
 
    /**
-    * Returns the context path as a reference.
-    * @return The context path as a reference.
-    */
-   public Reference getBaseRef()
-   {
-      return getWrappedCall().getBaseRef();
-   }
-
-   /**
-    * Returns the cookies provided by the client to the server.
-    * @return The cookies provided by the client to the server.
+	 * Returns the cookies provided by the client.
+	 * @return The cookies provided by the client.
     */
    public List<Cookie> getCookies()
    {
@@ -107,8 +107,8 @@ public class WrapperCall extends Call
    }
 
    /**
-    * Returns the cookies provided by the server to the client.
-    * @return The cookies provided by the server to the client.
+	 * Returns the cookie settings provided by the server.
+	 * @return The cookie settings provided by the server.
     */
    public List<CookieSetting> getCookieSettings()
    {
@@ -125,10 +125,10 @@ public class WrapperCall extends Call
    }
 
    /**
-    * Returns the representation provided by the client as a form.<br/>
-    * Note that this triggers the parsing of the input representation.<br/>
-    * This method and the associated getInput method should be invoked only once.
-    * @return The input form provided by the client.
+	 * Returns the representation provided by the client as a form.<br/>
+	 * Note that this triggers the parsing of the input representation.<br/>
+	 * This method and the associated getInput method can only be invoked once.
+	 * @return The input form provided by the client.
     */
    public Form getInputAsForm()
    {
@@ -136,8 +136,8 @@ public class WrapperCall extends Call
    }
 
    /**
-    * Returns the call method.
-    * @return The call method.
+	 * Returns the method.
+	 * @return The method.
     */
    public Method getMethod()
    {
@@ -154,17 +154,8 @@ public class WrapperCall extends Call
    }
 
    /**
-    * Returns the client specific data.
-    * @return The client specific data.
-    */
-   public ClientData getClient()
-   {
-      return getWrappedCall().getClient();
-   }
-
-   /**
-    * Returns the reference that the client should follow for redirections or creation of new resources.
-    * @return The redirection reference.
+	 * Returns the reference that the client should follow for redirections or resource creations.
+	 * @return The redirection reference.
     */
    public Reference getRedirectRef()
    {
@@ -181,17 +172,8 @@ public class WrapperCall extends Call
    }
 
    /**
-    * Returns the relative resource path, following the absolute Restlet path in the resource reference.
-    * @return The relative resource path.
-    */
-   public String getResourcePath()
-   {
-      return getWrappedCall().getResourcePath();
-   }
-
-   /**
-    * Returns the absolute resource reference.
-    * @return The absolute resource reference.
+	 * Returns the reference of the target resource.
+	 * @return The reference of the target resource.
     */
    public Reference getResourceRef()
    {
@@ -235,28 +217,6 @@ public class WrapperCall extends Call
    }
 
    /**
-    * Sets the best representation of a given resource according to the client preferences.<br/>
-    * If no representation is found, sets the status to "Not found".<br/>
-    * If no acceptable representation is available, sets the status to "Not acceptable".<br/>
-    * @param resource The resource for which the best representation needs to be set.
-    * @param fallbackLanguage The language to use if no preference matches.
-    * @see <a href="http://httpd.apache.org/docs/2.2/en/content-negotiation.html#algorithm">Apache content negotiation algorithm</a>
-    */
-   public void setBestOutput(Resource resource, Language fallbackLanguage)
-   {
-      getWrappedCall().setBestOutput(resource, fallbackLanguage);
-   }
-
-   /**
-    * Sets the absolute context path, preceeding the relative resource path in the resource reference.
-    * @param contextPath The absolute context path.
-    */
-   public void setContextPath(String contextPath)
-   {
-      getWrappedCall().setContextPath(contextPath);
-   }
-
-   /**
     * Sets the representation provided by the client.
     * @param input The representation provided by the client.
     */
@@ -274,27 +234,31 @@ public class WrapperCall extends Call
       getWrappedCall().setMethod(method);
    }
 
-   /**
-    * Sets the representation provided by the server.
-    * @param output The representation provided by the server.
-    */
+	/**
+	 * Sets the representation provided by the server.
+	 * @param output The representation provided by the server.
+	 */
    public void setOutput(Representation output)
    {
       getWrappedCall().setOutput(output);
    }
 
-   /**
-    * Sets the reference that the client should follow for redirections or creation of new resources.
-    * @param redirectRef The redirection reference.
-    */
-   public void setRedirectRef(Reference redirectRef)
+	/**
+	 * Sets the best output representation of a given resource according to the client preferences.<br/>
+	 * If no representation is found, sets the status to "Not found".<br/>
+	 * If no acceptable representation is available, sets the status to "Not acceptable".<br/>
+	 * @param resource The resource for which the best representation needs to be set.
+	 * @param fallbackLanguage The language to use if no preference matches.
+	 * @see <a href="http://httpd.apache.org/docs/2.2/en/content-negotiation.html#algorithm">Apache content negotiation algorithm</a>
+	 */
+   public void setOutput(Resource resource, Language fallbackLanguage)
    {
-      getWrappedCall().setRedirectRef(redirectRef);
+      getWrappedCall().setOutput(resource, fallbackLanguage);
    }
 
    /**
-    * Sets the reference that the client should follow for redirections or creation of new resources.
-    * @param redirectUri The redirection URI.
+	 * Sets the reference that the client should follow for redirections or resource creations.
+	 * @param redirectUri The redirection URI.
     */
    public void setRedirectRef(String redirectUri)
    {
@@ -302,12 +266,12 @@ public class WrapperCall extends Call
    }
 
    /**
-    * Sets the referrer reference if available.
-    * @param referrerRef The referrer reference.
+	 * Sets the reference that the client should follow for redirections or resource creations.
+	 * @param redirectRef The redirection reference.
     */
-   public void setReferrerRef(Reference referrerRef)
+   public void setRedirectRef(Reference redirectRef)
    {
-      getWrappedCall().setReferrerRef(referrerRef);
+      getWrappedCall().setRedirectRef(redirectRef);
    }
 
    /**
@@ -320,21 +284,33 @@ public class WrapperCall extends Call
    }
 
    /**
-    * Sets the resource reference.
-    * @param resourceRef The resource reference.
+    * Sets the referrer reference if available.
+    * @param referrerRef The referrer reference.
+    */
+   public void setReferrerRef(Reference referrerRef)
+   {
+      getWrappedCall().setReferrerRef(referrerRef);
+   }
+
+	/**
+	 * Sets the target resource reference using an URI string. Note that the URI can be either
+	 * absolute or relative to the context's base reference.
+	 * @param resourceUri The resource URI.
+	 */
+   public void setResourceRef(String resourceUri)
+   {
+      getWrappedCall().setResourceRef(resourceUri);
+   }
+
+   /**
+	 * Sets the target resource reference. If the reference is relative, it will be resolved as an
+	 * absolute reference. Also, the context's base reference will be reset. Finally, the reference
+	 * will be normalized to ensure a consistent handling of the call.
+	 * @param resourceRef The resource reference.
     */
    public void setResourceRef(Reference resourceRef)
    {
       getWrappedCall().setResourceRef(resourceRef);
-   }
-
-   /**
-    * Sets the resource reference using an URI string.
-    * @param resourceUri The resource URI.
-    */
-   public void setResourceRef(String resourceUri)
-   {
-      getWrappedCall().setResourceRef(resourceUri);
    }
 
    /**
