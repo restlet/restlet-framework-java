@@ -52,7 +52,7 @@ public class DirectoryHandlerBuilder extends RestletBuilder
 
 	/** 
 	 * Indicates if content negotation should be enabled.
-	 * @param negotiationEnabled True if content negotation should be enabled.
+	 * @param negotiate True if content negotation should be enabled.
     * @return The current builder.
 	 */
    public DirectoryHandlerBuilder negotiate(boolean negotiate)

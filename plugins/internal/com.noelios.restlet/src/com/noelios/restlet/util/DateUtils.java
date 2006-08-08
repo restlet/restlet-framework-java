@@ -62,9 +62,16 @@ public class DateUtils
     */
    public static boolean after(Date baseDate, Date afterDate)
    {
-      long baseTime = baseDate.getTime() / 1000;
-      long afterTime = afterDate.getTime() / 1000;
-      return baseTime < afterTime;
+   	if((baseDate == null) || (afterDate == null))
+   	{
+   		throw new IllegalArgumentException("Can't compare the dates, at least one of them is null");
+   	}
+   	else
+   	{
+	      long baseTime = baseDate.getTime() / 1000;
+	      long afterTime = afterDate.getTime() / 1000;
+	      return baseTime < afterTime;
+   	}
    }
 
    /**
@@ -75,9 +82,16 @@ public class DateUtils
     */
    public static boolean before(Date baseDate, Date beforeDate)
    {
-      long baseTime = baseDate.getTime() / 1000;
-      long beforeTime = beforeDate.getTime() / 1000;
-      return beforeTime < baseTime;
+   	if((baseDate == null) || (beforeDate == null))
+   	{
+   		throw new IllegalArgumentException("Can't compare the dates, at least one of them is null");
+   	}
+   	else
+   	{
+	      long baseTime = baseDate.getTime() / 1000;
+	      long beforeTime = beforeDate.getTime() / 1000;
+	      return beforeTime < baseTime;
+   	}
    }
 
    /**
@@ -88,9 +102,16 @@ public class DateUtils
     */
    public static boolean equals(Date baseDate, Date otherDate)
    {
-      long baseTime = baseDate.getTime() / 1000;
-      long otherTime = otherDate.getTime() / 1000;
-      return otherTime == baseTime;
+   	if((baseDate == null) || (otherDate == null))
+   	{
+   		throw new IllegalArgumentException("Can't compare the dates, at least one of them is null");
+   	}
+   	else
+   	{
+	      long baseTime = baseDate.getTime() / 1000;
+	      long otherTime = otherDate.getTime() / 1000;
+	      return otherTime == baseTime;
+   	}
    }
 
    /**

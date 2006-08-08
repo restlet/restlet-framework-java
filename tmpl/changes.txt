@@ -14,6 +14,8 @@ Changes log
  - Fixed bug in DirectoryHandler preventing the return of a directory listing if an index file name was set but not found. Reported by Thierry Boileau.
  - Add option to turn off content negotiation on DirectoryHandler which was causing some issues with online Javadocs. Reported by Tiago Silveira.
  - org.restlet.component.Component.getServers() was returning Map<String, Server> instead of ServerMap. Reported by Piyush Purang.
+ - Fixed caching conflicts with content negotiation. Reported by Chris Winters.
+ - Fixed potential NPE in the DateUtils comparison methods. Reported by Chris Winters.
 
 [API breaking changes]
  - Removed get/setTimeout() methods from the Client interface and related classes. Also, removed the configureSsl() method from the Server interface.
@@ -72,6 +74,7 @@ Changes log
  - Added SVG media type constant to MediaTypes. Also part of the common extesions (*.svg) of ContextClient.
  - Improved the default directory listing template to look more like Apache style of listing. Added the ".." link when possible, etc.
  - Added Reference.getParentRef() method.
+ - Added Tag.ALL constant, equivalent to the special "*" value in HTTP.
  
 1.0 beta 17 (2006-07-19)
 [Bugs fixed]

@@ -34,6 +34,9 @@ package org.restlet.data;
  */
 public class Tag implements Metadata
 {
+	/** Tag matching any other tag, used in call's condition data. */
+	public static final Tag ALL = new Tag("*");
+	
    /** The opaque tag string. */
    protected String tag;
 
@@ -71,6 +74,10 @@ public class Tag implements Metadata
       {
          this.tag = name.substring(1, name.length() - 1);
       }
+      else if(name.equals("*"))
+      {
+      	this.tag = "*";
+      }
       else
       {
          throw new IllegalArgumentException("Invalid tag format detected: " + name);
@@ -84,9 +91,16 @@ public class Tag implements Metadata
     */
    public String getName()
    {
-      StringBuilder sb = new StringBuilder();
-      if(isWeak()) sb.append("W/");
-      return sb.append('"').append(getOpaqueTag()).append('"').toString();
+   	if(getOpaqueTag().equals("*"))
+   	{
+   		return "*";
+   	}
+   	else
+   	{
+	      StringBuilder sb = new StringBuilder();
+	      if(isWeak()) sb.append("W/");
+	      return sb.append('"').append(getOpaqueTag()).append('"').toString();
+   	}
    }
    
    /**
@@ -132,6 +146,16 @@ public class Tag implements Metadata
    public void setOpaqueTag(String tag)
    {
       this.tag = tag;
+   }
+
+   /**
+    * Indicates if both tags are equal.
+    * @param tag The tag to compare.
+    * @return True if both tags are equal.
+    */
+   public boolean equals(Tag tag)
+   {
+   	return (tag == null) ? false : getName().equals(tag.getName());
    }
 
 }
