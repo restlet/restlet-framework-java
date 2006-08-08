@@ -23,17 +23,16 @@
 package org.restlet.component;
 
 import java.io.IOException;
-import java.util.Map;
 
 import org.restlet.Call;
 import org.restlet.Restlet;
 import org.restlet.connector.ClientMap;
-import org.restlet.connector.Server;
+import org.restlet.connector.ServerMap;
 import org.restlet.data.ParameterList;
 
 /**
- * Abstract unit of software instructions and internal state. "A component is an abstract 
- * unit of software instructions and internal state that provides a transformation of data 
+ * Abstract unit of software instructions and internal state. "A component is an abstract
+ * unit of software instructions and internal state that provides a transformation of data
  * via its interface." Roy T. Fielding
  * @see <a href="http://www.ics.uci.edu/~fielding/pubs/dissertation/software_arch.htm#sec_1_2_1">Source
  * dissertation</a>
@@ -41,30 +40,30 @@ import org.restlet.data.ParameterList;
  */
 public interface Component extends Restlet
 {
-   /**
-    * Calls a client connector. If no matching connector is available in this component, 
-    * the owner components will recursively be used in order to find the closest match.
-    * @param name The name of the client connector.
-    * @param call The call to handle.
-    * @throws IOException
-    */
-   public void callClient(String name, Call call);
+	/**
+	 * Calls a client connector. If no matching connector is available in this component,
+	 * the owner components will recursively be used in order to find the closest match.
+	 * @param name The name of the client connector.
+	 * @param call The call to handle.
+	 * @throws IOException
+	 */
+	public void callClient(String name, Call call);
 
-   /**
+	/**
 	 * Returns the modifiable list of parameters.
 	 * @return The modifiable list of parameters.
 	 */
 	public ParameterList getParameters();
-	
+
 	/**
 	 * Returns the modifiable map of client connectors.
 	 * @return The modifiable map of client connectors.
 	 */
 	public ClientMap getClients();
-	
+
 	/**
 	 * Returns the modifiable map of server connectors.
 	 * @return The modifiable map of server connectors.
 	 */
-	public Map<String, Server> getServers();
+	public ServerMap getServers();
 }
