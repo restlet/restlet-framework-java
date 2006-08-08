@@ -245,12 +245,6 @@ public class HttpClient extends AbstractClient
          {
             clientCall.getRequestHeaders().add(ConnectorCall.HEADER_AUTHORIZATION, SecurityUtils.format(response));
          }
-         
-//         // Add the custom headers that may have been set by the user
-//         for(Parameter header : call.getConnectorCall().getRequestHeaders())
-//         {
-//            clientCall.getRequestHeaders().add(header.getName(), header.getValue());
-//         }         
 
          // Send the input representation
          if(hasInput(call))
