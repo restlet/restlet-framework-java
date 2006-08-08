@@ -13,6 +13,7 @@ Changes log
  - Fixed bug in NRE's factory which prevented the detection of HTTPS connectors. Now all HTTPS connectors work fully (Simple, Jetty5 and Jetty6).
  - Fixed bug in DirectoryHandler preventing the return of a directory listing if an index file name was set but not found. Reported by Thierry Boileau.
  - Add option to turn off content negotiation on DirectoryHandler which was causing some issues with online Javadocs. Reported by Tiago Silveira.
+ - org.restlet.component.Component.getServers() was returning Map<String, Server> instead of ServerMap. Reported by Piyush Purang.
 
 [API breaking changes]
  - Removed get/setTimeout() methods from the Client interface and related classes. Also, removed the configureSsl() method from the Server interface.
