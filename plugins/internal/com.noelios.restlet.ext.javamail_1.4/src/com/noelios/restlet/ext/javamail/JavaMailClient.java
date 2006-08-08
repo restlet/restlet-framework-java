@@ -251,15 +251,6 @@ public abstract class JavaMailClient extends AbstractClient
             // Set the subject and content text
             msg.setSubject(subject);
             msg.setText(text);
-//            
-//            // Add the custom headers that may have been set by the user
-//            Parameter customHeader;
-//            for(Iterator<Parameter> iter = call.getConnectorCall().getRequestHeaders().iterator(); iter.hasNext();)
-//            {
-//               customHeader = iter.next();
-//               msg.addHeader(customHeader.getName(), customHeader.getValue());
-//            }         
-
             msg.setSentDate(new Date());
             msg.saveChanges();
 
