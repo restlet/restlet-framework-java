@@ -30,7 +30,7 @@ import java.net.URLEncoder;
  * Multi-usage parameter.
  * @author Jerome Louvel (contact@noelios.com) <a href="http://www.noelios.com/">Noelios Consulting</a>
  */
-public class Parameter implements Data, Comparable<Parameter>
+public class Parameter implements Comparable<Parameter>
 {
    /** The name. */
 	protected String name;

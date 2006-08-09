@@ -26,7 +26,7 @@ package org.restlet.data;
  * Metadata preference definition.
  * @author Jerome Louvel (contact@noelios.com) <a href="http://www.noelios.com/">Noelios Consulting</a>
  */
-public class Preference implements ControlData
+public class Preference
 {
 	/** The metadata associated with this preference. */
    private Metadata metadata;

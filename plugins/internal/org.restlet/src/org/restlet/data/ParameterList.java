@@ -29,6 +29,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
+
 /**
  * Modifiable list of parameters with many helper methods. Note that this class implements the java.util.List
  * interface using the Parameter class as the template type. This allows you to use an instance of this class
@@ -37,7 +38,7 @@ import java.util.Set;
  * @see java.util.Collections
  * @see java.util.List
  */
-public class ParameterList extends WrapperList<Parameter> implements Data
+public class ParameterList extends WrapperList<Parameter>
 {
 	/**
 	 * Constructor.

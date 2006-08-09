@@ -44,7 +44,7 @@ import org.restlet.Restlet;
  * @see org.restlet.data.Reference
  * @author Jerome Louvel (contact@noelios.com) <a href="http://www.noelios.com/">Noelios Consulting</a>
  */
-public interface Resource extends Data, Restlet
+public interface Resource extends Restlet
 {
 	/**
 	 * Returns the official identifier.

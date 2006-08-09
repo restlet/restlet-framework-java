@@ -28,7 +28,7 @@ import org.restlet.Factory;
  * Authentication response sent by client to an origin server.
  * @author Jerome Louvel (contact@noelios.com) <a href="http://www.noelios.com/">Noelios Consulting</a>
  */
-public class ChallengeResponse implements ControlData
+public class ChallengeResponse
 {
    /** The challenge scheme. */
    protected ChallengeScheme scheme;

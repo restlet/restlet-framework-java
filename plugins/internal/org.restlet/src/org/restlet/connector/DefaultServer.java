@@ -123,14 +123,14 @@ public class DefaultServer implements Server
    /**
     * Constructor.
     * @param protocol The connector protocol.
-    * @param properties The initial properties.
+    * @param parameters The initial parameters.
     * @param target The target Restlet.
     * @param address The optional listening IP address (useful if multiple IP addresses available).
     * @param port The listening port.
     */
-   public DefaultServer(Protocol protocol, ParameterList properties, Restlet target, String address, int port)
+   public DefaultServer(Protocol protocol, ParameterList parameters, Restlet target, String address, int port)
    {
-   	this(Arrays.asList(protocol), properties, target, address, port);
+   	this(Arrays.asList(protocol), parameters, target, address, port);
    }
 
    /**

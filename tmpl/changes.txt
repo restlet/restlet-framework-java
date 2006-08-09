@@ -16,7 +16,7 @@ Changes log
  - org.restlet.component.Component.getServers() was returning Map<String, Server> instead of ServerMap. Reported by Piyush Purang.
  - Fixed caching conflicts with content negotiation. Reported by Chris Winters.
  - Fixed potential NPE in the DateUtils comparison methods. Reported by Chris Winters.
-
+ 
 [API breaking changes]
  - Removed get/setTimeout() methods from the Client interface and related classes. Also, removed the configureSsl() method from the Server interface.
  	We will now use connectors'parameters instead. Suggested by John D. Mitchell.
@@ -46,6 +46,7 @@ Changes log
  - Renamed static Reference.toUri() method into Reference.toString() for consistency with existing Reference.toString() methods (non-static).
  - Renamed Call.setBestOutput() into Call.setOutput() and adjusted the Javadocs to explain behavior (set best output for the given resource).
  - Removed addition of custom headers from Call.connectorCall for JavaMailClient and HttpClient. Will now require the usage of Converters.
+ - Removed empty and unused interfaces Gateway, OriginServer, Proxy, UserAgent, Cache, Resolver, Tunnel, ControlData, Data. Suggested by Piyush Purang.
    
 [Other changes] 
  - Separated the HTTP client connector (based on JDK's HttpUrlConnection) previously integrated to the NRE core. This will allow future alternative
@@ -75,6 +76,7 @@ Changes log
  - Improved the default directory listing template to look more like Apache style of listing. Added the ".." link when possible, etc.
  - Added Reference.getParentRef() method.
  - Added Tag.ALL constant, equivalent to the special "*" value in HTTP.
+ - ServerMap and ClientMap now create the new connectors using the Factory instead of the DefaultClient/Server classes. Suggested by Piyush Purang.
  
 1.0 beta 17 (2006-07-19)
 [Bugs fixed]

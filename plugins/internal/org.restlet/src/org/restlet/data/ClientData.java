@@ -31,7 +31,7 @@ import org.restlet.Factory;
  * Client specific data related to a call.
  * @author Jerome Louvel (contact@noelios.com) <a href="http://www.noelios.com/">Noelios Consulting</a>
  */
-public class ClientData implements ControlData
+public class ClientData
 {
 	/** The IP addresses. */
 	protected List<String> addresses;

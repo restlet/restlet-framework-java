@@ -45,7 +45,7 @@ import org.restlet.Scorer;
  * @see java.util.Collections
  * @see java.util.List
  */
-public class ScorerList implements List<Scorer>, Data
+public class ScorerList implements List<Scorer>
 {
 	/** The parent router. */
 	protected Router router;

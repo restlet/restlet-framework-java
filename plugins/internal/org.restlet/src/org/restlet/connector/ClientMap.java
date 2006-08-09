@@ -22,6 +22,9 @@
 
 package org.restlet.connector;
 
+import java.util.Arrays;
+
+import org.restlet.Factory;
 import org.restlet.data.Protocol;
 import org.restlet.data.WrapperMap;
 
@@ -39,6 +42,6 @@ public class ClientMap extends WrapperMap<String, Client>
 	 */
 	public Client put(String key, Protocol protocol)
 	{
-		return put(key, new DefaultClient(protocol));
+		return put(key, Factory.getInstance().createClient(Arrays.asList(protocol), null, null));
 	}
 }

@@ -26,6 +26,6 @@ package org.restlet.data;
  * Empty value marker.
  * @author Jerome Louvel (contact@noelios.com) <a href="http://www.noelios.com/">Noelios Consulting</a>
  */
-public class EmptyValue implements ControlData
+public class EmptyValue
 {
 }

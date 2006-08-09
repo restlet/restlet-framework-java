@@ -33,7 +33,7 @@ package org.restlet.data;
  * dissertation</a>
  * @author Jerome Louvel (contact@noelios.com) <a href="http://www.noelios.com/">Noelios Consulting</a>
  */
-public interface Metadata extends Data
+public interface Metadata
 {
    /**
     * Returns the name (ex: "text/html" or "compress" or "iso-8851-1").

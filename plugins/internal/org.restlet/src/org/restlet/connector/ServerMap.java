@@ -22,6 +22,9 @@
 
 package org.restlet.connector;
 
+import java.util.Arrays;
+
+import org.restlet.Factory;
 import org.restlet.component.Component;
 import org.restlet.data.Protocol;
 import org.restlet.data.WrapperMap;
@@ -34,7 +37,7 @@ public class ServerMap extends WrapperMap<String, Server>
 {
 	/** The owner component. */
 	protected Component owner;
-	
+
 	/**
 	 * Constructor.
 	 * @param owner The owner component.
@@ -43,7 +46,7 @@ public class ServerMap extends WrapperMap<String, Server>
 	{
 		this.owner = owner;
 	}
-	
+
 	/**
 	 * Returns the owner component.
 	 * @return The owner component.
@@ -52,7 +55,7 @@ public class ServerMap extends WrapperMap<String, Server>
 	{
 		return this.owner;
 	}
-	
+
 	/**
 	 * Sets the owner component.
 	 * @param owner The owner component.
@@ -61,7 +64,7 @@ public class ServerMap extends WrapperMap<String, Server>
 	{
 		this.owner = owner;
 	}
-	
+
 	/**
 	 * Puts a new server connector in the map supporting the given protocol.
 	 * @param name The connector name.
@@ -70,31 +73,34 @@ public class ServerMap extends WrapperMap<String, Server>
 	 */
 	public Server put(String name, Protocol protocol)
 	{
-		return put(name, new DefaultServer(protocol, getOwner()));
+		return put(name, Factory.getInstance().createServer(Arrays.asList(protocol),
+				getOwner(), null, null, protocol.getDefaultPort()));
 	}
 
 	/**
 	 * Puts a new server connector in the map supporting the given protocol on the specified port.
 	 * @param name The connector name.
 	 * @param protocol The connector protocol.
-    * @param port The listening port.
+	 * @param port The listening port.
 	 * @return The added server.
 	 */
 	public Server put(String name, Protocol protocol, int port)
 	{
-		return put(name, new DefaultServer(protocol, getOwner(), port));
+		return put(name, Factory.getInstance().createServer(Arrays.asList(protocol),
+				getOwner(), null, null, port));
 	}
 
 	/**
 	 * Puts a new server connector in the map supporting the given protocol on the specified IP address and port.
 	 * @param name The connector name.
 	 * @param protocol The connector protocol.
-    * @param address The optional listening IP address (useful if multiple IP addresses available).
-    * @param port The listening port.
+	 * @param address The optional listening IP address (useful if multiple IP addresses available).
+	 * @param port The listening port.
 	 * @return The added server.
 	 */
 	public Server put(String name, Protocol protocol, String address, int port)
 	{
-		return put(name, new DefaultServer(protocol, getOwner(), address, port));
+		return put(name, Factory.getInstance().createServer(Arrays.asList(protocol),
+				getOwner(), null, address, port));
 	}
 }

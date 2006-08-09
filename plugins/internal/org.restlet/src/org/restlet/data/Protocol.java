@@ -28,7 +28,7 @@ package org.restlet.data;
  * between two distributed components.
  * @author Jerome Louvel (contact@noelios.com) <a href="http://www.noelios.com/">Noelios Consulting</a>
  */
-public interface Protocol extends ControlData
+public interface Protocol
 {
 	/**
 	 * Returns the name.

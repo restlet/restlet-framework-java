@@ -32,7 +32,7 @@ import org.restlet.Call;
  * the other call's data are expected to be more stable during the processing.
  * @author Jerome Louvel (contact@noelios.com) <a href="http://www.noelios.com/">Noelios Consulting</a>
  */
-public class ContextData implements ControlData
+public class ContextData
 {
 	/** Obtain a suitable logger. */
 	private static Logger logger = Logger.getLogger(ContextData.class.getCanonicalName());

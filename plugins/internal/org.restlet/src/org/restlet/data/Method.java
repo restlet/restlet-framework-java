@@ -27,7 +27,7 @@ package org.restlet.data;
  * @see org.restlet.data.Methods
  * @author Jerome Louvel (contact@noelios.com) <a href="http://www.noelios.com/">Noelios Consulting</a>
  */
-public interface Method extends ControlData
+public interface Method
 {
    /**
     * Returns the technical name.

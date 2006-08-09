@@ -26,7 +26,7 @@ package org.restlet.data;
  * Challenge scheme used to authenticate remote clients.
  * @author Jerome Louvel (contact@noelios.com) <a href="http://www.noelios.com/">Noelios Consulting</a>
  */
-public interface ChallengeScheme extends ControlData
+public interface ChallengeScheme
 {
    /**
     * Returns the unique name.

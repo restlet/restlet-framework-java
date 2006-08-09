@@ -47,7 +47,7 @@ import java.util.List;
  * @see java.net.URLDecoder
  * @see java.net.URLEncoder
  */
-public class Reference implements Data
+public class Reference
 {
    /** The base reference for relative references. */
    protected Reference baseRef;

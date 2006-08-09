@@ -26,7 +26,7 @@ package org.restlet.data;
  * Security data related to a call.
  * @author Jerome Louvel (contact@noelios.com) <a href="http://www.noelios.com/">Noelios Consulting</a>
  */
-public class SecurityData implements ControlData
+public class SecurityData
 {
    /** The authentication request sent by an origin server to a client. */
    protected ChallengeRequest request;
