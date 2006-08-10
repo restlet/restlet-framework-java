@@ -55,6 +55,8 @@ Changes log
  - Refactored Method, Methods and DefaultMethod into a single Method class. 
  - Refactored Protocol, Protocols and DefaultProtocol into a single Protocol class. 
  - Refactored Status, Statuses and DefaultStatus into a single Status class. 
+ - Fixed the remaining inconsistent usages of ParameterList. Removed MediaType.getParametersValue(). 
+   Now getParameters() methods always instantiate a new list of none was existing before.  
    
 [Other changes] 
  - Separated the HTTP client connector (based on JDK's HttpUrlConnection) previously integrated to the NRE core. This will allow future alternative
