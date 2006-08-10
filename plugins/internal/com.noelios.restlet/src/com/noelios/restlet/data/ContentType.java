@@ -59,7 +59,7 @@ public class ContentType
          pref = pr.readPreference();
          this.mediaType = (MediaType)pref.getMetadata();
 
-         String charSet = this.mediaType.getParameterValue("charset");
+         String charSet = this.mediaType.getParameters().getFirstValue("charset");
          if(charSet != null)
          {
             this.characterSet = new CharacterSet(charSet);

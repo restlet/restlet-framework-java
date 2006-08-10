@@ -245,14 +245,7 @@ public class DefaultClient implements Client
 	 */
 	public ParameterList getParameters()
 	{
-   	if(this.wrappedClient != null)
-   	{
-   		return this.wrappedClient.getParameters();
-   	}
-   	else
-   	{
-   		return null;
-   	}
+  		return (this.wrappedClient != null) ? this.wrappedClient.getParameters() : null;
 	}
 
    /**

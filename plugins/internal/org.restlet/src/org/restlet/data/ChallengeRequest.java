@@ -22,7 +22,6 @@
 
 package org.restlet.data;
 
-import java.util.List;
 
 /**
  * Authentication challenge sent by an origin server to a client.
@@ -91,18 +90,10 @@ public class ChallengeRequest
     * Returns the scheme parameters.
     * @return The scheme parameters.
     */
-   public List<Parameter> getParameters()
+   public ParameterList getParameters()
    {
+   	if(this.parameters == null) this.parameters = new ParameterList();
       return this.parameters;
-   }
-
-   /**
-    * Sets the scheme parameters.
-    * @param parameters The scheme parameters.
-    */
-   public void setParameters(ParameterList parameters)
-   {
-      this.parameters = parameters;
    }
 
 }

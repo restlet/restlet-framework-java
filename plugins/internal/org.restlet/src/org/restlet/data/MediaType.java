@@ -22,7 +22,6 @@
 
 package org.restlet.data;
 
-import java.util.Iterator;
 
 /**
  * Media type used in representations and preferences.
@@ -305,32 +304,8 @@ public class MediaType extends Metadata
 	 */
 	public ParameterList getParameters()
 	{
+   	if(this.parameters == null) this.parameters = new ParameterList();
 		return this.parameters;
-	}
-
-	/**
-	 * Returns the value of a parameter with a given name.
-	 * @param name The name of the parameter to return.
-	 * @return The value of the parameter with a given name.
-	 */
-	public String getParameterValue(String name)
-	{
-		String result = null;
-
-		if (getParameters() != null)
-		{
-			Parameter current;
-			for (Iterator iter = getParameters().iterator(); iter.hasNext();)
-			{
-				current = (Parameter) iter.next();
-				if (current.getName().equals(name))
-				{
-					result = current.getValue();
-				}
-			}
-		}
-
-		return result;
 	}
 
 	/**
@@ -375,15 +350,6 @@ public class MediaType extends Metadata
 		}
 
 		return result;
-	}
-
-	/**
-	 * Returns the media type name.
-	 * @return The media type name.
-	 */
-	public String toString()
-	{
-		return getName();
 	}
 
 }

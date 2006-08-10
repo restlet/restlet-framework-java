@@ -118,7 +118,8 @@ public class Preference
     */
    public ParameterList getParameters()
    {
-      return parameters;
+   	if(this.parameters == null) this.parameters = new ParameterList();
+   	return this.parameters;
    }
    
    @Override
