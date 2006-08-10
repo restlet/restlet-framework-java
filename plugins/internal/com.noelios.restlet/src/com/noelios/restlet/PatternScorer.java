@@ -78,13 +78,13 @@ public class PatternScorer extends AbstractScorer
 	public float score(Call call)
 	{
 		float result = 0F;
-		String relativeRef = call.getContext().getRelativeRef().toString();
-		Matcher matcher = getPattern().matcher(relativeRef);
+		String remainingRef = getRemainingRef(call);
+		Matcher matcher = getPattern().matcher(remainingRef);
       boolean matched = matcher.lookingAt();
 
       if(matched)
       {
-      	float totalLength = relativeRef.length();
+      	float totalLength = remainingRef.length();
       	
       	if(totalLength > 0.0F)
       	{
@@ -111,8 +111,8 @@ public class PatternScorer extends AbstractScorer
 	 */
 	public void handle(Call call)
 	{
-		String relativeRef = call.getContext().getRelativeRef().toString();;
-		Matcher matcher = getPattern().matcher(relativeRef);
+		String remainingRef = getRemainingRef(call);
+		Matcher matcher = getPattern().matcher(remainingRef);
       boolean matched = matcher.lookingAt();
          
       if(logger.isLoggable(Level.FINER))
@@ -123,18 +123,19 @@ public class PatternScorer extends AbstractScorer
       if(matched)
       {
 	      // Updates the context
-	      String matchedPart = relativeRef.substring(0, matcher.end());
+	      String matchedPart = remainingRef.substring(0, matcher.end());
 	      Reference baseRef = call.getContext().getBaseRef();
 	
 	      if(baseRef == null)
 	      {
 	      	baseRef = new Reference(matchedPart);
-	      	call.getContext().setBaseRef(baseRef);
 	      }
 	      else
 	      {
 	      	baseRef = new Reference(baseRef.toString(false, false) + matchedPart);
 	      }
+	      
+      	call.getContext().setBaseRef(baseRef);
 	
 	      if(logger.isLoggable(Level.FINE))
 	      {
@@ -155,4 +156,21 @@ public class PatternScorer extends AbstractScorer
       	call.setStatus(Status.CLIENT_ERROR_NOT_FOUND);
       }
 	}   
+
+	/**
+	 * Returns the remaining reference following the base reference.
+	 * @param call The call to handle.
+	 * @return The remaining reference following the base reference.
+	 */
+	protected String getRemainingRef(Call call)
+	{
+		if(call.getContext().getBaseRef() != null)
+		{
+			return call.getResourceRef().toString().substring(call.getContext().getBaseRef().toString().length());
+		}
+		else
+		{
+			return call.getResourceRef().toString();
+		}
+	}
 }
