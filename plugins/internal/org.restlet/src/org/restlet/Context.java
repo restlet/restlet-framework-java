@@ -27,15 +27,15 @@ import java.util.logging.Logger;
 import org.restlet.data.Reference;
 
 /**
- * Data associated to a call that are contextual to the current Restlet handling it. They may not 
- * necessarily change for each Restlet in the processing chain, but they can potentially change while
- * the other call's data are expected to be more stable during the processing.
+ * Context of a call associated to the handling Restlet. They may not necessarily change for each 
+ * Restlet in the processing chain, but they can potentially change while the other call's data 
+ * are expected to be more stable during the processing.
  * @author Jerome Louvel (contact@noelios.com) <a href="http://www.noelios.com/">Noelios Consulting</a>
  */
-public class ContextData
+public class Context
 {
 	/** Obtain a suitable logger. */
-	private static Logger logger = Logger.getLogger(ContextData.class.getCanonicalName());
+	private static Logger logger = Logger.getLogger(Context.class.getCanonicalName());
 
 	/** The base reference. */
 	protected Reference baseRef;
@@ -47,7 +47,7 @@ public class ContextData
 	 * Constructor. 
 	 * @param call The parent call.
 	 */
-	public ContextData(Call call)
+	public Context(Call call)
 	{
 		this.baseRef = null;
 		this.call = call;

@@ -62,7 +62,7 @@ public class Call
 	protected ConditionData condition;
 
 	/** The context data. */
-	protected ContextData context;
+	protected Context context;
 
 	/** The cookies provided by the client. */
 	protected List<Cookie> cookies;
@@ -168,9 +168,9 @@ public class Call
 	 * Returns the context data of the current Restlet applying to this call.
 	 * @return The context data applying to this call.
 	 */
-	public ContextData getContext()
+	public Context getContext()
 	{
-		if (this.context == null) this.context = new ContextData(this);
+		if (this.context == null) this.context = new Context(this);
 		return this.context;
 	}
 

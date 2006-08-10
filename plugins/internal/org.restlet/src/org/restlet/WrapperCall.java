@@ -91,7 +91,7 @@ public class WrapperCall extends Call
 	 * Returns the context data of the current Restlet applying to this call.
 	 * @return The context data applying to this call.
 	 */
-	public ContextData getContext()
+	public Context getContext()
 	{
       return getWrappedCall().getContext();
 	}
