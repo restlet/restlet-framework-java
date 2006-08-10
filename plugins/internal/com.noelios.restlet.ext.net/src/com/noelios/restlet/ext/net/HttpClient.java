@@ -35,14 +35,13 @@ import org.restlet.connector.AbstractClient;
 import org.restlet.connector.ConnectorCall;
 import org.restlet.data.ChallengeRequest;
 import org.restlet.data.ChallengeResponse;
+import org.restlet.data.ClientData;
 import org.restlet.data.ConditionData;
-import org.restlet.data.DefaultStatus;
-import org.restlet.data.MediaTypes;
+import org.restlet.data.MediaType;
 import org.restlet.data.Parameter;
 import org.restlet.data.ParameterList;
-import org.restlet.data.ClientData;
-import org.restlet.data.Protocols;
-import org.restlet.data.Statuses;
+import org.restlet.data.Protocol;
+import org.restlet.data.Status;
 
 import com.noelios.restlet.Factory;
 import com.noelios.restlet.connector.AbstractHttpClientCall;
@@ -114,8 +113,8 @@ public class HttpClient extends AbstractClient
    public HttpClient(Component owner, ParameterList parameters)
    {
    	super(owner, parameters);
-      getProtocols().add(Protocols.HTTP);
-      getProtocols().add(Protocols.HTTPS);
+      getProtocols().add(Protocol.HTTP);
+      getProtocols().add(Protocol.HTTPS);
    }
    
    /**
@@ -221,7 +220,7 @@ public class HttpClient extends AbstractClient
          }
          else
          {
-        	 clientCall.getRequestHeaders().add(ConnectorCall.HEADER_ACCEPT, MediaTypes.ALL.getName());
+        	 clientCall.getRequestHeaders().add(ConnectorCall.HEADER_ACCEPT, MediaType.ALL.getName());
          }
          
          if(client.getCharacterSetPrefs().size() > 0)
@@ -273,7 +272,7 @@ public class HttpClient extends AbstractClient
       catch(Exception e)
       {
          logger.log(Level.FINE, "An unexpected error occured during the preparation of the HTTP client call.", e);
-         call.setStatus(new DefaultStatus(Statuses.CONNECTOR_ERROR_INTERNAL, "Unable to create the HTTP call and its headers. " + e.getMessage()));
+         call.setStatus(new Status(Status.CONNECTOR_ERROR_INTERNAL, "Unable to create the HTTP call and its headers. " + e.getMessage()));
       }
          
       try
@@ -288,32 +287,32 @@ public class HttpClient extends AbstractClient
          }
 
          // Get the response status
-         call.setStatus(new DefaultStatus(clientCall.getResponseStatusCode(), null, clientCall.getResponseReasonPhrase(), null));
+         call.setStatus(new Status(clientCall.getResponseStatusCode(), null, clientCall.getResponseReasonPhrase(), null));
       }
       catch(ConnectException ce)
       {
          logger.log(Level.FINE, "An error occured during the connection to the remote HTTP server.", ce);
-         call.setStatus(new DefaultStatus(Statuses.CONNECTOR_ERROR_CONNECTION, "Unable to connect to the remote server. " + ce.getMessage()));
+         call.setStatus(new Status(Status.CONNECTOR_ERROR_CONNECTION, "Unable to connect to the remote server. " + ce.getMessage()));
       }
       catch(SocketTimeoutException ste)
       {
          logger.log(Level.FINE, "An timeout error occured during the communication with the remote HTTP server.", ste);
-         call.setStatus(new DefaultStatus(Statuses.CONNECTOR_ERROR_COMMUNICATION, "Unable to complete the HTTP call due to a communication timeout error. " + ste.getMessage()));
+         call.setStatus(new Status(Status.CONNECTOR_ERROR_COMMUNICATION, "Unable to complete the HTTP call due to a communication timeout error. " + ste.getMessage()));
       }
       catch(FileNotFoundException fnfe)
       {
          logger.log(Level.FINE, "An unexpected error occured during the sending of the HTTP request.", fnfe);
-         call.setStatus(new DefaultStatus(Statuses.CONNECTOR_ERROR_INTERNAL, "Unable to find a local file for sending. " + fnfe.getMessage()));
+         call.setStatus(new Status(Status.CONNECTOR_ERROR_INTERNAL, "Unable to find a local file for sending. " + fnfe.getMessage()));
       }
       catch(IOException ioe)
       {
          logger.log(Level.FINE, "An error occured during the communication with the remote HTTP server.", ioe);
-         call.setStatus(new DefaultStatus(Statuses.CONNECTOR_ERROR_COMMUNICATION, "Unable to complete the HTTP call due to a communication error with the remote server. " + ioe.getMessage()));
+         call.setStatus(new Status(Status.CONNECTOR_ERROR_COMMUNICATION, "Unable to complete the HTTP call due to a communication error with the remote server. " + ioe.getMessage()));
       }
       catch(Exception e)
       {
          logger.log(Level.FINE, "An unexpected error occured during the sending of the HTTP request.", e);
-         call.setStatus(new DefaultStatus(Statuses.CONNECTOR_ERROR_INTERNAL, "Unable to send the HTTP request. " + e.getMessage()));
+         call.setStatus(new Status(Status.CONNECTOR_ERROR_INTERNAL, "Unable to send the HTTP request. " + e.getMessage()));
       }
       
       try
@@ -363,7 +362,7 @@ public class HttpClient extends AbstractClient
       catch(Exception e)
       {
          logger.log(Level.FINE, "An error occured during the processing of the HTTP response.", e);
-         call.setStatus(new DefaultStatus(Statuses.CONNECTOR_ERROR_INTERNAL, "Unable to process the response. " + e.getMessage()));
+         call.setStatus(new Status(Status.CONNECTOR_ERROR_INTERNAL, "Unable to process the response. " + e.getMessage()));
       }
    }
 

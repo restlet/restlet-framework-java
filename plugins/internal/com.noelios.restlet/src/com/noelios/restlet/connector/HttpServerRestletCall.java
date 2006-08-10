@@ -34,12 +34,12 @@ import org.restlet.connector.ConnectorCall;
 import org.restlet.data.ClientData;
 import org.restlet.data.ConditionData;
 import org.restlet.data.Cookie;
-import org.restlet.data.Methods;
+import org.restlet.data.Method;
 import org.restlet.data.Parameter;
 import org.restlet.data.Reference;
 import org.restlet.data.Representation;
 import org.restlet.data.SecurityData;
-import org.restlet.data.Statuses;
+import org.restlet.data.Status;
 import org.restlet.data.Tag;
 
 import com.noelios.restlet.Factory;
@@ -76,8 +76,8 @@ public class HttpServerRestletCall extends Call
 		setConnectorCall(call);
 		getServer().setAddress(call.getResponseAddress());
 		getServer().setName(Factory.VERSION_HEADER);
-		setStatus(Statuses.SUCCESS_OK);
-		setMethod(Methods.create(call.getRequestMethod()));
+		setStatus(Status.SUCCESS_OK);
+		setMethod(Method.create(call.getRequestMethod()));
 
 		// Set the resource reference
 		String resource = call.getRequestUri();

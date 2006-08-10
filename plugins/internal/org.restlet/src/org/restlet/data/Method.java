@@ -24,34 +24,189 @@ package org.restlet.data;
 
 /**
  * Method to execute when handling a call.
- * @see org.restlet.data.Methods
  * @author Jerome Louvel (contact@noelios.com) <a href="http://www.noelios.com/">Noelios Consulting</a>
  */
-public interface Method
+public class Method extends Metadata
 {
-   /**
-    * Returns the technical name.
-    * @return The technical name.
-    */
-   public String getName();
+	protected static final String BASE_HTTP = "http://www.w3.org/Protocols/rfc2616/rfc2616-sec9.html";
+	protected static final String BASE_WEBDAV = "http://www.webdav.org/specs/rfc2518.html";
 
-   /**
-    * Returns the description.
-    * @return The description.
-    */
-   public String getDescription();
+	public static final Method CONNECT = new Method(
+			"CONNECT",
+			"Used with a proxy that can dynamically switch to being a tunnel", 
+			BASE_HTTP	+ "#sec9.9");
 
-   /**
-    * Returns the URI of the specification describing the method.
-    * @return The URI of the specification describing the method.
-    */
-   public String getUri();
+	public static final Method COPY = new Method(
+			"COPY",
+			"Create a duplicate of the source resource, identified by the Request-URI, in the destination resource, identified by the URI in the Destination header",
+			BASE_WEBDAV + "#METHOD_COPY");
 
-   /**
-    * Indicates if the method is equal to a given one.
-    * @param method The method to compare to.
-    * @return True if the method is equal to a given one.
-    */
-   public boolean equals(Method method);
+	public static final Method DELETE = new Method(
+			"DELETE",
+			"Request that the origin server delete the resource identified by the request URI",
+			BASE_HTTP + "#sec9.7");
 
+	public static final Method GET = new Method(
+			"GET",
+			"Retrieve whatever information (in the form of an entity) is identified by the request URI",
+			BASE_HTTP + "#sec9.3");
+
+	public static final Method HEAD = new Method(
+			"HEAD",
+			"Identical to GET except that the server must not return a message body in the response",
+			BASE_HTTP + "#sec9.4");
+
+	public static final Method LOCK = new Method(
+			"LOCK",
+			"Used to take out a lock of any access type (WebDAV)", 
+			BASE_WEBDAV + "#METHOD_LOCK");
+
+	public static final Method MKCOL = new Method(
+			"MKCOL",
+			"Used to create a new collection (WebDAV)", 
+			BASE_WEBDAV + "#METHOD_MKCOL");
+
+	public static final Method MOVE = new Method(
+			"MOVE",
+			"Logical equivalent of a copy, followed by consistency maintenance processing, followed by a delete of the source (WebDAV)",
+			BASE_WEBDAV + "#METHOD_MOVE");
+
+	public static final Method OPTIONS = new Method(
+			"OPTIONS",
+			"Request for information about the communication options available on the request/response chain identified by the URI",
+			BASE_HTTP + "#sec9.2");
+
+	public static final Method POST = new Method(
+			"POST",
+			"Request that the origin server accept the entity enclosed in the request as a new subordinate of the resource identified by the request URI",
+			BASE_HTTP + "#sec9.5");
+
+	public static final Method PROPFIND = new Method(
+			"PROPFIND",
+			"Retrieve properties defined on the resource identified by the request URI", 
+			BASE_WEBDAV + "#METHOD_PROPFIND");
+
+	public static final Method PROPPATCH = new Method(
+			"PROPPATCH",
+			"Process instructions specified in the request body to set and/or remove properties defined on the resource identified by the request URI",
+			BASE_WEBDAV + "#METHOD_PROPPATCH");
+
+	public static final Method PUT = new Method(
+			"PUT",
+			"Request that the enclosed entity be stored under the supplied request URI", 
+			BASE_HTTP + "#sec9.6");
+
+	public static final Method TRACE = new Method(
+			"TRACE",
+			"Used to invoke a remote, application-layer loop-back of the request message",
+			BASE_HTTP + "#sec9.8");
+
+	public static final Method UNLOCK = new Method(
+			"UNLOCK",
+			"Remove the lock identified by the lock token from the request URI, and all other resources included in the lock",
+			BASE_WEBDAV + "#METHOD_UNLOCK");
+
+	/** The URI of the specification describing the method. */
+	protected String uri;
+
+	/**
+	 * Constructor.
+	 * @param name The technical name of the method.
+	 * @see org.restlet.data.Method#create(String)
+	 */
+	public Method(String name)
+	{
+		this(name, null, null);
+	}
+
+	/**
+	 * Constructor.
+	 * @param name The technical name of the method.
+	 * @param description The description.
+	 * @see org.restlet.data.Method#create(String)
+	 */
+	public Method(String name, String description)
+	{
+		this(name, description, null);
+	}
+
+	/**
+	 * Constructor.
+	 * @param name The technical name.
+	 * @param description The description.
+	 * @param uri The URI of the specification describing the method.
+	 * @see org.restlet.data.Method#create(String)
+	 */
+	public Method(String name, String description, String uri)
+	{
+		super(name, description);
+		this.uri = uri;
+	}
+
+	/**
+	 * Returns the URI of the specification describing the method.
+	 * @return The URI of the specification describing the method.
+	 */
+	public String getUri()
+	{
+		return this.uri;
+	}
+
+	/**
+	 * Indicates if the method is equal to a given one.
+	 * @param method The method to compare to.
+	 * @return True if the method is equal to a given one.
+	 */
+	public boolean equals(Method method)
+	{
+		return (method != null) && getName().equals(method.getName());
+	}
+
+	/**
+	 * Creates a new method by attempting to reuse an existing enumeration entry.
+	 * @param methodName The method name.
+	 * @return The new method.
+	 */
+	public static Method create(String methodName)
+	{
+		Method result = null;
+
+		if (methodName != null)
+		{
+			if (methodName.equalsIgnoreCase(GET.getName()))
+				result = GET;
+			else if (methodName.equalsIgnoreCase(POST.getName()))
+				result = POST;
+			else if (methodName.equalsIgnoreCase(HEAD.getName()))
+				result = HEAD;
+			else if (methodName.equalsIgnoreCase(OPTIONS.getName()))
+				result = OPTIONS;
+			else if (methodName.equalsIgnoreCase(PUT.getName()))
+				result = PUT;
+			else if (methodName.equalsIgnoreCase(DELETE.getName()))
+				result = DELETE;
+			else if (methodName.equalsIgnoreCase(CONNECT.getName()))
+				result = CONNECT;
+			else if (methodName.equalsIgnoreCase(COPY.getName()))
+				result = COPY;
+			else if (methodName.equalsIgnoreCase(LOCK.getName()))
+				result = LOCK;
+			else if (methodName.equalsIgnoreCase(MKCOL.getName()))
+				result = MKCOL;
+			else if (methodName.equalsIgnoreCase(MOVE.getName()))
+				result = MOVE;
+			else if (methodName.equalsIgnoreCase(PROPFIND.getName()))
+				result = PROPFIND;
+			else if (methodName.equalsIgnoreCase(PROPPATCH.getName()))
+				result = PROPPATCH;
+			else if (methodName.equalsIgnoreCase(TRACE.getName()))
+				result = TRACE;
+			else if (methodName.equalsIgnoreCase(UNLOCK.getName()))
+				result = UNLOCK;
+			else
+				result = new Method(methodName);
+		}
+
+		return result;
+	}
 }

@@ -25,7 +25,7 @@ package com.noelios.restlet.ext.jetty5;
 import org.mortbay.util.InetAddrPort;
 import org.restlet.component.Component;
 import org.restlet.data.ParameterList;
-import org.restlet.data.Protocols;
+import org.restlet.data.Protocol;
 
 /**
  * Jetty AJP server connector.
@@ -44,7 +44,7 @@ public class AjpServer extends JettyServer
    public AjpServer(Component owner, ParameterList parameters, String address, int port)
    {
       super(owner, parameters, address, port);
-      getProtocols().add(Protocols.AJP);
+      getProtocols().add(Protocol.AJP);
    }
 
    /** Start hook. */

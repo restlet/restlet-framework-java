@@ -32,7 +32,6 @@ import org.restlet.Restlet;
 import org.restlet.connector.DefaultClient;
 import org.restlet.data.ParameterList;
 import org.restlet.data.Protocol;
-import org.restlet.data.Protocols;
 
 /**
  * Component whose main purpose is to contain and manage a set of Restlets. The goal is create to constitue 
@@ -83,8 +82,8 @@ public class RestletContainer extends AbstractComponent
 
       // Adds the default context client
       List<Protocol> protocols = new ArrayList<Protocol>();
-      protocols.add(Protocols.CONTEXT);
-      protocols.add(Protocols.FILE);
+      protocols.add(Protocol.CONTEXT);
+      protocols.add(Protocol.FILE);
       getClients().put(Factory.CONTEXT_CLIENT_NAME, new DefaultClient(protocols));
    }
 

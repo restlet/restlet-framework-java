@@ -34,9 +34,7 @@ import org.restlet.Call;
 import org.restlet.component.Component;
 import org.restlet.data.Encoding;
 import org.restlet.data.EncodingPref;
-import org.restlet.data.Encodings;
 import org.restlet.data.MediaType;
-import org.restlet.data.MediaTypes;
 import org.restlet.data.Representation;
 
 import com.noelios.restlet.data.EncoderRepresentation;
@@ -122,7 +120,7 @@ public class CompressFilter extends AbstractFilter
 	public static List<MediaType> getDefaultAcceptedMediaTypes()
 	{
 		List<MediaType> result = new ArrayList<MediaType>();
-		result.add(MediaTypes.ALL);
+		result.add(MediaType.ALL);
 		return result;
 	}
 
@@ -133,10 +131,10 @@ public class CompressFilter extends AbstractFilter
 	 */
 	public static List<MediaType> getDefaultIgnoredMediaTypes()
 	{
-		List<MediaType> result = Arrays.<MediaType> asList(MediaTypes.APPLICATION_CABINET, 
-				MediaTypes.APPLICATION_GNU_ZIP, MediaTypes.APPLICATION_ZIP, MediaTypes.APPLICATION_GNU_TAR, 
-				MediaTypes.APPLICATION_JAVA_ARCHIVE, MediaTypes.APPLICATION_STUFFIT, MediaTypes.APPLICATION_TAR,
-				MediaTypes.AUDIO_ALL, MediaTypes.IMAGE_ALL, MediaTypes.VIDEO_ALL);
+		List<MediaType> result = Arrays.<MediaType> asList(MediaType.APPLICATION_CABINET, 
+				MediaType.APPLICATION_GNU_ZIP, MediaType.APPLICATION_ZIP, MediaType.APPLICATION_GNU_TAR, 
+				MediaType.APPLICATION_JAVA_ARCHIVE, MediaType.APPLICATION_STUFFIT, MediaType.APPLICATION_TAR,
+				MediaType.AUDIO_ALL, MediaType.IMAGE_ALL, MediaType.VIDEO_ALL);
 		return result;
 	}
 
@@ -175,7 +173,7 @@ public class CompressFilter extends AbstractFilter
 	{
 		// Test the existance of the representation and that no existing encoding applies
 		boolean result = ((representation != null) && (representation.getEncoding() == null)) ||
-							  ((representation != null) && representation.getEncoding().equals(Encodings.IDENTITY));
+							  ((representation != null) && representation.getEncoding().equals(Encoding.IDENTITY));
 		
 		if(result)
 		{
@@ -253,7 +251,7 @@ public class CompressFilter extends AbstractFilter
 			{
 				currentPref = iter2.next();
 				
-				if(currentPref.getEncoding().equals(Encodings.ALL) || 
+				if(currentPref.getEncoding().equals(Encoding.ALL) || 
 					currentPref.getEncoding().equals(currentEncoding))
 				{
 					// A match was found, compute its score

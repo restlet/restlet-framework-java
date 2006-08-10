@@ -27,10 +27,8 @@ import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 
-import org.restlet.data.DefaultLanguage;
-import org.restlet.data.DefaultMediaType;
+import org.restlet.data.Language;
 import org.restlet.data.MediaType;
-import org.restlet.data.MediaTypes;
 import org.restlet.data.Reference;
 import org.restlet.data.Representation;
 import org.xml.sax.Attributes;
@@ -98,7 +96,7 @@ public class Feed extends SaxRepresentation
 	 */
 	public Feed()
 	{
-		super(MediaTypes.APPLICATION_ATOM_XML);
+		super(MediaType.APPLICATION_ATOM_XML);
 		this.authors = null;
 		this.categories = null;
 		this.contributors = null;
@@ -524,8 +522,8 @@ public class Feed extends SaxRepresentation
 					currentLink = new Link();
 					currentLink.setHref(new Reference(attrs.getValue("", "href")));
 					currentLink.setRel(Relation.parse(attrs.getValue("", "rel")));
-					currentLink.setType(new DefaultMediaType(attrs.getValue("", "type")));
-					currentLink.setHrefLang(new DefaultLanguage(attrs.getValue("", "hreflang")));
+					currentLink.setType(new MediaType(attrs.getValue("", "type")));
+					currentLink.setHrefLang(new Language(attrs.getValue("", "hreflang")));
 					currentLink.setTitle(attrs.getValue("", "title"));
 					String attr = attrs.getValue("", "length");
 					currentLink.setLength((attr == null) ? -1L : Long.parseLong(attr));
@@ -622,19 +620,19 @@ public class Feed extends SaxRepresentation
 			}
 			else if(type.equals("text"))
 			{
-				result = MediaTypes.TEXT_PLAIN;
+				result = MediaType.TEXT_PLAIN;
 			}
 			else if(type.equals("html"))
 			{
-				result = MediaTypes.TEXT_HTML;
+				result = MediaType.TEXT_HTML;
 			}
 			else if(type.equals("xhtml"))
 			{
-				result = MediaTypes.APPLICATION_XHTML_XML;
+				result = MediaType.APPLICATION_XHTML_XML;
 			}
 			else
 			{
-				result = new DefaultMediaType(type);
+				result = new MediaType(type);
 			}
 			
 			return result;

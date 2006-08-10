@@ -34,7 +34,6 @@ import java.util.zip.GZIPOutputStream;
 import java.util.zip.ZipOutputStream;
 
 import org.restlet.data.Encoding;
-import org.restlet.data.Encodings;
 import org.restlet.data.Representation;
 import org.restlet.data.WrapperRepresentation;
 
@@ -158,19 +157,19 @@ public class EncoderRepresentation extends WrapperRepresentation
 		{
 			DeflaterOutputStream encoderOutputStream = null;
 	
-			if(getEncoding().equals(Encodings.GZIP))
+			if(getEncoding().equals(Encoding.GZIP))
 			{
 				encoderOutputStream = new GZIPOutputStream(outputStream);
 			}
-			else if(getEncoding().equals(Encodings.DEFLATE))
+			else if(getEncoding().equals(Encoding.DEFLATE))
 			{
 				encoderOutputStream = new DeflaterOutputStream(outputStream);
 			}
-			else if(getEncoding().equals(Encodings.ZIP))
+			else if(getEncoding().equals(Encoding.ZIP))
 			{
 				encoderOutputStream = new ZipOutputStream(outputStream);
 			}
-			else if(getEncoding().equals(Encodings.IDENTITY))
+			else if(getEncoding().equals(Encoding.IDENTITY))
 			{
 				// Encoder unecessary for identity encoding
 			}
@@ -223,6 +222,6 @@ public class EncoderRepresentation extends WrapperRepresentation
 	 */
 	public static List<Encoding> getSupportedEncodings()
 	{
-		return Arrays.<Encoding>asList(Encodings.GZIP, Encodings.DEFLATE, Encodings.ZIP, Encodings.IDENTITY);
+		return Arrays.<Encoding>asList(Encoding.GZIP, Encoding.DEFLATE, Encoding.ZIP, Encoding.IDENTITY);
 	}
 }

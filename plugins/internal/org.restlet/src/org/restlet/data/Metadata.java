@@ -33,17 +33,58 @@ package org.restlet.data;
  * dissertation</a>
  * @author Jerome Louvel (contact@noelios.com) <a href="http://www.noelios.com/">Noelios Consulting</a>
  */
-public interface Metadata
+public class Metadata
 {
-   /**
-    * Returns the name (ex: "text/html" or "compress" or "iso-8851-1").
-    * @return The name (ex: "text/html" or "compress" or "iso-8851-1").
-    */
-   public String getName();
-   
-   /**
-    * Returns the description.
-    * @return The description.
-    */
-   public String getDescription();
+	/** The metadata name like "text/html" or "compress" or "iso-8851-1". */
+	protected String name;
+
+	/** The description of this metadata. */
+	protected String description;
+
+	/**
+	 * Constructor.
+	 * @param name The unique name.
+	 */
+	public Metadata(String name)
+	{
+		this(name, null);
+	}
+
+	/**
+	 * Constructor.
+	 * @param name The unique name.
+	 * @param description The description.
+	 */
+	public Metadata(String name, String description)
+	{
+		this.name = name;
+		this.description = description;
+	}
+
+	/**
+	 * Returns the name (ex: "text/html" or "compress" or "iso-8851-1").
+	 * @return The name (ex: "text/html" or "compress" or "iso-8851-1").
+	 */
+	public String getName()
+	{
+		return this.name;
+	}
+
+	/**
+	 * Returns the description.
+	 * @return The description.
+	 */
+	public String getDescription()
+	{
+		return this.description;
+	}
+
+	/**
+	 * Returns the metadata name.
+	 * @return The metadata name.
+	 */
+	public String toString()
+	{
+		return getName();
+	}
 }

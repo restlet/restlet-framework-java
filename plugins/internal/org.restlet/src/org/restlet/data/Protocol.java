@@ -22,42 +22,138 @@
 
 package org.restlet.data;
 
-
 /**
- * Protocol used by a client and a server connector to enable the communication
- * between two distributed components.
+ * Protocol used by client and server connectors. Connectors enable the communication between components
+ * by implementing standard protocols.
  * @author Jerome Louvel (contact@noelios.com) <a href="http://www.noelios.com/">Noelios Consulting</a>
  */
-public interface Protocol
+public class Protocol extends Metadata
 {
-	/**
-	 * Returns the name.
-	 * @return The name.
-	 */
-	public String getName();
+	/** AJP 1.3 protocol to communicate with Apache HTTP server or Microsoft IIS. */
+	public static final Protocol AJP = new Protocol("ajp", "AJP",
+			"Apache Jakarta Protocol", 8009);
+
+	/** Context access protocol base on Java classloaders, Web application context loaders. */
+	public static final Protocol CONTEXT = new Protocol("context", "CONTEXT",
+			"Context Access Protocol", -1);
+
+	/** Local file system access protocol. */
+	public static final Protocol FILE = new Protocol("file", "FILE",
+			"Local File System Protocol", -1);
+
+	/** HTTP protocol. */
+	public static final Protocol HTTP = new Protocol("http", "HTTP",
+			"HyperText Transport Protocol", 80);
+
+	/** HTTPS protocol (via SSL socket). */
+	public static final Protocol HTTPS = new Protocol("https", "HTTPS",
+			"HyperText Transport Protocol (Secure)", 443);
+
+	/** JDBC protocol. */
+	public static final Protocol JDBC = new Protocol("jdbc", "JDBC",
+			"Java DataBase Connectivity", -1);
+
+	/** SMTP protocol. */
+	public static final Protocol SMTP = new Protocol("smtp", "SMTP",
+			"Simple Mail Transfer Protocol", 25);
+
+	/** SMTP with STARTTLS protocol (started with a plain socket). */
+	public static final Protocol SMTP_STARTTLS = new Protocol("smtp", "SMTP_STARTTLS",
+			"Simple Mail Transfer Protocol (starting a TLS encryption)", 25);
+
+	/** SMTPS protocol (via SSL/TLS socket). */
+	public static final Protocol SMTPS = new Protocol("smtps", "SMTPS",
+			"Simple Mail Transfer Protocol (Secure)", 465);
+
+	/** The scheme name. */
+	protected String schemeName;
+
+	/** The default port if known or -1. */
+	protected int defaultPort;
 
 	/**
-	 * Returns the description.
-	 * @return The description.
+	 * Constructor.
+	 * @param schemeName The scheme name.
 	 */
-   public String getDescription();
-	
+	public Protocol(String schemeName)
+	{
+		this(schemeName, schemeName.toUpperCase(), schemeName.toUpperCase() + " Protocol",
+				-1);
+	}
+
+	/**
+	 * Constructor.
+	 * @param schemeName The scheme name.
+	 * @param name The unique name.
+	 * @param description The description.
+	 * @param defaultPort The default port.
+	 */
+	public Protocol(String schemeName, String name, String description, int defaultPort)
+	{
+		super(name, description);
+		this.schemeName = schemeName;
+		this.defaultPort = defaultPort;
+	}
+
 	/**
 	 * Returns the URI scheme name. 
 	 * @return The URI scheme name.
 	 */
-	public String getSchemeName();
-	
+	public String getSchemeName()
+	{
+		return this.schemeName;
+	}
+
 	/**
 	 * Returns the default port number.
 	 * @return The default port number.
 	 */
-	public int getDefaultPort();
-	
-   /**
-    * Indicates if the protocol is equal to a given one.
-    * @param protocol The protocol to compare to.
-    * @return True if the protocol is equal to a given one.
-    */
-   public boolean equals(Protocol protocol);
+	public int getDefaultPort()
+	{
+		return this.defaultPort;
+	}
+
+	/**
+	 * Indicates if the protocol is equal to a given one.
+	 * @param protocol The protocol to compare to.
+	 * @return True if the protocol is equal to a given one.
+	 */
+	public boolean equals(Protocol protocol)
+	{
+		return (protocol != null) && getName().equalsIgnoreCase(protocol.getName());
+	}
+
+	/**
+	 * Creates a new method by attempting to reuse an existing enumeration entry.
+	 * @param schemeName The scheme name.
+	 * @return The new method.
+	 */
+	public static Protocol create(String schemeName)
+	{
+		Protocol result = null;
+
+		if (schemeName != null)
+		{
+			if (schemeName.equalsIgnoreCase(AJP.getSchemeName()))
+				result = AJP;
+			else if (schemeName.equalsIgnoreCase(CONTEXT.getSchemeName()))
+				result = CONTEXT;
+			else if (schemeName.equalsIgnoreCase(FILE.getSchemeName()))
+				result = FILE;
+			else if (schemeName.equalsIgnoreCase(HTTP.getSchemeName()))
+				result = HTTP;
+			else if (schemeName.equalsIgnoreCase(HTTPS.getSchemeName()))
+				result = HTTPS;
+			else if (schemeName.equalsIgnoreCase(JDBC.getSchemeName()))
+				result = JDBC;
+			else if (schemeName.equalsIgnoreCase(SMTP.getSchemeName()))
+				result = SMTP;
+			else if (schemeName.equalsIgnoreCase(SMTPS.getSchemeName()))
+				result = SMTPS;
+			else
+				result = new Protocol(schemeName);
+		}
+
+		return result;
+	}
 }

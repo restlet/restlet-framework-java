@@ -32,7 +32,7 @@ package org.restlet.data;
  * Validators</a>
  * @author Jerome Louvel (contact@noelios.com) <a href="http://www.noelios.com/">Noelios Consulting</a>
  */
-public class Tag implements Metadata
+public class Tag
 {
 	/** Tag matching any other tag, used in call's condition data. */
 	public static final Tag ALL = new Tag("*");

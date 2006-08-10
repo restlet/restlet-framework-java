@@ -34,7 +34,7 @@ import org.restlet.Factory;
 import org.restlet.Restlet;
 import org.restlet.component.Component;
 import org.restlet.connector.Client;
-import org.restlet.data.MediaTypes;
+import org.restlet.data.MediaType;
 import org.restlet.data.Reference;
 import org.restlet.data.ReferenceList;
 import org.restlet.data.Representation;
@@ -269,7 +269,7 @@ public class DirectoryHandler extends AbstractHandler
 
    	// Create the variants list
    	List<Representation> result = new ArrayList<Representation>();
-   	result.add(new StringRepresentation(sb.toString(), MediaTypes.TEXT_HTML));
+   	result.add(new StringRepresentation(sb.toString(), MediaType.TEXT_HTML));
    	return result;
    }
 

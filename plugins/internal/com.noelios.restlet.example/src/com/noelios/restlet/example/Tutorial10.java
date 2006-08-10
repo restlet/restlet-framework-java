@@ -23,7 +23,7 @@
 package com.noelios.restlet.example;
 
 import org.restlet.component.RestletContainer;
-import org.restlet.data.Protocols;
+import org.restlet.data.Protocol;
 
 import com.noelios.restlet.HostRouter;
 import com.noelios.restlet.RedirectRestlet;
@@ -43,7 +43,7 @@ public class Tutorial10
 
          // Add an HTTP server connector to the Restlet container. 
          // Note that the container is the call restlet.
-         myContainer.getServers().put("HTTP Server", Protocols.HTTP, 8182);
+         myContainer.getServers().put("HTTP Server", Protocol.HTTP, 8182);
 
          // Create a host router matching calls to the server
          HostRouter host = new HostRouter(myContainer, 8182);

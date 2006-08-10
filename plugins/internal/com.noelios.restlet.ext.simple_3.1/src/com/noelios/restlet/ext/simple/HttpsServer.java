@@ -31,7 +31,7 @@ import javax.net.ssl.SSLContext;
 
 import org.restlet.component.Component;
 import org.restlet.data.ParameterList;
-import org.restlet.data.Protocols;
+import org.restlet.data.Protocol;
 
 import simple.http.BufferedPipelineFactory;
 import simple.http.PipelineHandlerFactory;
@@ -99,7 +99,7 @@ public class HttpsServer extends SimpleServer
 			String address, int port)
 	{
 		super(owner, parameters, address, port);
-		getProtocols().add(Protocols.HTTPS);
+		getProtocols().add(Protocol.HTTPS);
 	}
 
 	/** Starts the Restlet. */

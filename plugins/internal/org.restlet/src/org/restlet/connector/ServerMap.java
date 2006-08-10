@@ -65,6 +65,13 @@ public class ServerMap extends WrapperMap<String, Server>
 		this.owner = owner;
 	}
 
+	@Override
+	public Server put(String name, Server server)
+	{
+		server.setTarget(getOwner());
+		return super.put(name, server);
+	}
+
 	/**
 	 * Puts a new server connector in the map supporting the given protocol.
 	 * @param name The connector name.

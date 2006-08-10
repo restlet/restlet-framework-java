@@ -24,7 +24,7 @@ package com.noelios.restlet.test;
 
 import org.restlet.AbstractRestlet;
 import org.restlet.Call;
-import org.restlet.data.MediaTypes;
+import org.restlet.data.MediaType;
 
 import com.noelios.restlet.data.StringRepresentation;
 
@@ -43,7 +43,7 @@ public class TraceTarget extends AbstractRestlet
       String output = "Hello World!" +
                       "\nYour IP address is " + call.getClient().getAddress() + 
                       "\nYour request URI is: " + call.getResourceRef().toString();
-      call.setOutput(new StringRepresentation(output, MediaTypes.TEXT_PLAIN));
+      call.setOutput(new StringRepresentation(output, MediaType.TEXT_PLAIN));
    }
 
 }

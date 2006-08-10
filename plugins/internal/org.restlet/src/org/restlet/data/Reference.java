@@ -955,7 +955,7 @@ public class Reference
     */
    public Protocol getProtocol()
    {
-   	return Protocols.create(getScheme());
+   	return Protocol.create(getScheme());
    }
    
    /**

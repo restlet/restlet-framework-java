@@ -23,8 +23,8 @@
 package com.noelios.restlet.example;
 
 import org.restlet.component.RestletContainer;
-import org.restlet.data.ChallengeSchemes;
-import org.restlet.data.Protocols;
+import org.restlet.data.ChallengeScheme;
+import org.restlet.data.Protocol;
 
 import com.noelios.restlet.DirectoryHandler;
 import com.noelios.restlet.GuardFilter;
@@ -47,7 +47,7 @@ public class Tutorial09a implements Constants
 
          // Add an HTTP server connector to the Restlet container. 
          // Note that the container is the call restlet.
-         myContainer.getServers().put("HTTP Server", Protocols.HTTP, 8182);
+         myContainer.getServers().put("HTTP Server", Protocol.HTTP, 8182);
 
          // Attach a log Filter to the container
          LogFilter log = new LogFilter(myContainer, "com.noelios.restlet.example");
@@ -58,7 +58,7 @@ public class Tutorial09a implements Constants
          log.setTarget(status);
 
          // Attach a guard Filter to the container
-         GuardFilter guard = new GuardFilter(myContainer, "com.noelios.restlet.example", true, ChallengeSchemes.HTTP_BASIC , "Restlet tutorial", true);
+         GuardFilter guard = new GuardFilter(myContainer, "com.noelios.restlet.example", true, ChallengeScheme.HTTP_BASIC , "Restlet tutorial", true);
          guard.getAuthorizations().put("scott", "tiger");
          status.setTarget(guard);
 

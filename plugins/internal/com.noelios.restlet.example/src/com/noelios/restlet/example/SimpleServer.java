@@ -27,9 +27,9 @@ import org.restlet.Call;
 import org.restlet.Restlet;
 import org.restlet.component.RestletContainer;
 import org.restlet.data.Form;
-import org.restlet.data.MediaTypes;
+import org.restlet.data.MediaType;
 import org.restlet.data.Parameter;
-import org.restlet.data.Protocols;
+import org.restlet.data.Protocol;
 
 import com.noelios.restlet.HostRouter;
 import com.noelios.restlet.data.StringRepresentation;
@@ -50,7 +50,7 @@ public class SimpleServer
          // Create the HTTP server connector, then add it as a server
          // connector to the Restlet container. Note that the container
          // is the call restlet.
-         myContainer.getServers().put("My connector", Protocols.HTTP, 9876);
+         myContainer.getServers().put("My connector", Protocol.HTTP, 9876);
 
          // Attach a host router as the root handler
          HostRouter host = new HostRouter(myContainer, 9876);
@@ -79,7 +79,7 @@ public class SimpleServer
                   System.out.println(sb.toString());
                }
 
-               call.setOutput(new StringRepresentation(sb.toString(), MediaTypes.TEXT_PLAIN));
+               call.setOutput(new StringRepresentation(sb.toString(), MediaType.TEXT_PLAIN));
             }
          };
          host.getScorers().add("/test", testRestlet);

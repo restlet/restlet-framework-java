@@ -27,9 +27,9 @@ import java.util.List;
 import org.restlet.Call;
 import org.restlet.connector.ConnectorCall;
 import org.restlet.data.ClientData;
-import org.restlet.data.Methods;
+import org.restlet.data.Method;
 import org.restlet.data.Reference;
-import org.restlet.data.Statuses;
+import org.restlet.data.Status;
 
 /**
  * Test {@link org.restlet.Call}.
@@ -76,10 +76,10 @@ public class CallTestCase extends RestletTestCase
 	public void testStatus() throws Exception
 	{
 		Call call = getCall();
-		call.setStatus(Statuses.SUCCESS_OK);
-		assertEquals(Statuses.SUCCESS_OK, call.getStatus());
-		call.setStatus(Statuses.CLIENT_ERROR_BAD_REQUEST);
-		assertEquals(Statuses.CLIENT_ERROR_BAD_REQUEST, call.getStatus());
+		call.setStatus(Status.SUCCESS_OK);
+		assertEquals(Status.SUCCESS_OK, call.getStatus());
+		call.setStatus(Status.CLIENT_ERROR_BAD_REQUEST);
+		assertEquals(Status.CLIENT_ERROR_BAD_REQUEST, call.getStatus());
 	}
 
 	/**
@@ -175,10 +175,10 @@ public class CallTestCase extends RestletTestCase
 	public void testMethod() throws Exception
 	{
 		Call call = getCall();
-		call.setMethod(Methods.GET);
-		assertEquals(Methods.GET, call.getMethod());
-		call.setMethod(Methods.POST);
-		assertEquals(Methods.POST, call.getMethod());
+		call.setMethod(Method.GET);
+		assertEquals(Method.GET, call.getMethod());
+		call.setMethod(Method.POST);
+		assertEquals(Method.POST, call.getMethod());
 	}
 
 	/**

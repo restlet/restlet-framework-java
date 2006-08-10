@@ -24,7 +24,7 @@ package com.noelios.restlet;
 
 import org.restlet.Call;
 import org.restlet.component.Component;
-import org.restlet.data.Methods;
+import org.restlet.data.Method;
 
 import com.noelios.restlet.util.PreferenceUtils;
 
@@ -99,7 +99,7 @@ public class TunnelFilter extends ExtractFilter
 
          if(methodName != null)
          {
-            call.setMethod(Methods.create(methodName));
+            call.setMethod(Method.create(methodName));
          }
       }
 

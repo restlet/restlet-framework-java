@@ -29,7 +29,7 @@ import org.restlet.AbstractRestlet;
 import org.restlet.Call;
 import org.restlet.component.Component;
 import org.restlet.data.Reference;
-import org.restlet.data.Statuses;
+import org.restlet.data.Status;
 
 import com.noelios.restlet.util.CallModel;
 import com.noelios.restlet.util.StringTemplate;
@@ -148,19 +148,19 @@ public class RedirectRestlet extends AbstractRestlet
          case MODE_CLIENT_PERMANENT:
             logger.log(Level.INFO, "Permanently redirecting client to: " + targetUri);
             call.setRedirectRef(target);
-            call.setStatus(Statuses.REDIRECTION_MOVED_PERMANENTLY);
+            call.setStatus(Status.REDIRECTION_MOVED_PERMANENTLY);
          break;
 
          case MODE_CLIENT_FOUND:
             logger.log(Level.INFO, "Redirecting client to found location: " + targetUri);
             call.setRedirectRef(target);
-            call.setStatus(Statuses.REDIRECTION_FOUND);
+            call.setStatus(Status.REDIRECTION_FOUND);
          break;
          
          case MODE_CLIENT_TEMPORARY:
             logger.log(Level.INFO, "Temporarily redirecting client to: " + targetUri);
             call.setRedirectRef(target);
-            call.setStatus(Statuses.REDIRECTION_MOVED_TEMPORARILY);
+            call.setStatus(Status.REDIRECTION_MOVED_TEMPORARILY);
          break;
 
          case MODE_CONNECTOR:

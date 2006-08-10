@@ -29,8 +29,8 @@ import java.nio.channels.ReadableByteChannel;
 import java.nio.channels.WritableByteChannel;
 
 import org.restlet.connector.ConnectorCall;
-import org.restlet.data.DefaultEncoding;
-import org.restlet.data.DefaultLanguage;
+import org.restlet.data.Encoding;
+import org.restlet.data.Language;
 import org.restlet.data.Parameter;
 import org.restlet.data.Representation;
 import org.restlet.data.Tag;
@@ -157,11 +157,11 @@ public abstract class AbstractHttpClientCall extends AbstractClientCall
             }
             else if(header.getName().equalsIgnoreCase(ConnectorCall.HEADER_CONTENT_ENCODING))
             {
-            	result.setEncoding(new DefaultEncoding(header.getValue()));
+            	result.setEncoding(new Encoding(header.getValue()));
             }
             else if(header.getName().equalsIgnoreCase(ConnectorCall.HEADER_CONTENT_LANGUAGE))
             {
-            	result.setLanguage(new DefaultLanguage(header.getValue()));
+            	result.setLanguage(new Language(header.getValue()));
             }
             else if(header.getName().equalsIgnoreCase(ConnectorCall.HEADER_LAST_MODIFIED))
             {

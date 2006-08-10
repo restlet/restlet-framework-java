@@ -27,8 +27,7 @@ import java.util.logging.Logger;
 
 import org.restlet.component.Component;
 import org.restlet.data.Method;
-import org.restlet.data.Methods;
-import org.restlet.data.Statuses;
+import org.restlet.data.Status;
 
 /**
  * Abstract Restlet that can easily be subclassed. Concrete classes must only implement the handle(Call)
@@ -81,35 +80,35 @@ public abstract class AbstractRestlet implements Restlet
    	{
    		handleOthers(call);
    	}
-   	else if(method.equals(Methods.GET))
+   	else if(method.equals(Method.GET))
 		{
 			handleGet(call);
 		}
-		else if(method.equals(Methods.POST))
+		else if(method.equals(Method.POST))
 		{
 			handlePost(call);
 		}
-		else if(method.equals(Methods.PUT))
+		else if(method.equals(Method.PUT))
 		{
 			handlePut(call);
 		}
-		else if(method.equals(Methods.DELETE))
+		else if(method.equals(Method.DELETE))
 		{
 			handleDelete(call);
 		}
-		else if(method.equals(Methods.HEAD))
+		else if(method.equals(Method.HEAD))
 		{
 			handleHead(call);
 		}
-		else if(method.equals(Methods.CONNECT))
+		else if(method.equals(Method.CONNECT))
 		{
 			handleConnect(call);
 		}
-		else if(method.equals(Methods.OPTIONS))
+		else if(method.equals(Method.OPTIONS))
 		{
 			handleOptions(call);
 		}
-		else if(method.equals(Methods.TRACE))
+		else if(method.equals(Method.TRACE))
 		{
 			handleTrace(call);
 		}
@@ -207,7 +206,7 @@ public abstract class AbstractRestlet implements Restlet
     */
    protected void defaultHandle(Call call)
    {
-		call.setStatus(Statuses.CLIENT_ERROR_METHOD_NOT_ALLOWED);
+		call.setStatus(Status.CLIENT_ERROR_METHOD_NOT_ALLOWED);
    }
    
    /** Starts the Restlet. */
@@ -288,7 +287,7 @@ public abstract class AbstractRestlet implements Restlet
 				catch (Exception e)
 				{
 					logger.log(Level.WARNING, UNABLE_TO_START, e);
-					call.setStatus(Statuses.SERVER_ERROR_INTERNAL);
+					call.setStatus(Status.SERVER_ERROR_INTERNAL);
 				}
 			}
 			
@@ -300,7 +299,7 @@ public abstract class AbstractRestlet implements Restlet
 			else
 			{
 				logger.log(Level.WARNING, UNABLE_TO_START);
-				call.setStatus(Statuses.SERVER_ERROR_INTERNAL);
+				call.setStatus(Status.SERVER_ERROR_INTERNAL);
 			}
    	}
    	else

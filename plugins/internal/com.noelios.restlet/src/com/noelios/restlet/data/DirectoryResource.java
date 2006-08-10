@@ -30,11 +30,11 @@ import java.util.logging.Logger;
 
 import org.restlet.Call;
 import org.restlet.data.AbstractResource;
-import org.restlet.data.MediaTypes;
+import org.restlet.data.MediaType;
 import org.restlet.data.Reference;
 import org.restlet.data.ReferenceList;
 import org.restlet.data.Representation;
-import org.restlet.data.Statuses;
+import org.restlet.data.Status;
 
 import com.noelios.restlet.DirectoryHandler;
 
@@ -108,7 +108,7 @@ public class DirectoryResource extends AbstractResource
 		// Try to detect the presence of a directory
 		Call contextCall = getDirectory().getContextClient().get(this.targetUri);
 		if ((contextCall.getOutput() != null)
-				&& contextCall.getOutput().getMediaType().equals(MediaTypes.TEXT_URI_LIST))
+				&& contextCall.getOutput().getMediaType().equals(MediaType.TEXT_URI_LIST))
 		{
 			this.targetDirectory = true;
 			this.directoryContent = new ReferenceList(contextCall.getOutput());
@@ -149,7 +149,7 @@ public class DirectoryResource extends AbstractResource
 
 			contextCall = getDirectory().getContextClient().get(this.directoryUri);
 			if ((contextCall.getOutput() != null)
-					&& contextCall.getOutput().getMediaType().equals(MediaTypes.TEXT_URI_LIST))
+					&& contextCall.getOutput().getMediaType().equals(MediaType.TEXT_URI_LIST))
 			{
 				this.directoryContent = new ReferenceList(contextCall.getOutput());
 			}
@@ -228,7 +228,7 @@ public class DirectoryResource extends AbstractResource
 		// We allow the transfer of the DELETE calls only if the readOnly flag is not set
 		if (getDirectory().isModifiable())
 		{
-			call.setStatus(Statuses.CLIENT_ERROR_FORBIDDEN);
+			call.setStatus(Status.CLIENT_ERROR_FORBIDDEN);
 		}
 		else
 		{
@@ -246,7 +246,7 @@ public class DirectoryResource extends AbstractResource
 		// We allow the transfer of the PUT calls only if the readOnly flag is not set
 		if (getDirectory().isModifiable())
 		{
-			call.setStatus(Statuses.CLIENT_ERROR_FORBIDDEN);
+			call.setStatus(Status.CLIENT_ERROR_FORBIDDEN);
 		}
 		else
 		{
@@ -261,7 +261,7 @@ public class DirectoryResource extends AbstractResource
 	 */
 	protected void defaultHandle(Call call)
 	{
-		call.setStatus(Statuses.CLIENT_ERROR_METHOD_NOT_ALLOWED);
+		call.setStatus(Status.CLIENT_ERROR_METHOD_NOT_ALLOWED);
 	}
 
 	/**

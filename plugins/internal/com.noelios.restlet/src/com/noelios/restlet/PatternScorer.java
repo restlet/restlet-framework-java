@@ -27,12 +27,12 @@ import java.util.logging.Logger;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
-import org.restlet.Call;
 import org.restlet.AbstractScorer;
+import org.restlet.Call;
 import org.restlet.Restlet;
 import org.restlet.Router;
 import org.restlet.data.Reference;
-import org.restlet.data.Statuses;
+import org.restlet.data.Status;
 
 /**
  * Router handler based on a URI pattern. Note that the matching is case sensitive unless some inline modifiers
@@ -152,7 +152,7 @@ public class PatternScorer extends AbstractScorer
 	   }
       else
       {
-      	call.setStatus(Statuses.CLIENT_ERROR_NOT_FOUND);
+      	call.setStatus(Status.CLIENT_ERROR_NOT_FOUND);
       }
 	}   
 }

@@ -23,7 +23,7 @@
 package com.noelios.restlet.example;
 
 import org.restlet.component.RestletContainer;
-import org.restlet.data.Protocols;
+import org.restlet.data.Protocol;
 
 import com.noelios.restlet.DirectoryHandler;
 import com.noelios.restlet.HostRouter;
@@ -45,7 +45,7 @@ public class Tutorial08 implements Constants
 
          // Add an HTTP server connector to the Restlet container. 
          // Note that the container is the call restlet.
-         myContainer.getServers().put("HTTP Server", Protocols.HTTP, 8182);
+         myContainer.getServers().put("HTTP Server", Protocol.HTTP, 8182);
 
          // Attach a log Filter to the container
          LogFilter log = new LogFilter(myContainer, "com.noelios.restlet.example");

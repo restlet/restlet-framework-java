@@ -25,15 +25,55 @@ package org.restlet.data;
 /**
  * Modifier of a representation's media type. Useful to apply compression without losing the 
  * identity of the underlying media type.
- * @see org.restlet.data.Encodings
  * @author Jerome Louvel (contact@noelios.com) <a href="http://www.noelios.com/">Noelios Consulting</a>
  */
-public interface Encoding extends Metadata
+public class Encoding extends Metadata
 {
+   /** All encodings acceptable. */
+   public static Encoding ALL = new Encoding("*", "All encodings");
+
+   /** The GNU Zip encoding. */
+   public static Encoding GZIP = new Encoding("gzip", "GZip compression");
+
+   /** The Info-Zip encoding. */
+   public static Encoding ZIP = new Encoding("zip", "Zip compression");
+
+   /** The common Unix file compression. */
+   public static Encoding COMPRESS = new Encoding("compress", "Common Unix compression");
+
+   /** The zlib format defined by RFC 1950 and 1951. */
+   public static Encoding DEFLATE = new Encoding("deflate", "Deflate compression using the zlib format");
+
+   /** The default (identity) encoding. */
+   public static Encoding IDENTITY = new Encoding("identity", "The default encoding with no transformation");
+
+	
    /**
-    * Indicates if the encoding equal to a given one.
+    * Constructor.
+    * @param name The name.
+    */
+   public Encoding(String name)
+   {
+      this(name, "Encoding applied to a representation");
+   }
+
+   /**
+    * Constructor.
+    * @param name The name.
+    * @param description The description. 
+    */
+   public Encoding(String name, String description)
+   {
+      super(name, description);
+   }
+
+   /**
+    * Indicates if the encoding is equal to a given one.
     * @param encoding The encoding to compare to.
     * @return True if the encoding is equal to a given one.
     */
-   public boolean equals(Encoding encoding);
+   public boolean equals(Encoding encoding)
+   {
+      return (encoding != null) && getName().equalsIgnoreCase(encoding.getName());
+   }
 }

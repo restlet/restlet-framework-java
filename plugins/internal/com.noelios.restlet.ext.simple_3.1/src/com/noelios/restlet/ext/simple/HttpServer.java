@@ -26,7 +26,7 @@ import java.net.ServerSocket;
 
 import org.restlet.component.Component;
 import org.restlet.data.ParameterList;
-import org.restlet.data.Protocols;
+import org.restlet.data.Protocol;
 
 import simple.http.BufferedPipelineFactory;
 import simple.http.PipelineHandlerFactory;
@@ -49,7 +49,7 @@ public class HttpServer extends SimpleServer
    public HttpServer(Component owner, ParameterList parameters, String address, int port)
    {
       super(owner, parameters, address, port);
-      getProtocols().add(Protocols.HTTP);
+      getProtocols().add(Protocol.HTTP);
    }
 
    /** Starts the Restlet. */

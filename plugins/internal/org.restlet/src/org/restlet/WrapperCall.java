@@ -27,7 +27,6 @@ import java.util.Map;
 
 import org.restlet.data.ClientData;
 import org.restlet.data.ConditionData;
-import org.restlet.data.ContextData;
 import org.restlet.data.Cookie;
 import org.restlet.data.CookieSetting;
 import org.restlet.data.Form;

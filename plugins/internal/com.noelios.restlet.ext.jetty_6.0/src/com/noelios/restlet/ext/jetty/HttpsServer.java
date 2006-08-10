@@ -27,7 +27,7 @@ import java.io.File;
 import org.mortbay.jetty.security.SslSocketConnector;
 import org.restlet.component.Component;
 import org.restlet.data.ParameterList;
-import org.restlet.data.Protocols;
+import org.restlet.data.Protocol;
 
 /**
  * Jetty HTTPS server connector. Here is the list of additional parameters that are supported:
@@ -96,7 +96,7 @@ public class HttpsServer extends JettyServer
    public HttpsServer(Component owner, ParameterList parameters, String address, int port)
    {
       super(owner, parameters, address, port);
-      getProtocols().add(Protocols.HTTPS);
+      getProtocols().add(Protocol.HTTPS);
    }
 
    /** Start hook. */

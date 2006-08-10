@@ -30,9 +30,9 @@ import org.restlet.DefaultRouter;
 import org.restlet.Restlet;
 import org.restlet.Router;
 import org.restlet.component.RestletContainer;
-import org.restlet.data.ChallengeSchemes;
-import org.restlet.data.MediaTypes;
-import org.restlet.data.Protocols;
+import org.restlet.data.ChallengeScheme;
+import org.restlet.data.MediaType;
+import org.restlet.data.Protocol;
 
 import com.noelios.restlet.DirectoryHandler;
 import com.noelios.restlet.GuardFilter;
@@ -56,7 +56,7 @@ public class Tutorial11 implements Constants
 
          // Add an HTTP server connector to the Restlet container. 
          // Note that the container is the call restlet.
-         myContainer.getServers().put("HTTP Server", Protocols.HTTP, 8182);
+         myContainer.getServers().put("HTTP Server", Protocol.HTTP, 8182);
 
          // Attach a log Filter to the container
          LogFilter log = new LogFilter(myContainer, "com.noelios.restlet.example");
@@ -71,7 +71,7 @@ public class Tutorial11 implements Constants
          status.setTarget(host);
 
          // Attach a guard Filter to secure access the the chained directory Restlet
-         GuardFilter guard = new GuardFilter(myContainer, "com.noelios.restlet.example", true, ChallengeSchemes.HTTP_BASIC , "Restlet tutorial", true);
+         GuardFilter guard = new GuardFilter(myContainer, "com.noelios.restlet.example", true, ChallengeScheme.HTTP_BASIC , "Restlet tutorial", true);
          guard.getAuthorizations().put("scott", "tiger");
          host.getScorers().add("/docs/", guard);
 
@@ -90,7 +90,7 @@ public class Tutorial11 implements Constants
                {
                   // Print the requested URI path
                   String output = "Account of user named: " + call.getContext().getBaseRef().getLastSegment();
-                  call.setOutput(new StringRepresentation(output, MediaTypes.TEXT_PLAIN));
+                  call.setOutput(new StringRepresentation(output, MediaType.TEXT_PLAIN));
                }
             };
          user.getScorers().add("$", account);
@@ -103,7 +103,7 @@ public class Tutorial11 implements Constants
                   // Print the user name of the requested orders
                   List<String> segments = call.getContext().getBaseRef().getSegments();
                   String output = "Orders of user named: " + segments.get(segments.size() - 2);
-                  call.setOutput(new StringRepresentation(output, MediaTypes.TEXT_PLAIN));
+                  call.setOutput(new StringRepresentation(output, MediaType.TEXT_PLAIN));
                }
             };
          user.getScorers().add("/orders$", orders);

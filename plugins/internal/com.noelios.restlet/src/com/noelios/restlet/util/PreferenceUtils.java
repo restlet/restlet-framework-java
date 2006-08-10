@@ -29,18 +29,17 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Locale;
 
+import org.restlet.data.CharacterSet;
 import org.restlet.data.CharacterSetPref;
-import org.restlet.data.CharacterSets;
+import org.restlet.data.ClientData;
+import org.restlet.data.Encoding;
 import org.restlet.data.EncodingPref;
-import org.restlet.data.Encodings;
+import org.restlet.data.Language;
 import org.restlet.data.LanguagePref;
-import org.restlet.data.Languages;
 import org.restlet.data.MediaType;
 import org.restlet.data.MediaTypePref;
-import org.restlet.data.MediaTypes;
 import org.restlet.data.Parameter;
 import org.restlet.data.Preference;
-import org.restlet.data.ClientData;
 
 /**
  * Preference manipulation utilities.<br/>
@@ -199,7 +198,7 @@ public class PreferenceUtils
          // http://www.w3.org/Protocols/rfc2616/rfc2616-sec14.html#sec14.2
          if(acceptCharsetHeader.length() == 0)
          {
-         	client.getCharacterSetPrefs().add(new CharacterSetPref(CharacterSets.ISO_8859_1));
+         	client.getCharacterSetPrefs().add(new CharacterSetPref(CharacterSet.ISO_8859_1));
          }
          else
          {
@@ -221,7 +220,7 @@ public class PreferenceUtils
       }
       else
       {
-         client.getCharacterSetPrefs().add(new CharacterSetPref(CharacterSets.ALL));
+         client.getCharacterSetPrefs().add(new CharacterSetPref(CharacterSet.ALL));
       }
    }
 
@@ -251,7 +250,7 @@ public class PreferenceUtils
       }
       else
       {
-         preference.getEncodingPrefs().add(new EncodingPref(Encodings.IDENTITY));
+         preference.getEncodingPrefs().add(new EncodingPref(Encoding.IDENTITY));
       }
    }
 
@@ -281,7 +280,7 @@ public class PreferenceUtils
       }
       else
       {
-         preference.getLanguagePrefs().add(new LanguagePref(Languages.ALL));
+         preference.getLanguagePrefs().add(new LanguagePref(Language.ALL));
       }
    }
 
@@ -311,7 +310,7 @@ public class PreferenceUtils
       }
       else
       {
-         preference.getMediaTypePrefs().add(new MediaTypePref(MediaTypes.ALL));
+         preference.getMediaTypePrefs().add(new MediaTypePref(MediaType.ALL));
       }
    }
    

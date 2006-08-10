@@ -28,10 +28,9 @@ import java.util.logging.Logger;
 import org.restlet.AbstractFilter;
 import org.restlet.Call;
 import org.restlet.component.Component;
-import org.restlet.data.MediaTypes;
+import org.restlet.data.MediaType;
 import org.restlet.data.Representation;
 import org.restlet.data.Status;
-import org.restlet.data.Statuses;
 
 import com.noelios.restlet.data.StringRepresentation;
 
@@ -89,7 +88,7 @@ public class StatusFilter extends AbstractFilter
       catch(Exception e)
       {
          logger.log(Level.SEVERE, "Unhandled error intercepted", e);
-         call.setStatus(Statuses.SERVER_ERROR_INTERNAL);
+         call.setStatus(Status.SERVER_ERROR_INTERNAL);
       }
    }
 
@@ -102,12 +101,12 @@ public class StatusFilter extends AbstractFilter
       // If no status is set, then the "success ok" status is assumed.
       if(call.getStatus() == null)
       {
-         call.setStatus(Statuses.SUCCESS_OK);
+         call.setStatus(Status.SUCCESS_OK);
       }
 
       // Do we need to get an output representation for the current status?
-      if(!call.getStatus().equals(Statuses.SUCCESS_OK)
-            && !call.getStatus().equals(Statuses.REDIRECTION_NOT_MODIFIED)
+      if(!call.getStatus().equals(Status.SUCCESS_OK)
+            && !call.getStatus().equals(Status.REDIRECTION_NOT_MODIFIED)
             && ((call.getOutput() == null) || overwrite))
       {
          call.setOutput(getRepresentation(call.getStatus(), call));
@@ -162,7 +161,7 @@ public class StatusFilter extends AbstractFilter
       sb.append("</body>\n");
       sb.append("</html>\n");
 
-      return new StringRepresentation(sb.toString(), MediaTypes.TEXT_HTML);
+      return new StringRepresentation(sb.toString(), MediaType.TEXT_HTML);
    }
 
 }

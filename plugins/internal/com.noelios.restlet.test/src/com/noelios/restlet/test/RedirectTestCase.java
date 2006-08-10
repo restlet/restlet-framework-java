@@ -29,10 +29,9 @@ import org.restlet.Call;
 import org.restlet.Restlet;
 import org.restlet.component.RestletContainer;
 import org.restlet.connector.DefaultServer;
-import org.restlet.data.MediaTypes;
+import org.restlet.data.MediaType;
 import org.restlet.data.Method;
-import org.restlet.data.Methods;
-import org.restlet.data.Protocols;
+import org.restlet.data.Protocol;
 
 import com.noelios.restlet.RedirectRestlet;
 import com.noelios.restlet.data.StringRepresentation;
@@ -52,8 +51,8 @@ public class RedirectTestCase extends TestCase
 		RestletContainer myContainer = new RestletContainer();
 
 		// Create the client connectors
-		myContainer.getClients().put("TestClient", Protocols.HTTP);
-		myContainer.getClients().put("ProxyClient", Protocols.HTTP);
+		myContainer.getClients().put("TestClient", Protocol.HTTP);
+		myContainer.getClients().put("ProxyClient", Protocol.HTTP);
 
 		// Create the proxy Restlet
 		String target = "http://localhost:9090${path}#[if query]?${query}#[end]";
@@ -73,34 +72,34 @@ public class RedirectTestCase extends TestCase
 						+ "Relative path: " + call.getContext().getRelativePath() + '\n'
 						+ "Query string:  " + call.getResourceRef().getQuery() + '\n'
 						+ "Method name:   " + call.getMethod() + '\n';
-				call.setOutput(new StringRepresentation(output, MediaTypes.TEXT_PLAIN));
+				call.setOutput(new StringRepresentation(output, MediaType.TEXT_PLAIN));
 			}
 		};
 
 		// Create the server connectors
 		myContainer.getServers().put("ProxyServer",
-				new DefaultServer(Protocols.HTTP, proxy, 8080));
+				new DefaultServer(Protocol.HTTP, proxy, 8080));
 		myContainer.getServers().put("OriginServer",
-				new DefaultServer(Protocols.HTTP, trace, 9090));
+				new DefaultServer(Protocol.HTTP, trace, 9090));
 
 		// Now, let's start the container!
 		myContainer.start();
 
 		// Tests
 		String uri = "http://localhost:8080/?foo=bar";
-		testCall(myContainer, Methods.GET, uri);
-		testCall(myContainer, Methods.POST, uri);
-		testCall(myContainer, Methods.PUT, uri);
-		testCall(myContainer, Methods.DELETE, uri);
+		testCall(myContainer, Method.GET, uri);
+		testCall(myContainer, Method.POST, uri);
+		testCall(myContainer, Method.PUT, uri);
+		testCall(myContainer, Method.DELETE, uri);
 
 		uri = "http://localhost:8080/abcd/efgh/ijkl?foo=bar&foo=beer";
-		testCall(myContainer, Methods.GET, uri);
-		testCall(myContainer, Methods.POST, uri);
-		testCall(myContainer, Methods.PUT, uri);
-		testCall(myContainer, Methods.DELETE, uri);
+		testCall(myContainer, Method.GET, uri);
+		testCall(myContainer, Method.POST, uri);
+		testCall(myContainer, Method.PUT, uri);
+		testCall(myContainer, Method.DELETE, uri);
 
 		uri = "http://localhost:8080/v1/client/kwse/CnJlNUQV9%252BNNqbUf7Lhs2BYEK2Y%253D/user/johnm/uVGYTDK4kK4zsu96VHGeTCzfwso%253D/";
-		testCall(myContainer, Methods.GET, uri);
+		testCall(myContainer, Method.GET, uri);
 
 		// Stop the container
 		myContainer.stop();

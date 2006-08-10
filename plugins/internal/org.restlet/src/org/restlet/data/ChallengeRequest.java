@@ -37,7 +37,7 @@ public class ChallengeRequest
    protected String realm;
 
    /** The scheme parameters. */
-   protected List<Parameter> parameters;
+   protected ParameterList parameters;
 
    /**
     * Constructor.
@@ -100,7 +100,7 @@ public class ChallengeRequest
     * Sets the scheme parameters.
     * @param parameters The scheme parameters.
     */
-   public void setParameters(List<Parameter> parameters)
+   public void setParameters(ParameterList parameters)
    {
       this.parameters = parameters;
    }

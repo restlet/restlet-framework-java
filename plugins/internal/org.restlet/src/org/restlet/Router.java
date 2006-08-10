@@ -22,7 +22,6 @@
 
 package org.restlet;
 
-import org.restlet.data.ScorerList;
 
 /**
  * Router of calls to one of several target Restlet options. Each Restlet option is represented by a scorer 

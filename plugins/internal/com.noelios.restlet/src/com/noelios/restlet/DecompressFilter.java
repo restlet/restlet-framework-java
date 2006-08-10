@@ -30,7 +30,6 @@ import org.restlet.AbstractFilter;
 import org.restlet.Call;
 import org.restlet.component.Component;
 import org.restlet.data.Encoding;
-import org.restlet.data.Encodings;
 import org.restlet.data.Representation;
 
 import com.noelios.restlet.data.DecoderRepresentation;
@@ -108,7 +107,7 @@ public class DecompressFilter extends AbstractFilter
 	{
 		// Test the existance of the representation and that an encoding applies
 		return (representation != null) && (representation.getEncoding() != null) && 
-				 !representation.getEncoding().equals(Encodings.IDENTITY);
+				 !representation.getEncoding().equals(Encoding.IDENTITY);
 	}
 
 	/**
@@ -126,7 +125,7 @@ public class DecompressFilter extends AbstractFilter
 		{
 			currentEncoding = iter.next();
 			
-			if(!currentEncoding.equals(Encodings.IDENTITY) && 
+			if(!currentEncoding.equals(Encoding.IDENTITY) && 
 				representation.getEncoding().equals(currentEncoding))
 			{
 				result = new DecoderRepresentation(representation);

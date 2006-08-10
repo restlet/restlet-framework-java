@@ -30,7 +30,7 @@ import java.util.logging.Logger;
 import org.restlet.AbstractRestlet;
 import org.restlet.Call;
 import org.restlet.data.ParameterList;
-import org.restlet.data.Statuses;
+import org.restlet.data.Status;
 
 /**
  * Component composed of multiple Restlet containers. Each container is managing its own resource namespace. 
@@ -128,7 +128,7 @@ public class RestletServer extends AbstractComponent
       }
       else
       {
-         call.setStatus(Statuses.SERVER_ERROR_INTERNAL);
+         call.setStatus(Status.SERVER_ERROR_INTERNAL);
          logger.log(Level.SEVERE, "No default Restlet container defined");
       }
    }

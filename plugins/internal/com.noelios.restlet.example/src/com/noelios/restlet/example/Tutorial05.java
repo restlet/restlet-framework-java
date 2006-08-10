@@ -26,7 +26,7 @@ import org.restlet.AbstractRestlet;
 import org.restlet.Call;
 import org.restlet.Restlet;
 import org.restlet.component.RestletContainer;
-import org.restlet.data.Protocols;
+import org.restlet.data.Protocol;
 
 import com.noelios.restlet.HostRouter;
 import com.noelios.restlet.data.StringRepresentation;
@@ -46,7 +46,7 @@ public class Tutorial05
 
          // Create the HTTP server connector, then add it to the container. 
          // Note that the container will act as the initial Restlet call's handler.
-         myContainer.getServers().put("HTTP Server", Protocols.HTTP, 8182);
+         myContainer.getServers().put("HTTP Server", Protocol.HTTP, 8182);
 
          // Create a host router matching calls to the server
          HostRouter host = new HostRouter(myContainer, 8182);

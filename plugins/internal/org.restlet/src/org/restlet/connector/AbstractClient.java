@@ -24,7 +24,7 @@ package org.restlet.connector;
 
 import org.restlet.Call;
 import org.restlet.component.Component;
-import org.restlet.data.Methods;
+import org.restlet.data.Method;
 import org.restlet.data.ParameterList;
 import org.restlet.data.Representation;
 
@@ -53,7 +53,7 @@ public abstract class AbstractClient extends AbstractConnector implements Client
    {
       Call call = new Call();
       call.setResourceRef(resourceUri);
-      call.setMethod(Methods.GET);
+      call.setMethod(Method.GET);
       handle(call);
       return call;
    }
@@ -68,7 +68,7 @@ public abstract class AbstractClient extends AbstractConnector implements Client
    {
       Call call = new Call();
       call.setResourceRef(resourceUri);
-      call.setMethod(Methods.POST);
+      call.setMethod(Method.POST);
       call.setInput(input);
       handle(call);
       return call;
@@ -84,7 +84,7 @@ public abstract class AbstractClient extends AbstractConnector implements Client
    {
       Call call = new Call();
       call.setResourceRef(resourceUri);
-      call.setMethod(Methods.PUT);
+      call.setMethod(Method.PUT);
       call.setInput(input);
       handle(call);
       return call;
@@ -99,7 +99,7 @@ public abstract class AbstractClient extends AbstractConnector implements Client
    {
       Call call = new Call();
       call.setResourceRef(resourceUri);
-      call.setMethod(Methods.DELETE);
+      call.setMethod(Method.DELETE);
       handle(call);
       return call;
    }
@@ -113,8 +113,8 @@ public abstract class AbstractClient extends AbstractConnector implements Client
    {
       boolean result = true;
       
-      if(call.getMethod().equals(Methods.GET) || call.getMethod().equals(Methods.HEAD) ||
-            call.getMethod().equals(Methods.DELETE))
+      if(call.getMethod().equals(Method.GET) || call.getMethod().equals(Method.HEAD) ||
+            call.getMethod().equals(Method.DELETE))
       {
          result = false;
       }

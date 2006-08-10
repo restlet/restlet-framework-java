@@ -33,13 +33,10 @@ import org.restlet.Call;
 import org.restlet.DefaultRouter;
 import org.restlet.Restlet;
 import org.restlet.Router;
+import org.restlet.ScorerList;
 import org.restlet.component.Component;
-import org.restlet.data.DefaultStatus;
 import org.restlet.data.Protocol;
-import org.restlet.data.Protocols;
-import org.restlet.data.ScorerList;
 import org.restlet.data.Status;
-import org.restlet.data.Statuses;
 
 /**
  * Router associated with a host and allowing different alias URI patterns. After configuration , you can use 
@@ -203,16 +200,16 @@ public class HostRouter extends AbstractHandler implements Router
    	super(owner);
       this.mode = UsageMode.FILTER;
       this.allowedProtocols = new ArrayList<Protocol>();
-      this.allowedProtocols.add(Protocols.HTTP);
+      this.allowedProtocols.add(Protocol.HTTP);
       this.allowedDomains = new ArrayList<String>();
       if(domain != null) this.allowedDomains.add(domain);
       this.allowedPorts = new ArrayList<Integer>();
       this.allowedPorts.add(port);
-      this.preferredProtocol = Protocols.HTTP;
+      this.preferredProtocol = Protocol.HTTP;
       this.preferredDomain = domain;
       this.preferredPort = port;
       this.redirectClient = false;
-      this.redirectStatus = Statuses.REDIRECTION_FOUND;
+      this.redirectStatus = Status.REDIRECTION_FOUND;
       this.warnClient = false;
       this.allowIpAddresses = true;
       this.allowLocalHost = true;
@@ -393,7 +390,7 @@ public class HostRouter extends AbstractHandler implements Router
 				{
 		   		// Redirect the caller to the preferred format
 					String description = "Used this URI instead: " + getPreferredUri() + call.getContext().getRelativeRef(); 
-					call.setStatus(new DefaultStatus(Statuses.CLIENT_ERROR_BAD_REQUEST, description));
+					call.setStatus(new Status(Status.CLIENT_ERROR_BAD_REQUEST, description));
 			   }
 
 				// We'll stop the call handling here 

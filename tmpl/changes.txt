@@ -47,6 +47,14 @@ Changes log
  - Renamed Call.setBestOutput() into Call.setOutput() and adjusted the Javadocs to explain behavior (set best output for the given resource).
  - Removed addition of custom headers from Call.connectorCall for JavaMailClient and HttpClient. Will now require the usage of Converters.
  - Removed empty and unused interfaces Gateway, OriginServer, Proxy, UserAgent, Cache, Resolver, Tunnel, ControlData, Data. Suggested by Piyush Purang.
+ - Refactored CharacterSet, CharacterSets and DefaultCharacterSet into a single CharacterSet class.
+ - Refactored Encoding, Encodings and DefaultEncoding into a single Encoding class. 
+ - Refactored ChallengeScheme, ChallengeSchemes and DefaultChallengeScheme into a single ChallengeScheme class. 
+ - Refactored Language, Languages and DefaultLanguage into a single Language class. 
+ - Refactored MediaType, MediaTypes and DefaultMediaType into a single MediaType class. 
+ - Refactored Method, Methods and DefaultMethod into a single Method class. 
+ - Refactored Protocol, Protocols and DefaultProtocol into a single Protocol class. 
+ - Refactored Status, Statuses and DefaultStatus into a single Status class. 
    
 [Other changes] 
  - Separated the HTTP client connector (based on JDK's HttpUrlConnection) previously integrated to the NRE core. This will allow future alternative

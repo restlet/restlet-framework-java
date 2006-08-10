@@ -42,9 +42,9 @@ import org.apache.commons.pool.impl.GenericObjectPool;
 import org.restlet.Call;
 import org.restlet.component.Component;
 import org.restlet.connector.AbstractClient;
-import org.restlet.data.Methods;
+import org.restlet.data.Method;
 import org.restlet.data.ParameterList;
-import org.restlet.data.Protocols;
+import org.restlet.data.Protocol;
 import org.restlet.data.Representation;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
@@ -87,7 +87,7 @@ public class JdbcClient extends AbstractClient
    public JdbcClient(Component owner, ParameterList parameters)
    {
    	super(owner, parameters);
-   	getProtocols().add(Protocols.JDBC);
+   	getProtocols().add(Protocol.JDBC);
 
       // Set up the list of factories
       this.connectionSources = new ArrayList<ConnectionSource>();
@@ -102,7 +102,7 @@ public class JdbcClient extends AbstractClient
    {
       Call result = new Call();
       result.getClient().setName(Factory.VERSION_HEADER);
-      result.setMethod(Methods.POST);
+      result.setMethod(Method.POST);
       result.setResourceRef(jdbcURI);
       result.setInput(request);
       return result;
@@ -156,7 +156,7 @@ public class JdbcClient extends AbstractClient
          Node sqlRequestNode = rootElt.getElementsByTagName("body").item(0);
          String sqlRequest = sqlRequestNode.getTextContent();
 
-         if(call.getMethod().equals(Methods.POST))
+         if(call.getMethod().equals(Method.POST))
          {
             // Execute the SQL request
             connection = getConnection(connectionURI, properties, usePooling);

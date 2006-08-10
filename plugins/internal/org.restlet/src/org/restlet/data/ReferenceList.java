@@ -476,7 +476,7 @@ public class ReferenceList implements List<Reference>
          sb.append(ref.toString()).append("\r\n");
       }
 
-      return Factory.getInstance().createRepresentation(sb.toString(), MediaTypes.TEXT_URI_LIST);
+      return Factory.getInstance().createRepresentation(sb.toString(), MediaType.TEXT_URI_LIST);
    }
 
 }

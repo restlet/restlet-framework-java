@@ -27,9 +27,9 @@ import java.util.List;
 import org.restlet.AbstractRestlet;
 import org.restlet.Call;
 import org.restlet.Restlet;
-import org.restlet.data.ChallengeSchemes;
-import org.restlet.data.MediaTypes;
-import org.restlet.data.Protocols;
+import org.restlet.data.ChallengeScheme;
+import org.restlet.data.MediaType;
+import org.restlet.data.Protocol;
 
 import com.noelios.restlet.build.Builders;
 import com.noelios.restlet.data.StringRepresentation;
@@ -51,7 +51,7 @@ public class Tutorial12 implements Constants
                {
                   // Print the requested URI path
                   String output = "Account of user named: " + call.getContext().getBaseRef().getLastSegment();
-                  call.setOutput(new StringRepresentation(output, MediaTypes.TEXT_PLAIN));
+                  call.setOutput(new StringRepresentation(output, MediaType.TEXT_PLAIN));
                }
             };
 
@@ -63,17 +63,17 @@ public class Tutorial12 implements Constants
             		// Print the user name of the requested orders
                   List<String> segments = call.getContext().getBaseRef().getSegments();
                   String output = "Orders of user named: " + segments.get(segments.size() - 2);
-                  call.setOutput(new StringRepresentation(output, MediaTypes.TEXT_PLAIN));
+                  call.setOutput(new StringRepresentation(output, MediaType.TEXT_PLAIN));
                }
             };
       	
          // Build and start the container
       	Builders.buildContainer()
-      		.addServer("HTTP server", Protocols.HTTP, 8182)
+      		.addServer("HTTP server", Protocol.HTTP, 8182)
       		.attachLog("com.noelios.restlet.example")
       			.attachStatus(true, "webmaster@mysite.org", "http://www.mysite.org")
       				.attachHost(8182)
-      					.attachGuard("/docs/", "com.noelios.restlet.example", true, ChallengeSchemes.HTTP_BASIC , "Restlet tutorial", true)
+      					.attachGuard("/docs/", "com.noelios.restlet.example", true, ChallengeScheme.HTTP_BASIC , "Restlet tutorial", true)
       						.authorize("scott", "tiger")
       						.attachDirectory(ROOT_URI, "index.html").upRouter()
    						.attachRouter("/users/[a-z]+")

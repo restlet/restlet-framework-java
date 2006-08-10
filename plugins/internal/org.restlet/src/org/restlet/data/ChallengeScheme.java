@@ -26,31 +26,69 @@ package org.restlet.data;
  * Challenge scheme used to authenticate remote clients.
  * @author Jerome Louvel (contact@noelios.com) <a href="http://www.noelios.com/">Noelios Consulting</a>
  */
-public interface ChallengeScheme
+public class ChallengeScheme extends Metadata
 {
-   /**
-    * Returns the unique name.
-    * @return The unique name.
-    */
-   public String getName();
+	/** Custom scheme based on IP address or cookies or query params, etc. */
+	public static final ChallengeScheme CUSTOM = new ChallengeScheme("CUSTOM", "Custom",
+			"Custom authentication");
 
-   /**
-    * Returns the technical name.
-    * @return The technical name.
-    */
-   public String getTechnicalName();
+	/** Basic HTTP scheme. */
+	public static final ChallengeScheme HTTP_BASIC = new ChallengeScheme("HTTP_BASIC",
+			"Basic", "Basic HTTP authentication");
 
-   /**
-    * Returns the description.
-    * @return The description.
-    */
-   public String getDescription();
+	/** Digest HTTP scheme. */
+	public static final ChallengeScheme HTTP_DIGEST = new ChallengeScheme("HTTP_DIGEST",
+			"Digest", "Digest HTTP authentication");
 
-   /**
-    * Indicates if the scheme is equal to a given one.
-    * @param scheme The scheme to compare to.
-    * @return True if the scheme is equal to a given one.
-    */
-   public boolean equals(ChallengeScheme scheme);
+	/** Microsoft NTML HTTP scheme. */
+	public static final ChallengeScheme HTTP_NTLM = new ChallengeScheme("HTTP_NTLM",
+			"NTLM", "Microsoft's NTLM HTTP authentication");
 
+	/** Plain SMTP scheme. */
+	public static final ChallengeScheme SMTP_PLAIN = new ChallengeScheme("SMTP_PLAIN",
+			"PLAIN", "Plain SMTP authentication");
+
+	/** The technical name. */
+	protected String technicalName;
+
+	/**
+	 * Constructor.
+	 * @param name The unique name.
+	 * @param technicalName The technical name.
+	 */
+	public ChallengeScheme(String name, String technicalName)
+	{
+		this(name, technicalName, null);
+	}
+
+	/**
+	 * Constructor.
+	 * @param name The unique name.
+	 * @param technicalName The technical name.
+	 * @param description The description.
+	 */
+	public ChallengeScheme(String name, String technicalName, String description)
+	{
+		super(name, description);
+		this.technicalName = technicalName;
+	}
+
+	/**
+	 * Returns the technical name (ex: BASIC).
+	 * @return The technical name (ex: BASIC).
+	 */
+	public String getTechnicalName()
+	{
+		return this.technicalName;
+	}
+
+	/**
+	 * Indicates if the scheme is equal to a given one.
+	 * @param scheme The scheme to compare to.
+	 * @return True if the scheme is equal to a given one.
+	 */
+	public boolean equals(ChallengeScheme scheme)
+	{
+		return scheme.getName().equalsIgnoreCase(getName());
+	}
 }

@@ -82,7 +82,7 @@ public class Form extends ParameterList
     */
    public Representation getWebForm() 
    {
-      return Factory.getInstance().createRepresentation(getQueryString(), MediaTypes.APPLICATION_WWW_FORM);
+      return Factory.getInstance().createRepresentation(getQueryString(), MediaType.APPLICATION_WWW_FORM);
    }
 
    /**

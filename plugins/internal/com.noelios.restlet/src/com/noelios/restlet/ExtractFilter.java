@@ -32,7 +32,7 @@ import org.restlet.AbstractFilter;
 import org.restlet.Call;
 import org.restlet.component.Component;
 import org.restlet.data.Form;
-import org.restlet.data.Statuses;
+import org.restlet.data.Status;
 
 import com.noelios.restlet.util.CallModel;
 
@@ -147,7 +147,7 @@ public class ExtractFilter extends AbstractFilter
       catch(Exception e)
       {
          logger.log(Level.SEVERE, "Unhandled error intercepted", e);
-         call.setStatus(Statuses.SERVER_ERROR_INTERNAL);
+         call.setStatus(Status.SERVER_ERROR_INTERNAL);
       }
    }
 

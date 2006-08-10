@@ -25,10 +25,8 @@ package com.noelios.restlet.data;
 import java.io.IOException;
 
 import org.restlet.data.CharacterSet;
-import org.restlet.data.DefaultCharacterSet;
 import org.restlet.data.MediaType;
 import org.restlet.data.Preference;
-
 
 import com.noelios.restlet.util.PreferenceReader;
 
@@ -64,7 +62,7 @@ public class ContentType
          String charSet = this.mediaType.getParameterValue("charset");
          if(charSet != null)
          {
-            this.characterSet = new DefaultCharacterSet(charSet);
+            this.characterSet = new CharacterSet(charSet);
          }
       }
       catch(IOException ioe)

@@ -28,11 +28,11 @@ import org.restlet.Call;
 import org.restlet.connector.Client;
 import org.restlet.connector.DefaultClient;
 import org.restlet.data.ChallengeResponse;
-import org.restlet.data.ChallengeSchemes;
-import org.restlet.data.Methods;
-import org.restlet.data.Protocols;
+import org.restlet.data.ChallengeScheme;
+import org.restlet.data.Method;
+import org.restlet.data.Protocol;
 import org.restlet.data.Representation;
-import org.restlet.data.Statuses;
+import org.restlet.data.Status;
 
 /**
  * Authenticating to an HTTP server.
@@ -45,14 +45,14 @@ public class Tutorial09b
       try
       {
          // Prepare the REST call
-      	Call call = new Call(Methods.GET, "http://localhost:8182/");
+      	Call call = new Call(Method.GET, "http://localhost:8182/");
          
          // Add the client authentication to the call 
-         ChallengeResponse authentication = new ChallengeResponse(ChallengeSchemes.HTTP_BASIC, "scott", "tiger");
+         ChallengeResponse authentication = new ChallengeResponse(ChallengeScheme.HTTP_BASIC, "scott", "tiger");
          call.getSecurity().setChallengeResponse(authentication);
 
          // Ask to the HTTP client connector to handle the call
-         Client client = new DefaultClient(Protocols.HTTP);
+         Client client = new DefaultClient(Protocol.HTTP);
          client.handle(call);
 
          if(call.getStatus().isSuccess())
@@ -61,7 +61,7 @@ public class Tutorial09b
             Representation output = call.getOutput();
             output.write(System.out);
          }
-         else if(call.getStatus().equals(Statuses.CLIENT_ERROR_UNAUTHORIZED))
+         else if(call.getStatus().equals(Status.CLIENT_ERROR_UNAUTHORIZED))
          {
             // Unauthorized access
             System.out.println("Your access was not authorized by the server, check your credentials");

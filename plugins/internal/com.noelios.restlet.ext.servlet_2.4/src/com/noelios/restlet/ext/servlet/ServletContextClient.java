@@ -29,13 +29,13 @@ import javax.servlet.ServletContext;
 
 import org.restlet.Call;
 import org.restlet.component.Component;
-import org.restlet.data.DefaultMediaType;
-import org.restlet.data.Methods;
+import org.restlet.data.MediaType;
+import org.restlet.data.Method;
 import org.restlet.data.ParameterList;
 import org.restlet.data.Reference;
 import org.restlet.data.ReferenceList;
 import org.restlet.data.Representation;
-import org.restlet.data.Statuses;
+import org.restlet.data.Status;
 
 import com.noelios.restlet.connector.ContextClient;
 import com.noelios.restlet.data.ContextReference;
@@ -103,7 +103,7 @@ public class ServletContextClient extends ContextClient
     */
    protected void handleServletContext(Call call)
    {
-      if(call.getMethod().equals(Methods.GET) || call.getMethod().equals(Methods.HEAD))
+      if(call.getMethod().equals(Method.GET) || call.getMethod().equals(Method.HEAD))
 		{
       	String basePath = call.getResourceRef().toString();
       	int lastSlashIndex = basePath.lastIndexOf('/');
@@ -136,16 +136,16 @@ public class ServletContextClient extends ContextClient
             
             if(mediaType != null)
             {
-            	output.setMediaType(new DefaultMediaType(mediaType));
+            	output.setMediaType(new MediaType(mediaType));
             }
 			}
 			
 			call.setOutput(output);
-			call.setStatus(Statuses.SUCCESS_OK);
+			call.setStatus(Status.SUCCESS_OK);
 		}
 		else
 		{
-			call.setStatus(Statuses.CLIENT_ERROR_METHOD_NOT_ALLOWED);
+			call.setStatus(Status.CLIENT_ERROR_METHOD_NOT_ALLOWED);
 		}
    }
    

@@ -34,9 +34,8 @@ import org.restlet.component.Component;
 import org.restlet.data.ChallengeRequest;
 import org.restlet.data.ChallengeResponse;
 import org.restlet.data.ChallengeScheme;
-import org.restlet.data.ChallengeSchemes;
 import org.restlet.data.SecurityData;
-import org.restlet.data.Statuses;
+import org.restlet.data.Status;
 
 import com.noelios.restlet.util.Base64;
 
@@ -139,14 +138,14 @@ public class GuardFilter extends AbstractFilter
       SecurityData security = call.getSecurity();
       ChallengeResponse resp = security.getChallengeResponse();
 
-      if(this.scheme.equals(ChallengeSchemes.HTTP_BASIC))
+      if(this.scheme.equals(ChallengeScheme.HTTP_BASIC))
       {
          if(resp == null)
          {
             // Authentication failed, no challenge response provided, maybe first authentication attempt 
             logger.log(Level.INFO, "Authentication failed: no challenge response provided.");
          }
-         else if(resp.getScheme().equals(ChallengeSchemes.HTTP_BASIC))
+         else if(resp.getScheme().equals(ChallengeScheme.HTTP_BASIC))
 	      {
 	         try
 	         {
@@ -247,7 +246,7 @@ public class GuardFilter extends AbstractFilter
       }
       else
       {
-      	call.setStatus(Statuses.CLIENT_ERROR_FORBIDDEN);
+      	call.setStatus(Status.CLIENT_ERROR_FORBIDDEN);
       }
    }
    
@@ -259,9 +258,9 @@ public class GuardFilter extends AbstractFilter
     */
    protected void challenge(Call call)
    {
-		if(this.scheme.equals(ChallengeSchemes.HTTP_BASIC))
+		if(this.scheme.equals(ChallengeScheme.HTTP_BASIC))
 		{
-			call.setStatus(Statuses.CLIENT_ERROR_UNAUTHORIZED);
+			call.setStatus(Status.CLIENT_ERROR_UNAUTHORIZED);
 			call.getSecurity().setChallengeRequest(new ChallengeRequest(this.scheme, this.realm));
 		}
 		else

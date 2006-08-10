@@ -29,10 +29,8 @@ import java.io.OutputStream;
 import java.io.OutputStreamWriter;
 
 import org.restlet.data.CharacterSet;
-import org.restlet.data.CharacterSets;
 import org.restlet.data.Language;
 import org.restlet.data.MediaType;
-import org.restlet.data.MediaTypes;
 
 /**
  * Represents an Unicode string that can be converted to any character set supported by Java. 
@@ -49,7 +47,7 @@ public class StringRepresentation extends StreamRepresentation
 	 */
 	public StringRepresentation(String value)
 	{
-		this(value, MediaTypes.TEXT_PLAIN);
+		this(value, MediaType.TEXT_PLAIN);
 	}
 
 	/**
@@ -70,7 +68,7 @@ public class StringRepresentation extends StreamRepresentation
 	 */
 	public StringRepresentation(String value, Language language)
 	{
-		this(value, MediaTypes.TEXT_PLAIN, language);
+		this(value, MediaType.TEXT_PLAIN, language);
 	}
 
 	/**
@@ -81,7 +79,7 @@ public class StringRepresentation extends StreamRepresentation
 	 */
 	public StringRepresentation(String value, MediaType mediaType, Language language)
 	{
-		this(value, mediaType, language, CharacterSets.ISO_8859_1);
+		this(value, mediaType, language, CharacterSet.ISO_8859_1);
 	}
 
 	/**

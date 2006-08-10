@@ -25,13 +25,13 @@ package com.noelios.restlet.util;
 import java.io.IOException;
 import java.util.Iterator;
 
+import org.restlet.data.CharacterSet;
 import org.restlet.data.CharacterSetPref;
-import org.restlet.data.DefaultCharacterSet;
-import org.restlet.data.DefaultEncoding;
-import org.restlet.data.DefaultLanguage;
-import org.restlet.data.DefaultMediaType;
+import org.restlet.data.Encoding;
 import org.restlet.data.EncodingPref;
+import org.restlet.data.Language;
 import org.restlet.data.LanguagePref;
+import org.restlet.data.MediaType;
 import org.restlet.data.MediaTypePref;
 import org.restlet.data.Parameter;
 import org.restlet.data.ParameterList;
@@ -305,19 +305,19 @@ public class PreferenceReader extends HeaderReader
          switch(type)
          {
             case TYPE_CHARACTER_SET:
-               result = new CharacterSetPref(new DefaultCharacterSet(metadata.toString()));
+               result = new CharacterSetPref(new CharacterSet(metadata.toString()));
                break;
 
             case TYPE_ENCODING:
-               result = new EncodingPref(new DefaultEncoding(metadata.toString()));
+               result = new EncodingPref(new Encoding(metadata.toString()));
                break;
 
             case TYPE_LANGUAGE:
-               result = new LanguagePref(new DefaultLanguage(metadata.toString()));
+               result = new LanguagePref(new Language(metadata.toString()));
                break;
 
             case TYPE_MEDIA_TYPE:
-               result = new MediaTypePref(new DefaultMediaType(metadata.toString()));
+               result = new MediaTypePref(new MediaType(metadata.toString()));
                break;
          }
       }
@@ -329,19 +329,19 @@ public class PreferenceReader extends HeaderReader
          switch(type)
          {
             case TYPE_CHARACTER_SET:
-               result = new CharacterSetPref(new DefaultCharacterSet(metadata.toString()), quality, parameters);
+               result = new CharacterSetPref(new CharacterSet(metadata.toString()), quality, parameters);
                break;
 
             case TYPE_ENCODING:
-               result = new EncodingPref(new DefaultEncoding(metadata.toString()), quality, parameters);
+               result = new EncodingPref(new Encoding(metadata.toString()), quality, parameters);
                break;
 
             case TYPE_LANGUAGE:
-               result = new LanguagePref(new DefaultLanguage(metadata.toString()), quality, parameters);
+               result = new LanguagePref(new Language(metadata.toString()), quality, parameters);
                break;
 
             case TYPE_MEDIA_TYPE:
-               result = new MediaTypePref(new DefaultMediaType(metadata.toString(), mediaParams), quality, parameters);
+               result = new MediaTypePref(new MediaType(metadata.toString(), mediaParams), quality, parameters);
                break;
          }
       }

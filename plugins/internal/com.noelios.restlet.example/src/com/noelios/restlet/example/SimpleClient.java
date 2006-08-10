@@ -26,8 +26,8 @@ import org.restlet.Call;
 import org.restlet.connector.Client;
 import org.restlet.connector.DefaultClient;
 import org.restlet.data.Form;
-import org.restlet.data.Methods;
-import org.restlet.data.Protocols;
+import org.restlet.data.Method;
+import org.restlet.data.Protocol;
 import org.restlet.data.Representation;
 
 /**
@@ -50,7 +50,7 @@ public class SimpleClient
          call.setResourceRef("http://127.0.0.1:9876/test");
 
          // Action: Update
-         call.setMethod(Methods.PUT);
+         call.setMethod(Method.PUT);
 
          Form form = new Form();
          form.add("name", "John D. Mitchell");
@@ -59,7 +59,7 @@ public class SimpleClient
          call.setInput(form.getWebForm());
 
          // Prepare HTTP client connector.
-         Client client = new DefaultClient(Protocols.HTTP);
+         Client client = new DefaultClient(Protocol.HTTP);
 
          // Make the call.
          client.handle(call);

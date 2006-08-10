@@ -23,10 +23,10 @@
 package com.noelios.restlet.ext.atom;
 
 import org.restlet.Call;
-import org.restlet.data.Methods;
+import org.restlet.data.Method;
 import org.restlet.data.Reference;
 import org.restlet.data.Representation;
-import org.restlet.data.Statuses;
+import org.restlet.data.Status;
 
 /**
  * Atom Protocol collection, part of a workspace.
@@ -149,12 +149,12 @@ public class Collection
 	public Reference postMember(Representation member) throws Exception 
 	{
 		Call post = new Call();
-		post.setMethod(Methods.POST);
+		post.setMethod(Method.POST);
 		post.setResourceRef(getHref());
 		post.setInput(member);
 		getWorkspace().getService().getClient().handle(post);
 		
-		if(post.getStatus().equals(Statuses.SUCCESS_CREATED))
+		if(post.getStatus().equals(Status.SUCCESS_CREATED))
 		{
 			return post.getRedirectRef();
 		}
@@ -172,11 +172,11 @@ public class Collection
 	public Feed getFeed() throws Exception
 	{
 		Call get = new Call();
-		get.setMethod(Methods.GET);
+		get.setMethod(Method.GET);
 		get.setResourceRef(getHref());
 		getWorkspace().getService().getClient().handle(get);
 		
-		if(get.getStatus().equals(Statuses.SUCCESS_OK))
+		if(get.getStatus().equals(Status.SUCCESS_OK))
 		{
 			return new Feed(get.getOutput());
 		}

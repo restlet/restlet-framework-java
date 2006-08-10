@@ -25,7 +25,7 @@ package com.noelios.restlet.ext.jetty5;
 import org.mortbay.util.InetAddrPort;
 import org.restlet.component.Component;
 import org.restlet.data.ParameterList;
-import org.restlet.data.Protocols;
+import org.restlet.data.Protocol;
 
 /**
  * Jetty HTTP server connector. Here is the list of additional parameters that are supported:
@@ -52,7 +52,7 @@ public class HttpServer extends JettyServer
    public HttpServer(Component owner, ParameterList parameters, String address, int port)
    {
       super(owner, parameters, address, port);
-      getProtocols().add(Protocols.HTTP);
+      getProtocols().add(Protocol.HTTP);
    }
 
    /** Start hook. */

@@ -20,11 +20,11 @@
  * Portions Copyright [yyyy] [name of copyright owner]
  */
 
-package org.restlet.data;
+package org.restlet;
 
 import java.util.logging.Logger;
 
-import org.restlet.Call;
+import org.restlet.data.Reference;
 
 /**
  * Data associated to a call that are contextual to the current Restlet handling it. They may not 

@@ -20,7 +20,7 @@
  * Portions Copyright [yyyy] [name of copyright owner]
  */
 
-package org.restlet.data;
+package org.restlet;
 
 import java.util.ArrayList;
 import java.util.Collection;
@@ -29,11 +29,7 @@ import java.util.List;
 import java.util.ListIterator;
 import java.util.Random;
 
-import org.restlet.Call;
-import org.restlet.Factory;
-import org.restlet.Restlet;
-import org.restlet.Router;
-import org.restlet.Scorer;
+import org.restlet.data.Parameter;
 
 /**
  * Modifiable list of scorers with some helper methods. Note that this class implements the java.util.List

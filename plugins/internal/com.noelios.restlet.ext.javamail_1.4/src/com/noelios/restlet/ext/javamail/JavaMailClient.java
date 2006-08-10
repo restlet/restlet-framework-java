@@ -39,9 +39,9 @@ import javax.xml.parsers.DocumentBuilderFactory;
 import org.restlet.Call;
 import org.restlet.component.Component;
 import org.restlet.connector.AbstractClient;
-import org.restlet.data.Methods;
+import org.restlet.data.Method;
 import org.restlet.data.ParameterList;
-import org.restlet.data.Protocols;
+import org.restlet.data.Protocol;
 import org.restlet.data.Representation;
 import org.restlet.data.SecurityData;
 import org.w3c.dom.Document;
@@ -83,9 +83,9 @@ public abstract class JavaMailClient extends AbstractClient
    public JavaMailClient(Component owner, ParameterList parameters)
    {
    	super(owner, parameters);
-      getProtocols().add(Protocols.SMTP);
-      getProtocols().add(Protocols.SMTP_STARTTLS);
-      getProtocols().add(Protocols.SMTPS);
+      getProtocols().add(Protocol.SMTP);
+      getProtocols().add(Protocol.SMTP_STARTTLS);
+      getProtocols().add(Protocol.SMTPS);
    }
 
    /**
@@ -112,7 +112,7 @@ public abstract class JavaMailClient extends AbstractClient
    {
    	Call result = new Call();
       result.getClient().setName(Factory.VERSION_HEADER);
-      result.setMethod(Methods.POST);
+      result.setMethod(Method.POST);
       result.setResourceRef(smtpURI);
       result.setInput(email);
       return result;
@@ -134,12 +134,12 @@ public abstract class JavaMailClient extends AbstractClient
 
          if(smtpPort == -1)
          {
-            if((getProtocols().equals(Protocols.SMTP)) || (getProtocols().equals(Protocols.SMTP_STARTTLS)))
+            if((getProtocols().equals(Protocol.SMTP)) || (getProtocols().equals(Protocol.SMTP_STARTTLS)))
             {
             	// Use the default SMTP port
             	smtpPort = 25;
             }
-            else if(getProtocols().equals(Protocols.SMTPS))
+            else if(getProtocols().equals(Protocol.SMTPS))
             {
             	smtpPort = 465;
             }
@@ -192,17 +192,17 @@ public abstract class JavaMailClient extends AbstractClient
          boolean authenticate = ((sd.getLogin() != null) && (sd.getPassword() != null));
          
          // Connect to the SMTP server
-         if(getProtocols().equals(Protocols.SMTP) || getProtocols().equals(Protocols.SMTP_STARTTLS))
+         if(getProtocols().equals(Protocol.SMTP) || getProtocols().equals(Protocol.SMTP_STARTTLS))
          {
             props.put("mail.smtp.host", smtpHost);
             props.put("mail.smtp.port", Integer.toString(smtpPort));
             props.put("mail.smtp.auth", Boolean.toString(authenticate).toLowerCase());
-	         props.put("mail.smtp.starttls.enable", Boolean.toString(getProtocols().equals(Protocols.SMTP_STARTTLS)).toLowerCase());
+	         props.put("mail.smtp.starttls.enable", Boolean.toString(getProtocols().equals(Protocol.SMTP_STARTTLS)).toLowerCase());
             session = Session.getDefaultInstance(props);
             // session.setDebug(true);
 	         transport = session.getTransport("smtp");
          }
-         else if(getProtocols().equals(Protocols.SMTPS))
+         else if(getProtocols().equals(Protocol.SMTPS))
          {
             props.put("mail.smtps.host", smtpHost);
             props.put("mail.smtps.port", Integer.toString(smtpPort));

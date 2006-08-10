@@ -24,7 +24,7 @@ package com.noelios.restlet.ext.asyncweb;
 
 import org.restlet.component.Component;
 import org.restlet.data.ParameterList;
-import org.restlet.data.Protocols;
+import org.restlet.data.Protocol;
 import org.safehaus.asyncweb.container.ContainerLifecycleException;
 import org.safehaus.asyncweb.transport.nio.NIOTransport;
 
@@ -56,7 +56,7 @@ public class HttpServer extends AsyncWebServer
    public HttpServer(Component owner, ParameterList parameters, String address, int port)
    {
       super(owner, parameters, address, port);
-      getProtocols().add(Protocols.HTTP);
+      getProtocols().add(Protocol.HTTP);
    }
 
    /** Starts the Connector. */

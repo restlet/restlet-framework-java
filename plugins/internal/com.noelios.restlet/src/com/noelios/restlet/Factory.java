@@ -43,21 +43,19 @@ import org.restlet.component.Component;
 import org.restlet.connector.Client;
 import org.restlet.connector.Server;
 import org.restlet.data.ChallengeResponse;
-import org.restlet.data.ChallengeSchemes;
+import org.restlet.data.ChallengeScheme;
 import org.restlet.data.ClientData;
 import org.restlet.data.Form;
 import org.restlet.data.Language;
 import org.restlet.data.LanguagePref;
-import org.restlet.data.Languages;
 import org.restlet.data.MediaType;
 import org.restlet.data.MediaTypePref;
-import org.restlet.data.MediaTypes;
 import org.restlet.data.Parameter;
 import org.restlet.data.ParameterList;
 import org.restlet.data.Protocol;
 import org.restlet.data.Representation;
 import org.restlet.data.Resource;
-import org.restlet.data.Statuses;
+import org.restlet.data.Status;
 import org.restlet.data.Tag;
 
 import com.noelios.restlet.data.StringRepresentation;
@@ -75,9 +73,7 @@ public class Factory extends org.restlet.Factory
 	private static Logger logger = Logger.getLogger(Factory.class.getCanonicalName());
 
 	public static final String VERSION_LONG = org.restlet.Factory.VERSION_LONG;
-
 	public static final String VERSION_SHORT = org.restlet.Factory.VERSION_SHORT;
-
 	public static final String VERSION_HEADER = "Noelios-Restlet-Engine/" + VERSION_SHORT;
 
 	/** List of available client connectors. */
@@ -383,7 +379,7 @@ public class Factory extends org.restlet.Factory
 				// If no language preference is defined, assume that all languages are acceptable 
 				List<LanguagePref> languagePrefs = client.getLanguagePrefs();
 				if (languagePrefs.size() == 0)
-					languagePrefs.add(new LanguagePref(Languages.ALL));
+					languagePrefs.add(new LanguagePref(Language.ALL));
 
 				// For each language preference defined in the call
 				// Calculate the score and remember the best scoring preference
@@ -459,7 +455,7 @@ public class Factory extends org.restlet.Factory
 				// If no media type preference is defined, assume that all media types are acceptable 
 				List<MediaTypePref> mediaTypePrefs = client.getMediaTypePrefs();
 				if (mediaTypePrefs.size() == 0)
-					mediaTypePrefs.add(new MediaTypePref(MediaTypes.ALL));
+					mediaTypePrefs.add(new MediaTypePref(MediaType.ALL));
 
 				// For each media range preference defined in the call
 				// Calculate the score and remember the best scoring preference
@@ -635,7 +631,7 @@ public class Factory extends org.restlet.Factory
 		if ((variants == null) || (variants.size() < 1))
 		{
 			// Resource not found
-			call.setStatus(Statuses.CLIENT_ERROR_NOT_FOUND);
+			call.setStatus(Status.CLIENT_ERROR_NOT_FOUND);
 		}
 		else
 		{
@@ -646,7 +642,7 @@ public class Factory extends org.restlet.Factory
 			if (bestVariant == null)
 			{
 				// No variant was found matching the client preferences
-				call.setStatus(Statuses.CLIENT_ERROR_NOT_ACCEPTABLE);
+				call.setStatus(Status.CLIENT_ERROR_NOT_ACCEPTABLE);
 			}
 			else
 			{
@@ -687,12 +683,12 @@ public class Factory extends org.restlet.Factory
 				{
 					// Send the best representation as the call output
 					call.setOutput(bestVariant);
-					call.setStatus(Statuses.SUCCESS_OK);
+					call.setStatus(Status.SUCCESS_OK);
 				}
 				else
 				{
 					// Indicates to the client that he already has the best representation 
-					call.setStatus(Statuses.REDIRECTION_NOT_MODIFIED);
+					call.setStatus(Status.REDIRECTION_NOT_MODIFIED);
 				}
 			}
 		}
@@ -708,12 +704,12 @@ public class Factory extends org.restlet.Factory
 	{
 		try
 		{
-			if (response.getScheme().equals(ChallengeSchemes.HTTP_BASIC))
+			if (response.getScheme().equals(ChallengeScheme.HTTP_BASIC))
 			{
 				String credentials = userId + ':' + password;
 				response.setCredentials(Base64.encodeBytes(credentials.getBytes("US-ASCII")));
 			}
-			else if (response.getScheme().equals(ChallengeSchemes.SMTP_PLAIN))
+			else if (response.getScheme().equals(ChallengeScheme.SMTP_PLAIN))
 			{
 				String credentials = "^@" + userId + "^@" + password;
 				response.setCredentials(Base64.encodeBytes(credentials.getBytes("US-ASCII")));

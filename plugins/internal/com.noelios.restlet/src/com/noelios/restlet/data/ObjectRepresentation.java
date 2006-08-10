@@ -27,7 +27,7 @@ import java.io.ObjectOutputStream;
 import java.io.OutputStream;
 import java.io.Serializable;
 
-import org.restlet.data.MediaTypes;
+import org.restlet.data.MediaType;
 
 /**
  * Representation based on a serializable Java object.
@@ -44,7 +44,7 @@ public class ObjectRepresentation extends OutputRepresentation
     */
    public ObjectRepresentation(Serializable object)
    {
-      super(MediaTypes.APPLICATION_JAVA_OBJECT);
+      super(MediaType.APPLICATION_JAVA_OBJECT);
       this.object = object;
    }
 

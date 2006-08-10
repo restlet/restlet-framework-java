@@ -41,23 +41,17 @@ import org.restlet.Call;
 import org.restlet.component.Component;
 import org.restlet.connector.AbstractClient;
 import org.restlet.data.CharacterSet;
-import org.restlet.data.DefaultEncoding;
-import org.restlet.data.DefaultLanguage;
-import org.restlet.data.DefaultMediaType;
-import org.restlet.data.DefaultStatus;
 import org.restlet.data.Encoding;
 import org.restlet.data.Language;
-import org.restlet.data.Languages;
 import org.restlet.data.MediaType;
-import org.restlet.data.MediaTypes;
 import org.restlet.data.Metadata;
-import org.restlet.data.Methods;
+import org.restlet.data.Method;
 import org.restlet.data.ParameterList;
-import org.restlet.data.Protocols;
+import org.restlet.data.Protocol;
 import org.restlet.data.Reference;
 import org.restlet.data.ReferenceList;
 import org.restlet.data.Representation;
-import org.restlet.data.Statuses;
+import org.restlet.data.Status;
 
 import com.noelios.restlet.data.ContextReference;
 import com.noelios.restlet.data.FileReference;
@@ -136,8 +130,8 @@ public class ContextClient extends AbstractClient
    public ContextClient(Component owner, ParameterList parameters)
    {
    	super(owner, parameters);
-      getProtocols().add(Protocols.CONTEXT);
-      getProtocols().add(Protocols.FILE);
+      getProtocols().add(Protocol.CONTEXT);
+      getProtocols().add(Protocol.FILE);
       this.metadataMappings = new TreeMap<String, Metadata>();
       this.webAppPath = null;
       this.webAppArchive = false;
@@ -197,7 +191,7 @@ public class ContextClient extends AbstractClient
    {
       File file = new File(FileReference.localizePath(path));
 
-      if(call.getMethod().equals(Methods.GET) || call.getMethod().equals(Methods.HEAD))
+      if(call.getMethod().equals(Method.GET) || call.getMethod().equals(Method.HEAD))
 		{
  			if((file != null) && file.exists())
  			{
@@ -232,14 +226,14 @@ public class ContextClient extends AbstractClient
  				}
  				
  				call.setOutput(output);
- 				call.setStatus(Statuses.SUCCESS_OK);
+ 				call.setStatus(Status.SUCCESS_OK);
  			}
  			else
  			{
- 				call.setStatus(Statuses.CLIENT_ERROR_NOT_FOUND);
+ 				call.setStatus(Status.CLIENT_ERROR_NOT_FOUND);
  			}
 		}
-		else if(call.getMethod().equals(Methods.PUT))
+		else if(call.getMethod().equals(Method.PUT))
 		{
 			File tmp = null;
 
@@ -247,7 +241,7 @@ public class ContextClient extends AbstractClient
 			{
 				if(file.isDirectory())
 				{
-					call.setStatus(new DefaultStatus(Statuses.CLIENT_ERROR_FORBIDDEN, "Can't put a new representation of a directory"));
+					call.setStatus(new Status(Status.CLIENT_ERROR_FORBIDDEN, "Can't put a new representation of a directory"));
 				}
 				else
 				{
@@ -267,7 +261,7 @@ public class ContextClient extends AbstractClient
 					catch (IOException ioe)
 					{
 						logger.log(Level.WARNING, "Unable to create the temporary file", ioe);
-						call.setStatus(new DefaultStatus(Statuses.SERVER_ERROR_INTERNAL, "Unable to create a temporary file"));
+						call.setStatus(new Status(Status.SERVER_ERROR_INTERNAL, "Unable to create a temporary file"));
 					}
 					
 					// Then delete the existing file
@@ -278,23 +272,23 @@ public class ContextClient extends AbstractClient
 						{
 							if(call.getInput() == null)
 							{
-								call.setStatus(Statuses.SUCCESS_NO_CONTENT);
+								call.setStatus(Status.SUCCESS_NO_CONTENT);
 							}
 							else
 							{
-								call.setStatus(Statuses.SUCCESS_OK);
+								call.setStatus(Status.SUCCESS_OK);
 							}
 						}
 						else
 						{
 							logger.log(Level.WARNING, "Unable to move the temporary file to replace the existing file");
-							call.setStatus(new DefaultStatus(Statuses.SERVER_ERROR_INTERNAL, "Unable to move the temporary file to replace the existing file"));
+							call.setStatus(new Status(Status.SERVER_ERROR_INTERNAL, "Unable to move the temporary file to replace the existing file"));
 						}
 					}
 					else
 					{
 						logger.log(Level.WARNING, "Unable to delete the existing file");
-						call.setStatus(new DefaultStatus(Statuses.SERVER_ERROR_INTERNAL, "Unable to delete the existing file"));
+						call.setStatus(new Status(Status.SERVER_ERROR_INTERNAL, "Unable to delete the existing file"));
 					}
 				}
 			}
@@ -306,12 +300,12 @@ public class ContextClient extends AbstractClient
 					// Create a new directory and its necessary parents
 					if(file.mkdirs())
 					{
-						call.setStatus(Statuses.SUCCESS_NO_CONTENT);
+						call.setStatus(Status.SUCCESS_NO_CONTENT);
 					}
 					else
 					{
 						logger.log(Level.WARNING, "Unable to create the new directory");
-						call.setStatus(new DefaultStatus(Statuses.SERVER_ERROR_INTERNAL, "Unable to create the new directory"));
+						call.setStatus(new Status(Status.SERVER_ERROR_INTERNAL, "Unable to create the new directory"));
 					}
 				}
 				else
@@ -325,7 +319,7 @@ public class ContextClient extends AbstractClient
 							if(!parent.mkdirs())
 							{
 								logger.log(Level.WARNING, "Unable to create the parent directory");
-								call.setStatus(new DefaultStatus(Statuses.SERVER_ERROR_INTERNAL, "Unable to create the parent directory"));
+								call.setStatus(new Status(Status.SERVER_ERROR_INTERNAL, "Unable to create the parent directory"));
 							}
 						}
 					}
@@ -337,40 +331,40 @@ public class ContextClient extends AbstractClient
 						{
 							if(call.getInput() == null)
 							{
-								call.setStatus(Statuses.SUCCESS_NO_CONTENT);
+								call.setStatus(Status.SUCCESS_NO_CONTENT);
 							}
 							else
 							{
 								FileOutputStream fos = new FileOutputStream(file);
 								ByteUtils.write(call.getInput().getStream(), fos);
 								fos.close();
-								call.setStatus(Statuses.SUCCESS_OK);
+								call.setStatus(Status.SUCCESS_OK);
 							}
 						}
 						else
 						{
 							logger.log(Level.WARNING, "Unable to create the new file");
-							call.setStatus(new DefaultStatus(Statuses.SERVER_ERROR_INTERNAL, "Unable to create the new file"));
+							call.setStatus(new Status(Status.SERVER_ERROR_INTERNAL, "Unable to create the new file"));
 						}
 					}
 					catch (FileNotFoundException fnfe)
 					{
 						logger.log(Level.WARNING, "Unable to create the new file", fnfe);
-						call.setStatus(new DefaultStatus(Statuses.SERVER_ERROR_INTERNAL, "Unable to create the new file"));
+						call.setStatus(new Status(Status.SERVER_ERROR_INTERNAL, "Unable to create the new file"));
 					}
 					catch (IOException ioe)
 					{
 						logger.log(Level.WARNING, "Unable to create the new file", ioe);
-						call.setStatus(new DefaultStatus(Statuses.SERVER_ERROR_INTERNAL, "Unable to create the new file"));
+						call.setStatus(new Status(Status.SERVER_ERROR_INTERNAL, "Unable to create the new file"));
 					}
 				}
 			}
 		}
-		else if(call.getMethod().equals(Methods.DELETE))
+		else if(call.getMethod().equals(Method.DELETE))
 		{
 			if(file.delete())
 			{
-				call.setStatus(Statuses.SUCCESS_NO_CONTENT);
+				call.setStatus(Status.SUCCESS_NO_CONTENT);
 			}
 			else
 			{
@@ -378,22 +372,22 @@ public class ContextClient extends AbstractClient
 				{
 					if(file.listFiles().length == 0)
 					{
-						call.setStatus(new DefaultStatus(Statuses.SERVER_ERROR_INTERNAL, "Couldn't delete the empty directory"));
+						call.setStatus(new Status(Status.SERVER_ERROR_INTERNAL, "Couldn't delete the empty directory"));
 					}
 					else
 					{
-						call.setStatus(new DefaultStatus(Statuses.CLIENT_ERROR_FORBIDDEN, "Couldn't delete the non-empty directory"));
+						call.setStatus(new Status(Status.CLIENT_ERROR_FORBIDDEN, "Couldn't delete the non-empty directory"));
 					}
 				}
 				else
 				{
-					call.setStatus(new DefaultStatus(Statuses.SERVER_ERROR_INTERNAL, "Couldn't delete the file"));
+					call.setStatus(new Status(Status.SERVER_ERROR_INTERNAL, "Couldn't delete the file"));
 				}
 			}
 		}
 		else
 		{
-			call.setStatus(Statuses.CLIENT_ERROR_METHOD_NOT_ALLOWED);
+			call.setStatus(Status.CLIENT_ERROR_METHOD_NOT_ALLOWED);
 		}
    }
    
@@ -403,7 +397,7 @@ public class ContextClient extends AbstractClient
     */
    protected void handleClassLoader(Call call, ClassLoader classLoader)
    {
-      if(call.getMethod().equals(Methods.GET) || call.getMethod().equals(Methods.HEAD))
+      if(call.getMethod().equals(Method.GET) || call.getMethod().equals(Method.HEAD))
 		{
       	URL url = classLoader.getResource(call.getResourceRef().getPath());
       	
@@ -412,22 +406,22 @@ public class ContextClient extends AbstractClient
 				try
 				{
 					call.setOutput(new InputRepresentation(url.openStream(), null));
-	 				call.setStatus(Statuses.SUCCESS_OK);
+	 				call.setStatus(Status.SUCCESS_OK);
 				}
 				catch (IOException ioe)
 				{
 					logger.log(Level.WARNING, "Unable to open the representation's input stream", ioe);
-					call.setStatus(Statuses.SERVER_ERROR_INTERNAL);
+					call.setStatus(Status.SERVER_ERROR_INTERNAL);
 				}
       	}
       	else
       	{
-      		call.setStatus(Statuses.CLIENT_ERROR_NOT_FOUND);
+      		call.setStatus(Status.CLIENT_ERROR_NOT_FOUND);
       	}
 		}
 		else
 		{
-			call.setStatus(Statuses.CLIENT_ERROR_METHOD_NOT_ALLOWED);
+			call.setStatus(Status.CLIENT_ERROR_METHOD_NOT_ALLOWED);
 		}
    }
 
@@ -470,7 +464,7 @@ public class ContextClient extends AbstractClient
  					}
  					
  					call.setOutput(rl.getRepresentation());
-    				call.setStatus(Statuses.SUCCESS_OK);
+    				call.setStatus(Status.SUCCESS_OK);
 				}
  				else
  				{
@@ -478,13 +472,13 @@ public class ContextClient extends AbstractClient
                Representation output = new InputRepresentation(war.getInputStream(entry), null);
                updateMetadata(path, output);
     				call.setOutput(output);
-    				call.setStatus(Statuses.SUCCESS_OK);
+    				call.setStatus(Status.SUCCESS_OK);
  				}
 			}
 			catch (IOException e)
 			{
 				logger.log(Level.WARNING, "Unable to access to the WAR file", e);
-				call.setStatus(Statuses.SERVER_ERROR_INTERNAL);
+				call.setStatus(Status.SERVER_ERROR_INTERNAL);
 			}
 			
 		}
@@ -495,12 +489,12 @@ public class ContextClient extends AbstractClient
 			if(path.toUpperCase().startsWith("/WEB-INF/"))
 			{
 				logger.warning("Forbidden access to the WEB-INF directory detected. Path requested: " + path);
-				call.setStatus(Statuses.CLIENT_ERROR_NOT_FOUND);
+				call.setStatus(Status.CLIENT_ERROR_NOT_FOUND);
 			}
 			else if(path.toUpperCase().startsWith("/META-INF/"))
 			{
 				logger.warning("Forbidden access to the META-INF directory detected. Path requested: " + path);
-				call.setStatus(Statuses.CLIENT_ERROR_NOT_FOUND);
+				call.setStatus(Status.CLIENT_ERROR_NOT_FOUND);
 			}
 			else
 			{
@@ -550,28 +544,28 @@ public class ContextClient extends AbstractClient
     */
    public void addCommonExtensions()
    {
-      addExtension("en",   Languages.ENGLISH);
-      addExtension("es",   Languages.SPANISH);
-      addExtension("fr",   Languages.FRENCH);
+      addExtension("en",   Language.ENGLISH);
+      addExtension("es",   Language.SPANISH);
+      addExtension("fr",   Language.FRENCH);
       
-      addExtension("css",  MediaTypes.TEXT_CSS);
-      addExtension("doc",  MediaTypes.APPLICATION_WORD);
-      addExtension("gif",  MediaTypes.IMAGE_GIF);
-      addExtension("html", MediaTypes.TEXT_HTML);
-      addExtension("ico",  MediaTypes.IMAGE_ICON);
-      addExtension("jpeg", MediaTypes.IMAGE_JPEG);
-      addExtension("jpg",  MediaTypes.IMAGE_JPEG);
-      addExtension("js",   MediaTypes.APPLICATION_JAVASCRIPT);
-      addExtension("pdf",  MediaTypes.APPLICATION_PDF);
-      addExtension("png",  MediaTypes.IMAGE_PNG);
-      addExtension("ppt",  MediaTypes.APPLICATION_POWERPOINT);
-      addExtension("rdf",  MediaTypes.APPLICATION_RESOURCE_DESCRIPTION_FRAMEWORK);
-      addExtension("txt",  MediaTypes.TEXT_PLAIN);
-      addExtension("svg",  MediaTypes.IMAGE_SVG);
-      addExtension("swf",  MediaTypes.APPLICATION_SHOCKWAVE_FLASH);
-      addExtension("xhtml",MediaTypes.APPLICATION_XHTML_XML);
-      addExtension("xml",  MediaTypes.TEXT_XML);
-      addExtension("zip",	MediaTypes.APPLICATION_ZIP);
+      addExtension("css",  MediaType.TEXT_CSS);
+      addExtension("doc",  MediaType.APPLICATION_WORD);
+      addExtension("gif",  MediaType.IMAGE_GIF);
+      addExtension("html", MediaType.TEXT_HTML);
+      addExtension("ico",  MediaType.IMAGE_ICON);
+      addExtension("jpeg", MediaType.IMAGE_JPEG);
+      addExtension("jpg",  MediaType.IMAGE_JPEG);
+      addExtension("js",   MediaType.APPLICATION_JAVASCRIPT);
+      addExtension("pdf",  MediaType.APPLICATION_PDF);
+      addExtension("png",  MediaType.IMAGE_PNG);
+      addExtension("ppt",  MediaType.APPLICATION_POWERPOINT);
+      addExtension("rdf",  MediaType.APPLICATION_RESOURCE_DESCRIPTION_FRAMEWORK);
+      addExtension("txt",  MediaType.TEXT_PLAIN);
+      addExtension("svg",  MediaType.IMAGE_SVG);
+      addExtension("swf",  MediaType.APPLICATION_SHOCKWAVE_FLASH);
+      addExtension("xhtml",MediaType.APPLICATION_XHTML_XML);
+      addExtension("xml",  MediaType.TEXT_XML);
+      addExtension("zip",	MediaType.APPLICATION_ZIP);
    }
 
    /**
@@ -626,7 +620,7 @@ public class ContextClient extends AbstractClient
     */
    public Encoding getDefaultEncoding()
    {
-   	return new DefaultEncoding(getParameters().getFirstValue("defaultEncoding", "identity"));
+   	return new Encoding(getParameters().getFirstValue("defaultEncoding", "identity"));
    }
    
    /**
@@ -636,7 +630,7 @@ public class ContextClient extends AbstractClient
     */
    public MediaType getDefaultMediaType()
    {
-   	return new DefaultMediaType(getParameters().getFirstValue("defaultMediaType", "text/plain"));
+   	return new MediaType(getParameters().getFirstValue("defaultMediaType", "text/plain"));
    }
 
    /**
@@ -646,7 +640,7 @@ public class ContextClient extends AbstractClient
     */
    public Language getDefaultLanguage()
    {
-   	return new DefaultLanguage(getParameters().getFirstValue("defaultLanguage", "en-us"));
+   	return new Language(getParameters().getFirstValue("defaultLanguage", "en-us"));
    }
 
    /**

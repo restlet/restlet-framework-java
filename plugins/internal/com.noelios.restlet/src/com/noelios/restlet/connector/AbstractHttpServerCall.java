@@ -35,11 +35,7 @@ import org.restlet.Call;
 import org.restlet.connector.Connector;
 import org.restlet.connector.ConnectorCall;
 import org.restlet.data.CookieSetting;
-import org.restlet.data.DefaultEncoding;
-import org.restlet.data.DefaultLanguage;
-import org.restlet.data.DefaultMediaType;
 import org.restlet.data.Encoding;
-import org.restlet.data.Encodings;
 import org.restlet.data.Language;
 import org.restlet.data.MediaType;
 import org.restlet.data.Parameter;
@@ -128,15 +124,15 @@ public abstract class AbstractHttpServerCall extends DefaultConnectorCall
          {
             if(header.getName().equalsIgnoreCase(ConnectorCall.HEADER_CONTENT_ENCODING))
             {
-               contentEncoding = new DefaultEncoding(header.getValue());
+               contentEncoding = new Encoding(header.getValue());
             }
             else if(header.getName().equalsIgnoreCase(ConnectorCall.HEADER_CONTENT_LANGUAGE))
             {
-               contentLanguage = new DefaultLanguage(header.getValue());
+               contentLanguage = new Language(header.getValue());
             }
             else if(header.getName().equalsIgnoreCase(ConnectorCall.HEADER_CONTENT_TYPE))
             {
-               contentType = new DefaultMediaType(header.getValue());
+               contentType = new MediaType(header.getValue());
             }
             else if(header.getName().equalsIgnoreCase(ConnectorCall.HEADER_CONTENT_LENGTH))
             {
@@ -207,7 +203,7 @@ public abstract class AbstractHttpServerCall extends DefaultConnectorCall
             	getResponseHeaders().add(HEADER_EXPIRES, formatDate(output.getExpirationDate(), false));
             }
             
-            if((output.getEncoding() != null) && (!output.getEncoding().equals(Encodings.IDENTITY)))
+            if((output.getEncoding() != null) && (!output.getEncoding().equals(Encoding.IDENTITY)))
             {
             	getResponseHeaders().add(HEADER_CONTENT_ENCODING, output.getEncoding().getName());
             }

@@ -38,7 +38,7 @@ import javax.servlet.http.HttpServletResponse;
 
 import org.restlet.data.Parameter;
 import org.restlet.data.ParameterList;
-import org.restlet.data.Statuses;
+import org.restlet.data.Status;
 
 import com.noelios.restlet.connector.AbstractHttpServerCall;
 
@@ -239,7 +239,7 @@ public class ServletCall extends AbstractHttpServerCall
     */
    public void setResponseStatus(int code, String reason)
    {
-   	if(Statuses.isError(code))
+   	if(Status.isError(code))
    	{
    		try
 			{

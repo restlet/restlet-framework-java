@@ -23,8 +23,7 @@
 package org.restlet;
 
 import org.restlet.component.Component;
-import org.restlet.data.ScorerList;
-import org.restlet.data.Statuses;
+import org.restlet.data.Status;
 
 /**
  * Default Router that can directly be used.
@@ -129,7 +128,7 @@ public class DefaultRouter extends AbstractHandler implements Router
 		if(result == null)
 		{
 			// No routing option could be matched
-			call.setStatus(Statuses.CLIENT_ERROR_NOT_FOUND);
+			call.setStatus(Status.CLIENT_ERROR_NOT_FOUND);
 		}
 		
 		return result;

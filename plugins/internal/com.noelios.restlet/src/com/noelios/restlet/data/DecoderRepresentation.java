@@ -34,7 +34,6 @@ import java.util.zip.InflaterInputStream;
 import java.util.zip.ZipInputStream;
 
 import org.restlet.data.Encoding;
-import org.restlet.data.Encodings;
 import org.restlet.data.Representation;
 import org.restlet.data.WrapperRepresentation;
 
@@ -122,19 +121,19 @@ public class DecoderRepresentation extends WrapperRepresentation
 		{
 			Encoding we = getWrappedRepresentation().getEncoding();
 			
-			if(we.equals(Encodings.GZIP))
+			if(we.equals(Encoding.GZIP))
 			{
 				result = new GZIPInputStream(getWrappedRepresentation().getStream());
 			}
-			else if(we.equals(Encodings.DEFLATE))
+			else if(we.equals(Encoding.DEFLATE))
 			{
 				result = new InflaterInputStream(getWrappedRepresentation().getStream());
 			}
-			else if(we.equals(Encodings.ZIP))
+			else if(we.equals(Encoding.ZIP))
 			{
 				result = new ZipInputStream(getWrappedRepresentation().getStream());
 			}
-			else if(we.equals(Encodings.IDENTITY))
+			else if(we.equals(Encoding.IDENTITY))
 			{
 				throw new IOException("Decoder unecessary for identity decoding");
 			}
@@ -207,6 +206,6 @@ public class DecoderRepresentation extends WrapperRepresentation
 	 */
 	public static List<Encoding> getSupportedEncodings()
 	{
-		return Arrays.<Encoding>asList(Encodings.GZIP, Encodings.DEFLATE, Encodings.ZIP, Encodings.IDENTITY);
+		return Arrays.<Encoding>asList(Encoding.GZIP, Encoding.DEFLATE, Encoding.ZIP, Encoding.IDENTITY);
 	}
 }
