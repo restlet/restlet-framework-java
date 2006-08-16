@@ -153,13 +153,14 @@ public class Method extends Metadata
 	}
 
 	/**
-	 * Indicates if the method is equal to a given one.
-	 * @param method The method to compare to.
-	 * @return True if the method is equal to a given one.
+	 * Indicates if two metadata are equal.
+	 * @param object The object to compare to.
+	 * @return True if both metadata are equal.
 	 */
-	public boolean equals(Method method)
+	public boolean equals(Object object)
 	{
-		return (method != null) && getName().equals(method.getName());
+		return (object instanceof Method)
+				&& ((Method) object).getName().equals(getName());
 	}
 
 	/**

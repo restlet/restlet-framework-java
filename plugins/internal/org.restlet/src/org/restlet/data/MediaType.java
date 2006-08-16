@@ -22,7 +22,6 @@
 
 package org.restlet.data;
 
-
 /**
  * Media type used in representations and preferences.
  * @see <a href="http://en.wikipedia.org/wiki/MIME">MIME types on Wikipedia</a>
@@ -30,11 +29,10 @@ package org.restlet.data;
  */
 public class MediaType extends Metadata
 {
-	public static final MediaType ALL = new MediaType(
-			"*/*", "All media");
+	public static final MediaType ALL = new MediaType("*/*", "All media");
 
-	public static final MediaType APPLICATION_ALL = new MediaType(
-			"application/*", "All application documents");
+	public static final MediaType APPLICATION_ALL = new MediaType("application/*",
+			"All application documents");
 
 	public static final MediaType APPLICATION_ATOM_XML = new MediaType(
 			"application/atom+xml", "Atom syndication documents");
@@ -66,8 +64,8 @@ public class MediaType extends Metadata
 	public static final MediaType APPLICATION_OCTET_STREAM = new MediaType(
 			"application/octet-stream", "Raw octet stream");
 
-	public static final MediaType APPLICATION_PDF = new MediaType(
-			"application/pdf", "Adobe PDF document");
+	public static final MediaType APPLICATION_PDF = new MediaType("application/pdf",
+			"Adobe PDF document");
 
 	public static final MediaType APPLICATION_POSTSCRIPT = new MediaType(
 			"application/postscript", "Postscript document");
@@ -90,11 +88,11 @@ public class MediaType extends Metadata
 	public static final MediaType APPLICATION_STUFFIT = new MediaType(
 			"application/x-stuffit", "Stuffit archive");
 
-	public static final MediaType APPLICATION_TAR = new MediaType(
-			"application/x-tar",	"Tar archive");
+	public static final MediaType APPLICATION_TAR = new MediaType("application/x-tar",
+			"Tar archive");
 
-	public static final MediaType APPLICATION_WORD = new MediaType(
-			"application/msword", "Microsoft Word document");
+	public static final MediaType APPLICATION_WORD = new MediaType("application/msword",
+			"Microsoft Word document");
 
 	public static final MediaType APPLICATION_WWW_FORM = new MediaType(
 			"application/x-www-form-urlencoded", "Web form (URL encoded)");
@@ -102,92 +100,75 @@ public class MediaType extends Metadata
 	public static final MediaType APPLICATION_XHTML_XML = new MediaType(
 			"application/xhtml+xml", "XHTML document");
 
-	public static final MediaType APPLICATION_XML = new MediaType(
-			"application/xml", "XML document");
+	public static final MediaType APPLICATION_XML = new MediaType("application/xml",
+			"XML document");
 
-	public static final MediaType APPLICATION_ZIP = new MediaType(
-			"application/zip", "Zip archive");
+	public static final MediaType APPLICATION_ZIP = new MediaType("application/zip",
+			"Zip archive");
 
-	public static final MediaType AUDIO_ALL = new MediaType(
-			"audio/*", "All audios");
+	public static final MediaType AUDIO_ALL = new MediaType("audio/*", "All audios");
 
-	public static final MediaType AUDIO_MPEG = new MediaType(
-			"audio/mpeg", "MPEG audio (MP3)");
+	public static final MediaType AUDIO_MPEG = new MediaType("audio/mpeg",
+			"MPEG audio (MP3)");
 
-	public static final MediaType AUDIO_REAL = new MediaType(
-			"audio/x-pn-realaudio",	"Real audio");
+	public static final MediaType AUDIO_REAL = new MediaType("audio/x-pn-realaudio",
+			"Real audio");
 
-	public static final MediaType AUDIO_WAV = new MediaType(
-			"audio/x-wav",	"Waveform audio");
+	public static final MediaType AUDIO_WAV = new MediaType("audio/x-wav",
+			"Waveform audio");
 
-	public static final MediaType IMAGE_ALL = new MediaType(
-			"image/*", "All images");
+	public static final MediaType IMAGE_ALL = new MediaType("image/*", "All images");
 
-	public static final MediaType IMAGE_BMP = new MediaType(
-			"image/bmp", "Windows bitmap");
+	public static final MediaType IMAGE_BMP = new MediaType("image/bmp", "Windows bitmap");
 
-	public static final MediaType IMAGE_GIF = new MediaType(
-			"image/gif", "GIF image");
+	public static final MediaType IMAGE_GIF = new MediaType("image/gif", "GIF image");
 
-	public static final MediaType IMAGE_ICON = new MediaType(
-			"image/x-icon", "Windows icon (Favicon)");
+	public static final MediaType IMAGE_ICON = new MediaType("image/x-icon",
+			"Windows icon (Favicon)");
 
-	public static final MediaType IMAGE_JPEG = new MediaType(
-			"image/jpeg", "JPEG image");
+	public static final MediaType IMAGE_JPEG = new MediaType("image/jpeg", "JPEG image");
 
-	public static final MediaType IMAGE_PNG = new MediaType(
-			"image/png", "PNG image");
+	public static final MediaType IMAGE_PNG = new MediaType("image/png", "PNG image");
 
-	public static final MediaType IMAGE_SVG = new MediaType(
-			"image/svg+xml", "Scalable Vector Graphics");
+	public static final MediaType IMAGE_SVG = new MediaType("image/svg+xml",
+			"Scalable Vector Graphics");
 
-	public static final MediaType MESSAGE_ALL = new MediaType(
-			"message/*", "All messages");
+	public static final MediaType MESSAGE_ALL = new MediaType("message/*", "All messages");
 
-	public static final MediaType MODEL_ALL = new MediaType(
-			"model/*", "All models");
+	public static final MediaType MODEL_ALL = new MediaType("model/*", "All models");
 
-	public static final MediaType MULTIPART_ALL = new MediaType(
-			"multipart/*",	"All multipart data");
+	public static final MediaType MULTIPART_ALL = new MediaType("multipart/*",
+			"All multipart data");
 
 	public static final MediaType MULTIPART_FORM_DATA = new MediaType(
 			"multipart/form-data", "Multipart form data");
 
-	public static final MediaType TEXT_ALL = new MediaType(
-			"text/*", "All texts");
+	public static final MediaType TEXT_ALL = new MediaType("text/*", "All texts");
 
-	public static final MediaType TEXT_CSS = new MediaType(
-			"text/css", "CSS stylesheet");
+	public static final MediaType TEXT_CSS = new MediaType("text/css", "CSS stylesheet");
 
-	public static final MediaType TEXT_HTML = new MediaType(
-			"text/html", "HTML document");
+	public static final MediaType TEXT_HTML = new MediaType("text/html", "HTML document");
 
-	public static final MediaType TEXT_PLAIN = new MediaType(
-			"text/plain", "Plain text");
+	public static final MediaType TEXT_PLAIN = new MediaType("text/plain", "Plain text");
 
-	public static final MediaType TEXT_URI_LIST = new MediaType(
-			"text/uri-list", "List of URIs");
+	public static final MediaType TEXT_URI_LIST = new MediaType("text/uri-list",
+			"List of URIs");
 
-	public static final MediaType TEXT_VCARD = new MediaType(
-			"text/x-vcard", "vCard");
+	public static final MediaType TEXT_VCARD = new MediaType("text/x-vcard", "vCard");
 
-	public static final MediaType TEXT_XML = new MediaType(
-			"text/xml", "XML text");
+	public static final MediaType TEXT_XML = new MediaType("text/xml", "XML text");
 
-	public static final MediaType VIDEO_ALL = new MediaType(
-			"video/*", "All videos");
+	public static final MediaType VIDEO_ALL = new MediaType("video/*", "All videos");
 
-	public static final MediaType VIDEO_AVI = new MediaType(
-			"video/x-msvideo", "AVI video");
+	public static final MediaType VIDEO_AVI = new MediaType("video/x-msvideo", "AVI video");
 
-	public static final MediaType VIDEO_MPEG = new MediaType(
-			"video/mpeg", "MPEG video");
+	public static final MediaType VIDEO_MPEG = new MediaType("video/mpeg", "MPEG video");
 
-	public static final MediaType VIDEO_QUICKTIME = new MediaType(
-			"video/quicktime", "Quicktime video");
+	public static final MediaType VIDEO_QUICKTIME = new MediaType("video/quicktime",
+			"Quicktime video");
 
-	public static final MediaType VIDEO_WMV = new MediaType(
-			"video/x-ms-wmv", "Windows movie");
+	public static final MediaType VIDEO_WMV = new MediaType("video/x-ms-wmv",
+			"Windows movie");
 
 	/** The list of parameters. */
 	private ParameterList parameters;
@@ -304,7 +285,7 @@ public class MediaType extends Metadata
 	 */
 	public ParameterList getParameters()
 	{
-   	if(this.parameters == null) this.parameters = new ParameterList();
+		if (this.parameters == null) this.parameters = new ParameterList();
 		return this.parameters;
 	}
 
@@ -335,7 +316,8 @@ public class MediaType extends Metadata
 			else
 			{
 				result = getMainType().equals(included.getMainType())
-						&& getSubType().equals("*");
+						&& (getSubType().equals(included.getSubType()) || getSubType().equals(
+								"*"));
 
 				if (result)
 				{
@@ -350,6 +332,17 @@ public class MediaType extends Metadata
 		}
 
 		return result;
+	}
+
+	/**
+	 * Indicates if two media types are equal.
+	 * @param object The object to compare to.
+	 * @return True if both media types are equal.
+	 */
+	public boolean equals(Object object)
+	{
+		return (object instanceof MediaType)
+				&& ((MediaType) object).getName().equals(getName());
 	}
 
 }

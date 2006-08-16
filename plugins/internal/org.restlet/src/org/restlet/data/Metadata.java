@@ -71,6 +71,17 @@ public class Metadata
 	}
 
 	/**
+	 * Indicates if two metadata are equal.
+	 * @param object The object to compare to.
+	 * @return True if both metadata are equal.
+	 */
+	public boolean equals(Object object)
+	{
+		return (object instanceof Metadata)
+				&& ((Metadata) object).getName().equals(getName());
+	}
+
+	/**
 	 * Returns the description.
 	 * @return The description.
 	 */

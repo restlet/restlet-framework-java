@@ -65,7 +65,8 @@ public class CharacterSet extends Metadata
 	 */
 	public CharacterSet(String name)
 	{
-		this(name, "Character set or range of character sets");
+		this(name == null ? null : name.toUpperCase(),
+				"Character set or range of character sets");
 	}
 
 	/**
@@ -75,16 +76,17 @@ public class CharacterSet extends Metadata
 	 */
 	public CharacterSet(String name, String description)
 	{
-		super(name.toUpperCase(), description);
+		super(name == null ? null : name.toUpperCase(), description);
 	}
 
 	/**
 	 * Indicates if the character set is equal to a given one.
-	 * @param characterSet The character set to compare to.
+	 * @param object The object to compare to.
 	 * @return True if the character set is equal to a given one.
 	 */
-	public boolean equals(CharacterSet characterSet)
+	public boolean equals(Object object)
 	{
-		return (characterSet != null) && getName().equalsIgnoreCase(characterSet.getName());
+		return (object instanceof CharacterSet)
+				&& getName().equalsIgnoreCase(((CharacterSet) object).getName());
 	}
 }

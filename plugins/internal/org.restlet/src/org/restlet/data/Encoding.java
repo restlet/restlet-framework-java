@@ -29,51 +29,53 @@ package org.restlet.data;
  */
 public class Encoding extends Metadata
 {
-   /** All encodings acceptable. */
-   public static Encoding ALL = new Encoding("*", "All encodings");
+	/** All encodings acceptable. */
+	public static Encoding ALL = new Encoding("*", "All encodings");
 
-   /** The GNU Zip encoding. */
-   public static Encoding GZIP = new Encoding("gzip", "GZip compression");
+	/** The GNU Zip encoding. */
+	public static Encoding GZIP = new Encoding("gzip", "GZip compression");
 
-   /** The Info-Zip encoding. */
-   public static Encoding ZIP = new Encoding("zip", "Zip compression");
+	/** The Info-Zip encoding. */
+	public static Encoding ZIP = new Encoding("zip", "Zip compression");
 
-   /** The common Unix file compression. */
-   public static Encoding COMPRESS = new Encoding("compress", "Common Unix compression");
+	/** The common Unix file compression. */
+	public static Encoding COMPRESS = new Encoding("compress", "Common Unix compression");
 
-   /** The zlib format defined by RFC 1950 and 1951. */
-   public static Encoding DEFLATE = new Encoding("deflate", "Deflate compression using the zlib format");
+	/** The zlib format defined by RFC 1950 and 1951. */
+	public static Encoding DEFLATE = new Encoding("deflate",
+			"Deflate compression using the zlib format");
 
-   /** The default (identity) encoding. */
-   public static Encoding IDENTITY = new Encoding("identity", "The default encoding with no transformation");
+	/** The default (identity) encoding. */
+	public static Encoding IDENTITY = new Encoding("identity",
+			"The default encoding with no transformation");
 
-	
-   /**
-    * Constructor.
-    * @param name The name.
-    */
-   public Encoding(String name)
-   {
-      this(name, "Encoding applied to a representation");
-   }
+	/**
+	 * Constructor.
+	 * @param name The name.
+	 */
+	public Encoding(String name)
+	{
+		this(name, "Encoding applied to a representation");
+	}
 
-   /**
-    * Constructor.
-    * @param name The name.
-    * @param description The description. 
-    */
-   public Encoding(String name, String description)
-   {
-      super(name, description);
-   }
+	/**
+	 * Constructor.
+	 * @param name The name.
+	 * @param description The description. 
+	 */
+	public Encoding(String name, String description)
+	{
+		super(name, description);
+	}
 
-   /**
-    * Indicates if the encoding is equal to a given one.
-    * @param encoding The encoding to compare to.
-    * @return True if the encoding is equal to a given one.
-    */
-   public boolean equals(Encoding encoding)
-   {
-      return (encoding != null) && getName().equalsIgnoreCase(encoding.getName());
-   }
+	/**
+	 * Indicates if the encoding is equal to a given one.
+	 * @param object The object to compare to.
+	 * @return True if the encoding is equal to a given one.
+	 */
+	public boolean equals(Object object)
+	{
+		return (object instanceof Encoding)
+				&& getName().equalsIgnoreCase(((Encoding) object).getName());
+	}
 }

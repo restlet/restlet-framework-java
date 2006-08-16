@@ -138,33 +138,42 @@ public class Cookie extends Parameter
 
    /**
     * Compares two parameters.
-    * @param otherCookie The other cookie to compare to.
+    * @param object The object to compare to.
     * @return True if the parameters are identical (name and value).
     */
-   public boolean equals(Cookie otherCookie)
+   public boolean equals(Object object)
    {
-      boolean result = super.equals((Parameter)otherCookie);
-
-      result &= (getVersion() == otherCookie.getVersion());
-
-      if(getPath() == null)
+      boolean result = super.equals(object);
+      
+      if(result)
       {
-         result &= (otherCookie.getPath() == null);
+      	result = object instanceof Cookie;
+      	
+      	if(result)
+      	{
+      		Cookie otherCookie = (Cookie)object;
+		      result &= (getVersion() == otherCookie.getVersion());
+		
+		      if(getPath() == null)
+		      {
+		         result &= (otherCookie.getPath() == null);
+		      }
+		      else
+		      {
+		         result &= getPath().equals(otherCookie.getPath());
+		      }
+		
+		      if(getDomain() == null)
+		      {
+		         result &= (otherCookie.getDomain() == null);
+		      }
+		      else
+		      {
+		         result &= getDomain().equals(otherCookie.getDomain());
+		      }
+      	}
       }
-      else
-      {
-         result &= getPath().equals(otherCookie.getPath());
-      }
-
-      if(getDomain() == null)
-      {
-         result &= (otherCookie.getDomain() == null);
-      }
-      else
-      {
-         result &= getDomain().equals(otherCookie.getDomain());
-      }
-
+      
       return result;
    }
 

@@ -115,12 +115,13 @@ public class Protocol extends Metadata
 
 	/**
 	 * Indicates if the protocol is equal to a given one.
-	 * @param protocol The protocol to compare to.
+	 * @param object The object to compare to.
 	 * @return True if the protocol is equal to a given one.
 	 */
-	public boolean equals(Protocol protocol)
+	public boolean equals(Object object)
 	{
-		return (protocol != null) && getName().equalsIgnoreCase(protocol.getName());
+		return (object instanceof Protocol)
+				&& getName().equalsIgnoreCase(((Protocol) object).getName());
 	}
 
 	/**

@@ -28,86 +28,88 @@ package org.restlet.data;
  */
 public class Language extends Metadata
 {
-   /** All languages acceptable. */
-   public static Language ALL = new Language("*", "All languages");
+	/** All languages acceptable. */
+	public static Language ALL = new Language("*", "All languages");
 
-   /** English language. */
-   public static Language ENGLISH = new Language("en", "English language");
+	/** English language. */
+	public static Language ENGLISH = new Language("en", "English language");
 
-   /** English language spoken in USA. */
-   public static Language ENGLISH_US = new Language("en-us", "English language in USA");
+	/** English language spoken in USA. */
+	public static Language ENGLISH_US = new Language("en-us", "English language in USA");
 
-   /** French language. */
-   public static Language FRENCH = new Language("fr", "French language");
+	/** French language. */
+	public static Language FRENCH = new Language("fr", "French language");
 
-   /** French language spoken in France. */
-   public static Language FRENCH_FRANCE = new Language("fr-fr", "French language in France");
+	/** French language spoken in France. */
+	public static Language FRENCH_FRANCE = new Language("fr-fr",
+			"French language in France");
 
-   /** Spanish language. */
-   public static Language SPANISH = new Language("es", "Spanish language");
-	
-   /**
-    * Constructor.
-    * @param name The name.
-    */
-   public Language(String name)
-   {
-      this(name, "Language or range of languages");
-   }
+	/** Spanish language. */
+	public static Language SPANISH = new Language("es", "Spanish language");
 
-   /**
-    * Constructor.
-    * @param name The name.
-    * @param description The description. 
-    */
-   public Language(String name, String description)
-   {
-      super(name, description);
-   }
+	/**
+	 * Constructor.
+	 * @param name The name.
+	 */
+	public Language(String name)
+	{
+		this(name, "Language or range of languages");
+	}
 
-   /**
-    * Returns the main tag.
-    * @return The main tag.
-    */
-   public String getMainTag()
-   {
-      int separator = getName().indexOf('-');
+	/**
+	 * Constructor.
+	 * @param name The name.
+	 * @param description The description. 
+	 */
+	public Language(String name, String description)
+	{
+		super(name, description);
+	}
 
-      if(separator == -1)
-      {
-         return getName();
-      }
-      else
-      {
-         return getName().substring(0, separator);
-      }
-   }
+	/**
+	 * Returns the main tag.
+	 * @return The main tag.
+	 */
+	public String getMainTag()
+	{
+		int separator = getName().indexOf('-');
 
-   /**
-    * Returns the sub tag.
-    * @return The sub tag.
-    */
-   public String getSubTag()
-   {
-      int separator = getName().indexOf('-');
+		if (separator == -1)
+		{
+			return getName();
+		}
+		else
+		{
+			return getName().substring(0, separator);
+		}
+	}
 
-      if(separator == -1)
-      {
-         return null;
-      }
-      else
-      {
-         return getName().substring(separator + 1);
-      }
-   }
+	/**
+	 * Returns the sub tag.
+	 * @return The sub tag.
+	 */
+	public String getSubTag()
+	{
+		int separator = getName().indexOf('-');
 
-   /**
-    * Indicates if the language is equal to a given one.
-    * @param language The language to compare to.
-    * @return True if the language is equal to a given one.
-    */
-   public boolean equals(Language language)
-   {
-      return (language != null) && getName().equalsIgnoreCase(language.getName());
-   }
+		if (separator == -1)
+		{
+			return null;
+		}
+		else
+		{
+			return getName().substring(separator + 1);
+		}
+	}
+
+	/**
+	 * Indicates if the language is equal to a given one.
+	 * @param object The object to compare to.
+	 * @return True if the language is equal to a given one.
+	 */
+	public boolean equals(Object object)
+	{
+		return (object instanceof Language)
+				&& getName().equalsIgnoreCase(((Language) object).getName());
+	}
 }

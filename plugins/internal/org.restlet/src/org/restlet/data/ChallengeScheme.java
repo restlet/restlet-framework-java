@@ -83,12 +83,13 @@ public class ChallengeScheme extends Metadata
 	}
 
 	/**
-	 * Indicates if the scheme is equal to a given one.
-	 * @param scheme The scheme to compare to.
-	 * @return True if the scheme is equal to a given one.
+	 * Indicates if two metadata are equal.
+	 * @param object The object to compare to.
+	 * @return True if both metadata are equal.
 	 */
-	public boolean equals(ChallengeScheme scheme)
+	public boolean equals(Object object)
 	{
-		return scheme.getName().equalsIgnoreCase(getName());
+		return (object instanceof ChallengeScheme)
+				&& ((ChallengeScheme) object).getName().equals(getName());
 	}
 }

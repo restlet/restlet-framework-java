@@ -193,25 +193,30 @@ public class Reference
    {
    	this.baseRef = baseRef;
    }
-
-   /**
-    * Returns true if both reference are strictly equals, character-to-character.
-    * @param ref The reference to compare.
-    * @return True if both reference are strictly equals, character-to-character.
-    */
-   public boolean equals(Reference ref)
-   {
-   	return (ref == null) ? false : this.internalRef.equals(ref.internalRef);
-   }
    
    /**
     * Indicates whether some other object is "equal to" this one.
-    * @param obj The reference object with which to compare.
+    * @param object The object to compare to.
     * @return True if this object is the same as the obj argument. 
     */
-   public boolean equals(Object obj) 
+   public boolean equals(Object object) 
    {
-   	return (obj instanceof Reference) ? equals((Reference) obj) : false;
+   	if(object instanceof Reference)
+   	{
+   		Reference ref = (Reference)object;
+   		if(this.internalRef == null)
+   		{
+   			return ref.internalRef == null;
+   		}
+   		else
+   		{
+   			return this.internalRef.equals(ref.internalRef);
+   		}
+   	}
+   	else
+   	{
+   		return false;
+   	}
    }
       
    /**

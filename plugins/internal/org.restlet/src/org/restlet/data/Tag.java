@@ -152,12 +152,12 @@ public class Tag
 
 	/**
 	 * Indicates if both tags are equal.
-	 * @param tag The tag to compare.
+	 * @param object The object to compare to.
 	 * @return True if both tags are equal.
 	 */
-	public boolean equals(Tag tag)
+	public boolean equals(Object object)
 	{
-		return (tag == null) ? false : getName().equals(tag.getName());
+		return (object instanceof Tag) && getName().equals(((Tag) object).getName());
 	}
 
 }

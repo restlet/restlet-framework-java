@@ -77,31 +77,36 @@ public class Parameter implements Comparable<Parameter>
 
    /**
     * Compares two parameters.
-    * @param otherParam The other parameter to compare.
+    * @param object The object to compare.
     * @return True if the parameters are identical (name and value).
     */
-   public boolean equals(Parameter otherParam)
+   public boolean equals(Object object)
    {
-      boolean result = true;
+      boolean result = object instanceof Parameter;
 
-      if(getName() == null)
+      if(result)
       {
-         result = (otherParam.getName() == null);
+      	Parameter param = (Parameter)object;
+      	
+	      if(getName() == null)
+	      {
+	         result = (param.getName() == null);
+	      }
+	      else
+	      {
+	         result = getName().equals(param.getName());
+	      }
+	
+	      if(getValue() == null)
+	      {
+	         result &= (param.getValue() == null);
+	      }
+	      else
+	      {
+	         result &= getValue().equals(param.getValue());
+	      }
       }
-      else
-      {
-         result = getName().equals(otherParam.getName());
-      }
-
-      if(getValue() == null)
-      {
-         result &= (otherParam.getValue() == null);
-      }
-      else
-      {
-         result &= getValue().equals(otherParam.getValue());
-      }
-
+      
       return result;
    }
 

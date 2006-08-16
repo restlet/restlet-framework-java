@@ -16,6 +16,8 @@ Changes log
    off by default. Reported by Tiago Silveira.
  - Fixed caching conflicts with content negotiation. Now ETags are properly considered. Reported by Chris Winters.
  - Fixed potential NPE in the DateUtils comparison methods. Reported by Chris Winters.
+ - Reworked all equals() methods in the data package to accept Object as parameter. 
+ - Fixed bug in MediaType.includes() and added a JUnit test case for MediaType comparison. Report and patch by Chris Winters.
  
 [API breaking changes]
  - Removed get/setTimeout() methods from the Client interface and related classes. Also, removed the configureSsl() method from the Server interface.
