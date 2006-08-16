@@ -14,7 +14,6 @@
 <br/>
 
 <h1>Tutorial</h1>
-<br/>
 
 <h3><a name="toc">Table of contents</a></h3>
 <p>
@@ -34,7 +33,6 @@
       <li><a href="#conclusion">Conclusion</a></li>
    </ol>
 </p>
-<br/>
 
 <h3><a name="part01">1. Registering an implementation</a></h3>
 
@@ -47,7 +45,6 @@
 <p>
    The registration is done automatically. See the <a href="http://java.sun.com/j2se/1.5.0/docs/guide/jar/jar.html#Service%20Provider">JAR specification</a> for details. When an implementation is loaded, it automatically calls back the <code>org.restlet.Factory.setInstance()</code> method.
 </p>
-<br/>
 
 <h3><a name="part02">2. Retrieving the content of a Web page</a></h3>
 
@@ -75,7 +72,6 @@
          Representation output = call.getOutput();
          output.write(System.out);
 </pre>
-<br/>
 
 <h3><a name="part03">3. Listening to Web browsers</a></h3>
 
@@ -98,7 +94,6 @@
 <p>
    If you run this code and launch your server, you can open a Web browser and hit the <a target="_top" href="http://localhost:8182">http://localhost:8182</a>. Actually, any URI will work, try also <a target="_top" href="http://localhost:8182/test/tutorial">http://localhost:8182/test/tutorial</a>. Note that if you test your server from a different machine, you need to replace "localhost" by either the IP address of your server or its domain name. The handler that we created is very primitive. We will see later how to take more advantage of the Restlet framework.
 </p>
-<br/>
 
 <h3><a name="part04">4. Overview of a REST architecture</a></h3>
 <p>
@@ -110,7 +105,6 @@
 <p>
    Note that the same component can have any number of client and server connectors attached to it. Web Server B, for example, has both a server connector to respond to requests from the User Agent component, and client connectors to send requests to the Database Server, the Mail Server and the Web Server A.
 </p>
-<br/>
 
 <h3><a name="part05">5. Restlets servers and containers</a></h3>
 <p>
@@ -170,7 +164,6 @@
 <p>
    Also, note that servers and containers are REST components themselves. This means that if your Restlet server has only one container, you can simply use it as your origin server and attach connectors normally to it.
 </p>
-<br/>
 
 <h3><a name="part06">6. Serving context resources</a></h3>
 <p>
@@ -194,7 +187,6 @@
 <p>
    Note that no external configuration file is needed. Here, the three extensions are declaring some media types, but the same mechanism can also be used to declare other metadata like languages.
 </p>
-<br/>
 
 <h3><a name="part07">7. Filters and call logging</a></h3>
 <p>
@@ -230,7 +222,6 @@
 <p>
    For details on the configuration file format, please check the <a href="http://java.sun.com/j2se/1.5.0/docs/api/index.html?java/util/logging/LogManager.html">JDK's LogManager</a> class.
 </p>
-<br/>
 
 <h3><a name="part08">8. Displaying error pages</a></h3>
 <p>
@@ -261,7 +252,6 @@
 <p>
    In order to customize the default messages, you will simply need to subclass the StatusFilter class and override the getRepresentation(status, call) method.
 </p>
-<br/>
 
 <h3><a name="part09">9. Guarding access to sensitive resources</a></h3>
 <p>
@@ -314,7 +304,6 @@
 <p>
    You can change the user ID or password sent by this test client in order to check the response returned by the server. Remember to launch the previous Restlet server before starting your client. Note that if you test your server from a different machine, you need to replace "localhost" by either the IP address of your server or its domain name when typing the URI in the browser. The server won't need any adjustment due to the usage of the HostRouter which accepts all types of URI by default.
 </p>
-<br/>
 
 <h3><a name="part10">10. URI rewriting and redirection</a></h3>
 <p>
@@ -332,7 +321,6 @@
 <p>
    Note that the RedirectRestlet needs two parameters only. The first one defines how the URI rewriting should be done, based on a URI template. This template will be processed by the <a href="http://www.restlet.org/docs/nre/com/noelios/restlet/util/StringTemplate.html">StringTemplate</a> class and the URI data model provided by the <a href="http://www.restlet.org/docs/nre/com/noelios/restlet/util/RestletCallModel.html">RestletCallModel</a> class. The second parameter defines the type of redirection; here we chose the client redirection, for simplicity purpose.
 </p>
-<br/>
 
 <h3><a name="part11">11. Routers and hierarchical URIs</a></h3>
 <p>
@@ -417,7 +405,6 @@
          // Now, let's start the container!
          myContainer.start();
 </pre>
-<br/>
 
 <h3><a name="part12">12. Simplify configuration with fluent builders</a></h3>
 <p>
@@ -443,7 +430,6 @@
 <p>
    Here we are essentially creating a tree of builders. Each builder wrap a node (Restlet, Components, etc.) and provides method facilitating its configuration (setting of properties, creating of children and automatic attachment). Each time an attach*() method is invoked, the current builder is moved down to a builder wrapping the newly attached node. If you need to go up the tree of builders in order to attach more children, just use the up() or up(levels) or owner() or root() methods available. The to*() methods can be necessary in order to use methods specific to a certain type of builder. Another benefit is the possibility to use code completion in your IDE to assist you in using these builders. Have a look at the com.noelios.restlet.build package for more details.
 </p>
-<br/>
 
 <h3><a name="conclusion">Conclusion</a></h3>
 <p>
