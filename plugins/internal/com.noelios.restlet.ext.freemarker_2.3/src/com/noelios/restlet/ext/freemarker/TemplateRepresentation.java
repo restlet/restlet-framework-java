@@ -44,13 +44,13 @@ import freemarker.template.TemplateException;
 public class TemplateRepresentation extends OutputRepresentation
 {
    /** The FreeMarker template's name. */
-   protected String templateName;
+	private String templateName;
 
    /** The FreeMarker configuration. */
-   Configuration config;
+	private Configuration config;
 
    /** The template's data model. */
-   protected Object dataModel;
+	private Object dataModel;
 
    /**
     * Constructor.

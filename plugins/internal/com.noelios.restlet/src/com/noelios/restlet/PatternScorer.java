@@ -27,10 +27,10 @@ import java.util.logging.Logger;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
-import org.restlet.AbstractScorer;
 import org.restlet.Call;
 import org.restlet.Restlet;
 import org.restlet.Router;
+import org.restlet.Scorer;
 import org.restlet.data.Reference;
 import org.restlet.data.Status;
 
@@ -41,13 +41,13 @@ import org.restlet.data.Status;
  * @see <a href="http://javaalmanac.com/egs/java.util.regex/pkg.html">Java Almanac on the Regex package</a>
  * @author Jerome Louvel (contact@noelios.com) <a href="http://www.noelios.com/">Noelios Consulting</a>
  */
-public class PatternScorer extends AbstractScorer
+public class PatternScorer extends Scorer
 {
    /** Obtain a suitable logger. */
    private static Logger logger = Logger.getLogger(PatternScorer.class.getCanonicalName());
 
    /** The URI pattern. */
-   Pattern pattern;
+   private Pattern pattern;
 
    /**
     * Constructor.
@@ -78,7 +78,7 @@ public class PatternScorer extends AbstractScorer
 	public float score(Call call)
 	{
 		float result = 0F;
-		String remainingRef = getRemainingRef(call);
+		String remainingRef = call.getRelativePart();
 		Matcher matcher = getPattern().matcher(remainingRef);
       boolean matched = matcher.lookingAt();
 
@@ -111,7 +111,7 @@ public class PatternScorer extends AbstractScorer
 	 */
 	public void handle(Call call)
 	{
-		String remainingRef = getRemainingRef(call);
+		String remainingRef = call.getRelativePart();
 		Matcher matcher = getPattern().matcher(remainingRef);
       boolean matched = matcher.lookingAt();
          
@@ -124,7 +124,7 @@ public class PatternScorer extends AbstractScorer
       {
 	      // Updates the context
 	      String matchedPart = remainingRef.substring(0, matcher.end());
-	      Reference baseRef = call.getContext().getBaseRef();
+	      Reference baseRef = call.getBaseRef();
 	
 	      if(baseRef == null)
 	      {
@@ -135,12 +135,12 @@ public class PatternScorer extends AbstractScorer
 	      	baseRef = new Reference(baseRef.toString(false, false) + matchedPart);
 	      }
 	      
-      	call.getContext().setBaseRef(baseRef);
+      	call.setBaseRef(baseRef);
 	
 	      if(logger.isLoggable(Level.FINE))
 	      {
-	      	logger.fine("New base URI: " + call.getContext().getBaseRef());
-	      	logger.fine("New relative path: " + call.getContext().getRelativePath());
+	      	logger.fine("New base URI: " + call.getBaseRef());
+	      	logger.fine("New relative part: " + call.getRelativePart());
 	      }
 	
 	      if(logger.isLoggable(Level.FINE))
@@ -156,21 +156,4 @@ public class PatternScorer extends AbstractScorer
       	call.setStatus(Status.CLIENT_ERROR_NOT_FOUND);
       }
 	}   
-
-	/**
-	 * Returns the remaining reference following the base reference.
-	 * @param call The call to handle.
-	 * @return The remaining reference following the base reference.
-	 */
-	protected String getRemainingRef(Call call)
-	{
-		if(call.getContext().getBaseRef() != null)
-		{
-			return call.getResourceRef().toString().substring(call.getContext().getBaseRef().toString().length());
-		}
-		else
-		{
-			return call.getResourceRef().toString();
-		}
-	}
 }

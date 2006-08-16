@@ -34,22 +34,22 @@ import org.restlet.Factory;
 public class ClientData
 {
 	/** The IP addresses. */
-	protected List<String> addresses;
+	private List<String> addresses;
 
 	/** The name. */
-	protected String name;
+	private String name;
 
 	/** The character set preferences. */
-	protected List<CharacterSetPref> characterSetPrefs;
+	private List<CharacterSetPref> characterSetPrefs;
 
 	/** The encoding preferences. */
-	protected List<EncodingPref> encodingPrefs;
+	private List<EncodingPref> encodingPrefs;
 
 	/** The language preferences. */
-	protected List<LanguagePref> languagePrefs;
+	private List<LanguagePref> languagePrefs;
 
 	/** The media preferences. */
-	protected List<MediaTypePref> mediaTypePrefs;
+	private List<MediaTypePref> mediaTypePrefs;
 
 	/**
 	 * Constructor.

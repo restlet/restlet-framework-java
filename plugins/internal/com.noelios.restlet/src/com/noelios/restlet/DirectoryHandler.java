@@ -28,16 +28,14 @@ import java.util.List;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
-import org.restlet.AbstractHandler;
 import org.restlet.Call;
-import org.restlet.Factory;
-import org.restlet.Restlet;
-import org.restlet.component.Component;
-import org.restlet.connector.Client;
+import org.restlet.Context;
+import org.restlet.Handler;
 import org.restlet.data.MediaType;
 import org.restlet.data.Reference;
 import org.restlet.data.ReferenceList;
 import org.restlet.data.Representation;
+import org.restlet.data.Resource;
 
 import com.noelios.restlet.data.DirectoryResource;
 import com.noelios.restlet.data.StringRepresentation;
@@ -50,42 +48,38 @@ import com.noelios.restlet.data.StringRepresentation;
  * @see <a href="http://www.restlet.org/tutorial#part06">Tutorial: Serving context resources</a>
  * @author Jerome Louvel (contact@noelios.com) <a href="http://www.noelios.com/">Noelios Consulting</a>
  */
-public class DirectoryHandler extends AbstractHandler
+public class DirectoryHandler extends Handler
 {
    /** Obtain a suitable logger. */
    private static Logger logger = Logger.getLogger(DirectoryResource.class.getCanonicalName());
 
-   /** The context client. */
-   protected Client contextClient;
-
    /** If no file name is specified, use the (optional) index name. */
-   protected String indexName;
+   private String indexName;
 
    /** Indicates if the subdirectories are deeply accessible (true by default). */
-   protected boolean deeplyAccessible;
+   private boolean deeplyAccessible;
 
    /** The absolute root URI, including the "file://" or "context://" scheme. */
-   protected String rootUri;
+   private String rootUri;
    
    /** Indicates if modifications to context resources are allowed (false by default). */
-   protected boolean modifiable;
+   private boolean modifiable;
    
    /** Indicates if the display of directory listings is allowed when no index file is found. */
-   protected boolean listingAllowed;
+   private boolean listingAllowed;
 
 	/** Indicates if content negotation should be enabled (false by default). */
-	protected boolean negotiationEnabled;
+   private boolean negotiationEnabled;
   
    /**
     * Constructor.
-    * @param owner The owner component.
+    * @param context The context.
     * @param rootUri The absolute root Uri, including the "file://" or "context://" scheme.
     * @param indexName If no file name is specified, use the (optional) index name.
     */
-   public DirectoryHandler(Component owner, String rootUri, String indexName)
+   public DirectoryHandler(Context context, String rootUri, String indexName)
    {
-      super(owner);
-      this.contextClient = getOwner().getClients().get(Factory.CONTEXT_CLIENT_NAME);
+      super(context);
       this.indexName = indexName;
       
       if(rootUri.endsWith("/"))
@@ -104,13 +98,13 @@ public class DirectoryHandler extends AbstractHandler
       this.listingAllowed = false;
       this.negotiationEnabled = false;
    }
-   
-   /**
-	 * Finds the next Restlet if available.
-	 * @param call The current call.
-	 * @return The next Restlet if available or null.
+
+	/**
+	 * Finds the target resource of the given call.
+	 * @param call The call to handle.
+	 * @return The target resource of the given call.
 	 */
-	public Restlet findNext(Call call)
+	public Resource findResource(Call call)
 	{
    	try
 		{
@@ -175,24 +169,6 @@ public class DirectoryHandler extends AbstractHandler
    public void setModifiable(boolean modifiable)
    {
    	this.modifiable = modifiable;
-   }
-   
-   /**
-    * Returns the context client.
-    * @return The context client.
-    */
-   public Client getContextClient()
-   {
-   	return this.contextClient;
-   }
-
-   /**
-    * Sets the context client.
-    * @param contextClient The context client.
-    */
-   public void setContextClient(Client contextClient)
-   {
-   	this.contextClient = contextClient;
    }
    
    /**

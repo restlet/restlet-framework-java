@@ -26,9 +26,9 @@ package com.noelios.restlet;
 
 import java.util.Iterator;
 
-import org.restlet.AbstractFilter;
 import org.restlet.Call;
-import org.restlet.component.Component;
+import org.restlet.Context;
+import org.restlet.Filter;
 import org.restlet.data.Encoding;
 import org.restlet.data.Representation;
 
@@ -38,36 +38,36 @@ import com.noelios.restlet.data.DecoderRepresentation;
  * Filter decompressing input or output representations. 
  * @author Jerome Louvel (contact@noelios.com) <a href="http://www.noelios.com/">Noelios Consulting</a>
  */
-public class DecompressFilter extends AbstractFilter
+public class DecompressFilter extends Filter
 {
 	/**
 	 * Indicates if the input representation should be decoded.
 	 */
-	protected boolean decodeInput;
+	private boolean decodeInput;
 	
 	/**
 	 * Indicates if the output representation should be decoded.
 	 */
-	protected boolean decodeOutput;
+	private boolean decodeOutput;
 
 	/**
 	 * Constructor to only decode input representations before call handling.
-	 * @param owner The owner component.
+	 * @param context The context.
 	 */
-	public DecompressFilter(Component owner)
+	public DecompressFilter(Context context)
 	{
-		this(owner, true, false);
+		this(context, true, false);
 	}
 
 	/**
 	 * Constructor.
-	 * @param owner The owner component.
+	 * @param context The context.
 	 * @param decodeInput Indicates if the input representation should be decoded.
 	 * @param decodeOutput Indicates if the output representation should be decoded.
 	 */
-	public DecompressFilter(Component owner, boolean decodeInput, boolean decodeOutput)
+	public DecompressFilter(Context context, boolean decodeInput, boolean decodeOutput)
 	{
-		super(owner);
+		super(context);
 		this.decodeInput = decodeInput;
 		this.decodeOutput = decodeOutput;
 	}

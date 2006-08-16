@@ -28,8 +28,8 @@ package org.restlet.data;
  */
 public class Method extends Metadata
 {
-	protected static final String BASE_HTTP = "http://www.w3.org/Protocols/rfc2616/rfc2616-sec9.html";
-	protected static final String BASE_WEBDAV = "http://www.webdav.org/specs/rfc2518.html";
+	private static final String BASE_HTTP = "http://www.w3.org/Protocols/rfc2616/rfc2616-sec9.html";
+	private static final String BASE_WEBDAV = "http://www.webdav.org/specs/rfc2518.html";
 
 	public static final Method CONNECT = new Method(
 			"CONNECT",
@@ -107,7 +107,7 @@ public class Method extends Metadata
 			BASE_WEBDAV + "#METHOD_UNLOCK");
 
 	/** The URI of the specification describing the method. */
-	protected String uri;
+	private String uri;
 
 	/**
 	 * Constructor.

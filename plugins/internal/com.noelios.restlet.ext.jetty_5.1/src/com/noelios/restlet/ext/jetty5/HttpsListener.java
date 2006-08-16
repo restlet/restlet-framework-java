@@ -38,7 +38,7 @@ public class HttpsListener extends SslListener
    private static final long serialVersionUID = 1L;
 
    /** The parent Jetty server. */
-   protected JettyServer server;
+   private JettyServer server;
    
    /**
     * Constructor.

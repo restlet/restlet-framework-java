@@ -24,32 +24,33 @@ package org.restlet.data;
 
 import java.util.List;
 
-import org.restlet.WrapperRestlet;
-
 /**
  * Resource wrapper. Useful for application developer who need to enrich the resource 
  * with application related properties and behavior.
  * @see <a href="http://c2.com/cgi/wiki?DecoratorPattern">The decorator (aka wrapper) pattern</a>
  * @author Jerome Louvel (contact@noelios.com) <a href="http://www.noelios.com/">Noelios Consulting</a>
  */
-public class WrapperResource extends WrapperRestlet implements Resource
+public class WrapperResource implements Resource
 {
+	/** The wrapped resource. */
+	private Resource wrappedResource;
+	
    /**
     * Constructor.
     * @param wrappedResource The wrapped resource.
     */
    public WrapperResource(Resource wrappedResource)
    {
-   	super(wrappedResource);
+   	this.wrappedResource = wrappedResource;
    }
 
    /**
     * Returns the wrapped Resource.
     * @return The wrapped Resource.
     */
-   public Resource getWrappedResource()
+   protected Resource getWrappedResource()
    {
-   	return (Resource)getWrappedRestlet();
+   	return this.wrappedResource;
    }
    
 	/**

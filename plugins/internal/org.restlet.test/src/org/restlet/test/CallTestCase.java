@@ -25,11 +25,12 @@ import java.util.Arrays;
 import java.util.List;
 
 import org.restlet.Call;
-import org.restlet.connector.ConnectorCall;
 import org.restlet.data.ClientData;
 import org.restlet.data.Method;
 import org.restlet.data.Reference;
 import org.restlet.data.Status;
+
+import com.noelios.restlet.connector.HttpCall;
 
 /**
  * Test {@link org.restlet.Call}.
@@ -54,7 +55,7 @@ public class CallTestCase extends RestletTestCase
 	 *
 	 * @return A connector call instance.
 	 */
-	protected ConnectorCall getConnectorCall()
+	protected HttpCall getConnectorCall()
 	{
 		return new DummyConnectorCall();
 	}
@@ -241,14 +242,14 @@ public class CallTestCase extends RestletTestCase
 		assertEquals(resourceRef, call.getResourceRef());
 		String uri = "http://www.restlet.org/path";
 		Reference reference = getReference(uri);
-		call.getContext().setBaseRef(uri);
-		assertEquals(uri, call.getContext().getBaseRef().toString());
-		assertEquals(reference, call.getContext().getBaseRef());
+		call.setBaseRef(uri);
+		assertEquals(uri, call.getBaseRef().toString());
+		assertEquals(reference, call.getBaseRef());
 		uri = "http://www.restlet.org/path/to";
 		reference = getReference(uri);
-		call.getContext().setBaseRef(uri);
-		assertEquals(uri, call.getContext().getBaseRef().toString());
-		assertEquals(reference, call.getContext().getBaseRef());
+		call.setBaseRef(uri);
+		assertEquals(uri, call.getBaseRef().toString());
+		assertEquals(reference, call.getBaseRef());
 	}
 
 	/**

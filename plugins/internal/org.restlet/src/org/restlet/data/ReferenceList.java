@@ -40,10 +40,10 @@ import org.restlet.Factory;
 public class ReferenceList implements List<Reference>
 {
    /** The list reference. */
-   protected Reference listRef;
+	private Reference listRef;
 
    /** The delegate list. */
-   protected List<Reference> delegate;
+	private List<Reference> delegate;
 
    /**
     * Constructor.

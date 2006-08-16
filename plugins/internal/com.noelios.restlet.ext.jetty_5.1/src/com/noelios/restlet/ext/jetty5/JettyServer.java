@@ -22,9 +22,6 @@
 
 package com.noelios.restlet.ext.jetty5;
 
-import org.restlet.component.Component;
-import org.restlet.data.ParameterList;
-
 import com.noelios.restlet.connector.AbstractHttpServer;
 
 /**
@@ -70,18 +67,16 @@ public abstract class JettyServer extends AbstractHttpServer
    private static final long serialVersionUID = 1L;
 
    /** The Jetty listener (keep package prefixing). */
-   protected org.mortbay.http.HttpListener listener;
+   private org.mortbay.http.HttpListener listener;
   
    /**
     * Constructor.
-    * @param owner The owner component.
-    * @param parameters The initial parameters.
     * @param address The optional listening IP address (local host used if null).
     * @param port The listening port.
     */
-   public JettyServer(Component owner, ParameterList parameters, String address, int port)
+   public JettyServer(String address, int port)
    {
-      super(owner, parameters, address, port);
+      super(address, port);
    }
 
    /**
@@ -91,6 +86,15 @@ public abstract class JettyServer extends AbstractHttpServer
    public org.mortbay.http.HttpListener getListener()
    {
       return this.listener;
+   }
+
+   /**
+    * Sets the Jetty listener.
+    * @param listener The Jetty listener.
+    */
+   public void setListener(org.mortbay.http.HttpListener listener)
+   {
+      this.listener = listener;
    }
 
    /** Start connector. */
@@ -113,7 +117,7 @@ public abstract class JettyServer extends AbstractHttpServer
     */
    public int getMinThreads()
    {
-   	return Integer.parseInt(getParameters().getFirstValue("minThreads", "2"));
+   	return Integer.parseInt(getContext().getParameters().getFirstValue("minThreads", "2"));
    }
 
    /**
@@ -122,7 +126,7 @@ public abstract class JettyServer extends AbstractHttpServer
     */
    public int getMaxThreads()
    {
-   	return Integer.parseInt(getParameters().getFirstValue("maxThreads", "256"));
+   	return Integer.parseInt(getContext().getParameters().getFirstValue("maxThreads", "256"));
    }
 
    /**
@@ -131,7 +135,7 @@ public abstract class JettyServer extends AbstractHttpServer
     */
    public int getMaxIdleTimeMs()
    {
-   	return Integer.parseInt(getParameters().getFirstValue("maxIdleTimeMs", "10000"));
+   	return Integer.parseInt(getContext().getParameters().getFirstValue("maxIdleTimeMs", "10000"));
    }
    
 }

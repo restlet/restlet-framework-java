@@ -22,11 +22,12 @@
 
 package com.noelios.restlet.example;
 
-import org.restlet.component.RestletContainer;
+import org.restlet.Context;
+import org.restlet.component.Container;
 import org.restlet.data.Protocol;
 
 import com.noelios.restlet.HostRouter;
-import com.noelios.restlet.RedirectRestlet;
+import com.noelios.restlet.RedirectHandler;
 
 /**
  * URI rewriting and redirection.
@@ -39,19 +40,20 @@ public class Tutorial10
       try
       {
          // Create a new Restlet container
-         RestletContainer myContainer = new RestletContainer();
+         Container myContainer = new Container();
+         Context myContext = myContainer.getContext();
 
          // Add an HTTP server connector to the Restlet container. 
          // Note that the container is the call restlet.
-         myContainer.getServers().put("HTTP Server", Protocol.HTTP, 8182);
+         myContainer.getServers().add(Protocol.HTTP, 8182);
 
          // Create a host router matching calls to the server
-         HostRouter host = new HostRouter(myContainer, 8182);
+         HostRouter host = new HostRouter(myContext, 8182);
          myContainer.setRoot(host);
 
          // Create a redirect Restlet then attach it to the container
          String target = "http://www.google.com/search?q=site:mysite.org+${query('query')}";
-         RedirectRestlet redirect = new RedirectRestlet(myContainer, target, RedirectRestlet.MODE_CLIENT_TEMPORARY);
+         RedirectHandler redirect = new RedirectHandler(myContext, target, RedirectHandler.MODE_CLIENT_TEMPORARY);
          host.getScorers().add("/search", redirect);
 
          // Now, let's start the container!

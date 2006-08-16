@@ -56,19 +56,19 @@ public class StringTemplate
    private static final int TEXT_SKIP = 2;
    
    /** The template to process. */
-   protected CharSequence template;
+   private CharSequence template;
 
    /** The string that defines variable start delimiters. */
-   protected String variableStart;
+   private String variableStart;
 
    /** The string that defines variable end delimiters. */
-   protected String variableEnd;
+   private String variableEnd;
 
    /** The string that defines instruction start delimiters. */
-   protected String instructionStart;
+   private String instructionStart;
 
    /** The string that defines instruction end delimiters. */
-   protected String instructionEnd;
+   private String instructionEnd;
 
    /**
     * Constructor. Uses the default delimiters "${" and "}" for variables, "#[" and "]" for instructions.

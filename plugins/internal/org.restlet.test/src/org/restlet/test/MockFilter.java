@@ -21,8 +21,8 @@
  */
 package org.restlet.test;
 
-import org.restlet.AbstractFilter;
 import org.restlet.Call;
+import org.restlet.Filter;
 
 /**
  * Thin layer around an AbstractFilter.
@@ -32,7 +32,7 @@ import org.restlet.Call;
  * @author Lars Heuer (heuer[at]semagia.com) <a href="http://www.semagia.com/">Semagia</a>
  * @version $Rev:$ - $Date:$
  */
-public class MockFilter extends AbstractFilter
+public class MockFilter extends Filter
 {
 
 	/* (non-Javadoc)
@@ -45,7 +45,7 @@ public class MockFilter extends AbstractFilter
 		{
 			throw new IllegalStateException("Filter is not started");
 		}
-		if (!super.hasTarget())
+		if (!super.hasNext())
 		{
 			throw new IllegalStateException("Target is not set");
 		}

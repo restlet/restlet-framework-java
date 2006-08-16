@@ -36,10 +36,10 @@ package org.restlet.data;
 public class Metadata
 {
 	/** The metadata name like "text/html" or "compress" or "iso-8851-1". */
-	protected String name;
+	private String name;
 
 	/** The description of this metadata. */
-	protected String description;
+	private String description;
 
 	/**
 	 * Constructor.

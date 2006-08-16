@@ -25,9 +25,9 @@ package com.noelios.restlet;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
-import org.restlet.AbstractFilter;
 import org.restlet.Call;
-import org.restlet.component.Component;
+import org.restlet.Context;
+import org.restlet.Filter;
 import org.restlet.data.MediaType;
 import org.restlet.data.Representation;
 import org.restlet.data.Status;
@@ -45,30 +45,30 @@ import com.noelios.restlet.data.StringRepresentation;
  * @see <a href="http://www.restlet.org/tutorial#part08">Tutorial: Displaying error pages</a>
  * @author Jerome Louvel (contact@noelios.com) <a href="http://www.noelios.com/">Noelios Consulting</a>
  */
-public class StatusFilter extends AbstractFilter
+public class StatusFilter extends Filter
 {
    /** Obtain a suitable logger. */
    private static Logger logger = Logger.getLogger(StatusFilter.class.getCanonicalName());
 
    /** Indicates whether an existing representation should be overwritten. */
-   protected boolean overwrite;
+   private boolean overwrite;
 
    /** Email address of the administrator to contact in case of error. */
-   protected String email;
+   private String email;
 
    /** The home URI to display in case the user got a "not found" exception. */
-   protected String homeURI;
+   private String homeURI;
 
    /**
     * Constructor.
-    * @param owner The owner component.
+    * @param context The context.
     * @param overwrite Indicates whether an existing representation should be overwritten.
     * @param email Email address of the administrator to contact in case of error.
     * @param homeURI The home URI to display in case the user got a "not found" exception.
     */
-   public StatusFilter(Component owner, boolean overwrite, String email, String homeURI)
+   public StatusFilter(Context context, boolean overwrite, String email, String homeURI)
    {
-      super(owner);
+      super(context);
       this.overwrite = overwrite;
       this.email = email;
       this.homeURI = homeURI;

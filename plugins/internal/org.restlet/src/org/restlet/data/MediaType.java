@@ -190,7 +190,7 @@ public class MediaType extends Metadata
 			"video/x-ms-wmv", "Windows movie");
 
 	/** The list of parameters. */
-	protected ParameterList parameters;
+	private ParameterList parameters;
 
 	/**
 	 * Constructor.

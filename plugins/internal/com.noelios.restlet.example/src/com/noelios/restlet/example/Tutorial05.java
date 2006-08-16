@@ -22,10 +22,10 @@
 
 package com.noelios.restlet.example;
 
-import org.restlet.AbstractRestlet;
 import org.restlet.Call;
+import org.restlet.Context;
 import org.restlet.Restlet;
-import org.restlet.component.RestletContainer;
+import org.restlet.component.Container;
 import org.restlet.data.Protocol;
 
 import com.noelios.restlet.HostRouter;
@@ -42,25 +42,26 @@ public class Tutorial05
       try
       {
          // Create a new Restlet container
-         RestletContainer myContainer = new RestletContainer();
+      	Container myContainer = new Container();
+      	Context myContext = myContainer.getContext();
 
          // Create the HTTP server connector, then add it to the container. 
          // Note that the container will act as the initial Restlet call's handler.
-         myContainer.getServers().put("HTTP Server", Protocol.HTTP, 8182);
+         myContainer.getServers().add(Protocol.HTTP, 8182);
 
          // Create a host router matching calls to the server
-         HostRouter host = new HostRouter(myContainer, 8182);
+         HostRouter host = new HostRouter(myContext, 8182);
          myContainer.setRoot(host);
 
          // Create a new Restlet that will display some path information.
-         Restlet myRestlet = new AbstractRestlet(myContainer)
+         Restlet myRestlet = new Restlet(myContext)
             {
                public void handleGet(Call call)
                {
                   // Print the requested URI path
                   String output = "Resource URI:  " + call.getResourceRef() + '\n' +
-                                  "Base URI:      " + call.getContext().getBaseRef() + '\n' +
-                                  "Relative path: " + call.getContext().getRelativePath() + '\n' +
+                                  "Base URI:      " + call.getBaseRef() + '\n' +
+                                  "Relative path: " + call.getRelativePart() + '\n' +
                                   "Query string:  " + call.getResourceRef().getQuery();
                   call.setOutput(new StringRepresentation(output));
                }

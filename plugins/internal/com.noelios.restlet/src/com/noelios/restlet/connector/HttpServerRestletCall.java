@@ -30,7 +30,6 @@ import java.util.logging.Logger;
 
 import org.restlet.Call;
 import org.restlet.connector.Connector;
-import org.restlet.connector.ConnectorCall;
 import org.restlet.data.ClientData;
 import org.restlet.data.ConditionData;
 import org.restlet.data.Cookie;
@@ -58,10 +57,28 @@ public class HttpServerRestletCall extends Call
 			.getCanonicalName());
 
 	/** The HTTP server connector that issued the call. */
-	protected Connector httpServer;
+	private Connector httpServer;
 
 	/** The low-level connector call. */
-	protected ConnectorCall connectorCall;
+	private HttpCall connectorCall;
+
+	/** Indicates if the client data was parsed and added. */
+	private boolean clientAdded;
+
+	/** Indicates if the conditions were parsed and added. */
+	private boolean conditionAdded;
+
+	/** Indicates if the cookies were parsed and added. */
+	private boolean cookiesAdded;
+
+	/** Indicates if the input representation was added. */
+	private boolean inputAdded;
+
+	/** Indicates if the referrer was parsed and added. */
+	private boolean referrerAdded;
+
+	/** Indicates if the security data was parsed and added. */
+	private boolean securityAdded;
 
 	/**
 	 * Constructor.
@@ -71,6 +88,12 @@ public class HttpServerRestletCall extends Call
 	public HttpServerRestletCall(Connector httpServer, AbstractHttpServerCall call)
 	{
 		this.httpServer = httpServer;
+		this.clientAdded = false;
+		this.conditionAdded = false;
+		this.cookiesAdded = false;
+		this.inputAdded = false;
+		this.referrerAdded = false;
+		this.securityAdded = false;
 
 		// Set the properties
 		setConnectorCall(call);
@@ -88,31 +111,90 @@ public class HttpServerRestletCall extends Call
 	}
 
 	/**
+	 * Returns the client specific data.
+	 * @return The client specific data.
+	 */
+	public ClientData getClient()
+	{
+		ClientData result = super.getClient();
+
+		if (!this.clientAdded)
+		{
+			// Extract the header values
+			String acceptCharset = getConnectorCall().getRequestHeaders().getValues(
+					HttpConstants.HEADER_ACCEPT_CHARSET);
+			String acceptEncoding = getConnectorCall().getRequestHeaders().getValues(
+					HttpConstants.HEADER_ACCEPT_ENCODING);
+			String acceptLanguage = getConnectorCall().getRequestHeaders().getValues(
+					HttpConstants.HEADER_ACCEPT_LANGUAGE);
+			String acceptMediaType = getConnectorCall().getRequestHeaders().getValues(
+					HttpConstants.HEADER_ACCEPT);
+
+			// Parse the headers and update the call preferences
+			PreferenceUtils.parseCharacterSets(acceptCharset, result);
+			PreferenceUtils.parseEncodings(acceptEncoding, result);
+			PreferenceUtils.parseLanguages(acceptLanguage, result);
+			PreferenceUtils.parseMediaTypes(acceptMediaType, result);
+
+			// Set other properties
+			result.setName(getConnectorCall().getRequestHeaders().getValues(
+					HttpConstants.HEADER_USER_AGENT));
+			result.setAddress(getConnectorCall().getRequestAddress());
+
+			// Special handling for the non standard but common "X-Forwarded-For" header. 
+			boolean useForwardedForHeader = Boolean.parseBoolean(this.httpServer
+					.getContext().getParameters()
+					.getFirstValue("useForwardedForHeader", false));
+			if (useForwardedForHeader)
+			{
+				// Lookup the "X-Forwarded-For" header supported by popular proxies and caches.
+				// This information is only safe for intermediary components within your local network.
+				// Other addresses could easily be changed by setting a fake header and should never 
+				// be trusted for serious security checks.
+				String header = getConnectorCall().getRequestHeaders().getValues(
+						HttpConstants.HEADER_X_FORWARDED_FOR);
+				if (header != null)
+				{
+					String[] addresses = header.split(",");
+					for (int i = addresses.length - 1; i >= 0; i--)
+					{
+						result.getAddresses().add(addresses[i].trim());
+					}
+				}
+			}
+
+			this.clientAdded = true;
+		}
+
+		return result;
+	}
+
+	/**
 	 * Returns the condition data applying to this call.
 	 * @return The condition data applying to this call.
 	 */
 	public ConditionData getCondition()
 	{
-		if (this.condition == null)
-		{
-			this.condition = new ConditionData();
+		ConditionData result = super.getCondition();
 
+		if (!this.conditionAdded)
+		{
 			// Extract the header values
 			String ifMatchHeader = getConnectorCall().getRequestHeaders().getValues(
-					ConnectorCall.HEADER_IF_MATCH);
+					HttpConstants.HEADER_IF_MATCH);
 			String ifNoneMatchHeader = getConnectorCall().getRequestHeaders().getValues(
-					ConnectorCall.HEADER_IF_NONE_MATCH);
+					HttpConstants.HEADER_IF_NONE_MATCH);
 			Date ifModifiedSince = null;
 			Date ifUnmodifiedSince = null;
 
 			for (Parameter header : getConnectorCall().getRequestHeaders())
 			{
-				if (header.getName().equalsIgnoreCase(ConnectorCall.HEADER_IF_MODIFIED_SINCE))
+				if (header.getName().equalsIgnoreCase(HttpConstants.HEADER_IF_MODIFIED_SINCE))
 				{
 					ifModifiedSince = getConnectorCall().parseDate(header.getValue(), false);
 				}
 				else if (header.getName().equalsIgnoreCase(
-						ConnectorCall.HEADER_IF_UNMODIFIED_SINCE))
+						HttpConstants.HEADER_IF_UNMODIFIED_SINCE))
 				{
 					ifUnmodifiedSince = getConnectorCall().parseDate(header.getValue(), false);
 				}
@@ -121,13 +203,13 @@ public class HttpServerRestletCall extends Call
 			// Set the If-Modified-Since date
 			if ((ifModifiedSince != null) && (ifModifiedSince.getTime() != -1))
 			{
-				getCondition().setModifiedSince(ifModifiedSince);
+				result.setModifiedSince(ifModifiedSince);
 			}
 
 			// Set the If-Unmodified-Since date
 			if ((ifUnmodifiedSince != null) && (ifUnmodifiedSince.getTime() != -1))
 			{
-				getCondition().setUnmodifiedSince(ifUnmodifiedSince);
+				result.setUnmodifiedSince(ifUnmodifiedSince);
 			}
 
 			// Set the If-Match tags
@@ -146,7 +228,7 @@ public class HttpServerRestletCall extends Call
 						if (match == null)
 						{
 							match = new ArrayList<Tag>();
-							getCondition().setMatch(match);
+							result.setMatch(match);
 						}
 
 						// Add the new tag
@@ -175,7 +257,7 @@ public class HttpServerRestletCall extends Call
 						if (noneMatch == null)
 						{
 							noneMatch = new ArrayList<Tag>();
-							getCondition().setNoneMatch(noneMatch);
+							result.setNoneMatch(noneMatch);
 						}
 
 						noneMatch.add(current);
@@ -187,16 +269,18 @@ public class HttpServerRestletCall extends Call
 							+ ifNoneMatchHeader);
 				}
 			}
+
+			this.conditionAdded = true;
 		}
 
-		return this.condition;
+		return result;
 	}
 
 	/**
 	 * Returns the low-level connector call.
 	 * @return The low-level connector call.
 	 */
-	public ConnectorCall getConnectorCall()
+	public HttpCall getConnectorCall()
 	{
 		return this.connectorCall;
 	}
@@ -207,11 +291,12 @@ public class HttpServerRestletCall extends Call
 	 */
 	public List<Cookie> getCookies()
 	{
-		if (this.cookies == null)
+		List<Cookie> result = super.getCookies();
+
+		if (!cookiesAdded)
 		{
-			this.cookies = new ArrayList<Cookie>();
 			String cookiesValue = getConnectorCall().getRequestHeaders().getValues(
-					ConnectorCall.HEADER_COOKIE);
+					HttpConstants.HEADER_COOKIE);
 
 			if (cookiesValue != null)
 			{
@@ -221,7 +306,7 @@ public class HttpServerRestletCall extends Call
 					Cookie current = cr.readCookie();
 					while (current != null)
 					{
-						this.cookies.add(current);
+						result.add(current);
 						current = cr.readCookie();
 					}
 				}
@@ -232,9 +317,11 @@ public class HttpServerRestletCall extends Call
 									+ cookiesValue, e);
 				}
 			}
+
+			this.cookiesAdded = true;
 		}
 
-		return this.cookies;
+		return result;
 	}
 
 	/**
@@ -243,68 +330,13 @@ public class HttpServerRestletCall extends Call
 	 */
 	public Representation getInput()
 	{
-		if (this.input == null)
+		if (!this.inputAdded)
 		{
-			this.input = ((AbstractHttpServerCall) getConnectorCall()).getRequestInput();
+			setInput(((AbstractHttpServerCall) getConnectorCall()).getRequestInput());
+			this.inputAdded = true;
 		}
 
-		return this.input;
-	}
-
-	/**
-	 * Returns the client specific data.
-	 * @return The client specific data.
-	 */
-	public ClientData getClient()
-	{
-		if (this.client == null)
-		{
-			this.client = new ClientData();
-
-			// Extract the header values
-			String acceptCharset = getConnectorCall().getRequestHeaders().getValues(
-					ConnectorCall.HEADER_ACCEPT_CHARSET);
-			String acceptEncoding = getConnectorCall().getRequestHeaders().getValues(
-					ConnectorCall.HEADER_ACCEPT_ENCODING);
-			String acceptLanguage = getConnectorCall().getRequestHeaders().getValues(
-					ConnectorCall.HEADER_ACCEPT_LANGUAGE);
-			String acceptMediaType = getConnectorCall().getRequestHeaders().getValues(
-					ConnectorCall.HEADER_ACCEPT);
-
-			// Parse the headers and update the call preferences
-			PreferenceUtils.parseCharacterSets(acceptCharset, this.client);
-			PreferenceUtils.parseEncodings(acceptEncoding, this.client);
-			PreferenceUtils.parseLanguages(acceptLanguage, this.client);
-			PreferenceUtils.parseMediaTypes(acceptMediaType, this.client);
-
-			// Set other properties
-			this.client.setName(getConnectorCall().getRequestHeaders().getValues(
-					ConnectorCall.HEADER_USER_AGENT));
-			this.client.setAddress(getConnectorCall().getRequestAddress());
-
-			// Special handling for the non standard but common "X-Forwarded-For" header. 
-			boolean useForwardedForHeader = Boolean.parseBoolean(this.httpServer
-					.getParameters().getFirstValue("useForwardedForHeader", false));
-			if (useForwardedForHeader)
-			{
-				// Lookup the "X-Forwarded-For" header supported by popular proxies and caches.
-				// This information is only safe for intermediary components within your local network.
-				// Other addresses could easily be changed by setting a fake header and should never 
-				// be trusted for serious security checks.
-				String header = getConnectorCall().getRequestHeaders().getValues(
-						ConnectorCall.HEADER_X_FORWARDED_FOR);
-				if (header != null)
-				{
-					String[] addresses = header.split(",");
-					for (int i = addresses.length - 1; i >= 0; i--)
-					{
-						this.client.getAddresses().add(addresses[i].trim());
-					}
-				}
-			}
-		}
-
-		return this.client;
+		return super.getInput();
 	}
 
 	/**
@@ -313,17 +345,19 @@ public class HttpServerRestletCall extends Call
 	 */
 	public Reference getReferrerRef()
 	{
-		if (this.referrerRef == null)
+		if (!this.referrerAdded)
 		{
 			String referrerValue = getConnectorCall().getRequestHeaders().getValues(
-					ConnectorCall.HEADER_REFERRER);
+					HttpConstants.HEADER_REFERRER);
 			if (referrerValue != null)
 			{
-				this.referrerRef = new Reference(referrerValue);
+				setReferrerRef(new Reference(referrerValue));
 			}
+
+			this.referrerAdded = true;
 		}
 
-		return this.referrerRef;
+		return super.getReferrerRef();
 	}
 
 	/**
@@ -332,10 +366,10 @@ public class HttpServerRestletCall extends Call
 	 */
 	public SecurityData getSecurity()
 	{
-		if (this.security == null)
-		{
-			this.security = new SecurityData();
+		SecurityData result = super.getSecurity();
 
+		if (!this.securityAdded)
+		{
 			if (getConnectorCall().isConfidential())
 			{
 				getSecurity().setConfidential(true);
@@ -348,20 +382,22 @@ public class HttpServerRestletCall extends Call
 
 			// Extract the header value
 			String authorization = getConnectorCall().getRequestHeaders().getValues(
-					ConnectorCall.HEADER_AUTHORIZATION);
+					HttpConstants.HEADER_AUTHORIZATION);
 
 			// Set the challenge response
-			getSecurity().setChallengeResponse(SecurityUtils.parseResponse(authorization));
+			result.setChallengeResponse(SecurityUtils.parseResponse(authorization));
+
+			this.securityAdded = true;
 		}
 
-		return this.security;
+		return result;
 	}
 
 	/**
 	 * Sets the low-level connector call.
 	 * @param call The low-level connector call.
 	 */
-	public void setConnectorCall(ConnectorCall call)
+	public void setConnectorCall(HttpCall call)
 	{
 		this.connectorCall = call;
 	}

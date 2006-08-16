@@ -33,7 +33,6 @@ import java.util.logging.Logger;
 
 import org.restlet.Call;
 import org.restlet.connector.Connector;
-import org.restlet.connector.ConnectorCall;
 import org.restlet.data.CookieSetting;
 import org.restlet.data.Encoding;
 import org.restlet.data.Language;
@@ -50,7 +49,7 @@ import com.noelios.restlet.util.SecurityUtils;
  * Abstract HTTP server connector call.
  * @author Jerome Louvel (contact@noelios.com) <a href="http://www.noelios.com/">Noelios Consulting</a>
  */
-public abstract class AbstractHttpServerCall extends DefaultConnectorCall
+public abstract class AbstractHttpServerCall extends DefaultHttpCall
 {
    /** Obtain a suitable logger. */
    private static Logger logger = Logger.getLogger(AbstractHttpServerCall.class.getCanonicalName());
@@ -122,19 +121,19 @@ public abstract class AbstractHttpServerCall extends DefaultConnectorCall
 
          for(Parameter header : getRequestHeaders())
          {
-            if(header.getName().equalsIgnoreCase(ConnectorCall.HEADER_CONTENT_ENCODING))
+            if(header.getName().equalsIgnoreCase(HttpConstants.HEADER_CONTENT_ENCODING))
             {
                contentEncoding = new Encoding(header.getValue());
             }
-            else if(header.getName().equalsIgnoreCase(ConnectorCall.HEADER_CONTENT_LANGUAGE))
+            else if(header.getName().equalsIgnoreCase(HttpConstants.HEADER_CONTENT_LANGUAGE))
             {
                contentLanguage = new Language(header.getValue());
             }
-            else if(header.getName().equalsIgnoreCase(ConnectorCall.HEADER_CONTENT_TYPE))
+            else if(header.getName().equalsIgnoreCase(HttpConstants.HEADER_CONTENT_TYPE))
             {
                contentType = new MediaType(header.getValue());
             }
-            else if(header.getName().equalsIgnoreCase(ConnectorCall.HEADER_CONTENT_LENGTH))
+            else if(header.getName().equalsIgnoreCase(HttpConstants.HEADER_CONTENT_LENGTH))
             {
             	contentLength = Long.parseLong(header.getValue());
             }
@@ -169,23 +168,23 @@ public abstract class AbstractHttpServerCall extends DefaultConnectorCall
          List<CookieSetting> cookies = call.getCookieSettings();
          for(int i = 0; i < cookies.size(); i++)
          {
-            getResponseHeaders().add(ConnectorCall.HEADER_SET_COOKIE, CookieUtils.format(cookies.get(i)));
+            getResponseHeaders().add(HttpConstants.HEADER_SET_COOKIE, CookieUtils.format(cookies.get(i)));
          }
          
          // Set the redirection URI
          if(call.getRedirectRef() != null)
          {
-         	getResponseHeaders().add(HEADER_LOCATION, call.getRedirectRef().toString());
+         	getResponseHeaders().add(HttpConstants.HEADER_LOCATION, call.getRedirectRef().toString());
          }
 
          // Set the security data
          if(call.getSecurity().getChallengeRequest() != null)
          {
-         	getResponseHeaders().add(HEADER_WWW_AUTHENTICATE, SecurityUtils.format(call.getSecurity().getChallengeRequest()));
+         	getResponseHeaders().add(HttpConstants.HEADER_WWW_AUTHENTICATE, SecurityUtils.format(call.getSecurity().getChallengeRequest()));
          }
 
          // Set the server name again
-         getResponseHeaders().add(HEADER_SERVER, call.getServer().getName());
+         getResponseHeaders().add(HttpConstants.HEADER_SERVER, call.getServer().getName());
          
          // Set the status code in the response
          if(call.getStatus() != null)
@@ -200,17 +199,17 @@ public abstract class AbstractHttpServerCall extends DefaultConnectorCall
    
             if(output.getExpirationDate() != null)
             {
-            	getResponseHeaders().add(HEADER_EXPIRES, formatDate(output.getExpirationDate(), false));
+            	getResponseHeaders().add(HttpConstants.HEADER_EXPIRES, formatDate(output.getExpirationDate(), false));
             }
             
             if((output.getEncoding() != null) && (!output.getEncoding().equals(Encoding.IDENTITY)))
             {
-            	getResponseHeaders().add(HEADER_CONTENT_ENCODING, output.getEncoding().getName());
+            	getResponseHeaders().add(HttpConstants.HEADER_CONTENT_ENCODING, output.getEncoding().getName());
             }
             
             if(output.getLanguage() != null)
             {
-            	getResponseHeaders().add(HEADER_CONTENT_LANGUAGE, output.getLanguage().getName());
+            	getResponseHeaders().add(HttpConstants.HEADER_CONTENT_LANGUAGE, output.getLanguage().getName());
             }
             
             if(output.getMediaType() != null)
@@ -223,27 +222,27 @@ public abstract class AbstractHttpServerCall extends DefaultConnectorCall
                   contentType.append("; charset=").append(output.getCharacterSet().getName());
                }
    
-               getResponseHeaders().add(HEADER_CONTENT_TYPE, contentType.toString());
+               getResponseHeaders().add(HttpConstants.HEADER_CONTENT_TYPE, contentType.toString());
             }
    
             if(output.getModificationDate() != null)
             {
-            	getResponseHeaders().add(HEADER_LAST_MODIFIED, formatDate(output.getModificationDate(), false));
+            	getResponseHeaders().add(HttpConstants.HEADER_LAST_MODIFIED, formatDate(output.getModificationDate(), false));
             }
    
             if(output.getTag() != null)
             {
-            	getResponseHeaders().add(HEADER_ETAG, output.getTag().getName());
+            	getResponseHeaders().add(HttpConstants.HEADER_ETAG, output.getTag().getName());
             }
             
             if(call.getOutput().getSize() != Representation.UNKNOWN_SIZE)
             {
-            	getResponseHeaders().add(HEADER_CONTENT_LENGTH, Long.toString(call.getOutput().getSize()));
+            	getResponseHeaders().add(HttpConstants.HEADER_CONTENT_LENGTH, Long.toString(call.getOutput().getSize()));
             }
 
             if(call.getOutput().getIdentifier() != null)
             {
-            	getResponseHeaders().add(HEADER_CONTENT_LOCATION, call.getOutput().getIdentifier().toString());
+            	getResponseHeaders().add(HttpConstants.HEADER_CONTENT_LOCATION, call.getOutput().getIdentifier().toString());
             }
          }
       }

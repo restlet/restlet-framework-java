@@ -29,15 +29,15 @@ package org.restlet.data;
 public class CookieSetting extends Cookie
 {
    /** The user's comment. */
-   protected String comment;
+	private String comment;
 
    /**
     * The maximum age in seconds. Use 0 to discard an existing cookie.
     */
-   protected int maxAge;
+	private int maxAge;
 
    /** Indicates if cookie should only be transmitted by secure means. */
-   protected boolean secure;
+	private boolean secure;
 
    /**
     * Default constructor.

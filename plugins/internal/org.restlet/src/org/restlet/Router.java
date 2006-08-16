@@ -22,6 +22,7 @@
 
 package org.restlet;
 
+import org.restlet.data.Status;
 
 /**
  * Router of calls to one of several target Restlet options. Each Restlet option is represented by a scorer 
@@ -50,7 +51,7 @@ package org.restlet;
  * @see <a href="http://www.restlet.org/tutorial#part11">Tutorial: Routers and hierarchical URIs</a>
  * @author Jerome Louvel (contact@noelios.com) <a href="http://www.noelios.com/">Noelios Consulting</a>
  */
-public interface Router extends Handler
+public class Router extends Chainer
 {
 	/** Enumeration of available router modes. */
 	public enum Mode
@@ -93,60 +94,202 @@ public interface Router extends Handler
 		CUSTOM;	
 	}
 	
+	
+	/** The modifiable list of scorers. */
+	private ScorerList scorers;
+	
+	/** The routing mode. */
+	private Mode mode;
+	
+	/** The minimum score required to have a match. */
+	private float requiredScore;
+	
+	/** The maximum number of attempts if no attachment could be matched on the first attempt. */
+	private int maxAttempts;
+	
+	/** The delay (in milliseconds) before a new attempt. */
+	private long retryDelay;
+	
+   /**
+    * Constructor.
+    */
+   public Router()
+   {
+      this(null);
+   }
+
+   /**
+    * Constructor.
+    * @param context The context.
+    */
+	public Router(Context context)
+   {
+      super(context);
+      this.scorers = null;
+      this.mode = Mode.BEST;
+      this.requiredScore = 0.5F;
+      this.maxAttempts = 1;
+      this.retryDelay = 500L;
+   }
+
 	/**
-	 * Returns the routing mode.
-	 * @return The routing mode.
+	 * Finds the next Restlet if available.
+	 * @param call The current call.
+	 * @return The next Restlet if available or null.
 	 */
-	public Mode getMode();
+	public Restlet findNext(Call call)
+	{
+		Scorer result = null;
+		
+		if(this.scorers != null)
+		{
+			for(int i = 0; (result == null) && (i < getMaxAttempts()); i++)
+			{
+				if(i > 0)
+				{
+					// Before attempting another time, let's
+					// sleep during the "retryDelay" set.
+					try
+					{
+						Thread.sleep(getRetryDelay());
+					}
+					catch (InterruptedException e)
+					{
+					}
+				}
+				
+				// Select the routing mode
+				switch(getMode())
+				{
+					case BEST:
+						result = getScorers().getBest(call, this.requiredScore);
+					break;
+					
+					case FIRST:
+						result = getScorers().getFirst(call, this.requiredScore);
+					break;
+					
+					case LAST:
+						result = getScorers().getLast(call, this.requiredScore);
+					break;
+					
+					case NEXT:
+						result = getScorers().getNext(call, this.requiredScore);
+					break;
+					
+					case RANDOM:
+						result = getScorers().getRandom(call, this.requiredScore);
+					break;
+					
+					case CUSTOM:
+						result = customFind(call);
+					break;
+				}
+			}
+		}		
+		
+		if(result == null)
+		{
+			// No routing option could be matched
+			call.setStatus(Status.CLIENT_ERROR_NOT_FOUND);
+		}
+		
+		return result;
+	}
+	
+	/**
+	 * Returns the matched scorer according to a custom algorithm. To use in combination of the RouterMode.CUSTOM 
+	 * enumeration. The default implementation (to be overriden), returns null. 
+	 * @param call The current call.
+	 * @return The matched scorer if available or null.
+	 */
+	protected Scorer customFind(Call call)
+	{
+		return null;
+	}
 	
 	/**
 	 * Returns the modifiable list of scorers.
 	 * @return The modifiable list of scorers.
 	 */
-	public ScorerList getScorers();
+	public ScorerList getScorers()
+	{
+      if(this.scorers == null) this.scorers = new ScorerList(this);
+      return this.scorers;
+	}
 
+	/**
+	 * Returns the routing mode.
+	 * @return The routing mode.
+	 */
+	public Mode getMode()
+	{
+		return this.mode;
+	}
+	
 	/**
 	 * Sets the routing mode.
 	 * @param mode The routing mode.
 	 */
-	public void setMode(Mode mode);
+	public void setMode(Mode mode)
+	{
+		this.mode = mode;
+	}
 	
 	/**
 	 * Returns the minimum score required to have a match.
 	 * @return The minimum score required to have a match.
 	 */
-	public float getRequiredScore();
+	public float getRequiredScore()
+	{
+		return this.requiredScore;
+	}
 	
 	/**
 	 * Sets the score required to have a match.
 	 * @param score The score required to have a match.
 	 */
-	public void setRequiredScore(float score);
+	public void setRequiredScore(float score)
+	{
+		this.requiredScore = score;
+	}
 
 	/**
 	 * Returns the maximum number of attempts if no attachment could be matched on the first attempt.
 	 * This is useful when the attachment scoring is dynamic and therefore could change on a retry.
 	 * @return The maximum number of attempts if no attachment could be matched on the first attempt.
 	 */
-	public int getMaxAttempts();
+	public int getMaxAttempts()
+	{
+		return this.maxAttempts;
+	}
 	
 	/**
 	 * Sets the maximum number of attempts if no attachment could be matched on the first attempt.
 	 * This is useful when the attachment scoring is dynamic and therefore could change on a retry.
 	 * @param maxAttempts The maximum number of attempts. 
 	 */
-	public void setMaxAttempts(int maxAttempts);
+	public void setMaxAttempts(int maxAttempts)
+	{
+		this.maxAttempts = maxAttempts;
+	}
 
 	/**
 	 * Returns the delay (in seconds) before a new attempt.
 	 * @return The delay (in seconds) before a new attempt.
 	 */
-	public long getRetryDelay();
+	public long getRetryDelay()
+	{
+		return this.retryDelay;
+	}
 	
 	/**
 	 * Sets the delay (in seconds) before a new attempt.
-	 * @param delay The delay (in seconds) before a new attempt.
+	 * @param retryDelay The delay (in seconds) before a new attempt.
 	 */
-	public void setRetryDelay(long delay);
+	public void setRetryDelay(long retryDelay)
+	{
+		this.retryDelay = retryDelay;
+	}
 	
 }

@@ -33,13 +33,13 @@ import org.restlet.data.Representation;
 public class Content
 {
 	/** Representation for inline content. */
-	protected Representation inlineContent;
+	private Representation inlineContent;
 
 	/** Reference to the external representation. */
-	protected Reference externalRef;
+	private Reference externalRef;
 	
 	/** Expected media type of the external content. */
-	protected MediaType externalType;
+	private MediaType externalType;
 	
 	/**
 	 * Constructor.

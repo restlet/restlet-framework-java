@@ -78,10 +78,10 @@ public class CallModel implements ReadableModel
    public static final String NAME_STATUS = "status";
 
    /** The wrapped call. */
-   protected Call call;
+   private Call call;
 
    /** The default value to return if a lookup fails or returns null. */
-   protected String defaultValue;
+   private String defaultValue;
 
    /**
     * Constructor.

@@ -62,16 +62,16 @@ public abstract class AbstractFilterTestCase extends RestletTestCase
 	public void testAttachDetachInstance() throws Exception
 	{
 		Filter filter = getFilter();
-		assertFalse(filter.hasTarget());
-		filter.setTarget(getRestlet());
+		assertFalse(filter.hasNext());
+		filter.setNext(getRestlet());
 		filter.start();
 		assertTrue(filter.isStarted());
 		assertFalse(filter.isStopped());
 		Call call = getCall();
 		filter.handle(call);
-		assertTrue(filter.hasTarget());
-		filter.setTarget(null);
-		assertFalse(filter.hasTarget());
+		assertTrue(filter.hasNext());
+		filter.setNext(null);
+		assertFalse(filter.hasNext());
 	}
 
 	/**
@@ -83,7 +83,7 @@ public abstract class AbstractFilterTestCase extends RestletTestCase
 		filter.start();
 		assertTrue(filter.isStarted());
 		assertFalse(filter.isStopped());
-		assertFalse(filter.hasTarget());
+		assertFalse(filter.hasNext());
 		Call call = getCall();
 		try
 		{
@@ -102,8 +102,8 @@ public abstract class AbstractFilterTestCase extends RestletTestCase
 	public void testIllegalStartedState() throws Exception
 	{
 		Filter filter = getFilter();
-		filter.setTarget(getRestlet());
-		assertTrue(filter.hasTarget());
+		filter.setNext(getRestlet());
+		assertTrue(filter.hasNext());
 		assertFalse(filter.isStarted());
 		assertTrue(filter.isStopped());
 		Call call = getCall();

@@ -35,7 +35,7 @@ import org.restlet.data.Representation;
 public class RepresentationContext implements RequestContext
 {
 	/** The representation to adapt. */
-	protected Representation multipartForm;
+	private Representation multipartForm;
 	
 	/**
 	 * Constructor.

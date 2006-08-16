@@ -25,9 +25,9 @@ package com.noelios.restlet;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
-import org.restlet.AbstractRestlet;
+import org.restlet.Chainer;
 import org.restlet.Call;
-import org.restlet.component.Component;
+import org.restlet.Context;
 import org.restlet.data.Reference;
 import org.restlet.data.Status;
 
@@ -41,10 +41,10 @@ import com.noelios.restlet.util.StringTemplate;
  * @see <a href="http://www.restlet.org/tutorial#part10">Tutorial: URI rewriting and redirection</a>
  * @author Jerome Louvel (contact@noelios.com) <a href="http://www.noelios.com/">Noelios Consulting</a>
  */
-public class RedirectRestlet extends AbstractRestlet
+public class RedirectHandler extends Chainer
 {
    /** Obtain a suitable logger. */
-   private static Logger logger = Logger.getLogger(RedirectRestlet.class.getCanonicalName());
+   private static Logger logger = Logger.getLogger(RedirectHandler.class.getCanonicalName());
 
    /**
     * In this mode, the client is permanently redirected to the URI generated from the target URI pattern.<br/>
@@ -83,51 +83,36 @@ public class RedirectRestlet extends AbstractRestlet
    /** The target URI pattern. */
    protected String targetPattern;
 
-   /** The connector name. */
-   protected String connectorName;
-
    /** The redirection mode. */
    protected int mode;
 
    /**
     * Constructor.
-    * @param owner The owner component.
+    * @param context The context.
     * @param targetPattern The pattern to build the target URI (using StringTemplate syntax and the CallModel for variables).
     * @param mode The redirection mode.
     * @see com.noelios.restlet.util.StringTemplate
     * @see com.noelios.restlet.util.CallModel
     */
-   public RedirectRestlet(Component owner, String targetPattern, int mode)
+   public RedirectHandler(Context context, String targetPattern, int mode)
    {
-      super(owner);
+      super(context);
       this.targetPattern = targetPattern;
       this.mode = mode;
-      this.connectorName = null;
    }
 
    /**
     * Constructor for the connector mode.
-    * @param owner The owner component.
+    * @param context The context.
     * @param targetPattern The pattern to build the target URI (using StringTemplate syntax and the CallModel for variables).
-    * @param connectorName The connector name.
     * @see com.noelios.restlet.util.StringTemplate
     * @see com.noelios.restlet.util.CallModel
     */
-   public RedirectRestlet(Component owner, String targetPattern, String connectorName)
+   public RedirectHandler(Context context, String targetPattern)
    {
-      super(owner);
+      super(context);
       this.targetPattern = targetPattern;
       this.mode = MODE_CONNECTOR;
-      this.connectorName = connectorName;
-   }
-
-   /**
-    * Sets the connector name.
-    * @param name The connector name.
-    */
-   public void setConnectorName(String name)
-   {
-      this.connectorName = name;
    }
 
    /**
@@ -164,15 +149,9 @@ public class RedirectRestlet extends AbstractRestlet
          break;
 
          case MODE_CONNECTOR:
-            logger.log(Level.INFO, "Redirecting to connector " + this.connectorName + ": " + targetUri);
+            logger.log(Level.INFO, "Redirecting via client connector to: " + targetUri);
             call.setResourceRef(target);
-            getOwner().callClient(this.connectorName, call);
-         break;
-
-         case MODE_INTERNAL:
-            logger.log(Level.INFO, "Redirecting internally: " + targetUri);
-            call.setResourceRef(target);
-            getOwner().handle(call);
+            getContext().handle(call);
          break;
       }
    }

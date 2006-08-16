@@ -28,9 +28,9 @@ package org.restlet.data;
  */
 public class Status extends Metadata
 {
-	protected static final String BASE_HTTP = "http://www.w3.org/Protocols/rfc2616/rfc2616-sec10.html";
-	protected static final String BASE_WEBDAV = "http://www.webdav.org/specs/rfc2518.html";
-	protected static final String BASE_RESTLET = "http://www.restlet.org/docs/api/";
+	private static final String BASE_HTTP = "http://www.w3.org/Protocols/rfc2616/rfc2616-sec10.html";
+	private static final String BASE_WEBDAV = "http://www.webdav.org/specs/rfc2518.html";
+	private static final String BASE_RESTLET = "http://www.restlet.org/docs/api/";
 	
    public static final Status INFO_CONTINUE = new Status(100);
    public static final Status INFO_SWITCHING_PROTOCOL = new Status(101);
@@ -88,10 +88,10 @@ public class Status extends Metadata
    public static final Status CONNECTOR_ERROR_INTERNAL = new Status(1002);
 	
    /** The specification code. */
-   protected int code;
+   private int code;
 
    /** The URI of the specification describing the method. */
-   protected String uri;
+   private String uri;
 
    /**
     * Constructor.
@@ -481,164 +481,167 @@ public class Status extends Metadata
     */
    public String getUri()
    {
-      String result = null;
+      String result = this.uri;
 
-      switch(this.code)
+      if(result == null)
       {
-         case 100:
-            result = BASE_HTTP + "#sec10.1.1";
-            break;
-         case 101:
-            result = BASE_HTTP + "#sec10.1.2";
-            break;
-         case 102:
-            result = BASE_WEBDAV + "#STATUS_102";
-            break;
-
-         case 200:
-            result = BASE_HTTP + "#sec10.2.1";
-            break;
-         case 201:
-            result = BASE_HTTP + "#sec10.2.2";
-            break;
-         case 202:
-            result = BASE_HTTP + "#sec10.2.3";
-            break;
-         case 203:
-            result = BASE_HTTP + "#sec10.2.4";
-            break;
-         case 204:
-            result = BASE_HTTP + "#sec10.2.5";
-            break;
-         case 205:
-            result = BASE_HTTP + "#sec10.2.6";
-            break;
-         case 206:
-            result = BASE_HTTP + "#sec10.2.7";
-            break;
-         case 207:
-            result = BASE_WEBDAV + "#STATUS_207";
-            break;
-
-         case 300:
-            result = BASE_HTTP + "#sec10.3.1";
-            break;
-         case 301:
-            result = BASE_HTTP + "#sec10.3.2";
-            break;
-         case 302:
-            result = BASE_HTTP + "#sec10.3.3";
-            break;
-         case 303:
-            result = BASE_HTTP + "#sec10.3.4";
-            break;
-         case 304:
-            result = BASE_HTTP + "#sec10.3.5";
-            break;
-         case 305:
-            result = BASE_HTTP + "#sec10.3.6";
-            break;
-         case 307:
-            result = BASE_HTTP + "#sec10.3.8";
-            break;
-
-         case 400:
-            result = BASE_HTTP + "#sec10.4.1";
-            break;
-         case 401:
-            result = BASE_HTTP + "#sec10.4.2";
-            break;
-         case 402:
-            result = BASE_HTTP + "#sec10.4.3";
-            break;
-         case 403:
-            result = BASE_HTTP + "#sec10.4.4";
-            break;
-         case 404:
-            result = BASE_HTTP + "#sec10.4.5";
-            break;
-         case 405:
-            result = BASE_HTTP + "#sec10.4.6";
-            break;
-         case 406:
-            result = BASE_HTTP + "#sec10.4.7";
-            break;
-         case 407:
-            result = BASE_HTTP + "#sec10.4.8";
-            break;
-         case 408:
-            result = BASE_HTTP + "#sec10.4.9";
-            break;
-         case 409:
-            result = BASE_HTTP + "#sec10.4.10";
-            break;
-         case 410:
-            result = BASE_HTTP + "#sec10.4.11";
-            break;
-         case 411:
-            result = BASE_HTTP + "#sec10.4.12";
-            break;
-         case 412:
-            result = BASE_HTTP + "#sec10.4.13";
-            break;
-         case 413:
-            result = BASE_HTTP + "#sec10.4.14";
-            break;
-         case 414:
-            result = BASE_HTTP + "#sec10.4.15";
-            break;
-         case 415:
-            result = BASE_HTTP + "#sec10.4.16";
-            break;
-         case 416:
-            result = BASE_HTTP + "#sec10.4.17";
-            break;
-         case 417:
-            result = BASE_HTTP + "#sec10.4.18";
-            break;
-         case 422:
-            result = BASE_WEBDAV + "#STATUS_422";
-            break;
-         case 423:
-            result = BASE_WEBDAV + "#STATUS_423";
-            break;
-         case 424:
-            result = BASE_WEBDAV + "#STATUS_424";
-            break;
-
-         case 500:
-            result = BASE_HTTP + "#sec10.5.1";
-            break;
-         case 501:
-            result = BASE_HTTP + "#sec10.5.2";
-            break;
-         case 502:
-            result = BASE_HTTP + "#sec10.5.3";
-            break;
-         case 503:
-            result = BASE_HTTP + "#sec10.5.4";
-            break;
-         case 504:
-            result = BASE_HTTP + "#sec10.5.5";
-            break;
-         case 505:
-            result = BASE_HTTP + "#sec10.5.6";
-            break;
-         case 507:
-            result = BASE_WEBDAV + "#STATUS_507";
-            break;
-            
-         case 1000:
-         	result = BASE_RESTLET + "org/restlet/data/Statuses.html#CONNECTOR_ERROR_CONNECTION";
-         	break;
-         case 1001:
-         	result = BASE_RESTLET + "org/restlet/data/Statuses.html#CONNECTOR_ERROR_COMMUNICATION";
-         	break;
-         case 1002:
-         	result = BASE_RESTLET + "org/restlet/data/Statuses.html#CONNECTOR_ERROR_INTERNAL";
-         	break;
+	      switch(this.code)
+	      {
+	         case 100:
+	            result = BASE_HTTP + "#sec10.1.1";
+	            break;
+	         case 101:
+	            result = BASE_HTTP + "#sec10.1.2";
+	            break;
+	         case 102:
+	            result = BASE_WEBDAV + "#STATUS_102";
+	            break;
+	
+	         case 200:
+	            result = BASE_HTTP + "#sec10.2.1";
+	            break;
+	         case 201:
+	            result = BASE_HTTP + "#sec10.2.2";
+	            break;
+	         case 202:
+	            result = BASE_HTTP + "#sec10.2.3";
+	            break;
+	         case 203:
+	            result = BASE_HTTP + "#sec10.2.4";
+	            break;
+	         case 204:
+	            result = BASE_HTTP + "#sec10.2.5";
+	            break;
+	         case 205:
+	            result = BASE_HTTP + "#sec10.2.6";
+	            break;
+	         case 206:
+	            result = BASE_HTTP + "#sec10.2.7";
+	            break;
+	         case 207:
+	            result = BASE_WEBDAV + "#STATUS_207";
+	            break;
+	
+	         case 300:
+	            result = BASE_HTTP + "#sec10.3.1";
+	            break;
+	         case 301:
+	            result = BASE_HTTP + "#sec10.3.2";
+	            break;
+	         case 302:
+	            result = BASE_HTTP + "#sec10.3.3";
+	            break;
+	         case 303:
+	            result = BASE_HTTP + "#sec10.3.4";
+	            break;
+	         case 304:
+	            result = BASE_HTTP + "#sec10.3.5";
+	            break;
+	         case 305:
+	            result = BASE_HTTP + "#sec10.3.6";
+	            break;
+	         case 307:
+	            result = BASE_HTTP + "#sec10.3.8";
+	            break;
+	
+	         case 400:
+	            result = BASE_HTTP + "#sec10.4.1";
+	            break;
+	         case 401:
+	            result = BASE_HTTP + "#sec10.4.2";
+	            break;
+	         case 402:
+	            result = BASE_HTTP + "#sec10.4.3";
+	            break;
+	         case 403:
+	            result = BASE_HTTP + "#sec10.4.4";
+	            break;
+	         case 404:
+	            result = BASE_HTTP + "#sec10.4.5";
+	            break;
+	         case 405:
+	            result = BASE_HTTP + "#sec10.4.6";
+	            break;
+	         case 406:
+	            result = BASE_HTTP + "#sec10.4.7";
+	            break;
+	         case 407:
+	            result = BASE_HTTP + "#sec10.4.8";
+	            break;
+	         case 408:
+	            result = BASE_HTTP + "#sec10.4.9";
+	            break;
+	         case 409:
+	            result = BASE_HTTP + "#sec10.4.10";
+	            break;
+	         case 410:
+	            result = BASE_HTTP + "#sec10.4.11";
+	            break;
+	         case 411:
+	            result = BASE_HTTP + "#sec10.4.12";
+	            break;
+	         case 412:
+	            result = BASE_HTTP + "#sec10.4.13";
+	            break;
+	         case 413:
+	            result = BASE_HTTP + "#sec10.4.14";
+	            break;
+	         case 414:
+	            result = BASE_HTTP + "#sec10.4.15";
+	            break;
+	         case 415:
+	            result = BASE_HTTP + "#sec10.4.16";
+	            break;
+	         case 416:
+	            result = BASE_HTTP + "#sec10.4.17";
+	            break;
+	         case 417:
+	            result = BASE_HTTP + "#sec10.4.18";
+	            break;
+	         case 422:
+	            result = BASE_WEBDAV + "#STATUS_422";
+	            break;
+	         case 423:
+	            result = BASE_WEBDAV + "#STATUS_423";
+	            break;
+	         case 424:
+	            result = BASE_WEBDAV + "#STATUS_424";
+	            break;
+	
+	         case 500:
+	            result = BASE_HTTP + "#sec10.5.1";
+	            break;
+	         case 501:
+	            result = BASE_HTTP + "#sec10.5.2";
+	            break;
+	         case 502:
+	            result = BASE_HTTP + "#sec10.5.3";
+	            break;
+	         case 503:
+	            result = BASE_HTTP + "#sec10.5.4";
+	            break;
+	         case 504:
+	            result = BASE_HTTP + "#sec10.5.5";
+	            break;
+	         case 505:
+	            result = BASE_HTTP + "#sec10.5.6";
+	            break;
+	         case 507:
+	            result = BASE_WEBDAV + "#STATUS_507";
+	            break;
+	            
+	         case 1000:
+	         	result = BASE_RESTLET + "org/restlet/data/Statuses.html#CONNECTOR_ERROR_CONNECTION";
+	         	break;
+	         case 1001:
+	         	result = BASE_RESTLET + "org/restlet/data/Statuses.html#CONNECTOR_ERROR_COMMUNICATION";
+	         	break;
+	         case 1002:
+	         	result = BASE_RESTLET + "org/restlet/data/Statuses.html#CONNECTOR_ERROR_INTERNAL";
+	         	break;
+	      }
       }
-
+      
       return result;
    }
 

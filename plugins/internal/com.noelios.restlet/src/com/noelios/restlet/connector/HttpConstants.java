@@ -20,17 +20,13 @@
  * Portions Copyright [yyyy] [name of copyright owner]
  */
 
-package org.restlet.connector;
-
-import java.util.Date;
-
-import org.restlet.data.ParameterList;
+package com.noelios.restlet.connector;
 
 /**
- * Connector call for all protocols.
+ * Constants related to the HTTP protocol.
  * @author Jerome Louvel (contact@noelios.com) <a href="http://www.noelios.com/">Noelios Consulting</a>
  */
-public interface ConnectorCall
+public final class HttpConstants
 {
    // ---------------------
    // ---  Status codes ---
@@ -144,76 +140,4 @@ public interface ConnectorCall
    public static final String HEADER_WWW_AUTHENTICATE = "WWW-Authenticate";
    public static final String HEADER_X_FORWARDED_FOR = "X-Forwarded-For";
    public static final String HEADER_X_HTTP_METHOD_OVERRIDE = "X-HTTP-Method-Override";
-
-   /**
-    * Indicates if the confidentiality of the call is ensured (ex: via SSL).
-    * @return True if the confidentiality of the call is ensured (ex: via SSL).
-    */
-   public boolean isConfidential();
-
-   /**
-    * Returns the request address.<br/>
-    * Corresponds to the IP address of the requesting client.
-    * @return The request address.
-    */
-   public String getRequestAddress();
-
-   /**
-    * Returns the request method. 
-    * @return The request method.
-    */
-   public String getRequestMethod();
-
-   /**
-    * Returns the full request URI. 
-    * @return The full request URI.
-    */
-   public String getRequestUri();
-   
-   /**
-    * Returns the modifiable list of request headers.
-    * @return The modifiable list of request headers.
-    */
-   public ParameterList getRequestHeaders();
-
-   /**
-    * Returns the response address.<br/>
-    * Corresponds to the IP address of the responding server.
-    * @return The response address.
-    */
-   public String getResponseAddress();
-
-   /**
-    * Returns the response status code.
-    * @return The response status code.
-    */
-   public int getResponseStatusCode();
-
-   /**
-    * Returns the response reason phrase.
-    * @return The response reason phrase.
-    */
-   public String getResponseReasonPhrase();
-   
-   /**
-    * Returns the modifiable list of response headers.
-    * @return The modifiable list of response headers.
-    */
-   public ParameterList getResponseHeaders();
-   
-   /**
-    * Parses a date string.
-    * @param date The date string to parse.
-    * @param cookie Indicates if the date is in the cookie format.
-    * @return The parsed date.
-    */
-   public Date parseDate(String date, boolean cookie);
-   
-   /**
-    * Formats a date as a header string.
-    * @param date The date to format.
-    * @param cookie Indicates if the date should be in the cookie format.
-    * @return The formatted date.
-    */
-   public String formatDate(Date date, boolean cookie);
 }

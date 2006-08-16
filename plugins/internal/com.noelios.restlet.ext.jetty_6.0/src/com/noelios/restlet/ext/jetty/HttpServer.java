@@ -26,8 +26,6 @@ import org.mortbay.jetty.AbstractConnector;
 import org.mortbay.jetty.bio.SocketConnector;
 import org.mortbay.jetty.nio.BlockingChannelConnector;
 import org.mortbay.jetty.nio.SelectChannelConnector;
-import org.restlet.component.Component;
-import org.restlet.data.ParameterList;
 import org.restlet.data.Protocol;
 
 /**
@@ -56,14 +54,12 @@ public class HttpServer extends JettyServer
 {
    /**
     * Constructor.
-    * @param owner The owner component.
-    * @param parameters The initial parameters.
     * @param address The optional listening IP address (local host used if null).
     * @param port The listening port.
     */
-   public HttpServer(Component owner, ParameterList parameters, String address, int port)
+   public HttpServer(String address, int port)
    {
-   	super(owner, parameters, address, port);
+   	super(address, port);
    	getProtocols().add(Protocol.HTTP);
    }
 
@@ -92,7 +88,7 @@ public class HttpServer extends JettyServer
    		}
 
    		configure(connector);
-         this.wrappedServer.addConnector(connector);
+         getWrappedServer().addConnector(connector);
    		super.start();
    	}
    }
@@ -103,7 +99,7 @@ public class HttpServer extends JettyServer
     */
    public int getType()
    {
-   	return Integer.parseInt(getParameters().getFirstValue("type", "1"));
+   	return Integer.parseInt(getContext().getParameters().getFirstValue("type", "1"));
    }
 
 }

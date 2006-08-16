@@ -31,31 +31,103 @@ package org.restlet;
  * @see <a href="http://www.restlet.org/tutorial#part07">Tutorial: Filters and call logging</a>
  * @author Jerome Louvel (contact@noelios.com) <a href="http://www.noelios.com/">Noelios Consulting</a>
  */
-public interface Filter extends Handler
+public class Filter extends Chainer
 {
+	/** The chained Restlet. */
+	private Restlet next;
+
 	/**
-    * Sets the target Restlet shared by all calls going through this filter.
-    * @param target The target Restlet.
-    */
-   public void setTarget(Restlet target);
+	 * Constructor.
+	 */
+	public Filter()
+	{
+		this(null);
+	}
 
-   /**
-    * Returns the target Restlet.
-    * @return The target Restlet or null.
-    */
-   public Restlet getTarget();
+	/**
+	 * Constructor.
+	 * @param context The context.
+	 */
+	public Filter(Context context)
+	{
+		super(context);
+		this.next = null;
+	}
 
-   /**
-    * Indicates if there is a target Restlet.
-    * @return True if there is a target Restlet.
-    */
-   public boolean hasTarget();
-   
-   /**
-    * Handles a call by first invoking the beforeHandle() method for pre-filtering, then distributing the call 
-    * to the target Restlet via the doHandle() method. When the target handling is completed, it finally 
-    * invokes the afterHandle() method for post-filtering.
-    * @param call The call to handle.
-    */
-	public void handle(Call call);
+	/**
+	 * Finds the next Restlet if available.
+	 * @param call The current call.
+	 * @return The next Restlet if available or null.
+	 */
+	public Restlet findNext(Call call)
+	{
+		return getNext();
+	}
+
+	/**
+	 * Sets the chained Restlet shared by all calls going through this filter.
+	 * @param next The chained Restlet.
+	 */
+	public void setNext(Restlet next)
+	{
+		this.next = next;
+	}
+
+	/**
+	 * Returns the chained Restlet.
+	 * @return The chained Restlet or null.
+	 */
+	public Restlet getNext()
+	{
+		return this.next;
+	}
+
+	/**
+	 * Indicates if there is a chained Restlet.
+	 * @return True if there is a chained Restlet.
+	 */
+	public boolean hasNext()
+	{
+		return getNext() != null;
+	}
+
+	/**
+	 * Handles a call by first invoking the beforeHandle() method for pre-filtering, then distributing the call 
+	 * to the target Restlet via the doHandle() method. When the target handling is completed, it finally 
+	 * invokes the afterHandle() method for post-filtering.
+	 * @param call The call to handle.
+	 */
+	public void handle(Call call)
+	{
+		beforeHandle(call);
+		doHandle(call);
+		afterHandle(call);
+	}
+
+	/**
+	 * Allows filtering before its handling by the target Restlet. Does nothing by default.
+	 * @param call The call to filter.
+	 */
+	protected void beforeHandle(Call call)
+	{
+		// To be overriden
+	}
+
+	/**
+	 * Handles the call by distributing it to the target handler. 
+	 * @param call The call to handle.
+	 */
+	protected void doHandle(Call call)
+	{
+		super.handle(call);
+	}
+
+	/**
+	 * Allows filtering after its handling by the target Restlet. Does nothing by default.
+	 * @param call The call to filter.
+	 */
+	protected void afterHandle(Call call)
+	{
+		// To be overriden
+	}
 }

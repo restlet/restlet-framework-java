@@ -34,7 +34,7 @@ public class MapModel implements Model
 	/** 
 	 * The map used to store model variables.
 	 */
-	protected Map<String, String> map;
+	private Map<String, String> map;
 	
 	/**
 	 * Constructor.

@@ -22,18 +22,16 @@
 
 package org.restlet;
 
-import org.restlet.component.Component;
-
 /**
  * Wrapper for Restlet instances. Useful for application developer who need to enrich the Restlet with
  * some additional state or logic.
  * @see <a href="http://c2.com/cgi/wiki?DecoratorPattern">The decorator (aka wrapper) pattern</a>
  * @author Jerome Louvel (contact@noelios.com) <a href="http://www.noelios.com/">Noelios Consulting</a>
  */
-public class WrapperRestlet implements Restlet
+public class WrapperRestlet extends Restlet
 {
    /** Wrapped resource. */
-   protected Restlet wrappedRestlet;
+   private Restlet wrappedRestlet;
 
    /**
     * Constructor.
@@ -50,13 +48,22 @@ public class WrapperRestlet implements Restlet
     */
    public Restlet getWrappedRestlet()
    {
-   	return this.wrappedRestlet;
+      return this.wrappedRestlet;
+   }
+
+   /**
+    * Returns the context.
+    * @return The context.
+    */
+   public Context getContext()
+   {
+      return this.wrappedRestlet.getContext();
    }
 
    /** Starts the Restlet. */
    public void start() throws Exception
    {
-   	this.wrappedRestlet.start();
+      this.wrappedRestlet.start();
    }
 
    /**
@@ -65,7 +72,7 @@ public class WrapperRestlet implements Restlet
     */
    public boolean isStarted()
    {
-   	return this.wrappedRestlet.isStarted();
+      return this.wrappedRestlet.isStarted();
    }
 
    /**
@@ -74,13 +81,13 @@ public class WrapperRestlet implements Restlet
     */
    public void handle(Call call)
    {
-   	this.wrappedRestlet.handle(call);
+      this.wrappedRestlet.handle(call);
    }
 
    /** Stops the Restlet. */
    public void stop() throws Exception
    {
-   	this.wrappedRestlet.stop();
+      this.wrappedRestlet.stop();
    }
 
    /**
@@ -89,24 +96,6 @@ public class WrapperRestlet implements Restlet
     */
    public boolean isStopped()
    {
-   	return this.wrappedRestlet.isStopped();
-   }
-
-   /**
-    * Returns the owner component.
-    * @return The owner component.
-    */
-   public Component getOwner()
-   {
-   	return this.wrappedRestlet.getOwner();
-   }
-
-   /**
-    * Sets the owner component.
-    * @param owner The owner component.
-    */
-   public void setOwner(Component owner)
-   {
-   	this.wrappedRestlet.setOwner(owner);
+      return this.wrappedRestlet.isStopped();
    }
 }

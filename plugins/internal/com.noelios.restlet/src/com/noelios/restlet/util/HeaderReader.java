@@ -33,10 +33,10 @@ import org.restlet.data.Parameter;
 public class HeaderReader
 {
    /** The header to read. */
-   protected String header;
+	private String header;
    
    /** The current read index (or -1 if not reading anymore). */
-   protected int index;
+	private int index;
    
    /**
     * Constructor.

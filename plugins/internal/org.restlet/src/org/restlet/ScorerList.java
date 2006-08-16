@@ -44,13 +44,13 @@ import org.restlet.data.Parameter;
 public class ScorerList implements List<Scorer>
 {
 	/** The parent router. */
-	protected Router router;
+	private Router router;
 	
 	/** The delegate list. */
-	protected List<Scorer> delegate;
+	private List<Scorer> delegate;
 	
 	/** The index of the last scorer used in the round robin mode. */ 
-	protected int lastIndex;
+	private int lastIndex;
 
 	/**
 	 * Constructor.

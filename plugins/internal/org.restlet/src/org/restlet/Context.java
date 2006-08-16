@@ -24,100 +24,104 @@ package org.restlet;
 
 import java.util.logging.Logger;
 
-import org.restlet.data.Reference;
+import org.restlet.data.Method;
+import org.restlet.data.ParameterList;
+import org.restlet.data.Representation;
 
 /**
- * Context of a call associated to the handling Restlet. They may not necessarily change for each 
- * Restlet in the processing chain, but they can potentially change while the other call's data 
- * are expected to be more stable during the processing.
+ * Context of a call associated to a Restlet.
  * @author Jerome Louvel (contact@noelios.com) <a href="http://www.noelios.com/">Noelios Consulting</a>
  */
 public class Context
 {
-	/** Obtain a suitable logger. */
-	private static Logger logger = Logger.getLogger(Context.class.getCanonicalName());
+   /** The modifiable list of parameters. */
+   private ParameterList parameters;
 
-	/** The base reference. */
-	protected Reference baseRef;
-	
-	/** The parent call. */
-	protected Call call;
+   /**
+    * Returns the modifiable list of parameters.
+    * @return The modifiable list of parameters.
+    */
+   public ParameterList getParameters()
+   {
+      if(this.parameters == null) this.parameters = new ParameterList();
+      return this.parameters;
+   }
 
-	/**
-	 * Constructor. 
-	 * @param call The parent call.
-	 */
-	public Context(Call call)
-	{
-		this.baseRef = null;
-		this.call = call;
-	}
-	
-	/**
-	 * Forwards a call to the owner component for processing. This can be useful when some sort of internal 
-	 * redirection or dispatching is needed. Note that you can pass either an existing call or a fresh call 
-	 * instance to this method. When the method returns, verification and further processing can still be 
-	 * done, the client will only receive the response to the call when the Restlet handle method returns. 
-	 * @param call The call to forward.
-	 */
-	public void forward(Call call)
-	{
-//		setBaseRef(null);
-//		getOwner().handle(call);
-	}
+   /**
+    * Returns the logger.
+    * @return The logger.
+    */
+   public Logger getLogger()
+   {
+      return null;
+   }
 
-	/**
-	 * Returns the base reference.
-	 * @return The base reference.
-	 */
-	public Reference getBaseRef()
-	{
-	   return this.baseRef;
-	}
+   /**
+    * Handles a call.
+    * @param call The call to handle.
+    */
+   public void handle(Call call)
+   {
+      throw new UnsupportedOperationException("This context doesn't dispatch calls");
+   }
 
-	/**
-	 * Sets the base reference that will serve to compute relative resource references.
-	 * @param baseUri The base absolute URI.
-	 */
-	public void setBaseRef(String baseUri)
-	{
-		setBaseRef(new Reference(baseUri));
-	}
-	
-	/**
-	 * Sets the base reference that will serve to compute relative resource references.
-	 * @param baseRef The base reference.
-	 */
-	public void setBaseRef(Reference baseRef)
-	{
-	   if(this.call.getResourceRef() == null)
-	   {
-	      logger.warning("You must specify a resource reference before setting a base reference");
-	   }
-	   else if((baseRef != null) && !baseRef.isParent(this.call.getResourceRef()))
-	   {
-	      logger.warning("You must specify a base reference that is a parent of the resource reference");
-	   }
-	
-	   this.baseRef = baseRef;
-	}
+   /**
+    * Gets the identified resource.
+    * @param resourceUri The URI of the resource to get.
+    * @return The returned uniform call.
+    */
+   public Call get(String resourceUri)
+   {
+      Call call = new Call();
+      call.setResourceRef(resourceUri);
+      call.setMethod(Method.GET);
+      handle(call);
+      return call;
+   }
 
-	/**
-	 * Returns the resource reference relative to the context's base reference.
-	 * @return The relative resource reference.
-	 */
-	public Reference getRelativeRef()
-	{
-		return this.call.getResourceRef().getRelativeRef(getBaseRef());
-	}
+   /**
+    * Post a representation to the identified resource.
+    * @param resourceUri The URI of the resource to post to.
+    * @param input The input representation to post.
+    * @return The returned uniform call.
+    */
+   public Call post(String resourceUri, Representation input)
+   {
+      Call call = new Call();
+      call.setResourceRef(resourceUri);
+      call.setMethod(Method.POST);
+      call.setInput(input);
+      handle(call);
+      return call;
+   }
 
-	/**
-	 * Returns the resource path relative to the context's base reference.
-	 * @return The relative resource path .
-	 */
-	public String getRelativePath()
-	{
-		return getRelativeRef().getPath();
-	}
-	
+   /**
+    * Puts a representation in the identified resource.
+    * @param resourceUri The URI of the resource to modify.
+    * @param input The input representation to put.
+    * @return The returned uniform call.
+    */
+   public Call put(String resourceUri, Representation input)
+   {
+      Call call = new Call();
+      call.setResourceRef(resourceUri);
+      call.setMethod(Method.PUT);
+      call.setInput(input);
+      handle(call);
+      return call;
+   }
+
+   /**
+    * Deletes the identified resource.
+    * @param resourceUri The URI of the resource to delete.
+    * @return The returned uniform call.
+    */
+   public Call delete(String resourceUri)
+   {
+      Call call = new Call();
+      call.setResourceRef(resourceUri);
+      call.setMethod(Method.DELETE);
+      handle(call);
+      return call;
+   }
 }

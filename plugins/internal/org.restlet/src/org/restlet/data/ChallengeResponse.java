@@ -31,10 +31,10 @@ import org.restlet.Factory;
 public class ChallengeResponse
 {
    /** The challenge scheme. */
-   protected ChallengeScheme scheme;
+	private ChallengeScheme scheme;
 
    /** The credentials. */
-   protected String credentials;
+	private String credentials;
 
    /**
     * Constructor.

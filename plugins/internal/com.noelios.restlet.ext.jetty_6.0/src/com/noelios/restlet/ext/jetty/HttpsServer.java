@@ -25,8 +25,6 @@ package com.noelios.restlet.ext.jetty;
 import java.io.File;
 
 import org.mortbay.jetty.security.SslSocketConnector;
-import org.restlet.component.Component;
-import org.restlet.data.ParameterList;
 import org.restlet.data.Protocol;
 
 /**
@@ -88,14 +86,12 @@ public class HttpsServer extends JettyServer
 {
    /**
     * Constructor.
-    * @param owner The owner component.
-    * @param parameters The initial parameters.
     * @param address The optional listening IP address (local host used if null).
     * @param port The listening port.
     */
-   public HttpsServer(Component owner, ParameterList parameters, String address, int port)
+   public HttpsServer(String address, int port)
    {
-      super(owner, parameters, address, port);
+      super(address, port);
       getProtocols().add(Protocol.HTTPS);
    }
 
@@ -117,7 +113,7 @@ public class HttpsServer extends JettyServer
          connector.setProtocol(getSslProtocol());
          connector.setProvider(getSecurityProvider());
          
-         this.wrappedServer.addConnector(connector);
+         getWrappedServer().addConnector(connector);
    		super.start();
    	}
    }
@@ -128,7 +124,7 @@ public class HttpsServer extends JettyServer
     */
    public String getKeystorePath()
    {
-   	return getParameters().getFirstValue("keystorePath", System.getProperty("user.home") + File.separator + ".keystore");
+   	return getContext().getParameters().getFirstValue("keystorePath", System.getProperty("user.home") + File.separator + ".keystore");
    }
 
    /**
@@ -137,7 +133,7 @@ public class HttpsServer extends JettyServer
     */
    public String getKeystorePassword()
    {
-   	return getParameters().getFirstValue("keystorePassword", "");
+   	return getContext().getParameters().getFirstValue("keystorePassword", "");
    }
 
    /**
@@ -146,7 +142,7 @@ public class HttpsServer extends JettyServer
     */
    public String getKeystoreType()
    {
-   	return getParameters().getFirstValue("keystoreType", "JKS");
+   	return getContext().getParameters().getFirstValue("keystoreType", "JKS");
    }
 
    /**
@@ -155,7 +151,7 @@ public class HttpsServer extends JettyServer
     */
    public String getKeyPassword()
    {
-   	return getParameters().getFirstValue("keyPassword", "");
+   	return getContext().getParameters().getFirstValue("keyPassword", "");
    }
 
    /**
@@ -164,7 +160,7 @@ public class HttpsServer extends JettyServer
     */
    public String getCertAlgorithm()
    {
-   	return getParameters().getFirstValue("certAlgorithm", "SunX509");
+   	return getContext().getParameters().getFirstValue("certAlgorithm", "SunX509");
    }
 
    /**
@@ -173,7 +169,7 @@ public class HttpsServer extends JettyServer
     */
    public String getSslProtocol()
    {
-   	return getParameters().getFirstValue("sslProtocol", "TLS");
+   	return getContext().getParameters().getFirstValue("sslProtocol", "TLS");
    }
 
    /**
@@ -182,7 +178,7 @@ public class HttpsServer extends JettyServer
     */
    public String getSecurityProvider()
    {
-   	return getParameters().getFirstValue("securityProvider", null);
+   	return getContext().getParameters().getFirstValue("securityProvider", null);
    }
 
 }

@@ -29,13 +29,13 @@ package org.restlet.data;
 public class Cookie extends Parameter
 {
    /** The version number. */
-   protected int version;
+	private int version;
 
    /** The validity path. */
-   protected String path;
+	private String path;
 
    /** The domain name. */
-   protected String domain;
+	private String domain;
 
    /**
     * Constructor.

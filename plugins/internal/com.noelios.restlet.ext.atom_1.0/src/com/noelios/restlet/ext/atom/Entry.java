@@ -34,40 +34,40 @@ import java.util.List;
 public class Entry
 {
 	/** The authors of the entry. */
-	protected List<Person> authors;
+	private List<Person> authors;
 	
 	/** The categories associated with the entry. */
-	protected List<Category> categories;
+	private List<Category> categories;
 	
 	/** Contains or links to the content of the entry. */
-	protected Content content;
+	private Content content;
 
 	/** The contributors to the entry. */
-	protected List<Person> contributors;
+	private List<Person> contributors;
 	
 	/** Permanent, universally unique identifier for the entry. */
-	protected String id;
+	private String id;
 
 	/** The references from the entry to Web resources. */
-	protected List<Link> links;
+	private List<Link> links;
 
 	/** Moment associated with an event early in the life cycle of the entry. */
-	protected Date published;
+	private Date published;
 
 	/** Information about rights held in and over an entry. */
-	protected Text rights;
+	private Text rights;
 
 	/** Source feed's metadata if the entry was copied from another feed. */
-	protected Source source;
+	private Source source;
 	
 	/** Short summary, abstract, or excerpt of the entry. */
-	protected String summary;
+	private String summary;
 
 	/** The human-readable title for the entry. */
-	protected Text title;
+	private Text title;
 
 	/** Most recent moment when the entry was modified in a significant way. */
-	protected Date updated;
+	private Date updated;
 
 	/**
 	 * Constructor.

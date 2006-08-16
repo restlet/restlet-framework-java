@@ -27,7 +27,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import org.restlet.connector.Client;
-import org.restlet.connector.DefaultClient;
+import org.restlet.connector.GenericClient;
 import org.restlet.data.MediaType;
 import org.restlet.data.Protocol;
 import org.restlet.data.Reference;
@@ -52,17 +52,17 @@ public class Service extends SaxRepresentation
 	/**
 	 * The HTTP client connector.
 	 */
-	protected Client client;
+	private Client client;
 	
 	/**
 	 * The reference.
 	 */
-	protected Reference reference;
+	private Reference reference;
 
 	/**
 	 * The list of workspaces.
 	 */
-	protected List<Workspace> workspaces;
+	private List<Workspace> workspaces;
 
 	/**
 	 * Constructor.
@@ -81,7 +81,7 @@ public class Service extends SaxRepresentation
 	 */
 	public Service(String serviceUri) throws IOException
 	{
-		this(new DefaultClient(Protocol.HTTP), serviceUri);
+		this(new GenericClient(Protocol.HTTP), serviceUri);
 	}
 	
 	/**
@@ -103,7 +103,7 @@ public class Service extends SaxRepresentation
 	 */
 	public Service(String serviceUri, Representation xmlService) throws IOException
 	{
-		this(new DefaultClient(Protocol.HTTP), serviceUri, xmlService);
+		this(new GenericClient(Protocol.HTTP), serviceUri, xmlService);
 	}
 
 	/**

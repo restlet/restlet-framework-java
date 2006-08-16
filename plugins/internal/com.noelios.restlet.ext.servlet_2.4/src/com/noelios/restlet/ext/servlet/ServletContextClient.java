@@ -28,10 +28,8 @@ import java.util.Set;
 import javax.servlet.ServletContext;
 
 import org.restlet.Call;
-import org.restlet.component.Component;
 import org.restlet.data.MediaType;
 import org.restlet.data.Method;
-import org.restlet.data.ParameterList;
 import org.restlet.data.Reference;
 import org.restlet.data.ReferenceList;
 import org.restlet.data.Representation;
@@ -49,27 +47,24 @@ import com.noelios.restlet.data.ContextReference.AuthorityType;
 public class ServletContextClient extends ContextClient
 {
    /** The Servlet context to use. */
-   protected ServletContext context;
+	private ServletContext servletContext;
 
    /**
     * Constructor.
-    * @param owner The owner component.
-    * @param parameters The initial parameters.
-    * @param context The Servlet context.
+    * @param servletContext The Servlet context.
     */
-   public ServletContextClient(Component owner, ParameterList parameters, ServletContext context)
+   public ServletContextClient(ServletContext servletContext)
    {
-      super(owner, parameters);
-      this.context = context;
+      this.servletContext = servletContext;
    }
    
    /**
     * Returns the Servlet context.
     * @return The Servlet context.
     */
-   public ServletContext getContext()
+   public ServletContext getServletContext()
    {
-      return this.context;
+      return this.servletContext;
    }
 
    /**
@@ -113,7 +108,7 @@ public class ServletContextClient extends ContextClient
 			if(basePath.endsWith("/"))
 			{
 				// Return the directory listing
-				Set entries = getContext().getResourcePaths(basePath);
+				Set entries = getServletContext().getResourcePaths(basePath);
 				ReferenceList rl = new ReferenceList(entries.size());
 				rl.setListRef(call.getResourceRef());
 				
@@ -128,11 +123,11 @@ public class ServletContextClient extends ContextClient
 			else
 			{
 				// Return the entry content
-            output = new InputRepresentation(getContext().getResourceAsStream(basePath), getDefaultMediaType());
+            output = new InputRepresentation(getServletContext().getResourceAsStream(basePath), getDefaultMediaType());
             updateMetadata(entry, output);
             
             // See if the Servlet context specified a particular Mime Type
-            String mediaType = getContext().getMimeType(basePath);
+            String mediaType = getServletContext().getMimeType(basePath);
             
             if(mediaType != null)
             {

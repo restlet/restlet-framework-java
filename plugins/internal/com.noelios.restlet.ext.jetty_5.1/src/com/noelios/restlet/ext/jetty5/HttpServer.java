@@ -23,8 +23,6 @@
 package com.noelios.restlet.ext.jetty5;
 
 import org.mortbay.util.InetAddrPort;
-import org.restlet.component.Component;
-import org.restlet.data.ParameterList;
 import org.restlet.data.Protocol;
 
 /**
@@ -44,14 +42,12 @@ public class HttpServer extends JettyServer
 {
    /**
     * Constructor.
-    * @param owner The owner component.
-    * @param parameters The initial parameters.
     * @param address The optional listening IP address (local host used if null).
     * @param port The listening port.
     */
-   public HttpServer(Component owner, ParameterList parameters, String address, int port)
+   public HttpServer(String address, int port)
    {
-      super(owner, parameters, address, port);
+      super(address, port);
       getProtocols().add(Protocol.HTTP);
    }
 
@@ -60,14 +56,14 @@ public class HttpServer extends JettyServer
    {
    	HttpListener listener;
    	
-      if(this.address != null)
+      if(getAddress() != null)
       {
-         listener = new HttpListener(this, new InetAddrPort(this.address, this.port));
+         listener = new HttpListener(this, new InetAddrPort(getAddress(), getPort()));
       }
       else
       {
       	listener = new HttpListener(this);
-      	listener.setPort(port);
+      	listener.setPort(getPort());
       }
 
       // Configure the listener
@@ -76,7 +72,7 @@ public class HttpServer extends JettyServer
       listener.setMaxIdleTimeMs(getMaxIdleTimeMs());
       listener.setLowResourcePersistTimeMs(getLowResourcePersistTimeMs());
 
-      this.listener = listener;
+      setListener(listener);
       super.start();
    }
 
@@ -86,7 +82,7 @@ public class HttpServer extends JettyServer
     */
    public int getLowResourcePersistTimeMs()
    {
-   	return Integer.parseInt(getParameters().getFirstValue("lowResourcePersistTimeMs", "2000"));
+   	return Integer.parseInt(getContext().getParameters().getFirstValue("lowResourcePersistTimeMs", "2000"));
    }
 
 }

@@ -38,7 +38,7 @@ import org.restlet.data.MediaType;
  */
 public class StringRepresentation extends StreamRepresentation
 {
-	protected String value;
+	private String value;
 
 	/**
 	 * Constructor. The following metadata are used by default: "text/plain" media type, no language and the 
@@ -93,9 +93,9 @@ public class StringRepresentation extends StreamRepresentation
 	{
 		super(mediaType);
 		this.value = value;
-		this.mediaType = mediaType;
-		this.language = language;
-		this.characterSet = characterSet;
+		setMediaType(mediaType);
+		setLanguage(language);
+		setCharacterSet(characterSet);
 		updateSize();
 	}
 
@@ -106,11 +106,11 @@ public class StringRepresentation extends StreamRepresentation
 	{
 		if(getValue() != null) 
 		{
-			this.expectedSize = getValue().length();
+			setSize(getValue().length());
 		}
 		else
 		{
-			this.expectedSize = UNKNOWN_SIZE;
+			setSize(UNKNOWN_SIZE);
 		}
 	}
 	

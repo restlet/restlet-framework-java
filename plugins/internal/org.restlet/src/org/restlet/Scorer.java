@@ -27,18 +27,53 @@ package org.restlet;
  * The score is typically used by the Router in order to determine the best handler for a given call. 
  * @author Jerome Louvel (contact@noelios.com) <a href="http://www.noelios.com/">Noelios Consulting</a>
  */
-public interface Scorer extends Handler
+public class Scorer extends Chainer
 {
-	/**
-	 * Returns the parent router.
-	 * @return The parent router.
-	 */
-	public Router getRouter();
+	/** The parent router. */
+	protected Router router;
+	
+   /** The Restlet target. */
+   protected Restlet target;
+
+   /**
+    * Constructor.
+    * @param router The parent router.
+    * @param target The Restlet target.
+    */
+   public Scorer(Router router, Restlet target)
+   {
+   	super(router == null ? null : router.getContext());
+   	this.router = router;
+      this.target = target;
+   }
 	
 	/**
 	 * Returns the score for a given call (between 0.0 and 1.0).
 	 * @param call The call to score.
 	 * @return The score for a given call (between 0.0 and 1.0).
 	 */
-	public float score(Call call);
+	public float score(Call call)
+	{
+		return 0.0F;
+	}
+
+   /**
+	 * Returns the parent router.
+	 * @return The parent router.
+	 */
+	public Router getRouter()
+	{
+		return this.router;
+	}
+
+	/**
+	 * Finds the next Restlet if available.
+	 * @param call The current call.
+	 * @return The next Restlet if available or null.
+	 */
+	public Restlet findNext(Call call)
+	{
+		return this.target;
+	}
+
 }

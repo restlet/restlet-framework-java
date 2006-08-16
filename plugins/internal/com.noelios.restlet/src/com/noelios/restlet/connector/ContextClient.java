@@ -38,15 +38,13 @@ import java.util.logging.Level;
 import java.util.logging.Logger;
 
 import org.restlet.Call;
-import org.restlet.component.Component;
-import org.restlet.connector.AbstractClient;
+import org.restlet.connector.Client;
 import org.restlet.data.CharacterSet;
 import org.restlet.data.Encoding;
 import org.restlet.data.Language;
 import org.restlet.data.MediaType;
 import org.restlet.data.Metadata;
 import org.restlet.data.Method;
-import org.restlet.data.ParameterList;
 import org.restlet.data.Protocol;
 import org.restlet.data.Reference;
 import org.restlet.data.ReferenceList;
@@ -104,32 +102,29 @@ import com.noelios.restlet.util.ByteUtils;
  * @see com.noelios.restlet.data.ContextReference
  * @author Jerome Louvel (contact@noelios.com) <a href="http://www.noelios.com/">Noelios Consulting</a>
  */
-public class ContextClient extends AbstractClient
+public class ContextClient extends Client
 {
    /** Obtain a suitable logger. */
    private static Logger logger = Logger.getLogger(ContextClient.class.getCanonicalName());
 
    /** Mappings from extensions to metadata. */
-   protected Map<String, Metadata> metadataMappings;
+   private Map<String, Metadata> metadataMappings;
    
    /** The location of the Web Application archive file or directory path. */
-   protected String webAppPath;
+   private String webAppPath;
    
    /** Indicates if the Web Application path corresponds to an archive file or a directory path. */
-   protected boolean webAppArchive;
+   private boolean webAppArchive;
    
    /** Cache of all the WAR file entries to improve directory listing time. */
-   protected List<String> warEntries;
+   private List<String> warEntries;
 
    /**
     * Constructor. Note that the common list of metadata associations based on extensions is added, see
     * the addCommonExtensions() method.
-    * @param owner The owner component.
-    * @param parameters The initial parameters.
     */
-   public ContextClient(Component owner, ParameterList parameters)
+   public ContextClient()
    {
-   	super(owner, parameters);
       getProtocols().add(Protocol.CONTEXT);
       getProtocols().add(Protocol.FILE);
       this.metadataMappings = new TreeMap<String, Metadata>();
@@ -620,7 +615,7 @@ public class ContextClient extends AbstractClient
     */
    public Encoding getDefaultEncoding()
    {
-   	return new Encoding(getParameters().getFirstValue("defaultEncoding", "identity"));
+   	return new Encoding(getContext().getParameters().getFirstValue("defaultEncoding", "identity"));
    }
    
    /**
@@ -630,7 +625,7 @@ public class ContextClient extends AbstractClient
     */
    public MediaType getDefaultMediaType()
    {
-   	return new MediaType(getParameters().getFirstValue("defaultMediaType", "text/plain"));
+   	return new MediaType(getContext().getParameters().getFirstValue("defaultMediaType", "text/plain"));
    }
 
    /**
@@ -640,7 +635,7 @@ public class ContextClient extends AbstractClient
     */
    public Language getDefaultLanguage()
    {
-   	return new Language(getParameters().getFirstValue("defaultLanguage", "en-us"));
+   	return new Language(getContext().getParameters().getFirstValue("defaultLanguage", "en-us"));
    }
 
    /**
@@ -649,7 +644,7 @@ public class ContextClient extends AbstractClient
     */
    public int getTimeToLive()
    {
-   	return Integer.parseInt(getParameters().getFirstValue("timeToLive", "600"));
+   	return Integer.parseInt(getContext().getParameters().getFirstValue("timeToLive", "600"));
    }
 
    /**
@@ -660,7 +655,7 @@ public class ContextClient extends AbstractClient
    {
    	if(this.webAppPath == null)
    	{
-      	this.webAppPath = getParameters().getFirstValue("webAppPath", System.getProperty("user.home") + File.separator + "restlet.war");
+      	this.webAppPath = getContext().getParameters().getFirstValue("webAppPath", System.getProperty("user.home") + File.separator + "restlet.war");
       	File file = new File(this.webAppPath);
       	
       	if(file.exists())

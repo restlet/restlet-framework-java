@@ -49,7 +49,7 @@ public class PreferenceReader extends HeaderReader
    public static final int TYPE_MEDIA_TYPE = 4;
 
    /** The type of metadata read. */
-   protected int type;
+   private int type;
 
    /**
     * Constructor.

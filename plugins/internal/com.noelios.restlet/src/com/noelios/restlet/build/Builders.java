@@ -25,8 +25,9 @@ package com.noelios.restlet.build;
 import org.restlet.Filter;
 import org.restlet.Restlet;
 import org.restlet.Router;
+import org.restlet.component.Application;
 import org.restlet.component.Component;
-import org.restlet.component.RestletContainer;
+import org.restlet.component.Container;
 
 import com.noelios.restlet.DirectoryHandler;
 import com.noelios.restlet.ExtractFilter;
@@ -40,35 +41,25 @@ import com.noelios.restlet.HostRouter;
 public class Builders
 {
 	/** The current factory. */
-	protected static BuilderFactory factory = new BuilderFactory();
-	
+	private static BuilderFactory factory = new BuilderFactory();
+
 	/**
-	 * Returns the current factory.
-	 * @return The current factory.
+	 * Creates an Application builder.
+	 * @param container The parent container.
 	 */
-	public static BuilderFactory getFactory()
+	public static ApplicationBuilder buildApplication(Container container)
 	{
-		return factory;
+		return getFactory().createApplicationBuilder(container);
 	}
-	
+
 	/**
-	 * Sets the current factory.
-	 * @param newFactory The current factory.
-	 */
-	public static void setFactory(BuilderFactory newFactory)
-	{
-		factory = newFactory;
-	}
-	
-	/**
-	 * Builds a Filter.
-	 * @param parent The parent builder.
+	 * Builds an Application.
 	 * @param node The wrapped node.
 	 */
-	public static FilterBuilder buildFilter(ObjectBuilder parent, Filter node)
-	{
-		return getFactory().createFilterBuilder(parent, node);
-	}
+   public static ApplicationBuilder buildApplication(Application node)
+   {
+   	return getFactory().createApplicationBuilder(node);
+   }
 
 	/**
 	 * Builds a Component.
@@ -79,32 +70,32 @@ public class Builders
 	{
 		return getFactory().createComponentBuilder(parent, node);
 	}
-
+	
 	/**
-	 * Builds a RestletContainer.
+	 * Builds a Container.
 	 */
-   public static RestletContainerBuilder buildContainer()
+   public static ContainerBuilder buildContainer()
    {
-   	return getFactory().createRestletContainerBuilder(null, new RestletContainer());
+   	return getFactory().createContainerBuilder(null, new Container());
    }
-
+	
 	/**
-	 * Builds a RestletContainer.
+	 * Builds an Application.
 	 * @param node The wrapped node.
 	 */
-   public static RestletContainerBuilder buildContainer(RestletContainer node)
+   public static ContainerBuilder buildContainer(Container node)
    {
-   	return getFactory().createRestletContainerBuilder(null, node);
+   	return getFactory().createContainerBuilder(null, node);
    }
 
 	/**
-	 * Builds a RestletContainer.
+	 * Builds a DirectoryHandler.
 	 * @param parent The parent builder.
 	 * @param node The wrapped node.
 	 */
-   public static RestletContainerBuilder buildContainer(ObjectBuilder parent, RestletContainer node)
+   public static DirectoryHandlerBuilder buildDirectory(ObjectBuilder parent, DirectoryHandler node)
    {
-   	return getFactory().createRestletContainerBuilder(parent, node);
+   	return getFactory().createDirectoryHandlerBuilder(parent, node);
    }
 
 	/**
@@ -116,6 +107,16 @@ public class Builders
    {
    	return getFactory().createExtractFilterBuilder(parent, node);
    }
+
+	/**
+	 * Builds a Filter.
+	 * @param parent The parent builder.
+	 * @param node The wrapped node.
+	 */
+	public static FilterBuilder buildFilter(ObjectBuilder parent, Filter node)
+	{
+		return getFactory().createFilterBuilder(parent, node);
+	}
 
 	/**
 	 * Builds a GuardFilter.
@@ -138,16 +139,6 @@ public class Builders
    }
 
 	/**
-	 * Builds a Router.
-	 * @param parent The parent builder.
-	 * @param node The wrapped node.
-	 */
-   public static RouterBuilder buildRouter(ObjectBuilder parent, Router node)
-   {
-   	return getFactory().createRouterBuilder(parent, node);
-   }
-   
-	/**
 	 * Builds an Object.
 	 * @param parent The parent builder.
 	 * @param node The wrapped node.
@@ -166,15 +157,33 @@ public class Builders
    {
    	return getFactory().createRestletBuilder(parent, node);
    }
-
+   
 	/**
-	 * Builds a DirectoryHandler.
+	 * Builds a Router.
 	 * @param parent The parent builder.
 	 * @param node The wrapped node.
 	 */
-   public static DirectoryHandlerBuilder buildDirectory(ObjectBuilder parent, DirectoryHandler node)
+   public static RouterBuilder buildRouter(ObjectBuilder parent, Router node)
    {
-   	return getFactory().createDirectoryHandlerBuilder(parent, node);
+   	return getFactory().createRouterBuilder(parent, node);
    }
+
+	/**
+	 * Returns the current factory.
+	 * @return The current factory.
+	 */
+	public static BuilderFactory getFactory()
+	{
+		return factory;
+	}
+
+	/**
+	 * Sets the current factory.
+	 * @param newFactory The current factory.
+	 */
+	public static void setFactory(BuilderFactory newFactory)
+	{
+		factory = newFactory;
+	}
 	
 }

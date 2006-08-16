@@ -87,15 +87,6 @@ public class WrapperCall extends Call
       return getWrappedCall().getCondition();
    }
 
-	/**
-	 * Returns the context data of the current Restlet applying to this call.
-	 * @return The context data applying to this call.
-	 */
-	public Context getContext()
-	{
-      return getWrappedCall().getContext();
-	}
-
    /**
 	 * Returns the cookies provided by the client.
 	 * @return The cookies provided by the client.

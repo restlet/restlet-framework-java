@@ -43,14 +43,14 @@ import com.noelios.restlet.connector.AbstractHttpServerCall;
 public class JettyCall extends AbstractHttpServerCall
 {
    /** The wrapped Jetty HTTP request. */
-   protected HttpRequest request;
+	private HttpRequest request;
 
    /** The wrapped Jetty HTTP response. */
-   protected HttpResponse response;
-   
-   /** The request headers. */
-   protected ParameterList requestHeaders;
-   
+	private HttpResponse response;
+
+	/** Indicates if the request headers were parsed and added. */
+	private boolean requestHeadersAdded;
+
    /**
     * Constructor.
     * @param request The Jetty HTTP request.
@@ -60,8 +60,6 @@ public class JettyCall extends AbstractHttpServerCall
    {
       this.request = request;
       this.response = response;
-      this.requestHeaders = null;
-      this.responseHeaders = null;
    }
 
    /**
@@ -125,10 +123,10 @@ public class JettyCall extends AbstractHttpServerCall
     */
    public ParameterList getRequestHeaders()
    {
-      if(this.requestHeaders == null)
+   	ParameterList result = super.getRequestHeaders();
+   	
+      if(!requestHeadersAdded)
       {
-         this.requestHeaders = new ParameterList();
-
          // Copy the headers from the request object
          String headerName;
          String headerValue;
@@ -138,12 +136,14 @@ public class JettyCall extends AbstractHttpServerCall
             for(Enumeration values = getRequest().getFieldValues(headerName); values.hasMoreElements(); )
             {
                headerValue = (String)values.nextElement();
-               this.requestHeaders.add(new Parameter(headerName, headerValue));
+               result.add(new Parameter(headerName, headerValue));
             }
          }
+         
+         requestHeadersAdded = true;
       }
 
-      return this.requestHeaders;
+      return result;
    }
 
    /**

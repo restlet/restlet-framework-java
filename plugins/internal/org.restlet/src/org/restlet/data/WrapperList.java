@@ -37,7 +37,7 @@ import java.util.ListIterator;
 public class WrapperList<E> implements List<E> 
 {
 	/** The delegate list. */
-	protected List<E> delegate;
+	private List<E> delegate;
 
 	/**
 	 * Constructor.

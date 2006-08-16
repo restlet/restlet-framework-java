@@ -29,9 +29,9 @@ import java.util.Arrays;
 import java.util.Iterator;
 import java.util.List;
 
-import org.restlet.AbstractFilter;
 import org.restlet.Call;
-import org.restlet.component.Component;
+import org.restlet.Context;
+import org.restlet.Filter;
 import org.restlet.data.Encoding;
 import org.restlet.data.EncodingPref;
 import org.restlet.data.MediaType;
@@ -49,7 +49,7 @@ import com.noelios.restlet.data.EncoderRepresentation;
  * @author Lars Heuer (heuer[at]semagia.com) <a href="http://semagia.com/">Semagia</a>
  * @author Jerome Louvel (contact@noelios.com) <a href="http://www.noelios.com">Noelios Consulting</a>
  */
-public class CompressFilter extends AbstractFilter
+public class CompressFilter extends Filter
 {
 	/**
 	 * Indicates if the encoding should always occur, regardless of the size. 
@@ -59,52 +59,52 @@ public class CompressFilter extends AbstractFilter
 	/**
 	 * Indicates if the input representation should be encoded.
 	 */
-	protected boolean encodeInput;
+	private boolean encodeInput;
 	
 	/**
 	 * Indicates if the output representation should be encoded.
 	 */
-	protected boolean encodeOutput;
+	private boolean encodeOutput;
 	
 	/**
 	 * The minimal size necessary for encoding.
 	 */
-	protected long mininumSize;
+	private long mininumSize;
 
 	/**
 	 * The media types that should be encoded.
 	 */
-	protected List<MediaType> acceptedMediaTypes;
+	private List<MediaType> acceptedMediaTypes;
 
 	/**
 	 * The media types that should be ignored.
 	 */
-	protected List<MediaType> ignoredMediaTypes;
+	private List<MediaType> ignoredMediaTypes;
 
 	/**
 	 * Constructor using the default media types and with {@link #ENCODE_ALL_SIZES} setting.
 	 * This constructor will only encode output representations after call handling.
-	 * @param owner The owner component.
+	 * @param context The context.
 	 */
-	public CompressFilter(Component owner)
+	public CompressFilter(Context context)
 	{
-		this(owner, false, true, ENCODE_ALL_SIZES, getDefaultAcceptedMediaTypes(),
+		this(context, false, true, ENCODE_ALL_SIZES, getDefaultAcceptedMediaTypes(),
 				getDefaultIgnoredMediaTypes());
 	}
 
 	/**
 	 * Constructor.
-	 * @param owner The owner component.
+	 * @param context The context.
 	 * @param encodeInput Indicates if the input representation should be encoded.
 	 * @param encodeOutput Indicates if the output representation should be encoded.
 	 * @param minimumSize The minimal size of the representation where compression should be used.
 	 * @param acceptedMediaTypes The media types that should be encoded.
 	 * @param ignoredMediaTypes The media types that should be ignored.
 	 */
-	public CompressFilter(Component owner, boolean encodeInput, boolean encodeOutput, 
+	public CompressFilter(Context context, boolean encodeInput, boolean encodeOutput, 
 			long minimumSize, List<MediaType> acceptedMediaTypes, List<MediaType> ignoredMediaTypes)
 	{
-		super(owner);
+		super(context);
 		this.encodeInput = encodeInput;
 		this.encodeOutput = encodeOutput;
 		this.mininumSize = minimumSize;

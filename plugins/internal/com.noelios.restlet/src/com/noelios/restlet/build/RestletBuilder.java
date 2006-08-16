@@ -53,17 +53,17 @@ public class RestletBuilder extends ObjectBuilder
     * Returns the owner component builder.
     * @return The owner component builder.
     */
-   public ComponentBuilder owner()
+   public ContainerBuilder owner()
    {
       ObjectBuilder result = this;
 
       for(boolean goUp = true; goUp; )
       {
-         goUp = (result.getNode() != getNode().getOwner()) && (result.up() != null);
+         goUp = (result.getNode() != getNode().getContext()) && (result.up() != null);
          if(goUp) result = result.up();
       }
 
-      return (ComponentBuilder)result;
+      return (ContainerBuilder)result;
    }
 
    /** Starts the Restlet. */

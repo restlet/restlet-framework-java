@@ -24,8 +24,6 @@ package org.restlet.data;
 
 import java.util.List;
 
-import org.restlet.Restlet;
-
 /**
  * Intended conceptual target of a hypertext reference. "Any information that can be named can be
  * a resource: a document or image, a temporal service (e.g. "today's weather in Los Angeles"), a collection
@@ -44,7 +42,7 @@ import org.restlet.Restlet;
  * @see org.restlet.data.Reference
  * @author Jerome Louvel (contact@noelios.com) <a href="http://www.noelios.com/">Noelios Consulting</a>
  */
-public interface Resource extends Restlet
+public interface Resource
 {
 	/**
 	 * Returns the official identifier.

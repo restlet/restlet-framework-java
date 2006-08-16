@@ -52,16 +52,16 @@ public class ServletCall extends AbstractHttpServerCall
    private static Logger logger = Logger.getLogger(ServletCall.class.getCanonicalName());
 
    /** The HTTP Servlet request to wrap. */
-   protected HttpServletRequest request;
+   private HttpServletRequest request;
    
    /** The HTTP Servlet response to wrap. */
-   protected HttpServletResponse response;
+   private HttpServletResponse response;
    
    /** The Servlet context to wrap. */
-   protected ServletContext context;
+   private ServletContext context;
       
    /** The request headers. */
-   protected ParameterList requestHeaders;
+   private ParameterList requestHeaders;
 
    /**
     * Constructor.

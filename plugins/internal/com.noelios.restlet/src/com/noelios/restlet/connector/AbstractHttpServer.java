@@ -28,33 +28,72 @@ import java.util.logging.Logger;
 
 import org.restlet.Call;
 import org.restlet.Restlet;
-import org.restlet.component.Component;
-import org.restlet.connector.AbstractServer;
 import org.restlet.connector.Connector;
+import org.restlet.connector.Server;
 import org.restlet.data.Method;
-import org.restlet.data.ParameterList;
 
 /**
  * Abstract HTTP server connector.
  * @author Jerome Louvel (contact@noelios.com) <a href="http://www.noelios.com/">Noelios Consulting</a>
  */
-public abstract class AbstractHttpServer extends AbstractServer
+public abstract class AbstractHttpServer extends Server
 {
    /** Obtain a suitable logger. */
    private static Logger logger = Logger.getLogger(AbstractHttpServer.class.getCanonicalName());
 
+   /** The listening address if specified. */
+	private String address;
+
+   /** The listening port if specified. */
+	private int port;
+
    /**
     * Constructor.
-    * @param owner The owner component.
-    * @param parameters The initial parameters.
     * @param address The optional listening IP address (local host used if null).
     * @param port The listening port.
     */
-   public AbstractHttpServer(Component owner, ParameterList parameters, String address, int port)
+   public AbstractHttpServer(String address, int port)
    {
-      super(owner, parameters, address, port);
+      this.address = address;
+      this.port = port;
    }
 	
+   /**
+    * Returns the optional listening IP address (local host used if null).
+    * @return The optional listening IP address (local host used if null).
+    */
+   public String getAddress()
+   {
+   	return this.address;
+   }
+	
+   /**
+    * Sets the optional listening IP address (local host used if null).
+    * @param address The optional listening IP address (local host used if null).
+    */
+   protected void setAddress(String address)
+   {
+   	this.address = address;
+   }
+	
+   /**
+    * Returns the listening port if specified.
+    * @return The listening port if specified.
+    */
+   public int getPort()
+   {
+   	return this.port;
+   }
+	
+   /**
+    * Sets the listening port if specified.
+    * @param port The listening port if specified.
+    */
+   protected void setPort(int port)
+   {
+   	this.port = port;
+   }
+   
    /**
     * Handles the connector call.<br/>
     * The default behavior is to create an REST call and delegate it to the attached Restlet.
@@ -77,13 +116,13 @@ public abstract class AbstractHttpServer extends AbstractServer
     * Handles an HTTP server call for a given Restlet target. 
     * @param httpServer The HTTP server connector that issued the call.
     * @param call The connector call.
-    * @param target The target Restlet.
+    * @param next The chained Restlet.
     * @throws IOException 
     */
-   public static void handle(Connector httpServer, AbstractHttpServerCall call, Restlet target) throws IOException
+   public static void handle(Connector httpServer, AbstractHttpServerCall call, Restlet next) throws IOException
    {
       Call restletCall = call.toUniform(httpServer);
-      target.handle(restletCall);
+      next.handle(restletCall);
       call.setResponse(restletCall);
       call.sendResponseHeaders();
       

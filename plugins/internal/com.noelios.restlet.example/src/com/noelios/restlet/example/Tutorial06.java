@@ -22,7 +22,7 @@
 
 package com.noelios.restlet.example;
 
-import org.restlet.component.RestletContainer;
+import org.restlet.component.Container;
 import org.restlet.data.Protocol;
 
 import com.noelios.restlet.DirectoryHandler;
@@ -39,19 +39,19 @@ public class Tutorial06 implements Constants
       try
       {
          // Create a new Restlet container
-         RestletContainer myContainer = new RestletContainer();
+      	Container myContainer = new Container();
 
          // Add an HTTP server connector to the Restlet container. 
          // Note that the container is the call restlet.
-         myContainer.getServers().put("HTTP Server", Protocol.HTTP, 8182);
+         myContainer.getServers().add(Protocol.HTTP, 8182);
 
          // Create a host router matching calls to the server
-         HostRouter host = new HostRouter(myContainer, 8182);
+         HostRouter host = new HostRouter(myContainer.getContext(), 8182);
          myContainer.setRoot(host);
 
          // Create a directory Restlet able to return a deep hierarchy of Web files
          // (HTML pages, CSS stylesheets or GIF images) from a local directory.
-         DirectoryHandler directory = new DirectoryHandler(myContainer, ROOT_URI, "index.html");
+         DirectoryHandler directory = new DirectoryHandler(myContainer.getContext(), ROOT_URI, "index.html");
 
          // Then attach the Restlet to the container.
          host.getScorers().add("/", directory);

@@ -23,7 +23,7 @@
 package com.noelios.restlet;
 
 import org.restlet.Call;
-import org.restlet.component.Component;
+import org.restlet.Context;
 import org.restlet.data.Method;
 
 import com.noelios.restlet.util.PreferenceUtils;
@@ -37,42 +37,42 @@ import com.noelios.restlet.util.PreferenceUtils;
 public class TunnelFilter extends ExtractFilter
 {
    /** Indicates if the method name can be tunneled. */
-   protected boolean methodTunnel;
+	private boolean methodTunnel;
 
    /** The name of the attribute containing the method name. */
-   protected String methodAttribute;
+	private String methodAttribute;
 
    /** Indicates if the client preferences can be tunneled. */
-   protected boolean preferencesTunnel;
+	private boolean preferencesTunnel;
 
    /** The name of the attribute containing the accepted character sets. */
-   protected String characterSetsAttribute;
+	private String characterSetsAttribute;
 
    /** The name of the attribute containing the accepted encodings. */
-   protected String encodingsAttribute;
+	private String encodingsAttribute;
 
    /** The name of the attribute containing the accepted languages. */
-   protected String languagesAttribute;
+	private String languagesAttribute;
 
    /** The name of the attribute containing the accepted media types. */
-   protected String mediaTypesAttribute;
+	private String mediaTypesAttribute;
 
    /** Indicates if the resource reference can be tunneled. */
-   protected boolean uriTunnel;
+	private boolean uriTunnel;
 
    /** The name of the attribute containing the resource reference. */
-   protected String uriAttribute;
+	private String uriAttribute;
 
    /**
     * Constructor.
-    * @param owner The owner component.
+    * @param context The owner component.
     * @param methodTunnel Indicates if the method name can be tunneled.
     * @param preferencesTunnel Indicates if the client preferences can be tunneled.
     * @param uriTunnel Indicates if the resource reference can be tunneled.
     */
-   public TunnelFilter(Component owner, boolean methodTunnel, boolean preferencesTunnel, boolean uriTunnel)
+   public TunnelFilter(Context context, boolean methodTunnel, boolean preferencesTunnel, boolean uriTunnel)
    {
-      super(owner);
+      super(context);
       this.methodTunnel = methodTunnel;
       this.methodAttribute= "method";
       this.preferencesTunnel = preferencesTunnel;

@@ -29,10 +29,10 @@ package org.restlet.data;
 public class ServerData
 {
    /** The server IP address. */
-   protected String address;
+	private String address;
 
    /** The server name. */
-   protected String name;
+	private String name;
 
    /**
     * Returns the server's IP address.

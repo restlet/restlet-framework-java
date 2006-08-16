@@ -29,22 +29,22 @@ package org.restlet.data;
 public class SecurityData
 {
    /** The authentication request sent by an origin server to a client. */
-   protected ChallengeRequest request;
+	private ChallengeRequest request;
 
    /** The authentication response sent by a client to an origin server. */
-   protected ChallengeResponse response;
+	private ChallengeResponse response;
 
    /** Indicates if the call came over a confidential channel. */
-   protected boolean confidential;
+	private boolean confidential;
 
    /** The login of the authenticated caller. */
-   protected String login;
+	private String login;
    
    /** The password of the authenticated caller. */
-   protected String password;
+	private String password;
    
    /** The role of the authenticated caller. */
-   protected String role;
+	private String role;
    
    /**
     * Constructor.

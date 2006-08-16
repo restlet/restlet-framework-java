@@ -23,8 +23,9 @@ package org.restlet.test;
 
 import java.util.Date;
 
-import org.restlet.connector.ConnectorCall;
 import org.restlet.data.ParameterList;
+
+import com.noelios.restlet.connector.HttpCall;
 
 /**
  * Dummy connector call. 
@@ -33,7 +34,7 @@ import org.restlet.data.ParameterList;
  * @author Lars Heuer (heuer[at]semagia.com) <a href="http://www.semagia.com/">Semagia</a>
  * @version $Rev:$ - $Date:$
  */
-public class DummyConnectorCall implements ConnectorCall
+public class DummyConnectorCall implements HttpCall
 {
 	/* (non-Javadoc)
 	 * @see org.restlet.connector.ConnectorCall#addRequestHeader(java.lang.String, java.lang.String)

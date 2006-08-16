@@ -59,10 +59,10 @@ public class CookieReader extends HeaderReader
    /**
     * The cached pair. Used by the readPair() method.
     */
-   protected Parameter cachedPair;
+   private Parameter cachedPair;
 
    /** The global cookie specification version. */
-   protected int globalVersion;
+   private int globalVersion;
 
    /**
     * Constructor.

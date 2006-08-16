@@ -36,7 +36,7 @@ import java.util.TreeMap;
 public class WrapperMap<K, V> implements Map<K, V>
 {
 	/** The delegate map. */
-	protected Map<K, V> delegate;
+	private Map<K, V> delegate;
 
 	/**
 	 * Constructor.

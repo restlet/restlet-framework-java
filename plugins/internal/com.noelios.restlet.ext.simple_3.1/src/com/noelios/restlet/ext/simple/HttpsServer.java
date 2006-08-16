@@ -29,8 +29,6 @@ import java.security.KeyStore;
 import javax.net.ssl.KeyManagerFactory;
 import javax.net.ssl.SSLContext;
 
-import org.restlet.component.Component;
-import org.restlet.data.ParameterList;
 import org.restlet.data.Protocol;
 
 import simple.http.BufferedPipelineFactory;
@@ -90,15 +88,12 @@ public class HttpsServer extends SimpleServer
 {
 	/**
 	 * Constructor.
-	 * @param owner The owner component.
-	 * @param parameters The initial parameters.
 	 * @param address The optional listening IP address (local host used if null).
 	 * @param port The listening port.
 	 */
-	public HttpsServer(Component owner, ParameterList parameters,
-			String address, int port)
+	public HttpsServer(String address, int port)
 	{
-		super(owner, parameters, address, port);
+		super(address, port);
 		getProtocols().add(Protocol.HTTPS);
 	}
 
@@ -114,14 +109,14 @@ public class HttpsServer extends SimpleServer
 			keyManagerFactory.init(keyStore, getKeyPassword().toCharArray());
 			SSLContext sslContext = SSLContext.getInstance(getSslProtocol());
 			sslContext.init(keyManagerFactory.getKeyManagers(), null, null);
-			socket = sslContext.getServerSocketFactory().createServerSocket(port);
-			socket.setSoTimeout(60000);
+			setSocket(sslContext.getServerSocketFactory().createServerSocket(getPort()));
+			getSocket().setSoTimeout(60000);
 
 			// Complete initialization
-			this.confidential = true;
-			this.handler = PipelineHandlerFactory.getInstance(this, getDefaultThreads(), getMaxWaitTimeMs());
-			this.connection = ConnectionFactory.getConnection(handler, new BufferedPipelineFactory());
-			this.connection.connect(socket);
+			setConfidential(true);
+			setHandler(PipelineHandlerFactory.getInstance(this, getDefaultThreads(), getMaxWaitTimeMs()));
+			setConnection(ConnectionFactory.getConnection(getHandler(), new BufferedPipelineFactory()));
+			getConnection().connect(getSocket());
 			super.start();
 		}
 	}
@@ -132,7 +127,7 @@ public class HttpsServer extends SimpleServer
     */
    public String getKeystorePath()
    {
-   	return getParameters().getFirstValue("keystorePath", System.getProperty("user.home") + File.separator + ".keystore");
+   	return getContext().getParameters().getFirstValue("keystorePath", System.getProperty("user.home") + File.separator + ".keystore");
    }
 
    /**
@@ -141,7 +136,7 @@ public class HttpsServer extends SimpleServer
     */
    public String getKeystorePassword()
    {
-   	return getParameters().getFirstValue("keystorePassword", "");
+   	return getContext().getParameters().getFirstValue("keystorePassword", "");
    }
 
    /**
@@ -150,7 +145,7 @@ public class HttpsServer extends SimpleServer
     */
    public String getKeystoreType()
    {
-   	return getParameters().getFirstValue("keystoreType", "JKS");
+   	return getContext().getParameters().getFirstValue("keystoreType", "JKS");
    }
 
    /**
@@ -159,7 +154,7 @@ public class HttpsServer extends SimpleServer
     */
    public String getKeyPassword()
    {
-   	return getParameters().getFirstValue("keyPassword", "");
+   	return getContext().getParameters().getFirstValue("keyPassword", "");
    }
 
    /**
@@ -168,7 +163,7 @@ public class HttpsServer extends SimpleServer
     */
    public String getCertAlgorithm()
    {
-   	return getParameters().getFirstValue("certAlgorithm", "SunX509");
+   	return getContext().getParameters().getFirstValue("certAlgorithm", "SunX509");
    }
 
    /**
@@ -177,7 +172,7 @@ public class HttpsServer extends SimpleServer
     */
    public String getSslProtocol()
    {
-   	return getParameters().getFirstValue("sslProtocol", "TLS");
+   	return getContext().getParameters().getFirstValue("sslProtocol", "TLS");
    }
 
 }

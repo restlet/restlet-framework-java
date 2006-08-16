@@ -204,6 +204,7 @@
       <li>Model == Resource + data objects. Just start from the <a href="http://www.restlet.org/docs/api/org/restlet/data/AbstractResource.html">org.restlet.data.AbstractResource class</a> and override the handle*() methods that you want to support, like handleDelete(). For the handleGet() method, you can rely on the default implementation to do server-side content negotiation. For this, you just need to override the getVariants() method, the rest is automatically done. Internally, we rely on the call.setBestOutput() method to trigger this content negotiation, which compares the variant representations that you make available, with the client capabilities and preferences.</li>
       <li>View == Representation variants. To create new representations for your resources, you can rely on one of the numerous Representation implementation classes (InputRepresentation for example) available in the NRE data package or in the extension packages like the one for FreeMarker (TemplateRepresentation).</li>
    </ol>
+   Chris Winters has developped a <a href="http://www.cwinters.com/raw/RestSampleBook.zip">sample application</a> illustrating very well those concepts. He uses AJAX with a Restlet container to do server-side content negotiation between resource representations available in different formats (XML, JSON and image). He also added the creation of new resources via POST. Note that the code source is based on source code snapshot and won't directly run with the latest beta 17 version.
 </p>
 <h3><a name="16">16 Any recommendations/guidelines in terms of how to deal with caching?</a></h3>
 
@@ -293,7 +294,7 @@
    <table>
       <tr>
          <td style="vertical-align: middle;" rowspan="2"><a href="http://www.java.net/"><img src="http://www.restlet.org/images/javanet.gif" alt="java.net member" /></a></td>
-         <td>Version 1.10, last modified on 2006-07-31</td>
+         <td>Version 1.11, last modified on 2006-08-15</td>
       </tr>
       <tr>
          <td>Copyright &copy; 2005-2006 <a href="mailto:contact@noelios.com">J&eacute;r&ocirc;me Louvel</a>. Restlet is a registered trademark of <a target="_top" href="http://www.noelios.com">Noelios Consulting</a>.</td>

@@ -46,7 +46,7 @@ import com.noelios.restlet.util.ByteUtils;
 public class DecoderRepresentation extends WrapperRepresentation
 {
 	/** Indicates if the decoding can happen. */
-	protected boolean canDecode;
+	private boolean canDecode;
 	
    /**
     * Constructor.

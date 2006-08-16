@@ -39,12 +39,12 @@ public class ContentType
    /**
     * The content media type.
     */
-   protected MediaType mediaType;
+	private MediaType mediaType;
 
    /**
     * The content character set.
     */
-   protected CharacterSet characterSet;
+	private CharacterSet characterSet;
 
    /**
     * Constructor.

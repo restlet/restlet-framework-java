@@ -37,7 +37,7 @@ import com.noelios.restlet.util.ByteUtils;
 public class ReadableRepresentation extends ChannelRepresentation
 {
    /** The representation's input stream. */
-   protected ReadableByteChannel readableChannel;
+	private ReadableByteChannel readableChannel;
 
    /**
     * Constructor.
@@ -58,10 +58,10 @@ public class ReadableRepresentation extends ChannelRepresentation
    public ReadableRepresentation(ReadableByteChannel readableChannel, MediaType mediaType, long expectedSize)
    {
       super(mediaType);
-      this.expectedSize = expectedSize;
+      setSize(expectedSize);
       this.readableChannel = readableChannel;
-      this.contentAvailable = (readableChannel != null);
-      this.contentTransient = true;
+      setContentAvailable(readableChannel != null);
+      setContentTransient(true);
    }
 
    /**
@@ -73,7 +73,7 @@ public class ReadableRepresentation extends ChannelRepresentation
    {
    	ReadableByteChannel result = this.readableChannel;
    	this.readableChannel = null; 
-      this.contentAvailable = false;
+      setContentAvailable(false);
       return result;
    }
 

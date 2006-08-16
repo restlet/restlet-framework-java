@@ -24,7 +24,6 @@ package com.noelios.restlet.example;
 
 import java.util.List;
 
-import org.restlet.AbstractRestlet;
 import org.restlet.Call;
 import org.restlet.Restlet;
 import org.restlet.data.ChallengeScheme;
@@ -45,23 +44,23 @@ public class Tutorial12 implements Constants
       try
       {
          // Create the user Restlet
-         Restlet userRestlet = new AbstractRestlet()
+         Restlet userRestlet = new Restlet()
             {
          		public void handleGet(Call call)
                {
                   // Print the requested URI path
-                  String output = "Account of user named: " + call.getContext().getBaseRef().getLastSegment();
+                  String output = "Account of user named: " + call.getBaseRef().getLastSegment();
                   call.setOutput(new StringRepresentation(output, MediaType.TEXT_PLAIN));
                }
             };
 
          // Create the orders Restlet
-         Restlet ordersRestlet = new AbstractRestlet()
+         Restlet ordersRestlet = new Restlet()
          	{
             	public void handleGet(Call call)
                {
             		// Print the user name of the requested orders
-                  List<String> segments = call.getContext().getBaseRef().getSegments();
+                  List<String> segments = call.getBaseRef().getSegments();
                   String output = "Orders of user named: " + segments.get(segments.size() - 2);
                   call.setOutput(new StringRepresentation(output, MediaType.TEXT_PLAIN));
                }
@@ -69,7 +68,7 @@ public class Tutorial12 implements Constants
       	
          // Build and start the container
       	Builders.buildContainer()
-      		.addServer("HTTP server", Protocol.HTTP, 8182)
+      		.addServer(Protocol.HTTP, 8182)
       		.attachLog("com.noelios.restlet.example")
       			.attachStatus(true, "webmaster@mysite.org", "http://www.mysite.org")
       				.attachHost(8182)

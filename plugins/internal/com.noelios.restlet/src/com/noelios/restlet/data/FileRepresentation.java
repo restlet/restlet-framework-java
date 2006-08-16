@@ -44,7 +44,7 @@ import com.noelios.restlet.util.ByteUtils;
 public class FileRepresentation extends AbstractRepresentation
 {
    /** The file descriptor. */
-   protected File file;
+	private File file;
 
    /**
     * Constructor.
@@ -56,9 +56,9 @@ public class FileRepresentation extends AbstractRepresentation
    {
    	super(mediaType);
    	this.file = file;
-      this.modificationDate = new Date(file.lastModified());
-      this.expirationDate = new Date(System.currentTimeMillis() + (timeToLive * 1000));
-      this.mediaType = mediaType;
+      setModificationDate(new Date(file.lastModified()));
+      setExpirationDate(new Date(System.currentTimeMillis() + (timeToLive * 1000)));
+      setMediaType(mediaType);
    }
    
    /**
@@ -143,9 +143,9 @@ public class FileRepresentation extends AbstractRepresentation
     */
    public long getSize()
    {
-   	if(this.expectedSize != UNKNOWN_SIZE)
+   	if(super.getSize() != UNKNOWN_SIZE)
    	{
-   		return this.expectedSize;
+   		return super.getSize();
    	}
    	else
    	{

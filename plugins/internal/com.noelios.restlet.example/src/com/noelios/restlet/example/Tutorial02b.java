@@ -26,7 +26,7 @@ import java.io.IOException;
 
 import org.restlet.Call;
 import org.restlet.connector.Client;
-import org.restlet.connector.DefaultClient;
+import org.restlet.connector.GenericClient;
 import org.restlet.data.Method;
 import org.restlet.data.Protocol;
 import org.restlet.data.Representation;
@@ -46,7 +46,7 @@ public class Tutorial02b
          call.setReferrerRef("http://www.mysite.org");
 
          // Ask to the HTTP client connector to handle the call
-         Client client = new DefaultClient(Protocol.HTTP);
+         Client client = new GenericClient(Protocol.HTTP);
          client.handle(call);
 
          // Output the result representation on the JVM console

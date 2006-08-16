@@ -37,10 +37,8 @@ import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
 
 import org.restlet.Call;
-import org.restlet.component.Component;
-import org.restlet.connector.AbstractClient;
+import org.restlet.connector.Client;
 import org.restlet.data.Method;
-import org.restlet.data.ParameterList;
 import org.restlet.data.Protocol;
 import org.restlet.data.Representation;
 import org.restlet.data.SecurityData;
@@ -70,19 +68,16 @@ import com.noelios.restlet.Factory;
  * {@code </email>}
  * @author Jerome Louvel (contact@noelios.com) <a href="http://www.noelios.com/">Noelios Consulting</a>
  */
-public abstract class JavaMailClient extends AbstractClient
+public abstract class JavaMailClient extends Client
 {
    /** Obtain a suitable logger. */
    private static Logger logger = Logger.getLogger(JavaMailClient.class.getCanonicalName());
    
    /**
     * Constructor.
-    * @param owner The owner component.
-    * @param parameters The initial parameters.
     */
-   public JavaMailClient(Component owner, ParameterList parameters)
+   public JavaMailClient()
    {
-   	super(owner, parameters);
       getProtocols().add(Protocol.SMTP);
       getProtocols().add(Protocol.SMTP_STARTTLS);
       getProtocols().add(Protocol.SMTPS);

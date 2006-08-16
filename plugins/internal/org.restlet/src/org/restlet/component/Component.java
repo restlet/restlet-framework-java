@@ -22,13 +22,9 @@
 
 package org.restlet.component;
 
-import java.io.IOException;
-
 import org.restlet.Call;
+import org.restlet.Context;
 import org.restlet.Restlet;
-import org.restlet.connector.ClientMap;
-import org.restlet.connector.ServerMap;
-import org.restlet.data.ParameterList;
 
 /**
  * Abstract unit of software instructions and internal state. "A component is an abstract
@@ -38,32 +34,88 @@ import org.restlet.data.ParameterList;
  * dissertation</a>
  * @author Jerome Louvel (contact@noelios.com) <a href="http://www.noelios.com/">Noelios Consulting</a>
  */
-public interface Component extends Restlet
+public class Component extends Restlet
 {
-	/**
-	 * Calls a client connector. If no matching connector is available in this component,
-	 * the owner components will recursively be used in order to find the closest match.
-	 * @param name The name of the client connector.
-	 * @param call The call to handle.
-	 * @throws IOException
+	/** The root Restlet. */
+	private Restlet root;
+   
+   /**
+    * Constructor.
+    * @param context The context.
+    */
+   public Component(Context context)
+   {
+      this(context, null);
+   }
+
+   /**
+    * Constructor.
+    * @param context The context.
+    * @param root The root Restlet.
+    */
+   public Component(Context context, Restlet root)
+   {
+   	super(context);
+   	this.root = root;
+   }
+
+   /** Start hook. */
+   public void start() throws Exception
+   {
+      super.start();
+
+      if(getRoot() != null)
+   	{
+   		getRoot().start();
+   	}
+   }
+
+   /** Stop hook. */
+   public void stop() throws Exception
+   {
+   	if(getRoot() != null)
+   	{
+   		getRoot().stop();
+   	}
+   	
+      super.stop();
+   }
+
+   /**
+	 * Sets the root Restlet that will receive all incoming calls. In general, instance of Router, 
+	 * Filter or Handler interfaces will be used as root of containers.
+	 * @param root The root Restlet to use.
 	 */
-	public void callClient(String name, Call call);
+	public void setRoot(Restlet root)
+	{
+		this.root = root;
+	}
 
 	/**
-	 * Returns the modifiable list of parameters.
-	 * @return The modifiable list of parameters.
+	 * Returns the root Restlet.
+	 * @return The root Restlet.
 	 */
-	public ParameterList getParameters();
+	public Restlet getRoot()
+	{
+		return this.root;
+	}
 
 	/**
-	 * Returns the modifiable map of client connectors.
-	 * @return The modifiable map of client connectors.
+	 * Indicates if a root Restlet is set. 
+	 * @return True if a root Restlet is set. 
 	 */
-	public ClientMap getClients();
+	public boolean hasRoot()
+	{
+		return getRoot() != null;
+	}
 
-	/**
-	 * Returns the modifiable map of server connectors.
-	 * @return The modifiable map of server connectors.
-	 */
-	public ServerMap getServers();
+   /**
+    * Handles a direct call.
+    * @param call The call to handle.
+    */
+	public void handle(Call call)
+   {
+		handle(call, getRoot());
+   }
+
 }

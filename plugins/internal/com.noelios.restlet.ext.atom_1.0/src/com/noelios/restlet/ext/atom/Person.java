@@ -33,17 +33,17 @@ public class Person
 	/**
 	 * Human-readable name.
 	 */
-	protected String name;
+	private String name;
 	
 	/**
 	 * IRI associated with the person.
 	 */
-	protected Reference uri;
+	private Reference uri;
 	
 	/**
 	 * Email address associated with the person.
 	 */
-	protected String email;
+	private String email;
 
 	/**
 	 * Constructor.

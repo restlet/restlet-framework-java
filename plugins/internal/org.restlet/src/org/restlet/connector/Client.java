@@ -23,6 +23,7 @@
 package org.restlet.connector;
 
 import org.restlet.Call;
+import org.restlet.data.Method;
 import org.restlet.data.Representation;
 
 /**
@@ -35,22 +36,37 @@ import org.restlet.data.Representation;
  * dissertation</a>
  * @author Jerome Louvel (contact@noelios.com) <a href="http://www.noelios.com/">Noelios Consulting</a>
  */
-public interface Client extends Connector
+public class Client extends Connector
 {
    /**
     * Gets the identified resource.
     * @param resourceUri The URI of the resource to get.
     * @return The returned uniform call.
     */
-   public Call get(String resourceUri);
-   
+   public Call get(String resourceUri)
+   {
+      Call call = new Call();
+      call.setResourceRef(resourceUri);
+      call.setMethod(Method.GET);
+      handle(call);
+      return call;
+   }
+
    /**
     * Post a representation to the identified resource.
     * @param resourceUri The URI of the resource to post to.
     * @param input The input representation to post.
     * @return The returned uniform call.
     */
-   public Call post(String resourceUri, Representation input);
+	public Call post(String resourceUri, Representation input)
+   {
+      Call call = new Call();
+      call.setResourceRef(resourceUri);
+      call.setMethod(Method.POST);
+      call.setInput(input);
+      handle(call);
+      return call;
+   }
 
    /**
     * Puts a representation in the identified resource.
@@ -58,12 +74,50 @@ public interface Client extends Connector
     * @param input The input representation to put.
     * @return The returned uniform call.
     */
-   public Call put(String resourceUri, Representation input);
-   
+   public Call put(String resourceUri, Representation input)
+   {
+      Call call = new Call();
+      call.setResourceRef(resourceUri);
+      call.setMethod(Method.PUT);
+      call.setInput(input);
+      handle(call);
+      return call;
+   }
+
    /**
     * Deletes the identified resource.
     * @param resourceUri The URI of the resource to delete.
     * @return The returned uniform call.
     */
-   public Call delete(String resourceUri);
+   public Call delete(String resourceUri)
+   {
+      Call call = new Call();
+      call.setResourceRef(resourceUri);
+      call.setMethod(Method.DELETE);
+      handle(call);
+      return call;
+   }
+
+   /**
+    * Determines if a call has any concrete input.
+    * @param call The call to analyze.
+    * @return True if the call has any concrete input.
+    */
+   protected boolean hasInput(Call call)
+   {
+      boolean result = true;
+      
+      if(call.getMethod().equals(Method.GET) || call.getMethod().equals(Method.HEAD) ||
+            call.getMethod().equals(Method.DELETE))
+      {
+         result = false;
+      }
+      else
+      {
+         result = (call.getInput() != null) && call.getInput().isContentAvailable();
+      }
+      
+      return result;
+   }
+
 }

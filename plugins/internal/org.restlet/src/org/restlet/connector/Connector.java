@@ -22,10 +22,11 @@
 
 package org.restlet.connector;
 
+import java.util.ArrayList;
 import java.util.List;
 
+import org.restlet.Context;
 import org.restlet.Restlet;
-import org.restlet.data.ParameterList;
 import org.restlet.data.Protocol;
 
 /**
@@ -42,17 +43,30 @@ import org.restlet.data.Protocol;
  * dissertation</a>
  * @author Jerome Louvel (contact@noelios.com) <a href="http://www.noelios.com/">Noelios Consulting</a>
  */
-public interface Connector extends Restlet
+public class Connector extends Restlet
 {
-	/**
-	 * Returns the modifiable list of parameters.
-	 * @return The modifiable list of parameters.
-	 */
-	public ParameterList getParameters();
+   /** The protocols supported by the connector. */
+	private List<Protocol> protocols;
+   
+   /**
+    * Constructor.
+    */
+   public Connector()
+   {
+   	super(new Context());
+   }
 
    /**
-    * Returns the supported protocols. 
-    * @return The supported protocols.
+    * Returns the protocols supported by the connector.
+    * @return The protocols supported by the connector.
     */
-   public List<Protocol> getProtocols();
+   public List<Protocol> getProtocols()
+   {
+      if(this.protocols == null)
+      {
+      	this.protocols = new ArrayList<Protocol>();
+      }
+      
+      return this.protocols;
+   }
 }

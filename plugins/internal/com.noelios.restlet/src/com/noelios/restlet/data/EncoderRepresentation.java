@@ -46,10 +46,10 @@ import com.noelios.restlet.util.ByteUtils;
 public class EncoderRepresentation extends WrapperRepresentation
 {
 	/** Indicates if the encoding can happen. */
-	protected boolean canEncode;
+	private boolean canEncode;
 	
 	/** The encoding to apply. */
-	protected Encoding encoding;
+	private Encoding encoding;
 	
    /**
     * Constructor.

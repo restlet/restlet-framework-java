@@ -22,30 +22,21 @@
 
 package org.restlet;
 
-import org.restlet.component.Component;
-
 /**
- * Abstract Handler that can easily be subclassed. Concrete classes only have to implement the 
- * findNext(Call) method.
+ * Restlet that is part of a processing chain. In addition to handling incoming calls like any Restlet, a handler 
+ * can also resolve, either statically or dynamically, the next Restlet that will continue the processing chain.
+ * Subclasses only have to implement the findNext(Call) method.
  * @author Jerome Louvel (contact@noelios.com) <a href="http://www.noelios.com/">Noelios Consulting</a>
  */
-public abstract class AbstractHandler extends AbstractRestlet implements Handler
+public class Chainer extends Restlet 
 {
    /**
     * Constructor.
+    * @param context The context.
     */
-   public AbstractHandler()
+   public Chainer(Context context)
    {
-      super(null);
-   }
-
-   /**
-    * Constructor.
-    * @param owner The owner component.
-    */
-   public AbstractHandler(Component owner)
-   {
-   	super(owner);
+   	super(context);
    }
    
    /**
@@ -65,5 +56,15 @@ public abstract class AbstractHandler extends AbstractRestlet implements Handler
    		super.defaultHandle(call);
    	}
    }
+
+   /**
+	 * Finds the next Restlet if available.
+	 * @param call The current call.
+	 * @return The next Restlet if available or null.
+	 */
+	public Restlet findNext(Call call)
+	{
+		return null;
+	}
 
 }

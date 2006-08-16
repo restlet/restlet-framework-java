@@ -32,16 +32,16 @@ import java.util.List;
 public class ConditionData
 {
    /** The "if-modified-since" condition */
-   protected Date modifiedSince;
+	private Date modifiedSince;
    
    /** The "if-unmodified-since" condition */
-   protected Date unmodifiedSince;
+	private Date unmodifiedSince;
    
    /** The "if-match" condition */
-   protected List<Tag> match;
+	private List<Tag> match;
    
    /** The "if-none-match" condition */
-   protected List<Tag> noneMatch;
+	private List<Tag> noneMatch;
    
    /**
     * Constructor.

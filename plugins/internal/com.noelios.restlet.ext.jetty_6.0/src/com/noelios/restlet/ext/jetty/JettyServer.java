@@ -30,8 +30,6 @@ import org.mortbay.jetty.AbstractConnector;
 import org.mortbay.jetty.HttpConnection;
 import org.mortbay.jetty.Server;
 import org.mortbay.thread.BoundedThreadPool;
-import org.restlet.component.Component;
-import org.restlet.data.ParameterList;
 
 /**
  * Abstract Jetty Web server connector. Here is the list of parameters that are supported:
@@ -129,19 +127,17 @@ public abstract class JettyServer extends com.noelios.restlet.connector.Abstract
 	/**
 	 * The wrapped Jetty server.
 	 */
-	protected Server wrappedServer;
+	private Server wrappedServer;
 	
    /**
     * Constructor.
-    * @param owner The owner component.
-    * @param parameters The initial parameters.
     * @param address The optional listening IP address (local host used if null).
     * @param port The listening port.
     */
-   public JettyServer(Component owner, ParameterList parameters, String address, int port)
+   public JettyServer(String address, int port)
    {
-   	super(owner, parameters, address, port);
-   	this.wrappedServer = new WrappedServer(this);
+   	super(address, port);
+   	this.setWrappedServer(new WrappedServer(this));
 
    	// Configuring the thread pool
       BoundedThreadPool btp=new BoundedThreadPool();
@@ -149,7 +145,7 @@ public abstract class JettyServer extends com.noelios.restlet.connector.Abstract
       btp.setMaxIdleTimeMs(getThreadMaxIdleTimeMs());
       btp.setMaxThreads(getMaxThreads());
       btp.setMinThreads(getMinThreads());
-      this.wrappedServer.setThreadPool(btp);
+      getWrappedServer().setThreadPool(btp);
    }
 
    /** Starts the Connector. */
@@ -157,7 +153,7 @@ public abstract class JettyServer extends com.noelios.restlet.connector.Abstract
    {
    	if(!isStarted())
    	{
-   		this.wrappedServer.start();
+   		getWrappedServer().start();
 			super.start();
    	}
    }
@@ -167,15 +163,15 @@ public abstract class JettyServer extends com.noelios.restlet.connector.Abstract
    {
    	if(isStarted())
    	{
-   		this.wrappedServer.stop();
+   		getWrappedServer().stop();
    		super.stop();
    	}
    }
 
    protected void configure(AbstractConnector connector)
    {
-      if(address != null) connector.setHost(this.address);
-      connector.setPort(this.port);
+      if(getAddress() != null) connector.setHost(getAddress());
+      connector.setPort(getPort());
       connector.setLowResourceMaxIdleTime(getLowResourceMaxIdleTimeMs());
       connector.setAcceptors(getAcceptorThreads());
       connector.setAcceptQueueSize(getAcceptQueueSize());
@@ -219,7 +215,7 @@ public abstract class JettyServer extends com.noelios.restlet.connector.Abstract
     */
    public int getMinThreads()
    {
-   	return Integer.parseInt(getParameters().getFirstValue("minThreads", "1"));
+   	return Integer.parseInt(getContext().getParameters().getFirstValue("minThreads", "1"));
    }
 
    /**
@@ -228,7 +224,7 @@ public abstract class JettyServer extends com.noelios.restlet.connector.Abstract
     */
    public int getMaxThreads()
    {
-   	return Integer.parseInt(getParameters().getFirstValue("maxThreads", "255"));
+   	return Integer.parseInt(getContext().getParameters().getFirstValue("maxThreads", "255"));
    }
 
    /**
@@ -237,7 +233,7 @@ public abstract class JettyServer extends com.noelios.restlet.connector.Abstract
     */
    public int getThreadMaxIdleTimeMs()
    {
-   	return Integer.parseInt(getParameters().getFirstValue("threadMaxIdleTimeMs", "60000"));
+   	return Integer.parseInt(getContext().getParameters().getFirstValue("threadMaxIdleTimeMs", "60000"));
    }
 
    /**
@@ -246,7 +242,7 @@ public abstract class JettyServer extends com.noelios.restlet.connector.Abstract
     */
    public int getLowThreads()
    {
-   	return Integer.parseInt(getParameters().getFirstValue("lowThreads", "25"));
+   	return Integer.parseInt(getContext().getParameters().getFirstValue("lowThreads", "25"));
    }
 
    /**
@@ -255,7 +251,7 @@ public abstract class JettyServer extends com.noelios.restlet.connector.Abstract
     */
    public int getLowResourceMaxIdleTimeMs()
    {
-   	return Integer.parseInt(getParameters().getFirstValue("lowResourceMaxIdleTimeMs", "2500"));
+   	return Integer.parseInt(getContext().getParameters().getFirstValue("lowResourceMaxIdleTimeMs", "2500"));
    }
 
    /**
@@ -264,7 +260,7 @@ public abstract class JettyServer extends com.noelios.restlet.connector.Abstract
     */
    public int getAcceptorThreads()
    {
-   	return Integer.parseInt(getParameters().getFirstValue("acceptorThreads", "1"));
+   	return Integer.parseInt(getContext().getParameters().getFirstValue("acceptorThreads", "1"));
    }
 
    /**
@@ -273,7 +269,7 @@ public abstract class JettyServer extends com.noelios.restlet.connector.Abstract
     */
    public int getAcceptQueueSize()
    {
-   	return Integer.parseInt(getParameters().getFirstValue("acceptQueueSize", "0"));
+   	return Integer.parseInt(getContext().getParameters().getFirstValue("acceptQueueSize", "0"));
    }
 
    /**
@@ -282,7 +278,7 @@ public abstract class JettyServer extends com.noelios.restlet.connector.Abstract
     */
    public int getHeaderBufferSize()
    {
-   	return Integer.parseInt(getParameters().getFirstValue("headerBufferSize", Integer.toString(4*1024)));
+   	return Integer.parseInt(getContext().getParameters().getFirstValue("headerBufferSize", Integer.toString(4*1024)));
    }
 
    /**
@@ -291,7 +287,7 @@ public abstract class JettyServer extends com.noelios.restlet.connector.Abstract
     */
    public int getRequestBufferSize()
    {
-   	return Integer.parseInt(getParameters().getFirstValue("requestBufferSize", Integer.toString(8*1024)));
+   	return Integer.parseInt(getContext().getParameters().getFirstValue("requestBufferSize", Integer.toString(8*1024)));
    }
 
    /**
@@ -300,7 +296,7 @@ public abstract class JettyServer extends com.noelios.restlet.connector.Abstract
     */
    public int getResponseBufferSize()
    {
-   	return Integer.parseInt(getParameters().getFirstValue("responseBufferSize", Integer.toString(32*1024)));
+   	return Integer.parseInt(getContext().getParameters().getFirstValue("responseBufferSize", Integer.toString(32*1024)));
    }
 
    /**
@@ -309,7 +305,7 @@ public abstract class JettyServer extends com.noelios.restlet.connector.Abstract
     */
    public int getIoMaxIdleTimeMs()
    {
-   	return Integer.parseInt(getParameters().getFirstValue("ioMaxIdleTimeMs", "30000"));
+   	return Integer.parseInt(getContext().getParameters().getFirstValue("ioMaxIdleTimeMs", "30000"));
    }
 
    /**
@@ -318,7 +314,25 @@ public abstract class JettyServer extends com.noelios.restlet.connector.Abstract
     */
    public int getSoLingerTime()
    {
-   	return Integer.parseInt(getParameters().getFirstValue("soLingerTime", "1000"));
+   	return Integer.parseInt(getContext().getParameters().getFirstValue("soLingerTime", "1000"));
    }
+
+	/**
+	 * Sets the wrapped Jetty server.
+	 * @param wrappedServer The wrapped Jetty server.
+	 */
+	protected void setWrappedServer(Server wrappedServer)
+	{
+		this.wrappedServer = wrappedServer;
+	}
+
+	/**
+	 * Returns the wrapped Jetty server.
+	 * @return The wrapped Jetty server.
+	 */
+	protected Server getWrappedServer()
+	{
+		return this.wrappedServer;
+	}
   
 }

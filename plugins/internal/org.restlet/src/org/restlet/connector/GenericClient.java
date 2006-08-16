@@ -26,58 +26,46 @@ import java.util.Arrays;
 import java.util.List;
 
 import org.restlet.Call;
+import org.restlet.Context;
 import org.restlet.Factory;
-import org.restlet.component.Component;
-import org.restlet.data.ParameterList;
 import org.restlet.data.Protocol;
 import org.restlet.data.Representation;
 
 /**
- * Default client connector supporting multiples protocols.
+ * Generic client connector supporting multiples protocols.
  * @author Jerome Louvel (contact@noelios.com) <a href="http://www.noelios.com/">Noelios Consulting</a>
  */
-public class DefaultClient implements Client
+public class GenericClient extends Client
 {
 	/** The wrapped client. */
-	Client wrappedClient;
+	private Client wrappedClient;
 	
 	/**
     * Constructor.
     * @param protocol The connector protocol.
 	 */
-	public DefaultClient(Protocol protocol)
+	public GenericClient(Protocol protocol)
 	{
-		this(protocol, null);
+		this.wrappedClient = Factory.getInstance().createClient(Arrays.asList(protocol));
 	}
 	
 	/**
     * Constructor.
     * @param protocols The connector protocols.
 	 */
-	public DefaultClient(List<Protocol> protocols)
+	public GenericClient(List<Protocol> protocols)
 	{
-		this(protocols, null);
+		this.wrappedClient = Factory.getInstance().createClient(protocols);
 	}
-	
-	/**
-    * Constructor.
-    * @param protocol The connector protocol.
-    * @param parameters The initial parameters.
-	 */
-	public DefaultClient(Protocol protocol, ParameterList parameters)
-	{
-		this.wrappedClient = Factory.getInstance().createClient(Arrays.asList(protocol), null, parameters);
-	}
-	
-	/**
-    * Constructor.
-    * @param protocols The connector protocols.
-    * @param parameters The initial parameters.
-	 */
-	public DefaultClient(List<Protocol> protocols, ParameterList parameters)
-	{
-		this.wrappedClient = Factory.getInstance().createClient(protocols, null, parameters);
-	}
+
+   /**
+    * Returns the context.
+    * @return The context.
+    */
+   public Context getContext()
+   {
+  		return (this.wrappedClient != null) ? this.wrappedClient.getContext() : null;
+   }
 
    /**
     * Gets the identified resource.
@@ -210,43 +198,6 @@ public class DefaultClient implements Client
    		return true;
    	}
    }
-
-   /**
-    * Returns the owner component.
-    * @return The owner component.
-    */
-   public Component getOwner()
-   {
-   	if(this.wrappedClient != null)
-   	{
-      	return this.wrappedClient.getOwner();
-   	}
-   	else
-   	{
-   		return null;
-   	}
-   }
-
-   /**
-    * Sets the owner component.
-    * @param owner The owner component.
-    */
-   public void setOwner(Component owner)
-   {
-   	if(this.wrappedClient != null)
-   	{
-   		this.wrappedClient.setOwner(owner);
-   	}
-   }
-   
-	/**
-	 * Returns the modifiable map of properties.
-	 * @return The modifiable map of properties.
-	 */
-	public ParameterList getParameters()
-	{
-  		return (this.wrappedClient != null) ? this.wrappedClient.getParameters() : null;
-	}
 
    /**
     * Returns the protocols supported by the connector.

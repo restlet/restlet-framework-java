@@ -31,13 +31,13 @@ import org.restlet.data.Reference;
 public class Generator
 {
 	/** Reference of the generating agent. */
-	protected Reference uri;
+	private Reference uri;
 	
 	/** Version of the generationg agent. */
-	protected String version;
+	private String version;
 	
 	/** Human-readable name for the generating agent. */
-	protected String name;
+	private String name;
 	
 	/**
 	 * Constructor.

@@ -25,80 +25,19 @@ package org.restlet.data;
 import java.util.ArrayList;
 import java.util.List;
 
-import org.restlet.AbstractRestlet;
-import org.restlet.Call;
-import org.restlet.component.Component;
-
 /**
- * Abstract Resource that can easily be subclassed. It automatically handles the GET calls by using server-side
+ * Abstract resource that can easily be subclassed. It automatically handles the GET calls by using server-side
  * content negotiation on the available variants. Other methods can easily be implemented using the corresponding
  * handle*() method, as for any subclass of AbstractRestlet. 
  * @author Jerome Louvel (contact@noelios.com) <a href="http://www.noelios.com/">Noelios Consulting</a>
  */
-public abstract class AbstractResource extends AbstractRestlet implements Resource
+public abstract class AbstractResource implements Resource
 {
    /** The modifiable list of identifiers. */
-   protected ReferenceList identifiers;
+	private ReferenceList identifiers;
    
    /** The modifiable list of variants. */
-   protected List<Representation> variants;
-   
-   /** The language to use if content negotiation fails. */
-   protected Language fallbackLanguage;
-   
-   /**
-    * Constructor.
-    */
-   public AbstractResource()
-   {
-      this(null);
-   }
-
-   /**
-    * Constructor.
-    * @param owner The owner component.
-    */
-   public AbstractResource(Component owner)
-   {
-   	super(owner);
-   	this.identifiers = null;
-   }
-   
-   /**
-    * Handles a GET call.
-    * @param call The call to handle.
-    */
-   protected void handleGet(Call call)
-   {
-   	call.setOutput(this, fallbackLanguage);
-   }
-   
-   /**
-    * Handles a HEAD call.
-    * @param call The call to handle.
-    */
-   protected void handleHead(Call call)
-   {
-   	handleGet(call);
-   }
-
-   /**
-    * Returns the language to use if content negotiation fails.
-    * @return The language to use if content negotiation fails.
-    */
-   public Language getFallbackLanguage()
-   {
-   	return this.fallbackLanguage;
-   }
-   
-   /**
-    * Sets the language to use if content negotiation fails.
-    * @param fallbackLanguage The language to use if content negotiation fails.
-    */
-   public void setFallbackLanguage(Language fallbackLanguage)
-   {
-   	this.fallbackLanguage = fallbackLanguage;
-   }
+	private List<Representation> variants;
 
 	/**
 	 * Returns the official identifier.

@@ -20,28 +20,30 @@
  * Portions Copyright [yyyy] [name of copyright owner]
  */
 
-package org.restlet.connector;
+package org.restlet.component;
 
 import java.util.Arrays;
 
 import org.restlet.Factory;
+import org.restlet.connector.Client;
 import org.restlet.data.Protocol;
-import org.restlet.data.WrapperMap;
+import org.restlet.data.WrapperList;
 
 /**
  * Modifiable map of client connectors.
  * @author Jerome Louvel (contact@noelios.com) <a href="http://www.noelios.com/">Noelios Consulting</a>
  */
-public class ClientMap extends WrapperMap<String, Client>
+public class ClientList extends WrapperList<Client>
 {
 	/**
-	 * Puts a new client connector in the map supporting the given protocol.
-	 * @param key The map key.
+	 * Adds a new client connector in the map supporting the given protocol.
 	 * @param protocol The connector protocol.
 	 * @return The added client.
 	 */
-	public Client put(String key, Protocol protocol)
+	public Client add(Protocol protocol)
 	{
-		return put(key, Factory.getInstance().createClient(Arrays.asList(protocol), null, null));
+		Client result = Factory.getInstance().createClient(Arrays.asList(protocol)); 
+		add(result);
+		return result;
 	}
 }

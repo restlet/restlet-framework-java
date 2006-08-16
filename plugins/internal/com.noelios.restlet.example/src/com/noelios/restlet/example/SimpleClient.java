@@ -24,7 +24,7 @@ package com.noelios.restlet.example;
 
 import org.restlet.Call;
 import org.restlet.connector.Client;
-import org.restlet.connector.DefaultClient;
+import org.restlet.connector.GenericClient;
 import org.restlet.data.Form;
 import org.restlet.data.Method;
 import org.restlet.data.Protocol;
@@ -59,7 +59,7 @@ public class SimpleClient
          call.setInput(form.getWebForm());
 
          // Prepare HTTP client connector.
-         Client client = new DefaultClient(Protocol.HTTP);
+         Client client = new GenericClient(Protocol.HTTP);
 
          // Make the call.
          client.handle(call);

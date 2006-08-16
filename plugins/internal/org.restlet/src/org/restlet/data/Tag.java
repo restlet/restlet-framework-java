@@ -38,10 +38,10 @@ public class Tag
 	public static final Tag ALL = new Tag("*");
 
 	/** The opaque tag string. */
-	protected String tag;
+	private String tag;
 
 	/** The tag weakness. */
-	protected boolean weak;
+	private boolean weak;
 
 	/**
 	 * Constructor.

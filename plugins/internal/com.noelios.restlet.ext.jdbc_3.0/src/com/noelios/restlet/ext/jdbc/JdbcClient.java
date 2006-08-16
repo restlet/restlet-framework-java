@@ -40,10 +40,8 @@ import org.apache.commons.dbcp.PoolingDataSource;
 import org.apache.commons.pool.ObjectPool;
 import org.apache.commons.pool.impl.GenericObjectPool;
 import org.restlet.Call;
-import org.restlet.component.Component;
-import org.restlet.connector.AbstractClient;
+import org.restlet.connector.Client;
 import org.restlet.data.Method;
-import org.restlet.data.ParameterList;
 import org.restlet.data.Protocol;
 import org.restlet.data.Representation;
 import org.w3c.dom.Document;
@@ -74,19 +72,16 @@ import com.noelios.restlet.data.ObjectRepresentation;
  * &nbsp;&nbsp;{@code </body>}<br/> {@code </request>}
  * @author Jerome Louvel (contact@noelios.com) <a href="http://www.noelios.com/">Noelios Consulting</a>
  */
-public class JdbcClient extends AbstractClient
+public class JdbcClient extends Client
 {
    /** Map of connection factories. */
-   protected List<ConnectionSource> connectionSources;
+	private List<ConnectionSource> connectionSources;
    
    /**
     * Constructor.
-    * @param owner The owner component.
-    * @param parameters The initial parameters.
     */
-   public JdbcClient(Component owner, ParameterList parameters)
+   public JdbcClient()
    {
-   	super(owner, parameters);
    	getProtocols().add(Protocol.JDBC);
 
       // Set up the list of factories

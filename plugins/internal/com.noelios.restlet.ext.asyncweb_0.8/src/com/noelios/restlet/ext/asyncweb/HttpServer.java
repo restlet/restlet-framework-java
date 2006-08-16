@@ -22,8 +22,6 @@
 
 package com.noelios.restlet.ext.asyncweb;
 
-import org.restlet.component.Component;
-import org.restlet.data.ParameterList;
 import org.restlet.data.Protocol;
 import org.safehaus.asyncweb.container.ContainerLifecycleException;
 import org.safehaus.asyncweb.transport.nio.NIOTransport;
@@ -48,14 +46,12 @@ public class HttpServer extends AsyncWebServer
 {
    /**
     * Constructor.
-    * @param owner The owner component.
-    * @param parameters The initial parameters.
     * @param address The optional listening IP address (local host used if null).
     * @param port The listening port.
     */
-   public HttpServer(Component owner, ParameterList parameters, String address, int port)
+   public HttpServer(String address, int port)
    {
-      super(owner, parameters, address, port);
+      super(address, port);
       getProtocols().add(Protocol.HTTP);
    }
 
@@ -65,10 +61,10 @@ public class HttpServer extends AsyncWebServer
 		if(!isStarted())
 		{
 			NIOTransport nio = new NIOTransport();
-			nio.setPort(super.port);
+			nio.setPort(getPort());
 			nio.setServiceContainer(this);
 			nio.setIoWorkerCount(getIoWorkerCount());
-			this.transport = nio;
+			setTransport(nio);
 			super.start();		
 		}
 	}

@@ -28,13 +28,11 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.regex.Pattern;
 
-import org.restlet.AbstractHandler;
 import org.restlet.Call;
-import org.restlet.DefaultRouter;
+import org.restlet.Context;
 import org.restlet.Restlet;
 import org.restlet.Router;
 import org.restlet.ScorerList;
-import org.restlet.component.Component;
 import org.restlet.data.Protocol;
 import org.restlet.data.Status;
 
@@ -46,7 +44,7 @@ import org.restlet.data.Status;
  * not issued automatically. 
  * @author Jerome Louvel (contact@noelios.com) <a href="http://www.noelios.com/">Noelios Consulting</a>
  */
-public class HostRouter extends AbstractHandler implements Router
+public class HostRouter extends Router
 {
 	/**
 	 * Usage mode for the HostRouter. 
@@ -72,50 +70,50 @@ public class HostRouter extends AbstractHandler implements Router
 	/**
 	 * The usage mode. 
 	 */
-	protected UsageMode mode;
+	private UsageMode mode;
 	
 	/** 
 	 * The list of allowed protocols. 
 	 * Useful if both HTTP and HTTPS are allowed for example. 
 	 */
-	protected List<Protocol> allowedProtocols;
+	private List<Protocol> allowedProtocols;
 	
 	/** 
 	 * The list of allowed domain names. 
 	 * If IP addresses are allowed they will be looked up from these names. 
 	 */
-	protected List<String> allowedDomains;
+	private List<String> allowedDomains;
 	
 	/**
 	 * The list of allowed port numbers.
 	 */
-	protected List<Integer> allowedPorts;
+	private List<Integer> allowedPorts;
 	
 	/**
 	 * The preferred protocol.
 	 * Used to detect if client redirects or warnings must be issued. 
 	 */
-	protected Protocol preferredProtocol;
+	private Protocol preferredProtocol;
 	
 	/**
 	 * The preferred domain name.
 	 * Used to detect if client redirects or warnings must be issued. 
 	 */
-	protected String preferredDomain;
+	private String preferredDomain;
 	
 	/**
 	 * The preferred port.
 	 * Used to detect if client redirects or warnings must be issued. 
 	 */
-	protected int preferredPort;
+	private int preferredPort;
 	
 	/** The preferred URI start based on other preferences for protocol, domain and port. */
-	protected String preferredUri;
+	private String preferredUri;
 	
 	/**
 	 * Indicates if client redirects should be issued when the host URI doesn't match the preferred format.
 	 */
-	protected boolean redirectClient;
+	private boolean redirectClient;
 
 	/**
 	 * Indicates the redirection status to use.
@@ -123,81 +121,81 @@ public class HostRouter extends AbstractHandler implements Router
 	 * @see org.restlet.test.data.Statuses.REDIRECTION_FOUND
 	 * @see org.restlet.test.data.Statuses.REDIRECTION_MOVED_TEMPORARILY
 	 */
-	protected Status redirectStatus;
+	private Status redirectStatus;
 	
 	/**
 	 * Indicates if client warnings should be issued when the host URI doesn't match the preferred format.
 	 * This will materialize as a Not Found status with a detailled explanation.
 	 */
-	protected boolean warnClient;
+	private boolean warnClient;
 	
 	/**
 	 * Indicates if the IP addresses, equivalent of the domain names,
 	 * are allowed as a way to specify URIs.
 	 */
-	protected boolean allowIpAddresses;
+	private boolean allowIpAddresses;
 	
 	/**
 	 * Indicates if "localhost" is accepted as a valid domain name.
 	 * In addition, if IP addresses are allowed, "127.0.0.1" is also allowed.
 	 */
-	protected boolean allowLocalHost;
+	private boolean allowLocalHost;
 	
 	/**
 	 * Indicates if default ports for the allowed protocols are allowed.
 	 * Concretely allow the usage of any URI without explicit port number.
 	 */
-	protected boolean allowDefaultPorts;
+	private boolean allowDefaultPorts;
 	
 	/**
 	 * Front router only used in the Filter usage mode.
 	 * Its target is the internal delegate router.
 	 */
-	protected Router frontRouter;
+	private Router frontRouter;
 	
 	/**
 	 * Back router used in all usage modes.
 	 */
-	protected Router backRouter;
+	private Router backRouter;
 	
    /**
     * Constructor to match the machine's host name on port 80.
-    * @param owner The owner component.
+    * @param context The context.
     */
-   public HostRouter(Component owner)
+   public HostRouter(Context context)
    {
-		this(owner, 80);
+		this(context, 80);
    }
 	
    /**
     * Constructor to match a given host name on port 80.
-    * @param owner The owner component.
+    * @param owner The context.
     * @param domain The domain name.
     */
-   public HostRouter(Component owner, String domain)
+   public HostRouter(Context owner, String domain)
    {
    	this(owner, domain, 80);
    }
 	
    /**
     * Constructor to match the machine's host name on a given port.
-    * @param owner The owner component.
+    * @param context The context.
     * @param port The port number.
     */
-   public HostRouter(Component owner, int port)
+   public HostRouter(Context context, int port)
    {
-		this(owner, getLocalHostName(), port);
+		this(context, getLocalHostName(), port);
    }
    
    /**
     * Constructor to match a given host name on a given port.
-    * @param owner The owner component.
+    * @param context The context.
     * @param domain The domain name.
     * @param port The port number.
     */
-   public HostRouter(Component owner, String domain, int port)
+   public HostRouter(Context context, String domain, int port)
    {
-   	super(owner);
+   	super(context);
       this.mode = UsageMode.FILTER;
       this.allowedProtocols = new ArrayList<Protocol>();
       this.allowedProtocols.add(Protocol.HTTP);
@@ -215,7 +213,7 @@ public class HostRouter extends AbstractHandler implements Router
       this.allowLocalHost = true;
       this.allowDefaultPorts = true;
       this.frontRouter = null;
-      this.backRouter = new DefaultRouter(owner);
+      this.backRouter = new Router(context);
       updatePreferredUri();
    }
 
@@ -383,13 +381,13 @@ public class HostRouter extends AbstractHandler implements Router
 				if(isRedirectClient())
 			   {
 			   	// Redirect the caller to the preferred format
-					call.setRedirectRef(getPreferredUri() + call.getContext().getRelativeRef());
+					call.setRedirectRef(getPreferredUri() + call.getRelativePart());
 					call.setStatus(getRedirectStatus());
 				}
 				else if(isWarnClient())
 				{
 		   		// Redirect the caller to the preferred format
-					String description = "Used this URI instead: " + getPreferredUri() + call.getContext().getRelativeRef(); 
+					String description = "Used this URI instead: " + getPreferredUri() + call.getRelativePart(); 
 					call.setStatus(new Status(Status.CLIENT_ERROR_BAD_REQUEST, description));
 			   }
 
@@ -411,7 +409,7 @@ public class HostRouter extends AbstractHandler implements Router
 	   				// We test again after synchronization
 	   	   		if(this.frontRouter == null)
 	   	   		{
-	   	   			this.frontRouter = new DefaultRouter(getOwner());
+	   	   			this.frontRouter = new Router(getContext());
 	   	   			this.frontRouter.getScorers().add(getPattern(), this.backRouter);
 	   	   		}
 	   			}

@@ -29,7 +29,6 @@ import java.nio.channels.WritableByteChannel;
 import org.restlet.data.Parameter;
 import org.restlet.data.ParameterList;
 import org.restlet.data.Reference;
-
 import org.safehaus.asyncweb.http.HttpRequest;
 import org.safehaus.asyncweb.http.HttpResponse;
 import org.safehaus.asyncweb.http.ResponseStatus;
@@ -48,12 +47,18 @@ public class AsyncWebServerCall extends AbstractHttpServerCall
 	/**
 	 * AsyncWeb request.
 	 */
-	protected Request request;
+	private Request request;
+
+	/** Indicates if the request headers were parsed and added. */
+	private boolean requestHeadersAdded;
 
 	/**
 	 * AsyncWeb response.
 	 */
-	protected Response response;
+	private Response response;
+
+	/** Indicates if the response headers were parsed and added. */
+	private boolean responseHeadersAdded;
 
 	/**
 	 * Constructor.
@@ -68,9 +73,11 @@ public class AsyncWebServerCall extends AbstractHttpServerCall
 	{
 		super();
 		this.request = (Request) request;
+		this.requestHeadersAdded = false;
 		this.response = (Response) response;
-		super.confidential = confidential;
-		super.responseAddress = address;
+		this.responseHeadersAdded = false;
+		setConfidential(confidential);
+		setResponseAddress(address);
 	}
 
 	/* (non-Javadoc)
@@ -88,8 +95,8 @@ public class AsyncWebServerCall extends AbstractHttpServerCall
 	@Override
 	public String getRequestUri()
 	{
-		return Reference.toString(isConfidential() ? "https" : "http", request.getHeader("host"), null,
-				request.getRequestURI(), null, null);
+		return Reference.toString(isConfidential() ? "https" : "http", request
+				.getHeader("host"), null, request.getRequestURI(), null, null);
 	}
 
 	/* (non-Javadoc)
@@ -126,45 +133,53 @@ public class AsyncWebServerCall extends AbstractHttpServerCall
 	{
 		response.setStatus(ResponseStatus.forId(code), reason);
 	}
-	
+
 	/* (non-Javadoc)
 	 * @see com.noelios.restlet.impl.ConnectorCallImpl#getRequestHeaders()
 	 */
 	@Override
 	public ParameterList getRequestHeaders()
 	{
-		if (super.requestHeaders == null) 
+		ParameterList result = super.getRequestHeaders();
+
+		if (!this.requestHeadersAdded)
 		{
 			HttpHeaders headers = request.getHeaders();
 			int headerCount = headers.getSize();
-			super.requestHeaders = new ParameterList(headerCount);
-			for (int i=0; i < headerCount; i++) 
+			for (int i = 0; i < headerCount; i++)
 			{
-				super.requestHeaders.add(headers.getHeaderName(i).getValue(),
-												 headers.getHeaderValue(i).getValue());
+				result.add(headers.getHeaderName(i).getValue(), headers.getHeaderValue(i)
+						.getValue());
 			}
+
+			this.requestHeadersAdded = true;
 		}
-		return super.requestHeaders;
+
+		return result;
 	}
-	
+
 	/* (non-Javadoc)
 	 * @see com.noelios.restlet.impl.ConnectorCallImpl#getResponseHeaders()
 	 */
 	@Override
 	public ParameterList getResponseHeaders()
 	{
-		if (super.responseHeaders == null) 
+		ParameterList result = super.getResponseHeaders();
+
+		if (!this.responseHeadersAdded)
 		{
 			HttpHeaders headers = response.getHeaders();
 			int headerCount = headers.getSize();
-			super.responseHeaders = new ParameterList(headerCount);
-			for (int i=0; i < headerCount; i++) 
+			for (int i = 0; i < headerCount; i++)
 			{
-				super.responseHeaders.add(headers.getHeaderName(i).getValue(),
-												 headers.getHeaderValue(i).getValue());
-			} 
+				result.add(headers.getHeaderName(i).getValue(), headers.getHeaderValue(i)
+						.getValue());
+			}
+
+			this.responseHeadersAdded = true;
 		}
-		return super.responseHeaders;
+
+		return result;
 	}
 
 	/* (non-Javadoc)

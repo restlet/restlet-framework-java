@@ -24,48 +24,47 @@ package com.noelios.restlet.connector;
 
 import java.util.Date;
 
-import org.restlet.connector.ConnectorCall;
 import org.restlet.data.ParameterList;
 
 import com.noelios.restlet.util.DateUtils;
 
 /**
- * Default implementation of a connector call.
+ * Default implementation of a HTTP call.
  * @author Jerome Louvel (contact@noelios.com) <a href="http://www.noelios.com/">Noelios Consulting</a>
  */
-public class DefaultConnectorCall implements ConnectorCall
+public class DefaultHttpCall implements HttpCall
 {
    /** Indicates if the call is confidential. */
-   protected boolean confidential;
+	private boolean confidential;
    
    /** The client IP address. */
-   protected String requestAddress;
+	private String requestAddress;
    
    /** The request method. */
-   protected String requestMethod;
+	private String requestMethod;
    
    /** The request URI. */
-   protected String requestUri;
+	private String requestUri;
    
    /** The request headers. */
-   protected ParameterList requestHeaders;
+	private ParameterList requestHeaders;
    
    /** The response address. */
-   protected String responseAddress;
+	private String responseAddress;
    
    /** The response headers. */
-   protected ParameterList responseHeaders;
+	private ParameterList responseHeaders;
    
    /** The response status code. */
-   protected int responseStatusCode;
+	private int responseStatusCode;
    
    /** The response reason phrase. */
-   protected String responseReasonPhrase;
+	private String responseReasonPhrase;
    
    /**
     * Constructor.
     */
-   public DefaultConnectorCall()
+   public DefaultHttpCall()
    {
       this.confidential = false;
       this.responseAddress = null;
@@ -88,6 +87,15 @@ public class DefaultConnectorCall implements ConnectorCall
    }
 
    /**
+    * Indicates if the confidentiality of the call is ensured (ex: via SSL).
+    * @param confidential True if the confidentiality of the call is ensured (ex: via SSL).
+    */
+   protected void setConfidential(boolean confidential)
+   {
+      this.confidential = confidential;
+   }
+
+   /**
     * Returns the request address.<br/>
     * Corresponds to the IP address of the requesting client.
     * @return The request address.
@@ -98,12 +106,30 @@ public class DefaultConnectorCall implements ConnectorCall
    }
 
    /**
+    * Sets the request address. 
+    * @param requestAddress The request address. 
+    */
+   protected void setRequestAddress(String requestAddress)
+   {
+      this.requestAddress = requestAddress;
+   }
+
+   /**
     * Returns the request method. 
     * @return The request method.
     */
    public String getRequestMethod()
    {
       return this.requestMethod;
+   }
+	
+   /**
+    * Sets the request method. 
+    * @param method The request method.
+    */
+   protected void setRequestMethod(String method)
+   {
+      this.requestMethod = method;
    }
 
    /**
@@ -113,6 +139,15 @@ public class DefaultConnectorCall implements ConnectorCall
    public String getRequestUri()
    {
       return this.requestUri;
+   }
+
+   /**
+    * Sets the full request URI. 
+    * @param requestUri The full request URI.
+    */
+   protected void setRequestUri(String requestUri)
+   {
+      this.requestUri = requestUri;
    }
    
    /**
@@ -124,7 +159,7 @@ public class DefaultConnectorCall implements ConnectorCall
       if(this.requestHeaders == null) this.requestHeaders = new ParameterList();
       return this.requestHeaders;
    }
-   
+
    /**
     * Returns the response address.<br/>
     * Corresponds to the IP address of the responding server.
@@ -133,6 +168,16 @@ public class DefaultConnectorCall implements ConnectorCall
    public String getResponseAddress()
    {
       return this.responseAddress;
+   }
+
+   /**
+    * Sets the response address.<br/>
+    * Corresponds to the IP address of the responding server.
+    * @param responseAddress The response address.
+    */
+   public void setResponseAddress(String responseAddress)
+   {
+      this.responseAddress = responseAddress;
    }
    
    /**

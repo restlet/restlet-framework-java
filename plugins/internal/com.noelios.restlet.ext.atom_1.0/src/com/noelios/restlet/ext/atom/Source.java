@@ -35,40 +35,40 @@ import org.restlet.data.Reference;
 public class Source
 {
 	/** The authors of the entry. */
-	protected List<Person> authors;
+	private List<Person> authors;
 
 	/** The categories associated with the entry. */
-	protected List<Category> categories;
+	private List<Category> categories;
 
 	/** The contributors to the entry. */
-	protected List<Person> contributors;
+	private List<Person> contributors;
 	
 	/** The agent used to generate a feed. */
-	protected Generator generator;
+	private Generator generator;
 	
 	/** Image that provides iconic visual identification for a feed. */
-	protected Reference icon;
+	private Reference icon;
 
 	/** Permanent, universally unique identifier for the entry. */
-	protected String id;
+	private String id;
 
 	/** The references from the entry to Web resources. */
-	protected List<Link> links;
+	private List<Link> links;
 	
 	/** Image that provides visual identification for a feed. */
-	protected Reference logo;
+	private Reference logo;
 	
 	/** Information about rights held in and over an entry. */
-	protected Text rights;
+	private Text rights;
 	
 	/** Short summary, abstract, or excerpt of an entry. */
-	protected Text subtitle;
+	private Text subtitle;
 	
 	/** The human-readable title for the entry. */
-	protected Text title;
+	private Text title;
 	
 	/** Most recent moment when the entry was modified in a significant way. */
-	protected Date updated;
+	private Date updated;
 	
 	/**
 	 * Constructor.

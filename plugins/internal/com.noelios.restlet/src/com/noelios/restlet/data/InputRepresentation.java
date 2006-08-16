@@ -37,7 +37,7 @@ import com.noelios.restlet.util.ByteUtils;
 public class InputRepresentation extends StreamRepresentation
 {
    /** The representation's stream. */
-   protected InputStream inputStream;
+	private InputStream inputStream;
 
    /**
     * Constructor.
@@ -58,10 +58,10 @@ public class InputRepresentation extends StreamRepresentation
    public InputRepresentation(InputStream inputStream, MediaType mediaType, long expectedSize)
    {
       super(mediaType);
-      this.expectedSize = expectedSize;
+      setSize(expectedSize);
       this.inputStream = inputStream;
-      this.contentAvailable = (inputStream != null);
-      this.contentTransient = true;
+      setContentAvailable(inputStream != null);
+      setContentTransient(true);
    }
 
    /**
@@ -72,7 +72,7 @@ public class InputRepresentation extends StreamRepresentation
    {
       InputStream result = this.inputStream;
       this.inputStream = null;
-      this.contentAvailable = false;
+      setContentAvailable(false);
       return result;
    }
    

@@ -23,8 +23,6 @@
 package com.noelios.restlet.ext.jetty5;
 
 import org.mortbay.util.InetAddrPort;
-import org.restlet.component.Component;
-import org.restlet.data.ParameterList;
 import org.restlet.data.Protocol;
 
 /**
@@ -36,14 +34,12 @@ public class AjpServer extends JettyServer
 {
    /**
     * Constructor.
-    * @param owner The owner component.
-    * @param parameters The initial parameters.
     * @param address The optional listening IP address (local host used if null).
     * @param port The listening port.
     */
-   public AjpServer(Component owner, ParameterList parameters, String address, int port)
+   public AjpServer(String address, int port)
    {
-      super(owner, parameters, address, port);
+      super(address, port);
       getProtocols().add(Protocol.AJP);
    }
 
@@ -52,14 +48,14 @@ public class AjpServer extends JettyServer
    {
    	AjpListener listener;
    	
-      if(this.address != null)
+      if(getAddress() != null)
       {
-         listener = new AjpListener(this, new InetAddrPort(this.address, this.port));
+         listener = new AjpListener(this, new InetAddrPort(getAddress(), getPort()));
       }
       else
       {
          listener = new AjpListener(this);
-         listener.setPort(port);
+         listener.setPort(getPort());
       }
 
       // Configure the listener
@@ -67,7 +63,7 @@ public class AjpServer extends JettyServer
       listener.setMaxThreads(getMaxThreads());
       listener.setMaxIdleTimeMs(getMaxIdleTimeMs());
       
-      this.listener = listener;
+      setListener(listener);
       super.start();
    }
 

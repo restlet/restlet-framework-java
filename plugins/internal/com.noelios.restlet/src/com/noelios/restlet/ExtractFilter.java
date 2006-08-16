@@ -28,9 +28,9 @@ import java.util.List;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
-import org.restlet.AbstractFilter;
 import org.restlet.Call;
-import org.restlet.component.Component;
+import org.restlet.Context;
+import org.restlet.Filter;
 import org.restlet.data.Form;
 import org.restlet.data.Status;
 
@@ -42,7 +42,7 @@ import com.noelios.restlet.util.CallModel;
  * or on the call's template model.
  * @author Jerome Louvel (contact@noelios.com) <a href="http://www.noelios.com/">Noelios Consulting</a>
  */
-public class ExtractFilter extends AbstractFilter
+public class ExtractFilter extends Filter
 {
    /** Obtain a suitable logger. */
    private static Logger logger = Logger.getLogger(ExtractFilter.class.getCanonicalName());
@@ -50,25 +50,25 @@ public class ExtractFilter extends AbstractFilter
    /**
     * List of query parameters to extract.
     */
-   protected List<ExtractInfo> queryExtracts;
+   private List<ExtractInfo> queryExtracts;
 
    /**
     * List of input parameters to extract.
     */
-   protected List<ExtractInfo> inputExtracts;
+   private List<ExtractInfo> inputExtracts;
 
    /**
     * List of call's model attributes to extract.
     */
-   protected List<ExtractInfo> modelExtracts;
+   private List<ExtractInfo> modelExtracts;
 
    /**
     * Constructor.
-    * @param owner The owner component.
+    * @param context The context.
     */
-   public ExtractFilter(Component owner)
+   public ExtractFilter(Context context)
    {
-      super(owner);
+      super(context);
       this.queryExtracts = null;
       this.inputExtracts = null;
       this.modelExtracts = null;

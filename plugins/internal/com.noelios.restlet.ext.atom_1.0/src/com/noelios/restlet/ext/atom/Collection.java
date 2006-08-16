@@ -37,22 +37,22 @@ public class Collection
 	/**
 	 * The parent workspace.
 	 */
-	protected Workspace workspace;
+	private Workspace workspace;
 	
 	/**
 	 * The title.
 	 */
-	protected String title;
+	private String title;
 	
 	/**
 	 * The hypertext reference.
 	 */
-	protected Reference href;
+	private Reference href;
 	
 	/**
 	 * The type of members.
 	 */
-	protected MemberType memberType;
+	private MemberType memberType;
 	
 	/**
 	 * Constructor.

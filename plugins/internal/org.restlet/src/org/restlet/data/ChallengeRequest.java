@@ -22,7 +22,6 @@
 
 package org.restlet.data;
 
-
 /**
  * Authentication challenge sent by an origin server to a client.
  * @author Jerome Louvel (contact@noelios.com) <a href="http://www.noelios.com/">Noelios Consulting</a>
@@ -30,13 +29,13 @@ package org.restlet.data;
 public class ChallengeRequest
 {
    /** The challenge scheme. */
-   protected ChallengeScheme scheme;
+	private ChallengeScheme scheme;
 
    /** The authentication realm. */
-   protected String realm;
+	private String realm;
 
    /** The scheme parameters. */
-   protected ParameterList parameters;
+	private ParameterList parameters;
 
    /**
     * Constructor.

@@ -22,10 +22,10 @@
 
 package com.noelios.restlet.example;
 
-import org.restlet.AbstractRestlet;
 import org.restlet.Call;
+import org.restlet.Context;
 import org.restlet.Restlet;
-import org.restlet.component.RestletContainer;
+import org.restlet.component.Container;
 import org.restlet.data.Form;
 import org.restlet.data.MediaType;
 import org.restlet.data.Parameter;
@@ -45,19 +45,20 @@ public class SimpleServer
       try
       {
          // Create a new Restlet container
-         RestletContainer myContainer = new RestletContainer();
-
+      	Container myContainer = new Container();
+         Context myContext = myContainer.getContext();
+         
          // Create the HTTP server connector, then add it as a server
          // connector to the Restlet container. Note that the container
          // is the call restlet.
-         myContainer.getServers().put("My connector", Protocol.HTTP, 9876);
+         myContainer.getServers().add(Protocol.HTTP, 9876);
 
          // Attach a host router as the root handler
-         HostRouter host = new HostRouter(myContainer, 9876);
+         HostRouter host = new HostRouter(myContext, 9876);
          myContainer.setRoot(host);
 
          // Prepare and attach a test Restlet
-         Restlet testRestlet = new AbstractRestlet(myContainer)
+         Restlet testRestlet = new Restlet(myContext)
          {
             public void handlePut(Call call)
             {

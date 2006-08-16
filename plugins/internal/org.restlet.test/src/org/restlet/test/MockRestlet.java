@@ -21,8 +21,8 @@
  */
 package org.restlet.test;
 
-import org.restlet.AbstractRestlet;
 import org.restlet.Call;
+import org.restlet.Restlet;
 
 /**
  * Thin layer around an AbstractRestlet.
@@ -31,7 +31,7 @@ import org.restlet.Call;
  * @author Lars Heuer (heuer[at]semagia.com) <a href="http://www.semagia.com/">Semagia</a>
  * @version $Rev:$ - $Date:$
  */
-public class MockRestlet extends AbstractRestlet
+public class MockRestlet extends Restlet
 {
 
 	/* (non-Javadoc)

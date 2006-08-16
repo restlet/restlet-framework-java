@@ -24,8 +24,6 @@ package com.noelios.restlet.ext.simple;
 
 import java.net.ServerSocket;
 
-import org.restlet.component.Component;
-import org.restlet.data.ParameterList;
 import org.restlet.data.Protocol;
 
 import simple.http.BufferedPipelineFactory;
@@ -41,14 +39,12 @@ public class HttpServer extends SimpleServer
 {
    /**
     * Constructor.
-    * @param owner The owner component.
-    * @param parameters The initial parameters.
     * @param address The optional listening IP address (local host used if null).
     * @param port The listening port.
     */
-   public HttpServer(Component owner, ParameterList parameters, String address, int port)
+   public HttpServer(String address, int port)
    {
-      super(owner, parameters, address, port);
+      super(address, port);
       getProtocols().add(Protocol.HTTP);
    }
 
@@ -57,11 +53,11 @@ public class HttpServer extends SimpleServer
 	{
 		if(!isStarted())
 		{
-			socket = new ServerSocket(this.port);
-			this.confidential = false;
-			this.handler = PipelineHandlerFactory.getInstance(this, getDefaultThreads(), getMaxWaitTimeMs());
-			this.connection = ConnectionFactory.getConnection(handler, new BufferedPipelineFactory());
-			this.connection.connect(socket);
+			setSocket(new ServerSocket(getPort()));
+			setConfidential(false);
+			setHandler(PipelineHandlerFactory.getInstance(this, getDefaultThreads(), getMaxWaitTimeMs()));
+			setConnection(ConnectionFactory.getConnection(getHandler(), new BufferedPipelineFactory()));
+			getConnection().connect(getSocket());
 			super.start();
 		}
 	}

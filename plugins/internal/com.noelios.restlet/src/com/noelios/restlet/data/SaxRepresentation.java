@@ -56,7 +56,7 @@ public abstract class SaxRepresentation extends OutputRepresentation
 	/**
 	 * The source to parse.
 	 */
-	protected Source source;
+	private Source source;
 	
    /**
     * Constructor.

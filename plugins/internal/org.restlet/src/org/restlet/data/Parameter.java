@@ -33,10 +33,10 @@ import java.net.URLEncoder;
 public class Parameter implements Comparable<Parameter>
 {
    /** The name. */
-	protected String name;
+	private String name;
 	
    /** The value. */
-   protected String value;
+	private String value;
 
    /**
     * Default constructor.

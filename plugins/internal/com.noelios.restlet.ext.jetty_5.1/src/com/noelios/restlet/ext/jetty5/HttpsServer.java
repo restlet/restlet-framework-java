@@ -25,8 +25,6 @@ package com.noelios.restlet.ext.jetty5;
 import java.io.File;
 
 import org.mortbay.util.InetAddrPort;
-import org.restlet.component.Component;
-import org.restlet.data.ParameterList;
 import org.restlet.data.Protocol;
 
 /**
@@ -70,14 +68,12 @@ public class HttpsServer extends JettyServer
 {
    /**
     * Constructor.
-    * @param owner The owner component.
-    * @param parameters The initial parameters.
     * @param address The optional listening IP address (local host used if null).
     * @param port The listening port.
     */
-   public HttpsServer(Component owner, ParameterList parameters, String address, int port)
+   public HttpsServer(String address, int port)
    {
-      super(owner, parameters, address, port);
+      super(address, port);
       getProtocols().add(Protocol.HTTPS);
    }
 
@@ -85,14 +81,14 @@ public class HttpsServer extends JettyServer
    public void start() throws Exception
    {
    	HttpsListener listener = null;
-      if(this.address != null)
+      if(getAddress() != null)
       {
-         listener = new HttpsListener(this, new InetAddrPort(this.address, this.port));
+         listener = new HttpsListener(this, new InetAddrPort(getAddress(), getPort()));
       }
       else
       {
       	listener = new HttpsListener(this);
-      	listener.setPort(port);
+      	listener.setPort(getPort());
       }
       
       // Configure the listener
@@ -104,7 +100,7 @@ public class HttpsServer extends JettyServer
       listener.setPassword(getKeystorePassword());
       listener.setKeyPassword(getKeyPassword());
       
-      this.listener = listener;
+      setListener(listener);
       
       super.start();
    }
@@ -115,7 +111,7 @@ public class HttpsServer extends JettyServer
     */
    public String getKeystorePath()
    {
-   	return getParameters().getFirstValue("keystorePath", System.getProperty("user.home") + File.separator + ".keystore");
+   	return getContext().getParameters().getFirstValue("keystorePath", System.getProperty("user.home") + File.separator + ".keystore");
    }
 
    /**
@@ -124,7 +120,7 @@ public class HttpsServer extends JettyServer
     */
    public String getKeystorePassword()
    {
-   	return getParameters().getFirstValue("keystorePassword", "");
+   	return getContext().getParameters().getFirstValue("keystorePassword", "");
    }
 
    /**
@@ -133,7 +129,7 @@ public class HttpsServer extends JettyServer
     */
    public String getKeyPassword()
    {
-   	return getParameters().getFirstValue("keyPassword", "");
+   	return getContext().getParameters().getFirstValue("keyPassword", "");
    }
 
    /**
@@ -142,7 +138,7 @@ public class HttpsServer extends JettyServer
     */
    public int getLowResourcePersistTimeMs()
    {
-   	return Integer.parseInt(getParameters().getFirstValue("lowResourcePersistTimeMs", "2000"));
+   	return Integer.parseInt(getContext().getParameters().getFirstValue("lowResourcePersistTimeMs", "2000"));
    }
 
 }

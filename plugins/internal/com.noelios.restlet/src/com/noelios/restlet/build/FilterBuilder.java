@@ -22,7 +22,6 @@
 
 package com.noelios.restlet.build;
 
-import org.restlet.DefaultRouter;
 import org.restlet.Filter;
 import org.restlet.Restlet;
 import org.restlet.Router;
@@ -35,7 +34,7 @@ import com.noelios.restlet.ExtractFilter;
 import com.noelios.restlet.GuardFilter;
 import com.noelios.restlet.HostRouter;
 import com.noelios.restlet.LogFilter;
-import com.noelios.restlet.RedirectRestlet;
+import com.noelios.restlet.RedirectHandler;
 import com.noelios.restlet.StatusFilter;
 
 /**
@@ -64,42 +63,36 @@ public class FilterBuilder extends RestletBuilder
    }
 
    /**
-    * Attaches a target Restlet. Note that you don't need to specify an owner component 
-    * for your target as the filter's owner will automatically be set for you.
-    * @param target The target Restlet to attach.
+    * Attaches a Restlet.
+    * @param next The Restlet to attach.
     * @return The builder for the target.
     */
-   public RestletBuilder attach(Restlet target)
+   public RestletBuilder attach(Restlet next)
    {
-   	target.setOwner(getNode().getOwner());
-      getNode().setTarget(target);
-      return Builders.buildRestlet(this, target);
+      getNode().setNext(next);
+      return Builders.buildRestlet(this, next);
    }
 
    /**
-    * Attaches a target Filter. Note that you don't need to specify an owner component 
-    * for your target as the filter's owner will automatically be set for you.
-    * @param target The target filter to attach.
+    * Attaches a Filter.
+    * @param next The Filter to attach.
     * @return The builder for the target.
     */
-   public FilterBuilder attach(Filter target)
+   public FilterBuilder attach(Filter next)
    {
-   	target.setOwner(getNode().getOwner());
-      getNode().setTarget(target);
-      return Builders.buildFilter(this, target);
+      getNode().setNext(next);
+      return Builders.buildFilter(this, next);
    }
 
    /**
-    * Attaches a target Router. Note that you don't need to specify an owner component 
-    * for your target as the filter's owner will automatically be set for you.
-    * @param target The target router to attach.
+    * Attaches a Router.
+    * @param next The Router to attach.
     * @return The builder for the target.
     */
-   public RouterBuilder attach(Router target)
+   public RouterBuilder attach(Router next)
    {
-   	target.setOwner(getNode().getOwner());
-      getNode().setTarget(target);
-      return Builders.buildRouter(this, target);
+      getNode().setNext(next);
+      return Builders.buildRouter(this, next);
    }
 
    /**
@@ -108,8 +101,8 @@ public class FilterBuilder extends RestletBuilder
     */
    public FilterBuilder attachCompress()
    {
-      CompressFilter node = new CompressFilter(getNode().getOwner());
-      getNode().setTarget(node);
+      CompressFilter node = new CompressFilter(getNode().getContext());
+      getNode().setNext(node);
       return Builders.buildFilter(this, node);
    }
 
@@ -130,8 +123,8 @@ public class FilterBuilder extends RestletBuilder
 	 */
 	public FilterBuilder attachDecompress(boolean decodeInput, boolean decodeOutput)
 	{
-      DecompressFilter node = new DecompressFilter(getNode().getOwner(), decodeInput, decodeOutput);
-      getNode().setTarget(node);
+      DecompressFilter node = new DecompressFilter(getNode().getContext(), decodeInput, decodeOutput);
+      getNode().setNext(node);
       return Builders.buildFilter(this, node);
 	}
    
@@ -143,8 +136,8 @@ public class FilterBuilder extends RestletBuilder
     */
    public DirectoryHandlerBuilder attachDirectory(String rootUri, String indexName)
    {
-      DirectoryHandler node = new DirectoryHandler(getNode().getOwner(), rootUri, indexName);
-      getNode().setTarget(node);
+      DirectoryHandler node = new DirectoryHandler(getNode().getContext(), rootUri, indexName);
+      getNode().setNext(node);
       return Builders.buildDirectory(this, node);
    }
 
@@ -154,8 +147,8 @@ public class FilterBuilder extends RestletBuilder
     */
    public ExtractFilterBuilder attachExtract()
    {
-      ExtractFilter node = new ExtractFilter(getNode().getOwner());
-      getNode().setTarget(node);
+      ExtractFilter node = new ExtractFilter(getNode().getContext());
+      getNode().setNext(node);
       return Builders.buildExtract(this, node);
    }
 
@@ -170,8 +163,8 @@ public class FilterBuilder extends RestletBuilder
     */
    public GuardFilterBuilder attachGuard(String logName, boolean authentication, ChallengeScheme scheme, String realm, boolean authorization)
    {
-   	GuardFilter node = new GuardFilter(getNode().getOwner(), logName, authentication, scheme, realm, authorization);
-      getNode().setTarget(node);
+   	GuardFilter node = new GuardFilter(getNode().getContext(), logName, authentication, scheme, realm, authorization);
+      getNode().setNext(node);
       return Builders.buildGuard(this, node);
    }
    
@@ -182,8 +175,8 @@ public class FilterBuilder extends RestletBuilder
     */
    public HostRouterBuilder attachHost(int port)
    {
-      HostRouter node = new HostRouter(getNode().getOwner(), port);
-      getNode().setTarget(node);
+      HostRouter node = new HostRouter(getNode().getContext(), port);
+      getNode().setNext(node);
       return Builders.buildHost(this, node);
    }
    
@@ -194,8 +187,8 @@ public class FilterBuilder extends RestletBuilder
     */
    public HostRouterBuilder attachHost(String domain)
    {
-      HostRouter node = new HostRouter(getNode().getOwner(), domain);
-      getNode().setTarget(node);
+      HostRouter node = new HostRouter(getNode().getContext(), domain);
+      getNode().setNext(node);
       return Builders.buildHost(this, node);
    }
    
@@ -207,8 +200,8 @@ public class FilterBuilder extends RestletBuilder
     */
    public HostRouterBuilder attachHost(String domain, int port)
    {
-      HostRouter node = new HostRouter(getNode().getOwner(), domain, port);
-      getNode().setTarget(node);
+      HostRouter node = new HostRouter(getNode().getContext(), domain, port);
+      getNode().setNext(node);
       return Builders.buildHost(this, node);
    }
 
@@ -220,8 +213,8 @@ public class FilterBuilder extends RestletBuilder
     */
    public FilterBuilder attachLog(String logName)
    {
-      LogFilter node = new LogFilter(getNode().getOwner(), logName);
-      getNode().setTarget(node);
+      LogFilter node = new LogFilter(getNode().getContext(), logName);
+      getNode().setNext(node);
       return Builders.buildFilter(this, node);
    }
 
@@ -235,8 +228,8 @@ public class FilterBuilder extends RestletBuilder
     */
    public FilterBuilder attachLog(String logName, String logFormat)
    {
-      LogFilter node = new LogFilter(getNode().getOwner(), logName, logFormat);
-      getNode().setTarget(node);
+      LogFilter node = new LogFilter(getNode().getContext(), logName, logFormat);
+      getNode().setNext(node);
       return Builders.buildFilter(this, node);
    }
 
@@ -246,8 +239,8 @@ public class FilterBuilder extends RestletBuilder
     */
    public RouterBuilder attachRouter()
    {
-   	DefaultRouter node = new DefaultRouter(getNode().getOwner());
-      getNode().setTarget(node);
+   	Router node = new Router(getNode().getContext());
+      getNode().setNext(node);
       return Builders.buildRouter(this, node);
    }
 
@@ -259,21 +252,20 @@ public class FilterBuilder extends RestletBuilder
     */
    public RestletBuilder attachRedirect(String targetPattern, int mode)
    {
-      RedirectRestlet node = new RedirectRestlet(getNode().getOwner(), targetPattern, mode);
-      getNode().setTarget(node);
+      RedirectHandler node = new RedirectHandler(getNode().getContext(), targetPattern, mode);
+      getNode().setNext(node);
       return Builders.buildRestlet(this, node);
    }
 
    /**
     * Attaches a Redirect Restlet in the Connector mode.
     * @param targetPattern The pattern to build the target URI.
-    * @param connectorName The connector Name.
     * @return The builder for the created node.
     */
-   public RestletBuilder attachRedirect(String targetPattern, String connectorName)
+   public RestletBuilder attachRedirect(String targetPattern)
    {
-      RedirectRestlet node = new RedirectRestlet(getNode().getOwner(), targetPattern, connectorName);
-      getNode().setTarget(node);
+      RedirectHandler node = new RedirectHandler(getNode().getContext(), targetPattern);
+      getNode().setNext(node);
       return Builders.buildRestlet(this, node);
    }
    
@@ -286,8 +278,8 @@ public class FilterBuilder extends RestletBuilder
     */
    public FilterBuilder attachStatus(boolean overwrite, String email, String homeURI)
    {
-      StatusFilter node = new StatusFilter(getNode().getOwner(), overwrite, email, homeURI);
-      getNode().setTarget(node);
+      StatusFilter node = new StatusFilter(getNode().getContext(), overwrite, email, homeURI);
+      getNode().setNext(node);
       return Builders.buildFilter(this, node);
    }
 

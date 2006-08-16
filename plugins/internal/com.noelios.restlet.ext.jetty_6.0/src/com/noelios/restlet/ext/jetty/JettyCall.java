@@ -50,10 +50,10 @@ public class JettyCall extends AbstractHttpServerCall
    private static Logger logger = Logger.getLogger(JettyCall.class.getCanonicalName());
 
    /** The wrapped Jetty HTTP connection. */
-   protected HttpConnection connection;
+   private HttpConnection connection;
 
    /** The request headers. */
-   protected ParameterList requestHeaders;
+   private ParameterList requestHeaders;
 
    /**
     * Constructor.

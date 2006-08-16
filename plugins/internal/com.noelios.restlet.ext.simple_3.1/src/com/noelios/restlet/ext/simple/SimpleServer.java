@@ -27,9 +27,6 @@ import java.net.ServerSocket;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
-import org.restlet.component.Component;
-import org.restlet.data.ParameterList;
-
 import simple.http.PipelineHandler;
 import simple.http.ProtocolHandler;
 import simple.http.Request;
@@ -77,33 +74,31 @@ public abstract class SimpleServer extends AbstractHttpServer implements Protoco
    /**
 	 * Indicates if this service is acting in HTTP or HTTPS mode.
 	 */
-	protected boolean confidential;
+	private boolean confidential;
 
 	/**
 	 * Server socket this server is listening to.
 	 */
-	protected ServerSocket socket;
+	private ServerSocket socket;
 
 	/**
 	 * Simple pipeline handler.
 	 */
-	protected PipelineHandler handler;
+	private PipelineHandler handler;
 	
 	/**
 	 * Simple connection.
 	 */
-	protected Connection connection;
+	private Connection connection;
 
    /**
     * Constructor.
-    * @param owner The owner component.
-    * @param parameters The initial parameters.
     * @param address The optional listening IP address (local host used if null).
     * @param port The listening port.
     */
-   public SimpleServer(Component owner, ParameterList parameters, String address, int port)
+   public SimpleServer(String address, int port)
    {
-      super(owner, parameters, address, port);
+      super(address, port);
    }
 
    /** Stops the Restlet. */
@@ -111,10 +106,10 @@ public abstract class SimpleServer extends AbstractHttpServer implements Protoco
 	{
 		if(isStarted())
 		{
-			this.socket.close();
-			this.socket = null;
-			this.handler = null;
-			this.connection = null;
+			getSocket().close();
+			setSocket(null);
+			this.setHandler(null);
+			this.setConnection(null);
 			
 			// For further information on how to shutdown a Simple
 			// server, see http://sourceforge.net/mailarchive/forum.php?thread_id=10138257&forum_id=38791
@@ -131,7 +126,7 @@ public abstract class SimpleServer extends AbstractHttpServer implements Protoco
 	 */
 	public void handle(Request request, Response response)
 	{
-		handle(new SimpleCall(request, response, this.confidential, this.port));
+		handle(new SimpleCall(request, response, this.isConfidential(), getPort()));
 		
 		try
 		{
@@ -149,7 +144,7 @@ public abstract class SimpleServer extends AbstractHttpServer implements Protoco
     */
    public int getDefaultThreads()
    {
-   	return Integer.parseInt(getParameters().getFirstValue("defaultThreads", "20"));
+   	return Integer.parseInt(getContext().getParameters().getFirstValue("defaultThreads", "20"));
    }
 
    /**
@@ -158,7 +153,79 @@ public abstract class SimpleServer extends AbstractHttpServer implements Protoco
     */
    public int getMaxWaitTimeMs()
    {
-   	return Integer.parseInt(getParameters().getFirstValue("maxWaitTimeMs", "200"));
+   	return Integer.parseInt(getContext().getParameters().getFirstValue("maxWaitTimeMs", "200"));
    }
+
+	/**
+	 * Sets the server socket this server is listening to.
+	 * @param socket The server socket this server is listening to.
+	 */
+	protected void setSocket(ServerSocket socket)
+	{
+		this.socket = socket;
+	}
+
+	/**
+	 * Returns the server socket this server is listening to.
+	 * @return The server socket this server is listening to.
+	 */
+	protected ServerSocket getSocket()
+	{
+		return socket;
+	}
+
+	/**
+	 * Sets the Simple pipeline handler.
+	 * @param handler The Simple pipeline handler.
+	 */
+	protected void setHandler(PipelineHandler handler)
+	{
+		this.handler = handler;
+	}
+
+	/**
+	 * Returns the Simple pipeline handler.
+	 * @return The Simple pipeline handler.
+	 */
+	protected PipelineHandler getHandler()
+	{
+		return handler;
+	}
+
+	/**
+	 * Sets the Simple connection.
+	 * @param connection The Simple connection.
+	 */
+	protected void setConnection(Connection connection)
+	{
+		this.connection = connection;
+	}
+
+	/**
+	 * Returns the Simple connection.
+	 * @return The Simple connection.
+	 */
+	protected Connection getConnection()
+	{
+		return connection;
+	}
+
+	/**
+	 * Indicates if this service is acting in HTTP or HTTPS mode.
+	 * @param confidential True if this service is acting in HTTP or HTTPS mode.
+	 */
+	protected void setConfidential(boolean confidential)
+	{
+		this.confidential = confidential;
+	}
+
+	/**
+	 * Indicates if this service is acting in HTTP or HTTPS mode.
+	 * @return True if this service is acting in HTTP or HTTPS mode.
+	 */
+	protected boolean isConfidential()
+	{
+		return confidential;
+	}
 
 }

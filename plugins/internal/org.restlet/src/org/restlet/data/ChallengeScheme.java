@@ -49,7 +49,7 @@ public class ChallengeScheme extends Metadata
 			"PLAIN", "Plain SMTP authentication");
 
 	/** The technical name. */
-	protected String technicalName;
+	private String technicalName;
 
 	/**
 	 * Constructor.

@@ -28,9 +28,9 @@ import java.util.TreeMap;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
-import org.restlet.AbstractFilter;
 import org.restlet.Call;
-import org.restlet.component.Component;
+import org.restlet.Context;
+import org.restlet.Filter;
 import org.restlet.data.ChallengeRequest;
 import org.restlet.data.ChallengeResponse;
 import org.restlet.data.ChallengeScheme;
@@ -45,39 +45,39 @@ import com.noelios.restlet.util.Base64;
  * @see <a href="http://www.restlet.org/tutorial#part09">Tutorial: Guarding access to sensitive resources</a>
  * @author Jerome Louvel (contact@noelios.com) <a href="http://www.noelios.com/">Noelios Consulting</a>
  */
-public class GuardFilter extends AbstractFilter
+public class GuardFilter extends Filter
 {
    /** Indicates if the guard should attempt to authenticate the caller. */
-	protected boolean authentication;
+	private boolean authentication;
 	
 	/** Indicates if the guard should attempt to authorize the caller. */
-	protected boolean authorization;
+	private boolean authorization;
 
 	/** Map of authorizations (login/password combinations). */
-	protected Map<String, String> authorizations;
+	private Map<String, String> authorizations;
 	
 	/** The authentication scheme. */
-	protected ChallengeScheme scheme;
+	private ChallengeScheme scheme;
 	
 	/** Obtain a suitable logger. */
-   protected Logger logger;
+	private Logger logger;
 
    /** The authentication realm. */
-   protected String realm;
+	private String realm;
 
    /**
     * Constructor.
     * If the authentication is not requested, the scheme and realm parameters are not necessary (pass null instead).
-    * @param owner The owner component.
+    * @param context The context.
     * @param logName The log name to used in the logging.properties file.
     * @param authentication Indicates if the guard should attempt to authenticate the caller.
     * @param scheme The authentication scheme to use. 
     * @param realm The authentication realm.
     * @param authorization Indicates if the guard should attempt to authorize the caller.
     */
-   public GuardFilter(Component owner, String logName, boolean authentication, ChallengeScheme scheme, String realm, boolean authorization)
+   public GuardFilter(Context context, String logName, boolean authentication, ChallengeScheme scheme, String realm, boolean authorization)
    {
-      super(owner);
+      super(context);
       this.logger = Logger.getLogger(logName);
       this.authentication = authentication;
       this.authorizations = null;

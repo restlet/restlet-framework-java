@@ -24,12 +24,11 @@ package com.noelios.restlet.example;
 
 import java.util.List;
 
-import org.restlet.AbstractRestlet;
 import org.restlet.Call;
-import org.restlet.DefaultRouter;
+import org.restlet.Context;
 import org.restlet.Restlet;
 import org.restlet.Router;
-import org.restlet.component.RestletContainer;
+import org.restlet.component.Container;
 import org.restlet.data.ChallengeScheme;
 import org.restlet.data.MediaType;
 import org.restlet.data.Protocol;
@@ -52,56 +51,57 @@ public class Tutorial11 implements Constants
       try
       {
          // Create a new Restlet container
-      	RestletContainer myContainer = new RestletContainer();
+      	Container myContainer = new Container();
+         Context myContext = myContainer.getContext();
 
          // Add an HTTP server connector to the Restlet container. 
          // Note that the container is the call restlet.
-         myContainer.getServers().put("HTTP Server", Protocol.HTTP, 8182);
+         myContainer.getServers().add(Protocol.HTTP, 8182);
 
          // Attach a log Filter to the container
-         LogFilter log = new LogFilter(myContainer, "com.noelios.restlet.example");
+         LogFilter log = new LogFilter(myContext, "com.noelios.restlet.example");
          myContainer.setRoot(log);
 
          // Attach a status Filter to the log Filter
-         StatusFilter status = new StatusFilter(myContainer, true, "webmaster@mysite.org", "http://www.mysite.org");
-         log.setTarget(status);
+         StatusFilter status = new StatusFilter(myContext, true, "webmaster@mysite.org", "http://www.mysite.org");
+         log.setNext(status);
 
          // Create a host router matching calls to the server
-         HostRouter host = new HostRouter(myContainer, 8182);
-         status.setTarget(host);
+         HostRouter host = new HostRouter(myContext, 8182);
+         status.setNext(host);
 
          // Attach a guard Filter to secure access the the chained directory Restlet
-         GuardFilter guard = new GuardFilter(myContainer, "com.noelios.restlet.example", true, ChallengeScheme.HTTP_BASIC , "Restlet tutorial", true);
+         GuardFilter guard = new GuardFilter(myContext, "com.noelios.restlet.example", true, ChallengeScheme.HTTP_BASIC , "Restlet tutorial", true);
          guard.getAuthorizations().put("scott", "tiger");
          host.getScorers().add("/docs/", guard);
 
          // Create a directory Restlet able to return a deep hierarchy of Web files
-         DirectoryHandler directory = new DirectoryHandler(myContainer, ROOT_URI, "index.html");
-         guard.setTarget(directory);
+         DirectoryHandler directory = new DirectoryHandler(myContext, ROOT_URI, "index.html");
+         guard.setNext(directory);
 
          // Create the user router
-         Router user = new DefaultRouter(myContainer);
+         Router user = new Router(myContext);
          host.getScorers().add("/users/[a-z]+", user);
 
          // Create the account Restlet
-         Restlet account = new AbstractRestlet()
+         Restlet account = new Restlet()
             {
          		public void handleGet(Call call)
                {
                   // Print the requested URI path
-                  String output = "Account of user named: " + call.getContext().getBaseRef().getLastSegment();
+                  String output = "Account of user named: " + call.getBaseRef().getLastSegment();
                   call.setOutput(new StringRepresentation(output, MediaType.TEXT_PLAIN));
                }
             };
          user.getScorers().add("$", account);
 
          // Create the orders Restlet
-         Restlet orders = new AbstractRestlet(myContainer)
+         Restlet orders = new Restlet(myContext)
             {
                public void handleGet(Call call)
                {
                   // Print the user name of the requested orders
-                  List<String> segments = call.getContext().getBaseRef().getSegments();
+                  List<String> segments = call.getBaseRef().getSegments();
                   String output = "Orders of user named: " + segments.get(segments.size() - 2);
                   call.setOutput(new StringRepresentation(output, MediaType.TEXT_PLAIN));
                }

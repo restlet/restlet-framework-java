@@ -7,7 +7,7 @@ import junit.framework.TestCase;
 
 import org.restlet.Call;
 import org.restlet.connector.Client;
-import org.restlet.connector.DefaultClient;
+import org.restlet.connector.GenericClient;
 import org.restlet.data.Protocol;
 import org.restlet.data.Status;
 
@@ -24,7 +24,7 @@ public class FileClientTestCase extends TestCase
 	public void testFileClient() throws IOException
 	{
 		String text = "Test content\r\nLine 2\r\nLine2";
-		Client fc = new DefaultClient(Protocol.FILE);
+		Client fc = new GenericClient(Protocol.FILE);
 		FileReference fr = new FileReference(File.createTempFile("Restlet",
 				".txt"));
 

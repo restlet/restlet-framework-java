@@ -29,10 +29,10 @@ package com.noelios.restlet.build;
 public class ObjectBuilder
 {
 	/** The parent builder. */
-	protected ObjectBuilder parent;
+	private ObjectBuilder parent;
 	
 	/** The wrapped node. */
-	protected Object node;
+	private Object node;
 	
 	/**
 	 * Constructor.
@@ -160,9 +160,9 @@ public class ObjectBuilder
 	 * Casts the current builder. 
 	 * @return A Component builder.
 	 */
-	public ComponentBuilder toComponent()
+	public ContainerBuilder toComponent()
 	{
-		return (ComponentBuilder)this;
+		return (ContainerBuilder)this;
 	}
 
 }

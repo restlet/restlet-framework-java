@@ -22,6 +22,7 @@
 
 package org.restlet.connector;
 
+import org.restlet.Call;
 import org.restlet.Restlet;
 
 /**
@@ -34,17 +35,46 @@ import org.restlet.Restlet;
  * dissertation</a>
  * @author Jerome Louvel (contact@noelios.com) <a href="http://www.noelios.com/">Noelios Consulting</a>
  */
-public interface Server extends Connector
+public class Server extends Connector
 {
-   /**
-    * Returns the target Restlet.
-    * @return The target Restlet.
-    */
-   public Restlet getTarget();
+   /** The target Restlet. */
+   private Restlet next;
 
    /**
-    * Sets the target Restlet.
-    * @param target The target Restlet.
+    * Handles a call.<br/>
+    * The default behavior is to ask the target Restlet to handle the call.
+    * @param call The call to handle.
     */
-   public void setTarget(Restlet target);
+   public void handle(Call call)
+   {
+      getNext().handle(call);
+   }
+
+   /**
+    * Returns the chained Restlet.
+    * @return The chained Restlet.
+    */
+   public Restlet getNext()
+   {
+      return this.next;
+   }
+
+   /**
+    * Indicates if a chained Restlet is set.
+    * @return True if a chained Restlet is set.
+    */
+   public boolean hasNext()
+   {
+      return getNext() != null;
+   }
+
+   /**
+    * Sets the chained Restlet.
+    * @param next The chained Restlet.
+    */
+   public void setNext(Restlet next)
+   {
+      this.next = next;
+   }
+
 }

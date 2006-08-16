@@ -32,41 +32,41 @@ import java.util.Date;
 public abstract class AbstractRepresentation extends AbstractResource implements Representation
 {
    /** The character set or null if not applicable. */
-   protected CharacterSet characterSet;
+	private CharacterSet characterSet;
    
    /** Indicates if the representation's content is available. */
-   protected boolean contentAvailable;
+	private boolean contentAvailable;
 	
    /** Indicates if the representation's content is transient. */
-   protected boolean contentTransient;
+	private boolean contentTransient;
 
    /** The encoding or null if not identity encoding applies. */
-   protected Encoding encoding;
+	private Encoding encoding;
 
 	/** 
 	 * The expected size. Dynamic representations can have any size, but sometimes we can know in 
 	 * advance the expected size. If this expected size is specified by the user, it has a higher priority
 	 * than any size that can be guessed by the representation (like a file size).
 	 */
-	protected long expectedSize;
+	private long size;
    
    /** The expiration date. */
-   protected Date expirationDate;
+	private Date expirationDate;
    
    /** The language or null if not applicable. */
-   protected Language language;
+	private Language language;
 
    /** The media type. */
-   protected MediaType mediaType;
+	private MediaType mediaType;
 
    /** The modification date. */
-   protected Date modificationDate;
+	private Date modificationDate;
 
 	/** The represented resource, if available. */
-   protected Resource resource;
+	private Resource resource;
 
    /** The tag. */
-   protected Tag tag;
+	private Tag tag;
    
    /**
     * Constructor.
@@ -78,7 +78,7 @@ public abstract class AbstractRepresentation extends AbstractResource implements
       this.contentAvailable = true;
       this.contentTransient = false;
       this.encoding = null;
-      this.expectedSize = UNKNOWN_SIZE;
+      this.size = UNKNOWN_SIZE;
       this.expirationDate = null;
       this.language = null;
       this.mediaType = mediaType;
@@ -119,7 +119,16 @@ public abstract class AbstractRepresentation extends AbstractResource implements
    {
    	return this.contentAvailable;
    }
-   
+
+	/**
+	 * Indicates if some fresh content is available.
+	 * @param contentAvailable True if some fresh content is available.
+	 */
+	protected void setContentAvailable(boolean contentAvailable)
+	{
+		this.contentAvailable = contentAvailable;
+	}
+
    /**
     * Indicates if the representation's content is transient, which means that it can 
     * be obtained only once. This is often the case with representations transmitted
@@ -256,7 +265,7 @@ public abstract class AbstractRepresentation extends AbstractResource implements
     */
    public long getSize()
    {
-      return this.expectedSize;
+      return this.size;
    }
 
    /**
@@ -265,7 +274,7 @@ public abstract class AbstractRepresentation extends AbstractResource implements
     */
    public void setSize(long expectedSize)
    {
-      this.expectedSize = expectedSize;
+      this.size = expectedSize;
    }
 
    /**

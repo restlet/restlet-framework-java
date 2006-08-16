@@ -24,8 +24,6 @@ package com.noelios.restlet.ext.asyncweb;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
-import org.restlet.component.Component;
-import org.restlet.data.ParameterList;
 import org.safehaus.asyncweb.container.ContainerLifecycleException;
 import org.safehaus.asyncweb.container.ServiceContainer;
 import org.safehaus.asyncweb.container.ServiceHandler;
@@ -82,23 +80,21 @@ public abstract class AsyncWebServer extends AbstractHttpServer implements Servi
 	/**
 	 * Indicates if the server is acting in HTTPS mode.
 	 */
-	protected boolean confidential;
+   private boolean confidential;
 
 	/**
-	 * AyncWeb transport layer.
+	 * The AsyncWeb transport layer.
 	 */
-	protected Transport transport;
+   private Transport transport;
 
    /**
     * Constructor.
-    * @param owner The owner component.
-    * @param parameters The initial parameters.
     * @param address The optional listening IP address (local host used if null).
     * @param port The listening port.
     */
-   public AsyncWebServer(Component owner, ParameterList parameters, String address, int port)
+   public AsyncWebServer(String address, int port)
    {
-      super(owner, parameters, address, port);
+      super(address, port);
    }
 
 	/* (non-Javadoc)
@@ -123,7 +119,7 @@ public abstract class AsyncWebServer extends AbstractHttpServer implements Servi
 	public void dispatchRequest(AsyncWebRequest request)
 	{
 		HttpResponse response = request.createHttpResponse();
-		AbstractHttpServerCall call = new AsyncWebServerCall(request, response, confidential, super.address);
+		AbstractHttpServerCall call = new AsyncWebServerCall(request, response, confidential, getAddress());
 		handle(call);
 		request.commitResponse(response);
 	}
@@ -136,15 +132,18 @@ public abstract class AsyncWebServer extends AbstractHttpServer implements Servi
 		{
 			try
 			{
-				transport.start();
-
-				// Setting the flag directly to avoid catching an exception
-				this.started = true;
+				getTransport().start();
+				super.start();
 			}
 			catch (TransportException ex)
 			{
 				logger.log(Level.WARNING, "Failed to start the transport", ex);
 				throw new ContainerLifecycleException("Failed to start the transport", ex);
+			}
+			catch (Exception e)
+			{
+				logger.log(Level.WARNING, "Failed to start the AsyncWeb HTTP Server", e);
+				throw new ContainerLifecycleException("Failed to start the AsyncWeb HTTP Server", e);
 			}
 		}
 	}
@@ -157,14 +156,16 @@ public abstract class AsyncWebServer extends AbstractHttpServer implements Servi
 		{
 			try
 			{
-				transport.stop();
-
-				// Setting the flag directly to avoid catching an exception
-				this.started = false;
+				getTransport().stop();
+				super.stop();
 			}
 			catch (TransportException ex)
 			{
 				logger.log(Level.WARNING, "Failed to stop transport", ex);
+			}
+			catch (Exception e)
+			{
+				logger.log(Level.WARNING, "Failed to start the AsyncWeb HTTP Server", e);
 			}
 		}
 	}
@@ -175,7 +176,25 @@ public abstract class AsyncWebServer extends AbstractHttpServer implements Servi
     */
    public int getIoWorkerCount()
    {
-   	return Integer.parseInt(getParameters().getFirstValue("ioWorkerCount", "2"));
+   	return Integer.parseInt(getContext().getParameters().getFirstValue("ioWorkerCount", "2"));
    }
+
+	/**
+	 * Sets the AsyncWeb transport layer.
+	 * @param transport The AsyncWeb transport layer.
+	 */
+	protected void setTransport(Transport transport)
+	{
+		this.transport = transport;
+	}
+
+	/**
+	 * Returns the AsyncWeb transport layer.
+	 * @return The AsyncWeb transport layer.
+	 */
+	protected Transport getTransport()
+	{
+		return this.transport;
+	}
 
 }

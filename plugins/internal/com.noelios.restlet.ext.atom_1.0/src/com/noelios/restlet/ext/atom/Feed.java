@@ -53,43 +53,43 @@ public class Feed extends SaxRepresentation
 	public final static String XHTML_NAMESPACE = "http://www.w3.org/1999/xhtml";
 	
 	/** The authors of the feed. */
-	protected List<Person> authors;
+	private List<Person> authors;
 
 	/** The categories associated with the feed. */
-	protected List<Category> categories;
+	private List<Category> categories;
 
 	/** The contributors to the feed. */
-	protected List<Person> contributors;
+	private List<Person> contributors;
 
 	/** The agent used to generate a feed. */
-	protected Generator generator;
+	private Generator generator;
 	
 	/** Image that provides iconic visual identification for a feed. */
-	protected Reference icon;
+	private Reference icon;
 
 	/** Permanent, universally unique identifier for the feed. */
-	protected String id;
+	private String id;
 
 	/** The references from the entry to Web resources. */
-	protected List<Link> links;
+	private List<Link> links;
 	
 	/** Image that provides visual identification for a feed. */
-	protected Reference logo;
+	private Reference logo;
 	
 	/** Information about rights held in and over an entry. */
-	protected Text rights;
+	private Text rights;
 	
 	/** Short summary, abstract, or excerpt of an entry. */
-	protected Text subtitle;
+	private Text subtitle;
 	
 	/** The human-readable title for the entry. */
-	protected Text title;
+	private Text title;
 	
 	/** Most recent moment when the entry was modified in a significant way. */
-	protected Date updated;
+	private Date updated;
 
 	/** Individual entries, acting as a containers for associated metadata and data. */
-	protected List<Entry> entries;
+	private List<Entry> entries;
 
 	/**
 	 * Constructor.

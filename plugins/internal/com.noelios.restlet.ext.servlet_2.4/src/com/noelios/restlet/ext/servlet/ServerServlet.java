@@ -32,6 +32,7 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
 import org.restlet.Call;
+import org.restlet.Context;
 import org.restlet.Factory;
 import org.restlet.Restlet;
 import org.restlet.component.Component;
@@ -116,7 +117,7 @@ import com.noelios.restlet.connector.AbstractHttpServer;
  * @see <a href="http://java.sun.com/j2ee/">J2EE home page</a>
  * @author Jerome Louvel (contact@noelios.com) <a href="http://www.noelios.com/">Noelios Consulting</a>
  */
-public class ServerServlet extends HttpServlet implements Connector
+public class ServerServlet extends HttpServlet
 {
    /** 
     * The Servlet context initialization parameter's name containing the target's 
@@ -143,16 +144,16 @@ public class ServerServlet extends HttpServlet implements Connector
    private static final long serialVersionUID = 1L;
 
    /** The target Restlet for Jetty calls. */
-   protected Restlet target;
+   private Restlet target;
    
    /** Indicates if the connector was started. */
-   protected boolean started;
+   private boolean started;
    
-   /** The owner component. */
-   protected Component owner;
+   /** The context. */
+   private Context context;
 
 	/** The modifiable list of parameters. */
-   protected ParameterList parameters;
+   private ParameterList parameters;
 
    /**
     * Constructor.
@@ -161,7 +162,7 @@ public class ServerServlet extends HttpServlet implements Connector
    {
       this.target = null;
       this.started = false;
-      this.owner = null;
+      this.context = null;
       this.parameters = null;
    }
    
@@ -257,18 +258,18 @@ public class ServerServlet extends HttpServlet implements Connector
     * Returns the owner component.
     * @return The owner component.
     */
-   public Component getOwner()
+   public Context getContext()
    {
-   	return this.owner;
+   	return this.context;
    }
 
    /**
-    * Sets the owner component.
-    * @param owner The owner component.
+    * Sets the context.
+    * @param context The context.
     */
-   public void setOwner(Component owner)
+   public void setContext(Context context)
    {
-   	this.owner = owner;
+   	this.context = context;
    }
    
 	/**
@@ -299,10 +300,10 @@ public class ServerServlet extends HttpServlet implements Connector
     */
    protected void service(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException
    {
-   	if(getTarget(request) != null)
-      {
-         AbstractHttpServer.handle(this, new ServletCall(request, response, getServletContext()), getTarget());
-      }
+//   	if(getTarget(request) != null)
+//      {
+//         AbstractHttpServer.handle(this, new ServletCall(request, response, getServletContext()), getTarget());
+//      }
    }
 
    /**
@@ -358,14 +359,14 @@ public class ServerServlet extends HttpServlet implements Connector
                         	Component component = null;
                         	if(result instanceof Component)
                         	{
-                        		// The target is probably a RestletContainer or RestletServer
+                        		// The target is probably a Container or an Application
                         		component = (Component)result;
                         	}
                         	else
                         	{
                         		// The target is probably a standalone Restlet or Filter or Router
                         		// Try to get its parent, even if chances to find one are low
-                        		component = result.getOwner();
+//                        		component = result.getContext();
                         	}
                         	
                         	// Provide the context path as an init parameter
@@ -376,21 +377,21 @@ public class ServerServlet extends HttpServlet implements Connector
                         		int hostPort = request.getServerPort();
                         		String servletPath = request.getContextPath() + request.getServletPath();
                         		String contextPath = Reference.toString(scheme, hostName, hostPort, servletPath, null, null);
-                        		component.getParameters().add(initContextPathName, contextPath);
+//                        		component.getParameters().add(initContextPathName, contextPath);
                         		log("[Noelios Restlet Engine] - This context path has been provided to the target's init parameter \"" + initContextPathName + "\": " + contextPath);
                         		
                         		// Replace the default context client (if any)
                         		// by a special ServletContextClient instance 
-                        		component.getClients().remove(Factory.CONTEXT_CLIENT_NAME);
-                        		component.getClients().put(Factory.CONTEXT_CLIENT_NAME, new ServletContextClient(component, null, getServletContext()));
+//                        		component.getClients().remove(Factory.CONTEXT_CLIENT_NAME);
+//                        		component.getClients().add(new ServletContextClient(component, null, getServletContext()));
                         		log("[Noelios Restlet Engine] - The special ServletContextClient has been set on the target component under this name: " + Factory.CONTEXT_CLIENT_NAME);
                         		
                         		// Copy all initParameters in the component's parameters map
-                        		String name;
+//                      		String name;
                         		for(Enumeration names = getServletContext().getInitParameterNames(); names.hasMoreElements(); )
                         		{
-                        			name = (String)names.nextElement();
-                        			component.getParameters().add(name, getServletContext().getInitParameter(name));
+//                        			name = (String)names.nextElement();
+//                        			component.getParameters().add(name, getServletContext().getInitParameter(name));
                         		}
                         	}
                      	}

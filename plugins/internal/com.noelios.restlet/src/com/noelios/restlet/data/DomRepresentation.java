@@ -49,12 +49,7 @@ public class DomRepresentation extends OutputRepresentation
 	/** 
 	 * The wrapped DOM document. 
 	 */
-	protected Document dom;
-	
-	/** 
-	 * Indicates if indentation should occur. 
-	 */
-	protected boolean indent;
+	private Document dom;
 	
    /**
     * Constructor.

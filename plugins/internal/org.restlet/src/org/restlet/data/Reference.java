@@ -50,19 +50,19 @@ import java.util.List;
 public class Reference
 {
    /** The base reference for relative references. */
-   protected Reference baseRef;
+	private Reference baseRef;
 
    /** The internal reference. */
-   protected String internalRef;
+	private String internalRef;
 
    /** The fragment separator index. */
-   protected int fragmentIndex;
+	private int fragmentIndex;
 
    /** The query separator index. */
-   protected int queryIndex;
+	private int queryIndex;
 
    /** The scheme separator index. */
-   protected int schemeIndex;
+	private int schemeIndex;
    
    /**
     * Empty constructor.

@@ -52,31 +52,31 @@ public class DirectoryResource extends AbstractResource
 			.getCanonicalName());
 
 	/** The handled call. */
-	protected Call call;
+	private Call call;
 
 	/** The parent directory handler. */
-	protected DirectoryHandler handler;
+	private DirectoryHandler handler;
 
 	/** The resource path relative to the directory URI. */
-	protected String resourcePath;
+	private String relativePart;
 
 	/** The context's target URI. For example, "file:///c:/dir/foo.en" or "context://webapp/dir/foo.en". */
-	protected String targetUri;
+	private String targetUri;
 
 	/** Indicates if the target resource is a directory or a file. */
-	protected boolean targetDirectory;
+	private boolean targetDirectory;
 
 	/** The context's directory URI. For example, "file:///c:/dir/" or "context://webapp/dir/". */
-	protected String directoryUri;
+	private String directoryUri;
 
 	/** The local base name of the resource. For example, "foo.en" and "foo.en-GB.html" return "foo". */
-	protected String baseName;
+	private String baseName;
 
 	/** The base set of extensions. */
-	protected Set<String> baseExtensions;
+	private Set<String> baseExtensions;
 
 	/** If the resource is a directory, this contains its content. */
-	protected ReferenceList directoryContent;
+	private ReferenceList directoryContent;
 
 	/**
 	 * Constructor.
@@ -89,15 +89,15 @@ public class DirectoryResource extends AbstractResource
 		// Update the member variables
 		this.handler = handler;
 		this.call = call;
-		this.resourcePath = call.getContext().getRelativePath();
+		this.relativePart = call.getRelativePart();
 
-		if (this.resourcePath.startsWith("/"))
+		if (this.relativePart.startsWith("/"))
 		{
 			// We enforce the leading slash on the root URI
-			this.resourcePath = this.resourcePath.substring(1);
+			this.relativePart = this.relativePart.substring(1);
 		}
 
-		this.targetUri = new Reference(handler.getRootUri() + this.resourcePath)
+		this.targetUri = new Reference(handler.getRootUri() + this.relativePart)
 				.normalize().toString();
 		if (!this.targetUri.startsWith(handler.getRootUri()))
 		{
@@ -106,7 +106,7 @@ public class DirectoryResource extends AbstractResource
 		}
 
 		// Try to detect the presence of a directory
-		Call contextCall = getDirectory().getContextClient().get(this.targetUri);
+		Call contextCall = getDirectory().getContext().get(this.targetUri);
 		if ((contextCall.getOutput() != null)
 				&& contextCall.getOutput().getMediaType().equals(MediaType.TEXT_URI_LIST))
 		{
@@ -116,7 +116,7 @@ public class DirectoryResource extends AbstractResource
 			if (!this.targetUri.endsWith("/"))
 			{
 				this.targetUri += "/";
-				this.resourcePath += "/";
+				this.relativePart += "/";
 			}
 
 			// Append the index name
@@ -147,7 +147,7 @@ public class DirectoryResource extends AbstractResource
 				this.baseName = targetUri.substring(lastSlashIndex + 1);
 			}
 
-			contextCall = getDirectory().getContextClient().get(this.directoryUri);
+			contextCall = getDirectory().getContext().get(this.directoryUri);
 			if ((contextCall.getOutput() != null)
 					&& contextCall.getOutput().getMediaType().equals(MediaType.TEXT_URI_LIST))
 			{
@@ -226,7 +226,7 @@ public class DirectoryResource extends AbstractResource
 	protected void handleDelete(Call call)
 	{
 		// We allow the transfer of the DELETE calls only if the readOnly flag is not set
-		if (getDirectory().isModifiable())
+		if (!getDirectory().isModifiable())
 		{
 			call.setStatus(Status.CLIENT_ERROR_FORBIDDEN);
 		}
@@ -244,7 +244,7 @@ public class DirectoryResource extends AbstractResource
 	protected void handlePut(Call call)
 	{
 		// We allow the transfer of the PUT calls only if the readOnly flag is not set
-		if (getDirectory().isModifiable())
+		if (!getDirectory().isModifiable())
 		{
 			call.setStatus(Status.CLIENT_ERROR_FORBIDDEN);
 		}
@@ -319,7 +319,7 @@ public class DirectoryResource extends AbstractResource
 						if (validVariant)
 						{
 							// Add the new variant to the result list
-							Call contextCall = getDirectory().getContextClient().get(entryUri);
+							Call contextCall = getDirectory().getContext().get(entryUri);
 							if (contextCall.getStatus().isSuccess()
 									&& (contextCall.getOutput() != null))
 							{
@@ -337,13 +337,13 @@ public class DirectoryResource extends AbstractResource
 					ReferenceList userList = new ReferenceList(this.directoryContent.size());
 					
 					// Compute the base reference (from a call's client point of view) 
-					String baseRef = this.call.getContext().getBaseRef()
+					String baseRef = this.call.getBaseRef()
 							.toString(false, false);
 					if (!baseRef.endsWith("/"))
 					{
 						baseRef += "/";
 					}
-					baseRef += this.resourcePath;
+					baseRef += this.relativePart;
 
 					// Set the list base reference
 					userList.setListRef(baseRef);

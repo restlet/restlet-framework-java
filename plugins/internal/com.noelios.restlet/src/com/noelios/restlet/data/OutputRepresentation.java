@@ -54,7 +54,7 @@ public abstract class OutputRepresentation extends StreamRepresentation
    public OutputRepresentation(MediaType mediaType, long expectedSize)
    {
       super(mediaType);
-      this.expectedSize = expectedSize;
+      setSize(expectedSize);
    }
    
    /**

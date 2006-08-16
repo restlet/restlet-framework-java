@@ -43,8 +43,11 @@ import com.noelios.restlet.ext.net.HttpClient;
 public class HttpUrlConnectionCall extends AbstractHttpClientCall
 {
    /** The wrapped HTTP URL connection. */
-   protected HttpURLConnection connection;
+	private HttpURLConnection connection;
    
+	/** Indicates if the response headers were added. */
+	private boolean responseHeadersAdded;
+	
    /**
     * Constructor.
     * @param client The client connector.
@@ -67,7 +70,8 @@ public class HttpUrlConnectionCall extends AbstractHttpClientCall
          this.connection.setDoOutput(hasInput);
          this.connection.setInstanceFollowRedirects(client.isFollowRedirects());
          this.connection.setUseCaches(client.isUseCaches());
-         this.confidential = (this.connection instanceof HttpsURLConnection);
+         this.responseHeadersAdded = false;
+         setConfidential(this.connection instanceof HttpsURLConnection);
       }
       else
       {
@@ -135,24 +139,26 @@ public class HttpUrlConnectionCall extends AbstractHttpClientCall
     */
    public ParameterList getResponseHeaders()
    {
-      if(this.responseHeaders == null)
+   	ParameterList result = super.getResponseHeaders();
+   	
+      if(!this.responseHeadersAdded)
       {
-         this.responseHeaders = new ParameterList();
-         
          // Read the response headers
          int i = 1;
          String headerName = getConnection().getHeaderFieldKey(i);
          String headerValue = getConnection().getHeaderField(i);
          while(headerName != null)
          {
-            this.responseHeaders.add(headerName, headerValue);
+         	result.add(headerName, headerValue);
             i++;
             headerName = getConnection().getHeaderFieldKey(i);
             headerValue = getConnection().getHeaderField(i);
          }
+         
+         this.responseHeadersAdded = true;
       }
 
-      return this.responseHeaders;
+      return result;
    }
    
    /**

@@ -20,48 +20,47 @@
  * Portions Copyright [yyyy] [name of copyright owner]
  */
 
-package org.restlet;
+package org.restlet.component;
+
+import org.restlet.Restlet;
 
 /**
- * Abstract Scorer that can easily be subclassed.
+ * Component holding a user application, typically within a parent container. The role of an 
+ * application is to standardize the configuration of an application for aspects such as call logging,
+ * authentication, status pages, virtual hosting, etc.
  * @author Jerome Louvel (contact@noelios.com) <a href="http://www.noelios.com/">Noelios Consulting</a>
  */
-public abstract class AbstractScorer extends AbstractHandler implements Scorer
+public class Application extends Component 
 {
-	/** The parent router. */
-	protected Router router;
-	
-   /** The Restlet target. */
-   protected Restlet target;
-
+   /** The parent container. */
+	private Container container;
+   
    /**
     * Constructor.
-    * @param router The parent router.
-    * @param target The Restlet target.
+    * @param container The parent container.
     */
-   public AbstractScorer(Router router, Restlet target)
+   public Application(Container container)
    {
-   	this.router = router;
-      this.target = target;
+      this(container, null);
    }
 
    /**
-	 * Returns the parent router.
-	 * @return The parent router.
-	 */
-	public Router getRouter()
-	{
-		return this.router;
-	}
+    * Constructor.
+    * @param container The parent container.
+    * @param root The root Restlet.
+    */
+   public Application(Container container, Restlet root)
+   {
+   	super(container.getContext(), root);
+   }
 
-	/**
-	 * Finds the next Restlet if available.
-	 * @param call The current call.
-	 * @return The next Restlet if available or null.
+   /**
+	 * Returns the parent container.
+	 * @return The parent container.
 	 */
-	public Restlet findNext(Call call)
+	public Container getContainer()
 	{
-		return this.target;
+		return this.container;
 	}
 
 }

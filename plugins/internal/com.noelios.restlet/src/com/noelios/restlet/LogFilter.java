@@ -25,12 +25,12 @@ package com.noelios.restlet;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
-import org.restlet.AbstractFilter;
 import org.restlet.Call;
-import org.restlet.component.Component;
+import org.restlet.Context;
+import org.restlet.Filter;
 
-import com.noelios.restlet.util.StringTemplate;
 import com.noelios.restlet.util.CallModel;
+import com.noelios.restlet.util.StringTemplate;
 
 /**
  * Filter logging all calls after their handling by the target Restlet. The current format 
@@ -38,10 +38,10 @@ import com.noelios.restlet.util.CallModel;
  * @see <a href="http://www.restlet.org/tutorial#part07">Tutorial: Filters and call logging</a>
  * @author Jerome Louvel (contact@noelios.com) <a href="http://www.noelios.com/">Noelios Consulting</a>
  */
-public class LogFilter extends AbstractFilter
+public class LogFilter extends Filter
 {
    /** Obtain a suitable logger. */
-   protected Logger logger;
+	private Logger logger;
 
    /** 
     * The log template to use. 
@@ -54,27 +54,27 @@ public class LogFilter extends AbstractFilter
     * Constructor using the default format. Here is the default format using the 
     * <a href="http://analog.cx/docs/logfmt.html">Analog syntax</a>: 
     * %Y-%m-%d\t%h:%n:%j\t%j\t%r\t%u\t%s\t%j\t%B\t%f\t%c\t%b\t%q\t%v\t%T
-    * @param owner The owner component.
+    * @param context The context.
     * @param logName The log name to used in the logging.properties file.
     */
-   public LogFilter(Component owner, String logName)
+   public LogFilter(Context context, String logName)
    {
-      super(owner);
+      super(context);
       this.logger = Logger.getLogger(logName);
       this.logTemplate = null;
    }
 
    /**
     * Constructor.
-    * @param owner The owner component.
+    * @param context The context.
     * @param logName The log name to used in the logging.properties file.
     * @param logFormat The log format to use.
     * @see com.noelios.restlet.util.CallModel
     * @see com.noelios.restlet.util.StringTemplate
     */
-   public LogFilter(Component owner, String logName, String logFormat)
+   public LogFilter(Context context, String logName, String logFormat)
    {
-      super(owner);
+      super(context);
       this.logger = Logger.getLogger(logName);
       this.logTemplate = new StringTemplate(logFormat);
    }

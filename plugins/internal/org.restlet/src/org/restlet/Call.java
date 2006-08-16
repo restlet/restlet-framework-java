@@ -27,6 +27,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 import java.util.TreeMap;
+import java.util.logging.Logger;
 
 import org.restlet.data.ClientData;
 import org.restlet.data.ConditionData;
@@ -52,50 +53,53 @@ import org.restlet.data.Status;
  */
 public class Call
 {
-	/** The modifiable attributes map. */
-	protected Map<String, Object> attributes;
+	/** Obtain a suitable logger. */
+	private static Logger logger = Logger.getLogger(Call.class.getCanonicalName());
 
+	/** The modifiable attributes map. */
+	private Map<String, Object> attributes;
+
+	/** The base reference. */
+	private Reference baseRef;
+	
 	/** The client data. */
-	protected ClientData client;
+	private ClientData client;
 
 	/** The condition data. */
-	protected ConditionData condition;
-
-	/** The context data. */
-	protected Context context;
+	private ConditionData condition;
 
 	/** The cookies provided by the client. */
-	protected List<Cookie> cookies;
+	private List<Cookie> cookies;
 
 	/** The cookie settings provided by the server. */
-	protected List<CookieSetting> cookieSettings;
+	private List<CookieSetting> cookieSettings;
 
 	/** The representation provided by the client. */
-	protected Representation input;
+	private Representation input;
 
 	/** The method. */
-	protected Method method;
+	private Method method;
 
 	/** The representation provided by the server. */
-	protected Representation output;
+	private Representation output;
 
 	/** The redirection reference. */
-	protected Reference redirectRef;
+	private Reference redirectRef;
 
 	/** The referrer reference. */
-	protected Reference referrerRef;
+	private Reference referrerRef;
 
 	/** The resource reference. */
-	protected Reference resourceRef;
+	private Reference resourceRef;
 
 	/** The security data. */
-	protected SecurityData security;
+	private SecurityData security;
 
 	/** The server data. */
-	protected ServerData server;
+	private ServerData server;
 
 	/** The status. */
-	protected Status status;
+	private Status status;
 
 	/**
 	 * Constructor.
@@ -145,6 +149,15 @@ public class Call
 	}
 
 	/**
+	 * Returns the base reference.
+	 * @return The base reference.
+	 */
+	public Reference getBaseRef()
+	{
+	   return this.baseRef;
+	}
+
+	/**
 	 * Returns the client specific data.
 	 * @return The client specific data.
 	 */
@@ -162,16 +175,6 @@ public class Call
 	{
 		if (this.condition == null) this.condition = new ConditionData();
 		return this.condition;
-	}
-
-	/**
-	 * Returns the context data of the current Restlet applying to this call.
-	 * @return The context data applying to this call.
-	 */
-	public Context getContext()
-	{
-		if (this.context == null) this.context = new Context(this);
-		return this.context;
 	}
 
 	/**
@@ -259,6 +262,31 @@ public class Call
 	}
 
 	/**
+	 * Returns the resource path relative to the context's base reference.
+	 * @return The relative resource path .
+	 */
+	public String getRelativePart()
+	{
+		if(getBaseRef() != null)
+		{
+			return getResourceRef().toString().substring(getBaseRef().toString().length());
+		}
+		else
+		{
+			return getResourceRef().toString();
+		}
+	}
+
+	/**
+	 * Returns the resource reference relative to the context's base reference.
+	 * @return The relative resource reference.
+	 */
+	public Reference getRelativeRef()
+	{
+		return getResourceRef().getRelativeRef(getBaseRef());
+	}
+
+	/**
 	 * Returns the reference of the target resource.
 	 * @return The reference of the target resource.
 	 */
@@ -294,6 +322,33 @@ public class Call
 	public Status getStatus()
 	{
 		return this.status;
+	}
+
+	/**
+	 * Sets the base reference that will serve to compute relative resource references.
+	 * @param baseUri The base absolute URI.
+	 */
+	public void setBaseRef(String baseUri)
+	{
+		setBaseRef(new Reference(baseUri));
+	}
+	
+	/**
+	 * Sets the base reference that will serve to compute relative resource references.
+	 * @param baseRef The base reference.
+	 */
+	public void setBaseRef(Reference baseRef)
+	{
+	   if(getResourceRef() == null)
+	   {
+	      logger.warning("You must specify a resource reference before setting a base reference");
+	   }
+	   else if((baseRef != null) && !baseRef.isParent(getResourceRef()))
+	   {
+	      logger.warning("You must specify a base reference that is a parent of the resource reference");
+	   }
+	
+	   this.baseRef = baseRef;
 	}
 
 	/**
@@ -342,7 +397,7 @@ public class Call
 	 */
 	public void setRedirectRef(String redirectUri)
 	{
-		setRedirectRef(new Reference(getContext().getBaseRef(), redirectUri).getTargetRef());
+		setRedirectRef(new Reference(getBaseRef(), redirectUri).getTargetRef());
 	}
 
 	/**
@@ -379,7 +434,7 @@ public class Call
 	 */
 	public void setResourceRef(String resourceUri)
 	{
-		setResourceRef(new Reference(getContext().getBaseRef(), resourceUri));
+		setResourceRef(new Reference(getBaseRef(), resourceUri));
 	}
 
 	/**
@@ -400,7 +455,7 @@ public class Call
 		}
 		
 		// Reset the context's base reference
-		getContext().setBaseRef((Reference)null);
+		setBaseRef((Reference)null);
 	}
 
 	/**
@@ -411,5 +466,5 @@ public class Call
 	{
 		this.status = status;
 	}
-
+	
 }

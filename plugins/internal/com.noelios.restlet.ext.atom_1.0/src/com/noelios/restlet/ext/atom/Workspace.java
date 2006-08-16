@@ -34,17 +34,17 @@ public class Workspace
 	/**
 	 * The parent service.
 	 */
-	protected Service service;
+	private Service service;
 	
 	/**
 	 * The title.
 	 */
-	protected String title;
+	private String title;
 	
 	/**
 	 * The list of collections.
 	 */
-	protected List<Collection> collections; 
+	private List<Collection> collections; 
 
 	/**
 	 * Constructor.

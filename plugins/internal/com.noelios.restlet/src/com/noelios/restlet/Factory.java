@@ -39,7 +39,6 @@ import org.restlet.Call;
 import org.restlet.Restlet;
 import org.restlet.Router;
 import org.restlet.Scorer;
-import org.restlet.component.Component;
 import org.restlet.connector.Client;
 import org.restlet.connector.Server;
 import org.restlet.data.ChallengeResponse;
@@ -51,7 +50,6 @@ import org.restlet.data.LanguagePref;
 import org.restlet.data.MediaType;
 import org.restlet.data.MediaTypePref;
 import org.restlet.data.Parameter;
-import org.restlet.data.ParameterList;
 import org.restlet.data.Protocol;
 import org.restlet.data.Representation;
 import org.restlet.data.Resource;
@@ -73,14 +71,16 @@ public class Factory extends org.restlet.Factory
 	private static Logger logger = Logger.getLogger(Factory.class.getCanonicalName());
 
 	public static final String VERSION_LONG = org.restlet.Factory.VERSION_LONG;
+
 	public static final String VERSION_SHORT = org.restlet.Factory.VERSION_SHORT;
+
 	public static final String VERSION_HEADER = "Noelios-Restlet-Engine/" + VERSION_SHORT;
 
 	/** List of available client connectors. */
-	protected List<Client> clients;
+	private List<Client> clients;
 
 	/** List of available server connectors. */
-	protected List<Server> servers;
+	private List<Server> servers;
 
 	/**
 	 * Constructor.
@@ -125,8 +125,7 @@ public class Factory extends org.restlet.Factory
 							{
 								Class<? extends Client> providerClass = (Class<? extends Client>) Class
 										.forName(provider);
-								this.clients.add(providerClass.getConstructor(Component.class,
-										ParameterList.class).newInstance(null, null));
+								this.clients.add(providerClass.newInstance());
 							}
 							catch (Exception e)
 							{
@@ -177,9 +176,8 @@ public class Factory extends org.restlet.Factory
 							{
 								Class<? extends Server> providerClass = (Class<? extends Server>) Class
 										.forName(provider);
-								this.servers.add(providerClass.getConstructor(Component.class,
-										ParameterList.class, String.class, int.class).newInstance(
-										null, null, null, new Integer(-1)));
+								this.servers.add(providerClass.getConstructor(String.class,
+										int.class).newInstance(null, new Integer(-1)));
 							}
 							catch (Exception e)
 							{
@@ -228,12 +226,9 @@ public class Factory extends org.restlet.Factory
 	/**
 	 * Create a new client connector for a given protocol.
 	 * @param protocols The connector protocols.
-	 * @param owner The owner component.
-	 * @param parameters The initial parameters.
 	 * @return The new client connector.
 	 */
-	public Client createClient(List<Protocol> protocols, Component owner,
-			ParameterList parameters)
+	public Client createClient(List<Protocol> protocols)
 	{
 		for (Client client : this.clients)
 		{
@@ -241,8 +236,7 @@ public class Factory extends org.restlet.Factory
 			{
 				try
 				{
-					return client.getClass().getConstructor(Component.class,
-							ParameterList.class).newInstance(owner, parameters);
+					return client.getClass().getConstructor().newInstance();
 				}
 				catch (Exception e)
 				{
@@ -264,14 +258,11 @@ public class Factory extends org.restlet.Factory
 	/**
 	 * Create a new server connector for internal usage by the GenericClient.
 	 * @param protocols The connector protocols.
-	 * @param owner The owner component.
-	 * @param parameters The initial parameters.
 	 * @param address The optional listening IP address (local host used if null).
 	 * @param port The listening port.
 	 * @return The new server connector.
 	 */
-	public Server createServer(List<Protocol> protocols, Component owner,
-			ParameterList parameters, String address, int port)
+	public Server createServer(List<Protocol> protocols, String address, int port)
 	{
 		for (Server server : this.servers)
 		{
@@ -279,9 +270,8 @@ public class Factory extends org.restlet.Factory
 			{
 				try
 				{
-					return server.getClass().getConstructor(Component.class,
-							ParameterList.class, String.class, int.class).newInstance(owner,
-							parameters, address, port);
+					return server.getClass().getConstructor(String.class, int.class)
+							.newInstance(address, port);
 				}
 				catch (Exception e)
 				{
@@ -320,12 +310,12 @@ public class Factory extends org.restlet.Factory
 	 * of the context resource path.
 	 * @param router The parent router.
 	 * @param pattern The URI pattern used to map calls (see {@link java.util.regex.Pattern} for the syntax).
-	 * @param target The target instance to attach.
+	 * @param next The chained instance to attach.
 	 * @see java.util.regex.Pattern
 	 */
-	public Scorer createScorer(Router router, String pattern, Restlet target)
+	public Scorer createScorer(Router router, String pattern, Restlet next)
 	{
-		return new PatternScorer(router, pattern, target);
+		return new PatternScorer(router, pattern, next);
 	}
 
 	/**

@@ -42,10 +42,10 @@ import com.noelios.restlet.util.StringTemplate;
 public class StringTemplateRepresentation extends StreamRepresentation implements Model
 {
 	/** The string template. */
-	protected StringTemplate template;
+	private StringTemplate template;
 	
 	/** The template model. */
-	protected Model model;
+	private Model model;
    
    /**
     * Constructor.

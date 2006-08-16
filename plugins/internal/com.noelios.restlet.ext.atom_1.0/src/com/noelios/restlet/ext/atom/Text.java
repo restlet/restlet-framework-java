@@ -34,12 +34,12 @@ public class Text
 	/** 
 	 * The content type.
 	 */
-	protected MediaType type;
+	private MediaType type;
 	
 	/**
 	 * The content.
 	 */
-	protected String content;
+	private String content;
 
 	/**
 	 * Constructor.

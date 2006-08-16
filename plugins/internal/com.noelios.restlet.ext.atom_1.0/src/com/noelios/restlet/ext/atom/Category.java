@@ -31,13 +31,13 @@ import org.restlet.data.Reference;
 public class Category
 {
 	/** The identifier term. */
-	protected String term;
+	private String term;
 	
 	/** The IRI that identifies a categorization scheme. */
-	protected Reference scheme;
+	private Reference scheme;
 	
 	/** The human-readable label for display in end-user applications. */
-	protected String label;
+	private String label;
 	
 	/**
 	 * Constructor.

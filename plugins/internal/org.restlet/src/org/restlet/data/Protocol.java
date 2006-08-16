@@ -66,10 +66,10 @@ public class Protocol extends Metadata
 			"Simple Mail Transfer Protocol (Secure)", 465);
 
 	/** The scheme name. */
-	protected String schemeName;
+	private String schemeName;
 
 	/** The default port if known or -1. */
-	protected int defaultPort;
+	private int defaultPort;
 
 	/**
 	 * Constructor.

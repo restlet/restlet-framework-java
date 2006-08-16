@@ -33,22 +33,22 @@ import org.restlet.data.Reference;
 public class Link
 {
 	/** Contains the link's IRI. */
-	protected Reference href;
+	private Reference href;
 
 	/** Indicates the link's relation type */
-	protected Relation rel;
+	private Relation rel;
 	
 	/** Advisory media type. */
-	protected MediaType type;
+	private MediaType type;
 	
 	/** Language of the resource pointed to by the href attribute. */
-	protected Language hrefLang;
+	private Language hrefLang;
 	
 	/** Human-readable information about the link. */
-	protected String title;
+	private String title;
 	
 	/** Advisory length of the linked content in octets. */
-	protected long length;
+	private long length;
 	
 	/**
 	 * Constructor.

@@ -25,10 +25,11 @@ package com.noelios.restlet.connector;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
+import java.net.InetAddress;
+import java.net.UnknownHostException;
 import java.nio.channels.ReadableByteChannel;
 import java.nio.channels.WritableByteChannel;
 
-import org.restlet.connector.ConnectorCall;
 import org.restlet.data.Encoding;
 import org.restlet.data.Language;
 import org.restlet.data.Parameter;
@@ -43,7 +44,7 @@ import com.noelios.restlet.data.ReadableRepresentation;
  * Abstract HTTP client connector call.
  * @author Jerome Louvel (contact@noelios.com) <a href="http://www.noelios.com/">Noelios Consulting</a>
  */
-public abstract class AbstractHttpClientCall extends AbstractClientCall
+public abstract class AbstractHttpClientCall extends DefaultHttpCall
 {
 	/**
 	 * Constructor setting the request address to the local host.
@@ -52,10 +53,27 @@ public abstract class AbstractHttpClientCall extends AbstractClientCall
 	 */
 	public AbstractHttpClientCall(String method, String requestUri)
 	{
-		super(method, requestUri);
-      this.requestAddress = getLocalAddress();
+		setRequestMethod(method);
+		setRequestUri(requestUri);
+      setRequestAddress(getLocalAddress());
 	}
- 
+
+	/**
+	 * Returns the local IP address or 127.0.0.1 if the resolution fails.
+	 * @return The local IP address or 127.0.0.1 if the resolution fails.
+	 */
+	public static String getLocalAddress()
+	{
+      try
+      {
+         return InetAddress.getLocalHost().getHostAddress();
+      }
+      catch(UnknownHostException e)
+      {
+         return "127.0.0.1";
+      }
+	}
+
    /**
     * Sends the request headers.<br/>
     * Must be called before sending the request input.
@@ -138,7 +156,7 @@ public abstract class AbstractHttpClientCall extends AbstractClientCall
       {
       	for(Parameter header : getResponseHeaders())
          {
-            if(header.getName().equalsIgnoreCase(ConnectorCall.HEADER_CONTENT_TYPE))
+            if(header.getName().equalsIgnoreCase(HttpConstants.HEADER_CONTENT_TYPE))
             {
                ContentType contentType = new ContentType(header.getValue());
                if(contentType != null) 
@@ -147,31 +165,31 @@ public abstract class AbstractHttpClientCall extends AbstractClientCall
                	result.setCharacterSet(contentType.getCharacterSet());
                }
             }
-            else if(header.getName().equalsIgnoreCase(ConnectorCall.HEADER_CONTENT_LENGTH))
+            else if(header.getName().equalsIgnoreCase(HttpConstants.HEADER_CONTENT_LENGTH))
             {
                result.setSize(Long.parseLong(header.getValue()));
             }
-            else if(header.getName().equalsIgnoreCase(ConnectorCall.HEADER_EXPIRES))
+            else if(header.getName().equalsIgnoreCase(HttpConstants.HEADER_EXPIRES))
             {
             	result.setExpirationDate(parseDate(header.getValue(), false));
             }
-            else if(header.getName().equalsIgnoreCase(ConnectorCall.HEADER_CONTENT_ENCODING))
+            else if(header.getName().equalsIgnoreCase(HttpConstants.HEADER_CONTENT_ENCODING))
             {
             	result.setEncoding(new Encoding(header.getValue()));
             }
-            else if(header.getName().equalsIgnoreCase(ConnectorCall.HEADER_CONTENT_LANGUAGE))
+            else if(header.getName().equalsIgnoreCase(HttpConstants.HEADER_CONTENT_LANGUAGE))
             {
             	result.setLanguage(new Language(header.getValue()));
             }
-            else if(header.getName().equalsIgnoreCase(ConnectorCall.HEADER_LAST_MODIFIED))
+            else if(header.getName().equalsIgnoreCase(HttpConstants.HEADER_LAST_MODIFIED))
             {
             	result.setModificationDate(parseDate(header.getValue(), false));
             }
-            else if(header.getName().equalsIgnoreCase(ConnectorCall.HEADER_ETAG))
+            else if(header.getName().equalsIgnoreCase(HttpConstants.HEADER_ETAG))
             {
             	result.setTag(new Tag(header.getValue()));
             }
-            else if(header.getName().equalsIgnoreCase(ConnectorCall.HEADER_CONTENT_LOCATION))
+            else if(header.getName().equalsIgnoreCase(HttpConstants.HEADER_CONTENT_LOCATION))
             {
             	result.setIdentifier(header.getValue());
             }

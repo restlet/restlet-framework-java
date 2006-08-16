@@ -30,7 +30,6 @@ import java.util.List;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
-import org.restlet.component.Component;
 import org.restlet.connector.Client;
 import org.restlet.connector.Server;
 import org.restlet.data.ChallengeResponse;
@@ -38,7 +37,6 @@ import org.restlet.data.ClientData;
 import org.restlet.data.Form;
 import org.restlet.data.Language;
 import org.restlet.data.MediaType;
-import org.restlet.data.ParameterList;
 import org.restlet.data.Protocol;
 import org.restlet.data.Representation;
 import org.restlet.data.Resource;
@@ -61,7 +59,7 @@ public abstract class Factory
    public static final String VERSION_SHORT = "1.0b" + BETA_NUMBER;
 
    /** The registered factory. */
-   protected static Factory instance = null;
+   private static Factory instance = null;
 
    /**
     * Returns the factory of the Restlet implementation.
@@ -126,35 +124,31 @@ public abstract class Factory
    }
 
    /**
-    * Creates a URI-based handler attachment that will score target instance shared by all calls.
+    * Creates a URI-based handler attachment that will score chained instance shared by all calls.
     * The score will be proportional to the number of chararacters matched by the pattern, from the start
     * of the context resource path.
     * @param router The parent router.
     * @param pattern The URI pattern used to map calls (see {@link java.util.regex.Pattern} for the syntax).
-    * @param target The target instance to attach.
+    * @param next The chained instance to attach.
     * @see java.util.regex.Pattern
     */
-   public abstract Scorer createScorer(Router router, String pattern, Restlet target);
+   public abstract Scorer createScorer(Router router, String pattern, Restlet next);
 
    /**
     * Creates a new client connector for a given protocol.
     * @param protocols The connector protocols.
-    * @param owner The owner component.
-    * @param parameters The initial parameters.
     * @return The new client connector.
     */
-   public abstract Client createClient(List<Protocol> protocols, Component owner, ParameterList parameters);
+   public abstract Client createClient(List<Protocol> protocols);
 
    /**
     * Create a new server connector for internal usage by the GenericClient.
     * @param protocols The connector protocols.
-    * @param owner The owner component.
-    * @param parameters The initial parameters.
     * @param address The optional listening IP address (local host used if null).
     * @param port The listening port.
     * @return The new server connector.
     */
-   public abstract Server createServer(List<Protocol> protocols, Component owner, ParameterList parameters, String address, int port);
+   public abstract Server createServer(List<Protocol> protocols, String address, int port);
 
    /**
     * Creates a string-base representation.

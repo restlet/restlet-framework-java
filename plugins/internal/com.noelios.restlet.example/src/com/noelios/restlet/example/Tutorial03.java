@@ -22,10 +22,9 @@
 
 package com.noelios.restlet.example;
 
-import org.restlet.AbstractRestlet;
 import org.restlet.Call;
 import org.restlet.Restlet;
-import org.restlet.connector.DefaultServer;
+import org.restlet.connector.GenericServer;
 import org.restlet.data.Protocol;
 
 import com.noelios.restlet.data.StringRepresentation;
@@ -41,7 +40,7 @@ public class Tutorial03
       try
       {
          // Creating a minimal Restlet returning "Hello World"
-         Restlet handler = new AbstractRestlet()
+         Restlet handler = new Restlet()
          {
             public void handleGet(Call call)
             {
@@ -50,7 +49,7 @@ public class Tutorial03
          };
 
          // Create the HTTP server and listen on port 8182
-         new DefaultServer(Protocol.HTTP, handler, 8182).start();
+         new GenericServer(Protocol.HTTP, 8182, handler).start();
       }
       catch(Exception e)
       {

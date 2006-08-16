@@ -24,16 +24,16 @@ package com.noelios.restlet.test;
 
 import junit.framework.TestCase;
 
-import org.restlet.AbstractRestlet;
 import org.restlet.Call;
+import org.restlet.Context;
 import org.restlet.Restlet;
-import org.restlet.component.RestletContainer;
-import org.restlet.connector.DefaultServer;
+import org.restlet.component.Container;
+import org.restlet.connector.GenericServer;
 import org.restlet.data.MediaType;
 import org.restlet.data.Method;
 import org.restlet.data.Protocol;
 
-import com.noelios.restlet.RedirectRestlet;
+import com.noelios.restlet.RedirectHandler;
 import com.noelios.restlet.data.StringRepresentation;
 
 /**
@@ -47,29 +47,30 @@ public class RedirectTestCase extends TestCase
 	 */
 	public void testRedirect() throws Exception
 	{
-		// Create a new Restlet container
-		RestletContainer myContainer = new RestletContainer();
+		// Create containers
+		Container clientContainer = new Container();
+		Container proxyContainer = new Container();
+		Container originContainer = new Container();
 
 		// Create the client connectors
-		myContainer.getClients().put("TestClient", Protocol.HTTP);
-		myContainer.getClients().put("ProxyClient", Protocol.HTTP);
+		clientContainer.getClients().add(Protocol.HTTP);
+		proxyContainer.getClients().add(Protocol.HTTP);
 
 		// Create the proxy Restlet
 		String target = "http://localhost:9090${path}#[if query]?${query}#[end]";
-		RedirectRestlet proxy = new RedirectRestlet(myContainer, target,
-				RedirectRestlet.MODE_CONNECTOR);
-		proxy.setConnectorName("ProxyClient");
+		RedirectHandler proxy = new RedirectHandler(proxyContainer.getContext(), target, 
+				RedirectHandler.MODE_CONNECTOR);
 
 		// Create a new Restlet that will display some path information.
-		Restlet trace = new AbstractRestlet(myContainer)
+		Restlet trace = new Restlet(originContainer.getContext())
 		{
 			public void handle(Call call)
 			{
 				// Print the requested URI path
 				String output = 
 					     "Resource URI:  " + call.getResourceRef() + '\n'
-						+ "Base URI:      " + call.getContext().getBaseRef() + '\n'
-						+ "Relative path: " + call.getContext().getRelativePath() + '\n'
+						+ "Base URI:      " + call.getBaseRef() + '\n'
+						+ "Relative path: " + call.getRelativePart() + '\n'
 						+ "Query string:  " + call.getResourceRef().getQuery() + '\n'
 						+ "Method name:   " + call.getMethod() + '\n';
 				call.setOutput(new StringRepresentation(output, MediaType.TEXT_PLAIN));
@@ -77,41 +78,44 @@ public class RedirectTestCase extends TestCase
 		};
 
 		// Create the server connectors
-		myContainer.getServers().put("ProxyServer",
-				new DefaultServer(Protocol.HTTP, proxy, 8080));
-		myContainer.getServers().put("OriginServer",
-				new DefaultServer(Protocol.HTTP, trace, 9090));
+		proxyContainer.getServers().add(new GenericServer(Protocol.HTTP, 8080, proxy));
+		originContainer.getServers().add(new GenericServer(Protocol.HTTP, 9090, trace));
 
-		// Now, let's start the container!
-		myContainer.start();
+		// Now, let's start the containers!
+		originContainer.start();
+		proxyContainer.start();
+		clientContainer.start();
 
 		// Tests
+		Context context = clientContainer.getContext();
 		String uri = "http://localhost:8080/?foo=bar";
-		testCall(myContainer, Method.GET, uri);
-		testCall(myContainer, Method.POST, uri);
-		testCall(myContainer, Method.PUT, uri);
-		testCall(myContainer, Method.DELETE, uri);
+		testCall(context, Method.GET, uri);
+		testCall(context, Method.POST, uri);
+		testCall(context, Method.PUT, uri);
+		testCall(context, Method.DELETE, uri);
 
 		uri = "http://localhost:8080/abcd/efgh/ijkl?foo=bar&foo=beer";
-		testCall(myContainer, Method.GET, uri);
-		testCall(myContainer, Method.POST, uri);
-		testCall(myContainer, Method.PUT, uri);
-		testCall(myContainer, Method.DELETE, uri);
+		testCall(context, Method.GET, uri);
+		testCall(context, Method.POST, uri);
+		testCall(context, Method.PUT, uri);
+		testCall(context, Method.DELETE, uri);
 
 		uri = "http://localhost:8080/v1/client/kwse/CnJlNUQV9%252BNNqbUf7Lhs2BYEK2Y%253D/user/johnm/uVGYTDK4kK4zsu96VHGeTCzfwso%253D/";
-		testCall(myContainer, Method.GET, uri);
+		testCall(context, Method.GET, uri);
 
-		// Stop the container
-		myContainer.stop();
+		// Stop the containers
+		clientContainer.stop();
+		originContainer.stop();
+		proxyContainer.stop();
 	}
 
-	private void testCall(RestletContainer myContainer, Method method, String uri)
+	private void testCall(Context context, Method method, String uri)
 			throws Exception
 	{
 		Call call = new Call();
 		call.setMethod(method);
 		call.setResourceRef(uri);
-		myContainer.callClient("TestClient", call);
+		context.handle(call);
 		assertNotNull(call.getOutput());
 		call.getOutput().write(System.out);
 	}

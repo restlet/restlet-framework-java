@@ -22,8 +22,8 @@
 
 package com.noelios.restlet.test;
 
-import org.restlet.AbstractRestlet;
 import org.restlet.Call;
+import org.restlet.Restlet;
 import org.restlet.data.MediaType;
 
 import com.noelios.restlet.data.StringRepresentation;
@@ -32,7 +32,7 @@ import com.noelios.restlet.data.StringRepresentation;
  * Trace target. 
  * @author Jerome Louvel (contact@noelios.com) <a href="http://www.noelios.com/">Noelios Consulting</a>
  */
-public class TraceTarget extends AbstractRestlet
+public class TraceTarget extends Restlet
 {
    /**
     * Handles a uniform call.

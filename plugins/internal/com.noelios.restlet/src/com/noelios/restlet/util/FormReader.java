@@ -42,7 +42,7 @@ import org.restlet.data.Representation;
 public class FormReader
 {
    /** The form stream. */
-   protected InputStream stream;
+	private InputStream stream;
    
    /**
     * Constructor.
