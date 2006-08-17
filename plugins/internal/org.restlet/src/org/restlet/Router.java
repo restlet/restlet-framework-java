@@ -53,53 +53,48 @@ import org.restlet.data.Status;
  */
 public class Router extends Chainer
 {
-	/** Enumeration of available router modes. */
-	public enum Mode
-	{
-		/**
-		 * Each call will be routed to the scorer with the best score, if the required score is reached.
-		 */
-		BEST,
-		
-		/**
-		 * Each call is routed to the first scorer if the required score is reached. If the required score 
-		 * is not reached, then the scorer is skipped and the next one is considered. 
-		 */
-		FIRST,
-		
-		/**
-		 * Each call will be routed to the last scorer if the required score is reached. If the required score 
-		 * is not reached, then the scorer is skipped and the previous one is considered. 
-		 */
-		LAST,
-		
-		/**
-		 * Each call is be routed to the next scorer target if the required score is reached. The next scorer is 
-		 * relative to the previous call routed (round robin mode). If the required score is not reached, then the
-		 * scorer is skipped and the next one is considered. If the last scorer is reached, the first scorer will 
-		 * be considered.  
-		 */
-		NEXT,
-		
-		/**
-		 * Each call will be randomly routed to one of the scorers that reached the required score. If the random 
-		 * scorer selected is not a match then the immediate next scorer is evaluated until one matching scorer is 
-		 * found. If we get back to the inital random scorer selected with no match, then we return null.
-		 */
-		RANDOM,
-		
-		/**
-		 * Each call will be routed according to a custom mode.
-		 */
-		CUSTOM;	
-	}
+	/**
+	 * Each call will be routed to the scorer with the best score, if the required score is reached.
+	 */
+	public static final int BEST = 1;
 	
+	/**
+	 * Each call is routed to the first scorer if the required score is reached. If the required score 
+	 * is not reached, then the scorer is skipped and the next one is considered. 
+	 */
+	public static final int FIRST = 2;
+	
+	/**
+	 * Each call will be routed to the last scorer if the required score is reached. If the required score 
+	 * is not reached, then the scorer is skipped and the previous one is considered. 
+	 */
+	public static final int LAST = 3;
+		
+	/**
+	 * Each call is be routed to the next scorer target if the required score is reached. The next scorer is 
+	 * relative to the previous call routed (round robin mode). If the required score is not reached, then the
+	 * scorer is skipped and the next one is considered. If the last scorer is reached, the first scorer will 
+	 * be considered.  
+	 */
+	public static final int NEXT = 4;
+		
+	/**
+	 * Each call will be randomly routed to one of the scorers that reached the required score. If the random 
+	 * scorer selected is not a match then the immediate next scorer is evaluated until one matching scorer is 
+	 * found. If we get back to the inital random scorer selected with no match, then we return null.
+	 */
+	public static final int RANDOM = 5;
+		
+	/**
+	 * Each call will be routed according to a custom mode.
+	 */
+	public static final int CUSTOM = 6;	
 	
 	/** The modifiable list of scorers. */
 	private ScorerList scorers;
 	
 	/** The routing mode. */
-	private Mode mode;
+	private int mode;
 	
 	/** The minimum score required to have a match. */
 	private float requiredScore;
@@ -126,7 +121,7 @@ public class Router extends Chainer
    {
       super(context);
       this.scorers = null;
-      this.mode = Mode.BEST;
+      this.mode = BEST;
       this.requiredScore = 0.5F;
       this.maxAttempts = 1;
       this.retryDelay = 500L;
@@ -222,7 +217,7 @@ public class Router extends Chainer
 	 * Returns the routing mode.
 	 * @return The routing mode.
 	 */
-	public Mode getMode()
+	public int getMode()
 	{
 		return this.mode;
 	}
@@ -231,7 +226,7 @@ public class Router extends Chainer
 	 * Sets the routing mode.
 	 * @param mode The routing mode.
 	 */
-	public void setMode(Mode mode)
+	public void setMode(int mode)
 	{
 		this.mode = mode;
 	}

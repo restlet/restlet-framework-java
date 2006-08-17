@@ -41,7 +41,7 @@ import org.restlet.data.SecurityData;
 import org.restlet.data.Status;
 import org.restlet.data.Tag;
 
-import com.noelios.restlet.Factory;
+import com.noelios.restlet.spi.Factory;
 import com.noelios.restlet.util.CookieReader;
 import com.noelios.restlet.util.PreferenceUtils;
 import com.noelios.restlet.util.SecurityUtils;

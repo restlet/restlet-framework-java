@@ -33,7 +33,6 @@ import org.restlet.data.Resource;
  */
 public class Handler extends Restlet
 {
-   
    /** The language to use if content negotiation fails. */
 	private Language fallbackLanguage;
 	

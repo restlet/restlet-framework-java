@@ -47,30 +47,24 @@ import org.restlet.data.Status;
 public class HostRouter extends Router
 {
 	/**
-	 * Usage mode for the HostRouter. 
+	 * Default mode used when the HostRouter is attached to a Filter (or to a RestletContainer using
+	 * an attach() method with no parameter. In this mode, the HostRouter is setting the contextPath
+	 * of the handler call itself.
 	 */
-	public enum UsageMode 
-	{
-		/**
-		 * Default mode used when the HostRouter is attached to a Filter (or to a RestletContainer using
-		 * an attach() method with no parameter. In this mode, the HostRouter is setting the contextPath
-		 * of the handler call itself.
-		 */
-		FILTER, 
+	public static final int FILTERING = 1; 
 		
-		/**
-		 * Mode used when the HostRouter is attached to a parent router (or to a RestletContainer using
-		 * an attach() method with a URI pattern parameter. In this mode, the parent router is setting the
-		 * contextPath before delegating to call to the HostRouter. When setting the URI pattern for the
-		 * parent router, just use the getPattern() method after having configured your HostRouter instance. 
-		 */
-		ROUTER
-	};
+	/**
+	 * Mode used when the HostRouter is attached to a parent router (or to a RestletContainer using
+	 * an attach() method with a URI pattern parameter. In this mode, the parent router is setting the
+	 * contextPath before delegating to call to the HostRouter. When setting the URI pattern for the
+	 * parent router, just use the getPattern() method after having configured your HostRouter instance. 
+	 */
+	public static final int ROUTING = 2;
 	
 	/**
 	 * The usage mode. 
 	 */
-	private UsageMode mode;
+	private int usageMode;
 	
 	/** 
 	 * The list of allowed protocols. 
@@ -196,7 +190,7 @@ public class HostRouter extends Router
    public HostRouter(Context context, String domain, int port)
    {
    	super(context);
-      this.mode = UsageMode.FILTER;
+      this.usageMode = FILTERING;
       this.allowedProtocols = new ArrayList<Protocol>();
       this.allowedProtocols.add(Protocol.HTTP);
       this.allowedDomains = new ArrayList<String>();
@@ -218,21 +212,21 @@ public class HostRouter extends Router
    }
 
    /**
-    * Returns the attachment mode.
-    * @return The attachment mode.
+    * Returns the usage mode.
+    * @return The usage mode.
     */
-   public UsageMode getUsageMode()
+   public int getUsageMode()
    {
-   	return this.mode;
+   	return this.usageMode;
    }
 
    /**
-    * Sets the attachment mode.
-    * @param mode The attachment mode.
+    * Sets the usage mode.
+    * @param mode The usage mode.
     */
-   public void setMode(UsageMode mode)
+   public void setUsageMode(int mode)
    {
-   	this.mode = mode;
+   	this.usageMode = mode;
    }
    
    /**
@@ -399,7 +393,7 @@ public class HostRouter extends Router
 		if(handle)
 		{
 			// Actually handles the call.
-	   	if(getUsageMode() == UsageMode.FILTER)
+	   	if(getUsageMode() == FILTERING)
 	   	{
 	   		// First test outside the synchronized block
 	   		if(this.frontRouter == null)
@@ -417,7 +411,7 @@ public class HostRouter extends Router
 	   		
 	   		this.frontRouter.handle(call);
 	   	}
-	   	else if(getUsageMode() == UsageMode.ROUTER)
+	   	else if(getUsageMode() == ROUTING)
 	   	{
 	   		this.backRouter.handle(call);
 	   	}
@@ -707,7 +701,7 @@ public class HostRouter extends Router
 	 * Returns the routing mode.
 	 * @return The routing mode.
 	 */
-	public Mode getMode()
+	public int getMode()
 	{
 		return this.backRouter.getMode();
 	}
@@ -716,7 +710,7 @@ public class HostRouter extends Router
 	 * Sets the routing mode.
 	 * @param mode The routing mode.
 	 */
-	public void setMode(Mode mode)
+	public void setMode(int mode)
 	{
 		this.backRouter.setMode(mode);
 	}

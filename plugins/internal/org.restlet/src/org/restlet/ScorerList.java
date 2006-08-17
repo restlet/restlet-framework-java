@@ -30,6 +30,7 @@ import java.util.ListIterator;
 import java.util.Random;
 
 import org.restlet.data.Parameter;
+import org.restlet.spi.Factory;
 
 /**
  * Modifiable list of scorers with some helper methods. Note that this class implements the java.util.List

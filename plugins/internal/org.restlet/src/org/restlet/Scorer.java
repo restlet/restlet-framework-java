@@ -30,10 +30,10 @@ package org.restlet;
 public class Scorer extends Chainer
 {
 	/** The parent router. */
-	protected Router router;
+	private Router router;
 	
    /** The Restlet target. */
-   protected Restlet target;
+	private Restlet target;
 
    /**
     * Constructor.

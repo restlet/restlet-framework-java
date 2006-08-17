@@ -40,9 +40,9 @@ import org.restlet.data.Parameter;
 import org.restlet.data.Protocol;
 import org.restlet.data.Status;
 
-import com.noelios.restlet.Factory;
 import com.noelios.restlet.connector.AbstractHttpClientCall;
 import com.noelios.restlet.connector.HttpConstants;
+import com.noelios.restlet.spi.Factory;
 import com.noelios.restlet.util.CookieReader;
 import com.noelios.restlet.util.CookieUtils;
 import com.noelios.restlet.util.DateUtils;

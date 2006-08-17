@@ -42,6 +42,7 @@ import org.restlet.data.Resource;
 import org.restlet.data.SecurityData;
 import org.restlet.data.ServerData;
 import org.restlet.data.Status;
+import org.restlet.spi.Factory;
 
 /**
  * Uniform call handled by Restlets. Issued by a client to a server and handled by one or more Restlets. Calls are 
@@ -136,7 +137,7 @@ public class Call
 	 * Returns a modifiable attributes map that can be used by developers to save information relative
 	 * to the current call. This is an easier alternative to the creation of a wrapper around the whole call.
 	 * @return The modifiable attributes map.
-	 * @see org.restlet.WrapperCall
+	 * @see org.restlet.util.WrapperCall
 	 */
 	public Map<String, Object> getAttributes()
 	{

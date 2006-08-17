@@ -25,7 +25,7 @@ package org.restlet.data;
 import java.util.ArrayList;
 import java.util.List;
 
-import org.restlet.Factory;
+import org.restlet.spi.Factory;
 
 /**
  * Client specific data related to a call.

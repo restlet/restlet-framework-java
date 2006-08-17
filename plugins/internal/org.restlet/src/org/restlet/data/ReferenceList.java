@@ -31,7 +31,7 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.ListIterator;
 
-import org.restlet.Factory;
+import org.restlet.spi.Factory;
 
 /**
  * List of URI references.

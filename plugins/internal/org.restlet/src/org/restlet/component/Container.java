@@ -33,7 +33,6 @@ import org.restlet.connector.GenericClient;
 import org.restlet.connector.Server;
 import org.restlet.data.Protocol;
 
-
 /**
  * Component containing a set of connectors and applications. The connectors are shared by the 
  * applications and the container attemps to isolate each application from each other.

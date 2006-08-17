@@ -20,9 +20,14 @@
  * Portions Copyright [yyyy] [name of copyright owner]
  */
 
-package org.restlet.data;
+package org.restlet.util;
 
 import java.util.List;
+
+import org.restlet.data.Reference;
+import org.restlet.data.ReferenceList;
+import org.restlet.data.Representation;
+import org.restlet.data.Resource;
 
 /**
  * Resource wrapper. Useful for application developer who need to enrich the resource 

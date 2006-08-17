@@ -27,9 +27,9 @@ import java.util.List;
 
 import org.restlet.Call;
 import org.restlet.Context;
-import org.restlet.Factory;
 import org.restlet.data.Protocol;
 import org.restlet.data.Representation;
+import org.restlet.spi.Factory;
 
 /**
  * Generic client connector supporting multiples protocols.

@@ -75,6 +75,10 @@ Changes log
    Restlet handling the call. For example Call.getResourcePath() is now Call.getContext().getRelativePath(), Call.setContextPath() is now Call.getContext().
    setBaseRef(), etc.
  - Replaced the CharacterSetPref, EncodingPref, LanguagePref and MediaTypePref by a generic Preference<Metadata> class.
+ - Replaced Router.Mode enumeration by static constants on Router. Simplifies the Javadocs display and works well enough.
+ - Moved all wrapper classes into a new org.restlet.util package
+ - Moved org.restlet.Factory into a hidden org.restlet.spi.Factory package. Same thing for the NRE's Factory.
+ - Replaced HostRouter.Mode enumeration by constants on HostRouter.
  
 [Other changes] 
  - Separated the HTTP client connector (based on JDK's HttpUrlConnection) previously integrated to the NRE core. This will allow future alternative

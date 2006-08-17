@@ -20,7 +20,7 @@
  * Portions Copyright [yyyy] [name of copyright owner]
  */
 
-package com.noelios.restlet;
+package com.noelios.restlet.spi;
 
 import java.io.BufferedReader;
 import java.io.IOException;
@@ -55,6 +55,7 @@ import org.restlet.data.Resource;
 import org.restlet.data.Status;
 import org.restlet.data.Tag;
 
+import com.noelios.restlet.PatternScorer;
 import com.noelios.restlet.data.StringRepresentation;
 import com.noelios.restlet.util.Base64;
 import com.noelios.restlet.util.DateUtils;
@@ -64,14 +65,14 @@ import com.noelios.restlet.util.FormUtils;
  * Factory for the Noelios Restlet Engine.
  * @author Jerome Louvel (contact@noelios.com) <a href="http://www.noelios.com/">Noelios Consulting</a>
  */
-public class Factory extends org.restlet.Factory
+public class Factory extends org.restlet.spi.Factory
 {
 	/** Obtain a suitable logger. */
 	private static Logger logger = Logger.getLogger(Factory.class.getCanonicalName());
 
-	public static final String VERSION_LONG = org.restlet.Factory.VERSION_LONG;
+	public static final String VERSION_LONG = org.restlet.spi.Factory.VERSION_LONG;
 
-	public static final String VERSION_SHORT = org.restlet.Factory.VERSION_SHORT;
+	public static final String VERSION_SHORT = org.restlet.spi.Factory.VERSION_SHORT;
 
 	public static final String VERSION_HEADER = "Noelios-Restlet-Engine/" + VERSION_SHORT;
 

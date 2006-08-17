@@ -20,7 +20,11 @@
  * Portions Copyright [yyyy] [name of copyright owner]
  */
 
-package org.restlet;
+package org.restlet.util;
+
+import org.restlet.Call;
+import org.restlet.Context;
+import org.restlet.Restlet;
 
 /**
  * Wrapper for Restlet instances. Useful for application developer who need to enrich the Restlet with

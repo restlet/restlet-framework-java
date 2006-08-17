@@ -10,4 +10,5 @@ Export-Package: com.noelios.restlet,
  com.noelios.restlet.build,
  com.noelios.restlet.connector,
  com.noelios.restlet.data,
+ com.noelios.restlet.spi,
  com.noelios.restlet.util

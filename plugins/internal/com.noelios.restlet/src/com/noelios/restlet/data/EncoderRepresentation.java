@@ -35,7 +35,7 @@ import java.util.zip.ZipOutputStream;
 
 import org.restlet.data.Encoding;
 import org.restlet.data.Representation;
-import org.restlet.data.WrapperRepresentation;
+import org.restlet.util.WrapperRepresentation;
 
 import com.noelios.restlet.util.ByteUtils;
 

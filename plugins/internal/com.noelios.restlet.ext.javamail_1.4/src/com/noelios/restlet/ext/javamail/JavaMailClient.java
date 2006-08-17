@@ -46,7 +46,7 @@ import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 import org.w3c.dom.NodeList;
 
-import com.noelios.restlet.Factory;
+import com.noelios.restlet.spi.Factory;
 
 /**
  * Client connector to a mail server. Currently only the SMTP protocol is supported. To send an email, 

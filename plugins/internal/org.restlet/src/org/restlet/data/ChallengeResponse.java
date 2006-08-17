@@ -22,7 +22,7 @@
 
 package org.restlet.data;
 
-import org.restlet.Factory;
+import org.restlet.spi.Factory;
 
 /**
  * Authentication response sent by client to an origin server.

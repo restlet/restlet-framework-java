@@ -20,11 +20,12 @@
  * Portions Copyright [yyyy] [name of copyright owner]
  */
 
-package org.restlet;
+package org.restlet.util;
 
 import java.util.List;
 import java.util.Map;
 
+import org.restlet.Call;
 import org.restlet.data.ClientData;
 import org.restlet.data.ConditionData;
 import org.restlet.data.Cookie;

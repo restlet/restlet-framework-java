@@ -24,10 +24,10 @@ package org.restlet.component;
 
 import java.util.Arrays;
 
-import org.restlet.Factory;
 import org.restlet.connector.Client;
 import org.restlet.data.Protocol;
-import org.restlet.data.WrapperList;
+import org.restlet.spi.Factory;
+import org.restlet.util.WrapperList;
 
 /**
  * Modifiable map of client connectors.

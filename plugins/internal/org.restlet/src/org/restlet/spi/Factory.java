@@ -20,7 +20,7 @@
  * Portions Copyright [yyyy] [name of copyright owner]
  */
 
-package org.restlet;
+package org.restlet.spi;
 
 import java.io.BufferedReader;
 import java.io.IOException;
@@ -30,6 +30,10 @@ import java.util.List;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
+import org.restlet.Call;
+import org.restlet.Restlet;
+import org.restlet.Router;
+import org.restlet.Scorer;
 import org.restlet.connector.Client;
 import org.restlet.connector.Server;
 import org.restlet.data.ChallengeResponse;
@@ -73,7 +77,7 @@ public abstract class Factory
 
          // Find the factory class name
          ClassLoader cl = Thread.currentThread().getContextClassLoader();
-         URL configURL = cl.getResource("META-INF/services/org.restlet.Factory");
+         URL configURL = cl.getResource("META-INF/services/org.restlet.spi.Factory");
          if(configURL != null)
          {
             try

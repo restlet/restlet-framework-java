@@ -36,7 +36,6 @@ import com.noelios.restlet.HostRouter;
 import com.noelios.restlet.LogFilter;
 import com.noelios.restlet.RedirectHandler;
 import com.noelios.restlet.StatusFilter;
-import com.noelios.restlet.HostRouter.UsageMode;
 
 /**
  * Fluent builder for routers.
@@ -234,7 +233,7 @@ public class RouterBuilder extends RestletBuilder
    public HostRouterBuilder createHost(int port)
    {
       HostRouter node = new HostRouter(getNode().getContext(), port);
-      node.setMode(UsageMode.ROUTER);
+      node.setMode(HostRouter.ROUTING);
       return Builders.buildHost(this, node);
    }
    
@@ -259,7 +258,7 @@ public class RouterBuilder extends RestletBuilder
    public HostRouterBuilder createHost(String domain)
    {
       HostRouter node = new HostRouter(getNode().getContext(), domain);
-      node.setMode(UsageMode.ROUTER);
+      node.setMode(HostRouter.ROUTING);
       return Builders.buildHost(this, node);
    }
    
@@ -285,7 +284,7 @@ public class RouterBuilder extends RestletBuilder
    public HostRouterBuilder createHost(String domain, int port)
    {
       HostRouter node = new HostRouter(getNode().getContext(), domain, port);
-      node.setMode(UsageMode.ROUTER);
+      node.setMode(HostRouter.ROUTING);
       return Builders.buildHost(this, node);
    }
    

@@ -33,13 +33,13 @@ import javax.servlet.http.HttpServletResponse;
 
 import org.restlet.Call;
 import org.restlet.Context;
-import org.restlet.Factory;
 import org.restlet.Restlet;
 import org.restlet.component.Component;
 import org.restlet.connector.Connector;
 import org.restlet.data.ParameterList;
 import org.restlet.data.Protocol;
 import org.restlet.data.Reference;
+import org.restlet.spi.Factory;
 
 import com.noelios.restlet.connector.AbstractHttpServer;
 

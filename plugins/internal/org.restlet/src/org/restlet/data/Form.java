@@ -24,7 +24,7 @@ package org.restlet.data;
 
 import java.io.IOException;
 
-import org.restlet.Factory;
+import org.restlet.spi.Factory;
 
 /**
  * Form which is a specialized modifiable list of parameters.
