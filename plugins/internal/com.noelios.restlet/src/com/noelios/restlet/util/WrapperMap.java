@@ -20,7 +20,7 @@
  * Portions Copyright [yyyy] [name of copyright owner]
  */
 
-package org.restlet.util;
+package com.noelios.restlet.util;
 
 import java.util.Collection;
 import java.util.Map;

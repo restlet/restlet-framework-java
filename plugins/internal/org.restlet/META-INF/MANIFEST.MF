@@ -9,5 +9,4 @@ Export-Package: org.restlet,
  org.restlet.component,
  org.restlet.connector,
  org.restlet.data,
- org.restlet.spi,
- org.restlet.util
+ org.restlet.spi

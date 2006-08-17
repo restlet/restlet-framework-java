@@ -28,7 +28,7 @@ import org.restlet.connector.Client;
 import org.restlet.data.Protocol;
 
 /**
- * 
+ * Context allowing access to the container's connectors.
  * @author Jerome Louvel (contact@noelios.com) <a href="http://www.noelios.com/">Noelios Consulting</a>
  */
 public class ContainerContext extends Context
