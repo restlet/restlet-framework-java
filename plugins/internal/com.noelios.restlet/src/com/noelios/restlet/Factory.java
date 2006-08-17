@@ -46,10 +46,9 @@ import org.restlet.data.ChallengeScheme;
 import org.restlet.data.ClientData;
 import org.restlet.data.Form;
 import org.restlet.data.Language;
-import org.restlet.data.LanguagePref;
 import org.restlet.data.MediaType;
-import org.restlet.data.MediaTypePref;
 import org.restlet.data.Parameter;
+import org.restlet.data.Preference;
 import org.restlet.data.Protocol;
 import org.restlet.data.Representation;
 import org.restlet.data.Resource;
@@ -348,10 +347,10 @@ public class Factory extends org.restlet.Factory
 			Representation currentVariant = null;
 			Representation bestVariant = null;
 
-			LanguagePref currentLanguagePref = null;
-			LanguagePref bestLanguagePref = null;
-			MediaTypePref currentMediaTypePref = null;
-			MediaTypePref bestMediaTypePref = null;
+			Preference<Language> currentLanguagePref = null;
+			Preference<Language> bestLanguagePref = null;
+			Preference<MediaType> currentMediaTypePref = null;
+			Preference<MediaType> bestMediaTypePref = null;
 
 			float bestQuality = 0;
 			float currentScore = 0;
@@ -367,17 +366,17 @@ public class Factory extends org.restlet.Factory
 				variantMediaType = currentVariant.getMediaType();
 
 				// If no language preference is defined, assume that all languages are acceptable 
-				List<LanguagePref> languagePrefs = client.getLanguagePrefs();
+				List<Preference<Language>> languagePrefs = client.getLanguagePrefs();
 				if (languagePrefs.size() == 0)
-					languagePrefs.add(new LanguagePref(Language.ALL));
+					languagePrefs.add(new Preference<Language>(Language.ALL));
 
 				// For each language preference defined in the call
 				// Calculate the score and remember the best scoring preference
-				for (Iterator<LanguagePref> iter2 = languagePrefs.iterator(); (variantLanguage != null)
+				for (Iterator<Preference<Language>> iter2 = languagePrefs.iterator(); (variantLanguage != null)
 						&& iter2.hasNext();)
 				{
 					currentLanguagePref = iter2.next();
-					currentLanguage = currentLanguagePref.getLanguage();
+					currentLanguage = currentLanguagePref.getMetadata();
 					compatiblePref = true;
 					currentScore = 0;
 
@@ -443,17 +442,17 @@ public class Factory extends org.restlet.Factory
 						|| (variantLanguage.equals(fallbackLanguage));
 
 				// If no media type preference is defined, assume that all media types are acceptable 
-				List<MediaTypePref> mediaTypePrefs = client.getMediaTypePrefs();
+				List<Preference<MediaType>> mediaTypePrefs = client.getMediaTypePrefs();
 				if (mediaTypePrefs.size() == 0)
-					mediaTypePrefs.add(new MediaTypePref(MediaType.ALL));
+					mediaTypePrefs.add(new Preference<MediaType>(MediaType.ALL));
 
 				// For each media range preference defined in the call
 				// Calculate the score and remember the best scoring preference
-				for (Iterator<MediaTypePref> iter2 = mediaTypePrefs.iterator(); compatibleLanguage
+				for (Iterator<Preference<MediaType>> iter2 = mediaTypePrefs.iterator(); compatibleLanguage
 						&& iter2.hasNext();)
 				{
 					currentMediaTypePref = iter2.next();
-					currentMediaType = currentMediaTypePref.getMediaType();
+					currentMediaType = currentMediaTypePref.getMetadata();
 					compatiblePref = true;
 					currentScore = 0;
 

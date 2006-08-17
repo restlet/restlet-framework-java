@@ -30,14 +30,10 @@ import java.util.List;
 import java.util.Locale;
 
 import org.restlet.data.CharacterSet;
-import org.restlet.data.CharacterSetPref;
 import org.restlet.data.ClientData;
 import org.restlet.data.Encoding;
-import org.restlet.data.EncodingPref;
 import org.restlet.data.Language;
-import org.restlet.data.LanguagePref;
 import org.restlet.data.MediaType;
-import org.restlet.data.MediaTypePref;
 import org.restlet.data.Parameter;
 import org.restlet.data.Preference;
 
@@ -47,271 +43,293 @@ import org.restlet.data.Preference;
  */
 public class PreferenceUtils
 {
-   /**
-    * Formats a list of preferences.
-    * @param prefs The list of preferences.
-    * @return The formatted list of preferences.
-    * @throws IOException 
-    */
-   public static String format(List<? extends Preference> prefs) throws IOException
-   {
-      StringBuilder sb = new StringBuilder();
-      
-      Preference pref;
-      for(int i = 0; i < prefs.size(); i++)
-      {
-         if(i > 0) sb.append(", ");
-         pref = prefs.get(i);
-         format(pref, sb);
-      }      
-      
-      return sb.toString();
-   }
-   
-   /**
-    * Formats a preference.
-    * @param pref The preference to format.
-    * @param destination The appendable destination.
-    * @throws IOException
-    */
-   public static void format(Preference pref, Appendable destination) throws IOException
-   {
-      destination.append(pref.getMetadata().getName());
-      
-      if(pref.getMetadata() instanceof MediaType)
-      {
-         MediaType mediaType = (MediaType)pref.getMetadata();
-         
-         if(mediaType.getParameters() != null)
-         {
-            Parameter param;
-            for(Iterator<Parameter> iter = mediaType.getParameters().iterator(); iter.hasNext(); )
-            {
-               param = iter.next();
-               
-               if(param.getName() != null)
-               {
-                  destination.append(';').append(param.getName());
-               
-                  if((param.getValue() != null) && (param.getValue().length() > 0))
-                  {
-                     destination.append('=').append(param.getValue());
-                  }
-               }
-            }
-         }
-      }
-      
-      if(pref.getQuality() < 1F)
-      {
-         destination.append(";q=");
-         formatQuality(pref.getQuality(), destination);
-      }
-      
-      if(pref.getParameters() != null)
-      {
-         Parameter param;
-         for(Iterator<Parameter> iter = pref.getParameters().iterator(); iter.hasNext(); )
-         {
-            param = iter.next();
-            
-            if(param.getName() != null)
-            {
-               destination.append(';').append(param.getName());
-            
-               if((param.getValue() != null) && (param.getValue().length() > 0))
-               {
-                  destination.append('=').append(param.getValue());
-               }
-            }
-         }
-      }
-   }
-   
-   /**
-    * Formats a quality value.
-    * @param quality The quality value as a float.
-    * @param destination The appendable destination;
-    * @throws IOException
-    */
-   public static void formatQuality(float quality, Appendable destination) throws IOException
-   {
-      if(!isQuality(quality)) 
-      {
-         throw new IllegalArgumentException("Invalid quality value detected. Value must be between 0 and 1.");
-      }
-      else
-      {
-         NumberFormat formatter = DecimalFormat.getNumberInstance(Locale.US);
-         formatter.setMaximumFractionDigits(2);
-         destination.append(formatter.format(quality));
-      }
-   }
+	/**
+	 * Formats a list of preferences.
+	 * @param prefs The list of preferences.
+	 * @return The formatted list of preferences.
+	 * @throws IOException 
+	 */
+	public static String format(List<? extends Preference> prefs) throws IOException
+	{
+		StringBuilder sb = new StringBuilder();
 
-   /**
-    * Parses a quality value.
-    * @param quality The quality value as a string.
-    * @return The parsed quality value as a float.
-    */
-   public static float parseQuality(String quality)
-   {
-      try
-      {
-         float result = Float.valueOf(quality);
-         
-         if(isQuality(result))
-         {
-            return result;
-         }
-         else
-         {
-            throw new IllegalArgumentException("Invalid quality value detected. Value must be between 0 and 1.");
-         }
-      }
-      catch(NumberFormatException nfe)
-      {
-         throw new IllegalArgumentException("Invalid quality value detected. Value must be between 0 and 1.");
-      }
-   }
-   
-   /**
-    * Indicates if the quality value is valid.<br/>
-    * Otherwise an IllegalArgumentException is thrown.
-    * @param quality The quality value.
-    * @return True if the quality value is valid.
-    */
-   public static boolean isQuality(float quality)
-   {
-      return (quality >= 0F) && (quality <= 1F);
-   }
-   
-   /**
-    * Parses character set preferences from a header.
-    * @param acceptCharsetHeader The header to parse.  
-    * @param client The client preferences to update. 
-    */
-   public static void parseCharacterSets(String acceptCharsetHeader, ClientData client)
-   {
-      if(acceptCharsetHeader != null)
-      {
-         // Implementation according to
-         // http://www.w3.org/Protocols/rfc2616/rfc2616-sec14.html#sec14.2
-         if(acceptCharsetHeader.length() == 0)
-         {
-         	client.getCharacterSetPrefs().add(new CharacterSetPref(CharacterSet.ISO_8859_1));
-         }
-         else
-         {
-            try
-            {
-               PreferenceReader pr = new PreferenceReader(PreferenceReader.TYPE_CHARACTER_SET, acceptCharsetHeader);
-               CharacterSetPref currentPref = (CharacterSetPref)pr.readPreference();
-               while(currentPref != null)
-               {
-               	client.getCharacterSetPrefs().add(currentPref);
-                  currentPref = (CharacterSetPref)pr.readPreference();
-               }
-            }
-            catch(IOException ioe)
-            {
-            	throw new IllegalArgumentException("An exception occured during character set preferences parsing. Header: " + acceptCharsetHeader + ". Ignoring header.");
-            }
-         }
-      }
-      else
-      {
-         client.getCharacterSetPrefs().add(new CharacterSetPref(CharacterSet.ALL));
-      }
-   }
+		Preference pref;
+		for (int i = 0; i < prefs.size(); i++)
+		{
+			if (i > 0) sb.append(", ");
+			pref = prefs.get(i);
+			format(pref, sb);
+		}
 
-   /**
-    * Parses encoding preferences from a header.
-    * @param acceptEncodingHeader The header to parse.  
-    * @param preference The client preferences to update. 
-    */
-   public static void parseEncodings(String acceptEncodingHeader, ClientData preference)
-   {
-      if(acceptEncodingHeader != null)
-      {
-         try
-         {
-            PreferenceReader pr = new PreferenceReader(PreferenceReader.TYPE_ENCODING, acceptEncodingHeader);
-            EncodingPref currentPref = (EncodingPref)pr.readPreference();
-            while(currentPref != null)
-            {
-               preference.getEncodingPrefs().add(currentPref);
-               currentPref = (EncodingPref)pr.readPreference();
-            }
-         }
-         catch(IOException ioe)
-         {
-         	throw new IllegalArgumentException("An exception occured during encoding preferences parsing. Header: " + acceptEncodingHeader + ". Ignoring header.");
-         }
-      }
-      else
-      {
-         preference.getEncodingPrefs().add(new EncodingPref(Encoding.IDENTITY));
-      }
-   }
+		return sb.toString();
+	}
 
-   /**
-    * Parses language preferences from a header.
-    * @param acceptLanguageHeader The header to parse.  
-    * @param preference The client preferences to update. 
-    */
-   public static void parseLanguages(String acceptLanguageHeader, ClientData preference)
-   {
-      if(acceptLanguageHeader != null)
-      {
-         try
-         {
-            PreferenceReader pr = new PreferenceReader(PreferenceReader.TYPE_LANGUAGE, acceptLanguageHeader);
-            LanguagePref currentPref = (LanguagePref)pr.readPreference();
-            while(currentPref != null)
-            {
-               preference.getLanguagePrefs().add(currentPref);
-               currentPref = (LanguagePref)pr.readPreference();
-            }
-         }
-         catch(IOException ioe)
-         {
-         	throw new IllegalArgumentException("An exception occured during language preferences parsing. Header: " + acceptLanguageHeader + ". Ignoring header.");
-         }
-      }
-      else
-      {
-         preference.getLanguagePrefs().add(new LanguagePref(Language.ALL));
-      }
-   }
+	/**
+	 * Formats a preference.
+	 * @param pref The preference to format.
+	 * @param destination The appendable destination.
+	 * @throws IOException
+	 */
+	public static void format(Preference pref, Appendable destination) throws IOException
+	{
+		destination.append(pref.getMetadata().getName());
 
-   /**
-    * Parses media type preferences from a header.
-    * @param acceptMediaTypeHeader The header to parse.  
-    * @param preference The client preferences to update. 
-    */
-   public static void parseMediaTypes(String acceptMediaTypeHeader, ClientData preference)
-   {
-      if(acceptMediaTypeHeader != null)
-      {
-         try
-         {
-            PreferenceReader pr = new PreferenceReader(PreferenceReader.TYPE_MEDIA_TYPE, acceptMediaTypeHeader);
-            MediaTypePref currentPref = (MediaTypePref)pr.readPreference();
-            while(currentPref != null)
-            {
-               preference.getMediaTypePrefs().add(currentPref);
-               currentPref = (MediaTypePref)pr.readPreference();
-            }
-         }
-         catch(IOException ioe)
-         {
-         	throw new IllegalArgumentException("An exception occured during media type preferences parsing. Header: " + acceptMediaTypeHeader + ". Ignoring header.");
-         }
-      }
-      else
-      {
-         preference.getMediaTypePrefs().add(new MediaTypePref(MediaType.ALL));
-      }
-   }
-   
+		if (pref.getMetadata() instanceof MediaType)
+		{
+			MediaType mediaType = (MediaType) pref.getMetadata();
+
+			if (mediaType.getParameters() != null)
+			{
+				Parameter param;
+				for (Iterator<Parameter> iter = mediaType.getParameters().iterator(); iter
+						.hasNext();)
+				{
+					param = iter.next();
+
+					if (param.getName() != null)
+					{
+						destination.append(';').append(param.getName());
+
+						if ((param.getValue() != null) && (param.getValue().length() > 0))
+						{
+							destination.append('=').append(param.getValue());
+						}
+					}
+				}
+			}
+		}
+
+		if (pref.getQuality() < 1F)
+		{
+			destination.append(";q=");
+			formatQuality(pref.getQuality(), destination);
+		}
+
+		if (pref.getParameters() != null)
+		{
+			Parameter param;
+			for (Iterator<Parameter> iter = pref.getParameters().iterator(); iter.hasNext();)
+			{
+				param = iter.next();
+
+				if (param.getName() != null)
+				{
+					destination.append(';').append(param.getName());
+
+					if ((param.getValue() != null) && (param.getValue().length() > 0))
+					{
+						destination.append('=').append(param.getValue());
+					}
+				}
+			}
+		}
+	}
+
+	/**
+	 * Formats a quality value.
+	 * @param quality The quality value as a float.
+	 * @param destination The appendable destination;
+	 * @throws IOException
+	 */
+	public static void formatQuality(float quality, Appendable destination)
+			throws IOException
+	{
+		if (!isQuality(quality))
+		{
+			throw new IllegalArgumentException(
+					"Invalid quality value detected. Value must be between 0 and 1.");
+		}
+		else
+		{
+			NumberFormat formatter = DecimalFormat.getNumberInstance(Locale.US);
+			formatter.setMaximumFractionDigits(2);
+			destination.append(formatter.format(quality));
+		}
+	}
+
+	/**
+	 * Parses a quality value.
+	 * @param quality The quality value as a string.
+	 * @return The parsed quality value as a float.
+	 */
+	public static float parseQuality(String quality)
+	{
+		try
+		{
+			float result = Float.valueOf(quality);
+
+			if (isQuality(result))
+			{
+				return result;
+			}
+			else
+			{
+				throw new IllegalArgumentException(
+						"Invalid quality value detected. Value must be between 0 and 1.");
+			}
+		}
+		catch (NumberFormatException nfe)
+		{
+			throw new IllegalArgumentException(
+					"Invalid quality value detected. Value must be between 0 and 1.");
+		}
+	}
+
+	/**
+	 * Indicates if the quality value is valid.<br/>
+	 * Otherwise an IllegalArgumentException is thrown.
+	 * @param quality The quality value.
+	 * @return True if the quality value is valid.
+	 */
+	public static boolean isQuality(float quality)
+	{
+		return (quality >= 0F) && (quality <= 1F);
+	}
+
+	/**
+	 * Parses character set preferences from a header.
+	 * @param acceptCharsetHeader The header to parse.  
+	 * @param client The client preferences to update. 
+	 */
+	@SuppressWarnings("unchecked")
+	public static void parseCharacterSets(String acceptCharsetHeader, ClientData client)
+	{
+		if (acceptCharsetHeader != null)
+		{
+			// Implementation according to
+			// http://www.w3.org/Protocols/rfc2616/rfc2616-sec14.html#sec14.2
+			if (acceptCharsetHeader.length() == 0)
+			{
+				client.getCharacterSetPrefs().add(
+						new Preference<CharacterSet>(CharacterSet.ISO_8859_1));
+			}
+			else
+			{
+				try
+				{
+					PreferenceReader pr = new PreferenceReader(
+							PreferenceReader.TYPE_CHARACTER_SET, acceptCharsetHeader);
+					Preference currentPref = pr.readPreference();
+					while (currentPref != null)
+					{
+						client.getCharacterSetPrefs().add(currentPref);
+						currentPref = pr.readPreference();
+					}
+				}
+				catch (IOException ioe)
+				{
+					throw new IllegalArgumentException(
+							"An exception occured during character set preferences parsing. Header: "
+									+ acceptCharsetHeader + ". Ignoring header.");
+				}
+			}
+		}
+		else
+		{
+			client.getCharacterSetPrefs().add(new Preference(CharacterSet.ALL));
+		}
+	}
+
+	/**
+	 * Parses encoding preferences from a header.
+	 * @param acceptEncodingHeader The header to parse.  
+	 * @param preference The client preferences to update. 
+	 */
+	@SuppressWarnings("unchecked")
+	public static void parseEncodings(String acceptEncodingHeader, ClientData preference)
+	{
+		if (acceptEncodingHeader != null)
+		{
+			try
+			{
+				PreferenceReader pr = new PreferenceReader(PreferenceReader.TYPE_ENCODING,
+						acceptEncodingHeader);
+				Preference currentPref = pr.readPreference();
+				while (currentPref != null)
+				{
+					preference.getEncodingPrefs().add(currentPref);
+					currentPref = pr.readPreference();
+				}
+			}
+			catch (IOException ioe)
+			{
+				throw new IllegalArgumentException(
+						"An exception occured during encoding preferences parsing. Header: "
+								+ acceptEncodingHeader + ". Ignoring header.");
+			}
+		}
+		else
+		{
+			preference.getEncodingPrefs().add(new Preference(Encoding.IDENTITY));
+		}
+	}
+
+	/**
+	 * Parses language preferences from a header.
+	 * @param acceptLanguageHeader The header to parse.  
+	 * @param preference The client preferences to update. 
+	 */
+	@SuppressWarnings("unchecked")
+	public static void parseLanguages(String acceptLanguageHeader, ClientData preference)
+	{
+		if (acceptLanguageHeader != null)
+		{
+			try
+			{
+				PreferenceReader pr = new PreferenceReader(PreferenceReader.TYPE_LANGUAGE,
+						acceptLanguageHeader);
+				Preference currentPref = pr.readPreference();
+				while (currentPref != null)
+				{
+					preference.getLanguagePrefs().add(currentPref);
+					currentPref = pr.readPreference();
+				}
+			}
+			catch (IOException ioe)
+			{
+				throw new IllegalArgumentException(
+						"An exception occured during language preferences parsing. Header: "
+								+ acceptLanguageHeader + ". Ignoring header.");
+			}
+		}
+		else
+		{
+			preference.getLanguagePrefs().add(new Preference(Language.ALL));
+		}
+	}
+
+	/**
+	 * Parses media type preferences from a header.
+	 * @param acceptMediaTypeHeader The header to parse.  
+	 * @param preference The client preferences to update. 
+	 */
+	@SuppressWarnings("unchecked")
+	public static void parseMediaTypes(String acceptMediaTypeHeader, ClientData preference)
+	{
+		if (acceptMediaTypeHeader != null)
+		{
+			try
+			{
+				PreferenceReader pr = new PreferenceReader(PreferenceReader.TYPE_MEDIA_TYPE,
+						acceptMediaTypeHeader);
+				Preference currentPref = pr.readPreference();
+				while (currentPref != null)
+				{
+					preference.getMediaTypePrefs().add(currentPref);
+					currentPref = pr.readPreference();
+				}
+			}
+			catch (IOException ioe)
+			{
+				throw new IllegalArgumentException(
+						"An exception occured during media type preferences parsing. Header: "
+								+ acceptMediaTypeHeader + ". Ignoring header.");
+			}
+		}
+		else
+		{
+			preference.getMediaTypePrefs().add(new Preference(MediaType.ALL));
+		}
+	}
+
 }

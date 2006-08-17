@@ -26,10 +26,10 @@ package org.restlet.data;
  * Metadata preference definition.
  * @author Jerome Louvel (contact@noelios.com) <a href="http://www.noelios.com/">Noelios Consulting</a>
  */
-public class Preference
+public class Preference<T extends Metadata>
 {
 	/** The metadata associated with this preference. */
-   private Metadata metadata;
+   private T metadata;
 
    /** The quality/preference level. */
    private float quality;
@@ -39,9 +39,17 @@ public class Preference
 
    /**
     * Constructor.
+    */
+   public Preference()
+   {
+      this(null, 1F, null);
+   }
+
+   /**
+    * Constructor.
     * @param metadata The associated metadata.
     */
-   public Preference(Metadata metadata)
+   public Preference(T metadata)
    {
       this(metadata, 1F, null);
    }
@@ -51,7 +59,7 @@ public class Preference
     * @param metadata The associated metadata.
     * @param quality The quality/preference level.
     */
-   public Preference(Metadata metadata, float quality)
+   public Preference(T metadata, float quality)
    {
       this(metadata, quality, null);
    }
@@ -62,25 +70,18 @@ public class Preference
     * @param quality The quality/preference level.
     * @param parameters The list of parameters.
     */
-   public Preference(Metadata metadata, float quality, ParameterList parameters)
+   public Preference(T metadata, float quality, ParameterList parameters)
    {
-      if(metadata == null)
-      {
-         throw new IllegalArgumentException("Metadata parameter can't be null");
-      }
-      else
-      {
-         this.metadata = metadata;
-         this.quality = quality;
-         this.parameters = parameters;
-      }
+      this.metadata = metadata;
+      this.quality = quality;
+      this.parameters = parameters;
    }
 
    /**
     * Returns the metadata associated with this preference.
     * @return The metadata associated with this preference.
     */
-   public Metadata getMetadata()
+   public T getMetadata()
    {
       return metadata;
    }
@@ -89,7 +90,7 @@ public class Preference
     * Sets the metadata associated with this preference.
     * @param metadata The metadata associated with this preference.
     */
-   public void setMetadata(Metadata metadata)
+   public void setMetadata(T metadata)
    {
       this.metadata = metadata;
    }

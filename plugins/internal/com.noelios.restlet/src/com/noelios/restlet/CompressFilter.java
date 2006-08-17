@@ -33,8 +33,8 @@ import org.restlet.Call;
 import org.restlet.Context;
 import org.restlet.Filter;
 import org.restlet.data.Encoding;
-import org.restlet.data.EncodingPref;
 import org.restlet.data.MediaType;
+import org.restlet.data.Preference;
 import org.restlet.data.Representation;
 
 import com.noelios.restlet.data.EncoderRepresentation;
@@ -240,19 +240,19 @@ public class CompressFilter extends Filter
 	{
 		Encoding bestEncoding = null;
 		Encoding currentEncoding = null;
-		EncodingPref currentPref = null;
+		Preference<Encoding> currentPref = null;
 		float bestScore = 0F;
 		
 		for(Iterator<Encoding> iter = EncoderRepresentation.getSupportedEncodings().iterator(); iter.hasNext(); )
 		{
 			currentEncoding = iter.next();
 			
-			for(Iterator<EncodingPref> iter2 = call.getClient().getEncodingPrefs().iterator(); iter2.hasNext(); )
+			for(Iterator<Preference<Encoding>> iter2 = call.getClient().getEncodingPrefs().iterator(); iter2.hasNext(); )
 			{
 				currentPref = iter2.next();
 				
-				if(currentPref.getEncoding().equals(Encoding.ALL) || 
-					currentPref.getEncoding().equals(currentEncoding))
+				if(currentPref.getMetadata().equals(Encoding.ALL) || 
+					currentPref.getMetadata().equals(currentEncoding))
 				{
 					// A match was found, compute its score
 					if(currentPref.getQuality() > bestScore)

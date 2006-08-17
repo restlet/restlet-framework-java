@@ -40,16 +40,16 @@ public class ClientData
 	private String name;
 
 	/** The character set preferences. */
-	private List<CharacterSetPref> characterSetPrefs;
+	private List<Preference<CharacterSet>> characterSetPrefs;
 
 	/** The encoding preferences. */
-	private List<EncodingPref> encodingPrefs;
+	private List<Preference<Encoding>> encodingPrefs;
 
 	/** The language preferences. */
-	private List<LanguagePref> languagePrefs;
+	private List<Preference<Language>> languagePrefs;
 
 	/** The media preferences. */
-	private List<MediaTypePref> mediaTypePrefs;
+	private List<Preference<MediaType>> mediaTypePrefs;
 
 	/**
 	 * Constructor.
@@ -124,10 +124,10 @@ public class ClientData
 	 * Returns the character set preferences.
 	 * @return The character set preferences.
 	 */
-	public List<CharacterSetPref> getCharacterSetPrefs()
+	public List<Preference<CharacterSet>> getCharacterSetPrefs()
 	{
 		if (this.characterSetPrefs == null)
-			this.characterSetPrefs = new ArrayList<CharacterSetPref>();
+			this.characterSetPrefs = new ArrayList<Preference<CharacterSet>>();
 		return this.characterSetPrefs;
 	}
 
@@ -135,9 +135,9 @@ public class ClientData
 	 * Returns the encoding preferences.
 	 * @return The encoding preferences.
 	 */
-	public List<EncodingPref> getEncodingPrefs()
+	public List<Preference<Encoding>> getEncodingPrefs()
 	{
-		if (this.encodingPrefs == null) this.encodingPrefs = new ArrayList<EncodingPref>();
+		if (this.encodingPrefs == null) this.encodingPrefs = new ArrayList<Preference<Encoding>>();
 		return this.encodingPrefs;
 	}
 
@@ -145,9 +145,9 @@ public class ClientData
 	 * Returns the language preferences.
 	 * @return The language preferences.
 	 */
-	public List<LanguagePref> getLanguagePrefs()
+	public List<Preference<Language>> getLanguagePrefs()
 	{
-		if (this.languagePrefs == null) this.languagePrefs = new ArrayList<LanguagePref>();
+		if (this.languagePrefs == null) this.languagePrefs = new ArrayList<Preference<Language>>();
 		return this.languagePrefs;
 	}
 
@@ -155,10 +155,10 @@ public class ClientData
 	 * Returns the media type preferences.
 	 * @return The media type preferences.
 	 */
-	public List<MediaTypePref> getMediaTypePrefs()
+	public List<Preference<MediaType>> getMediaTypePrefs()
 	{
 		if (this.mediaTypePrefs == null)
-			this.mediaTypePrefs = new ArrayList<MediaTypePref>();
+			this.mediaTypePrefs = new ArrayList<Preference<MediaType>>();
 		return this.mediaTypePrefs;
 	}
 

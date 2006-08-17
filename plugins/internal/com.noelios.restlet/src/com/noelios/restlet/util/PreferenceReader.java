@@ -26,13 +26,10 @@ import java.io.IOException;
 import java.util.Iterator;
 
 import org.restlet.data.CharacterSet;
-import org.restlet.data.CharacterSetPref;
 import org.restlet.data.Encoding;
-import org.restlet.data.EncodingPref;
 import org.restlet.data.Language;
-import org.restlet.data.LanguagePref;
 import org.restlet.data.MediaType;
-import org.restlet.data.MediaTypePref;
+import org.restlet.data.Metadata;
 import org.restlet.data.Parameter;
 import org.restlet.data.ParameterList;
 import org.restlet.data.Preference;
@@ -41,7 +38,7 @@ import org.restlet.data.Preference;
  * Preference header reader. Works for character sets, encodings, languages or media types.
  * @author Jerome Louvel (contact@noelios.com) <a href="http://www.noelios.com/">Noelios Consulting</a>
  */
-public class PreferenceReader extends HeaderReader
+public class PreferenceReader<T extends Metadata> extends HeaderReader
 {
    public static final int TYPE_CHARACTER_SET = 1;
    public static final int TYPE_ENCODING = 2;
@@ -66,9 +63,9 @@ public class PreferenceReader extends HeaderReader
     * Read the next preference.
     * @return The next preference.
     */
-   public Preference readPreference() throws IOException
+   public Preference<T> readPreference() throws IOException
    {
-      Preference result = null;
+      Preference<T> result = null;
 
       boolean readingMetadata = true;
       boolean readingParamName = false;
@@ -296,28 +293,31 @@ public class PreferenceReader extends HeaderReader
     * @param parameters The parameters list.
     * @return The new preference.
     */
-   protected Preference createPreference(CharSequence metadata, ParameterList parameters)
+   @SuppressWarnings("unchecked")
+	protected Preference<T> createPreference(CharSequence metadata, ParameterList parameters)
    {
-      Preference result = null;
+   	Preference<T> result;
 
       if(parameters == null)
       {
+      	result = new Preference<T>();
+      	 
          switch(type)
          {
             case TYPE_CHARACTER_SET:
-               result = new CharacterSetPref(new CharacterSet(metadata.toString()));
+               result.setMetadata((T)new CharacterSet(metadata.toString()));
                break;
 
             case TYPE_ENCODING:
-               result = new EncodingPref(new Encoding(metadata.toString()));
+               result.setMetadata((T)new Encoding(metadata.toString()));
                break;
 
             case TYPE_LANGUAGE:
-               result = new LanguagePref(new Language(metadata.toString()));
+               result.setMetadata((T)new Language(metadata.toString()));
                break;
 
             case TYPE_MEDIA_TYPE:
-               result = new MediaTypePref(new MediaType(metadata.toString()));
+               result.setMetadata((T)new MediaType(metadata.toString()));
                break;
          }
       }
@@ -325,23 +325,24 @@ public class PreferenceReader extends HeaderReader
       {
       	ParameterList mediaParams = extractMediaParams(parameters);
          float quality = extractQuality(parameters);
+      	result = new Preference<T>(null, quality, parameters);
          
          switch(type)
          {
             case TYPE_CHARACTER_SET:
-               result = new CharacterSetPref(new CharacterSet(metadata.toString()), quality, parameters);
+               result.setMetadata((T)new CharacterSet(metadata.toString()));
                break;
 
             case TYPE_ENCODING:
-               result = new EncodingPref(new Encoding(metadata.toString()), quality, parameters);
+               result.setMetadata((T)new Encoding(metadata.toString()));
                break;
 
             case TYPE_LANGUAGE:
-               result = new LanguagePref(new Language(metadata.toString()), quality, parameters);
+               result.setMetadata((T)new Language(metadata.toString()));
                break;
 
             case TYPE_MEDIA_TYPE:
-               result = new MediaTypePref(new MediaType(metadata.toString(), mediaParams), quality, parameters);
+               result.setMetadata((T)new MediaType(metadata.toString(), mediaParams));
                break;
          }
       }
