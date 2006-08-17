@@ -34,7 +34,7 @@ import com.noelios.restlet.ExtractFilter;
 import com.noelios.restlet.GuardFilter;
 import com.noelios.restlet.HostRouter;
 import com.noelios.restlet.LogFilter;
-import com.noelios.restlet.RedirectHandler;
+import com.noelios.restlet.RedirectRestlet;
 import com.noelios.restlet.StatusFilter;
 
 /**
@@ -350,7 +350,7 @@ public class RouterBuilder extends RestletBuilder
     */
    public RestletBuilder attachRedirect(String pattern, String targetPattern, int mode)
    {
-      RedirectHandler node = new RedirectHandler(getNode().getContext(), targetPattern, mode);
+      RedirectRestlet node = new RedirectRestlet(getNode().getContext(), targetPattern, mode);
       getNode().getScorers().add(pattern, node);
       return Builders.buildRestlet(this, node);
    }
@@ -363,7 +363,7 @@ public class RouterBuilder extends RestletBuilder
     */
    public RestletBuilder attachRedirect(String pattern, String targetPattern)
    {
-      RedirectHandler node = new RedirectHandler(getNode().getContext(), targetPattern);
+      RedirectRestlet node = new RedirectRestlet(getNode().getContext(), targetPattern);
       getNode().getScorers().add(pattern, node);
       return Builders.buildRestlet(this, node);
    }

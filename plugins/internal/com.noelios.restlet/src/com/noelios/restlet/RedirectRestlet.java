@@ -25,9 +25,9 @@ package com.noelios.restlet;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
-import org.restlet.Chainer;
 import org.restlet.Call;
 import org.restlet.Context;
+import org.restlet.Restlet;
 import org.restlet.data.Reference;
 import org.restlet.data.Status;
 
@@ -41,10 +41,10 @@ import com.noelios.restlet.util.StringTemplate;
  * @see <a href="http://www.restlet.org/tutorial#part10">Tutorial: URI rewriting and redirection</a>
  * @author Jerome Louvel (contact@noelios.com) <a href="http://www.noelios.com/">Noelios Consulting</a>
  */
-public class RedirectHandler extends Chainer
+public class RedirectRestlet extends Restlet
 {
    /** Obtain a suitable logger. */
-   private static Logger logger = Logger.getLogger(RedirectHandler.class.getCanonicalName());
+   private static Logger logger = Logger.getLogger(RedirectRestlet.class.getCanonicalName());
 
    /**
     * In this mode, the client is permanently redirected to the URI generated from the target URI pattern.<br/>
@@ -94,7 +94,7 @@ public class RedirectHandler extends Chainer
     * @see com.noelios.restlet.util.StringTemplate
     * @see com.noelios.restlet.util.CallModel
     */
-   public RedirectHandler(Context context, String targetPattern, int mode)
+   public RedirectRestlet(Context context, String targetPattern, int mode)
    {
       super(context);
       this.targetPattern = targetPattern;
@@ -108,7 +108,7 @@ public class RedirectHandler extends Chainer
     * @see com.noelios.restlet.util.StringTemplate
     * @see com.noelios.restlet.util.CallModel
     */
-   public RedirectHandler(Context context, String targetPattern)
+   public RedirectRestlet(Context context, String targetPattern)
    {
       super(context);
       this.targetPattern = targetPattern;

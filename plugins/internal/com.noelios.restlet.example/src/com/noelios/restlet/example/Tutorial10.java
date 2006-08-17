@@ -27,7 +27,7 @@ import org.restlet.component.Container;
 import org.restlet.data.Protocol;
 
 import com.noelios.restlet.HostRouter;
-import com.noelios.restlet.RedirectHandler;
+import com.noelios.restlet.RedirectRestlet;
 
 /**
  * URI rewriting and redirection.
@@ -53,7 +53,7 @@ public class Tutorial10
 
          // Create a redirect Restlet then attach it to the container
          String target = "http://www.google.com/search?q=site:mysite.org+${query('query')}";
-         RedirectHandler redirect = new RedirectHandler(myContext, target, RedirectHandler.MODE_CLIENT_TEMPORARY);
+         RedirectRestlet redirect = new RedirectRestlet(myContext, target, RedirectRestlet.MODE_CLIENT_TEMPORARY);
          host.getScorers().add("/search", redirect);
 
          // Now, let's start the container!

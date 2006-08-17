@@ -99,12 +99,12 @@ public class DirectoryHandler extends Handler
       this.negotiationEnabled = false;
    }
 
-	/**
-	 * Finds the target resource of the given call.
-	 * @param call The call to handle.
-	 * @return The target resource of the given call.
+   /**
+	 * Finds the target Resource if available.
+	 * @param call The current call.
+	 * @return The target resource if available or null.
 	 */
-	public Resource findResource(Call call)
+	public Resource findTarget(Call call)
 	{
    	try
 		{

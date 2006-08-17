@@ -33,7 +33,7 @@ import org.restlet.data.MediaType;
 import org.restlet.data.Method;
 import org.restlet.data.Protocol;
 
-import com.noelios.restlet.RedirectHandler;
+import com.noelios.restlet.RedirectRestlet;
 import com.noelios.restlet.data.StringRepresentation;
 
 /**
@@ -58,8 +58,8 @@ public class RedirectTestCase extends TestCase
 
 		// Create the proxy Restlet
 		String target = "http://localhost:9090${path}#[if query]?${query}#[end]";
-		RedirectHandler proxy = new RedirectHandler(proxyContainer.getContext(), target, 
-				RedirectHandler.MODE_CONNECTOR);
+		RedirectRestlet proxy = new RedirectRestlet(proxyContainer.getContext(), target, 
+				RedirectRestlet.MODE_CONNECTOR);
 
 		// Create a new Restlet that will display some path information.
 		Restlet trace = new Restlet(originContainer.getContext())

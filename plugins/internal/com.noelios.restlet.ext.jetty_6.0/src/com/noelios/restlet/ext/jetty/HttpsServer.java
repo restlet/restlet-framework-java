@@ -73,10 +73,28 @@ import org.restlet.data.Protocol;
  * 		<td>SSL protocol.</td>
  * 	</tr>
  * 	<tr>
+ * 		<td>secureRandomAlgorithm</td>
+ * 		<td>String</td>
+ * 		<td>null (see java.security.SecureRandom)</td>
+ * 		<td>Name of the RNG algorithm. (see java.security.SecureRandom class).</td>
+ * 	</tr>
+ * 	<tr>
  * 		<td>securityProvider</td>
  * 		<td>String</td>
  * 		<td>null (see javax.net.ssl.SSLContext)</td>
  * 		<td>Java security provider name (see java.security.Provider class).</td>
+ * 	</tr>
+ * 	<tr>
+ * 		<td>needClientAuthentication</td>
+ * 		<td>boolean</td>
+ * 		<td>false</td>
+ * 		<td>Indicates if we require client certificate authentication.</td>
+ * 	</tr>
+ * 	<tr>
+ * 		<td>wantClientAuthentication</td>
+ * 		<td>boolean</td>
+ * 		<td>false</td>
+ * 		<td>Indicates if we would like client certificate authentication.</td>
  * 	</tr>
  * </table>
  * @see <a href="http://jetty.mortbay.org/jetty/faq?s=400-Security&t=ssl">FAQ - Configuring SSL for Jetty</a>
@@ -105,13 +123,18 @@ public class HttpsServer extends JettyServer
    		configure(connector);
 
    		// Continue configuration with HTTPS specific parameters
-         connector.setAlgorithm(getCertAlgorithm());
-         connector.setKeyPassword(getKeyPassword());
+         connector.setKeyPassword(getKeyPassword()); 
          connector.setKeystore(getKeystorePath());
          connector.setKeystoreType(getKeystoreType());
+   		connector.setNeedClientAuth(isNeedClientAuthentication());
          connector.setPassword(getKeystorePassword());
          connector.setProtocol(getSslProtocol());
          connector.setProvider(getSecurityProvider());
+         connector.setSecureRandomAlgorithm(getSecureRandomAlgorithm());
+         connector.setSslKeyManagerFactoryAlgorithm(getCertAlgorithm());
+         connector.setSslTrustManagerFactoryAlgorithm(getCertAlgorithm());
+         connector.setTrustPassword(getKeystorePassword());
+   		connector.setWantClientAuth(isWantClientAuthentication());
          
          getWrappedServer().addConnector(connector);
    		super.start();
@@ -171,7 +194,16 @@ public class HttpsServer extends JettyServer
    {
    	return getContext().getParameters().getFirstValue("sslProtocol", "TLS");
    }
-
+   
+   /**
+    * Returns the name of the RNG algorithm.
+    * @return The name of the RNG algorithm.
+    */
+   public String getSecureRandomAlgorithm()
+   {
+   	return getContext().getParameters().getFirstValue("secureRandomAlgorithm", null);
+   }
+   
    /**
     * Returns the Java security provider name.
     * @return The Java security provider name.
@@ -179,6 +211,24 @@ public class HttpsServer extends JettyServer
    public String getSecurityProvider()
    {
    	return getContext().getParameters().getFirstValue("securityProvider", null);
+   }
+
+   /**
+    * Indicates if we require client certificate authentication.
+    * @return True if we require client certificate authentication.
+    */
+   public boolean isNeedClientAuthentication()
+   {
+   	return Boolean.parseBoolean(getContext().getParameters().getFirstValue("needClientAuthentication", "false"));
+   }
+
+   /**
+    * Indicates if we would like client certificate authentication.
+    * @return True if we would like client certificate authentication.
+    */
+   public boolean isWantClientAuthentication()
+   {
+   	return Boolean.parseBoolean(getContext().getParameters().getFirstValue("wantClientAuthentication", "false"));
    }
 
 }

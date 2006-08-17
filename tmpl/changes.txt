@@ -80,6 +80,7 @@ Changes log
  - Replaced HostRouter.Mode enumeration by constants on HostRouter.
  - Moved WrapperMap to NRE util package as it's not used anymore in the API.
  - ScorerList now derives from WrapperList like similar classes (ClientList, ParameterList, etc.).
+ - Renamed RedirectHandler to RedirectRestlet as it is not taking advantage of the features of a Handler.
   
 [Other changes] 
  - Separated the HTTP client connector (based on JDK's HttpUrlConnection) previously integrated to the NRE core. This will allow future alternative
