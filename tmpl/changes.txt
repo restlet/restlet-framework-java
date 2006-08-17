@@ -88,6 +88,7 @@ Changes log
  - Added ParameterList.getFirstValue() methods taking and additional "defaultValue" parameter.
  - Parameterized connectors
  - Added HTTPS connector for Jetty 6.0
+ - Updated Jetty 6 to RC1.
  - The Jetty 6 extension now appears in the Javadocs due to the package renaming of the Jetty 5 extension.
  - Updated documentation, especially for the distribution. Suggested by Dave Pawson.
  - Added more control on Simple HTTPS connector, see list of parameters.
