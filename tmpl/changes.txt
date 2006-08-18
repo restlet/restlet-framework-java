@@ -85,6 +85,9 @@ Changes log
  - Added put() and delete() methods on Resource interface and related classes.
  - Renamed ContextClient into LocalClient to remove ambiguity with concept of Restlet's context.
  - Handler now has a default implementation of the handlePut() and handleDelete() methods.
+ - Renamed ClientData.get*Prefs() methods into getAccepted*() to be more inline with HTTP terminology.
+ - Refactored and improved robustness of the ServerServlet adapter. Now you have access to the ServletContext's logger and resources via the standard
+   Restlet.getContext() methods.
 
 [Other changes] 
  - Separated the HTTP client connector (based on JDK's HttpUrlConnection) previously integrated to the NRE core. This will allow future alternative

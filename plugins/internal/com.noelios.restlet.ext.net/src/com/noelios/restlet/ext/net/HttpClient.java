@@ -220,10 +220,10 @@ public class HttpClient extends Client
 
 			// Add the preferences
 			ClientData client = call.getClient();
-			if (client.getMediaTypePrefs().size() > 0)
+			if (client.getAcceptedMediaTypes().size() > 0)
 			{
 				clientCall.getRequestHeaders().add(HttpConstants.HEADER_ACCEPT,
-						PreferenceUtils.format(client.getMediaTypePrefs()));
+						PreferenceUtils.format(client.getAcceptedMediaTypes()));
 			}
 			else
 			{
@@ -231,22 +231,22 @@ public class HttpClient extends Client
 						MediaType.ALL.getName());
 			}
 
-			if (client.getCharacterSetPrefs().size() > 0)
+			if (client.getAcceptedCharacterSets().size() > 0)
 			{
 				clientCall.getRequestHeaders().add(HttpConstants.HEADER_ACCEPT_CHARSET,
-						PreferenceUtils.format(client.getCharacterSetPrefs()));
+						PreferenceUtils.format(client.getAcceptedCharacterSets()));
 			}
 
-			if (client.getEncodingPrefs().size() > 0)
+			if (client.getAcceptedEncodings().size() > 0)
 			{
 				clientCall.getRequestHeaders().add(HttpConstants.HEADER_ACCEPT_ENCODING,
-						PreferenceUtils.format(client.getEncodingPrefs()));
+						PreferenceUtils.format(client.getAcceptedEncodings()));
 			}
 
-			if (client.getLanguagePrefs().size() > 0)
+			if (client.getAcceptedLanguages().size() > 0)
 			{
 				clientCall.getRequestHeaders().add(HttpConstants.HEADER_ACCEPT_LANGUAGE,
-						PreferenceUtils.format(client.getLanguagePrefs()));
+						PreferenceUtils.format(client.getAcceptedLanguages()));
 			}
 
 			// Add the security

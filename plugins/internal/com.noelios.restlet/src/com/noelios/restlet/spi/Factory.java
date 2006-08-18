@@ -367,7 +367,7 @@ public class Factory extends org.restlet.spi.Factory
 				variantMediaType = currentVariant.getMediaType();
 
 				// If no language preference is defined, assume that all languages are acceptable 
-				List<Preference<Language>> languagePrefs = client.getLanguagePrefs();
+				List<Preference<Language>> languagePrefs = client.getAcceptedLanguages();
 				if (languagePrefs.size() == 0)
 					languagePrefs.add(new Preference<Language>(Language.ALL));
 
@@ -443,7 +443,7 @@ public class Factory extends org.restlet.spi.Factory
 						|| (variantLanguage.equals(fallbackLanguage));
 
 				// If no media type preference is defined, assume that all media types are acceptable 
-				List<Preference<MediaType>> mediaTypePrefs = client.getMediaTypePrefs();
+				List<Preference<MediaType>> mediaTypePrefs = client.getAcceptedMediaTypes();
 				if (mediaTypePrefs.size() == 0)
 					mediaTypePrefs.add(new Preference<MediaType>(MediaType.ALL));
 
@@ -626,7 +626,7 @@ public class Factory extends org.restlet.spi.Factory
 		else
 		{
 			// Compute the best variant
-			Representation bestVariant = call.getClient().getBestVariant(variants,
+			Representation bestVariant = call.getClient().getPreferredVariant(variants,
 					fallbackLanguage);
 
 			if (bestVariant == null)

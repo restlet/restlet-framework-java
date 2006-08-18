@@ -124,7 +124,7 @@ public class ClientData
 	 * Returns the character set preferences.
 	 * @return The character set preferences.
 	 */
-	public List<Preference<CharacterSet>> getCharacterSetPrefs()
+	public List<Preference<CharacterSet>> getAcceptedCharacterSets()
 	{
 		if (this.characterSetPrefs == null)
 			this.characterSetPrefs = new ArrayList<Preference<CharacterSet>>();
@@ -135,9 +135,10 @@ public class ClientData
 	 * Returns the encoding preferences.
 	 * @return The encoding preferences.
 	 */
-	public List<Preference<Encoding>> getEncodingPrefs()
+	public List<Preference<Encoding>> getAcceptedEncodings()
 	{
-		if (this.encodingPrefs == null) this.encodingPrefs = new ArrayList<Preference<Encoding>>();
+		if (this.encodingPrefs == null)
+			this.encodingPrefs = new ArrayList<Preference<Encoding>>();
 		return this.encodingPrefs;
 	}
 
@@ -145,9 +146,10 @@ public class ClientData
 	 * Returns the language preferences.
 	 * @return The language preferences.
 	 */
-	public List<Preference<Language>> getLanguagePrefs()
+	public List<Preference<Language>> getAcceptedLanguages()
 	{
-		if (this.languagePrefs == null) this.languagePrefs = new ArrayList<Preference<Language>>();
+		if (this.languagePrefs == null)
+			this.languagePrefs = new ArrayList<Preference<Language>>();
 		return this.languagePrefs;
 	}
 
@@ -155,7 +157,7 @@ public class ClientData
 	 * Returns the media type preferences.
 	 * @return The media type preferences.
 	 */
-	public List<Preference<MediaType>> getMediaTypePrefs()
+	public List<Preference<MediaType>> getAcceptedMediaTypes()
 	{
 		if (this.mediaTypePrefs == null)
 			this.mediaTypePrefs = new ArrayList<Preference<MediaType>>();
@@ -169,9 +171,9 @@ public class ClientData
 	 * @return The best variant representation.
 	 * @see <a href="http://httpd.apache.org/docs/2.2/en/content-negotiation.html#algorithm">Apache content negotiation algorithm</a>
 	 */
-	public Representation getBestVariant(Resource resource, Language fallbackLanguage)
+	public Representation getPreferredVariant(Resource resource, Language fallbackLanguage)
 	{
-		return getBestVariant(resource.getVariants(), fallbackLanguage);
+		return getPreferredVariant(resource.getVariants(), fallbackLanguage);
 	}
 
 	/**
@@ -181,7 +183,7 @@ public class ClientData
 	 * @return The best variant representation.
 	 * @see <a href="http://httpd.apache.org/docs/2.2/en/content-negotiation.html#algorithm">Apache content negotiation algorithm</a>
 	 */
-	public Representation getBestVariant(List<Representation> variants,
+	public Representation getPreferredVariant(List<Representation> variants,
 			Language fallbackLanguage)
 	{
 		return Factory.getInstance().getBestVariant(this, variants, fallbackLanguage);

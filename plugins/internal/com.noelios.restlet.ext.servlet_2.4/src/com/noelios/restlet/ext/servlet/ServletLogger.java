@@ -32,16 +32,16 @@ import java.util.logging.Logger;
 public class ServletLogger extends Logger
 {
 	/** The Servlet context to use for logging. */
-	private javax.servlet.ServletContext servletContext;
+	private javax.servlet.ServletContext context;
 	
 	/**
 	 * Constructor.
-	 * @param name A name for the logger.
+	 * @param context The Servlet context to use.
 	 */
-	public ServletLogger(javax.servlet.ServletContext servletContext)
+	public ServletLogger(javax.servlet.ServletContext context)
 	{
 		super(null, null);
-		this.servletContext = servletContext;
+		this.context = context;
 	}
 
 	/**
@@ -59,7 +59,7 @@ public class ServletLogger extends Logger
 	 */
 	private javax.servlet.ServletContext getContext()
 	{
-		return this.servletContext;
+		return this.context;
 	}
 	
 }

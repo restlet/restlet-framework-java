@@ -57,7 +57,7 @@ public class HttpServerRestletCall extends Call
 			.getCanonicalName());
 
 	/** The context of the HTTP server connector that issued the call. */
-	private Context connextorContext;
+	private Context connectorContext;
 
 	/** The low-level connector call. */
 	private HttpCall connectorCall;
@@ -82,12 +82,12 @@ public class HttpServerRestletCall extends Call
 
 	/**
 	 * Constructor.
-	 * @param connextorContext The context of the HTTP server connector that issued the call.
+	 * @param connectorContext The context of the HTTP server connector that issued the call.
 	 * @param call The wrapped HTTP server call.
 	 */
-	public HttpServerRestletCall(Context connextorContext, AbstractHttpServerCall call)
+	public HttpServerRestletCall(Context connectorContext, AbstractHttpServerCall call)
 	{
-		this.connextorContext = connextorContext;
+		this.connectorContext = connectorContext;
 		this.clientAdded = false;
 		this.conditionAdded = false;
 		this.cookiesAdded = false;
@@ -141,8 +141,8 @@ public class HttpServerRestletCall extends Call
 					HttpConstants.HEADER_USER_AGENT));
 			result.setAddress(getConnectorCall().getRequestAddress());
 
-			// Special handling for the non standard but common "X-Forwarded-For" header. 
-			boolean useForwardedForHeader = Boolean.parseBoolean(this.connextorContext
+			// Special handling for the non standard but common "X-Forwarded-For" header.
+			boolean useForwardedForHeader = Boolean.parseBoolean(this.connectorContext
 					.getParameters().getFirstValue("useForwardedForHeader", false));
 			if (useForwardedForHeader)
 			{

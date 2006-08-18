@@ -200,7 +200,7 @@ public class PreferenceUtils
 			// http://www.w3.org/Protocols/rfc2616/rfc2616-sec14.html#sec14.2
 			if (acceptCharsetHeader.length() == 0)
 			{
-				client.getCharacterSetPrefs().add(
+				client.getAcceptedCharacterSets().add(
 						new Preference<CharacterSet>(CharacterSet.ISO_8859_1));
 			}
 			else
@@ -212,7 +212,7 @@ public class PreferenceUtils
 					Preference currentPref = pr.readPreference();
 					while (currentPref != null)
 					{
-						client.getCharacterSetPrefs().add(currentPref);
+						client.getAcceptedCharacterSets().add(currentPref);
 						currentPref = pr.readPreference();
 					}
 				}
@@ -226,7 +226,7 @@ public class PreferenceUtils
 		}
 		else
 		{
-			client.getCharacterSetPrefs().add(new Preference(CharacterSet.ALL));
+			client.getAcceptedCharacterSets().add(new Preference(CharacterSet.ALL));
 		}
 	}
 
@@ -247,7 +247,7 @@ public class PreferenceUtils
 				Preference currentPref = pr.readPreference();
 				while (currentPref != null)
 				{
-					preference.getEncodingPrefs().add(currentPref);
+					preference.getAcceptedEncodings().add(currentPref);
 					currentPref = pr.readPreference();
 				}
 			}
@@ -260,7 +260,7 @@ public class PreferenceUtils
 		}
 		else
 		{
-			preference.getEncodingPrefs().add(new Preference(Encoding.IDENTITY));
+			preference.getAcceptedEncodings().add(new Preference(Encoding.IDENTITY));
 		}
 	}
 
@@ -281,7 +281,7 @@ public class PreferenceUtils
 				Preference currentPref = pr.readPreference();
 				while (currentPref != null)
 				{
-					preference.getLanguagePrefs().add(currentPref);
+					preference.getAcceptedLanguages().add(currentPref);
 					currentPref = pr.readPreference();
 				}
 			}
@@ -294,7 +294,7 @@ public class PreferenceUtils
 		}
 		else
 		{
-			preference.getLanguagePrefs().add(new Preference(Language.ALL));
+			preference.getAcceptedLanguages().add(new Preference(Language.ALL));
 		}
 	}
 
@@ -315,7 +315,7 @@ public class PreferenceUtils
 				Preference currentPref = pr.readPreference();
 				while (currentPref != null)
 				{
-					preference.getMediaTypePrefs().add(currentPref);
+					preference.getAcceptedMediaTypes().add(currentPref);
 					currentPref = pr.readPreference();
 				}
 			}
@@ -328,7 +328,7 @@ public class PreferenceUtils
 		}
 		else
 		{
-			preference.getMediaTypePrefs().add(new Preference(MediaType.ALL));
+			preference.getAcceptedMediaTypes().add(new Preference(MediaType.ALL));
 		}
 	}
 

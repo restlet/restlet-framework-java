@@ -40,9 +40,9 @@ public class ServletContext extends ContainerContext
 	private Servlet servlet;
 
 	/**
-	 * Constructor. 
+	 * Constructor.
+	 * @param servlet The parent Servlet. 
 	 * @param container The parent container.
-    * @param logger The logger instance of use.
 	 */
 	public ServletContext(Servlet servlet, Container container)
 	{

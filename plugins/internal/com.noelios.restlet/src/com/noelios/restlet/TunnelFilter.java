@@ -114,25 +114,25 @@ public class TunnelFilter extends ExtractFilter
          // Parse the headers and update the call preferences
          if(acceptCharset != null)
          {
-            call.getClient().getCharacterSetPrefs().clear();
+            call.getClient().getAcceptedCharacterSets().clear();
             PreferenceUtils.parseCharacterSets(acceptCharset, call.getClient());
          }
 
          if(acceptEncoding != null)
          {
-            call.getClient().getEncodingPrefs().clear();
+            call.getClient().getAcceptedEncodings().clear();
             PreferenceUtils.parseEncodings(acceptEncoding, call.getClient());
          }
 
          if(acceptLanguage != null)
          {
-            call.getClient().getLanguagePrefs().clear();
+            call.getClient().getAcceptedLanguages().clear();
             PreferenceUtils.parseLanguages(acceptLanguage, call.getClient());
          }
 
          if(acceptMediaType != null)
          {
-            call.getClient().getMediaTypePrefs().clear();
+            call.getClient().getAcceptedMediaTypes().clear();
             PreferenceUtils.parseMediaTypes(acceptMediaType, call.getClient());
          }
       }
