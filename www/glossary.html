@@ -19,9 +19,12 @@
 <p>
    <ol>
       <li><a href="#call">Call</a></li>
+      <li><a href="#chainer">Chainer</a></li>
       <li><a href="#component">Component</a></li>
       <li><a href="#connector">Connector</a></li>
+      <li><a href="#container">Container</a></li>
       <li><a href="#directory-handler">Directory Handler</a></li>
+      <li><a href="#engine">Engine</a></li>
       <li><a href="#filter">Filter</a></li>
       <li><a href="#guard-filter">Guard Filter</a></li>
       <li><a href="#handler">Handler</a></li>
@@ -31,8 +34,6 @@
       <li><a href="#representation">Representation</a></li>
       <li><a href="#resource">Resource</a></li>
       <li><a href="#restlet">Restlet</a></li>
-      <li><a href="#restlet-container">Restlet Container</a></li>
-      <li><a href="#restlet-engine">Restlet Engine</a></li>
       <li><a href="#router">Router</a></li>
       <li><a href="#scorer">Scorer</a></li>
       <li><a href="#status-filter">Status Filter</a></li>
@@ -45,10 +46,16 @@
    Issued by a client to a server and handled by one or more Restlets. Calls are uniform across all type of connectors (client or server), all types of protocols and component. If you are familiar with the Servlet API, a Restlet call merges and abstracts the Servlet HTTP request and response, as well as the HttpUrlConnection class from the JDK.
 </p>
 
+<h3><a name="chainer">Chainer</a></h3>
+
+<p>
+   Restlet that is part of a processing chain. The next handler is determined for each call and can therefore by either statically or dynamically resolved. Examples of chainers are routers, filters and scorers.
+</p>
+
 <h3><a name="component">Component</a></h3>
 
 <p>
-   Abstract unit of software instructions and internal state. Examples are Restlet Container, Restlet Server, Gateway, OriginServer, Proxy and UserAgent. "A component is an abstract unit of software instructions and internal state that provides a transformation of data via its interface." Roy T. Fielding
+   Abstract unit of software instructions and internal state. An example of Container is. "A component is an abstract unit of software instructions and internal state that provides a transformation of data via its interface." Roy T. Fielding
 </p>
 
 <h3><a name="connector">Connector</a></h3>
@@ -57,10 +64,22 @@
    Abstract mechanism that enables communication between components. "A connector is an abstract mechanism that mediates communication, coordination, or cooperation among components. Connectors enable communication between components by transferring data elements from one interface to another without changing the data." Roy T. Fielding "Encapsulate the activities of accessing resources and transferring resource representations. The connectors present an abstract interface for component communication, enhancing simplicity by providing a clean separation of concerns and hiding the underlying implementation of resources and communication mechanisms" Roy T. Fielding
 </p>
 
+<h3><a name="container">Container</a></h3>
+
+<p>
+   Component whose main purpose is to contain and manage a set of Restlets (Handlers, Routers or Filters) in order to constitue a coherent processing chain for incoming REST calls. In addition, Restlet containers can also be contained within a parent Restlet server.
+</p>
+
 <h3><a name="directory-handler">Directory Handler</a></h3>
 
 <p>
    Call handler supported by a directory of resource (from the file system, the web application context or class loaders). An automatic content negotiation mechanism (similar to the one in Apache HTTP server) is used to select the best representation of a resource based on the available variants and on the client capabilities and preferences.
+</p>
+
+<h3><a name="engine">Engine</a></h3>
+
+<p>
+   A Restlet Engine is an implementation of the Restlet API. The reference implementation, provided by Noelios Consulting, is therefore called the Noelios Restlet Engine (NRE).
 </p>
 
 <h3><a name="filter">Filter</a></h3>
@@ -78,7 +97,7 @@
 <h3><a name="handler">Handler</a></h3>
 
 <p>
-   Restlet that is part of a processing chain. The next handler is found for each call and can therefore by either statically or dynamically resolved.
+   Restlet that is the final handler of the call processing chain. It should have all the necessary information in order to find the resource that is the actual target of the call and to handle the required method on it.
 </p>
 
 <h3><a name="host-router">Host Router</a></h3>
@@ -127,18 +146,6 @@
    Uniform interface for REST handlers. "The central feature that distinguishes the REST architectural style from other network-based styles is its emphasis on a uniform interface between components. By applying the software engineering principle of generality to the component interface, the overall system architecture is simplified and the visibility of interactions is improved. Implementations are decoupled from the services they provide, which encourages independent evolvability." Roy T. Fielding
 </p>
 
-<h3><a name="restlet-container">Restlet Container</a></h3>
-
-<p>
-   Component whose main purpose is to contain and manage a set of Restlets (Handlers, Routers or Filters) in order to constitue a coherent processing chain for incoming REST calls. In addition, Restlet containers can also be contained within a parent Restlet server.
-</p>
-
-<h3><a name="restlet-engine">Restlet Engine</a></h3>
-
-<p>
-   Name of an implementation of the Restlet API. The reference implementation, provided by Noelios Consulting, is therefore called the Noelios Restlet Engine (NRE).
-</p>
-
 <h3><a name="router">Router</a></h3>
 
 <p>
@@ -174,7 +181,7 @@
    <table>
       <tr>
          <td style="vertical-align: middle;" rowspan="2"><a href="http://www.java.net/"><img src="http://www.restlet.org/images/javanet.gif" alt="java.net member" /></a></td>
-         <td>Version 2.2, last modified on 2006-07-31</td>
+         <td>Version 2.3, last modified on 2006-08-18</td>
       </tr>
       <tr>
          <td>Copyright &copy; 2005-2006 <a href="mailto:contact@noelios.com">J&eacute;r&ocirc;me Louvel</a>. Restlet is a registered trademark of <a target="_top" href="http://www.noelios.com">Noelios Consulting</a>.</td>
