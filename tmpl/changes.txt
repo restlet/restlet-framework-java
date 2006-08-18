@@ -18,6 +18,7 @@ Changes log
  - Fixed potential NPE in the DateUtils comparison methods. Reported by Chris Winters.
  - Reworked all equals() methods in the data package to accept Object as parameter. 
  - Fixed bug in MediaType.includes() and added a JUnit test case for MediaType comparison. Report and patch by Chris Winters.
+ - Fixed bug in fluent builders prevent the proper usage of routers in routing mode.
  
 [API breaking changes]
  - Removed get/setTimeout() methods from the Client interface and related classes. Also, removed the configureSsl() method from the Server interface.
@@ -88,7 +89,9 @@ Changes log
  - Renamed ClientData.get*Prefs() methods into getAccepted*() to be more inline with HTTP terminology.
  - Refactored and improved robustness of the ServerServlet adapter. Now you have access to the ServletContext's logger and resources via the standard
    Restlet.getContext() methods.
-
+ - Renamed HostRouter.ROUTING and FILTERING to USAGE_ROUTING and USAGE_FILTERING.
+ - Renamed Router.mode to Router.routingMode.
+ 
 [Other changes] 
  - Separated the HTTP client connector (based on JDK's HttpUrlConnection) previously integrated to the NRE core. This will allow future alternative
    implementations like based on Apache HTTP Client or Apache MINA NIO framework. Please ensure that the new extension (com.noelios.restlet.ext.net) is

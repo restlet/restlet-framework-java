@@ -76,33 +76,33 @@
       {
          try
          {
-            if((args == null) || (args.length != 9))
+            if ((args == null) || (args.length != 9))
             {
                // Display program arguments
-               System.err.println("Can't launch the Maine web server. List of required arguments:\n" +
-                                  " 1) Restlet root path    (where web files are located)\n" +
-                                  " 2) Restlet IP address   (IP address to listen on)\n" +
-                                  " 3) Restlet private port (port to listen on)\n" +
-                                  " 4) Restlet public port  (port which initially receives the TCP connections)\n" +
-
-                                  " 5) Noelios root path    (where web files are located)\n" +
-                                  " 6) Noelios IP address   (IP address to listen on)\n" +
-                                  " 7) Noelios private port (port to listen on)\n" +
-                                  " 8) Noelios public port  (port which initially receives the TCP connections)\n" +
-
-                                  " 9) Data root path       (where stable data files are located)");
+               System.err
+                     .println("Can't launch the Maine web server. List of required arguments:\n"
+                           + " 1) Restlet root path (where web files are located)\n"
+                           + " 2) Restlet IP address (IP address to listen on)\n"
+                           + " 3) Restlet private port (port to listen on)\n"
+                           + " 4) Restlet public port (port which initially receives the TCP connections)\n"
+                           + " 5) Noelios root path (where web files are located)\n"
+                           + " 6) Noelios IP address (IP address to listen on)\n"
+                           + " 7) Noelios private port (port to listen on)\n"
+                           + " 8) Noelios public port (port which initially receives the TCP connections)\n"
+                           + " 9) Data root path      (where stable data files are located)");
             }
             else
             {
                // Create and start the server
-               new WebContainer(args[0], args[1], Integer.parseInt(args[2]), Integer.parseInt(args[3]),
-                                args[4], args[5], Integer.parseInt(args[6]), Integer.parseInt(args[7]),
-                                args[8]).start();
+               new WebContainer(args[0], args[1], Integer.parseInt(args[2]), Integer
+                     .parseInt(args[3]), args[4], args[5], Integer.parseInt(args[6]),
+                     Integer.parseInt(args[7]), args[8]).start();
             }
          }
-         catch(Exception e)
+         catch (Exception e)
          {
-            System.err.println("Can't launch the Web server.\nAn unexpected exception occured:");
+            System.err
+                  .println("Can't launch the Web server.\nAn unexpected exception occured:");
             e.printStackTrace(System.err);
          }
       }
@@ -139,54 +139,57 @@
             int privateNoeliosPort, int publicNoeliosPort, String dataPath) throws Exception
       {
          dataPath = FileReference.normalizePath(dataPath);
-         String downloadsPath = dataPath + File.separatorChar + "archive"
-               + File.separatorChar + "restlet";
-         String reportPath = dataPath + File.separatorChar + "log" + File.separatorChar
-               + "report";
+         String downloadsPath = dataPath + File.separatorChar + "archive" + File.separatorChar + "restlet";
+         String reportPath = dataPath + File.separatorChar + "log" + File.separatorChar + "report";
 
          // Fluently build the container
          Builders.buildContainer(this)
-               .addServer(Protocol.HTTP, restletAddress, privateRestletPort)
-               .addServer(Protocol.HTTP, noeliosAddress, privateNoeliosPort)
-               .attachLog("com.noelios.maine.WebContainer.www")
+            .addServer(Protocol.HTTP, restletAddress, privateRestletPort)
+            .addServer(Protocol.HTTP, noeliosAddress, privateNoeliosPort)
+            .attachLog("com.noelios.maine.WebContainer.www")
                .attachStatus(false, "contact@noelios.com", "http://www.noelios.com")
-               .attachRouter()
+                  .attachRouter()
 
-               // Restlet domains Maplet
-               .createHost("www.restlet.org", publicRestletPort).allowDomain("restlet.org")
-               .allowDomain("www.restlet.com").allowDomain("restlet.com").allowDomain(
-                     "www.restlet.net").allowDomain("restlet.net").redirectClient()
-               .redirectStatus(Status.REDIRECTION_MOVED_PERMANENTLY)
-               .attachParent()
+                     // Restlet domains Maplet
+                     .createHost("www.restlet.org", publicRestletPort)
+                        .allowDomain("restlet.org")
+                        .allowDomain("www.restlet.com")
+                        .allowDomain("restlet.com")
+                        .allowDomain("www.restlet.net")
+                        .allowDomain("restlet.net")
+                        .redirectClient()
+                        .redirectStatus(Status.REDIRECTION_MOVED_PERMANENTLY)
+                        .attachParent()
 
-               // Serve download files from a specific directory
-               .attachDirectory("/downloads", downloadsPath, "index")
-               .upRouter()
+                        // Serve download files from a specific directory
+                        .attachDirectory("/downloads", downloadsPath, "index.html").upRouter()
 
-               // Serve other files from the Restlet path
-               .attachDirectory("", restletPath, "index")
-               .upRouter(2)
+                        // Serve other files from the Restlet path
+                        .attachDirectory("", restletPath, "index.html").upRouter(2)
 
-               // Noelios domain Maplet
-               .createHost("www.noelios.com", publicNoeliosPort).allowDomain("noelios.com")
-               .redirectClient().redirectStatus(Status.REDIRECTION_MOVED_PERMANENTLY)
-               .attachParent()
+                     // Noelios domain Maplet
+                     .createHost("www.noelios.com", publicNoeliosPort).allowDomain("noelios.com")
+                        .redirectClient()
+                        .redirectStatus(Status.REDIRECTION_MOVED_PERMANENTLY)
+                        .attachParent()
 
-               // Serve logs report from a guarded directory
-               .attachGuard("/logs/report", "com.noelios.maine.WebContainer", true,
-                     ChallengeScheme.HTTP_BASIC, "Log report", true).authorize("report",
-                     "analog").attachDirectory(reportPath, "index").upRouter()
+                        // Serve logs report from a guarded directory
+                        .attachGuard("/logs/report", "com.noelios.maine.WebContainer", true, ChallengeScheme.HTTP_BASIC, "Log report", true)
+                           .authorize("***", "***")
+                           .attachDirectory(reportPath, "index.html").upRouter()
 
-               // Serve other files from the Noelios path
-               .attachDirectory("", noeliosPath, "index").upRouter(2)
+                        // Serve other files from the Noelios path
+                        .attachDirectory("", noeliosPath, "index.html").upRouter(2)
 
-               // Noelios blog Maplet
-               .createHost("blog.noelios.com", publicNoeliosPort).preferDomain(
-                     "noelios.wordpress.com").redirectClient().redirectStatus(
-                     Status.REDIRECTION_MOVED_TEMPORARILY).attachParent()
+                     // Noelios blog Maplet
+                     .createHost("blog.noelios.com", publicNoeliosPort)
+                        .preferDomain("noelios.wordpress.com")
+                        .redirectClient()
+                        .redirectStatus(Status.REDIRECTION_MOVED_TEMPORARILY)
+                        .attachParent()
 
-               // Start the container
-               .owner().start();
+                     // Start the container
+                     .owner().start();
       }
 </pre>
 
