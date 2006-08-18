@@ -47,19 +47,18 @@ import org.restlet.data.Status;
 public class HostRouter extends Router
 {
 	/**
-	 * Default mode used when the HostRouter is attached to a Filter (or to a RestletContainer using
-	 * an attach() method with no parameter. In this mode, the HostRouter is setting the contextPath
-	 * of the handler call itself.
+	 * Default mode used when the HostRouter is attached to a Filter. In this mode, the HostRouter is 
+	 * setting the baseRef of the call itself.
 	 */
-	public static final int FILTERING = 1; 
+	public static final int USAGE_FILTERING = 1; 
 		
 	/**
-	 * Mode used when the HostRouter is attached to a parent router (or to a RestletContainer using
-	 * an attach() method with a URI pattern parameter. In this mode, the parent router is setting the
-	 * contextPath before delegating to call to the HostRouter. When setting the URI pattern for the
-	 * parent router, just use the getPattern() method after having configured your HostRouter instance. 
+	 * Mode used when the HostRouter is attached to a parent router using an attach() method with a 
+	 * URI pattern parameter. In this mode, the parent router is setting the baseRef before delegating 
+	 * to call to the HostRouter. When setting the URI pattern for the parent router, just use the 
+	 * getPattern() method after having configured your HostRouter instance. 
 	 */
-	public static final int ROUTING = 2;
+	public static final int USAGE_ROUTING = 2;
 	
 	/**
 	 * The usage mode. 
@@ -190,7 +189,7 @@ public class HostRouter extends Router
    public HostRouter(Context context, String domain, int port)
    {
    	super(context);
-      this.usageMode = FILTERING;
+      this.usageMode = USAGE_FILTERING;
       this.allowedProtocols = new ArrayList<Protocol>();
       this.allowedProtocols.add(Protocol.HTTP);
       this.allowedDomains = new ArrayList<String>();
@@ -393,7 +392,7 @@ public class HostRouter extends Router
 		if(handle)
 		{
 			// Actually handles the call.
-	   	if(getUsageMode() == FILTERING)
+	   	if(getUsageMode() == USAGE_FILTERING)
 	   	{
 	   		// First test outside the synchronized block
 	   		if(this.frontRouter == null)
@@ -411,7 +410,7 @@ public class HostRouter extends Router
 	   		
 	   		this.frontRouter.handle(call);
 	   	}
-	   	else if(getUsageMode() == ROUTING)
+	   	else if(getUsageMode() == USAGE_ROUTING)
 	   	{
 	   		this.backRouter.handle(call);
 	   	}
@@ -701,18 +700,18 @@ public class HostRouter extends Router
 	 * Returns the routing mode.
 	 * @return The routing mode.
 	 */
-	public int getMode()
+	public int getRoutingMode()
 	{
-		return this.backRouter.getMode();
+		return this.backRouter.getRoutingMode();
 	}
 	
 	/**
 	 * Sets the routing mode.
 	 * @param mode The routing mode.
 	 */
-	public void setMode(int mode)
+	public void setRoutingMode(int mode)
 	{
-		this.backRouter.setMode(mode);
+		this.backRouter.setRoutingMode(mode);
 	}
 	
 	/**

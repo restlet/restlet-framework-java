@@ -94,7 +94,7 @@ public class Router extends Chainer
 	private ScorerList scorers;
 	
 	/** The routing mode. */
-	private int mode;
+	private int routingMode;
 	
 	/** The minimum score required to have a match. */
 	private float requiredScore;
@@ -121,7 +121,7 @@ public class Router extends Chainer
    {
       super(context);
       this.scorers = null;
-      this.mode = BEST;
+      this.routingMode = BEST;
       this.requiredScore = 0.5F;
       this.maxAttempts = 1;
       this.retryDelay = 500L;
@@ -154,7 +154,7 @@ public class Router extends Chainer
 				}
 				
 				// Select the routing mode
-				switch(getMode())
+				switch(getRoutingMode())
 				{
 					case BEST:
 						result = getScorers().getBest(call, this.requiredScore);
@@ -217,18 +217,18 @@ public class Router extends Chainer
 	 * Returns the routing mode.
 	 * @return The routing mode.
 	 */
-	public int getMode()
+	public int getRoutingMode()
 	{
-		return this.mode;
+		return this.routingMode;
 	}
 	
 	/**
 	 * Sets the routing mode.
-	 * @param mode The routing mode.
+	 * @param routingMode The routing mode.
 	 */
-	public void setMode(int mode)
+	public void setRoutingMode(int routingMode)
 	{
-		this.mode = mode;
+		this.routingMode = routingMode;
 	}
 	
 	/**

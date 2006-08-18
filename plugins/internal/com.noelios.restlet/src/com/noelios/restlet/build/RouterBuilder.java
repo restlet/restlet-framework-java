@@ -233,7 +233,7 @@ public class RouterBuilder extends RestletBuilder
    public HostRouterBuilder createHost(int port)
    {
       HostRouter node = new HostRouter(getNode().getContext(), port);
-      node.setMode(HostRouter.ROUTING);
+      node.setUsageMode(HostRouter.USAGE_ROUTING);
       return Builders.buildHost(this, node);
    }
    
@@ -258,7 +258,7 @@ public class RouterBuilder extends RestletBuilder
    public HostRouterBuilder createHost(String domain)
    {
       HostRouter node = new HostRouter(getNode().getContext(), domain);
-      node.setMode(HostRouter.ROUTING);
+      node.setUsageMode(HostRouter.USAGE_ROUTING);
       return Builders.buildHost(this, node);
    }
    
@@ -284,7 +284,7 @@ public class RouterBuilder extends RestletBuilder
    public HostRouterBuilder createHost(String domain, int port)
    {
       HostRouter node = new HostRouter(getNode().getContext(), domain, port);
-      node.setMode(HostRouter.ROUTING);
+      node.setUsageMode(HostRouter.USAGE_ROUTING);
       return Builders.buildHost(this, node);
    }
    
