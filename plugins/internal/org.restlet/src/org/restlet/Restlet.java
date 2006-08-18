@@ -83,7 +83,7 @@ public class Restlet
     * Sets the context.
     * @param context The context.
     */
-   protected void setContext(Context context)
+   public void setContext(Context context)
    {
       this.context = context;
    }

@@ -36,7 +36,19 @@ public class Context
 {
    /** The modifiable list of parameters. */
    private ParameterList parameters;
+   
+   /** The logger instance to use. */
+   private Logger logger;
 
+   /**
+    * Constructor.
+    * @param logger The logger instance of use.
+    */
+   public Context(Logger logger)
+   {
+   	this.logger = logger;
+   }
+   
    /**
     * Returns the modifiable list of parameters.
     * @return The modifiable list of parameters.
@@ -53,7 +65,16 @@ public class Context
     */
    public Logger getLogger()
    {
-      return null;
+      return this.logger;
+   }
+
+   /**
+    * Sets the logger.
+    * @param logger The logger.
+    */
+   protected void setLogger(Logger logger)
+   {
+      this.logger = logger;
    }
 
    /**

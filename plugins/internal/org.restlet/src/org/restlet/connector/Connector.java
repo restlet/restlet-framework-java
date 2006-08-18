@@ -24,6 +24,7 @@ package org.restlet.connector;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.logging.Logger;
 
 import org.restlet.Context;
 import org.restlet.Restlet;
@@ -50,10 +51,28 @@ public class Connector extends Restlet
    
    /**
     * Constructor.
+    * @param context The context to use.
+    */
+   public Connector(Context context)
+   {
+   	super(context);
+   }
+   
+   /**
+    * Constructor.
+    * @param loggerName The logger name to use in the context.
+    */
+   public Connector(String loggerName)
+   {
+   	this(new Context(Logger.getLogger(loggerName)));
+   }
+   
+   /**
+    * Constructor that uses the class name as the logger name.
     */
    public Connector()
    {
-   	super(new Context());
+   	setContext(new Context(Logger.getLogger(getClass().getCanonicalName())));
    }
 
    /**

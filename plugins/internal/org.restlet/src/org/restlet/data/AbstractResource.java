@@ -101,5 +101,24 @@ public abstract class AbstractResource implements Resource
 		if(this.variants == null) this.variants = new ArrayList<Representation>();
 		return this.variants;
 	}
+	
+	/**
+	 * Puts a variant representation in the resource.
+	 * @param variant A new or updated variant representation. 
+	 * @return The result status.
+	 */
+	public Status put(Representation variant)
+	{
+		return Status.SERVER_ERROR_NOT_IMPLEMENTED;
+	}
+	
+	/**
+	 * Asks the resource to delete itself and all its representations.
+	 * @return The result status. 
+	 */
+	public Status delete()
+	{
+		return Status.SERVER_ERROR_NOT_IMPLEMENTED;
+	}
 
 }

@@ -28,10 +28,12 @@ import java.util.logging.Level;
 import java.util.logging.Logger;
 
 import org.restlet.Call;
+import org.restlet.Context;
 import org.restlet.connector.Client;
 import org.restlet.connector.GenericClient;
 import org.restlet.connector.Server;
 import org.restlet.data.Protocol;
+import org.restlet.data.Status;
 
 /**
  * Component containing a set of connectors and applications. The connectors are shared by the 
@@ -43,7 +45,7 @@ public class Container extends Component
    /** Obtain a suitable logger. */
    private static Logger logger = Logger.getLogger(Container.class.getCanonicalName());
 
-   /** The Restlet containers. */
+   /** The list of applications. */
    private List<Application> applications;
 
    /** The map of client connectors. */
@@ -52,30 +54,45 @@ public class Container extends Component
    /** The map of server connectors. */
 	private ServerList servers;
 
+	/**
+	 * Constructor that adds a default local connector and uses a local logger.
+	 */
+	public Container()
+	{
+		this(null);
+		setContext(new ContainerContext(this, logger));
+      getClients().add(createLocalClient());
+	}
+	
    /**
     * Constructor.
+    * @param context The parent context.
     */
-   public Container()
+   public Container(Context context)
    {
-   	super(null);
-   	setContext(new ContainerContext(this));
-   	
+   	super(context);
       this.applications = null;
       this.clients = null;
       this.servers = null;
-
-      // Adds the default context client
-      List<Protocol> protocols = new ArrayList<Protocol>();
-      protocols.add(Protocol.CONTEXT);
-      protocols.add(Protocol.FILE);
-      getClients().add(new GenericClient(protocols));
    }
 
    /**
-    * Returns the modifiable list of containers.
-    * @return The modifiable list of containers.
+    * Creates a new local client from the factory. 
+    * @return A new local client from the factory.
     */
-   public List<Application> getContainers()
+   private static Client createLocalClient()
+   {
+      List<Protocol> protocols = new ArrayList<Protocol>();
+      protocols.add(Protocol.CONTEXT);
+      protocols.add(Protocol.FILE);
+      return new GenericClient(protocols);
+   }
+   
+   /**
+    * Returns the modifiable list of applications.
+    * @return The modifiable list of applications.
+    */
+   public List<Application> getApplications()
    {
    	if(this.applications == null) new ArrayList<Application>();
    	return this.applications;
@@ -87,15 +104,15 @@ public class Container extends Component
     */
    public void handle(Call call)
    {
-//      if(getDefaultTarget() != null)
-//      {
-//   		handle(call, getDefaultTarget());
-//      }
-//      else
-//      {
-//         call.setStatus(Status.SERVER_ERROR_INTERNAL);
+      if(getRoot() != null)
+      {
+   		handle(call, getRoot());
+      }
+      else
+      {
+         call.setStatus(Status.SERVER_ERROR_INTERNAL);
          logger.log(Level.SEVERE, "Handle not implemented yet...");
-//      }
+      }
    }
 
    /**
@@ -155,9 +172,9 @@ public class Container extends Component
    	
    	if(this.applications != null)
    	{
-	      for(Application container : this.applications)
+	      for(Application application : this.applications)
 	      {
-	         container.stop();
+	         application.stop();
 	      }
    	}
    }

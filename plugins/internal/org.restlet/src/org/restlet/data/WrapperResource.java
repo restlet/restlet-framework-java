@@ -100,5 +100,24 @@ public class WrapperResource implements Resource
 	{
 		return getWrappedResource().getVariants();
 	}
+	
+	/**
+	 * Puts a variant representation in the resource.
+	 * @param variant A new or updated variant representation. 
+	 * @return The result status.
+	 */
+	public Status put(Representation variant)
+	{
+		return getWrappedResource().put(variant);
+	}
+	
+	/**
+	 * Asks the resource to delete itself and all its representations.
+	 * @return The result status. 
+	 */
+	public Status delete()
+	{
+		return getWrappedResource().delete();
+	}
 
 }

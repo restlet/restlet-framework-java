@@ -29,7 +29,7 @@ import java.util.logging.Level;
 import java.util.logging.Logger;
 
 import org.restlet.Call;
-import org.restlet.connector.Connector;
+import org.restlet.Context;
 import org.restlet.data.ClientData;
 import org.restlet.data.ConditionData;
 import org.restlet.data.Cookie;
@@ -56,8 +56,8 @@ public class HttpServerRestletCall extends Call
 	private static Logger logger = Logger.getLogger(HttpServerRestletCall.class
 			.getCanonicalName());
 
-	/** The HTTP server connector that issued the call. */
-	private Connector httpServer;
+	/** The context of the HTTP server connector that issued the call. */
+	private Context connextorContext;
 
 	/** The low-level connector call. */
 	private HttpCall connectorCall;
@@ -82,12 +82,12 @@ public class HttpServerRestletCall extends Call
 
 	/**
 	 * Constructor.
-	 * @param httpServer The HTTP server connector that issued the call.
+	 * @param connextorContext The context of the HTTP server connector that issued the call.
 	 * @param call The wrapped HTTP server call.
 	 */
-	public HttpServerRestletCall(Connector httpServer, AbstractHttpServerCall call)
+	public HttpServerRestletCall(Context connextorContext, AbstractHttpServerCall call)
 	{
-		this.httpServer = httpServer;
+		this.connextorContext = connextorContext;
 		this.clientAdded = false;
 		this.conditionAdded = false;
 		this.cookiesAdded = false;
@@ -142,9 +142,8 @@ public class HttpServerRestletCall extends Call
 			result.setAddress(getConnectorCall().getRequestAddress());
 
 			// Special handling for the non standard but common "X-Forwarded-For" header. 
-			boolean useForwardedForHeader = Boolean.parseBoolean(this.httpServer
-					.getContext().getParameters()
-					.getFirstValue("useForwardedForHeader", false));
+			boolean useForwardedForHeader = Boolean.parseBoolean(this.connextorContext
+					.getParameters().getFirstValue("useForwardedForHeader", false));
 			if (useForwardedForHeader)
 			{
 				// Lookup the "X-Forwarded-For" header supported by popular proxies and caches.

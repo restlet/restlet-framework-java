@@ -22,6 +22,8 @@
 
 package org.restlet.component;
 
+import java.util.logging.Logger;
+
 import org.restlet.Call;
 import org.restlet.Context;
 import org.restlet.connector.Client;
@@ -37,11 +39,13 @@ public class ContainerContext extends Context
 	private Container container;
 
 	/**
-	 * 
-	 * @param container
+	 * Constructor. 
+	 * @param container The parent container.
+    * @param logger The logger instance of use.
 	 */
-	public ContainerContext(Container container)
+	public ContainerContext(Container container, Logger logger)
 	{
+		super(logger);
 		this.setContainer(container);
 	}
 

@@ -59,7 +59,7 @@ import com.noelios.restlet.data.ContextReference.AuthorityType;
 import com.noelios.restlet.util.ByteUtils;
 
 /**
- * Connector to the contextual resources accessible via file system, class loaders and similar mechanisms.
+ * Connector to the local resources accessible via file system, class loaders and similar mechanisms.
  * Here is the list of parameters that are supported:
  * <table>
  * 	<tr>
@@ -102,10 +102,10 @@ import com.noelios.restlet.util.ByteUtils;
  * @see com.noelios.restlet.data.ContextReference
  * @author Jerome Louvel (contact@noelios.com) <a href="http://www.noelios.com/">Noelios Consulting</a>
  */
-public class ContextClient extends Client
+public class LocalClient extends Client
 {
    /** Obtain a suitable logger. */
-   private static Logger logger = Logger.getLogger(ContextClient.class.getCanonicalName());
+   private static Logger logger = Logger.getLogger(LocalClient.class.getCanonicalName());
 
    /** Mappings from extensions to metadata. */
    private Map<String, Metadata> metadataMappings;
@@ -123,7 +123,7 @@ public class ContextClient extends Client
     * Constructor. Note that the common list of metadata associations based on extensions is added, see
     * the addCommonExtensions() method.
     */
-   public ContextClient()
+   public LocalClient()
    {
       getProtocols().add(Protocol.CONTEXT);
       getProtocols().add(Protocol.FILE);

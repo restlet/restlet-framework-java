@@ -75,4 +75,17 @@ public interface Resource
 	 * @return The list of variants.
 	 */
 	public List<Representation> getVariants();
+	
+	/**
+	 * Puts a variant representation in the resource.
+	 * @param variant A new or updated variant representation. 
+	 * @return The result status.
+	 */
+	public Status put(Representation variant);
+	
+	/**
+	 * Asks the resource to delete itself and all its representations.
+	 * @return The result status. 
+	 */
+	public Status delete();
 }

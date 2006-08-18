@@ -81,7 +81,10 @@ Changes log
  - Moved WrapperMap to NRE util package as it's not used anymore in the API.
  - ScorerList now derives from WrapperList like similar classes (ClientList, ParameterList, etc.).
  - Renamed RedirectHandler to RedirectRestlet as it is not taking advantage of the features of a Handler.
-  
+ - Refactored the Servlet connector to make it work with the new notion of Restlet's context.
+ - Added put() and delete() methods on Resource interface and related classes.
+ - Renamed ContextClient into LocalClient to remove ambiguity with concept of Restlet's context.
+
 [Other changes] 
  - Separated the HTTP client connector (based on JDK's HttpUrlConnection) previously integrated to the NRE core. This will allow future alternative
    implementations like based on Apache HTTP Client or Apache MINA NIO framework. Please ensure that the new extension (com.noelios.restlet.ext.net) is

@@ -35,16 +35,14 @@ import org.restlet.data.ReferenceList;
 import org.restlet.data.Representation;
 import org.restlet.data.Status;
 
-import com.noelios.restlet.connector.ContextClient;
-import com.noelios.restlet.data.ContextReference;
+import com.noelios.restlet.connector.LocalClient;
 import com.noelios.restlet.data.InputRepresentation;
-import com.noelios.restlet.data.ContextReference.AuthorityType;
 
 /**
- * Context client connector based on a Servlet context (JEE Web application context).
+ * Local client connector based on a Servlet context (JEE Web application context).
  * @author Jerome Louvel (contact@noelios.com) <a href="http://www.noelios.com/">Noelios Consulting</a>
  */
-public class ServletContextClient extends ContextClient
+public class ServletLocalClient extends LocalClient
 {
    /** The Servlet context to use. */
 	private ServletContext servletContext;
@@ -53,7 +51,7 @@ public class ServletContextClient extends ContextClient
     * Constructor.
     * @param servletContext The Servlet context.
     */
-   public ServletContextClient(ServletContext servletContext)
+   public ServletLocalClient(ServletContext servletContext)
    {
       this.servletContext = servletContext;
    }
@@ -68,35 +66,10 @@ public class ServletContextClient extends ContextClient
    }
 
    /**
-    * Handles a call.
+    * Handles a call using the current Web Application.
     * @param call The call to handle.
     */
-   public void handle(Call call)
-   {
-      if(call.getResourceRef().getScheme().equalsIgnoreCase("context"))
-      {
-			ContextReference cr = new ContextReference(call.getResourceRef());
-			
-      	if(cr.getAuthorityType() == AuthorityType.WEB_APPLICATION)
-      	{
-      		handleServletContext(call);
-	      }
-      	else
-      	{
-      		super.handle(call);
-      	}
-      }
-   	else
-   	{
-   		super.handle(call);
-   	}
-   }
-
-   /**
-    * Handles a call based on the Servlet context.
-    * @param call The call to handle.
-    */
-   protected void handleServletContext(Call call)
+   protected void handleWebApp(Call call)
    {
       if(call.getMethod().equals(Method.GET) || call.getMethod().equals(Method.HEAD))
 		{

@@ -27,8 +27,8 @@ import java.util.logging.Level;
 import java.util.logging.Logger;
 
 import org.restlet.Call;
+import org.restlet.Context;
 import org.restlet.Restlet;
-import org.restlet.connector.Connector;
 import org.restlet.connector.Server;
 import org.restlet.data.Method;
 
@@ -103,7 +103,7 @@ public abstract class AbstractHttpServer extends Server
    {
    	try
    	{
-   		handle(this, call, this);
+   		handle(getContext(), call, this);
 		}
 		catch (Exception e)
 		{
@@ -114,14 +114,14 @@ public abstract class AbstractHttpServer extends Server
 
    /**
     * Handles an HTTP server call for a given Restlet target. 
-    * @param httpServer The HTTP server connector that issued the call.
+    * @param connectorContext The context of the HTTP server connector that issued the call.
     * @param call The connector call.
     * @param next The chained Restlet.
     * @throws IOException 
     */
-   public static void handle(Connector httpServer, AbstractHttpServerCall call, Restlet next) throws IOException
+   public static void handle(Context connectorContext, AbstractHttpServerCall call, Restlet next) throws IOException
    {
-      Call restletCall = call.toUniform(httpServer);
+      Call restletCall = call.toUniform(connectorContext);
       next.handle(restletCall);
       call.setResponse(restletCall);
       call.sendResponseHeaders();
