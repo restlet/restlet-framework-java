@@ -90,6 +90,6 @@ public class ChallengeScheme extends Metadata
 	public boolean equals(Object object)
 	{
 		return (object instanceof ChallengeScheme)
-				&& ((ChallengeScheme) object).getName().equals(getName());
+				&& ((ChallengeScheme) object).getName().equalsIgnoreCase(getName());
 	}
 }
