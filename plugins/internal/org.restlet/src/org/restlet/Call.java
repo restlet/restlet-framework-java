@@ -269,11 +269,11 @@ public class Call
 	{
 		if(getBaseRef() != null)
 		{
-			return getResourceRef().toString().substring(getBaseRef().toString().length());
+			return getResourceRef().toString(false, false).substring(getBaseRef().toString().length());
 		}
 		else
 		{
-			return getResourceRef().toString();
+			return getResourceRef().toString(false, false);
 		}
 	}
 
