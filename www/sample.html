@@ -162,10 +162,10 @@
                         .attachParent()
 
                         // Serve download files from a specific directory
-                        .attachDirectory("/downloads", downloadsPath, "index.html").upRouter()
+                        .attachDirectory("/downloads", downloadsPath, "index").listing(true).negotiate(true).upRouter()
 
                         // Serve other files from the Restlet path
-                        .attachDirectory("", restletPath, "index.html").upRouter(2)
+                        .attachDirectory("", restletPath, "index").negotiate(true).upRouter(2)
 
                      // Noelios domain Maplet
                      .createHost("www.noelios.com", publicNoeliosPort).allowDomain("noelios.com")
@@ -176,10 +176,10 @@
                         // Serve logs report from a guarded directory
                         .attachGuard("/logs/report", "com.noelios.maine.WebContainer", true, ChallengeScheme.HTTP_BASIC, "Log report", true)
                            .authorize("***", "***")
-                           .attachDirectory(reportPath, "index.html").upRouter()
+                           .attachDirectory(reportPath, "index").negotiate(true).upRouter()
 
                         // Serve other files from the Noelios path
-                        .attachDirectory("", noeliosPath, "index.html").upRouter(2)
+                        .attachDirectory("", noeliosPath, "index").negotiate(true).upRouter(2)
 
                      // Noelios blog Maplet
                      .createHost("blog.noelios.com", publicNoeliosPort)
