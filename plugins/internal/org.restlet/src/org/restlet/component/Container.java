@@ -195,7 +195,7 @@ public class Container extends Component
 	 */
 	public ServerList getServers()
 	{
-		if(this.servers == null) this.servers = new ServerList();
+		if(this.servers == null) this.servers = new ServerList(this);
 		return this.servers;
 	}
 

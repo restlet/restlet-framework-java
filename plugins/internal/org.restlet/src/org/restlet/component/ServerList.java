@@ -35,6 +35,28 @@ import org.restlet.spi.Factory;
  */
 public class ServerList extends WrapperList<Server>
 {
+	/** The parent container. */
+	private Container container;
+	
+	/**
+	 * Constructor.
+	 * @param container The parent container.
+	 */
+	public ServerList(Container container)
+	{
+		this.container = container;
+	}
+	
+	/**
+	 * Adds a server at the end of the list.
+	 * @return True (as per the general contract of the Collection.add method).
+	 */
+	public boolean add(Server server)
+	{
+		if(this.container != null) server.setNext(this.container);
+		return super.add(server);
+	}
+
 	/**
 	 * Adds a new server connector in the map supporting the given protocol.
 	 * @param protocol The connector protocol.

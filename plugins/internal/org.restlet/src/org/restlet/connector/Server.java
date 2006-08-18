@@ -24,6 +24,7 @@ package org.restlet.connector;
 
 import org.restlet.Call;
 import org.restlet.Restlet;
+import org.restlet.data.Status;
 
 /**
  * Connector that listens for connections and responds to requests. By default, the handle(UniformCall)
@@ -37,7 +38,7 @@ import org.restlet.Restlet;
  */
 public class Server extends Connector
 {
-   /** The target Restlet. */
+   /** The chained Restlet. */
    private Restlet next;
 
    /**
@@ -47,7 +48,15 @@ public class Server extends Connector
     */
    public void handle(Call call)
    {
-      getNext().handle(call);
+   	if(getNext() != null) 
+   	{
+   		getNext().handle(call);
+   	}
+   	else
+   	{
+   		call.setStatus(Status.SERVER_ERROR_INTERNAL);
+   		getContext().getLogger().warning("Unable to find a chained Restlet for the Server connector.");
+   	}
    }
 
    /**
