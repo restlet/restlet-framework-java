@@ -24,6 +24,7 @@ package org.restlet;
 
 import org.restlet.data.Language;
 import org.restlet.data.Resource;
+import org.restlet.data.Status;
 
 /**
  * Restlet that is the final handler of the processing chain. It should have all the necessary 
@@ -33,19 +34,19 @@ import org.restlet.data.Resource;
  */
 public class Handler extends Restlet
 {
-   /** The language to use if content negotiation fails. */
+	/** The language to use if content negotiation fails. */
 	private Language fallbackLanguage;
-	
-   /**
-    * Constructor.
-    * @param context The context.
-    */
-   public Handler(Context context)
-   {
-   	super(context);
-   }
 
-   /**
+	/**
+	 * Constructor.
+	 * @param context The context.
+	 */
+	public Handler(Context context)
+	{
+		super(context);
+	}
+
+	/**
 	 * Finds the target Resource if available.
 	 * @param call The current call.
 	 * @return The target resource if available or null.
@@ -55,40 +56,84 @@ public class Handler extends Restlet
 		return null;
 	}
 
-   /**
-    * Handles a GET call.
-    * @param call The call to handle.
-    */
-   protected void handleGet(Call call)
-   {
-   	call.setOutput(findTarget(call), getFallbackLanguage());
-   }
-   
-   /**
-    * Handles a HEAD call.
-    * @param call The call to handle.
-    */
-   protected void handleHead(Call call)
-   {
-   	handleGet(call);
-   }
+	/**
+	 * Handles a GET call.
+	 * @param call The call to handle.
+	 */
+	protected void handleGet(Call call)
+	{
+		call.setOutput(findTarget(call), getFallbackLanguage());
+	}
 
-   /**
-    * Returns the language to use if content negotiation fails.
-    * @return The language to use if content negotiation fails.
-    */
-   public Language getFallbackLanguage()
-   {
-   	return this.fallbackLanguage;
-   }
-   
-   /**
-    * Sets the language to use if content negotiation fails.
-    * @param fallbackLanguage The language to use if content negotiation fails.
-    */
-   public void setFallbackLanguage(Language fallbackLanguage)
-   {
-   	this.fallbackLanguage = fallbackLanguage;
-   }
+	/**
+	 * Handles a HEAD call.
+	 * @param call The call to handle.
+	 */
+	protected void handleHead(Call call)
+	{
+		handleGet(call);
+	}
+
+	/**
+	 * Handles a DELETE call.
+	 * @param call The call to handle.
+	 */
+	protected void handleDelete(Call call)
+	{
+		Resource target = findTarget(call);
+
+		if (target != null)
+		{
+			call.setStatus(target.delete());
+		}
+		else
+		{
+			call.setStatus(Status.SERVER_ERROR_NOT_IMPLEMENTED);
+		}
+	}
+
+	/**
+	 * Handles a PUT call.
+	 * @param call The call to handle.
+	 */
+	protected void handlePut(Call call)
+	{
+		Resource target = findTarget(call);
+
+		if (target != null)
+		{
+			if (call.getInput() != null)
+			{
+				call.setStatus(target.put(call.getInput()));
+			}
+			else
+			{
+				call.setStatus(new Status(Status.CLIENT_ERROR_NOT_ACCEPTABLE,
+						"Missing input representation"));
+			}
+		}
+		else
+		{
+			call.setStatus(Status.SERVER_ERROR_NOT_IMPLEMENTED);
+		}
+	}
+
+	/**
+	 * Returns the language to use if content negotiation fails.
+	 * @return The language to use if content negotiation fails.
+	 */
+	public Language getFallbackLanguage()
+	{
+		return this.fallbackLanguage;
+	}
+
+	/**
+	 * Sets the language to use if content negotiation fails.
+	 * @param fallbackLanguage The language to use if content negotiation fails.
+	 */
+	public void setFallbackLanguage(Language fallbackLanguage)
+	{
+		this.fallbackLanguage = fallbackLanguage;
+	}
 
 }
