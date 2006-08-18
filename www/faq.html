@@ -199,7 +199,7 @@
    Here is the basic proposition for implementing the MVC pattern with Restlets :
    <ol>
       <li>Controller == Chainers (Routers or Filters) + Handlers. You can visualize the controller as a sort of call processing chain, where the last node should be Handler with all the information necessary to locate the Resource identified in the call. This location information can be stored either in the call's attributes map, either in the member variables of a call wrapper (see <a href="http://www.restlet.org/docs/api/org/restlet/WrapperCall.html">org.restlet.WrapperCall</a>). This last Handler should implement its findTarget(Call) method and return an instance of Resource.</li>
-      <li>Model == Resource + data objects. Just start from the <a href="http://www.restlet.org/docs/api/org/restlet/data/AbstractResource.html">org.restlet.data.AbstractResource class</a> and implement its methods like getVariants(), delete() and put(). You can rely on the default implementation to do server-side content negotiation. For this, you just need to override the getVariants() method, the rest is automatically done. Internally, we rely on the call.setBestOutput() method to trigger this content negotiation, which compares the variant representations that you make available, with the client capabilities and preferences.</li>
+      <li>Model == Resource + data objects. Just start from the <a href="http://www.restlet.org/docs/api/org/restlet/data/AbstractResource.html">org.restlet.data.AbstractResource class</a> and implement its methods like getVariants(), delete() and put(). The AbstractResource automatically invokes those method by implementing the handleGet(), handleHead(), handlePut(), handleDelete() methods for you. For example, you just need to override the getVariants() to benefit from server-side content negotiation. Internally, we rely on the call.setOutput() method to trigger this content negotiation, which compares the variant representations that you make available, with the client capabilities and preferences.</li>
       <li>View == Representation variants. To create new representations for your resources, you can rely on one of the numerous Representation implementation classes (InputRepresentation for example) available in the NRE data package or in the extension packages like the one for FreeMarker (TemplateRepresentation).</li>
    </ol>
    Chris Winters has developped a <a href="http://www.cwinters.com/raw/RestSampleBook.zip">sample application</a> illustrating very well those concepts. He uses AJAX with a Restlet container to do server-side content negotiation between resource representations available in different formats (XML, JSON and image). He also added the creation of new resources via POST. Note that the code source is based on source code snapshot and won't directly run with the latest beta 17 version.
@@ -237,14 +237,14 @@
 <h3><a name="19">19. Can a Filter modify the call like a Servlet Filter?</a></h3>
 
 <p>
-   Absolutely! What the tutorial only says is that call's context path shouldn't be modified. Beside that, anything else in the call object can be modified, before or after the handling of the call by the attached Restlet.
+   Absolutely! What the tutorial only says is that call's base reference shouldn't be modified. Beside that, anything else in the call object can be modified, before or after the handling of the call by the attached Restlet.
 </p>
 
 <h3><a name="20">20. My server is running behind a proxy, can I get the actual client IP address?</a></h3>
 
 <p>
    The immediate client IP address available is the only that is always available because its based on the underlying protocol connection.
-   In HTTP, certain proxies do transfer the original client IP address (or addresses) by using some extra HTTP headers like "X-Forwarded-for". In the recent Restlet versions you can get all this information in a straightforward way. On the Call interface, you have two related methods <a href="http://www.restlet.org/docs/api/org/restlet/Call.html#getClientAddress()">getClientAddress()</a> and <a href="http://www.restlet.org/docs/api/org/restlet/Call.html#getClientAddresses()">getClientAddresses()</a>. Please check the Javadocs for details as there are some security risks when using the second method, especially if you are not controlling the intermediary proxies.
+   In HTTP, certain proxies do transfer the original client IP address (or addresses) by using some extra HTTP headers like "X-Forwarded-for". In the recent Restlet versions you can get all this information in a straightforward way. On the Call interface, you have two related methods <a href="http://www.restlet.org/docs/api/org/restlet/Call.html#getClientAddress()">getClientAddress()</a> and <a href="http://www.restlet.org/docs/api/org/restlet/Call.html#getClientAddresses()">getClientAddresses()</a>. Please check the Javadocs of the HTTP server connectors for details (i.e. context parameter to set) on how to enable the support for the "X-Forwarded-For" header as there are some security risks when using it, especially if you are not controlling the intermediary proxies.
 </p>
 
 
@@ -292,7 +292,7 @@
    <table>
       <tr>
          <td style="vertical-align: middle;" rowspan="2"><a href="http://www.java.net/"><img src="http://www.restlet.org/images/javanet.gif" alt="java.net member" /></a></td>
-         <td>Version 1.11, last modified on 2006-08-15</td>
+         <td>Version 2.0, last modified on 2006-08-18</td>
       </tr>
       <tr>
          <td>Copyright &copy; 2005-2006 <a href="mailto:contact@noelios.com">J&eacute;r&ocirc;me Louvel</a>. Restlet is a registered trademark of <a target="_top" href="http://www.noelios.com">Noelios Consulting</a>.</td>
