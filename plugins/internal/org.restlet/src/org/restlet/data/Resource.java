@@ -63,15 +63,15 @@ public interface Resource
 	public void setIdentifier(String identifierUri);
 	
 	/**
-	 * Returns the list of all the identifiers for the resource. The list is composed of the official identifier
-	 * followed by all the alias identifiers.
-	 * @return The list of all the identifiers for the resource.
+	 * Returns the list of all the identifiers. The list is composed of the official identifier
+	 * followed by all the alias identifiers. It guarantees that a null pointer is never returned. 
+	 * @return The list of all the identifiers. 
 	 */
 	public ReferenceList getIdentifiers();
 	
 	/**
 	 * Returns the list of variants. Each variant is described by metadata and can provide several instances 
-	 * of the variant's representation.
+	 * of the variant's representation. It guarantees that a null pointer is never returned.
 	 * @return The list of variants.
 	 */
 	public List<Representation> getVariants();
@@ -88,4 +88,16 @@ public interface Resource
 	 * @return The result status. 
 	 */
 	public Status delete();
+	
+	/**
+	 * Sets a new list of all the identifiers for the resource.  
+	 * @param identifiers The new list of identifiers. 
+	 */
+	public void setIdentifiers(ReferenceList identifiers);
+	
+	/**
+	 * Sets a new list of variants. 
+	 * @param variants The new list of variants.
+	 */
+	public void setVariants(List<Representation> variants);
 }

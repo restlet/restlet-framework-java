@@ -119,5 +119,23 @@ public class WrapperResource implements Resource
 	{
 		return getWrappedResource().delete();
 	}
+	
+	/**
+	 * Sets a new list of all the identifiers for the resource.  
+	 * @param identifiers The new list of identifiers. 
+	 */
+	public void setIdentifiers(ReferenceList identifiers)
+	{
+		getWrappedResource().setIdentifiers(identifiers);
+	}
+	
+	/**
+	 * Sets a new list of variants. 
+	 * @param variants The new list of variants.
+	 */
+	public void setVariants(List<Representation> variants)
+	{
+		getWrappedResource().setVariants(variants);
+	}
 
 }

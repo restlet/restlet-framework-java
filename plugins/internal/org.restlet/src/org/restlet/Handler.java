@@ -57,7 +57,9 @@ public class Handler extends Restlet
 	}
 
 	/**
-	 * Handles a GET call.
+	 * Handles a GET call by automatically returning the best output available from the target resource (as provided
+	 * by the 'findTarget' method). The content negotiation is based on the client's preferences available in the 
+	 * handled call.
 	 * @param call The call to handle.
 	 */
 	protected void handleGet(Call call)
@@ -66,7 +68,7 @@ public class Handler extends Restlet
 	}
 
 	/**
-	 * Handles a HEAD call.
+	 * Handles a HEAD call, using a logic similat to the handleGet method.
 	 * @param call The call to handle.
 	 */
 	protected void handleHead(Call call)
@@ -75,7 +77,8 @@ public class Handler extends Restlet
 	}
 
 	/**
-	 * Handles a DELETE call.
+	 * Handles a DELETE call invoking the 'delete' method of the target resource (as provided by the 'findTarget' 
+	 * method).
 	 * @param call The call to handle.
 	 */
 	protected void handleDelete(Call call)
@@ -93,7 +96,7 @@ public class Handler extends Restlet
 	}
 
 	/**
-	 * Handles a PUT call.
+	 * Handles a PUT call invoking the 'put' method of the target resource (as provided by the 'findTarget' method).
 	 * @param call The call to handle.
 	 */
 	protected void handlePut(Call call)

@@ -120,5 +120,23 @@ public abstract class AbstractResource implements Resource
 	{
 		return Status.SERVER_ERROR_NOT_IMPLEMENTED;
 	}
+	
+	/**
+	 * Sets a new list of all the identifiers for the resource.  
+	 * @param identifiers The new list of identifiers. 
+	 */
+	public void setIdentifiers(ReferenceList identifiers)
+	{
+		this.identifiers = identifiers;
+	}
+	
+	/**
+	 * Sets a new list of variants. 
+	 * @param variants The new list of variants.
+	 */
+	public void setVariants(List<Representation> variants)
+	{
+		this.variants = variants;
+	}
 
 }
