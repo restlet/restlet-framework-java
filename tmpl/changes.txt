@@ -13,7 +13,9 @@ Changes log
 [Other changes] 
  - Added Resource.setVariants() and setIdentifiers() methods. Can be easier than doing a getVariants().clear() then a getVariants().addAll(newList). 
    Suggested by Chris Winters.
- - 
+ - org.restlet.ReferenceList now derives from WrapperList<Reference> to factorize code and to clarify (in Javadocs) which extra methods are provided.
+ - Improved Javadocs for the org.restlet.Handler class to explain what is the default behavior of each handle*() method. 
+ - Completed support for content streaming in the HTTP client connector extension. Reported by Mikkel Jensen.
 
 1.0 beta 18 (2006-08-19)
 [Bugs fixed]

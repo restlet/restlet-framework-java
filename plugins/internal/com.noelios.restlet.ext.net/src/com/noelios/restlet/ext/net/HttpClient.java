@@ -40,7 +40,6 @@ import org.restlet.data.Parameter;
 import org.restlet.data.Protocol;
 import org.restlet.data.Status;
 
-import com.noelios.restlet.connector.AbstractHttpClientCall;
 import com.noelios.restlet.connector.HttpConstants;
 import com.noelios.restlet.spi.Factory;
 import com.noelios.restlet.util.CookieReader;
@@ -113,38 +112,18 @@ public class HttpClient extends Client
 	}
 
 	/**
-	 * Returns a new client call.
-	 * @param method The request method.
-	 * @param resourceUri The requested resource URI.
-	 * @param hasInput Indicates if the call will have an input to send to the server.
-	 * @return A new HTTP protocol call.
-	 */
-	public AbstractHttpClientCall createCall(String method, String resourceUri,
-			boolean hasInput)
-	{
-		try
-		{
-			return new HttpUrlConnectionCall(this, method, resourceUri, hasInput);
-		}
-		catch (IOException e)
-		{
-			return null;
-		}
-	}
-
-	/**
 	 * Handles a uniform call.
 	 * @param call The uniform call to handle.
 	 */
 	public void handle(Call call)
 	{
-		AbstractHttpClientCall clientCall = null;
-
+		HttpUrlConnectionCall clientCall = null;
+		
 		try
 		{
 			// Create a new HTTP client call
-			clientCall = createCall(call.getMethod().getName(), call.getResourceRef()
-					.toString(), hasInput(call));
+			clientCall = new HttpUrlConnectionCall(this, call.getMethod().toString(), 
+					call.getResourceRef().toString(), hasInput(call));
 
 			// Add the user agent header
 			if (call.getClient().getName() != null)
@@ -262,8 +241,21 @@ public class HttpClient extends Client
 			{
 				if (call.getInput().getSize() > 0)
 				{
-					clientCall.getRequestHeaders().add(HttpConstants.HEADER_CONTENT_LENGTH,
-							Long.toString(call.getInput().getSize()));
+					// The size of the input is known in advance
+					clientCall.getConnection().setFixedLengthStreamingMode((int)call.getInput().getSize());
+				}
+				else
+				{
+					// The size of the input is not known in advance
+					if(getChunkLength() >= 0)
+					{
+						// Use chunked encoding
+						clientCall.getConnection().setChunkedStreamingMode(getChunkLength());
+					}
+					else
+					{
+						// Use input buffering to determine the content length
+					}
 				}
 
 				if (call.getInput().getMediaType() != null)
