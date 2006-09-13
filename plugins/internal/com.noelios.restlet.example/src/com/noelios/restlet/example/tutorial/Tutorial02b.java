@@ -20,27 +20,38 @@
  * Portions Copyright [yyyy] [name of copyright owner]
  */
 
-package com.noelios.restlet.example;
+package com.noelios.restlet.example.tutorial;
 
 import java.io.IOException;
 
+import org.restlet.Call;
 import org.restlet.connector.Client;
 import org.restlet.connector.GenericClient;
+import org.restlet.data.Method;
 import org.restlet.data.Protocol;
+import org.restlet.data.Representation;
 
 /**
- * Retrieving the content of a Web page.
+ * Retrieving the content of a Web page (detailled).
  * @author Jerome Louvel (contact@noelios.com) <a href="http://www.noelios.com/">Noelios Consulting</a>
  */
-public class Tutorial02a
+public class Tutorial02b
 {
    public static void main(String[] args)
    {
       try
       {
-         // Outputting the content of a Web page
+         // Prepare the REST call
+      	Call call = new Call(Method.GET, "http://www.restlet.org");
+         call.setReferrerRef("http://www.mysite.org");
+
+         // Ask to the HTTP client connector to handle the call
          Client client = new GenericClient(Protocol.HTTP);
-         client.get("http://www.restlet.org").getOutput().write(System.out);
+         client.handle(call);
+
+         // Output the result representation on the JVM console
+         Representation output = call.getOutput();
+         output.write(System.out);
       }
       catch(IOException e)
       {

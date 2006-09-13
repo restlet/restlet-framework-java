@@ -13,6 +13,7 @@ Changes log
 [API breaking changes]
  - Moved hasInput() method from org.restlet.connector.Client to Call.isInputAvailable().
  - Renamed Representation.isContentAvailable() to isAvailable() and isContentTransient() to isTransient().
+ - Application now only requires a Context and not a Container.
 
 [Other changes] 
  - Updated Jetty 6 extension to final 6.0 release.
@@ -20,12 +21,15 @@ Changes log
    Suggested by Chris Winters.
  - org.restlet.ReferenceList now derives from WrapperList<Reference> to factorize code and to clarify (in Javadocs) which extra methods are provided.
  - Improved Javadocs for the org.restlet.Handler class to explain what is the default behavior of each handle*() method. 
- - Added support for call converters in HTTP server connectors and in ServerServlet.
+ - Refactored ServerServlet to cleanly support call converters via a HttpServer instance working as an intermediary between the Servlet and the target Restlet.
  - Refactored all HTTP client and server classes to work with the new call converter mechanism.
  - Renamed AbstractHttpServer to HttpServer, AbstractHttpServerCall to HttpServerCall and AbstractHttpClientCall to HttpClientCall.
  - Merged HttpCall interface and DefaultHttpCall class into single HttpCall class.
  - Added com.noelios.restlet.connector.HttpServerConverter as the base call converter (from HTTP calls to uniform REST calls).
  - Refactored the HttpUrlConnection-based HTTP client to extract a generic HttpClientConverter and added a base HttpClient class.
+ - Added new constructors to Client and Server to be match Connector's constructors.
+ - Added "converter" parameter to HttpServer base class and thus to all HTTP server connectors (Jetty, Simple, AsyncWeb).
+ - Added sample application illustrating the usage of call converters to access raw HTTP headers.
 
 1.0 beta 18 (2006-08-19)
 [Bugs fixed]

@@ -20,40 +20,40 @@
  * Portions Copyright [yyyy] [name of copyright owner]
  */
 
-package com.noelios.restlet.example;
-
-import java.io.IOException;
+package com.noelios.restlet.example.misc;
 
 import org.restlet.Call;
-import org.restlet.connector.Client;
-import org.restlet.connector.GenericClient;
-import org.restlet.data.Method;
+import org.restlet.Restlet;
+import org.restlet.connector.GenericServer;
 import org.restlet.data.Protocol;
-import org.restlet.data.Representation;
+
+import com.noelios.restlet.data.StringRepresentation;
 
 /**
- * Retrieving the content of a Web page (detailled).
+ * Display the HTTP accept header sent by the Web browsers.
  * @author Jerome Louvel (contact@noelios.com) <a href="http://www.noelios.com/">Noelios Consulting</a>
  */
-public class Tutorial02b
+public class ConverterTest
 {
    public static void main(String[] args)
    {
       try
       {
-         // Prepare the REST call
-      	Call call = new Call(Method.GET, "http://www.restlet.org");
-         call.setReferrerRef("http://www.mysite.org");
+         Restlet handler = new Restlet()
+         {
+            public void handleGet(Call call)
+            {
+            	String acceptHeader = (String)call.getAttributes().get("Accept");
+               call.setOutput(new StringRepresentation("Accept header: " + acceptHeader));
+            }
+         };
 
-         // Ask to the HTTP client connector to handle the call
-         Client client = new GenericClient(Protocol.HTTP);
-         client.handle(call);
-
-         // Output the result representation on the JVM console
-         Representation output = call.getOutput();
-         output.write(System.out);
+         // Create the HTTP server and listen on port 8182
+         GenericServer server = new GenericServer(Protocol.HTTP, 8182, handler);
+         server.getContext().getParameters().add("converter", "com.noelios.restlet.example.misc.ConverterExample");
+         server.start();
       }
-      catch(IOException e)
+      catch(Exception e)
       {
          e.printStackTrace();
       }

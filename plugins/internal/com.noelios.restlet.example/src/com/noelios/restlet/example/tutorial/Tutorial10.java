@@ -20,41 +20,41 @@
  * Portions Copyright [yyyy] [name of copyright owner]
  */
 
-package com.noelios.restlet.example;
+package com.noelios.restlet.example.tutorial;
 
+import org.restlet.Context;
 import org.restlet.component.Container;
 import org.restlet.data.Protocol;
 
-import com.noelios.restlet.DirectoryHandler;
 import com.noelios.restlet.HostRouter;
+import com.noelios.restlet.RedirectRestlet;
 
 /**
- * Serving static files.
+ * URI rewriting and redirection.
  * @author Jerome Louvel (contact@noelios.com) <a href="http://www.noelios.com/">Noelios Consulting</a>
  */
-public class Tutorial06 implements Constants
+public class Tutorial10
 {
    public static void main(String[] args)
    {
       try
       {
          // Create a new Restlet container
-      	Container myContainer = new Container();
+         Container myContainer = new Container();
+         Context myContext = myContainer.getContext();
 
          // Add an HTTP server connector to the Restlet container. 
          // Note that the container is the call restlet.
          myContainer.getServers().add(Protocol.HTTP, 8182);
 
          // Create a host router matching calls to the server
-         HostRouter host = new HostRouter(myContainer.getContext(), 8182);
+         HostRouter host = new HostRouter(myContext, 8182);
          myContainer.setRoot(host);
 
-         // Create a directory Restlet able to return a deep hierarchy of Web files
-         // (HTML pages, CSS stylesheets or GIF images) from a local directory.
-         DirectoryHandler directory = new DirectoryHandler(myContainer.getContext(), ROOT_URI, "index.html");
-
-         // Then attach the Restlet to the container.
-         host.getScorers().add("/", directory);
+         // Create a redirect Restlet then attach it to the container
+         String target = "http://www.google.com/search?q=site:mysite.org+${query('query')}";
+         RedirectRestlet redirect = new RedirectRestlet(myContext, target, RedirectRestlet.MODE_CLIENT_TEMPORARY);
+         host.getScorers().add("/search", redirect);
 
          // Now, let's start the container!
          myContainer.start();

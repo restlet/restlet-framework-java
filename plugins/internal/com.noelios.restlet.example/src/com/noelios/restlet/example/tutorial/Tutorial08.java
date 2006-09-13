@@ -20,31 +20,22 @@
  * Portions Copyright [yyyy] [name of copyright owner]
  */
 
-package com.noelios.restlet.example;
+package com.noelios.restlet.example.tutorial;
 
-import java.util.List;
-
-import org.restlet.Call;
 import org.restlet.Context;
-import org.restlet.Restlet;
-import org.restlet.Router;
 import org.restlet.component.Container;
-import org.restlet.data.ChallengeScheme;
-import org.restlet.data.MediaType;
 import org.restlet.data.Protocol;
 
 import com.noelios.restlet.DirectoryHandler;
-import com.noelios.restlet.GuardFilter;
 import com.noelios.restlet.HostRouter;
 import com.noelios.restlet.LogFilter;
 import com.noelios.restlet.StatusFilter;
-import com.noelios.restlet.data.StringRepresentation;
 
 /**
- * Routers and hierarchical URIs
+ * Displaying error pages.
  * @author Jerome Louvel (contact@noelios.com) <a href="http://www.noelios.com/">Noelios Consulting</a>
  */
-public class Tutorial11 implements Constants
+public class Tutorial08 implements Constants
 {
    public static void main(String[] args)
    {
@@ -52,7 +43,7 @@ public class Tutorial11 implements Constants
       {
          // Create a new Restlet container
       	Container myContainer = new Container();
-         Context myContext = myContainer.getContext();
+      	Context myContext = myContainer.getContext();
 
          // Add an HTTP server connector to the Restlet container. 
          // Note that the container is the call restlet.
@@ -70,43 +61,11 @@ public class Tutorial11 implements Constants
          HostRouter host = new HostRouter(myContext, 8182);
          status.setNext(host);
 
-         // Attach a guard Filter to secure access the the chained directory Restlet
-         GuardFilter guard = new GuardFilter(myContext, "com.noelios.restlet.example", true, ChallengeScheme.HTTP_BASIC , "Restlet tutorial", true);
-         guard.getAuthorizations().put("scott", "tiger");
-         host.getScorers().add("/docs/", guard);
-
          // Create a directory Restlet able to return a deep hierarchy of Web files
          DirectoryHandler directory = new DirectoryHandler(myContext, ROOT_URI, "index.html");
-         guard.setNext(directory);
 
-         // Create the user router
-         Router user = new Router(myContext);
-         host.getScorers().add("/users/[a-z]+", user);
-
-         // Create the account Restlet
-         Restlet account = new Restlet()
-            {
-         		public void handleGet(Call call)
-               {
-                  // Print the requested URI path
-                  String output = "Account of user named: " + call.getBaseRef().getLastSegment();
-                  call.setOutput(new StringRepresentation(output, MediaType.TEXT_PLAIN));
-               }
-            };
-         user.getScorers().add("$", account);
-
-         // Create the orders Restlet
-         Restlet orders = new Restlet(myContext)
-            {
-               public void handleGet(Call call)
-               {
-                  // Print the user name of the requested orders
-                  List<String> segments = call.getBaseRef().getSegments();
-                  String output = "Orders of user named: " + segments.get(segments.size() - 2);
-                  call.setOutput(new StringRepresentation(output, MediaType.TEXT_PLAIN));
-               }
-            };
-         user.getScorers().add("/orders$", orders);
+         // Then attach the directory Restlet to the host router.
+         host.getScorers().add("/", directory);
 
          // Now, let's start the container!
          myContainer.start();

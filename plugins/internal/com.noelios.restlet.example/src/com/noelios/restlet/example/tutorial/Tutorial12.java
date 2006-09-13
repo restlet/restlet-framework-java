@@ -20,7 +20,7 @@
  * Portions Copyright [yyyy] [name of copyright owner]
  */
 
-package com.noelios.restlet.example;
+package com.noelios.restlet.example.tutorial;
 
 import java.util.List;
 

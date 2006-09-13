@@ -149,12 +149,12 @@ public class HttpServer extends Server
 	{
 		if (this.converter == null)
 		{
-			if (this.converterName != null)
+			if (getConverterName() != null)
 			{
 				try
 				{
 					// Load the converter class using the given class name
-					Class converterClass = Class.forName(converterName);
+					Class converterClass = Class.forName(getConverterName());
 					this.converter = (HttpServerConverter) converterClass.newInstance();
 				}
 				catch (ClassNotFoundException e)

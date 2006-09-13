@@ -20,13 +20,41 @@
  * Portions Copyright [yyyy] [name of copyright owner]
  */
 
-package com.noelios.restlet.example;
+package com.noelios.restlet.example.tutorial;
+
+import org.restlet.Call;
+import org.restlet.Restlet;
+import org.restlet.connector.GenericServer;
+import org.restlet.data.Protocol;
+
+import com.noelios.restlet.data.StringRepresentation;
 
 /**
- * Constants for the tutorial examples.
+ * Listening to Web browsers.
  * @author Jerome Louvel (contact@noelios.com) <a href="http://www.noelios.com/">Noelios Consulting</a>
  */
-public interface Constants
+public class Tutorial03
 {
-	public static final String ROOT_URI = "file:///D:/Restlet/www/docs/api/";
+   public static void main(String[] args)
+   {
+      try
+      {
+         // Creating a minimal Restlet returning "Hello World"
+         Restlet handler = new Restlet()
+         {
+            public void handleGet(Call call)
+            {
+               call.setOutput(new StringRepresentation("Hello World!"));
+            }
+         };
+
+         // Create the HTTP server and listen on port 8182
+         new GenericServer(Protocol.HTTP, 8182, handler).start();
+      }
+      catch(Exception e)
+      {
+         e.printStackTrace();
+      }
+   }
+
 }

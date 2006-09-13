@@ -20,41 +20,47 @@
  * Portions Copyright [yyyy] [name of copyright owner]
  */
 
-package com.noelios.restlet.example;
+package com.noelios.restlet.example.tutorial;
 
 import org.restlet.Context;
 import org.restlet.component.Container;
 import org.restlet.data.Protocol;
 
+import com.noelios.restlet.DirectoryHandler;
 import com.noelios.restlet.HostRouter;
-import com.noelios.restlet.RedirectRestlet;
+import com.noelios.restlet.LogFilter;
 
 /**
- * URI rewriting and redirection.
+ * Logging calls.
  * @author Jerome Louvel (contact@noelios.com) <a href="http://www.noelios.com/">Noelios Consulting</a>
  */
-public class Tutorial10
+public class Tutorial07 implements Constants
 {
    public static void main(String[] args)
    {
       try
       {
          // Create a new Restlet container
-         Container myContainer = new Container();
-         Context myContext = myContainer.getContext();
+      	Container myContainer = new Container();
+      	Context myContext = myContainer.getContext();
 
          // Add an HTTP server connector to the Restlet container. 
          // Note that the container is the call restlet.
          myContainer.getServers().add(Protocol.HTTP, 8182);
 
+         // Attach a log Filter to the container
+         LogFilter log = new LogFilter(myContext, "com.noelios.restlet.example");
+         myContainer.setRoot(log);
+
          // Create a host router matching calls to the server
          HostRouter host = new HostRouter(myContext, 8182);
-         myContainer.setRoot(host);
+         log.setNext(host);
 
-         // Create a redirect Restlet then attach it to the container
-         String target = "http://www.google.com/search?q=site:mysite.org+${query('query')}";
-         RedirectRestlet redirect = new RedirectRestlet(myContext, target, RedirectRestlet.MODE_CLIENT_TEMPORARY);
-         host.getScorers().add("/search", redirect);
+         // Create a directory Restlet able to return a deep hierarchy of Web files
+         DirectoryHandler directory = new DirectoryHandler(myContext, ROOT_URI, "index.html");
+
+         // Then attach the Restlet to the log Filter.
+         host.getScorers().add("/", directory);
 
          // Now, let's start the container!
          myContainer.start();

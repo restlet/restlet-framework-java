@@ -20,7 +20,7 @@
  * Portions Copyright [yyyy] [name of copyright owner]
  */
 
-package com.noelios.restlet.example;
+package com.noelios.restlet.example.misc;
 
 import org.restlet.Call;
 import org.restlet.connector.Client;

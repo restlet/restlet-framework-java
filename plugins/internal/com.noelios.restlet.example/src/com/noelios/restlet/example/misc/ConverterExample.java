@@ -20,41 +20,25 @@
  * Portions Copyright [yyyy] [name of copyright owner]
  */
 
-package com.noelios.restlet.example;
+package com.noelios.restlet.example.misc;
 
 import org.restlet.Call;
-import org.restlet.Restlet;
-import org.restlet.connector.GenericServer;
-import org.restlet.data.Protocol;
+import org.restlet.Context;
 
-import com.noelios.restlet.data.StringRepresentation;
+import com.noelios.restlet.connector.HttpServerCall;
+import com.noelios.restlet.connector.HttpServerConverter;
 
 /**
- * Listening to Web browsers.
+ * Sample converter that copies the "Accept" HTTP header into a call's attribute.
  * @author Jerome Louvel (contact@noelios.com) <a href="http://www.noelios.com/">Noelios Consulting</a>
  */
-public class Tutorial03
+public class ConverterExample extends HttpServerConverter
 {
-   public static void main(String[] args)
-   {
-      try
-      {
-         // Creating a minimal Restlet returning "Hello World"
-         Restlet handler = new Restlet()
-         {
-            public void handleGet(Call call)
-            {
-               call.setOutput(new StringRepresentation("Hello World!"));
-            }
-         };
-
-         // Create the HTTP server and listen on port 8182
-         new GenericServer(Protocol.HTTP, 8182, handler).start();
-      }
-      catch(Exception e)
-      {
-         e.printStackTrace();
-      }
-   }
-
+	public Call toUniform(HttpServerCall httpCall, Context context)
+	{
+		Call call = super.toUniform(httpCall, context);
+		String userAgent = httpCall.getRequestHeaders().getFirstValue("Accept");
+		call.getAttributes().put("Accept", userAgent);
+		return call;
+	}
 }

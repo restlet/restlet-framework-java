@@ -20,21 +20,22 @@
  * Portions Copyright [yyyy] [name of copyright owner]
  */
 
-package com.noelios.restlet.example;
+package com.noelios.restlet.example.tutorial;
 
+import org.restlet.Call;
 import org.restlet.Context;
+import org.restlet.Restlet;
 import org.restlet.component.Container;
 import org.restlet.data.Protocol;
 
-import com.noelios.restlet.DirectoryHandler;
 import com.noelios.restlet.HostRouter;
-import com.noelios.restlet.LogFilter;
+import com.noelios.restlet.data.StringRepresentation;
 
 /**
- * Logging calls.
+ * Restlets servers and containers.
  * @author Jerome Louvel (contact@noelios.com) <a href="http://www.noelios.com/">Noelios Consulting</a>
  */
-public class Tutorial07 implements Constants
+public class Tutorial05
 {
    public static void main(String[] args)
    {
@@ -44,25 +45,33 @@ public class Tutorial07 implements Constants
       	Container myContainer = new Container();
       	Context myContext = myContainer.getContext();
 
-         // Add an HTTP server connector to the Restlet container. 
-         // Note that the container is the call restlet.
+         // Create the HTTP server connector, then add it to the container. 
+         // Note that the container will act as the initial Restlet call's handler.
          myContainer.getServers().add(Protocol.HTTP, 8182);
-
-         // Attach a log Filter to the container
-         LogFilter log = new LogFilter(myContext, "com.noelios.restlet.example");
-         myContainer.setRoot(log);
 
          // Create a host router matching calls to the server
          HostRouter host = new HostRouter(myContext, 8182);
-         log.setNext(host);
+         myContainer.setRoot(host);
 
-         // Create a directory Restlet able to return a deep hierarchy of Web files
-         DirectoryHandler directory = new DirectoryHandler(myContext, ROOT_URI, "index.html");
+         // Create a new Restlet that will display some path information.
+         Restlet myRestlet = new Restlet(myContext)
+            {
+               public void handleGet(Call call)
+               {
+                  // Print the requested URI path
+                  String output = "Resource URI:  " + call.getResourceRef() + '\n' +
+                                  "Base URI:      " + call.getBaseRef() + '\n' +
+                                  "Relative path: " + call.getRelativePart() + '\n' +
+                                  "Query string:  " + call.getResourceRef().getQuery();
+                  call.setOutput(new StringRepresentation(output));
+               }
+            };
 
-         // Then attach the Restlet to the log Filter.
-         host.getScorers().add("/", directory);
+         // Then attach it to the host router.
+         host.getScorers().add("/trace", myRestlet);
 
          // Now, let's start the container!
+         // Note that the HTTP server connector is also automatically started.
          myContainer.start();
       }
       catch(Exception e)

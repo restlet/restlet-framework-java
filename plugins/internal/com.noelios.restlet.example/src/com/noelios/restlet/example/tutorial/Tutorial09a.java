@@ -20,22 +20,24 @@
  * Portions Copyright [yyyy] [name of copyright owner]
  */
 
-package com.noelios.restlet.example;
+package com.noelios.restlet.example.tutorial;
 
 import org.restlet.Context;
 import org.restlet.component.Container;
+import org.restlet.data.ChallengeScheme;
 import org.restlet.data.Protocol;
 
 import com.noelios.restlet.DirectoryHandler;
+import com.noelios.restlet.GuardFilter;
 import com.noelios.restlet.HostRouter;
 import com.noelios.restlet.LogFilter;
 import com.noelios.restlet.StatusFilter;
 
 /**
- * Displaying error pages.
+ * Guard access to a Restlet.
  * @author Jerome Louvel (contact@noelios.com) <a href="http://www.noelios.com/">Noelios Consulting</a>
  */
-public class Tutorial08 implements Constants
+public class Tutorial09a implements Constants
 {
    public static void main(String[] args)
    {
@@ -44,7 +46,7 @@ public class Tutorial08 implements Constants
          // Create a new Restlet container
       	Container myContainer = new Container();
       	Context myContext = myContainer.getContext();
-
+      	
          // Add an HTTP server connector to the Restlet container. 
          // Note that the container is the call restlet.
          myContainer.getServers().add(Protocol.HTTP, 8182);
@@ -57,9 +59,14 @@ public class Tutorial08 implements Constants
          StatusFilter status = new StatusFilter(myContext, true, "webmaster@mysite.org", "http://www.mysite.org");
          log.setNext(status);
 
+         // Attach a guard Filter to the container
+         GuardFilter guard = new GuardFilter(myContext, "com.noelios.restlet.example", true, ChallengeScheme.HTTP_BASIC , "Restlet tutorial", true);
+         guard.getAuthorizations().put("scott", "tiger");
+         status.setNext(guard);
+
          // Create a host router matching calls to the server
          HostRouter host = new HostRouter(myContext, 8182);
-         status.setNext(host);
+         guard.setNext(host);
 
          // Create a directory Restlet able to return a deep hierarchy of Web files
          DirectoryHandler directory = new DirectoryHandler(myContext, ROOT_URI, "index.html");
