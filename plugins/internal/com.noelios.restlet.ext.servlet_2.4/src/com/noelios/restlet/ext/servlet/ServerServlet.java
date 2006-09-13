@@ -29,12 +29,12 @@ import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
-import org.restlet.Call;
 import org.restlet.Context;
 import org.restlet.Restlet;
 import org.restlet.component.Container;
 import org.restlet.data.Reference;
 
+import com.noelios.restlet.connector.HttpServer;
 import com.noelios.restlet.connector.HttpServerConverter;
 
 /**
@@ -131,12 +131,14 @@ public class ServerServlet extends HttpServlet
 	 * com.noelios.restlet.connector.HttpServerConverter. 
 	 */
 	public static final String NAME_CONVERTER_CLASS = "org.restlet.converter.class";
+	public static final String NAME_CONVERTER_CLASS_DEFAULT = HttpServerConverter.class.getCanonicalName();
 
 	/** 
 	 * The Servlet context initialization parameter's name containing the name of the 
-	 * Servlet context attribute that should be used to store the target instance. 
+	 * Servlet context attribute that should be used to store the HTTP server connector instance. 
 	 */
-	public static final String NAME_TARGET_ATTRIBUTE = "org.restlet.target.attribute";
+	public static final String NAME_SERVER_ATTRIBUTE = "org.restlet.server";
+	public static final String NAME_SERVER_ATTRIBUTE_DEFAULT = "com.noelios.restlet.ext.servlet.ServerServlet.server";
 
 	/** 
 	 * The Servlet context initialization parameter's name containing the name of the 
@@ -150,53 +152,15 @@ public class ServerServlet extends HttpServlet
 	/** Serial version identifier. */
 	private static final long serialVersionUID = 1L;
 
-	/** The target Restlet for Jetty calls. */
-	private Restlet target;
+	/** The associated HTTP server connector. */
+	private HttpServer server;
 
-	/** The context. */
-	private Context context;
-
-	/** The call converter. */
-	private HttpServerConverter converter;
-	
 	/**
 	 * Constructor.
 	 */
 	public ServerServlet()
 	{
-		this.target = null;
-		this.context = null;
-		this.converter = null;
-	}
-
-	/**
-	 * Handles a call.
-	 * @param call The call to handle.
-	 */
-	public void handle(Call call)
-	{
-		if (getTarget() != null)
-		{
-			getTarget().handle(call);
-		}
-	}
-
-	/**
-	 * Returns the owner component.
-	 * @return The owner component.
-	 */
-	public Context getContext()
-	{
-		return this.context;
-	}
-
-	/**
-	 * Sets the context.
-	 * @param context The context.
-	 */
-	public void setContext(Context context)
-	{
-		this.context = context;
+		this.server = null;
 	}
 
 	/**
@@ -207,68 +171,12 @@ public class ServerServlet extends HttpServlet
 	protected void service(HttpServletRequest request, HttpServletResponse response)
 			throws ServletException, IOException
 	{
-		if (getTarget(request) != null)
-		{
-   		ServletCall httpCall = new ServletCall(request, response);
-			Call call = getConverter().toUniform(httpCall, getContext());
-			handle(call);
-			getConverter().commit(httpCall, call);
-		}
-		else
-		{
-			log("Unable to service the Servlet request, no Restlet target is available");
-		}
-	}
-	
-	/**
-	 * Returns the call converter.
-	 * @return The call converter.
-	 */
-	public HttpServerConverter getConverter()
-	{
-		if(this.converter == null) 
-		{
-			String converterClassName = getInitParameter(NAME_CONVERTER_CLASS);
-
-			if (converterClassName != null)
-			{
-				try
-				{
-					// Load the converter class using the given class name
-					Class converterClass = Class.forName(converterClassName);
-					this.converter = (HttpServerConverter)converterClass.newInstance();
-				}
-				catch (ClassNotFoundException e)
-				{
-					log(
-							"[Noelios Restlet Engine] - The ServerServlet couldn't find the converter class. Please check that your classpath includes "
-									+ converterClassName, e);
-				}
-				catch (InstantiationException e)
-				{
-					log(
-							"[Noelios Restlet Engine] - The ServerServlet couldn't instantiate the converter class. Please check this class has an empty constructor "
-									+ converterClassName, e);
-				}
-				catch (IllegalAccessException e)
-				{
-					log(
-							"[Noelios Restlet Engine] - The ServerServlet couldn't instantiate the converter class. Please check that you have to proper access rights to "
-									+ converterClassName, e);
-				}
-			}
-			
-			if(this.converter == null)
-			{
-				this.converter = new HttpServerConverter();
-			}
-		}
-		
-		return this.converter;
+		ServletCall httpCall = new ServletCall(request, response);
+		getServer(request).handle(httpCall);
 	}
 
 	/**
-	 * Returns the target Restlet handling calls.<br/>
+	 * Returns the associated HTTP server handling calls.<br/>
 	 * For the first invocation, we look for an existing target in the application context, using the NAME_TARGET_ATTRIBUTE parameter.<br/>
 	 * We lookup for the attribute name in the servlet configuration, then in the application context.<br/>
 	 * If no target exists, we try to instantiate one based on the class name set in the NAME_TARGET_CLASS parameter.<br/>
@@ -278,74 +186,78 @@ public class ServerServlet extends HttpServlet
 	 * @param request The HTTP Servlet request.
 	 * @return The target Restlet handling calls.
 	 */
-	public Restlet getTarget(HttpServletRequest request)
+	public HttpServer getServer(HttpServletRequest request)
 	{
-		Restlet result = this.target;
+		HttpServer result = this.server;
 
 		if (result == null)
 		{
 			synchronized (ServerServlet.class)
 			{
-				// Find the attribute name to use to store the target reference
-				String targetAttributeName = getInitParameter(NAME_TARGET_ATTRIBUTE);
-				if (targetAttributeName == null) targetAttributeName = "org.restlet.target";
+				// Find the attribute name to use to store the server reference
+				String serverAttributeName = getInitParameter(NAME_SERVER_ATTRIBUTE, NAME_SERVER_ATTRIBUTE_DEFAULT);
 
 				// Look up the attribute for a target
-				result = (Restlet) getServletContext().getAttribute(targetAttributeName);
-
+				result = (HttpServer) getServletContext().getAttribute(serverAttributeName);
+				
 				if (result == null)
 				{
+					result = new HttpServer();
+					result.setConverterName(getInitParameter(NAME_CONVERTER_CLASS, NAME_CONVERTER_CLASS_DEFAULT));
+					getServletContext().setAttribute(NAME_SERVER_ATTRIBUTE, result);
+					
 					// Try to instantiate a new target
 					// First, find the target class name
-					String targetClassName = getInitParameter(NAME_TARGET_CLASS);
-
+					String targetClassName = getInitParameter(NAME_TARGET_CLASS, null);
 					if (targetClassName != null)
 					{
 						try
 						{
 							// Load the target class using the given class name
 							Class targetClass = Class.forName(targetClassName);
+							Restlet target = null;
 
 							// Create a new instance of the target class
 							// and store it for reuse by other ServerServlets.
 							try
 							{
-								result = (Restlet) targetClass.getConstructor(Context.class)
-									.newInstance((Context) null);
+								target = (Restlet) targetClass.getConstructor(Context.class)
+										.newInstance((Context) null);
 							}
-							catch(NoSuchMethodException nsme)
+							catch (NoSuchMethodException nsme)
 							{
-								result = (Restlet) targetClass.newInstance();
+								target = (Restlet) targetClass.newInstance();
 							}
-							
-							getServletContext().setAttribute(NAME_TARGET_ATTRIBUTE, result);
 
 							// First, let's locate the closest component
 							Container container = null;
-							if (result instanceof Container)
+							if (target instanceof Container)
 							{
 								// The target is probably a Container or an Application
-								container = (Container) result;
+								container = (Container) target;
 							}
 							else
 							{
 								// The target is probably a standalone Restlet or Filter or Router
 								// Try to get its parent, even if chances to find one are low
 								container = new Container(null);
-								container.setRoot(result);
+								container.setRoot(target);
 							}
 							
 							if (container != null)
 							{
+								// Add the HTTP server connector adapting the Servlet requests 
+								container.getServers().add(result);
+								
 								// Create a local client and add it to the container
 								container.getClients().add(
 										new ServletLocalClient(getServletContext()));
-								
+
 								// Create the context based on the Servlet's context
 								// and set it on the container and optionally the target Restlet
 								container.setContext(new ServletContext(this, container));
-								if(result != container) result.setContext(container.getContext());
-								setContext(container.getContext());
+								result.setContext(container.getContext());
+								if (target != container) target.setContext(container.getContext());
 
 								// Set if a context path needs to be transmitted
 								String initContextPathName = getInitParameter(NAME_TARGET_INIT_CONTEXTPATH);
@@ -364,7 +276,7 @@ public class ServerServlet extends HttpServlet
 									log("[Noelios Restlet Engine] - This context path has been provided to the target's init parameter \""
 											+ initContextPathName + "\": " + contextPath);
 								}
-	
+
 								// Starts the target Restlet
 								result.start();
 							}
@@ -405,7 +317,7 @@ public class ServerServlet extends HttpServlet
 					}
 				}
 
-				this.target = result;
+				this.server = result;
 			}
 		}
 
@@ -413,36 +325,24 @@ public class ServerServlet extends HttpServlet
 	}
 
 	/**
-	 * Returns the target Restlet handling calls.
-	 * @return The target Restlet handling calls.
-	 */
-	public Restlet getTarget()
-	{
-		return this.target;
-	}
-
-	/**
-	 * Sets the target Restlet handling calls.
-	 * @param target The target Restlet handling calls.
-	 */
-	public void setTarget(Restlet target)
-	{
-		this.target = target;
-	}
-
-	/**
 	 * Returns the value of a given initialization parameter, first from the Servlet configuration, then
 	 * from the Web Application context.
 	 * @param name The parameter name.
+	 * @param defaultValue The default to use in case the parameter is not found.
 	 * @return The value of the parameter or null.
 	 */
-	public String getInitParameter(String name)
+	public String getInitParameter(String name, String defaultValue)
 	{
 		String result = getServletConfig().getInitParameter(name);
 
 		if (result == null)
 		{
 			result = getServletConfig().getServletContext().getInitParameter(name);
+		}
+		
+		if(result == null)
+		{
+			result = defaultValue;
 		}
 
 		return result;

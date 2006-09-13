@@ -23,6 +23,7 @@
 package org.restlet.connector;
 
 import org.restlet.Call;
+import org.restlet.Context;
 import org.restlet.Restlet;
 import org.restlet.data.Status;
 
@@ -40,6 +41,32 @@ public class Server extends Connector
 {
    /** The chained Restlet. */
    private Restlet next;
+   
+   /**
+    * Constructor.
+    * @param context The context to use.
+    */
+   public Server(Context context)
+   {
+   	super(context);
+   }
+   
+   /**
+    * Constructor.
+    * @param loggerName The logger name to use in the context.
+    */
+   public Server(String loggerName)
+   {
+   	super(loggerName);
+   }
+   
+   /**
+    * Constructor that uses the class name as the logger name.
+    */
+   public Server()
+   {
+   	super();
+   }
 
    /**
     * Handles a call.<br/>

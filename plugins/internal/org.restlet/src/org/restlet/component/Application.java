@@ -22,6 +22,7 @@
 
 package org.restlet.component;
 
+import org.restlet.Context;
 import org.restlet.Restlet;
 
 /**
@@ -32,35 +33,14 @@ import org.restlet.Restlet;
  */
 public class Application extends Component 
 {
-   /** The parent container. */
-	private Container container;
-   
    /**
     * Constructor.
-    * @param container The parent container.
-    */
-   public Application(Container container)
-   {
-      this(container, null);
-   }
-
-   /**
-    * Constructor.
-    * @param container The parent container.
+    * @param context The container's context.
     * @param root The root Restlet.
     */
-   public Application(Container container, Restlet root)
+   public Application(Context context, Restlet root)
    {
-   	super(container.getContext(), root);
+   	super(context, root);
    }
-
-   /**
-	 * Returns the parent container.
-	 * @return The parent container.
-	 */
-	public Container getContainer()
-	{
-		return this.container;
-	}
 
 }

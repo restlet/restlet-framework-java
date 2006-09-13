@@ -23,6 +23,7 @@
 package org.restlet.connector;
 
 import org.restlet.Call;
+import org.restlet.Context;
 import org.restlet.data.Method;
 import org.restlet.data.Representation;
 
@@ -37,7 +38,33 @@ import org.restlet.data.Representation;
  * @author Jerome Louvel (contact@noelios.com) <a href="http://www.noelios.com/">Noelios Consulting</a>
  */
 public class Client extends Connector
-{
+{   
+   /**
+    * Constructor.
+    * @param context The context to use.
+    */
+   public Client(Context context)
+   {
+   	super(context);
+   }
+   
+   /**
+    * Constructor.
+    * @param loggerName The logger name to use in the context.
+    */
+   public Client(String loggerName)
+   {
+   	super(loggerName);
+   }
+   
+   /**
+    * Constructor that uses the class name as the logger name.
+    */
+   public Client()
+   {
+   	super();
+   }
+	
    /**
     * Gets the identified resource.
     * @param resourceUri The URI of the resource to get.

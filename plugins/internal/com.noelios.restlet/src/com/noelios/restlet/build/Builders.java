@@ -22,6 +22,7 @@
 
 package com.noelios.restlet.build;
 
+import org.restlet.Context;
 import org.restlet.Filter;
 import org.restlet.Restlet;
 import org.restlet.Router;
@@ -45,11 +46,11 @@ public class Builders
 
 	/**
 	 * Creates an Application builder.
-	 * @param container The parent container.
+	 * @param context The container's context.
 	 */
-	public static ApplicationBuilder buildApplication(Container container)
+	public static ApplicationBuilder buildApplication(Context context)
 	{
-		return getFactory().createApplicationBuilder(container);
+		return getFactory().createApplicationBuilder(context);
 	}
 
 	/**
