@@ -55,7 +55,7 @@ public abstract class Factory
    private static Logger logger = Logger.getLogger(Factory.class.getCanonicalName());
 
    /** Common version info. */
-   public static final String BETA_NUMBER = "18";
+   public static final String BETA_NUMBER = "19";
    public static final String VERSION_LONG = "1.0 beta " + BETA_NUMBER;
    public static final String VERSION_SHORT = "1.0b" + BETA_NUMBER;
 

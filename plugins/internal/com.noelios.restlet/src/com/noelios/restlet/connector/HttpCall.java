@@ -26,67 +26,205 @@ import java.util.Date;
 
 import org.restlet.data.ParameterList;
 
+import com.noelios.restlet.util.DateUtils;
+
 /**
  * Low-level call for the HTTP connectors.
  * @author Jerome Louvel (contact@noelios.com) <a href="http://www.noelios.com/">Noelios Consulting</a>
  */
-public interface HttpCall
+public class HttpCall
 {
+   /** Indicates if the call is confidential. */
+	private boolean confidential;
+   
+   /** The client IP address. */
+	private String requestAddress;
+   
+   /** The request method. */
+	private String requestMethod;
+   
+   /** The request URI. */
+	private String requestUri;
+   
+   /** The request headers. */
+	private ParameterList requestHeaders;
+   
+   /** The response address. */
+	private String responseAddress;
+   
+   /** The response headers. */
+	private ParameterList responseHeaders;
+   
+   /** The response status code. */
+	private int responseStatusCode;
+   
+   /** The response reason phrase. */
+	private String responseReasonPhrase;
+   
+   /**
+    * Constructor.
+    */
+   public HttpCall()
+   {
+      this.confidential = false;
+      this.responseAddress = null;
+      this.requestMethod = null;
+      this.requestUri = null;
+      this.requestHeaders = null;
+      this.responseAddress = null;
+      this.responseHeaders = null;
+      this.responseStatusCode = 200;
+      this.responseReasonPhrase = "";
+   }
+
    /**
     * Indicates if the confidentiality of the call is ensured (ex: via SSL).
     * @return True if the confidentiality of the call is ensured (ex: via SSL).
     */
-   public boolean isConfidential();
+   public boolean isConfidential()
+   {
+      return this.confidential;
+   }
+
+   /**
+    * Indicates if the confidentiality of the call is ensured (ex: via SSL).
+    * @param confidential True if the confidentiality of the call is ensured (ex: via SSL).
+    */
+   protected void setConfidential(boolean confidential)
+   {
+      this.confidential = confidential;
+   }
 
    /**
     * Returns the request address.<br/>
     * Corresponds to the IP address of the requesting client.
     * @return The request address.
     */
-   public String getRequestAddress();
+   public String getRequestAddress()
+   {
+      return this.requestAddress;
+   }
+
+   /**
+    * Sets the request address. 
+    * @param requestAddress The request address. 
+    */
+   protected void setRequestAddress(String requestAddress)
+   {
+      this.requestAddress = requestAddress;
+   }
 
    /**
     * Returns the request method. 
     * @return The request method.
     */
-   public String getRequestMethod();
+   public String getRequestMethod()
+   {
+      return this.requestMethod;
+   }
+	
+   /**
+    * Sets the request method. 
+    * @param method The request method.
+    */
+   protected void setRequestMethod(String method)
+   {
+      this.requestMethod = method;
+   }
 
    /**
     * Returns the full request URI. 
     * @return The full request URI.
     */
-   public String getRequestUri();
+   public String getRequestUri()
+   {
+      return this.requestUri;
+   }
+
+   /**
+    * Sets the full request URI. 
+    * @param requestUri The full request URI.
+    */
+   protected void setRequestUri(String requestUri)
+   {
+      this.requestUri = requestUri;
+   }
    
    /**
     * Returns the modifiable list of request headers.
     * @return The modifiable list of request headers.
     */
-   public ParameterList getRequestHeaders();
+   public ParameterList getRequestHeaders()
+   {
+      if(this.requestHeaders == null) this.requestHeaders = new ParameterList();
+      return this.requestHeaders;
+   }
 
    /**
     * Returns the response address.<br/>
     * Corresponds to the IP address of the responding server.
     * @return The response address.
     */
-   public String getResponseAddress();
+   public String getResponseAddress()
+   {
+      return this.responseAddress;
+   }
 
    /**
-    * Returns the response status code.
-    * @return The response status code.
+    * Sets the response address.<br/>
+    * Corresponds to the IP address of the responding server.
+    * @param responseAddress The response address.
     */
-   public int getResponseStatusCode();
-
-   /**
-    * Returns the response reason phrase.
-    * @return The response reason phrase.
-    */
-   public String getResponseReasonPhrase();
+   public void setResponseAddress(String responseAddress)
+   {
+      this.responseAddress = responseAddress;
+   }
    
    /**
     * Returns the modifiable list of response headers.
     * @return The modifiable list of response headers.
     */
-   public ParameterList getResponseHeaders();
+   public ParameterList getResponseHeaders()
+   {
+      if(this.responseHeaders == null) this.responseHeaders = new ParameterList();
+      return this.responseHeaders;
+   }
+
+   /**
+    * Returns the response status code.
+    * @return The response status code.
+    */
+   public int getResponseStatusCode()
+   {
+      return this.responseStatusCode;
+   }
+
+   /**
+    * Sets the response status code.
+    * @param code The response status code.
+    */
+   public void setResponseStatusCode(int code)
+   {
+      this.responseStatusCode = code;
+   }
+
+   /**
+    * Returns the response reason phrase.
+    * @return The response reason phrase.
+    */
+   public String getResponseReasonPhrase()
+   {
+      return this.responseReasonPhrase;
+   }
+
+   /**
+    * Sets the response reason phrase.
+    * @param reasonPhrase The response reason phrase.
+    */
+   public void setResponseReasonPhrase(String reasonPhrase)
+   {
+      this.responseReasonPhrase = reasonPhrase;
+   }
    
    /**
     * Parses a date string.
@@ -94,7 +232,17 @@ public interface HttpCall
     * @param cookie Indicates if the date is in the cookie format.
     * @return The parsed date.
     */
-   public Date parseDate(String date, boolean cookie);
+   public Date parseDate(String date, boolean cookie)
+   {
+      if(cookie)
+      {
+         return DateUtils.parse(date, DateUtils.FORMAT_RFC_1036);
+      }
+      else
+      {
+         return DateUtils.parse(date, DateUtils.FORMAT_RFC_1123);
+      }
+   }
    
    /**
     * Formats a date as a header string.
@@ -102,5 +250,15 @@ public interface HttpCall
     * @param cookie Indicates if the date should be in the cookie format.
     * @return The formatted date.
     */
-   public String formatDate(Date date, boolean cookie);
+   public String formatDate(Date date, boolean cookie)
+   {
+      if(cookie)
+      {
+         return DateUtils.format(date, DateUtils.FORMAT_RFC_1036[0]);
+      }
+      else
+      {
+         return DateUtils.format(date, DateUtils.FORMAT_RFC_1123[0]);
+      }
+   }
 }

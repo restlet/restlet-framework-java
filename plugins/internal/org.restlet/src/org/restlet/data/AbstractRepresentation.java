@@ -115,7 +115,7 @@ public abstract class AbstractRepresentation extends AbstractResource implements
     * transient representation whose content can only be accessed once. 
     * @return True if some fresh content is available.
     */
-   public boolean isContentAvailable()
+   public boolean isAvailable()
    {
    	return this.contentAvailable;
    }
@@ -136,7 +136,7 @@ public abstract class AbstractRepresentation extends AbstractResource implements
     * several times, you need to cache it first, for example into memory or into a file.   
     * @return True if the representation's content is transient.
     */
-	public boolean isContentTransient()
+	public boolean isTransient()
 	{
 		return this.contentTransient;
 	}
@@ -303,7 +303,7 @@ public abstract class AbstractRepresentation extends AbstractResource implements
    {
       String result = null;
 
-      if(isContentAvailable())
+      if(isAvailable())
       {
 	      try
 	      {

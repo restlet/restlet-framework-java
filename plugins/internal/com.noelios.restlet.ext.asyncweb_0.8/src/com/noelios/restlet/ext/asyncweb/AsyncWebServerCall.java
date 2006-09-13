@@ -21,6 +21,7 @@
  */
 package com.noelios.restlet.ext.asyncweb;
 
+import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
 import java.nio.channels.ReadableByteChannel;
@@ -29,6 +30,7 @@ import java.nio.channels.WritableByteChannel;
 import org.restlet.data.Parameter;
 import org.restlet.data.ParameterList;
 import org.restlet.data.Reference;
+import org.restlet.data.Representation;
 import org.safehaus.asyncweb.http.HttpRequest;
 import org.safehaus.asyncweb.http.HttpResponse;
 import org.safehaus.asyncweb.http.ResponseStatus;
@@ -36,13 +38,13 @@ import org.safehaus.asyncweb.http.internal.HttpHeaders;
 import org.safehaus.asyncweb.http.internal.Request;
 import org.safehaus.asyncweb.http.internal.Response;
 
-import com.noelios.restlet.connector.AbstractHttpServerCall;
+import com.noelios.restlet.connector.HttpServerCall;
 
 /**
  * HttpServerCall implementation used by the AsyncServer.
  * @author Lars Heuer (heuer[at]semagia.com) <a href="http://www.semagia.com/">Semagia</a>
  */
-public class AsyncWebServerCall extends AbstractHttpServerCall
+public class AsyncWebServerCall extends HttpServerCall
 {
 	/**
 	 * AsyncWeb request.
@@ -56,9 +58,6 @@ public class AsyncWebServerCall extends AbstractHttpServerCall
 	 * AsyncWeb response.
 	 */
 	private Response response;
-
-	/** Indicates if the response headers were parsed and added. */
-	private boolean responseHeadersAdded;
 
 	/**
 	 * Constructor.
@@ -75,23 +74,16 @@ public class AsyncWebServerCall extends AbstractHttpServerCall
 		this.request = (Request) request;
 		this.requestHeadersAdded = false;
 		this.response = (Response) response;
-		this.responseHeadersAdded = false;
 		setConfidential(confidential);
 		setResponseAddress(address);
 	}
 
-	/* (non-Javadoc)
-	 * @see com.noelios.restlet.impl.ConnectorCallImpl#getRequestAddress()
-	 */
 	@Override
 	public String getRequestAddress()
 	{
 		return request.getRemoteAddress();
 	}
 
-	/* (non-Javadoc)
-	 * @see com.noelios.restlet.impl.ConnectorCallImpl#getRequestUri()
-	 */
 	@Override
 	public String getRequestUri()
 	{
@@ -99,50 +91,18 @@ public class AsyncWebServerCall extends AbstractHttpServerCall
 				.getHeader("host"), null, request.getRequestURI(), null, null);
 	}
 
-	/* (non-Javadoc)
-	 * @see com.noelios.restlet.impl.ConnectorCallImpl#getRequestMethod()
-	 */
 	@Override
 	public String getRequestMethod()
 	{
 		return request.getMethod().getName();
 	}
 
-	/* (non-Javadoc)
-	 * @see com.noelios.restlet.impl.ConnectorCallImpl#getResponseStatusCode()
-	 */
-	@Override
-	public int getResponseStatusCode()
-	{
-		return response.getStatus().getCode();
-	}
-
-	/* (non-Javadoc)
-	 * @see com.noelios.restlet.impl.ConnectorCallImpl#getResponseReasonPhrase()
-	 */
-	@Override
-	public String getResponseReasonPhrase()
-	{
-		return response.getStatusReasonPhrase();
-	}
-
-	/* (non-Javadoc)
-	 * @see org.restlet.connector.ServerCall#setResponseStatus(int, java.lang.String)
-	 */
-	public void setResponseStatus(int code, String reason)
-	{
-		response.setStatus(ResponseStatus.forId(code), reason);
-	}
-
-	/* (non-Javadoc)
-	 * @see com.noelios.restlet.impl.ConnectorCallImpl#getRequestHeaders()
-	 */
 	@Override
 	public ParameterList getRequestHeaders()
 	{
 		ParameterList result = super.getRequestHeaders();
 
-		if (!this.requestHeadersAdded)
+		if(!this.requestHeadersAdded)
 		{
 			HttpHeaders headers = request.getHeaders();
 			int headerCount = headers.getSize();
@@ -158,72 +118,48 @@ public class AsyncWebServerCall extends AbstractHttpServerCall
 		return result;
 	}
 
-	/* (non-Javadoc)
-	 * @see com.noelios.restlet.impl.ConnectorCallImpl#getResponseHeaders()
+	/**
+	 * Sends the response back to the client. Commits the status, headers and optional output and 
+	 * send them on the network. 
+	 * @param output The optional output representation to send.
 	 */
-	@Override
-	public ParameterList getResponseHeaders()
+	public void sendResponse(Representation output) throws IOException
 	{
-		ParameterList result = super.getResponseHeaders();
+		response.setStatus(ResponseStatus.forId(getResponseStatusCode()),
+				getResponseReasonPhrase());
 
-		if (!this.responseHeadersAdded)
-		{
-			HttpHeaders headers = response.getHeaders();
-			int headerCount = headers.getSize();
-			for (int i = 0; i < headerCount; i++)
-			{
-				result.add(headers.getHeaderName(i).getValue(), headers.getHeaderValue(i)
-						.getValue());
-			}
-
-			this.responseHeadersAdded = true;
-		}
-
-		return result;
-	}
-
-	/* (non-Javadoc)
-	 * @see org.restlet.connector.ServerCall#sendResponseHeaders()
-	 */
-	public void sendResponseHeaders()
-	{
 		// Ensure that headers are empty
 		response.getHeaders().dispose();
 		for (Parameter header : super.getResponseHeaders())
 		{
 			response.addHeader(header.getName(), header.getValue());
 		}
+
+		// Send the output representation
+		super.sendResponse(output);
 	}
 
-	/* (non-Javadoc)
-	 * @see org.restlet.connector.ServerCall#getRequestChannel()
-	 */
+	@Override
 	public ReadableByteChannel getRequestChannel()
 	{
 		// Unsupported.
 		return null;
 	}
 
-	/* (non-Javadoc)
-	 * @see org.restlet.connector.ServerCall#getRequestStream()
-	 */
+	@Override
 	public InputStream getRequestStream()
 	{
 		return request.getInputStream();
 	}
 
-	/* (non-Javadoc)
-	 * @see org.restlet.connector.ServerCall#getResponseChannel()
-	 */
+	@Override
 	public WritableByteChannel getResponseChannel()
 	{
 		// Unsupported.
 		return null;
 	}
 
-	/* (non-Javadoc)
-	 * @see org.restlet.connector.ServerCall#getResponseStream()
-	 */
+	@Override
 	public OutputStream getResponseStream()
 	{
 		return response.getOutputStream();

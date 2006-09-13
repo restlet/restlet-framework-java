@@ -31,18 +31,19 @@ import java.nio.channels.WritableByteChannel;
 import org.restlet.data.Parameter;
 import org.restlet.data.ParameterList;
 import org.restlet.data.Reference;
+import org.restlet.data.Representation;
 
 import simple.http.Request;
 import simple.http.Response;
 
-import com.noelios.restlet.connector.AbstractHttpServerCall;
+import com.noelios.restlet.connector.HttpServerCall;
 
 /**
  * Call that is used by the Simple HTTP server.
  * @author Lars Heuer (heuer[at]semagia.com) <a href="http://semagia.com/">Semagia</a>
  * @author Jerome Louvel (contact@noelios.com) <a href="http://www.noelios.com/">Noelios Consulting</a>
  */
-public class SimpleCall extends AbstractHttpServerCall
+public class SimpleCall extends HttpServerCall
 {
 	/**
 	 * Simple Request.
@@ -90,17 +91,6 @@ public class SimpleCall extends AbstractHttpServerCall
 	}
 
 	/**
-	 * Returns the value for a request header name.<br/>
-	 * If multiple headers with the same name are found, all values are returned separated by commas.
-	 * @param headerName The header name.
-	 * @return The value for a request header name.
-	 */
-	public String getRequestHeaderValue(String headerName)
-	{
-		return request.getValue(headerName);
-	}
-
-	/**
 	 * Returns the request method. 
 	 * @return The request method.
 	 */
@@ -117,15 +107,6 @@ public class SimpleCall extends AbstractHttpServerCall
 	public String getResponseAddress()
 	{
 		return response.getInetAddress().getHostAddress();
-	}
-
-	/**
-	 * Returns the response status code.
-	 * @return The response status code.
-	 */
-	public int getResponseStatusCode()
-	{
-		return response.getCode();
 	}
 
 	/**
@@ -161,16 +142,25 @@ public class SimpleCall extends AbstractHttpServerCall
 	}
 
 	/**
-	 * Sends the response headers.<br/>
-	 * Must be called before sending the response output.
+	 * Sends the response back to the client. Commits the status, headers and optional output and 
+	 * send them on the network. 
+	 * @param output The optional output representation to send.
 	 */
-	public void sendResponseHeaders()
+	public void sendResponse(Representation output) throws IOException
 	{
+		// Set the response headers
 		response.clear();
 		for (Parameter header : getResponseHeaders())
 		{
 			response.add(header.getName(), header.getValue());
 		}
+
+		// Set the status
+		response.setCode(getResponseStatusCode());
+		response.setText(getResponseReasonPhrase());
+
+		// Send the response output
+		super.sendResponse(output);
 	}
 
 	/**
@@ -197,17 +187,6 @@ public class SimpleCall extends AbstractHttpServerCall
 		{
 			return null;
 		}
-	}
-
-	/**
-	 * Sets the response status code.
-	 * @param code The response status code.
-	 * @param reason The response reason phrase.
-	 */
-	public void setResponseStatus(int code, String reason)
-	{
-		response.setCode(code);
-		response.setText(reason);
 	}
 
 	/**

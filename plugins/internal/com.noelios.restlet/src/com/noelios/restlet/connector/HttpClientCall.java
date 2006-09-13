@@ -34,6 +34,7 @@ import org.restlet.data.Encoding;
 import org.restlet.data.Language;
 import org.restlet.data.Parameter;
 import org.restlet.data.Representation;
+import org.restlet.data.Status;
 import org.restlet.data.Tag;
 
 import com.noelios.restlet.data.ContentType;
@@ -41,17 +42,17 @@ import com.noelios.restlet.data.InputRepresentation;
 import com.noelios.restlet.data.ReadableRepresentation;
 
 /**
- * Abstract HTTP client connector call.
+ * Low-level HTTP client call.
  * @author Jerome Louvel (contact@noelios.com) <a href="http://www.noelios.com/">Noelios Consulting</a>
  */
-public abstract class AbstractHttpClientCall extends DefaultHttpCall
+public class HttpClientCall extends HttpCall
 {
 	/**
 	 * Constructor setting the request address to the local host.
     * @param method The method name.
     * @param requestUri The request URI.
 	 */
-	public AbstractHttpClientCall(String method, String requestUri)
+	public HttpClientCall(String method, String requestUri)
 	{
 		setRequestMethod(method);
 		setRequestUri(requestUri);
@@ -75,12 +76,6 @@ public abstract class AbstractHttpClientCall extends DefaultHttpCall
 	}
 
    /**
-    * Sends the request headers.<br/>
-    * Must be called before sending the request input.
-    */
-   public abstract void sendRequestHeaders() throws IOException;
-
-   /**
     * Returns the request entity channel if it exists.
     * @return The request entity channel if it exists.
     */
@@ -97,23 +92,36 @@ public abstract class AbstractHttpClientCall extends DefaultHttpCall
    {
       return null;
    }
-
-   /**
-    * Sends the request input.
-    * @param input The request input;
-    */
-   public void sendRequestInput(Representation input) throws IOException
+   
+	/**
+	 * Sends the request to the client. Commits the request line, headers and optional input and 
+	 * send them over the network. 
+	 * @param input The optional input representation to send.
+	 */
+   public Status sendRequest(Representation input) throws IOException
    {
       if(getRequestStream() != null)
       {
-         input.write(getRequestStream());
+   		if(input != null)
+   		{
+   			input.write(getRequestStream());
+   		}
+   		
+         getRequestStream().flush();
          getRequestStream().close();
       }
       else if(getRequestChannel() != null)
       {
-         input.write(getRequestChannel());
+   		if(input != null)
+   		{
+   			input.write(getRequestChannel());
+   		}
+   		
          getRequestChannel().close();
       }
+      
+		// Get the response status
+		return new Status(getResponseStatusCode(), null, getResponseReasonPhrase(), null);
    }
 
    /**
@@ -198,5 +206,5 @@ public abstract class AbstractHttpClientCall extends DefaultHttpCall
    	
    	return result;
    }
-   
+
 }

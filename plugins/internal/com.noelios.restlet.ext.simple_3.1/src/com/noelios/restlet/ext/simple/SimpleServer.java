@@ -33,7 +33,7 @@ import simple.http.Request;
 import simple.http.Response;
 import simple.http.connect.Connection;
 
-import com.noelios.restlet.connector.AbstractHttpServer;
+import com.noelios.restlet.connector.HttpServer;
 
 /**
  * Abstract Simple Web server connector. Here is the list of parameters that are supported:
@@ -66,7 +66,7 @@ import com.noelios.restlet.connector.AbstractHttpServer;
  * @author Lars Heuer (heuer[at]semagia.com) <a href="http://semagia.com/">Semagia</a>
  * @author Jerome Louvel (contact@noelios.com) <a href="http://www.noelios.com">Noelios Consulting</a>
  */
-public abstract class SimpleServer extends AbstractHttpServer implements ProtocolHandler
+public abstract class SimpleServer extends HttpServer implements ProtocolHandler
 {
    /** Obtain a suitable logger. */
    private static Logger logger = Logger.getLogger(SimpleServer.class.getCanonicalName());

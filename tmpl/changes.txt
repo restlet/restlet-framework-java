@@ -7,15 +7,25 @@ Changes log
 @version-full@ (@release-date@)
 
 [Bugs fixed]
+ - Fixed issue with error status preventing the setting of response headers with Servlet containers like Tomcat. Report and solution by Evan DiBiase.
+ - Completed support for content streaming in the HTTP client connector extension. Issue reported by Mikkel Jensen.
 
 [API breaking changes]
+ - Moved hasInput() method from org.restlet.connector.Client to Call.isInputAvailable().
+ - Renamed Representation.isContentAvailable() to isAvailable() and isContentTransient() to isTransient().
 
 [Other changes] 
+ - Updated Jetty 6 extension to final 6.0 release.
  - Added Resource.setVariants() and setIdentifiers() methods. Can be easier than doing a getVariants().clear() then a getVariants().addAll(newList). 
    Suggested by Chris Winters.
  - org.restlet.ReferenceList now derives from WrapperList<Reference> to factorize code and to clarify (in Javadocs) which extra methods are provided.
  - Improved Javadocs for the org.restlet.Handler class to explain what is the default behavior of each handle*() method. 
- - Completed support for content streaming in the HTTP client connector extension. Reported by Mikkel Jensen.
+ - Added support for call converters in HTTP server connectors and in ServerServlet.
+ - Refactored all HTTP client and server classes to work with the new call converter mechanism.
+ - Renamed AbstractHttpServer to HttpServer, AbstractHttpServerCall to HttpServerCall and AbstractHttpClientCall to HttpClientCall.
+ - Merged HttpCall interface and DefaultHttpCall class into single HttpCall class.
+ - Added com.noelios.restlet.connector.HttpServerConverter as the base call converter (from HTTP calls to uniform REST calls).
+ - Refactored the HttpUrlConnection-based HTTP client to extract a generic HttpClientConverter and added a base HttpClient class.
 
 1.0 beta 18 (2006-08-19)
 [Bugs fixed]

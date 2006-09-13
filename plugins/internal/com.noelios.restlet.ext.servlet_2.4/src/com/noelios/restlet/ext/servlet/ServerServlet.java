@@ -35,7 +35,7 @@ import org.restlet.Restlet;
 import org.restlet.component.Container;
 import org.restlet.data.Reference;
 
-import com.noelios.restlet.connector.AbstractHttpServer;
+import com.noelios.restlet.connector.HttpServerConverter;
 
 /**
  * Servlet acting like an HTTP server connector. See the getTarget() method for details on how 
@@ -48,7 +48,7 @@ import com.noelios.restlet.connector.AbstractHttpServer;
  * 	&lt;display-name&gt;Server Servlet&lt;/display-name&gt;
  * 	&lt;description&gt;Servlet acting as a Restlet server connector&lt;/description&gt;
  * 
- * 	&lt;!-- Class of the target Restlet that will handle the call --&gt;
+ * 	&lt;!-- Target Restlet class handling calls --&gt;
  * 	&lt;context-param&gt;
  * 		&lt;param-name&gt;org.restlet.target.class&lt;/param-name&gt;
  * 		&lt;param-value&gt;com.noelios.restlet.test.TraceTarget&lt;/param-value&gt;
@@ -68,7 +68,14 @@ import com.noelios.restlet.connector.AbstractHttpServer;
  * 		&lt;param-value&gt;false&lt;/param-value&gt;
  * 	&lt;/context-param&gt;
  * 
- * 	&lt;!-- Qualified name of ServerServlet class or a subclass --&gt;
+ * 	&lt;!-- Optional call converter class --&gt;
+ *    &lt;!-- Must be a subclass of com.noelios.restlet.connector.HttpServerConverter --&gt;
+ * 	&lt;context-param&gt;
+ * 		&lt;param-name&gt;org.restlet.converter.class&lt;/param-name&gt;
+ * 		&lt;param-value&gt;com.noelios.restlet.connector.HttpServerConverter&lt;/param-value&gt;
+ * 	&lt;/context-param&gt;
+ * 
+ * 	&lt;!-- ServerServlet class or a subclass --&gt;
  * 	&lt;servlet&gt;
  * 		&lt;servlet-name&gt;ServerServlet&lt;/servlet-name&gt;
  * 		&lt;servlet-class&gt;com.noelios.restlet.ext.servlet.ServerServlet&lt;/servlet-class&gt;
@@ -120,6 +127,12 @@ public class ServerServlet extends HttpServlet
 	public static final String NAME_TARGET_CLASS = "org.restlet.target.class";
 
 	/** 
+	 * A customized Restlet call converter. It must contain the class name of a subclass of 
+	 * com.noelios.restlet.connector.HttpServerConverter. 
+	 */
+	public static final String NAME_CONVERTER_CLASS = "org.restlet.converter.class";
+
+	/** 
 	 * The Servlet context initialization parameter's name containing the name of the 
 	 * Servlet context attribute that should be used to store the target instance. 
 	 */
@@ -143,6 +156,9 @@ public class ServerServlet extends HttpServlet
 	/** The context. */
 	private Context context;
 
+	/** The call converter. */
+	private HttpServerConverter converter;
+	
 	/**
 	 * Constructor.
 	 */
@@ -150,6 +166,7 @@ public class ServerServlet extends HttpServlet
 	{
 		this.target = null;
 		this.context = null;
+		this.converter = null;
 	}
 
 	/**
@@ -192,9 +209,62 @@ public class ServerServlet extends HttpServlet
 	{
 		if (getTarget(request) != null)
 		{
-			AbstractHttpServer.handle(getContext(), new ServletCall(request, response,
-					getServletContext()), getTarget());
+   		ServletCall httpCall = new ServletCall(request, response);
+			Call call = getConverter().toUniform(httpCall, getContext());
+			handle(call);
+			getConverter().commit(httpCall, call);
 		}
+		else
+		{
+			log("Unable to service the Servlet request, no Restlet target is available");
+		}
+	}
+	
+	/**
+	 * Returns the call converter.
+	 * @return The call converter.
+	 */
+	public HttpServerConverter getConverter()
+	{
+		if(this.converter == null) 
+		{
+			String converterClassName = getInitParameter(NAME_CONVERTER_CLASS);
+
+			if (converterClassName != null)
+			{
+				try
+				{
+					// Load the converter class using the given class name
+					Class converterClass = Class.forName(converterClassName);
+					this.converter = (HttpServerConverter)converterClass.newInstance();
+				}
+				catch (ClassNotFoundException e)
+				{
+					log(
+							"[Noelios Restlet Engine] - The ServerServlet couldn't find the converter class. Please check that your classpath includes "
+									+ converterClassName, e);
+				}
+				catch (InstantiationException e)
+				{
+					log(
+							"[Noelios Restlet Engine] - The ServerServlet couldn't instantiate the converter class. Please check this class has an empty constructor "
+									+ converterClassName, e);
+				}
+				catch (IllegalAccessException e)
+				{
+					log(
+							"[Noelios Restlet Engine] - The ServerServlet couldn't instantiate the converter class. Please check that you have to proper access rights to "
+									+ converterClassName, e);
+				}
+			}
+			
+			if(this.converter == null)
+			{
+				this.converter = new HttpServerConverter();
+			}
+		}
+		
+		return this.converter;
 	}
 
 	/**
@@ -306,19 +376,19 @@ public class ServerServlet extends HttpServlet
 						catch (ClassNotFoundException e)
 						{
 							log(
-									"[Noelios Restlet Engine] - The ServerServlet couldn't find the class. Please check that your classpath includes "
+									"[Noelios Restlet Engine] - The ServerServlet couldn't find the target class. Please check that your classpath includes "
 											+ targetClassName, e);
 						}
 						catch (InstantiationException e)
 						{
 							log(
-									"[Noelios Restlet Engine] - The ServerServlet couldn't instantiate the class. Please check this class has an empty constructor "
+									"[Noelios Restlet Engine] - The ServerServlet couldn't instantiate the target class. Please check this class has an empty constructor "
 											+ targetClassName, e);
 						}
 						catch (IllegalAccessException e)
 						{
 							log(
-									"[Noelios Restlet Engine] - The ServerServlet couldn't instantiate the class. Please check that you have to proper access rights to "
+									"[Noelios Restlet Engine] - The ServerServlet couldn't instantiate the target class. Please check that you have to proper access rights to "
 											+ targetClassName, e);
 						}
 						catch (Exception e)
@@ -330,7 +400,7 @@ public class ServerServlet extends HttpServlet
 					}
 					else
 					{
-						log("[Noelios Restlet Engine] - The ServerServlet couldn't find the class name of the target Restlet. Please set the initialization parameter called "
+						log("[Noelios Restlet Engine] - The ServerServlet couldn't find the target class name. Please set the initialization parameter called "
 								+ NAME_TARGET_CLASS);
 					}
 				}

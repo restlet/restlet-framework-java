@@ -38,13 +38,13 @@ import org.restlet.data.ParameterList;
 import org.restlet.data.Representation;
 import org.restlet.data.Status;
 
-import com.noelios.restlet.connector.AbstractHttpServerCall;
+import com.noelios.restlet.connector.HttpServerCall;
 
 /**
  * Call that is used by the Jetty 6 HTTP server connector.
  * @author Jerome Louvel (contact@noelios.com) <a href="http://www.noelios.com/">Noelios Consulting</a>
  */
-public class JettyCall extends AbstractHttpServerCall
+public class JettyCall extends HttpServerCall
 {
    /** Obtain a suitable logger. */
    private static Logger logger = Logger.getLogger(JettyCall.class.getCanonicalName());
@@ -52,8 +52,8 @@ public class JettyCall extends AbstractHttpServerCall
    /** The wrapped Jetty HTTP connection. */
    private HttpConnection connection;
 
-   /** The request headers. */
-   private ParameterList requestHeaders;
+	/** Indicates if the request headers were parsed and added. */
+	private boolean requestHeadersAdded;
 
    /**
     * Constructor.
@@ -62,6 +62,7 @@ public class JettyCall extends AbstractHttpServerCall
    public JettyCall(HttpConnection connection)
    {
       this.connection = connection;
+      this.requestHeadersAdded = false;
    }
 
    /**
@@ -118,10 +119,10 @@ public class JettyCall extends AbstractHttpServerCall
     */
    public ParameterList getRequestHeaders()
    {
-      if(this.requestHeaders == null)
+   	ParameterList result = super.getRequestHeaders();
+   	
+      if(!requestHeadersAdded)
       {
-         this.requestHeaders = new ParameterList();
-
          // Copy the headers from the request object
          String headerName;
          String headerValue;
@@ -131,12 +132,14 @@ public class JettyCall extends AbstractHttpServerCall
             for(Enumeration values = getConnection().getRequest().getHeaders(headerName); values.hasMoreElements(); )
             {
                headerValue = (String)values.nextElement();
-               this.requestHeaders.add(new Parameter(headerName, headerValue));
+               result.add(new Parameter(headerName, headerValue));
             }
          }
+         
+         requestHeadersAdded = true;
       }
 
-      return this.requestHeaders;
+      return result;
    }
 
    /**
@@ -147,24 +150,6 @@ public class JettyCall extends AbstractHttpServerCall
    public String getResponseAddress()
    {
       return getConnection().getEndPoint().getLocalAddr();
-   }
-
-   /**
-    * Returns the response status code.
-    * @return The response status code.
-    */
-   public int getResponseStatusCode()
-   {
-      return getConnection().getResponse().getStatus();
-   }
-
-   /**
-    * Returns the response reason phrase.
-    * @return The response reason phrase.
-    */
-   public String getResponseReasonPhrase()
-   {
-      return getConnection().getResponse().getReason();
    }
 
    /**
@@ -193,34 +178,11 @@ public class JettyCall extends AbstractHttpServerCall
    }
 
    /**
-    * Sets the response status code.
-    * @param code The response status code.
-    * @param reason The response reason phrase.
+    * Sends the response back to the client. Commits the status, headers and optional output and 
+    * send them on the network. 
+    * @param output The optional output representation to send.
     */
-   public void setResponseStatus(int code, String reason)
-   {
-   	if(Status.isError(code))
-   	{
-   		try
-			{
-   			getConnection().getResponse().sendError(code, reason);
-			}
-			catch (IOException ioe)
-			{
-				logger.log(Level.WARNING, "Unable to set the response error status", ioe);
-			}
-   	}
-   	else
-   	{
-   		getConnection().getResponse().setStatus(code, reason);
-   	}
-   }
-
-   /**
-    * Sends the response headers.<br/>
-    * Must be called before sending the response output.
-    */
-   public void sendResponseHeaders()
+   public void sendResponse(Representation output) throws IOException
    {
       // Add call headers
       Parameter header;
@@ -229,6 +191,32 @@ public class JettyCall extends AbstractHttpServerCall
          header = iter.next();
          getConnection().getResponse().addHeader(header.getName(), header.getValue());
       }
+
+      // Set the status code in the response. We do this after adding the headers because 
+      // when we have to rely on the 'sendError' method, the Servlet containers are expected
+      // to commit their response.
+   	if(Status.isError(getResponseStatusCode()))
+   	{
+   		try
+			{
+   			getConnection().getResponse().sendError(getResponseStatusCode(), getResponseReasonPhrase());
+			}
+			catch (IOException ioe)
+			{
+				logger.log(Level.WARNING, "Unable to set the response error status", ioe);
+			}
+   	}
+   	else
+   	{
+   		getConnection().getResponse().setStatus(getResponseStatusCode());
+   	}
+      
+   	// Send the response output
+      super.sendResponse(output);
+
+      // Fully complete and commit the response 
+   	this.connection.completeResponse();
+   	this.connection.commitResponse(true);
    }
 
    /**
@@ -254,17 +242,6 @@ public class JettyCall extends AbstractHttpServerCall
       {
          return null;
       }
-   }
-
-   /**
-    * Sends the response output.
-    * @param output The response output;
-    */
-   public void sendResponseOutput(Representation output) throws IOException
-   {
-   	super.sendResponseOutput(output);
-   	this.connection.completeResponse();
-   	this.connection.commitResponse(true);
    }
    
 }

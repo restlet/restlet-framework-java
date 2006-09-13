@@ -22,6 +22,7 @@
 
 package com.noelios.restlet.ext.jetty5;
 
+import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
 import java.nio.channels.ReadableByteChannel;
@@ -33,14 +34,15 @@ import org.mortbay.http.HttpRequest;
 import org.mortbay.http.HttpResponse;
 import org.restlet.data.Parameter;
 import org.restlet.data.ParameterList;
+import org.restlet.data.Representation;
 
-import com.noelios.restlet.connector.AbstractHttpServerCall;
+import com.noelios.restlet.connector.HttpServerCall;
 
 /**
  * Call that is used by the Jetty HTTP server connector.
  * @author Jerome Louvel (contact@noelios.com) <a href="http://www.noelios.com/">Noelios Consulting</a>
  */
-public class JettyCall extends AbstractHttpServerCall
+public class JettyCall extends HttpServerCall
 {
    /** The wrapped Jetty HTTP request. */
 	private HttpRequest request;
@@ -60,6 +62,7 @@ public class JettyCall extends AbstractHttpServerCall
    {
       this.request = request;
       this.response = response;
+      this.requestHeadersAdded = false;
    }
 
    /**
@@ -157,30 +160,12 @@ public class JettyCall extends AbstractHttpServerCall
    }
 
    /**
-    * Returns the response status code.
-    * @return The response status code.
-    */
-   public int getResponseStatusCode()
-   {
-      return getResponse().getStatus();
-   }
-
-   /**
-    * Returns the response reason phrase.
-    * @return The response reason phrase.
-    */
-   public String getResponseReasonPhrase()
-   {
-      return getResponse().getReason();
-   }
-
-   /**
     * Returns the request entity channel if it exists.
     * @return The request entity channel if it exists.
     */
    public ReadableByteChannel getRequestChannel()
    {
-      // Can't do anything
+		// Unsupported.
       return null;
    }
 
@@ -194,34 +179,31 @@ public class JettyCall extends AbstractHttpServerCall
    }
 
    /**
-    * Sets the response status code.
-    * @param code The response status code.
-    * @param reason The response reason phrase.
+    * Sends the response back to the client. Commits the status, headers and optional output and 
+    * send them on the network. 
+    * @param output The optional output representation to send.
     */
-   public void setResponseStatus(int code, String reason)
+   public void sendResponse(Representation output) throws IOException
    {
-      getResponse().setStatus(code, reason);
-   }
+   	// Set the response status
+      getResponse().setStatus(getResponseStatusCode(), getResponseReasonPhrase());
 
-   /**
-    * Sends the response headers.<br/>
-    * Must be called before sending the response output.
-    */
-   public void sendResponseHeaders()
-   {
-      // Remove existings headers
+      // Remove existings headers if any
       for(Enumeration fields = getResponse().getFieldNames(); fields.hasMoreElements(); )
       {
          getResponse().removeField((String)fields.nextElement());
       }
       
-      // Add call headers
+      // Add response headers
       Parameter header;
       for(Iterator<Parameter> iter = getResponseHeaders().iterator(); iter.hasNext();)
       {
          header = iter.next();
          getResponse().addField(header.getName(), header.getValue());
       }
+      
+      // Send the response output
+      super.sendResponse(output);
    }
 
    /**
@@ -230,7 +212,7 @@ public class JettyCall extends AbstractHttpServerCall
     */
    public WritableByteChannel getResponseChannel()
    {
-      // Can't do anything
+		// Unsupported.
       return null;
    }
 

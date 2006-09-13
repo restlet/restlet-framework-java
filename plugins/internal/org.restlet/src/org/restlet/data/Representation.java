@@ -66,7 +66,7 @@ public interface Representation extends Resource
     * transient representation whose content can only be accessed once. 
     * @return True if some fresh content is available.
     */
-   public boolean isContentAvailable();
+   public boolean isAvailable();
    
    /**
     * Indicates if the representation's content is transient, which means that it can 
@@ -75,7 +75,7 @@ public interface Representation extends Resource
     * several times, you need to cache it first, for example into memory or into a file.   
     * @return True if the representation's content is transient.
     */
-	public boolean isContentTransient();
+	public boolean isTransient();
    
    /**
     * Returns the encoding or null if identity encoding applies.

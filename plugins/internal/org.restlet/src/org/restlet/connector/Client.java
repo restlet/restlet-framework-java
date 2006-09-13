@@ -98,26 +98,4 @@ public class Client extends Connector
       return call;
    }
 
-   /**
-    * Determines if a call has any concrete input.
-    * @param call The call to analyze.
-    * @return True if the call has any concrete input.
-    */
-   protected boolean hasInput(Call call)
-   {
-      boolean result = true;
-      
-      if(call.getMethod().equals(Method.GET) || call.getMethod().equals(Method.HEAD) ||
-            call.getMethod().equals(Method.DELETE))
-      {
-         result = false;
-      }
-      else
-      {
-         result = (call.getInput() != null) && call.getInput().isContentAvailable();
-      }
-      
-      return result;
-   }
-
 }

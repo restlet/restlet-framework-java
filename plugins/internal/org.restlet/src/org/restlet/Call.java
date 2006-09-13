@@ -325,6 +325,29 @@ public class Call
 	}
 
 	/**
+	 * Indicates if an input representation is available and can be sent to a client.
+	 * Several conditions must be met: the method must allow the sending of input representations,
+	 * the input representation must exists and has some available content.
+	 * @return True if an input representation is available and can be sent to a client.
+	 */
+	public boolean isInputAvailable()
+	{
+		boolean result = true;
+
+		if (getMethod().equals(Method.GET) || getMethod().equals(Method.HEAD)
+				|| getMethod().equals(Method.DELETE))
+		{
+			result = false;
+		}
+		else
+		{
+			result = (getInput() != null) && getInput().isAvailable();
+		}
+
+		return result;
+	}
+
+	/**
 	 * Sets the base reference that will serve to compute relative resource references.
 	 * @param baseUri The base absolute URI.
 	 */

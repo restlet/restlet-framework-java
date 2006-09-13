@@ -32,8 +32,8 @@ import org.safehaus.asyncweb.request.AsyncWebRequest;
 import org.safehaus.asyncweb.transport.Transport;
 import org.safehaus.asyncweb.transport.TransportException;
 
-import com.noelios.restlet.connector.AbstractHttpServer;
-import com.noelios.restlet.connector.AbstractHttpServerCall;
+import com.noelios.restlet.connector.HttpServer;
+import com.noelios.restlet.connector.HttpServerCall;
 
 /**
  * Abstract AsyncWeb server connector. Here is the list of parameters that are supported:
@@ -72,7 +72,7 @@ import com.noelios.restlet.connector.AbstractHttpServerCall;
  * @author Lars Heuer (heuer[at]semagia.com) <a href="http://www.semagia.com/">Semagia</a>
  * @author Jerome Louvel (contact@noelios.com) <a href="http://www.noelios.com/">Noelios Consulting</a>
  */
-public abstract class AsyncWebServer extends AbstractHttpServer implements ServiceContainer
+public abstract class AsyncWebServer extends HttpServer implements ServiceContainer
 {
    /** Obtain a suitable logger. */
    private static Logger logger = Logger.getLogger(AsyncWebServer.class.getCanonicalName());
@@ -119,7 +119,7 @@ public abstract class AsyncWebServer extends AbstractHttpServer implements Servi
 	public void dispatchRequest(AsyncWebRequest request)
 	{
 		HttpResponse response = request.createHttpResponse();
-		AbstractHttpServerCall call = new AsyncWebServerCall(request, response, confidential, getAddress());
+		HttpServerCall call = new AsyncWebServerCall(request, response, confidential, getAddress());
 		handle(call);
 		request.commitResponse(response);
 	}

@@ -32,21 +32,21 @@ import java.util.Iterator;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
-import javax.servlet.ServletContext;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
 import org.restlet.data.Parameter;
 import org.restlet.data.ParameterList;
+import org.restlet.data.Representation;
 import org.restlet.data.Status;
 
-import com.noelios.restlet.connector.AbstractHttpServerCall;
+import com.noelios.restlet.connector.HttpServerCall;
 
 /**
  * Call that is used by the Servlet HTTP server connector.
  * @author Jerome Louvel (contact@noelios.com) <a href="http://www.noelios.com/">Noelios Consulting</a>
  */
-public class ServletCall extends AbstractHttpServerCall
+public class ServletCall extends HttpServerCall
 {
    /** Obtain a suitable logger. */
    private static Logger logger = Logger.getLogger(ServletCall.class.getCanonicalName());
@@ -56,9 +56,6 @@ public class ServletCall extends AbstractHttpServerCall
    
    /** The HTTP Servlet response to wrap. */
    private HttpServletResponse response;
-   
-   /** The Servlet context to wrap. */
-   private ServletContext context;
       
    /** The request headers. */
    private ParameterList requestHeaders;
@@ -67,13 +64,11 @@ public class ServletCall extends AbstractHttpServerCall
     * Constructor.
     * @param request The HTTP Servlet request to wrap.
     * @param response The HTTP Servlet response to wrap.
-    * @param context The Servlet context to wrap.
     */
-   public ServletCall(HttpServletRequest request, HttpServletResponse response, ServletContext context)
+   public ServletCall(HttpServletRequest request, HttpServletResponse response)
    {
       this.request = request;
       this.response = response;
-      this.context = context;
    }
 
    /**
@@ -92,15 +87,6 @@ public class ServletCall extends AbstractHttpServerCall
    public HttpServletResponse getResponse()
    {
       return this.response;
-   }
-
-   /**
-    * Returns the Servlet context.
-    * @return The Servlet context.
-    */
-   public ServletContext getContext()
-   {
-      return this.context;
    }
 
    /**
@@ -233,17 +219,28 @@ public class ServletCall extends AbstractHttpServerCall
    }
 
    /**
-    * Sets the response status code.
-    * @param code The response status code.
-    * @param reason The response reason phrase.
+    * Sends the response back to the client. Commits the status, headers and optional output and 
+    * send them on the network. 
+    * @param output The optional output representation to send.
     */
-   public void setResponseStatus(int code, String reason)
+   public void sendResponse(Representation output) throws IOException
    {
-   	if(Status.isError(code))
+   	// Add the response headers
+      Parameter header;
+      for(Iterator<Parameter> iter = getResponseHeaders().iterator(); iter.hasNext();)
+      {
+         header = iter.next();
+         getResponse().addHeader(header.getName(), header.getValue());
+      }
+
+      // Set the status code in the response. We do this after adding the headers because 
+      // when we have to rely on the 'sendError' method, the Servlet containers are expected
+      // to commit their response.
+   	if(Status.isError(getResponseStatusCode()))
    	{
    		try
 			{
-				getResponse().sendError(code, reason);
+				getResponse().sendError(getResponseStatusCode(), getResponseReasonPhrase());
 			}
 			catch (IOException ioe)
 			{
@@ -252,22 +249,11 @@ public class ServletCall extends AbstractHttpServerCall
    	}
    	else
    	{
-   		getResponse().setStatus(code);
+   		getResponse().setStatus(getResponseStatusCode());
    	}
-   }
-
-   /**
-    * Sends the response headers.<br/>
-    * Must be called before sending the response output.
-    */
-   public void sendResponseHeaders()
-   {
-      Parameter header;
-      for(Iterator<Parameter> iter = getResponseHeaders().iterator(); iter.hasNext();)
-      {
-         header = iter.next();
-         getResponse().addHeader(header.getName(), header.getValue());
-      }
+   	
+   	// Send the response output
+   	super.sendResponse(output);
    }
 
    /**

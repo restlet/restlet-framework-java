@@ -22,31 +22,14 @@
 
 package com.noelios.restlet.ext.net;
 
-import java.io.FileNotFoundException;
 import java.io.IOException;
-import java.net.ConnectException;
-import java.net.SocketTimeoutException;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
 import org.restlet.Call;
-import org.restlet.connector.Client;
-import org.restlet.data.ChallengeRequest;
-import org.restlet.data.ChallengeResponse;
-import org.restlet.data.ClientData;
-import org.restlet.data.ConditionData;
-import org.restlet.data.MediaType;
-import org.restlet.data.Parameter;
 import org.restlet.data.Protocol;
-import org.restlet.data.Status;
 
-import com.noelios.restlet.connector.HttpConstants;
-import com.noelios.restlet.spi.Factory;
-import com.noelios.restlet.util.CookieReader;
-import com.noelios.restlet.util.CookieUtils;
-import com.noelios.restlet.util.DateUtils;
-import com.noelios.restlet.util.PreferenceUtils;
-import com.noelios.restlet.util.SecurityUtils;
+import com.noelios.restlet.connector.HttpClientCall;
 
 /**
  * HTTP client connector using the HttpUrlConnectionCall. Here is the list of parameters that are supported:
@@ -97,7 +80,7 @@ import com.noelios.restlet.util.SecurityUtils;
  * @see <a href="http://java.sun.com/j2se/1.5.0/docs/guide/net/index.html">Networking Features</a>
  * @author Jerome Louvel (contact@noelios.com) <a href="http://www.noelios.com/">Noelios Consulting</a>
  */
-public class HttpClient extends Client
+public class HttpClient extends com.noelios.restlet.connector.HttpClient
 {
 	/** Obtain a suitable logger. */
 	private static Logger logger = Logger.getLogger(HttpClient.class.getCanonicalName());
@@ -112,294 +95,25 @@ public class HttpClient extends Client
 	}
 
 	/**
-	 * Handles a uniform call.
-	 * @param call The uniform call to handle.
+	 * Creates a low-level HTTP client call from a high-level uniform call.
+	 * @param call The high-level uniform call.
+	 * @return A low-level HTTP client call.
 	 */
-	public void handle(Call call)
+	public HttpClientCall create(Call call)
 	{
-		HttpUrlConnectionCall clientCall = null;
+		HttpClientCall result = null;
 		
 		try
 		{
-			// Create a new HTTP client call
-			clientCall = new HttpUrlConnectionCall(this, call.getMethod().toString(), 
-					call.getResourceRef().toString(), hasInput(call));
-
-			// Add the user agent header
-			if (call.getClient().getName() != null)
-			{
-				clientCall.getRequestHeaders().add(HttpConstants.HEADER_USER_AGENT,
-						call.getClient().getName());
-			}
-			else
-			{
-				clientCall.getRequestHeaders().add(HttpConstants.HEADER_USER_AGENT,
-						Factory.VERSION_HEADER);
-			}
-
-			// Add the conditions
-			ConditionData condition = call.getCondition();
-			if (condition.getMatch() != null)
-			{
-				StringBuilder value = new StringBuilder();
-
-				for (int i = 0; i < condition.getMatch().size(); i++)
-				{
-					if (i > 0) value.append(", ");
-					value.append(condition.getMatch().get(i).getName());
-				}
-
-				clientCall.getRequestHeaders().add(HttpConstants.HEADER_IF_MATCH,
-						value.toString());
-			}
-
-			if (condition.getModifiedSince() != null)
-			{
-				String imsDate = DateUtils.format(condition.getModifiedSince(),
-						DateUtils.FORMAT_RFC_1123[0]);
-				clientCall.getRequestHeaders().add(HttpConstants.HEADER_IF_MODIFIED_SINCE,
-						imsDate);
-			}
-
-			if (condition.getNoneMatch() != null)
-			{
-				StringBuilder value = new StringBuilder();
-
-				for (int i = 0; i < condition.getNoneMatch().size(); i++)
-				{
-					if (i > 0) value.append(", ");
-					value.append(condition.getNoneMatch().get(i).getName());
-				}
-
-				clientCall.getRequestHeaders().add(HttpConstants.HEADER_IF_NONE_MATCH,
-						value.toString());
-			}
-
-			if (condition.getUnmodifiedSince() != null)
-			{
-				String iusDate = DateUtils.format(condition.getUnmodifiedSince(),
-						DateUtils.FORMAT_RFC_1123[0]);
-				clientCall.getRequestHeaders().add(HttpConstants.HEADER_IF_UNMODIFIED_SINCE,
-						iusDate);
-			}
-
-			// Add the cookies
-			if (call.getCookies().size() > 0)
-			{
-				String cookies = CookieUtils.format(call.getCookies());
-				clientCall.getRequestHeaders().add(HttpConstants.HEADER_COOKIE, cookies);
-			}
-
-			// Add the referrer header
-			if (call.getReferrerRef() != null)
-			{
-				clientCall.getRequestHeaders().add(HttpConstants.HEADER_REFERRER,
-						call.getReferrerRef().toString());
-			}
-
-			// Add the preferences
-			ClientData client = call.getClient();
-			if (client.getAcceptedMediaTypes().size() > 0)
-			{
-				clientCall.getRequestHeaders().add(HttpConstants.HEADER_ACCEPT,
-						PreferenceUtils.format(client.getAcceptedMediaTypes()));
-			}
-			else
-			{
-				clientCall.getRequestHeaders().add(HttpConstants.HEADER_ACCEPT,
-						MediaType.ALL.getName());
-			}
-
-			if (client.getAcceptedCharacterSets().size() > 0)
-			{
-				clientCall.getRequestHeaders().add(HttpConstants.HEADER_ACCEPT_CHARSET,
-						PreferenceUtils.format(client.getAcceptedCharacterSets()));
-			}
-
-			if (client.getAcceptedEncodings().size() > 0)
-			{
-				clientCall.getRequestHeaders().add(HttpConstants.HEADER_ACCEPT_ENCODING,
-						PreferenceUtils.format(client.getAcceptedEncodings()));
-			}
-
-			if (client.getAcceptedLanguages().size() > 0)
-			{
-				clientCall.getRequestHeaders().add(HttpConstants.HEADER_ACCEPT_LANGUAGE,
-						PreferenceUtils.format(client.getAcceptedLanguages()));
-			}
-
-			// Add the security
-			ChallengeResponse response = call.getSecurity().getChallengeResponse();
-			if (response != null)
-			{
-				clientCall.getRequestHeaders().add(HttpConstants.HEADER_AUTHORIZATION,
-						SecurityUtils.format(response));
-			}
-
-			// Send the input representation
-			if (hasInput(call))
-			{
-				if (call.getInput().getSize() > 0)
-				{
-					// The size of the input is known in advance
-					clientCall.getConnection().setFixedLengthStreamingMode((int)call.getInput().getSize());
-				}
-				else
-				{
-					// The size of the input is not known in advance
-					if(getChunkLength() >= 0)
-					{
-						// Use chunked encoding
-						clientCall.getConnection().setChunkedStreamingMode(getChunkLength());
-					}
-					else
-					{
-						// Use input buffering to determine the content length
-					}
-				}
-
-				if (call.getInput().getMediaType() != null)
-				{
-					clientCall.getRequestHeaders().add(HttpConstants.HEADER_CONTENT_TYPE,
-							call.getInput().getMediaType().toString());
-				}
-
-				if (call.getInput().getEncoding() != null)
-				{
-					clientCall.getRequestHeaders().add(HttpConstants.HEADER_CONTENT_ENCODING,
-							call.getInput().getEncoding().toString());
-				}
-
-				if (call.getInput().getLanguage() != null)
-				{
-					clientCall.getRequestHeaders().add(HttpConstants.HEADER_CONTENT_LANGUAGE,
-							call.getInput().getLanguage().toString());
-				}
-			}
-		}
-		catch (Exception e)
-		{
-			logger
-					.log(
-							Level.FINE,
-							"An unexpected error occured during the preparation of the HTTP client call.",
-							e);
-			call.setStatus(new Status(Status.CONNECTOR_ERROR_INTERNAL,
-					"Unable to create the HTTP call and its headers. " + e.getMessage()));
-		}
-
-		try
-		{
-			// Commit the request headers
-			clientCall.sendRequestHeaders();
-
-			// Send the input representation
-			if (hasInput(call))
-			{
-				clientCall.sendRequestInput(call.getInput());
-			}
-
-			// Get the response status
-			call.setStatus(new Status(clientCall.getResponseStatusCode(), null, clientCall
-					.getResponseReasonPhrase(), null));
-		}
-		catch (ConnectException ce)
-		{
-			logger.log(Level.FINE,
-					"An error occured during the connection to the remote HTTP server.", ce);
-			call.setStatus(new Status(Status.CONNECTOR_ERROR_CONNECTION,
-					"Unable to connect to the remote server. " + ce.getMessage()));
-		}
-		catch (SocketTimeoutException ste)
-		{
-			logger
-					.log(
-							Level.FINE,
-							"An timeout error occured during the communication with the remote HTTP server.",
-							ste);
-			call.setStatus(new Status(Status.CONNECTOR_ERROR_COMMUNICATION,
-					"Unable to complete the HTTP call due to a communication timeout error. "
-							+ ste.getMessage()));
-		}
-		catch (FileNotFoundException fnfe)
-		{
-			logger.log(Level.FINE,
-					"An unexpected error occured during the sending of the HTTP request.",
-					fnfe);
-			call.setStatus(new Status(Status.CONNECTOR_ERROR_INTERNAL,
-					"Unable to find a local file for sending. " + fnfe.getMessage()));
+			result = new HttpUrlConnectionCall(this, call.getMethod().toString(), 
+					call.getResourceRef().toString(), call.isInputAvailable());
 		}
 		catch (IOException ioe)
 		{
-			logger.log(Level.FINE,
-					"An error occured during the communication with the remote HTTP server.",
-					ioe);
-			call.setStatus(new Status(Status.CONNECTOR_ERROR_COMMUNICATION,
-					"Unable to complete the HTTP call due to a communication error with the remote server. "
-							+ ioe.getMessage()));
+			logger.log(Level.WARNING, "Unable to create the HTTP client call", ioe);
 		}
-		catch (Exception e)
-		{
-			logger.log(Level.FINE,
-					"An unexpected error occured during the sending of the HTTP request.", e);
-			call.setStatus(new Status(Status.CONNECTOR_ERROR_INTERNAL,
-					"Unable to send the HTTP request. " + e.getMessage()));
-		}
-
-		try
-		{
-			// Get the server address
-			call.getServer().setAddress(clientCall.getResponseAddress());
-
-			//         // Update the connector call associated with the uniform call
-			//         // so that advanced users can read the response headers, etc.
-			//         call.setConnectorCall(clientCall);
-
-			// Extract info from headers
-
-			for (Parameter header : clientCall.getResponseHeaders())
-			{
-				if (header.getName().equalsIgnoreCase(HttpConstants.HEADER_LOCATION))
-				{
-					call.setRedirectRef(header.getValue());
-				}
-				else if ((header.getName().equalsIgnoreCase(HttpConstants.HEADER_SET_COOKIE))
-						|| (header.getName().equalsIgnoreCase(HttpConstants.HEADER_SET_COOKIE2)))
-				{
-					try
-					{
-						CookieReader cr = new CookieReader(header.getValue());
-						call.getCookieSettings().add(cr.readCookieSetting());
-					}
-					catch (Exception e)
-					{
-						logger.log(Level.WARNING,
-								"Error during cookie setting parsing. Header: "
-										+ header.getValue(), e);
-					}
-				}
-				else if (header.getName().equalsIgnoreCase(
-						HttpConstants.HEADER_WWW_AUTHENTICATE))
-				{
-					ChallengeRequest request = SecurityUtils.parseRequest(header.getValue());
-					call.getSecurity().setChallengeRequest(request);
-				}
-				else if (header.getName().equalsIgnoreCase(HttpConstants.HEADER_SERVER))
-				{
-					call.getServer().setName(header.getValue());
-				}
-			}
-
-			// Set the output representation
-			call.setOutput(clientCall.getResponseOutput());
-		}
-		catch (Exception e)
-		{
-			logger.log(Level.FINE,
-					"An error occured during the processing of the HTTP response.", e);
-			call.setStatus(new Status(Status.CONNECTOR_ERROR_INTERNAL,
-					"Unable to process the response. " + e.getMessage()));
-		}
+		
+		return result;
 	}
 
 	/**

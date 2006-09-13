@@ -22,26 +22,39 @@
 
 package com.noelios.restlet.ext.net;
 
+import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
+import java.net.ConnectException;
 import java.net.HttpURLConnection;
+import java.net.SocketTimeoutException;
 import java.net.URL;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 import javax.net.ssl.HttpsURLConnection;
 
 import org.restlet.data.Parameter;
 import org.restlet.data.ParameterList;
+import org.restlet.data.Representation;
+import org.restlet.data.Status;
 
-import com.noelios.restlet.connector.AbstractHttpClientCall;
-import com.noelios.restlet.ext.net.HttpClient;
+import com.noelios.restlet.connector.HttpClientCall;
 
 /**
  * HTTP client connector call based on JDK's java.net.HttpUrlConnection class.
  * @author Jerome Louvel (contact@noelios.com) <a href="http://www.noelios.com/">Noelios Consulting</a>
  */
-public class HttpUrlConnectionCall extends AbstractHttpClientCall
+public class HttpUrlConnectionCall extends HttpClientCall
 {
+	/** Obtain a suitable logger. */
+	private static Logger logger = Logger.getLogger(HttpUrlConnectionCall.class
+			.getCanonicalName());
+
+	/** The associated HTTP client. */
+	private HttpClient client;
+	
    /** The wrapped HTTP URL connection. */
 	private HttpURLConnection connection;
    
@@ -59,6 +72,7 @@ public class HttpUrlConnectionCall extends AbstractHttpClientCall
    public HttpUrlConnectionCall(HttpClient client, String method, String requestUri, boolean hasInput) throws IOException
    {
       super(method, requestUri);
+      this.client = client;
       
       if(requestUri.startsWith("http"))
       {
@@ -78,7 +92,7 @@ public class HttpUrlConnectionCall extends AbstractHttpClientCall
          throw new IllegalArgumentException("Only HTTP or HTTPS resource URIs are allowed here");
       }
    }
-   
+
    /**
     * Returns the connection.
     * @return The connection.
@@ -87,24 +101,101 @@ public class HttpUrlConnectionCall extends AbstractHttpClientCall
    {
       return this.connection;
    }
-   
-   /**
-    * Sends the request headers.<br/>
-    * Must be called before sending the request input.
-    */
-   public void sendRequestHeaders() throws IOException
+
+	/**
+	 * Sends the request to the client. Commits the request line, headers and optional input and 
+	 * send them over the network. 
+	 * @param input The optional input representation to send.
+	 * @return The result status.
+	 */
+   public Status sendRequest(Representation input) throws IOException
    {
-      // Set the request method
-      getConnection().setRequestMethod(getRequestMethod());
-
-      // Set the request headers
-      for(Parameter header : getRequestHeaders())
-      {
-         getConnection().addRequestProperty(header.getName(), header.getValue());
-      }
-
-      // Ensure that the connections is active
-      getConnection().connect();
+   	Status result = null;
+   	
+   	try
+   	{
+   		if(input != null)
+   		{
+		   	// Adjust the streaming mode
+				if (input.getSize() > 0)
+				{
+					// The size of the input is known in advance
+					getConnection().setFixedLengthStreamingMode((int)input.getSize());
+				}
+				else
+				{
+					// The size of the input is not known in advance
+					if(this.client.getChunkLength() >= 0)
+					{
+						// Use chunked encoding
+						getConnection().setChunkedStreamingMode(this.client.getChunkLength());
+					}
+					else
+					{
+						// Use input buffering to determine the content length
+					}
+				}
+   		}
+	
+			// Set the request method
+	      getConnection().setRequestMethod(getRequestMethod());
+	
+	      // Set the request headers
+	      for(Parameter header : getRequestHeaders())
+	      {
+	         getConnection().addRequestProperty(header.getName(), header.getValue());
+	      }
+	
+	      // Ensure that the connections is active
+	      getConnection().connect();
+	      
+	      // Send the optional input
+			result = super.sendRequest(input);
+		}
+		catch (ConnectException ce)
+		{
+			logger.log(Level.FINE,
+					"An error occured during the connection to the remote HTTP server.", ce);
+			result = new Status(Status.CONNECTOR_ERROR_CONNECTION,
+					"Unable to connect to the remote server. " + ce.getMessage());
+		}
+		catch (SocketTimeoutException ste)
+		{
+			logger
+					.log(
+							Level.FINE,
+							"An timeout error occured during the communication with the remote HTTP server.",
+							ste);
+			result = new Status(Status.CONNECTOR_ERROR_COMMUNICATION,
+					"Unable to complete the HTTP call due to a communication timeout error. "
+							+ ste.getMessage());
+		}
+		catch (FileNotFoundException fnfe)
+		{
+			logger.log(Level.FINE,
+					"An unexpected error occured during the sending of the HTTP request.",
+					fnfe);
+			result = new Status(Status.CONNECTOR_ERROR_INTERNAL,
+					"Unable to find a local file for sending. " + fnfe.getMessage());
+		}
+		catch (IOException ioe)
+		{
+			logger.log(Level.FINE,
+					"An error occured during the communication with the remote HTTP server.",
+					ioe);
+			result = new Status(Status.CONNECTOR_ERROR_COMMUNICATION,
+					"Unable to complete the HTTP call due to a communication error with the remote server. "
+							+ ioe.getMessage());
+		}
+		catch (Exception e)
+		{
+			logger.log(Level.FINE,
+					"An unexpected error occured during the sending of the HTTP request.", e);
+			result = new Status(Status.CONNECTOR_ERROR_INTERNAL,
+					"Unable to send the HTTP request. " + e.getMessage());
+		}
+		
+		return result;
    }
 
    /**

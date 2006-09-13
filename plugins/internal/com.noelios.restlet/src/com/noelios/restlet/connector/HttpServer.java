@@ -22,40 +22,40 @@
 
 package com.noelios.restlet.connector;
 
-import java.io.IOException;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
 import org.restlet.Call;
-import org.restlet.Context;
-import org.restlet.Restlet;
 import org.restlet.connector.Server;
-import org.restlet.data.Method;
 
 /**
- * Abstract HTTP server connector.
+ * Base HTTP server connector.
  * @author Jerome Louvel (contact@noelios.com) <a href="http://www.noelios.com/">Noelios Consulting</a>
  */
-public abstract class AbstractHttpServer extends Server
+public class HttpServer extends Server
 {
    /** Obtain a suitable logger. */
-   private static Logger logger = Logger.getLogger(AbstractHttpServer.class.getCanonicalName());
+   private static Logger logger = Logger.getLogger(HttpServer.class.getCanonicalName());
 
    /** The listening address if specified. */
 	private String address;
 
    /** The listening port if specified. */
 	private int port;
+	
+	/** The converter from HTTP calls to uniform calls. */
+	private HttpServerConverter converter;
 
    /**
     * Constructor.
     * @param address The optional listening IP address (local host used if null).
     * @param port The listening port.
     */
-   public AbstractHttpServer(String address, int port)
+   public HttpServer(String address, int port)
    {
       this.address = address;
       this.port = port;
+      this.converter = null;
    }
 	
    /**
@@ -97,13 +97,15 @@ public abstract class AbstractHttpServer extends Server
    /**
     * Handles the connector call.<br/>
     * The default behavior is to create an REST call and delegate it to the attached Restlet.
-    * @param call The connector call.
+    * @param httpCall The HTTP server call.
     */
-   public void handle(AbstractHttpServerCall call)
+   public void handle(HttpServerCall httpCall)
    {
    	try
    	{
-   		handle(getContext(), call, this);
+         Call call = getConverter().toUniform(httpCall, getContext());
+         handle(call);
+         getConverter().commit(httpCall, call);
 		}
 		catch (Exception e)
 		{
@@ -112,24 +114,23 @@ public abstract class AbstractHttpServer extends Server
 		}
    }
 
-   /**
-    * Handles an HTTP server call for a given Restlet target. 
-    * @param connectorContext The context of the HTTP server connector that issued the call.
-    * @param call The connector call.
-    * @param next The chained Restlet.
-    * @throws IOException 
-    */
-   public static void handle(Context connectorContext, AbstractHttpServerCall call, Restlet next) throws IOException
-   {
-      Call restletCall = call.toUniform(connectorContext);
-      next.handle(restletCall);
-      call.setResponse(restletCall);
-      call.sendResponseHeaders();
-      
-      if(!restletCall.getMethod().equals(Method.HEAD))
-      {
-      	call.sendResponseOutput(restletCall.getOutput());
-      }
-   }
+	/**
+	 * Returns the converter from HTTP calls to uniform calls.
+	 * @return the converter from HTTP calls to uniform calls.
+	 */
+	public HttpServerConverter getConverter()
+	{
+		if(this.converter == null) this.converter = new HttpServerConverter();
+		return this.converter;
+	}
+
+	/**
+	 * Sets the converter from HTTP calls to uniform calls.
+	 * @param converter The converter to set.
+	 */
+	public void setConverter(HttpServerConverter converter)
+	{
+		this.converter = converter;
+	}
    
 }

@@ -80,9 +80,9 @@ public class WrapperRepresentation extends WrapperResource implements Representa
     * transient representation whose content can only be accessed once. 
     * @return True if some fresh content is available.
     */
-   public boolean isContentAvailable()
+   public boolean isAvailable()
    {
-   	return getWrappedRepresentation().isContentAvailable();
+   	return getWrappedRepresentation().isAvailable();
    }
    
    /**
@@ -92,9 +92,9 @@ public class WrapperRepresentation extends WrapperResource implements Representa
     * several times, you need to cache it first, for example into memory or into a file.   
     * @return True if the representation's content is transient.
     */
-	public boolean isContentTransient()
+	public boolean isTransient()
 	{
-		return getWrappedRepresentation().isContentTransient();
+		return getWrappedRepresentation().isTransient();
 	}
    
    /**

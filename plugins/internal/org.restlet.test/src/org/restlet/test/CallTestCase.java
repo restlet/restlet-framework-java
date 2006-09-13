@@ -55,9 +55,9 @@ public class CallTestCase extends RestletTestCase
 	 *
 	 * @return A connector call instance.
 	 */
-	protected HttpCall getConnectorCall()
+	protected HttpCall getHttpCall()
 	{
-		return new DummyConnectorCall();
+		return new HttpCall();
 	}
 
 	/**
