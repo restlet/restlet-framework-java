@@ -22,7 +22,7 @@
       <li><a href="#02">What are the underlying concepts?</a></li>
       <li><a href="#03">What are the advantages of using Restlets instead of Servlets?</a></li>
       <li><a href="#04">I have general questions about REST, where can I get help?</a></li>
-      <li><a href="#05">Restlet calls abstract HTTP requests and responses, but can I get the low-level headers if I really need to?</a></li>
+      <li><a href="#05">How can I get the raw HTTP headers if I really need to?</a></li>
       <li><a href="#06">Can I run Restlets inside Tomcat or any Servlet container?</a></li>
       <li><a href="#07">Can the Restlets composing a site be defined in an XML file?</a></li>
       <li><a href="#08">What JAR files must I have in my classpath for a minimal application?</a></li>
@@ -99,11 +99,10 @@
    In addition, you are always welcome to post your questions on the <a href="http://www.restlet.org/discuss">Restlet mailing list</a>.
 </p>
 
-<h3><a name="05">5. Restlet calls abstract HTTP requests and responses, but can I get the low-level headers if I really need to?</a></h3>
+<h3><a name="05">5. How can I get the raw HTTP headers if I really need to?</a></h3>
 
 <p>
-   Yes, this is a request that we had several times. The common situation is where some custom or non-standard headers are used and need to be accessed.
-   You access to the low-level call using: <a href="http://www.restlet.org/docs/api/org/restlet/Call.html#getConnectorCall()">Call.getConnectorCall()</a> then you have access to modified request and response header lists.
+   Even though the uniform org.restlet.Call provides a convenient and protocol-neutral way to manipulate the information contained in all standard HTTP headers, it is sometimes necessary to access to the raw values of the headers or to some non-standard ones. For this purpose, a mechanism called "call converters" was introduced to let you customize the default conversion from low-level HTTP server calls to uniform calls, and also from uniform calls to low-level HTTP client calls. See documentation in the com.noelios.restlet.connector package. There is also some sample code in the distribution that illustrates the steps in details.
 </p>
 
 <h3><a name="06">6. Can I run Restlets inside Tomcat or any Servlet container?</a></h3>
