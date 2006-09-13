@@ -28,8 +28,8 @@ Changes log
  - Added com.noelios.restlet.connector.HttpServerConverter as the base call converter (from HTTP calls to uniform REST calls).
  - Refactored the HttpUrlConnection-based HTTP client to extract a generic HttpClientConverter and added a base HttpClient class.
  - Added new constructors to Client and Server to be match Connector's constructors.
- - Added "converter" parameter to HttpServer base class and thus to all HTTP server connectors (Jetty, Simple, AsyncWeb).
- - Added sample application illustrating the usage of call converters to access raw HTTP headers.
+ - Added "converter" parameter to HttpServer and HttpClient base classes and thus to all HTTP connectors (Jetty, Simple, AsyncWeb, HttpUrlConnection).
+ - Added sample application illustrating the usage of server call converters to access raw HTTP headers.
 
 1.0 beta 18 (2006-08-19)
 [Bugs fixed]
