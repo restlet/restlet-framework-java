@@ -14,6 +14,7 @@ Changes log
  - Moved hasInput() method from org.restlet.connector.Client to Call.isInputAvailable().
  - Renamed Representation.isContentAvailable() to isAvailable() and isContentTransient() to isTransient().
  - Application now only requires a Context and not a Container.
+ - WrapperRestlet.getWrappedRestlet() is now protected instead of public, only subclasses should have access to the wrapped Restlet.
 
 [Other changes] 
  - Updated Jetty 6 extension to final 6.0 release.

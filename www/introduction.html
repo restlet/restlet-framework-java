@@ -35,13 +35,13 @@
 
 <h3>Servlet limitations</h3>
 <p>
-   At the end of 2003, <a target="_top" href="http://www.mortbay.com/people/gregw/">Greg Wilkins</a>, the author of the <a target="_top" href="http://jetty.mortbay.org">Jetty Web container</a> and contributor to the <a target="_top" href="http://www.jcp.org/en/jsr/detail?id=154">Servlet specifications</a>, <a target="_top" href="http://www.mortbay.com/MB/log/gregw/?permalink=servletsMustDieSlowly.html">blogged</a> about some issues with Servlets:
+   At the end of 2003, <a target="_top" href="http://www.webtide.com/about_us.jsp">Greg Wilkins</a>, the author of the <a target="_top" href="http://jetty.mortbay.org">Jetty Web container</a> and contributor to the <a target="_top" href="http://www.jcp.org/en/jsr/detail?id=154">Servlet specifications</a>, <a target="_top" href="http://web.archive.org/web/20050308210733/http://www.mortbay.com/MB/log/gregw/?permalink=servletsMustDieSlowly.html">blogged</a> about some issues with Servlets:
    <ul>
       <li>No clear separation between the protocol concerns and the application concerns.</li>
       <li>Unable to take full advantage of the non-blocking NIO due to blocking IO assumptions.</li>
       <li>Full Servlet Web containers are overkill for many applications like serving XML documents for Web services.</li>
    </ul>
-   He proposed to specify a new API that would be truly protocol-independent and define contentlets to expose content and its metadata. These ideas were both thought-provoking and inspiring for the creation of the Restlet project. In a <a target="_top" href="http://www.mortbay.com/MB/log/gregw/?permalink=NIOServlet.html">later post</a>, Greg Wilkins explains with detailed arguments why the current Servlet API, without a concept like contentlets, limits the efficient usage of the non-blocking NIO API. This traditionally imposes the use of a separate thread for each HTTP requests to handle. He goes even further in <a target="_top" href="http://www.mortbay.com/MB/log/gregw/?permalink=servletNG.html">this post</a>, specifying the next generation of Servlets.
+   He proposed to specify a new API that would be truly protocol-independent and define contentlets to expose content and its metadata. These ideas were both thought-provoking and inspiring for the creation of the Restlet project. In a <a target="_top" href="http://blogs.webtide.com/gregw/2004/02/09/1076359560000.html">later post</a>, Greg Wilkins explains with detailed arguments why the current Servlet API, without a concept like contentlets, limits the efficient usage of the non-blocking NIO API. This traditionally imposes the use of a separate thread for each HTTP requests to handle. He goes even further in <a target="_top" href="http://blogs.webtide.com/gregw/2004/09/24/1096051860000.html">this post</a>, specifying the next generation of Servlets.
 </p>
 <p>
    Another major issue is that the API encourages application developpers to store session state directly in memory, at the application or user session level. Even though it looks like a nice feature, it became a major issue for the scalability and high-availability of Servlet containers. To compensate, complex load-balancing, session replication and persistence mechanisms must be implemented. But in the end, scalability inevitably suffers.
@@ -86,7 +86,7 @@
    <table>
       <tr>
          <td style="vertical-align: middle;" rowspan="2"><a href="http://www.java.net/"><img src="http://www.restlet.org/images/javanet.gif" alt="java.net member" /></a></td>
-         <td>Version 1.7, last modified on 2006-07-21</td>
+         <td>Version 1.8, last modified on 2006-09-14</td>
       </tr>
       <tr>
          <td>Copyright &copy; 2005-2006 <a href="mailto:contact@noelios.com">J&eacute;r&ocirc;me Louvel</a>. Restlet is a registered trademark of <a target="_top" href="http://www.noelios.com">Noelios Consulting</a>.</td>

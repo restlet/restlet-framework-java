@@ -47,7 +47,7 @@ public class WrapperRestlet extends Restlet
     * Returns the wrapped Restlet.
     * @return The wrapped Restlet.
     */
-   public Restlet getWrappedRestlet()
+   protected Restlet getWrappedRestlet()
    {
       return this.wrappedRestlet;
    }
