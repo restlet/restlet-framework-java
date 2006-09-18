@@ -23,28 +23,24 @@
 package org.restlet;
 
 /**
- * Scoring handler typically attached to a Router. It is also able to score calls indicating its affinity. 
- * The score is typically used by the Router in order to determine the best handler for a given call. 
+ * Filter scoring the affinity of calls with an attached Restlet. The score is used by an associated 
+ * Router in order to determine the most appropriate Restlet for a given call. 
  * @author Jerome Louvel (contact@noelios.com) <a href="http://www.noelios.com/">Noelios Consulting</a>
  */
-public class Scorer extends Chainer
+public class Scorer extends Filter
 {
 	/** The parent router. */
 	private Router router;
-	
-   /** The Restlet target. */
-	private Restlet target;
 
    /**
     * Constructor.
     * @param router The parent router.
-    * @param target The Restlet target.
+    * @param next The Restlet target.
     */
-   public Scorer(Router router, Restlet target)
+   public Scorer(Router router, Restlet next)
    {
-   	super(router == null ? null : router.getContext());
+   	super(router == null ? null : router.getContext(), next);
    	this.router = router;
-      this.target = target;
    }
 	
 	/**
@@ -65,15 +61,4 @@ public class Scorer extends Chainer
 	{
 		return this.router;
 	}
-
-	/**
-	 * Finds the next Restlet if available.
-	 * @param call The current call.
-	 * @return The next Restlet if available or null.
-	 */
-	public Restlet findNext(Call call)
-	{
-		return this.target;
-	}
-
 }

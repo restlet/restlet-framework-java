@@ -108,7 +108,6 @@ public class HttpClientCall extends HttpCall
    		}
    		
          getRequestStream().flush();
-         getRequestStream().close();
       }
       else if(getRequestChannel() != null)
       {
@@ -116,12 +115,20 @@ public class HttpClientCall extends HttpCall
    		{
    			input.write(getRequestChannel());
    		}
-   		
+      }
+      
+      Status result = new Status(getResponseStatusCode(), null, getResponseReasonPhrase(), null);
+
+      if(getRequestStream() != null)
+      {
+         getRequestStream().close();
+      }
+      else if(getRequestChannel() != null)
+      {
          getRequestChannel().close();
       }
       
-		// Get the response status
-		return new Status(getResponseStatusCode(), null, getResponseReasonPhrase(), null);
+		return result;
    }
 
    /**

@@ -23,10 +23,10 @@
 package org.restlet;
 
 /**
- * Filter of calls handled by a target Restlet. The purpose is to do some pre-processing or post-processing 
- * on the calls going through it before or after they are actually handled by an attached Restlet.<br/>
- * Note that during this processing, the call's context path and resource path are not expected to be modified.<br/>
- * Also note that you can attach and detach targets while handling incoming calls as the filter is ensured to 
+ * Chainer to an attached Restlet allowing some filtering. The purpose is to do some pre-processing or 
+ * post-processing on the calls going through it before or after they are actually handled by an attached 
+ * Restlet. Note that during this processing, the call's context path and resource path are not expected 
+ * to be modified. Also note that you can attach and detach targets while handling incoming calls as the filter is ensured to 
  * be thread-safe.
  * @see <a href="http://www.restlet.org/tutorial#part07">Tutorial: Filters and call logging</a>
  * @author Jerome Louvel (contact@noelios.com) <a href="http://www.noelios.com/">Noelios Consulting</a>
@@ -41,7 +41,7 @@ public class Filter extends Chainer
 	 */
 	public Filter()
 	{
-		this(null);
+		this(null, null);
 	}
 
 	/**
@@ -50,8 +50,18 @@ public class Filter extends Chainer
 	 */
 	public Filter(Context context)
 	{
+		this(context, null);
+	}
+
+	/**
+	 * Constructor.
+	 * @param context The context.
+	 * @param next The attached Restlet.
+	 */
+	public Filter(Context context, Restlet next)
+	{
 		super(context);
-		this.next = null;
+		this.next = next;
 	}
 
 	/**

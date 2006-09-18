@@ -46,7 +46,7 @@ import org.restlet.data.Status;
 import org.restlet.spi.Factory;
 
 /**
- * Uniform call handled by Restlets. Issued by a client to a server and handled by one or more Restlets. Calls are 
+ * Protocol-independent call processed by Restlets. It is issued by a client to a server and handled by one or more Restlets. Calls are 
  * uniform across all type of connectors (client or server), all types of protocols and component. If you are 
  * familiar with the Servlet API, a Restlet call merges and abstracts the Servlet HTTP request and response, 
  * as well as the HttpUrlConnection class from the JDK.
@@ -386,7 +386,7 @@ public class Call
 		}
 		else
 		{
-			result = (getInput() != null) && getInput().isAvailable();
+			result = (getInput() != null) && getInput().isAvailable() && (getInput().getSize() > 0);
 		}
 
 		return result;

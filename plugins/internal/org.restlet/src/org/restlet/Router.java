@@ -25,8 +25,8 @@ package org.restlet;
 import org.restlet.data.Status;
 
 /**
- * Router of calls to one of several target Restlet options. Each Restlet option is represented by a scorer 
- * that can compute an affinity score for each call depending on various criteria. Some add() methods in the 
+ * Chainer routing calls to one of the attached Scorers. Each scorer is representing a routing Restlet option that can 
+ * compute an affinity score for each call depending on various criteria. Some add() methods in the 
  * modifiable ScorerList instance returned by getScorers() allow the creation of scorers based on URI path 
  * patterns matching the beginning of a the resource path in the current context (see Call.getContextPath() 
  * and getResourcePath() methods).<br/>

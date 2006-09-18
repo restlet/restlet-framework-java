@@ -29,7 +29,7 @@ import org.restlet.data.ParameterList;
 import org.restlet.data.Representation;
 
 /**
- * Context associated to a Restlet.
+ * Context associated with a Restlet.
  * @author Jerome Louvel (contact@noelios.com) <a href="http://www.noelios.com/">Noelios Consulting</a>
  */
 public class Context

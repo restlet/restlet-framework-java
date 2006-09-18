@@ -20,7 +20,7 @@
  * Portions Copyright [yyyy] [name of copyright owner]
  */
 
-package org.restlet.util;
+package org.restlet.data;
 
 import java.io.IOException;
 import java.io.InputStream;
@@ -29,13 +29,6 @@ import java.nio.channels.ReadableByteChannel;
 import java.nio.channels.WritableByteChannel;
 import java.util.Date;
 
-import org.restlet.data.CharacterSet;
-import org.restlet.data.Encoding;
-import org.restlet.data.Language;
-import org.restlet.data.MediaType;
-import org.restlet.data.Representation;
-import org.restlet.data.Resource;
-import org.restlet.data.Tag;
 
 
 /**

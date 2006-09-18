@@ -27,7 +27,7 @@ import org.restlet.data.Resource;
 import org.restlet.data.Status;
 
 /**
- * Restlet that is the final handler of the processing chain. It should have all the necessary 
+ * Restlet capable of finding a target Resource. It should have all the necessary 
  * information in order to find the resource that is the actual target of the call and to handle
  * the required method on it. 
  * @author Jerome Louvel (contact@noelios.com) <a href="http://www.noelios.com/">Noelios Consulting</a>
@@ -36,6 +36,14 @@ public class Handler extends Restlet
 {
 	/** The language to use if content negotiation fails. */
 	private Language fallbackLanguage;
+
+	/**
+	 * Constructor.
+	 */
+	public Handler()
+	{
+		this(null);
+	}
 
 	/**
 	 * Constructor.

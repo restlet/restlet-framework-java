@@ -26,7 +26,7 @@ import org.restlet.data.Method;
 import org.restlet.data.Status;
 
 /**
- * Uniform interface for REST handlers. "The central feature that distinguishes
+ * Generic call processor. "The central feature that distinguishes
  * the REST architectural style from other network-based styles is its emphasis on a uniform interface between
  * components. By applying the software engineering principle of generality to the component interface, the
  * overall system architecture is simplified and the visibility of interactions is improved. Implementations

@@ -23,13 +23,21 @@
 package org.restlet;
 
 /**
- * Restlet that is part of a processing chain. In addition to handling incoming calls like any Restlet, a handler 
+ * Restlet part of a processing chain. In addition to handling incoming calls like any Restlet, a handler 
  * can also resolve, either statically or dynamically, the next Restlet that will continue the processing chain.
  * Subclasses only have to implement the findNext(Call) method.
  * @author Jerome Louvel (contact@noelios.com) <a href="http://www.noelios.com/">Noelios Consulting</a>
  */
 public class Chainer extends Restlet 
 {
+   /**
+    * Constructor.
+    */
+   public Chainer()
+   {
+   	this(null);
+   }
+
    /**
     * Constructor.
     * @param context The context.

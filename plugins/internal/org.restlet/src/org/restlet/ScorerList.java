@@ -26,8 +26,8 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Random;
 
+import org.restlet.data.WrapperList;
 import org.restlet.spi.Factory;
-import org.restlet.util.WrapperList;
 
 /**
  * Modifiable list of scorers with some helper methods. Note that this class implements the java.util.List
@@ -43,8 +43,8 @@ public class ScorerList extends WrapperList<Scorer>
 {
 	/** The parent router. */
 	private Router router;
-	
-	/** The index of the last scorer used in the round robin mode. */ 
+
+	/** The index of the last scorer used in the round robin mode. */
 	private int lastIndex;
 
 	/**
@@ -65,7 +65,7 @@ public class ScorerList extends WrapperList<Scorer>
 	{
 		this(router, new ArrayList<Scorer>(initialCapacity));
 	}
-	
+
 	/**
 	 * Constructor.
 	 * @param delegate The delegate list.
@@ -74,15 +74,15 @@ public class ScorerList extends WrapperList<Scorer>
 	{
 		super(delegate);
 		this.router = router;
-      this.lastIndex = -1;
+		this.lastIndex = -1;
 	}
-	
+
 	/**
 	 * Creates then adds a scorer at the end of the list.
-    * Adds a target option based on an URI pattern at the end of the list of options. 
-    * @param pattern The URI pattern used to map calls (see {@link java.util.regex.Pattern} for the syntax).
-    * @param target The target instance to attach.
-    * @see java.util.regex.Pattern
+	 * Adds a target option based on an URI pattern at the end of the list of options. 
+	 * @param pattern The URI pattern used to map calls (see {@link java.util.regex.Pattern} for the syntax).
+	 * @param target The target instance to attach.
+	 * @see java.util.regex.Pattern
 	 * @return True (as per the general contract of the Collection.add method).
 	 */
 	public boolean add(String pattern, Restlet target)
@@ -90,18 +90,17 @@ public class ScorerList extends WrapperList<Scorer>
 		return add(Factory.getInstance().createScorer(this.router, pattern, target));
 	}
 
-   /**
-    * Creates then adds a scorer based on an URI pattern at a specific position.
-    * @param pattern The URI pattern used to map calls (see {@link java.util.regex.Pattern} for the syntax).
-    * @param target The target instance to attach.
-    * @param index The insertion position in the list of attachments.
-    * @see java.util.regex.Pattern
-    */
-   public void add(String pattern, Restlet target, int index)
-   {
-   	add(index, Factory.getInstance().createScorer(this.router, pattern, target));
-   }
-
+	/**
+	 * Creates then adds a scorer based on an URI pattern at a specific position.
+	 * @param pattern The URI pattern used to map calls (see {@link java.util.regex.Pattern} for the syntax).
+	 * @param target The target instance to attach.
+	 * @param index The insertion position in the list of attachments.
+	 * @see java.util.regex.Pattern
+	 */
+	public void add(String pattern, Restlet target, int index)
+	{
+		add(index, Factory.getInstance().createScorer(this.router, pattern, target));
+	}
 
 	/**
 	 * Returns the best scorer match for a given call.
@@ -114,17 +113,17 @@ public class ScorerList extends WrapperList<Scorer>
 		Scorer result = null;
 		float bestScore = 0F;
 		float score;
-		for(Scorer current : this)
+		for (Scorer current : this)
 		{
 			score = current.score(call);
 
-			if((score > bestScore) && (score >= requiredScore))
+			if ((score > bestScore) && (score >= requiredScore))
 			{
 				bestScore = score;
 				result = current;
 			}
 		}
-		
+
 		return result;
 	}
 
@@ -136,11 +135,11 @@ public class ScorerList extends WrapperList<Scorer>
 	 */
 	public synchronized Scorer getFirst(Call call, float requiredScore)
 	{
-		for(Scorer current : this)
+		for (Scorer current : this)
 		{
-			if(current.score(call) >= requiredScore) return current;
+			if (current.score(call) >= requiredScore) return current;
 		}
-		
+
 		// No match found
 		return null;
 	}
@@ -153,11 +152,11 @@ public class ScorerList extends WrapperList<Scorer>
 	 */
 	public synchronized Scorer getLast(Call call, float requiredScore)
 	{
-		for(int j = (size() - 1); (j >= 0); j--)
+		for (int j = (size() - 1); (j >= 0); j--)
 		{
-			if(get(j).score(call) >= requiredScore) return get(j);
+			if (get(j).score(call) >= requiredScore) return get(j);
 		}
-		
+
 		// No match found
 		return null;
 	}
@@ -170,14 +169,14 @@ public class ScorerList extends WrapperList<Scorer>
 	 */
 	public synchronized Scorer getNext(Call call, float requiredScore)
 	{
-		for(int initialIndex = lastIndex++; initialIndex != lastIndex; lastIndex++)
+		for (int initialIndex = lastIndex++; initialIndex != lastIndex; lastIndex++)
 		{
-			if(lastIndex == size())
+			if (lastIndex == size())
 			{
 				lastIndex = 0;
 			}
-			
-			if(get(lastIndex).score(call) >= requiredScore) return get(lastIndex);
+
+			if (get(lastIndex).score(call) >= requiredScore) return get(lastIndex);
 		}
 
 		// No match found
@@ -193,16 +192,16 @@ public class ScorerList extends WrapperList<Scorer>
 	public synchronized Scorer getRandom(Call call, float requiredScore)
 	{
 		int j = new Random().nextInt(size());
-		if(get(j).score(call) >= requiredScore) return get(j);
-		
-		for(int initialIndex = j++; initialIndex != j; j++)
+		if (get(j).score(call) >= requiredScore) return get(j);
+
+		for (int initialIndex = j++; initialIndex != j; j++)
 		{
-			if(j == size())
+			if (j == size())
 			{
 				j = 0;
 			}
-			
-			if(get(j).score(call) >= requiredScore) return get(j);
+
+			if (get(j).score(call) >= requiredScore) return get(j);
 		}
 
 		// No match found

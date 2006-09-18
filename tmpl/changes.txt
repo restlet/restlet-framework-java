@@ -22,11 +22,11 @@ Changes log
  - Moved org.restlet.component.ContainerContext to com.noelios.restlet.impl.component.ContainerContext.
  - Renamed Server."next" property into "target". "Next" was assuming that a previous Restlet existed, which is false for Server connectors.
  - Moved static Resltet.handle(Call call, Restlet target) method to Call.handle(Restlet target).
- - Moved all wrapper classes into a new org.restlet.util package to clarify the API and its Javadocs.
  - Moved com.noelios.restlet.util.WrapperMap into org.restlet.util.
  - Removed Restlet.compareTo() method. No apparent usage.
  - Renamed Reference.getProtocol() into getSchemeProtocol().
  - Connector and Component no longer derive from Restlet, it was allowing some code reuse but also created some confusion between those core concepts.
+ - Scorer now derives from Filter to improve factorization.
 
 [Other changes] 
  - Updated Jetty 6 extension to final 6.0 release.
@@ -45,6 +45,8 @@ Changes log
  - Added sample application illustrating the usage of server call converters to access raw HTTP headers.
  - Added static valueOf() methods to ChallengeScheme, CharacterSet, Encoding, Language, MediaType, Method, Protocol and Status. Sometimes renamed existing create() method. Suggested by Piyush Purang.
  - Added new Context constructor taking just a logger name.
+ - Clarified the Javadocs of root classes in org.restlet.
+ - Added more constructors to Chainer, Filter and Handler.
 
 1.0 beta 18 (2006-08-19)
 [Bugs fixed]
