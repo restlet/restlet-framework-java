@@ -32,7 +32,7 @@ import org.restlet.data.Status;
  * the required method on it. 
  * @author Jerome Louvel (contact@noelios.com) <a href="http://www.noelios.com/">Noelios Consulting</a>
  */
-public class Handler extends Restlet
+public class Finder extends Restlet
 {
 	/** The language to use if content negotiation fails. */
 	private Language fallbackLanguage;
@@ -40,7 +40,7 @@ public class Handler extends Restlet
 	/**
 	 * Constructor.
 	 */
-	public Handler()
+	public Finder()
 	{
 		this(null);
 	}
@@ -49,7 +49,7 @@ public class Handler extends Restlet
 	 * Constructor.
 	 * @param context The context.
 	 */
-	public Handler(Context context)
+	public Finder(Context context)
 	{
 		super(context);
 	}
@@ -95,7 +95,33 @@ public class Handler extends Restlet
 
 		if (target != null)
 		{
-			call.setStatus(target.delete());
+			call.setStatus(target.delete().getStatus());
+		}
+		else
+		{
+			call.setStatus(Status.SERVER_ERROR_NOT_IMPLEMENTED);
+		}
+	}
+
+	/**
+	 * Handles a POST call invoking the 'post' method of the target resource (as provided by the 'findTarget' method).
+	 * @param call The call to handle.
+	 */
+	protected void handlePost(Call call)
+	{
+		Resource target = findTarget(call);
+
+		if (target != null)
+		{
+			if (call.getInput() != null)
+			{
+				call.setStatus(target.post(call.getInput()).getStatus());
+			}
+			else
+			{
+				call.setStatus(new Status(Status.CLIENT_ERROR_NOT_ACCEPTABLE,
+						"Missing input representation"));
+			}
 		}
 		else
 		{
@@ -115,7 +141,7 @@ public class Handler extends Restlet
 		{
 			if (call.getInput() != null)
 			{
-				call.setStatus(target.put(call.getInput()));
+				call.setStatus(target.put(call.getInput()).getStatus());
 			}
 			else
 			{

@@ -33,7 +33,7 @@ import org.restlet.data.ChallengeScheme;
 import org.restlet.data.MediaType;
 import org.restlet.data.Protocol;
 
-import com.noelios.restlet.DirectoryHandler;
+import com.noelios.restlet.DirectoryFinder;
 import com.noelios.restlet.GuardFilter;
 import com.noelios.restlet.HostRouter;
 import com.noelios.restlet.LogFilter;
@@ -76,7 +76,7 @@ public class Tutorial11 implements Constants
          host.getScorers().add("/docs/", guard);
 
          // Create a directory Restlet able to return a deep hierarchy of Web files
-         DirectoryHandler directory = new DirectoryHandler(myContext, ROOT_URI, "index.html");
+         DirectoryFinder directory = new DirectoryFinder(myContext, ROOT_URI, "index.html");
          guard.setNext(directory);
 
          // Create the user router

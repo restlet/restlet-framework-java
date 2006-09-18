@@ -77,17 +77,24 @@ public interface Resource
 	public List<Representation> getVariants();
 	
 	/**
+	 * Posts a variant representation in the resource.
+	 * @param entity The posted entity. 
+	 * @return The result information.
+	 */
+	public Result post(Representation entity);
+	
+	/**
 	 * Puts a variant representation in the resource.
 	 * @param variant A new or updated variant representation. 
-	 * @return The result status.
+	 * @return The result information.
 	 */
-	public Status put(Representation variant);
+	public Result put(Representation variant);
 	
 	/**
 	 * Asks the resource to delete itself and all its representations.
-	 * @return The result status. 
+	 * @return The result information. 
 	 */
-	public Status delete();
+	public Result delete();
 	
 	/**
 	 * Sets a new list of all the identifiers for the resource.  

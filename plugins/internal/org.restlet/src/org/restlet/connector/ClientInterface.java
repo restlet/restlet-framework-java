@@ -22,115 +22,51 @@
 
 package org.restlet.connector;
 
-import java.util.Arrays;
-import java.util.List;
-
 import org.restlet.Call;
-import org.restlet.data.Protocol;
+import org.restlet.UniformInterface;
 import org.restlet.data.Representation;
-import org.restlet.spi.Factory;
 
 /**
- * Generic client connector supporting multiples protocols.
+ * Uniform client interface.
  * @author Jerome Louvel (contact@noelios.com) <a href="http://www.noelios.com/">Noelios Consulting</a>
  */
-public class Client extends Connector implements ClientInterface
+public interface ClientInterface extends UniformInterface
 {
-	/**
-	 * Constructor.
-	 * @param wrappedClient The wrapped client.
-	 */
-	protected Client(Client wrappedClient)
-	{
-		super(wrappedClient);
-	}
-	
-	/**
-    * Constructor.
-    * @param protocol The connector protocol.
-	 */
-	public Client(Protocol protocol)
-	{
-		this(Arrays.asList(protocol));
-	}
-	
-	/**
-    * Constructor.
-    * @param protocols The connector protocols.
-	 */
-	public Client(List<Protocol> protocols)
-	{
-		super(Factory.getInstance().createClient(protocols));
-	}
-
-	/**
-	 * Returns the wrapped client.
-	 * @return The wrapped client.
-	 */
-	private Client getWrappedClient()
-	{
-		return (Client)getWrappedConnector();
-	}
-
-   /**
-    * Handles a call.
-    * @param call The call to handle.
-    */
-   public void handle(Call call)
-   {
-   	if(getWrappedClient() != null) getWrappedClient().handle(call);
-   }
-   
    /**
     * Deletes the identified resource.
     * @param resourceUri The URI of the resource to delete.
     * @return The returned uniform call.
     */
-   public Call delete(String resourceUri)
-   {
-   	return (getWrappedClient() != null) ? getWrappedClient().delete(resourceUri) : null;
-   }
+   public Call delete(String resourceUri);
 
    /**
     * Gets the identified resource.
     * @param resourceUri The URI of the resource to get.
     * @return The returned uniform call.
     */
-   public Call get(String resourceUri)
-   {
-   	return (getWrappedClient() != null) ? getWrappedClient().get(resourceUri) : null;
-   }
+   public Call get(String resourceUri);
    
    /**
     * Gets the identified resource without its representation's content.
     * @param resourceUri The URI of the resource to get.
     * @return The returned uniform call.
     */
-   public Call head(String resourceUri)
-   {
-   	return (getWrappedClient() != null) ? getWrappedClient().head(resourceUri) : null;
-   }
+   public Call head(String resourceUri);
    
    /**
     * Gets the options for the identified resource.
     * @param resourceUri The URI of the resource to get.
     * @return The returned uniform call.
     */
-   public Call options(String resourceUri)
-   {
-   	return (getWrappedClient() != null) ? getWrappedClient().options(resourceUri) : null;
-   }
+   public Call options(String resourceUri);
    
    /**
-    * Post a representation to the identified resource.
+    * Posts a representation to the identified resource.
     * @param resourceUri The URI of the resource to post to.
     * @param input The input representation to post.
     * @return The returned uniform call.
     */
-   public Call post(String resourceUri, Representation input)
-   {
-   	return (getWrappedClient() != null) ? getWrappedClient().post(resourceUri, input) : null;
-   }
+   public Call post(String resourceUri, Representation input);
 
    /**
     * Puts a representation in the identified resource.
@@ -138,18 +74,12 @@ public class Client extends Connector implements ClientInterface
     * @param input The input representation to put.
     * @return The returned uniform call.
     */
-   public Call put(String resourceUri, Representation input)
-   {
-   	return (getWrappedClient() != null) ? getWrappedClient().put(resourceUri, input) : null;
-   }
+   public Call put(String resourceUri, Representation input);
    
    /**
     * Tests the identified resource.
     * @param resourceUri The URI of the resource to delete.
     * @return The returned uniform call.
     */
-   public Call trace(String resourceUri)
-   {
-   	return (getWrappedClient() != null) ? getWrappedClient().trace(resourceUri) : null;
-   }
+   public Call trace(String resourceUri);
 }

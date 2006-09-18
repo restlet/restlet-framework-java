@@ -24,9 +24,9 @@ package org.restlet;
 
 import java.util.logging.Logger;
 
-import org.restlet.data.Method;
+import org.restlet.connector.ClientInterface;
 import org.restlet.data.ParameterList;
-import org.restlet.data.Representation;
+import org.restlet.data.Protocol;
 
 /**
  * Context associated with a Restlet.
@@ -57,17 +57,36 @@ public class Context
    {
    	this.logger = logger;
    }
+
+   /**
+    * Returns a client delegate for the given protocol.
+    * @param protocol The protocol required.
+    * @return A client delegate for the given protocol or null if it isn't available.
+    */
+   public ClientInterface getClient(Protocol protocol)
+   {
+      throw new UnsupportedOperationException("This context doesn't dispatch calls");
+   }
    
    /**
-    * Returns the modifiable list of parameters.
-    * @return The modifiable list of parameters.
+    * Gets the client delegate for the call's target resource based on the reference's scheme protocol,
+    * then use it to handle the given call.
+    * @param call The call to handle.
     */
-   public ParameterList getParameters()
+   public void handle(Call call)
    {
-      if(this.parameters == null) this.parameters = new ParameterList();
-      return this.parameters;
+   	ClientInterface client = getClient(call.getResourceRef().getSchemeProtocol());
+   	
+   	if(client != null)
+   	{
+   		client.handle(call);
+   	}
+   	else
+   	{
+         throw new RuntimeException("Unable to find a client delegate for the protocol: " + call.getResourceRef().getSchemeProtocol().getName());
+   	}
    }
-
+   
    /**
     * Returns the logger.
     * @return The logger.
@@ -85,73 +104,14 @@ public class Context
    {
       this.logger = logger;
    }
-
+   
    /**
-    * Handles a call.
-    * @param call The call to handle.
+    * Returns the modifiable list of parameters.
+    * @return The modifiable list of parameters.
     */
-   public void handle(Call call)
+   public ParameterList getParameters()
    {
-      throw new UnsupportedOperationException("This context doesn't dispatch calls");
-   }
-
-   /**
-    * Gets the identified resource.
-    * @param resourceUri The URI of the resource to get.
-    * @return The returned uniform call.
-    */
-   public Call get(String resourceUri)
-   {
-      Call call = new Call();
-      call.setResourceRef(resourceUri);
-      call.setMethod(Method.GET);
-      handle(call);
-      return call;
-   }
-
-   /**
-    * Post a representation to the identified resource.
-    * @param resourceUri The URI of the resource to post to.
-    * @param input The input representation to post.
-    * @return The returned uniform call.
-    */
-   public Call post(String resourceUri, Representation input)
-   {
-      Call call = new Call();
-      call.setResourceRef(resourceUri);
-      call.setMethod(Method.POST);
-      call.setInput(input);
-      handle(call);
-      return call;
-   }
-
-   /**
-    * Puts a representation in the identified resource.
-    * @param resourceUri The URI of the resource to modify.
-    * @param input The input representation to put.
-    * @return The returned uniform call.
-    */
-   public Call put(String resourceUri, Representation input)
-   {
-      Call call = new Call();
-      call.setResourceRef(resourceUri);
-      call.setMethod(Method.PUT);
-      call.setInput(input);
-      handle(call);
-      return call;
-   }
-
-   /**
-    * Deletes the identified resource.
-    * @param resourceUri The URI of the resource to delete.
-    * @return The returned uniform call.
-    */
-   public Call delete(String resourceUri)
-   {
-      Call call = new Call();
-      call.setResourceRef(resourceUri);
-      call.setMethod(Method.DELETE);
-      handle(call);
-      return call;
+      if(this.parameters == null) this.parameters = new ParameterList();
+      return this.parameters;
    }
 }

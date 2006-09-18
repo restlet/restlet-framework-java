@@ -27,6 +27,12 @@ Changes log
  - Renamed Reference.getProtocol() into getSchemeProtocol().
  - Connector and Component no longer derive from Restlet, it was allowing some code reuse but also created some confusion between those core concepts.
  - Scorer now derives from Filter to improve factorization.
+ - Renamed Handler into Finder (hopefully more explicit).
+ - Renamed DirectoryHandler* classes into DirectoryFinder*.
+ - Added Context.getClient() returning a ClientInterface for a specific protocol.
+ - Removed get/post/put/delete methods on Context as getClient() or handle() are preferred.
+ - Added a post() method on Resource returning an instance of the new org.restlet.data.Result class as well as put() and delete().
+ - Renamed Chainer.findNext(Call) into getNext(Call).
 
 [Other changes] 
  - Updated Jetty 6 extension to final 6.0 release.
@@ -47,6 +53,7 @@ Changes log
  - Added new Context constructor taking just a logger name.
  - Clarified the Javadocs of root classes in org.restlet.
  - Added more constructors to Chainer, Filter and Handler.
+ - Readded UniformInterface and added ClientInterface.
 
 1.0 beta 18 (2006-08-19)
 [Bugs fixed]

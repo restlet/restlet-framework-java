@@ -27,7 +27,7 @@ import org.restlet.component.Container;
 import org.restlet.data.ChallengeScheme;
 import org.restlet.data.Protocol;
 
-import com.noelios.restlet.DirectoryHandler;
+import com.noelios.restlet.DirectoryFinder;
 import com.noelios.restlet.GuardFilter;
 import com.noelios.restlet.HostRouter;
 import com.noelios.restlet.LogFilter;
@@ -69,7 +69,7 @@ public class Tutorial09a implements Constants
          guard.setNext(host);
 
          // Create a directory Restlet able to return a deep hierarchy of Web files
-         DirectoryHandler directory = new DirectoryHandler(myContext, ROOT_URI, "index.html");
+         DirectoryFinder directory = new DirectoryFinder(myContext, ROOT_URI, "index.html");
 
          // Then attach the directory Restlet to the host router.
          host.getScorers().add("/", directory);

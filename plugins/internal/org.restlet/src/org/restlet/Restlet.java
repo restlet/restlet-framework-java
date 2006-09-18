@@ -36,7 +36,7 @@ import org.restlet.data.Status;
  * @see <a href="http://www.restlet.org/tutorial#part03">Tutorial: Listening to Web browsers</a>
  * @author Jerome Louvel (contact@noelios.com) <a href="http://www.noelios.com/">Noelios Consulting</a>
  */
-public class Restlet
+public class Restlet implements UniformInterface
 {
    /** The context. */
 	private Context context;

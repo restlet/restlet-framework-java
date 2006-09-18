@@ -25,7 +25,7 @@ package com.noelios.restlet.example.tutorial;
 import org.restlet.component.Container;
 import org.restlet.data.Protocol;
 
-import com.noelios.restlet.DirectoryHandler;
+import com.noelios.restlet.DirectoryFinder;
 import com.noelios.restlet.HostRouter;
 
 /**
@@ -51,7 +51,7 @@ public class Tutorial06 implements Constants
 
          // Create a directory Restlet able to return a deep hierarchy of Web files
          // (HTML pages, CSS stylesheets or GIF images) from a local directory.
-         DirectoryHandler directory = new DirectoryHandler(myContainer.getContext(), ROOT_URI, "index.html");
+         DirectoryFinder directory = new DirectoryFinder(myContainer.getContext(), ROOT_URI, "index.html");
 
          // Then attach the Restlet to the container.
          host.getScorers().add("/", directory);

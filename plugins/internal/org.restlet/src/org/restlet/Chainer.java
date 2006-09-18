@@ -53,11 +53,11 @@ public class Chainer extends Restlet
     */
    protected void defaultHandle(Call call)
    {
-   	Restlet target = findNext(call);
+   	Restlet next = getNext(call);
    	
-   	if(target != null)
+   	if(next != null)
    	{
-      	call.handle(target);
+      	call.handle(next);
    	}
    	else
    	{
@@ -66,11 +66,11 @@ public class Chainer extends Restlet
    }
 
    /**
-	 * Finds the next Restlet if available.
+	 * Returns the next Restlet if available.
 	 * @param call The current call.
 	 * @return The next Restlet if available or null.
 	 */
-	public Restlet findNext(Call call)
+	public Restlet getNext(Call call)
 	{
 		return null;
 	}

@@ -128,11 +128,11 @@ public class Router extends Chainer
    }
 
 	/**
-	 * Finds the next Restlet if available.
+	 * Returns the next Restlet if available.
 	 * @param call The current call.
 	 * @return The next Restlet if available or null.
 	 */
-	public Restlet findNext(Call call)
+	public Restlet getNext(Call call)
 	{
 		Scorer result = null;
 		
@@ -177,7 +177,7 @@ public class Router extends Chainer
 					break;
 					
 					case CUSTOM:
-						result = customFind(call);
+						result = getCustom(call);
 					break;
 				}
 			}
@@ -198,7 +198,7 @@ public class Router extends Chainer
 	 * @param call The current call.
 	 * @return The matched scorer if available or null.
 	 */
-	protected Scorer customFind(Call call)
+	protected Scorer getCustom(Call call)
 	{
 		return null;
 	}

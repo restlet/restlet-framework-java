@@ -33,7 +33,7 @@ package org.restlet;
  */
 public class Filter extends Chainer
 {
-	/** The chained Restlet. */
+	/** The attached Restlet. */
 	private Restlet next;
 
 	/**
@@ -65,18 +65,18 @@ public class Filter extends Chainer
 	}
 
 	/**
-	 * Finds the next Restlet if available.
+	 * Returns the next Restlet if available.
 	 * @param call The current call.
 	 * @return The next Restlet if available or null.
 	 */
-	public Restlet findNext(Call call)
+	public Restlet getNext(Call call)
 	{
 		return getNext();
 	}
 
 	/**
-	 * Sets the chained Restlet shared by all calls going through this filter.
-	 * @param next The chained Restlet.
+	 * Sets the attached Restlet shared by all calls going through this filter.
+	 * @param next The attached Restlet.
 	 */
 	public void setNext(Restlet next)
 	{
@@ -84,8 +84,8 @@ public class Filter extends Chainer
 	}
 
 	/**
-	 * Returns the chained Restlet.
-	 * @return The chained Restlet or null.
+	 * Returns the attached Restlet.
+	 * @return The attached Restlet or null.
 	 */
 	public Restlet getNext()
 	{
@@ -93,8 +93,8 @@ public class Filter extends Chainer
 	}
 
 	/**
-	 * Indicates if there is a chained Restlet.
-	 * @return True if there is a chained Restlet.
+	 * Indicates if there is an attached Restlet.
+	 * @return True if there is an attached Restlet.
 	 */
 	public boolean hasNext()
 	{

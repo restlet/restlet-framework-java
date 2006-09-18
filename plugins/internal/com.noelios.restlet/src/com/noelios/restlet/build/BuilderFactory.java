@@ -30,7 +30,7 @@ import org.restlet.component.Application;
 import org.restlet.component.Component;
 import org.restlet.component.Container;
 
-import com.noelios.restlet.DirectoryHandler;
+import com.noelios.restlet.DirectoryFinder;
 import com.noelios.restlet.ExtractFilter;
 import com.noelios.restlet.GuardFilter;
 import com.noelios.restlet.HostRouter;
@@ -93,10 +93,10 @@ public class BuilderFactory
 	 * @param parent The parent builder.
 	 * @param node The wrapped node.
 	 */
-	public DirectoryHandlerBuilder createDirectoryHandlerBuilder(ObjectBuilder parent,
-			DirectoryHandler node)
+	public DirectoryFinderBuilder createDirectoryHandlerBuilder(ObjectBuilder parent,
+			DirectoryFinder node)
 	{
-		return new DirectoryHandlerBuilder(parent, node);
+		return new DirectoryFinderBuilder(parent, node);
 	}
 
 	/**

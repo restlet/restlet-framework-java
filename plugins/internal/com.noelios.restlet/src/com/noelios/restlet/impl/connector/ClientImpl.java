@@ -162,6 +162,20 @@ public class ClientImpl extends Client
       
       return this.protocols;
    }
+
+   /**
+    * Deletes the identified resource.
+    * @param resourceUri The URI of the resource to delete.
+    * @return The returned uniform call.
+    */
+   public Call delete(String resourceUri)
+   {
+      Call call = new Call();
+      call.setResourceRef(resourceUri);
+      call.setMethod(Method.DELETE);
+      handle(call);
+      return call;
+   }
    
    /**
     * Gets the identified resource.
@@ -173,6 +187,34 @@ public class ClientImpl extends Client
       Call call = new Call();
       call.setResourceRef(resourceUri);
       call.setMethod(Method.GET);
+      handle(call);
+      return call;
+   }
+   
+   /**
+    * Gets the identified resource without its representation's content.
+    * @param resourceUri The URI of the resource to get.
+    * @return The returned uniform call.
+    */
+   public Call head(String resourceUri)
+   {
+      Call call = new Call();
+      call.setResourceRef(resourceUri);
+      call.setMethod(Method.HEAD);
+      handle(call);
+      return call;
+   }
+   
+   /**
+    * Gets the options for the identified resource.
+    * @param resourceUri The URI of the resource to get.
+    * @return The returned uniform call.
+    */
+   public Call options(String resourceUri)
+   {
+      Call call = new Call();
+      call.setResourceRef(resourceUri);
+      call.setMethod(Method.OPTIONS);
       handle(call);
       return call;
    }
@@ -208,19 +250,18 @@ public class ClientImpl extends Client
       handle(call);
       return call;
    }
-
+   
    /**
-    * Deletes the identified resource.
+    * Tests the identified resource.
     * @param resourceUri The URI of the resource to delete.
     * @return The returned uniform call.
     */
-   public Call delete(String resourceUri)
+   public Call trace(String resourceUri)
    {
       Call call = new Call();
       call.setResourceRef(resourceUri);
-      call.setMethod(Method.DELETE);
+      call.setMethod(Method.TRACE);
       handle(call);
       return call;
    }
-
 }

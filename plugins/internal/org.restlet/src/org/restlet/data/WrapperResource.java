@@ -103,20 +103,30 @@ public class WrapperResource implements Resource
 	}
 	
 	/**
+	 * Posts a variant representation in the resource.
+	 * @param entity The posted entity. 
+	 * @return The result information.
+	 */
+	public Result post(Representation entity)
+	{
+		return getWrappedResource().post(entity);
+	}
+	
+	/**
 	 * Puts a variant representation in the resource.
 	 * @param variant A new or updated variant representation. 
-	 * @return The result status.
+	 * @return The result information.
 	 */
-	public Status put(Representation variant)
+	public Result put(Representation variant)
 	{
 		return getWrappedResource().put(variant);
 	}
 	
 	/**
 	 * Asks the resource to delete itself and all its representations.
-	 * @return The result status. 
+	 * @return The result information. 
 	 */
-	public Status delete()
+	public Result delete()
 	{
 		return getWrappedResource().delete();
 	}

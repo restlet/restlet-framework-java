@@ -682,9 +682,9 @@ public class HostRouter extends Router
 	 * @param call The current call.
 	 * @return The next Restlet if available or null.
 	 */
-	public Restlet findNext(Call call)
+	public Restlet getNext(Call call)
 	{
-		return this.backRouter.findNext(call);
+		return this.backRouter.getNext(call);
 	}
 	
 	/**

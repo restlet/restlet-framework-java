@@ -103,22 +103,32 @@ public abstract class AbstractResource implements Resource
 	}
 	
 	/**
+	 * Posts a variant representation in the resource.
+	 * @param entity The posted entity. 
+	 * @return The result information.
+	 */
+	public Result post(Representation entity)
+	{
+		return new Result(Status.SERVER_ERROR_NOT_IMPLEMENTED);
+	}
+	
+	/**
 	 * Puts a variant representation in the resource.
 	 * @param variant A new or updated variant representation. 
-	 * @return The result status.
+	 * @return The result information.
 	 */
-	public Status put(Representation variant)
+	public Result put(Representation variant)
 	{
-		return Status.SERVER_ERROR_NOT_IMPLEMENTED;
+		return new Result(Status.SERVER_ERROR_NOT_IMPLEMENTED);
 	}
 	
 	/**
 	 * Asks the resource to delete itself and all its representations.
-	 * @return The result status. 
+	 * @return The result information. 
 	 */
-	public Status delete()
+	public Result delete()
 	{
-		return Status.SERVER_ERROR_NOT_IMPLEMENTED;
+		return new Result(Status.SERVER_ERROR_NOT_IMPLEMENTED);
 	}
 	
 	/**

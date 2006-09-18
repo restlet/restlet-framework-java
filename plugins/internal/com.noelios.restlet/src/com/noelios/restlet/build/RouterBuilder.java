@@ -29,7 +29,7 @@ import org.restlet.data.ChallengeScheme;
 
 import com.noelios.restlet.CompressFilter;
 import com.noelios.restlet.DecompressFilter;
-import com.noelios.restlet.DirectoryHandler;
+import com.noelios.restlet.DirectoryFinder;
 import com.noelios.restlet.ExtractFilter;
 import com.noelios.restlet.GuardFilter;
 import com.noelios.restlet.HostRouter;
@@ -186,9 +186,9 @@ public class RouterBuilder extends RestletBuilder
     * @param indexName If no file name is specified, use the (optional) index name.
     * @return The builder for the created node.
     */
-   public DirectoryHandlerBuilder attachDirectory(String pattern, String rootUri, String indexName)
+   public DirectoryFinderBuilder attachDirectory(String pattern, String rootUri, String indexName)
    {
-      DirectoryHandler node = new DirectoryHandler(getNode().getContext(), rootUri, indexName);
+      DirectoryFinder node = new DirectoryFinder(getNode().getContext(), rootUri, indexName);
       getNode().getScorers().add(pattern, node);
       return Builders.buildDirectory(this, node);
    }

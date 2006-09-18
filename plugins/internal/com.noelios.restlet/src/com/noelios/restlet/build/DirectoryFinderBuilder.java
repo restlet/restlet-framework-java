@@ -22,21 +22,21 @@
 
 package com.noelios.restlet.build;
 
-import com.noelios.restlet.DirectoryHandler;
+import com.noelios.restlet.DirectoryFinder;
 
 /**
  * Fluent builder for directory handlers.
  * @author Jerome Louvel (contact[at]noelios.com) <a href="http://www.noelios.com/">Noelios Consulting</a>
- * @see com.noelios.restlet.DirectoryHandler
+ * @see com.noelios.restlet.DirectoryFinder
  */
-public class DirectoryHandlerBuilder extends RestletBuilder
+public class DirectoryFinderBuilder extends RestletBuilder
 {
 	/**
 	 * Constructor.
 	 * @param parent The parent builder.
 	 * @param node The wrapped node.
 	 */
-   public DirectoryHandlerBuilder(ObjectBuilder parent, DirectoryHandler node)
+   public DirectoryFinderBuilder(ObjectBuilder parent, DirectoryFinder node)
    {
       super(parent, node);
    }
@@ -45,9 +45,9 @@ public class DirectoryHandlerBuilder extends RestletBuilder
     * Returns the node wrapped by the builder.
     * @return The node wrapped by the builder.
     */
-   public DirectoryHandler getNode()
+   public DirectoryFinder getNode()
    {
-      return (DirectoryHandler)super.getNode();
+      return (DirectoryFinder)super.getNode();
    }
 
 	/** 
@@ -55,7 +55,7 @@ public class DirectoryHandlerBuilder extends RestletBuilder
 	 * @param negotiate True if content negotation should be enabled.
     * @return The current builder.
 	 */
-   public DirectoryHandlerBuilder negotiate(boolean negotiate)
+   public DirectoryFinderBuilder negotiate(boolean negotiate)
    {
    	getNode().setNegotiationEnabled(negotiate);
    	return this;
@@ -66,7 +66,7 @@ public class DirectoryHandlerBuilder extends RestletBuilder
 	 * @param allow True if the display of directory listings is allowed when no index file is found.
     * @return The current builder.
     */
-   public DirectoryHandlerBuilder listing(boolean allow)
+   public DirectoryFinderBuilder listing(boolean allow)
    {
    	getNode().setListingAllowed(allow);
    	return this;
@@ -77,7 +77,7 @@ public class DirectoryHandlerBuilder extends RestletBuilder
     * @param deeplyAccessible True if the subdirectories are deeply accessible.
     * @return The current builder.
     */
-   public DirectoryHandlerBuilder deeply(boolean deeplyAccessible)
+   public DirectoryFinderBuilder deeply(boolean deeplyAccessible)
    {
    	getNode().setDeeplyAccessible(deeplyAccessible);
    	return this;
@@ -87,7 +87,7 @@ public class DirectoryHandlerBuilder extends RestletBuilder
     * Indicates if modifications to context resources are allowed.
     * @param modifiable True if modifications to context resources are allowed.
     */
-   public DirectoryHandlerBuilder modifiable(boolean modifiable)
+   public DirectoryFinderBuilder modifiable(boolean modifiable)
    {
    	getNode().setModifiable(modifiable);
    	return this;

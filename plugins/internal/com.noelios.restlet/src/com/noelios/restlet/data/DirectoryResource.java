@@ -31,12 +31,13 @@ import java.util.logging.Logger;
 import org.restlet.Call;
 import org.restlet.data.AbstractResource;
 import org.restlet.data.MediaType;
+import org.restlet.data.Method;
 import org.restlet.data.Reference;
 import org.restlet.data.ReferenceList;
 import org.restlet.data.Representation;
 import org.restlet.data.Status;
 
-import com.noelios.restlet.DirectoryHandler;
+import com.noelios.restlet.DirectoryFinder;
 
 /**
  * Resource supported by a set of context representations (from file system, class loaders and webapp context). 
@@ -55,7 +56,7 @@ public class DirectoryResource extends AbstractResource
 	private Call call;
 
 	/** The parent directory handler. */
-	private DirectoryHandler handler;
+	private DirectoryFinder handler;
 
 	/** The resource path relative to the directory URI. */
 	private String relativePart;
@@ -84,7 +85,7 @@ public class DirectoryResource extends AbstractResource
 	 * @param call The handled call.
 	 * @throws IOException 
 	 */
-	public DirectoryResource(DirectoryHandler handler, Call call) throws IOException
+	public DirectoryResource(DirectoryFinder handler, Call call) throws IOException
 	{
 		// Update the member variables
 		this.handler = handler;
@@ -106,7 +107,8 @@ public class DirectoryResource extends AbstractResource
 		}
 
 		// Try to detect the presence of a directory
-		Call contextCall = getDirectory().getContext().get(this.targetUri);
+		Call contextCall = new Call(Method.GET, this.targetUri);
+		getDirectory().getContext().handle(call);
 		if ((contextCall.getOutput() != null)
 				&& contextCall.getOutput().getMediaType().equals(MediaType.TEXT_URI_LIST))
 		{
@@ -147,7 +149,8 @@ public class DirectoryResource extends AbstractResource
 				this.baseName = targetUri.substring(lastSlashIndex + 1);
 			}
 
-			contextCall = getDirectory().getContext().get(this.directoryUri);
+			contextCall = new Call(Method.GET, this.directoryUri);
+			getDirectory().getContext().handle(call);
 			if ((contextCall.getOutput() != null)
 					&& contextCall.getOutput().getMediaType().equals(MediaType.TEXT_URI_LIST))
 			{
@@ -178,7 +181,7 @@ public class DirectoryResource extends AbstractResource
 	 * Returns the parent directory handler.
 	 * @return The parent directory handler.
 	 */
-	public DirectoryHandler getDirectory()
+	public DirectoryFinder getDirectory()
 	{
 		return this.handler;
 	}
@@ -319,7 +322,8 @@ public class DirectoryResource extends AbstractResource
 						if (validVariant)
 						{
 							// Add the new variant to the result list
-							Call contextCall = getDirectory().getContext().get(entryUri);
+							Call contextCall = new Call(Method.GET, entryUri);
+							getDirectory().getContext().handle(call);
 							if (contextCall.getStatus().isSuccess()
 									&& (contextCall.getOutput() != null))
 							{
