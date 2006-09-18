@@ -34,8 +34,8 @@ import org.restlet.Restlet;
 import org.restlet.component.Container;
 import org.restlet.data.Reference;
 
-import com.noelios.restlet.connector.HttpServer;
-import com.noelios.restlet.connector.HttpServerConverter;
+import com.noelios.restlet.impl.connector.HttpServer;
+import com.noelios.restlet.impl.connector.HttpServerConverter;
 
 /**
  * Servlet acting like an HTTP server connector. See the getTarget() method for details on how 
@@ -215,18 +215,18 @@ public class ServerServlet extends HttpServlet
 						{
 							// Load the target class using the given class name
 							Class targetClass = Class.forName(targetClassName);
-							Restlet target = null;
+							Object target = null;
 
 							// Create a new instance of the target class
 							// and store it for reuse by other ServerServlets.
 							try
 							{
-								target = (Restlet) targetClass.getConstructor(Context.class)
+								target = targetClass.getConstructor(Context.class)
 										.newInstance((Context) null);
 							}
 							catch (NoSuchMethodException nsme)
 							{
-								target = (Restlet) targetClass.newInstance();
+								target = targetClass.newInstance();
 							}
 
 							// First, let's locate the closest component
@@ -236,12 +236,12 @@ public class ServerServlet extends HttpServlet
 								// The target is probably a Container or an Application
 								container = (Container) target;
 							}
-							else
+							else if(target instanceof Restlet)
 							{
 								// The target is probably a standalone Restlet or Filter or Router
 								// Try to get its parent, even if chances to find one are low
 								container = new Container(null);
-								container.setRoot(target);
+								container.setRoot((Restlet)target);
 							}
 							
 							if (container != null)
@@ -257,7 +257,7 @@ public class ServerServlet extends HttpServlet
 								// and set it on the container and optionally the target Restlet
 								container.setContext(new ServletContext(this, container));
 								result.setContext(container.getContext());
-								if (target != container) target.setContext(container.getContext());
+								if (target != container) ((Restlet)target).setContext(container.getContext());
 
 								// Set if a context path needs to be transmitted
 								String initContextPathName = getInitParameter(NAME_TARGET_INIT_CONTEXTPATH);

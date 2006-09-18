@@ -29,7 +29,7 @@ import java.nio.channels.WritableByteChannel;
 import org.restlet.data.AbstractRepresentation;
 import org.restlet.data.MediaType;
 
-import com.noelios.restlet.util.ByteUtils;
+import com.noelios.restlet.impl.util.ByteUtils;
 
 /**
  * Representation based on a BIO stream.

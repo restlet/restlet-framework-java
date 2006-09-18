@@ -30,7 +30,7 @@ import org.restlet.data.Method;
 import org.restlet.data.Reference;
 import org.restlet.data.Status;
 
-import com.noelios.restlet.connector.HttpCall;
+import com.noelios.restlet.impl.connector.HttpCall;
 
 /**
  * Test {@link org.restlet.Call}.

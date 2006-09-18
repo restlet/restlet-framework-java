@@ -27,6 +27,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 import java.util.TreeMap;
+import java.util.logging.Level;
 import java.util.logging.Logger;
 
 import org.restlet.data.ClientData;
@@ -54,6 +55,9 @@ import org.restlet.spi.Factory;
  */
 public class Call
 {
+   /** Error message. */
+   private static final String UNABLE_TO_START = "Unable to start the target Restlet";
+   
 	/** Obtain a suitable logger. */
 	private static Logger logger = Logger.getLogger(Call.class.getCanonicalName());
 
@@ -322,6 +326,47 @@ public class Call
 	public Status getStatus()
 	{
 		return this.status;
+	}
+   
+   /**
+	 * Handles a call with a given target Restlet. 
+	 * @param target The target Restlet.
+	 */
+	public void handle(Restlet target)
+	{
+   	if(target != null)
+   	{
+			if(target.isStopped())
+			{
+				try
+				{
+					// Start the target Restlet
+					target.start();
+				}
+				catch (Exception e)
+				{
+					logger.log(Level.WARNING, UNABLE_TO_START, e);
+					setStatus(Status.SERVER_ERROR_INTERNAL);
+				}
+			}
+			
+			if(target.isStarted())
+			{
+				// Invoke the target handler
+				target.handle(this);
+			}
+			else
+			{
+				logger.log(Level.WARNING, UNABLE_TO_START);
+				setStatus(Status.SERVER_ERROR_INTERNAL);
+			}
+   	}
+   	else
+   	{
+   		// No additional Restlet available,
+   		// moving up the stack of calls,
+   		// applying the post-handle filters.
+   	}
 	}
 
 	/**

@@ -29,6 +29,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import org.restlet.spi.Factory;
+import org.restlet.util.WrapperList;
 
 /**
  * List of URI references.

@@ -22,49 +22,65 @@
 
 package org.restlet.connector;
 
+import java.util.Arrays;
+import java.util.List;
+
 import org.restlet.Call;
-import org.restlet.Context;
-import org.restlet.data.Method;
+import org.restlet.data.Protocol;
 import org.restlet.data.Representation;
+import org.restlet.spi.Factory;
 
 /**
- * Connector that initiates communication by making a request. By default, the handle(UniformCall)
- * method converts the call received into a connector call and handle it.<br/><br/>"The primary connector types are
- * client and server. The essential difference between the two is that a client initiates communication by
- * making a request, whereas a server listens for connections and responds to requests in order to supply
- * access to its services. A component may include both client and server connectors." Roy T. Fielding
- * @see <a href="http://www.ics.uci.edu/~fielding/pubs/dissertation/rest_arch_style.htm#sec_5_2_2">Source
- * dissertation</a>
+ * Generic client connector supporting multiples protocols.
  * @author Jerome Louvel (contact@noelios.com) <a href="http://www.noelios.com/">Noelios Consulting</a>
  */
 public class Client extends Connector
-{   
-   /**
-    * Constructor.
-    * @param context The context to use.
-    */
-   public Client(Context context)
-   {
-   	super(context);
-   }
-   
-   /**
-    * Constructor.
-    * @param loggerName The logger name to use in the context.
-    */
-   public Client(String loggerName)
-   {
-   	super(loggerName);
-   }
-   
-   /**
-    * Constructor that uses the class name as the logger name.
-    */
-   public Client()
-   {
-   	super();
-   }
+{
+	/**
+	 * Constructor.
+	 * @param wrappedClient The wrapped client.
+	 */
+	protected Client(Client wrappedClient)
+	{
+		super(wrappedClient);
+	}
 	
+	/**
+    * Constructor.
+    * @param protocol The connector protocol.
+	 */
+	public Client(Protocol protocol)
+	{
+		this(Arrays.asList(protocol));
+	}
+	
+	/**
+    * Constructor.
+    * @param protocols The connector protocols.
+	 */
+	public Client(List<Protocol> protocols)
+	{
+		super(Factory.getInstance().createClient(protocols));
+	}
+
+	/**
+	 * Returns the wrapped client.
+	 * @return The wrapped client.
+	 */
+	private Client getWrappedClient()
+	{
+		return (Client)getWrappedConnector();
+	}
+
+   /**
+    * Handles a call.
+    * @param call The call to handle.
+    */
+   public void handle(Call call)
+   {
+   	if(getWrappedClient() != null) getWrappedClient().handle(call);
+   }
+
    /**
     * Gets the identified resource.
     * @param resourceUri The URI of the resource to get.
@@ -72,27 +88,18 @@ public class Client extends Connector
     */
    public Call get(String resourceUri)
    {
-      Call call = new Call();
-      call.setResourceRef(resourceUri);
-      call.setMethod(Method.GET);
-      handle(call);
-      return call;
+   	return (getWrappedClient() != null) ? getWrappedClient().get(resourceUri) : null;
    }
-
+   
    /**
     * Post a representation to the identified resource.
     * @param resourceUri The URI of the resource to post to.
     * @param input The input representation to post.
     * @return The returned uniform call.
     */
-	public Call post(String resourceUri, Representation input)
+   public Call post(String resourceUri, Representation input)
    {
-      Call call = new Call();
-      call.setResourceRef(resourceUri);
-      call.setMethod(Method.POST);
-      call.setInput(input);
-      handle(call);
-      return call;
+   	return (getWrappedClient() != null) ? getWrappedClient().post(resourceUri, input) : null;
    }
 
    /**
@@ -103,14 +110,9 @@ public class Client extends Connector
     */
    public Call put(String resourceUri, Representation input)
    {
-      Call call = new Call();
-      call.setResourceRef(resourceUri);
-      call.setMethod(Method.PUT);
-      call.setInput(input);
-      handle(call);
-      return call;
+   	return (getWrappedClient() != null) ? getWrappedClient().put(resourceUri, input) : null;
    }
-
+   
    /**
     * Deletes the identified resource.
     * @param resourceUri The URI of the resource to delete.
@@ -118,11 +120,7 @@ public class Client extends Connector
     */
    public Call delete(String resourceUri)
    {
-      Call call = new Call();
-      call.setResourceRef(resourceUri);
-      call.setMethod(Method.DELETE);
-      handle(call);
-      return call;
+   	return (getWrappedClient() != null) ? getWrappedClient().delete(resourceUri) : null;
    }
 
 }

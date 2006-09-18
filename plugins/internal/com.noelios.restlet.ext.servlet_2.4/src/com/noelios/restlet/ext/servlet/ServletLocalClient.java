@@ -35,8 +35,8 @@ import org.restlet.data.ReferenceList;
 import org.restlet.data.Representation;
 import org.restlet.data.Status;
 
-import com.noelios.restlet.connector.LocalClient;
 import com.noelios.restlet.data.InputRepresentation;
+import com.noelios.restlet.impl.connector.LocalClient;
 
 /**
  * Local client connector based on a Servlet context (JEE Web application context).

@@ -27,7 +27,6 @@ import java.util.ArrayList;
 import java.util.List;
 
 import org.restlet.connector.Client;
-import org.restlet.connector.GenericClient;
 import org.restlet.data.MediaType;
 import org.restlet.data.Protocol;
 import org.restlet.data.Reference;
@@ -81,7 +80,7 @@ public class Service extends SaxRepresentation
 	 */
 	public Service(String serviceUri) throws IOException
 	{
-		this(new GenericClient(Protocol.HTTP), serviceUri);
+		this(new Client(Protocol.HTTP), serviceUri);
 	}
 	
 	/**
@@ -103,7 +102,7 @@ public class Service extends SaxRepresentation
 	 */
 	public Service(String serviceUri, Representation xmlService) throws IOException
 	{
-		this(new GenericClient(Protocol.HTTP), serviceUri, xmlService);
+		this(new Client(Protocol.HTTP), serviceUri, xmlService);
 	}
 
 	/**

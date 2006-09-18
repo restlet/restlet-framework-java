@@ -34,52 +34,67 @@ import org.restlet.Restlet;
  * dissertation</a>
  * @author Jerome Louvel (contact@noelios.com) <a href="http://www.noelios.com/">Noelios Consulting</a>
  */
-public class Component extends Restlet
+public abstract class Component
 {
-	/** The root Restlet. */
-	private Restlet root;
+   /** The wrapped component. */
+	private Component wrappedComponent;
    
-   /**
-    * Constructor.
-    * @param context The context.
-    */
-   public Component(Context context)
-   {
-      this(context, null);
-   }
+	/**
+	 * Constructor for wrappers.
+	 * @param wrappedComponent The wrapped component.
+	 */
+	protected Component(Component wrappedComponent)
+	{
+		this.wrappedComponent = wrappedComponent;
+	}
 
-   /**
-    * Constructor.
-    * @param context The context.
-    * @param root The root Restlet.
-    */
-   public Component(Context context, Restlet root)
-   {
-   	super(context);
-   	this.root = root;
-   }
+	/**
+	 * Returns the wrapped component.
+	 * @return The wrapped component.
+	 */
+	protected Component getWrappedComponent()
+	{
+		return this.wrappedComponent;
+	}
 
    /** Start hook. */
    public void start() throws Exception
    {
-      super.start();
-
-      if(getRoot() != null)
-   	{
-   		getRoot().start();
-   	}
+   	getWrappedComponent().start();
    }
 
    /** Stop hook. */
    public void stop() throws Exception
    {
-   	if(getRoot() != null)
-   	{
-   		getRoot().stop();
-   	}
-   	
-      super.stop();
+   	getWrappedComponent().stop();
    }
+
+   /**
+    * Returns the context.
+    * @return The context.
+    */
+   public Context getContext()
+   {
+      return getWrappedComponent().getContext();
+   }
+
+   /**
+    * Sets the context.
+    * @param context The context.
+    */
+   public void setContext(Context context)
+   {
+		getWrappedComponent().setContext(context);
+   }
+
+	/**
+	 * Returns the root Restlet.
+	 * @return The root Restlet.
+	 */
+	public Restlet getRoot()
+	{
+		return getWrappedComponent().getRoot();
+	}
 
    /**
 	 * Sets the root Restlet that will receive all incoming calls. In general, instance of Router, 
@@ -88,16 +103,7 @@ public class Component extends Restlet
 	 */
 	public void setRoot(Restlet root)
 	{
-		this.root = root;
-	}
-
-	/**
-	 * Returns the root Restlet.
-	 * @return The root Restlet.
-	 */
-	public Restlet getRoot()
-	{
-		return this.root;
+		getWrappedComponent().setRoot(root);
 	}
 
 	/**
@@ -106,7 +112,7 @@ public class Component extends Restlet
 	 */
 	public boolean hasRoot()
 	{
-		return getRoot() != null;
+		return getWrappedComponent().hasRoot();
 	}
 
    /**
@@ -115,7 +121,7 @@ public class Component extends Restlet
     */
 	public void handle(Call call)
    {
-		handle(call, getRoot());
+		getWrappedComponent().handle(call);
    }
 
 }

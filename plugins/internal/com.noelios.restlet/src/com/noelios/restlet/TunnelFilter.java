@@ -26,7 +26,7 @@ import org.restlet.Call;
 import org.restlet.Context;
 import org.restlet.data.Method;
 
-import com.noelios.restlet.util.PreferenceUtils;
+import com.noelios.restlet.impl.util.PreferenceUtils;
 
 /**
  * Filter extracting some attributes from a call.
@@ -99,7 +99,7 @@ public class TunnelFilter extends ExtractFilter
 
          if(methodName != null)
          {
-            call.setMethod(Method.create(methodName));
+            call.setMethod(Method.valueOf(methodName));
          }
       }
 

@@ -24,7 +24,7 @@ package com.noelios.restlet.example.misc;
 
 import org.restlet.Call;
 import org.restlet.Restlet;
-import org.restlet.connector.GenericServer;
+import org.restlet.connector.Server;
 import org.restlet.data.Protocol;
 
 import com.noelios.restlet.data.StringRepresentation;
@@ -49,8 +49,8 @@ public class ConverterTest
          };
 
          // Create the HTTP server and listen on port 8182
-         GenericServer server = new GenericServer(Protocol.HTTP, 8182, handler);
-         server.getContext().getParameters().add("converter", "com.noelios.restlet.example.misc.ConverterExample");
+         Server server = new Server(Protocol.HTTP, 8182, handler);
+//         server.getContext().getParameters().add("converter", "com.noelios.restlet.example.misc.ConverterExample");
          server.start();
       }
       catch(Exception e)

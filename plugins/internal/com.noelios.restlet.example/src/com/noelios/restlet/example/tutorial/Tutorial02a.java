@@ -25,7 +25,6 @@ package com.noelios.restlet.example.tutorial;
 import java.io.IOException;
 
 import org.restlet.connector.Client;
-import org.restlet.connector.GenericClient;
 import org.restlet.data.Protocol;
 
 /**
@@ -39,7 +38,7 @@ public class Tutorial02a
       try
       {
          // Outputting the content of a Web page
-         Client client = new GenericClient(Protocol.HTTP);
+      	Client client = new Client(Protocol.HTTP);
          client.get("http://www.restlet.org").getOutput().write(System.out);
       }
       catch(IOException e)

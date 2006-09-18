@@ -1,1 +1,1 @@
-com.noelios.restlet.connector.LocalClient		# CONTEXT, FILE
+com.noelios.restlet.impl.connector.LocalClient		# CONTEXT, FILE

@@ -37,7 +37,7 @@ import org.xml.sax.helpers.DefaultHandler;
 
 import com.noelios.restlet.data.SaxRepresentation;
 import com.noelios.restlet.data.StringRepresentation;
-import com.noelios.restlet.util.DateUtils;
+import com.noelios.restlet.impl.util.DateUtils;
 import com.noelios.restlet.util.XmlWriter;
 
 /**

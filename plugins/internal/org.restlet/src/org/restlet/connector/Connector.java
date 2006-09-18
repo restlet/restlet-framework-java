@@ -22,12 +22,8 @@
 
 package org.restlet.connector;
 
-import java.util.ArrayList;
 import java.util.List;
-import java.util.logging.Logger;
 
-import org.restlet.Context;
-import org.restlet.Restlet;
 import org.restlet.data.Protocol;
 
 /**
@@ -44,48 +40,85 @@ import org.restlet.data.Protocol;
  * dissertation</a>
  * @author Jerome Louvel (contact@noelios.com) <a href="http://www.noelios.com/">Noelios Consulting</a>
  */
-public class Connector extends Restlet
+public abstract class Connector
 {
-   /** The protocols supported by the connector. */
-	private List<Protocol> protocols;
+   /** The wrapped server. */
+	private Connector wrappedConnector;
    
-   /**
-    * Constructor.
-    * @param context The context to use.
-    */
-   public Connector(Context context)
+	/**
+	 * Constructor for wrappers.
+	 * @param wrappedConnector The wrapped connector.
+	 */
+	protected Connector(Connector wrappedConnector)
+	{
+		this.wrappedConnector = wrappedConnector;
+	}
+
+	/**
+	 * Returns the wrapped connector.
+	 * @return The wrapped connector.
+	 */
+	protected Connector getWrappedConnector()
+	{
+		return this.wrappedConnector;
+	}
+	
+   /** Starts the Restlet. */
+   public void start() throws Exception
    {
-   	super(context);
-   }
-   
-   /**
-    * Constructor.
-    * @param loggerName The logger name to use in the context.
-    */
-   public Connector(String loggerName)
-   {
-   	this(new Context(Logger.getLogger(loggerName)));
-   }
-   
-   /**
-    * Constructor that uses the class name as the logger name.
-    */
-   public Connector()
-   {
-   	setContext(new Context(Logger.getLogger(getClass().getCanonicalName())));
+   	if(this.wrappedConnector != null)
+   	{
+   		this.wrappedConnector.start();
+   	}
    }
 
+   /** Stops the Restlet. */
+   public void stop() throws Exception
+   {
+   	if(this.wrappedConnector != null)
+   	{
+   		this.wrappedConnector.stop();
+   	}
+   }
+
+   /**
+    * Indicates if the Restlet is started.
+    * @return True if the Restlet is started.
+    */
+   public boolean isStarted()
+   {
+   	if(this.wrappedConnector != null)
+   	{
+   		return this.wrappedConnector.isStarted();
+   	}
+   	else
+   	{
+   		return false;
+   	}
+   }
+
+   /**
+    * Indicates if the Restlet is stopped.
+    * @return True if the Restlet is stopped.
+    */
+   public boolean isStopped()
+   {
+   	if(this.wrappedConnector != null)
+   	{
+   		return this.wrappedConnector.isStopped();
+   	}
+   	else
+   	{
+   		return true;
+   	}
+   }
+   
    /**
     * Returns the protocols supported by the connector.
     * @return The protocols supported by the connector.
     */
    public List<Protocol> getProtocols()
    {
-      if(this.protocols == null)
-      {
-      	this.protocols = new ArrayList<Protocol>();
-      }
-      
-      return this.protocols;
+  		return (this.wrappedConnector != null) ? this.wrappedConnector.getProtocols() : null;
    }
 }

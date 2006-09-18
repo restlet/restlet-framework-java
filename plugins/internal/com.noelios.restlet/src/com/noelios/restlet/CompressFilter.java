@@ -131,7 +131,7 @@ public class CompressFilter extends Filter
 	 */
 	public static List<MediaType> getDefaultIgnoredMediaTypes()
 	{
-		List<MediaType> result = Arrays.<MediaType> asList(MediaType.APPLICATION_CABINET, 
+		List<MediaType> result = Arrays.<MediaType> asList(MediaType.APPLICATION_CAB, 
 				MediaType.APPLICATION_GNU_ZIP, MediaType.APPLICATION_ZIP, MediaType.APPLICATION_GNU_TAR, 
 				MediaType.APPLICATION_JAVA_ARCHIVE, MediaType.APPLICATION_STUFFIT, MediaType.APPLICATION_TAR,
 				MediaType.AUDIO_ALL, MediaType.IMAGE_ALL, MediaType.VIDEO_ALL);

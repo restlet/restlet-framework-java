@@ -28,7 +28,7 @@ import java.io.OutputStream;
 
 import org.restlet.data.MediaType;
 
-import com.noelios.restlet.util.ByteUtils;
+import com.noelios.restlet.impl.util.ByteUtils;
 
 /**
  * Transient representation based on a BIO input stream.

@@ -22,95 +22,122 @@
 
 package org.restlet.connector;
 
-import org.restlet.Call;
-import org.restlet.Context;
+import java.util.Arrays;
+import java.util.List;
+
 import org.restlet.Restlet;
-import org.restlet.data.Status;
+import org.restlet.data.Protocol;
+import org.restlet.spi.Factory;
 
 /**
- * Connector that listens for connections and responds to requests. By default, the handle(UniformCall)
- * method delegates the call received to the target restlet<br/><br/>"The primary connector types are
- * client and server. The essential difference between the two is that a client initiates communication by
- * making a request, whereas a server listens for connections and responds to requests in order to supply
- * access to its services. A component may include both client and server connectors." Roy T. Fielding
- * @see <a href="http://www.ics.uci.edu/~fielding/pubs/dissertation/rest_arch_style.htm#sec_5_2_2">Source
- * dissertation</a>
+ * Generic server connector supporting multiples protocols.
  * @author Jerome Louvel (contact@noelios.com) <a href="http://www.noelios.com/">Noelios Consulting</a>
  */
 public class Server extends Connector
 {
-   /** The chained Restlet. */
-   private Restlet next;
-   
+	/**
+	 * Constructor.
+	 * @param wrappedServer The wrapped server.
+	 */
+	protected Server(Server wrappedServer)
+	{
+		super(wrappedServer);
+	}
+	
    /**
-    * Constructor.
-    * @param context The context to use.
-    */
-   public Server(Context context)
-   {
-   	super(context);
-   }
-   
-   /**
-    * Constructor.
-    * @param loggerName The logger name to use in the context.
-    */
-   public Server(String loggerName)
-   {
-   	super(loggerName);
-   }
-   
-   /**
-    * Constructor that uses the class name as the logger name.
-    */
-   public Server()
-   {
-   	super();
-   }
-
-   /**
-    * Handles a call.<br/>
-    * The default behavior is to ask the target Restlet to handle the call.
-    * @param call The call to handle.
-    */
-   public void handle(Call call)
-   {
-   	if(getNext() != null) 
-   	{
-   		getNext().handle(call);
-   	}
-   	else
-   	{
-   		call.setStatus(Status.SERVER_ERROR_INTERNAL);
-   		getContext().getLogger().warning("Unable to find a chained Restlet for the Server connector.");
-   	}
-   }
-
-   /**
-    * Returns the chained Restlet.
-    * @return The chained Restlet.
-    */
-   public Restlet getNext()
-   {
-      return this.next;
-   }
-
-   /**
-    * Indicates if a chained Restlet is set.
-    * @return True if a chained Restlet is set.
-    */
-   public boolean hasNext()
-   {
-      return getNext() != null;
-   }
-
-   /**
-    * Sets the chained Restlet.
+    * Constructor using the protocol's default port.
+    * @param protocol The connector protocol.
     * @param next The chained Restlet.
     */
-   public void setNext(Restlet next)
+   public Server(Protocol protocol, Restlet next)
    {
-      this.next = next;
+   	this(protocol, null, protocol.getDefaultPort(), next);
+   }
+   
+   /**
+    * Constructor.
+    * @param protocol The connector protocol.
+    * @param port The listening port.
+    * @param next The chained Restlet.
+    */
+   public Server(Protocol protocol, int port, Restlet next)
+   {
+   	this(protocol, null, port, next);
+   }
+   
+   /**
+    * Constructor.
+    * @param protocols The connector protocols.
+    * @param port The listening port.
+    * @param next The chained Restlet.
+    */
+   public Server(List<Protocol> protocols, int port, Restlet next)
+   {
+   	this(protocols, null, port, next);
+   }
+   
+   /**
+    * Constructor.
+    * @param protocol The connector protocol.
+    * @param address The optional listening IP address (useful if multiple IP addresses available).
+    * @param port The listening port.
+    * @param next The chained Restlet.
+    */
+   public Server(Protocol protocol, String address, int port, Restlet next)
+   {
+   	this(Arrays.asList(protocol), address, port, next);
+   }
+   
+   /**
+    * Constructor.
+    * @param protocols The connector protocols.
+    * @param address The optional listening IP address (useful if multiple IP addresses available).
+    * @param port The listening port.
+    * @param next The chained Restlet.
+    */
+   public Server(List<Protocol> protocols, String address, int port, Restlet next)
+   {
+   	super(Factory.getInstance().createServer(protocols, address, port));
+   	setTarget(next);
+   }
+
+	/**
+	 * Returns the wrapped server.
+	 * @return The wrapped server.
+	 */
+	private Server getWrappedServer()
+	{
+		return (Server)getWrappedConnector();
+	}
+
+   /**
+    * Returns the target restlet.
+    * @return The target restlet.
+    */
+   public Restlet getTarget()
+   {
+  		return (getWrappedServer() != null) ? getWrappedServer().getTarget() : null;
+   }
+
+	/**
+	 * Indicates if a target Restlet is set. 
+	 * @return True if a target Restlet is set. 
+	 */
+	public boolean hasTarget()
+	{
+  		return (getWrappedServer() != null) ? getWrappedServer().hasTarget() : false;
+	}
+
+   /**
+    * Sets the target restlet.
+    * @param target The target restlet.
+    */
+   public void setTarget(Restlet target)
+   {
+   	if(getWrappedServer() != null)
+   	{
+   		getWrappedServer().setTarget(target);
+   	}
    }
 
 }

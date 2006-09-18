@@ -22,9 +22,6 @@
 
 package org.restlet;
 
-import java.util.logging.Level;
-import java.util.logging.Logger;
-
 import org.restlet.data.Method;
 import org.restlet.data.Status;
 
@@ -41,11 +38,6 @@ import org.restlet.data.Status;
  */
 public class Restlet
 {
-   /** Obtain a suitable logger. */
-   private static Logger logger = Logger.getLogger(Restlet.class.getCanonicalName());
-
-   private static final String UNABLE_TO_START = "Unable to start the target Restlet";
-   
    /** The context. */
 	private Context context;
 
@@ -258,57 +250,4 @@ public class Restlet
    {
       return !this.started;
    }
-
-   /**
-    * Compares this object with the specified object for order.
-    * @param object The object to compare.
-    * @return The result of the comparison.
-    * @see java.lang.Comparable
-    */
-   public int compareTo(Restlet object)
-   {
-      return this.hashCode() - object.hashCode();
-   }
-   
-   /**
-	 * Handles a call with a given target Restlet. 
-	 * @param call The call to handle.
-	 * @param target The target Restlet.
-	 */
-	public static void handle(Call call, Restlet target)
-	{
-   	if(target != null)
-   	{
-			if(target.isStopped())
-			{
-				try
-				{
-					// Start the target Restlet
-					target.start();
-				}
-				catch (Exception e)
-				{
-					logger.log(Level.WARNING, UNABLE_TO_START, e);
-					call.setStatus(Status.SERVER_ERROR_INTERNAL);
-				}
-			}
-			
-			if(target.isStarted())
-			{
-				// Invoke the target handler
-				target.handle(call);
-			}
-			else
-			{
-				logger.log(Level.WARNING, UNABLE_TO_START);
-				call.setStatus(Status.SERVER_ERROR_INTERNAL);
-			}
-   	}
-   	else
-   	{
-   		// No additional Restlet available,
-   		// moving up the stack of calls,
-   		// applying the post-handle filters.
-   	}
-	}
 }

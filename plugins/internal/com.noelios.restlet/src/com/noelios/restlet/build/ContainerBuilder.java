@@ -24,8 +24,6 @@ package com.noelios.restlet.build;
 
 import org.restlet.component.Container;
 import org.restlet.connector.Client;
-import org.restlet.connector.GenericClient;
-import org.restlet.connector.GenericServer;
 import org.restlet.connector.Server;
 import org.restlet.data.Protocol;
 
@@ -73,7 +71,7 @@ public class ContainerBuilder extends ComponentBuilder
     */
    public ContainerBuilder addServer(Server server)
    {
-   	server.setNext(getNode());
+   	server.setTarget(getNode().getRoot());
       getNode().getServers().add(server);
       return this;
    }
@@ -86,7 +84,7 @@ public class ContainerBuilder extends ComponentBuilder
     */
    public ContainerBuilder addServer(Protocol protocol, int port)
    {
-      return addServer(new GenericServer(protocol, port, getNode()));
+      return addServer(new Server(protocol, port, getNode().getRoot()));
    }
 
    /**
@@ -98,7 +96,7 @@ public class ContainerBuilder extends ComponentBuilder
     */
    public ContainerBuilder addServer(Protocol protocol, String address, int port)
    {
-   	return addServer(new GenericServer(protocol, address, port, getNode()));
+   	return addServer(new Server(protocol, address, port, getNode().getRoot()));
    }
 
    /**
@@ -119,7 +117,7 @@ public class ContainerBuilder extends ComponentBuilder
     */
    public ContainerBuilder addClient(Protocol protocol)
    {
-      return addClient(new GenericClient(protocol));
+      return addClient(new Client(protocol));
    }
 
 }

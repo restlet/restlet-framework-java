@@ -8,7 +8,9 @@ Bundle-Localization: plugin
 Require-Bundle: org.restlet
 Export-Package: com.noelios.restlet,
  com.noelios.restlet.build,
- com.noelios.restlet.connector,
  com.noelios.restlet.data,
- com.noelios.restlet.spi,
+ com.noelios.restlet.impl,
+ com.noelios.restlet.impl.component,
+ com.noelios.restlet.impl.connector,
+ com.noelios.restlet.impl.util,
  com.noelios.restlet.util

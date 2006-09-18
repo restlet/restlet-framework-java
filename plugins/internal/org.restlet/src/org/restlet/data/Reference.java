@@ -955,12 +955,12 @@ public class Reference
    }
 
    /**
-    * Returns the protocol associated to the scheme component.
-    * @return The protocol associated to the scheme component.
+    * Returns the protocol associated with the scheme component.
+    * @return The protocol associated with the scheme component.
     */
-   public Protocol getProtocol()
+   public Protocol getSchemeProtocol()
    {
-   	return Protocol.create(getScheme());
+   	return Protocol.valueOf(getScheme());
    }
    
    /**

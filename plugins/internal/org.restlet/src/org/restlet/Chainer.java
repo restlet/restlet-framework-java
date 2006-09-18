@@ -49,7 +49,7 @@ public class Chainer extends Restlet
    	
    	if(target != null)
    	{
-      	handle(call, target);
+      	call.handle(target);
    	}
    	else
    	{

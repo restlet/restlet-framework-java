@@ -37,7 +37,6 @@ import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
 
 import org.restlet.Call;
-import org.restlet.connector.Client;
 import org.restlet.data.Method;
 import org.restlet.data.Protocol;
 import org.restlet.data.Representation;
@@ -46,7 +45,8 @@ import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 import org.w3c.dom.NodeList;
 
-import com.noelios.restlet.spi.Factory;
+import com.noelios.restlet.impl.Factory;
+import com.noelios.restlet.impl.connector.ClientImpl;
 
 /**
  * Client connector to a mail server. Currently only the SMTP protocol is supported. To send an email, 
@@ -68,7 +68,7 @@ import com.noelios.restlet.spi.Factory;
  * {@code </email>}
  * @author Jerome Louvel (contact@noelios.com) <a href="http://www.noelios.com/">Noelios Consulting</a>
  */
-public abstract class JavaMailClient extends Client
+public abstract class JavaMailClient extends ClientImpl
 {
    /** Obtain a suitable logger. */
    private static Logger logger = Logger.getLogger(JavaMailClient.class.getCanonicalName());
@@ -121,7 +121,9 @@ public abstract class JavaMailClient extends Client
    {
       try
       {
-         // Parse the SMTP URI
+  			if(!isStarted()) start();
+
+   		// Parse the SMTP URI
          URI smtpURI = new URI(call.getResourceRef().toString());
          String smtpHost = smtpURI.getHost();
          int smtpPort = smtpURI.getPort();

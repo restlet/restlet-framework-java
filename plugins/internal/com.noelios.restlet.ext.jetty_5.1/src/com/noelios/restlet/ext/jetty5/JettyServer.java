@@ -22,7 +22,7 @@
 
 package com.noelios.restlet.ext.jetty5;
 
-import com.noelios.restlet.connector.HttpServer;
+import com.noelios.restlet.impl.connector.HttpServer;
 
 /**
  * Abstract Jetty Web server connector. Here is the list of parameters that are supported:

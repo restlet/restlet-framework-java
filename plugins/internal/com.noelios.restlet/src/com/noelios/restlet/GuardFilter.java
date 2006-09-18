@@ -37,7 +37,7 @@ import org.restlet.data.ChallengeScheme;
 import org.restlet.data.SecurityData;
 import org.restlet.data.Status;
 
-import com.noelios.restlet.util.Base64;
+import com.noelios.restlet.impl.util.Base64;
 
 /**
  * Filter guarding the access to another Restlet. Currently it only supports the HTTP basic authentication 

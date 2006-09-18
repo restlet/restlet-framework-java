@@ -31,9 +31,12 @@ import java.util.logging.Level;
 import java.util.logging.Logger;
 
 import org.restlet.Call;
+import org.restlet.Context;
 import org.restlet.Restlet;
 import org.restlet.Router;
 import org.restlet.Scorer;
+import org.restlet.component.Application;
+import org.restlet.component.Container;
 import org.restlet.connector.Client;
 import org.restlet.connector.Server;
 import org.restlet.data.ChallengeResponse;
@@ -125,6 +128,34 @@ public abstract class Factory
    }
 
    /**
+    * Creates a new application using the given context.
+    * @param context The context.
+    * @return The new application.
+    */
+   public abstract Application createApplication(Context context);
+   
+   /**
+    * Creates a new client connector for a given protocol.
+    * @param protocols The connector protocols.
+    * @return The new client connector.
+    */
+   public abstract Client createClient(List<Protocol> protocols);
+
+   /**
+    * Creates a new container.
+    * @param root The root Restlet.
+    * @return The new container.
+    */
+   public abstract Container createContainer(Restlet root);
+
+   /**
+    * Creates a string-base representation.
+    * @param value The represented string.
+    * @param mediaType The representation's media type.
+    */
+   public abstract Representation createRepresentation(String value, MediaType mediaType);
+
+   /**
     * Creates a URI-based handler attachment that will score chained instance shared by all calls.
     * The score will be proportional to the number of chararacters matched by the pattern, from the start
     * of the context resource path.
@@ -136,13 +167,6 @@ public abstract class Factory
    public abstract Scorer createScorer(Router router, String pattern, Restlet next);
 
    /**
-    * Creates a new client connector for a given protocol.
-    * @param protocols The connector protocols.
-    * @return The new client connector.
-    */
-   public abstract Client createClient(List<Protocol> protocols);
-
-   /**
     * Create a new server connector for internal usage by the GenericClient.
     * @param protocols The connector protocols.
     * @param address The optional listening IP address (local host used if null).
@@ -150,13 +174,6 @@ public abstract class Factory
     * @return The new server connector.
     */
    public abstract Server createServer(List<Protocol> protocols, String address, int port);
-
-   /**
-    * Creates a string-base representation.
-    * @param value The represented string.
-    * @param mediaType The representation's media type.
-    */
-   public abstract Representation createRepresentation(String value, MediaType mediaType);
 
    /**
     * Returns the best variant representation for a given resource according the the client preferences.

@@ -23,7 +23,7 @@
 package org.restlet.component;
 
 import org.restlet.Context;
-import org.restlet.Restlet;
+import org.restlet.spi.Factory;
 
 /**
  * Component holding a user application, typically within a parent container. The role of an 
@@ -33,14 +33,26 @@ import org.restlet.Restlet;
  */
 public class Application extends Component 
 {
-   /**
-    * Constructor.
-    * @param context The container's context.
-    * @param root The root Restlet.
-    */
-   public Application(Context context, Restlet root)
-   {
-   	super(context, root);
-   }
+	public Application(Context context)
+	{
+		super(Factory.getInstance().createApplication(context));
+	}
+	
+	/**
+	 * Constructor for wrappers.
+	 * @param wrappedApplication The wrapped application.
+	 */
+	protected Application(Application wrappedApplication)
+	{
+		super(wrappedApplication);
+	}
 
+	/**
+	 * Returns the wrapped application.
+	 * @return The wrapped application.
+	 */
+	protected Application getWrappedApplication()
+	{
+		return (Application)getWrappedComponent();
+	}
 }

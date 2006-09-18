@@ -112,4 +112,35 @@ public class Language extends Metadata
 		return (object instanceof Language)
 				&& getName().equalsIgnoreCase(((Language) object).getName());
 	}
+
+	/**
+	 * Returns the language associated to a name. If an existing constant exists then it is 
+	 * returned, otherwise a new instance is created.
+	 * @param name The name.
+	 * @return The associated language.
+	 */
+	public static Language valueOf(String name)
+	{
+		Language result = null;
+
+		if (name != null)
+		{
+			if (name.equalsIgnoreCase(ALL.getName()))
+				result = ALL;
+			else if (name.equalsIgnoreCase(ENGLISH.getName()))
+				result = ENGLISH;
+			else if (name.equalsIgnoreCase(ENGLISH_US.getName()))
+				result = ENGLISH_US;
+			else if (name.equalsIgnoreCase(FRENCH.getName()))
+				result = FRENCH;
+			else if (name.equalsIgnoreCase(FRENCH_FRANCE.getName()))
+				result = FRENCH_FRANCE;
+			else if (name.equalsIgnoreCase(SPANISH.getName()))
+				result = SPANISH;
+			else
+				result = new Language(name);
+		}
+
+		return result;
+	}
 }

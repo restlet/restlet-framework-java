@@ -40,7 +40,6 @@ import org.apache.commons.dbcp.PoolingDataSource;
 import org.apache.commons.pool.ObjectPool;
 import org.apache.commons.pool.impl.GenericObjectPool;
 import org.restlet.Call;
-import org.restlet.connector.Client;
 import org.restlet.data.Method;
 import org.restlet.data.Protocol;
 import org.restlet.data.Representation;
@@ -50,7 +49,8 @@ import org.w3c.dom.Node;
 import org.w3c.dom.NodeList;
 
 import com.noelios.restlet.data.ObjectRepresentation;
-import com.noelios.restlet.spi.Factory;
+import com.noelios.restlet.impl.Factory;
+import com.noelios.restlet.impl.connector.ClientImpl;
 
 /**
  * Client connector to a JDBC database. To send a request to the server create a new instance of
@@ -72,7 +72,7 @@ import com.noelios.restlet.spi.Factory;
  * &nbsp;&nbsp;{@code </body>}<br/> {@code </request>}
  * @author Jerome Louvel (contact@noelios.com) <a href="http://www.noelios.com/">Noelios Consulting</a>
  */
-public class JdbcClient extends Client
+public class JdbcClient extends ClientImpl
 {
    /** Map of connection factories. */
 	private List<ConnectionSource> connectionSources;
@@ -113,7 +113,9 @@ public class JdbcClient extends Client
 
       try
       {
-         // Parse the JDBC URI
+  			if(!isStarted()) start();
+
+  			// Parse the JDBC URI
          String connectionURI = call.getResourceRef().toString();
 
          // Parse the request to extract necessary info

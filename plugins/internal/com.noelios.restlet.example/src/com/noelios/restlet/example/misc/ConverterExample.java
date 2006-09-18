@@ -25,8 +25,8 @@ package com.noelios.restlet.example.misc;
 import org.restlet.Call;
 import org.restlet.Context;
 
-import com.noelios.restlet.connector.HttpServerCall;
-import com.noelios.restlet.connector.HttpServerConverter;
+import com.noelios.restlet.impl.connector.HttpServerCall;
+import com.noelios.restlet.impl.connector.HttpServerConverter;
 
 /**
  * Sample converter that copies the "Accept" HTTP header into a call's attribute.

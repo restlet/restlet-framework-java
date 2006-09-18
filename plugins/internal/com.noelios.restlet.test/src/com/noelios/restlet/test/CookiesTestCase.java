@@ -32,9 +32,9 @@ import org.restlet.data.CookieSetting;
 
 import junit.framework.TestCase;
 
-import com.noelios.restlet.util.CookieReader;
-import com.noelios.restlet.util.CookieUtils;
-import com.noelios.restlet.util.DateUtils;
+import com.noelios.restlet.impl.util.CookieReader;
+import com.noelios.restlet.impl.util.CookieUtils;
+import com.noelios.restlet.impl.util.DateUtils;
 
 /**
  * Unit tests for the Cookie related classes.

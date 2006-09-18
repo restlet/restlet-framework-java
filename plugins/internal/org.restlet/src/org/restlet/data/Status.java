@@ -943,4 +943,173 @@ public class Status extends Metadata
 	{
 		return getName() + " (" + this.code + ")";
 	}
+
+	/**
+	 * Returns the status associated to a code. If an existing constant exists then it is 
+	 * returned, otherwise a new instance is created.
+	 * @param code The code.
+	 * @return The associated status.
+	 */
+	public static Status valueOf(int code)
+	{
+		Status result = null;
+
+		switch (code)
+		{
+			case 100:
+				result = INFO_CONTINUE;
+			break;
+			case 101:
+				result = INFO_SWITCHING_PROTOCOL;
+			break;
+			case 102:
+				result = INFO_PROCESSING;
+			break;
+
+			case 200:
+				result = SUCCESS_OK;
+			break;
+			case 201:
+				result = SUCCESS_CREATED;
+			break;
+			case 202:
+				result = SUCCESS_ACCEPTED;
+			break;
+			case 203:
+				result = SUCCESS_NON_AUTHORITATIVE;
+			break;
+			case 204:
+				result = SUCCESS_NO_CONTENT;
+			break;
+			case 205:
+				result = SUCCESS_RESET_CONTENT;
+			break;
+			case 206:
+				result = SUCCESS_PARTIAL_CONTENT;
+			break;
+			case 207:
+				result = SUCCESS_MULTI_STATUS;
+			break;
+
+			case 300:
+				result = REDIRECTION_MULTIPLE_CHOICES;
+			break;
+			case 301:
+				result = REDIRECTION_MOVED_PERMANENTLY;
+			break;
+			case 302:
+				result = REDIRECTION_FOUND;
+			break;
+			case 303:
+				result = REDIRECTION_SEE_OTHER;
+			break;
+			case 304:
+				result = REDIRECTION_NOT_MODIFIED;
+			break;
+			case 305:
+				result = REDIRECTION_USE_PROXY;
+			break;
+			case 307:
+				result = REDIRECTION_MOVED_TEMPORARILY;
+			break;
+
+			case 400:
+				result = CLIENT_ERROR_BAD_REQUEST;
+			break;
+			case 401:
+				result = CLIENT_ERROR_UNAUTHORIZED;
+			break;
+			case 402:
+				result = CLIENT_ERROR_PAYMENT_REQUIRED;
+			break;
+			case 403:
+				result = CLIENT_ERROR_FORBIDDEN;
+			break;
+			case 404:
+				result = CLIENT_ERROR_NOT_FOUND;
+			break;
+			case 405:
+				result = CLIENT_ERROR_METHOD_NOT_ALLOWED;
+			break;
+			case 406:
+				result = CLIENT_ERROR_NOT_ACCEPTABLE;
+			break;
+			case 407:
+				result = CLIENT_ERROR_PROXY_AUTHENTIFICATION_REQUIRED;
+			break;
+			case 408:
+				result = CLIENT_ERROR_REQUEST_TIMEOUT;
+			break;
+			case 409:
+				result = CLIENT_ERROR_CONFLICT;
+			break;
+			case 410:
+				result = CLIENT_ERROR_GONE;
+			break;
+			case 411:
+				result = CLIENT_ERROR_LENGTH_REQUIRED;
+			break;
+			case 412:
+				result = CLIENT_ERROR_PRECONDITION_FAILED;
+			break;
+			case 413:
+				result = CLIENT_ERROR_REQUEST_ENTITY_TOO_LARGE;
+			break;
+			case 414:
+				result = CLIENT_ERROR_REQUEST_URI_TOO_LONG;
+			break;
+			case 415:
+				result = CLIENT_ERROR_UNSUPPORTED_MEDIA_TYPE;
+			break;
+			case 416:
+				result = CLIENT_ERROR_REQUESTED_RANGE_NOT_SATISFIABLE;
+			break;
+			case 417:
+				result = CLIENT_ERROR_EXPECTATION_FAILED;
+			break;
+			case 422:
+				result = CLIENT_ERROR_UNPROCESSABLE_ENTITY;
+			break;
+			case 423:
+				result = CLIENT_ERROR_LOCKED;
+			break;
+			case 424:
+				result = CLIENT_ERROR_FAILED_DEPENDENCY;
+			break;
+
+			case 500:
+				result = SERVER_ERROR_INTERNAL;
+			break;
+			case 501:
+				result = SERVER_ERROR_NOT_IMPLEMENTED;
+			break;
+			case 502:
+				result = SERVER_ERROR_BAD_GATEWAY;
+			break;
+			case 503:
+				result = SERVER_ERROR_SERVICE_UNAVAILABLE;
+			break;
+			case 504:
+				result = SERVER_ERROR_GATEWAY_TIMEOUT;
+			break;
+			case 505:
+				result = SERVER_ERROR_VERSION_NOT_SUPPORTED;
+			break;
+			case 507:
+				result = SERVER_ERROR_INSUFFICIENT_STORAGE;
+			break;
+
+			case 1000:
+				result = CONNECTOR_ERROR_CONNECTION;
+			break;
+			case 1001:
+				result = CONNECTOR_ERROR_COMMUNICATION;
+			break;
+			case 1002:
+				result = CONNECTOR_ERROR_INTERNAL;
+			break;
+		}
+
+		return result;
+	}
 }

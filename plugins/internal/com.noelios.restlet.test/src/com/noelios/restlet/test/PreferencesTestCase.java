@@ -30,8 +30,8 @@ import junit.framework.TestCase;
 
 import org.restlet.data.Preference;
 
-import com.noelios.restlet.util.PreferenceReader;
-import com.noelios.restlet.util.PreferenceUtils;
+import com.noelios.restlet.impl.util.PreferenceReader;
+import com.noelios.restlet.impl.util.PreferenceUtils;
 
 /**
  * Unit tests for the Preference related classes.

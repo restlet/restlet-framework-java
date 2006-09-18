@@ -92,4 +92,33 @@ public class ChallengeScheme extends Metadata
 		return (object instanceof ChallengeScheme)
 				&& ((ChallengeScheme) object).getName().equalsIgnoreCase(getName());
 	}
+
+	/**
+	 * Returns the challenge scheme associated to a scheme name. If an existing constant exists then it is 
+	 * returned, otherwise a new instance is created.
+	 * @param name The scheme name.
+	 * @return The associated challenge scheme.
+	 */
+	public static ChallengeScheme valueOf(String name)
+	{
+		ChallengeScheme result = null;
+
+		if (name != null)
+		{
+			if (name.equalsIgnoreCase(CUSTOM.getName()))
+				result = CUSTOM;
+			else if (name.equalsIgnoreCase(HTTP_BASIC.getName()))
+				result = HTTP_BASIC;
+			else if (name.equalsIgnoreCase(HTTP_DIGEST.getName()))
+				result = HTTP_DIGEST;
+			else if (name.equalsIgnoreCase(HTTP_NTLM.getName()))
+				result = HTTP_NTLM;
+			else if (name.equalsIgnoreCase(SMTP_PLAIN.getName()))
+				result = SMTP_PLAIN;
+			else
+				result = new ChallengeScheme(name, null, null);
+		}
+
+		return result;
+	}
 }

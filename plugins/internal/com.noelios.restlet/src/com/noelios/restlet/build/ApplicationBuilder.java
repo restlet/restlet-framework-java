@@ -37,7 +37,7 @@ public class ApplicationBuilder extends ComponentBuilder
 	 */
 	public ApplicationBuilder(Context context)
 	{
-		this(null, new Application(context, null));
+		this(null, new Application(context));
 	}
 	
 	/**
@@ -55,7 +55,7 @@ public class ApplicationBuilder extends ComponentBuilder
 	 */
 	public ApplicationBuilder(ContainerBuilder parent)
 	{
-		super(parent, new Application(parent.getNode().getContext(), null));
+		super(parent, new Application(parent.getNode().getContext()));
 	}
 	
 	/**

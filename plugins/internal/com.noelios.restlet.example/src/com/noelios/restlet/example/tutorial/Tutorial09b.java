@@ -26,7 +26,6 @@ import java.io.IOException;
 
 import org.restlet.Call;
 import org.restlet.connector.Client;
-import org.restlet.connector.GenericClient;
 import org.restlet.data.ChallengeResponse;
 import org.restlet.data.ChallengeScheme;
 import org.restlet.data.Method;
@@ -52,7 +51,7 @@ public class Tutorial09b
          call.getSecurity().setChallengeResponse(authentication);
 
          // Ask to the HTTP client connector to handle the call
-         Client client = new GenericClient(Protocol.HTTP);
+         Client client = new Client(Protocol.HTTP);
          client.handle(call);
 
          if(call.getStatus().isSuccess())

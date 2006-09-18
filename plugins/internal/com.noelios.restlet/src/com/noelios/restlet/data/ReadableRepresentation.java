@@ -28,7 +28,7 @@ import java.nio.channels.WritableByteChannel;
 
 import org.restlet.data.MediaType;
 
-import com.noelios.restlet.util.ByteUtils;
+import com.noelios.restlet.impl.util.ByteUtils;
 
 /**
  * Transient representation based on a readable NIO byte channel.

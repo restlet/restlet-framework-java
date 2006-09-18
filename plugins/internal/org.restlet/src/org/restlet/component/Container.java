@@ -22,18 +22,11 @@
 
 package org.restlet.component;
 
-import java.util.ArrayList;
 import java.util.List;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 
 import org.restlet.Call;
-import org.restlet.Context;
-import org.restlet.connector.Client;
-import org.restlet.connector.GenericClient;
-import org.restlet.connector.Server;
-import org.restlet.data.Protocol;
-import org.restlet.data.Status;
+import org.restlet.Restlet;
+import org.restlet.spi.Factory;
 
 /**
  * Component containing a set of connectors and applications. The connectors are shared by the 
@@ -42,142 +35,40 @@ import org.restlet.data.Status;
  */
 public class Container extends Component
 {
-   /** Obtain a suitable logger. */
-   private static Logger logger = Logger.getLogger(Container.class.getCanonicalName());
-
-   /** The list of applications. */
-   private List<Application> applications;
-
-   /** The map of client connectors. */
-	private ClientList clients;
-
-   /** The map of server connectors. */
-	private ServerList servers;
-
 	/**
 	 * Constructor that adds a default local connector and uses a local logger.
+	 * @param wrappedContainer The wrapped container. 
 	 */
-	public Container()
+	protected Container(Container wrappedContainer)
 	{
-		this(null);
-		setContext(new ContainerContext(this, logger));
-      getClients().add(createLocalClient());
+		super(wrappedContainer);
 	}
-	
-   /**
-    * Constructor.
-    * @param context The parent context.
-    */
-   public Container(Context context)
-   {
-   	super(context);
-      this.applications = null;
-      this.clients = null;
-      this.servers = null;
-   }
 
    /**
-    * Creates a new local client from the factory. 
-    * @return A new local client from the factory.
+    * Constructor.
     */
-   private static Client createLocalClient()
+   public Container()
    {
-      List<Protocol> protocols = new ArrayList<Protocol>();
-      protocols.add(Protocol.CONTEXT);
-      protocols.add(Protocol.FILE);
-      return new GenericClient(protocols);
+   	this((Restlet)null);
    }
    
    /**
-    * Returns the modifiable list of applications.
-    * @return The modifiable list of applications.
+    * Constructor.
+    * @param root The root Restlet.
     */
-   public List<Application> getApplications()
+   public Container(Restlet root)
    {
-   	if(this.applications == null) new ArrayList<Application>();
-   	return this.applications;
+		this(Factory.getInstance().createContainer(root));
    }
 
    /**
-    * Handles a direct call.
-    * @param call The call to handle.
+    * Returns the wrapped container.
+    * @return The wrapped container.
     */
-   public void handle(Call call)
-   {
-      if(getRoot() != null)
-      {
-   		handle(call, getRoot());
-      }
-      else
-      {
-         call.setStatus(Status.SERVER_ERROR_INTERNAL);
-         logger.log(Level.SEVERE, "Handle not implemented yet...");
-      }
-   }
-
-   /**
-    * Start hook. Starts all containers.
-    */
-   public void start() throws Exception
-   {
-      super.start();
-
-      if(this.clients != null)
-   	{
-	      for(Client client : this.clients)
-	      {
-	         client.start();
-	      }
-   	}
-   	
-   	if(this.servers != null)
-   	{
-	      for(Server server : this.servers)
-	      {
-	      	server.start();
-	      }
-   	}
-   	
-   	if(this.applications != null)
-   	{
-	      for(Application application : this.applications)
-	      {
-	         application.start();
-	      }
-   	}
-   }
-
-   /**
-    * Stop hook. Stops all containers.
-    */
-   public void stop() throws Exception
-   {
-      super.stop();
-
-      if(this.clients != null)
-   	{
-	      for(Client client : this.clients)
-	      {
-	         client.stop();
-	      }
-   	}
-   	
-   	if(this.servers != null)
-   	{
-	      for(Server server : this.servers)
-	      {
-	      	server.stop();
-	      }
-   	}
-   	
-   	if(this.applications != null)
-   	{
-	      for(Application application : this.applications)
-	      {
-	         application.stop();
-	      }
-   	}
-   }
+	private Container getWrappedContainer()
+	{
+		return (Container)getWrappedComponent();
+	}
 
 	/**
 	 * Returns the modifiable list of client connectors.
@@ -185,8 +76,7 @@ public class Container extends Component
 	 */
 	public ClientList getClients()
 	{
-		if(this.clients == null) this.clients = new ClientList();
-		return this.clients;
+		return getWrappedContainer().getClients();
 	}
 
 	/**
@@ -195,8 +85,41 @@ public class Container extends Component
 	 */
 	public ServerList getServers()
 	{
-		if(this.servers == null) this.servers = new ServerList(this);
-		return this.servers;
+		return getWrappedContainer().getServers();
 	}
+
+   /**
+    * Returns the modifiable list of applications.
+    * @return The modifiable list of applications.
+    */
+   public List<Application> getApplications()
+   {
+		return getWrappedContainer().getApplications();
+   }
+
+   /**
+    * Handles a direct call.
+    * @param call The call to handle.
+    */
+   public void handle(Call call)
+   {
+		getWrappedContainer().handle(call);
+   }
+
+   /**
+    * Start hook. Starts all containers.
+    */
+   public void start() throws Exception
+   {
+		getWrappedContainer().start();
+   }
+
+   /**
+    * Stop hook. Stops all containers.
+    */
+   public void stop() throws Exception
+   {
+		getWrappedContainer().stop();
+   }
 
 }

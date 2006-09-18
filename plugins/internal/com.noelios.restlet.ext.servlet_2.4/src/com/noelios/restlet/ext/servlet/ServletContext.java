@@ -27,7 +27,8 @@ import java.util.Enumeration;
 import javax.servlet.Servlet;
 
 import org.restlet.component.Container;
-import org.restlet.component.ContainerContext;
+
+import com.noelios.restlet.impl.component.ContainerContext;
 
 /**
  * Context allowing access to the container's connectors, reusing the Servlet's logging mechanism and

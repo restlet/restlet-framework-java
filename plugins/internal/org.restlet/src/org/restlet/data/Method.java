@@ -112,7 +112,7 @@ public class Method extends Metadata
 	/**
 	 * Constructor.
 	 * @param name The technical name of the method.
-	 * @see org.restlet.data.Method#create(String)
+	 * @see org.restlet.data.Method#valueOf(String)
 	 */
 	public Method(String name)
 	{
@@ -123,7 +123,7 @@ public class Method extends Metadata
 	 * Constructor.
 	 * @param name The technical name of the method.
 	 * @param description The description.
-	 * @see org.restlet.data.Method#create(String)
+	 * @see org.restlet.data.Method#valueOf(String)
 	 */
 	public Method(String name, String description)
 	{
@@ -135,7 +135,7 @@ public class Method extends Metadata
 	 * @param name The technical name.
 	 * @param description The description.
 	 * @param uri The URI of the specification describing the method.
-	 * @see org.restlet.data.Method#create(String)
+	 * @see org.restlet.data.Method#valueOf(String)
 	 */
 	public Method(String name, String description, String uri)
 	{
@@ -164,11 +164,12 @@ public class Method extends Metadata
 	}
 
 	/**
-	 * Creates a new method by attempting to reuse an existing enumeration entry.
+	 * Returns the method associated to a given method name. If an existing constant exists then it is returned,
+	 * otherwise a new instance is created.
 	 * @param methodName The method name.
-	 * @return The new method.
+	 * @return The associated method.
 	 */
-	public static Method create(String methodName)
+	public static Method valueOf(String methodName)
 	{
 		Method result = null;
 

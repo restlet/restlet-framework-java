@@ -9,12 +9,24 @@ Changes log
 [Bugs fixed]
  - Fixed issue with error status preventing the setting of response headers with Servlet containers like Tomcat. Report and solution by Evan DiBiase.
  - Completed support for content streaming in the HTTP client connector extension. Issue reported by Mikkel Jensen.
-
+ 
 [API breaking changes]
  - Moved hasInput() method from org.restlet.connector.Client to Call.isInputAvailable().
  - Renamed Representation.isContentAvailable() to isAvailable() and isContentTransient() to isTransient().
  - Application now only requires a Context and not a Container.
  - WrapperRestlet.getWrappedRestlet() is now protected instead of public, only subclasses should have access to the wrapped Restlet.
+ - Merged Client and GenericClient into a single Client class.
+ - Moved com.noelios.restlet.connector into hidden com.noelios.restlet.impl.connector package.
+ - Moved internal utilities from com.noelios.restlet.util into hidden com.noelios.restlet.impl.util package.
+ - Moved com.noelios.restlet.spi into hidden com.noelios.restlet.impl package.
+ - Moved org.restlet.component.ContainerContext to com.noelios.restlet.impl.component.ContainerContext.
+ - Renamed Server."next" property into "target". "Next" was assuming that a previous Restlet existed, which is false for Server connectors.
+ - Moved static Resltet.handle(Call call, Restlet target) method to Call.handle(Restlet target).
+ - Moved all wrapper classes into a new org.restlet.util package to clarify the API and its Javadocs.
+ - Moved com.noelios.restlet.util.WrapperMap into org.restlet.util.
+ - Removed Restlet.compareTo() method. No apparent usage.
+ - Renamed Reference.getProtocol() into getSchemeProtocol().
+ - Connector and Component no longer derive from Restlet, it was allowing some code reuse but also created some confusion between those core concepts.
 
 [Other changes] 
  - Updated Jetty 6 extension to final 6.0 release.
@@ -31,6 +43,8 @@ Changes log
  - Added new constructors to Client and Server to be match Connector's constructors.
  - Added "converter" parameter to HttpServer and HttpClient base classes and thus to all HTTP connectors (Jetty, Simple, AsyncWeb, HttpUrlConnection).
  - Added sample application illustrating the usage of server call converters to access raw HTTP headers.
+ - Added static valueOf() methods to ChallengeScheme, CharacterSet, Encoding, Language, MediaType, Method, Protocol and Status. Sometimes renamed existing create() method. Suggested by Piyush Purang.
+ - Added new Context constructor taking just a logger name.
 
 1.0 beta 18 (2006-08-19)
 [Bugs fixed]

@@ -37,11 +37,14 @@ public class MediaType extends Metadata
 	public static final MediaType APPLICATION_ATOM_XML = new MediaType(
 			"application/atom+xml", "Atom syndication documents");
 
-	public static final MediaType APPLICATION_CABINET = new MediaType(
+	public static final MediaType APPLICATION_CAB = new MediaType(
 			"application/vnd.ms-cab-compressed", "Microsoft Cabinet archive");
 
 	public static final MediaType APPLICATION_EXCEL = new MediaType(
 			"application/vnd.ms-excel", "Microsoft Excel document");
+
+	public static final MediaType APPLICATION_FLASH = new MediaType(
+			"application/x-shockwave-flash", "Shockwave Flash object");
 
 	public static final MediaType APPLICATION_GNU_TAR = new MediaType(
 			"application/x-gtar", "GNU Tar archive");
@@ -76,14 +79,11 @@ public class MediaType extends Metadata
 	public static final MediaType APPLICATION_PROJECT = new MediaType(
 			"application/vnd.ms-project", "Microsoft Project document");
 
-	public static final MediaType APPLICATION_RESOURCE_DESCRIPTION_FRAMEWORK = new MediaType(
-			"application/rdf-xml", "Resource Description Framework document");
+	public static final MediaType APPLICATION_RDF = new MediaType("application/rdf-xml",
+			"Resource Description Framework document");
 
-	public static final MediaType APPLICATION_RICH_TEXT_FORMAT = new MediaType(
-			"application/rtf", "Rich Text Format document");
-
-	public static final MediaType APPLICATION_SHOCKWAVE_FLASH = new MediaType(
-			"application/x-shockwave-flash", "Shockwave Flash object");
+	public static final MediaType APPLICATION_RTF = new MediaType("application/rtf",
+			"Rich Text Format document");
 
 	public static final MediaType APPLICATION_STUFFIT = new MediaType(
 			"application/x-stuffit", "Stuffit archive");
@@ -345,4 +345,128 @@ public class MediaType extends Metadata
 				&& ((MediaType) object).getName().equals(getName());
 	}
 
+	/**
+	 * Returns the media type associated to a name. If an existing constant exists then it is 
+	 * returned, otherwise a new instance is created.
+	 * @param name The name.
+	 * @return The associated media type.
+	 */
+	public static MediaType valueOf(String name)
+	{
+		MediaType result = null;
+
+		if (name != null)
+		{
+			if (name.equals(ALL.getName()))
+				result = ALL;
+			else if (name.equals(APPLICATION_ALL.getName()))
+				result = APPLICATION_ALL;
+			else if (name.equals(APPLICATION_ATOM_XML.getName()))
+				result = APPLICATION_ATOM_XML;
+			else if (name.equals(APPLICATION_CAB.getName()))
+				result = APPLICATION_CAB;
+			else if (name.equals(APPLICATION_EXCEL.getName()))
+				result = APPLICATION_EXCEL;
+			else if (name.equals(APPLICATION_FLASH.getName()))
+				result = APPLICATION_FLASH;
+			else if (name.equals(APPLICATION_GNU_TAR.getName()))
+				result = APPLICATION_GNU_TAR;
+			else if (name.equals(APPLICATION_GNU_ZIP.getName()))
+				result = APPLICATION_GNU_ZIP;
+			else if (name.equals(APPLICATION_JAVA_ARCHIVE.getName()))
+				result = APPLICATION_JAVA_ARCHIVE;
+			else if (name.equals(APPLICATION_JAVA_OBJECT.getName()))
+				result = APPLICATION_JAVA_OBJECT;
+			else if (name.equals(APPLICATION_JAVASCRIPT.getName()))
+				result = APPLICATION_JAVASCRIPT;
+			else if (name.equals(APPLICATION_OCTET_STREAM.getName()))
+				result = APPLICATION_OCTET_STREAM;
+			else if (name.equals(APPLICATION_PDF.getName()))
+				result = APPLICATION_PDF;
+			else if (name.equals(APPLICATION_POSTSCRIPT.getName()))
+				result = APPLICATION_POSTSCRIPT;
+			else if (name.equals(APPLICATION_POWERPOINT.getName()))
+				result = APPLICATION_POWERPOINT;
+			else if (name.equals(APPLICATION_PROJECT.getName()))
+				result = APPLICATION_PROJECT;
+			else if (name.equals(APPLICATION_RDF.getName()))
+				result = APPLICATION_RDF;
+			else if (name.equals(APPLICATION_RTF.getName()))
+				result = APPLICATION_RTF;
+			else if (name.equals(APPLICATION_STUFFIT.getName()))
+				result = APPLICATION_STUFFIT;
+			else if (name.equals(APPLICATION_TAR.getName()))
+				result = APPLICATION_TAR;
+			else if (name.equals(APPLICATION_WORD.getName()))
+				result = APPLICATION_WORD;
+			else if (name.equals(APPLICATION_WWW_FORM.getName()))
+				result = APPLICATION_WWW_FORM;
+			else if (name.equals(APPLICATION_XHTML_XML.getName()))
+				result = APPLICATION_XHTML_XML;
+			else if (name.equals(APPLICATION_XML.getName()))
+				result = APPLICATION_XML;
+			else if (name.equals(APPLICATION_ZIP.getName()))
+				result = APPLICATION_ZIP;
+			else if (name.equals(AUDIO_ALL.getName()))
+				result = AUDIO_ALL;
+			else if (name.equals(AUDIO_MPEG.getName()))
+				result = AUDIO_MPEG;
+			else if (name.equals(AUDIO_REAL.getName()))
+				result = AUDIO_REAL;
+			else if (name.equals(AUDIO_WAV.getName()))
+				result = AUDIO_WAV;
+			else if (name.equals(IMAGE_ALL.getName()))
+				result = IMAGE_ALL;
+			else if (name.equals(IMAGE_BMP.getName()))
+				result = IMAGE_BMP;
+			else if (name.equals(IMAGE_GIF.getName()))
+				result = IMAGE_GIF;
+			else if (name.equals(IMAGE_ICON.getName()))
+				result = IMAGE_ICON;
+			else if (name.equals(IMAGE_JPEG.getName()))
+				result = IMAGE_JPEG;
+			else if (name.equals(IMAGE_PNG.getName()))
+				result = IMAGE_PNG;
+			else if (name.equals(IMAGE_SVG.getName()))
+				result = IMAGE_SVG;
+			else if (name.equals(MESSAGE_ALL.getName()))
+				result = MESSAGE_ALL;
+			else if (name.equals(MODEL_ALL.getName()))
+				result = MODEL_ALL;
+			else if (name.equals(MESSAGE_ALL.getName()))
+				result = MESSAGE_ALL;
+			else if (name.equals(MULTIPART_ALL.getName()))
+				result = MULTIPART_ALL;
+			else if (name.equals(MULTIPART_FORM_DATA.getName()))
+				result = MULTIPART_FORM_DATA;
+			else if (name.equals(TEXT_ALL.getName()))
+				result = TEXT_ALL;
+			else if (name.equals(TEXT_CSS.getName()))
+				result = TEXT_CSS;
+			else if (name.equals(TEXT_HTML.getName()))
+				result = TEXT_HTML;
+			else if (name.equals(TEXT_PLAIN.getName()))
+				result = TEXT_PLAIN;
+			else if (name.equals(TEXT_URI_LIST.getName()))
+				result = TEXT_URI_LIST;
+			else if (name.equals(TEXT_VCARD.getName()))
+				result = TEXT_VCARD;
+			else if (name.equals(TEXT_XML.getName()))
+				result = TEXT_XML;
+			else if (name.equals(VIDEO_ALL.getName()))
+				result = VIDEO_ALL;
+			else if (name.equals(VIDEO_AVI.getName()))
+				result = VIDEO_AVI;
+			else if (name.equals(VIDEO_MPEG.getName()))
+				result = VIDEO_MPEG;
+			else if (name.equals(VIDEO_QUICKTIME.getName()))
+				result = VIDEO_QUICKTIME;
+			else if (name.equals(VIDEO_WMV.getName()))
+				result = VIDEO_WMV;
+			else
+				result = new MediaType(name);
+		}
+
+		return result;
+	}
 }

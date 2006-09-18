@@ -26,8 +26,8 @@ import java.util.Arrays;
 
 import org.restlet.connector.Server;
 import org.restlet.data.Protocol;
-import org.restlet.data.WrapperList;
 import org.restlet.spi.Factory;
+import org.restlet.util.WrapperList;
 
 /**
  * Modifiable map of server connectors.
@@ -48,12 +48,25 @@ public class ServerList extends WrapperList<Server>
 	}
 	
 	/**
+	 * Returns the parent container.
+	 * @return The parent container.
+	 */
+	private Container getContainer()
+	{
+		return this.container;
+	}
+	
+	/**
 	 * Adds a server at the end of the list.
 	 * @return True (as per the general contract of the Collection.add method).
 	 */
 	public boolean add(Server server)
 	{
-		if(this.container != null) server.setNext(this.container);
+		if((getContainer() != null) && (getContainer().getRoot() != null)) 
+		{
+			server.setTarget(getContainer().getRoot());
+		}
+		
 		return super.add(server);
 	}
 

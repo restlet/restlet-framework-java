@@ -28,7 +28,6 @@ import org.restlet.Call;
 import org.restlet.Context;
 import org.restlet.Restlet;
 import org.restlet.component.Container;
-import org.restlet.connector.GenericServer;
 import org.restlet.data.MediaType;
 import org.restlet.data.Method;
 import org.restlet.data.Protocol;
@@ -77,9 +76,13 @@ public class RedirectTestCase extends TestCase
 			}
 		};
 
+		// Set the container roots
+		proxyContainer.setRoot(proxy);
+		originContainer.setRoot(trace);
+		
 		// Create the server connectors
-		proxyContainer.getServers().add(new GenericServer(Protocol.HTTP, 8080, proxy));
-		originContainer.getServers().add(new GenericServer(Protocol.HTTP, 9090, trace));
+		proxyContainer.getServers().add(Protocol.HTTP, 8080);
+		originContainer.getServers().add(Protocol.HTTP, 9090);
 
 		// Now, let's start the containers!
 		originContainer.start();

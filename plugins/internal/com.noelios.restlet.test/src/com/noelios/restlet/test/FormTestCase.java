@@ -25,7 +25,8 @@ package com.noelios.restlet.test;
 import java.io.IOException;
 import junit.framework.TestCase;
 import org.restlet.data.Form;
-import com.noelios.restlet.util.FormReader;
+
+import com.noelios.restlet.impl.util.FormReader;
 
 /**
  * Unit tests for the Form class.

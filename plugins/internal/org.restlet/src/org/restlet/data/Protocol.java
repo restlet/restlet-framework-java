@@ -125,11 +125,12 @@ public class Protocol extends Metadata
 	}
 
 	/**
-	 * Creates a new method by attempting to reuse an existing enumeration entry.
+	 * Creates the protocol associated to a URI scheme name. If an existing constant exists then it is returned,
+	 * otherwise a new instance is created.
 	 * @param schemeName The scheme name.
-	 * @return The new method.
+	 * @return The associated protocol.
 	 */
-	public static Protocol create(String schemeName)
+	public static Protocol valueOf(String schemeName)
 	{
 		Protocol result = null;
 

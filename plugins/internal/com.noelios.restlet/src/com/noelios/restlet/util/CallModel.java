@@ -25,6 +25,8 @@ package com.noelios.restlet.util;
 import org.restlet.Call;
 import org.restlet.data.Form;
 
+import com.noelios.restlet.impl.util.CookieUtils;
+
 /**
  * Readable model wrapping a REST call. It can be passed directly passed to a string template. 
  * Repeating values can be retrieved by appending (index) or ("name")  or ('name') after the variable's name. 

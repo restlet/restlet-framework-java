@@ -29,7 +29,7 @@ import java.util.logging.Logger;
 import org.restlet.Call;
 import org.restlet.data.Protocol;
 
-import com.noelios.restlet.connector.HttpClientCall;
+import com.noelios.restlet.impl.connector.HttpClientCall;
 
 /**
  * HTTP client connector using the HttpUrlConnectionCall. Here is the list of parameters that are supported:
@@ -80,7 +80,7 @@ import com.noelios.restlet.connector.HttpClientCall;
  * @see <a href="http://java.sun.com/j2se/1.5.0/docs/guide/net/index.html">Networking Features</a>
  * @author Jerome Louvel (contact@noelios.com) <a href="http://www.noelios.com/">Noelios Consulting</a>
  */
-public class HttpClient extends com.noelios.restlet.connector.HttpClient
+public class HttpClient extends com.noelios.restlet.impl.connector.HttpClient
 {
 	/** Obtain a suitable logger. */
 	private static Logger logger = Logger.getLogger(HttpClient.class.getCanonicalName());

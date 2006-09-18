@@ -29,7 +29,7 @@ import org.restlet.data.ParameterList;
 import org.restlet.data.Representation;
 
 /**
- * Context of a call associated to a Restlet.
+ * Context associated to a Restlet.
  * @author Jerome Louvel (contact@noelios.com) <a href="http://www.noelios.com/">Noelios Consulting</a>
  */
 public class Context
@@ -39,6 +39,15 @@ public class Context
    
    /** The logger instance to use. */
    private Logger logger;
+
+   /**
+    * Constructor.
+    * @param loggerName The name of the logger to use.
+    */
+   public Context(String loggerName)
+   {
+   	this(Logger.getLogger(loggerName));
+   }
 
    /**
     * Constructor.
