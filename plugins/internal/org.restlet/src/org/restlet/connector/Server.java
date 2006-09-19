@@ -25,7 +25,9 @@ package org.restlet.connector;
 import java.util.Arrays;
 import java.util.List;
 
+import org.restlet.Call;
 import org.restlet.Restlet;
+import org.restlet.UniformInterface;
 import org.restlet.data.Protocol;
 import org.restlet.spi.Factory;
 
@@ -101,6 +103,15 @@ public class Server extends Connector
    	setTarget(next);
    }
 
+   /**
+    * Handles a call.
+    * @param call The call to handle.
+    */
+   public void handle(Call call)
+   {
+   	if(getWrappedServer() != null) getWrappedServer().handle(call);
+   }
+
 	/**
 	 * Returns the wrapped server.
 	 * @return The wrapped server.
@@ -111,17 +122,17 @@ public class Server extends Connector
 	}
 
    /**
-    * Returns the target restlet.
-    * @return The target restlet.
+    * Returns the target handler.
+    * @return The target handler.
     */
-   public Restlet getTarget()
+   public UniformInterface getTarget()
    {
   		return (getWrappedServer() != null) ? getWrappedServer().getTarget() : null;
    }
 
 	/**
-	 * Indicates if a target Restlet is set. 
-	 * @return True if a target Restlet is set. 
+	 * Indicates if a target handler is set. 
+	 * @return True if a target handler is set. 
 	 */
 	public boolean hasTarget()
 	{
@@ -129,15 +140,14 @@ public class Server extends Connector
 	}
 
    /**
-    * Sets the target restlet.
-    * @param target The target restlet.
+    * Sets the target handler.
+    * @param target The target handler.
     */
-   public void setTarget(Restlet target)
+   public void setTarget(UniformInterface target)
    {
    	if(getWrappedServer() != null)
    	{
    		getWrappedServer().setTarget(target);
    	}
    }
-
 }

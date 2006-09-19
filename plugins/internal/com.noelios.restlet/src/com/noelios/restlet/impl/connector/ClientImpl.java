@@ -43,7 +43,7 @@ import org.restlet.data.Representation;
  * dissertation</a>
  * @author Jerome Louvel (contact@noelios.com) <a href="http://www.noelios.com/">Noelios Consulting</a>
  */
-public class ClientImpl extends Client
+public abstract class ClientImpl extends Client
 {   
    /** The context. */
 	private Context context;
@@ -111,14 +111,6 @@ public class ClientImpl extends Client
 		return this;
 	}
 
-	/**
-	 * Handles a call.
-	 * @param call The call to handle.
-	 */
-	public void handle(Call call)
-	{
-	}
-
    /** Starts the Restlet. */
    public void start() throws Exception
    {
@@ -162,6 +154,12 @@ public class ClientImpl extends Client
       
       return this.protocols;
    }
+
+	/**
+	 * Handles a call.
+	 * @param call The call to handle.
+	 */
+	public abstract void handle(Call call);
 
    /**
     * Deletes the identified resource.

@@ -62,11 +62,7 @@ public class ServerList extends WrapperList<Server>
 	 */
 	public boolean add(Server server)
 	{
-		if((getContainer() != null) && (getContainer().getRoot() != null)) 
-		{
-			server.setTarget(getContainer().getRoot());
-		}
-		
+		server.setTarget(getContainer());
 		return super.add(server);
 	}
 

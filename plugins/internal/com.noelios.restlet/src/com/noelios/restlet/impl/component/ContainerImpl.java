@@ -138,7 +138,7 @@ public class ContainerImpl extends Container
       else
       {
          call.setStatus(Status.SERVER_ERROR_INTERNAL);
-         logger.log(Level.SEVERE, "Handle not implemented yet...");
+         logger.log(Level.SEVERE, "No root handler defined.");
       }
    }
 
@@ -260,12 +260,6 @@ public class ContainerImpl extends Container
 	 */
 	public void setRoot(Restlet root)
 	{
-		// Update the target of all server connectors
-		for(Server server : getServers())
-		{
-			server.setTarget(root);
-		}
-		
 		this.root = root;
 	}
 

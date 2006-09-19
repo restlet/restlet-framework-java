@@ -25,6 +25,7 @@ package org.restlet.component;
 import org.restlet.Call;
 import org.restlet.Context;
 import org.restlet.Restlet;
+import org.restlet.UniformInterface;
 
 /**
  * Abstract unit of software instructions and internal state. "A component is an abstract
@@ -34,7 +35,7 @@ import org.restlet.Restlet;
  * dissertation</a>
  * @author Jerome Louvel (contact@noelios.com) <a href="http://www.noelios.com/">Noelios Consulting</a>
  */
-public abstract class Component
+public abstract class Component implements UniformInterface
 {
    /** The wrapped component. */
 	private Component wrappedComponent;

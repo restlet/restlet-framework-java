@@ -71,7 +71,7 @@ public class ContainerBuilder extends ComponentBuilder
     */
    public ContainerBuilder addServer(Server server)
    {
-   	server.setTarget(getNode().getRoot());
+   	server.setTarget(getNode());
       getNode().getServers().add(server);
       return this;
    }

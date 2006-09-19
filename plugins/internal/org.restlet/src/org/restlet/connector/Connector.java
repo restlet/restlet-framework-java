@@ -24,6 +24,7 @@ package org.restlet.connector;
 
 import java.util.List;
 
+import org.restlet.UniformInterface;
 import org.restlet.data.Protocol;
 
 /**
@@ -40,7 +41,7 @@ import org.restlet.data.Protocol;
  * dissertation</a>
  * @author Jerome Louvel (contact@noelios.com) <a href="http://www.noelios.com/">Noelios Consulting</a>
  */
-public abstract class Connector
+public abstract class Connector implements UniformInterface
 {
    /** The wrapped server. */
 	private Connector wrappedConnector;
