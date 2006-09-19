@@ -178,7 +178,7 @@ public class ParameterList extends WrapperList<Parameter>
 	public String getFirstValue(String name, boolean ignoreCase, String defaultValue)
 	{
 		String result = defaultValue;
-		Parameter param = getFirst(name);
+		Parameter param = getFirst(name, ignoreCase);
 		
 		if(param != null)
 		{

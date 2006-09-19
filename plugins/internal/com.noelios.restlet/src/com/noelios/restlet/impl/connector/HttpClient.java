@@ -29,67 +29,50 @@ import org.restlet.Call;
 
 /**
  * Base HTTP client connector.
- * <table>
- * 	<tr>
- * 		<th>Parameter name</th>
- * 		<th>Value type</th>
- * 		<th>Default value</th>
- * 		<th>Description</th>
- * 	</tr>
- * 	<tr>
- * 		<td>converter</td>
- * 		<td>String</td>
- * 		<td>com.noelios.restlet.connector.HttpClientConverter</td>
- * 		<td>The qualified class name of the converter from uniform calls to HTTP client calls.</td>
- * 	</tr>
- * </table>
  * @author Jerome Louvel (contact@noelios.com) <a href="http://www.noelios.com/">Noelios Consulting</a>
  */
 public abstract class HttpClient extends ClientImpl
 {
-   /** Obtain a suitable logger. */
-   private static Logger logger = Logger.getLogger(HttpClient.class.getCanonicalName());
+	/** Obtain a suitable logger. */
+	private static Logger logger = Logger.getLogger(HttpClient.class.getCanonicalName());
 
-   /** The converter from uniform calls to HTTP calls. */
-   private HttpClientConverter converter;
+	/** The converter from uniform calls to HTTP calls. */
+	private HttpClientConverter converter;
 
-	/** The qualified class name of the call converter. */
-	private String converterName;
+	/**
+	 * Constructor.
+	 */
+	public HttpClient()
+	{
+		this.converter = null;
+	}
 
-   /**
-    * Constructor.
-    */
-   public HttpClient()
-   {
-      this.converter = null;
-		this.converterName = null;
-   }
+	/**
+	 * Creates a low-level HTTP client call from a high-level uniform call.
+	 * @param call The high-level uniform call.
+	 * @return A low-level HTTP client call.
+	 */
+	public abstract HttpClientCall create(Call call);
 
-   /**
-    * Creates a low-level HTTP client call from a high-level uniform call.
-    * @param call The high-level uniform call.
-    * @return A low-level HTTP client call.
-    */
-   public abstract HttpClientCall create(Call call);
-
-   /**
-    * Handles a call.
-    * @param call The call to handle.
-    */
-   public void handle(Call call)
-   {
+	/**
+	 * Handles a call.
+	 * @param call The call to handle.
+	 */
+	public void handle(Call call)
+	{
 		try
-      {
-  			if(!isStarted()) start();
-         HttpClientCall httpCall = getConverter().toSpecific(this, call);
-         getConverter().commit(httpCall, call);
-      }
-      catch (Exception e)
-      {
-         logger.log(Level.WARNING, "Error while handling an HTTP client call: ", e.getMessage());
-         logger.log(Level.INFO, "Error while handling an HTTP client call", e);
-      }
-   }
+		{
+			if (!isStarted()) start();
+			HttpClientCall httpCall = getConverter().toSpecific(this, call);
+			getConverter().commit(httpCall, call);
+		}
+		catch (Exception e)
+		{
+			logger.log(Level.WARNING, "Error while handling an HTTP client call: ", e
+					.getMessage());
+			logger.log(Level.INFO, "Error while handling an HTTP client call", e);
+		}
+	}
 
 	/**
 	 * Returns the converter from uniform calls to HTTP calls.
@@ -99,82 +82,18 @@ public abstract class HttpClient extends ClientImpl
 	{
 		if (this.converter == null)
 		{
-			if (getConverterName() != null)
-			{
-				try
-				{
-					// Load the converter class using the given class name
-					Class converterClass = Class.forName(getConverterName());
-					this.converter = (HttpClientConverter) converterClass.newInstance();
-				}
-				catch (ClassNotFoundException e)
-				{
-					getContext().getLogger().log(
-							Level.WARNING,
-							"Couldn't find the converter class. Please check that your classpath includes "
-									+ converterName, e);
-				}
-				catch (InstantiationException e)
-				{
-					getContext()
-							.getLogger()
-							.log(
-									Level.WARNING,
-									"Couldn't instantiate the converter class. Please check this class has an empty constructor "
-											+ converterName, e);
-				}
-				catch (IllegalAccessException e)
-				{
-					getContext()
-							.getLogger()
-							.log(
-									Level.WARNING,
-									"Couldn't instantiate the converter class. Please check that you have to proper access rights to "
-											+ converterName, e);
-				}
-			}
-
-			if (this.converter == null)
-			{
-				getContext().getLogger().log(Level.WARNING,
-						"Instantiating the default HTTP call converter");
-				this.converter = new HttpClientConverter();
-			}
+			this.converter = new HttpClientConverter();
 		}
 
 		return this.converter;
 	}
 
-   /**
-    * Sets the converter from uniform calls to HTTP calls.
-    * @param converter The converter to set.
-    */
-   public void setConverter(HttpClientConverter converter)
-   {
-      this.converter = converter;
-   }
-
 	/**
-	 * Returns the qualified class name of the call converter.
-	 * @return the qualified class name of the call converter.
+	 * Sets the converter from uniform calls to HTTP calls.
+	 * @param converter The converter to set.
 	 */
-	public String getConverterName()
+	public void setConverter(HttpClientConverter converter)
 	{
-		if (this.converterName == null)
-		{
-			this.converterName = getContext().getParameters().getFirstValue("converter",
-					HttpClientConverter.class.getCanonicalName());
-		}
-
-		return this.converterName;
-	}
-
-	/**
-	 * Sets the qualified class name of the call converter.
-	 * @param converterName The qualified class name of the call converter.
-	 */
-	public void setConverterName(String converterName)
-	{
-		this.converterName = converterName;
+		this.converter = converter;
 	}
 }

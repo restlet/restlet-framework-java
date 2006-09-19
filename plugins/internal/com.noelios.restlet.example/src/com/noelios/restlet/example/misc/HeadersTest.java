@@ -25,15 +25,15 @@ package com.noelios.restlet.example.misc;
 import org.restlet.Call;
 import org.restlet.Restlet;
 import org.restlet.connector.Server;
+import org.restlet.data.MediaType;
+import org.restlet.data.ParameterList;
 import org.restlet.data.Protocol;
-
-import com.noelios.restlet.data.StringRepresentation;
 
 /**
  * Display the HTTP accept header sent by the Web browsers.
  * @author Jerome Louvel (contact@noelios.com) <a href="http://www.noelios.com/">Noelios Consulting</a>
  */
-public class ConverterTest
+public class HeadersTest
 {
    public static void main(String[] args)
    {
@@ -43,14 +43,17 @@ public class ConverterTest
          {
             public void handleGet(Call call)
             {
-            	String acceptHeader = (String)call.getAttributes().get("Accept");
-               call.setOutput(new StringRepresentation("Accept header: " + acceptHeader));
+            	ParameterList requestHeaders = (ParameterList)call.getAttributes().get("requestHeaders"); 
+               call.setOutput("Accept header: " + requestHeaders.getFirstValue("accept", true), MediaType.TEXT_PLAIN);
+
+               ParameterList responseHeaders = new ParameterList();
+               responseHeaders.add("X-Test", "Test value");
+               call.getAttributes().put("responseHeaders", responseHeaders);
             }
          };
 
          // Create the HTTP server and listen on port 8182
          Server server = new Server(Protocol.HTTP, 8182, handler);
-//         server.getContext().getParameters().add("converter", "com.noelios.restlet.example.misc.ConverterExample");
          server.start();
       }
       catch(Exception e)

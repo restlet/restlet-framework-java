@@ -30,6 +30,7 @@ import org.restlet.Call;
 import org.restlet.Context;
 import org.restlet.data.CookieSetting;
 import org.restlet.data.Encoding;
+import org.restlet.data.Parameter;
 import org.restlet.data.ParameterList;
 import org.restlet.data.Representation;
 import org.restlet.data.Status;
@@ -55,7 +56,9 @@ public class HttpServerConverter
 	 */
 	public Call toUniform(HttpServerCall httpCall, Context context)
 	{
-		return new HttpServerRestletCall(context, httpCall);
+		Call result = new HttpServerRestletCall(context, httpCall);
+		result.getAttributes().put("requestHeaders", httpCall.getRequestHeaders());
+		return result;
 	}
 	
 	/**
@@ -189,6 +192,74 @@ public class HttpServerConverter
 				{
 					responseHeaders.add(HttpConstants.HEADER_CONTENT_LOCATION, call
 							.getOutput().getIdentifier().toString());
+				}
+			}
+			
+			// Add user-defined extension headers
+			ParameterList additionalHeaders = (ParameterList)call.getAttributes().get("responseHeaders");
+			if(additionalHeaders != null)
+			{
+				for(Parameter param : additionalHeaders)
+				{
+					if( 	param.getName().equalsIgnoreCase(HttpConstants.HEADER_ACCEPT) ||
+							param.getName().equalsIgnoreCase(HttpConstants.HEADER_ACCEPT_CHARSET) ||
+							param.getName().equalsIgnoreCase(HttpConstants.HEADER_ACCEPT_ENCODING) ||
+							param.getName().equalsIgnoreCase(HttpConstants.HEADER_ACCEPT_LANGUAGE) ||
+							param.getName().equalsIgnoreCase(HttpConstants.HEADER_ACCEPT_RANGES) ||
+							param.getName().equalsIgnoreCase(HttpConstants.HEADER_AGE) ||
+							param.getName().equalsIgnoreCase(HttpConstants.HEADER_ALLOW) ||
+							param.getName().equalsIgnoreCase(HttpConstants.HEADER_AUTHORIZATION) ||
+							param.getName().equalsIgnoreCase(HttpConstants.HEADER_CACHE_CONTROL) ||
+							param.getName().equalsIgnoreCase(HttpConstants.HEADER_CONNECTION) ||
+							param.getName().equalsIgnoreCase(HttpConstants.HEADER_CONTENT_ENCODING) ||
+							param.getName().equalsIgnoreCase(HttpConstants.HEADER_CONTENT_LANGUAGE) ||
+							param.getName().equalsIgnoreCase(HttpConstants.HEADER_CONTENT_LENGTH) ||
+							param.getName().equalsIgnoreCase(HttpConstants.HEADER_CONTENT_LOCATION) ||
+							param.getName().equalsIgnoreCase(HttpConstants.HEADER_CONTENT_MD5) ||
+							param.getName().equalsIgnoreCase(HttpConstants.HEADER_CONTENT_RANGE) ||
+							param.getName().equalsIgnoreCase(HttpConstants.HEADER_CONTENT_TYPE) ||
+							param.getName().equalsIgnoreCase(HttpConstants.HEADER_COOKIE) ||
+							param.getName().equalsIgnoreCase(HttpConstants.HEADER_DATE) ||
+							param.getName().equalsIgnoreCase(HttpConstants.HEADER_ETAG) ||
+							param.getName().equalsIgnoreCase(HttpConstants.HEADER_EXPECT) ||
+							param.getName().equalsIgnoreCase(HttpConstants.HEADER_EXPIRES) ||
+							param.getName().equalsIgnoreCase(HttpConstants.HEADER_FROM) ||
+							param.getName().equalsIgnoreCase(HttpConstants.HEADER_HOST) ||
+							param.getName().equalsIgnoreCase(HttpConstants.HEADER_IF_MATCH) ||
+							param.getName().equalsIgnoreCase(HttpConstants.HEADER_IF_MODIFIED_SINCE) ||
+							param.getName().equalsIgnoreCase(HttpConstants.HEADER_IF_NONE_MATCH) ||
+							param.getName().equalsIgnoreCase(HttpConstants.HEADER_IF_RANGE) ||
+							param.getName().equalsIgnoreCase(HttpConstants.HEADER_IF_UNMODIFIED_SINCE) ||
+							param.getName().equalsIgnoreCase(HttpConstants.HEADER_LAST_MODIFIED) ||
+							param.getName().equalsIgnoreCase(HttpConstants.HEADER_LOCATION) ||
+							param.getName().equalsIgnoreCase(HttpConstants.HEADER_MAX_FORWARDS) ||
+							param.getName().equalsIgnoreCase(HttpConstants.HEADER_PRAGMA) ||
+							param.getName().equalsIgnoreCase(HttpConstants.HEADER_PROXY_AUTHENTICATE) ||
+							param.getName().equalsIgnoreCase(HttpConstants.HEADER_PROXY_AUTHORIZATION) ||
+							param.getName().equalsIgnoreCase(HttpConstants.HEADER_RANGE) ||
+							param.getName().equalsIgnoreCase(HttpConstants.HEADER_REFERRER) ||
+							param.getName().equalsIgnoreCase(HttpConstants.HEADER_RETRY_AFTER) ||
+							param.getName().equalsIgnoreCase(HttpConstants.HEADER_SERVER) ||
+							param.getName().equalsIgnoreCase(HttpConstants.HEADER_SET_COOKIE) ||
+							param.getName().equalsIgnoreCase(HttpConstants.HEADER_SET_COOKIE2) ||
+							param.getName().equalsIgnoreCase(HttpConstants.HEADER_TRAILER) ||
+							param.getName().equalsIgnoreCase(HttpConstants.HEADER_TRANSFER_ENCODING) ||
+							param.getName().equalsIgnoreCase(HttpConstants.HEADER_TRANSFER_EXTENSION) ||
+							param.getName().equalsIgnoreCase(HttpConstants.HEADER_UPGRADE) ||
+							param.getName().equalsIgnoreCase(HttpConstants.HEADER_USER_AGENT) ||
+							param.getName().equalsIgnoreCase(HttpConstants.HEADER_VARY) ||
+							param.getName().equalsIgnoreCase(HttpConstants.HEADER_VIA) ||
+							param.getName().equalsIgnoreCase(HttpConstants.HEADER_WARNING) ||
+							param.getName().equalsIgnoreCase(HttpConstants.HEADER_WWW_AUTHENTICATE)
+							)
+					{
+						// Standard headers can't be overriden
+						logger.warning("Addition of the standard header \"" + param.getName() + "\" is not allowed.");
+					}
+					else
+					{
+						responseHeaders.add(param);
+					}
 				}
 			}
 		}

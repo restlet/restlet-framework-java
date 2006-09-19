@@ -36,6 +36,7 @@ import org.restlet.data.Cookie;
 import org.restlet.data.CookieSetting;
 import org.restlet.data.Form;
 import org.restlet.data.Language;
+import org.restlet.data.MediaType;
 import org.restlet.data.Method;
 import org.restlet.data.Reference;
 import org.restlet.data.Representation;
@@ -444,6 +445,16 @@ public class Call
 	public void setOutput(Representation output)
 	{
 		this.output = output;
+	}
+
+	/**
+	 * Sets a textual representation provided by the server.
+    * @param value The represented string.
+    * @param mediaType The representation's media type.
+	 */
+	public void setOutput(String value, MediaType mediaType)
+	{
+		setOutput(Factory.getInstance().createRepresentation(value, mediaType));
 	}
 
 	/**

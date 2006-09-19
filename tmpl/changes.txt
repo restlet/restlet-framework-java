@@ -9,6 +9,7 @@ Changes log
 [Bugs fixed]
  - Fixed issue with error status preventing the setting of response headers with Servlet containers like Tomcat. Report and solution by Evan DiBiase.
  - Completed support for content streaming in the HTTP client connector extension. Issue reported by Mikkel Jensen.
+ - Fixed bug in ParameterList.getFirstValue(String, boolean) ignoring the "ignoreCase" parameter.
  
 [API breaking changes]
  - Moved hasInput() method from org.restlet.connector.Client to Call.isInputAvailable().
@@ -47,14 +48,20 @@ Changes log
  - Added com.noelios.restlet.connector.HttpServerConverter as the base call converter (from HTTP calls to uniform REST calls).
  - Refactored the HttpUrlConnection-based HTTP client to extract a generic HttpClientConverter and added a base HttpClient class.
  - Added new constructors to Client and Server to be match Connector's constructors.
- - Added "converter" parameter to HttpServer and HttpClient base classes and thus to all HTTP connectors (Jetty, Simple, AsyncWeb, HttpUrlConnection).
+ - Added support of server HTTP headers in uniform Call instance. The request headers are available in call.getAttributes().get("requestHeaders") as an
+   instance of ParameterList. Additional response headers can also be added by setting a "responseHeaders" attribute. Note that only non-standard HTTP 
+   headers are allowed to be added to prevent conflicts with the connector's behavior.
+ - Added support of client HTTP headers in uniform Call instance. The response headers are available in call.getAttributes().get("responseHeaders") as an
+   instance of ParameterList. Additional request headers can also be added by setting a "requestHeaders" attribute. Note that only non-standard HTTP 
+   headers are allowed to be added to prevent conflicts with the connector's behavior.
  - Added sample application illustrating the usage of server call converters to access raw HTTP headers.
  - Added static valueOf() methods to ChallengeScheme, CharacterSet, Encoding, Language, MediaType, Method, Protocol and Status. Sometimes renamed existing create() method. Suggested by Piyush Purang.
  - Added new Context constructor taking just a logger name.
  - Clarified the Javadocs of root classes in org.restlet.
  - Added more constructors to Chainer, Filter and Handler.
  - Readded UniformInterface and added ClientInterface.
-
+ - Added a Call.setOutput(String, MediaType) method facilitating the setting of string-based output representations.
+ 
 1.0 beta 18 (2006-08-19)
 [Bugs fixed]
  - Status descriptions are now sent back to Jetty 6 for error statuses. Reported by AJ Barnes.
