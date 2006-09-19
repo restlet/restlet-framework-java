@@ -108,7 +108,7 @@ public class DirectoryResource extends AbstractResource
 
 		// Try to detect the presence of a directory
 		Call contextCall = new Call(Method.GET, this.targetUri);
-		getDirectory().getContext().handle(call);
+		getDirectory().getContext().handle(contextCall);
 		if ((contextCall.getOutput() != null)
 				&& contextCall.getOutput().getMediaType().equals(MediaType.TEXT_URI_LIST))
 		{
@@ -150,7 +150,7 @@ public class DirectoryResource extends AbstractResource
 			}
 
 			contextCall = new Call(Method.GET, this.directoryUri);
-			getDirectory().getContext().handle(call);
+			getDirectory().getContext().handle(contextCall);
 			if ((contextCall.getOutput() != null)
 					&& contextCall.getOutput().getMediaType().equals(MediaType.TEXT_URI_LIST))
 			{
@@ -323,7 +323,7 @@ public class DirectoryResource extends AbstractResource
 						{
 							// Add the new variant to the result list
 							Call contextCall = new Call(Method.GET, entryUri);
-							getDirectory().getContext().handle(call);
+							getDirectory().getContext().handle(contextCall);
 							if (contextCall.getStatus().isSuccess()
 									&& (contextCall.getOutput() != null))
 							{
