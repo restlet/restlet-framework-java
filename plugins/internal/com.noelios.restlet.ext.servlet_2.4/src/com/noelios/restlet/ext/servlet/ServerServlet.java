@@ -35,7 +35,6 @@ import org.restlet.component.Container;
 import org.restlet.data.Reference;
 
 import com.noelios.restlet.impl.connector.HttpServer;
-import com.noelios.restlet.impl.connector.HttpServerConverter;
 
 /**
  * Servlet acting like an HTTP server connector. See the getTarget() method for details on how 
@@ -66,13 +65,6 @@ import com.noelios.restlet.impl.connector.HttpServerConverter;
  * 	&lt;context-param&gt;
  * 		&lt;param-name&gt;useForwardedForHeader&lt;/param-name&gt;
  * 		&lt;param-value&gt;false&lt;/param-value&gt;
- * 	&lt;/context-param&gt;
- * 
- * 	&lt;!-- Optional call converter class --&gt;
- *    &lt;!-- Must be a subclass of com.noelios.restlet.connector.HttpServerConverter --&gt;
- * 	&lt;context-param&gt;
- * 		&lt;param-name&gt;org.restlet.converter.class&lt;/param-name&gt;
- * 		&lt;param-value&gt;com.noelios.restlet.connector.HttpServerConverter&lt;/param-value&gt;
  * 	&lt;/context-param&gt;
  * 
  * 	&lt;!-- ServerServlet class or a subclass --&gt;
@@ -125,13 +117,6 @@ public class ServerServlet extends HttpServlet
 	 * class name to use to create the target instance. 
 	 */
 	public static final String NAME_TARGET_CLASS = "org.restlet.target.class";
-
-	/** 
-	 * A customized Restlet call converter. It must contain the class name of a subclass of 
-	 * com.noelios.restlet.connector.HttpServerConverter. 
-	 */
-	public static final String NAME_CONVERTER_CLASS = "org.restlet.converter.class";
-	public static final String NAME_CONVERTER_CLASS_DEFAULT = HttpServerConverter.class.getCanonicalName();
 
 	/** 
 	 * The Servlet context initialization parameter's name containing the name of the 
@@ -203,7 +188,6 @@ public class ServerServlet extends HttpServlet
 				if (result == null)
 				{
 					result = new HttpServer();
-					result.setConverterName(getInitParameter(NAME_CONVERTER_CLASS, NAME_CONVERTER_CLASS_DEFAULT));
 					getServletContext().setAttribute(NAME_SERVER_ATTRIBUTE, result);
 					
 					// Try to instantiate a new target
