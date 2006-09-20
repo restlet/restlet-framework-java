@@ -140,7 +140,33 @@ public class Call
 
 	/**
 	 * Returns a modifiable attributes map that can be used by developers to save information relative
-	 * to the current call. This is an easier alternative to the creation of a wrapper around the whole call.
+	 * to the current call. This is an easier alternative to the creation of a wrapper around the whole 
+	 * call.<br/>
+	 * <br/>
+	 * In addition, this map is used by Restlet implementations to exchange advanced information
+	 * with developers. For this purpose, all attribute names starting with "restlet." are reserved. 
+	 * Currently the following attributes are used:
+	 * <table>
+	 * 	<tr>
+	 * 		<th>Attribute name</th>
+	 * 		<th>Value type</th>
+	 * 		<th>Description</th>
+	 * 	</tr>
+	 * 	<tr>
+	 * 		<td>restlet.http.requestHeaders</td>
+	 * 		<td>org.restlet.data.ParameterList</td>
+	 * 		<td>Server HTTP connectors must provide all the request headers exactly as they were received
+	 * from the client. When invoking client HTTP connectors, developers can also set this attribute to 
+	 * specify the non-standard HTTP headers that should be added to the request sent to a server.</td>
+	 * 	</tr>
+	 * 	<tr>
+	 * 		<td>restlet.http.responseHeaders</td>
+	 * 		<td>org.restlet.data.ParameterList</td>
+	 * 		<td>Client HTTP connectors must provide all the response headers exactly as they were received
+	 * from the server. When replying to server HTTP connectors, developers can also set this attribute to 
+	 * specify the non-standard HTTP headers that should be added to the response sent to a client.</td>
+	 * 	</tr>
+	 *	</table>
 	 * @return The modifiable attributes map.
 	 */
 	public Map<String, Object> getAttributes()

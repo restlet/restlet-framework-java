@@ -57,7 +57,7 @@ public class HttpServerConverter
 	public Call toUniform(HttpServerCall httpCall, Context context)
 	{
 		Call result = new HttpServerRestletCall(context, httpCall);
-		result.getAttributes().put("requestHeaders", httpCall.getRequestHeaders());
+		result.getAttributes().put("restlet.http.requestHeaders", httpCall.getRequestHeaders());
 		return result;
 	}
 	
@@ -196,7 +196,7 @@ public class HttpServerConverter
 			}
 			
 			// Add user-defined extension headers
-			ParameterList additionalHeaders = (ParameterList)call.getAttributes().get("responseHeaders");
+			ParameterList additionalHeaders = (ParameterList)call.getAttributes().get("restlet.http.responseHeaders");
 			if(additionalHeaders != null)
 			{
 				for(Parameter param : additionalHeaders)

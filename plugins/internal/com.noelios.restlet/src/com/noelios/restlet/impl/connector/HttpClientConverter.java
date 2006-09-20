@@ -270,7 +270,7 @@ public class HttpClientConverter
 
 		
 		// Add user-defined extension headers
-		ParameterList additionalHeaders = (ParameterList)call.getAttributes().get("requestHeaders");
+		ParameterList additionalHeaders = (ParameterList)call.getAttributes().get("restlet.http.requestHeaders");
 		if(additionalHeaders != null)
 		{
 			for(Parameter param : additionalHeaders)
@@ -348,7 +348,7 @@ public class HttpClientConverter
 		try
 		{
 			// Put the response headers in the call's attributes map
-			call.getAttributes().put("responseHeaders", httpCall.getResponseHeaders());
+			call.getAttributes().put("restlet.http.responseHeaders", httpCall.getResponseHeaders());
 			
 			// Read info from headers
 			for (Parameter header : httpCall.getResponseHeaders())

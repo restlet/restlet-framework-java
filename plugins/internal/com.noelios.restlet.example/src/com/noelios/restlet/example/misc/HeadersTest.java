@@ -35,31 +35,35 @@ import org.restlet.data.Protocol;
  */
 public class HeadersTest
 {
-   public static void main(String[] args)
-   {
-      try
-      {
-         Restlet handler = new Restlet()
-         {
-            public void handleGet(Call call)
-            {
-            	ParameterList requestHeaders = (ParameterList)call.getAttributes().get("requestHeaders"); 
-               call.setOutput("Accept header: " + requestHeaders.getFirstValue("accept", true), MediaType.TEXT_PLAIN);
+	public static void main(String[] args)
+	{
+		try
+		{
+			Restlet handler = new Restlet()
+			{
+				public void handleGet(Call call)
+				{
+					// Get an HTTP request header
+					ParameterList headers = (ParameterList) call.getAttributes().get(
+							"restlet.http.requestHeaders");
+					call.setOutput("Accept header: " + headers.getFirstValue("accept", true),
+							MediaType.TEXT_PLAIN);
 
-               ParameterList responseHeaders = new ParameterList();
-               responseHeaders.add("X-Test", "Test value");
-               call.getAttributes().put("responseHeaders", responseHeaders);
-            }
-         };
+					// Add a custom response header
+					headers = new ParameterList();
+					headers.add("X-Test", "Test value");
+					call.getAttributes().put("restlet.http.responseHeaders", headers);
+				}
+			};
 
-         // Create the HTTP server and listen on port 8182
-         Server server = new Server(Protocol.HTTP, 8182, handler);
-         server.start();
-      }
-      catch(Exception e)
-      {
-         e.printStackTrace();
-      }
-   }
+			// Create the HTTP server and listen on port 8182
+			Server server = new Server(Protocol.HTTP, 8182, handler);
+			server.start();
+		}
+		catch (Exception e)
+		{
+			e.printStackTrace();
+		}
+	}
 
 }
