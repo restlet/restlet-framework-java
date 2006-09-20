@@ -48,12 +48,12 @@ Changes log
  - Added com.noelios.restlet.connector.HttpServerConverter as the base call converter (from HTTP calls to uniform REST calls).
  - Refactored the HttpUrlConnection-based HTTP client to extract a generic HttpClientConverter and added a base HttpClient class.
  - Added new constructors to Client and Server to be match Connector's constructors.
- - Added support of server HTTP headers in uniform Call instance. The request headers are available in call.getAttributes().get("requestHeaders") as an
-   instance of ParameterList. Additional response headers can also be added by setting a "responseHeaders" attribute. Note that only non-standard HTTP 
-   headers are allowed to be added to prevent conflicts with the connector's behavior.
- - Added support of client HTTP headers in uniform Call instance. The response headers are available in call.getAttributes().get("responseHeaders") as an
-   instance of ParameterList. Additional request headers can also be added by setting a "requestHeaders" attribute. Note that only non-standard HTTP 
-   headers are allowed to be added to prevent conflicts with the connector's behavior.
+ - Added support of server HTTP headers in uniform Call instance. The request headers are available in call.getAttributes().get("org.restlet.http.
+   requestHeaders") as an instance of ParameterList. Additional response headers can also be added by setting a "org.restlet.http.responseHeaders" 
+   attribute. Note that only non-standard HTTP headers are allowed to be added to prevent conflicts with the connector's behavior.
+ - Added support of client HTTP headers in uniform Call instance. The response headers are available in call.getAttributes().get("org.restlet.http.
+   responseHeaders") as an instance of ParameterList. Additional request headers can also be added by setting a "org.restlet.http.requestHeaders" 
+   attribute. Note that only non-standard HTTP headers are allowed to be added to prevent conflicts with the connector's behavior.
  - Added sample application illustrating the usage of server call converters to access raw HTTP headers.
  - Added static valueOf() methods to ChallengeScheme, CharacterSet, Encoding, Language, MediaType, Method, Protocol and Status. Sometimes renamed existing create() method. Suggested by Piyush Purang.
  - Added new Context constructor taking just a logger name.

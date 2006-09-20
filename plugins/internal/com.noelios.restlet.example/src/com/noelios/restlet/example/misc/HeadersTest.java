@@ -45,14 +45,14 @@ public class HeadersTest
 				{
 					// Get an HTTP request header
 					ParameterList headers = (ParameterList) call.getAttributes().get(
-							"restlet.http.requestHeaders");
+							"org.restlet.http.requestHeaders");
 					call.setOutput("Accept header: " + headers.getFirstValue("accept", true),
 							MediaType.TEXT_PLAIN);
 
 					// Add a custom response header
 					headers = new ParameterList();
 					headers.add("X-Test", "Test value");
-					call.getAttributes().put("restlet.http.responseHeaders", headers);
+					call.getAttributes().put("org.restlet.http.responseHeaders", headers);
 				}
 			};
 
