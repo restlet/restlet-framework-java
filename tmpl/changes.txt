@@ -34,7 +34,7 @@ Changes log
  - Removed get/post/put/delete methods on Context as getClient() or handle() are preferred.
  - Added a post() method on Resource returning an instance of the new org.restlet.data.Result class as well as put() and delete().
  - Renamed Chainer.findNext(Call) into getNext(Call).
-
+ 
 [Other changes] 
  - Updated Jetty 6 extension to final 6.0 release.
  - Added Resource.setVariants() and setIdentifiers() methods. Can be easier than doing a getVariants().clear() then a getVariants().addAll(newList). 
@@ -60,6 +60,7 @@ Changes log
  - Clarified the Javadocs of root classes in org.restlet.
  - Added more constructors to Chainer, Filter and Handler.
  - Readded UniformInterface and added ClientInterface.
+ - Component and Connector now implement UniformInterface. Reenabled internal optimizations.
  - Added a Call.setOutput(String, MediaType) method facilitating the setting of string-based output representations.
  
 1.0 beta 18 (2006-08-19)

@@ -26,10 +26,10 @@ import org.restlet.Call;
 import org.restlet.Context;
 import org.restlet.Restlet;
 import org.restlet.component.Container;
+import org.restlet.data.MediaType;
 import org.restlet.data.Protocol;
 
 import com.noelios.restlet.HostRouter;
-import com.noelios.restlet.data.StringRepresentation;
 
 /**
  * Restlets servers and containers.
@@ -63,7 +63,7 @@ public class Tutorial05
                                   "Base URI:      " + call.getBaseRef() + '\n' +
                                   "Relative path: " + call.getRelativePart() + '\n' +
                                   "Query string:  " + call.getResourceRef().getQuery();
-                  call.setOutput(new StringRepresentation(output));
+                  call.setOutput(output, MediaType.TEXT_PLAIN);
                }
             };
 

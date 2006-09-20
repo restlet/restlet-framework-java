@@ -25,9 +25,8 @@ package com.noelios.restlet.example.tutorial;
 import org.restlet.Call;
 import org.restlet.Restlet;
 import org.restlet.connector.Server;
+import org.restlet.data.MediaType;
 import org.restlet.data.Protocol;
-
-import com.noelios.restlet.data.StringRepresentation;
 
 /**
  * Listening to Web browsers.
@@ -44,7 +43,7 @@ public class Tutorial03
          {
             public void handleGet(Call call)
             {
-               call.setOutput(new StringRepresentation("Hello World!"));
+               call.setOutput("Hello World!", MediaType.TEXT_PLAIN);
             }
          };
 

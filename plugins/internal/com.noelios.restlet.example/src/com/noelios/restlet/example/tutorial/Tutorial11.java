@@ -38,7 +38,6 @@ import com.noelios.restlet.GuardFilter;
 import com.noelios.restlet.HostRouter;
 import com.noelios.restlet.LogFilter;
 import com.noelios.restlet.StatusFilter;
-import com.noelios.restlet.data.StringRepresentation;
 
 /**
  * Routers and hierarchical URIs
@@ -90,7 +89,7 @@ public class Tutorial11 implements Constants
                {
                   // Print the requested URI path
                   String output = "Account of user named: " + call.getBaseRef().getLastSegment();
-                  call.setOutput(new StringRepresentation(output, MediaType.TEXT_PLAIN));
+                  call.setOutput(output, MediaType.TEXT_PLAIN);
                }
             };
          user.getScorers().add("$", account);
@@ -103,7 +102,7 @@ public class Tutorial11 implements Constants
                   // Print the user name of the requested orders
                   List<String> segments = call.getBaseRef().getSegments();
                   String output = "Orders of user named: " + segments.get(segments.size() - 2);
-                  call.setOutput(new StringRepresentation(output, MediaType.TEXT_PLAIN));
+                  call.setOutput(output, MediaType.TEXT_PLAIN);
                }
             };
          user.getScorers().add("/orders$", orders);

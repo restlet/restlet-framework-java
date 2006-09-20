@@ -27,7 +27,7 @@ import java.util.List;
 
 import org.restlet.Call;
 import org.restlet.Context;
-import org.restlet.Restlet;
+import org.restlet.UniformInterface;
 import org.restlet.connector.Server;
 import org.restlet.data.Protocol;
 import org.restlet.data.Status;
@@ -47,8 +47,8 @@ public class ServerImpl extends Server
    /** The context. */
 	private Context context;
 	
-	/** The target Restlet. */
-   private Restlet target;
+	/** The target handler. */
+   private UniformInterface target;
    
    /** The supported protocols. */
    private List<Protocol> protocols;
@@ -168,17 +168,17 @@ public class ServerImpl extends Server
    }
 
    /**
-    * Returns the target Restlet.
-    * @return The target Restlet.
+    * Returns the target handler.
+    * @return The target handler.
     */
-   public Restlet getTarget()
+   public UniformInterface getTarget()
    {
       return this.target;
    }
 
    /**
-    * Indicates if a target Restlet is set.
-    * @return True if a target Restlet is set.
+    * Indicates if a target handler is set.
+    * @return True if a target handler is set.
     */
    public boolean hasTarget()
    {
@@ -186,10 +186,10 @@ public class ServerImpl extends Server
    }
 
    /**
-    * Sets the target Restlet.
-    * @param target The target Restlet.
+    * Sets the target handler.
+    * @param target The target handler.
     */
-   public void setTarget(Restlet target)
+   public void setTarget(UniformInterface target)
    {
       this.target = target;
    }

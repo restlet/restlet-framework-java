@@ -31,7 +31,6 @@ import org.restlet.data.MediaType;
 import org.restlet.data.Protocol;
 
 import com.noelios.restlet.build.Builders;
-import com.noelios.restlet.data.StringRepresentation;
 
 /**
  * Fluent Builders to simplify configuration. 
@@ -50,7 +49,7 @@ public class Tutorial12 implements Constants
                {
                   // Print the requested URI path
                   String output = "Account of user named: " + call.getBaseRef().getLastSegment();
-                  call.setOutput(new StringRepresentation(output, MediaType.TEXT_PLAIN));
+                  call.setOutput(output, MediaType.TEXT_PLAIN);
                }
             };
 
@@ -62,7 +61,7 @@ public class Tutorial12 implements Constants
             		// Print the user name of the requested orders
                   List<String> segments = call.getBaseRef().getSegments();
                   String output = "Orders of user named: " + segments.get(segments.size() - 2);
-                  call.setOutput(new StringRepresentation(output, MediaType.TEXT_PLAIN));
+                  call.setOutput(output, MediaType.TEXT_PLAIN);
                }
             };
       	

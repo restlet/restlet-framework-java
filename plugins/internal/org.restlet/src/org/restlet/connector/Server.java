@@ -145,9 +145,6 @@ public class Server extends Connector
     */
    public void setTarget(UniformInterface target)
    {
-   	if(getWrappedServer() != null)
-   	{
-   		getWrappedServer().setTarget(target);
-   	}
+   	if(getWrappedServer() != null) getWrappedServer().setTarget(target);
    }
 }
