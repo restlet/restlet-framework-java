@@ -143,8 +143,8 @@ public class Call
 	 * to the current call. This is an easier alternative to the creation of a wrapper around the whole 
 	 * call.<br/>
 	 * <br/>
-	 * In addition, this map is used by Restlet implementations to exchange advanced information
-	 * with developers. For this purpose, all attribute names starting with "restlet." are reserved. 
+	 * In addition, this map is shared with the Restlet implementations to exchange advanced information
+	 * with developers. For this purpose, all attribute names starting with "org.restlet" are reserved. 
 	 * Currently the following attributes are used:
 	 * <table>
 	 * 	<tr>
@@ -157,16 +157,18 @@ public class Call
 	 * 		<td>org.restlet.data.ParameterList</td>
 	 * 		<td>Server HTTP connectors must provide all the request headers exactly as they were received
 	 * from the client. When invoking client HTTP connectors, developers can also set this attribute to 
-	 * specify the non-standard HTTP headers that should be added to the request sent to a server.</td>
+	 * specify <b>non-standard</b> HTTP headers that should be added to the request sent to a server.</td>
 	 * 	</tr>
 	 * 	<tr>
 	 * 		<td>org.restlet.http.responseHeaders</td>
 	 * 		<td>org.restlet.data.ParameterList</td>
 	 * 		<td>Client HTTP connectors must provide all the response headers exactly as they were received
 	 * from the server. When replying to server HTTP connectors, developers can also set this attribute to 
-	 * specify the non-standard HTTP headers that should be added to the response sent to a client.</td>
+	 * specify <b>non-standard</b> HTTP headers that should be added to the response sent to a client.</td>
 	 * 	</tr>
 	 *	</table>
+	 * Trying to add standard HTTP headers could conflict with the connector's internal behavior and 
+	 * prevent future optimizations, so this is clearly forbidden.</td>
 	 * @return The modifiable attributes map.
 	 */
 	public Map<String, Object> getAttributes()
