@@ -143,9 +143,11 @@ public class Call
 	 * to the current call. This is an easier alternative to the creation of a wrapper around the whole 
 	 * call.<br/>
 	 * <br/>
-	 * In addition, this map is shared with the Restlet implementations to exchange advanced information
-	 * with developers. For this purpose, all attribute names starting with "org.restlet" are reserved. 
-	 * Currently the following attributes are used:
+	 * In addition, this map is a shared space between the developer, the Restlet implementation and the
+	 * connectors used. In the latter cases, it is used to exchange information that is not uniform 
+	 * across all protocols and couldn't therefore be included in the Call API directly. For this purpose, 
+	 * all attribute names starting with "org.restlet" are reserved. Currently the following attributes 
+	 * are used:
 	 * <table>
 	 * 	<tr>
 	 * 		<th>Attribute name</th>
@@ -167,8 +169,8 @@ public class Call
 	 * specify <b>non-standard</b> HTTP headers that should be added to the response sent to a client.</td>
 	 * 	</tr>
 	 *	</table>
-	 * Trying to add standard HTTP headers could conflict with the connector's internal behavior and 
-	 * prevent future optimizations, so this is clearly forbidden.</td>
+	 * Trying to add standard HTTP headers is forbidden because it could conflict with the connector's internal 
+	 * behavior, limit portability or prevent future optimizations.</td>
 	 * @return The modifiable attributes map.
 	 */
 	public Map<String, Object> getAttributes()
