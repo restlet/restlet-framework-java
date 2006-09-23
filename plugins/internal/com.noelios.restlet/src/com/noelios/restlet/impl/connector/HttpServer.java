@@ -130,8 +130,6 @@ public class HttpServer extends ServerImpl
 	{
 		if (this.converter == null)
 		{
-			getContext().getLogger().log(Level.WARNING,
-					"Instantiating the default HTTP call converter");
 			this.converter = new HttpServerConverter();
 		}
 
