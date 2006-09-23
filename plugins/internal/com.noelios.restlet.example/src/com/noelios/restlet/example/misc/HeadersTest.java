@@ -43,15 +43,28 @@ public class HeadersTest
 			{
 				public void handleGet(Call call)
 				{
-					// Get an HTTP request header
-					ParameterList headers = (ParameterList) call.getAttributes().get(
-							"org.restlet.http.requestHeaders");
-					call.setOutput("Accept header: " + headers.getFirstValue("accept", true),
-							MediaType.TEXT_PLAIN);
+					// ------------------------------
+					// Getting an HTTP request header
+					// ------------------------------
+					ParameterList headers = (ParameterList) call.getAttributes().get("org.restlet.http.requestHeaders");
+					
+					// The headers list contains all received HTTP headers, in raw format.
+					// Below, we simply display the standard "Accept" HTTP header.
+					call.setOutput("Accept header: " + headers.getFirstValue("accept", true), MediaType.TEXT_PLAIN);
 
-					// Add a custom response header
+					// -----------------------
+					// Adding response headers
+					// -----------------------
 					headers = new ParameterList();
+					
+					// Non-standard headers are allowed
 					headers.add("X-Test", "Test value");
+					
+					// Standard HTTP headers are forbidden. If you happen to add one like the "Location" 
+					// header below, it will be ignored and a warning message will be displayed in the logs.
+					headers.add("Location", "http://www.restlet.org");
+					
+					// Setting the additional headers into the shared call's attribute
 					call.getAttributes().put("org.restlet.http.responseHeaders", headers);
 				}
 			};
