@@ -57,9 +57,9 @@
 <h3><a name="02">2. What are the underlying concepts?</a></h3>
 
 <p>
-   As the name of the project implies it, the Restlet interface is the main concept to understand. It's a RESTful uniform interface that is implemented by all protocol connectors (both client and server), all components (including RestletServer and RestletContainer) and all call handlers. Beside classic lifecycle methods, it contains the "public void handle(Call call)" method which is the contract respected by all parts of the framework.<br/>
+   As the name of the project implies it, the Restlet class is the central concept to understand. It implements a RESTful uniform interface that is implemented by all connectors, components and call handlers. It contains a single "public void handle(Call call)" method which is the contract respected by all parts of the framework.<br/>
    <br/>
-   Then, the Call interface is important as it encapsulate all aspects of a RESTful call, including the request and the response details, in a protocol neutral way. Based on these two core interfaces, all REST concepts were implemented, trying to use the REST name as the name of the equivalent Java interface. Some specialized Restlets called Handler, Filter and Router were added to facilitate the processing of call, especially to resources identified by hierarchical URIs.
+   Then, the Call class is important as it encapsulate all aspects of a RESTful call, including the request and the response details, in a protocol neutral way. All REST concepts were implemented, trying to use the REST name as the name of the equivalent Java interface. Some specialized Restlets called Chainer, Filter, Finder, Router and Scorer were added to facilitate the processing of calls, especially to locate the target resource identified by hierarchical URIs.
 </p>
 
 <h3><a name="03">3. What are the advantages of using Restlets instead of Servlets?</a></h3>
@@ -102,7 +102,7 @@
 <h3><a name="05">5. How can I get the raw HTTP headers if I really need to?</a></h3>
 
 <p>
-   Even though the uniform org.restlet.Call provides a convenient and protocol-neutral way to manipulate the information contained in all standard HTTP headers, it is sometimes necessary to access to the raw values of the headers or to some non-standard ones. For this purpose, a mechanism called "call converters" was introduced to let you customize the default conversion from low-level HTTP server calls to uniform calls, and also from uniform calls to low-level HTTP client calls. See documentation in the com.noelios.restlet.connector package. There is also some sample code in the distribution that illustrates the steps in details.
+   Even though the org.restlet.Call provides a convenient and protocol-neutral way to manipulate the information contained in all standard HTTP headers, it is sometimes necessary to access to the raw header values and to add non-standard headers. For this purpose, special call attributes are available, see details in Javadocs of the Call.getAttributes() method. There is also a sample code in the distribution that illustrates how to get raw headers and how to add non-standard ones, see the com.noelios.restlet.example.misc.HeadersTest class in the "src" directory.
 </p>
 
 <h3><a name="06">6. Can I run Restlets inside Tomcat or any Servlet container?</a></h3>
@@ -132,24 +132,20 @@
 <h3><a name="09">9. What are the other JAR files for?</a></h3>
 
 <p>
-   Beside the client HTTP connector which is part of the core NRE JAR, you need to add to your classpath the JAR file of each additional connector that
-   your application is using. If you want to act as an HTTP server, you can choose between several connectors, four standalone based on Jetty, Simple Framework and AsyncWeb, and one embedded if you want to use an existing Servlet container like Tomcat.
+   The core NRE doesn't contain any connector. You need to add to your classpath the JAR file of each additional connector that your application is using. If you want to act as an HTTP server, you can choose between several connectors: four standalone ones based on Jetty, Simple Framework and AsyncWeb, and one embedded if you want to use an existing Servlet container like Tomcat.
 </p>
 <p>
-   There are other optional extensions to the NRE, like SMTP and JDBC clients. Each one correspond to a seperate Java package under com.noelios.restlet.ext.* and is packaged as a separate JAR file available under on of the "lib" subdirectories. For example, if you need to send emails, you must include the following JAR files: /lib/javamail1.3/mail.jar (JavaMail) and /lib/javamail1.3/restlet.javamail.jar (NRE extension).
+   There are other extensions to the NRE, like SMTP and JDBC clients. Each one corresponds to a seperate Java package under com.noelios.restlet.ext.* and is packaged as a separate JAR file available under the "lib" directory. For example, if you need to send emails, you must include the following JAR files: /lib/com.noelios.restlet.ext.javamail_1.4.jar (NRE extension) and /lib/javax.mail_1.4/mail.jar (JavaMail).
 </p>
 <p>
-   No further configuration is needed as the NRE runtime will automatically detect the extensions present if the application classpath. That's why you
-   can rely on the standard Restlet API to create connector, for example: new DefaultServer(Protocols.HTTP, handler, 8182).
+   No further configuration is needed as the NRE runtime will automatically detect the extensions present if the application classpath. This is the reason why you can rely on the standard Restlet API to create connectors, for example: new Server(Protocols.HTTP, 8182, handler).
 </p>
 
 <h3><a name="10">10. Why are there two Jetty versions provided?</a></h3>
 
 <p>
    The Jetty 5 connector is based on the stable, production-proven Jetty 5.1 HTTP connector. It has full support for HTTPS and should be your default
-   choice for most situations. The Jetty 6 connector is based on the next version of Jetty, currently under development. As this is a full rewrite of
-   Jetty, it will have a longer release cycle. Currently, it doesn't support HTTPS but in the end, it is expected that the Jetty 5 connector will be
-   removed in favor of a stable Jetty 6 one.
+   choice for most situations. The Jetty 6 connector is based on a recent version of Jetty. As this is a full rewrite of Jetty, it is not as robust and proven yet.
 </p>
 
 <h3><a name="11">11. How do I provide password protection on a server?</a></h3>
@@ -169,14 +165,13 @@
 <h3><a name="13">13. How do I attach a status report to a client GET when the call fails on my server?</a></h3>
 
 <p>
-   This is also simple: call.setStatus(Statuses.CLIENT_ERROR_NOT_FOUND). Of course you have a complete list of options available in the Statuses
-   enumeration, closely following the HTTP and WebDAV conventions. In addition, you can take advantage of the StatusFilter in your application in
+   This is also simple: call.setStatus(Status.CLIENT_ERROR_NOT_FOUND). Of course you have a complete list of options available in the Status
+   class, closely following the HTTP and WebDAV conventions. In addition, you can take advantage of the StatusFilter in your application in
    order to return a description page to the client browser. Please check the <a href="http://www.restlet.org/tutorial#part08">part 8 of the tutorial</a>.
 </p>
 <p>
-   Finally, a description can be added to the status report to help the client to understand the situation and correct its request if needed. For this
-   purpose, you can use the <a href="http://www.restlet.org/docs/api/org/restlet/data/DefaultStatus.html">DefaultStatus</a> class instead of the constants in Statuses. Just create new instances like this:
-   call.setStatus(new DefaultStatus(Statuses.CLIENT_ERROR_NOT_FOUND, "Your comment goes here")).
+   Finally, a description can be added to the status report to help the client understand the situation and correct its request if needed. For this
+   purpose, you can create new instances of the <a href="http://www.restlet.org/docs/api/org/restlet/data/Status.html">Status</a> class instead of using the constants. For example use : call.setStatus(new Status(Status.CLIENT_ERROR_NOT_FOUND, "Your comment goes here")).
 </p>
 
 <h3><a name="14">14. What about performance, are new Restlets created for each call received on my server?</a></h3>
@@ -187,9 +182,9 @@
    information when manipulating the Call object.
 <p/>
 <p>
-   For the rest, the Restlet cost happens upon initialization or first call. By default, Restlet objects (including Handlers, Filters and Routers) are shared by all calls. As calls are living in separate threads that can be concurrently handled by the Restlets, you need
+   For the rest, the Restlet cost happens upon initialization or first call. By default, Restlet objects (including Chainers, Filters, Finders and Routers) are shared by all calls. As calls are living in separate threads that can be concurrently handled by the Restlets, you need
    to be careful about using member variables to store temporary state. If at some point in your application, you need to have state that is specific
-   to your call, you can use the call.getAttributes() as a modifiable attributes map. In the final Handler that find the target Resource for your call, you can also easily create a new Resource instance and assotiate call's specific information to it.
+   to your call, you can use the call.getAttributes() as a modifiable attributes map. In the final Finder that finds the target Resource for your call, you can also easily create a new Resource instance and assotiate call's specific information to it.
 </p>
 
 <h3><a name="15">15. How do I implement the traditional MVC pattern?</a></h3>
@@ -197,11 +192,11 @@
 <p>
    Here is the basic proposition for implementing the MVC pattern with Restlets :
    <ol>
-      <li>Controller == Chainers (Routers or Filters) + Handlers. You can visualize the controller as a sort of call processing chain, where the last node should be Handler with all the information necessary to locate the Resource identified in the call. This location information can be stored either in the call's attributes map, either in the member variables of a call wrapper (see <a href="http://www.restlet.org/docs/api/org/restlet/WrapperCall.html">org.restlet.WrapperCall</a>). This last Handler should implement its findTarget(Call) method and return an instance of Resource.</li>
-      <li>Model == Resource + data objects. Just start from the <a href="http://www.restlet.org/docs/api/org/restlet/data/AbstractResource.html">org.restlet.data.AbstractResource class</a> and implement its methods like getVariants(), delete() and put(). The AbstractResource automatically invokes those method by implementing the handleGet(), handleHead(), handlePut(), handleDelete() methods for you. For example, you just need to override the getVariants() to benefit from server-side content negotiation. Internally, we rely on the call.setOutput() method to trigger this content negotiation, which compares the variant representations that you make available, with the client capabilities and preferences.</li>
+      <li>Controller == Restlets (Chainers, Filters, Finders and Routers). You can visualize the controller as a sort of call processing chain, where the last node should be a Finder with all the information necessary to locate the Resource identified in the call. This location information can be stored either in the call's attributes map, either in the member variables of a call wrapper (see <a href="http://www.restlet.org/docs/api/org/restlet/WrapperCall.html">org.restlet.WrapperCall</a>). This last Finder should override the findTarget(Call) method and return an instance of Resource.</li>
+      <li>Model == Resource + data objects. Just start from the <a href="http://www.restlet.org/docs/api/org/restlet/data/AbstractResource.html">org.restlet.data.AbstractResource class</a> and implement its methods like getVariants(), post(), delete() and put(). The Finder class automatically invokes those methods by implementing the handleGet(), handleHead(), handlePost(), handlePut(), handleDelete() methods for you. For example, you just need to override the getVariants() to benefit from server-side content negotiation. Internally, we rely on the call.setOutput() method to trigger this content negotiation, which compares the variant representations that you make available, with the client capabilities and preferences.</li>
       <li>View == Representation variants. To create new representations for your resources, you can rely on one of the numerous Representation implementation classes (InputRepresentation for example) available in the NRE data package or in the extension packages like the one for FreeMarker (TemplateRepresentation).</li>
    </ol>
-   Chris Winters has developped a <a href="http://www.cwinters.com/raw/RestSampleBook.zip">sample application</a> illustrating very well those concepts. He uses AJAX with a Restlet container to do server-side content negotiation between resource representations available in different formats (XML, JSON and image). He also added the creation of new resources via POST. Note that the code source is based on source code snapshot and won't directly run with the latest beta 17 version.
+   Chris Winters has developped a <a href="http://www.cwinters.com/raw/RestSampleBook.zip">sample application</a> illustrating very well those concepts. He uses AJAX with a Restlet container to do server-side content negotiation between resource representations available in different formats (XML, JSON and image). He also added the creation of new resources via POST. Note that the code source is based on the beta 18 version.
 </p>
 <h3><a name="16">16 Any recommendations/guidelines in terms of how to deal with caching?</a></h3>
 
@@ -209,14 +204,11 @@
    Currently, client-side caching is supported via the "condition" property of Call. See the <a href="http://www.restlet.org/docs/api/org/restlet/data/ConditionData.html">
    ConditionData</a> interface for details. So, the first recommendation is to ensure that you correctly set all the representation metadata for
    your own representations (modification date, expiration date, tag). That will ensure that the server-side negotiation logic (used via the
-   Call.setBestOutput() method) works optimally.
+   Call.setOutput(Resource) method) works optimally.
 </p>
 <p>
    Then, writing a generic server-side cache is a different story. The recommendation would be to follow the REST and HTTP specifications spirit as
-   closely as possible. The only provision in the Restlet API is the org.restlet.connector.Cache interface which currently has no implementation.
-<p/>
-   For full-featured caching, you should look at popular projects like Squid: http://www.squid-cache.org/ or Apache caching modules. These caches can
-   be installed transparently for the clients, as reverse proxies.
+   closely as possible. For full-featured caching, you should look at popular projects like Squid: http://www.squid-cache.org/ or Apache caching modules. These caches can be installed transparently for the clients, as reverse proxies.
 </p>
 
 <h3><a name="17">17. What is the performance of the HTTP connectors?</a></h3>
@@ -291,7 +283,7 @@
    <table>
       <tr>
          <td style="vertical-align: middle;" rowspan="2"><a href="http://www.java.net/"><img src="http://www.restlet.org/images/javanet.gif" alt="java.net member" /></a></td>
-         <td>Version 2.0, last modified on 2006-08-18</td>
+         <td>Version 2.1, last modified on 2006-09-23</td>
       </tr>
       <tr>
          <td>Copyright &copy; 2005-2006 <a href="mailto:contact@noelios.com">J&eacute;r&ocirc;me Louvel</a>. Restlet is a registered trademark of <a target="_top" href="http://www.noelios.com">Noelios Consulting</a>.</td>
