@@ -30,9 +30,9 @@ import java.util.regex.Pattern;
 
 import org.restlet.Call;
 import org.restlet.Context;
-import org.restlet.Restlet;
 import org.restlet.Router;
 import org.restlet.ScorerList;
+import org.restlet.UniformInterface;
 import org.restlet.data.Protocol;
 import org.restlet.data.Status;
 
@@ -229,7 +229,7 @@ public class HostRouter extends Router
    }
    
    /**
-    * Returns the path pattern that can be used to attach the HostRouter to a parent RestletContainer/Router.
+    * Returns the URI pattern that can be used to attach the HostRouter to a parent RestletContainer/Router.
     * This pattern is dynamically generated based on the current configuration.
     * @return The path pattern that can be used to attach the HostRouter to a parent RestletContainer/Router.
     */
@@ -678,11 +678,11 @@ public class HostRouter extends Router
 	// -------------------------
 
 	/**
-	 * Finds the next Restlet if available.
+	 * Finds the next handler if available.
 	 * @param call The current call.
-	 * @return The next Restlet if available or null.
+	 * @return The next handler if available or null.
 	 */
-	public Restlet getNext(Call call)
+	public UniformInterface getNext(Call call)
 	{
 		return this.backRouter.getNext(call);
 	}

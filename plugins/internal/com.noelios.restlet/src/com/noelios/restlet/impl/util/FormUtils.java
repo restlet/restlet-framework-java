@@ -26,6 +26,8 @@ import java.io.IOException;
 import java.io.UnsupportedEncodingException;
 import java.net.URLDecoder;
 import java.util.Map;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 import org.restlet.data.Form;
 import org.restlet.data.Parameter;
@@ -37,14 +39,30 @@ import org.restlet.data.Representation;
  */
 public class FormUtils
 {
+	/** Obtain a suitable logger. */
+	private static Logger logger = Logger.getLogger(FormUtils.class.getCanonicalName());
+	
    /**
     * Parses a query into a given form.
     * @param form The target form.
     * @param query Query string.
     */
-   public static void parseQuery(Form form, String query) throws IOException
+   public static void parseQuery(Form form, String query)
    {
-      new FormReader(query).addParameters(form);
+   	FormReader fr = null;
+		try
+		{
+			fr = new FormReader(query);
+		}
+		catch (IOException ioe)
+		{
+			logger.log(Level.WARNING, "Unable to create a form reader. Parsing aborted.", ioe);
+		}
+		
+		if(fr != null)
+		{
+			fr.addParameters(form);
+		}
    }
    
    /**
@@ -52,9 +70,22 @@ public class FormUtils
     * @param form The target form.
     * @param post The posted form.
     */
-   public static void parsePost(Form form, Representation post) throws IOException
+   public static void parsePost(Form form, Representation post)
    {
-      new FormReader(post).addParameters(form);
+   	FormReader fr = null;
+		try
+		{
+			fr = new FormReader(post);
+		}
+		catch (IOException ioe)
+		{
+			logger.log(Level.WARNING, "Unable to create a form reader. Parsing aborted.", ioe);
+		}
+		
+		if(fr != null)
+		{
+			fr.addParameters(form);
+		}
    }
 
    /**

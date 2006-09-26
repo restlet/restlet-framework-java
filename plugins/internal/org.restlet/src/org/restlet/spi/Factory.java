@@ -23,7 +23,6 @@
 package org.restlet.spi;
 
 import java.io.BufferedReader;
-import java.io.IOException;
 import java.io.InputStreamReader;
 import java.net.URL;
 import java.util.List;
@@ -190,14 +189,14 @@ public abstract class Factory
     * @param form The target form.
     * @param webForm The posted form.
     */
-   public abstract void parse(Form form, Representation webForm) throws IOException;
+   public abstract void parse(Form form, Representation webForm);
 
    /**
     * Parses an URL encoded query string into a given form.
     * @param form The target form.
     * @param queryString Query string.
     */
-   public abstract void parse(Form form, String queryString) throws IOException;
+   public abstract void parse(Form form, String queryString);
 
    /**
     * Sets the best output representation of a given resource according to the client preferences.<br/>

@@ -5,7 +5,7 @@ Changes log
 
 
 @version-full@ (@release-date@)
-
+ 
 [Bugs fixed]
  - Fixed issue with error status preventing the setting of response headers with Servlet containers like Tomcat. Report and solution by Evan DiBiase.
  - Completed support for content streaming in the HTTP client connector extension. Issue reported by Mikkel Jensen.
@@ -22,18 +22,19 @@ Changes log
  - Moved com.noelios.restlet.spi into hidden com.noelios.restlet.impl package.
  - Moved org.restlet.component.ContainerContext to com.noelios.restlet.impl.component.ContainerContext.
  - Renamed Server."next" property into "target". "Next" was assuming that a previous Restlet existed, which is false for Server connectors.
- - Moved static Resltet.handle(Call call, Restlet target) method to Call.handle(Restlet target).
+ - Removed static Restlet.handle(Call call, Restlet target) method. Now Restlet automatically start themselves on first call.
  - Moved com.noelios.restlet.util.WrapperMap into org.restlet.util.
  - Removed Restlet.compareTo() method. No apparent usage.
  - Renamed Reference.getProtocol() into getSchemeProtocol().
  - Connector and Component no longer derive from Restlet, it was allowing some code reuse but also created some confusion between those core concepts.
  - Scorer now derives from Filter to improve factorization.
- - Renamed Handler into Finder (hopefully more explicit).
+ - Renamed Handler into Finder (hopefully more explicit as UniformInterface has a "handle" method).
  - Renamed DirectoryHandler* classes into DirectoryFinder*.
  - Added Context.getClient() returning a ClientInterface for a specific protocol.
  - Removed get/post/put/delete methods on Context as getClient() or handle() are preferred.
  - Added a post() method on Resource returning an instance of the new org.restlet.data.Result class as well as put() and delete().
- - Renamed Chainer.findNext(Call) into getNext(Call).
+ - Renamed Chainer.findNext(Call) into getNext(Call). Chainer is now abstract.
+ - Scorer is now abstract to force implementation of the score() method.
  
 [Other changes] 
  - Updated Jetty 6 extension to final 6.0 release.
@@ -63,6 +64,8 @@ Changes log
  - Component and Connector now implement UniformInterface. Reenabled internal optimizations.
  - Added a Call.setOutput(String, MediaType) method facilitating the setting of string-based output representations.
  - Fully updated the FAQ.
+ - Updated pictures in the tutorial to reflect the latest API changes (Application, hierarchy changes, etc.).
+ - Form handling code don't throw IO exceptions anymore for Call.getInputAsForm() and Reference.getQueryAsForm(). Issue reported by Piyush Purang.
  
 1.0 beta 18 (2006-08-19)
 [Bugs fixed]

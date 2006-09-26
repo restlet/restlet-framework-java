@@ -29,6 +29,8 @@ import java.io.UnsupportedEncodingException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 import org.restlet.data.EmptyValue;
 import org.restlet.data.Form;
@@ -41,7 +43,10 @@ import org.restlet.data.Representation;
  */
 public class FormReader
 {
-   /** The form stream. */
+	/** Obtain a suitable logger. */
+	private static Logger logger = Logger.getLogger(FormReader.class.getCanonicalName());
+
+	/** The form stream. */
 	private InputStream stream;
    
    /**
@@ -317,17 +322,43 @@ public class FormReader
     * Adds the parameters into a given form.
     * @param form The target form.
     */
-   public void addParameters(Form form) throws IOException
+   public void addParameters(Form form)
    {
-      Parameter param = readNextParameter();
+   	boolean readNext = true;
+      Parameter param = null;
 
-      while(param != null)
+      // Let's read all form parameters
+      while(readNext)
       {
-         form.add(param);
-         param = readNextParameter();
+      	try
+      	{
+	      	param = readNextParameter();
+	      	
+	      	if(param != null)
+	      	{
+	      		// Add parsed parameter to the form
+	      		form.add(param);
+	      	}
+	      	else
+	      	{
+	      		// Last parameter parsed
+	      		readNext = false;
+	      	}
+      	}
+      	catch(IOException ioe)
+      	{
+   			logger.log(Level.WARNING, "Unable to parse a form parameter. Skipping it.", ioe);
+      	}
       }
 
-      this.stream.close();
+      try
+		{
+			this.stream.close();
+		}
+		catch (IOException ioe)
+		{
+			logger.log(Level.WARNING, "Unable to close the form input stream", ioe);
+		}
    }
 
 }

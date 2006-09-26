@@ -3,9 +3,9 @@ List of examples:
 -----------------
 
 Misc package:
- - SimpleClient  : Simple HTTP client calling the simple server
- - SimpleServer  : Simple HTTP server invoked by the simple client
- - TestConverter : Simple Restlet displaying the raw HTTP "Accept" header
+ - SimpleClient : Simple HTTP client calling the simple server
+ - SimpleServer : Simple HTTP server invoked by the simple client
+ - HeadersTest  : Simple Restlet displaying the raw HTTP "Accept" header
  
 Tutorial package:
  - Tutorial02a : Retrieving the content of a Web page

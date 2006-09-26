@@ -608,7 +608,7 @@ public class Factory extends org.restlet.spi.Factory
 	 * @param form The target form.
 	 * @param webForm The posted form.
 	 */
-	public void parse(Form form, Representation webForm) throws IOException
+	public void parse(Form form, Representation webForm)
 	{
 		if (webForm != null)
 		{
@@ -621,7 +621,7 @@ public class Factory extends org.restlet.spi.Factory
 	 * @param form The target form.
 	 * @param queryString Query string.
 	 */
-	public void parse(Form form, String queryString) throws IOException
+	public void parse(Form form, String queryString)
 	{
 		if ((queryString != null) && !queryString.equals(""))
 		{

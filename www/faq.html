@@ -42,6 +42,7 @@
       <li><a href="#22">What is the difference between a Filter and a Router?</a></li>
       <li><a href="#23">How can I send and receive files with Restlets?</a></li>
       <li><a href="#24">How can I make PUT or DELETE calls from browsers?</a></li>
+      <li><a href="#25">What's the best practice for error handling in an intermediate Restlet?</a></li>
    </ol>
 </p>
 
@@ -266,6 +267,13 @@
    There are two solutions to this problem. The first one is to tunnel the PUT or DELETE calls inside regular GET or POST calls. There is a <a href="http://www.restlet.org/docs/core/index.html?com/noelios/restlet/TunnelFilter.html">TunnelFilter</a> available in the NRE to help you with this task. Also, in the <a href="http://www.onlamp.com/lpt/a/6480">Using REST with Ajax</a> article, the author explains how to directly build the PUT and DELETE methods from a browser using some Javascript code.
 </p>
 
+<h3><a name="25">25. What's the best practice for error handling in an intermediate Restlet?</a></h3>
+
+<p>
+   Have a look at the StatusFilter, it catches any unhandled exception (thrown inside a "handle(Call)" method) and sets the call's status to INTERNAL_ERROR (500 in HTTP) in this case. You can override it to customize the status page displayed. If you want a different status when an exception is thrown, you have to catch it manually at a lower level (inside the handle(Call) or handleGet|Post|etc. method of your intermediary Restlet) and set
+   the desired status on your call.
+</p>
+
 <p>
    <a href="mailto:contact@noelios.com">J&eacute;r&ocirc;me Louvel</a> (<a target="_top" href="http://blog.noelios.com">blog</a>)<br/>
 </p>
@@ -283,7 +291,7 @@
    <table>
       <tr>
          <td style="vertical-align: middle;" rowspan="2"><a href="http://www.java.net/"><img src="http://www.restlet.org/images/javanet.gif" alt="java.net member" /></a></td>
-         <td>Version 2.1, last modified on 2006-09-23</td>
+         <td>Version 2.2, last modified on 2006-09-24</td>
       </tr>
       <tr>
          <td>Copyright &copy; 2005-2006 <a href="mailto:contact@noelios.com">J&eacute;r&ocirc;me Louvel</a>. Restlet is a registered trademark of <a target="_top" href="http://www.noelios.com">Noelios Consulting</a>.</td>

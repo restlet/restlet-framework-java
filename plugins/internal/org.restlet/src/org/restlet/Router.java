@@ -128,11 +128,11 @@ public class Router extends Chainer
    }
 
 	/**
-	 * Returns the next Restlet if available.
+	 * Returns the next handler if available.
 	 * @param call The current call.
-	 * @return The next Restlet if available or null.
+	 * @return The next handler if available or null.
 	 */
-	public Restlet getNext(Call call)
+	public UniformInterface getNext(Call call)
 	{
 		Scorer result = null;
 		

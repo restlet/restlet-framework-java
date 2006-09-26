@@ -133,7 +133,7 @@ public class ContainerImpl extends Container
    {
       if(getRoot() != null)
       {
-   		call.handle(getRoot());
+   		getRoot().handle(call);
       }
       else
       {

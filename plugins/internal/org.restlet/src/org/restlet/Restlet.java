@@ -22,6 +22,8 @@
 
 package org.restlet;
 
+import java.util.logging.Level;
+
 import org.restlet.data.Method;
 import org.restlet.data.Status;
 
@@ -38,6 +40,9 @@ import org.restlet.data.Status;
  */
 public class Restlet implements UniformInterface
 {
+   /** Error message. */
+   private static final String UNABLE_TO_START = "Unable to start the target Restlet";
+   
    /** The context. */
 	private Context context;
 
@@ -86,47 +91,69 @@ public class Restlet implements UniformInterface
     */
 	public void handle(Call call)
    {
-   	Method method = call.getMethod();
-   	
-   	if(method == null)
-   	{
-   		handleOthers(call);
-   	}
-   	else if(method.equals(Method.GET))
+		// Check if the Restlet was started
+		if(isStopped())
 		{
-			handleGet(call);
+			try
+			{
+				start();
+			}
+			catch (Exception e)
+			{
+				getContext().getLogger().log(Level.WARNING, UNABLE_TO_START, e);
+				call.setStatus(Status.SERVER_ERROR_INTERNAL);
+			}
 		}
-		else if(method.equals(Method.POST))
+		
+		if(isStarted())
 		{
-			handlePost(call);
-		}
-		else if(method.equals(Method.PUT))
-		{
-			handlePut(call);
-		}
-		else if(method.equals(Method.DELETE))
-		{
-			handleDelete(call);
-		}
-		else if(method.equals(Method.HEAD))
-		{
-			handleHead(call);
-		}
-		else if(method.equals(Method.CONNECT))
-		{
-			handleConnect(call);
-		}
-		else if(method.equals(Method.OPTIONS))
-		{
-			handleOptions(call);
-		}
-		else if(method.equals(Method.TRACE))
-		{
-			handleTrace(call);
+	   	Method method = call.getMethod();
+	   	
+	   	if(method == null)
+	   	{
+	   		handleOthers(call);
+	   	}
+	   	else if(method.equals(Method.GET))
+			{
+				handleGet(call);
+			}
+			else if(method.equals(Method.POST))
+			{
+				handlePost(call);
+			}
+			else if(method.equals(Method.PUT))
+			{
+				handlePut(call);
+			}
+			else if(method.equals(Method.DELETE))
+			{
+				handleDelete(call);
+			}
+			else if(method.equals(Method.HEAD))
+			{
+				handleHead(call);
+			}
+			else if(method.equals(Method.CONNECT))
+			{
+				handleConnect(call);
+			}
+			else if(method.equals(Method.OPTIONS))
+			{
+				handleOptions(call);
+			}
+			else if(method.equals(Method.TRACE))
+			{
+				handleTrace(call);
+			}
+			else
+			{
+				handleOthers(call);
+			}
 		}
 		else
 		{
-			handleOthers(call);
+			getContext().getLogger().log(Level.WARNING, UNABLE_TO_START);
+			call.setStatus(Status.SERVER_ERROR_INTERNAL);
 		}
    }
 

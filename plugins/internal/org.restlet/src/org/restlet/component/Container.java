@@ -96,7 +96,7 @@ public class Container extends Component
    {
 		return getWrappedContainer().getApplications();
    }
-
+   
    /**
     * Handles a direct call.
     * @param call The call to handle.

@@ -22,7 +22,10 @@
 
 package org.restlet.component;
 
+import java.util.List;
+
 import org.restlet.Context;
+import org.restlet.data.Protocol;
 import org.restlet.spi.Factory;
 
 /**
@@ -54,5 +57,32 @@ public class Application extends Component
 	protected Application getWrappedApplication()
 	{
 		return (Application)getWrappedComponent();
+	}
+	
+	/**
+	 * Retuns the root application path
+	 * @return
+	 */
+	public String getRootPath()
+	{
+		return null;
+	}
+	
+	/**
+	 * Returns the list of client connectors required for a proper behavior of the application. 
+	 * @return The list of client connectors required.
+	 */
+	public List<Protocol> getRequiredClients()
+	{
+		return getWrappedApplication().getRequiredClients();
+	}
+	
+	/**
+	 * Returns the list of server connectors required for a proper behavior of the application. 
+	 * @return The list of server connectors required.
+	 */
+	public List<Protocol> getRequiredServers()
+	{
+		return getWrappedApplication().getRequiredServers();
 	}
 }

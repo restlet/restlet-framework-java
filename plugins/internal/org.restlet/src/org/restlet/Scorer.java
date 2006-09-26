@@ -27,7 +27,7 @@ package org.restlet;
  * Router in order to determine the most appropriate Restlet for a given call. 
  * @author Jerome Louvel (contact@noelios.com) <a href="http://www.noelios.com/">Noelios Consulting</a>
  */
-public class Scorer extends Filter
+public abstract class Scorer extends Filter
 {
 	/** The parent router. */
 	private Router router;
@@ -35,9 +35,9 @@ public class Scorer extends Filter
    /**
     * Constructor.
     * @param router The parent router.
-    * @param next The Restlet target.
+    * @param next The next handler.
     */
-   public Scorer(Router router, Restlet next)
+   public Scorer(Router router, UniformInterface next)
    {
    	super(router == null ? null : router.getContext(), next);
    	this.router = router;
@@ -48,10 +48,7 @@ public class Scorer extends Filter
 	 * @param call The call to score.
 	 * @return The score for a given call (between 0.0 and 1.0).
 	 */
-	public float score(Call call)
-	{
-		return 0.0F;
-	}
+	public abstract float score(Call call);
 
    /**
 	 * Returns the parent router.

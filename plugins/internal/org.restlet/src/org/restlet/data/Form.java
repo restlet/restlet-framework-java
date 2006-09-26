@@ -45,7 +45,7 @@ public class Form extends ParameterList
     * @param queryString The Web form parameters as a string.
     * @throws IOException 
     */
-   public Form(String queryString) throws IOException
+   public Form(String queryString)
    {
    	Factory.getInstance().parse(this, queryString);
    }
@@ -55,7 +55,7 @@ public class Form extends ParameterList
     * @param webForm The URL encoded Web form.
     * @throws IOException
     */
-   public Form(Representation webForm) throws IOException
+   public Form(Representation webForm)
    {
    	Factory.getInstance().parse(this, webForm);
    }

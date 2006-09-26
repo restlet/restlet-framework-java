@@ -33,8 +33,8 @@ package org.restlet;
  */
 public class Filter extends Chainer
 {
-	/** The attached Restlet. */
-	private Restlet next;
+	/** The next handler. */
+	private UniformInterface next;
 
 	/**
 	 * Constructor.
@@ -56,45 +56,45 @@ public class Filter extends Chainer
 	/**
 	 * Constructor.
 	 * @param context The context.
-	 * @param next The attached Restlet.
+	 * @param next The next handler.
 	 */
-	public Filter(Context context, Restlet next)
+	public Filter(Context context, UniformInterface next)
 	{
 		super(context);
 		this.next = next;
 	}
 
 	/**
-	 * Returns the next Restlet if available.
+	 * Returns the next handler if available.
 	 * @param call The current call.
-	 * @return The next Restlet if available or null.
+	 * @return The next handler if available or null.
 	 */
-	public Restlet getNext(Call call)
+	public UniformInterface getNext(Call call)
 	{
 		return getNext();
 	}
 
 	/**
-	 * Sets the attached Restlet shared by all calls going through this filter.
-	 * @param next The attached Restlet.
+	 * Sets the next handler.
+	 * @param next The next handler.
 	 */
-	public void setNext(Restlet next)
+	public void setNext(UniformInterface next)
 	{
 		this.next = next;
 	}
 
 	/**
-	 * Returns the attached Restlet.
-	 * @return The attached Restlet or null.
+	 * Returns the next handler.
+	 * @return The next handler or null.
 	 */
-	public Restlet getNext()
+	public UniformInterface getNext()
 	{
 		return this.next;
 	}
 
 	/**
-	 * Indicates if there is an attached Restlet.
-	 * @return True if there is an attached Restlet.
+	 * Indicates if there is a next handler.
+	 * @return True if there is a next handler.
 	 */
 	public boolean hasNext()
 	{
@@ -103,7 +103,7 @@ public class Filter extends Chainer
 
 	/**
 	 * Handles a call by first invoking the beforeHandle() method for pre-filtering, then distributing the call 
-	 * to the target Restlet via the doHandle() method. When the target handling is completed, it finally 
+	 * to the next handler via the doHandle() method. When the handling is completed, it finally 
 	 * invokes the afterHandle() method for post-filtering.
 	 * @param call The call to handle.
 	 */
@@ -115,7 +115,7 @@ public class Filter extends Chainer
 	}
 
 	/**
-	 * Allows filtering before its handling by the target Restlet. Does nothing by default.
+	 * Allows filtering before its processing by the next handler. Does nothing by default.
 	 * @param call The call to filter.
 	 */
 	protected void beforeHandle(Call call)
@@ -124,7 +124,7 @@ public class Filter extends Chainer
 	}
 
 	/**
-	 * Handles the call by distributing it to the target handler. 
+	 * Handles the call by distributing it to the next handler. 
 	 * @param call The call to handle.
 	 */
 	protected void doHandle(Call call)
@@ -133,7 +133,7 @@ public class Filter extends Chainer
 	}
 
 	/**
-	 * Allows filtering after its handling by the target Restlet. Does nothing by default.
+	 * Allows filtering after its processing by the next handler. Does nothing by default.
 	 * @param call The call to filter.
 	 */
 	protected void afterHandle(Call call)

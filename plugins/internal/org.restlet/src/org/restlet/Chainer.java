@@ -28,7 +28,7 @@ package org.restlet;
  * Subclasses only have to implement the findNext(Call) method.
  * @author Jerome Louvel (contact@noelios.com) <a href="http://www.noelios.com/">Noelios Consulting</a>
  */
-public class Chainer extends Restlet 
+public abstract class Chainer extends Restlet 
 {
    /**
     * Constructor.
@@ -53,11 +53,11 @@ public class Chainer extends Restlet
     */
    protected void defaultHandle(Call call)
    {
-   	Restlet next = getNext(call);
+   	UniformInterface next = getNext(call);
    	
    	if(next != null)
    	{
-      	call.handle(next);
+      	next.handle(call);
    	}
    	else
    	{
@@ -66,13 +66,9 @@ public class Chainer extends Restlet
    }
 
    /**
-	 * Returns the next Restlet if available.
+	 * Returns the next handler if available.
 	 * @param call The current call.
-	 * @return The next Restlet if available or null.
+	 * @return The next handler if available or null.
 	 */
-	public Restlet getNext(Call call)
-	{
-		return null;
-	}
-
+	public abstract UniformInterface getNext(Call call);
 }

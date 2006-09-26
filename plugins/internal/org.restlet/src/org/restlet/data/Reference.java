@@ -931,7 +931,7 @@ public class Reference
     * @return The optional query component as a form submission.
     * @throws IOException 
     */
-   public Form getQueryAsForm() throws IOException
+   public Form getQueryAsForm()
    {
       return new Form(getQuery());
    }

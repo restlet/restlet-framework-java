@@ -33,13 +33,14 @@ import org.restlet.Restlet;
  */
 public class MockRestlet extends Restlet
 {
-
 	/* (non-Javadoc)
 	 * @see org.restlet.AbstractRestlet#handle(org.restlet.Call)
 	 */
 	@Override
 	public void handle(Call call)
 	{
+		super.handle(call);
+
 		if (!super.isStarted())
 		{
 			throw new IllegalStateException("Restlet was not started");
