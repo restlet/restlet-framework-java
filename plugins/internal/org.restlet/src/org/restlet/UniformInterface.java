@@ -23,7 +23,10 @@
 package org.restlet;
 
 /**
- * Uniform REST interface.
+ * Uniform REST interface. The Restlet class is the generic implementation of UniformInterface, but other 
+ * elements such as the Connector and Component classes also implement it. 
+ * @see org.restlet.Call
+ * @see org.restlet.Restlet
  * @author Jerome Louvel (contact@noelios.com) <a href="http://www.noelios.com/">Noelios Consulting</a>
  */
 public interface UniformInterface

@@ -55,7 +55,7 @@ public class HostRouter extends Router
 	/**
 	 * Mode used when the HostRouter is attached to a parent router using an attach() method with a 
 	 * URI pattern parameter. In this mode, the parent router is setting the baseRef before delegating 
-	 * to call to the HostRouter. When setting the URI pattern for the parent router, just use the 
+	 * the call to the HostRouter. When setting the URI pattern for the parent router, just use the 
 	 * getPattern() method after having configured your HostRouter instance. 
 	 */
 	public static final int USAGE_ROUTING = 2;
