@@ -130,6 +130,7 @@ import com.noelios.restlet.impl.util.ByteUtils;
  *	</table>
  * @see com.noelios.restlet.data.ContextReference
  * @author Jerome Louvel (contact@noelios.com) <a href="http://www.noelios.com/">Noelios Consulting</a>
+ * @author Thierry Boileau
  */
 public class LocalClient extends ClientImpl
 {
