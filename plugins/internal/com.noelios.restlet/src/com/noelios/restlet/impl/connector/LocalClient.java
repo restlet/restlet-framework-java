@@ -29,6 +29,7 @@ import java.io.IOException;
 import java.net.URL;
 import java.util.ArrayList;
 import java.util.Enumeration;
+import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.TreeMap;
@@ -45,6 +46,7 @@ import org.restlet.data.MediaType;
 import org.restlet.data.Metadata;
 import org.restlet.data.Method;
 import org.restlet.data.Parameter;
+import org.restlet.data.Preference;
 import org.restlet.data.Protocol;
 import org.restlet.data.Reference;
 import org.restlet.data.ReferenceList;
@@ -229,21 +231,21 @@ public class LocalClient extends ClientImpl
 	{
 		try
 		{
-			if(!isStarted()) start();
+			if (!isStarted()) start();
 		}
-		catch(Exception e)
+		catch (Exception e)
 		{
 			logger.log(Level.SEVERE, "Couldn't start the local client connector", e);
 		}
-		
-		if(isStarted())
+
+		if (isStarted())
 		{
 			String scheme = call.getResourceRef().getScheme();
-	
+
 			// Ensure that all ".." and "." are normalized into the path
 			// to preven unauthorized access to user directories.
 			call.getResourceRef().normalize();
-	
+
 			if (scheme.equalsIgnoreCase("file"))
 			{
 				handleFile(call, call.getResourceRef().getPath());
@@ -251,7 +253,7 @@ public class LocalClient extends ClientImpl
 			else if (scheme.equalsIgnoreCase("context"))
 			{
 				ContextReference cr = new ContextReference(call.getResourceRef());
-	
+
 				if (cr.getAuthorityType() == AuthorityType.CLASS)
 				{
 					handleClassLoader(call, getClass().getClassLoader());
@@ -290,45 +292,95 @@ public class LocalClient extends ClientImpl
 
 		if (call.getMethod().equals(Method.GET) || call.getMethod().equals(Method.HEAD))
 		{
-			if ((file != null) && file.exists())
+			Representation output = null;
+
+			// TBoi : Get variants for a resource
+			boolean found = false;
+			Iterator<Preference<MediaType>> iterator = call.getClient()
+					.getAcceptedMediaTypes().iterator();
+			while (iterator.hasNext() && !found)
 			{
-				Representation output = null;
-
-				if (file.isDirectory())
+				Preference<MediaType> pref = iterator.next();
+				found = pref.getMetadata().equals(MediaType.TEXT_URI_LIST);
+			}
+			if (found)
+			{
+				//1- set up base name as the longest part of the name without known extensions (beginning from the left)
+				String[] result = file.getName().split("\\.");
+				String baseName = result[0];
+				boolean extensionFound = false;
+				for (int i = 1; i < result.length && !extensionFound; i++)
 				{
-					// Return the directory listing
-					File[] files = file.listFiles();
-					ReferenceList rl = new ReferenceList(files.length);
-					rl.setListRef(call.getResourceRef());
-
-					for (File entry : files)
+					extensionFound = getMetadata(result[i]) != null;
+					if (!extensionFound)
 					{
-						try
+						baseName += "." + result[i];
+					}
+				}
+				//2- loooking for resources with the same base name
+				File[] files = file.getParentFile().listFiles();
+				ReferenceList rl = new ReferenceList(files.length);
+				rl.setListRef(call.getResourceRef());
+
+				for (File entry : files)
+				{
+					try
+					{
+						if (entry.getName().startsWith(baseName))
 						{
 							rl.add(new FileReference(entry));
 						}
-						catch (IOException ioe)
-						{
-							logger.log(Level.WARNING, "Unable to create file reference", ioe);
-						}
 					}
-
-					output = rl.getRepresentation();
+					catch (IOException ioe)
+					{
+						logger.log(Level.WARNING, "Unable to create file reference", ioe);
+					}
 				}
-				else
-				{
-					// Return the file content
-					output = new FileRepresentation(file, getDefaultMediaType(),
-							getTimeToLive());
-					updateMetadata(file.getName(), output);
-				}
-
-				call.setOutput(output);
-				call.setStatus(Status.SUCCESS_OK);
+				output = rl.getRepresentation();
 			}
 			else
 			{
+				if ((file != null) && file.exists())
+				{
+					if (file.isDirectory())
+					{
+						// Return the directory listing
+						File[] files = file.listFiles();
+						ReferenceList rl = new ReferenceList(files.length);
+						rl.setListRef(call.getResourceRef());
+
+						for (File entry : files)
+						{
+							try
+							{
+								rl.add(new FileReference(entry));
+							}
+							catch (IOException ioe)
+							{
+								logger.log(Level.WARNING, "Unable to create file reference", ioe);
+							}
+						}
+
+						output = rl.getRepresentation();
+					}
+					else
+					{
+						// Return the file content
+						output = new FileRepresentation(file, getDefaultMediaType(),
+								getTimeToLive());
+						updateMetadata(file.getName(), output);
+					}
+				}
+			}
+
+			if (output == null)
+			{
 				call.setStatus(Status.CLIENT_ERROR_NOT_FOUND);
+			}
+			else
+			{
+				call.setOutput(output);
+				call.setStatus(Status.SUCCESS_OK);
 			}
 		}
 		else if (call.getMethod().equals(Method.PUT))

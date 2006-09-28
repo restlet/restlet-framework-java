@@ -26,15 +26,18 @@ import java.io.IOException;
 import java.util.List;
 import java.util.Set;
 import java.util.TreeSet;
+import java.util.logging.Level;
 import java.util.logging.Logger;
 
 import org.restlet.Call;
 import org.restlet.data.AbstractResource;
 import org.restlet.data.MediaType;
 import org.restlet.data.Method;
+import org.restlet.data.Preference;
 import org.restlet.data.Reference;
 import org.restlet.data.ReferenceList;
 import org.restlet.data.Representation;
+import org.restlet.data.Result;
 import org.restlet.data.Status;
 
 import com.noelios.restlet.DirectoryFinder;
@@ -280,56 +283,15 @@ public class DirectoryResource extends AbstractResource
 		{
 			if (this.baseName != null)
 			{
-				Set<String> extensions = null;
-				String entryUri;
-				String fullEntryName;
-				String baseEntryName;
-				int lastSlashIndex;
-				int firstDotIndex;
-
-				for (Reference ref : this.directoryContent)
+				for (Reference ref : getVariantsReferences(false))
 				{
-					entryUri = ref.toString();
-					lastSlashIndex = entryUri.lastIndexOf('/');
-					fullEntryName = (lastSlashIndex == -1) ? entryUri : entryUri
-							.substring(lastSlashIndex + 1);
-					baseEntryName = fullEntryName;
-
-					if (this.handler.isNegotiationEnabled())
+					//Add the new variant to the result list
+					Call contextCall = new Call(Method.GET, ref.toString());
+					getDirectory().getContext().handle(contextCall);
+					if (contextCall.getStatus().isSuccess()
+							&& (contextCall.getOutput() != null))
 					{
-						// Remove the extensions from the base name
-						firstDotIndex = fullEntryName.indexOf('.');
-						if (firstDotIndex != -1)
-						{
-							baseEntryName = fullEntryName.substring(0, firstDotIndex);
-						}
-					}
-
-					// Check if the current file is a valid variant
-					if (baseEntryName.equals(this.baseName))
-					{
-						boolean validVariant = true;
-
-						if (this.handler.isNegotiationEnabled())
-						{
-							// Verify that the extensions are compatible
-							extensions = getExtensions(fullEntryName);
-							validVariant = (((extensions == null) && (this.baseExtensions == null))
-									|| (this.baseExtensions == null) || extensions
-									.containsAll(this.baseExtensions));
-						}
-
-						if (validVariant)
-						{
-							// Add the new variant to the result list
-							Call contextCall = new Call(Method.GET, entryUri);
-							getDirectory().getContext().handle(contextCall);
-							if (contextCall.getStatus().isSuccess()
-									&& (contextCall.getOutput() != null))
-							{
-								result.add(contextCall.getOutput());
-							}
-						}
+						result.add(contextCall.getOutput());
 					}
 				}
 			}
@@ -339,10 +301,9 @@ public class DirectoryResource extends AbstractResource
 				if (this.targetDirectory && getDirectory().isListingAllowed())
 				{
 					ReferenceList userList = new ReferenceList(this.directoryContent.size());
-					
+
 					// Compute the base reference (from a call's client point of view) 
-					String baseRef = this.call.getBaseRef()
-							.toString(false, false);
+					String baseRef = this.call.getBaseRef().toString(false, false);
 					if (!baseRef.endsWith("/"))
 					{
 						baseRef += "/";
@@ -385,4 +346,156 @@ public class DirectoryResource extends AbstractResource
 		return result;
 	}
 
+	/**
+	 * 
+	 */
+	public Result put(Representation variant)
+	{
+		Call contextCall = new Call(Method.PUT, this.targetUri);
+		// We allow the transfer of the PUT calls only if the readOnly flag is not set
+		if (!getDirectory().isModifiable())
+		{
+			contextCall.setStatus(Status.CLIENT_ERROR_FORBIDDEN);
+		}
+		else
+		{
+			contextCall.setInput(variant);
+			if (targetDirectory)
+			{
+				contextCall.setResourceRef(this.targetUri);
+				getDirectory().getContext().handle(contextCall);
+			}
+			else
+			{
+				//Try to get the unique representation of the resource, if any
+				ReferenceList references = getVariantsReferences(true);
+				if (!references.isEmpty())
+				{
+					contextCall.setResourceRef(references.get(0));
+					getDirectory().getContext().handle(contextCall);
+				}
+				else
+				{
+					contextCall.setResourceRef(this.targetUri);
+					getDirectory().getContext().handle(contextCall);
+				}
+			}
+		}
+
+		return new Result(contextCall.getStatus());
+	}
+
+	/**
+	 * 
+	 */
+	public Result delete()
+	{
+		Call contextCall = new Call();
+		contextCall.setMethod(Method.DELETE);
+		// We allow the transfer of the PUT calls only if the readOnly flag is not set
+		if (!getDirectory().isModifiable())
+		{
+			contextCall.setStatus(Status.CLIENT_ERROR_FORBIDDEN);
+		}
+		else
+		{
+			if (targetDirectory)
+			{
+				contextCall.setResourceRef(this.targetUri);
+				getDirectory().getContext().handle(contextCall);
+			}
+			else
+			{
+				//Try to get the unique representation of the resource
+				ReferenceList references = getVariantsReferences(true);
+				if (!references.isEmpty())
+				{
+					contextCall.setResourceRef(references.get(0));
+					getDirectory().getContext().handle(contextCall);
+				}
+				else
+				{
+					contextCall.setStatus(Status.CLIENT_ERROR_NOT_FOUND);
+				}
+			}
+		}
+
+		return new Result(contextCall.getStatus());
+	}
+
+	/**
+	 * Returns the references of the representations of the target resource
+	 * according to the directory handler property
+	 * @param unique tells wether looking or not for the unique reference
+	 * @return The list of variants references
+	 */
+	private ReferenceList getVariantsReferences(boolean unique)
+	{
+		ReferenceList result = new ReferenceList(0);
+		try
+		{
+			Call contextCall = new Call(Method.GET, this.targetUri);
+			contextCall.getClient().getAcceptedMediaTypes().add(
+					new Preference<MediaType>(MediaType.TEXT_URI_LIST));
+			getDirectory().getContext().handle(contextCall);
+			if (contextCall.getOutput() != null)
+			{
+				ReferenceList listVariants = new ReferenceList(contextCall.getOutput());
+				Set<String> extensions = null;
+				String entryUri;
+				String fullEntryName;
+				String baseEntryName;
+				int lastSlashIndex;
+				int firstDotIndex;
+				for (Reference ref : listVariants)
+				{
+					entryUri = ref.toString();
+					lastSlashIndex = entryUri.lastIndexOf('/');
+					fullEntryName = (lastSlashIndex == -1) ? entryUri : entryUri
+							.substring(lastSlashIndex + 1);
+					baseEntryName = fullEntryName;
+
+					if (this.handler.isNegotiationEnabled())
+					{
+						// Remove the extensions from the base name
+						firstDotIndex = fullEntryName.indexOf('.');
+						if (firstDotIndex != -1)
+						{
+							baseEntryName = fullEntryName.substring(0, firstDotIndex);
+						}
+					}
+
+					// Check if the current file is a valid variant
+					if (baseEntryName.equals(this.baseName))
+					{
+						boolean validVariant = true;
+
+						if (this.handler.isNegotiationEnabled())
+						{
+							// Verify that the extensions are compatible
+							extensions = getExtensions(fullEntryName);
+							validVariant = (((extensions == null) && (this.baseExtensions == null))
+									|| (this.baseExtensions == null) || extensions
+									.containsAll(this.baseExtensions));
+							if (unique && validVariant)
+							{
+								validVariant = this.baseExtensions.containsAll(extensions);
+							}
+						}
+
+						if (validVariant)
+						{
+							result.add(ref);
+						}
+					}
+				}
+			}
+		}
+		catch (IOException ioe)
+		{
+			logger.log(Level.WARNING, "Unable to get resource variants", ioe);
+		}
+
+		return result;
+	}
 }

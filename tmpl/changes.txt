@@ -66,6 +66,7 @@ Changes log
  - Fully updated the FAQ.
  - Updated pictures in the tutorial to reflect the latest API changes (Application, hierarchy changes, etc.).
  - Form handling code don't throw IO exceptions anymore for Call.getInputAsForm() and Reference.getQueryAsForm(). Issue reported by Piyush Purang.
+ - Added modification support (PUT and DELETE) to DirectoryFinder. Suggested by Don Dwoske and John D. Mitchell. Implementation contributed by Thierry Boileau.
  
 1.0 beta 18 (2006-08-19)
 [Bugs fixed]
