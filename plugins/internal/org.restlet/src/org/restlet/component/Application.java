@@ -36,6 +36,16 @@ import org.restlet.spi.Factory;
  */
 public class Application extends Component 
 {
+	private String name;
+	
+	private String description;
+	
+	private String author;
+	
+	private String owner;
+	
+	
+	
 	public Application(Context context)
 	{
 		super(Factory.getInstance().createApplication(context));
@@ -60,29 +70,84 @@ public class Application extends Component
 	}
 	
 	/**
-	 * Retuns the root application path
-	 * @return
+	 * Returns the list of client protocols used. 
+	 * @return The list of client protocols used.
 	 */
-	public String getRootPath()
+	public List<Protocol> getClientProtocols()
 	{
-		return null;
+		return getWrappedApplication().getClientProtocols();
 	}
 	
 	/**
-	 * Returns the list of client connectors required for a proper behavior of the application. 
-	 * @return The list of client connectors required.
+	 * Returns the list of server protocols accepted. 
+	 * @return The list of server protocols accepted.
 	 */
-	public List<Protocol> getRequiredClients()
+	public List<Protocol> getServerProtocols()
 	{
-		return getWrappedApplication().getRequiredClients();
+		return getWrappedApplication().getServerProtocols();
 	}
-	
+
 	/**
-	 * Returns the list of server connectors required for a proper behavior of the application. 
-	 * @return The list of server connectors required.
+	 * @param name the name to set
 	 */
-	public List<Protocol> getRequiredServers()
+	public void setName(String name)
 	{
-		return getWrappedApplication().getRequiredServers();
+		this.name = name;
+	}
+
+	/**
+	 * @return the name
+	 */
+	public String getName()
+	{
+		return name;
+	}
+
+	/**
+	 * @param description the description to set
+	 */
+	public void setDescription(String description)
+	{
+		this.description = description;
+	}
+
+	/**
+	 * @return the description
+	 */
+	public String getDescription()
+	{
+		return description;
+	}
+
+	/**
+	 * @param author the author to set
+	 */
+	public void setAuthor(String author)
+	{
+		this.author = author;
+	}
+
+	/**
+	 * @return the author
+	 */
+	public String getAuthor()
+	{
+		return author;
+	}
+
+	/**
+	 * @param owner the owner to set
+	 */
+	public void setOwner(String owner)
+	{
+		this.owner = owner;
+	}
+
+	/**
+	 * @return the owner
+	 */
+	public String getOwner()
+	{
+		return owner;
 	}
 }

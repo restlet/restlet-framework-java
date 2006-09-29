@@ -89,12 +89,21 @@ public class Container extends Component
 	}
 
    /**
-    * Returns the modifiable list of applications.
-    * @return The modifiable list of applications.
+    * Returns the default virtual host.
+    * @return The default virtual host.
     */
-   public List<Application> getApplications()
+   public Host getDefaultHost()
    {
-		return getWrappedContainer().getApplications();
+		return getWrappedContainer().getDefaultHost();
+   }
+
+   /**
+    * Returns the modifiable list of virtual hosts.
+    * @return The modifiable list of virtual hosts.
+    */
+   public List<Host> getVirtualHosts()
+   {
+		return getWrappedContainer().getVirtualHosts();
    }
    
    /**
@@ -104,6 +113,15 @@ public class Container extends Component
    public void handle(Call call)
    {
 		getWrappedContainer().handle(call);
+   }
+
+   /**
+    * Sets the default virtual host.
+    * @param defaultHost The default virtual host.
+    */
+   public void setDefaultHost(Host defaultHost)
+   {
+		getWrappedContainer().setDefaultHost(defaultHost);
    }
 
    /**
