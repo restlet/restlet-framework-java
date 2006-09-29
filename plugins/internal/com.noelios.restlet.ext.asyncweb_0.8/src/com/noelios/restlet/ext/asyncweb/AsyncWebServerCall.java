@@ -29,7 +29,6 @@ import java.nio.channels.WritableByteChannel;
 
 import org.restlet.data.Parameter;
 import org.restlet.data.ParameterList;
-import org.restlet.data.Reference;
 import org.restlet.data.Representation;
 import org.safehaus.asyncweb.http.HttpRequest;
 import org.safehaus.asyncweb.http.HttpResponse;
@@ -87,8 +86,7 @@ public class AsyncWebServerCall extends HttpServerCall
 	@Override
 	public String getRequestUri()
 	{
-		return Reference.toString(isConfidential() ? "https" : "http", request
-				.getHeader("host"), request.getRequestURI(), null, null);
+		return request.getRequestURI();
 	}
 
 	@Override

@@ -214,12 +214,12 @@ public class HttpUrlConnectionCall extends HttpClientCall
    	}
    }
 
-   /**
-    * Returns the response address.<br/>
-    * Corresponds to the IP address of the responding server.
-    * @return The response address.
-    */
-   public String getResponseAddress()
+	/**
+	 * Returns the response address.<br/>
+	 * Corresponds to the IP address of the responding server.
+	 * @return The response address.
+	 */
+   public String getServerAddress()
    {
       return getConnection().getURL().getHost();
    }
@@ -256,7 +256,7 @@ public class HttpUrlConnectionCall extends HttpClientCall
     * Returns the response status code.
     * @return The response status code.
     */
-   public int getResponseStatusCode()
+   public int getStatusCode()
    {
       try
       {
@@ -272,7 +272,7 @@ public class HttpUrlConnectionCall extends HttpClientCall
     * Returns the response reason phrase.
     * @return The response reason phrase.
     */
-   public String getResponseReasonPhrase()
+   public String getReasonPhrase()
    {
       try
       {

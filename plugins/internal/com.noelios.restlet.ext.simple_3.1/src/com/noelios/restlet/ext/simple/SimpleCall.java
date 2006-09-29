@@ -30,7 +30,6 @@ import java.nio.channels.WritableByteChannel;
 
 import org.restlet.data.Parameter;
 import org.restlet.data.ParameterList;
-import org.restlet.data.Reference;
 import org.restlet.data.Representation;
 
 import simple.http.Request;
@@ -86,15 +85,14 @@ public class SimpleCall extends HttpServerCall
 	 */
 	public String getRequestUri()
 	{
-		return Reference.toString(isConfidential() ? "https" : "http", request
-				.getValue("host"), null, request.getURI(), null, null);
+		return request.getURI();
 	}
 
 	/**
 	 * Returns the request method. 
 	 * @return The request method.
 	 */
-	public String getRequestMethod()
+	public String getMethod()
 	{
 		return request.getMethod();
 	}
@@ -104,19 +102,19 @@ public class SimpleCall extends HttpServerCall
 	 * Corresponds to the IP address of the requesting client.
 	 * @return The request address.
 	 */
-	public String getResponseAddress()
+	public String getClientAddress()
 	{
-		return response.getInetAddress().getHostAddress();
+		return request.getInetAddress().getHostAddress();
 	}
 
 	/**
-	 * Returns the request address.<br/>
-	 * Corresponds to the IP address of the requesting client.
-	 * @return The request address.
+	 * Returns the response address.<br/>
+	 * Corresponds to the IP address of the responding server.
+	 * @return The response address.
 	 */
-	public String getRequestAddress()
+	public String getServerAddress()
 	{
-		return request.getInetAddress().getHostAddress();
+		return response.getInetAddress().getHostAddress();
 	}
 
 	/**

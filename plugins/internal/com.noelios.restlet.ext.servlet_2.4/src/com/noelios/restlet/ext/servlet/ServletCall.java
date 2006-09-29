@@ -97,13 +97,13 @@ public class ServletCall extends HttpServerCall
    {
       return getRequest().isSecure();
    }
-   
-   /**
-    * Returns the request address.<br/>
-    * Corresponds to the IP address of the requesting client.
-    * @return The request address.
-    */
-   public String getRequestAddress()
+
+	/**
+	 * Returns the request address.<br/>
+	 * Corresponds to the IP address of the requesting client.
+	 * @return The request address.
+	 */
+   public String getClientAddress()
    {
       return getRequest().getRemoteAddr();
    }
@@ -112,7 +112,7 @@ public class ServletCall extends HttpServerCall
     * Returns the request method. 
     * @return The request method.
     */
-   public String getRequestMethod()
+   public String getMethod()
    {
       return getRequest().getMethod();
    }
@@ -127,11 +127,11 @@ public class ServletCall extends HttpServerCall
 
       if((queryString == null) || (queryString.equals("")))
       {
-         return getRequest().getRequestURL().toString();
+         return getRequest().getRequestURI();
       }
       else
       {
-         return getRequest().getRequestURL().append('?').append(queryString).toString();
+         return getRequest().getRequestURI() + '?' + queryString;
       }
    }
    
@@ -189,11 +189,11 @@ public class ServletCall extends HttpServerCall
    }
 
    /**
-    * Returns the reponse address.<br/>
+    * Returns the response address.<br/>
     * Corresponds to the IP address of the responding server.
-    * @return The reponse address.
+    * @return The response address.
     */
-   public String getResponseAddress()
+   public String getServerAddress()
    {
       return getRequest().getLocalAddr();
    }
@@ -202,7 +202,7 @@ public class ServletCall extends HttpServerCall
     * Returns the response status code.
     * @return The response status code.
     */
-   public int getResponseStatusCode()
+   public int getStatusCode()
    {
       // Can't do anything
       return 0;
@@ -212,7 +212,7 @@ public class ServletCall extends HttpServerCall
     * Returns the response reason phrase.
     * @return The response reason phrase.
     */
-   public String getResponseReasonPhrase()
+   public String getReasonPhrase()
    {
       // Can't do anything
       return null;

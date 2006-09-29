@@ -42,17 +42,11 @@ import com.noelios.restlet.data.StringRepresentation;
  */
 public class DirectoryTestCase extends TestCase
 {
-
    String webSiteURL = "http://myapplication/";
-
    String baseFileUrl = webSiteURL.concat("fichier.txt");
-
    String baseFileUrlEn = webSiteURL.concat("fichier.txt.en");
-
    String baseFileUrlFr = webSiteURL.concat("fichier.txt.fr");
-
    String baseFileUrlFrBis = webSiteURL.concat("fichier.fr.txt");
-
    String testFileUrl;
 
    public void testDirectory() throws IOException

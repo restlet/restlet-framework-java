@@ -141,8 +141,8 @@ public class HttpCall
 	}
 
 	/**
-	 * Returns the full request URI. 
-	 * @return The full request URI.
+	 * Returns the URI on the request line (most like a relative reference, but not necessarily). 
+	 * @return The URI on the request line.
 	 */
 	public String getRequestUri()
 	{

@@ -168,6 +168,10 @@ public abstract class JettyServer extends com.noelios.restlet.impl.connector.Htt
    	}
    }
 
+   /**
+    * Configures the connector.
+    * @param connector The connector to configure.
+    */
    protected void configure(AbstractConnector connector)
    {
       if(getAddress() != null) connector.setHost(getAddress());

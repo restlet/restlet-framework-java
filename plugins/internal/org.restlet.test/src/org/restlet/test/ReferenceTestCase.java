@@ -122,7 +122,8 @@ public class ReferenceTestCase extends RestletTestCase
       testRef0("foo://example.com:8042/over/there?name=ferret#nose", "foo", "example.com:8042", "/over/there", "name=ferret", "nose");
       testRef0("urn:example:animal:ferret:nose", "urn", null, "example:animal:ferret:nose", null, null);
       testRef0("mailto:fred@example.com", "mailto", null, "fred@example.com", null, null);
-      testRef0("foo://info.example.com?fred", "foo", "info.example.com", null, "fred", null); 
+      testRef0("foo://info.example.com?fred", "foo", "info.example.com", null, "fred", null);
+      testRef0("*", null, null, "*", null, null);
       
       // Test the resolution of relative references
       testRef1(base, uri01, uri101);

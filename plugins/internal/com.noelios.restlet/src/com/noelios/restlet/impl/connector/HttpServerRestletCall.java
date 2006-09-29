@@ -105,14 +105,26 @@ public class HttpServerRestletCall extends Call
 		// Set the properties
 		setStatus(Status.SUCCESS_OK);
 		setMethod(Method.valueOf(httpCall.getMethod()));
-		setProtocol(httpCall.isConfidential() ? Protocol.HTTP : Protocol.HTTPS);
+		setProtocol(httpCall.isConfidential() ? Protocol.HTTPS : Protocol.HTTP);
 
 		// Set the resource reference
-		String resource = httpCall.getRequestUri();
-		if (resource != null)
+		Reference resource = new Reference(httpCall.getRequestUri());
+		if (resource.isRelative())
 		{
-			setResourceRef(resource);
+			// Let's reconstruct the client's target URI
+			StringBuilder sb = new StringBuilder();
+			sb.append(getProtocol().getSchemeName()).append("://");
+			sb.append(httpCall.getServerName());
+			if(httpCall.getServerPort() != getProtocol().getDefaultPort())
+			{
+				sb.append(':').append(httpCall.getServerPort());
+			}
+
+			resource.setBaseRef(new Reference(sb.toString()));
+			resource = resource.getTargetRef();
 		}
+
+		setResourceRef(resource);
 	}
 
 	/**

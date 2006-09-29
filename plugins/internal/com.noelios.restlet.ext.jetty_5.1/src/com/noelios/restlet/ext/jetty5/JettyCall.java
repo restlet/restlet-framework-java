@@ -92,12 +92,12 @@ public class JettyCall extends HttpServerCall
       return getRequest().isConfidential();
    }
 
-   /**
-    * Returns the request address.<br/>
-    * Corresponds to the IP address of the requesting client.
-    * @return The request address.
-    */
-   public String getRequestAddress()
+	/**
+	 * Returns the request address.<br/>
+	 * Corresponds to the IP address of the requesting client.
+	 * @return The request address.
+	 */
+   public String getClientAddress()
    {
       return getRequest().getRemoteAddr();
    }
@@ -106,18 +106,18 @@ public class JettyCall extends HttpServerCall
     * Returns the request method.
     * @return The request method.
     */
-   public String getRequestMethod()
+   public String getMethod()
    {
       return getRequest().getMethod();
    }
 
-   /**
-    * Returns the full request URI.
-    * @return The full request URI.
-    */
+	/**
+	 * Returns the URI on the request line (most like a relative reference, but not necessarily). 
+	 * @return The URI on the request line.
+	 */
    public String getRequestUri()
    {
-   	return getRequest().getRootURL().append(getRequest().getURI().toString()).toString();
+   	return getRequest().getURI().toString();
    }
    
    /**
@@ -154,7 +154,7 @@ public class JettyCall extends HttpServerCall
     * Corresponds to the IP address of the responding server.
     * @return The response address.
     */
-   public String getResponseAddress()
+   public String getServerAddress()
    {
       return getRequest().getHttpConnection().getServerAddr();
    }

@@ -40,7 +40,7 @@ Changes log
  - Refactored HttpCall and related classes to better handle and preserve the "Host" header information.
  - Renamed CallModel variable "clientName" into "client.agent" and "serverName" into "server.agent", also
    "serverAddress" into "server.address" and "clientAddress" into "client.address".
- 
+  
 [Other changes] 
  - Updated Jetty 6 extension to final 6.0 release.
  - Added Resource.setVariants() and setIdentifiers() methods. Can be easier than doing a getVariants().clear() then a getVariants().addAll(newList). 
@@ -76,7 +76,9 @@ Changes log
  - Added FTP constant to Protocol.
  - Improved detection of default ports in Reference.toString() static methods. Added new toString() variant.
  - HTTP client connectors now set the "Host" header manually when proper information is found via Call.getServer()."name" and "port".
-
+ - Refactored the parsing/construction of the target resource reference to handle both relative and absolute URIs.
+ - Improved robustness of Reference when handling relative URIs.
+ 
 1.0 beta 18 (2006-08-19)
 [Bugs fixed]
  - Status descriptions are now sent back to Jetty 6 for error statuses. Reported by AJ Barnes.
