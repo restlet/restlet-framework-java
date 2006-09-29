@@ -33,8 +33,8 @@ import com.noelios.restlet.impl.util.CookieUtils;
  * Note that (first) is equivalent to (0) and that (last) returns the last value. 
  * Here is the list of currently supported variables:
  * <ul>
- *	<li>clientAddress (repeating and non-repeating, lookup by index only)</li>
- * <li>clientName</li>
+ *	<li>client.address (repeating and non-repeating, lookup by index only)</li>
+ * <li>client.agent</li>
  * <li>cookie (repeating, lookup by name and by index)</li>
  * <li>method</li>
  * <li>redirectUri</li>
@@ -50,16 +50,16 @@ import com.noelios.restlet.impl.util.CookieUtils;
  * <li>scheme</li>
  * <li>uri</li>
  * <li>userInfo</li>
- * <li>serverAddress</li>
- * <li>serverName</li>
+ * <li>server.address</li>
+ * <li>server.agent</li>
  * <li>status</li>
  * </ul>
  * @author Jerome Louvel (contact@noelios.com) <a href="http://www.noelios.com/">Noelios Consulting</a>
  */
 public class CallModel implements ReadableModel
 {
-   public static final String NAME_CLIENT_ADDRESS = "clientAddress";
-   public static final String NAME_CLIENT_NAME = "clientName";
+   public static final String NAME_CLIENT_ADDRESS = "client.address";
+   public static final String NAME_CLIENT_AGENT_NAME = "client.agent";
    public static final String NAME_COOKIE = "cookie";
    public static final String NAME_METHOD = "method";
    public static final String NAME_REDIRECT_URI = "redirectUri";
@@ -75,8 +75,8 @@ public class CallModel implements ReadableModel
    public static final String NAME_RESOURCE_SCHEME = "scheme";
    public static final String NAME_RESOURCE_URI = "uri";
    public static final String NAME_RESOURCE_USER_INFO = "userInfo";
-   public static final String NAME_SERVER_ADDRESS = "serverAddress";
-   public static final String NAME_SERVER_NAME = "serverName";
+   public static final String NAME_SERVER_ADDRESS = "server.address";
+   public static final String NAME_SERVER_AGENT = "server.agent";
    public static final String NAME_STATUS = "status";
 
    /** The wrapped call. */
@@ -146,9 +146,9 @@ public class CallModel implements ReadableModel
 	      		}
 	      	}
 	      }
-	      else if(name.equals(NAME_CLIENT_NAME))
+	      else if(name.equals(NAME_CLIENT_AGENT_NAME))
 	      {
-	         result = call.getClient().getName();
+	         result = call.getClient().getAgent();
 	      }
 	      else if(name.startsWith(NAME_COOKIE))
 	      {
@@ -280,9 +280,9 @@ public class CallModel implements ReadableModel
 	      {
 	         result = call.getServer().getAddress();
 	      }
-	      else if(name.equals(NAME_SERVER_NAME))
+	      else if(name.equals(NAME_SERVER_AGENT))
 	      {
-	         result = call.getServer().getName();
+	         result = call.getServer().getAgent();
 	      }
 	      else if(name.equals(NAME_STATUS))
 	      {
@@ -337,9 +337,9 @@ public class CallModel implements ReadableModel
       {
          result = (call.getClient().getAddress() != null);
       }
-      else if(name.equals(NAME_CLIENT_NAME))
+      else if(name.equals(NAME_CLIENT_AGENT_NAME))
       {
-         result = (call.getClient().getName() != null);
+         result = (call.getClient().getAgent() != null);
       }
       else if(name.startsWith(NAME_COOKIE))
       {
@@ -405,9 +405,9 @@ public class CallModel implements ReadableModel
       {
          result = (call.getServer().getAddress() != null);
       }
-      else if(name.equals(NAME_SERVER_NAME))
+      else if(name.equals(NAME_SERVER_AGENT))
       {
-         result = (call.getServer().getName() != null);
+         result = (call.getServer().getAgent() != null);
       }
       else if(name.equals(NAME_STATUS))
       {

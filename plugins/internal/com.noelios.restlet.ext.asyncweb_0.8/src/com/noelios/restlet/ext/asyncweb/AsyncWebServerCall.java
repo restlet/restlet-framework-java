@@ -75,11 +75,11 @@ public class AsyncWebServerCall extends HttpServerCall
 		this.requestHeadersAdded = false;
 		this.response = (Response) response;
 		setConfidential(confidential);
-		setResponseAddress(address);
+		setServerAddress(address);
 	}
 
 	@Override
-	public String getRequestAddress()
+	public String getClientAddress()
 	{
 		return request.getRemoteAddress();
 	}
@@ -88,11 +88,11 @@ public class AsyncWebServerCall extends HttpServerCall
 	public String getRequestUri()
 	{
 		return Reference.toString(isConfidential() ? "https" : "http", request
-				.getHeader("host"), null, request.getRequestURI(), null, null);
+				.getHeader("host"), request.getRequestURI(), null, null);
 	}
 
 	@Override
-	public String getRequestMethod()
+	public String getMethod()
 	{
 		return request.getMethod().getName();
 	}
@@ -125,8 +125,8 @@ public class AsyncWebServerCall extends HttpServerCall
 	 */
 	public void sendResponse(Representation output) throws IOException
 	{
-		response.setStatus(ResponseStatus.forId(getResponseStatusCode()),
-				getResponseReasonPhrase());
+		response.setStatus(ResponseStatus.forId(getStatusCode()),
+				getReasonPhrase());
 
 		// Ensure that headers are empty
 		response.getHeaders().dispose();

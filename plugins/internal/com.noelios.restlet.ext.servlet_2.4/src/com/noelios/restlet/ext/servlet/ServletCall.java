@@ -236,11 +236,11 @@ public class ServletCall extends HttpServerCall
       // Set the status code in the response. We do this after adding the headers because 
       // when we have to rely on the 'sendError' method, the Servlet containers are expected
       // to commit their response.
-   	if(Status.isError(getResponseStatusCode()))
+   	if(Status.isError(getStatusCode()))
    	{
    		try
 			{
-				getResponse().sendError(getResponseStatusCode(), getResponseReasonPhrase());
+				getResponse().sendError(getStatusCode(), getReasonPhrase());
 			}
 			catch (IOException ioe)
 			{
@@ -249,7 +249,7 @@ public class ServletCall extends HttpServerCall
    	}
    	else
    	{
-   		getResponse().setStatus(getResponseStatusCode());
+   		getResponse().setStatus(getStatusCode());
    	}
    	
    	// Send the response output

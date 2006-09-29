@@ -186,7 +186,7 @@ public class JettyCall extends HttpServerCall
    public void sendResponse(Representation output) throws IOException
    {
    	// Set the response status
-      getResponse().setStatus(getResponseStatusCode(), getResponseReasonPhrase());
+      getResponse().setStatus(getStatusCode(), getReasonPhrase());
 
       // Remove existings headers if any
       for(Enumeration fields = getResponse().getFieldNames(); fields.hasMoreElements(); )

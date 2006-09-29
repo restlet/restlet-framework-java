@@ -156,8 +156,8 @@ public class SimpleCall extends HttpServerCall
 		}
 
 		// Set the status
-		response.setCode(getResponseStatusCode());
-		response.setText(getResponseReasonPhrase());
+		response.setCode(getStatusCode());
+		response.setText(getReasonPhrase());
 
 		// Send the response output
 		super.sendResponse(output);

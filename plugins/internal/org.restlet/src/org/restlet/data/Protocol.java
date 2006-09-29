@@ -41,6 +41,10 @@ public class Protocol extends Metadata
 	public static final Protocol FILE = new Protocol("file", "FILE",
 			"Local File System Protocol", -1);
 
+	/** FTP protocol. */
+	public static final Protocol FTP = new Protocol("ftp", "FTP",
+			"File Transfer Protocol", 21);
+
 	/** HTTP protocol. */
 	public static final Protocol HTTP = new Protocol("http", "HTTP",
 			"HyperText Transport Protocol", 80);

@@ -81,8 +81,8 @@ public class HttpServerConverter
 		catch (Exception e)
 		{
 			logger.log(Level.INFO, "Exception intercepted", e);
-			httpCall.setResponseStatusCode(500);
-			httpCall.setResponseReasonPhrase("An unexpected exception occured");
+			httpCall.setStatusCode(500);
+			httpCall.setReasonPhrase("An unexpected exception occured");
 		}
 	}
 	
@@ -122,13 +122,13 @@ public class HttpServerConverter
 
 			// Set the server name again
 			httpCall.getResponseHeaders().add(HttpConstants.HEADER_SERVER,
-					call.getServer().getName());
+					call.getServer().getAgent());
 
 			// Set the status code in the response
 			if (call.getStatus() != null)
 			{
-				httpCall.setResponseStatusCode(call.getStatus().getCode());
-				httpCall.setResponseReasonPhrase(call.getStatus().getDescription());
+				httpCall.setStatusCode(call.getStatus().getCode());
+				httpCall.setReasonPhrase(call.getStatus().getDescription());
 			}
 
 			// If an output was set during the call, copy it to the output stream;
@@ -266,8 +266,8 @@ public class HttpServerConverter
 		catch (Exception e)
 		{
 			logger.log(Level.INFO, "Exception intercepted while adding the response headers", e);
-			httpCall.setResponseStatusCode(Status.SERVER_ERROR_INTERNAL.getCode());
-			httpCall.setResponseReasonPhrase(Status.SERVER_ERROR_INTERNAL.getDescription());
+			httpCall.setStatusCode(Status.SERVER_ERROR_INTERNAL.getCode());
+			httpCall.setReasonPhrase(Status.SERVER_ERROR_INTERNAL.getDescription());
 		}
 	}
 

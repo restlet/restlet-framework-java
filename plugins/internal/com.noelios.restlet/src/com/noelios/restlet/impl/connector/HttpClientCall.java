@@ -54,9 +54,9 @@ public class HttpClientCall extends HttpCall
 	 */
 	public HttpClientCall(String method, String requestUri)
 	{
-		setRequestMethod(method);
+		setMethod(method);
 		setRequestUri(requestUri);
-      setRequestAddress(getLocalAddress());
+      setClientAddress(getLocalAddress());
 	}
 
 	/**
@@ -117,7 +117,7 @@ public class HttpClientCall extends HttpCall
    		}
       }
       
-      Status result = new Status(getResponseStatusCode(), null, getResponseReasonPhrase(), null);
+      Status result = new Status(getStatusCode(), null, getReasonPhrase(), null);
 
       if(getRequestStream() != null)
       {

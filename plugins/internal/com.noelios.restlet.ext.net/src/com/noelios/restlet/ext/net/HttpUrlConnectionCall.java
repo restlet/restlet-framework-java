@@ -138,7 +138,7 @@ public class HttpUrlConnectionCall extends HttpClientCall
    		}
 	
 			// Set the request method
-	      getConnection().setRequestMethod(getRequestMethod());
+	      getConnection().setRequestMethod(getMethod());
 	
 	      // Set the request headers
 	      for(Parameter header : getRequestHeaders())

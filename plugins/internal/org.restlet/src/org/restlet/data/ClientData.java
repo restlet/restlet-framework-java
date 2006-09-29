@@ -36,8 +36,8 @@ public class ClientData
 	/** The IP addresses. */
 	private List<String> addresses;
 
-	/** The name. */
-	private String name;
+	/** The agent name. */
+	private String agent;
 
 	/** The character set preferences. */
 	private List<Preference<CharacterSet>> characterSetPrefs;
@@ -103,21 +103,21 @@ public class ClientData
 	}
 
 	/**
-	 * Returns the client's name.
-	 * @return The client's name.
+	 * Returns the agent name (ex: "Noelios Restlet Engine/1.0").
+	 * @return The agent name.
 	 */
-	public String getName()
+	public String getAgent()
 	{
-		return this.name;
+		return this.agent;
 	}
 
 	/**
-	 * Sets the client's name.
-	 * @param name The client's name.
+	 * Sets the agent name (ex: "Noelios Restlet Engine/1.0").
+	 * @param agent The agent name.
 	 */
-	public void setName(String name)
+	public void setAgent(String agent)
 	{
-		this.name = name;
+		this.agent = agent;
 	}
 
 	/**

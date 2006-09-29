@@ -35,6 +35,7 @@ import org.restlet.data.Form;
 import org.restlet.data.Language;
 import org.restlet.data.MediaType;
 import org.restlet.data.Method;
+import org.restlet.data.Protocol;
 import org.restlet.data.Reference;
 import org.restlet.data.Representation;
 import org.restlet.data.Resource;
@@ -79,6 +80,9 @@ public class Call
 	/** The method. */
 	private Method method;
 
+	/** The protocol. */
+	private Protocol protocol;
+	
 	/** The representation provided by the server. */
 	private Representation output;
 
@@ -265,6 +269,18 @@ public class Call
 	}
 
 	/**
+	 * Returns the protocol used by the call. It can either indicate the protocol used by a server connector
+	 * to receive the call or the one that must be used to send the call. If the protocol is not specified 
+	 * when sending a call, the implementation will attempt to guess it by looking at a scheme protocol 
+	 * associated with the target resource reference. 
+	 * @return The protocol or null if not available.
+	 */
+	public Protocol getProtocol()
+	{
+		return this.protocol;
+	}
+	
+	/**
 	 * Returns the reference that the client should follow for redirections or resource creations.
 	 * @return The redirection reference.
 	 */
@@ -443,6 +459,18 @@ public class Call
 	public void setOutput(Resource resource, Language fallbackLanguage)
 	{
 		Factory.getInstance().setOutput(this, resource, fallbackLanguage);
+	}
+
+	/**
+	 * Sets the protocol used by the call. It can either indicate the protocol used by a server connector
+	 * to receive the call or the one that must be used to send the call. If the protocol is not specified 
+	 * when sending a call, the implementation will attempt to guess it by looking at a scheme protocol 
+	 * associated with the target resource reference. 
+	 * @param protocol The protocol to set.
+	 */
+	public void setProtocol(Protocol protocol)
+	{
+		this.protocol = protocol;
 	}
 
 	/**

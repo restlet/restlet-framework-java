@@ -34,231 +34,274 @@ import com.noelios.restlet.impl.util.DateUtils;
  */
 public class HttpCall
 {
-   /** Indicates if the call is confidential. */
+	/** Indicates if the call is confidential. */
 	private boolean confidential;
-   
-   /** The client IP address. */
-	private String requestAddress;
-   
-   /** The request method. */
-	private String requestMethod;
-   
-   /** The request URI. */
-	private String requestUri;
-   
-   /** The request headers. */
+
+	/** The client IP address. */
+	private String clientAddress;
+
+	/** The method. */
+	private String method;
+
+	/** The reason phrase. */
+	private String reasonPhrase;
+
+	/** The request headers. */
 	private ParameterList requestHeaders;
-   
-   /** The response address. */
-	private String responseAddress;
-   
-   /** The response headers. */
+
+	/** The request URI. */
+	private String requestUri;
+
+	/** The response headers. */
 	private ParameterList responseHeaders;
-   
-   /** The response status code. */
-	private int responseStatusCode;
-   
-   /** The response reason phrase. */
-	private String responseReasonPhrase;
-   
-   /**
-    * Constructor.
-    */
-   public HttpCall()
-   {
-      this.confidential = false;
-      this.responseAddress = null;
-      this.requestMethod = null;
-      this.requestUri = null;
-      this.requestHeaders = null;
-      this.responseAddress = null;
-      this.responseHeaders = null;
-      this.responseStatusCode = 200;
-      this.responseReasonPhrase = "";
-   }
 
-   /**
-    * Indicates if the confidentiality of the call is ensured (ex: via SSL).
-    * @return True if the confidentiality of the call is ensured (ex: via SSL).
-    */
-   public boolean isConfidential()
-   {
-      return this.confidential;
-   }
+	/** The server IP address. */
+	private String serverAddress;
 
-   /**
-    * Indicates if the confidentiality of the call is ensured (ex: via SSL).
-    * @param confidential True if the confidentiality of the call is ensured (ex: via SSL).
-    */
-   protected void setConfidential(boolean confidential)
-   {
-      this.confidential = confidential;
-   }
+	/** The server name. */
+	private String serverName;
 
-   /**
-    * Returns the request address.<br/>
-    * Corresponds to the IP address of the requesting client.
-    * @return The request address.
-    */
-   public String getRequestAddress()
-   {
-      return this.requestAddress;
-   }
+	/** The server port. */
+	private Integer serverPort;
 
-   /**
-    * Sets the request address. 
-    * @param requestAddress The request address. 
-    */
-   protected void setRequestAddress(String requestAddress)
-   {
-      this.requestAddress = requestAddress;
-   }
+	/** The status code. */
+	private int statusCode;
 
-   /**
-    * Returns the request method. 
-    * @return The request method.
-    */
-   public String getRequestMethod()
-   {
-      return this.requestMethod;
-   }
-	
-   /**
-    * Sets the request method. 
-    * @param method The request method.
-    */
-   protected void setRequestMethod(String method)
-   {
-      this.requestMethod = method;
-   }
+	/**
+	 * Constructor.
+	 */
+	public HttpCall()
+	{
+		this.confidential = false;
+		this.clientAddress = null;
+		this.method = null;
+		this.reasonPhrase = "";
+		this.requestHeaders = null;
+		this.requestUri = null;
+		this.responseHeaders = null;
+		this.serverAddress = null;
+		this.serverPort = null;
+		this.statusCode = 200;
+	}
 
-   /**
-    * Returns the full request URI. 
-    * @return The full request URI.
-    */
-   public String getRequestUri()
-   {
-      return this.requestUri;
-   }
+	/**
+	 * Formats a date as a header string.
+	 * @param date The date to format.
+	 * @param cookie Indicates if the date should be in the cookie format.
+	 * @return The formatted date.
+	 */
+	public String formatDate(Date date, boolean cookie)
+	{
+		if (cookie)
+		{
+			return DateUtils.format(date, DateUtils.FORMAT_RFC_1036[0]);
+		}
+		else
+		{
+			return DateUtils.format(date, DateUtils.FORMAT_RFC_1123[0]);
+		}
+	}
 
-   /**
-    * Sets the full request URI. 
-    * @param requestUri The full request URI.
-    */
-   protected void setRequestUri(String requestUri)
-   {
-      this.requestUri = requestUri;
-   }
-   
-   /**
-    * Returns the modifiable list of request headers.
-    * @return The modifiable list of request headers.
-    */
-   public ParameterList getRequestHeaders()
-   {
-      if(this.requestHeaders == null) this.requestHeaders = new ParameterList();
-      return this.requestHeaders;
-   }
+	/**
+	 * Returns the request address.<br/>
+	 * Corresponds to the IP address of the requesting client.
+	 * @return The request address.
+	 */
+	public String getClientAddress()
+	{
+		return this.clientAddress;
+	}
 
-   /**
-    * Returns the response address.<br/>
-    * Corresponds to the IP address of the responding server.
-    * @return The response address.
-    */
-   public String getResponseAddress()
-   {
-      return this.responseAddress;
-   }
+	/**
+	 * Returns the request method. 
+	 * @return The request method.
+	 */
+	public String getMethod()
+	{
+		return this.method;
+	}
 
-   /**
-    * Sets the response address.<br/>
-    * Corresponds to the IP address of the responding server.
-    * @param responseAddress The response address.
-    */
-   public void setResponseAddress(String responseAddress)
-   {
-      this.responseAddress = responseAddress;
-   }
-   
-   /**
-    * Returns the modifiable list of response headers.
-    * @return The modifiable list of response headers.
-    */
-   public ParameterList getResponseHeaders()
-   {
-      if(this.responseHeaders == null) this.responseHeaders = new ParameterList();
-      return this.responseHeaders;
-   }
+	/**
+	 * Returns the reason phrase.
+	 * @return The reason phrase.
+	 */
+	public String getReasonPhrase()
+	{
+		return this.reasonPhrase;
+	}
 
-   /**
-    * Returns the response status code.
-    * @return The response status code.
-    */
-   public int getResponseStatusCode()
-   {
-      return this.responseStatusCode;
-   }
+	/**
+	 * Returns the modifiable list of request headers.
+	 * @return The modifiable list of request headers.
+	 */
+	public ParameterList getRequestHeaders()
+	{
+		if (this.requestHeaders == null) this.requestHeaders = new ParameterList();
+		return this.requestHeaders;
+	}
 
-   /**
-    * Sets the response status code.
-    * @param code The response status code.
-    */
-   public void setResponseStatusCode(int code)
-   {
-      this.responseStatusCode = code;
-   }
+	/**
+	 * Returns the full request URI. 
+	 * @return The full request URI.
+	 */
+	public String getRequestUri()
+	{
+		return this.requestUri;
+	}
 
-   /**
-    * Returns the response reason phrase.
-    * @return The response reason phrase.
-    */
-   public String getResponseReasonPhrase()
-   {
-      return this.responseReasonPhrase;
-   }
+	/**
+	 * Returns the modifiable list of server headers.
+	 * @return The modifiable list of server headers.
+	 */
+	public ParameterList getResponseHeaders()
+	{
+		if (this.responseHeaders == null) this.responseHeaders = new ParameterList();
+		return this.responseHeaders;
+	}
 
-   /**
-    * Sets the response reason phrase.
-    * @param reasonPhrase The response reason phrase.
+	/**
+	 * Returns the response address.<br/>
+	 * Corresponds to the IP address of the responding server.
+	 * @return The response address.
+	 */
+	public String getServerAddress()
+	{
+		return this.serverAddress;
+	}
+
+   /** 
+    * Returns the server name.
+    * @return The server name.
     */
-   public void setResponseReasonPhrase(String reasonPhrase)
-   {
-      this.responseReasonPhrase = reasonPhrase;
-   }
-   
-   /**
-    * Parses a date string.
-    * @param date The date string to parse.
-    * @param cookie Indicates if the date is in the cookie format.
-    * @return The parsed date.
+	public String getServerName()
+	{
+		return this.serverName;
+	}
+
+   /** 
+    * Returns the server port.
+    * @return The server port.
     */
-   public Date parseDate(String date, boolean cookie)
-   {
-      if(cookie)
-      {
-         return DateUtils.parse(date, DateUtils.FORMAT_RFC_1036);
-      }
-      else
-      {
-         return DateUtils.parse(date, DateUtils.FORMAT_RFC_1123);
-      }
-   }
-   
-   /**
-    * Formats a date as a header string.
-    * @param date The date to format.
-    * @param cookie Indicates if the date should be in the cookie format.
-    * @return The formatted date.
+	public Integer getServerPort()
+	{
+		return this.serverPort;
+	}
+
+	/**
+	 * Returns the status code.
+	 * @return The status code.
+	 */
+	public int getStatusCode()
+	{
+		return this.statusCode;
+	}
+
+	/**
+	 * Indicates if the confidentiality of the call is ensured (ex: via SSL).
+	 * @return True if the confidentiality of the call is ensured (ex: via SSL).
+	 */
+	public boolean isConfidential()
+	{
+		return this.confidential;
+	}
+
+	/**
+	 * Parses a date string.
+	 * @param date The date string to parse.
+	 * @param cookie Indicates if the date is in the cookie format.
+	 * @return The parsed date.
+	 */
+	public Date parseDate(String date, boolean cookie)
+	{
+		if (cookie)
+		{
+			return DateUtils.parse(date, DateUtils.FORMAT_RFC_1036);
+		}
+		else
+		{
+			return DateUtils.parse(date, DateUtils.FORMAT_RFC_1123);
+		}
+	}
+
+	/**
+	 * Sets the request address. 
+	 * @param requestAddress The request address. 
+	 */
+	protected void setClientAddress(String requestAddress)
+	{
+		this.clientAddress = requestAddress;
+	}
+
+	/**
+	 * Indicates if the confidentiality of the call is ensured (ex: via SSL).
+	 * @param confidential True if the confidentiality of the call is ensured (ex: via SSL).
+	 */
+	protected void setConfidential(boolean confidential)
+	{
+		this.confidential = confidential;
+	}
+
+	/**
+	 * Sets the request method. 
+	 * @param method The request method.
+	 */
+	protected void setMethod(String method)
+	{
+		this.method = method;
+	}
+
+	/**
+	 * Sets the reason phrase.
+	 * @param reasonPhrase The reason phrase.
+	 */
+	public void setReasonPhrase(String reasonPhrase)
+	{
+		this.reasonPhrase = reasonPhrase;
+	}
+
+	/**
+	 * Sets the full request URI. 
+	 * @param requestUri The full request URI.
+	 */
+	protected void setRequestUri(String requestUri)
+	{
+		this.requestUri = requestUri;
+	}
+
+	/**
+	 * Sets the response address.<br/>
+	 * Corresponds to the IP address of the responding server.
+	 * @param responseAddress The response address.
+	 */
+	public void setServerAddress(String responseAddress)
+	{
+		this.serverAddress = responseAddress;
+	}
+
+   /** 
+    * Sets the server name.
+    * @param serverName The server name.
     */
-   public String formatDate(Date date, boolean cookie)
-   {
-      if(cookie)
-      {
-         return DateUtils.format(date, DateUtils.FORMAT_RFC_1036[0]);
-      }
-      else
-      {
-         return DateUtils.format(date, DateUtils.FORMAT_RFC_1123[0]);
-      }
-   }
+	public void setServerName(String serverName)
+	{
+		this.serverName = serverName;
+	}
+
+   /** 
+    * Sets the server port.
+    * @param serverPort The server port.
+    */
+	public void setServerPort(Integer serverPort)
+	{
+		this.serverPort = serverPort;
+	}
+
+	/**
+	 * Sets the status code.
+	 * @param code The status code.
+	 */
+	public void setStatusCode(int code)
+	{
+		this.statusCode = code;
+	}
 }

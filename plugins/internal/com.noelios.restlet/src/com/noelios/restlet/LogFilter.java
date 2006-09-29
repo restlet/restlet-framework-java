@@ -141,10 +141,10 @@ public class LogFilter extends Filter
       // Append the version
       sb.append("\t-");
 
-      // Append the client name
+      // Append the agent name
       sb.append('\t');
-      String clientName = call.getClient().getName();
-      sb.append((clientName == null) ? "-" : clientName);
+      String agentName = call.getClient().getAgent();
+      sb.append((agentName == null) ? "-" : agentName);
 
       // Append the referrer
       sb.append('\t');

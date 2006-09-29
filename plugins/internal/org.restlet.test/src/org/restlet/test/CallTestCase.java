@@ -129,17 +129,17 @@ public class CallTestCase extends RestletTestCase
 	}
 
 	/**
-	 * Tests client name getting/setting. 
+	 * Tests client agent getting/setting. 
 	 */
-	public void testClientName() throws Exception
+	public void testClientAgent() throws Exception
 	{
 		ClientData client = getCall().getClient();
 		String name = "Restlet";
-		client.setName(name);
-		assertEquals(name, client.getName());
+		client.setAgent(name);
+		assertEquals(name, client.getAgent());
 		name = "Restlet Client";
-		client.setName(name);
-		assertEquals(name, client.getName());
+		client.setAgent(name);
+		assertEquals(name, client.getAgent());
 	}
 
 	/**
@@ -157,17 +157,17 @@ public class CallTestCase extends RestletTestCase
 	}
 
 	/**
-	 * Tests server name getting/setting. 
+	 * Tests server agent getting/setting. 
 	 */
-	public void testServerName() throws Exception
+	public void testServerAgent() throws Exception
 	{
 		Call call = getCall();
 		String name = "Restlet";
-		call.getServer().setName(name);
-		assertEquals(name, call.getServer().getName());
+		call.getServer().setAgent(name);
+		assertEquals(name, call.getServer().getAgent());
 		name = "Restlet Server";
-		call.getServer().setName(name);
-		assertEquals(name, call.getServer().getName());
+		call.getServer().setAgent(name);
+		assertEquals(name, call.getServer().getAgent());
 	}
 
 	/**

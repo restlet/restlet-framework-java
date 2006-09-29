@@ -27,12 +27,14 @@ import java.io.InputStream;
 import java.io.OutputStream;
 import java.nio.channels.ReadableByteChannel;
 import java.nio.channels.WritableByteChannel;
+import java.util.logging.Logger;
 
 import org.restlet.data.Encoding;
 import org.restlet.data.Language;
 import org.restlet.data.MediaType;
 import org.restlet.data.Method;
 import org.restlet.data.Parameter;
+import org.restlet.data.Protocol;
 import org.restlet.data.Representation;
 
 import com.noelios.restlet.data.InputRepresentation;
@@ -44,6 +46,21 @@ import com.noelios.restlet.data.ReadableRepresentation;
  */
 public abstract class HttpServerCall extends HttpCall
 {
+	/** Obtain a suitable logger. */
+	private static Logger logger = Logger.getLogger(HttpServerRestletCall.class
+			.getCanonicalName());
+
+	/** Indicates if the "host" header was already parsed. */
+	private boolean hostParsed;
+
+	/**
+	 * Constructor.
+	 */
+	public HttpServerCall()
+	{
+		this.hostParsed = false;
+	}
+
 	/**
 	 * Returns the request entity channel if it exists.
 	 * @return The request entity channel if it exists.
@@ -125,6 +142,64 @@ public abstract class HttpServerCall extends HttpCall
 		return result;
 	}
 
+	/** 
+	 * Returns the server name.
+	 * @return The server name.
+	 */
+	public String getServerName()
+	{
+		if (!hostParsed) parseHost();
+		return super.getServerName();
+	}
+
+	/** 
+	 * Returns the server port.
+	 * @return The server port.
+	 */
+	public Integer getServerPort()
+	{
+		if (!hostParsed) parseHost();
+		return super.getServerPort();
+	}
+
+	/**
+	 * Parses the "host" header to set the server host and port properties.
+	 */
+	private void parseHost()
+	{
+		String host = getRequestHeaders().getFirstValue(HttpConstants.HEADER_HOST);
+
+		if (host != null)
+		{
+			int colonIndex = host.indexOf(':');
+
+			if (colonIndex != -1)
+			{
+				super.setServerName(host.substring(0, colonIndex));
+				super.setServerPort(Integer.valueOf(host.substring(colonIndex + 1)));
+			}
+			else
+			{
+				super.setServerName(host);
+
+				if (isConfidential())
+				{
+					super.setServerPort(Protocol.HTTPS.getDefaultPort());
+				}
+				else
+				{
+					super.setServerPort(Protocol.HTTP.getDefaultPort());
+				}
+			}
+		}
+		else
+		{
+			logger.warning("Couldn't find the mandatory \"Host\" HTTP header.");
+		}
+
+		this.hostParsed = true;
+	}
+
 	/**
 	 * Sends the response back to the client. Commits the status, headers and optional output and 
 	 * send them over the network. The default implementation only writes the output representation 
@@ -134,7 +209,7 @@ public abstract class HttpServerCall extends HttpCall
 	 */
 	public void sendResponse(Representation output) throws IOException
 	{
-		if ((output != null) && !getRequestMethod().equals(Method.HEAD.getName()))
+		if ((output != null) && !getMethod().equals(Method.HEAD.getName()))
 		{
 			// Send the output to the client
 			if (getResponseStream() != null)

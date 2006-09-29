@@ -1847,20 +1847,37 @@ public class Reference
     */
    public static String toString(String scheme, String hostName, Integer hostPort, String path, String query, String fragment)
    {
-   	StringBuilder sb = new StringBuilder();
-
-   	// Append the scheme and host name
-   	sb.append(scheme).append("://").append(hostName);
-
+   	String host = hostName;
+   	
    	// Append the host port number
    	if(hostPort != null)
    	{
-   		if((scheme.equals("ftp")   && (hostPort != 21)) ||
-   			(scheme.equals("http")  && (hostPort != 80)) || 
-   			(scheme.equals("https") && (hostPort != 443)))
+   		int defaultPort = Protocol.valueOf(scheme).getDefaultPort();
+   		if(hostPort != defaultPort)
    		{
-   			sb.append(':').append(hostPort);
+   			host = hostName + ':' + hostPort;
    		}
+   	}
+   	
+   	return toString(scheme, host, path, query, fragment);
+   }
+   
+   /**
+    * Creates a reference string from its parts.
+    * @param scheme The scheme ("http", "https" or "ftp").
+    * @param host The host name or IP address plus the optional port number.
+    * @param path The path component for hierarchical identifiers.
+    * @param query The optional query component for hierarchical identifiers.
+    * @param fragment The optionale fragment identifier.
+    */
+   public static String toString(String scheme, String host, String path, String query, String fragment)
+   {
+   	StringBuilder sb = new StringBuilder();
+
+   	if(scheme != null)
+   	{
+	   	// Append the scheme and host name
+	   	sb.append(scheme.toLowerCase()).append("://").append(host);
    	}
 
    	// Append the path

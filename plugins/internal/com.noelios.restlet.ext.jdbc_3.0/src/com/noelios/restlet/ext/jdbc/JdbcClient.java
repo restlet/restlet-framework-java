@@ -96,7 +96,7 @@ public class JdbcClient extends ClientImpl
    public static Call create(String jdbcURI, Representation request)
    {
       Call result = new Call();
-      result.getClient().setName(Factory.VERSION_HEADER);
+      result.getClient().setAgent(Factory.VERSION_HEADER);
       result.setMethod(Method.POST);
       result.setResourceRef(jdbcURI);
       result.setInput(request);

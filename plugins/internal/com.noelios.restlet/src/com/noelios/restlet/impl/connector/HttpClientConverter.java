@@ -85,7 +85,7 @@ public class HttpClientConverter
          call.setStatus(httpCall.sendRequest(call.isInputAvailable() ? call.getInput() : null));
 
          // Get the server address
-			call.getServer().setAddress(httpCall.getResponseAddress());
+			call.getServer().setAddress(httpCall.getServerAddress());
 
 			// Read the response headers
 			readResponseHeaders(httpCall, call);
@@ -109,10 +109,10 @@ public class HttpClientConverter
 		ParameterList requestHeaders = httpCall.getRequestHeaders();
 		
 		// Add the user agent header
-		if (call.getClient().getName() != null)
+		if (call.getClient().getAgent() != null)
 		{
 			requestHeaders.add(HttpConstants.HEADER_USER_AGENT,
-					call.getClient().getName());
+					call.getClient().getAgent());
 		}
 		else
 		{
@@ -380,7 +380,7 @@ public class HttpClientConverter
 				}
 				else if (header.getName().equalsIgnoreCase(HttpConstants.HEADER_SERVER))
 				{
-					call.getServer().setName(header.getValue());
+					call.getServer().setAgent(header.getValue());
 				}
 			}
 		}
