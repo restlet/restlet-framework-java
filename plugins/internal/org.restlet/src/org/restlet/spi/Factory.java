@@ -31,7 +31,6 @@ import java.util.logging.Logger;
 
 import org.restlet.Call;
 import org.restlet.Context;
-import org.restlet.Restlet;
 import org.restlet.Router;
 import org.restlet.Scorer;
 import org.restlet.UniformInterface;
@@ -161,10 +160,10 @@ public abstract class Factory
     * of the context resource path.
     * @param router The parent router.
     * @param pattern The URI pattern used to map calls (see {@link java.util.regex.Pattern} for the syntax).
-    * @param next The chained instance to attach.
+    * @param target The target handler to attach.
     * @see java.util.regex.Pattern
     */
-   public abstract Scorer createScorer(Router router, String pattern, Restlet next);
+   public abstract Scorer createScorer(Router router, String pattern, UniformInterface target);
 
    /**
     * Create a new server connector for internal usage by the GenericClient.

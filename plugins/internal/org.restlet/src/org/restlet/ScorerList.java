@@ -81,11 +81,11 @@ public class ScorerList extends WrapperList<Scorer>
 	 * Creates then adds a scorer at the end of the list.
 	 * Adds a target option based on an URI pattern at the end of the list of options. 
 	 * @param pattern The URI pattern used to map calls (see {@link java.util.regex.Pattern} for the syntax).
-	 * @param target The target instance to attach.
+	 * @param target The target handler to attach.
 	 * @see java.util.regex.Pattern
 	 * @return True (as per the general contract of the Collection.add method).
 	 */
-	public boolean add(String pattern, Restlet target)
+	public boolean add(String pattern, UniformInterface target)
 	{
 		return add(Factory.getInstance().createScorer(this.router, pattern, target));
 	}
@@ -93,11 +93,11 @@ public class ScorerList extends WrapperList<Scorer>
 	/**
 	 * Creates then adds a scorer based on an URI pattern at a specific position.
 	 * @param pattern The URI pattern used to map calls (see {@link java.util.regex.Pattern} for the syntax).
-	 * @param target The target instance to attach.
+	 * @param target The target handler to attach.
 	 * @param index The insertion position in the list of attachments.
 	 * @see java.util.regex.Pattern
 	 */
-	public void add(String pattern, Restlet target, int index)
+	public void add(String pattern, UniformInterface target, int index)
 	{
 		add(index, Factory.getInstance().createScorer(this.router, pattern, target));
 	}

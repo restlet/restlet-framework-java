@@ -37,7 +37,6 @@ import java.util.logging.Logger;
 
 import org.restlet.Call;
 import org.restlet.Context;
-import org.restlet.Restlet;
 import org.restlet.Router;
 import org.restlet.Scorer;
 import org.restlet.UniformInterface;
@@ -334,12 +333,12 @@ public class Factory extends org.restlet.spi.Factory
 	 * of the context resource path.
 	 * @param router The parent router.
 	 * @param pattern The URI pattern used to map calls (see {@link java.util.regex.Pattern} for the syntax).
-	 * @param next The chained instance to attach.
+	 * @param target The target handler to attach.
 	 * @see java.util.regex.Pattern
 	 */
-	public Scorer createScorer(Router router, String pattern, Restlet next)
+	public Scorer createScorer(Router router, String pattern, UniformInterface target)
 	{
-		return new PatternScorer(router, pattern, next);
+		return new PatternScorer(router, pattern, target);
 	}
 
 	/**
