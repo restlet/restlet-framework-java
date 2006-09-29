@@ -49,25 +49,39 @@ public class ContainerContext extends Context
 		super(logger);
 		this.setContainer(container);
 	}
-
+   
 	/**
     * Handles a call.
     * @param call The call to handle.
     */
    public void handle(Call call)
    {
-   	Protocol protocol = call.getResourceRef().getSchemeProtocol();
+   	Protocol protocol = call.getProtocol();
    	
-   	for(Client client : getContainer().getClients())
+   	if(protocol == null)
    	{
-   		if(client.getProtocols().contains(protocol))
-   		{
-   			client.handle(call);
-   			return;
-   		}
+   		// Attempt to guess the protocol to use
+   		// from the target reference scheme
+   		protocol = call.getResourceRef().getSchemeProtocol();
    	}
-
-   	throw new UnsupportedOperationException("The " + protocol + " protocol is not available to this application");
+   	
+   	if(protocol == null)
+   	{
+      	throw new UnsupportedOperationException("Unable to determine the protocol to use for this call.");
+   	}
+   	else
+   	{
+	   	for(Client client : getContainer().getClients())
+	   	{
+	   		if(client.getProtocols().contains(protocol))
+	   		{
+	   			client.handle(call);
+	   			return;
+	   		}
+	   	}
+   	}
+   	
+   	throw new UnsupportedOperationException("The " + protocol + " protocol is not available in this context.");
    }
 
 	/**

@@ -29,7 +29,7 @@ import java.util.logging.Logger;
 
 import org.restlet.Call;
 import org.restlet.Context;
-import org.restlet.Restlet;
+import org.restlet.UniformInterface;
 import org.restlet.component.Application;
 import org.restlet.component.ClientList;
 import org.restlet.component.Container;
@@ -59,8 +59,8 @@ public class ContainerImpl extends Container
    /** The map of client connectors. */
 	private ClientList clients;
 
-	/** The root Restlet. */
-	private Restlet root;
+	/** The root handler. */
+	private UniformInterface root;
 	
    /** The map of server connectors. */
 	private ServerList servers;
@@ -79,9 +79,9 @@ public class ContainerImpl extends Container
    /**
     * Constructor.
     * @param context The context.
-    * @param root The root Restlet.
+    * @param root The root handler.
     */
-   public ContainerImpl(Restlet root)
+   public ContainerImpl(UniformInterface root)
    {
    	super((Container)null);
 		this.context = new ContainerContext(this, logger);
@@ -245,27 +245,27 @@ public class ContainerImpl extends Container
 	}
 
 	/**
-	 * Returns the root Restlet.
-	 * @return The root Restlet.
+	 * Returns the root handler.
+	 * @return The root handler.
 	 */
-	public Restlet getRoot()
+	public UniformInterface getRoot()
 	{
 		return this.root;
 	}
 
    /**
-	 * Sets the root Restlet that will receive all incoming calls. In general, instance of Router, 
-	 * Filter or Handler interfaces will be used as root of containers.
+	 * Sets the root handler that will receive all incoming calls. In general, instances of Restlet, Router, 
+	 * Filter or Finder classeswill be used as root of containers.
 	 * @param root The root Restlet to use.
 	 */
-	public void setRoot(Restlet root)
+	public void setRoot(UniformInterface root)
 	{
 		this.root = root;
 	}
 
 	/**
-	 * Indicates if a root Restlet is set. 
-	 * @return True if a root Restlet is set. 
+	 * Indicates if a root handler is set. 
+	 * @return True if a root handler is set. 
 	 */
 	public boolean hasRoot()
 	{

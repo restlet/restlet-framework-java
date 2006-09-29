@@ -34,6 +34,7 @@ import org.restlet.Context;
 import org.restlet.Restlet;
 import org.restlet.Router;
 import org.restlet.Scorer;
+import org.restlet.UniformInterface;
 import org.restlet.component.Application;
 import org.restlet.component.Container;
 import org.restlet.connector.Client;
@@ -142,10 +143,10 @@ public abstract class Factory
 
    /**
     * Creates a new container.
-    * @param root The root Restlet.
+    * @param root The root handler.
     * @return The new container.
     */
-   public abstract Container createContainer(Restlet root);
+   public abstract Container createContainer(UniformInterface root);
 
    /**
     * Creates a string-base representation.

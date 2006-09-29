@@ -26,7 +26,6 @@ import java.util.Arrays;
 import java.util.List;
 
 import org.restlet.Call;
-import org.restlet.Restlet;
 import org.restlet.UniformInterface;
 import org.restlet.data.Protocol;
 import org.restlet.spi.Factory;
@@ -49,33 +48,33 @@ public class Server extends Connector
    /**
     * Constructor using the protocol's default port.
     * @param protocol The connector protocol.
-    * @param next The chained Restlet.
+    * @param target The target handler.
     */
-   public Server(Protocol protocol, Restlet next)
+   public Server(Protocol protocol, UniformInterface target)
    {
-   	this(protocol, null, protocol.getDefaultPort(), next);
+   	this(protocol, null, protocol.getDefaultPort(), target);
    }
    
    /**
     * Constructor.
     * @param protocol The connector protocol.
     * @param port The listening port.
-    * @param next The chained Restlet.
+    * @param target The target handler.
     */
-   public Server(Protocol protocol, int port, Restlet next)
+   public Server(Protocol protocol, int port, UniformInterface target)
    {
-   	this(protocol, null, port, next);
+   	this(protocol, null, port, target);
    }
    
    /**
     * Constructor.
     * @param protocols The connector protocols.
     * @param port The listening port.
-    * @param next The chained Restlet.
+    * @param target The target handler.
     */
-   public Server(List<Protocol> protocols, int port, Restlet next)
+   public Server(List<Protocol> protocols, int port, UniformInterface target)
    {
-   	this(protocols, null, port, next);
+   	this(protocols, null, port, target);
    }
    
    /**
@@ -83,11 +82,11 @@ public class Server extends Connector
     * @param protocol The connector protocol.
     * @param address The optional listening IP address (useful if multiple IP addresses available).
     * @param port The listening port.
-    * @param next The chained Restlet.
+    * @param target The target handler.
     */
-   public Server(Protocol protocol, String address, int port, Restlet next)
+   public Server(Protocol protocol, String address, int port, UniformInterface target)
    {
-   	this(Arrays.asList(protocol), address, port, next);
+   	this(Arrays.asList(protocol), address, port, target);
    }
    
    /**
@@ -95,12 +94,12 @@ public class Server extends Connector
     * @param protocols The connector protocols.
     * @param address The optional listening IP address (useful if multiple IP addresses available).
     * @param port The listening port.
-    * @param next The chained Restlet.
+    * @param target The target handler.
     */
-   public Server(List<Protocol> protocols, String address, int port, Restlet next)
+   public Server(List<Protocol> protocols, String address, int port, UniformInterface target)
    {
    	super(Factory.getInstance().createServer(protocols, address, port));
-   	setTarget(next);
+   	setTarget(target);
    }
 
    /**

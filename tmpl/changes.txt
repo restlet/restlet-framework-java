@@ -10,7 +10,7 @@ Changes log
  - Fixed issue with error status preventing the setting of response headers with Servlet containers like Tomcat. Report and solution by Evan DiBiase.
  - Completed support for content streaming in the HTTP client connector extension. Issue reported by Mikkel Jensen.
  - Fixed bug in ParameterList.getFirstValue(String, boolean) ignoring the "ignoreCase" parameter.
- 
+  
 [API breaking changes]
  - Moved hasInput() method from org.restlet.connector.Client to Call.isInputAvailable().
  - Renamed Representation.isContentAvailable() to isAvailable() and isContentTransient() to isTransient().
@@ -40,6 +40,7 @@ Changes log
  - Refactored HttpCall and related classes to better handle and preserve the "Host" header information.
  - Renamed CallModel variable "clientName" into "client.agent" and "serverName" into "server.agent", also
    "serverAddress" into "server.address" and "clientAddress" into "client.address".
+ - Removed Context.getClient(protocol) method, now Context directly implements ClientInterface.
   
 [Other changes] 
  - Updated Jetty 6 extension to final 6.0 release.

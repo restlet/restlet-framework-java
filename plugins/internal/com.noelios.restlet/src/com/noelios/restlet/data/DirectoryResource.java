@@ -111,8 +111,7 @@ public class DirectoryResource extends AbstractResource
 		}
 
 		// Try to detect the presence of a directory
-		Call contextCall = new Call(Method.GET, this.targetUri);
-		getDirectory().getContext().handle(contextCall);
+		Call contextCall = getDirectory().getContext().get(this.targetUri);
 		if ((contextCall.getOutput() != null)
 				&& contextCall.getOutput().getMediaType().equals(MediaType.TEXT_URI_LIST))
 		{
@@ -153,8 +152,7 @@ public class DirectoryResource extends AbstractResource
 				this.baseName = targetUri.substring(lastSlashIndex + 1);
 			}
 
-			contextCall = new Call(Method.GET, this.directoryUri);
-			getDirectory().getContext().handle(contextCall);
+			contextCall = getDirectory().getContext().get(this.directoryUri);
 			if ((contextCall.getOutput() != null)
 					&& contextCall.getOutput().getMediaType().equals(MediaType.TEXT_URI_LIST))
 			{
@@ -189,7 +187,7 @@ public class DirectoryResource extends AbstractResource
 	{
 		return this.handler;
 	}
-
+	
 	/**
 	 * Returns the context's target URI. For example, "file:///c:/dir/foo.en" or "context://webapp/dir/foo.en".
 	 * @return The context's target URI.
@@ -287,8 +285,7 @@ public class DirectoryResource extends AbstractResource
 				for (Reference ref : getVariantsReferences(false))
 				{
 					//Add the new variant to the result list
-					Call contextCall = new Call(Method.GET, ref.toString());
-					getDirectory().getContext().handle(contextCall);
+					Call contextCall = getDirectory().getContext().get(ref.toString());
 					if (contextCall.getStatus().isSuccess()
 							&& (contextCall.getOutput() != null))
 					{

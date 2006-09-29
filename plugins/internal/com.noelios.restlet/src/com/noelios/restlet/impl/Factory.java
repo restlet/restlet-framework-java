@@ -40,6 +40,7 @@ import org.restlet.Context;
 import org.restlet.Restlet;
 import org.restlet.Router;
 import org.restlet.Scorer;
+import org.restlet.UniformInterface;
 import org.restlet.component.Application;
 import org.restlet.component.Container;
 import org.restlet.connector.Client;
@@ -270,10 +271,10 @@ public class Factory extends org.restlet.spi.Factory
 
    /**
     * Creates a new container.
-    * @param root The root Restlet.
+    * @param root The root handler.
     * @return The new container.
     */
-   public Container createContainer(Restlet root)
+   public Container createContainer(UniformInterface root)
    {
    	return new com.noelios.restlet.impl.component.ContainerImpl(root);
    }

@@ -25,7 +25,7 @@ package org.restlet.component;
 import java.util.List;
 
 import org.restlet.Call;
-import org.restlet.Restlet;
+import org.restlet.UniformInterface;
 import org.restlet.spi.Factory;
 
 /**
@@ -49,14 +49,14 @@ public class Container extends Component
     */
    public Container()
    {
-   	this((Restlet)null);
+   	this((UniformInterface)null);
    }
    
    /**
     * Constructor.
-    * @param root The root Restlet.
+    * @param root The root handler.
     */
-   public Container(Restlet root)
+   public Container(UniformInterface root)
    {
 		this(Factory.getInstance().createContainer(root));
    }

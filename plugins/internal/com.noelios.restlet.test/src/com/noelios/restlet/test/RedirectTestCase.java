@@ -122,5 +122,4 @@ public class RedirectTestCase extends TestCase
 		assertNotNull(call.getOutput());
 		call.getOutput().write(System.out);
 	}
-
 }

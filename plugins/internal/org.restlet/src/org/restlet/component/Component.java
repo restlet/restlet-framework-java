@@ -24,7 +24,6 @@ package org.restlet.component;
 
 import org.restlet.Call;
 import org.restlet.Context;
-import org.restlet.Restlet;
 import org.restlet.UniformInterface;
 
 /**
@@ -89,27 +88,27 @@ public abstract class Component implements UniformInterface
    }
 
 	/**
-	 * Returns the root Restlet.
-	 * @return The root Restlet.
+	 * Returns the root handler.
+	 * @return The root handler.
 	 */
-	public Restlet getRoot()
+	public UniformInterface getRoot()
 	{
 		return getWrappedComponent().getRoot();
 	}
 
    /**
-	 * Sets the root Restlet that will receive all incoming calls. In general, instance of Router, 
-	 * Filter or Handler interfaces will be used as root of containers.
-	 * @param root The root Restlet to use.
+	 * Sets the root handler that will receive all incoming calls. In general, instances of Restlet, Router, 
+	 * Filter or Finder classes will be used as root handlers.
+	 * @param root The root handler to use.
 	 */
-	public void setRoot(Restlet root)
+	public void setRoot(UniformInterface root)
 	{
 		getWrappedComponent().setRoot(root);
 	}
 
 	/**
-	 * Indicates if a root Restlet is set. 
-	 * @return True if a root Restlet is set. 
+	 * Indicates if a root handler is set. 
+	 * @return True if a root handler is set. 
 	 */
 	public boolean hasRoot()
 	{
