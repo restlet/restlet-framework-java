@@ -5,7 +5,7 @@ Changes log
 
 
 @version-full@ (@release-date@)
- 
+
 [Bugs fixed]
  - Fixed issue with error status preventing the setting of response headers with Servlet containers like Tomcat. Report and solution by Evan DiBiase.
  - Completed support for content streaming in the HTTP client connector extension. Issue reported by Mikkel Jensen.
@@ -35,6 +35,11 @@ Changes log
  - Added a post() method on Resource returning an instance of the new org.restlet.data.Result class as well as put() and delete().
  - Renamed Chainer.findNext(Call) into getNext(Call). Chainer is now abstract.
  - Scorer is now abstract to force implementation of the score() method.
+ - Renamed "name" property into "agent" for ClientData and ServerData.
+ - Added "name" (for domain name) and "port" properties to ServerData, matching HTTP's "Host" header.
+ - Refactored HttpCall and related classes to better handle and preserve the "Host" header information.
+ - Renamed CallModel variable "clientName" into "client.agent" and "serverName" into "server.agent", also
+   "serverAddress" into "server.address" and "clientAddress" into "client.address".
  
 [Other changes] 
  - Updated Jetty 6 extension to final 6.0 release.
@@ -67,7 +72,11 @@ Changes log
  - Updated pictures in the tutorial to reflect the latest API changes (Application, hierarchy changes, etc.).
  - Form handling code don't throw IO exceptions anymore for Call.getInputAsForm() and Reference.getQueryAsForm(). Issue reported by Piyush Purang.
  - Added modification support (PUT and DELETE) to DirectoryFinder. Suggested by Don Dwoske and John D. Mitchell. Implementation contributed by Thierry Boileau.
- 
+ - Added "protocol" property on Call.
+ - Added FTP constant to Protocol.
+ - Improved detection of default ports in Reference.toString() static methods. Added new toString() variant.
+ - HTTP client connectors now set the "Host" header manually when proper information is found via Call.getServer()."name" and "port".
+
 1.0 beta 18 (2006-08-19)
 [Bugs fixed]
  - Status descriptions are now sent back to Jetty 6 for error statuses. Reported by AJ Barnes.

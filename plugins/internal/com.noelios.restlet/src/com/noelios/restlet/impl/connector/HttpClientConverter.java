@@ -107,6 +107,24 @@ public class HttpClientConverter
 	protected void addRequestHeaders(HttpClientCall httpCall, Call call)
 	{
 		ParameterList requestHeaders = httpCall.getRequestHeaders();
+
+		// Manually add the host name and port when it is potentially different
+		// from the one specified in the target resource reference.
+		if(call.getServer().getName() != null)
+		{
+			String host;
+			
+			if(call.getServer().getPort() != null)
+			{
+				host = call.getServer().getName() + ':' + call.getServer().getPort();
+			}
+			else
+			{
+				host = call.getServer().getName();
+			}
+
+			requestHeaders.add(HttpConstants.HEADER_HOST, host);
+		}
 		
 		// Add the user agent header
 		if (call.getClient().getAgent() != null)
