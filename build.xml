@@ -435,6 +435,11 @@
 			<istrue value="${javadoc}" />
 		</condition>
 
+		<!-- Set the property that will enable the generation of the Javadoc of implementation classes -->
+		<condition property="exclude-packages" value="**.spi.*,**.impl.*" else="">
+			<istrue value="${javadoc-hide}" />
+		</condition>
+
 		<!-- Set the debug level property -->
 		<condition property="debuglevel" value="source,lines,vars">
 			<and>
@@ -677,9 +682,9 @@
 			<fileset dir="${docs-core}" excludes="**/.svn" />
 			<fileset dir="${docs-ext}" excludes="**/.svn" />
 		</delete>
-
+		
 		<javadoc packagenames="org.restlet.*"
-					excludepackagenames="org.restlet.spi.*"
+				 excludepackagenames="${exclude-packages}"
 		         destdir="${docs-api}"
 		         classpathref="path-all"
 		         author="true"
@@ -706,7 +711,7 @@
 		</javadoc>
 	
 		<javadoc packagenames="com.noelios.restlet.*"
-					excludepackagenames="com.noelios.restlet.impl.*"
+				 excludepackagenames="${exclude-packages}"
 		         destdir="${docs-core}"
 		         classpathref="path-all"
 		         author="true"
@@ -733,6 +738,7 @@
 		</javadoc>
 	
 		<javadoc packagenames="com.noelios.restlet.ext.*"
+				 excludepackagenames="${exclude-packages}"
 		         destdir="${docs-ext}"
 		         classpathref="path-all"
 		         author="true"

@@ -80,6 +80,7 @@ Changes log
  - HTTP client connectors now set the "Host" header manually when proper information is found via Call.getServer()."name" and "port".
  - Refactored the parsing/construction of the target resource reference to handle both relative and absolute URIs.
  - Improved robustness of Reference when handling relative URIs.
+ - Added a "javadoc-hide" property to "build.properties" to hide the Javadocs of implementation packages (true by default).
  
 1.0 beta 18 (2006-08-19)
 [Bugs fixed]

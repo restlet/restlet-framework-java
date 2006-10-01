@@ -78,7 +78,6 @@ public class ContainerImpl extends Container
 	
    /**
     * Constructor.
-    * @param context The context.
     * @param root The root handler.
     */
    public ContainerImpl(UniformInterface root)
