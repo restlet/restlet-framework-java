@@ -423,6 +423,7 @@ public class HttpServerRestletCall extends Call
 			result.setAgent(Factory.VERSION_HEADER);
 			result.setName(httpCall.getServerName());
 			result.setPort(httpCall.getServerPort());
+			this.serverAdded = true;
 		}
 
 		return result;

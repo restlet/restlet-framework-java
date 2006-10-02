@@ -25,13 +25,13 @@ package org.restlet.connector;
 import java.util.Arrays;
 import java.util.List;
 
-import org.restlet.Call;
 import org.restlet.UniformInterface;
 import org.restlet.data.Protocol;
 import org.restlet.spi.Factory;
 
 /**
- * Generic server connector supporting multiples protocols.
+ * Generic server connector. It internally uses one of the available connectors registered with the current
+ * Restlet implementation.
  * @author Jerome Louvel (contact@noelios.com) <a href="http://www.noelios.com/">Noelios Consulting</a>
  */
 public class Server extends Connector
@@ -100,15 +100,6 @@ public class Server extends Connector
    {
    	super(Factory.getInstance().createServer(protocols, address, port));
    	setTarget(target);
-   }
-
-   /**
-    * Handles a call.
-    * @param call The call to handle.
-    */
-   public void handle(Call call)
-   {
-   	if(getWrappedServer() != null) getWrappedServer().handle(call);
    }
 
 	/**

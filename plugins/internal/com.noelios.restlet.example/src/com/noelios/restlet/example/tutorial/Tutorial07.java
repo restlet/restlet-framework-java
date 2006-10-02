@@ -27,7 +27,6 @@ import org.restlet.component.Container;
 import org.restlet.data.Protocol;
 
 import com.noelios.restlet.DirectoryFinder;
-import com.noelios.restlet.HostRouter;
 import com.noelios.restlet.LogFilter;
 
 /**
@@ -50,18 +49,12 @@ public class Tutorial07 implements Constants
 
          // Attach a log Filter to the container
          LogFilter log = new LogFilter(myContext, "com.noelios.restlet.example");
-         myContainer.setRoot(log);
+         myContainer.getLocalHost().attach("/", log);
 
-         // Create a host router matching calls to the server
-         HostRouter host = new HostRouter(myContext, 8182);
-         log.setNext(host);
-
-         // Create a directory Restlet able to return a deep hierarchy of Web files
+         // Create a directory finder able to return a deep hierarchy of Web files
          DirectoryFinder directory = new DirectoryFinder(myContext, ROOT_URI, "index.html");
-
-         // Then attach the Restlet to the log Filter.
-         host.getScorers().add("/", directory);
-
+         log.setNext(directory);
+         
          // Now, let's start the container!
          myContainer.start();
       }

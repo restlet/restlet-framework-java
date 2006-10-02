@@ -30,7 +30,6 @@ import java.util.logging.Level;
 import java.util.logging.Logger;
 
 import org.restlet.Call;
-import org.restlet.Context;
 import org.restlet.Router;
 import org.restlet.Scorer;
 import org.restlet.UniformInterface;
@@ -128,11 +127,11 @@ public abstract class Factory
 
    /**
     * Creates a new application using the given context.
-    * @param context The context.
+    * @param container The parent container.
     * @return The new application.
     */
-   public abstract Application createApplication(Context context);
-   
+   public abstract Application createApplication(Container container);
+
    /**
     * Creates a new client connector for a given protocol.
     * @param protocols The connector protocols.
@@ -142,11 +141,10 @@ public abstract class Factory
 
    /**
     * Creates a new container.
-    * @param root The root handler.
-    * @return The new container.
+    * @return A new container.
     */
-   public abstract Container createContainer(UniformInterface root);
-
+   public abstract Container createContainer();
+   
    /**
     * Creates a string-base representation.
     * @param value The represented string.
@@ -159,11 +157,11 @@ public abstract class Factory
     * The score will be proportional to the number of chararacters matched by the pattern, from the start
     * of the context resource path.
     * @param router The parent router.
-    * @param pattern The URI pattern used to map calls (see {@link java.util.regex.Pattern} for the syntax).
+    * @param uriPattern The URI pattern used to map calls (see {@link java.util.regex.Pattern} for the syntax).
     * @param target The target handler to attach.
     * @see java.util.regex.Pattern
     */
-   public abstract Scorer createScorer(Router router, String pattern, UniformInterface target);
+   public abstract Scorer createScorer(Router router, String uriPattern, UniformInterface target);
 
    /**
     * Create a new server connector for internal usage by the GenericClient.

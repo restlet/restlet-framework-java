@@ -25,12 +25,12 @@ package org.restlet.component;
 import java.util.List;
 
 import org.restlet.Call;
-import org.restlet.UniformInterface;
 import org.restlet.spi.Factory;
 
 /**
- * Component containing a set of connectors and applications. The connectors are shared by the 
- * applications and the container attemps to isolate each application from each other.
+ * Component managing a set of connectors, virtual hosts and applications. The server connectors and 
+ * virtual hosts can be shared by several applications, but the client connectors are instantiated for
+ * each application in order to ensure full isolation between contained applications.
  * @author Jerome Louvel (contact@noelios.com) <a href="http://www.noelios.com/">Noelios Consulting</a>
  */
 public class Container extends Component
@@ -43,22 +43,13 @@ public class Container extends Component
 	{
 		super(wrappedContainer);
 	}
-
+   
    /**
     * Constructor.
     */
    public Container()
    {
-   	this((UniformInterface)null);
-   }
-   
-   /**
-    * Constructor.
-    * @param root The root handler.
-    */
-   public Container(UniformInterface root)
-   {
-		this(Factory.getInstance().createContainer(root));
+		this(Factory.getInstance().createContainer());
    }
 
    /**
@@ -79,6 +70,24 @@ public class Container extends Component
 		return getWrappedContainer().getClients();
 	}
 
+   /**
+    * Returns the modifiable list of host routers.
+    * @return The modifiable list of host routers.
+    */
+   public List<VirtualHost> getHosts()
+   {
+		return getWrappedContainer().getHosts();
+   }
+
+   /**
+    * Returns the local virtual host.
+    * @return The local virtual host.
+    */
+   public VirtualHost getLocalHost()
+   {
+		return getWrappedContainer().getLocalHost();
+   }
+
 	/**
 	 * Returns the modifiable list of server connectors.
 	 * @return The modifiable list of server connectors.
@@ -87,25 +96,7 @@ public class Container extends Component
 	{
 		return getWrappedContainer().getServers();
 	}
-
-   /**
-    * Returns the default virtual host.
-    * @return The default virtual host.
-    */
-   public Host getDefaultHost()
-   {
-		return getWrappedContainer().getDefaultHost();
-   }
-
-   /**
-    * Returns the modifiable list of virtual hosts.
-    * @return The modifiable list of virtual hosts.
-    */
-   public List<Host> getVirtualHosts()
-   {
-		return getWrappedContainer().getVirtualHosts();
-   }
-   
+	
    /**
     * Handles a direct call.
     * @param call The call to handle.
@@ -116,28 +107,12 @@ public class Container extends Component
    }
 
    /**
-    * Sets the default virtual host.
-    * @param defaultHost The default virtual host.
+    * Sets the local virtual host.
+    * @param localHost The local virtual host.
     */
-   public void setDefaultHost(Host defaultHost)
+   public void setLocalHost(VirtualHost localHost)
    {
-		getWrappedContainer().setDefaultHost(defaultHost);
-   }
-
-   /**
-    * Start hook. Starts all containers.
-    */
-   public void start() throws Exception
-   {
-		getWrappedContainer().start();
-   }
-
-   /**
-    * Stop hook. Stops all containers.
-    */
-   public void stop() throws Exception
-   {
-		getWrappedContainer().stop();
+		getWrappedContainer().setLocalHost(localHost);
    }
 
 }

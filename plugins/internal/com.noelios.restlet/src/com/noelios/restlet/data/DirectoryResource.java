@@ -30,6 +30,7 @@ import java.util.logging.Level;
 import java.util.logging.Logger;
 
 import org.restlet.Call;
+import org.restlet.connector.ClientInterface;
 import org.restlet.data.AbstractResource;
 import org.restlet.data.MediaType;
 import org.restlet.data.Method;
@@ -111,7 +112,7 @@ public class DirectoryResource extends AbstractResource
 		}
 
 		// Try to detect the presence of a directory
-		Call contextCall = getDirectory().getContext().get(this.targetUri);
+		Call contextCall = getClient().get(this.targetUri);
 		if ((contextCall.getOutput() != null)
 				&& contextCall.getOutput().getMediaType().equals(MediaType.TEXT_URI_LIST))
 		{
@@ -152,7 +153,7 @@ public class DirectoryResource extends AbstractResource
 				this.baseName = targetUri.substring(lastSlashIndex + 1);
 			}
 
-			contextCall = getDirectory().getContext().get(this.directoryUri);
+			contextCall = getClient().get(this.directoryUri);
 			if ((contextCall.getOutput() != null)
 					&& contextCall.getOutput().getMediaType().equals(MediaType.TEXT_URI_LIST))
 			{
@@ -179,6 +180,15 @@ public class DirectoryResource extends AbstractResource
 		logger.info("Converted base name: " + this.baseName);
 	}
 
+	/**
+	 * Returns the client interface.
+	 * @return The client interface.
+	 */
+	private ClientInterface getClient()
+	{
+		return getDirectory().getContext().getClient();
+	}
+	
 	/**
 	 * Returns the parent directory handler.
 	 * @return The parent directory handler.
@@ -285,7 +295,7 @@ public class DirectoryResource extends AbstractResource
 				for (Reference ref : getVariantsReferences(false))
 				{
 					//Add the new variant to the result list
-					Call contextCall = getDirectory().getContext().get(ref.toString());
+					Call contextCall = getClient().get(ref.toString());
 					if (contextCall.getStatus().isSuccess()
 							&& (contextCall.getOutput() != null))
 					{
@@ -363,7 +373,7 @@ public class DirectoryResource extends AbstractResource
 			if (targetDirectory)
 			{
 				contextCall.setResourceRef(this.targetUri);
-				getDirectory().getContext().handle(contextCall);
+				getClient().handle(contextCall);
 			}
 			else
 			{
@@ -372,12 +382,12 @@ public class DirectoryResource extends AbstractResource
 				if (!references.isEmpty())
 				{
 					contextCall.setResourceRef(references.get(0));
-					getDirectory().getContext().handle(contextCall);
+					getClient().handle(contextCall);
 				}
 				else
 				{
 					contextCall.setResourceRef(this.targetUri);
-					getDirectory().getContext().handle(contextCall);
+					getClient().handle(contextCall);
 				}
 			}
 		}
@@ -403,7 +413,7 @@ public class DirectoryResource extends AbstractResource
 			if (targetDirectory)
 			{
 				contextCall.setResourceRef(this.targetUri);
-				getDirectory().getContext().handle(contextCall);
+				getClient().handle(contextCall);
 			}
 			else
 			{
@@ -412,7 +422,7 @@ public class DirectoryResource extends AbstractResource
 				if (!references.isEmpty())
 				{
 					contextCall.setResourceRef(references.get(0));
-					getDirectory().getContext().handle(contextCall);
+					getClient().handle(contextCall);
 				}
 				else
 				{
@@ -438,7 +448,7 @@ public class DirectoryResource extends AbstractResource
 			Call contextCall = new Call(Method.GET, this.targetUri);
 			contextCall.getClient().getAcceptedMediaTypes().add(
 					new Preference<MediaType>(MediaType.TEXT_URI_LIST));
-			getDirectory().getContext().handle(contextCall);
+			getClient().handle(contextCall);
 			if (contextCall.getOutput() != null)
 			{
 				ReferenceList listVariants = new ReferenceList(contextCall.getOutput());

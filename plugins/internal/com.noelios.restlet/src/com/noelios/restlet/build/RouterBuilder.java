@@ -32,7 +32,6 @@ import com.noelios.restlet.DecompressFilter;
 import com.noelios.restlet.DirectoryFinder;
 import com.noelios.restlet.ExtractFilter;
 import com.noelios.restlet.GuardFilter;
-import com.noelios.restlet.HostRouter;
 import com.noelios.restlet.LogFilter;
 import com.noelios.restlet.RedirectRestlet;
 import com.noelios.restlet.StatusFilter;
@@ -232,9 +231,10 @@ public class RouterBuilder extends RestletBuilder
     */
    public HostRouterBuilder createHost(int port)
    {
-      HostRouter node = new HostRouter(getNode().getContext(), port);
-      node.setUsageMode(HostRouter.USAGE_ROUTING);
-      return Builders.buildHost(this, node);
+//      VirtualHostImpl node = new VirtualHostImpl(getNode().getContext(), port);
+//      node.setUsageMode(VirtualHostImpl.USAGE_ROUTING);
+//      return Builders.buildHost(this, node);
+   	return null;
    }
    
    /**
@@ -244,7 +244,8 @@ public class RouterBuilder extends RestletBuilder
     */
    public HostRouterBuilder attachHost(int port)
    {
-   	return createHost(port).attachParent();
+//   	return createHost(port).attachParent();
+   	return null;
    }
    
    /**
@@ -257,9 +258,10 @@ public class RouterBuilder extends RestletBuilder
     */
    public HostRouterBuilder createHost(String domain)
    {
-      HostRouter node = new HostRouter(getNode().getContext(), domain);
-      node.setUsageMode(HostRouter.USAGE_ROUTING);
-      return Builders.buildHost(this, node);
+//      VirtualHostImpl node = new VirtualHostImpl(getNode().getContext(), domain);
+//      node.setUsageMode(VirtualHostImpl.USAGE_ROUTING);
+//      return Builders.buildHost(this, node);
+   	return null;
    }
    
    /**
@@ -269,7 +271,8 @@ public class RouterBuilder extends RestletBuilder
     */
    public HostRouterBuilder attachHost(String domain)
    {
-   	return createHost(domain).attachParent();
+//   	return createHost(domain).attachParent();
+   	return null;
    }
    
    /**
@@ -283,9 +286,10 @@ public class RouterBuilder extends RestletBuilder
     */
    public HostRouterBuilder createHost(String domain, int port)
    {
-      HostRouter node = new HostRouter(getNode().getContext(), domain, port);
-      node.setUsageMode(HostRouter.USAGE_ROUTING);
-      return Builders.buildHost(this, node);
+//      VirtualHostImpl node = new VirtualHostImpl(getNode().getContext(), domain, port);
+//      node.setUsageMode(VirtualHostImpl.USAGE_ROUTING);
+//      return Builders.buildHost(this, node);
+   	return null;
    }
    
    /**
@@ -296,7 +300,8 @@ public class RouterBuilder extends RestletBuilder
     */
    public HostRouterBuilder attachHost(String domain, int port)
    {
-   	return createHost(domain, port).attachParent();
+//   	return createHost(domain, port).attachParent();
+   	return null;
    }
 
    /**

@@ -22,7 +22,6 @@
 
 package org.restlet.component;
 
-import org.restlet.Call;
 import org.restlet.Context;
 import org.restlet.UniformInterface;
 
@@ -70,6 +69,24 @@ public abstract class Component implements UniformInterface
    }
 
    /**
+    * Indicates if the Restlet is started.
+    * @return True if the Restlet is started.
+    */
+   public boolean isStarted()
+   {
+   	return getWrappedComponent().isStarted();
+   }
+
+   /**
+    * Indicates if the Restlet is stopped.
+    * @return True if the Restlet is stopped.
+    */
+   public boolean isStopped()
+   {
+   	return getWrappedComponent().isStopped();
+   }
+
+   /**
     * Returns the context.
     * @return The context.
     */
@@ -86,42 +103,4 @@ public abstract class Component implements UniformInterface
    {
 		getWrappedComponent().setContext(context);
    }
-
-	/**
-	 * Returns the root handler.
-	 * @return The root handler.
-	 */
-	public UniformInterface getRoot()
-	{
-		return getWrappedComponent().getRoot();
-	}
-
-   /**
-	 * Sets the root handler that will receive all incoming calls. In general, instances of Restlet, Router, 
-	 * Filter or Finder classes will be used as root handlers.
-	 * @param root The root handler to use.
-	 */
-	public void setRoot(UniformInterface root)
-	{
-		getWrappedComponent().setRoot(root);
-	}
-
-	/**
-	 * Indicates if a root handler is set. 
-	 * @return True if a root handler is set. 
-	 */
-	public boolean hasRoot()
-	{
-		return getWrappedComponent().hasRoot();
-	}
-
-   /**
-    * Handles a direct call.
-    * @param call The call to handle.
-    */
-	public void handle(Call call)
-   {
-		getWrappedComponent().handle(call);
-   }
-
 }

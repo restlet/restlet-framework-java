@@ -26,28 +26,35 @@ import java.util.logging.Logger;
 
 import org.restlet.Call;
 import org.restlet.Context;
-import org.restlet.component.Container;
-import org.restlet.connector.Client;
+import org.restlet.connector.ClientInterface;
+import org.restlet.data.Method;
 import org.restlet.data.Protocol;
+import org.restlet.data.Representation;
+
+import com.noelios.restlet.impl.connector.LocalClient;
 
 /**
  * Context allowing access to the container's connectors.
  * @author Jerome Louvel (contact@noelios.com) <a href="http://www.noelios.com/">Noelios Consulting</a>
  */
-public class ContainerContext extends Context
+public class ContainerContext extends Context implements ClientInterface
 {
+	/** The local client. */
+	private LocalClient localClient;
+	
 	/** The parent container. */
-	private Container container;
+	private ContainerImpl container;
 
 	/**
 	 * Constructor. 
 	 * @param container The parent container.
     * @param logger The logger instance of use.
 	 */
-	public ContainerContext(Container container, Logger logger)
+	public ContainerContext(ContainerImpl container, Logger logger)
 	{
 		super(logger);
-		this.setContainer(container);
+		this.container = container;
+		this.localClient = new LocalClient();
 	}
    
 	/**
@@ -57,7 +64,6 @@ public class ContainerContext extends Context
    public void handle(Call call)
    {
    	Protocol protocol = call.getProtocol();
-   	
    	if(protocol == null)
    	{
    		// Attempt to guess the protocol to use
@@ -71,24 +77,124 @@ public class ContainerContext extends Context
    	}
    	else
    	{
-	   	for(Client client : getContainer().getClients())
-	   	{
-	   		if(client.getProtocols().contains(protocol))
-	   		{
-	   			client.handle(call);
-	   			return;
-	   		}
-	   	}
+   		if(protocol.equals(Protocol.CONTEXT) || protocol.equals(Protocol.FILE))
+   		{
+   			getLocalClient().handle(call);
+   		}
+   		else
+   		{
+   			getContainer().getClientRouter().handle(call);
+   		}
    	}
-   	
-   	throw new UnsupportedOperationException("The " + protocol + " protocol is not available in this context.");
+   }
+   
+   /**
+    * Deletes the identified resource.
+    * @param resourceUri The URI of the resource to delete.
+    * @return The returned uniform call.
+    */
+   public Call delete(String resourceUri)
+   {
+      Call call = new Call();
+      call.setResourceRef(resourceUri);
+      call.setMethod(Method.DELETE);
+      handle(call);
+      return call;
+   }
+   
+   /**
+    * Gets the identified resource.
+    * @param resourceUri The URI of the resource to get.
+    * @return The returned uniform call.
+    */
+   public Call get(String resourceUri)
+   {
+      Call call = new Call();
+      call.setResourceRef(resourceUri);
+      call.setMethod(Method.GET);
+      handle(call);
+      return call;
+   }
+   
+   /**
+    * Gets the identified resource without its representation's content.
+    * @param resourceUri The URI of the resource to get.
+    * @return The returned uniform call.
+    */
+   public Call head(String resourceUri)
+   {
+      Call call = new Call();
+      call.setResourceRef(resourceUri);
+      call.setMethod(Method.HEAD);
+      handle(call);
+      return call;
+   }
+   
+   /**
+    * Gets the options for the identified resource.
+    * @param resourceUri The URI of the resource to get.
+    * @return The returned uniform call.
+    */
+   public Call options(String resourceUri)
+   {
+      Call call = new Call();
+      call.setResourceRef(resourceUri);
+      call.setMethod(Method.OPTIONS);
+      handle(call);
+      return call;
+   }
+
+   /**
+    * Post a representation to the identified resource.
+    * @param resourceUri The URI of the resource to post to.
+    * @param input The input representation to post.
+    * @return The returned uniform call.
+    */
+	public Call post(String resourceUri, Representation input)
+   {
+      Call call = new Call();
+      call.setResourceRef(resourceUri);
+      call.setMethod(Method.POST);
+      call.setInput(input);
+      handle(call);
+      return call;
+   }
+
+   /**
+    * Puts a representation in the identified resource.
+    * @param resourceUri The URI of the resource to modify.
+    * @param input The input representation to put.
+    * @return The returned uniform call.
+    */
+   public Call put(String resourceUri, Representation input)
+   {
+      Call call = new Call();
+      call.setResourceRef(resourceUri);
+      call.setMethod(Method.PUT);
+      call.setInput(input);
+      handle(call);
+      return call;
+   }
+   
+   /**
+    * Tests the identified resource.
+    * @param resourceUri The URI of the resource to delete.
+    * @return The returned uniform call.
+    */
+   public Call trace(String resourceUri)
+   {
+      Call call = new Call();
+      call.setResourceRef(resourceUri);
+      call.setMethod(Method.TRACE);
+      handle(call);
+      return call;
    }
 
 	/**
 	 * Sets the parent container.
 	 * @param container The parent container.
 	 */
-	protected void setContainer(Container container)
+	protected void setContainer(ContainerImpl container)
 	{
 		this.container = container;
 	}
@@ -97,8 +203,35 @@ public class ContainerContext extends Context
 	 * Returns the parent container.
 	 * @return The parent container.
 	 */
-	protected Container getContainer()
+	protected ContainerImpl getContainer()
 	{
 		return this.container;
+	}
+   
+   /**
+    * Returns a generic client delegate.
+    * @return A generic client delegate.
+    */
+   public ClientInterface getClient()
+   {
+   	return this;
+   }
+
+	/**
+	 * Returns the local client.
+	 * @return the local client.
+	 */
+	protected LocalClient getLocalClient()
+	{
+		return this.localClient;
+	}
+
+	/**
+	 * Sets the local client.
+	 * @param localClient The localClient.
+	 */
+	protected void setLocalClient(LocalClient localClient)
+	{
+		this.localClient = localClient;
 	}
 }

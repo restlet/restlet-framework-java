@@ -32,7 +32,6 @@ import com.noelios.restlet.DecompressFilter;
 import com.noelios.restlet.DirectoryFinder;
 import com.noelios.restlet.ExtractFilter;
 import com.noelios.restlet.GuardFilter;
-import com.noelios.restlet.HostRouter;
 import com.noelios.restlet.LogFilter;
 import com.noelios.restlet.RedirectRestlet;
 import com.noelios.restlet.StatusFilter;
@@ -175,9 +174,10 @@ public class FilterBuilder extends RestletBuilder
     */
    public HostRouterBuilder attachHost(int port)
    {
-      HostRouter node = new HostRouter(getNode().getContext(), port);
-      getNode().setNext(node);
-      return Builders.buildHost(this, node);
+//      VirtualHostImpl node = new VirtualHostImpl(getNode().getContext(), port);
+//      getNode().setNext(node);
+//      return Builders.buildHost(this, node);
+   	return null;
    }
    
    /**
@@ -187,9 +187,10 @@ public class FilterBuilder extends RestletBuilder
     */
    public HostRouterBuilder attachHost(String domain)
    {
-      HostRouter node = new HostRouter(getNode().getContext(), domain);
-      getNode().setNext(node);
-      return Builders.buildHost(this, node);
+//      VirtualHostImpl node = new VirtualHostImpl(getNode().getContext(), domain);
+//      getNode().setNext(node);
+//      return Builders.buildHost(this, node);
+   	return null;
    }
    
    /**
@@ -200,9 +201,10 @@ public class FilterBuilder extends RestletBuilder
     */
    public HostRouterBuilder attachHost(String domain, int port)
    {
-      HostRouter node = new HostRouter(getNode().getContext(), domain, port);
-      getNode().setNext(node);
-      return Builders.buildHost(this, node);
+//      VirtualHostImpl node = new VirtualHostImpl(getNode().getContext(), domain, port);
+//      getNode().setNext(node);
+//      return Builders.buildHost(this, node);
+   	return null;
    }
 
    /**

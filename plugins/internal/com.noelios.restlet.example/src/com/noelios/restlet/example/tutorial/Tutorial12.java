@@ -66,17 +66,18 @@ public class Tutorial12 implements Constants
             };
       	
          // Build and start the container
-      	Builders.buildContainer()
-      		.addServer(Protocol.HTTP, 8182)
-      		.attachLog("com.noelios.restlet.example")
-      			.attachStatus(true, "webmaster@mysite.org", "http://www.mysite.org")
-      				.attachHost(8182)
-      					.attachGuard("/docs/", "com.noelios.restlet.example", true, ChallengeScheme.HTTP_BASIC , "Restlet tutorial", true)
-      						.authorize("scott", "tiger")
-      						.attachDirectory(ROOT_URI, "index.html").upRouter()
-   						.attachRouter("/users/[a-z]+")
-   								.attach("$", userRestlet).upRouter()
-									.attach("/orders$", ordersRestlet).owner().start();
+//      	Builders.buildContainer()
+//      		.addServer(Protocol.HTTP, 8182)
+//      		.getLocalHost().
+//      			.attachLog("com.noelios.restlet.example")
+//      			.attachStatus(true, "webmaster@mysite.org", "http://www.mysite.org")
+//      				.attachRouter()
+//      					.attachGuard("/docs/", "com.noelios.restlet.example", true, ChallengeScheme.HTTP_BASIC , "Restlet tutorial", true)
+//      						.authorize("scott", "tiger")
+//      						.attachDirectory(ROOT_URI, "index.html").upRouter()
+//   						.attachRouter("/users/[a-z]+")
+//   								.attach("$", userRestlet).upRouter()
+//									.attach("/orders$", ordersRestlet).owner().start();
       }
       catch(Exception e)
       {

@@ -22,8 +22,8 @@
 
 package com.noelios.restlet.build;
 
-import org.restlet.Context;
 import org.restlet.component.Application;
+import org.restlet.component.Container;
 
 /**
  * Fluent builder for Restlet Containers.
@@ -35,9 +35,9 @@ public class ApplicationBuilder extends ComponentBuilder
 	 * Constructor for new containers.
 	 * @param context The container's context.
 	 */
-	public ApplicationBuilder(Context context)
+	public ApplicationBuilder(Container container)
 	{
-		this(null, new Application(context));
+		this(null, new Application(container));
 	}
 	
 	/**
@@ -55,7 +55,7 @@ public class ApplicationBuilder extends ComponentBuilder
 	 */
 	public ApplicationBuilder(ContainerBuilder parent)
 	{
-		super(parent, new Application(parent.getNode().getContext()));
+		super(parent, null); //new Application(parent.getNode().getContext()));
 	}
 	
 	/**

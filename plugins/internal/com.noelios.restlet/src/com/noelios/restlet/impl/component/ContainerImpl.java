@@ -29,11 +29,10 @@ import java.util.logging.Logger;
 
 import org.restlet.Call;
 import org.restlet.Context;
-import org.restlet.UniformInterface;
-import org.restlet.component.Application;
 import org.restlet.component.ClientList;
 import org.restlet.component.Container;
 import org.restlet.component.ServerList;
+import org.restlet.component.VirtualHost;
 import org.restlet.connector.Client;
 import org.restlet.connector.Server;
 import org.restlet.data.Protocol;
@@ -41,8 +40,7 @@ import org.restlet.data.Status;
 import org.restlet.spi.Factory;
 
 /**
- * Component containing a set of connectors and applications. The connectors are shared by the 
- * applications and the container attemps to isolate each application from each other.
+ * Container implementation. 
  * @author Jerome Louvel (contact@noelios.com) <a href="http://www.noelios.com/">Noelios Consulting</a>
  */
 public class ContainerImpl extends Container
@@ -50,44 +48,44 @@ public class ContainerImpl extends Container
    /** Obtain a suitable logger. */
    private static Logger logger = Logger.getLogger(ContainerImpl.class.getCanonicalName());
 
-   /** The context. */
-	private Context context;
-   
-   /** The list of applications. */
-   private List<Application> applications;
-
    /** The map of client connectors. */
 	private ClientList clients;
-
-	/** The root handler. */
-	private UniformInterface root;
 	
    /** The map of server connectors. */
 	private ServerList servers;
+	
+	/** The modifiable list of virtual hosts. */ 
+	private List<VirtualHost> hosts;
+	
+	/** The local host. */
+	private VirtualHost localHost;
 
-	/** Indicates if the restlet was started. */
+   /** The context. */
+	private Context context;
+	
+	/** The internal client router. */
+	private ClientRouter clientRouter;
+	
+	/** The internal host router. */
+	private HostRouter hostRouter;
+
+	/** Indicates if the instance was started. */
    private boolean started;
-
-	/**
-	 * Constructor that adds a default local connector and uses a local logger.
-	 */
-	public ContainerImpl()
-	{
-		this(null);
-	}
 	
    /**
     * Constructor.
-    * @param root The root handler.
     */
-   public ContainerImpl(UniformInterface root)
+   public ContainerImpl()
    {
    	super((Container)null);
 		this.context = new ContainerContext(this, logger);
-      this.applications = null;
+      this.hosts = new ArrayList<VirtualHost>();
+      this.localHost = new LocalHost(getContext());
+      this.clientRouter = new ClientRouter(this);
+      this.hostRouter = new HostRouter(this);
       this.clients = null;
-      this.root = root;
       this.servers = null;
+      this.started = false;
 
       // Add a local client
       List<Protocol> protocols = new ArrayList<Protocol>();
@@ -95,15 +93,23 @@ public class ContainerImpl extends Container
       protocols.add(Protocol.FILE);
       getClients().add(Factory.getInstance().createClient(protocols));
    }
-   
+
    /**
-    * Returns the modifiable list of applications.
-    * @return The modifiable list of applications.
+    * Returns the modifiable list of host routers.
+    * @return The modifiable list of host routers.
     */
-   public List<Application> getApplications()
+   public List<VirtualHost> getHosts()
    {
-   	if(this.applications == null) new ArrayList<Application>();
-   	return this.applications;
+		return this.hosts;
+   }
+
+   /**
+    * Returns the local virtual host.
+    * @return The local virtual host.
+    */
+   public VirtualHost getLocalHost()
+   {
+		return this.localHost;
    }
 
    /**
@@ -130,14 +136,14 @@ public class ContainerImpl extends Container
     */
    public void handle(Call call)
    {
-      if(getRoot() != null)
+      if(getHostRouter() != null)
       {
-   		getRoot().handle(call);
+      	getHostRouter().handle(call);
       }
       else
       {
          call.setStatus(Status.SERVER_ERROR_INTERNAL);
-         logger.log(Level.SEVERE, "No root handler defined.");
+         logger.log(Level.SEVERE, "No host router defined.");
       }
    }
 
@@ -159,14 +165,6 @@ public class ContainerImpl extends Container
 	      for(Server server : this.servers)
 	      {
 	      	server.start();
-	      }
-   	}
-   	
-   	if(this.applications != null)
-   	{
-	      for(Application application : this.applications)
-	      {
-	         application.start();
 	      }
    	}
 
@@ -195,14 +193,6 @@ public class ContainerImpl extends Container
 	      	server.stop();
 	      }
    	}
-   	
-   	if(this.applications != null)
-   	{
-	      for(Application application : this.applications)
-	      {
-	         application.stop();
-	      }
-   	}
    }
 
    /**
@@ -229,7 +219,7 @@ public class ContainerImpl extends Container
 	 */
    public ClientList getClients()
 	{
-		if(this.clients == null) this.clients = new ClientList();
+		if(this.clients == null) this.clients = new ClientListImpl();
 		return this.clients;
 	}
 
@@ -239,36 +229,44 @@ public class ContainerImpl extends Container
 	 */
 	public ServerList getServers()
 	{
-		if(this.servers == null) this.servers = new ServerList(this);
+		if(this.servers == null) this.servers = new ServerListImpl(this);
 		return this.servers;
 	}
 
 	/**
-	 * Returns the root handler.
-	 * @return The root handler.
+	 * Returns the internal client router.
+	 * @return the internal client router.
 	 */
-	public UniformInterface getRoot()
+	public ClientRouter getClientRouter()
 	{
-		return this.root;
-	}
-
-   /**
-	 * Sets the root handler that will receive all incoming calls. In general, instances of Restlet, Router, 
-	 * Filter or Finder classeswill be used as root of containers.
-	 * @param root The root Restlet to use.
-	 */
-	public void setRoot(UniformInterface root)
-	{
-		this.root = root;
+		return this.clientRouter;
 	}
 
 	/**
-	 * Indicates if a root handler is set. 
-	 * @return True if a root handler is set. 
+	 * Sets the internal client router.
+	 * @param clientRouter The internal client router.
 	 */
-	public boolean hasRoot()
+	public void setClientRouter(ClientRouter clientRouter)
 	{
-		return (getRoot() != null);
+		this.clientRouter = clientRouter;
+	}
+
+	/**
+	 * Returns the internal host router.
+	 * @return the internal host router.
+	 */
+	public HostRouter getHostRouter()
+	{
+		return this.hostRouter;
+	}
+
+	/**
+	 * Sets the internal host router.
+	 * @param hostRouter The internal host router.
+	 */
+	public void setHostRouter(HostRouter hostRouter)
+	{
+		this.hostRouter = hostRouter;
 	}
 
 }

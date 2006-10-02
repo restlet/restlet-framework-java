@@ -151,7 +151,7 @@ public class RedirectRestlet extends Restlet
          case MODE_CONNECTOR:
             logger.log(Level.INFO, "Redirecting via client connector to: " + targetUri);
             call.setResourceRef(target);
-            getContext().handle(call);
+            getContext().getClient().handle(call);
          break;
       }
    }

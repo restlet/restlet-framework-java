@@ -42,7 +42,13 @@ Changes log
  - Renamed CallModel variable "clientName" into "client.agent" and "serverName" into "server.agent", also
    "serverAddress" into "server.address" and "clientAddress" into "client.address".
  - Removed Context.getClient(protocol) method, now Context directly implements ClientInterface.
-  
+ - Replaced com.noelios.restlet.HostRouter by a portable org.restlet.component.VirtualHost class. See updated tutorial to know how to migrate.
+ - Moved com.noelios.restlet.PatternScorer to com.noelios.restlet.impl.PatternScorer as this is related to the API implementation.
+ - Refactored and completed the Application class to act as a portable component, deployable on any Restlet engine and any (virtual) host without any change.
+ - Moved "root" property from Component to Application.
+ - Added new org.restlet.component.VirtualHost class, as a Router subclass to target applications or handlers.
+ - Connector and Context no longer implement UniformInterface.
+
 [Other changes] 
  - Updated Jetty 6 extension to final 6.0 release.
  - Added Resource.setVariants() and setIdentifiers() methods. Can be easier than doing a getVariants().clear() then a getVariants().addAll(newList). 
@@ -85,6 +91,8 @@ Changes log
  - Method Filter.getNext(Call) is now final to prevent overriding. If needed, use Chainer as base class.
  - Added ScorerList.removeAll(UniformInterface) method to remove all scorers pointing to a given handler.
  - Added Protocol.ALL constant as a protocol wildcard.
+ - Changed ClientList and ServerList into classes supported by hidden implementation classes in NRE.
+ - Added "hosts" and "localHost" properties to Container.
 
 1.0 beta 18 (2006-08-19)
 [Bugs fixed]

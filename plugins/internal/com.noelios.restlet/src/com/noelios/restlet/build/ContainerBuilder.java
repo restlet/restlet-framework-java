@@ -71,7 +71,6 @@ public class ContainerBuilder extends ComponentBuilder
     */
    public ContainerBuilder addServer(Server server)
    {
-   	server.setTarget(getNode());
       getNode().getServers().add(server);
       return this;
    }
@@ -84,7 +83,7 @@ public class ContainerBuilder extends ComponentBuilder
     */
    public ContainerBuilder addServer(Protocol protocol, int port)
    {
-      return addServer(new Server(protocol, port, getNode().getRoot()));
+   	return addServer(new Server(protocol, port, null));
    }
 
    /**
@@ -96,7 +95,7 @@ public class ContainerBuilder extends ComponentBuilder
     */
    public ContainerBuilder addServer(Protocol protocol, String address, int port)
    {
-   	return addServer(new Server(protocol, address, port, getNode().getRoot()));
+   	return addServer(new Server(protocol, address, port, null));
    }
 
    /**

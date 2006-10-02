@@ -20,7 +20,7 @@
  * Portions Copyright [yyyy] [name of copyright owner]
  */
 
-package com.noelios.restlet;
+package com.noelios.restlet.impl;
 
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -35,7 +35,7 @@ import org.restlet.data.Reference;
 import org.restlet.data.Status;
 
 /**
- * Router handler based on a URI pattern. Note that the matching is case sensitive unless some inline modifiers
+ * Router scorer based on a URI pattern. Note that the matching is case sensitive unless some inline modifiers
  * were used in the pattern using the "(?i)" inline flag.
  * @see java.util.regex.Pattern
  * @see <a href="http://javaalmanac.com/egs/java.util.regex/pkg.html">Java Almanac on the Regex package</a>
@@ -99,7 +99,7 @@ public class PatternScorer extends Scorer
       
       if(logger.isLoggable(Level.FINER))
       {
-      	logger.finer("Scoring this pattern: " + getPattern().toString() + " >> " + result);
+      	logger.finer("Call score for the \"" + getPattern().toString() + "\" URI pattern: " + result);
       }
 
       return result;

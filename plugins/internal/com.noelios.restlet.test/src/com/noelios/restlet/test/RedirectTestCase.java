@@ -77,8 +77,8 @@ public class RedirectTestCase extends TestCase
 		};
 
 		// Set the container roots
-		proxyContainer.setRoot(proxy);
-		originContainer.setRoot(trace);
+//		proxyContainer.setRoot(proxy);
+//		originContainer.setRoot(trace);
 		
 		// Create the server connectors
 		proxyContainer.getServers().add(Protocol.HTTP, 8080);
@@ -118,7 +118,7 @@ public class RedirectTestCase extends TestCase
 		Call call = new Call();
 		call.setMethod(method);
 		call.setResourceRef(uri);
-		context.handle(call);
+		context.getClient().handle(call);
 		assertNotNull(call.getOutput());
 		call.getOutput().write(System.out);
 	}

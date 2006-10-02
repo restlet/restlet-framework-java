@@ -26,9 +26,8 @@ import java.util.Enumeration;
 
 import javax.servlet.Servlet;
 
-import org.restlet.component.Container;
-
 import com.noelios.restlet.impl.component.ContainerContext;
+import com.noelios.restlet.impl.component.ContainerImpl;
 
 /**
  * Context allowing access to the container's connectors, reusing the Servlet's logging mechanism and
@@ -45,7 +44,7 @@ public class ServletContext extends ContainerContext
 	 * @param servlet The parent Servlet. 
 	 * @param container The parent container.
 	 */
-	public ServletContext(Servlet servlet, Container container)
+	public ServletContext(Servlet servlet, ContainerImpl container)
 	{
 		super(container, new ServletLogger(servlet.getServletConfig().getServletContext()));
 		this.servlet = servlet;

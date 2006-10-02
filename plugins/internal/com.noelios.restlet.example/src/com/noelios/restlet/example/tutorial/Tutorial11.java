@@ -35,7 +35,6 @@ import org.restlet.data.Protocol;
 
 import com.noelios.restlet.DirectoryFinder;
 import com.noelios.restlet.GuardFilter;
-import com.noelios.restlet.HostRouter;
 import com.noelios.restlet.LogFilter;
 import com.noelios.restlet.StatusFilter;
 
@@ -59,20 +58,20 @@ public class Tutorial11 implements Constants
 
          // Attach a log Filter to the container
          LogFilter log = new LogFilter(myContext, "com.noelios.restlet.example");
-         myContainer.setRoot(log);
+         myContainer.getLocalHost().attach("/", log);
 
          // Attach a status Filter to the log Filter
          StatusFilter status = new StatusFilter(myContext, true, "webmaster@mysite.org", "http://www.mysite.org");
          log.setNext(status);
 
-         // Create a host router matching calls to the server
-         HostRouter host = new HostRouter(myContext, 8182);
-         status.setNext(host);
+         // Create a first Router
+         Router router = new Router(myContext);
+         status.setNext(router);
 
-         // Attach a guard Filter to secure access the the chained directory Restlet
+         // Attach a guard Filter to secure access the the chained directory Finder
          GuardFilter guard = new GuardFilter(myContext, "com.noelios.restlet.example", true, ChallengeScheme.HTTP_BASIC , "Restlet tutorial", true);
          guard.getAuthorizations().put("scott", "tiger");
-         host.getScorers().add("/docs/", guard);
+         router.getScorers().add("/docs/", guard);
 
          // Create a directory Restlet able to return a deep hierarchy of Web files
          DirectoryFinder directory = new DirectoryFinder(myContext, ROOT_URI, "index.html");
@@ -80,7 +79,7 @@ public class Tutorial11 implements Constants
 
          // Create the user router
          Router user = new Router(myContext);
-         host.getScorers().add("/users/[a-z]+", user);
+         router.attach("/users/[a-z]+", user);
 
          // Create the account Restlet
          Restlet account = new Restlet()
@@ -92,7 +91,7 @@ public class Tutorial11 implements Constants
                   call.setOutput(output, MediaType.TEXT_PLAIN);
                }
             };
-         user.getScorers().add("$", account);
+         user.attach("$", account);
 
          // Create the orders Restlet
          Restlet orders = new Restlet(myContext)
@@ -105,7 +104,7 @@ public class Tutorial11 implements Constants
                   call.setOutput(output, MediaType.TEXT_PLAIN);
                }
             };
-         user.getScorers().add("/orders$", orders);
+         user.attach("/orders$", orders);
 
          // Now, let's start the container!
          myContainer.start();

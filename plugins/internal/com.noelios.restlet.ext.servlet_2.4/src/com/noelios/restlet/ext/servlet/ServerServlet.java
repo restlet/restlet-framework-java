@@ -31,9 +31,10 @@ import javax.servlet.http.HttpServletResponse;
 
 import org.restlet.Context;
 import org.restlet.Restlet;
-import org.restlet.component.Container;
+import org.restlet.component.Application;
 import org.restlet.data.Reference;
 
+import com.noelios.restlet.impl.component.ContainerImpl;
 import com.noelios.restlet.impl.connector.HttpServer;
 
 /**
@@ -47,24 +48,10 @@ import com.noelios.restlet.impl.connector.HttpServer;
  * 	&lt;display-name&gt;Server Servlet&lt;/display-name&gt;
  * 	&lt;description&gt;Servlet acting as a Restlet server connector&lt;/description&gt;
  * 
- * 	&lt;!-- Target Restlet class handling calls --&gt;
+ * 	&lt;!-- Application class handling calls --&gt;
  * 	&lt;context-param&gt;
- * 		&lt;param-name&gt;org.restlet.target.class&lt;/param-name&gt;
- * 		&lt;param-value&gt;com.noelios.restlet.test.TraceTarget&lt;/param-value&gt;
- * 	&lt;/context-param&gt;
- * 
- * 	&lt;!-- Name of the parameter that will contain the ServerServlet's context path --&gt;
- * 	&lt;!-- This context-param element is optional. If absent, no parameter is created --&gt;
- * 	&lt;context-param&gt;
- * 		&lt;param-name&gt;org.restlet.target.init.contextPath&lt;/param-name&gt;
- * 		&lt;param-value&gt;contextPath&lt;/param-value&gt;
- * 	&lt;/context-param&gt;
- * 
- * 	&lt;!-- Indicates if the "X-Forwarded-For" HTTP header should be used to get client addresses --&gt;
- * 	&lt;!-- This context-param element is optional. If absent, it defaults to "false". --&gt;
- * 	&lt;context-param&gt;
- * 		&lt;param-name&gt;useForwardedForHeader&lt;/param-name&gt;
- * 		&lt;param-value&gt;false&lt;/param-value&gt;
+ * 		&lt;param-name&gt;org.restlet.application&lt;/param-name&gt;
+ * 		&lt;param-value&gt;com.noelios.restlet.test.TraceApplication&lt;/param-value&gt;
  * 	&lt;/context-param&gt;
  * 
  * 	&lt;!-- ServerServlet class or a subclass --&gt;
@@ -213,19 +200,13 @@ public class ServerServlet extends HttpServlet
 								target = targetClass.newInstance();
 							}
 
-							// First, let's locate the closest component
-							Container container = null;
-							if (target instanceof Container)
-							{
-								// The target is probably a Container or an Application
-								container = (Container) target;
-							}
-							else if(target instanceof Restlet)
+							// First, let's locate the closest container
+							ContainerImpl container = new ContainerImpl();
+							if(target instanceof Application)
 							{
 								// The target is probably a standalone Restlet or Filter or Router
 								// Try to get its parent, even if chances to find one are low
-								container = new Container(null);
-								container.setRoot((Restlet)target);
+//								container.setRoot((Restlet)target);
 							}
 							
 							if (container != null)

@@ -26,7 +26,6 @@ import org.restlet.Context;
 import org.restlet.component.Container;
 import org.restlet.data.Protocol;
 
-import com.noelios.restlet.HostRouter;
 import com.noelios.restlet.RedirectRestlet;
 
 /**
@@ -47,14 +46,10 @@ public class Tutorial10
          // Note that the container is the call restlet.
          myContainer.getServers().add(Protocol.HTTP, 8182);
 
-         // Create a host router matching calls to the server
-         HostRouter host = new HostRouter(myContext, 8182);
-         myContainer.setRoot(host);
-
          // Create a redirect Restlet then attach it to the container
          String target = "http://www.google.com/search?q=site:mysite.org+${query('query')}";
          RedirectRestlet redirect = new RedirectRestlet(myContext, target, RedirectRestlet.MODE_CLIENT_TEMPORARY);
-         host.getScorers().add("/search", redirect);
+         myContainer.getLocalHost().attach("/search", redirect);
 
          // Now, let's start the container!
          myContainer.start();

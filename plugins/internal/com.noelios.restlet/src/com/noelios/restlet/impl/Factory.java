@@ -36,7 +36,6 @@ import java.util.logging.Level;
 import java.util.logging.Logger;
 
 import org.restlet.Call;
-import org.restlet.Context;
 import org.restlet.Router;
 import org.restlet.Scorer;
 import org.restlet.UniformInterface;
@@ -58,8 +57,8 @@ import org.restlet.data.Resource;
 import org.restlet.data.Status;
 import org.restlet.data.Tag;
 
-import com.noelios.restlet.PatternScorer;
 import com.noelios.restlet.data.StringRepresentation;
+import com.noelios.restlet.impl.component.ApplicationImpl;
 import com.noelios.restlet.impl.util.Base64;
 import com.noelios.restlet.impl.util.DateUtils;
 import com.noelios.restlet.impl.util.FormUtils;
@@ -228,12 +227,12 @@ public class Factory extends org.restlet.spi.Factory
 
    /**
     * Creates a new application using the given context.
-    * @param context The context.
+    * @param container The parent container.
     * @return The new application.
     */
-   public Application createApplication(Context context)
+   public Application createApplication(Container container)
    {
-   	return null;
+   	return new ApplicationImpl(container);
    }
 
 	/**
@@ -270,12 +269,11 @@ public class Factory extends org.restlet.spi.Factory
 
    /**
     * Creates a new container.
-    * @param root The root handler.
     * @return The new container.
     */
-   public Container createContainer(UniformInterface root)
+   public Container createContainer()
    {
-   	return new com.noelios.restlet.impl.component.ContainerImpl(root);
+   	return new com.noelios.restlet.impl.component.ContainerImpl();
    }
 
 	/**

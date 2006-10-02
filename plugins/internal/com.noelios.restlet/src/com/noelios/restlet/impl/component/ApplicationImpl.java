@@ -20,54 +20,141 @@
  * Portions Copyright [yyyy] [name of copyright owner]
  */
 
-package org.restlet.component;
+package com.noelios.restlet.impl.component;
 
 import java.util.List;
 import java.util.Map;
+import java.util.TreeMap;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 import org.restlet.Call;
+import org.restlet.Context;
 import org.restlet.UniformInterface;
+import org.restlet.component.Application;
+import org.restlet.component.Container;
 import org.restlet.data.Encoding;
 import org.restlet.data.Language;
 import org.restlet.data.MediaType;
 import org.restlet.data.Metadata;
 import org.restlet.data.Protocol;
-import org.restlet.spi.Factory;
+import org.restlet.data.Status;
 
 /**
- * Component attached to a virtual host and managed by a parent container. Applications are also guaranteed
- * to be portable to any Restlet container implementing the same level of Restlet API.  
+ * Application implementation.
  * @author Jerome Louvel (contact@noelios.com) <a href="http://www.noelios.com/">Noelios Consulting</a>
  */
-public class Application extends Component 
+public class ApplicationImpl extends Application
 {
+   /** Obtain a suitable logger. */
+   private static Logger logger = Logger.getLogger(ApplicationImpl.class.getCanonicalName());
+
+   /** The display name. */
+	private String name;
+	
+	/** The description. */
+	private String description;
+	
+	/** The author(s). */
+	private String author;
+	
+	/** The owner(s). */
+	private String owner;
+	
+	/** The default encoding for local representations. */
+	private Encoding defaultEncoding;
+	
+	/** The default language for local representations. */
+	private Language defaultLanguage;
+
+	/** The default media type for local representations. */
+	private MediaType defaultMediaType;
+	
+	/** The mappings from extension names to metadata. */
+	private Map<String, Metadata> metadataMappings;
+
+	/** The list of index names (ex: index.html). */
+	private List<String> indexNames;
+	
+	/** The list of client protocols used. */
+	private List<Protocol> clientProtocols;
+	
+	/** The list of server protocols accepted. */
+	private List<Protocol> serverProtocols;
+	
+	/** The root handler. */
+	private UniformInterface root;
+
+   /** The context. */
+	private Context context;
+
+	/** Indicates if the instance was started. */
+   private boolean started;
+	
 	/**
-	 * Constructor.
-	 * @param wrappedApplication The wrapped application. 
-	 */
-	protected Application(Application wrappedApplication)
-	{
-		super(wrappedApplication);
-	}
+    * Constructor.
+    * @param container The parent container.
+    */
+   public ApplicationImpl(Container container)
+   {
+   	super(container);
+		this.name = null;
+		this.description = null;
+		this.author = null;
+		this.owner = null;
+		this.defaultEncoding = null;
+		this.defaultLanguage = null;
+		this.defaultMediaType = null;
+		this.metadataMappings = new TreeMap<String, Metadata>();
+      this.started = false;
+   }
 
    /**
-    * Constructor.
-    * @param container The parent container.
+    * Returns the context.
+    * @return The context.
     */
-   public Application(Container container)
+   public Context getContext()
    {
-   	this(container, null);
+      return this.context;
    }
-   
+
    /**
-    * Constructor.
-    * @param container The parent container.
-    * @param root The root handler.
+    * Sets the context.
+    * @param context The context.
     */
-   public Application(Container container, UniformInterface root)
+   public void setContext(Context context)
    {
-		this(Factory.getInstance().createApplication(container));
-		setRoot(root);
+      this.context = context;
+   }
+
+   /** Start hook. */
+   public void start() throws Exception
+   {
+   	this.started = true;
+   }
+
+   /** Stop hook. */
+   public void stop() throws Exception
+   {
+      this.started = false;
+   }
+
+   /**
+    * Indicates if the Restlet is started.
+    * @return True if the Restlet is started.
+    */
+   public boolean isStarted()
+   {
+      return this.started;
+   }
+
+   /**
+    * Indicates if the Restlet is stopped.
+    * @return True if the Restlet is stopped.
+    */
+   public boolean isStopped()
+   {
+      return !this.started;
    }
 
    /**
@@ -76,34 +163,42 @@ public class Application extends Component
     */
    public void handle(Call call)
    {
-   	getWrappedApplication().handle(call);
+      if(getRoot() != null)
+      {
+   		getRoot().handle(call);
+      }
+      else
+      {
+         call.setStatus(Status.SERVER_ERROR_INTERNAL);
+         logger.log(Level.SEVERE, "No root handler defined.");
+      }
    }
    
-   /**
+	/**
 	 * Returns the author(s).
 	 * @return The author(s).
 	 */
 	public String getAuthor()
 	{
-		return getWrappedApplication().getAuthor();
+		return this.author;
 	}
-   
+	
 	/**
 	 * Returns the list of client protocols used. 
 	 * @return The list of client protocols used.
 	 */
 	public List<Protocol> getClientProtocols()
 	{
-		return getWrappedApplication().getClientProtocols();
+		return this.clientProtocols;
 	}
-	
+
 	/**
 	 * Returns the default encoding for local representations.
 	 * @return The default encoding for local representations.
 	 */
 	public Encoding getDefaultEncoding()
 	{
-		return getWrappedApplication().getDefaultEncoding();
+		return this.defaultEncoding;
 	}
 
 	/**
@@ -112,7 +207,7 @@ public class Application extends Component
 	 */
 	public Language getDefaultLanguage()
 	{
-		return getWrappedApplication().getDefaultLanguage();
+		return this.defaultLanguage;
 	}
 
 	/**
@@ -121,7 +216,7 @@ public class Application extends Component
 	 */
 	public MediaType getDefaultMediaType()
 	{
-		return getWrappedApplication().getDefaultMediaType();
+		return this.defaultMediaType;
 	}
 
 	/**
@@ -130,7 +225,7 @@ public class Application extends Component
 	 */
 	public String getDescription()
 	{
-		return getWrappedApplication().getDescription();
+		return this.description;
 	}
 
 	/**
@@ -139,7 +234,7 @@ public class Application extends Component
 	 */
 	public List<String> getIndexNames()
 	{
-		return getWrappedApplication().getIndexNames();
+		return this.indexNames;
 	}
 
 	/**
@@ -148,7 +243,7 @@ public class Application extends Component
 	 */
 	public Map<String, Metadata> getMetadataMappings()
 	{
-		return getWrappedApplication().getMetadataMappings();
+		return this.metadataMappings;
 	}
 
 	/**
@@ -157,7 +252,7 @@ public class Application extends Component
 	 */
 	public String getName()
 	{
-		return getWrappedApplication().getName();
+		return this.name;
 	}
 
 	/**
@@ -166,7 +261,7 @@ public class Application extends Component
 	 */
 	public String getOwner()
 	{
-		return getWrappedApplication().getOwner();
+		return this.owner;
 	}
 
 	/**
@@ -175,7 +270,7 @@ public class Application extends Component
 	 */
 	public UniformInterface getRoot()
 	{
-		return getWrappedApplication().getRoot();
+		return this.root;
 	}
 
 	/**
@@ -184,17 +279,8 @@ public class Application extends Component
 	 */
 	public List<Protocol> getServerProtocols()
 	{
-		return getWrappedApplication().getServerProtocols();
+		return this.serverProtocols;
 	}
-
-	/**
-    * Returns the wrapped application.
-    * @return The wrapped application.
-    */
-   protected Application getWrappedApplication()
-   {
-   	return (Application)getWrappedComponent();
-   }
 
 	/**
 	 * Indicates if a root handler is set. 
@@ -202,7 +288,7 @@ public class Application extends Component
 	 */
 	public boolean hasRoot()
 	{
-		return getWrappedApplication().hasRoot();
+		return getRoot() != null;
 	}
 
 	/**
@@ -211,7 +297,7 @@ public class Application extends Component
 	 */
 	public void setAuthor(String author)
 	{
-		getWrappedApplication().setAuthor(author);
+		this.author = author;
 	}
 
 	/**
@@ -220,7 +306,7 @@ public class Application extends Component
 	 */
 	public void setDefaultEncoding(Encoding defaultEncoding)
 	{
-		getWrappedApplication().setDefaultEncoding(defaultEncoding);
+		this.defaultEncoding = defaultEncoding;
 	}
 
 	/**
@@ -229,7 +315,7 @@ public class Application extends Component
 	 */
 	public void setDefaultLanguage(Language defaultLanguage)
 	{
-		getWrappedApplication().setDefaultLanguage(defaultLanguage);
+		this.defaultLanguage = defaultLanguage;
 	}
 
 	/**
@@ -238,7 +324,7 @@ public class Application extends Component
 	 */
 	public void setDefaultMediaType(MediaType defaultMediaType)
 	{
-		getWrappedApplication().setDefaultMediaType(defaultMediaType);
+		this.defaultMediaType = defaultMediaType;
 	}
 
 	/**
@@ -247,7 +333,7 @@ public class Application extends Component
 	 */
 	public void setDescription(String description)
 	{
-		getWrappedApplication().setDescription(description);
+		this.description = description;
 	}
 
 	/**
@@ -256,7 +342,7 @@ public class Application extends Component
 	 */
 	public void setName(String name)
 	{
-		getWrappedApplication().setName(name);
+		this.name = name;
 	}
 
    /**
@@ -265,7 +351,7 @@ public class Application extends Component
 	 */
 	public void setOwner(String owner)
 	{
-		getWrappedApplication().setOwner(owner);
+		this.owner = owner;
 	}
 
 	/**
@@ -275,6 +361,6 @@ public class Application extends Component
 	 */
 	public void setRoot(UniformInterface root)
 	{
-		getWrappedApplication().setRoot(root);
+		this.root = root;
 	}
 }

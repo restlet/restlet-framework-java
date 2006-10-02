@@ -20,40 +20,31 @@
  * Portions Copyright [yyyy] [name of copyright owner]
  */
 
-package org.restlet.component;
+package com.noelios.restlet.impl.component;
 
-import java.util.List;
+import java.util.Arrays;
 
-import org.restlet.connector.Server;
+import org.restlet.component.ClientList;
+import org.restlet.connector.Client;
 import org.restlet.data.Protocol;
+import org.restlet.data.WrapperList;
+import org.restlet.spi.Factory;
 
 /**
- * Modifiable list of server connectors.
+ * Modifiable list of client connectors.
  * @author Jerome Louvel (contact@noelios.com) <a href="http://www.noelios.com/">Noelios Consulting</a>
  */
-public interface ServerList extends List<Server>
+public class ClientListImpl extends WrapperList<Client> implements ClientList 
 {
 	/**
-	 * Adds a new server connector in the map supporting the given protocol.
+	 * Adds a new client connector in the map supporting the given protocol.
 	 * @param protocol The connector protocol.
-	 * @return The added server.
+	 * @return The added client.
 	 */
-	public Server add(Protocol protocol);
-
-	/**
-	 * Adds a new server connector in the map supporting the given protocol on the specified port.
-	 * @param protocol The connector protocol.
-	 * @param port The listening port.
-	 * @return The added server.
-	 */
-	public Server add(Protocol protocol, int port);
-
-	/**
-	 * Adds a new server connector in the map supporting the given protocol on the specified IP address and port.
-	 * @param protocol The connector protocol.
-	 * @param address The optional listening IP address (useful if multiple IP addresses available).
-	 * @param port The listening port.
-	 * @return The added server.
-	 */
-	public Server add(Protocol protocol, String address, int port);
+	public Client add(Protocol protocol)
+	{
+		Client result = Factory.getInstance().createClient(Arrays.asList(protocol)); 
+		add(result);
+		return result;
+	}
 }

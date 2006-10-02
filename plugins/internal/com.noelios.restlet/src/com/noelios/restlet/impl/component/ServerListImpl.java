@@ -20,25 +20,66 @@
  * Portions Copyright [yyyy] [name of copyright owner]
  */
 
-package org.restlet.component;
+package com.noelios.restlet.impl.component;
 
-import java.util.List;
+import java.util.Arrays;
 
+import org.restlet.component.ServerList;
 import org.restlet.connector.Server;
 import org.restlet.data.Protocol;
+import org.restlet.data.WrapperList;
+import org.restlet.spi.Factory;
 
 /**
- * Modifiable list of server connectors.
+ * Servers list implementation.
  * @author Jerome Louvel (contact@noelios.com) <a href="http://www.noelios.com/">Noelios Consulting</a>
  */
-public interface ServerList extends List<Server>
+public class ServerListImpl extends WrapperList<Server> implements ServerList
 {
+	/** The parent container. */
+	private ContainerImpl container;
+	
+	/**
+	 * Constructor.
+	 * @param container The parent container.
+	 */
+	public ServerListImpl(ContainerImpl container)
+	{
+		this.container = container;
+	}
+	
+	/**
+	 * Returns the parent container.
+	 * @return The parent container.
+	 */
+	private ContainerImpl getContainer()
+	{
+		return this.container;
+	}
+
+
+	/**
+	 * Adds a server at the end of the list.
+	 * @return True (as per the general contract of the Collection.add method).
+	 */
+	public boolean add(Server server)
+	{
+		server.setTarget(getContainer().getHostRouter());
+		return super.add(server);
+	}
+	
 	/**
 	 * Adds a new server connector in the map supporting the given protocol.
 	 * @param protocol The connector protocol.
 	 * @return The added server.
 	 */
-	public Server add(Protocol protocol);
+	public Server add(Protocol protocol)
+	{
+		Server result = Factory.getInstance().createServer(Arrays.asList(protocol), null,
+				protocol.getDefaultPort());
+		add(result);
+		return result;
+	}
 
 	/**
 	 * Adds a new server connector in the map supporting the given protocol on the specified port.
@@ -46,7 +87,13 @@ public interface ServerList extends List<Server>
 	 * @param port The listening port.
 	 * @return The added server.
 	 */
-	public Server add(Protocol protocol, int port);
+	public Server add(Protocol protocol, int port)
+	{
+		Server result = Factory.getInstance().createServer(Arrays.asList(protocol), null,
+				port);
+		add(result);
+		return result;
+	}
 
 	/**
 	 * Adds a new server connector in the map supporting the given protocol on the specified IP address and port.
@@ -55,5 +102,11 @@ public interface ServerList extends List<Server>
 	 * @param port The listening port.
 	 * @return The added server.
 	 */
-	public Server add(Protocol protocol, String address, int port);
+	public Server add(Protocol protocol, String address, int port)
+	{
+		Server result = Factory.getInstance().createServer(Arrays.asList(protocol), address, port);
+		add(result);
+		return result;
+	}
+
 }

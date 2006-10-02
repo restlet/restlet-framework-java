@@ -31,9 +31,6 @@ import org.restlet.data.MediaType;
 import org.restlet.data.Parameter;
 import org.restlet.data.Protocol;
 
-import com.noelios.restlet.HostRouter;
-import com.noelios.restlet.data.StringRepresentation;
-
 /**
  * Simple HTTP server invoked by the simple client.
  * @author Jerome Louvel (contact@noelios.com) <a href="http://www.noelios.com/">Noelios Consulting</a>
@@ -52,10 +49,6 @@ public class SimpleServer
          // connector to the Restlet container. Note that the container
          // is the call restlet.
          myContainer.getServers().add(Protocol.HTTP, 9876);
-
-         // Attach a host router as the root handler
-         HostRouter host = new HostRouter(myContext, 9876);
-         myContainer.setRoot(host);
 
          // Prepare and attach a test Restlet
          Restlet testRestlet = new Restlet(myContext)
@@ -80,10 +73,11 @@ public class SimpleServer
                   System.out.println(sb.toString());
                }
 
-               call.setOutput(new StringRepresentation(sb.toString(), MediaType.TEXT_PLAIN));
+               call.setOutput(sb.toString(), MediaType.TEXT_PLAIN);
             }
          };
-         host.getScorers().add("/test", testRestlet);
+
+         myContainer.getLocalHost().attach("/test", testRestlet);
 
          // Now, start the container
          myContainer.start();

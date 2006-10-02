@@ -29,7 +29,6 @@ import org.restlet.data.Protocol;
 
 import com.noelios.restlet.DirectoryFinder;
 import com.noelios.restlet.GuardFilter;
-import com.noelios.restlet.HostRouter;
 import com.noelios.restlet.LogFilter;
 import com.noelios.restlet.StatusFilter;
 
@@ -53,7 +52,7 @@ public class Tutorial09a implements Constants
 
          // Attach a log Filter to the container
          LogFilter log = new LogFilter(myContext, "com.noelios.restlet.example");
-         myContainer.setRoot(log);
+         myContainer.getLocalHost().attach("/", log);
 
          // Attach a status Filter to the log Filter
          StatusFilter status = new StatusFilter(myContext, true, "webmaster@mysite.org", "http://www.mysite.org");
@@ -64,15 +63,9 @@ public class Tutorial09a implements Constants
          guard.getAuthorizations().put("scott", "tiger");
          status.setNext(guard);
 
-         // Create a host router matching calls to the server
-         HostRouter host = new HostRouter(myContext, 8182);
-         guard.setNext(host);
-
          // Create a directory Restlet able to return a deep hierarchy of Web files
          DirectoryFinder directory = new DirectoryFinder(myContext, ROOT_URI, "index.html");
-
-         // Then attach the directory Restlet to the host router.
-         host.getScorers().add("/", directory);
+         guard.setNext(directory);
 
          // Now, let's start the container!
          myContainer.start();

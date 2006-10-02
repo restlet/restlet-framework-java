@@ -20,23 +20,43 @@
  * Portions Copyright [yyyy] [name of copyright owner]
  */
 
-package org.restlet.component;
+package com.noelios.restlet.impl.component;
 
-import java.util.List;
-
-import org.restlet.connector.Client;
-import org.restlet.data.Protocol;
+import org.restlet.component.Application;
 
 /**
- * Modifiable list of client connectors.
+ * Context based on a parent container's context but dedicated to an application. This is important to allow
+ * contextual access to application's resources.
  * @author Jerome Louvel (contact@noelios.com) <a href="http://www.noelios.com/">Noelios Consulting</a>
  */
-public interface ClientList extends List<Client>
+public class ApplicationContext
 {
+	/** The parent application. */
+	private Application application;
+	
 	/**
-	 * Adds a new client connector in the map supporting the given protocol.
-	 * @param protocol The connector protocol.
-	 * @return The added client.
+	 * Constructor.
+	 * @param application The parent application.
 	 */
-	public Client add(Protocol protocol);
+	public ApplicationContext(Application application)
+	{
+		this.application = application;
+	}
+
+	/**
+	 * @return the application
+	 */
+	public Application getApplication()
+	{
+		return application;
+	}
+
+	/**
+	 * @param application the application to set
+	 */
+	public void setApplication(Application application)
+	{
+		this.application = application;
+	}
+	
 }

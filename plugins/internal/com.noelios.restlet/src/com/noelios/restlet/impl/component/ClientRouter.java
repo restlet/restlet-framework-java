@@ -20,39 +20,47 @@
  * Portions Copyright [yyyy] [name of copyright owner]
  */
 
-package com.noelios.restlet.example.tutorial;
+package com.noelios.restlet.impl.component;
 
+import org.restlet.Router;
 import org.restlet.component.Container;
-import org.restlet.data.Protocol;
-
-import com.noelios.restlet.DirectoryFinder;
+import org.restlet.connector.Client;
 
 /**
- * Serving static files.
+ * Router that collects calls from all applications and dispatches them to the appropriate
+ * client connectors.
  * @author Jerome Louvel (contact@noelios.com) <a href="http://www.noelios.com/">Noelios Consulting</a>
  */
-public class Tutorial06 implements Constants
+public class ClientRouter extends Router
 {
-   public static void main(String[] args)
-   {
-      try
-      {
-         // Create a new Restlet container and add a HTTP server connector to it
-      	Container myContainer = new Container();
-         myContainer.getServers().add(Protocol.HTTP, 8182);
+	/** The parent container. */
+	private Container container;
+	
+   /**
+    * Constructor.
+    * @param container The parent container.
+    */
+	protected ClientRouter(Container container)
+	{
+		super(container.getContext());
+		this.container = container;
+	}
+	
+   /** Starts the Restlet. */
+	public void start()
+	{
+		for(Client client : getContainer().getClients())
+		{
+			getScorers().add(new ClientScorer(this, client));
+		}
+	}
 
-         // Create a DirectoryFinder able to return a deep hierarchy of Web files
-         // (HTML pages, CSS stylesheets or GIF images) from a local directory.
-         DirectoryFinder directory = new DirectoryFinder(myContainer.getContext(), ROOT_URI, "index.html");
-         myContainer.getLocalHost().attach("/", directory);
-
-         // Now, let's start the container!
-         myContainer.start();
-      }
-      catch(Exception e)
-      {
-         e.printStackTrace();
-      }
-   }
-
+	/**
+	 * Returns the parent container.
+	 * @return The parent container.
+	 */
+	private Container getContainer()
+	{
+		return container;
+	}
 }

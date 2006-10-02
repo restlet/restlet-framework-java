@@ -29,11 +29,11 @@ import org.restlet.Router;
 import org.restlet.component.Application;
 import org.restlet.component.Component;
 import org.restlet.component.Container;
+import org.restlet.component.VirtualHost;
 
 import com.noelios.restlet.DirectoryFinder;
 import com.noelios.restlet.ExtractFilter;
 import com.noelios.restlet.GuardFilter;
-import com.noelios.restlet.HostRouter;
 
 /**
  * Factory for builders.
@@ -56,7 +56,7 @@ public class BuilderFactory
 	 */
 	public ApplicationBuilder createApplicationBuilder(Context context)
 	{
-		return new ApplicationBuilder(context);
+		return new ApplicationBuilder((Container)null); //context);
 	}
 
 	/**
@@ -136,9 +136,10 @@ public class BuilderFactory
 	 * @param parent The parent builder.
 	 * @param node The wrapped node.
 	 */
-	public HostRouterBuilder createHostRouterBuilder(ObjectBuilder parent, HostRouter node)
+	public HostRouterBuilder createHostRouterBuilder(ObjectBuilder parent, VirtualHost node)
 	{
-		return new HostRouterBuilder(parent, node);
+//		return new HostRouterBuilder(parent, node);
+   	return null;
 	}
 
 	/**

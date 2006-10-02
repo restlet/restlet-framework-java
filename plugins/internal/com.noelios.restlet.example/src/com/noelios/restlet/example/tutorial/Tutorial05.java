@@ -23,16 +23,13 @@
 package com.noelios.restlet.example.tutorial;
 
 import org.restlet.Call;
-import org.restlet.Context;
 import org.restlet.Restlet;
 import org.restlet.component.Container;
 import org.restlet.data.MediaType;
 import org.restlet.data.Protocol;
 
-import com.noelios.restlet.HostRouter;
-
 /**
- * Restlets servers and containers.
+ * Restlets containers.
  * @author Jerome Louvel (contact@noelios.com) <a href="http://www.noelios.com/">Noelios Consulting</a>
  */
 public class Tutorial05
@@ -41,20 +38,12 @@ public class Tutorial05
    {
       try
       {
-         // Create a new Restlet container
+         // Create a new Restlet container and add a HTTP server connector to it
       	Container myContainer = new Container();
-      	Context myContext = myContainer.getContext();
-
-         // Create the HTTP server connector, then add it to the container. 
-         // Note that the container will act as the initial Restlet call's handler.
          myContainer.getServers().add(Protocol.HTTP, 8182);
 
-         // Create a host router matching calls to the server
-         HostRouter host = new HostRouter(myContext, 8182);
-         myContainer.setRoot(host);
-
          // Create a new Restlet that will display some path information.
-         Restlet myRestlet = new Restlet(myContext)
+         Restlet myRestlet = new Restlet()
             {
                public void handleGet(Call call)
                {
@@ -67,8 +56,8 @@ public class Tutorial05
                }
             };
 
-         // Then attach it to the host router.
-         host.getScorers().add("/trace", myRestlet);
+         // Then attach it to the local host
+         myContainer.getLocalHost().attach("/trace", myRestlet);
 
          // Now, let's start the container!
          // Note that the HTTP server connector is also automatically started.

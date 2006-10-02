@@ -22,22 +22,37 @@
 
 package com.noelios.restlet.impl.component;
 
-import org.restlet.component.Component;
+import org.restlet.Context;
+import org.restlet.component.VirtualHost;
+import org.restlet.data.Protocol;
 
 /**
- * 
+ * Virtual host allowing all requests to localhost names or addresses.  
  * @author Jerome Louvel (contact@noelios.com) <a href="http://www.noelios.com/">Noelios Consulting</a>
  */
-public class VirtualServer extends Component
+public class LocalHost extends VirtualHost
 {
 	/**
-	 * Constructor for wrappers.
-	 * @param wrappedComponent The wrapped component.
+	 * Constructor.
+	 * @param context The context.
 	 */
-	protected VirtualServer(Component wrappedComponent)
+	public LocalHost(Context context)
 	{
-		super(null);
+		super(context);
+
+		// Add allowed IP addresses
+		getAllowedAddresses().add("127.0.0.1");
+		getAllowedAddresses().add(getLocalHostAddress());
+
+		// Add allowed domain names
+		getAllowedNames().add("localhost");
+		getAllowedNames().add("127.0.0.1");
+		getAllowedNames().add(getLocalHostName());
+
+		// Add allowed port numbers (all by default)
+		getAllowedPorts().add(ALL_PORTS);
+
+		// Add allowed protocols (all by default)
+		getAllowedProtocols().add(Protocol.ALL);
 	}
-	
-	
 }
