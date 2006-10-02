@@ -80,26 +80,26 @@ public class ScorerList extends WrapperList<Scorer>
 	/**
 	 * Creates then adds a scorer at the end of the list.
 	 * Adds a target option based on an URI pattern at the end of the list of options. 
-	 * @param pattern The URI pattern used to map calls (see {@link java.util.regex.Pattern} for the syntax).
+	 * @param uriPattern The URI pattern used to map calls (see {@link java.util.regex.Pattern} for the syntax).
 	 * @param target The target handler to attach.
 	 * @see java.util.regex.Pattern
 	 * @return True (as per the general contract of the Collection.add method).
 	 */
-	public boolean add(String pattern, UniformInterface target)
+	public boolean add(String uriPattern, UniformInterface target)
 	{
-		return add(Factory.getInstance().createScorer(this.router, pattern, target));
+		return add(Factory.getInstance().createScorer(this.router, uriPattern, target));
 	}
 
 	/**
 	 * Creates then adds a scorer based on an URI pattern at a specific position.
-	 * @param pattern The URI pattern used to map calls (see {@link java.util.regex.Pattern} for the syntax).
+	 * @param uriPattern The URI pattern used to map calls (see {@link java.util.regex.Pattern} for the syntax).
 	 * @param target The target handler to attach.
 	 * @param index The insertion position in the list of attachments.
 	 * @see java.util.regex.Pattern
 	 */
-	public void add(String pattern, UniformInterface target, int index)
+	public void add(String uriPattern, UniformInterface target, int index)
 	{
-		add(index, Factory.getInstance().createScorer(this.router, pattern, target));
+		add(index, Factory.getInstance().createScorer(this.router, uriPattern, target));
 	}
 
 	/**
@@ -206,6 +206,18 @@ public class ScorerList extends WrapperList<Scorer>
 
 		// No match found
 		return null;
+	}
+	
+	/**
+	 * Removes all scorers routing to a given target.
+	 * @param target The target handler to detach.
+	 */
+	public void removeAll(UniformInterface target)
+	{
+		for(int i = size() - 1; i >= 0; i--)
+		{
+			if(get(i).getNext() == target) remove(i); 
+		}
 	}
 
 	/**

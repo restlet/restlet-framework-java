@@ -23,7 +23,7 @@
 package org.restlet;
 
 /**
- * Chainer to an attached Restlet allowing some filtering. The purpose is to do some pre-processing or 
+ * Chainer to an attached handler that filters calls. The purpose is to do some pre-processing or 
  * post-processing on the calls going through it before or after they are actually handled by an attached 
  * Restlet. Note that during this processing, the call's context path and resource path are not expected 
  * to be modified. Also note that you can attach and detach targets while handling incoming calls as the filter is ensured to 
@@ -69,7 +69,7 @@ public class Filter extends Chainer
 	 * @param call The current call.
 	 * @return The next handler if available or null.
 	 */
-	public UniformInterface getNext(Call call)
+	public final UniformInterface getNext(Call call)
 	{
 		return getNext();
 	}

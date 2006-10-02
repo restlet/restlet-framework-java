@@ -31,7 +31,8 @@ import org.restlet.data.Representation;
 import org.restlet.spi.Factory;
 
 /**
- * Generic client connector supporting multiples protocols.
+ * Generic client connector. It internally uses one of the available connectors registered with the current
+ * Restlet implementation.
  * @author Jerome Louvel (contact@noelios.com) <a href="http://www.noelios.com/">Noelios Consulting</a>
  */
 public class Client extends Connector implements ClientInterface

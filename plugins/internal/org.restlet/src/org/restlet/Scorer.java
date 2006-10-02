@@ -23,7 +23,7 @@
 package org.restlet;
 
 /**
- * Filter scoring the affinity of calls with an attached Restlet. The score is used by an associated 
+ * Filter scoring the affinity of calls with an attached handler. The score is used by an associated 
  * Router in order to determine the most appropriate Restlet for a given call. 
  * @author Jerome Louvel (contact@noelios.com) <a href="http://www.noelios.com/">Noelios Consulting</a>
  */

@@ -126,7 +126,27 @@ public class Router extends Chainer
       this.maxAttempts = 1;
       this.retryDelay = 500L;
    }
-
+	
+	/**
+	 * Attaches a target to this router based on a given URI pattern. A new scorer will be added routing
+	 * to the target when calls with a URI matching the pattern will be received.
+	 * @param target The target handler to attach.
+	 */
+	public void attach(String uriPattern, UniformInterface target)
+	{
+		getScorers().add(uriPattern, target);
+	}
+	
+	/**
+	 * Detaches the target from this router. All scorers routing to this target handler are removed
+	 * from the list of scorers.
+	 * @param target The target handler to detach.
+	 */
+	public void detach(UniformInterface target)
+	{
+		getScorers().removeAll(target);
+	}
+	
 	/**
 	 * Returns the next handler if available.
 	 * @param call The current call.

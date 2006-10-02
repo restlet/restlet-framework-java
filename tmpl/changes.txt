@@ -81,7 +81,11 @@ Changes log
  - Refactored the parsing/construction of the target resource reference to handle both relative and absolute URIs.
  - Improved robustness of Reference when handling relative URIs.
  - Added a "javadoc-hide" property to "build.properties" to hide the Javadocs of implementation packages (true by default).
- 
+ - Added shortcut attach/detach methods to Router, equivalent to getScorers().add()/removeAll().
+ - Method Filter.getNext(Call) is now final to prevent overriding. If needed, use Chainer as base class.
+ - Added ScorerList.removeAll(UniformInterface) method to remove all scorers pointing to a given handler.
+ - Added Protocol.ALL constant as a protocol wildcard.
+
 1.0 beta 18 (2006-08-19)
 [Bugs fixed]
  - Status descriptions are now sent back to Jetty 6 for error statuses. Reported by AJ Barnes.

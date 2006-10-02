@@ -29,6 +29,10 @@ package org.restlet.data;
  */
 public class Protocol extends Metadata
 {
+	/** All protocols wildcard. */
+	public static final Protocol ALL = new Protocol("all", "ALL",
+			"Wildcard for all protocols", -1);
+
 	/** AJP 1.3 protocol to communicate with Apache HTTP server or Microsoft IIS. */
 	public static final Protocol AJP = new Protocol("ajp", "AJP",
 			"Apache Jakarta Protocol", 8009);
