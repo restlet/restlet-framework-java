@@ -61,7 +61,7 @@ public class RedirectTestCase extends TestCase
 				RedirectRestlet.MODE_CONNECTOR);
 
 		// Create a new Restlet that will display some path information.
-		Restlet trace = new Restlet(originContainer.getContext())
+		Restlet trace = new Restlet()
 		{
 			public void handle(Call call)
 			{
@@ -77,8 +77,8 @@ public class RedirectTestCase extends TestCase
 		};
 
 		// Set the container roots
-//		proxyContainer.setRoot(proxy);
-//		originContainer.setRoot(trace);
+		proxyContainer.getLocalHost().attach("", proxy);
+		originContainer.getLocalHost().attach("", trace);
 		
 		// Create the server connectors
 		proxyContainer.getServers().add(Protocol.HTTP, 8080);
