@@ -20,7 +20,12 @@
  * Portions Copyright [yyyy] [name of copyright owner]
  */
 
-package org.restlet;
+package org.restlet.util;
+
+import org.restlet.Context;
+import org.restlet.Request;
+import org.restlet.Response;
+import org.restlet.Restlet;
 
 /**
  * Wrapper used to enrich a Restlet with additional state or logic.
@@ -50,51 +55,62 @@ public class WrapperRestlet extends Restlet
 		return this.wrappedRestlet;
 	}
 
-	/**
-	 * Returns the context.
-	 * @return The context.
-	 */
-	public Context getContext()
-	{
-		return this.wrappedRestlet.getContext();
-	}
 
-	/** Starts the Restlet. */
-	public void start() throws Exception
-	{
-		this.wrappedRestlet.start();
-	}
+   /**
+    * Returns the context.
+    * @return The context.
+    */
+   public Context getContext()
+   {
+      return getWrappedRestlet().getContext();
+   }
 
-	/**
-	 * Indicates if the Restlet is started.
-	 * @return True if the Restlet is started.
-	 */
-	public boolean isStarted()
-	{
-		return this.wrappedRestlet.isStarted();
-	}
+   /**
+    * Sets the context.
+    * @param context The context.
+    */
+   public void setContext(Context context)
+   {
+   	getWrappedRestlet().setContext(context);
+   }
 
-	/**
-	 * Handles a call.
-	 * @param call The call to handle.
-	 */
-	public void handle(Call call)
-	{
-		this.wrappedRestlet.handle(call);
-	}
+   /**
+    * Handles a call.
+    * @param request The request to handle.
+    * @param response The response to update.
+    */
+	public void handle(Request request, Response response)
+   {
+		getWrappedRestlet().handle(request, response);
+   }
+   
+   /** Starts the Restlet. */
+   public void start() throws Exception
+   {
+   	getWrappedRestlet().start();
+   }
 
-	/** Stops the Restlet. */
-	public void stop() throws Exception
-	{
-		this.wrappedRestlet.stop();
-	}
+   /** Stops the Restlet. */
+   public void stop() throws Exception
+   {
+   	getWrappedRestlet().stop();
+   }
 
-	/**
-	 * Indicates if the Restlet is stopped.
-	 * @return True if the Restlet is stopped.
-	 */
-	public boolean isStopped()
-	{
-		return this.wrappedRestlet.isStopped();
-	}
+   /**
+    * Indicates if the Restlet is started.
+    * @return True if the Restlet is started.
+    */
+   public boolean isStarted()
+   {
+      return getWrappedRestlet().isStarted();
+   }
+
+   /**
+    * Indicates if the Restlet is stopped.
+    * @return True if the Restlet is stopped.
+    */
+   public boolean isStopped()
+   {
+      return getWrappedRestlet().isStopped();
+   }
 }

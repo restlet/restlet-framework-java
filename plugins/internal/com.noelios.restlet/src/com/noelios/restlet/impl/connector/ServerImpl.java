@@ -25,8 +25,9 @@ package com.noelios.restlet.impl.connector;
 import java.util.ArrayList;
 import java.util.List;
 
-import org.restlet.Call;
 import org.restlet.Context;
+import org.restlet.Request;
+import org.restlet.Response;
 import org.restlet.UniformInterface;
 import org.restlet.connector.Server;
 import org.restlet.data.Protocol;
@@ -152,17 +153,18 @@ public class ServerImpl extends Server
    /**
     * Handles a call.<br/>
     * The default behavior is to ask the target Restlet to handle the call.
-    * @param call The call to handle.
+    * @param request The request to handle.
+    * @param response The response to update.
     */
-   public void handle(Call call)
+   public void handle(Request request, Response response)
    {
    	if(getTarget() != null) 
    	{
-   		getTarget().handle(call);
+   		getTarget().handle(request, response);
    	}
    	else
    	{
-   		call.setStatus(Status.SERVER_ERROR_INTERNAL);
+   		response.setStatus(Status.SERVER_ERROR_INTERNAL);
    		getContext().getLogger().warning("Unable to find a chained Restlet for the Server connector.");
    	}
    }

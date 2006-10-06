@@ -24,7 +24,8 @@ package org.restlet.component;
 
 import java.util.List;
 
-import org.restlet.Call;
+import org.restlet.Request;
+import org.restlet.Response;
 import org.restlet.spi.Factory;
 
 /**
@@ -98,12 +99,13 @@ public class Container extends Component
 	}
 	
    /**
-    * Handles a direct call.
-    * @param call The call to handle.
+    * Handles a request.
+    * @param request The request to handle.
+    * @param response The response to update.
     */
-   public void handle(Call call)
+	public void handle(Request request, Response response)
    {
-		getWrappedContainer().handle(call);
+		getWrappedContainer().handle(request, response);
    }
 
    /**

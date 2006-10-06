@@ -35,7 +35,8 @@ import java.util.List;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
-import org.restlet.Call;
+import org.restlet.Request;
+import org.restlet.Response;
 import org.restlet.Router;
 import org.restlet.Scorer;
 import org.restlet.UniformInterface;
@@ -631,29 +632,31 @@ public class Factory extends org.restlet.spi.Factory
 	 * Sets the best representation of a given resource according to the client preferences.<br/>
 	 * If no representation is found, sets the status to "Not found".<br/>
 	 * If no acceptable representation is available, sets the status to "Not acceptable".<br/>
+    * @param request The request containing the client preferences.
+    * @param response The response to update with the best output.
 	 * @param resource The resource for which the best representation needs to be set.
 	 * @param fallbackLanguage The language to use if no preference matches.
 	 * @see <a href="http://httpd.apache.org/docs/2.2/en/content-negotiation.html#algorithm">Apache content negotiation algorithm</a>
 	 */
-	public void setOutput(Call call, Resource resource, Language fallbackLanguage)
+	public void setOutput(Request request, Response response, Resource resource, Language fallbackLanguage)
 	{
 		List<Representation> variants = resource.getVariants();
 
 		if ((variants == null) || (variants.size() < 1))
 		{
 			// Resource not found
-			call.setStatus(Status.CLIENT_ERROR_NOT_FOUND);
+			response.setStatus(Status.CLIENT_ERROR_NOT_FOUND);
 		}
 		else
 		{
 			// Compute the best variant
-			Representation bestVariant = call.getClient().getPreferredVariant(variants,
+			Representation bestVariant = request.getClient().getPreferredVariant(variants,
 					fallbackLanguage);
 
 			if (bestVariant == null)
 			{
 				// No variant was found matching the client preferences
-				call.setStatus(Status.CLIENT_ERROR_NOT_ACCEPTABLE);
+				response.setStatus(Status.CLIENT_ERROR_NOT_ACCEPTABLE);
 			}
 			else
 			{
@@ -661,8 +664,8 @@ public class Factory extends org.restlet.spi.Factory
 				boolean send = true;
 
 				// Check the tag conditions 
-				if ((call.getCondition().getNoneMatch() != null)
-						&& (call.getCondition().getNoneMatch().size() > 0))
+				if ((request.getCondition().getNoneMatch() != null)
+						&& (request.getCondition().getNoneMatch().size() > 0))
 				{
 					boolean matched = false;
 
@@ -671,7 +674,7 @@ public class Factory extends org.restlet.spi.Factory
 					{
 						// Check if it matches one of the representations already cached by the client
 						Tag tag;
-						for (Iterator<Tag> iter = call.getCondition().getNoneMatch().iterator(); !matched
+						for (Iterator<Tag> iter = request.getCondition().getNoneMatch().iterator(); !matched
 								&& iter.hasNext();)
 						{
 							tag = iter.next();
@@ -684,7 +687,7 @@ public class Factory extends org.restlet.spi.Factory
 				else
 				{
 					// Was the representation modified since the last client call?
-					Date modifiedSince = call.getCondition().getModifiedSince();
+					Date modifiedSince = request.getCondition().getModifiedSince();
 					send = ((modifiedSince == null)
 							|| (bestVariant.getModificationDate() == null) || DateUtils.after(
 							modifiedSince, bestVariant.getModificationDate()));
@@ -693,13 +696,13 @@ public class Factory extends org.restlet.spi.Factory
 				if (send)
 				{
 					// Send the best representation as the call output
-					call.setOutput(bestVariant);
-					call.setStatus(Status.SUCCESS_OK);
+					response.setOutput(bestVariant);
+					response.setStatus(Status.SUCCESS_OK);
 				}
 				else
 				{
 					// Indicates to the client that he already has the best representation 
-					call.setStatus(Status.REDIRECTION_NOT_MODIFIED);
+					response.setStatus(Status.REDIRECTION_NOT_MODIFIED);
 				}
 			}
 		}

@@ -23,6 +23,7 @@
 package org.restlet;
 
 import org.restlet.data.Language;
+import org.restlet.data.Method;
 import org.restlet.data.Resource;
 import org.restlet.data.Status;
 
@@ -32,7 +33,7 @@ import org.restlet.data.Status;
  * the required method on it. 
  * @author Jerome Louvel (contact@noelios.com) <a href="http://www.noelios.com/">Noelios Consulting</a>
  */
-public class Finder extends Restlet
+public abstract class Finder extends Restlet
 {
 	/** The language to use if content negotiation fails. */
 	private Language fallbackLanguage;
@@ -56,102 +57,150 @@ public class Finder extends Restlet
 
 	/**
 	 * Finds the target Resource if available.
-	 * @param call The current call.
+    * @param request The request to handle.
+    * @param response The response to update.
 	 * @return The target resource if available or null.
 	 */
-	public Resource findTarget(Call call)
-	{
-		return null;
-	}
+	public abstract Resource findTarget(Request request, Response response);
 
 	/**
 	 * Handles a GET call by automatically returning the best output available from the target resource (as provided
 	 * by the 'findTarget' method). The content negotiation is based on the client's preferences available in the 
 	 * handled call.
-	 * @param call The call to handle.
+    * @param request The request to handle.
+    * @param response The response to update.
 	 */
-	protected void handleGet(Call call)
+	protected void handleGet(Request request, Response response)
 	{
-		call.setOutput(findTarget(call), getFallbackLanguage());
-	}
+		Resource target = findTarget(request, response);
 
+		if (target != null)
+		{
+			if(target.allowGet())
+			{
+				response.setOutput(target, getFallbackLanguage());
+			}
+			else
+			{
+				response.setStatus(Status.CLIENT_ERROR_METHOD_NOT_ALLOWED);
+			}
+
+			setAllowedMethods(target, response);
+		}
+		else
+		{
+			response.setStatus(Status.CLIENT_ERROR_NOT_FOUND);
+		}
+	}
+	
 	/**
 	 * Handles a HEAD call, using a logic similat to the handleGet method.
-	 * @param call The call to handle.
+    * @param request The request to handle.
+    * @param response The response to update.
 	 */
-	protected void handleHead(Call call)
+	protected void handleHead(Request request, Response response)
 	{
-		handleGet(call);
+		handleGet(request, response);
 	}
 
 	/**
 	 * Handles a DELETE call invoking the 'delete' method of the target resource (as provided by the 'findTarget' 
 	 * method).
-	 * @param call The call to handle.
+    * @param request The request to handle.
+    * @param response The response to update.
 	 */
-	protected void handleDelete(Call call)
+	protected void handleDelete(Request request, Response response)
 	{
-		Resource target = findTarget(call);
+		Resource target = findTarget(request, response);
 
 		if (target != null)
 		{
-			call.setStatus(target.delete().getStatus());
+			if(target.allowDelete())
+			{
+				response.setStatus(target.delete().getStatus());
+			}
+			else
+			{
+				response.setStatus(Status.CLIENT_ERROR_METHOD_NOT_ALLOWED);
+			}
+
+			setAllowedMethods(target, response);
 		}
 		else
 		{
-			call.setStatus(Status.SERVER_ERROR_NOT_IMPLEMENTED);
+			response.setStatus(Status.CLIENT_ERROR_NOT_FOUND);
 		}
 	}
 
 	/**
 	 * Handles a POST call invoking the 'post' method of the target resource (as provided by the 'findTarget' method).
-	 * @param call The call to handle.
+    * @param request The request to handle.
+    * @param response The response to update.
 	 */
-	protected void handlePost(Call call)
+	protected void handlePost(Request request, Response response)
 	{
-		Resource target = findTarget(call);
+		Resource target = findTarget(request, response);
 
 		if (target != null)
 		{
-			if (call.getInput() != null)
+			if(target.allowPost())
 			{
-				call.setStatus(target.post(call.getInput()).getStatus());
+				if (request.isInputAvailable())
+				{
+					response.setStatus(target.post(request.getInput()).getStatus());
+				}
+				else
+				{
+					response.setStatus(new Status(Status.CLIENT_ERROR_NOT_ACCEPTABLE,
+					"Missing input representation"));
+				}
 			}
 			else
 			{
-				call.setStatus(new Status(Status.CLIENT_ERROR_NOT_ACCEPTABLE,
-						"Missing input representation"));
+				response.setStatus(Status.CLIENT_ERROR_METHOD_NOT_ALLOWED);
 			}
+
+			setAllowedMethods(target, response);
 		}
 		else
 		{
-			call.setStatus(Status.SERVER_ERROR_NOT_IMPLEMENTED);
+			response.setStatus(Status.CLIENT_ERROR_NOT_FOUND);
 		}
 	}
 
 	/**
 	 * Handles a PUT call invoking the 'put' method of the target resource (as provided by the 'findTarget' method).
-	 * @param call The call to handle.
+    * @param request The request to handle.
+    * @param response The response to update.
 	 */
-	protected void handlePut(Call call)
+	protected void handlePut(Request request, Response response)
 	{
-		Resource target = findTarget(call);
+		Resource target = findTarget(request, response);
 
 		if (target != null)
 		{
-			if (call.getInput() != null)
+			if(target.allowPut())
 			{
-				call.setStatus(target.put(call.getInput()).getStatus());
+				if (request.isInputAvailable())
+				{
+					response.setStatus(target.put(request.getInput()).getStatus());
+				}
+				else
+				{
+					response.setStatus(new Status(Status.CLIENT_ERROR_NOT_ACCEPTABLE,
+							"Missing input representation"));
+				}
 			}
 			else
 			{
-				call.setStatus(new Status(Status.CLIENT_ERROR_NOT_ACCEPTABLE,
-						"Missing input representation"));
+				response.setStatus(Status.CLIENT_ERROR_METHOD_NOT_ALLOWED);
 			}
+
+			setAllowedMethods(target, response);
 		}
 		else
 		{
-			call.setStatus(Status.SERVER_ERROR_NOT_IMPLEMENTED);
+			response.setStatus(Status.CLIENT_ERROR_NOT_FOUND);
 		}
 	}
 
@@ -162,6 +211,27 @@ public class Finder extends Restlet
 	public Language getFallbackLanguage()
 	{
 		return this.fallbackLanguage;
+	}
+
+	/**
+	 * Sets the list of allowed methods on a resource to a response. 
+	 * @param resource The resource to introspect.
+	 * @param response The response to update.
+	 */
+	protected void setAllowedMethods(Resource resource, Response response)
+	{
+		// Clear the current set of allowed methods
+		response.getAllowedMethods().clear();
+		
+		// Introspect the resource for allowed methods
+		if(resource.allowGet()) 
+		{
+			response.getAllowedMethods().add(Method.HEAD);
+			response.getAllowedMethods().add(Method.GET);
+		}
+		if(resource.allowDelete()) response.getAllowedMethods().add(Method.DELETE);
+		if(resource.allowPost()) response.getAllowedMethods().add(Method.POST);
+		if(resource.allowPut()) response.getAllowedMethods().add(Method.PUT);
 	}
 
 	/**

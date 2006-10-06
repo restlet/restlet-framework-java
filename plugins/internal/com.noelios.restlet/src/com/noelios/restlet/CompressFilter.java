@@ -29,9 +29,11 @@ import java.util.Arrays;
 import java.util.Iterator;
 import java.util.List;
 
-import org.restlet.Call;
 import org.restlet.Context;
 import org.restlet.Filter;
+import org.restlet.Request;
+import org.restlet.Response;
+import org.restlet.data.ClientData;
 import org.restlet.data.Encoding;
 import org.restlet.data.MediaType;
 import org.restlet.data.Preference;
@@ -140,27 +142,29 @@ public class CompressFilter extends Filter
 
    /**
     * Allows filtering before its handling by the target Restlet. Does nothing by default.
-    * @param call The call to filter.
+    * @param request The request to filter.
+    * @param response The response to filter.
     */
-   public void beforeHandle(Call call)
+   public void beforeHandle(Request request, Response response)
    {
 		// Check if encoding of the call input is needed
-		if(isEncodeInput() && canEncode(call.getInput()))
+		if(isEncodeInput() && canEncode(request.getInput()))
 		{
-			call.setInput(encode(call, call.getInput()));
+			request.setInput(encode(request.getClient(), request.getInput()));
 		}
    }
 
    /**
     * Allows filtering after its handling by the target Restlet. Does nothing by default.
-    * @param call The call to filter.
+    * @param request The request to filter.
+    * @param response The response to filter.
     */
-   public void afterHandle(Call call)
+   public void afterHandle(Request request, Response response)
    {
 		// Check if encoding of the call output is needed
-		if(isEncodeOutput() && canEncode(call.getOutput()))
+		if(isEncodeOutput() && canEncode(response.getOutput()))
 		{
-			call.setOutput(encode(call, call.getOutput()));
+			response.setOutput(encode(request.getClient(), response.getOutput()));
 		}
 	}
 
@@ -214,14 +218,14 @@ public class CompressFilter extends Filter
 
 	/**
 	 * Encodes a given representation if an encoding is supported by the client.
-	 * @param call The parent call. 
+    * @param client The client preferences to use.
 	 * @param representation The representation to encode.
 	 * @return The encoded representation or the original one if no encoding supported by the client.
 	 */
-	public Representation encode(Call call, Representation representation)
+	public Representation encode(ClientData client, Representation representation)
 	{
 		Representation result = representation;
-		Encoding bestEncoding = getBestEncoding(call);
+		Encoding bestEncoding = getBestEncoding(client);
 		
 		if(bestEncoding != null)
 		{
@@ -232,11 +236,11 @@ public class CompressFilter extends Filter
 	}
 	
 	/**
-	 * Returns the best supported encoding for a given call.
-	 * @param call The call to test.
+	 * Returns the best supported encoding for a given client.
+    * @param client The client preferences to use.
 	 * @return The best supported encoding for the given call.
 	 */
-	public Encoding getBestEncoding(Call call)
+	public Encoding getBestEncoding(ClientData client)
 	{
 		Encoding bestEncoding = null;
 		Encoding currentEncoding = null;
@@ -247,7 +251,7 @@ public class CompressFilter extends Filter
 		{
 			currentEncoding = iter.next();
 			
-			for(Iterator<Preference<Encoding>> iter2 = call.getClient().getAcceptedEncodings().iterator(); iter2.hasNext(); )
+			for(Iterator<Preference<Encoding>> iter2 = client.getAcceptedEncodings().iterator(); iter2.hasNext(); )
 			{
 				currentPref = iter2.next();
 				

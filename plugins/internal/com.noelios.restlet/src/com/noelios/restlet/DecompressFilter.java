@@ -26,9 +26,10 @@ package com.noelios.restlet;
 
 import java.util.Iterator;
 
-import org.restlet.Call;
 import org.restlet.Context;
 import org.restlet.Filter;
+import org.restlet.Request;
+import org.restlet.Response;
 import org.restlet.data.Encoding;
 import org.restlet.data.Representation;
 
@@ -74,27 +75,29 @@ public class DecompressFilter extends Filter
 
    /**
     * Allows filtering before its handling by the target Restlet. Does nothing by default.
-    * @param call The call to filter.
+    * @param request The request to filter.
+    * @param response The response to filter.
     */
-   public void beforeHandle(Call call)
+   public void beforeHandle(Request request, Response response)
    {
 		// Check if decoding of the call input is needed
-		if(isDecodeInput() && canDecode(call.getInput()))
+		if(isDecodeInput() && canDecode(request.getInput()))
 		{
-			call.setInput(decode(call.getInput()));
+			request.setInput(decode(request.getInput()));
 		}
    }
 
    /**
     * Allows filtering after its handling by the target Restlet. Does nothing by default.
-    * @param call The call to filter.
+    * @param request The request to filter.
+    * @param response The response to filter.
     */
-   public void afterHandle(Call call)
+   public void afterHandle(Request request, Response response)
    {
 		// Check if decoding of the call output is needed
-		if(isDecodeOutput() && canDecode(call.getOutput()))
+		if(isDecodeOutput() && canDecode(response.getOutput()))
 		{
-			call.setOutput(decode(call.getOutput()));
+			response.setOutput(decode(response.getOutput()));
 		}
    }
 

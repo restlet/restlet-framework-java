@@ -25,9 +25,10 @@ package com.noelios.restlet;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
-import org.restlet.Call;
 import org.restlet.Context;
 import org.restlet.Filter;
+import org.restlet.Request;
+import org.restlet.Response;
 
 import com.noelios.restlet.util.CallModel;
 import com.noelios.restlet.util.StringTemplate;
@@ -81,36 +82,38 @@ public class LogFilter extends Filter
 
    /**
     * Handles a call to a resource or a set of resources.
-    * @param call The call to handle.
+    * @param request The request to handle.
+    * @param response The response to update.
     */
-   public void handle(Call call)
+   public void handle(Request request, Response response)
    {
-   	beforeHandle(call);
+   	beforeHandle(request, response);
    	
       long startTime = System.currentTimeMillis();
-      super.handle(call);
+      super.handle(request, response);
       int duration = (int)(System.currentTimeMillis() - startTime);
 
       // Format the call into a log entry
       if(this.logTemplate != null)
       {
-         this.logger.log(Level.INFO, format(call));
+         this.logger.log(Level.INFO, format(request, response));
       }
       else
       {
-         this.logger.log(Level.INFO, formatDefault(call, duration));
+         this.logger.log(Level.INFO, formatDefault(request, response, duration));
       }
       
-      afterHandle(call);
+      afterHandle(request, response);
    }
 
    /**
     * Format a log entry using the default format.
-    * @param call The call to log.
+    * @param request The request to log.
+    * @param response The response to log.
     * @param duration The call duration.
     * @return The formatted log entry.
     */
-   protected String formatDefault(Call call, int duration)
+   protected String formatDefault(Request request, Response response, int duration)
    {
       StringBuilder sb = new StringBuilder();
 
@@ -122,12 +125,12 @@ public class LogFilter extends Filter
 
       // Append the method name
       sb.append('\t');
-      String methodName = call.getMethod().getName();
+      String methodName = request.getMethod().getName();
       sb.append((methodName == null) ? "-" : methodName);
 
       // Append the resource path
       sb.append('\t');
-      String resourcePath = call.getResourceRef().getPath();
+      String resourcePath = request.getResourceRef().getPath();
       sb.append((resourcePath == null) ? "-" : resourcePath);
 
       // Append the user name
@@ -135,7 +138,7 @@ public class LogFilter extends Filter
 
       // Append the client IP address
       sb.append('\t');
-      String clientAddress = call.getClient().getAddress();
+      String clientAddress = request.getClient().getAddress();
       sb.append((clientAddress == null) ? "-" : clientAddress);
 
       // Append the version
@@ -143,36 +146,36 @@ public class LogFilter extends Filter
 
       // Append the agent name
       sb.append('\t');
-      String agentName = call.getClient().getAgent();
+      String agentName = request.getClient().getAgent();
       sb.append((agentName == null) ? "-" : agentName);
 
       // Append the referrer
       sb.append('\t');
-      sb.append((call.getReferrerRef() == null) ? "-" : call.getReferrerRef().getIdentifier());
+      sb.append((request.getReferrerRef() == null) ? "-" : request.getReferrerRef().getIdentifier());
 
       // Append the status code
       sb.append('\t');
-      sb.append((call.getStatus() == null) ? "-" : Integer.toString(call.getStatus().getCode()));
+      sb.append((response.getStatus() == null) ? "-" : Integer.toString(response.getStatus().getCode()));
 
       // Append the returned size
       sb.append('\t');
-      if(call.getOutput() == null)
+      if(response.getOutput() == null)
       {
          sb.append('0');
       }
       else
       {
-         sb.append((call.getOutput().getSize() == -1) ? "-" : Long.toString(call.getOutput().getSize()));
+         sb.append((response.getOutput().getSize() == -1) ? "-" : Long.toString(response.getOutput().getSize()));
       }
 
       // Append the resource query
       sb.append('\t');
-      String query = call.getResourceRef().getQuery();
+      String query = request.getResourceRef().getQuery();
       sb.append((query == null) ? "-" : query);
 
       // Append the virtual name
       sb.append('\t');
-      sb.append((call.getResourceRef() == null) ? "-" : call.getResourceRef().getHostIdentifier());
+      sb.append((request.getResourceRef() == null) ? "-" : request.getResourceRef().getHostIdentifier());
 
       // Append the duration
       sb.append('\t');
@@ -183,12 +186,13 @@ public class LogFilter extends Filter
 
    /**
     * Format a log entry.
-    * @param call The call to log.
+    * @param request The request to log.
+    * @param response The response to log.
     * @return The formatted log entry.
     */
-   protected String format(Call call)
+   protected String format(Request request, Response response)
    {
-      return this.logTemplate.process(new CallModel(call, "-"));
+      return this.logTemplate.process(new CallModel(request, response, "-"));
    }
 
 }

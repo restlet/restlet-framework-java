@@ -22,7 +22,8 @@
 
 package com.noelios.restlet.example.misc;
 
-import org.restlet.Call;
+import org.restlet.Request;
+import org.restlet.Response;
 import org.restlet.connector.Client;
 import org.restlet.data.Form;
 import org.restlet.data.Method;
@@ -35,50 +36,43 @@ import org.restlet.data.Representation;
  */
 public class SimpleClient
 {
-   public static void main(String[] args)
+   public static void main(String[] args) throws Exception
    {
-      try
+      // Prepare the REST call.
+      Request request = new Request();
+
+      // Identify oursevles.
+      request.setReferrerRef("http://www.foo.com/");
+
+      // Target resource.
+      request.setResourceRef("http://127.0.0.1:9876/test");
+
+      // Action: Update
+      request.setMethod(Method.PUT);
+
+      Form form = new Form();
+      form.add("name", "John D. Mitchell");
+      form.add("email", "john@bob.net");
+      form.add("email2", "joe@bob.net");
+      request.setInput(form.getWebForm());
+
+      // Prepare HTTP client connector.
+      Client client = new Client(Protocol.HTTP);
+
+      // Make the call.
+      Response response = client.handle(request);
+
+      if(response.getStatus().isSuccess())
       {
-         // Prepare the REST call.
-         Call call = new Call();
-
-         // Identify oursevles.
-         call.setReferrerRef("http://www.foo.com/");
-
-         // Target resource.
-         call.setResourceRef("http://127.0.0.1:9876/test");
-
-         // Action: Update
-         call.setMethod(Method.PUT);
-
-         Form form = new Form();
-         form.add("name", "John D. Mitchell");
-         form.add("email", "john@bob.net");
-         form.add("email2", "joe@bob.net");
-         call.setInput(form.getWebForm());
-
-         // Prepare HTTP client connector.
-         Client client = new Client(Protocol.HTTP);
-
-         // Make the call.
-         client.handle(call);
-
-         if(call.getStatus().isSuccess())
-         {
-            // Output the result representation on the JVM console
-            Representation output = call.getOutput();
-            output.write(System.out);
-            System.out.println("client: success!");
-         }
-         else
-         {
-            System.out.println("client: failure!");
-            System.out.println(call.getStatus().getDescription());
-         }
+         // Output the result representation on the JVM console
+         Representation output = response.getOutput();
+         output.write(System.out);
+         System.out.println("client: success!");
       }
-      catch(Exception ex)
+      else
       {
-         ex.printStackTrace();
+         System.out.println("client: failure!");
+         System.out.println(response.getStatus().getDescription());
       }
    }
 }

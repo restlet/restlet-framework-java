@@ -28,14 +28,9 @@ import org.restlet.data.Method;
 import org.restlet.data.Status;
 
 /**
- * Generic call handler. "The central feature that distinguishes
- * the REST architectural style from other network-based styles is its emphasis on a uniform interface between
- * components. By applying the software engineering principle of generality to the component interface, the
- * overall system architecture is simplified and the visibility of interactions is improved. Implementations
- * are decoupled from the services they provide, which encourages independent evolvability." Roy T. Fielding
- * @see <a href="http://www.ics.uci.edu/~fielding/pubs/dissertation/rest_arch_style.htm#sec_5_1_5">Source
- * dissertation</a>
- * @see <a href="http://www.restlet.org/tutorial#part03">Tutorial: Listening to Web browsers</a>
+ * Generic call handler with a context. It has many subclasses that focus on a specific ways to handle 
+ * calls like filtering, routing or finding the target resource. The context of a Restlet is typically 
+ * provided by a parent container as a way to give access to features such as logging and client connectors.
  * @author Jerome Louvel (contact@noelios.com) <a href="http://www.noelios.com/">Noelios Consulting</a>
  */
 public class Restlet implements UniformInterface
@@ -87,9 +82,10 @@ public class Restlet implements UniformInterface
 
    /**
     * Handles a call.
-    * @param call The call to handle.
+    * @param request The request to handle.
+    * @param response The response to update.
     */
-	public void handle(Call call)
+	public void handle(Request request, Response response)
    {
 		// Check if the Restlet was started
 		if(isStopped())
@@ -101,151 +97,161 @@ public class Restlet implements UniformInterface
 			catch (Exception e)
 			{
 				getContext().getLogger().log(Level.WARNING, UNABLE_TO_START, e);
-				call.setStatus(Status.SERVER_ERROR_INTERNAL);
+				response.setStatus(Status.SERVER_ERROR_INTERNAL);
 			}
 		}
 		
 		if(isStarted())
 		{
-	   	Method method = call.getMethod();
+	   	Method method = request.getMethod();
 	   	
 	   	if(method == null)
 	   	{
-	   		handleOthers(call);
+	   		handleOthers(request, response);
 	   	}
 	   	else if(method.equals(Method.GET))
 			{
-				handleGet(call);
+				handleGet(request, response);
 			}
 			else if(method.equals(Method.POST))
 			{
-				handlePost(call);
+				handlePost(request, response);
 			}
 			else if(method.equals(Method.PUT))
 			{
-				handlePut(call);
+				handlePut(request, response);
 			}
 			else if(method.equals(Method.DELETE))
 			{
-				handleDelete(call);
+				handleDelete(request, response);
 			}
 			else if(method.equals(Method.HEAD))
 			{
-				handleHead(call);
+				handleHead(request, response);
 			}
 			else if(method.equals(Method.CONNECT))
 			{
-				handleConnect(call);
+				handleConnect(request, response);
 			}
 			else if(method.equals(Method.OPTIONS))
 			{
-				handleOptions(call);
+				handleOptions(request, response);
 			}
 			else if(method.equals(Method.TRACE))
 			{
-				handleTrace(call);
+				handleTrace(request, response);
 			}
 			else
 			{
-				handleOthers(call);
+				handleOthers(request, response);
 			}
 		}
 		else
 		{
 			getContext().getLogger().log(Level.WARNING, UNABLE_TO_START);
-			call.setStatus(Status.SERVER_ERROR_INTERNAL);
+			response.setStatus(Status.SERVER_ERROR_INTERNAL);
 		}
    }
 
    /**
     * Handles a CONNECT call.
-    * @param call The call to handle.
+    * @param request The request to handle.
+    * @param response The response to update.
     */
-   protected void handleConnect(Call call)
+   protected void handleConnect(Request request, Response response)
    {
-   	defaultHandle(call);
+   	defaultHandle(request, response);
    }
 
    /**
     * Handles a DELETE call.
-    * @param call The call to handle.
+    * @param request The request to handle.
+    * @param response The response to update.
     */
-   protected void handleDelete(Call call)
+   protected void handleDelete(Request request, Response response)
    {
-   	defaultHandle(call);
+   	defaultHandle(request, response);
    }
 
    /**
     * Handles a GET call.
-    * @param call The call to handle.
+    * @param request The request to handle.
+    * @param response The response to update.
     */
-   protected void handleGet(Call call)
+   protected void handleGet(Request request, Response response)
    {
-   	defaultHandle(call);
+   	defaultHandle(request, response);
    }
 
    /**
     * Handles a HEAD call.
-    * @param call The call to handle.
+    * @param request The request to handle.
+    * @param response The response to update.
     */
-   protected void handleHead(Call call)
+   protected void handleHead(Request request, Response response)
    {
-   	defaultHandle(call);
+   	defaultHandle(request, response);
    }
 
    /**
     * Handles a OPTIONS call.
-    * @param call The call to handle.
+    * @param request The request to handle.
+    * @param response The response to update.
     */
-   protected void handleOptions(Call call)
+   protected void handleOptions(Request request, Response response)
    {
-   	defaultHandle(call);
+   	defaultHandle(request, response);
    }
 
    /**
     * Handles a POST call.
-    * @param call The call to handle.
+    * @param request The request to handle.
+    * @param response The response to update.
     */
-   protected void handlePost(Call call)
+   protected void handlePost(Request request, Response response)
    {
-   	defaultHandle(call);
+   	defaultHandle(request, response);
    }
 
    /**
     * Handles a PUT call.
-    * @param call The call to handle.
+    * @param request The request to handle.
+    * @param response The response to update.
     */
-   protected void handlePut(Call call)
+   protected void handlePut(Request request, Response response)
    {
-   	defaultHandle(call);
+   	defaultHandle(request, response);
    }
 
    /**
     * Handles a TRACE call.
-    * @param call The call to handle.
+    * @param request The request to handle.
+    * @param response The response to update.
     */
-   protected void handleTrace(Call call)
+   protected void handleTrace(Request request, Response response)
    {
-   	defaultHandle(call);
+   	defaultHandle(request, response);
    }
    
    /**
     * Handles a call with a method that is not directly supported by a special handle*() method.
-    * @param call The call to handle.
+    * @param request The request to handle.
+    * @param response The response to update.
     */
-   protected void handleOthers(Call call)
+   protected void handleOthers(Request request, Response response)
    {
-   	defaultHandle(call);
+   	defaultHandle(request, response);
    }
    
    /**
     * Default implementation for all the handle*() methods that simply returns a client error 
     * indicating that the method is not allowed. 
-    * @param call The call to handle.
+    * @param request The request to handle.
+    * @param response The response to update.
     */
-   protected void defaultHandle(Call call)
+   protected void defaultHandle(Request request, Response response)
    {
-		call.setStatus(Status.CLIENT_ERROR_METHOD_NOT_ALLOWED);
+		response.setStatus(Status.CLIENT_ERROR_METHOD_NOT_ALLOWED);
    }
    
    /** Starts the Restlet. */

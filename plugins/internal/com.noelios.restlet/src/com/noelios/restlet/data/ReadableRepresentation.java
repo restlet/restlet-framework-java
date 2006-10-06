@@ -60,8 +60,8 @@ public class ReadableRepresentation extends ChannelRepresentation
       super(mediaType);
       setSize(expectedSize);
       this.readableChannel = readableChannel;
-      setContentAvailable(readableChannel != null);
-      setContentTransient(true);
+      setAvailable(readableChannel != null);
+      setTransient(true);
    }
 
    /**
@@ -73,7 +73,7 @@ public class ReadableRepresentation extends ChannelRepresentation
    {
    	ReadableByteChannel result = this.readableChannel;
    	this.readableChannel = null; 
-      setContentAvailable(false);
+      setAvailable(false);
       return result;
    }
 

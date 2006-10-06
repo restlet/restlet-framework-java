@@ -27,7 +27,8 @@ import java.util.Set;
 
 import javax.servlet.ServletContext;
 
-import org.restlet.Call;
+import org.restlet.Request;
+import org.restlet.Response;
 import org.restlet.data.MediaType;
 import org.restlet.data.Method;
 import org.restlet.data.Reference;
@@ -67,13 +68,14 @@ public class ServletLocalClient extends LocalClient
 
    /**
     * Handles a call using the current Web Application.
-    * @param call The call to handle.
+    * @param request The request to handle.
+    * @param response The response to update.
     */
-   protected void handleWebApp(Call call)
+   protected void handleWebApp(Request request, Response response)
    {
-      if(call.getMethod().equals(Method.GET) || call.getMethod().equals(Method.HEAD))
+      if(request.getMethod().equals(Method.GET) || request.getMethod().equals(Method.HEAD))
 		{
-      	String basePath = call.getResourceRef().toString();
+      	String basePath = request.getResourceRef().toString();
       	int lastSlashIndex = basePath.lastIndexOf('/');
       	String entry = (lastSlashIndex == -1) ? basePath : basePath.substring(lastSlashIndex + 1);
       	Representation output = null;
@@ -83,7 +85,7 @@ public class ServletLocalClient extends LocalClient
 				// Return the directory listing
 				Set entries = getServletContext().getResourcePaths(basePath);
 				ReferenceList rl = new ReferenceList(entries.size());
-				rl.setListRef(call.getResourceRef());
+				rl.setListRef(request.getResourceRef());
 				
 				for(Iterator iter = entries.iterator(); iter.hasNext();)
 				{
@@ -108,12 +110,12 @@ public class ServletLocalClient extends LocalClient
             }
 			}
 			
-			call.setOutput(output);
-			call.setStatus(Status.SUCCESS_OK);
+			response.setOutput(output);
+			response.setStatus(Status.SUCCESS_OK);
 		}
 		else
 		{
-			call.setStatus(Status.CLIENT_ERROR_METHOD_NOT_ALLOWED);
+			response.setStatus(Status.CLIENT_ERROR_METHOD_NOT_ALLOWED);
 		}
    }
    

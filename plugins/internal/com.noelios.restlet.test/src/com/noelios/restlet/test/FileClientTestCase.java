@@ -5,7 +5,7 @@ import java.io.IOException;
 
 import junit.framework.TestCase;
 
-import org.restlet.Call;
+import org.restlet.Response;
 import org.restlet.connector.Client;
 import org.restlet.data.Protocol;
 import org.restlet.data.Status;
@@ -28,16 +28,16 @@ public class FileClientTestCase extends TestCase
 				".txt"));
 
 		// Write the text to temporary file
-		Call call = fc.put(fr.toString(), new StringRepresentation(text));
-		assertTrue(call.getStatus().equals(Status.SUCCESS_OK));
+		Response response = fc.put(fr.toString(), new StringRepresentation(text));
+		assertTrue(response.getStatus().equals(Status.SUCCESS_OK));
 
 		// Get the text and compare to the original
-		call = fc.get(fr.toString());
-		assertTrue(call.getStatus().equals(Status.SUCCESS_OK));
+		response = fc.get(fr.toString());
+		assertTrue(response.getStatus().equals(Status.SUCCESS_OK));
 
 		// Delete the file
-		call = fc.delete(fr.toString());
-		assertTrue(call.getStatus().equals(Status.SUCCESS_NO_CONTENT));
+		response = fc.delete(fr.toString());
+		assertTrue(response.getStatus().equals(Status.SUCCESS_NO_CONTENT));
 	}
 
 }

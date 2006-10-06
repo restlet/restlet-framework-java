@@ -26,7 +26,8 @@ import java.io.IOException;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
-import org.restlet.Call;
+import org.restlet.Request;
+import org.restlet.Response;
 import org.restlet.data.ChallengeRequest;
 import org.restlet.data.ChallengeResponse;
 import org.restlet.data.ClientData;
@@ -56,16 +57,17 @@ public class HttpClientConverter
 	/**
 	 * Converts a low-level HTTP call into a high-level uniform call.
 	 * @param client The HTTP client that will handle the call.
-	 * @param call The uniform call to handle
+	 * @param request The high-level request.
+	 * @param response The high-level response.
 	 * @return A new high-level uniform call.
 	 */
-	public HttpClientCall toSpecific(HttpClient client, Call call)
+	public HttpClientCall toSpecific(HttpClient client, Request request, Response response)
 	{
 		// Create the low-level HTTP client call
-		HttpClientCall result = client.create(call);
+		HttpClientCall result = client.create(request);
 		
 		// Add the request headers
-		addRequestHeaders(result, call);
+		addRequestHeaders(result, request, response);
 
 		return result;
 	}
@@ -75,23 +77,24 @@ public class HttpClientConverter
 	 * implementation first invokes the "addResponseHeaders" the asks the "htppCall" to send the 
 	 * response back to the client.  
 	 * @param httpCall The original HTTP call.
-	 * @param call The handled uniform call.
+	 * @param request The high-level request.
+	 * @param response The high-level response.
 	 */
-	public void commit(HttpClientCall httpCall, Call call)
+	public void commit(HttpClientCall httpCall, Request request, Response response)
 	{
 		try
 		{
          // Send the request to the client
-         call.setStatus(httpCall.sendRequest(call.isInputAvailable() ? call.getInput() : null));
+			response.setStatus(httpCall.sendRequest(request.isInputAvailable() ? request.getInput() : null));
 
          // Get the server address
-			call.getServer().setAddress(httpCall.getServerAddress());
+			response.getServer().setAddress(httpCall.getServerAddress());
 
 			// Read the response headers
-			readResponseHeaders(httpCall, call);
+			readResponseHeaders(httpCall, response);
 
 			// Set the output representation
-			call.setOutput(httpCall.getResponseOutput());
+			response.setOutput(httpCall.getResponseOutput());
 		}
 		catch (Exception e)
 		{
@@ -102,35 +105,36 @@ public class HttpClientConverter
 	/**
 	 * Adds the request headers of a uniform call to a HTTP client call.  
 	 * @param httpCall The HTTP client call.
-	 * @param call The uniform call.
+	 * @param request The high-level request.
+	 * @param response The high-level response.
 	 */
-	protected void addRequestHeaders(HttpClientCall httpCall, Call call)
+	protected void addRequestHeaders(HttpClientCall httpCall, Request request, Response response)
 	{
 		ParameterList requestHeaders = httpCall.getRequestHeaders();
 
 		// Manually add the host name and port when it is potentially different
 		// from the one specified in the target resource reference.
-		if(call.getServer().getName() != null)
+		if(response.getServer().getName() != null)
 		{
 			String host;
 			
-			if(call.getServer().getPort() != null)
+			if(response.getServer().getPort() != null)
 			{
-				host = call.getServer().getName() + ':' + call.getServer().getPort();
+				host = response.getServer().getName() + ':' + response.getServer().getPort();
 			}
 			else
 			{
-				host = call.getServer().getName();
+				host = response.getServer().getName();
 			}
 
 			requestHeaders.add(HttpConstants.HEADER_HOST, host);
 		}
 		
 		// Add the user agent header
-		if (call.getClient().getAgent() != null)
+		if (request.getClient().getAgent() != null)
 		{
 			requestHeaders.add(HttpConstants.HEADER_USER_AGENT,
-					call.getClient().getAgent());
+					request.getClient().getAgent());
 		}
 		else
 		{
@@ -139,7 +143,7 @@ public class HttpClientConverter
 		}
 
 		// Add the conditions
-		ConditionData condition = call.getCondition();
+		ConditionData condition = request.getCondition();
 		if (condition.getMatch() != null)
 		{
 			StringBuilder value = new StringBuilder();
@@ -184,21 +188,21 @@ public class HttpClientConverter
 		}
 
 		// Add the cookies
-		if (call.getCookies().size() > 0)
+		if (request.getCookies().size() > 0)
 		{
-			String cookies = CookieUtils.format(call.getCookies());
+			String cookies = CookieUtils.format(request.getCookies());
 			requestHeaders.add(HttpConstants.HEADER_COOKIE, cookies);
 		}
 
 		// Add the referrer header
-		if (call.getReferrerRef() != null)
+		if (request.getReferrerRef() != null)
 		{
 			requestHeaders.add(HttpConstants.HEADER_REFERRER,
-					call.getReferrerRef().toString());
+					request.getReferrerRef().toString());
 		}
 
 		// Add the preferences
-		ClientData client = call.getClient();
+		ClientData client = request.getClient();
 		if (client.getAcceptedMediaTypes().size() > 0)
 		{
 			try
@@ -257,38 +261,38 @@ public class HttpClientConverter
 		}
 
 		// Add the security
-		ChallengeResponse response = call.getSecurity().getChallengeResponse();
-		if (response != null)
+		ChallengeResponse challengeResponse = request.getChallengeResponse();
+		if (challengeResponse != null)
 		{
 			requestHeaders.add(HttpConstants.HEADER_AUTHORIZATION,
-					SecurityUtils.format(response));
+					SecurityUtils.format(challengeResponse));
 		}
 
 		// Send the input representation
-		if (call.getInput() != null)
+		if (request.getInput() != null)
 		{
-			if (call.getInput().getMediaType() != null)
+			if (request.getInput().getMediaType() != null)
 			{
 				requestHeaders.add(HttpConstants.HEADER_CONTENT_TYPE,
-						call.getInput().getMediaType().toString());
+						request.getInput().getMediaType().toString());
 			}
 
-			if (call.getInput().getEncoding() != null)
+			if (request.getInput().getEncoding() != null)
 			{
 				requestHeaders.add(HttpConstants.HEADER_CONTENT_ENCODING,
-						call.getInput().getEncoding().toString());
+						request.getInput().getEncoding().toString());
 			}
 
-			if (call.getInput().getLanguage() != null)
+			if (request.getInput().getLanguage() != null)
 			{
 				requestHeaders.add(HttpConstants.HEADER_CONTENT_LANGUAGE,
-						call.getInput().getLanguage().toString());
+						request.getInput().getLanguage().toString());
 			}
 		}
 
 		
 		// Add user-defined extension headers
-		ParameterList additionalHeaders = (ParameterList)call.getAttributes().get("org.restlet.http.requestHeaders");
+		ParameterList additionalHeaders = (ParameterList)request.getAttributes().get("org.restlet.http.headers");
 		if(additionalHeaders != null)
 		{
 			for(Parameter param : additionalHeaders)
@@ -359,21 +363,21 @@ public class HttpClientConverter
 	/**
 	 * Reads the response headers of a handled HTTP client call to update the original uniform call.  
 	 * @param httpCall The handled HTTP client call.
-	 * @param call The original uniform call.
+	 * @param response The high-level response.
 	 */
-	protected void readResponseHeaders(HttpClientCall httpCall, Call call)
+	protected void readResponseHeaders(HttpClientCall httpCall, Response response)
 	{
 		try
 		{
 			// Put the response headers in the call's attributes map
-			call.getAttributes().put("org.restlet.http.responseHeaders", httpCall.getResponseHeaders());
+			response.getAttributes().put("org.restlet.http.headers", httpCall.getResponseHeaders());
 			
 			// Read info from headers
 			for (Parameter header : httpCall.getResponseHeaders())
 			{
 				if (header.getName().equalsIgnoreCase(HttpConstants.HEADER_LOCATION))
 				{
-					call.setRedirectRef(header.getValue());
+					response.setRedirectRef(header.getValue());
 				}
 				else if ((header.getName().equalsIgnoreCase(HttpConstants.HEADER_SET_COOKIE))
 						|| (header.getName().equalsIgnoreCase(HttpConstants.HEADER_SET_COOKIE2)))
@@ -381,7 +385,7 @@ public class HttpClientConverter
 					try
 					{
 						CookieReader cr = new CookieReader(header.getValue());
-						call.getCookieSettings().add(cr.readCookieSetting());
+						response.getCookieSettings().add(cr.readCookieSetting());
 					}
 					catch (Exception e)
 					{
@@ -394,11 +398,11 @@ public class HttpClientConverter
 						HttpConstants.HEADER_WWW_AUTHENTICATE))
 				{
 					ChallengeRequest request = SecurityUtils.parseRequest(header.getValue());
-					call.getSecurity().setChallengeRequest(request);
+					response.setChallengeRequest(request);
 				}
 				else if (header.getName().equalsIgnoreCase(HttpConstants.HEADER_SERVER))
 				{
-					call.getServer().setAgent(header.getValue());
+					response.getServer().setAgent(header.getValue());
 				}
 			}
 		}
@@ -406,7 +410,7 @@ public class HttpClientConverter
 		{
 			logger.log(Level.FINE,
 					"An error occured during the processing of the HTTP response.", e);
-			call.setStatus(new Status(Status.CONNECTOR_ERROR_INTERNAL,
+			response.setStatus(new Status(Status.CONNECTOR_ERROR_INTERNAL,
 					"Unable to process the response. " + e.getMessage()));
 		}
 	}

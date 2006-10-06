@@ -28,8 +28,9 @@ import java.util.List;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
-import org.restlet.Call;
 import org.restlet.Context;
+import org.restlet.Request;
+import org.restlet.data.ChallengeResponse;
 import org.restlet.data.ClientData;
 import org.restlet.data.ConditionData;
 import org.restlet.data.Cookie;
@@ -38,24 +39,20 @@ import org.restlet.data.Parameter;
 import org.restlet.data.Protocol;
 import org.restlet.data.Reference;
 import org.restlet.data.Representation;
-import org.restlet.data.SecurityData;
-import org.restlet.data.ServerData;
-import org.restlet.data.Status;
 import org.restlet.data.Tag;
 
-import com.noelios.restlet.impl.Factory;
 import com.noelios.restlet.impl.util.CookieReader;
 import com.noelios.restlet.impl.util.PreferenceUtils;
 import com.noelios.restlet.impl.util.SecurityUtils;
 
 /**
- * Call wrapper for server HTTP calls.
+ * Request wrapper for server HTTP calls.
  * @author Jerome Louvel (contact@noelios.com) <a href="http://www.noelios.com/">Noelios Consulting</a>
  */
-public class HttpServerRestletCall extends Call
+public class HttpRequest extends Request
 {
 	/** Obtain a suitable logger. */
-	private static Logger logger = Logger.getLogger(HttpServerRestletCall.class
+	private static Logger logger = Logger.getLogger(HttpRequest.class
 			.getCanonicalName());
 
 	/** The context of the HTTP server connector that issued the call. */
@@ -82,15 +79,12 @@ public class HttpServerRestletCall extends Call
 	/** Indicates if the security data was parsed and added. */
 	private boolean securityAdded;
 
-	/** Indicates if the server data was parsed and added. */
-	private boolean serverAdded;
-
 	/**
 	 * Constructor.
 	 * @param context The context of the HTTP server connector that issued the call.
 	 * @param httpCall The low-level HTTP server call.
 	 */
-	public HttpServerRestletCall(Context context, HttpServerCall httpCall)
+	public HttpRequest(Context context, HttpServerCall httpCall)
 	{
 		this.context = context;
 		this.clientAdded = false;
@@ -99,13 +93,21 @@ public class HttpServerRestletCall extends Call
 		this.inputAdded = false;
 		this.referrerAdded = false;
 		this.securityAdded = false;
-		this.serverAdded = false;
 		this.httpCall = httpCall;
 
 		// Set the properties
-		setStatus(Status.SUCCESS_OK);
 		setMethod(Method.valueOf(httpCall.getMethod()));
 		setProtocol(httpCall.isConfidential() ? Protocol.HTTPS : Protocol.HTTP);
+
+		if (getHttpCall().isConfidential())
+		{
+			setConfidential(true);
+		}
+		else
+		{
+			// We don't want to autocreate the security data just for this information
+			// Because that will by the default value of this property if read by someone.
+		}
 
 		// Set the resource reference
 		Reference resource = new Reference(httpCall.getRequestUri());
@@ -376,54 +378,24 @@ public class HttpServerRestletCall extends Call
 		return super.getReferrerRef();
 	}
 
-	/**
-	 * Returns the security data related to this call.
-	 * @return The security data related to this call.
-	 */
-	public SecurityData getSecurity()
-	{
-		SecurityData result = super.getSecurity();
+   /**
+    * Returns the authentication response sent by a client to an origin server.
+    * @return The authentication response sent by a client to an origin server.
+    */
+   public ChallengeResponse getChallengeResponse()
+   {
+   	ChallengeResponse result = super.getChallengeResponse();
 
 		if (!this.securityAdded)
 		{
-			if (getHttpCall().isConfidential())
-			{
-				getSecurity().setConfidential(true);
-			}
-			else
-			{
-				// We don't want to autocreate the security data just for this information
-				// Because that will by the default value of this property if read by someone.
-			}
-
 			// Extract the header value
 			String authorization = getHttpCall().getRequestHeaders().getValues(
 					HttpConstants.HEADER_AUTHORIZATION);
 
 			// Set the challenge response
-			result.setChallengeResponse(SecurityUtils.parseResponse(authorization));
-
+			result = SecurityUtils.parseResponse(authorization);
+			setChallengeResponse(result);
 			this.securityAdded = true;
-		}
-
-		return result;
-	}
-
-	/**
-	 * Returns the server specific data.
-	 * @return The server specific data.
-	 */
-	public ServerData getServer()
-	{
-		ServerData result = super.getServer();
-
-		if (!this.serverAdded)
-		{
-			result.setAddress(httpCall.getServerAddress());
-			result.setAgent(Factory.VERSION_HEADER);
-			result.setName(httpCall.getServerName());
-			result.setPort(httpCall.getServerPort());
-			this.serverAdded = true;
 		}
 
 		return result;

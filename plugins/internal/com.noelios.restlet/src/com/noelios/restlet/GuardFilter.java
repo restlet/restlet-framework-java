@@ -28,13 +28,13 @@ import java.util.TreeMap;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
-import org.restlet.Call;
 import org.restlet.Context;
 import org.restlet.Filter;
+import org.restlet.Request;
+import org.restlet.Response;
 import org.restlet.data.ChallengeRequest;
 import org.restlet.data.ChallengeResponse;
 import org.restlet.data.ChallengeScheme;
-import org.restlet.data.SecurityData;
 import org.restlet.data.Status;
 
 import com.noelios.restlet.impl.util.Base64;
@@ -64,6 +64,12 @@ public class GuardFilter extends Filter
 
    /** The authentication realm. */
 	private String realm;
+	
+	/** The attribute name to use to store the login. */
+	private String loginAttribute;
+	
+	/** The attribute name to use to store the password. */
+	private String passwordAttribute;
 
    /**
     * Constructor.
@@ -79,6 +85,8 @@ public class GuardFilter extends Filter
    {
       super(context);
       this.logger = Logger.getLogger(logName);
+      this.loginAttribute = "login";
+      this.passwordAttribute = "password";
       this.authentication = authentication;
       this.authorizations = null;
       
@@ -98,11 +106,11 @@ public class GuardFilter extends Filter
     * Allows filtering before its handling by the target Restlet. Does nothing by default.
     * @param call The call to filter.
     */
-   public void beforeHandle(Call call)
+   public void beforeHandle(Request request, Response response)
    {
    	if(this.authentication)
    	{
-   		authenticate(call);
+   		authenticate(request);
    	}
    }
 
@@ -110,15 +118,15 @@ public class GuardFilter extends Filter
     * Handles the call by distributing it to the target handler. 
     * @param call The call to handle.
     */
-   public void doHandle(Call call)
+   public void doHandle(Request request, Response response)
    {
-		if(!this.authorization || authorize(call))
+		if(!this.authorization || authorize(request))
       {
-      	accept(call);
+      	accept(request, response);
       }
       else
       {
-         reject(call);
+         reject(response);
       }
    }
 
@@ -131,12 +139,11 @@ public class GuardFilter extends Filter
     * Subclasses could also set the additional role property.<br/>
     * If you know that the caller has already been authenticated, you should set the challenge scheme to NONE
     * in the constructor to silently skip this step. 
-    * @param call The call to authenticate.
+    * @param request The request to authenticate.
     */
-   public void authenticate(Call call)
+   public void authenticate(Request request)
    {
-      SecurityData security = call.getSecurity();
-      ChallengeResponse resp = security.getChallengeResponse();
+      ChallengeResponse resp = request.getChallengeResponse();
 
       if(this.scheme.equals(ChallengeScheme.HTTP_BASIC))
       {
@@ -155,15 +162,17 @@ public class GuardFilter extends Filter
 	            if(separator == -1)
 	            {
 	               // Log the blocking
-	               logger.warning("Invalid credentials given by client with IP: " + call.getClient().getAddress());
+	               logger.warning("Invalid credentials given by client with IP: " + request.getClient().getAddress());
 	            }
 	            else
 	            {
-	               security.setLogin(credentials.substring(0, separator));
-	               security.setPassword(credentials.substring(separator + 1));
+	            	String login = credentials.substring(0, separator);
+	            	String password = credentials.substring(separator + 1);
+	               request.getAttributes().put(getLoginAttribute(), login);
+	               request.getAttributes().put(getPasswordAttribute(), password);
 	
 	               // Log the authentication result
-	               logger.info("Basic HTTP authentication succeeded: login=" + security.getLogin() + ".");
+	               logger.info("Basic HTTP authentication succeeded: login=" + login + ".");
 	            }
 	         }
 	         catch(UnsupportedEncodingException e)
@@ -206,11 +215,11 @@ public class GuardFilter extends Filter
     * @param call The current call.
     * @return True if the given credentials authorize access to the attached Restlet.
     */
-   protected boolean authorize(Call call)
+   protected boolean authorize(Request request)
    {
    	boolean result = false;
-   	String login = call.getSecurity().getLogin();
-   	String password = call.getSecurity().getPassword();
+   	String login = (String)request.getAttributes().get(getLoginAttribute());
+   	String password = (String)request.getAttributes().get(getPasswordAttribute());
    	
    	if((login != null) && (password != null))
    	{
@@ -225,10 +234,10 @@ public class GuardFilter extends Filter
     * By default, invokes the attached Restlet.
     * @param call The current call.
     */
-   protected void accept(Call call)
+   protected void accept(Request request, Response response)
    {
    	// Invoke the chained Restlet
-      super.doHandle(call);
+      super.doHandle(request, response);
    }
    
    /**
@@ -238,15 +247,15 @@ public class GuardFilter extends Filter
     * call status is set to CLIENT_ERROR_FORBIDDEN.
     * @param call The current call.
     */
-   protected void reject(Call call)
+   protected void reject(Response response)
    {
       if(this.authentication)
       {
-      	challenge(call);
+      	challenge(response);
       }
       else
       {
-      	call.setStatus(Status.CLIENT_ERROR_FORBIDDEN);
+      	response.setStatus(Status.CLIENT_ERROR_FORBIDDEN);
       }
    }
    
@@ -256,17 +265,53 @@ public class GuardFilter extends Filter
     * challenging mechanism, such as displaying a login page.
     * @param call The current call.
     */
-   protected void challenge(Call call)
+   protected void challenge(Response response)
    {
 		if(this.scheme.equals(ChallengeScheme.HTTP_BASIC))
 		{
-			call.setStatus(Status.CLIENT_ERROR_UNAUTHORIZED);
-			call.getSecurity().setChallengeRequest(new ChallengeRequest(this.scheme, this.realm));
+			response.setStatus(Status.CLIENT_ERROR_UNAUTHORIZED);
+			response.setChallengeRequest(new ChallengeRequest(this.scheme, this.realm));
 		}
 		else
 		{
          logger.log(Level.WARNING, "Unsupported challenging mechanism. Please override the challenge method or use a supported challenge scheme like HTTP Basic.");
 		}
    }
+
+	/**
+	 * Returns the attribute name to use to store the login. The default value is "login".
+	 * @return the attribute name to use to store the login.
+	 */
+	public String getLoginAttribute()
+	{
+		return loginAttribute;
+	}
+
+	/**
+	 * Sets the attribute name to use to store the login.
+	 * @param loginAttribute The attribute name to use to store the login.
+	 */
+	public void setLoginAttribute(String loginAttribute)
+	{
+		this.loginAttribute = loginAttribute;
+	}
+
+	/**
+	 * Returns the attribute name to use to store the password. The default value is "password".
+	 * @return The attribute name to use to store the password.
+	 */
+	public String getPasswordAttribute()
+	{
+		return passwordAttribute;
+	}
+
+	/**
+	 * Sets the attribute name to use to store the password.
+	 * @param passwordAttribute The attribute name to use to store the password.
+	 */
+	public void setPasswordAttribute(String passwordAttribute)
+	{
+		this.passwordAttribute = passwordAttribute;
+	}
 
 }

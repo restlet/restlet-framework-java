@@ -11,7 +11,7 @@ Changes log
  - Completed support for content streaming in the HTTP client connector extension. Issue reported by Mikkel Jensen.
  - Fixed bug in ParameterList.getFirstValue(String, boolean) ignoring the "ignoreCase" parameter.
  - Fixed issue with ServerServlet preventing the returning of an output representation with an error status code. Reported by Sean Landis.
-  
+   
 [API breaking changes]
  - Moved hasInput() method from org.restlet.connector.Client to Call.isInputAvailable().
  - Renamed Representation.isContentAvailable() to isAvailable() and isContentTransient() to isTransient().
@@ -48,6 +48,10 @@ Changes log
  - Moved "root" property from Component to Application.
  - Added new org.restlet.component.VirtualHost class, as a Router subclass to target applications or handlers.
  - Connector and Context no longer implement UniformInterface.
+ - Split org.restlet.Call into org.restlet.Request and org.restlet.Response to solve overweight issue. Suggested by Piyush Purang.
+ - Merged AbstractResource and Resource into a single Resource class.
+ - Merged AbstractRepresentation and Representation into a single Representation class.
+ - Moved all wrappers into org.restlet.util. Suggested by Piyush Purang.
 
 [Other changes] 
  - Updated Jetty 6 extension to final 6.0 release.
@@ -62,12 +66,9 @@ Changes log
  - Added com.noelios.restlet.connector.HttpServerConverter as the base call converter (from HTTP calls to uniform REST calls).
  - Refactored the HttpUrlConnection-based HTTP client to extract a generic HttpClientConverter and added a base HttpClient class.
  - Added new constructors to Client and Server to be match Connector's constructors.
- - Added support of server HTTP headers in uniform Call instance. The request headers are available in call.getAttributes().get("org.restlet.http.
-   requestHeaders") as an instance of ParameterList. Additional response headers can also be added by setting a "org.restlet.http.responseHeaders" 
-   attribute. Note that only non-standard HTTP headers are allowed to be added to prevent conflicts with the connector's behavior.
- - Added support of client HTTP headers in uniform Call instance. The response headers are available in call.getAttributes().get("org.restlet.http.
-   responseHeaders") as an instance of ParameterList. Additional request headers can also be added by setting a "org.restlet.http.requestHeaders" 
-   attribute. Note that only non-standard HTTP headers are allowed to be added to prevent conflicts with the connector's behavior.
+ - Added support of HTTP headers in high-level calls. The headers are available in Request|Response.getAttributes().get("org.restlet.http.
+   headers") as an instance of ParameterList. Additional headers can also be added by setting a "org.restlet.http.headers" 
+   attribute in Request or Response. Note that only non-standard HTTP headers are allowed to be added to prevent conflicts with the connector's behavior.
  - Added sample application illustrating the access raw HTTP headers. Used suggestion from John D. Mitchell.
  - Added static valueOf() methods to ChallengeScheme, CharacterSet, Encoding, Language, MediaType, Method, Protocol and Status. Sometimes renamed existing create() method. Suggested by Piyush Purang.
  - Added new Context constructor taking just a logger name.
@@ -93,6 +94,9 @@ Changes log
  - Added Protocol.ALL constant as a protocol wildcard.
  - Changed ClientList and ServerList into classes supported by hidden implementation classes in NRE.
  - Added "hosts" and "localHost" properties to Container.
+ - Added support "Allow" HTTP headers. New allow*() methods added on Resource and support for setting the 405 status in the Finder (ex-Handler) class.
+   The list of allowed methods is then set to the Response (ex-Call) object. Subclasses of Finder can customize the list of allowed methods.
+   Suggested by AJ Barnes and Lars Heuer.
 
 1.0 beta 18 (2006-08-19)
 [Bugs fixed]

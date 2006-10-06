@@ -36,11 +36,11 @@ import javax.mail.internet.MimeMessage;
 import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
 
-import org.restlet.Call;
+import org.restlet.Request;
+import org.restlet.Response;
 import org.restlet.data.Method;
 import org.restlet.data.Protocol;
 import org.restlet.data.Representation;
-import org.restlet.data.SecurityData;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 import org.w3c.dom.NodeList;
@@ -84,28 +84,28 @@ public abstract class JavaMailClient extends ClientImpl
    }
 
    /**
-    * Creates a Restlet call.
+    * Creates a high-level request.
     * @param smtpURI The SMTP server's URI (ex: smtp://localhost).
     * @param email The email to send (valid XML email).
     * @param login Authenticate using this login name.
     * @param password Authenticate using this password.
     */
-   public static Call create(String smtpURI, Representation email, String login, String password)
+   public static Request create(String smtpURI, Representation email, String login, String password)
    {
-   	Call call = create(smtpURI, email);
-   	call.getSecurity().setLogin(login);
-   	call.getSecurity().setPassword(password);
-   	return call;
+   	Request result = create(smtpURI, email);
+   	result.getAttributes().put("login", login);
+   	result.getAttributes().put("password", password);
+   	return result;
    }
    
    /**
-    * Creates a Restlet call.
+    * Creates a high-level request.
     * @param smtpURI The SMTP server's URI (ex: smtp://localhost).
     * @param email The email to send (valid XML email).
     */
-   public static Call create(String smtpURI, Representation email)
+   public static Request create(String smtpURI, Representation email)
    {
-   	Call result = new Call();
+   	Request result = new Request();
       result.getClient().setAgent(Factory.VERSION_HEADER);
       result.setMethod(Method.POST);
       result.setResourceRef(smtpURI);
@@ -114,17 +114,18 @@ public abstract class JavaMailClient extends ClientImpl
    }
 
    /**
-    * Handles a REST call.
-    * @param call The call to handle.
+    * Handles a call.
+    * @param request The request to handle.
+    * @param response The response to update.
     */
-   public void handle(Call call)
+	public void handle(Request request, Response response)
    {
       try
       {
   			if(!isStarted()) start();
 
    		// Parse the SMTP URI
-         URI smtpURI = new URI(call.getResourceRef().toString());
+         URI smtpURI = new URI(request.getResourceRef().toString());
          String smtpHost = smtpURI.getHost();
          int smtpPort = smtpURI.getPort();
          // String smtpUserInfo = smtpURI.getUserInfo();
@@ -149,7 +150,7 @@ public abstract class JavaMailClient extends ClientImpl
 
          // Parse the email to extract necessary info
          DocumentBuilder docBuilder = DocumentBuilderFactory.newInstance().newDocumentBuilder();
-         Document email = docBuilder.parse(call.getInput().getStream());
+         Document email = docBuilder.parse(request.getInput().getStream());
 
          Element root = (Element)email.getElementsByTagName("email").item(0);
          Element header = (Element)root.getElementsByTagName("head").item(0);
@@ -185,8 +186,7 @@ public abstract class JavaMailClient extends ClientImpl
          Properties props = System.getProperties();
          
          // Check if authentication required
-         SecurityData sd = call.getSecurity();
-         boolean authenticate = ((sd.getLogin() != null) && (sd.getPassword() != null));
+         boolean authenticate = ((getLogin(request) != null) && (getPassword(request) != null));
          
          // Connect to the SMTP server
          if(getProtocols().equals(Protocol.SMTP) || getProtocols().equals(Protocol.SMTP_STARTTLS))
@@ -212,7 +212,7 @@ public abstract class JavaMailClient extends ClientImpl
          // Check if authentication is needed
          if(authenticate)
          {
-            transport.connect(smtpHost, sd.getLogin(), sd.getPassword());
+            transport.connect(smtpHost, getLogin(request), getPassword(request));
          }
          else
          {
@@ -265,4 +265,24 @@ public abstract class JavaMailClient extends ClientImpl
 
    }
 
+	/**
+	 * Returns the login stored as an attribute.
+	 * @param request The high-level request.
+	 * @return The high-level request.
+	 */
+	private String getLogin(Request request)
+	{
+		return (String)request.getAttributes().get("login");
+	}
+
+	/**
+	 * Returns the password stored as an attribute.
+	 * @param request The high-level request.
+	 * @return The high-level request.
+	 */
+	private String getPassword(Request request)
+	{
+		return (String)request.getAttributes().get("password");
+	}
+	
 }

@@ -22,7 +22,8 @@
 
 package com.noelios.restlet.example.tutorial;
 
-import org.restlet.Call;
+import org.restlet.Request;
+import org.restlet.Response;
 import org.restlet.Restlet;
 import org.restlet.component.Container;
 import org.restlet.data.MediaType;
@@ -34,39 +35,32 @@ import org.restlet.data.Protocol;
  */
 public class Tutorial05
 {
-   public static void main(String[] args)
+   public static void main(String[] args) throws Exception
    {
-      try
-      {
-         // Create a new Restlet container and add a HTTP server connector to it
-      	Container myContainer = new Container();
-         myContainer.getServers().add(Protocol.HTTP, 8182);
+      // Create a new Restlet container and add a HTTP server connector to it
+   	Container myContainer = new Container();
+      myContainer.getServers().add(Protocol.HTTP, 8182);
 
-         // Create a new Restlet that will display some path information.
-         Restlet myRestlet = new Restlet()
+      // Create a new Restlet that will display some path information.
+      Restlet myRestlet = new Restlet()
+         {
+            public void handleGet(Request request, Response response)
             {
-               public void handleGet(Call call)
-               {
-                  // Print the requested URI path
-                  String output = "Resource URI:  " + call.getResourceRef() + '\n' +
-                                  "Base URI:      " + call.getBaseRef() + '\n' +
-                                  "Relative path: " + call.getRelativePart() + '\n' +
-                                  "Query string:  " + call.getResourceRef().getQuery();
-                  call.setOutput(output, MediaType.TEXT_PLAIN);
-               }
-            };
+               // Print the requested URI path
+               String output = "Resource URI:  " + request.getResourceRef() + '\n' +
+                               "Base URI:      " + request.getBaseRef() + '\n' +
+                               "Relative path: " + request.getRelativePart() + '\n' +
+                               "Query string:  " + request.getResourceRef().getQuery();
+               response.setOutput(output, MediaType.TEXT_PLAIN);
+            }
+         };
 
-         // Then attach it to the local host
-         myContainer.getLocalHost().attach("/trace", myRestlet);
+      // Then attach it to the local host
+      myContainer.getLocalHost().attach("/trace", myRestlet);
 
-         // Now, let's start the container!
-         // Note that the HTTP server connector is also automatically started.
-         myContainer.start();
-      }
-      catch(Exception e)
-      {
-         e.printStackTrace();
-      }
+      // Now, let's start the container!
+      // Note that the HTTP server connector is also automatically started.
+      myContainer.start();
    }
 
 }

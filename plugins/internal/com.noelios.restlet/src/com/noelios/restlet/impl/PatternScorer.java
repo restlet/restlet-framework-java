@@ -27,7 +27,8 @@ import java.util.logging.Logger;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
-import org.restlet.Call;
+import org.restlet.Request;
+import org.restlet.Response;
 import org.restlet.Router;
 import org.restlet.Scorer;
 import org.restlet.UniformInterface;
@@ -72,13 +73,14 @@ public class PatternScorer extends Scorer
 	
 	/**
 	 * Returns the score for a given call (between 0 and 1.0).
-	 * @param call The call to score.
+    * @param request The request to score.
+    * @param response The response to score.
 	 * @return The score for a given call (between 0 and 1.0).
 	 */
-	public float score(Call call)
+	public float score(Request request, Response response)
 	{
 		float result = 0F;
-		String remainingRef = call.getRelativePart();
+		String remainingRef = request.getRelativePart();
 		Matcher matcher = getPattern().matcher(remainingRef);
       boolean matched = matcher.lookingAt();
 
@@ -107,11 +109,12 @@ public class PatternScorer extends Scorer
 	
 	/**
 	 * Handles the call.
-	 * @param call The call to handle.
+    * @param request The request to handle.
+    * @param response The response to update.
 	 */
-	public void handle(Call call)
+	public void handle(Request request, Response response)
 	{
-		String remainingRef = call.getRelativePart();
+		String remainingRef = request.getRelativePart();
 		Matcher matcher = getPattern().matcher(remainingRef);
       boolean matched = matcher.lookingAt();
          
@@ -124,7 +127,7 @@ public class PatternScorer extends Scorer
       {
 	      // Updates the context
 	      String matchedPart = remainingRef.substring(0, matcher.end());
-	      Reference baseRef = call.getBaseRef();
+	      Reference baseRef = request.getBaseRef();
 	
 	      if(baseRef == null)
 	      {
@@ -135,12 +138,12 @@ public class PatternScorer extends Scorer
 	      	baseRef = new Reference(baseRef.toString(false, false) + matchedPart);
 	      }
 	      
-      	call.setBaseRef(baseRef);
+	      request.setBaseRef(baseRef);
 	
 	      if(logger.isLoggable(Level.FINE))
 	      {
-	      	logger.fine("New base URI: " + call.getBaseRef());
-	      	logger.fine("New relative part: " + call.getRelativePart());
+	      	logger.fine("New base URI: " + request.getBaseRef());
+	      	logger.fine("New relative part: " + request.getRelativePart());
 	      }
 	
 	      if(logger.isLoggable(Level.FINE))
@@ -149,11 +152,11 @@ public class PatternScorer extends Scorer
 	      }
 	
 	      // Invoke the call restlet
-	      super.handle(call);
+	      super.handle(request, response);
 	   }
       else
       {
-      	call.setStatus(Status.CLIENT_ERROR_NOT_FOUND);
+      	response.setStatus(Status.CLIENT_ERROR_NOT_FOUND);
       }
 	}   
 }

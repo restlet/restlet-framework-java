@@ -26,8 +26,8 @@ import java.io.IOException;
 import java.nio.channels.ReadableByteChannel;
 import java.nio.channels.WritableByteChannel;
 
-import org.restlet.data.AbstractRepresentation;
 import org.restlet.data.MediaType;
+import org.restlet.data.Representation;
 
 import com.noelios.restlet.impl.util.ByteUtils;
 
@@ -35,7 +35,7 @@ import com.noelios.restlet.impl.util.ByteUtils;
  * Representation based on a BIO stream.
  * @author Jerome Louvel (contact@noelios.com) <a href="http://www.noelios.com/">Noelios Consulting</a>
  */
-public abstract class StreamRepresentation extends AbstractRepresentation
+public abstract class StreamRepresentation extends Representation
 {
    /**
     * Constructor.

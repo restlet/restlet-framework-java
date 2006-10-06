@@ -25,11 +25,9 @@ package org.restlet;
 import org.restlet.data.Status;
 
 /**
- * Chainer routing calls to one of the attached Scorers. Each scorer is representing a routing Restlet option that can 
- * compute an affinity score for each call depending on various criteria. Some add() methods in the 
- * modifiable ScorerList instance returned by getScorers() allow the creation of scorers based on URI path 
- * patterns matching the beginning of a the resource path in the current context (see Call.getContextPath() 
- * and getResourcePath() methods).<br/>
+ * Chainer routing calls to one of the attached Scorers. Each scorer represents a routing option that can 
+ * compute an affinity score for each call depending on various criteria. The attach() method allow the 
+ * creation of scorers based on URI patterns matching the beginning of a the relative resource part.<br/>
  * <br/>
  * In addition, several routing modes are supported, implementing various algorithms like:
  * <ul>
@@ -41,13 +39,13 @@ import org.restlet.data.Status;
  * <li>Custom</li>
  * </ul>
  * <br/>
- * Note that for scorers using URI patterns will update the call paths during the routing if they are selected.
- * If you are handling hierarchical paths, remember to directly attach the child routers to their parent router
- * instead of the top level Restlet container. Also, remember to manually handle the path separator characters 
- * in your path patterns otherwise the delegation will not work as expected.<br/>
+ * Note that for scorers using URI patterns will update the resource base reference during the routing if 
+ * they are selected. If you are using hierarchical paths, remember to directly attach the child routers to 
+ * their parent router instead of the top level Restlet container. Also, remember to manually handle the 
+ * path separator characters in your path patterns otherwise the delegation will not work as expected.<br/>
  * <br/>
- * Finally, you can modify the scorers list while handling incoming calls as the delegation code is ensured to 
- * be thread-safe.
+ * Finally, you can modify the scorers list while handling incoming calls as the delegation code is ensured 
+ * to be thread-safe.
  * @see <a href="http://www.restlet.org/tutorial#part11">Tutorial: Routers and hierarchical URIs</a>
  * @author Jerome Louvel (contact@noelios.com) <a href="http://www.noelios.com/">Noelios Consulting</a>
  */
@@ -149,10 +147,11 @@ public class Router extends Chainer
 	
 	/**
 	 * Returns the next handler if available.
-	 * @param call The current call.
+    * @param request The request to handle.
+    * @param response The response to update.
 	 * @return The next handler if available or null.
 	 */
-	public UniformInterface getNext(Call call)
+	public UniformInterface getNext(Request request, Response response)
 	{
 		Scorer result = null;
 		
@@ -177,27 +176,27 @@ public class Router extends Chainer
 				switch(getRoutingMode())
 				{
 					case BEST:
-						result = getScorers().getBest(call, this.requiredScore);
+						result = getScorers().getBest(request, response, this.requiredScore);
 					break;
 					
 					case FIRST:
-						result = getScorers().getFirst(call, this.requiredScore);
+						result = getScorers().getFirst(request, response, this.requiredScore);
 					break;
 					
 					case LAST:
-						result = getScorers().getLast(call, this.requiredScore);
+						result = getScorers().getLast(request, response, this.requiredScore);
 					break;
 					
 					case NEXT:
-						result = getScorers().getNext(call, this.requiredScore);
+						result = getScorers().getNext(request, response, this.requiredScore);
 					break;
 					
 					case RANDOM:
-						result = getScorers().getRandom(call, this.requiredScore);
+						result = getScorers().getRandom(request, response, this.requiredScore);
 					break;
 					
 					case CUSTOM:
-						result = getCustom(call);
+						result = getCustom(request, response);
 					break;
 				}
 			}
@@ -206,7 +205,7 @@ public class Router extends Chainer
 		if(result == null)
 		{
 			// No routing option could be matched
-			call.setStatus(Status.CLIENT_ERROR_NOT_FOUND);
+			response.setStatus(Status.CLIENT_ERROR_NOT_FOUND);
 		}
 		
 		return result;
@@ -215,10 +214,11 @@ public class Router extends Chainer
 	/**
 	 * Returns the matched scorer according to a custom algorithm. To use in combination of the RouterMode.CUSTOM 
 	 * enumeration. The default implementation (to be overriden), returns null. 
-	 * @param call The current call.
+    * @param request The request to handle.
+    * @param response The response to update.
 	 * @return The matched scorer if available or null.
 	 */
-	protected Scorer getCustom(Call call)
+	protected Scorer getCustom(Request request, Response response)
 	{
 		return null;
 	}

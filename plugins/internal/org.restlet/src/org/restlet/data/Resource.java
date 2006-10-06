@@ -22,6 +22,7 @@
 
 package org.restlet.data;
 
+import java.util.ArrayList;
 import java.util.List;
 
 /**
@@ -42,69 +43,157 @@ import java.util.List;
  * @see org.restlet.data.Reference
  * @author Jerome Louvel (contact@noelios.com) <a href="http://www.noelios.com/">Noelios Consulting</a>
  */
-public interface Resource
+public class Resource
 {
+   /** The modifiable list of identifiers. */
+	private ReferenceList identifiers;
+   
+   /** The modifiable list of variants. */
+	private List<Representation> variants;
+
+	/**
+	 * Indicates if it is allowed to delete the resource. The default value is false. 
+	 * @return True if the method is allowed.
+	 */
+	public boolean allowDelete()
+	{
+		return false;
+	}
+
+	/**
+	 * Indicates if it is allowed to get the variants. The default value is true. 
+	 * @return True if the method is allowed.
+	 */
+	public boolean allowGet()
+	{
+		return true;
+	}
+
+	/**
+	 * Indicates if it is allowed to post to the resource. The default value is false. 
+	 * @return True if the method is allowed.
+	 */
+	public boolean allowPost()
+	{
+		return false;
+	}
+
+	/**
+	 * Indicates if it is allowed to put to the resource. The default value is false. 
+	 * @return True if the method is allowed.
+	 */
+	public boolean allowPut()
+	{
+		return false;
+	}
+	
 	/**
 	 * Returns the official identifier.
 	 * @return The official identifier.
 	 */
-	public Reference getIdentifier();
-	
+	public Reference getIdentifier()
+	{
+		if(getIdentifiers().isEmpty())
+		{
+			return null;
+		}
+		else
+		{
+			return getIdentifiers().get(0);
+		}
+	}
+
 	/**
 	 * Sets the official identifier.
 	 * @param identifier The official identifier.
 	 */
-	public void setIdentifier(Reference identifier);
+	public void setIdentifier(Reference identifier)
+	{
+		if(getIdentifiers().isEmpty())
+		{
+			getIdentifiers().add(identifier);
+		}
+		else
+		{
+			getIdentifiers().set(0, identifier);
+		}
+	}
 	
 	/**
 	 * Sets the official identifier from a URI string.
 	 * @param identifierUri The official identifier to parse.
 	 */
-	public void setIdentifier(String identifierUri);
-	
+	public void setIdentifier(String identifierUri)
+	{
+		setIdentifier(new Reference(identifierUri));
+	}
+
 	/**
-	 * Returns the list of all the identifiers. The list is composed of the official identifier
-	 * followed by all the alias identifiers. It guarantees that a null pointer is never returned. 
-	 * @return The list of all the identifiers. 
+	 * Returns the list of all the identifiers for the resource. The list is composed of the official identifier
+	 * followed by all the alias identifiers.
+	 * @return The list of all the identifiers for the resource.
 	 */
-	public ReferenceList getIdentifiers();
+	public ReferenceList getIdentifiers()
+	{
+		if(this.identifiers == null) this.identifiers = new ReferenceList();
+		return this.identifiers;
+	}
 	
 	/**
 	 * Returns the list of variants. Each variant is described by metadata and can provide several instances 
-	 * of the variant's representation. It guarantees that a null pointer is never returned.
+	 * of the variant's representation.
 	 * @return The list of variants.
 	 */
-	public List<Representation> getVariants();
+	public List<Representation> getVariants()
+	{
+		if(this.variants == null) this.variants = new ArrayList<Representation>();
+		return this.variants;
+	}
 	
 	/**
 	 * Posts a variant representation in the resource.
 	 * @param entity The posted entity. 
 	 * @return The result information.
 	 */
-	public Result post(Representation entity);
+	public Result post(Representation entity)
+	{
+		return new Result(Status.SERVER_ERROR_NOT_IMPLEMENTED);
+	}
 	
 	/**
 	 * Puts a variant representation in the resource.
 	 * @param variant A new or updated variant representation. 
 	 * @return The result information.
 	 */
-	public Result put(Representation variant);
+	public Result put(Representation variant)
+	{
+		return new Result(Status.SERVER_ERROR_NOT_IMPLEMENTED);
+	}
 	
 	/**
 	 * Asks the resource to delete itself and all its representations.
 	 * @return The result information. 
 	 */
-	public Result delete();
+	public Result delete()
+	{
+		return new Result(Status.SERVER_ERROR_NOT_IMPLEMENTED);
+	}
 	
 	/**
 	 * Sets a new list of all the identifiers for the resource.  
 	 * @param identifiers The new list of identifiers. 
 	 */
-	public void setIdentifiers(ReferenceList identifiers);
+	public void setIdentifiers(ReferenceList identifiers)
+	{
+		this.identifiers = identifiers;
+	}
 	
 	/**
 	 * Sets a new list of variants. 
 	 * @param variants The new list of variants.
 	 */
-	public void setVariants(List<Representation> variants);
+	public void setVariants(List<Representation> variants)
+	{
+		this.variants = variants;
+	}
 }

@@ -24,8 +24,9 @@ package com.noelios.restlet.test;
 
 import junit.framework.TestCase;
 
-import org.restlet.Call;
 import org.restlet.Context;
+import org.restlet.Request;
+import org.restlet.Response;
 import org.restlet.Restlet;
 import org.restlet.component.Container;
 import org.restlet.data.MediaType;
@@ -63,16 +64,16 @@ public class RedirectTestCase extends TestCase
 		// Create a new Restlet that will display some path information.
 		Restlet trace = new Restlet()
 		{
-			public void handle(Call call)
+			public void handle(Request request, Response response)
 			{
 				// Print the requested URI path
 				String output = 
-					     "Resource URI:  " + call.getResourceRef() + '\n'
-						+ "Base URI:      " + call.getBaseRef() + '\n'
-						+ "Relative path: " + call.getRelativePart() + '\n'
-						+ "Query string:  " + call.getResourceRef().getQuery() + '\n'
-						+ "Method name:   " + call.getMethod() + '\n';
-				call.setOutput(new StringRepresentation(output, MediaType.TEXT_PLAIN));
+					     "Resource URI:  " + request.getResourceRef() + '\n'
+						+ "Base URI:      " + request.getBaseRef() + '\n'
+						+ "Relative path: " + request.getRelativePart() + '\n'
+						+ "Query string:  " + request.getResourceRef().getQuery() + '\n'
+						+ "Method name:   " + request.getMethod() + '\n';
+				response.setOutput(new StringRepresentation(output, MediaType.TEXT_PLAIN));
 			}
 		};
 
@@ -115,11 +116,8 @@ public class RedirectTestCase extends TestCase
 	private void testCall(Context context, Method method, String uri)
 			throws Exception
 	{
-		Call call = new Call();
-		call.setMethod(method);
-		call.setResourceRef(uri);
-		context.getClient().handle(call);
-		assertNotNull(call.getOutput());
-		call.getOutput().write(System.out);
+		Response response = context.getClient().handle(new Request(method, uri));
+		assertNotNull(response.getOutput());
+		response.getOutput().write(System.out);
 	}
 }

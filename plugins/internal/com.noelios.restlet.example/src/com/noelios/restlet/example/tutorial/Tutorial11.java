@@ -24,8 +24,9 @@ package com.noelios.restlet.example.tutorial;
 
 import java.util.List;
 
-import org.restlet.Call;
 import org.restlet.Context;
+import org.restlet.Request;
+import org.restlet.Response;
 import org.restlet.Restlet;
 import org.restlet.Router;
 import org.restlet.component.Container;
@@ -44,75 +45,68 @@ import com.noelios.restlet.StatusFilter;
  */
 public class Tutorial11 implements Constants
 {
-   public static void main(String[] args)
+   public static void main(String[] args) throws Exception
    {
-      try
-      {
-         // Create a new Restlet container
-      	Container myContainer = new Container();
-         Context myContext = myContainer.getContext();
+      // Create a new Restlet container
+   	Container myContainer = new Container();
+      Context myContext = myContainer.getContext();
 
-         // Add an HTTP server connector to the Restlet container. 
-         // Note that the container is the call restlet.
-         myContainer.getServers().add(Protocol.HTTP, 8182);
+      // Add an HTTP server connector to the Restlet container. 
+      // Note that the container is the call restlet.
+      myContainer.getServers().add(Protocol.HTTP, 8182);
 
-         // Attach a log Filter to the container
-         LogFilter log = new LogFilter(myContext, "com.noelios.restlet.example");
-         myContainer.getLocalHost().attach("/", log);
+      // Attach a log Filter to the container
+      LogFilter log = new LogFilter(myContext, "com.noelios.restlet.example");
+      myContainer.getLocalHost().attach("/", log);
 
-         // Attach a status Filter to the log Filter
-         StatusFilter status = new StatusFilter(myContext, true, "webmaster@mysite.org", "http://www.mysite.org");
-         log.setNext(status);
+      // Attach a status Filter to the log Filter
+      StatusFilter status = new StatusFilter(myContext, true, "webmaster@mysite.org", "http://www.mysite.org");
+      log.setNext(status);
 
-         // Create a first Router
-         Router router = new Router(myContext);
-         status.setNext(router);
+      // Create a first Router
+      Router router = new Router(myContext);
+      status.setNext(router);
 
-         // Attach a guard Filter to secure access the the chained directory Finder
-         GuardFilter guard = new GuardFilter(myContext, "com.noelios.restlet.example", true, ChallengeScheme.HTTP_BASIC , "Restlet tutorial", true);
-         guard.getAuthorizations().put("scott", "tiger");
-         router.getScorers().add("/docs/", guard);
+      // Attach a guard Filter to secure access the the chained directory Finder
+      GuardFilter guard = new GuardFilter(myContext, "com.noelios.restlet.example", true, ChallengeScheme.HTTP_BASIC , "Restlet tutorial", true);
+      guard.getAuthorizations().put("scott", "tiger");
+      router.getScorers().add("/docs/", guard);
 
-         // Create a directory Restlet able to return a deep hierarchy of Web files
-         DirectoryFinder directory = new DirectoryFinder(myContext, ROOT_URI, "index.html");
-         guard.setNext(directory);
+      // Create a directory Restlet able to return a deep hierarchy of Web files
+      DirectoryFinder directory = new DirectoryFinder(myContext, ROOT_URI, "index.html");
+      guard.setNext(directory);
 
-         // Create the user router
-         Router user = new Router(myContext);
-         router.attach("/users/[a-z]+", user);
+      // Create the user router
+      Router user = new Router(myContext);
+      router.attach("/users/[a-z]+", user);
 
-         // Create the account Restlet
-         Restlet account = new Restlet()
+      // Create the account Restlet
+      Restlet account = new Restlet()
+         {
+      		public void handleGet(Request request, Response response)
             {
-         		public void handleGet(Call call)
-               {
-                  // Print the requested URI path
-                  String output = "Account of user named: " + call.getBaseRef().getLastSegment();
-                  call.setOutput(output, MediaType.TEXT_PLAIN);
-               }
-            };
-         user.attach("$", account);
+               // Print the requested URI path
+               String output = "Account of user named: " + request.getBaseRef().getLastSegment();
+               response.setOutput(output, MediaType.TEXT_PLAIN);
+            }
+         };
+      user.attach("$", account);
 
-         // Create the orders Restlet
-         Restlet orders = new Restlet(myContext)
+      // Create the orders Restlet
+      Restlet orders = new Restlet(myContext)
+         {
+            public void handleGet(Request request, Response response)
             {
-               public void handleGet(Call call)
-               {
-                  // Print the user name of the requested orders
-                  List<String> segments = call.getBaseRef().getSegments();
-                  String output = "Orders of user named: " + segments.get(segments.size() - 2);
-                  call.setOutput(output, MediaType.TEXT_PLAIN);
-               }
-            };
-         user.attach("/orders$", orders);
+               // Print the user name of the requested orders
+               List<String> segments = request.getBaseRef().getSegments();
+               String output = "Orders of user named: " + segments.get(segments.size() - 2);
+               response.setOutput(output, MediaType.TEXT_PLAIN);
+            }
+         };
+      user.attach("/orders$", orders);
 
-         // Now, let's start the container!
-         myContainer.start();
-      }
-      catch(Exception e)
-      {
-         e.printStackTrace();
-      }
+      // Now, let's start the container!
+      myContainer.start();
    }
 
 }

@@ -32,8 +32,8 @@ import java.nio.channels.FileChannel;
 import java.nio.channels.WritableByteChannel;
 import java.util.Date;
 
-import org.restlet.data.AbstractRepresentation;
 import org.restlet.data.MediaType;
+import org.restlet.data.Representation;
 
 import com.noelios.restlet.impl.util.ByteUtils;
 
@@ -41,7 +41,7 @@ import com.noelios.restlet.impl.util.ByteUtils;
  * Representation based on a file.
  * @author Jerome Louvel (contact@noelios.com) <a href="http://www.noelios.com/">Noelios Consulting</a>
  */
-public class FileRepresentation extends AbstractRepresentation
+public class FileRepresentation extends Representation
 {
    /** The file descriptor. */
 	private File file;

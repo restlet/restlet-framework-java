@@ -27,52 +27,48 @@ import java.util.List;
 import java.util.Map;
 import java.util.TreeMap;
 
+import org.restlet.data.ChallengeResponse;
 import org.restlet.data.ClientData;
 import org.restlet.data.ConditionData;
 import org.restlet.data.Cookie;
-import org.restlet.data.CookieSetting;
 import org.restlet.data.Form;
-import org.restlet.data.Language;
-import org.restlet.data.MediaType;
 import org.restlet.data.Method;
 import org.restlet.data.Protocol;
 import org.restlet.data.Reference;
 import org.restlet.data.Representation;
-import org.restlet.data.Resource;
-import org.restlet.data.SecurityData;
-import org.restlet.data.ServerData;
-import org.restlet.data.Status;
-import org.restlet.spi.Factory;
 
 /**
- * Protocol-neutral call handled by UniformInterface implementors such as Restlets. It is issued by a client 
- * to a server and then processed by a chain of handlers. Calls are uniform across all types of connectors 
- * (client or server), all types of protocols and components. If you are familiar with the Servlet API, 
- * Call merges and abstracts the Servlet's HTTP request and response classes, as well as the HttpUrlConnection
- * class from the JDK.
+ * Protocol-neutral request handled by UniformInterface implementors such as Restlets. It is sent by a
+ * source component (via a client connector) to a target component (via a server connector). This request can
+ * also be processed by a chain of handlers, on the client or server sides. Requests are uniform across all 
+ * types of connectors, protocols and components.
+ * @see org.restlet.Response
  * @see org.restlet.Restlet
  * @see org.restlet.UniformInterface
  * @author Jerome Louvel (contact@noelios.com) <a href="http://www.noelios.com/">Noelios Consulting</a>
  */
-public class Call
+public class Request
 {
 	/** The modifiable attributes map. */
 	private Map<String, Object> attributes;
 
+	/** The authentication response sent by a client to an origin server. */
+	private ChallengeResponse challengeResponse;
+
 	/** The base reference. */
 	private Reference baseRef;
-	
+
 	/** The client data. */
 	private ClientData client;
 
 	/** The condition data. */
 	private ConditionData condition;
 
+	/** Indicates if the call came over a confidential channel. */
+	private boolean confidential;
+
 	/** The cookies provided by the client. */
 	private List<Cookie> cookies;
-
-	/** The cookie settings provided by the server. */
-	private List<CookieSetting> cookieSettings;
 
 	/** The representation provided by the client. */
 	private Representation input;
@@ -82,12 +78,6 @@ public class Call
 
 	/** The protocol. */
 	private Protocol protocol;
-	
-	/** The representation provided by the server. */
-	private Representation output;
-
-	/** The redirection reference. */
-	private Reference redirectRef;
 
 	/** The referrer reference. */
 	private Reference referrerRef;
@@ -95,20 +85,13 @@ public class Call
 	/** The resource reference. */
 	private Reference resourceRef;
 
-	/** The security data. */
-	private SecurityData security;
-
-	/** The server data. */
-	private ServerData server;
-
-	/** The status. */
-	private Status status;
 
 	/**
 	 * Constructor.
 	 */
-	public Call()
+	public Request()
 	{
+      this.confidential = false;
 	}
 
 	/**
@@ -116,11 +99,23 @@ public class Call
 	 * @param method The call's method.
 	 * @param resourceRef The resource reference.
 	 */
-	public Call(Method method, Reference resourceRef)
+	public Request(Method method, Reference resourceRef)
+	{
+		this(method, resourceRef, null);
+	}
+
+	/**
+	 * Constructor.
+	 * @param method The call's method.
+	 * @param resourceRef The resource reference.
+	 * @param input The input representation to send.
+	 */
+	public Request(Method method, Reference resourceRef, Representation input)
 	{
 		this();
 		setMethod(method);
 		setResourceRef(resourceRef);
+		setInput(input);
 	}
 
 	/**
@@ -128,21 +123,30 @@ public class Call
 	 * @param method The call's method.
 	 * @param resourceUri The resource URI.
 	 */
-	public Call(Method method, String resourceUri)
+	public Request(Method method, String resourceUri)
 	{
-		this();
-		setMethod(method);
-		setResourceRef(resourceUri);
+		this(method, new Reference(resourceUri));
+	}
+
+	/**
+	 * Constructor.
+	 * @param method The call's method.
+	 * @param resourceUri The resource URI.
+	 * @param input The input representation to send.
+	 */
+	public Request(Method method, String resourceUri, Representation input)
+	{
+		this(method, new Reference(resourceUri), input);
 	}
 
 	/**
 	 * Returns a modifiable attributes map that can be used by developers to save information relative
-	 * to the current call. This is an easier alternative to the creation of a wrapper around the whole 
-	 * call.<br/>
+	 * to the current request. This is an easier alternative to the creation of a wrapper around the whole 
+	 * request.<br/>
 	 * <br/>
 	 * In addition, this map is a shared space between the developer, the Restlet implementation and the
-	 * connectors used. In the latter cases, it is used to exchange information that is not uniform 
-	 * across all protocols and couldn't therefore be included in the Call API directly. For this purpose, 
+	 * connectors used. In this case, it is used to exchange information that is not uniform 
+	 * across all protocols and couldn't therefore be directly included in the API. For this purpose, 
 	 * all attribute names starting with "org.restlet" are reserved. Currently the following attributes 
 	 * are used:
 	 * <table>
@@ -152,21 +156,14 @@ public class Call
 	 * 		<th>Description</th>
 	 * 	</tr>
 	 * 	<tr>
-	 * 		<td>org.restlet.http.requestHeaders</td>
+	 * 		<td>org.restlet.http.headers</td>
 	 * 		<td>org.restlet.data.ParameterList</td>
 	 * 		<td>Server HTTP connectors must provide all the request headers exactly as they were received
 	 * from the client. When invoking client HTTP connectors, developers can also set this attribute to 
 	 * specify <b>non-standard</b> HTTP headers that should be added to the request sent to a server.</td>
 	 * 	</tr>
-	 * 	<tr>
-	 * 		<td>org.restlet.http.responseHeaders</td>
-	 * 		<td>org.restlet.data.ParameterList</td>
-	 * 		<td>Client HTTP connectors must provide all the response headers exactly as they were received
-	 * from the server. When replying to server HTTP connectors, developers can also set this attribute to 
-	 * specify <b>non-standard</b> HTTP headers that should be added to the response sent to a client.</td>
-	 * 	</tr>
 	 *	</table>
-	 * Trying to add standard HTTP headers is forbidden because it could conflict with the connector's internal 
+	 * Adding standard HTTP headers is forbidden because it could conflict with the connector's internal 
 	 * behavior, limit portability or prevent future optimizations.</td>
 	 * @return The modifiable attributes map.
 	 */
@@ -188,6 +185,15 @@ public class Call
 	{
 	   return this.baseRef;
 	}
+
+   /**
+    * Returns the authentication response sent by a client to an origin server.
+    * @return The authentication response sent by a client to an origin server.
+    */
+   public ChallengeResponse getChallengeResponse()
+   {
+      return this.challengeResponse;
+   }
 
 	/**
 	 * Returns the client specific data.
@@ -220,17 +226,6 @@ public class Call
 	}
 
 	/**
-	 * Returns the cookie settings provided by the server.
-	 * @return The cookie settings provided by the server.
-	 */
-	public List<CookieSetting> getCookieSettings()
-	{
-		if (this.cookieSettings == null)
-			this.cookieSettings = new ArrayList<CookieSetting>();
-		return this.cookieSettings;
-	}
-
-	/**
 	 * Returns the representation provided by the client.
 	 * @return The representation provided by the client.
 	 */
@@ -260,15 +255,6 @@ public class Call
 	}
 
 	/**
-	 * Returns the representation provided by the server.
-	 * @return The representation provided by the server.
-	 */
-	public Representation getOutput()
-	{
-		return this.output;
-	}
-
-	/**
 	 * Returns the protocol used by the call. It can either indicate the protocol used by a server connector
 	 * to receive the call or the one that must be used to send the call. If the protocol is not specified 
 	 * when sending a call, the implementation will attempt to guess it by looking at a scheme protocol 
@@ -278,15 +264,6 @@ public class Call
 	public Protocol getProtocol()
 	{
 		return this.protocol;
-	}
-	
-	/**
-	 * Returns the reference that the client should follow for redirections or resource creations.
-	 * @return The redirection reference.
-	 */
-	public Reference getRedirectRef()
-	{
-		return this.redirectRef;
 	}
 
 	/**
@@ -332,34 +309,15 @@ public class Call
 		return this.resourceRef;
 	}
 
-	/**
-	 * Returns the security data related to this call.
-	 * @return The security data related to this call.
-	 */
-	public SecurityData getSecurity()
-	{
-		if (this.security == null) this.security = new SecurityData();
-		return this.security;
-	}
-
-	/**
-	 * Returns the server specific data.
-	 * @return The server specific data.
-	 */
-	public ServerData getServer()
-	{
-		if (this.server == null) this.server = new ServerData();
-		return this.server;
-	}
-
-	/**
-	 * Returns the call status.
-	 * @return The call status.
-	 */
-	public Status getStatus()
-	{
-		return this.status;
-	}
+   /**
+    * Indicates if the call came over a confidential channel
+    * such as an SSL-secured connection.
+    * @return True if the call came over a confidential channel.
+    */
+   public boolean isConfidential()
+   {
+      return this.confidential;
+   }
 
 	/**
 	 * Indicates if an input representation is available and can be sent to a client.
@@ -411,6 +369,25 @@ public class Call
 	   this.baseRef = baseRef;
 	}
 
+   /**
+    * Sets the authentication response sent by a client to an origin server.
+    * @param response The authentication response sent by a client to an origin server.
+    */
+   public void setChallengeResponse(ChallengeResponse response)
+   {
+      this.challengeResponse = response;
+   }
+
+   /**
+    * Indicates if the call came over a confidential channel
+    * such as an SSL-secured connection.
+    * @param confidential True if the call came over a confidential channel.
+    */
+   public void setConfidential(boolean confidential)
+   {
+      this.confidential = confidential;
+   }
+
 	/**
 	 * Sets the representation provided by the client.
 	 * @param input The representation provided by the client.
@@ -430,38 +407,6 @@ public class Call
 	}
 
 	/**
-	 * Sets the representation provided by the server.
-	 * @param output The representation provided by the server.
-	 */
-	public void setOutput(Representation output)
-	{
-		this.output = output;
-	}
-
-	/**
-	 * Sets a textual representation provided by the server.
-    * @param value The represented string.
-    * @param mediaType The representation's media type.
-	 */
-	public void setOutput(String value, MediaType mediaType)
-	{
-		setOutput(Factory.getInstance().createRepresentation(value, mediaType));
-	}
-
-	/**
-	 * Sets the best output representation of a given resource according to the client preferences.<br/>
-	 * If no representation is found, sets the status to "Not found".<br/>
-	 * If no acceptable representation is available, sets the status to "Not acceptable".<br/>
-	 * @param resource The resource for which the best representation needs to be set.
-	 * @param fallbackLanguage The language to use if no preference matches.
-	 * @see <a href="http://httpd.apache.org/docs/2.2/en/content-negotiation.html#algorithm">Apache content negotiation algorithm</a>
-	 */
-	public void setOutput(Resource resource, Language fallbackLanguage)
-	{
-		Factory.getInstance().setOutput(this, resource, fallbackLanguage);
-	}
-
-	/**
 	 * Sets the protocol used by the call. It can either indicate the protocol used by a server connector
 	 * to receive the call or the one that must be used to send the call. If the protocol is not specified 
 	 * when sending a call, the implementation will attempt to guess it by looking at a scheme protocol 
@@ -471,24 +416,6 @@ public class Call
 	public void setProtocol(Protocol protocol)
 	{
 		this.protocol = protocol;
-	}
-
-	/**
-	 * Sets the reference that the client should follow for redirections or resource creations.
-	 * @param redirectUri The redirection URI.
-	 */
-	public void setRedirectRef(String redirectUri)
-	{
-		setRedirectRef(new Reference(getBaseRef(), redirectUri).getTargetRef());
-	}
-
-	/**
-	 * Sets the reference that the client should follow for redirections or resource creations.
-	 * @param redirectRef The redirection reference.
-	 */
-	public void setRedirectRef(Reference redirectRef)
-	{
-		this.redirectRef = redirectRef;
 	}
 
 	/**
@@ -538,15 +465,6 @@ public class Call
 		
 		// Reset the context's base reference
 		setBaseRef((Reference)null);
-	}
-
-	/**
-	 * Sets the call status.
-	 * @param status The call status to set.
-	 */
-	public void setStatus(Status status)
-	{
-		this.status = status;
 	}
 	
 }

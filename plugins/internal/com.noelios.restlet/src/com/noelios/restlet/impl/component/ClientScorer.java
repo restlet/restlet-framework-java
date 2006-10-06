@@ -25,7 +25,8 @@ package com.noelios.restlet.impl.component;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
-import org.restlet.Call;
+import org.restlet.Request;
+import org.restlet.Response;
 import org.restlet.Router;
 import org.restlet.Scorer;
 import org.restlet.connector.Client;
@@ -70,20 +71,21 @@ public class ClientScorer extends Scorer
 	
 	/**
 	 * Returns the score for a given call (between 0 and 1.0).
-	 * @param call The call to score.
+    * @param request The request to score.
+    * @param response The response to score.
 	 * @return The score for a given call (between 0 and 1.0).
 	 */
-	public float score(Call call)
+	public float score(Request request, Response response)
 	{
 		float result = 0F;
 
 		// Add the protocol score
-   	Protocol protocol = call.getProtocol();
+   	Protocol protocol = request.getProtocol();
    	if(protocol == null)
    	{
    		// Attempt to guess the protocol to use
    		// from the target reference scheme
-   		protocol = call.getResourceRef().getSchemeProtocol();
+   		protocol = request.getResourceRef().getSchemeProtocol();
    	}
    	
    	if(protocol == null)

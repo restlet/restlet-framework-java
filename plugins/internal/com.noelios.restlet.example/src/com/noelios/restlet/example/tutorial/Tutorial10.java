@@ -34,30 +34,23 @@ import com.noelios.restlet.RedirectRestlet;
  */
 public class Tutorial10
 {
-   public static void main(String[] args)
+   public static void main(String[] args) throws Exception
    {
-      try
-      {
-         // Create a new Restlet container
-         Container myContainer = new Container();
-         Context myContext = myContainer.getContext();
+      // Create a new Restlet container
+      Container myContainer = new Container();
+      Context myContext = myContainer.getContext();
 
-         // Add an HTTP server connector to the Restlet container. 
-         // Note that the container is the call restlet.
-         myContainer.getServers().add(Protocol.HTTP, 8182);
+      // Add an HTTP server connector to the Restlet container. 
+      // Note that the container is the call restlet.
+      myContainer.getServers().add(Protocol.HTTP, 8182);
 
-         // Create a redirect Restlet then attach it to the container
-         String target = "http://www.google.com/search?q=site:mysite.org+${query('query')}";
-         RedirectRestlet redirect = new RedirectRestlet(myContext, target, RedirectRestlet.MODE_CLIENT_TEMPORARY);
-         myContainer.getLocalHost().attach("/search", redirect);
+      // Create a redirect Restlet then attach it to the container
+      String target = "http://www.google.com/search?q=site:mysite.org+${query('query')}";
+      RedirectRestlet redirect = new RedirectRestlet(myContext, target, RedirectRestlet.MODE_CLIENT_TEMPORARY);
+      myContainer.getLocalHost().attach("/search", redirect);
 
-         // Now, let's start the container!
-         myContainer.start();
-      }
-      catch(Exception e)
-      {
-         e.printStackTrace();
-      }
+      // Now, let's start the container!
+      myContainer.start();
    }
 
 }

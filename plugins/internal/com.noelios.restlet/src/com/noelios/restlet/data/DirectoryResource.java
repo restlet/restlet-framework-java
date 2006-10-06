@@ -29,15 +29,16 @@ import java.util.TreeSet;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
-import org.restlet.Call;
+import org.restlet.Request;
+import org.restlet.Response;
 import org.restlet.connector.ClientInterface;
-import org.restlet.data.AbstractResource;
 import org.restlet.data.MediaType;
 import org.restlet.data.Method;
 import org.restlet.data.Preference;
 import org.restlet.data.Reference;
 import org.restlet.data.ReferenceList;
 import org.restlet.data.Representation;
+import org.restlet.data.Resource;
 import org.restlet.data.Result;
 import org.restlet.data.Status;
 
@@ -51,14 +52,14 @@ import com.noelios.restlet.DirectoryFinder;
  * @author Jerome Louvel (contact@noelios.com) <a href="http://www.noelios.com/">Noelios Consulting</a>
  * @author Thierry Boileau
  */
-public class DirectoryResource extends AbstractResource
+public class DirectoryResource extends Resource
 {
 	/** Obtain a suitable logger. */
 	private static Logger logger = Logger.getLogger(DirectoryResource.class
 			.getCanonicalName());
 
-	/** The handled call. */
-	private Call call;
+	/** The handled request. */
+	private Request request;
 
 	/** The parent directory handler. */
 	private DirectoryFinder handler;
@@ -87,15 +88,15 @@ public class DirectoryResource extends AbstractResource
 	/**
 	 * Constructor.
 	 * @param handler The parent directory handler.
-	 * @param call The handled call.
+	 * @param request The handled call.
 	 * @throws IOException 
 	 */
-	public DirectoryResource(DirectoryFinder handler, Call call) throws IOException
+	public DirectoryResource(DirectoryFinder handler, Request request) throws IOException
 	{
 		// Update the member variables
 		this.handler = handler;
-		this.call = call;
-		this.relativePart = call.getRelativePart();
+		this.request = request;
+		this.relativePart = request.getRelativePart();
 
 		if (this.relativePart.startsWith("/"))
 		{
@@ -112,12 +113,12 @@ public class DirectoryResource extends AbstractResource
 		}
 
 		// Try to detect the presence of a directory
-		Call contextCall = getClient().get(this.targetUri);
-		if ((contextCall.getOutput() != null)
-				&& contextCall.getOutput().getMediaType().equals(MediaType.TEXT_URI_LIST))
+		Response contextResponse = getClient().get(this.targetUri);
+		if ((contextResponse.getOutput() != null)
+				&& contextResponse.getOutput().getMediaType().equals(MediaType.TEXT_URI_LIST))
 		{
 			this.targetDirectory = true;
-			this.directoryContent = new ReferenceList(contextCall.getOutput());
+			this.directoryContent = new ReferenceList(contextResponse.getOutput());
 
 			if (!this.targetUri.endsWith("/"))
 			{
@@ -153,11 +154,11 @@ public class DirectoryResource extends AbstractResource
 				this.baseName = targetUri.substring(lastSlashIndex + 1);
 			}
 
-			contextCall = getClient().get(this.directoryUri);
-			if ((contextCall.getOutput() != null)
-					&& contextCall.getOutput().getMediaType().equals(MediaType.TEXT_URI_LIST))
+			contextResponse = getClient().get(this.directoryUri);
+			if ((contextResponse.getOutput() != null)
+					&& contextResponse.getOutput().getMediaType().equals(MediaType.TEXT_URI_LIST))
 			{
-				this.directoryContent = new ReferenceList(contextCall.getOutput());
+				this.directoryContent = new ReferenceList(contextResponse.getOutput());
 			}
 		}
 
@@ -178,6 +179,24 @@ public class DirectoryResource extends AbstractResource
 		// Log results
 		logger.info("Converted base path: " + this.targetUri);
 		logger.info("Converted base name: " + this.baseName);
+	}
+
+	/**
+	 * Indicates if it is allowed to delete the resource. The default value is false. 
+	 * @return True if the method is allowed.
+	 */
+	public boolean allowDelete()
+	{
+		return getDirectory().isModifiable();
+	}
+
+	/**
+	 * Indicates if it is allowed to put to the resource. The default value is false. 
+	 * @return True if the method is allowed.
+	 */
+	public boolean allowPut()
+	{
+		return getDirectory().isModifiable();
 	}
 
 	/**
@@ -236,14 +255,14 @@ public class DirectoryResource extends AbstractResource
 
 	/**
 	 * Handles a DELETE call.
-	 * @param call The call to handle.
+	 * @param request The call to handle.
 	 */
-	protected void handleDelete(Call call)
+	protected void handleDelete(Request request, Response response)
 	{
 		// We allow the transfer of the DELETE calls only if the readOnly flag is not set
 		if (!getDirectory().isModifiable())
 		{
-			call.setStatus(Status.CLIENT_ERROR_FORBIDDEN);
+			response.setStatus(Status.CLIENT_ERROR_FORBIDDEN);
 		}
 		else
 		{
@@ -254,14 +273,14 @@ public class DirectoryResource extends AbstractResource
 
 	/**
 	 * Handles a PUT call.
-	 * @param call The call to handle.
+	 * @param request The call to handle.
 	 */
-	protected void handlePut(Call call)
+	protected void handlePut(Request request, Response response)
 	{
 		// We allow the transfer of the PUT calls only if the readOnly flag is not set
 		if (!getDirectory().isModifiable())
 		{
-			call.setStatus(Status.CLIENT_ERROR_FORBIDDEN);
+			response.setStatus(Status.CLIENT_ERROR_FORBIDDEN);
 		}
 		else
 		{
@@ -272,11 +291,11 @@ public class DirectoryResource extends AbstractResource
 
 	/**
 	 * Default implementation for all the handle*() methods that simply calls the nextHandle() method. 
-	 * @param call The call to handle.
+	 * @param request The call to handle.
 	 */
-	protected void defaultHandle(Call call)
+	protected void defaultHandle(Request request, Response response)
 	{
-		call.setStatus(Status.CLIENT_ERROR_METHOD_NOT_ALLOWED);
+		response.setStatus(Status.CLIENT_ERROR_METHOD_NOT_ALLOWED);
 	}
 
 	/**
@@ -295,11 +314,11 @@ public class DirectoryResource extends AbstractResource
 				for (Reference ref : getVariantsReferences(false))
 				{
 					//Add the new variant to the result list
-					Call contextCall = getClient().get(ref.toString());
-					if (contextCall.getStatus().isSuccess()
-							&& (contextCall.getOutput() != null))
+					Response contextResponse = getClient().get(ref.toString());
+					if (contextResponse.getStatus().isSuccess()
+							&& (contextResponse.getOutput() != null))
 					{
-						result.add(contextCall.getOutput());
+						result.add(contextResponse.getOutput());
 					}
 				}
 			}
@@ -311,7 +330,7 @@ public class DirectoryResource extends AbstractResource
 					ReferenceList userList = new ReferenceList(this.directoryContent.size());
 
 					// Compute the base reference (from a call's client point of view) 
-					String baseRef = this.call.getBaseRef().toString(false, false);
+					String baseRef = this.request.getBaseRef().toString(false, false);
 					if (!baseRef.endsWith("/"))
 					{
 						baseRef += "/";
@@ -361,19 +380,23 @@ public class DirectoryResource extends AbstractResource
 	 */
 	public Result put(Representation variant)
 	{
-		Call contextCall = new Call(Method.PUT, this.targetUri);
+		Status status;
+		
 		// We allow the transfer of the PUT calls only if the readOnly flag is not set
 		if (!getDirectory().isModifiable())
 		{
-			contextCall.setStatus(Status.CLIENT_ERROR_FORBIDDEN);
+			status = Status.CLIENT_ERROR_FORBIDDEN;
 		}
 		else
 		{
-			contextCall.setInput(variant);
+			Request contextRequest = new Request(Method.PUT, this.targetUri);
+			Response contextResponse = new Response(contextRequest);
+			
+			contextRequest.setInput(variant);
 			if (targetDirectory)
 			{
-				contextCall.setResourceRef(this.targetUri);
-				getClient().handle(contextCall);
+				contextRequest.setResourceRef(this.targetUri);
+				getClient().handle(contextRequest, contextResponse);
 			}
 			else
 			{
@@ -381,18 +404,20 @@ public class DirectoryResource extends AbstractResource
 				ReferenceList references = getVariantsReferences(true);
 				if (!references.isEmpty())
 				{
-					contextCall.setResourceRef(references.get(0));
-					getClient().handle(contextCall);
+					contextRequest.setResourceRef(references.get(0));
+					getClient().handle(contextRequest, contextResponse);
 				}
 				else
 				{
-					contextCall.setResourceRef(this.targetUri);
-					getClient().handle(contextCall);
+					contextRequest.setResourceRef(this.targetUri);
+					getClient().handle(contextRequest, contextResponse);
 				}
 			}
+			
+			status = contextResponse.getStatus();
 		}
 
-		return new Result(contextCall.getStatus());
+		return new Result(status);
 	}
 
 	/**
@@ -401,19 +426,22 @@ public class DirectoryResource extends AbstractResource
 	 */
 	public Result delete()
 	{
-		Call contextCall = new Call();
-		contextCall.setMethod(Method.DELETE);
+		Status status;
+		
 		// We allow the transfer of the PUT calls only if the readOnly flag is not set
 		if (!getDirectory().isModifiable())
 		{
-			contextCall.setStatus(Status.CLIENT_ERROR_FORBIDDEN);
+			status = Status.CLIENT_ERROR_FORBIDDEN;
 		}
 		else
 		{
+			Request contextRequest = new Request(Method.DELETE, this.targetUri);
+			Response contextResponse = new Response(contextRequest);
+
 			if (targetDirectory)
 			{
-				contextCall.setResourceRef(this.targetUri);
-				getClient().handle(contextCall);
+				contextRequest.setResourceRef(this.targetUri);
+				getClient().handle(contextRequest, contextResponse);
 			}
 			else
 			{
@@ -421,17 +449,19 @@ public class DirectoryResource extends AbstractResource
 				ReferenceList references = getVariantsReferences(true);
 				if (!references.isEmpty())
 				{
-					contextCall.setResourceRef(references.get(0));
-					getClient().handle(contextCall);
+					contextRequest.setResourceRef(references.get(0));
+					getClient().handle(contextRequest, contextResponse);
 				}
 				else
 				{
-					contextCall.setStatus(Status.CLIENT_ERROR_NOT_FOUND);
+					contextResponse.setStatus(Status.CLIENT_ERROR_NOT_FOUND);
 				}
 			}
+
+			status = contextResponse.getStatus();
 		}
 
-		return new Result(contextCall.getStatus());
+		return new Result(status);
 	}
 
 	/**
@@ -445,13 +475,13 @@ public class DirectoryResource extends AbstractResource
 		ReferenceList result = new ReferenceList(0);
 		try
 		{
-			Call contextCall = new Call(Method.GET, this.targetUri);
+			Request contextCall = new Request(Method.GET, this.targetUri);
 			contextCall.getClient().getAcceptedMediaTypes().add(
 					new Preference<MediaType>(MediaType.TEXT_URI_LIST));
-			getClient().handle(contextCall);
-			if (contextCall.getOutput() != null)
+			Response contextResponse = getClient().handle(contextCall);
+			if (contextResponse.getOutput() != null)
 			{
-				ReferenceList listVariants = new ReferenceList(contextCall.getOutput());
+				ReferenceList listVariants = new ReferenceList(contextResponse.getOutput());
 				Set<String> extensions = null;
 				String entryUri;
 				String fullEntryName;

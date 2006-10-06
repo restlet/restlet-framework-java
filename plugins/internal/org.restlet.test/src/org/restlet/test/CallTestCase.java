@@ -24,7 +24,8 @@ package org.restlet.test;
 import java.util.Arrays;
 import java.util.List;
 
-import org.restlet.Call;
+import org.restlet.Request;
+import org.restlet.Response;
 import org.restlet.data.ClientData;
 import org.restlet.data.Method;
 import org.restlet.data.Reference;
@@ -41,13 +42,22 @@ import com.noelios.restlet.impl.connector.HttpCall;
 public class CallTestCase extends RestletTestCase
 {
 	/**
-	 * Returns the call that is used for the tests.
-	 *
-	 * @return A call instance.
+	 * Returns a request. 
+	 * @return Request instance.
 	 */
-	protected Call getCall()
+	protected Request getRequest()
 	{
-		return new Call();
+		return new Request();
+	}
+
+	/**
+	 * Returns a response. 
+	 * @param request The associated request.
+	 * @return Response instance.
+	 */
+	protected Response getResponse(Request request)
+	{
+		return new Response(request);
 	}
 
 	/**
@@ -76,11 +86,12 @@ public class CallTestCase extends RestletTestCase
 	 */
 	public void testStatus() throws Exception
 	{
-		Call call = getCall();
-		call.setStatus(Status.SUCCESS_OK);
-		assertEquals(Status.SUCCESS_OK, call.getStatus());
-		call.setStatus(Status.CLIENT_ERROR_BAD_REQUEST);
-		assertEquals(Status.CLIENT_ERROR_BAD_REQUEST, call.getStatus());
+		Request request = getRequest();
+		Response response = getResponse(request);
+		response.setStatus(Status.SUCCESS_OK);
+		assertEquals(Status.SUCCESS_OK, response.getStatus());
+		response.setStatus(Status.CLIENT_ERROR_BAD_REQUEST);
+		assertEquals(Status.CLIENT_ERROR_BAD_REQUEST, response.getStatus());
 	}
 
 	/**
@@ -88,7 +99,7 @@ public class CallTestCase extends RestletTestCase
 	 */
 	public void testClientAddress() throws Exception
 	{
-		ClientData client = getCall().getClient();
+		ClientData client = getRequest().getClient();
 		String address = "127.0.0.1";
 		client.setAddress(address);
 		assertEquals(address, client.getAddress());
@@ -106,7 +117,7 @@ public class CallTestCase extends RestletTestCase
 	 */
 	public void testClientAddresses() throws Exception
 	{
-		ClientData client = getCall().getClient();
+		ClientData client = getRequest().getClient();
 		String firstAddress = "127.0.0.1";
 		String secondAddress = "192.168.99.10";
 		List<String> addresses = Arrays.asList(new String[]
@@ -133,7 +144,7 @@ public class CallTestCase extends RestletTestCase
 	 */
 	public void testClientAgent() throws Exception
 	{
-		ClientData client = getCall().getClient();
+		ClientData client = getRequest().getClient();
 		String name = "Restlet";
 		client.setAgent(name);
 		assertEquals(name, client.getAgent());
@@ -147,13 +158,14 @@ public class CallTestCase extends RestletTestCase
 	 */
 	public void testServerAddress() throws Exception
 	{
-		Call call = getCall();
+		Request request = getRequest();
+		Response response = getResponse(request);
 		String address = "127.0.0.1";
-		call.getServer().setAddress(address);
-		assertEquals(address, call.getServer().getAddress());
+		response.getServer().setAddress(address);
+		assertEquals(address, response.getServer().getAddress());
 		address = "192.168.99.10";
-		call.getServer().setAddress(address);
-		assertEquals(address, call.getServer().getAddress());
+		response.getServer().setAddress(address);
+		assertEquals(address, response.getServer().getAddress());
 	}
 
 	/**
@@ -161,13 +173,14 @@ public class CallTestCase extends RestletTestCase
 	 */
 	public void testServerAgent() throws Exception
 	{
-		Call call = getCall();
+		Request request = getRequest();
+		Response response = getResponse(request);
 		String name = "Restlet";
-		call.getServer().setAgent(name);
-		assertEquals(name, call.getServer().getAgent());
+		response.getServer().setAgent(name);
+		assertEquals(name, response.getServer().getAgent());
 		name = "Restlet Server";
-		call.getServer().setAgent(name);
-		assertEquals(name, call.getServer().getAgent());
+		response.getServer().setAgent(name);
+		assertEquals(name, response.getServer().getAgent());
 	}
 
 	/**
@@ -175,11 +188,11 @@ public class CallTestCase extends RestletTestCase
 	 */
 	public void testMethod() throws Exception
 	{
-		Call call = getCall();
-		call.setMethod(Method.GET);
-		assertEquals(Method.GET, call.getMethod());
-		call.setMethod(Method.POST);
-		assertEquals(Method.POST, call.getMethod());
+		Request request = getRequest();
+		request.setMethod(Method.GET);
+		assertEquals(Method.GET, request.getMethod());
+		request.setMethod(Method.POST);
+		assertEquals(Method.POST, request.getMethod());
 	}
 
 	/**
@@ -187,15 +200,16 @@ public class CallTestCase extends RestletTestCase
 	 */
 	public void testRedirectionRef() throws Exception
 	{
-		Call call = getCall();
+		Request request = getRequest();
+		Response response = getResponse(request);
 		String uri = "http://www.restlet.org/";
 		Reference reference = getReference(uri);
-		call.setRedirectRef(uri);
-		assertEquals(reference, call.getRedirectRef());
+		response.setRedirectRef(uri);
+		assertEquals(reference, response.getRedirectRef());
 		uri = "http://www.restlet.org/something";
 		reference = getReference(uri);
-		call.setRedirectRef(reference);
-		assertEquals(reference, call.getRedirectRef());
+		response.setRedirectRef(reference);
+		assertEquals(reference, response.getRedirectRef());
 	}
 
 	/**
@@ -203,15 +217,15 @@ public class CallTestCase extends RestletTestCase
 	 */
 	public void testReferrerRef() throws Exception
 	{
-		Call call = getCall();
+		Request request = getRequest();
 		String uri = "http://www.restlet.org/";
 		Reference reference = getReference(uri);
-		call.setReferrerRef(uri);
-		assertEquals(reference, call.getReferrerRef());
+		request.setReferrerRef(uri);
+		assertEquals(reference, request.getReferrerRef());
 		uri = "http://www.restlet.org/something";
 		reference = getReference(uri);
-		call.setReferrerRef(reference);
-		assertEquals(reference, call.getReferrerRef());
+		request.setReferrerRef(reference);
+		assertEquals(reference, request.getReferrerRef());
 	}
 
 	/**
@@ -219,15 +233,15 @@ public class CallTestCase extends RestletTestCase
 	 */
 	public void testResourceRef() throws Exception
 	{
-		Call call = getCall();
+		Request request = getRequest();
 		String uri = "http://www.restlet.org/";
 		Reference reference = getReference(uri);
-		call.setResourceRef(uri);
-		assertEquals(reference, call.getResourceRef());
+		request.setResourceRef(uri);
+		assertEquals(reference, request.getResourceRef());
 		uri = "http://www.restlet.org/something";
 		reference = getReference(uri);
-		call.setResourceRef(reference);
-		assertEquals(reference, call.getResourceRef());
+		request.setResourceRef(reference);
+		assertEquals(reference, request.getResourceRef());
 	}
 
 	/**
@@ -235,21 +249,21 @@ public class CallTestCase extends RestletTestCase
 	 */
 	public void testBaseRef() throws Exception
 	{
-		Call call = getCall();
+		Request request = getRequest();
 		String resourceRefURI = "http://www.restlet.org/path/to/resource";
 		Reference resourceRef = getReference(resourceRefURI);
-		call.setResourceRef(resourceRefURI);
-		assertEquals(resourceRef, call.getResourceRef());
+		request.setResourceRef(resourceRefURI);
+		assertEquals(resourceRef, request.getResourceRef());
 		String uri = "http://www.restlet.org/path";
 		Reference reference = getReference(uri);
-		call.setBaseRef(uri);
-		assertEquals(uri, call.getBaseRef().toString());
-		assertEquals(reference, call.getBaseRef());
+		request.setBaseRef(uri);
+		assertEquals(uri, request.getBaseRef().toString());
+		assertEquals(reference, request.getBaseRef());
 		uri = "http://www.restlet.org/path/to";
 		reference = getReference(uri);
-		call.setBaseRef(uri);
-		assertEquals(uri, call.getBaseRef().toString());
-		assertEquals(reference, call.getBaseRef());
+		request.setBaseRef(uri);
+		assertEquals(uri, request.getBaseRef().toString());
+		assertEquals(reference, request.getBaseRef());
 	}
 
 	/**

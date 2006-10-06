@@ -25,8 +25,9 @@ package com.noelios.restlet;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
-import org.restlet.Call;
 import org.restlet.Context;
+import org.restlet.Request;
+import org.restlet.Response;
 import org.restlet.Restlet;
 import org.restlet.data.Reference;
 import org.restlet.data.Status;
@@ -117,41 +118,42 @@ public class RedirectRestlet extends Restlet
 
    /**
     * Handles a call to a resource or a set of resources.
-    * @param call The call to handle.
+    * @param request The request to handle.
+    * @param response The response to update.
     */
-	public void handle(Call call)
+	public void handle(Request request, Response response)
    {
       // Create the template engine
       StringTemplate te = new StringTemplate(this.targetPattern);
 
       // Create the template data model
-      String targetUri = te.process(new CallModel(call, ""));
+      String targetUri = te.process(new CallModel(request, response, ""));
       Reference target = new Reference(targetUri);
 
       switch(this.mode)
       {
          case MODE_CLIENT_PERMANENT:
             logger.log(Level.INFO, "Permanently redirecting client to: " + targetUri);
-            call.setRedirectRef(target);
-            call.setStatus(Status.REDIRECTION_MOVED_PERMANENTLY);
+            response.setRedirectRef(target);
+            response.setStatus(Status.REDIRECTION_MOVED_PERMANENTLY);
          break;
 
          case MODE_CLIENT_FOUND:
             logger.log(Level.INFO, "Redirecting client to found location: " + targetUri);
-            call.setRedirectRef(target);
-            call.setStatus(Status.REDIRECTION_FOUND);
+            response.setRedirectRef(target);
+            response.setStatus(Status.REDIRECTION_FOUND);
          break;
          
          case MODE_CLIENT_TEMPORARY:
             logger.log(Level.INFO, "Temporarily redirecting client to: " + targetUri);
-            call.setRedirectRef(target);
-            call.setStatus(Status.REDIRECTION_MOVED_TEMPORARILY);
+            response.setRedirectRef(target);
+            response.setStatus(Status.REDIRECTION_MOVED_TEMPORARILY);
          break;
 
          case MODE_CONNECTOR:
             logger.log(Level.INFO, "Redirecting via client connector to: " + targetUri);
-            call.setResourceRef(target);
-            getContext().getClient().handle(call);
+            request.setResourceRef(target);
+            getContext().getClient().handle(request, response);
          break;
       }
    }

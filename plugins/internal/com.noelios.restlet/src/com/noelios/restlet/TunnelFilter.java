@@ -22,8 +22,9 @@
 
 package com.noelios.restlet;
 
-import org.restlet.Call;
 import org.restlet.Context;
+import org.restlet.Request;
+import org.restlet.Response;
 import org.restlet.data.Method;
 
 import com.noelios.restlet.impl.util.PreferenceUtils;
@@ -86,64 +87,65 @@ public class TunnelFilter extends ExtractFilter
 
    /**
     * Allows filtering before its handling by the target Restlet. Does nothing by default.
-    * @param call The call to filter.
+    * @param request The request to handle.
+    * @param response The response to update.
     */
-   public void beforeHandle(Call call)
+   public void beforeHandle(Request request, Response response)
    {
-      super.beforeHandle(call);
+      super.beforeHandle(request, response);
 
       // Tunnels the extracted attributes into the proper call objects.
       if(isMethodTunnel())
       {
-         String methodName = (String)call.getAttributes().get(getMethodAttribute());
+         String methodName = (String)request.getAttributes().get(getMethodAttribute());
 
          if(methodName != null)
          {
-            call.setMethod(Method.valueOf(methodName));
+         	request.setMethod(Method.valueOf(methodName));
          }
       }
 
       if(isPreferencesTunnel())
       {
          // Extract the header values
-         String acceptCharset = (String)call.getAttributes().get(getCharacterSetsAttribute());
-         String acceptEncoding = (String)call.getAttributes().get(getEncodingsAttribute());
-         String acceptLanguage = (String)call.getAttributes().get(getLanguagesAttribute());
-         String acceptMediaType = (String)call.getAttributes().get(getMediaTypesAttribute());
+         String acceptCharset = (String)request.getAttributes().get(getCharacterSetsAttribute());
+         String acceptEncoding = (String)request.getAttributes().get(getEncodingsAttribute());
+         String acceptLanguage = (String)request.getAttributes().get(getLanguagesAttribute());
+         String acceptMediaType = (String)request.getAttributes().get(getMediaTypesAttribute());
 
          // Parse the headers and update the call preferences
          if(acceptCharset != null)
          {
-            call.getClient().getAcceptedCharacterSets().clear();
-            PreferenceUtils.parseCharacterSets(acceptCharset, call.getClient());
+         	request.getClient().getAcceptedCharacterSets().clear();
+            PreferenceUtils.parseCharacterSets(acceptCharset, request.getClient());
          }
 
          if(acceptEncoding != null)
          {
-            call.getClient().getAcceptedEncodings().clear();
-            PreferenceUtils.parseEncodings(acceptEncoding, call.getClient());
+         	request.getClient().getAcceptedEncodings().clear();
+            PreferenceUtils.parseEncodings(acceptEncoding, request.getClient());
          }
 
          if(acceptLanguage != null)
          {
-            call.getClient().getAcceptedLanguages().clear();
-            PreferenceUtils.parseLanguages(acceptLanguage, call.getClient());
+         	request.getClient().getAcceptedLanguages().clear();
+            PreferenceUtils.parseLanguages(acceptLanguage, request.getClient());
          }
 
          if(acceptMediaType != null)
          {
-            call.getClient().getAcceptedMediaTypes().clear();
-            PreferenceUtils.parseMediaTypes(acceptMediaType, call.getClient());
+         	request.getClient().getAcceptedMediaTypes().clear();
+            PreferenceUtils.parseMediaTypes(acceptMediaType, request.getClient());
          }
       }
 
       if(isUriTunnel())
       {
-         String uri = (String)call.getAttributes().get(getUriAttribute());
+         String uri = (String)request.getAttributes().get(getUriAttribute());
 
          if(uri != null)
          {
-            call.setResourceRef(uri);
+         	request.setResourceRef(uri);
          }
       }
    }

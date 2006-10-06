@@ -24,7 +24,8 @@ package com.noelios.restlet.test;
 
 import junit.framework.TestCase;
 
-import org.restlet.Call;
+import org.restlet.Request;
+import org.restlet.Response;
 
 import com.noelios.restlet.util.CallModel;
 import com.noelios.restlet.util.MapModel;
@@ -71,8 +72,9 @@ public class StringTemplateTestCase extends TestCase
    public void testUriPattern()
    {
    	// Create a test call
-      Call call = new Call();
-      call.setResourceRef("http://www.domain.com:8080/path1/path2/path3?param1&param2=123&query=abc");
+      Request request = new Request();
+      Response response = new Response(request);
+      request.setResourceRef("http://www.domain.com:8080/path1/path2/path3?param1&param2=123&query=abc");
 
       // Create the template engine
    	String pattern = "http://www.target.org";
@@ -80,12 +82,12 @@ public class StringTemplateTestCase extends TestCase
       StringTemplate te = new StringTemplate(pattern);
 
       // Create the template data model
-      String targetUri = te.process(new CallModel(call, null));
+      String targetUri = te.process(new CallModel(request, response, null));
       assertEquals("http://www.target.org/path1/path2/path3?abc", targetUri);
 
       // Remove the query parameter
-      call.setResourceRef("http://www.domain.com:8080/path1/path2/path3?param1&param2=123");
-      targetUri = te.process(new CallModel(call, null));
+      request.setResourceRef("http://www.domain.com:8080/path1/path2/path3?param1&param2=123");
+      targetUri = te.process(new CallModel(request, response, null));
       assertEquals("http://www.target.org/path1/path2/path3", targetUri);
    }
    

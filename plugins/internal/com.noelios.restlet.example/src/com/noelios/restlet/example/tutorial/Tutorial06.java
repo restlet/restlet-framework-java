@@ -33,26 +33,19 @@ import com.noelios.restlet.DirectoryFinder;
  */
 public class Tutorial06 implements Constants
 {
-   public static void main(String[] args)
+   public static void main(String[] args) throws Exception
    {
-      try
-      {
-         // Create a new Restlet container and add a HTTP server connector to it
-      	Container myContainer = new Container();
-         myContainer.getServers().add(Protocol.HTTP, 8182);
+      // Create a new Restlet container and add a HTTP server connector to it
+   	Container myContainer = new Container();
+      myContainer.getServers().add(Protocol.HTTP, 8182);
 
-         // Create a DirectoryFinder able to return a deep hierarchy of Web files
-         // (HTML pages, CSS stylesheets or GIF images) from a local directory.
-         DirectoryFinder directory = new DirectoryFinder(myContainer.getContext(), ROOT_URI, "index.html");
-         myContainer.getLocalHost().attach("/", directory);
+      // Create a DirectoryFinder able to return a deep hierarchy of Web files
+      // (HTML pages, CSS stylesheets or GIF images) from a local directory.
+      DirectoryFinder directory = new DirectoryFinder(myContainer.getContext(), ROOT_URI, "index.html");
+      myContainer.getLocalHost().attach("/", directory);
 
-         // Now, let's start the container!
-         myContainer.start();
-      }
-      catch(Exception e)
-      {
-         e.printStackTrace();
-      }
+      // Now, let's start the container!
+      myContainer.start();
    }
 
 }

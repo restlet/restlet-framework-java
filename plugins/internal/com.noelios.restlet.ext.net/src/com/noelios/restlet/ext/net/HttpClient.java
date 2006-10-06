@@ -26,7 +26,7 @@ import java.io.IOException;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
-import org.restlet.Call;
+import org.restlet.Request;
 import org.restlet.data.Protocol;
 
 import com.noelios.restlet.impl.connector.HttpClientCall;
@@ -96,17 +96,17 @@ public class HttpClient extends com.noelios.restlet.impl.connector.HttpClient
 
 	/**
 	 * Creates a low-level HTTP client call from a high-level uniform call.
-	 * @param call The high-level uniform call.
+	 * @param request The high-level request.
 	 * @return A low-level HTTP client call.
 	 */
-	public HttpClientCall create(Call call)
+	public HttpClientCall create(Request request)
 	{
 		HttpClientCall result = null;
 		
 		try
 		{
-			result = new HttpUrlConnectionCall(this, call.getMethod().toString(), 
-					call.getResourceRef().toString(), call.isInputAvailable());
+			result = new HttpUrlConnectionCall(this, request.getMethod().toString(), 
+					request.getResourceRef().toString(), request.isInputAvailable());
 		}
 		catch (IOException ioe)
 		{

@@ -38,7 +38,8 @@ import java.util.jar.JarFile;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
-import org.restlet.Call;
+import org.restlet.Request;
+import org.restlet.Response;
 import org.restlet.data.CharacterSet;
 import org.restlet.data.Encoding;
 import org.restlet.data.Language;
@@ -226,9 +227,10 @@ public class LocalClient extends ClientImpl
 
 	/**
 	 * Handles a call.
-	 * @param call The call to handle.
+    * @param request The request to handle.
+    * @param response The response to update.
 	 */
-	public void handle(Call call)
+	public void handle(Request request, Response response)
 	{
 		try
 		{
@@ -241,35 +243,35 @@ public class LocalClient extends ClientImpl
 
 		if (isStarted())
 		{
-			String scheme = call.getResourceRef().getScheme();
+			String scheme = request.getResourceRef().getScheme();
 
 			// Ensure that all ".." and "." are normalized into the path
 			// to preven unauthorized access to user directories.
-			call.getResourceRef().normalize();
+			request.getResourceRef().normalize();
 
 			if (scheme.equalsIgnoreCase("file"))
 			{
-				handleFile(call, call.getResourceRef().getPath());
+				handleFile(request, response, request.getResourceRef().getPath());
 			}
 			else if (scheme.equalsIgnoreCase("context"))
 			{
-				ContextReference cr = new ContextReference(call.getResourceRef());
+				ContextReference cr = new ContextReference(request.getResourceRef());
 
 				if (cr.getAuthorityType() == AuthorityType.CLASS)
 				{
-					handleClassLoader(call, getClass().getClassLoader());
+					handleClassLoader(request, response, getClass().getClassLoader());
 				}
 				else if (cr.getAuthorityType() == AuthorityType.SYSTEM)
 				{
-					handleClassLoader(call, ClassLoader.getSystemClassLoader());
+					handleClassLoader(request, response, ClassLoader.getSystemClassLoader());
 				}
 				else if (cr.getAuthorityType() == AuthorityType.THREAD)
 				{
-					handleClassLoader(call, Thread.currentThread().getContextClassLoader());
+					handleClassLoader(request, response, Thread.currentThread().getContextClassLoader());
 				}
 				else if (cr.getAuthorityType() == AuthorityType.WEB_APPLICATION)
 				{
-					handleWebApp(call);
+					handleWebApp(request, response);
 				}
 			}
 			else
@@ -284,20 +286,21 @@ public class LocalClient extends ClientImpl
 
 	/**
 	 * Handles a call for the FILE protocol.
-	 * @param call The call to handle.
+    * @param request The request to handle.
+    * @param response The response to update.
 	 * @param path The file or directory path.
 	 */
-	protected void handleFile(Call call, String path)
+	protected void handleFile(Request request, Response response, String path)
 	{
 		File file = new File(FileReference.localizePath(path));
 
-		if (call.getMethod().equals(Method.GET) || call.getMethod().equals(Method.HEAD))
+		if (request.getMethod().equals(Method.GET) || request.getMethod().equals(Method.HEAD))
 		{
 			Representation output = null;
 
 			// TBoi : Get variants for a resource
 			boolean found = false;
-			Iterator<Preference<MediaType>> iterator = call.getClient()
+			Iterator<Preference<MediaType>> iterator = request.getClient()
 					.getAcceptedMediaTypes().iterator();
 			while (iterator.hasNext() && !found)
 			{
@@ -321,7 +324,7 @@ public class LocalClient extends ClientImpl
 				//2- loooking for resources with the same base name
 				File[] files = file.getParentFile().listFiles();
 				ReferenceList rl = new ReferenceList(files.length);
-				rl.setListRef(call.getResourceRef());
+				rl.setListRef(request.getResourceRef());
 
 				for (File entry : files)
 				{
@@ -348,7 +351,7 @@ public class LocalClient extends ClientImpl
 						// Return the directory listing
 						File[] files = file.listFiles();
 						ReferenceList rl = new ReferenceList(files.length);
-						rl.setListRef(call.getResourceRef());
+						rl.setListRef(request.getResourceRef());
 
 						for (File entry : files)
 						{
@@ -376,15 +379,15 @@ public class LocalClient extends ClientImpl
 
 			if (output == null)
 			{
-				call.setStatus(Status.CLIENT_ERROR_NOT_FOUND);
+				response.setStatus(Status.CLIENT_ERROR_NOT_FOUND);
 			}
 			else
 			{
-				call.setOutput(output);
-				call.setStatus(Status.SUCCESS_OK);
+				response.setOutput(output);
+				response.setStatus(Status.SUCCESS_OK);
 			}
 		}
-		else if (call.getMethod().equals(Method.PUT))
+		else if (request.getMethod().equals(Method.PUT))
 		{
 			File tmp = null;
 
@@ -392,7 +395,7 @@ public class LocalClient extends ClientImpl
 			{
 				if (file.isDirectory())
 				{
-					call.setStatus(new Status(Status.CLIENT_ERROR_FORBIDDEN,
+					response.setStatus(new Status(Status.CLIENT_ERROR_FORBIDDEN,
 							"Can't put a new representation of a directory"));
 				}
 				else
@@ -403,17 +406,17 @@ public class LocalClient extends ClientImpl
 					{
 						tmp = File.createTempFile("restlet-upload", "bin");
 
-						if (call.getInput() != null)
+						if (request.isInputAvailable())
 						{
 							FileOutputStream fos = new FileOutputStream(tmp);
-							ByteUtils.write(call.getInput().getStream(), fos);
+							ByteUtils.write(request.getInput().getStream(), fos);
 							fos.close();
 						}
 					}
 					catch (IOException ioe)
 					{
 						logger.log(Level.WARNING, "Unable to create the temporary file", ioe);
-						call.setStatus(new Status(Status.SERVER_ERROR_INTERNAL,
+						response.setStatus(new Status(Status.SERVER_ERROR_INTERNAL,
 								"Unable to create a temporary file"));
 					}
 
@@ -423,13 +426,13 @@ public class LocalClient extends ClientImpl
 						// Finally move the temporary file to the existing file location
 						if (tmp.renameTo(file))
 						{
-							if (call.getInput() == null)
+							if (request.getInput() == null)
 							{
-								call.setStatus(Status.SUCCESS_NO_CONTENT);
+								response.setStatus(Status.SUCCESS_NO_CONTENT);
 							}
 							else
 							{
-								call.setStatus(Status.SUCCESS_OK);
+								response.setStatus(Status.SUCCESS_OK);
 							}
 						}
 						else
@@ -437,7 +440,7 @@ public class LocalClient extends ClientImpl
 							logger
 									.log(Level.WARNING,
 											"Unable to move the temporary file to replace the existing file");
-							call
+							response
 									.setStatus(new Status(Status.SERVER_ERROR_INTERNAL,
 											"Unable to move the temporary file to replace the existing file"));
 						}
@@ -445,7 +448,7 @@ public class LocalClient extends ClientImpl
 					else
 					{
 						logger.log(Level.WARNING, "Unable to delete the existing file");
-						call.setStatus(new Status(Status.SERVER_ERROR_INTERNAL,
+						response.setStatus(new Status(Status.SERVER_ERROR_INTERNAL,
 								"Unable to delete the existing file"));
 					}
 				}
@@ -458,12 +461,12 @@ public class LocalClient extends ClientImpl
 					// Create a new directory and its necessary parents
 					if (file.mkdirs())
 					{
-						call.setStatus(Status.SUCCESS_NO_CONTENT);
+						response.setStatus(Status.SUCCESS_NO_CONTENT);
 					}
 					else
 					{
 						logger.log(Level.WARNING, "Unable to create the new directory");
-						call.setStatus(new Status(Status.SERVER_ERROR_INTERNAL,
+						response.setStatus(new Status(Status.SERVER_ERROR_INTERNAL,
 								"Unable to create the new directory"));
 					}
 				}
@@ -479,7 +482,7 @@ public class LocalClient extends ClientImpl
 							{
 								logger
 										.log(Level.WARNING, "Unable to create the parent directory");
-								call.setStatus(new Status(Status.SERVER_ERROR_INTERNAL,
+								response.setStatus(new Status(Status.SERVER_ERROR_INTERNAL,
 										"Unable to create the parent directory"));
 							}
 						}
@@ -490,45 +493,45 @@ public class LocalClient extends ClientImpl
 					{
 						if (file.createNewFile())
 						{
-							if (call.getInput() == null)
+							if (request.getInput() == null)
 							{
-								call.setStatus(Status.SUCCESS_NO_CONTENT);
+								response.setStatus(Status.SUCCESS_NO_CONTENT);
 							}
 							else
 							{
 								FileOutputStream fos = new FileOutputStream(file);
-								ByteUtils.write(call.getInput().getStream(), fos);
+								ByteUtils.write(request.getInput().getStream(), fos);
 								fos.close();
-								call.setStatus(Status.SUCCESS_OK);
+								response.setStatus(Status.SUCCESS_OK);
 							}
 						}
 						else
 						{
 							logger.log(Level.WARNING, "Unable to create the new file");
-							call.setStatus(new Status(Status.SERVER_ERROR_INTERNAL,
+							response.setStatus(new Status(Status.SERVER_ERROR_INTERNAL,
 									"Unable to create the new file"));
 						}
 					}
 					catch (FileNotFoundException fnfe)
 					{
 						logger.log(Level.WARNING, "Unable to create the new file", fnfe);
-						call.setStatus(new Status(Status.SERVER_ERROR_INTERNAL,
+						response.setStatus(new Status(Status.SERVER_ERROR_INTERNAL,
 								"Unable to create the new file"));
 					}
 					catch (IOException ioe)
 					{
 						logger.log(Level.WARNING, "Unable to create the new file", ioe);
-						call.setStatus(new Status(Status.SERVER_ERROR_INTERNAL,
+						response.setStatus(new Status(Status.SERVER_ERROR_INTERNAL,
 								"Unable to create the new file"));
 					}
 				}
 			}
 		}
-		else if (call.getMethod().equals(Method.DELETE))
+		else if (request.getMethod().equals(Method.DELETE))
 		{
 			if (file.delete())
 			{
-				call.setStatus(Status.SUCCESS_NO_CONTENT);
+				response.setStatus(Status.SUCCESS_NO_CONTENT);
 			}
 			else
 			{
@@ -536,74 +539,76 @@ public class LocalClient extends ClientImpl
 				{
 					if (file.listFiles().length == 0)
 					{
-						call.setStatus(new Status(Status.SERVER_ERROR_INTERNAL,
+						response.setStatus(new Status(Status.SERVER_ERROR_INTERNAL,
 								"Couldn't delete the empty directory"));
 					}
 					else
 					{
-						call.setStatus(new Status(Status.CLIENT_ERROR_FORBIDDEN,
+						response.setStatus(new Status(Status.CLIENT_ERROR_FORBIDDEN,
 								"Couldn't delete the non-empty directory"));
 					}
 				}
 				else
 				{
-					call.setStatus(new Status(Status.SERVER_ERROR_INTERNAL,
+					response.setStatus(new Status(Status.SERVER_ERROR_INTERNAL,
 							"Couldn't delete the file"));
 				}
 			}
 		}
 		else
 		{
-			call.setStatus(Status.CLIENT_ERROR_METHOD_NOT_ALLOWED);
+			response.setStatus(Status.CLIENT_ERROR_METHOD_NOT_ALLOWED);
 		}
 	}
 
 	/**
 	 * Handles a call with a given class loader.
-	 * @param call The call to handle.
+    * @param request The request to handle.
+    * @param response The response to update.
 	 */
-	protected void handleClassLoader(Call call, ClassLoader classLoader)
+	protected void handleClassLoader(Request request, Response response, ClassLoader classLoader)
 	{
-		if (call.getMethod().equals(Method.GET) || call.getMethod().equals(Method.HEAD))
+		if (request.getMethod().equals(Method.GET) || request.getMethod().equals(Method.HEAD))
 		{
-			URL url = classLoader.getResource(call.getResourceRef().getPath());
+			URL url = classLoader.getResource(request.getResourceRef().getPath());
 
 			if (url != null)
 			{
 				try
 				{
-					call.setOutput(new InputRepresentation(url.openStream(), null));
-					call.setStatus(Status.SUCCESS_OK);
+					response.setOutput(new InputRepresentation(url.openStream(), null));
+					response.setStatus(Status.SUCCESS_OK);
 				}
 				catch (IOException ioe)
 				{
 					logger.log(Level.WARNING,
 							"Unable to open the representation's input stream", ioe);
-					call.setStatus(Status.SERVER_ERROR_INTERNAL);
+					response.setStatus(Status.SERVER_ERROR_INTERNAL);
 				}
 			}
 			else
 			{
-				call.setStatus(Status.CLIENT_ERROR_NOT_FOUND);
+				response.setStatus(Status.CLIENT_ERROR_NOT_FOUND);
 			}
 		}
 		else
 		{
-			call.setStatus(Status.CLIENT_ERROR_METHOD_NOT_ALLOWED);
+			response.setStatus(Status.CLIENT_ERROR_METHOD_NOT_ALLOWED);
 		}
 	}
 
 	/**
 	 * Handles a call using the current Web Application.
-	 * @param call The call to handle.
+    * @param request The request to handle.
+    * @param response The response to update.
 	 */
-	protected void handleWebApp(Call call)
+	protected void handleWebApp(Request request, Response response)
 	{
 		if (this.webAppArchive)
 		{
 			try
 			{
-				String path = call.getResourceRef().getPath();
+				String path = request.getResourceRef().getPath();
 				JarFile war = new JarFile(getWebAppPath());
 				JarEntry entry = war.getJarEntry(path);
 
@@ -622,7 +627,7 @@ public class LocalClient extends ClientImpl
 
 					// Return the directory listing
 					ReferenceList rl = new ReferenceList();
-					rl.setListRef(call.getResourceRef());
+					rl.setListRef(request.getResourceRef());
 
 					for (String warEntry : warEntries)
 					{
@@ -632,8 +637,8 @@ public class LocalClient extends ClientImpl
 						}
 					}
 
-					call.setOutput(rl.getRepresentation());
-					call.setStatus(Status.SUCCESS_OK);
+					response.setOutput(rl.getRepresentation());
+					response.setStatus(Status.SUCCESS_OK);
 				}
 				else
 				{
@@ -641,39 +646,39 @@ public class LocalClient extends ClientImpl
 					Representation output = new InputRepresentation(war.getInputStream(entry),
 							null);
 					updateMetadata(path, output);
-					call.setOutput(output);
-					call.setStatus(Status.SUCCESS_OK);
+					response.setOutput(output);
+					response.setStatus(Status.SUCCESS_OK);
 				}
 			}
 			catch (IOException e)
 			{
 				logger.log(Level.WARNING, "Unable to access to the WAR file", e);
-				call.setStatus(Status.SERVER_ERROR_INTERNAL);
+				response.setStatus(Status.SERVER_ERROR_INTERNAL);
 			}
 
 		}
 		else
 		{
-			String path = call.getResourceRef().getPath();
+			String path = request.getResourceRef().getPath();
 
 			if (path.toUpperCase().startsWith("/WEB-INF/"))
 			{
 				logger
 						.warning("Forbidden access to the WEB-INF directory detected. Path requested: "
 								+ path);
-				call.setStatus(Status.CLIENT_ERROR_NOT_FOUND);
+				response.setStatus(Status.CLIENT_ERROR_NOT_FOUND);
 			}
 			else if (path.toUpperCase().startsWith("/META-INF/"))
 			{
 				logger
 						.warning("Forbidden access to the META-INF directory detected. Path requested: "
 								+ path);
-				call.setStatus(Status.CLIENT_ERROR_NOT_FOUND);
+				response.setStatus(Status.CLIENT_ERROR_NOT_FOUND);
 			}
 			else
 			{
 				path = getWebAppPath() + path;
-				handleFile(call, path);
+				handleFile(request, response, path);
 			}
 		}
 	}
@@ -780,14 +785,14 @@ public class LocalClient extends ClientImpl
 			}
 
 			int dashIndex = tokens[j].indexOf('-');
-			if ((representation == null) && (dashIndex != -1))
+			if ((representation != null) && (dashIndex != -1))
 			{
 				// We found a language extension with a region area specified
 				// Try to find a language matching the primary part of the extension
 				String primaryPart = tokens[j].substring(0, dashIndex);
 				current = getMetadata(primaryPart);
-				if (representation instanceof Language)
-					representation.setLanguage((Language) representation);
+				if (current instanceof Language)
+					representation.setLanguage((Language) current);
 			}
 		}
 	}

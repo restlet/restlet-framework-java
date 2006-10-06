@@ -27,8 +27,9 @@ import java.util.List;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
-import org.restlet.Call;
 import org.restlet.Context;
+import org.restlet.Request;
+import org.restlet.Response;
 import org.restlet.component.ClientList;
 import org.restlet.component.Container;
 import org.restlet.component.ServerList;
@@ -132,17 +133,18 @@ public class ContainerImpl extends Container
 
    /**
     * Handles a direct call.
-    * @param call The call to handle.
+    * @param request The request to handle.
+    * @param response The response to update.
     */
-   public void handle(Call call)
+   public void handle(Request request, Response response)
    {
       if(getHostRouter() != null)
       {
-      	getHostRouter().handle(call);
+      	getHostRouter().handle(request, response);
       }
       else
       {
-         call.setStatus(Status.SERVER_ERROR_INTERNAL);
+      	response.setStatus(Status.SERVER_ERROR_INTERNAL);
          logger.log(Level.SEVERE, "No host router defined.");
       }
    }

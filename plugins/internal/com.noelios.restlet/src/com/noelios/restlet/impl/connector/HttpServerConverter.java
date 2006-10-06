@@ -26,10 +26,12 @@ import java.util.List;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
-import org.restlet.Call;
 import org.restlet.Context;
+import org.restlet.Request;
+import org.restlet.Response;
 import org.restlet.data.CookieSetting;
 import org.restlet.data.Encoding;
+import org.restlet.data.Method;
 import org.restlet.data.Parameter;
 import org.restlet.data.ParameterList;
 import org.restlet.data.Representation;
@@ -54,10 +56,10 @@ public class HttpServerConverter
 	 * @param context The context of the server connector.
 	 * @return A new high-level uniform call.
 	 */
-	public Call toUniform(HttpServerCall httpCall, Context context)
+	public Request toUniform(HttpServerCall httpCall, Context context)
 	{
-		Call result = new HttpServerRestletCall(context, httpCall);
-		result.getAttributes().put("org.restlet.http.requestHeaders", httpCall.getRequestHeaders());
+		Request result = new HttpRequest(context, httpCall);
+		result.getAttributes().put("org.restlet.http.headers", httpCall.getRequestHeaders());
 		return result;
 	}
 	
@@ -66,17 +68,17 @@ public class HttpServerConverter
 	 * implementation first invokes the "addResponseHeaders" the asks the "htppCall" to send the 
 	 * response back to the client.  
 	 * @param httpCall The original HTTP call.
-	 * @param call The handled uniform call.
+	 * @param response The high-level response.
 	 */
-	public void commit(HttpServerCall httpCall, Call call)
+	public void commit(HttpServerCall httpCall, Response response)
 	{
 		try
 		{
 			// Add the response headers
-			addResponseHeaders(httpCall, call);
+			addResponseHeaders(httpCall, response);
 			
 			// Send the response to the client
-			httpCall.sendResponse(call.getOutput());
+			httpCall.sendResponse(response.getOutput());
 		}
 		catch (Exception e)
 		{
@@ -89,17 +91,40 @@ public class HttpServerConverter
 	/**
 	 * Adds the response headers for the handled uniform call.  
 	 * @param httpCall The original HTTP call.
-	 * @param call The handled uniform call.
+	 * @param response The response returned.
 	 */
-	protected void addResponseHeaders(HttpServerCall httpCall, Call call)
+	protected void addResponseHeaders(HttpServerCall httpCall, Response response)
 	{
 		try
 		{
 			// Add all the necessary response headers
 			ParameterList responseHeaders = httpCall.getResponseHeaders();
 
+			if(response.getStatus().equals(Status.CLIENT_ERROR_METHOD_NOT_ALLOWED) ||
+					response.getRequest().getMethod().equals(Method.PUT))
+			{
+				// Format the "Allow" header
+				StringBuilder sb = new StringBuilder();
+				boolean first = true;
+				for(Method method : response.getAllowedMethods())
+				{
+					if(first) 
+					{
+						first = false;
+					}
+					else 
+					{
+						sb.append(", ");
+					}
+					
+					sb.append(method.getName());
+				}
+
+				responseHeaders.add(HttpConstants.HEADER_ALLOW, sb.toString());
+			}
+			
 			// Add the cookie settings
-			List<CookieSetting> cookies = call.getCookieSettings();
+			List<CookieSetting> cookies = response.getCookieSettings();
 			for (int i = 0; i < cookies.size(); i++)
 			{
 				responseHeaders.add(HttpConstants.HEADER_SET_COOKIE, CookieUtils
@@ -107,34 +132,34 @@ public class HttpServerConverter
 			}
 
 			// Set the redirection URI
-			if (call.getRedirectRef() != null)
+			if (response.getRedirectRef() != null)
 			{
-				responseHeaders.add(HttpConstants.HEADER_LOCATION, call
+				responseHeaders.add(HttpConstants.HEADER_LOCATION, response
 						.getRedirectRef().toString());
 			}
 
 			// Set the security data
-			if (call.getSecurity().getChallengeRequest() != null)
+			if (response.getChallengeRequest() != null)
 			{
 				responseHeaders.add(HttpConstants.HEADER_WWW_AUTHENTICATE, SecurityUtils
-						.format(call.getSecurity().getChallengeRequest()));
+						.format(response.getChallengeRequest()));
 			}
 
 			// Set the server name again
 			httpCall.getResponseHeaders().add(HttpConstants.HEADER_SERVER,
-					call.getServer().getAgent());
+					response.getServer().getAgent());
 
 			// Set the status code in the response
-			if (call.getStatus() != null)
+			if (response.getStatus() != null)
 			{
-				httpCall.setStatusCode(call.getStatus().getCode());
-				httpCall.setReasonPhrase(call.getStatus().getDescription());
+				httpCall.setStatusCode(response.getStatus().getCode());
+				httpCall.setReasonPhrase(response.getStatus().getDescription());
 			}
 
 			// If an output was set during the call, copy it to the output stream;
-			if (call.getOutput() != null)
+			if (response.getOutput() != null)
 			{
-				Representation output = call.getOutput();
+				Representation output = response.getOutput();
 
 				if (output.getExpirationDate() != null)
 				{
@@ -182,21 +207,21 @@ public class HttpServerConverter
 					responseHeaders.add(HttpConstants.HEADER_ETAG, output.getTag().getName());
 				}
 
-				if (call.getOutput().getSize() != Representation.UNKNOWN_SIZE)
+				if (response.getOutput().getSize() != Representation.UNKNOWN_SIZE)
 				{
 					responseHeaders.add(HttpConstants.HEADER_CONTENT_LENGTH, Long
-							.toString(call.getOutput().getSize()));
+							.toString(response.getOutput().getSize()));
 				}
 
-				if (call.getOutput().getIdentifier() != null)
+				if (response.getOutput().getIdentifier() != null)
 				{
-					responseHeaders.add(HttpConstants.HEADER_CONTENT_LOCATION, call
+					responseHeaders.add(HttpConstants.HEADER_CONTENT_LOCATION, response
 							.getOutput().getIdentifier().toString());
 				}
 			}
 			
 			// Add user-defined extension headers
-			ParameterList additionalHeaders = (ParameterList)call.getAttributes().get("org.restlet.http.responseHeaders");
+			ParameterList additionalHeaders = (ParameterList)response.getAttributes().get("org.restlet.http.headers");
 			if(additionalHeaders != null)
 			{
 				for(Parameter param : additionalHeaders)

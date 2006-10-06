@@ -35,33 +35,26 @@ import com.noelios.restlet.LogFilter;
  */
 public class Tutorial07 implements Constants
 {
-   public static void main(String[] args)
+   public static void main(String[] args) throws Exception
    {
-      try
-      {
-         // Create a new Restlet container
-      	Container myContainer = new Container();
-      	Context myContext = myContainer.getContext();
+      // Create a new Restlet container
+   	Container myContainer = new Container();
+   	Context myContext = myContainer.getContext();
 
-         // Add an HTTP server connector to the Restlet container. 
-         // Note that the container is the call restlet.
-         myContainer.getServers().add(Protocol.HTTP, 8182);
+      // Add an HTTP server connector to the Restlet container. 
+      // Note that the container is the call restlet.
+      myContainer.getServers().add(Protocol.HTTP, 8182);
 
-         // Attach a log Filter to the container
-         LogFilter log = new LogFilter(myContext, "com.noelios.restlet.example");
-         myContainer.getLocalHost().attach("/", log);
+      // Attach a log Filter to the container
+      LogFilter log = new LogFilter(myContext, "com.noelios.restlet.example");
+      myContainer.getLocalHost().attach("/", log);
 
-         // Create a directory finder able to return a deep hierarchy of Web files
-         DirectoryFinder directory = new DirectoryFinder(myContext, ROOT_URI, "index.html");
-         log.setNext(directory);
-         
-         // Now, let's start the container!
-         myContainer.start();
-      }
-      catch(Exception e)
-      {
-         e.printStackTrace();
-      }
+      // Create a directory finder able to return a deep hierarchy of Web files
+      DirectoryFinder directory = new DirectoryFinder(myContext, ROOT_URI, "index.html");
+      log.setNext(directory);
+      
+      // Now, let's start the container!
+      myContainer.start();
    }
 
 }

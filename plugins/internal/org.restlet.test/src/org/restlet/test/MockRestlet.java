@@ -21,7 +21,8 @@
  */
 package org.restlet.test;
 
-import org.restlet.Call;
+import org.restlet.Request;
+import org.restlet.Response;
 import org.restlet.Restlet;
 
 /**
@@ -37,9 +38,9 @@ public class MockRestlet extends Restlet
 	 * @see org.restlet.AbstractRestlet#handle(org.restlet.Call)
 	 */
 	@Override
-	public void handle(Call call)
+	public void handle(Request request, Response response)
 	{
-		super.handle(call);
+		super.handle(request, response);
 
 		if (!super.isStarted())
 		{

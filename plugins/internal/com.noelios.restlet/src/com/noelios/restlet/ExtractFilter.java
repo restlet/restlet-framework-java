@@ -28,18 +28,19 @@ import java.util.List;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
-import org.restlet.Call;
 import org.restlet.Context;
 import org.restlet.Filter;
+import org.restlet.Request;
+import org.restlet.Response;
 import org.restlet.data.Form;
 import org.restlet.data.Status;
 
 import com.noelios.restlet.util.CallModel;
 
 /**
- * Filter extracting some attributes from a call. Multiple extractions can be defined, based on the query 
+ * Filter extracting some attributes from a request. Multiple extractions can be defined, based on the query 
  * string of the resource reference, on the input form (posted from a browser), on the context URI matches 
- * or on the call's template model.
+ * or on the request's template model.
  * @author Jerome Louvel (contact@noelios.com) <a href="http://www.noelios.com/">Noelios Consulting</a>
  */
 public class ExtractFilter extends Filter
@@ -58,7 +59,7 @@ public class ExtractFilter extends Filter
    private List<ExtractInfo> inputExtracts;
 
    /**
-    * List of call's model attributes to extract.
+    * List of request's model attributes to extract.
     */
    private List<ExtractInfo> modelExtracts;
 
@@ -75,16 +76,17 @@ public class ExtractFilter extends Filter
    }
 
    /**
-    * Extracts the attributes value from the call. 
-    * @param call The call to process.
+    * Extracts the attributes value from the request. 
+    * @param request The request to process.
+    * @param response The response to process.
     * @throws IOException
     */
-   protected void extractAttributes(Call call) throws IOException
+   protected void extractAttributes(Request request, Response response) throws IOException
    {
       // Extract the query parameters
       if(this.queryExtracts != null)
       {
-         Form input = call.getResourceRef().getQueryAsForm();
+         Form input = request.getResourceRef().getQueryAsForm();
 
          if(input != null)
          {
@@ -92,11 +94,11 @@ public class ExtractFilter extends Filter
             {
                if(qe.multiple)
                {
-                  call.getAttributes().put(qe.attribute, input.subList(qe.value));
+               	request.getAttributes().put(qe.attribute, input.subList(qe.value));
                }
                else
                {
-                  call.getAttributes().put(qe.attribute, input.getFirst(qe.value));
+               	request.getAttributes().put(qe.attribute, input.getFirst(qe.value));
                }
             }
          }
@@ -105,7 +107,7 @@ public class ExtractFilter extends Filter
       // Extract the input parameters
       if(this.inputExtracts != null)
       {
-         Form input = call.getInputAsForm();
+         Form input = request.getInputAsForm();
 
          if(input != null)
          {
@@ -113,11 +115,11 @@ public class ExtractFilter extends Filter
             {
                if(ie.multiple)
                {
-                  call.getAttributes().put(ie.attribute, input.subList(ie.value));
+               	request.getAttributes().put(ie.attribute, input.subList(ie.value));
                }
                else
                {
-                  call.getAttributes().put(ie.attribute, input.getFirst(ie.value));
+               	request.getAttributes().put(ie.attribute, input.getFirst(ie.value));
                }
             }
          }
@@ -126,28 +128,29 @@ public class ExtractFilter extends Filter
       // Extract the model patterns
       if(this.modelExtracts != null)
       {
-         CallModel model = new CallModel(call, null);
+         CallModel model = new CallModel(request, response, null);
          for(ExtractInfo me : getModelExtracts())
          {
-            call.getAttributes().put(me.attribute, model.get(me.value));
+         	request.getAttributes().put(me.attribute, model.get(me.value));
          }
       }
    }
 
    /**
     * Allows filtering before its handling by the target Restlet. Does nothing by default.
-    * @param call The call to filter.
+    * @param request The request to filter.
+    * @param response The response to filter.
     */
-   public void beforeHandle(Call call)
+   public void beforeHandle(Request request, Response response)
    {
       try
       {
-   		extractAttributes(call);	
+   		extractAttributes(request, response);	
       }
       catch(Exception e)
       {
          logger.log(Level.SEVERE, "Unhandled error intercepted", e);
-         call.setStatus(Status.SERVER_ERROR_INTERNAL);
+         response.setStatus(Status.SERVER_ERROR_INTERNAL);
       }
    }
 

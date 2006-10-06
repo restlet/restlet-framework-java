@@ -25,7 +25,8 @@ package com.noelios.restlet.impl.connector;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
-import org.restlet.Call;
+import org.restlet.Request;
+import org.restlet.Response;
 
 /**
  * Base HTTP server connector.
@@ -110,9 +111,10 @@ public class HttpServer extends ServerImpl
 	{
 		try
 		{
-			Call call = getConverter().toUniform(httpCall, getContext());
-			handle(call);
-			getConverter().commit(httpCall, call);
+			Request request = getConverter().toUniform(httpCall, getContext());
+			Response response = new HttpResponse(httpCall, request);
+			handle(request, response);
+			getConverter().commit(httpCall, response);
 		}
 		catch (Exception e)
 		{

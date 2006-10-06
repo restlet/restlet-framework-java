@@ -21,8 +21,9 @@
  */
 package org.restlet.test;
 
-import org.restlet.Call;
 import org.restlet.Filter;
+import org.restlet.Request;
+import org.restlet.Response;
 
 /**
  * Thin layer around an AbstractFilter.
@@ -34,12 +35,8 @@ import org.restlet.Filter;
  */
 public class MockFilter extends Filter
 {
-
-	/* (non-Javadoc)
-	 * @see org.restlet.AbstractFilter#handle(org.restlet.Call)
-	 */
 	@Override
-	public void handle(Call call)
+	public void handle(Request request, Response response)
 	{
 		if (!super.isStarted())
 		{
@@ -49,7 +46,7 @@ public class MockFilter extends Filter
 		{
 			throw new IllegalStateException("Target is not set");
 		}
-		super.handle(call);
+		super.handle(request, response);
 	}
 
 }

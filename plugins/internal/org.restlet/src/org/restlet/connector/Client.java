@@ -25,7 +25,8 @@ package org.restlet.connector;
 import java.util.Arrays;
 import java.util.List;
 
-import org.restlet.Call;
+import org.restlet.Request;
+import org.restlet.Response;
 import org.restlet.data.Protocol;
 import org.restlet.data.Representation;
 import org.restlet.spi.Factory;
@@ -72,22 +73,33 @@ public class Client extends Connector implements ClientInterface
 	{
 		return (Client)getWrappedConnector();
 	}
+	
+	/**
+	 * Handles a call.
+	 * @param request The request to handle.
+	 * @return The returned response.
+	 */
+	public Response handle(Request request)
+	{
+   	return (getWrappedClient() != null) ? getWrappedClient().handle(request) : null;
+	}
 
    /**
     * Handles a call.
-    * @param call The call to handle.
+    * @param request The request to handle.
+    * @param response The response to update.
     */
-   public void handle(Call call)
+   public void handle(Request request, Response response)
    {
-   	if(getWrappedClient() != null) getWrappedClient().handle(call);
+   	if(getWrappedClient() != null) getWrappedClient().handle(request, response);
    }
    
    /**
     * Deletes the identified resource.
     * @param resourceUri The URI of the resource to delete.
-    * @return The returned uniform call.
+    * @return The response.
     */
-   public Call delete(String resourceUri)
+   public Response delete(String resourceUri)
    {
    	return (getWrappedClient() != null) ? getWrappedClient().delete(resourceUri) : null;
    }
@@ -95,9 +107,9 @@ public class Client extends Connector implements ClientInterface
    /**
     * Gets the identified resource.
     * @param resourceUri The URI of the resource to get.
-    * @return The returned uniform call.
+    * @return The response.
     */
-   public Call get(String resourceUri)
+   public Response get(String resourceUri)
    {
    	return (getWrappedClient() != null) ? getWrappedClient().get(resourceUri) : null;
    }
@@ -105,9 +117,9 @@ public class Client extends Connector implements ClientInterface
    /**
     * Gets the identified resource without its representation's content.
     * @param resourceUri The URI of the resource to get.
-    * @return The returned uniform call.
+    * @return The response.
     */
-   public Call head(String resourceUri)
+   public Response head(String resourceUri)
    {
    	return (getWrappedClient() != null) ? getWrappedClient().head(resourceUri) : null;
    }
@@ -115,9 +127,9 @@ public class Client extends Connector implements ClientInterface
    /**
     * Gets the options for the identified resource.
     * @param resourceUri The URI of the resource to get.
-    * @return The returned uniform call.
+    * @return The response.
     */
-   public Call options(String resourceUri)
+   public Response options(String resourceUri)
    {
    	return (getWrappedClient() != null) ? getWrappedClient().options(resourceUri) : null;
    }
@@ -126,9 +138,9 @@ public class Client extends Connector implements ClientInterface
     * Post a representation to the identified resource.
     * @param resourceUri The URI of the resource to post to.
     * @param input The input representation to post.
-    * @return The returned uniform call.
+    * @return The response.
     */
-   public Call post(String resourceUri, Representation input)
+   public Response post(String resourceUri, Representation input)
    {
    	return (getWrappedClient() != null) ? getWrappedClient().post(resourceUri, input) : null;
    }
@@ -137,9 +149,9 @@ public class Client extends Connector implements ClientInterface
     * Puts a representation in the identified resource.
     * @param resourceUri The URI of the resource to modify.
     * @param input The input representation to put.
-    * @return The returned uniform call.
+    * @return The response.
     */
-   public Call put(String resourceUri, Representation input)
+   public Response put(String resourceUri, Representation input)
    {
    	return (getWrappedClient() != null) ? getWrappedClient().put(resourceUri, input) : null;
    }
@@ -147,9 +159,9 @@ public class Client extends Connector implements ClientInterface
    /**
     * Tests the identified resource.
     * @param resourceUri The URI of the resource to delete.
-    * @return The returned uniform call.
+    * @return The response.
     */
-   public Call trace(String resourceUri)
+   public Response trace(String resourceUri)
    {
    	return (getWrappedClient() != null) ? getWrappedClient().trace(resourceUri) : null;
    }

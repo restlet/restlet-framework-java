@@ -22,9 +22,8 @@
 
 package com.noelios.restlet.example.tutorial;
 
-import java.io.IOException;
-
-import org.restlet.Call;
+import org.restlet.Request;
+import org.restlet.Response;
 import org.restlet.connector.Client;
 import org.restlet.data.ChallengeResponse;
 import org.restlet.data.ChallengeScheme;
@@ -39,41 +38,34 @@ import org.restlet.data.Status;
  */
 public class Tutorial09b
 {
-   public static void main(String[] args)
+   public static void main(String[] args) throws Exception
    {
-      try
+      // Prepare the request
+   	Request request = new Request(Method.GET, "http://localhost:8182/");
+      
+      // Add the client authentication to the call 
+      ChallengeResponse authentication = new ChallengeResponse(ChallengeScheme.HTTP_BASIC, "scott", "tiger");
+      request.setChallengeResponse(authentication);
+
+      // Ask to the HTTP client connector to handle the call
+      Client client = new Client(Protocol.HTTP);
+      Response response = client.handle(request);
+
+      if(response.getStatus().isSuccess())
       {
-         // Prepare the REST call
-      	Call call = new Call(Method.GET, "http://localhost:8182/");
-         
-         // Add the client authentication to the call 
-         ChallengeResponse authentication = new ChallengeResponse(ChallengeScheme.HTTP_BASIC, "scott", "tiger");
-         call.getSecurity().setChallengeResponse(authentication);
-
-         // Ask to the HTTP client connector to handle the call
-         Client client = new Client(Protocol.HTTP);
-         client.handle(call);
-
-         if(call.getStatus().isSuccess())
-         {
-            // Output the result representation on the JVM console
-            Representation output = call.getOutput();
-            output.write(System.out);
-         }
-         else if(call.getStatus().equals(Status.CLIENT_ERROR_UNAUTHORIZED))
-         {
-            // Unauthorized access
-            System.out.println("Your access was not authorized by the server, check your credentials");
-         }
-         else
-         {
-            // Unexpected status
-            System.out.println("An unexpected status was returned: " + call.getStatus());
-         }
+         // Output the result representation on the JVM console
+         Representation output = response.getOutput();
+         output.write(System.out);
       }
-      catch(IOException e)
+      else if(response.getStatus().equals(Status.CLIENT_ERROR_UNAUTHORIZED))
       {
-         e.printStackTrace();
+         // Unauthorized access
+         System.out.println("Your access was not authorized by the server, check your credentials");
+      }
+      else
+      {
+         // Unexpected status
+         System.out.println("An unexpected status was returned: " + response.getStatus());
       }
    }
 

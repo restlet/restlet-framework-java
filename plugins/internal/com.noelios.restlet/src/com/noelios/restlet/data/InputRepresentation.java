@@ -60,8 +60,8 @@ public class InputRepresentation extends StreamRepresentation
       super(mediaType);
       setSize(expectedSize);
       this.inputStream = inputStream;
-      setContentAvailable(inputStream != null);
-      setContentTransient(true);
+      setAvailable(inputStream != null);
+      setTransient(true);
    }
 
    /**
@@ -72,7 +72,7 @@ public class InputRepresentation extends StreamRepresentation
    {
       InputStream result = this.inputStream;
       this.inputStream = null;
-      setContentAvailable(false);
+      setAvailable(false);
       return result;
    }
    

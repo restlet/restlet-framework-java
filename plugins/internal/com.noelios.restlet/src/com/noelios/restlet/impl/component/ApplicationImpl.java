@@ -28,8 +28,9 @@ import java.util.TreeMap;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
-import org.restlet.Call;
 import org.restlet.Context;
+import org.restlet.Request;
+import org.restlet.Response;
 import org.restlet.UniformInterface;
 import org.restlet.component.Application;
 import org.restlet.component.Container;
@@ -159,17 +160,18 @@ public class ApplicationImpl extends Application
 
    /**
     * Handles a direct call.
-    * @param call The call to handle.
+    * @param request The request to handle.
+    * @param response The response to update.
     */
-   public void handle(Call call)
+   public void handle(Request request, Response response)
    {
       if(getRoot() != null)
       {
-   		getRoot().handle(call);
+   		getRoot().handle(request, response);
       }
       else
       {
-         call.setStatus(Status.SERVER_ERROR_INTERNAL);
+         response.setStatus(Status.SERVER_ERROR_INTERNAL);
          logger.log(Level.SEVERE, "No root handler defined.");
       }
    }

@@ -29,7 +29,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
-
+import org.restlet.util.WrapperList;
 
 /**
  * Modifiable list of parameters with many helper methods. Note that this class implements the java.util.List

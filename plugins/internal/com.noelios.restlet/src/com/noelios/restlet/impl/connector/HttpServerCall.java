@@ -47,7 +47,7 @@ import com.noelios.restlet.data.ReadableRepresentation;
 public abstract class HttpServerCall extends HttpCall
 {
 	/** Obtain a suitable logger. */
-	private static Logger logger = Logger.getLogger(HttpServerRestletCall.class
+	private static Logger logger = Logger.getLogger(HttpRequest.class
 			.getCanonicalName());
 
 	/** Indicates if the "host" header was already parsed. */

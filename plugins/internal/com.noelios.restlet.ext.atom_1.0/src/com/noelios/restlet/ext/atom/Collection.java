@@ -22,7 +22,8 @@
 
 package com.noelios.restlet.ext.atom;
 
-import org.restlet.Call;
+import org.restlet.Request;
+import org.restlet.Response;
 import org.restlet.data.Method;
 import org.restlet.data.Reference;
 import org.restlet.data.Representation;
@@ -148,19 +149,16 @@ public class Collection
 	 */
 	public Reference postMember(Representation member) throws Exception 
 	{
-		Call post = new Call();
-		post.setMethod(Method.POST);
-		post.setResourceRef(getHref());
-		post.setInput(member);
-		getWorkspace().getService().getClient().handle(post);
+		Request request = new Request(Method.POST, getHref(), member);
+		Response response = getWorkspace().getService().getClient().handle(request);
 		
-		if(post.getStatus().equals(Status.SUCCESS_CREATED))
+		if(response.getStatus().equals(Status.SUCCESS_CREATED))
 		{
-			return post.getRedirectRef();
+			return response.getRedirectRef();
 		}
 		else
 		{
-			throw new Exception("Couldn't post the member representation. Status returned: " + post.getStatus().getDescription());
+			throw new Exception("Couldn't post the member representation. Status returned: " + response.getStatus().getDescription());
 		}
 	}
 
@@ -171,18 +169,16 @@ public class Collection
 	 */
 	public Feed getFeed() throws Exception
 	{
-		Call get = new Call();
-		get.setMethod(Method.GET);
-		get.setResourceRef(getHref());
-		getWorkspace().getService().getClient().handle(get);
+		Request request = new Request(Method.GET, getHref());
+		Response response = getWorkspace().getService().getClient().handle(request);
 		
-		if(get.getStatus().equals(Status.SUCCESS_OK))
+		if(response.getStatus().equals(Status.SUCCESS_OK))
 		{
-			return new Feed(get.getOutput());
+			return new Feed(response.getOutput());
 		}
 		else
 		{
-			throw new Exception("Couldn't get the feed representation. Status returned: " + get.getStatus().getDescription());
+			throw new Exception("Couldn't get the feed representation. Status returned: " + response.getStatus().getDescription());
 		}
 	}
 	

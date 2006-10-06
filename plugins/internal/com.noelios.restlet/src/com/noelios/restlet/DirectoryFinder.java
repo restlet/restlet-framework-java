@@ -28,9 +28,10 @@ import java.util.List;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
-import org.restlet.Call;
 import org.restlet.Context;
 import org.restlet.Finder;
+import org.restlet.Request;
+import org.restlet.Response;
 import org.restlet.data.MediaType;
 import org.restlet.data.Reference;
 import org.restlet.data.ReferenceList;
@@ -101,14 +102,15 @@ public class DirectoryFinder extends Finder
 
    /**
 	 * Finds the target Resource if available.
-	 * @param call The current call.
+    * @param request The request to filter.
+    * @param response The response to filter.
 	 * @return The target resource if available or null.
 	 */
-	public Resource findTarget(Call call)
+	public Resource findTarget(Request request, Response response)
 	{
    	try
 		{
-			return new DirectoryResource(this, call);
+			return new DirectoryResource(this, request);
 		}
 		catch (IOException ioe)
 		{

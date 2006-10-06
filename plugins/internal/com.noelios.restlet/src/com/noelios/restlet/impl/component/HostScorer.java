@@ -25,7 +25,8 @@ package com.noelios.restlet.impl.component;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
-import org.restlet.Call;
+import org.restlet.Request;
+import org.restlet.Response;
 import org.restlet.Router;
 import org.restlet.Scorer;
 import org.restlet.component.VirtualHost;
@@ -71,21 +72,22 @@ public class HostScorer extends Scorer
 
 	/**
 	 * Returns the score for a given call (between 0 and 1.0).
-	 * @param call The call to score.
+    * @param request The request to score.
+    * @param response The response to score.
 	 * @return The score for a given call (between 0 and 1.0).
 	 */
-	public float score(Call call)
+	public float score(Request request, Response response)
 	{
 		float result = 0F;
 		boolean incompatible = false;
 
 		// Add the protocol score
-		Protocol protocol = call.getProtocol();
+		Protocol protocol = request.getProtocol();
 		if (protocol == null)
 		{
 			// Attempt to guess the protocol to use
 			// from the target reference scheme
-			protocol = call.getResourceRef().getSchemeProtocol();
+			protocol = request.getResourceRef().getSchemeProtocol();
 		}
 
 		if (protocol == null)
@@ -109,7 +111,7 @@ public class HostScorer extends Scorer
 		// Add the port score
 		if (!incompatible)
 		{
-			Integer port = call.getServer().getPort();
+			Integer port = response.getServer().getPort();
 
 			if (getHost().getAllowedPorts().contains(VirtualHost.ALL_PORTS)
 					|| ((port != null) && getHost().getAllowedPorts().contains(port)))
@@ -125,7 +127,7 @@ public class HostScorer extends Scorer
 		// Add the address score
 		if (!incompatible)
 		{
-			String address = call.getServer().getAddress();
+			String address = response.getServer().getAddress();
 
 			if (getHost().getAllowedAddresses().contains(VirtualHost.ALL_ADDRESSES)
 					|| ((address != null) && getHost().getAllowedAddresses().contains(address)))
@@ -141,7 +143,7 @@ public class HostScorer extends Scorer
 		// Add the name score
 		if (!incompatible)
 		{
-			String name = call.getServer().getName();
+			String name = response.getServer().getName();
 
 			if (getHost().getAllowedNames().contains(VirtualHost.ALL_NAMES)
 					|| ((name != null) && getHost().getAllowedNames().contains(name)))
@@ -169,18 +171,19 @@ public class HostScorer extends Scorer
 	}
 
 	/**
-	 * Handles the call.
-	 * @param call The call to handle.
+	 * Handles a call.
+    * @param request The request to handle.
+    * @param response The response to update.
 	 */
-	public void handle(Call call)
+	public void handle(Request request, Response response)
 	{
-		call.setBaseRef(new Reference(call.getProtocol().getSchemeName(), call.getServer()
-				.getName(), call.getServer().getPort(), null, null, null));
+		request.setBaseRef(new Reference(request.getProtocol().getSchemeName(), response.getServer()
+				.getName(), response.getServer().getPort(), null, null, null));
 
 		if (logger.isLoggable(Level.FINE))
 		{
-			logger.fine("New base URI: " + call.getBaseRef());
-			logger.fine("New relative part: " + call.getRelativePart());
+			logger.fine("New base URI: " + request.getBaseRef());
+			logger.fine("New relative part: " + request.getRelativePart());
 		}
 
 		if (logger.isLoggable(Level.FINE))
@@ -189,6 +192,6 @@ public class HostScorer extends Scorer
 		}
 
 		// Invoke the call restlet
-		super.handle(call);
+		super.handle(request, response);
 	}
 }

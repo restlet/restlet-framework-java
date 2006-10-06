@@ -25,9 +25,10 @@ package com.noelios.restlet;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
-import org.restlet.Call;
 import org.restlet.Context;
 import org.restlet.Filter;
+import org.restlet.Request;
+import org.restlet.Response;
 import org.restlet.data.MediaType;
 import org.restlet.data.Representation;
 import org.restlet.data.Status;
@@ -76,40 +77,42 @@ public class StatusFilter extends Filter
 
    /**
     * Handles a call to a resource or a set of resources.
-    * @param call The call to handle.
+    * @param request The request to handle.
+    * @param response The response to update.
     */
-   public void handle(Call call)
+   public void handle(Request request, Response response)
    {
       // Normally handle the call
       try
       {
-         super.handle(call);
+         super.handle(request, response);
       }
       catch(Exception e)
       {
          logger.log(Level.SEVERE, "Unhandled error intercepted", e);
-         call.setStatus(Status.SERVER_ERROR_INTERNAL);
+         response.setStatus(Status.SERVER_ERROR_INTERNAL);
       }
    }
 
    /**
     * Allows filtering after its handling by the target Restlet. Does nothing by default.
-    * @param call The call to filter.
+    * @param request The request to handle.
+    * @param response The response to update.
     */
-   public void afterHandle(Call call)
+   public void afterHandle(Request request, Response response)
    {
       // If no status is set, then the "success ok" status is assumed.
-      if(call.getStatus() == null)
+      if(response.getStatus() == null)
       {
-         call.setStatus(Status.SUCCESS_OK);
+         response.setStatus(Status.SUCCESS_OK);
       }
 
       // Do we need to get an output representation for the current status?
-      if(!call.getStatus().equals(Status.SUCCESS_OK)
-            && !call.getStatus().equals(Status.REDIRECTION_NOT_MODIFIED)
-            && ((call.getOutput() == null) || overwrite))
+      if(!response.getStatus().equals(Status.SUCCESS_OK)
+            && !response.getStatus().equals(Status.REDIRECTION_NOT_MODIFIED)
+            && ((response.getOutput() == null) || overwrite))
       {
-         call.setOutput(getRepresentation(call.getStatus(), call));
+         response.setOutput(getRepresentation(response.getStatus(), request, response));
       }
    }
 
@@ -117,10 +120,11 @@ public class StatusFilter extends Filter
     * Returns a representation for the given status.<br/> In order to customize the default representation,
     * this method can be overriden.
     * @param status The status to represent.
-    * @param call The related call that was handled.
+    * @param request The request handled.
+    * @param response The response updated.
     * @return The representation of the given status.
     */
-   public Representation getRepresentation(Status status, Call call)
+   public Representation getRepresentation(Status status, Request request, Response response)
    {
       StringBuilder sb = new StringBuilder();
       sb.append("<html>\n");

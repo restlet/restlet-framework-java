@@ -22,9 +22,8 @@
 
 package com.noelios.restlet.example.tutorial;
 
-import java.io.IOException;
-
-import org.restlet.Call;
+import org.restlet.Request;
+import org.restlet.Response;
 import org.restlet.connector.Client;
 import org.restlet.data.Method;
 import org.restlet.data.Protocol;
@@ -36,26 +35,19 @@ import org.restlet.data.Representation;
  */
 public class Tutorial02b
 {
-   public static void main(String[] args)
+   public static void main(String[] args) throws Exception
    {
-      try
-      {
-         // Prepare the REST call
-      	Call call = new Call(Method.GET, "http://www.restlet.org");
-         call.setReferrerRef("http://www.mysite.org");
+      // Prepare the request
+   	Request request = new Request(Method.GET, "http://www.restlet.org");
+      request.setReferrerRef("http://www.mysite.org");
 
-         // Ask to the HTTP client connector to handle the call
-         Client client = new Client(Protocol.HTTP);
-         client.handle(call);
+      // Handle it using an HTTP client connector
+      Client client = new Client(Protocol.HTTP);
+      Response response = client.handle(request);
 
-         // Output the result representation on the JVM console
-         Representation output = call.getOutput();
-         output.write(System.out);
-      }
-      catch(IOException e)
-      {
-         e.printStackTrace();
-      }
+      // Write the output representation on the console
+      Representation output = response.getOutput();
+      output.write(System.out);
    }
 
 }

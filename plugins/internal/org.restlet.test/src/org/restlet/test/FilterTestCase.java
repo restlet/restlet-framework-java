@@ -21,8 +21,9 @@
  */
 package org.restlet.test;
 
-import org.restlet.Call;
 import org.restlet.Filter;
+import org.restlet.Request;
+import org.restlet.Response;
 import org.restlet.Restlet;
 
 /**
@@ -33,33 +34,31 @@ import org.restlet.Restlet;
  */
 public class FilterTestCase extends AbstractFilterTestCase
 {
-	/* (non-Javadoc)
-	 * @see org.restlet.AbstractTestFilter#getFilter()
-	 */
+	@Override
 	protected Filter getFilter()
 	{
 		return new MockFilter();
 	}
 
-	/* (non-Javadoc)
-	 * @see org.restlet.AbstractTestFilter#getCall()
-	 */
-	protected Call getCall()
+	@Override
+	protected Request getRequest()
 	{
-		return new Call();
+		return new Request();
 	}
 
-	/* (non-Javadoc)
-	 * @see org.restlet.AbstractTestFilter#getRestlet()
-	 */
+	@Override
+	protected Response getResponse(Request request)
+	{
+		return new Response(request);
+	}
+
+	@Override
 	protected Restlet getRestlet()
 	{
 		return new MockRestlet();
 	}
 
-	/* (non-Javadoc)
-	 * @see org.restlet.AbstractTestFilter#getRestletClass()
-	 */
+	@Override
 	protected Class getRestletClass()
 	{
 		return MockRestlet.class;

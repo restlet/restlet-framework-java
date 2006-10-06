@@ -20,7 +20,7 @@
  * Portions Copyright [yyyy] [name of copyright owner]
  */
 
-package org.restlet.data;
+package org.restlet.util;
 
 import java.io.IOException;
 import java.io.InputStream;
@@ -28,8 +28,18 @@ import java.io.OutputStream;
 import java.nio.channels.ReadableByteChannel;
 import java.nio.channels.WritableByteChannel;
 import java.util.Date;
+import java.util.List;
 
-
+import org.restlet.data.CharacterSet;
+import org.restlet.data.Encoding;
+import org.restlet.data.Language;
+import org.restlet.data.MediaType;
+import org.restlet.data.Reference;
+import org.restlet.data.ReferenceList;
+import org.restlet.data.Representation;
+import org.restlet.data.Resource;
+import org.restlet.data.Result;
+import org.restlet.data.Tag;
 
 /**
  * Representation wrapper. Useful for application developer who need to enrich the representation 
@@ -37,15 +47,19 @@ import java.util.Date;
  * @see <a href="http://c2.com/cgi/wiki?DecoratorPattern">The decorator (aka wrapper) pattern</a>
  * @author Jerome Louvel (contact@noelios.com) <a href="http://www.noelios.com/">Noelios Consulting</a>
  */
-public class WrapperRepresentation extends WrapperResource implements Representation
+public class WrapperRepresentation extends Representation
 {
+	/** The wrapped representation. */
+	private Representation wrappedRepresentation;
+	
    /**
     * Constructor.
     * @param wrappedRepresentation The wrapped representation.
     */
    public WrapperRepresentation(Representation wrappedRepresentation)
    {
-      super(wrappedRepresentation);
+   	super(null);
+      this.wrappedRepresentation = wrappedRepresentation;
    }
 
    /**
@@ -54,8 +68,147 @@ public class WrapperRepresentation extends WrapperResource implements Representa
     */
    public Representation getWrappedRepresentation()
    {
-   	return (Representation)getWrappedResource();
+   	return this.wrappedRepresentation;
    }
+
+   // -------------------------------
+   // Methods inherited from Resource
+   //--------------------------------
+
+	/**
+	 * Indicates if it is allowed to delete the resource. The default value is false. 
+	 * @return True if the method is allowed.
+	 */
+	public boolean allowDelete()
+	{
+		return getWrappedRepresentation().allowDelete();
+	}
+
+	/**
+	 * Indicates if it is allowed to get the variants. The default value is true. 
+	 * @return True if the method is allowed.
+	 */
+	public boolean allowGet()
+	{
+		return getWrappedRepresentation().allowGet();
+	}
+
+	/**
+	 * Indicates if it is allowed to post to the resource. The default value is false. 
+	 * @return True if the method is allowed.
+	 */
+	public boolean allowPost()
+	{
+		return getWrappedRepresentation().allowPost();
+	}
+
+	/**
+	 * Indicates if it is allowed to put to the resource. The default value is false. 
+	 * @return True if the method is allowed.
+	 */
+	public boolean allowPut()
+	{
+		return getWrappedRepresentation().allowPut();
+	}
+	
+	/**
+	 * Returns the official identifier.
+	 * @return The official identifier.
+	 */
+	public Reference getIdentifier()
+	{
+		return getWrappedRepresentation().getIdentifier();
+	}
+
+	/**
+	 * Sets the official identifier.
+	 * @param identifier The official identifier.
+	 */
+	public void setIdentifier(Reference identifier)
+	{
+		getWrappedRepresentation().setIdentifier(identifier);
+	}
+	
+	/**
+	 * Sets the official identifier from a URI string.
+	 * @param identifierUri The official identifier to parse.
+	 */
+	public void setIdentifier(String identifierUri)
+	{
+		getWrappedRepresentation().setIdentifier(identifierUri);
+	}
+
+	/**
+	 * Returns the list of all the identifiers for the resource. The list is composed of the official identifier
+	 * followed by all the alias identifiers.
+	 * @return The list of all the identifiers for the resource.
+	 */
+	public ReferenceList getIdentifiers()
+	{
+		return getWrappedRepresentation().getIdentifiers();
+	}
+	
+	/**
+	 * Returns the list of variants. Each variant is described by metadata and can provide several instances 
+	 * of the variant's representation.
+	 * @return The list of variants.
+	 */
+	public List<Representation> getVariants()
+	{
+		return getWrappedRepresentation().getVariants();
+	}
+	
+	/**
+	 * Posts a variant representation in the resource.
+	 * @param entity The posted entity. 
+	 * @return The result information.
+	 */
+	public Result post(Representation entity)
+	{
+		return getWrappedRepresentation().post(entity);
+	}
+	
+	/**
+	 * Puts a variant representation in the resource.
+	 * @param variant A new or updated variant representation. 
+	 * @return The result information.
+	 */
+	public Result put(Representation variant)
+	{
+		return getWrappedRepresentation().put(variant);
+	}
+	
+	/**
+	 * Asks the resource to delete itself and all its representations.
+	 * @return The result information. 
+	 */
+	public Result delete()
+	{
+		return getWrappedRepresentation().delete();
+	}
+	
+	/**
+	 * Sets a new list of all the identifiers for the resource.  
+	 * @param identifiers The new list of identifiers. 
+	 */
+	public void setIdentifiers(ReferenceList identifiers)
+	{
+		getWrappedRepresentation().setIdentifiers(identifiers);
+	}
+	
+	/**
+	 * Sets a new list of variants. 
+	 * @param variants The new list of variants.
+	 */
+	public void setVariants(List<Representation> variants)
+	{
+		getWrappedRepresentation().setVariants(variants);
+	}
+
+   // -------------------------------------
+   // Methods inherited from Representation
+   //--------------------------------------
+
 
    /**
     * Returns the character set or null if not applicable.
@@ -63,9 +216,9 @@ public class WrapperRepresentation extends WrapperResource implements Representa
     */
    public CharacterSet getCharacterSet()
    {
-   	return getWrappedRepresentation().getCharacterSet();
+      return getWrappedRepresentation().getCharacterSet();
    }
-   
+
    /**
     * Sets the character set or null if not applicable.
     * @param characterSet The character set or null if not applicable.
@@ -85,7 +238,7 @@ public class WrapperRepresentation extends WrapperResource implements Representa
    {
    	return getWrappedRepresentation().isAvailable();
    }
-   
+
    /**
     * Indicates if the representation's content is transient, which means that it can 
     * be obtained only once. This is often the case with representations transmitted
@@ -97,16 +250,16 @@ public class WrapperRepresentation extends WrapperResource implements Representa
 	{
 		return getWrappedRepresentation().isTransient();
 	}
-   
+
    /**
     * Returns the encoding or null if identity encoding applies.
     * @return The encoding or null if identity encoding applies.
     */
    public Encoding getEncoding()
    {
-   	return getWrappedRepresentation().getEncoding();
+      return getWrappedRepresentation().getEncoding();
    }
-   
+
    /**
     * Sets the encoding or null if identity encoding applies.
     * @param encoding The encoding or null if identity encoding applies.
@@ -115,16 +268,16 @@ public class WrapperRepresentation extends WrapperResource implements Representa
    {
    	getWrappedRepresentation().setEncoding(encoding);
    }
-   
+
    /**
     * Returns the future date when this representation expire. If this information is not known, returns null.
     * @return The expiration date.
     */
    public Date getExpirationDate()
    {
-   	return getWrappedRepresentation().getExpirationDate();
+      return getWrappedRepresentation().getExpirationDate();
    }
-   
+
    /**
     * Sets the future date when this representation expire. If this information is not known, pass null.
     * @param expirationDate The expiration date.
@@ -133,16 +286,16 @@ public class WrapperRepresentation extends WrapperResource implements Representa
    {
    	getWrappedRepresentation().setExpirationDate(expirationDate);
    }
-   
+
    /**
     * Returns the language or null if not applicable.
     * @return The language or null if not applicable.
     */
    public Language getLanguage()
    {
-   	return getWrappedRepresentation().getLanguage();
+      return getWrappedRepresentation().getLanguage();
    }
-   
+
    /**
     * Sets the language or null if not applicable.
     * @param language The language or null if not applicable.
@@ -151,16 +304,16 @@ public class WrapperRepresentation extends WrapperResource implements Representa
    {
    	getWrappedRepresentation().setLanguage(language);
    }
-   
+
    /**
     * Returns the media type.
     * @return The media type.
     */
    public MediaType getMediaType()
    {
-   	return getWrappedRepresentation().getMediaType();
+      return getWrappedRepresentation().getMediaType();
    }
-   
+
    /**
     * Sets the media type.
     * @param mediaType The media type.
@@ -169,7 +322,7 @@ public class WrapperRepresentation extends WrapperResource implements Representa
    {
    	getWrappedRepresentation().setMediaType(mediaType);
    }
-   
+
    /**
     * Returns the last date when this representation was modified. If this information is not known, returns
     * null.
@@ -177,9 +330,9 @@ public class WrapperRepresentation extends WrapperResource implements Representa
     */
    public Date getModificationDate()
    {
-   	return getWrappedRepresentation().getModificationDate();
+      return getWrappedRepresentation().getModificationDate();
    }
-   
+
    /**
     * Sets the last date when this representation was modified. If this information is not known, pass null.
     * @param modificationDate The modification date.
@@ -189,13 +342,13 @@ public class WrapperRepresentation extends WrapperResource implements Representa
    	getWrappedRepresentation().setModificationDate(modificationDate);
    }
 
-	/**
+   /**
     * Returns the represented resource if available.
     * @return The represented resource if available.
     */
    public Resource getResource()
    {
-   	return getWrappedRepresentation().getResource();
+      return getWrappedRepresentation().getResource();
    }
 
    /**
@@ -206,16 +359,16 @@ public class WrapperRepresentation extends WrapperResource implements Representa
    {
    	getWrappedRepresentation().setResource(resource);
    }
-	
+   
    /**
-    * Returns the size in bytes if known, -1 otherwise.
-    * @return The size in bytes if known, -1 otherwise.
+    * Returns the size in bytes if known, UNKNOWN_SIZE (-1) otherwise.
+    * @return The size in bytes if known, UNKNOWN_SIZE (-1) otherwise.
     */
    public long getSize()
    {
-   	return getWrappedRepresentation().getSize();
+      return getWrappedRepresentation().getSize();
    }
-	
+
    /**
     * Sets the expected size in bytes if known, -1 otherwise.
     * @param expectedSize The expected size in bytes if known, -1 otherwise.
@@ -231,9 +384,9 @@ public class WrapperRepresentation extends WrapperResource implements Representa
     */
    public Tag getTag()
    {
-   	return getWrappedRepresentation().getTag();
+      return getWrappedRepresentation().getTag();
    }
-   
+
    /**
     * Sets the tag.
     * @param tag The tag.
@@ -242,10 +395,12 @@ public class WrapperRepresentation extends WrapperResource implements Representa
    {
    	getWrappedRepresentation().setTag(tag);
    }
-
+   
    /**
     * Returns a channel with the representation's content.<br/>
-    * If it is supported by a file, a read-only instance of FileChannel is returned.
+    * If it is supported by a file, a read-only instance of FileChannel is returned.<br/>
+    * This method is ensured to return a fresh channel for each invocation unless it 
+    * is a transient representation, in which case null is returned.
     * @return A channel with the representation's content.
     * @throws IOException
     */
@@ -256,6 +411,8 @@ public class WrapperRepresentation extends WrapperResource implements Representa
 
    /**
     * Returns a stream with the representation's content.
+    * This method is ensured to return a fresh stream for each invocation unless it 
+    * is a transient representation, in which case null is returned.
     * @return A stream with the representation's content.
     * @throws IOException
     */
@@ -266,6 +423,8 @@ public class WrapperRepresentation extends WrapperResource implements Representa
 
    /**
     * Writes the representation to a byte channel.
+    * This method is ensured to write the full content for each invocation unless it 
+    * is a transient representation, in which case an exception is thrown.
     * @param writableChannel A writable byte channel.
     * @throws IOException
     */
@@ -276,6 +435,8 @@ public class WrapperRepresentation extends WrapperResource implements Representa
 
    /**
     * Writes the representation to a byte stream.
+    * This method is ensured to write the full content for each invocation unless it 
+    * is a transient representation, in which case an exception is thrown.
     * @param outputStream The output stream.
     * @throws IOException
     */
@@ -292,5 +453,5 @@ public class WrapperRepresentation extends WrapperResource implements Representa
    {
    	return getWrappedRepresentation().toString();
    }
-
+	
 }

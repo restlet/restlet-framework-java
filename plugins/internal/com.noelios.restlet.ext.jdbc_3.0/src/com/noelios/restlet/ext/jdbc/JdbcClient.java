@@ -39,7 +39,8 @@ import org.apache.commons.dbcp.PoolableConnectionFactory;
 import org.apache.commons.dbcp.PoolingDataSource;
 import org.apache.commons.pool.ObjectPool;
 import org.apache.commons.pool.impl.GenericObjectPool;
-import org.restlet.Call;
+import org.restlet.Request;
+import org.restlet.Response;
 import org.restlet.data.Method;
 import org.restlet.data.Protocol;
 import org.restlet.data.Representation;
@@ -93,9 +94,9 @@ public class JdbcClient extends ClientImpl
     * @param jdbcURI The database's JDBC URI (ex: jdbc:mysql://[hostname]/[database]).
     * @param request The request to send (valid XML request).
     */
-   public static Call create(String jdbcURI, Representation request)
+   public static Request create(String jdbcURI, Representation request)
    {
-      Call result = new Call();
+   	Request result = new Request();
       result.getClient().setAgent(Factory.VERSION_HEADER);
       result.setMethod(Method.POST);
       result.setResourceRef(jdbcURI);
@@ -104,10 +105,11 @@ public class JdbcClient extends ClientImpl
    }
 
    /**
-    * Handles a REST call.
-    * @param call The call to handle.
+    * Handles a call.
+    * @param request The request to handle.
+    * @param response The response to update.
     */
-   public void handle(Call call)
+   public void handle(Request request, Response response)
    {
       Connection connection = null;
 
@@ -116,13 +118,13 @@ public class JdbcClient extends ClientImpl
   			if(!isStarted()) start();
 
   			// Parse the JDBC URI
-         String connectionURI = call.getResourceRef().toString();
+         String connectionURI = request.getResourceRef().toString();
 
          // Parse the request to extract necessary info
          DocumentBuilder docBuilder = DocumentBuilderFactory.newInstance().newDocumentBuilder();
-         Document request = docBuilder.parse(call.getInput().getStream());
+         Document requestDoc = docBuilder.parse(request.getInput().getStream());
 
-         Element rootElt = (Element)request.getElementsByTagName("request").item(0);
+         Element rootElt = (Element)requestDoc.getElementsByTagName("request").item(0);
          Element headerElt = (Element)rootElt.getElementsByTagName("header").item(0);
          Element connectionElt = (Element)headerElt.getElementsByTagName("connection").item(0);
 
@@ -153,7 +155,7 @@ public class JdbcClient extends ClientImpl
          Node sqlRequestNode = rootElt.getElementsByTagName("body").item(0);
          String sqlRequest = sqlRequestNode.getTextContent();
 
-         if(call.getMethod().equals(Method.POST))
+         if(request.getMethod().equals(Method.POST))
          {
             // Execute the SQL request
             connection = getConnection(connectionURI, properties, usePooling);
@@ -161,7 +163,7 @@ public class JdbcClient extends ClientImpl
             statement.execute(sqlRequest, returnGeneratedKeys ? Statement.RETURN_GENERATED_KEYS
                   : Statement.NO_GENERATED_KEYS);
             JdbcResult result = new JdbcResult(statement);
-            call.setOutput(new ObjectRepresentation(result));
+            response.setOutput(new ObjectRepresentation(result));
 
             // Commit any changes to the database
             connection.commit();

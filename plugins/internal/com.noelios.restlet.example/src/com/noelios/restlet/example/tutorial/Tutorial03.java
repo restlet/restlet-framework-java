@@ -22,7 +22,8 @@
 
 package com.noelios.restlet.example.tutorial;
 
-import org.restlet.Call;
+import org.restlet.Request;
+import org.restlet.Response;
 import org.restlet.Restlet;
 import org.restlet.connector.Server;
 import org.restlet.data.MediaType;
@@ -34,26 +35,19 @@ import org.restlet.data.Protocol;
  */
 public class Tutorial03
 {
-   public static void main(String[] args)
+   public static void main(String[] args) throws Exception
    {
-      try
+      // Creating a minimal Restlet returning "Hello World"
+      Restlet handler = new Restlet()
       {
-         // Creating a minimal Restlet returning "Hello World"
-         Restlet handler = new Restlet()
+         public void handleGet(Request request, Response response)
          {
-            public void handleGet(Call call)
-            {
-               call.setOutput("Hello World!", MediaType.TEXT_PLAIN);
-            }
-         };
+            response.setOutput("Hello World!", MediaType.TEXT_PLAIN);
+         }
+      };
 
-         // Create the HTTP server and listen on port 8182
-         new Server(Protocol.HTTP, 8182, handler).start();
-      }
-      catch(Exception e)
-      {
-         e.printStackTrace();
-      }
+      // Create the HTTP server and listen on port 8182
+      new Server(Protocol.HTTP, 8182, handler).start();
    }
 
 }

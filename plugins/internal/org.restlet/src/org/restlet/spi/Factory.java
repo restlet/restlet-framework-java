@@ -29,7 +29,8 @@ import java.util.List;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
-import org.restlet.Call;
+import org.restlet.Request;
+import org.restlet.Response;
 import org.restlet.Router;
 import org.restlet.Scorer;
 import org.restlet.UniformInterface;
@@ -200,11 +201,13 @@ public abstract class Factory
     * Sets the best output representation of a given resource according to the client preferences.<br/>
     * If no representation is found, sets the status to "Not found".<br/>
     * If no acceptable representation is available, sets the status to "Not acceptable".<br/>
+    * @param request The request containing the client preferences.
+    * @param response The response to update with the best output.
     * @param resource The resource for which the best representation needs to be set.
     * @param fallbackLanguage The language to use if no preference matches.
     * @see <a href="http://httpd.apache.org/docs/2.2/en/content-negotiation.html#algorithm">Apache content negotiation algorithm</a>
     */
-   public abstract void setOutput(Call call, Resource resource, Language fallbackLanguage);
+   public abstract void setOutput(Request request, Response response, Resource resource, Language fallbackLanguage);
 
    /**
     * Sets the credentials of a challenge response using a user ID and a password.<br/>

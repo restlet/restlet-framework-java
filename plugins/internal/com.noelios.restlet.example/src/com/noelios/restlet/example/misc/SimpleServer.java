@@ -22,8 +22,9 @@
 
 package com.noelios.restlet.example.misc;
 
-import org.restlet.Call;
 import org.restlet.Context;
+import org.restlet.Request;
+import org.restlet.Response;
 import org.restlet.Restlet;
 import org.restlet.component.Container;
 import org.restlet.data.Form;
@@ -53,11 +54,11 @@ public class SimpleServer
          // Prepare and attach a test Restlet
          Restlet testRestlet = new Restlet(myContext)
          {
-            public void handlePut(Call call)
+            public void handlePut(Request request, Response response)
             {
                System.out.println("Handling the call...");
                System.out.println("Trying to get the input as a form...");
-               Form form = call.getInputAsForm();
+               Form form = request.getInputAsForm();
 
                System.out.println("Trying to getParameters...");
                StringBuffer sb = new StringBuffer("foo");
@@ -73,7 +74,7 @@ public class SimpleServer
                   System.out.println(sb.toString());
                }
 
-               call.setOutput(sb.toString(), MediaType.TEXT_PLAIN);
+               response.setOutput(sb.toString(), MediaType.TEXT_PLAIN);
             }
          };
 

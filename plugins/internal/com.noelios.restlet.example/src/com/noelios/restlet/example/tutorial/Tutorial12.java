@@ -24,13 +24,10 @@ package com.noelios.restlet.example.tutorial;
 
 import java.util.List;
 
-import org.restlet.Call;
+import org.restlet.Request;
+import org.restlet.Response;
 import org.restlet.Restlet;
-import org.restlet.data.ChallengeScheme;
 import org.restlet.data.MediaType;
-import org.restlet.data.Protocol;
-
-import com.noelios.restlet.build.Builders;
 
 /**
  * Fluent Builders to simplify configuration. 
@@ -38,34 +35,32 @@ import com.noelios.restlet.build.Builders;
  */
 public class Tutorial12 implements Constants
 {
-   public static void main(String[] args)
+   public static void main(String[] args) throws Exception
    {
-      try
-      {
-         // Create the user Restlet
-         Restlet userRestlet = new Restlet()
+      // Create the user Restlet
+      Restlet userRestlet = new Restlet()
+         {
+      		public void handleGet(Request request, Response response)
             {
-         		public void handleGet(Call call)
-               {
-                  // Print the requested URI path
-                  String output = "Account of user named: " + call.getBaseRef().getLastSegment();
-                  call.setOutput(output, MediaType.TEXT_PLAIN);
-               }
-            };
+               // Print the requested URI path
+               String output = "Account of user named: " + request.getBaseRef().getLastSegment();
+               response.setOutput(output, MediaType.TEXT_PLAIN);
+            }
+         };
 
-         // Create the orders Restlet
-         Restlet ordersRestlet = new Restlet()
-         	{
-            	public void handleGet(Call call)
-               {
-            		// Print the user name of the requested orders
-                  List<String> segments = call.getBaseRef().getSegments();
-                  String output = "Orders of user named: " + segments.get(segments.size() - 2);
-                  call.setOutput(output, MediaType.TEXT_PLAIN);
-               }
-            };
-      	
-         // Build and start the container
+      // Create the orders Restlet
+      Restlet ordersRestlet = new Restlet()
+      	{
+         	public void handleGet(Request request, Response response)
+            {
+         		// Print the user name of the requested orders
+               List<String> segments = request.getBaseRef().getSegments();
+               String output = "Orders of user named: " + segments.get(segments.size() - 2);
+               response.setOutput(output, MediaType.TEXT_PLAIN);
+            }
+         };
+   	
+      // Build and start the container
 //      	Builders.buildContainer()
 //      		.addServer(Protocol.HTTP, 8182)
 //      		.getLocalHost().
@@ -78,11 +73,6 @@ public class Tutorial12 implements Constants
 //   						.attachRouter("/users/[a-z]+")
 //   								.attach("$", userRestlet).upRouter()
 //									.attach("/orders$", ordersRestlet).owner().start();
-      }
-      catch(Exception e)
-      {
-         e.printStackTrace();
-      }
    }
 
 }

@@ -25,7 +25,8 @@ package com.noelios.restlet.impl.connector;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
-import org.restlet.Call;
+import org.restlet.Request;
+import org.restlet.Response;
 
 /**
  * Base HTTP client connector.
@@ -48,23 +49,24 @@ public abstract class HttpClient extends ClientImpl
 	}
 
 	/**
-	 * Creates a low-level HTTP client call from a high-level uniform call.
-	 * @param call The high-level uniform call.
+	 * Creates a low-level HTTP client call from a high-level request.
+	 * @param request The high-level request.
 	 * @return A low-level HTTP client call.
 	 */
-	public abstract HttpClientCall create(Call call);
+	public abstract HttpClientCall create(Request request);
 
 	/**
 	 * Handles a call.
-	 * @param call The call to handle.
+    * @param request The request to handle.
+    * @param response The response to update.
 	 */
-	public void handle(Call call)
+	public void handle(Request request, Response response)
 	{
 		try
 		{
 			if (!isStarted()) start();
-			HttpClientCall httpCall = getConverter().toSpecific(this, call);
-			getConverter().commit(httpCall, call);
+			HttpClientCall httpCall = getConverter().toSpecific(this, request, response);
+			getConverter().commit(httpCall, request, response);
 		}
 		catch (Exception e)
 		{

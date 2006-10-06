@@ -22,44 +22,45 @@
 
 package com.noelios.restlet.util;
 
-import org.restlet.Call;
+import org.restlet.Request;
+import org.restlet.Response;
 import org.restlet.data.Form;
 
 import com.noelios.restlet.impl.util.CookieUtils;
 
 /**
- * Readable model wrapping a REST call. It can be passed directly passed to a string template. 
- * Repeating values can be retrieved by appending (index) or ("name")  or ('name') after the variable's name. 
- * Note that (first) is equivalent to (0) and that (last) returns the last value. 
+ * Readable model wrapping a call's request and response. It can be passed directly passed to a string 
+ * template. Repeating values can be retrieved by appending (index) or ("name")  or ('name') after the 
+ * variable's name. Note that (first) is equivalent to (0) and that (last) returns the last value. 
  * Here is the list of currently supported variables:
  * <ul>
+ * <li>authority</li>
  *	<li>client.address (repeating and non-repeating, lookup by index only)</li>
  * <li>client.agent</li>
  * <li>cookie (repeating, lookup by name and by index)</li>
- * <li>method</li>
- * <li>redirectUri</li>
- * <li>referrerUri</li>
- * <li>authority</li>
  * <li>fragment</li>
+ * <li>hostIdentifier</li>
  * <li>hostName</li>
  * <li>hostPort</li>
- * <li>hostIdentifier</li>
  * <li>identifier</li>
+ * <li>method</li>
  * <li>path</li>
  * <li>query (repeating and non-repeating, lookup by name and by index)</li>
+ * <li>redirectUri</li>
+ * <li>referrerUri</li>
  * <li>scheme</li>
- * <li>uri</li>
- * <li>userInfo</li>
  * <li>server.address</li>
  * <li>server.agent</li>
  * <li>status</li>
+ * <li>uri</li>
+ * <li>userInfo</li>
  * </ul>
  * @author Jerome Louvel (contact@noelios.com) <a href="http://www.noelios.com/">Noelios Consulting</a>
  */
 public class CallModel implements ReadableModel
 {
    public static final String NAME_CLIENT_ADDRESS = "client.address";
-   public static final String NAME_CLIENT_AGENT_NAME = "client.agent";
+   public static final String NAME_CLIENT_AGENT = "client.agent";
    public static final String NAME_COOKIE = "cookie";
    public static final String NAME_METHOD = "method";
    public static final String NAME_REDIRECT_URI = "redirectUri";
@@ -79,20 +80,25 @@ public class CallModel implements ReadableModel
    public static final String NAME_SERVER_AGENT = "server.agent";
    public static final String NAME_STATUS = "status";
 
-   /** The wrapped call. */
-   private Call call;
+   /** The wrapped request. */
+   private Request request;
+
+   /** The wrapped response. */
+   private Response response;
 
    /** The default value to return if a lookup fails or returns null. */
    private String defaultValue;
 
    /**
     * Constructor.
-    * @param call The wrapped uniform call.
+    * @param request The wrapped request.
+    * @param response The wrapped response.
     * @param defaultValue The default value to return if a lookup fails or returns null.
     */
-   public CallModel(Call call, String defaultValue)
+   public CallModel(Request request, Response response, String defaultValue)
    {
-      this.call = call;
+      this.request = request;
+      this.response = response;
       this.defaultValue = defaultValue;
    }
 
@@ -111,7 +117,7 @@ public class CallModel implements ReadableModel
 	      {
 	      	if(name.equals(NAME_CLIENT_ADDRESS))
 	      	{
-	      		result = call.getClient().getAddress();
+	      		result = request.getClient().getAddress();
 	      	}
 	      	else
 	      	{
@@ -123,11 +129,11 @@ public class CallModel implements ReadableModel
 	      			
 	   				if(rest.equals("first"))
 	   				{
-	   					result = call.getClient().getAddresses().get(0);
+	   					result = request.getClient().getAddresses().get(0);
 	   				}
 	   				else if(rest.equals("last"))
 	   				{
-	   					result = call.getClient().getAddresses().get(call.getClient().getAddresses().size() - 1);
+	   					result = request.getClient().getAddresses().get(request.getClient().getAddresses().size() - 1);
 	   				}
 	   				else if(isVariableName(rest))
 	   				{
@@ -137,7 +143,7 @@ public class CallModel implements ReadableModel
 	   				else
 	   				{
 	   					// Lookup by index
-	   					result = call.getClient().getAddresses().get(Integer.parseInt(rest));
+	   					result = request.getClient().getAddresses().get(Integer.parseInt(rest));
 	   				}
 	      		}
 	      		else
@@ -146,9 +152,9 @@ public class CallModel implements ReadableModel
 	      		}
 	      	}
 	      }
-	      else if(name.equals(NAME_CLIENT_AGENT_NAME))
+	      else if(name.equals(NAME_CLIENT_AGENT))
 	      {
-	         result = call.getClient().getAgent();
+	         result = request.getClient().getAgent();
 	      }
 	      else if(name.startsWith(NAME_COOKIE))
 	      {
@@ -160,22 +166,22 @@ public class CallModel implements ReadableModel
 	   			
 					if(rest.equals("first"))
 					{
-			         result = call.getCookies().get(0).getValue();
+			         result = request.getCookies().get(0).getValue();
 					}
 					else if(rest.equals("last"))
 					{
-						result = call.getCookies().get(call.getCookies().size() - 1).getValue();
+						result = request.getCookies().get(request.getCookies().size() - 1).getValue();
 					}
    				else if(isVariableName(rest))
 					{
 						// Lookup by name
 		   			rest = getVariableName(rest);
-			         result = CookieUtils.getFirstCookie(call.getCookies(), rest).getValue();
+			         result = CookieUtils.getFirstCookie(request.getCookies(), rest).getValue();
 					}
 					else
 					{
 						// Lookup by index
-						result = call.getCookies().get(Integer.parseInt(rest)).getValue();
+						result = request.getCookies().get(Integer.parseInt(rest)).getValue();
 					}
 	   		}
 	   		else
@@ -185,49 +191,49 @@ public class CallModel implements ReadableModel
 	      }
 	      else if(name.equals(NAME_METHOD))
 	      {
-	         result = call.getMethod().getName();
+	         result = request.getMethod().getName();
 	      }
 	      else if(name.equals(NAME_REDIRECT_URI))
 	      {
-	         result = call.getRedirectRef().toString();
+	         result = response.getRedirectRef().toString();
 	      }
 	      else if(name.equals(NAME_REFERRER_URI))
 	      {
-	         result = call.getReferrerRef().toString();
+	         result = request.getReferrerRef().toString();
 	      }
 	      else if(name.equals(NAME_RESOURCE_AUTHORITY))
 	      {
-	         result = call.getResourceRef().getAuthority();
+	         result = request.getResourceRef().getAuthority();
 	      }
 	      else if(name.equals(NAME_RESOURCE_FRAGMENT))
 	      {
-	         result = call.getResourceRef().getFragment();
+	         result = request.getResourceRef().getFragment();
 	      }
 	      else if(name.equals(NAME_RESOURCE_HOST_NAME))
 	      {
-	         result = call.getResourceRef().getHostName();
+	         result = request.getResourceRef().getHostName();
 	      }
 	      else if(name.equals(NAME_RESOURCE_HOST_PORT))
 	      {
-	         result = call.getResourceRef().getHostPort().toString();
+	         result = request.getResourceRef().getHostPort().toString();
 	      }
 	      else if(name.equals(NAME_RESOURCE_HOST_IDENTIFIER))
 	      {
-	         result = call.getResourceRef().getHostIdentifier();
+	         result = request.getResourceRef().getHostIdentifier();
 	      }
 	      else if(name.equals(NAME_RESOURCE_IDENTIFIER))
 	      {
-	         result = call.getResourceRef().getIdentifier();
+	         result = request.getResourceRef().getIdentifier();
 	      }
 	      else if(name.equals(NAME_RESOURCE_PATH))
 	      {
-	         result = call.getResourceRef().getPath();
+	         result = request.getResourceRef().getPath();
 	      }
 	      else if(name.startsWith(NAME_RESOURCE_QUERY))
 	      {
 	      	if(name.equals(NAME_RESOURCE_QUERY))
 	      	{
-		         result = call.getResourceRef().getQuery();
+		         result = request.getResourceRef().getQuery();
 	      	}
 	      	else
 	      	{
@@ -239,23 +245,23 @@ public class CallModel implements ReadableModel
 	      			
 	   				if(rest.equals("first"))
 	   				{
-	   					result = call.getResourceRef().getQueryAsForm().get(0).getValue();
+	   					result = request.getResourceRef().getQueryAsForm().get(0).getValue();
 	   				}
 	   				else if(rest.equals("last"))
 	   				{
-	   					Form form = call.getResourceRef().getQueryAsForm(); 
+	   					Form form = request.getResourceRef().getQueryAsForm(); 
 	   					result = form.get(form.size() - 1).getValue();
 	   				}
 	   				else if(isVariableName(rest))
 	   				{
 							// Lookup by name
 			   			rest = getVariableName(rest);
-				         result = call.getResourceRef().getQueryAsForm().getFirst(rest).getValue();
+				         result = request.getResourceRef().getQueryAsForm().getFirst(rest).getValue();
 	   				}
 	   				else
 	   				{
 	   					// Lookup by index
-	   					result = call.getResourceRef().getQueryAsForm().get(Integer.parseInt(rest)).getValue();
+	   					result = request.getResourceRef().getQueryAsForm().get(Integer.parseInt(rest)).getValue();
 	   				}
 	      		}
 	      		else
@@ -266,29 +272,29 @@ public class CallModel implements ReadableModel
 	      }
 	      else if(name.equals(NAME_RESOURCE_SCHEME))
 	      {
-	         result = call.getResourceRef().getScheme();
+	         result = request.getResourceRef().getScheme();
 	      }
 	      else if(name.equals(NAME_RESOURCE_URI))
 	      {
-	         result = call.getResourceRef().toString();
+	         result = request.getResourceRef().toString();
 	      }
 	      else if(name.equals(NAME_RESOURCE_USER_INFO))
 	      {
-	         result = call.getResourceRef().getUserInfo();
+	         result = request.getResourceRef().getUserInfo();
 	      }
 	      else if(name.equals(NAME_SERVER_ADDRESS))
 	      {
-	         result = call.getServer().getAddress();
+	         result = response.getServer().getAddress();
 	      }
 	      else if(name.equals(NAME_SERVER_AGENT))
 	      {
-	         result = call.getServer().getAgent();
+	         result = response.getServer().getAgent();
 	      }
 	      else if(name.equals(NAME_STATUS))
 	      {
-	         result = Integer.toString(call.getStatus().getCode());
+	         result = Integer.toString(response.getStatus().getCode());
 	      }
-	
+
 	      // Check if the default value should be returned
 	      if(result == null)
 	      {
@@ -308,7 +314,7 @@ public class CallModel implements ReadableModel
     * @param token The token to test.
     * @return True if the token contains a variable name.
     */
-   public boolean isVariableName(String token)
+   protected boolean isVariableName(String token)
    {
    	return (((token.charAt(0) == '"') && (token.charAt(token.length() - 1) == '"')) ||
 			     ((token.charAt(0) == '\'') && (token.charAt(token.length() - 1) == '\'')));
@@ -319,7 +325,7 @@ public class CallModel implements ReadableModel
     * @param token The token containing the variable name.
     * @return The variable name.
     */
-   public String getVariableName(String token)
+   protected String getVariableName(String token)
    {
 		return token.substring(1, token.length() - 1);
    }
@@ -335,83 +341,83 @@ public class CallModel implements ReadableModel
 
       if(name.startsWith(NAME_CLIENT_ADDRESS))
       {
-         result = (call.getClient().getAddress() != null);
+         result = (request.getClient().getAddress() != null);
       }
-      else if(name.equals(NAME_CLIENT_AGENT_NAME))
+      else if(name.equals(NAME_CLIENT_AGENT))
       {
-         result = (call.getClient().getAgent() != null);
+         result = (request.getClient().getAgent() != null);
       }
       else if(name.startsWith(NAME_COOKIE))
       {
-         result = (call.getCookies() != null) && (call.getCookies().size() > 0);
+         result = (request.getCookies() != null) && (request.getCookies().size() > 0);
       }
       else if(name.equals(NAME_METHOD))
       {
-         result = (call.getMethod() != null);
+         result = (request.getMethod() != null);
       }
       else if(name.equals(NAME_REDIRECT_URI))
       {
-         result = (call.getRedirectRef() != null);
+         result = (response.getRedirectRef() != null);
       }
       else if(name.equals(NAME_REFERRER_URI))
       {
-         result = (call.getReferrerRef() != null);
+         result = (request.getReferrerRef() != null);
       }
       else if(name.equals(NAME_RESOURCE_AUTHORITY))
       {
-         result = (call.getResourceRef() != null) && (call.getResourceRef().getAuthority() != null);
+         result = (request.getResourceRef() != null) && (request.getResourceRef().getAuthority() != null);
       }
       else if(name.equals(NAME_RESOURCE_FRAGMENT))
       {
-         result = (call.getResourceRef() != null) && (call.getResourceRef().getFragment() != null);
+         result = (request.getResourceRef() != null) && (request.getResourceRef().getFragment() != null);
       }
       else if(name.equals(NAME_RESOURCE_HOST_NAME))
       {
-         result = (call.getResourceRef() != null) && (call.getResourceRef().getHostName() != null);
+         result = (request.getResourceRef() != null) && (request.getResourceRef().getHostName() != null);
       }
       else if(name.equals(NAME_RESOURCE_HOST_PORT))
       {
-         result = (call.getResourceRef() != null) && (call.getResourceRef().getHostPort() != null);
+         result = (request.getResourceRef() != null) && (request.getResourceRef().getHostPort() != null);
       }
       else if(name.equals(NAME_RESOURCE_HOST_IDENTIFIER))
       {
-         result = (call.getResourceRef() != null) && (call.getResourceRef().getHostIdentifier() != null);
+         result = (request.getResourceRef() != null) && (request.getResourceRef().getHostIdentifier() != null);
       }
       else if(name.equals(NAME_RESOURCE_IDENTIFIER))
       {
-         result = (call.getResourceRef() != null);
+         result = (request.getResourceRef() != null);
       }
       else if(name.equals(NAME_RESOURCE_PATH))
       {
-         result = (call.getResourceRef() != null) && (call.getResourceRef().getPath() != null);
+         result = (request.getResourceRef() != null) && (request.getResourceRef().getPath() != null);
       }
       else if(name.startsWith(NAME_RESOURCE_QUERY))
       {
-         result = (call.getResourceRef() != null) && (call.getResourceRef().getQuery() != null);
+         result = (request.getResourceRef() != null) && (request.getResourceRef().getQuery() != null);
       }
       else if(name.equals(NAME_RESOURCE_SCHEME))
       {
-         result = (call.getResourceRef() != null) && (call.getResourceRef().getScheme() != null);
+         result = (request.getResourceRef() != null) && (request.getResourceRef().getScheme() != null);
       }
       else if(name.equals(NAME_RESOURCE_URI))
       {
-         result = (call.getResourceRef() != null);
+         result = (request.getResourceRef() != null);
       }
       else if(name.equals(NAME_RESOURCE_USER_INFO))
       {
-         result = (call.getResourceRef() != null) && (call.getResourceRef().getUserInfo() != null);
+         result = (request.getResourceRef() != null) && (request.getResourceRef().getUserInfo() != null);
       }
       else if(name.equals(NAME_SERVER_ADDRESS))
       {
-         result = (call.getServer().getAddress() != null);
+         result = (response.getServer().getAddress() != null);
       }
       else if(name.equals(NAME_SERVER_AGENT))
       {
-         result = (call.getServer().getAgent() != null);
+         result = (response.getServer().getAgent() != null);
       }
       else if(name.equals(NAME_STATUS))
       {
-         result = (call.getStatus() != null);
+         result = (response.getStatus() != null);
       }
 
       return result;

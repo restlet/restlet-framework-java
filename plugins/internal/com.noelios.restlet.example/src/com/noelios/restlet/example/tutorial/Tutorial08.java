@@ -36,37 +36,30 @@ import com.noelios.restlet.StatusFilter;
  */
 public class Tutorial08 implements Constants
 {
-   public static void main(String[] args)
+   public static void main(String[] args) throws Exception
    {
-      try
-      {
-         // Create a new Restlet container
-      	Container myContainer = new Container();
-      	Context myContext = myContainer.getContext();
+      // Create a new Restlet container
+   	Container myContainer = new Container();
+   	Context myContext = myContainer.getContext();
 
-         // Add an HTTP server connector to the Restlet container. 
-         // Note that the container is the call restlet.
-         myContainer.getServers().add(Protocol.HTTP, 8182);
+      // Add an HTTP server connector to the Restlet container. 
+      // Note that the container is the call restlet.
+      myContainer.getServers().add(Protocol.HTTP, 8182);
 
-         // Attach a log Filter to the container
-         LogFilter log = new LogFilter(myContext, "com.noelios.restlet.example");
-         myContainer.getLocalHost().attach("/", log);
+      // Attach a log Filter to the container
+      LogFilter log = new LogFilter(myContext, "com.noelios.restlet.example");
+      myContainer.getLocalHost().attach("/", log);
 
-         // Attach a status Filter to the log Filter
-         StatusFilter status = new StatusFilter(myContext, true, "webmaster@mysite.org", "http://www.mysite.org");
-         log.setNext(status);
+      // Attach a status Filter to the log Filter
+      StatusFilter status = new StatusFilter(myContext, true, "webmaster@mysite.org", "http://www.mysite.org");
+      log.setNext(status);
 
-         // Create a DirectoryFinder able to return a deep hierarchy of Web files
-         DirectoryFinder directory = new DirectoryFinder(myContext, ROOT_URI, "index.html");
-         status.setNext(directory);
+      // Create a DirectoryFinder able to return a deep hierarchy of Web files
+      DirectoryFinder directory = new DirectoryFinder(myContext, ROOT_URI, "index.html");
+      status.setNext(directory);
 
-         // Now, let's start the container!
-         myContainer.start();
-      }
-      catch(Exception e)
-      {
-         e.printStackTrace();
-      }
+      // Now, let's start the container!
+      myContainer.start();
    }
 
 }

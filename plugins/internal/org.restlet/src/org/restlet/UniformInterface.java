@@ -23,17 +23,21 @@
 package org.restlet;
 
 /**
- * Uniform REST interface. The Restlet class is the generic implementation of UniformInterface, but other 
- * elements such as the Connector and Component classes also implement it. 
- * @see org.restlet.Call
- * @see org.restlet.Restlet
+ * Uniform REST interface. "The central feature that distinguishes
+ * the REST architectural style from other network-based styles is its emphasis on a uniform interface between
+ * components. By applying the software engineering principle of generality to the component interface, the
+ * overall system architecture is simplified and the visibility of interactions is improved. Implementations
+ * are decoupled from the services they provide, which encourages independent evolvability." Roy T. Fielding
+ * @see <a href="http://www.ics.uci.edu/~fielding/pubs/dissertation/rest_arch_style.htm#sec_5_1_5">Source
+ * dissertation</a>
  * @author Jerome Louvel (contact@noelios.com) <a href="http://www.noelios.com/">Noelios Consulting</a>
  */
 public interface UniformInterface
 {
    /**
     * Handles a call.
-    * @param call The call to handle.
+    * @param request The request to handle.
+    * @param response The response to update.
     */
-	public void handle(Call call);
+	public void handle(Request request, Response response);
 }

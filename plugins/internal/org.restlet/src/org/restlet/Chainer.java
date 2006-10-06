@@ -25,7 +25,7 @@ package org.restlet;
 /**
  * Restlet part of a processing chain. In addition to handling incoming calls like any Restlet, a handler 
  * can also resolve, either statically or dynamically, the next Restlet that will continue the processing chain.
- * Subclasses only have to implement the findNext(Call) method.
+ * Subclasses only have to implement the findNext() method.
  * @author Jerome Louvel (contact@noelios.com) <a href="http://www.noelios.com/">Noelios Consulting</a>
  */
 public abstract class Chainer extends Restlet 
@@ -48,27 +48,29 @@ public abstract class Chainer extends Restlet
    }
    
    /**
-    * Default implementation for all the handle*() methods that calls the next handler if it is available. 
-    * @param call The call to handle.
+    * Default implementation for all the handle*() methods that invokes the next handler if it is available. 
+    * @param request The request to handle.
+    * @param response The response to update.
     */
-   protected void defaultHandle(Call call)
+   protected void defaultHandle(Request request, Response response)
    {
-   	UniformInterface next = getNext(call);
+   	UniformInterface next = getNext(request, response);
    	
    	if(next != null)
    	{
-      	next.handle(call);
+      	next.handle(request, response);
    	}
    	else
    	{
-   		super.defaultHandle(call);
+   		super.defaultHandle(request, response);
    	}
    }
 
    /**
 	 * Returns the next handler if available.
-	 * @param call The current call.
+    * @param request The request to handle.
+    * @param response The response to update.
 	 * @return The next handler if available or null.
 	 */
-	public abstract UniformInterface getNext(Call call);
+	public abstract UniformInterface getNext(Request request, Response response);
 }

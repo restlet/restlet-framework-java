@@ -24,8 +24,9 @@ package com.noelios.restlet.impl.component;
 
 import java.util.logging.Logger;
 
-import org.restlet.Call;
 import org.restlet.Context;
+import org.restlet.Request;
+import org.restlet.Response;
 import org.restlet.connector.ClientInterface;
 import org.restlet.data.Method;
 import org.restlet.data.Protocol;
@@ -58,17 +59,30 @@ public class ContainerContext extends Context implements ClientInterface
 	}
    
 	/**
+	 * Handles a call.
+	 * @param request The request to handle.
+	 * @return The returned response.
+	 */
+	public Response handle(Request request)
+	{
+		Response response = new Response(request);
+		handle(request, response);
+		return response;
+	}
+	
+	/**
     * Handles a call.
-    * @param call The call to handle.
+    * @param request The request to handle.
+    * @param response The response to update.
     */
-   public void handle(Call call)
+   public void handle(Request request, Response response)
    {
-   	Protocol protocol = call.getProtocol();
+   	Protocol protocol = request.getProtocol();
    	if(protocol == null)
    	{
    		// Attempt to guess the protocol to use
    		// from the target reference scheme
-   		protocol = call.getResourceRef().getSchemeProtocol();
+   		protocol = request.getResourceRef().getSchemeProtocol();
    	}
    	
    	if(protocol == null)
@@ -79,11 +93,11 @@ public class ContainerContext extends Context implements ClientInterface
    	{
    		if(protocol.equals(Protocol.CONTEXT) || protocol.equals(Protocol.FILE))
    		{
-   			getLocalClient().handle(call);
+   			getLocalClient().handle(request, response);
    		}
    		else
    		{
-   			getContainer().getClientRouter().handle(call);
+   			getContainer().getClientRouter().handle(request, response);
    		}
    	}
    }
@@ -91,103 +105,73 @@ public class ContainerContext extends Context implements ClientInterface
    /**
     * Deletes the identified resource.
     * @param resourceUri The URI of the resource to delete.
-    * @return The returned uniform call.
+    * @return The response.
     */
-   public Call delete(String resourceUri)
+   public Response delete(String resourceUri)
    {
-      Call call = new Call();
-      call.setResourceRef(resourceUri);
-      call.setMethod(Method.DELETE);
-      handle(call);
-      return call;
+      return handle(new Request(Method.DELETE, resourceUri));
    }
    
    /**
     * Gets the identified resource.
     * @param resourceUri The URI of the resource to get.
-    * @return The returned uniform call.
+    * @return The response.
     */
-   public Call get(String resourceUri)
+   public Response get(String resourceUri)
    {
-      Call call = new Call();
-      call.setResourceRef(resourceUri);
-      call.setMethod(Method.GET);
-      handle(call);
-      return call;
+      return handle(new Request(Method.GET, resourceUri));
    }
    
    /**
     * Gets the identified resource without its representation's content.
     * @param resourceUri The URI of the resource to get.
-    * @return The returned uniform call.
+    * @return The response.
     */
-   public Call head(String resourceUri)
+   public Response head(String resourceUri)
    {
-      Call call = new Call();
-      call.setResourceRef(resourceUri);
-      call.setMethod(Method.HEAD);
-      handle(call);
-      return call;
+      return handle(new Request(Method.HEAD, resourceUri));
    }
    
    /**
     * Gets the options for the identified resource.
     * @param resourceUri The URI of the resource to get.
-    * @return The returned uniform call.
+    * @return The response.
     */
-   public Call options(String resourceUri)
+   public Response options(String resourceUri)
    {
-      Call call = new Call();
-      call.setResourceRef(resourceUri);
-      call.setMethod(Method.OPTIONS);
-      handle(call);
-      return call;
+      return handle(new Request(Method.OPTIONS, resourceUri));
    }
 
    /**
-    * Post a representation to the identified resource.
+    * Posts a representation to the identified resource.
     * @param resourceUri The URI of the resource to post to.
     * @param input The input representation to post.
-    * @return The returned uniform call.
+    * @return The response.
     */
-	public Call post(String resourceUri, Representation input)
+	public Response post(String resourceUri, Representation input)
    {
-      Call call = new Call();
-      call.setResourceRef(resourceUri);
-      call.setMethod(Method.POST);
-      call.setInput(input);
-      handle(call);
-      return call;
+      return handle(new Request(Method.POST, resourceUri, input));
    }
 
    /**
     * Puts a representation in the identified resource.
     * @param resourceUri The URI of the resource to modify.
     * @param input The input representation to put.
-    * @return The returned uniform call.
+    * @return The response.
     */
-   public Call put(String resourceUri, Representation input)
+   public Response put(String resourceUri, Representation input)
    {
-      Call call = new Call();
-      call.setResourceRef(resourceUri);
-      call.setMethod(Method.PUT);
-      call.setInput(input);
-      handle(call);
-      return call;
+      return handle(new Request(Method.PUT, resourceUri, input));
    }
    
    /**
     * Tests the identified resource.
     * @param resourceUri The URI of the resource to delete.
-    * @return The returned uniform call.
+    * @return The response.
     */
-   public Call trace(String resourceUri)
+   public Response trace(String resourceUri)
    {
-      Call call = new Call();
-      call.setResourceRef(resourceUri);
-      call.setMethod(Method.TRACE);
-      handle(call);
-      return call;
+      return handle(new Request(Method.TRACE, resourceUri));
    }
 
 	/**

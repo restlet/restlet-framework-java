@@ -21,8 +21,9 @@
  */
 package org.restlet.test;
 
-import org.restlet.Call;
 import org.restlet.Filter;
+import org.restlet.Request;
+import org.restlet.Response;
 import org.restlet.Restlet;
 
 /**
@@ -39,10 +40,17 @@ public abstract class AbstractFilterTestCase extends RestletTestCase
 	protected abstract Filter getFilter();
 
 	/**
-	 * Returns a call. 
-	 * @return Call instance.
+	 * Returns a request. 
+	 * @return Request instance.
 	 */
-	protected abstract Call getCall();
+	protected abstract Request getRequest();
+
+	/**
+	 * Returns a response. 
+	 * @param request The associated request.
+	 * @return Response instance.
+	 */
+	protected abstract Response getResponse(Request request);
 
 	/**
 	 * Returns a restlet. 
@@ -67,8 +75,9 @@ public abstract class AbstractFilterTestCase extends RestletTestCase
 		filter.start();
 		assertTrue(filter.isStarted());
 		assertFalse(filter.isStopped());
-		Call call = getCall();
-		filter.handle(call);
+		Request request = getRequest();
+		Response response = getResponse(request);
+		filter.handle(request, response);
 		assertTrue(filter.hasNext());
 		filter.setNext(null);
 		assertFalse(filter.hasNext());
@@ -84,10 +93,11 @@ public abstract class AbstractFilterTestCase extends RestletTestCase
 		assertTrue(filter.isStarted());
 		assertFalse(filter.isStopped());
 		assertFalse(filter.hasNext());
-		Call call = getCall();
+		Request request = getRequest();
+		Response response = getResponse(request);
 		try
 		{
-			filter.handle(call);
+			filter.handle(request, response);
 			fail("Filter handles call without a target");
 		}
 		catch (Exception ex)
@@ -106,10 +116,11 @@ public abstract class AbstractFilterTestCase extends RestletTestCase
 		assertTrue(filter.hasNext());
 		assertFalse(filter.isStarted());
 		assertTrue(filter.isStopped());
-		Call call = getCall();
+		Request request = getRequest();
+		Response response = getResponse(request);
 		try
 		{
-			filter.handle(call);
+			filter.handle(request, response);
 			fail("Filter handles call without being started");
 		}
 		catch (Exception ex)

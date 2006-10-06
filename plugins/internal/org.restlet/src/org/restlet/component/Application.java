@@ -25,7 +25,8 @@ package org.restlet.component;
 import java.util.List;
 import java.util.Map;
 
-import org.restlet.Call;
+import org.restlet.Request;
+import org.restlet.Response;
 import org.restlet.UniformInterface;
 import org.restlet.data.Encoding;
 import org.restlet.data.Language;
@@ -36,7 +37,7 @@ import org.restlet.spi.Factory;
 
 /**
  * Component attached to a virtual host and managed by a parent container. Applications are also guaranteed
- * to be portable to any Restlet container implementing the same level of Restlet API.  
+ * to be portable between containers implementing the same Restlet API.  
  * @author Jerome Louvel (contact@noelios.com) <a href="http://www.noelios.com/">Noelios Consulting</a>
  */
 public class Application extends Component 
@@ -71,12 +72,13 @@ public class Application extends Component
    }
 
    /**
-    * Handles a direct call.
-    * @param call The call to handle.
+    * Handles a request.
+    * @param request The request to handle.
+    * @param response The response to update.
     */
-   public void handle(Call call)
+	public void handle(Request request, Response response)
    {
-   	getWrappedApplication().handle(call);
+   	getWrappedApplication().handle(request, response);
    }
    
    /**

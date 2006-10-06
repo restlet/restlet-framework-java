@@ -25,9 +25,8 @@ package org.restlet;
 /**
  * Chainer to an attached handler that filters calls. The purpose is to do some pre-processing or 
  * post-processing on the calls going through it before or after they are actually handled by an attached 
- * Restlet. Note that during this processing, the call's context path and resource path are not expected 
- * to be modified. Also note that you can attach and detach targets while handling incoming calls as the filter is ensured to 
- * be thread-safe.
+ * Restlet. Also note that you can attach and detach targets while handling incoming calls as the filter 
+ * is ensured to be thread-safe.
  * @see <a href="http://www.restlet.org/tutorial#part07">Tutorial: Filters and call logging</a>
  * @author Jerome Louvel (contact@noelios.com) <a href="http://www.noelios.com/">Noelios Consulting</a>
  */
@@ -66,10 +65,11 @@ public class Filter extends Chainer
 
 	/**
 	 * Returns the next handler if available.
-	 * @param call The current call.
+    * @param request The request to handle.
+    * @param response The response to update.
 	 * @return The next handler if available or null.
 	 */
-	public final UniformInterface getNext(Call call)
+	public final UniformInterface getNext(Request request, Response response)
 	{
 		return getNext();
 	}
@@ -105,38 +105,42 @@ public class Filter extends Chainer
 	 * Handles a call by first invoking the beforeHandle() method for pre-filtering, then distributing the call 
 	 * to the next handler via the doHandle() method. When the handling is completed, it finally 
 	 * invokes the afterHandle() method for post-filtering.
-	 * @param call The call to handle.
+    * @param request The request to handle.
+    * @param response The response to update.
 	 */
-	public void handle(Call call)
+	public void handle(Request request, Response response)
 	{
-		beforeHandle(call);
-		doHandle(call);
-		afterHandle(call);
+		beforeHandle(request, response);
+		doHandle(request, response);
+		afterHandle(request, response);
 	}
 
 	/**
-	 * Allows filtering before its processing by the next handler. Does nothing by default.
-	 * @param call The call to filter.
+	 * Allows filtering before processing by the next handler. Does nothing by default.
+    * @param request The request to handle.
+    * @param response The response to update.
 	 */
-	protected void beforeHandle(Call call)
+	protected void beforeHandle(Request request, Response response)
 	{
 		// To be overriden
 	}
 
 	/**
 	 * Handles the call by distributing it to the next handler. 
-	 * @param call The call to handle.
+    * @param request The request to handle.
+    * @param response The response to update.
 	 */
-	protected void doHandle(Call call)
+	protected void doHandle(Request request, Response response)
 	{
-		super.handle(call);
+		super.handle(request, response);
 	}
 
 	/**
-	 * Allows filtering after its processing by the next handler. Does nothing by default.
-	 * @param call The call to filter.
+	 * Allows filtering after processing by the next handler. Does nothing by default.
+    * @param request The request to handle.
+    * @param response The response to update.
 	 */
-	protected void afterHandle(Call call)
+	protected void afterHandle(Request request, Response response)
 	{
 		// To be overriden
 	}
