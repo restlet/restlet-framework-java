@@ -147,7 +147,7 @@ public class JettyCall extends HttpServerCall
 	 */
    public String getServerAddress()
    {
-      return getConnection().getEndPoint().getLocalAddr();
+      return getConnection().getRequest().getLocalAddr();
    }
 
    /**
