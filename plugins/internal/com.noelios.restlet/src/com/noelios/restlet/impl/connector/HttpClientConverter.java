@@ -92,7 +92,7 @@ public class HttpClientConverter
 
 			// Read the response headers
 			readResponseHeaders(httpCall, response);
-
+			
 			// Set the output representation
 			response.setOutput(httpCall.getResponseOutput());
 		}

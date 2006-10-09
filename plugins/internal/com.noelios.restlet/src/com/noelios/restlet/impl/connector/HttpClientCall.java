@@ -116,8 +116,6 @@ public class HttpClientCall extends HttpCall
    			input.write(getRequestChannel());
    		}
       }
-      
-      Status result = new Status(getStatusCode(), null, getReasonPhrase(), null);
 
       if(getRequestStream() != null)
       {
@@ -127,6 +125,9 @@ public class HttpClientCall extends HttpCall
       {
          getRequestChannel().close();
       }
+      
+      // Now we can access the status code, this MUST happen after closing any open request stream.
+      Status result = new Status(getStatusCode(), null, getReasonPhrase(), null);
       
 		return result;
    }
