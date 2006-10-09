@@ -20,7 +20,7 @@
  * Portions Copyright [yyyy] [name of copyright owner]
  */
 
-package com.noelios.restlet.impl.component;
+package com.noelios.restlet.impl;
 
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -29,7 +29,7 @@ import org.restlet.Request;
 import org.restlet.Response;
 import org.restlet.Router;
 import org.restlet.Scorer;
-import org.restlet.component.VirtualHost;
+import org.restlet.VirtualHost;
 import org.restlet.data.Protocol;
 import org.restlet.data.Reference;
 

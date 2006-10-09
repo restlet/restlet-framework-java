@@ -29,8 +29,8 @@ import org.restlet.data.Protocol;
 
 import com.noelios.restlet.DirectoryFinder;
 import com.noelios.restlet.GuardFilter;
-import com.noelios.restlet.LogFilter;
-import com.noelios.restlet.StatusFilter;
+import com.noelios.restlet.impl.LogFilter;
+import com.noelios.restlet.impl.StatusFilter;
 
 /**
  * Guard access to a Restlet.

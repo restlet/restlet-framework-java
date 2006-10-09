@@ -52,6 +52,10 @@ Changes log
  - Merged AbstractResource and Resource into a single Resource class.
  - Merged AbstractRepresentation and Representation into a single Representation class.
  - Moved all wrappers into org.restlet.util. Suggested by Piyush Purang.
+ - Removed the "com.noelios.restlet.builder" package as the new Application feature broke this approach and makes it less useful. We may reintroduce a refactored version in the next release.
+ - Moved Application to org.restlet.
+ - Added ApplicationDelegate to org.restlet.component.
+ - Moved LogFilter and StatusFilter to com.noelios.restlet.impl.
 
 [Other changes] 
  - Updated Jetty 6 extension to final 6.0 release.

@@ -29,9 +29,9 @@ import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
+import org.restlet.Application;
 import org.restlet.Context;
 import org.restlet.Restlet;
-import org.restlet.component.Application;
 import org.restlet.data.Reference;
 
 import com.noelios.restlet.impl.component.ContainerImpl;

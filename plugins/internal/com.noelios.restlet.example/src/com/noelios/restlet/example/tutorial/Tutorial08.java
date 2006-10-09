@@ -27,8 +27,8 @@ import org.restlet.component.Container;
 import org.restlet.data.Protocol;
 
 import com.noelios.restlet.DirectoryFinder;
-import com.noelios.restlet.LogFilter;
-import com.noelios.restlet.StatusFilter;
+import com.noelios.restlet.impl.LogFilter;
+import com.noelios.restlet.impl.StatusFilter;
 
 /**
  * Displaying error pages.

@@ -20,7 +20,7 @@
  * Portions Copyright [yyyy] [name of copyright owner]
  */
 
-package com.noelios.restlet;
+package com.noelios.restlet.impl;
 
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -60,9 +60,7 @@ public class LogFilter extends Filter
     */
    public LogFilter(Context context, String logName)
    {
-      super(context);
-      this.logger = Logger.getLogger(logName);
-      this.logTemplate = null;
+   	this(context, logName, null);
    }
 
    /**
@@ -77,7 +75,7 @@ public class LogFilter extends Filter
    {
       super(context);
       this.logger = Logger.getLogger(logName);
-      this.logTemplate = new StringTemplate(logFormat);
+      this.logTemplate = (logFormat == null) ? null : new StringTemplate(logFormat);
    }
 
    /**

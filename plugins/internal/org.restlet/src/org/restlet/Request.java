@@ -38,12 +38,11 @@ import org.restlet.data.Reference;
 import org.restlet.data.Representation;
 
 /**
- * Protocol-neutral request handled by UniformInterface implementors such as Restlets. It is sent by a
- * source component (via a client connector) to a target component (via a server connector). This request can
- * also be processed by a chain of handlers, on the client or server sides. Requests are uniform across all 
- * types of connectors, protocols and components.
+ * Generic request sent by client connectors. It is then received by server connectors and processed 
+ * by handlers implementing UniformInterface. This request can also be processed by a chain of 
+ * handlers, on the client or server sides. Requests are uniform across all types of connectors, 
+ * protocols and components.
  * @see org.restlet.Response
- * @see org.restlet.Restlet
  * @see org.restlet.UniformInterface
  * @author Jerome Louvel (contact@noelios.com) <a href="http://www.noelios.com/">Noelios Consulting</a>
  */

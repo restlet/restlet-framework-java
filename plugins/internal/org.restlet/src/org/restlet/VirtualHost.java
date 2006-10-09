@@ -20,15 +20,15 @@
  * Portions Copyright [yyyy] [name of copyright owner]
  */
 
-package org.restlet.component;
+package org.restlet;
 
 import java.net.InetAddress;
 import java.net.UnknownHostException;
 import java.util.ArrayList;
 import java.util.List;
 
-import org.restlet.Context;
-import org.restlet.Router;
+import org.restlet.component.ApplicationDelegate;
+import org.restlet.component.Container;
 import org.restlet.data.Protocol;
 
 /**
@@ -40,6 +40,9 @@ public class VirtualHost extends Router
 	public static final String ALL_ADDRESSES = "0.0.0.0";
 	public static final String ALL_NAMES = "*";
 	public static final Integer ALL_PORTS = -1;
+	
+	/** The parent container. */
+	private Container container;
 	
 	/** The display name. */
 	private String name;
@@ -70,15 +73,29 @@ public class VirtualHost extends Router
 
 	/**
     * Constructor.
-    * @param context The context.
+    * @param container The parent container.
     */
-	public VirtualHost(Context context)
+	public VirtualHost(Container container)
    {
-		super(context);
+		super(container.getContext());
+		this.container = container;
 		this.allowedAddresses = new ArrayList<String>();
 		this.allowedNames = new ArrayList<String>();
 		this.allowedPorts = new ArrayList<Integer>();
 		this.allowedProtocols = new ArrayList<Protocol>();
+	}
+	
+	/**
+	 * Deploys an application to the parent container and attaches it to this virtual host. 
+	 * @param uriPattern The URI pattern that must match the relative part of the resource URI. 
+	 * @param application The application to deploy and attach.
+	 * @return The deployed application.
+	 */
+	public ApplicationDelegate attach(String uriPattern, Application application)
+	{
+		ApplicationDelegate result = new ApplicationDelegate(getContainer(), application);
+		getScorers().add(uriPattern, result);
+		return result;
 	}
 
 	/**
@@ -195,6 +212,24 @@ public class VirtualHost extends Router
 		}
 		
 		return result;
+	}
+
+	/**
+	 * Returns the parent container.
+	 * @return the parent container.
+	 */
+	public Container getContainer()
+	{
+		return container;
+	}
+
+	/**
+	 * Sets the parent container.
+	 * @param container The parent container.
+	 */
+	public void setContainer(Container container)
+	{
+		this.container = container;
 	}
 	
 }

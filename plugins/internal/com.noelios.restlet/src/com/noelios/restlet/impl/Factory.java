@@ -35,12 +35,13 @@ import java.util.List;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
+import org.restlet.Application;
 import org.restlet.Request;
 import org.restlet.Response;
 import org.restlet.Router;
 import org.restlet.Scorer;
 import org.restlet.UniformInterface;
-import org.restlet.component.Application;
+import org.restlet.component.ApplicationDelegate;
 import org.restlet.component.Container;
 import org.restlet.connector.Client;
 import org.restlet.connector.Server;
@@ -59,7 +60,7 @@ import org.restlet.data.Status;
 import org.restlet.data.Tag;
 
 import com.noelios.restlet.data.StringRepresentation;
-import com.noelios.restlet.impl.component.ApplicationImpl;
+import com.noelios.restlet.impl.component.ApplicationDelegateImpl;
 import com.noelios.restlet.impl.util.Base64;
 import com.noelios.restlet.impl.util.DateUtils;
 import com.noelios.restlet.impl.util.FormUtils;
@@ -229,11 +230,12 @@ public class Factory extends org.restlet.spi.Factory
    /**
     * Creates a new application using the given context.
     * @param container The parent container.
-    * @return The new application.
+    * @param application The application descriptor.
+    * @return The new application delegate.
     */
-   public Application createApplication(Container container)
+   public ApplicationDelegate createApplicationDelegate(Container container, Application application)
    {
-   	return new ApplicationImpl(container);
+   	return new ApplicationDelegateImpl(container, application);
    }
 
 	/**

@@ -22,8 +22,8 @@
 
 package com.noelios.restlet.impl.component;
 
-import org.restlet.Context;
-import org.restlet.component.VirtualHost;
+import org.restlet.VirtualHost;
+import org.restlet.component.Container;
 import org.restlet.data.Protocol;
 
 /**
@@ -36,9 +36,9 @@ public class LocalHost extends VirtualHost
 	 * Constructor.
 	 * @param context The context.
 	 */
-	public LocalHost(Context context)
+	public LocalHost(Container container)
 	{
-		super(context);
+		super(container);
 
 		// Add allowed IP addresses
 		getAllowedAddresses().add("127.0.0.1");

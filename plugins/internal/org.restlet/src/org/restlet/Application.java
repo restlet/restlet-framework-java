@@ -20,36 +20,26 @@
  * Portions Copyright [yyyy] [name of copyright owner]
  */
 
-package com.noelios.restlet.impl.component;
+package org.restlet;
 
 import java.util.List;
 import java.util.Map;
 import java.util.TreeMap;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 
-import org.restlet.Context;
-import org.restlet.Request;
-import org.restlet.Response;
-import org.restlet.UniformInterface;
-import org.restlet.component.Application;
-import org.restlet.component.Container;
 import org.restlet.data.Encoding;
 import org.restlet.data.Language;
 import org.restlet.data.MediaType;
 import org.restlet.data.Metadata;
 import org.restlet.data.Protocol;
-import org.restlet.data.Status;
 
 /**
- * Application implementation.
+ * Application s deployed inside containers and attached to virtual hosts. Applications are 
+ * guaranteed to be portable between containers and to receive calls with the base reference set relatively to
+ * the virtual host which served it.  
  * @author Jerome Louvel (contact@noelios.com) <a href="http://www.noelios.com/">Noelios Consulting</a>
  */
-public class ApplicationImpl extends Application
+public abstract class Application
 {
-   /** Obtain a suitable logger. */
-   private static Logger logger = Logger.getLogger(ApplicationImpl.class.getCanonicalName());
-
    /** The display name. */
 	private String name;
 	
@@ -83,22 +73,11 @@ public class ApplicationImpl extends Application
 	/** The list of server protocols accepted. */
 	private List<Protocol> serverProtocols;
 	
-	/** The root handler. */
-	private UniformInterface root;
-
-   /** The context. */
-	private Context context;
-
-	/** Indicates if the instance was started. */
-   private boolean started;
-	
 	/**
     * Constructor.
-    * @param container The parent container.
     */
-   public ApplicationImpl(Container container)
+   public Application()
    {
-   	super(container);
 		this.name = null;
 		this.description = null;
 		this.author = null;
@@ -107,73 +86,6 @@ public class ApplicationImpl extends Application
 		this.defaultLanguage = null;
 		this.defaultMediaType = null;
 		this.metadataMappings = new TreeMap<String, Metadata>();
-      this.started = false;
-   }
-
-   /**
-    * Returns the context.
-    * @return The context.
-    */
-   public Context getContext()
-   {
-      return this.context;
-   }
-
-   /**
-    * Sets the context.
-    * @param context The context.
-    */
-   public void setContext(Context context)
-   {
-      this.context = context;
-   }
-
-   /** Start hook. */
-   public void start() throws Exception
-   {
-   	this.started = true;
-   }
-
-   /** Stop hook. */
-   public void stop() throws Exception
-   {
-      this.started = false;
-   }
-
-   /**
-    * Indicates if the Restlet is started.
-    * @return True if the Restlet is started.
-    */
-   public boolean isStarted()
-   {
-      return this.started;
-   }
-
-   /**
-    * Indicates if the Restlet is stopped.
-    * @return True if the Restlet is stopped.
-    */
-   public boolean isStopped()
-   {
-      return !this.started;
-   }
-
-   /**
-    * Handles a direct call.
-    * @param request The request to handle.
-    * @param response The response to update.
-    */
-   public void handle(Request request, Response response)
-   {
-      if(getRoot() != null)
-      {
-   		getRoot().handle(request, response);
-      }
-      else
-      {
-         response.setStatus(Status.SERVER_ERROR_INTERNAL);
-         logger.log(Level.SEVERE, "No root handler defined.");
-      }
    }
    
 	/**
@@ -267,13 +179,12 @@ public class ApplicationImpl extends Application
 	}
 
 	/**
-	 * Returns the root handler.
+	 * Creates a root handler that will receive all incoming calls. In general, instances of 
+	 * Router, Filter, Restlet or Finder classes will be used as initial application handler.
+	 * @param context The application context. 
 	 * @return The root handler.
 	 */
-	public UniformInterface getRoot()
-	{
-		return this.root;
-	}
+	public abstract UniformInterface createRoot(Context context);
 
 	/**
 	 * Returns the list of server protocols accepted. 
@@ -282,15 +193,6 @@ public class ApplicationImpl extends Application
 	public List<Protocol> getServerProtocols()
 	{
 		return this.serverProtocols;
-	}
-
-	/**
-	 * Indicates if a root handler is set. 
-	 * @return True if a root handler is set. 
-	 */
-	public boolean hasRoot()
-	{
-		return getRoot() != null;
 	}
 
 	/**
@@ -354,15 +256,5 @@ public class ApplicationImpl extends Application
 	public void setOwner(String owner)
 	{
 		this.owner = owner;
-	}
-
-	/**
-	 * Sets the root handler that will receive all incoming calls. In general, instances of Restlet, Router, 
-	 * Filter or Finder classes will be used as root handlers.
-	 * @param root The root handler to use.
-	 */
-	public void setRoot(UniformInterface root)
-	{
-		this.root = root;
 	}
 }

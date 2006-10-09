@@ -26,6 +26,7 @@ import java.util.List;
 
 import org.restlet.Request;
 import org.restlet.Response;
+import org.restlet.VirtualHost;
 import org.restlet.spi.Factory;
 
 /**
@@ -52,7 +53,7 @@ public class Container extends Component
    {
 		this(Factory.getInstance().createContainer());
    }
-
+   
    /**
     * Returns the wrapped container.
     * @return The wrapped container.

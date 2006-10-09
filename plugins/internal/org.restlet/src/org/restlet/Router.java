@@ -128,6 +128,7 @@ public class Router extends Chainer
 	/**
 	 * Attaches a target to this router based on a given URI pattern. A new scorer will be added routing
 	 * to the target when calls with a URI matching the pattern will be received.
+	 * @param uriPattern The URI pattern that must match the relative part of the resource URI. 
 	 * @param target The target handler to attach.
 	 */
 	public void attach(String uriPattern, UniformInterface target)

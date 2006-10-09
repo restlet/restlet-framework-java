@@ -23,6 +23,8 @@
 package org.restlet.component;
 
 import org.restlet.Context;
+import org.restlet.Request;
+import org.restlet.Response;
 import org.restlet.UniformInterface;
 
 /**
@@ -55,6 +57,16 @@ public abstract class Component implements UniformInterface
 	{
 		return this.wrappedComponent;
 	}
+
+   /**
+    * Handles a call.
+    * @param request The request to handle.
+    * @param response The response to update.
+    */
+	public void handle(Request request, Response response)
+   {
+   	getWrappedComponent().handle(request, response);
+   }
 
    /** Start hook. */
    public void start() throws Exception

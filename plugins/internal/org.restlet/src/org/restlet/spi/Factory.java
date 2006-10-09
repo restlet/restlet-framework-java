@@ -29,12 +29,13 @@ import java.util.List;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
+import org.restlet.Application;
 import org.restlet.Request;
 import org.restlet.Response;
 import org.restlet.Router;
 import org.restlet.Scorer;
 import org.restlet.UniformInterface;
-import org.restlet.component.Application;
+import org.restlet.component.ApplicationDelegate;
 import org.restlet.component.Container;
 import org.restlet.connector.Client;
 import org.restlet.connector.Server;
@@ -127,11 +128,12 @@ public abstract class Factory
    }
 
    /**
-    * Creates a new application using the given context.
+    * Creates a new application delegate using the given context.
     * @param container The parent container.
-    * @return The new application.
+    * @param application The application descriptor.
+    * @return The new application delegate.
     */
-   public abstract Application createApplication(Container container);
+   public abstract ApplicationDelegate createApplicationDelegate(Container container, Application application);
 
    /**
     * Creates a new client connector for a given protocol.

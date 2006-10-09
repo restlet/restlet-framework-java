@@ -20,18 +20,19 @@
  * Portions Copyright [yyyy] [name of copyright owner]
  */
 
-package com.noelios.restlet.impl.component;
+package com.noelios.restlet.impl;
 
 import org.restlet.Router;
+import org.restlet.VirtualHost;
 import org.restlet.component.Container;
-import org.restlet.component.VirtualHost;
+
 
 /**
  * Router that collects calls from all server connectors and dispatches them to the appropriate
  * host routers for dispatching to the user applications.
  * @author Jerome Louvel (contact@noelios.com) <a href="http://www.noelios.com/">Noelios Consulting</a>
  */
-public class HostRouter extends Router
+public class ServerRouter extends Router
 {
 	/** The parent container. */
 	private Container container;
@@ -40,7 +41,7 @@ public class HostRouter extends Router
     * Constructor.
     * @param container The parent container.
     */
-	protected HostRouter(Container container)
+	public ServerRouter(Container container)
 	{
 		super(container.getContext());
 		this.container = container;

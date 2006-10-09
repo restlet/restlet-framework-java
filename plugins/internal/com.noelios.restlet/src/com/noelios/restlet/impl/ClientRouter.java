@@ -20,7 +20,7 @@
  * Portions Copyright [yyyy] [name of copyright owner]
  */
 
-package com.noelios.restlet.impl.component;
+package com.noelios.restlet.impl;
 
 import org.restlet.Router;
 import org.restlet.component.Container;
@@ -40,7 +40,7 @@ public class ClientRouter extends Router
     * Constructor.
     * @param container The parent container.
     */
-	protected ClientRouter(Container container)
+	public ClientRouter(Container container)
 	{
 		super(container.getContext());
 		this.container = container;

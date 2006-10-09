@@ -22,14 +22,15 @@
 
 package com.noelios.restlet.impl.component;
 
-import org.restlet.component.Application;
+import org.restlet.Application;
+import org.restlet.Context;
 
 /**
  * Context based on a parent container's context but dedicated to an application. This is important to allow
  * contextual access to application's resources.
  * @author Jerome Louvel (contact@noelios.com) <a href="http://www.noelios.com/">Noelios Consulting</a>
  */
-public class ApplicationContext
+public class ApplicationContext extends Context
 {
 	/** The parent application. */
 	private Application application;
@@ -37,9 +38,11 @@ public class ApplicationContext
 	/**
 	 * Constructor.
 	 * @param application The parent application.
+    * @param loggerName The name of the logger to use.
 	 */
-	public ApplicationContext(Application application)
+	public ApplicationContext(Application application, String loggerName)
 	{
+		super(loggerName);
 		this.application = application;
 	}
 

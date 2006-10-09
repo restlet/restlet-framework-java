@@ -30,15 +30,18 @@ import java.util.logging.Logger;
 import org.restlet.Context;
 import org.restlet.Request;
 import org.restlet.Response;
+import org.restlet.VirtualHost;
 import org.restlet.component.ClientList;
 import org.restlet.component.Container;
 import org.restlet.component.ServerList;
-import org.restlet.component.VirtualHost;
 import org.restlet.connector.Client;
 import org.restlet.connector.Server;
 import org.restlet.data.Protocol;
 import org.restlet.data.Status;
 import org.restlet.spi.Factory;
+
+import com.noelios.restlet.impl.ClientRouter;
+import com.noelios.restlet.impl.ServerRouter;
 
 /**
  * Container implementation. 
@@ -68,7 +71,7 @@ public class ContainerImpl extends Container
 	private ClientRouter clientRouter;
 	
 	/** The internal host router. */
-	private HostRouter hostRouter;
+	private ServerRouter hostRouter;
 
 	/** Indicates if the instance was started. */
    private boolean started;
@@ -81,9 +84,9 @@ public class ContainerImpl extends Container
    	super((Container)null);
 		this.context = new ContainerContext(this, logger);
       this.hosts = new ArrayList<VirtualHost>();
-      this.localHost = new LocalHost(getContext());
+      this.localHost = new LocalHost(this);
       this.clientRouter = new ClientRouter(this);
-      this.hostRouter = new HostRouter(this);
+      this.hostRouter = new ServerRouter(this);
       this.clients = null;
       this.servers = null;
       this.started = false;
@@ -257,7 +260,7 @@ public class ContainerImpl extends Container
 	 * Returns the internal host router.
 	 * @return the internal host router.
 	 */
-	public HostRouter getHostRouter()
+	public ServerRouter getHostRouter()
 	{
 		return this.hostRouter;
 	}
@@ -266,7 +269,7 @@ public class ContainerImpl extends Container
 	 * Sets the internal host router.
 	 * @param hostRouter The internal host router.
 	 */
-	public void setHostRouter(HostRouter hostRouter)
+	public void setHostRouter(ServerRouter hostRouter)
 	{
 		this.hostRouter = hostRouter;
 	}

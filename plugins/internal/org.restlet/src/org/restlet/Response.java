@@ -40,12 +40,9 @@ import org.restlet.data.Status;
 import org.restlet.spi.Factory;
 
 /**
- * Protocol-neutral response handled by UniformInterface implementors such as Restlets. It is sent by a
- * target component (via a server connector) to a source component (via a client connector). This response can
- * also be processed by a chain of handlers, on the client or server sides. Responses are uniform across all 
- * types of connectors, protocols and components.
+ * Generic response sent by server connectors. It is then received by client connectors. Responses 
+ * are uniform across all types of connectors, protocols and components.
  * @see org.restlet.Request
- * @see org.restlet.Restlet
  * @see org.restlet.UniformInterface
  * @author Jerome Louvel (contact@noelios.com) <a href="http://www.noelios.com/">Noelios Consulting</a>
  */

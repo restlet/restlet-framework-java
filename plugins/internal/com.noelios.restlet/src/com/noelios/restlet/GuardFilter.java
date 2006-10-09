@@ -103,8 +103,9 @@ public class GuardFilter extends Filter
    }
 
    /**
-    * Allows filtering before its handling by the target Restlet. Does nothing by default.
-    * @param call The call to filter.
+	 * Allows filtering before processing by the next handler. Does nothing by default.
+    * @param request The request to handle.
+    * @param response The response to update.
     */
    public void beforeHandle(Request request, Response response)
    {
@@ -114,10 +115,11 @@ public class GuardFilter extends Filter
    	}
    }
 
-   /**
-    * Handles the call by distributing it to the target handler. 
-    * @param call The call to handle.
-    */
+	/**
+	 * Handles the call by distributing it to the next handler. 
+    * @param request The request to handle.
+    * @param response The response to update.
+	 */
    public void doHandle(Request request, Response response)
    {
 		if(!this.authorization || authorize(request))
@@ -212,7 +214,7 @@ public class GuardFilter extends Filter
     * checking whether the current user has the proper role or access rights.<br/>
     * By default, a call is authorized if the call's login/password couple is available in the map of authorizations. 
     * Of course, this method is meant to be overriden by subclasses requiring a custom authorization mechanism.
-    * @param call The current call.
+    * @param request The request to authorize.
     * @return True if the given credentials authorize access to the attached Restlet.
     */
    protected boolean authorize(Request request)
@@ -232,7 +234,8 @@ public class GuardFilter extends Filter
    /**
     * Accepts the call.
     * By default, invokes the attached Restlet.
-    * @param call The current call.
+    * @param request The request to accept.
+    * @param response The response to accept.
     */
    protected void accept(Request request, Response response)
    {
@@ -245,7 +248,7 @@ public class GuardFilter extends Filter
     * This can be overriden to change the defaut behavior, for example to display an error page.
     * By default, if authentication is required, the challenge method is invoked, otherwise the 
     * call status is set to CLIENT_ERROR_FORBIDDEN.
-    * @param call The current call.
+    * @param response The reject response.
     */
    protected void reject(Response response)
    {
@@ -263,7 +266,7 @@ public class GuardFilter extends Filter
     * Sends a challenge request the caller in order to receive a (new) challenge response with caller's credentials.
     * Application using a custom authentication should override this method in order to provide a useful
     * challenging mechanism, such as displaying a login page.
-    * @param call The current call.
+    * @param response The challenge response.
     */
    protected void challenge(Response response)
    {
