@@ -20,19 +20,19 @@
  * Portions Copyright [yyyy] [name of copyright owner]
  */
 
-package org.restlet;
+package org.restlet.component;
 
 import java.net.InetAddress;
 import java.net.UnknownHostException;
 import java.util.ArrayList;
 import java.util.List;
 
-import org.restlet.component.ApplicationDelegate;
-import org.restlet.component.Container;
+import org.restlet.Application;
+import org.restlet.Router;
 import org.restlet.data.Protocol;
 
 /**
- * Router that mediates between server connectors and attached handlers (typically Applications).
+ * Router dispatching call from server connectors to attached applications.
  * @author Jerome Louvel (contact@noelios.com) <a href="http://www.noelios.com/">Noelios Consulting</a>
  */
 public class VirtualHost extends Router

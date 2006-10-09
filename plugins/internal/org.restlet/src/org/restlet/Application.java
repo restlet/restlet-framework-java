@@ -33,9 +33,11 @@ import org.restlet.data.Metadata;
 import org.restlet.data.Protocol;
 
 /**
- * Application s deployed inside containers and attached to virtual hosts. Applications are 
- * guaranteed to be portable between containers and to receive calls with the base reference set relatively to
- * the virtual host which served it.  
+ * Application descriptor deployable in any Restlet container. Applications are guaranteed to 
+ * receive calls with the base reference set relatively to the virtual host which served it. This
+ * class is only a descriptor able to create the root handler. When it is attached to a VirtualHost
+ * via the "attach" method, an ApplicationDelegate instance is created to actual handle the calls. If
+ * required, the delegate can be reattached to several other virtual hosts or with a several root URIs.   
  * @author Jerome Louvel (contact@noelios.com) <a href="http://www.noelios.com/">Noelios Consulting</a>
  */
 public abstract class Application

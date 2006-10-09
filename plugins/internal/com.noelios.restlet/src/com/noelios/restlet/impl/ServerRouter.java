@@ -23,8 +23,8 @@
 package com.noelios.restlet.impl;
 
 import org.restlet.Router;
-import org.restlet.VirtualHost;
 import org.restlet.component.Container;
+import org.restlet.component.VirtualHost;
 
 
 /**

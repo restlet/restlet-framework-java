@@ -29,7 +29,7 @@ import org.restlet.Request;
 import org.restlet.Response;
 import org.restlet.Router;
 import org.restlet.Scorer;
-import org.restlet.VirtualHost;
+import org.restlet.component.VirtualHost;
 import org.restlet.data.Protocol;
 import org.restlet.data.Reference;
 

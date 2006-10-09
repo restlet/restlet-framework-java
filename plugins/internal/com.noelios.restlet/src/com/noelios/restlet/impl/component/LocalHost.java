@@ -22,8 +22,8 @@
 
 package com.noelios.restlet.impl.component;
 
-import org.restlet.VirtualHost;
 import org.restlet.component.Container;
+import org.restlet.component.VirtualHost;
 import org.restlet.data.Protocol;
 
 /**

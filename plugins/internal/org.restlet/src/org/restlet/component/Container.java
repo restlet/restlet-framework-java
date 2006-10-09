@@ -26,7 +26,6 @@ import java.util.List;
 
 import org.restlet.Request;
 import org.restlet.Response;
-import org.restlet.VirtualHost;
 import org.restlet.spi.Factory;
 
 /**
