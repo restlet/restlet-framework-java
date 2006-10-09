@@ -32,7 +32,7 @@ import org.restlet.Router;
 import org.restlet.data.Protocol;
 
 /**
- * Router dispatching call from server connectors to attached applications.
+ * Router dispatching calls from server connectors to application delegates.
  * @author Jerome Louvel (contact@noelios.com) <a href="http://www.noelios.com/">Noelios Consulting</a>
  */
 public class VirtualHost extends Router
