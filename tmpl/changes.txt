@@ -56,7 +56,9 @@ Changes log
  - Moved Application to org.restlet.
  - Added ApplicationDelegate to org.restlet.component.
  - Moved LogFilter and StatusFilter to com.noelios.restlet.impl.
-
+ - Moved ClientList and ServerList to org.restlet.util 
+ - Moved ScorerList to org.restlet.util and changed it to an interface.
+ 
 [Other changes] 
  - Updated Jetty 6 extension to final 6.0 release.
  - Added Resource.setVariants() and setIdentifiers() methods. Can be easier than doing a getVariants().clear() then a getVariants().addAll(newList). 
