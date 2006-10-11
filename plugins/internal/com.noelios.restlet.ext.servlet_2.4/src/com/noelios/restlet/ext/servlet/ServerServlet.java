@@ -32,7 +32,6 @@ import javax.servlet.http.HttpServletResponse;
 import org.restlet.Application;
 import org.restlet.Context;
 import org.restlet.Restlet;
-import org.restlet.data.Reference;
 
 import com.noelios.restlet.impl.component.ContainerImpl;
 import com.noelios.restlet.impl.connector.HttpServer;
@@ -100,10 +99,10 @@ import com.noelios.restlet.impl.connector.HttpServer;
 public class ServerServlet extends HttpServlet
 {
 	/** 
-	 * The Servlet context initialization parameter's name containing the target's 
+	 * The Servlet context initialization parameter's name containing the application's 
 	 * class name to use to create the target instance. 
 	 */
-	public static final String NAME_TARGET_CLASS = "org.restlet.target.class";
+	public static final String NAME_APPLICATION_CLASS = "org.restlet.application";
 
 	/** 
 	 * The Servlet context initialization parameter's name containing the name of the 
@@ -111,15 +110,6 @@ public class ServerServlet extends HttpServlet
 	 */
 	public static final String NAME_SERVER_ATTRIBUTE = "org.restlet.server";
 	public static final String NAME_SERVER_ATTRIBUTE_DEFAULT = "com.noelios.restlet.ext.servlet.ServerServlet.server";
-
-	/** 
-	 * The Servlet context initialization parameter's name containing the name of the 
-	 * target initialization parameter to use to store the context path. This context path
-	 * is composed of the following parts: scheme, host name, [host port], webapp path,
-	 * servlet path. If this initialization parameter is not set in the Servlet context 
-	 * or config, then the setting is simply skipped. 
-	 */
-	public static final String NAME_TARGET_INIT_CONTEXTPATH = "org.restlet.target.init.contextPath";
 
 	/** Serial version identifier. */
 	private static final long serialVersionUID = 1L;
@@ -179,7 +169,7 @@ public class ServerServlet extends HttpServlet
 					
 					// Try to instantiate a new target
 					// First, find the target class name
-					String targetClassName = getInitParameter(NAME_TARGET_CLASS, null);
+					String targetClassName = getInitParameter(NAME_APPLICATION_CLASS, null);
 					if (targetClassName != null)
 					{
 						try
@@ -224,23 +214,18 @@ public class ServerServlet extends HttpServlet
 								result.setContext(container.getContext());
 								if (target != container) ((Restlet)target).setContext(container.getContext());
 
-								// Set if a context path needs to be transmitted
-								String initContextPathName = getInitParameter(NAME_TARGET_INIT_CONTEXTPATH);
-								if (initContextPathName != null)
-								{
-									// Provide the context path as an init parameter
-									String scheme = request.getScheme();
-									String hostName = request.getServerName();
-									int hostPort = request.getServerPort();
-									String servletPath = request.getContextPath()
-											+ request.getServletPath();
-									String contextPath = Reference.toString(scheme, hostName,
-											hostPort, servletPath, null, null);
-									container.getContext().getParameters().add(
-											initContextPathName, contextPath);
-									log("[Noelios Restlet Engine] - This context path has been provided to the target's init parameter \""
-											+ initContextPathName + "\": " + contextPath);
-								}
+								// Provide the context path as an init parameter
+//								String scheme = request.getScheme();
+//								String hostName = request.getServerName();
+//								int hostPort = request.getServerPort();
+//								String servletPath = request.getContextPath()
+//										+ request.getServletPath();
+//								String contextPath = Reference.toString(scheme, hostName,
+//										hostPort, servletPath, null, null);
+//								container.getContext().getParameters().add(
+//										initContextPathName, contextPath);
+//								log("[Noelios Restlet Engine] - This context path has been provided to the target's init parameter \""
+//										+ initContextPathName + "\": " + contextPath);
 
 								// Starts the target Restlet
 								result.start();
@@ -278,7 +263,7 @@ public class ServerServlet extends HttpServlet
 					else
 					{
 						log("[Noelios Restlet Engine] - The ServerServlet couldn't find the target class name. Please set the initialization parameter called "
-								+ NAME_TARGET_CLASS);
+								+ NAME_APPLICATION_CLASS);
 					}
 				}
 
