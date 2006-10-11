@@ -81,13 +81,14 @@ public class ApplicationDelegateImpl extends ApplicationDelegate
 	 * Constructor.
 	 * @param container The parent container.
 	 * @param application The application descriptor.
-    * @param webAppPath The path to the directory or WAR of the web application files.
+	 * @param webAppPath The path to the directory or WAR of the web application files.
 	 */
-	public ApplicationDelegateImpl(Container container, Application application, String webAppPath)
+	public ApplicationDelegateImpl(Container container, Application application,
+			String webAppPath)
 	{
 		super(null);
-		this.context = new ApplicationContext(application,
-				"org.restlet.application.context." + hashCode());
+		this.context = new ApplicationContext(container, this, Logger
+				.getLogger("org.restlet.application.context." + hashCode()));
 		this.started = false;
 		this.application = application;
 		this.loggingEnabled = true;
@@ -119,40 +120,40 @@ public class ApplicationDelegateImpl extends ApplicationDelegate
 
 	/** Start hook. */
 	public void start() throws Exception
-   {
+	{
 		this.root = null;
-   	Filter lastFilter = null;
+		Filter lastFilter = null;
 
-   	// Logging of calls
-   	if(isLoggingEnabled())
-   	{
-   		lastFilter = new LogFilter(getContext(), getLoggingName(), getLoggingFormat());
-   		this.root = lastFilter;
-   	}
-   	
-   	// Addition of status pages
-   	if(isStatusEnabled())
-   	{
-   		Filter statusFilter = new ApplicationStatusFilter(this);
-   		if(lastFilter != null) lastFilter.setNext(statusFilter);
-   		if(this.root == null) this.root = statusFilter;
-   		lastFilter = statusFilter;
-   	}
+		// Logging of calls
+		if (isLoggingEnabled())
+		{
+			lastFilter = new LogFilter(getContext(), getLoggingName(), getLoggingFormat());
+			this.root = lastFilter;
+		}
 
-   	// Creation the application root
-   	UniformInterface applicationRoot = getApplication().createRoot(getContext());
-   	if(this.root == null) 
-   	{
-   		this.root = applicationRoot;
-   	}
-   	else
-   	{
-   		lastFilter.setNext(applicationRoot);
-   	}
+		// Addition of status pages
+		if (isStatusEnabled())
+		{
+			Filter statusFilter = new ApplicationStatusFilter(this);
+			if (lastFilter != null) lastFilter.setNext(statusFilter);
+			if (this.root == null) this.root = statusFilter;
+			lastFilter = statusFilter;
+		}
 
-   	// Start completed
-   	this.started = true;
-   }
+		// Creation the application root
+		UniformInterface applicationRoot = getApplication().createRoot(getContext());
+		if (this.root == null)
+		{
+			this.root = applicationRoot;
+		}
+		else
+		{
+			lastFilter.setNext(applicationRoot);
+		}
+
+		// Start completed
+		this.started = true;
+	}
 
 	/** Stop hook. */
 	public void stop() throws Exception
@@ -345,5 +346,5 @@ public class ApplicationDelegateImpl extends ApplicationDelegate
 	{
 		this.contactEmail = email;
 	}
-	
+
 }

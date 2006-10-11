@@ -22,44 +22,116 @@
 
 package com.noelios.restlet.impl.component;
 
-import org.restlet.Application;
-import org.restlet.Context;
+import java.util.logging.Logger;
+
+import org.restlet.Request;
+import org.restlet.Response;
+import org.restlet.component.ApplicationDelegate;
+import org.restlet.component.Container;
+import org.restlet.data.Protocol;
+
+import com.noelios.restlet.impl.connector.LocalClient;
 
 /**
  * Context based on a parent container's context but dedicated to an application. This is important to allow
  * contextual access to application's resources.
  * @author Jerome Louvel (contact@noelios.com) <a href="http://www.noelios.com/">Noelios Consulting</a>
  */
-public class ApplicationContext extends Context
+public class ApplicationContext extends ContextImpl
 {
-	/** The parent application. */
-	private Application application;
+	/** The local client. */
+	private LocalClient localClient;
+	
+	/** The parent container. */
+	private Container container;
+	
+	/** The application delegate. */
+	private ApplicationDelegate applicationDelegate;
 	
 	/**
 	 * Constructor.
-	 * @param application The parent application.
-    * @param loggerName The name of the logger to use.
+	 * @param container The parent container.
+	 * @param applicationDelegate The parent application.
+    * @param logger The logger instance of use.
 	 */
-	public ApplicationContext(Application application, String loggerName)
+	public ApplicationContext(Container container, ApplicationDelegate applicationDelegate, Logger logger)
 	{
-		super(loggerName);
-		this.application = application;
+		super(logger);
+		this.container = container;
+		this.applicationDelegate = applicationDelegate;
+		this.localClient = new LocalClient();
+	}
+	
+	/**
+    * Handles a call.
+    * @param protocol The protocol to use for the handling.
+    * @param request The request to handle.
+    * @param response The response to update.
+    */
+   public void handle(Protocol protocol, Request request, Response response)
+   {
+		if(protocol.equals(Protocol.CONTEXT) || protocol.equals(Protocol.FILE))
+		{
+			getLocalClient().handle(request, response);
+		}
+		else
+		{
+			getContainer().getContext().getClient().handle(request, response);
+		}
+   }
+
+	/**
+	 * Returns the application delegate.
+	 * @return the application delegate.
+	 */
+	public ApplicationDelegate getApplicationDelegate()
+	{
+		return this.applicationDelegate;
 	}
 
 	/**
-	 * @return the application
+	 * Sets the application delegate.
+	 * @param applicationDelegate The application delegate. 
 	 */
-	public Application getApplication()
+	public void setApplicationDelegate(ApplicationDelegate applicationDelegate)
 	{
-		return application;
+		this.applicationDelegate = applicationDelegate;
 	}
 
 	/**
-	 * @param application the application to set
+	 * Returns the local client.
+	 * @return the local client.
 	 */
-	public void setApplication(Application application)
+	protected LocalClient getLocalClient()
 	{
-		this.application = application;
+		return this.localClient;
+	}
+
+	/**
+	 * Sets the local client.
+	 * @param localClient The localClient.
+	 */
+	protected void setLocalClient(LocalClient localClient)
+	{
+		this.localClient = localClient;
+	}
+
+	/**
+	 * Returns the parent container.
+	 * @return The parent container.
+	 */
+	public Container getContainer()
+	{
+		return this.container;
+	}
+
+	/**
+	 * Sets the parent container.
+	 * @param container The parent container.
+	 */
+	public void setContainer(Container container)
+	{
+		this.container = container;
 	}
 	
 }

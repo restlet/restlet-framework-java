@@ -30,7 +30,6 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
 import org.restlet.Application;
-import org.restlet.Context;
 import org.restlet.Restlet;
 
 import com.noelios.restlet.impl.component.ContainerImpl;
@@ -66,33 +65,9 @@ import com.noelios.restlet.impl.connector.HttpServer;
  * 	&lt;/servlet-mapping&gt;
  * &lt;/web-app&gt;}
  * </pre>
- * Note that using this configuration, you can dynamically retrieve a context path from within your 
- * Restlet application that will have no knowledge of your Servlet integration details. This is the purpose
- * of the "contextPath" initialization argument. Its value will be dynamically provided by the ServerServlet
- * using this format:<br/>
- * <pre>
- * 	ContextPath = http://hostname:hostPort + ServletContextPath + ServletPath
- * 	ServletContextPath = result of call to servletRequest.getContextPath()
- * 	ServletPath = result of call to servletRequest.getServletPath()
- * </pre>
- * From within your RestletContainer subclass, you can retrieve this context path using this code:
- * <pre>
- * 	String contextPath = getParameters().get("contextPath")
- * </pre>
- * Just replace "contextPath" with the parameter name configured in your web.xml file under the 
- * "org.restlet.target.init.contextPath" Servlet context parameter. Also note that this init parameter
- * is only set after the constructor of your target class returns. This means that you should move any 
- * code that depends on the "contextPath" to the start() method. Now that you have your Restlet context path 
- * ready, you can use it to attach your root Restlet (or Router or Filter) to your target router or 
- * RestletContainer. You will typically do something like this in you constructor:
- * <pre>
- * 	attach(contextPath, myRootRestlet);
- * </pre>
- * Starting from "myRootRestlet", the coding is strictly similar to Restlet applications using the standalone 
- * mode.<br/><br/>
- * Finally, the enumeration of initParameters of your Servlet will be copied to the "parameters" property of 
- * your target component, or the closest owner component. This way, you can pass additional initialization 
- * parameters to your Restlet application, and share them with existing Servlets.
+ * The enumeration of initParameters of your Servlet will be copied to the "context.parameters" property of 
+ * your application. This way, you can pass additional initialization parameters to your Restlet application,
+ * and share them with existing Servlets.
  * @see <a href="http://java.sun.com/j2ee/">J2EE home page</a>
  * @author Jerome Louvel (contact@noelios.com) <a href="http://www.noelios.com/">Noelios Consulting</a>
  */
@@ -100,7 +75,7 @@ public class ServerServlet extends HttpServlet
 {
 	/** 
 	 * The Servlet context initialization parameter's name containing the application's 
-	 * class name to use to create the target instance. 
+	 * class name to use to create the application instance. 
 	 */
 	public static final String NAME_APPLICATION_CLASS = "org.restlet.application";
 
@@ -109,6 +84,8 @@ public class ServerServlet extends HttpServlet
 	 * Servlet context attribute that should be used to store the HTTP server connector instance. 
 	 */
 	public static final String NAME_SERVER_ATTRIBUTE = "org.restlet.server";
+
+	/** The default value for the NAME_SERVER_ATTRIBUTE parameter. */
 	public static final String NAME_SERVER_ATTRIBUTE_DEFAULT = "com.noelios.restlet.ext.servlet.ServerServlet.server";
 
 	/** Serial version identifier. */
@@ -139,14 +116,18 @@ public class ServerServlet extends HttpServlet
 
 	/**
 	 * Returns the associated HTTP server handling calls.<br/>
-	 * For the first invocation, we look for an existing target in the application context, using the NAME_TARGET_ATTRIBUTE parameter.<br/>
+	 * For the first invocation, we look for an existing target in the application context, using the 
+	 * NAME_APPLICATION_ATTRIBUTE parameter.<br/>
 	 * We lookup for the attribute name in the servlet configuration, then in the application context.<br/>
-	 * If no target exists, we try to instantiate one based on the class name set in the NAME_TARGET_CLASS parameter.<br/>
+	 * If no target exists, we try to instantiate one based on the class name set in the NAME_APPLICATION_CLASS 
+	 * parameter.<br/>
 	 * We lookup for the class name in the servlet configuration, then in the application context.<br/>
-	 * Once the target is found, we wrap the servlet request and response into a uniform call and ask the target to handle it.<br/>
-	 * When the handling is done, we write the result back into the result object and return from the service method.
+	 * Once the target is found, we wrap the servlet request and response into a Restlet HTTP call and ask the 
+	 * target application to handle it.<br/>
+	 * When the handling is done, we write the result back into the result object and return from the service 
+	 * method.
 	 * @param request The HTTP Servlet request.
-	 * @return The target Restlet handling calls.
+	 * @return The HTTP server handling calls.
 	 */
 	public HttpServer getServer(HttpServletRequest request)
 	{
@@ -157,53 +138,47 @@ public class ServerServlet extends HttpServlet
 			synchronized (ServerServlet.class)
 			{
 				// Find the attribute name to use to store the server reference
-				String serverAttributeName = getInitParameter(NAME_SERVER_ATTRIBUTE, NAME_SERVER_ATTRIBUTE_DEFAULT);
+				String serverAttributeName = getInitParameter(NAME_SERVER_ATTRIBUTE,
+						NAME_SERVER_ATTRIBUTE_DEFAULT);
 
 				// Look up the attribute for a target
 				result = (HttpServer) getServletContext().getAttribute(serverAttributeName);
-				
+
 				if (result == null)
 				{
 					result = new HttpServer();
 					getServletContext().setAttribute(NAME_SERVER_ATTRIBUTE, result);
-					
-					// Try to instantiate a new target
-					// First, find the target class name
-					String targetClassName = getInitParameter(NAME_APPLICATION_CLASS, null);
-					if (targetClassName != null)
+
+					// Try to instantiate a new target application
+					// First, find the application class name
+					String applicationClassName = getInitParameter(NAME_APPLICATION_CLASS,
+							null);
+					if (applicationClassName != null)
 					{
 						try
 						{
-							// Load the target class using the given class name
-							Class targetClass = Class.forName(targetClassName);
+							// Load the application class using the given class name
+							Class targetClass = Class.forName(applicationClassName);
 							Object target = null;
 
-							// Create a new instance of the target class
+							// Create a new instance of the application class
 							// and store it for reuse by other ServerServlets.
-							try
-							{
-								target = targetClass.getConstructor(Context.class)
-										.newInstance((Context) null);
-							}
-							catch (NoSuchMethodException nsme)
-							{
-								target = targetClass.newInstance();
-							}
+							target = targetClass.newInstance();
 
 							// First, let's locate the closest container
 							ContainerImpl container = new ContainerImpl();
-							if(target instanceof Application)
+							if (target instanceof Application)
 							{
 								// The target is probably a standalone Restlet or Filter or Router
 								// Try to get its parent, even if chances to find one are low
-//								container.setRoot((Restlet)target);
+								//								container.setRoot((Restlet)target);
 							}
-							
+
 							if (container != null)
 							{
 								// Add the HTTP server connector adapting the Servlet requests 
 								container.getServers().add(result);
-								
+
 								// Create a local client and add it to the container
 								container.getClients().add(
 										new ServletLocalClient(getServletContext()));
@@ -212,20 +187,21 @@ public class ServerServlet extends HttpServlet
 								// and set it on the container and optionally the target Restlet
 								container.setContext(new ServletContext(this, container));
 								result.setContext(container.getContext());
-								if (target != container) ((Restlet)target).setContext(container.getContext());
+								if (target != container)
+									((Restlet) target).setContext(container.getContext());
 
 								// Provide the context path as an init parameter
-//								String scheme = request.getScheme();
-//								String hostName = request.getServerName();
-//								int hostPort = request.getServerPort();
-//								String servletPath = request.getContextPath()
-//										+ request.getServletPath();
-//								String contextPath = Reference.toString(scheme, hostName,
-//										hostPort, servletPath, null, null);
-//								container.getContext().getParameters().add(
-//										initContextPathName, contextPath);
-//								log("[Noelios Restlet Engine] - This context path has been provided to the target's init parameter \""
-//										+ initContextPathName + "\": " + contextPath);
+								//								String scheme = request.getScheme();
+								//								String hostName = request.getServerName();
+								//								int hostPort = request.getServerPort();
+								//								String servletPath = request.getContextPath()
+								//										+ request.getServletPath();
+								//								String contextPath = Reference.toString(scheme, hostName,
+								//										hostPort, servletPath, null, null);
+								//								container.getContext().getParameters().add(
+								//										initContextPathName, contextPath);
+								//								log("[Noelios Restlet Engine] - This context path has been provided to the target's init parameter \""
+								//										+ initContextPathName + "\": " + contextPath);
 
 								// Starts the target Restlet
 								result.start();
@@ -239,19 +215,19 @@ public class ServerServlet extends HttpServlet
 						{
 							log(
 									"[Noelios Restlet Engine] - The ServerServlet couldn't find the target class. Please check that your classpath includes "
-											+ targetClassName, e);
+											+ applicationClassName, e);
 						}
 						catch (InstantiationException e)
 						{
 							log(
 									"[Noelios Restlet Engine] - The ServerServlet couldn't instantiate the target class. Please check this class has an empty constructor "
-											+ targetClassName, e);
+											+ applicationClassName, e);
 						}
 						catch (IllegalAccessException e)
 						{
 							log(
 									"[Noelios Restlet Engine] - The ServerServlet couldn't instantiate the target class. Please check that you have to proper access rights to "
-											+ targetClassName, e);
+											+ applicationClassName, e);
 						}
 						catch (Exception e)
 						{
@@ -289,8 +265,8 @@ public class ServerServlet extends HttpServlet
 		{
 			result = getServletConfig().getServletContext().getInitParameter(name);
 		}
-		
-		if(result == null)
+
+		if (result == null)
 		{
 			result = defaultValue;
 		}
