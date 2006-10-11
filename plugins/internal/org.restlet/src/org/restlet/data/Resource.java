@@ -45,10 +45,10 @@ import java.util.List;
  */
 public class Resource
 {
-   /** The modifiable list of identifiers. */
+	/** The modifiable list of identifiers. */
 	private ReferenceList identifiers;
-   
-   /** The modifiable list of variants. */
+
+	/** The modifiable list of variants. */
 	private List<Representation> variants;
 
 	/**
@@ -86,14 +86,14 @@ public class Resource
 	{
 		return false;
 	}
-	
+
 	/**
 	 * Returns the official identifier.
 	 * @return The official identifier.
 	 */
 	public Reference getIdentifier()
 	{
-		if(getIdentifiers().isEmpty())
+		if (getIdentifiers().isEmpty())
 		{
 			return null;
 		}
@@ -109,7 +109,7 @@ public class Resource
 	 */
 	public void setIdentifier(Reference identifier)
 	{
-		if(getIdentifiers().isEmpty())
+		if (getIdentifiers().isEmpty())
 		{
 			getIdentifiers().add(identifier);
 		}
@@ -118,7 +118,7 @@ public class Resource
 			getIdentifiers().set(0, identifier);
 		}
 	}
-	
+
 	/**
 	 * Sets the official identifier from a URI string.
 	 * @param identifierUri The official identifier to parse.
@@ -135,10 +135,10 @@ public class Resource
 	 */
 	public ReferenceList getIdentifiers()
 	{
-		if(this.identifiers == null) this.identifiers = new ReferenceList();
+		if (this.identifiers == null) this.identifiers = new ReferenceList();
 		return this.identifiers;
 	}
-	
+
 	/**
 	 * Returns the list of variants. Each variant is described by metadata and can provide several instances 
 	 * of the variant's representation.
@@ -146,10 +146,10 @@ public class Resource
 	 */
 	public List<Representation> getVariants()
 	{
-		if(this.variants == null) this.variants = new ArrayList<Representation>();
+		if (this.variants == null) this.variants = new ArrayList<Representation>();
 		return this.variants;
 	}
-	
+
 	/**
 	 * Posts a variant representation in the resource.
 	 * @param entity The posted entity. 
@@ -159,7 +159,7 @@ public class Resource
 	{
 		return new Result(Status.SERVER_ERROR_NOT_IMPLEMENTED);
 	}
-	
+
 	/**
 	 * Puts a variant representation in the resource.
 	 * @param variant A new or updated variant representation. 
@@ -169,7 +169,7 @@ public class Resource
 	{
 		return new Result(Status.SERVER_ERROR_NOT_IMPLEMENTED);
 	}
-	
+
 	/**
 	 * Asks the resource to delete itself and all its representations.
 	 * @return The result information. 
@@ -178,7 +178,7 @@ public class Resource
 	{
 		return new Result(Status.SERVER_ERROR_NOT_IMPLEMENTED);
 	}
-	
+
 	/**
 	 * Sets a new list of all the identifiers for the resource.  
 	 * @param identifiers The new list of identifiers. 
@@ -187,7 +187,7 @@ public class Resource
 	{
 		this.identifiers = identifiers;
 	}
-	
+
 	/**
 	 * Sets a new list of variants. 
 	 * @param variants The new list of variants.

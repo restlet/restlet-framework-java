@@ -31,6 +31,8 @@ import org.restlet.data.Language;
 import org.restlet.data.MediaType;
 import org.restlet.data.Metadata;
 import org.restlet.data.Protocol;
+import org.restlet.data.Representation;
+import org.restlet.data.Status;
 
 /**
  * Application descriptor deployable in any Restlet container. Applications are guaranteed to 
@@ -89,6 +91,14 @@ public abstract class Application
 		this.defaultMediaType = null;
 		this.metadataMappings = new TreeMap<String, Metadata>();
    }
+
+	/**
+	 * Creates a root handler that will receive all incoming calls. In general, instances of 
+	 * Router, Filter, Restlet or Finder classes will be used as initial application handler.
+	 * @param context The application context. 
+	 * @return The root handler.
+	 */
+	public abstract UniformInterface createRoot(Context context);
    
 	/**
 	 * Returns the author(s).
@@ -171,6 +181,19 @@ public abstract class Application
 		return this.name;
 	}
 
+   /**
+    * Returns an output representation for the given status.<br/> In order to customize the 
+    * default representation, this method can be overriden. It returns null by default.
+    * @param status The status to represent.
+    * @param request The request handled.
+    * @param response The response updated.
+    * @return The representation of the given status.
+    */
+   public Representation getOutput(Status status, Request request, Response response)
+   {
+   	return null;
+   }
+
 	/**
 	 * Returns the owner(s).
 	 * @return The owner(s).
@@ -181,14 +204,6 @@ public abstract class Application
 	}
 
 	/**
-	 * Creates a root handler that will receive all incoming calls. In general, instances of 
-	 * Router, Filter, Restlet or Finder classes will be used as initial application handler.
-	 * @param context The application context. 
-	 * @return The root handler.
-	 */
-	public abstract UniformInterface createRoot(Context context);
-
-	/**
 	 * Returns the list of server protocols accepted. 
 	 * @return The list of server protocols accepted.
 	 */
@@ -196,7 +211,7 @@ public abstract class Application
 	{
 		return this.serverProtocols;
 	}
-
+   
 	/**
 	 * Sets the author(s).
 	 * @param author The author(s).

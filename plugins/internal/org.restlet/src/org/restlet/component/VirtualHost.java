@@ -93,7 +93,7 @@ public class VirtualHost extends Router
 	 */
 	public ApplicationDelegate attach(String uriPattern, Application application)
 	{
-		ApplicationDelegate result = new ApplicationDelegate(getContainer(), application);
+		ApplicationDelegate result = new ApplicationDelegate(getContainer(), application, null);
 		getScorers().add(uriPattern, result);
 		return result;
 	}

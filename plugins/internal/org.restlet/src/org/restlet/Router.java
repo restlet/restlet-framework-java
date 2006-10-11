@@ -23,6 +23,8 @@
 package org.restlet;
 
 import org.restlet.data.Status;
+import org.restlet.spi.Factory;
+import org.restlet.util.ScorerList;
 
 /**
  * Chainer routing calls to one of the attached Scorers. Each scorer represents a routing option that can 
@@ -230,7 +232,7 @@ public class Router extends Chainer
 	 */
 	public ScorerList getScorers()
 	{
-      if(this.scorers == null) this.scorers = new ScorerList(this);
+      if(this.scorers == null) this.scorers = Factory.getInstance().createScorerList(this);
       return this.scorers;
 	}
 

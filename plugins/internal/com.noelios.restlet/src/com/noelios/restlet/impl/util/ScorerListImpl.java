@@ -20,13 +20,19 @@
  * Portions Copyright [yyyy] [name of copyright owner]
  */
 
-package org.restlet;
+package com.noelios.restlet.impl.util;
 
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Random;
 
+import org.restlet.Request;
+import org.restlet.Response;
+import org.restlet.Router;
+import org.restlet.Scorer;
+import org.restlet.UniformInterface;
 import org.restlet.spi.Factory;
+import org.restlet.util.ScorerList;
 import org.restlet.util.WrapperList;
 
 /**
@@ -39,7 +45,7 @@ import org.restlet.util.WrapperList;
  * @see java.util.Collections
  * @see java.util.List
  */
-public class ScorerList extends WrapperList<Scorer>
+public class ScorerListImpl extends WrapperList<Scorer> implements ScorerList 
 {
 	/** The parent router. */
 	private Router router;
@@ -51,7 +57,7 @@ public class ScorerList extends WrapperList<Scorer>
 	 * Constructor.
 	 * @param router The parent router.
 	 */
-	public ScorerList(Router router)
+	public ScorerListImpl(Router router)
 	{
 		this(router, null);
 	}
@@ -61,7 +67,7 @@ public class ScorerList extends WrapperList<Scorer>
 	 * @param router The parent router.
 	 * @param initialCapacity The initial list capacity.
 	 */
-	public ScorerList(Router router, int initialCapacity)
+	public ScorerListImpl(Router router, int initialCapacity)
 	{
 		this(router, new ArrayList<Scorer>(initialCapacity));
 	}
@@ -70,7 +76,7 @@ public class ScorerList extends WrapperList<Scorer>
 	 * Constructor.
 	 * @param delegate The delegate list.
 	 */
-	public ScorerList(Router router, List<Scorer> delegate)
+	public ScorerListImpl(Router router, List<Scorer> delegate)
 	{
 		super(delegate);
 		this.router = router;
@@ -232,8 +238,8 @@ public class ScorerList extends WrapperList<Scorer>
 	 * @param toIndex The end position (exclusive).
 	 * @return The sub-list.
 	 */
-	public synchronized ScorerList subList(int fromIndex, int toIndex)
+	public synchronized ScorerListImpl subList(int fromIndex, int toIndex)
 	{
-		return new ScorerList(this.router, getDelegate().subList(fromIndex, toIndex));
+		return new ScorerListImpl(this.router, getDelegate().subList(fromIndex, toIndex));
 	}
 }

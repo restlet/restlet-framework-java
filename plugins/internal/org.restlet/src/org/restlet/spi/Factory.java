@@ -47,6 +47,7 @@ import org.restlet.data.MediaType;
 import org.restlet.data.Protocol;
 import org.restlet.data.Representation;
 import org.restlet.data.Resource;
+import org.restlet.util.ScorerList;
 
 /**
  * Factory and registration service for Restlet API implementations.
@@ -131,9 +132,10 @@ public abstract class Factory
     * Creates a new application delegate using the given context.
     * @param container The parent container.
     * @param application The application descriptor.
+    * @param webAppPath The path to the directory or WAR of the web application files.
     * @return The new application delegate.
     */
-   public abstract ApplicationDelegate createApplicationDelegate(Container container, Application application);
+   public abstract ApplicationDelegate createApplicationDelegate(Container container, Application application, String webAppPath);
 
    /**
     * Creates a new client connector for a given protocol.
@@ -166,6 +168,13 @@ public abstract class Factory
     */
    public abstract Scorer createScorer(Router router, String uriPattern, UniformInterface target);
 
+   /**
+    * Creates a new scorer list.
+	 * @param router The parent router.
+    * @return The new scorer list.
+    */
+   public abstract ScorerList createScorerList(Router router);
+   
    /**
     * Create a new server connector for internal usage by the GenericClient.
     * @param protocols The connector protocols.

@@ -29,103 +29,104 @@ package org.restlet.data;
 public class Preference<T extends Metadata>
 {
 	/** The metadata associated with this preference. */
-   private T metadata;
+	private T metadata;
 
-   /** The quality/preference level. */
-   private float quality;
+	/** The quality/preference level. */
+	private float quality;
 
-   /** The modifiable list of parameters. */
-   private ParameterList parameters;
+	/** The modifiable list of parameters. */
+	private ParameterList parameters;
 
-   /**
-    * Constructor.
-    */
-   public Preference()
-   {
-      this(null, 1F, null);
-   }
+	/**
+	 * Constructor.
+	 */
+	public Preference()
+	{
+		this(null, 1F, null);
+	}
 
-   /**
-    * Constructor.
-    * @param metadata The associated metadata.
-    */
-   public Preference(T metadata)
-   {
-      this(metadata, 1F, null);
-   }
+	/**
+	 * Constructor.
+	 * @param metadata The associated metadata.
+	 */
+	public Preference(T metadata)
+	{
+		this(metadata, 1F, null);
+	}
 
-   /**
-    * Constructor.
-    * @param metadata The associated metadata.
-    * @param quality The quality/preference level.
-    */
-   public Preference(T metadata, float quality)
-   {
-      this(metadata, quality, null);
-   }
+	/**
+	 * Constructor.
+	 * @param metadata The associated metadata.
+	 * @param quality The quality/preference level.
+	 */
+	public Preference(T metadata, float quality)
+	{
+		this(metadata, quality, null);
+	}
 
-   /**
-    * Constructor.
-    * @param metadata The associated metadata.
-    * @param quality The quality/preference level.
-    * @param parameters The list of parameters.
-    */
-   public Preference(T metadata, float quality, ParameterList parameters)
-   {
-      this.metadata = metadata;
-      this.quality = quality;
-      this.parameters = parameters;
-   }
+	/**
+	 * Constructor.
+	 * @param metadata The associated metadata.
+	 * @param quality The quality/preference level.
+	 * @param parameters The list of parameters.
+	 */
+	public Preference(T metadata, float quality, ParameterList parameters)
+	{
+		this.metadata = metadata;
+		this.quality = quality;
+		this.parameters = parameters;
+	}
 
-   /**
-    * Returns the metadata associated with this preference.
-    * @return The metadata associated with this preference.
-    */
-   public T getMetadata()
-   {
-      return metadata;
-   }
+	/**
+	 * Returns the metadata associated with this preference.
+	 * @return The metadata associated with this preference.
+	 */
+	public T getMetadata()
+	{
+		return metadata;
+	}
 
-   /**
-    * Sets the metadata associated with this preference.
-    * @param metadata The metadata associated with this preference.
-    */
-   public void setMetadata(T metadata)
-   {
-      this.metadata = metadata;
-   }
+	/**
+	 * Sets the metadata associated with this preference.
+	 * @param metadata The metadata associated with this preference.
+	 */
+	public void setMetadata(T metadata)
+	{
+		this.metadata = metadata;
+	}
 
-   /**
-    * Returns the quality/preference level.
-    * @return The quality/preference level.
-    */
-   public float getQuality()
-   {
-      return quality;
-   }
+	/**
+	 * Returns the quality/preference level.
+	 * @return The quality/preference level.
+	 */
+	public float getQuality()
+	{
+		return quality;
+	}
 
-   /**
-    * Sets the quality/preference level.
-    * @param quality The quality/preference level.
-    */
-   public void setQuality(float quality)
-   {
-      this.quality = quality;
-   }
+	/**
+	 * Sets the quality/preference level.
+	 * @param quality The quality/preference level.
+	 */
+	public void setQuality(float quality)
+	{
+		this.quality = quality;
+	}
 
-   /**
-    * Returns the modifiable list of parameters.
-    * @return The modifiable list of parameters.
-    */
-   public ParameterList getParameters()
-   {
-   	if(this.parameters == null) this.parameters = new ParameterList();
-   	return this.parameters;
-   }
-   
-   @Override
-   public String toString()
-   {
-   	return (getMetadata() == null) ? "" : (getMetadata().getName() + ":" + getQuality());
-   }
+	/**
+	 * Returns the modifiable list of parameters.
+	 * @return The modifiable list of parameters.
+	 */
+	public ParameterList getParameters()
+	{
+		if (this.parameters == null) this.parameters = new ParameterList();
+		return this.parameters;
+	}
+
+	@Override
+	public String toString()
+	{
+		return (getMetadata() == null) ? ""
+				: (getMetadata().getName() + ":" + getQuality());
+	}
 }

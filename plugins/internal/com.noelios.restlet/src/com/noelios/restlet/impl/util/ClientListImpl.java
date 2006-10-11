@@ -20,23 +20,31 @@
  * Portions Copyright [yyyy] [name of copyright owner]
  */
 
-package org.restlet.component;
+package com.noelios.restlet.impl.util;
 
-import java.util.List;
+import java.util.Arrays;
 
 import org.restlet.connector.Client;
 import org.restlet.data.Protocol;
+import org.restlet.spi.Factory;
+import org.restlet.util.ClientList;
+import org.restlet.util.WrapperList;
 
 /**
  * Modifiable list of client connectors.
  * @author Jerome Louvel (contact@noelios.com) <a href="http://www.noelios.com/">Noelios Consulting</a>
  */
-public interface ClientList extends List<Client>
+public class ClientListImpl extends WrapperList<Client> implements ClientList 
 {
 	/**
 	 * Adds a new client connector in the map supporting the given protocol.
 	 * @param protocol The connector protocol.
 	 * @return The added client.
 	 */
-	public Client add(Protocol protocol);
+	public Client add(Protocol protocol)
+	{
+		Client result = Factory.getInstance().createClient(Arrays.asList(protocol)); 
+		add(result);
+		return result;
+	}
 }

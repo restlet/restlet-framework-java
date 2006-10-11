@@ -36,7 +36,6 @@ import org.restlet.component.Container;
 import org.restlet.data.Status;
 
 import com.noelios.restlet.impl.LogFilter;
-import com.noelios.restlet.impl.StatusFilter;
 
 /**
  * Application implementation.
@@ -82,8 +81,9 @@ public class ApplicationDelegateImpl extends ApplicationDelegate
 	 * Constructor.
 	 * @param container The parent container.
 	 * @param application The application descriptor.
+    * @param webAppPath The path to the directory or WAR of the web application files.
 	 */
-	public ApplicationDelegateImpl(Container container, Application application)
+	public ApplicationDelegateImpl(Container container, Application application, String webAppPath)
 	{
 		super(null);
 		this.context = new ApplicationContext(application,
@@ -133,7 +133,7 @@ public class ApplicationDelegateImpl extends ApplicationDelegate
    	// Addition of status pages
    	if(isStatusEnabled())
    	{
-   		Filter statusFilter = new StatusFilter(getContext(), isStatusOverwrite(), getContactEmail(), "/");
+   		Filter statusFilter = new ApplicationStatusFilter(this);
    		if(lastFilter != null) lastFilter.setNext(statusFilter);
    		if(this.root == null) this.root = statusFilter;
    		lastFilter = statusFilter;
@@ -345,5 +345,5 @@ public class ApplicationDelegateImpl extends ApplicationDelegate
 	{
 		this.contactEmail = email;
 	}
-
+	
 }

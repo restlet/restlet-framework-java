@@ -65,14 +65,14 @@ public class StatusFilter extends Filter
     * @param context The context.
     * @param overwrite Indicates whether an existing representation should be overwritten.
     * @param email Email address of the administrator to contact in case of error.
-    * @param homeURI The home URI to display in case the user got a "not found" exception.
+    * @param homeUri The home URI to display in case the user got a "not found" exception.
     */
-   public StatusFilter(Context context, boolean overwrite, String email, String homeURI)
+   public StatusFilter(Context context, boolean overwrite, String email, String homeUri)
    {
       super(context);
       this.overwrite = overwrite;
       this.email = email;
-      this.homeURI = homeURI;
+      this.homeURI = homeUri;
    }
 
    /**
@@ -112,19 +112,19 @@ public class StatusFilter extends Filter
             && !response.getStatus().equals(Status.REDIRECTION_NOT_MODIFIED)
             && ((response.getOutput() == null) || overwrite))
       {
-         response.setOutput(getRepresentation(response.getStatus(), request, response));
+         response.setOutput(getOutput(response.getStatus(), request, response));
       }
    }
 
    /**
-    * Returns a representation for the given status.<br/> In order to customize the default representation,
-    * this method can be overriden.
+    * Returns an output representation for the given status.<br/> In order to customize the 
+    * default representation, this method can be overriden. 
     * @param status The status to represent.
     * @param request The request handled.
     * @param response The response updated.
     * @return The representation of the given status.
     */
-   public Representation getRepresentation(Status status, Request request, Response response)
+   public Representation getOutput(Status status, Request request, Response response)
    {
       StringBuilder sb = new StringBuilder();
       sb.append("<html>\n");

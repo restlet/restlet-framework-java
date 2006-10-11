@@ -57,7 +57,7 @@ public class ParameterList extends WrapperList<Parameter>
 	{
 		super(initialCapacity);
 	}
-	
+
 	/**
 	 * Constructor.
 	 * @param delegate The delegate list.
@@ -66,7 +66,7 @@ public class ParameterList extends WrapperList<Parameter>
 	{
 		super(delegate);
 	}
-	
+
 	/**
 	 * Creates then adds a parameter at the end of the list.
 	 * @param name The parameter name.
@@ -77,7 +77,7 @@ public class ParameterList extends WrapperList<Parameter>
 	{
 		return add(new Parameter(name, value));
 	}
-	
+
 	/**
 	 * Tests the equality of two string, potentially null, which a case sensitivity flag.  
 	 * @param value1 The first value.
@@ -88,12 +88,12 @@ public class ParameterList extends WrapperList<Parameter>
 	private boolean equals(String value1, String value2, boolean ignoreCase)
 	{
 		boolean result = (value1 == value2);
-		
-		if(!result)
+
+		if (!result)
 		{
-			if((value1 != null) && (value2 != null))
+			if ((value1 != null) && (value2 != null))
 			{
-				if(ignoreCase)
+				if (ignoreCase)
 				{
 					result = value1.equalsIgnoreCase(value2);
 				}
@@ -116,23 +116,23 @@ public class ParameterList extends WrapperList<Parameter>
 	{
 		return getFirst(name, false);
 	}
-	
+
 	/**
 	 * Returns the first parameter found with the given name. 
 	 * @param name The parameter name.
-    * @param ignoreCase Indicates if the name comparison is case sensitive.
+	 * @param ignoreCase Indicates if the name comparison is case sensitive.
 	 * @return The first parameter found with the given name.
 	 */
 	public Parameter getFirst(String name, boolean ignoreCase)
 	{
-		for(Parameter param : this)
+		for (Parameter param : this)
 		{
-			if(equals(param.getName(), name, ignoreCase))
+			if (equals(param.getName(), name, ignoreCase))
 			{
 				return param;
 			}
 		}
-		
+
 		return null;
 	}
 
@@ -156,22 +156,22 @@ public class ParameterList extends WrapperList<Parameter>
 	{
 		return getFirstValue(name, false, defaultValue);
 	}
-	
+
 	/**
 	 * Returns the value of the first parameter found with the given name. 
 	 * @param name The parameter name.
-    * @param ignoreCase Indicates if the name comparison is case sensitive.
+	 * @param ignoreCase Indicates if the name comparison is case sensitive.
 	 * @return The value of the first parameter found with the given name.
 	 */
 	public String getFirstValue(String name, boolean ignoreCase)
 	{
 		return getFirstValue(name, ignoreCase, null);
 	}
-	
+
 	/**
 	 * Returns the value of the first parameter found with the given name. 
 	 * @param name The parameter name.
-    * @param ignoreCase Indicates if the name comparison is case sensitive.
+	 * @param ignoreCase Indicates if the name comparison is case sensitive.
 	 * @param defaultValue The default value to return if no matching parameter found.
 	 * @return The value of the first parameter found with the given name or the default value.
 	 */
@@ -179,19 +179,19 @@ public class ParameterList extends WrapperList<Parameter>
 	{
 		String result = defaultValue;
 		Parameter param = getFirst(name, ignoreCase);
-		
-		if(param != null)
+
+		if (param != null)
 		{
 			result = param.getValue();
 		}
-		
+
 		return result;
 	}
-	
+
 	/**
-    * Returns the values of the parameters with a given name. If multiple parameters with the same name are 
-    * found, all values are concatenated and separated by a comma (like for HTTP message headers). 
-    * @param name The parameter name (case insensitive).
+	 * Returns the values of the parameters with a given name. If multiple parameters with the same name are 
+	 * found, all values are concatenated and separated by a comma (like for HTTP message headers). 
+	 * @param name The parameter name (case insensitive).
 	 * @return The values of the parameters with a given name.
 	 */
 	public String getValues(String name)
@@ -206,58 +206,58 @@ public class ParameterList extends WrapperList<Parameter>
 	public Set<String> getNames()
 	{
 		Set<String> result = new HashSet<String>();
-		
-		for(Parameter param : this)
+
+		for (Parameter param : this)
 		{
 			result.add(param.getName());
 		}
-		
+
 		return result;
 	}
-	
-   /**
-    * Returns the parameter values with a given name. If multiple parameters with the same name are found, 
-    * all values are concatenated and separated by the given separator.
-    * @param name The parameter name.
-    * @param separator The separator character.
-    * @param ignoreCase Indicates if the name comparison is case sensitive.
-    * @return The sequence of values.
-    */
-   public String getValues(String name, String separator, boolean ignoreCase)
-   {
-   	String result = null;
-   	StringBuilder sb = null;
-   	
-   	for(Parameter param : this)
-   	{
-   		if(param.getName().equalsIgnoreCase(name))
-   		{
-   			if(sb == null)
-   			{
-   				if(result == null)
-   				{
-   					result = param.getValue();
-   				}
-   				else
-   				{
-   					sb = new StringBuilder();
-      				sb.append(result).append(separator).append(param.getValue());
-   				}
-   			}
-   			else
-   			{
-   				sb.append(separator).append(param.getValue());
-   			}
-   		}
-   	}
-   	
-   	if(sb != null)
-   	{
-   		result = sb.toString();
-   	}
-   	
-   	return result;
-   }
+
+	/**
+	 * Returns the parameter values with a given name. If multiple parameters with the same name are found, 
+	 * all values are concatenated and separated by the given separator.
+	 * @param name The parameter name.
+	 * @param separator The separator character.
+	 * @param ignoreCase Indicates if the name comparison is case sensitive.
+	 * @return The sequence of values.
+	 */
+	public String getValues(String name, String separator, boolean ignoreCase)
+	{
+		String result = null;
+		StringBuilder sb = null;
+
+		for (Parameter param : this)
+		{
+			if (param.getName().equalsIgnoreCase(name))
+			{
+				if (sb == null)
+				{
+					if (result == null)
+					{
+						result = param.getValue();
+					}
+					else
+					{
+						sb = new StringBuilder();
+						sb.append(result).append(separator).append(param.getValue());
+					}
+				}
+				else
+				{
+					sb.append(separator).append(param.getValue());
+				}
+			}
+		}
+
+		if (sb != null)
+		{
+			result = sb.toString();
+		}
+
+		return result;
+	}
 
 	/**
 	 * Removes all the parameters with a given name.
@@ -268,28 +268,28 @@ public class ParameterList extends WrapperList<Parameter>
 	{
 		return removeAll(name, false);
 	}
-	
+
 	/**
 	 * Removes all the parameters with a given name.
 	 * @param name The parameter name.
-    * @param ignoreCase Indicates if the name comparison is case sensitive.
+	 * @param ignoreCase Indicates if the name comparison is case sensitive.
 	 * @return True if the list changed.
 	 */
 	public boolean removeAll(String name, boolean ignoreCase)
 	{
 		boolean changed = false;
 		Parameter param = null;
-		
-		for(Iterator<Parameter> iter = iterator(); iter.hasNext(); )
+
+		for (Iterator<Parameter> iter = iterator(); iter.hasNext();)
 		{
 			param = iter.next();
-			if(equals(param.getName(), name, ignoreCase))
+			if (equals(param.getName(), name, ignoreCase))
 			{
 				iter.remove();
 				changed = true;
 			}
 		}
-		
+
 		return changed;
 	}
 
@@ -298,7 +298,7 @@ public class ParameterList extends WrapperList<Parameter>
 	 * and removes all other parameters with the same name.
 	 * @param name The parameter name.
 	 * @param value The value to set.
-    * @param ignoreCase Indicates if the name comparison is case sensitive.
+	 * @param ignoreCase Indicates if the name comparison is case sensitive.
 	 * @return The parameter set or added.
 	 */
 	public Parameter set(String name, String value, boolean ignoreCase)
@@ -306,14 +306,14 @@ public class ParameterList extends WrapperList<Parameter>
 		Parameter result = null;
 		Parameter param = null;
 		boolean found = false;
-		
-		for(Iterator<Parameter> iter = iterator(); iter.hasNext();)
+
+		for (Iterator<Parameter> iter = iterator(); iter.hasNext();)
 		{
 			param = iter.next();
-			
-			if(equals(param.getName(), name, ignoreCase))
+
+			if (equals(param.getName(), name, ignoreCase))
 			{
-				if(found)
+				if (found)
 				{
 					// Remove other parameters with the same name
 					iter.remove();
@@ -327,12 +327,12 @@ public class ParameterList extends WrapperList<Parameter>
 				}
 			}
 		}
-		
-		if(!found)
+
+		if (!found)
 		{
 			add(name, value);
 		}
-	
+
 		return result;
 	}
 
@@ -357,87 +357,87 @@ public class ParameterList extends WrapperList<Parameter>
 	{
 		return subList(name, false);
 	}
-	
+
 	/**
 	 * Returns a list of all the values associated to the parameter name.
 	 * @param name The parameter name.
-    * @param ignoreCase Indicates if the name comparison is case sensitive.
+	 * @param ignoreCase Indicates if the name comparison is case sensitive.
 	 * @return The list of values.
 	 */
 	public ParameterList subList(String name, boolean ignoreCase)
 	{
 		ParameterList result = new ParameterList();
-		
-		for(Parameter param : this)
+
+		for (Parameter param : this)
 		{
-			if(equals(param.getName(), name, ignoreCase))
+			if (equals(param.getName(), name, ignoreCase))
 			{
 				result.add(param);
 			}
 		}
-		
+
 		return result;
 	}
-   
-   /**
-    * Copies the parameters whose name is a key in the given map.<br/>
-    * If a matching parameter is found, its value is put in the map.<br/>
-    * If multiple values are found, a list is created and set in the map.
-    * @param params The map controlling the copy.
-    */
-   @SuppressWarnings("unchecked")
-   public void copyTo(Map<String, Object> params) 
-   {
-   	Parameter param;
-      Object currentValue = null;
-      for(Iterator<Parameter> iter = iterator(); iter.hasNext();)
-      {
-         param = iter.next();
-         
-         if(params.containsKey(param.getName()))
-         {
-            currentValue = params.get(param.getName());
 
-            if(currentValue != null)
-            {
-               List<Object> values = null;
+	/**
+	 * Copies the parameters whose name is a key in the given map.<br/>
+	 * If a matching parameter is found, its value is put in the map.<br/>
+	 * If multiple values are found, a list is created and set in the map.
+	 * @param params The map controlling the copy.
+	 */
+	@SuppressWarnings("unchecked")
+	public void copyTo(Map<String, Object> params)
+	{
+		Parameter param;
+		Object currentValue = null;
+		for (Iterator<Parameter> iter = iterator(); iter.hasNext();)
+		{
+			param = iter.next();
 
-               if(currentValue instanceof List)
-               {
-                  // Multiple values already found for this parameter
-                  values = (List<Object>)currentValue;
-               }
-               else
-               {
-                  // Second value found for this parameter
-                  // Create a list of values
-                  values = new ArrayList<Object>();
-                  values.add(currentValue);
-                  params.put(param.getName(), values);
-               }
+			if (params.containsKey(param.getName()))
+			{
+				currentValue = params.get(param.getName());
 
-               if(param.getValue() == null)
-               {
-                  values.add(new EmptyValue());
-               }
-               else
-               {
-                  values.add(param.getValue());
-               }
-            }
-            else
-            {
-               if(param.getValue() == null)
-               {
-                  params.put(param.getName(), new EmptyValue());
-               }
-               else
-               {
-                  params.put(param.getName(), param.getValue());
-               }
-            }
-         }
-      }
-   }
-	
+				if (currentValue != null)
+				{
+					List<Object> values = null;
+
+					if (currentValue instanceof List)
+					{
+						// Multiple values already found for this parameter
+						values = (List<Object>) currentValue;
+					}
+					else
+					{
+						// Second value found for this parameter
+						// Create a list of values
+						values = new ArrayList<Object>();
+						values.add(currentValue);
+						params.put(param.getName(), values);
+					}
+
+					if (param.getValue() == null)
+					{
+						values.add(new EmptyValue());
+					}
+					else
+					{
+						values.add(param.getValue());
+					}
+				}
+				else
+				{
+					if (param.getValue() == null)
+					{
+						params.put(param.getName(), new EmptyValue());
+					}
+					else
+					{
+						params.put(param.getName(), param.getValue());
+					}
+				}
+			}
+		}
+	}
+
 }

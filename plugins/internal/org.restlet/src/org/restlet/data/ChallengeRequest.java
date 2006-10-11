@@ -28,71 +28,71 @@ package org.restlet.data;
  */
 public class ChallengeRequest
 {
-   /** The challenge scheme. */
+	/** The challenge scheme. */
 	private ChallengeScheme scheme;
 
-   /** The authentication realm. */
+	/** The authentication realm. */
 	private String realm;
 
-   /** The scheme parameters. */
+	/** The scheme parameters. */
 	private ParameterList parameters;
 
-   /**
-    * Constructor.
-    * @param scheme The challenge scheme.
-    * @param realm The authentication realm.
-    */
-   public ChallengeRequest(ChallengeScheme scheme, String realm)
-   {
-      this.scheme = scheme;
-      this.realm = realm;
-      this.parameters = null;
-   }
+	/**
+	 * Constructor.
+	 * @param scheme The challenge scheme.
+	 * @param realm The authentication realm.
+	 */
+	public ChallengeRequest(ChallengeScheme scheme, String realm)
+	{
+		this.scheme = scheme;
+		this.realm = realm;
+		this.parameters = null;
+	}
 
-   /**
-    * Returns the scheme used.
-    * @return The scheme used.
-    */
-   public ChallengeScheme getScheme()
-   {
-      return this.scheme;
-   }
+	/**
+	 * Returns the scheme used.
+	 * @return The scheme used.
+	 */
+	public ChallengeScheme getScheme()
+	{
+		return this.scheme;
+	}
 
-   /**
-    * Sets the scheme used.
-    * @param scheme The scheme used.
-    */
-   public void setScheme(ChallengeScheme scheme)
-   {
-      this.scheme = scheme;
-   }
+	/**
+	 * Sets the scheme used.
+	 * @param scheme The scheme used.
+	 */
+	public void setScheme(ChallengeScheme scheme)
+	{
+		this.scheme = scheme;
+	}
 
-   /**
-    * Returns the realm name.
-    * @return The realm name.
-    */
-   public String getRealm()
-   {
-      return this.realm;
-   }
+	/**
+	 * Returns the realm name.
+	 * @return The realm name.
+	 */
+	public String getRealm()
+	{
+		return this.realm;
+	}
 
-   /**
-    * Sets the realm name.
-    * @param realm The realm name.
-    */
-   public void setRealm(String realm)
-   {
-      this.realm = realm;
-   }
+	/**
+	 * Sets the realm name.
+	 * @param realm The realm name.
+	 */
+	public void setRealm(String realm)
+	{
+		this.realm = realm;
+	}
 
-   /**
-    * Returns the scheme parameters.
-    * @return The scheme parameters.
-    */
-   public ParameterList getParameters()
-   {
-   	if(this.parameters == null) this.parameters = new ParameterList();
-      return this.parameters;
-   }
+	/**
+	 * Returns the scheme parameters.
+	 * @return The scheme parameters.
+	 */
+	public ParameterList getParameters()
+	{
+		if (this.parameters == null) this.parameters = new ParameterList();
+		return this.parameters;
+	}
 
 }

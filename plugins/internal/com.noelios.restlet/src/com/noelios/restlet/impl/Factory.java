@@ -58,12 +58,14 @@ import org.restlet.data.Representation;
 import org.restlet.data.Resource;
 import org.restlet.data.Status;
 import org.restlet.data.Tag;
+import org.restlet.util.ScorerList;
 
 import com.noelios.restlet.data.StringRepresentation;
 import com.noelios.restlet.impl.component.ApplicationDelegateImpl;
 import com.noelios.restlet.impl.util.Base64;
 import com.noelios.restlet.impl.util.DateUtils;
 import com.noelios.restlet.impl.util.FormUtils;
+import com.noelios.restlet.impl.util.ScorerListImpl;
 
 /**
  * Factory for the Noelios Restlet Engine.
@@ -231,11 +233,12 @@ public class Factory extends org.restlet.spi.Factory
     * Creates a new application using the given context.
     * @param container The parent container.
     * @param application The application descriptor.
+    * @param webAppPath The path to the directory or WAR of the web application files.
     * @return The new application delegate.
     */
-   public ApplicationDelegate createApplicationDelegate(Container container, Application application)
+   public ApplicationDelegate createApplicationDelegate(Container container, Application application, String webAppPath)
    {
-   	return new ApplicationDelegateImpl(container, application);
+   	return new ApplicationDelegateImpl(container, application, webAppPath);
    }
 
 	/**
@@ -341,6 +344,16 @@ public class Factory extends org.restlet.spi.Factory
 	{
 		return new PatternScorer(router, pattern, target);
 	}
+
+   /**
+    * Creates a new scorer list.
+	 * @param router The parent router.
+    * @return The new scorer list.
+    */
+   public ScorerList createScorerList(Router router)
+   {
+   	return new ScorerListImpl(router);
+   }
 
 	/**
 	 * Returns the best variant representation for a given resource according the the client preferences.

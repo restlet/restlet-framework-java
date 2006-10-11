@@ -45,10 +45,11 @@ public class ApplicationDelegate extends Component
     * Constructor.
     * @param container The parent container.
     * @param application The delegated application.
+    * @param webAppPath The path to the directory or WAR of the web application files.
     */
-   public ApplicationDelegate(Container container, Application application)
+   public ApplicationDelegate(Container container, Application application, String webAppPath)
    {
-		this(Factory.getInstance().createApplicationDelegate(container, application));
+		this(Factory.getInstance().createApplicationDelegate(container, application, webAppPath));
    }
 
 	/**

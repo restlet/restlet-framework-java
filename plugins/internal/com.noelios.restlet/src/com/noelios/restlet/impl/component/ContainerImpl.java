@@ -30,18 +30,20 @@ import java.util.logging.Logger;
 import org.restlet.Context;
 import org.restlet.Request;
 import org.restlet.Response;
-import org.restlet.component.ClientList;
 import org.restlet.component.Container;
-import org.restlet.component.ServerList;
 import org.restlet.component.VirtualHost;
 import org.restlet.connector.Client;
 import org.restlet.connector.Server;
 import org.restlet.data.Protocol;
 import org.restlet.data.Status;
 import org.restlet.spi.Factory;
+import org.restlet.util.ClientList;
+import org.restlet.util.ServerList;
 
 import com.noelios.restlet.impl.ClientRouter;
 import com.noelios.restlet.impl.ServerRouter;
+import com.noelios.restlet.impl.util.ClientListImpl;
+import com.noelios.restlet.impl.util.ServerListImpl;
 
 /**
  * Container implementation. 

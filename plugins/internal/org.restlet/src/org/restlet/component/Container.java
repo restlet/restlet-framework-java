@@ -27,6 +27,8 @@ import java.util.List;
 import org.restlet.Request;
 import org.restlet.Response;
 import org.restlet.spi.Factory;
+import org.restlet.util.ClientList;
+import org.restlet.util.ServerList;
 
 /**
  * Component managing a set of connectors, virtual hosts and applications. The server connectors and 
