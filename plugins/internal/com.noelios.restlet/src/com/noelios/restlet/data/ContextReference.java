@@ -30,6 +30,10 @@ import org.restlet.data.Reference;
  */
 public class ContextReference extends Reference
 {
+	/**
+	 * Enumeration of supported authority types.
+	 * @author Jerome Louvel (contact@noelios.com) <a href="http://www.noelios.com/">Noelios Consulting</a>
+	 */
 	public enum AuthorityType 
 	{ 
 		/**
