@@ -26,7 +26,7 @@ import java.util.List;
 
 import org.restlet.Request;
 import org.restlet.Response;
-import org.restlet.data.ClientData;
+import org.restlet.data.ClientInfo;
 import org.restlet.data.Method;
 import org.restlet.data.Reference;
 import org.restlet.data.Status;
@@ -99,7 +99,7 @@ public class CallTestCase extends RestletTestCase
 	 */
 	public void testClientAddress() throws Exception
 	{
-		ClientData client = getRequest().getClient();
+		ClientInfo client = getRequest().getClient();
 		String address = "127.0.0.1";
 		client.setAddress(address);
 		assertEquals(address, client.getAddress());
@@ -117,7 +117,7 @@ public class CallTestCase extends RestletTestCase
 	 */
 	public void testClientAddresses() throws Exception
 	{
-		ClientData client = getRequest().getClient();
+		ClientInfo client = getRequest().getClient();
 		String firstAddress = "127.0.0.1";
 		String secondAddress = "192.168.99.10";
 		List<String> addresses = Arrays.asList(new String[]
@@ -144,7 +144,7 @@ public class CallTestCase extends RestletTestCase
 	 */
 	public void testClientAgent() throws Exception
 	{
-		ClientData client = getRequest().getClient();
+		ClientInfo client = getRequest().getClient();
 		String name = "Restlet";
 		client.setAgent(name);
 		assertEquals(name, client.getAgent());

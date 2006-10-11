@@ -31,12 +31,12 @@ import java.util.logging.Logger;
 import org.restlet.Context;
 import org.restlet.Finder;
 import org.restlet.Request;
+import org.restlet.Resource;
 import org.restlet.Response;
 import org.restlet.data.MediaType;
 import org.restlet.data.Reference;
 import org.restlet.data.ReferenceList;
 import org.restlet.data.Representation;
-import org.restlet.data.Resource;
 
 import com.noelios.restlet.data.DirectoryResource;
 import com.noelios.restlet.data.StringRepresentation;

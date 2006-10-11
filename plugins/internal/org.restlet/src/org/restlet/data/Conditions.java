@@ -26,10 +26,10 @@ import java.util.Date;
 import java.util.List;
 
 /**
- * Set of conditions applying to an uniform call. This is equivalent to the HTTP conditional headers.  
+ * Set of conditions applying to a request. This is equivalent to the HTTP conditional headers.  
  * @author Jerome Louvel (contact@noelios.com) <a href="http://www.noelios.com/">Noelios Consulting</a>
  */
-public class ConditionData
+public class Conditions
 {
    /** The "if-modified-since" condition */
 	private Date modifiedSince;
@@ -46,7 +46,7 @@ public class ConditionData
    /**
     * Constructor.
     */
-   public ConditionData()
+   public Conditions()
    {
       this.modifiedSince = null;
       this.unmodifiedSince = null;

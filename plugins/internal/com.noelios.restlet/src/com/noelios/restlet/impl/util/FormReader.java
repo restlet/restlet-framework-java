@@ -32,10 +32,10 @@ import java.util.Map;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
-import org.restlet.data.EmptyValue;
 import org.restlet.data.Form;
 import org.restlet.data.Parameter;
 import org.restlet.data.Representation;
+import org.restlet.util.EmptyValue;
 
 /**
  * Form reader.

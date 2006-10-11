@@ -30,6 +30,7 @@ import java.nio.channels.WritableByteChannel;
 import java.util.Date;
 import java.util.List;
 
+import org.restlet.Resource;
 import org.restlet.data.CharacterSet;
 import org.restlet.data.Encoding;
 import org.restlet.data.Language;
@@ -37,7 +38,6 @@ import org.restlet.data.MediaType;
 import org.restlet.data.Reference;
 import org.restlet.data.ReferenceList;
 import org.restlet.data.Representation;
-import org.restlet.data.Resource;
 import org.restlet.data.Result;
 import org.restlet.data.Tag;
 

@@ -37,6 +37,7 @@ import java.util.logging.Logger;
 
 import org.restlet.Application;
 import org.restlet.Request;
+import org.restlet.Resource;
 import org.restlet.Response;
 import org.restlet.Router;
 import org.restlet.Scorer;
@@ -47,7 +48,7 @@ import org.restlet.connector.Client;
 import org.restlet.connector.Server;
 import org.restlet.data.ChallengeResponse;
 import org.restlet.data.ChallengeScheme;
-import org.restlet.data.ClientData;
+import org.restlet.data.ClientInfo;
 import org.restlet.data.Form;
 import org.restlet.data.Language;
 import org.restlet.data.MediaType;
@@ -55,7 +56,6 @@ import org.restlet.data.Parameter;
 import org.restlet.data.Preference;
 import org.restlet.data.Protocol;
 import org.restlet.data.Representation;
-import org.restlet.data.Resource;
 import org.restlet.data.Status;
 import org.restlet.data.Tag;
 import org.restlet.util.ScorerList;
@@ -363,7 +363,7 @@ public class Factory extends org.restlet.spi.Factory
 	 * @return The best variant representation.
 	 * @see <a href="http://httpd.apache.org/docs/2.2/en/content-negotiation.html#algorithm">Apache content negotiation algorithm</a>
 	 */
-	public Representation getBestVariant(ClientData client, List<Representation> variants,
+	public Representation getBestVariant(ClientInfo client, List<Representation> variants,
 			Language fallbackLanguage)
 	{
 		if (variants == null)
@@ -679,8 +679,8 @@ public class Factory extends org.restlet.spi.Factory
 				boolean send = true;
 
 				// Check the tag conditions 
-				if ((request.getCondition().getNoneMatch() != null)
-						&& (request.getCondition().getNoneMatch().size() > 0))
+				if ((request.getConditions().getNoneMatch() != null)
+						&& (request.getConditions().getNoneMatch().size() > 0))
 				{
 					boolean matched = false;
 
@@ -689,7 +689,7 @@ public class Factory extends org.restlet.spi.Factory
 					{
 						// Check if it matches one of the representations already cached by the client
 						Tag tag;
-						for (Iterator<Tag> iter = request.getCondition().getNoneMatch().iterator(); !matched
+						for (Iterator<Tag> iter = request.getConditions().getNoneMatch().iterator(); !matched
 								&& iter.hasNext();)
 						{
 							tag = iter.next();
@@ -702,7 +702,7 @@ public class Factory extends org.restlet.spi.Factory
 				else
 				{
 					// Was the representation modified since the last client call?
-					Date modifiedSince = request.getCondition().getModifiedSince();
+					Date modifiedSince = request.getConditions().getModifiedSince();
 					send = ((modifiedSince == null)
 							|| (bestVariant.getModificationDate() == null) || DateUtils.after(
 							modifiedSince, bestVariant.getModificationDate()));

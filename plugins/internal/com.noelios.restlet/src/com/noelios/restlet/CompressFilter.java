@@ -33,7 +33,7 @@ import org.restlet.Context;
 import org.restlet.Filter;
 import org.restlet.Request;
 import org.restlet.Response;
-import org.restlet.data.ClientData;
+import org.restlet.data.ClientInfo;
 import org.restlet.data.Encoding;
 import org.restlet.data.MediaType;
 import org.restlet.data.Preference;
@@ -222,7 +222,7 @@ public class CompressFilter extends Filter
 	 * @param representation The representation to encode.
 	 * @return The encoded representation or the original one if no encoding supported by the client.
 	 */
-	public Representation encode(ClientData client, Representation representation)
+	public Representation encode(ClientInfo client, Representation representation)
 	{
 		Representation result = representation;
 		Encoding bestEncoding = getBestEncoding(client);
@@ -240,7 +240,7 @@ public class CompressFilter extends Filter
     * @param client The client preferences to use.
 	 * @return The best supported encoding for the given call.
 	 */
-	public Encoding getBestEncoding(ClientData client)
+	public Encoding getBestEncoding(ClientInfo client)
 	{
 		Encoding bestEncoding = null;
 		Encoding currentEncoding = null;

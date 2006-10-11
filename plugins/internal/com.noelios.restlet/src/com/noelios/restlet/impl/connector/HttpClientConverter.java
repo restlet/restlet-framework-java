@@ -30,8 +30,8 @@ import org.restlet.Request;
 import org.restlet.Response;
 import org.restlet.data.ChallengeRequest;
 import org.restlet.data.ChallengeResponse;
-import org.restlet.data.ClientData;
-import org.restlet.data.ConditionData;
+import org.restlet.data.ClientInfo;
+import org.restlet.data.Conditions;
 import org.restlet.data.MediaType;
 import org.restlet.data.Parameter;
 import org.restlet.data.ParameterList;
@@ -143,7 +143,7 @@ public class HttpClientConverter
 		}
 
 		// Add the conditions
-		ConditionData condition = request.getCondition();
+		Conditions condition = request.getConditions();
 		if (condition.getMatch() != null)
 		{
 			StringBuilder value = new StringBuilder();
@@ -202,7 +202,7 @@ public class HttpClientConverter
 		}
 
 		// Add the preferences
-		ClientData client = request.getClient();
+		ClientInfo client = request.getClient();
 		if (client.getAcceptedMediaTypes().size() > 0)
 		{
 			try

@@ -31,8 +31,8 @@ import java.util.logging.Logger;
 import org.restlet.Context;
 import org.restlet.Request;
 import org.restlet.data.ChallengeResponse;
-import org.restlet.data.ClientData;
-import org.restlet.data.ConditionData;
+import org.restlet.data.ClientInfo;
+import org.restlet.data.Conditions;
 import org.restlet.data.Cookie;
 import org.restlet.data.Method;
 import org.restlet.data.Parameter;
@@ -133,9 +133,9 @@ public class HttpRequest extends Request
 	 * Returns the client specific data.
 	 * @return The client specific data.
 	 */
-	public ClientData getClient()
+	public ClientInfo getClient()
 	{
-		ClientData result = super.getClient();
+		ClientInfo result = super.getClient();
 
 		if (!this.clientAdded)
 		{
@@ -191,9 +191,9 @@ public class HttpRequest extends Request
 	 * Returns the condition data applying to this call.
 	 * @return The condition data applying to this call.
 	 */
-	public ConditionData getCondition()
+	public Conditions getConditions()
 	{
-		ConditionData result = super.getCondition();
+		Conditions result = super.getConditions();
 
 		if (!this.conditionAdded)
 		{

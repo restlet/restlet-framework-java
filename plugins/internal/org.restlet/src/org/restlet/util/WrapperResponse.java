@@ -26,6 +26,7 @@ import java.util.List;
 import java.util.Map;
 
 import org.restlet.Request;
+import org.restlet.Resource;
 import org.restlet.Response;
 import org.restlet.data.ChallengeRequest;
 import org.restlet.data.CookieSetting;
@@ -34,8 +35,7 @@ import org.restlet.data.MediaType;
 import org.restlet.data.Method;
 import org.restlet.data.Reference;
 import org.restlet.data.Representation;
-import org.restlet.data.Resource;
-import org.restlet.data.ServerData;
+import org.restlet.data.ServerInfo;
 import org.restlet.data.Status;
 
 /**
@@ -136,7 +136,7 @@ public class WrapperResponse extends Response
 	 * Returns the server specific data.
 	 * @return The server specific data.
 	 */
-	public ServerData getServer()
+	public ServerInfo getServer()
 	{
 		return getWrappedResponse().getServer();
 	}

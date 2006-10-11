@@ -24,7 +24,7 @@ package com.noelios.restlet.impl.connector;
 
 import org.restlet.Request;
 import org.restlet.Response;
-import org.restlet.data.ServerData;
+import org.restlet.data.ServerInfo;
 import org.restlet.data.Status;
 
 import com.noelios.restlet.impl.Factory;
@@ -69,9 +69,9 @@ public class HttpResponse extends Response
 	 * Returns the server specific data.
 	 * @return The server specific data.
 	 */
-	public ServerData getServer()
+	public ServerInfo getServer()
 	{
-		ServerData result = super.getServer();
+		ServerInfo result = super.getServer();
 
 		if (!this.serverAdded)
 		{

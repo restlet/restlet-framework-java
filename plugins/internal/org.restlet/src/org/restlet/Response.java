@@ -34,8 +34,7 @@ import org.restlet.data.MediaType;
 import org.restlet.data.Method;
 import org.restlet.data.Reference;
 import org.restlet.data.Representation;
-import org.restlet.data.Resource;
-import org.restlet.data.ServerData;
+import org.restlet.data.ServerInfo;
 import org.restlet.data.Status;
 import org.restlet.spi.Factory;
 
@@ -70,7 +69,7 @@ public class Response
 	private Request request;
 	
 	/** The server data. */
-	private ServerData server;
+	private ServerInfo server;
 
 	/** The status. */
 	private Status status;
@@ -187,9 +186,9 @@ public class Response
 	 * Returns the server specific data.
 	 * @return The server specific data.
 	 */
-	public ServerData getServer()
+	public ServerInfo getServer()
 	{
-		if (this.server == null) this.server = new ServerData();
+		if (this.server == null) this.server = new ServerInfo();
 		return this.server;
 	}
 

@@ -31,6 +31,7 @@ import java.util.logging.Logger;
 
 import org.restlet.Application;
 import org.restlet.Request;
+import org.restlet.Resource;
 import org.restlet.Response;
 import org.restlet.Router;
 import org.restlet.Scorer;
@@ -40,13 +41,12 @@ import org.restlet.component.Container;
 import org.restlet.connector.Client;
 import org.restlet.connector.Server;
 import org.restlet.data.ChallengeResponse;
-import org.restlet.data.ClientData;
+import org.restlet.data.ClientInfo;
 import org.restlet.data.Form;
 import org.restlet.data.Language;
 import org.restlet.data.MediaType;
 import org.restlet.data.Protocol;
 import org.restlet.data.Representation;
-import org.restlet.data.Resource;
 import org.restlet.util.ScorerList;
 
 /**
@@ -192,7 +192,7 @@ public abstract class Factory
     * @return The best variant representation.
     * @see <a href="http://httpd.apache.org/docs/2.2/en/content-negotiation.html#algorithm">Apache content negotiation algorithm</a>
     */
-   public abstract Representation getBestVariant(ClientData client, List<Representation> variants, Language fallbackLanguage);
+   public abstract Representation getBestVariant(ClientInfo client, List<Representation> variants, Language fallbackLanguage);
 
    /**
     * Parses an URL encoded Web form.

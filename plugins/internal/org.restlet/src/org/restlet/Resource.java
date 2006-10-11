@@ -20,10 +20,16 @@
  * Portions Copyright [yyyy] [name of copyright owner]
  */
 
-package org.restlet.data;
+package org.restlet;
 
 import java.util.ArrayList;
 import java.util.List;
+
+import org.restlet.data.Reference;
+import org.restlet.data.ReferenceList;
+import org.restlet.data.Representation;
+import org.restlet.data.Result;
+import org.restlet.data.Status;
 
 /**
  * Intended conceptual target of a hypertext reference. "Any information that can be named can be

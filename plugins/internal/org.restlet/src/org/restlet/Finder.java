@@ -24,7 +24,6 @@ package org.restlet;
 
 import org.restlet.data.Language;
 import org.restlet.data.Method;
-import org.restlet.data.Resource;
 import org.restlet.data.Status;
 
 /**

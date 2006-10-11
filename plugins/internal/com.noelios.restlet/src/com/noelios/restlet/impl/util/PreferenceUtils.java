@@ -30,7 +30,7 @@ import java.util.List;
 import java.util.Locale;
 
 import org.restlet.data.CharacterSet;
-import org.restlet.data.ClientData;
+import org.restlet.data.ClientInfo;
 import org.restlet.data.Encoding;
 import org.restlet.data.Language;
 import org.restlet.data.MediaType;
@@ -193,7 +193,7 @@ public class PreferenceUtils
 	 * @param client The client preferences to update. 
 	 */
 	@SuppressWarnings("unchecked")
-	public static void parseCharacterSets(String acceptCharsetHeader, ClientData client)
+	public static void parseCharacterSets(String acceptCharsetHeader, ClientInfo client)
 	{
 		if (acceptCharsetHeader != null)
 		{
@@ -237,7 +237,7 @@ public class PreferenceUtils
 	 * @param preference The client preferences to update. 
 	 */
 	@SuppressWarnings("unchecked")
-	public static void parseEncodings(String acceptEncodingHeader, ClientData preference)
+	public static void parseEncodings(String acceptEncodingHeader, ClientInfo preference)
 	{
 		if (acceptEncodingHeader != null)
 		{
@@ -271,7 +271,7 @@ public class PreferenceUtils
 	 * @param preference The client preferences to update. 
 	 */
 	@SuppressWarnings("unchecked")
-	public static void parseLanguages(String acceptLanguageHeader, ClientData preference)
+	public static void parseLanguages(String acceptLanguageHeader, ClientInfo preference)
 	{
 		if (acceptLanguageHeader != null)
 		{
@@ -305,7 +305,7 @@ public class PreferenceUtils
 	 * @param preference The client preferences to update. 
 	 */
 	@SuppressWarnings("unchecked")
-	public static void parseMediaTypes(String acceptMediaTypeHeader, ClientData preference)
+	public static void parseMediaTypes(String acceptMediaTypeHeader, ClientInfo preference)
 	{
 		if (acceptMediaTypeHeader != null)
 		{

@@ -27,8 +27,8 @@ import java.util.Map;
 
 import org.restlet.Request;
 import org.restlet.data.ChallengeResponse;
-import org.restlet.data.ClientData;
-import org.restlet.data.ConditionData;
+import org.restlet.data.ClientInfo;
+import org.restlet.data.Conditions;
 import org.restlet.data.Cookie;
 import org.restlet.data.Form;
 import org.restlet.data.Method;
@@ -97,7 +97,7 @@ public class WrapperRequest extends Request
 	 * Returns the client specific data.
 	 * @return The client specific data.
 	 */
-	public ClientData getClient()
+	public ClientInfo getClient()
 	{
 		return getWrappedRequest().getClient();
 	}
@@ -106,9 +106,9 @@ public class WrapperRequest extends Request
 	 * Returns the condition data applying to this call.
 	 * @return The condition data applying to this call.
 	 */
-	public ConditionData getCondition()
+	public Conditions getConditions()
 	{
-		return getWrappedRequest().getCondition();
+		return getWrappedRequest().getConditions();
 	}
 
 	/**

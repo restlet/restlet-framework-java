@@ -26,7 +26,7 @@ package org.restlet.data;
  * Server specific data related to a call.
  * @author Jerome Louvel (contact@noelios.com) <a href="http://www.noelios.com/">Noelios Consulting</a>
  */
-public class ServerData
+public class ServerInfo
 {
    /** The IP address. */
 	private String address;
@@ -43,7 +43,7 @@ public class ServerData
 	/**
 	 * Constructor.
 	 */
-	public ServerData()
+	public ServerInfo()
 	{
 		this.address = null;
 		this.agent = null;

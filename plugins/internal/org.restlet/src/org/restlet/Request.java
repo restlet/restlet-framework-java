@@ -28,8 +28,8 @@ import java.util.Map;
 import java.util.TreeMap;
 
 import org.restlet.data.ChallengeResponse;
-import org.restlet.data.ClientData;
-import org.restlet.data.ConditionData;
+import org.restlet.data.ClientInfo;
+import org.restlet.data.Conditions;
 import org.restlet.data.Cookie;
 import org.restlet.data.Form;
 import org.restlet.data.Method;
@@ -58,10 +58,10 @@ public class Request
 	private Reference baseRef;
 
 	/** The client data. */
-	private ClientData client;
+	private ClientInfo client;
 
 	/** The condition data. */
-	private ConditionData condition;
+	private Conditions conditions;
 
 	/** Indicates if the call came over a confidential channel. */
 	private boolean confidential;
@@ -198,20 +198,20 @@ public class Request
 	 * Returns the client specific data.
 	 * @return The client specific data.
 	 */
-	public ClientData getClient()
+	public ClientInfo getClient()
 	{
-		if (this.client == null) this.client = new ClientData();
+		if (this.client == null) this.client = new ClientInfo();
 		return this.client;
 	}
 
 	/**
-	 * Returns the condition data applying to this call.
-	 * @return The condition data applying to this call.
+	 * Returns the conditions applying to this call.
+	 * @return The conditions applying to this call.
 	 */
-	public ConditionData getCondition()
+	public Conditions getConditions()
 	{
-		if (this.condition == null) this.condition = new ConditionData();
-		return this.condition;
+		if (this.conditions == null) this.conditions = new Conditions();
+		return this.conditions;
 	}
 
 	/**

@@ -35,7 +35,7 @@ import org.restlet.data.Representation;
 import org.restlet.data.Status;
 
 /**
- * Application descriptor deployable in any Restlet container. Applications are guaranteed to 
+ * Application descriptor deployable in containers. Applications are guaranteed to 
  * receive calls with the base reference set relatively to the virtual host which served it. This
  * class is only a descriptor able to create the root handler. When it is attached to a VirtualHost
  * via the "attach" method, an ApplicationDelegate instance is created to actual handle the calls. If

@@ -30,6 +30,7 @@ import java.util.logging.Level;
 import java.util.logging.Logger;
 
 import org.restlet.Request;
+import org.restlet.Resource;
 import org.restlet.Response;
 import org.restlet.connector.ClientInterface;
 import org.restlet.data.MediaType;
@@ -38,7 +39,6 @@ import org.restlet.data.Preference;
 import org.restlet.data.Reference;
 import org.restlet.data.ReferenceList;
 import org.restlet.data.Representation;
-import org.restlet.data.Resource;
 import org.restlet.data.Result;
 import org.restlet.data.Status;
 

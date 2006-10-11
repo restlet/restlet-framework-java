@@ -25,13 +25,14 @@ package org.restlet.data;
 import java.util.ArrayList;
 import java.util.List;
 
+import org.restlet.Resource;
 import org.restlet.spi.Factory;
 
 /**
  * Client specific data related to a call.
  * @author Jerome Louvel (contact@noelios.com) <a href="http://www.noelios.com/">Noelios Consulting</a>
  */
-public class ClientData
+public class ClientInfo
 {
 	/** The IP addresses. */
 	private List<String> addresses;
@@ -54,7 +55,7 @@ public class ClientData
 	/**
 	 * Constructor.
 	 */
-	public ClientData()
+	public ClientInfo()
 	{
 		this.characterSetPrefs = null;
 		this.encodingPrefs = null;
