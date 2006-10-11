@@ -26,15 +26,17 @@ import java.util.Enumeration;
 
 import javax.servlet.Servlet;
 
-import com.noelios.restlet.impl.component.ContainerContext;
-import com.noelios.restlet.impl.component.ContainerImpl;
+import org.restlet.component.ApplicationDelegate;
+import org.restlet.component.Container;
+
+import com.noelios.restlet.impl.component.ApplicationContext;
 
 /**
  * Context allowing access to the container's connectors, reusing the Servlet's logging mechanism and
  * adding the Servlet's initialization parameters to the context's parameters.
  * @author Jerome Louvel (contact@noelios.com) <a href="http://www.noelios.com/">Noelios Consulting</a>
  */
-public class ServletContext extends ContainerContext
+public class ServletContext extends ApplicationContext
 {
 	/** The parent servlet. */
 	private Servlet servlet;
@@ -43,28 +45,38 @@ public class ServletContext extends ContainerContext
 	 * Constructor.
 	 * @param servlet The parent Servlet. 
 	 * @param container The parent container.
+	 * @param applicationDelegate The parent application.
 	 */
-	public ServletContext(Servlet servlet, ContainerImpl container)
+	public ServletContext(Servlet servlet, Container container,
+			ApplicationDelegate applicationDelegate)
 	{
-		super(container, new ServletLogger(servlet.getServletConfig().getServletContext()));
+		super(container, applicationDelegate, new ServletLogger(servlet.getServletConfig()
+				.getServletContext()));
 		this.servlet = servlet;
 		
+		// Set the special local client
+		setLocalClient(new ServletLocalClient(servlet.getServletConfig()
+				.getServletContext()));
+
 		// Copy all the servlet parameters into the context
 		String initParam;
 
 		// Copy all the Web Container initialization parameters
 		javax.servlet.ServletConfig servletConfig = getServlet().getServletConfig();
-		for(Enumeration enum1 = servletConfig.getInitParameterNames(); enum1.hasMoreElements(); )
+		for (Enumeration enum1 = servletConfig.getInitParameterNames(); enum1
+				.hasMoreElements();)
 		{
-			initParam = (String)enum1.nextElement();
+			initParam = (String) enum1.nextElement();
 			getParameters().add(initParam, servletConfig.getInitParameter(initParam));
 		}
 
 		// Copy all the Web Application initialization parameters
-		javax.servlet.ServletContext servletContext = getServlet().getServletConfig().getServletContext();
-		for(Enumeration enum1 = servletContext.getInitParameterNames(); enum1.hasMoreElements(); )
+		javax.servlet.ServletContext servletContext = getServlet().getServletConfig()
+				.getServletContext();
+		for (Enumeration enum1 = servletContext.getInitParameterNames(); enum1
+				.hasMoreElements();)
 		{
-			initParam = (String)enum1.nextElement();
+			initParam = (String) enum1.nextElement();
 			getParameters().add(initParam, servletContext.getInitParameter(initParam));
 		}
 	}
@@ -77,4 +89,5 @@ public class ServletContext extends ContainerContext
 	{
 		return this.servlet;
 	}
+
 }

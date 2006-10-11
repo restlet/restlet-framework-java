@@ -83,12 +83,12 @@ public class Container extends Component
    }
 
    /**
-    * Returns the local virtual host.
-    * @return The local virtual host.
+    * Returns the default virtual host.
+    * @return The default virtual host.
     */
-   public VirtualHost getLocalHost()
+   public VirtualHost getDefaultHost()
    {
-		return getWrappedContainer().getLocalHost();
+		return getWrappedContainer().getDefaultHost();
    }
 
 	/**

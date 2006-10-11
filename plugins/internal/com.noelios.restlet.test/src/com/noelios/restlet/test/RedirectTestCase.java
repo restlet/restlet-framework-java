@@ -78,8 +78,8 @@ public class RedirectTestCase extends TestCase
 		};
 
 		// Set the container roots
-		proxyContainer.getLocalHost().attach("", proxy);
-		originContainer.getLocalHost().attach("", trace);
+		proxyContainer.getDefaultHost().attach("", proxy);
+		originContainer.getDefaultHost().attach("", trace);
 		
 		// Create the server connectors
 		proxyContainer.getServers().add(Protocol.HTTP, 8080);

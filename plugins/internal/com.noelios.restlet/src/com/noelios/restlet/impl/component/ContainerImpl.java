@@ -63,8 +63,8 @@ public class ContainerImpl extends Container
 	/** The modifiable list of virtual hosts. */ 
 	private List<VirtualHost> hosts;
 	
-	/** The local host. */
-	private VirtualHost localHost;
+	/** The default host. */
+	private VirtualHost defaultHost;
 
    /** The context. */
 	private Context context;
@@ -86,7 +86,7 @@ public class ContainerImpl extends Container
    	super((Container)null);
 		this.context = new ContainerContext(this, logger);
       this.hosts = new ArrayList<VirtualHost>();
-      this.localHost = new LocalHost(this);
+      this.defaultHost = new DefaultHost(this);
       this.clientRouter = new ClientRouter(this);
       this.hostRouter = new ServerRouter(this);
       this.clients = null;
@@ -110,12 +110,12 @@ public class ContainerImpl extends Container
    }
 
    /**
-    * Returns the local virtual host.
-    * @return The local virtual host.
+    * Returns the default virtual host.
+    * @return The default virtual host.
     */
-   public VirtualHost getLocalHost()
+   public VirtualHost getDefaultHost()
    {
-		return this.localHost;
+		return this.defaultHost;
    }
 
    /**

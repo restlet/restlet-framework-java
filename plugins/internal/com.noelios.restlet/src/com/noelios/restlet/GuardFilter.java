@@ -26,7 +26,6 @@ import java.io.UnsupportedEncodingException;
 import java.util.Map;
 import java.util.TreeMap;
 import java.util.logging.Level;
-import java.util.logging.Logger;
 
 import org.restlet.Context;
 import org.restlet.Filter;
@@ -58,9 +57,6 @@ public class GuardFilter extends Filter
 	
 	/** The authentication scheme. */
 	private ChallengeScheme scheme;
-	
-	/** Obtain a suitable logger. */
-	private Logger logger;
 
    /** The authentication realm. */
 	private String realm;
@@ -75,16 +71,14 @@ public class GuardFilter extends Filter
     * Constructor.
     * If the authentication is not requested, the scheme and realm parameters are not necessary (pass null instead).
     * @param context The context.
-    * @param logName The log name to used in the logging.properties file.
     * @param authentication Indicates if the guard should attempt to authenticate the caller.
     * @param scheme The authentication scheme to use. 
     * @param realm The authentication realm.
     * @param authorization Indicates if the guard should attempt to authorize the caller.
     */
-   public GuardFilter(Context context, String logName, boolean authentication, ChallengeScheme scheme, String realm, boolean authorization)
+   public GuardFilter(Context context, boolean authentication, ChallengeScheme scheme, String realm, boolean authorization)
    {
       super(context);
-      this.logger = Logger.getLogger(logName);
       this.loginAttribute = "login";
       this.passwordAttribute = "password";
       this.authentication = authentication;
@@ -152,7 +146,7 @@ public class GuardFilter extends Filter
          if(resp == null)
          {
             // Authentication failed, no challenge response provided, maybe first authentication attempt 
-            logger.log(Level.INFO, "Authentication failed: no challenge response provided.");
+            getContext().getLogger().log(Level.INFO, "Authentication failed: no challenge response provided.");
          }
          else if(resp.getScheme().equals(ChallengeScheme.HTTP_BASIC))
 	      {
@@ -164,7 +158,7 @@ public class GuardFilter extends Filter
 	            if(separator == -1)
 	            {
 	               // Log the blocking
-	               logger.warning("Invalid credentials given by client with IP: " + request.getClient().getAddress());
+	            	getContext().getLogger().warning("Invalid credentials given by client with IP: " + request.getClient().getAddress());
 	            }
 	            else
 	            {
@@ -174,25 +168,25 @@ public class GuardFilter extends Filter
 	               request.getAttributes().put(getPasswordAttribute(), password);
 	
 	               // Log the authentication result
-	               logger.info("Basic HTTP authentication succeeded: login=" + login + ".");
+	               getContext().getLogger().info("Basic HTTP authentication succeeded: login=" + login + ".");
 	            }
 	         }
 	         catch(UnsupportedEncodingException e)
 	         {
-	            logger.log(Level.WARNING, "Unsupported encoding error", e);
+	         	getContext().getLogger().log(Level.WARNING, "Unsupported encoding error", e);
 	         }
 	
 	      }
 	      else
 	      {
 	         // Authentication mechanism not supported
-	         logger.log(Level.WARNING, "Authentication failed: invalid authentication mechanism used: " + resp.getScheme().getName() + " instead of :" + this.scheme.getName() + ".");
+	      	getContext().getLogger().log(Level.WARNING, "Authentication failed: invalid authentication mechanism used: " + resp.getScheme().getName() + " instead of :" + this.scheme.getName() + ".");
 	      }
       }
       else
       {
          // Authentication failed, scheme not supported
-         logger.log(Level.WARNING, "Authentication failed: unsupported scheme used: " + this.scheme.getName() + ". Please override the authenticate method.");
+      	getContext().getLogger().log(Level.WARNING, "Authentication failed: unsupported scheme used: " + this.scheme.getName() + ". Please override the authenticate method.");
       }
    }
 
@@ -277,7 +271,7 @@ public class GuardFilter extends Filter
 		}
 		else
 		{
-         logger.log(Level.WARNING, "Unsupported challenging mechanism. Please override the challenge method or use a supported challenge scheme like HTTP Basic.");
+			getContext().getLogger().log(Level.WARNING, "Unsupported challenging mechanism. Please override the challenge method or use a supported challenge scheme like HTTP Basic.");
 		}
    }
 

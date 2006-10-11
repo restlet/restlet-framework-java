@@ -62,6 +62,8 @@ Changes log
  - Moved EmptyValue to org.restlet.util.
  - Moved Resource from org.restlet.data to org.restlet.
  - Renamed ConditionData to Conditions.
+ - ServerServlet now only works with applications as target. Review updated Javadocs before upgrading.
+ - GuardFilter now logs messages via the context's logger. Changed constructor.
 
 [Other changes] 
  - Updated Jetty 6 extension to final 6.0 release.
@@ -107,6 +109,7 @@ Changes log
  - Added support "Allow" HTTP headers. New allow*() methods added on Resource and support for setting the 405 status in the Finder (ex-Handler) class.
    The list of allowed methods is then set to the Response (ex-Call) object. Subclasses of Finder can customize the list of allowed methods.
    Suggested by AJ Barnes and Lars Heuer.
+ - Updated tutorial examples to leverage application concept.
 
 1.0 beta 18 (2006-08-19)
 [Bugs fixed]

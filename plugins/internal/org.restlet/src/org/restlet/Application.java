@@ -22,6 +22,7 @@
 
 package org.restlet;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 import java.util.TreeMap;
@@ -44,44 +45,44 @@ import org.restlet.data.Status;
  */
 public abstract class Application
 {
-   /** The display name. */
+	/** The display name. */
 	private String name;
-	
+
 	/** The description. */
 	private String description;
-	
+
 	/** The author(s). */
 	private String author;
-	
+
 	/** The owner(s). */
 	private String owner;
-	
+
 	/** The default encoding for local representations. */
 	private Encoding defaultEncoding;
-	
+
 	/** The default language for local representations. */
 	private Language defaultLanguage;
 
 	/** The default media type for local representations. */
 	private MediaType defaultMediaType;
-	
+
 	/** The mappings from extension names to metadata. */
 	private Map<String, Metadata> metadataMappings;
 
 	/** The list of index names (ex: index.html). */
 	private List<String> indexNames;
-	
+
 	/** The list of client protocols used. */
 	private List<Protocol> clientProtocols;
-	
+
 	/** The list of server protocols accepted. */
 	private List<Protocol> serverProtocols;
-	
+
 	/**
-    * Constructor.
-    */
-   public Application()
-   {
+	 * Constructor.
+	 */
+	public Application()
+	{
 		this.name = null;
 		this.description = null;
 		this.author = null;
@@ -90,16 +91,20 @@ public abstract class Application
 		this.defaultLanguage = null;
 		this.defaultMediaType = null;
 		this.metadataMappings = new TreeMap<String, Metadata>();
-   }
+		this.indexNames = new ArrayList<String>();
+		this.clientProtocols = null;
+		this.serverProtocols = null;
+	}
 
 	/**
-	 * Creates a root handler that will receive all incoming calls. In general, instances of 
-	 * Router, Filter, Restlet or Finder classes will be used as initial application handler.
+	 * Creates a root handler that will receive all incoming calls. In general, instances of Router, Filter, 
+	 * Restlet or Finder classes will be used as initial application handler. The default implementation
+	 * returns null by default. This method is intended to be overriden by subclasses.  
 	 * @param context The application context. 
 	 * @return The root handler.
 	 */
 	public abstract UniformInterface createRoot(Context context);
-   
+
 	/**
 	 * Returns the author(s).
 	 * @return The author(s).
@@ -108,7 +113,7 @@ public abstract class Application
 	{
 		return this.author;
 	}
-	
+
 	/**
 	 * Returns the list of client protocols used. 
 	 * @return The list of client protocols used.
@@ -181,18 +186,18 @@ public abstract class Application
 		return this.name;
 	}
 
-   /**
-    * Returns an output representation for the given status.<br/> In order to customize the 
-    * default representation, this method can be overriden. It returns null by default.
-    * @param status The status to represent.
-    * @param request The request handled.
-    * @param response The response updated.
-    * @return The representation of the given status.
-    */
-   public Representation getOutput(Status status, Request request, Response response)
-   {
-   	return null;
-   }
+	/**
+	 * Returns an output representation for the given status.<br/> In order to customize the 
+	 * default representation, this method can be overriden. It returns null by default.
+	 * @param status The status to represent.
+	 * @param request The request handled.
+	 * @param response The response updated.
+	 * @return The representation of the given status.
+	 */
+	public Representation getOutput(Status status, Request request, Response response)
+	{
+		return null;
+	}
 
 	/**
 	 * Returns the owner(s).
@@ -211,7 +216,7 @@ public abstract class Application
 	{
 		return this.serverProtocols;
 	}
-   
+
 	/**
 	 * Sets the author(s).
 	 * @param author The author(s).
@@ -266,7 +271,7 @@ public abstract class Application
 		this.name = name;
 	}
 
-   /**
+	/**
 	 * Sets the owner(s).
 	 * @param owner The owner(s).
 	 */

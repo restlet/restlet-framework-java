@@ -56,7 +56,7 @@ public class Tutorial05
          };
 
       // Then attach it to the local host
-      myContainer.getLocalHost().attach("/trace", myRestlet);
+      myContainer.getDefaultHost().attach("/trace", myRestlet);
 
       // Now, let's start the container!
       // Note that the HTTP server connector is also automatically started.

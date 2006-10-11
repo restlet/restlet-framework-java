@@ -24,11 +24,13 @@ package com.noelios.restlet.example.tutorial;
 
 import java.util.List;
 
+import org.restlet.Application;
 import org.restlet.Context;
 import org.restlet.Request;
 import org.restlet.Response;
 import org.restlet.Restlet;
 import org.restlet.Router;
+import org.restlet.UniformInterface;
 import org.restlet.component.Container;
 import org.restlet.data.ChallengeScheme;
 import org.restlet.data.MediaType;
@@ -36,8 +38,6 @@ import org.restlet.data.Protocol;
 
 import com.noelios.restlet.DirectoryFinder;
 import com.noelios.restlet.GuardFilter;
-import com.noelios.restlet.impl.LogFilter;
-import com.noelios.restlet.impl.StatusFilter;
 
 /**
  * Routers and hierarchical URIs
@@ -47,66 +47,64 @@ public class Tutorial11 implements Constants
 {
    public static void main(String[] args) throws Exception
    {
-      // Create a new Restlet container
-   	Container myContainer = new Container();
-      Context myContext = myContainer.getContext();
+		// Create a container
+		Container container = new Container();
+		container.getServers().add(Protocol.HTTP, 8182);
 
-      // Add an HTTP server connector to the Restlet container. 
-      // Note that the container is the call restlet.
-      myContainer.getServers().add(Protocol.HTTP, 8182);
+		// Create an application
+		Application application = new Application()
+		{
+			public UniformInterface createRoot(Context context)
+			{
+		      // Create a root Router
+		      Router router = new Router(context);
+		
+		      // Attach a guard Filter to secure access the the chained directory Finder
+		      GuardFilter guard = new GuardFilter(context, true, ChallengeScheme.HTTP_BASIC , "Restlet tutorial", true);
+		      guard.getAuthorizations().put("scott", "tiger");
+		      router.getScorers().add("/docs/", guard);
+		
+		      // Create a directory Restlet able to return a deep hierarchy of Web files
+		      DirectoryFinder directory = new DirectoryFinder(context, ROOT_URI, "index.html");
+		      guard.setNext(directory);
+		
+		      // Create the user router
+		      Router user = new Router(context);
+		      router.attach("/users/[a-z]+", user);
+		
+		      // Create the account Restlet
+		      Restlet account = new Restlet()
+		         {
+		      		public void handleGet(Request request, Response response)
+		            {
+		               // Print the requested URI path
+		               String output = "Account of user named: " + request.getBaseRef().getLastSegment();
+		               response.setOutput(output, MediaType.TEXT_PLAIN);
+		            }
+		         };
+		      user.attach("$", account);
+		
+		      // Create the orders Restlet
+		      Restlet orders = new Restlet(context)
+		         {
+		            public void handleGet(Request request, Response response)
+		            {
+		               // Print the user name of the requested orders
+		               List<String> segments = request.getBaseRef().getSegments();
+		               String output = "Orders of user named: " + segments.get(segments.size() - 2);
+		               response.setOutput(output, MediaType.TEXT_PLAIN);
+		            }
+		         };
+		      user.attach("/orders$", orders);
+		      
+		      // Return the root router
+		      return router;
+			}
+		};
 
-      // Attach a log Filter to the container
-      LogFilter log = new LogFilter(myContext, "com.noelios.restlet.example");
-      myContainer.getLocalHost().attach("/", log);
-
-      // Attach a status Filter to the log Filter
-      StatusFilter status = new StatusFilter(myContext, true, "webmaster@mysite.org", "http://www.mysite.org");
-      log.setNext(status);
-
-      // Create a first Router
-      Router router = new Router(myContext);
-      status.setNext(router);
-
-      // Attach a guard Filter to secure access the the chained directory Finder
-      GuardFilter guard = new GuardFilter(myContext, "com.noelios.restlet.example", true, ChallengeScheme.HTTP_BASIC , "Restlet tutorial", true);
-      guard.getAuthorizations().put("scott", "tiger");
-      router.getScorers().add("/docs/", guard);
-
-      // Create a directory Restlet able to return a deep hierarchy of Web files
-      DirectoryFinder directory = new DirectoryFinder(myContext, ROOT_URI, "index.html");
-      guard.setNext(directory);
-
-      // Create the user router
-      Router user = new Router(myContext);
-      router.attach("/users/[a-z]+", user);
-
-      // Create the account Restlet
-      Restlet account = new Restlet()
-         {
-      		public void handleGet(Request request, Response response)
-            {
-               // Print the requested URI path
-               String output = "Account of user named: " + request.getBaseRef().getLastSegment();
-               response.setOutput(output, MediaType.TEXT_PLAIN);
-            }
-         };
-      user.attach("$", account);
-
-      // Create the orders Restlet
-      Restlet orders = new Restlet(myContext)
-         {
-            public void handleGet(Request request, Response response)
-            {
-               // Print the user name of the requested orders
-               List<String> segments = request.getBaseRef().getSegments();
-               String output = "Orders of user named: " + segments.get(segments.size() - 2);
-               response.setOutput(output, MediaType.TEXT_PLAIN);
-            }
-         };
-      user.attach("/orders$", orders);
-
-      // Now, let's start the container!
-      myContainer.start();
+		// Attach the application to the container and start it
+		container.getDefaultHost().attach("", application);
+		container.start();
    }
 
 }

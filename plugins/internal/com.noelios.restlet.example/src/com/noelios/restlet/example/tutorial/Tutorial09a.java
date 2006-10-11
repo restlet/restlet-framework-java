@@ -22,15 +22,15 @@
 
 package com.noelios.restlet.example.tutorial;
 
+import org.restlet.Application;
 import org.restlet.Context;
+import org.restlet.UniformInterface;
 import org.restlet.component.Container;
 import org.restlet.data.ChallengeScheme;
 import org.restlet.data.Protocol;
 
 import com.noelios.restlet.DirectoryFinder;
 import com.noelios.restlet.GuardFilter;
-import com.noelios.restlet.impl.LogFilter;
-import com.noelios.restlet.impl.StatusFilter;
 
 /**
  * Guard access to a Restlet.
@@ -40,33 +40,29 @@ public class Tutorial09a implements Constants
 {
    public static void main(String[] args) throws Exception
    {
-      // Create a new Restlet container
-   	Container myContainer = new Container();
-   	Context myContext = myContainer.getContext();
-   	
-      // Add an HTTP server connector to the Restlet container. 
-      // Note that the container is the call restlet.
-      myContainer.getServers().add(Protocol.HTTP, 8182);
+		// Create a container
+		Container container = new Container();
+		container.getServers().add(Protocol.HTTP, 8182);
 
-      // Attach a log Filter to the container
-      LogFilter log = new LogFilter(myContext, "com.noelios.restlet.example");
-      myContainer.getLocalHost().attach("/", log);
+		// Create an application
+		Application application = new Application()
+		{
+			public UniformInterface createRoot(Context context)
+			{
+		      // Create a guard Filter
+		      GuardFilter guard = new GuardFilter(context, true, ChallengeScheme.HTTP_BASIC , "Tutorial", true);
+		      guard.getAuthorizations().put("scott", "tiger");
 
-      // Attach a status Filter to the log Filter
-      StatusFilter status = new StatusFilter(myContext, true, "webmaster@mysite.org", "http://www.mysite.org");
-      log.setNext(status);
-
-      // Attach a guard Filter to the container
-      GuardFilter guard = new GuardFilter(myContext, "com.noelios.restlet.example", true, ChallengeScheme.HTTP_BASIC , "Restlet tutorial", true);
-      guard.getAuthorizations().put("scott", "tiger");
-      status.setNext(guard);
-
-      // Create a directory Restlet able to return a deep hierarchy of Web files
-      DirectoryFinder directory = new DirectoryFinder(myContext, ROOT_URI, "index.html");
-      guard.setNext(directory);
-
-      // Now, let's start the container!
-      myContainer.start();
+		      // Create a directory Restlet able to return a deep hierarchy of Web files
+		      DirectoryFinder directory = new DirectoryFinder(context, ROOT_URI, "index.html");
+		      guard.setNext(directory);
+		      return guard;
+			}
+		};
+		
+		// Attach the application to the container and start it
+		container.getDefaultHost().attach("", application);
+		container.start();
    }
 
 }

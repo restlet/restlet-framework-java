@@ -22,7 +22,9 @@
 
 package com.noelios.restlet.example.tutorial;
 
+import org.restlet.Application;
 import org.restlet.Context;
+import org.restlet.UniformInterface;
 import org.restlet.component.Container;
 import org.restlet.data.Protocol;
 
@@ -36,21 +38,24 @@ public class Tutorial10
 {
    public static void main(String[] args) throws Exception
    {
-      // Create a new Restlet container
-      Container myContainer = new Container();
-      Context myContext = myContainer.getContext();
+		// Create a container
+		Container container = new Container();
+		container.getServers().add(Protocol.HTTP, 8182);
 
-      // Add an HTTP server connector to the Restlet container. 
-      // Note that the container is the call restlet.
-      myContainer.getServers().add(Protocol.HTTP, 8182);
+		// Create an application
+		Application application = new Application()
+		{
+			public UniformInterface createRoot(Context context)
+			{
+		      // Create a redirect Restlet then attach it to the container
+		      String target = "http://www.google.com/search?q=site:mysite.org+${query('query')}";
+		      return new RedirectRestlet(context, target, RedirectRestlet.MODE_CLIENT_TEMPORARY);
+			}
+		};
 
-      // Create a redirect Restlet then attach it to the container
-      String target = "http://www.google.com/search?q=site:mysite.org+${query('query')}";
-      RedirectRestlet redirect = new RedirectRestlet(myContext, target, RedirectRestlet.MODE_CLIENT_TEMPORARY);
-      myContainer.getLocalHost().attach("/search", redirect);
-
-      // Now, let's start the container!
-      myContainer.start();
+		// Attach the application to the container and start it
+		container.getDefaultHost().attach("/search", application);
+		container.start();
    }
 
 }

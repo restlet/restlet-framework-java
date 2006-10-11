@@ -78,7 +78,7 @@ public class SimpleServer
             }
          };
 
-         myContainer.getLocalHost().attach("/test", testRestlet);
+         myContainer.getDefaultHost().attach("/test", testRestlet);
 
          // Now, start the container
          myContainer.start();

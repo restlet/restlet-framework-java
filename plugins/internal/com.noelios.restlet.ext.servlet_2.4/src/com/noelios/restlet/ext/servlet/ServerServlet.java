@@ -30,9 +30,8 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
 import org.restlet.Application;
-import org.restlet.Restlet;
+import org.restlet.component.Container;
 
-import com.noelios.restlet.impl.component.ContainerImpl;
 import com.noelios.restlet.impl.connector.HttpServer;
 
 /**
@@ -159,49 +158,24 @@ public class ServerServlet extends HttpServlet
 						{
 							// Load the application class using the given class name
 							Class targetClass = Class.forName(applicationClassName);
-							Object target = null;
+							Application application = null;
 
 							// Create a new instance of the application class
 							// and store it for reuse by other ServerServlets.
-							target = targetClass.newInstance();
+							application = (Application) targetClass.newInstance();
 
 							// First, let's locate the closest container
-							ContainerImpl container = new ContainerImpl();
-							if (target instanceof Application)
-							{
-								// The target is probably a standalone Restlet or Filter or Router
-								// Try to get its parent, even if chances to find one are low
-								//								container.setRoot((Restlet)target);
-							}
+							Container container = new Container();
 
 							if (container != null)
 							{
 								// Add the HTTP server connector adapting the Servlet requests 
 								container.getServers().add(result);
 
-								// Create a local client and add it to the container
-								container.getClients().add(
-										new ServletLocalClient(getServletContext()));
-
-								// Create the context based on the Servlet's context
-								// and set it on the container and optionally the target Restlet
-								container.setContext(new ServletContext(this, container));
-								result.setContext(container.getContext());
-								if (target != container)
-									((Restlet) target).setContext(container.getContext());
-
-								// Provide the context path as an init parameter
-								//								String scheme = request.getScheme();
-								//								String hostName = request.getServerName();
-								//								int hostPort = request.getServerPort();
-								//								String servletPath = request.getContextPath()
-								//										+ request.getServletPath();
-								//								String contextPath = Reference.toString(scheme, hostName,
-								//										hostPort, servletPath, null, null);
-								//								container.getContext().getParameters().add(
-								//										initContextPathName, contextPath);
-								//								log("[Noelios Restlet Engine] - This context path has been provided to the target's init parameter \""
-								//										+ initContextPathName + "\": " + contextPath);
+								// Attach the application
+								String uriPattern = request.getContextPath()
+										+ request.getServletPath();
+								container.getDefaultHost().attach(uriPattern, application);
 
 								// Starts the target Restlet
 								result.start();

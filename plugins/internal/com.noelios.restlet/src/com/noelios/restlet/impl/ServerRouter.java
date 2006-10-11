@@ -57,9 +57,9 @@ public class ServerRouter extends Router
 		}
 
 		// Also attach the local host if it exists
-		if(getContainer().getLocalHost() != null)
+		if(getContainer().getDefaultHost() != null)
 		{
-			getScorers().add(new HostScorer(this, getContainer().getLocalHost()));
+			getScorers().add(new HostScorer(this, getContainer().getDefaultHost()));
 		}
 
 		super.start();

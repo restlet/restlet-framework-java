@@ -20,40 +20,36 @@
  * Portions Copyright [yyyy] [name of copyright owner]
  */
 
-package com.noelios.restlet.example.tutorial;
+package com.noelios.restlet.impl.component;
 
-import org.restlet.Application;
-import org.restlet.Context;
-import org.restlet.UniformInterface;
 import org.restlet.component.Container;
+import org.restlet.component.VirtualHost;
 import org.restlet.data.Protocol;
 
-import com.noelios.restlet.DirectoryFinder;
-
 /**
- * Server static files using an application.
+ * Virtual host catching all requests.  
  * @author Jerome Louvel (contact@noelios.com) <a href="http://www.noelios.com/">Noelios Consulting</a>
  */
-public class Tutorial06 implements Constants
+public class DefaultHost extends VirtualHost
 {
-   public static void main(String[] args) throws Exception
-   {
-		// Create a container
-		Container container = new Container();
-		container.getServers().add(Protocol.HTTP, 8182);
+	/**
+	 * Constructor.
+	 * @param context The context.
+	 */
+	public DefaultHost(Container container)
+	{
+		super(container);
 
-		// Create an application
-		Application application = new Application()
-		{
-			public UniformInterface createRoot(Context context)
-			{
-				return new DirectoryFinder(context, ROOT_URI, "index.html");
-			}
-		};
+		// Add allowed IP addresses
+		getAllowedAddresses().add(ALL_ADDRESSES);
 
-		// Attach the application to the container and start it
-		container.getDefaultHost().attach("", application);
-		container.start();
-   }
+		// Add allowed domain names
+		getAllowedNames().add(ALL_NAMES);
 
+		// Add allowed port numbers (all by default)
+		getAllowedPorts().add(ALL_PORTS);
+
+		// Add allowed protocols (all by default)
+		getAllowedProtocols().add(Protocol.ALL);
+	}
 }

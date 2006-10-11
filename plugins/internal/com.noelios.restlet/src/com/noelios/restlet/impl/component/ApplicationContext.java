@@ -59,7 +59,7 @@ public class ApplicationContext extends ContextImpl
 		super(logger);
 		this.container = container;
 		this.applicationDelegate = applicationDelegate;
-		this.localClient = new LocalClient();
+		this.localClient = null;
 	}
 	
 	/**
@@ -104,6 +104,11 @@ public class ApplicationContext extends ContextImpl
 	 */
 	protected LocalClient getLocalClient()
 	{
+		if(this.localClient == null)
+		{
+			this.localClient = new LocalClient();
+		}
+		
 		return this.localClient;
 	}
 
