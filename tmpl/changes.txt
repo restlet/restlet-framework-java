@@ -66,7 +66,7 @@ Changes log
  - GuardFilter now logs messages via the context's logger. Changed constructor.
 
 [Other changes] 
- - Updated Jetty 6 extension to final 6.0 release.
+ - Updated Jetty 6 extension to 6.0.1 release and Jetty 5 extension to 5.1.11 release.
  - Added Resource.setVariants() and setIdentifiers() methods. Can be easier than doing a getVariants().clear() then a getVariants().addAll(newList). 
    Suggested by Chris Winters.
  - org.restlet.ReferenceList now derives from WrapperList<Reference> to factorize code and to clarify (in Javadocs) which extra methods are provided.
