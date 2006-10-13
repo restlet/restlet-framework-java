@@ -24,8 +24,7 @@ package com.noelios.restlet.example.tutorial;
 
 import org.restlet.Application;
 import org.restlet.Container;
-import org.restlet.Context;
-import org.restlet.UniformInterface;
+import org.restlet.Handler;
 import org.restlet.data.ChallengeScheme;
 import org.restlet.data.Protocol;
 
@@ -45,16 +44,16 @@ public class Tutorial09a implements Constants
 		container.getServers().add(Protocol.HTTP, 8182);
 
 		// Create an application
-		Application application = new Application()
+		Application application = new Application(container)
 		{
-			public UniformInterface createRoot(Context context)
+			public Handler createRoot()
 			{
 		      // Create a guard Filter
-		      GuardFilter guard = new GuardFilter(context, true, ChallengeScheme.HTTP_BASIC , "Tutorial", true);
+		      GuardFilter guard = new GuardFilter(getContext(), true, ChallengeScheme.HTTP_BASIC , "Tutorial", true);
 		      guard.getAuthorizations().put("scott", "tiger");
 
 		      // Create a directory Restlet able to return a deep hierarchy of Web files
-		      DirectoryFinder directory = new DirectoryFinder(context, ROOT_URI, "index.html");
+		      DirectoryFinder directory = new DirectoryFinder(getContext(), ROOT_URI, "index.html");
 		      guard.setNext(directory);
 		      return guard;
 			}

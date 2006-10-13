@@ -25,6 +25,7 @@ package com.noelios.restlet.ext.jetty;
 import java.io.File;
 
 import org.mortbay.jetty.security.SslSocketConnector;
+import org.restlet.Context;
 import org.restlet.data.Protocol;
 
 /**
@@ -104,12 +105,13 @@ public class HttpsServer extends JettyServer
 {
    /**
     * Constructor.
+    * @param context The context.
     * @param address The optional listening IP address (local host used if null).
     * @param port The listening port.
     */
-   public HttpsServer(String address, int port)
+   public HttpsServer(Context context, String address, int port)
    {
-      super(address, port);
+      super(context, address, port);
       getProtocols().add(Protocol.HTTPS);
    }
 

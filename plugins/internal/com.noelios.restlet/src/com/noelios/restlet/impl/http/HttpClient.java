@@ -20,11 +20,12 @@
  * Portions Copyright [yyyy] [name of copyright owner]
  */
 
-package com.noelios.restlet.impl.connector;
+package com.noelios.restlet.impl.http;
 
 import java.util.logging.Level;
-import java.util.logging.Logger;
 
+import org.restlet.Client;
+import org.restlet.Context;
 import org.restlet.data.Request;
 import org.restlet.data.Response;
 
@@ -32,19 +33,18 @@ import org.restlet.data.Response;
  * Base HTTP client connector.
  * @author Jerome Louvel (contact@noelios.com) <a href="http://www.noelios.com/">Noelios Consulting</a>
  */
-public abstract class HttpClient extends ClientImpl
+public abstract class HttpClient extends Client
 {
-	/** Obtain a suitable logger. */
-	private static Logger logger = Logger.getLogger(HttpClient.class.getCanonicalName());
-
 	/** The converter from uniform calls to HTTP calls. */
 	private HttpClientConverter converter;
 
 	/**
 	 * Constructor.
+	 * @param context The context.
 	 */
-	public HttpClient()
+	public HttpClient(Context context)
 	{
+		super(context);
 		this.converter = null;
 	}
 
@@ -70,9 +70,9 @@ public abstract class HttpClient extends ClientImpl
 		}
 		catch (Exception e)
 		{
-			logger.log(Level.WARNING, "Error while handling an HTTP client call: ", e
+			getLogger().log(Level.WARNING, "Error while handling an HTTP client call: ", e
 					.getMessage());
-			logger.log(Level.INFO, "Error while handling an HTTP client call", e);
+			getLogger().log(Level.INFO, "Error while handling an HTTP client call", e);
 		}
 	}
 

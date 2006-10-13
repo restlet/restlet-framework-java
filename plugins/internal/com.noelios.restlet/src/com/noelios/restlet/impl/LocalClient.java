@@ -20,7 +20,7 @@
  * Portions Copyright [yyyy] [name of copyright owner]
  */
 
-package com.noelios.restlet.impl.connector;
+package com.noelios.restlet.impl;
 
 import java.io.File;
 import java.io.FileNotFoundException;
@@ -38,6 +38,8 @@ import java.util.jar.JarFile;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
+import org.restlet.Client;
+import org.restlet.Context;
 import org.restlet.data.CharacterSet;
 import org.restlet.data.Encoding;
 import org.restlet.data.Language;
@@ -133,7 +135,7 @@ import com.noelios.restlet.impl.util.ByteUtils;
  * @author Jerome Louvel (contact@noelios.com) <a href="http://www.noelios.com/">Noelios Consulting</a>
  * @author Thierry Boileau
  */
-public class LocalClient extends ClientImpl
+public class LocalClient extends Client
 {
 	/** Obtain a suitable logger. */
 	private static Logger logger = Logger.getLogger(LocalClient.class.getCanonicalName());
@@ -153,11 +155,15 @@ public class LocalClient extends ClientImpl
 	/**
 	 * Constructor. Note that the common list of metadata associations based on extensions is added, see
 	 * the addCommonExtensions() method.
+	 * @param context The context.
 	 */
-	public LocalClient()
+	public LocalClient(Context context)
 	{
+		super(context);
+
 		getProtocols().add(Protocol.CONTEXT);
 		getProtocols().add(Protocol.FILE);
+		
 		this.metadataMappings = new TreeMap<String, Metadata>();
 		this.webAppPath = null;
 		this.webAppArchive = false;

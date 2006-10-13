@@ -37,7 +37,7 @@ public class FilterTestCase extends AbstractFilterTestCase
 	@Override
 	protected Filter getFilter()
 	{
-		return new MockFilter();
+		return new MockFilter(null);
 	}
 
 	@Override
@@ -55,7 +55,7 @@ public class FilterTestCase extends AbstractFilterTestCase
 	@Override
 	protected Restlet getRestlet()
 	{
-		return new MockRestlet();
+		return new MockRestlet(null);
 	}
 
 	@Override

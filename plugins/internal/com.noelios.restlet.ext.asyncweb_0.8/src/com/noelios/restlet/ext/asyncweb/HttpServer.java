@@ -22,6 +22,7 @@
 
 package com.noelios.restlet.ext.asyncweb;
 
+import org.restlet.Context;
 import org.restlet.data.Protocol;
 import org.safehaus.asyncweb.container.ContainerLifecycleException;
 import org.safehaus.asyncweb.transport.nio.NIOTransport;
@@ -31,7 +32,7 @@ import org.safehaus.asyncweb.transport.nio.NIOTransport;
  * 
  * This implementation passes by all of AsyncWeb ServiceContainer, 
  * HttpServiceHandler etc. mechanisms and implements a 
- * {@link com.noelios.restlet.impl.connector.ServerImpl} and a 
+ * {@link com.noelios.restlet.impl.http.ServerImpl} and a 
  * {@link org.safehaus.asyncweb.container.ServiceContainer} directly. It takes
  * care about setting up a {@link org.safehaus.asyncweb.transport.nio.NIOTransport}.
  * <p>
@@ -46,12 +47,13 @@ public class HttpServer extends AsyncWebServer
 {
    /**
     * Constructor.
+    * @param context The context.
     * @param address The optional listening IP address (local host used if null).
     * @param port The listening port.
     */
-   public HttpServer(String address, int port)
+   public HttpServer(Context context, String address, int port)
    {
-      super(address, port);
+      super(context, address, port);
       getProtocols().add(Protocol.HTTP);
    }
 

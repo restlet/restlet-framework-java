@@ -20,11 +20,13 @@
  * Portions Copyright [yyyy] [name of copyright owner]
  */
 
-package com.noelios.restlet.impl.connector;
+package com.noelios.restlet.impl.http;
 
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
+import org.restlet.Context;
+import org.restlet.Server;
 import org.restlet.data.Request;
 import org.restlet.data.Response;
 
@@ -32,7 +34,7 @@ import org.restlet.data.Response;
  * Base HTTP server connector.
  * @author Jerome Louvel (contact@noelios.com) <a href="http://www.noelios.com/">Noelios Consulting</a>
  */
-public class HttpServer extends ServerImpl
+public class HttpServer extends Server
 {
 	/** Obtain a suitable logger. */
 	private static Logger logger = Logger.getLogger(HttpServer.class.getCanonicalName());
@@ -48,10 +50,11 @@ public class HttpServer extends ServerImpl
 
 	/**
 	 * Constructor.
+	 * @param context The context.
 	 */
-	public HttpServer()
+	public HttpServer(Context context)
 	{
-		this(null, 0);
+		this(context, null, 0);
 	}
 
 	/**
@@ -59,8 +62,9 @@ public class HttpServer extends ServerImpl
 	 * @param address The optional listening IP address (local host used if null).
 	 * @param port The listening port.
 	 */
-	public HttpServer(String address, int port)
+	public HttpServer(Context context, String address, int port)
 	{
+		super(context);
 		this.address = address;
 		this.port = port;
 		this.converter = null;

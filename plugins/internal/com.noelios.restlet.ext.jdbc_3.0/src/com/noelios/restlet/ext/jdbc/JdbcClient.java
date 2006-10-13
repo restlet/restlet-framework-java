@@ -39,6 +39,8 @@ import org.apache.commons.dbcp.PoolableConnectionFactory;
 import org.apache.commons.dbcp.PoolingDataSource;
 import org.apache.commons.pool.ObjectPool;
 import org.apache.commons.pool.impl.GenericObjectPool;
+import org.restlet.Client;
+import org.restlet.Context;
 import org.restlet.data.Method;
 import org.restlet.data.Protocol;
 import org.restlet.data.Representation;
@@ -51,7 +53,6 @@ import org.w3c.dom.NodeList;
 
 import com.noelios.restlet.data.ObjectRepresentation;
 import com.noelios.restlet.impl.Factory;
-import com.noelios.restlet.impl.connector.ClientImpl;
 
 /**
  * Client connector to a JDBC database. To send a request to the server create a new instance of
@@ -73,16 +74,19 @@ import com.noelios.restlet.impl.connector.ClientImpl;
  * &nbsp;&nbsp;{@code </body>}<br/> {@code </request>}
  * @author Jerome Louvel (contact@noelios.com) <a href="http://www.noelios.com/">Noelios Consulting</a>
  */
-public class JdbcClient extends ClientImpl
+public class JdbcClient extends Client
 {
    /** Map of connection factories. */
 	private List<ConnectionSource> connectionSources;
-   
-   /**
-    * Constructor.
-    */
-   public JdbcClient()
+
+	/**
+	 * Constructor.
+	 * @param context The context.
+	 */
+	public JdbcClient(Context context)
    {
+		super(context);
+		
    	getProtocols().add(Protocol.JDBC);
 
       // Set up the list of factories

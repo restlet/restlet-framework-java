@@ -36,6 +36,7 @@ import org.restlet.data.Representation;
 import org.restlet.data.Request;
 import org.restlet.data.Response;
 import org.restlet.data.Status;
+import org.restlet.spi.Factory;
 
 /**
  * Application descriptor deployable in containers. Applications are guaranteed to 
@@ -45,7 +46,7 @@ import org.restlet.data.Status;
  * required, the delegate can be reattached to several other virtual hosts or with a several root URIs.   
  * @author Jerome Louvel (contact@noelios.com) <a href="http://www.noelios.com/">Noelios Consulting</a>
  */
-public abstract class Application
+public abstract class Application extends Handler
 {
 	/** The display name. */
 	private String name;
@@ -79,12 +80,31 @@ public abstract class Application
 
 	/** The list of server protocols accepted. */
 	private List<Protocol> serverProtocols;
+	
+	/** The root handler. */
+	private Handler root;
+	
+	/**
+	 * The holding filter.
+	 */
+	private Holder holder;
 
 	/**
 	 * Constructor.
+	 * @param container The container.
 	 */
-	public Application()
+	public Application(Container container)
 	{
+		this(container.getContext());
+	}
+	
+	/**
+	 * Constructor.
+	 * @param context The context.
+	 */
+	public Application(Context context)
+	{
+		super(context);
 		this.name = null;
 		this.description = null;
 		this.author = null;
@@ -96,16 +116,31 @@ public abstract class Application
 		this.indexNames = new ArrayList<String>();
 		this.clientProtocols = null;
 		this.serverProtocols = null;
+		this.root = null;
+		this.holder = null;
 	}
-
+	
 	/**
 	 * Creates a root handler that will receive all incoming calls. In general, instances of Router, Filter, 
 	 * Restlet or Finder classes will be used as initial application handler. The default implementation
 	 * returns null by default. This method is intended to be overriden by subclasses.  
-	 * @param context The application context. 
 	 * @return The root handler.
 	 */
-	public abstract UniformInterface createRoot(Context context);
+	public abstract Handler createRoot();
+
+	/**
+	 * Returns the root handler. Invokes the createRoot() method if no handler exists.
+	 * @return The root handler.
+	 */
+	public Handler getRoot()
+	{
+		if(this.root == null)
+		{
+			this.root = createRoot();
+		}
+		
+		return this.root;
+	}
 
 	/**
 	 * Returns the author(s).
@@ -189,14 +224,14 @@ public abstract class Application
 	}
 
 	/**
-	 * Returns an output representation for the given status.<br/> In order to customize the 
+	 * Returns a representation for the given status.<br/> In order to customize the 
 	 * default representation, this method can be overriden. It returns null by default.
 	 * @param status The status to represent.
 	 * @param request The request handled.
 	 * @param response The response updated.
 	 * @return The representation of the given status.
 	 */
-	public Representation getOutput(Status status, Request request, Response response)
+	public Representation getRepresentation(Status status, Request request, Response response)
 	{
 		return null;
 	}
@@ -281,4 +316,15 @@ public abstract class Application
 	{
 		this.owner = owner;
 	}
+
+	/**
+	 * Returns the holding filter.
+	 * @return The holding filter
+	 */
+	public Holder getHolder()
+	{
+		if(this.holder == null) this.holder = Factory.getInstance().createHolder(getContext(), getRoot());
+		return this.holder;
+	}
+	
 }

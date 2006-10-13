@@ -26,10 +26,9 @@ import java.util.List;
 
 import org.restlet.Application;
 import org.restlet.Container;
-import org.restlet.Context;
+import org.restlet.Handler;
 import org.restlet.Restlet;
 import org.restlet.Router;
-import org.restlet.UniformInterface;
 import org.restlet.data.ChallengeScheme;
 import org.restlet.data.MediaType;
 import org.restlet.data.Protocol;
@@ -52,24 +51,24 @@ public class Tutorial11 implements Constants
 		container.getServers().add(Protocol.HTTP, 8182);
 
 		// Create an application
-		Application application = new Application()
+		Application application = new Application(container)
 		{
-			public UniformInterface createRoot(Context context)
+			public Handler createRoot()
 			{
 		      // Create a root Router
-		      Router router = new Router(context);
+		      Router router = new Router(getContext());
 		
 		      // Attach a guard Filter to secure access the the chained directory Finder
-		      GuardFilter guard = new GuardFilter(context, true, ChallengeScheme.HTTP_BASIC , "Restlet tutorial", true);
+		      GuardFilter guard = new GuardFilter(getContext(), true, ChallengeScheme.HTTP_BASIC , "Restlet tutorial", true);
 		      guard.getAuthorizations().put("scott", "tiger");
 		      router.getScorers().add("/docs/", guard);
 		
 		      // Create a directory Restlet able to return a deep hierarchy of Web files
-		      DirectoryFinder directory = new DirectoryFinder(context, ROOT_URI, "index.html");
+		      DirectoryFinder directory = new DirectoryFinder(getContext(), ROOT_URI, "index.html");
 		      guard.setNext(directory);
 		
 		      // Create the user router
-		      Router user = new Router(context);
+		      Router user = new Router(getContext());
 		      router.attach("/users/[a-z]+", user);
 		
 		      // Create the account Restlet
@@ -85,7 +84,7 @@ public class Tutorial11 implements Constants
 		      user.attach("$", account);
 		
 		      // Create the orders Restlet
-		      Restlet orders = new Restlet(context)
+		      Restlet orders = new Restlet(getContext())
 		         {
 		            public void handleGet(Request request, Response response)
 		            {

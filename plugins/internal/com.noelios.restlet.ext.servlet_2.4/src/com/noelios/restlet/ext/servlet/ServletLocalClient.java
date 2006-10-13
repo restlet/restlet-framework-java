@@ -27,6 +27,7 @@ import java.util.Set;
 
 import javax.servlet.ServletContext;
 
+import org.restlet.Context;
 import org.restlet.data.MediaType;
 import org.restlet.data.Method;
 import org.restlet.data.Reference;
@@ -37,7 +38,7 @@ import org.restlet.data.Response;
 import org.restlet.data.Status;
 
 import com.noelios.restlet.data.InputRepresentation;
-import com.noelios.restlet.impl.connector.LocalClient;
+import com.noelios.restlet.impl.LocalClient;
 
 /**
  * Local client connector based on a Servlet context (JEE Web application context).
@@ -50,10 +51,12 @@ public class ServletLocalClient extends LocalClient
 
    /**
     * Constructor.
+	 * @param context The context.
     * @param servletContext The Servlet context.
     */
-   public ServletLocalClient(ServletContext servletContext)
+   public ServletLocalClient(Context context, ServletContext servletContext)
    {
+   	super(context);
       this.servletContext = servletContext;
    }
    

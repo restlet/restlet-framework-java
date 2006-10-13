@@ -24,8 +24,7 @@ package com.noelios.restlet.example.tutorial;
 
 import org.restlet.Application;
 import org.restlet.Container;
-import org.restlet.Context;
-import org.restlet.UniformInterface;
+import org.restlet.Handler;
 import org.restlet.data.Protocol;
 
 import com.noelios.restlet.DirectoryFinder;
@@ -43,11 +42,11 @@ public class Tutorial06 implements Constants
 		container.getServers().add(Protocol.HTTP, 8182);
 
 		// Create an application
-		Application application = new Application()
+		Application application = new Application(container)
 		{
-			public UniformInterface createRoot(Context context)
+			public Handler createRoot()
 			{
-				return new DirectoryFinder(context, ROOT_URI, "index.html");
+				return new DirectoryFinder(getContext(), ROOT_URI, "index.html");
 			}
 		};
 

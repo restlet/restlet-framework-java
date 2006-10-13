@@ -21,6 +21,7 @@
  */
 package org.restlet.test;
 
+import org.restlet.Context;
 import org.restlet.Restlet;
 import org.restlet.data.Request;
 import org.restlet.data.Response;
@@ -34,9 +35,11 @@ import org.restlet.data.Response;
  */
 public class MockRestlet extends Restlet
 {
-	/* (non-Javadoc)
-	 * @see org.restlet.AbstractRestlet#handle(org.restlet.Call)
-	 */
+	public MockRestlet(Context context)
+	{
+		super(context);
+	}
+
 	@Override
 	public void handle(Request request, Response response)
 	{

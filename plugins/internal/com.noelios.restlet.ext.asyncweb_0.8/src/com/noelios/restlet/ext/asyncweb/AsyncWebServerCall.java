@@ -37,7 +37,7 @@ import org.safehaus.asyncweb.http.internal.HttpHeaders;
 import org.safehaus.asyncweb.http.internal.Request;
 import org.safehaus.asyncweb.http.internal.Response;
 
-import com.noelios.restlet.impl.connector.HttpServerCall;
+import com.noelios.restlet.impl.http.HttpServerCall;
 
 /**
  * HttpServerCall implementation used by the AsyncServer.

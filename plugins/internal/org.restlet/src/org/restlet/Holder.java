@@ -22,51 +22,63 @@
 
 package org.restlet;
 
-import org.restlet.spi.Factory;
-
 /**
- * Component attached to a virtual host and managed by a parent container. Applications are also guaranteed
- * to be portable between containers implementing the same Restlet API.  
+ * Filter holding an attached handler and providing filtering services such as call logging and setting of
+ * status representations.
  * @author Jerome Louvel (contact@noelios.com) <a href="http://www.noelios.com/">Noelios Consulting</a>
  */
-public class ApplicationDelegate extends Component 
+public class Holder extends Filter
 {
+	/** Indicates if the calls logging is enabled. */
+	private boolean loggingEnabled;
+
+	/** The logging name to use. */
+	private String loggingName;
+
+	/** The logging format to use (or null for the default). */
+	private String loggingFormat;
+
+	/** Indicates if status pages should be added. */
+	private boolean statusEnabled;
+
+	/** Indicates if the status pages should overwrite existing output representations. */
+	private boolean statusOverwrite;
+
+	/** The email to contact in case of issue with the application. */
+	private String contactEmail;
+	
 	/**
 	 * Constructor.
-	 * @param wrappedApplication The wrapped application. 
+	 * @param wrappedHolder The wrapped application delegate. 
 	 */
-	protected ApplicationDelegate(ApplicationDelegate wrappedApplication)
+	public Holder(Holder wrappedHolder)
 	{
-		super(wrappedApplication);
+		super(wrappedHolder);
 	}
    
    /**
     * Constructor.
-    * @param container The parent container.
-    * @param application The delegated application.
-    * @param webAppPath The path to the directory or WAR of the web application files.
+    * @param context The context.
+    * @param next The attached handler.
     */
-   public ApplicationDelegate(Container container, Application application, String webAppPath)
+   public Holder(Context context, Handler next)
    {
-		this(Factory.getInstance().createApplicationDelegate(container, application, webAppPath));
+   	super(context, next);
+		this.loggingEnabled = true;
+		this.loggingName = "org.restlet.application.calls." + hashCode();
+		this.loggingFormat = null;
+		this.statusEnabled = true;
+		this.statusOverwrite = false;
+		this.contactEmail = null;
    }
 
 	/**
     * Returns the wrapped application.
     * @return The wrapped application.
     */
-   protected ApplicationDelegate getWrappedApplicationDelegate()
+   private Holder getWrappedHolder()
    {
-   	return (ApplicationDelegate)getWrappedComponent();
-   }
-
-   /**
-    * Returns the application descriptor.
-    * @return The application descriptor.
-    */
-   public Application getApplication()
-   {
-   	return getWrappedApplicationDelegate().getApplication();
+		return (Holder)getWrappedHandler();
    }
    
    /**
@@ -75,7 +87,7 @@ public class ApplicationDelegate extends Component
     */
    public boolean isLoggingEnabled()
    {
-   	return getWrappedApplicationDelegate().isLoggingEnabled();
+   	return (getWrappedHolder() != null) ? getWrappedHolder().isLoggingEnabled() : this.loggingEnabled;
    }
    
    /**
@@ -84,7 +96,14 @@ public class ApplicationDelegate extends Component
     */
    public void setLoggingEnabled(boolean enabled)
    {
-   	getWrappedApplicationDelegate().setLoggingEnabled(enabled);
+   	if(getWrappedHolder() != null)
+   	{
+   		getWrappedHolder().setLoggingEnabled(enabled);
+   	}
+   	else
+   	{
+   		this.loggingEnabled = enabled;
+   	}
    }
 
    /**
@@ -93,7 +112,7 @@ public class ApplicationDelegate extends Component
     */
    public String getLoggingName()
    {
-   	return getWrappedApplicationDelegate().getLoggingName();
+   	return (getWrappedHolder() != null) ? getWrappedHolder().getLoggingName() : this.loggingName;
    }
 
    /**
@@ -102,7 +121,14 @@ public class ApplicationDelegate extends Component
     */
    public void setLoggingName(String name)
    {
-   	getWrappedApplicationDelegate().setLoggingName(name);
+   	if(getWrappedHolder() != null)
+   	{
+   		getWrappedHolder().setLoggingName(name);
+   	}
+   	else
+   	{
+   		this.loggingName = name;
+   	}
    }
 
    /**
@@ -111,19 +137,24 @@ public class ApplicationDelegate extends Component
     */
    public String getLoggingFormat()
    {
-   	return getWrappedApplicationDelegate().getLoggingFormat();
+   	return (getWrappedHolder() != null) ? getWrappedHolder().getLoggingFormat() : this.loggingFormat;
    }
    
    /**
     * Sets the format to use when logging calls. The default format matches the one of IIS 6.
-    * 
     * ** ADD DETAILS ABOUT THE FORMAT SYNTAX AND AVAILABLE VARIABLES **
-    * 
     * @param format The format to use when loggin calls.
     */
    public void setLoggingFormat(String format)
    {
-   	getWrappedApplicationDelegate().setLoggingFormat(format);
+   	if(getWrappedHolder() != null)
+   	{
+   		getWrappedHolder().setLoggingFormat(format);
+   	}
+   	else
+   	{
+   		this.loggingFormat = format;
+   	}
    }
    
    /**
@@ -132,7 +163,7 @@ public class ApplicationDelegate extends Component
     */
    public boolean isStatusEnabled()
    {
-   	return getWrappedApplicationDelegate().isStatusEnabled();
+   	return (getWrappedHolder() != null) ? getWrappedHolder().isStatusEnabled() : this.statusEnabled;
    }
    
    /**
@@ -141,7 +172,14 @@ public class ApplicationDelegate extends Component
     */
    public void setStatusEnabled(boolean enabled)
    {
-   	getWrappedApplicationDelegate().setStatusEnabled(enabled);
+   	if(getWrappedHolder() != null)
+   	{
+   		getWrappedHolder().setStatusEnabled(enabled);
+   	}
+   	else
+   	{
+   		this.statusEnabled = enabled;
+   	}
    }
    
    /**
@@ -150,7 +188,7 @@ public class ApplicationDelegate extends Component
     */
    public boolean isStatusOverwrite()
    {
-   	return getWrappedApplicationDelegate().isStatusOverwrite();
+   	return (getWrappedHolder() != null) ? getWrappedHolder().isStatusOverwrite() : this.statusOverwrite;
    }
    
    /**
@@ -159,7 +197,14 @@ public class ApplicationDelegate extends Component
     */
    public void setStatusOverwrite(boolean overwrite)
    {
-   	getWrappedApplicationDelegate().setStatusOverwrite(overwrite);
+   	if(getWrappedHolder() != null)
+   	{
+   		getWrappedHolder().setStatusOverwrite(overwrite);
+   	}
+   	else
+   	{
+   		this.statusOverwrite = overwrite;
+   	}
    }
 
    /**
@@ -168,7 +213,7 @@ public class ApplicationDelegate extends Component
     */
    public String getContactEmail()
    {
-   	return getWrappedApplicationDelegate().getContactEmail();
+   	return (getWrappedHolder() != null) ? getWrappedHolder().getContactEmail() : this.contactEmail;
    }
 
    /**
@@ -177,7 +222,14 @@ public class ApplicationDelegate extends Component
     */
    public void setContactEmail(String email)
    {
-   	getWrappedApplicationDelegate().setContactEmail(email);
+   	if(getWrappedHolder() != null)
+   	{
+   		getWrappedHolder().setContactEmail(email);
+   	}
+   	else
+   	{
+   		this.contactEmail = email;
+   	}
    }
    
 }

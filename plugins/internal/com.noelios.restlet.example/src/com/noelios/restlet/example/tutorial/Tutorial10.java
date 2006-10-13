@@ -24,8 +24,7 @@ package com.noelios.restlet.example.tutorial;
 
 import org.restlet.Application;
 import org.restlet.Container;
-import org.restlet.Context;
-import org.restlet.UniformInterface;
+import org.restlet.Handler;
 import org.restlet.data.Protocol;
 
 import com.noelios.restlet.RedirectRestlet;
@@ -43,13 +42,13 @@ public class Tutorial10
 		container.getServers().add(Protocol.HTTP, 8182);
 
 		// Create an application
-		Application application = new Application()
+		Application application = new Application(container)
 		{
-			public UniformInterface createRoot(Context context)
+			public Handler createRoot()
 			{
 		      // Create a redirect Restlet then attach it to the container
 		      String target = "http://www.google.com/search?q=site:mysite.org+${query('query')}";
-		      return new RedirectRestlet(context, target, RedirectRestlet.MODE_CLIENT_TEMPORARY);
+		      return new RedirectRestlet(getContext(), target, RedirectRestlet.MODE_CLIENT_TEMPORARY);
 			}
 		};
 

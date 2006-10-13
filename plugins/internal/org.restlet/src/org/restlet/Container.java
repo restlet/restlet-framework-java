@@ -22,10 +22,9 @@
 
 package org.restlet;
 
+import java.util.ArrayList;
 import java.util.List;
 
-import org.restlet.data.Request;
-import org.restlet.data.Response;
 import org.restlet.spi.Factory;
 
 /**
@@ -36,31 +35,65 @@ import org.restlet.spi.Factory;
  */
 public class Container extends Component
 {
+	/** The modifiable list of virtual hosts. */ 
+	private List<VirtualHost> hosts;
+	
+	/** The default host. */
+	private VirtualHost defaultHost;
+
 	/**
-	 * Constructor that adds a default local connector and uses a local logger.
-	 * @param wrappedContainer The wrapped container. 
-	 */
-	protected Container(Container wrappedContainer)
-	{
-		super(wrappedContainer);
-	}
-   
-   /**
-    * Constructor.
+    * Default constructor. Instantiate then wrap a container provided by the current Restlet 
+    * implementation.
     */
    public Container()
    {
 		this(Factory.getInstance().createContainer());
    }
+
+	/**
+	 * Constructor.
+	 * @param context The context.
+	 */
+	public Container(Context context)
+	{
+		super(context);
+		this.hosts = null;
+		this.defaultHost = VirtualHost.createDefaultHost(context);
+	}
    
    /**
-    * Returns the wrapped container.
-    * @return The wrapped container.
-    */
-	private Container getWrappedContainer()
+	 * Wrapper constructor.
+	 * @param wrappedContainer The container to wrap. 
+	 */
+	protected Container(Container wrappedContainer)
 	{
-		return (Container)getWrappedComponent();
+		super(wrappedContainer);
 	}
+
+	/**
+	 * Returns the wrapped container.
+	 * @return The wrapped container.
+	 */
+	public Container getWrappedContainer()
+	{
+		return (Container)getWrappedHandler();
+	}
+	
+   /**
+    * Returns the default virtual host.
+    * @return The default virtual host.
+    */
+   public VirtualHost getDefaultHost()
+   {
+   	if(getWrappedContainer() != null)
+   	{
+   		return getWrappedContainer().getDefaultHost();
+   	}
+   	else
+   	{
+   		return this.defaultHost;
+   	}
+   }
 
 	/**
     * Returns the modifiable list of host routers.
@@ -68,26 +101,15 @@ public class Container extends Component
     */
    public List<VirtualHost> getHosts()
    {
-		return getWrappedContainer().getHosts();
-   }
-
-   /**
-    * Returns the default virtual host.
-    * @return The default virtual host.
-    */
-   public VirtualHost getDefaultHost()
-   {
-		return getWrappedContainer().getDefaultHost();
-   }
-
-	/**
-    * Handles a request.
-    * @param request The request to handle.
-    * @param response The response to update.
-    */
-	public void handle(Request request, Response response)
-   {
-		getWrappedContainer().handle(request, response);
+   	if(getWrappedContainer() != null)
+   	{
+   		return getWrappedContainer().getHosts();
+   	}
+   	else
+   	{
+   		if(this.hosts == null) this.hosts = new ArrayList<VirtualHost>();
+   		return this.hosts;
+   	}
    }
 
    /**
@@ -96,7 +118,14 @@ public class Container extends Component
     */
    public void setDefaultHost(VirtualHost defaultHost)
    {
-		getWrappedContainer().setDefaultHost(defaultHost);
+   	if(getWrappedContainer() != null)
+   	{
+   		getWrappedContainer().setDefaultHost(defaultHost);
+   	}
+   	else
+   	{
+   		this.defaultHost = defaultHost;
+   	}
    }
 
 }

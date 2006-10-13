@@ -24,8 +24,8 @@ package org.restlet.util;
 
 import java.util.List;
 
+import org.restlet.Handler;
 import org.restlet.Scorer;
-import org.restlet.UniformInterface;
 import org.restlet.data.Request;
 import org.restlet.data.Response;
 
@@ -49,7 +49,7 @@ public interface ScorerList extends List<Scorer>
 	 * @see java.util.regex.Pattern
 	 * @return True (as per the general contract of the Collection.add method).
 	 */
-	public boolean add(String uriPattern, UniformInterface target);
+	public boolean add(String uriPattern, Handler target);
 
 	/**
 	 * Creates then adds a scorer based on an URI pattern at a specific position.
@@ -58,7 +58,7 @@ public interface ScorerList extends List<Scorer>
 	 * @param index The insertion position in the list of attachments.
 	 * @see java.util.regex.Pattern
 	 */
-	public void add(String uriPattern, UniformInterface target, int index);
+	public void add(String uriPattern, Handler target, int index);
 
 	/**
 	 * Returns the best scorer match for a given call.
@@ -109,7 +109,7 @@ public interface ScorerList extends List<Scorer>
 	 * Removes all scorers routing to a given target.
 	 * @param target The target handler to detach.
 	 */
-	public void removeAll(UniformInterface target);
+	public void removeAll(Handler target);
 
 	/**
 	 * Returns a view of the portion of this list between the specified fromIndex, 

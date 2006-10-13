@@ -30,6 +30,7 @@ import org.mortbay.jetty.AbstractConnector;
 import org.mortbay.jetty.HttpConnection;
 import org.mortbay.jetty.Server;
 import org.mortbay.thread.BoundedThreadPool;
+import org.restlet.Context;
 
 /**
  * Abstract Jetty Web server connector. Here is the list of parameters that are supported:
@@ -122,7 +123,7 @@ import org.mortbay.thread.BoundedThreadPool;
  * @see <a href="http://jetty.mortbay.org/jetty6/">Jetty home page</a>
  * @author Jerome Louvel (contact@noelios.com) <a href="http://www.noelios.com/">Noelios Consulting</a>
  */
-public abstract class JettyServer extends com.noelios.restlet.impl.connector.HttpServer
+public abstract class JettyServer extends com.noelios.restlet.impl.http.HttpServer
 {
 	/**
 	 * The wrapped Jetty server.
@@ -131,12 +132,13 @@ public abstract class JettyServer extends com.noelios.restlet.impl.connector.Htt
 	
    /**
     * Constructor.
+    * @param context The context.
     * @param address The optional listening IP address (local host used if null).
     * @param port The listening port.
     */
-   public JettyServer(String address, int port)
+   public JettyServer(Context context, String address, int port)
    {
-   	super(address, port);
+   	super(context, address, port);
    	this.setWrappedServer(new WrappedServer(this));
 
    	// Configuring the thread pool

@@ -29,14 +29,14 @@ import java.util.List;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
-import org.restlet.Application;
-import org.restlet.ApplicationDelegate;
 import org.restlet.Client;
 import org.restlet.Container;
+import org.restlet.Context;
+import org.restlet.Handler;
+import org.restlet.Holder;
 import org.restlet.Router;
 import org.restlet.Scorer;
 import org.restlet.Server;
-import org.restlet.UniformInterface;
 import org.restlet.data.ChallengeResponse;
 import org.restlet.data.ClientInfo;
 import org.restlet.data.Form;
@@ -47,7 +47,9 @@ import org.restlet.data.Representation;
 import org.restlet.data.Request;
 import org.restlet.data.Resource;
 import org.restlet.data.Response;
+import org.restlet.util.ClientList;
 import org.restlet.util.ScorerList;
+import org.restlet.util.ServerList;
 
 /**
  * Factory and registration service for Restlet API implementations.
@@ -129,21 +131,34 @@ public abstract class Factory
    }
 
    /**
-    * Creates a new application delegate using the given context.
-    * @param container The parent container.
-    * @param application The application descriptor.
-    * @param webAppPath The path to the directory or WAR of the web application files.
-    * @return The new application delegate.
+    * Creates a new holder using the given context.
+    * @param context The context.
+    * @param next The attached handler.
+    * @return The new holder.
     */
-   public abstract ApplicationDelegate createApplicationDelegate(Container container, Application application, String webAppPath);
+   public abstract Holder createHolder(Context context, Handler next);
 
    /**
     * Creates a new client connector for a given protocol.
+    * @param context The context.
     * @param protocols The connector protocols.
     * @return The new client connector.
     */
-   public abstract Client createClient(List<Protocol> protocols);
+   public abstract Client createClient(Context context, List<Protocol> protocols);
 
+   /**
+    * Create a new list of client connectors.
+    * @param context The context.
+    * @return A new list of client connectors.
+    */
+   public abstract ClientList createClientList(Context context);
+
+   /**
+    * Create a new list of server connectors.
+    * @return A new list of server connectors.
+    */
+   public abstract ServerList createServerList();
+   
    /**
     * Creates a new container.
     * @return A new container.
@@ -166,7 +181,7 @@ public abstract class Factory
     * @param target The target handler to attach.
     * @see java.util.regex.Pattern
     */
-   public abstract Scorer createScorer(Router router, String uriPattern, UniformInterface target);
+   public abstract Scorer createScorer(Router router, String uriPattern, Handler target);
 
    /**
     * Creates a new scorer list.
@@ -180,9 +195,10 @@ public abstract class Factory
     * @param protocols The connector protocols.
     * @param address The optional listening IP address (local host used if null).
     * @param port The listening port.
+	 * @param target The target handler.
     * @return The new server connector.
     */
-   public abstract Server createServer(List<Protocol> protocols, String address, int port);
+   public abstract Server createServer(List<Protocol> protocols, String address, int port, Handler target);
 
    /**
     * Returns the best variant representation for a given resource according the the client preferences.

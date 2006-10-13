@@ -20,7 +20,7 @@
  * Portions Copyright [yyyy] [name of copyright owner]
  */
 
-package com.noelios.restlet.impl.connector;
+package com.noelios.restlet.impl.http;
 
 /**
  * Constants related to the HTTP protocol.

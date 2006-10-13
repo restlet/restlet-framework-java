@@ -20,17 +20,16 @@
  * Portions Copyright [yyyy] [name of copyright owner]
  */
 
-package com.noelios.restlet.impl.component;
+package com.noelios.restlet.impl;
 
 import java.util.logging.Logger;
 
-import org.restlet.ApplicationDelegate;
+import org.restlet.Holder;
 import org.restlet.Container;
 import org.restlet.data.Protocol;
 import org.restlet.data.Request;
 import org.restlet.data.Response;
 
-import com.noelios.restlet.impl.connector.LocalClient;
 
 /**
  * Context based on a parent container's context but dedicated to an application. This is important to allow
@@ -46,7 +45,7 @@ public class ApplicationContext extends ContextImpl
 	private Container container;
 	
 	/** The application delegate. */
-	private ApplicationDelegate applicationDelegate;
+	private Holder applicationDelegate;
 	
 	/**
 	 * Constructor.
@@ -54,7 +53,7 @@ public class ApplicationContext extends ContextImpl
 	 * @param applicationDelegate The parent application.
     * @param logger The logger instance of use.
 	 */
-	public ApplicationContext(Container container, ApplicationDelegate applicationDelegate, Logger logger)
+	public ApplicationContext(Container container, Holder applicationDelegate, Logger logger)
 	{
 		super(logger);
 		this.container = container;
@@ -84,7 +83,7 @@ public class ApplicationContext extends ContextImpl
 	 * Returns the application delegate.
 	 * @return the application delegate.
 	 */
-	public ApplicationDelegate getApplicationDelegate()
+	public Holder getApplicationDelegate()
 	{
 		return this.applicationDelegate;
 	}
@@ -93,7 +92,7 @@ public class ApplicationContext extends ContextImpl
 	 * Sets the application delegate.
 	 * @param applicationDelegate The application delegate. 
 	 */
-	public void setApplicationDelegate(ApplicationDelegate applicationDelegate)
+	public void setApplicationDelegate(Holder applicationDelegate)
 	{
 		this.applicationDelegate = applicationDelegate;
 	}
@@ -106,7 +105,7 @@ public class ApplicationContext extends ContextImpl
 	{
 		if(this.localClient == null)
 		{
-			this.localClient = new LocalClient();
+			this.localClient = new LocalClient(this);
 		}
 		
 		return this.localClient;

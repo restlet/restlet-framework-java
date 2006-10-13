@@ -62,7 +62,7 @@ public class RedirectTestCase extends TestCase
 				RedirectRestlet.MODE_CONNECTOR);
 
 		// Create a new Restlet that will display some path information.
-		Restlet trace = new Restlet()
+		Restlet trace = new Restlet(originContainer.getContext())
 		{
 			public void handle(Request request, Response response)
 			{

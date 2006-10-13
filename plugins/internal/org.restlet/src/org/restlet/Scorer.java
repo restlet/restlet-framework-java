@@ -40,7 +40,7 @@ public abstract class Scorer extends Filter
     * @param router The parent router.
     * @param next The next handler.
     */
-   public Scorer(Router router, UniformInterface next)
+   public Scorer(Router router, Handler next)
    {
    	super(router == null ? null : router.getContext(), next);
    	this.router = router;

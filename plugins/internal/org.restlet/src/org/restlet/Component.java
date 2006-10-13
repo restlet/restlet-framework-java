@@ -22,11 +22,9 @@
 
 package org.restlet;
 
-import org.restlet.data.Request;
-import org.restlet.data.Response;
+import org.restlet.spi.Factory;
 import org.restlet.util.ClientList;
 import org.restlet.util.ServerList;
-
 
 /**
  * Abstract unit of software instructions and internal state. "A component is an abstract
@@ -36,86 +34,40 @@ import org.restlet.util.ServerList;
  * dissertation</a>
  * @author Jerome Louvel (contact@noelios.com) <a href="http://www.noelios.com/">Noelios Consulting</a>
  */
-public abstract class Component implements UniformInterface
+public abstract class Component extends Handler
 {
-   /** The wrapped component. */
-	private Component wrappedComponent;
-   
+	/** The modifiable list of client connectors. */
+	private ClientList clients;
+	
+	/** The modifiable list of server connectors. */
+	private ServerList servers;
+	
 	/**
-	 * Constructor for wrappers.
-	 * @param wrappedComponent The wrapped component.
+	 * Constructor.
+	 * @param context The context.
 	 */
-	protected Component(Component wrappedComponent)
+	public Component(Context context)
 	{
-		this.wrappedComponent = wrappedComponent;
+		super(context);
+	}
+	
+	/**
+	 * Wrapper constructor.
+	 * @param wrappedComponent The component to wrap.
+	 */
+	public Component(Component wrappedComponent)
+	{
+		super(wrappedComponent);
 	}
 
-	/**
+	/** 
 	 * Returns the wrapped component.
 	 * @return The wrapped component.
 	 */
-	protected Component getWrappedComponent()
+	private Component getWrappedComponent()
 	{
-		return this.wrappedComponent;
+		return (Component)getWrappedHandler();
 	}
-
-   /**
-    * Handles a call.
-    * @param request The request to handle.
-    * @param response The response to update.
-    */
-	public void handle(Request request, Response response)
-   {
-   	getWrappedComponent().handle(request, response);
-   }
-
-   /** Start hook. */
-   public void start() throws Exception
-   {
-   	getWrappedComponent().start();
-   }
-
-   /** Stop hook. */
-   public void stop() throws Exception
-   {
-   	getWrappedComponent().stop();
-   }
-
-   /**
-    * Indicates if the Restlet is started.
-    * @return True if the Restlet is started.
-    */
-   public boolean isStarted()
-   {
-   	return getWrappedComponent().isStarted();
-   }
-
-   /**
-    * Indicates if the Restlet is stopped.
-    * @return True if the Restlet is stopped.
-    */
-   public boolean isStopped()
-   {
-   	return getWrappedComponent().isStopped();
-   }
-
-   /**
-    * Returns the context.
-    * @return The context.
-    */
-   public Context getContext()
-   {
-      return getWrappedComponent().getContext();
-   }
-
-   /**
-    * Sets the context.
-    * @param context The context.
-    */
-   public void setContext(Context context)
-   {
-		getWrappedComponent().setContext(context);
-   }
 
 	/**
 	 * Returns the modifiable list of client connectors.
@@ -123,7 +75,15 @@ public abstract class Component implements UniformInterface
 	 */
 	public ClientList getClients()
 	{
-		return getWrappedComponent().getClients();
+		if(getWrappedComponent() != null)
+		{
+			return getWrappedComponent().getClients();
+		}
+		else
+		{
+			if(this.clients == null) this.clients = Factory.getInstance().createClientList(getContext());
+			return this.clients;
+		}
 	}
 
 	/**
@@ -132,6 +92,63 @@ public abstract class Component implements UniformInterface
 	 */
 	public ServerList getServers()
 	{
-		return getWrappedComponent().getServers();
+		if(getWrappedComponent() != null)
+		{
+			return getWrappedComponent().getServers();
+		}
+		else
+		{
+			if(this.servers == null) this.servers = Factory.getInstance().createServerList();
+			return this.servers;
+		}
 	}
+	
+   /**
+    * Start hook. Starts all connectors.
+    */
+   public void start() throws Exception
+   {
+   	if(this.clients != null)
+   	{
+	      for(Client client : this.clients)
+	      {
+	      	client.start();
+	      }
+   	}
+   	
+   	if(this.servers != null)
+   	{
+	      for(Server server : this.servers)
+	      {
+	      	server.start();
+	      }
+   	}
+
+   	super.start();
+   }
+
+   /**
+    * Stop hook. Stops all connectors.
+    */
+   public void stop() throws Exception
+   {
+   	super.stop();
+
+      if(this.clients != null)
+   	{
+	      for(Client client : this.clients)
+	      {
+	         client.stop();
+	      }
+   	}
+   	
+   	if(this.servers != null)
+   	{
+	      for(Server server : this.servers)
+	      {
+	      	server.stop();
+	      }
+   	}
+   }
+	
 }

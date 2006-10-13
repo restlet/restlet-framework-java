@@ -30,43 +30,18 @@ import org.restlet.spi.Factory;
 import org.restlet.util.ServerList;
 import org.restlet.util.WrapperList;
 
-import com.noelios.restlet.impl.component.ContainerImpl;
-
 /**
  * Servers list implementation.
  * @author Jerome Louvel (contact@noelios.com) <a href="http://www.noelios.com/">Noelios Consulting</a>
  */
 public class ServerListImpl extends WrapperList<Server> implements ServerList
 {
-	/** The parent container. */
-	private ContainerImpl container;
-	
-	/**
-	 * Constructor.
-	 * @param container The parent container.
-	 */
-	public ServerListImpl(ContainerImpl container)
-	{
-		this.container = container;
-	}
-	
-	/**
-	 * Returns the parent container.
-	 * @return The parent container.
-	 */
-	private ContainerImpl getContainer()
-	{
-		return this.container;
-	}
-
-
 	/**
 	 * Adds a server at the end of the list.
 	 * @return True (as per the general contract of the Collection.add method).
 	 */
 	public boolean add(Server server)
 	{
-		server.setTarget(getContainer().getHostRouter());
 		return super.add(server);
 	}
 	
@@ -78,7 +53,7 @@ public class ServerListImpl extends WrapperList<Server> implements ServerList
 	public Server add(Protocol protocol)
 	{
 		Server result = Factory.getInstance().createServer(Arrays.asList(protocol), null,
-				protocol.getDefaultPort());
+				protocol.getDefaultPort(), null);
 		add(result);
 		return result;
 	}
@@ -92,7 +67,7 @@ public class ServerListImpl extends WrapperList<Server> implements ServerList
 	public Server add(Protocol protocol, int port)
 	{
 		Server result = Factory.getInstance().createServer(Arrays.asList(protocol), null,
-				port);
+				port, null);
 		add(result);
 		return result;
 	}
@@ -106,7 +81,7 @@ public class ServerListImpl extends WrapperList<Server> implements ServerList
 	 */
 	public Server add(Protocol protocol, String address, int port)
 	{
-		Server result = Factory.getInstance().createServer(Arrays.asList(protocol), address, port);
+		Server result = Factory.getInstance().createServer(Arrays.asList(protocol), address, port, null);
 		add(result);
 		return result;
 	}

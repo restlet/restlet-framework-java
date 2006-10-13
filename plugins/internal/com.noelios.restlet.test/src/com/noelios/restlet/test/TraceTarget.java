@@ -22,6 +22,7 @@
 
 package com.noelios.restlet.test;
 
+import org.restlet.Context;
 import org.restlet.Restlet;
 import org.restlet.data.MediaType;
 import org.restlet.data.Request;
@@ -33,7 +34,12 @@ import org.restlet.data.Response;
  */
 public class TraceTarget extends Restlet
 {
-   /**
+   public TraceTarget(Context context)
+	{
+		super(context);
+	}
+
+	/**
     * Handles a uniform call.
     * @param request The request to handle.
     * @param response The response to update.

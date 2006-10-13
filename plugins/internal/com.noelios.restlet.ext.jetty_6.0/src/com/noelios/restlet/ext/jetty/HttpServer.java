@@ -26,6 +26,7 @@ import org.mortbay.jetty.AbstractConnector;
 import org.mortbay.jetty.bio.SocketConnector;
 import org.mortbay.jetty.nio.BlockingChannelConnector;
 import org.mortbay.jetty.nio.SelectChannelConnector;
+import org.restlet.Context;
 import org.restlet.data.Protocol;
 
 /**
@@ -54,12 +55,13 @@ public class HttpServer extends JettyServer
 {
    /**
     * Constructor.
+    * @param context The context.
     * @param address The optional listening IP address (local host used if null).
     * @param port The listening port.
     */
-   public HttpServer(String address, int port)
+   public HttpServer(Context context, String address, int port)
    {
-   	super(address, port);
+   	super(context, address, port);
    	getProtocols().add(Protocol.HTTP);
    }
 

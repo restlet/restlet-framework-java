@@ -20,7 +20,7 @@
  * Portions Copyright [yyyy] [name of copyright owner]
  */
 
-package com.noelios.restlet.impl.component;
+package com.noelios.restlet.impl;
 
 import java.util.logging.Logger;
 
@@ -36,6 +36,15 @@ public class ContainerContext extends ContextImpl
 {
 	/** The parent container. */
 	private ContainerImpl container;
+
+	/**
+	 * Constructor. 
+	 * @param container The parent container.
+	 */
+	public ContainerContext(ContainerImpl container)
+	{
+		this(container, Logger.getLogger("org.restlet.container"));
+	}
 
 	/**
 	 * Constructor. 

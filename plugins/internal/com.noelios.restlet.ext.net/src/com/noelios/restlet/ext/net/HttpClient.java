@@ -26,10 +26,11 @@ import java.io.IOException;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
+import org.restlet.Context;
 import org.restlet.data.Protocol;
 import org.restlet.data.Request;
 
-import com.noelios.restlet.impl.connector.HttpClientCall;
+import com.noelios.restlet.impl.http.HttpClientCall;
 
 /**
  * HTTP client connector using the HttpUrlConnectionCall. Here is the list of parameters that are supported:
@@ -80,16 +81,18 @@ import com.noelios.restlet.impl.connector.HttpClientCall;
  * @see <a href="http://java.sun.com/j2se/1.5.0/docs/guide/net/index.html">Networking Features</a>
  * @author Jerome Louvel (contact@noelios.com) <a href="http://www.noelios.com/">Noelios Consulting</a>
  */
-public class HttpClient extends com.noelios.restlet.impl.connector.HttpClient
+public class HttpClient extends com.noelios.restlet.impl.http.HttpClient
 {
 	/** Obtain a suitable logger. */
 	private static Logger logger = Logger.getLogger(HttpClient.class.getCanonicalName());
 
 	/**
 	 * Constructor.
+	 * @param context The context.
 	 */
-	public HttpClient()
+	public HttpClient(Context context)
 	{
+		super(context);
 		getProtocols().add(Protocol.HTTP);
 		getProtocols().add(Protocol.HTTPS);
 	}

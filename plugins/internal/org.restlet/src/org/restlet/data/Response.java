@@ -31,7 +31,7 @@ import org.restlet.spi.Factory;
  * Generic response sent by server connectors. It is then received by client connectors. Responses 
  * are uniform across all types of connectors, protocols and components.
  * @see org.restlet.data.Request
- * @see org.restlet.UniformInterface
+ * @see org.restlet.Handler
  * @author Jerome Louvel (contact@noelios.com) <a href="http://www.noelios.com/">Noelios Consulting</a>
  */
 public class Response extends Message
@@ -63,7 +63,13 @@ public class Response extends Message
 	 */
 	public Response(Request request)
 	{
+		this.allowedMethods = null;
+		this.challengeRequest = null;
+		this.cookieSettings = null;
+		this.redirectRef = null;
 		this.request = request;
+		this.serverInfo = null;
+		this.status = Status.SUCCESS_OK;
 	}
 
 	/**

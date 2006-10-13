@@ -25,6 +25,7 @@ package com.noelios.restlet.impl.util;
 import java.util.Arrays;
 
 import org.restlet.Client;
+import org.restlet.Context;
 import org.restlet.data.Protocol;
 import org.restlet.spi.Factory;
 import org.restlet.util.ClientList;
@@ -36,6 +37,27 @@ import org.restlet.util.WrapperList;
  */
 public class ClientListImpl extends WrapperList<Client> implements ClientList 
 {
+	/** The context. */
+	private Context context;
+	
+	/**
+	 * Constructor.
+	 * @param context The context.
+	 */
+	public ClientListImpl(Context context)
+	{
+		this.context = context;
+	}
+	
+	/**
+	 * Returns the context.
+	 * @return The context.
+	 */
+	private Context getContext()
+	{
+		return this.context;		
+	}
+	
 	/**
 	 * Adds a new client connector in the map supporting the given protocol.
 	 * @param protocol The connector protocol.
@@ -43,7 +65,7 @@ public class ClientListImpl extends WrapperList<Client> implements ClientList
 	 */
 	public Client add(Protocol protocol)
 	{
-		Client result = Factory.getInstance().createClient(Arrays.asList(protocol)); 
+		Client result = Factory.getInstance().createClient(getContext(), Arrays.asList(protocol)); 
 		add(result);
 		return result;
 	}

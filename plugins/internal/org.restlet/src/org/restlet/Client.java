@@ -25,6 +25,7 @@ package org.restlet;
 import java.util.Arrays;
 import java.util.List;
 
+import org.restlet.data.Method;
 import org.restlet.data.Protocol;
 import org.restlet.data.Representation;
 import org.restlet.data.Request;
@@ -40,9 +41,18 @@ public class Client extends Connector implements ClientInterface
 {
 	/**
 	 * Constructor.
-	 * @param wrappedClient The wrapped client.
+	 * @param context The context.
 	 */
-	protected Client(Client wrappedClient)
+	public Client(Context context)
+	{
+		super(context);
+	}
+
+	/**
+	 * Wrapper constructor.
+	 * @param wrappedClient The client to wrap.
+	 */
+	public Client(Client wrappedClient)
 	{
 		super(wrappedClient);
 	}
@@ -53,7 +63,17 @@ public class Client extends Connector implements ClientInterface
 	 */
 	public Client(Protocol protocol)
 	{
-		this(Arrays.asList(protocol));
+		this(new Context(), protocol);
+	}
+	
+	/**
+    * Constructor.
+    * @param context The context.
+    * @param protocol The connector protocol.
+	 */
+	public Client(Context context, Protocol protocol)
+	{
+		this(context, Arrays.asList(protocol));
 	}
 	
 	/**
@@ -62,18 +82,28 @@ public class Client extends Connector implements ClientInterface
 	 */
 	public Client(List<Protocol> protocols)
 	{
-		super(Factory.getInstance().createClient(protocols));
+		this(new Context(), protocols);
 	}
-
+	
 	/**
-	 * Returns the wrapped client.
+    * Constructor.
+    * @param context The context.
+    * @param protocols The connector protocols.
+	 */
+	public Client(Context context, List<Protocol> protocols)
+	{
+		this(Factory.getInstance().createClient(context, protocols));
+	}
+	
+	/**
+	 * Returns the wrapped client. 
 	 * @return The wrapped client.
 	 */
 	private Client getWrappedClient()
 	{
-		return (Client)getWrappedConnector();
+		return (Client)getWrappedHandler();
 	}
-	
+   
 	/**
 	 * Handles a call.
 	 * @param request The request to handle.
@@ -81,18 +111,17 @@ public class Client extends Connector implements ClientInterface
 	 */
 	public Response handle(Request request)
 	{
-   	return (getWrappedClient() != null) ? getWrappedClient().handle(request) : null;
+		if(getWrappedClient() != null)
+		{
+			return getWrappedClient().handle(request);
+		}
+		else
+		{
+			Response response = new Response(request);
+			handle(request, response);
+			return response;
+		}
 	}
-
-   /**
-    * Handles a call.
-    * @param request The request to handle.
-    * @param response The response to update.
-    */
-   public void handle(Request request, Response response)
-   {
-   	if(getWrappedClient() != null) getWrappedClient().handle(request, response);
-   }
    
    /**
     * Deletes the identified resource.
@@ -101,9 +130,16 @@ public class Client extends Connector implements ClientInterface
     */
    public Response delete(String resourceUri)
    {
-   	return (getWrappedClient() != null) ? getWrappedClient().delete(resourceUri) : null;
+		if(getWrappedClient() != null)
+		{
+			return getWrappedClient().delete(resourceUri);
+		}
+		else
+		{
+			return handle(new Request(Method.DELETE, resourceUri));
+		}
    }
-
+   
    /**
     * Gets the identified resource.
     * @param resourceUri The URI of the resource to get.
@@ -111,7 +147,14 @@ public class Client extends Connector implements ClientInterface
     */
    public Response get(String resourceUri)
    {
-   	return (getWrappedClient() != null) ? getWrappedClient().get(resourceUri) : null;
+		if(getWrappedClient() != null)
+		{
+			return getWrappedClient().get(resourceUri);
+		}
+		else
+		{
+			return handle(new Request(Method.GET, resourceUri));
+		}
    }
    
    /**
@@ -121,7 +164,14 @@ public class Client extends Connector implements ClientInterface
     */
    public Response head(String resourceUri)
    {
-   	return (getWrappedClient() != null) ? getWrappedClient().head(resourceUri) : null;
+		if(getWrappedClient() != null)
+		{
+			return getWrappedClient().head(resourceUri);
+		}
+		else
+		{
+			return handle(new Request(Method.HEAD, resourceUri));
+		}
    }
    
    /**
@@ -131,18 +181,32 @@ public class Client extends Connector implements ClientInterface
     */
    public Response options(String resourceUri)
    {
-   	return (getWrappedClient() != null) ? getWrappedClient().options(resourceUri) : null;
+		if(getWrappedClient() != null)
+		{
+			return getWrappedClient().options(resourceUri);
+		}
+		else
+		{
+			return handle(new Request(Method.OPTIONS, resourceUri));
+		}
    }
-   
+
    /**
-    * Post a representation to the identified resource.
+    * Posts a representation to the identified resource.
     * @param resourceUri The URI of the resource to post to.
     * @param input The input representation to post.
     * @return The response.
     */
-   public Response post(String resourceUri, Representation input)
+	public Response post(String resourceUri, Representation input)
    {
-   	return (getWrappedClient() != null) ? getWrappedClient().post(resourceUri, input) : null;
+		if(getWrappedClient() != null)
+		{
+			return getWrappedClient().post(resourceUri, input);
+		}
+		else
+		{
+			return handle(new Request(Method.POST, resourceUri, input));
+		}
    }
 
    /**
@@ -153,7 +217,14 @@ public class Client extends Connector implements ClientInterface
     */
    public Response put(String resourceUri, Representation input)
    {
-   	return (getWrappedClient() != null) ? getWrappedClient().put(resourceUri, input) : null;
+		if(getWrappedClient() != null)
+		{
+			return getWrappedClient().put(resourceUri, input);
+		}
+		else
+		{
+			return handle(new Request(Method.PUT, resourceUri, input));
+		}
    }
    
    /**
@@ -163,6 +234,14 @@ public class Client extends Connector implements ClientInterface
     */
    public Response trace(String resourceUri)
    {
-   	return (getWrappedClient() != null) ? getWrappedClient().trace(resourceUri) : null;
+		if(getWrappedClient() != null)
+		{
+			return getWrappedClient().trace(resourceUri);
+		}
+		else
+		{
+			return handle(new Request(Method.TRACE, resourceUri));
+		}
    }
+   
 }

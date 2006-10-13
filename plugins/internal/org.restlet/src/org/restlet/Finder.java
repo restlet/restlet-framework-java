@@ -35,17 +35,18 @@ import org.restlet.data.Status;
  * the required method on it. 
  * @author Jerome Louvel (contact@noelios.com) <a href="http://www.noelios.com/">Noelios Consulting</a>
  */
-public abstract class Finder extends Restlet
+public class Finder extends Restlet
 {
 	/** The language to use if content negotiation fails. */
 	private Language fallbackLanguage;
 
 	/**
-	 * Constructor.
+	 * Wrapper constructor.
+	 * @param wrappedFinder The wrapped finder.
 	 */
-	public Finder()
+	public Finder(Finder wrappedFinder)
 	{
-		this(null);
+		super(wrappedFinder);
 	}
 
 	/**
@@ -58,12 +59,24 @@ public abstract class Finder extends Restlet
 	}
 
 	/**
+	 * Returns the wrapped finder.
+	 * @return The wrapped finder.
+	 */
+	private Finder getWrappedFinder()
+	{
+		return (Finder)getWrappedHandler();
+	}
+
+	/**
 	 * Finds the target Resource if available.
     * @param request The request to handle.
     * @param response The response to update.
 	 * @return The target resource if available or null.
 	 */
-	public abstract Resource findTarget(Request request, Response response);
+	public Resource findTarget(Request request, Response response)
+	{
+		return (getWrappedFinder() != null) ? getWrappedFinder().findTarget(request, response) : null;
+	}
 
 	/**
 	 * Handles a GET call by automatically returning the best output available from the target resource (as provided
@@ -74,24 +87,31 @@ public abstract class Finder extends Restlet
 	 */
 	protected void handleGet(Request request, Response response)
 	{
-		Resource target = findTarget(request, response);
-
-		if (target != null)
+		if(getWrappedFinder() != null)
 		{
-			if(target.allowGet())
-			{
-				response.setEntity(target, getFallbackLanguage());
-			}
-			else
-			{
-				response.setStatus(Status.CLIENT_ERROR_METHOD_NOT_ALLOWED);
-			}
-
-			setAllowedMethods(target, response);
+			getWrappedFinder().handleGet(request, response);
 		}
 		else
 		{
-			response.setStatus(Status.CLIENT_ERROR_NOT_FOUND);
+			Resource target = findTarget(request, response);
+	
+			if (target != null)
+			{
+				if(target.allowGet())
+				{
+					response.setEntity(target, getFallbackLanguage());
+				}
+				else
+				{
+					response.setStatus(Status.CLIENT_ERROR_METHOD_NOT_ALLOWED);
+				}
+	
+				setAllowedMethods(target, response);
+			}
+			else
+			{
+				response.setStatus(Status.CLIENT_ERROR_NOT_FOUND);
+			}
 		}
 	}
 	
@@ -102,7 +122,14 @@ public abstract class Finder extends Restlet
 	 */
 	protected void handleHead(Request request, Response response)
 	{
-		handleGet(request, response);
+		if(getWrappedFinder() != null)
+		{
+			getWrappedFinder().handleHead(request, response);
+		}
+		else
+		{
+			handleGet(request, response);
+		}
 	}
 
 	/**
@@ -113,24 +140,31 @@ public abstract class Finder extends Restlet
 	 */
 	protected void handleDelete(Request request, Response response)
 	{
-		Resource target = findTarget(request, response);
-
-		if (target != null)
+		if(getWrappedFinder() != null)
 		{
-			if(target.allowDelete())
-			{
-				response.setStatus(target.delete().getStatus());
-			}
-			else
-			{
-				response.setStatus(Status.CLIENT_ERROR_METHOD_NOT_ALLOWED);
-			}
-
-			setAllowedMethods(target, response);
+			getWrappedFinder().handleDelete(request, response);
 		}
 		else
 		{
-			response.setStatus(Status.CLIENT_ERROR_NOT_FOUND);
+			Resource target = findTarget(request, response);
+	
+			if (target != null)
+			{
+				if(target.allowDelete())
+				{
+					response.setStatus(target.delete().getStatus());
+				}
+				else
+				{
+					response.setStatus(Status.CLIENT_ERROR_METHOD_NOT_ALLOWED);
+				}
+	
+				setAllowedMethods(target, response);
+			}
+			else
+			{
+				response.setStatus(Status.CLIENT_ERROR_NOT_FOUND);
+			}
 		}
 	}
 
@@ -141,32 +175,39 @@ public abstract class Finder extends Restlet
 	 */
 	protected void handlePost(Request request, Response response)
 	{
-		Resource target = findTarget(request, response);
-
-		if (target != null)
+		if(getWrappedFinder() != null)
 		{
-			if(target.allowPost())
-			{
-				if (request.isEntityAvailable())
-				{
-					response.setStatus(target.post(request.getEntity()).getStatus());
-				}
-				else
-				{
-					response.setStatus(new Status(Status.CLIENT_ERROR_NOT_ACCEPTABLE,
-					"Missing input representation"));
-				}
-			}
-			else
-			{
-				response.setStatus(Status.CLIENT_ERROR_METHOD_NOT_ALLOWED);
-			}
-
-			setAllowedMethods(target, response);
+			getWrappedFinder().handlePost(request, response);
 		}
 		else
 		{
-			response.setStatus(Status.CLIENT_ERROR_NOT_FOUND);
+			Resource target = findTarget(request, response);
+	
+			if (target != null)
+			{
+				if(target.allowPost())
+				{
+					if (request.isEntityAvailable())
+					{
+						response.setStatus(target.post(request.getEntity()).getStatus());
+					}
+					else
+					{
+						response.setStatus(new Status(Status.CLIENT_ERROR_NOT_ACCEPTABLE,
+						"Missing input representation"));
+					}
+				}
+				else
+				{
+					response.setStatus(Status.CLIENT_ERROR_METHOD_NOT_ALLOWED);
+				}
+	
+				setAllowedMethods(target, response);
+			}
+			else
+			{
+				response.setStatus(Status.CLIENT_ERROR_NOT_FOUND);
+			}
 		}
 	}
 
@@ -177,32 +218,39 @@ public abstract class Finder extends Restlet
 	 */
 	protected void handlePut(Request request, Response response)
 	{
-		Resource target = findTarget(request, response);
-
-		if (target != null)
+		if(getWrappedFinder() != null)
 		{
-			if(target.allowPut())
-			{
-				if (request.isEntityAvailable())
-				{
-					response.setStatus(target.put(request.getEntity()).getStatus());
-				}
-				else
-				{
-					response.setStatus(new Status(Status.CLIENT_ERROR_NOT_ACCEPTABLE,
-							"Missing input representation"));
-				}
-			}
-			else
-			{
-				response.setStatus(Status.CLIENT_ERROR_METHOD_NOT_ALLOWED);
-			}
-
-			setAllowedMethods(target, response);
+			getWrappedFinder().handlePut(request, response);
 		}
 		else
 		{
-			response.setStatus(Status.CLIENT_ERROR_NOT_FOUND);
+			Resource target = findTarget(request, response);
+	
+			if (target != null)
+			{
+				if(target.allowPut())
+				{
+					if (request.isEntityAvailable())
+					{
+						response.setStatus(target.put(request.getEntity()).getStatus());
+					}
+					else
+					{
+						response.setStatus(new Status(Status.CLIENT_ERROR_NOT_ACCEPTABLE,
+								"Missing input representation"));
+					}
+				}
+				else
+				{
+					response.setStatus(Status.CLIENT_ERROR_METHOD_NOT_ALLOWED);
+				}
+	
+				setAllowedMethods(target, response);
+			}
+			else
+			{
+				response.setStatus(Status.CLIENT_ERROR_NOT_FOUND);
+			}
 		}
 	}
 
@@ -212,7 +260,7 @@ public abstract class Finder extends Restlet
 	 */
 	public Language getFallbackLanguage()
 	{
-		return this.fallbackLanguage;
+		return (getWrappedFinder() != null) ? getWrappedFinder().getFallbackLanguage() : this.fallbackLanguage;
 	}
 
 	/**
@@ -222,18 +270,25 @@ public abstract class Finder extends Restlet
 	 */
 	protected void setAllowedMethods(Resource resource, Response response)
 	{
-		// Clear the current set of allowed methods
-		response.getAllowedMethods().clear();
-		
-		// Introspect the resource for allowed methods
-		if(resource.allowGet()) 
+		if(getWrappedFinder() != null)
 		{
-			response.getAllowedMethods().add(Method.HEAD);
-			response.getAllowedMethods().add(Method.GET);
+			getWrappedFinder().setAllowedMethods(resource, response);
 		}
-		if(resource.allowDelete()) response.getAllowedMethods().add(Method.DELETE);
-		if(resource.allowPost()) response.getAllowedMethods().add(Method.POST);
-		if(resource.allowPut()) response.getAllowedMethods().add(Method.PUT);
+		else
+		{
+			// Clear the current set of allowed methods
+			response.getAllowedMethods().clear();
+			
+			// Introspect the resource for allowed methods
+			if(resource.allowGet()) 
+			{
+				response.getAllowedMethods().add(Method.HEAD);
+				response.getAllowedMethods().add(Method.GET);
+			}
+			if(resource.allowDelete()) response.getAllowedMethods().add(Method.DELETE);
+			if(resource.allowPost()) response.getAllowedMethods().add(Method.POST);
+			if(resource.allowPut()) response.getAllowedMethods().add(Method.PUT);
+		}
 	}
 
 	/**
@@ -242,7 +297,14 @@ public abstract class Finder extends Restlet
 	 */
 	public void setFallbackLanguage(Language fallbackLanguage)
 	{
-		this.fallbackLanguage = fallbackLanguage;
+		if(getWrappedFinder() != null)
+		{
+			getWrappedFinder().setFallbackLanguage(fallbackLanguage);
+		}
+		else
+		{
+			this.fallbackLanguage = fallbackLanguage;
+		}
 	}
 
 }

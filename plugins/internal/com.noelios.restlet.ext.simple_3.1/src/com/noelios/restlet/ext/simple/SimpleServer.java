@@ -27,13 +27,15 @@ import java.net.ServerSocket;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
+import org.restlet.Context;
+
 import simple.http.PipelineHandler;
 import simple.http.ProtocolHandler;
 import simple.http.Request;
 import simple.http.Response;
 import simple.http.connect.Connection;
 
-import com.noelios.restlet.impl.connector.HttpServer;
+import com.noelios.restlet.impl.http.HttpServer;
 
 /**
  * Abstract Simple Web server connector. Here is the list of parameters that are supported:
@@ -93,12 +95,13 @@ public abstract class SimpleServer extends HttpServer implements ProtocolHandler
 
    /**
     * Constructor.
+    * @param context The context.
     * @param address The optional listening IP address (local host used if null).
     * @param port The listening port.
     */
-   public SimpleServer(String address, int port)
+   public SimpleServer(Context context, String address, int port)
    {
-      super(address, port);
+      super(context, address, port);
    }
 
    /** Stops the Restlet. */

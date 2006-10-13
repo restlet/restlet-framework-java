@@ -31,7 +31,7 @@ import java.util.List;
  * handlers, on the client or server sides. Requests are uniform across all types of connectors, 
  * protocols and components.
  * @see org.restlet.data.Response
- * @see org.restlet.UniformInterface
+ * @see org.restlet.Handler
  * @author Jerome Louvel (contact@noelios.com) <a href="http://www.noelios.com/">Noelios Consulting</a>
  */
 public class Request extends Message

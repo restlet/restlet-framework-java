@@ -22,7 +22,9 @@
 
 package com.noelios.restlet.ext.jetty5;
 
-import com.noelios.restlet.impl.connector.HttpServer;
+import org.restlet.Context;
+
+import com.noelios.restlet.impl.http.HttpServer;
 
 /**
  * Abstract Jetty Web server connector. Here is the list of parameters that are supported:
@@ -71,12 +73,13 @@ public abstract class JettyServer extends HttpServer
   
    /**
     * Constructor.
+    * @param context The context.
     * @param address The optional listening IP address (local host used if null).
     * @param port The listening port.
     */
-   public JettyServer(String address, int port)
+   public JettyServer(Context context, String address, int port)
    {
-      super(address, port);
+      super(context, address, port);
    }
 
    /**

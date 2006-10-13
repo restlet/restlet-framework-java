@@ -29,6 +29,7 @@ import java.security.KeyStore;
 import javax.net.ssl.KeyManagerFactory;
 import javax.net.ssl.SSLContext;
 
+import org.restlet.Context;
 import org.restlet.data.Protocol;
 
 import simple.http.BufferedPipelineFactory;
@@ -88,12 +89,13 @@ public class HttpsServer extends SimpleServer
 {
 	/**
 	 * Constructor.
+    * @param context The context.
 	 * @param address The optional listening IP address (local host used if null).
 	 * @param port The listening port.
 	 */
-	public HttpsServer(String address, int port)
+	public HttpsServer(Context context, String address, int port)
 	{
-		super(address, port);
+		super(context, address, port);
 		getProtocols().add(Protocol.HTTPS);
 	}
 

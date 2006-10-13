@@ -39,6 +39,14 @@ public class Context
    private Logger logger;
 
    /**
+    * Constructor. Writes log messages to "org.restlet".
+    */
+   public Context()
+   {
+   	this("org.restlet");
+   }
+
+   /**
     * Constructor.
     * @param loggerName The name of the logger to use.
     */

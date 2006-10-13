@@ -24,6 +24,7 @@ package org.restlet;
 
 import org.restlet.data.Request;
 import org.restlet.data.Response;
+import org.restlet.data.Status;
 
 /**
  * Chainer to an attached handler that filters calls. The purpose is to do some pre-processing or 
@@ -36,15 +37,7 @@ import org.restlet.data.Response;
 public class Filter extends Chainer
 {
 	/** The next handler. */
-	private UniformInterface next;
-
-	/**
-	 * Constructor.
-	 */
-	public Filter()
-	{
-		this(null, null);
-	}
+	private Handler next;
 
 	/**
 	 * Constructor.
@@ -60,10 +53,28 @@ public class Filter extends Chainer
 	 * @param context The context.
 	 * @param next The next handler.
 	 */
-	public Filter(Context context, UniformInterface next)
+	public Filter(Context context, Handler next)
 	{
 		super(context);
 		this.next = next;
+	}
+
+	/**
+	 * Wrapper constructor.
+	 * @param wrappedFilter The filter to wrap.
+	 */
+	public Filter(Filter wrappedFilter)
+	{
+		super(wrappedFilter);
+	}
+
+	/** 
+	 * Returns the wrapped filter.
+	 * @return The wrapped filter.
+	 */
+	private Filter getWrappedFilter()
+	{
+		return (Filter)getWrappedHandler();
 	}
 
 	/**
@@ -72,27 +83,34 @@ public class Filter extends Chainer
     * @param response The response to update.
 	 * @return The next handler if available or null.
 	 */
-	public final UniformInterface getNext(Request request, Response response)
+	public final Handler getNext(Request request, Response response)
 	{
-		return getNext();
+		return (getWrappedFilter() != null) ? getWrappedFilter().getNext() : getNext();
 	}
 
 	/**
 	 * Sets the next handler.
 	 * @param next The next handler.
 	 */
-	public void setNext(UniformInterface next)
+	public void setNext(Handler next)
 	{
-		this.next = next;
+		if(getWrappedFilter() != null)
+		{
+			getWrappedFilter().setNext(next);
+		}
+		else
+		{
+			this.next = next;
+		}
 	}
 
 	/**
 	 * Returns the next handler.
 	 * @return The next handler or null.
 	 */
-	public UniformInterface getNext()
+	public Handler getNext()
 	{
-		return this.next;
+		return (getWrappedFilter() != null) ? getWrappedFilter().getNext() : this.next;
 	}
 
 	/**
@@ -101,7 +119,7 @@ public class Filter extends Chainer
 	 */
 	public boolean hasNext()
 	{
-		return getNext() != null;
+		return (getWrappedFilter() != null) ? getWrappedFilter().hasNext() : getNext() != null;
 	}
 
 	/**
@@ -113,9 +131,17 @@ public class Filter extends Chainer
 	 */
 	public void handle(Request request, Response response)
 	{
-		beforeHandle(request, response);
-		doHandle(request, response);
-		afterHandle(request, response);
+		if(getWrappedFilter() != null)
+		{
+			getWrappedFilter().handle(request, response);
+		}
+		else
+		{
+			super.handle(request, response);
+			beforeHandle(request, response);
+			doHandle(request, response);
+			afterHandle(request, response);
+		}
 	}
 
 	/**
@@ -125,7 +151,14 @@ public class Filter extends Chainer
 	 */
 	protected void beforeHandle(Request request, Response response)
 	{
-		// To be overriden
+		if(getWrappedFilter() != null)
+		{
+			getWrappedFilter().beforeHandle(request, response);
+		}
+		else
+		{
+			// To be overriden
+		}
 	}
 
 	/**
@@ -135,7 +168,21 @@ public class Filter extends Chainer
 	 */
 	protected void doHandle(Request request, Response response)
 	{
-		super.handle(request, response);
+		if(getWrappedFilter() != null)
+		{
+			getWrappedFilter().doHandle(request, response);
+		}
+		else
+		{
+			if(getNext() != null)
+			{
+				getNext().handle(request, response);
+			}
+			else
+			{
+				response.setStatus(Status.SERVER_ERROR_NOT_IMPLEMENTED);
+			}
+		}
 	}
 
 	/**
@@ -145,6 +192,13 @@ public class Filter extends Chainer
 	 */
 	protected void afterHandle(Request request, Response response)
 	{
-		// To be overriden
+		if(getWrappedFilter() != null)
+		{
+			getWrappedFilter().afterHandle(request, response);
+		}
+		else
+		{
+			// To be overriden
+		}
 	}
 }

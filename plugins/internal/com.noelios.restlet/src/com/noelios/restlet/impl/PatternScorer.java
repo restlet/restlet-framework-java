@@ -27,9 +27,9 @@ import java.util.logging.Logger;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
+import org.restlet.Handler;
 import org.restlet.Router;
 import org.restlet.Scorer;
-import org.restlet.UniformInterface;
 import org.restlet.data.Reference;
 import org.restlet.data.Request;
 import org.restlet.data.Response;
@@ -56,7 +56,7 @@ public class PatternScorer extends Scorer
     * @param pattern The URI pattern.
     * @param target The target handler.
     */
-   public PatternScorer(Router router, String pattern, UniformInterface target)
+   public PatternScorer(Router router, String pattern, Handler target)
    {
       super(router, target);
       this.pattern = Pattern.compile(pattern);

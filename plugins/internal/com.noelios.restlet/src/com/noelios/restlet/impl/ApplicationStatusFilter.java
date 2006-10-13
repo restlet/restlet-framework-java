@@ -20,15 +20,13 @@
  * Portions Copyright [yyyy] [name of copyright owner]
  */
 
-package com.noelios.restlet.impl.component;
+package com.noelios.restlet.impl;
 
-import org.restlet.ApplicationDelegate;
+import org.restlet.Holder;
 import org.restlet.data.Representation;
 import org.restlet.data.Request;
 import org.restlet.data.Response;
 import org.restlet.data.Status;
-
-import com.noelios.restlet.impl.StatusFilter;
 
 /**
  * Status filter that tries to obtain ouput representation from an application.
@@ -37,15 +35,15 @@ import com.noelios.restlet.impl.StatusFilter;
 public class ApplicationStatusFilter extends StatusFilter
 {
 	/** The application delegate. */
-	private ApplicationDelegate applicationDelegate;
+	private Holder holder;
 
 	/**
 	 * Constructor.
-	 * @param applicationDelegate The application delegate.
+	 * @param applicationHolder The application delegate.
 	 */
-	public ApplicationStatusFilter(ApplicationDelegate applicationDelegate)
+	public ApplicationStatusFilter(Holder applicationHolder)
 	{
-		super(applicationDelegate.getContext(), applicationDelegate.isStatusOverwrite(), applicationDelegate
+		super(applicationHolder.getContext(), applicationHolder.isStatusOverwrite(), applicationHolder
 				.getContactEmail(), "/");
 	}
 
@@ -53,9 +51,9 @@ public class ApplicationStatusFilter extends StatusFilter
 	 * Returns the application delegate.
 	 * @return The application delegate.
 	 */
-	public ApplicationDelegate getApplicationDelegate()
+	public Holder getHolder()
 	{
-		return this.applicationDelegate;
+		return this.holder;
 	}
 
    /**
@@ -68,8 +66,9 @@ public class ApplicationStatusFilter extends StatusFilter
     */
    public Representation getOutput(Status status, Request request, Response response)
    {
-   	Representation result = getApplicationDelegate().getApplication().getOutput(status, request, response);
-   	if(result == null) result = super.getOutput(status, request, response);
+   	Representation //result = getHolder().getApplication().getRepresentation(status, request, response);
+//   	if(result == null) 
+   	result = super.getOutput(status, request, response);
    	return result;
    }
    

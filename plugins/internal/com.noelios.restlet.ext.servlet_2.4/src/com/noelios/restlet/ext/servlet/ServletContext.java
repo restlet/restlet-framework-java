@@ -26,10 +26,10 @@ import java.util.Enumeration;
 
 import javax.servlet.Servlet;
 
-import org.restlet.ApplicationDelegate;
+import org.restlet.Holder;
 import org.restlet.Container;
 
-import com.noelios.restlet.impl.component.ApplicationContext;
+import com.noelios.restlet.impl.ApplicationContext;
 
 /**
  * Context allowing access to the container's connectors, reusing the Servlet's logging mechanism and
@@ -48,14 +48,14 @@ public class ServletContext extends ApplicationContext
 	 * @param applicationDelegate The parent application.
 	 */
 	public ServletContext(Servlet servlet, Container container,
-			ApplicationDelegate applicationDelegate)
+			Holder applicationDelegate)
 	{
 		super(container, applicationDelegate, new ServletLogger(servlet.getServletConfig()
 				.getServletContext()));
 		this.servlet = servlet;
 		
 		// Set the special local client
-		setLocalClient(new ServletLocalClient(servlet.getServletConfig()
+		setLocalClient(new ServletLocalClient(container.getContext(), servlet.getServletConfig()
 				.getServletContext()));
 
 		// Copy all the servlet parameters into the context

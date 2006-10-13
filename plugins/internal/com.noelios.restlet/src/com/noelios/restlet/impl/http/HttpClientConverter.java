@@ -20,7 +20,7 @@
  * Portions Copyright [yyyy] [name of copyright owner]
  */
 
-package com.noelios.restlet.impl.connector;
+package com.noelios.restlet.impl.http;
 
 import java.io.IOException;
 import java.util.StringTokenizer;

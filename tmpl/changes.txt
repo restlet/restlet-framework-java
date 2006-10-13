@@ -68,6 +68,13 @@ Changes log
  - GuardFilter now logs messages via the context's logger. Changed constructor.
  - Moved all remaining classes of org.restlet.component and org.restlet.connector into org.restlet for simplification purpose. Suggested by Piyush Purang.
  
+ - Added Holder filter to hold an attached handler and apply call logging and status setting.
+ - Removed ApplicationDelegate.
+ - Refactored hierarchy : Restlet, Chainer, Connector and Component directly derive from Handler class.
+ - Extended usage of contexts.
+ - Removed WrapperRestlet class, replaced by wrapping mode on Restlet.
+ 
+ 
 [Other changes] 
  - Updated Jetty 6 extension to 6.0.1 release and Jetty 5 extension to 5.1.11 release.
  - Added Resource.setVariants() and setIdentifiers() methods. Can be easier than doing a getVariants().clear() then a getVariants().addAll(newList). 

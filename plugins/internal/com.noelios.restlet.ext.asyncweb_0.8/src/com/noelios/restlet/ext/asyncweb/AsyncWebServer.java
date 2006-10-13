@@ -24,6 +24,7 @@ package com.noelios.restlet.ext.asyncweb;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
+import org.restlet.Context;
 import org.safehaus.asyncweb.container.ContainerLifecycleException;
 import org.safehaus.asyncweb.container.ServiceContainer;
 import org.safehaus.asyncweb.container.ServiceHandler;
@@ -32,8 +33,8 @@ import org.safehaus.asyncweb.request.AsyncWebRequest;
 import org.safehaus.asyncweb.transport.Transport;
 import org.safehaus.asyncweb.transport.TransportException;
 
-import com.noelios.restlet.impl.connector.HttpServer;
-import com.noelios.restlet.impl.connector.HttpServerCall;
+import com.noelios.restlet.impl.http.HttpServer;
+import com.noelios.restlet.impl.http.HttpServerCall;
 
 /**
  * Abstract AsyncWeb server connector. Here is the list of parameters that are supported:
@@ -60,7 +61,7 @@ import com.noelios.restlet.impl.connector.HttpServerCall;
  *	<br/> 
  * This implementation passes by all of AsyncWeb ServiceContainer, 
  * HttpServiceHandler etc. mechanisms and implements a 
- * {@link com.noelios.restlet.impl.connector.ServerImpl} and a 
+ * {@link com.noelios.restlet.impl.http.ServerImpl} and a 
  * {@link org.safehaus.asyncweb.container.ServiceContainer} directly. It takes
  * care about setting up a {@link org.safehaus.asyncweb.transport.nio.NIOTransport}.
  * <p>
@@ -89,12 +90,13 @@ public abstract class AsyncWebServer extends HttpServer implements ServiceContai
 
    /**
     * Constructor.
+    * @param context The context.
     * @param address The optional listening IP address (local host used if null).
     * @param port The listening port.
     */
-   public AsyncWebServer(String address, int port)
+   public AsyncWebServer(Context context, String address, int port)
    {
-      super(address, port);
+      super(context, address, port);
    }
 
 	/* (non-Javadoc)

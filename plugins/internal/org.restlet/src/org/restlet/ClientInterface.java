@@ -30,8 +30,15 @@ import org.restlet.data.Response;
  * Uniform client interface.
  * @author Jerome Louvel (contact@noelios.com) <a href="http://www.noelios.com/">Noelios Consulting</a>
  */
-public interface ClientInterface extends UniformInterface
+public interface ClientInterface
 {
+	/**
+	 * Handles a call.
+	 * @param request The request to handle.
+	 * @param response The response to update.
+	 */
+	public void handle(Request request, Response response);
+	
 	/**
 	 * Handles a call.
 	 * @param request The request to handle.

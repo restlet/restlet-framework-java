@@ -21,6 +21,7 @@
  */
 package org.restlet.test;
 
+import org.restlet.Context;
 import org.restlet.Filter;
 import org.restlet.data.Request;
 import org.restlet.data.Response;
@@ -35,6 +36,11 @@ import org.restlet.data.Response;
  */
 public class MockFilter extends Filter
 {
+	public MockFilter(Context context)
+	{
+		super(context);
+	}
+
 	@Override
 	public void handle(Request request, Response response)
 	{

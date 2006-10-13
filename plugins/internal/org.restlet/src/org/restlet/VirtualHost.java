@@ -39,9 +39,6 @@ public class VirtualHost extends Router
 	public static final String ALL_NAMES = "*";
 	public static final Integer ALL_PORTS = -1;
 	
-	/** The parent container. */
-	private Container container;
-	
 	/** The display name. */
 	private String name;
 	
@@ -71,31 +68,68 @@ public class VirtualHost extends Router
 
 	/**
     * Constructor.
-    * @param container The parent container.
+    * @param context The context.
     */
-	public VirtualHost(Container container)
+	public VirtualHost(Context context)
    {
-		super(container.getContext());
-		this.container = container;
+		super(context);
 		this.allowedAddresses = new ArrayList<String>();
 		this.allowedNames = new ArrayList<String>();
 		this.allowedPorts = new ArrayList<Integer>();
 		this.allowedProtocols = new ArrayList<Protocol>();
 	}
-	
+
 	/**
-	 * Deploys an application to the parent container and attaches it to this virtual host. 
-	 * @param uriPattern The URI pattern that must match the relative part of the resource URI. 
-	 * @param application The application to deploy and attach.
-	 * @return The deployed application.
+	 * Creates a new default virtual host. Accepts all incoming calls. 
+	 * @param context The context.
+	 * @return A new default virtual host.
 	 */
-	public ApplicationDelegate attach(String uriPattern, Application application)
+	public static VirtualHost createDefaultHost(Context context)
 	{
-		ApplicationDelegate result = new ApplicationDelegate(getContainer(), application, null);
-		getScorers().add(uriPattern, result);
+		VirtualHost result = new VirtualHost(context);
+
+		// Add allowed IP addresses
+		result.getAllowedAddresses().add(ALL_ADDRESSES);
+
+		// Add allowed domain names
+		result.getAllowedNames().add(ALL_NAMES);
+
+		// Add allowed port numbers (all by default)
+		result.getAllowedPorts().add(ALL_PORTS);
+
+		// Add allowed protocols (all by default)
+		result.getAllowedProtocols().add(Protocol.ALL);
+		
 		return result;
 	}
 
+	/**
+	 * Creates a new local virtual host. Accepts incoming calls to the local host name or IP address. 
+	 * @param context The context.
+	 * @return A new local virtual host.
+	 */
+	public static VirtualHost createLocalHost(Context context)
+	{
+		VirtualHost result = new VirtualHost(context);
+
+		// Add allowed IP addresses
+		result.getAllowedAddresses().add("127.0.0.1");
+		result.getAllowedAddresses().add(getLocalHostAddress());
+
+		// Add allowed domain names
+		result.getAllowedNames().add("localhost");
+		result.getAllowedNames().add("127.0.0.1");
+		result.getAllowedNames().add(getLocalHostName());
+
+		// Add allowed port numbers (all by default)
+		result.getAllowedPorts().add(ALL_PORTS);
+
+		// Add allowed protocols (all by default)
+		result.getAllowedProtocols().add(Protocol.ALL);
+		
+		return result;
+	}
+	
 	/**
 	 * Returns the modifiable list of allowed IP addresses. 
 	 * You can add the ALL_ADDRESSES (-1) to allow any IP address. 
@@ -212,22 +246,4 @@ public class VirtualHost extends Router
 		return result;
 	}
 
-	/**
-	 * Returns the parent container.
-	 * @return the parent container.
-	 */
-	public Container getContainer()
-	{
-		return container;
-	}
-
-	/**
-	 * Sets the parent container.
-	 * @param container The parent container.
-	 */
-	public void setContainer(Container container)
-	{
-		this.container = container;
-	}
-	
 }

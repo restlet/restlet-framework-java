@@ -22,6 +22,7 @@
 
 package org.restlet;
 
+import java.util.ArrayList;
 import java.util.List;
 
 import org.restlet.data.Protocol;
@@ -40,85 +41,54 @@ import org.restlet.data.Protocol;
  * dissertation</a>
  * @author Jerome Louvel (contact@noelios.com) <a href="http://www.noelios.com/">Noelios Consulting</a>
  */
-public abstract class Connector
+public class Connector extends Handler
 {
-   /** The wrapped server. */
-	private Connector wrappedConnector;
-   
+	/** The list of protocols simultaneously supported. */
+	private List<Protocol> protocols;
+
 	/**
-	 * Constructor for wrappers.
-	 * @param wrappedConnector The wrapped connector.
+	 * Constructor.
+	 * @param context The context.
 	 */
-	protected Connector(Connector wrappedConnector)
+	public Connector(Context context)
 	{
-		this.wrappedConnector = wrappedConnector;
+		super(context);
+		this.protocols = null;
 	}
 
 	/**
-	 * Returns the wrapped connector.
-	 * @return The wrapped connector.
+	 * Wrapper constructor.
+	 * @param wrappedConnector The connector to wrap.
 	 */
-	protected Connector getWrappedConnector()
+	public Connector(Connector wrappedConnector)
 	{
-		return this.wrappedConnector;
+		super(wrappedConnector);
+	}
+
+	/**
+	 * Returns the wrapped conncector.
+	 * @return The wrapped conncector.
+	 */
+	private Connector getWrappedConnector()
+	{
+		return (Connector)getWrappedHandler();
 	}
 	
-   /** Starts the Restlet. */
-   public void start() throws Exception
-   {
-   	if(this.wrappedConnector != null)
-   	{
-   		this.wrappedConnector.start();
-   	}
-   }
+	/**
+	 * Returns the protocols simultaneously supported.
+	 * @return The protocols simultaneously supported.
+	 */
+	public List<Protocol> getProtocols()
+	{
+		if(getWrappedConnector() != null)
+		{
+			return getWrappedConnector().getProtocols();
+		}
+		else
+		{
+			if (this.protocols == null) this.protocols = new ArrayList<Protocol>();
+			return this.protocols;
+		}
+	}
 
-   /** Stops the Restlet. */
-   public void stop() throws Exception
-   {
-   	if(this.wrappedConnector != null)
-   	{
-   		this.wrappedConnector.stop();
-   	}
-   }
-
-   /**
-    * Indicates if the Restlet is started.
-    * @return True if the Restlet is started.
-    */
-   public boolean isStarted()
-   {
-   	if(this.wrappedConnector != null)
-   	{
-   		return this.wrappedConnector.isStarted();
-   	}
-   	else
-   	{
-   		return false;
-   	}
-   }
-
-   /**
-    * Indicates if the Restlet is stopped.
-    * @return True if the Restlet is stopped.
-    */
-   public boolean isStopped()
-   {
-   	if(this.wrappedConnector != null)
-   	{
-   		return this.wrappedConnector.isStopped();
-   	}
-   	else
-   	{
-   		return true;
-   	}
-   }
-   
-   /**
-    * Returns the protocols supported by the connector.
-    * @return The protocols supported by the connector.
-    */
-   public List<Protocol> getProtocols()
-   {
-  		return (this.wrappedConnector != null) ? this.wrappedConnector.getProtocols() : null;
-   }
 }

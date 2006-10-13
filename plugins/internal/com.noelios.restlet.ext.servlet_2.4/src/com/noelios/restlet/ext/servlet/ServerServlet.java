@@ -32,7 +32,7 @@ import javax.servlet.http.HttpServletResponse;
 import org.restlet.Application;
 import org.restlet.Container;
 
-import com.noelios.restlet.impl.connector.HttpServer;
+import com.noelios.restlet.impl.http.HttpServer;
 
 /**
  * Servlet acting like an HTTP server connector. See the getTarget() method for details on how 
@@ -145,9 +145,6 @@ public class ServerServlet extends HttpServlet
 
 				if (result == null)
 				{
-					result = new HttpServer();
-					getServletContext().setAttribute(NAME_SERVER_ATTRIBUTE, result);
-
 					// Try to instantiate a new target application
 					// First, find the application class name
 					String applicationClassName = getInitParameter(NAME_APPLICATION_CLASS,
@@ -166,6 +163,8 @@ public class ServerServlet extends HttpServlet
 
 							// First, let's locate the closest container
 							Container container = new Container();
+							result = new HttpServer(container.getContext());
+							getServletContext().setAttribute(NAME_SERVER_ATTRIBUTE, result);
 
 							if (container != null)
 							{

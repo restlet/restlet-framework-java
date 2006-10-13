@@ -35,14 +35,14 @@ import java.util.List;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
-import org.restlet.Application;
-import org.restlet.ApplicationDelegate;
 import org.restlet.Client;
 import org.restlet.Container;
+import org.restlet.Context;
+import org.restlet.Handler;
+import org.restlet.Holder;
 import org.restlet.Router;
 import org.restlet.Scorer;
 import org.restlet.Server;
-import org.restlet.UniformInterface;
 import org.restlet.data.ChallengeResponse;
 import org.restlet.data.ChallengeScheme;
 import org.restlet.data.ClientInfo;
@@ -58,14 +58,17 @@ import org.restlet.data.Resource;
 import org.restlet.data.Response;
 import org.restlet.data.Status;
 import org.restlet.data.Tag;
+import org.restlet.util.ClientList;
 import org.restlet.util.ScorerList;
+import org.restlet.util.ServerList;
 
 import com.noelios.restlet.data.StringRepresentation;
-import com.noelios.restlet.impl.component.ApplicationDelegateImpl;
 import com.noelios.restlet.impl.util.Base64;
+import com.noelios.restlet.impl.util.ClientListImpl;
 import com.noelios.restlet.impl.util.DateUtils;
 import com.noelios.restlet.impl.util.FormUtils;
 import com.noelios.restlet.impl.util.ScorerListImpl;
+import com.noelios.restlet.impl.util.ServerListImpl;
 
 /**
  * Factory for the Noelios Restlet Engine.
@@ -131,7 +134,7 @@ public class Factory extends org.restlet.spi.Factory
 							{
 								Class<? extends Client> providerClass = (Class<? extends Client>) Class
 										.forName(provider);
-								this.clients.add(providerClass.newInstance());
+								this.clients.add(providerClass.getConstructor(Context.class).newInstance(new Context()));
 							}
 							catch (Exception e)
 							{
@@ -182,8 +185,8 @@ public class Factory extends org.restlet.spi.Factory
 							{
 								Class<? extends Server> providerClass = (Class<? extends Server>) Class
 										.forName(provider);
-								this.servers.add(providerClass.getConstructor(String.class,
-										int.class).newInstance(null, new Integer(-1)));
+								this.servers.add(providerClass.getConstructor(Context.class, String.class,
+										int.class).newInstance(new Context(), null, new Integer(-1)));
 							}
 							catch (Exception e)
 							{
@@ -230,23 +233,23 @@ public class Factory extends org.restlet.spi.Factory
 	}
 
    /**
-    * Creates a new application using the given context.
-    * @param container The parent container.
-    * @param application The application descriptor.
-    * @param webAppPath The path to the directory or WAR of the web application files.
-    * @return The new application delegate.
+    * Creates a new holder using the given context.
+    * @param context The context.
+    * @param next The attached handler.
+    * @return The new holder.
     */
-   public ApplicationDelegate createApplicationDelegate(Container container, Application application, String webAppPath)
+   public Holder createHolder(Context context, Handler next)
    {
-   	return new ApplicationDelegateImpl(container, application, webAppPath);
+   	return new HolderImpl(context, next);
    }
 
 	/**
 	 * Create a new client connector for a given protocol.
+    * @param context The context.
 	 * @param protocols The connector protocols.
 	 * @return The new client connector.
 	 */
-	public Client createClient(List<Protocol> protocols)
+	public Client createClient(Context context, List<Protocol> protocols)
 	{
 		for (Client client : this.clients)
 		{
@@ -254,7 +257,7 @@ public class Factory extends org.restlet.spi.Factory
 			{
 				try
 				{
-					return client.getClass().getConstructor().newInstance();
+					return client.getClass().getConstructor(Context.class).newInstance(context);
 				}
 				catch (Exception e)
 				{
@@ -274,31 +277,55 @@ public class Factory extends org.restlet.spi.Factory
 	}
 
    /**
+    * Create a new list of client connectors.
+    * @param context The context.
+    * @return A new list of client connectors.
+    */
+   public ClientList createClientList(Context context)
+   {
+   	return new ClientListImpl(context);
+   }
+
+   /**
+    * Create a new list of server connectors.
+    * @return A new list of server connectors.
+    */
+   public ServerList createServerList()
+   {
+   	return new ServerListImpl();
+   }
+
+   /**
     * Creates a new container.
     * @return The new container.
     */
    public Container createContainer()
    {
-   	return new com.noelios.restlet.impl.component.ContainerImpl();
+   	return new com.noelios.restlet.impl.ContainerImpl();
    }
-
-	/**
-	 * Create a new server connector for internal usage by the GenericClient.
-	 * @param protocols The connector protocols.
-	 * @param address The optional listening IP address (local host used if null).
-	 * @param port The listening port.
-	 * @return The new server connector.
-	 */
-	public Server createServer(List<Protocol> protocols, String address, int port)
+   
+   /**
+    * Create a new server connector for internal usage by the GenericClient.
+    * @param protocols The connector protocols.
+    * @param address The optional listening IP address (local host used if null).
+    * @param port The listening port.
+	 * @param target The target handler.
+    * @return The new server connector.
+    */
+   public Server createServer(List<Protocol> protocols, String address, int port, Handler target)
 	{
+   	Server result = null;
+   	
 		for (Server server : this.servers)
 		{
 			if (server.getProtocols().containsAll(protocols))
 			{
 				try
 				{
-					return server.getClass().getConstructor(String.class, int.class)
+					result = server.getClass().getConstructor(String.class, int.class)
 							.newInstance(address, port);
+					result.setTarget(target);
+					return result;
 				}
 				catch (Exception e)
 				{
@@ -316,6 +343,7 @@ public class Factory extends org.restlet.spi.Factory
 		{
 			sb.append(p.getName()).append(" ");
 		}
+		
 		logger.log(Level.WARNING, sb.toString());
 
 		return null;
@@ -340,7 +368,7 @@ public class Factory extends org.restlet.spi.Factory
 	 * @param target The target handler to attach.
 	 * @see java.util.regex.Pattern
 	 */
-	public Scorer createScorer(Router router, String pattern, UniformInterface target)
+	public Scorer createScorer(Router router, String pattern, Handler target)
 	{
 		return new PatternScorer(router, pattern, target);
 	}

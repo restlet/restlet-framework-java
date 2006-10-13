@@ -26,6 +26,9 @@ import java.util.Arrays;
 import java.util.List;
 
 import org.restlet.data.Protocol;
+import org.restlet.data.Request;
+import org.restlet.data.Response;
+import org.restlet.data.Status;
 import org.restlet.spi.Factory;
 
 /**
@@ -35,6 +38,29 @@ import org.restlet.spi.Factory;
  */
 public class Server extends Connector
 {
+	/** The target handler. */
+	private Handler target;
+
+	/**
+	 * Constructor.
+	 * @param context The context.
+	 */
+	public Server(Context context)
+	{
+		this(context, null);
+	}
+
+	/**
+	 * Constructor.
+	 * @param context The context.
+	 * @param target The target handler.
+	 */
+	public Server(Context context, Handler target)
+	{
+		super(context);
+		this.target = target;
+	}
+
 	/**
 	 * Constructor.
 	 * @param wrappedServer The wrapped server.
@@ -43,63 +69,62 @@ public class Server extends Connector
 	{
 		super(wrappedServer);
 	}
-	
-   /**
-    * Constructor using the protocol's default port.
-    * @param protocol The connector protocol.
-    * @param target The target handler.
-    */
-   public Server(Protocol protocol, UniformInterface target)
-   {
-   	this(protocol, null, protocol.getDefaultPort(), target);
-   }
-   
-   /**
-    * Constructor.
-    * @param protocol The connector protocol.
-    * @param port The listening port.
-    * @param target The target handler.
-    */
-   public Server(Protocol protocol, int port, UniformInterface target)
-   {
-   	this(protocol, null, port, target);
-   }
-   
-   /**
-    * Constructor.
-    * @param protocols The connector protocols.
-    * @param port The listening port.
-    * @param target The target handler.
-    */
-   public Server(List<Protocol> protocols, int port, UniformInterface target)
-   {
-   	this(protocols, null, port, target);
-   }
-   
-   /**
-    * Constructor.
-    * @param protocol The connector protocol.
-    * @param address The optional listening IP address (useful if multiple IP addresses available).
-    * @param port The listening port.
-    * @param target The target handler.
-    */
-   public Server(Protocol protocol, String address, int port, UniformInterface target)
-   {
-   	this(Arrays.asList(protocol), address, port, target);
-   }
-   
-   /**
-    * Constructor.
-    * @param protocols The connector protocols.
-    * @param address The optional listening IP address (useful if multiple IP addresses available).
-    * @param port The listening port.
-    * @param target The target handler.
-    */
-   public Server(List<Protocol> protocols, String address, int port, UniformInterface target)
-   {
-   	super(Factory.getInstance().createServer(protocols, address, port));
-   	setTarget(target);
-   }
+
+	/**
+	 * Constructor using the protocol's default port.
+	 * @param protocol The connector protocol.
+	 * @param target The target handler.
+	 */
+	public Server(Protocol protocol, Handler target)
+	{
+		this(protocol, null, protocol.getDefaultPort(), target);
+	}
+
+	/**
+	 * Constructor.
+	 * @param protocol The connector protocol.
+	 * @param port The listening port.
+	 * @param target The target handler.
+	 */
+	public Server(Protocol protocol, int port, Handler target)
+	{
+		this(protocol, null, port, target);
+	}
+
+	/**
+	 * Constructor.
+	 * @param protocols The connector protocols.
+	 * @param port The listening port.
+	 * @param target The target handler.
+	 */
+	public Server(List<Protocol> protocols, int port, Handler target)
+	{
+		this(protocols, null, port, target);
+	}
+
+	/**
+	 * Constructor.
+	 * @param protocol The connector protocol.
+	 * @param address The optional listening IP address (useful if multiple IP addresses available).
+	 * @param port The listening port.
+	 * @param target The target handler.
+	 */
+	public Server(Protocol protocol, String address, int port, Handler target)
+	{
+		this(Arrays.asList(protocol), address, port, target);
+	}
+
+	/**
+	 * Constructor.
+	 * @param protocols The connector protocols.
+	 * @param address The optional listening IP address (useful if multiple IP addresses available).
+	 * @param port The listening port.
+	 * @param target The target handler.
+	 */
+	public Server(List<Protocol> protocols, String address, int port, Handler target)
+	{
+		super(Factory.getInstance().createServer(protocols, address, port, target));
+	}
 
 	/**
 	 * Returns the wrapped server.
@@ -107,33 +132,65 @@ public class Server extends Connector
 	 */
 	private Server getWrappedServer()
 	{
-		return (Server)getWrappedConnector();
+		return (Server)getWrappedHandler();
 	}
 
-   /**
-    * Returns the target handler.
-    * @return The target handler.
-    */
-   public UniformInterface getTarget()
-   {
-  		return (getWrappedServer() != null) ? getWrappedServer().getTarget() : null;
-   }
+	/**
+	 * Returns the target handler.
+	 * @return The target handler.
+	 */
+	public Handler getTarget()
+	{
+		return (getWrappedServer() != null) ? getWrappedServer().getTarget() : this.target;
+	}
 
+	/**
+	 * Handles a call.
+	 * @param request The request to handle.
+	 * @param response The response to update.
+	 */
+	public void handle(Request request, Response response)
+	{
+   	if(getWrappedServer() != null)
+   	{
+   		getWrappedServer().handle(request, response);
+   	}
+   	else
+   	{
+   		super.handle(request, response);
+   		
+   		if(getTarget() != null)
+   		{
+   			response.setStatus(Status.SUCCESS_OK);
+   			getTarget().handle(request, response);
+   		}
+   	}
+	}
+	
 	/**
 	 * Indicates if a target handler is set. 
 	 * @return True if a target handler is set. 
 	 */
 	public boolean hasTarget()
 	{
-  		return (getWrappedServer() != null) ? getWrappedServer().hasTarget() : false;
+		return (getWrappedServer() != null) ? getWrappedServer().hasTarget()
+				: this.target != null;
 	}
 
-   /**
-    * Sets the target handler.
-    * @param target The target handler.
-    */
-   public void setTarget(UniformInterface target)
-   {
-   	if(getWrappedServer() != null) getWrappedServer().setTarget(target);
-   }
+	/**
+	 * Sets the target handler.
+	 * @param target The target handler.
+	 */
+	public void setTarget(Handler target)
+	{
+		if (getWrappedServer() != null)
+		{
+			getWrappedServer().setTarget(target);
+		}
+		else
+		{
+			this.target = target;
+		}
+	}
+
 }

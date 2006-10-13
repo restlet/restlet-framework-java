@@ -26,9 +26,9 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Random;
 
+import org.restlet.Handler;
 import org.restlet.Router;
 import org.restlet.Scorer;
-import org.restlet.UniformInterface;
 import org.restlet.data.Request;
 import org.restlet.data.Response;
 import org.restlet.spi.Factory;
@@ -91,7 +91,7 @@ public class ScorerListImpl extends WrapperList<Scorer> implements ScorerList
 	 * @see java.util.regex.Pattern
 	 * @return True (as per the general contract of the Collection.add method).
 	 */
-	public boolean add(String uriPattern, UniformInterface target)
+	public boolean add(String uriPattern, Handler target)
 	{
 		return add(Factory.getInstance().createScorer(this.router, uriPattern, target));
 	}
@@ -103,7 +103,7 @@ public class ScorerListImpl extends WrapperList<Scorer> implements ScorerList
 	 * @param index The insertion position in the list of attachments.
 	 * @see java.util.regex.Pattern
 	 */
-	public void add(String uriPattern, UniformInterface target, int index)
+	public void add(String uriPattern, Handler target, int index)
 	{
 		add(index, Factory.getInstance().createScorer(this.router, uriPattern, target));
 	}
@@ -223,7 +223,7 @@ public class ScorerListImpl extends WrapperList<Scorer> implements ScorerList
 	 * Removes all scorers routing to a given target.
 	 * @param target The target handler to detach.
 	 */
-	public void removeAll(UniformInterface target)
+	public void removeAll(Handler target)
 	{
 		for(int i = size() - 1; i >= 0; i--)
 		{
