@@ -22,8 +22,8 @@
 
 package com.noelios.restlet.impl.connector;
 
-import org.restlet.Request;
-import org.restlet.Response;
+import org.restlet.data.Request;
+import org.restlet.data.Response;
 import org.restlet.data.ServerInfo;
 import org.restlet.data.Status;
 
@@ -71,7 +71,7 @@ public class HttpResponse extends Response
 	 */
 	public ServerInfo getServer()
 	{
-		ServerInfo result = super.getServer();
+		ServerInfo result = super.getServerInfo();
 
 		if (!this.serverAdded)
 		{

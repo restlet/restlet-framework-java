@@ -20,112 +20,50 @@
  * Portions Copyright [yyyy] [name of copyright owner]
  */
 
-package org.restlet.util;
+package org.restlet.data;
 
+import java.util.ArrayList;
 import java.util.List;
-import java.util.Map;
 
-import org.restlet.data.ChallengeRequest;
-import org.restlet.data.CookieSetting;
-import org.restlet.data.Form;
-import org.restlet.data.Language;
-import org.restlet.data.MediaType;
-import org.restlet.data.Method;
-import org.restlet.data.Reference;
-import org.restlet.data.Representation;
-import org.restlet.data.Request;
-import org.restlet.data.Resource;
-import org.restlet.data.Response;
-import org.restlet.data.ServerInfo;
-import org.restlet.data.Status;
+import org.restlet.spi.Factory;
 
 /**
- * Wrapper used to enrich a response with additional state or logic.
- * @see <a href="http://c2.com/cgi/wiki?DecoratorPattern">The decorator (aka wrapper) pattern</a>
+ * Generic response sent by server connectors. It is then received by client connectors. Responses 
+ * are uniform across all types of connectors, protocols and components.
+ * @see org.restlet.data.Request
+ * @see org.restlet.UniformInterface
  * @author Jerome Louvel (contact@noelios.com) <a href="http://www.noelios.com/">Noelios Consulting</a>
  */
-public class WrapperResponse extends Response
+public class Response extends Message
 {
-	/** Wrapped request. */
-	private Response wrappedResponse;
+	/** The list of methods allowed on the requested resource. */
+	private List<Method> allowedMethods;
+
+	/** The authentication request sent by an origin server to a client. */
+	private ChallengeRequest challengeRequest;
+
+	/** The cookie settings provided by the server. */
+	private List<CookieSetting> cookieSettings;
+
+	/** The redirection reference. */
+	private Reference redirectRef;
+
+	/** The associated request. */
+	private Request request;
+
+	/** The server data. */
+	private ServerInfo serverInfo;
+
+	/** The status. */
+	private Status status;
 
 	/**
 	 * Constructor.
-	 * @param wrappedResponse The wrapped response.
+	 * @param request The request associated to this response.
 	 */
-	public WrapperResponse(Response wrappedResponse)
+	public Response(Request request)
 	{
-		super(null);
-		this.wrappedResponse = wrappedResponse;
-	}
-
-	/**
-	 * Returns the wrapped response.
-	 * @return The wrapped response.
-	 */
-	protected Response getWrappedResponse()
-	{
-		return this.wrappedResponse;
-	}
-
-	/**
-	 * Returns a modifiable attributes map that can be used by developers to save information relative
-	 * to the message. This is an easier alternative to the creation of a wrapper instance around the 
-	 * whole message.
-	 * @return The modifiable attributes map.
-	 */
-	public Map<String, Object> getAttributes()
-	{
-		return getWrappedResponse().getAttributes();
-	}
-
-	/**
-	 * Returns the entity representation.
-	 * @return The entity representation.
-	 */
-	public Representation getEntity()
-	{
-		return getWrappedResponse().getEntity();
-	}
-
-	/**
-	 * Returns the representation provided by the client as a form.<br/>
-	 * Note that this triggers the parsing of the input representation.<br/>
-	 * This method and the associated getInput method can only be invoked once.
-	 * @return The input form provided by the client.
-	 */
-	public Form getEntityAsForm()
-	{
-		return getWrappedResponse().getEntityAsForm();
-	}
-
-	/**
-	 * Indicates if a content is available and can be sent. Several conditions must be met: the content 
-	 * must exists and have some available data.
-	 * @return True if a content is available and can be sent.
-	 */
-	public boolean isEntityAvailable()
-	{
-		return getWrappedResponse().isEntityAvailable();
-	}
-	
-	/**
-	 * Sets the entity representation.
-	 * @param entity The entity representation.
-	 */
-	public void setEntity(Representation entity)
-	{
-		getWrappedResponse().setEntity(entity);
-	}
-
-	/**
-	 * Sets a textual entity.
-    * @param value The represented string.
-    * @param mediaType The representation's media type.
-	 */
-	public void setEntity(String value, MediaType mediaType)
-	{
-		getWrappedResponse().setEntity(value, mediaType);
+		this.request = request;
 	}
 
 	/**
@@ -134,7 +72,12 @@ public class WrapperResponse extends Response
 	 */
 	public List<Method> getAllowedMethods()
 	{
-		return getWrappedResponse().getAllowedMethods();
+		if (this.allowedMethods == null)
+		{
+			this.allowedMethods = new ArrayList<Method>();
+		}
+
+		return this.allowedMethods;
 	}
 
 	/**
@@ -143,7 +86,7 @@ public class WrapperResponse extends Response
 	 */
 	public ChallengeRequest getChallengeRequest()
 	{
-		return getWrappedResponse().getChallengeRequest();
+		return this.challengeRequest;
 	}
 
 	/**
@@ -152,7 +95,9 @@ public class WrapperResponse extends Response
 	 */
 	public List<CookieSetting> getCookieSettings()
 	{
-		return getWrappedResponse().getCookieSettings();
+		if (this.cookieSettings == null)
+			this.cookieSettings = new ArrayList<CookieSetting>();
+		return this.cookieSettings;
 	}
 
 	/**
@@ -161,7 +106,7 @@ public class WrapperResponse extends Response
 	 */
 	public Reference getRedirectRef()
 	{
-		return getWrappedResponse().getRedirectRef();
+		return this.redirectRef;
 	}
 
 	/**
@@ -170,7 +115,7 @@ public class WrapperResponse extends Response
 	 */
 	public Request getRequest()
 	{
-		return getWrappedResponse().getRequest();
+		return request;
 	}
 
 	/**
@@ -179,7 +124,8 @@ public class WrapperResponse extends Response
 	 */
 	public ServerInfo getServerInfo()
 	{
-		return getWrappedResponse().getServerInfo();
+		if (this.serverInfo == null) this.serverInfo = new ServerInfo();
+		return this.serverInfo;
 	}
 
 	/**
@@ -188,7 +134,7 @@ public class WrapperResponse extends Response
 	 */
 	public Status getStatus()
 	{
-		return getWrappedResponse().getStatus();
+		return this.status;
 	}
 
 	/**
@@ -197,7 +143,7 @@ public class WrapperResponse extends Response
 	 */
 	public void setChallengeRequest(ChallengeRequest request)
 	{
-		getWrappedResponse().setChallengeRequest(request);
+		this.challengeRequest = request;
 	}
 
 	/**
@@ -210,7 +156,7 @@ public class WrapperResponse extends Response
 	 */
 	public void setEntity(Resource resource, Language fallbackLanguage)
 	{
-		getWrappedResponse().setEntity(resource, fallbackLanguage);
+		Factory.getInstance().setOutput(getRequest(), this, resource, fallbackLanguage);
 	}
 
 	/**
@@ -219,7 +165,7 @@ public class WrapperResponse extends Response
 	 */
 	public void setRedirectRef(String redirectUri)
 	{
-		getWrappedResponse().setRedirectRef(redirectUri);
+		setRedirectRef(new Reference(getRequest().getBaseRef(), redirectUri).getTargetRef());
 	}
 
 	/**
@@ -228,7 +174,7 @@ public class WrapperResponse extends Response
 	 */
 	public void setRedirectRef(Reference redirectRef)
 	{
-		getWrappedResponse().setRedirectRef(redirectRef);
+		this.redirectRef = redirectRef;
 	}
 
 	/**
@@ -237,7 +183,7 @@ public class WrapperResponse extends Response
 	 */
 	public void setRequest(Request request)
 	{
-		getWrappedResponse().setRequest(request);
+		this.request = request;
 	}
 
 	/**
@@ -246,7 +192,7 @@ public class WrapperResponse extends Response
 	 */
 	public void setStatus(Status status)
 	{
-		getWrappedResponse().setStatus(status);
+		this.status = status;
 	}
 
 }

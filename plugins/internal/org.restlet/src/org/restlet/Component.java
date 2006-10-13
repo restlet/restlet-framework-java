@@ -20,12 +20,13 @@
  * Portions Copyright [yyyy] [name of copyright owner]
  */
 
-package org.restlet.component;
+package org.restlet;
 
-import org.restlet.Context;
-import org.restlet.Request;
-import org.restlet.Response;
-import org.restlet.UniformInterface;
+import org.restlet.data.Request;
+import org.restlet.data.Response;
+import org.restlet.util.ClientList;
+import org.restlet.util.ServerList;
+
 
 /**
  * Abstract unit of software instructions and internal state. "A component is an abstract
@@ -115,4 +116,22 @@ public abstract class Component implements UniformInterface
    {
 		getWrappedComponent().setContext(context);
    }
+
+	/**
+	 * Returns the modifiable list of client connectors.
+	 * @return The modifiable list of client connectors.
+	 */
+	public ClientList getClients()
+	{
+		return getWrappedComponent().getClients();
+	}
+
+	/**
+	 * Returns the modifiable list of server connectors.
+	 * @return The modifiable list of server connectors.
+	 */
+	public ServerList getServers()
+	{
+		return getWrappedComponent().getServers();
+	}
 }

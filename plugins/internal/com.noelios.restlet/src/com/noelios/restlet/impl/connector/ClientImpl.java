@@ -25,14 +25,14 @@ package com.noelios.restlet.impl.connector;
 import java.util.ArrayList;
 import java.util.List;
 
+import org.restlet.Client;
+import org.restlet.Connector;
 import org.restlet.Context;
-import org.restlet.Request;
-import org.restlet.Response;
-import org.restlet.connector.Client;
-import org.restlet.connector.Connector;
 import org.restlet.data.Method;
 import org.restlet.data.Protocol;
 import org.restlet.data.Representation;
+import org.restlet.data.Request;
+import org.restlet.data.Response;
 
 /**
  * Connector that initiates communication by making a request. By default, the handle(UniformCall)

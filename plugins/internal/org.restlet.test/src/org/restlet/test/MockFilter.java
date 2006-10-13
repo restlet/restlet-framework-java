@@ -22,8 +22,8 @@
 package org.restlet.test;
 
 import org.restlet.Filter;
-import org.restlet.Request;
-import org.restlet.Response;
+import org.restlet.data.Request;
+import org.restlet.data.Response;
 
 /**
  * Thin layer around an AbstractFilter.

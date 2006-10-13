@@ -30,7 +30,7 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
 import org.restlet.Application;
-import org.restlet.component.Container;
+import org.restlet.Container;
 
 import com.noelios.restlet.impl.connector.HttpServer;
 

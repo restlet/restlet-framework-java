@@ -26,7 +26,7 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 
-import org.restlet.connector.Client;
+import org.restlet.Client;
 import org.restlet.data.MediaType;
 import org.restlet.data.Protocol;
 import org.restlet.data.Reference;
@@ -91,7 +91,7 @@ public class Service extends SaxRepresentation
 	 */
 	public Service(Client client, String serviceUri) throws IOException
 	{
-		this(client, serviceUri, client.get(serviceUri).getOutput());
+		this(client, serviceUri, client.get(serviceUri).getEntity());
 	}
 
 	/**
@@ -177,7 +177,7 @@ public class Service extends SaxRepresentation
 	 */
 	public Representation getResource(String uri)
 	{
-		return getClient().get(uri).getOutput();
+		return getClient().get(uri).getEntity();
 	}
 	
 	/**

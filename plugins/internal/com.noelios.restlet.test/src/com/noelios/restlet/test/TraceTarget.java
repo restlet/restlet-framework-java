@@ -22,10 +22,10 @@
 
 package com.noelios.restlet.test;
 
-import org.restlet.Request;
-import org.restlet.Response;
 import org.restlet.Restlet;
 import org.restlet.data.MediaType;
+import org.restlet.data.Request;
+import org.restlet.data.Response;
 
 /**
  * Trace target. 
@@ -41,9 +41,9 @@ public class TraceTarget extends Restlet
 	public void handle(Request request, Response response)
    {
       String output = "Hello World!" +
-                      "\nYour IP address is " + request.getClient().getAddress() + 
+                      "\nYour IP address is " + request.getClientInfo().getAddress() + 
                       "\nYour request URI is: " + request.getResourceRef().toString();
-      response.setOutput(output, MediaType.TEXT_PLAIN);
+      response.setEntity(output, MediaType.TEXT_PLAIN);
    }
 
 }

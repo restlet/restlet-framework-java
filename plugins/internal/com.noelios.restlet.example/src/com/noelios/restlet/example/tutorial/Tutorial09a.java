@@ -23,9 +23,9 @@
 package com.noelios.restlet.example.tutorial;
 
 import org.restlet.Application;
+import org.restlet.Container;
 import org.restlet.Context;
 import org.restlet.UniformInterface;
-import org.restlet.component.Container;
 import org.restlet.data.ChallengeScheme;
 import org.restlet.data.Protocol;
 

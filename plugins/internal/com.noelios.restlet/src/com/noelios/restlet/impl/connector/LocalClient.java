@@ -38,8 +38,6 @@ import java.util.jar.JarFile;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
-import org.restlet.Request;
-import org.restlet.Response;
 import org.restlet.data.CharacterSet;
 import org.restlet.data.Encoding;
 import org.restlet.data.Language;
@@ -52,6 +50,8 @@ import org.restlet.data.Protocol;
 import org.restlet.data.Reference;
 import org.restlet.data.ReferenceList;
 import org.restlet.data.Representation;
+import org.restlet.data.Request;
+import org.restlet.data.Response;
 import org.restlet.data.Status;
 
 import com.noelios.restlet.data.ContextReference;
@@ -300,7 +300,7 @@ public class LocalClient extends ClientImpl
 
 			// TBoi : Get variants for a resource
 			boolean found = false;
-			Iterator<Preference<MediaType>> iterator = request.getClient()
+			Iterator<Preference<MediaType>> iterator = request.getClientInfo()
 					.getAcceptedMediaTypes().iterator();
 			while (iterator.hasNext() && !found)
 			{
@@ -383,7 +383,7 @@ public class LocalClient extends ClientImpl
 			}
 			else
 			{
-				response.setOutput(output);
+				response.setEntity(output);
 				response.setStatus(Status.SUCCESS_OK);
 			}
 		}
@@ -406,10 +406,10 @@ public class LocalClient extends ClientImpl
 					{
 						tmp = File.createTempFile("restlet-upload", "bin");
 
-						if (request.isInputAvailable())
+						if (request.isEntityAvailable())
 						{
 							FileOutputStream fos = new FileOutputStream(tmp);
-							ByteUtils.write(request.getInput().getStream(), fos);
+							ByteUtils.write(request.getEntity().getStream(), fos);
 							fos.close();
 						}
 					}
@@ -426,7 +426,7 @@ public class LocalClient extends ClientImpl
 						// Finally move the temporary file to the existing file location
 						if (tmp.renameTo(file))
 						{
-							if (request.getInput() == null)
+							if (request.getEntity() == null)
 							{
 								response.setStatus(Status.SUCCESS_NO_CONTENT);
 							}
@@ -493,14 +493,14 @@ public class LocalClient extends ClientImpl
 					{
 						if (file.createNewFile())
 						{
-							if (request.getInput() == null)
+							if (request.getEntity() == null)
 							{
 								response.setStatus(Status.SUCCESS_NO_CONTENT);
 							}
 							else
 							{
 								FileOutputStream fos = new FileOutputStream(file);
-								ByteUtils.write(request.getInput().getStream(), fos);
+								ByteUtils.write(request.getEntity().getStream(), fos);
 								fos.close();
 								response.setStatus(Status.SUCCESS_OK);
 							}
@@ -576,7 +576,7 @@ public class LocalClient extends ClientImpl
 			{
 				try
 				{
-					response.setOutput(new InputRepresentation(url.openStream(), null));
+					response.setEntity(new InputRepresentation(url.openStream(), null));
 					response.setStatus(Status.SUCCESS_OK);
 				}
 				catch (IOException ioe)
@@ -637,7 +637,7 @@ public class LocalClient extends ClientImpl
 						}
 					}
 
-					response.setOutput(rl.getRepresentation());
+					response.setEntity(rl.getRepresentation());
 					response.setStatus(Status.SUCCESS_OK);
 				}
 				else
@@ -646,7 +646,7 @@ public class LocalClient extends ClientImpl
 					Representation output = new InputRepresentation(war.getInputStream(entry),
 							null);
 					updateMetadata(path, output);
-					response.setOutput(output);
+					response.setEntity(output);
 					response.setStatus(Status.SUCCESS_OK);
 				}
 			}

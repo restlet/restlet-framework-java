@@ -39,11 +39,11 @@ import org.apache.commons.dbcp.PoolableConnectionFactory;
 import org.apache.commons.dbcp.PoolingDataSource;
 import org.apache.commons.pool.ObjectPool;
 import org.apache.commons.pool.impl.GenericObjectPool;
-import org.restlet.Request;
-import org.restlet.Response;
 import org.restlet.data.Method;
 import org.restlet.data.Protocol;
 import org.restlet.data.Representation;
+import org.restlet.data.Request;
+import org.restlet.data.Response;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 import org.w3c.dom.Node;
@@ -97,10 +97,10 @@ public class JdbcClient extends ClientImpl
    public static Request create(String jdbcURI, Representation request)
    {
    	Request result = new Request();
-      result.getClient().setAgent(Factory.VERSION_HEADER);
+      result.getClientInfo().setAgent(Factory.VERSION_HEADER);
       result.setMethod(Method.POST);
       result.setResourceRef(jdbcURI);
-      result.setInput(request);
+      result.setEntity(request);
       return result;
    }
 
@@ -122,7 +122,7 @@ public class JdbcClient extends ClientImpl
 
          // Parse the request to extract necessary info
          DocumentBuilder docBuilder = DocumentBuilderFactory.newInstance().newDocumentBuilder();
-         Document requestDoc = docBuilder.parse(request.getInput().getStream());
+         Document requestDoc = docBuilder.parse(request.getEntity().getStream());
 
          Element rootElt = (Element)requestDoc.getElementsByTagName("request").item(0);
          Element headerElt = (Element)rootElt.getElementsByTagName("header").item(0);
@@ -163,7 +163,7 @@ public class JdbcClient extends ClientImpl
             statement.execute(sqlRequest, returnGeneratedKeys ? Statement.RETURN_GENERATED_KEYS
                   : Statement.NO_GENERATED_KEYS);
             JdbcResult result = new JdbcResult(statement);
-            response.setOutput(new ObjectRepresentation(result));
+            response.setEntity(new ObjectRepresentation(result));
 
             // Commit any changes to the database
             connection.commit();

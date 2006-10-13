@@ -20,15 +20,13 @@
  * Portions Copyright [yyyy] [name of copyright owner]
  */
 
-package org.restlet.component;
+package org.restlet;
 
 import java.util.List;
 
-import org.restlet.Request;
-import org.restlet.Response;
+import org.restlet.data.Request;
+import org.restlet.data.Response;
 import org.restlet.spi.Factory;
-import org.restlet.util.ClientList;
-import org.restlet.util.ServerList;
 
 /**
  * Component managing a set of connectors, virtual hosts and applications. The server connectors and 
@@ -65,15 +63,6 @@ public class Container extends Component
 	}
 
 	/**
-	 * Returns the modifiable list of client connectors.
-	 * @return The modifiable list of client connectors.
-	 */
-	public ClientList getClients()
-	{
-		return getWrappedContainer().getClients();
-	}
-
-   /**
     * Returns the modifiable list of host routers.
     * @return The modifiable list of host routers.
     */
@@ -92,15 +81,6 @@ public class Container extends Component
    }
 
 	/**
-	 * Returns the modifiable list of server connectors.
-	 * @return The modifiable list of server connectors.
-	 */
-	public ServerList getServers()
-	{
-		return getWrappedContainer().getServers();
-	}
-	
-   /**
     * Handles a request.
     * @param request The request to handle.
     * @param response The response to update.
@@ -111,12 +91,12 @@ public class Container extends Component
    }
 
    /**
-    * Sets the local virtual host.
-    * @param localHost The local virtual host.
+    * Sets the default virtual host.
+    * @param defaultHost The default virtual host.
     */
-   public void setLocalHost(VirtualHost localHost)
+   public void setDefaultHost(VirtualHost defaultHost)
    {
-		getWrappedContainer().setLocalHost(localHost);
+		getWrappedContainer().setDefaultHost(defaultHost);
    }
 
 }

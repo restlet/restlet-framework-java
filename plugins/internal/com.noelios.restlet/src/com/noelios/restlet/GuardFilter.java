@@ -29,11 +29,11 @@ import java.util.logging.Level;
 
 import org.restlet.Context;
 import org.restlet.Filter;
-import org.restlet.Request;
-import org.restlet.Response;
 import org.restlet.data.ChallengeRequest;
 import org.restlet.data.ChallengeResponse;
 import org.restlet.data.ChallengeScheme;
+import org.restlet.data.Request;
+import org.restlet.data.Response;
 import org.restlet.data.Status;
 
 import com.noelios.restlet.impl.util.Base64;
@@ -158,7 +158,7 @@ public class GuardFilter extends Filter
 	            if(separator == -1)
 	            {
 	               // Log the blocking
-	            	getContext().getLogger().warning("Invalid credentials given by client with IP: " + request.getClient().getAddress());
+	            	getContext().getLogger().warning("Invalid credentials given by client with IP: " + request.getClientInfo().getAddress());
 	            }
 	            else
 	            {

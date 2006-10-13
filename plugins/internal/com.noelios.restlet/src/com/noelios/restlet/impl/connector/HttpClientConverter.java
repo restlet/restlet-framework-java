@@ -27,8 +27,6 @@ import java.util.StringTokenizer;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
-import org.restlet.Request;
-import org.restlet.Response;
 import org.restlet.data.ChallengeRequest;
 import org.restlet.data.ChallengeResponse;
 import org.restlet.data.ClientInfo;
@@ -37,6 +35,8 @@ import org.restlet.data.MediaType;
 import org.restlet.data.Method;
 import org.restlet.data.Parameter;
 import org.restlet.data.ParameterList;
+import org.restlet.data.Request;
+import org.restlet.data.Response;
 import org.restlet.data.Status;
 
 import com.noelios.restlet.impl.Factory;
@@ -87,17 +87,17 @@ public class HttpClientConverter
 		try
 		{
 			// Send the request to the client
-			response.setStatus(httpCall.sendRequest(request.isInputAvailable() ? request
-					.getInput() : null));
+			response.setStatus(httpCall.sendRequest(request.isEntityAvailable() ? request
+					.getEntity() : null));
 
 			// Get the server address
-			response.getServer().setAddress(httpCall.getServerAddress());
+			response.getServerInfo().setAddress(httpCall.getServerAddress());
 
 			// Read the response headers
 			readResponseHeaders(httpCall, response);
 
 			// Set the output representation
-			response.setOutput(httpCall.getResponseOutput());
+			response.setEntity(httpCall.getResponseOutput());
 		}
 		catch (Exception e)
 		{
@@ -118,26 +118,26 @@ public class HttpClientConverter
 
 		// Manually add the host name and port when it is potentially different
 		// from the one specified in the target resource reference.
-		if (response.getServer().getName() != null)
+		if (response.getServerInfo().getName() != null)
 		{
 			String host;
 
-			if (response.getServer().getPort() != null)
+			if (response.getServerInfo().getPort() != null)
 			{
-				host = response.getServer().getName() + ':' + response.getServer().getPort();
+				host = response.getServerInfo().getName() + ':' + response.getServerInfo().getPort();
 			}
 			else
 			{
-				host = response.getServer().getName();
+				host = response.getServerInfo().getName();
 			}
 
 			requestHeaders.add(HttpConstants.HEADER_HOST, host);
 		}
 
 		// Add the user agent header
-		if (request.getClient().getAgent() != null)
+		if (request.getClientInfo().getAgent() != null)
 		{
-			requestHeaders.add(HttpConstants.HEADER_USER_AGENT, request.getClient()
+			requestHeaders.add(HttpConstants.HEADER_USER_AGENT, request.getClientInfo()
 					.getAgent());
 		}
 		else
@@ -203,7 +203,7 @@ public class HttpClientConverter
 		}
 
 		// Add the preferences
-		ClientInfo client = request.getClient();
+		ClientInfo client = request.getClientInfo();
 		if (client.getAcceptedMediaTypes().size() > 0)
 		{
 			try
@@ -269,23 +269,23 @@ public class HttpClientConverter
 		}
 
 		// Send the input representation
-		if (request.getInput() != null)
+		if (request.getEntity() != null)
 		{
-			if (request.getInput().getMediaType() != null)
+			if (request.getEntity().getMediaType() != null)
 			{
-				requestHeaders.add(HttpConstants.HEADER_CONTENT_TYPE, request.getInput()
+				requestHeaders.add(HttpConstants.HEADER_CONTENT_TYPE, request.getEntity()
 						.getMediaType().toString());
 			}
 
-			if (request.getInput().getEncoding() != null)
+			if (request.getEntity().getEncoding() != null)
 			{
-				requestHeaders.add(HttpConstants.HEADER_CONTENT_ENCODING, request.getInput()
+				requestHeaders.add(HttpConstants.HEADER_CONTENT_ENCODING, request.getEntity()
 						.getEncoding().toString());
 			}
 
-			if (request.getInput().getLanguage() != null)
+			if (request.getEntity().getLanguage() != null)
 			{
-				requestHeaders.add(HttpConstants.HEADER_CONTENT_LANGUAGE, request.getInput()
+				requestHeaders.add(HttpConstants.HEADER_CONTENT_LANGUAGE, request.getEntity()
 						.getLanguage().toString());
 			}
 		}
@@ -417,7 +417,7 @@ public class HttpClientConverter
 				}
 				else if (header.getName().equalsIgnoreCase(HttpConstants.HEADER_SERVER))
 				{
-					response.getServer().setAgent(header.getValue());
+					response.getServerInfo().setAgent(header.getValue());
 				}
 				else if (header.getName().equalsIgnoreCase(HttpConstants.HEADER_ALLOW))
 				{

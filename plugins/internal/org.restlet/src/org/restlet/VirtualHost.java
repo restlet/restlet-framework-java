@@ -20,15 +20,13 @@
  * Portions Copyright [yyyy] [name of copyright owner]
  */
 
-package org.restlet.component;
+package org.restlet;
 
 import java.net.InetAddress;
 import java.net.UnknownHostException;
 import java.util.ArrayList;
 import java.util.List;
 
-import org.restlet.Application;
-import org.restlet.Router;
 import org.restlet.data.Protocol;
 
 /**

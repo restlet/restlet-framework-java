@@ -22,7 +22,7 @@
 
 package com.noelios.restlet.example.tutorial;
 
-import org.restlet.connector.Client;
+import org.restlet.Client;
 import org.restlet.data.Protocol;
 
 /**
@@ -35,7 +35,7 @@ public class Tutorial02a
    {
       // Outputting the content of a Web page
    	Client client = new Client(Protocol.HTTP);
-      client.get("http://www.restlet.org").getOutput().write(System.out);
+      client.get("http://www.restlet.org").getEntity().write(System.out);
    }
 
 }

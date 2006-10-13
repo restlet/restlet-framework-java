@@ -31,13 +31,13 @@ import java.util.List;
 
 import org.restlet.Context;
 import org.restlet.Filter;
-import org.restlet.Request;
-import org.restlet.Response;
 import org.restlet.data.ClientInfo;
 import org.restlet.data.Encoding;
 import org.restlet.data.MediaType;
 import org.restlet.data.Preference;
 import org.restlet.data.Representation;
+import org.restlet.data.Request;
+import org.restlet.data.Response;
 
 import com.noelios.restlet.data.EncoderRepresentation;
 
@@ -148,9 +148,9 @@ public class CompressFilter extends Filter
    public void beforeHandle(Request request, Response response)
    {
 		// Check if encoding of the call input is needed
-		if(isEncodeInput() && canEncode(request.getInput()))
+		if(isEncodeInput() && canEncode(request.getEntity()))
 		{
-			request.setInput(encode(request.getClient(), request.getInput()));
+			request.setEntity(encode(request.getClientInfo(), request.getEntity()));
 		}
    }
 
@@ -162,9 +162,9 @@ public class CompressFilter extends Filter
    public void afterHandle(Request request, Response response)
    {
 		// Check if encoding of the call output is needed
-		if(isEncodeOutput() && canEncode(response.getOutput()))
+		if(isEncodeOutput() && canEncode(response.getEntity()))
 		{
-			response.setOutput(encode(request.getClient(), response.getOutput()));
+			response.setEntity(encode(request.getClientInfo(), response.getEntity()));
 		}
 	}
 

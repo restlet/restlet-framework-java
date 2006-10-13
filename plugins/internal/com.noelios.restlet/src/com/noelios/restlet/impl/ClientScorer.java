@@ -25,12 +25,12 @@ package com.noelios.restlet.impl;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
-import org.restlet.Request;
-import org.restlet.Response;
+import org.restlet.Client;
 import org.restlet.Router;
 import org.restlet.Scorer;
-import org.restlet.connector.Client;
 import org.restlet.data.Protocol;
+import org.restlet.data.Request;
+import org.restlet.data.Response;
 
 /**
  * Router scorer based on a target VirtualHost. 

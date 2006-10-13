@@ -24,9 +24,9 @@ package com.noelios.restlet.impl.component;
 
 import java.util.logging.Logger;
 
-import org.restlet.Request;
-import org.restlet.Response;
 import org.restlet.data.Protocol;
+import org.restlet.data.Request;
+import org.restlet.data.Response;
 
 /**
  * Context allowing access to the container's connectors.

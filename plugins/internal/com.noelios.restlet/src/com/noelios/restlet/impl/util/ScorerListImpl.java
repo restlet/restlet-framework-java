@@ -26,11 +26,11 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Random;
 
-import org.restlet.Request;
-import org.restlet.Response;
 import org.restlet.Router;
 import org.restlet.Scorer;
 import org.restlet.UniformInterface;
+import org.restlet.data.Request;
+import org.restlet.data.Response;
 import org.restlet.spi.Factory;
 import org.restlet.util.ScorerList;
 import org.restlet.util.WrapperList;

@@ -22,15 +22,15 @@
 
 package com.noelios.restlet.example.misc;
 
+import org.restlet.Container;
 import org.restlet.Context;
-import org.restlet.Request;
-import org.restlet.Response;
 import org.restlet.Restlet;
-import org.restlet.component.Container;
 import org.restlet.data.Form;
 import org.restlet.data.MediaType;
 import org.restlet.data.Parameter;
 import org.restlet.data.Protocol;
+import org.restlet.data.Request;
+import org.restlet.data.Response;
 
 /**
  * Simple HTTP server invoked by the simple client.
@@ -58,7 +58,7 @@ public class SimpleServer
             {
                System.out.println("Handling the call...");
                System.out.println("Trying to get the input as a form...");
-               Form form = request.getInputAsForm();
+               Form form = request.getEntityAsForm();
 
                System.out.println("Trying to getParameters...");
                StringBuffer sb = new StringBuffer("foo");
@@ -74,7 +74,7 @@ public class SimpleServer
                   System.out.println(sb.toString());
                }
 
-               response.setOutput(sb.toString(), MediaType.TEXT_PLAIN);
+               response.setEntity(sb.toString(), MediaType.TEXT_PLAIN);
             }
          };
 

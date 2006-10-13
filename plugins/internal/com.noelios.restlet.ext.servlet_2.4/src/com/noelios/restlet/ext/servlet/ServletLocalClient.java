@@ -27,13 +27,13 @@ import java.util.Set;
 
 import javax.servlet.ServletContext;
 
-import org.restlet.Request;
-import org.restlet.Response;
 import org.restlet.data.MediaType;
 import org.restlet.data.Method;
 import org.restlet.data.Reference;
 import org.restlet.data.ReferenceList;
 import org.restlet.data.Representation;
+import org.restlet.data.Request;
+import org.restlet.data.Response;
 import org.restlet.data.Status;
 
 import com.noelios.restlet.data.InputRepresentation;
@@ -110,7 +110,7 @@ public class ServletLocalClient extends LocalClient
             }
 			}
 			
-			response.setOutput(output);
+			response.setEntity(output);
 			response.setStatus(Status.SUCCESS_OK);
 		}
 		else

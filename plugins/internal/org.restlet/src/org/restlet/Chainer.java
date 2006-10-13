@@ -22,6 +22,9 @@
 
 package org.restlet;
 
+import org.restlet.data.Request;
+import org.restlet.data.Response;
+
 /**
  * Restlet part of a processing chain. In addition to handling incoming calls like any Restlet, a handler 
  * can also resolve, either statically or dynamically, the next Restlet that will continue the processing chain.

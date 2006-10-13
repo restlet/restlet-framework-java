@@ -30,16 +30,13 @@ import java.util.logging.Level;
 import java.util.logging.Logger;
 
 import org.restlet.Application;
-import org.restlet.Request;
-import org.restlet.Resource;
-import org.restlet.Response;
+import org.restlet.ApplicationDelegate;
+import org.restlet.Client;
+import org.restlet.Container;
 import org.restlet.Router;
 import org.restlet.Scorer;
+import org.restlet.Server;
 import org.restlet.UniformInterface;
-import org.restlet.component.ApplicationDelegate;
-import org.restlet.component.Container;
-import org.restlet.connector.Client;
-import org.restlet.connector.Server;
 import org.restlet.data.ChallengeResponse;
 import org.restlet.data.ClientInfo;
 import org.restlet.data.Form;
@@ -47,6 +44,9 @@ import org.restlet.data.Language;
 import org.restlet.data.MediaType;
 import org.restlet.data.Protocol;
 import org.restlet.data.Representation;
+import org.restlet.data.Request;
+import org.restlet.data.Resource;
+import org.restlet.data.Response;
 import org.restlet.util.ScorerList;
 
 /**

@@ -24,11 +24,11 @@ package com.noelios.restlet.impl.component;
 
 import java.util.logging.Logger;
 
-import org.restlet.Request;
-import org.restlet.Response;
-import org.restlet.component.ApplicationDelegate;
-import org.restlet.component.Container;
+import org.restlet.ApplicationDelegate;
+import org.restlet.Container;
 import org.restlet.data.Protocol;
+import org.restlet.data.Request;
+import org.restlet.data.Response;
 
 import com.noelios.restlet.impl.connector.LocalClient;
 

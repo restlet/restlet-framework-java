@@ -27,8 +27,8 @@ import java.util.logging.Logger;
 
 import org.restlet.Context;
 import org.restlet.Filter;
-import org.restlet.Request;
-import org.restlet.Response;
+import org.restlet.data.Request;
+import org.restlet.data.Response;
 
 import com.noelios.restlet.util.CallModel;
 import com.noelios.restlet.util.StringTemplate;
@@ -136,7 +136,7 @@ public class LogFilter extends Filter
 
       // Append the client IP address
       sb.append('\t');
-      String clientAddress = request.getClient().getAddress();
+      String clientAddress = request.getClientInfo().getAddress();
       sb.append((clientAddress == null) ? "-" : clientAddress);
 
       // Append the version
@@ -144,7 +144,7 @@ public class LogFilter extends Filter
 
       // Append the agent name
       sb.append('\t');
-      String agentName = request.getClient().getAgent();
+      String agentName = request.getClientInfo().getAgent();
       sb.append((agentName == null) ? "-" : agentName);
 
       // Append the referrer
@@ -157,13 +157,13 @@ public class LogFilter extends Filter
 
       // Append the returned size
       sb.append('\t');
-      if(response.getOutput() == null)
+      if(response.getEntity() == null)
       {
          sb.append('0');
       }
       else
       {
-         sb.append((response.getOutput().getSize() == -1) ? "-" : Long.toString(response.getOutput().getSize()));
+         sb.append((response.getEntity().getSize() == -1) ? "-" : Long.toString(response.getEntity().getSize()));
       }
 
       // Append the resource query

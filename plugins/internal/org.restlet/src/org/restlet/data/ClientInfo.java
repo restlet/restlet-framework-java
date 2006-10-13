@@ -25,7 +25,6 @@ package org.restlet.data;
 import java.util.ArrayList;
 import java.util.List;
 
-import org.restlet.Resource;
 import org.restlet.spi.Factory;
 
 /**

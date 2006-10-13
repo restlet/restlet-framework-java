@@ -25,8 +25,8 @@ package com.noelios.restlet.impl.connector;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
-import org.restlet.Request;
-import org.restlet.Response;
+import org.restlet.data.Request;
+import org.restlet.data.Response;
 
 /**
  * Base HTTP server connector.

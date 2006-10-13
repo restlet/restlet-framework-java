@@ -22,13 +22,13 @@
 
 package com.noelios.restlet.example.misc;
 
-import org.restlet.Request;
-import org.restlet.Response;
 import org.restlet.Restlet;
-import org.restlet.connector.Server;
+import org.restlet.Server;
 import org.restlet.data.MediaType;
 import org.restlet.data.ParameterList;
 import org.restlet.data.Protocol;
+import org.restlet.data.Request;
+import org.restlet.data.Response;
 
 /**
  * Display the HTTP accept header sent by the Web browsers.
@@ -49,7 +49,7 @@ public class HeadersTest
 				
 				// The headers list contains all received HTTP headers, in raw format.
 				// Below, we simply display the standard "Accept" HTTP header.
-				response.setOutput("Accept header: " + headers.getFirstValue("accept", true), MediaType.TEXT_PLAIN);
+				response.setEntity("Accept header: " + headers.getFirstValue("accept", true), MediaType.TEXT_PLAIN);
 
 				// -----------------------
 				// Adding response headers

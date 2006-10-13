@@ -22,9 +22,9 @@
 
 package com.noelios.restlet.impl;
 
+import org.restlet.Client;
+import org.restlet.Container;
 import org.restlet.Router;
-import org.restlet.component.Container;
-import org.restlet.connector.Client;
 
 /**
  * Router that collects calls from all applications and dispatches them to the appropriate

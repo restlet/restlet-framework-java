@@ -26,11 +26,11 @@ import java.util.ArrayList;
 import java.util.List;
 
 import org.restlet.Context;
-import org.restlet.Request;
-import org.restlet.Response;
+import org.restlet.Server;
 import org.restlet.UniformInterface;
-import org.restlet.connector.Server;
 import org.restlet.data.Protocol;
+import org.restlet.data.Request;
+import org.restlet.data.Response;
 import org.restlet.data.Status;
 
 /**

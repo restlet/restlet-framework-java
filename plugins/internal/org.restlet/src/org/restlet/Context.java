@@ -24,7 +24,6 @@ package org.restlet;
 
 import java.util.logging.Logger;
 
-import org.restlet.connector.ClientInterface;
 import org.restlet.data.ParameterList;
 
 /**

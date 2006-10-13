@@ -22,11 +22,11 @@
 
 package com.noelios.restlet.ext.atom;
 
-import org.restlet.Request;
-import org.restlet.Response;
 import org.restlet.data.Method;
 import org.restlet.data.Reference;
 import org.restlet.data.Representation;
+import org.restlet.data.Request;
+import org.restlet.data.Response;
 import org.restlet.data.Status;
 
 /**
@@ -174,7 +174,7 @@ public class Collection
 		
 		if(response.getStatus().equals(Status.SUCCESS_OK))
 		{
-			return new Feed(response.getOutput());
+			return new Feed(response.getEntity());
 		}
 		else
 		{

@@ -28,10 +28,10 @@ import java.util.Iterator;
 
 import org.restlet.Context;
 import org.restlet.Filter;
-import org.restlet.Request;
-import org.restlet.Response;
 import org.restlet.data.Encoding;
 import org.restlet.data.Representation;
+import org.restlet.data.Request;
+import org.restlet.data.Response;
 
 import com.noelios.restlet.data.DecoderRepresentation;
 
@@ -81,9 +81,9 @@ public class DecompressFilter extends Filter
    public void beforeHandle(Request request, Response response)
    {
 		// Check if decoding of the call input is needed
-		if(isDecodeInput() && canDecode(request.getInput()))
+		if(isDecodeInput() && canDecode(request.getEntity()))
 		{
-			request.setInput(decode(request.getInput()));
+			request.setEntity(decode(request.getEntity()));
 		}
    }
 
@@ -95,9 +95,9 @@ public class DecompressFilter extends Filter
    public void afterHandle(Request request, Response response)
    {
 		// Check if decoding of the call output is needed
-		if(isDecodeOutput() && canDecode(response.getOutput()))
+		if(isDecodeOutput() && canDecode(response.getEntity()))
 		{
-			response.setOutput(decode(response.getOutput()));
+			response.setEntity(decode(response.getEntity()));
 		}
    }
 

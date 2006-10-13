@@ -24,14 +24,14 @@ package com.noelios.restlet.test;
 
 import junit.framework.TestCase;
 
+import org.restlet.Container;
 import org.restlet.Context;
-import org.restlet.Request;
-import org.restlet.Response;
 import org.restlet.Restlet;
-import org.restlet.component.Container;
 import org.restlet.data.MediaType;
 import org.restlet.data.Method;
 import org.restlet.data.Protocol;
+import org.restlet.data.Request;
+import org.restlet.data.Response;
 
 import com.noelios.restlet.RedirectRestlet;
 import com.noelios.restlet.data.StringRepresentation;
@@ -73,7 +73,7 @@ public class RedirectTestCase extends TestCase
 						+ "Relative path: " + request.getRelativePart() + '\n'
 						+ "Query string:  " + request.getResourceRef().getQuery() + '\n'
 						+ "Method name:   " + request.getMethod() + '\n';
-				response.setOutput(new StringRepresentation(output, MediaType.TEXT_PLAIN));
+				response.setEntity(new StringRepresentation(output, MediaType.TEXT_PLAIN));
 			}
 		};
 
@@ -117,7 +117,7 @@ public class RedirectTestCase extends TestCase
 			throws Exception
 	{
 		Response response = context.getClient().handle(new Request(method, uri));
-		assertNotNull(response.getOutput());
-		response.getOutput().write(System.out);
+		assertNotNull(response.getEntity());
+		response.getEntity().write(System.out);
 	}
 }

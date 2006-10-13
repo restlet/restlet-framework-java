@@ -36,11 +36,11 @@ import javax.mail.internet.MimeMessage;
 import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
 
-import org.restlet.Request;
-import org.restlet.Response;
 import org.restlet.data.Method;
 import org.restlet.data.Protocol;
 import org.restlet.data.Representation;
+import org.restlet.data.Request;
+import org.restlet.data.Response;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 import org.w3c.dom.NodeList;
@@ -106,10 +106,10 @@ public abstract class JavaMailClient extends ClientImpl
    public static Request create(String smtpURI, Representation email)
    {
    	Request result = new Request();
-      result.getClient().setAgent(Factory.VERSION_HEADER);
+      result.getClientInfo().setAgent(Factory.VERSION_HEADER);
       result.setMethod(Method.POST);
       result.setResourceRef(smtpURI);
-      result.setInput(email);
+      result.setEntity(email);
       return result;
    }
 
@@ -150,7 +150,7 @@ public abstract class JavaMailClient extends ClientImpl
 
          // Parse the email to extract necessary info
          DocumentBuilder docBuilder = DocumentBuilderFactory.newInstance().newDocumentBuilder();
-         Document email = docBuilder.parse(request.getInput().getStream());
+         Document email = docBuilder.parse(request.getEntity().getStream());
 
          Element root = (Element)email.getElementsByTagName("email").item(0);
          Element header = (Element)root.getElementsByTagName("head").item(0);

@@ -22,13 +22,13 @@
 
 package com.noelios.restlet.example.misc;
 
-import org.restlet.Request;
-import org.restlet.Response;
-import org.restlet.connector.Client;
+import org.restlet.Client;
 import org.restlet.data.Form;
 import org.restlet.data.Method;
 import org.restlet.data.Protocol;
 import org.restlet.data.Representation;
+import org.restlet.data.Request;
+import org.restlet.data.Response;
 
 /**
  * Simple HTTP client calling the simple server.
@@ -54,7 +54,7 @@ public class SimpleClient
       form.add("name", "John D. Mitchell");
       form.add("email", "john@bob.net");
       form.add("email2", "joe@bob.net");
-      request.setInput(form.getWebForm());
+      request.setEntity(form.getWebForm());
 
       // Prepare HTTP client connector.
       Client client = new Client(Protocol.HTTP);
@@ -65,7 +65,7 @@ public class SimpleClient
       if(response.getStatus().isSuccess())
       {
          // Output the result representation on the JVM console
-         Representation output = response.getOutput();
+         Representation output = response.getEntity();
          output.write(System.out);
          System.out.println("client: success!");
       }

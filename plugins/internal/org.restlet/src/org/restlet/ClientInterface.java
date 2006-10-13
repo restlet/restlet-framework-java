@@ -20,12 +20,11 @@
  * Portions Copyright [yyyy] [name of copyright owner]
  */
 
-package org.restlet.connector;
+package org.restlet;
 
-import org.restlet.Request;
-import org.restlet.Response;
-import org.restlet.UniformInterface;
 import org.restlet.data.Representation;
+import org.restlet.data.Request;
+import org.restlet.data.Response;
 
 /**
  * Uniform client interface.

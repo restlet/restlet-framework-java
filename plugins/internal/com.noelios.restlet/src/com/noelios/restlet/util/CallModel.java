@@ -22,9 +22,9 @@
 
 package com.noelios.restlet.util;
 
-import org.restlet.Request;
-import org.restlet.Response;
 import org.restlet.data.Form;
+import org.restlet.data.Request;
+import org.restlet.data.Response;
 
 import com.noelios.restlet.impl.util.CookieUtils;
 
@@ -117,7 +117,7 @@ public class CallModel implements ReadableModel
 	      {
 	      	if(name.equals(NAME_CLIENT_ADDRESS))
 	      	{
-	      		result = request.getClient().getAddress();
+	      		result = request.getClientInfo().getAddress();
 	      	}
 	      	else
 	      	{
@@ -129,11 +129,11 @@ public class CallModel implements ReadableModel
 	      			
 	   				if(rest.equals("first"))
 	   				{
-	   					result = request.getClient().getAddresses().get(0);
+	   					result = request.getClientInfo().getAddresses().get(0);
 	   				}
 	   				else if(rest.equals("last"))
 	   				{
-	   					result = request.getClient().getAddresses().get(request.getClient().getAddresses().size() - 1);
+	   					result = request.getClientInfo().getAddresses().get(request.getClientInfo().getAddresses().size() - 1);
 	   				}
 	   				else if(isVariableName(rest))
 	   				{
@@ -143,7 +143,7 @@ public class CallModel implements ReadableModel
 	   				else
 	   				{
 	   					// Lookup by index
-	   					result = request.getClient().getAddresses().get(Integer.parseInt(rest));
+	   					result = request.getClientInfo().getAddresses().get(Integer.parseInt(rest));
 	   				}
 	      		}
 	      		else
@@ -154,7 +154,7 @@ public class CallModel implements ReadableModel
 	      }
 	      else if(name.equals(NAME_CLIENT_AGENT))
 	      {
-	         result = request.getClient().getAgent();
+	         result = request.getClientInfo().getAgent();
 	      }
 	      else if(name.startsWith(NAME_COOKIE))
 	      {
@@ -284,11 +284,11 @@ public class CallModel implements ReadableModel
 	      }
 	      else if(name.equals(NAME_SERVER_ADDRESS))
 	      {
-	         result = response.getServer().getAddress();
+	         result = response.getServerInfo().getAddress();
 	      }
 	      else if(name.equals(NAME_SERVER_AGENT))
 	      {
-	         result = response.getServer().getAgent();
+	         result = response.getServerInfo().getAgent();
 	      }
 	      else if(name.equals(NAME_STATUS))
 	      {
@@ -341,11 +341,11 @@ public class CallModel implements ReadableModel
 
       if(name.startsWith(NAME_CLIENT_ADDRESS))
       {
-         result = (request.getClient().getAddress() != null);
+         result = (request.getClientInfo().getAddress() != null);
       }
       else if(name.equals(NAME_CLIENT_AGENT))
       {
-         result = (request.getClient().getAgent() != null);
+         result = (request.getClientInfo().getAgent() != null);
       }
       else if(name.startsWith(NAME_COOKIE))
       {
@@ -409,11 +409,11 @@ public class CallModel implements ReadableModel
       }
       else if(name.equals(NAME_SERVER_ADDRESS))
       {
-         result = (response.getServer().getAddress() != null);
+         result = (response.getServerInfo().getAddress() != null);
       }
       else if(name.equals(NAME_SERVER_AGENT))
       {
-         result = (response.getServer().getAgent() != null);
+         result = (response.getServerInfo().getAgent() != null);
       }
       else if(name.equals(NAME_STATUS))
       {

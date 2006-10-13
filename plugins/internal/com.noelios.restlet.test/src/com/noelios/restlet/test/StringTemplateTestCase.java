@@ -24,8 +24,8 @@ package com.noelios.restlet.test;
 
 import junit.framework.TestCase;
 
-import org.restlet.Request;
-import org.restlet.Response;
+import org.restlet.data.Request;
+import org.restlet.data.Response;
 
 import com.noelios.restlet.util.CallModel;
 import com.noelios.restlet.util.MapModel;

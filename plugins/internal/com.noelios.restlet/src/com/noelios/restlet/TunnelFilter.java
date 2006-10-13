@@ -23,9 +23,9 @@
 package com.noelios.restlet;
 
 import org.restlet.Context;
-import org.restlet.Request;
-import org.restlet.Response;
 import org.restlet.data.Method;
+import org.restlet.data.Request;
+import org.restlet.data.Response;
 
 import com.noelios.restlet.impl.util.PreferenceUtils;
 
@@ -116,26 +116,26 @@ public class TunnelFilter extends ExtractFilter
          // Parse the headers and update the call preferences
          if(acceptCharset != null)
          {
-         	request.getClient().getAcceptedCharacterSets().clear();
-            PreferenceUtils.parseCharacterSets(acceptCharset, request.getClient());
+         	request.getClientInfo().getAcceptedCharacterSets().clear();
+            PreferenceUtils.parseCharacterSets(acceptCharset, request.getClientInfo());
          }
 
          if(acceptEncoding != null)
          {
-         	request.getClient().getAcceptedEncodings().clear();
-            PreferenceUtils.parseEncodings(acceptEncoding, request.getClient());
+         	request.getClientInfo().getAcceptedEncodings().clear();
+            PreferenceUtils.parseEncodings(acceptEncoding, request.getClientInfo());
          }
 
          if(acceptLanguage != null)
          {
-         	request.getClient().getAcceptedLanguages().clear();
-            PreferenceUtils.parseLanguages(acceptLanguage, request.getClient());
+         	request.getClientInfo().getAcceptedLanguages().clear();
+            PreferenceUtils.parseLanguages(acceptLanguage, request.getClientInfo());
          }
 
          if(acceptMediaType != null)
          {
-         	request.getClient().getAcceptedMediaTypes().clear();
-            PreferenceUtils.parseMediaTypes(acceptMediaType, request.getClient());
+         	request.getClientInfo().getAcceptedMediaTypes().clear();
+            PreferenceUtils.parseMediaTypes(acceptMediaType, request.getClientInfo());
          }
       }
 

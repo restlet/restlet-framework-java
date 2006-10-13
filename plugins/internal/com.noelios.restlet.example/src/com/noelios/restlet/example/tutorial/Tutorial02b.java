@@ -22,12 +22,12 @@
 
 package com.noelios.restlet.example.tutorial;
 
-import org.restlet.Request;
-import org.restlet.Response;
-import org.restlet.connector.Client;
+import org.restlet.Client;
 import org.restlet.data.Method;
 import org.restlet.data.Protocol;
 import org.restlet.data.Representation;
+import org.restlet.data.Request;
+import org.restlet.data.Response;
 
 /**
  * Retrieving the content of a Web page (detailled).
@@ -46,7 +46,7 @@ public class Tutorial02b
       Response response = client.handle(request);
 
       // Write the output representation on the console
-      Representation output = response.getOutput();
+      Representation output = response.getEntity();
       output.write(System.out);
    }
 

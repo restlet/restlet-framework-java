@@ -27,11 +27,11 @@ import java.io.IOException;
 
 import junit.framework.TestCase;
 
-import org.restlet.Request;
-import org.restlet.Response;
-import org.restlet.component.Container;
+import org.restlet.Container;
 import org.restlet.data.Method;
 import org.restlet.data.Representation;
+import org.restlet.data.Request;
+import org.restlet.data.Response;
 import org.restlet.data.Status;
 
 import com.noelios.restlet.DirectoryFinder;
@@ -109,7 +109,7 @@ public class DirectoryTestCase extends TestCase
       if (response.getStatus().equals(Status.SUCCESS_OK))
       {
          // should list all files in the directory (at least the temporary file generated before)
-         response.getOutput().write(System.out);
+         response.getEntity().write(System.out);
       }
 
       //Test n°2a : tests the HEAD method
@@ -136,7 +136,7 @@ public class DirectoryTestCase extends TestCase
       assertTrue(response.getStatus().equals(Status.SUCCESS_OK));
       if (response.getStatus().equals(Status.SUCCESS_OK))
       {
-         response.getOutput().write(System.out);
+         response.getEntity().write(System.out);
          System.out.println("");
       }
 
@@ -248,7 +248,7 @@ public class DirectoryTestCase extends TestCase
       request.setMethod(method);
       if (Method.PUT.equals(method))
       {
-         request.setInput(inputRepresentation);
+         request.setEntity(inputRepresentation);
       }
 
       directory.handle(request, response);

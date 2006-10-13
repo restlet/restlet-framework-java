@@ -28,8 +28,8 @@ import org.apache.commons.fileupload.FileItem;
 import org.apache.commons.fileupload.FileItemFactory;
 import org.apache.commons.fileupload.FileUpload;
 import org.apache.commons.fileupload.FileUploadException;
-import org.restlet.Request;
 import org.restlet.data.Representation;
+import org.restlet.data.Request;
 
 /**
  * High level API for processing file uploads.
@@ -69,7 +69,7 @@ public class RestletFileUpload extends FileUpload
 	@SuppressWarnings("unchecked")
 	public List<FileItem> parseRequest(Request request) throws FileUploadException
 	{
-		return parseRequest(new RepresentationContext(request.getInput()));
+		return parseRequest(new RepresentationContext(request.getEntity()));
 	}
 
 	/**

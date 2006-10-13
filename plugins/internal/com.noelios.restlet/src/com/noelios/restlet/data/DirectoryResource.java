@@ -29,16 +29,16 @@ import java.util.TreeSet;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
-import org.restlet.Request;
-import org.restlet.Resource;
-import org.restlet.Response;
-import org.restlet.connector.ClientInterface;
+import org.restlet.ClientInterface;
 import org.restlet.data.MediaType;
 import org.restlet.data.Method;
 import org.restlet.data.Preference;
 import org.restlet.data.Reference;
 import org.restlet.data.ReferenceList;
 import org.restlet.data.Representation;
+import org.restlet.data.Request;
+import org.restlet.data.Resource;
+import org.restlet.data.Response;
 import org.restlet.data.Result;
 import org.restlet.data.Status;
 
@@ -114,11 +114,11 @@ public class DirectoryResource extends Resource
 
 		// Try to detect the presence of a directory
 		Response contextResponse = getClient().get(this.targetUri);
-		if ((contextResponse.getOutput() != null)
-				&& contextResponse.getOutput().getMediaType().equals(MediaType.TEXT_URI_LIST))
+		if ((contextResponse.getEntity() != null)
+				&& contextResponse.getEntity().getMediaType().equals(MediaType.TEXT_URI_LIST))
 		{
 			this.targetDirectory = true;
-			this.directoryContent = new ReferenceList(contextResponse.getOutput());
+			this.directoryContent = new ReferenceList(contextResponse.getEntity());
 
 			if (!this.targetUri.endsWith("/"))
 			{
@@ -155,10 +155,10 @@ public class DirectoryResource extends Resource
 			}
 
 			contextResponse = getClient().get(this.directoryUri);
-			if ((contextResponse.getOutput() != null)
-					&& contextResponse.getOutput().getMediaType().equals(MediaType.TEXT_URI_LIST))
+			if ((contextResponse.getEntity() != null)
+					&& contextResponse.getEntity().getMediaType().equals(MediaType.TEXT_URI_LIST))
 			{
-				this.directoryContent = new ReferenceList(contextResponse.getOutput());
+				this.directoryContent = new ReferenceList(contextResponse.getEntity());
 			}
 		}
 
@@ -316,9 +316,9 @@ public class DirectoryResource extends Resource
 					//Add the new variant to the result list
 					Response contextResponse = getClient().get(ref.toString());
 					if (contextResponse.getStatus().isSuccess()
-							&& (contextResponse.getOutput() != null))
+							&& (contextResponse.getEntity() != null))
 					{
-						result.add(contextResponse.getOutput());
+						result.add(contextResponse.getEntity());
 					}
 				}
 			}
@@ -392,7 +392,7 @@ public class DirectoryResource extends Resource
 			Request contextRequest = new Request(Method.PUT, this.targetUri);
 			Response contextResponse = new Response(contextRequest);
 			
-			contextRequest.setInput(variant);
+			contextRequest.setEntity(variant);
 			if (targetDirectory)
 			{
 				contextRequest.setResourceRef(this.targetUri);
@@ -476,12 +476,12 @@ public class DirectoryResource extends Resource
 		try
 		{
 			Request contextCall = new Request(Method.GET, this.targetUri);
-			contextCall.getClient().getAcceptedMediaTypes().add(
+			contextCall.getClientInfo().getAcceptedMediaTypes().add(
 					new Preference<MediaType>(MediaType.TEXT_URI_LIST));
 			Response contextResponse = getClient().handle(contextCall);
-			if (contextResponse.getOutput() != null)
+			if (contextResponse.getEntity() != null)
 			{
-				ReferenceList listVariants = new ReferenceList(contextResponse.getOutput());
+				ReferenceList listVariants = new ReferenceList(contextResponse.getEntity());
 				Set<String> extensions = null;
 				String entryUri;
 				String fullEntryName;

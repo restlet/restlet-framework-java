@@ -24,6 +24,9 @@ package org.restlet;
 
 import org.restlet.data.Language;
 import org.restlet.data.Method;
+import org.restlet.data.Request;
+import org.restlet.data.Resource;
+import org.restlet.data.Response;
 import org.restlet.data.Status;
 
 /**
@@ -77,7 +80,7 @@ public abstract class Finder extends Restlet
 		{
 			if(target.allowGet())
 			{
-				response.setOutput(target, getFallbackLanguage());
+				response.setEntity(target, getFallbackLanguage());
 			}
 			else
 			{
@@ -144,9 +147,9 @@ public abstract class Finder extends Restlet
 		{
 			if(target.allowPost())
 			{
-				if (request.isInputAvailable())
+				if (request.isEntityAvailable())
 				{
-					response.setStatus(target.post(request.getInput()).getStatus());
+					response.setStatus(target.post(request.getEntity()).getStatus());
 				}
 				else
 				{
@@ -180,9 +183,9 @@ public abstract class Finder extends Restlet
 		{
 			if(target.allowPut())
 			{
-				if (request.isInputAvailable())
+				if (request.isEntityAvailable())
 				{
-					response.setStatus(target.put(request.getInput()).getStatus());
+					response.setStatus(target.put(request.getEntity()).getStatus());
 				}
 				else
 				{

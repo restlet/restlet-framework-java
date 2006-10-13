@@ -25,13 +25,13 @@ package com.noelios.restlet.impl;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
-import org.restlet.Request;
-import org.restlet.Response;
 import org.restlet.Router;
 import org.restlet.Scorer;
-import org.restlet.component.VirtualHost;
+import org.restlet.VirtualHost;
 import org.restlet.data.Protocol;
 import org.restlet.data.Reference;
+import org.restlet.data.Request;
+import org.restlet.data.Response;
 
 /**
  * Router scorer based on a target VirtualHost. 
@@ -111,7 +111,7 @@ public class HostScorer extends Scorer
 		// Add the port score
 		if (!incompatible)
 		{
-			Integer port = response.getServer().getPort();
+			Integer port = response.getServerInfo().getPort();
 
 			if (getHost().getAllowedPorts().contains(VirtualHost.ALL_PORTS)
 					|| ((port != null) && getHost().getAllowedPorts().contains(port)))
@@ -127,7 +127,7 @@ public class HostScorer extends Scorer
 		// Add the address score
 		if (!incompatible)
 		{
-			String address = response.getServer().getAddress();
+			String address = response.getServerInfo().getAddress();
 
 			if (getHost().getAllowedAddresses().contains(VirtualHost.ALL_ADDRESSES)
 					|| ((address != null) && getHost().getAllowedAddresses().contains(address)))
@@ -143,7 +143,7 @@ public class HostScorer extends Scorer
 		// Add the name score
 		if (!incompatible)
 		{
-			String name = response.getServer().getName();
+			String name = response.getServerInfo().getName();
 
 			if (getHost().getAllowedNames().contains(VirtualHost.ALL_NAMES)
 					|| ((name != null) && getHost().getAllowedNames().contains(name)))
@@ -177,8 +177,8 @@ public class HostScorer extends Scorer
 	 */
 	public void handle(Request request, Response response)
 	{
-		request.setBaseRef(new Reference(request.getProtocol().getSchemeName(), response.getServer()
-				.getName(), response.getServer().getPort(), null, null, null));
+		request.setBaseRef(new Reference(request.getProtocol().getSchemeName(), response.getServerInfo()
+				.getName(), response.getServerInfo().getPort(), null, null, null));
 
 		if (logger.isLoggable(Level.FINE))
 		{

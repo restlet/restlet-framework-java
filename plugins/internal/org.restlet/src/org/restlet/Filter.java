@@ -22,6 +22,9 @@
 
 package org.restlet;
 
+import org.restlet.data.Request;
+import org.restlet.data.Response;
+
 /**
  * Chainer to an attached handler that filters calls. The purpose is to do some pre-processing or 
  * post-processing on the calls going through it before or after they are actually handled by an attached 

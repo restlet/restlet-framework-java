@@ -22,10 +22,10 @@
 
 package com.noelios.restlet.impl.component;
 
-import org.restlet.Request;
-import org.restlet.Response;
-import org.restlet.component.ApplicationDelegate;
+import org.restlet.ApplicationDelegate;
 import org.restlet.data.Representation;
+import org.restlet.data.Request;
+import org.restlet.data.Response;
 import org.restlet.data.Status;
 
 import com.noelios.restlet.impl.StatusFilter;

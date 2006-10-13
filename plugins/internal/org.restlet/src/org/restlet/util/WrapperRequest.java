@@ -25,16 +25,17 @@ package org.restlet.util;
 import java.util.List;
 import java.util.Map;
 
-import org.restlet.Request;
 import org.restlet.data.ChallengeResponse;
 import org.restlet.data.ClientInfo;
 import org.restlet.data.Conditions;
 import org.restlet.data.Cookie;
 import org.restlet.data.Form;
+import org.restlet.data.MediaType;
 import org.restlet.data.Method;
 import org.restlet.data.Protocol;
 import org.restlet.data.Reference;
 import org.restlet.data.Representation;
+import org.restlet.data.Request;
 
 /**
  * Wrapper used to enrich a request with additional state or logic.
@@ -66,8 +67,8 @@ public class WrapperRequest extends Request
 
 	/**
 	 * Returns a modifiable attributes map that can be used by developers to save information relative
-	 * to the current request. This is an easier alternative to the creation of a wrapper around the whole 
-	 * request.
+	 * to the message. This is an easier alternative to the creation of a wrapper instance around the 
+	 * whole message.
 	 * @return The modifiable attributes map.
 	 */
 	public Map<String, Object> getAttributes()
@@ -76,35 +77,84 @@ public class WrapperRequest extends Request
 	}
 
 	/**
+	 * Returns the entity representation.
+	 * @return The entity representation.
+	 */
+	public Representation getEntity()
+	{
+		return getWrappedRequest().getEntity();
+	}
+
+	/**
+	 * Returns the representation provided by the client as a form.<br/>
+	 * Note that this triggers the parsing of the input representation.<br/>
+	 * This method and the associated getInput method can only be invoked once.
+	 * @return The input form provided by the client.
+	 */
+	public Form getEntityAsForm()
+	{
+		return getWrappedRequest().getEntityAsForm();
+	}
+
+	/**
+	 * Indicates if a content is available and can be sent. Several conditions must be met: the content 
+	 * must exists and have some available data.
+	 * @return True if a content is available and can be sent.
+	 */
+	public boolean isEntityAvailable()
+	{
+		return getWrappedRequest().isEntityAvailable();
+	}
+	
+	/**
+	 * Sets the entity representation.
+	 * @param entity The entity representation.
+	 */
+	public void setEntity(Representation entity)
+	{
+		getWrappedRequest().setEntity(entity);
+	}
+
+	/**
+	 * Sets a textual entity.
+    * @param value The represented string.
+    * @param mediaType The representation's media type.
+	 */
+	public void setEntity(String value, MediaType mediaType)
+	{
+		getWrappedRequest().setEntity(value, mediaType);
+	}
+
+	/**
 	 * Returns the base reference.
 	 * @return The base reference.
 	 */
 	public Reference getBaseRef()
 	{
-	   return getWrappedRequest().getBaseRef();
+		return getWrappedRequest().getBaseRef();
 	}
 
-   /**
-    * Returns the authentication response sent by a client to an origin server.
-    * @return The authentication response sent by a client to an origin server.
-    */
-   public ChallengeResponse getChallengeResponse()
-   {
-      return getWrappedRequest().getChallengeResponse();
-   }
-
 	/**
-	 * Returns the client specific data.
-	 * @return The client specific data.
+	 * Returns the authentication response sent by a client to an origin server.
+	 * @return The authentication response sent by a client to an origin server.
 	 */
-	public ClientInfo getClient()
+	public ChallengeResponse getChallengeResponse()
 	{
-		return getWrappedRequest().getClient();
+		return getWrappedRequest().getChallengeResponse();
 	}
 
 	/**
-	 * Returns the condition data applying to this call.
-	 * @return The condition data applying to this call.
+	 * Returns the client-specific information.
+	 * @return The client-specific information.
+	 */
+	public ClientInfo getClientInfo()
+	{
+		return getWrappedRequest().getClientInfo();
+	}
+
+	/**
+	 * Returns the conditions applying to this call.
+	 * @return The conditions applying to this call.
 	 */
 	public Conditions getConditions()
 	{
@@ -121,26 +171,6 @@ public class WrapperRequest extends Request
 	}
 
 	/**
-	 * Returns the representation provided by the client.
-	 * @return The representation provided by the client.
-	 */
-	public Representation getInput()
-	{
-		return getWrappedRequest().getInput();
-	}
-
-	/**
-	 * Returns the representation provided by the client as a form.<br/>
-	 * Note that this triggers the parsing of the input representation.<br/>
-	 * This method and the associated getInput method can only be invoked once.
-	 * @return The input form provided by the client.
-	 */
-	public Form getInputAsForm()
-	{
-		return getWrappedRequest().getInputAsForm();
-	}
-
-	/**
 	 * Returns the method.
 	 * @return The method.
 	 */
@@ -150,10 +180,10 @@ public class WrapperRequest extends Request
 	}
 
 	/**
-	 * Returns the protocol used by the call. It can either indicate the protocol used by a server connector
-	 * to receive the call or the one that must be used to send the call. If the protocol is not specified 
-	 * when sending a call, the implementation will attempt to guess it by looking at a scheme protocol 
-	 * associated with the target resource reference. 
+	 * Returns the protocol. It can either indicate the protocol used by a server connector to receive 
+	 * or the one that must be used to send. If the protocol is not specified when sending a request, 
+	 * the implementation will attempt to guess it by looking at a scheme protocol associated with the 
+	 * target resource reference. 
 	 * @return The protocol or null if not available.
 	 */
 	public Protocol getProtocol()
@@ -197,25 +227,14 @@ public class WrapperRequest extends Request
 		return getWrappedRequest().getResourceRef();
 	}
 
-   /**
-    * Indicates if the call came over a confidential channel
-    * such as an SSL-secured connection.
-    * @return True if the call came over a confidential channel.
-    */
-   public boolean isConfidential()
-   {
-      return getWrappedRequest().isConfidential();
-   }
-
 	/**
-	 * Indicates if an input representation is available and can be sent to a client.
-	 * Several conditions must be met: the method must allow the sending of input representations,
-	 * the input representation must exists and has some available content.
-	 * @return True if an input representation is available and can be sent to a client.
+	 * Indicates if the call came over a confidential channel
+	 * such as an SSL-secured connection.
+	 * @return True if the call came over a confidential channel.
 	 */
-	public boolean isInputAvailable()
+	public boolean isConfidential()
 	{
-		return getWrappedRequest().isInputAvailable();
+		return getWrappedRequest().isConfidential();
 	}
 
 	/**
@@ -226,7 +245,7 @@ public class WrapperRequest extends Request
 	{
 		getWrappedRequest().setBaseRef(baseUri);
 	}
-	
+
 	/**
 	 * Sets the base reference that will serve to compute relative resource references.
 	 * @param baseRef The base reference.
@@ -236,32 +255,23 @@ public class WrapperRequest extends Request
 		getWrappedRequest().setBaseRef(baseRef);
 	}
 
-   /**
-    * Sets the authentication response sent by a client to an origin server.
-    * @param response The authentication response sent by a client to an origin server.
-    */
-   public void setChallengeResponse(ChallengeResponse response)
-   {
-   	getWrappedRequest().setChallengeResponse(response);
-   }
-
-   /**
-    * Indicates if the call came over a confidential channel
-    * such as an SSL-secured connection.
-    * @param confidential True if the call came over a confidential channel.
-    */
-   public void setConfidential(boolean confidential)
-   {
-   	getWrappedRequest().setConfidential(confidential);
-   }
+	/**
+	 * Sets the authentication response sent by a client to an origin server.
+	 * @param response The authentication response sent by a client to an origin server.
+	 */
+	public void setChallengeResponse(ChallengeResponse response)
+	{
+		getWrappedRequest().setChallengeResponse(response);
+	}
 
 	/**
-	 * Sets the representation provided by the client.
-	 * @param input The representation provided by the client.
+	 * Indicates if the call came over a confidential channel
+	 * such as an SSL-secured connection.
+	 * @param confidential True if the call came over a confidential channel.
 	 */
-	public void setInput(Representation input)
+	public void setConfidential(boolean confidential)
 	{
-		getWrappedRequest().setInput(input);
+		getWrappedRequest().setConfidential(confidential);
 	}
 
 	/**
@@ -323,5 +333,5 @@ public class WrapperRequest extends Request
 	{
 		getWrappedRequest().setResourceRef(resourceRef);
 	}
-
+	
 }

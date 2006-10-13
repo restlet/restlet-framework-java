@@ -26,13 +26,13 @@ import java.util.logging.Level;
 import java.util.logging.Logger;
 
 import org.restlet.Application;
+import org.restlet.ApplicationDelegate;
+import org.restlet.Container;
 import org.restlet.Context;
 import org.restlet.Filter;
-import org.restlet.Request;
-import org.restlet.Response;
 import org.restlet.UniformInterface;
-import org.restlet.component.ApplicationDelegate;
-import org.restlet.component.Container;
+import org.restlet.data.Request;
+import org.restlet.data.Response;
 import org.restlet.data.Status;
 
 import com.noelios.restlet.impl.LogFilter;

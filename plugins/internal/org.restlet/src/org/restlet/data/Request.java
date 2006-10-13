@@ -20,37 +20,22 @@
  * Portions Copyright [yyyy] [name of copyright owner]
  */
 
-package org.restlet;
+package org.restlet.data;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Map;
-import java.util.TreeMap;
-
-import org.restlet.data.ChallengeResponse;
-import org.restlet.data.ClientInfo;
-import org.restlet.data.Conditions;
-import org.restlet.data.Cookie;
-import org.restlet.data.Form;
-import org.restlet.data.Method;
-import org.restlet.data.Protocol;
-import org.restlet.data.Reference;
-import org.restlet.data.Representation;
 
 /**
  * Generic request sent by client connectors. It is then received by server connectors and processed 
  * by handlers implementing UniformInterface. This request can also be processed by a chain of 
  * handlers, on the client or server sides. Requests are uniform across all types of connectors, 
  * protocols and components.
- * @see org.restlet.Response
+ * @see org.restlet.data.Response
  * @see org.restlet.UniformInterface
  * @author Jerome Louvel (contact@noelios.com) <a href="http://www.noelios.com/">Noelios Consulting</a>
  */
-public class Request
+public class Request extends Message
 {
-	/** The modifiable attributes map. */
-	private Map<String, Object> attributes;
-
 	/** The authentication response sent by a client to an origin server. */
 	private ChallengeResponse challengeResponse;
 
@@ -58,7 +43,7 @@ public class Request
 	private Reference baseRef;
 
 	/** The client data. */
-	private ClientInfo client;
+	private ClientInfo clientInfo;
 
 	/** The condition data. */
 	private Conditions conditions;
@@ -68,9 +53,6 @@ public class Request
 
 	/** The cookies provided by the client. */
 	private List<Cookie> cookies;
-
-	/** The representation provided by the client. */
-	private Representation input;
 
 	/** The method. */
 	private Method method;
@@ -84,13 +66,12 @@ public class Request
 	/** The resource reference. */
 	private Reference resourceRef;
 
-
 	/**
 	 * Constructor.
 	 */
 	public Request()
 	{
-      this.confidential = false;
+		this.confidential = false;
 	}
 
 	/**
@@ -107,14 +88,13 @@ public class Request
 	 * Constructor.
 	 * @param method The call's method.
 	 * @param resourceRef The resource reference.
-	 * @param input The input representation to send.
+	 * @param entity The entity.
 	 */
-	public Request(Method method, Reference resourceRef, Representation input)
+	public Request(Method method, Reference resourceRef, Representation entity)
 	{
-		this();
+		super(entity);
 		setMethod(method);
 		setResourceRef(resourceRef);
-		setInput(input);
 	}
 
 	/**
@@ -131,49 +111,11 @@ public class Request
 	 * Constructor.
 	 * @param method The call's method.
 	 * @param resourceUri The resource URI.
-	 * @param input The input representation to send.
+	 * @param entity The entity.
 	 */
-	public Request(Method method, String resourceUri, Representation input)
+	public Request(Method method, String resourceUri, Representation entity)
 	{
-		this(method, new Reference(resourceUri), input);
-	}
-
-	/**
-	 * Returns a modifiable attributes map that can be used by developers to save information relative
-	 * to the current request. This is an easier alternative to the creation of a wrapper around the whole 
-	 * request.<br/>
-	 * <br/>
-	 * In addition, this map is a shared space between the developer, the Restlet implementation and the
-	 * connectors used. In this case, it is used to exchange information that is not uniform 
-	 * across all protocols and couldn't therefore be directly included in the API. For this purpose, 
-	 * all attribute names starting with "org.restlet" are reserved. Currently the following attributes 
-	 * are used:
-	 * <table>
-	 * 	<tr>
-	 * 		<th>Attribute name</th>
-	 * 		<th>Class name</th>
-	 * 		<th>Description</th>
-	 * 	</tr>
-	 * 	<tr>
-	 * 		<td>org.restlet.http.headers</td>
-	 * 		<td>org.restlet.data.ParameterList</td>
-	 * 		<td>Server HTTP connectors must provide all the request headers exactly as they were received
-	 * from the client. When invoking client HTTP connectors, developers can also set this attribute to 
-	 * specify <b>non-standard</b> HTTP headers that should be added to the request sent to a server.</td>
-	 * 	</tr>
-	 *	</table>
-	 * Adding standard HTTP headers is forbidden because it could conflict with the connector's internal 
-	 * behavior, limit portability or prevent future optimizations.</td>
-	 * @return The modifiable attributes map.
-	 */
-	public Map<String, Object> getAttributes()
-	{
-		if (attributes == null)
-		{
-			attributes = new TreeMap<String, Object>();
-		}
-
-		return attributes;
+		this(method, new Reference(resourceUri), entity);
 	}
 
 	/**
@@ -182,26 +124,26 @@ public class Request
 	 */
 	public Reference getBaseRef()
 	{
-	   return this.baseRef;
+		return this.baseRef;
 	}
 
-   /**
-    * Returns the authentication response sent by a client to an origin server.
-    * @return The authentication response sent by a client to an origin server.
-    */
-   public ChallengeResponse getChallengeResponse()
-   {
-      return this.challengeResponse;
-   }
+	/**
+	 * Returns the authentication response sent by a client to an origin server.
+	 * @return The authentication response sent by a client to an origin server.
+	 */
+	public ChallengeResponse getChallengeResponse()
+	{
+		return this.challengeResponse;
+	}
 
 	/**
-	 * Returns the client specific data.
-	 * @return The client specific data.
+	 * Returns the client-specific information.
+	 * @return The client-specific information.
 	 */
-	public ClientInfo getClient()
+	public ClientInfo getClientInfo()
 	{
-		if (this.client == null) this.client = new ClientInfo();
-		return this.client;
+		if (this.clientInfo == null) this.clientInfo = new ClientInfo();
+		return this.clientInfo;
 	}
 
 	/**
@@ -225,26 +167,6 @@ public class Request
 	}
 
 	/**
-	 * Returns the representation provided by the client.
-	 * @return The representation provided by the client.
-	 */
-	public Representation getInput()
-	{
-		return this.input;
-	}
-
-	/**
-	 * Returns the representation provided by the client as a form.<br/>
-	 * Note that this triggers the parsing of the input representation.<br/>
-	 * This method and the associated getInput method can only be invoked once.
-	 * @return The input form provided by the client.
-	 */
-	public Form getInputAsForm()
-	{
-		return new Form(getInput());
-	}
-
-	/**
 	 * Returns the method.
 	 * @return The method.
 	 */
@@ -254,10 +176,10 @@ public class Request
 	}
 
 	/**
-	 * Returns the protocol used by the call. It can either indicate the protocol used by a server connector
-	 * to receive the call or the one that must be used to send the call. If the protocol is not specified 
-	 * when sending a call, the implementation will attempt to guess it by looking at a scheme protocol 
-	 * associated with the target resource reference. 
+	 * Returns the protocol. It can either indicate the protocol used by a server connector to receive 
+	 * or the one that must be used to send. If the protocol is not specified when sending a request, 
+	 * the implementation will attempt to guess it by looking at a scheme protocol associated with the 
+	 * target resource reference. 
 	 * @return The protocol or null if not available.
 	 */
 	public Protocol getProtocol()
@@ -280,9 +202,10 @@ public class Request
 	 */
 	public String getRelativePart()
 	{
-		if(getBaseRef() != null)
+		if (getBaseRef() != null)
 		{
-			return getResourceRef().toString(false, false).substring(getBaseRef().toString().length());
+			return getResourceRef().toString(false, false).substring(
+					getBaseRef().toString().length());
 		}
 		else
 		{
@@ -308,37 +231,32 @@ public class Request
 		return this.resourceRef;
 	}
 
-   /**
-    * Indicates if the call came over a confidential channel
-    * such as an SSL-secured connection.
-    * @return True if the call came over a confidential channel.
-    */
-   public boolean isConfidential()
-   {
-      return this.confidential;
-   }
+	/**
+	 * Indicates if the call came over a confidential channel
+	 * such as an SSL-secured connection.
+	 * @return True if the call came over a confidential channel.
+	 */
+	public boolean isConfidential()
+	{
+		return this.confidential;
+	}
 
 	/**
-	 * Indicates if an input representation is available and can be sent to a client.
-	 * Several conditions must be met: the method must allow the sending of input representations,
-	 * the input representation must exists and has some available content.
-	 * @return True if an input representation is available and can be sent to a client.
+	 * Indicates if a content is available and can be sent. Several conditions must be met: the method 
+	 * must allow the sending of content, the content must exists and have some available data.
+	 * @return True if a content is available and can be sent.
 	 */
-	public boolean isInputAvailable()
+	public boolean isEntityAvailable()
 	{
-		boolean result = true;
-
 		if (getMethod().equals(Method.GET) || getMethod().equals(Method.HEAD)
 				|| getMethod().equals(Method.DELETE))
 		{
-			result = false;
+			return false;
 		}
 		else
 		{
-			result = (getInput() != null) && getInput().isAvailable() && (getInput().getSize() > 0);
+			return super.isEntityAvailable();
 		}
-
-		return result;
 	}
 
 	/**
@@ -349,51 +267,44 @@ public class Request
 	{
 		setBaseRef(new Reference(baseUri));
 	}
-	
+
 	/**
 	 * Sets the base reference that will serve to compute relative resource references.
 	 * @param baseRef The base reference.
 	 */
 	public void setBaseRef(Reference baseRef)
 	{
-	   if(getResourceRef() == null)
-	   {
-	      throw new IllegalArgumentException("You must specify a resource reference before setting a base reference");
-	   }
-	   else if((baseRef != null) && !baseRef.isParent(getResourceRef()))
-	   {
-	   	new IllegalArgumentException("You must specify a base reference that is a parent of the resource reference");
-	   }
-	
-	   this.baseRef = baseRef;
+		if (getResourceRef() == null)
+		{
+			throw new IllegalArgumentException(
+					"You must specify a resource reference before setting a base reference");
+		}
+		else if ((baseRef != null) && !baseRef.isParent(getResourceRef()))
+		{
+			new IllegalArgumentException(
+					"You must specify a base reference that is a parent of the resource reference");
+		}
+
+		this.baseRef = baseRef;
 	}
 
-   /**
-    * Sets the authentication response sent by a client to an origin server.
-    * @param response The authentication response sent by a client to an origin server.
-    */
-   public void setChallengeResponse(ChallengeResponse response)
-   {
-      this.challengeResponse = response;
-   }
-
-   /**
-    * Indicates if the call came over a confidential channel
-    * such as an SSL-secured connection.
-    * @param confidential True if the call came over a confidential channel.
-    */
-   public void setConfidential(boolean confidential)
-   {
-      this.confidential = confidential;
-   }
+	/**
+	 * Sets the authentication response sent by a client to an origin server.
+	 * @param response The authentication response sent by a client to an origin server.
+	 */
+	public void setChallengeResponse(ChallengeResponse response)
+	{
+		this.challengeResponse = response;
+	}
 
 	/**
-	 * Sets the representation provided by the client.
-	 * @param input The representation provided by the client.
+	 * Indicates if the call came over a confidential channel
+	 * such as an SSL-secured connection.
+	 * @param confidential True if the call came over a confidential channel.
 	 */
-	public void setInput(Representation input)
+	public void setConfidential(boolean confidential)
 	{
-		this.input = input;
+		this.confidential = confidential;
 	}
 
 	/**
@@ -453,7 +364,8 @@ public class Request
 	 */
 	public void setResourceRef(Reference resourceRef)
 	{
-		if((resourceRef != null) && resourceRef.isRelative() && (resourceRef.getBaseRef() != null))
+		if ((resourceRef != null) && resourceRef.isRelative()
+				&& (resourceRef.getBaseRef() != null))
 		{
 			this.resourceRef = resourceRef.getTargetRef();
 		}
@@ -461,9 +373,9 @@ public class Request
 		{
 			this.resourceRef = resourceRef.normalize();
 		}
-		
+
 		// Reset the context's base reference
-		setBaseRef((Reference)null);
+		setBaseRef((Reference) null);
 	}
-	
+
 }

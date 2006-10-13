@@ -29,7 +29,6 @@ import java.util.logging.Level;
 import java.util.logging.Logger;
 
 import org.restlet.Context;
-import org.restlet.Request;
 import org.restlet.data.ChallengeResponse;
 import org.restlet.data.ClientInfo;
 import org.restlet.data.Conditions;
@@ -39,6 +38,7 @@ import org.restlet.data.Parameter;
 import org.restlet.data.Protocol;
 import org.restlet.data.Reference;
 import org.restlet.data.Representation;
+import org.restlet.data.Request;
 import org.restlet.data.Tag;
 
 import com.noelios.restlet.impl.util.CookieReader;
@@ -135,7 +135,7 @@ public class HttpRequest extends Request
 	 */
 	public ClientInfo getClient()
 	{
-		ClientInfo result = super.getClient();
+		ClientInfo result = super.getClientInfo();
 
 		if (!this.clientAdded)
 		{
@@ -350,11 +350,11 @@ public class HttpRequest extends Request
 	{
 		if (!this.inputAdded)
 		{
-			setInput(((HttpServerCall) getHttpCall()).getRequestInput());
+			setEntity(((HttpServerCall) getHttpCall()).getRequestInput());
 			this.inputAdded = true;
 		}
 
-		return super.getInput();
+		return super.getEntity();
 	}
 
 	/**

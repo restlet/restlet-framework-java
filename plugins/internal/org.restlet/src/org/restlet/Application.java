@@ -33,6 +33,8 @@ import org.restlet.data.MediaType;
 import org.restlet.data.Metadata;
 import org.restlet.data.Protocol;
 import org.restlet.data.Representation;
+import org.restlet.data.Request;
+import org.restlet.data.Response;
 import org.restlet.data.Status;
 
 /**

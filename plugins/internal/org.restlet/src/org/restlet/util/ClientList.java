@@ -24,7 +24,7 @@ package org.restlet.util;
 
 import java.util.List;
 
-import org.restlet.connector.Client;
+import org.restlet.Client;
 import org.restlet.data.Protocol;
 
 /**

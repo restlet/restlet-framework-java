@@ -25,16 +25,16 @@ package com.noelios.restlet.example.tutorial;
 import java.util.List;
 
 import org.restlet.Application;
+import org.restlet.Container;
 import org.restlet.Context;
-import org.restlet.Request;
-import org.restlet.Response;
 import org.restlet.Restlet;
 import org.restlet.Router;
 import org.restlet.UniformInterface;
-import org.restlet.component.Container;
 import org.restlet.data.ChallengeScheme;
 import org.restlet.data.MediaType;
 import org.restlet.data.Protocol;
+import org.restlet.data.Request;
+import org.restlet.data.Response;
 
 import com.noelios.restlet.DirectoryFinder;
 import com.noelios.restlet.GuardFilter;
@@ -79,7 +79,7 @@ public class Tutorial11 implements Constants
 		            {
 		               // Print the requested URI path
 		               String output = "Account of user named: " + request.getBaseRef().getLastSegment();
-		               response.setOutput(output, MediaType.TEXT_PLAIN);
+		               response.setEntity(output, MediaType.TEXT_PLAIN);
 		            }
 		         };
 		      user.attach("$", account);
@@ -92,7 +92,7 @@ public class Tutorial11 implements Constants
 		               // Print the user name of the requested orders
 		               List<String> segments = request.getBaseRef().getSegments();
 		               String output = "Orders of user named: " + segments.get(segments.size() - 2);
-		               response.setOutput(output, MediaType.TEXT_PLAIN);
+		               response.setEntity(output, MediaType.TEXT_PLAIN);
 		            }
 		         };
 		      user.attach("/orders$", orders);

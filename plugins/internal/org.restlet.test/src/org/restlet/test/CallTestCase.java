@@ -24,11 +24,11 @@ package org.restlet.test;
 import java.util.Arrays;
 import java.util.List;
 
-import org.restlet.Request;
-import org.restlet.Response;
 import org.restlet.data.ClientInfo;
 import org.restlet.data.Method;
 import org.restlet.data.Reference;
+import org.restlet.data.Request;
+import org.restlet.data.Response;
 import org.restlet.data.Status;
 
 import com.noelios.restlet.impl.connector.HttpCall;
@@ -99,7 +99,7 @@ public class CallTestCase extends RestletTestCase
 	 */
 	public void testClientAddress() throws Exception
 	{
-		ClientInfo client = getRequest().getClient();
+		ClientInfo client = getRequest().getClientInfo();
 		String address = "127.0.0.1";
 		client.setAddress(address);
 		assertEquals(address, client.getAddress());
@@ -117,7 +117,7 @@ public class CallTestCase extends RestletTestCase
 	 */
 	public void testClientAddresses() throws Exception
 	{
-		ClientInfo client = getRequest().getClient();
+		ClientInfo client = getRequest().getClientInfo();
 		String firstAddress = "127.0.0.1";
 		String secondAddress = "192.168.99.10";
 		List<String> addresses = Arrays.asList(new String[]
@@ -144,7 +144,7 @@ public class CallTestCase extends RestletTestCase
 	 */
 	public void testClientAgent() throws Exception
 	{
-		ClientInfo client = getRequest().getClient();
+		ClientInfo client = getRequest().getClientInfo();
 		String name = "Restlet";
 		client.setAgent(name);
 		assertEquals(name, client.getAgent());
@@ -161,11 +161,11 @@ public class CallTestCase extends RestletTestCase
 		Request request = getRequest();
 		Response response = getResponse(request);
 		String address = "127.0.0.1";
-		response.getServer().setAddress(address);
-		assertEquals(address, response.getServer().getAddress());
+		response.getServerInfo().setAddress(address);
+		assertEquals(address, response.getServerInfo().getAddress());
 		address = "192.168.99.10";
-		response.getServer().setAddress(address);
-		assertEquals(address, response.getServer().getAddress());
+		response.getServerInfo().setAddress(address);
+		assertEquals(address, response.getServerInfo().getAddress());
 	}
 
 	/**
@@ -176,11 +176,11 @@ public class CallTestCase extends RestletTestCase
 		Request request = getRequest();
 		Response response = getResponse(request);
 		String name = "Restlet";
-		response.getServer().setAgent(name);
-		assertEquals(name, response.getServer().getAgent());
+		response.getServerInfo().setAgent(name);
+		assertEquals(name, response.getServerInfo().getAgent());
 		name = "Restlet Server";
-		response.getServer().setAgent(name);
-		assertEquals(name, response.getServer().getAgent());
+		response.getServerInfo().setAgent(name);
+		assertEquals(name, response.getServerInfo().getAgent());
 	}
 
 	/**

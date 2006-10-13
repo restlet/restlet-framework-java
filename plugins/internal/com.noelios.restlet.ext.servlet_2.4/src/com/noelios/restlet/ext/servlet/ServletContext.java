@@ -26,8 +26,8 @@ import java.util.Enumeration;
 
 import javax.servlet.Servlet;
 
-import org.restlet.component.ApplicationDelegate;
-import org.restlet.component.Container;
+import org.restlet.ApplicationDelegate;
+import org.restlet.Container;
 
 import com.noelios.restlet.impl.component.ApplicationContext;
 

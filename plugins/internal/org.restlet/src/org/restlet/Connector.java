@@ -20,7 +20,7 @@
  * Portions Copyright [yyyy] [name of copyright owner]
  */
 
-package org.restlet.connector;
+package org.restlet;
 
 import java.util.List;
 

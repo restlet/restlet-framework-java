@@ -27,14 +27,14 @@ import java.util.logging.Level;
 import java.util.logging.Logger;
 
 import org.restlet.Context;
-import org.restlet.Request;
-import org.restlet.Response;
 import org.restlet.data.CookieSetting;
 import org.restlet.data.Encoding;
 import org.restlet.data.Method;
 import org.restlet.data.Parameter;
 import org.restlet.data.ParameterList;
 import org.restlet.data.Representation;
+import org.restlet.data.Request;
+import org.restlet.data.Response;
 import org.restlet.data.Status;
 
 import com.noelios.restlet.impl.util.CookieUtils;
@@ -78,7 +78,7 @@ public class HttpServerConverter
 			addResponseHeaders(httpCall, response);
 			
 			// Send the response to the client
-			httpCall.sendResponse(response.getOutput());
+			httpCall.sendResponse(response.getEntity());
 		}
 		catch (Exception e)
 		{
@@ -147,7 +147,7 @@ public class HttpServerConverter
 
 			// Set the server name again
 			httpCall.getResponseHeaders().add(HttpConstants.HEADER_SERVER,
-					response.getServer().getAgent());
+					response.getServerInfo().getAgent());
 
 			// Set the status code in the response
 			if (response.getStatus() != null)
@@ -157,9 +157,9 @@ public class HttpServerConverter
 			}
 
 			// If an output was set during the call, copy it to the output stream;
-			if (response.getOutput() != null)
+			if (response.getEntity() != null)
 			{
-				Representation output = response.getOutput();
+				Representation output = response.getEntity();
 
 				if (output.getExpirationDate() != null)
 				{
@@ -207,16 +207,16 @@ public class HttpServerConverter
 					responseHeaders.add(HttpConstants.HEADER_ETAG, output.getTag().getName());
 				}
 
-				if (response.getOutput().getSize() != Representation.UNKNOWN_SIZE)
+				if (response.getEntity().getSize() != Representation.UNKNOWN_SIZE)
 				{
 					responseHeaders.add(HttpConstants.HEADER_CONTENT_LENGTH, Long
-							.toString(response.getOutput().getSize()));
+							.toString(response.getEntity().getSize()));
 				}
 
-				if (response.getOutput().getIdentifier() != null)
+				if (response.getEntity().getIdentifier() != null)
 				{
 					responseHeaders.add(HttpConstants.HEADER_CONTENT_LOCATION, response
-							.getOutput().getIdentifier().toString());
+							.getEntity().getIdentifier().toString());
 				}
 			}
 			

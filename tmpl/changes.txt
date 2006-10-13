@@ -49,6 +49,7 @@ Changes log
  - Added new org.restlet.component.VirtualHost class, as a Router subclass to target applications or handlers.
  - Connector and Context no longer implement UniformInterface.
  - Split org.restlet.Call into org.restlet.Request and org.restlet.Response to solve overweight issue. Suggested by Piyush Purang.
+   Also added a parent Message class following the HTTP semantics. Merged "input" and "output" properties into a single "entity" property on Message.
  - Merged AbstractResource and Resource into a single Resource class.
  - Merged AbstractRepresentation and Representation into a single Representation class.
  - Moved all wrappers into org.restlet.util. Suggested by Piyush Purang.
@@ -59,12 +60,14 @@ Changes log
  - Moved ClientList and ServerList to org.restlet.util 
  - Moved ScorerList to org.restlet.util and changed it to an interface.
  - Renamed ClientData and ServerData to ClientInfo and ServerInfo to be less ambiguous about the type of data.
+   Also renamed "Response.server" property to "serverInfo" and "Response.client" property to "clientInfo".
  - Moved EmptyValue to org.restlet.util.
  - Moved Resource from org.restlet.data to org.restlet.
  - Renamed ConditionData to Conditions.
  - ServerServlet now only works with applications as target. Review updated Javadocs before upgrading.
  - GuardFilter now logs messages via the context's logger. Changed constructor.
-
+ - Moved all remaining classes of org.restlet.component and org.restlet.connector into org.restlet for simplification purpose. Suggested by Piyush Purang.
+ 
 [Other changes] 
  - Updated Jetty 6 extension to 6.0.1 release and Jetty 5 extension to 5.1.11 release.
  - Added Resource.setVariants() and setIdentifiers() methods. Can be easier than doing a getVariants().clear() then a getVariants().addAll(newList). 
@@ -110,6 +113,7 @@ Changes log
    The list of allowed methods is then set to the Response (ex-Call) object. Subclasses of Finder can customize the list of allowed methods.
    Suggested by AJ Barnes and Lars Heuer.
  - Updated tutorial examples to leverage application concept.
+ - 
 
 1.0 beta 18 (2006-08-19)
 [Bugs fixed]

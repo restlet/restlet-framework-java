@@ -27,10 +27,10 @@ import java.util.logging.Logger;
 
 import org.restlet.Context;
 import org.restlet.Filter;
-import org.restlet.Request;
-import org.restlet.Response;
 import org.restlet.data.MediaType;
 import org.restlet.data.Representation;
+import org.restlet.data.Request;
+import org.restlet.data.Response;
 import org.restlet.data.Status;
 
 import com.noelios.restlet.data.StringRepresentation;
@@ -110,9 +110,9 @@ public class StatusFilter extends Filter
       // Do we need to get an output representation for the current status?
       if(!response.getStatus().equals(Status.SUCCESS_OK)
             && !response.getStatus().equals(Status.REDIRECTION_NOT_MODIFIED)
-            && ((response.getOutput() == null) || overwrite))
+            && ((response.getEntity() == null) || overwrite))
       {
-         response.setOutput(getOutput(response.getStatus(), request, response));
+         response.setEntity(getOutput(response.getStatus(), request, response));
       }
    }
 

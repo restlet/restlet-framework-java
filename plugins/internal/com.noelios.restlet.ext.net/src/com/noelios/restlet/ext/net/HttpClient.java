@@ -26,8 +26,8 @@ import java.io.IOException;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
-import org.restlet.Request;
 import org.restlet.data.Protocol;
+import org.restlet.data.Request;
 
 import com.noelios.restlet.impl.connector.HttpClientCall;
 
@@ -106,7 +106,7 @@ public class HttpClient extends com.noelios.restlet.impl.connector.HttpClient
 		try
 		{
 			result = new HttpUrlConnectionCall(this, request.getMethod().toString(), 
-					request.getResourceRef().toString(), request.isInputAvailable());
+					request.getResourceRef().toString(), request.isEntityAvailable());
 		}
 		catch (IOException ioe)
 		{

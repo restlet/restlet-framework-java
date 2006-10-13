@@ -22,12 +22,12 @@
 
 package com.noelios.restlet.example.tutorial;
 
-import org.restlet.Request;
-import org.restlet.Response;
+import org.restlet.Container;
 import org.restlet.Restlet;
-import org.restlet.component.Container;
 import org.restlet.data.MediaType;
 import org.restlet.data.Protocol;
+import org.restlet.data.Request;
+import org.restlet.data.Response;
 
 /**
  * Restlets containers.
@@ -51,7 +51,7 @@ public class Tutorial05
                                "Base URI:      " + request.getBaseRef() + '\n' +
                                "Relative path: " + request.getRelativePart() + '\n' +
                                "Query string:  " + request.getResourceRef().getQuery();
-               response.setOutput(output, MediaType.TEXT_PLAIN);
+               response.setEntity(output, MediaType.TEXT_PLAIN);
             }
          };
 

@@ -5,9 +5,9 @@ import java.io.IOException;
 
 import junit.framework.TestCase;
 
-import org.restlet.Response;
-import org.restlet.connector.Client;
+import org.restlet.Client;
 import org.restlet.data.Protocol;
+import org.restlet.data.Response;
 import org.restlet.data.Status;
 
 import com.noelios.restlet.data.FileReference;

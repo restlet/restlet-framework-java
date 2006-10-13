@@ -30,8 +30,6 @@ import java.nio.channels.ReadableByteChannel;
 import java.nio.channels.WritableByteChannel;
 import java.util.Date;
 
-import org.restlet.Resource;
-
 /**
  * Current or intended state of a resource. For performance purpose, it is essential that a minimal overhead 
  * occurs upon initialization. The main overhead must only occur during invocation of content processing 

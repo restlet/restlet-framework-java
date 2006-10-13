@@ -20,9 +20,8 @@
  * Portions Copyright [yyyy] [name of copyright owner]
  */
 
-package org.restlet.component;
+package org.restlet;
 
-import org.restlet.Application;
 import org.restlet.spi.Factory;
 
 /**

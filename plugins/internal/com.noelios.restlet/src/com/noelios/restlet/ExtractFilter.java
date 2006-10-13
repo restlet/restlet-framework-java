@@ -30,9 +30,9 @@ import java.util.logging.Logger;
 
 import org.restlet.Context;
 import org.restlet.Filter;
-import org.restlet.Request;
-import org.restlet.Response;
 import org.restlet.data.Form;
+import org.restlet.data.Request;
+import org.restlet.data.Response;
 import org.restlet.data.Status;
 
 import com.noelios.restlet.util.CallModel;
@@ -107,7 +107,7 @@ public class ExtractFilter extends Filter
       // Extract the input parameters
       if(this.inputExtracts != null)
       {
-         Form input = request.getInputAsForm();
+         Form input = request.getEntityAsForm();
 
          if(input != null)
          {

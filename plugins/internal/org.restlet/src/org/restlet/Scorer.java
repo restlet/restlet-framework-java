@@ -22,6 +22,9 @@
 
 package org.restlet;
 
+import org.restlet.data.Request;
+import org.restlet.data.Response;
+
 /**
  * Filter scoring the affinity of calls with an attached handler. The score is used by an associated 
  * Router in order to determine the most appropriate Restlet for a given call. 
