@@ -34,12 +34,12 @@ import org.restlet.data.Status;
  * other network-based styles is its emphasis on a uniform interface between components. By applying 
  * the software engineering principle of generality to the component interface, the overall system 
  * architecture is simplified and the visibility of interactions is improved. Implementations are 
- * decoupled from the services they provide, which encourages independent evolvability." Roy T. Fielding
- * @see <a href="http://www.ics.uci.edu/~fielding/pubs/dissertation/rest_arch_style.htm#sec_5_1_5">Source dissertation</a><br/>
+ * decoupled from the services they provide, which encourages independent evolvability." Roy T. Fielding<br/>
  * <br/>
  * It has many subclasses that focus on a specific ways to handle calls like filtering, routing or finding 
  * a target resource. The context property is typically provided by a parent container as a way to give 
  * access to features such as logging and client connectors. 
+ * @see <a href="http://www.ics.uci.edu/~fielding/pubs/dissertation/rest_arch_style.htm#sec_5_1_5">Source dissertation</a>
  * @author Jerome Louvel (contact@noelios.com) <a href="http://www.noelios.com/">Noelios Consulting</a>
  */
 public class Handler
