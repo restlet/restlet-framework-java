@@ -31,6 +31,7 @@ import javax.servlet.http.HttpServletResponse;
 
 import org.restlet.Application;
 import org.restlet.Container;
+import org.restlet.Context;
 
 import com.noelios.restlet.impl.http.HttpServer;
 
@@ -110,7 +111,17 @@ public class ServerServlet extends HttpServlet
 			throws ServletException, IOException
 	{
 		ServletCall httpCall = new ServletCall(request, response);
-		getServer(request).handle(httpCall);
+		HttpServer server = getServer(request);
+		
+		if(server != null) 
+		{
+			server.handle(httpCall);
+		}
+		else
+		{
+			log("[Noelios Restlet Engine] - Unable to get the Restlet HTTP server connector. Status code 500 returned.");
+			response.sendError(500);
+		}
 	}
 
 	/**
@@ -155,11 +166,6 @@ public class ServerServlet extends HttpServlet
 						{
 							// Load the application class using the given class name
 							Class targetClass = Class.forName(applicationClassName);
-							Application application = null;
-
-							// Create a new instance of the application class
-							// and store it for reuse by other ServerServlets.
-							application = (Application) targetClass.newInstance();
 
 							// First, let's locate the closest container
 							Container container = new Container();
@@ -170,6 +176,9 @@ public class ServerServlet extends HttpServlet
 							{
 								// Add the HTTP server connector adapting the Servlet requests 
 								container.getServers().add(result);
+
+								// Create a new instance of the application class
+								Application application = (Application) targetClass.getConstructor(Context.class).newInstance(container.getContext());
 
 								// Attach the application
 								String uriPattern = request.getContextPath()
