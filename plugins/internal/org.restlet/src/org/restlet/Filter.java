@@ -24,7 +24,6 @@ package org.restlet;
 
 import org.restlet.data.Request;
 import org.restlet.data.Response;
-import org.restlet.data.Status;
 
 /**
  * Chainer to an attached handler that filters calls. The purpose is to do some pre-processing or 
@@ -137,7 +136,7 @@ public class Filter extends Chainer
 		}
 		else
 		{
-			super.handle(request, response);
+   		init(request, response);
 			beforeHandle(request, response);
 			doHandle(request, response);
 			afterHandle(request, response);
@@ -174,14 +173,8 @@ public class Filter extends Chainer
 		}
 		else
 		{
-			if(getNext() != null)
-			{
-				getNext().handle(request, response);
-			}
-			else
-			{
-				response.setStatus(Status.SERVER_ERROR_NOT_IMPLEMENTED);
-			}
+			// Reuse the chainer's logic
+			super.handle(request, response);
 		}
 	}
 

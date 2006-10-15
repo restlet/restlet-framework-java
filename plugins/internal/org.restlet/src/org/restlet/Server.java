@@ -77,7 +77,7 @@ public class Server extends Connector
 	 */
 	public Server(Protocol protocol, Handler target)
 	{
-		this(protocol, null, protocol.getDefaultPort(), target);
+		this(new Context(), protocol, target);
 	}
 
 	/**
@@ -88,7 +88,7 @@ public class Server extends Connector
 	 */
 	public Server(Protocol protocol, int port, Handler target)
 	{
-		this(protocol, null, port, target);
+		this(new Context(), protocol, port, target);
 	}
 
 	/**
@@ -99,7 +99,7 @@ public class Server extends Connector
 	 */
 	public Server(List<Protocol> protocols, int port, Handler target)
 	{
-		this(protocols, null, port, target);
+		this(new Context(), protocols, port, target);
 	}
 
 	/**
@@ -111,7 +111,7 @@ public class Server extends Connector
 	 */
 	public Server(Protocol protocol, String address, int port, Handler target)
 	{
-		this(Arrays.asList(protocol), address, port, target);
+		this(new Context(), protocol, address, port, target);
 	}
 
 	/**
@@ -123,9 +123,70 @@ public class Server extends Connector
 	 */
 	public Server(List<Protocol> protocols, String address, int port, Handler target)
 	{
-		super(Factory.getInstance().createServer(protocols, address, port, target));
+		this(new Context(), protocols, address, port, target);
 	}
 
+	/**
+	 * Constructor using the protocol's default port.
+	 * @param context The context.
+	 * @param protocol The connector protocol.
+	 * @param target The target handler.
+	 */
+	public Server(Context context, Protocol protocol, Handler target)
+	{
+		this(context, protocol, null, protocol.getDefaultPort(), target);
+	}
+
+	/**
+	 * Constructor.
+	 * @param context The context.
+	 * @param protocol The connector protocol.
+	 * @param port The listening port.
+	 * @param target The target handler.
+	 */
+	public Server(Context context, Protocol protocol, int port, Handler target)
+	{
+		this(context, protocol, null, port, target);
+	}
+
+	/**
+	 * Constructor.
+	 * @param context The context.
+	 * @param protocols The connector protocols.
+	 * @param port The listening port.
+	 * @param target The target handler.
+	 */
+	public Server(Context context, List<Protocol> protocols, int port, Handler target)
+	{
+		this(context, protocols, null, port, target);
+	}
+
+	/**
+	 * Constructor.
+	 * @param context The context.
+	 * @param protocol The connector protocol.
+	 * @param address The optional listening IP address (useful if multiple IP addresses available).
+	 * @param port The listening port.
+	 * @param target The target handler.
+	 */
+	public Server(Context context, Protocol protocol, String address, int port, Handler target)
+	{
+		this(context, Arrays.asList(protocol), address, port, target);
+	}
+
+	/**
+	 * Constructor.
+	 * @param context The context.
+	 * @param protocols The connector protocols.
+	 * @param address The optional listening IP address (useful if multiple IP addresses available).
+	 * @param port The listening port.
+	 * @param target The target handler.
+	 */
+	public Server(Context context, List<Protocol> protocols, String address, int port, Handler target)
+	{
+		super(Factory.getInstance().createServer(context, protocols, address, port, target));
+	}
+	
 	/**
 	 * Returns the wrapped server.
 	 * @return The wrapped server.

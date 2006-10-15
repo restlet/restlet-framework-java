@@ -28,9 +28,11 @@ import org.restlet.data.Response;
 import org.restlet.data.Status;
 
 /**
- * Generic call handler with a context. It has many subclasses that focus on a specific ways to handle 
- * calls like filtering, routing or finding the target resource. The context of a Restlet is typically 
- * provided by a parent container as a way to give access to features such as logging and client connectors.
+ * Handler that is comparable to the HttpServlet class. It provides facility methods to handle the most common method
+ * names. The calls are then automatically dispatched to the appropriate handle*() method (where the '*'
+ * character corresponds to the method name, or to the handleOthers() method. By default, the implementation
+ * of the handle*() or handleOthers() methods is to invoke the defaultHandle() method which should be 
+ * overriden to change the default behavior (set the status to SERVER_ERROR_NOT_IMPLEMENTED).
  * @author Jerome Louvel (contact@noelios.com) <a href="http://www.noelios.com/">Noelios Consulting</a>
  */
 public class Restlet extends Handler

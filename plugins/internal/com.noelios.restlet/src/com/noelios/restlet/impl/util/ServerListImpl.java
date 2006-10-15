@@ -24,6 +24,7 @@ package com.noelios.restlet.impl.util;
 
 import java.util.Arrays;
 
+import org.restlet.Context;
 import org.restlet.Server;
 import org.restlet.data.Protocol;
 import org.restlet.spi.Factory;
@@ -36,6 +37,27 @@ import org.restlet.util.WrapperList;
  */
 public class ServerListImpl extends WrapperList<Server> implements ServerList
 {
+	/** The context. */
+	private Context context;
+
+	/**
+	 * Constructor.
+	 * @param context The context.
+	 */
+	public ServerListImpl(Context context)
+	{
+		this.context = context;
+	}
+
+	/**
+	 * Returns the context.
+	 * @return The context.
+	 */
+	public Context getContext()
+	{
+		return this.context;
+	}
+
 	/**
 	 * Adds a server at the end of the list.
 	 * @return True (as per the general contract of the Collection.add method).
@@ -44,7 +66,7 @@ public class ServerListImpl extends WrapperList<Server> implements ServerList
 	{
 		return super.add(server);
 	}
-	
+
 	/**
 	 * Adds a new server connector in the map supporting the given protocol.
 	 * @param protocol The connector protocol.
@@ -52,8 +74,8 @@ public class ServerListImpl extends WrapperList<Server> implements ServerList
 	 */
 	public Server add(Protocol protocol)
 	{
-		Server result = Factory.getInstance().createServer(Arrays.asList(protocol), null,
-				protocol.getDefaultPort(), null);
+		Server result = Factory.getInstance().createServer(getContext(),
+				Arrays.asList(protocol), null, protocol.getDefaultPort(), null);
 		add(result);
 		return result;
 	}
@@ -66,8 +88,8 @@ public class ServerListImpl extends WrapperList<Server> implements ServerList
 	 */
 	public Server add(Protocol protocol, int port)
 	{
-		Server result = Factory.getInstance().createServer(Arrays.asList(protocol), null,
-				port, null);
+		Server result = Factory.getInstance().createServer(getContext(),
+				Arrays.asList(protocol), null, port, null);
 		add(result);
 		return result;
 	}
@@ -81,7 +103,8 @@ public class ServerListImpl extends WrapperList<Server> implements ServerList
 	 */
 	public Server add(Protocol protocol, String address, int port)
 	{
-		Server result = Factory.getInstance().createServer(Arrays.asList(protocol), address, port, null);
+		Server result = Factory.getInstance().createServer(getContext(),
+				Arrays.asList(protocol), address, port, null);
 		add(result);
 		return result;
 	}

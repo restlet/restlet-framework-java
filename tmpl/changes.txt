@@ -11,7 +11,7 @@ Changes log
  - Completed support for content streaming in the HTTP client connector extension. Issue reported by Mikkel Jensen.
  - Fixed bug in ParameterList.getFirstValue(String, boolean) ignoring the "ignoreCase" parameter.
  - Fixed issue with ServerServlet preventing the returning of an output representation with an error status code. Reported by Sean Landis.
- 
+
 [API breaking changes]
  - Moved hasInput() method from org.restlet.connector.Client to Call.isInputAvailable().
  - Renamed Representation.isContentAvailable() to isAvailable() and isContentTransient() to isTransient().

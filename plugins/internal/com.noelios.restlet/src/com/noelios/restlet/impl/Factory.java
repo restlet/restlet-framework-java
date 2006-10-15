@@ -288,11 +288,12 @@ public class Factory extends org.restlet.spi.Factory
 
    /**
     * Create a new list of server connectors.
+    * @param context The context.
     * @return A new list of server connectors.
     */
-   public ServerList createServerList()
+   public ServerList createServerList(Context context)
    {
-   	return new ServerListImpl();
+   	return new ServerListImpl(context);
    }
 
    /**
@@ -306,13 +307,14 @@ public class Factory extends org.restlet.spi.Factory
    
    /**
     * Create a new server connector for internal usage by the GenericClient.
+    * @param context The context.
     * @param protocols The connector protocols.
     * @param address The optional listening IP address (local host used if null).
     * @param port The listening port.
 	 * @param target The target handler.
     * @return The new server connector.
     */
-   public Server createServer(List<Protocol> protocols, String address, int port, Handler target)
+   public Server createServer(Context context, List<Protocol> protocols, String address, int port, Handler target)
 	{
    	Server result = null;
    	
@@ -322,8 +324,8 @@ public class Factory extends org.restlet.spi.Factory
 			{
 				try
 				{
-					result = server.getClass().getConstructor(String.class, int.class)
-							.newInstance(address, port);
+					result = server.getClass().getConstructor(Context.class, String.class, int.class)
+							.newInstance(context, address, port);
 					result.setTarget(target);
 					return result;
 				}

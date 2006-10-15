@@ -155,9 +155,10 @@ public abstract class Factory
 
    /**
     * Create a new list of server connectors.
+    * @param context The context.
     * @return A new list of server connectors.
     */
-   public abstract ServerList createServerList();
+   public abstract ServerList createServerList(Context context);
    
    /**
     * Creates a new container.
@@ -192,13 +193,14 @@ public abstract class Factory
    
    /**
     * Create a new server connector for internal usage by the GenericClient.
+    * @param context The context.
     * @param protocols The connector protocols.
     * @param address The optional listening IP address (local host used if null).
     * @param port The listening port.
 	 * @param target The target handler.
     * @return The new server connector.
     */
-   public abstract Server createServer(List<Protocol> protocols, String address, int port, Handler target);
+   public abstract Server createServer(Context context, List<Protocol> protocols, String address, int port, Handler target);
 
    /**
     * Returns the best variant representation for a given resource according the the client preferences.

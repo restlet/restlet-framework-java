@@ -35,8 +35,11 @@ import org.restlet.data.Status;
  * the software engineering principle of generality to the component interface, the overall system 
  * architecture is simplified and the visibility of interactions is improved. Implementations are 
  * decoupled from the services they provide, which encourages independent evolvability." Roy T. Fielding
- * @see <a href="http://www.ics.uci.edu/~fielding/pubs/dissertation/rest_arch_style.htm#sec_5_1_5">Source
- * dissertation</a>
+ * @see <a href="http://www.ics.uci.edu/~fielding/pubs/dissertation/rest_arch_style.htm#sec_5_1_5">Source dissertation</a><br/>
+ * <br/>
+ * It has many subclasses that focus on a specific ways to handle calls like filtering, routing or finding 
+ * a target resource. The context property is typically provided by a parent container as a way to give 
+ * access to features such as logging and client connectors. 
  * @author Jerome Louvel (contact@noelios.com) <a href="http://www.noelios.com/">Noelios Consulting</a>
  */
 public class Handler
@@ -119,32 +122,42 @@ public class Handler
    	}
    	else
    	{
-	   	// Check if the Handler was started
-			if (isStopped())
-			{
-				try
-				{
-					start();
-				}
-				catch (Exception e)
-				{
-					getContext().getLogger().log(Level.WARNING, UNABLE_TO_START, e);
-					response.setStatus(Status.SERVER_ERROR_INTERNAL);
-				}
-			}
-	
-			if (isStopped())
-			{
-				getContext().getLogger().log(Level.WARNING, UNABLE_TO_START);
-				response.setStatus(Status.SERVER_ERROR_INTERNAL);
-			}
-			else
-			{
-				response.setStatus(Status.SERVER_ERROR_NOT_IMPLEMENTED);
-			}
+   		init(request, response);
    	}
 	}
 
+	/**
+	 * Initialize the handler by attemting to start it.
+	 * @param request The request to handle.
+	 * @param response The response to update.
+	 */
+	protected void init(Request request, Response response)
+	{
+   	// Check if the Handler was started
+		if (isStopped())
+		{
+			try
+			{
+				start();
+			}
+			catch (Exception e)
+			{
+				getContext().getLogger().log(Level.WARNING, UNABLE_TO_START, e);
+				response.setStatus(Status.SERVER_ERROR_INTERNAL);
+			}
+		}
+
+		if (isStopped())
+		{
+			getContext().getLogger().log(Level.WARNING, UNABLE_TO_START);
+			response.setStatus(Status.SERVER_ERROR_INTERNAL);
+		}
+		else
+		{
+			response.setStatus(Status.SERVER_ERROR_NOT_IMPLEMENTED);
+		}
+	}
+	
 	/**
 	 * Indicates if the Restlet is started.
 	 * @return True if the Restlet is started.
