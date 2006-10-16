@@ -148,7 +148,7 @@ public class PatternScorer extends Scorer
 	
 	      if(logger.isLoggable(Level.FINE))
 	      {
-	      	logger.fine("Delegating the call to the target Restlet");
+	      	logger.fine("Delegating the call to the target handler");
 	      }
 	
 	      // Invoke the call restlet

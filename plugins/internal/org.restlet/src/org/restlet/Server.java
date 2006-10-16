@@ -28,7 +28,6 @@ import java.util.List;
 import org.restlet.data.Protocol;
 import org.restlet.data.Request;
 import org.restlet.data.Response;
-import org.restlet.data.Status;
 import org.restlet.spi.Factory;
 
 /**
@@ -218,11 +217,10 @@ public class Server extends Connector
    	}
    	else
    	{
-   		super.handle(request, response);
+   		init(request, response);
    		
    		if(getTarget() != null)
    		{
-   			response.setStatus(Status.SUCCESS_OK);
    			getTarget().handle(request, response);
    		}
    	}

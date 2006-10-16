@@ -65,9 +65,9 @@ public class Chainer extends Handler
 		}
 		else
 		{
-			super.handle(request, response);
-	   	Handler next = getNext(request, response);
-	   	
+	  		init(request, response);
+
+	  		Handler next = getNext(request, response);
 	   	if(next != null)
 	   	{
 	      	next.handle(request, response);

@@ -255,6 +255,17 @@ public abstract class Application extends Handler
 	}
 
 	/**
+	 * Handles a call.
+	 * @param request The request to handle.
+	 * @param response The response to update.
+	 */
+	public void handle(Request request, Response response)
+	{
+  		init(request, response);
+  		if(getRoot() != null) getRoot().handle(request, response);
+	}
+
+	/**
 	 * Sets the author(s).
 	 * @param author The author(s).
 	 */

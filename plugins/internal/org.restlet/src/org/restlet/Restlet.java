@@ -103,7 +103,7 @@ public class Restlet extends Handler
 		}
 		else
 		{
-			super.handle(request, response);
+	  		init(request, response);
 	
 			if (isStarted())
 			{

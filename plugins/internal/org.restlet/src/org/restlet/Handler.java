@@ -139,6 +139,7 @@ public class Handler
 			try
 			{
 				start();
+				response.setStatus(Status.SUCCESS_OK);
 			}
 			catch (Exception e)
 			{

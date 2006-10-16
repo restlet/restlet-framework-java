@@ -103,7 +103,7 @@ public class Client extends Connector implements ClientInterface
 	{
 		return (Client)getWrappedHandler();
 	}
-   
+
 	/**
 	 * Handles a call.
 	 * @param request The request to handle.

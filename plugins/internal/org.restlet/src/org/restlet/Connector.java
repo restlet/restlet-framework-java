@@ -41,7 +41,7 @@ import org.restlet.data.Protocol;
  * dissertation</a>
  * @author Jerome Louvel (contact@noelios.com) <a href="http://www.noelios.com/">Noelios Consulting</a>
  */
-public class Connector extends Handler
+public abstract class Connector extends Handler
 {
 	/** The list of protocols simultaneously supported. */
 	private List<Protocol> protocols;
