@@ -13,3 +13,4 @@ Require-Bundle: org.restlet,
  com.noelios.restlet.ext.simple;resolution:=optional,
  com.noelios.restlet.ext.asyncweb;resolution:=optional,
  com.noelios.restlet.ext.atom
+Export-Package: com.noelios.restlet.test

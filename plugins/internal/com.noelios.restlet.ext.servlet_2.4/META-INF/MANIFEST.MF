@@ -8,3 +8,4 @@ Bundle-Localization: plugin
 Require-Bundle: org.restlet,
  com.noelios.restlet,
  javax.servlet4
+Export-Package: com.noelios.restlet.ext.servlet

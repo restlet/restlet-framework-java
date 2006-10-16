@@ -38,11 +38,11 @@ public class Tutorial05
    public static void main(String[] args) throws Exception
    {
       // Create a new Restlet container and add a HTTP server connector to it
-   	Container myContainer = new Container();
-      myContainer.getServers().add(Protocol.HTTP, 8182);
+   	Container container = new Container();
+      container.getServers().add(Protocol.HTTP, 8182);
 
       // Create a new Restlet that will display some path information.
-      Restlet myRestlet = new Restlet()
+      Restlet handler = new Restlet()
          {
             public void handleGet(Request request, Response response)
             {
@@ -56,11 +56,11 @@ public class Tutorial05
          };
 
       // Then attach it to the local host
-      myContainer.getDefaultHost().attach("/trace", myRestlet);
+      container.getDefaultHost().attach("/trace", handler);
 
       // Now, let's start the container!
       // Note that the HTTP server connector is also automatically started.
-      myContainer.start();
+      container.start();
    }
 
 }

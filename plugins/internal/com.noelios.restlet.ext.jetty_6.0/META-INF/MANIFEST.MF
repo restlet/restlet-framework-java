@@ -9,3 +9,4 @@ Require-Bundle: org.restlet,
  com.noelios.restlet,
  javax.servlet5,
  org.mortbay.jetty6
+Export-Package: com.noelios.restlet.ext.jetty

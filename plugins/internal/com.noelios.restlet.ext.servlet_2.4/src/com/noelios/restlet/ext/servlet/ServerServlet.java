@@ -43,22 +43,21 @@ import com.noelios.restlet.impl.http.HttpServer;
  * &lt;?xml version="1.0" encoding="ISO-8859-1"?&gt;
  * &lt;!DOCTYPE web-app PUBLIC "-//Sun Microsystems, Inc.//DTD Web Application 2.3//EN" "http://java.sun.com/dtd/web-app_2_3.dtd"&gt;
  * &lt;web-app&gt;
- * 	&lt;display-name&gt;Server Servlet&lt;/display-name&gt;
- * 	&lt;description&gt;Servlet acting as a Restlet server connector&lt;/description&gt;
+ * 	&lt;display-name&gt;Restlet adapter&lt;/display-name&gt;
  * 
- * 	&lt;!-- Application class handling calls --&gt;
+ * 	&lt;!-- Your application class name --&gt;
  * 	&lt;context-param&gt;
  * 		&lt;param-name&gt;org.restlet.application&lt;/param-name&gt;
  * 		&lt;param-value&gt;com.noelios.restlet.test.TraceApplication&lt;/param-value&gt;
  * 	&lt;/context-param&gt;
  * 
- * 	&lt;!-- ServerServlet class or a subclass --&gt;
+ * 	&lt;!-- Restlet adapter --&gt;
  * 	&lt;servlet&gt;
  * 		&lt;servlet-name&gt;ServerServlet&lt;/servlet-name&gt;
  * 		&lt;servlet-class&gt;com.noelios.restlet.ext.servlet.ServerServlet&lt;/servlet-class&gt;
  * 	&lt;/servlet&gt;
  * 
- * 	&lt;!-- Mapping of requests to the ServerServlet --&gt;
+ * 	&lt;!-- Catch all requests --&gt;
  * 	&lt;servlet-mapping&gt;
  * 		&lt;servlet-name&gt;ServerServlet&lt;/servlet-name&gt;
  * 		&lt;url-pattern&gt;/*&lt;/url-pattern&gt;

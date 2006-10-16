@@ -23,7 +23,6 @@
 package com.noelios.restlet.example.misc;
 
 import org.restlet.Container;
-import org.restlet.Context;
 import org.restlet.Restlet;
 import org.restlet.data.Form;
 import org.restlet.data.MediaType;
@@ -43,16 +42,15 @@ public class SimpleServer
       try
       {
          // Create a new Restlet container
-      	Container myContainer = new Container();
-         Context myContext = myContainer.getContext();
+      	Container container = new Container();
          
          // Create the HTTP server connector, then add it as a server
          // connector to the Restlet container. Note that the container
          // is the call restlet.
-         myContainer.getServers().add(Protocol.HTTP, 9876);
+         container.getServers().add(Protocol.HTTP, 9876);
 
          // Prepare and attach a test Restlet
-         Restlet testRestlet = new Restlet(myContext)
+         Restlet handler = new Restlet(container.getContext())
          {
             public void handlePut(Request request, Response response)
             {
@@ -78,10 +76,10 @@ public class SimpleServer
             }
          };
 
-         myContainer.getDefaultHost().attach("/test", testRestlet);
+         container.getDefaultHost().attach("/test", handler);
 
          // Now, start the container
-         myContainer.start();
+         container.start();
       }
       catch(Exception e)
       {

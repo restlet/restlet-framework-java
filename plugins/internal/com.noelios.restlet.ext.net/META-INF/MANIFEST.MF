@@ -7,3 +7,4 @@ Bundle-Vendor: Noelios Consulting
 Bundle-Localization: plugin
 Require-Bundle: org.restlet,
  com.noelios.restlet
+Export-Package: com.noelios.restlet.ext.net
