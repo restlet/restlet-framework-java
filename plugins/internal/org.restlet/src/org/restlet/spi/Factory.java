@@ -156,9 +156,10 @@ public abstract class Factory
    /**
     * Create a new list of server connectors.
     * @param context The context.
+	 * @param target The target handler of added servers.
     * @return A new list of server connectors.
     */
-   public abstract ServerList createServerList(Context context);
+   public abstract ServerList createServerList(Context context, Handler target);
    
    /**
     * Creates a new container.

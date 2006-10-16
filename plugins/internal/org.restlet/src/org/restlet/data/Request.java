@@ -42,7 +42,7 @@ public class Request extends Message
 	/** The base reference. */
 	private Reference baseRef;
 
-	/** The client data. */
+	/** The client-specific information. */
 	private ClientInfo clientInfo;
 
 	/** The condition data. */

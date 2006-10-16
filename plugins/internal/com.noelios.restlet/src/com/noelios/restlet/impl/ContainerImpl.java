@@ -34,27 +34,27 @@ import org.restlet.data.Status;
 import org.restlet.spi.Factory;
 
 /**
- * Container implementation. 
+ * Container implementation.
  * @author Jerome Louvel (contact@noelios.com) <a href="http://www.noelios.com/">Noelios Consulting</a>
  */
 public class ContainerImpl extends Container
 {
-	/** The internal client router. */
-	private ClientRouter clientRouter;
-	
-	/** The internal host router. */
-	private ServerRouter hostRouter;
-	
+   /** The internal client router. */
+   private ClientRouter clientRouter;
+
+   /** The internal server router. */
+   private ServerRouter serverRouter;
+
    /**
     * Constructor.
     */
    public ContainerImpl()
    {
-   	super(new ContainerContext(null));
-   	((ContainerContext)getContext()).setContainer(this);
-   	
+      super(new ContainerContext(null));
+      ((ContainerContext)getContext()).setContainer(this);
+
       this.clientRouter = new ClientRouter(this);
-      this.hostRouter = new ServerRouter(this);
+      this.serverRouter = new ServerRouter(this);
 
       // Add a local client
       List<Protocol> protocols = new ArrayList<Protocol>();
@@ -70,51 +70,51 @@ public class ContainerImpl extends Container
     */
    public void handle(Request request, Response response)
    {
-      if(getHostRouter() != null)
+      if(getServerRouter() != null)
       {
-      	getHostRouter().handle(request, response);
+         getServerRouter().handle(request, response);
       }
       else
       {
-      	response.setStatus(Status.SERVER_ERROR_INTERNAL);
+         response.setStatus(Status.SERVER_ERROR_INTERNAL);
          getLogger().log(Level.SEVERE, "No host router defined.");
       }
    }
 
-	/**
-	 * Returns the internal client router.
-	 * @return the internal client router.
-	 */
-	public ClientRouter getClientRouter()
-	{
-		return this.clientRouter;
-	}
+   /**
+    * Returns the internal client router.
+    * @return the internal client router.
+    */
+   public ClientRouter getClientRouter()
+   {
+      return this.clientRouter;
+   }
 
-	/**
-	 * Sets the internal client router.
-	 * @param clientRouter The internal client router.
-	 */
-	public void setClientRouter(ClientRouter clientRouter)
-	{
-		this.clientRouter = clientRouter;
-	}
+   /**
+    * Sets the internal client router.
+    * @param clientRouter The internal client router.
+    */
+   public void setClientRouter(ClientRouter clientRouter)
+   {
+      this.clientRouter = clientRouter;
+   }
 
-	/**
-	 * Returns the internal host router.
-	 * @return the internal host router.
-	 */
-	public ServerRouter getHostRouter()
-	{
-		return this.hostRouter;
-	}
+   /**
+    * Returns the internal host router.
+    * @return the internal host router.
+    */
+   public ServerRouter getServerRouter()
+   {
+      return this.serverRouter;
+   }
 
-	/**
-	 * Sets the internal host router.
-	 * @param hostRouter The internal host router.
-	 */
-	public void setHostRouter(ServerRouter hostRouter)
-	{
-		this.hostRouter = hostRouter;
-	}
+   /**
+    * Sets the internal host router.
+    * @param hostRouter The internal host router.
+    */
+   public void setServerRouter(ServerRouter hostRouter)
+   {
+      this.serverRouter = hostRouter;
+   }
 
 }

@@ -66,10 +66,10 @@ public class HttpResponse extends Response
 	}
 
 	/**
-	 * Returns the server specific data.
-	 * @return The server specific data.
+	 * Returns the server-specific information.
+	 * @return The server-specific information.
 	 */
-	public ServerInfo getServer()
+	public ServerInfo getServerInfo()
 	{
 		ServerInfo result = super.getServerInfo();
 
@@ -84,4 +84,5 @@ public class HttpResponse extends Response
 
 		return result;
 	}
+
 }

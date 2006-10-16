@@ -130,10 +130,10 @@ public class HttpRequest extends Request
 	}
 
 	/**
-	 * Returns the client specific data.
-	 * @return The client specific data.
+	 * Returns the client-specific information.
+	 * @return The client-specific information.
 	 */
-	public ClientInfo getClient()
+	public ClientInfo getClientInfo()
 	{
 		ClientInfo result = super.getClientInfo();
 

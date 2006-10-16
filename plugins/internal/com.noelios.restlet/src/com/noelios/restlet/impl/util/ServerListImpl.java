@@ -25,6 +25,7 @@ package com.noelios.restlet.impl.util;
 import java.util.Arrays;
 
 import org.restlet.Context;
+import org.restlet.Handler;
 import org.restlet.Server;
 import org.restlet.data.Protocol;
 import org.restlet.spi.Factory;
@@ -39,14 +40,19 @@ public class ServerListImpl extends WrapperList<Server> implements ServerList
 {
 	/** The context. */
 	private Context context;
+	
+	/** The target handler of added servers. */
+	private Handler target;
 
 	/**
 	 * Constructor.
 	 * @param context The context.
+	 * @param target The target handler of added servers.
 	 */
-	public ServerListImpl(Context context)
+	public ServerListImpl(Context context, Handler target)
 	{
 		this.context = context;
+		this.target = target;
 	}
 
 	/**
@@ -56,6 +62,15 @@ public class ServerListImpl extends WrapperList<Server> implements ServerList
 	public Context getContext()
 	{
 		return this.context;
+	}
+
+	/**
+	 * Returns the target handler.
+	 * @return The target handler.
+	 */
+	public Handler getTarget()
+	{
+		return this.target;
 	}
 
 	/**
@@ -75,7 +90,7 @@ public class ServerListImpl extends WrapperList<Server> implements ServerList
 	public Server add(Protocol protocol)
 	{
 		Server result = Factory.getInstance().createServer(getContext(),
-				Arrays.asList(protocol), null, protocol.getDefaultPort(), null);
+				Arrays.asList(protocol), null, protocol.getDefaultPort(), getTarget());
 		add(result);
 		return result;
 	}
@@ -89,7 +104,7 @@ public class ServerListImpl extends WrapperList<Server> implements ServerList
 	public Server add(Protocol protocol, int port)
 	{
 		Server result = Factory.getInstance().createServer(getContext(),
-				Arrays.asList(protocol), null, port, null);
+				Arrays.asList(protocol), null, port, getTarget());
 		add(result);
 		return result;
 	}
@@ -104,7 +119,7 @@ public class ServerListImpl extends WrapperList<Server> implements ServerList
 	public Server add(Protocol protocol, String address, int port)
 	{
 		Server result = Factory.getInstance().createServer(getContext(),
-				Arrays.asList(protocol), address, port, null);
+				Arrays.asList(protocol), address, port, getTarget());
 		add(result);
 		return result;
 	}

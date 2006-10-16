@@ -197,7 +197,25 @@ public class ServletCall extends HttpServerCall
    {
       return getRequest().getLocalAddr();
    }
-   
+
+	/** 
+	 * Returns the server name.
+	 * @return The server name.
+	 */
+	public String getServerName()
+	{
+		return getRequest().getServerName();
+	}
+
+	/** 
+	 * Returns the server port.
+	 * @return The server port.
+	 */
+	public Integer getServerPort()
+	{
+		return getRequest().getServerPort();
+	}
+
    /**
     * Returns the response status code.
     * @return The response status code.

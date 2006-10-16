@@ -289,11 +289,12 @@ public class Factory extends org.restlet.spi.Factory
    /**
     * Create a new list of server connectors.
     * @param context The context.
+	 * @param target The target handler of added servers.
     * @return A new list of server connectors.
     */
-   public ServerList createServerList(Context context)
+   public ServerList createServerList(Context context, Handler target)
    {
-   	return new ServerListImpl(context);
+   	return new ServerListImpl(context, target);
    }
 
    /**

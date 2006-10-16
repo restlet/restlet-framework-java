@@ -51,7 +51,7 @@ public class Response extends Message
 	/** The associated request. */
 	private Request request;
 
-	/** The server data. */
+	/** The server-specific information. */
 	private ServerInfo serverInfo;
 
 	/** The status. */

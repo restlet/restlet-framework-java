@@ -170,6 +170,7 @@ public class ServerServlet extends HttpServlet
 							// First, let's locate the closest container
 							Container container = new Container();
 							result = new HttpServer(container.getContext());
+							result.setTarget(container);
 							getServletContext().setAttribute(NAME_SERVER_ATTRIBUTE, result);
 
 							if (container != null)

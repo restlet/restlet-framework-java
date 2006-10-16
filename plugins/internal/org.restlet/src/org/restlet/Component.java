@@ -98,7 +98,7 @@ public abstract class Component extends Handler
 		}
 		else
 		{
-			if(this.servers == null) this.servers = Factory.getInstance().createServerList(getContext());
+			if(this.servers == null) this.servers = Factory.getInstance().createServerList(getContext(), this);
 			return this.servers;
 		}
 	}
