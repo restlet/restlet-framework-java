@@ -25,9 +25,10 @@ package org.restlet;
 import java.util.logging.Logger;
 
 import org.restlet.data.ParameterList;
+import org.restlet.util.ClientInterface;
 
 /**
- * Context associated with a Restlet.
+ * Information and services provided to a handler.
  * @author Jerome Louvel (contact@noelios.com) <a href="http://www.noelios.com/">Noelios Consulting</a>
  */
 public class Context

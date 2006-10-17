@@ -43,122 +43,131 @@ public class StringTemplateRepresentation extends StreamRepresentation implement
 {
 	/** The string template. */
 	private StringTemplate template;
-	
+
 	/** The template model. */
 	private Model model;
-   
-   /**
-    * Constructor.
-    * @param pattern The template pattern to process.
-    * @param model The template model to use.
-    * @param mediaType The representation's media type.
-    */
-   public StringTemplateRepresentation(CharSequence pattern, Model model, MediaType mediaType)
-   {
-      super(mediaType);
-      this.template = new StringTemplate(pattern);
-      this.model = model;
-   }
-   
-   /**
-    * Constructor.
-    * @param pattern The template pattern to process.
-    * @param mediaType The representation's media type.
-    */
-   public StringTemplateRepresentation(CharSequence pattern, MediaType mediaType)
-   {
-      this(pattern, new MapModel(), mediaType);
-   }
-	
-   /**
-    * Constructor.
-    * @param pattern The template pattern to process.
-    * @param variableStart The string that defines instructions start delimiters.
-    * @param variableEnd The string that defines instructions end delimiters.
-    * @param instructionStart The string that defines instructions start delimiters.
-    * @param instructionEnd The string that defines instructions end delimiters.
-    * @param model The template model.
-    * @param mediaType The representation's media type.
-    */
-   public StringTemplateRepresentation(CharSequence pattern, String variableStart, String variableEnd, String instructionStart, String instructionEnd, Model model, MediaType mediaType)
-   {
-      super(mediaType);
-      this.template = new StringTemplate(pattern, variableStart, variableEnd, instructionStart, instructionEnd);
-      this.model = model;
-   }
-	
-   /**
-    * Constructor.
-    * @param pattern The template pattern to process.
-    * @param variableStart The string that defines instructions start delimiters.
-    * @param variableEnd The string that defines instructions end delimiters.
-    * @param instructionStart The string that defines instructions start delimiters.
-    * @param instructionEnd The string that defines instructions end delimiters.
-    * @param mediaType The representation's media type.
-    */
-   public StringTemplateRepresentation(CharSequence pattern, String variableStart, String variableEnd, String instructionStart, String instructionEnd, MediaType mediaType)
-   {
-      this(pattern, variableStart, variableEnd, instructionStart, instructionEnd, new MapModel(), mediaType);
-   }
 
-   /**
-    * Returns the internal value.
-    * @return The internal value.
-    */
-   public String getValue()
-   {
-   	return this.template.process(this.model);
-   }
+	/**
+	 * Constructor.
+	 * @param pattern The template pattern to process.
+	 * @param model The template model to use.
+	 * @param mediaType The representation's media type.
+	 */
+	public StringTemplateRepresentation(CharSequence pattern, Model model,
+			MediaType mediaType)
+	{
+		super(mediaType);
+		this.template = new StringTemplate(pattern);
+		this.template.setLogger(getLogger());
+		this.model = model;
+	}
 
-   /**
-    * Returns the model value for a given name.
-    * @param name The name to look-up.
-    * @return The model value for the given name.
-    */
+	/**
+	 * Constructor.
+	 * @param pattern The template pattern to process.
+	 * @param mediaType The representation's media type.
+	 */
+	public StringTemplateRepresentation(CharSequence pattern, MediaType mediaType)
+	{
+		this(pattern, new MapModel(), mediaType);
+	}
+
+	/**
+	 * Constructor.
+	 * @param pattern The template pattern to process.
+	 * @param variableStart The string that defines instructions start delimiters.
+	 * @param variableEnd The string that defines instructions end delimiters.
+	 * @param instructionStart The string that defines instructions start delimiters.
+	 * @param instructionEnd The string that defines instructions end delimiters.
+	 * @param model The template model.
+	 * @param mediaType The representation's media type.
+	 */
+	public StringTemplateRepresentation(CharSequence pattern, String variableStart,
+			String variableEnd, String instructionStart, String instructionEnd, Model model,
+			MediaType mediaType)
+	{
+		super(mediaType);
+		this.template = new StringTemplate(pattern, variableStart,
+				variableEnd, instructionStart, instructionEnd);
+		this.template.setLogger(getLogger());
+		this.model = model;
+	}
+
+	/**
+	 * Constructor.
+	 * @param pattern The template pattern to process.
+	 * @param variableStart The string that defines instructions start delimiters.
+	 * @param variableEnd The string that defines instructions end delimiters.
+	 * @param instructionStart The string that defines instructions start delimiters.
+	 * @param instructionEnd The string that defines instructions end delimiters.
+	 * @param mediaType The representation's media type.
+	 */
+	public StringTemplateRepresentation(CharSequence pattern, String variableStart,
+			String variableEnd, String instructionStart, String instructionEnd,
+			MediaType mediaType)
+	{
+		this(pattern, variableStart, variableEnd, instructionStart, instructionEnd,
+				new MapModel(), mediaType);
+	}
+
+	/**
+	 * Returns the internal value.
+	 * @return The internal value.
+	 */
+	public String getValue()
+	{
+		return this.template.process(this.model);
+	}
+
+	/**
+	 * Returns the model value for a given name.
+	 * @param name The name to look-up.
+	 * @return The model value for the given name.
+	 */
 	public String get(String name)
 	{
 		return this.model.get(name);
 	}
 
-   /**
-    * Indicates if the model contains a value for a given name.
-    * @param name The name to look-up.
-    * @return True if the model contains a value for the given name.
-    */
+	/**
+	 * Indicates if the model contains a value for a given name.
+	 * @param name The name to look-up.
+	 * @return True if the model contains a value for the given name.
+	 */
 	public boolean contains(String name)
 	{
 		return this.model.contains(name);
 	}
 
-   /**
-    * Puts the model value for a given name.
-    * @param name The name to look-up.
-    * @param value The value to put.
-    */
+	/**
+	 * Puts the model value for a given name.
+	 * @param name The name to look-up.
+	 * @param value The value to put.
+	 */
 	public void put(String name, String value)
 	{
 		this.model.put(name, value);
 	}
-	
-   /**
-    * Converts the representation to a string.
-    * @return The representation as a string.
-    */
-   public String toString()
-   {
-   	return getValue();
-   }
 
-   /**
-    * Returns a stream with the representation's content.
-    * This method is ensured to return a fresh stream for each invocation unless it 
-    * is a transient representation, in which case null is returned.
-    * @return A stream with the representation's content.
-    * @throws IOException
-    */
+	/**
+	 * Converts the representation to a string.
+	 * @return The representation as a string.
+	 */
+	public String toString()
+	{
+		return getValue();
+	}
+
+	/**
+	 * Returns a stream with the representation's content.
+	 * This method is ensured to return a fresh stream for each invocation unless it 
+	 * is a transient representation, in which case null is returned.
+	 * @return A stream with the representation's content.
+	 * @throws IOException
+	 */
 	public InputStream getStream() throws IOException
 	{
-		if(getValue() != null)
+		if (getValue() != null)
 		{
 			return new ByteArrayInputStream(getValue().getBytes(getCharacterSet().getName()));
 		}
@@ -168,18 +177,19 @@ public class StringTemplateRepresentation extends StreamRepresentation implement
 		}
 	}
 
-   /**
-    * Writes the representation to a byte stream.
-    * This method is ensured to write the full content for each invocation unless it 
-    * is a transient representation, in which case an exception is thrown.
-    * @param outputStream The output stream.
-    * @throws IOException
-    */
+	/**
+	 * Writes the representation to a byte stream.
+	 * This method is ensured to write the full content for each invocation unless it 
+	 * is a transient representation, in which case an exception is thrown.
+	 * @param outputStream The output stream.
+	 * @throws IOException
+	 */
 	public void write(OutputStream outputStream) throws IOException
 	{
-		if(getValue() != null)
+		if (getValue() != null)
 		{
-			OutputStreamWriter osw = new OutputStreamWriter(outputStream, getCharacterSet().getName());
+			OutputStreamWriter osw = new OutputStreamWriter(outputStream, getCharacterSet()
+					.getName());
 			osw.write(getValue());
 		}
 	}

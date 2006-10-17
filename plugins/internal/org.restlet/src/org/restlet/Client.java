@@ -31,9 +31,10 @@ import org.restlet.data.Representation;
 import org.restlet.data.Request;
 import org.restlet.data.Response;
 import org.restlet.spi.Factory;
+import org.restlet.util.ClientInterface;
 
 /**
- * Generic client connector. It internally uses one of the available connectors registered with the current
+ * Connector acting as a generic client. It internally uses one of the available connectors registered with the current
  * Restlet implementation.
  * @author Jerome Louvel (contact@noelios.com) <a href="http://www.noelios.com/">Noelios Consulting</a>
  */
@@ -194,36 +195,36 @@ public class Client extends Connector implements ClientInterface
    /**
     * Posts a representation to the identified resource.
     * @param resourceUri The URI of the resource to post to.
-    * @param input The input representation to post.
+    * @param entity The entity representation to post.
     * @return The response.
     */
-	public Response post(String resourceUri, Representation input)
+	public Response post(String resourceUri, Representation entity)
    {
 		if(getWrappedClient() != null)
 		{
-			return getWrappedClient().post(resourceUri, input);
+			return getWrappedClient().post(resourceUri, entity);
 		}
 		else
 		{
-			return handle(new Request(Method.POST, resourceUri, input));
+			return handle(new Request(Method.POST, resourceUri, entity));
 		}
    }
 
    /**
     * Puts a representation in the identified resource.
     * @param resourceUri The URI of the resource to modify.
-    * @param input The input representation to put.
+    * @param entity The entity representation to put.
     * @return The response.
     */
-   public Response put(String resourceUri, Representation input)
+   public Response put(String resourceUri, Representation entity)
    {
 		if(getWrappedClient() != null)
 		{
-			return getWrappedClient().put(resourceUri, input);
+			return getWrappedClient().put(resourceUri, entity);
 		}
 		else
 		{
-			return handle(new Request(Method.PUT, resourceUri, input));
+			return handle(new Request(Method.PUT, resourceUri, entity));
 		}
    }
    

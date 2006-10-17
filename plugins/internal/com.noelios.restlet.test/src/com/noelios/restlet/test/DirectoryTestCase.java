@@ -235,11 +235,11 @@ public class DirectoryTestCase extends TestCase
     * @param baseRef
     * @param resourceRef
     * @param method
-    * @param inputRepresentation
+    * @param entity
     * @return
     */
    private Response handle(DirectoryFinder directory, String baseRef, String resourceRef,
-         Method method, Representation inputRepresentation)
+         Method method, Representation entity)
    {
       Request request = new Request();
       Response response = new Response(request);
@@ -248,7 +248,7 @@ public class DirectoryTestCase extends TestCase
       request.setMethod(method);
       if (Method.PUT.equals(method))
       {
-         request.setEntity(inputRepresentation);
+         request.setEntity(entity);
       }
 
       directory.handle(request, response);

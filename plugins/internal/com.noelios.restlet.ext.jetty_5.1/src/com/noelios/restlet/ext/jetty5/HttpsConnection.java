@@ -26,6 +26,7 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
 import java.net.InetAddress;
+import java.util.logging.Logger;
 
 import org.mortbay.http.HttpContext;
 import org.mortbay.http.HttpException;
@@ -43,17 +44,22 @@ public class HttpsConnection extends org.mortbay.http.HttpConnection
    /** Serial version identifier. */
    private static final long serialVersionUID = 1L;
 
+   /** The logger to use. */
+   private Logger logger;
+
    /**
     * Constructor.
+    * @param logger The logger to use.
     * @param listener The parent HTTP listener.
     * @param remoteAddress The address of the remote end or null.
     * @param in Input stream to read the request from.
     * @param out Output stream to write the response to.
     * @param connection The underlying connection object.
     */
-   public HttpsConnection(org.mortbay.http.HttpListener listener, InetAddress remoteAddress, InputStream in, OutputStream out, Object connection)
+   public HttpsConnection(Logger logger, org.mortbay.http.HttpListener listener, InetAddress remoteAddress, InputStream in, OutputStream out, Object connection)
    {
       super(listener, remoteAddress, in, out, connection);
+      this.logger = logger;
    }
 
    /**
@@ -66,7 +72,7 @@ public class HttpsConnection extends org.mortbay.http.HttpConnection
     */
    protected HttpContext service(HttpRequest request, HttpResponse response) throws HttpException, IOException
    {
-      getJettyServer().handle((HttpServerCall)new JettyCall(request, response));
+      getJettyServer().handle((HttpServerCall)new JettyCall(this.logger, request, response));
 
       // Commit the response and ensures that all data is flushed out to the caller
       response.commit();

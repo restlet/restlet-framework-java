@@ -650,27 +650,29 @@ public class Factory extends org.restlet.spi.Factory
 
 	/**
 	 * Parses an URL encoded Web form.
+	 * @param logger The logger to use.
 	 * @param form The target form.
 	 * @param webForm The posted form.
 	 */
-	public void parse(Form form, Representation webForm)
+	public void parse(Logger logger, Form form, Representation webForm)
 	{
 		if (webForm != null)
 		{
-			FormUtils.parsePost(form, webForm);
+			FormUtils.parsePost(logger, form, webForm);
 		}
 	}
 
 	/**
 	 * Parses an URL encoded query string into a given form.
+	 * @param logger The logger to use.
 	 * @param form The target form.
 	 * @param queryString Query string.
 	 */
-	public void parse(Form form, String queryString)
+	public void parse(Logger logger, Form form, String queryString)
 	{
 		if ((queryString != null) && !queryString.equals(""))
 		{
-			FormUtils.parseQuery(form, queryString);
+			FormUtils.parseQuery(logger, form, queryString);
 		}
 	}
 
@@ -679,12 +681,12 @@ public class Factory extends org.restlet.spi.Factory
 	 * If no representation is found, sets the status to "Not found".<br/>
 	 * If no acceptable representation is available, sets the status to "Not acceptable".<br/>
     * @param request The request containing the client preferences.
-    * @param response The response to update with the best output.
+    * @param response The response to update with the best entity.
 	 * @param resource The resource for which the best representation needs to be set.
 	 * @param fallbackLanguage The language to use if no preference matches.
 	 * @see <a href="http://httpd.apache.org/docs/2.2/en/content-negotiation.html#algorithm">Apache content negotiation algorithm</a>
 	 */
-	public void setOutput(Request request, Response response, Resource resource, Language fallbackLanguage)
+	public void setResponseEntity(Request request, Response response, Resource resource, Language fallbackLanguage)
 	{
 		List<Representation> variants = resource.getVariants();
 
@@ -741,7 +743,7 @@ public class Factory extends org.restlet.spi.Factory
 
 				if (send)
 				{
-					// Send the best representation as the call output
+					// Send the best representation as the response entity
 					response.setEntity(bestVariant);
 					response.setStatus(Status.SUCCESS_OK);
 				}

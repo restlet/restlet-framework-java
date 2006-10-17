@@ -12,6 +12,7 @@ Changes log
  - Fixed bug in ParameterList.getFirstValue(String, boolean) ignoring the "ignoreCase" parameter.
  - Fixed issue with ServerServlet preventing the returning of an output representation with an error status code. Reported by Sean Landis.
  - Fixed incomplete plugin descriptors for some extensions.
+ - Added workaround for JDK's bug #6472250 when using the fixed length mode with the HTTP client.
  
 [API breaking changes]
  - Moved hasInput() method from org.restlet.connector.Client to Call.isInputAvailable().
@@ -68,13 +69,14 @@ Changes log
  - ServerServlet now only works with applications as target. Review updated Javadocs before upgrading.
  - GuardFilter now logs messages via the context's logger. Changed constructor.
  - Moved all remaining classes of org.restlet.component and org.restlet.connector into org.restlet for simplification purpose. Suggested by Piyush Purang.
- 
  - Added Holder filter to hold an attached handler and apply call logging and status setting.
- - Removed ApplicationDelegate.
- - Refactored hierarchy : Restlet, Chainer, Connector and Component directly derive from Handler class.
+ - Refactored hierarchy : Restlet, Chainer, Connector and Component directly derive from base Handler class.
  - Extended usage of contexts.
  - Removed WrapperRestlet class, replaced by wrapping mode on Restlet.
- 
+ - Renamed "input" and "output" to "entity" or "request" or "response" in all properties name for CompressFilter, DecompressFilter, ExtractFilter, HttpClientCall, HttpServerCall, Result
+ - Moved ClientInterface to org.restlet.util.
+ - Replaced WrapperCall by wrapper constructors on Message, Request and Response.
+ - Replaced WrapperRepresentation by wrapper constructors on Resource and Representation.
  
 [Other changes] 
  - Updated Jetty 6 extension to 6.0.1 release and Jetty 5 extension to 5.1.11 release.
@@ -121,7 +123,7 @@ Changes log
    The list of allowed methods is then set to the Response (ex-Call) object. Subclasses of Finder can customize the list of allowed methods.
    Suggested by AJ Barnes and Lars Heuer.
  - Updated tutorial examples to leverage application concept.
- - 
+ - Refactored all usages of the JDK's loggers in order to reuse the Context's logger, allowing separation of messages for each application.
 
 1.0 beta 18 (2006-08-19)
 [Bugs fixed]

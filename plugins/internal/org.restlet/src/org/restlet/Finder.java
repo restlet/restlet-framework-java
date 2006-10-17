@@ -79,7 +79,7 @@ public class Finder extends Restlet
 	}
 
 	/**
-	 * Handles a GET call by automatically returning the best output available from the target resource (as provided
+	 * Handles a GET call by automatically returning the best entity available from the target resource (as provided
 	 * by the 'findTarget' method). The content negotiation is based on the client's preferences available in the 
 	 * handled call.
     * @param request The request to handle.
@@ -194,7 +194,7 @@ public class Finder extends Restlet
 					else
 					{
 						response.setStatus(new Status(Status.CLIENT_ERROR_NOT_ACCEPTABLE,
-						"Missing input representation"));
+						"Missing request entity"));
 					}
 				}
 				else
@@ -237,7 +237,7 @@ public class Finder extends Restlet
 					else
 					{
 						response.setStatus(new Status(Status.CLIENT_ERROR_NOT_ACCEPTABLE,
-								"Missing input representation"));
+								"Missing request entity"));
 					}
 				}
 				else

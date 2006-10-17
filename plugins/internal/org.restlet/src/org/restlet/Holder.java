@@ -23,8 +23,7 @@
 package org.restlet;
 
 /**
- * Filter holding an attached handler and providing filtering services such as call logging and setting of
- * status representations.
+ * Filter providing logging and status representation setting.
  * @author Jerome Louvel (contact@noelios.com) <a href="http://www.noelios.com/">Noelios Consulting</a>
  */
 public class Holder extends Filter
@@ -41,7 +40,7 @@ public class Holder extends Filter
 	/** Indicates if status pages should be added. */
 	private boolean statusEnabled;
 
-	/** Indicates if the status pages should overwrite existing output representations. */
+	/** Indicates if the status pages should overwrite existing response entity. */
 	private boolean statusOverwrite;
 
 	/** The email to contact in case of issue with the application. */
@@ -183,8 +182,8 @@ public class Holder extends Filter
    }
    
    /**
-    * Indicates if status pages should overwrite existing output representations.
-    * @return True if status pages should overwrite existing output representations.
+    * Indicates if status pages should overwrite existing response entities.
+    * @return True if status pages should overwrite existing response entities.
     */
    public boolean isStatusOverwrite()
    {
@@ -192,8 +191,8 @@ public class Holder extends Filter
    }
    
    /**
-    * Indicates if status pages should overwrite existing output representations.
-    * @param overwrite True if status pages should overwrite existing output representations.
+    * Indicates if status pages should overwrite existing response entities.
+    * @param overwrite True if status pages should overwrite existing response entities.
     */
    public void setStatusOverwrite(boolean overwrite)
    {

@@ -94,36 +94,41 @@ public class HttpClientCall extends HttpCall
    }
    
 	/**
-	 * Sends the request to the client. Commits the request line, headers and optional input and 
+	 * Sends the request to the client. Commits the request line, headers and optional entity and 
 	 * send them over the network. 
-	 * @param input The optional input representation to send.
+	 * @param entity The optional request entity to send.
 	 */
-   public Status sendRequest(Representation input) throws IOException
+   public Status sendRequest(Representation entity) throws IOException
    {
-      if(getRequestStream() != null)
+   	// In order to workaround bug #6472250, it is very important to reuse that exact same
+   	// "rs" reference when manipulating the request stream, otherwise "infufficient data sent" exceptions
+   	// will occur in "fixedLengthMode"
+   	OutputStream rs = getRequestStream(); 
+   	WritableByteChannel wbc = getRequestChannel(); 
+      if(rs != null)
       {
-   		if(input != null)
+   		if(entity != null)
    		{
-   			input.write(getRequestStream());
+   			entity.write(rs);
    		}
    		
-         getRequestStream().flush();
+   		rs.flush();
       }
-      else if(getRequestChannel() != null)
+      else if(wbc != null)
       {
-   		if(input != null)
+   		if(entity != null)
    		{
-   			input.write(getRequestChannel());
+   			entity.write(wbc);
    		}
       }
 
-      if(getRequestStream() != null)
+      if(rs != null)
       {
-         getRequestStream().close();
+      	rs.close();
       }
-      else if(getRequestChannel() != null)
+      else if(wbc != null)
       {
-         getRequestChannel().close();
+      	wbc.close();
       }
       
       // Now we can access the status code, this MUST happen after closing any open request stream.
@@ -151,11 +156,11 @@ public class HttpClientCall extends HttpCall
    }
 
    /**
-    * Returns the response output representation if available. Note that no metadata is associated by default, 
+    * Returns the response entity if available. Note that no metadata is associated by default, 
     * you have to manually set them from your headers.
-    * @return The response output representation if available.
+    * @return The response entity if available.
     */
-   public Representation getResponseOutput()
+   public Representation getResponseEntity()
    {
    	Representation result = null;
    	

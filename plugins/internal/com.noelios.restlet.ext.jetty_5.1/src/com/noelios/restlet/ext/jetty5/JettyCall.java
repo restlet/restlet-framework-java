@@ -29,6 +29,7 @@ import java.nio.channels.ReadableByteChannel;
 import java.nio.channels.WritableByteChannel;
 import java.util.Enumeration;
 import java.util.Iterator;
+import java.util.logging.Logger;
 
 import org.mortbay.http.HttpRequest;
 import org.mortbay.http.HttpResponse;
@@ -55,11 +56,13 @@ public class JettyCall extends HttpServerCall
 
    /**
     * Constructor.
+    * @param logger The logger to use.
     * @param request The Jetty HTTP request.
     * @param response The Jetty HTTP response.
     */
-   public JettyCall(HttpRequest request, HttpResponse response)
+   public JettyCall(Logger logger, HttpRequest request, HttpResponse response)
    {
+   	super(logger);
       this.request = request;
       this.response = response;
       this.requestHeadersAdded = false;
@@ -179,11 +182,11 @@ public class JettyCall extends HttpServerCall
    }
 
    /**
-    * Sends the response back to the client. Commits the status, headers and optional output and 
+    * Sends the response back to the client. Commits the status, headers and optional entity and 
     * send them on the network. 
-    * @param output The optional output representation to send.
+    * @param entity The optional response entity to send.
     */
-   public void sendResponse(Representation output) throws IOException
+   public void sendResponse(Representation entity) throws IOException
    {
    	// Set the response status
       getResponse().setStatus(getStatusCode(), getReasonPhrase());
@@ -202,8 +205,8 @@ public class JettyCall extends HttpServerCall
          getResponse().addField(header.getName(), header.getValue());
       }
       
-      // Send the response output
-      super.sendResponse(output);
+      // Send the response entity
+      super.sendResponse(entity);
    }
 
    /**

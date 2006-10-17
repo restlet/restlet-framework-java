@@ -27,6 +27,7 @@ import java.io.InputStream;
 import java.io.OutputStream;
 import java.nio.channels.ReadableByteChannel;
 import java.nio.channels.WritableByteChannel;
+import java.util.logging.Logger;
 
 import org.restlet.data.Parameter;
 import org.restlet.data.ParameterList;
@@ -65,13 +66,15 @@ public class SimpleCall extends HttpServerCall
 	/**
 	 * Constructs this class with the specified {@link simple.http.Request}
 	 * and {@link simple.http.Response}.
+	 * @param logger The logger to use.
 	 * @param request Request to wrap.
 	 * @param response Response to wrap.
 	 * @param confidential Inidicates if this call is acting in HTTP or HTTPS mode.
 	 * @param hostPort The listening port used.
 	 */
-	SimpleCall(Request request, Response response, boolean confidential, int hostPort)
+	SimpleCall(Logger logger, Request request, Response response, boolean confidential, int hostPort)
 	{
+		super(logger);
 		this.request = request;
 		this.response = response;
 		setConfidential(confidential);
@@ -140,11 +143,11 @@ public class SimpleCall extends HttpServerCall
 	}
 
 	/**
-	 * Sends the response back to the client. Commits the status, headers and optional output and 
+	 * Sends the response back to the client. Commits the status, headers and optional entity and 
 	 * send them on the network. 
-	 * @param output The optional output representation to send.
+	 * @param entity The optional response entity to send.
 	 */
-	public void sendResponse(Representation output) throws IOException
+	public void sendResponse(Representation entity) throws IOException
 	{
 		// Set the response headers
 		response.clear();
@@ -157,8 +160,8 @@ public class SimpleCall extends HttpServerCall
 		response.setCode(getStatusCode());
 		response.setText(getReasonPhrase());
 
-		// Send the response output
-		super.sendResponse(output);
+		// Send the response entity
+		super.sendResponse(entity);
 	}
 
 	/**

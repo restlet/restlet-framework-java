@@ -52,10 +52,18 @@ import com.noelios.restlet.impl.util.SecurityUtils;
  */
 public class HttpClientConverter
 {
-	/** Obtain a suitable logger. */
-	private static Logger logger = Logger.getLogger(HttpClientConverter.class
-			.getCanonicalName());
+	/** The logger to use. */
+	private Logger logger;
 
+	/**
+	 * Constructor.
+	 * @param logger The logger to use.
+	 */
+	public HttpClientConverter(Logger logger)
+	{
+		this.logger = logger;
+	}
+	
 	/**
 	 * Converts a low-level HTTP call into a high-level uniform call.
 	 * @param client The HTTP client that will handle the call.
@@ -96,12 +104,12 @@ public class HttpClientConverter
 			// Read the response headers
 			readResponseHeaders(httpCall, response);
 
-			// Set the output representation
-			response.setEntity(httpCall.getResponseOutput());
+			// Set the entity
+			response.setEntity(httpCall.getResponseEntity());
 		}
 		catch (Exception e)
 		{
-			logger.log(Level.INFO, "Exception intercepted", e);
+			this.logger.log(Level.INFO, "Exception intercepted", e);
 		}
 	}
 
@@ -213,7 +221,7 @@ public class HttpClientConverter
 			}
 			catch (IOException ioe)
 			{
-				logger.log(Level.WARNING, "Unable to format the HTTP Accept header", ioe);
+				this.logger.log(Level.WARNING, "Unable to format the HTTP Accept header", ioe);
 			}
 		}
 		else
@@ -230,7 +238,7 @@ public class HttpClientConverter
 			}
 			catch (IOException ioe)
 			{
-				logger.log(Level.WARNING, "Unable to format the HTTP Accept header", ioe);
+				this.logger.log(Level.WARNING, "Unable to format the HTTP Accept header", ioe);
 			}
 		}
 
@@ -243,7 +251,7 @@ public class HttpClientConverter
 			}
 			catch (IOException ioe)
 			{
-				logger.log(Level.WARNING, "Unable to format the HTTP Accept header", ioe);
+				this.logger.log(Level.WARNING, "Unable to format the HTTP Accept header", ioe);
 			}
 		}
 
@@ -256,7 +264,7 @@ public class HttpClientConverter
 			}
 			catch (IOException ioe)
 			{
-				logger.log(Level.WARNING, "Unable to format the HTTP Accept header", ioe);
+				this.logger.log(Level.WARNING, "Unable to format the HTTP Accept header", ioe);
 			}
 		}
 
@@ -268,7 +276,7 @@ public class HttpClientConverter
 					.format(challengeResponse));
 		}
 
-		// Send the input representation
+		// Send the request entity
 		if (request.getEntity() != null)
 		{
 			if (request.getEntity().getMediaType() != null)
@@ -363,7 +371,7 @@ public class HttpClientConverter
 								HttpConstants.HEADER_WWW_AUTHENTICATE))
 				{
 					// Standard headers can't be overriden
-					logger.warning("Addition of the standard header \"" + param.getName()
+					this.logger.warning("Addition of the standard header \"" + param.getName()
 							+ "\" is not allowed.");
 				}
 				else
@@ -399,12 +407,12 @@ public class HttpClientConverter
 				{
 					try
 					{
-						CookieReader cr = new CookieReader(header.getValue());
+						CookieReader cr = new CookieReader(this.logger, header.getValue());
 						response.getCookieSettings().add(cr.readCookieSetting());
 					}
 					catch (Exception e)
 					{
-						logger.log(Level.WARNING,
+						this.logger.log(Level.WARNING,
 								"Error during cookie setting parsing. Header: "
 										+ header.getValue(), e);
 					}
@@ -431,7 +439,7 @@ public class HttpClientConverter
 		}
 		catch (Exception e)
 		{
-			logger.log(Level.FINE,
+			this.logger.log(Level.FINE,
 					"An error occured during the processing of the HTTP response.", e);
 			response.setStatus(new Status(Status.CONNECTOR_ERROR_INTERNAL,
 					"Unable to process the response. " + e.getMessage()));

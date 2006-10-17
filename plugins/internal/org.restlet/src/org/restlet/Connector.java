@@ -28,7 +28,7 @@ import java.util.List;
 import org.restlet.data.Protocol;
 
 /**
- * Mechanism that enables communication between components. "A connector is an abstract
+ * Handler enabling communication between components. "A connector is an abstract
  * mechanism that mediates communication, coordination, or cooperation among components. Connectors enable
  * communication between components by transferring data elements from one interface to another without
  * changing the data." Roy T. Fielding </br> "Encapsulate the activities of accessing resources and

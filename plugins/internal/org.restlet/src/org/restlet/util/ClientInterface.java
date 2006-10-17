@@ -20,7 +20,7 @@
  * Portions Copyright [yyyy] [name of copyright owner]
  */
 
-package org.restlet;
+package org.restlet.util;
 
 import org.restlet.data.Representation;
 import org.restlet.data.Request;
@@ -77,18 +77,18 @@ public interface ClientInterface
    /**
     * Posts a representation to the identified resource.
     * @param resourceUri The URI of the resource to post to.
-    * @param input The input representation to post.
+    * @param entity The entity representation to post.
     * @return The response.
     */
-   public Response post(String resourceUri, Representation input);
+   public Response post(String resourceUri, Representation entity);
 
    /**
     * Puts a representation in the identified resource.
     * @param resourceUri The URI of the resource to modify.
-    * @param input The input representation to put.
+    * @param entity The entity representation to put.
     * @return The response.
     */
-   public Response put(String resourceUri, Representation input);
+   public Response put(String resourceUri, Representation entity);
    
    /**
     * Tests the identified resource.

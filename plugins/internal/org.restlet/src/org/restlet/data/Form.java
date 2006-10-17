@@ -23,6 +23,7 @@
 package org.restlet.data;
 
 import java.io.IOException;
+import java.util.logging.Logger;
 
 import org.restlet.spi.Factory;
 
@@ -47,7 +48,18 @@ public class Form extends ParameterList
     */
    public Form(String queryString)
    {
-   	Factory.getInstance().parse(this, queryString);
+   	this(Logger.getLogger(Form.class.getCanonicalName()), queryString);
+   }
+	
+   /**
+    * Constructor.
+    * @param logger The logger to use.
+    * @param queryString The Web form parameters as a string.
+    * @throws IOException 
+    */
+   public Form(Logger logger, String queryString)
+   {
+   	Factory.getInstance().parse(logger, this, queryString);
    }
 
    /**
@@ -57,7 +69,18 @@ public class Form extends ParameterList
     */
    public Form(Representation webForm)
    {
-   	Factory.getInstance().parse(this, webForm);
+   	this(Logger.getLogger(Form.class.getCanonicalName()), webForm);
+   }
+
+   /**
+    * Constructor.
+    * @param logger The logger to use.
+    * @param webForm The URL encoded Web form.
+    * @throws IOException
+    */
+   public Form(Logger logger, Representation webForm)
+   {
+   	Factory.getInstance().parse(logger, this, webForm);
    }
 
    /**

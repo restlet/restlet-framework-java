@@ -23,7 +23,6 @@
 package com.noelios.restlet.impl.http;
 
 import java.util.logging.Level;
-import java.util.logging.Logger;
 
 import org.restlet.Context;
 import org.restlet.Server;
@@ -36,9 +35,6 @@ import org.restlet.data.Response;
  */
 public class HttpServer extends Server
 {
-	/** Obtain a suitable logger. */
-	private static Logger logger = Logger.getLogger(HttpServer.class.getCanonicalName());
-
 	/** The listening address if specified. */
 	private String address;
 
@@ -115,16 +111,16 @@ public class HttpServer extends Server
 	{
 		try
 		{
-			Request request = getConverter().toUniform(httpCall, getContext());
+			Request request = getConverter().toUniform(httpCall);
 			Response response = new HttpResponse(httpCall, request);
 			handle(request, response);
 			getConverter().commit(httpCall, response);
 		}
 		catch (Exception e)
 		{
-			logger.log(Level.WARNING, "Error while handling an HTTP server call: ", e
-					.getMessage());
-			logger.log(Level.INFO, "Error while handling an HTTP server call", e);
+			getLogger().log(Level.WARNING, "Error while handling an HTTP server call: ",
+					e.getMessage());
+			getLogger().log(Level.INFO, "Error while handling an HTTP server call", e);
 		}
 	}
 
@@ -136,7 +132,7 @@ public class HttpServer extends Server
 	{
 		if (this.converter == null)
 		{
-			this.converter = new HttpServerConverter();
+			this.converter = new HttpServerConverter(getContext());
 		}
 
 		return this.converter;

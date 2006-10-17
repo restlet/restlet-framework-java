@@ -28,9 +28,7 @@ import java.util.List;
 import org.restlet.spi.Factory;
 
 /**
- * Component managing a set of connectors, virtual hosts and applications. The server connectors and 
- * virtual hosts can be shared by several applications, but the client connectors are instantiated for
- * each application in order to ensure full isolation between contained applications.
+ * Component managing a set of virtual hosts.
  * @author Jerome Louvel (contact@noelios.com) <a href="http://www.noelios.com/">Noelios Consulting</a>
  */
 public class Container extends Component

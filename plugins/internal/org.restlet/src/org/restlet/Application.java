@@ -39,11 +39,9 @@ import org.restlet.data.Status;
 import org.restlet.spi.Factory;
 
 /**
- * Application descriptor deployable in containers. Applications are guaranteed to 
- * receive calls with the base reference set relatively to the virtual host which served it. This
- * class is only a descriptor able to create the root handler. When it is attached to a VirtualHost
- * via the "attach" method, an ApplicationDelegate instance is created to actual handle the calls. If
- * required, the delegate can be reattached to several other virtual hosts or with a several root URIs.   
+ * Handler deployable into containers. Applications are guaranteed to receive calls with their base reference
+ * set relatively to the virtual host that served it. This class is both a descriptor able to create the root
+ * handler and the actual handler that can be attached to one or more VirtualHost instances.   
  * @author Jerome Louvel (contact@noelios.com) <a href="http://www.noelios.com/">Noelios Consulting</a>
  */
 public abstract class Application extends Handler

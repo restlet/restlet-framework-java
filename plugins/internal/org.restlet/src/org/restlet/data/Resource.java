@@ -24,6 +24,7 @@ package org.restlet.data;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.logging.Logger;
 
 /**
  * Intended conceptual target of a hypertext reference. "Any information that can be named can be
@@ -45,19 +46,95 @@ import java.util.List;
  */
 public class Resource
 {
+	/** The logger to use. */
+	private Logger logger;
+	
 	/** The modifiable list of identifiers. */
 	private ReferenceList identifiers;
 
 	/** The modifiable list of variants. */
 	private List<Representation> variants;
+	
+	/** The wrapped resource. */
+	private Resource wrappedResource;
+	
+	/**
+	 * Constructor.
+	 * @param logger The logger to use.
+	 */
+	public Resource(Logger logger)
+	{
+		this.logger = logger;
+		this.identifiers = null;
+		this.variants = null;
+		this.wrappedResource = null;
+	}
 
+	/**
+	 * The wrapper constructor.
+	 * @param wrappedResource The resource to wrap. 
+	 */
+	public Resource(Resource wrappedResource)
+	{
+		this.wrappedResource = wrappedResource;
+	}
+	
+	/** 
+	 * Returns the wrapped resource.
+	 * @return The wrapped resource. 
+	 */
+	protected Resource getWrappedResource()
+	{
+		return this.wrappedResource;
+	}
+	
+	/**
+	 * Returns the logger to use.
+	 * @return The logger to use.
+	 */
+	public Logger getLogger()
+	{
+		if(getWrappedResource() != null)
+		{
+			return getWrappedResource().getLogger();
+		}
+		else
+		{
+			if(this.logger == null) this.logger = Logger.getLogger(Resource.class.getCanonicalName());
+			return this.logger;
+		}
+	}
+	
+	/**
+	 * Sets the logger to use.
+	 * @param logger The logger to use.
+	 */
+	public void setLogger(Logger logger)
+	{
+		if(getWrappedResource() != null)
+		{
+			getWrappedResource().setLogger(logger);
+		}
+		else
+		{
+			this.logger = logger;
+		}
+	}
+	
 	/**
 	 * Indicates if it is allowed to delete the resource. The default value is false. 
 	 * @return True if the method is allowed.
 	 */
 	public boolean allowDelete()
 	{
-		return false;
+		if(getWrappedResource() != null)
+		{
+			return getWrappedResource().allowDelete();
+		}
+		else
+		{
+			return false;
+		}
 	}
 
 	/**
@@ -66,7 +143,14 @@ public class Resource
 	 */
 	public boolean allowGet()
 	{
-		return true;
+		if(getWrappedResource() != null)
+		{
+			return getWrappedResource().allowGet();
+		}
+		else
+		{
+			return true;
+		}
 	}
 
 	/**
@@ -75,7 +159,14 @@ public class Resource
 	 */
 	public boolean allowPost()
 	{
-		return false;
+		if(getWrappedResource() != null)
+		{
+			return getWrappedResource().allowPost();
+		}
+		else
+		{
+			return false;
+		}
 	}
 
 	/**
@@ -84,7 +175,14 @@ public class Resource
 	 */
 	public boolean allowPut()
 	{
-		return false;
+		if(getWrappedResource() != null)
+		{
+			return getWrappedResource().allowPut();
+		}
+		else
+		{
+			return false;
+		}
 	}
 
 	/**
@@ -93,13 +191,20 @@ public class Resource
 	 */
 	public Reference getIdentifier()
 	{
-		if (getIdentifiers().isEmpty())
+		if(getWrappedResource() != null)
 		{
-			return null;
+			return getWrappedResource().getIdentifier();
 		}
 		else
 		{
-			return getIdentifiers().get(0);
+			if (getIdentifiers().isEmpty())
+			{
+				return null;
+			}
+			else
+			{
+				return getIdentifiers().get(0);
+			}
 		}
 	}
 
@@ -109,13 +214,20 @@ public class Resource
 	 */
 	public void setIdentifier(Reference identifier)
 	{
-		if (getIdentifiers().isEmpty())
+		if(getWrappedResource() != null)
 		{
-			getIdentifiers().add(identifier);
+			getWrappedResource().setIdentifier(identifier);
 		}
 		else
 		{
-			getIdentifiers().set(0, identifier);
+			if (getIdentifiers().isEmpty())
+			{
+				getIdentifiers().add(identifier);
+			}
+			else
+			{
+				getIdentifiers().set(0, identifier);
+			}
 		}
 	}
 
@@ -125,7 +237,14 @@ public class Resource
 	 */
 	public void setIdentifier(String identifierUri)
 	{
-		setIdentifier(new Reference(identifierUri));
+		if(getWrappedResource() != null)
+		{
+			getWrappedResource().setIdentifier(identifierUri);
+		}
+		else
+		{
+			setIdentifier(new Reference(identifierUri));
+		}
 	}
 
 	/**
@@ -135,8 +254,15 @@ public class Resource
 	 */
 	public ReferenceList getIdentifiers()
 	{
-		if (this.identifiers == null) this.identifiers = new ReferenceList();
-		return this.identifiers;
+		if(getWrappedResource() != null)
+		{
+			return getWrappedResource().getIdentifiers();
+		}
+		else
+		{
+			if (this.identifiers == null) this.identifiers = new ReferenceList();
+			return this.identifiers;
+		}
 	}
 
 	/**
@@ -146,8 +272,15 @@ public class Resource
 	 */
 	public List<Representation> getVariants()
 	{
-		if (this.variants == null) this.variants = new ArrayList<Representation>();
-		return this.variants;
+		if(getWrappedResource() != null)
+		{
+			return getWrappedResource().getVariants();
+		}
+		else
+		{
+			if (this.variants == null) this.variants = new ArrayList<Representation>();
+			return this.variants;
+		}
 	}
 
 	/**
@@ -157,7 +290,14 @@ public class Resource
 	 */
 	public Result post(Representation entity)
 	{
-		return new Result(Status.SERVER_ERROR_NOT_IMPLEMENTED);
+		if(getWrappedResource() != null)
+		{
+			return getWrappedResource().post(entity);
+		}
+		else
+		{
+			return new Result(Status.SERVER_ERROR_NOT_IMPLEMENTED);
+		}
 	}
 
 	/**
@@ -167,7 +307,14 @@ public class Resource
 	 */
 	public Result put(Representation variant)
 	{
-		return new Result(Status.SERVER_ERROR_NOT_IMPLEMENTED);
+		if(getWrappedResource() != null)
+		{
+			return getWrappedResource().put(variant);
+		}
+		else
+		{
+			return new Result(Status.SERVER_ERROR_NOT_IMPLEMENTED);
+		}
 	}
 
 	/**
@@ -176,7 +323,14 @@ public class Resource
 	 */
 	public Result delete()
 	{
-		return new Result(Status.SERVER_ERROR_NOT_IMPLEMENTED);
+		if(getWrappedResource() != null)
+		{
+			return getWrappedResource().delete();
+		}
+		else
+		{
+			return new Result(Status.SERVER_ERROR_NOT_IMPLEMENTED);
+		}
 	}
 
 	/**
@@ -185,7 +339,14 @@ public class Resource
 	 */
 	public void setIdentifiers(ReferenceList identifiers)
 	{
-		this.identifiers = identifiers;
+		if(getWrappedResource() != null)
+		{
+			getWrappedResource().setIdentifiers(identifiers);
+		}
+		else
+		{
+			this.identifiers = identifiers;
+		}
 	}
 
 	/**
@@ -194,6 +355,13 @@ public class Resource
 	 */
 	public void setVariants(List<Representation> variants)
 	{
-		this.variants = variants;
+		if(getWrappedResource() != null)
+		{
+			getWrappedResource().setVariants(variants);
+		}
+		else
+		{
+			this.variants = variants;
+		}
 	}
 }

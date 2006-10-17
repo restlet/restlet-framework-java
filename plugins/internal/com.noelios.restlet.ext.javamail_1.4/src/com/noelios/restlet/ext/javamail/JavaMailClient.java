@@ -26,7 +26,6 @@ import java.net.URI;
 import java.util.Date;
 import java.util.Properties;
 import java.util.logging.Level;
-import java.util.logging.Logger;
 
 import javax.mail.Message;
 import javax.mail.Session;
@@ -71,9 +70,6 @@ import com.noelios.restlet.impl.Factory;
  */
 public abstract class JavaMailClient extends Client
 {
-   /** Obtain a suitable logger. */
-   private static Logger logger = Logger.getLogger(JavaMailClient.class.getCanonicalName());
-
 	/**
 	 * Constructor.
 	 * @param context The context.
@@ -225,7 +221,7 @@ public abstract class JavaMailClient extends Client
          // Actually send the message
          if(transport.isConnected())
          {
-         	logger.info("JavaMail client connection successfully established. Attempting to send the message");
+         	getLogger().info("JavaMail client connection successfully established. Attempting to send the message");
          	
             // Create a new message
             Message msg = new MimeMessage(session);
@@ -258,12 +254,12 @@ public abstract class JavaMailClient extends Client
             transport.sendMessage(msg, msg.getAllRecipients());
             transport.close();
             
-         	logger.info("JavaMail client successfully sent the message.");
+            getLogger().info("JavaMail client successfully sent the message.");
          }
       }
       catch(Exception e)
       {
-      	logger.log(Level.WARNING, "JavaMail client error", e);
+      	getLogger().log(Level.WARNING, "JavaMail client error", e);
       }
 
    }

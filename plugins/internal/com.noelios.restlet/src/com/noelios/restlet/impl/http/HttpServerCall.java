@@ -46,18 +46,19 @@ import com.noelios.restlet.data.ReadableRepresentation;
  */
 public abstract class HttpServerCall extends HttpCall
 {
-	/** Obtain a suitable logger. */
-	private static Logger logger = Logger.getLogger(HttpRequest.class
-			.getCanonicalName());
+	/** The logger to use. */
+	private Logger logger;
 
 	/** Indicates if the "host" header was already parsed. */
 	private boolean hostParsed;
 
 	/**
 	 * Constructor.
+    * @param logger The logger to use.
 	 */
-	public HttpServerCall()
+	public HttpServerCall(Logger logger)
 	{
+		this.logger = logger;
 		this.hostParsed = false;
 	}
 
@@ -86,10 +87,10 @@ public abstract class HttpServerCall extends HttpCall
 	public abstract OutputStream getResponseStream();
 
 	/**
-	 * Returns the request input representation if available.
-	 * @return The request input representation if available.
+	 * Returns the request entity if available.
+	 * @return The request entity if available.
 	 */
-	public Representation getRequestInput()
+	public Representation getRequestEntity()
 	{
 		Representation result = null;
 		InputStream requestStream = getRequestStream();
@@ -194,31 +195,31 @@ public abstract class HttpServerCall extends HttpCall
 		}
 		else
 		{
-			logger.warning("Couldn't find the mandatory \"Host\" HTTP header.");
+			this.logger.warning("Couldn't find the mandatory \"Host\" HTTP header.");
 		}
 
 		this.hostParsed = true;
 	}
 
 	/**
-	 * Sends the response back to the client. Commits the status, headers and optional output and 
-	 * send them over the network. The default implementation only writes the output representation 
+	 * Sends the response back to the client. Commits the status, headers and optional entity and 
+	 * send them over the network. The default implementation only writes the response entity 
 	 * on the reponse stream or channel. Subclasses will probably also copy the response headers and 
 	 * status.
-	 * @param output The optional output representation to send.
+	 * @param entity The optional entity to send.
 	 */
-	public void sendResponse(Representation output) throws IOException
+	public void sendResponse(Representation entity) throws IOException
 	{
-		if ((output != null) && !getMethod().equals(Method.HEAD.getName()))
+		if ((entity != null) && !getMethod().equals(Method.HEAD.getName()))
 		{
-			// Send the output to the client
+			// Send the entity to the client
 			if (getResponseStream() != null)
 			{
-				output.write(getResponseStream());
+				entity.write(getResponseStream());
 			}
 			else if (getResponseChannel() != null)
 			{
-				output.write(getResponseChannel());
+				entity.write(getResponseChannel());
 			}
 		}
 
@@ -226,6 +227,24 @@ public abstract class HttpServerCall extends HttpCall
 		{
 			getResponseStream().flush();
 		}
+	}
+
+	/**
+	 * Returns the logger to use.
+	 * @return The logger to use.
+	 */
+	public Logger getLogger()
+	{
+		return this.logger;
+	}
+
+	/**
+	 * Sets the logger to use.
+	 * @param logger The logger to use.
+	 */
+	public void setLogger(Logger logger)
+	{
+		this.logger = logger;
 	}
 
 }

@@ -26,7 +26,6 @@ import org.restlet.Client;
 import org.restlet.data.Form;
 import org.restlet.data.Method;
 import org.restlet.data.Protocol;
-import org.restlet.data.Representation;
 import org.restlet.data.Request;
 import org.restlet.data.Response;
 
@@ -64,9 +63,8 @@ public class SimpleClient
 
       if(response.getStatus().isSuccess())
       {
-         // Output the result representation on the JVM console
-         Representation output = response.getEntity();
-         output.write(System.out);
+         // Output the response entity on the JVM console
+         response.getEntity().write(System.out);
          System.out.println("client: success!");
       }
       else

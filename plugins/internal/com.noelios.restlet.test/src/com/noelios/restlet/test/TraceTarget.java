@@ -46,10 +46,10 @@ public class TraceTarget extends Restlet
     */
 	public void handle(Request request, Response response)
    {
-      String output = "Hello World!" +
+      String message = "Hello World!" +
                       "\nYour IP address is " + request.getClientInfo().getAddress() + 
                       "\nYour request URI is: " + request.getResourceRef().toString();
-      response.setEntity(output, MediaType.TEXT_PLAIN);
+      response.setEntity(message, MediaType.TEXT_PLAIN);
    }
 
 }

@@ -55,7 +55,7 @@ public class SimpleServer
             public void handlePut(Request request, Response response)
             {
                System.out.println("Handling the call...");
-               System.out.println("Trying to get the input as a form...");
+               System.out.println("Trying to get the entity as a form...");
                Form form = request.getEntityAsForm();
 
                System.out.println("Trying to getParameters...");
@@ -73,6 +73,7 @@ public class SimpleServer
                }
 
                response.setEntity(sb.toString(), MediaType.TEXT_PLAIN);
+               System.out.println("Done!");
             }
          };
 

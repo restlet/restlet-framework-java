@@ -119,12 +119,37 @@ public class Request extends Message
 	}
 
 	/**
+	 * Wrapper constructor.
+	 * @param wrappedRequest The request to wrap.
+	 */
+	public Request(Request wrappedRequest)
+	{
+		super(wrappedRequest);
+	}
+	
+	/**
+	 * Returns the wrapped request.
+	 * @return The wrapped request.
+	 */
+	public Request getWrappedRequest()
+	{
+		return (Request)getWrappedMessage();
+	}
+
+	/**
 	 * Returns the base reference.
 	 * @return The base reference.
 	 */
 	public Reference getBaseRef()
 	{
-		return this.baseRef;
+		if(getWrappedRequest() != null)
+		{
+			return getWrappedRequest().getBaseRef();
+		}
+		else
+		{
+			return this.baseRef;
+		}
 	}
 
 	/**
@@ -133,7 +158,14 @@ public class Request extends Message
 	 */
 	public ChallengeResponse getChallengeResponse()
 	{
-		return this.challengeResponse;
+		if(getWrappedRequest() != null)
+		{
+			return getWrappedRequest().getChallengeResponse();
+		}
+		else
+		{
+			return this.challengeResponse;
+		}
 	}
 
 	/**
@@ -142,8 +174,15 @@ public class Request extends Message
 	 */
 	public ClientInfo getClientInfo()
 	{
-		if (this.clientInfo == null) this.clientInfo = new ClientInfo();
-		return this.clientInfo;
+		if(getWrappedRequest() != null)
+		{
+			return getWrappedRequest().getClientInfo();
+		}
+		else
+		{
+			if (this.clientInfo == null) this.clientInfo = new ClientInfo();
+			return this.clientInfo;
+		}
 	}
 
 	/**
@@ -152,8 +191,15 @@ public class Request extends Message
 	 */
 	public Conditions getConditions()
 	{
-		if (this.conditions == null) this.conditions = new Conditions();
-		return this.conditions;
+		if(getWrappedRequest() != null)
+		{
+			return getWrappedRequest().getConditions();
+		}
+		else
+		{
+			if (this.conditions == null) this.conditions = new Conditions();
+			return this.conditions;
+		}
 	}
 
 	/**
@@ -162,8 +208,15 @@ public class Request extends Message
 	 */
 	public List<Cookie> getCookies()
 	{
-		if (this.cookies == null) this.cookies = new ArrayList<Cookie>();
-		return this.cookies;
+		if(getWrappedRequest() != null)
+		{
+			return getWrappedRequest().getCookies();
+		}
+		else
+		{
+			if (this.cookies == null) this.cookies = new ArrayList<Cookie>();
+			return this.cookies;
+		}
 	}
 
 	/**
@@ -172,7 +225,14 @@ public class Request extends Message
 	 */
 	public Method getMethod()
 	{
-		return this.method;
+		if(getWrappedRequest() != null)
+		{
+			return getWrappedRequest().getMethod();
+		}
+		else
+		{
+			return this.method;
+		}
 	}
 
 	/**
@@ -184,7 +244,14 @@ public class Request extends Message
 	 */
 	public Protocol getProtocol()
 	{
-		return this.protocol;
+		if(getWrappedRequest() != null)
+		{
+			return getWrappedRequest().getProtocol();
+		}
+		else
+		{
+			return this.protocol;
+		}
 	}
 
 	/**
@@ -193,7 +260,14 @@ public class Request extends Message
 	 */
 	public Reference getReferrerRef()
 	{
-		return this.referrerRef;
+		if(getWrappedRequest() != null)
+		{
+			return getWrappedRequest().getReferrerRef();
+		}
+		else
+		{
+			return this.referrerRef;
+		}
 	}
 
 	/**
@@ -202,14 +276,21 @@ public class Request extends Message
 	 */
 	public String getRelativePart()
 	{
-		if (getBaseRef() != null)
+		if(getWrappedRequest() != null)
 		{
-			return getResourceRef().toString(false, false).substring(
-					getBaseRef().toString().length());
+			return getWrappedRequest().getRelativePart();
 		}
 		else
 		{
-			return getResourceRef().toString(false, false);
+			if (getBaseRef() != null)
+			{
+				return getResourceRef().toString(false, false).substring(
+						getBaseRef().toString().length());
+			}
+			else
+			{
+				return getResourceRef().toString(false, false);
+			}
 		}
 	}
 
@@ -219,7 +300,14 @@ public class Request extends Message
 	 */
 	public Reference getRelativeRef()
 	{
-		return getResourceRef().getRelativeRef(getBaseRef());
+		if(getWrappedRequest() != null)
+		{
+			return getWrappedRequest().getRelativeRef();
+		}
+		else
+		{
+			return getResourceRef().getRelativeRef(getBaseRef());
+		}
 	}
 
 	/**
@@ -228,7 +316,14 @@ public class Request extends Message
 	 */
 	public Reference getResourceRef()
 	{
-		return this.resourceRef;
+		if(getWrappedRequest() != null)
+		{
+			return getWrappedRequest().getResourceRef();
+		}
+		else
+		{
+			return this.resourceRef;
+		}
 	}
 
 	/**
@@ -238,7 +333,14 @@ public class Request extends Message
 	 */
 	public boolean isConfidential()
 	{
-		return this.confidential;
+		if(getWrappedRequest() != null)
+		{
+			return getWrappedRequest().isConfidential();
+		}
+		else
+		{
+			return this.confidential;
+		}
 	}
 
 	/**
@@ -248,14 +350,21 @@ public class Request extends Message
 	 */
 	public boolean isEntityAvailable()
 	{
-		if (getMethod().equals(Method.GET) || getMethod().equals(Method.HEAD)
-				|| getMethod().equals(Method.DELETE))
+		if(getWrappedRequest() != null)
 		{
-			return false;
+			return getWrappedRequest().isEntityAvailable();
 		}
 		else
 		{
-			return super.isEntityAvailable();
+			if (getMethod().equals(Method.GET) || getMethod().equals(Method.HEAD)
+					|| getMethod().equals(Method.DELETE))
+			{
+				return false;
+			}
+			else
+			{
+				return super.isEntityAvailable();
+			}
 		}
 	}
 
@@ -265,7 +374,14 @@ public class Request extends Message
 	 */
 	public void setBaseRef(String baseUri)
 	{
-		setBaseRef(new Reference(baseUri));
+		if(getWrappedRequest() != null)
+		{
+			getWrappedRequest().setBaseRef(baseUri);
+		}
+		else
+		{
+			setBaseRef(new Reference(baseUri));
+		}
 	}
 
 	/**
@@ -274,18 +390,25 @@ public class Request extends Message
 	 */
 	public void setBaseRef(Reference baseRef)
 	{
-		if (getResourceRef() == null)
+		if(getWrappedRequest() != null)
 		{
-			throw new IllegalArgumentException(
-					"You must specify a resource reference before setting a base reference");
+			getWrappedRequest().setBaseRef(baseRef);
 		}
-		else if ((baseRef != null) && !baseRef.isParent(getResourceRef()))
+		else
 		{
-			new IllegalArgumentException(
-					"You must specify a base reference that is a parent of the resource reference");
+			if (getResourceRef() == null)
+			{
+				throw new IllegalArgumentException(
+						"You must specify a resource reference before setting a base reference");
+			}
+			else if ((baseRef != null) && !baseRef.isParent(getResourceRef()))
+			{
+				new IllegalArgumentException(
+						"You must specify a base reference that is a parent of the resource reference");
+			}
+	
+			this.baseRef = baseRef;
 		}
-
-		this.baseRef = baseRef;
 	}
 
 	/**
@@ -294,7 +417,14 @@ public class Request extends Message
 	 */
 	public void setChallengeResponse(ChallengeResponse response)
 	{
-		this.challengeResponse = response;
+		if(getWrappedRequest() != null)
+		{
+			getWrappedRequest().setChallengeResponse(response);
+		}
+		else
+		{
+			this.challengeResponse = response;
+		}
 	}
 
 	/**
@@ -304,7 +434,14 @@ public class Request extends Message
 	 */
 	public void setConfidential(boolean confidential)
 	{
-		this.confidential = confidential;
+		if(getWrappedRequest() != null)
+		{
+			getWrappedRequest().setConfidential(confidential);
+		}
+		else
+		{
+			this.confidential = confidential;
+		}
 	}
 
 	/**
@@ -313,7 +450,14 @@ public class Request extends Message
 	 */
 	public void setMethod(Method method)
 	{
-		this.method = method;
+		if(getWrappedRequest() != null)
+		{
+			getWrappedRequest().setMethod(method);
+		}
+		else
+		{
+			this.method = method;
+		}
 	}
 
 	/**
@@ -325,7 +469,14 @@ public class Request extends Message
 	 */
 	public void setProtocol(Protocol protocol)
 	{
-		this.protocol = protocol;
+		if(getWrappedRequest() != null)
+		{
+			getWrappedRequest().setProtocol(protocol);
+		}
+		else
+		{
+			this.protocol = protocol;
+		}
 	}
 
 	/**
@@ -334,7 +485,14 @@ public class Request extends Message
 	 */
 	public void setReferrerRef(String referrerUri)
 	{
-		setReferrerRef(new Reference(referrerUri));
+		if(getWrappedRequest() != null)
+		{
+			getWrappedRequest().setReferrerRef(referrerUri);
+		}
+		else
+		{
+			setReferrerRef(new Reference(referrerUri));
+		}
 	}
 
 	/**
@@ -343,7 +501,14 @@ public class Request extends Message
 	 */
 	public void setReferrerRef(Reference referrerRef)
 	{
-		this.referrerRef = referrerRef;
+		if(getWrappedRequest() != null)
+		{
+			getWrappedRequest().setReferrerRef(referrerRef);
+		}
+		else
+		{
+			this.referrerRef = referrerRef;
+		}
 	}
 
 	/**
@@ -353,7 +518,14 @@ public class Request extends Message
 	 */
 	public void setResourceRef(String resourceUri)
 	{
-		setResourceRef(new Reference(getBaseRef(), resourceUri));
+		if(getWrappedRequest() != null)
+		{
+			getWrappedRequest().setResourceRef(resourceUri);
+		}
+		else
+		{
+			setResourceRef(new Reference(getBaseRef(), resourceUri));
+		}
 	}
 
 	/**
@@ -364,18 +536,25 @@ public class Request extends Message
 	 */
 	public void setResourceRef(Reference resourceRef)
 	{
-		if ((resourceRef != null) && resourceRef.isRelative()
-				&& (resourceRef.getBaseRef() != null))
+		if(getWrappedRequest() != null)
 		{
-			this.resourceRef = resourceRef.getTargetRef();
+			getWrappedRequest().setResourceRef(resourceRef);
 		}
 		else
 		{
-			this.resourceRef = resourceRef.normalize();
+			if ((resourceRef != null) && resourceRef.isRelative()
+					&& (resourceRef.getBaseRef() != null))
+			{
+				this.resourceRef = resourceRef.getTargetRef();
+			}
+			else
+			{
+				this.resourceRef = resourceRef.normalize();
+			}
+	
+			// Reset the context's base reference
+			setBaseRef((Reference) null);
 		}
-
-		// Reset the context's base reference
-		setBaseRef((Reference) null);
 	}
 
 }

@@ -23,6 +23,8 @@
 package com.noelios.restlet.test;
 
 import java.io.IOException;
+import java.util.logging.Logger;
+
 import junit.framework.TestCase;
 import org.restlet.data.Form;
 
@@ -34,20 +36,20 @@ import com.noelios.restlet.impl.util.FormReader;
  */
 public class FormTestCase extends TestCase
 {
-   /**
-    * Tests the cookies parsing.
-    */
-   public void testParsing() throws IOException
-   {
-      Form form = new Form();
-      form.add("name", "John D. Mitchell");
-      form.add("email", "john@bob.net");
-      form.add("email2", "joe@bob.net");
-      
-      String query = form.urlEncode();
-      Form newForm = new FormReader(query).read();
-      String newQuery = newForm.urlEncode();
-      assertEquals(query, newQuery);
-   }
+	/**
+	 * Tests the cookies parsing.
+	 */
+	public void testParsing() throws IOException
+	{
+		Form form = new Form();
+		form.add("name", "John D. Mitchell");
+		form.add("email", "john@bob.net");
+		form.add("email2", "joe@bob.net");
 
+		String query = form.urlEncode();
+		Form newForm = new FormReader(Logger.getLogger(FormTestCase.class
+				.getCanonicalName()), query).read();
+		String newQuery = newForm.urlEncode();
+		assertEquals(query, newQuery);
+	}
 }

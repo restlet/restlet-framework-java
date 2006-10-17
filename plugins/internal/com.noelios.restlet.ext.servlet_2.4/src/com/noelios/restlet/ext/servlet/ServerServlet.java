@@ -109,12 +109,11 @@ public class ServerServlet extends HttpServlet
 	protected void service(HttpServletRequest request, HttpServletResponse response)
 			throws ServletException, IOException
 	{
-		ServletCall httpCall = new ServletCall(request, response);
 		HttpServer server = getServer(request);
-		
-		if(server != null) 
+
+		if (server != null)
 		{
-			server.handle(httpCall);
+			server.handle(new ServletCall(server.getLogger(), request, response));
 		}
 		else
 		{
@@ -178,7 +177,9 @@ public class ServerServlet extends HttpServlet
 								container.getServers().add(result);
 
 								// Create a new instance of the application class
-								Application application = (Application) targetClass.getConstructor(Context.class).newInstance(container.getContext());
+								Application application = (Application) targetClass
+										.getConstructor(Context.class).newInstance(
+												container.getContext());
 
 								// Attach the application
 								String uriPattern = request.getContextPath()

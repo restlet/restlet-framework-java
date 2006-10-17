@@ -43,27 +43,31 @@ import org.restlet.util.EmptyValue;
  */
 public class FormReader
 {
-	/** Obtain a suitable logger. */
-	private static Logger logger = Logger.getLogger(FormReader.class.getCanonicalName());
-
 	/** The form stream. */
 	private InputStream stream;
-   
+	
+	/** The logger to use. */
+	private Logger logger;
+	
    /**
     * Constructor.
+    * @param logger The logger.
     * @param representation The web form content.
     */
-   public FormReader(Representation representation) throws IOException
+   public FormReader(Logger logger, Representation representation) throws IOException
    {
+   	this.logger = logger;
       this.stream = representation.getStream();
    }
    
    /**
     * Constructor.
+    * @param logger The logger.
     * @param query The query string.
     */
-   public FormReader(String query) throws IOException
+   public FormReader(Logger logger, String query) throws IOException
    {
+   	this.logger = logger;
       this.stream = new ByteArrayInputStream(query.getBytes());
    }
 
@@ -347,7 +351,7 @@ public class FormReader
       	}
       	catch(IOException ioe)
       	{
-   			logger.log(Level.WARNING, "Unable to parse a form parameter. Skipping it.", ioe);
+      		getLogger().log(Level.WARNING, "Unable to parse a form parameter. Skipping it.", ioe);
       	}
       }
 
@@ -357,8 +361,18 @@ public class FormReader
 		}
 		catch (IOException ioe)
 		{
-			logger.log(Level.WARNING, "Unable to close the form input stream", ioe);
+			getLogger().log(Level.WARNING, "Unable to close the form input stream", ioe);
 		}
+   }
+   
+   /**
+    * Returns the logger.
+    * @return The logger.
+    */
+   private Logger getLogger()
+   {
+   	if(this.logger == null) this.logger = Logger.getLogger(FormReader.class.getCanonicalName());
+   	return this.logger;
    }
 
 }

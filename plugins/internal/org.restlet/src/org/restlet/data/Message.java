@@ -38,13 +38,16 @@ public abstract class Message
 
 	/** The payload of the message. */
 	private Representation entity;
+	
+	/** The wrapped message. */
+	private Message wrappedMessage;
 
 	/**
 	 * Constructor.
 	 */
 	public Message()
 	{
-		this(null);
+		this((Representation)null);
 	}
 
 	/**
@@ -53,7 +56,27 @@ public abstract class Message
 	 */
 	public Message(Representation entity)
 	{
+		this.attributes = null;
 		this.entity = entity;
+		this.wrappedMessage = null;
+	}
+
+	/**
+	 * Wrapper constructor.
+	 * @param wrappedMessage The message to wrap.
+	 */
+	public Message(Message wrappedMessage)
+	{
+		this.wrappedMessage = wrappedMessage;
+	}
+
+	/**
+	 * Returns the wrapped message.
+	 * @return The wrapped message.
+	 */
+	public Message getWrappedMessage()
+	{
+		return this.wrappedMessage;
 	}
 
 	/**
@@ -92,12 +115,19 @@ public abstract class Message
 	 */
 	public Map<String, Object> getAttributes()
 	{
-		if (attributes == null)
+		if(getWrappedMessage() != null)
 		{
-			attributes = new TreeMap<String, Object>();
+			return getWrappedMessage().getAttributes();
 		}
-
-		return attributes;
+		else
+		{
+			if (attributes == null)
+			{
+				attributes = new TreeMap<String, Object>();
+			}
+	
+			return attributes;
+		}
 	}
 
 	/**
@@ -106,7 +136,14 @@ public abstract class Message
 	 */
 	public Representation getEntity()
 	{
-		return this.entity;
+		if(getWrappedMessage() != null)
+		{
+			return getWrappedMessage().getEntity();
+		}
+		else
+		{
+			return this.entity;
+		}
 	}
 
 	/**
@@ -117,7 +154,14 @@ public abstract class Message
 	 */
 	public Form getEntityAsForm()
 	{
-		return new Form(getEntity());
+		if(getWrappedMessage() != null)
+		{
+			return getWrappedMessage().getEntityAsForm();
+		}
+		else
+		{
+			return new Form(getEntity());
+		}
 	}
 
 	/**
@@ -128,7 +172,14 @@ public abstract class Message
 	 */
 	public String getEntityAsString()
 	{
-		return getEntity().toString();
+		if(getWrappedMessage() != null)
+		{
+			return getWrappedMessage().getEntityAsString();
+		}
+		else
+		{
+			return getEntity().toString();
+		}
 	}
 
 	/**
@@ -138,7 +189,14 @@ public abstract class Message
 	 */
 	public boolean isEntityAvailable()
 	{
-		return (getEntity() != null) && (getEntity().getSize() > 0) && getEntity().isAvailable();
+		if(getWrappedMessage() != null)
+		{
+			return getWrappedMessage().isEntityAvailable();
+		}
+		else
+		{
+			return (getEntity() != null) && (getEntity().getSize() > 0) && getEntity().isAvailable();
+		}
 	}
 	
 	/**
@@ -147,7 +205,14 @@ public abstract class Message
 	 */
 	public void setEntity(Representation entity)
 	{
-		this.entity = entity;
+		if(getWrappedMessage() != null)
+		{
+			getWrappedMessage().setEntity(entity);
+		}
+		else
+		{
+			this.entity = entity;
+		}
 	}
 
 	/**
@@ -157,7 +222,14 @@ public abstract class Message
 	 */
 	public void setEntity(String value, MediaType mediaType)
 	{
-		setEntity(Factory.getInstance().createRepresentation(value, mediaType));
+		if(getWrappedMessage() != null)
+		{
+			getWrappedMessage().setEntity(value, mediaType);
+		}
+		else
+		{
+			setEntity(Factory.getInstance().createRepresentation(value, mediaType));
+		}
 	}
 
 }

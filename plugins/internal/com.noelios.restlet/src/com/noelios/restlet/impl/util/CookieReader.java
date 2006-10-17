@@ -32,16 +32,12 @@ import org.restlet.data.Cookie;
 import org.restlet.data.CookieSetting;
 import org.restlet.data.Parameter;
 
-
 /**
  * Cookie header reader.
  * @author Jerome Louvel (contact@noelios.com) <a href="http://www.noelios.com/">Noelios Consulting</a>
  */
 public class CookieReader extends HeaderReader
 {
-   /** Obtain a suitable logger. */
-   private static Logger logger = Logger.getLogger(CookieReader.class.getCanonicalName());
-
    private static final String NAME_VERSION = "$Version";
    private static final String NAME_PATH = "$Path";
    private static final String NAME_DOMAIN = "$Domain";
@@ -57,9 +53,10 @@ public class CookieReader extends HeaderReader
    private static final String NAME_SET_SECURE = "secure";
    private static final String NAME_SET_VERSION = "version";
 
-   /**
-    * The cached pair. Used by the readPair() method.
-    */
+   /** The logger to use. */
+   private Logger logger;
+   
+   /** The cached pair. Used by the readPair() method. */
    private Parameter cachedPair;
 
    /** The global cookie specification version. */
@@ -67,11 +64,13 @@ public class CookieReader extends HeaderReader
 
    /**
     * Constructor.
+    * @param logger The logger to use.
     * @param header The header to read.
     */
-   public CookieReader(String header)
+   public CookieReader(Logger logger, String header)
    {
       super(header);
+      this.logger = logger;
       this.cachedPair = null;
       this.globalVersion = -1;
    }
@@ -227,7 +226,7 @@ public class CookieReader extends HeaderReader
             else
             {
                // Ignore the expires header
-               logger.log(Level.WARNING, "Ignoring cookie setting expiration date. Unable to parse the date: " + pair.getValue());
+               this.logger.log(Level.WARNING, "Ignoring cookie setting expiration date. Unable to parse the date: " + pair.getValue());
             }
          }
          else if(pair.getName().equalsIgnoreCase(NAME_SET_MAX_AGE))

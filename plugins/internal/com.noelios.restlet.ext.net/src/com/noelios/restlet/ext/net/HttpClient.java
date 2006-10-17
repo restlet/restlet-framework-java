@@ -24,7 +24,6 @@ package com.noelios.restlet.ext.net;
 
 import java.io.IOException;
 import java.util.logging.Level;
-import java.util.logging.Logger;
 
 import org.restlet.Context;
 import org.restlet.data.Protocol;
@@ -45,7 +44,7 @@ import com.noelios.restlet.impl.http.HttpClientCall;
  * 		<td>chunkLength</td>
  * 		<td>int</td>
  * 		<td>0 (uses HttpURLConnection's default)</td>
- * 		<td>The chunk-length when using chunked encoding streaming mode for output. A value of -1 means chunked encoding is disabled for output.</td>
+ * 		<td>The chunk-length when using chunked encoding streaming mode for response entities. A value of -1 means chunked encoding is disabled for response entities.</td>
  * 	</tr>
  * 	<tr>
  * 		<td>followRedirects</td>
@@ -83,9 +82,6 @@ import com.noelios.restlet.impl.http.HttpClientCall;
  */
 public class HttpClient extends com.noelios.restlet.impl.http.HttpClient
 {
-	/** Obtain a suitable logger. */
-	private static Logger logger = Logger.getLogger(HttpClient.class.getCanonicalName());
-
 	/**
 	 * Constructor.
 	 * @param context The context.
@@ -113,16 +109,16 @@ public class HttpClient extends com.noelios.restlet.impl.http.HttpClient
 		}
 		catch (IOException ioe)
 		{
-			logger.log(Level.WARNING, "Unable to create the HTTP client call", ioe);
+			getLogger().log(Level.WARNING, "Unable to create the HTTP client call", ioe);
 		}
 		
 		return result;
 	}
 
 	/**
-	 * Returns the chunk-length when using chunked encoding streaming mode for output. 
-	 * A value of -1 means chunked encoding is disabled for output.
-	 * @return The chunk-length when using chunked encoding streaming mode for output.
+	 * Returns the chunk-length when using chunked encoding streaming mode for response entities. 
+	 * A value of -1 means chunked encoding is disabled for response entities.
+	 * @return The chunk-length when using chunked encoding streaming mode for response entities.
 	 */
 	public int getChunkLength()
 	{

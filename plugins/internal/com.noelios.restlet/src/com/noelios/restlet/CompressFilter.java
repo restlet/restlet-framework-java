@@ -42,7 +42,7 @@ import org.restlet.data.Response;
 import com.noelios.restlet.data.EncoderRepresentation;
 
 /**
- * Filter compressing input or output representations. The best encoding is automatically 
+ * Filter compressing entities. The best encoding is automatically 
  * selected based on the preferences of the client and on the encoding supported by NRE: GZip, Zip and 
  * Deflate.<br/>
  * If the {@link org.restlet.data.Content} has an unknown size, it will always be a candidate for
@@ -59,14 +59,14 @@ public class CompressFilter extends Filter
 	public static final int ENCODE_ALL_SIZES = -1;
 	
 	/**
-	 * Indicates if the input representation should be encoded.
+	 * Indicates if the request entity should be encoded.
 	 */
-	private boolean encodeInput;
+	private boolean encodeRequest;
 	
 	/**
-	 * Indicates if the output representation should be encoded.
+	 * Indicates if the response entity should be encoded.
 	 */
-	private boolean encodeOutput;
+	private boolean encodeResponse;
 	
 	/**
 	 * The minimal size necessary for encoding.
@@ -85,7 +85,7 @@ public class CompressFilter extends Filter
 
 	/**
 	 * Constructor using the default media types and with {@link #ENCODE_ALL_SIZES} setting.
-	 * This constructor will only encode output representations after call handling.
+	 * This constructor will only encode response entities after call handling.
 	 * @param context The context.
 	 */
 	public CompressFilter(Context context)
@@ -97,8 +97,8 @@ public class CompressFilter extends Filter
 	/**
 	 * Constructor.
 	 * @param context The context.
-	 * @param encodeInput Indicates if the input representation should be encoded.
-	 * @param encodeOutput Indicates if the output representation should be encoded.
+	 * @param encodeInput Indicates if the request entities should be encoded.
+	 * @param encodeOutput Indicates if the response entities should be encoded.
 	 * @param minimumSize The minimal size of the representation where compression should be used.
 	 * @param acceptedMediaTypes The media types that should be encoded.
 	 * @param ignoredMediaTypes The media types that should be ignored.
@@ -107,8 +107,8 @@ public class CompressFilter extends Filter
 			long minimumSize, List<MediaType> acceptedMediaTypes, List<MediaType> ignoredMediaTypes)
 	{
 		super(context);
-		this.encodeInput = encodeInput;
-		this.encodeOutput = encodeOutput;
+		this.encodeRequest = encodeInput;
+		this.encodeResponse = encodeOutput;
 		this.mininumSize = minimumSize;
 		this.acceptedMediaTypes = acceptedMediaTypes;
 		this.ignoredMediaTypes = ignoredMediaTypes;
@@ -147,8 +147,8 @@ public class CompressFilter extends Filter
     */
    public void beforeHandle(Request request, Response response)
    {
-		// Check if encoding of the call input is needed
-		if(isEncodeInput() && canEncode(request.getEntity()))
+		// Check if encoding of the request entity is needed
+		if(isEncodeRequest() && canEncode(request.getEntity()))
 		{
 			request.setEntity(encode(request.getClientInfo(), request.getEntity()));
 		}
@@ -161,8 +161,8 @@ public class CompressFilter extends Filter
     */
    public void afterHandle(Request request, Response response)
    {
-		// Check if encoding of the call output is needed
-		if(isEncodeOutput() && canEncode(response.getEntity()))
+		// Check if encoding of the response entity is needed
+		if(isEncodeResponse() && canEncode(response.getEntity()))
 		{
 			response.setEntity(encode(request.getClientInfo(), response.getEntity()));
 		}
@@ -272,39 +272,39 @@ public class CompressFilter extends Filter
 	}
 	
 	/**
-	 * Indicates if the input representation should be encoded.
-	 * @return True if the input representation should be encoded. 
+	 * Indicates if the request entity should be encoded.
+	 * @return True if the request entity should be encoded. 
 	 */
-	public boolean isEncodeInput()
+	public boolean isEncodeRequest()
 	{
-		return this.encodeInput;
+		return this.encodeRequest;
 	}
 
 	/**
-	 * Indicates if the input representation should be encoded.
-	 * @param encodeInput True if the input representation should be encoded. 
+	 * Indicates if the request entity should be encoded.
+	 * @param encodeRequest True if the request entity should be encoded. 
 	 */
-	public void setEncodeInput(boolean encodeInput)
+	public void setEncodeRequest(boolean encodeRequest)
 	{
-		this.encodeInput = encodeInput;
+		this.encodeRequest = encodeRequest;
 	}
 
 	/**
-	 * Indicates if the output representation should be encoded.
-	 * @return True if the output representation should be encoded. 
+	 * Indicates if the response entity should be encoded.
+	 * @return True if the response entity should be encoded. 
 	 */
-	public boolean isEncodeOutput()
+	public boolean isEncodeResponse()
 	{
-		return this.encodeOutput;
+		return this.encodeResponse;
 	}
 
 	/**
-	 * Indicates if the output representation should be encoded.
-	 * @param encodeOutput True if the output representation should be encoded. 
+	 * Indicates if the response entity should be encoded.
+	 * @param encodeResponse True if the response entity should be encoded. 
 	 */
-	public void setEncodeOutput(boolean encodeOutput)
+	public void setEncodeResponse(boolean encodeResponse)
 	{
-		this.encodeOutput = encodeOutput;
+		this.encodeResponse = encodeResponse;
 	}
 
 	/**

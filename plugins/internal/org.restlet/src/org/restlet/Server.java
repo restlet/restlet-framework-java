@@ -31,7 +31,7 @@ import org.restlet.data.Response;
 import org.restlet.spi.Factory;
 
 /**
- * Generic server connector. It internally uses one of the available connectors registered with the current
+ * Connector acting as a generic server. It internally uses one of the available connectors registered with the current
  * Restlet implementation.
  * @author Jerome Louvel (contact@noelios.com) <a href="http://www.noelios.com/">Noelios Consulting</a>
  */

@@ -35,7 +35,6 @@ import java.util.zip.ZipInputStream;
 
 import org.restlet.data.Encoding;
 import org.restlet.data.Representation;
-import org.restlet.util.WrapperRepresentation;
 
 import com.noelios.restlet.impl.util.ByteUtils;
 
@@ -43,7 +42,7 @@ import com.noelios.restlet.impl.util.ByteUtils;
  * Representation that decodes a wrapped representation if its encoding is supported. 
  * @author Jerome Louvel (contact@noelios.com) <a href="http://www.noelios.com/">Noelios Consulting</a>
  */
-public class DecoderRepresentation extends WrapperRepresentation
+public class DecoderRepresentation extends Representation
 {
 	/** Indicates if the decoding can happen. */
 	private boolean canDecode;

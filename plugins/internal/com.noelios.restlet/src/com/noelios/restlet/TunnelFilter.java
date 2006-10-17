@@ -32,7 +32,7 @@ import com.noelios.restlet.impl.util.PreferenceUtils;
 /**
  * Filter extracting some attributes from a call.
  * Multiple extractions can be defined, based on the query part of the resource reference,
- * on the input form (posted from a browser), on the context matches or on the call's template model.
+ * on the entity form (posted from a browser), on the context matches or on the call's template model.
  * @author Jerome Louvel (contact@noelios.com) <a href="http://www.noelios.com/">Noelios Consulting</a>
  */
 public class TunnelFilter extends ExtractFilter

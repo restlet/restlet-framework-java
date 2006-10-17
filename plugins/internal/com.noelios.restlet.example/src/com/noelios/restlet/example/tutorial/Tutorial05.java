@@ -47,11 +47,11 @@ public class Tutorial05
             public void handleGet(Request request, Response response)
             {
                // Print the requested URI path
-               String output = "Resource URI:  " + request.getResourceRef() + '\n' +
-                               "Base URI:      " + request.getBaseRef() + '\n' +
-                               "Relative path: " + request.getRelativePart() + '\n' +
-                               "Query string:  " + request.getResourceRef().getQuery();
-               response.setEntity(output, MediaType.TEXT_PLAIN);
+               String message = "Resource URI:  " + request.getResourceRef() + '\n' +
+                                "Base URI:      " + request.getBaseRef() + '\n' +
+                                "Relative path: " + request.getRelativePart() + '\n' +
+                                "Query string:  " + request.getResourceRef().getQuery();
+               response.setEntity(message, MediaType.TEXT_PLAIN);
             }
          };
 

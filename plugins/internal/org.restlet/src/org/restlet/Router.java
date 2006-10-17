@@ -29,7 +29,7 @@ import org.restlet.spi.Factory;
 import org.restlet.util.ScorerList;
 
 /**
- * Chainer routing calls to one of the attached Scorers. Each scorer represents a routing option that can 
+ * Chainer routing calls to one of the attached scorers. Each scorer represents a routing option that can 
  * compute an affinity score for each call depending on various criteria. The attach() method allow the 
  * creation of scorers based on URI patterns matching the beginning of a the relative resource part.<br/>
  * <br/>

@@ -26,6 +26,7 @@ import java.io.InputStream;
 import java.io.OutputStream;
 import java.nio.channels.ReadableByteChannel;
 import java.nio.channels.WritableByteChannel;
+import java.util.logging.Logger;
 
 import org.restlet.data.Parameter;
 import org.restlet.data.ParameterList;
@@ -45,9 +46,7 @@ import com.noelios.restlet.impl.http.HttpServerCall;
  */
 public class AsyncWebServerCall extends HttpServerCall
 {
-	/**
-	 * AsyncWeb request.
-	 */
+	/** AsyncWeb request. */
 	private Request request;
 
 	/** Indicates if the request headers were parsed and added. */
@@ -60,16 +59,16 @@ public class AsyncWebServerCall extends HttpServerCall
 
 	/**
 	 * Constructor.
-	 *
+    * @param logger The logger to use.
 	 * @param request The AsyncWebRequest.
 	 * @param response The AsyncWebResponse.
 	 * @param confidential Indicates if the server is acting in HTTPS mode.
 	 * @param address IP address of the server.
 	 */
-	public AsyncWebServerCall(HttpRequest request, HttpResponse response,
+	public AsyncWebServerCall(Logger logger, HttpRequest request, HttpResponse response,
 			boolean confidential, String address)
 	{
-		super();
+		super(logger);
 		this.request = (Request) request;
 		this.requestHeadersAdded = false;
 		this.response = (Response) response;
@@ -117,11 +116,11 @@ public class AsyncWebServerCall extends HttpServerCall
 	}
 
 	/**
-	 * Sends the response back to the client. Commits the status, headers and optional output and 
+	 * Sends the response back to the client. Commits the status, headers and optional entity and 
 	 * send them on the network. 
-	 * @param output The optional output representation to send.
+	 * @param entity The optional response entity to send.
 	 */
-	public void sendResponse(Representation output) throws IOException
+	public void sendResponse(Representation entity) throws IOException
 	{
 		response.setStatus(ResponseStatus.forId(getStatusCode()),
 				getReasonPhrase());
@@ -133,8 +132,8 @@ public class AsyncWebServerCall extends HttpServerCall
 			response.addHeader(header.getName(), header.getValue());
 		}
 
-		// Send the output representation
-		super.sendResponse(output);
+		// Send the response entity
+		super.sendResponse(entity);
 	}
 
 	@Override

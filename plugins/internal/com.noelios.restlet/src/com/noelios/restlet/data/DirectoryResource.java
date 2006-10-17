@@ -29,7 +29,6 @@ import java.util.TreeSet;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
-import org.restlet.ClientInterface;
 import org.restlet.data.MediaType;
 import org.restlet.data.Method;
 import org.restlet.data.Preference;
@@ -41,6 +40,7 @@ import org.restlet.data.Resource;
 import org.restlet.data.Response;
 import org.restlet.data.Result;
 import org.restlet.data.Status;
+import org.restlet.util.ClientInterface;
 
 import com.noelios.restlet.DirectoryFinder;
 
@@ -54,10 +54,6 @@ import com.noelios.restlet.DirectoryFinder;
  */
 public class DirectoryResource extends Resource
 {
-	/** Obtain a suitable logger. */
-	private static Logger logger = Logger.getLogger(DirectoryResource.class
-			.getCanonicalName());
-
 	/** The handled request. */
 	private Request request;
 
@@ -87,12 +83,15 @@ public class DirectoryResource extends Resource
 
 	/**
 	 * Constructor.
+	 * @param logger The logger to use.
 	 * @param handler The parent directory handler.
 	 * @param request The handled call.
 	 * @throws IOException 
 	 */
-	public DirectoryResource(DirectoryFinder handler, Request request) throws IOException
+	public DirectoryResource(Logger logger, DirectoryFinder handler, Request request) throws IOException
 	{
+		super(logger);
+		
 		// Update the member variables
 		this.handler = handler;
 		this.request = request;
@@ -305,7 +304,7 @@ public class DirectoryResource extends Resource
 	public List<Representation> getVariants()
 	{
 		List<Representation> result = super.getVariants();
-		logger.info("Getting variants for : " + getTargetUri());
+		getLogger().info("Getting variants for : " + getTargetUri());
 
 		if (this.directoryContent != null)
 		{
@@ -534,7 +533,7 @@ public class DirectoryResource extends Resource
 		}
 		catch (IOException ioe)
 		{
-			logger.log(Level.WARNING, "Unable to get resource variants", ioe);
+			getLogger().log(Level.WARNING, "Unable to get resource variants", ioe);
 		}
 
 		return result;

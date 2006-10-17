@@ -23,7 +23,6 @@
 package com.noelios.restlet.impl;
 
 import java.util.logging.Level;
-import java.util.logging.Logger;
 
 import org.restlet.Client;
 import org.restlet.Router;
@@ -38,9 +37,6 @@ import org.restlet.data.Response;
  */
 public class ClientScorer extends Scorer
 {
-   /** Obtain a suitable logger. */
-   private static Logger logger = Logger.getLogger(ClientScorer.class.getCanonicalName());
-
    /**
     * Constructor.
     * @param router The parent router.
@@ -90,16 +86,16 @@ public class ClientScorer extends Scorer
    	
    	if(protocol == null)
    	{
-      	logger.warning("Unable to determine the protocol to use for this call.");
+   		getLogger().warning("Unable to determine the protocol to use for this call.");
    	}
    	else if(getClient().getProtocols().contains(protocol))
   		{
   			result = 1.0F;
    	}
    	
-      if(logger.isLoggable(Level.FINER))
+      if(getLogger().isLoggable(Level.FINER))
       {
-      	logger.finer("Call score for the \"" + getClient().getProtocols().toString() + "\" client: " + result);
+      	getLogger().finer("Call score for the \"" + getClient().getProtocols().toString() + "\" client: " + result);
       }
 
       return result;

@@ -35,7 +35,6 @@ import java.util.zip.ZipOutputStream;
 
 import org.restlet.data.Encoding;
 import org.restlet.data.Representation;
-import org.restlet.util.WrapperRepresentation;
 
 import com.noelios.restlet.impl.util.ByteUtils;
 
@@ -43,7 +42,7 @@ import com.noelios.restlet.impl.util.ByteUtils;
  * Content that encodes a wrapped content. 
  * @author Jerome Louvel (contact@noelios.com) <a href="http://www.noelios.com/">Noelios Consulting</a>
  */
-public class EncoderRepresentation extends WrapperRepresentation
+public class EncoderRepresentation extends Representation
 {
 	/** Indicates if the encoding can happen. */
 	private boolean canEncode;

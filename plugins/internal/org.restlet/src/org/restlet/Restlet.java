@@ -28,7 +28,7 @@ import org.restlet.data.Response;
 import org.restlet.data.Status;
 
 /**
- * Handler that is comparable to the HttpServlet class. It provides facility methods to handle the most common method
+ * Handler comparable to an HttpServlet class. It provides facility methods to handle the most common method
  * names. The calls are then automatically dispatched to the appropriate handle*() method (where the '*'
  * character corresponds to the method name, or to the handleOthers() method. By default, the implementation
  * of the handle*() or handleOthers() methods is to invoke the defaultHandle() method which should be 

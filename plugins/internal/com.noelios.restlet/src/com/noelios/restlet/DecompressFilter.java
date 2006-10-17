@@ -36,23 +36,23 @@ import org.restlet.data.Response;
 import com.noelios.restlet.data.DecoderRepresentation;
 
 /**
- * Filter decompressing input or output representations. 
+ * Filter decompressing entities. 
  * @author Jerome Louvel (contact@noelios.com) <a href="http://www.noelios.com/">Noelios Consulting</a>
  */
 public class DecompressFilter extends Filter
 {
 	/**
-	 * Indicates if the input representation should be decoded.
+	 * Indicates if the request entity should be decoded.
 	 */
-	private boolean decodeInput;
+	private boolean decodeRequest;
 	
 	/**
-	 * Indicates if the output representation should be decoded.
+	 * Indicates if the response entity should be decoded.
 	 */
-	private boolean decodeOutput;
+	private boolean decodeResponse;
 
 	/**
-	 * Constructor to only decode input representations before call handling.
+	 * Constructor to only decode request entities before handling.
 	 * @param context The context.
 	 */
 	public DecompressFilter(Context context)
@@ -63,14 +63,14 @@ public class DecompressFilter extends Filter
 	/**
 	 * Constructor.
 	 * @param context The context.
-	 * @param decodeInput Indicates if the input representation should be decoded.
-	 * @param decodeOutput Indicates if the output representation should be decoded.
+	 * @param decodeRequest Indicates if the request entity should be decoded.
+	 * @param decodeResponse Indicates if the response entity should be decoded.
 	 */
-	public DecompressFilter(Context context, boolean decodeInput, boolean decodeOutput)
+	public DecompressFilter(Context context, boolean decodeRequest, boolean decodeResponse)
 	{
 		super(context);
-		this.decodeInput = decodeInput;
-		this.decodeOutput = decodeOutput;
+		this.decodeRequest = decodeRequest;
+		this.decodeResponse = decodeResponse;
 	}
 
    /**
@@ -80,8 +80,8 @@ public class DecompressFilter extends Filter
     */
    public void beforeHandle(Request request, Response response)
    {
-		// Check if decoding of the call input is needed
-		if(isDecodeInput() && canDecode(request.getEntity()))
+		// Check if decoding of the request entity is needed
+		if(isDecodeRequest() && canDecode(request.getEntity()))
 		{
 			request.setEntity(decode(request.getEntity()));
 		}
@@ -94,8 +94,8 @@ public class DecompressFilter extends Filter
     */
    public void afterHandle(Request request, Response response)
    {
-		// Check if decoding of the call output is needed
-		if(isDecodeOutput() && canDecode(response.getEntity()))
+		// Check if decoding of the response entity is needed
+		if(isDecodeResponse() && canDecode(response.getEntity()))
 		{
 			response.setEntity(decode(response.getEntity()));
 		}
@@ -139,39 +139,39 @@ public class DecompressFilter extends Filter
 	}
 	
 	/**
-	 * Indicates if the input representation should be decoded.
-	 * @return True if the input representation should be decoded. 
+	 * Indicates if the request entity should be decoded.
+	 * @return True if the request entity should be decoded. 
 	 */
-	public boolean isDecodeInput()
+	public boolean isDecodeRequest()
 	{
-		return this.decodeInput;
+		return this.decodeRequest;
 	}
 
 	/**
-	 * Indicates if the input representation should be decoded.
-	 * @param decodeInput True if the input representation should be decoded. 
+	 * Indicates if the request entity should be decoded.
+	 * @param decodeRequest True if the request entity should be decoded. 
 	 */
-	public void setDecodeInput(boolean decodeInput)
+	public void setDecodeRequest(boolean decodeRequest)
 	{
-		this.decodeInput = decodeInput;
+		this.decodeRequest = decodeRequest;
 	}
 
 	/**
-	 * Indicates if the output representation should be decoded.
-	 * @return True if the output representation should be decoded. 
+	 * Indicates if the response entity should be decoded.
+	 * @return True if the response entity should be decoded. 
 	 */
-	public boolean isDecodeOutput()
+	public boolean isDecodeResponse()
 	{
-		return this.decodeOutput;
+		return this.decodeResponse;
 	}
 
 	/**
-	 * Indicates if the output representation should be decoded.
-	 * @param decodeOutput True if the output representation should be decoded. 
+	 * Indicates if the response entity should be decoded.
+	 * @param decodeResponse True if the response entity should be decoded. 
 	 */
-	public void setDecodeOutput(boolean decodeOutput)
+	public void setDecodeResponse(boolean decodeResponse)
 	{
-		this.decodeOutput = decodeOutput;
+		this.decodeResponse = decodeResponse;
 	}
 
 }

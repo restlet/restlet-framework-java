@@ -27,7 +27,7 @@ import org.restlet.data.Response;
 import org.restlet.data.Status;
 
 /**
- * Restlet part of a processing chain. In addition to handling incoming calls like any Restlet, a handler 
+ * Handler part of a processing chain. In addition to handling incoming calls like any Restlet, a handler 
  * can also resolve, either statically or dynamically, the next Restlet that will continue the processing chain.
  * Subclasses only have to implement the findNext() method.
  * @author Jerome Louvel (contact@noelios.com) <a href="http://www.noelios.com/">Noelios Consulting</a>

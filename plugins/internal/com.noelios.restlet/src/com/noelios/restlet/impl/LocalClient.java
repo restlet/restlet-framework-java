@@ -36,7 +36,6 @@ import java.util.TreeMap;
 import java.util.jar.JarEntry;
 import java.util.jar.JarFile;
 import java.util.logging.Level;
-import java.util.logging.Logger;
 
 import org.restlet.Client;
 import org.restlet.Context;
@@ -137,9 +136,6 @@ import com.noelios.restlet.impl.util.ByteUtils;
  */
 public class LocalClient extends Client
 {
-	/** Obtain a suitable logger. */
-	private static Logger logger = Logger.getLogger(LocalClient.class.getCanonicalName());
-
 	/** Mappings from extensions to metadata. */
 	private Map<String, Metadata> metadataMappings;
 
@@ -163,7 +159,7 @@ public class LocalClient extends Client
 
 		getProtocols().add(Protocol.CONTEXT);
 		getProtocols().add(Protocol.FILE);
-		
+
 		this.metadataMappings = new TreeMap<String, Metadata>();
 		this.webAppPath = null;
 		this.webAppArchive = false;
@@ -233,8 +229,8 @@ public class LocalClient extends Client
 
 	/**
 	 * Handles a call.
-    * @param request The request to handle.
-    * @param response The response to update.
+	 * @param request The request to handle.
+	 * @param response The response to update.
 	 */
 	public void handle(Request request, Response response)
 	{
@@ -244,7 +240,7 @@ public class LocalClient extends Client
 		}
 		catch (Exception e)
 		{
-			logger.log(Level.SEVERE, "Couldn't start the local client connector", e);
+			getLogger().log(Level.SEVERE, "Couldn't start the local client connector", e);
 		}
 
 		if (isStarted())
@@ -273,7 +269,8 @@ public class LocalClient extends Client
 				}
 				else if (cr.getAuthorityType() == AuthorityType.THREAD)
 				{
-					handleClassLoader(request, response, Thread.currentThread().getContextClassLoader());
+					handleClassLoader(request, response, Thread.currentThread()
+							.getContextClassLoader());
 				}
 				else if (cr.getAuthorityType() == AuthorityType.WEB_APPLICATION)
 				{
@@ -292,15 +289,16 @@ public class LocalClient extends Client
 
 	/**
 	 * Handles a call for the FILE protocol.
-    * @param request The request to handle.
-    * @param response The response to update.
+	 * @param request The request to handle.
+	 * @param response The response to update.
 	 * @param path The file or directory path.
 	 */
 	protected void handleFile(Request request, Response response, String path)
 	{
 		File file = new File(FileReference.localizePath(path));
 
-		if (request.getMethod().equals(Method.GET) || request.getMethod().equals(Method.HEAD))
+		if (request.getMethod().equals(Method.GET)
+				|| request.getMethod().equals(Method.HEAD))
 		{
 			Representation output = null;
 
@@ -343,7 +341,7 @@ public class LocalClient extends Client
 					}
 					catch (IOException ioe)
 					{
-						logger.log(Level.WARNING, "Unable to create file reference", ioe);
+						getLogger().log(Level.WARNING, "Unable to create file reference", ioe);
 					}
 				}
 				output = rl.getRepresentation();
@@ -367,7 +365,8 @@ public class LocalClient extends Client
 							}
 							catch (IOException ioe)
 							{
-								logger.log(Level.WARNING, "Unable to create file reference", ioe);
+								getLogger().log(Level.WARNING, "Unable to create file reference",
+										ioe);
 							}
 						}
 
@@ -421,7 +420,8 @@ public class LocalClient extends Client
 					}
 					catch (IOException ioe)
 					{
-						logger.log(Level.WARNING, "Unable to create the temporary file", ioe);
+						getLogger().log(Level.WARNING, "Unable to create the temporary file",
+								ioe);
 						response.setStatus(new Status(Status.SERVER_ERROR_INTERNAL,
 								"Unable to create a temporary file"));
 					}
@@ -443,7 +443,7 @@ public class LocalClient extends Client
 						}
 						else
 						{
-							logger
+							getLogger()
 									.log(Level.WARNING,
 											"Unable to move the temporary file to replace the existing file");
 							response
@@ -453,7 +453,7 @@ public class LocalClient extends Client
 					}
 					else
 					{
-						logger.log(Level.WARNING, "Unable to delete the existing file");
+						getLogger().log(Level.WARNING, "Unable to delete the existing file");
 						response.setStatus(new Status(Status.SERVER_ERROR_INTERNAL,
 								"Unable to delete the existing file"));
 					}
@@ -471,7 +471,7 @@ public class LocalClient extends Client
 					}
 					else
 					{
-						logger.log(Level.WARNING, "Unable to create the new directory");
+						getLogger().log(Level.WARNING, "Unable to create the new directory");
 						response.setStatus(new Status(Status.SERVER_ERROR_INTERNAL,
 								"Unable to create the new directory"));
 					}
@@ -486,8 +486,8 @@ public class LocalClient extends Client
 							// Create the parent directories then the new file
 							if (!parent.mkdirs())
 							{
-								logger
-										.log(Level.WARNING, "Unable to create the parent directory");
+								getLogger().log(Level.WARNING,
+										"Unable to create the parent directory");
 								response.setStatus(new Status(Status.SERVER_ERROR_INTERNAL,
 										"Unable to create the parent directory"));
 							}
@@ -513,20 +513,20 @@ public class LocalClient extends Client
 						}
 						else
 						{
-							logger.log(Level.WARNING, "Unable to create the new file");
+							getLogger().log(Level.WARNING, "Unable to create the new file");
 							response.setStatus(new Status(Status.SERVER_ERROR_INTERNAL,
 									"Unable to create the new file"));
 						}
 					}
 					catch (FileNotFoundException fnfe)
 					{
-						logger.log(Level.WARNING, "Unable to create the new file", fnfe);
+						getLogger().log(Level.WARNING, "Unable to create the new file", fnfe);
 						response.setStatus(new Status(Status.SERVER_ERROR_INTERNAL,
 								"Unable to create the new file"));
 					}
 					catch (IOException ioe)
 					{
-						logger.log(Level.WARNING, "Unable to create the new file", ioe);
+						getLogger().log(Level.WARNING, "Unable to create the new file", ioe);
 						response.setStatus(new Status(Status.SERVER_ERROR_INTERNAL,
 								"Unable to create the new file"));
 					}
@@ -569,12 +569,14 @@ public class LocalClient extends Client
 
 	/**
 	 * Handles a call with a given class loader.
-    * @param request The request to handle.
-    * @param response The response to update.
+	 * @param request The request to handle.
+	 * @param response The response to update.
 	 */
-	protected void handleClassLoader(Request request, Response response, ClassLoader classLoader)
+	protected void handleClassLoader(Request request, Response response,
+			ClassLoader classLoader)
 	{
-		if (request.getMethod().equals(Method.GET) || request.getMethod().equals(Method.HEAD))
+		if (request.getMethod().equals(Method.GET)
+				|| request.getMethod().equals(Method.HEAD))
 		{
 			URL url = classLoader.getResource(request.getResourceRef().getPath());
 
@@ -587,7 +589,7 @@ public class LocalClient extends Client
 				}
 				catch (IOException ioe)
 				{
-					logger.log(Level.WARNING,
+					getLogger().log(Level.WARNING,
 							"Unable to open the representation's input stream", ioe);
 					response.setStatus(Status.SERVER_ERROR_INTERNAL);
 				}
@@ -605,8 +607,8 @@ public class LocalClient extends Client
 
 	/**
 	 * Handles a call using the current Web Application.
-    * @param request The request to handle.
-    * @param response The response to update.
+	 * @param request The request to handle.
+	 * @param response The response to update.
 	 */
 	protected void handleWebApp(Request request, Response response)
 	{
@@ -658,7 +660,7 @@ public class LocalClient extends Client
 			}
 			catch (IOException e)
 			{
-				logger.log(Level.WARNING, "Unable to access to the WAR file", e);
+				getLogger().log(Level.WARNING, "Unable to access to the WAR file", e);
 				response.setStatus(Status.SERVER_ERROR_INTERNAL);
 			}
 
@@ -669,15 +671,15 @@ public class LocalClient extends Client
 
 			if (path.toUpperCase().startsWith("/WEB-INF/"))
 			{
-				logger
-						.warning("Forbidden access to the WEB-INF directory detected. Path requested: "
+				getLogger().warning(
+						"Forbidden access to the WEB-INF directory detected. Path requested: "
 								+ path);
 				response.setStatus(Status.CLIENT_ERROR_NOT_FOUND);
 			}
 			else if (path.toUpperCase().startsWith("/META-INF/"))
 			{
-				logger
-						.warning("Forbidden access to the META-INF directory detected. Path requested: "
+				getLogger().warning(
+						"Forbidden access to the META-INF directory detected. Path requested: "
 								+ path);
 				response.setStatus(Status.CLIENT_ERROR_NOT_FOUND);
 			}
@@ -886,8 +888,9 @@ public class LocalClient extends Client
 			}
 			else
 			{
-				logger.warning("Unable to find an existing directory or archive at: "
-						+ this.webAppPath);
+				getLogger().warning(
+						"Unable to find an existing directory or archive at: "
+								+ this.webAppPath);
 			}
 		}
 

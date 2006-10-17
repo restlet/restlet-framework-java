@@ -84,7 +84,7 @@ public abstract class HttpClient extends Client
 	{
 		if (this.converter == null)
 		{
-			this.converter = new HttpClientConverter();
+			this.converter = new HttpClientConverter(getLogger());
 		}
 
 		return this.converter;

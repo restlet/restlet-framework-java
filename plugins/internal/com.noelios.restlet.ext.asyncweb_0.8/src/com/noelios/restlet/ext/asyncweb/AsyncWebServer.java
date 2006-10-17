@@ -22,7 +22,6 @@
 package com.noelios.restlet.ext.asyncweb;
 
 import java.util.logging.Level;
-import java.util.logging.Logger;
 
 import org.restlet.Context;
 import org.safehaus.asyncweb.container.ContainerLifecycleException;
@@ -75,9 +74,6 @@ import com.noelios.restlet.impl.http.HttpServerCall;
  */
 public abstract class AsyncWebServer extends HttpServer implements ServiceContainer
 {
-   /** Obtain a suitable logger. */
-   private static Logger logger = Logger.getLogger(AsyncWebServer.class.getCanonicalName());
-
 	/**
 	 * Indicates if the server is acting in HTTPS mode.
 	 */
@@ -121,7 +117,7 @@ public abstract class AsyncWebServer extends HttpServer implements ServiceContai
 	public void dispatchRequest(AsyncWebRequest request)
 	{
 		HttpResponse response = request.createHttpResponse();
-		HttpServerCall call = new AsyncWebServerCall(request, response, confidential, getAddress());
+		HttpServerCall call = new AsyncWebServerCall(getLogger(), request, response, confidential, getAddress());
 		handle(call);
 		request.commitResponse(response);
 	}
@@ -139,12 +135,12 @@ public abstract class AsyncWebServer extends HttpServer implements ServiceContai
 			}
 			catch (TransportException ex)
 			{
-				logger.log(Level.WARNING, "Failed to start the transport", ex);
+				getLogger().log(Level.WARNING, "Failed to start the transport", ex);
 				throw new ContainerLifecycleException("Failed to start the transport", ex);
 			}
 			catch (Exception e)
 			{
-				logger.log(Level.WARNING, "Failed to start the AsyncWeb HTTP Server", e);
+				getLogger().log(Level.WARNING, "Failed to start the AsyncWeb HTTP Server", e);
 				throw new ContainerLifecycleException("Failed to start the AsyncWeb HTTP Server", e);
 			}
 		}
@@ -163,11 +159,11 @@ public abstract class AsyncWebServer extends HttpServer implements ServiceContai
 			}
 			catch (TransportException ex)
 			{
-				logger.log(Level.WARNING, "Failed to stop transport", ex);
+				getLogger().log(Level.WARNING, "Failed to stop transport", ex);
 			}
 			catch (Exception e)
 			{
-				logger.log(Level.WARNING, "Failed to start the AsyncWeb HTTP Server", e);
+				getLogger().log(Level.WARNING, "Failed to start the AsyncWeb HTTP Server", e);
 			}
 		}
 	}

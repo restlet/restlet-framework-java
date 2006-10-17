@@ -28,8 +28,8 @@ package org.restlet.data;
  */
 public class Result
 {
-	/** The optional output representation. */
-	private Representation output;
+	/** The optional entity. */
+	private Representation entity;
 	
 	/** The status. */
 	private Status status;
@@ -49,22 +49,22 @@ public class Result
 	/**
 	 * Constructor. 
 	 * @param status The status.
-	 * @param output The output representation.
+	 * @param entity The entity.
 	 */
-	public Result(Status status, Representation output)
+	public Result(Status status, Representation entity)
 	{
-		this(status, output, null);
+		this(status, entity, null);
 	}
 
 	/**
 	 * Constructor. 
 	 * @param status The status.
-	 * @param output The output representation.
+	 * @param entity The entity.
 	 * @param redirectionRef The redirection reference.
 	 */
-	public Result(Status status, Representation output, Reference redirectionRef)
+	public Result(Status status, Representation entity, Reference redirectionRef)
 	{
-		this.output = output;
+		this.entity = entity;
 		this.status = status;
 		this.redirectionRef = redirectionRef;
 	}
@@ -88,21 +88,21 @@ public class Result
 	}
 
 	/**
-	 * Returns the output representation.
-	 * @return the output representation or null.
+	 * Returns the entity.
+	 * @return the entity or null.
 	 */
-	public Representation getOutput()
+	public Representation getEntity()
 	{
-		return this.output;
+		return this.entity;
 	}
 
 	/**
-	 * Sets the output representation.
-	 * @param output The output representation.
+	 * Sets the entity.
+	 * @param entity The entity.
 	 */
-	public void setOutput(Representation output)
+	public void setEntity(Representation entity)
 	{
-		this.output = output;
+		this.entity = entity;
 	}
 
 	/**

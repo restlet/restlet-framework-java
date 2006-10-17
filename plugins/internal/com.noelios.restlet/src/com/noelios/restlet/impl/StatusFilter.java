@@ -23,7 +23,6 @@
 package com.noelios.restlet.impl;
 
 import java.util.logging.Level;
-import java.util.logging.Logger;
 
 import org.restlet.Context;
 import org.restlet.Filter;
@@ -36,21 +35,16 @@ import org.restlet.data.Status;
 import com.noelios.restlet.data.StringRepresentation;
 
 /**
- * Filter associating an output representation based on the call status. In order to 
- * customize the default representation, just subclass this class and override the 
- * "getRepresentation" method.<br/> 
- * If any exception occurs during the call handling, a "server internal error" 
- * status is automatically associated to the call. Of course, you can personalize 
- * the representation of this error. Also, if no status is set (null), then the "success ok"
- * status is assumed.<br/> 
+ * Filter associating a response entity based on the status. In order to customize the default representation,
+ * just subclass this class and override the "getRepresentation" method.<br/> 
+ * If any exception occurs during the call handling, a "server internal error" status is automatically 
+ * associated to the call. Of course, you can personalize the representation of this error. Also, if no 
+ * status is set (null), then the "success ok" status is assumed.<br/> 
  * @see <a href="http://www.restlet.org/tutorial#part08">Tutorial: Displaying error pages</a>
  * @author Jerome Louvel (contact@noelios.com) <a href="http://www.noelios.com/">Noelios Consulting</a>
  */
 public class StatusFilter extends Filter
 {
-   /** Obtain a suitable logger. */
-   private static Logger logger = Logger.getLogger(StatusFilter.class.getCanonicalName());
-
    /** Indicates whether an existing representation should be overwritten. */
    private boolean overwrite;
 
@@ -89,7 +83,7 @@ public class StatusFilter extends Filter
       }
       catch(Exception e)
       {
-         logger.log(Level.SEVERE, "Unhandled error intercepted", e);
+      	getLogger().log(Level.SEVERE, "Unhandled error intercepted", e);
          response.setStatus(Status.SERVER_ERROR_INTERNAL);
       }
    }
@@ -107,24 +101,24 @@ public class StatusFilter extends Filter
          response.setStatus(Status.SUCCESS_OK);
       }
 
-      // Do we need to get an output representation for the current status?
+      // Do we need to get a representation for the current status?
       if(!response.getStatus().equals(Status.SUCCESS_OK)
             && !response.getStatus().equals(Status.REDIRECTION_NOT_MODIFIED)
             && ((response.getEntity() == null) || overwrite))
       {
-         response.setEntity(getOutput(response.getStatus(), request, response));
+         response.setEntity(getRepresentation(response.getStatus(), request, response));
       }
    }
 
    /**
-    * Returns an output representation for the given status.<br/> In order to customize the 
+    * Returns a representation for the given status.<br/> In order to customize the 
     * default representation, this method can be overriden. 
     * @param status The status to represent.
     * @param request The request handled.
     * @param response The response updated.
     * @return The representation of the given status.
     */
-   public Representation getOutput(Status status, Request request, Response response)
+   public Representation getRepresentation(Status status, Request request, Response response)
    {
       StringBuilder sb = new StringBuilder();
       sb.append("<html>\n");

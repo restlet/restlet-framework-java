@@ -26,7 +26,6 @@ import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 import java.util.logging.Level;
-import java.util.logging.Logger;
 
 import org.restlet.Context;
 import org.restlet.data.ChallengeResponse;
@@ -51,10 +50,6 @@ import com.noelios.restlet.impl.util.SecurityUtils;
  */
 public class HttpRequest extends Request
 {
-	/** Obtain a suitable logger. */
-	private static Logger logger = Logger.getLogger(HttpRequest.class
-			.getCanonicalName());
-
 	/** The context of the HTTP server connector that issued the call. */
 	private Context context;
 
@@ -70,8 +65,8 @@ public class HttpRequest extends Request
 	/** Indicates if the cookies were parsed and added. */
 	private boolean cookiesAdded;
 
-	/** Indicates if the input representation was added. */
-	private boolean inputAdded;
+	/** Indicates if the request entity was added. */
+	private boolean entityAdded;
 
 	/** Indicates if the referrer was parsed and added. */
 	private boolean referrerAdded;
@@ -90,7 +85,7 @@ public class HttpRequest extends Request
 		this.clientAdded = false;
 		this.conditionAdded = false;
 		this.cookiesAdded = false;
-		this.inputAdded = false;
+		this.entityAdded = false;
 		this.referrerAdded = false;
 		this.securityAdded = false;
 		this.httpCall = httpCall;
@@ -117,7 +112,7 @@ public class HttpRequest extends Request
 			StringBuilder sb = new StringBuilder();
 			sb.append(getProtocol().getSchemeName()).append("://");
 			sb.append(httpCall.getServerName());
-			if(httpCall.getServerPort() != getProtocol().getDefaultPort())
+			if (httpCall.getServerPort() != getProtocol().getDefaultPort())
 			{
 				sb.append(':').append(httpCall.getServerPort());
 			}
@@ -255,8 +250,8 @@ public class HttpRequest extends Request
 				}
 				catch (Exception e)
 				{
-					logger.log(Level.WARNING, "Unable to process the if-match header: "
-							+ ifMatchHeader);
+					this.context.getLogger().log(Level.WARNING,
+							"Unable to process the if-match header: " + ifMatchHeader);
 				}
 			}
 
@@ -283,8 +278,8 @@ public class HttpRequest extends Request
 				}
 				catch (Exception e)
 				{
-					logger.log(Level.WARNING, "Unable to process the if-none-match header: "
-							+ ifNoneMatchHeader);
+					this.context.getLogger().log(Level.WARNING,
+							"Unable to process the if-none-match header: " + ifNoneMatchHeader);
 				}
 			}
 
@@ -320,7 +315,7 @@ public class HttpRequest extends Request
 			{
 				try
 				{
-					CookieReader cr = new CookieReader(cookiesValue);
+					CookieReader cr = new CookieReader(this.context.getLogger(), cookiesValue);
 					Cookie current = cr.readCookie();
 					while (current != null)
 					{
@@ -330,7 +325,8 @@ public class HttpRequest extends Request
 				}
 				catch (Exception e)
 				{
-					logger.log(Level.WARNING,
+					this.context.getLogger().log(
+							Level.WARNING,
 							"An exception occured during cookies parsing. Headers value: "
 									+ cookiesValue, e);
 				}
@@ -346,12 +342,12 @@ public class HttpRequest extends Request
 	 * Returns the representation provided by the client.
 	 * @return The representation provided by the client.
 	 */
-	public Representation getInput()
+	public Representation getEntity()
 	{
-		if (!this.inputAdded)
+		if (!this.entityAdded)
 		{
-			setEntity(((HttpServerCall) getHttpCall()).getRequestInput());
-			this.inputAdded = true;
+			setEntity(((HttpServerCall) getHttpCall()).getRequestEntity());
+			this.entityAdded = true;
 		}
 
 		return super.getEntity();
@@ -378,13 +374,13 @@ public class HttpRequest extends Request
 		return super.getReferrerRef();
 	}
 
-   /**
-    * Returns the authentication response sent by a client to an origin server.
-    * @return The authentication response sent by a client to an origin server.
-    */
-   public ChallengeResponse getChallengeResponse()
-   {
-   	ChallengeResponse result = super.getChallengeResponse();
+	/**
+	 * Returns the authentication response sent by a client to an origin server.
+	 * @return The authentication response sent by a client to an origin server.
+	 */
+	public ChallengeResponse getChallengeResponse()
+	{
+		ChallengeResponse result = super.getChallengeResponse();
 
 		if (!this.securityAdded)
 		{

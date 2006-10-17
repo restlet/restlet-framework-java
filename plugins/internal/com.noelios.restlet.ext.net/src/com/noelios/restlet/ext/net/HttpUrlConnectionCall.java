@@ -31,7 +31,6 @@ import java.net.HttpURLConnection;
 import java.net.SocketTimeoutException;
 import java.net.URL;
 import java.util.logging.Level;
-import java.util.logging.Logger;
 
 import javax.net.ssl.HttpsURLConnection;
 
@@ -48,10 +47,6 @@ import com.noelios.restlet.impl.http.HttpClientCall;
  */
 public class HttpUrlConnectionCall extends HttpClientCall
 {
-	/** Obtain a suitable logger. */
-	private static Logger logger = Logger.getLogger(HttpUrlConnectionCall.class
-			.getCanonicalName());
-
 	/** The associated HTTP client. */
 	private HttpClient client;
 	
@@ -66,10 +61,10 @@ public class HttpUrlConnectionCall extends HttpClientCall
     * @param client The client connector.
     * @param method The method name.
     * @param requestUri The request URI.
-    * @param hasInput Indicates if the call will have an input to send to the server.
+    * @param hasEntity Indicates if the call will have an entity to send to the server.
     * @throws IOException
     */
-   public HttpUrlConnectionCall(HttpClient client, String method, String requestUri, boolean hasInput) throws IOException
+   public HttpUrlConnectionCall(HttpClient client, String method, String requestUri, boolean hasEntity) throws IOException
    {
       super(method, requestUri);
       this.client = client;
@@ -81,7 +76,7 @@ public class HttpUrlConnectionCall extends HttpClientCall
         	this.connection.setConnectTimeout(client.getConnectTimeout());
         	this.connection.setReadTimeout(client.getReadTimeout());
          this.connection.setAllowUserInteraction(client.isAllowUserInteraction());
-         this.connection.setDoOutput(hasInput);
+         this.connection.setDoOutput(hasEntity);
          this.connection.setInstanceFollowRedirects(client.isFollowRedirects());
          this.connection.setUseCaches(client.isUseCaches());
          this.responseHeadersAdded = false;
@@ -103,28 +98,28 @@ public class HttpUrlConnectionCall extends HttpClientCall
    }
 
 	/**
-	 * Sends the request to the client. Commits the request line, headers and optional input and 
+	 * Sends the request to the client. Commits the request line, headers and optional entity and 
 	 * send them over the network. 
-	 * @param input The optional input representation to send.
+	 * @param entity The optional entity representation to send.
 	 * @return The result status.
 	 */
-   public Status sendRequest(Representation input) throws IOException
+   public Status sendRequest(Representation entity) throws IOException
    {
    	Status result = null;
    	
    	try
    	{
-   		if(input != null)
+   		if(entity != null)
    		{
 		   	// Adjust the streaming mode
-				if (input.getSize() > 0)
+				if (entity.getSize() > 0)
 				{
-					// The size of the input is known in advance
-					getConnection().setFixedLengthStreamingMode((int)input.getSize());
+					// The size of the entity is known in advance
+					getConnection().setFixedLengthStreamingMode((int)entity.getSize());
 				}
 				else
 				{
-					// The size of the input is not known in advance
+					// The size of the entity is not known in advance
 					if(this.client.getChunkLength() >= 0)
 					{
 						// Use chunked encoding
@@ -132,7 +127,7 @@ public class HttpUrlConnectionCall extends HttpClientCall
 					}
 					else
 					{
-						// Use input buffering to determine the content length
+						// Use entity buffering to determine the content length
 					}
 				}
    		}
@@ -149,19 +144,19 @@ public class HttpUrlConnectionCall extends HttpClientCall
 	      // Ensure that the connections is active
 	      getConnection().connect();
 	      
-	      // Send the optional input
-			result = super.sendRequest(input);
+	      // Send the optional entity
+			result = super.sendRequest(entity);
 		}
 		catch (ConnectException ce)
 		{
-			logger.log(Level.FINE,
+			client.getLogger().log(Level.FINE,
 					"An error occured during the connection to the remote HTTP server.", ce);
 			result = new Status(Status.CONNECTOR_ERROR_CONNECTION,
 					"Unable to connect to the remote server. " + ce.getMessage());
 		}
 		catch (SocketTimeoutException ste)
 		{
-			logger
+			client.getLogger()
 					.log(
 							Level.FINE,
 							"An timeout error occured during the communication with the remote HTTP server.",
@@ -172,7 +167,7 @@ public class HttpUrlConnectionCall extends HttpClientCall
 		}
 		catch (FileNotFoundException fnfe)
 		{
-			logger.log(Level.FINE,
+			client.getLogger().log(Level.FINE,
 					"An unexpected error occured during the sending of the HTTP request.",
 					fnfe);
 			result = new Status(Status.CONNECTOR_ERROR_INTERNAL,
@@ -180,7 +175,7 @@ public class HttpUrlConnectionCall extends HttpClientCall
 		}
 		catch (IOException ioe)
 		{
-			logger.log(Level.FINE,
+			client.getLogger().log(Level.FINE,
 					"An error occured during the communication with the remote HTTP server.",
 					ioe);
 			result = new Status(Status.CONNECTOR_ERROR_COMMUNICATION,
@@ -189,7 +184,7 @@ public class HttpUrlConnectionCall extends HttpClientCall
 		}
 		catch (Exception e)
 		{
-			logger.log(Level.FINE,
+			client.getLogger().log(Level.FINE,
 					"An unexpected error occured during the sending of the HTTP request.", e);
 			result = new Status(Status.CONNECTOR_ERROR_INTERNAL,
 					"Unable to send the HTTP request. " + e.getMessage());

@@ -24,7 +24,6 @@ package com.noelios.restlet.impl.http;
 
 import java.util.List;
 import java.util.logging.Level;
-import java.util.logging.Logger;
 
 import org.restlet.Context;
 import org.restlet.data.CookieSetting;
@@ -46,19 +45,26 @@ import com.noelios.restlet.impl.util.SecurityUtils;
  */
 public class HttpServerConverter
 {
-	/** Obtain a suitable logger. */
-	private static Logger logger = Logger.getLogger(HttpServerConverter.class
-			.getCanonicalName());
+	/** The server context. */
+	private Context context;
+
+	/**
+	 * Constructor.
+	 * @param context The client context.
+	 */
+	public HttpServerConverter(Context context)
+	{
+		this.context = context;
+	}
 
 	/**
 	 * Converts a low-level HTTP call into a high-level uniform call.
 	 * @param httpCall The low-level HTTP call.
-	 * @param context The context of the server connector.
 	 * @return A new high-level uniform call.
 	 */
-	public Request toUniform(HttpServerCall httpCall, Context context)
+	public Request toUniform(HttpServerCall httpCall)
 	{
-		Request result = new HttpRequest(context, httpCall);
+		Request result = new HttpRequest(this.context, httpCall);
 		result.getAttributes().put(HttpConstants.ATTRIBUTE_HEADERS, httpCall.getRequestHeaders());
 		return result;
 	}
@@ -82,7 +88,7 @@ public class HttpServerConverter
 		}
 		catch (Exception e)
 		{
-			logger.log(Level.INFO, "Exception intercepted", e);
+			this.context.getLogger().log(Level.INFO, "Exception intercepted", e);
 			httpCall.setStatusCode(500);
 			httpCall.setReasonPhrase("An unexpected exception occured");
 		}
@@ -156,55 +162,55 @@ public class HttpServerConverter
 				httpCall.setReasonPhrase(response.getStatus().getDescription());
 			}
 
-			// If an output was set during the call, copy it to the output stream;
+			// If an entity was set during the call, copy it to the output stream;
 			if (response.getEntity() != null)
 			{
-				Representation output = response.getEntity();
+				Representation entity = response.getEntity();
 
-				if (output.getExpirationDate() != null)
+				if (entity.getExpirationDate() != null)
 				{
-					responseHeaders.add(HttpConstants.HEADER_EXPIRES, httpCall.formatDate(output
+					responseHeaders.add(HttpConstants.HEADER_EXPIRES, httpCall.formatDate(entity
 							.getExpirationDate(), false));
 				}
 
-				if ((output.getEncoding() != null)
-						&& (!output.getEncoding().equals(Encoding.IDENTITY)))
+				if ((entity.getEncoding() != null)
+						&& (!entity.getEncoding().equals(Encoding.IDENTITY)))
 				{
-					responseHeaders.add(HttpConstants.HEADER_CONTENT_ENCODING, output
+					responseHeaders.add(HttpConstants.HEADER_CONTENT_ENCODING, entity
 							.getEncoding().getName());
 				}
 
-				if (output.getLanguage() != null)
+				if (entity.getLanguage() != null)
 				{
-					responseHeaders.add(HttpConstants.HEADER_CONTENT_LANGUAGE, output
+					responseHeaders.add(HttpConstants.HEADER_CONTENT_LANGUAGE, entity
 							.getLanguage().getName());
 				}
 
-				if (output.getMediaType() != null)
+				if (entity.getMediaType() != null)
 				{
-					StringBuilder contentType = new StringBuilder(output.getMediaType()
+					StringBuilder contentType = new StringBuilder(entity.getMediaType()
 							.getName());
 
-					if (output.getCharacterSet() != null)
+					if (entity.getCharacterSet() != null)
 					{
 						// Specify the character set parameter
 						contentType.append("; charset=").append(
-								output.getCharacterSet().getName());
+								entity.getCharacterSet().getName());
 					}
 
 					responseHeaders.add(HttpConstants.HEADER_CONTENT_TYPE, contentType
 							.toString());
 				}
 
-				if (output.getModificationDate() != null)
+				if (entity.getModificationDate() != null)
 				{
-					responseHeaders.add(HttpConstants.HEADER_LAST_MODIFIED, httpCall.formatDate(output
+					responseHeaders.add(HttpConstants.HEADER_LAST_MODIFIED, httpCall.formatDate(entity
 							.getModificationDate(), false));
 				}
 
-				if (output.getTag() != null)
+				if (entity.getTag() != null)
 				{
-					responseHeaders.add(HttpConstants.HEADER_ETAG, output.getTag().getName());
+					responseHeaders.add(HttpConstants.HEADER_ETAG, entity.getTag().getName());
 				}
 
 				if (response.getEntity().getSize() != Representation.UNKNOWN_SIZE)
@@ -279,7 +285,7 @@ public class HttpServerConverter
 							)
 					{
 						// Standard headers can't be overriden
-						logger.warning("Addition of the standard header \"" + param.getName() + "\" is not allowed.");
+						this.context.getLogger().warning("Addition of the standard header \"" + param.getName() + "\" is not allowed.");
 					}
 					else
 					{
@@ -290,7 +296,7 @@ public class HttpServerConverter
 		}
 		catch (Exception e)
 		{
-			logger.log(Level.INFO, "Exception intercepted while adding the response headers", e);
+			this.context.getLogger().log(Level.INFO, "Exception intercepted while adding the response headers", e);
 			httpCall.setStatusCode(Status.SERVER_ERROR_INTERNAL.getCode());
 			httpCall.setReasonPhrase(Status.SERVER_ERROR_INTERNAL.getDescription());
 		}

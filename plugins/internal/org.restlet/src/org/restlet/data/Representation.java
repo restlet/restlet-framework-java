@@ -29,6 +29,7 @@ import java.io.OutputStream;
 import java.nio.channels.ReadableByteChannel;
 import java.nio.channels.WritableByteChannel;
 import java.util.Date;
+import java.util.logging.Logger;
 
 /**
  * Current or intended state of a resource. For performance purpose, it is essential that a minimal overhead 
@@ -44,9 +45,7 @@ import java.util.Date;
  */
 public abstract class Representation extends Resource
 {
-	/**
-	 * Inidicates that the size of the representation can't be known in advance. 
-	 */
+	/** Inidicates that the size of the representation can't be known in advance. */
 	public static final long UNKNOWN_SIZE = -1L;
 
    /** The character set or null if not applicable. */
@@ -92,6 +91,7 @@ public abstract class Representation extends Resource
     */
    public Representation(MediaType mediaType)
    {
+   	super((Logger)null);
       this.characterSet = null;
       this.contentAvailable = true;
       this.contentTransient = false;
@@ -108,6 +108,24 @@ public abstract class Representation extends Resource
       // variant is the representation itself
       getVariants().add(this);
    }
+   
+   /**
+    * Wrapper constructor.
+    * @param wrappedRepresentation The representation to wrap.
+    */
+   public Representation(Representation wrappedRepresentation)
+   {
+   	super(wrappedRepresentation);
+   }
+	
+	/** 
+	 * Returns the wrapped resource.
+	 * @return The wrapped resource. 
+	 */
+	protected Representation getWrappedRepresentation()
+	{
+		return (Representation)getWrappedResource();
+	}
 
    /**
     * Returns the character set or null if not applicable.
@@ -115,7 +133,14 @@ public abstract class Representation extends Resource
     */
    public CharacterSet getCharacterSet()
    {
-      return characterSet;
+		if(getWrappedRepresentation() != null)
+		{
+			return getWrappedRepresentation().getCharacterSet();
+		}
+		else
+		{
+			return this.characterSet;
+		}
    }
 
    /**
@@ -124,7 +149,14 @@ public abstract class Representation extends Resource
     */
    public void setCharacterSet(CharacterSet characterSet)
    {
-      this.characterSet = characterSet;
+		if(getWrappedRepresentation() != null)
+		{
+			getWrappedRepresentation().setCharacterSet(characterSet);
+		}
+		else
+		{
+			this.characterSet = characterSet;
+		}
    }
 
    /**
@@ -135,7 +167,14 @@ public abstract class Representation extends Resource
     */
    public boolean isAvailable()
    {
-   	return this.contentAvailable;
+		if(getWrappedRepresentation() != null)
+		{
+			return getWrappedRepresentation().isAvailable();
+		}
+		else
+		{
+			return this.contentAvailable;
+		}
    }
 
    /**
@@ -147,7 +186,14 @@ public abstract class Representation extends Resource
     */
 	public boolean isTransient()
 	{
-		return this.contentTransient;
+		if(getWrappedRepresentation() != null)
+		{
+			return getWrappedRepresentation().isTransient();
+		}
+		else
+		{
+			return this.contentTransient;
+		}
 	}
 
    /**
@@ -156,7 +202,14 @@ public abstract class Representation extends Resource
     */
    public Encoding getEncoding()
    {
-      return this.encoding;
+		if(getWrappedRepresentation() != null)
+		{
+			return getWrappedRepresentation().getEncoding();
+		}
+		else
+		{
+			return this.encoding;
+		}
    }
 
    /**
@@ -165,7 +218,14 @@ public abstract class Representation extends Resource
     */
    public void setEncoding(Encoding encoding)
    {
-      this.encoding = encoding;
+		if(getWrappedRepresentation() != null)
+		{
+			getWrappedRepresentation().setEncoding(encoding);
+		}
+		else
+		{
+			this.encoding = encoding;
+		}
    }
 
    /**
@@ -174,7 +234,14 @@ public abstract class Representation extends Resource
     */
    public Date getExpirationDate()
    {
-      return expirationDate;
+		if(getWrappedRepresentation() != null)
+		{
+			return getWrappedRepresentation().getExpirationDate();
+		}
+		else
+		{
+			return expirationDate;
+		}
    }
 
    /**
@@ -183,7 +250,14 @@ public abstract class Representation extends Resource
     */
    public void setExpirationDate(Date expirationDate)
    {
-      this.expirationDate = expirationDate;
+		if(getWrappedRepresentation() != null)
+		{
+			getWrappedRepresentation().setExpirationDate(expirationDate);
+		}
+		else
+		{
+			this.expirationDate = expirationDate;
+		}
    }
 
    /**
@@ -192,7 +266,14 @@ public abstract class Representation extends Resource
     */
    public Language getLanguage()
    {
-      return language;
+		if(getWrappedRepresentation() != null)
+		{
+			return getWrappedRepresentation().getLanguage();
+		}
+		else
+		{
+			return language;
+		}
    }
 
    /**
@@ -201,7 +282,14 @@ public abstract class Representation extends Resource
     */
    public void setLanguage(Language language)
    {
-      this.language = language;
+		if(getWrappedRepresentation() != null)
+		{
+			getWrappedRepresentation().setLanguage(language);
+		}
+		else
+		{
+			this.language = language;
+		}
    }
 
    /**
@@ -210,7 +298,14 @@ public abstract class Representation extends Resource
     */
    public MediaType getMediaType()
    {
-      return mediaType;
+		if(getWrappedRepresentation() != null)
+		{
+			return getWrappedRepresentation().getMediaType();
+		}
+		else
+		{
+			return mediaType;
+		}
    }
 
    /**
@@ -219,7 +314,14 @@ public abstract class Representation extends Resource
     */
    public void setMediaType(MediaType mediaType)
    {
-      this.mediaType = mediaType;
+		if(getWrappedRepresentation() != null)
+		{
+			getWrappedRepresentation().setMediaType(mediaType);
+		}
+		else
+		{
+			this.mediaType = mediaType;
+		}
    }
 
    /**
@@ -229,7 +331,14 @@ public abstract class Representation extends Resource
     */
    public Date getModificationDate()
    {
-      return modificationDate;
+		if(getWrappedRepresentation() != null)
+		{
+			return getWrappedRepresentation().getModificationDate();
+		}
+		else
+		{
+			return modificationDate;
+		}
    }
 
    /**
@@ -238,7 +347,14 @@ public abstract class Representation extends Resource
     */
    public void setModificationDate(Date modificationDate)
    {
-      this.modificationDate = modificationDate;
+		if(getWrappedRepresentation() != null)
+		{
+			getWrappedRepresentation().setModificationDate(modificationDate);
+		}
+		else
+		{
+			this.modificationDate = modificationDate;
+		}
    }
 
    /**
@@ -247,7 +363,14 @@ public abstract class Representation extends Resource
     */
    public Resource getResource()
    {
-      return this.resource;
+		if(getWrappedRepresentation() != null)
+		{
+			return getWrappedRepresentation().getResource();
+		}
+		else
+		{
+			return this.resource;
+		}
    }
 
    /**
@@ -256,7 +379,14 @@ public abstract class Representation extends Resource
     */
    public void setResource(Resource resource)
    {
-      this.resource = resource;
+		if(getWrappedRepresentation() != null)
+		{
+			getWrappedRepresentation().setResource(resource);
+		}
+		else
+		{
+			this.resource = resource;
+		}
    }
    
    /**
@@ -265,7 +395,14 @@ public abstract class Representation extends Resource
     */
    public long getSize()
    {
-      return this.size;
+		if(getWrappedRepresentation() != null)
+		{
+			return getWrappedRepresentation().getSize();
+		}
+		else
+		{
+			return this.size;
+		}
    }
 
    /**
@@ -274,7 +411,14 @@ public abstract class Representation extends Resource
     */
    public void setSize(long expectedSize)
    {
-      this.size = expectedSize;
+		if(getWrappedRepresentation() != null)
+		{
+			getWrappedRepresentation().setSize(expectedSize);
+		}
+		else
+		{
+			this.size = expectedSize;
+		}
    }
 
    /**
@@ -283,7 +427,14 @@ public abstract class Representation extends Resource
     */
    public Tag getTag()
    {
-      return tag;
+		if(getWrappedRepresentation() != null)
+		{
+			return getWrappedRepresentation().getTag();
+		}
+		else
+		{
+			return tag;
+		}
    }
 
    /**
@@ -292,25 +443,46 @@ public abstract class Representation extends Resource
     */
    public void setTag(Tag tag)
    {
-      this.tag = tag;
+		if(getWrappedRepresentation() != null)
+		{
+			getWrappedRepresentation().setTag(tag);
+		}
+		else
+		{
+			this.tag = tag;
+		}
    }
 
 	/**
 	 * Indicates if some fresh content is available.
-	 * @param contentAvailable True if some fresh content is available.
+	 * @param available True if some fresh content is available.
 	 */
-	protected void setAvailable(boolean contentAvailable)
+	protected void setAvailable(boolean available)
 	{
-		this.contentAvailable = contentAvailable;
+		if(getWrappedRepresentation() != null)
+		{
+			getWrappedRepresentation().setAvailable(available);
+		}
+		else
+		{
+			this.contentAvailable = available;
+		}
 	}
 
 	/**
 	 * Indicates if the representation's content is transient.
-	 * @param contentTransient True if the representation's content is transient.
+	 * @param isTransient True if the representation's content is transient.
 	 */
-	protected void setTransient(boolean contentTransient)
+	protected void setTransient(boolean isTransient)
 	{
-		this.contentTransient = contentTransient;
+		if(getWrappedRepresentation() != null)
+		{
+			getWrappedRepresentation().setTransient(isTransient);
+		}
+		else
+		{
+			this.contentTransient = isTransient;
+		}
 	}
 
    /**
@@ -321,7 +493,17 @@ public abstract class Representation extends Resource
     * @return A channel with the representation's content.
     * @throws IOException
     */
-   public abstract ReadableByteChannel getChannel() throws IOException;
+   public ReadableByteChannel getChannel() throws IOException
+   {
+		if(getWrappedRepresentation() != null)
+		{
+			return getWrappedRepresentation().getChannel();
+		}
+		else
+		{
+			return null;
+		}
+   }
 
    /**
     * Returns a stream with the representation's content.
@@ -330,7 +512,17 @@ public abstract class Representation extends Resource
     * @return A stream with the representation's content.
     * @throws IOException
     */
-   public abstract InputStream getStream() throws IOException;
+   public InputStream getStream() throws IOException
+   {
+		if(getWrappedRepresentation() != null)
+		{
+			return getWrappedRepresentation().getStream();
+		}
+		else
+		{
+			return null;
+		}
+   }
 
    /**
     * Writes the representation to a byte channel.
@@ -339,7 +531,17 @@ public abstract class Representation extends Resource
     * @param writableChannel A writable byte channel.
     * @throws IOException
     */
-   public abstract void write(WritableByteChannel writableChannel) throws IOException;
+   public void write(WritableByteChannel writableChannel) throws IOException
+   {
+		if(getWrappedRepresentation() != null)
+		{
+			getWrappedRepresentation().write(writableChannel);
+		}
+		else
+		{
+			throw new UnsupportedOperationException("You must override this method in order to use it");
+		}
+   }
 
    /**
     * Writes the representation to a byte stream.
@@ -348,7 +550,17 @@ public abstract class Representation extends Resource
     * @param outputStream The output stream.
     * @throws IOException
     */
-   public abstract void write(OutputStream outputStream) throws IOException;
+   public void write(OutputStream outputStream) throws IOException
+   {
+		if(getWrappedRepresentation() != null)
+		{
+			getWrappedRepresentation().write(outputStream);
+		}
+		else
+		{
+			throw new UnsupportedOperationException("You must override this method in order to use it");
+		}
+   }
 
    /**
     * Converts the representation to a string.
@@ -356,29 +568,36 @@ public abstract class Representation extends Resource
     */
    public String toString()
    {
-      String result = null;
-
-      if(isAvailable())
-      {
-	      try
+		if(getWrappedRepresentation() != null)
+		{
+			return getWrappedRepresentation().toString();
+		}
+		else
+		{
+	      String result = null;
+	
+	      if(isAvailable())
 	      {
-	         ByteArrayOutputStream baos = new ByteArrayOutputStream();
-	         write(baos);
-	         
-	         if(getCharacterSet() != null)
-	         {
-	         	result = baos.toString(getCharacterSet().getName());
-	         }
-	         else
-	         {
-	         	result = baos.toString();
-	         }
+		      try
+		      {
+		         ByteArrayOutputStream baos = new ByteArrayOutputStream();
+		         write(baos);
+		         
+		         if(getCharacterSet() != null)
+		         {
+		         	result = baos.toString(getCharacterSet().getName());
+		         }
+		         else
+		         {
+		         	result = baos.toString();
+		         }
+		      }
+		      catch(Exception ioe)
+		      {
+		      }
 	      }
-	      catch(Exception ioe)
-	      {
-	      }
-      }
-      
-      return result;
+	      
+	      return result;
+		}
    }
 }

@@ -23,7 +23,6 @@
 package com.noelios.restlet.impl;
 
 import java.util.logging.Level;
-import java.util.logging.Logger;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -44,9 +43,6 @@ import org.restlet.data.Status;
  */
 public class PatternScorer extends Scorer
 {
-   /** Obtain a suitable logger. */
-   private static Logger logger = Logger.getLogger(PatternScorer.class.getCanonicalName());
-
    /** The URI pattern. */
    private Pattern pattern;
 
@@ -99,9 +95,9 @@ public class PatternScorer extends Scorer
       	}
       }
       
-      if(logger.isLoggable(Level.FINER))
+      if(getLogger().isLoggable(Level.FINER))
       {
-      	logger.finer("Call score for the \"" + getPattern().toString() + "\" URI pattern: " + result);
+      	getLogger().finer("Call score for the \"" + getPattern().toString() + "\" URI pattern: " + result);
       }
 
       return result;
@@ -118,9 +114,9 @@ public class PatternScorer extends Scorer
 		Matcher matcher = getPattern().matcher(remainingRef);
       boolean matched = matcher.lookingAt();
          
-      if(logger.isLoggable(Level.FINER))
+      if(getLogger().isLoggable(Level.FINER))
       {
-      	logger.finer("Attempting to match this pattern: " + getPattern().toString() + " >> " + matched);
+      	getLogger().finer("Attempting to match this pattern: " + getPattern().toString() + " >> " + matched);
       }
 
       if(matched)
@@ -140,15 +136,15 @@ public class PatternScorer extends Scorer
 	      
 	      request.setBaseRef(baseRef);
 	
-	      if(logger.isLoggable(Level.FINE))
+	      if(getLogger().isLoggable(Level.FINE))
 	      {
-	      	logger.fine("New base URI: " + request.getBaseRef());
-	      	logger.fine("New relative part: " + request.getRelativePart());
+	      	getLogger().fine("New base URI: " + request.getBaseRef());
+	      	getLogger().fine("New relative part: " + request.getRelativePart());
 	      }
 	
-	      if(logger.isLoggable(Level.FINE))
+	      if(getLogger().isLoggable(Level.FINE))
 	      {
-	      	logger.fine("Delegating the call to the target handler");
+	      	getLogger().fine("Delegating the call to the target handler");
 	      }
 	
 	      // Invoke the call restlet

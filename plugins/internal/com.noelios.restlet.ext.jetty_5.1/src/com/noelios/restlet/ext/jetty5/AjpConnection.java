@@ -26,6 +26,7 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
 import java.net.Socket;
+import java.util.logging.Logger;
 
 import org.mortbay.http.HttpContext;
 import org.mortbay.http.HttpException;
@@ -44,17 +45,22 @@ public class AjpConnection extends AJP13Connection
    /** Serial version identifier. */
    private static final long serialVersionUID = 1L;
 
+   /** The logger to use. */
+   private Logger logger;
+   
    /**
     * Constructor.
+    * @param logger The logger to use.
     * @param listener The parent AJP listener.
     * @param in Input stream to read the request from.
     * @param out Output stream to write the response to.
     * @param socket The listening socket.
     * @param bufferSize The buffer size.
     */
-   public AjpConnection(AjpListener listener, InputStream in, OutputStream out, Socket socket, int bufferSize) throws IOException   
+   public AjpConnection(Logger logger, AjpListener listener, InputStream in, OutputStream out, Socket socket, int bufferSize) throws IOException   
    {
       super(listener, in, out, socket, bufferSize);
+      this.logger = logger;
    }
 
    /**
@@ -67,7 +73,7 @@ public class AjpConnection extends AJP13Connection
     */
    protected HttpContext service(HttpRequest request, HttpResponse response) throws HttpException, IOException
    {
-      getJettyServer().handle((HttpServerCall)new JettyCall(request, response));
+      getJettyServer().handle((HttpServerCall)new JettyCall(this.logger, request, response));
 
       // Commit the response and ensures that all data is flushed out to the caller
       response.commit();

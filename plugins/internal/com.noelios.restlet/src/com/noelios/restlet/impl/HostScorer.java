@@ -23,7 +23,6 @@
 package com.noelios.restlet.impl;
 
 import java.util.logging.Level;
-import java.util.logging.Logger;
 
 import org.restlet.Router;
 import org.restlet.Scorer;
@@ -39,9 +38,6 @@ import org.restlet.data.Response;
  */
 public class HostScorer extends Scorer
 {
-	/** Obtain a suitable logger. */
-	private static Logger logger = Logger.getLogger(HostScorer.class.getCanonicalName());
-
 	/**
 	 * Constructor.
 	 * @param router The parent router.
@@ -72,8 +68,8 @@ public class HostScorer extends Scorer
 
 	/**
 	 * Returns the score for a given call (between 0 and 1.0).
-    * @param request The request to score.
-    * @param response The response to score.
+	 * @param request The request to score.
+	 * @param response The response to score.
 	 * @return The score for a given call (between 0 and 1.0).
 	 */
 	public float score(Request request, Response response)
@@ -92,7 +88,7 @@ public class HostScorer extends Scorer
 
 		if (protocol == null)
 		{
-			logger.warning("Unable to determine the protocol to use for this call.");
+			getLogger().warning("Unable to determine the protocol to use for this call.");
 			incompatible = true;
 		}
 		else
@@ -161,10 +157,10 @@ public class HostScorer extends Scorer
 			result = 0F;
 		}
 
-		if (logger.isLoggable(Level.FINER))
+		if (getLogger().isLoggable(Level.FINER))
 		{
-			logger.finer("Call score for the \"" + getHost().getName() + "\" host: "
-					+ result);
+			getLogger().finer(
+					"Call score for the \"" + getHost().getName() + "\" host: " + result);
 		}
 
 		return result;
@@ -172,23 +168,24 @@ public class HostScorer extends Scorer
 
 	/**
 	 * Handles a call.
-    * @param request The request to handle.
-    * @param response The response to update.
+	 * @param request The request to handle.
+	 * @param response The response to update.
 	 */
 	public void handle(Request request, Response response)
 	{
-		request.setBaseRef(new Reference(request.getProtocol().getSchemeName(), response.getServerInfo()
-				.getName(), response.getServerInfo().getPort(), null, null, null));
+		request.setBaseRef(new Reference(request.getProtocol().getSchemeName(), response
+				.getServerInfo().getName(), response.getServerInfo().getPort(), null, null,
+				null));
 
-		if (logger.isLoggable(Level.FINE))
+		if (getLogger().isLoggable(Level.FINE))
 		{
-			logger.fine("New base URI: " + request.getBaseRef());
-			logger.fine("New relative part: " + request.getRelativePart());
+			getLogger().fine("New base URI: " + request.getBaseRef());
+			getLogger().fine("New relative part: " + request.getRelativePart());
 		}
 
-		if (logger.isLoggable(Level.FINE))
+		if (getLogger().isLoggable(Level.FINE))
 		{
-			logger.fine("Delegating the call to the target handler");
+			getLogger().fine("Delegating the call to the target handler");
 		}
 
 		// Invoke the call restlet

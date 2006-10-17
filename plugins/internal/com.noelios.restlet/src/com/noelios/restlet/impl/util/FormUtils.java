@@ -39,24 +39,22 @@ import org.restlet.data.Representation;
  */
 public class FormUtils
 {
-	/** Obtain a suitable logger. */
-	private static Logger logger = Logger.getLogger(FormUtils.class.getCanonicalName());
-	
    /**
     * Parses a query into a given form.
+    * @param logger The logger.
     * @param form The target form.
     * @param query Query string.
     */
-   public static void parseQuery(Form form, String query)
+   public static void parseQuery(Logger logger, Form form, String query)
    {
    	FormReader fr = null;
 		try
 		{
-			fr = new FormReader(query);
+			fr = new FormReader(logger, query);
 		}
 		catch (IOException ioe)
 		{
-			logger.log(Level.WARNING, "Unable to create a form reader. Parsing aborted.", ioe);
+			if(logger != null) logger.log(Level.WARNING, "Unable to create a form reader. Parsing aborted.", ioe);
 		}
 		
 		if(fr != null)
@@ -67,19 +65,20 @@ public class FormUtils
    
    /**
     * Parses a post into a given form.
+    * @param logger The logger.
     * @param form The target form.
     * @param post The posted form.
     */
-   public static void parsePost(Form form, Representation post)
+   public static void parsePost(Logger logger, Form form, Representation post)
    {
    	FormReader fr = null;
 		try
 		{
-			fr = new FormReader(post);
+			fr = new FormReader(logger, post);
 		}
 		catch (IOException ioe)
 		{
-			logger.log(Level.WARNING, "Unable to create a form reader. Parsing aborted.", ioe);
+			if(logger != null) logger.log(Level.WARNING, "Unable to create a form reader. Parsing aborted.", ioe);
 		}
 		
 		if(fr != null)
@@ -92,76 +91,83 @@ public class FormUtils
     * Reads the parameters whose name is a key in the given map.<br/>
     * If a matching parameter is found, its value is put in the map.<br/>
     * If multiple values are found, a list is created and set in the map.
+    * @param logger The logger.
     * @param query The query string.
     * @param parameters The parameters map controlling the reading.
     */
-   public static void getParameters(String query, Map<String, Object> parameters) throws IOException
+   public static void getParameters(Logger logger, String query, Map<String, Object> parameters) throws IOException
    {
-      new FormReader(query).readParameters(parameters);
+      new FormReader(logger, query).readParameters(parameters);
    }
 
    /**
     * Reads the parameters whose name is a key in the given map.<br/>
     * If a matching parameter is found, its value is put in the map.<br/>
     * If multiple values are found, a list is created and set in the map.
+    * @param logger The logger.
     * @param post The web form representation.
     * @param parameters The parameters map controlling the reading.
     */
-   public static void getParameters(Representation post, Map<String, Object> parameters) throws IOException
+   public static void getParameters(Logger logger, Representation post, Map<String, Object> parameters) throws IOException
    {
-      new FormReader(post).readParameters(parameters);
+      new FormReader(logger, post).readParameters(parameters);
    }
    
    /**
     * Reads the first parameter with the given name.
+    * @param logger The logger.
     * @param query The query string.
     * @param name The parameter name to match.
     * @return The parameter.
     * @throws IOException
     */
-   public static Parameter getFirstParameter(String query, String name) throws IOException
+   public static Parameter getFirstParameter(Logger logger, String query, String name) throws IOException
    {
-      return new FormReader(query).readFirstParameter(name);
+      return new FormReader(logger, query).readFirstParameter(name);
    }
    
    /**
     * Reads the first parameter with the given name.
+    * @param logger The logger.
     * @param post The web form representation.
     * @param name The parameter name to match.
     * @return The parameter.
     * @throws IOException
     */
-   public static Parameter getFirstParameter(Representation post, String name) throws IOException
+   public static Parameter getFirstParameter(Logger logger, Representation post, String name) throws IOException
    {
-      return new FormReader(post).readFirstParameter(name);
+      return new FormReader(logger, post).readFirstParameter(name);
    }
    
    /**
     * Reads the parameters with the given name.<br/>
     * If multiple values are found, a list is returned created.
+    * @param logger The logger.
     * @param query The query string.
     * @param name The parameter name to match.
     * @return The parameter value or list of values.
     */
-   public static Object getParameter(String query, String name) throws IOException
+   public static Object getParameter(Logger logger, String query, String name) throws IOException
    {
-      return new FormReader(query).readParameter(name);
+      return new FormReader(logger, query).readParameter(name);
    }
    
    /**
     * Reads the parameters with the given name.<br/>
     * If multiple values are found, a list is returned created.
+    * @param logger The logger.
     * @param form The web form representation.
     * @param name The parameter name to match.
     * @return The parameter value or list of values.
     */
-   public static Object getParameter(Representation form, String name) throws IOException
+   public static Object getParameter(Logger logger, Representation form, String name) throws IOException
    {
-      return new FormReader(form).readParameter(name);
+      return new FormReader(logger, form).readParameter(name);
    }
 
    /**
     * Creates a parameter.
+    * @param logger The logger.
     * @param name The parameter name buffer.
     * @param value The parameter value buffer (can be null).
     * @return The created parameter.

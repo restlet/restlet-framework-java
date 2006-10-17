@@ -30,7 +30,8 @@ import java.util.List;
 import org.restlet.data.Protocol;
 
 /**
- * Router dispatching calls from server connectors to application delegates.
+ * Router of calls from server connectors to attached handlers. The attached handlers are typically
+ * applications.
  * @author Jerome Louvel (contact@noelios.com) <a href="http://www.noelios.com/">Noelios Consulting</a>
  */
 public class VirtualHost extends Router

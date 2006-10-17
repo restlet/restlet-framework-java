@@ -30,11 +30,13 @@ import org.restlet.data.Response;
 import org.restlet.data.Status;
 
 /**
- * Uniform REST handler. "The central feature that distinguishes the REST architectural style from 
- * other network-based styles is its emphasis on a uniform interface between components. By applying 
- * the software engineering principle of generality to the component interface, the overall system 
- * architecture is simplified and the visibility of interactions is improved. Implementations are 
- * decoupled from the services they provide, which encourages independent evolvability." Roy T. Fielding<br/>
+ * Base class exposing a uniform REST interface.<br/>
+ * <br/>
+ * "The central feature that distinguishes the REST architectural style from other network-based styles is 
+ * its emphasis on a uniform interface between components. By applying the software engineering principle of 
+ * generality to the component interface, the overall system architecture is simplified and the visibility 
+ * of interactions is improved. Implementations are decoupled from the services they provide, which 
+ * encourages independent evolvability." Roy T. Fielding<br/>
  * <br/>
  * It has many subclasses that focus on a specific ways to handle calls like filtering, routing or finding 
  * a target resource. The context property is typically provided by a parent container as a way to give 
@@ -146,16 +148,16 @@ public class Handler
 				getContext().getLogger().log(Level.WARNING, UNABLE_TO_START, e);
 				response.setStatus(Status.SERVER_ERROR_INTERNAL);
 			}
-		}
 
-		if (isStopped())
-		{
-			getContext().getLogger().log(Level.WARNING, UNABLE_TO_START);
-			response.setStatus(Status.SERVER_ERROR_INTERNAL);
-		}
-		else
-		{
-			response.setStatus(Status.SERVER_ERROR_NOT_IMPLEMENTED);
+			if (isStopped())
+			{
+				getContext().getLogger().log(Level.WARNING, UNABLE_TO_START);
+				response.setStatus(Status.SERVER_ERROR_INTERNAL);
+			}
+			else
+			{
+				response.setStatus(Status.SERVER_ERROR_NOT_IMPLEMENTED);
+			}
 		}
 	}
 	

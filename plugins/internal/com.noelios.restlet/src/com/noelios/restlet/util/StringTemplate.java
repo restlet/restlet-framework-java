@@ -41,9 +41,6 @@ import java.util.logging.Logger;
  */
 public class StringTemplate
 {
-   /** Obtain a suitable logger. */
-   private static Logger logger = Logger.getLogger(StringTemplate.class.getCanonicalName());
-
    private static final int STATE_INSTRUCTION = 1;
    private static final int STATE_INSTRUCTION_POTENTIAL_DELIMITER_START = 2;
    private static final int STATE_INSTRUCTION_POTENTIAL_DELIMITER_END = 3;
@@ -69,6 +66,9 @@ public class StringTemplate
 
    /** The string that defines instruction end delimiters. */
    private String instructionEnd;
+   
+   /** The logger to use. */
+   private Logger logger;
 
    /**
     * Constructor. Uses the default delimiters "${" and "}" for variables, "#[" and "]" for instructions.
@@ -347,7 +347,7 @@ public class StringTemplate
          processText(textState, textStartIndex, i, sb, model);
       }
 
-      logger.log(Level.FINE, "Template result", sb);
+      getLogger().log(Level.FINE, "Template result", sb);
       return sb.toString();
    }
 
@@ -363,12 +363,12 @@ public class StringTemplate
    {
       if(state == TEXT_APPEND)
       {
-         logger.log(Level.FINER, "Appending text", buffer);
+      	getLogger().log(Level.FINER, "Appending text", buffer);
          append(tokenStart, tokenEnd, buffer);
       }
       else
       {
-         logger.log(Level.FINER, "Ignoring text", buffer);
+      	getLogger().log(Level.FINER, "Ignoring text", buffer);
       }
    }
 
@@ -384,7 +384,7 @@ public class StringTemplate
    protected int processInstruction(int textState, int tokenStart, int tokenEnd, StringBuilder buffer, ReadableModel model)
    {
       String instruction = template.subSequence(tokenStart, tokenEnd).toString();
-      logger.log(Level.FINER, "processInstruction: " + instruction, buffer);
+      getLogger().log(Level.FINER, "processInstruction: " + instruction, buffer);
 
       if(instruction.startsWith("if "))
       {
@@ -428,7 +428,7 @@ public class StringTemplate
       }
       else
       {
-         logger.log(Level.WARNING, "Unsupported instruction ignored: ", instruction);
+      	getLogger().log(Level.WARNING, "Unsupported instruction ignored: ", instruction);
       }
 
       return textState;
@@ -446,7 +446,7 @@ public class StringTemplate
    protected int processVariable(int textState, int tokenStart, int tokenEnd, StringBuilder buffer, ReadableModel model)
    {
       String variable = template.subSequence(tokenStart, tokenEnd).toString();
-      logger.log(Level.FINER, "processVariable: " + variable, buffer);
+      getLogger().log(Level.FINER, "processVariable: " + variable, buffer);
       
       int conditionIndex = variable.indexOf('?');
       boolean append = true;
@@ -478,7 +478,7 @@ public class StringTemplate
     */
    protected boolean evaluateCondition(String condition, ReadableModel model)
    {
-      logger.log(Level.FINER, "evaluateCondition: " + condition, model);
+      getLogger().log(Level.FINER, "evaluateCondition: " + condition, model);
       boolean result = false;
 
       if(model != null)
@@ -538,5 +538,24 @@ public class StringTemplate
          ioe.printStackTrace();
       }
    }
+
+	/**
+	 * Returns the logger.
+	 * @return the logger.
+	 */
+	public Logger getLogger()
+	{
+		if(this.logger == null) this.logger = Logger.getLogger(StringTemplate.class.getCanonicalName());
+		return this.logger;
+	}
+
+	/**
+	 * Sets the logger.
+	 * @param logger The logger.
+	 */
+	public void setLogger(Logger logger)
+	{
+		this.logger = logger;
+	}
 
 }

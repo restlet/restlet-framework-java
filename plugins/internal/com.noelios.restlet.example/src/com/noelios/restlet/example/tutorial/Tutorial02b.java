@@ -25,7 +25,6 @@ package com.noelios.restlet.example.tutorial;
 import org.restlet.Client;
 import org.restlet.data.Method;
 import org.restlet.data.Protocol;
-import org.restlet.data.Representation;
 import org.restlet.data.Request;
 import org.restlet.data.Response;
 
@@ -45,9 +44,8 @@ public class Tutorial02b
       Client client = new Client(Protocol.HTTP);
       Response response = client.handle(request);
 
-      // Write the output representation on the console
-      Representation output = response.getEntity();
-      output.write(System.out);
+      // Write the response entity on the console
+      response.getEntity().write(System.out);
    }
 
 }

@@ -26,7 +26,6 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.logging.Level;
-import java.util.logging.Logger;
 
 import org.restlet.Context;
 import org.restlet.Finder;
@@ -51,9 +50,6 @@ import com.noelios.restlet.data.StringRepresentation;
  */
 public class DirectoryFinder extends Finder
 {
-   /** Obtain a suitable logger. */
-   private static Logger logger = Logger.getLogger(DirectoryResource.class.getCanonicalName());
-
    /** If no file name is specified, use the (optional) index name. */
    private String indexName;
 
@@ -110,11 +106,11 @@ public class DirectoryFinder extends Finder
 	{
    	try
 		{
-			return new DirectoryResource(this, request);
+			return new DirectoryResource(getLogger(), this, request);
 		}
 		catch (IOException ioe)
 		{
-			logger.log(Level.WARNING, "Unable to find the directory's resource", ioe);
+			getLogger().log(Level.WARNING, "Unable to find the directory's resource", ioe);
 			return null;
 		}
 	}

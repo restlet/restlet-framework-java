@@ -24,13 +24,13 @@ package com.noelios.restlet.impl;
 
 import java.util.logging.Logger;
 
-import org.restlet.ClientInterface;
 import org.restlet.Context;
 import org.restlet.data.Method;
 import org.restlet.data.Protocol;
 import org.restlet.data.Representation;
 import org.restlet.data.Request;
 import org.restlet.data.Response;
+import org.restlet.util.ClientInterface;
 
 /**
  * Context allowing access to the container's connectors.
@@ -135,23 +135,23 @@ public abstract class ContextImpl extends Context implements ClientInterface
    /**
     * Posts a representation to the identified resource.
     * @param resourceUri The URI of the resource to post to.
-    * @param input The input representation to post.
+    * @param entity The entity to post.
     * @return The response.
     */
-	public Response post(String resourceUri, Representation input)
+	public Response post(String resourceUri, Representation entity)
    {
-      return handle(new Request(Method.POST, resourceUri, input));
+      return handle(new Request(Method.POST, resourceUri, entity));
    }
 
    /**
     * Puts a representation in the identified resource.
     * @param resourceUri The URI of the resource to modify.
-    * @param input The input representation to put.
+    * @param entity The entity to put.
     * @return The response.
     */
-   public Response put(String resourceUri, Representation input)
+   public Response put(String resourceUri, Representation entity)
    {
-      return handle(new Request(Method.PUT, resourceUri, input));
+      return handle(new Request(Method.PUT, resourceUri, entity));
    }
    
    /**

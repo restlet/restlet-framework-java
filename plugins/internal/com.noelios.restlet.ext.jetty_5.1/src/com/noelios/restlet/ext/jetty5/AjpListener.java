@@ -78,7 +78,7 @@ public class AjpListener extends AJP13Listener
     */
    protected AJP13Connection createConnection(Socket socket) throws IOException
    {
-       return new AjpConnection(this, socket.getInputStream(), socket.getOutputStream(), socket, getBufferSize());
+       return new AjpConnection(getServer().getLogger(), this, socket.getInputStream(), socket.getOutputStream(), socket, getBufferSize());
    }
 
 }

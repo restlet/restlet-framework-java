@@ -48,9 +48,6 @@ import com.noelios.restlet.impl.http.HttpServerCall;
  */
 public class ServletCall extends HttpServerCall
 {
-   /** Obtain a suitable logger. */
-   private static Logger logger = Logger.getLogger(ServletCall.class.getCanonicalName());
-
    /** The HTTP Servlet request to wrap. */
    private HttpServletRequest request;
    
@@ -62,11 +59,13 @@ public class ServletCall extends HttpServerCall
 
    /**
     * Constructor.
+    * @param logger The logger to use.
     * @param request The HTTP Servlet request to wrap.
     * @param response The HTTP Servlet response to wrap.
     */
-   public ServletCall(HttpServletRequest request, HttpServletResponse response)
+   public ServletCall(Logger logger, HttpServletRequest request, HttpServletResponse response)
    {
+		super(logger);
       this.request = request;
       this.response = response;
    }
@@ -237,11 +236,11 @@ public class ServletCall extends HttpServerCall
    }
 
    /**
-    * Sends the response back to the client. Commits the status, headers and optional output and 
+    * Sends the response back to the client. Commits the status, headers and optional entity and 
     * send them on the network. 
-    * @param output The optional output representation to send.
+    * @param entity The optional response entity to send.
     */
-   public void sendResponse(Representation output) throws IOException
+   public void sendResponse(Representation entity) throws IOException
    {
    	// Add the response headers
       Parameter header;
@@ -254,7 +253,7 @@ public class ServletCall extends HttpServerCall
       // Set the status code in the response. We do this after adding the headers because 
       // when we have to rely on the 'sendError' method, the Servlet containers are expected
       // to commit their response.
-   	if(Status.isError(getStatusCode()) && (output == null))
+   	if(Status.isError(getStatusCode()) && (entity == null))
    	{
    		try
 			{
@@ -262,14 +261,14 @@ public class ServletCall extends HttpServerCall
 			}
 			catch (IOException ioe)
 			{
-				logger.log(Level.WARNING, "Unable to set the response error status", ioe);
+				getLogger().log(Level.WARNING, "Unable to set the response error status", ioe);
 			}
    	}
    	else
    	{
-     		// Send the response output
+     		// Send the response entity
   		 	getResponse().setStatus(getStatusCode());
-      	super.sendResponse(output);
+      	super.sendResponse(entity);
    	}
    }
 

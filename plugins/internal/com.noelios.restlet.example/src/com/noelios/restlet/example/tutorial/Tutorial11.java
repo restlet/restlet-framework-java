@@ -77,8 +77,8 @@ public class Tutorial11 implements Constants
 		      		public void handleGet(Request request, Response response)
 		            {
 		               // Print the requested URI path
-		               String output = "Account of user named: " + request.getBaseRef().getLastSegment();
-		               response.setEntity(output, MediaType.TEXT_PLAIN);
+		               String message = "Account of user named: " + request.getBaseRef().getLastSegment();
+		               response.setEntity(message, MediaType.TEXT_PLAIN);
 		            }
 		         };
 		      user.attach("$", account);
@@ -90,8 +90,8 @@ public class Tutorial11 implements Constants
 		            {
 		               // Print the user name of the requested orders
 		               List<String> segments = request.getBaseRef().getSegments();
-		               String output = "Orders of user named: " + segments.get(segments.size() - 2);
-		               response.setEntity(output, MediaType.TEXT_PLAIN);
+		               String message = "Orders of user named: " + segments.get(segments.size() - 2);
+		               response.setEntity(message, MediaType.TEXT_PLAIN);
 		            }
 		         };
 		      user.attach("/orders$", orders);

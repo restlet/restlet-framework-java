@@ -73,17 +73,42 @@ public class Response extends Message
 	}
 
 	/**
+	 * Wrapper constructor.
+	 * @param wrappedResponse The response to wrap.
+	 */
+	public Response(Response wrappedResponse)
+	{
+		super(wrappedResponse);
+	}
+	
+	/**
+	 * Returns the wrapped response.
+	 * @return The wrapped response.
+	 */
+	public Response getWrappedResponse()
+	{
+		return (Response)getWrappedMessage();
+	}
+
+	/**
 	 * Returns the list of methods allowed on the requested resource.
 	 * @return The list of allowed methods.
 	 */
 	public List<Method> getAllowedMethods()
 	{
-		if (this.allowedMethods == null)
+		if(getWrappedResponse() != null)
 		{
-			this.allowedMethods = new ArrayList<Method>();
+			return getWrappedResponse().getAllowedMethods();
 		}
-
-		return this.allowedMethods;
+		else
+		{
+			if (this.allowedMethods == null)
+			{
+				this.allowedMethods = new ArrayList<Method>();
+			}
+	
+			return this.allowedMethods;
+		}
 	}
 
 	/**
@@ -92,7 +117,14 @@ public class Response extends Message
 	 */
 	public ChallengeRequest getChallengeRequest()
 	{
-		return this.challengeRequest;
+		if(getWrappedResponse() != null)
+		{
+			return getWrappedResponse().getChallengeRequest();
+		}
+		else
+		{
+			return this.challengeRequest;
+		}
 	}
 
 	/**
@@ -101,9 +133,16 @@ public class Response extends Message
 	 */
 	public List<CookieSetting> getCookieSettings()
 	{
-		if (this.cookieSettings == null)
-			this.cookieSettings = new ArrayList<CookieSetting>();
-		return this.cookieSettings;
+		if(getWrappedResponse() != null)
+		{
+			return getWrappedResponse().getCookieSettings();
+		}
+		else
+		{
+			if (this.cookieSettings == null)
+				this.cookieSettings = new ArrayList<CookieSetting>();
+			return this.cookieSettings;
+		}
 	}
 
 	/**
@@ -112,7 +151,14 @@ public class Response extends Message
 	 */
 	public Reference getRedirectRef()
 	{
-		return this.redirectRef;
+		if(getWrappedResponse() != null)
+		{
+			return getWrappedResponse().getRedirectRef();
+		}
+		else
+		{
+			return this.redirectRef;
+		}
 	}
 
 	/**
@@ -121,7 +167,14 @@ public class Response extends Message
 	 */
 	public Request getRequest()
 	{
-		return request;
+		if(getWrappedResponse() != null)
+		{
+			return getWrappedResponse().getRequest();
+		}
+		else
+		{
+			return request;
+		}
 	}
 
 	/**
@@ -130,8 +183,15 @@ public class Response extends Message
 	 */
 	public ServerInfo getServerInfo()
 	{
-		if (this.serverInfo == null) this.serverInfo = new ServerInfo();
-		return this.serverInfo;
+		if(getWrappedResponse() != null)
+		{
+			return getWrappedResponse().getServerInfo();
+		}
+		else
+		{
+			if (this.serverInfo == null) this.serverInfo = new ServerInfo();
+			return this.serverInfo;
+		}
 	}
 
 	/**
@@ -140,7 +200,14 @@ public class Response extends Message
 	 */
 	public Status getStatus()
 	{
-		return this.status;
+		if(getWrappedResponse() != null)
+		{
+			return getWrappedResponse().getStatus();
+		}
+		else
+		{
+			return this.status;
+		}
 	}
 
 	/**
@@ -149,7 +216,14 @@ public class Response extends Message
 	 */
 	public void setChallengeRequest(ChallengeRequest request)
 	{
-		this.challengeRequest = request;
+		if(getWrappedResponse() != null)
+		{
+			getWrappedResponse().setChallengeRequest(request);
+		}
+		else
+		{
+			this.challengeRequest = request;
+		}
 	}
 
 	/**
@@ -162,7 +236,14 @@ public class Response extends Message
 	 */
 	public void setEntity(Resource resource, Language fallbackLanguage)
 	{
-		Factory.getInstance().setOutput(getRequest(), this, resource, fallbackLanguage);
+		if(getWrappedResponse() != null)
+		{
+			getWrappedResponse().setEntity(resource, fallbackLanguage);
+		}
+		else
+		{
+			Factory.getInstance().setResponseEntity(getRequest(), this, resource, fallbackLanguage);
+		}
 	}
 
 	/**
@@ -171,7 +252,14 @@ public class Response extends Message
 	 */
 	public void setRedirectRef(String redirectUri)
 	{
-		setRedirectRef(new Reference(getRequest().getBaseRef(), redirectUri).getTargetRef());
+		if(getWrappedResponse() != null)
+		{
+			getWrappedResponse().setRedirectRef(redirectUri);
+		}
+		else
+		{
+			setRedirectRef(new Reference(getRequest().getBaseRef(), redirectUri).getTargetRef());
+		}
 	}
 
 	/**
@@ -180,7 +268,14 @@ public class Response extends Message
 	 */
 	public void setRedirectRef(Reference redirectRef)
 	{
-		this.redirectRef = redirectRef;
+		if(getWrappedResponse() != null)
+		{
+			getWrappedResponse().setRedirectRef(redirectRef);
+		}
+		else
+		{
+			this.redirectRef = redirectRef;
+		}
 	}
 
 	/**
@@ -189,7 +284,14 @@ public class Response extends Message
 	 */
 	public void setRequest(Request request)
 	{
-		this.request = request;
+		if(getWrappedResponse() != null)
+		{
+			getWrappedResponse().setRequest(request);
+		}
+		else
+		{
+			this.request = request;
+		}
 	}
 
 	/**
@@ -198,7 +300,14 @@ public class Response extends Message
 	 */
 	public void setStatus(Status status)
 	{
-		this.status = status;
+		if(getWrappedResponse() != null)
+		{
+			getWrappedResponse().setStatus(status);
+		}
+		else
+		{
+			this.status = status;
+		}
 	}
 
 }

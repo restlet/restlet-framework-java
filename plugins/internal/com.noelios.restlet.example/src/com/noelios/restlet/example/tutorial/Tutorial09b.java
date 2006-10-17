@@ -27,7 +27,6 @@ import org.restlet.data.ChallengeResponse;
 import org.restlet.data.ChallengeScheme;
 import org.restlet.data.Method;
 import org.restlet.data.Protocol;
-import org.restlet.data.Representation;
 import org.restlet.data.Request;
 import org.restlet.data.Response;
 import org.restlet.data.Status;
@@ -53,9 +52,8 @@ public class Tutorial09b
 
       if(response.getStatus().isSuccess())
       {
-         // Output the result representation on the JVM console
-         Representation output = response.getEntity();
-         output.write(System.out);
+         // Output the response entity on the JVM console
+         response.getEntity().write(System.out);
       }
       else if(response.getStatus().equals(Status.CLIENT_ERROR_UNAUTHORIZED))
       {

@@ -26,7 +26,6 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.logging.Level;
-import java.util.logging.Logger;
 
 import org.restlet.Context;
 import org.restlet.Filter;
@@ -39,24 +38,21 @@ import com.noelios.restlet.util.CallModel;
 
 /**
  * Filter extracting some attributes from a request. Multiple extractions can be defined, based on the query 
- * string of the resource reference, on the input form (posted from a browser), on the context URI matches 
+ * string of the resource reference, on the request form (posted from a browser), on the context URI matches 
  * or on the request's template model.
  * @author Jerome Louvel (contact@noelios.com) <a href="http://www.noelios.com/">Noelios Consulting</a>
  */
 public class ExtractFilter extends Filter
 {
-   /** Obtain a suitable logger. */
-   private static Logger logger = Logger.getLogger(ExtractFilter.class.getCanonicalName());
-
    /**
     * List of query parameters to extract.
     */
    private List<ExtractInfo> queryExtracts;
 
    /**
-    * List of input parameters to extract.
+    * List of request entity parameters to extract.
     */
-   private List<ExtractInfo> inputExtracts;
+   private List<ExtractInfo> entityExtracts;
 
    /**
     * List of request's model attributes to extract.
@@ -71,7 +67,7 @@ public class ExtractFilter extends Filter
    {
       super(context);
       this.queryExtracts = null;
-      this.inputExtracts = null;
+      this.entityExtracts = null;
       this.modelExtracts = null;
    }
 
@@ -86,40 +82,40 @@ public class ExtractFilter extends Filter
       // Extract the query parameters
       if(this.queryExtracts != null)
       {
-         Form input = request.getResourceRef().getQueryAsForm();
+         Form form = request.getResourceRef().getQueryAsForm();
 
-         if(input != null)
+         if(form != null)
          {
             for(ExtractInfo qe : getQueryExtracts())
             {
                if(qe.multiple)
                {
-               	request.getAttributes().put(qe.attribute, input.subList(qe.value));
+               	request.getAttributes().put(qe.attribute, form.subList(qe.value));
                }
                else
                {
-               	request.getAttributes().put(qe.attribute, input.getFirst(qe.value));
+               	request.getAttributes().put(qe.attribute, form.getFirst(qe.value));
                }
             }
          }
       }
 
-      // Extract the input parameters
-      if(this.inputExtracts != null)
+      // Extract the request entity parameters
+      if(this.entityExtracts != null)
       {
-         Form input = request.getEntityAsForm();
+         Form form = request.getEntityAsForm();
 
-         if(input != null)
+         if(form != null)
          {
-            for(ExtractInfo ie : getInputExtracts())
+            for(ExtractInfo ie : getEntityExtracts())
             {
                if(ie.multiple)
                {
-               	request.getAttributes().put(ie.attribute, input.subList(ie.value));
+               	request.getAttributes().put(ie.attribute, form.subList(ie.value));
                }
                else
                {
-               	request.getAttributes().put(ie.attribute, input.getFirst(ie.value));
+               	request.getAttributes().put(ie.attribute, form.getFirst(ie.value));
                }
             }
          }
@@ -149,7 +145,7 @@ public class ExtractFilter extends Filter
       }
       catch(Exception e)
       {
-         logger.log(Level.SEVERE, "Unhandled error intercepted", e);
+      	getLogger().log(Level.SEVERE, "Unhandled error intercepted", e);
          response.setStatus(Status.SERVER_ERROR_INTERNAL);
       }
    }
@@ -168,10 +164,10 @@ public class ExtractFilter extends Filter
     * Returns the list of query extracts.
     * @return The list of query extracts.
     */
-   private List<ExtractInfo> getInputExtracts()
+   private List<ExtractInfo> getEntityExtracts()
    {
-      if(this.inputExtracts == null) this.inputExtracts = new ArrayList<ExtractInfo>();
-      return this.inputExtracts;
+      if(this.entityExtracts == null) this.entityExtracts = new ArrayList<ExtractInfo>();
+      return this.entityExtracts;
    }
 
    /**
@@ -210,27 +206,27 @@ public class ExtractFilter extends Filter
    }
 
    /**
-    * Extracts an attribute from the input form. Only the first occurrence
+    * Extracts an attribute from the request entity form. Only the first occurrence
     * of a query string parameter is set.
     * @param attributeName The name of the call attribute to set.
-    * @param parameterName The name of the input form parameter to extract.
+    * @param parameterName The name of the entity form parameter to extract.
     * @return The current Filter.
     */
-   public ExtractFilter fromInput(String attributeName, String parameterName)
+   public ExtractFilter fromEntity(String attributeName, String parameterName)
    {
-      return fromInput(attributeName, parameterName, false);
+      return fromEntity(attributeName, parameterName, false);
    }
 
    /**
-    * Extracts an attribute from the input form.
+    * Extracts an attribute from the request entity form.
     * @param attributeName The name of the call attribute to set.
-    * @param parameterName The name of the input form parameter to extract.
+    * @param parameterName The name of the entity form parameter to extract.
     * @param multiple Indicates if the parameters should be set as a List in the attribute value. Useful for repeating parameters.
     * @return The current Filter.
     */
-   public ExtractFilter fromInput(String attributeName, String parameterName, boolean multiple)
+   public ExtractFilter fromEntity(String attributeName, String parameterName, boolean multiple)
    {
-      getInputExtracts().add(new ExtractInfo(attributeName, parameterName, multiple));
+      getEntityExtracts().add(new ExtractInfo(attributeName, parameterName, multiple));
       return this;
    }
 

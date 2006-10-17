@@ -46,9 +46,6 @@ import com.noelios.restlet.impl.http.HttpServerCall;
  */
 public class JettyCall extends HttpServerCall
 {
-   /** Obtain a suitable logger. */
-   private static Logger logger = Logger.getLogger(JettyCall.class.getCanonicalName());
-
    /** The wrapped Jetty HTTP connection. */
    private HttpConnection connection;
 
@@ -57,10 +54,12 @@ public class JettyCall extends HttpServerCall
 
    /**
     * Constructor.
+    * @param logger The logger to use.
     * @param connection The wrapped Jetty HTTP connection.
     */
-   public JettyCall(HttpConnection connection)
+   public JettyCall(Logger logger, HttpConnection connection)
    {
+   	super(logger);
       this.connection = connection;
       this.requestHeadersAdded = false;
    }
@@ -176,11 +175,11 @@ public class JettyCall extends HttpServerCall
    }
 
    /**
-    * Sends the response back to the client. Commits the status, headers and optional output and 
+    * Sends the response back to the client. Commits the status, headers and optional entity and 
     * send them on the network. 
-    * @param output The optional output representation to send.
+    * @param entity The optional response entity to send.
     */
-   public void sendResponse(Representation output) throws IOException
+   public void sendResponse(Representation entity) throws IOException
    {
       // Add call headers
       Parameter header;
@@ -201,7 +200,7 @@ public class JettyCall extends HttpServerCall
 			}
 			catch (IOException ioe)
 			{
-				logger.log(Level.WARNING, "Unable to set the response error status", ioe);
+				getLogger().log(Level.WARNING, "Unable to set the response error status", ioe);
 			}
    	}
    	else
@@ -209,8 +208,8 @@ public class JettyCall extends HttpServerCall
    		getConnection().getResponse().setStatus(getStatusCode());
    	}
       
-   	// Send the response output
-      super.sendResponse(output);
+   	// Send the response entity
+      super.sendResponse(entity);
 
       // Fully complete and commit the response 
    	this.connection.completeResponse();
