@@ -15,26 +15,21 @@ Changes log
  - Added workaround for JDK's bug #6472250 when using the fixed length mode with the HTTP client.
  
 [API breaking changes]
- - Moved hasInput() method from org.restlet.connector.Client to Call.isInputAvailable().
  - Renamed Representation.isContentAvailable() to isAvailable() and isContentTransient() to isTransient().
- - Application now only requires a Context and not a Container.
- - WrapperRestlet.getWrappedRestlet() is now protected instead of public, only subclasses should have access to the wrapped Restlet.
  - Merged Client and GenericClient into a single Client class.
  - Moved com.noelios.restlet.connector into hidden com.noelios.restlet.impl.connector package.
  - Moved internal utilities from com.noelios.restlet.util into hidden com.noelios.restlet.impl.util package.
  - Moved com.noelios.restlet.spi into hidden com.noelios.restlet.impl package.
  - Moved org.restlet.component.ContainerContext to com.noelios.restlet.impl.component.ContainerContext.
  - Renamed Server."next" property into "target". "Next" was assuming that a previous Restlet existed, which is false for Server connectors.
- - Removed static Restlet.handle(Call call, Restlet target) method. Now Restlet automatically start themselves on first call.
  - Moved com.noelios.restlet.util.WrapperMap into org.restlet.util.
  - Removed Restlet.compareTo() method. No apparent usage.
  - Renamed Reference.getProtocol() into getSchemeProtocol().
- - Connector and Component no longer derive from Restlet, it was allowing some code reuse but also created some confusion between those core concepts.
  - Scorer now derives from Filter to improve factorization.
- - Renamed Handler into Finder (hopefully more explicit as UniformInterface has a "handle" method).
+ - Renamed Handler into Finder. Note: Handler is still used, but for a new purpose!
  - Renamed DirectoryHandler* classes into DirectoryFinder*.
- - Added Context.getClient() returning a ClientInterface for a specific protocol.
- - Removed get/post/put/delete methods on Context as getClient() or handle() are preferred.
+ - Added Context.getClient() returning a generic ClientInterface.
+ - Removed get/post/put/delete methods on Context as getClient() is preferred.
  - Added a post() method on Resource returning an instance of the new org.restlet.data.Result class as well as put() and delete().
  - Renamed Chainer.findNext(Call) into getNext(Call). Chainer is now abstract.
  - Scorer is now abstract to force implementation of the score() method.
@@ -46,25 +41,22 @@ Changes log
  - Removed Context.getClient(protocol) method, now Context directly implements ClientInterface.
  - Replaced com.noelios.restlet.HostRouter by a portable org.restlet.component.VirtualHost class. See updated tutorial to know how to migrate.
  - Moved com.noelios.restlet.PatternScorer to com.noelios.restlet.impl.PatternScorer as this is related to the API implementation.
- - Refactored and completed the Application class to act as a portable component, deployable on any Restlet engine and any (virtual) host without any change.
+ - Refactored and completed the Application class to act as a portable component, deployable on any Restlet engine and 
+   any (virtual) host without any change.
  - Moved "root" property from Component to Application.
  - Added new org.restlet.component.VirtualHost class, as a Router subclass to target applications or handlers.
- - Connector and Context no longer implement UniformInterface.
  - Split org.restlet.Call into org.restlet.Request and org.restlet.Response to solve overweight issue. Suggested by Piyush Purang.
    Also added a parent Message class following the HTTP semantics. Merged "input" and "output" properties into a single "entity" property on Message.
  - Merged AbstractResource and Resource into a single Resource class.
  - Merged AbstractRepresentation and Representation into a single Representation class.
- - Moved all wrappers into org.restlet.util. Suggested by Piyush Purang.
- - Removed the "com.noelios.restlet.builder" package as the new Application feature broke this approach and makes it less useful. We may reintroduce a refactored version in the next release.
- - Moved Application to org.restlet.
- - Added ApplicationDelegate to org.restlet.component.
+ - Removed the "com.noelios.restlet.builder" package as the new Application feature broke this approach and makes it less useful. 
+   We may reintroduce a refactored version in a later release.
  - Moved LogFilter and StatusFilter to com.noelios.restlet.impl.
  - Moved ClientList and ServerList to org.restlet.util 
  - Moved ScorerList to org.restlet.util and changed it to an interface.
  - Renamed ClientData and ServerData to ClientInfo and ServerInfo to be less ambiguous about the type of data.
    Also renamed "Response.server" property to "serverInfo" and "Response.client" property to "clientInfo".
  - Moved EmptyValue to org.restlet.util.
- - Moved Resource from org.restlet.data to org.restlet.
  - Renamed ConditionData to Conditions.
  - ServerServlet now only works with applications as target. Review updated Javadocs before upgrading.
  - GuardFilter now logs messages via the context's logger. Changed constructor.
@@ -72,8 +64,9 @@ Changes log
  - Added Holder filter to hold an attached handler and apply call logging and status setting.
  - Refactored hierarchy : Restlet, Chainer, Connector and Component directly derive from base Handler class.
  - Extended usage of contexts.
- - Removed WrapperRestlet class, replaced by wrapping mode on Restlet.
- - Renamed "input" and "output" to "entity" or "request" or "response" in all properties name for CompressFilter, DecompressFilter, ExtractFilter, HttpClientCall, HttpServerCall, Result
+ - Removed WrapperRestlet class, replaced by a wrapping constructor on Restlet.
+ - Renamed "input" and "output" to "entity" or "request" or "response" in all properties name for CompressFilter, DecompressFilter, 
+   ExtractFilter, HttpClientCall, HttpServerCall, Result
  - Moved ClientInterface to org.restlet.util.
  - Replaced WrapperCall by wrapper constructors on Message, Request and Response.
  - Replaced WrapperRepresentation by wrapper constructors on Resource and Representation.
@@ -84,28 +77,25 @@ Changes log
    Suggested by Chris Winters.
  - org.restlet.ReferenceList now derives from WrapperList<Reference> to factorize code and to clarify (in Javadocs) which extra methods are provided.
  - Improved Javadocs for the org.restlet.Handler class to explain what is the default behavior of each handle*() method. 
- - Refactored ServerServlet to cleanly support call converters via a HttpServer instance working as an intermediary between the Servlet and the target Restlet.
  - Refactored all HTTP client and server classes to work with the new call converter mechanism.
  - Renamed AbstractHttpServer to HttpServer, AbstractHttpServerCall to HttpServerCall and AbstractHttpClientCall to HttpClientCall.
  - Merged HttpCall interface and DefaultHttpCall class into single HttpCall class.
  - Added com.noelios.restlet.connector.HttpServerConverter as the base call converter (from HTTP calls to uniform REST calls).
  - Refactored the HttpUrlConnection-based HTTP client to extract a generic HttpClientConverter and added a base HttpClient class.
- - Added new constructors to Client and Server to be match Connector's constructors.
  - Added support of HTTP headers in high-level calls. The headers are available in Request|Response.getAttributes().get("org.restlet.http.
    headers") as an instance of ParameterList. Additional headers can also be added by setting a "org.restlet.http.headers" 
    attribute in Request or Response. Note that only non-standard HTTP headers are allowed to be added to prevent conflicts with the connector's behavior.
  - Added sample application illustrating the access raw HTTP headers. Used suggestion from John D. Mitchell.
- - Added static valueOf() methods to ChallengeScheme, CharacterSet, Encoding, Language, MediaType, Method, Protocol and Status. Sometimes renamed existing create() method. Suggested by Piyush Purang.
- - Added new Context constructor taking just a logger name.
+ - Added static valueOf() methods to ChallengeScheme, CharacterSet, Encoding, Language, MediaType, Method, Protocol and Status. 
+   Sometimes renamed existing create() method. Suggested by Piyush Purang.
  - Clarified the Javadocs of root classes in org.restlet.
- - Added more constructors to Chainer, Filter and Handler.
- - Readded UniformInterface and added ClientInterface.
- - Component and Connector now implement UniformInterface. Reenabled internal optimizations.
- - Added a Call.setOutput(String, MediaType) method facilitating the setting of string-based output representations.
+ - Added more constructors to Chainer, Context, Filter and Finder.
+ - Added a Message.setEntity(String, MediaType) method facilitating the setting of string-based entities.
  - Fully updated the FAQ.
  - Updated pictures in the tutorial to reflect the latest API changes (Application, hierarchy changes, etc.).
  - Form handling code don't throw IO exceptions anymore for Call.getInputAsForm() and Reference.getQueryAsForm(). Issue reported by Piyush Purang.
- - Added modification support (PUT and DELETE) to DirectoryFinder. Suggested by Don Dwoske and John D. Mitchell. Implementation contributed by Thierry Boileau.
+ - Added modification support (PUT and DELETE) to DirectoryFinder. Suggested by Don Dwoske and John D. Mitchell. 
+   Implementation contributed by Thierry Boileau.
  - Added "protocol" property on Call.
  - Added FTP constant to Protocol.
  - Improved detection of default ports in Reference.toString() static methods. Added new toString() variant.
@@ -117,7 +107,6 @@ Changes log
  - Method Filter.getNext(Call) is now final to prevent overriding. If needed, use Chainer as base class.
  - Added ScorerList.removeAll(UniformInterface) method to remove all scorers pointing to a given handler.
  - Added Protocol.ALL constant as a protocol wildcard.
- - Changed ClientList and ServerList into classes supported by hidden implementation classes in NRE.
  - Added "hosts" and "localHost" properties to Container.
  - Added support "Allow" HTTP headers. New allow*() methods added on Resource and support for setting the 405 status in the Finder (ex-Handler) class.
    The list of allowed methods is then set to the Response (ex-Call) object. Subclasses of Finder can customize the list of allowed methods.
