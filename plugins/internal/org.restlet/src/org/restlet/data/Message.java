@@ -97,16 +97,10 @@ public abstract class Message
 	 * 	<tr>
 	 * 		<td>org.restlet.http.headers</td>
 	 * 		<td>org.restlet.data.ParameterList</td>
-	 * 		<td>Server HTTP connectors must provide all the request headers exactly as they were received
-	 * from the client. When invoking client HTTP connectors, developers can also set this attribute to 
-	 * specify <b>non-standard</b> HTTP headers that should be added to the request sent to a server.</td>
-	 * 	</tr>
-	 * 	<tr>
-	 * 		<td>org.restlet.http.headers</td>
-	 * 		<td>org.restlet.data.ParameterList</td>
-	 * 		<td>Client HTTP connectors must provide all the response headers exactly as they were received
-	 * from the server. When replying to server HTTP connectors, developers can also set this attribute to 
-	 * specify <b>non-standard</b> HTTP headers that should be added to the response sent to a client.</td>
+	 * 		<td>Server HTTP connectors must provide all request headers and client HTTP connectors must 
+	 * provide all response headers, exactly as they were received. In addition, developers can also use this 
+	 * attribute to specify <b>non-standard</b> headers that should be added to the request or to the response.
+	 * </td>
 	 * 	</tr>
 	 *	</table>
 	 * Adding standard HTTP headers is forbidden because it could conflict with the connector's internal 
