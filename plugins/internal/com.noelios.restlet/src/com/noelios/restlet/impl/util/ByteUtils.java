@@ -23,7 +23,6 @@
 package com.noelios.restlet.impl.util;
 
 import java.io.BufferedInputStream;
-import java.io.BufferedOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
@@ -218,26 +217,19 @@ public class ByteUtils
 
    /**
     * Writes an input stream to an output stream. When the reading is done, the input stream is closed. 
-    * Also, if the output stream is detected as a simple stream, then it is automatically wrapped by a 
-    * buffered output stream. 
     * @param inputStream The input stream.
     * @param outputStream The output stream.
     * @throws IOException
     */
    public static void write(InputStream inputStream, OutputStream outputStream) throws IOException
    {
-   	if((inputStream != null) && (outputStream != null))
-   	{
-	      OutputStream os = (outputStream instanceof BufferedOutputStream) ? outputStream : new BufferedOutputStream(outputStream);
-	      int nextByte = inputStream.read();
-	      while(nextByte != -1)
-	      {
-	         os.write(nextByte);
-	         nextByte = inputStream.read();
-	      }
-	      os.flush();
-	      inputStream.close();
-   	}
+      int bytesRead;
+      byte[] buffer = new byte[2048];
+      while ((bytesRead = inputStream.read(buffer)) > 0)
+      {
+      	outputStream.write(buffer, 0, bytesRead);
+      }
+      inputStream.close();
    }
 
    /**

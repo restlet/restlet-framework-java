@@ -141,22 +141,24 @@ public class Handler
 			try
 			{
 				start();
-				response.setStatus(Status.SUCCESS_OK);
 			}
 			catch (Exception e)
 			{
+				// Occurred while starting the handler
 				getContext().getLogger().log(Level.WARNING, UNABLE_TO_START, e);
 				response.setStatus(Status.SERVER_ERROR_INTERNAL);
 			}
 
-			if (isStopped())
+			if (isStarted())
 			{
-				getContext().getLogger().log(Level.WARNING, UNABLE_TO_START);
-				response.setStatus(Status.SERVER_ERROR_INTERNAL);
+				// Everything went fine, no exception raised
+				response.setStatus(Status.SUCCESS_OK);
 			}
 			else
 			{
-				response.setStatus(Status.SERVER_ERROR_NOT_IMPLEMENTED);
+				// No exception raised but the handler somehow couldn't be started
+				getContext().getLogger().log(Level.WARNING, UNABLE_TO_START);
+				response.setStatus(Status.SERVER_ERROR_INTERNAL);
 			}
 		}
 	}
