@@ -60,6 +60,14 @@ public class Resource
 	
 	/**
 	 * Constructor.
+	 */
+	public Resource()
+	{
+		this((Logger)null);
+	}
+	
+	/**
+	 * Constructor.
 	 * @param logger The logger to use.
 	 */
 	public Resource(Logger logger)
