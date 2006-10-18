@@ -113,7 +113,8 @@ Changes log
    Suggested by AJ Barnes and Lars Heuer.
  - Updated tutorial examples to leverage application concept.
  - Refactored all usages of the JDK's loggers in order to reuse the Context's logger, allowing separation of messages for each application.
-
+ - Optimized the ByteUtils.write(is, os) method.
+ 
 1.0 beta 18 (2006-08-19)
 [Bugs fixed]
  - Status descriptions are now sent back to Jetty 6 for error statuses. Reported by AJ Barnes.
