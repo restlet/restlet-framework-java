@@ -59,19 +59,19 @@ public class Router extends Chainer
 	 * Each call will be routed to the scorer with the best score, if the required score is reached.
 	 */
 	public static final int BEST = 1;
-	
+
 	/**
 	 * Each call is routed to the first scorer if the required score is reached. If the required score 
 	 * is not reached, then the scorer is skipped and the next one is considered. 
 	 */
 	public static final int FIRST = 2;
-	
+
 	/**
 	 * Each call will be routed to the last scorer if the required score is reached. If the required score 
 	 * is not reached, then the scorer is skipped and the previous one is considered. 
 	 */
 	public static final int LAST = 3;
-		
+
 	/**
 	 * Each call is be routed to the next scorer target if the required score is reached. The next scorer is 
 	 * relative to the previous call routed (round robin mode). If the required score is not reached, then the
@@ -79,55 +79,59 @@ public class Router extends Chainer
 	 * be considered.  
 	 */
 	public static final int NEXT = 4;
-		
+
 	/**
 	 * Each call will be randomly routed to one of the scorers that reached the required score. If the random 
 	 * scorer selected is not a match then the immediate next scorer is evaluated until one matching scorer is 
 	 * found. If we get back to the inital random scorer selected with no match, then we return null.
 	 */
 	public static final int RANDOM = 5;
-		
+
 	/**
 	 * Each call will be routed according to a custom mode.
 	 */
-	public static final int CUSTOM = 6;	
-	
+	public static final int CUSTOM = 6;
+
 	/** The modifiable list of scorers. */
 	private ScorerList scorers;
-	
+
+	/** The default scorer tested if no other one was available. */
+	private Scorer defaultScorer;
+
 	/** The routing mode. */
 	private int routingMode;
-	
+
 	/** The minimum score required to have a match. */
 	private float requiredScore;
-	
+
 	/** The maximum number of attempts if no attachment could be matched on the first attempt. */
 	private int maxAttempts;
-	
+
 	/** The delay (in milliseconds) before a new attempt. */
 	private long retryDelay;
 
 	/**
-    * Constructor.
-    */
-   public Router()
-   {
-   	this(null);
-   }
-	
-   /**
-    * Constructor.
-    * @param context The context.
-    */
+	 * Constructor.
+	 */
+	public Router()
+	{
+		this(null);
+	}
+
+	/**
+	 * Constructor.
+	 * @param context The context.
+	 */
 	public Router(Context context)
-   {
-      super(context);
-      this.scorers = null;
-      this.routingMode = BEST;
-      this.requiredScore = 0.5F;
-      this.maxAttempts = 1;
-      this.retryDelay = 500L;
-   }
+	{
+		super(context);
+		this.scorers = null;
+		this.defaultScorer = null;
+		this.routingMode = BEST;
+		this.requiredScore = 0.5F;
+		this.maxAttempts = 1;
+		this.retryDelay = 500L;
+	}
 
 	/**
 	 * Attaches a target to this router based on a given URI pattern. A new scorer will be added routing
@@ -139,7 +143,7 @@ public class Router extends Chainer
 	{
 		getScorers().add(uriPattern, target);
 	}
-	
+
 	/**
 	 * Detaches the target from this router. All scorers routing to this target Restlet are removed
 	 * from the list of scorers.
@@ -149,93 +153,101 @@ public class Router extends Chainer
 	{
 		getScorers().removeAll(target);
 	}
-	
+
 	/**
 	 * Returns the next Restlet if available.
-    * @param request The request to handle.
-    * @param response The response to update.
+	 * @param request The request to handle.
+	 * @param response The response to update.
 	 * @return The next Restlet if available or null.
 	 */
 	public Restlet getNext(Request request, Response response)
 	{
 		Scorer result = null;
-		
-		if(this.scorers != null)
+
+		for (int i = 0; (result == null) && (i < getMaxAttempts()); i++)
 		{
-			for(int i = 0; (result == null) && (i < getMaxAttempts()); i++)
+			if (i > 0)
 			{
-				if(i > 0)
+				// Before attempting another time, let's
+				// sleep during the "retryDelay" set.
+				try
 				{
-					// Before attempting another time, let's
-					// sleep during the "retryDelay" set.
-					try
-					{
-						Thread.sleep(getRetryDelay());
-					}
-					catch (InterruptedException e)
-					{
-					}
+					Thread.sleep(getRetryDelay());
 				}
-				
+				catch (InterruptedException e)
+				{
+				}
+			}
+
+			if (this.scorers != null)
+			{
 				// Select the routing mode
-				switch(getRoutingMode())
+				switch (getRoutingMode())
 				{
 					case BEST:
-						result = getScorers().getBest(request, response, this.requiredScore);
+						result = getScorers().getBest(request, response, getRequiredScore());
 					break;
-					
+
 					case FIRST:
-						result = getScorers().getFirst(request, response, this.requiredScore);
+						result = getScorers().getFirst(request, response, getRequiredScore());
 					break;
-					
+
 					case LAST:
-						result = getScorers().getLast(request, response, this.requiredScore);
+						result = getScorers().getLast(request, response, getRequiredScore());
 					break;
-					
+
 					case NEXT:
-						result = getScorers().getNext(request, response, this.requiredScore);
+						result = getScorers().getNext(request, response, getRequiredScore());
 					break;
-					
+
 					case RANDOM:
-						result = getScorers().getRandom(request, response, this.requiredScore);
+						result = getScorers().getRandom(request, response, getRequiredScore());
 					break;
-					
+
 					case CUSTOM:
 						result = getCustom(request, response);
 					break;
 				}
 			}
-		}		
-		
-		if(result == null)
+
+			// If nothing matched in the scorers list, check the default scorer
+			if ((result == null) && (getDefaultScorer() != null)
+					&& (getDefaultScorer().score(request, response) >= getRequiredScore()))
+			{
+				result = getDefaultScorer();
+			}
+		}
+
+		if (result == null)
 		{
 			// No routing option could be matched
 			response.setStatus(Status.CLIENT_ERROR_NOT_FOUND);
 		}
-		
+
 		return result;
 	}
-	
+
 	/**
 	 * Returns the matched scorer according to a custom algorithm. To use in combination of the RouterMode.CUSTOM 
 	 * enumeration. The default implementation (to be overriden), returns null. 
-    * @param request The request to handle.
-    * @param response The response to update.
+	 * @param request The request to handle.
+	 * @param response The response to update.
 	 * @return The matched scorer if available or null.
 	 */
 	protected Scorer getCustom(Request request, Response response)
 	{
 		return null;
 	}
-	
+
 	/**
 	 * Returns the modifiable list of scorers.
 	 * @return The modifiable list of scorers.
 	 */
 	public ScorerList getScorers()
 	{
-      if(this.scorers == null) this.scorers = Factory.getInstance().createScorerList(this);
-      return this.scorers;
+		if (this.scorers == null)
+			this.scorers = Factory.getInstance().createScorerList(this);
+		return this.scorers;
 	}
 
 	/**
@@ -246,7 +258,7 @@ public class Router extends Chainer
 	{
 		return this.routingMode;
 	}
-	
+
 	/**
 	 * Sets the routing mode.
 	 * @param routingMode The routing mode.
@@ -255,7 +267,7 @@ public class Router extends Chainer
 	{
 		this.routingMode = routingMode;
 	}
-	
+
 	/**
 	 * Returns the minimum score required to have a match.
 	 * @return The minimum score required to have a match.
@@ -264,7 +276,7 @@ public class Router extends Chainer
 	{
 		return this.requiredScore;
 	}
-	
+
 	/**
 	 * Sets the score required to have a match.
 	 * @param score The score required to have a match.
@@ -283,7 +295,7 @@ public class Router extends Chainer
 	{
 		return this.maxAttempts;
 	}
-	
+
 	/**
 	 * Sets the maximum number of attempts if no attachment could be matched on the first attempt.
 	 * This is useful when the attachment scoring is dynamic and therefore could change on a retry.
@@ -302,7 +314,7 @@ public class Router extends Chainer
 	{
 		return this.retryDelay;
 	}
-	
+
 	/**
 	 * Sets the delay (in seconds) before a new attempt.
 	 * @param retryDelay The delay (in seconds) before a new attempt.
@@ -311,5 +323,23 @@ public class Router extends Chainer
 	{
 		this.retryDelay = retryDelay;
 	}
-	
+
+	/**
+	 * Returns the default scorer tested if no other one was available.
+	 * @return The default scorer tested if no other one was available.
+	 */
+	public Scorer getDefaultScorer()
+	{
+		return this.defaultScorer;
+	}
+
+	/**
+	 * Sets the default scorer tested if no other one was available.
+	 * @param defaultScorer The default scorer tested if no other one was available.
+	 */
+	public void setDefaultScorer(Scorer defaultScorer)
+	{
+		this.defaultScorer = defaultScorer;
+	}
+
 }

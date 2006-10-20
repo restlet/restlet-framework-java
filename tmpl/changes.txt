@@ -115,6 +115,7 @@ Changes log
  - Updated tutorial examples to leverage application concept.
  - Refactored all usages of the JDK's loggers in order to reuse the Context's logger, allowing separation of messages for each application.
  - Optimized the ByteUtils.write(is, os) method.
+ - Added a "defaultScorer" property on Router to have a way to catch calls when no scorer in the normal list matched.
  
 1.0 beta 18 (2006-08-19)
 [Bugs fixed]
