@@ -42,7 +42,7 @@ import org.restlet.data.Status;
  * 
  * @author Jerome Louvel (contact@noelios.com) <a href="http://www.noelios.com/">Noelios Consulting</a>
  */
-public abstract class Handler extends Restlet
+public class Handler extends Restlet
 {
 	/** The language to use if content negotiation fails. */
 	private Language fallbackLanguage;
@@ -76,12 +76,16 @@ public abstract class Handler extends Restlet
 	}
 
 	/**
-	 * Finds the target Resource if available.
+	 * Finds the target Resource if available. The default value is null, but this method is intended to
+	 * be overriden in subclasses.
 	 * @param request The request to handle.
 	 * @param response The response to update.
 	 * @return The target resource if available or null.
 	 */
-	public abstract Resource findTarget(Request request, Response response);
+	public Resource findTarget(Request request, Response response)
+	{
+		return null;
+	}
 
 	/**
 	 * Returns the language to use if content negotiation fails.
@@ -183,7 +187,7 @@ public abstract class Handler extends Restlet
 		}
 		else
 		{
-			response.setStatus(Status.CLIENT_ERROR_NOT_FOUND);
+			defaultHandle(request, response);
 		}
 	}
 
@@ -213,7 +217,7 @@ public abstract class Handler extends Restlet
 		}
 		else
 		{
-			response.setStatus(Status.CLIENT_ERROR_NOT_FOUND);
+			defaultHandle(request, response);
 		}
 	}
 
@@ -277,7 +281,7 @@ public abstract class Handler extends Restlet
 		}
 		else
 		{
-			response.setStatus(Status.CLIENT_ERROR_NOT_FOUND);
+			defaultHandle(request, response);
 		}
 	}
 
@@ -313,7 +317,7 @@ public abstract class Handler extends Restlet
 		}
 		else
 		{
-			response.setStatus(Status.CLIENT_ERROR_NOT_FOUND);
+			defaultHandle(request, response);
 		}
 	}
 
