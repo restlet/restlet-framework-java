@@ -24,9 +24,11 @@ package com.noelios.restlet.impl.application;
 
 import org.restlet.Container;
 import org.restlet.Router;
+import org.restlet.Scorer;
 import org.restlet.VirtualHost;
 
 import com.noelios.restlet.impl.HostScorer;
+import com.noelios.restlet.impl.StatusFilter;
 
 
 /**
@@ -63,6 +65,10 @@ public class ServerRouter extends Router
 		{
 			getScorers().add(new HostScorer(this, getContainer().getDefaultHost()));
 		}
+		
+		// If no host matches, display and error page
+		StatusFilter statusFilter = new StatusFilter(getContext(), true, null, null);
+		setDefaultScorer(new Scorer(this, statusFilter));
 
 		super.start();
 	}
