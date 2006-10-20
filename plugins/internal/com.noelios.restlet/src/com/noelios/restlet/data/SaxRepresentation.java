@@ -89,16 +89,16 @@ public abstract class SaxRepresentation extends OutputRepresentation
    }
    
    /**
-    * Parses the source and sends SAX events to a content reader.
-    * @param contentReader The SAX content reader to use for parsing. 
+    * Parses the source and sends SAX events to a content handler.
+    * @param contentHandler The SAX content handler to use for parsing. 
     */
-   public void parse(ContentHandler contentReader) throws IOException 
+   public void parse(ContentHandler contentHandler) throws IOException 
    {
-   	if(contentReader != null)
+   	if(contentHandler != null)
    	{
 	      try
 			{
-	      	Result result = new SAXResult(contentReader);
+	      	Result result = new SAXResult(contentHandler);
 				TransformerFactory.newInstance().newTransformer().transform(this.source, result);
 			}
 			catch (TransformerConfigurationException tce)

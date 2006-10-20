@@ -24,7 +24,7 @@ package com.noelios.restlet.example.tutorial;
 
 import org.restlet.Application;
 import org.restlet.Container;
-import org.restlet.Handler;
+import org.restlet.Restlet;
 import org.restlet.data.Protocol;
 
 import com.noelios.restlet.DirectoryFinder;
@@ -44,7 +44,7 @@ public class Tutorial06 implements Constants
 		// Create an application
 		Application application = new Application(container)
 		{
-			public Handler createRoot()
+			public Restlet createRoot()
 			{
 				return new DirectoryFinder(getContext(), ROOT_URI, "index.html");
 			}

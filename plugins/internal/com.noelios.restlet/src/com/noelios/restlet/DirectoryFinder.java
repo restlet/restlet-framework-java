@@ -41,7 +41,7 @@ import com.noelios.restlet.data.DirectoryResource;
 import com.noelios.restlet.data.StringRepresentation;
 
 /**
- * Call handler supported by a directory of resource (from the file system, the web application context or 
+ * Handler supported by a directory of resource (from the file system, the web application context or 
  * class loaders). An automatic content negotiation mechanism (similar to the one in Apache HTTP server) is 
  * used to select the best representation of a resource based on the available variants and on the client 
  * capabilities and preferences.

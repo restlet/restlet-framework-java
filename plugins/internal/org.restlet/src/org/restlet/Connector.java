@@ -28,7 +28,7 @@ import java.util.List;
 import org.restlet.data.Protocol;
 
 /**
- * Handler enabling communication between components. "A connector is an abstract
+ * Restlet enabling communication between components. "A connector is an abstract
  * mechanism that mediates communication, coordination, or cooperation among components. Connectors enable
  * communication between components by transferring data elements from one interface to another without
  * changing the data." Roy T. Fielding </br> "Encapsulate the activities of accessing resources and
@@ -41,7 +41,7 @@ import org.restlet.data.Protocol;
  * dissertation</a>
  * @author Jerome Louvel (contact@noelios.com) <a href="http://www.noelios.com/">Noelios Consulting</a>
  */
-public abstract class Connector extends Handler
+public abstract class Connector extends Restlet
 {
 	/** The list of protocols simultaneously supported. */
 	private List<Protocol> protocols;
@@ -52,26 +52,18 @@ public abstract class Connector extends Handler
 	 */
 	public Connector(Context context)
 	{
+		this(context, null);
+	}
+	
+	/**
+	 * Constructor.
+	 * @param context The context.
+	 * @param protocols The supported protocols.
+	 */
+	public Connector(Context context, List<Protocol> protocols)
+	{
 		super(context);
-		this.protocols = null;
-	}
-
-	/**
-	 * Wrapper constructor.
-	 * @param wrappedConnector The connector to wrap.
-	 */
-	public Connector(Connector wrappedConnector)
-	{
-		super(wrappedConnector);
-	}
-
-	/**
-	 * Returns the wrapped conncector.
-	 * @return The wrapped conncector.
-	 */
-	private Connector getWrappedConnector()
-	{
-		return (Connector)getWrappedHandler();
+		this.protocols = protocols;
 	}
 	
 	/**
@@ -80,15 +72,8 @@ public abstract class Connector extends Handler
 	 */
 	public List<Protocol> getProtocols()
 	{
-		if(getWrappedConnector() != null)
-		{
-			return getWrappedConnector().getProtocols();
-		}
-		else
-		{
-			if (this.protocols == null) this.protocols = new ArrayList<Protocol>();
-			return this.protocols;
-		}
+		if (this.protocols == null) this.protocols = new ArrayList<Protocol>();
+		return this.protocols;
 	}
 
 }

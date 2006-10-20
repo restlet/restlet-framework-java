@@ -37,9 +37,13 @@ public class Protocol extends Metadata
 	public static final Protocol AJP = new Protocol("ajp", "AJP",
 			"Apache Jakarta Protocol", 8009);
 
-	/** Context access protocol base on Java classloaders, Web application context loaders. */
-	public static final Protocol CONTEXT = new Protocol("context", "CONTEXT",
-			"Context Access Protocol", -1);
+	/** Class loader access protocol. */
+	public static final Protocol CLAP = new Protocol("clap", "CLAP",
+			"Class Loader Access Protocol", -1);
+
+	/** Local Web Archive access protocol. */
+	public static final Protocol WAR = new Protocol("war", "WAR",
+			"Web Archive Access Protocol", -1);
 
 	/** Local file system access protocol. */
 	public static final Protocol FILE = new Protocol("file", "FILE",
@@ -146,8 +150,8 @@ public class Protocol extends Metadata
 		{
 			if (schemeName.equalsIgnoreCase(AJP.getSchemeName()))
 				result = AJP;
-			else if (schemeName.equalsIgnoreCase(CONTEXT.getSchemeName()))
-				result = CONTEXT;
+			else if (schemeName.equalsIgnoreCase(WAR.getSchemeName()))
+				result = WAR;
 			else if (schemeName.equalsIgnoreCase(FILE.getSchemeName()))
 				result = FILE;
 			else if (schemeName.equalsIgnoreCase(HTTP.getSchemeName()))

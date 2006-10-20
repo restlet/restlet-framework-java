@@ -42,9 +42,9 @@ public class Tutorial05
       container.getServers().add(Protocol.HTTP, 8182);
 
       // Create a new Restlet that will display some path information.
-      Restlet handler = new Restlet()
+      Restlet restlet = new Restlet()
          {
-            public void handleGet(Request request, Response response)
+            public void handle(Request request, Response response)
             {
                // Print the requested URI path
                String message = "Resource URI:  " + request.getResourceRef() + '\n' +
@@ -56,7 +56,7 @@ public class Tutorial05
          };
 
       // Then attach it to the local host
-      container.getDefaultHost().attach("/trace", handler);
+      container.getDefaultHost().attach("/trace", restlet);
 
       // Now, let's start the container!
       // Note that the HTTP server connector is also automatically started.

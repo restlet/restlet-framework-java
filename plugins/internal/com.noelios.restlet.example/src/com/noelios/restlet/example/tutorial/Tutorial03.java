@@ -38,16 +38,16 @@ public class Tutorial03
    public static void main(String[] args) throws Exception
    {
       // Creating a minimal Restlet returning "Hello World"
-      Restlet handler = new Restlet()
+      Restlet restlet = new Restlet()
       {
-         public void handleGet(Request request, Response response)
+         public void handle(Request request, Response response)
          {
             response.setEntity("Hello World!", MediaType.TEXT_PLAIN);
          }
       };
 
       // Create the HTTP server and listen on port 8182
-      new Server(Protocol.HTTP, 8182, handler).start();
+      new Server(Protocol.HTTP, 8182, restlet).start();
    }
 
 }

@@ -87,9 +87,9 @@ public class HttpConnection extends org.mortbay.http.HttpConnection
     * Returns the Jetty connector.
     * @return The Jetty connector.
     */
-   private JettyServer getJettyServer()
+   private JettyServerHelper getJettyServer()
    {
-      return ((HttpListener)getListener()).getServer();
+      return ((HttpListener)getListener()).getHelper();
    }
 
 }

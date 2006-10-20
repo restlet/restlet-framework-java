@@ -34,55 +34,55 @@ import org.restlet.data.Response;
  */
 public class ContainerContext extends ContextImpl
 {
-	/** The parent container. */
-	private ContainerImpl container;
+	/** The container helper. */
+	private ContainerHelper containerHelper;
 
 	/**
 	 * Constructor. 
-	 * @param container The parent container.
+	 * @param containerHelper The container helper.
 	 */
-	public ContainerContext(ContainerImpl container)
+	public ContainerContext(ContainerHelper containerHelper)
 	{
-		this(container, Logger.getLogger("org.restlet.container"));
+		this(containerHelper, Logger.getLogger("org.restlet.container"));
 	}
 
 	/**
 	 * Constructor. 
-	 * @param container The parent container.
-    * @param logger The logger instance of use.
+	 * @param containerHelper The container helper.
+	 * @param logger The logger instance of use.
 	 */
-	public ContainerContext(ContainerImpl container, Logger logger)
+	public ContainerContext(ContainerHelper containerHelper, Logger logger)
 	{
 		super(logger);
-		this.container = container;
-	}
-	
-	/**
-    * Handles a call.
-    * @param protocol The protocol to use for the handling.
-    * @param request The request to handle.
-    * @param response The response to update.
-    */
-   public void handle(Protocol protocol, Request request, Response response)
-   {
-		getContainer().getClientRouter().handle(request, response);
-   }
-
-	/**
-	 * Returns the parent container.
-	 * @return The parent container.
-	 */
-	protected ContainerImpl getContainer()
-	{
-		return this.container;
+		this.containerHelper = containerHelper;
 	}
 
 	/**
-	 * Sets the parent container.
-	 * @param container The parent container.
+	 * Handles a call.
+	 * @param protocol The protocol to use for the handling.
+	 * @param request The request to handle.
+	 * @param response The response to update.
 	 */
-	protected void setContainer(ContainerImpl container)
+	public void handle(Protocol protocol, Request request, Response response)
 	{
-		this.container = container;
+		getContainerHelper().getClientRouter().handle(request, response);
+	}
+
+	/**
+	 * Returns the container helper.
+	 * @return The container helper.
+	 */
+	protected ContainerHelper getContainerHelper()
+	{
+		return this.containerHelper;
+	}
+
+	/**
+	 * Sets the container helper.
+	 * @param containerHelper The container helper.
+	 */
+	protected void setContainerHelper(ContainerHelper containerHelper)
+	{
+		this.containerHelper = containerHelper;
 	}
 }

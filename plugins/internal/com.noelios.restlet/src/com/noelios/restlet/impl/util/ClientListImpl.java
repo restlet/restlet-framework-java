@@ -22,12 +22,9 @@
 
 package com.noelios.restlet.impl.util;
 
-import java.util.Arrays;
-
 import org.restlet.Client;
 import org.restlet.Context;
 import org.restlet.data.Protocol;
-import org.restlet.spi.Factory;
 import org.restlet.util.ClientList;
 import org.restlet.util.WrapperList;
 
@@ -65,7 +62,7 @@ public class ClientListImpl extends WrapperList<Client> implements ClientList
 	 */
 	public Client add(Protocol protocol)
 	{
-		Client result = Factory.getInstance().createClient(getContext(), Arrays.asList(protocol)); 
+		Client result = new Client(getContext(), protocol); 
 		add(result);
 		return result;
 	}

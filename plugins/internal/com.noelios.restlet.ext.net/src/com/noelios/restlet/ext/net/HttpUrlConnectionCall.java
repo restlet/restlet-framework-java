@@ -48,54 +48,56 @@ import com.noelios.restlet.impl.http.HttpClientCall;
 public class HttpUrlConnectionCall extends HttpClientCall
 {
 	/** The associated HTTP client. */
-	private HttpClient client;
-	
-   /** The wrapped HTTP URL connection. */
+	private HttpClientHelper clientHelper;
+
+	/** The wrapped HTTP URL connection. */
 	private HttpURLConnection connection;
-   
+
 	/** Indicates if the response headers were added. */
 	private boolean responseHeadersAdded;
-	
-   /**
-    * Constructor.
-    * @param client The client connector.
-    * @param method The method name.
-    * @param requestUri The request URI.
-    * @param hasEntity Indicates if the call will have an entity to send to the server.
-    * @throws IOException
-    */
-   public HttpUrlConnectionCall(HttpClient client, String method, String requestUri, boolean hasEntity) throws IOException
-   {
-      super(method, requestUri);
-      this.client = client;
-      
-      if(requestUri.startsWith("http"))
-      {
-         URL url = new URL(requestUri);
-         this.connection = (HttpURLConnection)url.openConnection();
-        	this.connection.setConnectTimeout(client.getConnectTimeout());
-        	this.connection.setReadTimeout(client.getReadTimeout());
-         this.connection.setAllowUserInteraction(client.isAllowUserInteraction());
-         this.connection.setDoOutput(hasEntity);
-         this.connection.setInstanceFollowRedirects(client.isFollowRedirects());
-         this.connection.setUseCaches(client.isUseCaches());
-         this.responseHeadersAdded = false;
-         setConfidential(this.connection instanceof HttpsURLConnection);
-      }
-      else
-      {
-         throw new IllegalArgumentException("Only HTTP or HTTPS resource URIs are allowed here");
-      }
-   }
 
-   /**
-    * Returns the connection.
-    * @return The connection.
-    */
-   public HttpURLConnection getConnection()
-   {
-      return this.connection;
-   }
+	/**
+	 * Constructor.
+	 * @param client The client connector.
+	 * @param method The method name.
+	 * @param requestUri The request URI.
+	 * @param hasEntity Indicates if the call will have an entity to send to the server.
+	 * @throws IOException
+	 */
+	public HttpUrlConnectionCall(HttpClientHelper client, String method,
+			String requestUri, boolean hasEntity) throws IOException
+	{
+		super(method, requestUri);
+		this.clientHelper = client;
+
+		if (requestUri.startsWith("http"))
+		{
+			URL url = new URL(requestUri);
+			this.connection = (HttpURLConnection) url.openConnection();
+			this.connection.setConnectTimeout(client.getConnectTimeout());
+			this.connection.setReadTimeout(client.getReadTimeout());
+			this.connection.setAllowUserInteraction(client.isAllowUserInteraction());
+			this.connection.setDoOutput(hasEntity);
+			this.connection.setInstanceFollowRedirects(client.isFollowRedirects());
+			this.connection.setUseCaches(client.isUseCaches());
+			this.responseHeadersAdded = false;
+			setConfidential(this.connection instanceof HttpsURLConnection);
+		}
+		else
+		{
+			throw new IllegalArgumentException(
+					"Only HTTP or HTTPS resource URIs are allowed here");
+		}
+	}
+
+	/**
+	 * Returns the connection.
+	 * @return The connection.
+	 */
+	public HttpURLConnection getConnection()
+	{
+		return this.connection;
+	}
 
 	/**
 	 * Sends the request to the client. Commits the request line, headers and optional entity and 
@@ -103,60 +105,62 @@ public class HttpUrlConnectionCall extends HttpClientCall
 	 * @param entity The optional entity representation to send.
 	 * @return The result status.
 	 */
-   public Status sendRequest(Representation entity) throws IOException
-   {
-   	Status result = null;
-   	
-   	try
-   	{
-   		if(entity != null)
-   		{
-		   	// Adjust the streaming mode
+	public Status sendRequest(Representation entity) throws IOException
+	{
+		Status result = null;
+
+		try
+		{
+			if (entity != null)
+			{
+				// Adjust the streaming mode
 				if (entity.getSize() > 0)
 				{
 					// The size of the entity is known in advance
-					getConnection().setFixedLengthStreamingMode((int)entity.getSize());
+					getConnection().setFixedLengthStreamingMode((int) entity.getSize());
 				}
 				else
 				{
 					// The size of the entity is not known in advance
-					if(this.client.getChunkLength() >= 0)
+					if (this.clientHelper.getChunkLength() >= 0)
 					{
 						// Use chunked encoding
-						getConnection().setChunkedStreamingMode(this.client.getChunkLength());
+						getConnection().setChunkedStreamingMode(
+								this.clientHelper.getChunkLength());
 					}
 					else
 					{
 						// Use entity buffering to determine the content length
 					}
 				}
-   		}
-	
+			}
+
 			// Set the request method
-	      getConnection().setRequestMethod(getMethod());
-	
-	      // Set the request headers
-	      for(Parameter header : getRequestHeaders())
-	      {
-	         getConnection().addRequestProperty(header.getName(), header.getValue());
-	      }
-	
-	      // Ensure that the connections is active
-	      getConnection().connect();
-	      
-	      // Send the optional entity
+			getConnection().setRequestMethod(getMethod());
+
+			// Set the request headers
+			for (Parameter header : getRequestHeaders())
+			{
+				getConnection().addRequestProperty(header.getName(), header.getValue());
+			}
+
+			// Ensure that the connections is active
+			getConnection().connect();
+
+			// Send the optional entity
 			result = super.sendRequest(entity);
 		}
 		catch (ConnectException ce)
 		{
-			client.getLogger().log(Level.FINE,
+			this.clientHelper.getLogger().log(Level.FINE,
 					"An error occured during the connection to the remote HTTP server.", ce);
 			result = new Status(Status.CONNECTOR_ERROR_CONNECTION,
 					"Unable to connect to the remote server. " + ce.getMessage());
 		}
 		catch (SocketTimeoutException ste)
 		{
-			client.getLogger()
+			this.clientHelper
+					.getLogger()
 					.log(
 							Level.FINE,
 							"An timeout error occured during the communication with the remote HTTP server.",
@@ -167,7 +171,7 @@ public class HttpUrlConnectionCall extends HttpClientCall
 		}
 		catch (FileNotFoundException fnfe)
 		{
-			client.getLogger().log(Level.FINE,
+			this.clientHelper.getLogger().log(Level.FINE,
 					"An unexpected error occured during the sending of the HTTP request.",
 					fnfe);
 			result = new Status(Status.CONNECTOR_ERROR_INTERNAL,
@@ -175,7 +179,7 @@ public class HttpUrlConnectionCall extends HttpClientCall
 		}
 		catch (IOException ioe)
 		{
-			client.getLogger().log(Level.FINE,
+			this.clientHelper.getLogger().log(Level.FINE,
 					"An error occured during the communication with the remote HTTP server.",
 					ioe);
 			result = new Status(Status.CONNECTOR_ERROR_COMMUNICATION,
@@ -184,124 +188,124 @@ public class HttpUrlConnectionCall extends HttpClientCall
 		}
 		catch (Exception e)
 		{
-			client.getLogger().log(Level.FINE,
+			this.clientHelper.getLogger().log(Level.FINE,
 					"An unexpected error occured during the sending of the HTTP request.", e);
 			result = new Status(Status.CONNECTOR_ERROR_INTERNAL,
 					"Unable to send the HTTP request. " + e.getMessage());
 		}
-		
-		return result;
-   }
 
-   /**
-    * Returns the request entity stream if it exists.
-    * @return The request entity stream if it exists.
-    */
-   public OutputStream getRequestStream()
-   {
-   	try
-   	{
-   		return getConnection().getOutputStream();
-   	}
-   	catch(IOException ioe)
-   	{
-   		return null;
-   	}
-   }
+		return result;
+	}
+
+	/**
+	 * Returns the request entity stream if it exists.
+	 * @return The request entity stream if it exists.
+	 */
+	public OutputStream getRequestStream()
+	{
+		try
+		{
+			return getConnection().getOutputStream();
+		}
+		catch (IOException ioe)
+		{
+			return null;
+		}
+	}
 
 	/**
 	 * Returns the response address.<br/>
 	 * Corresponds to the IP address of the responding server.
 	 * @return The response address.
 	 */
-   public String getServerAddress()
-   {
-      return getConnection().getURL().getHost();
-   }
+	public String getServerAddress()
+	{
+		return getConnection().getURL().getHost();
+	}
 
-   /**
-    * Returns the modifiable list of response headers.
-    * @return The modifiable list of response headers.
-    */
-   public ParameterList getResponseHeaders()
-   {
-   	ParameterList result = super.getResponseHeaders();
-   	
-      if(!this.responseHeadersAdded)
-      {
-         // Read the response headers
-         int i = 1;
-         String headerName = getConnection().getHeaderFieldKey(i);
-         String headerValue = getConnection().getHeaderField(i);
-         while(headerName != null)
-         {
-         	result.add(headerName, headerValue);
-            i++;
-            headerName = getConnection().getHeaderFieldKey(i);
-            headerValue = getConnection().getHeaderField(i);
-         }
-         
-         this.responseHeadersAdded = true;
-      }
+	/**
+	 * Returns the modifiable list of response headers.
+	 * @return The modifiable list of response headers.
+	 */
+	public ParameterList getResponseHeaders()
+	{
+		ParameterList result = super.getResponseHeaders();
 
-      return result;
-   }
-   
-   /**
-    * Returns the response status code.
-    * @return The response status code.
-    */
-   public int getStatusCode()
-   {
-      try
-      {
-         return getConnection().getResponseCode();
-      }
-      catch(IOException e)
-      {
-         return -1;
-      }
-   }
+		if (!this.responseHeadersAdded)
+		{
+			// Read the response headers
+			int i = 1;
+			String headerName = getConnection().getHeaderFieldKey(i);
+			String headerValue = getConnection().getHeaderField(i);
+			while (headerName != null)
+			{
+				result.add(headerName, headerValue);
+				i++;
+				headerName = getConnection().getHeaderFieldKey(i);
+				headerValue = getConnection().getHeaderField(i);
+			}
 
-   /**
-    * Returns the response reason phrase.
-    * @return The response reason phrase.
-    */
-   public String getReasonPhrase()
-   {
-      try
-      {
-         return getConnection().getResponseMessage();
-      }
-      catch(IOException e)
-      {
-         return null;
-      }
-   }
-   
-   /**
-    * Returns the response stream if it exists.
-    * @return The response stream if it exists.
-    */
-   public InputStream getResponseStream()
-   {
-      InputStream result = null;
-      
-      try
-      {
-      	result = getConnection().getInputStream();
-      }
-      catch(IOException ioe)
-      {
-       	result = getConnection().getErrorStream();
-      }
-      
-      if(result == null)
-      {
-      	// Maybe an error stream is available instead
-        	result = getConnection().getErrorStream();
-      }
-      
-      return result;
-   }
+			this.responseHeadersAdded = true;
+		}
+
+		return result;
+	}
+
+	/**
+	 * Returns the response status code.
+	 * @return The response status code.
+	 */
+	public int getStatusCode()
+	{
+		try
+		{
+			return getConnection().getResponseCode();
+		}
+		catch (IOException e)
+		{
+			return -1;
+		}
+	}
+
+	/**
+	 * Returns the response reason phrase.
+	 * @return The response reason phrase.
+	 */
+	public String getReasonPhrase()
+	{
+		try
+		{
+			return getConnection().getResponseMessage();
+		}
+		catch (IOException e)
+		{
+			return null;
+		}
+	}
+
+	/**
+	 * Returns the response stream if it exists.
+	 * @return The response stream if it exists.
+	 */
+	public InputStream getResponseStream()
+	{
+		InputStream result = null;
+
+		try
+		{
+			result = getConnection().getInputStream();
+		}
+		catch (IOException ioe)
+		{
+			result = getConnection().getErrorStream();
+		}
+
+		if (result == null)
+		{
+			// Maybe an error stream is available instead
+			result = getConnection().getErrorStream();
+		}
+
+		return result;
+	}
 }

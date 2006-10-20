@@ -26,6 +26,7 @@ import org.restlet.Container;
 import org.restlet.Restlet;
 import org.restlet.data.Form;
 import org.restlet.data.MediaType;
+import org.restlet.data.Method;
 import org.restlet.data.Parameter;
 import org.restlet.data.Protocol;
 import org.restlet.data.Request;
@@ -50,34 +51,37 @@ public class SimpleServer
          container.getServers().add(Protocol.HTTP, 9876);
 
          // Prepare and attach a test Restlet
-         Restlet handler = new Restlet(container.getContext())
+         Restlet restlet = new Restlet(container.getContext())
          {
-            public void handlePut(Request request, Response response)
+            public void handle(Request request, Response response)
             {
-            	System.out.println("Handling the call...");
-               System.out.println("Trying to get the entity as a form...");
-               Form form = request.getEntityAsForm();
-
-               System.out.println("Trying to getParameters...");
-               StringBuffer sb = new StringBuffer("foo");
-               for(Parameter p : form)
-               {
-                  System.out.println(p);
-
-                  sb.append("field name = ");
-                  sb.append(p.getName());
-                  sb.append("value = ");
-                  sb.append(p.getValue());
-                  sb.append("\n");
-                  System.out.println(sb.toString());
-               }
-
-               response.setEntity(sb.toString(), MediaType.TEXT_PLAIN);
-               System.out.println("Done!");
+            	if(request.getMethod().equals(Method.PUT))
+            	{
+	            	System.out.println("Handling the call...");
+	               System.out.println("Trying to get the entity as a form...");
+	               Form form = request.getEntityAsForm();
+	
+	               System.out.println("Trying to getParameters...");
+	               StringBuffer sb = new StringBuffer("foo");
+	               for(Parameter p : form)
+	               {
+	                  System.out.println(p);
+	
+	                  sb.append("field name = ");
+	                  sb.append(p.getName());
+	                  sb.append("value = ");
+	                  sb.append(p.getValue());
+	                  sb.append("\n");
+	                  System.out.println(sb.toString());
+	               }
+	
+	               response.setEntity(sb.toString(), MediaType.TEXT_PLAIN);
+	               System.out.println("Done!");
+            	}
             }
          };
 
-         container.getDefaultHost().attach("/test", handler);
+         container.getDefaultHost().attach("/test", restlet);
 
          // Now, start the container
          container.start();

@@ -51,7 +51,7 @@ public class StatusFilter extends Filter
    /** Email address of the administrator to contact in case of error. */
    private String email;
 
-   /** The home URI to display in case the user got a "not found" exception. */
+   /** The home URI to propose in case of error. */
    private String homeURI;
 
    /**
@@ -59,7 +59,7 @@ public class StatusFilter extends Filter
     * @param context The context.
     * @param overwrite Indicates whether an existing representation should be overwritten.
     * @param email Email address of the administrator to contact in case of error.
-    * @param homeUri The home URI to display in case the user got a "not found" exception.
+    * @param homeUri The home URI to propose in case of error.
     */
    public StatusFilter(Context context, boolean overwrite, String email, String homeUri)
    {
@@ -69,17 +69,17 @@ public class StatusFilter extends Filter
       this.homeURI = homeUri;
    }
 
-   /**
-    * Handles a call to a resource or a set of resources.
+	/**
+	 * Handles the call by distributing it to the next Restlet. 
     * @param request The request to handle.
     * @param response The response to update.
-    */
-   public void handle(Request request, Response response)
+	 */
+   public void dohandle(Request request, Response response)
    {
       // Normally handle the call
       try
       {
-         super.handle(request, response);
+         super.doHandle(request, response);
       }
       catch(Exception e)
       {

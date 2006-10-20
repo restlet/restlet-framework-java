@@ -24,7 +24,7 @@ package org.restlet.util;
 
 import java.util.List;
 
-import org.restlet.Handler;
+import org.restlet.Restlet;
 import org.restlet.Scorer;
 import org.restlet.data.Request;
 import org.restlet.data.Response;
@@ -45,20 +45,20 @@ public interface ScorerList extends List<Scorer>
 	 * Creates then adds a scorer at the end of the list.
 	 * Adds a target option based on an URI pattern at the end of the list of options. 
 	 * @param uriPattern The URI pattern used to map calls (see {@link java.util.regex.Pattern} for the syntax).
-	 * @param target The target handler to attach.
+	 * @param target The target Restlet to attach.
 	 * @see java.util.regex.Pattern
 	 * @return True (as per the general contract of the Collection.add method).
 	 */
-	public boolean add(String uriPattern, Handler target);
+	public boolean add(String uriPattern, Restlet target);
 
 	/**
 	 * Creates then adds a scorer based on an URI pattern at a specific position.
 	 * @param uriPattern The URI pattern used to map calls (see {@link java.util.regex.Pattern} for the syntax).
-	 * @param target The target handler to attach.
+	 * @param target The target Restlet to attach.
 	 * @param index The insertion position in the list of attachments.
 	 * @see java.util.regex.Pattern
 	 */
-	public void add(String uriPattern, Handler target, int index);
+	public void add(String uriPattern, Restlet target, int index);
 
 	/**
 	 * Returns the best scorer match for a given call.
@@ -107,9 +107,9 @@ public interface ScorerList extends List<Scorer>
 	
 	/**
 	 * Removes all scorers routing to a given target.
-	 * @param target The target handler to detach.
+	 * @param target The target Restlet to detach.
 	 */
-	public void removeAll(Handler target);
+	public void removeAll(Restlet target);
 
 	/**
 	 * Returns a view of the portion of this list between the specified fromIndex, 

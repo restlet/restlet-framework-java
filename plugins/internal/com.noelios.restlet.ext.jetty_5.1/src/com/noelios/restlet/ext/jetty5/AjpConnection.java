@@ -88,9 +88,9 @@ public class AjpConnection extends AJP13Connection
     * Returns the Jetty connector.
     * @return The Jetty connector.
     */
-   private JettyServer getJettyServer()
+   private JettyServerHelper getJettyServer()
    {
-      return ((AjpListener)getListener()).getServer();
+      return ((AjpListener)getListener()).getHelper();
    }
 
 }

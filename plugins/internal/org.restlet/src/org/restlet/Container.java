@@ -25,7 +25,10 @@ package org.restlet;
 import java.util.ArrayList;
 import java.util.List;
 
+import org.restlet.data.Request;
+import org.restlet.data.Response;
 import org.restlet.spi.Factory;
+import org.restlet.spi.Helper;
 
 /**
  * Component managing a set of virtual hosts.
@@ -38,6 +41,9 @@ public class Container extends Component
 	
 	/** The default host. */
 	private VirtualHost defaultHost;
+	
+	/** The helper provided by the implementation. */
+	private Helper helper;
 
 	/**
     * Default constructor. Instantiate then wrap a container provided by the current Restlet 
@@ -45,36 +51,11 @@ public class Container extends Component
     */
    public Container()
    {
-		this(Factory.getInstance().createContainer());
-   }
-
-	/**
-	 * Constructor.
-	 * @param context The context.
-	 */
-	public Container(Context context)
-	{
-		super(context);
+		super(null);
+		this.helper = Factory.getInstance().createHelper(this);
+		setContext(this.helper.createContext());
 		this.hosts = null;
-		this.defaultHost = VirtualHost.createDefaultHost(context);
-	}
-   
-   /**
-	 * Wrapper constructor.
-	 * @param wrappedContainer The container to wrap. 
-	 */
-	protected Container(Container wrappedContainer)
-	{
-		super(wrappedContainer);
-	}
-
-	/**
-	 * Returns the wrapped container.
-	 * @return The wrapped container.
-	 */
-	public Container getWrappedContainer()
-	{
-		return (Container)getWrappedHandler();
+		this.defaultHost = VirtualHost.createDefaultHost(getContext());
 	}
 	
    /**
@@ -83,15 +64,17 @@ public class Container extends Component
     */
    public VirtualHost getDefaultHost()
    {
-   	if(getWrappedContainer() != null)
-   	{
-   		return getWrappedContainer().getDefaultHost();
-   	}
-   	else
-   	{
-   		return this.defaultHost;
-   	}
+  		return this.defaultHost;
    }
+
+	/**
+	 * Returns the helper provided by the implementation.
+	 * @return The helper provided by the implementation.
+	 */
+	private Helper getHelper()
+	{
+		return this.helper;
+	}
 
 	/**
     * Returns the modifiable list of host routers.
@@ -99,16 +82,20 @@ public class Container extends Component
     */
    public List<VirtualHost> getHosts()
    {
-   	if(getWrappedContainer() != null)
-   	{
-   		return getWrappedContainer().getHosts();
-   	}
-   	else
-   	{
-   		if(this.hosts == null) this.hosts = new ArrayList<VirtualHost>();
-   		return this.hosts;
-   	}
+		if(this.hosts == null) this.hosts = new ArrayList<VirtualHost>();
+		return this.hosts;
    }
+   
+   /**
+	 * Handles a call.
+	 * @param request The request to handle.
+	 * @param response The response to update.
+	 */
+	public void handle(Request request, Response response)
+	{
+  		init(request, response);
+  		getHelper().handle(request, response);
+	}
 
    /**
     * Sets the default virtual host.
@@ -116,14 +103,21 @@ public class Container extends Component
     */
    public void setDefaultHost(VirtualHost defaultHost)
    {
-   	if(getWrappedContainer() != null)
-   	{
-   		getWrappedContainer().setDefaultHost(defaultHost);
-   	}
-   	else
-   	{
-   		this.defaultHost = defaultHost;
-   	}
+  		this.defaultHost = defaultHost;
    }
+	
+	/** Start callback. */
+	public void start() throws Exception
+	{
+		super.start();
+		getHelper().start();
+	}
+
+	/** Stop callback. */
+	public void stop() throws Exception
+	{
+		getHelper().stop();
+		super.stop();
+	}
 
 }

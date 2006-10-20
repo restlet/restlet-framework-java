@@ -121,7 +121,11 @@ public abstract class AbstractFilterTestCase extends RestletTestCase
 		try
 		{
 			filter.handle(request, response);
-			fail("Filter handles call without being started");
+			
+			if(!filter.isStarted())
+			{
+				fail("Filter handles call without being started");
+			}
 		}
 		catch (Exception ex)
 		{

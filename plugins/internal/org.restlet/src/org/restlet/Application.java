@@ -22,29 +22,24 @@
 
 package org.restlet;
 
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Map;
-import java.util.TreeMap;
-
-import org.restlet.data.Encoding;
-import org.restlet.data.Language;
-import org.restlet.data.MediaType;
-import org.restlet.data.Metadata;
-import org.restlet.data.Protocol;
 import org.restlet.data.Representation;
 import org.restlet.data.Request;
 import org.restlet.data.Response;
 import org.restlet.data.Status;
 import org.restlet.spi.Factory;
+import org.restlet.spi.Helper;
+import org.restlet.util.ConnectorService;
+import org.restlet.util.LocalService;
+import org.restlet.util.LogService;
+import org.restlet.util.StatusService;
 
 /**
- * Handler deployable into containers. Applications are guaranteed to receive calls with their base reference
- * set relatively to the virtual host that served it. This class is both a descriptor able to create the root
- * handler and the actual handler that can be attached to one or more VirtualHost instances.   
+ * Restlet deployable into containers. Applications are guaranteed to receive calls with their base reference
+ * set relatively to the virtual host that served them. This class is both a descriptor able to create the 
+ * root Restlet and the actual Restlet that can be attached to one or more VirtualHost instances.   
  * @author Jerome Louvel (contact@noelios.com) <a href="http://www.noelios.com/">Noelios Consulting</a>
  */
-public abstract class Application extends Handler
+public abstract class Application extends Restlet
 {
 	/** The display name. */
 	private String name;
@@ -57,35 +52,32 @@ public abstract class Application extends Handler
 
 	/** The owner(s). */
 	private String owner;
-
-	/** The default encoding for local representations. */
-	private Encoding defaultEncoding;
-
-	/** The default language for local representations. */
-	private Language defaultLanguage;
-
-	/** The default media type for local representations. */
-	private MediaType defaultMediaType;
-
-	/** The mappings from extension names to metadata. */
-	private Map<String, Metadata> metadataMappings;
-
-	/** The list of index names (ex: index.html). */
-	private List<String> indexNames;
-
-	/** The list of client protocols used. */
-	private List<Protocol> clientProtocols;
-
-	/** The list of server protocols accepted. */
-	private List<Protocol> serverProtocols;
 	
-	/** The root handler. */
-	private Handler root;
+	/** The root Restlet. */
+	private Restlet root;
+	
+	/** The connector service. */
+	private ConnectorService connectorService;
+	
+	/** The local service. */
+	private LocalService localService;
+	
+	/** The log service. */
+	private LogService logService;
+	
+	/** The status service. */
+	private StatusService statusService;
+	
+	/** The helper provided by the implementation. */
+	private Helper helper;
 	
 	/**
-	 * The holding filter.
+	 * Constructor.
 	 */
-	private Holder holder;
+	public Application()
+	{
+		this((Context)null);
+	}
 
 	/**
 	 * Constructor.
@@ -95,50 +87,34 @@ public abstract class Application extends Handler
 	{
 		this(container.getContext());
 	}
-	
+
 	/**
 	 * Constructor.
-	 * @param context The context.
+	 * @param parentContext The parent context. Typically the container's context.
 	 */
-	public Application(Context context)
+	public Application(Context parentContext)
 	{
-		super(context);
+		super(null);
+		this.helper = Factory.getInstance().createHelper(this, parentContext);
+		setContext(this.helper.createContext());
 		this.name = null;
 		this.description = null;
 		this.author = null;
 		this.owner = null;
-		this.defaultEncoding = null;
-		this.defaultLanguage = null;
-		this.defaultMediaType = null;
-		this.metadataMappings = new TreeMap<String, Metadata>();
-		this.indexNames = new ArrayList<String>();
-		this.clientProtocols = null;
-		this.serverProtocols = null;
 		this.root = null;
-		this.holder = null;
+		this.connectorService = null;
+		this.localService = null;
+		this.logService = null;
+		this.statusService = null;
 	}
-	
-	/**
-	 * Creates a root handler that will receive all incoming calls. In general, instances of Router, Filter, 
-	 * Restlet or Finder classes will be used as initial application handler. The default implementation
-	 * returns null by default. This method is intended to be overriden by subclasses.  
-	 * @return The root handler.
-	 */
-	public abstract Handler createRoot();
 
 	/**
-	 * Returns the root handler. Invokes the createRoot() method if no handler exists.
-	 * @return The root handler.
+	 * Creates a root Restlet that will receive all incoming calls. In general, instances of Router, Filter, 
+	 * Restlet or Finder classes will be used as initial application Restlet. The default implementation
+	 * returns null by default. This method is intended to be overriden by subclasses.  
+	 * @return The root Restlet.
 	 */
-	public Handler getRoot()
-	{
-		if(this.root == null)
-		{
-			this.root = createRoot();
-		}
-		
-		return this.root;
-	}
+	public abstract Restlet createRoot();
 
 	/**
 	 * Returns the author(s).
@@ -147,42 +123,6 @@ public abstract class Application extends Handler
 	public String getAuthor()
 	{
 		return this.author;
-	}
-
-	/**
-	 * Returns the list of client protocols used. 
-	 * @return The list of client protocols used.
-	 */
-	public List<Protocol> getClientProtocols()
-	{
-		return this.clientProtocols;
-	}
-
-	/**
-	 * Returns the default encoding for local representations.
-	 * @return The default encoding for local representations.
-	 */
-	public Encoding getDefaultEncoding()
-	{
-		return this.defaultEncoding;
-	}
-
-	/**
-	 * Returns the default language for local representations.
-	 * @return The default language for local representations.
-	 */
-	public Language getDefaultLanguage()
-	{
-		return this.defaultLanguage;
-	}
-
-	/**
-	 * Returns the default media type for local representations.
-	 * @return The default media type for local representations.
-	 */
-	public MediaType getDefaultMediaType()
-	{
-		return this.defaultMediaType;
 	}
 
 	/**
@@ -195,21 +135,42 @@ public abstract class Application extends Handler
 	}
 
 	/**
-	 * Returns the list of index names (ex: index.html).
-	 * @return The list of index names (ex: index.html).
+	 * Returns the helper provided by the implementation.
+	 * @return The helper provided by the implementation.
 	 */
-	public List<String> getIndexNames()
+	private Helper getHelper()
 	{
-		return this.indexNames;
+		return this.helper;
 	}
 
-	/**
-	 * Returns the mappings from extension names to metadata.
-	 * @return The mappings from extension names to metadata.
+	/** 
+	 * Returns the connector service. This service is enabled by default.
+	 * @return The connector service.
 	 */
-	public Map<String, Metadata> getMetadataMappings()
+	public ConnectorService getConnectorService()
 	{
-		return this.metadataMappings;
+		if(this.connectorService == null) this.connectorService = new ConnectorService(this, true);
+		return this.connectorService;
+	}
+
+	/** 
+	 * Returns the local service. This service is enabled by default.
+	 * @return The local service.
+	 */
+	public LocalService getLocalService()
+	{
+		if(this.localService == null) this.localService = new LocalService(this, true);
+		return this.localService;
+	}
+
+	/** 
+	 * Returns the log service. This service is enabled by default.
+	 * @return The log service.
+	 */
+	public LogService getLogService()
+	{
+		if(this.logService == null) this.logService = new LogService(this, true);
+		return this.logService;
 	}
 
 	/**
@@ -219,6 +180,15 @@ public abstract class Application extends Handler
 	public String getName()
 	{
 		return this.name;
+	}
+
+	/**
+	 * Returns the owner(s).
+	 * @return The owner(s).
+	 */
+	public String getOwner()
+	{
+		return this.owner;
 	}
 
 	/**
@@ -235,24 +205,30 @@ public abstract class Application extends Handler
 	}
 
 	/**
-	 * Returns the owner(s).
-	 * @return The owner(s).
+	 * Returns the root Restlet. Invokes the createRoot() method if no Restlet exists.
+	 * @return The root Restlet.
 	 */
-	public String getOwner()
+	public Restlet getRoot()
 	{
-		return this.owner;
+		if(this.root == null)
+		{
+			this.root = createRoot();
+		}
+		
+		return this.root;
 	}
 
-	/**
-	 * Returns the list of server protocols accepted. 
-	 * @return The list of server protocols accepted.
+	/** 
+	 * Returns the status service. This service is enabled by default.
+	 * @return The status service.
 	 */
-	public List<Protocol> getServerProtocols()
+	public StatusService getStatusService()
 	{
-		return this.serverProtocols;
+		if(this.statusService == null) this.statusService = new StatusService(this, true);
+		return this.statusService;
 	}
-
-	/**
+   
+   /**
 	 * Handles a call.
 	 * @param request The request to handle.
 	 * @param response The response to update.
@@ -260,7 +236,7 @@ public abstract class Application extends Handler
 	public void handle(Request request, Response response)
 	{
   		init(request, response);
-  		if(getRoot() != null) getRoot().handle(request, response);
+  		getHelper().handle(request, response);
 	}
 
 	/**
@@ -271,34 +247,7 @@ public abstract class Application extends Handler
 	{
 		this.author = author;
 	}
-
-	/**
-	 * Sets the default encoding for local representations.
-	 * @param defaultEncoding The default encoding for local representations.
-	 */
-	public void setDefaultEncoding(Encoding defaultEncoding)
-	{
-		this.defaultEncoding = defaultEncoding;
-	}
-
-	/**
-	 * Sets the default language for local representations.
-	 * @param defaultLanguage The default language for local representations.
-	 */
-	public void setDefaultLanguage(Language defaultLanguage)
-	{
-		this.defaultLanguage = defaultLanguage;
-	}
-
-	/**
-	 * Sets the default media type for local representations.
-	 * @param defaultMediaType The default media type for local representations.
-	 */
-	public void setDefaultMediaType(MediaType defaultMediaType)
-	{
-		this.defaultMediaType = defaultMediaType;
-	}
-
+	
 	/**
 	 * Sets the description.
 	 * @param description The description.
@@ -316,7 +265,7 @@ public abstract class Application extends Handler
 	{
 		this.name = name;
 	}
-
+	
 	/**
 	 * Sets the owner(s).
 	 * @param owner The owner(s).
@@ -325,15 +274,19 @@ public abstract class Application extends Handler
 	{
 		this.owner = owner;
 	}
-
-	/**
-	 * Returns the holding filter.
-	 * @return The holding filter
-	 */
-	public Holder getHolder()
-	{
-		if(this.holder == null) this.holder = Factory.getInstance().createHolder(getContext(), getRoot());
-		return this.holder;
-	}
 	
+	/** Start callback. */
+	public void start() throws Exception
+	{
+		super.start();
+		getHelper().start();
+	}
+
+	/** Stop callback. */
+	public void stop() throws Exception
+	{
+		getHelper().stop();
+		super.stop();
+	}
+
 }

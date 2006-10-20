@@ -167,11 +167,11 @@ public class HostScorer extends Scorer
 	}
 
 	/**
-	 * Handles a call.
-	 * @param request The request to handle.
-	 * @param response The response to update.
+	 * Allows filtering before processing by the next Restlet. Set the base reference. 
+    * @param request The request to handle.
+    * @param response The response to update.
 	 */
-	public void handle(Request request, Response response)
+	protected void beforeHandle(Request request, Response response)
 	{
 		request.setBaseRef(new Reference(request.getProtocol().getSchemeName(), response
 				.getServerInfo().getName(), response.getServerInfo().getPort(), null, null,
@@ -182,13 +182,5 @@ public class HostScorer extends Scorer
 			getLogger().fine("New base URI: " + request.getBaseRef());
 			getLogger().fine("New relative part: " + request.getRelativePart());
 		}
-
-		if (getLogger().isLoggable(Level.FINE))
-		{
-			getLogger().fine("Delegating the call to the target handler");
-		}
-
-		// Invoke the call restlet
-		super.handle(request, response);
 	}
 }

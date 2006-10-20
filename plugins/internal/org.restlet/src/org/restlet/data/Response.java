@@ -31,7 +31,7 @@ import org.restlet.spi.Factory;
  * Generic response sent by server connectors. It is then received by client connectors. Responses 
  * are uniform across all types of connectors, protocols and components.
  * @see org.restlet.data.Request
- * @see org.restlet.Handler
+ * @see org.restlet.Restlet
  * @author Jerome Louvel (contact@noelios.com) <a href="http://www.noelios.com/">Noelios Consulting</a>
  */
 public class Response extends Message

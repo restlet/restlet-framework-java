@@ -35,50 +35,51 @@ import org.mortbay.util.InetAddrPort;
  */
 public class AjpListener extends AJP13Listener
 {
-   /** Serial version identifier. */
-   private static final long serialVersionUID = 1L;
+	/** Serial version identifier. */
+	private static final long serialVersionUID = 1L;
 
-   /** The parent Jetty server. */
-   private JettyServer server;
-   
-   /**
-    * Constructor.
-    * @param server The parent Jetty server.
-    */
-   public AjpListener(JettyServer server)
-   {
-      this.server = server;
-   }
+	/** The parent Jetty server helper. */
+	private JettyServerHelper helper;
 
-   /**
-    * Constructor.
-    * @param server The parent Jetty server.
-    * @param address The listening address.
-    */
-   public AjpListener(JettyServer server, InetAddrPort address)
-   {
-      super(address);
-      this.server = server;
-   }
-   
-   /**
-    * Returns the parent Jetty server.
-    * @return The parent Jetty server.
-    */
-   public JettyServer getServer()
-   {
-      return this.server;
-   }
-   
-   /** 
-    * Creates an AJP13Connection instance. 
-    * This method can be used to override the connection instance.
-    * @param socket The underlying socket.
-    * @return The created connection.
-    */
-   protected AJP13Connection createConnection(Socket socket) throws IOException
-   {
-       return new AjpConnection(getServer().getLogger(), this, socket.getInputStream(), socket.getOutputStream(), socket, getBufferSize());
-   }
+	/**
+	 * Constructor.
+	 * @param server The parent Jetty server.
+	 */
+	public AjpListener(JettyServerHelper server)
+	{
+		this.helper = server;
+	}
+
+	/**
+	 * Constructor.
+	 * @param server The parent Jetty server.
+	 * @param address The listening address.
+	 */
+	public AjpListener(JettyServerHelper server, InetAddrPort address)
+	{
+		super(address);
+		this.helper = server;
+	}
+
+	/**
+	 * Returns the parent Jetty server helper.
+	 * @return The parent Jetty server helper.
+	 */
+	public JettyServerHelper getHelper()
+	{
+		return this.helper;
+	}
+
+	/** 
+	 * Creates an AJP13Connection instance. 
+	 * This method can be used to override the connection instance.
+	 * @param socket The underlying socket.
+	 * @return The created connection.
+	 */
+	protected AJP13Connection createConnection(Socket socket) throws IOException
+	{
+		return new AjpConnection(getHelper().getLogger(), this, socket.getInputStream(),
+				socket.getOutputStream(), socket, getBufferSize());
+	}
 
 }

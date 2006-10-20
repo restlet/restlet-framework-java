@@ -26,7 +26,6 @@ import java.util.List;
 
 import org.restlet.Application;
 import org.restlet.Container;
-import org.restlet.Handler;
 import org.restlet.Restlet;
 import org.restlet.Router;
 import org.restlet.data.ChallengeScheme;
@@ -53,7 +52,7 @@ public class Tutorial11 implements Constants
 		// Create an application
 		Application application = new Application(container)
 		{
-			public Handler createRoot()
+			public Restlet createRoot()
 			{
 		      // Create a root Router
 		      Router router = new Router(getContext());
@@ -74,7 +73,7 @@ public class Tutorial11 implements Constants
 		      // Create the account Restlet
 		      Restlet account = new Restlet()
 		         {
-		      		public void handleGet(Request request, Response response)
+		      		public void handle(Request request, Response response)
 		            {
 		               // Print the requested URI path
 		               String message = "Account of user named: " + request.getBaseRef().getLastSegment();
@@ -86,7 +85,7 @@ public class Tutorial11 implements Constants
 		      // Create the orders Restlet
 		      Restlet orders = new Restlet(getContext())
 		         {
-		            public void handleGet(Request request, Response response)
+		            public void handle(Request request, Response response)
 		            {
 		               // Print the user name of the requested orders
 		               List<String> segments = request.getBaseRef().getSegments();

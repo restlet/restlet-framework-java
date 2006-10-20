@@ -106,6 +106,14 @@ public class Router extends Chainer
 	
 	/** The delay (in milliseconds) before a new attempt. */
 	private long retryDelay;
+
+	/**
+    * Constructor.
+    */
+   public Router()
+   {
+   	this(null);
+   }
 	
    /**
     * Constructor.
@@ -122,129 +130,90 @@ public class Router extends Chainer
    }
 
 	/**
-	 * Wrapper constructor.
-	 * @param wrappedRouter The router to wrap.
-	 */
-	public Router(Router wrappedRouter)
-	{
-		super(wrappedRouter);
-	}
-
-	/** 
-	 * Returns the wrapped router.
-	 * @return The wrapped router.
-	 */
-	private Router getWrappedRouter()
-	{
-		return (Router)getWrappedHandler();
-	}
-
-	/**
 	 * Attaches a target to this router based on a given URI pattern. A new scorer will be added routing
 	 * to the target when calls with a URI matching the pattern will be received.
 	 * @param uriPattern The URI pattern that must match the relative part of the resource URI. 
-	 * @param target The target handler to attach.
+	 * @param target The target Restlet to attach.
 	 */
-	public void attach(String uriPattern, Handler target)
+	public void attach(String uriPattern, Restlet target)
 	{
-		if(getWrappedRouter() != null)
-		{
-			getWrappedRouter().attach(uriPattern, target);
-		}
-		else
-		{
-			getScorers().add(uriPattern, target);
-		}
+		getScorers().add(uriPattern, target);
 	}
 	
 	/**
-	 * Detaches the target from this router. All scorers routing to this target handler are removed
+	 * Detaches the target from this router. All scorers routing to this target Restlet are removed
 	 * from the list of scorers.
-	 * @param target The target handler to detach.
+	 * @param target The target Restlet to detach.
 	 */
-	public void detach(Handler target)
+	public void detach(Restlet target)
 	{
-		if(getWrappedRouter() != null)
-		{
-			getWrappedRouter().detach(target);
-		}
-		else
-		{
-			getScorers().removeAll(target);
-		}
+		getScorers().removeAll(target);
 	}
 	
 	/**
-	 * Returns the next handler if available.
+	 * Returns the next Restlet if available.
     * @param request The request to handle.
     * @param response The response to update.
-	 * @return The next handler if available or null.
+	 * @return The next Restlet if available or null.
 	 */
-	public Handler getNext(Request request, Response response)
+	public Restlet getNext(Request request, Response response)
 	{
-		if(getWrappedRouter() != null)
+		Scorer result = null;
+		
+		if(this.scorers != null)
 		{
-			return getWrappedRouter().getNext(request, response);
-		}
-		else
-		{
-			Scorer result = null;
-			
-			if(this.scorers != null)
+			for(int i = 0; (result == null) && (i < getMaxAttempts()); i++)
 			{
-				for(int i = 0; (result == null) && (i < getMaxAttempts()); i++)
+				if(i > 0)
 				{
-					if(i > 0)
+					// Before attempting another time, let's
+					// sleep during the "retryDelay" set.
+					try
 					{
-						// Before attempting another time, let's
-						// sleep during the "retryDelay" set.
-						try
-						{
-							Thread.sleep(getRetryDelay());
-						}
-						catch (InterruptedException e)
-						{
-						}
+						Thread.sleep(getRetryDelay());
 					}
-					
-					// Select the routing mode
-					switch(getRoutingMode())
+					catch (InterruptedException e)
 					{
-						case BEST:
-							result = getScorers().getBest(request, response, this.requiredScore);
-						break;
-						
-						case FIRST:
-							result = getScorers().getFirst(request, response, this.requiredScore);
-						break;
-						
-						case LAST:
-							result = getScorers().getLast(request, response, this.requiredScore);
-						break;
-						
-						case NEXT:
-							result = getScorers().getNext(request, response, this.requiredScore);
-						break;
-						
-						case RANDOM:
-							result = getScorers().getRandom(request, response, this.requiredScore);
-						break;
-						
-						case CUSTOM:
-							result = getCustom(request, response);
-						break;
 					}
 				}
-			}		
-			
-			if(result == null)
-			{
-				// No routing option could be matched
-				response.setStatus(Status.CLIENT_ERROR_NOT_FOUND);
+				
+				// Select the routing mode
+				switch(getRoutingMode())
+				{
+					case BEST:
+						result = getScorers().getBest(request, response, this.requiredScore);
+					break;
+					
+					case FIRST:
+						result = getScorers().getFirst(request, response, this.requiredScore);
+					break;
+					
+					case LAST:
+						result = getScorers().getLast(request, response, this.requiredScore);
+					break;
+					
+					case NEXT:
+						result = getScorers().getNext(request, response, this.requiredScore);
+					break;
+					
+					case RANDOM:
+						result = getScorers().getRandom(request, response, this.requiredScore);
+					break;
+					
+					case CUSTOM:
+						result = getCustom(request, response);
+					break;
+				}
 			}
-			
-			return result;
+		}		
+		
+		if(result == null)
+		{
+			// No routing option could be matched
+			response.setStatus(Status.CLIENT_ERROR_NOT_FOUND);
 		}
+		
+		return result;
 	}
 	
 	/**
@@ -256,7 +225,7 @@ public class Router extends Chainer
 	 */
 	protected Scorer getCustom(Request request, Response response)
 	{
-		return (getWrappedRouter() != null) ? getWrappedRouter().getCustom(request, response) : null;
+		return null;
 	}
 	
 	/**
@@ -265,15 +234,8 @@ public class Router extends Chainer
 	 */
 	public ScorerList getScorers()
 	{
-		if(getWrappedRouter() != null)
-		{
-			return getWrappedRouter().getScorers();
-		}
-		else
-		{
-	      if(this.scorers == null) this.scorers = Factory.getInstance().createScorerList(this);
-	      return this.scorers;
-		}
+      if(this.scorers == null) this.scorers = Factory.getInstance().createScorerList(this);
+      return this.scorers;
 	}
 
 	/**
@@ -282,7 +244,7 @@ public class Router extends Chainer
 	 */
 	public int getRoutingMode()
 	{
-		return (getWrappedRouter() != null) ? getWrappedRouter().getRoutingMode() : this.routingMode;
+		return this.routingMode;
 	}
 	
 	/**
@@ -291,14 +253,7 @@ public class Router extends Chainer
 	 */
 	public void setRoutingMode(int routingMode)
 	{
-		if(getWrappedRouter() != null)
-		{
-			getWrappedRouter().setRoutingMode(routingMode);
-		}
-		else
-		{
-			this.routingMode = routingMode;
-		}
+		this.routingMode = routingMode;
 	}
 	
 	/**
@@ -307,7 +262,7 @@ public class Router extends Chainer
 	 */
 	public float getRequiredScore()
 	{
-		return (getWrappedRouter() != null) ? getWrappedRouter().getRequiredScore() : this.requiredScore;
+		return this.requiredScore;
 	}
 	
 	/**
@@ -316,14 +271,7 @@ public class Router extends Chainer
 	 */
 	public void setRequiredScore(float score)
 	{
-		if(getWrappedRouter() != null)
-		{
-			getWrappedRouter().setRequiredScore(score);
-		}
-		else
-		{
-			this.requiredScore = score;
-		}
+		this.requiredScore = score;
 	}
 
 	/**
@@ -333,7 +281,7 @@ public class Router extends Chainer
 	 */
 	public int getMaxAttempts()
 	{
-		return (getWrappedRouter() != null) ? getWrappedRouter().getMaxAttempts() : this.maxAttempts;
+		return this.maxAttempts;
 	}
 	
 	/**
@@ -343,14 +291,7 @@ public class Router extends Chainer
 	 */
 	public void setMaxAttempts(int maxAttempts)
 	{
-		if(getWrappedRouter() != null)
-		{
-			getWrappedRouter().setMaxAttempts(maxAttempts);
-		}
-		else
-		{
-			this.maxAttempts = maxAttempts;
-		}
+		this.maxAttempts = maxAttempts;
 	}
 
 	/**
@@ -359,7 +300,7 @@ public class Router extends Chainer
 	 */
 	public long getRetryDelay()
 	{
-		return (getWrappedRouter() != null) ? getWrappedRouter().getRetryDelay() : this.retryDelay;
+		return this.retryDelay;
 	}
 	
 	/**
@@ -368,14 +309,7 @@ public class Router extends Chainer
 	 */
 	public void setRetryDelay(long retryDelay)
 	{
-		if(getWrappedRouter() != null)
-		{
-			getWrappedRouter().setRetryDelay(retryDelay);
-		}
-		else
-		{
-			this.retryDelay = retryDelay;
-		}
+		this.retryDelay = retryDelay;
 	}
 	
 }

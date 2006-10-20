@@ -35,11 +35,11 @@ import java.util.List;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
+import org.restlet.Application;
 import org.restlet.Client;
 import org.restlet.Container;
 import org.restlet.Context;
-import org.restlet.Handler;
-import org.restlet.Holder;
+import org.restlet.Restlet;
 import org.restlet.Router;
 import org.restlet.Scorer;
 import org.restlet.Server;
@@ -58,11 +58,13 @@ import org.restlet.data.Resource;
 import org.restlet.data.Response;
 import org.restlet.data.Status;
 import org.restlet.data.Tag;
+import org.restlet.spi.Helper;
 import org.restlet.util.ClientList;
 import org.restlet.util.ScorerList;
 import org.restlet.util.ServerList;
 
 import com.noelios.restlet.data.StringRepresentation;
+import com.noelios.restlet.impl.application.ApplicationHelper;
 import com.noelios.restlet.impl.util.Base64;
 import com.noelios.restlet.impl.util.ClientListImpl;
 import com.noelios.restlet.impl.util.DateUtils;
@@ -85,11 +87,19 @@ public class Factory extends org.restlet.spi.Factory
 
 	public static final String VERSION_HEADER = "Noelios-Restlet-Engine/" + VERSION_SHORT;
 
+	/**
+	 * Registers the Noelios Restlet Engine
+	 */
+	public static void register()
+	{
+		Factory.setInstance(new Factory());
+	}
+
 	/** List of available client connectors. */
-	private List<Client> clients;
+	private List<ConnectorHelper> registeredClients;
 
 	/** List of available server connectors. */
-	private List<Server> servers;
+	private List<ConnectorHelper> registeredServers;
 
 	/**
 	 * Constructor.
@@ -97,8 +107,8 @@ public class Factory extends org.restlet.spi.Factory
 	@SuppressWarnings("unchecked")
 	public Factory()
 	{
-		this.clients = new ArrayList<Client>();
-		this.servers = new ArrayList<Server>();
+		this.registeredClients = new ArrayList<ConnectorHelper>();
+		this.registeredServers = new ArrayList<ConnectorHelper>();
 
 		// Find the factory class name
 		String line = null;
@@ -112,7 +122,7 @@ public class Factory extends org.restlet.spi.Factory
 		try
 		{
 			for (Enumeration<URL> configUrls = cl
-					.getResources("META-INF/services/org.restlet.connector.Client"); configUrls
+					.getResources("META-INF/services/com.noelios.restlet.impl.ClientHelper"); configUrls
 					.hasMoreElements();)
 			{
 				configURL = configUrls.nextElement();
@@ -132,9 +142,10 @@ public class Factory extends org.restlet.spi.Factory
 							// Instantiate the factory
 							try
 							{
-								Class<? extends Client> providerClass = (Class<? extends Client>) Class
+								Class<? extends ConnectorHelper> providerClass = (Class<? extends ConnectorHelper>) Class
 										.forName(provider);
-								this.clients.add(providerClass.getConstructor(Context.class).newInstance(new Context()));
+								this.registeredClients.add(providerClass.getConstructor(
+										Client.class).newInstance((Client) null));
 							}
 							catch (Exception e)
 							{
@@ -163,7 +174,7 @@ public class Factory extends org.restlet.spi.Factory
 		try
 		{
 			for (Enumeration<URL> configUrls = cl
-					.getResources("META-INF/services/org.restlet.connector.Server"); configUrls
+					.getResources("META-INF/services/com.noelios.restlet.impl.ServerHelper"); configUrls
 					.hasMoreElements();)
 			{
 				configURL = configUrls.nextElement();
@@ -183,10 +194,10 @@ public class Factory extends org.restlet.spi.Factory
 							// Instantiate the factory
 							try
 							{
-								Class<? extends Server> providerClass = (Class<? extends Server>) Class
+								Class<? extends ConnectorHelper> providerClass = (Class<? extends ConnectorHelper>) Class
 										.forName(provider);
-								this.servers.add(providerClass.getConstructor(Context.class, String.class,
-										int.class).newInstance(new Context(), null, new Integer(-1)));
+								this.registeredServers.add(providerClass.getConstructor(
+										Server.class).newInstance((Server) null));
 							}
 							catch (Exception e)
 							{
@@ -213,51 +224,41 @@ public class Factory extends org.restlet.spi.Factory
 	}
 
 	/**
-	 * Parses a line to extract the provider class name.
-	 * @param line The line to parse.
-	 * @return The provider's class name or an empty string.
+	 * Create a new list of client connectors.
+	 * @param context The context.
+	 * @return A new list of client connectors.
 	 */
-	private String getProviderClassName(String line)
+	public ClientList createClientList(Context context)
 	{
-		int index = line.indexOf('#');
-		if (index != -1) line = line.substring(0, index);
-		return line.trim();
+		return new ClientListImpl(context);
 	}
 
 	/**
-	 * Registers the Noelios Restlet Engine
+	 * Creates a new helper for a given container.
+	 * @param application The application to help.
+	 * @param parentContext The parent context, typically the container's context.
+	 * @return The new helper.
 	 */
-	public static void register()
+	public Helper createHelper(Application application, Context parentContext)
 	{
-		Factory.setInstance(new Factory());
+		return new ApplicationHelper(application, parentContext);
 	}
 
-   /**
-    * Creates a new holder using the given context.
-    * @param context The context.
-    * @param next The attached handler.
-    * @return The new holder.
-    */
-   public Holder createHolder(Context context, Handler next)
-   {
-   	return new HolderImpl(context, next);
-   }
-
 	/**
-	 * Create a new client connector for a given protocol.
-    * @param context The context.
-	 * @param protocols The connector protocols.
-	 * @return The new client connector.
+	 * Creates a new helper for a given client connector.
+	 * @param client The client to help.
+	 * @return The new helper.
 	 */
-	public Client createClient(Context context, List<Protocol> protocols)
+	public Helper createHelper(Client client)
 	{
-		for (Client client : this.clients)
+		for (ConnectorHelper registeredClient : this.registeredClients)
 		{
-			if (client.getProtocols().containsAll(protocols))
+			if (registeredClient.getSupportedProtocols().containsAll(client.getProtocols()))
 			{
 				try
 				{
-					return client.getClass().getConstructor(Context.class).newInstance(context);
+					return registeredClient.getClass().getConstructor(Client.class)
+							.newInstance(client);
 				}
 				catch (Exception e)
 				{
@@ -265,69 +266,43 @@ public class Factory extends org.restlet.spi.Factory
 							"Exception while instantiation the client connector.", e);
 				}
 
-				return client;
+				return registeredClient;
 			}
 		}
 
-		logger
-				.log(Level.WARNING,
-						"No available client connector supports the required protocols: "
-								+ protocols);
+		logger.log(Level.WARNING,
+				"No available client connector supports the required protocols: "
+						+ client.getProtocols());
 		return null;
 	}
 
-   /**
-    * Create a new list of client connectors.
-    * @param context The context.
-    * @return A new list of client connectors.
-    */
-   public ClientList createClientList(Context context)
-   {
-   	return new ClientListImpl(context);
-   }
-
-   /**
-    * Create a new list of server connectors.
-    * @param context The context.
-	 * @param target The target handler of added servers.
-    * @return A new list of server connectors.
-    */
-   public ServerList createServerList(Context context, Handler target)
-   {
-   	return new ServerListImpl(context, target);
-   }
-
-   /**
-    * Creates a new container.
-    * @return The new container.
-    */
-   public Container createContainer()
-   {
-   	return new com.noelios.restlet.impl.ContainerImpl();
-   }
-   
-   /**
-    * Create a new server connector for internal usage by the GenericClient.
-    * @param context The context.
-    * @param protocols The connector protocols.
-    * @param address The optional listening IP address (local host used if null).
-    * @param port The listening port.
-	 * @param target The target handler.
-    * @return The new server connector.
-    */
-   public Server createServer(Context context, List<Protocol> protocols, String address, int port, Handler target)
+	/**
+	 * Creates a new helper for a given container.
+	 * @param container The container to help.
+	 * @return The new helper.
+	 */
+	public Helper createHelper(Container container)
 	{
-   	Server result = null;
-   	
-		for (Server server : this.servers)
+		return new ContainerHelper(container);
+	}
+
+	/**
+	 * Creates a new helper for a given server connector.
+	 * @param server The server to help.
+	 * @return The new helper.
+	 */
+	public Helper createHelper(Server server)
+	{
+		Helper result = null;
+
+		for (ConnectorHelper registeredServer : this.registeredServers)
 		{
-			if (server.getProtocols().containsAll(protocols))
+			if (registeredServer.getSupportedProtocols().containsAll(server.getProtocols()))
 			{
 				try
 				{
-					result = server.getClass().getConstructor(Context.class, String.class, int.class)
-							.newInstance(context, address, port);
-					result.setTarget(target);
+					result = registeredServer.getClass().getConstructor(Server.class)
+							.newInstance(server);
 					return result;
 				}
 				catch (Exception e)
@@ -342,11 +317,11 @@ public class Factory extends org.restlet.spi.Factory
 		StringBuilder sb = new StringBuilder();
 		sb.append("No available server connector supports the required protocols: ");
 
-		for (Protocol p : protocols)
+		for (Protocol p : server.getProtocols())
 		{
 			sb.append(p.getName()).append(" ");
 		}
-		
+
 		logger.log(Level.WARNING, sb.toString());
 
 		return null;
@@ -363,28 +338,39 @@ public class Factory extends org.restlet.spi.Factory
 	}
 
 	/**
-	 * Creates a URI-based handler attachment that will score target instance shared by all calls.
+	 * Creates a URI-based Restlet attachment that will score target instance shared by all calls.
 	 * The score will be proportional to the number of chararacters matched by the pattern, from the start
 	 * of the context resource path.
 	 * @param router The parent router.
 	 * @param pattern The URI pattern used to map calls (see {@link java.util.regex.Pattern} for the syntax).
-	 * @param target The target handler to attach.
+	 * @param target The target Restlet to attach.
 	 * @see java.util.regex.Pattern
 	 */
-	public Scorer createScorer(Router router, String pattern, Handler target)
+	public Scorer createScorer(Router router, String pattern, Restlet target)
 	{
 		return new PatternScorer(router, pattern, target);
 	}
 
-   /**
-    * Creates a new scorer list.
+	/**
+	 * Creates a new scorer list.
 	 * @param router The parent router.
-    * @return The new scorer list.
-    */
-   public ScorerList createScorerList(Router router)
-   {
-   	return new ScorerListImpl(router);
-   }
+	 * @return The new scorer list.
+	 */
+	public ScorerList createScorerList(Router router)
+	{
+		return new ScorerListImpl(router);
+	}
+
+	/**
+	 * Create a new list of server connectors.
+	 * @param context The context.
+	 * @param target The target Restlet of added servers.
+	 * @return A new list of server connectors.
+	 */
+	public ServerList createServerList(Context context, Restlet target)
+	{
+		return new ServerListImpl(context, target);
+	}
 
 	/**
 	 * Returns the best variant representation for a given resource according the the client preferences.
@@ -630,6 +616,18 @@ public class Factory extends org.restlet.spi.Factory
 	}
 
 	/**
+	 * Parses a line to extract the provider class name.
+	 * @param line The line to parse.
+	 * @return The provider's class name or an empty string.
+	 */
+	private String getProviderClassName(String line)
+	{
+		int index = line.indexOf('#');
+		if (index != -1) line = line.substring(0, index);
+		return line.trim();
+	}
+
+	/**
 	 * Indicates if the searched parameter is specified in the given media range.
 	 * @param searchedParam The searched parameter.
 	 * @param mediaRange The media range to inspect.
@@ -677,16 +675,49 @@ public class Factory extends org.restlet.spi.Factory
 	}
 
 	/**
+	 * Sets the credentials of a challenge response using a user ID and a password.<br/>
+	 * @param response The challenge response to set.
+	 * @param userId The user identifier to use.
+	 * @param password The user password.
+	 */
+	public void setCredentials(ChallengeResponse response, String userId, String password)
+	{
+		try
+		{
+			if (response.getScheme().equals(ChallengeScheme.HTTP_BASIC))
+			{
+				String credentials = userId + ':' + password;
+				response.setCredentials(Base64.encodeBytes(credentials.getBytes("US-ASCII")));
+			}
+			else if (response.getScheme().equals(ChallengeScheme.SMTP_PLAIN))
+			{
+				String credentials = "^@" + userId + "^@" + password;
+				response.setCredentials(Base64.encodeBytes(credentials.getBytes("US-ASCII")));
+			}
+			else
+			{
+				throw new IllegalArgumentException(
+						"Challenge scheme not supported by this implementation");
+			}
+		}
+		catch (UnsupportedEncodingException e)
+		{
+			throw new RuntimeException("Unsupported encoding, unable to encode credentials");
+		}
+	}
+
+	/**
 	 * Sets the best representation of a given resource according to the client preferences.<br/>
 	 * If no representation is found, sets the status to "Not found".<br/>
 	 * If no acceptable representation is available, sets the status to "Not acceptable".<br/>
-    * @param request The request containing the client preferences.
-    * @param response The response to update with the best entity.
+	 * @param request The request containing the client preferences.
+	 * @param response The response to update with the best entity.
 	 * @param resource The resource for which the best representation needs to be set.
 	 * @param fallbackLanguage The language to use if no preference matches.
 	 * @see <a href="http://httpd.apache.org/docs/2.2/en/content-negotiation.html#algorithm">Apache content negotiation algorithm</a>
 	 */
-	public void setResponseEntity(Request request, Response response, Resource resource, Language fallbackLanguage)
+	public void setResponseEntity(Request request, Response response, Resource resource,
+			Language fallbackLanguage)
 	{
 		List<Representation> variants = resource.getVariants();
 
@@ -698,8 +729,8 @@ public class Factory extends org.restlet.spi.Factory
 		else
 		{
 			// Compute the best variant
-			Representation bestVariant = request.getClientInfo().getPreferredVariant(variants,
-					fallbackLanguage);
+			Representation bestVariant = request.getClientInfo().getPreferredVariant(
+					variants, fallbackLanguage);
 
 			if (bestVariant == null)
 			{
@@ -722,8 +753,8 @@ public class Factory extends org.restlet.spi.Factory
 					{
 						// Check if it matches one of the representations already cached by the client
 						Tag tag;
-						for (Iterator<Tag> iter = request.getConditions().getNoneMatch().iterator(); !matched
-								&& iter.hasNext();)
+						for (Iterator<Tag> iter = request.getConditions().getNoneMatch()
+								.iterator(); !matched && iter.hasNext();)
 						{
 							tag = iter.next();
 							matched = tag.equals(bestVariant.getTag()) || tag.equals(Tag.ALL);
@@ -753,38 +784,6 @@ public class Factory extends org.restlet.spi.Factory
 					response.setStatus(Status.REDIRECTION_NOT_MODIFIED);
 				}
 			}
-		}
-	}
-
-	/**
-	 * Sets the credentials of a challenge response using a user ID and a password.<br/>
-	 * @param response The challenge response to set.
-	 * @param userId The user identifier to use.
-	 * @param password The user password.
-	 */
-	public void setCredentials(ChallengeResponse response, String userId, String password)
-	{
-		try
-		{
-			if (response.getScheme().equals(ChallengeScheme.HTTP_BASIC))
-			{
-				String credentials = userId + ':' + password;
-				response.setCredentials(Base64.encodeBytes(credentials.getBytes("US-ASCII")));
-			}
-			else if (response.getScheme().equals(ChallengeScheme.SMTP_PLAIN))
-			{
-				String credentials = "^@" + userId + "^@" + password;
-				response.setCredentials(Base64.encodeBytes(credentials.getBytes("US-ASCII")));
-			}
-			else
-			{
-				throw new IllegalArgumentException(
-						"Challenge scheme not supported by this implementation");
-			}
-		}
-		catch (UnsupportedEncodingException e)
-		{
-			throw new RuntimeException("Unsupported encoding, unable to encode credentials");
 		}
 	}
 

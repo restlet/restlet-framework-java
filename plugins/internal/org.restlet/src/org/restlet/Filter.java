@@ -26,7 +26,7 @@ import org.restlet.data.Request;
 import org.restlet.data.Response;
 
 /**
- * Chainer to an attached handler that filters calls. The purpose is to do some pre-processing or 
+ * Chainer to an attached Restlet that filters calls. The purpose is to do some pre-processing or 
  * post-processing on the calls going through it before or after they are actually handled by an attached 
  * Restlet. Also note that you can attach and detach targets while handling incoming calls as the filter 
  * is ensured to be thread-safe.
@@ -35,8 +35,16 @@ import org.restlet.data.Response;
  */
 public class Filter extends Chainer
 {
-	/** The next handler. */
-	private Handler next;
+	/** The next Restlet. */
+	private Restlet next;
+
+	/**
+    * Constructor.
+    */
+   public Filter()
+   {
+   	this(null);
+   }
 
 	/**
 	 * Constructor.
@@ -50,148 +58,95 @@ public class Filter extends Chainer
 	/**
 	 * Constructor.
 	 * @param context The context.
-	 * @param next The next handler.
+	 * @param next The next Restlet.
 	 */
-	public Filter(Context context, Handler next)
+	public Filter(Context context, Restlet next)
 	{
 		super(context);
 		this.next = next;
 	}
 
 	/**
-	 * Wrapper constructor.
-	 * @param wrappedFilter The filter to wrap.
-	 */
-	public Filter(Filter wrappedFilter)
-	{
-		super(wrappedFilter);
-	}
-
-	/** 
-	 * Returns the wrapped filter.
-	 * @return The wrapped filter.
-	 */
-	private Filter getWrappedFilter()
-	{
-		return (Filter)getWrappedHandler();
-	}
-
-	/**
-	 * Returns the next handler if available.
+	 * Returns the next Restlet if available.
     * @param request The request to handle.
     * @param response The response to update.
-	 * @return The next handler if available or null.
+	 * @return The next Restlet if available or null.
 	 */
-	public final Handler getNext(Request request, Response response)
+	public final Restlet getNext(Request request, Response response)
 	{
-		return (getWrappedFilter() != null) ? getWrappedFilter().getNext() : getNext();
+		return getNext();
 	}
 
 	/**
-	 * Sets the next handler.
-	 * @param next The next handler.
+	 * Sets the next Restlet.
+	 * @param next The next Restlet.
 	 */
-	public void setNext(Handler next)
+	public void setNext(Restlet next)
 	{
-		if(getWrappedFilter() != null)
-		{
-			getWrappedFilter().setNext(next);
-		}
-		else
-		{
-			this.next = next;
-		}
+		this.next = next;
 	}
 
 	/**
-	 * Returns the next handler.
-	 * @return The next handler or null.
+	 * Returns the next Restlet.
+	 * @return The next Restlet or null.
 	 */
-	public Handler getNext()
+	public Restlet getNext()
 	{
-		return (getWrappedFilter() != null) ? getWrappedFilter().getNext() : this.next;
+		return this.next;
 	}
 
 	/**
-	 * Indicates if there is a next handler.
-	 * @return True if there is a next handler.
+	 * Indicates if there is a next Restlet.
+	 * @return True if there is a next Restlet.
 	 */
 	public boolean hasNext()
 	{
-		return (getWrappedFilter() != null) ? getWrappedFilter().hasNext() : getNext() != null;
+		return getNext() != null;
 	}
 
 	/**
 	 * Handles a call by first invoking the beforeHandle() method for pre-filtering, then distributing the call 
-	 * to the next handler via the doHandle() method. When the handling is completed, it finally 
+	 * to the next Restlet via the doHandle() method. When the handling is completed, it finally 
 	 * invokes the afterHandle() method for post-filtering.
     * @param request The request to handle.
     * @param response The response to update.
 	 */
-	public void handle(Request request, Response response)
+	public final void handle(Request request, Response response)
 	{
-		if(getWrappedFilter() != null)
-		{
-			getWrappedFilter().handle(request, response);
-		}
-		else
-		{
-   		init(request, response);
-			beforeHandle(request, response);
-			doHandle(request, response);
-			afterHandle(request, response);
-		}
+		init(request, response);
+		beforeHandle(request, response);
+		doHandle(request, response);
+		afterHandle(request, response);
 	}
 
 	/**
-	 * Allows filtering before processing by the next handler. Does nothing by default.
+	 * Allows filtering before processing by the next Restlet. Does nothing by default.
     * @param request The request to handle.
     * @param response The response to update.
 	 */
 	protected void beforeHandle(Request request, Response response)
 	{
-		if(getWrappedFilter() != null)
-		{
-			getWrappedFilter().beforeHandle(request, response);
-		}
-		else
-		{
-			// To be overriden
-		}
+		// To be overriden
 	}
 
 	/**
-	 * Handles the call by distributing it to the next handler. 
+	 * Handles the call by distributing it to the next Restlet. 
     * @param request The request to handle.
     * @param response The response to update.
 	 */
 	protected void doHandle(Request request, Response response)
 	{
-		if(getWrappedFilter() != null)
-		{
-			getWrappedFilter().doHandle(request, response);
-		}
-		else
-		{
-			// Reuse the chainer's logic
-			super.handle(request, response);
-		}
+		// Reuse the chainer's logic
+		super.handle(request, response);
 	}
 
 	/**
-	 * Allows filtering after processing by the next handler. Does nothing by default.
+	 * Allows filtering after processing by the next Restlet. Does nothing by default.
     * @param request The request to handle.
     * @param response The response to update.
 	 */
 	protected void afterHandle(Request request, Response response)
 	{
-		if(getWrappedFilter() != null)
-		{
-			getWrappedFilter().afterHandle(request, response);
-		}
-		else
-		{
-			// To be overriden
-		}
+		// To be overriden
 	}
 }

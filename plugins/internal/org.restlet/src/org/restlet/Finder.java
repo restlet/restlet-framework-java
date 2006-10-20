@@ -33,20 +33,26 @@ import org.restlet.data.Status;
  * Restlet capable of finding a target Resource. It should have all the necessary 
  * information in order to find the resource that is the actual target of the call and to handle
  * the required method on it. 
+ * 
+ * It is comparable to an HttpServlet class as it provides facility methods to handle the most common method
+ * names. The calls are then automatically dispatched to the appropriate handle*() method (where the '*'
+ * character corresponds to the method name, or to the handleOthers() method. By default, the implementation
+ * of the handle*() or handleOthers() methods is to invoke the defaultHandle() method which should be 
+ * overriden to change the default behavior (set the status to SERVER_ERROR_NOT_IMPLEMENTED).
+ * 
  * @author Jerome Louvel (contact@noelios.com) <a href="http://www.noelios.com/">Noelios Consulting</a>
  */
-public class Finder extends Restlet
+public abstract class Finder extends Restlet
 {
 	/** The language to use if content negotiation fails. */
 	private Language fallbackLanguage;
 
 	/**
-	 * Wrapper constructor.
-	 * @param wrappedFinder The wrapped finder.
+	 * Constructor.
 	 */
-	public Finder(Finder wrappedFinder)
+	public Finder()
 	{
-		super(wrappedFinder);
+		this(null);
 	}
 
 	/**
@@ -59,200 +65,23 @@ public class Finder extends Restlet
 	}
 
 	/**
-	 * Returns the wrapped finder.
-	 * @return The wrapped finder.
+	 * Default implementation for all the handle*() methods that simply returns a client error 
+	 * indicating that the method is not allowed. 
+	 * @param request The request to handle.
+	 * @param response The response to update.
 	 */
-	private Finder getWrappedFinder()
+	protected void defaultHandle(Request request, Response response)
 	{
-		return (Finder)getWrappedHandler();
+		response.setStatus(Status.SERVER_ERROR_NOT_IMPLEMENTED);
 	}
 
 	/**
 	 * Finds the target Resource if available.
-    * @param request The request to handle.
-    * @param response The response to update.
+	 * @param request The request to handle.
+	 * @param response The response to update.
 	 * @return The target resource if available or null.
 	 */
-	public Resource findTarget(Request request, Response response)
-	{
-		return (getWrappedFinder() != null) ? getWrappedFinder().findTarget(request, response) : null;
-	}
-
-	/**
-	 * Handles a GET call by automatically returning the best entity available from the target resource (as provided
-	 * by the 'findTarget' method). The content negotiation is based on the client's preferences available in the 
-	 * handled call.
-    * @param request The request to handle.
-    * @param response The response to update.
-	 */
-	protected void handleGet(Request request, Response response)
-	{
-		if(getWrappedFinder() != null)
-		{
-			getWrappedFinder().handleGet(request, response);
-		}
-		else
-		{
-			Resource target = findTarget(request, response);
-	
-			if (target != null)
-			{
-				if(target.allowGet())
-				{
-					response.setEntity(target, getFallbackLanguage());
-				}
-				else
-				{
-					response.setStatus(Status.CLIENT_ERROR_METHOD_NOT_ALLOWED);
-				}
-	
-				setAllowedMethods(target, response);
-			}
-			else
-			{
-				response.setStatus(Status.CLIENT_ERROR_NOT_FOUND);
-			}
-		}
-	}
-	
-	/**
-	 * Handles a HEAD call, using a logic similat to the handleGet method.
-    * @param request The request to handle.
-    * @param response The response to update.
-	 */
-	protected void handleHead(Request request, Response response)
-	{
-		if(getWrappedFinder() != null)
-		{
-			getWrappedFinder().handleHead(request, response);
-		}
-		else
-		{
-			handleGet(request, response);
-		}
-	}
-
-	/**
-	 * Handles a DELETE call invoking the 'delete' method of the target resource (as provided by the 'findTarget' 
-	 * method).
-    * @param request The request to handle.
-    * @param response The response to update.
-	 */
-	protected void handleDelete(Request request, Response response)
-	{
-		if(getWrappedFinder() != null)
-		{
-			getWrappedFinder().handleDelete(request, response);
-		}
-		else
-		{
-			Resource target = findTarget(request, response);
-	
-			if (target != null)
-			{
-				if(target.allowDelete())
-				{
-					response.setStatus(target.delete().getStatus());
-				}
-				else
-				{
-					response.setStatus(Status.CLIENT_ERROR_METHOD_NOT_ALLOWED);
-				}
-	
-				setAllowedMethods(target, response);
-			}
-			else
-			{
-				response.setStatus(Status.CLIENT_ERROR_NOT_FOUND);
-			}
-		}
-	}
-
-	/**
-	 * Handles a POST call invoking the 'post' method of the target resource (as provided by the 'findTarget' method).
-    * @param request The request to handle.
-    * @param response The response to update.
-	 */
-	protected void handlePost(Request request, Response response)
-	{
-		if(getWrappedFinder() != null)
-		{
-			getWrappedFinder().handlePost(request, response);
-		}
-		else
-		{
-			Resource target = findTarget(request, response);
-	
-			if (target != null)
-			{
-				if(target.allowPost())
-				{
-					if (request.isEntityAvailable())
-					{
-						response.setStatus(target.post(request.getEntity()).getStatus());
-					}
-					else
-					{
-						response.setStatus(new Status(Status.CLIENT_ERROR_NOT_ACCEPTABLE,
-						"Missing request entity"));
-					}
-				}
-				else
-				{
-					response.setStatus(Status.CLIENT_ERROR_METHOD_NOT_ALLOWED);
-				}
-	
-				setAllowedMethods(target, response);
-			}
-			else
-			{
-				response.setStatus(Status.CLIENT_ERROR_NOT_FOUND);
-			}
-		}
-	}
-
-	/**
-	 * Handles a PUT call invoking the 'put' method of the target resource (as provided by the 'findTarget' method).
-    * @param request The request to handle.
-    * @param response The response to update.
-	 */
-	protected void handlePut(Request request, Response response)
-	{
-		if(getWrappedFinder() != null)
-		{
-			getWrappedFinder().handlePut(request, response);
-		}
-		else
-		{
-			Resource target = findTarget(request, response);
-	
-			if (target != null)
-			{
-				if(target.allowPut())
-				{
-					if (request.isEntityAvailable())
-					{
-						response.setStatus(target.put(request.getEntity()).getStatus());
-					}
-					else
-					{
-						response.setStatus(new Status(Status.CLIENT_ERROR_NOT_ACCEPTABLE,
-								"Missing request entity"));
-					}
-				}
-				else
-				{
-					response.setStatus(Status.CLIENT_ERROR_METHOD_NOT_ALLOWED);
-				}
-	
-				setAllowedMethods(target, response);
-			}
-			else
-			{
-				response.setStatus(Status.CLIENT_ERROR_NOT_FOUND);
-			}
-		}
-	}
+	public abstract Resource findTarget(Request request, Response response);
 
 	/**
 	 * Returns the language to use if content negotiation fails.
@@ -260,7 +89,242 @@ public class Finder extends Restlet
 	 */
 	public Language getFallbackLanguage()
 	{
-		return (getWrappedFinder() != null) ? getWrappedFinder().getFallbackLanguage() : this.fallbackLanguage;
+		return this.fallbackLanguage;
+	}
+
+	/**
+	 * Handles a call.
+	 * @param request The request to handle.
+	 * @param response The response to update.
+	 */
+	public void handle(Request request, Response response)
+	{
+		init(request, response);
+
+		if (isStarted())
+		{
+			Method method = request.getMethod();
+
+			if (method == null)
+			{
+				handleOthers(request, response);
+			}
+			else if (method.equals(Method.GET))
+			{
+				handleGet(request, response);
+			}
+			else if (method.equals(Method.POST))
+			{
+				handlePost(request, response);
+			}
+			else if (method.equals(Method.PUT))
+			{
+				handlePut(request, response);
+			}
+			else if (method.equals(Method.DELETE))
+			{
+				handleDelete(request, response);
+			}
+			else if (method.equals(Method.HEAD))
+			{
+				handleHead(request, response);
+			}
+			else if (method.equals(Method.CONNECT))
+			{
+				handleConnect(request, response);
+			}
+			else if (method.equals(Method.OPTIONS))
+			{
+				handleOptions(request, response);
+			}
+			else if (method.equals(Method.TRACE))
+			{
+				handleTrace(request, response);
+			}
+			else
+			{
+				handleOthers(request, response);
+			}
+		}
+	}
+
+	/**
+	 * Handles a CONNECT call.
+	 * @param request The request to handle.
+	 * @param response The response to update.
+	 */
+	protected void handleConnect(Request request, Response response)
+	{
+		defaultHandle(request, response);
+	}
+
+	/**
+	 * Handles a DELETE call invoking the 'delete' method of the target resource (as provided by the 'findTarget' 
+	 * method).
+	 * @param request The request to handle.
+	 * @param response The response to update.
+	 */
+	protected void handleDelete(Request request, Response response)
+	{
+		Resource target = findTarget(request, response);
+
+		if (target != null)
+		{
+			if (target.allowDelete())
+			{
+				response.setStatus(target.delete().getStatus());
+			}
+			else
+			{
+				response.setStatus(Status.CLIENT_ERROR_METHOD_NOT_ALLOWED);
+			}
+
+			setAllowedMethods(target, response);
+		}
+		else
+		{
+			response.setStatus(Status.CLIENT_ERROR_NOT_FOUND);
+		}
+	}
+
+	/**
+	 * Handles a GET call by automatically returning the best entity available from the target resource (as provided
+	 * by the 'findTarget' method). The content negotiation is based on the client's preferences available in the 
+	 * handled call.
+	 * @param request The request to handle.
+	 * @param response The response to update.
+	 */
+	protected void handleGet(Request request, Response response)
+	{
+		Resource target = findTarget(request, response);
+
+		if (target != null)
+		{
+			if (target.allowGet())
+			{
+				response.setEntity(target, getFallbackLanguage());
+			}
+			else
+			{
+				response.setStatus(Status.CLIENT_ERROR_METHOD_NOT_ALLOWED);
+			}
+
+			setAllowedMethods(target, response);
+		}
+		else
+		{
+			response.setStatus(Status.CLIENT_ERROR_NOT_FOUND);
+		}
+	}
+
+	/**
+	 * Handles a HEAD call, using a logic similat to the handleGet method.
+	 * @param request The request to handle.
+	 * @param response The response to update.
+	 */
+	protected void handleHead(Request request, Response response)
+	{
+		handleGet(request, response);
+	}
+
+	/**
+	 * Handles a OPTIONS call.
+	 * @param request The request to handle.
+	 * @param response The response to update.
+	 */
+	protected void handleOptions(Request request, Response response)
+	{
+	}
+
+	/**
+	 * Handles a call with a method that is not directly supported by a special handle*() method.
+	 * @param request The request to handle.
+	 * @param response The response to update.
+	 */
+	protected void handleOthers(Request request, Response response)
+	{
+	}
+
+	/**
+	 * Handles a POST call invoking the 'post' method of the target resource (as provided by the 'findTarget' method).
+	 * @param request The request to handle.
+	 * @param response The response to update.
+	 */
+	protected void handlePost(Request request, Response response)
+	{
+		Resource target = findTarget(request, response);
+
+		if (target != null)
+		{
+			if (target.allowPost())
+			{
+				if (request.isEntityAvailable())
+				{
+					response.setStatus(target.post(request.getEntity()).getStatus());
+				}
+				else
+				{
+					response.setStatus(new Status(Status.CLIENT_ERROR_NOT_ACCEPTABLE,
+							"Missing request entity"));
+				}
+			}
+			else
+			{
+				response.setStatus(Status.CLIENT_ERROR_METHOD_NOT_ALLOWED);
+			}
+
+			setAllowedMethods(target, response);
+		}
+		else
+		{
+			response.setStatus(Status.CLIENT_ERROR_NOT_FOUND);
+		}
+	}
+
+	/**
+	 * Handles a PUT call invoking the 'put' method of the target resource (as provided by the 'findTarget' method).
+	 * @param request The request to handle.
+	 * @param response The response to update.
+	 */
+	protected void handlePut(Request request, Response response)
+	{
+		Resource target = findTarget(request, response);
+
+		if (target != null)
+		{
+			if (target.allowPut())
+			{
+				if (request.isEntityAvailable())
+				{
+					response.setStatus(target.put(request.getEntity()).getStatus());
+				}
+				else
+				{
+					response.setStatus(new Status(Status.CLIENT_ERROR_NOT_ACCEPTABLE,
+							"Missing request entity"));
+				}
+			}
+			else
+			{
+				response.setStatus(Status.CLIENT_ERROR_METHOD_NOT_ALLOWED);
+			}
+
+			setAllowedMethods(target, response);
+		}
+		else
+		{
+			response.setStatus(Status.CLIENT_ERROR_NOT_FOUND);
+		}
+	}
+
+	/**
+	 * Handles a TRACE call.
+	 * @param request The request to handle.
+	 * @param response The response to update.
+	 */
+	protected void handleTrace(Request request, Response response)
+	{
+		defaultHandle(request, response);
 	}
 
 	/**
@@ -270,25 +334,18 @@ public class Finder extends Restlet
 	 */
 	protected void setAllowedMethods(Resource resource, Response response)
 	{
-		if(getWrappedFinder() != null)
+		// Clear the current set of allowed methods
+		response.getAllowedMethods().clear();
+
+		// Introspect the resource for allowed methods
+		if (resource.allowGet())
 		{
-			getWrappedFinder().setAllowedMethods(resource, response);
+			response.getAllowedMethods().add(Method.HEAD);
+			response.getAllowedMethods().add(Method.GET);
 		}
-		else
-		{
-			// Clear the current set of allowed methods
-			response.getAllowedMethods().clear();
-			
-			// Introspect the resource for allowed methods
-			if(resource.allowGet()) 
-			{
-				response.getAllowedMethods().add(Method.HEAD);
-				response.getAllowedMethods().add(Method.GET);
-			}
-			if(resource.allowDelete()) response.getAllowedMethods().add(Method.DELETE);
-			if(resource.allowPost()) response.getAllowedMethods().add(Method.POST);
-			if(resource.allowPut()) response.getAllowedMethods().add(Method.PUT);
-		}
+		if (resource.allowDelete()) response.getAllowedMethods().add(Method.DELETE);
+		if (resource.allowPost()) response.getAllowedMethods().add(Method.POST);
+		if (resource.allowPut()) response.getAllowedMethods().add(Method.PUT);
 	}
 
 	/**
@@ -297,14 +354,7 @@ public class Finder extends Restlet
 	 */
 	public void setFallbackLanguage(Language fallbackLanguage)
 	{
-		if(getWrappedFinder() != null)
-		{
-			getWrappedFinder().setFallbackLanguage(fallbackLanguage);
-		}
-		else
-		{
-			this.fallbackLanguage = fallbackLanguage;
-		}
+		this.fallbackLanguage = fallbackLanguage;
 	}
 
 }

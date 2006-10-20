@@ -27,11 +27,10 @@ import java.util.List;
 
 /**
  * Generic request sent by client connectors. It is then received by server connectors and processed 
- * by handlers implementing UniformInterface. This request can also be processed by a chain of 
- * handlers, on the client or server sides. Requests are uniform across all types of connectors, 
- * protocols and components.
+ * by Restlets. This request can also be processed by a chain of Restlets, on the client or server sides. 
+ * Requests are uniform across all types of connectors, protocols and components.
  * @see org.restlet.data.Response
- * @see org.restlet.Handler
+ * @see org.restlet.Restlet
  * @author Jerome Louvel (contact@noelios.com) <a href="http://www.noelios.com/">Noelios Consulting</a>
  */
 public class Request extends Message

@@ -38,9 +38,9 @@ public class HeadersTest
 {
 	public static void main(String[] args) throws Exception
 	{
-		Restlet handler = new Restlet()
+		Restlet restlet = new Restlet()
 		{
-			public void handleGet(Request request, Response response)
+			public void handle(Request request, Response response)
 			{
 				// ------------------------------
 				// Getting an HTTP request header
@@ -69,7 +69,7 @@ public class HeadersTest
 		};
 
 		// Create the HTTP server and listen on port 8182
-		Server server = new Server(Protocol.HTTP, 8182, handler);
+		Server server = new Server(Protocol.HTTP, 8182, restlet);
 		server.start();
 	}
 

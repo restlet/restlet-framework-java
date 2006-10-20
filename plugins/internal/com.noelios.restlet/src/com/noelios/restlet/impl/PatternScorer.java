@@ -26,7 +26,7 @@ import java.util.logging.Level;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
-import org.restlet.Handler;
+import org.restlet.Restlet;
 import org.restlet.Router;
 import org.restlet.Scorer;
 import org.restlet.data.Reference;
@@ -50,9 +50,9 @@ public class PatternScorer extends Scorer
     * Constructor.
     * @param router The parent router.
     * @param pattern The URI pattern.
-    * @param target The target handler.
+    * @param target The target Restlet.
     */
-   public PatternScorer(Router router, String pattern, Handler target)
+   public PatternScorer(Router router, String pattern, Restlet target)
    {
       super(router, target);
       this.pattern = Pattern.compile(pattern);
@@ -102,13 +102,13 @@ public class PatternScorer extends Scorer
 
       return result;
 	}
-	
+
 	/**
-	 * Handles the call.
+	 * Allows filtering before processing by the next Restlet. Set the base reference. 
     * @param request The request to handle.
     * @param response The response to update.
 	 */
-	public void handle(Request request, Response response)
+	public void beforeHandle(Request request, Response response)
 	{
 		String remainingRef = request.getRelativePart();
 		Matcher matcher = getPattern().matcher(remainingRef);
@@ -144,11 +144,8 @@ public class PatternScorer extends Scorer
 	
 	      if(getLogger().isLoggable(Level.FINE))
 	      {
-	      	getLogger().fine("Delegating the call to the target handler");
+	      	getLogger().fine("Delegating the call to the target Restlet");
 	      }
-	
-	      // Invoke the call restlet
-	      super.handle(request, response);
 	   }
       else
       {

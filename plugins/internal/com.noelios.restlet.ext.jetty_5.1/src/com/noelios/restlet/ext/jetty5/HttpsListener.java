@@ -34,50 +34,51 @@ import org.mortbay.util.InetAddrPort;
  */
 public class HttpsListener extends SslListener
 {
-   /** Serial version identifier. */
-   private static final long serialVersionUID = 1L;
+	/** Serial version identifier. */
+	private static final long serialVersionUID = 1L;
 
-   /** The parent Jetty server. */
-   private JettyServer server;
-   
-   /**
-    * Constructor.
-    * @param server The parent Jetty server.
-    */
-   public HttpsListener(JettyServer server)
-   {
-      this.server = server;
-   }
+	/** The parent Jetty server helper. */
+	private JettyServerHelper helper;
 
-   /**
-    * Constructor.
-    * @param server The parent Jetty server.
-    * @param address The listening address.
-    */
-   public HttpsListener(JettyServer server, InetAddrPort address)
-   {
-      super(address);
-      this.server = server;
-   }
-   
-   /**
-    * Returns the parent Jetty server.
-    * @return The parent Jetty server.
-    */
-   public JettyServer getServer()
-   {
-      return this.server;
-   }
-   
-   /** 
-    * Creates a HTTP connection instance. 
-    * This method can be used to override the connection instance.
-    * @param socket The underlying socket.
-    * @return The created connection.
-    */
-   protected HttpsConnection createConnection(Socket socket) throws IOException
-   {
-       return new HttpsConnection(getServer().getLogger(), this, socket.getInetAddress(), socket.getInputStream(), socket.getOutputStream(), socket);
-   }
+	/**
+	 * Constructor.
+	 * @param server The parent Jetty server.
+	 */
+	public HttpsListener(JettyServerHelper server)
+	{
+		this.helper = server;
+	}
+
+	/**
+	 * Constructor.
+	 * @param server The parent Jetty server.
+	 * @param address The listening address.
+	 */
+	public HttpsListener(JettyServerHelper server, InetAddrPort address)
+	{
+		super(address);
+		this.helper = server;
+	}
+
+	/**
+	 * Returns the parent Jetty server.
+	 * @return The parent Jetty server.
+	 */
+	public JettyServerHelper getHelper()
+	{
+		return this.helper;
+	}
+
+	/** 
+	 * Creates a HTTP connection instance. 
+	 * This method can be used to override the connection instance.
+	 * @param socket The underlying socket.
+	 * @return The created connection.
+	 */
+	protected HttpsConnection createConnection(Socket socket) throws IOException
+	{
+		return new HttpsConnection(getHelper().getLogger(), this, socket.getInetAddress(),
+				socket.getInputStream(), socket.getOutputStream(), socket);
+	}
 
 }

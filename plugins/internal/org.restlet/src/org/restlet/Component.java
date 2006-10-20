@@ -27,7 +27,7 @@ import org.restlet.util.ClientList;
 import org.restlet.util.ServerList;
 
 /**
- * Handler managing a set of client and server connectors.<br/>
+ * Restlet managing a set of client and server connectors.<br/>
  * <br/>
  * "A component is an abstract unit of software instructions and internal state that provides a 
  * transformation of data via its interface." Roy T. Fielding
@@ -35,7 +35,7 @@ import org.restlet.util.ServerList;
  * dissertation</a>
  * @author Jerome Louvel (contact@noelios.com) <a href="http://www.noelios.com/">Noelios Consulting</a>
  */
-public abstract class Component extends Handler
+public abstract class Component extends Restlet
 {
 	/** The modifiable list of client connectors. */
 	private ClientList clients;
@@ -45,29 +45,19 @@ public abstract class Component extends Handler
 	
 	/**
 	 * Constructor.
+	 */
+	public Component()
+	{
+		this(null);
+	}
+	
+	/**
+	 * Constructor.
 	 * @param context The context.
 	 */
 	public Component(Context context)
 	{
 		super(context);
-	}
-	
-	/**
-	 * Wrapper constructor.
-	 * @param wrappedComponent The component to wrap.
-	 */
-	public Component(Component wrappedComponent)
-	{
-		super(wrappedComponent);
-	}
-
-	/** 
-	 * Returns the wrapped component.
-	 * @return The wrapped component.
-	 */
-	private Component getWrappedComponent()
-	{
-		return (Component)getWrappedHandler();
 	}
 
 	/**
@@ -76,15 +66,8 @@ public abstract class Component extends Handler
 	 */
 	public ClientList getClients()
 	{
-		if(getWrappedComponent() != null)
-		{
-			return getWrappedComponent().getClients();
-		}
-		else
-		{
-			if(this.clients == null) this.clients = Factory.getInstance().createClientList(getContext());
-			return this.clients;
-		}
+		if(this.clients == null) this.clients = Factory.getInstance().createClientList(getContext());
+		return this.clients;
 	}
 
 	/**
@@ -93,15 +76,8 @@ public abstract class Component extends Handler
 	 */
 	public ServerList getServers()
 	{
-		if(getWrappedComponent() != null)
-		{
-			return getWrappedComponent().getServers();
-		}
-		else
-		{
-			if(this.servers == null) this.servers = Factory.getInstance().createServerList(getContext(), this);
-			return this.servers;
-		}
+		if(this.servers == null) this.servers = Factory.getInstance().createServerList(getContext(), this);
+		return this.servers;
 	}
 	
    /**

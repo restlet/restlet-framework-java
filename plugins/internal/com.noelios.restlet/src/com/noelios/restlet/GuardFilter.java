@@ -97,7 +97,7 @@ public class GuardFilter extends Filter
    }
 
    /**
-	 * Allows filtering before processing by the next handler. Does nothing by default.
+	 * Allows filtering before processing by the next Restlet. Does nothing by default.
     * @param request The request to handle.
     * @param response The response to update.
     */
@@ -110,7 +110,7 @@ public class GuardFilter extends Filter
    }
 
 	/**
-	 * Handles the call by distributing it to the next handler. 
+	 * Handles the call by distributing it to the next Restlet. 
     * @param request The request to handle.
     * @param response The response to update.
 	 */

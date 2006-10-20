@@ -22,287 +22,158 @@
 
 package org.restlet;
 
-import org.restlet.data.Method;
+import java.util.logging.Level;
+import java.util.logging.Logger;
+
 import org.restlet.data.Request;
 import org.restlet.data.Response;
 import org.restlet.data.Status;
 
 /**
- * Handler comparable to an HttpServlet class. It provides facility methods to handle the most common method
- * names. The calls are then automatically dispatched to the appropriate handle*() method (where the '*'
- * character corresponds to the method name, or to the handleOthers() method. By default, the implementation
- * of the handle*() or handleOthers() methods is to invoke the defaultHandle() method which should be 
- * overriden to change the default behavior (set the status to SERVER_ERROR_NOT_IMPLEMENTED).
+ * Base class exposing a uniform REST interface.<br/>
+ * <br/>
+ * "The central feature that distinguishes the REST architectural style from other network-based styles is 
+ * its emphasis on a uniform interface between components. By applying the software engineering principle of 
+ * generality to the component interface, the overall system architecture is simplified and the visibility 
+ * of interactions is improved. Implementations are decoupled from the services they provide, which 
+ * encourages independent evolvability." Roy T. Fielding<br/>
+ * <br/>
+ * It has many subclasses that focus on a specific ways to handle calls like filtering, routing or finding 
+ * a target resource. The context property is typically provided by a parent container as a way to give 
+ * access to features such as logging and client connectors. 
+ * @see <a href="http://www.ics.uci.edu/~fielding/pubs/dissertation/rest_arch_style.htm#sec_5_1_5">Source dissertation</a>
  * @author Jerome Louvel (contact@noelios.com) <a href="http://www.noelios.com/">Noelios Consulting</a>
  */
-public class Restlet extends Handler
+public class Restlet
 {
+	/** Error message. */
+	private static final String UNABLE_TO_START = "Unable to start the Restlet";
+
+	/** The context. */
+	private Context context;
+
+	/** Indicates if the restlet was started. */
+	private boolean started;
+
 	/**
 	 * Constructor.
 	 */
 	public Restlet()
 	{
-		this(new Context());
+		this(null);
 	}
-
+	
 	/**
 	 * Constructor.
 	 * @param context The context.
 	 */
 	public Restlet(Context context)
 	{
-		super(context);
+		this.context = context;
+		this.started = false;
 	}
 
 	/**
-	 * Wrapper constructor.
-	 * @param wrappedRestlet The wrapped Restlet.
+	 * Returns the context.
+	 * @return The context.
 	 */
-	public Restlet(Restlet wrappedRestlet)
+	public Context getContext()
 	{
-		super(wrappedRestlet);
+		if(this.context == null) this.context = new Context(getClass().getCanonicalName());
+		return this.context;
 	}
 
 	/**
-	 * Returns the wrapped Restlet.
-	 * @return The wrapped Restlet.
-	 */
-	private Restlet getWrappedRestlet()
-	{
-		return (Restlet)getWrappedHandler();
-	}
-
-	/**
-	 * Default implementation for all the handle*() methods that simply returns a client error 
-	 * indicating that the method is not allowed. 
-	 * @param request The request to handle.
-	 * @param response The response to update.
-	 */
-	protected void defaultHandle(Request request, Response response)
-	{
-		if(getWrappedRestlet() != null)
-		{
-			getWrappedRestlet().defaultHandle(request, response);
-		}
-		else
-		{
-			response.setStatus(Status.SERVER_ERROR_NOT_IMPLEMENTED);
-		}
-	}
-
-	/**
+    * Returns the context's logger.
+    * @return The context's logger.
+    */
+   public Logger getLogger()
+   {
+  		return (getContext() != null) ? getContext().getLogger() : null;
+   }
+   
+   /**
 	 * Handles a call.
 	 * @param request The request to handle.
 	 * @param response The response to update.
 	 */
 	public void handle(Request request, Response response)
 	{
-		if(getWrappedRestlet() != null)
+  		init(request, response);
+	}
+
+	/**
+	 * Initialize the Restlet by attemting to start it.
+	 * @param request The request to handle.
+	 * @param response The response to update.
+	 */
+	protected void init(Request request, Response response)
+	{
+   	// Check if the Restlet was started
+		if (isStopped())
 		{
-			getWrappedRestlet().handle(request, response);
-		}
-		else
-		{
-	  		init(request, response);
-	
+			try
+			{
+				start();
+			}
+			catch (Exception e)
+			{
+				// Occurred while starting the Restlet
+				getContext().getLogger().log(Level.WARNING, UNABLE_TO_START, e);
+				response.setStatus(Status.SERVER_ERROR_INTERNAL);
+			}
+
 			if (isStarted())
 			{
-				Method method = request.getMethod();
-	
-				if (method == null)
-				{
-					handleOthers(request, response);
-				}
-				else if (method.equals(Method.GET))
-				{
-					handleGet(request, response);
-				}
-				else if (method.equals(Method.POST))
-				{
-					handlePost(request, response);
-				}
-				else if (method.equals(Method.PUT))
-				{
-					handlePut(request, response);
-				}
-				else if (method.equals(Method.DELETE))
-				{
-					handleDelete(request, response);
-				}
-				else if (method.equals(Method.HEAD))
-				{
-					handleHead(request, response);
-				}
-				else if (method.equals(Method.CONNECT))
-				{
-					handleConnect(request, response);
-				}
-				else if (method.equals(Method.OPTIONS))
-				{
-					handleOptions(request, response);
-				}
-				else if (method.equals(Method.TRACE))
-				{
-					handleTrace(request, response);
-				}
-				else
-				{
-					handleOthers(request, response);
-				}
+				// Everything went fine, no exception raised
+				response.setStatus(Status.SUCCESS_OK);
+			}
+			else
+			{
+				// No exception raised but the Restlet somehow couldn't be started
+				getContext().getLogger().log(Level.WARNING, UNABLE_TO_START);
+				response.setStatus(Status.SERVER_ERROR_INTERNAL);
 			}
 		}
 	}
 
 	/**
-	 * Handles a CONNECT call.
-	 * @param request The request to handle.
-	 * @param response The response to update.
+	 * Indicates if the Restlet is started.
+	 * @return True if the Restlet is started.
 	 */
-	protected void handleConnect(Request request, Response response)
+	public boolean isStarted()
 	{
-		if(getWrappedRestlet() != null)
-		{
-			getWrappedRestlet().defaultHandle(request, response);
-		}
-		else
-		{
-			defaultHandle(request, response);
-		}
+		return this.started;
+	}
+	
+	/**
+	 * Indicates if the Restlet is stopped.
+	 * @return True if the Restlet is stopped.
+	 */
+	public boolean isStopped()
+	{
+		return !this.started;
 	}
 
 	/**
-	 * Handles a DELETE call.
-	 * @param request The request to handle.
-	 * @param response The response to update.
+	 * Sets the context.
+	 * @param context The context.
 	 */
-	protected void handleDelete(Request request, Response response)
+	public void setContext(Context context)
 	{
-		if(getWrappedRestlet() != null)
-		{
-			getWrappedRestlet().defaultHandle(request, response);
-		}
-		else
-		{
-			defaultHandle(request, response);
-		}
+		this.context = context;
 	}
 
-	/**
-	 * Handles a GET call.
-	 * @param request The request to handle.
-	 * @param response The response to update.
-	 */
-	protected void handleGet(Request request, Response response)
+	/** Starts the Restlet. */
+	public void start() throws Exception
 	{
-		if(getWrappedRestlet() != null)
-		{
-			getWrappedRestlet().defaultHandle(request, response);
-		}
-		else
-		{
-			defaultHandle(request, response);
-		}
+ 		this.started = true;
 	}
 
-	/**
-	 * Handles a HEAD call.
-	 * @param request The request to handle.
-	 * @param response The response to update.
-	 */
-	protected void handleHead(Request request, Response response)
+	/** Stops the Restlet. */
+	public void stop() throws Exception
 	{
-		if(getWrappedRestlet() != null)
-		{
-			getWrappedRestlet().defaultHandle(request, response);
-		}
-		else
-		{
-			defaultHandle(request, response);
-		}
+  		this.started = false;
 	}
 
-	/**
-	 * Handles a OPTIONS call.
-	 * @param request The request to handle.
-	 * @param response The response to update.
-	 */
-	protected void handleOptions(Request request, Response response)
-	{
-		if(getWrappedRestlet() != null)
-		{
-			getWrappedRestlet().defaultHandle(request, response);
-		}
-		else
-		{
-			defaultHandle(request, response);
-		}
-	}
-
-	/**
-	 * Handles a call with a method that is not directly supported by a special handle*() method.
-	 * @param request The request to handle.
-	 * @param response The response to update.
-	 */
-	protected void handleOthers(Request request, Response response)
-	{
-		if(getWrappedRestlet() != null)
-		{
-			getWrappedRestlet().defaultHandle(request, response);
-		}
-		else
-		{
-			defaultHandle(request, response);
-		}
-	}
-
-	/**
-	 * Handles a POST call.
-	 * @param request The request to handle.
-	 * @param response The response to update.
-	 */
-	protected void handlePost(Request request, Response response)
-	{
-		if(getWrappedRestlet() != null)
-		{
-			getWrappedRestlet().defaultHandle(request, response);
-		}
-		else
-		{
-			defaultHandle(request, response);
-		}
-	}
-
-	/**
-	 * Handles a PUT call.
-	 * @param request The request to handle.
-	 * @param response The response to update.
-	 */
-	protected void handlePut(Request request, Response response)
-	{
-		if(getWrappedRestlet() != null)
-		{
-			getWrappedRestlet().defaultHandle(request, response);
-		}
-		else
-		{
-			defaultHandle(request, response);
-		}
-	}
-
-	/**
-	 * Handles a TRACE call.
-	 * @param request The request to handle.
-	 * @param response The response to update.
-	 */
-	protected void handleTrace(Request request, Response response)
-	{
-		if(getWrappedRestlet() != null)
-		{
-			getWrappedRestlet().defaultHandle(request, response);
-		}
-		else
-		{
-			defaultHandle(request, response);
-		}
-	}
 }

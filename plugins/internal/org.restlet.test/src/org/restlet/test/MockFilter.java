@@ -42,7 +42,7 @@ public class MockFilter extends Filter
 	}
 
 	@Override
-	public void handle(Request request, Response response)
+	protected void beforeHandle(Request request, Response response)
 	{
 		if (!super.isStarted())
 		{
@@ -52,7 +52,6 @@ public class MockFilter extends Filter
 		{
 			throw new IllegalStateException("Target is not set");
 		}
-		super.handle(request, response);
 	}
 
 }

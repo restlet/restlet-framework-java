@@ -29,11 +29,11 @@ import java.util.List;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
+import org.restlet.Application;
 import org.restlet.Client;
 import org.restlet.Container;
 import org.restlet.Context;
-import org.restlet.Handler;
-import org.restlet.Holder;
+import org.restlet.Restlet;
 import org.restlet.Router;
 import org.restlet.Scorer;
 import org.restlet.Server;
@@ -42,7 +42,6 @@ import org.restlet.data.ClientInfo;
 import org.restlet.data.Form;
 import org.restlet.data.Language;
 import org.restlet.data.MediaType;
-import org.restlet.data.Protocol;
 import org.restlet.data.Representation;
 import org.restlet.data.Request;
 import org.restlet.data.Resource;
@@ -131,59 +130,58 @@ public abstract class Factory
    }
 
    /**
-    * Creates a new holder using the given context.
-    * @param context The context.
-    * @param next The attached handler.
-    * @return The new holder.
-    */
-   public abstract Holder createHolder(Context context, Handler next);
-
-   /**
-    * Creates a new client connector for a given protocol.
-    * @param context The context.
-    * @param protocols The connector protocols.
-    * @return The new client connector.
-    */
-   public abstract Client createClient(Context context, List<Protocol> protocols);
-
-   /**
     * Create a new list of client connectors.
     * @param context The context.
     * @return A new list of client connectors.
     */
    public abstract ClientList createClientList(Context context);
+   
+   /**
+    * Creates a new helper for a given container.
+    * @param application The application to help.
+	 * @param parentContext The parent context, typically the container's context.
+    * @return The new helper.
+    */
+   public abstract Helper createHelper(Application application, Context parentContext);
 
    /**
-    * Create a new list of server connectors.
-    * @param context The context.
-	 * @param target The target handler of added servers.
-    * @return A new list of server connectors.
+    * Creates a new helper for a given client connector.
+    * @param client The client to help.
+    * @return The new helper.
     */
-   public abstract ServerList createServerList(Context context, Handler target);
-   
+   public abstract Helper createHelper(Client client);
+
    /**
-    * Creates a new container.
-    * @return A new container.
+    * Creates a new helper for a given container.
+    * @param container The container to help.
+    * @return The new helper.
     */
-   public abstract Container createContainer();
-   
+   public abstract Helper createHelper(Container container);
+
+   /**
+    * Creates a new helper for a given server connector.
+    * @param server The server to help.
+    * @return The new helper.
+    */
+   public abstract Helper createHelper(Server server);
+
    /**
     * Creates a string-base representation.
     * @param value The represented string.
     * @param mediaType The representation's media type.
     */
    public abstract Representation createRepresentation(String value, MediaType mediaType);
-
+   
    /**
-    * Creates a URI-based handler attachment that will score chained instance shared by all calls.
+    * Creates a URI-based Restlet attachment that will score chained instance shared by all calls.
     * The score will be proportional to the number of chararacters matched by the pattern, from the start
     * of the context resource path.
     * @param router The parent router.
     * @param uriPattern The URI pattern used to map calls (see {@link java.util.regex.Pattern} for the syntax).
-    * @param target The target handler to attach.
+    * @param target The target Restlet to attach.
     * @see java.util.regex.Pattern
     */
-   public abstract Scorer createScorer(Router router, String uriPattern, Handler target);
+   public abstract Scorer createScorer(Router router, String uriPattern, Restlet target);
 
    /**
     * Creates a new scorer list.
@@ -193,15 +191,12 @@ public abstract class Factory
    public abstract ScorerList createScorerList(Router router);
    
    /**
-    * Create a new server connector for internal usage by the GenericClient.
+    * Create a new list of server connectors.
     * @param context The context.
-    * @param protocols The connector protocols.
-    * @param address The optional listening IP address (local host used if null).
-    * @param port The listening port.
-	 * @param target The target handler.
-    * @return The new server connector.
+	 * @param target The target Restlet of added servers.
+    * @return A new list of server connectors.
     */
-   public abstract Server createServer(Context context, List<Protocol> protocols, String address, int port, Handler target);
+   public abstract ServerList createServerList(Context context, Restlet target);
 
    /**
     * Returns the best variant representation for a given resource according the the client preferences.
@@ -230,6 +225,14 @@ public abstract class Factory
 	public abstract void parse(Logger logger, Form form, String queryString);
 
    /**
+    * Sets the credentials of a challenge response using a user ID and a password.<br/>
+    * @param response The challenge response to set.
+    * @param userId The user identifier to use.
+    * @param password The user password.
+    */
+   public abstract void setCredentials(ChallengeResponse response, String userId, String password);
+
+   /**
     * Sets the best response entity of a given resource according to the client preferences.<br/>
     * If no representation is found, sets the status to "Not found".<br/>
     * If no acceptable representation is available, sets the status to "Not acceptable".<br/>
@@ -240,13 +243,5 @@ public abstract class Factory
     * @see <a href="http://httpd.apache.org/docs/2.2/en/content-negotiation.html#algorithm">Apache content negotiation algorithm</a>
     */
    public abstract void setResponseEntity(Request request, Response response, Resource resource, Language fallbackLanguage);
-
-   /**
-    * Sets the credentials of a challenge response using a user ID and a password.<br/>
-    * @param response The challenge response to set.
-    * @param userId The user identifier to use.
-    * @param password The user password.
-    */
-   public abstract void setCredentials(ChallengeResponse response, String userId, String password);
 
 }

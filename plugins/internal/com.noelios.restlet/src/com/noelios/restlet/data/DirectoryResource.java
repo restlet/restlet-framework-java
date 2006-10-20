@@ -40,7 +40,7 @@ import org.restlet.data.Resource;
 import org.restlet.data.Response;
 import org.restlet.data.Result;
 import org.restlet.data.Status;
-import org.restlet.util.ClientInterface;
+import org.restlet.util.VirtualClient;
 
 import com.noelios.restlet.DirectoryFinder;
 
@@ -202,7 +202,7 @@ public class DirectoryResource extends Resource
 	 * Returns the client interface.
 	 * @return The client interface.
 	 */
-	private ClientInterface getClient()
+	private VirtualClient getClient()
 	{
 		return getDirectory().getContext().getClient();
 	}

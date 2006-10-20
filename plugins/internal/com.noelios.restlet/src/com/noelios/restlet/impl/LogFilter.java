@@ -78,17 +78,24 @@ public class LogFilter extends Filter
       this.logTemplate = (logFormat == null) ? null : new StringTemplate(logFormat);
    }
 
-   /**
-    * Handles a call to a resource or a set of resources.
+	/**
+	 * Allows filtering before processing by the next Restlet. Save the start time. 
     * @param request The request to handle.
     * @param response The response to update.
-    */
-   public void handle(Request request, Response response)
+	 */
+	protected void beforeHandle(Request request, Response response)
    {
-   	beforeHandle(request, response);
-   	
-      long startTime = System.currentTimeMillis();
-      super.handle(request, response);
+      request.getAttributes().put("org.restlet.startTime", System.currentTimeMillis());
+   }
+
+	/**
+	 * Allows filtering after processing by the next Restlet. Log the call. 
+    * @param request The request to handle.
+    * @param response The response to update.
+	 */
+	protected void afterHandle(Request request, Response response)
+	{
+		long startTime = (Long)request.getAttributes().get("org.restlet.startTime");
       int duration = (int)(System.currentTimeMillis() - startTime);
 
       // Format the call into a log entry
@@ -100,8 +107,6 @@ public class LogFilter extends Filter
       {
          this.logger.log(Level.INFO, formatDefault(request, response, duration));
       }
-      
-      afterHandle(request, response);
    }
 
    /**

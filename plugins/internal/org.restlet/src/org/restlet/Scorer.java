@@ -26,7 +26,7 @@ import org.restlet.data.Request;
 import org.restlet.data.Response;
 
 /**
- * Filter scoring the affinity of calls with the attached handler. The score is used by an associated 
+ * Filter scoring the affinity of calls with the attached Restlet. The score is used by an associated 
  * Router in order to determine the most appropriate Restlet for a given call. 
  * @author Jerome Louvel (contact@noelios.com) <a href="http://www.noelios.com/">Noelios Consulting</a>
  */
@@ -38,9 +38,9 @@ public abstract class Scorer extends Filter
    /**
     * Constructor.
     * @param router The parent router.
-    * @param next The next handler.
+    * @param next The next Restlet.
     */
-   public Scorer(Router router, Handler next)
+   public Scorer(Router router, Restlet next)
    {
    	super(router == null ? null : router.getContext(), next);
    	this.router = router;

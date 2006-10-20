@@ -26,10 +26,10 @@ import java.util.Enumeration;
 
 import javax.servlet.Servlet;
 
-import org.restlet.Holder;
-import org.restlet.Container;
+import org.restlet.Application;
+import org.restlet.Context;
 
-import com.noelios.restlet.impl.ApplicationContext;
+import com.noelios.restlet.impl.application.ApplicationContext;
 
 /**
  * Context allowing access to the container's connectors, reusing the Servlet's logging mechanism and
@@ -44,18 +44,17 @@ public class ServletContext extends ApplicationContext
 	/**
 	 * Constructor.
 	 * @param servlet The parent Servlet. 
-	 * @param container The parent container.
-	 * @param applicationDelegate The parent application.
+	 * @param parentContext The parent context.
+	 * @param application The parent application.
 	 */
-	public ServletContext(Servlet servlet, Container container,
-			Holder applicationDelegate)
+	public ServletContext(Servlet servlet, Application application, Context parentContext)
 	{
-		super(container, applicationDelegate, new ServletLogger(servlet.getServletConfig()
+		super(application, parentContext, new ServletLogger(servlet.getServletConfig()
 				.getServletContext()));
 		this.servlet = servlet;
-		
-		// Set the special local client
-		setLocalClient(new ServletLocalClient(container.getContext(), servlet.getServletConfig()
+
+		// Set the special WAR client
+		setWarClient(new ServletWarClient(parentContext, servlet.getServletConfig()
 				.getServletContext()));
 
 		// Copy all the servlet parameters into the context

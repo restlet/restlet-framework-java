@@ -27,13 +27,21 @@ import org.restlet.data.Response;
 import org.restlet.data.Status;
 
 /**
- * Handler part of a processing chain. In addition to handling incoming calls like any Restlet, a handler 
- * can also resolve, either statically or dynamically, the next Restlet that will continue the processing chain.
- * Subclasses only have to implement the findNext() method.
+ * Restlet part of a processing chain. In addition to handling incoming calls like any Restlet, a Chainer
+ * can also resolve, either statically or dynamically, the next Restlet that will continue the processing 
+ * chain. Subclasses only have to implement the getNext() method.
  * @author Jerome Louvel (contact@noelios.com) <a href="http://www.noelios.com/">Noelios Consulting</a>
  */
-public class Chainer extends Handler 
+public abstract class Chainer extends Restlet 
 {
+	/**
+    * Constructor.
+    */
+   public Chainer()
+   {
+   	this(null);
+   }
+
 	/**
     * Constructor.
     * @param context The context.
@@ -42,61 +50,33 @@ public class Chainer extends Handler
    {
    	super(context);
    }
-	
-	/**
-    * Constructor.
-    * @param wrappedChainer The chainer to wrap.
-    */
-   public Chainer(Chainer wrappedChainer)
-   {
-   	super(wrappedChainer);
-   }
 
 	/**
-	 * Handles a call by invoking the next handler if it is available.
+	 * Handles a call by invoking the next Restlet if it is available.
 	 * @param request The request to handle.
 	 * @param response The response to update.
 	 */
 	public void handle(Request request, Response response)
 	{
-		if(getWrappedChainer() != null)
-		{
-			getWrappedChainer().handle(request, response);
-		}
-		else
-		{
-	  		init(request, response);
+  		init(request, response);
 
-	  		Handler next = getNext(request, response);
-	   	if(next != null)
-	   	{
-	      	next.handle(request, response);
-	   	}
-	   	else
-	   	{
-	   		response.setStatus(Status.CLIENT_ERROR_NOT_FOUND);
-	   	}
-		}
+  		Restlet next = getNext(request, response);
+   	if(next != null)
+   	{
+      	next.handle(request, response);
+   	}
+   	else
+   	{
+   		response.setStatus(Status.CLIENT_ERROR_NOT_FOUND);
+   	}
    }
 
-	/** 
-	 * Returns the wrapped chainer.
-	 * @return The wrapped chainer.
-	 */
-	private Chainer getWrappedChainer()
-	{
-		return (Chainer)getWrappedHandler();
-	}
-
    /**
-	 * Returns the next handler if available.
+	 * Returns the next Restlet if available.
     * @param request The request to handle.
     * @param response The response to update.
-	 * @return The next handler if available or null.
+	 * @return The next Restlet if available or null.
 	 */
-	public Handler getNext(Request request, Response response)
-	{
-		return getWrappedChainer() != null ? getWrappedChainer().getNext(request, response) : null;
-	}
+	public abstract Restlet getNext(Request request, Response response);
 	
 }

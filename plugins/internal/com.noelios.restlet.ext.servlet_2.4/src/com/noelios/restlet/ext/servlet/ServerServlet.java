@@ -23,6 +23,7 @@
 package com.noelios.restlet.ext.servlet;
 
 import java.io.IOException;
+import java.util.List;
 
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServlet;
@@ -32,8 +33,10 @@ import javax.servlet.http.HttpServletResponse;
 import org.restlet.Application;
 import org.restlet.Container;
 import org.restlet.Context;
+import org.restlet.Server;
+import org.restlet.data.Protocol;
 
-import com.noelios.restlet.impl.http.HttpServer;
+import com.noelios.restlet.impl.http.HttpServerHelper;
 
 /**
  * Servlet acting like an HTTP server connector. See the getTarget() method for details on how 
@@ -90,15 +93,15 @@ public class ServerServlet extends HttpServlet
 	/** Serial version identifier. */
 	private static final long serialVersionUID = 1L;
 
-	/** The associated HTTP server connector. */
-	private HttpServer server;
+	/** The associated HTTP server helper. */
+	private HttpServerHelper helper;
 
 	/**
 	 * Constructor.
 	 */
 	public ServerServlet()
 	{
-		this.server = null;
+		this.helper = null;
 	}
 
 	/**
@@ -109,11 +112,11 @@ public class ServerServlet extends HttpServlet
 	protected void service(HttpServletRequest request, HttpServletResponse response)
 			throws ServletException, IOException
 	{
-		HttpServer server = getServer(request);
+		HttpServerHelper helper = getServer(request);
 
-		if (server != null)
+		if (helper != null)
 		{
-			server.handle(new ServletCall(server.getLogger(), request, response));
+			helper.handle(new ServletCall(helper.getLogger(), request, response));
 		}
 		else
 		{
@@ -137,9 +140,9 @@ public class ServerServlet extends HttpServlet
 	 * @param request The HTTP Servlet request.
 	 * @return The HTTP server handling calls.
 	 */
-	public HttpServer getServer(HttpServletRequest request)
+	public HttpServerHelper getServer(HttpServletRequest request)
 	{
-		HttpServer result = this.server;
+		HttpServerHelper result = this.helper;
 
 		if (result == null)
 		{
@@ -150,7 +153,8 @@ public class ServerServlet extends HttpServlet
 						NAME_SERVER_ATTRIBUTE_DEFAULT);
 
 				// Look up the attribute for a target
-				result = (HttpServer) getServletContext().getAttribute(serverAttributeName);
+				result = (HttpServerHelper) getServletContext().getAttribute(
+						serverAttributeName);
 
 				if (result == null)
 				{
@@ -167,15 +171,13 @@ public class ServerServlet extends HttpServlet
 
 							// First, let's locate the closest container
 							Container container = new Container();
-							result = new HttpServer(container.getContext());
-							result.setTarget(container);
+							Server server = new Server(container.getContext(), (List<Protocol>)null, request
+									.getLocalAddr(), request.getLocalPort(), container); 
+							result = new HttpServerHelper(server); 
 							getServletContext().setAttribute(NAME_SERVER_ATTRIBUTE, result);
 
 							if (container != null)
 							{
-								// Add the HTTP server connector adapting the Servlet requests 
-								container.getServers().add(result);
-
 								// Create a new instance of the application class
 								Application application = (Application) targetClass
 										.getConstructor(Context.class).newInstance(
@@ -226,7 +228,7 @@ public class ServerServlet extends HttpServlet
 					}
 				}
 
-				this.server = result;
+				this.helper = result;
 			}
 		}
 

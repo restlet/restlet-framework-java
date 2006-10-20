@@ -22,13 +22,10 @@
 
 package com.noelios.restlet.impl.util;
 
-import java.util.Arrays;
-
 import org.restlet.Context;
-import org.restlet.Handler;
+import org.restlet.Restlet;
 import org.restlet.Server;
 import org.restlet.data.Protocol;
-import org.restlet.spi.Factory;
 import org.restlet.util.ServerList;
 import org.restlet.util.WrapperList;
 
@@ -41,15 +38,15 @@ public class ServerListImpl extends WrapperList<Server> implements ServerList
 	/** The context. */
 	private Context context;
 	
-	/** The target handler of added servers. */
-	private Handler target;
+	/** The target Restlet of added servers. */
+	private Restlet target;
 
 	/**
 	 * Constructor.
 	 * @param context The context.
-	 * @param target The target handler of added servers.
+	 * @param target The target Restlet of added servers.
 	 */
-	public ServerListImpl(Context context, Handler target)
+	public ServerListImpl(Context context, Restlet target)
 	{
 		this.context = context;
 		this.target = target;
@@ -65,10 +62,10 @@ public class ServerListImpl extends WrapperList<Server> implements ServerList
 	}
 
 	/**
-	 * Returns the target handler.
-	 * @return The target handler.
+	 * Returns the target Restlet.
+	 * @return The target Restlet.
 	 */
-	public Handler getTarget()
+	public Restlet getTarget()
 	{
 		return this.target;
 	}
@@ -89,8 +86,7 @@ public class ServerListImpl extends WrapperList<Server> implements ServerList
 	 */
 	public Server add(Protocol protocol)
 	{
-		Server result = Factory.getInstance().createServer(getContext(),
-				Arrays.asList(protocol), null, protocol.getDefaultPort(), getTarget());
+		Server result = new Server(getContext(), protocol, null, protocol.getDefaultPort(), getTarget());
 		add(result);
 		return result;
 	}
@@ -103,8 +99,7 @@ public class ServerListImpl extends WrapperList<Server> implements ServerList
 	 */
 	public Server add(Protocol protocol, int port)
 	{
-		Server result = Factory.getInstance().createServer(getContext(),
-				Arrays.asList(protocol), null, port, getTarget());
+		Server result = new Server(getContext(), protocol, null, port, getTarget());
 		add(result);
 		return result;
 	}
@@ -118,8 +113,7 @@ public class ServerListImpl extends WrapperList<Server> implements ServerList
 	 */
 	public Server add(Protocol protocol, String address, int port)
 	{
-		Server result = Factory.getInstance().createServer(getContext(),
-				Arrays.asList(protocol), address, port, getTarget());
+		Server result = new Server(getContext(), protocol, address, port, getTarget());
 		add(result);
 		return result;
 	}

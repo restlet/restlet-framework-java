@@ -71,7 +71,7 @@ public class HttpClientConverter
 	 * @param response The high-level response.
 	 * @return A new high-level uniform call.
 	 */
-	public HttpClientCall toSpecific(HttpClient client, Request request, Response response)
+	public HttpClientCall toSpecific(HttpClientHelper client, Request request, Response response)
 	{
 		// Create the low-level HTTP client call
 		HttpClientCall result = client.create(request);

@@ -25,10 +25,10 @@ package org.restlet;
 import java.util.logging.Logger;
 
 import org.restlet.data.ParameterList;
-import org.restlet.util.ClientInterface;
+import org.restlet.util.VirtualClient;
 
 /**
- * Information and services provided to a handler.
+ * Information and services provided to a Restlet.
  * @author Jerome Louvel (contact@noelios.com) <a href="http://www.noelios.com/">Noelios Consulting</a>
  */
 public class Context
@@ -69,7 +69,7 @@ public class Context
     * Returns a generic client delegate.
     * @return A generic client delegate.
     */
-   public ClientInterface getClient()
+   public VirtualClient getClient()
    {
    	return null;
    }
