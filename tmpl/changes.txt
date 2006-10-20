@@ -116,6 +116,7 @@ Changes log
  - Refactored all usages of the JDK's loggers in order to reuse the Context's logger, allowing separation of messages for each application.
  - Optimized the ByteUtils.write(is, os) method.
  - Added a "defaultScorer" property on Router to have a way to catch calls when no scorer in the normal list matched.
+ - Scorer is no more abstract, default score() returns 1.0.
  
 1.0 beta 18 (2006-08-19)
 [Bugs fixed]

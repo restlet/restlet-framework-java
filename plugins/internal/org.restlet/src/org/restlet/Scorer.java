@@ -30,7 +30,7 @@ import org.restlet.data.Response;
  * Router in order to determine the most appropriate Restlet for a given call. 
  * @author Jerome Louvel (contact@noelios.com) <a href="http://www.noelios.com/">Noelios Consulting</a>
  */
-public abstract class Scorer extends Filter
+public class Scorer extends Filter
 {
 	/** The parent router. */
 	private Router router;
@@ -47,12 +47,16 @@ public abstract class Scorer extends Filter
    }
 	
 	/**
-	 * Returns the score for a given call (between 0.0 and 1.0).
+	 * Returns the score for a given call (between 0.0 and 1.0). The default value is 1.0 but this method
+	 * is intended to be overriden.
     * @param request The request to score.
     * @param response The response to score.
 	 * @return The score for a given call (between 0.0 and 1.0).
 	 */
-	public abstract float score(Request request, Response response);
+	public float score(Request request, Response response)
+	{
+		return 1.0F;
+	}
 
    /**
 	 * Returns the parent router.
