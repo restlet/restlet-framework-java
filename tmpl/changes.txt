@@ -26,8 +26,6 @@ Changes log
  - Removed Restlet.compareTo() method. No apparent usage.
  - Renamed Reference.getProtocol() into getSchemeProtocol().
  - Scorer now derives from Filter to improve factorization.
- - Renamed Handler into Finder. Note: Handler is still used, but for a new purpose!
- - Renamed DirectoryHandler* classes into DirectoryFinder*.
  - Added Context.getClient() returning a generic ClientInterface.
  - Removed get/post/put/delete methods on Context as getClient() is preferred.
  - Added a post() method on Resource returning an instance of the new org.restlet.data.Result class as well as put() and delete().
@@ -61,7 +59,6 @@ Changes log
  - ServerServlet now only works with applications as target. Review updated Javadocs before upgrading.
  - GuardFilter now logs messages via the context's logger. Changed constructor.
  - Moved all remaining classes of org.restlet.component and org.restlet.connector into org.restlet for simplification purpose. Suggested by Piyush Purang.
- - Added Holder filter to hold an attached handler and apply call logging and status setting.
  - Refactored hierarchy : Restlet, Chainer, Connector and Component directly derive from base Handler class.
  - Extended usage of contexts.
  - Removed WrapperRestlet class, replaced by a wrapping constructor on Restlet.
@@ -70,6 +67,11 @@ Changes log
  - Moved ClientInterface to org.restlet.util.
  - Replaced WrapperCall by wrapper constructors on Message, Request and Response.
  - Replaced WrapperRepresentation by wrapper constructors on Resource and Representation.
+ - Refactored the Restlet SPI and NRE implementation, to use helpers instead of wrappers as plug mechanism.
+ - Added ConnectorService, LocalService, LogService and StatusService to org.restlet.util and as Application properties.
+ - Renamed org.restlet.util.ClientInterface into VirtualClient.
+ - Replaced Protocol.CONTEXT by Protocol.CLAP (ClassLoader Access Protocol) and WAR (Web Application).
+ - Replaced ContextReference by ClapReference.
  
 [Other changes] 
  - Updated Jetty 6 extension to 6.0.1 release and Jetty 5 extension to 5.1.11 release.
@@ -89,12 +91,11 @@ Changes log
  - Added static valueOf() methods to ChallengeScheme, CharacterSet, Encoding, Language, MediaType, Method, Protocol and Status. 
    Sometimes renamed existing create() method. Suggested by Piyush Purang.
  - Clarified the Javadocs of root classes in org.restlet.
- - Added more constructors to Chainer, Context, Filter and Finder.
  - Added a Message.setEntity(String, MediaType) method facilitating the setting of string-based entities.
  - Fully updated the FAQ.
  - Updated pictures in the tutorial to reflect the latest API changes (Application, hierarchy changes, etc.).
  - Form handling code don't throw IO exceptions anymore for Call.getInputAsForm() and Reference.getQueryAsForm(). Issue reported by Piyush Purang.
- - Added modification support (PUT and DELETE) to DirectoryFinder. Suggested by Don Dwoske and John D. Mitchell. 
+ - Added modification support (PUT and DELETE) to DirectoryHandler. Suggested by Don Dwoske and John D. Mitchell. 
    Implementation contributed by Thierry Boileau.
  - Added "protocol" property on Call.
  - Added FTP constant to Protocol.
@@ -108,8 +109,8 @@ Changes log
  - Added ScorerList.removeAll(UniformInterface) method to remove all scorers pointing to a given handler.
  - Added Protocol.ALL constant as a protocol wildcard.
  - Added "hosts" and "localHost" properties to Container.
- - Added support "Allow" HTTP headers. New allow*() methods added on Resource and support for setting the 405 status in the Finder (ex-Handler) class.
-   The list of allowed methods is then set to the Response (ex-Call) object. Subclasses of Finder can customize the list of allowed methods.
+ - Added support "Allow" HTTP headers. New allow*() methods added on Resource and support for setting the 405 status in the Handler class.
+   The list of allowed methods is then set to the Response (ex-Call) object. Subclasses of Handler can customize the list of allowed methods.
    Suggested by AJ Barnes and Lars Heuer.
  - Updated tutorial examples to leverage application concept.
  - Refactored all usages of the JDK's loggers in order to reuse the Context's logger, allowing separation of messages for each application.

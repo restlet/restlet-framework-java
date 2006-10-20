@@ -27,7 +27,7 @@ import org.restlet.Container;
 import org.restlet.Restlet;
 import org.restlet.data.Protocol;
 
-import com.noelios.restlet.DirectoryFinder;
+import com.noelios.restlet.DirectoryHandler;
 
 /**
  * Server static files using an application.
@@ -46,7 +46,7 @@ public class Tutorial06 implements Constants
 		{
 			public Restlet createRoot()
 			{
-				return new DirectoryFinder(getContext(), ROOT_URI, "index.html");
+				return new DirectoryHandler(getContext(), ROOT_URI, "index.html");
 			}
 		};
 

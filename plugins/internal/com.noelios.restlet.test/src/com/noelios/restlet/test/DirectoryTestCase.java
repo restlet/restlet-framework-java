@@ -34,11 +34,11 @@ import org.restlet.data.Request;
 import org.restlet.data.Response;
 import org.restlet.data.Status;
 
-import com.noelios.restlet.DirectoryFinder;
+import com.noelios.restlet.DirectoryHandler;
 import com.noelios.restlet.data.StringRepresentation;
 
 /**
- * Unit tests for the directoryFinder.
+ * Unit tests for the DirectoryHandler class.
  * @author Thierry Boileau
  */
 public class DirectoryTestCase extends TestCase
@@ -69,8 +69,8 @@ public class DirectoryTestCase extends TestCase
          // Now, let's start the container!
          clientContainer.start();
 
-         // Create a directoryFinder that manages a local Directory with no index
-         DirectoryFinder directory = new DirectoryFinder(clientContainer.getContext(),
+         // Create a DirectoryHandler that manages a local Directory with no index
+         DirectoryHandler directory = new DirectoryHandler(clientContainer.getContext(),
                testDir.toURI().toString(), "");
          testDirectory(directory);
 
@@ -95,7 +95,7 @@ public class DirectoryTestCase extends TestCase
     * @param testFileUrl
     * @throws IOException
     */
-   private void testDirectory(DirectoryFinder directory) throws IOException
+   private void testDirectory(DirectoryHandler directory) throws IOException
    {
       //Test n°1a : directory does not allow to GET its content
       directory.setListingAllowed(false);
@@ -238,7 +238,7 @@ public class DirectoryTestCase extends TestCase
     * @param entity
     * @return
     */
-   private Response handle(DirectoryFinder directory, String baseRef, String resourceRef,
+   private Response handle(DirectoryHandler directory, String baseRef, String resourceRef,
          Method method, Representation entity)
    {
       Request request = new Request();

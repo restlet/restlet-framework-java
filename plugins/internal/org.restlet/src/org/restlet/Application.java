@@ -109,8 +109,8 @@ public abstract class Application extends Restlet
 	}
 
 	/**
-	 * Creates a root Restlet that will receive all incoming calls. In general, instances of Router, Filter, 
-	 * Restlet or Finder classes will be used as initial application Restlet. The default implementation
+	 * Creates a root Restlet that will receive all incoming calls. In general, instances of Router, Filter 
+	 * or Handler classes will be used as initial application Restlet. The default implementation
 	 * returns null by default. This method is intended to be overriden by subclasses.  
 	 * @return The root Restlet.
 	 */

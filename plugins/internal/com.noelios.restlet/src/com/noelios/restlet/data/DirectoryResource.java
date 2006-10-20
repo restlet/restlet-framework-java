@@ -42,7 +42,7 @@ import org.restlet.data.Result;
 import org.restlet.data.Status;
 import org.restlet.util.VirtualClient;
 
-import com.noelios.restlet.DirectoryFinder;
+import com.noelios.restlet.DirectoryHandler;
 
 /**
  * Resource supported by a set of context representations (from file system, class loaders and webapp context). 
@@ -58,7 +58,7 @@ public class DirectoryResource extends Resource
 	private Request request;
 
 	/** The parent directory handler. */
-	private DirectoryFinder handler;
+	private DirectoryHandler handler;
 
 	/** The resource path relative to the directory URI. */
 	private String relativePart;
@@ -88,7 +88,7 @@ public class DirectoryResource extends Resource
 	 * @param request The handled call.
 	 * @throws IOException 
 	 */
-	public DirectoryResource(Logger logger, DirectoryFinder handler, Request request) throws IOException
+	public DirectoryResource(Logger logger, DirectoryHandler handler, Request request) throws IOException
 	{
 		super(logger);
 		
@@ -211,7 +211,7 @@ public class DirectoryResource extends Resource
 	 * Returns the parent directory handler.
 	 * @return The parent directory handler.
 	 */
-	public DirectoryFinder getDirectory()
+	public DirectoryHandler getDirectory()
 	{
 		return this.handler;
 	}

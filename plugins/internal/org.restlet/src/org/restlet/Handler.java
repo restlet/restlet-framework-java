@@ -30,9 +30,9 @@ import org.restlet.data.Response;
 import org.restlet.data.Status;
 
 /**
- * Restlet capable of finding a target Resource. It should have all the necessary 
- * information in order to find the resource that is the actual target of the call and to handle
- * the required method on it. 
+ * Restlet capable of handling calls using a target Resource. At this point in the processing, all the 
+ * necessary information should be ready in order to find the resource that is the actual target of the 
+ * request and to handle the required method on it. 
  * 
  * It is comparable to an HttpServlet class as it provides facility methods to handle the most common method
  * names. The calls are then automatically dispatched to the appropriate handle*() method (where the '*'
@@ -42,7 +42,7 @@ import org.restlet.data.Status;
  * 
  * @author Jerome Louvel (contact@noelios.com) <a href="http://www.noelios.com/">Noelios Consulting</a>
  */
-public abstract class Finder extends Restlet
+public abstract class Handler extends Restlet
 {
 	/** The language to use if content negotiation fails. */
 	private Language fallbackLanguage;
@@ -50,7 +50,7 @@ public abstract class Finder extends Restlet
 	/**
 	 * Constructor.
 	 */
-	public Finder()
+	public Handler()
 	{
 		this(null);
 	}
@@ -59,7 +59,7 @@ public abstract class Finder extends Restlet
 	 * Constructor.
 	 * @param context The context.
 	 */
-	public Finder(Context context)
+	public Handler(Context context)
 	{
 		super(context);
 	}

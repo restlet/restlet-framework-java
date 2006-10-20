@@ -28,7 +28,7 @@ import java.util.List;
 import java.util.logging.Level;
 
 import org.restlet.Context;
-import org.restlet.Finder;
+import org.restlet.Handler;
 import org.restlet.data.MediaType;
 import org.restlet.data.Reference;
 import org.restlet.data.ReferenceList;
@@ -48,7 +48,7 @@ import com.noelios.restlet.data.StringRepresentation;
  * @see <a href="http://www.restlet.org/tutorial#part06">Tutorial: Serving context resources</a>
  * @author Jerome Louvel (contact@noelios.com) <a href="http://www.noelios.com/">Noelios Consulting</a>
  */
-public class DirectoryFinder extends Finder
+public class DirectoryHandler extends Handler
 {
    /** If no file name is specified, use the (optional) index name. */
    private String indexName;
@@ -74,7 +74,7 @@ public class DirectoryFinder extends Finder
     * @param rootUri The absolute root Uri, including the "file://" or "context://" scheme.
     * @param indexName If no file name is specified, use the (optional) index name.
     */
-   public DirectoryFinder(Context context, String rootUri, String indexName)
+   public DirectoryHandler(Context context, String rootUri, String indexName)
    {
       super(context);
       this.indexName = indexName;

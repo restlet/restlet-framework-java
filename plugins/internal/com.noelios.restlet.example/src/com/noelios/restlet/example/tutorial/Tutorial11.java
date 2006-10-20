@@ -34,7 +34,7 @@ import org.restlet.data.Protocol;
 import org.restlet.data.Request;
 import org.restlet.data.Response;
 
-import com.noelios.restlet.DirectoryFinder;
+import com.noelios.restlet.DirectoryHandler;
 import com.noelios.restlet.GuardFilter;
 
 /**
@@ -57,13 +57,13 @@ public class Tutorial11 implements Constants
 		      // Create a root Router
 		      Router router = new Router(getContext());
 		
-		      // Attach a guard Filter to secure access the the chained directory Finder
+		      // Attach a guard Filter to secure access to the chained directory handler
 		      GuardFilter guard = new GuardFilter(getContext(), true, ChallengeScheme.HTTP_BASIC , "Restlet tutorial", true);
 		      guard.getAuthorizations().put("scott", "tiger");
 		      router.getScorers().add("/docs/", guard);
 		
-		      // Create a directory Restlet able to return a deep hierarchy of Web files
-		      DirectoryFinder directory = new DirectoryFinder(getContext(), ROOT_URI, "index.html");
+		      // Create a directory handler able to return a deep hierarchy of Web files
+		      DirectoryHandler directory = new DirectoryHandler(getContext(), ROOT_URI, "index.html");
 		      guard.setNext(directory);
 		
 		      // Create the user router

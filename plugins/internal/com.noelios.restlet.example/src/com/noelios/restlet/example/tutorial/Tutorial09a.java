@@ -28,7 +28,7 @@ import org.restlet.Restlet;
 import org.restlet.data.ChallengeScheme;
 import org.restlet.data.Protocol;
 
-import com.noelios.restlet.DirectoryFinder;
+import com.noelios.restlet.DirectoryHandler;
 import com.noelios.restlet.GuardFilter;
 
 /**
@@ -53,7 +53,7 @@ public class Tutorial09a implements Constants
 		      guard.getAuthorizations().put("scott", "tiger");
 
 		      // Create a directory Restlet able to return a deep hierarchy of Web files
-		      DirectoryFinder directory = new DirectoryFinder(getContext(), ROOT_URI, "index.html");
+		      DirectoryHandler directory = new DirectoryHandler(getContext(), ROOT_URI, "index.html");
 		      guard.setNext(directory);
 		      return guard;
 			}
