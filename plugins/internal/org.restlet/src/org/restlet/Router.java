@@ -29,7 +29,7 @@ import org.restlet.spi.Factory;
 import org.restlet.util.ScorerList;
 
 /**
- * Chainer routing calls to one of the attached scorers. Each scorer represents a routing option that can 
+ * Chainer routing calls to one of the attached scorers. Each scorer represents a potential route that can 
  * compute an affinity score for each call depending on various criteria. The attach() method allow the 
  * creation of scorers based on URI patterns matching the beginning of a the relative resource part.<br/>
  * <br/>
@@ -155,6 +155,39 @@ public class Router extends Chainer
 	}
 
 	/**
+	 * Returns the matched scorer according to a custom algorithm. To use in combination of the RouterMode.CUSTOM 
+	 * enumeration. The default implementation (to be overriden), returns null. 
+	 * @param request The request to handle.
+	 * @param response The response to update.
+	 * @return The matched scorer if available or null.
+	 */
+	protected Scorer getCustom(Request request, Response response)
+	{
+		return null;
+	}
+
+	/**
+	 * Returns the default scorer to test if no other one was available after retying the maximum number
+	 * of attemps.
+	 * @return The default scorer tested if no other one was available.
+	 */
+	public Scorer getDefaultScorer()
+	{
+		return this.defaultScorer;
+	}
+
+	/**
+	 * Returns the maximum number of attempts if no attachment could be matched on the first attempt.
+	 * This is useful when the attachment scoring is dynamic and therefore could change on a retry.
+	 * The default value is set to 1. 
+	 * @return The maximum number of attempts if no attachment could be matched on the first attempt.
+	 */
+	public int getMaxAttempts()
+	{
+		return this.maxAttempts;
+	}
+
+	/**
 	 * Returns the next Restlet if available.
 	 * @param request The request to handle.
 	 * @param response The response to update.
@@ -209,34 +242,51 @@ public class Router extends Chainer
 					break;
 				}
 			}
-
-			// If nothing matched in the scorers list, check the default scorer
-			if ((result == null) && (getDefaultScorer() != null)
-					&& (getDefaultScorer().score(request, response) >= getRequiredScore()))
-			{
-				result = getDefaultScorer();
-			}
 		}
 
 		if (result == null)
 		{
-			// No routing option could be matched
-			response.setStatus(Status.CLIENT_ERROR_NOT_FOUND);
+			// If nothing matched in the scorers list, check the default scorer
+			if ((getDefaultScorer() != null)
+					&& (getDefaultScorer().score(request, response) >= getRequiredScore()))
+			{
+				result = getDefaultScorer();
+			}
+			else
+			{
+				// No route could be found
+				response.setStatus(Status.CLIENT_ERROR_NOT_FOUND);
+			}
 		}
 
 		return result;
 	}
 
 	/**
-	 * Returns the matched scorer according to a custom algorithm. To use in combination of the RouterMode.CUSTOM 
-	 * enumeration. The default implementation (to be overriden), returns null. 
-	 * @param request The request to handle.
-	 * @param response The response to update.
-	 * @return The matched scorer if available or null.
+	 * Returns the minimum score required to have a match.
+	 * @return The minimum score required to have a match.
 	 */
-	protected Scorer getCustom(Request request, Response response)
+	public float getRequiredScore()
 	{
-		return null;
+		return this.requiredScore;
+	}
+
+	/**
+	 * Returns the delay (in seconds) before a new attempt. The default value is 500 ms.
+	 * @return The delay (in seconds) before a new attempt.
+	 */
+	public long getRetryDelay()
+	{
+		return this.retryDelay;
+	}
+
+	/**
+	 * Returns the routing mode.
+	 * @return The routing mode.
+	 */
+	public int getRoutingMode()
+	{
+		return this.routingMode;
 	}
 
 	/**
@@ -251,49 +301,12 @@ public class Router extends Chainer
 	}
 
 	/**
-	 * Returns the routing mode.
-	 * @return The routing mode.
+	 * Sets the default scorer tested if no other one was available.
+	 * @param defaultScorer The default scorer tested if no other one was available.
 	 */
-	public int getRoutingMode()
+	public void setDefaultScorer(Scorer defaultScorer)
 	{
-		return this.routingMode;
-	}
-
-	/**
-	 * Sets the routing mode.
-	 * @param routingMode The routing mode.
-	 */
-	public void setRoutingMode(int routingMode)
-	{
-		this.routingMode = routingMode;
-	}
-
-	/**
-	 * Returns the minimum score required to have a match.
-	 * @return The minimum score required to have a match.
-	 */
-	public float getRequiredScore()
-	{
-		return this.requiredScore;
-	}
-
-	/**
-	 * Sets the score required to have a match.
-	 * @param score The score required to have a match.
-	 */
-	public void setRequiredScore(float score)
-	{
-		this.requiredScore = score;
-	}
-
-	/**
-	 * Returns the maximum number of attempts if no attachment could be matched on the first attempt.
-	 * This is useful when the attachment scoring is dynamic and therefore could change on a retry.
-	 * @return The maximum number of attempts if no attachment could be matched on the first attempt.
-	 */
-	public int getMaxAttempts()
-	{
-		return this.maxAttempts;
+		this.defaultScorer = defaultScorer;
 	}
 
 	/**
@@ -307,12 +320,12 @@ public class Router extends Chainer
 	}
 
 	/**
-	 * Returns the delay (in seconds) before a new attempt.
-	 * @return The delay (in seconds) before a new attempt.
+	 * Sets the score required to have a match.
+	 * @param score The score required to have a match.
 	 */
-	public long getRetryDelay()
+	public void setRequiredScore(float score)
 	{
-		return this.retryDelay;
+		this.requiredScore = score;
 	}
 
 	/**
@@ -325,21 +338,12 @@ public class Router extends Chainer
 	}
 
 	/**
-	 * Returns the default scorer tested if no other one was available.
-	 * @return The default scorer tested if no other one was available.
+	 * Sets the routing mode.
+	 * @param routingMode The routing mode.
 	 */
-	public Scorer getDefaultScorer()
+	public void setRoutingMode(int routingMode)
 	{
-		return this.defaultScorer;
-	}
-
-	/**
-	 * Sets the default scorer tested if no other one was available.
-	 * @param defaultScorer The default scorer tested if no other one was available.
-	 */
-	public void setDefaultScorer(Scorer defaultScorer)
-	{
-		this.defaultScorer = defaultScorer;
+		this.routingMode = routingMode;
 	}
 
 }
