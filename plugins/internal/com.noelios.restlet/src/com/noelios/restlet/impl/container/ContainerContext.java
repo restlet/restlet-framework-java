@@ -20,13 +20,15 @@
  * Portions Copyright [yyyy] [name of copyright owner]
  */
 
-package com.noelios.restlet.impl;
+package com.noelios.restlet.impl.container;
 
 import java.util.logging.Logger;
 
 import org.restlet.data.Protocol;
 import org.restlet.data.Request;
 import org.restlet.data.Response;
+
+import com.noelios.restlet.impl.ContextImpl;
 
 /**
  * Context allowing access to the container's connectors.

@@ -20,20 +20,23 @@
  * Portions Copyright [yyyy] [name of copyright owner]
  */
 
-package com.noelios.restlet.impl.application;
+package com.noelios.restlet.impl.container;
 
-import org.restlet.Client;
 import org.restlet.Container;
+import org.restlet.Restlet;
 import org.restlet.Router;
-
-import com.noelios.restlet.impl.ClientScorer;
+import org.restlet.Scorer;
+import org.restlet.VirtualHost;
+import org.restlet.data.Request;
+import org.restlet.data.Response;
+import org.restlet.data.Status;
 
 /**
- * Router that collects calls from all applications and dispatches them to the appropriate
- * client connectors.
+ * Router that collects calls from all server connectors and dispatches them to the appropriate
+ * host routers for dispatching to the user applications.
  * @author Jerome Louvel (contact@noelios.com) <a href="http://www.noelios.com/">Noelios Consulting</a>
  */
-public class ClientRouter extends Router
+public class ServerRouter extends Router
 {
 	/** The parent container. */
 	private Container container;
@@ -42,7 +45,7 @@ public class ClientRouter extends Router
     * Constructor.
     * @param container The parent container.
     */
-	public ClientRouter(Container container)
+	public ServerRouter(Container container)
 	{
 		super(container.getContext());
 		this.container = container;
@@ -51,11 +54,29 @@ public class ClientRouter extends Router
    /** Starts the Restlet. */
 	public void start() throws Exception
 	{
-		for(Client client : getContainer().getClients())
+		// Attach all virtual hosts
+		for(VirtualHost host : getContainer().getHosts())
 		{
-			getScorers().add(new ClientScorer(this, client));
+			getScorers().add(new HostScorer(this, host));
+		}
+
+		// Also attach the local host if it exists
+		if(getContainer().getDefaultHost() != null)
+		{
+			getScorers().add(new HostScorer(this, getContainer().getDefaultHost()));
 		}
 		
+		// If no host matches, display and error page with a precise message
+		Restlet noHostMatched = new Restlet(getContainer().getContext())
+		{
+			public void handle(Request request, Response response)
+			{
+				response.setStatus(Status.CLIENT_ERROR_NOT_FOUND, "No virtual host could handle the request");
+			}
+		};
+		setDefaultScorer(new Scorer(this, noHostMatched));
+
+		// Start the router
 		super.start();
 	}
 

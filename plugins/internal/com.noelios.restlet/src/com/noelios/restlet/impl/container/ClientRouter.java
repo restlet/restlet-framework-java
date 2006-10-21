@@ -20,23 +20,19 @@
  * Portions Copyright [yyyy] [name of copyright owner]
  */
 
-package com.noelios.restlet.impl.application;
+package com.noelios.restlet.impl.container;
 
+import org.restlet.Client;
 import org.restlet.Container;
 import org.restlet.Router;
-import org.restlet.Scorer;
-import org.restlet.VirtualHost;
-
-import com.noelios.restlet.impl.HostScorer;
-import com.noelios.restlet.impl.StatusFilter;
 
 
 /**
- * Router that collects calls from all server connectors and dispatches them to the appropriate
- * host routers for dispatching to the user applications.
+ * Router that collects calls from all applications and dispatches them to the appropriate
+ * client connectors.
  * @author Jerome Louvel (contact@noelios.com) <a href="http://www.noelios.com/">Noelios Consulting</a>
  */
-public class ServerRouter extends Router
+public class ClientRouter extends Router
 {
 	/** The parent container. */
 	private Container container;
@@ -45,7 +41,7 @@ public class ServerRouter extends Router
     * Constructor.
     * @param container The parent container.
     */
-	public ServerRouter(Container container)
+	public ClientRouter(Container container)
 	{
 		super(container.getContext());
 		this.container = container;
@@ -54,22 +50,11 @@ public class ServerRouter extends Router
    /** Starts the Restlet. */
 	public void start() throws Exception
 	{
-		// Attach all virtual hosts
-		for(VirtualHost host : getContainer().getHosts())
+		for(Client client : getContainer().getClients())
 		{
-			getScorers().add(new HostScorer(this, host));
-		}
-
-		// Also attach the local host if it exists
-		if(getContainer().getDefaultHost() != null)
-		{
-			getScorers().add(new HostScorer(this, getContainer().getDefaultHost()));
+			getScorers().add(new ClientScorer(this, client));
 		}
 		
-		// If no host matches, display and error page
-		StatusFilter statusFilter = new StatusFilter(getContext(), true, null, null);
-		setDefaultScorer(new Scorer(this, statusFilter));
-
 		super.start();
 	}
 

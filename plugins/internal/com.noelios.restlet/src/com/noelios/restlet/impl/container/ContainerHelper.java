@@ -20,7 +20,7 @@
  * Portions Copyright [yyyy] [name of copyright owner]
  */
 
-package com.noelios.restlet.impl;
+package com.noelios.restlet.impl.container;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -29,14 +29,15 @@ import java.util.logging.Level;
 import org.restlet.Client;
 import org.restlet.Container;
 import org.restlet.Context;
+import org.restlet.Filter;
+import org.restlet.Restlet;
 import org.restlet.data.Protocol;
 import org.restlet.data.Request;
 import org.restlet.data.Response;
 import org.restlet.data.Status;
 import org.restlet.spi.Helper;
 
-import com.noelios.restlet.impl.application.ClientRouter;
-import com.noelios.restlet.impl.application.ServerRouter;
+import com.noelios.restlet.impl.LogFilter;
 
 /**
  * Container helper.
@@ -46,6 +47,9 @@ public class ContainerHelper implements Helper
 {
 	/** The helped container. */
 	private Container container;
+
+	/** The first Restlet. */
+	private Restlet first;
 
 	/** The internal client router. */
 	private ClientRouter clientRouter;
@@ -59,6 +63,7 @@ public class ContainerHelper implements Helper
 	public ContainerHelper(Container container)
 	{
 		this.container = container;
+		this.first = null;
 		this.clientRouter = new ClientRouter(getContainer());
 		this.serverRouter = new ServerRouter(getContainer());
 
@@ -111,25 +116,74 @@ public class ContainerHelper implements Helper
 	 */
 	public void handle(Request request, Response response)
 	{
-		if (getServerRouter() != null)
+		if (getFirst() != null)
 		{
-			getServerRouter().handle(request, response);
+			getFirst().handle(request, response);
 		}
 		else
 		{
 			response.setStatus(Status.SERVER_ERROR_INTERNAL);
-			getContainer().getLogger().log(Level.SEVERE, "No server router defined.");
+			getContainer().getLogger().log(Level.SEVERE,
+					"The container wasn't properly started, it can't handle calls.");
 		}
 	}
 
 	/** Start callback. */
 	public void start() throws Exception
 	{
+		// Initialization of services
+		Filter lastFilter = null;
+
+		// Logging of calls
+		if (getContainer().getLogService().isEnabled())
+		{
+			lastFilter = new LogFilter(getContainer().getContext(), getContainer()
+					.getLogService().getLoggerName(), getContainer().getLogService()
+					.getFormat());
+			setFirst(lastFilter);
+		}
+
+		// Addition of status pages
+		if (getContainer().getStatusService().isEnabled())
+		{
+			Filter statusFilter = new ContainerStatusFilter(getContainer());
+			if (lastFilter != null) lastFilter.setNext(statusFilter);
+			if (getFirst() == null) setFirst(statusFilter);
+			lastFilter = statusFilter;
+		}
+
+		// Reattach the original filter's attached Restlet
+		if (getFirst() == null)
+		{
+			setFirst(getServerRouter());
+		}
+		else
+		{
+			lastFilter.setNext(getServerRouter());
+		}
 	}
 
 	/** Stop callback. */
 	public void stop() throws Exception
 	{
+	}
+
+	/**
+	 * Returns the first Restlet.
+	 * @return the first Restlet.
+	 */
+	private Restlet getFirst()
+	{
+		return this.first;
+	}
+
+	/**
+	 * Sets the first Restlet.
+	 * @param first The first Restlet.
+	 */
+	private void setFirst(Restlet first)
+	{
+		this.first = first;
 	}
 
 }

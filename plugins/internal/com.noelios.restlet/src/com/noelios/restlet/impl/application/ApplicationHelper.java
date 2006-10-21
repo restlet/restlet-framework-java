@@ -22,6 +22,7 @@
 
 package com.noelios.restlet.impl.application;
 
+import java.util.logging.Level;
 import java.util.logging.Logger;
 
 import org.restlet.Application;
@@ -30,6 +31,7 @@ import org.restlet.Filter;
 import org.restlet.Restlet;
 import org.restlet.data.Request;
 import org.restlet.data.Response;
+import org.restlet.data.Status;
 import org.restlet.spi.Helper;
 
 import com.noelios.restlet.impl.LogFilter;
@@ -82,6 +84,12 @@ public class ApplicationHelper implements Helper
 		if (getFirst() != null)
 		{
 			getFirst().handle(request, response);
+		}
+		else
+		{
+			response.setStatus(Status.SERVER_ERROR_INTERNAL);
+			getApplication().getLogger().log(Level.SEVERE,
+					"The application wasn't properly started, it can't handle calls.");
 		}
 	}
 

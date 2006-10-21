@@ -25,10 +25,14 @@ package org.restlet;
 import java.util.ArrayList;
 import java.util.List;
 
+import org.restlet.data.Representation;
 import org.restlet.data.Request;
 import org.restlet.data.Response;
+import org.restlet.data.Status;
 import org.restlet.spi.Factory;
 import org.restlet.spi.Helper;
+import org.restlet.util.LogService;
+import org.restlet.util.StatusService;
 
 /**
  * Component managing a set of virtual hosts.
@@ -44,6 +48,12 @@ public class Container extends Component
 	
 	/** The helper provided by the implementation. */
 	private Helper helper;
+	
+	/** The log service. */
+	private LogService logService;
+	
+	/** The status service. */
+	private StatusService statusService;
 
 	/**
     * Default constructor. Instantiate then wrap a container provided by the current Restlet 
@@ -56,6 +66,8 @@ public class Container extends Component
 		setContext(this.helper.createContext());
 		this.hosts = null;
 		this.defaultHost = VirtualHost.createDefaultHost(getContext());
+		this.logService = null;
+		this.statusService = null;
 	}
 	
    /**
@@ -85,7 +97,45 @@ public class Container extends Component
 		if(this.hosts == null) this.hosts = new ArrayList<VirtualHost>();
 		return this.hosts;
    }
-   
+
+	/** 
+	 * Returns the log service. This service is enabled by default.
+	 * @return The log service.
+	 */
+	public LogService getLogService()
+	{
+		if(this.logService == null) 
+		{
+			this.logService = new LogService(false);
+			this.logService.setLoggerName(getClass().getCanonicalName() + " (" + hashCode() + ")");
+		}
+
+		return this.logService;
+	}
+
+	/**
+	 * Returns a representation for the given status.<br/> In order to customize the 
+	 * default representation, this method can be overriden. It returns null by default.
+	 * @param status The status to represent.
+	 * @param request The request handled.
+	 * @param response The response updated.
+	 * @return The representation of the given status.
+	 */
+	public Representation getRepresentation(Status status, Request request, Response response)
+	{
+		return null;
+	}
+
+	/** 
+	 * Returns the status service. This service is enabled by default.
+	 * @return The status service.
+	 */
+	public StatusService getStatusService()
+	{
+		if(this.statusService == null) this.statusService = new StatusService(true);
+		return this.statusService;
+	}
+
    /**
 	 * Handles a call.
 	 * @param request The request to handle.

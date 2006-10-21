@@ -20,9 +20,9 @@
  * Portions Copyright [yyyy] [name of copyright owner]
  */
 
-package com.noelios.restlet.impl.application;
+package com.noelios.restlet.impl.container;
 
-import org.restlet.Application;
+import org.restlet.Container;
 import org.restlet.data.Representation;
 import org.restlet.data.Request;
 import org.restlet.data.Response;
@@ -34,29 +34,29 @@ import com.noelios.restlet.impl.StatusFilter;
  * Status filter that tries to obtain ouput representation from an application.
  * @author Jerome Louvel (contact@noelios.com) <a href="http://www.noelios.com/">Noelios Consulting</a>
  */
-public class ApplicationStatusFilter extends StatusFilter
+public class ContainerStatusFilter extends StatusFilter
 {
-	/** The application. */
-	private Application application;
+	/** The container. */
+	private Container container;
 	
 	/**
 	 * Constructor.
-	 * @param application The application.
+	 * @param container The container.
 	 */
-	public ApplicationStatusFilter(Application application)
+	public ContainerStatusFilter(Container container)
 	{
-		super(application.getContext(), application.getStatusService().isOverwrite(),
-				application.getStatusService().getContactEmail(), "/");
-		this.application = application;
+		super(container.getContext(), container.getStatusService().isOverwrite(),
+				container.getStatusService().getContactEmail(), "/");
+		this.container = container;
 	}
 
 	/**
-	 * Returns the application.
-	 * @return The application.
+	 * Returns the container.
+	 * @return The container.
 	 */
-	public Application getApplication()
+	public Container getContainer()
 	{
-		return this.application;
+		return this.container;
 	}
 	
 	/**
@@ -70,7 +70,7 @@ public class ApplicationStatusFilter extends StatusFilter
 	public Representation getRepresentation(Status status, Request request,
 			Response response)
 	{
-		Representation result = getApplication().getRepresentation(status, request, response);
+		Representation result = getContainer().getRepresentation(status, request, response);
 		if(result == null) result = super.getRepresentation(status, request, response);
 		return result;
 	}

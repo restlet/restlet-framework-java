@@ -65,6 +65,7 @@ import org.restlet.util.ServerList;
 
 import com.noelios.restlet.data.StringRepresentation;
 import com.noelios.restlet.impl.application.ApplicationHelper;
+import com.noelios.restlet.impl.container.ContainerHelper;
 import com.noelios.restlet.impl.util.Base64;
 import com.noelios.restlet.impl.util.ClientListImpl;
 import com.noelios.restlet.impl.util.DateUtils;

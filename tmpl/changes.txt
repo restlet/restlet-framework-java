@@ -14,7 +14,7 @@ Changes log
  - Fixed incomplete plugin descriptors for some extensions.
  - Added workaround for JDK's bug #6472250 when using the fixed length mode with the HTTP client.
  - Fixed bug in FreeMarker's TemplateRepresentation closing the output stream too early, causing Simple HTTP server to fail. Reported by Zohar Melamed.
- 
+
 [API breaking changes]
  - Renamed Representation.isContentAvailable() to isAvailable() and isContentTransient() to isTransient().
  - Merged Client and GenericClient into a single Client class.
@@ -118,7 +118,8 @@ Changes log
  - Representation is no longer abstract and "transient" and "available" properties can be externally modified. Added empty constructor.
  - Added support "Allow" HTTP headers. New allow*() methods added on Resource and support for setting the 405 status in the Handler class.
    Also added Resource."allowedMethod" property. Suggested by AJ Barnes and Lars Heuer.
- 
+ - Added Response.setStatus(status, message) method variant.
+
 1.0 beta 18 (2006-08-19)
 [Bugs fixed]
  - Status descriptions are now sent back to Jetty 6 for error statuses. Reported by AJ Barnes.

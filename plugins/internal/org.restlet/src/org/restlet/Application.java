@@ -169,7 +169,12 @@ public abstract class Application extends Restlet
 	 */
 	public LogService getLogService()
 	{
-		if(this.logService == null) this.logService = new LogService(true);
+		if(this.logService == null) 
+		{
+			this.logService = new LogService(true);
+			this.logService.setLoggerName(getClass().getCanonicalName() + " (" + hashCode() + ")");
+		}
+		
 		return this.logService;
 	}
 

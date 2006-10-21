@@ -183,4 +183,14 @@ public class Response extends Message
 		this.status = status;
 	}
 
+	/**
+	 * Sets the status.
+	 * @param status The status to set.
+	 * @param message The status message.
+	 */
+	public void setStatus(Status status, String message)
+	{
+		setStatus(new Status(status, message));
+	}
+
 }
