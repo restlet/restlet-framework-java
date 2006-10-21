@@ -29,6 +29,7 @@ import junit.framework.TestCase;
 
 import org.restlet.Container;
 import org.restlet.data.Method;
+import org.restlet.data.Protocol;
 import org.restlet.data.Representation;
 import org.restlet.data.Request;
 import org.restlet.data.Response;
@@ -65,6 +66,7 @@ public class DirectoryTestCase extends TestCase
 
          // Create a new Restlet container
          Container clientContainer = new Container();
+         clientContainer.getClients().add(Protocol.FILE);
 
          // Now, let's start the container!
          clientContainer.start();
