@@ -68,25 +68,22 @@ public class ConnectorHelper implements Helper
 	}
 
 	/**
-	 * Allows filtering before processing by the next Restlet. Does nothing by default.
+	 * Handles a call.
 	 * @param request The request to handle.
 	 * @param response The response to update.
 	 */
 	public void handle(Request request, Response response)
 	{
-
 	}
 
 	/** Start hook. */
 	public void start() throws Exception
 	{
-
 	}
 
 	/** Stop callback. */
 	public void stop() throws Exception
 	{
-
 	}
 	
 }

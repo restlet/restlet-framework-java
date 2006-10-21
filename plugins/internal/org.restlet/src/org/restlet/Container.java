@@ -99,7 +99,7 @@ public class Container extends Component
    }
 
 	/** 
-	 * Returns the log service. This service is enabled by default.
+	 * Returns the log service. This service is disabled by default.
 	 * @return The log service.
 	 */
 	public LogService getLogService()

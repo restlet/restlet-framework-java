@@ -106,24 +106,27 @@ public class HttpServerConverter extends HttpConverter
 			if (response.getStatus().equals(Status.CLIENT_ERROR_METHOD_NOT_ALLOWED)
 					|| response.getRequest().getMethod().equals(Method.PUT))
 			{
-				// Format the "Allow" header
-				StringBuilder sb = new StringBuilder();
-				boolean first = true;
-				for (Method method : response.getEntity().getResource().getAllowedMethods())
+				if((response.getEntity() != null) && (response.getEntity().getResource() != null))
 				{
-					if (first)
+					// Format the "Allow" header
+					StringBuilder sb = new StringBuilder();
+					boolean first = true;
+					for (Method method : response.getEntity().getResource().getAllowedMethods())
 					{
-						first = false;
+						if (first)
+						{
+							first = false;
+						}
+						else
+						{
+							sb.append(", ");
+						}
+	
+						sb.append(method.getName());
 					}
-					else
-					{
-						sb.append(", ");
-					}
-
-					sb.append(method.getName());
+	
+					responseHeaders.add(HttpConstants.HEADER_ALLOW, sb.toString());
 				}
-
-				responseHeaders.add(HttpConstants.HEADER_ALLOW, sb.toString());
 			}
 
 			// Add the cookie settings

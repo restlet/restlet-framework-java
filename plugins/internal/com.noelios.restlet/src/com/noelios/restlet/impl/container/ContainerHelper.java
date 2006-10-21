@@ -22,16 +22,12 @@
 
 package com.noelios.restlet.impl.container;
 
-import java.util.ArrayList;
-import java.util.List;
 import java.util.logging.Level;
 
-import org.restlet.Client;
 import org.restlet.Container;
 import org.restlet.Context;
 import org.restlet.Filter;
 import org.restlet.Restlet;
-import org.restlet.data.Protocol;
 import org.restlet.data.Request;
 import org.restlet.data.Response;
 import org.restlet.data.Status;
@@ -66,11 +62,6 @@ public class ContainerHelper implements Helper
 		this.first = null;
 		this.clientRouter = new ClientRouter(getContainer());
 		this.serverRouter = new ServerRouter(getContainer());
-
-		// Add a local client
-		List<Protocol> protocols = new ArrayList<Protocol>();
-		protocols.add(Protocol.FILE);
-		getContainer().getClients().add(new Client(getContainer().getContext(), protocols));
 	}
 
 	/**

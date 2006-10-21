@@ -27,6 +27,8 @@ import java.util.logging.Logger;
 import org.restlet.Context;
 import org.restlet.Server;
 import org.restlet.data.ParameterList;
+import org.restlet.data.Request;
+import org.restlet.data.Response;
 
 /**
  * Delegate used by API connector classes to get support from the implementation classes.  
@@ -82,6 +84,16 @@ public class ServerHelper extends ConnectorHelper
 	public Context getContext()
 	{
 		return getServer().getContext();
+	}
+
+	/**
+	 * Handles a call.
+	 * @param request The request to handle.
+	 * @param response The response to update.
+	 */
+	public void handle(Request request, Response response)
+	{
+		getServer().handle(request, response);
 	}
 
 }

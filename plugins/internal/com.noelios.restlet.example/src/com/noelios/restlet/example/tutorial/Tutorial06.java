@@ -40,6 +40,7 @@ public class Tutorial06 implements Constants
 		// Create a container
 		Container container = new Container();
 		container.getServers().add(Protocol.HTTP, 8182);
+		container.getClients().add(Protocol.FILE);
 
 		// Create an application
 		Application application = new Application(container)
