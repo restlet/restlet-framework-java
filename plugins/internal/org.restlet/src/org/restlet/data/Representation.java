@@ -116,7 +116,7 @@ public class Representation extends Resource
       // variant is the representation itself
       getVariants().add(this);
    }
-
+		
    /**
     * Returns the character set or null if not applicable.
     * @return The character set or null if not applicable.
