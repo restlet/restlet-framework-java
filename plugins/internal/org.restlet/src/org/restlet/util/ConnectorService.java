@@ -32,11 +32,17 @@ import org.restlet.data.Protocol;
  */
 public class ConnectorService extends Service
 {
-	/** The list of client protocols used. */
-	private List<Protocol> clientProtocols;
+	/** The list of required client protocols. */
+	private List<Protocol> requiredClientProtocols;
 
-	/** The list of server protocols accepted. */
-	private List<Protocol> serverProtocols;
+	/** The list of required server protocols. */
+	private List<Protocol> requiredServerProtocols;
+	
+	/** The list of optional client protocols. */
+	private List<Protocol> optionalClientProtocols;
+
+	/** The list of optional server protocols. */
+	private List<Protocol> optionalServerProtocols;
 	
 	/**
 	 * Constructor.
@@ -45,26 +51,46 @@ public class ConnectorService extends Service
 	public ConnectorService(boolean enabled)
 	{
 		super(enabled);
-		this.clientProtocols = null;
-		this.serverProtocols = null;
+		this.requiredClientProtocols = null;
+		this.requiredServerProtocols = null;
+		this.optionalClientProtocols = null;
+		this.optionalServerProtocols = null;
 	}
 	
 	/**
-	 * Returns the list of client protocols used. 
-	 * @return The list of client protocols used.
+	 * Returns the list of required client protocols. 
+	 * @return The list of required client protocols.
 	 */
-	public List<Protocol> getClientProtocols()
+	public List<Protocol> getRequiredClientProtocols()
 	{
-		return this.clientProtocols;
+		return this.requiredClientProtocols;
 	}
 
 	/**
-	 * Returns the list of server protocols accepted. 
-	 * @return The list of server protocols accepted.
+	 * Returns the list of required server protocols. 
+	 * @return The list of required server protocols.
 	 */
-	public List<Protocol> getServerProtocols()
+	public List<Protocol> getRequiredServerProtocols()
 	{
-		return this.serverProtocols;
+		return this.requiredServerProtocols;
+	}
+	
+	/**
+	 * Returns the list of optional client protocols. 
+	 * @return The list of optional client protocols.
+	 */
+	public List<Protocol> getOptionalClientProtocols()
+	{
+		return this.optionalClientProtocols;
+	}
+
+	/**
+	 * Returns the list of optional server protocols. 
+	 * @return The list of optional server protocols.
+	 */
+	public List<Protocol> getOptionalServerProtocols()
+	{
+		return this.optionalServerProtocols;
 	}
 
 }
