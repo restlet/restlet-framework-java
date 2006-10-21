@@ -22,7 +22,6 @@
 
 package org.restlet.util;
 
-import org.restlet.Application;
 import org.restlet.data.Reference;
 
 /**
@@ -42,12 +41,11 @@ public class StatusService extends Service
 	
 	/**
 	 * Constructor.
-	 * @param application The parent appplication.
 	 * @param enabled True if the service has been enabled.
 	 */
-	public StatusService(Application application, boolean enabled)
+	public StatusService(boolean enabled)
 	{
-		super(application, enabled);
+		super(enabled);
 		this.contactEmail = null;
 		this.homeRef = null;
 		this.overwrite = true;

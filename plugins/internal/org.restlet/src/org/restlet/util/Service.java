@@ -22,7 +22,6 @@
 
 package org.restlet.util;
 
-import org.restlet.Application;
 
 /**
  * Service provided to an application.
@@ -30,30 +29,16 @@ import org.restlet.Application;
  */
 public class Service
 {
-	/** The parent application. */
-	private Application application;
-	
 	/** Indicates if the service has been enabled. */
 	private boolean enabled;
 
 	/**
 	 * Constructor.
-	 * @param application The parent appplication.
 	 * @param enabled True if the service has been enabled.
 	 */
-	public Service(Application application, boolean enabled)
+	public Service(boolean enabled)
 	{
-		this.application = application;
 		this.enabled = enabled;
-	}
-	
-	/**
-	 * Returns the parent application.
-	 * @return The parent application.
-	 */
-	public Application getApplication()
-	{
-		return this.application;
 	}
 	
 	/**

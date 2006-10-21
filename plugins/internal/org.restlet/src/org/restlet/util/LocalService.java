@@ -27,7 +27,6 @@ import java.util.List;
 import java.util.Map;
 import java.util.TreeMap;
 
-import org.restlet.Application;
 import org.restlet.data.Encoding;
 import org.restlet.data.Language;
 import org.restlet.data.MediaType;
@@ -60,12 +59,11 @@ public class LocalService extends Service
 	
 	/**
 	 * Constructor.
-	 * @param application The parent appplication.
 	 * @param enabled True if the service has been enabled.
 	 */
-	public LocalService(Application application, boolean enabled)
+	public LocalService(boolean enabled)
 	{
-		super(application, enabled);
+		super(enabled);
 		this.defaultEncoding = null;
 		this.defaultLanguage = null;
 		this.defaultMediaType = null;

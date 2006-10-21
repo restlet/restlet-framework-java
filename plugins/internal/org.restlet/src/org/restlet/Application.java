@@ -149,7 +149,7 @@ public abstract class Application extends Restlet
 	 */
 	public ConnectorService getConnectorService()
 	{
-		if(this.connectorService == null) this.connectorService = new ConnectorService(this, true);
+		if(this.connectorService == null) this.connectorService = new ConnectorService(true);
 		return this.connectorService;
 	}
 
@@ -159,7 +159,7 @@ public abstract class Application extends Restlet
 	 */
 	public LocalService getLocalService()
 	{
-		if(this.localService == null) this.localService = new LocalService(this, true);
+		if(this.localService == null) this.localService = new LocalService(true);
 		return this.localService;
 	}
 
@@ -169,7 +169,7 @@ public abstract class Application extends Restlet
 	 */
 	public LogService getLogService()
 	{
-		if(this.logService == null) this.logService = new LogService(this, true);
+		if(this.logService == null) this.logService = new LogService(true);
 		return this.logService;
 	}
 
@@ -224,7 +224,7 @@ public abstract class Application extends Restlet
 	 */
 	public StatusService getStatusService()
 	{
-		if(this.statusService == null) this.statusService = new StatusService(this, true);
+		if(this.statusService == null) this.statusService = new StatusService(true);
 		return this.statusService;
 	}
    

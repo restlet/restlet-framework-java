@@ -22,8 +22,6 @@
 
 package org.restlet.util;
 
-import org.restlet.Application;
-
 /**
  * Service providing access logging.
  * @author Jerome Louvel (contact@noelios.com) <a href="http://www.noelios.com/">Noelios Consulting</a>
@@ -38,12 +36,11 @@ public class LogService extends Service
 	
 	/**
 	 * Constructor.
-	 * @param application The parent appplication.
 	 * @param enabled True if the service has been enabled.
 	 */
-	public LogService(Application application, boolean enabled)
+	public LogService(boolean enabled)
 	{
-		super(application, enabled);
+		super(enabled);
 		this.loggerName = null;
 		this.format = null;
 	}

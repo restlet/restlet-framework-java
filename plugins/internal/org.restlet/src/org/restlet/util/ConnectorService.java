@@ -24,7 +24,6 @@ package org.restlet.util;
 
 import java.util.List;
 
-import org.restlet.Application;
 import org.restlet.data.Protocol;
 
 /**
@@ -41,12 +40,11 @@ public class ConnectorService extends Service
 	
 	/**
 	 * Constructor.
-	 * @param application The parent appplication.
 	 * @param enabled True if the service has been enabled.
 	 */
-	public ConnectorService(Application application, boolean enabled)
+	public ConnectorService(boolean enabled)
 	{
-		super(application, enabled);
+		super(enabled);
 		this.clientProtocols = null;
 		this.serverProtocols = null;
 	}
