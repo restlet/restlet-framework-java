@@ -20,63 +20,46 @@
  * Portions Copyright [yyyy] [name of copyright owner]
  */
 
-package org.restlet.data;
+package org.restlet.util;
 
-import java.util.ArrayList;
 import java.util.List;
 import java.util.logging.Logger;
 
+import org.restlet.data.Method;
+import org.restlet.data.Reference;
+import org.restlet.data.ReferenceList;
+import org.restlet.data.Representation;
+import org.restlet.data.Resource;
+import org.restlet.data.Result;
+
 /**
- * Intended conceptual target of a hypertext reference. "Any information that can be named can be
- * a resource: a document or image, a temporal service (e.g. "today's weather in Los Angeles"), a collection
- * of other resources, a non-virtual object (e.g. a person), and so on. In other words, any concept that might
- * be the target of an author's hypertext reference must fit within the definition of a resource."<br/><br/>
- * "The only thing that is required to be static for a resource is the semantics of the mapping, since the
- * semantics is what distinguishes one resource from another." Roy T. Fielding<br/>
- * <br/>
- * Another definition adapted from the URI standard (RFC 3986): a resource is the conceptual mapping to a 
- * representation (also known as entity) or set of representations, not necessarily the representation which 
- * corresponds to that mapping at any particular instance in time. Thus, a resource can remain constant even
- * when its content (the representations to which it currently corresponds) changes over time, provided that 
- * the conceptual mapping is not changed in the process. In addition, a resource is always identified by a URI.
- * @see <a href="http://www.ics.uci.edu/~fielding/pubs/dissertation/rest_arch_style.htm#sec_5_2_1_1">Source dissertation</a>
- * @see org.restlet.data.Representation
- * @see org.restlet.data.Reference
+ * Resource wrapper. Useful for application developer who need to enrich the resource
+ * with application related properties and behavior.
+ * @see <a href="http://c2.com/cgi/wiki?DecoratorPattern">The decorator (aka wrapper) pattern</a>
  * @author Jerome Louvel (contact@noelios.com) <a href="http://www.noelios.com/">Noelios Consulting</a>
  */
-public class Resource
+public class WrapperResource extends Resource
 {
-	/** The list of methods allowed on the requested resource. */
-	private List<Method> allowedMethods;
+   /** The wrapped resource. */
+   private Resource wrappedResource;
 
-	/** The logger to use. */
-	private Logger logger;
+   /**
+    * Constructor.
+    * @param wrappedResource The wrapped resource.
+    */
+   public WrapperResource(Resource wrappedResource)
+   {
+      this.wrappedResource = wrappedResource;
+   }
 
-	/** The modifiable list of identifiers. */
-	private ReferenceList identifiers;
-
-	/** The modifiable list of variants. */
-	private List<Representation> variants;
-
-	/**
-	 * Constructor.
-	 */
-	public Resource()
-	{
-		this((Logger) null);
-	}
-
-	/**
-	 * Constructor.
-	 * @param logger The logger to use.
-	 */
-	public Resource(Logger logger)
-	{
-		this.allowedMethods = null;
-		this.logger = logger;
-		this.identifiers = null;
-		this.variants = null;
-	}
+   /**
+    * Returns the wrapped Resource.
+    * @return The wrapped Resource.
+    */
+   protected Resource getWrappedResource()
+   {
+      return this.wrappedResource;
+   }
 
 	/**
 	 * Indicates if it is allowed to delete the resource. The default value is false. 
@@ -84,7 +67,7 @@ public class Resource
 	 */
 	public boolean allowDelete()
 	{
-		return false;
+		return getWrappedResource().allowDelete();
 	}
 
 	/**
@@ -93,7 +76,7 @@ public class Resource
 	 */
 	public boolean allowGet()
 	{
-		return true;
+		return getWrappedResource().allowGet();
 	}
 
 	/**
@@ -102,7 +85,7 @@ public class Resource
 	 */
 	public boolean allowPost()
 	{
-		return false;
+		return getWrappedResource().allowPost();
 	}
 
 	/**
@@ -111,7 +94,7 @@ public class Resource
 	 */
 	public boolean allowPut()
 	{
-		return false;
+		return getWrappedResource().allowPut();
 	}
 
 	/**
@@ -120,7 +103,7 @@ public class Resource
 	 */
 	public Result delete()
 	{
-		return new Result(Status.SERVER_ERROR_NOT_IMPLEMENTED);
+		return getWrappedResource().delete();
 	}
 
 	/**
@@ -129,22 +112,7 @@ public class Resource
 	 */
 	public List<Method> getAllowedMethods()
 	{
-		if (this.allowedMethods == null)
-		{
-			this.allowedMethods = new ArrayList<Method>();
-
-			// Introspect the resource for allowed methods
-			if (allowGet())
-			{
-				this.allowedMethods.add(Method.HEAD);
-				this.allowedMethods.add(Method.GET);
-			}
-			if (allowDelete()) this.allowedMethods.add(Method.DELETE);
-			if (allowPost()) this.allowedMethods.add(Method.POST);
-			if (allowPut()) this.allowedMethods.add(Method.PUT);
-		}
-
-		return this.allowedMethods;
+		return getWrappedResource().getAllowedMethods();
 	}
 
 	/**
@@ -153,14 +121,7 @@ public class Resource
 	 */
 	public Reference getIdentifier()
 	{
-		if (getIdentifiers().isEmpty())
-		{
-			return null;
-		}
-		else
-		{
-			return getIdentifiers().get(0);
-		}
+		return getWrappedResource().getIdentifier();
 	}
 
 	/**
@@ -170,8 +131,7 @@ public class Resource
 	 */
 	public ReferenceList getIdentifiers()
 	{
-		if (this.identifiers == null) this.identifiers = new ReferenceList();
-		return this.identifiers;
+		return getWrappedResource().getIdentifiers();
 	}
 
 	/**
@@ -180,9 +140,7 @@ public class Resource
 	 */
 	public Logger getLogger()
 	{
-		if (this.logger == null)
-			this.logger = Logger.getLogger(Resource.class.getCanonicalName());
-		return this.logger;
+		return getWrappedResource().getLogger();
 	}
 
 	/**
@@ -192,8 +150,7 @@ public class Resource
 	 */
 	public List<Representation> getVariants()
 	{
-		if (this.variants == null) this.variants = new ArrayList<Representation>();
-		return this.variants;
+		return getWrappedResource().getVariants();
 	}
 
 	/**
@@ -203,7 +160,7 @@ public class Resource
 	 */
 	public Result post(Representation entity)
 	{
-		return new Result(Status.SERVER_ERROR_NOT_IMPLEMENTED);
+		return getWrappedResource().post(entity);
 	}
 
 	/**
@@ -213,7 +170,7 @@ public class Resource
 	 */
 	public Result put(Representation variant)
 	{
-		return new Result(Status.SERVER_ERROR_NOT_IMPLEMENTED);
+		return getWrappedResource().put(variant);
 	}
 
 	/**
@@ -222,14 +179,7 @@ public class Resource
 	 */
 	public void setIdentifier(Reference identifier)
 	{
-		if (getIdentifiers().isEmpty())
-		{
-			getIdentifiers().add(identifier);
-		}
-		else
-		{
-			getIdentifiers().set(0, identifier);
-		}
+		getWrappedResource().setIdentifier(identifier);
 	}
 
 	/**
@@ -238,7 +188,7 @@ public class Resource
 	 */
 	public void setIdentifier(String identifierUri)
 	{
-		setIdentifier(new Reference(identifierUri));
+		getWrappedResource().setIdentifier(identifierUri);
 	}
 
 	/**
@@ -247,7 +197,7 @@ public class Resource
 	 */
 	public void setIdentifiers(ReferenceList identifiers)
 	{
-		this.identifiers = identifiers;
+		getWrappedResource().setIdentifiers(identifiers);
 	}
 
 	/**
@@ -256,7 +206,7 @@ public class Resource
 	 */
 	public void setLogger(Logger logger)
 	{
-		this.logger = logger;
+		getWrappedResource().setLogger(logger);
 	}
 
 	/**
@@ -265,7 +215,7 @@ public class Resource
 	 */
 	public void setVariants(List<Representation> variants)
 	{
-		this.variants = variants;
+		getWrappedResource().setVariants(variants);
 	}
 
 }

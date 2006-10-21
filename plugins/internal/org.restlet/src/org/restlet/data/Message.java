@@ -38,9 +38,6 @@ public abstract class Message
 
 	/** The payload of the message. */
 	private Representation entity;
-	
-	/** The wrapped message. */
-	private Message wrappedMessage;
 
 	/**
 	 * Constructor.
@@ -58,25 +55,6 @@ public abstract class Message
 	{
 		this.attributes = null;
 		this.entity = entity;
-		this.wrappedMessage = null;
-	}
-
-	/**
-	 * Wrapper constructor.
-	 * @param wrappedMessage The message to wrap.
-	 */
-	public Message(Message wrappedMessage)
-	{
-		this.wrappedMessage = wrappedMessage;
-	}
-
-	/**
-	 * Returns the wrapped message.
-	 * @return The wrapped message.
-	 */
-	public Message getWrappedMessage()
-	{
-		return this.wrappedMessage;
 	}
 
 	/**
@@ -109,19 +87,12 @@ public abstract class Message
 	 */
 	public Map<String, Object> getAttributes()
 	{
-		if(getWrappedMessage() != null)
+		if (attributes == null)
 		{
-			return getWrappedMessage().getAttributes();
+			attributes = new TreeMap<String, Object>();
 		}
-		else
-		{
-			if (attributes == null)
-			{
-				attributes = new TreeMap<String, Object>();
-			}
-	
-			return attributes;
-		}
+
+		return attributes;
 	}
 
 	/**
@@ -130,14 +101,7 @@ public abstract class Message
 	 */
 	public Representation getEntity()
 	{
-		if(getWrappedMessage() != null)
-		{
-			return getWrappedMessage().getEntity();
-		}
-		else
-		{
-			return this.entity;
-		}
+		return this.entity;
 	}
 
 	/**
@@ -148,14 +112,7 @@ public abstract class Message
 	 */
 	public Form getEntityAsForm()
 	{
-		if(getWrappedMessage() != null)
-		{
-			return getWrappedMessage().getEntityAsForm();
-		}
-		else
-		{
-			return new Form(getEntity());
-		}
+		return new Form(getEntity());
 	}
 
 	/**
@@ -166,14 +123,7 @@ public abstract class Message
 	 */
 	public String getEntityAsString()
 	{
-		if(getWrappedMessage() != null)
-		{
-			return getWrappedMessage().getEntityAsString();
-		}
-		else
-		{
-			return getEntity().toString();
-		}
+		return getEntity().toString();
 	}
 
 	/**
@@ -183,14 +133,7 @@ public abstract class Message
 	 */
 	public boolean isEntityAvailable()
 	{
-		if(getWrappedMessage() != null)
-		{
-			return getWrappedMessage().isEntityAvailable();
-		}
-		else
-		{
-			return (getEntity() != null) && (getEntity().getSize() > 0) && getEntity().isAvailable();
-		}
+		return (getEntity() != null) && (getEntity().getSize() > 0) && getEntity().isAvailable();
 	}
 	
 	/**
@@ -199,14 +142,7 @@ public abstract class Message
 	 */
 	public void setEntity(Representation entity)
 	{
-		if(getWrappedMessage() != null)
-		{
-			getWrappedMessage().setEntity(entity);
-		}
-		else
-		{
-			this.entity = entity;
-		}
+		this.entity = entity;
 	}
 
 	/**
@@ -216,14 +152,7 @@ public abstract class Message
 	 */
 	public void setEntity(String value, MediaType mediaType)
 	{
-		if(getWrappedMessage() != null)
-		{
-			getWrappedMessage().setEntity(value, mediaType);
-		}
-		else
-		{
-			setEntity(Factory.getInstance().createRepresentation(value, mediaType));
-		}
+		setEntity(Factory.getInstance().createRepresentation(value, mediaType));
 	}
 
 }

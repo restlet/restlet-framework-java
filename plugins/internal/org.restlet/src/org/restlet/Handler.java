@@ -182,8 +182,6 @@ public class Handler extends Restlet
 			{
 				response.setStatus(Status.CLIENT_ERROR_METHOD_NOT_ALLOWED);
 			}
-
-			setAllowedMethods(target, response);
 		}
 		else
 		{
@@ -212,8 +210,6 @@ public class Handler extends Restlet
 			{
 				response.setStatus(Status.CLIENT_ERROR_METHOD_NOT_ALLOWED);
 			}
-
-			setAllowedMethods(target, response);
 		}
 		else
 		{
@@ -276,8 +272,6 @@ public class Handler extends Restlet
 			{
 				response.setStatus(Status.CLIENT_ERROR_METHOD_NOT_ALLOWED);
 			}
-
-			setAllowedMethods(target, response);
 		}
 		else
 		{
@@ -312,8 +306,6 @@ public class Handler extends Restlet
 			{
 				response.setStatus(Status.CLIENT_ERROR_METHOD_NOT_ALLOWED);
 			}
-
-			setAllowedMethods(target, response);
 		}
 		else
 		{
@@ -329,27 +321,6 @@ public class Handler extends Restlet
 	protected void handleTrace(Request request, Response response)
 	{
 		defaultHandle(request, response);
-	}
-
-	/**
-	 * Sets the list of allowed methods on a resource to a response. 
-	 * @param resource The resource to introspect.
-	 * @param response The response to update.
-	 */
-	protected void setAllowedMethods(Resource resource, Response response)
-	{
-		// Clear the current set of allowed methods
-		response.getAllowedMethods().clear();
-
-		// Introspect the resource for allowed methods
-		if (resource.allowGet())
-		{
-			response.getAllowedMethods().add(Method.HEAD);
-			response.getAllowedMethods().add(Method.GET);
-		}
-		if (resource.allowDelete()) response.getAllowedMethods().add(Method.DELETE);
-		if (resource.allowPost()) response.getAllowedMethods().add(Method.POST);
-		if (resource.allowPut()) response.getAllowedMethods().add(Method.PUT);
 	}
 
 	/**

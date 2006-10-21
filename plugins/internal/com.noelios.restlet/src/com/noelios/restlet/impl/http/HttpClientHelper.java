@@ -25,13 +25,28 @@ package com.noelios.restlet.impl.http;
 import java.util.logging.Level;
 
 import org.restlet.Client;
+import org.restlet.Context;
 import org.restlet.data.Request;
 import org.restlet.data.Response;
 
 import com.noelios.restlet.impl.ClientHelper;
 
 /**
- * Base HTTP client connector.
+ * Base HTTP client connector. Here is the list of parameters that are supported:
+ * <table>
+ * 	<tr>
+ * 		<th>Parameter name</th>
+ * 		<th>Value type</th>
+ * 		<th>Default value</th>
+ * 		<th>Description</th>
+ * 	</tr>
+ * 	<tr>
+ * 		<td>converter</td>
+ * 		<td>String</td>
+ * 		<td>com.noelios.restlet.impl.http.HttpClientConverter</td>
+ * 		<td>Class name of the converter of low-level HTTP calls into high level requests and responses.</td>
+ * 	</tr>
+ *	</table>
  * @author Jerome Louvel (contact@noelios.com) <a href="http://www.noelios.com/">Noelios Consulting</a>
  */
 public abstract class HttpClientHelper extends ClientHelper
@@ -84,7 +99,17 @@ public abstract class HttpClientHelper extends ClientHelper
 	{
 		if (this.converter == null)
 		{
-			this.converter = new HttpClientConverter(getClient().getLogger());
+			try
+			{
+				String converterClass = getParameters().getFirstValue("converter",
+						"com.noelios.restlet.impl.http.HttpClientConverter");
+				this.converter = (HttpClientConverter) Class.forName(converterClass)
+						.getConstructor(Context.class).newInstance(getContext());
+			}
+			catch (Exception e)
+			{
+				getLogger().log(Level.SEVERE, "Unable to create the HTTP server converter");
+			}
 		}
 
 		return this.converter;

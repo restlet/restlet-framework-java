@@ -121,14 +121,11 @@ public class TemplateRepresentation extends OutputRepresentation
          }
 
          template.process(getDataModel(), tmplWriter);
+         tmplWriter.flush();
       }
       catch(TemplateException te)
       {
          throw new IOException("Template processing error");
-      }
-      finally
-      {
-         if(tmplWriter != null) tmplWriter.close();
       }
    }
 

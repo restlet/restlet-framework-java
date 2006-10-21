@@ -28,7 +28,8 @@ import java.util.Set;
 import java.util.TreeMap;
 
 /**
- * Modifiable map that wraps a delegate map for the actual implementation. This allows an easy subclassing.
+ * Map wrapper. Modifiable map that delegates all methods to a wrapped map. This allows an easy 
+ * subclassing.
  * @author Jerome Louvel (contact@noelios.com) <a href="http://www.noelios.com/">Noelios Consulting</a>
  * @see java.util.Collections
  * @see java.util.List

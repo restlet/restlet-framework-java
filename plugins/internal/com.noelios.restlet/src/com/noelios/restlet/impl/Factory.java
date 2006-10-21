@@ -720,7 +720,7 @@ public class Factory extends org.restlet.spi.Factory
 			Language fallbackLanguage)
 	{
 		List<Representation> variants = resource.getVariants();
-
+		
 		if ((variants == null) || (variants.size() < 1))
 		{
 			// Resource not found
@@ -728,6 +728,12 @@ public class Factory extends org.restlet.spi.Factory
 		}
 		else
 		{
+			// Set the variants' resource
+			for(Representation variant : variants)
+			{
+				variant.setResource(resource);
+			}
+			
 			// Compute the best variant
 			Representation bestVariant = request.getClientInfo().getPreferredVariant(
 					variants, fallbackLanguage);

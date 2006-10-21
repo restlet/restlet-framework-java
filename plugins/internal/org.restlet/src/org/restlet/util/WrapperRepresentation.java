@@ -20,102 +20,222 @@
  * Portions Copyright [yyyy] [name of copyright owner]
  */
 
-package org.restlet.data;
+package org.restlet.util;
 
-import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
 import java.nio.channels.ReadableByteChannel;
 import java.nio.channels.WritableByteChannel;
 import java.util.Date;
+import java.util.List;
 import java.util.logging.Logger;
 
+import org.restlet.data.CharacterSet;
+import org.restlet.data.Encoding;
+import org.restlet.data.Language;
+import org.restlet.data.MediaType;
+import org.restlet.data.Method;
+import org.restlet.data.Reference;
+import org.restlet.data.ReferenceList;
+import org.restlet.data.Representation;
+import org.restlet.data.Resource;
+import org.restlet.data.Result;
+import org.restlet.data.Tag;
+
 /**
- * Current or intended state of a resource. For performance purpose, it is essential that a minimal overhead 
- * occurs upon initialization. The main overhead must only occur during invocation of content processing 
- * methods (write, getStream, getChannel and toString).Current or intended state of a resource.<br/><br/> 
- * "REST components perform actions on a resource by using a representation to capture the current or intended 
- * state of that resource and transferring that representation between components. A representation is a 
- * sequence of bytes, plus representation metadata to describe those bytes. Other commonly used but less 
- * precise names for a representation include: document, file, and HTTP message entity, instance, or variant." 
- * Roy T. Fielding
- * @see <a href="http://www.ics.uci.edu/~fielding/pubs/dissertation/rest_arch_style.htm#sec_5_2_1_2">Source dissertation</a>
+ * Representation wrapper. Useful for application developer who need to enrich the representation
+ * with application related properties and behavior.
+ * @see <a href="http://c2.com/cgi/wiki?DecoratorPattern">The decorator (aka wrapper) pattern</a>
  * @author Jerome Louvel (contact@noelios.com) <a href="http://www.noelios.com/">Noelios Consulting</a>
  */
-public class Representation extends Resource
+public class WrapperRepresentation extends Representation
 {
-	/** Inidicates that the size of the representation can't be known in advance. */
-	public static final long UNKNOWN_SIZE = -1L;
+   /** The wrapped representation. */
+   private Representation wrappedRepresentation;
 
-   /** The character set or null if not applicable. */
-	private CharacterSet characterSet;
-   
-   /** Indicates if the representation's content is available. */
-	private boolean contentAvailable;
-	
-   /** Indicates if the representation's content is transient. */
-	private boolean contentTransient;
-
-   /** The encoding or null if not identity encoding applies. */
-	private Encoding encoding;
-
-	/** 
-	 * The expected size. Dynamic representations can have any size, but sometimes we can know in 
-	 * advance the expected size. If this expected size is specified by the user, it has a higher priority
-	 * than any size that can be guessed by the representation (like a file size).
-	 */
-	private long size;
-   
-   /** The expiration date. */
-	private Date expirationDate;
-   
-   /** The language or null if not applicable. */
-	private Language language;
-
-   /** The media type. */
-	private MediaType mediaType;
-
-   /** The modification date. */
-	private Date modificationDate;
-
-	/** The represented resource, if available. */
-	private Resource resource;
-
-   /** The tag. */
-	private Tag tag;
-   
-	/**
-	 * Default constructor.
-	 */
-	public Representation()
-	{
-		this(null);
-	}
-	
    /**
     * Constructor.
-    * @param mediaType The media type.
+    * @param wrappedRepresentation The wrapped representation.
     */
-   public Representation(MediaType mediaType)
+   public WrapperRepresentation(Representation wrappedRepresentation)
    {
-   	super((Logger)null);
-      this.characterSet = null;
-      this.contentAvailable = true;
-      this.contentTransient = false;
-      this.encoding = null;
-      this.size = UNKNOWN_SIZE;
-      this.expirationDate = null;
-      this.language = null;
-      this.mediaType = mediaType;
-      this.modificationDate = null;
-      this.resource = null;
-      this.tag = null;
-      
-      // A representation is also a resource whose only 
-      // variant is the representation itself
-      getVariants().add(this);
+      this.wrappedRepresentation = wrappedRepresentation;
    }
+
+   /**
+    * Returns the wrapped representation.
+    * @return The wrapped representation.
+    */
+   public Representation getWrappedRepresentation()
+   {
+      return this.wrappedRepresentation;
+   }
+
+   // ----------------
+   // Resource methods
+   // ----------------
+   
+	/**
+	 * Indicates if it is allowed to delete the resource. The default value is false. 
+	 * @return True if the method is allowed.
+	 */
+	public boolean allowDelete()
+	{
+		return getWrappedRepresentation().allowDelete();
+	}
+
+	/**
+	 * Indicates if it is allowed to get the variants. The default value is true. 
+	 * @return True if the method is allowed.
+	 */
+	public boolean allowGet()
+	{
+		return getWrappedRepresentation().allowGet();
+	}
+
+	/**
+	 * Indicates if it is allowed to post to the resource. The default value is false. 
+	 * @return True if the method is allowed.
+	 */
+	public boolean allowPost()
+	{
+		return getWrappedRepresentation().allowPost();
+	}
+
+	/**
+	 * Indicates if it is allowed to put to the resource. The default value is false. 
+	 * @return True if the method is allowed.
+	 */
+	public boolean allowPut()
+	{
+		return getWrappedRepresentation().allowPut();
+	}
+
+	/**
+	 * Asks the resource to delete itself and all its representations.
+	 * @return The result information. 
+	 */
+	public Result delete()
+	{
+		return getWrappedRepresentation().delete();
+	}
+
+	/**
+	 * Returns the list of methods allowed on the requested resource.
+	 * @return The list of allowed methods.
+	 */
+	public List<Method> getAllowedMethods()
+	{
+		return getWrappedRepresentation().getAllowedMethods();
+	}
+
+	/**
+	 * Returns the official identifier.
+	 * @return The official identifier.
+	 */
+	public Reference getIdentifier()
+	{
+		return getWrappedRepresentation().getIdentifier();
+	}
+
+	/**
+	 * Returns the list of all the identifiers for the resource. The list is composed of the official identifier
+	 * followed by all the alias identifiers.
+	 * @return The list of all the identifiers for the resource.
+	 */
+	public ReferenceList getIdentifiers()
+	{
+		return getWrappedRepresentation().getIdentifiers();
+	}
+
+	/**
+	 * Returns the logger to use.
+	 * @return The logger to use.
+	 */
+	public Logger getLogger()
+	{
+		return getWrappedRepresentation().getLogger();
+	}
+
+	/**
+	 * Returns the list of variants. Each variant is described by metadata and can provide several instances 
+	 * of the variant's representation.
+	 * @return The list of variants.
+	 */
+	public List<Representation> getVariants()
+	{
+		return getWrappedRepresentation().getVariants();
+	}
+
+	/**
+	 * Posts a variant representation in the resource.
+	 * @param entity The posted entity. 
+	 * @return The result information.
+	 */
+	public Result post(Representation entity)
+	{
+		return getWrappedRepresentation().post(entity);
+	}
+
+	/**
+	 * Puts a variant representation in the resource.
+	 * @param variant A new or updated variant representation. 
+	 * @return The result information.
+	 */
+	public Result put(Representation variant)
+	{
+		return getWrappedRepresentation().put(variant);
+	}
+
+	/**
+	 * Sets the official identifier.
+	 * @param identifier The official identifier.
+	 */
+	public void setIdentifier(Reference identifier)
+	{
+		getWrappedRepresentation().setIdentifier(identifier);
+	}
+
+	/**
+	 * Sets the official identifier from a URI string.
+	 * @param identifierUri The official identifier to parse.
+	 */
+	public void setIdentifier(String identifierUri)
+	{
+		getWrappedRepresentation().setIdentifier(identifierUri);
+	}
+
+	/**
+	 * Sets a new list of all the identifiers for the resource.  
+	 * @param identifiers The new list of identifiers. 
+	 */
+	public void setIdentifiers(ReferenceList identifiers)
+	{
+		getWrappedRepresentation().setIdentifiers(identifiers);
+	}
+
+	/**
+	 * Sets the logger to use.
+	 * @param logger The logger to use.
+	 */
+	public void setLogger(Logger logger)
+	{
+		getWrappedRepresentation().setLogger(logger);
+	}
+
+	/**
+	 * Sets a new list of variants. 
+	 * @param variants The new list of variants.
+	 */
+	public void setVariants(List<Representation> variants)
+	{
+		getWrappedRepresentation().setVariants(variants);
+	}
+   
+   // ----------------------
+   // Representation methods
+   // ----------------------
 
    /**
     * Returns the character set or null if not applicable.
@@ -123,7 +243,7 @@ public class Representation extends Resource
     */
    public CharacterSet getCharacterSet()
    {
-		return this.characterSet;
+		return getWrappedRepresentation().getCharacterSet();
    }
 
    /**
@@ -132,7 +252,7 @@ public class Representation extends Resource
     */
    public void setCharacterSet(CharacterSet characterSet)
    {
-		this.characterSet = characterSet;
+   	getWrappedRepresentation().setCharacterSet(characterSet);
    }
 
    /**
@@ -143,7 +263,7 @@ public class Representation extends Resource
     */
    public boolean isAvailable()
    {
-		return this.contentAvailable;
+		return getWrappedRepresentation().isAvailable();
    }
 
    /**
@@ -155,7 +275,7 @@ public class Representation extends Resource
     */
 	public boolean isTransient()
 	{
-		return this.contentTransient;
+		return getWrappedRepresentation().isTransient();
 	}
 
    /**
@@ -164,7 +284,7 @@ public class Representation extends Resource
     */
    public Encoding getEncoding()
    {
-		return this.encoding;
+		return getWrappedRepresentation().getEncoding();
    }
 
    /**
@@ -173,7 +293,7 @@ public class Representation extends Resource
     */
    public void setEncoding(Encoding encoding)
    {
-		this.encoding = encoding;
+   	getWrappedRepresentation().setEncoding(encoding);
    }
 
    /**
@@ -182,7 +302,7 @@ public class Representation extends Resource
     */
    public Date getExpirationDate()
    {
-		return this.expirationDate;
+		return getWrappedRepresentation().getExpirationDate();
    }
 
    /**
@@ -191,7 +311,7 @@ public class Representation extends Resource
     */
    public void setExpirationDate(Date expirationDate)
    {
-		this.expirationDate = expirationDate;
+   	getWrappedRepresentation().setExpirationDate(expirationDate);
    }
 
    /**
@@ -200,7 +320,7 @@ public class Representation extends Resource
     */
    public Language getLanguage()
    {
-		return this.language;
+		return getWrappedRepresentation().getLanguage();
    }
 
    /**
@@ -209,7 +329,7 @@ public class Representation extends Resource
     */
    public void setLanguage(Language language)
    {
-		this.language = language;
+   	getWrappedRepresentation().setLanguage(language);
    }
 
    /**
@@ -218,7 +338,7 @@ public class Representation extends Resource
     */
    public MediaType getMediaType()
    {
-		return this.mediaType;
+		return getWrappedRepresentation().getMediaType();
    }
 
    /**
@@ -227,7 +347,7 @@ public class Representation extends Resource
     */
    public void setMediaType(MediaType mediaType)
    {
-		this.mediaType = mediaType;
+   	getWrappedRepresentation().setMediaType(mediaType);
    }
 
    /**
@@ -237,7 +357,7 @@ public class Representation extends Resource
     */
    public Date getModificationDate()
    {
-		return this.modificationDate;
+		return getWrappedRepresentation().getModificationDate();
    }
 
    /**
@@ -246,7 +366,7 @@ public class Representation extends Resource
     */
    public void setModificationDate(Date modificationDate)
    {
-		this.modificationDate = modificationDate;
+   	getWrappedRepresentation().setModificationDate(modificationDate);
    }
 
    /**
@@ -255,7 +375,7 @@ public class Representation extends Resource
     */
    public Resource getResource()
    {
-		return this.resource;
+		return getWrappedRepresentation().getResource();
    }
 
    /**
@@ -264,7 +384,7 @@ public class Representation extends Resource
     */
    public void setResource(Resource resource)
    {
-		this.resource = resource;
+   	getWrappedRepresentation().setResource(resource);
    }
    
    /**
@@ -273,7 +393,7 @@ public class Representation extends Resource
     */
    public long getSize()
    {
-		return this.size;
+		return getWrappedRepresentation().getSize();
    }
 
    /**
@@ -282,7 +402,7 @@ public class Representation extends Resource
     */
    public void setSize(long expectedSize)
    {
-		this.size = expectedSize;
+   	getWrappedRepresentation().setSize(expectedSize);
    }
 
    /**
@@ -291,7 +411,7 @@ public class Representation extends Resource
     */
    public Tag getTag()
    {
-		return this.tag;
+		return getWrappedRepresentation().getTag();
    }
 
    /**
@@ -300,16 +420,16 @@ public class Representation extends Resource
     */
    public void setTag(Tag tag)
    {
-		this.tag = tag;
+   	getWrappedRepresentation().setTag(tag);
    }
 
 	/**
 	 * Indicates if some fresh content is available.
-	 * @param available True if some fresh content is available.
+	 * @param isAvailable True if some fresh content is available.
 	 */
-	public void setAvailable(boolean available)
+	public void setAvailable(boolean isAvailable)
 	{
-		this.contentAvailable = available;
+		getWrappedRepresentation().setAvailable(isAvailable);
 	}
 
 	/**
@@ -318,7 +438,7 @@ public class Representation extends Resource
 	 */
 	public void setTransient(boolean isTransient)
 	{
-		this.contentTransient = isTransient;
+		getWrappedRepresentation().setTransient(isTransient);
 	}
 
    /**
@@ -331,7 +451,7 @@ public class Representation extends Resource
     */
    public ReadableByteChannel getChannel() throws IOException
    {
-		return null;
+		return getWrappedRepresentation().getChannel();
    }
 
    /**
@@ -343,7 +463,7 @@ public class Representation extends Resource
     */
    public InputStream getStream() throws IOException
    {
-		return null;
+		return getWrappedRepresentation().getStream();
    }
 
    /**
@@ -355,7 +475,7 @@ public class Representation extends Resource
     */
    public void write(WritableByteChannel writableChannel) throws IOException
    {
-		throw new UnsupportedOperationException("You must override this method in order to use it");
+   	getWrappedRepresentation().write(writableChannel);
    }
 
    /**
@@ -367,7 +487,7 @@ public class Representation extends Resource
     */
    public void write(OutputStream outputStream) throws IOException
    {
-		throw new UnsupportedOperationException("You must override this method in order to use it");
+   	getWrappedRepresentation().write(outputStream);
    }
 
    /**
@@ -376,30 +496,7 @@ public class Representation extends Resource
     */
    public String toString()
    {
-      String result = null;
-
-      if(isAvailable())
-      {
-	      try
-	      {
-	         ByteArrayOutputStream baos = new ByteArrayOutputStream();
-	         write(baos);
-	         
-	         if(getCharacterSet() != null)
-	         {
-	         	result = baos.toString(getCharacterSet().getName());
-	         }
-	         else
-	         {
-	         	result = baos.toString();
-	         }
-	      }
-	      catch(Exception ioe)
-	      {
-	      }
-      }
-      
-      return result;
+      return getWrappedRepresentation().toString();
    }
-   
+	
 }

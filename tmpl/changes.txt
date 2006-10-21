@@ -13,6 +13,7 @@ Changes log
  - Fixed issue with ServerServlet preventing the returning of an output representation with an error status code. Reported by Sean Landis.
  - Fixed incomplete plugin descriptors for some extensions.
  - Added workaround for JDK's bug #6472250 when using the fixed length mode with the HTTP client.
+ - Fixed bug in FreeMarker's TemplateRepresentation closing the output stream too early, causing Simple HTTP server to fail. Reported by Zohar Melamed.
  
 [API breaking changes]
  - Renamed Representation.isContentAvailable() to isAvailable() and isContentTransient() to isTransient().
@@ -65,8 +66,6 @@ Changes log
  - Renamed "input" and "output" to "entity" or "request" or "response" in all properties name for CompressFilter, DecompressFilter, 
    ExtractFilter, HttpClientCall, HttpServerCall, Result
  - Moved ClientInterface to org.restlet.util.
- - Replaced WrapperCall by wrapper constructors on Message, Request and Response.
- - Replaced WrapperRepresentation by wrapper constructors on Resource and Representation.
  - Refactored the Restlet SPI and NRE implementation, to use helpers instead of wrappers as plug mechanism.
  - Added ConnectorService, LocalService, LogService and StatusService to org.restlet.util and as Application properties.
  - Renamed org.restlet.util.ClientInterface into VirtualClient.
@@ -109,15 +108,16 @@ Changes log
  - Added ScorerList.removeAll(UniformInterface) method to remove all scorers pointing to a given handler.
  - Added Protocol.ALL constant as a protocol wildcard.
  - Added "hosts" and "localHost" properties to Container.
- - Added support "Allow" HTTP headers. New allow*() methods added on Resource and support for setting the 405 status in the Handler class.
-   The list of allowed methods is then set to the Response (ex-Call) object. Subclasses of Handler can customize the list of allowed methods.
-   Suggested by AJ Barnes and Lars Heuer.
  - Updated tutorial examples to leverage application concept.
  - Refactored all usages of the JDK's loggers in order to reuse the Context's logger, allowing separation of messages for each application.
  - Optimized the ByteUtils.write(is, os) method.
  - Added a "defaultScorer" property on Router to have a way to catch calls when no scorer in the normal list matched.
  - Scorer is no longer abstract, score() now returns 1.0 by default.
  - Handler is no longer abstract, findTarget() now returns "null" by default.
+ - Refactored HTTP call converters: introduce super HttpConverter class. Added pluggability of converters via a simple connector parameter. Following a request from Diggory Briercliffe.
+ - Representation is no longer abstract and "transient" and "available" properties can be externally modified. Added empty constructor.
+ - Added support "Allow" HTTP headers. New allow*() methods added on Resource and support for setting the 405 status in the Handler class.
+   Also added Resource."allowedMethod" property. Suggested by AJ Barnes and Lars Heuer.
  
 1.0 beta 18 (2006-08-19)
 [Bugs fixed]

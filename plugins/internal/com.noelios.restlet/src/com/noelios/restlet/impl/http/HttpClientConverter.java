@@ -23,10 +23,11 @@
 package com.noelios.restlet.impl.http;
 
 import java.io.IOException;
+import java.util.List;
 import java.util.StringTokenizer;
 import java.util.logging.Level;
-import java.util.logging.Logger;
 
+import org.restlet.Context;
 import org.restlet.data.ChallengeRequest;
 import org.restlet.data.ChallengeResponse;
 import org.restlet.data.ClientInfo;
@@ -50,20 +51,17 @@ import com.noelios.restlet.impl.util.SecurityUtils;
  * Converter of high-level uniform calls into low-level HTTP client calls.
  * @author Jerome Louvel (contact@noelios.com) <a href="http://www.noelios.com/">Noelios Consulting</a>
  */
-public class HttpClientConverter
+public class HttpClientConverter extends HttpConverter
 {
-	/** The logger to use. */
-	private Logger logger;
-
 	/**
 	 * Constructor.
-	 * @param logger The logger to use.
+	 * @param context The context to use.
 	 */
-	public HttpClientConverter(Logger logger)
+	public HttpClientConverter(Context context)
 	{
-		this.logger = logger;
+		super(context);
 	}
-	
+
 	/**
 	 * Converts a low-level HTTP call into a high-level uniform call.
 	 * @param client The HTTP client that will handle the call.
@@ -71,7 +69,8 @@ public class HttpClientConverter
 	 * @param response The high-level response.
 	 * @return A new high-level uniform call.
 	 */
-	public HttpClientCall toSpecific(HttpClientHelper client, Request request, Response response)
+	public HttpClientCall toSpecific(HttpClientHelper client, Request request,
+			Response response)
 	{
 		// Create the low-level HTTP client call
 		HttpClientCall result = client.create(request);
@@ -109,7 +108,7 @@ public class HttpClientConverter
 		}
 		catch (Exception e)
 		{
-			this.logger.log(Level.INFO, "Exception intercepted", e);
+			getLogger().log(Level.INFO, "Exception intercepted", e);
 		}
 	}
 
@@ -132,7 +131,8 @@ public class HttpClientConverter
 
 			if (response.getServerInfo().getPort() != null)
 			{
-				host = response.getServerInfo().getName() + ':' + response.getServerInfo().getPort();
+				host = response.getServerInfo().getName() + ':'
+						+ response.getServerInfo().getPort();
 			}
 			else
 			{
@@ -221,7 +221,8 @@ public class HttpClientConverter
 			}
 			catch (IOException ioe)
 			{
-				this.logger.log(Level.WARNING, "Unable to format the HTTP Accept header", ioe);
+				getLogger()
+						.log(Level.WARNING, "Unable to format the HTTP Accept header", ioe);
 			}
 		}
 		else
@@ -238,7 +239,8 @@ public class HttpClientConverter
 			}
 			catch (IOException ioe)
 			{
-				this.logger.log(Level.WARNING, "Unable to format the HTTP Accept header", ioe);
+				getLogger()
+						.log(Level.WARNING, "Unable to format the HTTP Accept header", ioe);
 			}
 		}
 
@@ -251,7 +253,8 @@ public class HttpClientConverter
 			}
 			catch (IOException ioe)
 			{
-				this.logger.log(Level.WARNING, "Unable to format the HTTP Accept header", ioe);
+				getLogger()
+						.log(Level.WARNING, "Unable to format the HTTP Accept header", ioe);
 			}
 		}
 
@@ -264,7 +267,8 @@ public class HttpClientConverter
 			}
 			catch (IOException ioe)
 			{
-				this.logger.log(Level.WARNING, "Unable to format the HTTP Accept header", ioe);
+				getLogger()
+						.log(Level.WARNING, "Unable to format the HTTP Accept header", ioe);
 			}
 		}
 
@@ -301,85 +305,7 @@ public class HttpClientConverter
 		// Add user-defined extension headers
 		ParameterList additionalHeaders = (ParameterList) request.getAttributes().get(
 				HttpConstants.ATTRIBUTE_HEADERS);
-		if (additionalHeaders != null)
-		{
-			for (Parameter param : additionalHeaders)
-			{
-				if (param.getName().equalsIgnoreCase(HttpConstants.HEADER_ACCEPT)
-						|| param.getName()
-								.equalsIgnoreCase(HttpConstants.HEADER_ACCEPT_CHARSET)
-						|| param.getName().equalsIgnoreCase(
-								HttpConstants.HEADER_ACCEPT_ENCODING)
-						|| param.getName().equalsIgnoreCase(
-								HttpConstants.HEADER_ACCEPT_LANGUAGE)
-						|| param.getName().equalsIgnoreCase(HttpConstants.HEADER_ACCEPT_RANGES)
-						|| param.getName().equalsIgnoreCase(HttpConstants.HEADER_AGE)
-						|| param.getName().equalsIgnoreCase(HttpConstants.HEADER_ALLOW)
-						|| param.getName().equalsIgnoreCase(HttpConstants.HEADER_AUTHORIZATION)
-						|| param.getName().equalsIgnoreCase(HttpConstants.HEADER_CACHE_CONTROL)
-						|| param.getName().equalsIgnoreCase(HttpConstants.HEADER_CONNECTION)
-						|| param.getName().equalsIgnoreCase(
-								HttpConstants.HEADER_CONTENT_ENCODING)
-						|| param.getName().equalsIgnoreCase(
-								HttpConstants.HEADER_CONTENT_LANGUAGE)
-						|| param.getName()
-								.equalsIgnoreCase(HttpConstants.HEADER_CONTENT_LENGTH)
-						|| param.getName().equalsIgnoreCase(
-								HttpConstants.HEADER_CONTENT_LOCATION)
-						|| param.getName().equalsIgnoreCase(HttpConstants.HEADER_CONTENT_MD5)
-						|| param.getName().equalsIgnoreCase(HttpConstants.HEADER_CONTENT_RANGE)
-						|| param.getName().equalsIgnoreCase(HttpConstants.HEADER_CONTENT_TYPE)
-						|| param.getName().equalsIgnoreCase(HttpConstants.HEADER_COOKIE)
-						|| param.getName().equalsIgnoreCase(HttpConstants.HEADER_DATE)
-						|| param.getName().equalsIgnoreCase(HttpConstants.HEADER_ETAG)
-						|| param.getName().equalsIgnoreCase(HttpConstants.HEADER_EXPECT)
-						|| param.getName().equalsIgnoreCase(HttpConstants.HEADER_EXPIRES)
-						|| param.getName().equalsIgnoreCase(HttpConstants.HEADER_FROM)
-						|| param.getName().equalsIgnoreCase(HttpConstants.HEADER_HOST)
-						|| param.getName().equalsIgnoreCase(HttpConstants.HEADER_IF_MATCH)
-						|| param.getName().equalsIgnoreCase(
-								HttpConstants.HEADER_IF_MODIFIED_SINCE)
-						|| param.getName().equalsIgnoreCase(HttpConstants.HEADER_IF_NONE_MATCH)
-						|| param.getName().equalsIgnoreCase(HttpConstants.HEADER_IF_RANGE)
-						|| param.getName().equalsIgnoreCase(
-								HttpConstants.HEADER_IF_UNMODIFIED_SINCE)
-						|| param.getName().equalsIgnoreCase(HttpConstants.HEADER_LAST_MODIFIED)
-						|| param.getName().equalsIgnoreCase(HttpConstants.HEADER_LOCATION)
-						|| param.getName().equalsIgnoreCase(HttpConstants.HEADER_MAX_FORWARDS)
-						|| param.getName().equalsIgnoreCase(HttpConstants.HEADER_PRAGMA)
-						|| param.getName().equalsIgnoreCase(
-								HttpConstants.HEADER_PROXY_AUTHENTICATE)
-						|| param.getName().equalsIgnoreCase(
-								HttpConstants.HEADER_PROXY_AUTHORIZATION)
-						|| param.getName().equalsIgnoreCase(HttpConstants.HEADER_RANGE)
-						|| param.getName().equalsIgnoreCase(HttpConstants.HEADER_REFERRER)
-						|| param.getName().equalsIgnoreCase(HttpConstants.HEADER_RETRY_AFTER)
-						|| param.getName().equalsIgnoreCase(HttpConstants.HEADER_SERVER)
-						|| param.getName().equalsIgnoreCase(HttpConstants.HEADER_SET_COOKIE)
-						|| param.getName().equalsIgnoreCase(HttpConstants.HEADER_SET_COOKIE2)
-						|| param.getName().equalsIgnoreCase(HttpConstants.HEADER_TRAILER)
-						|| param.getName().equalsIgnoreCase(
-								HttpConstants.HEADER_TRANSFER_ENCODING)
-						|| param.getName().equalsIgnoreCase(
-								HttpConstants.HEADER_TRANSFER_EXTENSION)
-						|| param.getName().equalsIgnoreCase(HttpConstants.HEADER_UPGRADE)
-						|| param.getName().equalsIgnoreCase(HttpConstants.HEADER_USER_AGENT)
-						|| param.getName().equalsIgnoreCase(HttpConstants.HEADER_VARY)
-						|| param.getName().equalsIgnoreCase(HttpConstants.HEADER_VIA)
-						|| param.getName().equalsIgnoreCase(HttpConstants.HEADER_WARNING)
-						|| param.getName().equalsIgnoreCase(
-								HttpConstants.HEADER_WWW_AUTHENTICATE))
-				{
-					// Standard headers can't be overriden
-					this.logger.warning("Addition of the standard header \"" + param.getName()
-							+ "\" is not allowed.");
-				}
-				else
-				{
-					requestHeaders.add(param);
-				}
-			}
-		}
+		addAdditionalHeaders(requestHeaders, additionalHeaders);
 	}
 
 	/**
@@ -407,12 +333,13 @@ public class HttpClientConverter
 				{
 					try
 					{
-						CookieReader cr = new CookieReader(this.logger, header.getValue());
+						CookieReader cr = new CookieReader(getLogger(), header.getValue());
 						response.getCookieSettings().add(cr.readCookieSetting());
 					}
 					catch (Exception e)
 					{
-						this.logger.log(Level.WARNING,
+						getLogger().log(
+								Level.WARNING,
 								"Error during cookie setting parsing. Header: "
 										+ header.getValue(), e);
 					}
@@ -430,16 +357,18 @@ public class HttpClientConverter
 				else if (header.getName().equalsIgnoreCase(HttpConstants.HEADER_ALLOW))
 				{
 					StringTokenizer st = new StringTokenizer(header.getValue(), ",\\s");
+					List<Method> allowedMethods = response.getEntity().getResource()
+							.getAllowedMethods();
 					while (st.hasMoreTokens())
 					{
-						response.getAllowedMethods().add(Method.valueOf(st.nextToken()));
+						allowedMethods.add(Method.valueOf(st.nextToken()));
 					}
 				}
 			}
 		}
 		catch (Exception e)
 		{
-			this.logger.log(Level.FINE,
+			getLogger().log(Level.FINE,
 					"An error occured during the processing of the HTTP response.", e);
 			response.setStatus(new Status(Status.CONNECTOR_ERROR_INTERNAL,
 					"Unable to process the response. " + e.getMessage()));
