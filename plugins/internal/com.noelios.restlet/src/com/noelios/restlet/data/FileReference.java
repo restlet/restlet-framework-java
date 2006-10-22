@@ -134,9 +134,9 @@ public class FileReference extends Reference
       for(int i = 0; i < path.length(); i++)
       {
          nextChar = path.charAt(i);
-         if((nextChar == File.separatorChar))
+         if((nextChar == '\\'))
          {
-            // Convert the URI separator to the standard path separator
+            // Convert the Windows style path separator to the standard path separator
             result.append('/');
          }
          else

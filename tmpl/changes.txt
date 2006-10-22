@@ -14,7 +14,9 @@ Changes log
  - Fixed incomplete plugin descriptors for some extensions.
  - Added workaround for JDK's bug #6472250 when using the fixed length mode with the HTTP client.
  - Fixed bug in FreeMarker's TemplateRepresentation closing the output stream too early, causing Simple HTTP server to fail. Reported by Zohar Melamed.
-
+ - Fixed bug in normalization of paths when Windows style paths were used on Linux. Reported by Kabe.
+ - Fixed compilation issue on Linux with UTF-8 encoding. Removed unmappable characters in DirectoryTestCase. Reported by Piyush Purang.
+ 
 [API breaking changes]
  - Renamed Representation.isContentAvailable() to isAvailable() and isContentTransient() to isTransient().
  - Merged Client and GenericClient into a single Client class.
