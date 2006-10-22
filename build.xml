@@ -343,6 +343,7 @@
 			<mkdir dir="@{destdir}" />
 			<javac compiler="@{compiler}"
 			       debug="@{debug}"
+			       encoding="UTF-8"
 			       debuglevel="@{debuglevel}"
 			       optimize="@{optimize}"
 			       verbose="@{verbose}"
