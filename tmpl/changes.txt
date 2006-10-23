@@ -73,7 +73,8 @@ Changes log
  - Renamed org.restlet.util.ClientInterface into VirtualClient.
  - Replaced Protocol.CONTEXT by Protocol.CLAP (ClassLoader Access Protocol) and WAR (Web Application).
  - Replaced ContextReference by ClapReference.
- - Renamed "hostName" or "serverName" into "hostDomain" or "serverHost" in API's Reference, ServerInfo, VirtualHost classes and NRE's CallModel, HttpCall, HttpServerCall classes.
+ - Renamed "hostName" or "serverName" into "hostDomain" or "serverDomain" in API's Reference, ServerInfo, VirtualHost classes and NRE's CallModel, 
+   HttpCall, HttpServerCall classes.
 
 [Other changes] 
  - Updated Jetty 6 extension to 6.0.1 release and Jetty 5 extension to 5.1.11 release.
