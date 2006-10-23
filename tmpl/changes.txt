@@ -123,6 +123,7 @@ Changes log
  - Added support "Allow" HTTP headers. New allow*() methods added on Resource and support for setting the 405 status in the Handler class.
    Also added Resource."allowedMethod" property. Suggested by AJ Barnes and Lars Heuer.
  - Added Response.setStatus(status, message) method variant.
+ - Added unit test covering execution of  FreeMarker templates.
 
 1.0 beta 18 (2006-08-19)
 [Bugs fixed]

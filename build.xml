@@ -202,6 +202,8 @@
 	<path id="mod-ri-test-path">
 		<path refid="mod-ri-path" />
 		<pathelement path="${classes}/${mod-ri-id}" />
+		<path refid="mod-freemarker-path" />
+		<pathelement path="${classes}/${mod-freemarker-id}" />
 		<path refid="mod-atom-path" />
 		<pathelement path="${classes}/${mod-atom-id}" />
 		<fileset dir="${lib}/${lib-junit-id}" includes="*.jar" />
@@ -544,6 +546,10 @@
 				<path refid="mod-simple-path" />
 				<pathelement path="${classes}/${mod-simple-id}" />
 				<pathelement path="${mod}/${mod-simple-id}/src" />
+
+				<path refid="mod-freemarker-path" />
+				<pathelement path="${classes}/${mod-freemarker-id}" />
+				<pathelement path="${mod}/${mod-freemarker-id}/src" />
 				
 				<pathelement location="tools/retroweaver/retroweaver-all.jar" />
 			</classpath>

@@ -45,13 +45,13 @@ public class StringTemplateTestCase extends TestCase
       dataModel.put("string", "abcdef");
 
       StringTemplate st = new StringTemplate("The number is ${number} and the string is ${string}");
-      assertEquals(st.process(dataModel), "The number is 12345 and the string is abcdef");
+      assertEquals("The number is 12345 and the string is abcdef", st.process(dataModel));
 
       st = new StringTemplate("The number is ${foo?exists} and the string is ${string?exists}");
-      assertEquals(st.process(dataModel), "The number is  and the string is abcdef");
+      assertEquals("The number is  and the string is abcdef", st.process(dataModel));
 
       st = new StringTemplate("The number is $$$ {{{${number}${number} and the string is ${string}$${string}$i{ng}");
-      assertEquals(st.process(dataModel), "The number is $$$ {{{1234512345 and the string is abcdef$abcdef$i{ng}");
+      assertEquals("The number is $$$ {{{1234512345 and the string is abcdef$abcdef$i{ng}", st.process(dataModel));
    }
    
    /** Tests the conditions feature. */
@@ -62,10 +62,10 @@ public class StringTemplateTestCase extends TestCase
       dataModel.put("string", "abcdef");
 
       StringTemplate st = new StringTemplate("#[if number]Number exists: ${number}#[else]Number doesn't exist#[end]");
-      assertEquals(st.process(dataModel), "Number exists: 12345");
+      assertEquals("Number exists: 12345", st.process(dataModel));
       
       dataModel.remove("number");
-      assertEquals(st.process(dataModel), "Number doesn't exist");
+      assertEquals("Number doesn't exist", st.process(dataModel));
    }
 
    /** Test URI patterns based on the CallModel and StringTemplate. */
