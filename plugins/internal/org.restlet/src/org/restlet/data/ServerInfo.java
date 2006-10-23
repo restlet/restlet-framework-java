@@ -35,7 +35,7 @@ public class ServerInfo
 	private String agent;
 
    /** The domain name. */
-	private String name;
+	private String domain;
 
    /** The port number. */
 	private Integer port;
@@ -47,7 +47,7 @@ public class ServerInfo
 	{
 		this.address = null;
 		this.agent = null;
-		this.name = null;
+		this.domain = null;
 		this.port = null;
 	}
 	
@@ -70,14 +70,14 @@ public class ServerInfo
    }
 
    /**
-    * Returns the domain name which received the call. This will often be similar to the host name specified 
+    * Returns the domain name that received the call. This will often be similar to the host name specified 
     * in the Call's target resource but it may diverge in specific cases, for exampl when a resource is 
     * identifed by an URN and retrieved by HTTP.  
-    * @return The host name which received the call. 
+    * @return The host name that received the call. 
     */
-   public String getName()
+   public String getDomain()
    {
-   	return this.name;
+   	return this.domain;
    }
 
    /**
@@ -108,12 +108,12 @@ public class ServerInfo
    }
 
    /**
-    * Sets the domain name which received the call.
-    * @param name The host name which received the call. 
+    * Sets the domain name that received the call.
+    * @param domain The domain name that received the call. 
     */
-   public void setName(String name)
+   public void setDomain(String domain)
    {
-   	this.name = name;
+   	this.domain = domain;
    }
 
    /**

@@ -136,13 +136,13 @@ public class HostScorer extends Scorer
 			}
 		}
 
-		// Add the name score
+		// Add the domain score
 		if (!incompatible)
 		{
-			String name = response.getServerInfo().getName();
+			String domain = response.getServerInfo().getDomain();
 
-			if (getHost().getAllowedNames().contains(VirtualHost.ALL_NAMES)
-					|| ((name != null) && getHost().getAllowedNames().contains(name)))
+			if (getHost().getAllowedDomains().contains(VirtualHost.ALL_DOMAINS)
+					|| ((domain != null) && getHost().getAllowedDomains().contains(domain)))
 			{
 				result += 0.25F;
 			}
@@ -174,7 +174,7 @@ public class HostScorer extends Scorer
 	protected void beforeHandle(Request request, Response response)
 	{
 		request.setBaseRef(new Reference(request.getProtocol().getSchemeName(), response
-				.getServerInfo().getName(), response.getServerInfo().getPort(), null, null,
+				.getServerInfo().getDomain(), response.getServerInfo().getPort(), null, null,
 				null));
 
 		if (getLogger().isLoggable(Level.FINE))

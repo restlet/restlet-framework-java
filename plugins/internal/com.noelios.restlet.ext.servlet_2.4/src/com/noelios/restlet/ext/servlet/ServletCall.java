@@ -198,10 +198,10 @@ public class ServletCall extends HttpServerCall
    }
 
 	/** 
-	 * Returns the server name.
-	 * @return The server name.
+	 * Returns the server domain name.
+	 * @return The server domain name.
 	 */
-	public String getServerName()
+	public String getServerDomain()
 	{
 		return getRequest().getServerName();
 	}

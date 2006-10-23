@@ -37,7 +37,7 @@ import org.restlet.data.Protocol;
 public class VirtualHost extends Router
 {
 	public static final String ALL_ADDRESSES = "0.0.0.0";
-	public static final String ALL_NAMES = "*";
+	public static final String ALL_DOMAINS = "*";
 	public static final Integer ALL_PORTS = -1;
 	
 	/** The display name. */
@@ -53,7 +53,7 @@ public class VirtualHost extends Router
 	 * The modifiable list of allowed domain names. 
 	 * You can add the ALL_NAMES ("*") to allow any domain name. 
 	 */
-	private List<String> allowedNames;
+	private List<String> allowedDomains;
 	
 	/**
 	 * The modifiable list of allowed port numbers.
@@ -83,7 +83,7 @@ public class VirtualHost extends Router
    {
 		super(context);
 		this.allowedAddresses = new ArrayList<String>();
-		this.allowedNames = new ArrayList<String>();
+		this.allowedDomains = new ArrayList<String>();
 		this.allowedPorts = new ArrayList<Integer>();
 		this.allowedProtocols = new ArrayList<Protocol>();
 	}
@@ -101,7 +101,7 @@ public class VirtualHost extends Router
 		result.getAllowedAddresses().add(ALL_ADDRESSES);
 
 		// Add allowed domain names
-		result.getAllowedNames().add(ALL_NAMES);
+		result.getAllowedDomains().add(ALL_DOMAINS);
 
 		// Add allowed port numbers (all by default)
 		result.getAllowedPorts().add(ALL_PORTS);
@@ -126,9 +126,9 @@ public class VirtualHost extends Router
 		result.getAllowedAddresses().add(getLocalHostAddress());
 
 		// Add allowed domain names
-		result.getAllowedNames().add("localhost");
-		result.getAllowedNames().add("127.0.0.1");
-		result.getAllowedNames().add(getLocalHostName());
+		result.getAllowedDomains().add("localhost");
+		result.getAllowedDomains().add("127.0.0.1");
+		result.getAllowedDomains().add(getLocalHostName());
 
 		// Add allowed port numbers (all by default)
 		result.getAllowedPorts().add(ALL_PORTS);
@@ -154,9 +154,9 @@ public class VirtualHost extends Router
 	 * You can add the ALL_NAMES ("*") to allow any domain name. 
 	 * @return The modifiable list of allowed domain names.
 	 */
-	public List<String> getAllowedNames()
+	public List<String> getAllowedDomains()
 	{
-		return this.allowedNames;
+		return this.allowedDomains;
 	}
 	
 	/**

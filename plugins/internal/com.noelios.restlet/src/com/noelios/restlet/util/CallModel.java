@@ -40,7 +40,7 @@ import com.noelios.restlet.impl.util.CookieUtils;
  * <li>cookie (repeating, lookup by name and by index)</li>
  * <li>fragment</li>
  * <li>hostIdentifier</li>
- * <li>hostName</li>
+ * <li>hostDomain</li>
  * <li>hostPort</li>
  * <li>identifier</li>
  * <li>method</li>
@@ -67,7 +67,7 @@ public class CallModel implements ReadableModel
    public static final String NAME_REFERRER_URI = "referrerUri";
    public static final String NAME_RESOURCE_AUTHORITY = "authority";
    public static final String NAME_RESOURCE_FRAGMENT = "fragment";
-   public static final String NAME_RESOURCE_HOST_NAME = "hostName";
+   public static final String NAME_RESOURCE_HOST_DOMAIN = "hostDomain";
    public static final String NAME_RESOURCE_HOST_PORT = "hostPort";
    public static final String NAME_RESOURCE_HOST_IDENTIFIER = "hostIdentifier";
    public static final String NAME_RESOURCE_IDENTIFIER = "identifier";
@@ -209,9 +209,9 @@ public class CallModel implements ReadableModel
 	      {
 	         result = request.getResourceRef().getFragment();
 	      }
-	      else if(name.equals(NAME_RESOURCE_HOST_NAME))
+	      else if(name.equals(NAME_RESOURCE_HOST_DOMAIN))
 	      {
-	         result = request.getResourceRef().getHostName();
+	         result = request.getResourceRef().getHostDomain();
 	      }
 	      else if(name.equals(NAME_RESOURCE_HOST_PORT))
 	      {
@@ -371,9 +371,9 @@ public class CallModel implements ReadableModel
       {
          result = (request.getResourceRef() != null) && (request.getResourceRef().getFragment() != null);
       }
-      else if(name.equals(NAME_RESOURCE_HOST_NAME))
+      else if(name.equals(NAME_RESOURCE_HOST_DOMAIN))
       {
-         result = (request.getResourceRef() != null) && (request.getResourceRef().getHostName() != null);
+         result = (request.getResourceRef() != null) && (request.getResourceRef().getHostDomain() != null);
       }
       else if(name.equals(NAME_RESOURCE_HOST_PORT))
       {

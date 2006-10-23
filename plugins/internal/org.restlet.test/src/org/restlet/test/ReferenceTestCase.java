@@ -250,7 +250,7 @@ public class ReferenceTestCase extends RestletTestCase
 	protected Reference getDefaultReference()
 	{
 		Reference ref = getReference();
-		ref.setHostName("www.restlet.org");
+		ref.setHostDomain("www.restlet.org");
 		return ref;
 	}
 
@@ -285,11 +285,11 @@ public class ReferenceTestCase extends RestletTestCase
 	{
 		Reference ref = getReference();
 		String host = "www.restlet.org";
-		ref.setHostName(host);
-		assertEquals(host, ref.getHostName());
+		ref.setHostDomain(host);
+		assertEquals(host, ref.getHostDomain());
 		host = "restlet.org";
-		ref.setHostName(host);
-		assertEquals(host, ref.getHostName());
+		ref.setHostDomain(host);
+		assertEquals(host, ref.getHostDomain());
 	}
 
 	/**

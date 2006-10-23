@@ -58,8 +58,8 @@ public class HttpCall
 	/** The server IP address. */
 	private String serverAddress;
 
-	/** The server name. */
-	private String serverName;
+	/** The server domain. */
+	private String serverDomain;
 
 	/** The server port. */
 	private Integer serverPort;
@@ -170,12 +170,12 @@ public class HttpCall
 	}
 
    /** 
-    * Returns the server name.
-    * @return The server name.
+    * Returns the server domain.
+    * @return The server domain.
     */
-	public String getServerName()
+	public String getServerDomain()
 	{
-		return this.serverName;
+		return this.serverDomain;
 	}
 
    /** 
@@ -279,12 +279,12 @@ public class HttpCall
 	}
 
    /** 
-    * Sets the server name.
-    * @param serverName The server name.
+    * Sets the server domain name.
+    * @param serverDomain The server domain name.
     */
-	public void setServerName(String serverName)
+	public void setServerDomain(String serverDomain)
 	{
-		this.serverName = serverName;
+		this.serverDomain = serverDomain;
 	}
 
    /** 

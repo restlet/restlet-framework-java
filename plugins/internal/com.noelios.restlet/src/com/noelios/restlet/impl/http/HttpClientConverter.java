@@ -125,18 +125,18 @@ public class HttpClientConverter extends HttpConverter
 
 		// Manually add the host name and port when it is potentially different
 		// from the one specified in the target resource reference.
-		if (response.getServerInfo().getName() != null)
+		if (response.getServerInfo().getDomain() != null)
 		{
 			String host;
 
 			if (response.getServerInfo().getPort() != null)
 			{
-				host = response.getServerInfo().getName() + ':'
+				host = response.getServerInfo().getDomain() + ':'
 						+ response.getServerInfo().getPort();
 			}
 			else
 			{
-				host = response.getServerInfo().getName();
+				host = response.getServerInfo().getDomain();
 			}
 
 			requestHeaders.add(HttpConstants.HEADER_HOST, host);

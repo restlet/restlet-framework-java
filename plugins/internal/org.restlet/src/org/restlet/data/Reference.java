@@ -36,7 +36,7 @@ import java.util.List;
  * 	absolute-reference   = scheme ":" scheme-specific-part [ "#" fragment ]
  * 	scheme-specific-part = ( hierarchical-part [ "?" query ] ) | opaque-part
  * 	hierarchical-part    = ( "//" authority path-abempty ) | path-absolute | path-rootless | path-empty
- * 	authority            = [ user-info "@" ] host-name [ ":" host-port ]
+ * 	authority            = [ user-info "@" ] host-domain [ ":" host-port ]
  * 
  * 	relative-reference   = relative-part [ "?" query ] [ "#" fragment ]
  * 	relative-part        = ( "//" authority path-abempty ) | path-absolute | path-noscheme | path-empty
@@ -345,7 +345,7 @@ public class Reference
 
 		// Ensure that the scheme and host names are reset in lower case
 		setScheme(getScheme());
-		setHostName(getHostName());
+		setHostDomain(getHostDomain());
 
 		return this;
 	}
@@ -500,10 +500,11 @@ public class Reference
 	}
 
 	/**
-	 * Returns the host name component for server based hierarchical identifiers.
-	 * @return The host name component for server based hierarchical identifiers.
+	 * Returns the host domain name component for server based hierarchical identifiers. It can also be replaced
+	 * by an IP address when no domain name was registered.
+	 * @return The host domain name component for server based hierarchical identifiers.
 	 */
-	public String getHostName()
+	public String getHostDomain()
 	{
 		String result = null;
 		String authority = getAuthority();
@@ -1334,23 +1335,23 @@ public class Reference
 	}
 
 	/**
-	 * Sets the host component for server based hierarchical identifiers.
-	 * @param host The host component for server based hierarchical identifiers.
+	 * Sets the host domain component for server based hierarchical identifiers.
+	 * @param domain The host component for server based hierarchical identifiers.
 	 */
-	public void setHostName(String host)
+	public void setHostDomain(String domain)
 	{
 		String authority = getAuthority();
 
 		if (authority != null)
 		{
-			if (host == null)
+			if (domain == null)
 			{
-				host = "";
+				domain = "";
 			}
 			else
 			{
 				// URI specification indicates that host names should be produced in lower case
-				host = host.toLowerCase();
+				domain = domain.toLowerCase();
 			}
 
 			int index1 = authority.indexOf('@');
@@ -1362,13 +1363,13 @@ public class Reference
 				if (index2 != -1)
 				{
 					// Port found
-					setAuthority(authority.substring(0, index1 + 1) + host
+					setAuthority(authority.substring(0, index1 + 1) + domain
 							+ authority.substring(index2));
 				}
 				else
 				{
 					// No port found
-					setAuthority(authority.substring(0, index1 + 1) + host);
+					setAuthority(authority.substring(0, index1 + 1) + domain);
 				}
 			}
 			else
@@ -1377,12 +1378,12 @@ public class Reference
 				if (index2 != -1)
 				{
 					// Port found
-					setAuthority(host + authority.substring(index2));
+					setAuthority(domain + authority.substring(index2));
 				}
 				else
 				{
 					// No port found
-					setAuthority(host);
+					setAuthority(domain);
 				}
 			}
 		}

@@ -111,7 +111,7 @@ public class HttpRequest extends Request
 			// Let's reconstruct the client's target URI
 			StringBuilder sb = new StringBuilder();
 			sb.append(getProtocol().getSchemeName()).append("://");
-			sb.append(httpCall.getServerName());
+			sb.append(httpCall.getServerDomain());
 			if (httpCall.getServerPort() != getProtocol().getDefaultPort())
 			{
 				sb.append(':').append(httpCall.getServerPort());

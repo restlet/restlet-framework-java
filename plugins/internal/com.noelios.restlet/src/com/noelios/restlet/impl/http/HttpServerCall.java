@@ -144,13 +144,13 @@ public abstract class HttpServerCall extends HttpCall
 	}
 
 	/** 
-	 * Returns the server name.
-	 * @return The server name.
+	 * Returns the server domain name.
+	 * @return The server domain name.
 	 */
-	public String getServerName()
+	public String getServerDomain()
 	{
 		if (!hostParsed) parseHost();
-		return super.getServerName();
+		return super.getServerDomain();
 	}
 
 	/** 
@@ -176,12 +176,12 @@ public abstract class HttpServerCall extends HttpCall
 
 			if (colonIndex != -1)
 			{
-				super.setServerName(host.substring(0, colonIndex));
+				super.setServerDomain(host.substring(0, colonIndex));
 				super.setServerPort(Integer.valueOf(host.substring(colonIndex + 1)));
 			}
 			else
 			{
-				super.setServerName(host);
+				super.setServerDomain(host);
 
 				if (isConfidential())
 				{
