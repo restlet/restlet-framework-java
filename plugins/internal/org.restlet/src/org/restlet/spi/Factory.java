@@ -60,7 +60,7 @@ public abstract class Factory
    private static Logger logger = Logger.getLogger(Factory.class.getCanonicalName());
 
    /** Common version info. */
-   public static final String BETA_NUMBER = "19";
+   public static final String BETA_NUMBER = "20";
    public static final String VERSION_LONG = "1.0 beta " + BETA_NUMBER;
    public static final String VERSION_SHORT = "1.0b" + BETA_NUMBER;
 
@@ -135,11 +135,11 @@ public abstract class Factory
     * @return A new list of client connectors.
     */
    public abstract ClientList createClientList(Context context);
-   
+
    /**
     * Creates a new helper for a given container.
     * @param application The application to help.
-	 * @param parentContext The parent context, typically the container's context.
+    * @param parentContext The parent context, typically the container's context.
     * @return The new helper.
     */
    public abstract Helper createHelper(Application application, Context parentContext);
@@ -171,7 +171,7 @@ public abstract class Factory
     * @param mediaType The representation's media type.
     */
    public abstract Representation createRepresentation(String value, MediaType mediaType);
-   
+
    /**
     * Creates a URI-based Restlet attachment that will score chained instance shared by all calls.
     * The score will be proportional to the number of chararacters matched by the pattern, from the start
@@ -185,15 +185,15 @@ public abstract class Factory
 
    /**
     * Creates a new scorer list.
-	 * @param router The parent router.
+    * @param router The parent router.
     * @return The new scorer list.
     */
    public abstract ScorerList createScorerList(Router router);
-   
+
    /**
     * Create a new list of server connectors.
     * @param context The context.
-	 * @param target The target Restlet of added servers.
+    * @param target The target Restlet of added servers.
     * @return A new list of server connectors.
     */
    public abstract ServerList createServerList(Context context, Restlet target);
@@ -208,21 +208,21 @@ public abstract class Factory
     */
    public abstract Representation getBestVariant(ClientInfo client, List<Representation> variants, Language fallbackLanguage);
 
-	/**
-	 * Parses an URL encoded Web form.
-	 * @param logger The logger to use.
-	 * @param form The target form.
-	 * @param webForm The posted form.
-	 */
-	public abstract void parse(Logger logger, Form form, Representation webForm);
+   /**
+    * Parses an URL encoded Web form.
+    * @param logger The logger to use.
+    * @param form The target form.
+    * @param webForm The posted form.
+    */
+   public abstract void parse(Logger logger, Form form, Representation webForm);
 
-	/**
-	 * Parses an URL encoded query string into a given form.
-	 * @param logger The logger to use.
-	 * @param form The target form.
-	 * @param queryString Query string.
-	 */
-	public abstract void parse(Logger logger, Form form, String queryString);
+   /**
+    * Parses an URL encoded query string into a given form.
+    * @param logger The logger to use.
+    * @param form The target form.
+    * @param queryString Query string.
+    */
+   public abstract void parse(Logger logger, Form form, String queryString);
 
    /**
     * Sets the credentials of a challenge response using a user ID and a password.<br/>

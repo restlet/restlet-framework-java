@@ -5,7 +5,17 @@ Changes log
 
 
 @version-full@ (@release-date@)
+[Bugs fixed]
+ - 
 
+[API breaking changes]
+ - 
+
+[Other changes] 
+ - 
+
+
+1.0 beta 19 (2006-10-23)
 [Bugs fixed]
  - Fixed issue with error status preventing the setting of response headers with Servlet containers like Tomcat. Report and solution by Evan DiBiase.
  - Completed support for content streaming in the HTTP client connector extension. Issue reported by Mikkel Jensen.
