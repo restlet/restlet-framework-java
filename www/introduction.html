@@ -58,7 +58,7 @@
    Also, I wanted to get rid of the unnatural separation between the client-side and server-side view of the Web in Java, following the sound advice of Benjamin Carlyle in this <a target="_top" href="http://members.optusnet.com.au/benjamincarlyle/benjamin/blog/2005/11/12/#httpAPI">blog post</a>. In today's networked environment, we shouldn't have to make such differences; anybody should be able to act, at the same time, as a Web client and as a Web server. In REST, every component can have as many client and server connectors as useful, so I simply developed a client HTTP connector based on the HttpURLConnection class mentioned above. Of course, other implementations could be provided, like one based on the more advanced <a target="_top" href="http://jakarta.apache.org/commons/httpclient/">Jakarta Commons HTTP Client</a>.
 </p>
 <p>
-   After several iterations, it became clear that it would be beneficial for developers to separate the Restlet project in two parts. The first part is a generic set of interfaces, called the Restlet API, including a few helper classes and a mechanism to register a Restlet implementation. The second part is a reference implementation, called the Noelios Restlet Engine, including a HTTP server connector; HTTP, JDBC and SMTP client connectors; a set of representations (based on strings, files, streams, channels or FreeMarker templates) and a DirectoryHandler able to serve static files from a tree of directories with automatic content negotiation base on file extensions. Since the first public release in November 2005, the project keeps maturing thanks to the help of a community of users and developers.
+   After several iterations, it became clear that it would be beneficial for developers to separate the Restlet project in two parts. The first part is a generic set of classes, called the Restlet API, including a few helper classes and a mechanism to register a Restlet implementation. The second part is a reference implementation, called the Noelios Restlet Engine, including a HTTP server connector; HTTP, JDBC and SMTP client connectors; a set of representations (based on strings, files, streams, channels or FreeMarker templates) and a DirectoryHandler able to serve static files from a tree of directories with automatic content negotiation base on file extensions. Since the first public release in November 2005, the project keeps maturing thanks to the help of a community of users and developers.
 </p>
 
 <h3>Conclusion</h3>
@@ -83,15 +83,7 @@
 <br/>
 
 <small>
-   <table>
-      <tr>
-         <td style="vertical-align: middle;" rowspan="2"><a href="http://www.java.net/"><img src="http://www.restlet.org/images/javanet.gif" alt="java.net member" /></a></td>
-         <td>Version 1.8, last modified on 2006-09-14</td>
-      </tr>
-      <tr>
-         <td>Copyright &copy; 2005-2006 <a href="mailto:contact@noelios.com">J&eacute;r&ocirc;me Louvel</a>. Restlet is a registered trademark of <a target="_top" href="http://www.noelios.com">Noelios Consulting</a>.</td>
-      </tr>
-   </table>
+   Last modified on 2006-10-23. Copyright &copy; 2005-2006 <a href="mailto:contact@noelios.com">J&eacute;r&ocirc;me Louvel</a>. Restlet is a registered trademark of <a target="_top" href="http://www.noelios.com">Noelios Consulting</a>.
 </small>
 
 </body>
