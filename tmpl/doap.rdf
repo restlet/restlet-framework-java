@@ -7,10 +7,10 @@
 	<homepage rdf:resource="http://www.restlet.org" />
 	<created>2005-11-01</created>
 	<shortdesc xml:lang="en">
-	  REST framework for Java.
+	  Ligthweight REST framework for Java.
 	</shortdesc>
 	<shortdesc xml:lang="fr">
-	  Framework REST en Java. 
+	  Cadre de travail REST léger pour Java. 
 	</shortdesc>
 	<description xml:lang="en">
 	  Restlet is a framework that brings the simplicity and efficiency of the REST architectural 
