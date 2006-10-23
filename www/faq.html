@@ -189,29 +189,29 @@
 <p>
    Here is the basic proposition for implementing the MVC pattern with Restlets :
    <ol>
-      <li>Controller == Restlets (mainly Filters, Routers and Handlers). You can visualize the controller as a sort of processing chain, where the last node should be a Hander with all the information necessary to locate the target Resource for the call. This location information can be stored either in the request's attributes map, either in the member variables of a request wrapper (see <a href="http://www.restlet.org/docs/api/org/restlet/WrapperCall.html">org.restlet.WrapperCall</a>). This last Finder should override the findTarget(Call) method and return an instance of Resource.</li>
-      <li>Model == Resource + data objects. Just start from the <a href="http://www.restlet.org/docs/api/org/restlet/data/AbstractResource.html">org.restlet.data.AbstractResource class</a> and implement its methods like getVariants(), post(), delete() and put(). The Finder class automatically invokes those methods by implementing the handleGet(), handleHead(), handlePost(), handlePut(), handleDelete() methods for you. For example, you just need to override the getVariants() to benefit from server-side content negotiation. Internally, we rely on the call.setOutput() method to trigger this content negotiation, which compares the variant representations that you make available, with the client capabilities and preferences.</li>
-      <li>View == Representation variants. To create new representations for your resources, you can rely on one of the numerous Representation implementation classes (InputRepresentation for example) available in the NRE data package or in the extension packages like the one for FreeMarker (TemplateRepresentation).</li>
+      <li>Controller == Restlets (mainly Filters, Routers and Handlers). You can visualize the controller as a sort of processing chain, where the last node should be a Hander with all the information necessary to locate the target Resource for the call. This location information can be stored either in the request's attributes map, either in the member variables of a request wrapper (see <a href="http://www.restlet.org/docs/api/org/restlet/util/WrapperRequest.html">org.restlet.WrapperRequest</a>). This last Handler should override the findTarget(Request, Response) method and return an instance of Resource.</li>
+      <li>Model == Resource + data objects. Just start from the <a href="http://www.restlet.org/docs/api/org/restlet/data/Resource.html">org.restlet.data.Resource class</a> and implement its methods like getVariants(), post(), delete() and put(). The Handler class automatically invokes those methods by implementing the handleGet(), handleHead(), handlePost(), handlePut(), handleDelete() methods for you. For example, you just need to override the getVariants() to benefit from automatic content negotiation. Internally, we rely on the Response.setEntity(Resource, Language) method to trigger this content negotiation, which compares the representations that you make available (named the variants), with the client capabilities and preferences.</li>
+      <li>View == Representation. To create new representations for your resources, you can rely on one of the numerous Representation implementation classes (InputRepresentation for example) available in the NRE data package or in the extension packages like the one for FreeMarker (TemplateRepresentation).</li>
    </ol>
    Chris Winters has developped a <a href="http://www.cwinters.com/raw/RestSampleBook.zip">sample application</a> illustrating very well those concepts. He uses AJAX with a Restlet container to do server-side content negotiation between resource representations available in different formats (XML, JSON and image). He also added the creation of new resources via POST. Note that the code source is based on the beta 18 version.
 </p>
 <h3><a name="16">16 Any recommendations/guidelines in terms of how to deal with caching?</a></h3>
 
 <p>
-   Currently, client-side caching is supported via the "condition" property of Call. See the <a href="http://www.restlet.org/docs/api/org/restlet/data/ConditionData.html">
-   ConditionData</a> interface for details. So, the first recommendation is to ensure that you correctly set all the representation metadata for
+   Currently, client-side caching is supported via the "conditions" property of Call. See the <a href="http://www.restlet.org/docs/api/org/restlet/data/Conditions.html">
+   Conditions</a> class for details. So, the first recommendation is to ensure that you correctly set all the representation metadata for
    your own representations (modification date, expiration date, tag). That will ensure that the server-side negotiation logic (used via the
-   Call.setOutput(Resource) method) works optimally.
+   Response.setEntity(Resource, Language) method) works optimally.
 </p>
 <p>
-   Then, writing a generic server-side cache is a different story. The recommendation would be to follow the REST and HTTP specifications spirit as
+   Then, writing a generic server-side cache is a different story. The recommendation would be to follow the REST style and HTTP specification spirit as
    closely as possible. For full-featured caching, you should look at popular projects like Squid: http://www.squid-cache.org/ or Apache caching modules. These caches can be installed transparently for the clients, as reverse proxies.
 </p>
 
 <h3><a name="17">17. What is the performance of the HTTP connectors?</a></h3>
 
 <p>
-   For server connectors, the performance will depend on the actual provider used. So what would be really needed is a benchmark comparing the different providers. Also, the results  will vary between the Jetty 5.1 connectors and the Jetty 6.0 one. For the Servlet adapter the performance will vary with the actual Servlet container used and how it is configured.
+   For server connectors, the performance will depend on the actual provider used. It would be really interested to do a benchmark comparing the different providers, but we didn't have the resources to do it for now. Also, the results  will vary between the Jetty 5.1 connectors and the Jetty 6.0 one. For the Servlet adapter the performance will vary with the actual Servlet container used and how it is configured.
 </p>
 
 <h3><a name="18">18. Why is my HTTP client sending unwanted "application/x-www-form-urlencoded" content type headers?</a></h3>
@@ -225,7 +225,7 @@
 <h3><a name="19">19. Can a Filter modify the call like a Servlet Filter?</a></h3>
 
 <p>
-   Absolutely! What the tutorial only says is that call's base reference shouldn't be modified. Beside that, anything else in the call object can be modified, before or after the handling of the call by the attached Restlet.
+   Absolutely! What the tutorial only says is that request's base reference should rarely be modified. Beside that, anything else in the request or response objects can be modified, before or after the handling of the call by the attached Restlet.
 </p>
 
 <h3><a name="20">20. My server is running behind a proxy, can I get the actual client IP address?</a></h3>
@@ -235,20 +235,16 @@
    In HTTP, certain proxies do transfer the original client IP address (or addresses) by using some extra HTTP headers like "X-Forwarded-for". In the recent Restlet versions you can get all this information in a straightforward way. On the Call interface, you have two related methods <a href="http://www.restlet.org/docs/api/org/restlet/Call.html#getClientAddress()">getClientAddress()</a> and <a href="http://www.restlet.org/docs/api/org/restlet/Call.html#getClientAddresses()">getClientAddresses()</a>. Please check the Javadocs of the HTTP server connectors for details (i.e. context parameter to set) on how to enable the support for the "X-Forwarded-For" header as there are some security risks when using it, especially if you are not controlling the intermediary proxies.
 </p>
 
-
 <h3><a name="21">21. Is there a mechanism to pass data sets to downstream Restlets?</a></h3>
 
 <p>
-   Yes, there are multiple mechanisms available. First, if you need to pass data related to the current authenticated user, such as its login name, password and role, you can simply use the related properties on the SecurityData interface accessible from the Call.getSecurity() method. If you need to store state, without any validation logic or behavior, you can use the Call.getAttributes() method which returns a modifiable map object.
-</p>
-<p>
-   Finally, you can use the decorator pattern by wrapping the Call object into a larger one containing the extra properties and methods that you need. For this purpose, you just have to create a subclass of org.restlet.WrapperCall. Then, in one of your handle methods, you can simply wrap the current call instance. Unless you use a common base Restlet you will need to properly cast the call instance in subsequent Restlets in order to access to your wrapper methods.
+   Yes, there are multiple mechanisms available. If you need to store state, without any validation logic or behavior, you can use the Request.getAttributes() method which returns a modifiable map object. Otherwise, you can wrap the Request object into a larger one containing the extra properties and methods that you need. For this purpose, you just have to create a subclass of org.restlet.util.WrapperRequest. Then, in one of your handle methods, you can simply wrap the current call instance. Unless you use a common base Restlet you will need to properly cast the call instance in subsequent Restlets in order to access to your wrapper methods.
 </p>
 
 <h3><a name="22">22. What is the difference between a Filter and a Router?</a></h3>
 
 <p>
-   On one hand, Filters support some processing before or after the handling of a call by a target Restlet. They are useful for actions like logging, caching, compressing or security checks. On the other hand, the purpose of Routers is to route calls based on URIs hierarchy and patterns. Routers can distribute calls to one or more attached Restlets. When the call is distributed, its context path property is updated before actually invoking the selected target Restlet. See also, <a href="#02">this FAQ entry</a> for a comparison of Routers with the Servlet API.
+   Filters support some processing before or after the handling of a call by a target Restlet. They are useful for actions like logging, caching, compressing or security checks. The purpose of Routers is to route calls based on some any useful criteria, typically base on the relative target URI. Routers can distribute calls to one or more attached Restlets using intermediary Scorers. A Scorer is a simple Filter where the target Restlet is attached and that can score incoming calls. Depending on the scorers and the routing algorithm used, the Router will select the most appropriate target Restlet to continue the processing of the call. Default scorers based on URI patterns will also update the Request."baseRef" propertybefore actually invoking the selected target Restlet. See also, <a href="#02">this FAQ entry</a> for a comparison of Routers with the Servlet API.
 </p>
 
 <h3><a name="23">23. How can I send and receive files with Restlets?</a></h3>
@@ -266,8 +262,7 @@
 <h3><a name="25">25. What's the best practice for error handling in an intermediate Restlet?</a></h3>
 
 <p>
-   Have a look at the StatusFilter, it catches any unhandled exception (thrown inside a "handle(Call)" method) and sets the call's status to INTERNAL_ERROR (500 in HTTP) in this case. You can override it to customize the status page displayed. If you want a different status when an exception is thrown, you have to catch it manually at a lower level (inside the handle(Call) or handleGet|Post|etc. method of your intermediary Restlet) and set
-   the desired status on your call.
+   Typically, unexpected exceptions are handled at the Application level, by setting the status to 500 (internal server error). If you want a different status when an exception is thrown, you have to catch it manually at a lower level (inside the handle(Call) or handleGet|Post|etc. method of your intermediary Restlet) and set the desired status on your response.
 </p>
 
 <p>

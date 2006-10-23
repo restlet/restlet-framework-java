@@ -113,10 +113,19 @@ import org.mortbay.thread.BoundedThreadPool;
  * 		<td>SO linger time (see Jetty 6 documentation).</td>
  * 	</tr>
  * 	<tr>
+ * 		<td>converter</td>
+ * 		<td>String</td>
+ * 		<td>com.noelios.restlet.impl.http.HttpServerConverter</td>
+ * 		<td>Class name of the converter of low-level HTTP calls into high level requests and responses.</td>
+ * 	</tr>
+ * 	<tr>
  * 		<td>useForwardedForHeader</td>
  * 		<td>boolean</td>
  * 		<td>false</td>
- * 		<td>True if the "X-Forwarded-For" HTTP header should be used to get client addresses.</td>
+ * 		<td>Lookup the "X-Forwarded-For" header supported by popular proxies and caches and uses it to populate 
+ * the Request.getClientAddresses() method result. This information is only safe for intermediary components 
+ * within your local network. Other addresses could easily be changed by setting a fake header and should not
+ * be trusted for serious security checks.</td>
  * 	</tr>
  * </table>
  * @see <a href="http://jetty.mortbay.org/jetty6/">Jetty home page</a>

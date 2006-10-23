@@ -41,6 +41,15 @@ import com.noelios.restlet.impl.ServerHelper;
  * 		<th>Description</th>
  * 	</tr>
  * 	<tr>
+ * 		<td>useForwardedForHeader</td>
+ * 		<td>boolean</td>
+ * 		<td>false</td>
+ * 		<td>Lookup the "X-Forwarded-For" header supported by popular proxies and caches and uses it to populate 
+ * the Request.getClientAddresses() method result. This information is only safe for intermediary components 
+ * within your local network. Other addresses could easily be changed by setting a fake header and should not
+ * be trusted for serious security checks.</td>
+ * 	</tr>
+ * 	<tr>
  * 		<td>converter</td>
  * 		<td>String</td>
  * 		<td>com.noelios.restlet.impl.http.HttpServerConverter</td>

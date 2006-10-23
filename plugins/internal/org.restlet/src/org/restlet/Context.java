@@ -28,7 +28,10 @@ import org.restlet.data.ParameterList;
 import org.restlet.util.VirtualClient;
 
 /**
- * Information and services provided to a Restlet.
+ * Information and services provided to a Restlet. The context is the door opened for Restlets in order to access 
+ * to their environment in the framework. The context is typically provided by the immediate parent Restlet 
+ * (Container and Application are the most common cases). The services provided are the access to a logger 
+ * instance, to some configuration parameters and to a generic client. 
  * @author Jerome Louvel (contact@noelios.com) <a href="http://www.noelios.com/">Noelios Consulting</a>
  */
 public class Context

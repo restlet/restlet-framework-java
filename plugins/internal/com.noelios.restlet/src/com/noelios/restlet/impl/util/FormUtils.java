@@ -167,7 +167,6 @@ public class FormUtils
 
    /**
     * Creates a parameter.
-    * @param logger The logger.
     * @param name The parameter name buffer.
     * @param value The parameter value buffer (can be null).
     * @return The created parameter.
