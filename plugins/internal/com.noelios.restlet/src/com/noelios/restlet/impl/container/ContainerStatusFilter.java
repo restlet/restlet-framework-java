@@ -38,15 +38,15 @@ public class ContainerStatusFilter extends StatusFilter
 {
 	/** The container. */
 	private Container container;
-	
+
 	/**
 	 * Constructor.
 	 * @param container The container.
 	 */
 	public ContainerStatusFilter(Container container)
 	{
-		super(container.getContext(), container.getStatusService().isOverwrite(),
-				container.getStatusService().getContactEmail(), "/");
+		super(container.getContext(), container.getStatusService().isOverwrite(), container
+				.getStatusService().getContactEmail(), "/");
 		this.container = container;
 	}
 
@@ -58,7 +58,7 @@ public class ContainerStatusFilter extends StatusFilter
 	{
 		return this.container;
 	}
-	
+
 	/**
 	 * Returns a representation for the given status.<br/> In order to customize the 
 	 * default representation, this method can be overriden. 
@@ -70,8 +70,9 @@ public class ContainerStatusFilter extends StatusFilter
 	public Representation getRepresentation(Status status, Request request,
 			Response response)
 	{
-		Representation result = getContainer().getRepresentation(status, request, response);
-		if(result == null) result = super.getRepresentation(status, request, response);
+		Representation result = getContainer().getStatusService().getRepresentation(status,
+				request, response);
+		if (result == null) result = super.getRepresentation(status, request, response);
 		return result;
 	}
 

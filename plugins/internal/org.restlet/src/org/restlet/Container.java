@@ -25,10 +25,8 @@ package org.restlet;
 import java.util.ArrayList;
 import java.util.List;
 
-import org.restlet.data.Representation;
 import org.restlet.data.Request;
 import org.restlet.data.Response;
-import org.restlet.data.Status;
 import org.restlet.spi.Factory;
 import org.restlet.spi.Helper;
 import org.restlet.util.LogService;
@@ -115,19 +113,6 @@ public class Container extends Component
 		return this.logService;
 	}
 
-	/**
-	 * Returns a representation for the given status.<br/> In order to customize the 
-	 * default representation, this method can be overriden. It returns null by default.
-	 * @param status The status to represent.
-	 * @param request The request handled.
-	 * @param response The response updated.
-	 * @return The representation of the given status.
-	 */
-	public Representation getRepresentation(Status status, Request request, Response response)
-	{
-		return null;
-	}
-
 	/** 
 	 * Returns the status service. This service is enabled by default.
 	 * @return The status service.
@@ -157,7 +142,25 @@ public class Container extends Component
    {
   		this.defaultHost = defaultHost;
    }
-	
+
+	/** 
+	 * Sets the log service. 
+	 * @param logService The log service.
+	 */
+	public void setLogService(LogService logService)
+	{
+		this.logService = logService;
+	}
+
+	/** 
+	 * Sets the status service. 
+	 * @param statusService The status service.
+	 */
+	public void setStatusService(StatusService statusService)
+	{
+		this.statusService = statusService;
+	}
+
 	/** Start callback. */
 	public void start() throws Exception
 	{

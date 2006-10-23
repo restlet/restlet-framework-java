@@ -25,6 +25,7 @@ package com.noelios.restlet.example.tutorial;
 import org.restlet.Client;
 import org.restlet.data.Method;
 import org.restlet.data.Protocol;
+import org.restlet.data.Representation;
 import org.restlet.data.Request;
 import org.restlet.data.Response;
 
@@ -34,18 +35,19 @@ import org.restlet.data.Response;
  */
 public class Tutorial02b
 {
-   public static void main(String[] args) throws Exception
-   {
-      // Prepare the request
-   	Request request = new Request(Method.GET, "http://www.restlet.org");
-      request.setReferrerRef("http://www.mysite.org");
+	public static void main(String[] args) throws Exception
+	{
+		// Prepare the request
+		Request request = new Request(Method.GET, "http://www.restlet.org");
+		request.setReferrerRef("http://www.mysite.org");
 
-      // Handle it using an HTTP client connector
-      Client client = new Client(Protocol.HTTP);
-      Response response = client.handle(request);
+		// Handle it using an HTTP client connector
+		Client client = new Client(Protocol.HTTP);
+		Response response = client.handle(request);
 
-      // Write the response entity on the console
-      response.getEntity().write(System.out);
-   }
+		// Write the response entity on the console
+		Representation output = response.getEntity();
+		output.write(System.out);
+	}
 
 }

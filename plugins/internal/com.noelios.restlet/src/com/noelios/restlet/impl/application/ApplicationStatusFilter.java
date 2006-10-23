@@ -38,7 +38,7 @@ public class ApplicationStatusFilter extends StatusFilter
 {
 	/** The application. */
 	private Application application;
-	
+
 	/**
 	 * Constructor.
 	 * @param application The application.
@@ -58,7 +58,7 @@ public class ApplicationStatusFilter extends StatusFilter
 	{
 		return this.application;
 	}
-	
+
 	/**
 	 * Returns a representation for the given status.<br/> In order to customize the 
 	 * default representation, this method can be overriden. 
@@ -70,8 +70,9 @@ public class ApplicationStatusFilter extends StatusFilter
 	public Representation getRepresentation(Status status, Request request,
 			Response response)
 	{
-		Representation result = getApplication().getRepresentation(status, request, response);
-		if(result == null) result = super.getRepresentation(status, request, response);
+		Representation result = getApplication().getStatusService().getRepresentation(
+				status, request, response);
+		if (result == null) result = super.getRepresentation(status, request, response);
 		return result;
 	}
 

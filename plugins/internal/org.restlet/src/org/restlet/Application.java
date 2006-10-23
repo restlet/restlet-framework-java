@@ -22,10 +22,8 @@
 
 package org.restlet;
 
-import org.restlet.data.Representation;
 import org.restlet.data.Request;
 import org.restlet.data.Response;
-import org.restlet.data.Status;
 import org.restlet.spi.Factory;
 import org.restlet.spi.Helper;
 import org.restlet.util.ConnectorService;
@@ -197,19 +195,6 @@ public abstract class Application extends Restlet
 	}
 
 	/**
-	 * Returns a representation for the given status.<br/> In order to customize the 
-	 * default representation, this method can be overriden. It returns null by default.
-	 * @param status The status to represent.
-	 * @param request The request handled.
-	 * @param response The response updated.
-	 * @return The representation of the given status.
-	 */
-	public Representation getRepresentation(Status status, Request request, Response response)
-	{
-		return null;
-	}
-
-	/**
 	 * Returns the root Restlet. Invokes the createRoot() method if no Restlet exists.
 	 * @return The root Restlet.
 	 */
@@ -252,6 +237,15 @@ public abstract class Application extends Restlet
 	{
 		this.author = author;
 	}
+
+	/** 
+	 * Sets the connector service. 
+	 * @param connectorService The connector service.
+	 */
+	public void setConnectorService(ConnectorService connectorService)
+	{
+		this.connectorService = connectorService;
+	}
 	
 	/**
 	 * Sets the description.
@@ -260,6 +254,24 @@ public abstract class Application extends Restlet
 	public void setDescription(String description)
 	{
 		this.description = description;
+	}
+
+	/** 
+	 * Sets the local service. 
+	 * @param localService The local service.
+	 */
+	public void setLocalService(LocalService localService)
+	{
+		this.localService = localService;
+	}
+
+	/** 
+	 * Sets the log service. 
+	 * @param logService The log service.
+	 */
+	public void setLogService(LogService logService)
+	{
+		this.logService = logService;
 	}
 
 	/**
@@ -278,6 +290,15 @@ public abstract class Application extends Restlet
 	public void setOwner(String owner)
 	{
 		this.owner = owner;
+	}
+
+	/** 
+	 * Sets the status service. 
+	 * @param statusService The status service.
+	 */
+	public void setStatusService(StatusService statusService)
+	{
+		this.statusService = statusService;
 	}
 	
 	/** Start callback. */

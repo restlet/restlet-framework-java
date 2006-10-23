@@ -23,6 +23,10 @@
 package org.restlet.util;
 
 import org.restlet.data.Reference;
+import org.restlet.data.Representation;
+import org.restlet.data.Request;
+import org.restlet.data.Response;
+import org.restlet.data.Status;
 
 /**
  * Service providing status representation setting.
@@ -69,6 +73,19 @@ public class StatusService extends Service
    {
    	return this.homeRef;
    }
+
+	/**
+	 * Returns a representation for the given status.<br/> In order to customize the 
+	 * default representation, this method can be overriden. It returns null by default.
+	 * @param status The status to represent.
+	 * @param request The request handled.
+	 * @param response The response updated.
+	 * @return The representation of the given status.
+	 */
+	public Representation getRepresentation(Status status, Request request, Response response)
+	{
+		return null;
+	}
 
    /** 
     * Indicates if an existing entity should be overwritten. 
