@@ -296,36 +296,41 @@ public class Factory extends org.restlet.spi.Factory
 	{
 		Helper result = null;
 
-		for (ConnectorHelper registeredServer : this.registeredServers)
+		if(server.getProtocols().size() > 0)
 		{
-			if (registeredServer.getSupportedProtocols().containsAll(server.getProtocols()))
+			for (ConnectorHelper registeredServer : this.registeredServers)
 			{
-				try
+				if (registeredServer.getSupportedProtocols().containsAll(server.getProtocols()))
 				{
-					result = registeredServer.getClass().getConstructor(Server.class)
-							.newInstance(server);
-					return result;
+					try
+					{
+						result = registeredServer.getClass().getConstructor(Server.class)
+								.newInstance(server);
+					}
+					catch (Exception e)
+					{
+						logger.log(Level.SEVERE,
+								"Exception while instantiation the server connector.", e);
+					}
 				}
-				catch (Exception e)
+			}
+
+			if(result == null)
+			{
+				// Couldn't find a matching connector
+				StringBuilder sb = new StringBuilder();
+				sb.append("No available server connector supports the required protocols: ");
+		
+				for (Protocol p : server.getProtocols())
 				{
-					logger.log(Level.SEVERE,
-							"Exception while instantiation the server connector.", e);
+					sb.append(p.getName()).append(" ");
 				}
+		
+				logger.log(Level.WARNING, sb.toString());
 			}
 		}
 
-		// Couldn't find a matching connector
-		StringBuilder sb = new StringBuilder();
-		sb.append("No available server connector supports the required protocols: ");
-
-		for (Protocol p : server.getProtocols())
-		{
-			sb.append(p.getName()).append(" ");
-		}
-
-		logger.log(Level.WARNING, sb.toString());
-
-		return null;
+		return result;
 	}
 
 	/**
