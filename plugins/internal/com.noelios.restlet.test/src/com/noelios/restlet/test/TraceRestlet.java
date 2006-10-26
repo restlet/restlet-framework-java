@@ -29,12 +29,12 @@ import org.restlet.data.Request;
 import org.restlet.data.Response;
 
 /**
- * Trace target. 
+ * Trace Restlet. 
  * @author Jerome Louvel (contact@noelios.com) <a href="http://www.noelios.com/">Noelios Consulting</a>
  */
-public class TraceTarget extends Restlet
+public class TraceRestlet extends Restlet
 {
-   public TraceTarget(Context context)
+   public TraceRestlet(Context context)
 	{
 		super(context);
 	}

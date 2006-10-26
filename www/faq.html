@@ -43,6 +43,7 @@
       <li><a href="#23">How can I send and receive files with Restlets?</a></li>
       <li><a href="#24">How can I make PUT or DELETE calls from browsers?</a></li>
       <li><a href="#25">What's the best practice for error handling in an intermediate Restlet?</a></li>
+      <li><a href="#26">What is the best way to use Restlets in Eclipse?</a></li>
    </ol>
 </p>
 
@@ -52,7 +53,7 @@
    The goal of a framework is to provide a reusable and extendable set of classes and interfaces that will serve as a foundation on which you can construct your own applications more efficiently. The Restlet project was started from the observation that no Java framework was available to help developers build RESTful applications.<br/>
    <br/>
    First, it's important that you familiarize yourself with the <a href="#21">REST architecture style</a>. Then you will realize that the Restlet API derived the name of its classes directly from the REST concepts (resource, representation, connector, component, media type, language, etc.). This means that you are able to think RESTfully and to translate your solution into code more naturally.<br/><br/>
-   If you are not familiar with REST yet, you still gain the protocol abstraction provided by Restlets: the same set of interfaces is usable for multiple protocols (HTTP server, HTTP client, SMTP client, JDBC client, file system...). For example, you don't need to know the HTTP headers to do content negotiation. Also, you don't need to use and learn mutiple APIs (Servlet, HttpUrlConnection and JavaMail for example) to implement standard Web applications.
+   If you are not familiar with REST yet, you still gain the protocol abstraction provided by Restlets: the same set of interfaces is usable for multiple protocols (HTTP server, HTTP client, SMTP client, JDBC client, file system...). For example, you don't need to know the HTTP headers to do content negotiation. Also, you don't need to use and learn multiple APIs (Servlet, HttpUrlConnection and JavaMail for example) to implement standard Web applications.
 </p>
 
 <h3><a name="02">2. What are the underlying concepts?</a></h3>
@@ -68,7 +69,7 @@
 <h3><a name="03">3. What are the advantages of using Restlets instead of Servlets?</a></h3>
 
 <p>
-   There are many advantages, but the main one is that Restlet strictly follows the REST architecture style as defined by Roy T. Fielding, co-author of the HTTP protocol. This ensures that your application can easily be developped in a RESTful manner. Each concept of REST has a corresponding Java class in the Restlet API. Also, Restlet removed the concepts of in-memory user sessions which are not RESTful and are a major bottleneck for availability and scalability of Servlet applications.<br/>
+   There are many advantages, but the main one is that Restlet strictly follows the REST architecture style as defined by Roy T. Fielding, co-author of the HTTP protocol. This ensures that your application can easily be developed in a RESTful manner. Each concept of REST has a corresponding Java class in the Restlet API. Also, Restlet removed the concepts of in-memory user sessions which are not RESTful and are a major bottleneck for availability and scalability of Servlet applications.<br/>
    <br/>
    Another advantage is the ability to work with multiple protocols (HTTP, JDBC, SMTP, etc.) using the exact same API. This is true for both client-side
    and server-side application. In addition, a Restlet Application can be a client and a server at the same time. It's a truly Web centric framework. If you compare it to the Servlet API, it's an HTTP-only API with support for server-side code. To do client-side code, you need to rely on
@@ -117,7 +118,7 @@
 <h3><a name="07">7. Can the Restlets composing a site be defined in an XML file?</a></h3>
 
 <p>
-   As XML has been frequently overused as an alternative programming language, in the Restlet framework we are very careful about this. We think that all the configuration that can only be one by the application developer should be done in Java. In the future, we plan to support XML configuration for the Container as this task will often by delegated to an administrator without Java knowledge. As you can see in our <a href="http://wiki.java.net/bin/view/Javawsxml/Restlet">Community Wiki</a>, several users have integrated Restlet with other frameworks like Spring, which support XML configuration itself.
+   As XML has been frequently overused as an alternative programming language, in the Restlet framework we are very careful about this. We think that any configuration that must be done by an application developer should be done in Java. In the future, we plan to support XML configuration for the Container as this task will often by delegated to an administrator without Java knowledge. As you can see in our <a href="http://wiki.java.net/bin/view/Javawsxml/Restlet">Community Wiki</a>, several users have integrated Restlet with other frameworks like Spring, which support XML configuration itself.
 </p>
 
 <h3><a name="08">8. What JAR files must I have in my classpath for a minimal application?</a></h3>
@@ -187,13 +188,13 @@
 <h3><a name="15">15. How do I implement the traditional MVC pattern?</a></h3>
 
 <p>
-   Here is the basic proposition for implementing the MVC pattern with Restlets :
+   Here is the basic proposition for implementing the MVC pattern with Restlets:
    <ol>
       <li>Controller == Restlets (mainly Filters, Routers and Handlers). You can visualize the controller as a sort of processing chain, where the last node should be a Hander with all the information necessary to locate the target Resource for the call. This location information can be stored either in the request's attributes map, either in the member variables of a request wrapper (see <a href="http://www.restlet.org/docs/api/org/restlet/util/WrapperRequest.html">org.restlet.WrapperRequest</a>). This last Handler should override the findTarget(Request, Response) method and return an instance of Resource.</li>
       <li>Model == Resource + data objects. Just start from the <a href="http://www.restlet.org/docs/api/org/restlet/data/Resource.html">org.restlet.data.Resource class</a> and implement its methods like getVariants(), post(), delete() and put(). The Handler class automatically invokes those methods by implementing the handleGet(), handleHead(), handlePost(), handlePut(), handleDelete() methods for you. For example, you just need to override the getVariants() to benefit from automatic content negotiation. Internally, we rely on the Response.setEntity(Resource, Language) method to trigger this content negotiation, which compares the representations that you make available (named the variants), with the client capabilities and preferences.</li>
       <li>View == Representation. To create new representations for your resources, you can rely on one of the numerous Representation implementation classes (InputRepresentation for example) available in the NRE data package or in the extension packages like the one for FreeMarker (TemplateRepresentation).</li>
    </ol>
-   Chris Winters has developped a <a href="http://www.cwinters.com/raw/RestSampleBook.zip">sample application</a> illustrating very well those concepts. He uses AJAX with a Restlet container to do server-side content negotiation between resource representations available in different formats (XML, JSON and image). He also added the creation of new resources via POST. Note that the code source is based on the beta 18 version.
+   Chris Winters has developed a <a href="http://www.cwinters.com/raw/RestSampleBook.zip">sample application</a> illustrating very well those concepts. He uses AJAX with a Restlet container to do server-side content negotiation between resource representations available in different formats (XML, JSON and image). He also added the creation of new resources via POST. Note that the code source is based on the beta 18 version.
 </p>
 <h3><a name="16">16 Any recommendations/guidelines in terms of how to deal with caching?</a></h3>
 
@@ -256,13 +257,41 @@
 <h3><a name="24">24. How can I make PUT or DELETE calls from browsers?</a></h3>
 
 <p>
-   There are two solutions to this problem. The first one is to tunnel the PUT or DELETE calls inside regular GET or POST calls. There is a <a href="http://www.restlet.org/docs/core/index.html?com/noelios/restlet/TunnelFilter.html">TunnelFilter</a> available in the NRE to help you with this task. Also, in the <a href="http://www.onlamp.com/lpt/a/6480">Using REST with Ajax</a> article, the author explains how to directly build the PUT and DELETE methods from a browser using some Javascript code.
+   There are two solutions to this problem. The first one is to tunnel the PUT or DELETE calls inside regular GET or POST calls. There is a <a href="http://www.restlet.org/docs/core/index.html?com/noelios/restlet/TunnelFilter.html">TunnelFilter</a> available in the NRE to help you with this task. Also, in the <a href="http://www.onlamp.com/lpt/a/6480">Using REST with Ajax</a> article, the author explains how to directly build the PUT and DELETE methods from a browser using some JavaScript code.
 </p>
 
 <h3><a name="25">25. What's the best practice for error handling in an intermediate Restlet?</a></h3>
 
 <p>
    Typically, unexpected exceptions are handled at the Application level, by setting the status to 500 (internal server error). If you want a different status when an exception is thrown, you have to catch it manually at a lower level (inside the handle(Call) or handleGet|Post|etc. method of your intermediary Restlet) and set the desired status on your response.
+</p>
+
+<h3><a name="26">26. What is the best way to use Restlets in Eclipse?</a></h3>
+
+<p>
+   Of course, you could manually use the JAR files in your Eclipse projects, but the most flexible way is to rely on Eclipse's plug-in infrastructure. Here are some detailed steps to get you started:
+   <ol>
+      <li>Drop the content of the Restlet's "lib/" directory into Eclipse's plug-in directory</li>
+      <li>Restart Eclipse and go into "Help/About Eclipse SDK" menu</li>
+      <li>In the new dialog, click on the "Plug-in Details" button</li>
+      <li>In the new dialog, you should see the registered plugins, for example under the "Noelios Consulting" provider name</li>
+   </ol>
+   Now in order to use those plugins:
+   <ol>
+      <li>Select "New Project" and choose "Plug-in Project"</li>
+      <li>Click "Next >", eeter a project name and click "Next >" again</li>
+      <li>Disable the plug-in options checkboxes (unless you do need them)</li>
+      <li>Click "Finish" and you should see you new project with the plug-in "Overview" panel displayed</li>
+      <li>Select the "Dependencies" tab and click "Add..." in the "Required Plug-ins..." section</li>
+      <li>Select the plugins you need, start by either "org.restlet", "com.noelios.restlet" or the package name for third-party libraries (Jetty,
+Servlet API, etc.).</li>
+   </ol>
+</p>
+<p>
+   Now you're done! You can create new classes and import the org.restlet.* packages to work with Restlets. Note, that if you add several server HTTP dependencies, only the first one in the list will be use to create connectors.
+</p>
+<p>
+   Also note that you can't add a dependency to Jetty 5 and Jetty 6 at the same time as it will result in a security exception as you experienced, because they use overlapping package names.
 </p>
 
 <p>
@@ -279,7 +308,7 @@
 <br/>
 
 <small>
-   Last modified on 2006-10-23. Copyright &copy; 2005-2006 <a href="mailto:contact@noelios.com">J&eacute;r&ocirc;me Louvel</a>. Restlet is a registered trademark of <a target="_top" href="http://www.noelios.com">Noelios Consulting</a>.
+   Last modified on 2006-10-25. Copyright &copy; 2005-2006 <a href="mailto:contact@noelios.com">J&eacute;r&ocirc;me Louvel</a>. Restlet is a registered trademark of <a target="_top" href="http://www.noelios.com">Noelios Consulting</a>.
 </small>
 
 </body>
