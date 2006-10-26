@@ -161,6 +161,10 @@
 	<property name="mod-jetty6-version" value="${lib-jetty6-version}" />
 	<property name="mod-jetty6-id" value="${mod-jetty6-package}_${mod-jetty6-version}" />
 
+	<property name="mod-jmx-package" value="com.noelios.restlet.ext.jmx" />
+	<property name="mod-jmx-version" value="1.2" />
+	<property name="mod-jmx-id" value="${mod-jmx-package}_${mod-jmx-version}" />
+
 	<property name="mod-net-package" value="com.noelios.restlet.ext.net" />
 	<property name="mod-net-version" value="${version-base}" />
 	<property name="mod-net-id" value="${mod-net-package}" />
@@ -271,6 +275,11 @@
 		<fileset dir="${lib}/${lib-jetty6-id}" includes="*.jar" />
 	</path>
 
+	<path id="mod-jmx-path">
+		<path refid="mod-ri-path" />
+		<pathelement path="${classes}/${mod-ri-id}" />
+	</path>
+
 	<path id="mod-net-path">
 		<path refid="mod-ri-path" />
 		<pathelement path="${classes}/${mod-ri-id}" />
@@ -298,6 +307,7 @@
 		<pathelement path="${classes}/${mod-jdbc-id}" />
 		<pathelement path="${classes}/${mod-jetty5-id}" />
 		<pathelement path="${classes}/${mod-jetty6-id}" />
+		<pathelement path="${classes}/${mod-jmx-id}" />
 		<pathelement path="${classes}/${mod-net-id}" />
 		<pathelement path="${classes}/${mod-servlet-id}" />
 		<path refid="mod-asyncweb-path" />
@@ -307,6 +317,7 @@
 		<path refid="mod-jdbc-path" />
 		<path refid="mod-jetty5-path" />
 		<path refid="mod-jetty6-path" />
+		<path refid="mod-jmx-path" />
 		<path refid="mod-net-path" />
 		<path refid="mod-servlet-path" />
 		<path refid="mod-simple-path" />
@@ -501,6 +512,7 @@
 		<compileModule name="jdbc" />
 		<compileModule name="jetty5" />
 		<compileModule name="jetty6" />
+		<compileModule name="jmx" />
 		<compileModule name="net" />
 		<compileModule name="servlet" />
 		<compileModule name="simple" />
@@ -650,6 +662,7 @@
 		<packageModule name="jdbc" />
 		<packageModule name="jetty5" />
 		<packageModule name="jetty6" />
+		<packageModule name="jmx" />
 		<packageModule name="net" />
 		<packageModule name="servlet" />
 		<packageModule name="simple" />
@@ -764,19 +777,20 @@
 				<pathelement path="${mod}/${mod-jdbc-id}/src/" />
 				<pathelement path="${mod}/${mod-jetty5-id}/src/" />
 				<pathelement path="${mod}/${mod-jetty6-id}/src/" />
+				<pathelement path="${mod}/${mod-jmx-id}/src/" />
 				<pathelement path="${mod}/${mod-net-id}/src/" />
 				<pathelement path="${mod}/${mod-servlet-id}/src/" />
 				<pathelement path="${mod}/${mod-simple-id}/src/" />
 			</sourcepath>
-		
+
 			<bottom>
 				<![CDATA[<i>Copyright &#169; 2005-2006 J&eacute;r&ocirc;me Louvel. Restlet is a trademark and service mark of <a target="_top" href="http://www.noelios.com">Noelios Consulting</a>.</i>]]>
 			</bottom>
-		
+
 			<group title="${restlet-ext}">
 				<package name="com.noelios.restlet.ext*" />
 			</group>
-			
+
 			<link href="http://www.restlet.org/docs/api/" packagelistLoc="${docs-api}" offline="true" />
 			<link href="http://www.restlet.org/docs/core/" packagelistLoc="${docs-core}" offline="true" />
 			<link href="http://freemarker.org/docs/api/" />
