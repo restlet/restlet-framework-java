@@ -74,7 +74,7 @@ public class StatusFilter extends Filter
     * @param request The request to handle.
     * @param response The response to update.
 	 */
-   public void dohandle(Request request, Response response)
+   public void doHandle(Request request, Response response)
    {
       // Normally handle the call
       try

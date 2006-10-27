@@ -52,7 +52,7 @@ public class StatusService extends Service
 		super(enabled);
 		this.contactEmail = null;
 		this.homeRef = null;
-		this.overwrite = true;
+		this.overwrite = false;
 	}
 	
    /** 
@@ -88,7 +88,7 @@ public class StatusService extends Service
 	}
 
    /** 
-    * Indicates if an existing entity should be overwritten. 
+    * Indicates if an existing entity should be overwritten. False by default.
     * @return True if an existing entity should be overwritten.
     */
    public boolean isOverwrite()

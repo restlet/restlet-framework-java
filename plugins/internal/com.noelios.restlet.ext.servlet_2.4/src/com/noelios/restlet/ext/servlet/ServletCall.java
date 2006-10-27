@@ -216,26 +216,6 @@ public class ServletCall extends HttpServerCall
 	}
 
    /**
-    * Returns the response status code.
-    * @return The response status code.
-    */
-   public int getStatusCode()
-   {
-      // Can't do anything
-      return 0;
-   }
-
-   /**
-    * Returns the response reason phrase.
-    * @return The response reason phrase.
-    */
-   public String getReasonPhrase()
-   {
-      // Can't do anything
-      return null;
-   }
-
-   /**
     * Sends the response back to the client. Commits the status, headers and optional entity and 
     * send them on the network. 
     * @param entity The optional response entity to send.
