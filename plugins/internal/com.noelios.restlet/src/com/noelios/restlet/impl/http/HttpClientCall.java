@@ -37,7 +37,6 @@ import org.restlet.data.Representation;
 import org.restlet.data.Status;
 import org.restlet.data.Tag;
 
-import com.noelios.restlet.data.ContentType;
 import com.noelios.restlet.data.InputRepresentation;
 import com.noelios.restlet.data.ReadableRepresentation;
 

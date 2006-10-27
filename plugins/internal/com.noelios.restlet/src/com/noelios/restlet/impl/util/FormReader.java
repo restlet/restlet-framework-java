@@ -34,8 +34,8 @@ import java.util.logging.Logger;
 
 import org.restlet.data.Form;
 import org.restlet.data.Parameter;
+import org.restlet.data.ParameterList;
 import org.restlet.data.Representation;
-import org.restlet.util.EmptyValue;
 
 /**
  * Form reader.
@@ -106,7 +106,7 @@ public class FormReader
 
                if(param.getValue() == null)
                {
-                  values.add(new EmptyValue());
+                  values.add(ParameterList.EMPTY_VALUE);
                }
                else
                {
@@ -117,7 +117,7 @@ public class FormReader
             {
                if(param.getValue() == null)
                {
-                  result = new EmptyValue();
+                  result = ParameterList.EMPTY_VALUE;
                }
                else
                {
@@ -195,7 +195,7 @@ public class FormReader
 
                if(param.getValue() == null)
                {
-                  values.add(new EmptyValue());
+                  values.add(ParameterList.EMPTY_VALUE);
                }
                else
                {
@@ -206,7 +206,7 @@ public class FormReader
             {
                if(param.getValue() == null)
                {
-                  parameters.put(param.getName(), new EmptyValue());
+                  parameters.put(param.getName(), ParameterList.EMPTY_VALUE);
                }
                else
                {

@@ -20,7 +20,7 @@
  * Portions Copyright [yyyy] [name of copyright owner]
  */
 
-package com.noelios.restlet.data;
+package com.noelios.restlet.impl.http;
 
 import java.io.IOException;
 
@@ -33,9 +33,7 @@ import com.noelios.restlet.impl.util.PreferenceReader;
 /**
  * Association of a media type and a character set.
  * @author Jerome Louvel (contact@noelios.com) <a href="http://www.noelios.com/">Noelios Consulting</a>
- * @deprecated Internal class, moved to impl/http package
  */
-@Deprecated
 public class ContentType
 {
    /**

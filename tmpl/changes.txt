@@ -17,7 +17,8 @@ Changes log
  - Added modifiable "identifier" and "secret" properties to ChallengeResponse, in addition to the raw "credentials" property.
  - Added support for Amazon Web Services authentication scheme for HTTP client requests. Added ChallengeScheme.HTTP_AWS constant and
    a sample example at com.noelios.restlet.example.misc.AwsTest. Suggested by Mikkel Jensen.
-
+ 
+ 
 1.0 beta 19 (2006-10-23)
 [Bugs fixed]
  - Fixed issue with error status preventing the setting of response headers with Servlet containers like Tomcat. Report and solution by Evan DiBiase.

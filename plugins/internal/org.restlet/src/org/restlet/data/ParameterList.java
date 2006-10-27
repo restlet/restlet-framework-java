@@ -29,7 +29,6 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
-import org.restlet.util.EmptyValue;
 import org.restlet.util.WrapperList;
 
 /**
@@ -42,6 +41,9 @@ import org.restlet.util.WrapperList;
  */
 public class ParameterList extends WrapperList<Parameter>
 {
+	/** A marker for empty values to differentiate from non existing values (null). */
+	public static final Object EMPTY_VALUE = new Object();
+	
 	/**
 	 * Constructor.
 	 */
@@ -419,7 +421,7 @@ public class ParameterList extends WrapperList<Parameter>
 
 					if (param.getValue() == null)
 					{
-						values.add(new EmptyValue());
+						values.add(ParameterList.EMPTY_VALUE);
 					}
 					else
 					{
@@ -430,7 +432,7 @@ public class ParameterList extends WrapperList<Parameter>
 				{
 					if (param.getValue() == null)
 					{
-						params.put(param.getName(), new EmptyValue());
+						params.put(param.getName(), ParameterList.EMPTY_VALUE);
 					}
 					else
 					{

@@ -138,7 +138,8 @@ public class Representation extends Resource
    /**
     * Indicates if some fresh content is available, without having to actually call one of the content
     * manipulation method like getStream() that would actually consume it. This is especially useful for
-    * transient representation whose content can only be accessed once. 
+    * transient representation whose content can only be accessed once and also when the size of the 
+    * representation is not known in advance. 
     * @return True if some fresh content is available.
     */
    public boolean isAvailable()

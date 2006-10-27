@@ -25,7 +25,9 @@ package org.restlet.util;
 /**
  * Empty value marker.
  * @author Jerome Louvel (contact@noelios.com) <a href="http://www.noelios.com/">Noelios Consulting</a>
+ * @deprecated Replaced by ParameterList.EMPTY_VALUE constant.
  */
+@Deprecated
 public class EmptyValue
 {
 }
