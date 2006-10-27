@@ -32,7 +32,7 @@ import org.safehaus.asyncweb.transport.nio.NIOTransport;
  * 
  * This implementation passes by all of AsyncWeb ServiceContainer, 
  * HttpServiceHandler etc. mechanisms and implements a 
- * {@link com.noelios.restlet.impl.http.ServerImpl} and a 
+ * {@link com.noelios.restlet.impl.http.HttpServerHelper} and a 
  * {@link org.safehaus.asyncweb.container.ServiceContainer} directly. It takes
  * care about setting up a {@link org.safehaus.asyncweb.transport.nio.NIOTransport}.
  * <p>

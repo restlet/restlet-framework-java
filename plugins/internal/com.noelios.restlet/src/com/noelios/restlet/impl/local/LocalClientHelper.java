@@ -214,7 +214,8 @@ public class LocalClientHelper extends ClientHelper
 	 *  <li>html: HTML document</li>
 	 *  <li>ico: Windows icon (Favicon)</li>
 	 *  <li>jpeg, jpg: JPEG image</li>
-	 *  <li>js: Javascript document</li>
+	 *  <li>js: JavaScript document</li>
+	 *  <li>json: JavaScript Object Notation document</li>
 	 *  <li>pdf: Adobe PDF document</li>
 	 *  <li>png: PNG image</li>
 	 *  <li>ppt: Microsoft Powerpoint document</li>
@@ -240,6 +241,7 @@ public class LocalClientHelper extends ClientHelper
 		addExtension("jpeg", MediaType.IMAGE_JPEG);
 		addExtension("jpg", MediaType.IMAGE_JPEG);
 		addExtension("js", MediaType.APPLICATION_JAVASCRIPT);
+		addExtension("json", MediaType.APPLICATION_JSON);
 		addExtension("pdf", MediaType.APPLICATION_PDF);
 		addExtension("png", MediaType.IMAGE_PNG);
 		addExtension("ppt", MediaType.APPLICATION_POWERPOINT);

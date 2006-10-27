@@ -148,7 +148,5 @@ public class DomRepresentation extends OutputRepresentation
 			throw new IOException("Couldn't write the XML representation: " + tfce.getMessage());
 		}
 	}
-
-	
 	
 }

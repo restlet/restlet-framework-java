@@ -18,8 +18,9 @@
 	<property name="vendor" value="Noelios Consulting" />
 	<property name="excludes" value="**/.emptyDir **/package.html **/overview.html" />
 	<property name="restlet-api" value="Restlet API" />
-	<property name="restlet-core" value="NRE Core" />
-	<property name="restlet-ext" value="NRE Extensions" />
+	<property name="restlet-ext" value="Restlet Extensions" />
+	<property name="restlet-nre-impl" value="Implementation" />
+	<property name="restlet-nre-ext" value="Extensions" />
 
 	<!-- Location properties -->
 	<property name="bin" value="bin" />
@@ -32,8 +33,8 @@
 	<property name="www" value="www" />
 	<property name="docs" value="${www}/docs" />
 	<property name="docs-api" value="${docs}/api" />
-	<property name="docs-core" value="${docs}/core" />
 	<property name="docs-ext" value="${docs}/ext" />
+	<property name="docs-nre" value="${docs}/nre" />
 
 	<!-- Library properties (external plugins) -->
 	<property name="lib-asm-package" value="org.objectweb.asm" />
@@ -75,6 +76,10 @@
 	<property name="lib-jetty6-package" value="org.mortbay.jetty" />
 	<property name="lib-jetty6-version" value="6.0" />
 	<property name="lib-jetty6-id" value="${lib-jetty6-package}_${lib-jetty6-version}" />
+
+	<property name="lib-json-package" value="org.json" />
+	<property name="lib-json-version" value="2.0" />
+	<property name="lib-json-id" value="${lib-json-package}_${lib-json-version}" />
 
 	<property name="lib-junit-package" value="org.junit" />
 	<property name="lib-junit-version" value="4.1" />
@@ -164,6 +169,10 @@
 	<property name="mod-jmx-package" value="com.noelios.restlet.ext.jmx" />
 	<property name="mod-jmx-version" value="1.2" />
 	<property name="mod-jmx-id" value="${mod-jmx-package}_${mod-jmx-version}" />
+
+	<property name="mod-json-package" value="org.restlet.ext.json" />
+	<property name="mod-json-version" value="${lib-json-version}" />
+	<property name="mod-json-id" value="${mod-json-package}_${mod-json-version}" />
 
 	<property name="mod-net-package" value="com.noelios.restlet.ext.net" />
 	<property name="mod-net-version" value="${version-base}" />
@@ -280,6 +289,12 @@
 		<pathelement path="${classes}/${mod-ri-id}" />
 	</path>
 
+	<path id="mod-json-path">
+		<path refid="mod-ri-path" />
+		<pathelement path="${classes}/${mod-ri-id}" />
+		<fileset dir="${lib}/${lib-json-id}" includes="*.jar" />
+	</path>
+	
 	<path id="mod-net-path">
 		<path refid="mod-ri-path" />
 		<pathelement path="${classes}/${mod-ri-id}" />
@@ -308,6 +323,7 @@
 		<pathelement path="${classes}/${mod-jetty5-id}" />
 		<pathelement path="${classes}/${mod-jetty6-id}" />
 		<pathelement path="${classes}/${mod-jmx-id}" />
+		<pathelement path="${classes}/${mod-json-id}" />
 		<pathelement path="${classes}/${mod-net-id}" />
 		<pathelement path="${classes}/${mod-servlet-id}" />
 		<path refid="mod-asyncweb-path" />
@@ -318,6 +334,7 @@
 		<path refid="mod-jetty5-path" />
 		<path refid="mod-jetty6-path" />
 		<path refid="mod-jmx-path" />
+		<path refid="mod-json-path" />
 		<path refid="mod-net-path" />
 		<path refid="mod-servlet-path" />
 		<path refid="mod-simple-path" />
@@ -450,7 +467,7 @@
 		</condition>
 
 		<!-- Set the property that will enable the generation of the Javadoc of implementation classes -->
-		<condition property="exclude-packages" value="**.spi.*,**.impl.*" else="">
+		<condition property="exclude-packages" value="**.spi.*" else="">
 			<istrue value="${javadoc-hide}" />
 		</condition>
 
@@ -513,6 +530,7 @@
 		<compileModule name="jetty5" />
 		<compileModule name="jetty6" />
 		<compileModule name="jmx" />
+		<compileModule name="json" />
 		<compileModule name="net" />
 		<compileModule name="servlet" />
 		<compileModule name="simple" />
@@ -616,11 +634,11 @@
 		<copy todir="${dist}/docs/api">
 			<fileset dir="${docs-api}" />
 		</copy>
-		<copy todir="${dist}/docs/core">
-			<fileset dir="${docs-core}" />
-		</copy>
 		<copy todir="${dist}/docs/ext">
 			<fileset dir="${docs-ext}" />
+		</copy>
+		<copy todir="${dist}/docs/nre">
+			<fileset dir="${docs-nre}" />
 		</copy>
 
 		<!-- Copy text notes -->
@@ -642,6 +660,7 @@
 		<packageLibrary name="javamail" />
 		<packageLibrary name="jetty5" />
 		<packageLibrary name="jetty6" />
+		<packageLibrary name="json" />
 		<packageLibrary name="logging" />
 		<packageLibrary name="mina" />
 		<packageLibrary name="pool" />
@@ -663,6 +682,7 @@
 		<packageModule name="jetty5" />
 		<packageModule name="jetty6" />
 		<packageModule name="jmx" />
+		<packageModule name="json" />
 		<packageModule name="net" />
 		<packageModule name="servlet" />
 		<packageModule name="simple" />
@@ -680,7 +700,7 @@
 		<delete includeEmptyDirs="true" verbose="false" quiet="true">
 			<fileset dir="${build}" />
 			<fileset dir="${docs-api}" excludes="**/.svn" />
-			<fileset dir="${docs-core}" excludes="**/.svn" />
+			<fileset dir="${docs-nre}" excludes="**/.svn" />
 			<fileset dir="${docs-ext}" excludes="**/.svn" />
 		</delete>
 	</target>
@@ -692,14 +712,14 @@
 		<zip destfile="${arc}/Restlet ${DSTAMP}.zip"
 		     basedir=""
 		     includes="**/*"
-		     excludes="${arc}/** ${build}/** ${dist}/** ${dist-zip}/** ${docs-api}/** ${docs-core}/** ${docs-ext}/**  ${plugins}/internal/**/*.class" />
+		     excludes="${arc}/** ${build}/** ${dist}/** ${dist-zip}/** ${docs-api}/** ${docs-nre}/** ${docs-ext}/**  ${plugins}/internal/**/*.class" />
 	</target>
 
 	<!-- Javadocs Target -->
 	<target name="javadoc" if="do-javadoc" depends="compile" description="Generate the Javadoc">
 		<delete includeEmptyDirs="true" verbose="false" quiet="true">
 			<fileset dir="${docs-api}" excludes="**/.svn" />
-			<fileset dir="${docs-core}" excludes="**/.svn" />
+			<fileset dir="${docs-nre}" excludes="**/.svn" />
 			<fileset dir="${docs-ext}" excludes="**/.svn" />
 		</delete>
 		
@@ -726,53 +746,58 @@
 				<package name="org.restlet*" />
 			</group>
 	
-			<link href="http://www.restlet.org/docs/core/" packagelistLoc="${docs-core}" offline="true" />
 			<link href="http://java.sun.com/j2se/1.5.0/docs/api/" />
 		</javadoc>
 	
-		<javadoc packagenames="com.noelios.restlet.*"
-				 excludepackagenames="${exclude-packages}"
-		         destdir="${docs-core}"
-		         classpathref="path-all"
-		         author="true"
-		         version="true"
-		         use="true"
-		         windowtitle="Noelios Restlet Engine ${version-full} - Core"
-		         doctitle="Noelios Restlet Engine ${version-full} - Core"
-	             overview="${tmpl}/overview-core.html"
-		         verbose="${verbose}">
-			<sourcepath>
-				<pathelement path="${mod}/${mod-ri-id}/src/" />
-			</sourcepath>
-	
-			<bottom>
-				<![CDATA[<i>Copyright &#169; 2005-2006 J&eacute;r&ocirc;me Louvel. Restlet is a trademark and service mark of <a target="_top" href="http://www.noelios.com">Noelios Consulting</a>.</i>]]>
-			</bottom>
-	
-			<group title="${restlet-core}">
-				<package name="com.noelios.restlet*" />
-			</group>
-		
-			<link href="http://www.restlet.org/docs/api/" packagelistLoc="${docs-api}" offline="true" />
-			<link href="http://java.sun.com/j2se/1.5.0/docs/api/" />
-		</javadoc>
-	
-		<javadoc packagenames="com.noelios.restlet.ext.*"
+		<javadoc packagenames="com.noelios.restlet, com.noelios.restlet.data, com.noelios.restlet.ext.*, org.restlet.ext.*"
 				 excludepackagenames="${exclude-packages}"
 		         destdir="${docs-ext}"
 		         classpathref="path-all"
 		         author="true"
 		         version="true"
 		         use="true"
-		         windowtitle="Noelios Restlet Engine ${version-full} - Extensions"
-		         doctitle="Noelios Restlet Engine ${version-full} - Extensions"
+		         windowtitle="Restlet Extensions ${version-full}"
+		         doctitle="Restlet Extensions ${version-full}"
 		         overview="${tmpl}/overview-ext.html"
 		         verbose="${verbose}">
 			<sourcepath>
-				<pathelement path="${mod}/${mod-asyncweb-id}/src/" />
 				<pathelement path="${mod}/${mod-atom-id}/src/" />
 				<pathelement path="${mod}/${mod-fileupload-id}/src/" />
 				<pathelement path="${mod}/${mod-freemarker-id}/src/" />
+				<pathelement path="${mod}/${mod-json-id}/src/" />
+			</sourcepath>
+
+			<bottom>
+				<![CDATA[<i>Copyright &#169; 2005-2006 J&eacute;r&ocirc;me Louvel. Restlet is a trademark and service mark of <a target="_top" href="http://www.noelios.com">Noelios Consulting</a>.</i>]]>
+			</bottom>
+
+			<group title="${restlet-ext}">
+				<package name="com.noelios.restlet.ext*" />
+				<package name="org.restlet.ext*" />
+			</group>
+
+			<link href="http://www.restlet.org/docs/api/" packagelistLoc="${docs-api}" offline="true" />
+			<link href="http://www.restlet.org/docs/nre/" packagelistLoc="${docs-nre}" offline="true" />
+			<link href="http://freemarker.org/docs/api/" />
+			<link href="http://jakarta.apache.org/commons/fileupload/apidocs/" />
+			<link href="http://www.json.org/javadoc/" />
+			<link href="http://java.sun.com/j2se/1.5.0/docs/api/" />
+		</javadoc>
+	
+		<javadoc packagenames="com.noelios.restlet.impl.*, com.noelios.restlet.ext.*"
+				 excludepackagenames="${exclude-packages}"
+		         destdir="${docs-nre}"
+		         classpathref="path-all"
+		         author="true"
+		         version="true"
+		         use="true"
+		         windowtitle="Noelios Restlet Engine ${version-full}"
+		         doctitle="Noelios Restlet Engine ${version-full}"
+	             overview="${tmpl}/overview-nre.html"
+		         verbose="${verbose}">
+			<sourcepath>
+				<pathelement path="${mod}/${mod-ri-id}/src/" />
+				<pathelement path="${mod}/${mod-asyncweb-id}/src/" />
 				<pathelement path="${mod}/${mod-javamail-id}/src/" />
 				<pathelement path="${mod}/${mod-jdbc-id}/src/" />
 				<pathelement path="${mod}/${mod-jetty5-id}/src/" />
@@ -782,19 +807,20 @@
 				<pathelement path="${mod}/${mod-servlet-id}/src/" />
 				<pathelement path="${mod}/${mod-simple-id}/src/" />
 			</sourcepath>
-
+	
 			<bottom>
 				<![CDATA[<i>Copyright &#169; 2005-2006 J&eacute;r&ocirc;me Louvel. Restlet is a trademark and service mark of <a target="_top" href="http://www.noelios.com">Noelios Consulting</a>.</i>]]>
 			</bottom>
-
-			<group title="${restlet-ext}">
+	
+			<group title="${restlet-nre-impl}">
+				<package name="com.noelios.restlet*" />
+			</group>
+	
+			<group title="${restlet-nre-ext}">
 				<package name="com.noelios.restlet.ext*" />
 			</group>
-
+		
 			<link href="http://www.restlet.org/docs/api/" packagelistLoc="${docs-api}" offline="true" />
-			<link href="http://www.restlet.org/docs/core/" packagelistLoc="${docs-core}" offline="true" />
-			<link href="http://freemarker.org/docs/api/" />
-			<link href="http://jakarta.apache.org/commons/fileupload/apidocs/" />
 			<link href="http://java.sun.com/j2se/1.5.0/docs/api/" />
 			<link href="http://java.sun.com/products/javamail/javadocs/" />
 			<!-- <link href="http://jetty.mortbay.org/jetty6/apidocs/" /> -->

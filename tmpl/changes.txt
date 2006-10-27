@@ -12,9 +12,12 @@ Changes log
  
 [API breaking changes]
  - 
-
+ 
 [Other changes] 
+ - Reorganized Javadocs into three parts: Restlet API, Restlet Extensions, Noelios Restlet Engine.
  - Added JSON library as an external plugin project. See http://www.json.org
+ - Added org.restlet.ext.json extension to manipulate JSON representations.
+ - Added MediaType.APPLICATION_JSON and added entry for "*.json" in common extensions.
  - Now adds the mandatory "Date" header to all responses.
  - Added modifiable "identifier" and "secret" properties to ChallengeResponse, in addition to the raw "credentials" property.
  - Added support for Amazon Web Services authentication scheme for HTTP client requests. Added ChallengeScheme.HTTP_AWS constant and

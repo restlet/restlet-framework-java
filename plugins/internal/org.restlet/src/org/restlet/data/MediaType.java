@@ -64,6 +64,9 @@ public class MediaType extends Metadata
 	public static final MediaType APPLICATION_JAVASCRIPT = new MediaType(
 			"application/x-javascript", "Javascript document");
 
+	public static final MediaType APPLICATION_JSON = new MediaType("application/json",
+			"JavaScript Object Notation document");
+
 	public static final MediaType APPLICATION_OCTET_STREAM = new MediaType(
 			"application/octet-stream", "Raw octet stream");
 
@@ -379,6 +382,8 @@ public class MediaType extends Metadata
 				result = APPLICATION_JAVA_OBJECT;
 			else if (name.equals(APPLICATION_JAVASCRIPT.getName()))
 				result = APPLICATION_JAVASCRIPT;
+			else if (name.equals(APPLICATION_JSON.getName()))
+				result = APPLICATION_JSON;
 			else if (name.equals(APPLICATION_OCTET_STREAM.getName()))
 				result = APPLICATION_OCTET_STREAM;
 			else if (name.equals(APPLICATION_PDF.getName()))
