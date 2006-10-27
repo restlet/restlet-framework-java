@@ -134,7 +134,7 @@
 	<property name="mod-asyncweb-version" value="${lib-asyncweb-version}" />
 	<property name="mod-asyncweb-id" value="${mod-asyncweb-package}_${mod-asyncweb-version}" />
 
-	<property name="mod-atom-package" value="com.noelios.restlet.ext.atom" />
+	<property name="mod-atom-package" value="org.restlet.ext.atom" />
 	<property name="mod-atom-version" value="1.0" />
 	<property name="mod-atom-id" value="${mod-atom-package}_${mod-atom-version}" />
 
@@ -142,11 +142,11 @@
 	<property name="mod-example-version" value="${version-base}" />
 	<property name="mod-example-id" value="${mod-example-package}" />
 
-	<property name="mod-fileupload-package" value="com.noelios.restlet.ext.fileupload" />
+	<property name="mod-fileupload-package" value="org.restlet.ext.fileupload" />
 	<property name="mod-fileupload-version" value="${lib-fileupload-version}" />
 	<property name="mod-fileupload-id" value="${mod-fileupload-package}_${mod-fileupload-version}" />
 
-	<property name="mod-freemarker-package" value="com.noelios.restlet.ext.freemarker" />
+	<property name="mod-freemarker-package" value="org.restlet.ext.freemarker" />
 	<property name="mod-freemarker-version" value="${lib-freemarker-version}" />
 	<property name="mod-freemarker-id" value="${mod-freemarker-package}_${mod-freemarker-version}" />
 
