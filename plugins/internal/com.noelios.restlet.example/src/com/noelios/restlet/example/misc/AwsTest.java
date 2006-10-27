@@ -49,12 +49,12 @@ public class AwsTest
 		ParameterList extraHeaders = new ParameterList();
 		extraHeaders.add("X-Amz-Meta-Author", "foo@bar.com");
 		extraHeaders.add("X-Amz-Magic", "abracadabra");
-		
+
 		// For the test we hard coded a special date header. Normally you don't need this as the 
 		// HTTP client connector will automatically provide an accurate Date header and use it 
 		// for authentication.
 		// extraHeaders.add("X-Amz-Date", "Thu, 17 Nov 2005 18:49:58 GMT");
-		
+
 		request.getAttributes().put("org.restlet.http.headers", extraHeaders);
 
 		// Handle it using an HTTP client connector
