@@ -772,7 +772,6 @@
 			</bottom>
 
 			<group title="${restlet-ext}">
-				<package name="com.noelios.restlet.ext*" />
 				<package name="org.restlet.ext*" />
 			</group>
 
