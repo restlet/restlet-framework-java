@@ -20,7 +20,7 @@
  * Portions Copyright [yyyy] [name of copyright owner]
  */
 
-package com.noelios.restlet.ext.freemarker;
+package org.restlet.ext.freemarker;
 
 import java.io.BufferedWriter;
 import java.io.IOException;

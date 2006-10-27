@@ -22,8 +22,8 @@
 
 package com.noelios.restlet.test;
 
-import com.noelios.restlet.ext.atom.Feed;
-import com.noelios.restlet.ext.atom.Service;
+import org.restlet.ext.atom.Feed;
+import org.restlet.ext.atom.Service;
 
 /**
  * Unit test case for the Atom extension.

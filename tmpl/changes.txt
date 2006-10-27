@@ -11,7 +11,7 @@ Changes log
  - Removed getStatusCode() and getReasonPhrase() methods in ServletCall hiding the actual value set. Reported by Sean Landis.
  
 [API breaking changes]
- - 
+ - Moved Atom, FreeMarker and FileUpload extensions to org.restlet.ext package.
  
 [Other changes] 
  - Reorganized Javadocs into three parts: Restlet API, Restlet Extensions, Noelios Restlet Engine.

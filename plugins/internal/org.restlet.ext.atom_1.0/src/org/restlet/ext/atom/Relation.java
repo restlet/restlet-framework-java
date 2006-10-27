@@ -20,7 +20,7 @@
  * Portions Copyright [yyyy] [name of copyright owner]
  */
 
-package com.noelios.restlet.ext.atom;
+package org.restlet.ext.atom;
 
 /**
  * Enumeration of relation types.

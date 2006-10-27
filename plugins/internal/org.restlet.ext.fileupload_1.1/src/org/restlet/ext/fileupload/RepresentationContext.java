@@ -20,7 +20,7 @@
  * Portions Copyright [yyyy] [name of copyright owner]
  */
 
-package com.noelios.restlet.ext.fileupload;
+package org.restlet.ext.fileupload;
 
 import java.io.IOException;
 import java.io.InputStream;

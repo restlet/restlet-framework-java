@@ -8,8 +8,8 @@ import java.util.TreeMap;
 import junit.framework.TestCase;
 
 import org.restlet.data.MediaType;
+import org.restlet.ext.freemarker.TemplateRepresentation;
 
-import com.noelios.restlet.ext.freemarker.TemplateRepresentation;
 
 import freemarker.template.Configuration;
 
