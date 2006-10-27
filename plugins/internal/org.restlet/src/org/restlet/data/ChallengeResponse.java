@@ -22,7 +22,6 @@
 
 package org.restlet.data;
 
-import org.restlet.spi.Factory;
 
 /**
  * Authentication response sent by client to an origin server.
@@ -33,30 +32,40 @@ public class ChallengeResponse
    /** The challenge scheme. */
 	private ChallengeScheme scheme;
 
-   /** The credentials. */
+	/** The user identifier, such as a login name or an access key. */
+	private String identifier;
+	
+	/** The user secret, such as a password or a secret key. */
+	private String secret;
+	
+   /** The raw credentials for custom challenge schemes. */
 	private String credentials;
 
    /**
     * Constructor.
     * @param scheme The challenge scheme.
-    * @param credentials The credentials to use.
+    * @param credentials The raw credentials for custom challenge schemes.
     */
    public ChallengeResponse(ChallengeScheme scheme, String credentials)
    {
       this.scheme = scheme;
       this.credentials = credentials;
+      this.identifier = null;
+      this.secret = null;
    }
 
    /**
     * Constructor.
     * @param scheme The challenge scheme.
-    * @param userId The user identifier to use.
-    * @param password The password to use.
+    * @param identifier The user identifier, such as a login name or an access key.
+    * @param secret The user secret, such as a password or a secret key.
     */
-   public ChallengeResponse(ChallengeScheme scheme, String userId, String password)
+   public ChallengeResponse(ChallengeScheme scheme, String identifier, String secret)
    {
       this.scheme = scheme;
-      Factory.getInstance().setCredentials(this, userId, password);
+      this.credentials = null;
+      this.identifier = identifier;
+      this.secret = secret;
    }
 
    /**
@@ -93,6 +102,42 @@ public class ChallengeResponse
    public void setCredentials(String credentials)
    {
       this.credentials = credentials;
+   }
+
+   /**
+    * Returns the user identifier, such as a login name or an access key.
+    * @return The user identifier, such as a login name or an access key.
+    */
+   public String getIdentifier()
+   {
+      return this.identifier;
+   }
+
+   /**
+    * Sets the user identifier, such as a login name or an access key.
+    * @param identifier The user identifier, such as a login name or an access key.
+    */
+   public void setIdentifier(String identifier)
+   {
+      this.identifier = identifier;
+   }
+
+   /**
+    * Returns the user secret, such as a password or a secret key.
+    * @return The user secret, such as a password or a secret key.
+    */
+   public String getSecret()
+   {
+      return this.secret;
+   }
+
+   /**
+    * Sets the user secret, such as a password or a secret key.
+    * @param secret The user secret, such as a password or a secret key.
+    */
+   public void setSecret(String secret)
+   {
+      this.secret = secret;
    }
 
 }

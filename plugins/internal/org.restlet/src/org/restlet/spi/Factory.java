@@ -37,7 +37,6 @@ import org.restlet.Restlet;
 import org.restlet.Router;
 import org.restlet.Scorer;
 import org.restlet.Server;
-import org.restlet.data.ChallengeResponse;
 import org.restlet.data.ClientInfo;
 import org.restlet.data.Form;
 import org.restlet.data.Language;
@@ -223,14 +222,6 @@ public abstract class Factory
     * @param queryString Query string.
     */
    public abstract void parse(Logger logger, Form form, String queryString);
-
-   /**
-    * Sets the credentials of a challenge response using a user ID and a password.<br/>
-    * @param response The challenge response to set.
-    * @param userId The user identifier to use.
-    * @param password The user password.
-    */
-   public abstract void setCredentials(ChallengeResponse response, String userId, String password);
 
    /**
     * Sets the best response entity of a given resource according to the client preferences.<br/>

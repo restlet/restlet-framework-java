@@ -52,7 +52,7 @@ public class DateUtils
    	"dd MMM yy HH:mm:ss z", "dd MMM yy HH:mm z"};
    
    /** Remember the often used GMT time zone. */
-   private static final TimeZone gmtTimeZone = TimeZone.getTimeZone("GMT");
+   private static final TimeZone TIMEZONE_GMT = TimeZone.getTimeZone("GMT");
 
    /**
     * Compares two date with a precision set to the second.
@@ -129,7 +129,7 @@ public class DateUtils
       else
       {
          SimpleDateFormat formatter = new SimpleDateFormat(format, Locale.US);
-         formatter.setTimeZone(gmtTimeZone);
+         formatter.setTimeZone(TIMEZONE_GMT);
          return formatter.format(date);
       }
    }
@@ -155,7 +155,7 @@ public class DateUtils
       	{
       		format = formats[i];
 	         SimpleDateFormat parser = new SimpleDateFormat(format, Locale.US);
-	         parser.setTimeZone(gmtTimeZone);
+	         parser.setTimeZone(TIMEZONE_GMT);
 	         
 	         try
 	         {

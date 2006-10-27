@@ -22,6 +22,7 @@
 
 package com.noelios.restlet.impl.http;
 
+import java.util.Date;
 import java.util.List;
 import java.util.logging.Level;
 
@@ -36,6 +37,7 @@ import org.restlet.data.Response;
 import org.restlet.data.Status;
 
 import com.noelios.restlet.impl.util.CookieUtils;
+import com.noelios.restlet.impl.util.DateUtils;
 import com.noelios.restlet.impl.util.SecurityUtils;
 
 /**
@@ -106,12 +108,14 @@ public class HttpServerConverter extends HttpConverter
 			if (response.getStatus().equals(Status.CLIENT_ERROR_METHOD_NOT_ALLOWED)
 					|| response.getRequest().getMethod().equals(Method.PUT))
 			{
-				if((response.getEntity() != null) && (response.getEntity().getResource() != null))
+				if ((response.getEntity() != null)
+						&& (response.getEntity().getResource() != null))
 				{
 					// Format the "Allow" header
 					StringBuilder sb = new StringBuilder();
 					boolean first = true;
-					for (Method method : response.getEntity().getResource().getAllowedMethods())
+					for (Method method : response.getEntity().getResource()
+							.getAllowedMethods())
 					{
 						if (first)
 						{
@@ -121,13 +125,17 @@ public class HttpServerConverter extends HttpConverter
 						{
 							sb.append(", ");
 						}
-	
+
 						sb.append(method.getName());
 					}
-	
+
 					responseHeaders.add(HttpConstants.HEADER_ALLOW, sb.toString());
 				}
 			}
+
+			// Add the date 
+			responseHeaders.add(HttpConstants.HEADER_DATE, DateUtils.format(new Date(),
+					DateUtils.FORMAT_RFC_1123[0]));
 
 			// Add the cookie settings
 			List<CookieSetting> cookies = response.getCookieSettings();
@@ -239,5 +247,4 @@ public class HttpServerConverter extends HttpConverter
 			httpCall.setReasonPhrase(Status.SERVER_ERROR_INTERNAL.getDescription());
 		}
 	}
-
 }

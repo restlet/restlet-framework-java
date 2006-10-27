@@ -34,16 +34,18 @@ import com.noelios.restlet.impl.util.SecurityUtils;
  */
 public class SecurityTestCase extends TestCase
 {
-   /**
-    * Tests the cookies parsing.
-    */
-   public void testParsing() throws IOException
-   {
-      String authenticate1 = "Basic realm=\"Restlet tutorial\"";
-      String authorization1 = "Basic c2NvdHQ6dGlnZXI=";
+	/**
+	 * Tests the cookies parsing.
+	 */
+	public void testParsing() throws IOException
+	{
+		String authenticate1 = "Basic realm=\"Restlet tutorial\"";
+		String authorization1 = "Basic c2NvdHQ6dGlnZXI=";
 
-      assertEquals(authorization1, SecurityUtils.format(SecurityUtils.parseResponse(authorization1)));
-      assertEquals(authenticate1, SecurityUtils.format(SecurityUtils.parseRequest(authenticate1)));
-   }
+		assertEquals(authorization1, SecurityUtils.format(SecurityUtils
+				.parseResponse(authorization1), null, null));
+		assertEquals(authenticate1, SecurityUtils.format(SecurityUtils
+				.parseRequest(authenticate1)));
+	}
 
 }

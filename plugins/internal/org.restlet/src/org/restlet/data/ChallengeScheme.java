@@ -32,6 +32,10 @@ public class ChallengeScheme extends Metadata
 	public static final ChallengeScheme CUSTOM = new ChallengeScheme("CUSTOM", "Custom",
 			"Custom authentication");
 
+	/** Amazon Web Services HTTP scheme. */
+	public static final ChallengeScheme HTTP_AWS = new ChallengeScheme("HTTP_AWS",
+			"AWS", "Amazon Web Services HTTP authentication");
+
 	/** Basic HTTP scheme. */
 	public static final ChallengeScheme HTTP_BASIC = new ChallengeScheme("HTTP_BASIC",
 			"Basic", "Basic HTTP authentication");
@@ -42,7 +46,7 @@ public class ChallengeScheme extends Metadata
 
 	/** Microsoft NTML HTTP scheme. */
 	public static final ChallengeScheme HTTP_NTLM = new ChallengeScheme("HTTP_NTLM",
-			"NTLM", "Microsoft's NTLM HTTP authentication");
+			"NTLM", "Microsoft NTLM HTTP authentication");
 
 	/** Plain SMTP scheme. */
 	public static final ChallengeScheme SMTP_PLAIN = new ChallengeScheme("SMTP_PLAIN",
@@ -107,6 +111,8 @@ public class ChallengeScheme extends Metadata
 		{
 			if (name.equalsIgnoreCase(CUSTOM.getName()))
 				result = CUSTOM;
+			else if (name.equalsIgnoreCase(HTTP_AWS.getName()))
+				result = HTTP_AWS;
 			else if (name.equalsIgnoreCase(HTTP_BASIC.getName()))
 				result = HTTP_BASIC;
 			else if (name.equalsIgnoreCase(HTTP_DIGEST.getName()))

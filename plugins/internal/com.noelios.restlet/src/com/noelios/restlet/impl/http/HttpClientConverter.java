@@ -272,15 +272,7 @@ public class HttpClientConverter extends HttpConverter
 			}
 		}
 
-		// Add the security
-		ChallengeResponse challengeResponse = request.getChallengeResponse();
-		if (challengeResponse != null)
-		{
-			requestHeaders.add(HttpConstants.HEADER_AUTHORIZATION, SecurityUtils
-					.format(challengeResponse));
-		}
-
-		// Send the request entity
+		// Add entity headers
 		if (request.getEntity() != null)
 		{
 			if (request.getEntity().getMediaType() != null)
@@ -306,6 +298,15 @@ public class HttpClientConverter extends HttpConverter
 		ParameterList additionalHeaders = (ParameterList) request.getAttributes().get(
 				HttpConstants.ATTRIBUTE_HEADERS);
 		addAdditionalHeaders(requestHeaders, additionalHeaders);
+
+		// Add the security headers. NOTE: This must stay at the end because the AWS challenge 
+		// scheme requires access to all HTTP headers
+		ChallengeResponse challengeResponse = request.getChallengeResponse();
+		if (challengeResponse != null)
+		{
+			requestHeaders.add(HttpConstants.HEADER_AUTHORIZATION, SecurityUtils.format(
+					challengeResponse, request, requestHeaders));
+		}
 	}
 
 	/**

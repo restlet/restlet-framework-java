@@ -25,7 +25,6 @@ package com.noelios.restlet.impl;
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
-import java.io.UnsupportedEncodingException;
 import java.net.URL;
 import java.util.ArrayList;
 import java.util.Date;
@@ -43,8 +42,6 @@ import org.restlet.Restlet;
 import org.restlet.Router;
 import org.restlet.Scorer;
 import org.restlet.Server;
-import org.restlet.data.ChallengeResponse;
-import org.restlet.data.ChallengeScheme;
 import org.restlet.data.ClientInfo;
 import org.restlet.data.Form;
 import org.restlet.data.Language;
@@ -66,7 +63,6 @@ import org.restlet.util.ServerList;
 import com.noelios.restlet.data.StringRepresentation;
 import com.noelios.restlet.impl.application.ApplicationHelper;
 import com.noelios.restlet.impl.container.ContainerHelper;
-import com.noelios.restlet.impl.util.Base64;
 import com.noelios.restlet.impl.util.ClientListImpl;
 import com.noelios.restlet.impl.util.DateUtils;
 import com.noelios.restlet.impl.util.FormUtils;
@@ -677,38 +673,6 @@ public class Factory extends org.restlet.spi.Factory
 		if ((queryString != null) && !queryString.equals(""))
 		{
 			FormUtils.parseQuery(logger, form, queryString);
-		}
-	}
-
-	/**
-	 * Sets the credentials of a challenge response using a user ID and a password.<br/>
-	 * @param response The challenge response to set.
-	 * @param userId The user identifier to use.
-	 * @param password The user password.
-	 */
-	public void setCredentials(ChallengeResponse response, String userId, String password)
-	{
-		try
-		{
-			if (response.getScheme().equals(ChallengeScheme.HTTP_BASIC))
-			{
-				String credentials = userId + ':' + password;
-				response.setCredentials(Base64.encodeBytes(credentials.getBytes("US-ASCII")));
-			}
-			else if (response.getScheme().equals(ChallengeScheme.SMTP_PLAIN))
-			{
-				String credentials = "^@" + userId + "^@" + password;
-				response.setCredentials(Base64.encodeBytes(credentials.getBytes("US-ASCII")));
-			}
-			else
-			{
-				throw new IllegalArgumentException(
-						"Challenge scheme not supported by this implementation");
-			}
-		}
-		catch (UnsupportedEncodingException e)
-		{
-			throw new RuntimeException("Unsupported encoding, unable to encode credentials");
 		}
 	}
 
