@@ -36,7 +36,10 @@
 <h3><a name="part01">1. Registering an implementation</a></h3>
 
 <p>
-   The Restlet framework is composed of two parts. First, there is the "<a href="http://www.restlet.org/docs/api/">Restlet API</a>", a neutral API supporting the concepts of REST and a mechanism called Restlet facilitating the handling of REST uniform calls. This API must be supported by a "Restlet Implementation" before it can effectively be used. Multiple implementations could be provided (open source projects or commercial products).
+   The Restlet framework is composed of two main parts. First, there is the "<a href="http://www.restlet.org/docs/api/">Restlet API</a>", a neutral API supporting the concepts of REST and a mechanism called Restlet facilitating the handling of REST uniform calls. This API must be supported by a "Restlet Implementation" before it can effectively be used. Multiple implementations could be provided (open source projects or commercial products).
+</p>
+<p align="middle">
+   <img src="images/tutorial01" alt="Framework structure"/>
 </p>
 <p>
    This separation between the API and the implementation is similar to the one between the Servlet API and Web containers like Jetty or Tomcat, or between the JDBC API and actual JDBC drivers. Currently, the "<a href="http://www.restlet.org/docs/core/">Noelios Restlet Engine</a>" (NRE) is available and acts as the reference implementation. When you download the Restlet framework, the API and the NRE come bundled together, ready to be used. If you need to use a different implementation just add the implementation JAR file to the classpath and remove the NRE JAR file named com.noelios.restlet.jar by default.
@@ -98,7 +101,7 @@
 <p>
    Let's step back a little bit and consider typical web architectures from a REST point of view. In the diagram below, ports represent the connector that enables the communication between components which are represented by the larger boxes. The links represents the particular protocol (HTTP, SMTP, etc.) used for the actual communication.
 </p>
-<p>
+<p align="middle">
    <img src="images/tutorial04" alt="REST architecture"/>
 </p>
 <p>
@@ -109,7 +112,7 @@
 <p>
    In addition to supporting the standard REST software architecture elements as presented before, the Restlet framework also provides a set of classes that greatly simplify the hosting of complex applications within a single JVM. The goal is to provide a RESTful, portable and more flexible alternative to existing Servlet API. In the diagram below, we can see the three types of Restlets that are provided in order to manage these complex cases. Containers are Components managing several Virtual Hosts and Applications. Virtual Hosts support flexible configuration where, for example, the same IP address is shared by several domain names, or where the same domain name is load-balanced across several IP addresses. Finally, we use Applications to manage a set of related Restlets, Resources and Representations. In addition, Applications are ensured to be portable and reconfigurable over different Restlet implementations and with different virtual hosts, and they provide important services such as access logging and status page setting.
 <p/>
-<p>
+<p align="middle">
    <img src="images/tutorial05" alt="Restlet containers, virtual hosts and applications"/>
 </p>
 <p>
@@ -217,7 +220,7 @@
       guard.setNext(directory);
       return guard;
 </pre>
-<p>
+<p align="middle">
    <img src="images/tutorial09" alt="Call handling flow"/><br/>
 </p>
 <p>
@@ -284,7 +287,7 @@
 <p>
    When a call reaches the User Router (7) we try to match the remaining part of the URI against the "$" pattern, meaning the the remaing resource path should be empty. If a match is found, then the Account Restlet is invoked (8). At this point it is possible to get the login name by getting the last URI segment. Otherwise, if the "/orders$" pattern matches, the Orders Restlet is invoked (9), where we can still get the login name from the list of URI segments. Note that again we use the '$' character at the end of the pattern in order to make sure that we match "/users/foo/orders" but not "/users/foo/orders123".
 </p>
-<p>
+<p align="middle">
    <img src="images/tutorial11" alt="Call handling flow"/><br/>
 </p>
 <p>
@@ -356,7 +359,7 @@
 <p>
    We already covered many aspects of the framework. Before you move on by yourself, let's take a step back and look at this hierarchy diagram showing the main concepts covered in this tutorial and their relationships.
 </p>
-<p>
+<p align="middle">
    <img src="images/conclusion" alt="Interfaces hierarchy"/><br/>
 </p>
 
@@ -379,7 +382,7 @@
 <br/>
 
 <small>
-   Last modified on 2006-10-23. Copyright &copy; 2005-2006 <a href="mailto:contact@noelios.com">J&eacute;r&ocirc;me Louvel</a>. Restlet is a registered trademark of <a target="_top" href="http://www.noelios.com">Noelios Consulting</a>.
+   Last modified on 2006-10-29. Copyright &copy; 2005-2006 <a href="mailto:contact@noelios.com">J&eacute;r&ocirc;me Louvel</a>. Restlet is a registered trademark of <a target="_top" href="http://www.noelios.com">Noelios Consulting</a>.
 </small>
 
 </body>
