@@ -12,7 +12,7 @@ Changes log
  
 [API breaking changes]
  - Moved Atom, FreeMarker and FileUpload extensions to org.restlet.ext package.
- 
+
 [Other changes] 
  - Reorganized Javadocs into three parts: Restlet API, Restlet Extensions, Noelios Restlet Engine.
  - Added JSON library as an external plugin project. See http://www.json.org
@@ -23,6 +23,8 @@ Changes log
  - Added support for Amazon Web Services authentication scheme for HTTP client requests. Added ChallengeScheme.HTTP_AWS constant and
    a sample example at com.noelios.restlet.example.misc.AwsTest. Suggested by Mikkel Jensen.
  - StatusService now has its "overwrite" property set to "false" by default.
+ - Now the StatusService (and associated StatusFilter classes) also catch unhandled Errors. Suggested by Vincent Lari.
+ - Added createStatusFilter and createLogFilter to NRE's ApplicationHelper and ContainerHelper to allow overriding. Reported by Vincent Lari.
  
 1.0 beta 19 (2006-10-23)
 [Bugs fixed]

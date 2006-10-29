@@ -35,6 +35,7 @@ import org.restlet.data.Status;
 import org.restlet.spi.Helper;
 
 import com.noelios.restlet.impl.LogFilter;
+import com.noelios.restlet.impl.StatusFilter;
 
 /**
  * Application implementation.
@@ -119,7 +120,7 @@ public class ApplicationHelper implements Helper
 		// Logging of calls
 		if (getApplication().getLogService().isEnabled())
 		{
-			lastFilter = new LogFilter(getApplication().getContext(), getApplication()
+			lastFilter = createLogFilter(getApplication().getContext(), getApplication()
 					.getLogService().getLoggerName(), getApplication().getLogService()
 					.getFormat());
 			setFirst(lastFilter);
@@ -128,7 +129,7 @@ public class ApplicationHelper implements Helper
 		// Addition of status pages
 		if (getApplication().getStatusService().isEnabled())
 		{
-			Filter statusFilter = new ApplicationStatusFilter(getApplication());
+			Filter statusFilter = createStatusFilter(getApplication());
 			if (lastFilter != null) lastFilter.setNext(statusFilter);
 			if (getFirst() == null) setFirst(statusFilter);
 			lastFilter = statusFilter;
@@ -143,6 +144,28 @@ public class ApplicationHelper implements Helper
 		{
 			lastFilter.setNext(getApplication().getRoot());
 		}
+	}
+
+	/**
+	 * Creates a new log filter. Allows overriding.
+	 * @param context The context.
+	 * @param logName The log name to used in the logging.properties file.
+	 * @param logFormat The log format to use.
+	 * @return The new log filter.
+	 */
+	protected LogFilter createLogFilter(Context context, String logName, String logFormat)
+	{
+		return new LogFilter(context, logName, logFormat);
+	}
+
+	/**
+	 * Creates a new status filter. Allows overriding.
+	 * @param application The parent application.
+	 * @return The new status filter.
+	 */
+	protected StatusFilter createStatusFilter(Application application)
+	{
+		return new ApplicationStatusFilter(application);
 	}
 
 	/** Stop callback. */

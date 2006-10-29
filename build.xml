@@ -749,7 +749,7 @@
 			<link href="http://java.sun.com/j2se/1.5.0/docs/api/" />
 		</javadoc>
 	
-		<javadoc packagenames="com.noelios.restlet, com.noelios.restlet.data, com.noelios.restlet.ext.*, org.restlet.ext.*"
+		<javadoc packagenames="com.noelios.restlet, com.noelios.restlet.data, org.restlet.ext.*"
 				 excludepackagenames="${exclude-packages}"
 		         destdir="${docs-ext}"
 		         classpathref="path-all"
@@ -761,6 +761,7 @@
 		         overview="${tmpl}/overview-ext.html"
 		         verbose="${verbose}">
 			<sourcepath>
+				<pathelement path="${mod}/${mod-ri-id}/src/" />
 				<pathelement path="${mod}/${mod-atom-id}/src/" />
 				<pathelement path="${mod}/${mod-fileupload-id}/src/" />
 				<pathelement path="${mod}/${mod-freemarker-id}/src/" />
@@ -772,6 +773,7 @@
 			</bottom>
 
 			<group title="${restlet-ext}">
+				<package name="com.noelios.restlet*" />
 				<package name="org.restlet.ext*" />
 			</group>
 
@@ -812,7 +814,7 @@
 			</bottom>
 	
 			<group title="${restlet-nre-impl}">
-				<package name="com.noelios.restlet*" />
+				<package name="com.noelios.restlet.impl*" />
 			</group>
 	
 			<group title="${restlet-nre-ext}">

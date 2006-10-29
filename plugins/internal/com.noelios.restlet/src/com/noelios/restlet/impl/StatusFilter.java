@@ -81,9 +81,9 @@ public class StatusFilter extends Filter
       {
          super.doHandle(request, response);
       }
-      catch(Exception e)
+      catch(Throwable t)
       {
-      	getLogger().log(Level.SEVERE, "Unhandled error intercepted", e);
+      	getLogger().log(Level.SEVERE, "Unhandled exception or error intercepted", t);
          response.setStatus(Status.SERVER_ERROR_INTERNAL);
       }
    }
