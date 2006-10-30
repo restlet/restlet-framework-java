@@ -41,7 +41,7 @@ public class AwsTest
 	public static void main(String[] args) throws Exception
 	{
 		// Prepare the request
-		Request request = new Request(Method.PUT, "http://s3.amazonaws.com/quotes/nelson");
+		Request request = new Request(Method.GET, "http://s3.amazonaws.com/quotes/nelson");
 		request.setChallengeResponse(new ChallengeResponse(ChallengeScheme.HTTP_AWS,
 				"44CF9590006BF252F707", "OtxrzxIsfpFjA7SwPzILwy8Bw21TLhquhboDYROV"));
 

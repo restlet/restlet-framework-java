@@ -36,6 +36,7 @@ import org.restlet.data.ChallengeRequest;
 import org.restlet.data.ChallengeResponse;
 import org.restlet.data.ChallengeScheme;
 import org.restlet.data.Form;
+import org.restlet.data.Method;
 import org.restlet.data.Parameter;
 import org.restlet.data.ParameterList;
 import org.restlet.data.Reference;
@@ -106,7 +107,19 @@ public class SecurityUtils
 			// Setup the ContentType header
 			String contentType = httpHeaders
 					.getFirstValue(HttpConstants.HEADER_CONTENT_TYPE);
-			if (contentType == null) contentType = "";
+			if (contentType == null)
+			{
+				String javaVersion = System.getProperty("java.version");
+				if (!request.getMethod().equals(Method.PUT)
+						&& (javaVersion.startsWith("1.5") || javaVersion.startsWith("1.4")))
+				{
+					contentType = "application/x-www-form-urlencoded";
+				}
+				else
+				{
+					contentType = "";
+				}
+			}
 
 			// Setup the canonicalized AmzHeaders 
 			String canonicalizedAmzHeaders = getCanonicalizedAmzHeaders(httpHeaders);
