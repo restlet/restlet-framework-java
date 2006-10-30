@@ -24,7 +24,7 @@ package com.noelios.restlet.ext.jetty5;
 
 import org.restlet.Server;
 
-import com.noelios.restlet.impl.http.HttpServerHelper;
+import com.noelios.restlet.http.HttpServerHelper;
 
 /**
  * Abstract Jetty Web server connector. Here is the list of parameters that are supported:
@@ -56,7 +56,7 @@ import com.noelios.restlet.impl.http.HttpServerHelper;
  * 	<tr>
  * 		<td>converter</td>
  * 		<td>String</td>
- * 		<td>com.noelios.restlet.impl.http.HttpServerConverter</td>
+ * 		<td>com.noelios.restlet.http.HttpServerConverter</td>
  * 		<td>Class name of the converter of low-level HTTP calls into high level requests and responses.</td>
  * 	</tr>
  * 	<tr>

@@ -28,7 +28,7 @@ import java.util.logging.Logger;
 import junit.framework.TestCase;
 import org.restlet.data.Form;
 
-import com.noelios.restlet.impl.util.FormReader;
+import com.noelios.restlet.util.FormReader;
 
 /**
  * Unit tests for the Form class.

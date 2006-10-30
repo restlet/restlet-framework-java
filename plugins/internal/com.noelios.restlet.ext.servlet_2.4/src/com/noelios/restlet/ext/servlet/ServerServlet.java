@@ -36,7 +36,7 @@ import org.restlet.Context;
 import org.restlet.Server;
 import org.restlet.data.Protocol;
 
-import com.noelios.restlet.impl.http.HttpServerHelper;
+import com.noelios.restlet.http.HttpServerHelper;
 
 /**
  * Servlet acting like an HTTP server connector. See the getTarget() method for details on how 

@@ -115,7 +115,7 @@ import org.mortbay.thread.BoundedThreadPool;
  * 	<tr>
  * 		<td>converter</td>
  * 		<td>String</td>
- * 		<td>com.noelios.restlet.impl.http.HttpServerConverter</td>
+ * 		<td>com.noelios.restlet.http.HttpServerConverter</td>
  * 		<td>Class name of the converter of low-level HTTP calls into high level requests and responses.</td>
  * 	</tr>
  * 	<tr>
@@ -132,7 +132,7 @@ import org.mortbay.thread.BoundedThreadPool;
  * @author Jerome Louvel (contact@noelios.com) <a href="http://www.noelios.com/">Noelios Consulting</a>
  */
 public abstract class JettyServerHelper extends
-		com.noelios.restlet.impl.http.HttpServerHelper
+		com.noelios.restlet.http.HttpServerHelper
 {
 	/** The wrapped Jetty server. */
 	private Server wrappedServer;

@@ -7,9 +7,11 @@ Bundle-Vendor: Noelios Consulting
 Bundle-Localization: plugin
 Require-Bundle: org.restlet,
  org.restlet.ext
-Export-Package: com.noelios.restlet.impl,
- com.noelios.restlet.impl.application,
- com.noelios.restlet.impl.container,
- com.noelios.restlet.impl.http,
- com.noelios.restlet.impl.local,
- com.noelios.restlet.impl.util
+Export-Package: com.noelios.restlet,
+ com.noelios.restlet.application,
+ com.noelios.restlet.container,
+ com.noelios.restlet.data,
+ com.noelios.restlet.filter,
+ com.noelios.restlet.http,
+ com.noelios.restlet.local,
+ com.noelios.restlet.util

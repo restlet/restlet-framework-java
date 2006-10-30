@@ -33,7 +33,7 @@ import org.restlet.data.Representation;
 import org.restlet.data.Request;
 import org.restlet.data.Response;
 
-import com.noelios.restlet.impl.data.DecoderRepresentation;
+import com.noelios.restlet.data.DecoderRepresentation;
 
 /**
  * Filter decompressing entities. 

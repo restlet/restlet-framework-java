@@ -29,7 +29,7 @@ import org.restlet.Client;
 import org.restlet.data.Protocol;
 import org.restlet.data.Request;
 
-import com.noelios.restlet.impl.http.HttpClientCall;
+import com.noelios.restlet.http.HttpClientCall;
 
 /**
  * HTTP client connector using the HttpUrlConnectionCall. Here is the list of parameters that are supported:
@@ -80,7 +80,7 @@ import com.noelios.restlet.impl.http.HttpClientCall;
  * @see <a href="http://java.sun.com/j2se/1.5.0/docs/guide/net/index.html">Networking Features</a>
  * @author Jerome Louvel (contact@noelios.com) <a href="http://www.noelios.com/">Noelios Consulting</a>
  */
-public class HttpClientHelper extends com.noelios.restlet.impl.http.HttpClientHelper
+public class HttpClientHelper extends com.noelios.restlet.http.HttpClientHelper
 {
 	/**
 	 * Constructor.

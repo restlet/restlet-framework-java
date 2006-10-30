@@ -1,1 +1,1 @@
-com.noelios.restlet.impl.Factory    # The factory for the Noelios Restlet Engine
+com.noelios.restlet.Factory    # The factory for the Noelios Restlet Engine

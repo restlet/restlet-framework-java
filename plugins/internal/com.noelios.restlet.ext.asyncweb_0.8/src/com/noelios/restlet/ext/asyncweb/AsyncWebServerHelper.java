@@ -32,8 +32,8 @@ import org.safehaus.asyncweb.request.AsyncWebRequest;
 import org.safehaus.asyncweb.transport.Transport;
 import org.safehaus.asyncweb.transport.TransportException;
 
-import com.noelios.restlet.impl.http.HttpServerCall;
-import com.noelios.restlet.impl.http.HttpServerHelper;
+import com.noelios.restlet.http.HttpServerCall;
+import com.noelios.restlet.http.HttpServerHelper;
 
 /**
  * Abstract AsyncWeb server connector. Here is the list of parameters that are supported:
@@ -53,7 +53,7 @@ import com.noelios.restlet.impl.http.HttpServerHelper;
  * 	<tr>
  * 		<td>converter</td>
  * 		<td>String</td>
- * 		<td>com.noelios.restlet.impl.http.HttpServerConverter</td>
+ * 		<td>com.noelios.restlet.http.HttpServerConverter</td>
  * 		<td>Class name of the converter of low-level HTTP calls into high level requests and responses.</td>
  * 	</tr>
  * 	<tr>
@@ -69,7 +69,7 @@ import com.noelios.restlet.impl.http.HttpServerHelper;
  *	<br/> 
  * This implementation passes by all of AsyncWeb ServiceContainer, 
  * HttpServiceHandler etc. mechanisms and implements a 
- * {@link com.noelios.restlet.impl.http.HttpServerHelper} and a 
+ * {@link com.noelios.restlet.http.HttpServerHelper} and a 
  * {@link org.safehaus.asyncweb.container.ServiceContainer} directly. It takes
  * care about setting up a {@link org.safehaus.asyncweb.transport.nio.NIOTransport}.
  * <p>

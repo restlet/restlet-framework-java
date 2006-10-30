@@ -29,7 +29,7 @@ import javax.servlet.Servlet;
 import org.restlet.Application;
 import org.restlet.Context;
 
-import com.noelios.restlet.impl.application.ApplicationContext;
+import com.noelios.restlet.application.ApplicationContext;
 
 /**
  * Context allowing access to the container's connectors, reusing the Servlet's logging mechanism and

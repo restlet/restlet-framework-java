@@ -38,7 +38,7 @@ import org.restlet.data.Response;
 import org.restlet.data.Status;
 import org.restlet.ext.data.InputRepresentation;
 
-import com.noelios.restlet.impl.local.WarClientHelper;
+import com.noelios.restlet.local.WarClientHelper;
 
 /**
  * Local client connector based on a Servlet context (JEE Web application context).

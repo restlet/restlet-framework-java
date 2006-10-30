@@ -801,7 +801,7 @@
 			<link href="http://java.sun.com/j2se/1.5.0/docs/api/" />
 		</javadoc>
 	
-		<javadoc packagenames="com.noelios.restlet.impl.*, com.noelios.restlet.ext.*"
+		<javadoc packagenames="com.noelios.restlet.*"
 				 excludepackagenames="${exclude-packages}"
 		         destdir="${docs-nre}"
 		         classpathref="path-all"

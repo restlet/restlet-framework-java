@@ -26,7 +26,7 @@ import java.io.IOException;
 
 import junit.framework.TestCase;
 
-import com.noelios.restlet.impl.util.SecurityUtils;
+import com.noelios.restlet.util.SecurityUtils;
 
 /**
  * Unit tests for the SecurityData related classes.

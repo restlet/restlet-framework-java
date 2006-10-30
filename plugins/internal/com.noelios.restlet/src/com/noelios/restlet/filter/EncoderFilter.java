@@ -39,7 +39,7 @@ import org.restlet.data.Representation;
 import org.restlet.data.Request;
 import org.restlet.data.Response;
 
-import com.noelios.restlet.impl.data.EncoderRepresentation;
+import com.noelios.restlet.data.EncoderRepresentation;
 
 /**
  * Filter compressing entities. The best encoding is automatically 

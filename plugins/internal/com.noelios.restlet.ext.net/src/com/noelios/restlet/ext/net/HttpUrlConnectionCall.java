@@ -39,7 +39,7 @@ import org.restlet.data.ParameterList;
 import org.restlet.data.Representation;
 import org.restlet.data.Status;
 
-import com.noelios.restlet.impl.http.HttpClientCall;
+import com.noelios.restlet.http.HttpClientCall;
 
 /**
  * HTTP client connector call based on JDK's java.net.HttpUrlConnection class.

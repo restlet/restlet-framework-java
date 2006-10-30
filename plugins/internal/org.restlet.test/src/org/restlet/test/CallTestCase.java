@@ -31,7 +31,7 @@ import org.restlet.data.Request;
 import org.restlet.data.Response;
 import org.restlet.data.Status;
 
-import com.noelios.restlet.impl.http.HttpCall;
+import com.noelios.restlet.http.HttpCall;
 
 /**
  * Test {@link org.restlet.Call}.
