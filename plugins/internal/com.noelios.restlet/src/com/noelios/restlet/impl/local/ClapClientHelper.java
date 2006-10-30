@@ -32,9 +32,10 @@ import org.restlet.data.Protocol;
 import org.restlet.data.Request;
 import org.restlet.data.Response;
 import org.restlet.data.Status;
+import org.restlet.ext.data.ClapReference;
+import org.restlet.ext.data.InputRepresentation;
 
-import com.noelios.restlet.data.ClapReference;
-import com.noelios.restlet.data.InputRepresentation;
+
 
 /**
  * Connector to the class loaders.

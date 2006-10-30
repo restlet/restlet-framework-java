@@ -27,9 +27,8 @@ import org.restlet.Container;
 import org.restlet.Restlet;
 import org.restlet.data.ChallengeScheme;
 import org.restlet.data.Protocol;
-
-import com.noelios.restlet.DirectoryHandler;
-import com.noelios.restlet.GuardFilter;
+import org.restlet.ext.DirectoryHandler;
+import org.restlet.ext.GuardFilter;
 
 /**
  * Guard access to a Restlet.
@@ -37,8 +36,8 @@ import com.noelios.restlet.GuardFilter;
  */
 public class Tutorial09a implements Constants
 {
-   public static void main(String[] args) throws Exception
-   {
+	public static void main(String[] args) throws Exception
+	{
 		// Create a container
 		Container container = new Container();
 		container.getServers().add(Protocol.HTTP, 8182);
@@ -49,20 +48,22 @@ public class Tutorial09a implements Constants
 		{
 			public Restlet createRoot()
 			{
-		      // Create a guard Filter
-		      GuardFilter guard = new GuardFilter(getContext(), true, ChallengeScheme.HTTP_BASIC , "Tutorial", true);
-		      guard.getAuthorizations().put("scott", "tiger");
+				// Create a guard Filter
+				GuardFilter guard = new GuardFilter(getContext(), ChallengeScheme.HTTP_BASIC,
+						"Tutorial");
+				guard.getAuthorizations().put("scott", "tiger");
 
-		      // Create a directory Restlet able to return a deep hierarchy of Web files
-		      DirectoryHandler directory = new DirectoryHandler(getContext(), ROOT_URI, "index.html");
-		      guard.setNext(directory);
-		      return guard;
+				// Create a directory Restlet able to return a deep hierarchy of Web files
+				DirectoryHandler directory = new DirectoryHandler(getContext(), ROOT_URI,
+						"index.html");
+				guard.setNext(directory);
+				return guard;
 			}
 		};
-		
+
 		// Attach the application to the container and start it
 		container.getDefaultHost().attach("", application);
 		container.start();
-   }
+	}
 
 }

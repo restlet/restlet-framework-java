@@ -32,12 +32,12 @@ import org.restlet.data.Protocol;
 import org.restlet.data.Reference;
 import org.restlet.data.Representation;
 import org.restlet.data.Status;
+import org.restlet.ext.data.SaxRepresentation;
+import org.restlet.ext.util.XmlWriter;
 import org.xml.sax.Attributes;
 import org.xml.sax.SAXException;
 import org.xml.sax.helpers.DefaultHandler;
 
-import com.noelios.restlet.data.SaxRepresentation;
-import com.noelios.restlet.util.XmlWriter;
 
 /**
  * Represents an Atom introspection document.

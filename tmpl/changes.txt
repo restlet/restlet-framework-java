@@ -9,10 +9,12 @@ Changes log
  - Fixed bug causing the ServerServlet to create an extra HTTP server connector if one is available on the classpath. Reported by Sean Landis.
  - Fixed bug in StatusFilter, method dohandle() renamed to doHandle().
  - Removed getStatusCode() and getReasonPhrase() methods in ServletCall hiding the actual value set. Reported by Sean Landis.
- 
-[API breaking changes]
- - Moved Atom, FreeMarker and FileUpload extensions to org.restlet.ext package.
 
+[API breaking changes]
+ - Moved Atom, FreeMarker and FileUpload extensions to org.restlet.ext.atom/freemarker/fileupload packages.
+ - Moved implementation-independent classes from NRE into a org.restlet.ext/.data/.model/.util packages. 
+ - Renamed LogService."loggerName" and "format" properties to add the "access" prefix. Added "contextLoggerName" property.
+ 
 [Other changes] 
  - Reorganized Javadocs into three parts: Restlet API, Restlet Extensions, Noelios Restlet Engine.
  - Added JSON library as an external plugin project. See http://www.json.org
@@ -26,6 +28,13 @@ Changes log
  - Now the StatusService (and associated StatusFilter classes) also catch unhandled Errors. Suggested by Vincent Lari.
  - Added createStatusFilter and createLogFilter to NRE's ApplicationHelper and ContainerHelper to allow overriding. Reported by Vincent Lari.
  - Added workaround for AWS authentication caused by HttpUrlConnection in JDK < 1.6 causing sending of "application/x-www-form-urlencoded" content type.
+ - The SPI mechanism now uses the classloader of the Factory's class. get/setClassLoader() methods also added. Suggested by Kabe.
+ - Made package org.restlet.spi visible like other JDK's SPI packages
+ - Moved interfaces from org.restlet.util to org.restlet.spi. Shouldn't impact user code at all.
+ - Implemented support for multiple choices in org.restlet.Handler. Added a "negotiateContent" property to disable automatic content negotiation.
+ - Added "decoderService" to Application to auto-decompress incoming entities.
+ - Implemented support for multiple choices (300 status) in org.restlet.Handler. 
+ - Added a "negotiateContent" property to disable automatic content negotiation.
  
 1.0 beta 19 (2006-10-23)
 [Bugs fixed]

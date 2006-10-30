@@ -28,6 +28,8 @@ import java.security.NoSuchAlgorithmException;
 import java.util.Date;
 import java.util.SortedMap;
 import java.util.TreeMap;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 import javax.crypto.Mac;
 import javax.crypto.spec.SecretKeySpec;
@@ -41,6 +43,7 @@ import org.restlet.data.Parameter;
 import org.restlet.data.ParameterList;
 import org.restlet.data.Reference;
 import org.restlet.data.Request;
+import org.restlet.ext.util.DateUtils;
 
 import com.noelios.restlet.impl.http.HttpConstants;
 
@@ -273,10 +276,13 @@ public class SecurityUtils
 
 	/**
 	 * Parses an authorization header into a challenge response.
-	 * @param header The HTTP header value to parse.
+	 * @param request The request.
+	 * @param logger The logger to use.
+	 * @param header The header value to parse.
 	 * @return The parsed challenge response.
 	 */
-	public static ChallengeResponse parseResponse(String header)
+	public static ChallengeResponse parseResponse(Request request, Logger logger,
+			String header)
 	{
 		ChallengeResponse result = null;
 
@@ -290,6 +296,48 @@ public class SecurityUtils
 				String credentials = header.substring(space + 1);
 				result = new ChallengeResponse(new ChallengeScheme("HTTP_" + scheme, scheme),
 						credentials);
+
+				if (result.getScheme().equals(ChallengeScheme.HTTP_BASIC))
+				{
+					try
+					{
+						credentials = new String(Base64.decode(result.getCredentials()),
+								"US-ASCII");
+						int separator = credentials.indexOf(':');
+
+						if (separator == -1)
+						{
+							// Log the blocking
+							logger.warning("Invalid credentials given by client with IP: "
+									+ ((request != null) ? request.getClientInfo().getAddress()
+											: "?"));
+						}
+						else
+						{
+							result.setIdentifier(credentials.substring(0, separator));
+							result.setSecret(credentials.substring(separator + 1));
+
+							// Log the authentication result
+							if (logger != null)
+							{
+								logger.info("Basic HTTP authentication succeeded: identifier="
+										+ result.getIdentifier() + ".");
+							}
+						}
+					}
+					catch (UnsupportedEncodingException e)
+					{
+						logger.log(Level.WARNING, "Unsupported encoding error", e);
+					}
+				}
+				else
+				{
+					// Authentication failed, scheme not supported
+					logger.log(Level.WARNING,
+							"Authentication failed: unsupported scheme used: "
+									+ result.getScheme().getName()
+									+ ". Please override the authenticate method.");
+				}
 			}
 		}
 

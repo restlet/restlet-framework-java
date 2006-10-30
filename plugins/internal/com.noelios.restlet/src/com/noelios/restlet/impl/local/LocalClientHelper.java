@@ -104,7 +104,7 @@ import com.noelios.restlet.impl.ClientHelper;
  * 		<td>Path to the Web Application WAR file or directory.</td>
  * 	</tr>
  *	</table>
- * @see com.noelios.restlet.data.ClapReference
+ * @see org.restlet.ext.data.ClapReference
  * @author Jerome Louvel (contact@noelios.com) <a href="http://www.noelios.com/">Noelios Consulting</a>
  * @author Thierry Boileau
  */

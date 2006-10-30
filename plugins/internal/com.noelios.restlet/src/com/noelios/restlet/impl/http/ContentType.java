@@ -30,6 +30,7 @@ import org.restlet.data.Preference;
 
 import com.noelios.restlet.impl.util.PreferenceReader;
 
+
 /**
  * Association of a media type and a character set.
  * @author Jerome Louvel (contact@noelios.com) <a href="http://www.noelios.com/">Noelios Consulting</a>

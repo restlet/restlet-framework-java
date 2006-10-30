@@ -34,8 +34,9 @@ import org.restlet.data.Response;
 import org.restlet.data.Status;
 import org.restlet.spi.Helper;
 
-import com.noelios.restlet.impl.LogFilter;
-import com.noelios.restlet.impl.StatusFilter;
+import com.noelios.restlet.filter.DecoderFilter;
+import com.noelios.restlet.filter.LogFilter;
+import com.noelios.restlet.filter.StatusFilter;
 
 /**
  * Application implementation.
@@ -70,9 +71,16 @@ public class ApplicationHelper implements Helper
 	 */
 	public Context createContext()
 	{
+		String loggerName = getApplication().getLogService().getContextLoggerName();
+
+		if (loggerName == null)
+		{
+			loggerName = Application.class.getCanonicalName() + "."
+					+ getApplication().getName() + "(" + getApplication().hashCode() + ")";
+		}
+
 		return new ApplicationContext(getApplication(), getParentContext(), Logger
-				.getLogger(Application.class.getCanonicalName() + "."
-						+ getApplication().getName() + "(" + getApplication().hashCode() + ")"));
+				.getLogger(loggerName));
 	}
 
 	/**
@@ -121,8 +129,8 @@ public class ApplicationHelper implements Helper
 		if (getApplication().getLogService().isEnabled())
 		{
 			lastFilter = createLogFilter(getApplication().getContext(), getApplication()
-					.getLogService().getLoggerName(), getApplication().getLogService()
-					.getFormat());
+					.getLogService().getAccessLoggerName(), getApplication().getLogService()
+					.getAccessLogFormat());
 			setFirst(lastFilter);
 		}
 
@@ -133,6 +141,15 @@ public class ApplicationHelper implements Helper
 			if (lastFilter != null) lastFilter.setNext(statusFilter);
 			if (getFirst() == null) setFirst(statusFilter);
 			lastFilter = statusFilter;
+		}
+
+		// Addition of decoder filter
+		if (getApplication().getDecoderService().isEnabled())
+		{
+			Filter decoderFilter = createDecoderFilter(getApplication());
+			if (lastFilter != null) lastFilter.setNext(decoderFilter);
+			if (getFirst() == null) setFirst(decoderFilter);
+			lastFilter = decoderFilter;
 		}
 
 		// Reattach the original filter's attached Restlet
@@ -156,6 +173,16 @@ public class ApplicationHelper implements Helper
 	protected LogFilter createLogFilter(Context context, String logName, String logFormat)
 	{
 		return new LogFilter(context, logName, logFormat);
+	}
+
+	/**
+	 * Creates a new decoder filter. Allows overriding.
+	 * @param application The parent application.
+	 * @return The new decoder filter.
+	 */
+	protected DecoderFilter createDecoderFilter(Application application)
+	{
+		return new DecoderFilter(application.getContext(), true, false);
 	}
 
 	/**

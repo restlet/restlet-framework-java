@@ -33,8 +33,8 @@ import org.restlet.data.Response;
 import org.restlet.data.Status;
 import org.restlet.spi.Helper;
 
-import com.noelios.restlet.impl.LogFilter;
-import com.noelios.restlet.impl.StatusFilter;
+import com.noelios.restlet.filter.LogFilter;
+import com.noelios.restlet.filter.StatusFilter;
 
 /**
  * Container helper.
@@ -130,8 +130,8 @@ public class ContainerHelper implements Helper
 		if (getContainer().getLogService().isEnabled())
 		{
 			lastFilter = createLogFilter(getContainer().getContext(), getContainer()
-					.getLogService().getLoggerName(), getContainer().getLogService()
-					.getFormat());
+					.getLogService().getAccessLoggerName(), getContainer().getLogService()
+					.getAccessLogFormat());
 			setFirst(lastFilter);
 		}
 

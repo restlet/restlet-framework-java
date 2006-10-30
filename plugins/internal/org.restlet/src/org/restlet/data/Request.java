@@ -196,8 +196,8 @@ public class Request extends Message
 	}
 
 	/**
-	 * Returns the resource path relative to the context's base reference.
-	 * @return The relative resource path .
+	 * Returns the resource part relative to the context's base reference.
+	 * @return The relative resource part.
 	 */
 	public String getRelativePart()
 	{

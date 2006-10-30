@@ -22,8 +22,12 @@
 
 package org.restlet;
 
+import java.util.List;
+
 import org.restlet.data.Language;
 import org.restlet.data.Method;
+import org.restlet.data.ReferenceList;
+import org.restlet.data.Representation;
 import org.restlet.data.Request;
 import org.restlet.data.Resource;
 import org.restlet.data.Response;
@@ -32,20 +36,26 @@ import org.restlet.data.Status;
 /**
  * Restlet capable of handling calls using a target Resource. At this point in the processing, all the 
  * necessary information should be ready in order to find the resource that is the actual target of the 
- * request and to handle the required method on it. 
- * 
- * It is comparable to an HttpServlet class as it provides facility methods to handle the most common method
- * names. The calls are then automatically dispatched to the appropriate handle*() method (where the '*'
- * character corresponds to the method name, or to the handleOthers() method. By default, the implementation
- * of the handle*() or handleOthers() methods is to invoke the defaultHandle() method which should be 
- * overriden to change the default behavior (set the status to SERVER_ERROR_NOT_IMPLEMENTED).
- * 
+ * request and to handle the required method on it.<br/> 
+ * <br/>
+ * It is comparable to an HttpServlet class as it provides facility methods to handle the most common 
+ * method names. The calls are then automatically dispatched to the appropriate handle*() method (where 
+ * the '*' character corresponds to the method name, or to the handleOthers() method.<br/> 
+ * <br/>
+ * The handleGet(), handlePost(), handlePut(), handleDelete() and handleHead() have a useful 
+ * implementation which is based on the target resource. See each method for details. 
+ * <br/>
+ * The other handle*() methods simply invoke the defaultHandle() method which simply set the status to 
+ * SERVER_ERROR_NOT_IMPLEMENTED). 
  * @author Jerome Louvel (contact@noelios.com) <a href="http://www.noelios.com/">Noelios Consulting</a>
  */
 public class Handler extends Restlet
 {
 	/** The language to use if content negotiation fails. */
 	private Language fallbackLanguage;
+
+	/** Indicates if the best content is automatically negotiated. */
+	private boolean negotiateContent;
 
 	/**
 	 * Constructor.
@@ -62,6 +72,25 @@ public class Handler extends Restlet
 	public Handler(Context context)
 	{
 		super(context);
+		this.negotiateContent = true;
+	}
+
+	/** 
+	 * Indicates if the best content is automatically negotiated. Default value is true.
+	 * @return True if the best content is automatically negotiated.
+	 */
+	public boolean isNegotiateContent()
+	{
+		return this.negotiateContent;
+	}
+
+	/** 
+	 * Indicates if the best content is automatically negotiated. Default value is true.
+	 * @param negotiateContent True if the best content is automatically negotiated.
+	 */
+	public void setNegotiateContent(boolean negotiateContent)
+	{
+		this.negotiateContent = negotiateContent;
 	}
 
 	/**
@@ -145,6 +174,14 @@ public class Handler extends Restlet
 			{
 				handleTrace(request, response);
 			}
+			else if (method.equals(Method.COPY))
+			{
+				handleCopy(request, response);
+			}
+			else if (method.equals(Method.MOVE))
+			{
+				handleMove(request, response);
+			}
 			else
 			{
 				handleOthers(request, response);
@@ -158,6 +195,16 @@ public class Handler extends Restlet
 	 * @param response The response to update.
 	 */
 	protected void handleConnect(Request request, Response response)
+	{
+		defaultHandle(request, response);
+	}
+
+	/**
+	 * Handles a COPY call.
+	 * @param request The request to handle.
+	 * @param response The response to update.
+	 */
+	protected void handleCopy(Request request, Response response)
 	{
 		defaultHandle(request, response);
 	}
@@ -192,7 +239,9 @@ public class Handler extends Restlet
 	/**
 	 * Handles a GET call by automatically returning the best entity available from the target resource (as provided
 	 * by the 'findTarget' method). The content negotiation is based on the client's preferences available in the 
-	 * handled call.
+	 * handled call and can be turned off using the "negotiateContent" property. If it is disabled and multiple 
+	 * variants are available for the target resource, then a 300 (Multiple Choices) status will be 
+	 * returned with the list of variants URI if available.
 	 * @param request The request to handle.
 	 * @param response The response to update.
 	 */
@@ -204,7 +253,51 @@ public class Handler extends Restlet
 		{
 			if (target.allowGet())
 			{
-				response.setEntity(target, getFallbackLanguage());
+				if (isNegotiateContent())
+				{
+					response.setEntity(target, getFallbackLanguage());
+				}
+				else
+				{
+					List<Representation> variants = target.getVariants();
+					if (variants.size() == 0)
+					{
+						response.setStatus(Status.CLIENT_ERROR_NOT_FOUND);
+					}
+					else if (variants.size() == 1)
+					{
+						response.setEntity(variants.get(0));
+					}
+					else
+					{
+						ReferenceList variantRefs = new ReferenceList();
+
+						for (Representation variant : variants)
+						{
+							if (variant.getIdentifier() != null)
+							{
+								variantRefs.add(variant.getIdentifier());
+							}
+							else
+							{
+								getLogger()
+										.warning(
+												"A resource with multiple variants should provide and identifier for each variants when content negotiation is turned off");
+							}
+						}
+
+						if (variantRefs.size() > 0)
+						{
+							// Return the list of variants
+							response.setStatus(Status.REDIRECTION_MULTIPLE_CHOICES);
+							response.setEntity(variantRefs.getRepresentation());
+						}
+						else
+						{
+							response.setStatus(Status.CLIENT_ERROR_NOT_FOUND);
+						}
+					}
+				}
 			}
 			else
 			{
@@ -228,12 +321,23 @@ public class Handler extends Restlet
 	}
 
 	/**
+	 * Handles a MOVE call.
+	 * @param request The request to handle.
+	 * @param response The response to update.
+	 */
+	protected void handleMove(Request request, Response response)
+	{
+		defaultHandle(request, response);
+	}
+
+	/**
 	 * Handles a OPTIONS call.
 	 * @param request The request to handle.
 	 * @param response The response to update.
 	 */
 	protected void handleOptions(Request request, Response response)
 	{
+		defaultHandle(request, response);
 	}
 
 	/**
@@ -243,6 +347,7 @@ public class Handler extends Restlet
 	 */
 	protected void handleOthers(Request request, Response response)
 	{
+		defaultHandle(request, response);
 	}
 
 	/**

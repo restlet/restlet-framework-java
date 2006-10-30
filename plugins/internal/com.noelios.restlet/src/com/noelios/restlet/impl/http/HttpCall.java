@@ -25,8 +25,8 @@ package com.noelios.restlet.impl.http;
 import java.util.Date;
 
 import org.restlet.data.ParameterList;
+import org.restlet.ext.util.DateUtils;
 
-import com.noelios.restlet.impl.util.DateUtils;
 
 /**
  * Low-level call for the HTTP connectors.

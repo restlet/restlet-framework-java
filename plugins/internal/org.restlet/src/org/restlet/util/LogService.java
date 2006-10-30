@@ -28,8 +28,11 @@ package org.restlet.util;
  */
 public class LogService extends Service
 {
-	/** The logger name. */
-	private String loggerName;
+	/** The access logger name. */
+	private String accessLoggerName;
+	
+	/** The context logger name. */
+	private String contextLoggerName;
 	
 	/** The format. */
 	private String format;
@@ -41,33 +44,88 @@ public class LogService extends Service
 	public LogService(boolean enabled)
 	{
 		super(enabled);
-		this.loggerName = null;
+		this.accessLoggerName = null;
+		this.contextLoggerName = null;
 		this.format = null;
 	}
+	
+   /**
+    * @deprecated Use getAccessLoggerName() instead.
+    */
+	@Deprecated
+   public String getLoggerName()
+   {
+   	return getAccessLoggerName();
+   }
+
+   /**
+    * @deprecated Use setAccessLoggerName() instead.
+    */
+	@Deprecated
+   public void setLoggerName(String name)
+   {
+   	setAccessLoggerName(name);
+   }
 	
    /**
     * Returns the name of the JDK's logger to use when logging calls.
     * @return The name of the JDK's logger to use when logging calls.
     */
-   public String getLoggerName()
+   public String getAccessLoggerName()
    {
-   	return this.loggerName;
+   	return this.accessLoggerName;
    }
 
    /**
     * Sets the name of the JDK's logger to use when logging calls.
     * @param name The name of the JDK's logger to use when logging calls.
     */
-   public void setLoggerName(String name)
+   public void setAccessLoggerName(String name)
    {
-   	this.loggerName = name;
+   	this.accessLoggerName = name;
+   }
+	
+   /**
+    * Returns the name of the JDK's logger to use when logging context messages.
+    * @return The name of the JDK's logger to use when logging context messages.
+    */
+   public String getContextLoggerName()
+   {
+   	return this.contextLoggerName;
+   }
+
+   /**
+    * Sets the name of the JDK's logger to use when logging context messages.
+    * @param name The name of the JDK's logger to use when logging context messages.
+    */
+   public void setContextLoggerName(String name)
+   {
+   	this.contextLoggerName = name;
+   }
+
+   /**
+    * @deprecated Use getAccessLogFormat() instead.
+    */
+	@Deprecated
+   public String getFormat()
+   {
+   	return getAccessLogFormat();
+   }
+   
+   /**
+    * @deprecated Use setAccessLogFormat() instead.
+    */
+	@Deprecated
+   public void setFormat(String format)
+   {
+   	setAccessLogFormat(format);
    }
 
    /**
     * Returns the format used.
     * @return The format used, or null if the default one is used.
     */
-   public String getFormat()
+   public String getAccessLogFormat()
    {
    	return this.format;
    }
@@ -77,7 +135,7 @@ public class LogService extends Service
     * See com.noelios.restlet.util.CallModel for format details.
     * @param format The format to use when loggin calls. 
     */
-   public void setFormat(String format)
+   public void setAccessLogFormat(String format)
    {
    	this.format = format;
    }

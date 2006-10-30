@@ -26,8 +26,7 @@ import org.restlet.Application;
 import org.restlet.Container;
 import org.restlet.Restlet;
 import org.restlet.data.Protocol;
-
-import com.noelios.restlet.DirectoryHandler;
+import org.restlet.ext.DirectoryHandler;
 
 /**
  * Server static files using an application.
@@ -35,8 +34,8 @@ import com.noelios.restlet.DirectoryHandler;
  */
 public class Tutorial06 implements Constants
 {
-   public static void main(String[] args) throws Exception
-   {
+	public static void main(String[] args) throws Exception
+	{
 		// Create a container
 		Container container = new Container();
 		container.getServers().add(Protocol.HTTP, 8182);
@@ -54,6 +53,6 @@ public class Tutorial06 implements Constants
 		// Attach the application to the container and start it
 		container.getDefaultHost().attach("", application);
 		container.start();
-   }
+	}
 
 }

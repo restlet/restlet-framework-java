@@ -25,7 +25,7 @@ package org.restlet;
 import java.util.logging.Logger;
 
 import org.restlet.data.ParameterList;
-import org.restlet.util.VirtualClient;
+import org.restlet.spi.VirtualClient;
 
 /**
  * Information and services provided to a Restlet. The context is the door opened for Restlets in order to access 

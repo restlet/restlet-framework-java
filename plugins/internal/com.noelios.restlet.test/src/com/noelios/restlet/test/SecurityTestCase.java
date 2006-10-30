@@ -42,8 +42,8 @@ public class SecurityTestCase extends TestCase
 		String authenticate1 = "Basic realm=\"Restlet tutorial\"";
 		String authorization1 = "Basic c2NvdHQ6dGlnZXI=";
 
-		assertEquals(authorization1, SecurityUtils.format(SecurityUtils
-				.parseResponse(authorization1), null, null));
+		assertEquals(authorization1, SecurityUtils.format(SecurityUtils.parseResponse(null,
+				null, authorization1), null, null));
 		assertEquals(authenticate1, SecurityUtils.format(SecurityUtils
 				.parseRequest(authenticate1)));
 	}

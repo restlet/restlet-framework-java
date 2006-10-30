@@ -31,6 +31,7 @@ import java.util.Map;
 
 import org.restlet.data.Cookie;
 import org.restlet.data.CookieSetting;
+import org.restlet.ext.util.DateUtils;
 
 
 /**
@@ -302,30 +303,6 @@ public class CookieUtils
             destination.put(cookie.getName(), cookie);
          }
       }
-   }
-
-   /**
-    * Reads the first cookie available with the given name or null.
-    * @param source The source list of cookies.
-    * @param name The name of the cookie to return.
-    * @return The first cookie available with the given name or null.
-    */
-   public static Cookie getFirstCookie(List<Cookie> source, String name)
-   {
-      Cookie result = null;
-      Cookie cookie;
-      
-      for(Iterator<Cookie> iter = source.iterator(); (result == null) && iter.hasNext(); )
-      {
-         cookie = iter.next();
-
-         if(name.equals(cookie.getName()))
-         {
-            result = cookie;
-         }
-      }
-      
-      return result;
    }
 
 }

@@ -6,6 +6,7 @@ Bundle-Version: 1.0.0
 Bundle-Vendor: Noelios Consulting
 Bundle-Localization: plugin
 Require-Bundle: org.restlet,
+ org.restlet.ext,
  com.noelios.restlet,
  com.noelios.restlet.ext.net,
  com.noelios.restlet.ext.simple;resolution:=optional,

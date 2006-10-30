@@ -45,9 +45,6 @@ import org.restlet.data.Representation;
 import org.restlet.data.Request;
 import org.restlet.data.Resource;
 import org.restlet.data.Response;
-import org.restlet.util.ClientList;
-import org.restlet.util.ScorerList;
-import org.restlet.util.ServerList;
 
 /**
  * Factory and registration service for Restlet API implementations.
@@ -65,7 +62,31 @@ public abstract class Factory
 
    /** The registered factory. */
    private static Factory instance = null;
+   
+   /** Provider resource. */ 
+   private static final String providerResource = "META-INF/services/org.restlet.spi.Factory";
+   
+   /** Classloader to use for dynamic class loading. */
+   private static ClassLoader classloader = Factory.class.getClassLoader();
 
+   /**
+    * Sets a new class loader to use when creating instantiating implementation classes.
+    * @param newClassloader The new class loader to use.
+    */
+   public static void setClassLoader(ClassLoader newClassloader)
+   {
+   	classloader = newClassloader;
+   }
+
+   /**
+    * Returns a the class loader to use when creating instantiating implementation classes.
+    * By default, it reused the classloader of this Factory's class.
+    */
+   public static ClassLoader getClassLoader()
+   {
+   	return classloader;
+   }
+   
    /**
     * Returns the factory of the Restlet implementation.
     * @return The factory of the Restlet implementation.
@@ -79,9 +100,24 @@ public abstract class Factory
          // Find the factory class name
          String factoryClassName = null;
 
-         // Find the factory class name
-         ClassLoader cl = Thread.currentThread().getContextClassLoader();
-         URL configURL = cl.getResource("META-INF/services/org.restlet.spi.Factory");
+         // Try the default classloader
+         ClassLoader cl = getClassLoader();
+         URL configURL = cl.getResource(providerResource);
+         
+         if(configURL == null) 
+         { 
+         	// Try the current thread's classloader
+         	cl = Thread.currentThread().getContextClassLoader(); 
+         	configURL = cl.getResource(providerResource); 
+         } 
+         
+         if(configURL == null) 
+         { 
+         	// Try the system classloader
+         	cl = ClassLoader.getSystemClassLoader(); 
+         	configURL = cl.getResource(providerResource); 
+         } 
+         
          if(configURL != null)
          {
             try

@@ -1,0 +1,12 @@
+Manifest-Version: 1.0
+Bundle-ManifestVersion: 2
+Bundle-Name: Restlet Extensions
+Bundle-SymbolicName: org.restlet.ext
+Bundle-Version: 1.0.0
+Bundle-Vendor: Noelios Consulting
+Bundle-Localization: plugin
+Export-Package: org.restlet.ext,
+ org.restlet.ext.data,
+ org.restlet.ext.model,
+ org.restlet.ext.util
+Require-Bundle: org.restlet

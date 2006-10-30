@@ -25,7 +25,7 @@ package com.noelios.restlet.impl.util;
 import org.restlet.Client;
 import org.restlet.Context;
 import org.restlet.data.Protocol;
-import org.restlet.util.ClientList;
+import org.restlet.spi.ClientList;
 import org.restlet.util.WrapperList;
 
 /**

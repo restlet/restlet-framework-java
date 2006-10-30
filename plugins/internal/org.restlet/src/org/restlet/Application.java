@@ -27,6 +27,7 @@ import org.restlet.data.Response;
 import org.restlet.spi.Factory;
 import org.restlet.spi.Helper;
 import org.restlet.util.ConnectorService;
+import org.restlet.util.DecoderService;
 import org.restlet.util.LocalService;
 import org.restlet.util.LogService;
 import org.restlet.util.StatusService;
@@ -56,6 +57,9 @@ public abstract class Application extends Restlet
 	
 	/** The connector service. */
 	private ConnectorService connectorService;
+	
+	/** The decoder service. */
+	private DecoderService decoderService;
 	
 	/** The local service. */
 	private LocalService localService;
@@ -101,6 +105,7 @@ public abstract class Application extends Restlet
 		this.owner = null;
 		this.root = null;
 		this.connectorService = null;
+		this.decoderService = null;
 		this.localService = null;
 		this.logService = null;
 		this.statusService = null;
@@ -152,6 +157,16 @@ public abstract class Application extends Restlet
 	}
 
 	/** 
+	 * Returns the decoder service. This service is enabled by default.
+	 * @return The decoderservice.
+	 */
+	public DecoderService getDecoderService()
+	{
+		if(this.decoderService == null) this.decoderService = new DecoderService(true);
+		return this.decoderService;
+	}
+
+	/** 
 	 * Returns the local service. This service is enabled by default.
 	 * @return The local service.
 	 */
@@ -170,7 +185,7 @@ public abstract class Application extends Restlet
 		if(this.logService == null) 
 		{
 			this.logService = new LogService(true);
-			this.logService.setLoggerName(getClass().getCanonicalName() + " (" + hashCode() + ")");
+			this.logService.setAccessLoggerName(getClass().getCanonicalName() + " (" + hashCode() + ")");
 		}
 		
 		return this.logService;

@@ -389,7 +389,8 @@ public class HttpRequest extends Request
 					HttpConstants.HEADER_AUTHORIZATION);
 
 			// Set the challenge response
-			result = SecurityUtils.parseResponse(authorization);
+			result = SecurityUtils.parseResponse(this, this.context.getLogger(),
+					authorization);
 			setChallengeResponse(result);
 			this.securityAdded = true;
 		}

@@ -4,7 +4,7 @@
      Restlet build file  -  Copyright 2005-2006 Jerome LOUVEL
      ======================================================== -->
 
-<project name="Restlet" default="package">
+<project name="Restlet" default="all">
 
 	<!-- ============================ -->
 	<!-- ===  Properties setting  === -->
@@ -126,6 +126,10 @@
 	<property name="mod-api-version" value="${version-base}" />
 	<property name="mod-api-id" value="${mod-api-package}" />
 
+	<property name="mod-api-ext-package" value="org.restlet.ext" />
+	<property name="mod-api-ext-version" value="${version-base}" />
+	<property name="mod-api-ext-id" value="${mod-api-ext-package}" />
+
 	<property name="mod-api-test-package" value="org.restlet.test" />
 	<property name="mod-api-test-version" value="${version-base}" />
 	<property name="mod-api-test-id" value="${mod-api-test-package}" />
@@ -204,21 +208,27 @@
 	<path id="mod-api-test-path">
 		<path refid="mod-ri-path" />
 		<pathelement path="${classes}/${mod-ri-id}" />
+		<path refid="mod-freemarker-path" />
+		<pathelement path="${classes}/${mod-freemarker-id}" />
+		<path refid="mod-atom-path" />
+		<pathelement path="${classes}/${mod-atom-id}" />
 		<fileset dir="${lib}/${lib-junit-id}" includes="*.jar" />
+	</path>
+
+	<path id="mod-api-ext-path">
+		<path refid="mod-api-path" />
+		<pathelement path="${classes}/${mod-api-id}" />
 	</path>
 
 	<path id="mod-ri-path">
 		<path refid="mod-api-path" />
 		<pathelement path="${classes}/${mod-api-id}" />
+		<pathelement path="${classes}/${mod-api-ext-id}" />
 	</path>
 
 	<path id="mod-ri-test-path">
 		<path refid="mod-ri-path" />
 		<pathelement path="${classes}/${mod-ri-id}" />
-		<path refid="mod-freemarker-path" />
-		<pathelement path="${classes}/${mod-freemarker-id}" />
-		<path refid="mod-atom-path" />
-		<pathelement path="${classes}/${mod-atom-id}" />
 		<fileset dir="${lib}/${lib-junit-id}" includes="*.jar" />
 	</path>
 
@@ -314,6 +324,7 @@
 
 	<path id="path-all">
 		<pathelement path="${classes}/${mod-api-id}" />
+		<pathelement path="${classes}/${mod-api-ext-id}" />
 		<pathelement path="${classes}/${mod-ri-id}" />
 		<pathelement path="${classes}/${mod-asyncweb-id}" />
 		<pathelement path="${classes}/${mod-freemarker-id}" />
@@ -450,6 +461,9 @@
 	<!-- ===================== -->
 
 	<!-- Initialization Target -->
+	<target name="all" depends="test, generate, javadoc, package" description="Full build"/>
+
+	<!-- Initialization Target -->
 	<target name="init">
 		<!-- Create the time stamp -->
 		<tstamp>
@@ -467,7 +481,7 @@
 		</condition>
 
 		<!-- Set the property that will enable the generation of the Javadoc of implementation classes -->
-		<condition property="exclude-packages" value="**.spi.*" else="">
+		<condition property="exclude-packages" value="**.internal.*" else="">
 			<istrue value="${javadoc-hide}" />
 		</condition>
 
@@ -520,6 +534,7 @@
 	<target name="compile" depends="init" description="Compile the Java source files">
 		<mkdir dir="${classes}" />
 		<compileModule name="api" />
+		<compileModule name="api-ext" />
 		<compileModule name="ri" />
 		<compileModule name="asyncweb" />
 		<compileModule name="atom" />
@@ -672,6 +687,7 @@
 
 		<!-- Package modules (internal plugins) -->
 		<packageModule name="api" />
+		<packageModule name="api-ext" />
 		<packageModule name="ri" />
 		<packageModule name="asyncweb" />
 		<packageModule name="atom" />
@@ -749,7 +765,7 @@
 			<link href="http://java.sun.com/j2se/1.5.0/docs/api/" />
 		</javadoc>
 	
-		<javadoc packagenames="com.noelios.restlet, com.noelios.restlet.data, org.restlet.ext.*"
+		<javadoc packagenames="org.restlet.ext.*"
 				 excludepackagenames="${exclude-packages}"
 		         destdir="${docs-ext}"
 		         classpathref="path-all"
@@ -761,7 +777,7 @@
 		         overview="${tmpl}/overview-ext.html"
 		         verbose="${verbose}">
 			<sourcepath>
-				<pathelement path="${mod}/${mod-ri-id}/src/" />
+				<pathelement path="${mod}/${mod-api-ext-id}/src/" />
 				<pathelement path="${mod}/${mod-atom-id}/src/" />
 				<pathelement path="${mod}/${mod-fileupload-id}/src/" />
 				<pathelement path="${mod}/${mod-freemarker-id}/src/" />

@@ -29,8 +29,8 @@ import java.io.OutputStreamWriter;
 import java.io.Writer;
 
 import org.restlet.data.MediaType;
+import org.restlet.ext.data.OutputRepresentation;
 
-import com.noelios.restlet.data.OutputRepresentation;
 
 import freemarker.template.Configuration;
 import freemarker.template.Template;

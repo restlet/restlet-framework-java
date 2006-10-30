@@ -55,16 +55,16 @@ import org.restlet.data.Resource;
 import org.restlet.data.Response;
 import org.restlet.data.Status;
 import org.restlet.data.Tag;
+import org.restlet.ext.data.StringRepresentation;
+import org.restlet.ext.util.DateUtils;
+import org.restlet.spi.ClientList;
 import org.restlet.spi.Helper;
-import org.restlet.util.ClientList;
-import org.restlet.util.ScorerList;
-import org.restlet.util.ServerList;
+import org.restlet.spi.ScorerList;
+import org.restlet.spi.ServerList;
 
-import com.noelios.restlet.data.StringRepresentation;
 import com.noelios.restlet.impl.application.ApplicationHelper;
 import com.noelios.restlet.impl.container.ContainerHelper;
 import com.noelios.restlet.impl.util.ClientListImpl;
-import com.noelios.restlet.impl.util.DateUtils;
 import com.noelios.restlet.impl.util.FormUtils;
 import com.noelios.restlet.impl.util.ScorerListImpl;
 import com.noelios.restlet.impl.util.ServerListImpl;
@@ -112,7 +112,7 @@ public class Factory extends org.restlet.spi.Factory
 		String provider = null;
 
 		// Find the factory class name
-		ClassLoader cl = Thread.currentThread().getContextClassLoader();
+		ClassLoader cl = org.restlet.spi.Factory.getClassLoader();
 		URL configURL;
 
 		// Register the client connector providers

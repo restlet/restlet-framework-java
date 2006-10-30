@@ -39,8 +39,8 @@ import org.restlet.data.Representation;
 import org.restlet.data.Request;
 import org.restlet.data.Response;
 import org.restlet.data.Status;
+import org.restlet.ext.data.InputRepresentation;
 
-import com.noelios.restlet.data.InputRepresentation;
 
 /**
  * Connector to the WAR resources.

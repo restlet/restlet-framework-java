@@ -33,9 +33,8 @@ import org.restlet.data.MediaType;
 import org.restlet.data.Protocol;
 import org.restlet.data.Request;
 import org.restlet.data.Response;
-
-import com.noelios.restlet.DirectoryHandler;
-import com.noelios.restlet.GuardFilter;
+import org.restlet.ext.DirectoryHandler;
+import org.restlet.ext.GuardFilter;
 
 /**
  * Routers and hierarchical URIs
@@ -43,8 +42,8 @@ import com.noelios.restlet.GuardFilter;
  */
 public class Tutorial11 implements Constants
 {
-   public static void main(String[] args) throws Exception
-   {
+	public static void main(String[] args) throws Exception
+	{
 		// Create a container
 		Container container = new Container();
 		container.getServers().add(Protocol.HTTP, 8182);
@@ -55,55 +54,59 @@ public class Tutorial11 implements Constants
 		{
 			public Restlet createRoot()
 			{
-		      // Create a root Router
-		      Router router = new Router(getContext());
-		
-		      // Attach a guard Filter to secure access to the chained directory handler
-		      GuardFilter guard = new GuardFilter(getContext(), true, ChallengeScheme.HTTP_BASIC , "Restlet tutorial", true);
-		      guard.getAuthorizations().put("scott", "tiger");
-		      router.getScorers().add("/docs/", guard);
-		
-		      // Create a directory handler able to return a deep hierarchy of Web files
-		      DirectoryHandler directory = new DirectoryHandler(getContext(), ROOT_URI, "index.html");
-		      guard.setNext(directory);
-		
-		      // Create the user router
-		      Router user = new Router(getContext());
-		      router.attach("/users/[a-z]+", user);
-		
-		      // Create the account Restlet
-		      Restlet account = new Restlet()
-		         {
-		      		public void handle(Request request, Response response)
-		            {
-		               // Print the requested URI path
-		               String message = "Account of user named: " + request.getBaseRef().getLastSegment();
-		               response.setEntity(message, MediaType.TEXT_PLAIN);
-		            }
-		         };
-		      user.attach("$", account);
-		
-		      // Create the orders Restlet
-		      Restlet orders = new Restlet(getContext())
-		         {
-		            public void handle(Request request, Response response)
-		            {
-		               // Print the user name of the requested orders
-		               List<String> segments = request.getBaseRef().getSegments();
-		               String message = "Orders of user named: " + segments.get(segments.size() - 2);
-		               response.setEntity(message, MediaType.TEXT_PLAIN);
-		            }
-		         };
-		      user.attach("/orders$", orders);
-		      
-		      // Return the root router
-		      return router;
+				// Create a root Router
+				Router router = new Router(getContext());
+
+				// Attach a guard Filter to secure access to the chained directory handler
+				GuardFilter guard = new GuardFilter(getContext(), ChallengeScheme.HTTP_BASIC,
+						"Restlet tutorial");
+				guard.getAuthorizations().put("scott", "tiger");
+				router.getScorers().add("/docs/", guard);
+
+				// Create a directory handler able to return a deep hierarchy of Web files
+				DirectoryHandler directory = new DirectoryHandler(getContext(), ROOT_URI,
+						"index.html");
+				guard.setNext(directory);
+
+				// Create the user router
+				Router user = new Router(getContext());
+				router.attach("/users/[a-z]+", user);
+
+				// Create the account Restlet
+				Restlet account = new Restlet()
+				{
+					public void handle(Request request, Response response)
+					{
+						// Print the requested URI path
+						String message = "Account of user named: "
+								+ request.getBaseRef().getLastSegment();
+						response.setEntity(message, MediaType.TEXT_PLAIN);
+					}
+				};
+				user.attach("$", account);
+
+				// Create the orders Restlet
+				Restlet orders = new Restlet(getContext())
+				{
+					public void handle(Request request, Response response)
+					{
+						// Print the user name of the requested orders
+						List<String> segments = request.getBaseRef().getSegments();
+						String message = "Orders of user named: "
+								+ segments.get(segments.size() - 2);
+						response.setEntity(message, MediaType.TEXT_PLAIN);
+					}
+				};
+				user.attach("/orders$", orders);
+
+				// Return the root router
+				return router;
 			}
 		};
 
 		// Attach the application to the container and start it
 		container.getDefaultHost().attach("", application);
 		container.start();
-   }
+	}
 
 }

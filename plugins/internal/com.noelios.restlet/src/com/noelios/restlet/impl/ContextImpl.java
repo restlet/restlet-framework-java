@@ -30,7 +30,7 @@ import org.restlet.data.Protocol;
 import org.restlet.data.Representation;
 import org.restlet.data.Request;
 import org.restlet.data.Response;
-import org.restlet.util.VirtualClient;
+import org.restlet.spi.VirtualClient;
 
 /**
  * Context allowing access to the container's connectors.

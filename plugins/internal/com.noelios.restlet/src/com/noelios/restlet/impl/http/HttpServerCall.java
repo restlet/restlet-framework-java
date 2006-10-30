@@ -36,9 +36,8 @@ import org.restlet.data.Method;
 import org.restlet.data.Parameter;
 import org.restlet.data.Protocol;
 import org.restlet.data.Representation;
-
-import com.noelios.restlet.data.InputRepresentation;
-import com.noelios.restlet.data.ReadableRepresentation;
+import org.restlet.ext.data.InputRepresentation;
+import org.restlet.ext.data.ReadableRepresentation;
 
 /**
  * Abstract HTTP server connector call.
@@ -54,7 +53,7 @@ public abstract class HttpServerCall extends HttpCall
 
 	/**
 	 * Constructor.
-    * @param logger The logger to use.
+	 * @param logger The logger to use.
 	 */
 	public HttpServerCall(Logger logger)
 	{

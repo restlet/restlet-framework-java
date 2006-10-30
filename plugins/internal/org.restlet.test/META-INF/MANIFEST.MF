@@ -5,7 +5,11 @@ Bundle-SymbolicName: org.restlet.test
 Bundle-Version: 1.0.0
 Bundle-Vendor: Noelios Consulting
 Bundle-Localization: plugin
-Require-Bundle: org.restlet,
+Require-Bundle: org.freemarker,
+ org.junit4,
+ org.restlet,
+ org.restlet.ext,
+ org.restlet.ext.atom,
+ org.restlet.ext.freemarker,
  com.noelios.restlet,
- com.noelios.restlet.ext.net,
- org.junit4
+ com.noelios.restlet.ext.net

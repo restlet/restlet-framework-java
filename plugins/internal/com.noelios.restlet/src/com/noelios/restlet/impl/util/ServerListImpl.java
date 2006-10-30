@@ -26,7 +26,7 @@ import org.restlet.Context;
 import org.restlet.Restlet;
 import org.restlet.Server;
 import org.restlet.data.Protocol;
-import org.restlet.util.ServerList;
+import org.restlet.spi.ServerList;
 import org.restlet.util.WrapperList;
 
 /**

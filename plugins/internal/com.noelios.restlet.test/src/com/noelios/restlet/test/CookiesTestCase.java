@@ -30,12 +30,12 @@ import java.util.logging.Logger;
 
 import org.restlet.data.Cookie;
 import org.restlet.data.CookieSetting;
+import org.restlet.ext.util.DateUtils;
 
 import junit.framework.TestCase;
 
 import com.noelios.restlet.impl.util.CookieReader;
 import com.noelios.restlet.impl.util.CookieUtils;
-import com.noelios.restlet.impl.util.DateUtils;
 
 /**
  * Unit tests for the Cookie related classes.

@@ -22,9 +22,9 @@
 
 package org.restlet;
 
+import org.restlet.spi.ClientList;
 import org.restlet.spi.Factory;
-import org.restlet.util.ClientList;
-import org.restlet.util.ServerList;
+import org.restlet.spi.ServerList;
 
 /**
  * Restlet managing a set of client and server connectors.<br/>

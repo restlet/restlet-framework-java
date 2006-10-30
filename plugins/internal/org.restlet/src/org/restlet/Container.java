@@ -107,7 +107,7 @@ public class Container extends Component
 		if(this.logService == null) 
 		{
 			this.logService = new LogService(false);
-			this.logService.setLoggerName(getClass().getCanonicalName() + " (" + hashCode() + ")");
+			this.logService.setAccessLoggerName(getClass().getCanonicalName() + " (" + hashCode() + ")");
 		}
 
 		return this.logService;

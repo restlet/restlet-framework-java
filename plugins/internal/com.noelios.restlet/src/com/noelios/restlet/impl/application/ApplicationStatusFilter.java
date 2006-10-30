@@ -28,7 +28,7 @@ import org.restlet.data.Request;
 import org.restlet.data.Response;
 import org.restlet.data.Status;
 
-import com.noelios.restlet.impl.StatusFilter;
+import com.noelios.restlet.filter.StatusFilter;
 
 /**
  * Status filter that tries to obtain ouput representation from an application.

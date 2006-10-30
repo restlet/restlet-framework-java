@@ -37,34 +37,36 @@ import org.restlet.data.Status;
  */
 public class Tutorial09b
 {
-   public static void main(String[] args) throws Exception
-   {
-      // Prepare the request
-   	Request request = new Request(Method.GET, "http://localhost:8182/");
-      
-      // Add the client authentication to the call 
-      ChallengeResponse authentication = new ChallengeResponse(ChallengeScheme.HTTP_BASIC, "scott", "tiger");
-      request.setChallengeResponse(authentication);
+	public static void main(String[] args) throws Exception
+	{
+		// Prepare the request
+		Request request = new Request(Method.GET, "http://localhost:8182/");
 
-      // Ask to the HTTP client connector to handle the call
-      Client client = new Client(Protocol.HTTP);
-      Response response = client.handle(request);
+		// Add the client authentication to the call 
+		ChallengeResponse authentication = new ChallengeResponse(
+				ChallengeScheme.HTTP_BASIC, "scott", "tiger");
+		request.setChallengeResponse(authentication);
 
-      if(response.getStatus().isSuccess())
-      {
-         // Output the response entity on the JVM console
-         response.getEntity().write(System.out);
-      }
-      else if(response.getStatus().equals(Status.CLIENT_ERROR_UNAUTHORIZED))
-      {
-         // Unauthorized access
-         System.out.println("Your access was not authorized by the server, check your credentials");
-      }
-      else
-      {
-         // Unexpected status
-         System.out.println("An unexpected status was returned: " + response.getStatus());
-      }
-   }
+		// Ask to the HTTP client connector to handle the call
+		Client client = new Client(Protocol.HTTP);
+		Response response = client.handle(request);
+
+		if (response.getStatus().isSuccess())
+		{
+			// Output the response entity on the JVM console
+			response.getEntity().write(System.out);
+		}
+		else if (response.getStatus().equals(Status.CLIENT_ERROR_UNAUTHORIZED))
+		{
+			// Unauthorized access
+			System.out
+					.println("Your access was not authorized by the server, check your credentials");
+		}
+		else
+		{
+			// Unexpected status
+			System.out.println("An unexpected status was returned: " + response.getStatus());
+		}
+	}
 
 }

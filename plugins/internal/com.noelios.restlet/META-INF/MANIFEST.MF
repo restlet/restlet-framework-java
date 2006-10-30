@@ -5,13 +5,11 @@ Bundle-SymbolicName: com.noelios.restlet
 Bundle-Version: 1.0.0
 Bundle-Vendor: Noelios Consulting
 Bundle-Localization: plugin
-Require-Bundle: org.restlet
-Export-Package: com.noelios.restlet,
- com.noelios.restlet.data,
- com.noelios.restlet.impl,
+Require-Bundle: org.restlet,
+ org.restlet.ext
+Export-Package: com.noelios.restlet.impl,
  com.noelios.restlet.impl.application,
  com.noelios.restlet.impl.container,
  com.noelios.restlet.impl.http,
  com.noelios.restlet.impl.local,
- com.noelios.restlet.impl.util,
- com.noelios.restlet.util
+ com.noelios.restlet.impl.util

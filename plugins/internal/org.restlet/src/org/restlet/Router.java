@@ -26,7 +26,7 @@ import org.restlet.data.Request;
 import org.restlet.data.Response;
 import org.restlet.data.Status;
 import org.restlet.spi.Factory;
-import org.restlet.util.ScorerList;
+import org.restlet.spi.ScorerList;
 
 /**
  * Chainer routing calls to one of the attached scorers. Each scorer represents a potential route that can 

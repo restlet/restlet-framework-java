@@ -46,12 +46,12 @@ import org.restlet.data.Protocol;
 import org.restlet.data.Representation;
 import org.restlet.data.Request;
 import org.restlet.data.Response;
+import org.restlet.ext.data.ObjectRepresentation;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 import org.w3c.dom.Node;
 import org.w3c.dom.NodeList;
 
-import com.noelios.restlet.data.ObjectRepresentation;
 import com.noelios.restlet.impl.ClientHelper;
 import com.noelios.restlet.impl.Factory;
 

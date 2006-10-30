@@ -26,8 +26,7 @@ import org.restlet.Application;
 import org.restlet.Container;
 import org.restlet.Restlet;
 import org.restlet.data.Protocol;
-
-import com.noelios.restlet.RedirectRestlet;
+import org.restlet.ext.RedirectRestlet;
 
 /**
  * URI rewriting and redirection.
@@ -35,8 +34,8 @@ import com.noelios.restlet.RedirectRestlet;
  */
 public class Tutorial10
 {
-   public static void main(String[] args) throws Exception
-   {
+	public static void main(String[] args) throws Exception
+	{
 		// Create a container
 		Container container = new Container();
 		container.getServers().add(Protocol.HTTP, 8182);
@@ -46,15 +45,16 @@ public class Tutorial10
 		{
 			public Restlet createRoot()
 			{
-		      // Create a redirect Restlet then attach it to the container
-		      String target = "http://www.google.com/search?q=site:mysite.org+${query('query')}";
-		      return new RedirectRestlet(getContext(), target, RedirectRestlet.MODE_CLIENT_TEMPORARY);
+				// Create a redirect Restlet then attach it to the container
+				String target = "http://www.google.com/search?q=site:mysite.org+${query('query')}";
+				return new RedirectRestlet(getContext(), target,
+						RedirectRestlet.MODE_CLIENT_TEMPORARY);
 			}
 		};
 
 		// Attach the application to the container and start it
 		container.getDefaultHost().attach("/search", application);
 		container.start();
-   }
+	}
 
 }

@@ -32,13 +32,14 @@ import java.nio.channels.WritableByteChannel;
 
 import org.restlet.data.Encoding;
 import org.restlet.data.Language;
+import org.restlet.data.Method;
 import org.restlet.data.Parameter;
 import org.restlet.data.Representation;
 import org.restlet.data.Status;
 import org.restlet.data.Tag;
+import org.restlet.ext.data.InputRepresentation;
+import org.restlet.ext.data.ReadableRepresentation;
 
-import com.noelios.restlet.data.InputRepresentation;
-import com.noelios.restlet.data.ReadableRepresentation;
 
 /**
  * Low-level HTTP client call.
@@ -171,6 +172,10 @@ public class HttpClientCall extends HttpCall
       {
          result = new ReadableRepresentation(getResponseChannel(), null);
       }
+		else if (getMethod().equals(Method.HEAD.getName()))
+		{
+			result = new Representation();
+		}
 
       if(result != null)
       {

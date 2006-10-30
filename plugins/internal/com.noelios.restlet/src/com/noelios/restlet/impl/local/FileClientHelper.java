@@ -39,10 +39,10 @@ import org.restlet.data.Representation;
 import org.restlet.data.Request;
 import org.restlet.data.Response;
 import org.restlet.data.Status;
+import org.restlet.ext.data.FileReference;
+import org.restlet.ext.data.FileRepresentation;
+import org.restlet.ext.util.ByteUtils;
 
-import com.noelios.restlet.data.FileReference;
-import com.noelios.restlet.data.FileRepresentation;
-import com.noelios.restlet.impl.util.ByteUtils;
 
 /**
  * Connector to the file resources accessible

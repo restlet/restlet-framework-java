@@ -29,8 +29,8 @@ import org.json.JSONException;
 import org.json.JSONObject;
 import org.restlet.data.MediaType;
 import org.restlet.data.Representation;
+import org.restlet.ext.data.StringRepresentation;
 
-import com.noelios.restlet.data.StringRepresentation;
 
 /**
  * Representation based on a JSON document.

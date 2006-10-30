@@ -5,7 +5,7 @@ Bundle-SymbolicName: org.restlet.ext.freemarker
 Bundle-Version: 1.0.0
 Bundle-Vendor: Noelios Consulting
 Bundle-Localization: plugin
-Require-Bundle: org.restlet,
- com.noelios.restlet,
- org.freemarker
+Require-Bundle: org.freemarker,
+ org.restlet,
+ org.restlet.ext
 Export-Package: org.restlet.ext.freemarker
