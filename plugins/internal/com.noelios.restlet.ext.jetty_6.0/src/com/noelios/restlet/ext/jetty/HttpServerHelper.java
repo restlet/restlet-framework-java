@@ -63,31 +63,32 @@ public class HttpServerHelper extends JettyServerHelper
 		getSupportedProtocols().add(Protocol.HTTP);
 	}
 
-	/** Starts the Restlet. */
-	public void start() throws Exception
+	/**
+	 * Creates a new internal Jetty connector.
+	 * @return A new internal Jetty connector.
+	 */
+	protected AbstractConnector createConnector()
 	{
-		// Create and configure the Jetty HTTP connector
-		AbstractConnector connector = null;
+		AbstractConnector result = null;
 
+		// Create and configure the Jetty HTTP connector
 		switch (getType())
 		{
 			case 1:
 				// Selecting NIO connector
-				connector = new SelectChannelConnector();
+				result = new SelectChannelConnector();
 			break;
 			case 2:
 				// Blocking NIO connector
-				connector = new BlockingChannelConnector();
+				result = new BlockingChannelConnector();
 			break;
 			case 3:
 				// Blocking BIO connector
-				connector = new SocketConnector();
+				result = new SocketConnector();
 			break;
 		}
 
-		configure(connector);
-		getWrappedServer().addConnector(connector);
-		super.start();
+		return result;
 	}
 
 	/**

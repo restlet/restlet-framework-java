@@ -25,7 +25,6 @@ package org.restlet.ext.model;
 import java.util.Map;
 import java.util.TreeMap;
 
-
 /**
  * Simple model based on a map.
  * @author Jerome Louvel (contact@noelios.com) <a href="http://www.noelios.com/">Noelios Consulting</a>
@@ -35,53 +34,67 @@ public class MapModel implements Model
 	/** 
 	 * The map used to store model variables.
 	 */
-	private Map<String, String> map;
-	
+	private Map<String, Object> map;
+
 	/**
-	 * Constructor.
+	 * Constructor. An internal map is automatically created.
 	 */
 	public MapModel()
 	{
-		this.map = new TreeMap<String, String>();
+		this(new TreeMap<String, Object>());
 	}
 
-   /**
-    * Returns the model value for a given name.
-    * @param name The name to look-up.
-    * @return The model value for the given name.
-    */
+	/**
+	 * Constructor.
+	 * @param map The map to use as model storage.
+	 */
+	public MapModel(Map<String, Object> map)
+	{
+		this.map = map;
+	}
+
+	/**
+	 * Returns the model value for a given name. 
+	 * @param name The name to look-up.
+	 * @return The model value for the given name.
+	 */
 	public String get(String name)
 	{
-		return this.map.get(name);
+		Object result = this.map.get(name);
+
+		if (result instanceof String)
+			return (String) result;
+		else
+			return result.toString();
 	}
 
-   /**
-    * Indicates if the model contains a value for a given name.
-    * @param name The name to look-up.
-    * @return True if the model contains a value for the given name.
-    */
+	/**
+	 * Indicates if the model contains a value for a given name.
+	 * @param name The name to look-up.
+	 * @return True if the model contains a value for the given name.
+	 */
 	public boolean contains(String name)
 	{
 		return this.map.containsKey(name);
 	}
 
-   /**
-    * Puts the model value for a given name.
-    * @param name The name to look-up.
-    * @param value The value to put.
-    */
+	/**
+	 * Puts the model value for a given name.
+	 * @param name The name to look-up.
+	 * @param value The value to put.
+	 */
 	public void put(String name, String value)
 	{
 		this.map.put(name, value);
 	}
 
-   /**
-    * Removes the model value for a given name.
-    * @param name The name to look-up.
-    */
+	/**
+	 * Removes the model value for a given name.
+	 * @param name The name to look-up.
+	 */
 	public void remove(String name)
 	{
 		this.map.remove(name);
 	}
-	
+
 }

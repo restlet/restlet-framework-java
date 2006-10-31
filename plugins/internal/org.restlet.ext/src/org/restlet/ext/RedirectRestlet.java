@@ -123,7 +123,7 @@ public class RedirectRestlet extends Restlet
 		te.setLogger(getLogger());
 
 		// Create the template data model
-		String targetUri = te.process(new CallModel(request, response, ""));
+		String targetUri = te.format(new CallModel(request, response, ""));
 		Reference target = new Reference(targetUri);
 
 		switch (this.mode)

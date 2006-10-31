@@ -115,7 +115,7 @@ public class StringTemplateRepresentation extends StreamRepresentation implement
 	 */
 	public String getValue()
 	{
-		return this.template.process(this.model);
+		return this.template.format(this.model);
 	}
 
 	/**

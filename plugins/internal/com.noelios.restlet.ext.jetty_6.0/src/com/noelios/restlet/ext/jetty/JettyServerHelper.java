@@ -136,6 +136,9 @@ public abstract class JettyServerHelper extends
 {
 	/** The wrapped Jetty server. */
 	private Server wrappedServer;
+	
+	/** The internal Jetty connector. */
+	private AbstractConnector connector;
 
 	/**
 	 * Constructor.
@@ -144,7 +147,8 @@ public abstract class JettyServerHelper extends
 	public JettyServerHelper(org.restlet.Server server)
 	{
 		super(server);
-		this.setWrappedServer(new WrappedServer(this));
+		this.connector = null;
+		this.wrappedServer = new WrappedServer(this);
 
 		// Configuring the thread pool
 		BoundedThreadPool btp = new BoundedThreadPool();
@@ -158,6 +162,13 @@ public abstract class JettyServerHelper extends
 	/** Starts the Connector. */
 	public void start() throws Exception
 	{
+		if(this.connector == null) 
+		{
+			this.connector = createConnector();
+			configure(this.connector);
+			getWrappedServer().addConnector(connector);
+		}
+		
 		getWrappedServer().start();
 	}
 
@@ -168,8 +179,14 @@ public abstract class JettyServerHelper extends
 	}
 
 	/**
-	 * Configures the connector.
-	 * @param connector The connector to configure.
+	 * Creates a new internal Jetty connector.
+	 * @return A new internal Jetty connector.
+	 */
+	protected abstract AbstractConnector createConnector();
+	
+	/**
+	 * Configures the internal Jetty connector.
+	 * @param connector The internal Jetty connector.
 	 */
 	protected void configure(AbstractConnector connector)
 	{

@@ -9,12 +9,13 @@ Changes log
  - Fixed bug causing the ServerServlet to create an extra HTTP server connector if one is available on the classpath. Reported by Sean Landis.
  - Fixed bug in StatusFilter, method dohandle() renamed to doHandle().
  - Removed getStatusCode() and getReasonPhrase() methods in ServletCall hiding the actual value set. Reported by Sean Landis.
+ - Fixed bug preventing the restart of a Jetty 6 connector. Added RestartTestCase. Reported by Piyush Purang.
 
 [API breaking changes]
  - Moved Atom, FreeMarker and FileUpload extensions to org.restlet.ext.atom/freemarker/fileupload packages.
  - Moved implementation-independent classes from NRE into a org.restlet.ext/.data/.model/.util packages. 
  - Renamed LogService."loggerName" and "format" properties to add the "access" prefix. Added "contextLoggerName" property.
- 
+
 [Other changes] 
  - Reorganized Javadocs into three parts: Restlet API, Restlet Extensions, Noelios Restlet Engine.
  - Added JSON library as an external plugin project. See http://www.json.org
@@ -35,6 +36,9 @@ Changes log
  - Added "decoderService" to Application to auto-decompress incoming entities.
  - Implemented support for multiple choices (300 status) in org.restlet.Handler. 
  - Added a "negotiateContent" property to disable automatic content negotiation.
+ - Refactored DirectoryResource: removed unused handle*() methods and duplicate "negotiationEnabled" property.
+ - Added Reference.encode() and decode() methods, easier to use than raw URLDecoder/URLEncoder classes.
+ - Renamed StringTemplate.process() into format() to make place for a parse() method.
  
 1.0 beta 19 (2006-10-23)
 [Bugs fixed]

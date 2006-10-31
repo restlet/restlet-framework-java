@@ -122,11 +122,21 @@ public class StringTemplate
 	}
 
 	/**
-	 * Processes the template using the given data model.
+	 * Parses the 
+	 * @param formattedSource
+	 * @param model
+	 */
+	public void parse(String formattedSource, WritableModel model)
+	{
+		// TODO
+	}
+	
+	/**
+	 * Formats the template using the given data model.
 	 * @param model The template model to use.
 	 * @return The generated string.
 	 */
-	public String process(ReadableModel model)
+	public String format(ReadableModel model)
 	{
 		StringBuilder sb = new StringBuilder();
 		char nextChar = 0;
@@ -374,7 +384,7 @@ public class StringTemplate
 	 * @param buffer The string buffer containing the template result.
 	 * @param model The template model to use.
 	 */
-	protected void processText(int state, int tokenStart, int tokenEnd,
+	private void processText(int state, int tokenStart, int tokenEnd,
 			StringBuilder buffer, ReadableModel model)
 	{
 		if (state == TEXT_APPEND)
@@ -397,7 +407,7 @@ public class StringTemplate
 	 * @param model The template model to use.
 	 * @return The state after processing.
 	 */
-	protected int processInstruction(int textState, int tokenStart, int tokenEnd,
+	private int processInstruction(int textState, int tokenStart, int tokenEnd,
 			StringBuilder buffer, ReadableModel model)
 	{
 		String instruction = template.subSequence(tokenStart, tokenEnd).toString();
@@ -460,7 +470,7 @@ public class StringTemplate
 	 * @param model The template model to use.
 	 * @return The state after processing.
 	 */
-	protected int processVariable(int textState, int tokenStart, int tokenEnd,
+	private int processVariable(int textState, int tokenStart, int tokenEnd,
 			StringBuilder buffer, ReadableModel model)
 	{
 		String variable = template.subSequence(tokenStart, tokenEnd).toString();
@@ -494,7 +504,7 @@ public class StringTemplate
 	 * @param model The template model to use.
 	 * @return The evaluation result.
 	 */
-	protected boolean evaluateCondition(String condition, ReadableModel model)
+	private boolean evaluateCondition(String condition, ReadableModel model)
 	{
 		getLogger().log(Level.FINER, "evaluateCondition: " + condition, model);
 		boolean result = false;
@@ -542,7 +552,7 @@ public class StringTemplate
 	 * @param endIndex The end index in the template.
 	 * @param appendable The appendable object to update.
 	 */
-	protected void append(int startIndex, int endIndex, Appendable appendable)
+	private void append(int startIndex, int endIndex, Appendable appendable)
 	{
 		try
 		{

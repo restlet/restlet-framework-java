@@ -23,7 +23,6 @@
 package com.noelios.restlet.util;
 
 import java.io.IOException;
-import java.net.URLEncoder;
 import java.util.Date;
 import java.util.Iterator;
 import java.util.List;
@@ -31,6 +30,7 @@ import java.util.Map;
 
 import org.restlet.data.Cookie;
 import org.restlet.data.CookieSetting;
+import org.restlet.data.Reference;
 import org.restlet.ext.util.DateUtils;
 
 
@@ -273,7 +273,7 @@ public class CookieUtils
    {
       if(version == 0)
       {
-         destination.append(URLEncoder.encode(value.toString(), "UTF-8"));
+         destination.append(Reference.encode(value.toString()));
       }
       else
       {

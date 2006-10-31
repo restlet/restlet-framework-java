@@ -173,7 +173,7 @@ public class DirectoryTestCase extends TestCase
 
       //Test 7b : put another representation of the base file (in french language) but the extensions are mixed
       // and there is no content negotiation
-      directory.setNegotiationEnabled(false);
+      directory.setNegotiateContent(false);
       response = handle(directory, webSiteURL, baseFileUrlFrBis, Method.PUT,
             new StringRepresentation("message de test"));
       assertTrue(response.getStatus().equals(Status.SUCCESS_OK));
@@ -195,7 +195,7 @@ public class DirectoryTestCase extends TestCase
 
       //Test 7d : put another representation of the base file (in french language) but the extensions are mixed
       // and there is content negotiation
-      directory.setNegotiationEnabled(true);
+      directory.setNegotiateContent(true);
       response = handle(directory, webSiteURL, baseFileUrlFr, Method.PUT,
             new StringRepresentation("message de test"));
       assertTrue(response.getStatus().equals(Status.SUCCESS_OK));
@@ -209,14 +209,14 @@ public class DirectoryTestCase extends TestCase
       assertTrue(response.getStatus().equals(Status.SUCCESS_OK));
 
       //Check if only one resource has been created
-      directory.setNegotiationEnabled(false);
+      directory.setNegotiateContent(false);
       response = handle(directory, webSiteURL, baseFileUrlFr, Method.HEAD, null);
       assertTrue(response.getStatus().equals(Status.SUCCESS_OK));
       response = handle(directory, webSiteURL, baseFileUrlFrBis, Method.HEAD, null);
       assertTrue(response.getStatus().equals(Status.CLIENT_ERROR_NOT_FOUND));
 
       //Test 7e : delete the file representation of the resources with content negotiation
-      directory.setNegotiationEnabled(true);
+      directory.setNegotiateContent(true);
       response = handle(directory, webSiteURL, baseFileUrlFr, Method.DELETE, null);
       assertTrue(response.getStatus().equals(Status.SUCCESS_NO_CONTENT));
       response = handle(directory, webSiteURL, baseFileUrlFr, Method.HEAD, null);

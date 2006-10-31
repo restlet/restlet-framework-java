@@ -9,4 +9,4 @@ Export-Package: org.restlet.ext,
  org.restlet.ext.data,
  org.restlet.ext.model,
  org.restlet.ext.util
-Require-Bundle: org.restlet
+Require-Bundle: org.restlet;visibility:=reexport

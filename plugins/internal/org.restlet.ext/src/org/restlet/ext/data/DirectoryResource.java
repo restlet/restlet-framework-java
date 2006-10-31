@@ -162,7 +162,7 @@ public class DirectoryResource extends Resource
 			}
 		}
 
-		if (this.handler.isNegotiationEnabled())
+		if (this.handler.isNegotiateContent())
 		{
 			// Remove the extensions from the base name
 			int firstDotIndex = this.baseName.indexOf('.');
@@ -251,51 +251,6 @@ public class DirectoryResource extends Resource
 	public String getBaseName()
 	{
 		return this.baseName;
-	}
-
-	/**
-	 * Handles a DELETE call.
-	 * @param request The call to handle.
-	 */
-	protected void handleDelete(Request request, Response response)
-	{
-		// We allow the transfer of the DELETE calls only if the readOnly flag is not set
-		if (!getDirectory().isModifiable())
-		{
-			response.setStatus(Status.CLIENT_ERROR_FORBIDDEN);
-		}
-		else
-		{
-			// Delete all the resource's representations
-			// TODO
-		}
-	}
-
-	/**
-	 * Handles a PUT call.
-	 * @param request The call to handle.
-	 */
-	protected void handlePut(Request request, Response response)
-	{
-		// We allow the transfer of the PUT calls only if the readOnly flag is not set
-		if (!getDirectory().isModifiable())
-		{
-			response.setStatus(Status.CLIENT_ERROR_FORBIDDEN);
-		}
-		else
-		{
-			// Remplace a similar representation or create a new one
-			// TODO
-		}
-	}
-
-	/**
-	 * Default implementation for all the handle*() methods that simply calls the nextHandle() method. 
-	 * @param request The call to handle.
-	 */
-	protected void defaultHandle(Request request, Response response)
-	{
-		response.setStatus(Status.CLIENT_ERROR_METHOD_NOT_ALLOWED);
 	}
 
 	/**
@@ -496,7 +451,7 @@ public class DirectoryResource extends Resource
 							.substring(lastSlashIndex + 1);
 					baseEntryName = fullEntryName;
 
-					if (this.handler.isNegotiationEnabled())
+					if (this.handler.isNegotiateContent())
 					{
 						// Remove the extensions from the base name
 						firstDotIndex = fullEntryName.indexOf('.');
@@ -511,7 +466,7 @@ public class DirectoryResource extends Resource
 					{
 						boolean validVariant = true;
 
-						if (this.handler.isNegotiationEnabled())
+						if (this.handler.isNegotiateContent())
 						{
 							// Verify that the extensions are compatible
 							extensions = getExtensions(fullEntryName);

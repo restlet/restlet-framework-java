@@ -6,7 +6,6 @@ Bundle-Version: 1.0.0
 Bundle-Vendor: Noelios Consulting
 Bundle-Localization: plugin
 Export-Package: com.noelios.restlet.ext.jetty5
-Require-Bundle: org.restlet,
- com.noelios.restlet,
- javax.servlet4,
- org.mortbay.jetty5
+Require-Bundle: com.noelios.restlet;visibility:=reexport,
+ javax.servlet4;visibility:=reexport,
+ org.mortbay.jetty5;visibility:=reexport

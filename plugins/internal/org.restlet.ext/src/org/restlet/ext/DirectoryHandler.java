@@ -64,9 +64,6 @@ public class DirectoryHandler extends Handler
 	/** Indicates if the display of directory listings is allowed when no index file is found. */
 	private boolean listingAllowed;
 
-	/** Indicates if content negotation should be enabled (false by default). */
-	private boolean negotiationEnabled;
-
 	/**
 	 * Constructor.
 	 * @param context The context.
@@ -92,7 +89,8 @@ public class DirectoryHandler extends Handler
 		this.deeplyAccessible = true;
 		this.modifiable = false;
 		this.listingAllowed = false;
-		this.negotiationEnabled = false;
+		
+		setNegotiateContent(false);
 	}
 
 	/**
@@ -130,24 +128,6 @@ public class DirectoryHandler extends Handler
 	public void setListingAllowed(boolean listingAllowed)
 	{
 		this.listingAllowed = listingAllowed;
-	}
-
-	/** 
-	 * Indicates if content negotation should be enabled.
-	 * @return True if content negotation should be enabled.
-	 */
-	public boolean isNegotiationEnabled()
-	{
-		return this.negotiationEnabled;
-	}
-
-	/** 
-	 * Indicates if content negotation should be enabled.
-	 * @param negotiationEnabled True if content negotation should be enabled.
-	 */
-	public void setNegotiationEnabled(boolean negotiationEnabled)
-	{
-		this.negotiationEnabled = negotiationEnabled;
 	}
 
 	/** 

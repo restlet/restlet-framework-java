@@ -196,7 +196,9 @@ public class Request extends Message
 	}
 
 	/**
-	 * Returns the resource part relative to the context's base reference.
+	 * Returns the part of the resource path relative to the current base reference. Note that the optional
+	 * query string and fragment are not returned by this method, you need to use the getResourceRef()
+	 * method instead. 
 	 * @return The relative resource part.
 	 */
 	public String getRelativePart()

@@ -196,7 +196,7 @@ public class LogFilter extends Filter
     */
    protected String format(Request request, Response response)
    {
-      return this.logTemplate.process(new CallModel(request, response, "-"));
+      return this.logTemplate.format(new CallModel(request, response, "-"));
    }
 
 }

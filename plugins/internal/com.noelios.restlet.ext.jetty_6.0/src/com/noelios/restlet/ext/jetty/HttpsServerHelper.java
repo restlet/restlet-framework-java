@@ -24,6 +24,7 @@ package com.noelios.restlet.ext.jetty;
 
 import java.io.File;
 
+import org.mortbay.jetty.AbstractConnector;
 import org.mortbay.jetty.security.SslSocketConnector;
 import org.restlet.Server;
 import org.restlet.data.Protocol;
@@ -113,28 +114,30 @@ public class HttpsServerHelper extends JettyServerHelper
 		getSupportedProtocols().add(Protocol.HTTPS);
 	}
 
-	/** Start hook. */
-	public void start() throws Exception
+	/**
+	 * Creates a new internal Jetty connector.
+	 * @return A new internal Jetty connector.
+	 */
+	protected AbstractConnector createConnector()
 	{
 		// Create and configure the Jetty HTTP connector
-		SslSocketConnector connector = new SslSocketConnector();
-		configure(connector);
+		SslSocketConnector result = new SslSocketConnector();
 
 		// Continue configuration with HTTPS specific parameters
-		connector.setKeyPassword(getKeyPassword());
-		connector.setKeystore(getKeystorePath());
-		connector.setKeystoreType(getKeystoreType());
-		connector.setNeedClientAuth(isNeedClientAuthentication());
-		connector.setPassword(getKeystorePassword());
-		connector.setProtocol(getSslProtocol());
-		connector.setProvider(getSecurityProvider());
-		connector.setSecureRandomAlgorithm(getSecureRandomAlgorithm());
-		connector.setSslKeyManagerFactoryAlgorithm(getCertAlgorithm());
-		connector.setSslTrustManagerFactoryAlgorithm(getCertAlgorithm());
-		connector.setTrustPassword(getKeystorePassword());
-		connector.setWantClientAuth(isWantClientAuthentication());
+		result.setKeyPassword(getKeyPassword());
+		result.setKeystore(getKeystorePath());
+		result.setKeystoreType(getKeystoreType());
+		result.setNeedClientAuth(isNeedClientAuthentication());
+		result.setPassword(getKeystorePassword());
+		result.setProtocol(getSslProtocol());
+		result.setProvider(getSecurityProvider());
+		result.setSecureRandomAlgorithm(getSecureRandomAlgorithm());
+		result.setSslKeyManagerFactoryAlgorithm(getCertAlgorithm());
+		result.setSslTrustManagerFactoryAlgorithm(getCertAlgorithm());
+		result.setTrustPassword(getKeystorePassword());
+		result.setWantClientAuth(isWantClientAuthentication());
 
-		getWrappedServer().addConnector(connector);
+		return result;
 	}
 
 	/**

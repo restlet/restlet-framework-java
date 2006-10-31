@@ -5,7 +5,6 @@ Bundle-SymbolicName: com.noelios.restlet.ext.simple
 Bundle-Version: 1.0.0
 Bundle-Vendor: Noelios Consulting
 Bundle-Localization: plugin
-Require-Bundle: org.restlet,
- com.noelios.restlet,
- org.simpleframework
+Require-Bundle: com.noelios.restlet;visibility:=reexport,
+ org.simpleframework;visibility:=reexport
 Export-Package: com.noelios.restlet.ext.simple

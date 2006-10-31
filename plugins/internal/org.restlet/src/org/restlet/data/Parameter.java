@@ -23,8 +23,6 @@
 package org.restlet.data;
 
 import java.io.IOException;
-import java.io.UnsupportedEncodingException;
-import java.net.URLEncoder;
 
 /**
  * Multi-usage parameter.
@@ -158,22 +156,15 @@ public class Parameter implements Comparable<Parameter>
     */
    public void urlEncode(Appendable buffer) throws IOException
    {
-      try
-      {
-      	if(getName() != null)
-      	{
-         	buffer.append(URLEncoder.encode(getName(), "UTF-8"));
-               
-            if(getValue() != null)
-            {
-            	buffer.append('=');
-               buffer.append(URLEncoder.encode(getValue(), "UTF-8"));
-            }
+   	if(getName() != null)
+   	{
+      	buffer.append(Reference.encode(getName()));
+            
+         if(getValue() != null)
+         {
+         	buffer.append('=');
+            buffer.append(Reference.encode(getValue()));
          }
-      }
-      catch(UnsupportedEncodingException uee)
-      {
-         throw new IOException("Unsupported encoding exception. Please contact the administrator");
       }
    }
    
