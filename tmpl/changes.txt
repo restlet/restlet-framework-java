@@ -10,7 +10,8 @@ Changes log
  - Fixed bug in StatusFilter, method dohandle() renamed to doHandle().
  - Removed getStatusCode() and getReasonPhrase() methods in ServletCall hiding the actual value set. Reported by Sean Landis.
  - Fixed bug preventing the restart of a Jetty 6 connector. Added RestartTestCase. Reported by Piyush Purang.
-
+ - Fixed bug in AWS authentication algorithm if no AMZ_* header present. Reported by Mikkel Jensen.
+ 
 [API breaking changes]
  - Moved Atom, FreeMarker and FileUpload extensions to org.restlet.ext.atom/freemarker/fileupload packages.
  - Moved implementation-independent classes from NRE into a org.restlet.ext/.data/.model/.util packages. 

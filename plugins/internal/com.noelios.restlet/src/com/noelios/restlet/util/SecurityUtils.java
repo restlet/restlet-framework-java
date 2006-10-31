@@ -135,7 +135,7 @@ public class SecurityUtils
 			StringBuilder rest = new StringBuilder();
 			rest.append(methodName).append('\n').append(contentMd5).append('\n').append(
 					contentType).append('\n').append(date).append('\n').append(
-					canonicalizedAmzHeaders).append('\n').append(canonicalizedResource);
+					canonicalizedAmzHeaders).append(canonicalizedResource);
 
 			// Append the AWS credentials 
 			sb.append(challenge.getIdentifier()).append(':').append(
@@ -206,19 +206,9 @@ public class SecurityUtils
 
 		// Concatenate all AMZ headers
 		StringBuilder sb = new StringBuilder();
-		boolean first = true;
 		for (String key : amzHeaders.keySet())
 		{
-			if (!first)
-			{
-				sb.append("\n");
-			}
-			else
-			{
-				first = false;
-			}
-
-			sb.append(key).append(':').append(amzHeaders.get(key));
+			sb.append(key).append(':').append(amzHeaders.get(key)).append("\n");
 		}
 
 		return sb.toString();
