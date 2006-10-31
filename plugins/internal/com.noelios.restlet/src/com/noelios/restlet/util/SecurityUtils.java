@@ -178,29 +178,6 @@ public class SecurityUtils
 	}
 
 	/**
-	 * Returns the canonicalized resource name.
-	 * @param resourceRef The resource reference.
-	 * @return The canonicalized resource name.
-	 */
-	private static String getCanonicalizedResourceName(Reference resourceRef)
-	{
-		StringBuilder sb = new StringBuilder();
-		sb.append(resourceRef.getPath());
-
-		Form query = resourceRef.getQueryAsForm();
-		if (query.getFirst("acl", true) != null)
-		{
-			sb.append("?acl");
-		}
-		else if (query.getFirst("torrent", true) != null)
-		{
-			sb.append("?torrent");
-		}
-
-		return sb.toString();
-	}
-
-	/**
 	 * Returns the canonicalized AMZ headers.
 	 * @param requestHeaders The list of request headers.
 	 * @return The canonicalized AMZ headers.
@@ -242,6 +219,29 @@ public class SecurityUtils
 			}
 
 			sb.append(key).append(':').append(amzHeaders.get(key));
+		}
+
+		return sb.toString();
+	}
+
+	/**
+	 * Returns the canonicalized resource name.
+	 * @param resourceRef The resource reference.
+	 * @return The canonicalized resource name.
+	 */
+	private static String getCanonicalizedResourceName(Reference resourceRef)
+	{
+		StringBuilder sb = new StringBuilder();
+		sb.append(resourceRef.getPath());
+
+		Form query = resourceRef.getQueryAsForm();
+		if (query.getFirst("acl", true) != null)
+		{
+			sb.append("?acl");
+		}
+		else if (query.getFirst("torrent", true) != null)
+		{
+			sb.append("?torrent");
 		}
 
 		return sb.toString();
