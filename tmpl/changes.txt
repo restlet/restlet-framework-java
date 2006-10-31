@@ -16,6 +16,7 @@ Changes log
  - Moved Atom, FreeMarker and FileUpload extensions to org.restlet.ext.atom/freemarker/fileupload packages.
  - Moved implementation-independent classes from NRE into a org.restlet.ext/.data/.model/.util packages. 
  - Renamed LogService."loggerName" and "format" properties to add the "access" prefix. Added "contextLoggerName" property.
+ - Moved WrapperRequest|Response|Representation to org.restlet.ext.util.
 
 [Other changes] 
  - Reorganized Javadocs into three parts: Restlet API, Restlet Extensions, Noelios Restlet Engine.
