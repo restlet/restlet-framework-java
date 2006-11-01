@@ -27,15 +27,13 @@ import java.net.URL;
 import java.util.logging.Level;
 
 import org.restlet.Client;
+import org.restlet.data.ClapReference;
 import org.restlet.data.Method;
 import org.restlet.data.Protocol;
 import org.restlet.data.Request;
 import org.restlet.data.Response;
 import org.restlet.data.Status;
-import org.restlet.ext.data.ClapReference;
-import org.restlet.ext.data.InputRepresentation;
-
-
+import org.restlet.resource.InputRepresentation;
 
 /**
  * Connector to the class loaders.
@@ -87,10 +85,8 @@ public class ClapClientHelper extends LocalClientHelper
 		}
 		else
 		{
-			throw new IllegalArgumentException(
-					"Protocol \""
-							+ scheme
-							+ "\" not supported by the connector. Only CLAP is supported.");
+			throw new IllegalArgumentException("Protocol \"" + scheme
+					+ "\" not supported by the connector. Only CLAP is supported.");
 		}
 	}
 

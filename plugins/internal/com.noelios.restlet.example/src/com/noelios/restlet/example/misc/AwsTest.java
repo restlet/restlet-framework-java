@@ -28,9 +28,9 @@ import org.restlet.data.ChallengeScheme;
 import org.restlet.data.Method;
 import org.restlet.data.ParameterList;
 import org.restlet.data.Protocol;
-import org.restlet.data.Representation;
 import org.restlet.data.Request;
 import org.restlet.data.Response;
+import org.restlet.resource.Representation;
 
 /**
  * Test the Amazon Web Service authentication.

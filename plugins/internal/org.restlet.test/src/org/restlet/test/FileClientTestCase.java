@@ -6,11 +6,11 @@ import java.io.IOException;
 import junit.framework.TestCase;
 
 import org.restlet.Client;
+import org.restlet.data.FileReference;
 import org.restlet.data.Protocol;
 import org.restlet.data.Response;
 import org.restlet.data.Status;
-import org.restlet.ext.data.FileReference;
-import org.restlet.ext.data.StringRepresentation;
+import org.restlet.resource.StringRepresentation;
 
 /**
  * Unit test case for the File client connector.

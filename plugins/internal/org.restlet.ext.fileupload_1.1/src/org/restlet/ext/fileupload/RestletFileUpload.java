@@ -28,8 +28,8 @@ import org.apache.commons.fileupload.FileItem;
 import org.apache.commons.fileupload.FileItemFactory;
 import org.apache.commons.fileupload.FileUpload;
 import org.apache.commons.fileupload.FileUploadException;
-import org.restlet.data.Representation;
 import org.restlet.data.Request;
+import org.restlet.resource.Representation;
 
 /**
  * High level API for processing file uploads.

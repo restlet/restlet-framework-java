@@ -25,8 +25,7 @@ package com.noelios.restlet.http;
 import java.util.Date;
 
 import org.restlet.data.ParameterList;
-import org.restlet.ext.util.DateUtils;
-
+import org.restlet.util.DateUtils;
 
 /**
  * Low-level call for the HTTP connectors.
@@ -169,19 +168,19 @@ public class HttpCall
 		return this.serverAddress;
 	}
 
-   /** 
-    * Returns the server domain.
-    * @return The server domain.
-    */
+	/** 
+	 * Returns the server domain.
+	 * @return The server domain.
+	 */
 	public String getServerDomain()
 	{
 		return this.serverDomain;
 	}
 
-   /** 
-    * Returns the server port.
-    * @return The server port.
-    */
+	/** 
+	 * Returns the server port.
+	 * @return The server port.
+	 */
 	public Integer getServerPort()
 	{
 		return this.serverPort;
@@ -278,19 +277,19 @@ public class HttpCall
 		this.serverAddress = responseAddress;
 	}
 
-   /** 
-    * Sets the server domain name.
-    * @param serverDomain The server domain name.
-    */
+	/** 
+	 * Sets the server domain name.
+	 * @param serverDomain The server domain name.
+	 */
 	public void setServerDomain(String serverDomain)
 	{
 		this.serverDomain = serverDomain;
 	}
 
-   /** 
-    * Sets the server port.
-    * @param serverPort The server port.
-    */
+	/** 
+	 * Sets the server port.
+	 * @param serverPort The server port.
+	 */
 	public void setServerPort(Integer serverPort)
 	{
 		this.serverPort = serverPort;

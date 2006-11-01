@@ -27,10 +27,10 @@ import java.util.List;
 
 import org.restlet.data.Request;
 import org.restlet.data.Response;
+import org.restlet.service.LogService;
+import org.restlet.service.StatusService;
 import org.restlet.spi.Factory;
 import org.restlet.spi.Helper;
-import org.restlet.util.LogService;
-import org.restlet.util.StatusService;
 
 /**
  * Component managing a set of virtual hosts and applications. Applications are expected to be directly attached 

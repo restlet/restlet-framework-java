@@ -26,6 +26,9 @@ import java.util.List;
 
 import org.restlet.Application;
 import org.restlet.Container;
+import org.restlet.Directory;
+import org.restlet.Guard;
+import org.restlet.Handler;
 import org.restlet.Restlet;
 import org.restlet.Router;
 import org.restlet.data.ChallengeScheme;
@@ -33,8 +36,6 @@ import org.restlet.data.MediaType;
 import org.restlet.data.Protocol;
 import org.restlet.data.Request;
 import org.restlet.data.Response;
-import org.restlet.ext.DirectoryHandler;
-import org.restlet.ext.GuardFilter;
 
 /**
  * Routers and hierarchical URIs
@@ -58,26 +59,25 @@ public class Tutorial11 implements Constants
 				// Create a root Router
 				Router router = new Router(getContext());
 
-				// Attach a guard Filter to secure access to the chained directory handler
-				GuardFilter guard = new GuardFilter(getContext(), ChallengeScheme.HTTP_BASIC,
+				// Attach a Guard to secure access to the chained directory handler
+				Guard guard = new Guard(getContext(), ChallengeScheme.HTTP_BASIC,
 						"Restlet tutorial");
 				guard.getAuthorizations().put("scott", "tiger");
 				router.getScorers().add("/docs/", guard);
 
-				// Create a directory handler able to return a deep hierarchy of Web files
-				DirectoryHandler directory = new DirectoryHandler(getContext(), ROOT_URI,
-						"index.html");
+				// Create a Directory able to return a deep hierarchy of Web files
+				Directory directory = new Directory(getContext(), ROOT_URI, "index.html");
 				guard.setNext(directory);
 
-				// Create the user router
+				// Create the user Router
 				Router user = new Router(getContext());
 				router.attach("/users/[a-z]+", user);
 
-				// Create the account Restlet
-				Restlet account = new Restlet()
+				// Create the account Handler
+				Handler account = new Handler()
 				{
 					@Override
-					public void handle(Request request, Response response)
+					public void handleGet(Request request, Response response)
 					{
 						// Print the requested URI path
 						String message = "Account of user named: "
@@ -87,11 +87,11 @@ public class Tutorial11 implements Constants
 				};
 				user.attach("$", account);
 
-				// Create the orders Restlet
-				Restlet orders = new Restlet(getContext())
+				// Create the orders Handler
+				Handler orders = new Handler(getContext())
 				{
 					@Override
-					public void handle(Request request, Response response)
+					public void handleGet(Request request, Response response)
 					{
 						// Print the user name of the requested orders
 						List<String> segments = request.getBaseRef().getSegments();

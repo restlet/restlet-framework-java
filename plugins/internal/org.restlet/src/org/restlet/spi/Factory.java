@@ -41,10 +41,10 @@ import org.restlet.data.ClientInfo;
 import org.restlet.data.Form;
 import org.restlet.data.Language;
 import org.restlet.data.MediaType;
-import org.restlet.data.Representation;
 import org.restlet.data.Request;
-import org.restlet.data.Resource;
 import org.restlet.data.Response;
+import org.restlet.resource.Representation;
+import org.restlet.resource.Resource;
 
 /**
  * Factory and registration service for Restlet API implementations.

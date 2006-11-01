@@ -34,9 +34,9 @@ import java.util.zip.InflaterInputStream;
 import java.util.zip.ZipInputStream;
 
 import org.restlet.data.Encoding;
-import org.restlet.data.Representation;
-import org.restlet.ext.util.ByteUtils;
-import org.restlet.ext.util.WrapperRepresentation;
+import org.restlet.resource.Representation;
+import org.restlet.util.ByteUtils;
+import org.restlet.util.WrapperRepresentation;
 
 /**
  * Representation that decodes a wrapped representation if its encoding is supported. 

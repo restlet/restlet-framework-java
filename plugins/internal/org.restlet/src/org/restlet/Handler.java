@@ -27,11 +27,11 @@ import java.util.List;
 import org.restlet.data.Language;
 import org.restlet.data.Method;
 import org.restlet.data.ReferenceList;
-import org.restlet.data.Representation;
 import org.restlet.data.Request;
-import org.restlet.data.Resource;
 import org.restlet.data.Response;
 import org.restlet.data.Status;
+import org.restlet.resource.Representation;
+import org.restlet.resource.Resource;
 
 /**
  * Restlet capable of handling calls using a target Resource. At this point in the processing, all the 

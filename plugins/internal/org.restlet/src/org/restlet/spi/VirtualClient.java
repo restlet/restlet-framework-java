@@ -22,9 +22,9 @@
 
 package org.restlet.spi;
 
-import org.restlet.data.Representation;
 import org.restlet.data.Request;
 import org.restlet.data.Response;
+import org.restlet.resource.Representation;
 
 /**
  * Dispatcher of calls to a set of client connectors.

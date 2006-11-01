@@ -36,9 +36,9 @@ import org.restlet.data.Method;
 import org.restlet.data.Parameter;
 import org.restlet.data.Protocol;
 import org.restlet.data.Reference;
-import org.restlet.data.Representation;
 import org.restlet.data.Request;
 import org.restlet.data.Tag;
+import org.restlet.resource.Representation;
 
 import com.noelios.restlet.util.CookieReader;
 import com.noelios.restlet.util.PreferenceUtils;

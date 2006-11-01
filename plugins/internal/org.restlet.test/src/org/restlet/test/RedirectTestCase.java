@@ -26,14 +26,14 @@ import junit.framework.TestCase;
 
 import org.restlet.Container;
 import org.restlet.Context;
+import org.restlet.Redirector;
 import org.restlet.Restlet;
 import org.restlet.data.MediaType;
 import org.restlet.data.Method;
 import org.restlet.data.Protocol;
 import org.restlet.data.Request;
 import org.restlet.data.Response;
-import org.restlet.ext.RedirectRestlet;
-import org.restlet.ext.data.StringRepresentation;
+import org.restlet.resource.StringRepresentation;
 
 
 /**
@@ -58,8 +58,8 @@ public class RedirectTestCase extends TestCase
 
 		// Create the proxy Restlet
 		String target = "http://localhost:9090${path}#[if query]?${query}#[end]";
-		RedirectRestlet proxy = new RedirectRestlet(proxyContainer.getContext(), target, 
-				RedirectRestlet.MODE_CONNECTOR);
+		Redirector proxy = new Redirector(proxyContainer.getContext(), target, 
+				Redirector.MODE_CONNECTOR);
 
 		// Create a new Restlet that will display some path information.
 		Restlet trace = new Restlet(originContainer.getContext())

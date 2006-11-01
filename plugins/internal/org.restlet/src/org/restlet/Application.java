@@ -24,13 +24,13 @@ package org.restlet;
 
 import org.restlet.data.Request;
 import org.restlet.data.Response;
+import org.restlet.service.ConnectorService;
+import org.restlet.service.DecoderService;
+import org.restlet.service.LocalService;
+import org.restlet.service.LogService;
+import org.restlet.service.StatusService;
 import org.restlet.spi.Factory;
 import org.restlet.spi.Helper;
-import org.restlet.util.ConnectorService;
-import org.restlet.util.DecoderService;
-import org.restlet.util.LocalService;
-import org.restlet.util.LogService;
-import org.restlet.util.StatusService;
 
 /**
  * Restlet deployable into containers. Applications are guaranteed to receive calls with their base reference

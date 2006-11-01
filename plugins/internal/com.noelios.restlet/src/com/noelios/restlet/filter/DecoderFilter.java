@@ -29,9 +29,9 @@ import java.util.Iterator;
 import org.restlet.Context;
 import org.restlet.Filter;
 import org.restlet.data.Encoding;
-import org.restlet.data.Representation;
 import org.restlet.data.Request;
 import org.restlet.data.Response;
+import org.restlet.resource.Representation;
 
 import com.noelios.restlet.data.DecoderRepresentation;
 

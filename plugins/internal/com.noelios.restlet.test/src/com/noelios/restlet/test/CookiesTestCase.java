@@ -30,7 +30,7 @@ import java.util.logging.Logger;
 
 import org.restlet.data.Cookie;
 import org.restlet.data.CookieSetting;
-import org.restlet.ext.util.DateUtils;
+import org.restlet.util.DateUtils;
 
 import junit.framework.TestCase;
 

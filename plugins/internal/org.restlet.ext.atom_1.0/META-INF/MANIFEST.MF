@@ -5,5 +5,5 @@ Bundle-SymbolicName: org.restlet.ext.atom
 Bundle-Version: 1.0.0
 Bundle-Vendor: Noelios Consulting
 Bundle-Localization: plugin
-Require-Bundle: org.restlet.ext;visibility:=reexport
+Require-Bundle: org.restlet;visibility:=reexport
 Export-Package: org.restlet.ext.atom

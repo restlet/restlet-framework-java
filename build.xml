@@ -126,10 +126,6 @@
 	<property name="mod-api-version" value="${version-base}" />
 	<property name="mod-api-id" value="${mod-api-package}" />
 
-	<property name="mod-api-ext-package" value="org.restlet.ext" />
-	<property name="mod-api-ext-version" value="${version-base}" />
-	<property name="mod-api-ext-id" value="${mod-api-ext-package}" />
-
 	<property name="mod-api-test-package" value="org.restlet.test" />
 	<property name="mod-api-test-version" value="${version-base}" />
 	<property name="mod-api-test-id" value="${mod-api-test-package}" />
@@ -215,15 +211,9 @@
 		<fileset dir="${lib}/${lib-junit-id}" includes="*.jar" />
 	</path>
 
-	<path id="mod-api-ext-path">
-		<path refid="mod-api-path" />
-		<pathelement path="${classes}/${mod-api-id}" />
-	</path>
-
 	<path id="mod-ri-path">
 		<path refid="mod-api-path" />
 		<pathelement path="${classes}/${mod-api-id}" />
-		<pathelement path="${classes}/${mod-api-ext-id}" />
 	</path>
 
 	<path id="mod-ri-test-path">
@@ -324,7 +314,6 @@
 
 	<path id="path-all">
 		<pathelement path="${classes}/${mod-api-id}" />
-		<pathelement path="${classes}/${mod-api-ext-id}" />
 		<pathelement path="${classes}/${mod-ri-id}" />
 		<pathelement path="${classes}/${mod-asyncweb-id}" />
 		<pathelement path="${classes}/${mod-freemarker-id}" />
@@ -534,7 +523,6 @@
 	<target name="compile" depends="init" description="Compile the Java source files">
 		<mkdir dir="${classes}" />
 		<compileModule name="api" />
-		<compileModule name="api-ext" />
 		<compileModule name="ri" />
 		<compileModule name="asyncweb" />
 		<compileModule name="atom" />
@@ -687,7 +675,6 @@
 
 		<!-- Package modules (internal plugins) -->
 		<packageModule name="api" />
-		<packageModule name="api-ext" />
 		<packageModule name="ri" />
 		<packageModule name="asyncweb" />
 		<packageModule name="atom" />
@@ -777,7 +764,6 @@
 		         overview="${tmpl}/overview-ext.html"
 		         verbose="${verbose}">
 			<sourcepath>
-				<pathelement path="${mod}/${mod-api-ext-id}/src/" />
 				<pathelement path="${mod}/${mod-atom-id}/src/" />
 				<pathelement path="${mod}/${mod-fileupload-id}/src/" />
 				<pathelement path="${mod}/${mod-freemarker-id}/src/" />

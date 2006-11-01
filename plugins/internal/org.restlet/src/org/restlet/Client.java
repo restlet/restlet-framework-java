@@ -27,9 +27,9 @@ import java.util.List;
 
 import org.restlet.data.Method;
 import org.restlet.data.Protocol;
-import org.restlet.data.Representation;
 import org.restlet.data.Request;
 import org.restlet.data.Response;
+import org.restlet.resource.Representation;
 import org.restlet.spi.Factory;
 import org.restlet.spi.Helper;
 import org.restlet.spi.VirtualClient;

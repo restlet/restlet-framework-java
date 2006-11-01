@@ -30,19 +30,18 @@ import java.util.Iterator;
 import java.util.logging.Level;
 
 import org.restlet.Client;
+import org.restlet.data.FileReference;
 import org.restlet.data.MediaType;
 import org.restlet.data.Method;
 import org.restlet.data.Preference;
 import org.restlet.data.Protocol;
 import org.restlet.data.ReferenceList;
-import org.restlet.data.Representation;
 import org.restlet.data.Request;
 import org.restlet.data.Response;
 import org.restlet.data.Status;
-import org.restlet.ext.data.FileReference;
-import org.restlet.ext.data.FileRepresentation;
-import org.restlet.ext.util.ByteUtils;
-
+import org.restlet.resource.FileRepresentation;
+import org.restlet.resource.Representation;
+import org.restlet.util.ByteUtils;
 
 /**
  * Connector to the file resources accessible

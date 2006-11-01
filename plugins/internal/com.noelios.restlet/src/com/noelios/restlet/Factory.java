@@ -49,18 +49,18 @@ import org.restlet.data.MediaType;
 import org.restlet.data.Parameter;
 import org.restlet.data.Preference;
 import org.restlet.data.Protocol;
-import org.restlet.data.Representation;
 import org.restlet.data.Request;
-import org.restlet.data.Resource;
 import org.restlet.data.Response;
 import org.restlet.data.Status;
 import org.restlet.data.Tag;
-import org.restlet.ext.data.StringRepresentation;
-import org.restlet.ext.util.DateUtils;
+import org.restlet.resource.Representation;
+import org.restlet.resource.Resource;
+import org.restlet.resource.StringRepresentation;
 import org.restlet.spi.ClientList;
 import org.restlet.spi.Helper;
 import org.restlet.spi.ScorerList;
 import org.restlet.spi.ServerList;
+import org.restlet.util.DateUtils;
 
 import com.noelios.restlet.application.ApplicationHelper;
 import com.noelios.restlet.container.ContainerHelper;
@@ -292,11 +292,12 @@ public class Factory extends org.restlet.spi.Factory
 	{
 		Helper result = null;
 
-		if(server.getProtocols().size() > 0)
+		if (server.getProtocols().size() > 0)
 		{
 			for (ConnectorHelper registeredServer : this.registeredServers)
 			{
-				if (registeredServer.getSupportedProtocols().containsAll(server.getProtocols()))
+				if (registeredServer.getSupportedProtocols().containsAll(
+						server.getProtocols()))
 				{
 					try
 					{
@@ -311,17 +312,17 @@ public class Factory extends org.restlet.spi.Factory
 				}
 			}
 
-			if(result == null)
+			if (result == null)
 			{
 				// Couldn't find a matching connector
 				StringBuilder sb = new StringBuilder();
 				sb.append("No available server connector supports the required protocols: ");
-		
+
 				for (Protocol p : server.getProtocols())
 				{
 					sb.append(p.getName()).append(" ");
 				}
-		
+
 				logger.log(Level.WARNING, sb.toString());
 			}
 		}
@@ -690,7 +691,7 @@ public class Factory extends org.restlet.spi.Factory
 			Language fallbackLanguage)
 	{
 		List<Representation> variants = resource.getVariants();
-		
+
 		if ((variants == null) || (variants.size() < 1))
 		{
 			// Resource not found
@@ -699,11 +700,11 @@ public class Factory extends org.restlet.spi.Factory
 		else
 		{
 			// Set the variants' resource
-			for(Representation variant : variants)
+			for (Representation variant : variants)
 			{
 				variant.setResource(resource);
 			}
-			
+
 			// Compute the best variant
 			Representation bestVariant = request.getClientInfo().getPreferredVariant(
 					variants, fallbackLanguage);

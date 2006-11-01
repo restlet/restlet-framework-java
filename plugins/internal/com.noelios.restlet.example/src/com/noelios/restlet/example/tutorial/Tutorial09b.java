@@ -43,8 +43,8 @@ public class Tutorial09b
 		Request request = new Request(Method.GET, "http://localhost:8182/");
 
 		// Add the client authentication to the call 
-		ChallengeResponse authentication = new ChallengeResponse(
-				ChallengeScheme.HTTP_BASIC, "scott", "tiger");
+		ChallengeScheme scheme = ChallengeScheme.HTTP_BASIC;
+		ChallengeResponse authentication = new ChallengeResponse(scheme, "scott", "tiger");
 		request.setChallengeResponse(authentication);
 
 		// Ask to the HTTP client connector to handle the call
@@ -59,8 +59,7 @@ public class Tutorial09b
 		else if (response.getStatus().equals(Status.CLIENT_ERROR_UNAUTHORIZED))
 		{
 			// Unauthorized access
-			System.out
-					.println("Your access was not authorized by the server, check your credentials");
+			System.out.println("Access authorized by the server, check your credentials");
 		}
 		else
 		{

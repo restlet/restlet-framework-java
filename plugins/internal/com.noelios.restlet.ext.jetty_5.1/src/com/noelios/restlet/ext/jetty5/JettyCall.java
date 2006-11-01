@@ -35,7 +35,7 @@ import org.mortbay.http.HttpRequest;
 import org.mortbay.http.HttpResponse;
 import org.restlet.data.Parameter;
 import org.restlet.data.ParameterList;
-import org.restlet.data.Representation;
+import org.restlet.resource.Representation;
 
 import com.noelios.restlet.http.HttpServerCall;
 

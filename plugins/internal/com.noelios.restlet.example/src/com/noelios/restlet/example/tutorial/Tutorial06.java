@@ -24,9 +24,9 @@ package com.noelios.restlet.example.tutorial;
 
 import org.restlet.Application;
 import org.restlet.Container;
+import org.restlet.Directory;
 import org.restlet.Restlet;
 import org.restlet.data.Protocol;
-import org.restlet.ext.DirectoryHandler;
 
 /**
  * Server static files using an application.
@@ -47,9 +47,7 @@ public class Tutorial06 implements Constants
 			@Override
 			public Restlet createRoot()
 			{
-				DirectoryHandler dh = new DirectoryHandler(getContext(), ROOT_URI, "index.html");
-				dh.setNegotiateContent(true);
-				return dh;
+				return new Directory(getContext(), ROOT_URI, "index.html");
 			}
 		};
 

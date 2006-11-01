@@ -1,7 +1,7 @@
 
 package org.restlet.test;
 
-import org.restlet.ext.data.FileReference;
+import org.restlet.data.FileReference;
 
 import junit.framework.TestCase;
 

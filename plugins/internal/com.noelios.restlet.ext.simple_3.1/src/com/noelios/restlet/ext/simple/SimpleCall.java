@@ -31,7 +31,7 @@ import java.util.logging.Logger;
 
 import org.restlet.data.Parameter;
 import org.restlet.data.ParameterList;
-import org.restlet.data.Representation;
+import org.restlet.resource.Representation;
 
 import simple.http.Request;
 import simple.http.Response;

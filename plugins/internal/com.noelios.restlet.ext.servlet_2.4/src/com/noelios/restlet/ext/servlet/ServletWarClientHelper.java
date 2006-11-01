@@ -32,11 +32,11 @@ import org.restlet.data.MediaType;
 import org.restlet.data.Method;
 import org.restlet.data.Reference;
 import org.restlet.data.ReferenceList;
-import org.restlet.data.Representation;
 import org.restlet.data.Request;
 import org.restlet.data.Response;
 import org.restlet.data.Status;
-import org.restlet.ext.data.InputRepresentation;
+import org.restlet.resource.InputRepresentation;
+import org.restlet.resource.Representation;
 
 import com.noelios.restlet.local.WarClientHelper;
 

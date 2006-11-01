@@ -28,14 +28,14 @@ import java.io.IOException;
 import junit.framework.TestCase;
 
 import org.restlet.Container;
+import org.restlet.Directory;
 import org.restlet.data.Method;
 import org.restlet.data.Protocol;
-import org.restlet.data.Representation;
 import org.restlet.data.Request;
 import org.restlet.data.Response;
 import org.restlet.data.Status;
-import org.restlet.ext.DirectoryHandler;
-import org.restlet.ext.data.StringRepresentation;
+import org.restlet.resource.Representation;
+import org.restlet.resource.StringRepresentation;
 
 
 /**
@@ -72,7 +72,7 @@ public class DirectoryTestCase extends TestCase
          clientContainer.start();
 
          // Create a DirectoryHandler that manages a local Directory with no index
-         DirectoryHandler directory = new DirectoryHandler(clientContainer.getContext(),
+         Directory directory = new Directory(clientContainer.getContext(),
                testDir.toURI().toString(), "");
          testDirectory(directory);
 
@@ -97,7 +97,7 @@ public class DirectoryTestCase extends TestCase
     * @param testFileUrl
     * @throws IOException
     */
-   private void testDirectory(DirectoryHandler directory) throws IOException
+   private void testDirectory(Directory directory) throws IOException
    {
       //Test 1a : directory does not allow to GET its content
       directory.setListingAllowed(false);
@@ -240,7 +240,7 @@ public class DirectoryTestCase extends TestCase
     * @param entity
     * @return
     */
-   private Response handle(DirectoryHandler directory, String baseRef, String resourceRef,
+   private Response handle(Directory directory, String baseRef, String resourceRef,
          Method method, Representation entity)
    {
       Request request = new Request();

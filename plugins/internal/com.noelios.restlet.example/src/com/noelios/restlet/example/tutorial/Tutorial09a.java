@@ -24,11 +24,11 @@ package com.noelios.restlet.example.tutorial;
 
 import org.restlet.Application;
 import org.restlet.Container;
+import org.restlet.Directory;
+import org.restlet.Guard;
 import org.restlet.Restlet;
 import org.restlet.data.ChallengeScheme;
 import org.restlet.data.Protocol;
-import org.restlet.ext.DirectoryHandler;
-import org.restlet.ext.GuardFilter;
 
 /**
  * Guard access to a Restlet.
@@ -49,14 +49,12 @@ public class Tutorial09a implements Constants
 			@Override
 			public Restlet createRoot()
 			{
-				// Create a guard Filter
-				GuardFilter guard = new GuardFilter(getContext(), ChallengeScheme.HTTP_BASIC,
-						"Tutorial");
+				// Create a Guard
+				Guard guard = new Guard(getContext(), ChallengeScheme.HTTP_BASIC, "Tutorial");
 				guard.getAuthorizations().put("scott", "tiger");
 
-				// Create a directory Restlet able to return a deep hierarchy of Web files
-				DirectoryHandler directory = new DirectoryHandler(getContext(), ROOT_URI,
-						"index.html");
+				// Create a Directory able to return a deep hierarchy of files
+				Directory directory = new Directory(getContext(), ROOT_URI, "index.html");
 				guard.setNext(directory);
 				return guard;
 			}

@@ -34,9 +34,9 @@ import java.util.zip.GZIPOutputStream;
 import java.util.zip.ZipOutputStream;
 
 import org.restlet.data.Encoding;
-import org.restlet.data.Representation;
-import org.restlet.ext.util.ByteUtils;
-import org.restlet.ext.util.WrapperRepresentation;
+import org.restlet.resource.Representation;
+import org.restlet.util.ByteUtils;
+import org.restlet.util.WrapperRepresentation;
 
 /**
  * Content that encodes a wrapped content. 

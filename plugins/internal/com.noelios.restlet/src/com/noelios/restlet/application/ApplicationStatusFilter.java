@@ -23,10 +23,10 @@
 package com.noelios.restlet.application;
 
 import org.restlet.Application;
-import org.restlet.data.Representation;
 import org.restlet.data.Request;
 import org.restlet.data.Response;
 import org.restlet.data.Status;
+import org.restlet.resource.Representation;
 
 import com.noelios.restlet.filter.StatusFilter;
 

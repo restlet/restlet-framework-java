@@ -26,9 +26,9 @@ import junit.framework.TestCase;
 
 import org.restlet.data.Request;
 import org.restlet.data.Response;
-import org.restlet.ext.model.CallModel;
-import org.restlet.ext.model.MapModel;
-import org.restlet.ext.model.StringTemplate;
+import org.restlet.model.CallModel;
+import org.restlet.model.MapModel;
+import org.restlet.model.StringTemplate;
 
 /**
  * Unit tests for the StringTemplate class.

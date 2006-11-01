@@ -25,6 +25,7 @@ package org.restlet.data;
 import java.io.IOException;
 import java.util.logging.Logger;
 
+import org.restlet.resource.Representation;
 import org.restlet.spi.Factory;
 
 /**

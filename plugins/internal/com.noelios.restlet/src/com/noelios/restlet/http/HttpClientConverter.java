@@ -39,7 +39,7 @@ import org.restlet.data.ParameterList;
 import org.restlet.data.Request;
 import org.restlet.data.Response;
 import org.restlet.data.Status;
-import org.restlet.ext.util.DateUtils;
+import org.restlet.util.DateUtils;
 
 import com.noelios.restlet.Factory;
 import com.noelios.restlet.util.CookieReader;

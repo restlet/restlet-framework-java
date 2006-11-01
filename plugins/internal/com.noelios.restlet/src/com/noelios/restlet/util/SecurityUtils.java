@@ -43,7 +43,7 @@ import org.restlet.data.Parameter;
 import org.restlet.data.ParameterList;
 import org.restlet.data.Reference;
 import org.restlet.data.Request;
-import org.restlet.ext.util.DateUtils;
+import org.restlet.util.DateUtils;
 
 import com.noelios.restlet.http.HttpConstants;
 

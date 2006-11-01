@@ -29,8 +29,8 @@ import org.restlet.Context;
 import org.restlet.Filter;
 import org.restlet.data.Request;
 import org.restlet.data.Response;
-import org.restlet.ext.model.CallModel;
-import org.restlet.ext.model.StringTemplate;
+import org.restlet.model.CallModel;
+import org.restlet.model.StringTemplate;
 
 /**
  * Filter logging all calls after their handling by the target Restlet. The current format 

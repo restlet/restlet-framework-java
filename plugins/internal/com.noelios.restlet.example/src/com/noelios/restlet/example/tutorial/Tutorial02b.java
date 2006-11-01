@@ -25,9 +25,9 @@ package com.noelios.restlet.example.tutorial;
 import org.restlet.Client;
 import org.restlet.data.Method;
 import org.restlet.data.Protocol;
-import org.restlet.data.Representation;
 import org.restlet.data.Request;
 import org.restlet.data.Response;
+import org.restlet.resource.Representation;
 
 /**
  * Retrieving the content of a Web page (detailled).

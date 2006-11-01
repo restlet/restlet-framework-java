@@ -24,10 +24,10 @@ package org.restlet.ext.atom;
 
 import org.restlet.data.Method;
 import org.restlet.data.Reference;
-import org.restlet.data.Representation;
 import org.restlet.data.Request;
 import org.restlet.data.Response;
 import org.restlet.data.Status;
+import org.restlet.resource.Representation;
 
 /**
  * Atom Protocol collection, part of a workspace.

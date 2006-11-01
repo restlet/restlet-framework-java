@@ -25,6 +25,7 @@ package org.restlet.data;
 import java.util.Map;
 import java.util.TreeMap;
 
+import org.restlet.resource.Representation;
 import org.restlet.spi.Factory;
 
 /**

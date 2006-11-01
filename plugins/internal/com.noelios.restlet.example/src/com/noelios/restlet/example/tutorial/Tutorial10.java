@@ -24,9 +24,9 @@ package com.noelios.restlet.example.tutorial;
 
 import org.restlet.Application;
 import org.restlet.Container;
+import org.restlet.Redirector;
 import org.restlet.Restlet;
 import org.restlet.data.Protocol;
-import org.restlet.ext.RedirectRestlet;
 
 /**
  * URI rewriting and redirection.
@@ -46,10 +46,9 @@ public class Tutorial10
 			@Override
 			public Restlet createRoot()
 			{
-				// Create a redirect Restlet then attach it to the container
+				// Create a Redirector to Google search service
 				String target = "http://www.google.com/search?q=site:mysite.org+${query('query')}";
-				return new RedirectRestlet(getContext(), target,
-						RedirectRestlet.MODE_CLIENT_TEMPORARY);
+				return new Redirector(getContext(), target, Redirector.MODE_CLIENT_TEMPORARY);
 			}
 		};
 

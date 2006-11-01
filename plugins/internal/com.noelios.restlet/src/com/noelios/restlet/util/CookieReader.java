@@ -31,7 +31,7 @@ import java.util.logging.Logger;
 import org.restlet.data.Cookie;
 import org.restlet.data.CookieSetting;
 import org.restlet.data.Parameter;
-import org.restlet.ext.util.DateUtils;
+import org.restlet.util.DateUtils;
 
 /**
  * Cookie header reader.

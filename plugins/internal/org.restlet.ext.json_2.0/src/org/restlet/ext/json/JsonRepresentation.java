@@ -28,8 +28,8 @@ import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 import org.restlet.data.MediaType;
-import org.restlet.data.Representation;
-import org.restlet.ext.data.StringRepresentation;
+import org.restlet.resource.Representation;
+import org.restlet.resource.StringRepresentation;
 
 
 /**

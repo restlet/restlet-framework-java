@@ -35,9 +35,9 @@ import org.restlet.data.MediaType;
 import org.restlet.data.Method;
 import org.restlet.data.Parameter;
 import org.restlet.data.Protocol;
-import org.restlet.data.Representation;
-import org.restlet.ext.data.InputRepresentation;
-import org.restlet.ext.data.ReadableRepresentation;
+import org.restlet.resource.InputRepresentation;
+import org.restlet.resource.ReadableRepresentation;
+import org.restlet.resource.Representation;
 
 /**
  * Abstract HTTP server connector call.

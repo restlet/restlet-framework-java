@@ -32,7 +32,7 @@ import org.restlet.data.Language;
 import org.restlet.data.MediaType;
 import org.restlet.data.Metadata;
 import org.restlet.data.Parameter;
-import org.restlet.data.Representation;
+import org.restlet.resource.Representation;
 
 import com.noelios.restlet.ClientHelper;
 
@@ -104,7 +104,7 @@ import com.noelios.restlet.ClientHelper;
  * 		<td>Path to the Web Application WAR file or directory.</td>
  * 	</tr>
  *	</table>
- * @see org.restlet.ext.data.ClapReference
+ * @see org.restlet.data.ClapReference
  * @author Jerome Louvel (contact@noelios.com) <a href="http://www.noelios.com/">Noelios Consulting</a>
  * @author Thierry Boileau
  */
