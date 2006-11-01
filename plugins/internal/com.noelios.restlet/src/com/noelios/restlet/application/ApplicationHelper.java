@@ -36,7 +36,6 @@ import org.restlet.spi.Helper;
 
 import com.noelios.restlet.filter.DecoderFilter;
 import com.noelios.restlet.filter.LogFilter;
-import com.noelios.restlet.filter.StatusFilter;
 
 /**
  * Application implementation.
@@ -170,7 +169,7 @@ public class ApplicationHelper implements Helper
 	 * @param logFormat The log format to use.
 	 * @return The new log filter.
 	 */
-	protected LogFilter createLogFilter(Context context, String logName, String logFormat)
+	protected Filter createLogFilter(Context context, String logName, String logFormat)
 	{
 		return new LogFilter(context, logName, logFormat);
 	}
@@ -180,7 +179,7 @@ public class ApplicationHelper implements Helper
 	 * @param application The parent application.
 	 * @return The new decoder filter.
 	 */
-	protected DecoderFilter createDecoderFilter(Application application)
+	protected Filter createDecoderFilter(Application application)
 	{
 		return new DecoderFilter(application.getContext(), true, false);
 	}
@@ -190,7 +189,7 @@ public class ApplicationHelper implements Helper
 	 * @param application The parent application.
 	 * @return The new status filter.
 	 */
-	protected StatusFilter createStatusFilter(Application application)
+	protected Filter createStatusFilter(Application application)
 	{
 		return new ApplicationStatusFilter(application);
 	}

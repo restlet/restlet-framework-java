@@ -161,6 +161,11 @@ public class SimpleCall extends HttpServerCall
 		response.setText(getReasonPhrase());
 
 		// Send the response entity
+		if(entity == null)
+		{
+			response.setContentLength(0);
+		}
+		
 		super.sendResponse(entity);
 	}
 

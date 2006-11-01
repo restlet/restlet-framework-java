@@ -412,7 +412,7 @@ public class Status extends Metadata
 					result = "The response to the request can be found under a different URI";
 				break;
 				case 304:
-					result = "The client has performed a conditional GET request and access is allowed";
+					result = "The client has performed a conditional GET request and the document has not been modified";
 				break;
 				case 305:
 					result = "The requested resource must be accessed through the proxy given by the location field";

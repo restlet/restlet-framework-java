@@ -11,7 +11,9 @@ Changes log
  - Removed getStatusCode() and getReasonPhrase() methods in ServletCall hiding the actual value set. Reported by Sean Landis.
  - Fixed bug preventing the restart of a Jetty 6 connector. Added RestartTestCase. Reported by Piyush Purang.
  - Fixed bug in AWS authentication algorithm if no AMZ_* header present. Reported by Mikkel Jensen.
- 
+ - Patched Simple connector to not return a "Content-length" header when size is 0.
+ - Bug bug in the Simple connector causing a "Transfer-Encoding: chunked" header to be returned even if no entity was present. May be the cause of problems with the Safari browser.
+
 [API breaking changes]
  - Moved Atom, FreeMarker and FileUpload extensions to org.restlet.ext.atom/freemarker/fileupload packages.
  - Moved implementation-independent classes from NRE into a org.restlet.ext/.data/.model/.util packages. 
@@ -41,6 +43,8 @@ Changes log
  - Refactored DirectoryResource: removed unused handle*() methods and duplicate "negotiationEnabled" property.
  - Added Reference.encode() and decode() methods, easier to use than raw URLDecoder/URLEncoder classes.
  - Renamed StringTemplate.process() into format() to make place for a parse() method.
+ - The create*() methods in ApplicationHelper simply require an instance of Filter as result parameter.
+ - Clarified description for 304 status code.
  
 1.0 beta 19 (2006-10-23)
 [Bugs fixed]
