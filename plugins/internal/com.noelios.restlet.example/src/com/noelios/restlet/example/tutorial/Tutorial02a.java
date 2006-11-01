@@ -31,11 +31,11 @@ import org.restlet.data.Protocol;
  */
 public class Tutorial02a
 {
-   public static void main(String[] args) throws Exception
-   {
-      // Outputting the content of a Web page
-   	Client client = new Client(Protocol.HTTP);
-      client.get("http://www.restlet.org").getEntity().write(System.out);
-   }
+	public static void main(String[] args) throws Exception
+	{
+		// Outputting the content of a Web page
+		Client client = new Client(Protocol.HTTP);
+		client.get("http://www.restlet.org").getEntity().write(System.out);
+	}
 
 }

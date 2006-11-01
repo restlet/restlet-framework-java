@@ -52,6 +52,7 @@ public class Tutorial11 implements Constants
 		// Create an application
 		Application application = new Application(container)
 		{
+			@Override
 			public Restlet createRoot()
 			{
 				// Create a root Router
@@ -75,6 +76,7 @@ public class Tutorial11 implements Constants
 				// Create the account Restlet
 				Restlet account = new Restlet()
 				{
+					@Override
 					public void handle(Request request, Response response)
 					{
 						// Print the requested URI path
@@ -88,6 +90,7 @@ public class Tutorial11 implements Constants
 				// Create the orders Restlet
 				Restlet orders = new Restlet(getContext())
 				{
+					@Override
 					public void handle(Request request, Response response)
 					{
 						// Print the user name of the requested orders

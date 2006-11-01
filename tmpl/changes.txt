@@ -45,7 +45,8 @@ Changes log
  - Renamed StringTemplate.process() into format() to make place for a parse() method.
  - The create*() methods in ApplicationHelper simply require an instance of Filter as result parameter.
  - Clarified description for 304 status code.
- 
+ - Added @Override annotation to all example source code. Suggested by Piyush Purang.
+
 1.0 beta 19 (2006-10-23)
 [Bugs fixed]
  - Fixed issue with error status preventing the setting of response headers with Servlet containers like Tomcat. Report and solution by Evan DiBiase.

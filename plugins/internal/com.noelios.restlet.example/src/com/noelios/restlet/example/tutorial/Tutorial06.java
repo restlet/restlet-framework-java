@@ -44,9 +44,12 @@ public class Tutorial06 implements Constants
 		// Create an application
 		Application application = new Application(container)
 		{
+			@Override
 			public Restlet createRoot()
 			{
-				return new DirectoryHandler(getContext(), ROOT_URI, "index.html");
+				DirectoryHandler dh = new DirectoryHandler(getContext(), ROOT_URI, "index.html");
+				dh.setNegotiateContent(true);
+				return dh;
 			}
 		};
 

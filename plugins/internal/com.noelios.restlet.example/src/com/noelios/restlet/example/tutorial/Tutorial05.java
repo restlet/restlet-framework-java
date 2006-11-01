@@ -35,32 +35,33 @@ import org.restlet.data.Response;
  */
 public class Tutorial05
 {
-   public static void main(String[] args) throws Exception
-   {
-      // Create a new Restlet container and add a HTTP server connector to it
-   	Container container = new Container();
-      container.getServers().add(Protocol.HTTP, 8182);
+	public static void main(String[] args) throws Exception
+	{
+		// Create a new Restlet container and add a HTTP server connector to it
+		Container container = new Container();
+		container.getServers().add(Protocol.HTTP, 8182);
 
-      // Create a new Restlet that will display some path information.
-      Restlet restlet = new Restlet()
-         {
-            public void handle(Request request, Response response)
-            {
-               // Print the requested URI path
-               String message = "Resource URI:  " + request.getResourceRef() + '\n' +
-                                "Base URI:      " + request.getBaseRef() + '\n' +
-                                "Relative path: " + request.getRelativePart() + '\n' +
-                                "Query string:  " + request.getResourceRef().getQuery();
-               response.setEntity(message, MediaType.TEXT_PLAIN);
-            }
-         };
+		// Create a new Restlet that will display some path information.
+		Restlet restlet = new Restlet()
+		{
+			@Override
+			public void handle(Request request, Response response)
+			{
+				// Print the requested URI path
+				String message = "Resource URI:  " + request.getResourceRef() + '\n'
+						+ "Base URI:      " + request.getBaseRef() + '\n' + "Relative path: "
+						+ request.getRelativePart() + '\n' + "Query string:  "
+						+ request.getResourceRef().getQuery();
+				response.setEntity(message, MediaType.TEXT_PLAIN);
+			}
+		};
 
-      // Then attach it to the local host
-      container.getDefaultHost().attach("/trace", restlet);
+		// Then attach it to the local host
+		container.getDefaultHost().attach("/trace", restlet);
 
-      // Now, let's start the container!
-      // Note that the HTTP server connector is also automatically started.
-      container.start();
-   }
+		// Now, let's start the container!
+		// Note that the HTTP server connector is also automatically started.
+		container.start();
+	}
 
 }

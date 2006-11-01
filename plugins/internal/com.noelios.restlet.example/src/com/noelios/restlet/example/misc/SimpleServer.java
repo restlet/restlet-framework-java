@@ -38,57 +38,58 @@ import org.restlet.data.Response;
  */
 public class SimpleServer
 {
-   public static void main(String[] args)
-   {
-      try
-      {
-         // Create a new Restlet container
-      	Container container = new Container();
-         
-         // Create the HTTP server connector, then add it as a server
-         // connector to the Restlet container. Note that the container
-         // is the call restlet.
-         container.getServers().add(Protocol.HTTP, 9876);
+	public static void main(String[] args)
+	{
+		try
+		{
+			// Create a new Restlet container
+			Container container = new Container();
 
-         // Prepare and attach a test Restlet
-         Restlet restlet = new Restlet(container.getContext())
-         {
-            public void handle(Request request, Response response)
-            {
-            	if(request.getMethod().equals(Method.PUT))
-            	{
-	            	System.out.println("Handling the call...");
-	               System.out.println("Trying to get the entity as a form...");
-	               Form form = request.getEntityAsForm();
-	
-	               System.out.println("Trying to getParameters...");
-	               StringBuffer sb = new StringBuffer("foo");
-	               for(Parameter p : form)
-	               {
-	                  System.out.println(p);
-	
-	                  sb.append("field name = ");
-	                  sb.append(p.getName());
-	                  sb.append("value = ");
-	                  sb.append(p.getValue());
-	                  sb.append("\n");
-	                  System.out.println(sb.toString());
-	               }
-	
-	               response.setEntity(sb.toString(), MediaType.TEXT_PLAIN);
-	               System.out.println("Done!");
-            	}
-            }
-         };
+			// Create the HTTP server connector, then add it as a server
+			// connector to the Restlet container. Note that the container
+			// is the call restlet.
+			container.getServers().add(Protocol.HTTP, 9876);
 
-         container.getDefaultHost().attach("/test", restlet);
+			// Prepare and attach a test Restlet
+			Restlet restlet = new Restlet(container.getContext())
+			{
+				@Override
+				public void handle(Request request, Response response)
+				{
+					if (request.getMethod().equals(Method.PUT))
+					{
+						System.out.println("Handling the call...");
+						System.out.println("Trying to get the entity as a form...");
+						Form form = request.getEntityAsForm();
 
-         // Now, start the container
-         container.start();
-      }
-      catch(Exception e)
-      {
-         e.printStackTrace();
-      }
-   }
+						System.out.println("Trying to getParameters...");
+						StringBuffer sb = new StringBuffer("foo");
+						for (Parameter p : form)
+						{
+							System.out.println(p);
+
+							sb.append("field name = ");
+							sb.append(p.getName());
+							sb.append("value = ");
+							sb.append(p.getValue());
+							sb.append("\n");
+							System.out.println(sb.toString());
+						}
+
+						response.setEntity(sb.toString(), MediaType.TEXT_PLAIN);
+						System.out.println("Done!");
+					}
+				}
+			};
+
+			container.getDefaultHost().attach("/test", restlet);
+
+			// Now, start the container
+			container.start();
+		}
+		catch (Exception e)
+		{
+			e.printStackTrace();
+		}
+	}
 }
