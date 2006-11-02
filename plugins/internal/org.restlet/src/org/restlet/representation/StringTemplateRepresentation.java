@@ -29,22 +29,22 @@ import java.io.OutputStream;
 import java.io.OutputStreamWriter;
 
 import org.restlet.data.MediaType;
-import org.restlet.model.MapModel;
-import org.restlet.model.Model;
-import org.restlet.model.StringTemplate;
+import org.restlet.util.DataModel;
+import org.restlet.util.MapModel;
+import org.restlet.util.StringTemplate;
 
 /**
  * Representation based on a simple string template.
  * Note that the string value is dynamically computed, each time it is accessed.
  * @author Jerome Louvel (contact@noelios.com) <a href="http://www.noelios.com/">Noelios Consulting</a>
  */
-public class StringTemplateRepresentation extends StreamRepresentation implements Model
+public class StringTemplateRepresentation extends StreamRepresentation
 {
 	/** The string template. */
 	private StringTemplate template;
 
 	/** The template model. */
-	private Model model;
+	private DataModel model;
 
 	/**
 	 * Constructor.
@@ -52,7 +52,7 @@ public class StringTemplateRepresentation extends StreamRepresentation implement
 	 * @param model The template model to use.
 	 * @param mediaType The representation's media type.
 	 */
-	public StringTemplateRepresentation(CharSequence pattern, Model model,
+	public StringTemplateRepresentation(CharSequence pattern, DataModel model,
 			MediaType mediaType)
 	{
 		super(mediaType);
@@ -82,12 +82,12 @@ public class StringTemplateRepresentation extends StreamRepresentation implement
 	 * @param mediaType The representation's media type.
 	 */
 	public StringTemplateRepresentation(CharSequence pattern, String variableStart,
-			String variableEnd, String instructionStart, String instructionEnd, Model model,
-			MediaType mediaType)
+			String variableEnd, String instructionStart, String instructionEnd,
+			DataModel model, MediaType mediaType)
 	{
 		super(mediaType);
-		this.template = new StringTemplate(pattern, variableStart,
-				variableEnd, instructionStart, instructionEnd);
+		this.template = new StringTemplate(pattern, variableStart, variableEnd,
+				instructionStart, instructionEnd);
 		this.template.setLogger(getLogger());
 		this.model = model;
 	}
@@ -110,42 +110,21 @@ public class StringTemplateRepresentation extends StreamRepresentation implement
 	}
 
 	/**
+	 * Returns the data model.
+	 * @return The data model.
+	 */
+	public DataModel getModel()
+	{
+		return this.model;
+	}
+
+	/**
 	 * Returns the internal value.
 	 * @return The internal value.
 	 */
 	public String getValue()
 	{
 		return this.template.format(this.model);
-	}
-
-	/**
-	 * Returns the model value for a given name.
-	 * @param name The name to look-up.
-	 * @return The model value for the given name.
-	 */
-	public String get(String name)
-	{
-		return this.model.get(name);
-	}
-
-	/**
-	 * Indicates if the model contains a value for a given name.
-	 * @param name The name to look-up.
-	 * @return True if the model contains a value for the given name.
-	 */
-	public boolean contains(String name)
-	{
-		return this.model.contains(name);
-	}
-
-	/**
-	 * Puts the model value for a given name.
-	 * @param name The name to look-up.
-	 * @param value The value to put.
-	 */
-	public void put(String name, String value)
-	{
-		this.model.put(name, value);
 	}
 
 	/**
