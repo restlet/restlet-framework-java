@@ -20,7 +20,7 @@
  * Portions Copyright [yyyy] [name of copyright owner]
  */
 
-package org.restlet.model;
+package org.restlet.util;
 
 import java.util.Iterator;
 import java.util.List;
@@ -63,7 +63,7 @@ import org.restlet.data.Response;
  * </ul>
  * @author Jerome Louvel (contact@noelios.com) <a href="http://www.noelios.com/">Noelios Consulting</a>
  */
-public class CallModel implements ReadableModel
+public class CallModel implements DataModel
 {
 	public static final String NAME_ATTRIBUTE = "attribute";
 
@@ -113,6 +113,30 @@ public class CallModel implements ReadableModel
 
 	public static final String NAME_STATUS = "status";
 
+	/**
+	 * Reads the first cookie available with the given name or null.
+	 * @param source The source list of cookies.
+	 * @param name The name of the cookie to return.
+	 * @return The first cookie available with the given name or null.
+	 */
+	private static Cookie getFirstCookie(List<Cookie> source, String name)
+	{
+		Cookie result = null;
+		Cookie cookie;
+
+		for (Iterator<Cookie> iter = source.iterator(); (result == null) && iter.hasNext();)
+		{
+			cookie = iter.next();
+
+			if (name.equals(cookie.getName()))
+			{
+				result = cookie;
+			}
+		}
+
+		return result;
+	}
+
 	/** The wrapped request. */
 	private Request request;
 
@@ -135,14 +159,145 @@ public class CallModel implements ReadableModel
 		this.defaultValue = defaultValue;
 	}
 
-	/**
-	 * Returns the model value for a given name.
-	 * @param name The name to look-up.
-	 * @return The model value for the given name.
-	 */
-	public String get(String name)
+   /**
+    * Removes all the model values.
+    * @throws UnsupportedOperationException if the map is read-only.
+    */
+	public void clear()
+	{
+		throw new UnsupportedOperationException();
+	}
+
+   /**
+    * Indicates if the model contains a value for a given key.
+    * @param key The key to look-up.
+    * @return True if the model contains a value for the given key.
+    */
+   public boolean containsKey(String key)
+	{
+		boolean result = false;
+		String name = key.toString();
+
+		if (name.startsWith(NAME_ATTRIBUTE))
+		{
+			result = (request.getAttributes().size() > 0)
+					|| (response.getAttributes().size() > 0);
+		}
+		else if (name.equals(NAME_BASE_URI))
+		{
+			result = (request.getBaseRef() != null);
+		}
+		else if (name.startsWith(NAME_CLIENT_ADDRESS))
+		{
+			result = (request.getClientInfo().getAddress() != null);
+		}
+		else if (name.equals(NAME_CLIENT_AGENT))
+		{
+			result = (request.getClientInfo().getAgent() != null);
+		}
+		else if (name.startsWith(NAME_COOKIE))
+		{
+			result = (request.getCookies() != null) && (request.getCookies().size() > 0);
+		}
+		else if (name.equals(NAME_METHOD))
+		{
+			result = (request.getMethod() != null);
+		}
+		else if (name.equals(NAME_REDIRECT_URI))
+		{
+			result = (response.getRedirectRef() != null);
+		}
+		else if (name.equals(NAME_REFERRER_URI))
+		{
+			result = (request.getReferrerRef() != null);
+		}
+		else if (name.equals(NAME_RELATIVE_URI))
+		{
+			result = (request.getRelativePart() != null);
+		}
+		else if (name.equals(NAME_RESOURCE_AUTHORITY))
+		{
+			result = (request.getResourceRef() != null)
+					&& (request.getResourceRef().getAuthority() != null);
+		}
+		else if (name.equals(NAME_RESOURCE_FRAGMENT))
+		{
+			result = (request.getResourceRef() != null)
+					&& (request.getResourceRef().getFragment() != null);
+		}
+		else if (name.equals(NAME_RESOURCE_HOST_DOMAIN))
+		{
+			result = (request.getResourceRef() != null)
+					&& (request.getResourceRef().getHostDomain() != null);
+		}
+		else if (name.equals(NAME_RESOURCE_HOST_PORT))
+		{
+			result = (request.getResourceRef() != null)
+					&& (request.getResourceRef().getHostPort() != null);
+		}
+		else if (name.equals(NAME_RESOURCE_HOST_IDENTIFIER))
+		{
+			result = (request.getResourceRef() != null)
+					&& (request.getResourceRef().getHostIdentifier() != null);
+		}
+		else if (name.equals(NAME_RESOURCE_IDENTIFIER))
+		{
+			result = (request.getResourceRef() != null);
+		}
+		else if (name.equals(NAME_RESOURCE_PATH))
+		{
+			result = (request.getResourceRef() != null)
+					&& (request.getResourceRef().getPath() != null);
+		}
+		else if (name.startsWith(NAME_RESOURCE_QUERY))
+		{
+			result = (request.getResourceRef() != null)
+					&& (request.getResourceRef().getQuery() != null);
+		}
+		else if (name.equals(NAME_RESOURCE_SCHEME))
+		{
+			result = (request.getResourceRef() != null)
+					&& (request.getResourceRef().getScheme() != null);
+		}
+		else if (name.startsWith(NAME_RESOURCE_SEGMENT))
+		{
+			result = (request.getResourceRef() != null)
+					&& (request.getResourceRef().getSegments().size() > 0);
+		}
+		else if (name.equals(NAME_RESOURCE_URI))
+		{
+			result = (request.getResourceRef() != null);
+		}
+		else if (name.equals(NAME_RESOURCE_USER_INFO))
+		{
+			result = (request.getResourceRef() != null)
+					&& (request.getResourceRef().getUserInfo() != null);
+		}
+		else if (name.equals(NAME_SERVER_ADDRESS))
+		{
+			result = (response.getServerInfo().getAddress() != null);
+		}
+		else if (name.equals(NAME_SERVER_AGENT))
+		{
+			result = (response.getServerInfo().getAgent() != null);
+		}
+		else if (name.equals(NAME_STATUS))
+		{
+			result = (response.getStatus() != null);
+		}
+
+		return result;
+	}
+
+   /**
+    * Returns the model value for a given key.
+    * @param key The key to look-up.
+    * @return The model value for the given key.
+    */
+	public String get(String key)
 	{
 		String result = null;
+		String name = key.toString();
 
 		try
 		{
@@ -418,6 +573,25 @@ public class CallModel implements ReadableModel
 	}
 
 	/**
+	 * Returns the variable name contained in the token.
+	 * @param token The token containing the variable name.
+	 * @return The variable name.
+	 */
+	protected String getVariableName(String token)
+	{
+		return token.substring(1, token.length() - 1);
+	}
+   
+   /**
+    * Indicates if this model cannot be modified.
+    * @return True if this model cannot be modified.
+    */
+   public boolean isReadOnly()
+	{
+		return true;
+	}
+
+	/**
 	 * Indicates if the token contains a variable name.
 	 * @param token The token to test.
 	 * @return True if the token contains a variable name.
@@ -428,158 +602,26 @@ public class CallModel implements ReadableModel
 				.charAt(0) == '\'') && (token.charAt(token.length() - 1) == '\'')));
 	}
 
-	/**
-	 * Returns the variable name contained in the token.
-	 * @param token The token containing the variable name.
-	 * @return The variable name.
-	 */
-	protected String getVariableName(String token)
+   /**
+    * Puts the model value for a given name.
+    * @param key The key to look-up.
+    * @param value The value to put.
+    * @throws UnsupportedOperationException if the map is read-only.
+    */
+   public void put(String key, String value)
 	{
-		return token.substring(1, token.length() - 1);
+		throw new UnsupportedOperationException();
 	}
 
-	/**
-	 * Indicates if the model contains a value for a given name.
-	 * @param name The name to look-up.
-	 * @return True if the model contains a value for the given name.
-	 */
-	public boolean contains(String name)
+   /**
+    * Removes a model value for a given key.
+    * @param key The key to look-up.
+    * @return The old value removed.
+    * @throws UnsupportedOperationException if the map is read-only.
+    */
+   public String remove(String key)
 	{
-		boolean result = false;
-
-		if (name.startsWith(NAME_ATTRIBUTE))
-		{
-			result = (request.getAttributes().size() > 0)
-					|| (response.getAttributes().size() > 0);
-		}
-		else if (name.equals(NAME_BASE_URI))
-		{
-			result = (request.getBaseRef() != null);
-		}
-		else if (name.startsWith(NAME_CLIENT_ADDRESS))
-		{
-			result = (request.getClientInfo().getAddress() != null);
-		}
-		else if (name.equals(NAME_CLIENT_AGENT))
-		{
-			result = (request.getClientInfo().getAgent() != null);
-		}
-		else if (name.startsWith(NAME_COOKIE))
-		{
-			result = (request.getCookies() != null) && (request.getCookies().size() > 0);
-		}
-		else if (name.equals(NAME_METHOD))
-		{
-			result = (request.getMethod() != null);
-		}
-		else if (name.equals(NAME_REDIRECT_URI))
-		{
-			result = (response.getRedirectRef() != null);
-		}
-		else if (name.equals(NAME_REFERRER_URI))
-		{
-			result = (request.getReferrerRef() != null);
-		}
-		else if (name.equals(NAME_RELATIVE_URI))
-		{
-			result = (request.getRelativePart() != null);
-		}
-		else if (name.equals(NAME_RESOURCE_AUTHORITY))
-		{
-			result = (request.getResourceRef() != null)
-					&& (request.getResourceRef().getAuthority() != null);
-		}
-		else if (name.equals(NAME_RESOURCE_FRAGMENT))
-		{
-			result = (request.getResourceRef() != null)
-					&& (request.getResourceRef().getFragment() != null);
-		}
-		else if (name.equals(NAME_RESOURCE_HOST_DOMAIN))
-		{
-			result = (request.getResourceRef() != null)
-					&& (request.getResourceRef().getHostDomain() != null);
-		}
-		else if (name.equals(NAME_RESOURCE_HOST_PORT))
-		{
-			result = (request.getResourceRef() != null)
-					&& (request.getResourceRef().getHostPort() != null);
-		}
-		else if (name.equals(NAME_RESOURCE_HOST_IDENTIFIER))
-		{
-			result = (request.getResourceRef() != null)
-					&& (request.getResourceRef().getHostIdentifier() != null);
-		}
-		else if (name.equals(NAME_RESOURCE_IDENTIFIER))
-		{
-			result = (request.getResourceRef() != null);
-		}
-		else if (name.equals(NAME_RESOURCE_PATH))
-		{
-			result = (request.getResourceRef() != null)
-					&& (request.getResourceRef().getPath() != null);
-		}
-		else if (name.startsWith(NAME_RESOURCE_QUERY))
-		{
-			result = (request.getResourceRef() != null)
-					&& (request.getResourceRef().getQuery() != null);
-		}
-		else if (name.equals(NAME_RESOURCE_SCHEME))
-		{
-			result = (request.getResourceRef() != null)
-					&& (request.getResourceRef().getScheme() != null);
-		}
-		else if (name.startsWith(NAME_RESOURCE_SEGMENT))
-		{
-			result = (request.getResourceRef() != null)
-					&& (request.getResourceRef().getSegments().size() > 0);
-		}
-		else if (name.equals(NAME_RESOURCE_URI))
-		{
-			result = (request.getResourceRef() != null);
-		}
-		else if (name.equals(NAME_RESOURCE_USER_INFO))
-		{
-			result = (request.getResourceRef() != null)
-					&& (request.getResourceRef().getUserInfo() != null);
-		}
-		else if (name.equals(NAME_SERVER_ADDRESS))
-		{
-			result = (response.getServerInfo().getAddress() != null);
-		}
-		else if (name.equals(NAME_SERVER_AGENT))
-		{
-			result = (response.getServerInfo().getAgent() != null);
-		}
-		else if (name.equals(NAME_STATUS))
-		{
-			result = (response.getStatus() != null);
-		}
-
-		return result;
-	}
-
-	/**
-	 * Reads the first cookie available with the given name or null.
-	 * @param source The source list of cookies.
-	 * @param name The name of the cookie to return.
-	 * @return The first cookie available with the given name or null.
-	 */
-	public static Cookie getFirstCookie(List<Cookie> source, String name)
-	{
-		Cookie result = null;
-		Cookie cookie;
-
-		for (Iterator<Cookie> iter = source.iterator(); (result == null) && iter.hasNext();)
-		{
-			cookie = iter.next();
-
-			if (name.equals(cookie.getName()))
-			{
-				result = cookie;
-			}
-		}
-
-		return result;
+		throw new UnsupportedOperationException();
 	}
 
 }

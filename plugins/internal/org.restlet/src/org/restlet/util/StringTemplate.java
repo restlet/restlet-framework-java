@@ -20,12 +20,12 @@
  * Portions Copyright [yyyy] [name of copyright owner]
  */
 
-package org.restlet.model;
+package org.restlet.util;
 
 import java.io.IOException;
+import java.util.Map;
 import java.util.logging.Level;
 import java.util.logging.Logger;
-
 
 /**
  * String template that enforces a strict separation between the pattern and the model. It supports 
@@ -126,17 +126,17 @@ public class StringTemplate
 	 * @param formattedSource
 	 * @param model
 	 */
-	public void parse(String formattedSource, WritableModel model)
+	public void parse(String formattedSource, Map<String, Object> model)
 	{
 		// TODO
 	}
-	
+
 	/**
 	 * Formats the template using the given data model.
 	 * @param model The template model to use.
 	 * @return The generated string.
 	 */
-	public String format(ReadableModel model)
+	public String format(DataModel model)
 	{
 		StringBuilder sb = new StringBuilder();
 		char nextChar = 0;
@@ -385,7 +385,7 @@ public class StringTemplate
 	 * @param model The template model to use.
 	 */
 	private void processText(int state, int tokenStart, int tokenEnd,
-			StringBuilder buffer, ReadableModel model)
+			StringBuilder buffer, DataModel model)
 	{
 		if (state == TEXT_APPEND)
 		{
@@ -408,7 +408,7 @@ public class StringTemplate
 	 * @return The state after processing.
 	 */
 	private int processInstruction(int textState, int tokenStart, int tokenEnd,
-			StringBuilder buffer, ReadableModel model)
+			StringBuilder buffer, DataModel model)
 	{
 		String instruction = template.subSequence(tokenStart, tokenEnd).toString();
 		getLogger().log(Level.FINER, "processInstruction: " + instruction, buffer);
@@ -471,7 +471,7 @@ public class StringTemplate
 	 * @return The state after processing.
 	 */
 	private int processVariable(int textState, int tokenStart, int tokenEnd,
-			StringBuilder buffer, ReadableModel model)
+			StringBuilder buffer, DataModel model)
 	{
 		String variable = template.subSequence(tokenStart, tokenEnd).toString();
 		getLogger().log(Level.FINER, "processVariable: " + variable, buffer);
@@ -486,7 +486,7 @@ public class StringTemplate
 
 			if (condition.equals("exists"))
 			{
-				append = model.contains(variable);
+				append = model.containsKey(variable);
 			}
 		}
 
@@ -504,7 +504,7 @@ public class StringTemplate
 	 * @param model The template model to use.
 	 * @return The evaluation result.
 	 */
-	private boolean evaluateCondition(String condition, ReadableModel model)
+	private boolean evaluateCondition(String condition, DataModel model)
 	{
 		getLogger().log(Level.FINER, "evaluateCondition: " + condition, model);
 		boolean result = false;
@@ -514,9 +514,9 @@ public class StringTemplate
 			if (condition.endsWith("?exists"))
 			{
 				String key = condition.subSequence(0, condition.length() - 7).toString();
-				result = model.contains(key);
+				result = model.containsKey(key);
 			}
-			else if (model.contains(condition))
+			else if (model.containsKey(condition))
 			{
 				Object value = model.get(condition);
 

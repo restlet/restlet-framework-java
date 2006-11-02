@@ -20,6 +20,10 @@ Changes log
  - Renamed LogService."loggerName" and "format" properties to add the "access" prefix. Added "contextLoggerName" property.
  - Moved Resource and Representation to new org.restlet.resource package.
  - Moved Service and subclasses to new org.restlet.service package.
+ - Renamed RedirectRestlet into org.restlet.Redirector.
+ - Renamed ExtractFilter into org.restlet.Extractor.
+ - Renamed TunnelFilter into org.restlet.Tunnel.
+ - Refactor data model of StringTemplate. New org.restlet.util.DataModel added, Model, ReadableModel and WritableModel removed.
 
 [Other changes] 
  - Reorganized Javadocs into three parts: Restlet API, Restlet Extensions, Noelios Restlet Engine.

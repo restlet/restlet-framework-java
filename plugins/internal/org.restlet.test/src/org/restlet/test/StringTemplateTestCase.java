@@ -26,9 +26,10 @@ import junit.framework.TestCase;
 
 import org.restlet.data.Request;
 import org.restlet.data.Response;
-import org.restlet.model.CallModel;
-import org.restlet.model.MapModel;
-import org.restlet.model.StringTemplate;
+import org.restlet.util.CallModel;
+import org.restlet.util.DataModel;
+import org.restlet.util.MapModel;
+import org.restlet.util.StringTemplate;
 
 /**
  * Unit tests for the StringTemplate class.
@@ -39,7 +40,7 @@ public class StringTemplateTestCase extends TestCase
    /** Tests the interpolation feature. */
    public void testInterpolation()
    {
-   	MapModel dataModel = new MapModel();
+   	DataModel dataModel = new MapModel();
       dataModel.put("number", Integer.toString(12345));
       dataModel.put("string", "abcdef");
 
@@ -56,7 +57,7 @@ public class StringTemplateTestCase extends TestCase
    /** Tests the conditions feature. */
    public void testConditions()
    {
-   	MapModel dataModel = new MapModel();
+   	DataModel dataModel = new MapModel();
       dataModel.put("number", Integer.toString(12345));
       dataModel.put("string", "abcdef");
 

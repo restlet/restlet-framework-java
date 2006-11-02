@@ -31,7 +31,7 @@ import org.restlet.data.Form;
 import org.restlet.data.Request;
 import org.restlet.data.Response;
 import org.restlet.data.Status;
-import org.restlet.model.CallModel;
+import org.restlet.util.CallModel;
 
 /**
  * Filter extracting some attributes from a request. Multiple extractions can be defined, based on the query 
@@ -39,7 +39,7 @@ import org.restlet.model.CallModel;
  * or on the request's template model.
  * @author Jerome Louvel (contact@noelios.com) <a href="http://www.noelios.com/">Noelios Consulting</a>
  */
-public class ExtractFilter extends Filter
+public class Extractor extends Filter
 {
 	/**
 	 * List of query parameters to extract.
@@ -65,7 +65,7 @@ public class ExtractFilter extends Filter
 	 * Constructor.
 	 * @param context The context.
 	 */
-	public ExtractFilter(Context context)
+	public Extractor(Context context)
 	{
 		super(context);
 		this.queryExtracts = null;
@@ -221,7 +221,7 @@ public class ExtractFilter extends Filter
 	 * @param parameterName The name of the query string parameter to extract.
 	 * @return The current Filter.
 	 */
-	public ExtractFilter fromQuery(String attributeName, String parameterName)
+	public Extractor fromQuery(String attributeName, String parameterName)
 	{
 		return fromQuery(attributeName, parameterName, false);
 	}
@@ -233,7 +233,7 @@ public class ExtractFilter extends Filter
 	 * @param multiple Indicates if the parameters should be set as a List in the attribute value. Useful for repeating parameters.
 	 * @return The current Filter.
 	 */
-	public ExtractFilter fromQuery(String attributeName, String parameterName,
+	public Extractor fromQuery(String attributeName, String parameterName,
 			boolean multiple)
 	{
 		getQueryExtracts().add(new ExtractInfo(attributeName, parameterName, multiple));
@@ -247,7 +247,7 @@ public class ExtractFilter extends Filter
 	 * @param parameterName The name of the entity form parameter to extract.
 	 * @return The current Filter.
 	 */
-	public ExtractFilter fromEntity(String attributeName, String parameterName)
+	public Extractor fromEntity(String attributeName, String parameterName)
 	{
 		return fromEntity(attributeName, parameterName, false);
 	}
@@ -259,7 +259,7 @@ public class ExtractFilter extends Filter
 	 * @param multiple Indicates if the parameters should be set as a List in the attribute value. Useful for repeating parameters.
 	 * @return The current Filter.
 	 */
-	public ExtractFilter fromEntity(String attributeName, String parameterName,
+	public Extractor fromEntity(String attributeName, String parameterName,
 			boolean multiple)
 	{
 		getEntityExtracts().add(new ExtractInfo(attributeName, parameterName, multiple));
@@ -271,9 +271,9 @@ public class ExtractFilter extends Filter
 	 * @param attributeName The name of the call attribute to set.
 	 * @param pattern The model pattern to resolve.
 	 * @return The current Filter.
-	 * @see org.restlet.model.CallModel
+	 * @see org.restlet.util.CallModel
 	 */
-	public ExtractFilter fromModel(String attributeName, String pattern)
+	public Extractor fromModel(String attributeName, String pattern)
 	{
 		getModelExtracts().add(new ExtractInfo(attributeName, pattern));
 		return this;
@@ -287,7 +287,7 @@ public class ExtractFilter extends Filter
 	 * @param offset The position of the segment.
 	 * @return The current Filter.
 	 */
-	public ExtractFilter fromSegment(String attributeName, int offset)
+	public Extractor fromSegment(String attributeName, int offset)
 	{
 		getSegmentExtracts().add(new ExtractInfo(attributeName, offset));
 		return this;
