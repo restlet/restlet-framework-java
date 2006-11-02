@@ -89,17 +89,18 @@ public class SecurityUtils
 			String methodName = request.getMethod().getName();
 
 			// Setup the Date header
-			String date = httpHeaders.getFirstValue("X-Amz-Date", true);
+			String date = "";
 
-			if (date == null)
+			if (httpHeaders.getFirstValue("X-Amz-Date", true) == null)
 			{
+				//	X-Amz-Date header didn't override the standard Date header
 				date = httpHeaders.getFirstValue(HttpConstants.HEADER_DATE, true);
-			}
-
-			if (date == null)
-			{
-				date = DateUtils.format(new Date(), DateUtils.FORMAT_RFC_1123[0]);
-				httpHeaders.add(HttpConstants.HEADER_DATE, date);
+				if (date == null)
+				{
+					// Add a fresh Date header
+					date = DateUtils.format(new Date(), DateUtils.FORMAT_RFC_1123[0]);
+					httpHeaders.add(HttpConstants.HEADER_DATE, date);
+				}
 			}
 
 			// Setup the ContentType header
@@ -190,12 +191,7 @@ public class SecurityUtils
 		for (Parameter param : requestHeaders)
 		{
 			headerName = param.getName().toLowerCase();
-
-			if (headerName.equals("x-amz-date"))
-			{
-				// Ignore as we set the Date header.
-			}
-			else if (headerName.startsWith("x-amz-"))
+			if (headerName.startsWith("x-amz-"))
 			{
 				if (!amzHeaders.containsKey(headerName))
 				{
