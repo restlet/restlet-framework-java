@@ -30,8 +30,8 @@ import java.util.List;
 import org.restlet.data.Protocol;
 
 /**
- * Router of calls from server connectors to attached Restlets. The attached Restlets are typically
- * applications.
+ * Router of calls from server Connectors to attached Restlets. The attached Restlets are typically
+ * Applications.
  * @author Jerome Louvel (contact@noelios.com) <a href="http://www.noelios.com/">Noelios Consulting</a>
  */
 public class VirtualHost extends Router

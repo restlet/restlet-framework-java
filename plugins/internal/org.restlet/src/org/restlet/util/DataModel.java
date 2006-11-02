@@ -23,10 +23,10 @@
 package org.restlet.util;
 
 /**
- * Data model that can be used by the template engines. If this model is read-only, some methods will throw an
+ * Data model that can be provided to the StringTemplate class. If this model is read-only, some methods will throw an
  * UnsupportedOperationException exception. It is similar to the JDK's Map interface but has a narrower scope
  * which makes it more suitable for dynamic models and easier to be implemented by domain classes.
- * @see com.noelios.restlet.util.StringTemplate
+ * @see org.restlet.util.StringTemplate
  * @author Jerome Louvel (contact@noelios.com) <a href="http://www.noelios.com/">Noelios Consulting</a>
  */
 public interface DataModel

@@ -34,7 +34,7 @@ import org.restlet.resource.Representation;
 import org.restlet.resource.Resource;
 
 /**
- * Restlet capable of handling calls using a target Resource. At this point in the processing, all the 
+ * Restlet capable of handling calls using a target resource. At this point in the processing, all the 
  * necessary information should be ready in order to find the resource that is the actual target of the 
  * request and to handle the required method on it.<br/> 
  * <br/>

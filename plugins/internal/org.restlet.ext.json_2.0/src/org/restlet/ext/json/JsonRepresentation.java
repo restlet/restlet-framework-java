@@ -46,7 +46,7 @@ public class JsonRepresentation extends StringRepresentation
     */
    public JsonRepresentation(Representation jsonRepresentation) throws IOException
    {
-      super(jsonRepresentation.toString(), MediaType.APPLICATION_JSON);
+      super(jsonRepresentation.getValue(), MediaType.APPLICATION_JSON);
    }
 
    /**

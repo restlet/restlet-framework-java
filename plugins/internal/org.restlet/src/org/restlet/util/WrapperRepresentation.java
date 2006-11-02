@@ -491,12 +491,11 @@ public class WrapperRepresentation extends Representation
    }
 
    /**
-    * Converts the representation to a string.
-    * @return The representation as a string.
+    * Converts the representation to a string value.
+    * @return The representation as a string value.
     */
-   public String toString()
+   public String getValue()
    {
-      return getWrappedRepresentation().toString();
+      return getWrappedRepresentation().getValue();
    }
-	
 }

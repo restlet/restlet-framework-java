@@ -33,9 +33,9 @@ import org.restlet.spi.Factory;
 import org.restlet.spi.Helper;
 
 /**
- * Component managing a set of virtual hosts and applications. Applications are expected to be directly attached 
- * to virtual hosts. Containers are also exposing a number of services in order to control several operational
- * features in a portable way, like access log and status setting. 
+ * Component managing a set of VirtualHosts and Applications. Applications are expected to be directly
+ * attached to VirtualHosts. Containers are also exposing a number of services in order to control several 
+ * operational features in a portable way, like access log and status setting. 
  * @author Jerome Louvel (contact@noelios.com) <a href="http://www.noelios.com/">Noelios Consulting</a>
  */
 public class Container extends Component

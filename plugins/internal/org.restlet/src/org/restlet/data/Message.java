@@ -124,7 +124,7 @@ public abstract class Message
 	 */
 	public String getEntityAsString()
 	{
-		return getEntity().toString();
+		return getEntity().getValue();
 	}
 
 	/**

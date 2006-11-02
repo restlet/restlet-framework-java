@@ -190,10 +190,10 @@ public class EncoderRepresentation extends WrapperRepresentation
 	}
 
 	/**
-	 * Converts the representation to a string.
-	 * @return The representation as a string.
+	 * Converts the representation to a string value.
+	 * @return The representation as a string value.
 	 */
-	public String toString()
+	public String getValue()
 	{
 		String result = null;
 
@@ -209,7 +209,7 @@ public class EncoderRepresentation extends WrapperRepresentation
 		}
 		else
 		{
-			result = getWrappedRepresentation().toString();
+			result = getWrappedRepresentation().getValue();
 		}
 
 		return result;

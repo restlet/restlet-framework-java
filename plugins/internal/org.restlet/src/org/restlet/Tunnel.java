@@ -32,12 +32,11 @@ import org.restlet.data.Request;
 import org.restlet.data.Response;
 
 /**
- * Filter extracting some attributes from a call.
- * Multiple extractions can be defined, based on the query part of the resource reference,
- * on the entity form (posted from a browser), on the context matches or on the call's template model.
+ * Filter tunnelling browser calls into full REST calls. The request method can be changed as well as the 
+ * accepted media types, languages, encodings, etc.  
  * @author Jerome Louvel (contact@noelios.com) <a href="http://www.noelios.com/">Noelios Consulting</a>
  */
-public class Tunnel extends Extractor
+public class Tunnel extends Filter
 {
 	/** Indicates if the method name can be tunneled. */
 	private boolean methodTunnel;

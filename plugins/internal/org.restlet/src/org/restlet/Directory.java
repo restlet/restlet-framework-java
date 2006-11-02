@@ -38,10 +38,10 @@ import org.restlet.resource.Resource;
 import org.restlet.resource.StringRepresentation;
 
 /**
- * Handler supported by a directory of resource (from the file system, the web application context or 
- * class loaders). An automatic content negotiation mechanism (similar to the one in Apache HTTP server) is 
- * used to select the best representation of a resource based on the available variants and on the client 
- * capabilities and preferences.
+ * Handler mapping a directory of local resources. Those resources have representations accessed by the file 
+ * system, the WAR context or the class loaders. An automatic content negotiation mechanism (similar 
+ * to the one in Apache HTTP server) is used to select the best representation of a resource based on the 
+ * available variants and on the client capabilities and preferences.
  * @see <a href="http://www.restlet.org/tutorial#part06">Tutorial: Serving context resources</a>
  * @author Jerome Louvel (contact@noelios.com) <a href="http://www.noelios.com/">Noelios Consulting</a>
  */

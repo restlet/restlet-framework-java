@@ -27,10 +27,9 @@ import org.restlet.spi.Factory;
 import org.restlet.spi.ServerList;
 
 /**
- * Restlet managing a set of client and server connectors.<br/>
- * <br/>
- * "A component is an abstract unit of software instructions and internal state that provides a 
- * transformation of data via its interface." Roy T. Fielding
+ * Restlet managing a set of Clients, Servers and other Restlets. "A component is an abstract unit of 
+ * software instructions and internal state that provides a transformation of data via its interface." 
+ * Roy T. Fielding
  * @see <a href="http://www.ics.uci.edu/~fielding/pubs/dissertation/software_arch.htm#sec_1_2_1">Source
  * dissertation</a>
  * @author Jerome Louvel (contact@noelios.com) <a href="http://www.noelios.com/">Noelios Consulting</a>

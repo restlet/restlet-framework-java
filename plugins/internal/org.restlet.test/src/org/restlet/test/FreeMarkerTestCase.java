@@ -44,7 +44,7 @@ public class FreeMarkerTestCase extends TestCase
 		Map<String, Object> map = new TreeMap<String, Object>();
 		map.put("value", "myValue");
 		
-		String result = new TemplateRepresentation(testFile.getName(), fmc, map, MediaType.TEXT_PLAIN).toString();
+		String result = new TemplateRepresentation(testFile.getName(), fmc, map, MediaType.TEXT_PLAIN).getValue();
 		assertEquals("Value=myValue", result);
 
 		// Clean-up

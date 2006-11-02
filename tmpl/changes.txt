@@ -24,6 +24,7 @@ Changes log
  - Renamed ExtractFilter into org.restlet.Extractor.
  - Renamed TunnelFilter into org.restlet.Tunnel.
  - Refactor data model of StringTemplate. New org.restlet.util.DataModel added, Model, ReadableModel and WritableModel removed.
+ - Replace Representation.toString() by getValue() to prevent unwanted consumption of the content. Reported by Vincent Lari.
 
 [Other changes] 
  - Reorganized Javadocs into three parts: Restlet API, Restlet Extensions, Noelios Restlet Engine.
