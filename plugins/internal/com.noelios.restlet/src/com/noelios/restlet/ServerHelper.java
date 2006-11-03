@@ -31,7 +31,7 @@ import org.restlet.data.Request;
 import org.restlet.data.Response;
 
 /**
- * Delegate used by API connector classes to get support from the implementation classes.  
+ * Server connector helper.  
  * @author Jerome Louvel (contact@noelios.com) <a href="http://www.noelios.com/">Noelios Consulting</a>
  */
 public class ServerHelper extends ConnectorHelper

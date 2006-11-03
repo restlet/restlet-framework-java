@@ -32,7 +32,7 @@ import org.restlet.data.Response;
 import org.restlet.spi.Helper;
 
 /**
- * Delegate used by API connector classes to get support from the implementation classes.  
+ * Base connector helper.  
  * @author Jerome Louvel (contact@noelios.com) <a href="http://www.noelios.com/">Noelios Consulting</a>
  */
 public class ConnectorHelper implements Helper

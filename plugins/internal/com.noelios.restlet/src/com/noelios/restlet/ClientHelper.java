@@ -29,7 +29,7 @@ import org.restlet.Context;
 import org.restlet.data.ParameterList;
 
 /**
- * Delegate used by API connector classes to get support from the implementation classes.  
+ * Client connector helper.  
  * @author Jerome Louvel (contact@noelios.com) <a href="http://www.noelios.com/">Noelios Consulting</a>
  */
 public class ClientHelper extends ConnectorHelper
