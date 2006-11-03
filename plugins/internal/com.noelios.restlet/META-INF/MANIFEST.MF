@@ -9,8 +9,6 @@ Require-Bundle: org.restlet;visibility:=reexport
 Export-Package: com.noelios.restlet,
  com.noelios.restlet.application,
  com.noelios.restlet.container,
- com.noelios.restlet.data,
- com.noelios.restlet.filter,
  com.noelios.restlet.http,
  com.noelios.restlet.local,
  com.noelios.restlet.util

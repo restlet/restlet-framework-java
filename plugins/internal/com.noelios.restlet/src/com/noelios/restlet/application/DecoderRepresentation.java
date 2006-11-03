@@ -20,7 +20,7 @@
  * Portions Copyright [yyyy] [name of copyright owner]
  */
 
-package com.noelios.restlet.data;
+package com.noelios.restlet.application;
 
 import java.io.IOException;
 import java.io.InputStream;
