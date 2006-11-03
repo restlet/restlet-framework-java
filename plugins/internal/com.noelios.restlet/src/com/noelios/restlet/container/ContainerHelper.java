@@ -33,8 +33,8 @@ import org.restlet.data.Response;
 import org.restlet.data.Status;
 import org.restlet.spi.Helper;
 
-import com.noelios.restlet.filter.LogFilter;
-import com.noelios.restlet.filter.StatusFilter;
+import com.noelios.restlet.LogFilter;
+import com.noelios.restlet.StatusFilter;
 
 /**
  * Container helper.

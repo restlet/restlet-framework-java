@@ -32,7 +32,7 @@ import org.restlet.util.WrapperList;
  * Modifiable list of client connectors.
  * @author Jerome Louvel (contact@noelios.com) <a href="http://www.noelios.com/">Noelios Consulting</a>
  */
-public class ClientListImpl extends WrapperList<Client> implements ClientList 
+public class DefaultClientList extends WrapperList<Client> implements ClientList 
 {
 	/** The context. */
 	private Context context;
@@ -41,7 +41,7 @@ public class ClientListImpl extends WrapperList<Client> implements ClientList
 	 * Constructor.
 	 * @param context The context.
 	 */
-	public ClientListImpl(Context context)
+	public DefaultClientList(Context context)
 	{
 		this.context = context;
 	}

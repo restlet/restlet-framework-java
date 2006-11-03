@@ -34,8 +34,7 @@ import org.restlet.data.Response;
 import org.restlet.data.Status;
 import org.restlet.spi.Helper;
 
-import com.noelios.restlet.filter.DecoderFilter;
-import com.noelios.restlet.filter.LogFilter;
+import com.noelios.restlet.LogFilter;
 
 /**
  * Application implementation.

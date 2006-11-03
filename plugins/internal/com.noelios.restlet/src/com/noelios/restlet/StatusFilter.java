@@ -20,7 +20,7 @@
  * Portions Copyright [yyyy] [name of copyright owner]
  */
 
-package com.noelios.restlet.filter;
+package com.noelios.restlet;
 
 import java.util.logging.Level;
 

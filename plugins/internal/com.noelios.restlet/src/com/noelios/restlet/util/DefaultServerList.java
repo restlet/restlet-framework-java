@@ -33,7 +33,7 @@ import org.restlet.util.WrapperList;
  * Servers list implementation.
  * @author Jerome Louvel (contact@noelios.com) <a href="http://www.noelios.com/">Noelios Consulting</a>
  */
-public class ServerListImpl extends WrapperList<Server> implements ServerList
+public class DefaultServerList extends WrapperList<Server> implements ServerList
 {
 	/** The context. */
 	private Context context;
@@ -46,7 +46,7 @@ public class ServerListImpl extends WrapperList<Server> implements ServerList
 	 * @param context The context.
 	 * @param target The target Restlet of added servers.
 	 */
-	public ServerListImpl(Context context, Restlet target)
+	public DefaultServerList(Context context, Restlet target)
 	{
 		this.context = context;
 		this.target = target;

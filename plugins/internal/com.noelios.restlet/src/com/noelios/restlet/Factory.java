@@ -64,13 +64,13 @@ import org.restlet.util.DateUtils;
 
 import com.noelios.restlet.application.ApplicationHelper;
 import com.noelios.restlet.container.ContainerHelper;
-import com.noelios.restlet.util.ClientListImpl;
+import com.noelios.restlet.util.DefaultClientList;
 import com.noelios.restlet.util.FormUtils;
-import com.noelios.restlet.util.ScorerListImpl;
-import com.noelios.restlet.util.ServerListImpl;
+import com.noelios.restlet.util.DefaultScorerList;
+import com.noelios.restlet.util.DefaultServerList;
 
 /**
- * Factory for the Noelios Restlet Engine.
+ * Restlet factory supported by the engine.
  * @author Jerome Louvel (contact@noelios.com) <a href="http://www.noelios.com/">Noelios Consulting</a>
  */
 public class Factory extends org.restlet.spi.Factory
@@ -227,7 +227,7 @@ public class Factory extends org.restlet.spi.Factory
 	 */
 	public ClientList createClientList(Context context)
 	{
-		return new ClientListImpl(context);
+		return new DefaultClientList(context);
 	}
 
 	/**
@@ -361,7 +361,7 @@ public class Factory extends org.restlet.spi.Factory
 	 */
 	public ScorerList createScorerList(Router router)
 	{
-		return new ScorerListImpl(router);
+		return new DefaultScorerList(router);
 	}
 
 	/**
@@ -372,7 +372,7 @@ public class Factory extends org.restlet.spi.Factory
 	 */
 	public ServerList createServerList(Context context, Restlet target)
 	{
-		return new ServerListImpl(context, target);
+		return new DefaultServerList(context, target);
 	}
 
 	/**

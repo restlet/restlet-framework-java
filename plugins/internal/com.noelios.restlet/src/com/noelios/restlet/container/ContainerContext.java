@@ -28,13 +28,13 @@ import org.restlet.data.Protocol;
 import org.restlet.data.Request;
 import org.restlet.data.Response;
 
-import com.noelios.restlet.ContextImpl;
+import com.noelios.restlet.DefaultContext;
 
 /**
  * Context allowing access to the container's connectors.
  * @author Jerome Louvel (contact@noelios.com) <a href="http://www.noelios.com/">Noelios Consulting</a>
  */
-public class ContainerContext extends ContextImpl
+public class ContainerContext extends DefaultContext
 {
 	/** The container helper. */
 	private ContainerHelper containerHelper;

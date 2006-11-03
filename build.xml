@@ -752,7 +752,7 @@
 			<link href="http://java.sun.com/j2se/1.5.0/docs/api/" />
 		</javadoc>
 	
-		<javadoc packagenames="org.restlet.ext.*"
+		<javadoc packagenames="org.restlet.ext.*,com.noelios.restlet.ext.*"
 				 excludepackagenames="${exclude-packages}"
 		         destdir="${docs-ext}"
 		         classpathref="path-all"
@@ -768,6 +768,15 @@
 				<pathelement path="${mod}/${mod-fileupload-id}/src/" />
 				<pathelement path="${mod}/${mod-freemarker-id}/src/" />
 				<pathelement path="${mod}/${mod-json-id}/src/" />
+				<pathelement path="${mod}/${mod-asyncweb-id}/src/" />
+				<pathelement path="${mod}/${mod-javamail-id}/src/" />
+				<pathelement path="${mod}/${mod-jdbc-id}/src/" />
+				<pathelement path="${mod}/${mod-jetty5-id}/src/" />
+				<pathelement path="${mod}/${mod-jetty6-id}/src/" />
+				<pathelement path="${mod}/${mod-jmx-id}/src/" />
+				<pathelement path="${mod}/${mod-net-id}/src/" />
+				<pathelement path="${mod}/${mod-servlet-id}/src/" />
+				<pathelement path="${mod}/${mod-simple-id}/src/" />
 			</sourcepath>
 
 			<bottom>
@@ -800,15 +809,6 @@
 		         verbose="${verbose}">
 			<sourcepath>
 				<pathelement path="${mod}/${mod-ri-id}/src/" />
-				<pathelement path="${mod}/${mod-asyncweb-id}/src/" />
-				<pathelement path="${mod}/${mod-javamail-id}/src/" />
-				<pathelement path="${mod}/${mod-jdbc-id}/src/" />
-				<pathelement path="${mod}/${mod-jetty5-id}/src/" />
-				<pathelement path="${mod}/${mod-jetty6-id}/src/" />
-				<pathelement path="${mod}/${mod-jmx-id}/src/" />
-				<pathelement path="${mod}/${mod-net-id}/src/" />
-				<pathelement path="${mod}/${mod-servlet-id}/src/" />
-				<pathelement path="${mod}/${mod-simple-id}/src/" />
 			</sourcepath>
 	
 			<bottom>

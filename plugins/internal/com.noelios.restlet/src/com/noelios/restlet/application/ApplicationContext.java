@@ -31,14 +31,14 @@ import org.restlet.data.Protocol;
 import org.restlet.data.Request;
 import org.restlet.data.Response;
 
-import com.noelios.restlet.ContextImpl;
+import com.noelios.restlet.DefaultContext;
 
 /**
  * Context based on a parent container's context but dedicated to an application. This is important to allow
  * contextual access to application's resources.
  * @author Jerome Louvel (contact@noelios.com) <a href="http://www.noelios.com/">Noelios Consulting</a>
  */
-public class ApplicationContext extends ContextImpl
+public class ApplicationContext extends DefaultContext
 {
 	/** The WAR client. */
 	private Client warClient;

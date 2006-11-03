@@ -22,7 +22,7 @@
  * Portions Copyright 2006 Lars Heuer (heuer[at]semagia.com)
  */
 
-package com.noelios.restlet.filter;
+package com.noelios.restlet.application;
 
 import java.util.Iterator;
 

@@ -45,7 +45,7 @@ import org.restlet.util.WrapperList;
  * @see java.util.Collections
  * @see java.util.List
  */
-public class ScorerListImpl extends WrapperList<Scorer> implements ScorerList 
+public class DefaultScorerList extends WrapperList<Scorer> implements ScorerList 
 {
 	/** The parent router. */
 	private Router router;
@@ -57,7 +57,7 @@ public class ScorerListImpl extends WrapperList<Scorer> implements ScorerList
 	 * Constructor.
 	 * @param router The parent router.
 	 */
-	public ScorerListImpl(Router router)
+	public DefaultScorerList(Router router)
 	{
 		this(router, null);
 	}
@@ -67,7 +67,7 @@ public class ScorerListImpl extends WrapperList<Scorer> implements ScorerList
 	 * @param router The parent router.
 	 * @param initialCapacity The initial list capacity.
 	 */
-	public ScorerListImpl(Router router, int initialCapacity)
+	public DefaultScorerList(Router router, int initialCapacity)
 	{
 		this(router, new ArrayList<Scorer>(initialCapacity));
 	}
@@ -76,7 +76,7 @@ public class ScorerListImpl extends WrapperList<Scorer> implements ScorerList
 	 * Constructor.
 	 * @param delegate The delegate list.
 	 */
-	public ScorerListImpl(Router router, List<Scorer> delegate)
+	public DefaultScorerList(Router router, List<Scorer> delegate)
 	{
 		super(delegate);
 		this.router = router;
@@ -238,8 +238,8 @@ public class ScorerListImpl extends WrapperList<Scorer> implements ScorerList
 	 * @param toIndex The end position (exclusive).
 	 * @return The sub-list.
 	 */
-	public synchronized ScorerListImpl subList(int fromIndex, int toIndex)
+	public synchronized DefaultScorerList subList(int fromIndex, int toIndex)
 	{
-		return new ScorerListImpl(this.router, getDelegate().subList(fromIndex, toIndex));
+		return new DefaultScorerList(this.router, getDelegate().subList(fromIndex, toIndex));
 	}
 }
