@@ -29,7 +29,7 @@ import java.util.logging.LogRecord;
  * Log record formatter which simply outputs the message on a new line. Useful for Web-style logs.
  * @author Jerome Louvel (contact@noelios.com) <a href="http://www.noelios.com/">Noelios Consulting</a>
  */
-public class LogFormatter extends Formatter
+public class AccessLogFormatter extends Formatter
 {
    /**
     * Format the given log record and return the formatted string.

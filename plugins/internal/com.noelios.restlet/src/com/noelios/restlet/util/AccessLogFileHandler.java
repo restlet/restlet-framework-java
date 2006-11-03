@@ -25,18 +25,18 @@ package com.noelios.restlet.util;
 import java.io.IOException;
 
 /**
- * Log file handler that uses the {@link LogFormatter} by default. Also useful in
+ * Log file handler that uses the {@link AccessLogFormatter} by default. Also useful in
  * configuration files to differentiate from the java.util.logging.FileHandler.
  * @author Jerome Louvel (contact@noelios.com) <a href="http://www.noelios.com/">Noelios Consulting</a>
  */
-public class LogFileHandler extends java.util.logging.FileHandler
+public class AccessLogFileHandler extends java.util.logging.FileHandler
 {
    /**
     * Constructor.
     * @throws IOException
     * @throws SecurityException
     */
-   public LogFileHandler() throws IOException, SecurityException
+   public AccessLogFileHandler() throws IOException, SecurityException
    {
       super();
       init();
@@ -48,7 +48,7 @@ public class LogFileHandler extends java.util.logging.FileHandler
     * @throws IOException
     * @throws SecurityException
     */
-   public LogFileHandler(String pattern) throws IOException, SecurityException
+   public AccessLogFileHandler(String pattern) throws IOException, SecurityException
    {
       super(pattern);
       init();
@@ -61,7 +61,7 @@ public class LogFileHandler extends java.util.logging.FileHandler
     * @throws IOException
     * @throws SecurityException
     */
-   public LogFileHandler(String pattern, boolean append) throws IOException, SecurityException
+   public AccessLogFileHandler(String pattern, boolean append) throws IOException, SecurityException
    {
       super(pattern, append);
       init();
@@ -75,7 +75,7 @@ public class LogFileHandler extends java.util.logging.FileHandler
     * @throws IOException
     * @throws SecurityException
     */
-   public LogFileHandler(String pattern, int limit, int count) throws IOException, SecurityException
+   public AccessLogFileHandler(String pattern, int limit, int count) throws IOException, SecurityException
    {
       super(pattern, limit, count);
       init();
@@ -90,7 +90,7 @@ public class LogFileHandler extends java.util.logging.FileHandler
     * @throws IOException
     * @throws SecurityException
     */
-   public LogFileHandler(String pattern, int limit, int count, boolean append) throws IOException,
+   public AccessLogFileHandler(String pattern, int limit, int count, boolean append) throws IOException,
          SecurityException
    {
       super(pattern, limit, count, append);
@@ -102,7 +102,7 @@ public class LogFileHandler extends java.util.logging.FileHandler
     */
    protected void init()
    {
-      setFormatter(new LogFormatter());
+      setFormatter(new AccessLogFormatter());
    }
 
 }
