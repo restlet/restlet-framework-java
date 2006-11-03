@@ -23,6 +23,7 @@
 package org.restlet.resource;
 
 import java.io.IOException;
+import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
 import java.io.OutputStream;
 import java.io.Serializable;
@@ -36,7 +37,7 @@ import org.restlet.data.MediaType;
 public class ObjectRepresentation extends OutputRepresentation
 {
 	/** The serializable object. */
-	private Serializable object;
+	private Object object;
 
 	/**
 	 * Constructor;
@@ -46,6 +47,33 @@ public class ObjectRepresentation extends OutputRepresentation
 	{
 		super(MediaType.APPLICATION_JAVA_OBJECT);
 		this.object = object;
+	}
+
+	/**
+	 * Constructor reading the object from a serialized representation. This representation must have the
+	 * proper media type: "application/x-java-serialized-object".
+	 * @param serializedRepresentation The serialized representation.
+	 * @throws IOException
+	 * @throws ClassNotFoundException
+	 * @throws IllegalArgumentException
+	 */
+	public ObjectRepresentation(Representation serializedRepresentation)
+			throws IOException, ClassNotFoundException, IllegalArgumentException
+	{
+		super(MediaType.APPLICATION_JAVA_OBJECT);
+		if (serializedRepresentation.getMediaType().equals(
+				MediaType.APPLICATION_JAVA_OBJECT))
+		{
+			ObjectInputStream ois = new ObjectInputStream(getStream());
+			this.object = ois.readObject();
+			ois.close();
+		}
+		else
+		{
+			throw new IllegalArgumentException(
+					"The serialized representation must have this media type: "
+							+ MediaType.APPLICATION_JAVA_OBJECT.toString());
+		}
 	}
 
 	/**
