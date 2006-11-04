@@ -25,12 +25,13 @@ package org.restlet.service;
 import java.util.List;
 
 import org.restlet.data.Protocol;
+import org.restlet.resource.Representation;
 
 /**
  * Service providing client and server connectors.
  * @author Jerome Louvel (contact@noelios.com) <a href="http://www.noelios.com/">Noelios Consulting</a>
  */
-public class ConnectorService extends Service
+public class ConnectorService
 {
 	/** The list of required client protocols. */
 	private List<Protocol> requiredClientProtocols;
@@ -46,17 +47,35 @@ public class ConnectorService extends Service
 	
 	/**
 	 * Constructor.
-	 * @param enabled True if the service has been enabled.
 	 */
-	public ConnectorService(boolean enabled)
+	public ConnectorService()
 	{
-		super(enabled);
 		this.requiredClientProtocols = null;
 		this.requiredServerProtocols = null;
 		this.optionalClientProtocols = null;
 		this.optionalServerProtocols = null;
 	}
 	
+	/**
+	 * Call-back method invoked by the client or server connectors just before committing the entity to 
+	 * the target component. The default implementation does nothing.
+	 * @param entity The entity about to be committed.
+	 */
+	public void beforeCommit(Representation entity)
+	{
+		// Do nothing by default. 
+	}
+	
+	/**
+	 * Call-back method invoked by the client or server connectors just after committing the entity to 
+	 * the target component. The default implementation does nothing.
+	 * @param entity The entity about to be committed.
+	 */
+	public void afterCommit(Representation entity)
+	{
+		// Do nothing by default. 
+	}
+
 	/**
 	 * Returns the list of required client protocols. 
 	 * @return The list of required client protocols.

@@ -26,9 +26,10 @@ import org.restlet.data.Request;
 import org.restlet.data.Response;
 import org.restlet.service.ConnectorService;
 import org.restlet.service.DecoderService;
-import org.restlet.service.LocalService;
+import org.restlet.service.MetadataService;
 import org.restlet.service.LogService;
 import org.restlet.service.StatusService;
+import org.restlet.service.TunnelService;
 import org.restlet.spi.Factory;
 import org.restlet.spi.Helper;
 
@@ -51,34 +52,37 @@ public abstract class Application extends Restlet
 
 	/** The owner(s). */
 	private String owner;
-	
+
 	/** The root Restlet. */
 	private Restlet root;
-	
+
 	/** The connector service. */
 	private ConnectorService connectorService;
-	
+
 	/** The decoder service. */
 	private DecoderService decoderService;
-	
+
 	/** The local service. */
-	private LocalService localService;
-	
+	private MetadataService metadataService;
+
 	/** The log service. */
 	private LogService logService;
-	
+
 	/** The status service. */
 	private StatusService statusService;
-	
+
+	/** The tunnel service. */
+	private TunnelService tunnelService;
+
 	/** The helper provided by the implementation. */
 	private Helper helper;
-	
+
 	/**
 	 * Constructor.
 	 */
 	public Application()
 	{
-		this((Context)null);
+		this((Context) null);
 	}
 
 	/**
@@ -106,9 +110,10 @@ public abstract class Application extends Restlet
 		this.root = null;
 		this.connectorService = null;
 		this.decoderService = null;
-		this.localService = null;
+		this.metadataService = null;
 		this.logService = null;
 		this.statusService = null;
+		this.tunnelService = null;
 	}
 
 	/**
@@ -126,6 +131,26 @@ public abstract class Application extends Restlet
 	public String getAuthor()
 	{
 		return this.author;
+	}
+
+	/** 
+	 * Returns the connector service.
+	 * @return The connector service.
+	 */
+	public ConnectorService getConnectorService()
+	{
+		if (this.connectorService == null) this.connectorService = new ConnectorService();
+		return this.connectorService;
+	}
+
+	/** 
+	 * Returns the decoder service. This service is enabled by default.
+	 * @return The decoderservice.
+	 */
+	public DecoderService getDecoderService()
+	{
+		if (this.decoderService == null) this.decoderService = new DecoderService(true);
+		return this.decoderService;
 	}
 
 	/**
@@ -147,48 +172,29 @@ public abstract class Application extends Restlet
 	}
 
 	/** 
-	 * Returns the connector service. This service is enabled by default.
-	 * @return The connector service.
-	 */
-	public ConnectorService getConnectorService()
-	{
-		if(this.connectorService == null) this.connectorService = new ConnectorService(true);
-		return this.connectorService;
-	}
-
-	/** 
-	 * Returns the decoder service. This service is enabled by default.
-	 * @return The decoderservice.
-	 */
-	public DecoderService getDecoderService()
-	{
-		if(this.decoderService == null) this.decoderService = new DecoderService(true);
-		return this.decoderService;
-	}
-
-	/** 
-	 * Returns the local service. This service is enabled by default.
-	 * @return The local service.
-	 */
-	public LocalService getLocalService()
-	{
-		if(this.localService == null) this.localService = new LocalService(true);
-		return this.localService;
-	}
-
-	/** 
 	 * Returns the log service. This service is enabled by default.
 	 * @return The log service.
 	 */
 	public LogService getLogService()
 	{
-		if(this.logService == null) 
+		if (this.logService == null)
 		{
 			this.logService = new LogService(true);
-			this.logService.setAccessLoggerName(getClass().getCanonicalName() + " (" + hashCode() + ")");
+			this.logService.setAccessLoggerName(getClass().getCanonicalName() + " ("
+					+ hashCode() + ")");
 		}
-		
+
 		return this.logService;
+	}
+
+	/** 
+	 * Returns the metadata service.
+	 * @return The metadata service.
+	 */
+	public MetadataService getMetadataService()
+	{
+		if (this.metadataService == null) this.metadataService = new MetadataService();
+		return this.metadataService;
 	}
 
 	/**
@@ -215,11 +221,11 @@ public abstract class Application extends Restlet
 	 */
 	public Restlet getRoot()
 	{
-		if(this.root == null)
+		if (this.root == null)
 		{
 			this.root = createRoot();
 		}
-		
+
 		return this.root;
 	}
 
@@ -229,19 +235,30 @@ public abstract class Application extends Restlet
 	 */
 	public StatusService getStatusService()
 	{
-		if(this.statusService == null) this.statusService = new StatusService(true);
+		if (this.statusService == null) this.statusService = new StatusService(true);
 		return this.statusService;
 	}
-   
-   /**
+
+	/** 
+	 * Returns the tunnel service. This service is enabled by default.
+	 * @return The tunnel service.
+	 */
+	public TunnelService getTunnelService()
+	{
+		if (this.tunnelService == null)
+			this.tunnelService = new TunnelService(true, true, true);
+		return this.tunnelService;
+	}
+
+	/**
 	 * Handles a call.
 	 * @param request The request to handle.
 	 * @param response The response to update.
 	 */
 	public void handle(Request request, Response response)
 	{
-  		init(request, response);
-  		getHelper().handle(request, response);
+		init(request, response);
+		getHelper().handle(request, response);
 	}
 
 	/**
@@ -261,7 +278,7 @@ public abstract class Application extends Restlet
 	{
 		this.connectorService = connectorService;
 	}
-	
+
 	/**
 	 * Sets the description.
 	 * @param description The description.
@@ -269,15 +286,6 @@ public abstract class Application extends Restlet
 	public void setDescription(String description)
 	{
 		this.description = description;
-	}
-
-	/** 
-	 * Sets the local service. 
-	 * @param localService The local service.
-	 */
-	public void setLocalService(LocalService localService)
-	{
-		this.localService = localService;
 	}
 
 	/** 
@@ -289,6 +297,15 @@ public abstract class Application extends Restlet
 		this.logService = logService;
 	}
 
+	/** 
+	 * Sets the metadata service. 
+	 * @param metadataService The metadata service.
+	 */
+	public void setMetadataService(MetadataService metadataService)
+	{
+		this.metadataService = metadataService;
+	}
+
 	/**
 	 * Sets the display name.
 	 * @param name The display name.
@@ -297,7 +314,7 @@ public abstract class Application extends Restlet
 	{
 		this.name = name;
 	}
-	
+
 	/**
 	 * Sets the owner(s).
 	 * @param owner The owner(s).
@@ -315,7 +332,16 @@ public abstract class Application extends Restlet
 	{
 		this.statusService = statusService;
 	}
-	
+
+	/** 
+	 * Sets the tunnel service. 
+	 * @param tunnelService The tunnel service.
+	 */
+	public void setTunnelService(TunnelService tunnelService)
+	{
+		this.tunnelService = tunnelService;
+	}
+
 	/** Start callback. */
 	public void start() throws Exception
 	{

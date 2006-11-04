@@ -32,8 +32,11 @@ import org.restlet.resource.Representation;
  * Service providing status representation setting.
  * @author Jerome Louvel (contact@noelios.com) <a href="http://www.noelios.com/">Noelios Consulting</a>
  */
-public class StatusService extends Service
+public class StatusService
 {
+	/** Indicates if the service has been enabled. */
+	private boolean enabled;
+
 	/** The email address to contact in case of error. */
 	private String contactEmail;
 	
@@ -49,12 +52,30 @@ public class StatusService extends Service
 	 */
 	public StatusService(boolean enabled)
 	{
-		super(enabled);
+		this.enabled = enabled;
 		this.contactEmail = null;
 		this.homeRef = null;
 		this.overwrite = false;
 	}
 	
+	/**
+	 * Indicates if the service should be enabled.
+	 * @return True if the service should be enabled.
+	 */
+	public boolean isEnabled()
+	{
+		return this.enabled;
+	}
+	
+	/**
+	 * Indicates if the service should be enabled.
+	 * @param enabled True if the service should be enabled.
+	 */
+	public void setEnabled(boolean enabled)
+	{
+		this.enabled = enabled;
+	}
+
    /** 
     * Returns the email address to contact in case of error. 
     * This is typically used when creating the status representations.

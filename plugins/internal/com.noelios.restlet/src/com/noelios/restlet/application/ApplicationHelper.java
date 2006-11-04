@@ -150,6 +150,15 @@ public class ApplicationHelper implements Helper
 			lastFilter = decoderFilter;
 		}
 
+		// Addition of tunnel filter
+		if (getApplication().getTunnelService().isEnabled())
+		{
+			Filter tunnelFilter = createTunnelFilter(getApplication());
+			if (lastFilter != null) lastFilter.setNext(tunnelFilter);
+			if (getFirst() == null) setFirst(tunnelFilter);
+			lastFilter = tunnelFilter;
+		}
+
 		// Reattach the original filter's attached Restlet
 		if (getFirst() == null)
 		{
@@ -191,6 +200,16 @@ public class ApplicationHelper implements Helper
 	protected Filter createStatusFilter(Application application)
 	{
 		return new ApplicationStatusFilter(application);
+	}
+
+	/**
+	 * Creates a new tunnel filter. Allows overriding.
+	 * @param application The parent application.
+	 * @return The new tunnel filter.
+	 */
+	protected Filter createTunnelFilter(Application application)
+	{
+		return new TunnelFilter(application);
 	}
 
 	/** Stop callback. */

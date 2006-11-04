@@ -42,18 +42,18 @@ public class ApplicationContext extends DefaultContext
 {
 	/** The WAR client. */
 	private Client warClient;
-	
+
 	/** The application delegate. */
 	private Application application;
-	
+
 	/** The parent context. */
 	private Context parentContext;
-	
+
 	/**
 	 * Constructor.
 	 * @param application The application.
 	 * @param parentContext The parent context.
-    * @param logger The logger instance of use.
+	 * @param logger The logger instance of use.
 	 */
 	public ApplicationContext(Application application, Context parentContext, Logger logger)
 	{
@@ -62,16 +62,21 @@ public class ApplicationContext extends DefaultContext
 		this.parentContext = parentContext;
 		this.warClient = null;
 	}
-	
+
 	/**
-    * Handles a call.
-    * @param protocol The protocol to use for the handling.
-    * @param request The request to handle.
-    * @param response The response to update.
-    */
-   public void handle(Protocol protocol, Request request, Response response)
-   {
-		if(protocol.equals(Protocol.WAR))
+	 * Handles a call.
+	 * @param protocol The protocol to use for the handling.
+	 * @param request The request to handle.
+	 * @param response The response to update.
+	 */
+	public void handle(Protocol protocol, Request request, Response response)
+	{
+		// Add the metadata service as a request attribute
+		// so the the client helper can be it
+		request.getAttributes().put("org.restlet.metadataService",
+				getApplication().getMetadataService());
+
+		if (protocol.equals(Protocol.WAR))
 		{
 			getWarClient().handle(request, response);
 		}
@@ -79,7 +84,7 @@ public class ApplicationContext extends DefaultContext
 		{
 			getParentContext().getClient().handle(request, response);
 		}
-   }
+	}
 
 	/**
 	 * Returns the application.
@@ -96,11 +101,11 @@ public class ApplicationContext extends DefaultContext
 	 */
 	protected Client getWarClient()
 	{
-		if(this.warClient == null)
+		if (this.warClient == null)
 		{
 			this.warClient = new Client(Protocol.WAR);
 		}
-		
+
 		return this.warClient;
 	}
 
@@ -121,5 +126,5 @@ public class ApplicationContext extends DefaultContext
 	{
 		return this.parentContext;
 	}
-	
+
 }

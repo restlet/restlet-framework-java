@@ -42,7 +42,15 @@ import org.restlet.resource.InputRepresentation;
 import org.restlet.resource.Representation;
 
 /**
- * Connector to the WAR resources.
+ * Connector to the WAR resources. Here is the list of parameters that are supported:
+ * <table>
+ * 	<tr>
+ * 		<td>webAppPath</td>
+ * 		<td>String</td>
+ * 		<td>${user.home}/restlet.war</td>
+ * 		<td>Path to the Web Application WAR file or directory.</td>
+ * 	</tr>
+ *	</table>
  * @author Jerome Louvel (contact@noelios.com) <a href="http://www.noelios.com/">Noelios Consulting</a>
  */
 public class WarClientHelper extends FileClientHelper
@@ -143,7 +151,7 @@ public class WarClientHelper extends FileClientHelper
 					// Return the file content
 					Representation output = new InputRepresentation(war.getInputStream(entry),
 							null);
-					updateMetadata(path, output);
+					updateMetadata(getMetadataService(request), path, output);
 					response.setEntity(output);
 					response.setStatus(Status.SUCCESS_OK);
 				}

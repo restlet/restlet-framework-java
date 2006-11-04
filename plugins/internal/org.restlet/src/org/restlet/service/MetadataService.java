@@ -33,14 +33,10 @@ import org.restlet.data.MediaType;
 import org.restlet.data.Metadata;
 
 /**
- * Service providing access to local resources. The resources will be resolved from the Web Application 
- * context, which is similar to the notion of ServletContext in the Servlet specification. If the 
- * application is packaged as a WAR file, then the resources correspond to files 
- * at the root of the archive, including the META-INF and WEB-INF directories. Examples: 
- * war:/rootDir/subDir/file.html or war:/WEB-INF/temlates/layout.fmt
+ * Service providing access to metadata and their extension names.
  * @author Jerome Louvel (contact@noelios.com) <a href="http://www.noelios.com/">Noelios Consulting</a>
  */
-public class LocalService extends Service
+public class MetadataService
 {
 	/** The default encoding for local representations. */
 	private Encoding defaultEncoding;
@@ -56,19 +52,84 @@ public class LocalService extends Service
 
 	/** The list of index names (ex: index.html). */
 	private List<String> indexNames;
-	
+
 	/**
 	 * Constructor.
-	 * @param enabled True if the service has been enabled.
 	 */
-	public LocalService(boolean enabled)
+	public MetadataService()
 	{
-		super(enabled);
-		this.defaultEncoding = null;
-		this.defaultLanguage = null;
-		this.defaultMediaType = null;
+		this.defaultEncoding = Encoding.IDENTITY;
+		this.defaultLanguage = Language.ENGLISH_US;
+		this.defaultMediaType = MediaType.APPLICATION_OCTET_STREAM;
 		this.metadataMappings = new TreeMap<String, Metadata>();
 		this.indexNames = new ArrayList<String>();
+		addCommonExtensions();
+	}
+
+	/**
+	 * Maps an extension to some metadata (media type, language or character set) to an extension.
+	 * @param extension The extension name.
+	 * @param metadata The metadata to map.
+	 */
+	public void addExtension(String extension, Metadata metadata)
+	{
+		this.metadataMappings.put(extension, metadata);
+	}
+
+	/**
+	 * Adds a common list of associations from extensions to metadata.
+	 * The list of languages extensions:<br/>
+	 * <ul>
+	 *  <li>en: English</li>
+	 *  <li>es: Spanish</li>
+	 *  <li>fr: French</li>
+	 * </ul><br/>
+	 * The list of media type extensions:<br/>
+	 * <ul>
+	 *  <li>css: CSS stylesheet</li>
+	 *  <li>doc: Microsoft Word document</li>
+	 *  <li>gif: GIF image</li>
+	 *  <li>html: HTML document</li>
+	 *  <li>ico: Windows icon (Favicon)</li>
+	 *  <li>jpeg, jpg: JPEG image</li>
+	 *  <li>js: JavaScript document</li>
+	 *  <li>json: JavaScript Object Notation document</li>
+	 *  <li>pdf: Adobe PDF document</li>
+	 *  <li>png: PNG image</li>
+	 *  <li>ppt: Microsoft Powerpoint document</li>
+	 *  <li>rdf:  Description Framework document</li>
+	 *  <li>txt: Plain text</li>
+	 *  <li>swf: Shockwave Flash object</li>
+	 *  <li>xhtml: XHTML document</li>
+	 *  <li>xml: XML document</li>
+	 *  <li>zip: Zip archive</li>
+	 * </ul>
+	 */
+	public void addCommonExtensions()
+	{
+		addExtension("en", Language.ENGLISH);
+		addExtension("es", Language.SPANISH);
+		addExtension("fr", Language.FRENCH);
+
+		addExtension("css", MediaType.TEXT_CSS);
+		addExtension("doc", MediaType.APPLICATION_WORD);
+		addExtension("gif", MediaType.IMAGE_GIF);
+		addExtension("html", MediaType.TEXT_HTML);
+		addExtension("ico", MediaType.IMAGE_ICON);
+		addExtension("jpeg", MediaType.IMAGE_JPEG);
+		addExtension("jpg", MediaType.IMAGE_JPEG);
+		addExtension("js", MediaType.APPLICATION_JAVASCRIPT);
+		addExtension("json", MediaType.APPLICATION_JSON);
+		addExtension("pdf", MediaType.APPLICATION_PDF);
+		addExtension("png", MediaType.IMAGE_PNG);
+		addExtension("ppt", MediaType.APPLICATION_POWERPOINT);
+		addExtension("rdf", MediaType.APPLICATION_RDF);
+		addExtension("txt", MediaType.TEXT_PLAIN);
+		addExtension("svg", MediaType.IMAGE_SVG);
+		addExtension("swf", MediaType.APPLICATION_FLASH);
+		addExtension("xhtml", MediaType.APPLICATION_XHTML_XML);
+		addExtension("xml", MediaType.TEXT_XML);
+		addExtension("zip", MediaType.APPLICATION_ZIP);
 	}
 
 	/**
@@ -111,9 +172,37 @@ public class LocalService extends Service
 	 * Returns the mappings from extension names to metadata.
 	 * @return The mappings from extension names to metadata.
 	 */
-	public Map<String, Metadata> getMetadataMappings()
+	public Map<String, Metadata> getMappings()
 	{
 		return this.metadataMappings;
+	}
+
+	/**
+	 * Returns the first extension mapping to this metadata.
+	 * @param metadata The metadata to find. 
+	 * @return The first extension mapping to this metadata.
+	 */
+	public String getExtension(Metadata metadata)
+	{
+		for (String extension : getMappings().keySet())
+		{
+			if (getMetadata(extension).equals(metadata))
+			{
+				return extension;
+			}
+		}
+
+		return null;
+	}
+
+	/**
+	 * Returns the metadata associated to this extension. It returns null if the extension was not declared.
+	 * @param extension The extension name without any delimiter.
+	 * @return The metadata associated to this extension.
+	 */
+	public Metadata getMetadata(String extension)
+	{
+		return getMappings().get(extension);
 	}
 
 	/**

@@ -19,13 +19,15 @@ Changes log
  - Moved implementation-independent classes from NRE into org.restlet packages. 
  - Renamed LogService."loggerName" and "format" properties to add the "access" prefix. Added "contextLoggerName" property.
  - Moved Resource and Representation to new org.restlet.resource package.
- - Moved Service and subclasses to new org.restlet.service package.
+ - Moved *Service classes to new org.restlet.service package.
  - Renamed RedirectRestlet into org.restlet.Redirector.
  - Renamed ExtractFilter into org.restlet.Extractor.
  - Renamed TunnelFilter into org.restlet.Tunnel.
  - Refactor data model of StringTemplate. New org.restlet.util.DataModel added, Model, ReadableModel and WritableModel removed.
  - Replace Representation.toString() by getValue() to prevent unwanted consumption of the content. Reported by Vincent Lari.
  - Renamed NRE's LogFileHandler and LogFormatter to AccessLogFileHandler and AccessLogFormatter (use for WWW access logs).
+ - Refactored TunnelFilter into a TunnelService enabled by default. 
+ - Also refactored and renamed LocalService into MetadataService used by the TunnelService and local client connectors.
  
 [Other changes] 
  - Reorganized Javadocs into three parts: Restlet API, Restlet Extensions, Noelios Restlet Engine.

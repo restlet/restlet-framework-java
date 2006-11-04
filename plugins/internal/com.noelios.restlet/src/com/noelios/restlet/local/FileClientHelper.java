@@ -41,6 +41,7 @@ import org.restlet.data.Response;
 import org.restlet.data.Status;
 import org.restlet.resource.FileRepresentation;
 import org.restlet.resource.Representation;
+import org.restlet.service.MetadataService;
 import org.restlet.util.ByteUtils;
 
 /**
@@ -95,6 +96,7 @@ public class FileClientHelper extends LocalClientHelper
 	protected void handleFile(Request request, Response response, String path)
 	{
 		File file = new File(FileReference.localizePath(path));
+		MetadataService metadataService = getMetadataService(request);
 
 		if (request.getMethod().equals(Method.GET)
 				|| request.getMethod().equals(Method.HEAD))
@@ -118,7 +120,7 @@ public class FileClientHelper extends LocalClientHelper
 				boolean extensionFound = false;
 				for (int i = 1; i < result.length && !extensionFound; i++)
 				{
-					extensionFound = getMetadata(result[i]) != null;
+					extensionFound = metadataService.getMetadata(result[i]) != null;
 					if (!extensionFound)
 					{
 						baseName += "." + result[i];
@@ -174,9 +176,9 @@ public class FileClientHelper extends LocalClientHelper
 					else
 					{
 						// Return the file content
-						output = new FileRepresentation(file, getDefaultMediaType(),
-								getTimeToLive());
-						updateMetadata(file.getName(), output);
+						output = new FileRepresentation(file, metadataService
+								.getDefaultMediaType(), getTimeToLive());
+						updateMetadata(metadataService, file.getName(), output);
 					}
 				}
 			}
