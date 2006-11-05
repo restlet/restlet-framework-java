@@ -190,22 +190,17 @@ public class EncoderRepresentation extends WrapperRepresentation
 	}
 
 	/**
-	 * Converts the representation to a string value.
+	 * Converts the representation to a string value. Be careful when using this method as the conversion of 
+	 * large content to a string fully stored in memory can result in OutOfMemoryErrors being thrown.
 	 * @return The representation as a string value.
 	 */
-	public String getValue()
+	public String getValue() throws IOException
 	{
 		String result = null;
 
 		if (canEncode())
 		{
-			try
-			{
-				result = ByteUtils.toString(getStream());
-			}
-			catch (IOException ioe)
-			{
-			}
+			result = ByteUtils.toString(getStream());
 		}
 		else
 		{

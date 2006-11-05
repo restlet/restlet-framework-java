@@ -117,17 +117,6 @@ public abstract class Message
 	}
 
 	/**
-	 * Returns the entity as a string.<br/>
-	 * Note that this triggers the parsing of the entity.<br/>
-	 * This method and the related getEntity*() methods can only be invoked once.
-	 * @return The entity as a string.
-	 */
-	public String getEntityAsString()
-	{
-		return getEntity().getValue();
-	}
-
-	/**
 	 * Indicates if a content is available and can be sent. Several conditions must be met: the content 
 	 * must exists and have some available data.
 	 * @return True if a content is available and can be sent.

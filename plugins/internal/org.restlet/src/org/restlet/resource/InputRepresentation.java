@@ -85,23 +85,14 @@ public class InputRepresentation extends StreamRepresentation
 		ByteUtils.write(getStream(), outputStream);
 	}
 
-   /**
-    * Converts the representation to a string value.
-    * @return The representation as a string value.
-    */
-   public String getValue()
+	/**
+	 * Converts the representation to a string value. Be careful when using this method as the conversion of 
+	 * large content to a string fully stored in memory can result in OutOfMemoryErrors being thrown.
+	 * @return The representation as a string value.
+	 */
+   public String getValue() throws IOException
 	{
-		String result = null;
-
-		try
-		{
-			result = ByteUtils.toString(getStream());
-		}
-		catch (IOException ioe)
-		{
-		}
-
-		return result;
+		return ByteUtils.toString(getStream());
 	}
 
 }

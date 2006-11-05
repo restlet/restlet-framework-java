@@ -490,11 +490,12 @@ public class WrapperRepresentation extends Representation
    	getWrappedRepresentation().write(outputStream);
    }
 
-   /**
-    * Converts the representation to a string value.
-    * @return The representation as a string value.
-    */
-   public String getValue()
+	/**
+	 * Converts the representation to a string value. Be careful when using this method as the conversion of 
+	 * large content to a string fully stored in memory can result in OutOfMemoryErrors being thrown.
+	 * @return The representation as a string value.
+	 */
+   public String getValue() throws IOException
    {
       return getWrappedRepresentation().getValue();
    }
