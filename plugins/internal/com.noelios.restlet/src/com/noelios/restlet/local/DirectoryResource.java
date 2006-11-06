@@ -27,7 +27,6 @@ import java.util.List;
 import java.util.Set;
 import java.util.TreeSet;
 import java.util.logging.Level;
-import java.util.logging.Logger;
 
 import org.restlet.Directory;
 import org.restlet.Dispatcher;
@@ -42,6 +41,7 @@ import org.restlet.data.Result;
 import org.restlet.data.Status;
 import org.restlet.resource.Representation;
 import org.restlet.resource.Resource;
+import org.restlet.service.MetadataService;
 
 /**
  * Resource supported by a set of context representations (from file system, class loaders and webapp context). 
@@ -53,11 +53,27 @@ import org.restlet.resource.Resource;
  */
 public class DirectoryResource extends Resource
 {
+	/**
+	 * Returns the set of extensions contained in a given directory entry name.
+	 * @param entryName The directory entry name.
+	 * @return The set of extensions.
+	 */
+	public static Set<String> getExtensions(String entryName)
+	{
+		Set<String> result = new TreeSet<String>();
+		String[] tokens = entryName.split("\\.");
+		for (int i = 1; i < tokens.length; i++)
+		{
+			result.add(tokens[i]);
+		}
+		return result;
+	}
+
 	/** The handled request. */
 	private Request request;
 
 	/** The parent directory handler. */
-	private Directory handler;
+	private Directory directory;
 
 	/** The resource path relative to the directory URI. */
 	private String relativePart;
@@ -82,18 +98,16 @@ public class DirectoryResource extends Resource
 
 	/**
 	 * Constructor.
-	 * @param logger The logger to use.
-	 * @param handler The parent directory handler.
+	 * @param directory The parent directory handler.
 	 * @param request The handled call.
 	 * @throws IOException 
 	 */
-	public DirectoryResource(Logger logger, Directory handler, Request request)
-			throws IOException
+	public DirectoryResource(Directory directory, Request request) throws IOException
 	{
-		super(logger);
+		super(directory.getLogger());
 
 		// Update the member variables
-		this.handler = handler;
+		this.directory = directory;
 		this.request = request;
 		this.relativePart = request.getRelativePart();
 
@@ -103,12 +117,12 @@ public class DirectoryResource extends Resource
 			this.relativePart = this.relativePart.substring(1);
 		}
 
-		this.targetUri = new Reference(handler.getRootUri() + this.relativePart)
+		this.targetUri = new Reference(directory.getRootUri() + this.relativePart)
 				.normalize().toString();
-		if (!this.targetUri.startsWith(handler.getRootUri()))
+		if (!this.targetUri.startsWith(directory.getRootUri()))
 		{
 			// Prevent the client from accessing resources in upper directories
-			this.targetUri = handler.getRootUri();
+			this.targetUri = directory.getRootUri();
 		}
 
 		// Try to detect the presence of a directory
@@ -126,10 +140,10 @@ public class DirectoryResource extends Resource
 			}
 
 			// Append the index name
-			if (getDirectory().getIndexName() != null)
+			if (getMetadataService().getIndexName() != null)
 			{
 				this.directoryUri = this.targetUri;
-				this.baseName = getDirectory().getIndexName();
+				this.baseName = getMetadataService().getIndexName();
 				this.targetUri = this.directoryUri + this.baseName;
 			}
 			else
@@ -162,7 +176,7 @@ public class DirectoryResource extends Resource
 			}
 		}
 
-		if (this.handler.isNegotiateContent())
+		if (this.directory.isNegotiateContent())
 		{
 			// Remove the extensions from the base name
 			int firstDotIndex = this.baseName.indexOf('.');
@@ -177,8 +191,8 @@ public class DirectoryResource extends Resource
 		}
 
 		// Log results
-		logger.info("Converted base path: " + this.targetUri);
-		logger.info("Converted base name: " + this.baseName);
+		getLogger().info("Converted base path: " + this.targetUri);
+		getLogger().info("Converted base name: " + this.baseName);
 	}
 
 	/**
@@ -199,13 +213,57 @@ public class DirectoryResource extends Resource
 		return getDirectory().isModifiable();
 	}
 
-   /**
-    * Returns a call dispatcher.
-    * @return A call dispatcher.
-    */
-	private Dispatcher getDispatcher()
+	/**
+	 * Asks the resource to delete itself and all its representations.
+	 * @return The result information. 
+	 */
+	public Result delete()
 	{
-		return getDirectory().getContext().getDispatcher();
+		Status status;
+
+		// We allow the transfer of the PUT calls only if the readOnly flag is not set
+		if (!getDirectory().isModifiable())
+		{
+			status = Status.CLIENT_ERROR_FORBIDDEN;
+		}
+		else
+		{
+			Request contextRequest = new Request(Method.DELETE, this.targetUri);
+			Response contextResponse = new Response(contextRequest);
+
+			if (targetDirectory)
+			{
+				contextRequest.setResourceRef(this.targetUri);
+				getDispatcher().handle(contextRequest, contextResponse);
+			}
+			else
+			{
+				//Try to get the unique representation of the resource
+				ReferenceList references = getVariantsReferences(true);
+				if (!references.isEmpty())
+				{
+					contextRequest.setResourceRef(references.get(0));
+					getDispatcher().handle(contextRequest, contextResponse);
+				}
+				else
+				{
+					contextResponse.setStatus(Status.CLIENT_ERROR_NOT_FOUND);
+				}
+			}
+
+			status = contextResponse.getStatus();
+		}
+
+		return new Result(status);
+	}
+
+	/**
+	 * Returns the local base name of the file. For example, "foo.en" and "foo.en-GB.html" return "foo".
+	 * @return The local name of the file.
+	 */
+	public String getBaseName()
+	{
+		return this.baseName;
 	}
 
 	/**
@@ -214,25 +272,7 @@ public class DirectoryResource extends Resource
 	 */
 	public Directory getDirectory()
 	{
-		return this.handler;
-	}
-
-	/**
-	 * Returns the context's target URI. For example, "file:///c:/dir/foo.en" or "context://webapp/dir/foo.en".
-	 * @return The context's target URI.
-	 */
-	public String getTargetUri()
-	{
-		return this.targetUri;
-	}
-
-	/**
-	 * Sets the context's target URI. For example, "file:///c:/dir/foo.en" or "context://webapp/dir/foo.en".
-	 * @param baseUri The context's target URI.
-	 */
-	public void setTargetUri(String baseUri)
-	{
-		this.targetUri = baseUri;
+		return this.directory;
 	}
 
 	/**
@@ -245,12 +285,30 @@ public class DirectoryResource extends Resource
 	}
 
 	/**
-	 * Returns the local base name of the file. For example, "foo.en" and "foo.en-GB.html" return "foo".
-	 * @return The local name of the file.
+	 * Returns a call dispatcher.
+	 * @return A call dispatcher.
 	 */
-	public String getBaseName()
+	private Dispatcher getDispatcher()
 	{
-		return this.baseName;
+		return getDirectory().getContext().getDispatcher();
+	}
+
+	/**
+	 * Returns the metadata service.
+	 * @return The metadata service.
+	 */
+	public MetadataService getMetadataService()
+	{
+		return getDirectory().getContext().getMetadataService();
+	}
+
+	/**
+	 * Returns the context's target URI. For example, "file:///c:/dir/foo.en" or "context://webapp/dir/foo.en".
+	 * @return The context's target URI.
+	 */
+	public String getTargetUri()
+	{
+		return this.targetUri;
 	}
 
 	/**
@@ -313,18 +371,78 @@ public class DirectoryResource extends Resource
 	}
 
 	/**
-	 * Returns the set of extensions contained in a given directory entry name.
-	 * @param entryName The directory entry name.
-	 * @return The set of extensions.
+	 * Returns the references of the representations of the target resource
+	 * according to the directory handler property
+	 * @param unique tells wether looking or not for the unique reference
+	 * @return The list of variants references
 	 */
-	public static Set<String> getExtensions(String entryName)
+	private ReferenceList getVariantsReferences(boolean unique)
 	{
-		Set<String> result = new TreeSet<String>();
-		String[] tokens = entryName.split("\\.");
-		for (int i = 1; i < tokens.length; i++)
+		ReferenceList result = new ReferenceList(0);
+		try
 		{
-			result.add(tokens[i]);
+			Request contextCall = new Request(Method.GET, this.targetUri);
+			contextCall.getClientInfo().getAcceptedMediaTypes().add(
+					new Preference<MediaType>(MediaType.TEXT_URI_LIST));
+			Response contextResponse = getDispatcher().handle(contextCall);
+			if (contextResponse.getEntity() != null)
+			{
+				ReferenceList listVariants = new ReferenceList(contextResponse.getEntity());
+				Set<String> extensions = null;
+				String entryUri;
+				String fullEntryName;
+				String baseEntryName;
+				int lastSlashIndex;
+				int firstDotIndex;
+				for (Reference ref : listVariants)
+				{
+					entryUri = ref.toString();
+					lastSlashIndex = entryUri.lastIndexOf('/');
+					fullEntryName = (lastSlashIndex == -1) ? entryUri : entryUri
+							.substring(lastSlashIndex + 1);
+					baseEntryName = fullEntryName;
+
+					if (this.directory.isNegotiateContent())
+					{
+						// Remove the extensions from the base name
+						firstDotIndex = fullEntryName.indexOf('.');
+						if (firstDotIndex != -1)
+						{
+							baseEntryName = fullEntryName.substring(0, firstDotIndex);
+						}
+					}
+
+					// Check if the current file is a valid variant
+					if (baseEntryName.equals(this.baseName))
+					{
+						boolean validVariant = true;
+
+						if (this.directory.isNegotiateContent())
+						{
+							// Verify that the extensions are compatible
+							extensions = getExtensions(fullEntryName);
+							validVariant = (((extensions == null) && (this.baseExtensions == null))
+									|| (this.baseExtensions == null) || extensions
+									.containsAll(this.baseExtensions));
+							if (unique && validVariant)
+							{
+								validVariant = this.baseExtensions.containsAll(extensions);
+							}
+						}
+
+						if (validVariant)
+						{
+							result.add(ref);
+						}
+					}
+				}
+			}
 		}
+		catch (IOException ioe)
+		{
+			getLogger().log(Level.WARNING, "Unable to get resource variants", ioe);
+		}
+
 		return result;
 	}
 
@@ -376,122 +494,11 @@ public class DirectoryResource extends Resource
 	}
 
 	/**
-	 * Asks the resource to delete itself and all its representations.
-	 * @return The result information. 
+	 * Sets the context's target URI. For example, "file:///c:/dir/foo.en" or "context://webapp/dir/foo.en".
+	 * @param baseUri The context's target URI.
 	 */
-	public Result delete()
+	public void setTargetUri(String baseUri)
 	{
-		Status status;
-
-		// We allow the transfer of the PUT calls only if the readOnly flag is not set
-		if (!getDirectory().isModifiable())
-		{
-			status = Status.CLIENT_ERROR_FORBIDDEN;
-		}
-		else
-		{
-			Request contextRequest = new Request(Method.DELETE, this.targetUri);
-			Response contextResponse = new Response(contextRequest);
-
-			if (targetDirectory)
-			{
-				contextRequest.setResourceRef(this.targetUri);
-				getDispatcher().handle(contextRequest, contextResponse);
-			}
-			else
-			{
-				//Try to get the unique representation of the resource
-				ReferenceList references = getVariantsReferences(true);
-				if (!references.isEmpty())
-				{
-					contextRequest.setResourceRef(references.get(0));
-					getDispatcher().handle(contextRequest, contextResponse);
-				}
-				else
-				{
-					contextResponse.setStatus(Status.CLIENT_ERROR_NOT_FOUND);
-				}
-			}
-
-			status = contextResponse.getStatus();
-		}
-
-		return new Result(status);
-	}
-
-	/**
-	 * Returns the references of the representations of the target resource
-	 * according to the directory handler property
-	 * @param unique tells wether looking or not for the unique reference
-	 * @return The list of variants references
-	 */
-	private ReferenceList getVariantsReferences(boolean unique)
-	{
-		ReferenceList result = new ReferenceList(0);
-		try
-		{
-			Request contextCall = new Request(Method.GET, this.targetUri);
-			contextCall.getClientInfo().getAcceptedMediaTypes().add(
-					new Preference<MediaType>(MediaType.TEXT_URI_LIST));
-			Response contextResponse = getDispatcher().handle(contextCall);
-			if (contextResponse.getEntity() != null)
-			{
-				ReferenceList listVariants = new ReferenceList(contextResponse.getEntity());
-				Set<String> extensions = null;
-				String entryUri;
-				String fullEntryName;
-				String baseEntryName;
-				int lastSlashIndex;
-				int firstDotIndex;
-				for (Reference ref : listVariants)
-				{
-					entryUri = ref.toString();
-					lastSlashIndex = entryUri.lastIndexOf('/');
-					fullEntryName = (lastSlashIndex == -1) ? entryUri : entryUri
-							.substring(lastSlashIndex + 1);
-					baseEntryName = fullEntryName;
-
-					if (this.handler.isNegotiateContent())
-					{
-						// Remove the extensions from the base name
-						firstDotIndex = fullEntryName.indexOf('.');
-						if (firstDotIndex != -1)
-						{
-							baseEntryName = fullEntryName.substring(0, firstDotIndex);
-						}
-					}
-
-					// Check if the current file is a valid variant
-					if (baseEntryName.equals(this.baseName))
-					{
-						boolean validVariant = true;
-
-						if (this.handler.isNegotiateContent())
-						{
-							// Verify that the extensions are compatible
-							extensions = getExtensions(fullEntryName);
-							validVariant = (((extensions == null) && (this.baseExtensions == null))
-									|| (this.baseExtensions == null) || extensions
-									.containsAll(this.baseExtensions));
-							if (unique && validVariant)
-							{
-								validVariant = this.baseExtensions.containsAll(extensions);
-							}
-						}
-
-						if (validVariant)
-						{
-							result.add(ref);
-						}
-					}
-				}
-			}
-		}
-		catch (IOException ioe)
-		{
-			getLogger().log(Level.WARNING, "Unable to get resource variants", ioe);
-		}
-
-		return result;
+		this.targetUri = baseUri;
 	}
 }

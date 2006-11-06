@@ -217,16 +217,15 @@ public class Factory extends org.restlet.util.Factory
 
 	/**
 	 * Creates a directory resource.
-	 * @param logger The logger to use.
 	 * @param handler The parent directory handler.
 	 * @param request The handled call.
 	 * @return A new directory resource.
 	 * @throws IOException 
 	 */
-	public Resource createDirectoryResource(Logger logger, Directory handler,
-			Request request) throws IOException
+	public Resource createDirectoryResource(Directory handler, Request request)
+			throws IOException
 	{
-		return new DirectoryResource(logger, handler, request);
+		return new DirectoryResource(handler, request);
 	}
 
 	/**

@@ -47,7 +47,7 @@ public class Part06 implements Constants
 			@Override
 			public Restlet createRoot()
 			{
-				return new Directory(getContext(), ROOT_URI, "index.html");
+				return new Directory(getContext(), ROOT_URI);
 			}
 		};
 

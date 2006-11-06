@@ -24,10 +24,10 @@ package org.restlet.test;
 
 import junit.framework.TestCase;
 
-import org.restlet.data.MapModel;
 import org.restlet.data.Request;
 import org.restlet.data.Response;
 import org.restlet.util.CallModel;
+import org.restlet.util.MapModel;
 import org.restlet.util.Model;
 import org.restlet.util.StringTemplate;
 

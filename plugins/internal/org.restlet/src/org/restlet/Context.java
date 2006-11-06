@@ -25,6 +25,7 @@ package org.restlet;
 import java.util.logging.Logger;
 
 import org.restlet.data.ParameterList;
+import org.restlet.service.MetadataService;
 
 /**
  * Contextual data and services provided to a Restlet. The context is the door opened for Restlets in order
@@ -35,74 +36,108 @@ import org.restlet.data.ParameterList;
  */
 public class Context
 {
-   /** The modifiable list of parameters. */
-   private ParameterList parameters;
-   
-   /** The logger instance to use. */
-   private Logger logger;
+	/** The metadata service. */
+	private MetadataService metadataService;
 
-   /**
-    * Constructor. Writes log messages to "org.restlet".
-    */
-   public Context()
-   {
-   	this("org.restlet");
-   }
+	/** The modifiable list of parameters. */
+	private ParameterList parameters;
 
-   /**
-    * Constructor.
-    * @param loggerName The name of the logger to use.
-    */
-   public Context(String loggerName)
-   {
-   	this(Logger.getLogger(loggerName));
-   }
+	/** The logger instance to use. */
+	private Logger logger;
 
-   /**
-    * Constructor.
-    * @param logger The logger instance of use.
-    */
-   public Context(Logger logger)
-   {
-   	this.logger = logger;
-   }
+	/**
+	 * Constructor. Writes log messages to "org.restlet".
+	 */
+	public Context()
+	{
+		this("org.restlet");
+	}
 
-   /**
-    * Returns a call dispatcher.
-    * @return A call dispatcher.
-    * @deprecated Use getDispatcher() instead.
-    */
-   @Deprecated  
-   public Dispatcher getClient()
-   {
-   	return getDispatcher();
-   }
+	/**
+	 * Constructor.
+	 * @param loggerName The name of the logger to use.
+	 */
+	public Context(String loggerName)
+	{
+		this(Logger.getLogger(loggerName), null);
+	}
 
-   /**
-    * Returns a call dispatcher.
-    * @return A call dispatcher.
-    */
-   public Dispatcher getDispatcher()
-   {
-   	return null;
-   }
-   
-   /**
-    * Returns the logger.
-    * @return The logger.
-    */
-   public Logger getLogger()
-   {
-      return this.logger;
-   }
+	/**
+	 * Constructor.
+	 * @param loggerName The name of the logger to use.
+	 * @param metadataService The metadata service.
+	 */
+	public Context(String loggerName, MetadataService metadataService)
+	{
+		this(Logger.getLogger(loggerName), metadataService);
+	}
 
-   /**
-    * Returns the modifiable list of parameters.
-    * @return The modifiable list of parameters.
-    */
-   public ParameterList getParameters()
-   {
-      if(this.parameters == null) this.parameters = new ParameterList();
-      return this.parameters;
-   }
+	/**
+	 * Constructor.
+	 * @param logger The logger instance of use.
+	 */
+	public Context(Logger logger)
+	{
+		this(logger, null);
+	}
+
+	/**
+	 * Constructor.
+	 * @param logger The logger instance of use.
+	 * @param metadataService The metadata service.
+	 */
+	public Context(Logger logger, MetadataService metadataService)
+	{
+		this.logger = logger;
+		this.metadataService = metadataService;
+	}
+
+	/**
+	 * Returns a call dispatcher.
+	 * @return A call dispatcher.
+	 * @deprecated Use getDispatcher() instead.
+	 */
+	@Deprecated
+	public Dispatcher getClient()
+	{
+		return getDispatcher();
+	}
+
+	/**
+	 * Returns a call dispatcher.
+	 * @return A call dispatcher.
+	 */
+	public Dispatcher getDispatcher()
+	{
+		return null;
+	}
+
+	/**
+	 * Returns the logger.
+	 * @return The logger.
+	 */
+	public Logger getLogger()
+	{
+		return this.logger;
+	}
+
+	/**
+	 * Returns the metadata service.
+	 * @return The metadata service.
+	 */
+	public MetadataService getMetadataService()
+	{
+		if (this.metadataService == null) this.metadataService = new MetadataService();
+		return this.metadataService;
+	}
+
+	/**
+	 * Returns the modifiable list of parameters.
+	 * @return The modifiable list of parameters.
+	 */
+	public ParameterList getParameters()
+	{
+		if (this.parameters == null) this.parameters = new ParameterList();
+		return this.parameters;
+	}
 }

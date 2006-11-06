@@ -28,8 +28,8 @@ import java.io.InputStream;
 import java.io.OutputStream;
 import java.io.OutputStreamWriter;
 
-import org.restlet.data.MapModel;
 import org.restlet.data.MediaType;
+import org.restlet.util.MapModel;
 import org.restlet.util.Model;
 import org.restlet.util.StringTemplate;
 

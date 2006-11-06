@@ -54,7 +54,7 @@ public class Part09a implements Constants
 				guard.getAuthorizations().put("scott", "tiger");
 
 				// Create a Directory able to return a deep hierarchy of files
-				Directory directory = new Directory(getContext(), ROOT_URI, "index.html");
+				Directory directory = new Directory(getContext(), ROOT_URI);
 				guard.setNext(directory);
 				return guard;
 			}

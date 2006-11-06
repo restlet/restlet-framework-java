@@ -20,12 +20,11 @@
  * Portions Copyright [yyyy] [name of copyright owner]
  */
 
-package org.restlet.data;
+package org.restlet.util;
 
 import java.util.Map;
 import java.util.TreeMap;
 
-import org.restlet.util.Model;
 
 
 /**

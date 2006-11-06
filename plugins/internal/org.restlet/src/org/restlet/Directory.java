@@ -47,9 +47,6 @@ import org.restlet.util.Factory;
  */
 public class Directory extends Handler
 {
-	/** If no file name is specified, use the (optional) index name. */
-	private String indexName;
-
 	/** Indicates if the subdirectories are deeply accessible (true by default). */
 	private boolean deeplyAccessible;
 
@@ -66,12 +63,10 @@ public class Directory extends Handler
 	 * Constructor.
 	 * @param context The context.
 	 * @param rootUri The absolute root Uri, including the "file://" or "context://" scheme.
-	 * @param indexName If no file name is specified, use the (optional) index name.
 	 */
-	public Directory(Context context, String rootUri, String indexName)
+	public Directory(Context context, String rootUri)
 	{
 		super(context);
-		this.indexName = indexName;
 
 		if (rootUri.endsWith("/"))
 		{
@@ -101,7 +96,7 @@ public class Directory extends Handler
 	{
 		try
 		{
-			return Factory.getInstance().createDirectoryResource(getLogger(), this, request);
+			return Factory.getInstance().createDirectoryResource(this, request);
 		}
 		catch (IOException ioe)
 		{
@@ -144,24 +139,6 @@ public class Directory extends Handler
 	public void setModifiable(boolean modifiable)
 	{
 		this.modifiable = modifiable;
-	}
-
-	/**
-	 * Returns the index name.
-	 * @return The index name.
-	 */
-	public String getIndexName()
-	{
-		return indexName;
-	}
-
-	/**
-	 * Sets the index name.
-	 * @param indexName The index name.
-	 */
-	public void setIndexName(String indexName)
-	{
-		this.indexName = indexName;
 	}
 
 	/**

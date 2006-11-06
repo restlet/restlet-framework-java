@@ -22,8 +22,6 @@
 
 package org.restlet.service;
 
-import java.util.ArrayList;
-import java.util.List;
 import java.util.Map;
 import java.util.TreeMap;
 
@@ -50,8 +48,8 @@ public class MetadataService
 	/** The mappings from extension names to metadata. */
 	private Map<String, Metadata> metadataMappings;
 
-	/** The list of index names (ex: index.html). */
-	private List<String> indexNames;
+	/** The index name, without extensions (ex: "index" or "home"). */
+	private String indexName;
 
 	/**
 	 * Constructor.
@@ -62,7 +60,7 @@ public class MetadataService
 		this.defaultLanguage = Language.ENGLISH_US;
 		this.defaultMediaType = MediaType.APPLICATION_OCTET_STREAM;
 		this.metadataMappings = new TreeMap<String, Metadata>();
-		this.indexNames = new ArrayList<String>();
+		this.indexName = "index";
 		addCommonExtensions();
 	}
 
@@ -160,12 +158,21 @@ public class MetadataService
 	}
 
 	/**
-	 * Returns the list of index names (ex: index.html).
-	 * @return The list of index names (ex: index.html).
+	 * Returns the index name, without extensions. Returns "index" by default.
+	 * @return The index name.
 	 */
-	public List<String> getIndexNames()
+	public String getIndexName()
 	{
-		return this.indexNames;
+		return this.indexName;
+	}
+
+	/**
+	 * Sets the index name, without extensions.
+	 * @param indexName The index name.
+	 */
+	public void setIndexName(String indexName)
+	{
+		this.indexName = indexName;
 	}
 
 	/**

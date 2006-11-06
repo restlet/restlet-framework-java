@@ -66,7 +66,7 @@ public class Part11 implements Constants
 				router.getScorers().add("/docs/", guard);
 
 				// Create a Directory able to return a deep hierarchy of Web files
-				Directory directory = new Directory(getContext(), ROOT_URI, "index.html");
+				Directory directory = new Directory(getContext(), ROOT_URI);
 				guard.setNext(directory);
 
 				// Create the user Router

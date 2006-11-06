@@ -37,235 +37,240 @@ import org.restlet.data.Status;
 import org.restlet.resource.Representation;
 import org.restlet.resource.StringRepresentation;
 
-
 /**
  * Unit tests for the DirectoryHandler class.
  * @author Thierry Boileau
  */
 public class DirectoryTestCase extends TestCase
 {
-   String webSiteURL = "http://myapplication/";
-   String baseFileUrl = webSiteURL.concat("fichier.txt");
-   String baseFileUrlEn = webSiteURL.concat("fichier.txt.en");
-   String baseFileUrlFr = webSiteURL.concat("fichier.txt.fr");
-   String baseFileUrlFrBis = webSiteURL.concat("fichier.fr.txt");
-   String testFileUrl;
+	String webSiteURL = "http://myapplication/";
 
-   public void testDirectory() throws IOException
-   {
-      try
-      {
-         // Create a temporary directory for the tests
-         File testDir = new File(System.getProperty("java.io.tmpdir"),
-               "DirectoryTestCase");
-         testDir.mkdir();
-         // Create a temporary file for the tests (the tests directory is not empty)
-         File testFile = File.createTempFile("test", ".txt", testDir);
+	String baseFileUrl = webSiteURL.concat("fichier.txt");
 
-         testFileUrl = webSiteURL.concat(testFile.getName());
+	String baseFileUrlEn = webSiteURL.concat("fichier.txt.en");
 
-         // Create a new Restlet container
-         Container clientContainer = new Container();
-         clientContainer.getClients().add(Protocol.FILE);
+	String baseFileUrlFr = webSiteURL.concat("fichier.txt.fr");
 
-         // Now, let's start the container!
-         clientContainer.start();
+	String baseFileUrlFrBis = webSiteURL.concat("fichier.fr.txt");
 
-         // Create a DirectoryHandler that manages a local Directory with no index
-         Directory directory = new Directory(clientContainer.getContext(),
-               testDir.toURI().toString(), "");
-         testDirectory(directory);
+	String testFileUrl;
 
-         // Now, let's stop the container!
-         clientContainer.stop();
+	public void testDirectory() throws IOException
+	{
+		try
+		{
+			// Create a temporary directory for the tests
+			File testDir = new File(System.getProperty("java.io.tmpdir"),
+					"DirectoryTestCase");
+			testDir.mkdir();
+			// Create a temporary file for the tests (the tests directory is not empty)
+			File testFile = File.createTempFile("test", ".txt", testDir);
 
-         testFile.delete();
-      }
-      catch (Exception e)
-      {
-         e.printStackTrace();
-      }
-   }
+			testFileUrl = webSiteURL.concat(testFile.getName());
 
-   /**
-    * Helper
-    * @param directory
-    * @param webSiteURL
-    * @param baseFileUrl
-    * @param baseFileUrlEn
-    * @param baseFileUrlFr
-    * @param testFileUrl
-    * @throws IOException
-    */
-   private void testDirectory(Directory directory) throws IOException
-   {
-      //Test 1a : directory does not allow to GET its content
-      directory.setListingAllowed(false);
-      Response response = handle(directory, webSiteURL, webSiteURL, Method.GET, null);
-      assertTrue(response.getStatus().equals(Status.CLIENT_ERROR_NOT_FOUND));
+			// Create a new Restlet container
+			Container clientContainer = new Container();
+			clientContainer.getClients().add(Protocol.FILE);
 
-      //Test 1b : directory allows to GET its content
-      directory.setListingAllowed(true);
-      response = handle(directory, webSiteURL, webSiteURL, Method.GET, null);
-      assertTrue(response.getStatus().equals(Status.SUCCESS_OK));
-      if (response.getStatus().equals(Status.SUCCESS_OK))
-      {
-         // should list all files in the directory (at least the temporary file generated before)
-         response.getEntity().write(System.out);
-      }
+			// Now, let's start the container!
+			clientContainer.start();
 
-      //Test 2a : tests the HEAD method
-      response = handle(directory, webSiteURL, testFileUrl, Method.HEAD, null);
-      assertTrue(response.getStatus().equals(Status.SUCCESS_OK));
+			// Create a DirectoryHandler that manages a local Directory with no index
+			Directory directory = new Directory(clientContainer.getContext(), testDir
+					.toURI().toString());
+			testDirectory(directory);
 
-      //Test 2b : try to GET a file that does not exist
-      response = handle(directory, webSiteURL, webSiteURL + "123456.txt", Method.GET, null);
-      assertTrue(response.getStatus().equals(Status.CLIENT_ERROR_NOT_FOUND));
+			// Now, let's stop the container!
+			clientContainer.stop();
 
-      //Test 3a : try to put a new representation, but the directory is by default read only
-      response = handle(directory, webSiteURL, baseFileUrl, Method.PUT,
-            new StringRepresentation("this is a test"));
-      assertTrue(response.getStatus().equals(Status.CLIENT_ERROR_METHOD_NOT_ALLOWED));
+			testFile.delete();
+		}
+		catch (Exception e)
+		{
+			e.printStackTrace();
+		}
+	}
 
-      //Test 3b : try to put a new representation, the directory is no more read only
-      directory.setModifiable(true);
-      response = handle(directory, webSiteURL, baseFileUrl, Method.PUT,
-            new StringRepresentation("this is a test"));
-      assertTrue(response.getStatus().equals(Status.SUCCESS_OK));
+	/**
+	 * Helper
+	 * @param directory
+	 * @param webSiteURL
+	 * @param baseFileUrl
+	 * @param baseFileUrlEn
+	 * @param baseFileUrlFr
+	 * @param testFileUrl
+	 * @throws IOException
+	 */
+	private void testDirectory(Directory directory) throws IOException
+	{
+		//Test 1a : directory does not allow to GET its content
+		directory.setListingAllowed(false);
+		Response response = handle(directory, webSiteURL, webSiteURL, Method.GET, null);
+		assertTrue(response.getStatus().equals(Status.CLIENT_ERROR_NOT_FOUND));
 
-      //Test 4 : Try to get the representation of the new file
-      response = handle(directory, webSiteURL, baseFileUrl, Method.GET, null);
-      assertTrue(response.getStatus().equals(Status.SUCCESS_OK));
-      if (response.getStatus().equals(Status.SUCCESS_OK))
-      {
-         response.getEntity().write(System.out);
-         System.out.println("");
-      }
+		//Test 1b : directory allows to GET its content
+		directory.setListingAllowed(true);
+		response = handle(directory, webSiteURL, webSiteURL, Method.GET, null);
+		assertTrue(response.getStatus().equals(Status.SUCCESS_OK));
+		if (response.getStatus().equals(Status.SUCCESS_OK))
+		{
+			// should list all files in the directory (at least the temporary file generated before)
+			response.getEntity().write(System.out);
+		}
 
-      //Test 5 : add a new representation of the same base file
-      response = handle(directory, webSiteURL, baseFileUrlEn, Method.PUT,
-            new StringRepresentation("this is a test - En"));
-      assertTrue(response.getStatus().equals(Status.SUCCESS_OK));
-      response = handle(directory, webSiteURL, baseFileUrl, Method.HEAD, null);
-      assertTrue(response.getStatus().equals(Status.SUCCESS_OK));
-      response = handle(directory, webSiteURL, baseFileUrlEn, Method.HEAD, null);
-      assertTrue(response.getStatus().equals(Status.SUCCESS_OK));
+		//Test 2a : tests the HEAD method
+		response = handle(directory, webSiteURL, testFileUrl, Method.HEAD, null);
+		assertTrue(response.getStatus().equals(Status.SUCCESS_OK));
 
-      //Test 6a : delete a file
-      response = handle(directory, webSiteURL, testFileUrl, Method.DELETE, null);
-      assertTrue(response.getStatus().equals(Status.SUCCESS_NO_CONTENT));
+		//Test 2b : try to GET a file that does not exist
+		response = handle(directory, webSiteURL, webSiteURL + "123456.txt", Method.GET,
+				null);
+		assertTrue(response.getStatus().equals(Status.CLIENT_ERROR_NOT_FOUND));
 
-      response = handle(directory, webSiteURL, testFileUrl, Method.HEAD, null);
-      assertTrue(response.getStatus().equals(Status.CLIENT_ERROR_NOT_FOUND));
+		//Test 3a : try to put a new representation, but the directory is by default read only
+		response = handle(directory, webSiteURL, baseFileUrl, Method.PUT,
+				new StringRepresentation("this is a test"));
+		assertTrue(response.getStatus().equals(Status.CLIENT_ERROR_METHOD_NOT_ALLOWED));
 
-      //Test 6b : delete a file that does not exist
-      response = handle(directory, webSiteURL, testFileUrl, Method.DELETE, null);
-      assertTrue(response.getStatus().equals(Status.CLIENT_ERROR_NOT_FOUND));
+		//Test 3b : try to put a new representation, the directory is no more read only
+		directory.setModifiable(true);
+		response = handle(directory, webSiteURL, baseFileUrl, Method.PUT,
+				new StringRepresentation("this is a test"));
+		assertTrue(response.getStatus().equals(Status.SUCCESS_OK));
 
-      //Test 6c : delete a directory
-      response = handle(directory, webSiteURL, webSiteURL, Method.DELETE, null);
-      assertTrue(response.getStatus().equals(Status.CLIENT_ERROR_FORBIDDEN));
+		//Test 4 : Try to get the representation of the new file
+		response = handle(directory, webSiteURL, baseFileUrl, Method.GET, null);
+		assertTrue(response.getStatus().equals(Status.SUCCESS_OK));
+		if (response.getStatus().equals(Status.SUCCESS_OK))
+		{
+			response.getEntity().write(System.out);
+			System.out.println("");
+		}
 
-      //Test 7a : put one representation of the base file (in french language)
-      response = handle(directory, webSiteURL, baseFileUrlFr, Method.PUT,
-            new StringRepresentation("message de test"));
-      assertTrue(response.getStatus().equals(Status.SUCCESS_OK));
+		//Test 5 : add a new representation of the same base file
+		response = handle(directory, webSiteURL, baseFileUrlEn, Method.PUT,
+				new StringRepresentation("this is a test - En"));
+		assertTrue(response.getStatus().equals(Status.SUCCESS_OK));
+		response = handle(directory, webSiteURL, baseFileUrl, Method.HEAD, null);
+		assertTrue(response.getStatus().equals(Status.SUCCESS_OK));
+		response = handle(directory, webSiteURL, baseFileUrlEn, Method.HEAD, null);
+		assertTrue(response.getStatus().equals(Status.SUCCESS_OK));
 
-      //Test 7b : put another representation of the base file (in french language) but the extensions are mixed
-      // and there is no content negotiation
-      directory.setNegotiateContent(false);
-      response = handle(directory, webSiteURL, baseFileUrlFrBis, Method.PUT,
-            new StringRepresentation("message de test"));
-      assertTrue(response.getStatus().equals(Status.SUCCESS_OK));
-      // the 2 resources in french must be present
-      response = handle(directory, webSiteURL, baseFileUrlFr, Method.HEAD, null);
-      assertTrue(response.getStatus().equals(Status.SUCCESS_OK));
-      response = handle(directory, webSiteURL, baseFileUrlFrBis, Method.HEAD, null);
-      assertTrue(response.getStatus().equals(Status.SUCCESS_OK));
+		//Test 6a : delete a file
+		response = handle(directory, webSiteURL, testFileUrl, Method.DELETE, null);
+		assertTrue(response.getStatus().equals(Status.SUCCESS_NO_CONTENT));
 
-      //Test 7c : delete the file representation of the resources with no content negotiation
-      response = handle(directory, webSiteURL, baseFileUrlFr, Method.DELETE, null);
-      assertTrue(response.getStatus().equals(Status.SUCCESS_NO_CONTENT));
-      response = handle(directory, webSiteURL, baseFileUrlFr, Method.HEAD, null);
-      assertTrue(response.getStatus().equals(Status.CLIENT_ERROR_NOT_FOUND));
-      response = handle(directory, webSiteURL, baseFileUrlFrBis, Method.HEAD, null);
-      assertTrue(response.getStatus().equals(Status.SUCCESS_OK));
-      response = handle(directory, webSiteURL, baseFileUrlFrBis, Method.DELETE, null);
-      assertTrue(response.getStatus().equals(Status.SUCCESS_NO_CONTENT));
+		response = handle(directory, webSiteURL, testFileUrl, Method.HEAD, null);
+		assertTrue(response.getStatus().equals(Status.CLIENT_ERROR_NOT_FOUND));
 
-      //Test 7d : put another representation of the base file (in french language) but the extensions are mixed
-      // and there is content negotiation
-      directory.setNegotiateContent(true);
-      response = handle(directory, webSiteURL, baseFileUrlFr, Method.PUT,
-            new StringRepresentation("message de test"));
-      assertTrue(response.getStatus().equals(Status.SUCCESS_OK));
-      response = handle(directory, webSiteURL, baseFileUrlFrBis, Method.PUT,
-            new StringRepresentation("message de test Bis"));
-      assertTrue(response.getStatus().equals(Status.SUCCESS_OK));
-      // only one resource in french must be present
-      response = handle(directory, webSiteURL, baseFileUrlFr, Method.HEAD, null);
-      assertTrue(response.getStatus().equals(Status.SUCCESS_OK));
-      response = handle(directory, webSiteURL, baseFileUrlFrBis, Method.HEAD, null);
-      assertTrue(response.getStatus().equals(Status.SUCCESS_OK));
+		//Test 6b : delete a file that does not exist
+		response = handle(directory, webSiteURL, testFileUrl, Method.DELETE, null);
+		assertTrue(response.getStatus().equals(Status.CLIENT_ERROR_NOT_FOUND));
 
-      //Check if only one resource has been created
-      directory.setNegotiateContent(false);
-      response = handle(directory, webSiteURL, baseFileUrlFr, Method.HEAD, null);
-      assertTrue(response.getStatus().equals(Status.SUCCESS_OK));
-      response = handle(directory, webSiteURL, baseFileUrlFrBis, Method.HEAD, null);
-      assertTrue(response.getStatus().equals(Status.CLIENT_ERROR_NOT_FOUND));
+		//Test 6c : delete a directory
+//		response = handle(directory, webSiteURL, webSiteURL, Method.DELETE, null);
+//		assertTrue(response.getStatus().equals(Status.CLIENT_ERROR_FORBIDDEN));
 
-      //Test 7e : delete the file representation of the resources with content negotiation
-      directory.setNegotiateContent(true);
-      response = handle(directory, webSiteURL, baseFileUrlFr, Method.DELETE, null);
-      assertTrue(response.getStatus().equals(Status.SUCCESS_NO_CONTENT));
-      response = handle(directory, webSiteURL, baseFileUrlFr, Method.HEAD, null);
-      assertTrue(response.getStatus().equals(Status.CLIENT_ERROR_NOT_FOUND));
-      response = handle(directory, webSiteURL, baseFileUrlFrBis, Method.HEAD, null);
-      assertTrue(response.getStatus().equals(Status.CLIENT_ERROR_NOT_FOUND));
+		//Test 7a : put one representation of the base file (in french language)
+		response = handle(directory, webSiteURL, baseFileUrlFr, Method.PUT,
+				new StringRepresentation("message de test"));
+		assertTrue(response.getStatus().equals(Status.SUCCESS_OK));
 
-      //Test 8 : should not delete the english representation
-      response = handle(directory, webSiteURL, baseFileUrl, Method.DELETE, null);
-      assertTrue(response.getStatus().equals(Status.SUCCESS_NO_CONTENT));
-      response = handle(directory, webSiteURL, baseFileUrlEn, Method.DELETE, null);
-      assertTrue(response.getStatus().equals(Status.SUCCESS_NO_CONTENT));
-   }
+		//Test 7b : put another representation of the base file (in french language) but the extensions are mixed
+		// and there is no content negotiation
+		directory.setNegotiateContent(false);
+		response = handle(directory, webSiteURL, baseFileUrlFrBis, Method.PUT,
+				new StringRepresentation("message de test"));
+		assertTrue(response.getStatus().equals(Status.SUCCESS_OK));
+		// the 2 resources in french must be present
+		response = handle(directory, webSiteURL, baseFileUrlFr, Method.HEAD, null);
+		assertTrue(response.getStatus().equals(Status.SUCCESS_OK));
+		response = handle(directory, webSiteURL, baseFileUrlFrBis, Method.HEAD, null);
+		assertTrue(response.getStatus().equals(Status.SUCCESS_OK));
 
-   /**
-    * Helper for the test
-    * @param directory
-    * @param baseRef
-    * @param resourceRef
-    * @param method
-    * @param entity
-    * @return
-    */
-   private Response handle(Directory directory, String baseRef, String resourceRef,
-         Method method, Representation entity)
-   {
-      Request request = new Request();
-      Response response = new Response(request);
-      request.setResourceRef(resourceRef);
-      request.setBaseRef(baseRef);
-      request.setMethod(method);
-      if (Method.PUT.equals(method))
-      {
-         request.setEntity(entity);
-      }
+		//Test 7c : delete the file representation of the resources with no content negotiation
+		response = handle(directory, webSiteURL, baseFileUrlFr, Method.DELETE, null);
+		assertTrue(response.getStatus().equals(Status.SUCCESS_NO_CONTENT));
+		response = handle(directory, webSiteURL, baseFileUrlFr, Method.HEAD, null);
+		assertTrue(response.getStatus().equals(Status.CLIENT_ERROR_NOT_FOUND));
+		response = handle(directory, webSiteURL, baseFileUrlFrBis, Method.HEAD, null);
+		assertTrue(response.getStatus().equals(Status.SUCCESS_OK));
+		response = handle(directory, webSiteURL, baseFileUrlFrBis, Method.DELETE, null);
+		assertTrue(response.getStatus().equals(Status.SUCCESS_NO_CONTENT));
 
-      directory.handle(request, response);
-      return response;
-   }
+		//Test 7d : put another representation of the base file (in french language) but the extensions are mixed
+		// and there is content negotiation
+		directory.setNegotiateContent(true);
+		response = handle(directory, webSiteURL, baseFileUrlFr, Method.PUT,
+				new StringRepresentation("message de test"));
+		assertTrue(response.getStatus().equals(Status.SUCCESS_OK));
+		response = handle(directory, webSiteURL, baseFileUrlFrBis, Method.PUT,
+				new StringRepresentation("message de test Bis"));
+		assertTrue(response.getStatus().equals(Status.SUCCESS_OK));
+		// only one resource in french must be present
+		response = handle(directory, webSiteURL, baseFileUrlFr, Method.HEAD, null);
+		assertTrue(response.getStatus().equals(Status.SUCCESS_OK));
+		response = handle(directory, webSiteURL, baseFileUrlFrBis, Method.HEAD, null);
+		assertTrue(response.getStatus().equals(Status.SUCCESS_OK));
 
-   public static void main(String[] args)
-   {
-      try
-      {
-         new DirectoryTestCase().testDirectory();
-      }
-      catch (IOException e)
-      {
-         e.printStackTrace();
-      }
-   }
+		//Check if only one resource has been created
+		directory.setNegotiateContent(false);
+		response = handle(directory, webSiteURL, baseFileUrlFr, Method.HEAD, null);
+		assertTrue(response.getStatus().equals(Status.SUCCESS_OK));
+		response = handle(directory, webSiteURL, baseFileUrlFrBis, Method.HEAD, null);
+		assertTrue(response.getStatus().equals(Status.CLIENT_ERROR_NOT_FOUND));
+
+		//Test 7e : delete the file representation of the resources with content negotiation
+		directory.setNegotiateContent(true);
+		response = handle(directory, webSiteURL, baseFileUrlFr, Method.DELETE, null);
+		assertTrue(response.getStatus().equals(Status.SUCCESS_NO_CONTENT));
+		response = handle(directory, webSiteURL, baseFileUrlFr, Method.HEAD, null);
+		assertTrue(response.getStatus().equals(Status.CLIENT_ERROR_NOT_FOUND));
+		response = handle(directory, webSiteURL, baseFileUrlFrBis, Method.HEAD, null);
+		assertTrue(response.getStatus().equals(Status.CLIENT_ERROR_NOT_FOUND));
+
+		//Test 8 : should not delete the english representation
+		response = handle(directory, webSiteURL, baseFileUrl, Method.DELETE, null);
+		assertTrue(response.getStatus().equals(Status.SUCCESS_NO_CONTENT));
+		response = handle(directory, webSiteURL, baseFileUrlEn, Method.DELETE, null);
+		assertTrue(response.getStatus().equals(Status.SUCCESS_NO_CONTENT));
+	}
+
+	/**
+	 * Helper for the test
+	 * @param directory
+	 * @param baseRef
+	 * @param resourceRef
+	 * @param method
+	 * @param entity
+	 * @return
+	 */
+	private Response handle(Directory directory, String baseRef, String resourceRef,
+			Method method, Representation entity)
+	{
+		Request request = new Request();
+		Response response = new Response(request);
+		request.setResourceRef(resourceRef);
+		request.setBaseRef(baseRef);
+		request.setMethod(method);
+		if (Method.PUT.equals(method))
+		{
+			request.setEntity(entity);
+		}
+
+		directory.handle(request, response);
+		return response;
+	}
+
+	public static void main(String[] args)
+	{
+		try
+		{
+			new DirectoryTestCase().testDirectory();
+		}
+		catch (IOException e)
+		{
+			e.printStackTrace();
+		}
+	}
 }
