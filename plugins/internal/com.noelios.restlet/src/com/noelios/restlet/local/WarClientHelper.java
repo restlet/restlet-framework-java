@@ -38,8 +38,8 @@ import org.restlet.data.ReferenceList;
 import org.restlet.data.Request;
 import org.restlet.data.Response;
 import org.restlet.data.Status;
-import org.restlet.resource.InputRepresentation;
-import org.restlet.resource.Representation;
+import org.restlet.representation.InputRepresentation;
+import org.restlet.representation.Representation;
 
 /**
  * Connector to the WAR resources. Here is the list of parameters that are supported:

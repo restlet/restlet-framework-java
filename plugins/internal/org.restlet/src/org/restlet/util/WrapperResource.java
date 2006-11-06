@@ -25,12 +25,12 @@ package org.restlet.util;
 import java.util.List;
 import java.util.logging.Logger;
 
+import org.restlet.Resource;
 import org.restlet.data.Method;
 import org.restlet.data.Reference;
 import org.restlet.data.ReferenceList;
 import org.restlet.data.Result;
-import org.restlet.resource.Representation;
-import org.restlet.resource.Resource;
+import org.restlet.representation.Representation;
 
 /**
  * Resource wrapper. Useful for application developer who need to enrich the resource

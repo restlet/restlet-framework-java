@@ -24,7 +24,7 @@ package org.restlet.util;
 
 import org.restlet.data.Request;
 import org.restlet.data.Response;
-import org.restlet.resource.Representation;
+import org.restlet.representation.Representation;
 
 /**
  * Dispatcher of calls to a set of client connectors.

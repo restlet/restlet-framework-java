@@ -20,45 +20,47 @@
  * Portions Copyright [yyyy] [name of copyright owner]
  */
 
-package org.restlet.resource;
+package org.restlet.representation;
 
 import java.io.IOException;
-import java.io.InputStream;
-import java.io.OutputStream;
+import java.nio.channels.ReadableByteChannel;
+import java.nio.channels.WritableByteChannel;
 
 import org.restlet.data.MediaType;
 import org.restlet.util.ByteUtils;
 
 /**
- * Representation based on a NIO byte channel.
+ * Representation based on a BIO stream.
  * @author Jerome Louvel (contact@noelios.com) <a href="http://www.noelios.com/">Noelios Consulting</a>
  */
-public abstract class ChannelRepresentation extends Representation
+public abstract class StreamRepresentation extends Representation
 {
 	/**
 	 * Constructor.
 	 * @param mediaType The media type.
 	 */
-	public ChannelRepresentation(MediaType mediaType)
+	public StreamRepresentation(MediaType mediaType)
 	{
 		super(mediaType);
 	}
 
 	/**
-	 * Writes the representation to a byte stream.
-	 * @param outputStream The output stream.
+	 * Returns a readable byte channel. If it is supported by a file a read-only instance of 
+	 * FileChannel is returned.
+	 * @return A readable byte channel.
 	 */
-	public void write(OutputStream outputStream) throws IOException
+	public ReadableByteChannel getChannel() throws IOException
 	{
-		write(ByteUtils.getChannel(outputStream));
+		return ByteUtils.getChannel(getStream());
 	}
 
 	/**
-	 * Returns a stream with the representation's content.
-	 * @return A stream with the representation's content.
+	 * Writes the representation to a byte channel.
+	 * @param writableChannel A writable byte channel.
 	 */
-	public InputStream getStream() throws IOException
+	public void write(WritableByteChannel writableChannel) throws IOException
 	{
-		return ByteUtils.getStream(getChannel());
+		write(ByteUtils.getStream(writableChannel));
 	}
+
 }

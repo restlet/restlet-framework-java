@@ -23,6 +23,7 @@
 package org.restlet.spi;
 
 import java.io.BufferedReader;
+import java.io.IOException;
 import java.io.InputStreamReader;
 import java.net.URL;
 import java.util.List;
@@ -33,6 +34,8 @@ import org.restlet.Application;
 import org.restlet.Client;
 import org.restlet.Container;
 import org.restlet.Context;
+import org.restlet.Directory;
+import org.restlet.Resource;
 import org.restlet.Restlet;
 import org.restlet.Router;
 import org.restlet.Scorer;
@@ -40,14 +43,9 @@ import org.restlet.Server;
 import org.restlet.data.ClientInfo;
 import org.restlet.data.Form;
 import org.restlet.data.Language;
-import org.restlet.data.MediaType;
 import org.restlet.data.Request;
 import org.restlet.data.Response;
-import org.restlet.resource.Representation;
-import org.restlet.resource.Resource;
-import org.restlet.util.ClientList;
-import org.restlet.util.ScorerList;
-import org.restlet.util.ServerList;
+import org.restlet.representation.Representation;
 
 /**
  * Factory and registration service for Restlet API implementations.
@@ -168,12 +166,15 @@ public abstract class Factory
    }
 
    /**
-    * Create a new list of client connectors.
-    * @param context The context.
-    * @return A new list of client connectors.
-    */
-   public abstract ClientList createClientList(Context context);
-
+	 * Creates a directory resource.
+	 * @param logger The logger to use.
+	 * @param handler The parent directory handler.
+	 * @param request The handled call.
+	 * @return A new directory resource.
+	 * @throws IOException 
+	 */
+   public abstract Resource createDirectoryResource(Logger logger, Directory handler, Request request) throws IOException;
+   
    /**
     * Creates a new helper for a given container.
     * @param application The application to help.
@@ -204,13 +205,6 @@ public abstract class Factory
    public abstract Helper createHelper(Server server);
 
    /**
-    * Creates a string-base representation.
-    * @param value The represented string.
-    * @param mediaType The representation's media type.
-    */
-   public abstract Representation createRepresentation(String value, MediaType mediaType);
-
-   /**
     * Creates a URI-based Restlet attachment that will score chained instance shared by all calls.
     * The score will be proportional to the number of chararacters matched by the pattern, from the start
     * of the context resource path.
@@ -220,21 +214,6 @@ public abstract class Factory
     * @see java.util.regex.Pattern
     */
    public abstract Scorer createScorer(Router router, String uriPattern, Restlet target);
-
-   /**
-    * Creates a new scorer list.
-    * @param router The parent router.
-    * @return The new scorer list.
-    */
-   public abstract ScorerList createScorerList(Router router);
-
-   /**
-    * Create a new list of server connectors.
-    * @param context The context.
-    * @param target The target Restlet of added servers.
-    * @return A new list of server connectors.
-    */
-   public abstract ServerList createServerList(Context context, Restlet target);
 
    /**
     * Returns the best variant representation for a given resource according the the client preferences.

@@ -24,6 +24,7 @@ package org.restlet.util;
 
 import java.util.List;
 
+import org.restlet.Resource;
 import org.restlet.data.ChallengeRequest;
 import org.restlet.data.CookieSetting;
 import org.restlet.data.Language;
@@ -32,7 +33,6 @@ import org.restlet.data.Request;
 import org.restlet.data.Response;
 import org.restlet.data.ServerInfo;
 import org.restlet.data.Status;
-import org.restlet.resource.Resource;
 
 /**
  * Request wrapper. Useful for application developer who need to enrich the request

@@ -37,9 +37,9 @@ import org.restlet.data.Parameter;
 import org.restlet.data.Request;
 import org.restlet.data.Status;
 import org.restlet.data.Tag;
-import org.restlet.resource.InputRepresentation;
-import org.restlet.resource.ReadableRepresentation;
-import org.restlet.resource.Representation;
+import org.restlet.representation.InputRepresentation;
+import org.restlet.representation.ReadableRepresentation;
+import org.restlet.representation.Representation;
 import org.restlet.service.ConnectorService;
 
 /**

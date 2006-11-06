@@ -60,7 +60,8 @@ Changes log
    Suggested by Diggory Briercliffe for integration with Seam.
  - Renamed tutorial examples to com.noelios.restlet.example.tutorial.Part**.java
  - Updated Java Service Wrapper to version 3.2.3.
- 
+ - Added support for Velocity templates in addition to FreeMarker templates. See org.restlet.ext.velocity package.
+
 1.0 beta 19 (2006-10-23)
 [Bugs fixed]
  - Fixed issue with error status preventing the setting of response headers with Servlet containers like Tomcat. Report and solution by Evan DiBiase.

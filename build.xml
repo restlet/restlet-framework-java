@@ -49,6 +49,10 @@
 	<property name="lib-backport-version" value="2.2" />
 	<property name="lib-backport-id" value="${lib-backport-package}_${lib-backport-version}" />
 
+	<property name="lib-collections-package" value="org.apache.commons.collections" />
+	<property name="lib-collections-version" value="3.2" />
+	<property name="lib-collections-id" value="${lib-collections-package}_${lib-collections-version}" />
+
 	<property name="lib-concurrent-package" value="edu.oswego.cs.dl.util.concurrent" />
 	<property name="lib-concurrent-version" value="1.3" />
 	<property name="lib-concurrent-id" value="${lib-concurrent-package}_${lib-concurrent-version}" />
@@ -116,6 +120,10 @@
 	<property name="lib-slf4j-package" value="org.slf4j" />
 	<property name="lib-slf4j-version" value="1.0" />
 	<property name="lib-slf4j-id" value="${lib-slf4j-package}_${lib-slf4j-version}" />
+
+	<property name="lib-velocity-package" value="org.apache.velocity" />
+	<property name="lib-velocity-version" value="1.4" />
+	<property name="lib-velocity-id" value="${lib-velocity-package}_${lib-velocity-version}" />
 
 	<property name="lib-wrapper-package" value="org.tanukisoftware.wrapper" />
 	<property name="lib-wrapper-version" value="3.2" />
@@ -194,6 +202,10 @@
 	<property name="mod-simple-version" value="${lib-simple-version}" />
 	<property name="mod-simple-id" value="${mod-simple-package}_${mod-simple-version}" />
 
+	<property name="mod-velocity-package" value="org.restlet.ext.velocity" />
+	<property name="mod-velocity-version" value="${lib-velocity-version}" />
+	<property name="mod-velocity-id" value="${mod-velocity-package}_${mod-velocity-version}" />
+
 
 	<!-- ======================= -->
 	<!-- ===  Paths setting  === -->
@@ -202,13 +214,38 @@
 	<path id="mod-api-path"/>
 
 	<path id="mod-api-test-path">
-		<path refid="mod-ri-path" />
 		<pathelement path="${classes}/${mod-ri-id}" />
-		<path refid="mod-freemarker-path" />
-		<pathelement path="${classes}/${mod-freemarker-id}" />
+		<pathelement path="${mod}/${mod-ri-id}/src" />
+
+		<pathelement path="${classes}/${mod-api-test-id}" />
+
+		<path refid="mod-ri-test-path" />
+		<pathelement path="${classes}/${mod-ri-test-id}" />
+
 		<path refid="mod-atom-path" />
 		<pathelement path="${classes}/${mod-atom-id}" />
+		<pathelement path="${mod}/${mod-atom-id}/src" />
+
+		<path refid="mod-net-path" />
+		<pathelement path="${classes}/${mod-net-id}" />
+		<pathelement path="${mod}/${mod-net-id}/src" />
+
+		<path refid="mod-simple-path" />
+		<pathelement path="${classes}/${mod-simple-id}" />
+		<pathelement path="${mod}/${mod-simple-id}/src" />
+
+		<path refid="mod-freemarker-path" />
+		<pathelement path="${classes}/${mod-freemarker-id}" />
+		<pathelement path="${mod}/${mod-freemarker-id}/src" />
+
+		<path refid="mod-velocity-path" />
+		<pathelement path="${classes}/${mod-velocity-id}" />
+		<pathelement path="${mod}/${mod-velocity-id}/src" />
+
+      <fileset dir="${lib}/${lib-collections-id}" includes="*.jar" />
 		<fileset dir="${lib}/${lib-junit-id}" includes="*.jar" />
+				
+		<pathelement location="tools/retroweaver/retroweaver-all.jar" />
 	</path>
 
 	<path id="mod-ri-path">
@@ -312,6 +349,12 @@
 		<fileset dir="${lib}/${lib-simple-id}" includes="*.jar" />
 	</path>
 
+	<path id="mod-velocity-path">
+		<path refid="mod-ri-path" />
+		<pathelement path="${classes}/${mod-ri-id}" />
+		<fileset dir="${lib}/${lib-velocity-id}" includes="*.jar" />
+	</path>
+
 	<path id="path-all">
 		<pathelement path="${classes}/${mod-api-id}" />
 		<pathelement path="${classes}/${mod-ri-id}" />
@@ -326,6 +369,7 @@
 		<pathelement path="${classes}/${mod-json-id}" />
 		<pathelement path="${classes}/${mod-net-id}" />
 		<pathelement path="${classes}/${mod-servlet-id}" />
+		<pathelement path="${classes}/${mod-velocity-id}" />
 		<path refid="mod-asyncweb-path" />
 		<path refid="mod-freemarker-path" />
 		<path refid="mod-fileupload-path" />
@@ -338,6 +382,7 @@
 		<path refid="mod-net-path" />
 		<path refid="mod-servlet-path" />
 		<path refid="mod-simple-path" />
+		<path refid="mod-velocity-path" />
 	</path>
 
 	<path id="path-none" />
@@ -373,6 +418,7 @@
 			<mkdir dir="@{destdir}" />
 			<javac compiler="@{compiler}"
 			       debug="@{debug}"
+			       deprecation="true"
 			       encoding="UTF-8"
 			       debuglevel="@{debuglevel}"
 			       optimize="@{optimize}"
@@ -454,6 +500,8 @@
 
 	<!-- Initialization Target -->
 	<target name="init">
+		<echo message="${lib}/${lib-collections-id}" />
+	
 		<!-- Create the time stamp -->
 		<tstamp>
 			<format property="release-date" pattern="yyyy-MM-dd" />
@@ -537,6 +585,7 @@
 		<compileModule name="net" />
 		<compileModule name="servlet" />
 		<compileModule name="simple" />
+		<compileModule name="velocity" />
 		<compileModule name="example" />
 		<compileModule name="api-test" />
 		<compileModule name="ri-test" />
@@ -563,28 +612,7 @@
 		       filtertrace="true"
 		       showoutput="${verbose}">
 			<classpath>
-				<path refid="mod-ri-path" />
-				<pathelement path="${classes}/${mod-ri-id}" />
-				<pathelement path="${mod}/${mod-ri-id}/src" />
-
-				<pathelement path="${classes}/${mod-api-test-id}" />
-
-				<path refid="mod-ri-test-path" />
-				<pathelement path="${classes}/${mod-ri-test-id}" />
-
-				<path refid="mod-net-path" />
-				<pathelement path="${classes}/${mod-net-id}" />
-				<pathelement path="${mod}/${mod-net-id}/src" />
-
-				<path refid="mod-simple-path" />
-				<pathelement path="${classes}/${mod-simple-id}" />
-				<pathelement path="${mod}/${mod-simple-id}/src" />
-
-				<path refid="mod-freemarker-path" />
-				<pathelement path="${classes}/${mod-freemarker-id}" />
-				<pathelement path="${mod}/${mod-freemarker-id}/src" />
-				
-				<pathelement location="tools/retroweaver/retroweaver-all.jar" />
+				<path refid="mod-api-test-path" />
 			</classpath>
 
 			<formatter type="plain" />
@@ -656,6 +684,7 @@
 
 		<!-- Packages libraries (external plugins) -->
 		<packageLibrary name="asyncweb" />
+		<packageLibrary name="collections" />
 		<packageLibrary name="concurrent" />
 		<packageLibrary name="dbcp" />
 		<packageLibrary name="fileupload" />
@@ -671,6 +700,7 @@
 		<packageLibrary name="servlet5" />
 		<packageLibrary name="simple" />
 		<packageLibrary name="slf4j" />
+		<packageLibrary name="velocity" />
 		<packageLibrary name="wrapper" />
 
 		<!-- Package modules (internal plugins) -->
@@ -689,6 +719,7 @@
 		<packageModule name="net" />
 		<packageModule name="servlet" />
 		<packageModule name="simple" />
+		<packageModule name="velocity" />
 		<packageModule name="example" />
 		<packageModule name="api-test" />
 		<packageModule name="ri-test" />
@@ -777,6 +808,7 @@
 				<pathelement path="${mod}/${mod-net-id}/src/" />
 				<pathelement path="${mod}/${mod-servlet-id}/src/" />
 				<pathelement path="${mod}/${mod-simple-id}/src/" />
+				<pathelement path="${mod}/${mod-velocity-id}/src/" />
 			</sourcepath>
 
 			<bottom>
@@ -788,12 +820,17 @@
 				<package name="org.restlet.ext*" />
 			</group>
 
+			<link href="http://freemarker.org/docs/api/" />
+			<link href="http://jakarta.apache.org/commons/collections/api-release/" />
+			<link href="http://jakarta.apache.org/commons/fileupload/apidocs/" />
+			<link href="http://jakarta.apache.org/velocity/docs/api/" />
+			<link href="http://java.sun.com/j2se/1.5.0/docs/api/" />
+			<link href="http://java.sun.com/products/javamail/javadocs/" />
+			<!-- <link href="http://jetty.mortbay.org/jetty6/apidocs/" /> -->
+			<link href="http://www.json.org/javadoc/" />
 			<link href="http://www.restlet.org/docs/api/" packagelistLoc="${docs-api}" offline="true" />
 			<link href="http://www.restlet.org/docs/nre/" packagelistLoc="${docs-nre}" offline="true" />
-			<link href="http://freemarker.org/docs/api/" />
-			<link href="http://jakarta.apache.org/commons/fileupload/apidocs/" />
-			<link href="http://www.json.org/javadoc/" />
-			<link href="http://java.sun.com/j2se/1.5.0/docs/api/" />
+			<link href="http://www.simpleframework.org/javadoc/" />
 		</javadoc>
 	
 		<javadoc packagenames="com.noelios.restlet.*"
@@ -825,9 +862,6 @@
 		
 			<link href="http://www.restlet.org/docs/api/" packagelistLoc="${docs-api}" offline="true" />
 			<link href="http://java.sun.com/j2se/1.5.0/docs/api/" />
-			<link href="http://java.sun.com/products/javamail/javadocs/" />
-			<!-- <link href="http://jetty.mortbay.org/jetty6/apidocs/" /> -->
-			<link href="http://www.simpleframework.org/javadoc/" />
 		</javadoc>
 	</target>
 

@@ -29,7 +29,7 @@ import org.restlet.data.Method;
 import org.restlet.data.Protocol;
 import org.restlet.data.Request;
 import org.restlet.data.Response;
-import org.restlet.resource.Representation;
+import org.restlet.representation.Representation;
 import org.restlet.spi.Factory;
 import org.restlet.spi.Helper;
 import org.restlet.util.VirtualClient;

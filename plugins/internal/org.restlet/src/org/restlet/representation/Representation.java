@@ -20,7 +20,7 @@
  * Portions Copyright [yyyy] [name of copyright owner]
  */
 
-package org.restlet.resource;
+package org.restlet.representation;
 
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
@@ -32,6 +32,7 @@ import java.util.Date;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
+import org.restlet.Resource;
 import org.restlet.data.CharacterSet;
 import org.restlet.data.Encoding;
 import org.restlet.data.Language;

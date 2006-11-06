@@ -20,7 +20,7 @@
  * Portions Copyright [yyyy] [name of copyright owner]
  */
 
-package org.restlet.resource;
+package org.restlet.representation;
 
 import java.io.ByteArrayInputStream;
 import java.io.IOException;

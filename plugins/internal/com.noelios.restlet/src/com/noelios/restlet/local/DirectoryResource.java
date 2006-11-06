@@ -20,7 +20,7 @@
  * Portions Copyright [yyyy] [name of copyright owner]
  */
 
-package org.restlet.resource;
+package com.noelios.restlet.local;
 
 import java.io.IOException;
 import java.util.List;
@@ -30,6 +30,7 @@ import java.util.logging.Level;
 import java.util.logging.Logger;
 
 import org.restlet.Directory;
+import org.restlet.Resource;
 import org.restlet.data.MediaType;
 import org.restlet.data.Method;
 import org.restlet.data.Preference;
@@ -39,6 +40,7 @@ import org.restlet.data.Request;
 import org.restlet.data.Response;
 import org.restlet.data.Result;
 import org.restlet.data.Status;
+import org.restlet.representation.Representation;
 import org.restlet.util.VirtualClient;
 
 /**

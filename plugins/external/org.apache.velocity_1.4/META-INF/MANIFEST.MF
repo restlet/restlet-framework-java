@@ -36,3 +36,4 @@ Export-Package: org.apache.velocity,
  org.apache.velocity.texen.util,
  org.apache.velocity.util,
  org.apache.velocity.util.introspection
+Require-Bundle: org.apache.commons.collections;visibility:=reexport

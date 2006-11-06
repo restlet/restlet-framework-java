@@ -22,7 +22,6 @@
 
 package org.restlet;
 
-import org.restlet.spi.Factory;
 import org.restlet.util.ClientList;
 import org.restlet.util.ServerList;
 
@@ -65,7 +64,7 @@ public abstract class Component extends Restlet
 	 */
 	public ClientList getClients()
 	{
-		if(this.clients == null) this.clients = Factory.getInstance().createClientList(getContext());
+		if(this.clients == null) this.clients = new ClientList(getContext());
 		return this.clients;
 	}
 
@@ -75,7 +74,7 @@ public abstract class Component extends Restlet
 	 */
 	public ServerList getServers()
 	{
-		if(this.servers == null) this.servers = Factory.getInstance().createServerList(getContext(), this);
+		if(this.servers == null) this.servers = new ServerList(getContext(), this);
 		return this.servers;
 	}
 	

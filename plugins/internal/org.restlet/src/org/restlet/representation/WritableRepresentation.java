@@ -20,56 +20,48 @@
  * Portions Copyright [yyyy] [name of copyright owner]
  */
 
-package org.restlet.resource;
+package org.restlet.representation;
 
 import java.io.IOException;
-import java.io.InputStream;
-import java.io.OutputStream;
+import java.nio.channels.ReadableByteChannel;
+import java.nio.channels.WritableByteChannel;
 
 import org.restlet.data.MediaType;
 import org.restlet.util.ByteUtils;
 
 /**
- * Representation based on a BIO output stream. The write(OutputStream) 
+ * Representation based on a writable NIO byte channel. The write(WritableByteChannel) 
  * method needs to be overriden in subclasses.
  * @author Jerome Louvel (contact@noelios.com) <a href="http://www.noelios.com/">Noelios Consulting</a>
  */
-public abstract class OutputRepresentation extends StreamRepresentation
+public abstract class WritableRepresentation extends ChannelRepresentation
 {
 	/**
 	 * Constructor.
-	 * @param mediaType The representation's mediaType.
+	 * @param mediaType The representation's media type.
 	 */
-	public OutputRepresentation(MediaType mediaType)
+	public WritableRepresentation(MediaType mediaType)
 	{
 		super(mediaType);
 	}
 
 	/**
-	 * Constructor.
-	 * @param mediaType The representation's mediaType.
-	 * @param expectedSize The expected input stream size.
+	 * Writes the representation to a byte channel.
+	 * This method is ensured to write the full content for each invocation unless it 
+	 * is a transient representation, in which case an exception is thrown.
+	 * @param writableChannel A writable byte channel.
+	 * @throws IOException
 	 */
-	public OutputRepresentation(MediaType mediaType, long expectedSize)
-	{
-		super(mediaType);
-		setSize(expectedSize);
-	}
+	public abstract void write(WritableByteChannel writableChannel) throws IOException;
 
 	/**
-	 * Writes the representation to a byte stream.
-	 * @param outputStream The output stream.
+	 * Returns a readable byte channel. If it is supported by a file a read-only instance of 
+	 * FileChannel is returned.
+	 * @return A readable byte channel.
 	 */
-	public abstract void write(OutputStream outputStream) throws IOException;
-
-	/**
-	 * Returns a stream with the representation's content. 
-	 * Internally, it uses a writer thread and a pipe stream.
-	 * @return A stream with the representation's content.
-	 */
-	public InputStream getStream() throws IOException
+	public ReadableByteChannel getChannel() throws IOException
 	{
-		return ByteUtils.getStream(this);
+		return ByteUtils.getChannel(this);
 	}
 
 }

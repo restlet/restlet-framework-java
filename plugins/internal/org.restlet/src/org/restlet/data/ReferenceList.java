@@ -28,8 +28,8 @@ import java.io.InputStreamReader;
 import java.util.ArrayList;
 import java.util.List;
 
-import org.restlet.resource.Representation;
-import org.restlet.spi.Factory;
+import org.restlet.representation.Representation;
+import org.restlet.representation.StringRepresentation;
 import org.restlet.util.WrapperList;
 
 /**
@@ -162,8 +162,7 @@ public class ReferenceList extends WrapperList<Reference>
 			sb.append(ref.toString()).append("\r\n");
 		}
 
-		return Factory.getInstance().createRepresentation(sb.toString(),
-				MediaType.TEXT_URI_LIST);
+		return new StringRepresentation(sb.toString(), MediaType.TEXT_URI_LIST);
 	}
 
 }

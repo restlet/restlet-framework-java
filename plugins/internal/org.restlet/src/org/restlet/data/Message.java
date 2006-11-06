@@ -22,8 +22,8 @@
 
 package org.restlet.data;
 
-import org.restlet.resource.Representation;
-import org.restlet.spi.Factory;
+import org.restlet.representation.Representation;
+import org.restlet.representation.StringRepresentation;
 import org.restlet.util.MapModel;
 
 /**
@@ -43,7 +43,7 @@ public abstract class Message
 	 */
 	public Message()
 	{
-		this((Representation)null);
+		this((Representation) null);
 	}
 
 	/**
@@ -121,9 +121,10 @@ public abstract class Message
 	 */
 	public boolean isEntityAvailable()
 	{
-		return (getEntity() != null) && (getEntity().getSize() > 0) && getEntity().isAvailable();
+		return (getEntity() != null) && (getEntity().getSize() > 0)
+				&& getEntity().isAvailable();
 	}
-	
+
 	/**
 	 * Sets the entity representation.
 	 * @param entity The entity representation.
@@ -135,12 +136,12 @@ public abstract class Message
 
 	/**
 	 * Sets a textual entity.
-    * @param value The represented string.
-    * @param mediaType The representation's media type.
+	 * @param value The represented string.
+	 * @param mediaType The representation's media type.
 	 */
 	public void setEntity(String value, MediaType mediaType)
 	{
-		setEntity(Factory.getInstance().createRepresentation(value, mediaType));
+		setEntity(new StringRepresentation(value, mediaType));
 	}
 
 }

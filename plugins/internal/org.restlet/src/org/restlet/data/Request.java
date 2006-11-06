@@ -25,7 +25,7 @@ package org.restlet.data;
 import java.util.ArrayList;
 import java.util.List;
 
-import org.restlet.resource.Representation;
+import org.restlet.representation.Representation;
 
 /**
  * Generic request sent by client connectors. It is then received by server connectors and processed 

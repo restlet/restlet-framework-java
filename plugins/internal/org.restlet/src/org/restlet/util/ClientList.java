@@ -22,21 +22,46 @@
 
 package org.restlet.util;
 
-import java.util.List;
-
 import org.restlet.Client;
+import org.restlet.Context;
 import org.restlet.data.Protocol;
 
 /**
  * Modifiable list of client connectors.
  * @author Jerome Louvel (contact@noelios.com) <a href="http://www.noelios.com/">Noelios Consulting</a>
  */
-public interface ClientList extends List<Client>
+public class ClientList  extends WrapperList<Client>  
 {
+	/** The context. */
+	private Context context;
+	
+	/**
+	 * Constructor.
+	 * @param context The context.
+	 */
+	public ClientList(Context context)
+	{
+		this.context = context;
+	}
+	
+	/**
+	 * Returns the context.
+	 * @return The context.
+	 */
+	private Context getContext()
+	{
+		return this.context;		
+	}
+	
 	/**
 	 * Adds a new client connector in the map supporting the given protocol.
 	 * @param protocol The connector protocol.
 	 * @return The added client.
 	 */
-	public Client add(Protocol protocol);
+	public Client add(Protocol protocol)
+	{
+		Client result = new Client(getContext(), protocol); 
+		add(result);
+		return result;
+	}
 }

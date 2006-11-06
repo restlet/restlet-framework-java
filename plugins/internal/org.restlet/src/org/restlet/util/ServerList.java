@@ -22,8 +22,8 @@
 
 package org.restlet.util;
 
-import java.util.List;
-
+import org.restlet.Context;
+import org.restlet.Restlet;
 import org.restlet.Server;
 import org.restlet.data.Protocol;
 
@@ -31,14 +31,63 @@ import org.restlet.data.Protocol;
  * Modifiable list of server connectors.
  * @author Jerome Louvel (contact@noelios.com) <a href="http://www.noelios.com/">Noelios Consulting</a>
  */
-public interface ServerList extends List<Server>
+public class ServerList extends WrapperList<Server>
 {
+	/** The context. */
+	private Context context;
+	
+	/** The target Restlet of added servers. */
+	private Restlet target;
+
+	/**
+	 * Constructor.
+	 * @param context The context.
+	 * @param target The target Restlet of added servers.
+	 */
+	public ServerList(Context context, Restlet target)
+	{
+		this.context = context;
+		this.target = target;
+	}
+
+	/**
+	 * Returns the context.
+	 * @return The context.
+	 */
+	public Context getContext()
+	{
+		return this.context;
+	}
+
+	/**
+	 * Returns the target Restlet.
+	 * @return The target Restlet.
+	 */
+	public Restlet getTarget()
+	{
+		return this.target;
+	}
+
+	/**
+	 * Adds a server at the end of the list.
+	 * @return True (as per the general contract of the Collection.add method).
+	 */
+	public boolean add(Server server)
+	{
+		return super.add(server);
+	}
+
 	/**
 	 * Adds a new server connector in the map supporting the given protocol.
 	 * @param protocol The connector protocol.
 	 * @return The added server.
 	 */
-	public Server add(Protocol protocol);
+	public Server add(Protocol protocol)
+	{
+		Server result = new Server(getContext(), protocol, null, protocol.getDefaultPort(), getTarget());
+		add(result);
+		return result;
+	}
 
 	/**
 	 * Adds a new server connector in the map supporting the given protocol on the specified port.
@@ -46,7 +95,12 @@ public interface ServerList extends List<Server>
 	 * @param port The listening port.
 	 * @return The added server.
 	 */
-	public Server add(Protocol protocol, int port);
+	public Server add(Protocol protocol, int port)
+	{
+		Server result = new Server(getContext(), protocol, null, port, getTarget());
+		add(result);
+		return result;
+	}
 
 	/**
 	 * Adds a new server connector in the map supporting the given protocol on the specified IP address and port.
@@ -55,5 +109,11 @@ public interface ServerList extends List<Server>
 	 * @param port The listening port.
 	 * @return The added server.
 	 */
-	public Server add(Protocol protocol, String address, int port);
+	public Server add(Protocol protocol, String address, int port)
+	{
+		Server result = new Server(getContext(), protocol, address, port, getTarget());
+		add(result);
+		return result;
+	}
+
 }

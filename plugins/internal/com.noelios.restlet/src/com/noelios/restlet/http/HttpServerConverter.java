@@ -34,7 +34,7 @@ import org.restlet.data.ParameterList;
 import org.restlet.data.Request;
 import org.restlet.data.Response;
 import org.restlet.data.Status;
-import org.restlet.resource.Representation;
+import org.restlet.representation.Representation;
 import org.restlet.util.DateUtils;
 
 import com.noelios.restlet.util.CookieUtils;

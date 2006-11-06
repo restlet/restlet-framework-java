@@ -32,10 +32,9 @@ import org.restlet.data.Reference;
 import org.restlet.data.ReferenceList;
 import org.restlet.data.Request;
 import org.restlet.data.Response;
-import org.restlet.resource.DirectoryResource;
-import org.restlet.resource.Representation;
-import org.restlet.resource.Resource;
-import org.restlet.resource.StringRepresentation;
+import org.restlet.representation.Representation;
+import org.restlet.representation.StringRepresentation;
+import org.restlet.spi.Factory;
 
 /**
  * Handler mapping a directory of local resources. Those resources have representations accessed by the file 
@@ -101,7 +100,7 @@ public class Directory extends Handler
 	{
 		try
 		{
-			return new DirectoryResource(getLogger(), this, request);
+			return Factory.getInstance().createDirectoryResource(getLogger(), this, request);
 		}
 		catch (IOException ioe)
 		{

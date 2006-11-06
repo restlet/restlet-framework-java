@@ -7,7 +7,7 @@ Bundle-Vendor: Noelios Consulting
 Bundle-Localization: plugin
 Export-Package: org.restlet,
  org.restlet.data,
- org.restlet.resource,
+ org.restlet.representation,
  org.restlet.service,
  org.restlet.spi,
  org.restlet.util

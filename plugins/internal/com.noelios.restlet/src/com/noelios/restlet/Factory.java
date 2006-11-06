@@ -38,6 +38,8 @@ import org.restlet.Application;
 import org.restlet.Client;
 import org.restlet.Container;
 import org.restlet.Context;
+import org.restlet.Directory;
+import org.restlet.Resource;
 import org.restlet.Restlet;
 import org.restlet.Router;
 import org.restlet.Scorer;
@@ -53,21 +55,14 @@ import org.restlet.data.Request;
 import org.restlet.data.Response;
 import org.restlet.data.Status;
 import org.restlet.data.Tag;
-import org.restlet.resource.Representation;
-import org.restlet.resource.Resource;
-import org.restlet.resource.StringRepresentation;
+import org.restlet.representation.Representation;
 import org.restlet.spi.Helper;
-import org.restlet.util.ClientList;
 import org.restlet.util.DateUtils;
-import org.restlet.util.ScorerList;
-import org.restlet.util.ServerList;
 
 import com.noelios.restlet.application.ApplicationHelper;
 import com.noelios.restlet.container.ContainerHelper;
-import com.noelios.restlet.util.DefaultClientList;
+import com.noelios.restlet.local.DirectoryResource;
 import com.noelios.restlet.util.FormUtils;
-import com.noelios.restlet.util.DefaultScorerList;
-import com.noelios.restlet.util.DefaultServerList;
 
 /**
  * Restlet factory supported by the engine.
@@ -221,13 +216,17 @@ public class Factory extends org.restlet.spi.Factory
 	}
 
 	/**
-	 * Create a new list of client connectors.
-	 * @param context The context.
-	 * @return A new list of client connectors.
+	 * Creates a directory resource.
+	 * @param logger The logger to use.
+	 * @param handler The parent directory handler.
+	 * @param request The handled call.
+	 * @return A new directory resource.
+	 * @throws IOException 
 	 */
-	public ClientList createClientList(Context context)
+	public Resource createDirectoryResource(Logger logger, Directory handler,
+			Request request) throws IOException
 	{
-		return new DefaultClientList(context);
+		return new DirectoryResource(logger, handler, request);
 	}
 
 	/**
@@ -331,16 +330,6 @@ public class Factory extends org.restlet.spi.Factory
 	}
 
 	/**
-	 * Creates a string-base representation.
-	 * @param value The represented string.
-	 * @param mediaType The representation's media type.
-	 */
-	public Representation createRepresentation(String value, MediaType mediaType)
-	{
-		return new StringRepresentation(value, mediaType);
-	}
-
-	/**
 	 * Creates a URI-based Restlet attachment that will score target instance shared by all calls.
 	 * The score will be proportional to the number of chararacters matched by the pattern, from the start
 	 * of the context resource path.
@@ -352,27 +341,6 @@ public class Factory extends org.restlet.spi.Factory
 	public Scorer createScorer(Router router, String pattern, Restlet target)
 	{
 		return new PatternScorer(router, pattern, target);
-	}
-
-	/**
-	 * Creates a new scorer list.
-	 * @param router The parent router.
-	 * @return The new scorer list.
-	 */
-	public ScorerList createScorerList(Router router)
-	{
-		return new DefaultScorerList(router);
-	}
-
-	/**
-	 * Create a new list of server connectors.
-	 * @param context The context.
-	 * @param target The target Restlet of added servers.
-	 * @return A new list of server connectors.
-	 */
-	public ServerList createServerList(Context context, Restlet target)
-	{
-		return new DefaultServerList(context, target);
 	}
 
 	/**

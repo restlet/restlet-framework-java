@@ -31,7 +31,7 @@ import java.nio.channels.Pipe;
 import java.nio.channels.ReadableByteChannel;
 import java.nio.channels.WritableByteChannel;
 
-import org.restlet.resource.Representation;
+import org.restlet.representation.Representation;
 
 /**
  * Byte manipulation utilities.

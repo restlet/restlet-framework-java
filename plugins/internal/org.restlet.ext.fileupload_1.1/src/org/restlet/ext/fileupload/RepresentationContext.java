@@ -26,7 +26,7 @@ import java.io.IOException;
 import java.io.InputStream;
 
 import org.apache.commons.fileupload.RequestContext;
-import org.restlet.resource.Representation;
+import org.restlet.representation.Representation;
 
 /**
  * Provides access to the representation information needed by the FileUpload processor.  

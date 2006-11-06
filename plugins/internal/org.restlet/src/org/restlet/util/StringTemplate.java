@@ -135,6 +135,18 @@ public class StringTemplate
 	 * Formats the template using the given data model.
 	 * @param model The template model to use.
 	 * @return The generated string.
+	 * @deprecated Use format() method instead.
+	 */
+	@Deprecated
+	public String process(DataModel model)
+	{
+		return format(model);
+	}
+
+	/**
+	 * Formats the template using the given data model.
+	 * @param model The template model to use.
+	 * @return The generated string.
 	 */
 	public String format(DataModel model)
 	{

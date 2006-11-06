@@ -25,7 +25,8 @@ package org.restlet.data;
 import java.io.IOException;
 import java.util.logging.Logger;
 
-import org.restlet.resource.Representation;
+import org.restlet.representation.Representation;
+import org.restlet.representation.StringRepresentation;
 import org.restlet.spi.Factory;
 
 /**
@@ -106,7 +107,7 @@ public class Form extends ParameterList
     */
    public Representation getWebForm() 
    {
-      return Factory.getInstance().createRepresentation(getQueryString(), MediaType.APPLICATION_WWW_FORM);
+      return new StringRepresentation(getQueryString(), MediaType.APPLICATION_WWW_FORM);
    }
 
    /**

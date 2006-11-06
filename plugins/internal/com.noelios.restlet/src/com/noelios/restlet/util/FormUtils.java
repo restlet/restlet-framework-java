@@ -30,7 +30,7 @@ import java.util.logging.Logger;
 import org.restlet.data.Form;
 import org.restlet.data.Parameter;
 import org.restlet.data.Reference;
-import org.restlet.resource.Representation;
+import org.restlet.representation.Representation;
 
 /**
  * Representation of a Web form containing submitted parameters.

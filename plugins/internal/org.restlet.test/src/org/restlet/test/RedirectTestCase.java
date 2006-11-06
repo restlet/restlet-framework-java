@@ -33,7 +33,7 @@ import org.restlet.data.Method;
 import org.restlet.data.Protocol;
 import org.restlet.data.Request;
 import org.restlet.data.Response;
-import org.restlet.resource.StringRepresentation;
+import org.restlet.representation.StringRepresentation;
 
 
 /**
