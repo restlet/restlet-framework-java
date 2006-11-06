@@ -27,6 +27,7 @@ import java.util.Map;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
+
 /**
  * String template that enforces a strict separation between the pattern and the model. It supports 
  * variable insertion and non-nestable conditions. The default delimiters are "${" and "}" for variables 
@@ -138,7 +139,7 @@ public class StringTemplate
 	 * @deprecated Use format() method instead.
 	 */
 	@Deprecated
-	public String process(DataModel model)
+	public String process(Model model)
 	{
 		return format(model);
 	}
@@ -148,7 +149,7 @@ public class StringTemplate
 	 * @param model The template model to use.
 	 * @return The generated string.
 	 */
-	public String format(DataModel model)
+	public String format(Model model)
 	{
 		StringBuilder sb = new StringBuilder();
 		char nextChar = 0;
@@ -397,7 +398,7 @@ public class StringTemplate
 	 * @param model The template model to use.
 	 */
 	private void processText(int state, int tokenStart, int tokenEnd,
-			StringBuilder buffer, DataModel model)
+			StringBuilder buffer, Model model)
 	{
 		if (state == TEXT_APPEND)
 		{
@@ -420,7 +421,7 @@ public class StringTemplate
 	 * @return The state after processing.
 	 */
 	private int processInstruction(int textState, int tokenStart, int tokenEnd,
-			StringBuilder buffer, DataModel model)
+			StringBuilder buffer, Model model)
 	{
 		String instruction = template.subSequence(tokenStart, tokenEnd).toString();
 		getLogger().log(Level.FINER, "processInstruction: " + instruction, buffer);
@@ -483,7 +484,7 @@ public class StringTemplate
 	 * @return The state after processing.
 	 */
 	private int processVariable(int textState, int tokenStart, int tokenEnd,
-			StringBuilder buffer, DataModel model)
+			StringBuilder buffer, Model model)
 	{
 		String variable = template.subSequence(tokenStart, tokenEnd).toString();
 		getLogger().log(Level.FINER, "processVariable: " + variable, buffer);
@@ -516,7 +517,7 @@ public class StringTemplate
 	 * @param model The template model to use.
 	 * @return The evaluation result.
 	 */
-	private boolean evaluateCondition(String condition, DataModel model)
+	private boolean evaluateCondition(String condition, Model model)
 	{
 		getLogger().log(Level.FINER, "evaluateCondition: " + condition, model);
 		boolean result = false;

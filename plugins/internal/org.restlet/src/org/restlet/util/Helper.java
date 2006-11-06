@@ -20,7 +20,7 @@
  * Portions Copyright [yyyy] [name of copyright owner]
  */
 
-package org.restlet.spi;
+package org.restlet.util;
 
 import org.restlet.Context;
 import org.restlet.data.Request;

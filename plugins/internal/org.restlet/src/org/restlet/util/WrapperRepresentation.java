@@ -37,6 +37,7 @@ import org.restlet.data.Language;
 import org.restlet.data.MediaType;
 import org.restlet.data.Method;
 import org.restlet.data.Reference;
+import org.restlet.data.ReferenceList;
 import org.restlet.data.Result;
 import org.restlet.data.Tag;
 import org.restlet.resource.Representation;

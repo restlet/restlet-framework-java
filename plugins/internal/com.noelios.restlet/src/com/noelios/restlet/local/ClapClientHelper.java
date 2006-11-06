@@ -27,7 +27,7 @@ import java.net.URL;
 import java.util.logging.Level;
 
 import org.restlet.Client;
-import org.restlet.data.ClapReference;
+import org.restlet.data.LocalReference;
 import org.restlet.data.Method;
 import org.restlet.data.Protocol;
 import org.restlet.data.Request;
@@ -67,17 +67,17 @@ public class ClapClientHelper extends LocalClientHelper
 
 		if (scheme.equalsIgnoreCase(Protocol.CLAP.getSchemeName()))
 		{
-			ClapReference cr = new ClapReference(request.getResourceRef());
+			LocalReference cr = new LocalReference(request.getResourceRef());
 
-			if (cr.getAuthorityType() == ClapReference.CLASS)
+			if (cr.getClapAuthorityType() == LocalReference.CLAP_CLASS)
 			{
 				handleClassLoader(request, response, getClass().getClassLoader());
 			}
-			else if (cr.getAuthorityType() == ClapReference.SYSTEM)
+			else if (cr.getClapAuthorityType() == LocalReference.CLAP_SYSTEM)
 			{
 				handleClassLoader(request, response, ClassLoader.getSystemClassLoader());
 			}
-			else if (cr.getAuthorityType() == ClapReference.THREAD)
+			else if (cr.getClapAuthorityType() == LocalReference.CLAP_THREAD)
 			{
 				handleClassLoader(request, response, Thread.currentThread()
 						.getContextClassLoader());

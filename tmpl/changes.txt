@@ -23,13 +23,13 @@ Changes log
  - Renamed RedirectRestlet into org.restlet.Redirector.
  - Renamed ExtractFilter into org.restlet.Extractor.
  - Renamed TunnelFilter into org.restlet.Tunnel.
- - Refactor data model of StringTemplate. New org.restlet.util.DataModel added, Model, ReadableModel and WritableModel removed.
+ - Moved StringTemplate data model to org.restlet.util.Model. Removed ReadableModel and WritableModel.
  - Replace Representation.toString() by getValue() to prevent unwanted consumption of the content. Reported by Vincent Lari.
  	Note that getValue() throws IOException instead of eating them as to older toString() implementation. 
- - Renamed NRE's LogFileHandler and LogFormatter to AccessLogFileHandler and AccessLogFormatter (use for WWW access logs).
  - Refactored TunnelFilter into a TunnelService enabled by default. 
  - Also refactored and renamed LocalService into MetadataService used by the TunnelService and local client connectors.
- 
+ - Refactored VirtualClient interface into a Dispatcher class. Renamed Context.getClient() into getDispatcher().
+
 [Other changes] 
  - Reorganized Javadocs into three parts: Restlet API, Restlet Extensions, Noelios Restlet Engine.
  - Added JSON library as an external plugin project. See http://www.json.org
@@ -61,6 +61,10 @@ Changes log
  - Renamed tutorial examples to com.noelios.restlet.example.tutorial.Part**.java
  - Updated Java Service Wrapper to version 3.2.3.
  - Added support for Velocity templates in addition to FreeMarker templates. See org.restlet.ext.velocity package.
+ - Merged NRE's ClapReference, JarReference and FileReference into a single org.restlet.data.LocalReference.
+ - Merged org.restlet.spi into org.restlet.util (only Factory and Helper were remaining).
+ - Added Protocol.JAR constant.
+ - Renamed NRE's LogFileHandler and LogFormatter to AccessLogFileHandler and AccessLogFormatter (use for WWW access logs).
 
 1.0 beta 19 (2006-10-23)
 [Bugs fixed]

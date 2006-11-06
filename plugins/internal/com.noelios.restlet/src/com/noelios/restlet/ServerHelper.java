@@ -26,9 +26,9 @@ import java.util.logging.Logger;
 
 import org.restlet.Context;
 import org.restlet.Server;
+import org.restlet.data.ParameterList;
 import org.restlet.data.Request;
 import org.restlet.data.Response;
-import org.restlet.util.ParameterList;
 
 /**
  * Server connector helper.  

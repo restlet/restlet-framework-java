@@ -30,6 +30,7 @@ import org.restlet.data.Form;
 import org.restlet.data.Request;
 import org.restlet.data.Response;
 
+
 /**
  * Readable model wrapping a call's request and response. It can be passed directly passed to a string 
  * template. Repeating values can be retrieved by appending (index) or ("name")  or ('name') after the 
@@ -63,7 +64,7 @@ import org.restlet.data.Response;
  * </ul>
  * @author Jerome Louvel (contact@noelios.com) <a href="http://www.noelios.com/">Noelios Consulting</a>
  */
-public class CallModel implements DataModel
+public class CallModel implements Model
 {
 	public static final String NAME_ATTRIBUTE = "attribute";
 

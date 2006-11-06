@@ -20,16 +20,19 @@
  * Portions Copyright [yyyy] [name of copyright owner]
  */
 
-package org.restlet.util;
+package org.restlet.data;
 
 import java.util.Map;
 import java.util.TreeMap;
+
+import org.restlet.util.Model;
+
 
 /**
  * Simple model based on a map.
  * @author Jerome Louvel (contact@noelios.com) <a href="http://www.noelios.com/">Noelios Consulting</a>
  */
-public class MapModel extends TreeMap<String, Object> implements DataModel
+public class MapModel extends TreeMap<String, Object> implements Model
 {
 	private static final long serialVersionUID = 4508869056441847319L;
 

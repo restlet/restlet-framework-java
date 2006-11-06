@@ -22,10 +22,10 @@
 
 package com.noelios.restlet;
 
+import org.restlet.Dispatcher;
 import org.restlet.data.Protocol;
 import org.restlet.data.Request;
 import org.restlet.data.Response;
-import org.restlet.util.Dispatcher;
 
 /**
  * Default call dispatcher.

@@ -28,8 +28,8 @@ import java.util.List;
 import org.restlet.data.Protocol;
 import org.restlet.data.Request;
 import org.restlet.data.Response;
-import org.restlet.spi.Factory;
-import org.restlet.spi.Helper;
+import org.restlet.util.Factory;
+import org.restlet.util.Helper;
 
 /**
  * Connector acting as a generic server. It internally uses one of the available connectors registered 

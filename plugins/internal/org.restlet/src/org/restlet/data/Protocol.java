@@ -61,6 +61,10 @@ public class Protocol extends Metadata
 	public static final Protocol HTTPS = new Protocol("https", "HTTPS",
 			"HyperText Transport Protocol (Secure)", 443);
 
+	/** JAR protocol. */
+	public static final Protocol JAR = new Protocol("jar", "JAR",
+			"Java ARchive", -1);
+
 	/** JDBC protocol. */
 	public static final Protocol JDBC = new Protocol("jdbc", "JDBC",
 			"Java DataBase Connectivity", -1);

@@ -26,7 +26,7 @@ import java.util.logging.Logger;
 
 import org.restlet.Context;
 import org.restlet.data.Parameter;
-import org.restlet.util.ParameterList;
+import org.restlet.data.ParameterList;
 
 /**
  * Converter between high-level and low-level HTTP calls.

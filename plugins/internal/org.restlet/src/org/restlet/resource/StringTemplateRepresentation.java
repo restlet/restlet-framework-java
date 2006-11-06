@@ -28,9 +28,9 @@ import java.io.InputStream;
 import java.io.OutputStream;
 import java.io.OutputStreamWriter;
 
+import org.restlet.data.MapModel;
 import org.restlet.data.MediaType;
-import org.restlet.util.DataModel;
-import org.restlet.util.MapModel;
+import org.restlet.util.Model;
 import org.restlet.util.StringTemplate;
 
 /**
@@ -44,7 +44,7 @@ public class StringTemplateRepresentation extends StreamRepresentation
 	private StringTemplate template;
 
 	/** The template model. */
-	private DataModel model;
+	private Model model;
 
 	/**
 	 * Constructor.
@@ -52,7 +52,7 @@ public class StringTemplateRepresentation extends StreamRepresentation
 	 * @param model The template model to use.
 	 * @param mediaType The representation's media type.
 	 */
-	public StringTemplateRepresentation(CharSequence pattern, DataModel model,
+	public StringTemplateRepresentation(CharSequence pattern, Model model,
 			MediaType mediaType)
 	{
 		super(mediaType);
@@ -83,7 +83,7 @@ public class StringTemplateRepresentation extends StreamRepresentation
 	 */
 	public StringTemplateRepresentation(CharSequence pattern, String variableStart,
 			String variableEnd, String instructionStart, String instructionEnd,
-			DataModel model, MediaType mediaType)
+			Model model, MediaType mediaType)
 	{
 		super(mediaType);
 		this.template = new StringTemplate(pattern, variableStart, variableEnd,
@@ -113,7 +113,7 @@ public class StringTemplateRepresentation extends StreamRepresentation
 	 * Returns the data model.
 	 * @return The data model.
 	 */
-	public DataModel getModel()
+	public Model getModel()
 	{
 		return this.model;
 	}

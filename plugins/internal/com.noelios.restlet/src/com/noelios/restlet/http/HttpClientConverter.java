@@ -35,11 +35,11 @@ import org.restlet.data.Conditions;
 import org.restlet.data.MediaType;
 import org.restlet.data.Method;
 import org.restlet.data.Parameter;
+import org.restlet.data.ParameterList;
 import org.restlet.data.Request;
 import org.restlet.data.Response;
 import org.restlet.data.Status;
 import org.restlet.util.DateUtils;
-import org.restlet.util.ParameterList;
 
 import com.noelios.restlet.Factory;
 import com.noelios.restlet.util.CookieReader;

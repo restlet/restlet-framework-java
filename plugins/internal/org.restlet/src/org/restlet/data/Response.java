@@ -26,7 +26,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import org.restlet.resource.Resource;
-import org.restlet.spi.Factory;
+import org.restlet.util.Factory;
 
 /**
  * Generic response sent by server connectors. It is then received by client connectors. Responses 

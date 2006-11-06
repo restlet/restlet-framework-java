@@ -22,7 +22,6 @@
 
 package org.restlet.data;
 
-import org.restlet.util.ParameterList;
 
 /**
  * Media type used in representations and preferences.

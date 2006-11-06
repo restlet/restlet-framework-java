@@ -27,8 +27,7 @@ import java.util.logging.Logger;
 
 import org.restlet.resource.Representation;
 import org.restlet.resource.StringRepresentation;
-import org.restlet.spi.Factory;
-import org.restlet.util.ParameterList;
+import org.restlet.util.Factory;
 
 /**
  * Form which is a specialized modifiable list of parameters.
@@ -43,88 +42,88 @@ public class Form extends ParameterList
 	{
 		super();
 	}
-	
-   /**
-    * Constructor.
-    * @param queryString The Web form parameters as a string.
-    * @throws IOException 
-    */
-   public Form(String queryString)
-   {
-   	this(Logger.getLogger(Form.class.getCanonicalName()), queryString);
-   }
-	
-   /**
-    * Constructor.
-    * @param logger The logger to use.
-    * @param queryString The Web form parameters as a string.
-    * @throws IOException 
-    */
-   public Form(Logger logger, String queryString)
-   {
-   	Factory.getInstance().parse(logger, this, queryString);
-   }
 
-   /**
-    * Constructor.
-    * @param webForm The URL encoded Web form.
-    * @throws IOException
-    */
-   public Form(Representation webForm)
-   {
-   	this(Logger.getLogger(Form.class.getCanonicalName()), webForm);
-   }
+	/**
+	 * Constructor.
+	 * @param queryString The Web form parameters as a string.
+	 * @throws IOException 
+	 */
+	public Form(String queryString)
+	{
+		this(Logger.getLogger(Form.class.getCanonicalName()), queryString);
+	}
 
-   /**
-    * Constructor.
-    * @param logger The logger to use.
-    * @param webForm The URL encoded Web form.
-    * @throws IOException
-    */
-   public Form(Logger logger, Representation webForm)
-   {
-   	Factory.getInstance().parse(logger, this, webForm);
-   }
+	/**
+	 * Constructor.
+	 * @param logger The logger to use.
+	 * @param queryString The Web form parameters as a string.
+	 * @throws IOException 
+	 */
+	public Form(Logger logger, String queryString)
+	{
+		Factory.getInstance().parse(logger, this, queryString);
+	}
 
-   /**
-    * Formats the form as a query string. 
-    * @return The form as a query string.
-    */
-   public String getQueryString()
-   {
-    	try
-     	{
-    		return urlEncode();
-   	}
-   	catch(IOException ioe)
-   	{
-   		return null;
-   	}
-   }
+	/**
+	 * Constructor.
+	 * @param webForm The URL encoded Web form.
+	 * @throws IOException
+	 */
+	public Form(Representation webForm)
+	{
+		this(Logger.getLogger(Form.class.getCanonicalName()), webForm);
+	}
 
-   /**
-    * Returns the formatted query corresponding to the current list of parameters.
-    * @return The formatted query.
-    */
-   public Representation getWebForm() 
-   {
-      return new StringRepresentation(getQueryString(), MediaType.APPLICATION_WWW_FORM);
-   }
+	/**
+	 * Constructor.
+	 * @param logger The logger to use.
+	 * @param webForm The URL encoded Web form.
+	 * @throws IOException
+	 */
+	public Form(Logger logger, Representation webForm)
+	{
+		Factory.getInstance().parse(logger, this, webForm);
+	}
 
-   /**
-    * URL encodes the form. 
-    * @return The encoded form.
-    * @throws IOException
-    */
-   public String urlEncode() throws IOException
-   {
-	      StringBuilder sb = new StringBuilder();
-	      for(int i = 0; i < size(); i++)
-	      {
-	         if(i > 0) sb.append('&');
-	         get(i).urlEncode(sb);
-	      }
-	      return sb.toString();
-   }
+	/**
+	 * Formats the form as a query string. 
+	 * @return The form as a query string.
+	 */
+	public String getQueryString()
+	{
+		try
+		{
+			return urlEncode();
+		}
+		catch (IOException ioe)
+		{
+			return null;
+		}
+	}
+
+	/**
+	 * Returns the formatted query corresponding to the current list of parameters.
+	 * @return The formatted query.
+	 */
+	public Representation getWebForm()
+	{
+		return new StringRepresentation(getQueryString(), MediaType.APPLICATION_WWW_FORM);
+	}
+
+	/**
+	 * URL encodes the form. 
+	 * @return The encoded form.
+	 * @throws IOException
+	 */
+	public String urlEncode() throws IOException
+	{
+		StringBuilder sb = new StringBuilder();
+		for (int i = 0; i < size(); i++)
+		{
+			if (i > 0) sb.append('&');
+			get(i).urlEncode(sb);
+		}
+		return sb.toString();
+	}
 
 }

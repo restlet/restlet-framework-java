@@ -31,7 +31,6 @@ import org.restlet.Router;
 import org.restlet.Scorer;
 import org.restlet.data.Request;
 import org.restlet.data.Response;
-import org.restlet.spi.Factory;
 
 /**
  * Modifiable list of scorers with some helper methods. Note that this class implements the java.util.List

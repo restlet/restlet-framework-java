@@ -29,13 +29,13 @@ import java.util.logging.Level;
 
 import org.restlet.data.MediaType;
 import org.restlet.data.Reference;
+import org.restlet.data.ReferenceList;
 import org.restlet.data.Request;
 import org.restlet.data.Response;
 import org.restlet.resource.Representation;
 import org.restlet.resource.Resource;
 import org.restlet.resource.StringRepresentation;
-import org.restlet.spi.Factory;
-import org.restlet.util.ReferenceList;
+import org.restlet.util.Factory;
 
 /**
  * Handler mapping a directory of local resources. Those resources have representations accessed by the file 

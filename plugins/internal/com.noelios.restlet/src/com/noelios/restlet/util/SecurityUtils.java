@@ -40,10 +40,10 @@ import org.restlet.data.ChallengeScheme;
 import org.restlet.data.Form;
 import org.restlet.data.Method;
 import org.restlet.data.Parameter;
+import org.restlet.data.ParameterList;
 import org.restlet.data.Reference;
 import org.restlet.data.Request;
 import org.restlet.util.DateUtils;
-import org.restlet.util.ParameterList;
 
 import com.noelios.restlet.http.HttpConstants;
 

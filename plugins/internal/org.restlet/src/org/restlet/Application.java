@@ -30,8 +30,8 @@ import org.restlet.service.MetadataService;
 import org.restlet.service.LogService;
 import org.restlet.service.StatusService;
 import org.restlet.service.TunnelService;
-import org.restlet.spi.Factory;
-import org.restlet.spi.Helper;
+import org.restlet.util.Factory;
+import org.restlet.util.Helper;
 
 /**
  * Restlet deployable into Containers. Applications are guaranteed to receive calls with their base reference

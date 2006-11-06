@@ -52,7 +52,7 @@ import com.noelios.restlet.ClientHelper;
  * 		<td>Time to live for a file representation before it expires (in seconds).</td>
  * 	</tr>
  *	</table>
- * @see org.restlet.data.ClapReference
+ * @see org.restlet.data.LocalReference
  * @author Jerome Louvel (contact@noelios.com) <a href="http://www.noelios.com/">Noelios Consulting</a>
  * @author Thierry Boileau
  */

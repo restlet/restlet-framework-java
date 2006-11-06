@@ -31,99 +31,99 @@ import java.util.List;
  */
 public class Conditions
 {
-   /** The "if-modified-since" condition */
+	/** The "if-modified-since" condition */
 	private Date modifiedSince;
-   
-   /** The "if-unmodified-since" condition */
+
+	/** The "if-unmodified-since" condition */
 	private Date unmodifiedSince;
-   
-   /** The "if-match" condition */
+
+	/** The "if-match" condition */
 	private List<Tag> match;
-   
-   /** The "if-none-match" condition */
+
+	/** The "if-none-match" condition */
 	private List<Tag> noneMatch;
-   
-   /**
-    * Constructor.
-    */
-   public Conditions()
-   {
-      this.modifiedSince = null;
-      this.unmodifiedSince = null;
-      this.match = null;
-      this.noneMatch = null;
-   }
-   
-   /**
-    * Returns the "if-modified-since" condition.
-    * @return The "if-modified-since" condition.
-    */
-   public Date getModifiedSince()
-   {
-      return this.modifiedSince;
-   }
-   
-   /**
-    * Sets the "if-modified-since" condition.
-    * @param date The "if-modified-since" condition.
-    */
-   public void setModifiedSince(Date date)
-   {
-      this.modifiedSince = date;
-   }
 
-   /**
-    * Returns the "if-unmodified-since" condition.
-    * @return The "if-unmodified-since" condition.
-    */
-   public Date getUnmodifiedSince()
-   {
-      return this.unmodifiedSince;
-   }
+	/**
+	 * Constructor.
+	 */
+	public Conditions()
+	{
+		this.modifiedSince = null;
+		this.unmodifiedSince = null;
+		this.match = null;
+		this.noneMatch = null;
+	}
 
-   /**
-    * Sets the "if-unmodified-since" condition.
-    * @param date The "if-unmodified-since" condition.
-    */
-   public void setUnmodifiedSince(Date date)
-   {
-      this.modifiedSince = date;
-   }
+	/**
+	 * Returns the "if-modified-since" condition.
+	 * @return The "if-modified-since" condition.
+	 */
+	public Date getModifiedSince()
+	{
+		return this.modifiedSince;
+	}
 
-   /**
-    * Returns the "if-match" condition.
-    * @return The "if-match" condition.
-    */
-   public List<Tag> getMatch()
-   {
-      return this.match;
-   }
-   
-   /**
-    * Sets the "if-match" condition.
-    * @param tags The "if-match" condition.
-    */
-   public void setMatch(List<Tag> tags)
-   {
-      this.match = tags;
-   }
+	/**
+	 * Sets the "if-modified-since" condition.
+	 * @param date The "if-modified-since" condition.
+	 */
+	public void setModifiedSince(Date date)
+	{
+		this.modifiedSince = date;
+	}
 
-   /**
-    * Returns the "if-none-match" condition.
-    * @return The "if-none-match" condition.
-    */
-   public List<Tag> getNoneMatch()
-   {
-      return this.noneMatch;
-   }
-   
-   /**
-    * Sets the "if-none-match" condition.
-    * @param tags The "if-none-match" condition.
-    */
-   public void setNoneMatch(List<Tag> tags)
-   {
-      this.noneMatch = tags;
-   }
+	/**
+	 * Returns the "if-unmodified-since" condition.
+	 * @return The "if-unmodified-since" condition.
+	 */
+	public Date getUnmodifiedSince()
+	{
+		return this.unmodifiedSince;
+	}
+
+	/**
+	 * Sets the "if-unmodified-since" condition.
+	 * @param date The "if-unmodified-since" condition.
+	 */
+	public void setUnmodifiedSince(Date date)
+	{
+		this.modifiedSince = date;
+	}
+
+	/**
+	 * Returns the "if-match" condition.
+	 * @return The "if-match" condition.
+	 */
+	public List<Tag> getMatch()
+	{
+		return this.match;
+	}
+
+	/**
+	 * Sets the "if-match" condition.
+	 * @param tags The "if-match" condition.
+	 */
+	public void setMatch(List<Tag> tags)
+	{
+		this.match = tags;
+	}
+
+	/**
+	 * Returns the "if-none-match" condition.
+	 * @return The "if-none-match" condition.
+	 */
+	public List<Tag> getNoneMatch()
+	{
+		return this.noneMatch;
+	}
+
+	/**
+	 * Sets the "if-none-match" condition.
+	 * @param tags The "if-none-match" condition.
+	 */
+	public void setNoneMatch(List<Tag> tags)
+	{
+		this.noneMatch = tags;
+	}
 
 }

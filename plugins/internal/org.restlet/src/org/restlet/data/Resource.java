@@ -30,7 +30,6 @@ import org.restlet.data.Method;
 import org.restlet.data.Reference;
 import org.restlet.data.Result;
 import org.restlet.data.Status;
-import org.restlet.util.ReferenceList;
 
 /**
  * Intended conceptual target of a hypertext reference. "Any information that can be named can be

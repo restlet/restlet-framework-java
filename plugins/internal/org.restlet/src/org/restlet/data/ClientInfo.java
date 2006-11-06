@@ -27,7 +27,7 @@ import java.util.List;
 
 import org.restlet.resource.Representation;
 import org.restlet.resource.Resource;
-import org.restlet.spi.Factory;
+import org.restlet.util.Factory;
 
 /**
  * Client specific data related to a call.

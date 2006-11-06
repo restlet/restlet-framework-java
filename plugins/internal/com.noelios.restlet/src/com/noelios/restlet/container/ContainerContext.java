@@ -26,7 +26,7 @@ import java.util.logging.Logger;
 
 import org.restlet.Container;
 import org.restlet.Context;
-import org.restlet.util.Dispatcher;
+import org.restlet.Dispatcher;
 
 /**
  * Context allowing access to the container's connectors.

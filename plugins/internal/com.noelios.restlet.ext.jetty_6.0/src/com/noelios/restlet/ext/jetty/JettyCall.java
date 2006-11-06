@@ -34,9 +34,9 @@ import java.util.logging.Logger;
 
 import org.mortbay.jetty.HttpConnection;
 import org.restlet.data.Parameter;
+import org.restlet.data.ParameterList;
 import org.restlet.data.Response;
 import org.restlet.data.Status;
-import org.restlet.util.ParameterList;
 
 import com.noelios.restlet.http.HttpServerCall;
 

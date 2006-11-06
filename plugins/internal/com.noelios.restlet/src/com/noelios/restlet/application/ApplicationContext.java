@@ -27,8 +27,8 @@ import java.util.logging.Logger;
 import org.restlet.Application;
 import org.restlet.Client;
 import org.restlet.Context;
+import org.restlet.Dispatcher;
 import org.restlet.data.Protocol;
-import org.restlet.util.Dispatcher;
 
 /**
  * Context based on a parent container's context but dedicated to an application. This is important to allow

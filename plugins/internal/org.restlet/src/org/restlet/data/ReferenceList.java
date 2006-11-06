@@ -20,7 +20,7 @@
  * Portions Copyright [yyyy] [name of copyright owner]
  */
 
-package org.restlet.util;
+package org.restlet.data;
 
 import java.io.BufferedReader;
 import java.io.IOException;
@@ -28,10 +28,9 @@ import java.io.InputStreamReader;
 import java.util.ArrayList;
 import java.util.List;
 
-import org.restlet.data.MediaType;
-import org.restlet.data.Reference;
 import org.restlet.resource.Representation;
 import org.restlet.resource.StringRepresentation;
+import org.restlet.util.WrapperList;
 
 /**
  * List of URI references.

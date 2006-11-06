@@ -25,10 +25,10 @@ package com.noelios.restlet.http;
 import java.util.Date;
 
 import org.restlet.Application;
+import org.restlet.data.ParameterList;
 import org.restlet.data.Request;
 import org.restlet.service.ConnectorService;
 import org.restlet.util.DateUtils;
-import org.restlet.util.ParameterList;
 
 /**
  * Low-level call for the HTTP connectors.

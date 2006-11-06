@@ -56,8 +56,8 @@ import org.restlet.data.Status;
 import org.restlet.data.Tag;
 import org.restlet.resource.Representation;
 import org.restlet.resource.Resource;
-import org.restlet.spi.Helper;
 import org.restlet.util.DateUtils;
+import org.restlet.util.Helper;
 
 import com.noelios.restlet.application.ApplicationHelper;
 import com.noelios.restlet.container.ContainerHelper;
@@ -68,14 +68,14 @@ import com.noelios.restlet.util.FormUtils;
  * Restlet factory supported by the engine.
  * @author Jerome Louvel (contact@noelios.com) <a href="http://www.noelios.com/">Noelios Consulting</a>
  */
-public class Factory extends org.restlet.spi.Factory
+public class Factory extends org.restlet.util.Factory
 {
 	/** Obtain a suitable logger. */
 	private static Logger logger = Logger.getLogger(Factory.class.getCanonicalName());
 
-	public static final String VERSION_LONG = org.restlet.spi.Factory.VERSION_LONG;
+	public static final String VERSION_LONG = org.restlet.util.Factory.VERSION_LONG;
 
-	public static final String VERSION_SHORT = org.restlet.spi.Factory.VERSION_SHORT;
+	public static final String VERSION_SHORT = org.restlet.util.Factory.VERSION_SHORT;
 
 	public static final String VERSION_HEADER = "Noelios-Restlet-Engine/" + VERSION_SHORT;
 
@@ -107,7 +107,7 @@ public class Factory extends org.restlet.spi.Factory
 		String provider = null;
 
 		// Find the factory class name
-		ClassLoader cl = org.restlet.spi.Factory.getClassLoader();
+		ClassLoader cl = org.restlet.util.Factory.getClassLoader();
 		URL configURL;
 
 		// Register the client connector providers

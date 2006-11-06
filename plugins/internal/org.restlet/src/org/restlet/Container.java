@@ -29,8 +29,8 @@ import org.restlet.data.Request;
 import org.restlet.data.Response;
 import org.restlet.service.LogService;
 import org.restlet.service.StatusService;
-import org.restlet.spi.Factory;
-import org.restlet.spi.Helper;
+import org.restlet.util.Factory;
+import org.restlet.util.Helper;
 
 /**
  * Component managing a set of VirtualHosts and Applications. Applications are expected to be directly

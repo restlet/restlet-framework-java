@@ -32,9 +32,9 @@ import java.util.Map;
 import org.apache.velocity.Template;
 import org.apache.velocity.VelocityContext;
 import org.apache.velocity.app.VelocityEngine;
+import org.restlet.data.MapModel;
 import org.restlet.data.MediaType;
 import org.restlet.resource.OutputRepresentation;
-import org.restlet.util.MapModel;
 
 /**
  * FreeMarker template representation. Useful for dynamic string-based representations.

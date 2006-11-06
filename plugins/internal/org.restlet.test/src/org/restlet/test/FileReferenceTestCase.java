@@ -1,9 +1,9 @@
 
 package org.restlet.test;
 
-import org.restlet.data.FileReference;
-
 import junit.framework.TestCase;
+
+import org.restlet.data.LocalReference;
 
 /**
  * Unit test case for the File Reference parsing.
@@ -15,7 +15,7 @@ public class FileReferenceTestCase extends TestCase
 	public void testCreation()
 	{
 		String path = "D:\\Restlet\\build.xml";
-		FileReference fr = new FileReference(path);
+		LocalReference fr = LocalReference.createFileReference(path);
 		fr.getFile();
 		
 		assertEquals("file", fr.getScheme());

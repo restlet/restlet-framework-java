@@ -24,11 +24,11 @@ package org.restlet.test;
 
 import junit.framework.TestCase;
 
+import org.restlet.data.MapModel;
 import org.restlet.data.Request;
 import org.restlet.data.Response;
 import org.restlet.util.CallModel;
-import org.restlet.util.DataModel;
-import org.restlet.util.MapModel;
+import org.restlet.util.Model;
 import org.restlet.util.StringTemplate;
 
 /**
@@ -40,7 +40,7 @@ public class StringTemplateTestCase extends TestCase
    /** Tests the interpolation feature. */
    public void testInterpolation()
    {
-   	DataModel dataModel = new MapModel();
+   	Model dataModel = new MapModel();
       dataModel.put("number", Integer.toString(12345));
       dataModel.put("string", "abcdef");
 
@@ -57,7 +57,7 @@ public class StringTemplateTestCase extends TestCase
    /** Tests the conditions feature. */
    public void testConditions()
    {
-   	DataModel dataModel = new MapModel();
+   	Model dataModel = new MapModel();
       dataModel.put("number", Integer.toString(12345));
       dataModel.put("string", "abcdef");
 

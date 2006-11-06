@@ -29,7 +29,7 @@ import java.nio.channels.WritableByteChannel;
 import java.util.logging.Logger;
 
 import org.restlet.data.Parameter;
-import org.restlet.util.ParameterList;
+import org.restlet.data.ParameterList;
 import org.safehaus.asyncweb.http.HttpRequest;
 import org.safehaus.asyncweb.http.HttpResponse;
 import org.safehaus.asyncweb.http.ResponseStatus;

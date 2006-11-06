@@ -22,9 +22,9 @@
 
 package com.noelios.restlet.container;
 
+import org.restlet.Dispatcher;
 import org.restlet.data.Request;
 import org.restlet.data.Response;
-import org.restlet.util.Dispatcher;
 
 /**
  * Container dispatcher.

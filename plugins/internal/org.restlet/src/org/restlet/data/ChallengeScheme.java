@@ -33,8 +33,8 @@ public class ChallengeScheme extends Metadata
 			"Custom authentication");
 
 	/** Amazon Web Services HTTP scheme. */
-	public static final ChallengeScheme HTTP_AWS = new ChallengeScheme("HTTP_AWS",
-			"AWS", "Amazon Web Services HTTP authentication");
+	public static final ChallengeScheme HTTP_AWS = new ChallengeScheme("HTTP_AWS", "AWS",
+			"Amazon Web Services HTTP authentication");
 
 	/** Basic HTTP scheme. */
 	public static final ChallengeScheme HTTP_BASIC = new ChallengeScheme("HTTP_BASIC",

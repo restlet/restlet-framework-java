@@ -30,7 +30,7 @@ import java.nio.channels.WritableByteChannel;
 import java.util.logging.Logger;
 
 import org.restlet.data.Parameter;
-import org.restlet.util.ParameterList;
+import org.restlet.data.ParameterList;
 
 import simple.http.Request;
 import simple.http.Response;

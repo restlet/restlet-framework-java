@@ -20,7 +20,7 @@
  * Portions Copyright [yyyy] [name of copyright owner]
  */
 
-package org.restlet.util;
+package org.restlet;
 
 import org.restlet.data.Method;
 import org.restlet.data.Request;
@@ -28,7 +28,7 @@ import org.restlet.data.Response;
 import org.restlet.resource.Representation;
 
 /**
- * Dispatcher of calls to a set of client connectors.
+ * Dispatcher of calls from a Restlet context to a set of connectors.
  * @author Jerome Louvel (contact@noelios.com) <a href="http://www.noelios.com/">Noelios Consulting</a>
  */
 public abstract class Dispatcher

@@ -6,7 +6,7 @@ import java.io.IOException;
 import junit.framework.TestCase;
 
 import org.restlet.Client;
-import org.restlet.data.FileReference;
+import org.restlet.data.LocalReference;
 import org.restlet.data.Protocol;
 import org.restlet.data.Response;
 import org.restlet.data.Status;
@@ -23,7 +23,7 @@ public class FileClientTestCase extends TestCase
 	{
 		String text = "Test content\r\nLine 2\r\nLine2";
 		Client fc = new Client(Protocol.FILE);
-		FileReference fr = new FileReference(File.createTempFile("Restlet", ".txt"));
+		LocalReference fr = LocalReference.createFileReference(File.createTempFile("Restlet", ".txt"));
 
 		// Write the text to temporary file
 		Response response = fc.put(fr.toString(), new StringRepresentation(text));

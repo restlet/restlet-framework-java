@@ -30,18 +30,18 @@ import java.util.logging.Level;
 import java.util.logging.Logger;
 
 import org.restlet.Directory;
+import org.restlet.Dispatcher;
 import org.restlet.data.MediaType;
 import org.restlet.data.Method;
 import org.restlet.data.Preference;
 import org.restlet.data.Reference;
+import org.restlet.data.ReferenceList;
 import org.restlet.data.Request;
 import org.restlet.data.Response;
 import org.restlet.data.Result;
 import org.restlet.data.Status;
 import org.restlet.resource.Representation;
 import org.restlet.resource.Resource;
-import org.restlet.util.ReferenceList;
-import org.restlet.util.Dispatcher;
 
 /**
  * Resource supported by a set of context representations (from file system, class loaders and webapp context). 

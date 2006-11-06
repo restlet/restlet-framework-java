@@ -36,9 +36,9 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
 import org.restlet.data.Parameter;
+import org.restlet.data.ParameterList;
 import org.restlet.data.Response;
 import org.restlet.data.Status;
-import org.restlet.util.ParameterList;
 
 import com.noelios.restlet.http.HttpServerCall;
 

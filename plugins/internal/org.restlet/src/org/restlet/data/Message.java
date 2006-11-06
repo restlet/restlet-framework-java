@@ -24,7 +24,6 @@ package org.restlet.data;
 
 import org.restlet.resource.Representation;
 import org.restlet.resource.StringRepresentation;
-import org.restlet.util.MapModel;
 
 /**
  * Generic message exchanged between client and server connectors.

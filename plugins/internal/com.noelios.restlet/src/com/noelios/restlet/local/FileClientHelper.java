@@ -30,11 +30,12 @@ import java.util.Iterator;
 import java.util.logging.Level;
 
 import org.restlet.Client;
-import org.restlet.data.FileReference;
+import org.restlet.data.LocalReference;
 import org.restlet.data.MediaType;
 import org.restlet.data.Method;
 import org.restlet.data.Preference;
 import org.restlet.data.Protocol;
+import org.restlet.data.ReferenceList;
 import org.restlet.data.Request;
 import org.restlet.data.Response;
 import org.restlet.data.Status;
@@ -42,7 +43,6 @@ import org.restlet.resource.FileRepresentation;
 import org.restlet.resource.Representation;
 import org.restlet.service.MetadataService;
 import org.restlet.util.ByteUtils;
-import org.restlet.util.ReferenceList;
 
 /**
  * Connector to the file resources accessible
@@ -95,7 +95,7 @@ public class FileClientHelper extends LocalClientHelper
 	 */
 	protected void handleFile(Request request, Response response, String path)
 	{
-		File file = new File(FileReference.localizePath(path));
+		File file = new File(LocalReference.localizePath(path));
 		MetadataService metadataService = getMetadataService(request);
 
 		if (request.getMethod().equals(Method.GET)
@@ -137,7 +137,7 @@ public class FileClientHelper extends LocalClientHelper
 					{
 						if (entry.getName().startsWith(baseName))
 						{
-							rl.add(new FileReference(entry));
+							rl.add(LocalReference.createFileReference(entry));
 						}
 					}
 					catch (IOException ioe)
@@ -162,7 +162,7 @@ public class FileClientHelper extends LocalClientHelper
 						{
 							try
 							{
-								rl.add(new FileReference(entry));
+								rl.add(LocalReference.createFileReference(entry));
 							}
 							catch (IOException ioe)
 							{

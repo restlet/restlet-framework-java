@@ -29,7 +29,7 @@ import org.restlet.Context;
 import org.restlet.data.Protocol;
 import org.restlet.data.Request;
 import org.restlet.data.Response;
-import org.restlet.spi.Helper;
+import org.restlet.util.Helper;
 
 /**
  * Base connector helper.  
