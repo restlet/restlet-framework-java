@@ -492,7 +492,7 @@ public class StringTemplate
 
 		if (append && (textState == TEXT_APPEND))
 		{
-			buffer.append(model.get(variable));
+			buffer.append(model.get(variable).toString());
 		}
 
 		return textState;

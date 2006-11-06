@@ -30,7 +30,6 @@ import java.util.logging.Logger;
 
 import org.restlet.data.Parameter;
 import org.restlet.data.ParameterList;
-import org.restlet.resource.Representation;
 import org.safehaus.asyncweb.http.HttpRequest;
 import org.safehaus.asyncweb.http.HttpResponse;
 import org.safehaus.asyncweb.http.ResponseStatus;
@@ -59,7 +58,7 @@ public class AsyncWebServerCall extends HttpServerCall
 
 	/**
 	 * Constructor.
-    * @param logger The logger to use.
+	 * @param logger The logger to use.
 	 * @param request The AsyncWebRequest.
 	 * @param response The AsyncWebResponse.
 	 * @param confidential Indicates if the server is acting in HTTPS mode.
@@ -99,7 +98,7 @@ public class AsyncWebServerCall extends HttpServerCall
 	{
 		ParameterList result = super.getRequestHeaders();
 
-		if(!this.requestHeadersAdded)
+		if (!this.requestHeadersAdded)
 		{
 			HttpHeaders headers = request.getHeaders();
 			int headerCount = headers.getSize();
@@ -118,12 +117,11 @@ public class AsyncWebServerCall extends HttpServerCall
 	/**
 	 * Sends the response back to the client. Commits the status, headers and optional entity and 
 	 * send them on the network. 
-	 * @param entity The optional response entity to send.
+	 * @param restletResponse The high-level response.
 	 */
-	public void sendResponse(Representation entity) throws IOException
+	public void sendResponse(org.restlet.data.Response restletResponse) throws IOException
 	{
-		response.setStatus(ResponseStatus.forId(getStatusCode()),
-				getReasonPhrase());
+		response.setStatus(ResponseStatus.forId(getStatusCode()), getReasonPhrase());
 
 		// Ensure that headers are empty
 		response.getHeaders().dispose();
@@ -133,7 +131,7 @@ public class AsyncWebServerCall extends HttpServerCall
 		}
 
 		// Send the response entity
-		super.sendResponse(entity);
+		super.sendResponse(restletResponse);
 	}
 
 	@Override

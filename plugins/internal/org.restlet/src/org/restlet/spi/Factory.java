@@ -45,6 +45,9 @@ import org.restlet.data.Request;
 import org.restlet.data.Response;
 import org.restlet.resource.Representation;
 import org.restlet.resource.Resource;
+import org.restlet.util.ClientList;
+import org.restlet.util.ScorerList;
+import org.restlet.util.ServerList;
 
 /**
  * Factory and registration service for Restlet API implementations.

@@ -56,11 +56,11 @@ import org.restlet.data.Tag;
 import org.restlet.resource.Representation;
 import org.restlet.resource.Resource;
 import org.restlet.resource.StringRepresentation;
-import org.restlet.spi.ClientList;
 import org.restlet.spi.Helper;
-import org.restlet.spi.ScorerList;
-import org.restlet.spi.ServerList;
+import org.restlet.util.ClientList;
 import org.restlet.util.DateUtils;
+import org.restlet.util.ScorerList;
+import org.restlet.util.ServerList;
 
 import com.noelios.restlet.application.ApplicationHelper;
 import com.noelios.restlet.container.ContainerHelper;

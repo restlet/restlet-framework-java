@@ -34,11 +34,13 @@ import org.restlet.data.Encoding;
 import org.restlet.data.Language;
 import org.restlet.data.Method;
 import org.restlet.data.Parameter;
+import org.restlet.data.Request;
 import org.restlet.data.Status;
 import org.restlet.data.Tag;
 import org.restlet.resource.InputRepresentation;
 import org.restlet.resource.ReadableRepresentation;
 import org.restlet.resource.Representation;
+import org.restlet.service.ConnectorService;
 
 /**
  * Low-level HTTP client call.
@@ -95,39 +97,51 @@ public class HttpClientCall extends HttpCall
 	/**
 	 * Sends the request to the client. Commits the request line, headers and optional entity and 
 	 * send them over the network. 
-	 * @param entity The optional request entity to send.
+	 * @param request The high-level request.
 	 */
-	public Status sendRequest(Representation entity) throws IOException
+	public Status sendRequest(Request request) throws IOException
 	{
-		// In order to workaround bug #6472250, it is very important to reuse that exact same
-		// "rs" reference when manipulating the request stream, otherwise "infufficient data sent" exceptions
-		// will occur in "fixedLengthMode"
-		OutputStream rs = getRequestStream();
-		WritableByteChannel wbc = getRequestChannel();
-		if (rs != null)
+		Representation entity = request.isEntityAvailable() ? request.getEntity() : null;
+		
+		if(entity != null)
 		{
-			if (entity != null)
+			// Get the connector service to callback
+			ConnectorService connectorService = getConnectorService(request);
+			if(connectorService != null) connectorService.beforeSend(entity);
+
+			// In order to workaround bug #6472250, it is very important to reuse that exact same
+			// "rs" reference when manipulating the request stream, otherwise "infufficient data sent" exceptions
+			// will occur in "fixedLengthMode"
+			OutputStream rs = getRequestStream();
+			WritableByteChannel wbc = getRequestChannel();
+			if (rs != null)
 			{
-				entity.write(rs);
+				if (entity != null)
+				{
+					entity.write(rs);
+				}
+	
+				rs.flush();
+			}
+			else if (wbc != null)
+			{
+				if (entity != null)
+				{
+					entity.write(wbc);
+				}
 			}
 
-			rs.flush();
-		}
-		else if (wbc != null)
-		{
-			if (entity != null)
-			{
-				entity.write(wbc);
-			}
-		}
+			// Call-back after writing
+			if(connectorService != null) connectorService.afterSend(entity);
 
-		if (rs != null)
-		{
-			rs.close();
-		}
-		else if (wbc != null)
-		{
-			wbc.close();
+			if (rs != null)
+			{
+				rs.close();
+			}
+			else if (wbc != null)
+			{
+				wbc.close();
+			}
 		}
 
 		// Now we can access the status code, this MUST happen after closing any open request stream.

@@ -41,7 +41,7 @@ import org.restlet.data.Response;
  * Routers and hierarchical URIs
  * @author Jerome Louvel (contact@noelios.com) <a href="http://www.noelios.com/">Noelios Consulting</a>
  */
-public class Tutorial11 implements Constants
+public class Part11 implements Constants
 {
 	public static void main(String[] args) throws Exception
 	{

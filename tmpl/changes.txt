@@ -45,7 +45,6 @@ Changes log
  - Added workaround for AWS authentication caused by HttpUrlConnection in JDK < 1.6 causing sending of "application/x-www-form-urlencoded" content type.
  - The SPI mechanism now uses the classloader of the Factory's class. get/setClassLoader() methods also added. Suggested by Kabe.
  - Made package org.restlet.spi visible like other JDK's SPI packages
- - Moved interfaces from org.restlet.util to org.restlet.spi. Shouldn't impact user code at all.
  - Implemented support for multiple choices in org.restlet.Handler. Added a "negotiateContent" property to disable automatic content negotiation.
  - Added "decoderService" to Application to auto-decompress incoming entities.
  - Implemented support for multiple choices (300 status) in org.restlet.Handler. 
@@ -57,6 +56,10 @@ Changes log
  - Clarified description for 304 status code.
  - Added @Override annotation to all example source code. Suggested by Piyush Purang.
  - Added a constructor to ObjectRepresentation taking a serialized object representation. getObject() will return the deserialized object.
+ - Added callback methods beforeSend() and afterSend() to ConnectorService in order to allow custom actions like transaction closing. 
+   Suggested by Diggory Briercliffe for integration with Seam.
+ - Renamed tutorial examples to com.noelios.restlet.example.tutorial.Part**.java
+ - Updated Java Service Wrapper to version 3.2.3.
  
 1.0 beta 19 (2006-10-23)
 [Bugs fixed]

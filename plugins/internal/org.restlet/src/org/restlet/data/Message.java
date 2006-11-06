@@ -22,11 +22,9 @@
 
 package org.restlet.data;
 
-import java.util.Map;
-import java.util.TreeMap;
-
 import org.restlet.resource.Representation;
 import org.restlet.spi.Factory;
+import org.restlet.util.MapModel;
 
 /**
  * Generic message exchanged between client and server connectors.
@@ -35,7 +33,7 @@ import org.restlet.spi.Factory;
 public abstract class Message
 {
 	/** The modifiable attributes map. */
-	private Map<String, Object> attributes;
+	private MapModel attributes;
 
 	/** The payload of the message. */
 	private Representation entity;
@@ -86,14 +84,14 @@ public abstract class Message
 	 * behavior, limit portability or prevent future optimizations.</td>
 	 * @return The modifiable attributes map.
 	 */
-	public Map<String, Object> getAttributes()
+	public MapModel getAttributes()
 	{
-		if (attributes == null)
+		if (this.attributes == null)
 		{
-			attributes = new TreeMap<String, Object>();
+			this.attributes = new MapModel();
 		}
 
-		return attributes;
+		return this.attributes;
 	}
 
 	/**

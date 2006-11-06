@@ -23,31 +23,49 @@
 package com.noelios.restlet.example.tutorial;
 
 import org.restlet.Client;
+import org.restlet.data.ChallengeResponse;
+import org.restlet.data.ChallengeScheme;
 import org.restlet.data.Method;
 import org.restlet.data.Protocol;
 import org.restlet.data.Request;
 import org.restlet.data.Response;
-import org.restlet.resource.Representation;
+import org.restlet.data.Status;
 
 /**
- * Retrieving the content of a Web page (detailled).
+ * Authenticating to an HTTP server.
  * @author Jerome Louvel (contact@noelios.com) <a href="http://www.noelios.com/">Noelios Consulting</a>
  */
-public class Tutorial02b
+public class Part09b
 {
 	public static void main(String[] args) throws Exception
 	{
 		// Prepare the request
-		Request request = new Request(Method.GET, "http://www.restlet.org");
-		request.setReferrerRef("http://www.mysite.org");
+		Request request = new Request(Method.GET, "http://localhost:8182/");
 
-		// Handle it using an HTTP client connector
+		// Add the client authentication to the call 
+		ChallengeScheme scheme = ChallengeScheme.HTTP_BASIC;
+		ChallengeResponse authentication = new ChallengeResponse(scheme, "scott", "tiger");
+		request.setChallengeResponse(authentication);
+
+		// Ask to the HTTP client connector to handle the call
 		Client client = new Client(Protocol.HTTP);
 		Response response = client.handle(request);
 
-		// Write the response entity on the console
-		Representation output = response.getEntity();
-		output.write(System.out);
+		if (response.getStatus().isSuccess())
+		{
+			// Output the response entity on the JVM console
+			response.getEntity().write(System.out);
+		}
+		else if (response.getStatus().equals(Status.CLIENT_ERROR_UNAUTHORIZED))
+		{
+			// Unauthorized access
+			System.out.println("Access authorized by the server, check your credentials");
+		}
+		else
+		{
+			// Unexpected status
+			System.out.println("An unexpected status was returned: " + response.getStatus());
+		}
 	}
 
 }

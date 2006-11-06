@@ -57,21 +57,21 @@ public class ConnectorService
 	}
 	
 	/**
-	 * Call-back method invoked by the client or server connectors just before committing the entity to 
+	 * Call-back method invoked by the client or server connectors just before sending the entity to 
 	 * the target component. The default implementation does nothing.
 	 * @param entity The entity about to be committed.
 	 */
-	public void beforeCommit(Representation entity)
+	public void beforeSend(Representation entity)
 	{
 		// Do nothing by default. 
 	}
 	
 	/**
-	 * Call-back method invoked by the client or server connectors just after committing the entity to 
+	 * Call-back method invoked by the client or server connectors just after sending the entity to 
 	 * the target component. The default implementation does nothing.
 	 * @param entity The entity about to be committed.
 	 */
-	public void afterCommit(Representation entity)
+	public void afterSend(Representation entity)
 	{
 		// Do nothing by default. 
 	}

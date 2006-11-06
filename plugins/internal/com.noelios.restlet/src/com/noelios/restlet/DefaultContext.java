@@ -30,7 +30,7 @@ import org.restlet.data.Protocol;
 import org.restlet.data.Request;
 import org.restlet.data.Response;
 import org.restlet.resource.Representation;
-import org.restlet.spi.VirtualClient;
+import org.restlet.util.VirtualClient;
 
 /**
  * Default context also acting as a virtual client.

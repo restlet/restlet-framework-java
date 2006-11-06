@@ -2,7 +2,7 @@ Manifest-Version: 1.0
 Bundle-ManifestVersion: 2
 Bundle-Name: AsyncWeb
 Bundle-SymbolicName: org.safehaus.asyncweb
-Bundle-Version: 0.8
+Bundle-Version: 0.8.2
 Bundle-ClassPath: org.safehaus.asyncweb.jar
 Bundle-Vendor: Safehaus
 Bundle-Localization: plugin

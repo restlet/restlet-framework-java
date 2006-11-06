@@ -22,47 +22,33 @@
 
 package com.noelios.restlet.example.tutorial;
 
-import org.restlet.Application;
-import org.restlet.Container;
-import org.restlet.Directory;
-import org.restlet.Guard;
 import org.restlet.Restlet;
-import org.restlet.data.ChallengeScheme;
+import org.restlet.Server;
+import org.restlet.data.MediaType;
 import org.restlet.data.Protocol;
+import org.restlet.data.Request;
+import org.restlet.data.Response;
 
 /**
- * Guard access to a Restlet.
+ * Listening to Web browsers.
  * @author Jerome Louvel (contact@noelios.com) <a href="http://www.noelios.com/">Noelios Consulting</a>
  */
-public class Tutorial09a implements Constants
+public class Part03
 {
 	public static void main(String[] args) throws Exception
 	{
-		// Create a container
-		Container container = new Container();
-		container.getServers().add(Protocol.HTTP, 8182);
-		container.getClients().add(Protocol.FILE);
-
-		// Create an application
-		Application application = new Application(container)
+		// Creating a minimal Restlet returning "Hello World"
+		Restlet restlet = new Restlet()
 		{
 			@Override
-			public Restlet createRoot()
+			public void handle(Request request, Response response)
 			{
-				// Create a Guard
-				Guard guard = new Guard(getContext(), ChallengeScheme.HTTP_BASIC, "Tutorial");
-				guard.getAuthorizations().put("scott", "tiger");
-
-				// Create a Directory able to return a deep hierarchy of files
-				Directory directory = new Directory(getContext(), ROOT_URI, "index.html");
-				guard.setNext(directory);
-				return guard;
+				response.setEntity("Hello World!", MediaType.TEXT_PLAIN);
 			}
 		};
 
-		// Attach the application to the container and start it
-		container.getDefaultHost().attach("", application);
-		container.start();
+		// Create the HTTP server and listen on port 8182
+		new Server(Protocol.HTTP, 8182, restlet).start();
 	}
 
 }

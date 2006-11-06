@@ -155,7 +155,7 @@ public class CallModel implements DataModel
 	public CallModel(Request request, Response response, String defaultValue)
 	{
 		this.request = request;
-		this.response = response;
+		this.response = (response != null) ? response : new Response(request);
 		this.defaultValue = defaultValue;
 	}
 
@@ -294,7 +294,7 @@ public class CallModel implements DataModel
     * @param key The key to look-up.
     * @return The model value for the given key.
     */
-	public String get(String key)
+	public Object get(String key)
 	{
 		String result = null;
 		String name = key.toString();
@@ -606,9 +606,10 @@ public class CallModel implements DataModel
     * Puts the model value for a given name.
     * @param key The key to look-up.
     * @param value The value to put.
+    * @return The old value or null.
     * @throws UnsupportedOperationException if the map is read-only.
     */
-   public void put(String key, String value)
+   public Object put(String key, Object value)
 	{
 		throw new UnsupportedOperationException();
 	}
@@ -619,7 +620,7 @@ public class CallModel implements DataModel
     * @return The old value removed.
     * @throws UnsupportedOperationException if the map is read-only.
     */
-   public String remove(String key)
+   public Object remove(String key)
 	{
 		throw new UnsupportedOperationException();
 	}

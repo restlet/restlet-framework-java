@@ -24,7 +24,10 @@ package com.noelios.restlet.http;
 
 import java.util.Date;
 
+import org.restlet.Application;
 import org.restlet.data.ParameterList;
+import org.restlet.data.Request;
+import org.restlet.service.ConnectorService;
 import org.restlet.util.DateUtils;
 
 /**
@@ -81,6 +84,29 @@ public class HttpCall
 		this.serverAddress = null;
 		this.serverPort = null;
 		this.statusCode = 200;
+	}
+
+	/**
+	 * Returns the connector service associated to a request.
+	 * @param request The request to lookup. 
+	 * @return The connector service associated to a request.
+	 */
+	public ConnectorService getConnectorService(Request request)
+	{
+		ConnectorService result = null;
+		Application application = (Application) request.getAttributes().get(
+				Application.class.getCanonicalName());
+
+		if (application != null)
+		{
+			result = application.getConnectorService();
+		}
+		else
+		{
+			result = new ConnectorService();
+		}
+
+		return result;
 	}
 
 	/**

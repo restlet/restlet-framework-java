@@ -37,8 +37,8 @@ import javax.servlet.http.HttpServletResponse;
 
 import org.restlet.data.Parameter;
 import org.restlet.data.ParameterList;
+import org.restlet.data.Response;
 import org.restlet.data.Status;
-import org.restlet.resource.Representation;
 
 import com.noelios.restlet.http.HttpServerCall;
 
@@ -48,154 +48,156 @@ import com.noelios.restlet.http.HttpServerCall;
  */
 public class ServletCall extends HttpServerCall
 {
-   /** The HTTP Servlet request to wrap. */
-   private HttpServletRequest request;
-   
-   /** The HTTP Servlet response to wrap. */
-   private HttpServletResponse response;
-      
-   /** The request headers. */
-   private ParameterList requestHeaders;
+	/** The HTTP Servlet request to wrap. */
+	private HttpServletRequest request;
 
-   /**
-    * Constructor.
-    * @param logger The logger to use.
-    * @param request The HTTP Servlet request to wrap.
-    * @param response The HTTP Servlet response to wrap.
-    */
-   public ServletCall(Logger logger, HttpServletRequest request, HttpServletResponse response)
-   {
+	/** The HTTP Servlet response to wrap. */
+	private HttpServletResponse response;
+
+	/** The request headers. */
+	private ParameterList requestHeaders;
+
+	/**
+	 * Constructor.
+	 * @param logger The logger to use.
+	 * @param request The HTTP Servlet request to wrap.
+	 * @param response The HTTP Servlet response to wrap.
+	 */
+	public ServletCall(Logger logger, HttpServletRequest request,
+			HttpServletResponse response)
+	{
 		super(logger);
-      this.request = request;
-      this.response = response;
-   }
+		this.request = request;
+		this.response = response;
+	}
 
-   /**
-    * Returns the HTTP Servlet request.
-    * @return The HTTP Servlet request.
-    */
-   public HttpServletRequest getRequest()
-   {
-      return this.request;
-   }
+	/**
+	 * Returns the HTTP Servlet request.
+	 * @return The HTTP Servlet request.
+	 */
+	public HttpServletRequest getRequest()
+	{
+		return this.request;
+	}
 
-   /**
-    * Returns the HTTP Servlet response.
-    * @return The HTTP Servlet response.
-    */
-   public HttpServletResponse getResponse()
-   {
-      return this.response;
-   }
+	/**
+	 * Returns the HTTP Servlet response.
+	 * @return The HTTP Servlet response.
+	 */
+	public HttpServletResponse getResponse()
+	{
+		return this.response;
+	}
 
-   /**
-    * Indicates if the request was made using a confidential mean.<br/>
-    * @return True if the request was made using a confidential mean.<br/>
-    */
-   public boolean isConfidential()
-   {
-      return getRequest().isSecure();
-   }
+	/**
+	 * Indicates if the request was made using a confidential mean.<br/>
+	 * @return True if the request was made using a confidential mean.<br/>
+	 */
+	public boolean isConfidential()
+	{
+		return getRequest().isSecure();
+	}
 
 	/**
 	 * Returns the request address.<br/>
 	 * Corresponds to the IP address of the requesting client.
 	 * @return The request address.
 	 */
-   public String getClientAddress()
-   {
-      return getRequest().getRemoteAddr();
-   }
+	public String getClientAddress()
+	{
+		return getRequest().getRemoteAddr();
+	}
 
-   /**
-    * Returns the request method. 
-    * @return The request method.
-    */
-   public String getMethod()
-   {
-      return getRequest().getMethod();
-   }
+	/**
+	 * Returns the request method. 
+	 * @return The request method.
+	 */
+	public String getMethod()
+	{
+		return getRequest().getMethod();
+	}
 
-   /**
-    * Returns the full request URI. 
-    * @return The full request URI.
-    */
-   public String getRequestUri()
-   {
-      String queryString = getRequest().getQueryString();
+	/**
+	 * Returns the full request URI. 
+	 * @return The full request URI.
+	 */
+	public String getRequestUri()
+	{
+		String queryString = getRequest().getQueryString();
 
-      if((queryString == null) || (queryString.equals("")))
-      {
-         return getRequest().getRequestURI();
-      }
-      else
-      {
-         return getRequest().getRequestURI() + '?' + queryString;
-      }
-   }
-   
-   /**
-    * Returns the list of request headers.
-    * @return The list of request headers.
-    */
-   public ParameterList getRequestHeaders()
-   {
-      if(this.requestHeaders == null)
-      {
-         this.requestHeaders = new ParameterList();
+		if ((queryString == null) || (queryString.equals("")))
+		{
+			return getRequest().getRequestURI();
+		}
+		else
+		{
+			return getRequest().getRequestURI() + '?' + queryString;
+		}
+	}
 
-         // Copy the headers from the request object
-         String headerName;
-         String headerValue;
-         for(Enumeration names = getRequest().getHeaderNames(); names.hasMoreElements(); )
-         {
-            headerName = (String)names.nextElement();
-            for(Enumeration values = getRequest().getHeaders(headerName); values.hasMoreElements(); )
-            {
-               headerValue = (String)values.nextElement();
-               this.requestHeaders.add(new Parameter(headerName, headerValue));
-            }
-         }
-      }
+	/**
+	 * Returns the list of request headers.
+	 * @return The list of request headers.
+	 */
+	public ParameterList getRequestHeaders()
+	{
+		if (this.requestHeaders == null)
+		{
+			this.requestHeaders = new ParameterList();
 
-      return this.requestHeaders;
-   }
+			// Copy the headers from the request object
+			String headerName;
+			String headerValue;
+			for (Enumeration names = getRequest().getHeaderNames(); names.hasMoreElements();)
+			{
+				headerName = (String) names.nextElement();
+				for (Enumeration values = getRequest().getHeaders(headerName); values
+						.hasMoreElements();)
+				{
+					headerValue = (String) values.nextElement();
+					this.requestHeaders.add(new Parameter(headerName, headerValue));
+				}
+			}
+		}
 
-   /**
-    * Returns the request entity channel if it exists.
-    * @return The request entity channel if it exists.
-    */
-   public ReadableByteChannel getRequestChannel()
-   {
-      // Can't do anything
-      return null;
-   }
-   
-   /**
-    * Returns the request entity stream if it exists.
-    * @return The request entity stream if it exists.
-    */
-   public InputStream getRequestStream()
-   {
-      try
-      {
-         return getRequest().getInputStream();
-      }
-      catch(IOException e)
-      {
-         return null;
-      }
-   }
+		return this.requestHeaders;
+	}
 
-   /**
-    * Returns the response address.<br/>
-    * Corresponds to the IP address of the responding server.
-    * @return The response address.
-    */
-   public String getServerAddress()
-   {
-      return getRequest().getLocalAddr();
-   }
+	/**
+	 * Returns the request entity channel if it exists.
+	 * @return The request entity channel if it exists.
+	 */
+	public ReadableByteChannel getRequestChannel()
+	{
+		// Can't do anything
+		return null;
+	}
+
+	/**
+	 * Returns the request entity stream if it exists.
+	 * @return The request entity stream if it exists.
+	 */
+	public InputStream getRequestStream()
+	{
+		try
+		{
+			return getRequest().getInputStream();
+		}
+		catch (IOException e)
+		{
+			return null;
+		}
+	}
+
+	/**
+	 * Returns the response address.<br/>
+	 * Corresponds to the IP address of the responding server.
+	 * @return The response address.
+	 */
+	public String getServerAddress()
+	{
+		return getRequest().getLocalAddr();
+	}
 
 	/** 
 	 * Returns the server domain name.
@@ -215,67 +217,68 @@ public class ServletCall extends HttpServerCall
 		return getRequest().getServerPort();
 	}
 
-   /**
-    * Sends the response back to the client. Commits the status, headers and optional entity and 
-    * send them on the network. 
-    * @param entity The optional response entity to send.
-    */
-   public void sendResponse(Representation entity) throws IOException
-   {
-   	// Add the response headers
-      Parameter header;
-      for(Iterator<Parameter> iter = getResponseHeaders().iterator(); iter.hasNext();)
-      {
-         header = iter.next();
-         getResponse().addHeader(header.getName(), header.getValue());
-      }
+	/**
+	 * Sends the response back to the client. Commits the status, headers and optional entity and 
+	 * send them on the network. 
+	 * @param response The high-level response.
+	 */
+	public void sendResponse(Response response) throws IOException
+	{
+		// Add the response headers
+		Parameter header;
+		for (Iterator<Parameter> iter = getResponseHeaders().iterator(); iter.hasNext();)
+		{
+			header = iter.next();
+			getResponse().addHeader(header.getName(), header.getValue());
+		}
 
-      // Set the status code in the response. We do this after adding the headers because 
-      // when we have to rely on the 'sendError' method, the Servlet containers are expected
-      // to commit their response.
-   	if(Status.isError(getStatusCode()) && (entity == null))
-   	{
-   		try
+		// Set the status code in the response. We do this after adding the headers because 
+		// when we have to rely on the 'sendError' method, the Servlet containers are expected
+		// to commit their response.
+		if (Status.isError(getStatusCode()) && (response == null))
+		{
+			try
 			{
 				getResponse().sendError(getStatusCode(), getReasonPhrase());
 			}
 			catch (IOException ioe)
 			{
-				getLogger().log(Level.WARNING, "Unable to set the response error status", ioe);
+				getLogger()
+						.log(Level.WARNING, "Unable to set the response error status", ioe);
 			}
-   	}
-   	else
-   	{
-     		// Send the response entity
-  		 	getResponse().setStatus(getStatusCode());
-      	super.sendResponse(entity);
-   	}
-   }
+		}
+		else
+		{
+			// Send the response entity
+			getResponse().setStatus(getStatusCode());
+			super.sendResponse(response);
+		}
+	}
 
-   /**
-    * Returns the response channel if it exists.
-    * @return The response channel if it exists.
-    */
-   public WritableByteChannel getResponseChannel()
-   {
-      // Can't do anything
-      return null;
-   }
-   
-   /**
-    * Returns the response stream if it exists.
-    * @return The response stream if it exists.
-    */
-   public OutputStream getResponseStream()
-   {
-      try
-      {
-         return getResponse().getOutputStream();
-      }
-      catch(IOException e)
-      {
-         return null;
-      }
-   }
-      
+	/**
+	 * Returns the response channel if it exists.
+	 * @return The response channel if it exists.
+	 */
+	public WritableByteChannel getResponseChannel()
+	{
+		// Can't do anything
+		return null;
+	}
+
+	/**
+	 * Returns the response stream if it exists.
+	 * @return The response stream if it exists.
+	 */
+	public OutputStream getResponseStream()
+	{
+		try
+		{
+			return getResponse().getOutputStream();
+		}
+		catch (IOException e)
+		{
+			return null;
+		}
+	}
+
 }

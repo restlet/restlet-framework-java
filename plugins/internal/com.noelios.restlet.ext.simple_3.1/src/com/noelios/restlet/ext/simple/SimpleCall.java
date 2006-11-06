@@ -31,7 +31,6 @@ import java.util.logging.Logger;
 
 import org.restlet.data.Parameter;
 import org.restlet.data.ParameterList;
-import org.restlet.resource.Representation;
 
 import simple.http.Request;
 import simple.http.Response;
@@ -72,7 +71,8 @@ public class SimpleCall extends HttpServerCall
 	 * @param confidential Inidicates if this call is acting in HTTP or HTTPS mode.
 	 * @param hostPort The listening port used.
 	 */
-	SimpleCall(Logger logger, Request request, Response response, boolean confidential, int hostPort)
+	SimpleCall(Logger logger, Request request, Response response, boolean confidential,
+			int hostPort)
 	{
 		super(logger);
 		this.request = request;
@@ -145,9 +145,9 @@ public class SimpleCall extends HttpServerCall
 	/**
 	 * Sends the response back to the client. Commits the status, headers and optional entity and 
 	 * send them on the network. 
-	 * @param entity The optional response entity to send.
+	 * @param restletResponse The high-level response.
 	 */
-	public void sendResponse(Representation entity) throws IOException
+	public void sendResponse(org.restlet.data.Response restletResponse) throws IOException
 	{
 		// Set the response headers
 		response.clear();
@@ -161,12 +161,12 @@ public class SimpleCall extends HttpServerCall
 		response.setText(getReasonPhrase());
 
 		// Send the response entity
-		if(entity == null)
+		if (response == null)
 		{
 			response.setContentLength(0);
 		}
-		
-		super.sendResponse(entity);
+
+		super.sendResponse(restletResponse);
 	}
 
 	/**

@@ -94,8 +94,7 @@ public class HttpClientConverter extends HttpConverter
 		try
 		{
 			// Send the request to the client
-			response.setStatus(httpCall.sendRequest(request.isEntityAvailable() ? request
-					.getEntity() : null));
+			response.setStatus(httpCall.sendRequest(request));
 
 			// Get the server address
 			response.getServerInfo().setAddress(httpCall.getServerAddress());

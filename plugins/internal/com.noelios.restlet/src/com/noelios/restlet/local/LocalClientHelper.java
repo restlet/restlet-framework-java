@@ -22,6 +22,7 @@
 
 package com.noelios.restlet.local;
 
+import org.restlet.Application;
 import org.restlet.Client;
 import org.restlet.data.CharacterSet;
 import org.restlet.data.Encoding;
@@ -74,9 +75,19 @@ public class LocalClientHelper extends ClientHelper
 	 */
 	public MetadataService getMetadataService(Request request)
 	{
-		MetadataService result = (MetadataService) request.getAttributes().get(
-				"org.restlet.metadataService");
-		if (result == null) result = new MetadataService();
+		MetadataService result = null;
+		Application application = (Application) request.getAttributes().get(
+				Application.class.getCanonicalName());
+
+		if (application != null)
+		{
+			result = application.getMetadataService();
+		}
+		else
+		{
+			result = new MetadataService();
+		}
+
 		return result;
 	}
 

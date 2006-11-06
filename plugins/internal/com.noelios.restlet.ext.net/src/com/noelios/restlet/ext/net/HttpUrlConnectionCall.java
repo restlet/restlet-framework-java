@@ -36,6 +36,7 @@ import javax.net.ssl.HttpsURLConnection;
 
 import org.restlet.data.Parameter;
 import org.restlet.data.ParameterList;
+import org.restlet.data.Request;
 import org.restlet.data.Status;
 import org.restlet.resource.Representation;
 
@@ -102,15 +103,17 @@ public class HttpUrlConnectionCall extends HttpClientCall
 	/**
 	 * Sends the request to the client. Commits the request line, headers and optional entity and 
 	 * send them over the network. 
-	 * @param entity The optional entity representation to send.
+	 * @param request The high-level request.
 	 * @return The result status.
 	 */
-	public Status sendRequest(Representation entity) throws IOException
+	public Status sendRequest(Request request) throws IOException
 	{
 		Status result = null;
 
 		try
 		{
+			Representation entity = request.getEntity();
+			
 			if (entity != null)
 			{
 				// Adjust the streaming mode
@@ -148,7 +151,7 @@ public class HttpUrlConnectionCall extends HttpClientCall
 			getConnection().connect();
 
 			// Send the optional entity
-			result = super.sendRequest(entity);
+			result = super.sendRequest(request);
 		}
 		catch (ConnectException ce)
 		{

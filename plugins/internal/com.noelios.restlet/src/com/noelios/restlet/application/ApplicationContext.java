@@ -71,10 +71,8 @@ public class ApplicationContext extends DefaultContext
 	 */
 	public void handle(Protocol protocol, Request request, Response response)
 	{
-		// Add the metadata service as a request attribute
-		// so the the client helper can be it
-		request.getAttributes().put("org.restlet.metadataService",
-				getApplication().getMetadataService());
+		// Add the application as a request attribute so that the client helper can use it
+		request.getAttributes().put(Application.class.getCanonicalName(), getApplication());
 
 		if (protocol.equals(Protocol.WAR))
 		{

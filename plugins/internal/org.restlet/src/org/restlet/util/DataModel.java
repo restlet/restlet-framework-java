@@ -49,7 +49,7 @@ public interface DataModel
     * @param key The key to look-up.
     * @return The model value for the given key.
     */
-   public String get(String key);
+   public Object get(String key);
    
    /**
     * Indicates if this model cannot be modified.
@@ -61,9 +61,10 @@ public interface DataModel
     * Puts the model value for a given name.
     * @param key The key to look-up.
     * @param value The value to put.
+    * @return The old value or null.
     * @throws UnsupportedOperationException if the map is read-only.
     */
-   public void put(String key, String value);
+   public Object put(String key, Object value);
 
    /**
     * Removes a model value for a given key.
@@ -71,5 +72,5 @@ public interface DataModel
     * @return The old value removed.
     * @throws UnsupportedOperationException if the map is read-only.
     */
-   public String remove(String key);
+   public Object remove(String key);
 }

@@ -22,37 +22,45 @@
 
 package com.noelios.restlet.example.tutorial;
 
-import org.restlet.Application;
 import org.restlet.Container;
-import org.restlet.Directory;
 import org.restlet.Restlet;
+import org.restlet.data.MediaType;
 import org.restlet.data.Protocol;
+import org.restlet.data.Request;
+import org.restlet.data.Response;
 
 /**
- * Server static files using an application.
+ * Restlets containers.
  * @author Jerome Louvel (contact@noelios.com) <a href="http://www.noelios.com/">Noelios Consulting</a>
  */
-public class Tutorial06 implements Constants
+public class Part05
 {
 	public static void main(String[] args) throws Exception
 	{
-		// Create a container
+		// Create a new Restlet container and add a HTTP server connector to it
 		Container container = new Container();
 		container.getServers().add(Protocol.HTTP, 8182);
-		container.getClients().add(Protocol.FILE);
 
-		// Create an application
-		Application application = new Application(container)
+		// Create a new Restlet that will display some path information.
+		Restlet restlet = new Restlet()
 		{
 			@Override
-			public Restlet createRoot()
+			public void handle(Request request, Response response)
 			{
-				return new Directory(getContext(), ROOT_URI, "index.html");
+				// Print the requested URI path
+				String message = "Resource URI:  " + request.getResourceRef() + '\n'
+						+ "Base URI:      " + request.getBaseRef() + '\n' + "Relative path: "
+						+ request.getRelativePart() + '\n' + "Query string:  "
+						+ request.getResourceRef().getQuery();
+				response.setEntity(message, MediaType.TEXT_PLAIN);
 			}
 		};
 
-		// Attach the application to the container and start it
-		container.getDefaultHost().attach("", application);
+		// Then attach it to the local host
+		container.getDefaultHost().attach("/trace", restlet);
+
+		// Now, let's start the container!
+		// Note that the HTTP server connector is also automatically started.
 		container.start();
 	}
 

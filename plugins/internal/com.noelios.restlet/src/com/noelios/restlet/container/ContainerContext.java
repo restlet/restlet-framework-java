@@ -24,6 +24,7 @@ package com.noelios.restlet.container;
 
 import java.util.logging.Logger;
 
+import org.restlet.Container;
 import org.restlet.data.Protocol;
 import org.restlet.data.Request;
 import org.restlet.data.Response;
@@ -45,7 +46,7 @@ public class ContainerContext extends DefaultContext
 	 */
 	public ContainerContext(ContainerHelper containerHelper)
 	{
-		this(containerHelper, Logger.getLogger("org.restlet.container"));
+		this(containerHelper, Logger.getLogger(Container.class.getCanonicalName()));
 	}
 
 	/**

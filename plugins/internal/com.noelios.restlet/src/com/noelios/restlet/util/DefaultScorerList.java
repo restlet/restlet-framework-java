@@ -32,7 +32,7 @@ import org.restlet.Scorer;
 import org.restlet.data.Request;
 import org.restlet.data.Response;
 import org.restlet.spi.Factory;
-import org.restlet.spi.ScorerList;
+import org.restlet.util.ScorerList;
 import org.restlet.util.WrapperList;
 
 /**

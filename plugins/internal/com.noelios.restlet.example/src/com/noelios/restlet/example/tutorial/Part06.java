@@ -20,23 +20,40 @@
  * Portions Copyright [yyyy] [name of copyright owner]
  */
 
-package org.restlet.spi;
+package com.noelios.restlet.example.tutorial;
 
-import java.util.List;
-
-import org.restlet.Client;
+import org.restlet.Application;
+import org.restlet.Container;
+import org.restlet.Directory;
+import org.restlet.Restlet;
 import org.restlet.data.Protocol;
 
 /**
- * Modifiable list of client connectors.
+ * Server static files using an application.
  * @author Jerome Louvel (contact@noelios.com) <a href="http://www.noelios.com/">Noelios Consulting</a>
  */
-public interface ClientList extends List<Client>
+public class Part06 implements Constants
 {
-	/**
-	 * Adds a new client connector in the map supporting the given protocol.
-	 * @param protocol The connector protocol.
-	 * @return The added client.
-	 */
-	public Client add(Protocol protocol);
+	public static void main(String[] args) throws Exception
+	{
+		// Create a container
+		Container container = new Container();
+		container.getServers().add(Protocol.HTTP, 8182);
+		container.getClients().add(Protocol.FILE);
+
+		// Create an application
+		Application application = new Application(container)
+		{
+			@Override
+			public Restlet createRoot()
+			{
+				return new Directory(getContext(), ROOT_URI, "index.html");
+			}
+		};
+
+		// Attach the application to the container and start it
+		container.getDefaultHost().attach("", application);
+		container.start();
+	}
+
 }

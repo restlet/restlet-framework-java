@@ -35,8 +35,8 @@ import java.util.logging.Logger;
 import org.mortbay.jetty.HttpConnection;
 import org.restlet.data.Parameter;
 import org.restlet.data.ParameterList;
+import org.restlet.data.Response;
 import org.restlet.data.Status;
-import org.restlet.resource.Representation;
 
 import com.noelios.restlet.http.HttpServerCall;
 
@@ -177,9 +177,9 @@ public class JettyCall extends HttpServerCall
    /**
     * Sends the response back to the client. Commits the status, headers and optional entity and 
     * send them on the network. 
-    * @param entity The optional response entity to send.
+	 * @param response The high-level response.
     */
-   public void sendResponse(Representation entity) throws IOException
+   public void sendResponse(Response response) throws IOException
    {
       // Add call headers
       Parameter header;
@@ -209,7 +209,7 @@ public class JettyCall extends HttpServerCall
    	}
       
    	// Send the response entity
-      super.sendResponse(entity);
+      super.sendResponse(response);
 
       // Fully complete and commit the response 
    	this.connection.completeResponse();

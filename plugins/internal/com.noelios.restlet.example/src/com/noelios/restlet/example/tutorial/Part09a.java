@@ -22,45 +22,46 @@
 
 package com.noelios.restlet.example.tutorial;
 
+import org.restlet.Application;
 import org.restlet.Container;
+import org.restlet.Directory;
+import org.restlet.Guard;
 import org.restlet.Restlet;
-import org.restlet.data.MediaType;
+import org.restlet.data.ChallengeScheme;
 import org.restlet.data.Protocol;
-import org.restlet.data.Request;
-import org.restlet.data.Response;
 
 /**
- * Restlets containers.
+ * Guard access to a Restlet.
  * @author Jerome Louvel (contact@noelios.com) <a href="http://www.noelios.com/">Noelios Consulting</a>
  */
-public class Tutorial05
+public class Part09a implements Constants
 {
 	public static void main(String[] args) throws Exception
 	{
-		// Create a new Restlet container and add a HTTP server connector to it
+		// Create a container
 		Container container = new Container();
 		container.getServers().add(Protocol.HTTP, 8182);
+		container.getClients().add(Protocol.FILE);
 
-		// Create a new Restlet that will display some path information.
-		Restlet restlet = new Restlet()
+		// Create an application
+		Application application = new Application(container)
 		{
 			@Override
-			public void handle(Request request, Response response)
+			public Restlet createRoot()
 			{
-				// Print the requested URI path
-				String message = "Resource URI:  " + request.getResourceRef() + '\n'
-						+ "Base URI:      " + request.getBaseRef() + '\n' + "Relative path: "
-						+ request.getRelativePart() + '\n' + "Query string:  "
-						+ request.getResourceRef().getQuery();
-				response.setEntity(message, MediaType.TEXT_PLAIN);
+				// Create a Guard
+				Guard guard = new Guard(getContext(), ChallengeScheme.HTTP_BASIC, "Tutorial");
+				guard.getAuthorizations().put("scott", "tiger");
+
+				// Create a Directory able to return a deep hierarchy of files
+				Directory directory = new Directory(getContext(), ROOT_URI, "index.html");
+				guard.setNext(directory);
+				return guard;
 			}
 		};
 
-		// Then attach it to the local host
-		container.getDefaultHost().attach("/trace", restlet);
-
-		// Now, let's start the container!
-		// Note that the HTTP server connector is also automatically started.
+		// Attach the application to the container and start it
+		container.getDefaultHost().attach("", application);
 		container.start();
 	}
 

@@ -32,7 +32,7 @@ import org.restlet.data.Response;
 import org.restlet.resource.Representation;
 import org.restlet.spi.Factory;
 import org.restlet.spi.Helper;
-import org.restlet.spi.VirtualClient;
+import org.restlet.util.VirtualClient;
 
 /**
  * Connector acting as a generic client. It internally uses one of the available connectors registered 

@@ -39,7 +39,7 @@ import org.restlet.data.Request;
 import org.restlet.data.Response;
 import org.restlet.data.Result;
 import org.restlet.data.Status;
-import org.restlet.spi.VirtualClient;
+import org.restlet.util.VirtualClient;
 
 /**
  * Resource supported by a set of context representations (from file system, class loaders and webapp context). 

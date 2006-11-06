@@ -35,9 +35,11 @@ import org.restlet.data.MediaType;
 import org.restlet.data.Method;
 import org.restlet.data.Parameter;
 import org.restlet.data.Protocol;
+import org.restlet.data.Response;
 import org.restlet.resource.InputRepresentation;
 import org.restlet.resource.ReadableRepresentation;
 import org.restlet.resource.Representation;
+import org.restlet.service.ConnectorService;
 
 /**
  * Abstract HTTP server connector call.
@@ -201,30 +203,40 @@ public abstract class HttpServerCall extends HttpCall
 	}
 
 	/**
-	 * Sends the response back to the client. Commits the status, headers and optional entity and 
-	 * send them over the network. The default implementation only writes the response entity 
-	 * on the reponse stream or channel. Subclasses will probably also copy the response headers and 
-	 * status.
-	 * @param entity The optional entity to send.
+	 * Sends the response back to the client. Commits the status, headers and optional entity and send them over 
+	 * the network. The default implementation only writes the response entity on the reponse stream or channel. 
+	 * Subclasses will probably also copy the response headers and status.
+	 * @param response The high-level response.
 	 */
-	public void sendResponse(Representation entity) throws IOException
+	public void sendResponse(Response response) throws IOException
 	{
-		if ((entity != null) && !getMethod().equals(Method.HEAD.getName()))
+		if(response != null)
 		{
-			// Send the entity to the client
+			Representation entity = response.getEntity();
+		
+			if ((entity != null) && !getMethod().equals(Method.HEAD.getName()))
+			{
+				// Get the connector service to callback
+				ConnectorService connectorService = getConnectorService(response.getRequest());
+				if(connectorService != null) connectorService.beforeSend(entity);
+
+				// Send the entity to the client
+				if (getResponseStream() != null)
+				{
+					entity.write(getResponseStream());
+				}
+				else if (getResponseChannel() != null)
+				{
+					entity.write(getResponseChannel());
+				}
+
+				if(connectorService != null) connectorService.afterSend(entity);
+			}
+		
 			if (getResponseStream() != null)
 			{
-				entity.write(getResponseStream());
+				getResponseStream().flush();
 			}
-			else if (getResponseChannel() != null)
-			{
-				entity.write(getResponseChannel());
-			}
-		}
-
-		if (getResponseStream() != null)
-		{
-			getResponseStream().flush();
 		}
 	}
 

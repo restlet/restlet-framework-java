@@ -22,9 +22,9 @@
 
 package org.restlet;
 
-import org.restlet.spi.ClientList;
 import org.restlet.spi.Factory;
-import org.restlet.spi.ServerList;
+import org.restlet.util.ClientList;
+import org.restlet.util.ServerList;
 
 /**
  * Restlet managing a set of Clients, Servers and other Restlets. "A component is an abstract unit of 

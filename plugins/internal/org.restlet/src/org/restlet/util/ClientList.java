@@ -20,35 +20,23 @@
  * Portions Copyright [yyyy] [name of copyright owner]
  */
 
-package com.noelios.restlet.example.tutorial;
+package org.restlet.util;
 
-import org.restlet.Restlet;
-import org.restlet.Server;
-import org.restlet.data.MediaType;
+import java.util.List;
+
+import org.restlet.Client;
 import org.restlet.data.Protocol;
-import org.restlet.data.Request;
-import org.restlet.data.Response;
 
 /**
- * Listening to Web browsers.
+ * Modifiable list of client connectors.
  * @author Jerome Louvel (contact@noelios.com) <a href="http://www.noelios.com/">Noelios Consulting</a>
  */
-public class Tutorial03
+public interface ClientList extends List<Client>
 {
-	public static void main(String[] args) throws Exception
-	{
-		// Creating a minimal Restlet returning "Hello World"
-		Restlet restlet = new Restlet()
-		{
-			@Override
-			public void handle(Request request, Response response)
-			{
-				response.setEntity("Hello World!", MediaType.TEXT_PLAIN);
-			}
-		};
-
-		// Create the HTTP server and listen on port 8182
-		new Server(Protocol.HTTP, 8182, restlet).start();
-	}
-
+	/**
+	 * Adds a new client connector in the map supporting the given protocol.
+	 * @param protocol The connector protocol.
+	 * @return The added client.
+	 */
+	public Client add(Protocol protocol);
 }

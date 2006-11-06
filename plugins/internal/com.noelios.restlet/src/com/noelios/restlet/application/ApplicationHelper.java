@@ -48,6 +48,9 @@ public class ApplicationHelper implements Helper
 	/** The first Restlet. */
 	private Restlet first;
 
+	/** The last Filter. */
+	private Filter last;
+
 	/** The parent context, typically the container's context. */
 	private Context parentContext;
 
@@ -90,6 +93,10 @@ public class ApplicationHelper implements Helper
 	{
 		if (getFirst() != null)
 		{
+			// Set the application as an attribute for usage by other services like the ConnectorService
+			request.getAttributes().put(Application.class.getCanonicalName(), getApplication());
+
+			// Dispatch the call to the first Restlet
 			getFirst().handle(request, response);
 		}
 		else
@@ -121,52 +128,58 @@ public class ApplicationHelper implements Helper
 	/** Start hook. */
 	public void start() throws Exception
 	{
-		Filter lastFilter = null;
+		// Addition of tunnel filter
+		if (getApplication().getTunnelService().isEnabled())
+		{
+			addFilter(createTunnelFilter(getApplication()));
+		}
 
 		// Logging of calls
 		if (getApplication().getLogService().isEnabled())
 		{
-			lastFilter = createLogFilter(getApplication().getContext(), getApplication()
+			addFilter(createLogFilter(getApplication().getContext(), getApplication()
 					.getLogService().getAccessLoggerName(), getApplication().getLogService()
-					.getAccessLogFormat());
-			setFirst(lastFilter);
+					.getAccessLogFormat()));
 		}
 
 		// Addition of status pages
 		if (getApplication().getStatusService().isEnabled())
 		{
-			Filter statusFilter = createStatusFilter(getApplication());
-			if (lastFilter != null) lastFilter.setNext(statusFilter);
-			if (getFirst() == null) setFirst(statusFilter);
-			lastFilter = statusFilter;
+			addFilter(createStatusFilter(getApplication()));
 		}
 
 		// Addition of decoder filter
 		if (getApplication().getDecoderService().isEnabled())
 		{
-			Filter decoderFilter = createDecoderFilter(getApplication());
-			if (lastFilter != null) lastFilter.setNext(decoderFilter);
-			if (getFirst() == null) setFirst(decoderFilter);
-			lastFilter = decoderFilter;
+			addFilter(createDecoderFilter(getApplication()));
 		}
 
-		// Addition of tunnel filter
-		if (getApplication().getTunnelService().isEnabled())
-		{
-			Filter tunnelFilter = createTunnelFilter(getApplication());
-			if (lastFilter != null) lastFilter.setNext(tunnelFilter);
-			if (getFirst() == null) setFirst(tunnelFilter);
-			lastFilter = tunnelFilter;
-		}
-
-		// Reattach the original filter's attached Restlet
+		// Attach the Application's root Restlet
 		if (getFirst() == null)
 		{
 			setFirst(getApplication().getRoot());
 		}
 		else
 		{
-			lastFilter.setNext(getApplication().getRoot());
+			getLast().setNext(getApplication().getRoot());
+		}
+	}
+
+	/**
+	 * Adds a new filter to the chain.
+	 * @param filter The filter to add.
+	 */
+	private void addFilter(Filter filter)
+	{
+		if (getLast() != null)
+		{
+			getLast().setNext(filter);
+			setLast(filter);
+		}
+		else
+		{
+			setFirst(filter);
+			setLast(filter);
 		}
 	}
 
@@ -234,6 +247,24 @@ public class ApplicationHelper implements Helper
 	private void setFirst(Restlet first)
 	{
 		this.first = first;
+	}
+
+	/**
+	 * Returns the last Filter.
+	 * @return the last Filter.
+	 */
+	private Filter getLast()
+	{
+		return this.last;
+	}
+
+	/**
+	 * Sets the last Filter.
+	 * @param last The last Filter.
+	 */
+	private void setLast(Filter last)
+	{
+		this.last = last;
 	}
 
 }

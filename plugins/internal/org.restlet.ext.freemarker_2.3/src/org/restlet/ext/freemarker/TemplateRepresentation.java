@@ -43,7 +43,7 @@ import freemarker.template.TemplateException;
  */
 public class TemplateRepresentation extends OutputRepresentation
 {
-   /** The FreeMarker template's name. */
+   /** The template's name. */
 	private String templateName;
 
    /** The FreeMarker configuration. */
@@ -56,7 +56,7 @@ public class TemplateRepresentation extends OutputRepresentation
     * Constructor.
     * @param templateName The FreeMarker template's name. The full path is resolved by the configuration. 
     * @param config The FreeMarker configuration.
-    * @param dataModel The FreeMarker template's data model.
+    * @param dataModel The template's data model.
     * @param mediaType The representation's media type.
     */
    public TemplateRepresentation(String templateName, Configuration config, Object dataModel,
@@ -69,8 +69,8 @@ public class TemplateRepresentation extends OutputRepresentation
    }
 
    /**
-    * Returns the FreeMarker template's data model.
-    * @return The FreeMarker template's data model.
+    * Returns the template's data model.
+    * @return The template's data model.
     */
    public Object getDataModel()
    {
@@ -78,26 +78,14 @@ public class TemplateRepresentation extends OutputRepresentation
    }
 
    /**
-    * Sets the FreeMarker template's data model.
-    * @param dataModel The FreeMarker template's data model.
-    * @return The FreeMarker template's data model.
+    * Sets the template's data model.
+    * @param dataModel The template's data model.
+    * @return The template's data model.
     */
    public Object setDataModel(Object dataModel)
    {
       this.dataModel = dataModel;
       return dataModel;
-   }
-
-   /**
-    * Loads a template from the file system.
-    * @param templateName The FreeMarker template's name. The full path is resolved by the configuration. 
-    * @param config The FreeMarker configuration.
-    * @return The loaded template.
-    * @throws IOException
-    */
-   private static Template loadTemplate(String templateName, Configuration config) throws IOException
-   {
-      return config.getTemplate(templateName);
    }
 
    /**
@@ -110,7 +98,7 @@ public class TemplateRepresentation extends OutputRepresentation
 
       try
       {
-         Template template = loadTemplate(templateName, config);
+         Template template = config.getTemplate(templateName);
          if(getCharacterSet() != null)
          {
             tmplWriter = new BufferedWriter(new OutputStreamWriter(outputStream, getCharacterSet().getName()));
@@ -125,7 +113,7 @@ public class TemplateRepresentation extends OutputRepresentation
       }
       catch(TemplateException te)
       {
-         throw new IOException("Template processing error");
+         throw new IOException("Template processing error " + te.getMessage());
       }
    }
 
