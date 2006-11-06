@@ -20,70 +20,28 @@
  * Portions Copyright [yyyy] [name of copyright owner]
  */
 
-package com.noelios.restlet;
+package com.noelios.restlet.container;
 
-import java.util.logging.Logger;
-
-import org.restlet.Context;
-import org.restlet.Server;
 import org.restlet.data.Request;
 import org.restlet.data.Response;
-import org.restlet.util.ParameterList;
+import org.restlet.util.Dispatcher;
 
 /**
- * Server connector helper.  
+ * Container dispatcher.
  * @author Jerome Louvel (contact@noelios.com) <a href="http://www.noelios.com/">Noelios Consulting</a>
  */
-public class ServerHelper extends ConnectorHelper
+public class ContainerDispatcher extends Dispatcher
 {
-	/** The server to help. */
-	private Server server;
-	
+	/** The parent context. */
+	private ContainerContext parentContext;
+
 	/**
 	 * Constructor.
-	 * @param server The client to help.
+	 * @param parentContext The parent context.
 	 */
-	public ServerHelper(Server server)
+	public ContainerDispatcher(ContainerContext parentContext)
 	{
-		this.server = server;
-	}
-
-	/**
-	 * Returns the server to help.
-	 * @return The server to help.
-	 */
-	public Server getServer()
-	{
-		return this.server;
-	}
-
-	/**
-	 * Returns the server parameters.
-	 * @return The server parameters.
-	 */
-	public ParameterList getParameters()
-	{
-		ParameterList result = (getServer() != null) ? getServer().getContext().getParameters() : null;
-		if(result == null) result = new ParameterList();
-		return result;
-	}
-
-	/**
-	 * Returns the server logger.
-	 * @return The server logger.
-	 */
-	public Logger getLogger()
-	{
-		return getServer().getLogger();
-	}
-
-	/**
-	 * Returns the server context.
-	 * @return The server context.
-	 */
-	public Context getContext()
-	{
-		return getServer().getContext();
+		this.parentContext = parentContext;
 	}
 
 	/**
@@ -93,7 +51,7 @@ public class ServerHelper extends ConnectorHelper
 	 */
 	public void handle(Request request, Response response)
 	{
-		getServer().handle(request, response);
+		this.parentContext.getContainerHelper().getClientRouter().handle(request, response);
 	}
 
 }

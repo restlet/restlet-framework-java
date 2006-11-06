@@ -22,8 +22,8 @@
 
 package org.restlet.data;
 
-import org.restlet.representation.Representation;
-import org.restlet.representation.StringRepresentation;
+import org.restlet.resource.Representation;
+import org.restlet.resource.StringRepresentation;
 import org.restlet.util.MapModel;
 
 /**

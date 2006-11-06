@@ -20,7 +20,7 @@
  * Portions Copyright [yyyy] [name of copyright owner]
  */
 
-package org.restlet.data;
+package org.restlet.util;
 
 import java.util.ArrayList;
 import java.util.HashSet;
@@ -29,7 +29,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
-import org.restlet.util.WrapperList;
+import org.restlet.data.Parameter;
 
 /**
  * Modifiable list of parameters with many helper methods. Note that this class implements the java.util.List

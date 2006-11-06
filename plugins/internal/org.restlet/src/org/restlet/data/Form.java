@@ -25,9 +25,10 @@ package org.restlet.data;
 import java.io.IOException;
 import java.util.logging.Logger;
 
-import org.restlet.representation.Representation;
-import org.restlet.representation.StringRepresentation;
+import org.restlet.resource.Representation;
+import org.restlet.resource.StringRepresentation;
 import org.restlet.spi.Factory;
+import org.restlet.util.ParameterList;
 
 /**
  * Form which is a specialized modifiable list of parameters.

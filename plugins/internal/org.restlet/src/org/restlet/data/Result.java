@@ -22,7 +22,7 @@
 
 package org.restlet.data;
 
-import org.restlet.representation.Representation;
+import org.restlet.resource.Representation;
 
 /**
  * Contains the results information returned by some methods in Resource. 

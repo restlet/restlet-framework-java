@@ -30,7 +30,7 @@ import org.restlet.data.Language;
 import org.restlet.data.MediaType;
 import org.restlet.data.Metadata;
 import org.restlet.data.Request;
-import org.restlet.representation.Representation;
+import org.restlet.resource.Representation;
 import org.restlet.service.MetadataService;
 
 import com.noelios.restlet.ClientHelper;

@@ -25,17 +25,14 @@ package com.noelios.restlet.container;
 import java.util.logging.Logger;
 
 import org.restlet.Container;
-import org.restlet.data.Protocol;
-import org.restlet.data.Request;
-import org.restlet.data.Response;
-
-import com.noelios.restlet.DefaultContext;
+import org.restlet.Context;
+import org.restlet.util.Dispatcher;
 
 /**
  * Context allowing access to the container's connectors.
  * @author Jerome Louvel (contact@noelios.com) <a href="http://www.noelios.com/">Noelios Consulting</a>
  */
-public class ContainerContext extends DefaultContext
+public class ContainerContext extends Context
 {
 	/** The container helper. */
 	private ContainerHelper containerHelper;
@@ -60,15 +57,13 @@ public class ContainerContext extends DefaultContext
 		this.containerHelper = containerHelper;
 	}
 
-	/**
-	 * Handles a call.
-	 * @param protocol The protocol to use for the handling.
-	 * @param request The request to handle.
-	 * @param response The response to update.
-	 */
-	public void handle(Protocol protocol, Request request, Response response)
+   /**
+    * Returns a call dispatcher.
+    * @return A call dispatcher.
+    */
+   public Dispatcher getDispatcher()
 	{
-		getContainerHelper().getClientRouter().handle(request, response);
+		return new ContainerDispatcher(this);
 	}
 
 	/**

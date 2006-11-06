@@ -25,7 +25,7 @@ package org.restlet.service;
 import java.util.List;
 
 import org.restlet.data.Protocol;
-import org.restlet.representation.Representation;
+import org.restlet.resource.Representation;
 
 /**
  * Service providing client and server connectors.

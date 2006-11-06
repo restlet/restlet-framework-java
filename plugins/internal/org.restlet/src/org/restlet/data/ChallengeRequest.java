@@ -22,6 +22,8 @@
 
 package org.restlet.data;
 
+import org.restlet.util.ParameterList;
+
 /**
  * Authentication challenge sent by an origin server to a client.
  * @author Jerome Louvel (contact@noelios.com) <a href="http://www.noelios.com/">Noelios Consulting</a>

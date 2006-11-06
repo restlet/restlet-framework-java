@@ -20,45 +20,48 @@
  * Portions Copyright [yyyy] [name of copyright owner]
  */
 
-package org.restlet.representation;
+package org.restlet.resource;
 
 import java.io.IOException;
-import java.io.InputStream;
-import java.io.OutputStream;
+import java.nio.channels.ReadableByteChannel;
+import java.nio.channels.WritableByteChannel;
 
 import org.restlet.data.MediaType;
 import org.restlet.util.ByteUtils;
 
 /**
- * Representation based on a NIO byte channel.
+ * Representation based on a writable NIO byte channel. The write(WritableByteChannel) 
+ * method needs to be overriden in subclasses.
  * @author Jerome Louvel (contact@noelios.com) <a href="http://www.noelios.com/">Noelios Consulting</a>
  */
-public abstract class ChannelRepresentation extends Representation
+public abstract class WritableRepresentation extends ChannelRepresentation
 {
 	/**
 	 * Constructor.
-	 * @param mediaType The media type.
+	 * @param mediaType The representation's media type.
 	 */
-	public ChannelRepresentation(MediaType mediaType)
+	public WritableRepresentation(MediaType mediaType)
 	{
 		super(mediaType);
 	}
 
 	/**
-	 * Writes the representation to a byte stream.
-	 * @param outputStream The output stream.
+	 * Writes the representation to a byte channel.
+	 * This method is ensured to write the full content for each invocation unless it 
+	 * is a transient representation, in which case an exception is thrown.
+	 * @param writableChannel A writable byte channel.
+	 * @throws IOException
 	 */
-	public void write(OutputStream outputStream) throws IOException
-	{
-		write(ByteUtils.getChannel(outputStream));
-	}
+	public abstract void write(WritableByteChannel writableChannel) throws IOException;
 
 	/**
-	 * Returns a stream with the representation's content.
-	 * @return A stream with the representation's content.
+	 * Returns a readable byte channel. If it is supported by a file a read-only instance of 
+	 * FileChannel is returned.
+	 * @return A readable byte channel.
 	 */
-	public InputStream getStream() throws IOException
+	public ReadableByteChannel getChannel() throws IOException
 	{
-		return ByteUtils.getStream(getChannel());
+		return ByteUtils.getChannel(this);
 	}
+
 }

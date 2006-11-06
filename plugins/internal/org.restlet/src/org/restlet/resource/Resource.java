@@ -20,7 +20,7 @@
  * Portions Copyright [yyyy] [name of copyright owner]
  */
 
-package org.restlet;
+package org.restlet.resource;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -28,10 +28,9 @@ import java.util.logging.Logger;
 
 import org.restlet.data.Method;
 import org.restlet.data.Reference;
-import org.restlet.data.ReferenceList;
 import org.restlet.data.Result;
 import org.restlet.data.Status;
-import org.restlet.representation.Representation;
+import org.restlet.util.ReferenceList;
 
 /**
  * Intended conceptual target of a hypertext reference. "Any information that can be named can be
@@ -47,7 +46,7 @@ import org.restlet.representation.Representation;
  * when its content (the representations to which it currently corresponds) changes over time, provided that 
  * the conceptual mapping is not changed in the process. In addition, a resource is always identified by a URI.
  * @see <a href="http://www.ics.uci.edu/~fielding/pubs/dissertation/rest_arch_style.htm#sec_5_2_1_1">Source dissertation</a>
- * @see org.restlet.representation.Representation
+ * @see org.restlet.resource.Representation
  * @see org.restlet.data.Reference
  * @author Jerome Louvel (contact@noelios.com) <a href="http://www.noelios.com/">Noelios Consulting</a>
  */

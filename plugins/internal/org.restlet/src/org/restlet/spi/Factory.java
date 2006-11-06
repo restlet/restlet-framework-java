@@ -35,7 +35,6 @@ import org.restlet.Client;
 import org.restlet.Container;
 import org.restlet.Context;
 import org.restlet.Directory;
-import org.restlet.Resource;
 import org.restlet.Restlet;
 import org.restlet.Router;
 import org.restlet.Scorer;
@@ -45,7 +44,8 @@ import org.restlet.data.Form;
 import org.restlet.data.Language;
 import org.restlet.data.Request;
 import org.restlet.data.Response;
-import org.restlet.representation.Representation;
+import org.restlet.resource.Representation;
+import org.restlet.resource.Resource;
 
 /**
  * Factory and registration service for Restlet API implementations.

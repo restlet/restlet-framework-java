@@ -30,12 +30,12 @@ import org.restlet.Context;
 import org.restlet.data.CookieSetting;
 import org.restlet.data.Encoding;
 import org.restlet.data.Method;
-import org.restlet.data.ParameterList;
 import org.restlet.data.Request;
 import org.restlet.data.Response;
 import org.restlet.data.Status;
-import org.restlet.representation.Representation;
+import org.restlet.resource.Representation;
 import org.restlet.util.DateUtils;
+import org.restlet.util.ParameterList;
 
 import com.noelios.restlet.util.CookieUtils;
 import com.noelios.restlet.util.SecurityUtils;

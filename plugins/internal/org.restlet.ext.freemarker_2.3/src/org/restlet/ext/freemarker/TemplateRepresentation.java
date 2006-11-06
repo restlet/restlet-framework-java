@@ -29,7 +29,7 @@ import java.io.OutputStreamWriter;
 import java.io.Writer;
 
 import org.restlet.data.MediaType;
-import org.restlet.representation.OutputRepresentation;
+import org.restlet.resource.OutputRepresentation;
 
 
 import freemarker.template.Configuration;

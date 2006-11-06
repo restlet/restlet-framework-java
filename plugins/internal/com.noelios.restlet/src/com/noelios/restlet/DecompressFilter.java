@@ -31,7 +31,7 @@ import org.restlet.Filter;
 import org.restlet.data.Encoding;
 import org.restlet.data.Request;
 import org.restlet.data.Response;
-import org.restlet.representation.Representation;
+import org.restlet.resource.Representation;
 
 import com.noelios.restlet.application.DecoderRepresentation;
 

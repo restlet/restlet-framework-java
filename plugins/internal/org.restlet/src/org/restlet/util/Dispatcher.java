@@ -20,32 +20,25 @@
  * Portions Copyright [yyyy] [name of copyright owner]
  */
 
-package com.noelios.restlet;
+package org.restlet.util;
 
-import java.util.logging.Logger;
-
-import org.restlet.Context;
 import org.restlet.data.Method;
-import org.restlet.data.Protocol;
 import org.restlet.data.Request;
 import org.restlet.data.Response;
-import org.restlet.representation.Representation;
-import org.restlet.util.VirtualClient;
+import org.restlet.resource.Representation;
 
 /**
- * Default context also acting as a virtual client.
+ * Dispatcher of calls to a set of client connectors.
  * @author Jerome Louvel (contact@noelios.com) <a href="http://www.noelios.com/">Noelios Consulting</a>
  */
-public abstract class DefaultContext extends Context implements VirtualClient
+public abstract class Dispatcher
 {
 	/**
-	 * Constructor. 
-	 * @param logger The logger instance of use.
+	 * Handles a call.
+	 * @param request The request to handle.
+	 * @param response The response to update.
 	 */
-	public DefaultContext(Logger logger)
-	{
-		super(logger);
-	}
+	public abstract void handle(Request request, Response response);
 
 	/**
 	 * Handles a call.
@@ -58,40 +51,6 @@ public abstract class DefaultContext extends Context implements VirtualClient
 		handle(request, response);
 		return response;
 	}
-
-	/**
-	 * Handles a call.
-	 * @param request The request to handle.
-	 * @param response The response to update.
-	 */
-	public void handle(Request request, Response response)
-	{
-		Protocol protocol = request.getProtocol();
-		if (protocol == null)
-		{
-			// Attempt to guess the protocol to use
-			// from the target reference scheme
-			protocol = request.getResourceRef().getSchemeProtocol();
-		}
-
-		if (protocol == null)
-		{
-			throw new UnsupportedOperationException(
-					"Unable to determine the protocol to use for this call.");
-		}
-		else
-		{
-			handle(protocol, request, response);
-		}
-	}
-
-	/**
-	 * Handles a call.
-	 * @param protocol The protocol to use for the handling.
-	 * @param request The request to handle.
-	 * @param response The response to update.
-	 */
-	public abstract void handle(Protocol protocol, Request request, Response response);
 
 	/**
 	 * Deletes the identified resource.
@@ -165,12 +124,4 @@ public abstract class DefaultContext extends Context implements VirtualClient
 		return handle(new Request(Method.TRACE, resourceUri));
 	}
 
-	/**
-	 * Returns a generic client delegate.
-	 * @return A generic client delegate.
-	 */
-	public VirtualClient getClient()
-	{
-		return this;
-	}
 }

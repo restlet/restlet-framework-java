@@ -24,7 +24,7 @@ package org.restlet.ext.atom;
 
 import org.restlet.data.MediaType;
 import org.restlet.data.Reference;
-import org.restlet.representation.Representation;
+import org.restlet.resource.Representation;
 
 /**
  * Either contains or links to the content of the entry.

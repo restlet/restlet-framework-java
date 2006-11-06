@@ -22,6 +22,8 @@
 
 package org.restlet.data;
 
+import org.restlet.util.ParameterList;
+
 /**
  * Media type used in representations and preferences.
  * @see <a href="http://en.wikipedia.org/wiki/MIME">MIME types on Wikipedia</a>

@@ -39,7 +39,6 @@ import org.restlet.Client;
 import org.restlet.Container;
 import org.restlet.Context;
 import org.restlet.Directory;
-import org.restlet.Resource;
 import org.restlet.Restlet;
 import org.restlet.Router;
 import org.restlet.Scorer;
@@ -55,7 +54,8 @@ import org.restlet.data.Request;
 import org.restlet.data.Response;
 import org.restlet.data.Status;
 import org.restlet.data.Tag;
-import org.restlet.representation.Representation;
+import org.restlet.resource.Representation;
+import org.restlet.resource.Resource;
 import org.restlet.spi.Helper;
 import org.restlet.util.DateUtils;
 

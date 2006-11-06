@@ -35,14 +35,14 @@ import org.restlet.data.MediaType;
 import org.restlet.data.Method;
 import org.restlet.data.Preference;
 import org.restlet.data.Protocol;
-import org.restlet.data.ReferenceList;
 import org.restlet.data.Request;
 import org.restlet.data.Response;
 import org.restlet.data.Status;
-import org.restlet.representation.FileRepresentation;
-import org.restlet.representation.Representation;
+import org.restlet.resource.FileRepresentation;
+import org.restlet.resource.Representation;
 import org.restlet.service.MetadataService;
 import org.restlet.util.ByteUtils;
+import org.restlet.util.ReferenceList;
 
 /**
  * Connector to the file resources accessible

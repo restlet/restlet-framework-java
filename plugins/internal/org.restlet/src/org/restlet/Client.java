@@ -29,17 +29,16 @@ import org.restlet.data.Method;
 import org.restlet.data.Protocol;
 import org.restlet.data.Request;
 import org.restlet.data.Response;
-import org.restlet.representation.Representation;
+import org.restlet.resource.Representation;
 import org.restlet.spi.Factory;
 import org.restlet.spi.Helper;
-import org.restlet.util.VirtualClient;
 
 /**
  * Connector acting as a generic client. It internally uses one of the available connectors registered 
  * with the current Restlet implementation.
  * @author Jerome Louvel (contact@noelios.com) <a href="http://www.noelios.com/">Noelios Consulting</a>
  */
-public class Client extends Connector implements VirtualClient
+public class Client extends Connector
 {
 	/** The helper provided by the implementation. */
 	private Helper helper;

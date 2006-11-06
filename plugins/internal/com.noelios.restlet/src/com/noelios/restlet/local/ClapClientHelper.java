@@ -33,7 +33,7 @@ import org.restlet.data.Protocol;
 import org.restlet.data.Request;
 import org.restlet.data.Response;
 import org.restlet.data.Status;
-import org.restlet.representation.InputRepresentation;
+import org.restlet.resource.InputRepresentation;
 
 /**
  * Connector to the class loaders.

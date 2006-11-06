@@ -26,7 +26,7 @@ import org.restlet.Container;
 import org.restlet.data.Request;
 import org.restlet.data.Response;
 import org.restlet.data.Status;
-import org.restlet.representation.Representation;
+import org.restlet.resource.Representation;
 
 import com.noelios.restlet.StatusFilter;
 

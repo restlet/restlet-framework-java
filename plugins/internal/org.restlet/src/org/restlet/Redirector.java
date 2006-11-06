@@ -151,7 +151,7 @@ public class Redirector extends Restlet
 				getLogger().log(Level.INFO,
 						"Redirecting via client connector to: " + targetUri);
 				request.setResourceRef(target);
-				getContext().getClient().handle(request, response);
+				getContext().getDispatcher().handle(request, response);
 			break;
 		}
 	}

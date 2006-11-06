@@ -30,18 +30,18 @@ import java.util.logging.Level;
 import java.util.logging.Logger;
 
 import org.restlet.Directory;
-import org.restlet.Resource;
 import org.restlet.data.MediaType;
 import org.restlet.data.Method;
 import org.restlet.data.Preference;
 import org.restlet.data.Reference;
-import org.restlet.data.ReferenceList;
 import org.restlet.data.Request;
 import org.restlet.data.Response;
 import org.restlet.data.Result;
 import org.restlet.data.Status;
-import org.restlet.representation.Representation;
-import org.restlet.util.VirtualClient;
+import org.restlet.resource.Representation;
+import org.restlet.resource.Resource;
+import org.restlet.util.ReferenceList;
+import org.restlet.util.Dispatcher;
 
 /**
  * Resource supported by a set of context representations (from file system, class loaders and webapp context). 
@@ -112,7 +112,7 @@ public class DirectoryResource extends Resource
 		}
 
 		// Try to detect the presence of a directory
-		Response contextResponse = getClient().get(this.targetUri);
+		Response contextResponse = getDispatcher().get(this.targetUri);
 		if ((contextResponse.getEntity() != null)
 				&& contextResponse.getEntity().getMediaType().equals(MediaType.TEXT_URI_LIST))
 		{
@@ -153,7 +153,7 @@ public class DirectoryResource extends Resource
 				this.baseName = targetUri.substring(lastSlashIndex + 1);
 			}
 
-			contextResponse = getClient().get(this.directoryUri);
+			contextResponse = getDispatcher().get(this.directoryUri);
 			if ((contextResponse.getEntity() != null)
 					&& contextResponse.getEntity().getMediaType().equals(
 							MediaType.TEXT_URI_LIST))
@@ -199,13 +199,13 @@ public class DirectoryResource extends Resource
 		return getDirectory().isModifiable();
 	}
 
-	/**
-	 * Returns the client interface.
-	 * @return The client interface.
-	 */
-	private VirtualClient getClient()
+   /**
+    * Returns a call dispatcher.
+    * @return A call dispatcher.
+    */
+	private Dispatcher getDispatcher()
 	{
-		return getDirectory().getContext().getClient();
+		return getDirectory().getContext().getDispatcher();
 	}
 
 	/**
@@ -269,7 +269,7 @@ public class DirectoryResource extends Resource
 				for (Reference ref : getVariantsReferences(false))
 				{
 					//Add the new variant to the result list
-					Response contextResponse = getClient().get(ref.toString());
+					Response contextResponse = getDispatcher().get(ref.toString());
 					if (contextResponse.getStatus().isSuccess()
 							&& (contextResponse.getEntity() != null))
 					{
@@ -351,7 +351,7 @@ public class DirectoryResource extends Resource
 			if (targetDirectory)
 			{
 				contextRequest.setResourceRef(this.targetUri);
-				getClient().handle(contextRequest, contextResponse);
+				getDispatcher().handle(contextRequest, contextResponse);
 			}
 			else
 			{
@@ -360,12 +360,12 @@ public class DirectoryResource extends Resource
 				if (!references.isEmpty())
 				{
 					contextRequest.setResourceRef(references.get(0));
-					getClient().handle(contextRequest, contextResponse);
+					getDispatcher().handle(contextRequest, contextResponse);
 				}
 				else
 				{
 					contextRequest.setResourceRef(this.targetUri);
-					getClient().handle(contextRequest, contextResponse);
+					getDispatcher().handle(contextRequest, contextResponse);
 				}
 			}
 
@@ -396,7 +396,7 @@ public class DirectoryResource extends Resource
 			if (targetDirectory)
 			{
 				contextRequest.setResourceRef(this.targetUri);
-				getClient().handle(contextRequest, contextResponse);
+				getDispatcher().handle(contextRequest, contextResponse);
 			}
 			else
 			{
@@ -405,7 +405,7 @@ public class DirectoryResource extends Resource
 				if (!references.isEmpty())
 				{
 					contextRequest.setResourceRef(references.get(0));
-					getClient().handle(contextRequest, contextResponse);
+					getDispatcher().handle(contextRequest, contextResponse);
 				}
 				else
 				{
@@ -433,7 +433,7 @@ public class DirectoryResource extends Resource
 			Request contextCall = new Request(Method.GET, this.targetUri);
 			contextCall.getClientInfo().getAcceptedMediaTypes().add(
 					new Preference<MediaType>(MediaType.TEXT_URI_LIST));
-			Response contextResponse = getClient().handle(contextCall);
+			Response contextResponse = getDispatcher().handle(contextCall);
 			if (contextResponse.getEntity() != null)
 			{
 				ReferenceList listVariants = new ReferenceList(contextResponse.getEntity());

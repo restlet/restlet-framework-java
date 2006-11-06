@@ -37,7 +37,7 @@ import org.restlet.data.MediaType;
 import org.restlet.data.Preference;
 import org.restlet.data.Request;
 import org.restlet.data.Response;
-import org.restlet.representation.Representation;
+import org.restlet.resource.Representation;
 
 import com.noelios.restlet.application.EncoderRepresentation;
 

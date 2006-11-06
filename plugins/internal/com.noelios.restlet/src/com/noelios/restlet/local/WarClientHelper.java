@@ -34,12 +34,12 @@ import java.util.logging.Level;
 import org.restlet.Client;
 import org.restlet.data.Protocol;
 import org.restlet.data.Reference;
-import org.restlet.data.ReferenceList;
 import org.restlet.data.Request;
 import org.restlet.data.Response;
 import org.restlet.data.Status;
-import org.restlet.representation.InputRepresentation;
-import org.restlet.representation.Representation;
+import org.restlet.resource.InputRepresentation;
+import org.restlet.resource.Representation;
+import org.restlet.util.ReferenceList;
 
 /**
  * Connector to the WAR resources. Here is the list of parameters that are supported:

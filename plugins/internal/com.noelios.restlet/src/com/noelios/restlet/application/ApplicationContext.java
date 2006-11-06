@@ -28,17 +28,14 @@ import org.restlet.Application;
 import org.restlet.Client;
 import org.restlet.Context;
 import org.restlet.data.Protocol;
-import org.restlet.data.Request;
-import org.restlet.data.Response;
-
-import com.noelios.restlet.DefaultContext;
+import org.restlet.util.Dispatcher;
 
 /**
  * Context based on a parent container's context but dedicated to an application. This is important to allow
  * contextual access to application's resources.
  * @author Jerome Louvel (contact@noelios.com) <a href="http://www.noelios.com/">Noelios Consulting</a>
  */
-public class ApplicationContext extends DefaultContext
+public class ApplicationContext extends Context
 {
 	/** The WAR client. */
 	private Client warClient;
@@ -57,31 +54,18 @@ public class ApplicationContext extends DefaultContext
 	 */
 	public ApplicationContext(Application application, Context parentContext, Logger logger)
 	{
-		super(logger);
 		this.application = application;
 		this.parentContext = parentContext;
 		this.warClient = null;
 	}
 
-	/**
-	 * Handles a call.
-	 * @param protocol The protocol to use for the handling.
-	 * @param request The request to handle.
-	 * @param response The response to update.
-	 */
-	public void handle(Protocol protocol, Request request, Response response)
-	{
-		// Add the application as a request attribute so that the client helper can use it
-		request.getAttributes().put(Application.class.getCanonicalName(), getApplication());
-
-		if (protocol.equals(Protocol.WAR))
-		{
-			getWarClient().handle(request, response);
-		}
-		else
-		{
-			getParentContext().getClient().handle(request, response);
-		}
+   /**
+    * Returns a call dispatcher.
+    * @return A call dispatcher.
+    */
+   public Dispatcher getDispatcher()
+   {
+		return new ApplicationDispatcher(this);
 	}
 
 	/**

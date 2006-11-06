@@ -24,8 +24,8 @@ package org.restlet;
 
 import java.util.logging.Logger;
 
-import org.restlet.data.ParameterList;
-import org.restlet.util.VirtualClient;
+import org.restlet.util.ParameterList;
+import org.restlet.util.Dispatcher;
 
 /**
  * Contextual data and services provided to a Restlet. The context is the door opened for Restlets in order
@@ -67,12 +67,23 @@ public class Context
    {
    	this.logger = logger;
    }
-   
+
    /**
-    * Returns a generic client delegate.
-    * @return A generic client delegate.
+    * Returns a call dispatcher.
+    * @return A call dispatcher.
+    * @deprecated Use getDispatcher() instead.
     */
-   public VirtualClient getClient()
+   @Deprecated  
+   public Dispatcher getClient()
+   {
+   	return getDispatcher();
+   }
+
+   /**
+    * Returns a call dispatcher.
+    * @return A call dispatcher.
+    */
+   public Dispatcher getDispatcher()
    {
    	return null;
    }

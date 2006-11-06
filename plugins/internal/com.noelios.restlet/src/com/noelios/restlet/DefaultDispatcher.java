@@ -20,34 +20,50 @@
  * Portions Copyright [yyyy] [name of copyright owner]
  */
 
-package com.noelios.restlet.example.tutorial;
+package com.noelios.restlet;
 
-import org.restlet.Client;
-import org.restlet.data.Method;
 import org.restlet.data.Protocol;
 import org.restlet.data.Request;
 import org.restlet.data.Response;
-import org.restlet.resource.Representation;
+import org.restlet.util.Dispatcher;
 
 /**
- * Retrieving the content of a Web page (detailled).
+ * Default call dispatcher.
  * @author Jerome Louvel (contact@noelios.com) <a href="http://www.noelios.com/">Noelios Consulting</a>
  */
-public class Part02b
+public abstract class DefaultDispatcher extends Dispatcher
 {
-	public static void main(String[] args) throws Exception
+	/**
+	 * Handles a call.
+	 * @param request The request to handle.
+	 * @param response The response to update.
+	 */
+	public void handle(Request request, Response response)
 	{
-		// Prepare the request
-		Request request = new Request(Method.GET, "http://www.restlet.org");
-		request.setReferrerRef("http://www.mysite.org");
+		Protocol protocol = request.getProtocol();
+		if (protocol == null)
+		{
+			// Attempt to guess the protocol to use
+			// from the target reference scheme
+			protocol = request.getResourceRef().getSchemeProtocol();
+		}
 
-		// Handle it using an HTTP client connector
-		Client client = new Client(Protocol.HTTP);
-		Response response = client.handle(request);
-
-		// Write the response entity on the console
-		Representation output = response.getEntity();
-		output.write(System.out);
+		if (protocol == null)
+		{
+			throw new UnsupportedOperationException(
+					"Unable to determine the protocol to use for this call.");
+		}
+		else
+		{
+			handle(protocol, request, response);
+		}
 	}
 
+	/**
+	 * Handles a call.
+	 * @param protocol The protocol to use for the handling.
+	 * @param request The request to handle.
+	 * @param response The response to update.
+	 */
+	public abstract void handle(Protocol protocol, Request request, Response response);
 }

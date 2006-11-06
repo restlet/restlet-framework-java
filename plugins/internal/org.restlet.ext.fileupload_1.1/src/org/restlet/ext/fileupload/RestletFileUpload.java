@@ -29,7 +29,7 @@ import org.apache.commons.fileupload.FileItemFactory;
 import org.apache.commons.fileupload.FileUpload;
 import org.apache.commons.fileupload.FileUploadException;
 import org.restlet.data.Request;
-import org.restlet.representation.Representation;
+import org.restlet.resource.Representation;
 
 /**
  * High level API for processing file uploads.

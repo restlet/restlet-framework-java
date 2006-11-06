@@ -10,7 +10,7 @@ import org.restlet.data.FileReference;
 import org.restlet.data.Protocol;
 import org.restlet.data.Response;
 import org.restlet.data.Status;
-import org.restlet.representation.StringRepresentation;
+import org.restlet.resource.StringRepresentation;
 
 /**
  * Unit test case for the File client connector.

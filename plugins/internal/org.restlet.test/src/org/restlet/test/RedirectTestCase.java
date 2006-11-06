@@ -33,8 +33,7 @@ import org.restlet.data.Method;
 import org.restlet.data.Protocol;
 import org.restlet.data.Request;
 import org.restlet.data.Response;
-import org.restlet.representation.StringRepresentation;
-
+import org.restlet.resource.StringRepresentation;
 
 /**
  * Unit tests for the RedirectRestlet.
@@ -58,7 +57,7 @@ public class RedirectTestCase extends TestCase
 
 		// Create the proxy Restlet
 		String target = "http://localhost:9090${path}#[if query]?${query}#[end]";
-		Redirector proxy = new Redirector(proxyContainer.getContext(), target, 
+		Redirector proxy = new Redirector(proxyContainer.getContext(), target,
 				Redirector.MODE_CONNECTOR);
 
 		// Create a new Restlet that will display some path information.
@@ -67,12 +66,11 @@ public class RedirectTestCase extends TestCase
 			public void handle(Request request, Response response)
 			{
 				// Print the requested URI path
-				String message = 
-					     "Resource URI:  " + request.getResourceRef() + '\n'
-						+ "Base URI:      " + request.getBaseRef() + '\n'
-						+ "Relative path: " + request.getRelativePart() + '\n'
-						+ "Query string:  " + request.getResourceRef().getQuery() + '\n'
-						+ "Method name:   " + request.getMethod() + '\n';
+				String message = "Resource URI:  " + request.getResourceRef() + '\n'
+						+ "Base URI:      " + request.getBaseRef() + '\n' + "Relative path: "
+						+ request.getRelativePart() + '\n' + "Query string:  "
+						+ request.getResourceRef().getQuery() + '\n' + "Method name:   "
+						+ request.getMethod() + '\n';
 				response.setEntity(new StringRepresentation(message, MediaType.TEXT_PLAIN));
 			}
 		};
@@ -80,7 +78,7 @@ public class RedirectTestCase extends TestCase
 		// Set the container roots
 		proxyContainer.getDefaultHost().attach("", proxy);
 		originContainer.getDefaultHost().attach("", trace);
-		
+
 		// Create the server connectors
 		proxyContainer.getServers().add(Protocol.HTTP, 8080);
 		originContainer.getServers().add(Protocol.HTTP, 9090);
@@ -113,10 +111,9 @@ public class RedirectTestCase extends TestCase
 		proxyContainer.stop();
 	}
 
-	private void testCall(Context context, Method method, String uri)
-			throws Exception
+	private void testCall(Context context, Method method, String uri) throws Exception
 	{
-		Response response = context.getClient().handle(new Request(method, uri));
+		Response response = context.getDispatcher().handle(new Request(method, uri));
 		assertNotNull(response.getEntity());
 		response.getEntity().write(System.out);
 	}

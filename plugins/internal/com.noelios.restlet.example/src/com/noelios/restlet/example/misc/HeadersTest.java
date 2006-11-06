@@ -25,10 +25,10 @@ package com.noelios.restlet.example.misc;
 import org.restlet.Restlet;
 import org.restlet.Server;
 import org.restlet.data.MediaType;
-import org.restlet.data.ParameterList;
 import org.restlet.data.Protocol;
 import org.restlet.data.Request;
 import org.restlet.data.Response;
+import org.restlet.util.ParameterList;
 
 /**
  * Display the HTTP accept header sent by the Web browsers.

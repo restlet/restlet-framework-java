@@ -33,7 +33,7 @@ import org.apache.velocity.Template;
 import org.apache.velocity.VelocityContext;
 import org.apache.velocity.app.VelocityEngine;
 import org.restlet.data.MediaType;
-import org.restlet.representation.OutputRepresentation;
+import org.restlet.resource.OutputRepresentation;
 import org.restlet.util.MapModel;
 
 /**

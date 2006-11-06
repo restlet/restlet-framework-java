@@ -75,7 +75,7 @@ public class ClapReference extends Reference
 	 */
 	public ClapReference(int authorityType, String path)
 	{
-		super("context://" + getAuthorityName(authorityType) + path);
+		super("clap://" + getAuthorityName(authorityType) + path);
 	}
 
 	/**

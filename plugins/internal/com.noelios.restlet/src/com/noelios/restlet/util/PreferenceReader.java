@@ -31,8 +31,8 @@ import org.restlet.data.Language;
 import org.restlet.data.MediaType;
 import org.restlet.data.Metadata;
 import org.restlet.data.Parameter;
-import org.restlet.data.ParameterList;
 import org.restlet.data.Preference;
+import org.restlet.util.ParameterList;
 
 
 /**
