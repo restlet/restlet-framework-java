@@ -35,8 +35,8 @@ import org.restlet.util.StringTemplate;
 
 /**
  * Rewrites URIs then redirects the call or the client to a new destination.
- * @see com.noelios.restlet.util.StringTemplate
- * @see com.noelios.restlet.util.CallModel
+ * @see org.restlet.util.StringTemplate
+ * @see org.restlet.util.CallModel
  * @see <a href="http://www.restlet.org/tutorial#part10">Tutorial: URI rewriting and redirection</a>
  * @author Jerome Louvel (contact@noelios.com) <a href="http://www.noelios.com/">Noelios Consulting</a>
  * @deprecated Use standard org.restlet.Redirector instead.
@@ -89,8 +89,8 @@ public class RedirectRestlet extends Restlet
 	 * @param context The context.
 	 * @param targetPattern The pattern to build the target URI (using StringTemplate syntax and the CallModel for variables).
 	 * @param mode The redirection mode.
-	 * @see com.noelios.restlet.util.StringTemplate
-	 * @see com.noelios.restlet.util.CallModel
+	 * @see org.restlet.util.StringTemplate
+	 * @see org.restlet.util.CallModel
 	 */
 	public RedirectRestlet(Context context, String targetPattern, int mode)
 	{
@@ -103,8 +103,8 @@ public class RedirectRestlet extends Restlet
 	 * Constructor for the connector mode.
 	 * @param context The context.
 	 * @param targetPattern The pattern to build the target URI (using StringTemplate syntax and the CallModel for variables).
-	 * @see com.noelios.restlet.util.StringTemplate
-	 * @see com.noelios.restlet.util.CallModel
+	 * @see org.restlet.util.StringTemplate
+	 * @see org.restlet.util.CallModel
 	 */
 	public RedirectRestlet(Context context, String targetPattern)
 	{

@@ -236,7 +236,7 @@ public class ExtractFilter extends Filter
     * @param attributeName The name of the call attribute to set.
     * @param pattern The model pattern to resolve.
     * @return The current Filter.
-    * @see com.noelios.restlet.util.CallModel
+    * @see org.restlet.util.CallModel
     */
    public ExtractFilter fromModel(String attributeName, String pattern)
    {

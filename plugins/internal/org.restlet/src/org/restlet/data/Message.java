@@ -22,8 +22,10 @@
 
 package org.restlet.data;
 
+import org.restlet.Application;
 import org.restlet.resource.Representation;
 import org.restlet.resource.StringRepresentation;
+import org.restlet.service.ConverterService;
 import org.restlet.util.MapModel;
 
 /**
@@ -115,6 +117,42 @@ public abstract class Message
 	}
 
 	/**
+	 * Returns the entity as a higher-level object. This object is created by the Application's converter service.
+	 * If you want to use this method to facilitate the processing of request entities, you need to provide a 
+	 * custom implementation of the ConverterService class, overriding the toObject(Representation) method.
+	 * <br/>
+	 * Note that this triggers the parsing of the entity.<br/>
+	 * This method and the related getEntity*() methods can only be invoked once.
+	 * @return The entity as a form.
+	 */
+	public Object getEntityAsObject()
+	{
+		return getConverterService().toObject(getEntity());
+	}
+
+	/**
+	 * Returns the metadata service.
+	 * @return The metadata service.
+	 */
+	private ConverterService getConverterService()
+	{
+		ConverterService result = null;
+		Application application = (Application) getAttributes().get(
+				Application.class.getCanonicalName());
+
+		if (application != null)
+		{
+			result = application.getConverterService();
+		}
+		else
+		{
+			result = new ConverterService();
+		}
+
+		return result;
+	}
+
+	/**
 	 * Indicates if a content is available and can be sent. Several conditions must be met: the content 
 	 * must exists and have some available data.
 	 * @return True if a content is available and can be sent.
@@ -123,6 +161,25 @@ public abstract class Message
 	{
 		return (getEntity() != null) && (getEntity().getSize() > 0)
 				&& getEntity().isAvailable();
+	}
+
+	/**
+	 * Sets the entity from a higher-level object. This object is converted to a representation using the 
+	 * Application's converter service. If you want to use this method to facilitate the setting of entities,
+	 * you need to provide a custom implementation of the ConverterService class, overriding the 
+	 * toRepresentation(Object) method.
+	 * @param object The higher-level object.
+	 */
+	public void setEntity(Object object)
+	{
+		if(object instanceof Representation)
+		{
+			setEntity((Representation)object);
+		}
+		else
+		{
+			setEntity(getConverterService().toRepresentation(object));
+		}
 	}
 
 	/**

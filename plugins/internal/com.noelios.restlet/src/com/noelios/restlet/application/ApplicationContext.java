@@ -54,7 +54,7 @@ public class ApplicationContext extends Context
 	 */
 	public ApplicationContext(Application application, Context parentContext, Logger logger)
 	{
-		super(Application.class.getCanonicalName(), application.getMetadataService());
+		super(Application.class.getCanonicalName());
 		this.application = application;
 		this.parentContext = parentContext;
 		this.warClient = null;

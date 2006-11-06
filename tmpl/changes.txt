@@ -65,7 +65,10 @@ Changes log
  - Merged org.restlet.spi into org.restlet.util (only Factory and Helper were remaining).
  - Added Protocol.JAR constant.
  - Renamed NRE's LogFileHandler and LogFormatter to AccessLogFileHandler and AccessLogFormatter (use for WWW access logs).
-
+ - Moved "indexName" property from Directory to MetadataService (remove the previous "indexNames" list).
+ - Added "converterService" to Application to converts between Representations and higher-level Objects (like JDOM documents, etc.). 
+   Suggested by Chris Winters.
+ 
 1.0 beta 19 (2006-10-23)
 [Bugs fixed]
  - Fixed issue with error status preventing the setting of response headers with Servlet containers like Tomcat. Report and solution by Evan DiBiase.

@@ -28,6 +28,7 @@ import java.util.Set;
 import java.util.TreeSet;
 import java.util.logging.Level;
 
+import org.restlet.Application;
 import org.restlet.Directory;
 import org.restlet.Dispatcher;
 import org.restlet.data.MediaType;
@@ -140,10 +141,10 @@ public class DirectoryResource extends Resource
 			}
 
 			// Append the index name
-			if (getMetadataService().getIndexName() != null)
+			if (getMetadataService(request).getIndexName() != null)
 			{
 				this.directoryUri = this.targetUri;
-				this.baseName = getMetadataService().getIndexName();
+				this.baseName = getMetadataService(request).getIndexName();
 				this.targetUri = this.directoryUri + this.baseName;
 			}
 			else
@@ -295,11 +296,25 @@ public class DirectoryResource extends Resource
 
 	/**
 	 * Returns the metadata service.
+	 * @param request The request to lookup. 
 	 * @return The metadata service.
 	 */
-	public MetadataService getMetadataService()
+	public MetadataService getMetadataService(Request request)
 	{
-		return getDirectory().getContext().getMetadataService();
+		MetadataService result = null;
+		Application application = (Application) request.getAttributes().get(
+				Application.class.getCanonicalName());
+
+		if (application != null)
+		{
+			result = application.getMetadataService();
+		}
+		else
+		{
+			result = new MetadataService();
+		}
+
+		return result;
 	}
 
 	/**

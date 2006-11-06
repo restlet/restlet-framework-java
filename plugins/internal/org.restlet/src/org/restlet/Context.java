@@ -25,7 +25,6 @@ package org.restlet;
 import java.util.logging.Logger;
 
 import org.restlet.data.ParameterList;
-import org.restlet.service.MetadataService;
 
 /**
  * Contextual data and services provided to a Restlet. The context is the door opened for Restlets in order
@@ -36,9 +35,6 @@ import org.restlet.service.MetadataService;
  */
 public class Context
 {
-	/** The metadata service. */
-	private MetadataService metadataService;
-
 	/** The modifiable list of parameters. */
 	private ParameterList parameters;
 
@@ -59,17 +55,7 @@ public class Context
 	 */
 	public Context(String loggerName)
 	{
-		this(Logger.getLogger(loggerName), null);
-	}
-
-	/**
-	 * Constructor.
-	 * @param loggerName The name of the logger to use.
-	 * @param metadataService The metadata service.
-	 */
-	public Context(String loggerName, MetadataService metadataService)
-	{
-		this(Logger.getLogger(loggerName), metadataService);
+		this(Logger.getLogger(loggerName));
 	}
 
 	/**
@@ -78,18 +64,7 @@ public class Context
 	 */
 	public Context(Logger logger)
 	{
-		this(logger, null);
-	}
-
-	/**
-	 * Constructor.
-	 * @param logger The logger instance of use.
-	 * @param metadataService The metadata service.
-	 */
-	public Context(Logger logger, MetadataService metadataService)
-	{
 		this.logger = logger;
-		this.metadataService = metadataService;
 	}
 
 	/**
@@ -119,16 +94,6 @@ public class Context
 	public Logger getLogger()
 	{
 		return this.logger;
-	}
-
-	/**
-	 * Returns the metadata service.
-	 * @return The metadata service.
-	 */
-	public MetadataService getMetadataService()
-	{
-		if (this.metadataService == null) this.metadataService = new MetadataService();
-		return this.metadataService;
 	}
 
 	/**

@@ -25,6 +25,7 @@ package org.restlet;
 import org.restlet.data.Request;
 import org.restlet.data.Response;
 import org.restlet.service.ConnectorService;
+import org.restlet.service.ConverterService;
 import org.restlet.service.DecoderService;
 import org.restlet.service.MetadataService;
 import org.restlet.service.LogService;
@@ -58,6 +59,9 @@ public abstract class Application extends Restlet
 
 	/** The connector service. */
 	private ConnectorService connectorService;
+
+	/** The converter service. */
+	private ConverterService converterService;
 
 	/** The decoder service. */
 	private DecoderService decoderService;
@@ -141,6 +145,16 @@ public abstract class Application extends Restlet
 	{
 		if (this.connectorService == null) this.connectorService = new ConnectorService();
 		return this.connectorService;
+	}
+
+	/** 
+	 * Returns the converter service.
+	 * @return The converter service.
+	 */
+	public ConverterService getConverterService()
+	{
+		if (this.converterService == null) this.converterService = new ConverterService();
+		return this.converterService;
 	}
 
 	/** 
@@ -277,6 +291,15 @@ public abstract class Application extends Restlet
 	public void setConnectorService(ConnectorService connectorService)
 	{
 		this.connectorService = connectorService;
+	}
+
+	/** 
+	 * Sets the converter service. 
+	 * @param converterService The converter service.
+	 */
+	public void setConverterService(ConverterService converterService)
+	{
+		this.converterService = converterService;
 	}
 
 	/**

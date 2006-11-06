@@ -68,8 +68,10 @@ public class ApplicationDispatcher extends Dispatcher
 		}
 		else
 		{
-			// Add the application as a request attribute so that the client helper can use it
+			// Add the application in request and response attributes 
 			request.getAttributes().put(Application.class.getCanonicalName(),
+					this.applicationContext.getApplication());
+			response.getAttributes().put(Application.class.getCanonicalName(),
 					this.applicationContext.getApplication());
 
 			if (protocol.equals(Protocol.WAR))
