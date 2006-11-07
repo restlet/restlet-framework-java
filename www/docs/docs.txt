@@ -5,9 +5,9 @@ Restlet documentation
 
 
 In this directory you will find three Javadocs subdirectories:
- - api  : Javadocs for the Restlet API
- - core : Javadocs for the core of the Noelios Restlet Engine (NRE)
- - ext  : Javadocs for the optional extensions to the core NRE
+ - api : Javadocs for the Restlet API
+ - ext : Javadocs for the Restlet Extensions (no dependency on NRE)
+ - nre : Javadocs for the Noelios Restlet Engine (Resltet API implementation)
  
 In addition, you can find many additional documentation on the Restlet Web site 
 (http://www.restlet.org). Here is a summary of the documents available:
