@@ -6,8 +6,7 @@ Bundle-Version: 3.2.3
 Bundle-ClassPath: wrapper.jar
 Bundle-Vendor: Tanuki Software
 Bundle-Localization: plugin
-Export-Package: com.silveregg.wrapper,
- org.tanukisoftware.wrapper,
+Export-Package: org.tanukisoftware.wrapper,
  org.tanukisoftware.wrapper.event,
  org.tanukisoftware.wrapper.jmx,
  org.tanukisoftware.wrapper.resources,
