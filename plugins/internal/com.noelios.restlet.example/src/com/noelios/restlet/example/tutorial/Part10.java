@@ -47,7 +47,7 @@ public class Part10
 			public Restlet createRoot()
 			{
 				// Create a Redirector to Google search service
-				String target = "http://www.google.com/search?q=site:mysite.org+${query('query')}";
+				String target = "http://www.google.com/search?q=site:mysite.org+${query('q')}";
 				return new Redirector(getContext(), target, Redirector.MODE_CLIENT_TEMPORARY);
 			}
 		};

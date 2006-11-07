@@ -500,8 +500,6 @@
 
 	<!-- Initialization Target -->
 	<target name="init">
-		<echo message="${lib}/${lib-collections-id}" />
-	
 		<!-- Create the time stamp -->
 		<tstamp>
 			<format property="release-date" pattern="yyyy-MM-dd" />

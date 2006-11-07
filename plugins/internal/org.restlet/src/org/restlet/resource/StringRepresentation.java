@@ -27,6 +27,8 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
 import java.io.OutputStreamWriter;
+import java.io.UnsupportedEncodingException;
+import java.util.logging.Logger;
 
 import org.restlet.data.CharacterSet;
 import org.restlet.data.Language;
@@ -107,7 +109,15 @@ public class StringRepresentation extends StreamRepresentation
 	{
 		if (getValue() != null)
 		{
-			setSize(getValue().length());
+			try
+			{
+				setSize(getValue().getBytes(getCharacterSet().getName()).length);
+			}
+			catch (UnsupportedEncodingException e)
+			{
+				Logger.getLogger(StringRepresentation.class.getCanonicalName());
+				setSize(UNKNOWN_SIZE);
+			}
 		}
 		else
 		{

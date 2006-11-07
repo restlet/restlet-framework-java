@@ -260,7 +260,7 @@
 
 <h3><a name="part10">10. URI rewriting and redirection</a></h3>
 <p>
-   One of the advantages of the Restlet framework is the built-in support for <a href="http://www.w3.org/Provider/Style/URI">cool URIs</a>. Another good description of the importance of proper URI design is given by Jacob Nielsen in his <a href="http://www.useit.com/alertbox/990321.html">AlertBox</a>. The first tool available is the RedirectRestlet, which allows the rewriting of a cool URI to another URI, followed by an automatic redirection. Several types of redirection are supported, the external redirection via the client/browser, the internal redirection at the container level and the connector redirection for proxy-like behavior. In the example below, we will define a search service for our web site (named "mysite.org") based on Google. The "/search" relative URI identifies the search service, accepting some keywords via the "query" parameter. :
+   One of the advantages of the Restlet framework is the built-in support for <a href="http://www.w3.org/Provider/Style/URI">cool URIs</a>. Another good description of the importance of proper URI design is given by Jacob Nielsen in his <a href="http://www.useit.com/alertbox/990321.html">AlertBox</a>. The first tool available is the RedirectRestlet, which allows the rewriting of a cool URI to another URI, followed by an automatic redirection. Several types of redirection are supported, the external redirection via the client/browser, the internal redirection at the container level and the connector redirection for proxy-like behavior. In the example below, we will define a search service for our web site (named "mysite.org") based on Google. The "/search" relative URI identifies the search service, accepting some keywords via the "q" parameter:
 </p>
 <pre>
       // Create a redirect Restlet then attach it to the container
@@ -268,7 +268,7 @@
       return new RedirectRestlet(getContext(), target, RedirectRestlet.MODE_CLIENT_TEMPORARY);
 </pre>
 <p>
-   Note that the RedirectRestlet needs two parameters only. The first one defines how the URI rewriting should be done, based on a URI template. This template will be processed by the <a href="http://www.restlet.org/docs/nre/com/noelios/restlet/util/StringTemplate.html">StringTemplate</a> class and the URI data model provided by the <a href="http://www.restlet.org/docs/nre/com/noelios/restlet/util/RestletCallModel.html">RestletCallModel</a> class. The second parameter defines the type of redirection; here we chose the client redirection, for simplicity purpose.
+   Note that the RedirectRestlet needs two parameters only. The first one defines how the URI rewriting should be done, based on a URI template. This template will be processed by the <a href="http://www.restlet.org/docs/api/org/restlet/util/StringTemplate.html">StringTemplate</a> class and the URI data model provided by the <a href="http://www.restlet.org/docs/api/org/restlet/util/CallModel.html">RestletCallModel</a> class. The second parameter defines the type of redirection; here we chose the client redirection, for simplicity purpose.
 </p>
 
 <h3><a name="part11">11. Routers and hierarchical URIs</a></h3>

@@ -22,6 +22,8 @@
 
 package com.noelios.restlet;
 
+import java.util.ArrayList;
+import java.util.List;
 import java.util.logging.Level;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
@@ -34,6 +36,8 @@ import org.restlet.data.Request;
 import org.restlet.data.Response;
 import org.restlet.data.Status;
 
+import com.noelios.restlet.util.ReferenceTemplate;
+
 /**
  * Router scorer based on a URI pattern. Note that the matching is case sensitive unless some inline modifiers
  * were used in the pattern using the "(?i)" inline flag.
@@ -45,6 +49,9 @@ public class PatternScorer extends Scorer
 {
    /** The URI pattern. */
    private Pattern pattern;
+   
+   /** The list of variable names found in the pattern. */
+   private List<String> variables;
 
    /**
     * Constructor.
@@ -55,9 +62,22 @@ public class PatternScorer extends Scorer
    public PatternScorer(Router router, String pattern, Restlet target)
    {
       super(router, target);
-      this.pattern = Pattern.compile(pattern);
+      this.variables = new ArrayList<String>();
+      this.pattern = compile(pattern);
    }
 
+   /**
+    * Compiles the URI pattern into a Regex pattern.
+    * @param uriPattern The URI pattern.
+    * @return The Regex pattern.
+    */
+   protected Pattern compile(String uriPattern)
+   {
+   	ReferenceTemplate rt = new ReferenceTemplate(uriPattern, getVariables());
+   	String regex = rt.toRegex();
+   	return Pattern.compile(regex);
+   }
+   
    /**
     * Returns the URI pattern.
     * @return The URI pattern.
@@ -65,6 +85,15 @@ public class PatternScorer extends Scorer
    public Pattern getPattern()
    {
       return this.pattern;
+   }
+
+   /**
+    * Returns the URI variables.
+    * @return The URI variables.
+    */
+   public List<String> getVariables()
+   {
+      return this.variables;
    }
 	
 	/**
@@ -121,6 +150,16 @@ public class PatternScorer extends Scorer
 
       if(matched)
       {
+      	// Update the attributes with the variables value
+      	String attributeName = null;
+      	String attributeValue = null;
+      	for(int i = 0; i < getVariables().size(); i++)
+      	{
+      		attributeName = getVariables().get(i);
+      		attributeValue = matcher.group(i + 1);
+      		request.getAttributes().put(attributeName, attributeValue);
+      	}
+      	
 	      // Updates the context
 	      String matchedPart = remainingRef.substring(0, matcher.end());
 	      Reference baseRef = request.getBaseRef();

@@ -23,10 +23,8 @@
 package org.restlet.util;
 
 import java.io.IOException;
-import java.util.Map;
 import java.util.logging.Level;
 import java.util.logging.Logger;
-
 
 /**
  * String template that enforces a strict separation between the pattern and the model. It supports 
@@ -57,9 +55,9 @@ public class StringTemplate
 
 	private static final int STATE_VARIABLE_POTENTIAL_DELIMITER_END = 7;
 
-	private static final int TEXT_APPEND = 1;
+	protected static final int TEXT_APPEND = 1;
 
-	private static final int TEXT_SKIP = 2;
+	protected static final int TEXT_SKIP = 2;
 
 	/** The template to process. */
 	private CharSequence template;
@@ -120,16 +118,6 @@ public class StringTemplate
 	public String getTemplate()
 	{
 		return this.template.toString();
-	}
-
-	/**
-	 * Parses the 
-	 * @param formattedSource
-	 * @param model
-	 */
-	public void parse(String formattedSource, Map<String, Object> model)
-	{
-		// TODO
 	}
 
 	/**
@@ -397,7 +385,7 @@ public class StringTemplate
 	 * @param buffer The string buffer containing the template result.
 	 * @param model The template model to use.
 	 */
-	private void processText(int state, int tokenStart, int tokenEnd,
+	protected void processText(int state, int tokenStart, int tokenEnd,
 			StringBuilder buffer, Model model)
 	{
 		if (state == TEXT_APPEND)
@@ -420,7 +408,7 @@ public class StringTemplate
 	 * @param model The template model to use.
 	 * @return The state after processing.
 	 */
-	private int processInstruction(int textState, int tokenStart, int tokenEnd,
+	protected int processInstruction(int textState, int tokenStart, int tokenEnd,
 			StringBuilder buffer, Model model)
 	{
 		String instruction = template.subSequence(tokenStart, tokenEnd).toString();
@@ -477,16 +465,14 @@ public class StringTemplate
 	/**
 	 * Processes a variable token.
 	 * @param textState The current text state. (see TEXT_* constants).
-	 * @param tokenStart The start index of the token to process.
-	 * @param tokenEnd The end index of the token to process.
+	 * @param variable The variable.
 	 * @param buffer The string buffer containing the template result.
 	 * @param model The template model to use.
 	 * @return The state after processing.
 	 */
-	private int processVariable(int textState, int tokenStart, int tokenEnd,
-			StringBuilder buffer, Model model)
+	protected int processVariable(int textState, String variable, StringBuilder buffer,
+			Model model)
 	{
-		String variable = template.subSequence(tokenStart, tokenEnd).toString();
 		getLogger().log(Level.FINER, "processVariable: " + variable, buffer);
 
 		int conditionIndex = variable.indexOf('?');
@@ -512,12 +498,28 @@ public class StringTemplate
 	}
 
 	/**
+	 * Processes a variable token.
+	 * @param textState The current text state. (see TEXT_* constants).
+	 * @param tokenStart The start index of the token to process.
+	 * @param tokenEnd The end index of the token to process.
+	 * @param buffer The string buffer containing the template result.
+	 * @param model The template model to use.
+	 * @return The state after processing.
+	 */
+	private int processVariable(int textState, int tokenStart, int tokenEnd,
+			StringBuilder buffer, Model model)
+	{
+		return processVariable(textState, template.subSequence(tokenStart, tokenEnd)
+				.toString(), buffer, model);
+	}
+
+	/**
 	 * Evalutes an instruction's condition.
 	 * @param condition The condition to evaluate.
 	 * @param model The template model to use.
 	 * @return The evaluation result.
 	 */
-	private boolean evaluateCondition(String condition, Model model)
+	protected boolean evaluateCondition(String condition, Model model)
 	{
 		getLogger().log(Level.FINER, "evaluateCondition: " + condition, model);
 		boolean result = false;
@@ -565,7 +567,7 @@ public class StringTemplate
 	 * @param endIndex The end index in the template.
 	 * @param appendable The appendable object to update.
 	 */
-	private void append(int startIndex, int endIndex, Appendable appendable)
+	protected void append(int startIndex, int endIndex, Appendable appendable)
 	{
 		try
 		{

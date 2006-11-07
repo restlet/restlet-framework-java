@@ -22,8 +22,6 @@
 
 package com.noelios.restlet.example.tutorial;
 
-import java.util.List;
-
 import org.restlet.Application;
 import org.restlet.Container;
 import org.restlet.Directory;
@@ -69,10 +67,6 @@ public class Part11 implements Constants
 				Directory directory = new Directory(getContext(), ROOT_URI);
 				guard.setNext(directory);
 
-				// Create the user Router
-				Router user = new Router(getContext());
-				router.attach("/users/[a-z]+", user);
-
 				// Create the account Handler
 				Handler account = new Handler()
 				{
@@ -80,12 +74,11 @@ public class Part11 implements Constants
 					public void handleGet(Request request, Response response)
 					{
 						// Print the requested URI path
-						String message = "Account of user named: "
-								+ request.getBaseRef().getLastSegment();
+						String message = "Account of user \""
+								+ request.getAttributes().get("user") + "\"";
 						response.setEntity(message, MediaType.TEXT_PLAIN);
 					}
 				};
-				user.attach("$", account);
 
 				// Create the orders Handler
 				Handler orders = new Handler(getContext())
@@ -94,13 +87,29 @@ public class Part11 implements Constants
 					public void handleGet(Request request, Response response)
 					{
 						// Print the user name of the requested orders
-						List<String> segments = request.getBaseRef().getSegments();
-						String message = "Orders of user named: "
-								+ segments.get(segments.size() - 2);
+						String message = "Orders of user \""
+								+ request.getAttributes().get("user") + "\"";
 						response.setEntity(message, MediaType.TEXT_PLAIN);
 					}
 				};
-				user.attach("/orders$", orders);
+
+				// Create the order Handler
+				Handler order = new Handler(getContext())
+				{
+					@Override
+					public void handleGet(Request request, Response response)
+					{
+						// Print the user name of the requested orders
+						String message = "Order \"" + request.getAttributes().get("order")
+								+ "\" for user \"" + request.getAttributes().get("user") + "\"";
+						response.setEntity(message, MediaType.TEXT_PLAIN);
+					}
+				};
+
+				// Attach the Handlers to the Router
+				router.attach("/users/{user}$", account);
+				router.attach("/users/{user}/orders$", orders);
+				router.attach("/users/{user}/orders/{order}$", order);
 
 				// Return the root router
 				return router;
