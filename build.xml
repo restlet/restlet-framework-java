@@ -719,8 +719,6 @@
 		<packageModule name="simple" />
 		<packageModule name="velocity" />
 		<packageModule name="example" />
-		<packageModule name="api-test" />
-		<packageModule name="ri-test" />
 
 		<!-- Create the final zip file -->
 		<zip destfile="${dist-zip}/restlet-${version-compact}.zip" basedir="${dist}" includes="**/*" />

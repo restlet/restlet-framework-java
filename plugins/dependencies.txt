@@ -15,6 +15,43 @@ plugins (either as a JAR or as a directory) withing an Eclipse IDE, then the
 dependencies are automatically declared. However, if you add them directly on 
 your classpath, you need to ensure that all the dependencies are also on the 
 classpath, otherwise ClassNotFound exceptions will be thrown.
+ 
+ 
+org.restlet (Restlet API)
+-----------
+ - none
+
+
+org.restlet.ext.atom_1.0 (Implementation of Atom specifications)
+------------------------
+ - none
+ 
+
+org.restlet.ext.fileupload_1.1 (Integration with Apache FileUpload)
+------------------------------
+ - javax.servlet_2.4
+ - org.apache.commons.fileupload_1.1 
+
+
+org.restlet.ext.freemarker_2.3 (Integration with FreeMarker template engine)
+------------------------------
+ - org.freemarker_2.3
+
+
+org.restlet.ext.json_2.0 (Integration with JavaScript Object Notation)
+------------------------
+ - org.json_2.0
+
+
+org.restlet.ext.velocity_1.4 (Integration with Apache Velocity)
+----------------------------
+ - org.apache.velocity_1.4
+ - org.apache.commons.collections_3.2
+ 
+
+com.noelios.restlet (Noelios Restlet Engine)
+-------------------
+ - org.restlet
 
 
 com.noelios.restlet.example (Tutorial examples)
@@ -29,22 +66,6 @@ com.noelios.restlet.ext.asyncweb_0.8 (AsyncWeb server HTTP connector)
  - org.apache.mina_0.8
  - org.safehaus.asyncweb_0.8
  - org.slf4j_1.0
-
-
-com.noelios.restlet.ext.atom_1.0 (Implementation of Atom specifications)
---------------------------------
- - none
- 
-
-com.noelios.restlet.ext.fileupload_1.1 (Integration with Apache FileUpload)
-------------------------------------
- - javax.servlet_2.4
- - org.apache.commons.fileupload_1.1 
-
-
-com.noelios.restlet.ext.freemarker_2.3 (Integration with FreeMarker template engine)
---------------------------------------
- - org.freemarker_2.3
 
 
 com.noelios.restlet.ext.javamail_1.4 (SMTP client connector based on JavaMail)
@@ -85,23 +106,3 @@ com.noelios.restlet.ext.servlet_2.4 (Servlet base server HTTP connector)
 com.noelios.restlet.ext.simple_3.1 (Simple server HTTP connector)
 ----------------------------------
  - org.simpleframework_3.1
- 
-
-com.noelios.restlet (Noelios Restlet Engine)
--------------------
- - org.restlet
- 
- 
-com.noelios.restlet.test (NRE unit tests)
-------------------------
- - nearly everything
- 
- 
-org.restlet (Resltet API)
------------
- - none
-
-
-org.restlet.test (API unit tests)
-----------------
- - none

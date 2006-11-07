@@ -111,7 +111,14 @@ public class StringRepresentation extends StreamRepresentation
 		{
 			try
 			{
-				setSize(getValue().getBytes(getCharacterSet().getName()).length);
+				if(getCharacterSet() != null)
+				{
+					setSize(getValue().getBytes(getCharacterSet().getName()).length);
+				}
+				else
+				{
+					setSize(getValue().getBytes().length);
+				}
 			}
 			catch (UnsupportedEncodingException e)
 			{
@@ -156,7 +163,14 @@ public class StringRepresentation extends StreamRepresentation
 	{
 		if (getValue() != null)
 		{
-			return new ByteArrayInputStream(getValue().getBytes(getCharacterSet().getName()));
+         if(getCharacterSet() != null)
+         {
+         	return new ByteArrayInputStream(getValue().getBytes(getCharacterSet().getName()));
+         }
+         else
+         {
+         	return new ByteArrayInputStream(getValue().getBytes());
+         }
 		}
 		else
 		{
@@ -175,8 +189,17 @@ public class StringRepresentation extends StreamRepresentation
 	{
 		if (getValue() != null)
 		{
-			OutputStreamWriter osw = new OutputStreamWriter(outputStream, getCharacterSet()
-					.getName());
+			OutputStreamWriter osw = null; 
+		
+			if(getCharacterSet() != null)
+			{
+				osw = new OutputStreamWriter(outputStream, getCharacterSet().getName());
+			}
+			else
+			{
+				osw = new OutputStreamWriter(outputStream);
+			}
+			
 			osw.write(getValue());
 			osw.flush();
 		}

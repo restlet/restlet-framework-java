@@ -14,6 +14,7 @@ Changes log
  - Patched Simple connector to not return a "Content-length" header when size is 0.
  - Bug bug in the Simple connector causing a "Transfer-Encoding: chunked" header to be returned even if no entity was present. May be the cause of problems with the Safari browser.
  - Fixed issue with StringRepresentation wrongly computing its length in certain cases. Reported by Richard G.
+ - Fixed potential NPE in StringRepresentation and StringTemplateRepresentation when no character set was defined. Reported by Chris Grindstaff.
 
 [API breaking changes]
  - Moved Atom, FreeMarker and FileUpload extensions to org.restlet.ext.atom/freemarker/fileupload packages.

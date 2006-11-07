@@ -28,6 +28,7 @@ import java.io.InputStream;
 import java.io.OutputStream;
 import java.io.OutputStreamWriter;
 
+import org.restlet.data.CharacterSet;
 import org.restlet.data.MediaType;
 import org.restlet.util.MapModel;
 import org.restlet.util.Model;
@@ -56,6 +57,7 @@ public class StringTemplateRepresentation extends StreamRepresentation
 			MediaType mediaType)
 	{
 		super(mediaType);
+		setCharacterSet(CharacterSet.ISO_8859_1);
 		this.template = new StringTemplate(pattern);
 		this.template.setLogger(getLogger());
 		this.model = model;
@@ -86,6 +88,7 @@ public class StringTemplateRepresentation extends StreamRepresentation
 			Model model, MediaType mediaType)
 	{
 		super(mediaType);
+		setCharacterSet(CharacterSet.ISO_8859_1);
 		this.template = new StringTemplate(pattern, variableStart, variableEnd,
 				instructionStart, instructionEnd);
 		this.template.setLogger(getLogger());
@@ -139,7 +142,14 @@ public class StringTemplateRepresentation extends StreamRepresentation
 	{
 		if (getValue() != null)
 		{
-			return new ByteArrayInputStream(getValue().getBytes(getCharacterSet().getName()));
+			if(getCharacterSet() != null)
+			{
+				return new ByteArrayInputStream(getValue().getBytes(getCharacterSet().getName()));
+			}
+			else
+			{
+				return new ByteArrayInputStream(getValue().getBytes());
+			}
 		}
 		else
 		{
@@ -158,9 +168,19 @@ public class StringTemplateRepresentation extends StreamRepresentation
 	{
 		if (getValue() != null)
 		{
-			OutputStreamWriter osw = new OutputStreamWriter(outputStream, getCharacterSet()
-					.getName());
+			OutputStreamWriter osw = null;
+			
+			if(getCharacterSet() != null)
+			{
+				osw = new OutputStreamWriter(outputStream, getCharacterSet().getName());
+			}
+			else
+			{
+				osw = new OutputStreamWriter(outputStream);
+			}
+			
 			osw.write(getValue());
+			osw.flush();
 		}
 	}
 
