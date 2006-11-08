@@ -63,7 +63,7 @@
    <br/>
    Then, the Request and Response classes are important as they encapsulate all aspects of a RESTful call, in a protocol neutral way. All REST concepts were implemented, trying to use the REST name as the name of the equivalent Java interface. Some specialized Restlets like Application, Chainer, Filter, Handler, Router and Scorer were added to facilitate the processing of calls, like in the case of Handler to locate the target resource identified by hierarchical URIs.
    <br/>
-   The processing of REST calls is typically done in two phases. During the first one, the call is processed by a chain of Restlets in order to filter it (like for security purpose or to extract variables from URI parts) to a locate a the target Resource of the call, as identified by the URI. The Handler class is the last Restlet in the processing chain, responsible to actually find a Resource instance based on the processed call information. Once this phase is over, the actual processing can take place in the target Resource class, or more likely one of its subclasses that you will have created. The concepts of Resource and Representation are really central to REST and therefore to the Restlet API. A single Resource can expose several Representations, in different format, languages, etc. In order to help you return the best Representation of your Resources, an automatic and transparent content negotiation algorithm is used.
+   The processing of REST calls is typically done in two phases. During the first one, the call is processed by a chain of Restlets in order to filter it (like for security purpose or to extract variables from URI parts) to a locate a the target Resource of the call, as identified by the URI. The Handler class is the last Restlet in the processing chain, responsible to actually find a Resource instance based on the processed request information. Once this phase is over, the actual processing can take place in the target Resource class, or more likely one of its subclasses that you will have created. The concepts of Resource and Representation are really central to REST and therefore to the Restlet API. A single Resource can expose several Representations, in different format, languages, etc. In order to help you return the best Representation of your Resources, an automatic and transparent content negotiation algorithm is used.
 </p>
 
 <h3><a name="03">3. What are the advantages of using Restlets instead of Servlets?</a></h3>
@@ -126,7 +126,7 @@
 <p>
    In a Restlet distribution, all JAR files are located under the "lib" directory. The <b>org.restlet.jar</b> file is containing the portable Restlet API.
    Even though you can compile your code with only this JAR file, it is likely that you'll need the additional features provided by the
-   reference implementation (Noelios Restlet Engine or NRE). In any case, to run a minimal application, you'll also need the <b>com.noelios.restlet.jar</b> file containing the core of the NRE. Each extension to the NRE core also comes packaged in a separate JAR file.
+   various Restlet extensions in the <b>org.restlet.ext.*.jar</b> files. In any case, to run a minimal application, you'll also need the core NRE implementation contained in <b>com.noelios.restlet.jar</b>.
 </p>
 
 <h3><a name="09">9. What are the other JAR files for?</a></h3>
@@ -138,7 +138,7 @@
    There are other extensions to the NRE, like SMTP and JDBC clients. Each one corresponds to a seperate Java package under com.noelios.restlet.ext.* and is packaged as a separate JAR file available under the "lib" directory. For example, if you need to send emails, you must include the following JAR files: /lib/com.noelios.restlet.ext.javamail_1.4.jar (NRE extension) and /lib/javax.mail_1.4/mail.jar (JavaMail).
 </p>
 <p>
-   No further configuration is needed as the NRE runtime will automatically detect the extensions present if the application classpath. This is the reason why you can rely on the standard Restlet API to create connectors, for example: new Server(Protocol.HTTP, 8182, handler).
+   No further configuration is needed as the NRE runtime will automatically detect the extensions present if the application classpath. This is the reason why you can rely on the standard Restlet API to create connectors, for example: new Server(Protocol.HTTP, 8182, target).
 </p>
 
 <h3><a name="10">10. Why are there two Jetty versions provided?</a></h3>
@@ -150,8 +150,7 @@
 <h3><a name="11">11. How do I provide password protection on a server?</a></h3>
 
 <p>
-   Currently, the Noelios Restlet Engine supports Basic HTTP authentication via the <a href="http://www.restlet.org/docs/core/index.html?com/noelios/restlet/GuardFilter.html">GuardFilter</a>.
-   For details on how to use this Filter, please check the <a href="http://www.restlet.org/tutorial#part09">part 9 of the tutorial</a>.
+   Currently, the Noelios Restlet Engine supports Basic HTTP and Amazon Web Services authentication schemes. You order to leverage them, use the <a href="http://www.restlet.org/docs/api/index.html?org/restlet/Guard.html">Guard</a> Filter. For details on how to use this Filter, please check the <a href="http://www.restlet.org/tutorial#part09">part 9 of the tutorial</a>.
 </p>
 
 <h3><a name="12">12. How do I check the mime type of a document PUT on my server?</a></h3>
@@ -191,10 +190,9 @@
    Here is the basic proposition for implementing the MVC pattern with Restlets:
    <ol>
       <li>Controller == Restlets (mainly Filters, Routers and Handlers). You can visualize the controller as a sort of processing chain, where the last node should be a Hander with all the information necessary to locate the target Resource for the call. This location information can be stored either in the request's attributes map, either in the member variables of a request wrapper (see <a href="http://www.restlet.org/docs/api/org/restlet/util/WrapperRequest.html">org.restlet.WrapperRequest</a>). This last Handler should override the findTarget(Request, Response) method and return an instance of Resource.</li>
-      <li>Model == Resource + data objects. Just start from the <a href="http://www.restlet.org/docs/api/org/restlet/data/Resource.html">org.restlet.data.Resource class</a> and implement its methods like getVariants(), post(), delete() and put(). The Handler class automatically invokes those methods by implementing the handleGet(), handleHead(), handlePost(), handlePut(), handleDelete() methods for you. For example, you just need to override the getVariants() to benefit from automatic content negotiation. Internally, we rely on the Response.setEntity(Resource, Language) method to trigger this content negotiation, which compares the representations that you make available (named the variants), with the client capabilities and preferences.</li>
-      <li>View == Representation. To create new representations for your resources, you can rely on one of the numerous Representation implementation classes (InputRepresentation for example) available in the NRE data package or in the extension packages like the one for FreeMarker (TemplateRepresentation).</li>
+      <li>Model == Resource + data objects. Just start from the <a href="http://www.restlet.org/docs/api/org/restlet/resource/Resource.html">org.restlet.resource.Resource class</a> and implement its methods like getVariants(), post(), delete() and put(). The Handler class automatically invokes those methods by implementing the handleGet(), handleHead(), handlePost(), handlePut(), handleDelete() methods for you. For example, you just need to override the getVariants() to benefit from automatic content negotiation. Internally, we rely on the Response.setEntity(Resource, Language) method to trigger this content negotiation, which compares the representations that you make available (named the variants), with the client capabilities and preferences.</li>
+      <li>View == Representation. To create new representations for your resources, you can rely on one of the numerous Representation implementation classes (InputRepresentation for example) available in the org.restlet.resource package or in extension packages like for JSON documents, FreeMarker and Velocity templates.</li>
    </ol>
-   Chris Winters has developed a <a href="http://www.cwinters.com/raw/RestSampleBook.zip">sample application</a> illustrating very well those concepts. He uses AJAX with a Restlet container to do server-side content negotiation between resource representations available in different formats (XML, JSON and image). He also added the creation of new resources via POST. Note that the code source is based on the beta 18 version.
 </p>
 <h3><a name="16">16 Any recommendations/guidelines in terms of how to deal with caching?</a></h3>
 
@@ -220,7 +218,7 @@
 <p>
    When you do a simple GET with the Restlet HTTP client connector, it appears that an extra "content-type" header is sent to the server, even though
    your call doesn't provide any input content (because you just GET a representation). This is due to a bug in the underlying JDK's HttpURLConnection
-   class in JDK 5.0. This was fixed in recent JDK 6.0 builds as indicated in the <a href="http://bugs.sun.com/bugdatabase/view_bug.do?bug_id=6369510">bug report</a>.
+   class in JDK 5.0. This was fixed in recent JDK 6.0 builds as indicated in the <a href="http://bugs.sun.com/bugdatabase/view_bug.do?bug_id=6369510">bug report</a>. We also asked for a backport of the fix to JDK 5.0 and Sun has positively replied to us: this could be included in JDK 5.0 update 10.
 </p>
 
 <h3><a name="19">19. Can a Filter modify the call like a Servlet Filter?</a></h3>
@@ -233,7 +231,7 @@
 
 <p>
    The immediate client IP address available is the only that is always available because its based on the underlying protocol connection.
-   In HTTP, certain proxies do transfer the original client IP address (or addresses) by using some extra HTTP headers like "X-Forwarded-for". In the recent Restlet versions you can get all this information in a straightforward way. On the Call interface, you have two related methods <a href="http://www.restlet.org/docs/api/org/restlet/Call.html#getClientAddress()">getClientAddress()</a> and <a href="http://www.restlet.org/docs/api/org/restlet/Call.html#getClientAddresses()">getClientAddresses()</a>. Please check the Javadocs of the HTTP server connectors for details (i.e. context parameter to set) on how to enable the support for the "X-Forwarded-For" header as there are some security risks when using it, especially if you are not controlling the intermediary proxies.
+   In HTTP, certain proxies do transfer the original client IP address (or addresses) by using some extra HTTP headers like "X-Forwarded-for". In the recent Restlet versions you can get all this information in a straightforward way. On the ClientInfo class, accessible via the <a href="http://www.restlet.org/docs/api/org/restlet/data/Request.html#getClientInfo()">getClientInfo()</a> method, you have two related methods <a href="http://www.restlet.org/docs/api/org/restlet/data/ClientInfo.html#getAddress()">getAddress()</a> and <a href="http://www.restlet.org/docs/api/org/restlet/data/ClientInfo.html#getAddresses()">getAddresses()</a>. Please check the Javadocs of the HTTP server connectors for details (i.e. context parameter to set) on how to enable the support for the "X-Forwarded-For" header as there are some security risks when using it, especially if you are not controlling the intermediary proxies.
 </p>
 
 <h3><a name="21">21. Is there a mechanism to pass data sets to downstream Restlets?</a></h3>
@@ -251,13 +249,13 @@
 <h3><a name="23">23. How can I send and receive files with Restlets?</a></h3>
 
 <p>
-   To receive large files, from browsers for example, you can rely on the Apache FileUpload project which was integrated as an <a href="http://www.restlet.org/docs/ext/index.html?com/noelios/restlet/ext/fileupload/package-summary.html">extension to NRE</a>. To send a file using the HTTP client connector, just create a new <a href="http://www.restlet.org/docs/core/index.html?com/noelios/restlet/data/FileRepresentation.html">FileRepresentation</a> and set is as the input of your call.
+   To receive large files, from browsers for example, you can rely on the Apache FileUpload project which was integrated as a <a href="http://www.restlet.org/docs/ext/index.html?org/restlet/ext/fileupload/package-summary.html">Restlet Extension</a>. To send a file using the HTTP client connector, just create a new <a href="http://www.restlet.org/docs/api/index.html?org/restlet/resource/FileRepresentation.html">FileRepresentation</a> and set is as the input of your call.
 </p>
 
 <h3><a name="24">24. How can I make PUT or DELETE calls from browsers?</a></h3>
 
 <p>
-   There are two solutions to this problem. The first one is to tunnel the PUT or DELETE calls inside regular GET or POST calls. There is a <a href="http://www.restlet.org/docs/core/index.html?com/noelios/restlet/TunnelFilter.html">TunnelFilter</a> available in the NRE to help you with this task. Also, in the <a href="http://www.onlamp.com/lpt/a/6480">Using REST with Ajax</a> article, the author explains how to directly build the PUT and DELETE methods from a browser using some JavaScript code.
+   There are two solutions to this problem. The first one is to tunnel the PUT or DELETE calls through regular POST calls. There is a <a href="http://www.restlet.org/docs/api/index.html?org/restlet/service/TunnelService.html">TunnelService</a> associated with each Application that automatically takes care of it. Also, in the <a href="http://www.onlamp.com/lpt/a/6480">Using REST with Ajax</a> article, the author explains how to directly build the PUT and DELETE methods from a browser using some JavaScript code.
 </p>
 
 <h3><a name="25">25. What's the best practice for error handling in an intermediate Restlet?</a></h3>
@@ -308,7 +306,7 @@ Servlet API, etc.).</li>
 <br/>
 
 <small>
-   Last modified on 2006-10-25. Copyright &copy; 2005-2006 <a href="mailto:contact@noelios.com">J&eacute;r&ocirc;me Louvel</a>. Restlet is a registered trademark of <a target="_top" href="http://www.noelios.com">Noelios Consulting</a>.
+   Last modified on 2006-11-08. Copyright &copy; 2005-2006 <a href="mailto:contact@noelios.com">J&eacute;r&ocirc;me Louvel</a>. Restlet is a registered trademark of <a target="_top" href="http://www.noelios.com">Noelios Consulting</a>.
 </small>
 
 </body>

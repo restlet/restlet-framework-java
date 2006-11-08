@@ -61,13 +61,13 @@ public class Part11 implements Constants
 				Guard guard = new Guard(getContext(), ChallengeScheme.HTTP_BASIC,
 						"Restlet tutorial");
 				guard.getAuthorizations().put("scott", "tiger");
-				router.getScorers().add("/docs/", guard);
+				router.attach("/docs/", guard);
 
 				// Create a Directory able to return a deep hierarchy of Web files
 				Directory directory = new Directory(getContext(), ROOT_URI);
 				guard.setNext(directory);
 
-				// Create the account Handler
+				// Create the Account Handler
 				Handler account = new Handler()
 				{
 					@Override
@@ -80,7 +80,7 @@ public class Part11 implements Constants
 					}
 				};
 
-				// Create the orders Handler
+				// Create the Orders Handler
 				Handler orders = new Handler(getContext())
 				{
 					@Override
@@ -93,7 +93,7 @@ public class Part11 implements Constants
 					}
 				};
 
-				// Create the order Handler
+				// Create the Order Handler
 				Handler order = new Handler(getContext())
 				{
 					@Override

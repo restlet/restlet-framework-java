@@ -1,38 +1,34 @@
 
-==============================
-Welcome to the Restlet project
-==============================
+==============================================
+Restlet, a lightweight REST framework for Java
+==============================================
+         http://www.restlet.org
+----------------------------------------------
 
 
-Mission : Bring the simplicity and efficiency of the REST architectural style to Java developers.
-Author  : Jerome Louvel (mailto:contact@noelios.com)
-Home    : http://www.restlet.org
-
-
-Restlet API
-    * All REST concepts are supported (resource, representation, data, connector, components, etc.)
+Features
+    * REST concepts have equivalent Java classes (resource, representation, connector, etc.)
     * Suitable for both client and server Web applications
-    * Routers support the concept of URIs as UI with advanced pattern matching features
-    * Filters support features such as authentication and logging
-    * Complete alternative to the Servlet API with no external dependency
-    * Supports blocking and non-blocking NIO modes
-
-Noelios Restlet Engine (NRE)
-    * Reference implementation of the Restlet API provided by Noelios Consulting
-    * Server connectors for HTTP, HTTPS and AJP (for Apache or IIS) protocols
-    * Client connectors for HTTP, HTTPS, SMTP, JDBC and FILE protocols.
-    * Supports logging (LogFilter), authentication (GuardFilter) and cool URIs rewriting (RedirectRestlet)
-    * Static files serving (DirectoryHandler) with metadata association based on file extensions
     * Automatic server-side content negotiation based on media type and language preferences
-    * FreeMarker template representations as an alternative to JSP pages
-    * Supports Restlet applications as native services using Java Service Wrapper
+    * Static file serving and editing with metadata association based on file extensions
+    * Support for representations like JSON, XML (DOM or SAX), FreeMarker templates (alternative to JSP)
+    * Server connectors for HTTP, HTTPS and AJP (for Apache or IIS) protocols
+    * Client connectors for HTTP, HTTPS, SMTP, JDBC and FILE protocols
+    * Routers support the concept of URIs as UI with advanced pattern matching features
+    * Filters support features such as authorization, browser tunnelling and extraction of call attributes
+    * Support of HTTP Basic and Amazon Web Services authentication schemes
+    * Deployment as native services using Java Service Wrapper
+    * Supports blocking and non-blocking NIO modes
+    * Clean Restlet API as a full alternative to the Servlet API
+    * Noelios Restlet Engine (NRE) is the Reference Implementation (provided by Noelios Consulting)
 
 Dependencies
-    * For all applications: Java SE 5.0 or above. Older versions also supported using Retroweaver.
-    * For standalone HTTP servers: Jetty 5.1 (stable), Jetty 6.0 (beta), Simple 3.1 and AsyncWeb 0.8 (lightest)
+    * For all applications: Java SE 5.0 or above. JDK 1.4 support is also available via Retroweaver.
+    * For standalone HTTP servers: AsyncWeb 0.8, Jetty 5.1, Jetty 6.0 and Simple 3.1
     * For embedded HTTP servers: Servlet 2.4 containers like Apache Tomcat
-    * For dynamic documents: FreeMarker 2.3
-    * For email sending: JavaMail 1.3
+    * For dynamic documents: FreeMarker 2.3, Velocity 1.4, JSON 2.0
+    * For uploading large files: Apache FileUpload 1.1
+    * For sending emails: JavaMail 1.4
 
 Licensing
     * "Restlet API" and "Noelios Restlet Engine" are distributed under the CDDL license (similar to Mozilla Public License).

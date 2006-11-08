@@ -25,13 +25,12 @@
       <li><a href="#connector">Connector</a></li>
       <li><a href="#container">Container</a></li>
       <li><a href="#context">Context</a></li>
-      <li><a href="#directory-handler">Directory Handler</a></li>
+      <li><a href="#directory">Directory</a></li>
       <li><a href="#engine">Engine</a></li>
       <li><a href="#filter">Filter</a></li>
-      <li><a href="#guard-filter">Guard Filter</a></li>
+      <li><a href="#guard">Guard</a></li>
       <li><a href="#handler">Handler</a></li>
-      <li><a href="#log-filter">Log Filter</a></li>
-      <li><a href="#redirect-restlet">Redirect Restlet</a></li>
+      <li><a href="#redirector">Redirector</a></li>
       <li><a href="#representation">Representation</a></li>
       <li><a href="#request">Request</a></li>
       <li><a href="#resource">Resource</a></li>
@@ -40,7 +39,6 @@
       <li><a href="#router">Router</a></li>
       <li><a href="#scorer">Scorer</a></li>
       <li><a href="#server">Server</a></li>
-      <li><a href="#tunnel-filter">Tunnel Filter</a></li>
       <li><a href="#virtual-host">Virtual Host</a></li>
    </ol>
 </p>
@@ -87,7 +85,7 @@
    Information and services provided to a Restlet. The context is the door opened for Restlets in order to access to their environment in the framework. The context is typically provided by the immediate parent Restlet (Container and Application are the most common cases). The services provided are the access to a logger instance, to some configuration parameters and to a generic client.
 </p>
 
-<h3><a name="directory-handler">Directory Handler</a></h3>
+<h3><a name="directory">Directory</a></h3>
 
 <p>
    Handler supported by a directory of resource (from the file system, the web application context or class loaders). An automatic content negotiation mechanism (similar to the one in Apache HTTP server) is used to select the best representation of a resource based on the available variants and on the client capabilities and preferences.
@@ -105,7 +103,7 @@
    Chainer to an attached Restlet that filters calls. The purpose is to do some pre-processing or post-processing on the calls going through it before or after they are actually handled by an attached Restlet. Also note that you can attach and detach targets while handling incoming calls as the filter is ensured to be thread-safe.
 </p>
 
-<h3><a name="guard-filter">Guard Filter</a></h3>
+<h3><a name="guard">Guard</a></h3>
 
 <p>
    Filter guarding the access to another Restlet. Currently it only supports the HTTP basic authentication scheme or custom schemes (based on cookies, query params or IP address for example).
@@ -117,7 +115,7 @@
    Restlet capable of handling calls using a target Resource. At this point in the processing, all the necessary information should be ready in order to find the resource that is the actual target of the request and to handle the required method on it. It is comparable to an HttpServlet class as it provides facility methods to handle the most common method names. The calls are then automatically dispatched to the appropriate handle*() method (where the '*' character corresponds to the method name, or to the handleOthers() method. By default, the implementation of the handle*() or handleOthers() methods is to invoke the defaultHandle() method which should be overriden to change the default behavior (set the status to SERVER_ERROR_NOT_IMPLEMENTED).
 </p>
 
-<h3><a name="redirect-restlet">Redirect Restlet</a></h3>
+<h3><a name="redirector">Redirector</a></h3>
 
 <p>
    Rewrites URIs then redirects the call or the client to a new destination.
@@ -201,12 +199,6 @@
    Connector acting as a generic server. It internally uses one of the available connectors registered with the current Restlet implementation.
 </p>
 
-<h3><a name="tunnel-filter">Tunnel Filter</a></h3>
-
-<p>
-   Filter extracting some attributes from a call. Multiple extractions can be defined, based on the query part of the resource reference, on the entity form (posted from a browser), on the context matches or on the call's template model.
-</p>
-
 <h3><a name="virtual-host">Virtual Host</a></h3>
 
 <p>
@@ -227,7 +219,7 @@
 <br/>
 
 <small>
-   Last modified on 2006-10-23. Copyright &copy; 2005-2006 <a href="mailto:contact@noelios.com">J&eacute;r&ocirc;me Louvel</a>. Restlet is a registered trademark of <a target="_top" href="http://www.noelios.com">Noelios Consulting</a>.
+   Last modified on 2006-11-08. Copyright &copy; 2005-2006 <a href="mailto:contact@noelios.com">J&eacute;r&ocirc;me Louvel</a>. Restlet is a registered trademark of <a target="_top" href="http://www.noelios.com">Noelios Consulting</a>.
 </small>
 
 </body>
