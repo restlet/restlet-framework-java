@@ -28,9 +28,9 @@ import java.util.logging.Logger;
 import org.restlet.data.Method;
 import org.restlet.data.Reference;
 import org.restlet.data.ReferenceList;
-import org.restlet.data.Result;
 import org.restlet.resource.Representation;
 import org.restlet.resource.Resource;
+import org.restlet.resource.Result;
 
 /**
  * Resource wrapper. Useful for application developer who need to enrich the resource

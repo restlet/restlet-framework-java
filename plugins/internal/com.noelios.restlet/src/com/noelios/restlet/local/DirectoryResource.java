@@ -38,10 +38,10 @@ import org.restlet.data.Reference;
 import org.restlet.data.ReferenceList;
 import org.restlet.data.Request;
 import org.restlet.data.Response;
-import org.restlet.data.Result;
 import org.restlet.data.Status;
 import org.restlet.resource.Representation;
 import org.restlet.resource.Resource;
+import org.restlet.resource.Result;
 import org.restlet.service.MetadataService;
 
 /**

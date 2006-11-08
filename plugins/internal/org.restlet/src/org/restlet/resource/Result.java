@@ -20,16 +20,16 @@
  * Portions Copyright [yyyy] [name of copyright owner]
  */
 
-package org.restlet.data;
+package org.restlet.resource;
 
+import org.restlet.data.Reference;
+import org.restlet.data.Status;
 import org.restlet.resource.Representation;
 
 /**
  * Contains the results information returned by some methods in Resource. 
  * @author Jerome Louvel (contact@noelios.com) <a href="http://www.noelios.com/">Noelios Consulting</a>
- * @deprecated Replace by org.restlet.resource.Result
  */
-@Deprecated
 public class Result
 {
 	/** The optional entity. */

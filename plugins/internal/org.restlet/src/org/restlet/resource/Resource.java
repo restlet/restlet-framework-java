@@ -29,7 +29,6 @@ import java.util.logging.Logger;
 import org.restlet.data.Method;
 import org.restlet.data.Reference;
 import org.restlet.data.ReferenceList;
-import org.restlet.data.Result;
 import org.restlet.data.Status;
 
 /**

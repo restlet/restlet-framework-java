@@ -57,7 +57,7 @@ public abstract class Factory
 	private static Logger logger = Logger.getLogger(Factory.class.getCanonicalName());
 
 	/** Common version info. */
-	public static final String BETA_NUMBER = "20";
+	public static final String BETA_NUMBER = "21";
 
 	public static final String VERSION_LONG = "1.0 beta " + BETA_NUMBER;
 
@@ -67,7 +67,7 @@ public abstract class Factory
 	private static Factory instance = null;
 
 	/** Provider resource. */
-	private static final String providerResource = "META-INF/services/org.restlet.spi.Factory";
+	private static final String providerResource = "META-INF/services/org.restlet.util.Factory";
 
 	/** Classloader to use for dynamic class loading. */
 	private static ClassLoader classloader = Factory.class.getClassLoader();
