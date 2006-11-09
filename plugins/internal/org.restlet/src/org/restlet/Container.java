@@ -40,44 +40,51 @@ import org.restlet.util.Helper;
  */
 public class Container extends Component
 {
-	/** The modifiable list of virtual hosts. */ 
+	/** The modifiable list of virtual hosts. */
 	private List<VirtualHost> hosts;
-	
+
 	/** The default host. */
 	private VirtualHost defaultHost;
-	
+
 	/** The helper provided by the implementation. */
 	private Helper helper;
-	
+
 	/** The log service. */
 	private LogService logService;
-	
+
 	/** The status service. */
 	private StatusService statusService;
 
 	/**
-    * Default constructor. Instantiate then wrap a container provided by the current Restlet 
-    * implementation.
-    */
-   public Container()
-   {
+	 * Default constructor. Instantiate then wrap a container provided by the current Restlet 
+	 * implementation.
+	 */
+	public Container()
+	{
 		super(null);
-		this.helper = Factory.getInstance().createHelper(this);
-		setContext(this.helper.createContext());
-		this.hosts = null;
-		this.defaultHost = VirtualHost.createDefaultHost(getContext());
-		this.logService = null;
-		this.statusService = null;
+		
+		if(Factory.getInstance() != null)
+		{
+			this.helper = Factory.getInstance().createHelper(this);
+			if (this.helper != null)
+			{
+				setContext(this.helper.createContext());
+				this.hosts = null;
+				this.defaultHost = VirtualHost.createDefaultHost(getContext());
+				this.logService = null;
+				this.statusService = null;
+			}
+		}
 	}
-	
-   /**
-    * Returns the default virtual host.
-    * @return The default virtual host.
-    */
-   public VirtualHost getDefaultHost()
-   {
-  		return this.defaultHost;
-   }
+
+	/**
+	 * Returns the default virtual host.
+	 * @return The default virtual host.
+	 */
+	public VirtualHost getDefaultHost()
+	{
+		return this.defaultHost;
+	}
 
 	/**
 	 * Returns the helper provided by the implementation.
@@ -89,14 +96,14 @@ public class Container extends Component
 	}
 
 	/**
-    * Returns the modifiable list of host routers.
-    * @return The modifiable list of host routers.
-    */
-   public List<VirtualHost> getHosts()
-   {
-		if(this.hosts == null) this.hosts = new ArrayList<VirtualHost>();
+	 * Returns the modifiable list of host routers.
+	 * @return The modifiable list of host routers.
+	 */
+	public List<VirtualHost> getHosts()
+	{
+		if (this.hosts == null) this.hosts = new ArrayList<VirtualHost>();
 		return this.hosts;
-   }
+	}
 
 	/** 
 	 * Returns the log service. This service is disabled by default.
@@ -104,10 +111,11 @@ public class Container extends Component
 	 */
 	public LogService getLogService()
 	{
-		if(this.logService == null) 
+		if (this.logService == null)
 		{
 			this.logService = new LogService(false);
-			this.logService.setAccessLoggerName(getClass().getCanonicalName() + " (" + hashCode() + ")");
+			this.logService.setAccessLoggerName(getClass().getCanonicalName() + " ("
+					+ hashCode() + ")");
 		}
 
 		return this.logService;
@@ -119,29 +127,29 @@ public class Container extends Component
 	 */
 	public StatusService getStatusService()
 	{
-		if(this.statusService == null) this.statusService = new StatusService(true);
+		if (this.statusService == null) this.statusService = new StatusService(true);
 		return this.statusService;
 	}
 
-   /**
+	/**
 	 * Handles a call.
 	 * @param request The request to handle.
 	 * @param response The response to update.
 	 */
 	public void handle(Request request, Response response)
 	{
-  		init(request, response);
-  		getHelper().handle(request, response);
+		init(request, response);
+		if(getHelper() != null) getHelper().handle(request, response);
 	}
 
-   /**
-    * Sets the default virtual host.
-    * @param defaultHost The default virtual host.
-    */
-   public void setDefaultHost(VirtualHost defaultHost)
-   {
-  		this.defaultHost = defaultHost;
-   }
+	/**
+	 * Sets the default virtual host.
+	 * @param defaultHost The default virtual host.
+	 */
+	public void setDefaultHost(VirtualHost defaultHost)
+	{
+		this.defaultHost = defaultHost;
+	}
 
 	/** 
 	 * Sets the log service. 
@@ -165,13 +173,13 @@ public class Container extends Component
 	public void start() throws Exception
 	{
 		super.start();
-		getHelper().start();
+		if(getHelper() != null) getHelper().start();
 	}
 
 	/** Stop callback. */
 	public void stop() throws Exception
 	{
-		getHelper().stop();
+		if(getHelper() != null) getHelper().stop();
 		super.stop();
 	}
 

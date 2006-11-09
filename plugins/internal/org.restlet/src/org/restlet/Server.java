@@ -168,7 +168,11 @@ public class Server extends Connector
 		this.address = address;
 		this.port = port;
 		this.target = target;
-		this.helper = Factory.getInstance().createHelper(this);
+
+		if(Factory.getInstance() != null)
+		{
+			this.helper = Factory.getInstance().createHelper(this);
+		}
 	}
 
 	/**

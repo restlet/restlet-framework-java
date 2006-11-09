@@ -82,7 +82,10 @@ public class Client extends Connector
 		
 		if((protocols != null) && (protocols.size() > 0))
 		{
-			this.helper = Factory.getInstance().createHelper(this);
+			if(Factory.getInstance() != null)
+			{
+				this.helper = Factory.getInstance().createHelper(this);
+			}
 		}
 	}
 	

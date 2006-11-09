@@ -105,8 +105,13 @@ public abstract class Application extends Restlet
 	public Application(Context parentContext)
 	{
 		super(null);
-		this.helper = Factory.getInstance().createHelper(this, parentContext);
-		setContext(this.helper.createContext());
+
+		if(Factory.getInstance() != null)
+		{
+			this.helper = Factory.getInstance().createHelper(this, parentContext);
+			setContext(this.helper.createContext());
+		}
+		
 		this.name = null;
 		this.description = null;
 		this.author = null;
@@ -272,7 +277,7 @@ public abstract class Application extends Restlet
 	public void handle(Request request, Response response)
 	{
 		init(request, response);
-		getHelper().handle(request, response);
+		if(getHelper() != null) getHelper().handle(request, response);
 	}
 
 	/**
@@ -369,13 +374,13 @@ public abstract class Application extends Restlet
 	public void start() throws Exception
 	{
 		super.start();
-		getHelper().start();
+		if(getHelper() != null) getHelper().start();
 	}
 
 	/** Stop callback. */
 	public void stop() throws Exception
 	{
-		getHelper().stop();
+		if(getHelper() != null) getHelper().stop();
 		super.stop();
 	}
 
