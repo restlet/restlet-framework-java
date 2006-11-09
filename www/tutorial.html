@@ -172,7 +172,9 @@
          @Override
          public Restlet createRoot()
          {
-            return new Directory(getContext(), ROOT_URI);
+            Directory directory = new Directory(getContext(), ROOT_URI);
+            directory.setNegotiateContent(true);
+            return directory;
          }
       };
 
@@ -181,7 +183,7 @@
       container.start();
 </pre>
 <p>
-   Note that no external configuration file is needed. If you want to customize the mapping between file extensions and metadata (media type, language or encoding), you can use the Application's "localService" property.
+   In order to run this example, you need to specify a valid value for ROOT_URI, depending on the location of your Restlet installation. By default, it is set to "file:///D:/Restlet/www/docs/api/". Note that no additional configuration is needed. If you want to customize the mapping between file extensions and metadata (media type, language or encoding), you can use the Application's "metadataService" property.
 </p>
 
 <h3><a name="part07">7. Access logging</a></h3>
@@ -220,6 +222,7 @@
 
       // Create a Directory able to return a deep hierarchy of files
       Directory directory = new Directory(getContext(), ROOT_URI);
+      directory.setNegotiateContent(true);
       guard.setNext(directory);
       return guard;
 </pre>
@@ -321,6 +324,7 @@
 
             // Create a Directory able to return a deep hierarchy of Web files
             Directory directory = new Directory(getContext(), ROOT_URI);
+            directory.setNegotiateContent(true);
             guard.setNext(directory);
 
             // Create the Account Handler
@@ -404,7 +408,7 @@
 <br/>
 
 <small>
-   Last modified on 2006-11-08. Copyright &copy; 2005-2006 <a href="mailto:contact@noelios.com">J&eacute;r&ocirc;me Louvel</a>. Restlet is a registered trademark of <a target="_top" href="http://www.noelios.com">Noelios Consulting</a>.
+   Last modified on 2006-11-09. Copyright &copy; 2005-2006 <a href="mailto:contact@noelios.com">J&eacute;r&ocirc;me Louvel</a>. Restlet is a registered trademark of <a target="_top" href="http://www.noelios.com">Noelios Consulting</a>.
 </small>
 
 </body>

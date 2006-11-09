@@ -124,15 +124,15 @@
 <h3><a name="08">8. What JAR files must I have in my classpath for a minimal application?</a></h3>
 
 <p>
-   In a Restlet distribution, all JAR files are located under the "lib" directory. The <b>org.restlet.jar</b> file is containing the portable Restlet API.
+   In a Restlet distribution, all JAR files are located under the "lib" directory. The <b>org.restlet.jar</b> file is containing the standard Restlet API.
    Even though you can compile your code with only this JAR file, it is likely that you'll need the additional features provided by the
-   various Restlet extensions in the <b>org.restlet.ext.*.jar</b> files. In any case, to run a minimal application, you'll also need the core NRE implementation contained in <b>com.noelios.restlet.jar</b>.
+   various Restlet extensions in the <b>org.restlet.ext.*.jar</b> files. In any case, to run a minimal application, you'll also need an implementation of the API, the core Noelios Restlet Engine contained in <b>com.noelios.restlet.jar</b>.
 </p>
 
 <h3><a name="09">9. What are the other JAR files for?</a></h3>
 
 <p>
-   The core NRE doesn't contain any connector. You need to add to your classpath the JAR file of each additional connector that your application is using. If you want to act as an HTTP server, you can choose between several connectors: four standalone ones based on Jetty, Simple Framework and AsyncWeb, and one embedded if you want to use an existing Servlet container like Tomcat.
+   The core NRE doesn't contain any connector to receive or send requests. You need to add to your classpath the JAR file of each additional connector needed by your application. Check the "/lib/README.txt" file in the distribution for a detailled list of all the required dependencies. If you want to act as an HTTP server, you can choose between several connectors: four standalone ones based on Jetty, Simple Framework and AsyncWeb, and one embedded if you want to use an existing Servlet container like Tomcat.
 </p>
 <p>
    There are other extensions to the NRE, like SMTP and JDBC clients. Each one corresponds to a seperate Java package under com.noelios.restlet.ext.* and is packaged as a separate JAR file available under the "lib" directory. For example, if you need to send emails, you must include the following JAR files: /lib/com.noelios.restlet.ext.javamail_1.4.jar (NRE extension) and /lib/javax.mail_1.4/mail.jar (JavaMail).
@@ -306,7 +306,7 @@ Servlet API, etc.).</li>
 <br/>
 
 <small>
-   Last modified on 2006-11-08. Copyright &copy; 2005-2006 <a href="mailto:contact@noelios.com">J&eacute;r&ocirc;me Louvel</a>. Restlet is a registered trademark of <a target="_top" href="http://www.noelios.com">Noelios Consulting</a>.
+   Last modified on 2006-11-09. Copyright &copy; 2005-2006 <a href="mailto:contact@noelios.com">J&eacute;r&ocirc;me Louvel</a>. Restlet is a registered trademark of <a target="_top" href="http://www.noelios.com">Noelios Consulting</a>.
 </small>
 
 </body>

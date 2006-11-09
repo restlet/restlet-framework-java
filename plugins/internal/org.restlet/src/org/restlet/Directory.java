@@ -82,8 +82,6 @@ public class Directory extends Handler
 		this.deeplyAccessible = true;
 		this.modifiable = false;
 		this.listingAllowed = false;
-
-		setNegotiateContent(false);
 	}
 
 	/**
