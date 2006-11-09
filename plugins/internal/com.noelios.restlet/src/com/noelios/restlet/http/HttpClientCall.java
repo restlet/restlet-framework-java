@@ -102,37 +102,37 @@ public class HttpClientCall extends HttpCall
 	public Status sendRequest(Request request) throws IOException
 	{
 		Representation entity = request.isEntityAvailable() ? request.getEntity() : null;
-		
-		if(entity != null)
+
+		if (entity != null)
 		{
 			// Get the connector service to callback
 			ConnectorService connectorService = getConnectorService(request);
-			if(connectorService != null) connectorService.beforeSend(entity);
+			if (connectorService != null) connectorService.beforeSend(entity);
 
 			// In order to workaround bug #6472250, it is very important to reuse that exact same
 			// "rs" reference when manipulating the request stream, otherwise "infufficient data sent" exceptions
 			// will occur in "fixedLengthMode"
 			OutputStream rs = getRequestStream();
 			WritableByteChannel wbc = getRequestChannel();
-			if (rs != null)
-			{
-				if (entity != null)
-				{
-					entity.write(rs);
-				}
-	
-				rs.flush();
-			}
-			else if (wbc != null)
+			if (wbc != null)
 			{
 				if (entity != null)
 				{
 					entity.write(wbc);
 				}
 			}
+			else if (rs != null)
+			{
+				if (entity != null)
+				{
+					entity.write(rs);
+				}
+
+				rs.flush();
+			}
 
 			// Call-back after writing
-			if(connectorService != null) connectorService.afterSend(entity);
+			if (connectorService != null) connectorService.afterSend(entity);
 
 			if (rs != null)
 			{

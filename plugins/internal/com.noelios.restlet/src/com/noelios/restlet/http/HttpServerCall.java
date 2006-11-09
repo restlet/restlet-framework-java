@@ -210,29 +210,29 @@ public abstract class HttpServerCall extends HttpCall
 	 */
 	public void sendResponse(Response response) throws IOException
 	{
-		if(response != null)
+		if (response != null)
 		{
 			Representation entity = response.getEntity();
-		
+
 			if ((entity != null) && !getMethod().equals(Method.HEAD.getName()))
 			{
 				// Get the connector service to callback
 				ConnectorService connectorService = getConnectorService(response.getRequest());
-				if(connectorService != null) connectorService.beforeSend(entity);
+				if (connectorService != null) connectorService.beforeSend(entity);
 
 				// Send the entity to the client
-				if (getResponseStream() != null)
-				{
-					entity.write(getResponseStream());
-				}
-				else if (getResponseChannel() != null)
+				if (getResponseChannel() != null)
 				{
 					entity.write(getResponseChannel());
 				}
+				else if (getResponseStream() != null)
+				{
+					entity.write(getResponseStream());
+				}
 
-				if(connectorService != null) connectorService.afterSend(entity);
+				if (connectorService != null) connectorService.afterSend(entity);
 			}
-		
+
 			if (getResponseStream() != null)
 			{
 				getResponseStream().flush();
