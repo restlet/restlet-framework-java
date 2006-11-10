@@ -8,7 +8,8 @@ Changes log
 [Bugs fixed]
  - Fixed potential NPE when some JAR files are missing (no API implementation, no connector found, etc.). Reported by Dave Pawson.
  - Renabled the content negotiation by default for Directory instances. This prevented the correct serving of index files in tutorial. Reported by Dave Pawson.
- 
+ - Fixed ServerServlet which forgot to set the proper Servlet Context on the Application. Reported by Evan DiBiase.
+
 [API changes]
  - Moved org.restlet.data.Result to org.restlet.resource.Result (deprecation used).
 

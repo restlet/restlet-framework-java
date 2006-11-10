@@ -171,9 +171,10 @@ public class ServerServlet extends HttpServlet
 
 							// First, let's locate the closest container
 							Container container = new Container();
-							Server server = new Server(container.getContext(), (List<Protocol>)null, request
-									.getLocalAddr(), request.getLocalPort(), container); 
-							result = new HttpServerHelper(server); 
+							Server server = new Server(container.getContext(),
+									(List<Protocol>) null, request.getLocalAddr(), request
+											.getLocalPort(), container);
+							result = new HttpServerHelper(server);
 							getServletContext().setAttribute(NAME_SERVER_ATTRIBUTE, result);
 
 							if (container != null)
@@ -182,6 +183,10 @@ public class ServerServlet extends HttpServlet
 								Application application = (Application) targetClass
 										.getConstructor(Context.class).newInstance(
 												container.getContext());
+								
+								// Set the Servlet context
+								application.setContext(new ServletContext(this, application,
+										container.getContext()));
 
 								// Attach the application
 								String uriPattern = request.getContextPath()

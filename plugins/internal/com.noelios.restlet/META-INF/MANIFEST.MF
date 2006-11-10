@@ -1,6 +1,6 @@
 Manifest-Version: 1.0
 Bundle-ManifestVersion: 2
-Bundle-Name: Noelios Restlet Engine - Core
+Bundle-Name: Noelios Restlet Engine
 Bundle-SymbolicName: com.noelios.restlet
 Bundle-Version: 1.0.0
 Bundle-Vendor: Noelios Consulting
