@@ -46,7 +46,7 @@
 <h3><a name="application">Application</a></h3>
 
 <p>
-   Restlet deployable into containers. Applications are guaranteed to receive calls with their base reference set relatively to the virtual host that served them. This class is both a descriptor able to create the root Restlet and the actual Restlet that can be attached to one or more VirtualHost instances.
+   Restlet that can be attached to one or more VirtualHosts. Applications are guaranteed to receive calls with their base reference set relatively to the virtual host that served them. This class is both a descriptor able to create the root Restlet and the actual Restlet that can be attached to one or more VirtualHost instances.
 </p>
 
 <h3><a name="chainer">Chainer</a></h3>
@@ -82,7 +82,7 @@
 <h3><a name="context">Context</a></h3>
 
 <p>
-   Information and services provided to a Restlet. The context is the door opened for Restlets in order to access to their environment in the framework. The context is typically provided by the immediate parent Restlet (Container and Application are the most common cases). The services provided are the access to a logger instance, to some configuration parameters and to a generic client.
+   Contextual data and services provided to a Restlet. The context is the means by which a Restlet may access the software environment within the framework. It is typically provided by the immediate parent Restlet (Container and Application are the most common cases). The services provided are access to a logger, access to configuration parameters and to a request dispatcher.
 </p>
 
 <h3><a name="directory">Directory</a></h3>
@@ -219,7 +219,7 @@
 <br/>
 
 <small>
-   Last modified on 2006-11-08. Copyright &copy; 2005-2006 <a href="mailto:contact@noelios.com">J&eacute;r&ocirc;me Louvel</a>. Restlet is a registered trademark of <a target="_top" href="http://www.noelios.com">Noelios Consulting</a>.
+   Last modified on 2006-11-10. Copyright &copy; 2005-2006 <a href="mailto:contact@noelios.com">J&eacute;r&ocirc;me Louvel</a>. Restlet is a registered trademark of <a target="_top" href="http://www.noelios.com">Noelios Consulting</a>.
 </small>
 
 </body>
