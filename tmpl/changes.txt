@@ -15,7 +15,8 @@ Changes log
 
 [Enhancements] 
  - HTTP calls now try to use the channel aspect of a representation before its stream aspect. Suggested by Lars Heuer.
-
+ - Added source path to JSON external plugin. Suggested by Chris Grindstaff.
+ 
 1.0 beta 20 (2006-11-08)
 [Bugs fixed]
  - Fixed bug causing the ServerServlet to create an extra HTTP server connector if one is available on the classpath. Reported by Sean Landis.
