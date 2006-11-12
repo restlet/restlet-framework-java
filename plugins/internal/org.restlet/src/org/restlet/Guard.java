@@ -122,18 +122,22 @@ public class Guard extends Filter
 	protected int authorize(Request request)
 	{
 		int result = 0;
-		String identifier = request.getChallengeResponse().getIdentifier();
-		String secret = request.getChallengeResponse().getSecret();
-
-		if ((identifier != null) && (secret != null))
+		
+		if(request.getChallengeResponse() != null)
 		{
-			if (secret.equals(getAuthorizations().get(identifier)))
+			String identifier = request.getChallengeResponse().getIdentifier();
+			String secret = request.getChallengeResponse().getSecret();
+	
+			if ((identifier != null) && (secret != null))
 			{
-				result = 1;
-			}
-			else
-			{
-				result = -1;
+				if (secret.equals(getAuthorizations().get(identifier)))
+				{
+					result = 1;
+				}
+				else
+				{
+					result = -1;
+				}
 			}
 		}
 
