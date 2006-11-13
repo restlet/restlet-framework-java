@@ -515,7 +515,7 @@
 	<!-- ===================== -->
 
 	<!-- Initialization Target -->
-	<target name="all" depends="test, generate, javadoc, package" description="Full build"/>
+	<target name="all" depends="test, generate, javadoc, package, findbugs" description="Full build"/>
 
 	<!-- Initialization Target -->
 	<target name="init">
@@ -532,6 +532,11 @@
 		<!-- Set the property that will enable the Javadoc target -->
 		<condition property="do-javadoc">
 			<istrue value="${javadoc}" />
+		</condition>
+		
+		<!-- Set the property that will enable the FindBugs target -->
+		<condition property="do-findbugs">
+			<istrue value="${findbugs}" />
 		</condition>
 
 		<!-- Set the property that will enable the generation of the Javadoc of implementation classes -->
@@ -744,7 +749,7 @@
 	</target>
   
 	<!-- Finding bugs -->
-	<target name="findbugs">
+	<target name="findbugs" depends="init" if="do-findbugs" >
 		<findbugsModule name="api" /> 
 		<findbugsModule name="ri" />
 		<findbugsModule name="asyncweb" />
