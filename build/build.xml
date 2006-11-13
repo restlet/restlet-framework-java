@@ -485,7 +485,7 @@
 	<macrodef name="findbugsModule">
 		<attribute name="name" />
 		<sequential>
-			<findbugs debug="false" home="tools/findbugs" output="html" outputFile="${temp}/${mod-@{name}-id}-fb.html" >
+			<findbugs debug="false" home="tools/findbugs" output="html" outputFile="${temp}/findbugs/${mod-@{name}-id}-fb.html" >
 				<auxClasspath refid="mod-@{name}-path" />
 				<sourcePath path="${mod}/${mod-@{name}-id}/src" />
 				<class location="${dist}/lib/${mod-@{name}-id}.jar" />
@@ -517,7 +517,7 @@
 	<target name="all" depends="test, generate, javadoc, package, findbugs" description="Full build"/>
 
 	<!-- Initialization Target -->
-	<target name="init">
+	<target name="init" description="Initialize some properties">
 		<!-- Create the time stamp -->
 		<tstamp>
 			<format property="release-date" pattern="yyyy-MM-dd" />
@@ -627,6 +627,7 @@
 
 	<!-- Testing Target -->
 	<target name="test" depends="retroweave" description="Execute the test suites">
+		<mkdir dir="${temp}/test"/>
 		<junit printsummary="true"
 		       fork="true"
 		       haltonfailure="true"
@@ -637,8 +638,8 @@
 			</classpath>
 
 			<formatter type="plain" />
-			<test name="com.noelios.restlet.test.NoeliosTestSuite" todir="${classes}" />
-			<test name="org.restlet.test.RestletTestSuite" todir="${classes}" />
+			<test name="com.noelios.restlet.test.NoeliosTestSuite" todir="${temp}/test" />
+			<test name="org.restlet.test.RestletTestSuite" todir="${temp}/test" />
 		</junit>
 	</target>
   
@@ -748,7 +749,8 @@
 	</target>
   
 	<!-- Finding bugs -->
-	<target name="findbugs" depends="init" if="do-findbugs" >
+	<target name="findbugs" depends="init" if="do-findbugs" description="Attempts to find bugs">
+		<mkdir dir="${temp}/findbugs" />
 		<findbugsModule name="api" /> 
 		<findbugsModule name="ri" />
 		<findbugsModule name="asyncweb" />
