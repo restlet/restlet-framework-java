@@ -30,23 +30,23 @@ package org.restlet.data;
 public class Encoding extends Metadata
 {
 	/** All encodings acceptable. */
-	public static Encoding ALL = new Encoding("*", "All encodings");
+	public static final Encoding ALL = new Encoding("*", "All encodings");
 
 	/** The GNU Zip encoding. */
-	public static Encoding GZIP = new Encoding("gzip", "GZip compression");
+	public static final Encoding GZIP = new Encoding("gzip", "GZip compression");
 
 	/** The Info-Zip encoding. */
-	public static Encoding ZIP = new Encoding("zip", "Zip compression");
+	public static final Encoding ZIP = new Encoding("zip", "Zip compression");
 
 	/** The common Unix file compression. */
-	public static Encoding COMPRESS = new Encoding("compress", "Common Unix compression");
+	public static final Encoding COMPRESS = new Encoding("compress", "Common Unix compression");
 
 	/** The zlib format defined by RFC 1950 and 1951. */
-	public static Encoding DEFLATE = new Encoding("deflate",
+	public static final Encoding DEFLATE = new Encoding("deflate",
 			"Deflate compression using the zlib format");
 
 	/** The default (identity) encoding. */
-	public static Encoding IDENTITY = new Encoding("identity",
+	public static final Encoding IDENTITY = new Encoding("identity",
 			"The default encoding with no transformation");
 
 	/**

@@ -29,23 +29,23 @@ package org.restlet.data;
 public class Language extends Metadata
 {
 	/** All languages acceptable. */
-	public static Language ALL = new Language("*", "All languages");
+	public static final Language ALL = new Language("*", "All languages");
 
 	/** English language. */
-	public static Language ENGLISH = new Language("en", "English language");
+	public static final Language ENGLISH = new Language("en", "English language");
 
 	/** English language spoken in USA. */
-	public static Language ENGLISH_US = new Language("en-us", "English language in USA");
+	public static final Language ENGLISH_US = new Language("en-us", "English language in USA");
 
 	/** French language. */
-	public static Language FRENCH = new Language("fr", "French language");
+	public static final Language FRENCH = new Language("fr", "French language");
 
 	/** French language spoken in France. */
-	public static Language FRENCH_FRANCE = new Language("fr-fr",
+	public static final Language FRENCH_FRANCE = new Language("fr-fr",
 			"French language in France");
 
 	/** Spanish language. */
-	public static Language SPANISH = new Language("es", "Spanish language");
+	public static final Language SPANISH = new Language("es", "Spanish language");
 
 	/**
 	 * Constructor.

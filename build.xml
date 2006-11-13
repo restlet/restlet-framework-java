@@ -211,7 +211,9 @@
 	<!-- ===  Paths setting  === -->
 	<!-- ======================= -->
 
-	<path id="mod-api-path"/>
+	<path id="mod-api-path">
+		<pathelement path="${classes}/org.restlet"/>
+	</path>
 
 	<path id="mod-api-test-path">
 		<pathelement path="${classes}/${mod-ri-id}" />
@@ -484,7 +486,7 @@
 	<macrodef name="findbugsModule">
 		<attribute name="name" />
 		<sequential>
-			<findbugs home="tools/findbugs" output="html" outputFile="build/${mod-@{name}-id}-fb.html" >
+			<findbugs debug="false" home="tools/findbugs" output="html" outputFile="build/${mod-@{name}-id}-fb.html" >
 				<auxClasspath refid="mod-@{name}-path" />
 				<sourcePath path="${mod}/${mod-@{name}-id}/src" />
 				<class location="${dist}/lib/${mod-@{name}-id}.jar" />
@@ -743,7 +745,7 @@
   
 	<!-- Finding bugs -->
 	<target name="findbugs">
-		<findbugsModule name="api" />
+		<findbugsModule name="api" /> 
 		<findbugsModule name="ri" />
 		<findbugsModule name="asyncweb" />
 		<findbugsModule name="atom" />

@@ -56,7 +56,7 @@ public class PipeStream
 			{
 				try
 				{
-					queue.put(new Integer(b));
+					queue.put(Integer.valueOf(b));
 				}
 				catch (InterruptedException ie)
 				{
