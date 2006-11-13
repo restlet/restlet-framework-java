@@ -24,11 +24,10 @@
 
 	<!-- Location properties -->
 	<property name="bin" value="bin" />
-	<property name="build" value="build" />
-	<property name="classes" value="${build}/classes" />
-	<property name="plugins" value="plugins" />
-	<property name="lib" value="${plugins}/external" />
-	<property name="mod" value="${plugins}/internal" />
+	<property name="temp" value="temp" />
+	<property name="classes" value="${temp}/classes" />
+	<property name="lib" value="../library" />
+	<property name="mod" value="../module" />
 	<property name="tmpl" value="tmpl" />
 	<property name="www" value="www" />
 	<property name="docs" value="${www}/docs" />
@@ -36,7 +35,7 @@
 	<property name="docs-ext" value="${docs}/ext" />
 	<property name="docs-nre" value="${docs}/nre" />
 
-	<!-- Library properties (external plugins) -->
+	<!-- Library properties -->
 	<property name="lib-asm-package" value="org.objectweb.asm" />
 	<property name="lib-asm-version" value="2.2" />
 	<property name="lib-asm-id" value="${lib-asm-package}_${lib-asm-version}" />
@@ -129,7 +128,7 @@
 	<property name="lib-wrapper-version" value="3.2" />
 	<property name="lib-wrapper-id" value="${lib-wrapper-package}_${lib-wrapper-version}" />
 
-	<!-- Module properties (internal plugins) -->
+	<!-- Module properties -->
 	<property name="mod-api-package" value="org.restlet" />
 	<property name="mod-api-version" value="${version-base}" />
 	<property name="mod-api-id" value="${mod-api-package}" />
@@ -438,7 +437,7 @@
 		</sequential>
 	</macrodef>
 
-	<!-- Compiles a module (internal plugin) -->
+	<!-- Compiles a module -->
 	<macrodef name="compileModule">
 		<attribute name="name" />
 		<sequential>
@@ -448,16 +447,16 @@
 		</sequential>
 	</macrodef>
 
-	<!-- Packages a module (internal plugin) -->
+	<!-- Packages a module -->
 	<macrodef name="packageModule">
 		<attribute name="name" />
 		<sequential>
 			<!-- Create the Manifest by merging the Eclipse plugin Manifest and the default JAR's one -->
-			<mkdir dir="${build}/jar/META-INF" />
-			<delete failonerror="false" file="${build}/jar/META-INF/MANIFEST.MF" />
+			<mkdir dir="${temp}/jar/META-INF" />
+			<delete failonerror="false" file="${temp}/jar/META-INF/MANIFEST.MF" />
 			<copy failonerror="false" file="${mod}/${mod-@{name}-id}/META-INF/MANIFEST.MF" 
-				tofile="${build}/jar/META-INF/MANIFEST.MF" />
-			<manifest file="${build}/jar/META-INF/MANIFEST.MF" mode="update">
+				tofile="${temp}/jar/META-INF/MANIFEST.MF" />
+			<manifest file="${temp}/jar/META-INF/MANIFEST.MF" mode="update">
 				<section name="${mod-@{name}-package}">
 					<attribute name="Implementation-Title" value="${mod-@{name}-id}" />
 					<attribute name="Implementation-Version" 
@@ -471,7 +470,7 @@
 			<jar jarfile="${dist}/lib/${mod-@{name}-id}.jar" filesetmanifest="merge">
 				<fileset dir="${classes}/${mod-@{name}-id}" />
 				<fileset dir="${mod}/${mod-@{name}-id}/src" includes="META-INF/**" />
-				<fileset dir="${build}/jar/" />
+				<fileset dir="${temp}/jar/" />
 			</jar>
 
 			<!-- Create extension source jar file -->
@@ -482,11 +481,11 @@
 		</sequential>
 	</macrodef>
 
-	<!-- Find bugs in a module (internal plugin) -->
+	<!-- Find bugs in a module -->
 	<macrodef name="findbugsModule">
 		<attribute name="name" />
 		<sequential>
-			<findbugs debug="false" home="tools/findbugs" output="html" outputFile="build/${mod-@{name}-id}-fb.html" >
+			<findbugs debug="false" home="tools/findbugs" output="html" outputFile="${temp}/${mod-@{name}-id}-fb.html" >
 				<auxClasspath refid="mod-@{name}-path" />
 				<sourcePath path="${mod}/${mod-@{name}-id}/src" />
 				<class location="${dist}/lib/${mod-@{name}-id}.jar" />
@@ -494,15 +493,15 @@
 		</sequential>
 	</macrodef>
 
-	<!-- Packages a library (external plugin) -->
+	<!-- Packages a library -->
 	<macrodef name="packageLibrary">
-		<!-- Package a library (external plugin) -->
+		<!-- Package a library -->
 		<attribute name="name" />
 		<sequential>
 			<!-- Create a destination directory -->
 			<mkdir dir="${dist}/lib/${lib-@{name}-id}" />
 
-			<!-- Copy all plugin content into the destination folder -->
+			<!-- Copy all library content into the destination folder -->
 			<copy todir="${dist}/lib/${lib-@{name}-id}">
 				<fileset dir="${lib}/${lib-@{name}-id}" excludes="bin, .classpath, .project, build.properties"/>
 			</copy>
@@ -697,14 +696,14 @@
 		<!-- Copy text notes -->
 		<copy file="${docs}/changes.txt" tofile="${dist}/CHANGES.txt" />
 		<copy file="${docs}/copyright.txt" tofile="${dist}/COPYRIGHT.txt" />
+		<copy file="${docs}/dependencies.txt" tofile="${dist}/lib/README.txt" />
 		<copy file="${docs}/docs.txt" tofile="${dist}/docs/README.txt" />
 		<copy file="${docs}/src.txt" tofile="${dist}/src/README.txt" />
 		<copy file="${docs}/license.txt" tofile="${dist}/LICENSE.txt" />
 		<copy file="${docs}/readme.txt" tofile="${dist}/README.txt" />
 		<copy file="${docs}/trademarks.txt" tofile="${dist}/TRADEMARKS.txt" />
-		<copy file="${plugins}/dependencies.txt" tofile="${dist}/lib/README.txt" />
 
-		<!-- Packages libraries (external plugins) -->
+		<!-- Packages libraries -->
 		<packageLibrary name="asyncweb" />
 		<packageLibrary name="collections" />
 		<packageLibrary name="concurrent" />
@@ -725,7 +724,7 @@
 		<packageLibrary name="velocity" />
 		<packageLibrary name="wrapper" />
 
-		<!-- Package modules (internal plugins) -->
+		<!-- Package modules -->
 		<packageModule name="api" />
 		<packageModule name="ri" />
 		<packageModule name="asyncweb" />
@@ -773,7 +772,7 @@
 	<target name="clean" description="Clean up the classes and Javadoc">
 		<!-- Delete the classes and Javadoc directories -->
 		<delete includeEmptyDirs="true" verbose="false" quiet="true">
-			<fileset dir="${build}" />
+			<fileset dir="${temp}" />
 			<fileset dir="${docs-api}" excludes="**/.svn" />
 			<fileset dir="${docs-nre}" excludes="**/.svn" />
 			<fileset dir="${docs-ext}" excludes="**/.svn" />
@@ -787,7 +786,7 @@
 		<zip destfile="${arc}/Restlet ${DSTAMP}.zip"
 		     basedir=""
 		     includes="**/*"
-		     excludes="${arc}/** ${build}/** ${dist}/** ${dist-zip}/** ${docs-api}/** ${docs-nre}/** ${docs-ext}/**  ${plugins}/internal/**/*.class" />
+		     excludes="${arc}/** ${temp}/** ${dist}/** ${dist-zip}/** ${docs-api}/** ${docs-nre}/** ${docs-ext}/**  ${plugins}/internal/**/*.class" />
 	</target>
 
 	<!-- Javadocs Target -->
