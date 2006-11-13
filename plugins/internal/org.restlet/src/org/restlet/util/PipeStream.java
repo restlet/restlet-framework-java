@@ -56,7 +56,7 @@ public class PipeStream
 			{
 				try
 				{
-					queue.put(Integer.valueOf(b));
+					queue.put(b);
 				}
 				catch (InterruptedException ie)
 				{
@@ -81,7 +81,7 @@ public class PipeStream
 				try
 				{
 					if (endReached) return -1;
-					int value = ((Integer) queue.take()).intValue();
+					int value = queue.take();
 					endReached = (value == -1);
 					return value;
 				}
