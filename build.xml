@@ -398,6 +398,11 @@
 		</classpath>
 	</taskdef>
 
+  <taskdef name="findbugs" classname="edu.umd.cs.findbugs.anttask.FindBugsTask">
+		<classpath>
+			<pathelement location="tools/findbugs/lib/findbugs-ant.jar" />
+		</classpath>
+  </taskdef>
 
 	<!-- ==================== -->
 	<!-- ===  Ant Macros  === -->
@@ -472,6 +477,18 @@
 			<copy todir="${dist}/src/${mod-@{name}-id}">
 				<fileset dir="${mod}/${mod-@{name}-id}/src" excludes="${excludes}" />
 			</copy>
+		</sequential>
+	</macrodef>
+
+	<!-- Find bugs in a module (internal plugin) -->
+	<macrodef name="findbugsModule">
+		<attribute name="name" />
+		<sequential>
+			<findbugs home="tools/findbugs" output="html" outputFile="build/${mod-@{name}-id}-fb.html" >
+				<auxClasspath refid="mod-@{name}-path" />
+				<sourcePath path="${mod}/${mod-@{name}-id}/src" />
+				<class location="${dist}/lib/${mod-@{name}-id}.jar" />
+			</findbugs>
 		</sequential>
 	</macrodef>
 
@@ -618,7 +635,7 @@
 			<test name="org.restlet.test.RestletTestSuite" todir="${classes}" />
 		</junit>
 	</target>
-
+  
 	<!-- Generation Target -->
 	<target name="generate" depends="init" description="Generate template-based files">
 		<!-- Generate the DOAP file -->
@@ -722,6 +739,27 @@
 
 		<!-- Create the final zip file -->
 		<zip destfile="${dist-zip}/restlet-${version-compact}.zip" basedir="${dist}" includes="**/*" />
+	</target>
+  
+	<!-- Finding bugs -->
+	<target name="findbugs">
+		<findbugsModule name="api" />
+		<findbugsModule name="ri" />
+		<findbugsModule name="asyncweb" />
+		<findbugsModule name="atom" />
+		<findbugsModule name="fileupload" />
+		<findbugsModule name="freemarker" />
+		<findbugsModule name="javamail" />
+		<findbugsModule name="jdbc" />
+		<findbugsModule name="jetty5" />
+		<findbugsModule name="jetty6" />
+		<findbugsModule name="jmx" />
+		<findbugsModule name="json" />
+		<findbugsModule name="net" />
+		<findbugsModule name="servlet" />
+		<findbugsModule name="simple" />
+		<findbugsModule name="velocity" />
+		<findbugsModule name="example" />
 	</target>
 
 	<!-- Cleaning Target -->

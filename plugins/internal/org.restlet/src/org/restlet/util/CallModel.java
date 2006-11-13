@@ -177,112 +177,111 @@ public class CallModel implements Model
    public boolean containsKey(String key)
 	{
 		boolean result = false;
-		String name = key.toString();
 
-		if (name.startsWith(NAME_ATTRIBUTE))
+		if (key.startsWith(NAME_ATTRIBUTE))
 		{
 			result = (request.getAttributes().size() > 0)
 					|| (response.getAttributes().size() > 0);
 		}
-		else if (name.equals(NAME_BASE_URI))
+		else if (key.equals(NAME_BASE_URI))
 		{
 			result = (request.getBaseRef() != null);
 		}
-		else if (name.startsWith(NAME_CLIENT_ADDRESS))
+		else if (key.startsWith(NAME_CLIENT_ADDRESS))
 		{
 			result = (request.getClientInfo().getAddress() != null);
 		}
-		else if (name.equals(NAME_CLIENT_AGENT))
+		else if (key.equals(NAME_CLIENT_AGENT))
 		{
 			result = (request.getClientInfo().getAgent() != null);
 		}
-		else if (name.startsWith(NAME_COOKIE))
+		else if (key.startsWith(NAME_COOKIE))
 		{
 			result = (request.getCookies() != null) && (request.getCookies().size() > 0);
 		}
-		else if (name.equals(NAME_METHOD))
+		else if (key.equals(NAME_METHOD))
 		{
 			result = (request.getMethod() != null);
 		}
-		else if (name.equals(NAME_REDIRECT_URI))
+		else if (key.equals(NAME_REDIRECT_URI))
 		{
 			result = (response.getRedirectRef() != null);
 		}
-		else if (name.equals(NAME_REFERRER_URI))
+		else if (key.equals(NAME_REFERRER_URI))
 		{
 			result = (request.getReferrerRef() != null);
 		}
-		else if (name.equals(NAME_RELATIVE_URI))
+		else if (key.equals(NAME_RELATIVE_URI))
 		{
 			result = (request.getRelativePart() != null);
 		}
-		else if (name.equals(NAME_RESOURCE_AUTHORITY))
+		else if (key.equals(NAME_RESOURCE_AUTHORITY))
 		{
 			result = (request.getResourceRef() != null)
 					&& (request.getResourceRef().getAuthority() != null);
 		}
-		else if (name.equals(NAME_RESOURCE_FRAGMENT))
+		else if (key.equals(NAME_RESOURCE_FRAGMENT))
 		{
 			result = (request.getResourceRef() != null)
 					&& (request.getResourceRef().getFragment() != null);
 		}
-		else if (name.equals(NAME_RESOURCE_HOST_DOMAIN))
+		else if (key.equals(NAME_RESOURCE_HOST_DOMAIN))
 		{
 			result = (request.getResourceRef() != null)
 					&& (request.getResourceRef().getHostDomain() != null);
 		}
-		else if (name.equals(NAME_RESOURCE_HOST_PORT))
+		else if (key.equals(NAME_RESOURCE_HOST_PORT))
 		{
 			result = (request.getResourceRef() != null)
 					&& (request.getResourceRef().getHostPort() != null);
 		}
-		else if (name.equals(NAME_RESOURCE_HOST_IDENTIFIER))
+		else if (key.equals(NAME_RESOURCE_HOST_IDENTIFIER))
 		{
 			result = (request.getResourceRef() != null)
 					&& (request.getResourceRef().getHostIdentifier() != null);
 		}
-		else if (name.equals(NAME_RESOURCE_IDENTIFIER))
+		else if (key.equals(NAME_RESOURCE_IDENTIFIER))
 		{
 			result = (request.getResourceRef() != null);
 		}
-		else if (name.equals(NAME_RESOURCE_PATH))
+		else if (key.equals(NAME_RESOURCE_PATH))
 		{
 			result = (request.getResourceRef() != null)
 					&& (request.getResourceRef().getPath() != null);
 		}
-		else if (name.startsWith(NAME_RESOURCE_QUERY))
+		else if (key.startsWith(NAME_RESOURCE_QUERY))
 		{
 			result = (request.getResourceRef() != null)
 					&& (request.getResourceRef().getQuery() != null);
 		}
-		else if (name.equals(NAME_RESOURCE_SCHEME))
+		else if (key.equals(NAME_RESOURCE_SCHEME))
 		{
 			result = (request.getResourceRef() != null)
 					&& (request.getResourceRef().getScheme() != null);
 		}
-		else if (name.startsWith(NAME_RESOURCE_SEGMENT))
+		else if (key.startsWith(NAME_RESOURCE_SEGMENT))
 		{
 			result = (request.getResourceRef() != null)
 					&& (request.getResourceRef().getSegments().size() > 0);
 		}
-		else if (name.equals(NAME_RESOURCE_URI))
+		else if (key.equals(NAME_RESOURCE_URI))
 		{
 			result = (request.getResourceRef() != null);
 		}
-		else if (name.equals(NAME_RESOURCE_USER_INFO))
+		else if (key.equals(NAME_RESOURCE_USER_INFO))
 		{
 			result = (request.getResourceRef() != null)
 					&& (request.getResourceRef().getUserInfo() != null);
 		}
-		else if (name.equals(NAME_SERVER_ADDRESS))
+		else if (key.equals(NAME_SERVER_ADDRESS))
 		{
 			result = (response.getServerInfo().getAddress() != null);
 		}
-		else if (name.equals(NAME_SERVER_AGENT))
+		else if (key.equals(NAME_SERVER_AGENT))
 		{
 			result = (response.getServerInfo().getAgent() != null);
 		}
-		else if (name.equals(NAME_STATUS))
+		else if (key.equals(NAME_STATUS))
 		{
 			result = (response.getStatus() != null);
 		}
@@ -298,13 +297,12 @@ public class CallModel implements Model
 	public Object get(String key)
 	{
 		String result = null;
-		String name = key.toString();
 
 		try
 		{
-			if (name.equals(NAME_ATTRIBUTE))
+			if (key.equals(NAME_ATTRIBUTE))
 			{
-				String rest = name.substring(NAME_ATTRIBUTE.length());
+				String rest = key.substring(NAME_ATTRIBUTE.length());
 
 				if ((rest.charAt(0) == '(') && (rest.charAt(rest.length() - 1) == ')'))
 				{
@@ -335,19 +333,19 @@ public class CallModel implements Model
 					result = defaultValue;
 				}
 			}
-			else if (name.equals(NAME_BASE_URI))
+			else if (key.equals(NAME_BASE_URI))
 			{
 				result = request.getBaseRef().toString();
 			}
-			else if (name.startsWith(NAME_CLIENT_ADDRESS))
+			else if (key.startsWith(NAME_CLIENT_ADDRESS))
 			{
-				if (name.equals(NAME_CLIENT_ADDRESS))
+				if (key.equals(NAME_CLIENT_ADDRESS))
 				{
 					result = request.getClientInfo().getAddress();
 				}
 				else
 				{
-					String rest = name.substring(NAME_CLIENT_ADDRESS.length());
+					String rest = key.substring(NAME_CLIENT_ADDRESS.length());
 
 					if ((rest.charAt(0) == '(') && (rest.charAt(rest.length() - 1) == ')'))
 					{
@@ -380,13 +378,13 @@ public class CallModel implements Model
 					}
 				}
 			}
-			else if (name.equals(NAME_CLIENT_AGENT))
+			else if (key.equals(NAME_CLIENT_AGENT))
 			{
 				result = request.getClientInfo().getAgent();
 			}
-			else if (name.startsWith(NAME_COOKIE))
+			else if (key.startsWith(NAME_COOKIE))
 			{
-				String rest = name.substring(NAME_COOKIE.length());
+				String rest = key.substring(NAME_COOKIE.length());
 
 				if ((rest.charAt(0) == '(') && (rest.charAt(rest.length() - 1) == ')'))
 				{
@@ -418,59 +416,59 @@ public class CallModel implements Model
 					result = defaultValue;
 				}
 			}
-			else if (name.equals(NAME_METHOD))
+			else if (key.equals(NAME_METHOD))
 			{
 				result = request.getMethod().getName();
 			}
-			else if (name.equals(NAME_REDIRECT_URI))
+			else if (key.equals(NAME_REDIRECT_URI))
 			{
 				result = response.getRedirectRef().toString();
 			}
-			else if (name.equals(NAME_REFERRER_URI))
+			else if (key.equals(NAME_REFERRER_URI))
 			{
 				result = request.getReferrerRef().toString();
 			}
-			else if (name.equals(NAME_RELATIVE_URI))
+			else if (key.equals(NAME_RELATIVE_URI))
 			{
 				result = request.getRelativePart();
 			}
-			else if (name.equals(NAME_RESOURCE_AUTHORITY))
+			else if (key.equals(NAME_RESOURCE_AUTHORITY))
 			{
 				result = request.getResourceRef().getAuthority();
 			}
-			else if (name.equals(NAME_RESOURCE_FRAGMENT))
+			else if (key.equals(NAME_RESOURCE_FRAGMENT))
 			{
 				result = request.getResourceRef().getFragment();
 			}
-			else if (name.equals(NAME_RESOURCE_HOST_DOMAIN))
+			else if (key.equals(NAME_RESOURCE_HOST_DOMAIN))
 			{
 				result = request.getResourceRef().getHostDomain();
 			}
-			else if (name.equals(NAME_RESOURCE_HOST_PORT))
+			else if (key.equals(NAME_RESOURCE_HOST_PORT))
 			{
 				result = request.getResourceRef().getHostPort().toString();
 			}
-			else if (name.equals(NAME_RESOURCE_HOST_IDENTIFIER))
+			else if (key.equals(NAME_RESOURCE_HOST_IDENTIFIER))
 			{
 				result = request.getResourceRef().getHostIdentifier();
 			}
-			else if (name.equals(NAME_RESOURCE_IDENTIFIER))
+			else if (key.equals(NAME_RESOURCE_IDENTIFIER))
 			{
 				result = request.getResourceRef().getIdentifier();
 			}
-			else if (name.equals(NAME_RESOURCE_PATH))
+			else if (key.equals(NAME_RESOURCE_PATH))
 			{
 				result = request.getResourceRef().getPath();
 			}
-			else if (name.startsWith(NAME_RESOURCE_QUERY))
+			else if (key.startsWith(NAME_RESOURCE_QUERY))
 			{
-				if (name.equals(NAME_RESOURCE_QUERY))
+				if (key.equals(NAME_RESOURCE_QUERY))
 				{
 					result = request.getResourceRef().getQuery();
 				}
 				else
 				{
-					String rest = name.substring(NAME_RESOURCE_QUERY.length());
+					String rest = key.substring(NAME_RESOURCE_QUERY.length());
 
 					if ((rest.charAt(0) == '(') && (rest.charAt(rest.length() - 1) == ')'))
 					{
@@ -505,13 +503,13 @@ public class CallModel implements Model
 					}
 				}
 			}
-			else if (name.equals(NAME_RESOURCE_SCHEME))
+			else if (key.equals(NAME_RESOURCE_SCHEME))
 			{
 				result = request.getResourceRef().getScheme();
 			}
-			else if (name.startsWith(NAME_RESOURCE_SEGMENT))
+			else if (key.startsWith(NAME_RESOURCE_SEGMENT))
 			{
-				String rest = name.substring(NAME_RESOURCE_SEGMENT.length());
+				String rest = key.substring(NAME_RESOURCE_SEGMENT.length());
 
 				if ((rest.charAt(0) == '(') && (rest.charAt(rest.length() - 1) == ')'))
 				{
@@ -538,23 +536,23 @@ public class CallModel implements Model
 					result = defaultValue;
 				}
 			}
-			else if (name.equals(NAME_RESOURCE_URI))
+			else if (key.equals(NAME_RESOURCE_URI))
 			{
 				result = request.getResourceRef().toString();
 			}
-			else if (name.equals(NAME_RESOURCE_USER_INFO))
+			else if (key.equals(NAME_RESOURCE_USER_INFO))
 			{
 				result = request.getResourceRef().getUserInfo();
 			}
-			else if (name.equals(NAME_SERVER_ADDRESS))
+			else if (key.equals(NAME_SERVER_ADDRESS))
 			{
 				result = response.getServerInfo().getAddress();
 			}
-			else if (name.equals(NAME_SERVER_AGENT))
+			else if (key.equals(NAME_SERVER_AGENT))
 			{
 				result = response.getServerInfo().getAgent();
 			}
-			else if (name.equals(NAME_STATUS))
+			else if (key.equals(NAME_STATUS))
 			{
 				result = Integer.toString(response.getStatus().getCode());
 			}

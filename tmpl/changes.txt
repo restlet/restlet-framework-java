@@ -17,6 +17,7 @@ Changes log
 [Enhancements] 
  - HTTP calls now try to use the channel aspect of a representation before its stream aspect. Suggested by Lars Heuer.
  - Added source path to JSON external plugin. Suggested by Chris Grindstaff.
+ - Added support for FindBugs in the Ant build script. Suggested by Piyush Purang.
  
 1.0 beta 20 (2006-11-08)
 [Bugs fixed]
