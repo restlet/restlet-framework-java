@@ -24,10 +24,14 @@ package com.noelios.restlet.container;
 
 import java.util.logging.Level;
 
+import org.restlet.Application;
 import org.restlet.Container;
 import org.restlet.Context;
 import org.restlet.Filter;
 import org.restlet.Restlet;
+import org.restlet.Scorer;
+import org.restlet.VirtualHost;
+import org.restlet.data.Protocol;
 import org.restlet.data.Request;
 import org.restlet.data.Response;
 import org.restlet.data.Status;
@@ -126,32 +130,79 @@ public class ContainerHelper implements Helper
 		// Initialization of services
 		Filter lastFilter = null;
 
-		// Logging of calls
-		if (getContainer().getLogService().isEnabled())
+		// Checking if all applications have proper connectors
+		boolean missingConnector = false;
+		for (VirtualHost host : getContainer().getHosts())
 		{
-			lastFilter = createLogFilter(getContainer().getContext(), getContainer()
-					.getLogService().getAccessLoggerName(), getContainer().getLogService()
-					.getAccessLogFormat());
-			setFirst(lastFilter);
-		}
+			for (Scorer scorer : host.getScorers())
+			{
+				Restlet next = scorer.getNext();
 
-		// Addition of status pages
-		if (getContainer().getStatusService().isEnabled())
-		{
-			Filter statusFilter = createStatusFilter(getContainer());
-			if (lastFilter != null) lastFilter.setNext(statusFilter);
-			if (getFirst() == null) setFirst(statusFilter);
-			lastFilter = statusFilter;
-		}
+				if (next instanceof Application)
+				{
+					Application application = (Application) next;
 
-		// Reattach the original filter's attached Restlet
-		if (getFirst() == null)
+					for (Protocol clientProtocol : application.getConnectorService()
+							.getClientProtocols())
+					{
+						if (!getContainer().getClients().contains(clientProtocol))
+						{
+							getContainer().getLogger().severe(
+									"Unable to start the application \"" + application.getName()
+											+ "\". Client connector for protocol "
+											+ clientProtocol.getName() + " is missing.");
+							missingConnector = true;
+						}
+					}
+
+					for (Protocol serverProtocol : application.getConnectorService()
+							.getServerProtocols())
+					{
+						if (!getContainer().getServers().contains(serverProtocol))
+						{
+							getContainer().getLogger().severe(
+									"Unable to start the application \"" + application.getName()
+											+ "\". Server connector for protocol "
+											+ serverProtocol.getName() + " is missing.");
+							missingConnector = true;
+						}
+					}
+				}
+			}
+		}
+		if(missingConnector) 
 		{
-			setFirst(getServerRouter());
+			getContainer().stop();
 		}
 		else
 		{
-			lastFilter.setNext(getServerRouter());
+			// Logging of calls
+			if (getContainer().getLogService().isEnabled())
+			{
+				lastFilter = createLogFilter(getContainer().getContext(), getContainer()
+						.getLogService().getAccessLoggerName(), getContainer().getLogService()
+						.getAccessLogFormat());
+				setFirst(lastFilter);
+			}
+	
+			// Addition of status pages
+			if (getContainer().getStatusService().isEnabled())
+			{
+				Filter statusFilter = createStatusFilter(getContainer());
+				if (lastFilter != null) lastFilter.setNext(statusFilter);
+				if (getFirst() == null) setFirst(statusFilter);
+				lastFilter = statusFilter;
+			}
+	
+			// Reattach the original filter's attached Restlet
+			if (getFirst() == null)
+			{
+				setFirst(getServerRouter());
+			}
+			else
+			{
+				lastFilter.setNext(getServerRouter());
+			}
 		}
 	}
 

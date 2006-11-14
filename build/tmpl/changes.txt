@@ -14,6 +14,7 @@ Changes log
 
 [API changes]
  - Moved org.restlet.data.Result to org.restlet.resource.Result (deprecation used).
+ - Replaced ConnectorService.get*Protocols() methods by just getClientProtocols() and getServerProtocols().
 
 [Enhancements] 
  - HTTP calls now try to use the channel aspect of a representation before its stream aspect. Suggested by Lars Heuer.
@@ -21,7 +22,8 @@ Changes log
  - Added support for FindBugs in the Ant build script. Suggested by Piyush Purang.
  - Added "verify" target to build script to provide a shorter cycle for developpers. Contributed by Piyush Purang.
  - Slightly updated Eclipse code template file. Please re-import it if possible.
- 
+ - NRE now checks that each application has the required connectors available when starting it.
+  
 1.0 beta 20 (2006-11-08)
 [Bugs fixed]
  - Fixed bug causing the ServerServlet to create an extra HTTP server connector if one is available on the classpath. Reported by Sean Landis.
