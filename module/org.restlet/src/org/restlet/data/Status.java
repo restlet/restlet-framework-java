@@ -930,9 +930,17 @@ public class Status extends Metadata
 	 * @param object The object to compare to.
 	 * @return True if the status is equal to a given one.
 	 */
+	@Override
 	public boolean equals(Object object)
 	{
 		return (object instanceof Status) && (this.code == ((Status) object).getCode());
+	}
+	
+	/** {@inheritDoc} */
+	@Override
+	public int hashCode()
+	{
+		return getCode();
 	}
 
 	/**

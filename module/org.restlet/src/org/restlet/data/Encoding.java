@@ -73,10 +73,18 @@ public class Encoding extends Metadata
 	 * @param object The object to compare to.
 	 * @return True if the encoding is equal to a given one.
 	 */
+	@Override
 	public boolean equals(Object object)
 	{
 		return (object instanceof Encoding)
 				&& getName().equalsIgnoreCase(((Encoding) object).getName());
+	}
+	
+	/** {@inheritDoc} */
+	@Override
+	public int hashCode()
+	{
+		return getName().toLowerCase().hashCode();
 	}
 
 	/**

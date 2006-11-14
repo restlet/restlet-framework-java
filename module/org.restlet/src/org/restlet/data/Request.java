@@ -284,7 +284,7 @@ public class Request extends Message
 		}
 		else if ((baseRef != null) && !baseRef.isParent(getResourceRef()))
 		{
-			new IllegalArgumentException(
+			throw new IllegalArgumentException(
 					"You must specify a base reference that is a parent of the resource reference");
 		}
 
@@ -367,14 +367,16 @@ public class Request extends Message
 	 */
 	public void setResourceRef(Reference resourceRef)
 	{
-		if ((resourceRef != null) && resourceRef.isRelative()
-				&& (resourceRef.getBaseRef() != null))
+		if (resourceRef != null)
 		{
-			this.resourceRef = resourceRef.getTargetRef();
-		}
-		else
-		{
-			this.resourceRef = resourceRef.normalize();
+			if(resourceRef.isRelative() && (resourceRef.getBaseRef() != null))
+			{
+				this.resourceRef = resourceRef.getTargetRef();
+			}
+			else
+			{
+				this.resourceRef = resourceRef.normalize();
+			}
 		}
 
 		// Reset the context's base reference

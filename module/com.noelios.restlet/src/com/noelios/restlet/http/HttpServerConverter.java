@@ -135,7 +135,7 @@ public class HttpServerConverter extends HttpConverter
 
 			// Add the date 
 			responseHeaders.add(HttpConstants.HEADER_DATE, DateUtils.format(new Date(),
-					DateUtils.FORMAT_RFC_1123[0]));
+					DateUtils.FORMAT_RFC_1123.get(0)));
 
 			// Add the cookie settings
 			List<CookieSetting> cookies = response.getCookieSettings();

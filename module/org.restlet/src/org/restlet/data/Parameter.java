@@ -79,34 +79,50 @@ public class Parameter implements Comparable<Parameter>
     * @return True if the parameters are identical (name and value).
     */
    public boolean equals(Object object)
-   {
-      boolean result = object instanceof Parameter;
+	{
+		boolean result = false;
+		if (object instanceof Parameter && object != null) //avoid findbugs correctness warning
+		{
+			final Parameter that = (Parameter) object;
+			final String thisName = this.getName();
+			final String thatName = that.getName();
+			if(!(thisName == thatName)) { // compare names taking care of nulls
+				result = (thisName != null && thisName.equals(thatName));				
+			}
+			//compare values if names are equal
+			if (result)
+			{
+				final String thisValue = this.getValue();
+				final String thatValue = that.getValue();
+				if (!(thisValue == thatValue)) // consider equality with nulls
+				{ 
+					result = (thisValue != null && thisValue.equals(thatValue));
+				}
+			}
 
-      if(result)
-      {
-      	Parameter param = (Parameter)object;
-      	
-	      if(getName() == null)
-	      {
-	         result = (param.getName() == null);
-	      }
-	      else
-	      {
-	         result = getName().equals(param.getName());
-	      }
-	
-	      if(getValue() == null)
-	      {
-	         result &= (param.getValue() == null);
-	      }
-	      else
-	      {
-	         result &= getValue().equals(param.getValue());
-	      }
-      }
-      
-      return result;
-   }
+		}
+
+		return result;
+	}
+
+	/** {@inheritDoc} */
+	@Override
+	public int hashCode()
+	{
+		int nameHashCode = 0;
+		int valueHashCode = 0;
+
+		if (getName() != null)
+		{
+			nameHashCode = getName().hashCode();
+		}
+		if (getValue() != null)
+		{
+			valueHashCode = getValue().hashCode();
+		}
+		// todo could we exceed INTEGER.MAX_VALUE?
+		return nameHashCode + valueHashCode;
+	}
 
    /**
     * Returns the name of this parameter.

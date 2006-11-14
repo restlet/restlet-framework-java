@@ -171,7 +171,7 @@ public class HttpClientConverter extends HttpConverter
 		if (condition.getModifiedSince() != null)
 		{
 			String imsDate = DateUtils.format(condition.getModifiedSince(),
-					DateUtils.FORMAT_RFC_1123[0]);
+					DateUtils.FORMAT_RFC_1123.get(0));
 			requestHeaders.add(HttpConstants.HEADER_IF_MODIFIED_SINCE, imsDate);
 		}
 
@@ -191,7 +191,7 @@ public class HttpClientConverter extends HttpConverter
 		if (condition.getUnmodifiedSince() != null)
 		{
 			String iusDate = DateUtils.format(condition.getUnmodifiedSince(),
-					DateUtils.FORMAT_RFC_1123[0]);
+					DateUtils.FORMAT_RFC_1123.get(0));
 			requestHeaders.add(HttpConstants.HEADER_IF_UNMODIFIED_SINCE, iusDate);
 		}
 

@@ -92,6 +92,7 @@ public abstract class Factory
 
 	/**
 	 * Returns the factory of the Restlet implementation.
+	 * 
 	 * @return The factory of the Restlet implementation.
 	 */
 	public static Factory getInstance()
@@ -123,29 +124,42 @@ public abstract class Factory
 
 			if (configURL != null)
 			{
+				BufferedReader reader = null;
 				try
 				{
-					BufferedReader reader = new BufferedReader(new InputStreamReader(configURL
-							.openStream(), "utf-8"));
+					reader = new BufferedReader(new InputStreamReader(configURL.openStream(),
+							"utf-8"));
 					String providerName = reader.readLine();
-					factoryClassName = providerName.substring(0, providerName.indexOf('#'))
-							.trim();
-				}
-				catch (Exception e)
-				{
-					// Exception during resolution
-				}
-			}
 
-			if (factoryClassName == null)
-			{
-				logger
-						.log(
-								Level.SEVERE,
-								"Unable to register the Restlet API implementation. Please check that the JAR file is in your classpath.");
-			}
-			else
-			{
+					if (providerName != null)
+						factoryClassName = providerName.substring(0, providerName.indexOf('#'))
+								.trim();
+				}
+				catch (IOException e)
+				{
+					logger
+							.log(
+									Level.SEVERE,
+									"Unable to register the Restlet API implementation. Please check that the JAR file is in your classpath.");
+				}
+				finally
+				{
+					if (reader != null)
+					{
+						try
+						{
+							reader.close();
+						}
+						catch (IOException e)
+						{
+							logger
+									.warning("IOException encountered while closing an open BufferedReader"
+											+ e.getMessage());
+						}
+					}
+
+				}
+
 				// Instantiate the factory
 				try
 				{
@@ -160,6 +174,7 @@ public abstract class Factory
 							"Unable to register the Restlet API implementation");
 				}
 			}
+
 		}
 
 		return result;

@@ -48,10 +48,6 @@ public class Conditions
 	 */
 	public Conditions()
 	{
-		this.modifiedSince = null;
-		this.unmodifiedSince = null;
-		this.match = null;
-		this.noneMatch = null;
 	}
 
 	/**
@@ -87,7 +83,7 @@ public class Conditions
 	 */
 	public void setUnmodifiedSince(Date date)
 	{
-		this.modifiedSince = date;
+		this.unmodifiedSince = date;
 	}
 
 	/**

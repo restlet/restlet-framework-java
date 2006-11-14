@@ -119,11 +119,11 @@ public class HttpCall
 	{
 		if (cookie)
 		{
-			return DateUtils.format(date, DateUtils.FORMAT_RFC_1036[0]);
+			return DateUtils.format(date, DateUtils.FORMAT_RFC_1036.get(0));
 		}
 		else
 		{
-			return DateUtils.format(date, DateUtils.FORMAT_RFC_1123[0]);
+			return DateUtils.format(date, DateUtils.FORMAT_RFC_1123.get(0));
 		}
 	}
 

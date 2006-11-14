@@ -107,11 +107,20 @@ public class Language extends Metadata
 	 * @param object The object to compare to.
 	 * @return True if the language is equal to a given one.
 	 */
+	@Override
 	public boolean equals(Object object)
 	{
 		return (object instanceof Language)
 				&& getName().equalsIgnoreCase(((Language) object).getName());
 	}
+	
+	/** {@inheritDoc} */
+	@Override
+	public int hashCode()
+	{
+		return getName().toLowerCase().hashCode();
+	}
+
 
 	/**
 	 * Returns the language associated to a name. If an existing constant exists then it is 

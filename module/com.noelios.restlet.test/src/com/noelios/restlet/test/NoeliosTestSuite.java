@@ -48,5 +48,4 @@ public class NoeliosTestSuite extends TestSuite
    {
       return new NoeliosTestSuite();
    }
-
 }

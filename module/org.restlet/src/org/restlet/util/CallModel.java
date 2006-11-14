@@ -30,7 +30,6 @@ import org.restlet.data.Form;
 import org.restlet.data.Request;
 import org.restlet.data.Response;
 
-
 /**
  * Readable model wrapping a call's request and response. It can be passed directly passed to a string 
  * template. Repeating values can be retrieved by appending (index) or ("name")  or ('name') after the 
@@ -160,21 +159,21 @@ public class CallModel implements Model
 		this.defaultValue = defaultValue;
 	}
 
-   /**
-    * Removes all the model values.
-    * @throws UnsupportedOperationException if the map is read-only.
-    */
+	/**
+	 * Removes all the model values.
+	 * @throws UnsupportedOperationException if the map is read-only.
+	 */
 	public void clear()
 	{
 		throw new UnsupportedOperationException();
 	}
 
-   /**
-    * Indicates if the model contains a value for a given key.
-    * @param key The key to look-up.
-    * @return True if the model contains a value for the given key.
-    */
-   public boolean containsKey(String key)
+	/**
+	 * Indicates if the model contains a value for a given key.
+	 * @param key The key to look-up.
+	 * @return True if the model contains a value for the given key.
+	 */
+	public boolean containsKey(String key)
 	{
 		boolean result = false;
 
@@ -289,37 +288,203 @@ public class CallModel implements Model
 		return result;
 	}
 
-   /**
-    * Returns the model value for a given key.
-    * @param key The key to look-up.
-    * @return The model value for the given key.
-    */
+	/**
+	 * Returns the model value for a given key.
+	 * @param key The key to look-up.
+	 * @return The model value for the given key.
+	 */
 	public Object get(String key)
 	{
 		String result = null;
 
-		try
+		if (key.equals(NAME_ATTRIBUTE))
 		{
-			if (key.equals(NAME_ATTRIBUTE))
+			String rest = key.substring(NAME_ATTRIBUTE.length());
+
+			if ((rest.charAt(0) == '(') && (rest.charAt(rest.length() - 1) == ')'))
 			{
-				String rest = key.substring(NAME_ATTRIBUTE.length());
+				rest = rest.substring(1, rest.length() - 1);
+
+				if (isVariableName(rest))
+				{
+					// Lookup by name
+					rest = getVariableName(rest);
+
+					// First check the request attributes
+					result = request.getAttributes().get(rest).toString();
+					if (result == null)
+					{
+						// Then check the response attributes
+						result = response.getAttributes().get(rest).toString();
+					}
+				}
+				else
+				{
+					// Lookup by index
+					result = request.getResourceRef().getQueryAsForm().get(
+							Integer.parseInt(rest)).getValue();
+				}
+			}
+			else
+			{
+				result = defaultValue;
+			}
+		}
+		else if (key.equals(NAME_BASE_URI))
+		{
+			result = request.getBaseRef().toString();
+		}
+		else if (key.startsWith(NAME_CLIENT_ADDRESS))
+		{
+			if (key.equals(NAME_CLIENT_ADDRESS))
+			{
+				result = request.getClientInfo().getAddress();
+			}
+			else
+			{
+				String rest = key.substring(NAME_CLIENT_ADDRESS.length());
 
 				if ((rest.charAt(0) == '(') && (rest.charAt(rest.length() - 1) == ')'))
 				{
 					rest = rest.substring(1, rest.length() - 1);
 
-					if (isVariableName(rest))
+					if (rest.equals("first"))
+					{
+						result = request.getClientInfo().getAddresses().get(0);
+					}
+					else if (rest.equals("last"))
+					{
+						result = request.getClientInfo().getAddresses().get(
+								request.getClientInfo().getAddresses().size() - 1);
+					}
+					else if (isVariableName(rest))
+					{
+						// Can't lookup by name
+						result = defaultValue;
+					}
+					else
+					{
+						// Lookup by index
+						result = request.getClientInfo().getAddresses().get(
+								Integer.parseInt(rest));
+					}
+				}
+				else
+				{
+					result = defaultValue;
+				}
+			}
+		}
+		else if (key.equals(NAME_CLIENT_AGENT))
+		{
+			result = request.getClientInfo().getAgent();
+		}
+		else if (key.startsWith(NAME_COOKIE))
+		{
+			String rest = key.substring(NAME_COOKIE.length());
+
+			if ((rest.charAt(0) == '(') && (rest.charAt(rest.length() - 1) == ')'))
+			{
+				rest = rest.substring(1, rest.length() - 1);
+
+				if (rest.equals("first"))
+				{
+					result = request.getCookies().get(0).getValue();
+				}
+				else if (rest.equals("last"))
+				{
+					result = request.getCookies().get(request.getCookies().size() - 1)
+							.getValue();
+				}
+				else if (isVariableName(rest))
+				{
+					// Lookup by name
+					rest = getVariableName(rest);
+					result = getFirstCookie(request.getCookies(), rest).getValue();
+				}
+				else
+				{
+					// Lookup by index
+					result = request.getCookies().get(Integer.parseInt(rest)).getValue();
+				}
+			}
+			else
+			{
+				result = defaultValue;
+			}
+		}
+		else if (key.equals(NAME_METHOD))
+		{
+			result = request.getMethod().getName();
+		}
+		else if (key.equals(NAME_REDIRECT_URI))
+		{
+			result = response.getRedirectRef().toString();
+		}
+		else if (key.equals(NAME_REFERRER_URI))
+		{
+			result = request.getReferrerRef().toString();
+		}
+		else if (key.equals(NAME_RELATIVE_URI))
+		{
+			result = request.getRelativePart();
+		}
+		else if (key.equals(NAME_RESOURCE_AUTHORITY))
+		{
+			result = request.getResourceRef().getAuthority();
+		}
+		else if (key.equals(NAME_RESOURCE_FRAGMENT))
+		{
+			result = request.getResourceRef().getFragment();
+		}
+		else if (key.equals(NAME_RESOURCE_HOST_DOMAIN))
+		{
+			result = request.getResourceRef().getHostDomain();
+		}
+		else if (key.equals(NAME_RESOURCE_HOST_PORT))
+		{
+			result = request.getResourceRef().getHostPort().toString();
+		}
+		else if (key.equals(NAME_RESOURCE_HOST_IDENTIFIER))
+		{
+			result = request.getResourceRef().getHostIdentifier();
+		}
+		else if (key.equals(NAME_RESOURCE_IDENTIFIER))
+		{
+			result = request.getResourceRef().getIdentifier();
+		}
+		else if (key.equals(NAME_RESOURCE_PATH))
+		{
+			result = request.getResourceRef().getPath();
+		}
+		else if (key.startsWith(NAME_RESOURCE_QUERY))
+		{
+			if (key.equals(NAME_RESOURCE_QUERY))
+			{
+				result = request.getResourceRef().getQuery();
+			}
+			else
+			{
+				String rest = key.substring(NAME_RESOURCE_QUERY.length());
+
+				if ((rest.charAt(0) == '(') && (rest.charAt(rest.length() - 1) == ')'))
+				{
+					rest = rest.substring(1, rest.length() - 1);
+
+					if (rest.equals("first"))
+					{
+						result = request.getResourceRef().getQueryAsForm().get(0).getValue();
+					}
+					else if (rest.equals("last"))
+					{
+						Form form = request.getResourceRef().getQueryAsForm();
+						result = form.get(form.size() - 1).getValue();
+					}
+					else if (isVariableName(rest))
 					{
 						// Lookup by name
 						rest = getVariableName(rest);
-
-						// First check the request attributes
-						result = request.getAttributes().get(rest).toString();
-						if (result == null)
-						{
-							// Then check the response attributes
-							result = response.getAttributes().get(rest).toString();
-						}
+						result = request.getResourceRef().getQueryAsForm().getFirstValue(rest);
 					}
 					else
 					{
@@ -333,237 +498,63 @@ public class CallModel implements Model
 					result = defaultValue;
 				}
 			}
-			else if (key.equals(NAME_BASE_URI))
+		}
+		else if (key.equals(NAME_RESOURCE_SCHEME))
+		{
+			result = request.getResourceRef().getScheme();
+		}
+		else if (key.startsWith(NAME_RESOURCE_SEGMENT))
+		{
+			String rest = key.substring(NAME_RESOURCE_SEGMENT.length());
+
+			if ((rest.charAt(0) == '(') && (rest.charAt(rest.length() - 1) == ')'))
 			{
-				result = request.getBaseRef().toString();
-			}
-			else if (key.startsWith(NAME_CLIENT_ADDRESS))
-			{
-				if (key.equals(NAME_CLIENT_ADDRESS))
+				rest = rest.substring(1, rest.length() - 1);
+
+				if (rest.equals("first"))
 				{
-					result = request.getClientInfo().getAddress();
+					result = request.getResourceRef().getSegments().get(0);
+				}
+				else if (rest.equals("last"))
+				{
+					result = request.getResourceRef().getSegments().get(
+							request.getResourceRef().getSegments().size() - 1);
 				}
 				else
 				{
-					String rest = key.substring(NAME_CLIENT_ADDRESS.length());
-
-					if ((rest.charAt(0) == '(') && (rest.charAt(rest.length() - 1) == ')'))
-					{
-						rest = rest.substring(1, rest.length() - 1);
-
-						if (rest.equals("first"))
-						{
-							result = request.getClientInfo().getAddresses().get(0);
-						}
-						else if (rest.equals("last"))
-						{
-							result = request.getClientInfo().getAddresses().get(
-									request.getClientInfo().getAddresses().size() - 1);
-						}
-						else if (isVariableName(rest))
-						{
-							// Can't lookup by name
-							result = defaultValue;
-						}
-						else
-						{
-							// Lookup by index
-							result = request.getClientInfo().getAddresses().get(
-									Integer.parseInt(rest));
-						}
-					}
-					else
-					{
-						result = defaultValue;
-					}
+					// Lookup by index
+					result = request.getResourceRef().getSegments()
+							.get(Integer.parseInt(rest));
 				}
 			}
-			else if (key.equals(NAME_CLIENT_AGENT))
+			else
 			{
-				result = request.getClientInfo().getAgent();
-			}
-			else if (key.startsWith(NAME_COOKIE))
-			{
-				String rest = key.substring(NAME_COOKIE.length());
-
-				if ((rest.charAt(0) == '(') && (rest.charAt(rest.length() - 1) == ')'))
-				{
-					rest = rest.substring(1, rest.length() - 1);
-
-					if (rest.equals("first"))
-					{
-						result = request.getCookies().get(0).getValue();
-					}
-					else if (rest.equals("last"))
-					{
-						result = request.getCookies().get(request.getCookies().size() - 1)
-								.getValue();
-					}
-					else if (isVariableName(rest))
-					{
-						// Lookup by name
-						rest = getVariableName(rest);
-						result = getFirstCookie(request.getCookies(), rest).getValue();
-					}
-					else
-					{
-						// Lookup by index
-						result = request.getCookies().get(Integer.parseInt(rest)).getValue();
-					}
-				}
-				else
-				{
-					result = defaultValue;
-				}
-			}
-			else if (key.equals(NAME_METHOD))
-			{
-				result = request.getMethod().getName();
-			}
-			else if (key.equals(NAME_REDIRECT_URI))
-			{
-				result = response.getRedirectRef().toString();
-			}
-			else if (key.equals(NAME_REFERRER_URI))
-			{
-				result = request.getReferrerRef().toString();
-			}
-			else if (key.equals(NAME_RELATIVE_URI))
-			{
-				result = request.getRelativePart();
-			}
-			else if (key.equals(NAME_RESOURCE_AUTHORITY))
-			{
-				result = request.getResourceRef().getAuthority();
-			}
-			else if (key.equals(NAME_RESOURCE_FRAGMENT))
-			{
-				result = request.getResourceRef().getFragment();
-			}
-			else if (key.equals(NAME_RESOURCE_HOST_DOMAIN))
-			{
-				result = request.getResourceRef().getHostDomain();
-			}
-			else if (key.equals(NAME_RESOURCE_HOST_PORT))
-			{
-				result = request.getResourceRef().getHostPort().toString();
-			}
-			else if (key.equals(NAME_RESOURCE_HOST_IDENTIFIER))
-			{
-				result = request.getResourceRef().getHostIdentifier();
-			}
-			else if (key.equals(NAME_RESOURCE_IDENTIFIER))
-			{
-				result = request.getResourceRef().getIdentifier();
-			}
-			else if (key.equals(NAME_RESOURCE_PATH))
-			{
-				result = request.getResourceRef().getPath();
-			}
-			else if (key.startsWith(NAME_RESOURCE_QUERY))
-			{
-				if (key.equals(NAME_RESOURCE_QUERY))
-				{
-					result = request.getResourceRef().getQuery();
-				}
-				else
-				{
-					String rest = key.substring(NAME_RESOURCE_QUERY.length());
-
-					if ((rest.charAt(0) == '(') && (rest.charAt(rest.length() - 1) == ')'))
-					{
-						rest = rest.substring(1, rest.length() - 1);
-
-						if (rest.equals("first"))
-						{
-							result = request.getResourceRef().getQueryAsForm().get(0).getValue();
-						}
-						else if (rest.equals("last"))
-						{
-							Form form = request.getResourceRef().getQueryAsForm();
-							result = form.get(form.size() - 1).getValue();
-						}
-						else if (isVariableName(rest))
-						{
-							// Lookup by name
-							rest = getVariableName(rest);
-							result = request.getResourceRef().getQueryAsForm().getFirst(rest)
-									.getValue();
-						}
-						else
-						{
-							// Lookup by index
-							result = request.getResourceRef().getQueryAsForm().get(
-									Integer.parseInt(rest)).getValue();
-						}
-					}
-					else
-					{
-						result = defaultValue;
-					}
-				}
-			}
-			else if (key.equals(NAME_RESOURCE_SCHEME))
-			{
-				result = request.getResourceRef().getScheme();
-			}
-			else if (key.startsWith(NAME_RESOURCE_SEGMENT))
-			{
-				String rest = key.substring(NAME_RESOURCE_SEGMENT.length());
-
-				if ((rest.charAt(0) == '(') && (rest.charAt(rest.length() - 1) == ')'))
-				{
-					rest = rest.substring(1, rest.length() - 1);
-
-					if (rest.equals("first"))
-					{
-						result = request.getResourceRef().getSegments().get(0);
-					}
-					else if (rest.equals("last"))
-					{
-						result = request.getResourceRef().getSegments().get(
-								request.getResourceRef().getSegments().size() - 1);
-					}
-					else
-					{
-						// Lookup by index
-						result = request.getResourceRef().getSegments().get(
-								Integer.parseInt(rest));
-					}
-				}
-				else
-				{
-					result = defaultValue;
-				}
-			}
-			else if (key.equals(NAME_RESOURCE_URI))
-			{
-				result = request.getResourceRef().toString();
-			}
-			else if (key.equals(NAME_RESOURCE_USER_INFO))
-			{
-				result = request.getResourceRef().getUserInfo();
-			}
-			else if (key.equals(NAME_SERVER_ADDRESS))
-			{
-				result = response.getServerInfo().getAddress();
-			}
-			else if (key.equals(NAME_SERVER_AGENT))
-			{
-				result = response.getServerInfo().getAgent();
-			}
-			else if (key.equals(NAME_STATUS))
-			{
-				result = Integer.toString(response.getStatus().getCode());
-			}
-
-			// Check if the default value should be returned
-			if (result == null)
-			{
-				result = this.defaultValue;
+				result = defaultValue;
 			}
 		}
-		catch (Exception e)
+		else if (key.equals(NAME_RESOURCE_URI))
+		{
+			result = request.getResourceRef().toString();
+		}
+		else if (key.equals(NAME_RESOURCE_USER_INFO))
+		{
+			result = request.getResourceRef().getUserInfo();
+		}
+		else if (key.equals(NAME_SERVER_ADDRESS))
+		{
+			result = response.getServerInfo().getAddress();
+		}
+		else if (key.equals(NAME_SERVER_AGENT))
+		{
+			result = response.getServerInfo().getAgent();
+		}
+		else if (key.equals(NAME_STATUS))
+		{
+			result = Integer.toString(response.getStatus().getCode());
+		}
+
+		// Check if the default value should be returned
+		if (result == null)
 		{
 			result = this.defaultValue;
 		}
@@ -580,12 +571,12 @@ public class CallModel implements Model
 	{
 		return token.substring(1, token.length() - 1);
 	}
-   
-   /**
-    * Indicates if this model cannot be modified.
-    * @return True if this model cannot be modified.
-    */
-   public boolean isReadOnly()
+
+	/**
+	 * Indicates if this model cannot be modified.
+	 * @return True if this model cannot be modified.
+	 */
+	public boolean isReadOnly()
 	{
 		return true;
 	}
@@ -601,25 +592,25 @@ public class CallModel implements Model
 				.charAt(0) == '\'') && (token.charAt(token.length() - 1) == '\'')));
 	}
 
-   /**
-    * Puts the model value for a given name.
-    * @param key The key to look-up.
-    * @param value The value to put.
-    * @return The old value or null.
-    * @throws UnsupportedOperationException if the map is read-only.
-    */
-   public Object put(String key, Object value)
+	/**
+	 * Puts the model value for a given name.
+	 * @param key The key to look-up.
+	 * @param value The value to put.
+	 * @return The old value or null.
+	 * @throws UnsupportedOperationException if the map is read-only.
+	 */
+	public Object put(String key, Object value)
 	{
 		throw new UnsupportedOperationException();
 	}
 
-   /**
-    * Removes a model value for a given key.
-    * @param key The key to look-up.
-    * @return The old value removed.
-    * @throws UnsupportedOperationException if the map is read-only.
-    */
-   public Object remove(String key)
+	/**
+	 * Removes a model value for a given key.
+	 * @param key The key to look-up.
+	 * @return The old value removed.
+	 * @throws UnsupportedOperationException if the map is read-only.
+	 */
+	public Object remove(String key)
 	{
 		throw new UnsupportedOperationException();
 	}

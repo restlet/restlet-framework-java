@@ -296,7 +296,7 @@ public class Extractor extends Filter
 	/**
 	 * Internal class holding extraction information.
 	 */
-	protected class ExtractInfo
+	protected static class ExtractInfo
 	{
 		/**
 		 * Holds the attribute name.

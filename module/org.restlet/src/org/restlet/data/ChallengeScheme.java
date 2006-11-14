@@ -91,11 +91,20 @@ public class ChallengeScheme extends Metadata
 	 * @param object The object to compare to.
 	 * @return True if both metadata are equal.
 	 */
+	@Override
 	public boolean equals(Object object)
 	{
 		return (object instanceof ChallengeScheme)
 				&& ((ChallengeScheme) object).getName().equalsIgnoreCase(getName());
 	}
+	
+	/** {@inheritDoc} */
+	@Override
+	public int hashCode()
+	{
+		return getName().toLowerCase().hashCode();
+	}
+
 
 	/**
 	 * Returns the challenge scheme associated to a scheme name. If an existing constant exists then it is 

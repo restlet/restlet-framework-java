@@ -152,7 +152,7 @@ public class CookieUtils
 					long expiresTime = currentTime + maxTime;
 					Date expires = new Date(expiresTime);
 					destination.append("; Expires=");
-					appendValue(DateUtils.format(expires, DateUtils.FORMAT_RFC_1036[0]),
+					appendValue(DateUtils.format(expires, DateUtils.FORMAT_RFC_1036.get(0)),
 							version, destination);
 				}
 				else

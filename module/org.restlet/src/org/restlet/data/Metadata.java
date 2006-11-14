@@ -75,10 +75,18 @@ public class Metadata
 	 * @param object The object to compare to.
 	 * @return True if both metadata are equal.
 	 */
+	@Override
 	public boolean equals(Object object)
 	{
 		return (object instanceof Metadata)
 				&& ((Metadata) object).getName().equals(getName());
+	}
+
+	/** {@inheritDoc} */
+	@Override
+	public int hashCode()
+	{
+		return getName().hashCode();
 	}
 
 	/**

@@ -98,7 +98,7 @@ public class SecurityUtils
 				if (date == null)
 				{
 					// Add a fresh Date header
-					date = DateUtils.format(new Date(), DateUtils.FORMAT_RFC_1123[0]);
+					date = DateUtils.format(new Date(), DateUtils.FORMAT_RFC_1123.get(0));
 					httpHeaders.add(HttpConstants.HEADER_DATE, date);
 				}
 			}

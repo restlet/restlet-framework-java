@@ -343,10 +343,18 @@ public class MediaType extends Metadata
 	 * @param object The object to compare to.
 	 * @return True if both media types are equal.
 	 */
+	@Override
 	public boolean equals(Object object)
 	{
 		return (object instanceof MediaType)
 				&& ((MediaType) object).getName().equals(getName());
+	}
+	
+	/** {@inheritDoc} */
+	@Override
+	public int hashCode()
+	{
+		return getName().hashCode();
 	}
 
 	/**

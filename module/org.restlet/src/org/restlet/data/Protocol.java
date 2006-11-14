@@ -134,11 +134,20 @@ public class Protocol extends Metadata
 	 * @param object The object to compare to.
 	 * @return True if the protocol is equal to a given one.
 	 */
+	@Override
 	public boolean equals(Object object)
 	{
 		return (object instanceof Protocol)
 				&& getName().equalsIgnoreCase(((Protocol) object).getName());
 	}
+	
+	/** {@inheritDoc} */
+	@Override
+	public int hashCode()
+	{
+		return getName().toLowerCase().hashCode();
+	}
+
 
 	/**
 	 * Creates the protocol associated to a URI scheme name. If an existing constant exists then it is returned,

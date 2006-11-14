@@ -22,6 +22,7 @@
 
 package org.restlet.service;
 
+import java.util.ArrayList;
 import java.util.List;
 
 import org.restlet.data.Protocol;
@@ -34,26 +35,16 @@ import org.restlet.resource.Representation;
 public class ConnectorService
 {
 	/** The list of required client protocols. */
-	private List<Protocol> requiredClientProtocols;
+	private List<Protocol> clientProtocols;
 
 	/** The list of required server protocols. */
-	private List<Protocol> requiredServerProtocols;
-	
-	/** The list of optional client protocols. */
-	private List<Protocol> optionalClientProtocols;
-
-	/** The list of optional server protocols. */
-	private List<Protocol> optionalServerProtocols;
+	private List<Protocol> serverProtocols;
 	
 	/**
 	 * Constructor.
 	 */
 	public ConnectorService()
 	{
-		this.requiredClientProtocols = null;
-		this.requiredServerProtocols = null;
-		this.optionalClientProtocols = null;
-		this.optionalServerProtocols = null;
 	}
 	
 	/**
@@ -80,36 +71,64 @@ public class ConnectorService
 	 * Returns the list of required client protocols. 
 	 * @return The list of required client protocols.
 	 */
-	public List<Protocol> getRequiredClientProtocols()
+	public List<Protocol> getClientProtocols()
 	{
-		return this.requiredClientProtocols;
+		if(this.clientProtocols == null) this.clientProtocols = new ArrayList<Protocol>();
+		return this.clientProtocols;
 	}
 
 	/**
 	 * Returns the list of required server protocols. 
 	 * @return The list of required server protocols.
 	 */
+	public List<Protocol> getServerProtocols()
+	{
+		if(this.serverProtocols == null) this.serverProtocols = new ArrayList<Protocol>();
+		return this.serverProtocols;
+	}
+
+	/**
+	 * Returns the list of required client protocols. 
+	 * @return The list of required client protocols.
+	 * @deprecated Use getClientProtocols instead
+	 */
+	@Deprecated
+	public List<Protocol> getRequiredClientProtocols()
+	{
+		return getClientProtocols();
+	}
+
+	/**
+	 * Returns the list of required server protocols. 
+	 * @return The list of required server protocols.
+	 * @deprecated Use getServerProtocols instead
+	 */
+	@Deprecated
 	public List<Protocol> getRequiredServerProtocols()
 	{
-		return this.requiredServerProtocols;
+		return getServerProtocols();
 	}
 	
 	/**
 	 * Returns the list of optional client protocols. 
 	 * @return The list of optional client protocols.
+	 * @deprecated Use getClientProtocols instead
 	 */
+	@Deprecated
 	public List<Protocol> getOptionalClientProtocols()
 	{
-		return this.optionalClientProtocols;
+		return getClientProtocols();
 	}
 
 	/**
 	 * Returns the list of optional server protocols. 
 	 * @return The list of optional server protocols.
+	 * @deprecated Use getServerProtocols instead
 	 */
+	@Deprecated
 	public List<Protocol> getOptionalServerProtocols()
 	{
-		return this.optionalServerProtocols;
+		return getServerProtocols();
 	}
 
 }

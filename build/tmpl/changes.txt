@@ -10,6 +10,7 @@ Changes log
  - Renabled the content negotiation by default for Directory instances. This prevented the correct serving of index files in tutorial. Reported by Dave Pawson.
  - Fixed ServerServlet which forgot to set the proper Servlet Context on the Application. Reported by Evan DiBiase.
  - Fixed NPE in Guard when no challenge response is set. Reported by Dave Pawson.
+ - Integrated patches and bug fixes (few NPEs) detected by FindBugs. Contributed by Piyush Purang.
 
 [API changes]
  - Moved org.restlet.data.Result to org.restlet.resource.Result (deprecation used).
@@ -18,6 +19,8 @@ Changes log
  - HTTP calls now try to use the channel aspect of a representation before its stream aspect. Suggested by Lars Heuer.
  - Added source path to JSON external plugin. Suggested by Chris Grindstaff.
  - Added support for FindBugs in the Ant build script. Suggested by Piyush Purang.
+ - Added "verify" target to build script to provide a shorter cycle for developpers. Contributed by Piyush Purang.
+ - Slightly updated Eclipse code template file. Please re-import it if possible.
  
 1.0 beta 20 (2006-11-08)
 [Bugs fixed]

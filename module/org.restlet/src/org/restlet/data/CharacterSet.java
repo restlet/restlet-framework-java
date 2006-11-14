@@ -84,11 +84,20 @@ public class CharacterSet extends Metadata
 	 * @param object The object to compare to.
 	 * @return True if the character set is equal to a given one.
 	 */
+	@Override
 	public boolean equals(Object object)
 	{
 		return (object instanceof CharacterSet)
 				&& getName().equalsIgnoreCase(((CharacterSet) object).getName());
 	}
+	
+	/** {@inheritDoc} */
+	@Override
+	public int hashCode()
+	{
+		return getName().toLowerCase().hashCode();
+	}
+
 
 	/**
 	 * Returns the character set associated to a name. If an existing constant exists then it is 

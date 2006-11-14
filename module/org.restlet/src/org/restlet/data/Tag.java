@@ -155,9 +155,17 @@ public class Tag
 	 * @param object The object to compare to.
 	 * @return True if both tags are equal.
 	 */
+	@Override
 	public boolean equals(Object object)
 	{
 		return (object instanceof Tag) && getName().equals(((Tag) object).getName());
+	}
+
+	/** {@inheritDoc} */
+	@Override
+	public int hashCode()
+	{
+		return getName().hashCode();
 	}
 
 }

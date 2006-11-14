@@ -152,29 +152,46 @@ public class Cookie extends Parameter
       	if(result)
       	{
       		Cookie otherCookie = (Cookie)object;
-		      result &= (getVersion() == otherCookie.getVersion());
-		
-		      if(getPath() == null)
-		      {
-		         result &= (otherCookie.getPath() == null);
-		      }
-		      else
-		      {
-		         result &= getPath().equals(otherCookie.getPath());
-		      }
-		
-		      if(getDomain() == null)
-		      {
-		         result &= (otherCookie.getDomain() == null);
-		      }
-		      else
-		      {
-		         result &= getDomain().equals(otherCookie.getDomain());
-		      }
+      		
+      		if(otherCookie != null)
+      		{
+			      result &= (getVersion() == otherCookie.getVersion());
+			
+			      if(getPath() == null)
+			      {
+			         result &= (otherCookie.getPath() == null);
+			      }
+			      else
+			      {
+			         result &= getPath().equals(otherCookie.getPath());
+			      }
+			
+			      if(getDomain() == null)
+			      {
+			         result &= (otherCookie.getDomain() == null);
+			      }
+			      else
+			      {
+			         result &= getDomain().equals(otherCookie.getDomain());
+			      }
+      		}
+      		else
+      		{
+      			result = false;
+      		}
       	}
       }
       
       return result;
    }
+	
+	/** {@inheritDoc} */
+	@Override
+	public int hashCode()
+	{
+		// to workaround findbugs warning
+		// to properly implement
+		return super.hashCode();
+	}
 
 }

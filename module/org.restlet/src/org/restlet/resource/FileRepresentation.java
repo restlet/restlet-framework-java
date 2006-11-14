@@ -55,7 +55,7 @@ public class FileRepresentation extends Representation
 		super(mediaType);
 		this.file = file;
 		setModificationDate(new Date(file.lastModified()));
-		setExpirationDate(new Date(System.currentTimeMillis() + (timeToLive * 1000)));
+		setExpirationDate(new Date(System.currentTimeMillis() + (1000L * timeToLive)));
 		setMediaType(mediaType);
 	}
 

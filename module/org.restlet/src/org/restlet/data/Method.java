@@ -157,10 +157,18 @@ public class Method extends Metadata
 	 * @param object The object to compare to.
 	 * @return True if both metadata are equal.
 	 */
+	@Override
 	public boolean equals(Object object)
 	{
 		return (object instanceof Method)
 				&& ((Method) object).getName().equals(getName());
+	}
+	
+	/** {@inheritDoc} */
+	@Override
+	public int hashCode()
+	{
+		return getName().hashCode();
 	}
 
 	/**

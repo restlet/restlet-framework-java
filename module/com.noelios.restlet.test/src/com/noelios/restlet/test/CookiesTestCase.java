@@ -142,7 +142,7 @@ public class CookiesTestCase extends TestCase
 		Date date = DateUtils.parse(dateValue, DateUtils.FORMAT_RFC_1036);
 
 		// Rewrite the date
-		String newDateValue = DateUtils.format(date, DateUtils.FORMAT_RFC_1036[0]);
+		String newDateValue = DateUtils.format(date, DateUtils.FORMAT_RFC_1036.get(0));
 
 		// Compare initial and new headers
 		assertEquals(dateValue, newDateValue);
