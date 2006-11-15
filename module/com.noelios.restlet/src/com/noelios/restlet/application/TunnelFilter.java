@@ -79,7 +79,7 @@ public class TunnelFilter extends Filter
 				&& request.getMethod().equals(Method.POST))
 		{
 			String methodName = (String) query.getFirstValue(getApplication()
-					.getTunnelService().getMethodAttribute());
+					.getTunnelService().getMethodParameter());
 
 			if (methodName != null)
 			{
@@ -87,7 +87,8 @@ public class TunnelFilter extends Filter
 			}
 		}
 
-		if (getApplication().getTunnelService().isPreferencesTunnel())
+		if (request.getMethod().equals(Method.GET)
+				&& getApplication().getTunnelService().isPreferencesTunnel())
 		{
 			// Extract the header values
 			String acceptCharset = (String) query.getFirstValue(getApplication()

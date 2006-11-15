@@ -25,7 +25,47 @@ package org.restlet.service;
 import org.restlet.data.ClientInfo;
 
 /**
- * Service providing tunnelling of method names or client preferences. 
+ * Service providing tunnelling of method names or client preferences. Clients applications can easily override the 
+ * default values of their client connector by specifying additional query parameters. Here is the list of the default
+ * parameter names supported:
+ * <table>
+ * 	<tr>
+ * 		<th>Property</th>
+ * 		<th>Default name</th>
+ * 		<th>Value type</th>
+ * 		<th>Description</th>
+ * 	</tr>
+ * 	<tr>
+ * 		<td>methodParameter</td>
+ * 		<td>method</td>
+ * 		<td>See values in org.restlet.data.Method</td>
+ * 		<td>For POST requests, specify the actual method to use (DELETE, PUT, etc.).</td>
+ *		</tr> 
+ * 	<tr>
+ * 		<td>characterSetParameter</td>
+ * 		<td>charset</td>
+ * 		<td>Use extension names defined in org.restlet.service.MetadataService</td>
+ * 		<td>For GET requests, replaces the accepted character set by the given value.</td>
+ *		</tr> 
+ * 	<tr>
+ * 		<td>encodingParameter</td>
+ * 		<td>encoding</td>
+ * 		<td>Use extension names defined in org.restlet.service.MetadataService</td>
+ * 		<td>For GET requests, replaces the accepted encoding by the given value.</td>
+ *		</tr> 
+ * 	<tr>
+ * 		<td>languageParameter</td>
+ * 		<td>language</td>
+ * 		<td>Use extension names defined in org.restlet.service.MetadataService</td>
+ * 		<td>For GET requests, replaces the accepted language by the given value.</td>
+ *		</tr> 
+ * 	<tr>
+ * 		<td>mediaTypeParameter</td>
+ * 		<td>media</td>
+ * 		<td>Use extension names defined in org.restlet.service.MetadataService</td>
+ * 		<td>For GET requests, replaces the accepted media type set by the given value.</td>
+ *		</tr> 
+ * </table>
  * @author Jerome Louvel (contact@noelios.com) <a href="http://www.noelios.com/">Noelios Consulting</a>
  */
 public class TunnelService
@@ -36,23 +76,23 @@ public class TunnelService
 	/** Indicates if the method name can be tunneled. */
 	private boolean methodTunnel;
 
-	/** The name of the attribute containing the method name. */
-	private String methodAttribute;
+	/** The name of the parameter containing the method name. */
+	private String methodParameter;
 
 	/** Indicates if the client preferences can be tunneled. */
 	private boolean preferencesTunnel;
 
-	/** The name of the attribute containing the accepted character set. */
-	private String characterSetAttribute;
+	/** The name of the parameter containing the accepted character set. */
+	private String characterSetParameter;
 
-	/** The name of the attribute containing the accepted encoding. */
-	private String encodingAttribute;
+	/** The name of the parameter containing the accepted encoding. */
+	private String encodingParameter;
 
-	/** The name of the attribute containing the accepted language. */
-	private String languageAttribute;
+	/** The name of the parameter containing the accepted language. */
+	private String languageParameter;
 
-	/** The name of the attribute containing the accepted media type. */
-	private String mediaTypeAttribute;
+	/** The name of the parameter containing the accepted media type. */
+	private String mediaTypeParameter;
 
 	/**
 	 * Constructor.
@@ -64,12 +104,12 @@ public class TunnelService
 	{
 		this.enabled = enabled;
 		this.methodTunnel = methodTunnel;
-		this.methodAttribute = "method";
+		this.methodParameter = "method";
 		this.preferencesTunnel = preferencesTunnel;
-		this.characterSetAttribute = "charset";
-		this.encodingAttribute = "encoding";
-		this.languageAttribute = "language";
-		this.mediaTypeAttribute = "media";
+		this.characterSetParameter = "charset";
+		this.encodingParameter     = "encoding";
+		this.languageParameter     = "language";
+		this.mediaTypeParameter    = "media";
 	}
 
 	/**
@@ -120,39 +160,39 @@ public class TunnelService
 	}
 
 	/**
-	 * Returns the method attribute name.
-	 * @return The method attribute name.
+	 * Returns the method parameter name.
+	 * @return The method parameter name.
 	 */
-	public String getMethodAttribute()
+	public String getMethodParameter()
 	{
-		return this.methodAttribute;
+		return this.methodParameter;
 	}
 
 	/**
-	 * Sets the method attribute name.
-	 * @param attributeName The method attribute name.
+	 * Sets the method parameter name.
+	 * @param parameterName The method parameter name.
 	 */
-	public void setMethodAttribute(String attributeName)
+	public void setMethodParameter(String parameterName)
 	{
-		this.methodAttribute = attributeName;
+		this.methodParameter = parameterName;
 	}
 
 	/**
-	 * Returns the character set attribute name.
-	 * @return The character set attribute name.
+	 * Returns the character set parameter name.
+	 * @return The character set parameter name.
 	 */
 	public String getCharacterSetAttribute()
 	{
-		return this.characterSetAttribute;
+		return this.characterSetParameter;
 	}
 
 	/**
-	 * Sets the character set attribute name.
-	 * @param attributeName The character set attribute name.
+	 * Sets the character set parameter name.
+	 * @param parameterName The character set parameter name.
 	 */
-	public void setCharacterSetAttribute(String attributeName)
+	public void setCharacterSetAttribute(String parameterName)
 	{
-		this.characterSetAttribute = attributeName;
+		this.characterSetParameter = parameterName;
 	}
 
 	/**
@@ -174,57 +214,57 @@ public class TunnelService
 	}
 
 	/**
-	 * Returns the name of the attribute containing the accepted encoding.
-	 * @return The name of the attribute containing the accepted encoding.
+	 * Returns the name of the parameter containing the accepted encoding.
+	 * @return The name of the parameter containing the accepted encoding.
 	 */
 	public String getEncodingAttribute()
 	{
-		return this.encodingAttribute;
+		return this.encodingParameter;
 	}
 
 	/**
-	 * Sets the name of the attribute containing the accepted encoding.
-	 * @param attributeName The name of the attribute containing the accepted encoding.
+	 * Sets the name of the parameter containing the accepted encoding.
+	 * @param parameterName The name of the parameter containing the accepted encoding.
 	 */
-	public void setEncodingAttribute(String attributeName)
+	public void setEncodingAttribute(String parameterName)
 	{
-		this.encodingAttribute = attributeName;
+		this.encodingParameter = parameterName;
 	}
 
 	/**
-	 * Returns the name of the attribute containing the accepted language.
-	 * @return The name of the attribute containing the accepted language.
+	 * Returns the name of the parameter containing the accepted language.
+	 * @return The name of the parameter containing the accepted language.
 	 */
 	public String getLanguageAttribute()
 	{
-		return this.languageAttribute;
+		return this.languageParameter;
 	}
 
 	/**
-	 * Sets the name of the attribute containing the accepted language.
-	 * @param attributeName The name of the attribute containing the accepted language.
+	 * Sets the name of the parameter containing the accepted language.
+	 * @param parameterName The name of the parameter containing the accepted language.
 	 */
-	public void setLanguageAttribute(String attributeName)
+	public void setLanguageAttribute(String parameterName)
 	{
-		this.languageAttribute = attributeName;
+		this.languageParameter = parameterName;
 	}
 
 	/**
-	 * Returns the name of the attribute containing the accepted media type.
-	 * @return The name of the attribute containing the accepted media type.
+	 * Returns the name of the parameter containing the accepted media type.
+	 * @return The name of the parameter containing the accepted media type.
 	 */
 	public String getMediaTypeAttribute()
 	{
-		return this.mediaTypeAttribute;
+		return this.mediaTypeParameter;
 	}
 
 	/**
-	 * Sets the name of the attribute containing the accepted media type.
-	 * @param attributeName The name of the attribute containing the accepted media type.
+	 * Sets the name of the parameter containing the accepted media type.
+	 * @param parameterName The name of the parameter containing the accepted media type.
 	 */
-	public void setMediaTypeAttribute(String attributeName)
+	public void setMediaTypeAttribute(String parameterName)
 	{
-		this.mediaTypeAttribute = attributeName;
+		this.mediaTypeParameter = parameterName;
 	}
 	
 }
