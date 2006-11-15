@@ -115,8 +115,23 @@ public class SecurityUtils
 			if (contentType == null)
 			{
 				String javaVersion = System.getProperty("java.version");
-				if (!request.getMethod().equals(Method.PUT)
-						&& (javaVersion.startsWith("1.5") || javaVersion.startsWith("1.4")))
+
+				boolean applyPatch = false;
+
+				if (javaVersion.startsWith("1.3") || javaVersion.startsWith("1.4"))
+				{
+					applyPatch = true;
+				}
+				else if (javaVersion.startsWith("1.5"))
+				{
+					int minorVersion = Integer.parseInt(javaVersion.substring(javaVersion
+							.indexOf('_') + 1));
+
+					// Sun is supposed to fix it in update 10
+					applyPatch = (minorVersion < 10);
+				}
+
+				if (applyPatch && !request.getMethod().equals(Method.PUT))
 				{
 					contentType = "application/x-www-form-urlencoded";
 				}

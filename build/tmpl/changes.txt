@@ -28,6 +28,7 @@ Changes log
  - Shortened author's info by removing the URI.
  - Refactored all hashCode() and equals() methods in classes of org.restlet.data package. Help from Piyush Purang.
  - Added Cookie test case for complex equality/hash code verification.
+ - Limited AWS patch to JDK 5.0 update 9 and lower as this should be fixed in update 10 and already works in JDK 6.0.
   
 1.0 beta 20 (2006-11-08)
 [Bugs fixed]

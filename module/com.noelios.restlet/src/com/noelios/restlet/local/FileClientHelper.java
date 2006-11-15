@@ -116,14 +116,14 @@ public class FileClientHelper extends LocalClientHelper
 			{
 				//1- set up base name as the longest part of the name without known extensions (beginning from the left)
 				String[] result = file.getName().split("\\.");
-				String baseName = result[0];
+				StringBuilder baseName = new StringBuilder().append(result[0]);
 				boolean extensionFound = false;
 				for (int i = 1; (i < result.length) && !extensionFound; i++)
 				{
 					extensionFound = metadataService.getMetadata(result[i]) != null;
 					if (!extensionFound)
 					{
-						baseName += "." + result[i];
+						baseName.append(".").append(result[i]);
 					}
 				}
 				//2- loooking for resources with the same base name
@@ -135,7 +135,7 @@ public class FileClientHelper extends LocalClientHelper
 				{
 					try
 					{
-						if (entry.getName().startsWith(baseName))
+						if (entry.getName().startsWith(baseName.toString()))
 						{
 							rl.add(LocalReference.createFileReference(entry));
 						}
