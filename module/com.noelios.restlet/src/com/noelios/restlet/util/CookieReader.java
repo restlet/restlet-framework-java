@@ -273,13 +273,6 @@ public class CookieReader extends HeaderReader
 			pair = readPair();
 		}
 
-		if (pair != null)
-		{
-			// We started to read the next cookie
-			// So let's put it back into the stream
-			this.cachedPair = pair;
-		}
-
 		return result;
 	}
 

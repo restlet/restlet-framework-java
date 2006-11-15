@@ -28,6 +28,7 @@ import java.security.NoSuchAlgorithmException;
 import java.util.Date;
 import java.util.SortedMap;
 import java.util.TreeMap;
+import java.util.Map.Entry;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
@@ -202,9 +203,9 @@ public class SecurityUtils
 
 		// Concatenate all AMZ headers
 		StringBuilder sb = new StringBuilder();
-		for (String key : amzHeaders.keySet())
+		for (Entry<String, String> entry : amzHeaders.entrySet())
 		{
-			sb.append(key).append(':').append(amzHeaders.get(key)).append("\n");
+			sb.append(entry.getKey()).append(':').append(entry.getValue()).append("\n");
 		}
 
 		return sb.toString();

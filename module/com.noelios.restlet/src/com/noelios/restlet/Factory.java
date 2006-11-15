@@ -150,7 +150,7 @@ public class Factory extends org.restlet.util.Factory
 						line = reader.readLine();
 					}
 				}
-				catch (Exception e)
+				catch (IOException e)
 				{
 					logger.log(Level.SEVERE, "Unable to read the provider descriptor: "
 							+ configURL.toString());
@@ -176,10 +176,11 @@ public class Factory extends org.restlet.util.Factory
 			{
 				configURL = configUrls.nextElement();
 
+				BufferedReader reader = null;
 				try
 				{
-					BufferedReader reader = new BufferedReader(new InputStreamReader(configURL
-							.openStream(), "utf-8"));
+					reader = new BufferedReader(new InputStreamReader(configURL.openStream(),
+							"utf-8"));
 					line = reader.readLine();
 
 					while (line != null)
@@ -206,10 +207,14 @@ public class Factory extends org.restlet.util.Factory
 						line = reader.readLine();
 					}
 				}
-				catch (Exception e)
+				catch (IOException e)
 				{
 					logger.log(Level.SEVERE, "Unable to read the provider descriptor: "
 							+ configURL.toString());
+				}
+				finally
+				{
+					if (reader != null) reader.close();
 				}
 			}
 		}

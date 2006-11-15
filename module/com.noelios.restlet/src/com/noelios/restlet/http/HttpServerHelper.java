@@ -22,7 +22,6 @@
 
 package com.noelios.restlet.http;
 
-import java.io.IOException;
 import java.lang.reflect.InvocationTargetException;
 import java.util.logging.Level;
 
