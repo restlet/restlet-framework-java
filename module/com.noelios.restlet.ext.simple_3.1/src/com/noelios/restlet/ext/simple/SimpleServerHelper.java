@@ -22,16 +22,11 @@
 
 package com.noelios.restlet.ext.simple;
 
-import java.io.IOException;
 import java.net.ServerSocket;
-import java.util.logging.Level;
 
 import org.restlet.Server;
 
 import simple.http.PipelineHandler;
-import simple.http.ProtocolHandler;
-import simple.http.Request;
-import simple.http.Response;
 import simple.http.connect.Connection;
 
 import com.noelios.restlet.http.HttpServerHelper;
@@ -76,8 +71,7 @@ import com.noelios.restlet.http.HttpServerHelper;
  * @author Lars Heuer (heuer[at]semagia.com) <a href="http://semagia.com/">Semagia</a>
  * @author Jerome Louvel (contact@noelios.com) <a href="http://www.noelios.com">Noelios Consulting</a>
  */
-public abstract class SimpleServerHelper extends HttpServerHelper implements
-		ProtocolHandler
+public abstract class SimpleServerHelper extends HttpServerHelper
 {
 	/**
 	 * Indicates if this service is acting in HTTP or HTTPS mode.
@@ -119,27 +113,6 @@ public abstract class SimpleServerHelper extends HttpServerHelper implements
 		// For further information on how to shutdown a Simple
 		// server, see http://sourceforge.net/mailarchive/forum.php?thread_id=10138257&forum_id=38791
 		// There seems to be place for improvement in this method.
-	}
-
-	/**
-	 * Handles a Simple request/response transaction.
-	 * @param request The Simple request.
-	 * @param response The Simple response.
-	 */
-	public void handle(Request request, Response response)
-	{
-		handle(new SimpleCall(getLogger(), request, response, this.isConfidential(),
-				getServer().getPort()));
-
-		try
-		{
-			response.getOutputStream().close();
-		}
-		catch (IOException ioe)
-		{
-			getLogger().log(Level.WARNING,
-					"Exception while closing the Simple response's output stream", ioe);
-		}
 	}
 
 	/**

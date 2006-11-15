@@ -137,8 +137,11 @@ public abstract class HttpServerCall extends HttpCall
 						contentLength);
 			}
 
-			result.setEncoding(contentEncoding);
-			result.setLanguage(contentLanguage);
+			if (result != null)
+			{
+				result.setEncoding(contentEncoding);
+				result.setLanguage(contentLanguage);
+			}
 		}
 
 		return result;

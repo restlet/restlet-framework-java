@@ -116,8 +116,8 @@ public class HttpsServerHelper extends SimpleServerHelper
 
 		// Complete initialization
 		setConfidential(true);
-		setHandler(PipelineHandlerFactory.getInstance(this, getDefaultThreads(),
-				getMaxWaitTimeMs()));
+		setHandler(PipelineHandlerFactory.getInstance(new SimpleProtocolHandler(this),
+				getDefaultThreads(), getMaxWaitTimeMs()));
 		setConnection(ConnectionFactory.getConnection(getHandler(),
 				new BufferedPipelineFactory()));
 		getConnection().connect(getSocket());

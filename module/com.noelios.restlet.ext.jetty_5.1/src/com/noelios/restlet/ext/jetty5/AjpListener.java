@@ -39,7 +39,7 @@ public class AjpListener extends AJP13Listener
 	private static final long serialVersionUID = 1L;
 
 	/** The parent Jetty server helper. */
-	private JettyServerHelper helper;
+	private transient JettyServerHelper helper;
 
 	/**
 	 * Constructor.

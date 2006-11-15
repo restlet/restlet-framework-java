@@ -22,6 +22,8 @@
 
 package com.noelios.restlet.http;
 
+import java.io.IOException;
+import java.lang.reflect.InvocationTargetException;
 import java.util.logging.Level;
 
 import org.restlet.Context;
@@ -110,9 +112,33 @@ public class HttpServerHelper extends ServerHelper
 				this.converter = (HttpServerConverter) Class.forName(converterClass)
 						.getConstructor(Context.class).newInstance(getContext());
 			}
-			catch (Exception e)
+			catch (IllegalArgumentException e)
 			{
-				getLogger().log(Level.SEVERE, "Unable to create the HTTP server converter");
+				getLogger().log(Level.SEVERE, "Unable to create the HTTP server converter", e);
+			}
+			catch (SecurityException e)
+			{
+				getLogger().log(Level.SEVERE, "Unable to create the HTTP server converter", e);
+			}
+			catch (InstantiationException e)
+			{
+				getLogger().log(Level.SEVERE, "Unable to create the HTTP server converter", e);
+			}
+			catch (IllegalAccessException e)
+			{
+				getLogger().log(Level.SEVERE, "Unable to create the HTTP server converter", e);
+			}
+			catch (InvocationTargetException e)
+			{
+				getLogger().log(Level.SEVERE, "Unable to create the HTTP server converter", e);
+			}
+			catch (NoSuchMethodException e)
+			{
+				getLogger().log(Level.SEVERE, "Unable to create the HTTP server converter", e);
+			}
+			catch (ClassNotFoundException e)
+			{
+				getLogger().log(Level.SEVERE, "Unable to create the HTTP server converter", e);
 			}
 		}
 

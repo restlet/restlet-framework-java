@@ -231,7 +231,7 @@ public class FileClientHelper extends LocalClientHelper
 					if (file.delete())
 					{
 						// Finally move the temporary file to the existing file location
-						if (tmp.renameTo(file))
+						if ((tmp != null) && tmp.renameTo(file))
 						{
 							if (request.getEntity() == null)
 							{

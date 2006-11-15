@@ -53,8 +53,8 @@ public class HttpServerHelper extends SimpleServerHelper
 	{
 		setSocket(new ServerSocket(getServer().getPort()));
 		setConfidential(false);
-		setHandler(PipelineHandlerFactory.getInstance(this, getDefaultThreads(),
-				getMaxWaitTimeMs()));
+		setHandler(PipelineHandlerFactory.getInstance(new SimpleProtocolHandler(this),
+				getDefaultThreads(), getMaxWaitTimeMs()));
 		setConnection(ConnectionFactory.getConnection(getHandler(),
 				new BufferedPipelineFactory()));
 		getConnection().connect(getSocket());

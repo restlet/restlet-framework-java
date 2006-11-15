@@ -38,7 +38,7 @@ public class HttpListener extends SocketListener
 	private static final long serialVersionUID = 1L;
 
 	/** The parent Jetty server helper. */
-	private JettyServerHelper helper;
+	private transient JettyServerHelper helper;
 
 	/**
 	 * Constructor.

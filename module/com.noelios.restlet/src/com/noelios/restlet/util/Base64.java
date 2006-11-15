@@ -351,28 +351,28 @@ public class Base64
 		{
 			try
 			{
-				oos.close();
+				if (oos != null) oos.close();
 			}
 			catch (Exception e)
 			{
 			}
 			try
 			{
-				gzos.close();
+				if (gzos != null) gzos.close();
 			}
 			catch (Exception e)
 			{
 			}
 			try
 			{
-				b64os.close();
+				if (b64os != null) b64os.close();
 			}
 			catch (Exception e)
 			{
 			}
 			try
 			{
-				baos.close();
+				if (baos != null) baos.close();
 			}
 			catch (Exception e)
 			{
@@ -496,21 +496,21 @@ public class Base64
 			{
 				try
 				{
-					gzos.close();
+					if (gzos != null) gzos.close();
 				}
 				catch (Exception e)
 				{
 				}
 				try
 				{
-					b64os.close();
+					if (b64os != null) b64os.close();
 				}
 				catch (Exception e)
 				{
 				}
 				try
 				{
-					baos.close();
+					if (baos != null) baos.close();
 				}
 				catch (Exception e)
 				{
@@ -785,21 +785,21 @@ public class Base64
 				{
 					try
 					{
-						baos.close();
+						if (baos != null) baos.close();
 					}
 					catch (Exception e)
 					{
 					}
 					try
 					{
-						gzis.close();
+						if (gzis != null) gzis.close();
 					}
 					catch (Exception e)
 					{
 					}
 					try
 					{
-						bais.close();
+						if (bais != null) bais.close();
 					}
 					catch (Exception e)
 					{
@@ -850,14 +850,14 @@ public class Base64
 		{
 			try
 			{
-				bais.close();
+				if (bais != null) bais.close();
 			}
 			catch (Exception e)
 			{
 			}
 			try
 			{
-				ois.close();
+				if (ois != null) ois.close();
 			}
 			catch (Exception e)
 			{
@@ -896,7 +896,7 @@ public class Base64
 		{
 			try
 			{
-				bos.close();
+				if (bos != null) bos.close();
 			}
 			catch (Exception e)
 			{
@@ -934,7 +934,7 @@ public class Base64
 		{
 			try
 			{
-				bos.close();
+				if (bos != null) bos.close();
 			}
 			catch (Exception e)
 			{
@@ -995,7 +995,7 @@ public class Base64
 		{
 			try
 			{
-				bis.close();
+				if (bis != null) bis.close();
 			}
 			catch (Exception e)
 			{
@@ -1046,7 +1046,7 @@ public class Base64
 		{
 			try
 			{
-				bis.close();
+				if (bis != null) bis.close();
 			}
 			catch (Exception e)
 			{
