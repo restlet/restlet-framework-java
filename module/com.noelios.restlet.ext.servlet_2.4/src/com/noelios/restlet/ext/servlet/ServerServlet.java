@@ -183,7 +183,7 @@ public class ServerServlet extends HttpServlet
 								Application application = (Application) targetClass
 										.getConstructor(Context.class).newInstance(
 												container.getContext());
-								
+
 								// Set the Servlet context
 								application.setContext(new ServletContext(this, application,
 										container.getContext()));

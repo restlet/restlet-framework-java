@@ -31,78 +31,80 @@ import java.io.IOException;
  */
 public class AccessLogFileHandler extends java.util.logging.FileHandler
 {
-   /**
-    * Constructor.
-    * @throws IOException
-    * @throws SecurityException
-    */
-   public AccessLogFileHandler() throws IOException, SecurityException
-   {
-      super();
-      init();
-   }
+	/**
+	 * Constructor.
+	 * @throws IOException
+	 * @throws SecurityException
+	 */
+	public AccessLogFileHandler() throws IOException, SecurityException
+	{
+		super();
+		init();
+	}
 
-   /**
-    * Constructor.
-    * @param pattern The name of the output file.
-    * @throws IOException
-    * @throws SecurityException
-    */
-   public AccessLogFileHandler(String pattern) throws IOException, SecurityException
-   {
-      super(pattern);
-      init();
-   }
+	/**
+	 * Constructor.
+	 * @param pattern The name of the output file.
+	 * @throws IOException
+	 * @throws SecurityException
+	 */
+	public AccessLogFileHandler(String pattern) throws IOException, SecurityException
+	{
+		super(pattern);
+		init();
+	}
 
-   /**
-    * Constructor.
-    * @param pattern The name of the output file.
-    * @param append Specifies append mode.
-    * @throws IOException
-    * @throws SecurityException
-    */
-   public AccessLogFileHandler(String pattern, boolean append) throws IOException, SecurityException
-   {
-      super(pattern, append);
-      init();
-   }
+	/**
+	 * Constructor.
+	 * @param pattern The name of the output file.
+	 * @param append Specifies append mode.
+	 * @throws IOException
+	 * @throws SecurityException
+	 */
+	public AccessLogFileHandler(String pattern, boolean append) throws IOException,
+			SecurityException
+	{
+		super(pattern, append);
+		init();
+	}
 
-   /**
-    * Constructor.
-    * @param pattern The name of the output file.
-    * @param limit The maximum number of bytes to write to any one file.
-    * @param count The number of files to use.
-    * @throws IOException
-    * @throws SecurityException
-    */
-   public AccessLogFileHandler(String pattern, int limit, int count) throws IOException, SecurityException
-   {
-      super(pattern, limit, count);
-      init();
-   }
+	/**
+	 * Constructor.
+	 * @param pattern The name of the output file.
+	 * @param limit The maximum number of bytes to write to any one file.
+	 * @param count The number of files to use.
+	 * @throws IOException
+	 * @throws SecurityException
+	 */
+	public AccessLogFileHandler(String pattern, int limit, int count) throws IOException,
+			SecurityException
+	{
+		super(pattern, limit, count);
+		init();
+	}
 
-   /**
-    * Constructor.
-    * @param pattern The name of the output file.
-    * @param limit The maximum number of bytes to write to any one file.
-    * @param count The number of files to use.
-    * @param append Specifies append mode.
-    * @throws IOException
-    * @throws SecurityException
-    */
-   public AccessLogFileHandler(String pattern, int limit, int count, boolean append) throws IOException,
-         SecurityException
-   {
-      super(pattern, limit, count, append);
-      init();
-   }
+	/**
+	 * Constructor.
+	 * @param pattern The name of the output file.
+	 * @param limit The maximum number of bytes to write to any one file.
+	 * @param count The number of files to use.
+	 * @param append Specifies append mode.
+	 * @throws IOException
+	 * @throws SecurityException
+	 */
+	public AccessLogFileHandler(String pattern, int limit, int count, boolean append)
+			throws IOException, SecurityException
+	{
+		super(pattern, limit, count, append);
+		init();
+	}
 
-   /**
-    * Initialization code common to all constructors.
-    */
-   protected void init()
-   {
-      setFormatter(new AccessLogFormatter());
-   }
+	/**
+	 * Initialization code common to all constructors.
+	 */
+	protected void init()
+	{
+		setFormatter(new AccessLogFormatter());
+	}
 
 }

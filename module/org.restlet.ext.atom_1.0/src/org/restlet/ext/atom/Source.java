@@ -42,10 +42,10 @@ public class Source
 
 	/** The contributors to the entry. */
 	private List<Person> contributors;
-	
+
 	/** The agent used to generate a feed. */
 	private Generator generator;
-	
+
 	/** Image that provides iconic visual identification for a feed. */
 	private Reference icon;
 
@@ -54,22 +54,22 @@ public class Source
 
 	/** The references from the entry to Web resources. */
 	private List<Link> links;
-	
+
 	/** Image that provides visual identification for a feed. */
 	private Reference logo;
-	
+
 	/** Information about rights held in and over an entry. */
 	private Text rights;
-	
+
 	/** Short summary, abstract, or excerpt of an entry. */
 	private Text subtitle;
-	
+
 	/** The human-readable title for the entry. */
 	private Text title;
-	
+
 	/** Most recent moment when the entry was modified in a significant way. */
 	private Date updated;
-	
+
 	/**
 	 * Constructor.
 	 */
@@ -88,14 +88,14 @@ public class Source
 		this.title = null;
 		this.updated = null;
 	}
-	
+
 	/** 
 	 * Returns the authors of the entry.
 	 * @return The authors of the entry.
 	 */
 	public List<Person> getAuthors()
 	{
-		if(this.authors == null) this.authors = new ArrayList<Person>();
+		if (this.authors == null) this.authors = new ArrayList<Person>();
 		return this.authors;
 	}
 
@@ -105,17 +105,17 @@ public class Source
 	 */
 	public List<Category> getCategories()
 	{
-		if(this.categories == null) this.categories = new ArrayList<Category>();
+		if (this.categories == null) this.categories = new ArrayList<Category>();
 		return this.categories;
 	}
-	
+
 	/** 
 	 * Returns the contributors to the entry.
 	 * @return The contributors to the entry.
 	 */
 	public List<Person> getContributors()
 	{
-		if(this.contributors == null) this.contributors = new ArrayList<Person>();
+		if (this.contributors == null) this.contributors = new ArrayList<Person>();
 		return this.contributors;
 	}
 
@@ -154,7 +154,7 @@ public class Source
 	{
 		this.icon = icon;
 	}
-	
+
 	/** 
 	 * Returns the permanent, universally unique identifier for the entry.
 	 * @return The permanent, universally unique identifier for the entry.
@@ -163,7 +163,7 @@ public class Source
 	{
 		return this.id;
 	}
-	
+
 	/** 
 	 * Sets the permanent, universally unique identifier for the entry.
 	 * @param id The permanent, universally unique identifier for the entry.
@@ -179,7 +179,7 @@ public class Source
 	 */
 	public List<Link> getLinks()
 	{
-		if(this.links == null) this.links = new ArrayList<Link>();
+		if (this.links == null) this.links = new ArrayList<Link>();
 		return this.links;
 	}
 
@@ -191,7 +191,7 @@ public class Source
 	{
 		return this.logo;
 	}
-	
+
 	/**
 	 * Sets the image that provides visual identification for a feed.
 	 * @param logo The image that provides visual identification for a feed.
@@ -236,7 +236,7 @@ public class Source
 	{
 		this.subtitle = subtitle;
 	}
-	
+
 	/** 
 	 * Returns the human-readable title for the entry.
 	 * @return The human-readable title for the entry.
@@ -272,5 +272,5 @@ public class Source
 	{
 		this.updated = updated;
 	}
-	
+
 }

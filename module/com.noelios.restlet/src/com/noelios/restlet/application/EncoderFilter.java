@@ -39,7 +39,6 @@ import org.restlet.data.Request;
 import org.restlet.data.Response;
 import org.restlet.resource.Representation;
 
-
 /**
  * Filter compressing entities. The best encoding is automatically 
  * selected based on the preferences of the client and on the encoding supported by NRE: GZip, Zip and 
@@ -56,17 +55,17 @@ public class EncoderFilter extends Filter
 	 * Indicates if the encoding should always occur, regardless of the size. 
 	 */
 	public static final int ENCODE_ALL_SIZES = -1;
-	
+
 	/**
 	 * Indicates if the request entity should be encoded.
 	 */
 	private boolean encodeRequest;
-	
+
 	/**
 	 * Indicates if the response entity should be encoded.
 	 */
 	private boolean encodeResponse;
-	
+
 	/**
 	 * The minimal size necessary for encoding.
 	 */
@@ -102,8 +101,9 @@ public class EncoderFilter extends Filter
 	 * @param acceptedMediaTypes The media types that should be encoded.
 	 * @param ignoredMediaTypes The media types that should be ignored.
 	 */
-	public EncoderFilter(Context context, boolean encodeInput, boolean encodeOutput, 
-			long minimumSize, List<MediaType> acceptedMediaTypes, List<MediaType> ignoredMediaTypes)
+	public EncoderFilter(Context context, boolean encodeInput, boolean encodeOutput,
+			long minimumSize, List<MediaType> acceptedMediaTypes,
+			List<MediaType> ignoredMediaTypes)
 	{
 		super(context);
 		this.encodeRequest = encodeInput;
@@ -132,36 +132,37 @@ public class EncoderFilter extends Filter
 	 */
 	public static List<MediaType> getDefaultIgnoredMediaTypes()
 	{
-		List<MediaType> result = Arrays.<MediaType> asList(MediaType.APPLICATION_CAB, 
-				MediaType.APPLICATION_GNU_ZIP, MediaType.APPLICATION_ZIP, MediaType.APPLICATION_GNU_TAR, 
-				MediaType.APPLICATION_JAVA_ARCHIVE, MediaType.APPLICATION_STUFFIT, MediaType.APPLICATION_TAR,
+		List<MediaType> result = Arrays.<MediaType> asList(MediaType.APPLICATION_CAB,
+				MediaType.APPLICATION_GNU_ZIP, MediaType.APPLICATION_ZIP,
+				MediaType.APPLICATION_GNU_TAR, MediaType.APPLICATION_JAVA_ARCHIVE,
+				MediaType.APPLICATION_STUFFIT, MediaType.APPLICATION_TAR,
 				MediaType.AUDIO_ALL, MediaType.IMAGE_ALL, MediaType.VIDEO_ALL);
 		return result;
 	}
 
-   /**
-    * Allows filtering before its handling by the target Restlet. Does nothing by default.
-    * @param request The request to filter.
-    * @param response The response to filter.
-    */
-   public void beforeHandle(Request request, Response response)
-   {
+	/**
+	 * Allows filtering before its handling by the target Restlet. Does nothing by default.
+	 * @param request The request to filter.
+	 * @param response The response to filter.
+	 */
+	public void beforeHandle(Request request, Response response)
+	{
 		// Check if encoding of the request entity is needed
-		if(isEncodeRequest() && canEncode(request.getEntity()))
+		if (isEncodeRequest() && canEncode(request.getEntity()))
 		{
 			request.setEntity(encode(request.getClientInfo(), request.getEntity()));
 		}
-   }
+	}
 
-   /**
-    * Allows filtering after its handling by the target Restlet. Does nothing by default.
-    * @param request The request to filter.
-    * @param response The response to filter.
-    */
-   public void afterHandle(Request request, Response response)
-   {
+	/**
+	 * Allows filtering after its handling by the target Restlet. Does nothing by default.
+	 * @param request The request to filter.
+	 * @param response The response to filter.
+	 */
+	public void afterHandle(Request request, Response response)
+	{
 		// Check if encoding of the response entity is needed
-		if(isEncodeResponse() && canEncode(response.getEntity()))
+		if (isEncodeResponse() && canEncode(response.getEntity()))
 		{
 			response.setEntity(encode(request.getClientInfo(), response.getEntity()));
 		}
@@ -175,36 +176,39 @@ public class EncoderFilter extends Filter
 	public boolean canEncode(Representation representation)
 	{
 		// Test the existance of the representation and that no existing encoding applies
-		boolean result = ((representation != null) && (representation.getEncoding() == null)) ||
-							  ((representation != null) && representation.getEncoding().equals(Encoding.IDENTITY));
-		
-		if(result)
+		boolean result = ((representation != null) && (representation.getEncoding() == null))
+				|| ((representation != null) && representation.getEncoding().equals(
+						Encoding.IDENTITY));
+
+		if (result)
 		{
 			// Test the size of the representation
-			result = (getMinimumSize() == ENCODE_ALL_SIZES) || 
-						(representation.getSize() == Representation.UNKNOWN_SIZE) ||
-						(representation.getSize() >= getMinimumSize());
+			result = (getMinimumSize() == ENCODE_ALL_SIZES)
+					|| (representation.getSize() == Representation.UNKNOWN_SIZE)
+					|| (representation.getSize() >= getMinimumSize());
 		}
-		
-		if(result)
+
+		if (result)
 		{
 			// Test the acceptance of the media type
 			MediaType mediaType = representation.getMediaType();
 			boolean accepted = false;
-			for(Iterator<MediaType> iter = getAcceptedMediaTypes().iterator(); !accepted && iter.hasNext(); )
+			for (Iterator<MediaType> iter = getAcceptedMediaTypes().iterator(); !accepted
+					&& iter.hasNext();)
 			{
 				accepted = iter.next().includes(mediaType);
 			}
-			
-			result = accepted; 
+
+			result = accepted;
 		}
-		
-		if(result)
+
+		if (result)
 		{
 			// Test the rejection of the media type
 			MediaType mediaType = representation.getMediaType();
 			boolean rejected = false;
-			for(Iterator<MediaType> iter = getIgnoredMediaTypes().iterator(); !rejected && iter.hasNext(); )
+			for (Iterator<MediaType> iter = getIgnoredMediaTypes().iterator(); !rejected
+					&& iter.hasNext();)
 			{
 				rejected = iter.next().includes(mediaType);
 			}
@@ -217,7 +221,7 @@ public class EncoderFilter extends Filter
 
 	/**
 	 * Encodes a given representation if an encoding is supported by the client.
-    * @param client The client preferences to use.
+	 * @param client The client preferences to use.
 	 * @param representation The representation to encode.
 	 * @return The encoded representation or the original one if no encoding supported by the client.
 	 */
@@ -225,18 +229,18 @@ public class EncoderFilter extends Filter
 	{
 		Representation result = representation;
 		Encoding bestEncoding = getBestEncoding(client);
-		
-		if(bestEncoding != null)
+
+		if (bestEncoding != null)
 		{
 			result = new EncoderRepresentation(bestEncoding, representation);
 		}
-				
+
 		return result;
 	}
-	
+
 	/**
 	 * Returns the best supported encoding for a given client.
-    * @param client The client preferences to use.
+	 * @param client The client preferences to use.
 	 * @return The best supported encoding for the given call.
 	 */
 	public Encoding getBestEncoding(ClientInfo client)
@@ -245,20 +249,22 @@ public class EncoderFilter extends Filter
 		Encoding currentEncoding = null;
 		Preference<Encoding> currentPref = null;
 		float bestScore = 0F;
-		
-		for(Iterator<Encoding> iter = EncoderRepresentation.getSupportedEncodings().iterator(); iter.hasNext(); )
+
+		for (Iterator<Encoding> iter = EncoderRepresentation.getSupportedEncodings()
+				.iterator(); iter.hasNext();)
 		{
 			currentEncoding = iter.next();
-			
-			for(Iterator<Preference<Encoding>> iter2 = client.getAcceptedEncodings().iterator(); iter2.hasNext(); )
+
+			for (Iterator<Preference<Encoding>> iter2 = client.getAcceptedEncodings()
+					.iterator(); iter2.hasNext();)
 			{
 				currentPref = iter2.next();
-				
-				if(currentPref.getMetadata().equals(Encoding.ALL) || 
-					currentPref.getMetadata().equals(currentEncoding))
+
+				if (currentPref.getMetadata().equals(Encoding.ALL)
+						|| currentPref.getMetadata().equals(currentEncoding))
 				{
 					// A match was found, compute its score
-					if(currentPref.getQuality() > bestScore)
+					if (currentPref.getQuality() > bestScore)
 					{
 						bestScore = currentPref.getQuality();
 						bestEncoding = currentEncoding;
@@ -266,10 +272,10 @@ public class EncoderFilter extends Filter
 				}
 			}
 		}
-		
+
 		return bestEncoding;
 	}
-	
+
 	/**
 	 * Indicates if the request entity should be encoded.
 	 * @return True if the request entity should be encoded. 

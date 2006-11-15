@@ -113,7 +113,7 @@ public class HttpUrlConnectionCall extends HttpClientCall
 		try
 		{
 			Representation entity = request.getEntity();
-			
+
 			if (entity != null)
 			{
 				// Adjust the streaming mode

@@ -35,8 +35,10 @@ public class AtomTest
 	{
 		try
 		{
-			Service atomService = new Service("http://bitworking.org/projects/pyapp/collection.cgi?introspection=1");
-			Feed atomFeed = atomService.getWorkspaces().get(0).getCollections().get(0).getFeed();
+			Service atomService = new Service(
+					"http://bitworking.org/projects/pyapp/collection.cgi?introspection=1");
+			Feed atomFeed = atomService.getWorkspaces().get(0).getCollections().get(0)
+					.getFeed();
 			atomFeed.write(System.out);
 		}
 		catch (Exception e)
@@ -44,5 +46,5 @@ public class AtomTest
 			e.printStackTrace();
 		}
 	}
-	
+
 }

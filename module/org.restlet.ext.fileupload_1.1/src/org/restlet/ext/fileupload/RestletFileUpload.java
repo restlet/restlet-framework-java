@@ -79,7 +79,8 @@ public class RestletFileUpload extends FileUpload
 	 * @throws FileUploadException if there are problems reading/parsing the request or storing files.
 	 */
 	@SuppressWarnings("unchecked")
-	public List<FileItem> parseRepresentation(Representation multipartForm) throws FileUploadException
+	public List<FileItem> parseRepresentation(Representation multipartForm)
+			throws FileUploadException
 	{
 		return parseRequest(new RepresentationContext(multipartForm));
 	}

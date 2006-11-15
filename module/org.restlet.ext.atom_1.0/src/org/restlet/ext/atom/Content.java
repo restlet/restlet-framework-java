@@ -37,10 +37,10 @@ public class Content
 
 	/** Reference to the external representation. */
 	private Reference externalRef;
-	
+
 	/** Expected media type of the external content. */
 	private MediaType externalType;
-	
+
 	/**
 	 * Constructor.
 	 */
@@ -68,7 +68,7 @@ public class Content
 	{
 		return (this.externalRef != null);
 	}
-	
+
 	/** 
 	 * Returns the representation for inline content.
 	 * @return The representation for inline content.
@@ -122,5 +122,5 @@ public class Content
 	{
 		this.externalType = externalType;
 	}
-	
+
 }

@@ -45,17 +45,17 @@ import org.safehaus.asyncweb.transport.nio.NIOTransport;
  */
 public class HttpServerHelper extends AsyncWebServerHelper
 {
-   /**
-    * Constructor.
+	/**
+	 * Constructor.
 	 * @param server The server to help.
-    */
-   public HttpServerHelper(Server server)
-   {
-      super(server);
-      getSupportedProtocols().add(Protocol.HTTP);
-   }
+	 */
+	public HttpServerHelper(Server server)
+	{
+		super(server);
+		getSupportedProtocols().add(Protocol.HTTP);
+	}
 
-   /** Starts the Connector. */
+	/** Starts the Connector. */
 	public void start() throws ContainerLifecycleException
 	{
 		NIOTransport nio = new NIOTransport();
@@ -63,7 +63,7 @@ public class HttpServerHelper extends AsyncWebServerHelper
 		nio.setServiceContainer(this);
 		nio.setIoWorkerCount(getIoWorkerCount());
 		setTransport(nio);
-		super.start();		
+		super.start();
 	}
 
 }

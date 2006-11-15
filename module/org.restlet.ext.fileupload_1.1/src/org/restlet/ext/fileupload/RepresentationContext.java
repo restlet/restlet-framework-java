@@ -36,23 +36,23 @@ public class RepresentationContext implements RequestContext
 {
 	/** The representation to adapt. */
 	private Representation multipartForm;
-	
+
 	/**
 	 * Constructor.
 	 * @param multipartForm The multipart form to parse.
 	 */
 	public RepresentationContext(Representation multipartForm)
-	{	
+	{
 		this.multipartForm = multipartForm;
 	}
-	
+
 	/**
 	 * Returns the character encoding for the form.
 	 * @return The character encoding for the form.
 	 */
 	public String getCharacterEncoding()
 	{
-		if(this.multipartForm.getEncoding() != null)
+		if (this.multipartForm.getEncoding() != null)
 		{
 			return this.multipartForm.getEncoding().getName();
 		}
@@ -68,7 +68,7 @@ public class RepresentationContext implements RequestContext
 	 */
 	public int getContentLength()
 	{
-		return (int)this.multipartForm.getSize();
+		return (int) this.multipartForm.getSize();
 	}
 
 	/**
@@ -77,7 +77,7 @@ public class RepresentationContext implements RequestContext
 	 */
 	public String getContentType()
 	{
-		if(this.multipartForm.getMediaType() != null)
+		if (this.multipartForm.getMediaType() != null)
 		{
 			return this.multipartForm.getMediaType().getName();
 		}

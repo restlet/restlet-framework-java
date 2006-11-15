@@ -170,7 +170,7 @@ public class ContainerHelper implements Helper
 				}
 			}
 		}
-		if(missingConnector) 
+		if (missingConnector)
 		{
 			getContainer().stop();
 		}
@@ -184,7 +184,7 @@ public class ContainerHelper implements Helper
 						.getAccessLogFormat());
 				setFirst(lastFilter);
 			}
-	
+
 			// Addition of status pages
 			if (getContainer().getStatusService().isEnabled())
 			{
@@ -193,7 +193,7 @@ public class ContainerHelper implements Helper
 				if (getFirst() == null) setFirst(statusFilter);
 				lastFilter = statusFilter;
 			}
-	
+
 			// Reattach the original filter's attached Restlet
 			if (getFirst() == null)
 			{

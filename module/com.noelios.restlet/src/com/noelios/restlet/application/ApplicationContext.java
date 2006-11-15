@@ -60,12 +60,12 @@ public class ApplicationContext extends Context
 		this.warClient = null;
 	}
 
-   /**
-    * Returns a call dispatcher.
-    * @return A call dispatcher.
-    */
-   public Dispatcher getDispatcher()
-   {
+	/**
+	 * Returns a call dispatcher.
+	 * @return A call dispatcher.
+	 */
+	public Dispatcher getDispatcher()
+	{
 		return new ApplicationDispatcher(this);
 	}
 

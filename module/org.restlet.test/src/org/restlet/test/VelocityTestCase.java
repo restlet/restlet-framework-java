@@ -39,9 +39,10 @@ public class VelocityTestCase extends TestCase
 		Map<String, Object> map = new TreeMap<String, Object>();
 		map.put("value", "myValue");
 
-		TemplateRepresentation tr = new TemplateRepresentation(testFile.getName(), map, MediaType.TEXT_PLAIN); 
+		TemplateRepresentation tr = new TemplateRepresentation(testFile.getName(), map,
+				MediaType.TEXT_PLAIN);
 		tr.getEngine().setProperty("file.resource.loader.path", testDir.getAbsolutePath());
-		
+
 		String result = tr.getValue();
 		assertEquals("Value=myValue", result);
 

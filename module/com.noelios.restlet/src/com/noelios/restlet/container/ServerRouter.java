@@ -40,38 +40,39 @@ public class ServerRouter extends Router
 {
 	/** The parent container. */
 	private Container container;
-	
-   /**
-    * Constructor.
-    * @param container The parent container.
-    */
+
+	/**
+	 * Constructor.
+	 * @param container The parent container.
+	 */
 	public ServerRouter(Container container)
 	{
 		super(container.getContext());
 		this.container = container;
 	}
-	
-   /** Starts the Restlet. */
+
+	/** Starts the Restlet. */
 	public void start() throws Exception
 	{
 		// Attach all virtual hosts
-		for(VirtualHost host : getContainer().getHosts())
+		for (VirtualHost host : getContainer().getHosts())
 		{
 			getScorers().add(new HostScorer(this, host));
 		}
 
 		// Also attach the local host if it exists
-		if(getContainer().getDefaultHost() != null)
+		if (getContainer().getDefaultHost() != null)
 		{
 			getScorers().add(new HostScorer(this, getContainer().getDefaultHost()));
 		}
-		
+
 		// If no host matches, display and error page with a precise message
 		Restlet noHostMatched = new Restlet(getContainer().getContext())
 		{
 			public void handle(Request request, Response response)
 			{
-				response.setStatus(Status.CLIENT_ERROR_NOT_FOUND, "No virtual host could handle the request");
+				response.setStatus(Status.CLIENT_ERROR_NOT_FOUND,
+						"No virtual host could handle the request");
 			}
 		};
 		setDefaultScorer(new Scorer(this, noHostMatched));

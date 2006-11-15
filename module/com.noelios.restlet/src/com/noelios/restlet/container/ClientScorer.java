@@ -37,15 +37,15 @@ import org.restlet.data.Response;
  */
 public class ClientScorer extends Scorer
 {
-   /**
-    * Constructor.
-    * @param router The parent router.
-    * @param target The target client.
-    */
-   public ClientScorer(Router router, Client target)
-   {
-      super(router, target);
-   }
+	/**
+	 * Constructor.
+	 * @param router The parent router.
+	 * @param target The target client.
+	 */
+	public ClientScorer(Router router, Client target)
+	{
+		super(router, target);
+	}
 
 	/**
 	 * Returns the target client.
@@ -53,7 +53,7 @@ public class ClientScorer extends Scorer
 	 */
 	public Client getClient()
 	{
-		return (Client)getNext();
+		return (Client) getNext();
 	}
 
 	/**
@@ -64,11 +64,11 @@ public class ClientScorer extends Scorer
 	{
 		super.setNext(next);
 	}
-	
+
 	/**
 	 * Returns the score for a given call (between 0 and 1.0).
-    * @param request The request to score.
-    * @param response The response to score.
+	 * @param request The request to score.
+	 * @param response The response to score.
 	 * @return The score for a given call (between 0 and 1.0).
 	 */
 	public float score(Request request, Response response)
@@ -76,28 +76,30 @@ public class ClientScorer extends Scorer
 		float result = 0F;
 
 		// Add the protocol score
-   	Protocol protocol = request.getProtocol();
-   	if(protocol == null)
-   	{
-   		// Attempt to guess the protocol to use
-   		// from the target reference scheme
-   		protocol = request.getResourceRef().getSchemeProtocol();
-   	}
-   	
-   	if(protocol == null)
-   	{
-   		getLogger().warning("Unable to determine the protocol to use for this call.");
-   	}
-   	else if(getClient().getProtocols().contains(protocol))
-  		{
-  			result = 1.0F;
-   	}
-   	
-      if(getLogger().isLoggable(Level.FINER))
-      {
-      	getLogger().finer("Call score for the \"" + getClient().getProtocols().toString() + "\" client: " + result);
-      }
+		Protocol protocol = request.getProtocol();
+		if (protocol == null)
+		{
+			// Attempt to guess the protocol to use
+			// from the target reference scheme
+			protocol = request.getResourceRef().getSchemeProtocol();
+		}
 
-      return result;
+		if (protocol == null)
+		{
+			getLogger().warning("Unable to determine the protocol to use for this call.");
+		}
+		else if (getClient().getProtocols().contains(protocol))
+		{
+			result = 1.0F;
+		}
+
+		if (getLogger().isLoggable(Level.FINER))
+		{
+			getLogger().finer(
+					"Call score for the \"" + getClient().getProtocols().toString()
+							+ "\" client: " + result);
+		}
+
+		return result;
 	}
 }

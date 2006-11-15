@@ -168,8 +168,8 @@ public class DirectoryTestCase extends TestCase
 		assertTrue(response.getStatus().equals(Status.CLIENT_ERROR_NOT_FOUND));
 
 		//Test 6c : delete a directory
-//		response = handle(directory, webSiteURL, webSiteURL, Method.DELETE, null);
-//		assertTrue(response.getStatus().equals(Status.CLIENT_ERROR_FORBIDDEN));
+		//		response = handle(directory, webSiteURL, webSiteURL, Method.DELETE, null);
+		//		assertTrue(response.getStatus().equals(Status.CLIENT_ERROR_FORBIDDEN));
 
 		//Test 7a : put one representation of the base file (in french language)
 		response = handle(directory, webSiteURL, baseFileUrlFr, Method.PUT,

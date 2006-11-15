@@ -69,7 +69,8 @@ public class HttpConverter
 	 * @param existingHeaders The headers to update.
 	 * @param additionalHeaders The headers to add.
 	 */
-	public void addAdditionalHeaders(ParameterList existingHeaders, ParameterList additionalHeaders)
+	public void addAdditionalHeaders(ParameterList existingHeaders,
+			ParameterList additionalHeaders)
 	{
 		if (additionalHeaders != null)
 		{
@@ -78,8 +79,10 @@ public class HttpConverter
 				if (param.getName().equalsIgnoreCase(HttpConstants.HEADER_ACCEPT)
 						|| param.getName()
 								.equalsIgnoreCase(HttpConstants.HEADER_ACCEPT_CHARSET)
-						|| param.getName().equalsIgnoreCase(HttpConstants.HEADER_ACCEPT_ENCODING)
-						|| param.getName().equalsIgnoreCase(HttpConstants.HEADER_ACCEPT_LANGUAGE)
+						|| param.getName().equalsIgnoreCase(
+								HttpConstants.HEADER_ACCEPT_ENCODING)
+						|| param.getName().equalsIgnoreCase(
+								HttpConstants.HEADER_ACCEPT_LANGUAGE)
 						|| param.getName().equalsIgnoreCase(HttpConstants.HEADER_ACCEPT_RANGES)
 						|| param.getName().equalsIgnoreCase(HttpConstants.HEADER_AGE)
 						|| param.getName().equalsIgnoreCase(HttpConstants.HEADER_ALLOW)
@@ -135,7 +138,8 @@ public class HttpConverter
 						|| param.getName().equalsIgnoreCase(HttpConstants.HEADER_VARY)
 						|| param.getName().equalsIgnoreCase(HttpConstants.HEADER_VIA)
 						|| param.getName().equalsIgnoreCase(HttpConstants.HEADER_WARNING)
-						|| param.getName().equalsIgnoreCase(HttpConstants.HEADER_WWW_AUTHENTICATE))
+						|| param.getName().equalsIgnoreCase(
+								HttpConstants.HEADER_WWW_AUTHENTICATE))
 				{
 					// Standard headers can't be overriden
 					getLogger().warning(

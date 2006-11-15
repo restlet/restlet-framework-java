@@ -31,29 +31,29 @@ import junit.framework.TestSuite;
  */
 public class RestletTestSuite extends TestSuite
 {
-   /** Constructor. */
-   public RestletTestSuite()
-   {
-      addTestSuite(CallTestCase.class);
-      addTestSuite(DirectoryTestCase.class);
-      addTestSuite(FileReferenceTestCase.class);
-      addTestSuite(FilterTestCase.class);
-      addTestSuite(FreeMarkerTestCase.class);
-      addTestSuite(MediaTypeTestCase.class);
-      addTestSuite(RedirectTestCase.class);
-      addTestSuite(ReferenceTestCase.class);
-      addTestSuite(RestartTestCase.class);
-      addTestSuite(StringTemplateTestCase.class);
-      addTestSuite(VelocityTestCase.class);
-   }
+	/** Constructor. */
+	public RestletTestSuite()
+	{
+		addTestSuite(CallTestCase.class);
+		addTestSuite(DirectoryTestCase.class);
+		addTestSuite(FileReferenceTestCase.class);
+		addTestSuite(FilterTestCase.class);
+		addTestSuite(FreeMarkerTestCase.class);
+		addTestSuite(MediaTypeTestCase.class);
+		addTestSuite(RedirectTestCase.class);
+		addTestSuite(ReferenceTestCase.class);
+		addTestSuite(RestartTestCase.class);
+		addTestSuite(StringTemplateTestCase.class);
+		addTestSuite(VelocityTestCase.class);
+	}
 
-   /**
-    * JUnit constructor.
-    * @return The unit test.
-    */
-   public static Test suite()
-   {
-      return new RestletTestSuite();
-   }
+	/**
+	 * JUnit constructor.
+	 * @return The unit test.
+	 */
+	public static Test suite()
+	{
+		return new RestletTestSuite();
+	}
 
 }

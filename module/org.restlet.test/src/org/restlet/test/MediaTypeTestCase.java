@@ -30,9 +30,9 @@ import org.restlet.data.MediaType;
 public class MediaTypeTestCase extends RestletTestCase
 {
 	protected static String DEFAULT_SCHEME = "http";
+
 	protected static String DEFAULT_SCHEMEPART = "//";
 
-   
 	/**
 	 * Equality tests. 
 	 */

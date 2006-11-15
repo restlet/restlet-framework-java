@@ -94,7 +94,8 @@ public class ApplicationHelper implements Helper
 		if (getFirst() != null)
 		{
 			// Set the application as an attribute for usage by other services like the ConnectorService
-			request.getAttributes().put(Application.class.getCanonicalName(), getApplication());
+			request.getAttributes().put(Application.class.getCanonicalName(),
+					getApplication());
 
 			// Dispatch the call to the first Restlet
 			getFirst().handle(request, response);

@@ -42,55 +42,58 @@ import com.noelios.restlet.http.HttpServerCall;
  */
 public class AjpConnection extends AJP13Connection
 {
-   /** Serial version identifier. */
-   private static final long serialVersionUID = 1L;
+	/** Serial version identifier. */
+	private static final long serialVersionUID = 1L;
 
-   /** The logger to use. */
-   private Logger logger;
-   
-   /**
-    * Constructor.
-    * @param logger The logger to use.
-    * @param listener The parent AJP listener.
-    * @param in Input stream to read the request from.
-    * @param out Output stream to write the response to.
-    * @param socket The listening socket.
-    * @param bufferSize The buffer size.
-    */
-   public AjpConnection(Logger logger, AjpListener listener, InputStream in, OutputStream out, Socket socket, int bufferSize) throws IOException   
-   {
-      super(listener, in, out, socket, bufferSize);
-      this.logger = logger;
-   }
+	/** The logger to use. */
+	private Logger logger;
 
-   /**
-    * Handle Jetty HTTP calls.
-    * @param request The HttpRequest request.
-    * @param response The HttpResponse response.
-    * @return The HttpContext that completed handling of the request or null.
-    * @exception HttpException
-    * @exception IOException
-    */
-   protected HttpContext service(HttpRequest request, HttpResponse response) throws HttpException, IOException
-   {
-      getJettyServer().handle((HttpServerCall)new JettyCall(this.logger, request, response));
+	/**
+	 * Constructor.
+	 * @param logger The logger to use.
+	 * @param listener The parent AJP listener.
+	 * @param in Input stream to read the request from.
+	 * @param out Output stream to write the response to.
+	 * @param socket The listening socket.
+	 * @param bufferSize The buffer size.
+	 */
+	public AjpConnection(Logger logger, AjpListener listener, InputStream in,
+			OutputStream out, Socket socket, int bufferSize) throws IOException
+	{
+		super(listener, in, out, socket, bufferSize);
+		this.logger = logger;
+	}
 
-      // Commit the response and ensures that all data is flushed out to the caller
-      response.commit();
+	/**
+	 * Handle Jetty HTTP calls.
+	 * @param request The HttpRequest request.
+	 * @param response The HttpResponse response.
+	 * @return The HttpContext that completed handling of the request or null.
+	 * @exception HttpException
+	 * @exception IOException
+	 */
+	protected HttpContext service(HttpRequest request, HttpResponse response)
+			throws HttpException, IOException
+	{
+		getJettyServer().handle(
+				(HttpServerCall) new JettyCall(this.logger, request, response));
 
-      // Indicates that the request fully handled
-      request.setHandled(true);
+		// Commit the response and ensures that all data is flushed out to the caller
+		response.commit();
 
-      return null;
-   }
+		// Indicates that the request fully handled
+		request.setHandled(true);
 
-   /**
-    * Returns the Jetty connector.
-    * @return The Jetty connector.
-    */
-   private JettyServerHelper getJettyServer()
-   {
-      return ((AjpListener)getListener()).getHelper();
-   }
+		return null;
+	}
+
+	/**
+	 * Returns the Jetty connector.
+	 * @return The Jetty connector.
+	 */
+	private JettyServerHelper getJettyServer()
+	{
+		return ((AjpListener) getListener()).getHelper();
+	}
 
 }

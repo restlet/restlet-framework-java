@@ -28,6 +28,5 @@ package org.restlet.ext.atom;
  */
 public enum MemberType
 {
-	ENTRY,
-	MEDIA;
+	ENTRY, MEDIA;
 }

@@ -168,8 +168,8 @@ public class HostScorer extends Scorer
 
 	/**
 	 * Allows filtering before processing by the next Restlet. Set the base reference. 
-    * @param request The request to handle.
-    * @param response The response to update.
+	 * @param request The request to handle.
+	 * @param response The response to update.
 	 */
 	protected void beforeHandle(Request request, Response response)
 	{

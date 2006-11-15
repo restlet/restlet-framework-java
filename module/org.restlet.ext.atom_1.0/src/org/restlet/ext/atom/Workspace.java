@@ -35,16 +35,16 @@ public class Workspace
 	 * The parent service.
 	 */
 	private Service service;
-	
+
 	/**
 	 * The title.
 	 */
 	private String title;
-	
+
 	/**
 	 * The list of collections.
 	 */
-	private List<Collection> collections; 
+	private List<Collection> collections;
 
 	/**
 	 * Constructor.
@@ -54,7 +54,7 @@ public class Workspace
 	{
 		this(service, null);
 	}
-	
+
 	/**
 	 * Constructor.
 	 * @param service The parent service.
@@ -62,10 +62,10 @@ public class Workspace
 	 */
 	public Workspace(Service service, String title)
 	{
-		this.service = service; 
+		this.service = service;
 		this.title = title;
 	}
-	
+
 	/**
 	 * Returns the parent service.
 	 * @return The parent service.
@@ -74,7 +74,7 @@ public class Workspace
 	{
 		return this.service;
 	}
-	
+
 	/**
 	 * Sets the parent service.
 	 * @param service The parent service.
@@ -83,7 +83,7 @@ public class Workspace
 	{
 		this.service = service;
 	}
-	
+
 	/**
 	 * Returns the title.
 	 * @return The title.
@@ -92,7 +92,7 @@ public class Workspace
 	{
 		return this.title;
 	}
-	
+
 	/**
 	 * Sets the title.
 	 * @param title The title.
@@ -108,12 +108,12 @@ public class Workspace
 	 */
 	public List<Collection> getCollections()
 	{
-		if(this.collections == null)
+		if (this.collections == null)
 		{
 			this.collections = new ArrayList<Collection>();
 		}
-		
+
 		return this.collections;
 	}
-	
+
 }

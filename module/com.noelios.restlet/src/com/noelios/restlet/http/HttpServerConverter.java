@@ -81,7 +81,7 @@ public class HttpServerConverter extends HttpConverter
 		{
 			// Add the response headers
 			addResponseHeaders(httpCall, response);
-			
+
 			// Send the response to the client
 			httpCall.sendResponse(response);
 		}

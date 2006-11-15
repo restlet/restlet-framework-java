@@ -36,7 +36,7 @@ public class ClientHelper extends ConnectorHelper
 {
 	/** The client to help. */
 	private Client client;
-	
+
 	/**
 	 * Constructor.
 	 * @param client The client to help.
@@ -45,7 +45,7 @@ public class ClientHelper extends ConnectorHelper
 	{
 		this.client = client;
 	}
-	
+
 	/**
 	 * Returns the client to help.
 	 * @return The client to help.
@@ -61,8 +61,9 @@ public class ClientHelper extends ConnectorHelper
 	 */
 	public ParameterList getParameters()
 	{
-		ParameterList result = (getClient() != null) ? getClient().getContext().getParameters() : null;
-		if(result == null) result = new ParameterList();
+		ParameterList result = (getClient() != null) ? getClient().getContext()
+				.getParameters() : null;
+		if (result == null) result = new ParameterList();
 		return result;
 	}
 

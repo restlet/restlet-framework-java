@@ -34,7 +34,6 @@ import org.restlet.data.Parameter;
 import org.restlet.data.ParameterList;
 import org.restlet.data.Preference;
 
-
 /**
  * Preference header reader. Works for character sets, encodings, languages or media types.
  * @author Jerome Louvel (contact@noelios.com) <a href="http://www.noelios.com/">Noelios Consulting</a>

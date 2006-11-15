@@ -46,199 +46,202 @@ import com.noelios.restlet.http.HttpServerCall;
  */
 public class JettyCall extends HttpServerCall
 {
-   /** The wrapped Jetty HTTP connection. */
-   private HttpConnection connection;
+	/** The wrapped Jetty HTTP connection. */
+	private HttpConnection connection;
 
 	/** Indicates if the request headers were parsed and added. */
 	private boolean requestHeadersAdded;
 
-   /**
-    * Constructor.
-    * @param logger The logger to use.
-    * @param connection The wrapped Jetty HTTP connection.
-    */
-   public JettyCall(Logger logger, HttpConnection connection)
-   {
-   	super(logger);
-      this.connection = connection;
-      this.requestHeadersAdded = false;
-   }
+	/**
+	 * Constructor.
+	 * @param logger The logger to use.
+	 * @param connection The wrapped Jetty HTTP connection.
+	 */
+	public JettyCall(Logger logger, HttpConnection connection)
+	{
+		super(logger);
+		this.connection = connection;
+		this.requestHeadersAdded = false;
+	}
 
-   /**
-    * Returns the wrapped Jetty HTTP connection.
-    * @return The wrapped Jetty HTTP connection.
-    */
-   public HttpConnection getConnection()
-   {
-      return this.connection;
-   }
+	/**
+	 * Returns the wrapped Jetty HTTP connection.
+	 * @return The wrapped Jetty HTTP connection.
+	 */
+	public HttpConnection getConnection()
+	{
+		return this.connection;
+	}
 
-   /**
-    * Indicates if the request was made using a confidential mean.<br/>
-    * @return True if the request was made using a confidential mean.<br/>
-    */
-   public boolean isConfidential()
-   {
-      return getConnection().getRequest().isSecure();
-   }
+	/**
+	 * Indicates if the request was made using a confidential mean.<br/>
+	 * @return True if the request was made using a confidential mean.<br/>
+	 */
+	public boolean isConfidential()
+	{
+		return getConnection().getRequest().isSecure();
+	}
 
 	/**
 	 * Returns the request address.<br/>
 	 * Corresponds to the IP address of the requesting client.
 	 * @return The request address.
 	 */
-   public String getClientAddress()
-   {
-      return getConnection().getRequest().getRemoteAddr();
-   }
+	public String getClientAddress()
+	{
+		return getConnection().getRequest().getRemoteAddr();
+	}
 
-   /**
-    * Returns the request method.
-    * @return The request method.
-    */
-   public String getMethod()
-   {
-      return getConnection().getRequest().getMethod();
-   }
+	/**
+	 * Returns the request method.
+	 * @return The request method.
+	 */
+	public String getMethod()
+	{
+		return getConnection().getRequest().getMethod();
+	}
 
 	/**
 	 * Returns the URI on the request line (most like a relative reference, but not necessarily). 
 	 * @return The URI on the request line.
 	 */
-   public String getRequestUri()
-   {
-   	return getConnection().getRequest().getUri().toString();
-   }
+	public String getRequestUri()
+	{
+		return getConnection().getRequest().getUri().toString();
+	}
 
-   /**
-    * Returns the list of request headers.
-    * @return The list of request headers.
-    */
-   public ParameterList getRequestHeaders()
-   {
-   	ParameterList result = super.getRequestHeaders();
-   	
-      if(!requestHeadersAdded)
-      {
-         // Copy the headers from the request object
-         String headerName;
-         String headerValue;
-         for(Enumeration names = getConnection().getRequest().getHeaderNames(); names.hasMoreElements(); )
-         {
-            headerName = (String)names.nextElement();
-            for(Enumeration values = getConnection().getRequest().getHeaders(headerName); values.hasMoreElements(); )
-            {
-               headerValue = (String)values.nextElement();
-               result.add(new Parameter(headerName, headerValue));
-            }
-         }
-         
-         requestHeadersAdded = true;
-      }
+	/**
+	 * Returns the list of request headers.
+	 * @return The list of request headers.
+	 */
+	public ParameterList getRequestHeaders()
+	{
+		ParameterList result = super.getRequestHeaders();
 
-      return result;
-   }
+		if (!requestHeadersAdded)
+		{
+			// Copy the headers from the request object
+			String headerName;
+			String headerValue;
+			for (Enumeration names = getConnection().getRequest().getHeaderNames(); names
+					.hasMoreElements();)
+			{
+				headerName = (String) names.nextElement();
+				for (Enumeration values = getConnection().getRequest().getHeaders(headerName); values
+						.hasMoreElements();)
+				{
+					headerValue = (String) values.nextElement();
+					result.add(new Parameter(headerName, headerValue));
+				}
+			}
+
+			requestHeadersAdded = true;
+		}
+
+		return result;
+	}
 
 	/**
 	 * Returns the response address.<br/>
 	 * Corresponds to the IP address of the responding server.
 	 * @return The response address.
 	 */
-   public String getServerAddress()
-   {
-      return getConnection().getRequest().getLocalAddr();
-   }
+	public String getServerAddress()
+	{
+		return getConnection().getRequest().getLocalAddr();
+	}
 
-   /**
-    * Returns the request entity channel if it exists.
-    * @return The request entity channel if it exists.
-    */
-   public ReadableByteChannel getRequestChannel()
-   {
-      return null;
-   }
+	/**
+	 * Returns the request entity channel if it exists.
+	 * @return The request entity channel if it exists.
+	 */
+	public ReadableByteChannel getRequestChannel()
+	{
+		return null;
+	}
 
-   /**
-    * Returns the request entity stream if it exists.
-    * @return The request entity stream if it exists.
-    */
-   public InputStream getRequestStream()
-   {
-      try
-      {
-         return getConnection().getRequest().getInputStream();
-      }
-      catch(IOException e)
-      {
-         return null;
-      }
-   }
+	/**
+	 * Returns the request entity stream if it exists.
+	 * @return The request entity stream if it exists.
+	 */
+	public InputStream getRequestStream()
+	{
+		try
+		{
+			return getConnection().getRequest().getInputStream();
+		}
+		catch (IOException e)
+		{
+			return null;
+		}
+	}
 
-   /**
-    * Sends the response back to the client. Commits the status, headers and optional entity and 
-    * send them on the network. 
+	/**
+	 * Sends the response back to the client. Commits the status, headers and optional entity and 
+	 * send them on the network. 
 	 * @param response The high-level response.
-    */
-   public void sendResponse(Response response) throws IOException
-   {
-      // Add call headers
-      Parameter header;
-      for(Iterator<Parameter> iter = getResponseHeaders().iterator(); iter.hasNext();)
-      {
-         header = iter.next();
-         getConnection().getResponse().addHeader(header.getName(), header.getValue());
-      }
+	 */
+	public void sendResponse(Response response) throws IOException
+	{
+		// Add call headers
+		Parameter header;
+		for (Iterator<Parameter> iter = getResponseHeaders().iterator(); iter.hasNext();)
+		{
+			header = iter.next();
+			getConnection().getResponse().addHeader(header.getName(), header.getValue());
+		}
 
-      // Set the status code in the response. We do this after adding the headers because 
-      // when we have to rely on the 'sendError' method, the Servlet containers are expected
-      // to commit their response.
-   	if(Status.isError(getStatusCode()))
-   	{
-   		try
+		// Set the status code in the response. We do this after adding the headers because 
+		// when we have to rely on the 'sendError' method, the Servlet containers are expected
+		// to commit their response.
+		if (Status.isError(getStatusCode()))
+		{
+			try
 			{
-   			getConnection().getResponse().sendError(getStatusCode(), getReasonPhrase());
+				getConnection().getResponse().sendError(getStatusCode(), getReasonPhrase());
 			}
 			catch (IOException ioe)
 			{
-				getLogger().log(Level.WARNING, "Unable to set the response error status", ioe);
+				getLogger()
+						.log(Level.WARNING, "Unable to set the response error status", ioe);
 			}
-   	}
-   	else
-   	{
-   		getConnection().getResponse().setStatus(getStatusCode());
-   	}
-      
-   	// Send the response entity
-      super.sendResponse(response);
+		}
+		else
+		{
+			getConnection().getResponse().setStatus(getStatusCode());
+		}
 
-      // Fully complete and commit the response 
-   	this.connection.completeResponse();
-   	this.connection.commitResponse(true);
-   }
+		// Send the response entity
+		super.sendResponse(response);
 
-   /**
-    * Returns the response channel if it exists.
-    * @return The response channel if it exists.
-    */
-   public WritableByteChannel getResponseChannel()
-   {
-      return null;
-   }
+		// Fully complete and commit the response 
+		this.connection.completeResponse();
+		this.connection.commitResponse(true);
+	}
 
-   /**
-    * Returns the response stream if it exists.
-    * @return The response stream if it exists.
-    */
-   public OutputStream getResponseStream()
-   {
-      try
-      {
-         return getConnection().getResponse().getOutputStream();
-      }
-      catch(IOException e)
-      {
-         return null;
-      }
-   }
-   
+	/**
+	 * Returns the response channel if it exists.
+	 * @return The response channel if it exists.
+	 */
+	public WritableByteChannel getResponseChannel()
+	{
+		return null;
+	}
+
+	/**
+	 * Returns the response stream if it exists.
+	 * @return The response stream if it exists.
+	 */
+	public OutputStream getResponseStream()
+	{
+		try
+		{
+			return getConnection().getResponse().getOutputStream();
+		}
+		catch (IOException e)
+		{
+			return null;
+		}
+	}
+
 }

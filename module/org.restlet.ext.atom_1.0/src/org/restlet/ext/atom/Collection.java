@@ -39,22 +39,22 @@ public class Collection
 	 * The parent workspace.
 	 */
 	private Workspace workspace;
-	
+
 	/**
 	 * The title.
 	 */
 	private String title;
-	
+
 	/**
 	 * The hypertext reference.
 	 */
 	private Reference href;
-	
+
 	/**
 	 * The type of members.
 	 */
 	private MemberType memberType;
-	
+
 	/**
 	 * Constructor.
 	 * @param workspace The parent workspace.
@@ -77,7 +77,7 @@ public class Collection
 	{
 		return this.workspace;
 	}
-	
+
 	/**
 	 * Sets the parent workspace.
 	 * @param workspace The parent workspace.
@@ -86,7 +86,7 @@ public class Collection
 	{
 		this.workspace = workspace;
 	}
-	
+
 	/**
 	 * Returns the title.
 	 * @return The title.
@@ -147,18 +147,19 @@ public class Collection
 	 * @return The reference of the new resource.
 	 * @throws Exception 
 	 */
-	public Reference postMember(Representation member) throws Exception 
+	public Reference postMember(Representation member) throws Exception
 	{
 		Request request = new Request(Method.POST, getHref(), member);
 		Response response = getWorkspace().getService().getClient().handle(request);
-		
-		if(response.getStatus().equals(Status.SUCCESS_CREATED))
+
+		if (response.getStatus().equals(Status.SUCCESS_CREATED))
 		{
 			return response.getRedirectRef();
 		}
 		else
 		{
-			throw new Exception("Couldn't post the member representation. Status returned: " + response.getStatus().getDescription());
+			throw new Exception("Couldn't post the member representation. Status returned: "
+					+ response.getStatus().getDescription());
 		}
 	}
 
@@ -171,15 +172,16 @@ public class Collection
 	{
 		Request request = new Request(Method.GET, getHref());
 		Response response = getWorkspace().getService().getClient().handle(request);
-		
-		if(response.getStatus().equals(Status.SUCCESS_OK))
+
+		if (response.getStatus().equals(Status.SUCCESS_OK))
 		{
 			return new Feed(response.getEntity());
 		}
 		else
 		{
-			throw new Exception("Couldn't get the feed representation. Status returned: " + response.getStatus().getDescription());
+			throw new Exception("Couldn't get the feed representation. Status returned: "
+					+ response.getStatus().getDescription());
 		}
 	}
-	
+
 }

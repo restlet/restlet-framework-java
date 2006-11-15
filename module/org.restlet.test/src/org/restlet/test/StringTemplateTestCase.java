@@ -37,63 +37,71 @@ import org.restlet.util.StringTemplate;
  */
 public class StringTemplateTestCase extends TestCase
 {
-   /** Tests the interpolation feature. */
-   public void testInterpolation()
-   {
-   	Model dataModel = new MapModel();
-      dataModel.put("number", Integer.toString(12345));
-      dataModel.put("string", "abcdef");
+	/** Tests the interpolation feature. */
+	public void testInterpolation()
+	{
+		Model dataModel = new MapModel();
+		dataModel.put("number", Integer.toString(12345));
+		dataModel.put("string", "abcdef");
 
-      StringTemplate st = new StringTemplate("The number is ${number} and the string is ${string}");
-      assertEquals("The number is 12345 and the string is abcdef", st.format(dataModel));
+		StringTemplate st = new StringTemplate(
+				"The number is ${number} and the string is ${string}");
+		assertEquals("The number is 12345 and the string is abcdef", st.format(dataModel));
 
-      st = new StringTemplate("The number is ${foo?exists} and the string is ${string?exists}");
-      assertEquals("The number is  and the string is abcdef", st.format(dataModel));
+		st = new StringTemplate(
+				"The number is ${foo?exists} and the string is ${string?exists}");
+		assertEquals("The number is  and the string is abcdef", st.format(dataModel));
 
-      st = new StringTemplate("The number is $$$ {{{${number}${number} and the string is ${string}$${string}$i{ng}");
-      assertEquals("The number is $$$ {{{1234512345 and the string is abcdef$abcdef$i{ng}", st.format(dataModel));
-   }
-   
-   /** Tests the conditions feature. */
-   public void testConditions()
-   {
-   	Model dataModel = new MapModel();
-      dataModel.put("number", Integer.toString(12345));
-      dataModel.put("string", "abcdef");
+		st = new StringTemplate(
+				"The number is $$$ {{{${number}${number} and the string is ${string}$${string}$i{ng}");
+		assertEquals(
+				"The number is $$$ {{{1234512345 and the string is abcdef$abcdef$i{ng}", st
+						.format(dataModel));
+	}
 
-      StringTemplate st = new StringTemplate("#[if number]Number exists: ${number}#[else]Number doesn't exist#[end]");
-      assertEquals("Number exists: 12345", st.format(dataModel));
-      
-      dataModel.remove("number");
-      assertEquals("Number doesn't exist", st.format(dataModel));
-   }
+	/** Tests the conditions feature. */
+	public void testConditions()
+	{
+		Model dataModel = new MapModel();
+		dataModel.put("number", Integer.toString(12345));
+		dataModel.put("string", "abcdef");
 
-   /** Test URI patterns based on the CallModel and StringTemplate. */
-   public void testUriPattern()
-   {
-   	// Create a test call
-      Request request = new Request();
-      Response response = new Response(request);
-      request.setResourceRef("http://www.domain.com:8080/path1/path2/path3?param1&param2=123&query=abc");
+		StringTemplate st = new StringTemplate(
+				"#[if number]Number exists: ${number}#[else]Number doesn't exist#[end]");
+		assertEquals("Number exists: 12345", st.format(dataModel));
 
-      // Create the template engine
-   	String pattern = "http://www.target.org";
-   	pattern += "${path}#[if query('query')]?${query('query')}#[end]";
-      StringTemplate te = new StringTemplate(pattern);
+		dataModel.remove("number");
+		assertEquals("Number doesn't exist", st.format(dataModel));
+	}
 
-      // Create the template data model
-      String targetUri = te.format(new CallModel(request, response, null));
-      assertEquals("http://www.target.org/path1/path2/path3?abc", targetUri);
+	/** Test URI patterns based on the CallModel and StringTemplate. */
+	public void testUriPattern()
+	{
+		// Create a test call
+		Request request = new Request();
+		Response response = new Response(request);
+		request
+				.setResourceRef("http://www.domain.com:8080/path1/path2/path3?param1&param2=123&query=abc");
 
-      // Remove the query parameter
-      request.setResourceRef("http://www.domain.com:8080/path1/path2/path3?param1&param2=123");
-      targetUri = te.format(new CallModel(request, response, null));
-      assertEquals("http://www.target.org/path1/path2/path3", targetUri);
-      
-      // Extract the last segment
-      te = new StringTemplate("${segment(last)}");
-      targetUri = te.format(new CallModel(request, response, null));
-      assertEquals("path3", targetUri);
-   }
-   
+		// Create the template engine
+		String pattern = "http://www.target.org";
+		pattern += "${path}#[if query('query')]?${query('query')}#[end]";
+		StringTemplate te = new StringTemplate(pattern);
+
+		// Create the template data model
+		String targetUri = te.format(new CallModel(request, response, null));
+		assertEquals("http://www.target.org/path1/path2/path3?abc", targetUri);
+
+		// Remove the query parameter
+		request
+				.setResourceRef("http://www.domain.com:8080/path1/path2/path3?param1&param2=123");
+		targetUri = te.format(new CallModel(request, response, null));
+		assertEquals("http://www.target.org/path1/path2/path3", targetUri);
+
+		// Extract the last segment
+		te = new StringTemplate("${segment(last)}");
+		targetUri = te.format(new CallModel(request, response, null));
+		assertEquals("path3", targetUri);
+	}
+
 }

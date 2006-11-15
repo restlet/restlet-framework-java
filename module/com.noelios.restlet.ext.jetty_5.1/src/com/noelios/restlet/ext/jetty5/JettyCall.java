@@ -45,187 +45,188 @@ import com.noelios.restlet.http.HttpServerCall;
  */
 public class JettyCall extends HttpServerCall
 {
-   /** The wrapped Jetty HTTP request. */
+	/** The wrapped Jetty HTTP request. */
 	private HttpRequest request;
 
-   /** The wrapped Jetty HTTP response. */
+	/** The wrapped Jetty HTTP response. */
 	private HttpResponse response;
 
 	/** Indicates if the request headers were parsed and added. */
 	private boolean requestHeadersAdded;
 
-   /**
-    * Constructor.
-    * @param logger The logger to use.
-    * @param request The Jetty HTTP request.
-    * @param response The Jetty HTTP response.
-    */
-   public JettyCall(Logger logger, HttpRequest request, HttpResponse response)
-   {
-   	super(logger);
-      this.request = request;
-      this.response = response;
-      this.requestHeadersAdded = false;
-   }
+	/**
+	 * Constructor.
+	 * @param logger The logger to use.
+	 * @param request The Jetty HTTP request.
+	 * @param response The Jetty HTTP response.
+	 */
+	public JettyCall(Logger logger, HttpRequest request, HttpResponse response)
+	{
+		super(logger);
+		this.request = request;
+		this.response = response;
+		this.requestHeadersAdded = false;
+	}
 
-   /**
-    * Returns the HTTP Jetty request.
-    * @return The HTTP Jetty request.
-    */
-   public HttpRequest getRequest()
-   {
-      return this.request;
-   }
+	/**
+	 * Returns the HTTP Jetty request.
+	 * @return The HTTP Jetty request.
+	 */
+	public HttpRequest getRequest()
+	{
+		return this.request;
+	}
 
-   /**
-    * Returns the HTTP Jetty response.
-    * @return The HTTP Jetty response.
-    */
-   public HttpResponse getResponse()
-   {
-      return this.response;
-   }
+	/**
+	 * Returns the HTTP Jetty response.
+	 * @return The HTTP Jetty response.
+	 */
+	public HttpResponse getResponse()
+	{
+		return this.response;
+	}
 
-   /**
-    * Indicates if the request was made using a confidential mean.<br/>
-    * @return True if the request was made using a confidential mean.<br/>
-    */
-   public boolean isConfidential()
-   {
-      return getRequest().isConfidential();
-   }
+	/**
+	 * Indicates if the request was made using a confidential mean.<br/>
+	 * @return True if the request was made using a confidential mean.<br/>
+	 */
+	public boolean isConfidential()
+	{
+		return getRequest().isConfidential();
+	}
 
 	/**
 	 * Returns the request address.<br/>
 	 * Corresponds to the IP address of the requesting client.
 	 * @return The request address.
 	 */
-   public String getClientAddress()
-   {
-      return getRequest().getRemoteAddr();
-   }
+	public String getClientAddress()
+	{
+		return getRequest().getRemoteAddr();
+	}
 
-   /**
-    * Returns the request method.
-    * @return The request method.
-    */
-   public String getMethod()
-   {
-      return getRequest().getMethod();
-   }
+	/**
+	 * Returns the request method.
+	 * @return The request method.
+	 */
+	public String getMethod()
+	{
+		return getRequest().getMethod();
+	}
 
 	/**
 	 * Returns the URI on the request line (most like a relative reference, but not necessarily). 
 	 * @return The URI on the request line.
 	 */
-   public String getRequestUri()
-   {
-   	return getRequest().getURI().toString();
-   }
-   
-   /**
-    * Returns the list of request headers.
-    * @return The list of request headers.
-    */
-   public ParameterList getRequestHeaders()
-   {
-   	ParameterList result = super.getRequestHeaders();
-   	
-      if(!requestHeadersAdded)
-      {
-         // Copy the headers from the request object
-         String headerName;
-         String headerValue;
-         for(Enumeration names = getRequest().getFieldNames(); names.hasMoreElements(); )
-         {
-            headerName = (String)names.nextElement();
-            for(Enumeration values = getRequest().getFieldValues(headerName); values.hasMoreElements(); )
-            {
-               headerValue = (String)values.nextElement();
-               result.add(new Parameter(headerName, headerValue));
-            }
-         }
-         
-         requestHeadersAdded = true;
-      }
+	public String getRequestUri()
+	{
+		return getRequest().getURI().toString();
+	}
 
-      return result;
-   }
+	/**
+	 * Returns the list of request headers.
+	 * @return The list of request headers.
+	 */
+	public ParameterList getRequestHeaders()
+	{
+		ParameterList result = super.getRequestHeaders();
 
-   /**
-    * Returns the response address.<br/>
-    * Corresponds to the IP address of the responding server.
-    * @return The response address.
-    */
-   public String getServerAddress()
-   {
-      return getRequest().getHttpConnection().getServerAddr();
-   }
+		if (!requestHeadersAdded)
+		{
+			// Copy the headers from the request object
+			String headerName;
+			String headerValue;
+			for (Enumeration names = getRequest().getFieldNames(); names.hasMoreElements();)
+			{
+				headerName = (String) names.nextElement();
+				for (Enumeration values = getRequest().getFieldValues(headerName); values
+						.hasMoreElements();)
+				{
+					headerValue = (String) values.nextElement();
+					result.add(new Parameter(headerName, headerValue));
+				}
+			}
 
-   /**
-    * Returns the request entity channel if it exists.
-    * @return The request entity channel if it exists.
-    */
-   public ReadableByteChannel getRequestChannel()
-   {
+			requestHeadersAdded = true;
+		}
+
+		return result;
+	}
+
+	/**
+	 * Returns the response address.<br/>
+	 * Corresponds to the IP address of the responding server.
+	 * @return The response address.
+	 */
+	public String getServerAddress()
+	{
+		return getRequest().getHttpConnection().getServerAddr();
+	}
+
+	/**
+	 * Returns the request entity channel if it exists.
+	 * @return The request entity channel if it exists.
+	 */
+	public ReadableByteChannel getRequestChannel()
+	{
 		// Unsupported.
-      return null;
-   }
+		return null;
+	}
 
-   /**
-    * Returns the request entity stream if it exists.
-    * @return The request entity stream if it exists.
-    */
-   public InputStream getRequestStream()
-   {
-      return getRequest().getInputStream();
-   }
+	/**
+	 * Returns the request entity stream if it exists.
+	 * @return The request entity stream if it exists.
+	 */
+	public InputStream getRequestStream()
+	{
+		return getRequest().getInputStream();
+	}
 
-   /**
-    * Sends the response back to the client. Commits the status, headers and optional entity and 
-    * send them on the network. 
+	/**
+	 * Sends the response back to the client. Commits the status, headers and optional entity and 
+	 * send them on the network. 
 	 * @param response The high-level response.
-    */
-   public void sendResponse(Response response) throws IOException
-   {
-   	// Set the response status
-      getResponse().setStatus(getStatusCode(), getReasonPhrase());
+	 */
+	public void sendResponse(Response response) throws IOException
+	{
+		// Set the response status
+		getResponse().setStatus(getStatusCode(), getReasonPhrase());
 
-      // Remove existings headers if any
-      for(Enumeration fields = getResponse().getFieldNames(); fields.hasMoreElements(); )
-      {
-         getResponse().removeField((String)fields.nextElement());
-      }
-      
-      // Add response headers
-      Parameter header;
-      for(Iterator<Parameter> iter = getResponseHeaders().iterator(); iter.hasNext();)
-      {
-         header = iter.next();
-         getResponse().addField(header.getName(), header.getValue());
-      }
-      
-      // Send the response entity
-      super.sendResponse(response);
-   }
+		// Remove existings headers if any
+		for (Enumeration fields = getResponse().getFieldNames(); fields.hasMoreElements();)
+		{
+			getResponse().removeField((String) fields.nextElement());
+		}
 
-   /**
-    * Returns the response channel if it exists.
-    * @return The response channel if it exists.
-    */
-   public WritableByteChannel getResponseChannel()
-   {
+		// Add response headers
+		Parameter header;
+		for (Iterator<Parameter> iter = getResponseHeaders().iterator(); iter.hasNext();)
+		{
+			header = iter.next();
+			getResponse().addField(header.getName(), header.getValue());
+		}
+
+		// Send the response entity
+		super.sendResponse(response);
+	}
+
+	/**
+	 * Returns the response channel if it exists.
+	 * @return The response channel if it exists.
+	 */
+	public WritableByteChannel getResponseChannel()
+	{
 		// Unsupported.
-      return null;
-   }
+		return null;
+	}
 
-   /**
-    * Returns the response stream if it exists.
-    * @return The response stream if it exists.
-    */
-   public OutputStream getResponseStream()
-   {
-      return getResponse().getOutputStream();
-   }
+	/**
+	 * Returns the response stream if it exists.
+	 * @return The response stream if it exists.
+	 */
+	public OutputStream getResponseStream()
+	{
+		return getResponse().getOutputStream();
+	}
 
 }

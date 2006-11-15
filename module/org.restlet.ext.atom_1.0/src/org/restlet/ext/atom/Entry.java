@@ -35,16 +35,16 @@ public class Entry
 {
 	/** The authors of the entry. */
 	private List<Person> authors;
-	
+
 	/** The categories associated with the entry. */
 	private List<Category> categories;
-	
+
 	/** Contains or links to the content of the entry. */
 	private Content content;
 
 	/** The contributors to the entry. */
 	private List<Person> contributors;
-	
+
 	/** Permanent, universally unique identifier for the entry. */
 	private String id;
 
@@ -59,7 +59,7 @@ public class Entry
 
 	/** Source feed's metadata if the entry was copied from another feed. */
 	private Source source;
-	
+
 	/** Short summary, abstract, or excerpt of the entry. */
 	private String summary;
 
@@ -87,14 +87,14 @@ public class Entry
 		this.title = null;
 		this.updated = null;
 	}
-	
+
 	/** 
 	 * Returns the authors of the entry.
 	 * @return The authors of the entry.
 	 */
 	public List<Person> getAuthors()
 	{
-		if(this.authors == null) this.authors = new ArrayList<Person>();
+		if (this.authors == null) this.authors = new ArrayList<Person>();
 		return this.authors;
 	}
 
@@ -104,7 +104,7 @@ public class Entry
 	 */
 	public List<Category> getCategories()
 	{
-		if(this.categories == null) this.categories = new ArrayList<Category>();
+		if (this.categories == null) this.categories = new ArrayList<Category>();
 		return this.categories;
 	}
 
@@ -132,7 +132,7 @@ public class Entry
 	 */
 	public List<Person> getContributors()
 	{
-		if(this.contributors == null) this.contributors = new ArrayList<Person>();
+		if (this.contributors == null) this.contributors = new ArrayList<Person>();
 		return this.contributors;
 	}
 
@@ -160,7 +160,7 @@ public class Entry
 	 */
 	public List<Link> getLinks()
 	{
-		if(this.links == null) this.links = new ArrayList<Link>();
+		if (this.links == null) this.links = new ArrayList<Link>();
 		return this.links;
 	}
 
@@ -173,17 +173,18 @@ public class Entry
 	{
 		Link result = null;
 		Link current = null;
-		
-		for(Iterator<Link> iter = getLinks().iterator(); (result == null) && iter.hasNext();)
+
+		for (Iterator<Link> iter = getLinks().iterator(); (result == null)
+				&& iter.hasNext();)
 		{
 			current = iter.next();
-			
-			if(current.getRel() == rel)
+
+			if (current.getRel() == rel)
 			{
 				result = current;
 			}
 		}
-		
+
 		return result;
 	}
 

@@ -31,7 +31,6 @@ import org.restlet.data.MediaType;
 import org.restlet.resource.Representation;
 import org.restlet.resource.StringRepresentation;
 
-
 /**
  * Representation based on a JSON document.
  * JSON stands for JavaScript Object Notation and is a lightweight data-interchange format.
@@ -40,60 +39,60 @@ import org.restlet.resource.StringRepresentation;
  */
 public class JsonRepresentation extends StringRepresentation
 {
-   /**
-    * Constructor.
-    * @param jsonRepresentation A source JSON representation to parse.
-    */
-   public JsonRepresentation(Representation jsonRepresentation) throws IOException
-   {
-      super(jsonRepresentation.getValue(), MediaType.APPLICATION_JSON);
-   }
+	/**
+	 * Constructor.
+	 * @param jsonRepresentation A source JSON representation to parse.
+	 */
+	public JsonRepresentation(Representation jsonRepresentation) throws IOException
+	{
+		super(jsonRepresentation.getValue(), MediaType.APPLICATION_JSON);
+	}
 
-   /**
-    * Constructor from a JSON object.
-    * @param jsonObject The JSON object.
-    */
-   public JsonRepresentation(JSONObject jsonObject)
-   {
-      super(jsonObject.toString(), MediaType.APPLICATION_JSON);
-   }
+	/**
+	 * Constructor from a JSON object.
+	 * @param jsonObject The JSON object.
+	 */
+	public JsonRepresentation(JSONObject jsonObject)
+	{
+		super(jsonObject.toString(), MediaType.APPLICATION_JSON);
+	}
 
-   /**
-    * Constructor from a JSON array.
-    * @param jsonArray The JSON array.
-    */
-   public JsonRepresentation(JSONArray jsonArray)
-   {
-      super(jsonArray.toString(), MediaType.APPLICATION_JSON);
-   }
+	/**
+	 * Constructor from a JSON array.
+	 * @param jsonArray The JSON array.
+	 */
+	public JsonRepresentation(JSONArray jsonArray)
+	{
+		super(jsonArray.toString(), MediaType.APPLICATION_JSON);
+	}
 
-   /**
-    * Constructor from a JSON string.
-    * @param jsonString The JSON string.
-    */
-   public JsonRepresentation(String jsonString)
-   {
-      super(jsonString, MediaType.APPLICATION_JSON);
-   }
-   
-   /**
-    * Converts the representation to a JSON object.
-    * @return The converted JSON object.
-    * @throws JSONException 
-    */
-   public JSONObject toJsonObject() throws JSONException 
-   {
-   	return new JSONObject(getValue());
-   }
-   
-   /**
-    * Converts the representation to a JSON array.
-    * @return The converted JSON array.
-    * @throws JSONException 
-    */
-   public JSONArray toJsonArray() throws JSONException 
-   {
-   	return new JSONArray(getValue());
-   }
-	
+	/**
+	 * Constructor from a JSON string.
+	 * @param jsonString The JSON string.
+	 */
+	public JsonRepresentation(String jsonString)
+	{
+		super(jsonString, MediaType.APPLICATION_JSON);
+	}
+
+	/**
+	 * Converts the representation to a JSON object.
+	 * @return The converted JSON object.
+	 * @throws JSONException 
+	 */
+	public JSONObject toJsonObject() throws JSONException
+	{
+		return new JSONObject(getValue());
+	}
+
+	/**
+	 * Converts the representation to a JSON array.
+	 * @return The converted JSON array.
+	 * @throws JSONException 
+	 */
+	public JSONArray toJsonArray() throws JSONException
+	{
+		return new JSONArray(getValue());
+	}
+
 }

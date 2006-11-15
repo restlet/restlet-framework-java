@@ -33,7 +33,7 @@ public class ServletLogger extends Logger
 {
 	/** The Servlet context to use for logging. */
 	private javax.servlet.ServletContext context;
-	
+
 	/**
 	 * Constructor.
 	 * @param context The Servlet context to use.
@@ -52,7 +52,7 @@ public class ServletLogger extends Logger
 	{
 		getContext().log(record.getMessage(), record.getThrown());
 	}
-	
+
 	/**
 	 * Returns the Servlet context to use for logging.
 	 * @return The Servlet context to use for logging.
@@ -61,5 +61,5 @@ public class ServletLogger extends Logger
 	{
 		return this.context;
 	}
-	
+
 }

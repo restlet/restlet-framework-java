@@ -32,13 +32,13 @@ public class Category
 {
 	/** The identifier term. */
 	private String term;
-	
+
 	/** The IRI that identifies a categorization scheme. */
 	private Reference scheme;
-	
+
 	/** The human-readable label for display in end-user applications. */
 	private String label;
-	
+
 	/**
 	 * Constructor.
 	 */
@@ -46,7 +46,7 @@ public class Category
 	{
 		this(null, null, null);
 	}
-	
+
 	/**
 	 * Constructor.
 	 * @param label The identifier term.
@@ -113,5 +113,5 @@ public class Category
 	{
 		this.term = term;
 	}
-	
+
 }

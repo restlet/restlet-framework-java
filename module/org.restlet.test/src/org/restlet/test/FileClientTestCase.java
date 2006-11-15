@@ -23,7 +23,8 @@ public class FileClientTestCase extends TestCase
 	{
 		String text = "Test content\r\nLine 2\r\nLine2";
 		Client fc = new Client(Protocol.FILE);
-		LocalReference fr = LocalReference.createFileReference(File.createTempFile("Restlet", ".txt"));
+		LocalReference fr = LocalReference.createFileReference(File.createTempFile(
+				"Restlet", ".txt"));
 
 		// Write the text to temporary file
 		Response response = fc.put(fr.toString(), new StringRepresentation(text));

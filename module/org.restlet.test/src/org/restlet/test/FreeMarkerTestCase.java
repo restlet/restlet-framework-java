@@ -10,7 +10,6 @@ import junit.framework.TestCase;
 import org.restlet.data.MediaType;
 import org.restlet.ext.freemarker.TemplateRepresentation;
 
-
 import freemarker.template.Configuration;
 
 public class FreeMarkerTestCase extends TestCase
@@ -43,8 +42,9 @@ public class FreeMarkerTestCase extends TestCase
 		fmc.setDirectoryForTemplateLoading(testDir);
 		Map<String, Object> map = new TreeMap<String, Object>();
 		map.put("value", "myValue");
-		
-		String result = new TemplateRepresentation(testFile.getName(), fmc, map, MediaType.TEXT_PLAIN).getValue();
+
+		String result = new TemplateRepresentation(testFile.getName(), fmc, map,
+				MediaType.TEXT_PLAIN).getValue();
 		assertEquals("Value=myValue", result);
 
 		// Clean-up

@@ -38,7 +38,7 @@ public class ServerHelper extends ConnectorHelper
 {
 	/** The server to help. */
 	private Server server;
-	
+
 	/**
 	 * Constructor.
 	 * @param server The client to help.
@@ -63,8 +63,9 @@ public class ServerHelper extends ConnectorHelper
 	 */
 	public ParameterList getParameters()
 	{
-		ParameterList result = (getServer() != null) ? getServer().getContext().getParameters() : null;
-		if(result == null) result = new ParameterList();
+		ParameterList result = (getServer() != null) ? getServer().getContext()
+				.getParameters() : null;
+		if (result == null) result = new ParameterList();
 		return result;
 	}
 

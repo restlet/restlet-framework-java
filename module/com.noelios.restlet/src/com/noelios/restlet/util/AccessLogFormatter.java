@@ -31,14 +31,14 @@ import java.util.logging.LogRecord;
  */
 public class AccessLogFormatter extends Formatter
 {
-   /**
-    * Format the given log record and return the formatted string.
-    * @param logRecord The log record to be formatted.
-    * @return The formatted log record.
-    */
-   public String format(LogRecord logRecord)
-   {
-      return logRecord.getMessage() + '\n';
-   }
+	/**
+	 * Format the given log record and return the formatted string.
+	 * @param logRecord The log record to be formatted.
+	 * @return The formatted log record.
+	 */
+	public String format(LogRecord logRecord)
+	{
+		return logRecord.getMessage() + '\n';
+	}
 
 }

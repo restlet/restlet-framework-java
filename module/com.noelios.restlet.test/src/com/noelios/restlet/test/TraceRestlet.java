@@ -34,22 +34,22 @@ import org.restlet.data.Response;
  */
 public class TraceRestlet extends Restlet
 {
-   public TraceRestlet(Context context)
+	public TraceRestlet(Context context)
 	{
 		super(context);
 	}
 
 	/**
-    * Handles a uniform call.
-    * @param request The request to handle.
-    * @param response The response to update.
-    */
+	 * Handles a uniform call.
+	 * @param request The request to handle.
+	 * @param response The response to update.
+	 */
 	public void handle(Request request, Response response)
-   {
-      String message = "Hello World!" +
-                      "\nYour IP address is " + request.getClientInfo().getAddress() + 
-                      "\nYour request URI is: " + request.getResourceRef().toString();
-      response.setEntity(message, MediaType.TEXT_PLAIN);
-   }
+	{
+		String message = "Hello World!" + "\nYour IP address is "
+				+ request.getClientInfo().getAddress() + "\nYour request URI is: "
+				+ request.getResourceRef().toString();
+		response.setEntity(message, MediaType.TEXT_PLAIN);
+	}
 
 }

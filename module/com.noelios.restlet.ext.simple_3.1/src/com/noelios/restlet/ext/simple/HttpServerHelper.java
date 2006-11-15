@@ -38,23 +38,25 @@ import simple.http.connect.ConnectionFactory;
  */
 public class HttpServerHelper extends SimpleServerHelper
 {
-   /**
-    * Constructor.
+	/**
+	 * Constructor.
 	 * @param server The server to help.
-    */
-   public HttpServerHelper(Server server)
-   {
-      super(server);
-      getSupportedProtocols().add(Protocol.HTTP);
-   }
+	 */
+	public HttpServerHelper(Server server)
+	{
+		super(server);
+		getSupportedProtocols().add(Protocol.HTTP);
+	}
 
-   /** Starts the Restlet. */
+	/** Starts the Restlet. */
 	public void start() throws Exception
 	{
 		setSocket(new ServerSocket(getServer().getPort()));
 		setConfidential(false);
-		setHandler(PipelineHandlerFactory.getInstance(this, getDefaultThreads(), getMaxWaitTimeMs()));
-		setConnection(ConnectionFactory.getConnection(getHandler(), new BufferedPipelineFactory()));
+		setHandler(PipelineHandlerFactory.getInstance(this, getDefaultThreads(),
+				getMaxWaitTimeMs()));
+		setConnection(ConnectionFactory.getConnection(getHandler(),
+				new BufferedPipelineFactory()));
 		getConnection().connect(getSocket());
 		super.start();
 	}

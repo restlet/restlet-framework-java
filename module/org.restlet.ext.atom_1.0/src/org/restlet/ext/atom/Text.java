@@ -35,7 +35,7 @@ public class Text
 	 * The content type.
 	 */
 	private MediaType type;
-	
+
 	/**
 	 * The content.
 	 */
@@ -60,7 +60,7 @@ public class Text
 	{
 		this(type, null);
 	}
-	
+
 	/**
 	 * Returns the content type.
 	 * @return The content type.
@@ -69,7 +69,7 @@ public class Text
 	{
 		return this.type;
 	}
-	
+
 	/**
 	 * Sets the content type.
 	 * @param type The content type.
@@ -78,7 +78,7 @@ public class Text
 	{
 		this.type = type;
 	}
-	
+
 	/**
 	 * Returns the content.
 	 * @return The content.
@@ -87,7 +87,7 @@ public class Text
 	{
 		return this.content;
 	}
-	
+
 	/**
 	 * Sets the content.
 	 * @param content The content.
@@ -96,5 +96,5 @@ public class Text
 	{
 		this.content = content;
 	}
-	
+
 }

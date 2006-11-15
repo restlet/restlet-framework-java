@@ -37,19 +37,19 @@ public class Link
 
 	/** Indicates the link's relation type */
 	private Relation rel;
-	
+
 	/** Advisory media type. */
 	private MediaType type;
-	
+
 	/** Language of the resource pointed to by the href attribute. */
 	private Language hrefLang;
-	
+
 	/** Human-readable information about the link. */
 	private String title;
-	
+
 	/** Advisory length of the linked content in octets. */
 	private long length;
-	
+
 	/**
 	 * Constructor.
 	 */
@@ -71,7 +71,7 @@ public class Link
 	{
 		return this.href;
 	}
-	
+
 	/** 
 	 * Sets the link's IRI.
 	 * @param href The link's IRI. 
@@ -98,7 +98,7 @@ public class Link
 	{
 		this.rel = rel;
 	}
-	
+
 	/**
 	 * Returns the advisoty media type.
 	 * @return The advisoty media type.
@@ -107,7 +107,7 @@ public class Link
 	{
 		return this.type;
 	}
-	
+
 	/**
 	 * Sets the advisoty media type.
 	 * @param type The advisoty media type.
@@ -116,7 +116,7 @@ public class Link
 	{
 		this.type = type;
 	}
-	
+
 	/**
 	 * Returns the language of the resource pointed to by the href attribute.
 	 * @return The language of the resource pointed to by the href attribute.
@@ -134,7 +134,7 @@ public class Link
 	{
 		this.hrefLang = hrefLang;
 	}
-	
+
 	/**
 	 * Returns the human-readable information about the link.
 	 * @return The human-readable information about the link.
@@ -143,7 +143,7 @@ public class Link
 	{
 		return this.title;
 	}
-	
+
 	/**
 	 * Sets the human-readable information about the link.
 	 * @param title The human-readable information about the link.
@@ -161,7 +161,7 @@ public class Link
 	{
 		return this.length;
 	}
-	
+
 	/**
 	 * Sets the advisory length of the linked content in octets.
 	 * @param length The advisory length of the linked content in octets.
@@ -170,5 +170,5 @@ public class Link
 	{
 		this.length = length;
 	}
-	
+
 }

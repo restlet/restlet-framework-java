@@ -34,12 +34,12 @@ public class Person
 	 * Human-readable name.
 	 */
 	private String name;
-	
+
 	/**
 	 * IRI associated with the person.
 	 */
 	private Reference uri;
-	
+
 	/**
 	 * Email address associated with the person.
 	 */
@@ -65,7 +65,7 @@ public class Person
 	{
 		this(null, null, null);
 	}
-	
+
 	/**
 	 * Returns the human-readable name.
 	 * @return The human-readable name.
@@ -74,7 +74,7 @@ public class Person
 	{
 		return this.name;
 	}
-	
+
 	/**
 	 * Returns the IRI associated with the person.
 	 * @return The IRI associated with the person.
@@ -83,7 +83,7 @@ public class Person
 	{
 		return this.uri;
 	}
-	
+
 	/**
 	 * Returns the email address associated with the person.
 	 * @return The email address associated with the person.
@@ -92,7 +92,7 @@ public class Person
 	{
 		return this.email;
 	}
-	
+
 	/**
 	 * Sets the human-readable name.
 	 * @param name The human-readable name.
@@ -101,7 +101,7 @@ public class Person
 	{
 		this.name = name;
 	}
-	
+
 	/**
 	 * Sets the IRI associated with the person.
 	 * @param uri The IRI associated with the person.
@@ -110,7 +110,7 @@ public class Person
 	{
 		this.uri = uri;
 	}
-	
+
 	/**
 	 * Sets the email address.
 	 * @param email The email address.
@@ -119,5 +119,5 @@ public class Person
 	{
 		this.email = email;
 	}
-	
+
 }

@@ -31,21 +31,21 @@ import junit.framework.TestSuite;
  */
 public class NoeliosTestSuite extends TestSuite
 {
-   /** Constructor. */
-   public NoeliosTestSuite()
-   {
-      addTestSuite(CookiesTestCase.class);
-      addTestSuite(FormTestCase.class);
-      addTestSuite(PreferencesTestCase.class);
-      addTestSuite(SecurityTestCase.class);
-   }
+	/** Constructor. */
+	public NoeliosTestSuite()
+	{
+		addTestSuite(CookiesTestCase.class);
+		addTestSuite(FormTestCase.class);
+		addTestSuite(PreferencesTestCase.class);
+		addTestSuite(SecurityTestCase.class);
+	}
 
-   /**
-    * JUnit constructor.
-    * @return The unit test.
-    */
-   public static Test suite()
-   {
-      return new NoeliosTestSuite();
-   }
+	/**
+	 * JUnit constructor.
+	 * @return The unit test.
+	 */
+	public static Test suite()
+	{
+		return new NoeliosTestSuite();
+	}
 }

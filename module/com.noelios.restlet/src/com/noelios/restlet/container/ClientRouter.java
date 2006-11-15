@@ -26,7 +26,6 @@ import org.restlet.Client;
 import org.restlet.Container;
 import org.restlet.Router;
 
-
 /**
  * Router that collects calls from all applications and dispatches them to the appropriate
  * client connectors.
@@ -36,25 +35,25 @@ public class ClientRouter extends Router
 {
 	/** The parent container. */
 	private Container container;
-	
-   /**
-    * Constructor.
-    * @param container The parent container.
-    */
+
+	/**
+	 * Constructor.
+	 * @param container The parent container.
+	 */
 	public ClientRouter(Container container)
 	{
 		super(container.getContext());
 		this.container = container;
 	}
-	
-   /** Starts the Restlet. */
+
+	/** Starts the Restlet. */
 	public void start() throws Exception
 	{
-		for(Client client : getContainer().getClients())
+		for (Client client : getContainer().getClients())
 		{
 			getScorers().add(new ClientScorer(this, client));
 		}
-		
+
 		super.start();
 	}
 

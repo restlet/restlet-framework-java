@@ -131,12 +131,11 @@ import org.mortbay.thread.BoundedThreadPool;
  * @see <a href="http://jetty.mortbay.org/jetty6/">Jetty home page</a>
  * @author Jerome Louvel (contact@noelios.com) <a href="http://www.noelios.com/">Noelios Consulting</a>
  */
-public abstract class JettyServerHelper extends
-		com.noelios.restlet.http.HttpServerHelper
+public abstract class JettyServerHelper extends com.noelios.restlet.http.HttpServerHelper
 {
 	/** The wrapped Jetty server. */
 	private Server wrappedServer;
-	
+
 	/** The internal Jetty connector. */
 	private AbstractConnector connector;
 
@@ -162,13 +161,13 @@ public abstract class JettyServerHelper extends
 	/** Starts the Connector. */
 	public void start() throws Exception
 	{
-		if(this.connector == null) 
+		if (this.connector == null)
 		{
 			this.connector = createConnector();
 			configure(this.connector);
 			getWrappedServer().addConnector(connector);
 		}
-		
+
 		getWrappedServer().start();
 	}
 
@@ -183,7 +182,7 @@ public abstract class JettyServerHelper extends
 	 * @return A new internal Jetty connector.
 	 */
 	protected abstract AbstractConnector createConnector();
-	
+
 	/**
 	 * Configures the internal Jetty connector.
 	 * @param connector The internal Jetty connector.

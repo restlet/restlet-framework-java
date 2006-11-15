@@ -39,7 +39,7 @@ public class ConnectorHelper implements Helper
 {
 	/** The protocols simultaneously supported. */
 	private List<Protocol> supportedProtocols;
-	
+
 	/**
 	 * Constructor.
 	 */
@@ -47,14 +47,15 @@ public class ConnectorHelper implements Helper
 	{
 		this.supportedProtocols = null;
 	}
-	
+
 	/**
 	 * Returns the protocols simultaneously supported.
 	 * @return The protocols simultaneously supported.
 	 */
 	public List<Protocol> getSupportedProtocols()
 	{
-		if(this.supportedProtocols == null) this.supportedProtocols = new ArrayList<Protocol>();
+		if (this.supportedProtocols == null)
+			this.supportedProtocols = new ArrayList<Protocol>();
 		return this.supportedProtocols;
 	}
 
@@ -85,5 +86,5 @@ public class ConnectorHelper implements Helper
 	public void stop() throws Exception
 	{
 	}
-	
+
 }

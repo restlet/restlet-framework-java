@@ -32,13 +32,13 @@ public class Generator
 {
 	/** Reference of the generating agent. */
 	private Reference uri;
-	
+
 	/** Version of the generationg agent. */
 	private String version;
-	
+
 	/** Human-readable name for the generating agent. */
 	private String name;
-	
+
 	/**
 	 * Constructor.
 	 */
@@ -57,7 +57,7 @@ public class Generator
 	{
 		return this.uri;
 	}
-	
+
 	/**
 	 * Sets the reference of the generating agent.
 	 * @param uri The reference of the generating agent.
@@ -66,7 +66,7 @@ public class Generator
 	{
 		this.uri = uri;
 	}
-	
+
 	/**
 	 * Returns the version of the generating agent.
 	 * @return The version of the generating agent.
@@ -75,7 +75,7 @@ public class Generator
 	{
 		return this.version;
 	}
-	
+
 	/**
 	 * Sets the version of the generating agent.
 	 * @param version The version of the generating agent.
@@ -84,7 +84,7 @@ public class Generator
 	{
 		this.version = version;
 	}
-	
+
 	/**
 	 * Returns the human-readable name for the generating agent.
 	 * @return The human-readable name for the generating agent.
@@ -92,8 +92,8 @@ public class Generator
 	public String getName()
 	{
 		return this.name;
-	}	
-	
+	}
+
 	/**
 	 * Sets the human-readable name for the generating agent.
 	 * @param name The human-readable name for the generating agent.
@@ -101,6 +101,6 @@ public class Generator
 	public void setName(String name)
 	{
 		this.name = name;
-	}	
-	
+	}
+
 }

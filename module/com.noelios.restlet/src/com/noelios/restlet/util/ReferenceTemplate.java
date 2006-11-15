@@ -36,13 +36,13 @@ import org.restlet.util.StringTemplate;
 public class ReferenceTemplate extends StringTemplate
 {
 	private List<String> variables;
-	
+
 	public ReferenceTemplate(CharSequence pattern, List<String> variables)
 	{
 		super(pattern, "{", "}", "#[", "]");
 		this.variables = variables;
 	}
-	
+
 	/**
 	 * Converts the URI template into a Regex pattern. 
 	 * @return The Regex pattern.
@@ -51,7 +51,7 @@ public class ReferenceTemplate extends StringTemplate
 	{
 		return format(null);
 	}
-	
+
 	/**
 	 * Returns the list of variables.
 	 * @return The list of variables.
@@ -79,6 +79,6 @@ public class ReferenceTemplate extends StringTemplate
 		}
 
 		return textState;
-	}	
-		
+	}
+
 }
