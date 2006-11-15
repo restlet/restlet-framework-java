@@ -24,9 +24,11 @@ package org.restlet.data;
 
 import java.io.IOException;
 
+import org.restlet.util.Factory;
+
 /**
  * Multi-usage parameter.
- * @author Jerome Louvel (contact@noelios.com) <a href="http://www.noelios.com/">Noelios Consulting</a>
+ * @author Jerome Louvel (contact@noelios.com)
  */
 public class Parameter implements Comparable<Parameter>
 {
@@ -73,61 +75,19 @@ public class Parameter implements Comparable<Parameter>
 		this.value = value;
 	}
 
-	/**
-	 * Compares two parameters.
-	 * @param object The object to compare.
-	 * @return True if the parameters are identical (name and value).
-	 */
-	public boolean equals(Object obj)
+	/** {@inheritDoc} */
+	@Override
+	public boolean equals(Object object)
 	{
-		boolean result = (obj == this);
-		//if obj == this no need to go further
-		if (!result)
-		{
-			if ((obj instanceof Parameter) && obj != null)
-			{
-				Parameter that = (Parameter) obj;
-				if (!(this.name == null)) // compare names taking care of nulls
-				{
-					result = this.name.equals(that.name);
-				}
-				else
-				{
-					result = (that.name == null);
-				}
-				if (result) //if names are equal test the values
-				{
-					if (!(this.value == null)) // compare values taking care of nulls
-					{
-						result = (this.value.equals(that.value));
-					}
-					else
-					{
-						result = (that.value == null);
-					}
-				}
-			}
-		}
-		return result;
+		return (object instanceof Parameter)
+				&& (((Parameter) object).hashCode() == hashCode());
 	}
 
 	/** {@inheritDoc} */
 	@Override
 	public int hashCode()
 	{
-		int nameHashCode = 0;
-		int valueHashCode = 0;
-
-		if (getName() != null)
-		{
-			nameHashCode = getName().hashCode();
-		}
-		if (getValue() != null)
-		{
-			valueHashCode = getValue().hashCode();
-		}
-		// todo could we exceed INTEGER.MAX_VALUE?
-		return nameHashCode + valueHashCode;
+		return Factory.hashCode(getName(), getValue());
 	}
 
 	/**

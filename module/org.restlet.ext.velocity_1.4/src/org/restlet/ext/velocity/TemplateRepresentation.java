@@ -39,7 +39,7 @@ import org.restlet.util.MapModel;
 /**
  * FreeMarker template representation. Useful for dynamic string-based representations.
  * @see <a href="http://freemarker.org/">FreeMarker home page</a>
- * @author Jerome Louvel (contact@noelios.com) <a href="http://www.noelios.com/">Noelios Consulting</a>
+ * @author Jerome Louvel (contact@noelios.com)
  */
 public class TemplateRepresentation extends OutputRepresentation
 {

@@ -30,7 +30,7 @@ import com.noelios.restlet.util.SecurityUtils;
 
 /**
  * Unit tests for the SecurityData related classes.
- * @author Jerome Louvel (contact@noelios.com) <a href="http://www.noelios.com/">Noelios Consulting</a>
+ * @author Jerome Louvel (contact@noelios.com)
  */
 public class SecurityTestCase extends TestCase
 {

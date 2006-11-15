@@ -32,7 +32,7 @@ import org.restlet.data.Protocol;
 /**
  * Router of calls from server Connectors to attached Restlets. The attached Restlets are typically
  * Applications.
- * @author Jerome Louvel (contact@noelios.com) <a href="http://www.noelios.com/">Noelios Consulting</a>
+ * @author Jerome Louvel (contact@noelios.com)
  */
 public class VirtualHost extends Router
 {

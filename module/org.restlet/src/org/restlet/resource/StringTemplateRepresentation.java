@@ -37,7 +37,7 @@ import org.restlet.util.StringTemplate;
 /**
  * Representation based on a simple string template.
  * Note that the string value is dynamically computed, each time it is accessed.
- * @author Jerome Louvel (contact@noelios.com) <a href="http://www.noelios.com/">Noelios Consulting</a>
+ * @author Jerome Louvel (contact@noelios.com)
  */
 public class StringTemplateRepresentation extends StreamRepresentation
 {

@@ -25,7 +25,7 @@ import org.restlet.data.MediaType;
 
 /**
  * Test {@link org.restlet.data.MediaType}.
- * @author Jerome Louvel (contact@noelios.com) <a href="http://www.noelios.com/">Noelios Consulting</a>
+ * @author Jerome Louvel (contact@noelios.com)
  */
 public class MediaTypeTestCase extends RestletTestCase
 {

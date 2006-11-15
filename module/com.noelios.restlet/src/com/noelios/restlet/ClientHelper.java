@@ -30,7 +30,7 @@ import org.restlet.data.ParameterList;
 
 /**
  * Client connector helper.  
- * @author Jerome Louvel (contact@noelios.com) <a href="http://www.noelios.com/">Noelios Consulting</a>
+ * @author Jerome Louvel (contact@noelios.com)
  */
 public class ClientHelper extends ConnectorHelper
 {

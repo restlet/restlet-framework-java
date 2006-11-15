@@ -27,7 +27,7 @@ import org.restlet.ext.atom.Service;
 
 /**
  * Unit test case for the Atom extension.
- * @author Jerome Louvel (contact@noelios.com) <a href="http://www.noelios.com/">Noelios Consulting</a>
+ * @author Jerome Louvel (contact@noelios.com)
  */
 public class AtomTest
 {

@@ -33,7 +33,7 @@ import org.restlet.data.Protocol;
 /**
  * Context based on a parent container's context but dedicated to an application. This is important to allow
  * contextual access to application's resources.
- * @author Jerome Louvel (contact@noelios.com) <a href="http://www.noelios.com/">Noelios Consulting</a>
+ * @author Jerome Louvel (contact@noelios.com)
  */
 public class ApplicationContext extends Context
 {

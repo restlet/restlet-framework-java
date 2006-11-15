@@ -37,7 +37,7 @@ import org.restlet.data.Response;
 
 /**
  * Routers and hierarchical URIs
- * @author Jerome Louvel (contact@noelios.com) <a href="http://www.noelios.com/">Noelios Consulting</a>
+ * @author Jerome Louvel (contact@noelios.com)
  */
 public class Part11 implements Constants
 {

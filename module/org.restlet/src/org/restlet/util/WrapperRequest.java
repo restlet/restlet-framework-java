@@ -37,7 +37,7 @@ import org.restlet.data.Request;
  * Request wrapper. Useful for application developer who need to enrich the request
  * with application related properties and behavior.
  * @see <a href="http://c2.com/cgi/wiki?DecoratorPattern">The decorator (aka wrapper) pattern</a>
- * @author Jerome Louvel (contact@noelios.com) <a href="http://www.noelios.com/">Noelios Consulting</a>
+ * @author Jerome Louvel (contact@noelios.com)
  */
 public class WrapperRequest extends Request
 {

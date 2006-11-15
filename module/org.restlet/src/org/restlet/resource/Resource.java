@@ -47,7 +47,7 @@ import org.restlet.data.Status;
  * @see <a href="http://www.ics.uci.edu/~fielding/pubs/dissertation/rest_arch_style.htm#sec_5_2_1_1">Source dissertation</a>
  * @see org.restlet.resource.Representation
  * @see org.restlet.data.Reference
- * @author Jerome Louvel (contact@noelios.com) <a href="http://www.noelios.com/">Noelios Consulting</a>
+ * @author Jerome Louvel (contact@noelios.com)
  */
 public class Resource
 {

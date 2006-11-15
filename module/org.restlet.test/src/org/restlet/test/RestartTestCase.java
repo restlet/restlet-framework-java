@@ -7,7 +7,7 @@ import org.restlet.data.Protocol;
 
 /**
  * Test the ability of a connector to be restarted.
- * @author Jerome Louvel (contact@noelios.com) <a href="http://www.noelios.com/">Noelios Consulting</a>
+ * @author Jerome Louvel (contact@noelios.com)
  */
 public class RestartTestCase extends TestCase
 {

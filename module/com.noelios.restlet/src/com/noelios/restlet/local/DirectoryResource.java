@@ -49,7 +49,7 @@ import org.restlet.service.MetadataService;
  * A content negotiation mechanism (similar to Apache HTTP server) is available. It is based on path extensions 
  * to detect variants (languages, media types or character sets).
  * @see <a href="http://httpd.apache.org/docs/2.0/content-negotiation.html">Apache mod_negotiation module</a>
- * @author Jerome Louvel (contact@noelios.com) <a href="http://www.noelios.com/">Noelios Consulting</a>
+ * @author Jerome Louvel (contact@noelios.com)
  * @author Thierry Boileau
  */
 public class DirectoryResource extends Resource

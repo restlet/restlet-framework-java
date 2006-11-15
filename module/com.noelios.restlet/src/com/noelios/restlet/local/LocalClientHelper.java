@@ -53,7 +53,7 @@ import com.noelios.restlet.ClientHelper;
  * 	</tr>
  *	</table>
  * @see org.restlet.data.LocalReference
- * @author Jerome Louvel (contact@noelios.com) <a href="http://www.noelios.com/">Noelios Consulting</a>
+ * @author Jerome Louvel (contact@noelios.com)
  * @author Thierry Boileau
  */
 public class LocalClientHelper extends ClientHelper

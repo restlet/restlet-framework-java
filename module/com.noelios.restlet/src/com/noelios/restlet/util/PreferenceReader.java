@@ -36,7 +36,7 @@ import org.restlet.data.Preference;
 
 /**
  * Preference header reader. Works for character sets, encodings, languages or media types.
- * @author Jerome Louvel (contact@noelios.com) <a href="http://www.noelios.com/">Noelios Consulting</a>
+ * @author Jerome Louvel (contact@noelios.com)
  */
 public class PreferenceReader<T extends Metadata> extends HeaderReader
 {

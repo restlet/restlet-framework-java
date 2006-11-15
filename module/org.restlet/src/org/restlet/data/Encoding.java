@@ -25,7 +25,7 @@ package org.restlet.data;
 /**
  * Modifier of a representation's media type. Useful to apply compression without losing the 
  * identity of the underlying media type.
- * @author Jerome Louvel (contact@noelios.com) <a href="http://www.noelios.com/">Noelios Consulting</a>
+ * @author Jerome Louvel (contact@noelios.com)
  */
 public class Encoding extends Metadata
 {
@@ -69,23 +69,19 @@ public class Encoding extends Metadata
 		super(name, description);
 	}
 
-	/**
-	 * Indicates if the encoding is equal to a given one.
-	 * @param object The object to compare to.
-	 * @return True if the encoding is equal to a given one.
-	 */
+	/** {@inheritDoc} */
 	@Override
 	public boolean equals(Object object)
 	{
 		return (object instanceof Encoding)
-				&& getName().equalsIgnoreCase(((Encoding) object).getName());
+				&& (((Encoding) object).hashCode() == hashCode());
 	}
 
 	/** {@inheritDoc} */
 	@Override
 	public int hashCode()
 	{
-		return getName().toLowerCase().hashCode();
+		return (getName() == null) ? 0 : getName().toLowerCase().hashCode();
 	}
 
 	/**

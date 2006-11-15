@@ -22,10 +22,12 @@
 
 package org.restlet.data;
 
+import org.restlet.util.Factory;
+
 /**
  * Media type used in representations and preferences.
  * @see <a href="http://en.wikipedia.org/wiki/MIME">MIME types on Wikipedia</a>
- * @author Jerome Louvel (contact@noelios.com) <a href="http://www.noelios.com/">Noelios Consulting</a>
+ * @author Jerome Louvel (contact@noelios.com)
  */
 public class MediaType extends Metadata
 {
@@ -337,23 +339,19 @@ public class MediaType extends Metadata
 		return result;
 	}
 
-	/**
-	 * Indicates if two media types are equal.
-	 * @param object The object to compare to.
-	 * @return True if both media types are equal.
-	 */
+	/** {@inheritDoc} */
 	@Override
 	public boolean equals(Object object)
 	{
 		return (object instanceof MediaType)
-				&& ((MediaType) object).getName().equals(getName());
+				&& (((MediaType) object).hashCode() == hashCode());
 	}
 
 	/** {@inheritDoc} */
 	@Override
 	public int hashCode()
 	{
-		return getName().hashCode();
+		return Factory.hashCode(super.hashCode(), getParameters());
 	}
 
 	/**

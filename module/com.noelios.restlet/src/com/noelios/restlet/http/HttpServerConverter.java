@@ -42,7 +42,7 @@ import com.noelios.restlet.util.SecurityUtils;
 
 /**
  * Converter of low-level HTTP server calls into high-level uniform calls.
- * @author Jerome Louvel (contact@noelios.com) <a href="http://www.noelios.com/">Noelios Consulting</a>
+ * @author Jerome Louvel (contact@noelios.com)
  */
 public class HttpServerConverter extends HttpConverter
 {

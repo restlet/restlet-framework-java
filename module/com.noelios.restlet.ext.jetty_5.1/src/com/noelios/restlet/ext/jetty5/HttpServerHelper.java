@@ -37,7 +37,7 @@ import org.restlet.data.Protocol;
  * 	</tr>
  * </table>
  * @see <a href="http://jetty.mortbay.com/">Jetty home page</a>
- * @author Jerome Louvel (contact@noelios.com) <a href="http://www.noelios.com/">Noelios Consulting</a>
+ * @author Jerome Louvel (contact@noelios.com)
  */
 public class HttpServerHelper extends JettyServerHelper
 {

@@ -24,7 +24,7 @@ package org.restlet.data;
 
 /**
  * Challenge scheme used to authenticate remote clients.
- * @author Jerome Louvel (contact@noelios.com) <a href="http://www.noelios.com/">Noelios Consulting</a>
+ * @author Jerome Louvel (contact@noelios.com)
  */
 public class ChallengeScheme extends Metadata
 {
@@ -86,23 +86,19 @@ public class ChallengeScheme extends Metadata
 		return this.technicalName;
 	}
 
-	/**
-	 * Indicates if two metadata are equal.
-	 * @param object The object to compare to.
-	 * @return True if both metadata are equal.
-	 */
+	/** {@inheritDoc} */
 	@Override
 	public boolean equals(Object object)
 	{
 		return (object instanceof ChallengeScheme)
-				&& ((ChallengeScheme) object).getName().equalsIgnoreCase(getName());
+				&& (((ChallengeScheme) object).hashCode() == hashCode());
 	}
 
 	/** {@inheritDoc} */
 	@Override
 	public int hashCode()
 	{
-		return getName().toLowerCase().hashCode();
+		return (getName() == null) ? 0 : getName().toLowerCase().hashCode();
 	}
 
 	/**

@@ -43,7 +43,7 @@ import com.noelios.restlet.local.WarClientHelper;
 
 /**
  * Local client connector based on a Servlet context (JEE Web application context).
- * @author Jerome Louvel (contact@noelios.com) <a href="http://www.noelios.com/">Noelios Consulting</a>
+ * @author Jerome Louvel (contact@noelios.com)
  */
 public class ServletWarClientHelper extends WarClientHelper
 {

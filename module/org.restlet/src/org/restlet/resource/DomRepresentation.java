@@ -41,7 +41,7 @@ import org.xml.sax.SAXException;
 /**
  * Representation based on a DOM document.
  * DOM is a standard XML object model defined by the W3C.
- * @author Jerome Louvel (contact@noelios.com) <a href="http://www.noelios.com/">Noelios Consulting</a>
+ * @author Jerome Louvel (contact@noelios.com)
  */
 public class DomRepresentation extends OutputRepresentation
 {

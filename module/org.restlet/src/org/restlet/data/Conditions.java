@@ -29,7 +29,7 @@ import org.restlet.util.ImmutableDate;
 
 /**
  * Set of conditions applying to a request. This is equivalent to the HTTP conditional headers.  
- * @author Jerome Louvel (contact@noelios.com) <a href="http://www.noelios.com/">Noelios Consulting</a>
+ * @author Jerome Louvel (contact@noelios.com)
  */
 public class Conditions
 {

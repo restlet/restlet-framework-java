@@ -24,7 +24,7 @@ package org.restlet.data;
 
 /**
  * Status to return after handling a call.
- * @author Jerome Louvel (contact@noelios.com) <a href="http://www.noelios.com/">Noelios Consulting</a>
+ * @author Jerome Louvel (contact@noelios.com)
  */
 public class Status extends Metadata
 {
@@ -933,7 +933,7 @@ public class Status extends Metadata
 	@Override
 	public boolean equals(Object object)
 	{
-		return (object instanceof Status) && (this.code == ((Status) object).getCode());
+		return (object instanceof Status) && (((Status) object).hashCode() == hashCode());
 	}
 
 	/** {@inheritDoc} */

@@ -47,7 +47,7 @@ import com.noelios.restlet.ClientHelper;
  * 		<td>Class name of the converter of low-level HTTP calls into high level requests and responses.</td>
  * 	</tr>
  *	</table>
- * @author Jerome Louvel (contact@noelios.com) <a href="http://www.noelios.com/">Noelios Consulting</a>
+ * @author Jerome Louvel (contact@noelios.com)
  */
 public abstract class HttpClientHelper extends ClientHelper
 {

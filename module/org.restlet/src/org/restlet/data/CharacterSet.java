@@ -24,7 +24,7 @@ package org.restlet.data;
 
 /**
  * Character set used to encode characters in textual representations.
- * @author Jerome Louvel (contact@noelios.com) <a href="http://www.noelios.com/">Noelios Consulting</a>
+ * @author Jerome Louvel (contact@noelios.com)
  */
 public class CharacterSet extends Metadata
 {
@@ -79,23 +79,19 @@ public class CharacterSet extends Metadata
 		super(name == null ? null : name.toUpperCase(), description);
 	}
 
-	/**
-	 * Indicates if the character set is equal to a given one.
-	 * @param object The object to compare to.
-	 * @return True if the character set is equal to a given one.
-	 */
+	/** {@inheritDoc} */
 	@Override
 	public boolean equals(Object object)
 	{
 		return (object instanceof CharacterSet)
-				&& getName().equalsIgnoreCase(((CharacterSet) object).getName());
+				&& (((CharacterSet) object).hashCode() == hashCode());
 	}
 
 	/** {@inheritDoc} */
 	@Override
 	public int hashCode()
 	{
-		return getName().toLowerCase().hashCode();
+		return (getName() == null) ? 0 : getName().toLowerCase().hashCode();
 	}
 
 	/**

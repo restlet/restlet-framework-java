@@ -24,7 +24,7 @@ package com.noelios.restlet.http;
 
 /**
  * Constants related to the HTTP protocol.
- * @author Jerome Louvel (contact@noelios.com) <a href="http://www.noelios.com/">Noelios Consulting</a>
+ * @author Jerome Louvel (contact@noelios.com)
  */
 public final class HttpConstants
 {

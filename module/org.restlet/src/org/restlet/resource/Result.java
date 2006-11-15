@@ -28,7 +28,7 @@ import org.restlet.resource.Representation;
 
 /**
  * Contains the results information returned by some methods in Resource. 
- * @author Jerome Louvel (contact@noelios.com) <a href="http://www.noelios.com/">Noelios Consulting</a>
+ * @author Jerome Louvel (contact@noelios.com)
  */
 public class Result
 {

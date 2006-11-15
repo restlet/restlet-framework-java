@@ -50,7 +50,7 @@ import org.restlet.util.ScorerList;
  * Finally, you can modify the scorers list while handling incoming calls as the delegation code is ensured 
  * to be thread-safe.
  * @see <a href="http://www.restlet.org/tutorial#part11">Tutorial: Routers and hierarchical URIs</a>
- * @author Jerome Louvel (contact@noelios.com) <a href="http://www.noelios.com/">Noelios Consulting</a>
+ * @author Jerome Louvel (contact@noelios.com)
  */
 public class Router extends Chainer
 {

@@ -44,7 +44,7 @@ import org.restlet.service.ConnectorService;
 
 /**
  * Low-level HTTP client call.
- * @author Jerome Louvel (contact@noelios.com) <a href="http://www.noelios.com/">Noelios Consulting</a>
+ * @author Jerome Louvel (contact@noelios.com)
  */
 public class HttpClientCall extends HttpCall
 {

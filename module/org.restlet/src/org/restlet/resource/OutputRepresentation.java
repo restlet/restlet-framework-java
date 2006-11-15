@@ -32,7 +32,7 @@ import org.restlet.util.ByteUtils;
 /**
  * Representation based on a BIO output stream. The write(OutputStream) 
  * method needs to be overriden in subclasses.
- * @author Jerome Louvel (contact@noelios.com) <a href="http://www.noelios.com/">Noelios Consulting</a>
+ * @author Jerome Louvel (contact@noelios.com)
  */
 public abstract class OutputRepresentation extends StreamRepresentation
 {

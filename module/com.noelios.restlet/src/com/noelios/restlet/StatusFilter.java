@@ -40,7 +40,7 @@ import org.restlet.resource.StringRepresentation;
  * associated to the call. Of course, you can personalize the representation of this error. Also, if no 
  * status is set (null), then the "success ok" status is assumed.<br/> 
  * @see <a href="http://www.restlet.org/tutorial#part08">Tutorial: Displaying error pages</a>
- * @author Jerome Louvel (contact@noelios.com) <a href="http://www.noelios.com/">Noelios Consulting</a>
+ * @author Jerome Louvel (contact@noelios.com)
  */
 public class StatusFilter extends Filter
 {

@@ -32,7 +32,7 @@ import com.noelios.restlet.util.FormReader;
 
 /**
  * Unit tests for the Form class.
- * @author Jerome Louvel (contact@noelios.com) <a href="http://www.noelios.com/">Noelios Consulting</a>
+ * @author Jerome Louvel (contact@noelios.com)
  */
 public class FormTestCase extends TestCase
 {

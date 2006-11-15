@@ -25,7 +25,7 @@ package org.restlet.data;
 /**
  * Protocol used by client and server connectors. Connectors enable the communication between components
  * by implementing standard protocols.
- * @author Jerome Louvel (contact@noelios.com) <a href="http://www.noelios.com/">Noelios Consulting</a>
+ * @author Jerome Louvel (contact@noelios.com)
  */
 public class Protocol extends Metadata
 {
@@ -128,23 +128,19 @@ public class Protocol extends Metadata
 		return this.defaultPort;
 	}
 
-	/**
-	 * Indicates if the protocol is equal to a given one.
-	 * @param object The object to compare to.
-	 * @return True if the protocol is equal to a given one.
-	 */
+	/** {@inheritDoc} */
 	@Override
 	public boolean equals(Object object)
 	{
 		return (object instanceof Protocol)
-				&& getName().equalsIgnoreCase(((Protocol) object).getName());
+				&& (((Protocol) object).hashCode() == hashCode());
 	}
 
 	/** {@inheritDoc} */
 	@Override
 	public int hashCode()
 	{
-		return getName().toLowerCase().hashCode();
+		return (getName() == null) ? 0 : getName().toLowerCase().hashCode();
 	}
 
 	/**

@@ -40,7 +40,7 @@ import org.restlet.util.WrapperRepresentation;
 
 /**
  * Representation that decodes a wrapped representation if its encoding is supported. 
- * @author Jerome Louvel (contact@noelios.com) <a href="http://www.noelios.com/">Noelios Consulting</a>
+ * @author Jerome Louvel (contact@noelios.com)
  */
 public class DecoderRepresentation extends WrapperRepresentation
 {

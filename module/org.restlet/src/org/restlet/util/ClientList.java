@@ -28,7 +28,7 @@ import org.restlet.data.Protocol;
 
 /**
  * Modifiable list of client connectors.
- * @author Jerome Louvel (contact@noelios.com) <a href="http://www.noelios.com/">Noelios Consulting</a>
+ * @author Jerome Louvel (contact@noelios.com)
  */
 public class ClientList extends WrapperList<Client>
 {

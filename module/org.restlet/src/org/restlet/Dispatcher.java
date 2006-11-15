@@ -29,7 +29,7 @@ import org.restlet.resource.Representation;
 
 /**
  * Dispatcher of calls from a Restlet context to a set of connectors.
- * @author Jerome Louvel (contact@noelios.com) <a href="http://www.noelios.com/">Noelios Consulting</a>
+ * @author Jerome Louvel (contact@noelios.com)
  */
 public abstract class Dispatcher
 {

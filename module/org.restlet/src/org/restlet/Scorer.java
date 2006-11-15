@@ -28,7 +28,7 @@ import org.restlet.data.Response;
 /**
  * Filter scoring the affinity of calls with the attached Restlet. The score is used by an associated 
  * Router in order to determine the most appropriate Restlet for a given call. 
- * @author Jerome Louvel (contact@noelios.com) <a href="http://www.noelios.com/">Noelios Consulting</a>
+ * @author Jerome Louvel (contact@noelios.com)
  */
 public class Scorer extends Filter
 {

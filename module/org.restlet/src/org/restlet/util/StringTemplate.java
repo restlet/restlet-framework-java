@@ -37,7 +37,7 @@ import java.util.logging.Logger;
  * Also, note that a condition can also be applied on variable insertions by using the following syntax: 
  * "${variableName?exists}". This will ensure that the insertion only happens if the model contains such
  * a variable.
- * @author Jerome Louvel (contact@noelios.com) <a href="http://www.noelios.com/">Noelios Consulting</a>
+ * @author Jerome Louvel (contact@noelios.com)
  */
 public class StringTemplate
 {

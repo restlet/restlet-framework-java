@@ -33,7 +33,7 @@ import org.restlet.util.StringTemplate;
 
 /**
  * Unit tests for the StringTemplate class.
- * @author Jerome Louvel (contact@noelios.com) <a href="http://www.noelios.com/">Noelios Consulting</a>
+ * @author Jerome Louvel (contact@noelios.com)
  */
 public class StringTemplateTestCase extends TestCase
 {

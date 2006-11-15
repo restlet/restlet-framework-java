@@ -43,7 +43,7 @@ import com.noelios.restlet.util.ReferenceTemplate;
  * were used in the pattern using the "(?i)" inline flag.
  * @see java.util.regex.Pattern
  * @see <a href="http://javaalmanac.com/egs/java.util.regex/pkg.html">Java Almanac on the Regex package</a>
- * @author Jerome Louvel (contact@noelios.com) <a href="http://www.noelios.com/">Noelios Consulting</a>
+ * @author Jerome Louvel (contact@noelios.com)
  */
 public class PatternScorer extends Scorer
 {

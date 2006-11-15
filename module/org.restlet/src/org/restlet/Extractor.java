@@ -37,7 +37,7 @@ import org.restlet.util.CallModel;
  * Filter extracting some attributes from a call. Multiple extractions can be defined, based on the query 
  * string of the resource reference, on the request form (posted from a browser), on the base URI matches 
  * or on the request or response data model.
- * @author Jerome Louvel (contact@noelios.com) <a href="http://www.noelios.com/">Noelios Consulting</a>
+ * @author Jerome Louvel (contact@noelios.com)
  */
 public class Extractor extends Filter
 {

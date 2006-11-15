@@ -33,7 +33,7 @@ import org.restlet.util.Factory;
  * are uniform across all types of connectors, protocols and components.
  * @see org.restlet.data.Request
  * @see org.restlet.Restlet
- * @author Jerome Louvel (contact@noelios.com) <a href="http://www.noelios.com/">Noelios Consulting</a>
+ * @author Jerome Louvel (contact@noelios.com)
  */
 public class Response extends Message
 {

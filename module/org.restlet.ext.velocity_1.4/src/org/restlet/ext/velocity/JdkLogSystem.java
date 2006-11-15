@@ -30,7 +30,7 @@ import org.apache.velocity.runtime.log.LogSystem;
 
 /**
  * Adapter between the Velocity Log system and the JDK's Logger system.
- * @author Jerome Louvel (contact@noelios.com) <a href="http://www.noelios.com/">Noelios Consulting</a>
+ * @author Jerome Louvel (contact@noelios.com)
  */
 public class JdkLogSystem implements LogSystem
 {

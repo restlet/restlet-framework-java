@@ -33,7 +33,7 @@ import org.restlet.util.Helper;
 
 /**
  * Base connector helper.  
- * @author Jerome Louvel (contact@noelios.com) <a href="http://www.noelios.com/">Noelios Consulting</a>
+ * @author Jerome Louvel (contact@noelios.com)
  */
 public class ConnectorHelper implements Helper
 {

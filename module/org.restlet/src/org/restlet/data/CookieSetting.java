@@ -22,9 +22,11 @@
 
 package org.restlet.data;
 
+import org.restlet.util.Factory;
+
 /**
  * Cookie setting provided by a server.
- * @author Jerome Louvel (contact@noelios.com) <a href="http://www.noelios.com/">Noelios Consulting</a>
+ * @author Jerome Louvel (contact@noelios.com)
  */
 public class CookieSetting extends Cookie
 {
@@ -149,6 +151,21 @@ public class CookieSetting extends Cookie
 	public String getDescription()
 	{
 		return "Cookie setting";
+	}
+
+	/** {@inheritDoc} */
+	@Override
+	public boolean equals(Object object)
+	{
+		return (object instanceof CookieSetting)
+				&& (((CookieSetting) object).hashCode() == hashCode());
+	}
+
+	/** {@inheritDoc} */
+	@Override
+	public int hashCode()
+	{
+		return Factory.hashCode(super.hashCode(), getComment(), getMaxAge(), isSecure());
 	}
 
 }

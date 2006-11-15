@@ -38,7 +38,7 @@ import org.restlet.util.Helper;
  * Restlet that can be attached to one or more VirtualHosts. Applications are guaranteed to receive calls with 
  * their base reference set relatively to the VirtualHost that served them. This class is both a descriptor able 
  * to create the root Restlet and the actual Restlet that can be attached to one or more VirtualHost instances.   
- * @author Jerome Louvel (contact@noelios.com) <a href="http://www.noelios.com/">Noelios Consulting</a>
+ * @author Jerome Louvel (contact@noelios.com)
  */
 public abstract class Application extends Restlet
 {

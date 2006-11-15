@@ -30,7 +30,7 @@ import org.restlet.Dispatcher;
 
 /**
  * Context allowing access to the container's connectors.
- * @author Jerome Louvel (contact@noelios.com) <a href="http://www.noelios.com/">Noelios Consulting</a>
+ * @author Jerome Louvel (contact@noelios.com)
  */
 public class ContainerContext extends Context
 {

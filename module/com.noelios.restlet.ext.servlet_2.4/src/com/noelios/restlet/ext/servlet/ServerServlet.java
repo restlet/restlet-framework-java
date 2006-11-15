@@ -71,7 +71,7 @@ import com.noelios.restlet.http.HttpServerHelper;
  * your application. This way, you can pass additional initialization parameters to your Restlet application,
  * and share them with existing Servlets.
  * @see <a href="http://java.sun.com/j2ee/">J2EE home page</a>
- * @author Jerome Louvel (contact@noelios.com) <a href="http://www.noelios.com/">Noelios Consulting</a>
+ * @author Jerome Louvel (contact@noelios.com)
  */
 public class ServerServlet extends HttpServlet
 {

@@ -32,7 +32,7 @@ import org.restlet.data.Protocol;
 
 /**
  * Guard access to a Restlet.
- * @author Jerome Louvel (contact@noelios.com) <a href="http://www.noelios.com/">Noelios Consulting</a>
+ * @author Jerome Louvel (contact@noelios.com)
  */
 public class Part09a implements Constants
 {

@@ -42,7 +42,7 @@ import com.noelios.restlet.StatusFilter;
 
 /**
  * Container helper.
- * @author Jerome Louvel (contact@noelios.com) <a href="http://www.noelios.com/">Noelios Consulting</a>
+ * @author Jerome Louvel (contact@noelios.com)
  */
 public class ContainerHelper implements Helper
 {

@@ -55,7 +55,7 @@ import java.util.logging.Logger;
  * Note that this class doesn't encode or decode the reserved characters. It assumes that the URIs or 
  * the URI parts passed in are properly encoded using the standard URI encoding mechanism. You can use
  * the static "encode()" and "decode()" methods for this purpose.  
- * @author Jerome Louvel (contact@noelios.com) <a href="http://www.noelios.com/">Noelios Consulting</a>
+ * @author Jerome Louvel (contact@noelios.com)
  * @see <a href="http://www.faqs.org/rfcs/rfc3986.html">RFC 3986</a>
  */
 public class Reference
@@ -303,22 +303,8 @@ public class Reference
 	 */
 	public boolean equals(Object object)
 	{
-		if (object instanceof Reference)
-		{
-			Reference ref = (Reference) object;
-			if (this.internalRef == null)
-			{
-				return ref.internalRef == null;
-			}
-			else
-			{
-				return this.internalRef.equals(ref.internalRef);
-			}
-		}
-		else
-		{
-			return false;
-		}
+		return (object instanceof Reference)
+				&& (((Reference) object).hashCode() == hashCode());
 	}
 
 	/**
@@ -1183,7 +1169,7 @@ public class Reference
 	 */
 	public int hashCode()
 	{
-		return this.internalRef.hashCode();
+		return (this.internalRef == null) ? 0 : this.internalRef.hashCode();
 	}
 
 	/**

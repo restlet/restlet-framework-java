@@ -35,7 +35,7 @@ import com.noelios.restlet.util.PreferenceUtils;
 
 /**
  * Unit tests for the Preference related classes.
- * @author Jerome Louvel (contact@noelios.com) <a href="http://www.noelios.com/">Noelios Consulting</a>
+ * @author Jerome Louvel (contact@noelios.com)
  */
 public class PreferencesTestCase extends TestCase
 {

@@ -37,7 +37,7 @@ import org.restlet.resource.InputRepresentation;
 
 /**
  * Connector to the class loaders.
- * @author Jerome Louvel (contact@noelios.com) <a href="http://www.noelios.com/">Noelios Consulting</a>
+ * @author Jerome Louvel (contact@noelios.com)
  */
 public class ClapClientHelper extends LocalClientHelper
 {

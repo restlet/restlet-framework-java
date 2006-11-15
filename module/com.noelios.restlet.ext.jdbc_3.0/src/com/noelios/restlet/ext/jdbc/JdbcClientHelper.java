@@ -73,7 +73,7 @@ import com.noelios.restlet.Factory;
  * &nbsp;&nbsp;&nbsp;&nbsp;{@code </connection>}<br/> &nbsp;&nbsp;&nbsp;&nbsp;{@code <returnGeneratedKeys>true</returnGeneratedKeys>}<br/>
  * &nbsp;&nbsp;{@code </header>}<br/> &nbsp;&nbsp;{@code <body>}<br/> &nbsp;&nbsp;&nbsp;&nbsp;{@code SELECT * FROM customers}<br/>
  * &nbsp;&nbsp;{@code </body>}<br/> {@code </request>}
- * @author Jerome Louvel (contact@noelios.com) <a href="http://www.noelios.com/">Noelios Consulting</a>
+ * @author Jerome Louvel (contact@noelios.com)
  */
 public class JdbcClientHelper extends ClientHelper
 {

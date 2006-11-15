@@ -43,7 +43,7 @@ import org.restlet.util.Factory;
  * to the one in Apache HTTP server) is used to select the best representation of a resource based on the 
  * available variants and on the client capabilities and preferences.
  * @see <a href="http://www.restlet.org/tutorial#part06">Tutorial: Serving context resources</a>
- * @author Jerome Louvel (contact@noelios.com) <a href="http://www.noelios.com/">Noelios Consulting</a>
+ * @author Jerome Louvel (contact@noelios.com)
  */
 public class Directory extends Handler
 {

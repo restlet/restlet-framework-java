@@ -24,7 +24,7 @@ package org.restlet.data;
 
 /**
  * Method to execute when handling a call.
- * @author Jerome Louvel (contact@noelios.com) <a href="http://www.noelios.com/">Noelios Consulting</a>
+ * @author Jerome Louvel (contact@noelios.com)
  */
 public class Method extends Metadata
 {
@@ -146,22 +146,18 @@ public class Method extends Metadata
 		return this.uri;
 	}
 
-	/**
-	 * Indicates if two metadata are equal.
-	 * @param object The object to compare to.
-	 * @return True if both metadata are equal.
-	 */
+	/** {@inheritDoc} */
 	@Override
 	public boolean equals(Object object)
 	{
-		return (object instanceof Method) && ((Method) object).getName().equals(getName());
+		return (object instanceof Method) && (((Method) object).hashCode() == hashCode());
 	}
 
 	/** {@inheritDoc} */
 	@Override
 	public int hashCode()
 	{
-		return getName().hashCode();
+		return (getName() == null) ? 0 : getName().hashCode();
 	}
 
 	/**

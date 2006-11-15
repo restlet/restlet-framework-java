@@ -44,7 +44,7 @@ import com.noelios.restlet.http.HttpClientCall;
 
 /**
  * HTTP client connector call based on JDK's java.net.HttpUrlConnection class.
- * @author Jerome Louvel (contact@noelios.com) <a href="http://www.noelios.com/">Noelios Consulting</a>
+ * @author Jerome Louvel (contact@noelios.com)
  */
 public class HttpUrlConnectionCall extends HttpClientCall
 {

@@ -22,9 +22,11 @@
 
 package org.restlet.data;
 
+import org.restlet.util.Factory;
+
 /**
  * Authentication challenge sent by an origin server to a client.
- * @author Jerome Louvel (contact@noelios.com) <a href="http://www.noelios.com/">Noelios Consulting</a>
+ * @author Jerome Louvel (contact@noelios.com)
  */
 public class ChallengeRequest
 {
@@ -47,6 +49,21 @@ public class ChallengeRequest
 		this.scheme = scheme;
 		this.realm = realm;
 		this.parameters = null;
+	}
+
+	/** {@inheritDoc} */
+	@Override
+	public boolean equals(Object object)
+	{
+		return (object instanceof ChallengeRequest)
+				&& (((ChallengeRequest) object).hashCode() == hashCode());
+	}
+
+	/** {@inheritDoc} */
+	@Override
+	public int hashCode()
+	{
+		return Factory.hashCode(getScheme(), getRealm(), getParameters());
 	}
 
 	/**

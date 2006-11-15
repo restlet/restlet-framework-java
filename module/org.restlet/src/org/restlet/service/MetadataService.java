@@ -32,7 +32,7 @@ import org.restlet.data.Metadata;
 
 /**
  * Service providing access to metadata and their extension names.
- * @author Jerome Louvel (contact@noelios.com) <a href="http://www.noelios.com/">Noelios Consulting</a>
+ * @author Jerome Louvel (contact@noelios.com)
  */
 public class MetadataService
 {

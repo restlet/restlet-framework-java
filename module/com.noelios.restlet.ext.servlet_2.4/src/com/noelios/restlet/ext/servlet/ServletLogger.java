@@ -27,7 +27,7 @@ import java.util.logging.Logger;
 
 /**
  * Logger that wraps the logging methods of javax.servlet.ServletContext.
- * @author Jerome Louvel (contact@noelios.com) <a href="http://www.noelios.com/">Noelios Consulting</a>
+ * @author Jerome Louvel (contact@noelios.com)
  */
 public class ServletLogger extends Logger
 {

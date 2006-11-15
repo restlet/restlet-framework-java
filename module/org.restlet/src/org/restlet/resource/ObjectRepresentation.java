@@ -32,7 +32,7 @@ import org.restlet.data.MediaType;
 
 /**
  * Representation based on a serializable Java object.
- * @author Jerome Louvel (contact@noelios.com) <a href="http://www.noelios.com/">Noelios Consulting</a>
+ * @author Jerome Louvel (contact@noelios.com)
  */
 public class ObjectRepresentation extends OutputRepresentation
 {

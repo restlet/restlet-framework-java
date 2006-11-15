@@ -29,7 +29,7 @@ import java.sql.Statement;
 
 /**
  * JDBC result wrapper. Used by the JDBC client connector as a response entity of JDBC calls.
- * @author Jerome Louvel (contact@noelios.com) <a href="http://www.noelios.com/">Noelios Consulting</a>
+ * @author Jerome Louvel (contact@noelios.com)
  */
 public class JdbcResult implements Serializable
 {

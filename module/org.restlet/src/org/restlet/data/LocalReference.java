@@ -36,7 +36,7 @@ import java.io.IOException;
  * <br/>
  * FILE is a standard scheme to access to representations stored in the file system (locally most of the time).
  * Example URI: "file:///D/root/index.html".
- * @author Jerome Louvel (contact@noelios.com) <a href="http://www.noelios.com/">Noelios Consulting</a>
+ * @author Jerome Louvel (contact@noelios.com)
  */
 public class LocalReference extends Reference
 {

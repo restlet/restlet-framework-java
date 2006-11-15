@@ -27,7 +27,7 @@ import org.restlet.data.Reference;
 
 /**
  * Test {@link org.restlet.data.Reference}.
- * @author Jerome Louvel (contact@noelios.com) <a href="http://www.noelios.com/">Noelios Consulting</a>
+ * @author Jerome Louvel (contact@noelios.com)
  * @author Lars Heuer (heuer[at]semagia.com) <a href="http://www.semagia.com/">Semagia</a>
  */
 public class ReferenceTestCase extends RestletTestCase

@@ -31,7 +31,7 @@ import org.restlet.util.StringTemplate;
  * Reference template capable of converting a URI template into a Regex pattern.
  * @see java.util.regex.Pattern
  * @see <a href="http://bitworking.org/projects/URI-Templates/draft-gregorio-uritemplate-00.html">INTERNET DRAFT - URI Template</a>
- * @author Jerome Louvel (contact@noelios.com) <a href="http://www.noelios.com/">Noelios Consulting</a>
+ * @author Jerome Louvel (contact@noelios.com)
  */
 public class ReferenceTemplate extends StringTemplate
 {

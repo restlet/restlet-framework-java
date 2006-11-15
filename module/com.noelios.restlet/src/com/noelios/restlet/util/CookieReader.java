@@ -35,7 +35,7 @@ import org.restlet.util.DateUtils;
 
 /**
  * Cookie header reader.
- * @author Jerome Louvel (contact@noelios.com) <a href="http://www.noelios.com/">Noelios Consulting</a>
+ * @author Jerome Louvel (contact@noelios.com)
  */
 public class CookieReader extends HeaderReader
 {

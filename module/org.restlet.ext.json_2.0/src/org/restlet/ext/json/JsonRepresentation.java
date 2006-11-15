@@ -34,7 +34,7 @@ import org.restlet.resource.StringRepresentation;
 /**
  * Representation based on a JSON document.
  * JSON stands for JavaScript Object Notation and is a lightweight data-interchange format.
- * @author Jerome Louvel (contact@noelios.com) <a href="http://www.noelios.com/">Noelios Consulting</a>
+ * @author Jerome Louvel (contact@noelios.com)
  * @see <a href="http://www.json.org">JSON home</a>
  */
 public class JsonRepresentation extends StringRepresentation

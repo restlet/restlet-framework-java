@@ -30,7 +30,7 @@ import org.restlet.data.Status;
  * Restlet part of a processing chain. In addition to handling incoming calls like any Restlet, a Chainer
  * can also resolve, either statically or dynamically, the next Restlet that will continue the processing 
  * chain. Subclasses only have to implement the getNext() method.
- * @author Jerome Louvel (contact@noelios.com) <a href="http://www.noelios.com/">Noelios Consulting</a>
+ * @author Jerome Louvel (contact@noelios.com)
  */
 public abstract class Chainer extends Restlet
 {

@@ -49,7 +49,7 @@ import org.restlet.resource.Resource;
 
 /**
  * Factory and registration service for Restlet API implementations.
- * @author Jerome Louvel (contact@noelios.com) <a href="http://www.noelios.com/">Noelios Consulting</a>
+ * @author Jerome Louvel (contact@noelios.com)
  */
 public abstract class Factory
 {

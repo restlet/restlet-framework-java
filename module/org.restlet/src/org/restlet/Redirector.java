@@ -36,7 +36,7 @@ import org.restlet.util.StringTemplate;
  * @see org.restlet.util.StringTemplate
  * @see org.restlet.util.CallModel
  * @see <a href="http://www.restlet.org/tutorial#part10">Tutorial: URI rewriting and redirection</a>
- * @author Jerome Louvel (contact@noelios.com) <a href="http://www.noelios.com/">Noelios Consulting</a>
+ * @author Jerome Louvel (contact@noelios.com)
  */
 public class Redirector extends Restlet
 {

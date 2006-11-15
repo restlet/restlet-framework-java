@@ -47,7 +47,7 @@ import org.restlet.resource.Resource;
  * <br/>
  * The other handle*() methods simply invoke the defaultHandle() method which simply set the status to 
  * SERVER_ERROR_NOT_IMPLEMENTED). 
- * @author Jerome Louvel (contact@noelios.com) <a href="http://www.noelios.com/">Noelios Consulting</a>
+ * @author Jerome Louvel (contact@noelios.com)
  */
 public class Handler extends Restlet
 {

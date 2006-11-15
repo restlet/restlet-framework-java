@@ -31,7 +31,7 @@ import org.restlet.util.Factory;
 
 /**
  * Form which is a specialized modifiable list of parameters.
- * @author Jerome Louvel (contact@noelios.com) <a href="http://www.noelios.com/">Noelios Consulting</a>
+ * @author Jerome Louvel (contact@noelios.com)
  */
 public class Form extends ParameterList
 {

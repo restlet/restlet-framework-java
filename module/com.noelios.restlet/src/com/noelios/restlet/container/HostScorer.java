@@ -34,7 +34,7 @@ import org.restlet.data.Response;
 
 /**
  * Router scorer based on a target VirtualHost. 
- * @author Jerome Louvel (contact@noelios.com) <a href="http://www.noelios.com/">Noelios Consulting</a>
+ * @author Jerome Louvel (contact@noelios.com)
  */
 public class HostScorer extends Scorer
 {

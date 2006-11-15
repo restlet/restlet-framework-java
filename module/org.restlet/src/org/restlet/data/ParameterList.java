@@ -35,7 +35,7 @@ import org.restlet.util.WrapperList;
  * Modifiable list of parameters with many helper methods. Note that this class implements the java.util.List
  * interface using the Parameter class as the template type. This allows you to use an instance of this class
  * as any other java.util.List, in particular all the helper methods in java.util.Collections.
- * @author Jerome Louvel (contact@noelios.com) <a href="http://www.noelios.com/">Noelios Consulting</a>
+ * @author Jerome Louvel (contact@noelios.com)
  * @see java.util.Collections
  * @see java.util.List
  */

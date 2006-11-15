@@ -22,9 +22,11 @@
 
 package org.restlet.data;
 
+import org.restlet.util.Factory;
+
 /**
  * Cookie provided by a client.
- * @author Jerome Louvel (contact@noelios.com) <a href="http://www.noelios.com/">Noelios Consulting</a>
+ * @author Jerome Louvel (contact@noelios.com)
  */
 public class Cookie extends Parameter
 {
@@ -136,59 +138,18 @@ public class Cookie extends Parameter
 		this.domain = domain;
 	}
 
+	/** {@inheritDoc} */
 	@Override
-	public boolean equals(Object obj)
+	public boolean equals(Object object)
 	{
-		boolean result = (obj == this);
-		//if obj == this no need to go further
-		if (!result)
-		{
-			// test for equality at Parameter level i.e. name and value.
-			if (super.equals(obj))
-			{
-				// if obj isn't a cookie or is null don't evaluate further
-				if ((obj instanceof Cookie) && obj != null)
-				{
-					Cookie that = (Cookie) obj;
-					result = (this.version == that.version);
-					if (result) // if versions are equal test domains
-					{
-						if (!(this.domain == null)) // compare domains taking care of nulls
-						{
-							result = (this.domain.equals(that.domain));
-						}
-						else
-						{
-							result = (that.domain == null);
-						}
-						if (result) //if domains are equal test the paths
-						{
-							if (!(this.path == null)) // compare paths taking care of nulls
-							{
-								result = (this.path.equals(that.path));
-							}
-							else
-							{
-								result = (that.path == null);
-							}
-						}
-					}
-				}
-			}
-
-		}
-		return result;
+		return (object instanceof Cookie) && (((Cookie) object).hashCode() == hashCode());
 	}
 
+	/** {@inheritDoc} */
 	@Override
 	public int hashCode()
 	{
-		final int PRIME = 31;
-		int result = super.hashCode(); //takes into account the name and value fields in superclass
-		result = PRIME * result + ((domain == null) ? 0 : domain.hashCode());
-		result = PRIME * result + ((path == null) ? 0 : path.hashCode());
-		result = PRIME * result + version;
-		return result;
+		return Factory.hashCode(super.hashCode(), getVersion(), getPath(), getDomain());
 	}
 
 }

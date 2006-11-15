@@ -27,7 +27,7 @@ import org.restlet.data.Protocol;
 
 /**
  * Retrieving the content of a Web page.
- * @author Jerome Louvel (contact@noelios.com) <a href="http://www.noelios.com/">Noelios Consulting</a>
+ * @author Jerome Louvel (contact@noelios.com)
  */
 public class Part02a
 {

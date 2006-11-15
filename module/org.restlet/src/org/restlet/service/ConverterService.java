@@ -26,7 +26,7 @@ import org.restlet.resource.Representation;
 
 /**
  * Service providing conversion between message entities and higher-level objects.
- * @author Jerome Louvel (contact@noelios.com) <a href="http://www.noelios.com/">Noelios Consulting</a>
+ * @author Jerome Louvel (contact@noelios.com)
  */
 public class ConverterService
 {

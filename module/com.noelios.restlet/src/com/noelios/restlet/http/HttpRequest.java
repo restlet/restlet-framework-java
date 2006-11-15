@@ -46,7 +46,7 @@ import com.noelios.restlet.util.SecurityUtils;
 
 /**
  * Request wrapper for server HTTP calls.
- * @author Jerome Louvel (contact@noelios.com) <a href="http://www.noelios.com/">Noelios Consulting</a>
+ * @author Jerome Louvel (contact@noelios.com)
  */
 public class HttpRequest extends Request
 {

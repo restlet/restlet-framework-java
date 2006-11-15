@@ -32,7 +32,7 @@ import com.noelios.restlet.StatusFilter;
 
 /**
  * Status filter that tries to obtain ouput representation from an application.
- * @author Jerome Louvel (contact@noelios.com) <a href="http://www.noelios.com/">Noelios Consulting</a>
+ * @author Jerome Louvel (contact@noelios.com)
  */
 public class ApplicationStatusFilter extends StatusFilter
 {

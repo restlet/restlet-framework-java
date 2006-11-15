@@ -38,7 +38,7 @@ import org.restlet.data.Response;
 /**
  * Filter tunnelling browser calls into full REST calls. The request method can be changed (via POST requests
  * only) as well as the accepted media types, languages, encodings and character sets.  
- * @author Jerome Louvel (contact@noelios.com) <a href="http://www.noelios.com/">Noelios Consulting</a>
+ * @author Jerome Louvel (contact@noelios.com)
  */
 public class TunnelFilter extends Filter
 {

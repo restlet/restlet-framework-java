@@ -24,7 +24,7 @@ package org.restlet.service;
 
 /**
  * Service providing decoding and decompression of request entities.
- * @author Jerome Louvel (contact@noelios.com) <a href="http://www.noelios.com/">Noelios Consulting</a>
+ * @author Jerome Louvel (contact@noelios.com)
  */
 public class DecoderService
 {

@@ -35,7 +35,7 @@ import org.restlet.resource.Representation;
 
 /**
  * Filter decompressing entities. 
- * @author Jerome Louvel (contact@noelios.com) <a href="http://www.noelios.com/">Noelios Consulting</a>
+ * @author Jerome Louvel (contact@noelios.com)
  */
 public class DecoderFilter extends Filter
 {

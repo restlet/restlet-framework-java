@@ -27,7 +27,7 @@ package org.restlet.util;
  * UnsupportedOperationException exception. It is similar to the JDK's Map interface but has a narrower scope
  * which makes it more suitable for dynamic models and easier to be implemented by domain classes.
  * @see org.restlet.util.StringTemplate
- * @author Jerome Louvel (contact@noelios.com) <a href="http://www.noelios.com/">Noelios Consulting</a>
+ * @author Jerome Louvel (contact@noelios.com)
  */
 public interface Model
 {

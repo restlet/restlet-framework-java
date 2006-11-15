@@ -32,7 +32,7 @@ import org.restlet.data.Response;
 
 /**
  * Display the HTTP accept header sent by the Web browsers.
- * @author Jerome Louvel (contact@noelios.com) <a href="http://www.noelios.com/">Noelios Consulting</a>
+ * @author Jerome Louvel (contact@noelios.com)
  */
 public class HeadersTest
 {

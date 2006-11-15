@@ -31,7 +31,7 @@ package org.restlet.data;
  * supplied representation." Roy T. Fielding
  * @see <a href="http://www.ics.uci.edu/~fielding/pubs/dissertation/rest_arch_style.htm#sec_5_2_1_2">Source
  * dissertation</a>
- * @author Jerome Louvel (contact@noelios.com) <a href="http://www.noelios.com/">Noelios Consulting</a>
+ * @author Jerome Louvel (contact@noelios.com)
  */
 public class Metadata
 {
@@ -70,23 +70,19 @@ public class Metadata
 		return this.name;
 	}
 
-	/**
-	 * Indicates if two metadata are equal.
-	 * @param object The object to compare to.
-	 * @return True if both metadata are equal.
-	 */
+	/** {@inheritDoc} */
 	@Override
 	public boolean equals(Object object)
 	{
 		return (object instanceof Metadata)
-				&& ((Metadata) object).getName().equals(getName());
+				&& (((Metadata) object).hashCode() == hashCode());
 	}
 
 	/** {@inheritDoc} */
 	@Override
 	public int hashCode()
 	{
-		return getName().hashCode();
+		return (getName() == null) ? 0 : getName().hashCode();
 	}
 
 	/**

@@ -27,7 +27,7 @@ import org.restlet.data.MediaType;
 /**
  * A Text construct contains human-readable text, usually in small quantities.  
  * The content of Text constructs is Language-Sensitive.
- * @author Jerome Louvel (contact@noelios.com) <a href="http://www.noelios.com/">Noelios Consulting</a>
+ * @author Jerome Louvel (contact@noelios.com)
  */
 public class Text
 {

@@ -38,7 +38,7 @@ import com.noelios.restlet.http.HttpServerCall;
 
 /**
  * Jetty AJP connection.
- * @author Jerome Louvel (contact@noelios.com) <a href="http://www.noelios.com/">Noelios Consulting</a>
+ * @author Jerome Louvel (contact@noelios.com)
  */
 public class AjpConnection extends AJP13Connection
 {

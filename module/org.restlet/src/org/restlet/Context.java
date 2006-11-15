@@ -31,7 +31,7 @@ import org.restlet.data.ParameterList;
  * the software environment within the framework. It is typically provided by the immediate parent Restlet 
  * (Container and Application are the most common cases). The services provided are access to a logger, access 
  * to configuration parameters and to a request dispatcher.
- * @author Jerome Louvel (contact@noelios.com) <a href="http://www.noelios.com/">Noelios Consulting</a>
+ * @author Jerome Louvel (contact@noelios.com)
  */
 public class Context
 {

@@ -100,7 +100,7 @@ import org.restlet.data.Protocol;
  * 	</tr>
  * </table>
  * @see <a href="http://jetty.mortbay.org/jetty/faq?s=400-Security&t=ssl">FAQ - Configuring SSL for Jetty</a>
- * @author Jerome Louvel (contact@noelios.com) <a href="http://www.noelios.com/">Noelios Consulting</a>
+ * @author Jerome Louvel (contact@noelios.com)
  */
 public class HttpsServerHelper extends JettyServerHelper
 {

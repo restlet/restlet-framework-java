@@ -29,7 +29,7 @@ import org.restlet.data.Response;
 
 /**
  * Default call dispatcher.
- * @author Jerome Louvel (contact@noelios.com) <a href="http://www.noelios.com/">Noelios Consulting</a>
+ * @author Jerome Louvel (contact@noelios.com)
  */
 public abstract class DefaultDispatcher extends Dispatcher
 {

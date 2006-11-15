@@ -30,7 +30,7 @@ package org.restlet.data;
  * @see <a href="http://www.w3.org/Protocols/rfc2616/rfc2616-sec3.html#sec3.11">HTTP Entity Tags</a>
  * @see <a href="http://www.w3.org/Protocols/rfc2616/rfc2616-sec13.html#sec13.3.2">HTTP Entity Tag Cache
  * Validators</a>
- * @author Jerome Louvel (contact@noelios.com) <a href="http://www.noelios.com/">Noelios Consulting</a>
+ * @author Jerome Louvel (contact@noelios.com)
  */
 public class Tag
 {
@@ -158,14 +158,14 @@ public class Tag
 	@Override
 	public boolean equals(Object object)
 	{
-		return (object instanceof Tag) && getName().equals(((Tag) object).getName());
+		return (object instanceof Tag) && (((Tag) object).hashCode() == hashCode());
 	}
 
 	/** {@inheritDoc} */
 	@Override
 	public int hashCode()
 	{
-		return getName().hashCode();
+		return (getName() == null) ? 0 : getName().hashCode();
 	}
 
 }

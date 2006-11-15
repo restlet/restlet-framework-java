@@ -61,7 +61,7 @@ import org.restlet.data.Response;
  * <li>uri</li>
  * <li>userInfo</li>
  * </ul>
- * @author Jerome Louvel (contact@noelios.com) <a href="http://www.noelios.com/">Noelios Consulting</a>
+ * @author Jerome Louvel (contact@noelios.com)
  */
 public class CallModel implements Model
 {

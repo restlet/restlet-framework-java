@@ -19,42 +19,36 @@
  * replaced with your own identifying information:
  * Portions Copyright [yyyy] [name of copyright owner]
  */
-
 package org.restlet.test;
 
-import junit.framework.Test;
-import junit.framework.TestSuite;
+import org.restlet.data.Cookie;
 
 /**
- * Suite of unit tests for the Restlet RI.
+ * Test {@link org.restlet.data.Cookie}.
  * @author Jerome Louvel (contact@noelios.com)
  */
-public class RestletTestSuite extends TestSuite
+public class CookieTestCase extends RestletTestCase
 {
-	/** Constructor. */
-	public RestletTestSuite()
+
+	/**
+	 * Equality tests. 
+	 */
+	public void testEquals() throws Exception
 	{
-		addTestSuite(CallTestCase.class);
-		addTestSuite(CookieTestCase.class);
-		addTestSuite(DirectoryTestCase.class);
-		addTestSuite(FileReferenceTestCase.class);
-		addTestSuite(FilterTestCase.class);
-		addTestSuite(FreeMarkerTestCase.class);
-		addTestSuite(MediaTypeTestCase.class);
-		addTestSuite(RedirectTestCase.class);
-		addTestSuite(ReferenceTestCase.class);
-		addTestSuite(RestartTestCase.class);
-		addTestSuite(StringTemplateTestCase.class);
-		addTestSuite(VelocityTestCase.class);
+		Cookie c1 = new Cookie(1, "name1", "value1", "path1", "domain1");
+		Cookie c2 = new Cookie(1, "name1", "value1", "path1", "domain1");
+		assertTrue(c1.equals(c2));
+		assertEquals(c1, c2);
 	}
 
 	/**
-	 * JUnit constructor.
-	 * @return The unit test.
+	 * Test references that are unequal. 
 	 */
-	public static Test suite()
+	public void testUnEquals() throws Exception
 	{
-		return new RestletTestSuite();
+		Cookie c1 = new Cookie(1, "name1", "value1", "path1", "domain1");
+		Cookie c2 = new Cookie(2, "name2", "value2", "path2", "domain2");
+		assertFalse(c1.equals(c2));
 	}
 
 }

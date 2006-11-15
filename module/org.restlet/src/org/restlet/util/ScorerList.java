@@ -38,7 +38,7 @@ import org.restlet.data.Response;
  * as any other java.util.List, in particular all the helper methods in java.util.Collections.<br/>
  * <br/>
  * Note that structural changes to this list are synchronized. 
- * @author Jerome Louvel (contact@noelios.com) <a href="http://www.noelios.com/">Noelios Consulting</a>
+ * @author Jerome Louvel (contact@noelios.com)
  * @see java.util.Collections
  * @see java.util.List
  */

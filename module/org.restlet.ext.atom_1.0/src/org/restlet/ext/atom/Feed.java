@@ -41,7 +41,7 @@ import org.xml.sax.helpers.DefaultHandler;
 
 /**
  * Atom Feed Document, acting as a container for metadata and data associated with the feed.
- * @author Jerome Louvel (contact@noelios.com) <a href="http://www.noelios.com/">Noelios Consulting</a>
+ * @author Jerome Louvel (contact@noelios.com)
  */
 public class Feed extends SaxRepresentation
 {

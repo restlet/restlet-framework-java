@@ -42,7 +42,7 @@ import org.restlet.data.Status;
  * a target resource. The context property is typically provided by a parent container as a way to give 
  * access to features such as logging and client connectors. 
  * @see <a href="http://www.ics.uci.edu/~fielding/pubs/dissertation/rest_arch_style.htm#sec_5_1_5">Source dissertation</a>
- * @author Jerome Louvel (contact@noelios.com) <a href="http://www.noelios.com/">Noelios Consulting</a>
+ * @author Jerome Louvel (contact@noelios.com)
  */
 public class Restlet
 {

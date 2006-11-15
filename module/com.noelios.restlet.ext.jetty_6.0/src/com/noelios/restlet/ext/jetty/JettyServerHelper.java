@@ -129,7 +129,7 @@ import org.mortbay.thread.BoundedThreadPool;
  * 	</tr>
  * </table>
  * @see <a href="http://jetty.mortbay.org/jetty6/">Jetty home page</a>
- * @author Jerome Louvel (contact@noelios.com) <a href="http://www.noelios.com/">Noelios Consulting</a>
+ * @author Jerome Louvel (contact@noelios.com)
  */
 public abstract class JettyServerHelper extends com.noelios.restlet.http.HttpServerHelper
 {
@@ -203,7 +203,7 @@ public abstract class JettyServerHelper extends com.noelios.restlet.http.HttpSer
 
 	/**
 	 * Jetty server wrapped by a parent Restlet HTTP server connector.
-	 * @author Jerome Louvel (contact@noelios.com) <a href="http://www.noelios.com/">Noelios Consulting</a>
+	 * @author Jerome Louvel (contact@noelios.com)
 	 */
 	private class WrappedServer extends org.mortbay.jetty.Server
 	{

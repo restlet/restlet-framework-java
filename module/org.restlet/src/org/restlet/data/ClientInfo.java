@@ -31,7 +31,7 @@ import org.restlet.util.Factory;
 
 /**
  * Client specific data related to a call.
- * @author Jerome Louvel (contact@noelios.com) <a href="http://www.noelios.com/">Noelios Consulting</a>
+ * @author Jerome Louvel (contact@noelios.com)
  */
 public class ClientInfo
 {

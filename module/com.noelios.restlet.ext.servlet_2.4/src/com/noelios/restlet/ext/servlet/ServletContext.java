@@ -34,7 +34,7 @@ import com.noelios.restlet.application.ApplicationContext;
 /**
  * Context allowing access to the container's connectors, reusing the Servlet's logging mechanism and
  * adding the Servlet's initialization parameters to the context's parameters.
- * @author Jerome Louvel (contact@noelios.com) <a href="http://www.noelios.com/">Noelios Consulting</a>
+ * @author Jerome Louvel (contact@noelios.com)
  */
 public class ServletContext extends ApplicationContext
 {

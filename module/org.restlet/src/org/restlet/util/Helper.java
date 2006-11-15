@@ -28,7 +28,7 @@ import org.restlet.data.Response;
 
 /**
  * Delegate used by API classes to get support from the implementation classes.  
- * @author Jerome Louvel (contact@noelios.com) <a href="http://www.noelios.com/">Noelios Consulting</a>
+ * @author Jerome Louvel (contact@noelios.com)
  */
 public interface Helper
 {

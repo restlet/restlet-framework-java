@@ -28,7 +28,7 @@ import org.restlet.resource.Representation;
 
 /**
  * Either contains or links to the content of the entry.
- * @author Jerome Louvel (contact@noelios.com) <a href="http://www.noelios.com/">Noelios Consulting</a>
+ * @author Jerome Louvel (contact@noelios.com)
  */
 public class Content
 {

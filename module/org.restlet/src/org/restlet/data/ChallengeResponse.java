@@ -22,9 +22,11 @@
 
 package org.restlet.data;
 
+import org.restlet.util.Factory;
+
 /**
  * Authentication response sent by client to an origin server.
- * @author Jerome Louvel (contact@noelios.com) <a href="http://www.noelios.com/">Noelios Consulting</a>
+ * @author Jerome Louvel (contact@noelios.com)
  */
 public class ChallengeResponse
 {
@@ -65,6 +67,21 @@ public class ChallengeResponse
 		this.credentials = null;
 		this.identifier = identifier;
 		this.secret = secret;
+	}
+
+	/** {@inheritDoc} */
+	@Override
+	public boolean equals(Object object)
+	{
+		return (object instanceof ChallengeResponse)
+				&& (((ChallengeResponse) object).hashCode() == hashCode());
+	}
+
+	/** {@inheritDoc} */
+	@Override
+	public int hashCode()
+	{
+		return Factory.hashCode(getScheme(), getIdentifier(), getSecret(), getCredentials());
 	}
 
 	/**
