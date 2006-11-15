@@ -37,6 +37,7 @@ import org.restlet.data.Encoding;
 import org.restlet.data.Language;
 import org.restlet.data.MediaType;
 import org.restlet.data.Tag;
+import org.restlet.util.ImmutableDate;
 
 /**
  * Current or intended state of a resource. For performance purpose, it is essential that a minimal overhead 
@@ -75,7 +76,7 @@ public class Representation extends Resource
 	private long size;
 
 	/** The expiration date. */
-	private Date expirationDate;
+	private ImmutableDate expirationDate;
 
 	/** The language or null if not applicable. */
 	private Language language;
@@ -84,7 +85,7 @@ public class Representation extends Resource
 	private MediaType mediaType;
 
 	/** The modification date. */
-	private Date modificationDate;
+	private ImmutableDate modificationDate;
 
 	/** The represented resource, if available. */
 	private Resource resource;
@@ -199,7 +200,7 @@ public class Representation extends Resource
 	 */
 	public void setExpirationDate(Date expirationDate)
 	{
-		this.expirationDate = expirationDate;
+		this.expirationDate = ImmutableDate.valueOf(expirationDate);
 	}
 
 	/**
@@ -254,7 +255,7 @@ public class Representation extends Resource
 	 */
 	public void setModificationDate(Date modificationDate)
 	{
-		this.modificationDate = modificationDate;
+		this.modificationDate = ImmutableDate.valueOf(modificationDate);
 	}
 
 	/**

@@ -28,170 +28,167 @@ package org.restlet.data;
  */
 public class Cookie extends Parameter
 {
-   /** The version number. */
+	/** The version number. */
 	private int version;
 
-   /** The validity path. */
+	/** The validity path. */
 	private String path;
 
-   /** The domain name. */
+	/** The domain name. */
 	private String domain;
 
-   /**
-    * Constructor.
-    */
-   public Cookie()
-   {
-      this(0, null, null, null, null);
-   }
+	/**
+	 * Constructor.
+	 */
+	public Cookie()
+	{
+		this(0, null, null, null, null);
+	}
 
-   /**
-    * Constructor.
-    * @param name The name.
-    * @param value The value.
-    */
-   public Cookie(String name, String value)
-   {
-      this(0, name, value, null, null);
-   }
+	/**
+	 * Constructor.
+	 * @param name The name.
+	 * @param value The value.
+	 */
+	public Cookie(String name, String value)
+	{
+		this(0, name, value, null, null);
+	}
 
-   /**
-    * Constructor.
-    * @param version The version number.
-    * @param name The name.
-    * @param value The value.
-    */
-   public Cookie(int version, String name, String value)
-   {
-      this(version, name, value, null, null);
-   }
+	/**
+	 * Constructor.
+	 * @param version The version number.
+	 * @param name The name.
+	 * @param value The value.
+	 */
+	public Cookie(int version, String name, String value)
+	{
+		this(version, name, value, null, null);
+	}
 
-   /**
-    * Constructor.
-    * @param version The version number.
-    * @param name The name.
-    * @param value The value.
-    * @param path The validity path.
-    * @param domain The domain name.
-    */
-   public Cookie(int version, String name, String value, String path, String domain)
-   {
-      super(name, value);
-      this.version = version;
-      this.path = path;
-      this.domain = domain;
-   }
+	/**
+	 * Constructor.
+	 * @param version The version number.
+	 * @param name The name.
+	 * @param value The value.
+	 * @param path The validity path.
+	 * @param domain The domain name.
+	 */
+	public Cookie(int version, String name, String value, String path, String domain)
+	{
+		super(name, value);
+		this.version = version;
+		this.path = path;
+		this.domain = domain;
+	}
 
-   /**
-    * Returns the cookie specification version.
-    * @return The cookie specification version.
-    */
-   public int getVersion()
-   {
-      return this.version;
-   }
+	/**
+	 * Returns the cookie specification version.
+	 * @return The cookie specification version.
+	 */
+	public int getVersion()
+	{
+		return this.version;
+	}
 
-   /**
-    * Sets the cookie specification version.
-    * @param version The cookie specification version.
-    */
-   public void setVersion(int version)
-   {
-      this.version = version;
-   }
+	/**
+	 * Sets the cookie specification version.
+	 * @param version The cookie specification version.
+	 */
+	public void setVersion(int version)
+	{
+		this.version = version;
+	}
 
-   /**
-    * Returns the validity path.
-    * @return The validity path.
-    */
-   public String getPath()
-   {
-      return this.path;
-   }
+	/**
+	 * Returns the validity path.
+	 * @return The validity path.
+	 */
+	public String getPath()
+	{
+		return this.path;
+	}
 
-   /**
-    * Sets the validity path.
-    * @param path The validity path.
-    */
-   public void setPath(String path)
-   {
-      this.path = path;
-   }
+	/**
+	 * Sets the validity path.
+	 * @param path The validity path.
+	 */
+	public void setPath(String path)
+	{
+		this.path = path;
+	}
 
-   /**
-    * Returns the domain name.
-    * @return The domain name.
-    */
-   public String getDomain()
-   {
-      return this.domain;
-   }
+	/**
+	 * Returns the domain name.
+	 * @return The domain name.
+	 */
+	public String getDomain()
+	{
+		return this.domain;
+	}
 
-   /**
-    * Sets the domain name.
-    * @param domain The domain name.
-    */
-   public void setDomain(String domain)
-   {
-      this.domain = domain;
-   }
+	/**
+	 * Sets the domain name.
+	 * @param domain The domain name.
+	 */
+	public void setDomain(String domain)
+	{
+		this.domain = domain;
+	}
 
-   /**
-    * Compares two parameters.
-    * @param object The object to compare to.
-    * @return True if the parameters are identical (name and value).
-    */
-   public boolean equals(Object object)
-   {
-      boolean result = super.equals(object);
-      
-      if(result)
-      {
-      	result = object instanceof Cookie;
-      	
-      	if(result)
-      	{
-      		Cookie otherCookie = (Cookie)object;
-      		
-      		if(otherCookie != null)
-      		{
-			      result &= (getVersion() == otherCookie.getVersion());
-			
-			      if(getPath() == null)
-			      {
-			         result &= (otherCookie.getPath() == null);
-			      }
-			      else
-			      {
-			         result &= getPath().equals(otherCookie.getPath());
-			      }
-			
-			      if(getDomain() == null)
-			      {
-			         result &= (otherCookie.getDomain() == null);
-			      }
-			      else
-			      {
-			         result &= getDomain().equals(otherCookie.getDomain());
-			      }
-      		}
-      		else
-      		{
-      			result = false;
-      		}
-      	}
-      }
-      
-      return result;
-   }
-	
-	/** {@inheritDoc} */
+	@Override
+	public boolean equals(Object obj)
+	{
+		boolean result = (obj == this);
+		//if obj == this no need to go further
+		if (!result)
+		{
+			// test for equality at Parameter level i.e. name and value.
+			if (super.equals(obj))
+			{
+				// if obj isn't a cookie or is null don't evaluate further
+				if ((obj instanceof Cookie) && obj != null)
+				{
+					Cookie that = (Cookie) obj;
+					result = (this.version == that.version);
+					if (result) // if versions are equal test domains
+					{
+						if (!(this.domain == null)) // compare domains taking care of nulls
+						{
+							result = (this.domain.equals(that.domain));
+						}
+						else
+						{
+							result = (that.domain == null);
+						}
+						if (result) //if domains are equal test the paths
+						{
+							if (!(this.path == null)) // compare paths taking care of nulls
+							{
+								result = (this.path.equals(that.path));
+							}
+							else
+							{
+								result = (that.path == null);
+							}
+						}
+					}
+				}
+			}
+
+		}
+		return result;
+	}
+
 	@Override
 	public int hashCode()
 	{
-		// to workaround findbugs warning
-		// to properly implement
-		return super.hashCode();
+		final int PRIME = 31;
+		int result = super.hashCode(); //takes into account the name and value fields in superclass
+		result = PRIME * result + ((domain == null) ? 0 : domain.hashCode());
+		result = PRIME * result + ((path == null) ? 0 : path.hashCode());
+		result = PRIME * result + version;
+		return result;
 	}
 
 }

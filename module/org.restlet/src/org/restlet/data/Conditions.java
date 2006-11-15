@@ -25,6 +25,8 @@ package org.restlet.data;
 import java.util.Date;
 import java.util.List;
 
+import org.restlet.util.ImmutableDate;
+
 /**
  * Set of conditions applying to a request. This is equivalent to the HTTP conditional headers.  
  * @author Jerome Louvel (contact@noelios.com) <a href="http://www.noelios.com/">Noelios Consulting</a>
@@ -32,10 +34,10 @@ import java.util.List;
 public class Conditions
 {
 	/** The "if-modified-since" condition */
-	private Date modifiedSince;
+	private ImmutableDate modifiedSince;
 
 	/** The "if-unmodified-since" condition */
-	private Date unmodifiedSince;
+	private ImmutableDate unmodifiedSince;
 
 	/** The "if-match" condition */
 	private List<Tag> match;
@@ -65,7 +67,7 @@ public class Conditions
 	 */
 	public void setModifiedSince(Date date)
 	{
-		this.modifiedSince = date;
+		this.modifiedSince = ImmutableDate.valueOf(date);
 	}
 
 	/**
@@ -83,7 +85,7 @@ public class Conditions
 	 */
 	public void setUnmodifiedSince(Date date)
 	{
-		this.unmodifiedSince = date;
+		this.unmodifiedSince = ImmutableDate.valueOf(date);
 	}
 
 	/**

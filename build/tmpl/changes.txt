@@ -24,6 +24,7 @@ Changes log
  - Added "verify" target to build script to provide a shorter cycle for developpers. Contributed by Piyush Purang.
  - Slightly updated Eclipse code template file. Please re-import it if possible.
  - NRE now checks that each application has the required connectors available when starting it.
+ - Added org.restlet.util.ImmutableDate.
   
 1.0 beta 20 (2006-11-08)
 [Bugs fixed]

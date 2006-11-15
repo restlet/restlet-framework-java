@@ -30,78 +30,84 @@ import java.io.IOException;
  */
 public class Parameter implements Comparable<Parameter>
 {
-   /** The name. */
+	/** The name. */
 	private String name;
-	
-   /** The value. */
+
+	/** The value. */
 	private String value;
 
-   /**
-    * Default constructor.
-    */
-   public Parameter() 
-   {
-      this(null, null);
-   }
-
-   /**
-    * Preferred constructor.
-    * @param name The name.
-    * @param value The value.
-    */
-   public Parameter(String name, String value)
-   {
-      this.name = name;
-      this.value = value;
-   }
-
-   /**
-    * Returns the value.
-    * @return The value.
-    */
-   public String getValue()
-   {
-      return this.value;
-   }
-
-   /**
-    * Sets the value.
-    * @param value The value.
-    */
-   public void setValue(String value)
-   {
-      this.value = value;
-   }
-
-   /**
-    * Compares two parameters.
-    * @param object The object to compare.
-    * @return True if the parameters are identical (name and value).
-    */
-   public boolean equals(Object object)
+	/**
+	 * Default constructor.
+	 */
+	public Parameter()
 	{
-		boolean result = false;
-		if (object instanceof Parameter && object != null) //avoid findbugs correctness warning
+		this(null, null);
+	}
+
+	/**
+	 * Preferred constructor.
+	 * @param name The name.
+	 * @param value The value.
+	 */
+	public Parameter(String name, String value)
+	{
+		this.name = name;
+		this.value = value;
+	}
+
+	/**
+	 * Returns the value.
+	 * @return The value.
+	 */
+	public String getValue()
+	{
+		return this.value;
+	}
+
+	/**
+	 * Sets the value.
+	 * @param value The value.
+	 */
+	public void setValue(String value)
+	{
+		this.value = value;
+	}
+
+	/**
+	 * Compares two parameters.
+	 * @param object The object to compare.
+	 * @return True if the parameters are identical (name and value).
+	 */
+	public boolean equals(Object obj)
+	{
+		boolean result = (obj == this);
+		//if obj == this no need to go further
+		if (!result)
 		{
-			final Parameter that = (Parameter) object;
-			final String thisName = this.getName();
-			final String thatName = that.getName();
-			if(!(thisName == thatName)) { // compare names taking care of nulls
-				result = (thisName != null && thisName.equals(thatName));				
-			}
-			//compare values if names are equal
-			if (result)
+			if ((obj instanceof Parameter) && obj != null)
 			{
-				final String thisValue = this.getValue();
-				final String thatValue = that.getValue();
-				if (!(thisValue == thatValue)) // consider equality with nulls
-				{ 
-					result = (thisValue != null && thisValue.equals(thatValue));
+				Parameter that = (Parameter) obj;
+				if (!(this.name == null)) // compare names taking care of nulls
+				{
+					result = this.name.equals(that.name);
+				}
+				else
+				{
+					result = (that.name == null);
+				}
+				if (result) //if names are equal test the values
+				{
+					if (!(this.value == null)) // compare values taking care of nulls
+					{
+						result = (this.value.equals(that.value));
+					}
+					else
+					{
+						result = (that.value == null);
+					}
 				}
 			}
-
 		}
-
 		return result;
 	}
 
@@ -124,64 +130,63 @@ public class Parameter implements Comparable<Parameter>
 		return nameHashCode + valueHashCode;
 	}
 
-   /**
-    * Returns the name of this parameter.
-    * @return The name of this parameter.
-    */
-   public String getName()
-   {
-   	return this.name;
-   }
-   
-   /**
-    * Returns a string with the name and value of the parameter.
-    * @return A string with the name and value of the parameter.
-    */
-   public String toString()
-   {
-   	return getName() + ": " + getValue();
-   }
+	/**
+	 * Returns the name of this parameter.
+	 * @return The name of this parameter.
+	 */
+	public String getName()
+	{
+		return this.name;
+	}
 
-   /**
-    * Compares this object with the specified object for order.
-    * @param o The object to be compared.
-    * @return A negative integer, zero, or a positive integer as this object is less than, equal to, or
-    * greater than the specified object.
-    */
-   public int compareTo(Parameter o)
-   {
-      return getName().compareTo(o.getName());
-   }
+	/**
+	 * Returns a string with the name and value of the parameter.
+	 * @return A string with the name and value of the parameter.
+	 */
+	public String toString()
+	{
+		return getName() + ": " + getValue();
+	}
 
-   /**
-    * Encodes the parameter.
-    * @return The encoded string.
-    * @throws IOException
-    */
-   public String urlEncode() throws IOException
-   {
-      StringBuilder sb = new StringBuilder();
-      urlEncode(sb);
-      return sb.toString();
-   }
+	/**
+	 * Compares this object with the specified object for order.
+	 * @param o The object to be compared.
+	 * @return A negative integer, zero, or a positive integer as this object is less than, equal to, or
+	 * greater than the specified object.
+	 */
+	public int compareTo(Parameter o)
+	{
+		return getName().compareTo(o.getName());
+	}
 
-   /**
-    * Encodes the parameter and append the result to the given buffer.
-    * @param buffer The buffer to append.
-    * @throws IOException
-    */
-   public void urlEncode(Appendable buffer) throws IOException
-   {
-   	if(getName() != null)
-   	{
-      	buffer.append(Reference.encode(getName()));
-            
-         if(getValue() != null)
-         {
-         	buffer.append('=');
-            buffer.append(Reference.encode(getValue()));
-         }
-      }
-   }
-   
+	/**
+	 * Encodes the parameter.
+	 * @return The encoded string.
+	 * @throws IOException
+	 */
+	public String urlEncode() throws IOException
+	{
+		StringBuilder sb = new StringBuilder();
+		urlEncode(sb);
+		return sb.toString();
+	}
+
+	/**
+	 * Encodes the parameter and append the result to the given buffer.
+	 * @param buffer The buffer to append.
+	 * @throws IOException
+	 */
+	public void urlEncode(Appendable buffer) throws IOException
+	{
+		if (getName() != null)
+		{
+			buffer.append(Reference.encode(getName()));
+
+			if (getValue() != null)
+			{
+				buffer.append('=');
+				buffer.append(Reference.encode(getValue()));
+			}
+		}
+	}
 }
