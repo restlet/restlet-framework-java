@@ -73,15 +73,6 @@ public abstract class Factory
 	private static ClassLoader classloader = Factory.class.getClassLoader();
 
 	/**
-	 * Sets a new class loader to use when creating instantiating implementation classes.
-	 * @param newClassloader The new class loader to use.
-	 */
-	public static void setClassLoader(ClassLoader newClassloader)
-	{
-		classloader = newClassloader;
-	}
-
-	/**
 	 * Returns a the class loader to use when creating instantiating implementation classes.
 	 * By default, it reused the classloader of this Factory's class.
 	 */
@@ -178,6 +169,34 @@ public abstract class Factory
 		}
 
 		return result;
+	}
+
+	/**
+	 * Computes the hash code of a set of objects. Follows the algorithm specified in List.hasCode().
+	 * @return The hash code of a set of objects.
+	 */
+	public static int hashCode(Object... objects)
+	{
+		int result = 1;
+
+		if (objects != null)
+		{
+			for (Object obj : objects)
+			{
+				result = 31 * result + (obj == null ? 0 : obj.hashCode());
+			}
+		}
+
+		return result;
+	}
+
+	/**
+	 * Sets a new class loader to use when creating instantiating implementation classes.
+	 * @param newClassloader The new class loader to use.
+	 */
+	public static void setClassLoader(ClassLoader newClassloader)
+	{
+		classloader = newClassloader;
 	}
 
 	/**
