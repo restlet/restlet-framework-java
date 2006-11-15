@@ -80,69 +80,6 @@ public class Protocol extends Metadata
 	public static final Protocol SMTPS = new Protocol("smtps", "SMTPS",
 			"Simple Mail Transfer Protocol (Secure)", 465);
 
-	/** The scheme name. */
-	private String schemeName;
-
-	/** The default port if known or -1. */
-	private int defaultPort;
-
-	/**
-	 * Constructor.
-	 * @param schemeName The scheme name.
-	 */
-	public Protocol(String schemeName)
-	{
-		this(schemeName, schemeName.toUpperCase(), schemeName.toUpperCase() + " Protocol",
-				-1);
-	}
-
-	/**
-	 * Constructor.
-	 * @param schemeName The scheme name.
-	 * @param name The unique name.
-	 * @param description The description.
-	 * @param defaultPort The default port.
-	 */
-	public Protocol(String schemeName, String name, String description, int defaultPort)
-	{
-		super(name, description);
-		this.schemeName = schemeName;
-		this.defaultPort = defaultPort;
-	}
-
-	/**
-	 * Returns the URI scheme name. 
-	 * @return The URI scheme name.
-	 */
-	public String getSchemeName()
-	{
-		return this.schemeName;
-	}
-
-	/**
-	 * Returns the default port number.
-	 * @return The default port number.
-	 */
-	public int getDefaultPort()
-	{
-		return this.defaultPort;
-	}
-
-	/** {@inheritDoc} */
-	@Override
-	public boolean equals(Object object)
-	{
-		return (object instanceof Protocol)
-				&& (((Protocol) object).hashCode() == hashCode());
-	}
-
-	/** {@inheritDoc} */
-	@Override
-	public int hashCode()
-	{
-		return (getName() == null) ? 0 : getName().toLowerCase().hashCode();
-	}
-
 	/**
 	 * Creates the protocol associated to a URI scheme name. If an existing constant exists then it is returned,
 	 * otherwise a new instance is created.
@@ -176,5 +113,68 @@ public class Protocol extends Metadata
 		}
 
 		return result;
+	}
+
+	/** The scheme name. */
+	private String schemeName;
+
+	/** The default port if known or -1. */
+	private int defaultPort;
+
+	/**
+	 * Constructor.
+	 * @param schemeName The scheme name.
+	 */
+	public Protocol(String schemeName)
+	{
+		this(schemeName, schemeName.toUpperCase(), schemeName.toUpperCase() + " Protocol",
+				-1);
+	}
+
+	/**
+	 * Constructor.
+	 * @param schemeName The scheme name.
+	 * @param name The unique name.
+	 * @param description The description.
+	 * @param defaultPort The default port.
+	 */
+	public Protocol(String schemeName, String name, String description, int defaultPort)
+	{
+		super(name, description);
+		this.schemeName = schemeName;
+		this.defaultPort = defaultPort;
+	}
+
+	/** {@inheritDoc} */
+	@Override
+	public boolean equals(Object object)
+	{
+		return (object instanceof Protocol)
+				&& (((Protocol) object).hashCode() == hashCode());
+	}
+
+	/**
+	 * Returns the default port number.
+	 * @return The default port number.
+	 */
+	public int getDefaultPort()
+	{
+		return this.defaultPort;
+	}
+
+	/**
+	 * Returns the URI scheme name. 
+	 * @return The URI scheme name.
+	 */
+	public String getSchemeName()
+	{
+		return this.schemeName;
+	}
+
+	/** {@inheritDoc} */
+	@Override
+	public int hashCode()
+	{
+		return (getName() == null) ? 0 : getName().toLowerCase().hashCode();
 	}
 }

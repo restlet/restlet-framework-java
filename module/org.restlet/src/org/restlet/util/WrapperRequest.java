@@ -54,15 +54,6 @@ public class WrapperRequest extends Request
 	}
 
 	/**
-	 * Returns the wrapped request.
-	 * @return The wrapped request.
-	 */
-	protected Request getWrappedRequest()
-	{
-		return this.wrappedRequest;
-	}
-
-	/**
 	 * Returns the base reference.
 	 * @return The base reference.
 	 */
@@ -165,6 +156,15 @@ public class WrapperRequest extends Request
 	}
 
 	/**
+	 * Returns the wrapped request.
+	 * @return The wrapped request.
+	 */
+	protected Request getWrappedRequest()
+	{
+		return this.wrappedRequest;
+	}
+
+	/**
 	 * Indicates if the call came over a confidential channel
 	 * such as an SSL-secured connection.
 	 * @return True if the call came over a confidential channel.
@@ -186,20 +186,20 @@ public class WrapperRequest extends Request
 
 	/**
 	 * Sets the base reference that will serve to compute relative resource references.
-	 * @param baseUri The base absolute URI.
-	 */
-	public void setBaseRef(String baseUri)
-	{
-		getWrappedRequest().setBaseRef(baseUri);
-	}
-
-	/**
-	 * Sets the base reference that will serve to compute relative resource references.
 	 * @param baseRef The base reference.
 	 */
 	public void setBaseRef(Reference baseRef)
 	{
 		getWrappedRequest().setBaseRef(baseRef);
+	}
+
+	/**
+	 * Sets the base reference that will serve to compute relative resource references.
+	 * @param baseUri The base absolute URI.
+	 */
+	public void setBaseRef(String baseUri)
+	{
+		getWrappedRequest().setBaseRef(baseUri);
 	}
 
 	/**
@@ -243,15 +243,6 @@ public class WrapperRequest extends Request
 	}
 
 	/**
-	 * Sets the referrer reference if available using an URI string.
-	 * @param referrerUri The referrer URI.
-	 */
-	public void setReferrerRef(String referrerUri)
-	{
-		getWrappedRequest().setReferrerRef(referrerUri);
-	}
-
-	/**
 	 * Sets the referrer reference if available.
 	 * @param referrerRef The referrer reference.
 	 */
@@ -261,13 +252,12 @@ public class WrapperRequest extends Request
 	}
 
 	/**
-	 * Sets the target resource reference using an URI string. Note that the URI can be either
-	 * absolute or relative to the context's base reference.
-	 * @param resourceUri The resource URI.
+	 * Sets the referrer reference if available using an URI string.
+	 * @param referrerUri The referrer URI.
 	 */
-	public void setResourceRef(String resourceUri)
+	public void setReferrerRef(String referrerUri)
 	{
-		getWrappedRequest().setResourceRef(resourceUri);
+		getWrappedRequest().setReferrerRef(referrerUri);
 	}
 
 	/**
@@ -279,6 +269,16 @@ public class WrapperRequest extends Request
 	public void setResourceRef(Reference resourceRef)
 	{
 		getWrappedRequest().setResourceRef(resourceRef);
+	}
+
+	/**
+	 * Sets the target resource reference using an URI string. Note that the URI can be either
+	 * absolute or relative to the context's base reference.
+	 * @param resourceUri The resource URI.
+	 */
+	public void setResourceRef(String resourceUri)
+	{
+		getWrappedRequest().setResourceRef(resourceUri);
 	}
 
 }

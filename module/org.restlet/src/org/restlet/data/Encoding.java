@@ -51,6 +51,37 @@ public class Encoding extends Metadata
 			"The default encoding with no transformation");
 
 	/**
+	 * Returns the encoding associated to a name. If an existing constant exists then it is 
+	 * returned, otherwise a new instance is created.
+	 * @param name The name.
+	 * @return The associated encoding.
+	 */
+	public static Encoding valueOf(String name)
+	{
+		Encoding result = null;
+
+		if (name != null)
+		{
+			if (name.equalsIgnoreCase(ALL.getName()))
+				result = ALL;
+			else if (name.equalsIgnoreCase(GZIP.getName()))
+				result = GZIP;
+			else if (name.equalsIgnoreCase(ZIP.getName()))
+				result = ZIP;
+			else if (name.equalsIgnoreCase(COMPRESS.getName()))
+				result = COMPRESS;
+			else if (name.equalsIgnoreCase(DEFLATE.getName()))
+				result = DEFLATE;
+			else if (name.equalsIgnoreCase(IDENTITY.getName()))
+				result = IDENTITY;
+			else
+				result = new Encoding(name);
+		}
+
+		return result;
+	}
+
+	/**
 	 * Constructor.
 	 * @param name The name.
 	 */
@@ -82,36 +113,5 @@ public class Encoding extends Metadata
 	public int hashCode()
 	{
 		return (getName() == null) ? 0 : getName().toLowerCase().hashCode();
-	}
-
-	/**
-	 * Returns the encoding associated to a name. If an existing constant exists then it is 
-	 * returned, otherwise a new instance is created.
-	 * @param name The name.
-	 * @return The associated encoding.
-	 */
-	public static Encoding valueOf(String name)
-	{
-		Encoding result = null;
-
-		if (name != null)
-		{
-			if (name.equalsIgnoreCase(ALL.getName()))
-				result = ALL;
-			else if (name.equalsIgnoreCase(GZIP.getName()))
-				result = GZIP;
-			else if (name.equalsIgnoreCase(ZIP.getName()))
-				result = ZIP;
-			else if (name.equalsIgnoreCase(COMPRESS.getName()))
-				result = COMPRESS;
-			else if (name.equalsIgnoreCase(DEFLATE.getName()))
-				result = DEFLATE;
-			else if (name.equalsIgnoreCase(IDENTITY.getName()))
-				result = IDENTITY;
-			else
-				result = new Encoding(name);
-		}
-
-		return result;
 	}
 }

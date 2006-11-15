@@ -51,20 +51,20 @@ public class Context
 
 	/**
 	 * Constructor.
-	 * @param loggerName The name of the logger to use.
-	 */
-	public Context(String loggerName)
-	{
-		this(Logger.getLogger(loggerName));
-	}
-
-	/**
-	 * Constructor.
 	 * @param logger The logger instance of use.
 	 */
 	public Context(Logger logger)
 	{
 		this.logger = logger;
+	}
+
+	/**
+	 * Constructor.
+	 * @param loggerName The name of the logger to use.
+	 */
+	public Context(String loggerName)
+	{
+		this(Logger.getLogger(loggerName));
 	}
 
 	/**

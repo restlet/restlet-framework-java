@@ -62,6 +62,40 @@ public class ByteUtils
 	}
 
 	/**
+	 * Returns a readable byte channel based on the given representation's content and its 
+	 * write(WritableByteChannel) method. Internally, it uses a writer thread and a pipe stream.
+	 * @return A readable byte channel.
+	 */
+	public static ReadableByteChannel getChannel(final Representation representation)
+			throws IOException
+	{
+		final Pipe pipe = Pipe.open();
+
+		// Create a thread that will handle the task of continuously
+		// writing the representation into the input side of the pipe
+		Thread writer = new Thread()
+		{
+			public void run()
+			{
+				try
+				{
+					WritableByteChannel wbc = pipe.sink();
+					representation.write(wbc);
+					wbc.close();
+				}
+				catch (IOException ioe)
+				{
+					ioe.printStackTrace();
+				}
+			}
+		};
+
+		// Start the writer thread
+		writer.start();
+		return pipe.source();
+	}
+
+	/**
 	 * Returns an input stream based on a given readable byte channel.
 	 * @param readableChannel The readable byte channel.
 	 * @return An input stream based on a given readable byte channel.
@@ -70,16 +104,6 @@ public class ByteUtils
 			throws IOException
 	{
 		return (readableChannel != null) ? Channels.newInputStream(readableChannel) : null;
-	}
-
-	/**
-	 * Returns an output stream based on a given writable byte channel.
-	 * @param writableChannel The writable byte channel.
-	 * @return An output stream based on a given writable byte channel.
-	 */
-	public static OutputStream getStream(WritableByteChannel writableChannel)
-	{
-		return (writableChannel != null) ? Channels.newOutputStream(writableChannel) : null;
 	}
 
 	/**
@@ -125,37 +149,13 @@ public class ByteUtils
 	}
 
 	/**
-	 * Returns a readable byte channel based on the given representation's content and its 
-	 * write(WritableByteChannel) method. Internally, it uses a writer thread and a pipe stream.
-	 * @return A readable byte channel.
+	 * Returns an output stream based on a given writable byte channel.
+	 * @param writableChannel The writable byte channel.
+	 * @return An output stream based on a given writable byte channel.
 	 */
-	public static ReadableByteChannel getChannel(final Representation representation)
-			throws IOException
+	public static OutputStream getStream(WritableByteChannel writableChannel)
 	{
-		final Pipe pipe = Pipe.open();
-
-		// Create a thread that will handle the task of continuously
-		// writing the representation into the input side of the pipe
-		Thread writer = new Thread()
-		{
-			public void run()
-			{
-				try
-				{
-					WritableByteChannel wbc = pipe.sink();
-					representation.write(wbc);
-					wbc.close();
-				}
-				catch (IOException ioe)
-				{
-					ioe.printStackTrace();
-				}
-			}
-		};
-
-		// Start the writer thread
-		writer.start();
-		return pipe.source();
+		return (writableChannel != null) ? Channels.newOutputStream(writableChannel) : null;
 	}
 
 	/**

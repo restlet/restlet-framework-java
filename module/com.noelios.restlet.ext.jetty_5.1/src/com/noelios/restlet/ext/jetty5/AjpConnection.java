@@ -76,7 +76,7 @@ public class AjpConnection extends AJP13Connection
 			throws HttpException, IOException
 	{
 		getJettyServer().handle(
-				(HttpServerCall) new JettyCall(this.logger, request, response));
+				new JettyCall(this.logger, request, response));
 
 		// Commit the response and ensures that all data is flushed out to the caller
 		response.commit();

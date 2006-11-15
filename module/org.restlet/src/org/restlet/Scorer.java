@@ -47,6 +47,15 @@ public class Scorer extends Filter
 	}
 
 	/**
+	 * Returns the parent router.
+	 * @return The parent router.
+	 */
+	public Router getRouter()
+	{
+		return this.router;
+	}
+
+	/**
 	 * Returns the score for a given call (between 0.0 and 1.0). The default value is 1.0 but this method
 	 * is intended to be overriden.
 	 * @param request The request to score.
@@ -56,14 +65,5 @@ public class Scorer extends Filter
 	public float score(Request request, Response response)
 	{
 		return 1.0F;
-	}
-
-	/**
-	 * Returns the parent router.
-	 * @return The parent router.
-	 */
-	public Router getRouter()
-	{
-		return this.router;
 	}
 }

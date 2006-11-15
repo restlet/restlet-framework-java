@@ -74,30 +74,30 @@ public class Result
 	}
 
 	/**
-	 * Returns the status.
-	 * @return the status.
-	 */
-	public Status getStatus()
-	{
-		return this.status;
-	}
-
-	/**
-	 * Sets the status.
-	 * @param status The status.
-	 */
-	public void setStatus(Status status)
-	{
-		this.status = status;
-	}
-
-	/**
 	 * Returns the entity.
 	 * @return the entity or null.
 	 */
 	public Representation getEntity()
 	{
 		return this.entity;
+	}
+
+	/**
+	 * Returns the redirection reference.
+	 * @return the redirection reference or null.
+	 */
+	public Reference getRedirectionRef()
+	{
+		return this.redirectionRef;
+	}
+
+	/**
+	 * Returns the status.
+	 * @return the status.
+	 */
+	public Status getStatus()
+	{
+		return this.status;
 	}
 
 	/**
@@ -119,12 +119,12 @@ public class Result
 	}
 
 	/**
-	 * Returns the redirection reference.
-	 * @return the redirection reference or null.
+	 * Sets the status.
+	 * @param status The status.
 	 */
-	public Reference getRedirectionRef()
+	public void setStatus(Status status)
 	{
-		return this.redirectionRef;
+		this.status = status;
 	}
 
 }

@@ -67,56 +67,13 @@ public class Filter extends Chainer
 	}
 
 	/**
-	 * Returns the next Restlet if available.
-	 * @param request The request to handle.
-	 * @param response The response to update.
-	 * @return The next Restlet if available or null.
-	 */
-	public final Restlet getNext(Request request, Response response)
-	{
-		return getNext();
-	}
-
-	/**
-	 * Sets the next Restlet.
-	 * @param next The next Restlet.
-	 */
-	public void setNext(Restlet next)
-	{
-		this.next = next;
-	}
-
-	/**
-	 * Returns the next Restlet.
-	 * @return The next Restlet or null.
-	 */
-	public Restlet getNext()
-	{
-		return this.next;
-	}
-
-	/**
-	 * Indicates if there is a next Restlet.
-	 * @return True if there is a next Restlet.
-	 */
-	public boolean hasNext()
-	{
-		return getNext() != null;
-	}
-
-	/**
-	 * Handles a call by first invoking the beforeHandle() method for pre-filtering, then distributing the call 
-	 * to the next Restlet via the doHandle() method. When the handling is completed, it finally 
-	 * invokes the afterHandle() method for post-filtering.
+	 * Allows filtering after processing by the next Restlet. Does nothing by default.
 	 * @param request The request to handle.
 	 * @param response The response to update.
 	 */
-	public final void handle(Request request, Response response)
+	protected void afterHandle(Request request, Response response)
 	{
-		init(request, response);
-		beforeHandle(request, response);
-		doHandle(request, response);
-		afterHandle(request, response);
+		// To be overriden
 	}
 
 	/**
@@ -141,12 +98,55 @@ public class Filter extends Chainer
 	}
 
 	/**
-	 * Allows filtering after processing by the next Restlet. Does nothing by default.
+	 * Returns the next Restlet.
+	 * @return The next Restlet or null.
+	 */
+	public Restlet getNext()
+	{
+		return this.next;
+	}
+
+	/**
+	 * Returns the next Restlet if available.
+	 * @param request The request to handle.
+	 * @param response The response to update.
+	 * @return The next Restlet if available or null.
+	 */
+	public final Restlet getNext(Request request, Response response)
+	{
+		return getNext();
+	}
+
+	/**
+	 * Handles a call by first invoking the beforeHandle() method for pre-filtering, then distributing the call 
+	 * to the next Restlet via the doHandle() method. When the handling is completed, it finally 
+	 * invokes the afterHandle() method for post-filtering.
 	 * @param request The request to handle.
 	 * @param response The response to update.
 	 */
-	protected void afterHandle(Request request, Response response)
+	public final void handle(Request request, Response response)
 	{
-		// To be overriden
+		init(request, response);
+		beforeHandle(request, response);
+		doHandle(request, response);
+		afterHandle(request, response);
+	}
+
+	/**
+	 * Indicates if there is a next Restlet.
+	 * @return True if there is a next Restlet.
+	 */
+	public boolean hasNext()
+	{
+		return getNext() != null;
+	}
+
+	/**
+	 * Sets the next Restlet.
+	 * @param next The next Restlet.
+	 */
+	public void setNext(Restlet next)
+	{
+		this.next = next;
 	}
 }

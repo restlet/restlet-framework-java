@@ -112,24 +112,72 @@ public class StringTemplate
 	}
 
 	/**
-	 * Returns the template to process.
-	 * @return The template to process.
+	 * Appends template characters to an appendable object.
+	 * @param startIndex The start index in the template.
+	 * @param endIndex The end index in the template.
+	 * @param appendable The appendable object to update.
 	 */
-	public String getTemplate()
+	protected void append(int startIndex, int endIndex, Appendable appendable)
 	{
-		return this.template.toString();
+		try
+		{
+			for (int i = startIndex; i < endIndex; i++)
+			{
+				appendable.append(template.charAt(i));
+			}
+		}
+		catch (IOException ioe)
+		{
+			ioe.printStackTrace();
+		}
 	}
 
 	/**
-	 * Formats the template using the given data model.
+	 * Evalutes an instruction's condition.
+	 * @param condition The condition to evaluate.
 	 * @param model The template model to use.
-	 * @return The generated string.
-	 * @deprecated Use format() method instead.
+	 * @return The evaluation result.
 	 */
-	@Deprecated
-	public String process(Model model)
+	protected boolean evaluateCondition(String condition, Model model)
 	{
-		return format(model);
+		getLogger().log(Level.FINER, "evaluateCondition: " + condition, model);
+		boolean result = false;
+
+		if (model != null)
+		{
+			if (condition.endsWith("?exists"))
+			{
+				String key = condition.subSequence(0, condition.length() - 7).toString();
+				result = model.containsKey(key);
+			}
+			else if (model.containsKey(condition))
+			{
+				Object value = model.get(condition);
+
+				if (value instanceof Boolean)
+				{
+					result = ((Boolean) value).booleanValue();
+				}
+				else if (value instanceof Integer)
+				{
+					result = (((Integer) value).intValue() != 0);
+				}
+				else if (value instanceof Float)
+				{
+					result = (((Float) value).floatValue() != (float) 0);
+				}
+				else if (value instanceof Long)
+				{
+					result = (((Long) value).longValue() != (long) 0);
+				}
+				else
+				{
+					result = (value != null);
+				}
+			}
+		}
+
+		return result;
 	}
 
 	/**
@@ -378,25 +426,35 @@ public class StringTemplate
 	}
 
 	/**
-	 * Processes a text token.
-	 * @param state The current instruction state. (see STATE_* constants).
-	 * @param tokenStart The start index of the token to process.
-	 * @param tokenEnd The end index of the token to process.
-	 * @param buffer The string buffer containing the template result.
-	 * @param model The template model to use.
+	 * Returns the logger.
+	 * @return the logger.
 	 */
-	protected void processText(int state, int tokenStart, int tokenEnd,
-			StringBuilder buffer, Model model)
+	public Logger getLogger()
 	{
-		if (state == TEXT_APPEND)
-		{
-			getLogger().log(Level.FINER, "Appending text", buffer);
-			append(tokenStart, tokenEnd, buffer);
-		}
-		else
-		{
-			getLogger().log(Level.FINER, "Ignoring text", buffer);
-		}
+		if (this.logger == null)
+			this.logger = Logger.getLogger(StringTemplate.class.getCanonicalName());
+		return this.logger;
+	}
+
+	/**
+	 * Returns the template to process.
+	 * @return The template to process.
+	 */
+	public String getTemplate()
+	{
+		return this.template.toString();
+	}
+
+	/**
+	 * Formats the template using the given data model.
+	 * @param model The template model to use.
+	 * @return The generated string.
+	 * @deprecated Use format() method instead.
+	 */
+	@Deprecated
+	public String process(Model model)
+	{
+		return format(model);
 	}
 
 	/**
@@ -463,6 +521,44 @@ public class StringTemplate
 	}
 
 	/**
+	 * Processes a text token.
+	 * @param state The current instruction state. (see STATE_* constants).
+	 * @param tokenStart The start index of the token to process.
+	 * @param tokenEnd The end index of the token to process.
+	 * @param buffer The string buffer containing the template result.
+	 * @param model The template model to use.
+	 */
+	protected void processText(int state, int tokenStart, int tokenEnd,
+			StringBuilder buffer, Model model)
+	{
+		if (state == TEXT_APPEND)
+		{
+			getLogger().log(Level.FINER, "Appending text", buffer);
+			append(tokenStart, tokenEnd, buffer);
+		}
+		else
+		{
+			getLogger().log(Level.FINER, "Ignoring text", buffer);
+		}
+	}
+
+	/**
+	 * Processes a variable token.
+	 * @param textState The current text state. (see TEXT_* constants).
+	 * @param tokenStart The start index of the token to process.
+	 * @param tokenEnd The end index of the token to process.
+	 * @param buffer The string buffer containing the template result.
+	 * @param model The template model to use.
+	 * @return The state after processing.
+	 */
+	private int processVariable(int textState, int tokenStart, int tokenEnd,
+			StringBuilder buffer, Model model)
+	{
+		return processVariable(textState, template.subSequence(tokenStart, tokenEnd)
+				.toString(), buffer, model);
+	}
+
+	/**
 	 * Processes a variable token.
 	 * @param textState The current text state. (see TEXT_* constants).
 	 * @param variable The variable.
@@ -495,102 +591,6 @@ public class StringTemplate
 		}
 
 		return textState;
-	}
-
-	/**
-	 * Processes a variable token.
-	 * @param textState The current text state. (see TEXT_* constants).
-	 * @param tokenStart The start index of the token to process.
-	 * @param tokenEnd The end index of the token to process.
-	 * @param buffer The string buffer containing the template result.
-	 * @param model The template model to use.
-	 * @return The state after processing.
-	 */
-	private int processVariable(int textState, int tokenStart, int tokenEnd,
-			StringBuilder buffer, Model model)
-	{
-		return processVariable(textState, template.subSequence(tokenStart, tokenEnd)
-				.toString(), buffer, model);
-	}
-
-	/**
-	 * Evalutes an instruction's condition.
-	 * @param condition The condition to evaluate.
-	 * @param model The template model to use.
-	 * @return The evaluation result.
-	 */
-	protected boolean evaluateCondition(String condition, Model model)
-	{
-		getLogger().log(Level.FINER, "evaluateCondition: " + condition, model);
-		boolean result = false;
-
-		if (model != null)
-		{
-			if (condition.endsWith("?exists"))
-			{
-				String key = condition.subSequence(0, condition.length() - 7).toString();
-				result = model.containsKey(key);
-			}
-			else if (model.containsKey(condition))
-			{
-				Object value = model.get(condition);
-
-				if (value instanceof Boolean)
-				{
-					result = ((Boolean) value).booleanValue();
-				}
-				else if (value instanceof Integer)
-				{
-					result = (((Integer) value).intValue() != 0);
-				}
-				else if (value instanceof Float)
-				{
-					result = (((Float) value).floatValue() != (float) 0);
-				}
-				else if (value instanceof Long)
-				{
-					result = (((Long) value).longValue() != (long) 0);
-				}
-				else
-				{
-					result = (value != null);
-				}
-			}
-		}
-
-		return result;
-	}
-
-	/**
-	 * Appends template characters to an appendable object.
-	 * @param startIndex The start index in the template.
-	 * @param endIndex The end index in the template.
-	 * @param appendable The appendable object to update.
-	 */
-	protected void append(int startIndex, int endIndex, Appendable appendable)
-	{
-		try
-		{
-			for (int i = startIndex; i < endIndex; i++)
-			{
-				appendable.append(template.charAt(i));
-			}
-		}
-		catch (IOException ioe)
-		{
-			ioe.printStackTrace();
-		}
-	}
-
-	/**
-	 * Returns the logger.
-	 * @return the logger.
-	 */
-	public Logger getLogger()
-	{
-		if (this.logger == null)
-			this.logger = Logger.getLogger(StringTemplate.class.getCanonicalName());
-		return this.logger;
 	}
 
 	/**

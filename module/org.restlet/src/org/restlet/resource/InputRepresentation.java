@@ -77,15 +77,6 @@ public class InputRepresentation extends StreamRepresentation
 	}
 
 	/**
-	 * Writes the representation to a byte stream.
-	 * @param outputStream The output stream.
-	 */
-	public void write(OutputStream outputStream) throws IOException
-	{
-		ByteUtils.write(getStream(), outputStream);
-	}
-
-	/**
 	 * Converts the representation to a string value. Be careful when using this method as the conversion of 
 	 * large content to a string fully stored in memory can result in OutOfMemoryErrors being thrown.
 	 * @return The representation as a string value.
@@ -93,6 +84,15 @@ public class InputRepresentation extends StreamRepresentation
 	public String getValue() throws IOException
 	{
 		return ByteUtils.toString(getStream());
+	}
+
+	/**
+	 * Writes the representation to a byte stream.
+	 * @param outputStream The output stream.
+	 */
+	public void write(OutputStream outputStream) throws IOException
+	{
+		ByteUtils.write(getStream(), outputStream);
 	}
 
 }

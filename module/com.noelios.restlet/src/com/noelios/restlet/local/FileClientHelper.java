@@ -118,7 +118,7 @@ public class FileClientHelper extends LocalClientHelper
 				String[] result = file.getName().split("\\.");
 				String baseName = result[0];
 				boolean extensionFound = false;
-				for (int i = 1; i < result.length && !extensionFound; i++)
+				for (int i = 1; (i < result.length) && !extensionFound; i++)
 				{
 					extensionFound = metadataService.getMetadata(result[i]) != null;
 					if (!extensionFound)

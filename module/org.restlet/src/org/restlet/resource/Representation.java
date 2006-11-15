@@ -126,6 +126,19 @@ public class Representation extends Resource
 	}
 
 	/**
+	 * Returns a channel with the representation's content.<br/>
+	 * If it is supported by a file, a read-only instance of FileChannel is returned.<br/>
+	 * This method is ensured to return a fresh channel for each invocation unless it 
+	 * is a transient representation, in which case null is returned.
+	 * @return A channel with the representation's content.
+	 * @throws IOException
+	 */
+	public ReadableByteChannel getChannel() throws IOException
+	{
+		return null;
+	}
+
+	/**
 	 * Returns the character set or null if not applicable.
 	 * @return The character set or null if not applicable.
 	 */
@@ -135,12 +148,115 @@ public class Representation extends Resource
 	}
 
 	/**
-	 * Sets the character set or null if not applicable.
-	 * @param characterSet The character set or null if not applicable.
+	 * Returns the encoding or null if identity encoding applies.
+	 * @return The encoding or null if identity encoding applies.
 	 */
-	public void setCharacterSet(CharacterSet characterSet)
+	public Encoding getEncoding()
 	{
-		this.characterSet = characterSet;
+		return this.encoding;
+	}
+
+	/**
+	 * Returns the future date when this representation expire. If this information is not known, returns null.
+	 * @return The expiration date.
+	 */
+	public Date getExpirationDate()
+	{
+		return this.expirationDate;
+	}
+
+	/**
+	 * Returns the language or null if not applicable.
+	 * @return The language or null if not applicable.
+	 */
+	public Language getLanguage()
+	{
+		return this.language;
+	}
+
+	/**
+	 * Returns the media type.
+	 * @return The media type.
+	 */
+	public MediaType getMediaType()
+	{
+		return this.mediaType;
+	}
+
+	/**
+	 * Returns the last date when this representation was modified. If this information is not known, returns
+	 * null.
+	 * @return The modification date.
+	 */
+	public Date getModificationDate()
+	{
+		return this.modificationDate;
+	}
+
+	/**
+	 * Returns the represented resource if available.
+	 * @return The represented resource if available.
+	 */
+	public Resource getResource()
+	{
+		return this.resource;
+	}
+
+	/**
+	 * Returns the size in bytes if known, UNKNOWN_SIZE (-1) otherwise.
+	 * @return The size in bytes if known, UNKNOWN_SIZE (-1) otherwise.
+	 */
+	public long getSize()
+	{
+		return this.size;
+	}
+
+	/**
+	 * Returns a stream with the representation's content.
+	 * This method is ensured to return a fresh stream for each invocation unless it 
+	 * is a transient representation, in which case null is returned.
+	 * @return A stream with the representation's content.
+	 * @throws IOException
+	 */
+	public InputStream getStream() throws IOException
+	{
+		return null;
+	}
+
+	/**
+	 * Returns the tag.
+	 * @return The tag.
+	 */
+	public Tag getTag()
+	{
+		return this.tag;
+	}
+
+	/**
+	 * Converts the representation to a string value. Be careful when using this method as the conversion of 
+	 * large content to a string fully stored in memory can result in OutOfMemoryErrors being thrown.
+	 * @return The representation as a string value.
+	 */
+	public String getValue() throws IOException
+	{
+		String result = null;
+
+		if (isAvailable())
+		{
+			ByteArrayOutputStream baos = new ByteArrayOutputStream();
+			write(baos);
+
+			if (getCharacterSet() != null)
+			{
+				result = baos.toString(getCharacterSet().getName());
+			}
+			else
+			{
+				result = baos.toString();
+			}
+		}
+
+		return result;
 	}
 
 	/**
@@ -168,12 +284,21 @@ public class Representation extends Resource
 	}
 
 	/**
-	 * Returns the encoding or null if identity encoding applies.
-	 * @return The encoding or null if identity encoding applies.
+	 * Indicates if some fresh content is available.
+	 * @param available True if some fresh content is available.
 	 */
-	public Encoding getEncoding()
+	public void setAvailable(boolean available)
 	{
-		return this.encoding;
+		this.contentAvailable = available;
+	}
+
+	/**
+	 * Sets the character set or null if not applicable.
+	 * @param characterSet The character set or null if not applicable.
+	 */
+	public void setCharacterSet(CharacterSet characterSet)
+	{
+		this.characterSet = characterSet;
 	}
 
 	/**
@@ -186,30 +311,12 @@ public class Representation extends Resource
 	}
 
 	/**
-	 * Returns the future date when this representation expire. If this information is not known, returns null.
-	 * @return The expiration date.
-	 */
-	public Date getExpirationDate()
-	{
-		return this.expirationDate;
-	}
-
-	/**
 	 * Sets the future date when this representation expire. If this information is not known, pass null.
 	 * @param expirationDate The expiration date.
 	 */
 	public void setExpirationDate(Date expirationDate)
 	{
 		this.expirationDate = ImmutableDate.valueOf(expirationDate);
-	}
-
-	/**
-	 * Returns the language or null if not applicable.
-	 * @return The language or null if not applicable.
-	 */
-	public Language getLanguage()
-	{
-		return this.language;
 	}
 
 	/**
@@ -222,31 +329,12 @@ public class Representation extends Resource
 	}
 
 	/**
-	 * Returns the media type.
-	 * @return The media type.
-	 */
-	public MediaType getMediaType()
-	{
-		return this.mediaType;
-	}
-
-	/**
 	 * Sets the media type.
 	 * @param mediaType The media type.
 	 */
 	public void setMediaType(MediaType mediaType)
 	{
 		this.mediaType = mediaType;
-	}
-
-	/**
-	 * Returns the last date when this representation was modified. If this information is not known, returns
-	 * null.
-	 * @return The modification date.
-	 */
-	public Date getModificationDate()
-	{
-		return this.modificationDate;
 	}
 
 	/**
@@ -259,30 +347,12 @@ public class Representation extends Resource
 	}
 
 	/**
-	 * Returns the represented resource if available.
-	 * @return The represented resource if available.
-	 */
-	public Resource getResource()
-	{
-		return this.resource;
-	}
-
-	/**
 	 * Sets the represented resource.
 	 * @param resource The represented resource.
 	 */
 	public void setResource(Resource resource)
 	{
 		this.resource = resource;
-	}
-
-	/**
-	 * Returns the size in bytes if known, UNKNOWN_SIZE (-1) otherwise.
-	 * @return The size in bytes if known, UNKNOWN_SIZE (-1) otherwise.
-	 */
-	public long getSize()
-	{
-		return this.size;
 	}
 
 	/**
@@ -295,15 +365,6 @@ public class Representation extends Resource
 	}
 
 	/**
-	 * Returns the tag.
-	 * @return The tag.
-	 */
-	public Tag getTag()
-	{
-		return this.tag;
-	}
-
-	/**
 	 * Sets the tag.
 	 * @param tag The tag.
 	 */
@@ -313,72 +374,12 @@ public class Representation extends Resource
 	}
 
 	/**
-	 * Indicates if some fresh content is available.
-	 * @param available True if some fresh content is available.
-	 */
-	public void setAvailable(boolean available)
-	{
-		this.contentAvailable = available;
-	}
-
-	/**
 	 * Indicates if the representation's content is transient.
 	 * @param isTransient True if the representation's content is transient.
 	 */
 	public void setTransient(boolean isTransient)
 	{
 		this.contentTransient = isTransient;
-	}
-
-	/**
-	 * Returns a channel with the representation's content.<br/>
-	 * If it is supported by a file, a read-only instance of FileChannel is returned.<br/>
-	 * This method is ensured to return a fresh channel for each invocation unless it 
-	 * is a transient representation, in which case null is returned.
-	 * @return A channel with the representation's content.
-	 * @throws IOException
-	 */
-	public ReadableByteChannel getChannel() throws IOException
-	{
-		return null;
-	}
-
-	/**
-	 * Returns a stream with the representation's content.
-	 * This method is ensured to return a fresh stream for each invocation unless it 
-	 * is a transient representation, in which case null is returned.
-	 * @return A stream with the representation's content.
-	 * @throws IOException
-	 */
-	public InputStream getStream() throws IOException
-	{
-		return null;
-	}
-
-	/**
-	 * Writes the representation to a byte channel.
-	 * This method is ensured to write the full content for each invocation unless it 
-	 * is a transient representation, in which case an exception is thrown.
-	 * @param writableChannel A writable byte channel.
-	 * @throws IOException
-	 */
-	public void write(WritableByteChannel writableChannel) throws IOException
-	{
-		throw new UnsupportedOperationException(
-				"You must override this method in order to use it");
-	}
-
-	/**
-	 * Writes the representation to a byte stream.
-	 * This method is ensured to write the full content for each invocation unless it 
-	 * is a transient representation, in which case an exception is thrown.
-	 * @param outputStream The output stream.
-	 * @throws IOException
-	 */
-	public void write(OutputStream outputStream) throws IOException
-	{
-		throw new UnsupportedOperationException(
-				"You must override this method in order to use it");
 	}
 
 	/**
@@ -407,30 +408,29 @@ public class Representation extends Resource
 	}
 
 	/**
-	 * Converts the representation to a string value. Be careful when using this method as the conversion of 
-	 * large content to a string fully stored in memory can result in OutOfMemoryErrors being thrown.
-	 * @return The representation as a string value.
+	 * Writes the representation to a byte stream.
+	 * This method is ensured to write the full content for each invocation unless it 
+	 * is a transient representation, in which case an exception is thrown.
+	 * @param outputStream The output stream.
+	 * @throws IOException
 	 */
-	public String getValue() throws IOException
+	public void write(OutputStream outputStream) throws IOException
 	{
-		String result = null;
+		throw new UnsupportedOperationException(
+				"You must override this method in order to use it");
+	}
 
-		if (isAvailable())
-		{
-			ByteArrayOutputStream baos = new ByteArrayOutputStream();
-			write(baos);
-
-			if (getCharacterSet() != null)
-			{
-				result = baos.toString(getCharacterSet().getName());
-			}
-			else
-			{
-				result = baos.toString();
-			}
-		}
-
-		return result;
+	/**
+	 * Writes the representation to a byte channel.
+	 * This method is ensured to write the full content for each invocation unless it 
+	 * is a transient representation, in which case an exception is thrown.
+	 * @param writableChannel A writable byte channel.
+	 * @throws IOException
+	 */
+	public void write(WritableByteChannel writableChannel) throws IOException
+	{
+		throw new UnsupportedOperationException(
+				"You must override this method in order to use it");
 	}
 
 }

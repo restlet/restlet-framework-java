@@ -58,24 +58,6 @@ public class StatusService
 		this.overwrite = false;
 	}
 
-	/**
-	 * Indicates if the service should be enabled.
-	 * @return True if the service should be enabled.
-	 */
-	public boolean isEnabled()
-	{
-		return this.enabled;
-	}
-
-	/**
-	 * Indicates if the service should be enabled.
-	 * @param enabled True if the service should be enabled.
-	 */
-	public void setEnabled(boolean enabled)
-	{
-		this.enabled = enabled;
-	}
-
 	/** 
 	 * Returns the email address to contact in case of error. 
 	 * This is typically used when creating the status representations.
@@ -109,6 +91,15 @@ public class StatusService
 		return null;
 	}
 
+	/**
+	 * Indicates if the service should be enabled.
+	 * @return True if the service should be enabled.
+	 */
+	public boolean isEnabled()
+	{
+		return this.enabled;
+	}
+
 	/** 
 	 * Indicates if an existing entity should be overwritten. False by default.
 	 * @return True if an existing entity should be overwritten.
@@ -126,6 +117,15 @@ public class StatusService
 	public void setContactEmail(String contactEmail)
 	{
 		this.contactEmail = contactEmail;
+	}
+
+	/**
+	 * Indicates if the service should be enabled.
+	 * @param enabled True if the service should be enabled.
+	 */
+	public void setEnabled(boolean enabled)
+	{
+		this.enabled = enabled;
 	}
 
 	/** 

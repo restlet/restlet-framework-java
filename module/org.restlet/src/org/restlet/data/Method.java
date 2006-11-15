@@ -100,66 +100,6 @@ public class Method extends Metadata
 			"Remove the lock identified by the lock token from the request URI, and all other resources included in the lock",
 			BASE_WEBDAV + "#METHOD_UNLOCK");
 
-	/** The URI of the specification describing the method. */
-	private String uri;
-
-	/**
-	 * Constructor.
-	 * @param name The technical name of the method.
-	 * @see org.restlet.data.Method#valueOf(String)
-	 */
-	public Method(String name)
-	{
-		this(name, null, null);
-	}
-
-	/**
-	 * Constructor.
-	 * @param name The technical name of the method.
-	 * @param description The description.
-	 * @see org.restlet.data.Method#valueOf(String)
-	 */
-	public Method(String name, String description)
-	{
-		this(name, description, null);
-	}
-
-	/**
-	 * Constructor.
-	 * @param name The technical name.
-	 * @param description The description.
-	 * @param uri The URI of the specification describing the method.
-	 * @see org.restlet.data.Method#valueOf(String)
-	 */
-	public Method(String name, String description, String uri)
-	{
-		super(name, description);
-		this.uri = uri;
-	}
-
-	/**
-	 * Returns the URI of the specification describing the method.
-	 * @return The URI of the specification describing the method.
-	 */
-	public String getUri()
-	{
-		return this.uri;
-	}
-
-	/** {@inheritDoc} */
-	@Override
-	public boolean equals(Object object)
-	{
-		return (object instanceof Method) && (((Method) object).hashCode() == hashCode());
-	}
-
-	/** {@inheritDoc} */
-	@Override
-	public int hashCode()
-	{
-		return (getName() == null) ? 0 : getName().hashCode();
-	}
-
 	/**
 	 * Returns the method associated to a given method name. If an existing constant exists then it is returned,
 	 * otherwise a new instance is created.
@@ -207,5 +147,65 @@ public class Method extends Metadata
 		}
 
 		return result;
+	}
+
+	/** The URI of the specification describing the method. */
+	private String uri;
+
+	/**
+	 * Constructor.
+	 * @param name The technical name of the method.
+	 * @see org.restlet.data.Method#valueOf(String)
+	 */
+	public Method(String name)
+	{
+		this(name, null, null);
+	}
+
+	/**
+	 * Constructor.
+	 * @param name The technical name of the method.
+	 * @param description The description.
+	 * @see org.restlet.data.Method#valueOf(String)
+	 */
+	public Method(String name, String description)
+	{
+		this(name, description, null);
+	}
+
+	/**
+	 * Constructor.
+	 * @param name The technical name.
+	 * @param description The description.
+	 * @param uri The URI of the specification describing the method.
+	 * @see org.restlet.data.Method#valueOf(String)
+	 */
+	public Method(String name, String description, String uri)
+	{
+		super(name, description);
+		this.uri = uri;
+	}
+
+	/** {@inheritDoc} */
+	@Override
+	public boolean equals(Object object)
+	{
+		return (object instanceof Method) && (((Method) object).hashCode() == hashCode());
+	}
+
+	/**
+	 * Returns the URI of the specification describing the method.
+	 * @return The URI of the specification describing the method.
+	 */
+	public String getUri()
+	{
+		return this.uri;
+	}
+
+	/** {@inheritDoc} */
+	@Override
+	public int hashCode()
+	{
+		return (getName() == null) ? 0 : getName().hashCode();
 	}
 }

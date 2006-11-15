@@ -50,6 +50,16 @@ public class StringTemplateRepresentation extends StreamRepresentation
 	/**
 	 * Constructor.
 	 * @param pattern The template pattern to process.
+	 * @param mediaType The representation's media type.
+	 */
+	public StringTemplateRepresentation(CharSequence pattern, MediaType mediaType)
+	{
+		this(pattern, new MapModel(), mediaType);
+	}
+
+	/**
+	 * Constructor.
+	 * @param pattern The template pattern to process.
 	 * @param model The template model to use.
 	 * @param mediaType The representation's media type.
 	 */
@@ -66,11 +76,18 @@ public class StringTemplateRepresentation extends StreamRepresentation
 	/**
 	 * Constructor.
 	 * @param pattern The template pattern to process.
+	 * @param variableStart The string that defines instructions start delimiters.
+	 * @param variableEnd The string that defines instructions end delimiters.
+	 * @param instructionStart The string that defines instructions start delimiters.
+	 * @param instructionEnd The string that defines instructions end delimiters.
 	 * @param mediaType The representation's media type.
 	 */
-	public StringTemplateRepresentation(CharSequence pattern, MediaType mediaType)
+	public StringTemplateRepresentation(CharSequence pattern, String variableStart,
+			String variableEnd, String instructionStart, String instructionEnd,
+			MediaType mediaType)
 	{
-		this(pattern, new MapModel(), mediaType);
+		this(pattern, variableStart, variableEnd, instructionStart, instructionEnd,
+				new MapModel(), mediaType);
 	}
 
 	/**
@@ -96,39 +113,12 @@ public class StringTemplateRepresentation extends StreamRepresentation
 	}
 
 	/**
-	 * Constructor.
-	 * @param pattern The template pattern to process.
-	 * @param variableStart The string that defines instructions start delimiters.
-	 * @param variableEnd The string that defines instructions end delimiters.
-	 * @param instructionStart The string that defines instructions start delimiters.
-	 * @param instructionEnd The string that defines instructions end delimiters.
-	 * @param mediaType The representation's media type.
-	 */
-	public StringTemplateRepresentation(CharSequence pattern, String variableStart,
-			String variableEnd, String instructionStart, String instructionEnd,
-			MediaType mediaType)
-	{
-		this(pattern, variableStart, variableEnd, instructionStart, instructionEnd,
-				new MapModel(), mediaType);
-	}
-
-	/**
 	 * Returns the data model.
 	 * @return The data model.
 	 */
 	public Model getModel()
 	{
 		return this.model;
-	}
-
-	/**
-	 * Converts the representation to a string value. Be careful when using this method as the conversion of 
-	 * large content to a string fully stored in memory can result in OutOfMemoryErrors being thrown.
-	 * @return The representation as a string value.
-	 */
-	public String getValue()
-	{
-		return this.template.format(this.model);
 	}
 
 	/**
@@ -156,6 +146,16 @@ public class StringTemplateRepresentation extends StreamRepresentation
 		{
 			return null;
 		}
+	}
+
+	/**
+	 * Converts the representation to a string value. Be careful when using this method as the conversion of 
+	 * large content to a string fully stored in memory can result in OutOfMemoryErrors being thrown.
+	 * @return The representation as a string value.
+	 */
+	public String getValue()
+	{
+		return this.template.format(this.model);
 	}
 
 	/**

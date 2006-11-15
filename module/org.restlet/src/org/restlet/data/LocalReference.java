@@ -63,40 +63,12 @@ public class LocalReference extends Reference
 
 	/**
 	 * Constructor.
-	 * @param localUri The local URI.
-	 */
-	public LocalReference(String localUri)
-	{
-		super(localUri);
-	}
-
-	/**
-	 * Constructor.
-	 * @param localRef The local reference.
-	 */
-	public LocalReference(Reference localRef)
-	{
-		super(localRef.toString());
-	}
-
-	/**
-	 * Constructor.
 	 * @param authorityType The authority type for the resource path.
 	 * @param path The resource path.
 	 */
 	public static LocalReference createClapReference(int authorityType, String path)
 	{
 		return new LocalReference("clap://" + getAuthorityName(authorityType) + path);
-	}
-
-	/**
-	 * Constructor.
-	 * @param jarFile The JAR file reference.
-	 * @param entryPath The entry path inside the JAR file.
-	 */
-	public static LocalReference createJarReference(Reference jarFile, String entryPath)
-	{
-		return new LocalReference("jar:" + jarFile.toString() + "!/" + entryPath);
 	}
 
 	/**
@@ -129,28 +101,35 @@ public class LocalReference extends Reference
 	}
 
 	/**
-	 * Gets the local file corresponding to the reference. Only URIs referring to the "localhost" or to an empty
-	 * authority are supported.
-	 * @return The local file corresponding to the reference.
+	 * Constructor.
+	 * @param jarFile The JAR file reference.
+	 * @param entryPath The entry path inside the JAR file.
 	 */
-	public File getFile()
+	public static LocalReference createJarReference(Reference jarFile, String entryPath)
 	{
-		File result = null;
+		return new LocalReference("jar:" + jarFile.toString() + "!/" + entryPath);
+	}
 
-		if (getSchemeProtocol().equals(Protocol.FILE))
+	/**
+	 * Returns an authority name. 
+	 * @param authority The authority.
+	 * @return The name.
+	 */
+	public static String getAuthorityName(int authority)
+	{
+		String result = null;
+
+		switch (authority)
 		{
-			String hostName = getAuthority();
-
-			if ((hostName == null) || hostName.equals("")
-					|| hostName.equalsIgnoreCase("localhost"))
-			{
-				String filePath = getPath();
-				result = new File(filePath);
-			}
-			else
-			{
-				throw new RuntimeException("Can't resolve files on remote host machines");
-			}
+			case CLAP_CLASS:
+				result = "class";
+			break;
+			case CLAP_SYSTEM:
+				result = "system";
+			break;
+			case CLAP_THREAD:
+				result = "thread";
+			break;
 		}
 
 		return result;
@@ -210,55 +189,21 @@ public class LocalReference extends Reference
 	}
 
 	/**
-	 * Returns the JAR file reference.
-	 * @return The JAR file reference.
+	 * Constructor.
+	 * @param localRef The local reference.
 	 */
-	public Reference getJarFileRef()
+	public LocalReference(Reference localRef)
 	{
-		Reference result = null;
-
-		if (getSchemeProtocol().equals(Protocol.JAR))
-		{
-			String ssp = getSchemeSpecificPart();
-
-			if (ssp != null)
-			{
-				int separatorIndex = ssp.indexOf("!/");
-
-				if (separatorIndex != -1)
-				{
-					result = new Reference(ssp.substring(0, separatorIndex));
-				}
-			}
-		}
-
-		return result;
+		super(localRef.toString());
 	}
 
 	/**
-	 * Returns the JAR entry path. 
-	 * @return The JAR entry path.
+	 * Constructor.
+	 * @param localUri The local URI.
 	 */
-	public String getJarEntryPath()
+	public LocalReference(String localUri)
 	{
-		String result = null;
-
-		if (getSchemeProtocol().equals(Protocol.JAR))
-		{
-			String ssp = getSchemeSpecificPart();
-
-			if (ssp != null)
-			{
-				int separatorIndex = ssp.indexOf("!/");
-
-				if (separatorIndex != -1)
-				{
-					result = ssp.substring(separatorIndex + 2);
-				}
-			}
-		}
-
-		return result;
+		super(localUri);
 	}
 
 	/**
@@ -294,25 +239,80 @@ public class LocalReference extends Reference
 	}
 
 	/**
-	 * Returns an authority name. 
-	 * @param authority The authority.
-	 * @return The name.
+	 * Gets the local file corresponding to the reference. Only URIs referring to the "localhost" or to an empty
+	 * authority are supported.
+	 * @return The local file corresponding to the reference.
 	 */
-	public static String getAuthorityName(int authority)
+	public File getFile()
+	{
+		File result = null;
+
+		if (getSchemeProtocol().equals(Protocol.FILE))
+		{
+			String hostName = getAuthority();
+
+			if ((hostName == null) || hostName.equals("")
+					|| hostName.equalsIgnoreCase("localhost"))
+			{
+				String filePath = getPath();
+				result = new File(filePath);
+			}
+			else
+			{
+				throw new RuntimeException("Can't resolve files on remote host machines");
+			}
+		}
+
+		return result;
+	}
+
+	/**
+	 * Returns the JAR entry path. 
+	 * @return The JAR entry path.
+	 */
+	public String getJarEntryPath()
 	{
 		String result = null;
 
-		switch (authority)
+		if (getSchemeProtocol().equals(Protocol.JAR))
 		{
-			case CLAP_CLASS:
-				result = "class";
-			break;
-			case CLAP_SYSTEM:
-				result = "system";
-			break;
-			case CLAP_THREAD:
-				result = "thread";
-			break;
+			String ssp = getSchemeSpecificPart();
+
+			if (ssp != null)
+			{
+				int separatorIndex = ssp.indexOf("!/");
+
+				if (separatorIndex != -1)
+				{
+					result = ssp.substring(separatorIndex + 2);
+				}
+			}
+		}
+
+		return result;
+	}
+
+	/**
+	 * Returns the JAR file reference.
+	 * @return The JAR file reference.
+	 */
+	public Reference getJarFileRef()
+	{
+		Reference result = null;
+
+		if (getSchemeProtocol().equals(Protocol.JAR))
+		{
+			String ssp = getSchemeSpecificPart();
+
+			if (ssp != null)
+			{
+				int separatorIndex = ssp.indexOf("!/");
+
+				if (separatorIndex != -1)
+				{
+					result = new Reference(ssp.substring(0, separatorIndex));
+				}
+			}
 		}
 
 		return result;

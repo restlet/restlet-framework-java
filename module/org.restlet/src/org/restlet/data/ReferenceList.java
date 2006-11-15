@@ -108,33 +108,6 @@ public class ReferenceList extends WrapperList<Reference>
 	}
 
 	/**
-	 * Returns the list reference.
-	 * @return The list reference.
-	 */
-	public Reference getListRef()
-	{
-		return this.listRef;
-	}
-
-	/**
-	 * Sets the list reference.
-	 * @param listUri The list reference as a URI.
-	 */
-	public void setListRef(String listUri)
-	{
-		setListRef(new Reference(listUri));
-	}
-
-	/**
-	 * Sets the list reference.
-	 * @param listRef The list reference.
-	 */
-	public void setListRef(Reference listRef)
-	{
-		this.listRef = listRef;
-	}
-
-	/**
 	 * Creates then adds a reference at the end of the list.
 	 * @param uri The uri of the reference to add.
 	 * @return True (as per the general contract of the Collection.add method).
@@ -145,15 +118,12 @@ public class ReferenceList extends WrapperList<Reference>
 	}
 
 	/**
-	 * Returns a view of the portion of this list between the specified fromIndex,
-	 * inclusive, and toIndex, exclusive.
-	 * @param fromIndex The start position.
-	 * @param toIndex The end position (exclusive).
-	 * @return The sub-list.
+	 * Returns the list reference.
+	 * @return The list reference.
 	 */
-	public ReferenceList subList(int fromIndex, int toIndex)
+	public Reference getListRef()
 	{
-		return new ReferenceList(getDelegate().subList(fromIndex, toIndex));
+		return this.listRef;
 	}
 
 	/**
@@ -175,6 +145,37 @@ public class ReferenceList extends WrapperList<Reference>
 		}
 
 		return new StringRepresentation(sb.toString(), MediaType.TEXT_URI_LIST);
+	}
+
+	/**
+	 * Sets the list reference.
+	 * @param listRef The list reference.
+	 */
+	public void setListRef(Reference listRef)
+	{
+		this.listRef = listRef;
+	}
+
+	/**
+	 * Sets the list reference.
+	 * @param listUri The list reference as a URI.
+	 */
+	public void setListRef(String listUri)
+	{
+		setListRef(new Reference(listUri));
+	}
+
+	/**
+	 * Returns a view of the portion of this list between the specified fromIndex,
+	 * inclusive, and toIndex, exclusive.
+	 * @param fromIndex The start position.
+	 * @param toIndex The end position (exclusive).
+	 * @return The sub-list.
+	 */
+	@Override
+	public ReferenceList subList(int fromIndex, int toIndex)
+	{
+		return new ReferenceList(getDelegate().subList(fromIndex, toIndex));
 	}
 
 }

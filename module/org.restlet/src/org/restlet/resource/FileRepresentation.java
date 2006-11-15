@@ -71,50 +71,6 @@ public class FileRepresentation extends Representation
 	}
 
 	/**
-	 * Writes the representation to a byte stream.
-	 * @param outputStream The output stream.
-	 */
-	public void write(OutputStream outputStream) throws IOException
-	{
-		ByteUtils.write(getStream(), outputStream);
-	}
-
-	/**
-	 * Writes the representation to a byte channel. Optimizes using the file channel transferTo method.
-	 * @param writableChannel A writable byte channel.
-	 */
-	public void write(WritableByteChannel writableChannel) throws IOException
-	{
-		FileChannel fc = getChannel();
-		long position = 0;
-		long count = fc.size();
-		long written = 0;
-
-		while (count > 0)
-		{
-			written = fc.transferTo(position, count, writableChannel);
-			position += written;
-			count -= written;
-		}
-	}
-
-	/**
-	 * Returns a stream with the representation's content.
-	 * @return A stream with the representation's content.
-	 */
-	public FileInputStream getStream() throws IOException
-	{
-		try
-		{
-			return new FileInputStream(file);
-		}
-		catch (FileNotFoundException fnfe)
-		{
-			throw new IOException("Couldn't get the stream. File not found");
-		}
-	}
-
-	/**
 	 * Returns a readable byte channel. If it is supported by a file a read-only instance of FileChannel is
 	 * returned.
 	 * @return A readable byte channel.
@@ -152,6 +108,22 @@ public class FileRepresentation extends Representation
 	}
 
 	/**
+	 * Returns a stream with the representation's content.
+	 * @return A stream with the representation's content.
+	 */
+	public FileInputStream getStream() throws IOException
+	{
+		try
+		{
+			return new FileInputStream(file);
+		}
+		catch (FileNotFoundException fnfe)
+		{
+			throw new IOException("Couldn't get the stream. File not found");
+		}
+	}
+
+	/**
 	 * Converts the representation to a string value. Be careful when using this method as the conversion of 
 	 * large content to a string fully stored in memory can result in OutOfMemoryErrors being thrown.
 	 * @return The representation as a string value.
@@ -159,6 +131,34 @@ public class FileRepresentation extends Representation
 	public String getValue() throws IOException
 	{
 		return ByteUtils.toString(getStream());
+	}
+
+	/**
+	 * Writes the representation to a byte stream.
+	 * @param outputStream The output stream.
+	 */
+	public void write(OutputStream outputStream) throws IOException
+	{
+		ByteUtils.write(getStream(), outputStream);
+	}
+
+	/**
+	 * Writes the representation to a byte channel. Optimizes using the file channel transferTo method.
+	 * @param writableChannel A writable byte channel.
+	 */
+	public void write(WritableByteChannel writableChannel) throws IOException
+	{
+		FileChannel fc = getChannel();
+		long position = 0;
+		long count = fc.size();
+		long written = 0;
+
+		while (count > 0)
+		{
+			written = fc.transferTo(position, count, writableChannel);
+			position += written;
+			count -= written;
+		}
 	}
 
 }

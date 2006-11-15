@@ -82,6 +82,67 @@ public class ParameterList extends WrapperList<Parameter>
 	}
 
 	/**
+	 * Copies the parameters whose name is a key in the given map.<br/>
+	 * If a matching parameter is found, its value is put in the map.<br/>
+	 * If multiple values are found, a list is created and set in the map.
+	 * @param params The map controlling the copy.
+	 */
+	@SuppressWarnings("unchecked")
+	public void copyTo(Map<String, Object> params)
+	{
+		Parameter param;
+		Object currentValue = null;
+		for (Iterator<Parameter> iter = iterator(); iter.hasNext();)
+		{
+			param = iter.next();
+
+			if (params.containsKey(param.getName()))
+			{
+				currentValue = params.get(param.getName());
+
+				if (currentValue != null)
+				{
+					List<Object> values = null;
+
+					if (currentValue instanceof List)
+					{
+						// Multiple values already found for this parameter
+						values = (List<Object>) currentValue;
+					}
+					else
+					{
+						// Second value found for this parameter
+						// Create a list of values
+						values = new ArrayList<Object>();
+						values.add(currentValue);
+						params.put(param.getName(), values);
+					}
+
+					if (param.getValue() == null)
+					{
+						values.add(ParameterList.EMPTY_VALUE);
+					}
+					else
+					{
+						values.add(param.getValue());
+					}
+				}
+				else
+				{
+					if (param.getValue() == null)
+					{
+						params.put(param.getName(), ParameterList.EMPTY_VALUE);
+					}
+					else
+					{
+						params.put(param.getName(), param.getValue());
+					}
+				}
+			}
+		}
+	}
+
+	/**
 	 * Tests the equality of two string, potentially null, which a case sensitivity flag.  
 	 * @param value1 The first value.
 	 * @param value2 The second value.
@@ -151,17 +212,6 @@ public class ParameterList extends WrapperList<Parameter>
 
 	/**
 	 * Returns the value of the first parameter found with the given name. 
-	 * @param name The parameter name (case sensitive).
-	 * @param defaultValue The default value to return if no matching parameter found.
-	 * @return The value of the first parameter found with the given name or the default value.
-	 */
-	public String getFirstValue(String name, String defaultValue)
-	{
-		return getFirstValue(name, false, defaultValue);
-	}
-
-	/**
-	 * Returns the value of the first parameter found with the given name. 
 	 * @param name The parameter name.
 	 * @param ignoreCase Indicates if the name comparison is case sensitive.
 	 * @return The value of the first parameter found with the given name.
@@ -192,14 +242,14 @@ public class ParameterList extends WrapperList<Parameter>
 	}
 
 	/**
-	 * Returns the values of the parameters with a given name. If multiple parameters with the same name are 
-	 * found, all values are concatenated and separated by a comma (like for HTTP message headers). 
-	 * @param name The parameter name (case insensitive).
-	 * @return The values of the parameters with a given name.
+	 * Returns the value of the first parameter found with the given name. 
+	 * @param name The parameter name (case sensitive).
+	 * @param defaultValue The default value to return if no matching parameter found.
+	 * @return The value of the first parameter found with the given name or the default value.
 	 */
-	public String getValues(String name)
+	public String getFirstValue(String name, String defaultValue)
 	{
-		return getValues(name, ",", true);
+		return getFirstValue(name, false, defaultValue);
 	}
 
 	/**
@@ -216,6 +266,17 @@ public class ParameterList extends WrapperList<Parameter>
 		}
 
 		return result;
+	}
+
+	/**
+	 * Returns the values of the parameters with a given name. If multiple parameters with the same name are 
+	 * found, all values are concatenated and separated by a comma (like for HTTP message headers). 
+	 * @param name The parameter name (case insensitive).
+	 * @return The values of the parameters with a given name.
+	 */
+	public String getValues(String name)
+	{
+		return getValues(name, ",", true);
 	}
 
 	/**
@@ -346,6 +407,7 @@ public class ParameterList extends WrapperList<Parameter>
 	 * @param toIndex The end position (exclusive).
 	 * @return The sub-list.
 	 */
+	@Override
 	public ParameterList subList(int fromIndex, int toIndex)
 	{
 		return new ParameterList(getDelegate().subList(fromIndex, toIndex));
@@ -380,67 +442,6 @@ public class ParameterList extends WrapperList<Parameter>
 		}
 
 		return result;
-	}
-
-	/**
-	 * Copies the parameters whose name is a key in the given map.<br/>
-	 * If a matching parameter is found, its value is put in the map.<br/>
-	 * If multiple values are found, a list is created and set in the map.
-	 * @param params The map controlling the copy.
-	 */
-	@SuppressWarnings("unchecked")
-	public void copyTo(Map<String, Object> params)
-	{
-		Parameter param;
-		Object currentValue = null;
-		for (Iterator<Parameter> iter = iterator(); iter.hasNext();)
-		{
-			param = iter.next();
-
-			if (params.containsKey(param.getName()))
-			{
-				currentValue = params.get(param.getName());
-
-				if (currentValue != null)
-				{
-					List<Object> values = null;
-
-					if (currentValue instanceof List)
-					{
-						// Multiple values already found for this parameter
-						values = (List<Object>) currentValue;
-					}
-					else
-					{
-						// Second value found for this parameter
-						// Create a list of values
-						values = new ArrayList<Object>();
-						values.add(currentValue);
-						params.put(param.getName(), values);
-					}
-
-					if (param.getValue() == null)
-					{
-						values.add(ParameterList.EMPTY_VALUE);
-					}
-					else
-					{
-						values.add(param.getValue());
-					}
-				}
-				else
-				{
-					if (param.getValue() == null)
-					{
-						params.put(param.getName(), ParameterList.EMPTY_VALUE);
-					}
-					else
-					{
-						params.put(param.getName(), param.getValue());
-					}
-				}
-			}
-		}
 	}
 
 }

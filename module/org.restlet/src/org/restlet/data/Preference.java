@@ -87,12 +87,13 @@ public class Preference<T extends Metadata>
 	}
 
 	/**
-	 * Sets the metadata associated with this preference.
-	 * @param metadata The metadata associated with this preference.
+	 * Returns the modifiable list of parameters.
+	 * @return The modifiable list of parameters.
 	 */
-	public void setMetadata(T metadata)
+	public ParameterList getParameters()
 	{
-		this.metadata = metadata;
+		if (this.parameters == null) this.parameters = new ParameterList();
+		return this.parameters;
 	}
 
 	/**
@@ -105,22 +106,21 @@ public class Preference<T extends Metadata>
 	}
 
 	/**
+	 * Sets the metadata associated with this preference.
+	 * @param metadata The metadata associated with this preference.
+	 */
+	public void setMetadata(T metadata)
+	{
+		this.metadata = metadata;
+	}
+
+	/**
 	 * Sets the quality/preference level.
 	 * @param quality The quality/preference level.
 	 */
 	public void setQuality(float quality)
 	{
 		this.quality = quality;
-	}
-
-	/**
-	 * Returns the modifiable list of parameters.
-	 * @return The modifiable list of parameters.
-	 */
-	public ParameterList getParameters()
-	{
-		if (this.parameters == null) this.parameters = new ParameterList();
-		return this.parameters;
 	}
 
 	@Override

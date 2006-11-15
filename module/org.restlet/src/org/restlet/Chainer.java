@@ -52,6 +52,14 @@ public abstract class Chainer extends Restlet
 	}
 
 	/**
+	 * Returns the next Restlet if available.
+	 * @param request The request to handle.
+	 * @param response The response to update.
+	 * @return The next Restlet if available or null.
+	 */
+	public abstract Restlet getNext(Request request, Response response);
+
+	/**
 	 * Handles a call by invoking the next Restlet if it is available.
 	 * @param request The request to handle.
 	 * @param response The response to update.
@@ -70,13 +78,5 @@ public abstract class Chainer extends Restlet
 			response.setStatus(Status.CLIENT_ERROR_NOT_FOUND);
 		}
 	}
-
-	/**
-	 * Returns the next Restlet if available.
-	 * @param request The request to handle.
-	 * @param response The response to update.
-	 * @return The next Restlet if available or null.
-	 */
-	public abstract Restlet getNext(Request request, Response response);
 
 }

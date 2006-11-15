@@ -51,16 +51,6 @@ public class CookieSetting extends Cookie
 
 	/**
 	 * Preferred constructor.
-	 * @param name The cookie's name.
-	 * @param value The cookie's value.
-	 */
-	public CookieSetting(String name, String value)
-	{
-		this(0, name, value, null, null);
-	}
-
-	/**
-	 * Preferred constructor.
 	 * @param version The cookie's version.
 	 * @param name The cookie's name.
 	 * @param value The cookie's value.
@@ -87,6 +77,24 @@ public class CookieSetting extends Cookie
 	}
 
 	/**
+	 * Preferred constructor.
+	 * @param name The cookie's name.
+	 * @param value The cookie's value.
+	 */
+	public CookieSetting(String name, String value)
+	{
+		this(0, name, value, null, null);
+	}
+
+	/** {@inheritDoc} */
+	@Override
+	public boolean equals(Object object)
+	{
+		return (object instanceof CookieSetting)
+				&& (((CookieSetting) object).hashCode() == hashCode());
+	}
+
+	/**
 	 * Returns the comment for the user.
 	 * @return The comment for the user.
 	 */
@@ -96,12 +104,12 @@ public class CookieSetting extends Cookie
 	}
 
 	/**
-	 * Sets the comment for the user.
-	 * @param comment The comment for the user.
+	 * Returns the description of this REST element.
+	 * @return The description of this REST element.
 	 */
-	public void setComment(String comment)
+	public String getDescription()
 	{
-		this.comment = comment;
+		return "Cookie setting";
 	}
 
 	/**
@@ -113,6 +121,31 @@ public class CookieSetting extends Cookie
 	public int getMaxAge()
 	{
 		return this.maxAge;
+	}
+
+	/** {@inheritDoc} */
+	@Override
+	public int hashCode()
+	{
+		return Factory.hashCode(super.hashCode(), getComment(), getMaxAge(), isSecure());
+	}
+
+	/**
+	 * Indicates if cookie should only be transmitted by secure means.
+	 * @return True if cookie should only be transmitted by secure means.
+	 */
+	public boolean isSecure()
+	{
+		return this.secure;
+	}
+
+	/**
+	 * Sets the comment for the user.
+	 * @param comment The comment for the user.
+	 */
+	public void setComment(String comment)
+	{
+		this.comment = comment;
 	}
 
 	/**
@@ -128,44 +161,11 @@ public class CookieSetting extends Cookie
 
 	/**
 	 * Indicates if cookie should only be transmitted by secure means.
-	 * @return True if cookie should only be transmitted by secure means.
-	 */
-	public boolean isSecure()
-	{
-		return this.secure;
-	}
-
-	/**
-	 * Indicates if cookie should only be transmitted by secure means.
 	 * @param secure True if cookie should only be transmitted by secure means.
 	 */
 	public void setSecure(boolean secure)
 	{
 		this.secure = secure;
-	}
-
-	/**
-	 * Returns the description of this REST element.
-	 * @return The description of this REST element.
-	 */
-	public String getDescription()
-	{
-		return "Cookie setting";
-	}
-
-	/** {@inheritDoc} */
-	@Override
-	public boolean equals(Object object)
-	{
-		return (object instanceof CookieSetting)
-				&& (((CookieSetting) object).hashCode() == hashCode());
-	}
-
-	/** {@inheritDoc} */
-	@Override
-	public int hashCode()
-	{
-		return Factory.hashCode(super.hashCode(), getComment(), getMaxAge(), isSecure());
 	}
 
 }

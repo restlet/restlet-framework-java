@@ -51,6 +51,36 @@ public class DomRepresentation extends OutputRepresentation
 	private Document dom;
 
 	/**
+	 * Constructor for an empty document.
+	 * @param mediaType The representation's media type.
+	 */
+	public DomRepresentation(MediaType mediaType) throws IOException
+	{
+		super(mediaType);
+
+		try
+		{
+			this.dom = DocumentBuilderFactory.newInstance().newDocumentBuilder()
+					.newDocument();
+		}
+		catch (ParserConfigurationException pce)
+		{
+			throw new IOException("Couldn't create the empty document: " + pce.getMessage());
+		}
+	}
+
+	/**
+	 * Constructor from an existing DOM document.
+	 * @param mediaType The representation's media type.
+	 * @param xmlDocument The source DOM document.
+	 */
+	public DomRepresentation(MediaType mediaType, Document xmlDocument)
+	{
+		super(mediaType);
+		this.dom = xmlDocument;
+	}
+
+	/**
 	 * Constructor.
 	 * @param mediaType The representation's media type.
 	 * @param xmlRepresentation A source XML representation to parse.
@@ -78,36 +108,6 @@ public class DomRepresentation extends OutputRepresentation
 		{
 			throw new IOException("Couldn't read the XML representation: "
 					+ pce.getMessage());
-		}
-	}
-
-	/**
-	 * Constructor from an existing DOM document.
-	 * @param mediaType The representation's media type.
-	 * @param xmlDocument The source DOM document.
-	 */
-	public DomRepresentation(MediaType mediaType, Document xmlDocument)
-	{
-		super(mediaType);
-		this.dom = xmlDocument;
-	}
-
-	/**
-	 * Constructor for an empty document.
-	 * @param mediaType The representation's media type.
-	 */
-	public DomRepresentation(MediaType mediaType) throws IOException
-	{
-		super(mediaType);
-
-		try
-		{
-			this.dom = DocumentBuilderFactory.newInstance().newDocumentBuilder()
-					.newDocument();
-		}
-		catch (ParserConfigurationException pce)
-		{
-			throw new IOException("Couldn't create the empty document: " + pce.getMessage());
 		}
 	}
 

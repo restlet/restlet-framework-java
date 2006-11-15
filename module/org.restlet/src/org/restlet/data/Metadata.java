@@ -61,28 +61,12 @@ public class Metadata
 		this.description = description;
 	}
 
-	/**
-	 * Returns the name (ex: "text/html" or "compress" or "iso-8851-1").
-	 * @return The name (ex: "text/html" or "compress" or "iso-8851-1").
-	 */
-	public String getName()
-	{
-		return this.name;
-	}
-
 	/** {@inheritDoc} */
 	@Override
 	public boolean equals(Object object)
 	{
 		return (object instanceof Metadata)
 				&& (((Metadata) object).hashCode() == hashCode());
-	}
-
-	/** {@inheritDoc} */
-	@Override
-	public int hashCode()
-	{
-		return (getName() == null) ? 0 : getName().hashCode();
 	}
 
 	/**
@@ -95,9 +79,26 @@ public class Metadata
 	}
 
 	/**
+	 * Returns the name (ex: "text/html" or "compress" or "iso-8851-1").
+	 * @return The name (ex: "text/html" or "compress" or "iso-8851-1").
+	 */
+	public String getName()
+	{
+		return this.name;
+	}
+
+	/** {@inheritDoc} */
+	@Override
+	public int hashCode()
+	{
+		return (getName() == null) ? 0 : getName().hashCode();
+	}
+
+	/**
 	 * Returns the metadata name.
 	 * @return The metadata name.
 	 */
+	@Override
 	public String toString()
 	{
 		return getName();

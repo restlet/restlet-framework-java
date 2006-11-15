@@ -80,33 +80,15 @@ public class Guard extends Filter
 	}
 
 	/**
-	 * Handles the call by distributing it to the next Restlet. 
-	 * @param request The request to handle.
-	 * @param response The response to update.
+	 * Accepts the call.
+	 * By default, invokes the attached Restlet.
+	 * @param request The request to accept.
+	 * @param response The response to accept.
 	 */
-	public void doHandle(Request request, Response response)
+	protected void accept(Request request, Response response)
 	{
-		int result = authorize(request);
-
-		if (result == 1)
-		{
-			accept(request, response);
-		}
-		else
-		{
-			reject(response, (result == 0));
-		}
-	}
-
-	/**
-	 * Returns the map of authorizations (identifier/secret combinations).
-	 * @return The map of authorizations (identifier/secret combinations).
-	 */
-	public Map<String, String> getAuthorizations()
-	{
-		if (this.authorizations == null)
-			this.authorizations = new TreeMap<String, String>();
-		return this.authorizations;
+		// Invoke the chained Restlet
+		super.doHandle(request, response);
 	}
 
 	/**
@@ -146,15 +128,33 @@ public class Guard extends Filter
 	}
 
 	/**
-	 * Accepts the call.
-	 * By default, invokes the attached Restlet.
-	 * @param request The request to accept.
-	 * @param response The response to accept.
+	 * Handles the call by distributing it to the next Restlet. 
+	 * @param request The request to handle.
+	 * @param response The response to update.
 	 */
-	protected void accept(Request request, Response response)
+	public void doHandle(Request request, Response response)
 	{
-		// Invoke the chained Restlet
-		super.doHandle(request, response);
+		int result = authorize(request);
+
+		if (result == 1)
+		{
+			accept(request, response);
+		}
+		else
+		{
+			reject(response, (result == 0));
+		}
+	}
+
+	/**
+	 * Returns the map of authorizations (identifier/secret combinations).
+	 * @return The map of authorizations (identifier/secret combinations).
+	 */
+	public Map<String, String> getAuthorizations()
+	{
+		if (this.authorizations == null)
+			this.authorizations = new TreeMap<String, String>();
+		return this.authorizations;
 	}
 
 	/**

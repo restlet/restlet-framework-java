@@ -45,17 +45,6 @@ public class Tag
 
 	/**
 	 * Constructor.
-	 * @param tag The tag value.
-	 * @param weak The weakness indicator.
-	 */
-	public Tag(String tag, boolean weak)
-	{
-		this.tag = tag;
-		this.weak = weak;
-	}
-
-	/**
-	 * Constructor.
 	 * @param name The tag name similar to the HTTP tag string; if it starts with a 'W'
 	 * the tag will be marked as weak and the data following the 'W' used as the tag;
 	 * otherwise it should be surrounded with quotes (e.g., "sometag")
@@ -87,6 +76,37 @@ public class Tag
 	}
 
 	/**
+	 * Constructor.
+	 * @param tag The tag value.
+	 * @param weak The weakness indicator.
+	 */
+	public Tag(String tag, boolean weak)
+	{
+		this.tag = tag;
+		this.weak = weak;
+	}
+
+	/**
+	 * Indicates if both tags are equal.
+	 * @param object The object to compare to.
+	 * @return True if both tags are equal.
+	 */
+	@Override
+	public boolean equals(Object object)
+	{
+		return (object instanceof Tag) && (((Tag) object).hashCode() == hashCode());
+	}
+
+	/**
+	 * Returns the description.
+	 * @return The description.
+	 */
+	public String getDescription()
+	{
+		return "Validation tag equivalent to the HTTP entity tag";
+	}
+
+	/**
 	 * Returns the equivalent HTTP string.
 	 * @return The equivalent HTTP string.
 	 * @see <a href="http://www.w3.org/Protocols/rfc2616/rfc2616-sec3.html#sec3.11">HTTP Entity Tags</a>
@@ -106,12 +126,19 @@ public class Tag
 	}
 
 	/**
-	 * Returns the description.
-	 * @return The description.
+	 * Returns the opaque tag string.
+	 * @return The opaque tag string.
 	 */
-	public String getDescription()
+	public String getOpaqueTag()
 	{
-		return "Validation tag equivalent to the HTTP entity tag";
+		return tag;
+	}
+
+	/** {@inheritDoc} */
+	@Override
+	public int hashCode()
+	{
+		return (getName() == null) ? 0 : getName().hashCode();
 	}
 
 	/**
@@ -124,24 +151,6 @@ public class Tag
 	}
 
 	/**
-	 * Sets the tag weakness.
-	 * @param weak True if the tag is weak, false if the tag is strong.
-	 */
-	public void setWeak(boolean weak)
-	{
-		this.weak = weak;
-	}
-
-	/**
-	 * Returns the opaque tag string.
-	 * @return The opaque tag string.
-	 */
-	public String getOpaqueTag()
-	{
-		return tag;
-	}
-
-	/**
 	 * Sets the opaque tag string.
 	 * @param tag The opaque tag string.
 	 */
@@ -151,21 +160,12 @@ public class Tag
 	}
 
 	/**
-	 * Indicates if both tags are equal.
-	 * @param object The object to compare to.
-	 * @return True if both tags are equal.
+	 * Sets the tag weakness.
+	 * @param weak True if the tag is weak, false if the tag is strong.
 	 */
-	@Override
-	public boolean equals(Object object)
+	public void setWeak(boolean weak)
 	{
-		return (object instanceof Tag) && (((Tag) object).hashCode() == hashCode());
-	}
-
-	/** {@inheritDoc} */
-	@Override
-	public int hashCode()
-	{
-		return (getName() == null) ? 0 : getName().hashCode();
+		this.weak = weak;
 	}
 
 }

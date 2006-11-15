@@ -53,16 +53,6 @@ public class StringRepresentation extends StreamRepresentation
 	}
 
 	/**
-	 * Constructor. The following metadata are used by default: no language and the ISO-8859-1 character set.
-	 * @param value The string value.
-	 * @param mediaType The media type. 
-	 */
-	public StringRepresentation(String value, MediaType mediaType)
-	{
-		this(value, mediaType, null);
-	}
-
-	/**
 	 * Constructor. The following metadata are used by default: "text/plain" media type, no language and the 
 	 * ISO-8859-1 character set.
 	 * @param value The string value.
@@ -71,6 +61,16 @@ public class StringRepresentation extends StreamRepresentation
 	public StringRepresentation(String value, Language language)
 	{
 		this(value, MediaType.TEXT_PLAIN, language);
+	}
+
+	/**
+	 * Constructor. The following metadata are used by default: no language and the ISO-8859-1 character set.
+	 * @param value The string value.
+	 * @param mediaType The media type. 
+	 */
+	public StringRepresentation(String value, MediaType mediaType)
+	{
+		this(value, mediaType, null);
 	}
 
 	/**
@@ -103,6 +103,53 @@ public class StringRepresentation extends StreamRepresentation
 	}
 
 	/**
+	 * Returns a stream with the representation's content.
+	 * This method is ensured to return a fresh stream for each invocation unless it 
+	 * is a transient representation, in which case null is returned.
+	 * @return A stream with the representation's content.
+	 * @throws IOException
+	 */
+	public InputStream getStream() throws IOException
+	{
+		if (getValue() != null)
+		{
+			if (getCharacterSet() != null)
+			{
+				return new ByteArrayInputStream(getValue().getBytes(
+						getCharacterSet().getName()));
+			}
+			else
+			{
+				return new ByteArrayInputStream(getValue().getBytes());
+			}
+		}
+		else
+		{
+			return null;
+		}
+	}
+
+	/**
+	 * Converts the representation to a string value. Be careful when using this method as the conversion of 
+	 * large content to a string fully stored in memory can result in OutOfMemoryErrors being thrown.
+	 * @return The representation as a string value.
+	 */
+	public String getValue()
+	{
+		return this.value;
+	}
+
+	/**
+	 * Sets the string value.
+	 * @param value The string value.
+	 */
+	public void setValue(String value)
+	{
+		this.value = value;
+		updateSize();
+	}
+
+	/**
 	 * Updates the expected size according to the current string value.
 	 */
 	protected void updateSize()
@@ -129,53 +176,6 @@ public class StringRepresentation extends StreamRepresentation
 		else
 		{
 			setSize(UNKNOWN_SIZE);
-		}
-	}
-
-	/**
-	 * Converts the representation to a string value. Be careful when using this method as the conversion of 
-	 * large content to a string fully stored in memory can result in OutOfMemoryErrors being thrown.
-	 * @return The representation as a string value.
-	 */
-	public String getValue()
-	{
-		return this.value;
-	}
-
-	/**
-	 * Sets the string value.
-	 * @param value The string value.
-	 */
-	public void setValue(String value)
-	{
-		this.value = value;
-		updateSize();
-	}
-
-	/**
-	 * Returns a stream with the representation's content.
-	 * This method is ensured to return a fresh stream for each invocation unless it 
-	 * is a transient representation, in which case null is returned.
-	 * @return A stream with the representation's content.
-	 * @throws IOException
-	 */
-	public InputStream getStream() throws IOException
-	{
-		if (getValue() != null)
-		{
-			if (getCharacterSet() != null)
-			{
-				return new ByteArrayInputStream(getValue().getBytes(
-						getCharacterSet().getName()));
-			}
-			else
-			{
-				return new ByteArrayInputStream(getValue().getBytes());
-			}
-		}
-		else
-		{
-			return null;
 		}
 	}
 

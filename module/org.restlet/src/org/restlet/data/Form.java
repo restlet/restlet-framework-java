@@ -45,12 +45,13 @@ public class Form extends ParameterList
 
 	/**
 	 * Constructor.
-	 * @param queryString The Web form parameters as a string.
-	 * @throws IOException 
+	 * @param logger The logger to use.
+	 * @param webForm The URL encoded Web form.
+	 * @throws IOException
 	 */
-	public Form(String queryString)
+	public Form(Logger logger, Representation webForm)
 	{
-		this(Logger.getLogger(Form.class.getCanonicalName()), queryString);
+		Factory.getInstance().parse(logger, this, webForm);
 	}
 
 	/**
@@ -76,13 +77,12 @@ public class Form extends ParameterList
 
 	/**
 	 * Constructor.
-	 * @param logger The logger to use.
-	 * @param webForm The URL encoded Web form.
-	 * @throws IOException
+	 * @param queryString The Web form parameters as a string.
+	 * @throws IOException 
 	 */
-	public Form(Logger logger, Representation webForm)
+	public Form(String queryString)
 	{
-		Factory.getInstance().parse(logger, this, webForm);
+		this(Logger.getLogger(Form.class.getCanonicalName()), queryString);
 	}
 
 	/**

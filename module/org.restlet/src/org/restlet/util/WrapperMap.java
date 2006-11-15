@@ -57,20 +57,6 @@ public class WrapperMap<K, V> implements Map<K, V>
 	}
 
 	/**
-	 * Returns the delegate list.
-	 * @return The delegate list.
-	 */
-	protected Map<K, V> getDelegate()
-	{
-		if (this.delegate == null)
-		{
-			this.delegate = new TreeMap<K, V>();
-		}
-
-		return this.delegate;
-	}
-
-	/**
 	 * Removes all mappings from this Map.
 	 */
 	public void clear()
@@ -125,6 +111,20 @@ public class WrapperMap<K, V> implements Map<K, V>
 	public V get(Object key)
 	{
 		return getDelegate().get(key);
+	}
+
+	/**
+	 * Returns the delegate list.
+	 * @return The delegate list.
+	 */
+	protected Map<K, V> getDelegate()
+	{
+		if (this.delegate == null)
+		{
+			this.delegate = new TreeMap<K, V>();
+		}
+
+		return this.delegate;
 	}
 
 	/**

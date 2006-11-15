@@ -65,16 +65,6 @@ public class MetadataService
 	}
 
 	/**
-	 * Maps an extension to some metadata (media type, language or character set) to an extension.
-	 * @param extension The extension name.
-	 * @param metadata The metadata to map.
-	 */
-	public void addExtension(String extension, Metadata metadata)
-	{
-		this.metadataMappings.put(extension, metadata);
-	}
-
-	/**
 	 * Adds a common list of associations from extensions to metadata.
 	 * The list of languages extensions:<br/>
 	 * <ul>
@@ -131,6 +121,16 @@ public class MetadataService
 	}
 
 	/**
+	 * Maps an extension to some metadata (media type, language or character set) to an extension.
+	 * @param extension The extension name.
+	 * @param metadata The metadata to map.
+	 */
+	public void addExtension(String extension, Metadata metadata)
+	{
+		this.metadataMappings.put(extension, metadata);
+	}
+
+	/**
 	 * Returns the default encoding for local representations.
 	 * @return The default encoding for local representations.
 	 */
@@ -158,33 +158,6 @@ public class MetadataService
 	}
 
 	/**
-	 * Returns the index name, without extensions. Returns "index" by default.
-	 * @return The index name.
-	 */
-	public String getIndexName()
-	{
-		return this.indexName;
-	}
-
-	/**
-	 * Sets the index name, without extensions.
-	 * @param indexName The index name.
-	 */
-	public void setIndexName(String indexName)
-	{
-		this.indexName = indexName;
-	}
-
-	/**
-	 * Returns the mappings from extension names to metadata.
-	 * @return The mappings from extension names to metadata.
-	 */
-	public Map<String, Metadata> getMappings()
-	{
-		return this.metadataMappings;
-	}
-
-	/**
 	 * Returns the first extension mapping to this metadata.
 	 * @param metadata The metadata to find. 
 	 * @return The first extension mapping to this metadata.
@@ -200,6 +173,24 @@ public class MetadataService
 		}
 
 		return null;
+	}
+
+	/**
+	 * Returns the index name, without extensions. Returns "index" by default.
+	 * @return The index name.
+	 */
+	public String getIndexName()
+	{
+		return this.indexName;
+	}
+
+	/**
+	 * Returns the mappings from extension names to metadata.
+	 * @return The mappings from extension names to metadata.
+	 */
+	public Map<String, Metadata> getMappings()
+	{
+		return this.metadataMappings;
 	}
 
 	/**
@@ -237,6 +228,15 @@ public class MetadataService
 	public void setDefaultMediaType(MediaType defaultMediaType)
 	{
 		this.defaultMediaType = defaultMediaType;
+	}
+
+	/**
+	 * Sets the index name, without extensions.
+	 * @param indexName The index name.
+	 */
+	public void setIndexName(String indexName)
+	{
+		this.indexName = indexName;
 	}
 
 }

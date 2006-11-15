@@ -40,16 +40,6 @@ public class ObjectRepresentation extends OutputRepresentation
 	private Object object;
 
 	/**
-	 * Constructor;
-	 * @param object The serializable object.
-	 */
-	public ObjectRepresentation(Serializable object)
-	{
-		super(MediaType.APPLICATION_JAVA_OBJECT);
-		this.object = object;
-	}
-
-	/**
 	 * Constructor reading the object from a serialized representation. This representation must have the
 	 * proper media type: "application/x-java-serialized-object".
 	 * @param serializedRepresentation The serialized representation.
@@ -77,14 +67,13 @@ public class ObjectRepresentation extends OutputRepresentation
 	}
 
 	/**
-	 * Writes the datum as a stream of bytes.
-	 * @param outputStream The stream to use when writing.
+	 * Constructor;
+	 * @param object The serializable object.
 	 */
-	public void write(OutputStream outputStream) throws IOException
+	public ObjectRepresentation(Serializable object)
 	{
-		ObjectOutputStream oos = new ObjectOutputStream(outputStream);
-		oos.writeObject(getObject());
-		oos.close();
+		super(MediaType.APPLICATION_JAVA_OBJECT);
+		this.object = object;
 	}
 
 	/**
@@ -95,6 +84,17 @@ public class ObjectRepresentation extends OutputRepresentation
 	public Object getObject() throws IOException
 	{
 		return this.object;
+	}
+
+	/**
+	 * Writes the datum as a stream of bytes.
+	 * @param outputStream The stream to use when writing.
+	 */
+	public void write(OutputStream outputStream) throws IOException
+	{
+		ObjectOutputStream oos = new ObjectOutputStream(outputStream);
+		oos.writeObject(getObject());
+		oos.close();
 	}
 
 }

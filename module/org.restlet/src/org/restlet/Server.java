@@ -51,85 +51,6 @@ public class Server extends Connector
 	private Helper helper;
 
 	/**
-	 * Constructor using the protocol's default port.
-	 * @param protocol The connector protocol.
-	 * @param target The target Restlet.
-	 */
-	public Server(Protocol protocol, Restlet target)
-	{
-		this(null, protocol, target);
-	}
-
-	/**
-	 * Constructor.
-	 * @param protocol The connector protocol.
-	 * @param port The listening port.
-	 * @param target The target Restlet.
-	 */
-	public Server(Protocol protocol, int port, Restlet target)
-	{
-		this(null, protocol, port, target);
-	}
-
-	/**
-	 * Constructor.
-	 * @param protocols The connector protocols.
-	 * @param port The listening port.
-	 * @param target The target Restlet.
-	 */
-	public Server(List<Protocol> protocols, int port, Restlet target)
-	{
-		this(null, protocols, port, target);
-	}
-
-	/**
-	 * Constructor.
-	 * @param protocol The connector protocol.
-	 * @param address The optional listening IP address (useful if multiple IP addresses available).
-	 * @param port The listening port.
-	 * @param target The target Restlet.
-	 */
-	public Server(Protocol protocol, String address, int port, Restlet target)
-	{
-		this(null, protocol, address, port, target);
-	}
-
-	/**
-	 * Constructor.
-	 * @param protocols The connector protocols.
-	 * @param address The optional listening IP address (useful if multiple IP addresses available).
-	 * @param port The listening port.
-	 * @param target The target Restlet.
-	 */
-	public Server(List<Protocol> protocols, String address, int port, Restlet target)
-	{
-		this(null, protocols, address, port, target);
-	}
-
-	/**
-	 * Constructor using the protocol's default port.
-	 * @param context The context.
-	 * @param protocol The connector protocol.
-	 * @param target The target Restlet.
-	 */
-	public Server(Context context, Protocol protocol, Restlet target)
-	{
-		this(context, protocol, null, protocol.getDefaultPort(), target);
-	}
-
-	/**
-	 * Constructor.
-	 * @param context The context.
-	 * @param protocol The connector protocol.
-	 * @param port The listening port.
-	 * @param target The target Restlet.
-	 */
-	public Server(Context context, Protocol protocol, int port, Restlet target)
-	{
-		this(context, protocol, null, port, target);
-	}
-
-	/**
 	 * Constructor.
 	 * @param context The context.
 	 * @param protocols The connector protocols.
@@ -139,20 +60,6 @@ public class Server extends Connector
 	public Server(Context context, List<Protocol> protocols, int port, Restlet target)
 	{
 		this(context, protocols, null, port, target);
-	}
-
-	/**
-	 * Constructor.
-	 * @param context The context.
-	 * @param protocol The connector protocol.
-	 * @param address The optional listening IP address (useful if multiple IP addresses available).
-	 * @param port The listening port.
-	 * @param target The target Restlet.
-	 */
-	public Server(Context context, Protocol protocol, String address, int port,
-			Restlet target)
-	{
-		this(context, Arrays.asList(protocol), address, port, target);
 	}
 
 	/**
@@ -178,6 +85,135 @@ public class Server extends Connector
 	}
 
 	/**
+	 * Constructor.
+	 * @param context The context.
+	 * @param protocol The connector protocol.
+	 * @param port The listening port.
+	 * @param target The target Restlet.
+	 */
+	public Server(Context context, Protocol protocol, int port, Restlet target)
+	{
+		this(context, protocol, null, port, target);
+	}
+
+	/**
+	 * Constructor using the protocol's default port.
+	 * @param context The context.
+	 * @param protocol The connector protocol.
+	 * @param target The target Restlet.
+	 */
+	public Server(Context context, Protocol protocol, Restlet target)
+	{
+		this(context, protocol, null, protocol.getDefaultPort(), target);
+	}
+
+	/**
+	 * Constructor.
+	 * @param context The context.
+	 * @param protocol The connector protocol.
+	 * @param address The optional listening IP address (useful if multiple IP addresses available).
+	 * @param port The listening port.
+	 * @param target The target Restlet.
+	 */
+	public Server(Context context, Protocol protocol, String address, int port,
+			Restlet target)
+	{
+		this(context, Arrays.asList(protocol), address, port, target);
+	}
+
+	/**
+	 * Constructor.
+	 * @param protocols The connector protocols.
+	 * @param port The listening port.
+	 * @param target The target Restlet.
+	 */
+	public Server(List<Protocol> protocols, int port, Restlet target)
+	{
+		this(null, protocols, port, target);
+	}
+
+	/**
+	 * Constructor.
+	 * @param protocols The connector protocols.
+	 * @param address The optional listening IP address (useful if multiple IP addresses available).
+	 * @param port The listening port.
+	 * @param target The target Restlet.
+	 */
+	public Server(List<Protocol> protocols, String address, int port, Restlet target)
+	{
+		this(null, protocols, address, port, target);
+	}
+
+	/**
+	 * Constructor.
+	 * @param protocol The connector protocol.
+	 * @param port The listening port.
+	 * @param target The target Restlet.
+	 */
+	public Server(Protocol protocol, int port, Restlet target)
+	{
+		this(null, protocol, port, target);
+	}
+
+	/**
+	 * Constructor using the protocol's default port.
+	 * @param protocol The connector protocol.
+	 * @param target The target Restlet.
+	 */
+	public Server(Protocol protocol, Restlet target)
+	{
+		this(null, protocol, target);
+	}
+
+	/**
+	 * Constructor.
+	 * @param protocol The connector protocol.
+	 * @param address The optional listening IP address (useful if multiple IP addresses available).
+	 * @param port The listening port.
+	 * @param target The target Restlet.
+	 */
+	public Server(Protocol protocol, String address, int port, Restlet target)
+	{
+		this(null, protocol, address, port, target);
+	}
+
+	/**
+	 * Returns the optional listening IP address (local host used if null).
+	 * @return The optional listening IP address (local host used if null).
+	 */
+	public String getAddress()
+	{
+		return this.address;
+	}
+
+	/**
+	 * Returns the internal server.
+	 * @return The internal server.
+	 */
+	private Helper getHelper()
+	{
+		return this.helper;
+	}
+
+	/**
+	 * Returns the listening port if specified.
+	 * @return The listening port if specified.
+	 */
+	public int getPort()
+	{
+		return this.port;
+	}
+
+	/**
+	 * Returns the target Restlet.
+	 * @return The target Restlet.
+	 */
+	public Restlet getTarget()
+	{
+		return this.target;
+	}
+
+	/**
 	 * Handles a call.
 	 * @param request The request to handle.
 	 * @param response The response to update.
@@ -193,12 +229,12 @@ public class Server extends Connector
 	}
 
 	/**
-	 * Returns the optional listening IP address (local host used if null).
-	 * @return The optional listening IP address (local host used if null).
+	 * Indicates if a target Restlet is set. 
+	 * @return True if a target Restlet is set. 
 	 */
-	public String getAddress()
+	public boolean hasTarget()
 	{
-		return this.address;
+		return this.target != null;
 	}
 
 	/**
@@ -211,48 +247,12 @@ public class Server extends Connector
 	}
 
 	/**
-	 * Returns the listening port if specified.
-	 * @return The listening port if specified.
-	 */
-	public int getPort()
-	{
-		return this.port;
-	}
-
-	/**
 	 * Sets the listening port if specified.
 	 * @param port The listening port if specified.
 	 */
 	protected void setPort(int port)
 	{
 		this.port = port;
-	}
-
-	/**
-	 * Returns the internal server.
-	 * @return The internal server.
-	 */
-	private Helper getHelper()
-	{
-		return this.helper;
-	}
-
-	/**
-	 * Returns the target Restlet.
-	 * @return The target Restlet.
-	 */
-	public Restlet getTarget()
-	{
-		return this.target;
-	}
-
-	/**
-	 * Indicates if a target Restlet is set. 
-	 * @return True if a target Restlet is set. 
-	 */
-	public boolean hasTarget()
-	{
-		return this.target != null;
 	}
 
 	/**

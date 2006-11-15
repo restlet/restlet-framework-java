@@ -52,55 +52,6 @@ public class ChallengeScheme extends Metadata
 	public static final ChallengeScheme SMTP_PLAIN = new ChallengeScheme("SMTP_PLAIN",
 			"PLAIN", "Plain SMTP authentication");
 
-	/** The technical name. */
-	private String technicalName;
-
-	/**
-	 * Constructor.
-	 * @param name The unique name.
-	 * @param technicalName The technical name.
-	 */
-	public ChallengeScheme(String name, String technicalName)
-	{
-		this(name, technicalName, null);
-	}
-
-	/**
-	 * Constructor.
-	 * @param name The unique name.
-	 * @param technicalName The technical name.
-	 * @param description The description.
-	 */
-	public ChallengeScheme(String name, String technicalName, String description)
-	{
-		super(name, description);
-		this.technicalName = technicalName;
-	}
-
-	/**
-	 * Returns the technical name (ex: BASIC).
-	 * @return The technical name (ex: BASIC).
-	 */
-	public String getTechnicalName()
-	{
-		return this.technicalName;
-	}
-
-	/** {@inheritDoc} */
-	@Override
-	public boolean equals(Object object)
-	{
-		return (object instanceof ChallengeScheme)
-				&& (((ChallengeScheme) object).hashCode() == hashCode());
-	}
-
-	/** {@inheritDoc} */
-	@Override
-	public int hashCode()
-	{
-		return (getName() == null) ? 0 : getName().toLowerCase().hashCode();
-	}
-
 	/**
 	 * Returns the challenge scheme associated to a scheme name. If an existing constant exists then it is 
 	 * returned, otherwise a new instance is created.
@@ -130,5 +81,54 @@ public class ChallengeScheme extends Metadata
 		}
 
 		return result;
+	}
+
+	/** The technical name. */
+	private String technicalName;
+
+	/**
+	 * Constructor.
+	 * @param name The unique name.
+	 * @param technicalName The technical name.
+	 */
+	public ChallengeScheme(String name, String technicalName)
+	{
+		this(name, technicalName, null);
+	}
+
+	/**
+	 * Constructor.
+	 * @param name The unique name.
+	 * @param technicalName The technical name.
+	 * @param description The description.
+	 */
+	public ChallengeScheme(String name, String technicalName, String description)
+	{
+		super(name, description);
+		this.technicalName = technicalName;
+	}
+
+	/** {@inheritDoc} */
+	@Override
+	public boolean equals(Object object)
+	{
+		return (object instanceof ChallengeScheme)
+				&& (((ChallengeScheme) object).hashCode() == hashCode());
+	}
+
+	/**
+	 * Returns the technical name (ex: BASIC).
+	 * @return The technical name (ex: BASIC).
+	 */
+	public String getTechnicalName()
+	{
+		return this.technicalName;
+	}
+
+	/** {@inheritDoc} */
+	@Override
+	public int hashCode()
+	{
+		return (getName() == null) ? 0 : getName().toLowerCase().hashCode();
 	}
 }

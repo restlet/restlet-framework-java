@@ -45,20 +45,20 @@ public abstract class ChannelRepresentation extends Representation
 	}
 
 	/**
-	 * Writes the representation to a byte stream.
-	 * @param outputStream The output stream.
-	 */
-	public void write(OutputStream outputStream) throws IOException
-	{
-		write(ByteUtils.getChannel(outputStream));
-	}
-
-	/**
 	 * Returns a stream with the representation's content.
 	 * @return A stream with the representation's content.
 	 */
 	public InputStream getStream() throws IOException
 	{
 		return ByteUtils.getStream(getChannel());
+	}
+
+	/**
+	 * Writes the representation to a byte stream.
+	 * @param outputStream The output stream.
+	 */
+	public void write(OutputStream outputStream) throws IOException
+	{
+		write(ByteUtils.getChannel(outputStream));
 	}
 }

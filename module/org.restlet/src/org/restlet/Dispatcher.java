@@ -34,25 +34,6 @@ import org.restlet.resource.Representation;
 public abstract class Dispatcher
 {
 	/**
-	 * Handles a call.
-	 * @param request The request to handle.
-	 * @param response The response to update.
-	 */
-	public abstract void handle(Request request, Response response);
-
-	/**
-	 * Handles a call.
-	 * @param request The request to handle.
-	 * @return The returned response.
-	 */
-	public Response handle(Request request)
-	{
-		Response response = new Response(request);
-		handle(request, response);
-		return response;
-	}
-
-	/**
 	 * Deletes the identified resource.
 	 * @param resourceUri The URI of the resource to delete.
 	 * @return The response.
@@ -71,6 +52,25 @@ public abstract class Dispatcher
 	{
 		return handle(new Request(Method.GET, resourceUri));
 	}
+
+	/**
+	 * Handles a call.
+	 * @param request The request to handle.
+	 * @return The returned response.
+	 */
+	public Response handle(Request request)
+	{
+		Response response = new Response(request);
+		handle(request, response);
+		return response;
+	}
+
+	/**
+	 * Handles a call.
+	 * @param request The request to handle.
+	 * @param response The response to update.
+	 */
+	public abstract void handle(Request request, Response response);
 
 	/**
 	 * Gets the identified resource without its representation's content.

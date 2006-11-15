@@ -42,6 +42,72 @@ import org.restlet.util.CallModel;
 public class Extractor extends Filter
 {
 	/**
+	 * Internal class holding extraction information.
+	 */
+	protected static class ExtractInfo
+	{
+		/**
+		 * Holds the attribute name.
+		 */
+		protected String attribute;
+
+		/**
+		 * Holds information to extract the attribute value.
+		 */
+		protected String value;
+
+		/**
+		 * Holds indicator on how to handle repeating values.
+		 */
+		protected boolean multiple;
+
+		/**
+		 * Holds information to extract the attribute value.
+		 */
+		protected int index;
+
+		/**
+		 * Constructor.
+		 * @param attribute
+		 * @param index
+		 */
+		public ExtractInfo(String attribute, int index)
+		{
+			this.attribute = attribute;
+			this.value = null;
+			this.multiple = false;
+			this.index = index;
+		}
+
+		/**
+		 * Constructor.
+		 * @param attribute
+		 * @param value
+		 */
+		public ExtractInfo(String attribute, String value)
+		{
+			this.attribute = attribute;
+			this.value = value;
+			this.multiple = false;
+			this.index = -1;
+		}
+
+		/**
+		 * Constructor.
+		 * @param attribute
+		 * @param value
+		 * @param multiple
+		 */
+		public ExtractInfo(String attribute, String value, boolean multiple)
+		{
+			this.attribute = attribute;
+			this.value = value;
+			this.multiple = multiple;
+			this.index = -1;
+		}
+	}
+
+	/**
 	 * List of query parameters to extract.
 	 */
 	private List<ExtractInfo> queryExtracts;
@@ -72,6 +138,24 @@ public class Extractor extends Filter
 		this.entityExtracts = null;
 		this.modelExtracts = null;
 		this.segmentExtracts = null;
+	}
+
+	/**
+	 * Allows filtering before its handling by the target Restlet. Does nothing by default.
+	 * @param request The request to filter.
+	 * @param response The response to filter.
+	 */
+	public void beforeHandle(Request request, Response response)
+	{
+		try
+		{
+			extractAttributes(request, response);
+		}
+		catch (Exception e)
+		{
+			getLogger().log(Level.SEVERE, "Unhandled error intercepted", e);
+			response.setStatus(Status.SERVER_ERROR_INTERNAL);
+		}
 	}
 
 	/**
@@ -155,91 +239,6 @@ public class Extractor extends Filter
 	}
 
 	/**
-	 * Allows filtering before its handling by the target Restlet. Does nothing by default.
-	 * @param request The request to filter.
-	 * @param response The response to filter.
-	 */
-	public void beforeHandle(Request request, Response response)
-	{
-		try
-		{
-			extractAttributes(request, response);
-		}
-		catch (Exception e)
-		{
-			getLogger().log(Level.SEVERE, "Unhandled error intercepted", e);
-			response.setStatus(Status.SERVER_ERROR_INTERNAL);
-		}
-	}
-
-	/**
-	 * Returns the list of query extracts.
-	 * @return The list of query extracts.
-	 */
-	private List<ExtractInfo> getQueryExtracts()
-	{
-		if (this.queryExtracts == null) this.queryExtracts = new ArrayList<ExtractInfo>();
-		return this.queryExtracts;
-	}
-
-	/**
-	 * Returns the list of query extracts.
-	 * @return The list of query extracts.
-	 */
-	private List<ExtractInfo> getEntityExtracts()
-	{
-		if (this.entityExtracts == null)
-			this.entityExtracts = new ArrayList<ExtractInfo>();
-		return this.entityExtracts;
-	}
-
-	/**
-	 * Returns the list of query extracts.
-	 * @return The list of query extracts.
-	 */
-	private List<ExtractInfo> getModelExtracts()
-	{
-		if (this.modelExtracts == null) this.modelExtracts = new ArrayList<ExtractInfo>();
-		return this.modelExtracts;
-	}
-
-	/**
-	 * Returns the list of segment extracts.
-	 * @return The list of segment extracts.
-	 */
-	private List<ExtractInfo> getSegmentExtracts()
-	{
-		if (this.segmentExtracts == null)
-			this.segmentExtracts = new ArrayList<ExtractInfo>();
-		return this.segmentExtracts;
-	}
-
-	/**
-	 * Extracts an attribute from the query string of the resource reference. Only the first occurrence
-	 * of a query string parameter is set.
-	 * @param attributeName The name of the call attribute to set.
-	 * @param parameterName The name of the query string parameter to extract.
-	 * @return The current Filter.
-	 */
-	public Extractor fromQuery(String attributeName, String parameterName)
-	{
-		return fromQuery(attributeName, parameterName, false);
-	}
-
-	/**
-	 * Extracts an attribute from the query string of the resource reference.
-	 * @param attributeName The name of the call attribute to set.
-	 * @param parameterName The name of the query string parameter to extract.
-	 * @param multiple Indicates if the parameters should be set as a List in the attribute value. Useful for repeating parameters.
-	 * @return The current Filter.
-	 */
-	public Extractor fromQuery(String attributeName, String parameterName, boolean multiple)
-	{
-		getQueryExtracts().add(new ExtractInfo(attributeName, parameterName, multiple));
-		return this;
-	}
-
-	/**
 	 * Extracts an attribute from the request entity form. Only the first occurrence
 	 * of a query string parameter is set.
 	 * @param attributeName The name of the call attribute to set.
@@ -279,6 +278,31 @@ public class Extractor extends Filter
 	}
 
 	/**
+	 * Extracts an attribute from the query string of the resource reference. Only the first occurrence
+	 * of a query string parameter is set.
+	 * @param attributeName The name of the call attribute to set.
+	 * @param parameterName The name of the query string parameter to extract.
+	 * @return The current Filter.
+	 */
+	public Extractor fromQuery(String attributeName, String parameterName)
+	{
+		return fromQuery(attributeName, parameterName, false);
+	}
+
+	/**
+	 * Extracts an attribute from the query string of the resource reference.
+	 * @param attributeName The name of the call attribute to set.
+	 * @param parameterName The name of the query string parameter to extract.
+	 * @param multiple Indicates if the parameters should be set as a List in the attribute value. Useful for repeating parameters.
+	 * @return The current Filter.
+	 */
+	public Extractor fromQuery(String attributeName, String parameterName, boolean multiple)
+	{
+		getQueryExtracts().add(new ExtractInfo(attributeName, parameterName, multiple));
+		return this;
+	}
+
+	/**
 	 * Extracts a segment from the request's base reference. If the offset is equal to zero 
 	 * or positive, it corresponds to the index of a start segment. If the offset is
 	 * negative, it corresponds to an end segment (index == size + offset).
@@ -293,69 +317,45 @@ public class Extractor extends Filter
 	}
 
 	/**
-	 * Internal class holding extraction information.
+	 * Returns the list of query extracts.
+	 * @return The list of query extracts.
 	 */
-	protected static class ExtractInfo
+	private List<ExtractInfo> getEntityExtracts()
 	{
-		/**
-		 * Holds the attribute name.
-		 */
-		protected String attribute;
+		if (this.entityExtracts == null)
+			this.entityExtracts = new ArrayList<ExtractInfo>();
+		return this.entityExtracts;
+	}
 
-		/**
-		 * Holds information to extract the attribute value.
-		 */
-		protected String value;
+	/**
+	 * Returns the list of query extracts.
+	 * @return The list of query extracts.
+	 */
+	private List<ExtractInfo> getModelExtracts()
+	{
+		if (this.modelExtracts == null) this.modelExtracts = new ArrayList<ExtractInfo>();
+		return this.modelExtracts;
+	}
 
-		/**
-		 * Holds indicator on how to handle repeating values.
-		 */
-		protected boolean multiple;
+	/**
+	 * Returns the list of query extracts.
+	 * @return The list of query extracts.
+	 */
+	private List<ExtractInfo> getQueryExtracts()
+	{
+		if (this.queryExtracts == null) this.queryExtracts = new ArrayList<ExtractInfo>();
+		return this.queryExtracts;
+	}
 
-		/**
-		 * Holds information to extract the attribute value.
-		 */
-		protected int index;
-
-		/**
-		 * Constructor.
-		 * @param attribute
-		 * @param value
-		 * @param multiple
-		 */
-		public ExtractInfo(String attribute, String value, boolean multiple)
-		{
-			this.attribute = attribute;
-			this.value = value;
-			this.multiple = multiple;
-			this.index = -1;
-		}
-
-		/**
-		 * Constructor.
-		 * @param attribute
-		 * @param index
-		 */
-		public ExtractInfo(String attribute, int index)
-		{
-			this.attribute = attribute;
-			this.value = null;
-			this.multiple = false;
-			this.index = index;
-		}
-
-		/**
-		 * Constructor.
-		 * @param attribute
-		 * @param value
-		 */
-		public ExtractInfo(String attribute, String value)
-		{
-			this.attribute = attribute;
-			this.value = value;
-			this.multiple = false;
-			this.index = -1;
-		}
+	/**
+	 * Returns the list of segment extracts.
+	 * @return The list of segment extracts.
+	 */
+	private List<ExtractInfo> getSegmentExtracts()
+	{
+		if (this.segmentExtracts == null)
+			this.segmentExtracts = new ArrayList<ExtractInfo>();
+		return this.segmentExtracts;
 	}
 
 }

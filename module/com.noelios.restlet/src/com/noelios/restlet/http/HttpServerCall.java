@@ -97,7 +97,7 @@ public abstract class HttpServerCall extends HttpCall
 		InputStream requestStream = getRequestStream();
 		ReadableByteChannel requestChannel = getRequestChannel();
 
-		if ((requestStream != null || requestChannel != null))
+		if (((requestStream != null) || (requestChannel != null)))
 		{
 			// Extract the header values
 			Encoding contentEncoding = null;

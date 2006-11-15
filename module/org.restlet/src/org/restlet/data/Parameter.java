@@ -58,21 +58,14 @@ public class Parameter implements Comparable<Parameter>
 	}
 
 	/**
-	 * Returns the value.
-	 * @return The value.
+	 * Compares this object with the specified object for order.
+	 * @param o The object to be compared.
+	 * @return A negative integer, zero, or a positive integer as this object is less than, equal to, or
+	 * greater than the specified object.
 	 */
-	public String getValue()
+	public int compareTo(Parameter o)
 	{
-		return this.value;
-	}
-
-	/**
-	 * Sets the value.
-	 * @param value The value.
-	 */
-	public void setValue(String value)
-	{
-		this.value = value;
+		return getName().compareTo(o.getName());
 	}
 
 	/** {@inheritDoc} */
@@ -81,13 +74,6 @@ public class Parameter implements Comparable<Parameter>
 	{
 		return (object instanceof Parameter)
 				&& (((Parameter) object).hashCode() == hashCode());
-	}
-
-	/** {@inheritDoc} */
-	@Override
-	public int hashCode()
-	{
-		return Factory.hashCode(getName(), getValue());
 	}
 
 	/**
@@ -100,23 +86,38 @@ public class Parameter implements Comparable<Parameter>
 	}
 
 	/**
-	 * Returns a string with the name and value of the parameter.
-	 * @return A string with the name and value of the parameter.
+	 * Returns the value.
+	 * @return The value.
 	 */
-	public String toString()
+	public String getValue()
 	{
-		return getName() + ": " + getValue();
+		return this.value;
+	}
+
+	/** {@inheritDoc} */
+	@Override
+	public int hashCode()
+	{
+		return Factory.hashCode(getName(), getValue());
 	}
 
 	/**
-	 * Compares this object with the specified object for order.
-	 * @param o The object to be compared.
-	 * @return A negative integer, zero, or a positive integer as this object is less than, equal to, or
-	 * greater than the specified object.
+	 * Sets the value.
+	 * @param value The value.
 	 */
-	public int compareTo(Parameter o)
+	public void setValue(String value)
 	{
-		return getName().compareTo(o.getName());
+		this.value = value;
+	}
+
+	/**
+	 * Returns a string with the name and value of the parameter.
+	 * @return A string with the name and value of the parameter.
+	 */
+	@Override
+	public String toString()
+	{
+		return getName() + ": " + getValue();
 	}
 
 	/**

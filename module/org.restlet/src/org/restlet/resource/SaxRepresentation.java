@@ -68,16 +68,6 @@ public abstract class SaxRepresentation extends OutputRepresentation
 
 	/**
 	 * Constructor.
-	 * @param xmlRepresentation A source XML representation to parse.
-	 */
-	public SaxRepresentation(Representation xmlRepresentation) throws IOException
-	{
-		super(xmlRepresentation.getMediaType());
-		this.source = new StreamSource(xmlRepresentation.getStream());
-	}
-
-	/**
-	 * Constructor.
 	 * @param mediaType The representation's media type.
 	 * @param xmlDocument A source DOM representation to parse.
 	 */
@@ -85,6 +75,16 @@ public abstract class SaxRepresentation extends OutputRepresentation
 	{
 		super(mediaType);
 		this.source = new DOMSource(xmlDocument);
+	}
+
+	/**
+	 * Constructor.
+	 * @param xmlRepresentation A source XML representation to parse.
+	 */
+	public SaxRepresentation(Representation xmlRepresentation) throws IOException
+	{
+		super(xmlRepresentation.getMediaType());
+		this.source = new StreamSource(xmlRepresentation.getStream());
 	}
 
 	/**

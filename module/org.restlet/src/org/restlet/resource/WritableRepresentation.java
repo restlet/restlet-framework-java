@@ -46,15 +46,6 @@ public abstract class WritableRepresentation extends ChannelRepresentation
 	}
 
 	/**
-	 * Writes the representation to a byte channel.
-	 * This method is ensured to write the full content for each invocation unless it 
-	 * is a transient representation, in which case an exception is thrown.
-	 * @param writableChannel A writable byte channel.
-	 * @throws IOException
-	 */
-	public abstract void write(WritableByteChannel writableChannel) throws IOException;
-
-	/**
 	 * Returns a readable byte channel. If it is supported by a file a read-only instance of 
 	 * FileChannel is returned.
 	 * @return A readable byte channel.
@@ -63,5 +54,14 @@ public abstract class WritableRepresentation extends ChannelRepresentation
 	{
 		return ByteUtils.getChannel(this);
 	}
+
+	/**
+	 * Writes the representation to a byte channel.
+	 * This method is ensured to write the full content for each invocation unless it 
+	 * is a transient representation, in which case an exception is thrown.
+	 * @param writableChannel A writable byte channel.
+	 * @throws IOException
+	 */
+	public abstract void write(WritableByteChannel writableChannel) throws IOException;
 
 }

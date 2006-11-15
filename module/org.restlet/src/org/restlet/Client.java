@@ -45,11 +45,20 @@ public class Client extends Connector
 
 	/**
 	 * Constructor.
-	 * @param protocol The connector protocol.
+	 * @param context The context.
+	 * @param protocols The connector protocols.
 	 */
-	public Client(Protocol protocol)
+	public Client(Context context, List<Protocol> protocols)
 	{
-		this(null, protocol);
+		super(context, protocols);
+
+		if ((protocols != null) && (protocols.size() > 0))
+		{
+			if (Factory.getInstance() != null)
+			{
+				this.helper = Factory.getInstance().createHelper(this);
+			}
+		}
 	}
 
 	/**
@@ -73,52 +82,11 @@ public class Client extends Connector
 
 	/**
 	 * Constructor.
-	 * @param context The context.
-	 * @param protocols The connector protocols.
+	 * @param protocol The connector protocol.
 	 */
-	public Client(Context context, List<Protocol> protocols)
+	public Client(Protocol protocol)
 	{
-		super(context, protocols);
-
-		if ((protocols != null) && (protocols.size() > 0))
-		{
-			if (Factory.getInstance() != null)
-			{
-				this.helper = Factory.getInstance().createHelper(this);
-			}
-		}
-	}
-
-	/**
-	 * Returns the helper provided by the implementation.
-	 * @return The helper provided by the implementation.
-	 */
-	private Helper getHelper()
-	{
-		return this.helper;
-	}
-
-	/**
-	 * Handles a call.
-	 * @param request The request to handle.
-	 * @param response The response to update.
-	 */
-	public void handle(Request request, Response response)
-	{
-		init(request, response);
-		if (getHelper() != null) getHelper().handle(request, response);
-	}
-
-	/**
-	 * Handles a call.
-	 * @param request The request to handle.
-	 * @return The returned response.
-	 */
-	public Response handle(Request request)
-	{
-		Response response = new Response(request);
-		handle(request, response);
-		return response;
+		this(null, protocol);
 	}
 
 	/**
@@ -139,6 +107,38 @@ public class Client extends Connector
 	public Response get(String resourceUri)
 	{
 		return handle(new Request(Method.GET, resourceUri));
+	}
+
+	/**
+	 * Returns the helper provided by the implementation.
+	 * @return The helper provided by the implementation.
+	 */
+	private Helper getHelper()
+	{
+		return this.helper;
+	}
+
+	/**
+	 * Handles a call.
+	 * @param request The request to handle.
+	 * @return The returned response.
+	 */
+	public Response handle(Request request)
+	{
+		Response response = new Response(request);
+		handle(request, response);
+		return response;
+	}
+
+	/**
+	 * Handles a call.
+	 * @param request The request to handle.
+	 * @param response The response to update.
+	 */
+	public void handle(Request request, Response response)
+	{
+		init(request, response);
+		if (getHelper() != null) getHelper().handle(request, response);
 	}
 
 	/**
@@ -183,16 +183,6 @@ public class Client extends Connector
 		return handle(new Request(Method.PUT, resourceUri, entity));
 	}
 
-	/**
-	 * Tests the identified resource.
-	 * @param resourceUri The URI of the resource to delete.
-	 * @return The response.
-	 */
-	public Response trace(String resourceUri)
-	{
-		return handle(new Request(Method.TRACE, resourceUri));
-	}
-
 	/** Start callback. */
 	public void start() throws Exception
 	{
@@ -205,6 +195,16 @@ public class Client extends Connector
 	{
 		if (getHelper() != null) getHelper().stop();
 		super.stop();
+	}
+
+	/**
+	 * Tests the identified resource.
+	 * @param resourceUri The URI of the resource to delete.
+	 * @return The response.
+	 */
+	public Response trace(String resourceUri)
+	{
+		return handle(new Request(Method.TRACE, resourceUri));
 	}
 
 }

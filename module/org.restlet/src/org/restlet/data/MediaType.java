@@ -175,185 +175,6 @@ public class MediaType extends Metadata
 	public static final MediaType VIDEO_WMV = new MediaType("video/x-ms-wmv",
 			"Windows movie");
 
-	/** The list of parameters. */
-	private ParameterList parameters;
-
-	/**
-	 * Constructor.
-	 * @param name The name.
-	 */
-	public MediaType(String name)
-	{
-		this(name, null, "Media type or range of media types");
-	}
-
-	/**
-	 * Constructor.
-	 * @param name The name.
-	 * @param description The description. 
-	 */
-	public MediaType(String name, String description)
-	{
-		this(name, null, description);
-	}
-
-	/**
-	 * Constructor.
-	 * @param name The name.
-	 * @param parameters The list of parameters.
-	 */
-	public MediaType(String name, ParameterList parameters)
-	{
-		this(name, parameters, "Media type or range of media types");
-	}
-
-	/**
-	 * Constructor.
-	 * @param name The name.
-	 * @param parameters The list of parameters.
-	 * @param description The description.
-	 */
-	public MediaType(String name, ParameterList parameters, String description)
-	{
-		super((name == null) ? null : name, description);
-		this.parameters = parameters;
-	}
-
-	/**
-	 * Returns the main type.
-	 * @return The main type.
-	 */
-	public String getMainType()
-	{
-		String result = null;
-
-		if (getName() != null)
-		{
-			int index = getName().indexOf('/');
-
-			// Some clients appear to use name types without subtypes
-			if (index == -1)
-			{
-				index = getName().indexOf(';');
-			}
-
-			if (index == -1)
-			{
-				result = getName();
-			}
-			else
-			{
-				result = getName().substring(0, index);
-			}
-		}
-
-		return result;
-	}
-
-	/**
-	 * Returns the sub-type.
-	 * @return The sub-type.
-	 */
-	public String getSubType()
-	{
-		String result = null;
-
-		if (getName() != null)
-		{
-			int slash = getName().indexOf('/');
-
-			if (slash == -1)
-			{
-				// No subtype found, assume that all subtypes are accepted
-				result = "*";
-			}
-			else
-			{
-				int separator = getName().indexOf(';');
-				if (separator == -1)
-				{
-					result = getName().substring(slash + 1);
-				}
-				else
-				{
-					result = getName().substring(slash + 1, separator);
-				}
-			}
-		}
-
-		return result;
-	}
-
-	/**
-	 * Returns the list of parameters.
-	 * @return The list of parameters.
-	 */
-	public ParameterList getParameters()
-	{
-		if (this.parameters == null) this.parameters = new ParameterList();
-		return this.parameters;
-	}
-
-	/**
-	 * Indicates if a given media type is included in the current one.
-	 * The test is true if both types are equal or if the given media type is within the range of the 
-	 * current one. For example, @link{ALL} includes all media types. 
-	 * Parameters are ignored for this comparison. 
-	 * @param included The media type to test for inclusion.
-	 * @return True if the given media type is included in the current one.
-	 */
-	public boolean includes(MediaType included)
-	{
-		boolean result = equals(ALL);
-
-		if (result)
-		{
-			// The ALL media type includes all other types.
-		}
-		else
-		{
-			result = equals(included);
-
-			if (result)
-			{
-				// Both media types are equal
-			}
-			else
-			{
-				result = getMainType().equals(included.getMainType())
-						&& (getSubType().equals(included.getSubType()) || getSubType().equals(
-								"*"));
-
-				if (result)
-				{
-					// Both media types have the same main type
-					// and the subtype of current media type includes all subtypes. 
-				}
-				else
-				{
-					// Both media types are not equal
-				}
-			}
-		}
-
-		return result;
-	}
-
-	/** {@inheritDoc} */
-	@Override
-	public boolean equals(Object object)
-	{
-		return (object instanceof MediaType)
-				&& (((MediaType) object).hashCode() == hashCode());
-	}
-
-	/** {@inheritDoc} */
-	@Override
-	public int hashCode()
-	{
-		return Factory.hashCode(super.hashCode(), getParameters());
-	}
-
 	/**
 	 * Returns the media type associated to a name. If an existing constant exists then it is 
 	 * returned, otherwise a new instance is created.
@@ -476,6 +297,185 @@ public class MediaType extends Metadata
 				result = VIDEO_WMV;
 			else
 				result = new MediaType(name);
+		}
+
+		return result;
+	}
+
+	/** The list of parameters. */
+	private ParameterList parameters;
+
+	/**
+	 * Constructor.
+	 * @param name The name.
+	 */
+	public MediaType(String name)
+	{
+		this(name, null, "Media type or range of media types");
+	}
+
+	/**
+	 * Constructor.
+	 * @param name The name.
+	 * @param parameters The list of parameters.
+	 */
+	public MediaType(String name, ParameterList parameters)
+	{
+		this(name, parameters, "Media type or range of media types");
+	}
+
+	/**
+	 * Constructor.
+	 * @param name The name.
+	 * @param parameters The list of parameters.
+	 * @param description The description.
+	 */
+	public MediaType(String name, ParameterList parameters, String description)
+	{
+		super((name == null) ? null : name, description);
+		this.parameters = parameters;
+	}
+
+	/**
+	 * Constructor.
+	 * @param name The name.
+	 * @param description The description. 
+	 */
+	public MediaType(String name, String description)
+	{
+		this(name, null, description);
+	}
+
+	/** {@inheritDoc} */
+	@Override
+	public boolean equals(Object object)
+	{
+		return (object instanceof MediaType)
+				&& (((MediaType) object).hashCode() == hashCode());
+	}
+
+	/**
+	 * Returns the main type.
+	 * @return The main type.
+	 */
+	public String getMainType()
+	{
+		String result = null;
+
+		if (getName() != null)
+		{
+			int index = getName().indexOf('/');
+
+			// Some clients appear to use name types without subtypes
+			if (index == -1)
+			{
+				index = getName().indexOf(';');
+			}
+
+			if (index == -1)
+			{
+				result = getName();
+			}
+			else
+			{
+				result = getName().substring(0, index);
+			}
+		}
+
+		return result;
+	}
+
+	/**
+	 * Returns the list of parameters.
+	 * @return The list of parameters.
+	 */
+	public ParameterList getParameters()
+	{
+		if (this.parameters == null) this.parameters = new ParameterList();
+		return this.parameters;
+	}
+
+	/**
+	 * Returns the sub-type.
+	 * @return The sub-type.
+	 */
+	public String getSubType()
+	{
+		String result = null;
+
+		if (getName() != null)
+		{
+			int slash = getName().indexOf('/');
+
+			if (slash == -1)
+			{
+				// No subtype found, assume that all subtypes are accepted
+				result = "*";
+			}
+			else
+			{
+				int separator = getName().indexOf(';');
+				if (separator == -1)
+				{
+					result = getName().substring(slash + 1);
+				}
+				else
+				{
+					result = getName().substring(slash + 1, separator);
+				}
+			}
+		}
+
+		return result;
+	}
+
+	/** {@inheritDoc} */
+	@Override
+	public int hashCode()
+	{
+		return Factory.hashCode(super.hashCode(), getParameters());
+	}
+
+	/**
+	 * Indicates if a given media type is included in the current one.
+	 * The test is true if both types are equal or if the given media type is within the range of the 
+	 * current one. For example, @link{ALL} includes all media types. 
+	 * Parameters are ignored for this comparison. 
+	 * @param included The media type to test for inclusion.
+	 * @return True if the given media type is included in the current one.
+	 */
+	public boolean includes(MediaType included)
+	{
+		boolean result = equals(ALL);
+
+		if (result)
+		{
+			// The ALL media type includes all other types.
+		}
+		else
+		{
+			result = equals(included);
+
+			if (result)
+			{
+				// Both media types are equal
+			}
+			else
+			{
+				result = getMainType().equals(included.getMainType())
+						&& (getSubType().equals(included.getSubType()) || getSubType().equals(
+								"*"));
+
+				if (result)
+				{
+					// Both media types have the same main type
+					// and the subtype of current media type includes all subtypes. 
+				}
+				else
+				{
+					// Both media types are not equal
+				}
+			}
 		}
 
 		return result;

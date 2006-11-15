@@ -45,15 +45,6 @@ public class ClientList extends WrapperList<Client>
 	}
 
 	/**
-	 * Returns the context.
-	 * @return The context.
-	 */
-	private Context getContext()
-	{
-		return this.context;
-	}
-
-	/**
 	 * Adds a new client connector in the map supporting the given protocol.
 	 * @param protocol The connector protocol.
 	 * @return The added client.
@@ -63,5 +54,14 @@ public class ClientList extends WrapperList<Client>
 		Client result = new Client(getContext(), protocol);
 		add(result);
 		return result;
+	}
+
+	/**
+	 * Returns the context.
+	 * @return The context.
+	 */
+	private Context getContext()
+	{
+		return this.context;
 	}
 }

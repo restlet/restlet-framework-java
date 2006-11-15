@@ -53,15 +53,6 @@ public class WrapperResource extends Resource
 	}
 
 	/**
-	 * Returns the wrapped Resource.
-	 * @return The wrapped Resource.
-	 */
-	protected Resource getWrappedResource()
-	{
-		return this.wrappedResource;
-	}
-
-	/**
 	 * Indicates if it is allowed to delete the resource. The default value is false. 
 	 * @return True if the method is allowed.
 	 */
@@ -151,6 +142,15 @@ public class WrapperResource extends Resource
 	public List<Representation> getVariants()
 	{
 		return getWrappedResource().getVariants();
+	}
+
+	/**
+	 * Returns the wrapped Resource.
+	 * @return The wrapped Resource.
+	 */
+	protected Resource getWrappedResource()
+	{
+		return this.wrappedResource;
 	}
 
 	/**

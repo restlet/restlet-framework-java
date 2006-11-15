@@ -57,12 +57,6 @@ public abstract class OutputRepresentation extends StreamRepresentation
 	}
 
 	/**
-	 * Writes the representation to a byte stream.
-	 * @param outputStream The output stream.
-	 */
-	public abstract void write(OutputStream outputStream) throws IOException;
-
-	/**
 	 * Returns a stream with the representation's content. 
 	 * Internally, it uses a writer thread and a pipe stream.
 	 * @return A stream with the representation's content.
@@ -71,5 +65,11 @@ public abstract class OutputRepresentation extends StreamRepresentation
 	{
 		return ByteUtils.getStream(this);
 	}
+
+	/**
+	 * Writes the representation to a byte stream.
+	 * @param outputStream The output stream.
+	 */
+	public abstract void write(OutputStream outputStream) throws IOException;
 
 }

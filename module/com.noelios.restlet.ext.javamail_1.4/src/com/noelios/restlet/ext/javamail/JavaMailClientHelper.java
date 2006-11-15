@@ -235,19 +235,19 @@ public abstract class JavaMailClientHelper extends ClientHelper
 				// Set the FROM and TO fields
 				msg.setFrom(new InternetAddress(from));
 
-				for (int i = 0; i < to.length; i++)
+				for (String element : to)
 				{
-					msg.addRecipient(Message.RecipientType.TO, new InternetAddress(to[i]));
+					msg.addRecipient(Message.RecipientType.TO, new InternetAddress(element));
 				}
 
-				for (int i = 0; i < cc.length; i++)
+				for (String element : cc)
 				{
-					msg.addRecipient(Message.RecipientType.CC, new InternetAddress(cc[i]));
+					msg.addRecipient(Message.RecipientType.CC, new InternetAddress(element));
 				}
 
-				for (int i = 0; i < bcc.length; i++)
+				for (String element : bcc)
 				{
-					msg.addRecipient(Message.RecipientType.BCC, new InternetAddress(bcc[i]));
+					msg.addRecipient(Message.RecipientType.BCC, new InternetAddress(element));
 				}
 
 				// Set the subject and content text

@@ -81,6 +81,20 @@ public class Redirector extends Restlet
 	protected int mode;
 
 	/**
+	 * Constructor for the connector mode.
+	 * @param context The context.
+	 * @param targetPattern The pattern to build the target URI (using StringTemplate syntax and the CallModel for variables).
+	 * @see org.restlet.util.StringTemplate
+	 * @see org.restlet.util.CallModel
+	 */
+	public Redirector(Context context, String targetPattern)
+	{
+		super(context);
+		this.targetPattern = targetPattern;
+		this.mode = MODE_CONNECTOR;
+	}
+
+	/**
 	 * Constructor.
 	 * @param context The context.
 	 * @param targetPattern The pattern to build the target URI (using StringTemplate syntax and the CallModel for variables).
@@ -93,20 +107,6 @@ public class Redirector extends Restlet
 		super(context);
 		this.targetPattern = targetPattern;
 		this.mode = mode;
-	}
-
-	/**
-	 * Constructor for the connector mode.
-	 * @param context The context.
-	 * @param targetPattern The pattern to build the target URI (using StringTemplate syntax and the CallModel for variables).
-	 * @see org.restlet.util.StringTemplate
-	 * @see org.restlet.util.CallModel
-	 */
-	public Redirector(Context context, String targetPattern)
-	{
-		super(context);
-		this.targetPattern = targetPattern;
-		this.mode = MODE_CONNECTOR;
 	}
 
 	/**

@@ -97,6 +97,28 @@ public abstract class Message
 	}
 
 	/**
+	 * Returns the metadata service.
+	 * @return The metadata service.
+	 */
+	private ConverterService getConverterService()
+	{
+		ConverterService result = null;
+		Application application = (Application) getAttributes().get(
+				Application.class.getCanonicalName());
+
+		if (application != null)
+		{
+			result = application.getConverterService();
+		}
+		else
+		{
+			result = new ConverterService();
+		}
+
+		return result;
+	}
+
+	/**
 	 * Returns the entity representation.
 	 * @return The entity representation.
 	 */
@@ -128,28 +150,6 @@ public abstract class Message
 	public Object getEntityAsObject()
 	{
 		return getConverterService().toObject(getEntity());
-	}
-
-	/**
-	 * Returns the metadata service.
-	 * @return The metadata service.
-	 */
-	private ConverterService getConverterService()
-	{
-		ConverterService result = null;
-		Application application = (Application) getAttributes().get(
-				Application.class.getCanonicalName());
-
-		if (application != null)
-		{
-			result = application.getConverterService();
-		}
-		else
-		{
-			result = new ConverterService();
-		}
-
-		return result;
 	}
 
 	/**

@@ -134,6 +134,342 @@ public class Status extends Metadata
 
 	public static final Status CONNECTOR_ERROR_INTERNAL = new Status(1002);
 
+	/**
+	 * Indicates if the status is a client error status.
+	 * @param code The code of the status.
+	 * @return True if the status is a client error status.
+	 */
+	public static boolean isClientError(int code)
+	{
+		boolean result = false;
+
+		switch (code)
+		{
+			case 400:
+			case 401:
+			case 402:
+			case 403:
+			case 404:
+			case 405:
+			case 406:
+			case 407:
+			case 408:
+			case 409:
+			case 410:
+			case 411:
+			case 412:
+			case 413:
+			case 414:
+			case 415:
+			case 416:
+			case 417:
+			case 422:
+			case 423:
+			case 424:
+				result = true;
+			break;
+		}
+
+		return result;
+	}
+
+	/**
+	 * Indicates if the status is a connector error status.
+	 * @param code The code of the status.
+	 * @return True if the status is a server error status.
+	 */
+	public static boolean isConnectorError(int code)
+	{
+		boolean result = false;
+
+		switch (code)
+		{
+			case 1000:
+			case 1001:
+			case 1002:
+				result = true;
+			break;
+		}
+
+		return result;
+	}
+
+	/**
+	 * Indicates if the status is an error (client or server) status.
+	 * @param code The code of the status.
+	 * @return True if the status is an error (client or server) status.
+	 */
+	public static boolean isError(int code)
+	{
+		return isClientError(code) || isServerError(code) || isConnectorError(code);
+	}
+
+	/**
+	 * Indicates if the status is an information status.
+	 * @param code The code of the status.
+	 * @return True if the status is an information status.
+	 */
+	public static boolean isInfo(int code)
+	{
+		boolean result = false;
+
+		switch (code)
+		{
+			case 100:
+			case 101:
+			case 102:
+				result = true;
+			break;
+		}
+
+		return result;
+	}
+
+	/**
+	 * Indicates if the status is a redirection status.
+	 * @param code The code of the status.
+	 * @return True if the status is a redirection status.
+	 */
+	public static boolean isRedirection(int code)
+	{
+		boolean result = false;
+
+		switch (code)
+		{
+			case 300:
+			case 301:
+			case 302:
+			case 303:
+			case 304:
+			case 305:
+			case 307:
+				result = true;
+			break;
+		}
+
+		return result;
+	}
+
+	/**
+	 * Indicates if the status is a server error status.
+	 * @param code The code of the status.
+	 * @return True if the status is a server error status.
+	 */
+	public static boolean isServerError(int code)
+	{
+		boolean result = false;
+
+		switch (code)
+		{
+			case 500:
+			case 501:
+			case 502:
+			case 503:
+			case 504:
+			case 505:
+			case 507:
+				result = true;
+			break;
+		}
+
+		return result;
+	}
+
+	/**
+	 * Indicates if the status is a success status.
+	 * @param code The code of the status.
+	 * @return True if the status is a success status.
+	 */
+	public static boolean isSuccess(int code)
+	{
+		boolean result = false;
+
+		switch (code)
+		{
+			case 200:
+			case 201:
+			case 202:
+			case 203:
+			case 204:
+			case 205:
+			case 206:
+			case 207:
+				result = true;
+			break;
+		}
+
+		return result;
+	}
+
+	/**
+	 * Returns the status associated to a code. If an existing constant exists then it is 
+	 * returned, otherwise a new instance is created.
+	 * @param code The code.
+	 * @return The associated status.
+	 */
+	public static Status valueOf(int code)
+	{
+		Status result = null;
+
+		switch (code)
+		{
+			case 100:
+				result = INFO_CONTINUE;
+			break;
+			case 101:
+				result = INFO_SWITCHING_PROTOCOL;
+			break;
+			case 102:
+				result = INFO_PROCESSING;
+			break;
+
+			case 200:
+				result = SUCCESS_OK;
+			break;
+			case 201:
+				result = SUCCESS_CREATED;
+			break;
+			case 202:
+				result = SUCCESS_ACCEPTED;
+			break;
+			case 203:
+				result = SUCCESS_NON_AUTHORITATIVE;
+			break;
+			case 204:
+				result = SUCCESS_NO_CONTENT;
+			break;
+			case 205:
+				result = SUCCESS_RESET_CONTENT;
+			break;
+			case 206:
+				result = SUCCESS_PARTIAL_CONTENT;
+			break;
+			case 207:
+				result = SUCCESS_MULTI_STATUS;
+			break;
+
+			case 300:
+				result = REDIRECTION_MULTIPLE_CHOICES;
+			break;
+			case 301:
+				result = REDIRECTION_MOVED_PERMANENTLY;
+			break;
+			case 302:
+				result = REDIRECTION_FOUND;
+			break;
+			case 303:
+				result = REDIRECTION_SEE_OTHER;
+			break;
+			case 304:
+				result = REDIRECTION_NOT_MODIFIED;
+			break;
+			case 305:
+				result = REDIRECTION_USE_PROXY;
+			break;
+			case 307:
+				result = REDIRECTION_MOVED_TEMPORARILY;
+			break;
+
+			case 400:
+				result = CLIENT_ERROR_BAD_REQUEST;
+			break;
+			case 401:
+				result = CLIENT_ERROR_UNAUTHORIZED;
+			break;
+			case 402:
+				result = CLIENT_ERROR_PAYMENT_REQUIRED;
+			break;
+			case 403:
+				result = CLIENT_ERROR_FORBIDDEN;
+			break;
+			case 404:
+				result = CLIENT_ERROR_NOT_FOUND;
+			break;
+			case 405:
+				result = CLIENT_ERROR_METHOD_NOT_ALLOWED;
+			break;
+			case 406:
+				result = CLIENT_ERROR_NOT_ACCEPTABLE;
+			break;
+			case 407:
+				result = CLIENT_ERROR_PROXY_AUTHENTIFICATION_REQUIRED;
+			break;
+			case 408:
+				result = CLIENT_ERROR_REQUEST_TIMEOUT;
+			break;
+			case 409:
+				result = CLIENT_ERROR_CONFLICT;
+			break;
+			case 410:
+				result = CLIENT_ERROR_GONE;
+			break;
+			case 411:
+				result = CLIENT_ERROR_LENGTH_REQUIRED;
+			break;
+			case 412:
+				result = CLIENT_ERROR_PRECONDITION_FAILED;
+			break;
+			case 413:
+				result = CLIENT_ERROR_REQUEST_ENTITY_TOO_LARGE;
+			break;
+			case 414:
+				result = CLIENT_ERROR_REQUEST_URI_TOO_LONG;
+			break;
+			case 415:
+				result = CLIENT_ERROR_UNSUPPORTED_MEDIA_TYPE;
+			break;
+			case 416:
+				result = CLIENT_ERROR_REQUESTED_RANGE_NOT_SATISFIABLE;
+			break;
+			case 417:
+				result = CLIENT_ERROR_EXPECTATION_FAILED;
+			break;
+			case 422:
+				result = CLIENT_ERROR_UNPROCESSABLE_ENTITY;
+			break;
+			case 423:
+				result = CLIENT_ERROR_LOCKED;
+			break;
+			case 424:
+				result = CLIENT_ERROR_FAILED_DEPENDENCY;
+			break;
+
+			case 500:
+				result = SERVER_ERROR_INTERNAL;
+			break;
+			case 501:
+				result = SERVER_ERROR_NOT_IMPLEMENTED;
+			break;
+			case 502:
+				result = SERVER_ERROR_BAD_GATEWAY;
+			break;
+			case 503:
+				result = SERVER_ERROR_SERVICE_UNAVAILABLE;
+			break;
+			case 504:
+				result = SERVER_ERROR_GATEWAY_TIMEOUT;
+			break;
+			case 505:
+				result = SERVER_ERROR_VERSION_NOT_SUPPORTED;
+			break;
+			case 507:
+				result = SERVER_ERROR_INSUFFICIENT_STORAGE;
+			break;
+
+			case 1000:
+				result = CONNECTOR_ERROR_CONNECTION;
+			break;
+			case 1001:
+				result = CONNECTOR_ERROR_COMMUNICATION;
+			break;
+			case 1002:
+				result = CONNECTOR_ERROR_INTERNAL;
+			break;
+		}
+
+		return result;
+	}
+
 	/** The specification code. */
 	private int code;
 
@@ -151,16 +487,6 @@ public class Status extends Metadata
 
 	/**
 	 * Constructor.
-	 * @param status The status to copy.
-	 * @param description The description to associate.
-	 */
-	public Status(Status status, String description)
-	{
-		this(status.getCode(), status.getName(), description, status.getUri());
-	}
-
-	/**
-	 * Constructor.
 	 * @param code The specification code.
 	 * @param name The name.
 	 * @param description The description.
@@ -174,182 +500,33 @@ public class Status extends Metadata
 	}
 
 	/**
+	 * Constructor.
+	 * @param status The status to copy.
+	 * @param description The description to associate.
+	 */
+	public Status(Status status, String description)
+	{
+		this(status.getCode(), status.getName(), description, status.getUri());
+	}
+
+	/**
+	 * Indicates if the status is equal to a given one.
+	 * @param object The object to compare to.
+	 * @return True if the status is equal to a given one.
+	 */
+	@Override
+	public boolean equals(Object object)
+	{
+		return (object instanceof Status) && (((Status) object).hashCode() == hashCode());
+	}
+
+	/**
 	 * Returns the HTTP code.
 	 * @return The HTTP code.
 	 */
 	public int getCode()
 	{
 		return this.code;
-	}
-
-	/**
-	 * Returns the name of this status.
-	 * @return The name of this status.
-	 */
-	public String getName()
-	{
-		String result = super.getName();
-
-		if (result == null)
-		{
-			switch (this.code)
-			{
-				case 100:
-					result = "Continue";
-				break;
-				case 101:
-					result = "Switching Protocols";
-				break;
-				case 102:
-					result = "Processing";
-				break;
-
-				case 200:
-					result = "OK";
-				break;
-				case 201:
-					result = "Created";
-				break;
-				case 202:
-					result = "Accepted";
-				break;
-				case 203:
-					result = "Non-Authoritative Information";
-				break;
-				case 204:
-					result = "No Content";
-				break;
-				case 205:
-					result = "Reset Content";
-				break;
-				case 206:
-					result = "Partial Content";
-				break;
-				case 207:
-					result = "Multi-Status";
-				break;
-
-				case 300:
-					result = "Multiple Choices";
-				break;
-				case 301:
-					result = "Moved Permanently";
-				break;
-				case 302:
-					result = "Found";
-				break;
-				case 303:
-					result = "See Other";
-				break;
-				case 304:
-					result = "Not Modified";
-				break;
-				case 305:
-					result = "Use Proxy";
-				break;
-				case 307:
-					result = "Temporary Redirect";
-				break;
-
-				case 400:
-					result = "Bad Request";
-				break;
-				case 401:
-					result = "Unauthorized";
-				break;
-				case 402:
-					result = "Payment Required";
-				break;
-				case 403:
-					result = "Forbidden";
-				break;
-				case 404:
-					result = "Not Found";
-				break;
-				case 405:
-					result = "Method Not Allowed";
-				break;
-				case 406:
-					result = "Not Acceptable";
-				break;
-				case 407:
-					result = "Proxy Authentication Required";
-				break;
-				case 408:
-					result = "Request Timeout";
-				break;
-				case 409:
-					result = "Conflict";
-				break;
-				case 410:
-					result = "Gone";
-				break;
-				case 411:
-					result = "Length Required";
-				break;
-				case 412:
-					result = "Precondition Failed";
-				break;
-				case 413:
-					result = "Request Entity Too Large";
-				break;
-				case 414:
-					result = "Request URI Too Long";
-				break;
-				case 415:
-					result = "Unsupported Media Type";
-				break;
-				case 416:
-					result = "Requested Range Not Satisfiable";
-				break;
-				case 417:
-					result = "Expectation Failed";
-				break;
-				case 422:
-					result = "Unprocessable Entity";
-				break;
-				case 423:
-					result = "Locked";
-				break;
-				case 424:
-					result = "Failed Dependency";
-				break;
-
-				case 500:
-					result = "Internal Server Error";
-				break;
-				case 501:
-					result = "Not Implemented";
-				break;
-				case 502:
-					result = "Bad Gateway";
-				break;
-				case 503:
-					result = "Service Unavailable";
-				break;
-				case 504:
-					result = "Gateway Timeout";
-				break;
-				case 505:
-					result = "Version Not Supported";
-				break;
-				case 507:
-					result = "Insufficient Storage";
-				break;
-
-				case 1000:
-					result = "Connection Error";
-				break;
-				case 1001:
-					result = "Communication Error";
-				break;
-				case 1002:
-					result = "Internal Connector Error";
-				break;
-			}
-		}
-
-		return result;
 	}
 
 	/**
@@ -515,6 +692,176 @@ public class Status extends Metadata
 				break;
 				case 1002:
 					result = "The connector encountered an unexpected condition which prevented it from fulfilling the request";
+				break;
+			}
+		}
+
+		return result;
+	}
+
+	/**
+	 * Returns the name of this status.
+	 * @return The name of this status.
+	 */
+	public String getName()
+	{
+		String result = super.getName();
+
+		if (result == null)
+		{
+			switch (this.code)
+			{
+				case 100:
+					result = "Continue";
+				break;
+				case 101:
+					result = "Switching Protocols";
+				break;
+				case 102:
+					result = "Processing";
+				break;
+
+				case 200:
+					result = "OK";
+				break;
+				case 201:
+					result = "Created";
+				break;
+				case 202:
+					result = "Accepted";
+				break;
+				case 203:
+					result = "Non-Authoritative Information";
+				break;
+				case 204:
+					result = "No Content";
+				break;
+				case 205:
+					result = "Reset Content";
+				break;
+				case 206:
+					result = "Partial Content";
+				break;
+				case 207:
+					result = "Multi-Status";
+				break;
+
+				case 300:
+					result = "Multiple Choices";
+				break;
+				case 301:
+					result = "Moved Permanently";
+				break;
+				case 302:
+					result = "Found";
+				break;
+				case 303:
+					result = "See Other";
+				break;
+				case 304:
+					result = "Not Modified";
+				break;
+				case 305:
+					result = "Use Proxy";
+				break;
+				case 307:
+					result = "Temporary Redirect";
+				break;
+
+				case 400:
+					result = "Bad Request";
+				break;
+				case 401:
+					result = "Unauthorized";
+				break;
+				case 402:
+					result = "Payment Required";
+				break;
+				case 403:
+					result = "Forbidden";
+				break;
+				case 404:
+					result = "Not Found";
+				break;
+				case 405:
+					result = "Method Not Allowed";
+				break;
+				case 406:
+					result = "Not Acceptable";
+				break;
+				case 407:
+					result = "Proxy Authentication Required";
+				break;
+				case 408:
+					result = "Request Timeout";
+				break;
+				case 409:
+					result = "Conflict";
+				break;
+				case 410:
+					result = "Gone";
+				break;
+				case 411:
+					result = "Length Required";
+				break;
+				case 412:
+					result = "Precondition Failed";
+				break;
+				case 413:
+					result = "Request Entity Too Large";
+				break;
+				case 414:
+					result = "Request URI Too Long";
+				break;
+				case 415:
+					result = "Unsupported Media Type";
+				break;
+				case 416:
+					result = "Requested Range Not Satisfiable";
+				break;
+				case 417:
+					result = "Expectation Failed";
+				break;
+				case 422:
+					result = "Unprocessable Entity";
+				break;
+				case 423:
+					result = "Locked";
+				break;
+				case 424:
+					result = "Failed Dependency";
+				break;
+
+				case 500:
+					result = "Internal Server Error";
+				break;
+				case 501:
+					result = "Not Implemented";
+				break;
+				case 502:
+					result = "Bad Gateway";
+				break;
+				case 503:
+					result = "Service Unavailable";
+				break;
+				case 504:
+					result = "Gateway Timeout";
+				break;
+				case 505:
+					result = "Version Not Supported";
+				break;
+				case 507:
+					result = "Insufficient Storage";
+				break;
+
+				case 1000:
+					result = "Connection Error";
+				break;
+				case 1001:
+					result = "Communication Error";
+				break;
+				case 1002:
+					result = "Internal Connector Error";
 				break;
 			}
 		}
@@ -695,31 +1042,11 @@ public class Status extends Metadata
 		return result;
 	}
 
-	/**
-	 * Indicates if the status is an information status.
-	 * @return True if the status is an information status.
-	 */
-	public boolean isInfo()
+	/** {@inheritDoc} */
+	@Override
+	public int hashCode()
 	{
-		return isInfo(getCode());
-	}
-
-	/**
-	 * Indicates if the status is a success status.
-	 * @return True if the status is a success status.
-	 */
-	public boolean isSuccess()
-	{
-		return isSuccess(getCode());
-	}
-
-	/**
-	 * Indicates if the status is a redirection status.
-	 * @return True if the status is a redirection status.
-	 */
-	public boolean isRedirection()
-	{
-		return isRedirection(getCode());
+		return getCode();
 	}
 
 	/**
@@ -741,15 +1068,6 @@ public class Status extends Metadata
 	}
 
 	/**
-	 * Indicates if the status is a server error status.
-	 * @return True if the status is a server error status.
-	 */
-	public boolean isServerError()
-	{
-		return isServerError(getCode());
-	}
-
-	/**
 	 * Indicates if the status is an error (client or server) status.
 	 * @return True if the status is an error (client or server) status.
 	 */
@@ -760,187 +1078,38 @@ public class Status extends Metadata
 
 	/**
 	 * Indicates if the status is an information status.
-	 * @param code The code of the status.
 	 * @return True if the status is an information status.
 	 */
-	public static boolean isInfo(int code)
+	public boolean isInfo()
 	{
-		boolean result = false;
-
-		switch (code)
-		{
-			case 100:
-			case 101:
-			case 102:
-				result = true;
-			break;
-		}
-
-		return result;
-	}
-
-	/**
-	 * Indicates if the status is a success status.
-	 * @param code The code of the status.
-	 * @return True if the status is a success status.
-	 */
-	public static boolean isSuccess(int code)
-	{
-		boolean result = false;
-
-		switch (code)
-		{
-			case 200:
-			case 201:
-			case 202:
-			case 203:
-			case 204:
-			case 205:
-			case 206:
-			case 207:
-				result = true;
-			break;
-		}
-
-		return result;
+		return isInfo(getCode());
 	}
 
 	/**
 	 * Indicates if the status is a redirection status.
-	 * @param code The code of the status.
 	 * @return True if the status is a redirection status.
 	 */
-	public static boolean isRedirection(int code)
+	public boolean isRedirection()
 	{
-		boolean result = false;
-
-		switch (code)
-		{
-			case 300:
-			case 301:
-			case 302:
-			case 303:
-			case 304:
-			case 305:
-			case 307:
-				result = true;
-			break;
-		}
-
-		return result;
-	}
-
-	/**
-	 * Indicates if the status is a client error status.
-	 * @param code The code of the status.
-	 * @return True if the status is a client error status.
-	 */
-	public static boolean isClientError(int code)
-	{
-		boolean result = false;
-
-		switch (code)
-		{
-			case 400:
-			case 401:
-			case 402:
-			case 403:
-			case 404:
-			case 405:
-			case 406:
-			case 407:
-			case 408:
-			case 409:
-			case 410:
-			case 411:
-			case 412:
-			case 413:
-			case 414:
-			case 415:
-			case 416:
-			case 417:
-			case 422:
-			case 423:
-			case 424:
-				result = true;
-			break;
-		}
-
-		return result;
+		return isRedirection(getCode());
 	}
 
 	/**
 	 * Indicates if the status is a server error status.
-	 * @param code The code of the status.
 	 * @return True if the status is a server error status.
 	 */
-	public static boolean isServerError(int code)
+	public boolean isServerError()
 	{
-		boolean result = false;
-
-		switch (code)
-		{
-			case 500:
-			case 501:
-			case 502:
-			case 503:
-			case 504:
-			case 505:
-			case 507:
-				result = true;
-			break;
-		}
-
-		return result;
+		return isServerError(getCode());
 	}
 
 	/**
-	 * Indicates if the status is a connector error status.
-	 * @param code The code of the status.
-	 * @return True if the status is a server error status.
+	 * Indicates if the status is a success status.
+	 * @return True if the status is a success status.
 	 */
-	public static boolean isConnectorError(int code)
+	public boolean isSuccess()
 	{
-		boolean result = false;
-
-		switch (code)
-		{
-			case 1000:
-			case 1001:
-			case 1002:
-				result = true;
-			break;
-		}
-
-		return result;
-	}
-
-	/**
-	 * Indicates if the status is an error (client or server) status.
-	 * @param code The code of the status.
-	 * @return True if the status is an error (client or server) status.
-	 */
-	public static boolean isError(int code)
-	{
-		return isClientError(code) || isServerError(code) || isConnectorError(code);
-	}
-
-	/**
-	 * Indicates if the status is equal to a given one.
-	 * @param object The object to compare to.
-	 * @return True if the status is equal to a given one.
-	 */
-	@Override
-	public boolean equals(Object object)
-	{
-		return (object instanceof Status) && (((Status) object).hashCode() == hashCode());
-	}
-
-	/** {@inheritDoc} */
-	@Override
-	public int hashCode()
-	{
-		return getCode();
+		return isSuccess(getCode());
 	}
 
 	/**
@@ -950,174 +1119,5 @@ public class Status extends Metadata
 	public String toString()
 	{
 		return getName() + " (" + this.code + ")";
-	}
-
-	/**
-	 * Returns the status associated to a code. If an existing constant exists then it is 
-	 * returned, otherwise a new instance is created.
-	 * @param code The code.
-	 * @return The associated status.
-	 */
-	public static Status valueOf(int code)
-	{
-		Status result = null;
-
-		switch (code)
-		{
-			case 100:
-				result = INFO_CONTINUE;
-			break;
-			case 101:
-				result = INFO_SWITCHING_PROTOCOL;
-			break;
-			case 102:
-				result = INFO_PROCESSING;
-			break;
-
-			case 200:
-				result = SUCCESS_OK;
-			break;
-			case 201:
-				result = SUCCESS_CREATED;
-			break;
-			case 202:
-				result = SUCCESS_ACCEPTED;
-			break;
-			case 203:
-				result = SUCCESS_NON_AUTHORITATIVE;
-			break;
-			case 204:
-				result = SUCCESS_NO_CONTENT;
-			break;
-			case 205:
-				result = SUCCESS_RESET_CONTENT;
-			break;
-			case 206:
-				result = SUCCESS_PARTIAL_CONTENT;
-			break;
-			case 207:
-				result = SUCCESS_MULTI_STATUS;
-			break;
-
-			case 300:
-				result = REDIRECTION_MULTIPLE_CHOICES;
-			break;
-			case 301:
-				result = REDIRECTION_MOVED_PERMANENTLY;
-			break;
-			case 302:
-				result = REDIRECTION_FOUND;
-			break;
-			case 303:
-				result = REDIRECTION_SEE_OTHER;
-			break;
-			case 304:
-				result = REDIRECTION_NOT_MODIFIED;
-			break;
-			case 305:
-				result = REDIRECTION_USE_PROXY;
-			break;
-			case 307:
-				result = REDIRECTION_MOVED_TEMPORARILY;
-			break;
-
-			case 400:
-				result = CLIENT_ERROR_BAD_REQUEST;
-			break;
-			case 401:
-				result = CLIENT_ERROR_UNAUTHORIZED;
-			break;
-			case 402:
-				result = CLIENT_ERROR_PAYMENT_REQUIRED;
-			break;
-			case 403:
-				result = CLIENT_ERROR_FORBIDDEN;
-			break;
-			case 404:
-				result = CLIENT_ERROR_NOT_FOUND;
-			break;
-			case 405:
-				result = CLIENT_ERROR_METHOD_NOT_ALLOWED;
-			break;
-			case 406:
-				result = CLIENT_ERROR_NOT_ACCEPTABLE;
-			break;
-			case 407:
-				result = CLIENT_ERROR_PROXY_AUTHENTIFICATION_REQUIRED;
-			break;
-			case 408:
-				result = CLIENT_ERROR_REQUEST_TIMEOUT;
-			break;
-			case 409:
-				result = CLIENT_ERROR_CONFLICT;
-			break;
-			case 410:
-				result = CLIENT_ERROR_GONE;
-			break;
-			case 411:
-				result = CLIENT_ERROR_LENGTH_REQUIRED;
-			break;
-			case 412:
-				result = CLIENT_ERROR_PRECONDITION_FAILED;
-			break;
-			case 413:
-				result = CLIENT_ERROR_REQUEST_ENTITY_TOO_LARGE;
-			break;
-			case 414:
-				result = CLIENT_ERROR_REQUEST_URI_TOO_LONG;
-			break;
-			case 415:
-				result = CLIENT_ERROR_UNSUPPORTED_MEDIA_TYPE;
-			break;
-			case 416:
-				result = CLIENT_ERROR_REQUESTED_RANGE_NOT_SATISFIABLE;
-			break;
-			case 417:
-				result = CLIENT_ERROR_EXPECTATION_FAILED;
-			break;
-			case 422:
-				result = CLIENT_ERROR_UNPROCESSABLE_ENTITY;
-			break;
-			case 423:
-				result = CLIENT_ERROR_LOCKED;
-			break;
-			case 424:
-				result = CLIENT_ERROR_FAILED_DEPENDENCY;
-			break;
-
-			case 500:
-				result = SERVER_ERROR_INTERNAL;
-			break;
-			case 501:
-				result = SERVER_ERROR_NOT_IMPLEMENTED;
-			break;
-			case 502:
-				result = SERVER_ERROR_BAD_GATEWAY;
-			break;
-			case 503:
-				result = SERVER_ERROR_SERVICE_UNAVAILABLE;
-			break;
-			case 504:
-				result = SERVER_ERROR_GATEWAY_TIMEOUT;
-			break;
-			case 505:
-				result = SERVER_ERROR_VERSION_NOT_SUPPORTED;
-			break;
-			case 507:
-				result = SERVER_ERROR_INSUFFICIENT_STORAGE;
-			break;
-
-			case 1000:
-				result = CONNECTOR_ERROR_CONNECTION;
-			break;
-			case 1001:
-				result = CONNECTOR_ERROR_COMMUNICATION;
-			break;
-			case 1002:
-				result = CONNECTOR_ERROR_INTERNAL;
-			break;
-		}
-
-		return result;
 	}
 }

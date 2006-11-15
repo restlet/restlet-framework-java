@@ -38,19 +38,7 @@ public final class ImmutableDate extends Date
 	// TODO Are we serializable?
 	private static final long serialVersionUID = -5946186780670229206L;
 
-	/** Delegate being wrapped */
-	private final Date delegate;
-
 	private static final transient WeakHashMap<Date, ImmutableDate> CACHE = new WeakHashMap<Date, ImmutableDate>();
-
-	/**
-	 * Private constructor. A factory method is provided.
-	 * @param date date to be made immutable
-	 */
-	private ImmutableDate(Date date)
-	{
-		this.delegate = (Date) date.clone();
-	}
 
 	/**
 	 * Returns an ImmutableDate object wrapping the given date.
@@ -64,6 +52,18 @@ public final class ImmutableDate extends Date
 			CACHE.put(date, new ImmutableDate(date));
 		}
 		return CACHE.get(date);
+	}
+
+	/** Delegate being wrapped */
+	private final Date delegate;
+
+	/**
+	 * Private constructor. A factory method is provided.
+	 * @param date date to be made immutable
+	 */
+	private ImmutableDate(Date date)
+	{
+		this.delegate = (Date) date.clone();
 	}
 
 	/**{@inheritDoc}*/

@@ -113,24 +113,6 @@ public class TunnelService
 	}
 
 	/**
-	 * Indicates if the service should be enabled.
-	 * @return True if the service should be enabled.
-	 */
-	public boolean isEnabled()
-	{
-		return this.enabled;
-	}
-
-	/**
-	 * Indicates if the service should be enabled.
-	 * @param enabled True if the service should be enabled.
-	 */
-	public void setEnabled(boolean enabled)
-	{
-		this.enabled = enabled;
-	}
-
-	/**
 	 * Indicates if the request from a given client can be tunnelled. The default implementation always
 	 * return true. This could be customize to restrict the usage of the tunnel service.
 	 * @param client The client to test.
@@ -139,42 +121,6 @@ public class TunnelService
 	public boolean allowClient(ClientInfo client)
 	{
 		return true;
-	}
-
-	/**
-	 * Indicates if the method name can be tunneled.
-	 * @return True if the method name can be tunneled.
-	 */
-	public boolean isMethodTunnel()
-	{
-		return this.methodTunnel;
-	}
-
-	/**
-	 * Indicates if the method name can be tunneled.
-	 * @param methodTunnel True if the method name can be tunneled.
-	 */
-	public void setMethodTunnel(boolean methodTunnel)
-	{
-		this.methodTunnel = methodTunnel;
-	}
-
-	/**
-	 * Returns the method parameter name.
-	 * @return The method parameter name.
-	 */
-	public String getMethodParameter()
-	{
-		return this.methodParameter;
-	}
-
-	/**
-	 * Sets the method parameter name.
-	 * @param parameterName The method parameter name.
-	 */
-	public void setMethodParameter(String parameterName)
-	{
-		this.methodParameter = parameterName;
 	}
 
 	/**
@@ -187,48 +133,12 @@ public class TunnelService
 	}
 
 	/**
-	 * Sets the character set parameter name.
-	 * @param parameterName The character set parameter name.
-	 */
-	public void setCharacterSetAttribute(String parameterName)
-	{
-		this.characterSetParameter = parameterName;
-	}
-
-	/**
-	 * Indicates if the client preferences can be tunneled.
-	 * @return True if the client preferences can be tunneled.
-	 */
-	public boolean isPreferencesTunnel()
-	{
-		return this.preferencesTunnel;
-	}
-
-	/**
-	 * Indicates if the client preferences can be tunneled.
-	 * @param preferencesTunnel True if the client preferences can be tunneled.
-	 */
-	public void setPreferencesTunnel(boolean preferencesTunnel)
-	{
-		this.preferencesTunnel = preferencesTunnel;
-	}
-
-	/**
 	 * Returns the name of the parameter containing the accepted encoding.
 	 * @return The name of the parameter containing the accepted encoding.
 	 */
 	public String getEncodingAttribute()
 	{
 		return this.encodingParameter;
-	}
-
-	/**
-	 * Sets the name of the parameter containing the accepted encoding.
-	 * @param parameterName The name of the parameter containing the accepted encoding.
-	 */
-	public void setEncodingAttribute(String parameterName)
-	{
-		this.encodingParameter = parameterName;
 	}
 
 	/**
@@ -241,15 +151,6 @@ public class TunnelService
 	}
 
 	/**
-	 * Sets the name of the parameter containing the accepted language.
-	 * @param parameterName The name of the parameter containing the accepted language.
-	 */
-	public void setLanguageAttribute(String parameterName)
-	{
-		this.languageParameter = parameterName;
-	}
-
-	/**
 	 * Returns the name of the parameter containing the accepted media type.
 	 * @return The name of the parameter containing the accepted media type.
 	 */
@@ -259,12 +160,111 @@ public class TunnelService
 	}
 
 	/**
+	 * Returns the method parameter name.
+	 * @return The method parameter name.
+	 */
+	public String getMethodParameter()
+	{
+		return this.methodParameter;
+	}
+
+	/**
+	 * Indicates if the service should be enabled.
+	 * @return True if the service should be enabled.
+	 */
+	public boolean isEnabled()
+	{
+		return this.enabled;
+	}
+
+	/**
+	 * Indicates if the method name can be tunneled.
+	 * @return True if the method name can be tunneled.
+	 */
+	public boolean isMethodTunnel()
+	{
+		return this.methodTunnel;
+	}
+
+	/**
+	 * Indicates if the client preferences can be tunneled.
+	 * @return True if the client preferences can be tunneled.
+	 */
+	public boolean isPreferencesTunnel()
+	{
+		return this.preferencesTunnel;
+	}
+
+	/**
+	 * Sets the character set parameter name.
+	 * @param parameterName The character set parameter name.
+	 */
+	public void setCharacterSetAttribute(String parameterName)
+	{
+		this.characterSetParameter = parameterName;
+	}
+
+	/**
+	 * Indicates if the service should be enabled.
+	 * @param enabled True if the service should be enabled.
+	 */
+	public void setEnabled(boolean enabled)
+	{
+		this.enabled = enabled;
+	}
+
+	/**
+	 * Sets the name of the parameter containing the accepted encoding.
+	 * @param parameterName The name of the parameter containing the accepted encoding.
+	 */
+	public void setEncodingAttribute(String parameterName)
+	{
+		this.encodingParameter = parameterName;
+	}
+
+	/**
+	 * Sets the name of the parameter containing the accepted language.
+	 * @param parameterName The name of the parameter containing the accepted language.
+	 */
+	public void setLanguageAttribute(String parameterName)
+	{
+		this.languageParameter = parameterName;
+	}
+
+	/**
 	 * Sets the name of the parameter containing the accepted media type.
 	 * @param parameterName The name of the parameter containing the accepted media type.
 	 */
 	public void setMediaTypeAttribute(String parameterName)
 	{
 		this.mediaTypeParameter = parameterName;
+	}
+
+	/**
+	 * Sets the method parameter name.
+	 * @param parameterName The method parameter name.
+	 */
+	public void setMethodParameter(String parameterName)
+	{
+		this.methodParameter = parameterName;
+	}
+
+	/**
+	 * Indicates if the method name can be tunneled.
+	 * @param methodTunnel True if the method name can be tunneled.
+	 */
+	public void setMethodTunnel(boolean methodTunnel)
+	{
+		this.methodTunnel = methodTunnel;
+	}
+
+	/**
+	 * Indicates if the client preferences can be tunneled.
+	 * @param preferencesTunnel True if the client preferences can be tunneled.
+	 */
+	public void setPreferencesTunnel(boolean preferencesTunnel)
+	{
+		this.preferencesTunnel = preferencesTunnel;
 	}
 
 }

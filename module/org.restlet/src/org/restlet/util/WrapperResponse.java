@@ -56,15 +56,6 @@ public class WrapperResponse extends Response
 	}
 
 	/**
-	 * Returns the wrapped response.
-	 * @return The wrapped response.
-	 */
-	protected Response getWrappedResponse()
-	{
-		return this.wrappedResponse;
-	}
-
-	/**
 	 * Returns the authentication request sent by an origin server to a client.
 	 * @return The authentication request sent by an origin server to a client.
 	 */
@@ -119,6 +110,15 @@ public class WrapperResponse extends Response
 	}
 
 	/**
+	 * Returns the wrapped response.
+	 * @return The wrapped response.
+	 */
+	protected Response getWrappedResponse()
+	{
+		return this.wrappedResponse;
+	}
+
+	/**
 	 * Sets the authentication request sent by an origin server to a client.
 	 * @param request The authentication request sent by an origin server to a client.
 	 */
@@ -142,20 +142,20 @@ public class WrapperResponse extends Response
 
 	/**
 	 * Sets the reference that the client should follow for redirections or resource creations.
-	 * @param redirectUri The redirection URI.
-	 */
-	public void setRedirectRef(String redirectUri)
-	{
-		getWrappedResponse().setRedirectRef(redirectUri);
-	}
-
-	/**
-	 * Sets the reference that the client should follow for redirections or resource creations.
 	 * @param redirectRef The redirection reference.
 	 */
 	public void setRedirectRef(Reference redirectRef)
 	{
 		getWrappedResponse().setRedirectRef(redirectRef);
+	}
+
+	/**
+	 * Sets the reference that the client should follow for redirections or resource creations.
+	 * @param redirectUri The redirection URI.
+	 */
+	public void setRedirectRef(String redirectUri)
+	{
+		getWrappedResponse().setRedirectRef(redirectUri);
 	}
 
 	/**

@@ -60,6 +60,35 @@ public class CharacterSet extends Metadata
 			"UTF 16 character set");
 
 	/**
+	 * Returns the character set associated to a name. If an existing constant exists then it is 
+	 * returned, otherwise a new instance is created.
+	 * @param name The name.
+	 * @return The associated character set.
+	 */
+	public static CharacterSet valueOf(String name)
+	{
+		CharacterSet result = null;
+
+		if (name != null)
+		{
+			if (name.equalsIgnoreCase(ALL.getName()))
+				result = ALL;
+			else if (name.equalsIgnoreCase(ISO_8859_1.getName()))
+				result = ISO_8859_1;
+			else if (name.equalsIgnoreCase(US_ASCII.getName()))
+				result = US_ASCII;
+			else if (name.equalsIgnoreCase(UTF_8.getName()))
+				result = UTF_8;
+			else if (name.equalsIgnoreCase(UTF_16.getName()))
+				result = UTF_16;
+			else
+				result = new CharacterSet(name);
+		}
+
+		return result;
+	}
+
+	/**
 	 * Constructor.
 	 * @param name The name.
 	 */
@@ -92,34 +121,5 @@ public class CharacterSet extends Metadata
 	public int hashCode()
 	{
 		return (getName() == null) ? 0 : getName().toLowerCase().hashCode();
-	}
-
-	/**
-	 * Returns the character set associated to a name. If an existing constant exists then it is 
-	 * returned, otherwise a new instance is created.
-	 * @param name The name.
-	 * @return The associated character set.
-	 */
-	public static CharacterSet valueOf(String name)
-	{
-		CharacterSet result = null;
-
-		if (name != null)
-		{
-			if (name.equalsIgnoreCase(ALL.getName()))
-				result = ALL;
-			else if (name.equalsIgnoreCase(ISO_8859_1.getName()))
-				result = ISO_8859_1;
-			else if (name.equalsIgnoreCase(US_ASCII.getName()))
-				result = US_ASCII;
-			else if (name.equalsIgnoreCase(UTF_8.getName()))
-				result = UTF_8;
-			else if (name.equalsIgnoreCase(UTF_16.getName()))
-				result = UTF_16;
-			else
-				result = new CharacterSet(name);
-		}
-
-		return result;
 	}
 }

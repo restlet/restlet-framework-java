@@ -48,21 +48,21 @@ public class ConnectorService
 	}
 
 	/**
-	 * Call-back method invoked by the client or server connectors just before sending the entity to 
-	 * the target component. The default implementation does nothing.
-	 * @param entity The entity about to be committed.
-	 */
-	public void beforeSend(Representation entity)
-	{
-		// Do nothing by default. 
-	}
-
-	/**
 	 * Call-back method invoked by the client or server connectors just after sending the entity to 
 	 * the target component. The default implementation does nothing.
 	 * @param entity The entity about to be committed.
 	 */
 	public void afterSend(Representation entity)
+	{
+		// Do nothing by default. 
+	}
+
+	/**
+	 * Call-back method invoked by the client or server connectors just before sending the entity to 
+	 * the target component. The default implementation does nothing.
+	 * @param entity The entity about to be committed.
+	 */
+	public void beforeSend(Representation entity)
 	{
 		// Do nothing by default. 
 	}
@@ -78,13 +78,25 @@ public class ConnectorService
 	}
 
 	/**
-	 * Returns the list of required server protocols. 
-	 * @return The list of required server protocols.
+	 * Returns the list of optional client protocols. 
+	 * @return The list of optional client protocols.
+	 * @deprecated Use getClientProtocols instead
 	 */
-	public List<Protocol> getServerProtocols()
+	@Deprecated
+	public List<Protocol> getOptionalClientProtocols()
 	{
-		if (this.serverProtocols == null) this.serverProtocols = new ArrayList<Protocol>();
-		return this.serverProtocols;
+		return getClientProtocols();
+	}
+
+	/**
+	 * Returns the list of optional server protocols. 
+	 * @return The list of optional server protocols.
+	 * @deprecated Use getServerProtocols instead
+	 */
+	@Deprecated
+	public List<Protocol> getOptionalServerProtocols()
+	{
+		return getServerProtocols();
 	}
 
 	/**
@@ -110,25 +122,13 @@ public class ConnectorService
 	}
 
 	/**
-	 * Returns the list of optional client protocols. 
-	 * @return The list of optional client protocols.
-	 * @deprecated Use getClientProtocols instead
+	 * Returns the list of required server protocols. 
+	 * @return The list of required server protocols.
 	 */
-	@Deprecated
-	public List<Protocol> getOptionalClientProtocols()
+	public List<Protocol> getServerProtocols()
 	{
-		return getClientProtocols();
-	}
-
-	/**
-	 * Returns the list of optional server protocols. 
-	 * @return The list of optional server protocols.
-	 * @deprecated Use getServerProtocols instead
-	 */
-	@Deprecated
-	public List<Protocol> getOptionalServerProtocols()
-	{
-		return getServerProtocols();
+		if (this.serverProtocols == null) this.serverProtocols = new ArrayList<Protocol>();
+		return this.serverProtocols;
 	}
 
 }

@@ -233,9 +233,9 @@ public class HttpRequest extends Request
 				try
 				{
 					String[] tags = ifMatchHeader.split(",");
-					for (int i = 0; i < tags.length; i++)
+					for (String element : tags)
 					{
-						current = new Tag(tags[i]);
+						current = new Tag(element);
 
 						// Is it the first tag?
 						if (match == null)
@@ -262,9 +262,9 @@ public class HttpRequest extends Request
 				try
 				{
 					String[] tags = ifNoneMatchHeader.split(",");
-					for (int i = 0; i < tags.length; i++)
+					for (String element : tags)
 					{
-						current = new Tag(tags[i]);
+						current = new Tag(element);
 
 						// Is it the first tag?
 						if (noneMatch == null)

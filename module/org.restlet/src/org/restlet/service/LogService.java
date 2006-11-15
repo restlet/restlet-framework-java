@@ -53,39 +53,12 @@ public class LogService
 	}
 
 	/**
-	 * Indicates if the service should be enabled.
-	 * @return True if the service should be enabled.
+	 * Returns the format used.
+	 * @return The format used, or null if the default one is used.
 	 */
-	public boolean isEnabled()
+	public String getAccessLogFormat()
 	{
-		return this.enabled;
-	}
-
-	/**
-	 * Indicates if the service should be enabled.
-	 * @param enabled True if the service should be enabled.
-	 */
-	public void setEnabled(boolean enabled)
-	{
-		this.enabled = enabled;
-	}
-
-	/**
-	 * @deprecated Use getAccessLoggerName() instead.
-	 */
-	@Deprecated
-	public String getLoggerName()
-	{
-		return getAccessLoggerName();
-	}
-
-	/**
-	 * @deprecated Use setAccessLoggerName() instead.
-	 */
-	@Deprecated
-	public void setLoggerName(String name)
-	{
-		setAccessLoggerName(name);
+		return this.format;
 	}
 
 	/**
@@ -98,30 +71,12 @@ public class LogService
 	}
 
 	/**
-	 * Sets the name of the JDK's logger to use when logging calls.
-	 * @param name The name of the JDK's logger to use when logging calls.
-	 */
-	public void setAccessLoggerName(String name)
-	{
-		this.accessLoggerName = name;
-	}
-
-	/**
 	 * Returns the name of the JDK's logger to use when logging context messages.
 	 * @return The name of the JDK's logger to use when logging context messages.
 	 */
 	public String getContextLoggerName()
 	{
 		return this.contextLoggerName;
-	}
-
-	/**
-	 * Sets the name of the JDK's logger to use when logging context messages.
-	 * @param name The name of the JDK's logger to use when logging context messages.
-	 */
-	public void setContextLoggerName(String name)
-	{
-		this.contextLoggerName = name;
 	}
 
 	/**
@@ -134,21 +89,21 @@ public class LogService
 	}
 
 	/**
-	 * @deprecated Use setAccessLogFormat() instead.
+	 * @deprecated Use getAccessLoggerName() instead.
 	 */
 	@Deprecated
-	public void setFormat(String format)
+	public String getLoggerName()
 	{
-		setAccessLogFormat(format);
+		return getAccessLoggerName();
 	}
 
 	/**
-	 * Returns the format used.
-	 * @return The format used, or null if the default one is used.
+	 * Indicates if the service should be enabled.
+	 * @return True if the service should be enabled.
 	 */
-	public String getAccessLogFormat()
+	public boolean isEnabled()
 	{
-		return this.format;
+		return this.enabled;
 	}
 
 	/**
@@ -159,6 +114,51 @@ public class LogService
 	public void setAccessLogFormat(String format)
 	{
 		this.format = format;
+	}
+
+	/**
+	 * Sets the name of the JDK's logger to use when logging calls.
+	 * @param name The name of the JDK's logger to use when logging calls.
+	 */
+	public void setAccessLoggerName(String name)
+	{
+		this.accessLoggerName = name;
+	}
+
+	/**
+	 * Sets the name of the JDK's logger to use when logging context messages.
+	 * @param name The name of the JDK's logger to use when logging context messages.
+	 */
+	public void setContextLoggerName(String name)
+	{
+		this.contextLoggerName = name;
+	}
+
+	/**
+	 * Indicates if the service should be enabled.
+	 * @param enabled True if the service should be enabled.
+	 */
+	public void setEnabled(boolean enabled)
+	{
+		this.enabled = enabled;
+	}
+
+	/**
+	 * @deprecated Use setAccessLogFormat() instead.
+	 */
+	@Deprecated
+	public void setFormat(String format)
+	{
+		setAccessLogFormat(format);
+	}
+
+	/**
+	 * @deprecated Use setAccessLoggerName() instead.
+	 */
+	@Deprecated
+	public void setLoggerName(String name)
+	{
+		setAccessLoggerName(name);
 	}
 
 }

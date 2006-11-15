@@ -301,6 +301,7 @@ public class Reference
 	 * @param object The object to compare to.
 	 * @return True if this object is the same as the obj argument. 
 	 */
+	@Override
 	public boolean equals(Object object)
 	{
 		return (object instanceof Reference)
@@ -1167,6 +1168,7 @@ public class Reference
 	 * Returns a hash code value for the object.
 	 * @return A hash code value for the object.
 	 */
+	@Override
 	public int hashCode()
 	{
 		return (this.internalRef == null) ? 0 : this.internalRef.hashCode();
@@ -1910,6 +1912,7 @@ public class Reference
 	 * Returns the reference as an URI string.
 	 * @return The reference as an URI string.
 	 */
+	@Override
 	public String toString()
 	{
 		return this.internalRef;

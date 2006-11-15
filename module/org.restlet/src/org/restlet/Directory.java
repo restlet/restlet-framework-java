@@ -104,69 +104,6 @@ public class Directory extends Handler
 	}
 
 	/**
-	 * Indicates if the display of directory listings is allowed when no index file is found.
-	 * @return True if the display of directory listings is allowed when no index file is found.
-	 */
-	public boolean isListingAllowed()
-	{
-		return this.listingAllowed;
-	}
-
-	/**
-	 * Indicates if the display of directory listings is allowed when no index file is found.
-	 * @param listingAllowed True if the display of directory listings is allowed when no index file is found.
-	 */
-	public void setListingAllowed(boolean listingAllowed)
-	{
-		this.listingAllowed = listingAllowed;
-	}
-
-	/** 
-	 * Indicates if modifications to context resources are allowed.
-	 * @return True if modifications to context resources are allowed.
-	 */
-	public boolean isModifiable()
-	{
-		return this.modifiable;
-	}
-
-	/** 
-	 * Indicates if modifications to context resources are allowed.
-	 * @param modifiable True if modifications to context resources are allowed.
-	 */
-	public void setModifiable(boolean modifiable)
-	{
-		this.modifiable = modifiable;
-	}
-
-	/**
-	 * Returns the root URI.
-	 * @return The root URI.
-	 */
-	public String getRootUri()
-	{
-		return rootUri;
-	}
-
-	/**
-	 * Indicates if the subdirectories are deeply accessible (true by default).
-	 * @return True if the subdirectories are deeply accessible.
-	 */
-	public boolean isDeeplyAccessible()
-	{
-		return deeplyAccessible;
-	}
-
-	/**
-	 * Indicates if the subdirectories are deeply accessible (true by default).
-	 * @param deeplyAccessible True if the subdirectories are deeply accessible.
-	 */
-	public void setDeeplyAccessible(boolean deeplyAccessible)
-	{
-		this.deeplyAccessible = deeplyAccessible;
-	}
-
-	/**
 	 * Returns the variant representations of a directory. This method can be subclassed in order to provide
 	 * alternative representations.
 	 * @param directoryContent The list of references contained in the directory.
@@ -199,6 +136,69 @@ public class Directory extends Handler
 		List<Representation> result = new ArrayList<Representation>();
 		result.add(new StringRepresentation(sb.toString(), MediaType.TEXT_HTML));
 		return result;
+	}
+
+	/**
+	 * Returns the root URI.
+	 * @return The root URI.
+	 */
+	public String getRootUri()
+	{
+		return rootUri;
+	}
+
+	/**
+	 * Indicates if the subdirectories are deeply accessible (true by default).
+	 * @return True if the subdirectories are deeply accessible.
+	 */
+	public boolean isDeeplyAccessible()
+	{
+		return deeplyAccessible;
+	}
+
+	/**
+	 * Indicates if the display of directory listings is allowed when no index file is found.
+	 * @return True if the display of directory listings is allowed when no index file is found.
+	 */
+	public boolean isListingAllowed()
+	{
+		return this.listingAllowed;
+	}
+
+	/** 
+	 * Indicates if modifications to context resources are allowed.
+	 * @return True if modifications to context resources are allowed.
+	 */
+	public boolean isModifiable()
+	{
+		return this.modifiable;
+	}
+
+	/**
+	 * Indicates if the subdirectories are deeply accessible (true by default).
+	 * @param deeplyAccessible True if the subdirectories are deeply accessible.
+	 */
+	public void setDeeplyAccessible(boolean deeplyAccessible)
+	{
+		this.deeplyAccessible = deeplyAccessible;
+	}
+
+	/**
+	 * Indicates if the display of directory listings is allowed when no index file is found.
+	 * @param listingAllowed True if the display of directory listings is allowed when no index file is found.
+	 */
+	public void setListingAllowed(boolean listingAllowed)
+	{
+		this.listingAllowed = listingAllowed;
+	}
+
+	/** 
+	 * Indicates if modifications to context resources are allowed.
+	 * @param modifiable True if modifications to context resources are allowed.
+	 */
+	public void setModifiable(boolean modifiable)
+	{
+		this.modifiable = modifiable;
 	}
 
 }

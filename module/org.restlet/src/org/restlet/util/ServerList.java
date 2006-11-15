@@ -51,33 +51,6 @@ public class ServerList extends WrapperList<Server>
 	}
 
 	/**
-	 * Returns the context.
-	 * @return The context.
-	 */
-	public Context getContext()
-	{
-		return this.context;
-	}
-
-	/**
-	 * Returns the target Restlet.
-	 * @return The target Restlet.
-	 */
-	public Restlet getTarget()
-	{
-		return this.target;
-	}
-
-	/**
-	 * Adds a server at the end of the list.
-	 * @return True (as per the general contract of the Collection.add method).
-	 */
-	public boolean add(Server server)
-	{
-		return super.add(server);
-	}
-
-	/**
 	 * Adds a new server connector in the map supporting the given protocol.
 	 * @param protocol The connector protocol.
 	 * @return The added server.
@@ -115,6 +88,33 @@ public class ServerList extends WrapperList<Server>
 		Server result = new Server(getContext(), protocol, address, port, getTarget());
 		add(result);
 		return result;
+	}
+
+	/**
+	 * Adds a server at the end of the list.
+	 * @return True (as per the general contract of the Collection.add method).
+	 */
+	public boolean add(Server server)
+	{
+		return super.add(server);
+	}
+
+	/**
+	 * Returns the context.
+	 * @return The context.
+	 */
+	public Context getContext()
+	{
+		return this.context;
+	}
+
+	/**
+	 * Returns the target Restlet.
+	 * @return The target Restlet.
+	 */
+	public Restlet getTarget()
+	{
+		return this.target;
 	}
 
 }

@@ -75,24 +75,6 @@ public class Handler extends Restlet
 		this.negotiateContent = true;
 	}
 
-	/** 
-	 * Indicates if the best content is automatically negotiated. Default value is true.
-	 * @return True if the best content is automatically negotiated.
-	 */
-	public boolean isNegotiateContent()
-	{
-		return this.negotiateContent;
-	}
-
-	/** 
-	 * Indicates if the best content is automatically negotiated. Default value is true.
-	 * @param negotiateContent True if the best content is automatically negotiated.
-	 */
-	public void setNegotiateContent(boolean negotiateContent)
-	{
-		this.negotiateContent = negotiateContent;
-	}
-
 	/**
 	 * Default implementation for all the handle*() methods that simply returns a client error 
 	 * indicating that the method is not allowed. 
@@ -428,6 +410,15 @@ public class Handler extends Restlet
 		defaultHandle(request, response);
 	}
 
+	/** 
+	 * Indicates if the best content is automatically negotiated. Default value is true.
+	 * @return True if the best content is automatically negotiated.
+	 */
+	public boolean isNegotiateContent()
+	{
+		return this.negotiateContent;
+	}
+
 	/**
 	 * Sets the language to use if content negotiation fails.
 	 * @param fallbackLanguage The language to use if content negotiation fails.
@@ -435,6 +426,15 @@ public class Handler extends Restlet
 	public void setFallbackLanguage(Language fallbackLanguage)
 	{
 		this.fallbackLanguage = fallbackLanguage;
+	}
+
+	/** 
+	 * Indicates if the best content is automatically negotiated. Default value is true.
+	 * @param negotiateContent True if the best content is automatically negotiated.
+	 */
+	public void setNegotiateContent(boolean negotiateContent)
+	{
+		this.negotiateContent = negotiateContent;
 	}
 
 }

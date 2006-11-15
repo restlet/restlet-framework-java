@@ -49,16 +49,6 @@ public class Cookie extends Parameter
 
 	/**
 	 * Constructor.
-	 * @param name The name.
-	 * @param value The value.
-	 */
-	public Cookie(String name, String value)
-	{
-		this(0, name, value, null, null);
-	}
-
-	/**
-	 * Constructor.
 	 * @param version The version number.
 	 * @param name The name.
 	 * @param value The value.
@@ -85,39 +75,20 @@ public class Cookie extends Parameter
 	}
 
 	/**
-	 * Returns the cookie specification version.
-	 * @return The cookie specification version.
+	 * Constructor.
+	 * @param name The name.
+	 * @param value The value.
 	 */
-	public int getVersion()
+	public Cookie(String name, String value)
 	{
-		return this.version;
+		this(0, name, value, null, null);
 	}
 
-	/**
-	 * Sets the cookie specification version.
-	 * @param version The cookie specification version.
-	 */
-	public void setVersion(int version)
+	/** {@inheritDoc} */
+	@Override
+	public boolean equals(Object object)
 	{
-		this.version = version;
-	}
-
-	/**
-	 * Returns the validity path.
-	 * @return The validity path.
-	 */
-	public String getPath()
-	{
-		return this.path;
-	}
-
-	/**
-	 * Sets the validity path.
-	 * @param path The validity path.
-	 */
-	public void setPath(String path)
-	{
-		this.path = path;
+		return (object instanceof Cookie) && (((Cookie) object).hashCode() == hashCode());
 	}
 
 	/**
@@ -130,6 +101,31 @@ public class Cookie extends Parameter
 	}
 
 	/**
+	 * Returns the validity path.
+	 * @return The validity path.
+	 */
+	public String getPath()
+	{
+		return this.path;
+	}
+
+	/**
+	 * Returns the cookie specification version.
+	 * @return The cookie specification version.
+	 */
+	public int getVersion()
+	{
+		return this.version;
+	}
+
+	/** {@inheritDoc} */
+	@Override
+	public int hashCode()
+	{
+		return Factory.hashCode(super.hashCode(), getVersion(), getPath(), getDomain());
+	}
+
+	/**
 	 * Sets the domain name.
 	 * @param domain The domain name.
 	 */
@@ -138,18 +134,22 @@ public class Cookie extends Parameter
 		this.domain = domain;
 	}
 
-	/** {@inheritDoc} */
-	@Override
-	public boolean equals(Object object)
+	/**
+	 * Sets the validity path.
+	 * @param path The validity path.
+	 */
+	public void setPath(String path)
 	{
-		return (object instanceof Cookie) && (((Cookie) object).hashCode() == hashCode());
+		this.path = path;
 	}
 
-	/** {@inheritDoc} */
-	@Override
-	public int hashCode()
+	/**
+	 * Sets the cookie specification version.
+	 * @param version The cookie specification version.
+	 */
+	public void setVersion(int version)
 	{
-		return Factory.hashCode(super.hashCode(), getVersion(), getPath(), getDomain());
+		this.version = version;
 	}
 
 }

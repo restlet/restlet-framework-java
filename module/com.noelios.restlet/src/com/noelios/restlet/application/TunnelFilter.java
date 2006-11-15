@@ -78,7 +78,7 @@ public class TunnelFilter extends Filter
 		if (getApplication().getTunnelService().isMethodTunnel()
 				&& request.getMethod().equals(Method.POST))
 		{
-			String methodName = (String) query.getFirstValue(getApplication()
+			String methodName = query.getFirstValue(getApplication()
 					.getTunnelService().getMethodParameter());
 
 			if (methodName != null)
@@ -91,13 +91,13 @@ public class TunnelFilter extends Filter
 				&& getApplication().getTunnelService().isPreferencesTunnel())
 		{
 			// Extract the header values
-			String acceptCharset = (String) query.getFirstValue(getApplication()
+			String acceptCharset = query.getFirstValue(getApplication()
 					.getTunnelService().getCharacterSetAttribute());
-			String acceptEncoding = (String) query.getFirstValue(getApplication()
+			String acceptEncoding = query.getFirstValue(getApplication()
 					.getTunnelService().getEncodingAttribute());
-			String acceptLanguage = (String) query.getFirstValue(getApplication()
+			String acceptLanguage = query.getFirstValue(getApplication()
 					.getTunnelService().getLanguageAttribute());
-			String acceptMediaType = (String) query.getFirstValue(getApplication()
+			String acceptMediaType = query.getFirstValue(getApplication()
 					.getTunnelService().getMediaTypeAttribute());
 
 			// Parse the headers and update the call preferences

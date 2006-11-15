@@ -249,6 +249,7 @@ public class Request extends Message
 	 * must allow the sending of content, the content must exists and have some available data.
 	 * @return True if a content is available and can be sent.
 	 */
+	@Override
 	public boolean isEntityAvailable()
 	{
 		if (getMethod().equals(Method.GET) || getMethod().equals(Method.HEAD)
@@ -260,15 +261,6 @@ public class Request extends Message
 		{
 			return super.isEntityAvailable();
 		}
-	}
-
-	/**
-	 * Sets the base reference that will serve to compute relative resource references.
-	 * @param baseUri The base absolute URI.
-	 */
-	public void setBaseRef(String baseUri)
-	{
-		setBaseRef(new Reference(baseUri));
 	}
 
 	/**
@@ -289,6 +281,15 @@ public class Request extends Message
 		}
 
 		this.baseRef = baseRef;
+	}
+
+	/**
+	 * Sets the base reference that will serve to compute relative resource references.
+	 * @param baseUri The base absolute URI.
+	 */
+	public void setBaseRef(String baseUri)
+	{
+		setBaseRef(new Reference(baseUri));
 	}
 
 	/**
@@ -332,15 +333,6 @@ public class Request extends Message
 	}
 
 	/**
-	 * Sets the referrer reference if available using an URI string.
-	 * @param referrerUri The referrer URI.
-	 */
-	public void setReferrerRef(String referrerUri)
-	{
-		setReferrerRef(new Reference(referrerUri));
-	}
-
-	/**
 	 * Sets the referrer reference if available.
 	 * @param referrerRef The referrer reference.
 	 */
@@ -350,13 +342,12 @@ public class Request extends Message
 	}
 
 	/**
-	 * Sets the target resource reference using an URI string. Note that the URI can be either
-	 * absolute or relative to the context's base reference.
-	 * @param resourceUri The resource URI.
+	 * Sets the referrer reference if available using an URI string.
+	 * @param referrerUri The referrer URI.
 	 */
-	public void setResourceRef(String resourceUri)
+	public void setReferrerRef(String referrerUri)
 	{
-		setResourceRef(new Reference(getBaseRef(), resourceUri));
+		setReferrerRef(new Reference(referrerUri));
 	}
 
 	/**
@@ -381,6 +372,16 @@ public class Request extends Message
 
 		// Reset the context's base reference
 		setBaseRef((Reference) null);
+	}
+
+	/**
+	 * Sets the target resource reference using an URI string. Note that the URI can be either
+	 * absolute or relative to the context's base reference.
+	 * @param resourceUri The resource URI.
+	 */
+	public void setResourceRef(String resourceUri)
+	{
+		setResourceRef(new Reference(getBaseRef(), resourceUri));
 	}
 
 }

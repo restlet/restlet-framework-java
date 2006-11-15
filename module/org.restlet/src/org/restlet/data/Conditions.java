@@ -53,42 +53,6 @@ public class Conditions
 	}
 
 	/**
-	 * Returns the "if-modified-since" condition.
-	 * @return The "if-modified-since" condition.
-	 */
-	public Date getModifiedSince()
-	{
-		return this.modifiedSince;
-	}
-
-	/**
-	 * Sets the "if-modified-since" condition.
-	 * @param date The "if-modified-since" condition.
-	 */
-	public void setModifiedSince(Date date)
-	{
-		this.modifiedSince = ImmutableDate.valueOf(date);
-	}
-
-	/**
-	 * Returns the "if-unmodified-since" condition.
-	 * @return The "if-unmodified-since" condition.
-	 */
-	public Date getUnmodifiedSince()
-	{
-		return this.unmodifiedSince;
-	}
-
-	/**
-	 * Sets the "if-unmodified-since" condition.
-	 * @param date The "if-unmodified-since" condition.
-	 */
-	public void setUnmodifiedSince(Date date)
-	{
-		this.unmodifiedSince = ImmutableDate.valueOf(date);
-	}
-
-	/**
 	 * Returns the "if-match" condition.
 	 * @return The "if-match" condition.
 	 */
@@ -98,12 +62,12 @@ public class Conditions
 	}
 
 	/**
-	 * Sets the "if-match" condition.
-	 * @param tags The "if-match" condition.
+	 * Returns the "if-modified-since" condition.
+	 * @return The "if-modified-since" condition.
 	 */
-	public void setMatch(List<Tag> tags)
+	public Date getModifiedSince()
 	{
-		this.match = tags;
+		return this.modifiedSince;
 	}
 
 	/**
@@ -116,12 +80,48 @@ public class Conditions
 	}
 
 	/**
+	 * Returns the "if-unmodified-since" condition.
+	 * @return The "if-unmodified-since" condition.
+	 */
+	public Date getUnmodifiedSince()
+	{
+		return this.unmodifiedSince;
+	}
+
+	/**
+	 * Sets the "if-match" condition.
+	 * @param tags The "if-match" condition.
+	 */
+	public void setMatch(List<Tag> tags)
+	{
+		this.match = tags;
+	}
+
+	/**
+	 * Sets the "if-modified-since" condition.
+	 * @param date The "if-modified-since" condition.
+	 */
+	public void setModifiedSince(Date date)
+	{
+		this.modifiedSince = ImmutableDate.valueOf(date);
+	}
+
+	/**
 	 * Sets the "if-none-match" condition.
 	 * @param tags The "if-none-match" condition.
 	 */
 	public void setNoneMatch(List<Tag> tags)
 	{
 		this.noneMatch = tags;
+	}
+
+	/**
+	 * Sets the "if-unmodified-since" condition.
+	 * @param date The "if-unmodified-since" condition.
+	 */
+	public void setUnmodifiedSince(Date date)
+	{
+		this.unmodifiedSince = ImmutableDate.valueOf(date);
 	}
 
 }

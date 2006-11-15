@@ -59,29 +59,14 @@ public class ChallengeRequest
 				&& (((ChallengeRequest) object).hashCode() == hashCode());
 	}
 
-	/** {@inheritDoc} */
-	@Override
-	public int hashCode()
-	{
-		return Factory.hashCode(getScheme(), getRealm(), getParameters());
-	}
-
 	/**
-	 * Returns the scheme used.
-	 * @return The scheme used.
+	 * Returns the scheme parameters.
+	 * @return The scheme parameters.
 	 */
-	public ChallengeScheme getScheme()
+	public ParameterList getParameters()
 	{
-		return this.scheme;
-	}
-
-	/**
-	 * Sets the scheme used.
-	 * @param scheme The scheme used.
-	 */
-	public void setScheme(ChallengeScheme scheme)
-	{
-		this.scheme = scheme;
+		if (this.parameters == null) this.parameters = new ParameterList();
+		return this.parameters;
 	}
 
 	/**
@@ -94,6 +79,22 @@ public class ChallengeRequest
 	}
 
 	/**
+	 * Returns the scheme used.
+	 * @return The scheme used.
+	 */
+	public ChallengeScheme getScheme()
+	{
+		return this.scheme;
+	}
+
+	/** {@inheritDoc} */
+	@Override
+	public int hashCode()
+	{
+		return Factory.hashCode(getScheme(), getRealm(), getParameters());
+	}
+
+	/**
 	 * Sets the realm name.
 	 * @param realm The realm name.
 	 */
@@ -103,13 +104,12 @@ public class ChallengeRequest
 	}
 
 	/**
-	 * Returns the scheme parameters.
-	 * @return The scheme parameters.
+	 * Sets the scheme used.
+	 * @param scheme The scheme used.
 	 */
-	public ParameterList getParameters()
+	public void setScheme(ChallengeScheme scheme)
 	{
-		if (this.parameters == null) this.parameters = new ParameterList();
-		return this.parameters;
+		this.scheme = scheme;
 	}
 
 }

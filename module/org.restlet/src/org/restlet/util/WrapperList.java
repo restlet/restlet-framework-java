@@ -67,20 +67,6 @@ public class WrapperList<E> implements List<E>
 	}
 
 	/**
-	 * Returns the delegate list.
-	 * @return The delegate list.
-	 */
-	protected List<E> getDelegate()
-	{
-		if (this.delegate == null)
-		{
-			this.delegate = new ArrayList<E>();
-		}
-
-		return this.delegate;
-	}
-
-	/**
 	 * Adds a element at the end of the list.
 	 * @return True (as per the general contract of the Collection.add method).
 	 */
@@ -189,6 +175,20 @@ public class WrapperList<E> implements List<E>
 		{
 			throw new IndexOutOfBoundsException();
 		}
+	}
+
+	/**
+	 * Returns the delegate list.
+	 * @return The delegate list.
+	 */
+	protected List<E> getDelegate()
+	{
+		if (this.delegate == null)
+		{
+			this.delegate = new ArrayList<E>();
+		}
+
+		return this.delegate;
 	}
 
 	/**

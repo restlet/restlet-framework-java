@@ -49,6 +49,37 @@ public class Language extends Metadata
 	public static final Language SPANISH = new Language("es", "Spanish language");
 
 	/**
+	 * Returns the language associated to a name. If an existing constant exists then it is 
+	 * returned, otherwise a new instance is created.
+	 * @param name The name.
+	 * @return The associated language.
+	 */
+	public static Language valueOf(String name)
+	{
+		Language result = null;
+
+		if (name != null)
+		{
+			if (name.equalsIgnoreCase(ALL.getName()))
+				result = ALL;
+			else if (name.equalsIgnoreCase(ENGLISH.getName()))
+				result = ENGLISH;
+			else if (name.equalsIgnoreCase(ENGLISH_US.getName()))
+				result = ENGLISH_US;
+			else if (name.equalsIgnoreCase(FRENCH.getName()))
+				result = FRENCH;
+			else if (name.equalsIgnoreCase(FRENCH_FRANCE.getName()))
+				result = FRENCH_FRANCE;
+			else if (name.equalsIgnoreCase(SPANISH.getName()))
+				result = SPANISH;
+			else
+				result = new Language(name);
+		}
+
+		return result;
+	}
+
+	/**
 	 * Constructor.
 	 * @param name The name.
 	 */
@@ -65,6 +96,14 @@ public class Language extends Metadata
 	public Language(String name, String description)
 	{
 		super(name, description);
+	}
+
+	/** {@inheritDoc} */
+	@Override
+	public boolean equals(Object object)
+	{
+		return (object instanceof Language)
+				&& (((Language) object).hashCode() == hashCode());
 	}
 
 	/**
@@ -105,47 +144,8 @@ public class Language extends Metadata
 
 	/** {@inheritDoc} */
 	@Override
-	public boolean equals(Object object)
-	{
-		return (object instanceof Language)
-				&& (((Language) object).hashCode() == hashCode());
-	}
-
-	/** {@inheritDoc} */
-	@Override
 	public int hashCode()
 	{
 		return (getName() == null) ? 0 : getName().toLowerCase().hashCode();
-	}
-
-	/**
-	 * Returns the language associated to a name. If an existing constant exists then it is 
-	 * returned, otherwise a new instance is created.
-	 * @param name The name.
-	 * @return The associated language.
-	 */
-	public static Language valueOf(String name)
-	{
-		Language result = null;
-
-		if (name != null)
-		{
-			if (name.equalsIgnoreCase(ALL.getName()))
-				result = ALL;
-			else if (name.equalsIgnoreCase(ENGLISH.getName()))
-				result = ENGLISH;
-			else if (name.equalsIgnoreCase(ENGLISH_US.getName()))
-				result = ENGLISH_US;
-			else if (name.equalsIgnoreCase(FRENCH.getName()))
-				result = FRENCH;
-			else if (name.equalsIgnoreCase(FRENCH_FRANCE.getName()))
-				result = FRENCH_FRANCE;
-			else if (name.equalsIgnoreCase(SPANISH.getName()))
-				result = SPANISH;
-			else
-				result = new Language(name);
-		}
-
-		return result;
 	}
 }

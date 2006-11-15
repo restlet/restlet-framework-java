@@ -65,64 +65,6 @@ public class ClientInfo
 	}
 
 	/**
-	 * Returns the client's IP address.
-	 * @return The client's IP address.
-	 */
-	public String getAddress()
-	{
-		return (this.addresses == null) ? null : (this.addresses.isEmpty() ? null
-				: this.addresses.get(0));
-	}
-
-	/**
-	 * Returns the list of client IP addresses.<br/> The first address is the one of the 
-	 * immediate client component as returned by the getClientAdress() method and the last
-	 * address should correspond to the origin client (frequently a user agent). This is 
-	 * useful when the user agent is separated from the origin server by a chain of 
-	 * intermediary components.
-	 * @return The client IP addresses.
-	 */
-	public List<String> getAddresses()
-	{
-		if (this.addresses == null) this.addresses = new ArrayList<String>();
-		return this.addresses;
-	}
-
-	/**
-	 * Sets the client's IP address.
-	 * @param address The client's IP address.
-	 */
-	public void setAddress(String address)
-	{
-		if (getAddresses().isEmpty())
-		{
-			getAddresses().add(address);
-		}
-		else
-		{
-			getAddresses().set(0, address);
-		}
-	}
-
-	/**
-	 * Returns the agent name (ex: "Noelios Restlet Engine/1.0").
-	 * @return The agent name.
-	 */
-	public String getAgent()
-	{
-		return this.agent;
-	}
-
-	/**
-	 * Sets the agent name (ex: "Noelios Restlet Engine/1.0").
-	 * @param agent The agent name.
-	 */
-	public void setAgent(String agent)
-	{
-		this.agent = agent;
-	}
-
-	/**
 	 * Returns the character set preferences.
 	 * @return The character set preferences.
 	 */
@@ -167,15 +109,36 @@ public class ClientInfo
 	}
 
 	/**
-	 * Returns the best variant representation for a given resource according the the client preferences.
-	 * @param resource The resource for which the best representation needs to be set.
-	 * @param fallbackLanguage The language to use if no preference matches.
-	 * @return The best variant representation.
-	 * @see <a href="http://httpd.apache.org/docs/2.2/en/content-negotiation.html#algorithm">Apache content negotiation algorithm</a>
+	 * Returns the client's IP address.
+	 * @return The client's IP address.
 	 */
-	public Representation getPreferredVariant(Resource resource, Language fallbackLanguage)
+	public String getAddress()
 	{
-		return getPreferredVariant(resource.getVariants(), fallbackLanguage);
+		return (this.addresses == null) ? null : (this.addresses.isEmpty() ? null
+				: this.addresses.get(0));
+	}
+
+	/**
+	 * Returns the list of client IP addresses.<br/> The first address is the one of the 
+	 * immediate client component as returned by the getClientAdress() method and the last
+	 * address should correspond to the origin client (frequently a user agent). This is 
+	 * useful when the user agent is separated from the origin server by a chain of 
+	 * intermediary components.
+	 * @return The client IP addresses.
+	 */
+	public List<String> getAddresses()
+	{
+		if (this.addresses == null) this.addresses = new ArrayList<String>();
+		return this.addresses;
+	}
+
+	/**
+	 * Returns the agent name (ex: "Noelios Restlet Engine/1.0").
+	 * @return The agent name.
+	 */
+	public String getAgent()
+	{
+		return this.agent;
 	}
 
 	/**
@@ -189,6 +152,43 @@ public class ClientInfo
 			Language fallbackLanguage)
 	{
 		return Factory.getInstance().getBestVariant(this, variants, fallbackLanguage);
+	}
+
+	/**
+	 * Returns the best variant representation for a given resource according the the client preferences.
+	 * @param resource The resource for which the best representation needs to be set.
+	 * @param fallbackLanguage The language to use if no preference matches.
+	 * @return The best variant representation.
+	 * @see <a href="http://httpd.apache.org/docs/2.2/en/content-negotiation.html#algorithm">Apache content negotiation algorithm</a>
+	 */
+	public Representation getPreferredVariant(Resource resource, Language fallbackLanguage)
+	{
+		return getPreferredVariant(resource.getVariants(), fallbackLanguage);
+	}
+
+	/**
+	 * Sets the client's IP address.
+	 * @param address The client's IP address.
+	 */
+	public void setAddress(String address)
+	{
+		if (getAddresses().isEmpty())
+		{
+			getAddresses().add(address);
+		}
+		else
+		{
+			getAddresses().set(0, address);
+		}
+	}
+
+	/**
+	 * Sets the agent name (ex: "Noelios Restlet Engine/1.0").
+	 * @param agent The agent name.
+	 */
+	public void setAgent(String agent)
+	{
+		this.agent = agent;
 	}
 
 }

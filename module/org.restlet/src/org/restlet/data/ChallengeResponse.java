@@ -77,31 +77,6 @@ public class ChallengeResponse
 				&& (((ChallengeResponse) object).hashCode() == hashCode());
 	}
 
-	/** {@inheritDoc} */
-	@Override
-	public int hashCode()
-	{
-		return Factory.hashCode(getScheme(), getIdentifier(), getSecret(), getCredentials());
-	}
-
-	/**
-	 * Returns the scheme used.
-	 * @return The scheme used.
-	 */
-	public ChallengeScheme getScheme()
-	{
-		return this.scheme;
-	}
-
-	/**
-	 * Sets the scheme used.
-	 * @param scheme The scheme used.
-	 */
-	public void setScheme(ChallengeScheme scheme)
-	{
-		this.scheme = scheme;
-	}
-
 	/**
 	 * Returns the credentials.
 	 * @return The credentials.
@@ -109,15 +84,6 @@ public class ChallengeResponse
 	public String getCredentials()
 	{
 		return this.credentials;
-	}
-
-	/**
-	 * Sets the credentials.
-	 * @param credentials The credentials.
-	 */
-	public void setCredentials(String credentials)
-	{
-		this.credentials = credentials;
 	}
 
 	/**
@@ -130,12 +96,12 @@ public class ChallengeResponse
 	}
 
 	/**
-	 * Sets the user identifier, such as a login name or an access key.
-	 * @param identifier The user identifier, such as a login name or an access key.
+	 * Returns the scheme used.
+	 * @return The scheme used.
 	 */
-	public void setIdentifier(String identifier)
+	public ChallengeScheme getScheme()
 	{
-		this.identifier = identifier;
+		return this.scheme;
 	}
 
 	/**
@@ -145,6 +111,40 @@ public class ChallengeResponse
 	public String getSecret()
 	{
 		return this.secret;
+	}
+
+	/** {@inheritDoc} */
+	@Override
+	public int hashCode()
+	{
+		return Factory.hashCode(getScheme(), getIdentifier(), getSecret(), getCredentials());
+	}
+
+	/**
+	 * Sets the credentials.
+	 * @param credentials The credentials.
+	 */
+	public void setCredentials(String credentials)
+	{
+		this.credentials = credentials;
+	}
+
+	/**
+	 * Sets the user identifier, such as a login name or an access key.
+	 * @param identifier The user identifier, such as a login name or an access key.
+	 */
+	public void setIdentifier(String identifier)
+	{
+		this.identifier = identifier;
+	}
+
+	/**
+	 * Sets the scheme used.
+	 * @param scheme The scheme used.
+	 */
+	public void setScheme(ChallengeScheme scheme)
+	{
+		this.scheme = scheme;
 	}
 
 	/**

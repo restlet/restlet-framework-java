@@ -151,20 +151,20 @@ public class Response extends Message
 
 	/**
 	 * Sets the reference that the client should follow for redirections or resource creations.
-	 * @param redirectUri The redirection URI.
-	 */
-	public void setRedirectRef(String redirectUri)
-	{
-		setRedirectRef(new Reference(getRequest().getBaseRef(), redirectUri).getTargetRef());
-	}
-
-	/**
-	 * Sets the reference that the client should follow for redirections or resource creations.
 	 * @param redirectRef The redirection reference.
 	 */
 	public void setRedirectRef(Reference redirectRef)
 	{
 		this.redirectRef = redirectRef;
+	}
+
+	/**
+	 * Sets the reference that the client should follow for redirections or resource creations.
+	 * @param redirectUri The redirection URI.
+	 */
+	public void setRedirectRef(String redirectUri)
+	{
+		setRedirectRef(new Reference(getRequest().getBaseRef(), redirectUri).getTargetRef());
 	}
 
 	/**
