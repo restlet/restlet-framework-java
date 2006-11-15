@@ -32,24 +32,24 @@ import org.restlet.data.Status;
  * chain. Subclasses only have to implement the getNext() method.
  * @author Jerome Louvel (contact@noelios.com) <a href="http://www.noelios.com/">Noelios Consulting</a>
  */
-public abstract class Chainer extends Restlet 
+public abstract class Chainer extends Restlet
 {
 	/**
-    * Constructor.
-    */
-   public Chainer()
-   {
-   	this(null);
-   }
+	 * Constructor.
+	 */
+	public Chainer()
+	{
+		this(null);
+	}
 
 	/**
-    * Constructor.
-    * @param context The context.
-    */
-   public Chainer(Context context)
-   {
-   	super(context);
-   }
+	 * Constructor.
+	 * @param context The context.
+	 */
+	public Chainer(Context context)
+	{
+		super(context);
+	}
 
 	/**
 	 * Handles a call by invoking the next Restlet if it is available.
@@ -58,25 +58,25 @@ public abstract class Chainer extends Restlet
 	 */
 	public void handle(Request request, Response response)
 	{
-  		init(request, response);
+		init(request, response);
 
-  		Restlet next = getNext(request, response);
-   	if(next != null)
-   	{
-      	next.handle(request, response);
-   	}
-   	else
-   	{
-   		response.setStatus(Status.CLIENT_ERROR_NOT_FOUND);
-   	}
-   }
+		Restlet next = getNext(request, response);
+		if (next != null)
+		{
+			next.handle(request, response);
+		}
+		else
+		{
+			response.setStatus(Status.CLIENT_ERROR_NOT_FOUND);
+		}
+	}
 
-   /**
+	/**
 	 * Returns the next Restlet if available.
-    * @param request The request to handle.
-    * @param response The response to update.
+	 * @param request The request to handle.
+	 * @param response The response to update.
 	 * @return The next Restlet if available or null.
 	 */
 	public abstract Restlet getNext(Request request, Response response);
-	
+
 }

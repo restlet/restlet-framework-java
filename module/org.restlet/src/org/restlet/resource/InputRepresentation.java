@@ -90,7 +90,7 @@ public class InputRepresentation extends StreamRepresentation
 	 * large content to a string fully stored in memory can result in OutOfMemoryErrors being thrown.
 	 * @return The representation as a string value.
 	 */
-   public String getValue() throws IOException
+	public String getValue() throws IOException
 	{
 		return ByteUtils.toString(getStream());
 	}

@@ -294,8 +294,7 @@ public class Router extends Chainer
 	 */
 	public ScorerList getScorers()
 	{
-		if (this.scorers == null)
-			this.scorers = new ScorerList(this);
+		if (this.scorers == null) this.scorers = new ScorerList(this);
 		return this.scorers;
 	}
 

@@ -145,7 +145,8 @@ public class Response extends Message
 	 */
 	public void setEntity(Resource resource, Language fallbackLanguage)
 	{
-		Factory.getInstance().setResponseEntity(getRequest(), this, resource, fallbackLanguage);
+		Factory.getInstance().setResponseEntity(getRequest(), this, resource,
+				fallbackLanguage);
 	}
 
 	/**

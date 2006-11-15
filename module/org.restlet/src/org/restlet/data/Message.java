@@ -172,9 +172,9 @@ public abstract class Message
 	 */
 	public void setEntity(Object object)
 	{
-		if(object instanceof Representation)
+		if (object instanceof Representation)
 		{
-			setEntity((Representation)object);
+			setEntity((Representation) object);
 		}
 		else
 		{

@@ -34,7 +34,7 @@ public class Result
 {
 	/** The optional entity. */
 	private Representation entity;
-	
+
 	/** The status. */
 	private Status status;
 
@@ -72,7 +72,7 @@ public class Result
 		this.status = status;
 		this.redirectionRef = redirectionRef;
 	}
-	
+
 	/**
 	 * Returns the status.
 	 * @return the status.
@@ -81,7 +81,7 @@ public class Result
 	{
 		return this.status;
 	}
-	
+
 	/**
 	 * Sets the status.
 	 * @param status The status.
@@ -126,5 +126,5 @@ public class Result
 	{
 		return this.redirectionRef;
 	}
-	
+
 }

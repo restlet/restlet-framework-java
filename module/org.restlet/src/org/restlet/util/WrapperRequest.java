@@ -61,7 +61,7 @@ public class WrapperRequest extends Request
 	{
 		return this.wrappedRequest;
 	}
-	
+
 	/**
 	 * Returns the base reference.
 	 * @return The base reference.

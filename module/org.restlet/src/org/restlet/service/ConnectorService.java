@@ -39,14 +39,14 @@ public class ConnectorService
 
 	/** The list of required server protocols. */
 	private List<Protocol> serverProtocols;
-	
+
 	/**
 	 * Constructor.
 	 */
 	public ConnectorService()
 	{
 	}
-	
+
 	/**
 	 * Call-back method invoked by the client or server connectors just before sending the entity to 
 	 * the target component. The default implementation does nothing.
@@ -56,7 +56,7 @@ public class ConnectorService
 	{
 		// Do nothing by default. 
 	}
-	
+
 	/**
 	 * Call-back method invoked by the client or server connectors just after sending the entity to 
 	 * the target component. The default implementation does nothing.
@@ -73,7 +73,7 @@ public class ConnectorService
 	 */
 	public List<Protocol> getClientProtocols()
 	{
-		if(this.clientProtocols == null) this.clientProtocols = new ArrayList<Protocol>();
+		if (this.clientProtocols == null) this.clientProtocols = new ArrayList<Protocol>();
 		return this.clientProtocols;
 	}
 
@@ -83,7 +83,7 @@ public class ConnectorService
 	 */
 	public List<Protocol> getServerProtocols()
 	{
-		if(this.serverProtocols == null) this.serverProtocols = new ArrayList<Protocol>();
+		if (this.serverProtocols == null) this.serverProtocols = new ArrayList<Protocol>();
 		return this.serverProtocols;
 	}
 
@@ -108,7 +108,7 @@ public class ConnectorService
 	{
 		return getServerProtocols();
 	}
-	
+
 	/**
 	 * Returns the list of optional client protocols. 
 	 * @return The list of optional client protocols.

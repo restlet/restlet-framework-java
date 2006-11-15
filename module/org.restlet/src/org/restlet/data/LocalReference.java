@@ -45,22 +45,22 @@ public class LocalReference extends Reference
 	 * clap://class/rootPkg/subPkg/myClass.class or clap://class/rootPkg/file.html
 	 * @see java.lang.Class#getClassLoader() 
 	 */
-	public static final int CLAP_CLASS = 2; 
+	public static final int CLAP_CLASS = 2;
 
 	/**
 	 * The resources will be resolved from the system's classloader. Examples:
 	 * clap://system/rootPkg/subPkg/myClass.class or clap://system/rootPkg/file.html
 	 * @see java.lang.ClassLoader#getSystemClassLoader() 
 	 */
-	public static final int CLAP_SYSTEM = 3; 
+	public static final int CLAP_SYSTEM = 3;
 
 	/**
 	 * The resources will be resolved from the current thread's classloader. Examples:
 	 * clap://thread/rootPkg/subPkg/myClass.class or clap://thread/rootPkg/file.html
 	 * @see java.lang.Thread#getContextClassLoader() 
 	 */
-	public static final int CLAP_THREAD = 4; 
-	
+	public static final int CLAP_THREAD = 4;
+
 	/**
 	 * Constructor.
 	 * @param localUri The local URI.
@@ -69,7 +69,7 @@ public class LocalReference extends Reference
 	{
 		super(localUri);
 	}
-	
+
 	/**
 	 * Constructor.
 	 * @param localRef The local reference.
@@ -98,7 +98,7 @@ public class LocalReference extends Reference
 	{
 		return new LocalReference("jar:" + jarFile.toString() + "!/" + entryPath);
 	}
-	
+
 	/**
 	 * Constructor.
 	 * @param file The file whose path must be used.
@@ -117,7 +117,7 @@ public class LocalReference extends Reference
 	{
 		return createFileReference("", filePath);
 	}
-	
+
 	/**
 	 * Constructor.
 	 * @param hostName The authority (can be a host name or the special "localhost" or an empty value).
@@ -136,12 +136,13 @@ public class LocalReference extends Reference
 	public File getFile()
 	{
 		File result = null;
-		
-		if(getSchemeProtocol().equals(Protocol.FILE))
+
+		if (getSchemeProtocol().equals(Protocol.FILE))
 		{
 			String hostName = getAuthority();
-			
-			if((hostName == null) || hostName.equals("") || hostName.equalsIgnoreCase("localhost"))
+
+			if ((hostName == null) || hostName.equals("")
+					|| hostName.equalsIgnoreCase("localhost"))
 			{
 				String filePath = getPath();
 				result = new File(filePath);
@@ -151,62 +152,62 @@ public class LocalReference extends Reference
 				throw new RuntimeException("Can't resolve files on remote host machines");
 			}
 		}
-		
+
 		return result;
 	}
-	
-   /**
-    * Localize a path by converting all the separator characters to the system-dependant separator character.
-    * @param path The path to localize.
-    * @return The localized path.
-    */
-   public static String localizePath(String path)
-   {
-      StringBuilder result = new StringBuilder();
-      char nextChar;
-      for(int i = 0; i < path.length(); i++)
-      {
-         nextChar = path.charAt(i);
-         if((nextChar == '/') || (nextChar == '\\'))
-         {
-            // Convert the URI separator to the system dependent path separator
-            result.append(File.separatorChar);
-         }
-         else
-         {
-            result.append(nextChar);
-         }
-      }
 
-      return result.toString();
-   }
+	/**
+	 * Localize a path by converting all the separator characters to the system-dependant separator character.
+	 * @param path The path to localize.
+	 * @return The localized path.
+	 */
+	public static String localizePath(String path)
+	{
+		StringBuilder result = new StringBuilder();
+		char nextChar;
+		for (int i = 0; i < path.length(); i++)
+		{
+			nextChar = path.charAt(i);
+			if ((nextChar == '/') || (nextChar == '\\'))
+			{
+				// Convert the URI separator to the system dependent path separator
+				result.append(File.separatorChar);
+			}
+			else
+			{
+				result.append(nextChar);
+			}
+		}
 
-   /**
-    * Normalize a path by converting all the system-dependant separator characters to the standard '/' 
-    * separator character.
-    * @param path The path to normalize.
-    * @return The normalize path.
-    */
-   public static String normalizePath(String path)
-   {
-      StringBuilder result = new StringBuilder();
-      char nextChar;
-      for(int i = 0; i < path.length(); i++)
-      {
-         nextChar = path.charAt(i);
-         if((nextChar == '\\'))
-         {
-            // Convert the Windows style path separator to the standard path separator
-            result.append('/');
-         }
-         else
-         {
-            result.append(nextChar);
-         }
-      }
+		return result.toString();
+	}
 
-      return result.toString();
-   }
+	/**
+	 * Normalize a path by converting all the system-dependant separator characters to the standard '/' 
+	 * separator character.
+	 * @param path The path to normalize.
+	 * @return The normalize path.
+	 */
+	public static String normalizePath(String path)
+	{
+		StringBuilder result = new StringBuilder();
+		char nextChar;
+		for (int i = 0; i < path.length(); i++)
+		{
+			nextChar = path.charAt(i);
+			if ((nextChar == '\\'))
+			{
+				// Convert the Windows style path separator to the standard path separator
+				result.append('/');
+			}
+			else
+			{
+				result.append(nextChar);
+			}
+		}
+
+		return result.toString();
+	}
 
 	/**
 	 * Returns the JAR file reference.
@@ -215,25 +216,25 @@ public class LocalReference extends Reference
 	public Reference getJarFileRef()
 	{
 		Reference result = null;
-		
-		if(getSchemeProtocol().equals(Protocol.JAR))
+
+		if (getSchemeProtocol().equals(Protocol.JAR))
 		{
 			String ssp = getSchemeSpecificPart();
-			
-			if(ssp != null)
+
+			if (ssp != null)
 			{
 				int separatorIndex = ssp.indexOf("!/");
-				
-				if(separatorIndex != -1)
+
+				if (separatorIndex != -1)
 				{
 					result = new Reference(ssp.substring(0, separatorIndex));
 				}
 			}
 		}
-		
+
 		return result;
 	}
-	
+
 	/**
 	 * Returns the JAR entry path. 
 	 * @return The JAR entry path.
@@ -241,22 +242,22 @@ public class LocalReference extends Reference
 	public String getJarEntryPath()
 	{
 		String result = null;
-		
-		if(getSchemeProtocol().equals(Protocol.JAR))
+
+		if (getSchemeProtocol().equals(Protocol.JAR))
 		{
 			String ssp = getSchemeSpecificPart();
-			
-			if(ssp != null)
+
+			if (ssp != null)
 			{
 				int separatorIndex = ssp.indexOf("!/");
-				
-				if(separatorIndex != -1)
+
+				if (separatorIndex != -1)
 				{
 					result = ssp.substring(separatorIndex + 2);
 				}
 			}
 		}
-		
+
 		return result;
 	}
 
@@ -267,31 +268,31 @@ public class LocalReference extends Reference
 	public int getClapAuthorityType()
 	{
 		int result = 0;
-		
-		if(getSchemeProtocol().equals(Protocol.CLAP))
+
+		if (getSchemeProtocol().equals(Protocol.CLAP))
 		{
 			String authority = getAuthority();
-			
-			if(authority != null)
+
+			if (authority != null)
 			{
-				if(authority.equalsIgnoreCase(getAuthorityName(CLAP_CLASS)))
+				if (authority.equalsIgnoreCase(getAuthorityName(CLAP_CLASS)))
 				{
 					result = CLAP_CLASS;
 				}
-				else if(authority.equalsIgnoreCase(getAuthorityName(CLAP_SYSTEM)))
+				else if (authority.equalsIgnoreCase(getAuthorityName(CLAP_SYSTEM)))
 				{
 					result = CLAP_SYSTEM;
 				}
-				else if(authority.equalsIgnoreCase(getAuthorityName(CLAP_THREAD)))
+				else if (authority.equalsIgnoreCase(getAuthorityName(CLAP_THREAD)))
 				{
 					result = CLAP_THREAD;
 				}
 			}
 		}
-		
+
 		return result;
 	}
-	
+
 	/**
 	 * Returns an authority name. 
 	 * @param authority The authority.
@@ -300,21 +301,21 @@ public class LocalReference extends Reference
 	public static String getAuthorityName(int authority)
 	{
 		String result = null;
-		
-		switch(authority)
+
+		switch (authority)
 		{
 			case CLAP_CLASS:
 				result = "class";
-				break;
+			break;
 			case CLAP_SYSTEM:
 				result = "system";
-				break;
+			break;
 			case CLAP_THREAD:
 				result = "thread";
-				break;
+			break;
 		}
-		
+
 		return result;
 	}
-	
+
 }

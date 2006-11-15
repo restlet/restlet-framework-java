@@ -233,8 +233,7 @@ public class Extractor extends Filter
 	 * @param multiple Indicates if the parameters should be set as a List in the attribute value. Useful for repeating parameters.
 	 * @return The current Filter.
 	 */
-	public Extractor fromQuery(String attributeName, String parameterName,
-			boolean multiple)
+	public Extractor fromQuery(String attributeName, String parameterName, boolean multiple)
 	{
 		getQueryExtracts().add(new ExtractInfo(attributeName, parameterName, multiple));
 		return this;

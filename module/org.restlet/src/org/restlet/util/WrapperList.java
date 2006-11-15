@@ -35,7 +35,7 @@ import java.util.ListIterator;
  * @see java.util.Collections
  * @see java.util.List
  */
-public class WrapperList<E> implements List<E> 
+public class WrapperList<E> implements List<E>
 {
 	/** The delegate list. */
 	private List<E> delegate;
@@ -56,7 +56,7 @@ public class WrapperList<E> implements List<E>
 	{
 		this(new ArrayList<E>(initialCapacity));
 	}
-	
+
 	/**
 	 * Constructor.
 	 * @param delegate The delegate list.
@@ -72,14 +72,14 @@ public class WrapperList<E> implements List<E>
 	 */
 	protected List<E> getDelegate()
 	{
-		if(this.delegate == null)
+		if (this.delegate == null)
 		{
 			this.delegate = new ArrayList<E>();
 		}
-		
+
 		return this.delegate;
 	}
-	
+
 	/**
 	 * Adds a element at the end of the list.
 	 * @return True (as per the general contract of the Collection.add method).
@@ -123,7 +123,7 @@ public class WrapperList<E> implements List<E>
 	 */
 	public void clear()
 	{
-		if(this.delegate != null)
+		if (this.delegate != null)
 		{
 			getDelegate().clear();
 			this.delegate = null;
@@ -137,7 +137,7 @@ public class WrapperList<E> implements List<E>
 	 */
 	public boolean contains(Object element)
 	{
-		if(this.delegate != null)
+		if (this.delegate != null)
 		{
 			return this.delegate.contains(element);
 		}
@@ -154,7 +154,7 @@ public class WrapperList<E> implements List<E>
 	 */
 	public boolean containsAll(Collection<?> elements)
 	{
-		if(this.delegate != null)
+		if (this.delegate != null)
 		{
 			return this.delegate.containsAll(elements);
 		}
@@ -163,7 +163,7 @@ public class WrapperList<E> implements List<E>
 			return false;
 		}
 	}
-	
+
 	/**
 	 * Compares the specified object with this list for equality.
 	 * @param o The object to be compared for equality with this list.
@@ -181,7 +181,7 @@ public class WrapperList<E> implements List<E>
 	 */
 	public E get(int index)
 	{
-		if(this.delegate != null)
+		if (this.delegate != null)
 		{
 			return this.delegate.get(index);
 		}
@@ -199,16 +199,16 @@ public class WrapperList<E> implements List<E>
 	{
 		return getDelegate().hashCode();
 	}
-	
-   /**
-    * Returns the index in this list of the first occurrence of the specified element, 
-    * or -1 if this list does not contain this element.
-    * @param element The element to find.
-    * @return The index of the first occurrence.
-    */
+
+	/**
+	 * Returns the index in this list of the first occurrence of the specified element, 
+	 * or -1 if this list does not contain this element.
+	 * @param element The element to find.
+	 * @return The index of the first occurrence.
+	 */
 	public int indexOf(Object element)
 	{
-		if(this.delegate != null)
+		if (this.delegate != null)
 		{
 			return this.delegate.indexOf(element);
 		}
@@ -223,7 +223,7 @@ public class WrapperList<E> implements List<E>
 	 */
 	public boolean isEmpty()
 	{
-		if(this.delegate != null)
+		if (this.delegate != null)
 		{
 			return this.delegate.isEmpty();
 		}
@@ -248,7 +248,7 @@ public class WrapperList<E> implements List<E>
 	 */
 	public int lastIndexOf(Object element)
 	{
-		if(this.delegate != null)
+		if (this.delegate != null)
 		{
 			return this.delegate.lastIndexOf(element);
 		}
@@ -283,7 +283,7 @@ public class WrapperList<E> implements List<E>
 	 */
 	public E remove(int index)
 	{
-		if(this.delegate != null)
+		if (this.delegate != null)
 		{
 			return this.delegate.remove(index);
 		}
@@ -299,7 +299,7 @@ public class WrapperList<E> implements List<E>
 	 */
 	public boolean remove(Object element)
 	{
-		if(this.delegate != null)
+		if (this.delegate != null)
 		{
 			return this.delegate.remove(element);
 		}
@@ -308,7 +308,7 @@ public class WrapperList<E> implements List<E>
 			return false;
 		}
 	}
-	
+
 	/**
 	 * Removes from this list all the elements that are contained in the specified collection.
 	 * @param elements The collection of element to remove.
@@ -316,7 +316,7 @@ public class WrapperList<E> implements List<E>
 	 */
 	public boolean removeAll(Collection<?> elements)
 	{
-		if(this.delegate != null)
+		if (this.delegate != null)
 		{
 			return this.delegate.removeAll(elements);
 		}
@@ -333,7 +333,7 @@ public class WrapperList<E> implements List<E>
 	 */
 	public boolean retainAll(Collection<?> elements)
 	{
-		if(this.delegate != null)
+		if (this.delegate != null)
 		{
 			return this.delegate.retainAll(elements);
 		}
@@ -350,7 +350,7 @@ public class WrapperList<E> implements List<E>
 	 */
 	public E set(int index, E element)
 	{
-		if(this.delegate != null)
+		if (this.delegate != null)
 		{
 			return this.delegate.set(index, element);
 		}
@@ -359,14 +359,14 @@ public class WrapperList<E> implements List<E>
 			throw new IndexOutOfBoundsException();
 		}
 	}
-	
+
 	/**
 	 * Returns the number of elements in this list.
 	 * @return The number of elements in this list.
 	 */
 	public int size()
 	{
-		if(this.delegate != null)
+		if (this.delegate != null)
 		{
 			return this.delegate.size();
 		}
@@ -395,7 +395,7 @@ public class WrapperList<E> implements List<E>
 	@SuppressWarnings("unchecked")
 	public E[] toArray()
 	{
-		return (E[])getDelegate().toArray();
+		return (E[]) getDelegate().toArray();
 	}
 
 	/**
@@ -407,5 +407,5 @@ public class WrapperList<E> implements List<E>
 	{
 		return getDelegate().toArray(a);
 	}
-	
+
 }

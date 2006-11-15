@@ -35,22 +35,22 @@ public class Scorer extends Filter
 	/** The parent router. */
 	private Router router;
 
-   /**
-    * Constructor.
-    * @param router The parent router.
-    * @param next The next Restlet.
-    */
-   public Scorer(Router router, Restlet next)
-   {
-   	super(router == null ? null : router.getContext(), next);
-   	this.router = router;
-   }
-	
+	/**
+	 * Constructor.
+	 * @param router The parent router.
+	 * @param next The next Restlet.
+	 */
+	public Scorer(Router router, Restlet next)
+	{
+		super(router == null ? null : router.getContext(), next);
+		this.router = router;
+	}
+
 	/**
 	 * Returns the score for a given call (between 0.0 and 1.0). The default value is 1.0 but this method
 	 * is intended to be overriden.
-    * @param request The request to score.
-    * @param response The response to score.
+	 * @param request The request to score.
+	 * @param response The response to score.
 	 * @return The score for a given call (between 0.0 and 1.0).
 	 */
 	public float score(Request request, Response response)
@@ -58,7 +58,7 @@ public class Scorer extends Filter
 		return 1.0F;
 	}
 
-   /**
+	/**
 	 * Returns the parent router.
 	 * @return The parent router.
 	 */

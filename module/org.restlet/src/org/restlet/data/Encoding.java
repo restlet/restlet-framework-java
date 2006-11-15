@@ -39,7 +39,8 @@ public class Encoding extends Metadata
 	public static final Encoding ZIP = new Encoding("zip", "Zip compression");
 
 	/** The common Unix file compression. */
-	public static final Encoding COMPRESS = new Encoding("compress", "Common Unix compression");
+	public static final Encoding COMPRESS = new Encoding("compress",
+			"Common Unix compression");
 
 	/** The zlib format defined by RFC 1950 and 1951. */
 	public static final Encoding DEFLATE = new Encoding("deflate",
@@ -79,7 +80,7 @@ public class Encoding extends Metadata
 		return (object instanceof Encoding)
 				&& getName().equalsIgnoreCase(((Encoding) object).getName());
 	}
-	
+
 	/** {@inheritDoc} */
 	@Override
 	public int hashCode()

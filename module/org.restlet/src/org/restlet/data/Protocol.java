@@ -62,8 +62,7 @@ public class Protocol extends Metadata
 			"HyperText Transport Protocol (Secure)", 443);
 
 	/** JAR protocol. */
-	public static final Protocol JAR = new Protocol("jar", "JAR",
-			"Java ARchive", -1);
+	public static final Protocol JAR = new Protocol("jar", "JAR", "Java ARchive", -1);
 
 	/** JDBC protocol. */
 	public static final Protocol JDBC = new Protocol("jdbc", "JDBC",
@@ -140,14 +139,13 @@ public class Protocol extends Metadata
 		return (object instanceof Protocol)
 				&& getName().equalsIgnoreCase(((Protocol) object).getName());
 	}
-	
+
 	/** {@inheritDoc} */
 	@Override
 	public int hashCode()
 	{
 		return getName().toLowerCase().hashCode();
 	}
-
 
 	/**
 	 * Creates the protocol associated to a URI scheme name. If an existing constant exists then it is returned,

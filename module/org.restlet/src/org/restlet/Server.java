@@ -46,7 +46,7 @@ public class Server extends Connector
 
 	/** The target Restlet. */
 	private Restlet target;
-	
+
 	/** The helper provided by the implementation. */
 	private Helper helper;
 
@@ -149,7 +149,8 @@ public class Server extends Connector
 	 * @param port The listening port.
 	 * @param target The target Restlet.
 	 */
-	public Server(Context context, Protocol protocol, String address, int port, Restlet target)
+	public Server(Context context, Protocol protocol, String address, int port,
+			Restlet target)
 	{
 		this(context, Arrays.asList(protocol), address, port, target);
 	}
@@ -162,14 +163,15 @@ public class Server extends Connector
 	 * @param port The listening port.
 	 * @param target The target Restlet.
 	 */
-	public Server(Context context, List<Protocol> protocols, String address, int port, Restlet target)
+	public Server(Context context, List<Protocol> protocols, String address, int port,
+			Restlet target)
 	{
 		super(context, protocols);
 		this.address = address;
 		this.port = port;
 		this.target = target;
 
-		if(Factory.getInstance() != null)
+		if (Factory.getInstance() != null)
 		{
 			this.helper = Factory.getInstance().createHelper(this);
 		}
@@ -182,12 +184,12 @@ public class Server extends Connector
 	 */
 	public void handle(Request request, Response response)
 	{
-  		init(request, response);
- 		
-  		if(getTarget() != null)
-  		{
-  			getTarget().handle(request, response);
-  		}
+		init(request, response);
+
+		if (getTarget() != null)
+		{
+			getTarget().handle(request, response);
+		}
 	}
 
 	/**
@@ -243,7 +245,7 @@ public class Server extends Connector
 	{
 		return this.target;
 	}
-	
+
 	/**
 	 * Indicates if a target Restlet is set. 
 	 * @return True if a target Restlet is set. 
@@ -261,19 +263,19 @@ public class Server extends Connector
 	{
 		this.target = target;
 	}
-	
+
 	/** Start callback. */
 	public void start() throws Exception
 	{
 		super.start();
-		if(getHelper() != null) getHelper().start();
+		if (getHelper() != null) getHelper().start();
 	}
 
 	/** Stop callback. */
 	public void stop() throws Exception
 	{
 		getHelper().stop();
-		if(getHelper() != null) super.stop();
+		if (getHelper() != null) super.stop();
 	}
 
 }

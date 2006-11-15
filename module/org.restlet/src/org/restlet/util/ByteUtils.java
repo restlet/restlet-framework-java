@@ -224,8 +224,8 @@ public class ByteUtils
 					.newOutputStream(writableChannel));
 		}
 	}
-   
-   /**
+
+	/**
 	 * Private constructor to ensure that the class acts as a true utility class 
 	 * i.e. it isn't instatiable and extensible.
 	 */

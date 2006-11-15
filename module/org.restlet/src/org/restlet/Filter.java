@@ -39,12 +39,12 @@ public class Filter extends Chainer
 	private Restlet next;
 
 	/**
-    * Constructor.
-    */
-   public Filter()
-   {
-   	this(null);
-   }
+	 * Constructor.
+	 */
+	public Filter()
+	{
+		this(null);
+	}
 
 	/**
 	 * Constructor.
@@ -68,8 +68,8 @@ public class Filter extends Chainer
 
 	/**
 	 * Returns the next Restlet if available.
-    * @param request The request to handle.
-    * @param response The response to update.
+	 * @param request The request to handle.
+	 * @param response The response to update.
 	 * @return The next Restlet if available or null.
 	 */
 	public final Restlet getNext(Request request, Response response)
@@ -108,8 +108,8 @@ public class Filter extends Chainer
 	 * Handles a call by first invoking the beforeHandle() method for pre-filtering, then distributing the call 
 	 * to the next Restlet via the doHandle() method. When the handling is completed, it finally 
 	 * invokes the afterHandle() method for post-filtering.
-    * @param request The request to handle.
-    * @param response The response to update.
+	 * @param request The request to handle.
+	 * @param response The response to update.
 	 */
 	public final void handle(Request request, Response response)
 	{
@@ -121,8 +121,8 @@ public class Filter extends Chainer
 
 	/**
 	 * Allows filtering before processing by the next Restlet. Does nothing by default.
-    * @param request The request to handle.
-    * @param response The response to update.
+	 * @param request The request to handle.
+	 * @param response The response to update.
 	 */
 	protected void beforeHandle(Request request, Response response)
 	{
@@ -131,8 +131,8 @@ public class Filter extends Chainer
 
 	/**
 	 * Handles the call by distributing it to the next Restlet. 
-    * @param request The request to handle.
-    * @param response The response to update.
+	 * @param request The request to handle.
+	 * @param response The response to update.
 	 */
 	protected void doHandle(Request request, Response response)
 	{
@@ -142,8 +142,8 @@ public class Filter extends Chainer
 
 	/**
 	 * Allows filtering after processing by the next Restlet. Does nothing by default.
-    * @param request The request to handle.
-    * @param response The response to update.
+	 * @param request The request to handle.
+	 * @param response The response to update.
 	 */
 	protected void afterHandle(Request request, Response response)
 	{

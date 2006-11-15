@@ -28,16 +28,16 @@ package org.restlet.data;
  */
 public class ServerInfo
 {
-   /** The IP address. */
+	/** The IP address. */
 	private String address;
 
-   /** The agent name. */
+	/** The agent name. */
 	private String agent;
 
-   /** The domain name. */
+	/** The domain name. */
 	private String domain;
 
-   /** The port number. */
+	/** The port number. */
 	private Integer port;
 
 	/**
@@ -50,79 +50,79 @@ public class ServerInfo
 		this.domain = null;
 		this.port = null;
 	}
-	
-   /**
-    * Returns the IP address.
-    * @return The IP address.
-    */
-   public String getAddress()
-   {
-      return this.address;
-   }
-   
-   /**
-    * Returns the agent name (ex: "Noelios Restlet Engine/1.0").
-    * @return The agent name.
-    */
-   public String getAgent()
-   {
-      return this.agent;
-   }
 
-   /**
-    * Returns the domain name that received the call. This will often be similar to the host name specified 
-    * in the Call's target resource but it may diverge in specific cases, for exampl when a resource is 
-    * identifed by an URN and retrieved by HTTP.  
-    * @return The host name that received the call. 
-    */
-   public String getDomain()
-   {
-   	return this.domain;
-   }
+	/**
+	 * Returns the IP address.
+	 * @return The IP address.
+	 */
+	public String getAddress()
+	{
+		return this.address;
+	}
 
-   /**
-    * Returns the port number which received the call.
-    * @return The port number which received the call.
-    */
-   public Integer getPort()
-   {
-   	return this.port;
-   }
+	/**
+	 * Returns the agent name (ex: "Noelios Restlet Engine/1.0").
+	 * @return The agent name.
+	 */
+	public String getAgent()
+	{
+		return this.agent;
+	}
 
-   /**
-    * Sets the IP address which received the call.
-    * @param address The IP address which received the call.
-    */
-   public void setAddress(String address)
-   {
-      this.address = address;
-   }
+	/**
+	 * Returns the domain name that received the call. This will often be similar to the host name specified 
+	 * in the Call's target resource but it may diverge in specific cases, for exampl when a resource is 
+	 * identifed by an URN and retrieved by HTTP.  
+	 * @return The host name that received the call. 
+	 */
+	public String getDomain()
+	{
+		return this.domain;
+	}
 
-   /**
-    * Sets the agent name (ex: "Noelios Restlet Engine/1.0").
-    * @param agent The agent name.
-    */
-   public void setAgent(String agent)
-   {
-      this.agent = agent;
-   }
+	/**
+	 * Returns the port number which received the call.
+	 * @return The port number which received the call.
+	 */
+	public Integer getPort()
+	{
+		return this.port;
+	}
 
-   /**
-    * Sets the domain name that received the call.
-    * @param domain The domain name that received the call. 
-    */
-   public void setDomain(String domain)
-   {
-   	this.domain = domain;
-   }
+	/**
+	 * Sets the IP address which received the call.
+	 * @param address The IP address which received the call.
+	 */
+	public void setAddress(String address)
+	{
+		this.address = address;
+	}
 
-   /**
-    * Sets the port number which received the call.
-    * @param port The port number which received the call.
-    */
-   public void setPort(Integer port)
-   {
-   	this.port = port;
-   }
+	/**
+	 * Sets the agent name (ex: "Noelios Restlet Engine/1.0").
+	 * @param agent The agent name.
+	 */
+	public void setAgent(String agent)
+	{
+		this.agent = agent;
+	}
+
+	/**
+	 * Sets the domain name that received the call.
+	 * @param domain The domain name that received the call. 
+	 */
+	public void setDomain(String domain)
+	{
+		this.domain = domain;
+	}
+
+	/**
+	 * Sets the port number which received the call.
+	 * @param port The port number which received the call.
+	 */
+	public void setPort(Integer port)
+	{
+		this.port = port;
+	}
 
 }

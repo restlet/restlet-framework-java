@@ -62,8 +62,8 @@ public class Container extends Component
 	public Container()
 	{
 		super(null);
-		
-		if(Factory.getInstance() != null)
+
+		if (Factory.getInstance() != null)
 		{
 			this.helper = Factory.getInstance().createHelper(this);
 			if (this.helper != null)
@@ -139,7 +139,7 @@ public class Container extends Component
 	public void handle(Request request, Response response)
 	{
 		init(request, response);
-		if(getHelper() != null) getHelper().handle(request, response);
+		if (getHelper() != null) getHelper().handle(request, response);
 	}
 
 	/**
@@ -173,13 +173,13 @@ public class Container extends Component
 	public void start() throws Exception
 	{
 		super.start();
-		if(getHelper() != null) getHelper().start();
+		if (getHelper() != null) getHelper().start();
 	}
 
 	/** Stop callback. */
 	public void stop() throws Exception
 	{
-		if(getHelper() != null) getHelper().stop();
+		if (getHelper() != null) getHelper().stop();
 		super.stop();
 	}
 

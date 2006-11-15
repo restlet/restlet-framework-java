@@ -56,7 +56,7 @@ public abstract class Connector extends Restlet
 	{
 		this(context, null);
 	}
-	
+
 	/**
 	 * Constructor.
 	 * @param context The context.
@@ -67,7 +67,7 @@ public abstract class Connector extends Restlet
 		super(context);
 		this.protocols = protocols;
 	}
-	
+
 	/**
 	 * Returns the protocols simultaneously supported.
 	 * @return The protocols simultaneously supported.

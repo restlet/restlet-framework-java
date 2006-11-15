@@ -171,11 +171,11 @@ public class WrapperMap<K, V> implements Map<K, V>
 	 * Copies all of the mappings from the specified map to this map (optional operation).
 	 * @param t Mappings to be stored in this map.
 	 */
-	public void putAll(Map<? extends K,? extends V> t)
+	public void putAll(Map<? extends K, ? extends V> t)
 	{
 		getDelegate().putAll(t);
 	}
-	
+
 	/**
 	 * Removes the mapping for this key from this map if it is present (optional operation). 
 	 * @param key Key whose mapping is to be removed from the map.
@@ -185,7 +185,7 @@ public class WrapperMap<K, V> implements Map<K, V>
 	{
 		return getDelegate().remove(key);
 	}
-	
+
 	/**
 	 * Returns the number of key-value mappings in this map.
 	 * @return The number of key-value mappings in this map.
@@ -194,7 +194,7 @@ public class WrapperMap<K, V> implements Map<K, V>
 	{
 		return getDelegate().size();
 	}
-	
+
 	/**
 	 * Returns a collection view of the values contained in this map.
 	 * @return A collection view of the values contained in this map.
@@ -203,5 +203,5 @@ public class WrapperMap<K, V> implements Map<K, V>
 	{
 		return getDelegate().values();
 	}
-	
+
 }

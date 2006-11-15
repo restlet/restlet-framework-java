@@ -111,7 +111,7 @@ public class StringRepresentation extends StreamRepresentation
 		{
 			try
 			{
-				if(getCharacterSet() != null)
+				if (getCharacterSet() != null)
 				{
 					setSize(getValue().getBytes(getCharacterSet().getName()).length);
 				}
@@ -163,14 +163,15 @@ public class StringRepresentation extends StreamRepresentation
 	{
 		if (getValue() != null)
 		{
-         if(getCharacterSet() != null)
-         {
-         	return new ByteArrayInputStream(getValue().getBytes(getCharacterSet().getName()));
-         }
-         else
-         {
-         	return new ByteArrayInputStream(getValue().getBytes());
-         }
+			if (getCharacterSet() != null)
+			{
+				return new ByteArrayInputStream(getValue().getBytes(
+						getCharacterSet().getName()));
+			}
+			else
+			{
+				return new ByteArrayInputStream(getValue().getBytes());
+			}
 		}
 		else
 		{
@@ -189,9 +190,9 @@ public class StringRepresentation extends StreamRepresentation
 	{
 		if (getValue() != null)
 		{
-			OutputStreamWriter osw = null; 
-		
-			if(getCharacterSet() != null)
+			OutputStreamWriter osw = null;
+
+			if (getCharacterSet() != null)
 			{
 				osw = new OutputStreamWriter(outputStream, getCharacterSet().getName());
 			}
@@ -199,7 +200,7 @@ public class StringRepresentation extends StreamRepresentation
 			{
 				osw = new OutputStreamWriter(outputStream);
 			}
-			
+
 			osw.write(getValue());
 			osw.flush();
 		}

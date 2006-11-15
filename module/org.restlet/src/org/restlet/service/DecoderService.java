@@ -39,7 +39,7 @@ public class DecoderService
 	{
 		this.enabled = enabled;
 	}
-	
+
 	/**
 	 * Indicates if the service should be enabled.
 	 * @return True if the service should be enabled.
@@ -48,7 +48,7 @@ public class DecoderService
 	{
 		return this.enabled;
 	}
-	
+
 	/**
 	 * Indicates if the service should be enabled.
 	 * @param enabled True if the service should be enabled.
@@ -57,5 +57,5 @@ public class DecoderService
 	{
 		this.enabled = enabled;
 	}
-	  
+
 }

@@ -84,8 +84,8 @@ public class StringTemplateRepresentation extends StreamRepresentation
 	 * @param mediaType The representation's media type.
 	 */
 	public StringTemplateRepresentation(CharSequence pattern, String variableStart,
-			String variableEnd, String instructionStart, String instructionEnd,
-			Model model, MediaType mediaType)
+			String variableEnd, String instructionStart, String instructionEnd, Model model,
+			MediaType mediaType)
 	{
 		super(mediaType);
 		setCharacterSet(CharacterSet.ISO_8859_1);
@@ -142,9 +142,10 @@ public class StringTemplateRepresentation extends StreamRepresentation
 	{
 		if (getValue() != null)
 		{
-			if(getCharacterSet() != null)
+			if (getCharacterSet() != null)
 			{
-				return new ByteArrayInputStream(getValue().getBytes(getCharacterSet().getName()));
+				return new ByteArrayInputStream(getValue().getBytes(
+						getCharacterSet().getName()));
 			}
 			else
 			{
@@ -169,8 +170,8 @@ public class StringTemplateRepresentation extends StreamRepresentation
 		if (getValue() != null)
 		{
 			OutputStreamWriter osw = null;
-			
-			if(getCharacterSet() != null)
+
+			if (getCharacterSet() != null)
 			{
 				osw = new OutputStreamWriter(outputStream, getCharacterSet().getName());
 			}
@@ -178,7 +179,7 @@ public class StringTemplateRepresentation extends StreamRepresentation
 			{
 				osw = new OutputStreamWriter(outputStream);
 			}
-			
+
 			osw.write(getValue());
 			osw.flush();
 		}

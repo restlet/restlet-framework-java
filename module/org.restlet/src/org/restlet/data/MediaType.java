@@ -22,7 +22,6 @@
 
 package org.restlet.data;
 
-
 /**
  * Media type used in representations and preferences.
  * @see <a href="http://en.wikipedia.org/wiki/MIME">MIME types on Wikipedia</a>
@@ -349,7 +348,7 @@ public class MediaType extends Metadata
 		return (object instanceof MediaType)
 				&& ((MediaType) object).getName().equals(getName());
 	}
-	
+
 	/** {@inheritDoc} */
 	@Override
 	public int hashCode()

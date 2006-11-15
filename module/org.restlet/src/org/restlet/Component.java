@@ -37,10 +37,10 @@ public abstract class Component extends Restlet
 {
 	/** The modifiable list of client connectors. */
 	private ClientList clients;
-	
+
 	/** The modifiable list of server connectors. */
 	private ServerList servers;
-	
+
 	/**
 	 * Constructor.
 	 */
@@ -48,7 +48,7 @@ public abstract class Component extends Restlet
 	{
 		this(null);
 	}
-	
+
 	/**
 	 * Constructor.
 	 * @param context The context.
@@ -64,7 +64,7 @@ public abstract class Component extends Restlet
 	 */
 	public ClientList getClients()
 	{
-		if(this.clients == null) this.clients = new ClientList(getContext());
+		if (this.clients == null) this.clients = new ClientList(getContext());
 		return this.clients;
 	}
 
@@ -74,56 +74,56 @@ public abstract class Component extends Restlet
 	 */
 	public ServerList getServers()
 	{
-		if(this.servers == null) this.servers = new ServerList(getContext(), this);
+		if (this.servers == null) this.servers = new ServerList(getContext(), this);
 		return this.servers;
 	}
-	
-   /**
-    * Start hook. Starts all connectors.
-    */
-   public void start() throws Exception
-   {
-   	if(this.clients != null)
-   	{
-	      for(Client client : this.clients)
-	      {
-	      	client.start();
-	      }
-   	}
-   	
-   	if(this.servers != null)
-   	{
-	      for(Server server : this.servers)
-	      {
-	      	server.start();
-	      }
-   	}
 
-   	super.start();
-   }
+	/**
+	 * Start hook. Starts all connectors.
+	 */
+	public void start() throws Exception
+	{
+		if (this.clients != null)
+		{
+			for (Client client : this.clients)
+			{
+				client.start();
+			}
+		}
 
-   /**
-    * Stop hook. Stops all connectors.
-    */
-   public void stop() throws Exception
-   {
-   	super.stop();
+		if (this.servers != null)
+		{
+			for (Server server : this.servers)
+			{
+				server.start();
+			}
+		}
 
-      if(this.clients != null)
-   	{
-	      for(Client client : this.clients)
-	      {
-	         client.stop();
-	      }
-   	}
-   	
-   	if(this.servers != null)
-   	{
-	      for(Server server : this.servers)
-	      {
-	      	server.stop();
-	      }
-   	}
-   }
-	
+		super.start();
+	}
+
+	/**
+	 * Stop hook. Stops all connectors.
+	 */
+	public void stop() throws Exception
+	{
+		super.stop();
+
+		if (this.clients != null)
+		{
+			for (Client client : this.clients)
+			{
+				client.stop();
+			}
+		}
+
+		if (this.servers != null)
+		{
+			for (Server server : this.servers)
+			{
+				server.stop();
+			}
+		}
+	}
+
 }

@@ -107,9 +107,9 @@ public class TunnelService
 		this.methodParameter = "method";
 		this.preferencesTunnel = preferencesTunnel;
 		this.characterSetParameter = "charset";
-		this.encodingParameter     = "encoding";
-		this.languageParameter     = "language";
-		this.mediaTypeParameter    = "media";
+		this.encodingParameter = "encoding";
+		this.languageParameter = "language";
+		this.mediaTypeParameter = "media";
 	}
 
 	/**
@@ -120,7 +120,7 @@ public class TunnelService
 	{
 		return this.enabled;
 	}
-	
+
 	/**
 	 * Indicates if the service should be enabled.
 	 * @param enabled True if the service should be enabled.
@@ -266,5 +266,5 @@ public class TunnelService
 	{
 		this.mediaTypeParameter = parameterName;
 	}
-	
+
 }

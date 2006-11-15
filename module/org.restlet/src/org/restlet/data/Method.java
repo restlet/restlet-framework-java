@@ -29,12 +29,12 @@ package org.restlet.data;
 public class Method extends Metadata
 {
 	private static final String BASE_HTTP = "http://www.w3.org/Protocols/rfc2616/rfc2616-sec9.html";
+
 	private static final String BASE_WEBDAV = "http://www.webdav.org/specs/rfc2518.html";
 
-	public static final Method CONNECT = new Method(
-			"CONNECT",
-			"Used with a proxy that can dynamically switch to being a tunnel", 
-			BASE_HTTP	+ "#sec9.9");
+	public static final Method CONNECT = new Method("CONNECT",
+			"Used with a proxy that can dynamically switch to being a tunnel", BASE_HTTP
+					+ "#sec9.9");
 
 	public static final Method COPY = new Method(
 			"COPY",
@@ -56,15 +56,12 @@ public class Method extends Metadata
 			"Identical to GET except that the server must not return a message body in the response",
 			BASE_HTTP + "#sec9.4");
 
-	public static final Method LOCK = new Method(
-			"LOCK",
-			"Used to take out a lock of any access type (WebDAV)", 
-			BASE_WEBDAV + "#METHOD_LOCK");
+	public static final Method LOCK = new Method("LOCK",
+			"Used to take out a lock of any access type (WebDAV)", BASE_WEBDAV
+					+ "#METHOD_LOCK");
 
-	public static final Method MKCOL = new Method(
-			"MKCOL",
-			"Used to create a new collection (WebDAV)", 
-			BASE_WEBDAV + "#METHOD_MKCOL");
+	public static final Method MKCOL = new Method("MKCOL",
+			"Used to create a new collection (WebDAV)", BASE_WEBDAV + "#METHOD_MKCOL");
 
 	public static final Method MOVE = new Method(
 			"MOVE",
@@ -81,9 +78,8 @@ public class Method extends Metadata
 			"Request that the origin server accept the entity enclosed in the request as a new subordinate of the resource identified by the request URI",
 			BASE_HTTP + "#sec9.5");
 
-	public static final Method PROPFIND = new Method(
-			"PROPFIND",
-			"Retrieve properties defined on the resource identified by the request URI", 
+	public static final Method PROPFIND = new Method("PROPFIND",
+			"Retrieve properties defined on the resource identified by the request URI",
 			BASE_WEBDAV + "#METHOD_PROPFIND");
 
 	public static final Method PROPPATCH = new Method(
@@ -91,13 +87,11 @@ public class Method extends Metadata
 			"Process instructions specified in the request body to set and/or remove properties defined on the resource identified by the request URI",
 			BASE_WEBDAV + "#METHOD_PROPPATCH");
 
-	public static final Method PUT = new Method(
-			"PUT",
-			"Request that the enclosed entity be stored under the supplied request URI", 
+	public static final Method PUT = new Method("PUT",
+			"Request that the enclosed entity be stored under the supplied request URI",
 			BASE_HTTP + "#sec9.6");
 
-	public static final Method TRACE = new Method(
-			"TRACE",
+	public static final Method TRACE = new Method("TRACE",
 			"Used to invoke a remote, application-layer loop-back of the request message",
 			BASE_HTTP + "#sec9.8");
 
@@ -160,10 +154,9 @@ public class Method extends Metadata
 	@Override
 	public boolean equals(Object object)
 	{
-		return (object instanceof Method)
-				&& ((Method) object).getName().equals(getName());
+		return (object instanceof Method) && ((Method) object).getName().equals(getName());
 	}
-	
+
 	/** {@inheritDoc} */
 	@Override
 	public int hashCode()

@@ -51,31 +51,31 @@ import org.restlet.resource.Result;
  */
 public class WrapperRepresentation extends Representation
 {
-   /** The wrapped representation. */
-   private Representation wrappedRepresentation;
+	/** The wrapped representation. */
+	private Representation wrappedRepresentation;
 
-   /**
-    * Constructor.
-    * @param wrappedRepresentation The wrapped representation.
-    */
-   public WrapperRepresentation(Representation wrappedRepresentation)
-   {
-      this.wrappedRepresentation = wrappedRepresentation;
-   }
+	/**
+	 * Constructor.
+	 * @param wrappedRepresentation The wrapped representation.
+	 */
+	public WrapperRepresentation(Representation wrappedRepresentation)
+	{
+		this.wrappedRepresentation = wrappedRepresentation;
+	}
 
-   /**
-    * Returns the wrapped representation.
-    * @return The wrapped representation.
-    */
-   public Representation getWrappedRepresentation()
-   {
-      return this.wrappedRepresentation;
-   }
+	/**
+	 * Returns the wrapped representation.
+	 * @return The wrapped representation.
+	 */
+	public Representation getWrappedRepresentation()
+	{
+		return this.wrappedRepresentation;
+	}
 
-   // ----------------
-   // Resource methods
-   // ----------------
-   
+	// ----------------
+	// Resource methods
+	// ----------------
+
 	/**
 	 * Indicates if it is allowed to delete the resource. The default value is false. 
 	 * @return True if the method is allowed.
@@ -232,196 +232,196 @@ public class WrapperRepresentation extends Representation
 	{
 		getWrappedRepresentation().setVariants(variants);
 	}
-   
-   // ----------------------
-   // Representation methods
-   // ----------------------
 
-   /**
-    * Returns the character set or null if not applicable.
-    * @return The character set or null if not applicable.
-    */
-   public CharacterSet getCharacterSet()
-   {
+	// ----------------------
+	// Representation methods
+	// ----------------------
+
+	/**
+	 * Returns the character set or null if not applicable.
+	 * @return The character set or null if not applicable.
+	 */
+	public CharacterSet getCharacterSet()
+	{
 		return getWrappedRepresentation().getCharacterSet();
-   }
+	}
 
-   /**
-    * Sets the character set or null if not applicable.
-    * @param characterSet The character set or null if not applicable.
-    */
-   public void setCharacterSet(CharacterSet characterSet)
-   {
-   	getWrappedRepresentation().setCharacterSet(characterSet);
-   }
+	/**
+	 * Sets the character set or null if not applicable.
+	 * @param characterSet The character set or null if not applicable.
+	 */
+	public void setCharacterSet(CharacterSet characterSet)
+	{
+		getWrappedRepresentation().setCharacterSet(characterSet);
+	}
 
-   /**
-    * Indicates if some fresh content is available, without having to actually call one of the content
-    * manipulation method like getStream() that would actually consume it. This is especially useful for
-    * transient representation whose content can only be accessed once. 
-    * @return True if some fresh content is available.
-    */
-   public boolean isAvailable()
-   {
+	/**
+	 * Indicates if some fresh content is available, without having to actually call one of the content
+	 * manipulation method like getStream() that would actually consume it. This is especially useful for
+	 * transient representation whose content can only be accessed once. 
+	 * @return True if some fresh content is available.
+	 */
+	public boolean isAvailable()
+	{
 		return getWrappedRepresentation().isAvailable();
-   }
+	}
 
-   /**
-    * Indicates if the representation's content is transient, which means that it can 
-    * be obtained only once. This is often the case with representations transmitted
-    * via network sockets for example. In such case, if you need to read the content 
-    * several times, you need to cache it first, for example into memory or into a file.   
-    * @return True if the representation's content is transient.
-    */
+	/**
+	 * Indicates if the representation's content is transient, which means that it can 
+	 * be obtained only once. This is often the case with representations transmitted
+	 * via network sockets for example. In such case, if you need to read the content 
+	 * several times, you need to cache it first, for example into memory or into a file.   
+	 * @return True if the representation's content is transient.
+	 */
 	public boolean isTransient()
 	{
 		return getWrappedRepresentation().isTransient();
 	}
 
-   /**
-    * Returns the encoding or null if identity encoding applies.
-    * @return The encoding or null if identity encoding applies.
-    */
-   public Encoding getEncoding()
-   {
+	/**
+	 * Returns the encoding or null if identity encoding applies.
+	 * @return The encoding or null if identity encoding applies.
+	 */
+	public Encoding getEncoding()
+	{
 		return getWrappedRepresentation().getEncoding();
-   }
+	}
 
-   /**
-    * Sets the encoding or null if identity encoding applies.
-    * @param encoding The encoding or null if identity encoding applies.
-    */
-   public void setEncoding(Encoding encoding)
-   {
-   	getWrappedRepresentation().setEncoding(encoding);
-   }
+	/**
+	 * Sets the encoding or null if identity encoding applies.
+	 * @param encoding The encoding or null if identity encoding applies.
+	 */
+	public void setEncoding(Encoding encoding)
+	{
+		getWrappedRepresentation().setEncoding(encoding);
+	}
 
-   /**
-    * Returns the future date when this representation expire. If this information is not known, returns null.
-    * @return The expiration date.
-    */
-   public Date getExpirationDate()
-   {
+	/**
+	 * Returns the future date when this representation expire. If this information is not known, returns null.
+	 * @return The expiration date.
+	 */
+	public Date getExpirationDate()
+	{
 		return getWrappedRepresentation().getExpirationDate();
-   }
+	}
 
-   /**
-    * Sets the future date when this representation expire. If this information is not known, pass null.
-    * @param expirationDate The expiration date.
-    */
-   public void setExpirationDate(Date expirationDate)
-   {
-   	getWrappedRepresentation().setExpirationDate(expirationDate);
-   }
+	/**
+	 * Sets the future date when this representation expire. If this information is not known, pass null.
+	 * @param expirationDate The expiration date.
+	 */
+	public void setExpirationDate(Date expirationDate)
+	{
+		getWrappedRepresentation().setExpirationDate(expirationDate);
+	}
 
-   /**
-    * Returns the language or null if not applicable.
-    * @return The language or null if not applicable.
-    */
-   public Language getLanguage()
-   {
+	/**
+	 * Returns the language or null if not applicable.
+	 * @return The language or null if not applicable.
+	 */
+	public Language getLanguage()
+	{
 		return getWrappedRepresentation().getLanguage();
-   }
+	}
 
-   /**
-    * Sets the language or null if not applicable.
-    * @param language The language or null if not applicable.
-    */
-   public void setLanguage(Language language)
-   {
-   	getWrappedRepresentation().setLanguage(language);
-   }
+	/**
+	 * Sets the language or null if not applicable.
+	 * @param language The language or null if not applicable.
+	 */
+	public void setLanguage(Language language)
+	{
+		getWrappedRepresentation().setLanguage(language);
+	}
 
-   /**
-    * Returns the media type.
-    * @return The media type.
-    */
-   public MediaType getMediaType()
-   {
+	/**
+	 * Returns the media type.
+	 * @return The media type.
+	 */
+	public MediaType getMediaType()
+	{
 		return getWrappedRepresentation().getMediaType();
-   }
+	}
 
-   /**
-    * Sets the media type.
-    * @param mediaType The media type.
-    */
-   public void setMediaType(MediaType mediaType)
-   {
-   	getWrappedRepresentation().setMediaType(mediaType);
-   }
+	/**
+	 * Sets the media type.
+	 * @param mediaType The media type.
+	 */
+	public void setMediaType(MediaType mediaType)
+	{
+		getWrappedRepresentation().setMediaType(mediaType);
+	}
 
-   /**
-    * Returns the last date when this representation was modified. If this information is not known, returns
-    * null.
-    * @return The modification date.
-    */
-   public Date getModificationDate()
-   {
+	/**
+	 * Returns the last date when this representation was modified. If this information is not known, returns
+	 * null.
+	 * @return The modification date.
+	 */
+	public Date getModificationDate()
+	{
 		return getWrappedRepresentation().getModificationDate();
-   }
+	}
 
-   /**
-    * Sets the last date when this representation was modified. If this information is not known, pass null.
-    * @param modificationDate The modification date.
-    */
-   public void setModificationDate(Date modificationDate)
-   {
-   	getWrappedRepresentation().setModificationDate(modificationDate);
-   }
+	/**
+	 * Sets the last date when this representation was modified. If this information is not known, pass null.
+	 * @param modificationDate The modification date.
+	 */
+	public void setModificationDate(Date modificationDate)
+	{
+		getWrappedRepresentation().setModificationDate(modificationDate);
+	}
 
-   /**
-    * Returns the represented resource if available.
-    * @return The represented resource if available.
-    */
-   public Resource getResource()
-   {
+	/**
+	 * Returns the represented resource if available.
+	 * @return The represented resource if available.
+	 */
+	public Resource getResource()
+	{
 		return getWrappedRepresentation().getResource();
-   }
+	}
 
-   /**
-    * Sets the represented resource.
-    * @param resource The represented resource.
-    */
-   public void setResource(Resource resource)
-   {
-   	getWrappedRepresentation().setResource(resource);
-   }
-   
-   /**
-    * Returns the size in bytes if known, UNKNOWN_SIZE (-1) otherwise.
-    * @return The size in bytes if known, UNKNOWN_SIZE (-1) otherwise.
-    */
-   public long getSize()
-   {
+	/**
+	 * Sets the represented resource.
+	 * @param resource The represented resource.
+	 */
+	public void setResource(Resource resource)
+	{
+		getWrappedRepresentation().setResource(resource);
+	}
+
+	/**
+	 * Returns the size in bytes if known, UNKNOWN_SIZE (-1) otherwise.
+	 * @return The size in bytes if known, UNKNOWN_SIZE (-1) otherwise.
+	 */
+	public long getSize()
+	{
 		return getWrappedRepresentation().getSize();
-   }
+	}
 
-   /**
-    * Sets the expected size in bytes if known, -1 otherwise.
-    * @param expectedSize The expected size in bytes if known, -1 otherwise.
-    */
-   public void setSize(long expectedSize)
-   {
-   	getWrappedRepresentation().setSize(expectedSize);
-   }
+	/**
+	 * Sets the expected size in bytes if known, -1 otherwise.
+	 * @param expectedSize The expected size in bytes if known, -1 otherwise.
+	 */
+	public void setSize(long expectedSize)
+	{
+		getWrappedRepresentation().setSize(expectedSize);
+	}
 
-   /**
-    * Returns the tag.
-    * @return The tag.
-    */
-   public Tag getTag()
-   {
+	/**
+	 * Returns the tag.
+	 * @return The tag.
+	 */
+	public Tag getTag()
+	{
 		return getWrappedRepresentation().getTag();
-   }
+	}
 
-   /**
-    * Sets the tag.
-    * @param tag The tag.
-    */
-   public void setTag(Tag tag)
-   {
-   	getWrappedRepresentation().setTag(tag);
-   }
+	/**
+	 * Sets the tag.
+	 * @param tag The tag.
+	 */
+	public void setTag(Tag tag)
+	{
+		getWrappedRepresentation().setTag(tag);
+	}
 
 	/**
 	 * Indicates if some fresh content is available.
@@ -441,62 +441,62 @@ public class WrapperRepresentation extends Representation
 		getWrappedRepresentation().setTransient(isTransient);
 	}
 
-   /**
-    * Returns a channel with the representation's content.<br/>
-    * If it is supported by a file, a read-only instance of FileChannel is returned.<br/>
-    * This method is ensured to return a fresh channel for each invocation unless it 
-    * is a transient representation, in which case null is returned.
-    * @return A channel with the representation's content.
-    * @throws IOException
-    */
-   public ReadableByteChannel getChannel() throws IOException
-   {
+	/**
+	 * Returns a channel with the representation's content.<br/>
+	 * If it is supported by a file, a read-only instance of FileChannel is returned.<br/>
+	 * This method is ensured to return a fresh channel for each invocation unless it 
+	 * is a transient representation, in which case null is returned.
+	 * @return A channel with the representation's content.
+	 * @throws IOException
+	 */
+	public ReadableByteChannel getChannel() throws IOException
+	{
 		return getWrappedRepresentation().getChannel();
-   }
+	}
 
-   /**
-    * Returns a stream with the representation's content.
-    * This method is ensured to return a fresh stream for each invocation unless it 
-    * is a transient representation, in which case null is returned.
-    * @return A stream with the representation's content.
-    * @throws IOException
-    */
-   public InputStream getStream() throws IOException
-   {
+	/**
+	 * Returns a stream with the representation's content.
+	 * This method is ensured to return a fresh stream for each invocation unless it 
+	 * is a transient representation, in which case null is returned.
+	 * @return A stream with the representation's content.
+	 * @throws IOException
+	 */
+	public InputStream getStream() throws IOException
+	{
 		return getWrappedRepresentation().getStream();
-   }
+	}
 
-   /**
-    * Writes the representation to a byte channel.
-    * This method is ensured to write the full content for each invocation unless it 
-    * is a transient representation, in which case an exception is thrown.
-    * @param writableChannel A writable byte channel.
-    * @throws IOException
-    */
-   public void write(WritableByteChannel writableChannel) throws IOException
-   {
-   	getWrappedRepresentation().write(writableChannel);
-   }
+	/**
+	 * Writes the representation to a byte channel.
+	 * This method is ensured to write the full content for each invocation unless it 
+	 * is a transient representation, in which case an exception is thrown.
+	 * @param writableChannel A writable byte channel.
+	 * @throws IOException
+	 */
+	public void write(WritableByteChannel writableChannel) throws IOException
+	{
+		getWrappedRepresentation().write(writableChannel);
+	}
 
-   /**
-    * Writes the representation to a byte stream.
-    * This method is ensured to write the full content for each invocation unless it 
-    * is a transient representation, in which case an exception is thrown.
-    * @param outputStream The output stream.
-    * @throws IOException
-    */
-   public void write(OutputStream outputStream) throws IOException
-   {
-   	getWrappedRepresentation().write(outputStream);
-   }
+	/**
+	 * Writes the representation to a byte stream.
+	 * This method is ensured to write the full content for each invocation unless it 
+	 * is a transient representation, in which case an exception is thrown.
+	 * @param outputStream The output stream.
+	 * @throws IOException
+	 */
+	public void write(OutputStream outputStream) throws IOException
+	{
+		getWrappedRepresentation().write(outputStream);
+	}
 
 	/**
 	 * Converts the representation to a string value. Be careful when using this method as the conversion of 
 	 * large content to a string fully stored in memory can result in OutOfMemoryErrors being thrown.
 	 * @return The representation as a string value.
 	 */
-   public String getValue() throws IOException
-   {
-      return getWrappedRepresentation().getValue();
-   }
+	public String getValue() throws IOException
+	{
+		return getWrappedRepresentation().getValue();
+	}
 }

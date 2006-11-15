@@ -44,7 +44,7 @@ public interface Helper
 	 * @param response The response to update.
 	 */
 	public void handle(Request request, Response response);
-	
+
 	/** Start callback. */
 	public void start() throws Exception;
 

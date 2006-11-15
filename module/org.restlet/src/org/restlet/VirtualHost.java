@@ -37,12 +37,14 @@ import org.restlet.data.Protocol;
 public class VirtualHost extends Router
 {
 	public static final String ALL_ADDRESSES = "0.0.0.0";
+
 	public static final String ALL_DOMAINS = "*";
+
 	public static final Integer ALL_PORTS = -1;
-	
+
 	/** The display name. */
 	private String name;
-	
+
 	/** 
 	 * The modifiable list of allowed IP addresses. 
 	 * You can add the ALL_ADDRESSES (-1) to allow any IP address. 
@@ -54,7 +56,7 @@ public class VirtualHost extends Router
 	 * You can add the ALL_NAMES ("*") to allow any domain name. 
 	 */
 	private List<String> allowedDomains;
-	
+
 	/**
 	 * The modifiable list of allowed port numbers.
 	 * You can add the ALL_PORTS (-1) to allow any port number. 
@@ -68,19 +70,19 @@ public class VirtualHost extends Router
 	private List<Protocol> allowedProtocols;
 
 	/**
-    * Constructor.
-    */
+	 * Constructor.
+	 */
 	public VirtualHost()
-   {
+	{
 		this(null);
-   }
-	
+	}
+
 	/**
-    * Constructor.
-    * @param context The context.
-    */
+	 * Constructor.
+	 * @param context The context.
+	 */
 	public VirtualHost(Context context)
-   {
+	{
 		super(context);
 		this.allowedAddresses = new ArrayList<String>();
 		this.allowedDomains = new ArrayList<String>();
@@ -108,7 +110,7 @@ public class VirtualHost extends Router
 
 		// Add allowed protocols (all by default)
 		result.getAllowedProtocols().add(Protocol.ALL);
-		
+
 		return result;
 	}
 
@@ -135,10 +137,10 @@ public class VirtualHost extends Router
 
 		// Add allowed protocols (all by default)
 		result.getAllowedProtocols().add(Protocol.ALL);
-		
+
 		return result;
 	}
-	
+
 	/**
 	 * Returns the modifiable list of allowed IP addresses. 
 	 * You can add the ALL_ADDRESSES (-1) to allow any IP address. 
@@ -158,7 +160,7 @@ public class VirtualHost extends Router
 	{
 		return this.allowedDomains;
 	}
-	
+
 	/**
 	 * Returns the modifiable list of allowed port numbers.
 	 * You can add the ALL_PORTS (-1) to allow any port number. 
@@ -168,7 +170,7 @@ public class VirtualHost extends Router
 	{
 		return this.allowedPorts;
 	}
-	
+
 	/**
 	 * Returns the modifiable list of allowed protocols. 
 	 * You can add the Protocol.ALL to allow any protocol. 
@@ -196,7 +198,7 @@ public class VirtualHost extends Router
 	{
 		this.name = name;
 	}
-	
+
 	/**
 	 * Returns the local host name.
 	 * @return The local host name.
@@ -204,7 +206,7 @@ public class VirtualHost extends Router
 	public static String getLocalHostName()
 	{
 		String result = null;
-		
+
 		try
 		{
 			result = InetAddress.getLocalHost().getHostName();
@@ -212,10 +214,10 @@ public class VirtualHost extends Router
 		catch (UnknownHostException e)
 		{
 		}
-		
+
 		return result;
 	}
-	
+
 	/**
 	 * Returns the local host IP address.
 	 * @return The local host IP address.
@@ -223,7 +225,7 @@ public class VirtualHost extends Router
 	public static String getLocalHostAddress()
 	{
 		String result = null;
-		
+
 		try
 		{
 			result = InetAddress.getLocalHost().getHostAddress();
@@ -231,10 +233,10 @@ public class VirtualHost extends Router
 		catch (UnknownHostException e)
 		{
 		}
-		
+
 		return result;
 	}
-	
+
 	/**
 	 * Returns the IP address of a given domain name.
 	 * @param domain The domain name.
@@ -243,7 +245,7 @@ public class VirtualHost extends Router
 	public static String getIpAddress(String domain)
 	{
 		String result = null;
-		
+
 		try
 		{
 			result = InetAddress.getByName(domain).getHostAddress();
@@ -251,7 +253,7 @@ public class VirtualHost extends Router
 		catch (UnknownHostException e)
 		{
 		}
-		
+
 		return result;
 	}
 

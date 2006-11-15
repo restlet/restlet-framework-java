@@ -35,7 +35,7 @@ public class ServerList extends WrapperList<Server>
 {
 	/** The context. */
 	private Context context;
-	
+
 	/** The target Restlet of added servers. */
 	private Restlet target;
 
@@ -84,7 +84,8 @@ public class ServerList extends WrapperList<Server>
 	 */
 	public Server add(Protocol protocol)
 	{
-		Server result = new Server(getContext(), protocol, null, protocol.getDefaultPort(), getTarget());
+		Server result = new Server(getContext(), protocol, null, protocol.getDefaultPort(),
+				getTarget());
 		add(result);
 		return result;
 	}

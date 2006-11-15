@@ -62,7 +62,7 @@ public class Restlet
 	{
 		this(null);
 	}
-	
+
 	/**
 	 * Constructor.
 	 * @param context The context.
@@ -79,27 +79,28 @@ public class Restlet
 	 */
 	public Context getContext()
 	{
-		if(this.context == null) this.context = new Context(getClass().getCanonicalName());
+		if (this.context == null)
+			this.context = new Context(getClass().getCanonicalName());
 		return this.context;
 	}
 
 	/**
-    * Returns the context's logger.
-    * @return The context's logger.
-    */
-   public Logger getLogger()
-   {
-  		return (getContext() != null) ? getContext().getLogger() : null;
-   }
-   
-   /**
+	 * Returns the context's logger.
+	 * @return The context's logger.
+	 */
+	public Logger getLogger()
+	{
+		return (getContext() != null) ? getContext().getLogger() : null;
+	}
+
+	/**
 	 * Handles a call.
 	 * @param request The request to handle.
 	 * @param response The response to update.
 	 */
 	public void handle(Request request, Response response)
 	{
-  		init(request, response);
+		init(request, response);
 	}
 
 	/**
@@ -109,7 +110,7 @@ public class Restlet
 	 */
 	protected void init(Request request, Response response)
 	{
-   	// Check if the Restlet was started
+		// Check if the Restlet was started
 		if (isStopped())
 		{
 			try
@@ -145,7 +146,7 @@ public class Restlet
 	{
 		return this.started;
 	}
-	
+
 	/**
 	 * Indicates if the Restlet is stopped.
 	 * @return True if the Restlet is stopped.
@@ -167,13 +168,13 @@ public class Restlet
 	/** Starts the Restlet. */
 	public void start() throws Exception
 	{
- 		this.started = true;
+		this.started = true;
 	}
 
 	/** Stops the Restlet. */
 	public void stop() throws Exception
 	{
-  		this.started = false;
+		this.started = false;
 	}
 
 }

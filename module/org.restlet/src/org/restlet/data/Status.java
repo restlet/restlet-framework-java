@@ -935,7 +935,7 @@ public class Status extends Metadata
 	{
 		return (object instanceof Status) && (this.code == ((Status) object).getCode());
 	}
-	
+
 	/** {@inheritDoc} */
 	@Override
 	public int hashCode()

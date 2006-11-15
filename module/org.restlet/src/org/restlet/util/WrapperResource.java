@@ -40,26 +40,26 @@ import org.restlet.resource.Result;
  */
 public class WrapperResource extends Resource
 {
-   /** The wrapped resource. */
-   private Resource wrappedResource;
+	/** The wrapped resource. */
+	private Resource wrappedResource;
 
-   /**
-    * Constructor.
-    * @param wrappedResource The wrapped resource.
-    */
-   public WrapperResource(Resource wrappedResource)
-   {
-      this.wrappedResource = wrappedResource;
-   }
+	/**
+	 * Constructor.
+	 * @param wrappedResource The wrapped resource.
+	 */
+	public WrapperResource(Resource wrappedResource)
+	{
+		this.wrappedResource = wrappedResource;
+	}
 
-   /**
-    * Returns the wrapped Resource.
-    * @return The wrapped Resource.
-    */
-   protected Resource getWrappedResource()
-   {
-      return this.wrappedResource;
-   }
+	/**
+	 * Returns the wrapped Resource.
+	 * @return The wrapped Resource.
+	 */
+	protected Resource getWrappedResource()
+	{
+		return this.wrappedResource;
+	}
 
 	/**
 	 * Indicates if it is allowed to delete the resource. The default value is false. 

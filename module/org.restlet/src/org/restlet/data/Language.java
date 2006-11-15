@@ -35,7 +35,8 @@ public class Language extends Metadata
 	public static final Language ENGLISH = new Language("en", "English language");
 
 	/** English language spoken in USA. */
-	public static final Language ENGLISH_US = new Language("en-us", "English language in USA");
+	public static final Language ENGLISH_US = new Language("en-us",
+			"English language in USA");
 
 	/** French language. */
 	public static final Language FRENCH = new Language("fr", "French language");
@@ -113,14 +114,13 @@ public class Language extends Metadata
 		return (object instanceof Language)
 				&& getName().equalsIgnoreCase(((Language) object).getName());
 	}
-	
+
 	/** {@inheritDoc} */
 	@Override
 	public int hashCode()
 	{
 		return getName().toLowerCase().hashCode();
 	}
-
 
 	/**
 	 * Returns the language associated to a name. If an existing constant exists then it is 

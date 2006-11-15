@@ -51,10 +51,11 @@ public class Guard extends Filter
 	 * @deprecated Please use the new constructor, authentication now done at the connector level.
 	 */
 	@Deprecated
-	public Guard(Context context, boolean authenticate, ChallengeScheme scheme, String realm, boolean authorize)
+	public Guard(Context context, boolean authenticate, ChallengeScheme scheme,
+			String realm, boolean authorize)
 	{
 	}
-		
+
 	/**
 	 * Constructor.
 	 * @param context The context.
@@ -122,12 +123,12 @@ public class Guard extends Filter
 	protected int authorize(Request request)
 	{
 		int result = 0;
-		
-		if(request.getChallengeResponse() != null)
+
+		if (request.getChallengeResponse() != null)
 		{
 			String identifier = request.getChallengeResponse().getIdentifier();
 			String secret = request.getChallengeResponse().getSecret();
-	
+
 			if ((identifier != null) && (secret != null))
 			{
 				if (secret.equals(getAuthorizations().get(identifier)))

@@ -97,14 +97,13 @@ public class ChallengeScheme extends Metadata
 		return (object instanceof ChallengeScheme)
 				&& ((ChallengeScheme) object).getName().equalsIgnoreCase(getName());
 	}
-	
+
 	/** {@inheritDoc} */
 	@Override
 	public int hashCode()
 	{
 		return getName().toLowerCase().hashCode();
 	}
-
 
 	/**
 	 * Returns the challenge scheme associated to a scheme name. If an existing constant exists then it is 

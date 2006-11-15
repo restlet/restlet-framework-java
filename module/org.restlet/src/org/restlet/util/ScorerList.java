@@ -42,7 +42,7 @@ import org.restlet.data.Response;
  * @see java.util.Collections
  * @see java.util.List
  */
-public class ScorerList extends WrapperList<Scorer> 
+public class ScorerList extends WrapperList<Scorer>
 {
 	/** The parent router. */
 	private Router router;
@@ -107,12 +107,13 @@ public class ScorerList extends WrapperList<Scorer>
 
 	/**
 	 * Returns the best scorer match for a given call.
-    * @param request The request to score.
-    * @param response The response to score.
+	 * @param request The request to score.
+	 * @param response The response to score.
 	 * @param requiredScore The minimum score required to have a match. 
 	 * @return The best scorer match or null.
 	 */
-	public synchronized Scorer getBest(Request request, Response response, float requiredScore)
+	public synchronized Scorer getBest(Request request, Response response,
+			float requiredScore)
 	{
 		Scorer result = null;
 		float bestScore = 0F;
@@ -133,12 +134,13 @@ public class ScorerList extends WrapperList<Scorer>
 
 	/**
 	 * Returns the first scorer match for a given call.
-    * @param request The request to score.
-    * @param response The response to score.
+	 * @param request The request to score.
+	 * @param response The response to score.
 	 * @param requiredScore The minimum score required to have a match. 
 	 * @return The first scorer match or null.
 	 */
-	public synchronized Scorer getFirst(Request request, Response response, float requiredScore)
+	public synchronized Scorer getFirst(Request request, Response response,
+			float requiredScore)
 	{
 		for (Scorer current : this)
 		{
@@ -151,12 +153,13 @@ public class ScorerList extends WrapperList<Scorer>
 
 	/**
 	 * Returns the last scorer match for a given call.
-    * @param request The request to score.
-    * @param response The response to score.
+	 * @param request The request to score.
+	 * @param response The response to score.
 	 * @param requiredScore The minimum score required to have a match. 
 	 * @return The last scorer match or null.
 	 */
-	public synchronized Scorer getLast(Request request, Response response, float requiredScore)
+	public synchronized Scorer getLast(Request request, Response response,
+			float requiredScore)
 	{
 		for (int j = (size() - 1); (j >= 0); j--)
 		{
@@ -169,12 +172,13 @@ public class ScorerList extends WrapperList<Scorer>
 
 	/**
 	 * Returns a next scorer match in a round robin mode for a given call.
-    * @param request The request to score.
-    * @param response The response to score.
+	 * @param request The request to score.
+	 * @param response The response to score.
 	 * @param requiredScore The minimum score required to have a match. 
 	 * @return A next scorer or null.
 	 */
-	public synchronized Scorer getNext(Request request, Response response, float requiredScore)
+	public synchronized Scorer getNext(Request request, Response response,
+			float requiredScore)
 	{
 		for (int initialIndex = lastIndex++; initialIndex != lastIndex; lastIndex++)
 		{
@@ -183,7 +187,8 @@ public class ScorerList extends WrapperList<Scorer>
 				lastIndex = 0;
 			}
 
-			if (get(lastIndex).score(request, response) >= requiredScore) return get(lastIndex);
+			if (get(lastIndex).score(request, response) >= requiredScore)
+				return get(lastIndex);
 		}
 
 		// No match found
@@ -192,12 +197,13 @@ public class ScorerList extends WrapperList<Scorer>
 
 	/**
 	 * Returns a random scorer match for a given call.
-    * @param request The request to score.
-    * @param response The response to score.
+	 * @param request The request to score.
+	 * @param response The response to score.
 	 * @param requiredScore The minimum score required to have a match. 
 	 * @return A random scorer or null.
 	 */
-	public synchronized Scorer getRandom(Request request, Response response, float requiredScore)
+	public synchronized Scorer getRandom(Request request, Response response,
+			float requiredScore)
 	{
 		int j = new Random().nextInt(size());
 		if (get(j).score(request, response) >= requiredScore) return get(j);
@@ -215,16 +221,16 @@ public class ScorerList extends WrapperList<Scorer>
 		// No match found
 		return null;
 	}
-	
+
 	/**
 	 * Removes all scorers routing to a given target.
 	 * @param target The target Restlet to detach.
 	 */
 	public void removeAll(Restlet target)
 	{
-		for(int i = size() - 1; i >= 0; i--)
+		for (int i = size() - 1; i >= 0; i--)
 		{
-			if(get(i).getNext() == target) remove(i); 
+			if (get(i).getNext() == target) remove(i);
 		}
 	}
 

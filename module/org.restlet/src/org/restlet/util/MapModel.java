@@ -25,8 +25,6 @@ package org.restlet.util;
 import java.util.Map;
 import java.util.TreeMap;
 
-
-
 /**
  * Simple model based on a map.
  * @author Jerome Louvel (contact@noelios.com) <a href="http://www.noelios.com/">Noelios Consulting</a>

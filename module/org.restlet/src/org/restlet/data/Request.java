@@ -369,7 +369,7 @@ public class Request extends Message
 	{
 		if (resourceRef != null)
 		{
-			if(resourceRef.isRelative() && (resourceRef.getBaseRef() != null))
+			if (resourceRef.isRelative() && (resourceRef.getBaseRef() != null))
 			{
 				this.resourceRef = resourceRef.getTargetRef();
 			}

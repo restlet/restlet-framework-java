@@ -90,14 +90,13 @@ public class CharacterSet extends Metadata
 		return (object instanceof CharacterSet)
 				&& getName().equalsIgnoreCase(((CharacterSet) object).getName());
 	}
-	
+
 	/** {@inheritDoc} */
 	@Override
 	public int hashCode()
 	{
 		return getName().toLowerCase().hashCode();
 	}
-
 
 	/**
 	 * Returns the character set associated to a name. If an existing constant exists then it is 
