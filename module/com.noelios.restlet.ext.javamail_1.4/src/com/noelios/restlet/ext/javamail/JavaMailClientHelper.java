@@ -22,18 +22,24 @@
 
 package com.noelios.restlet.ext.javamail;
 
+import java.io.IOException;
 import java.net.URI;
+import java.net.URISyntaxException;
 import java.util.Date;
 import java.util.Properties;
 import java.util.logging.Level;
 
 import javax.mail.Message;
+import javax.mail.MessagingException;
+import javax.mail.NoSuchProviderException;
 import javax.mail.Session;
 import javax.mail.Transport;
+import javax.mail.internet.AddressException;
 import javax.mail.internet.InternetAddress;
 import javax.mail.internet.MimeMessage;
 import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
+import javax.xml.parsers.ParserConfigurationException;
 
 import org.restlet.Client;
 import org.restlet.data.Method;
@@ -44,6 +50,7 @@ import org.restlet.resource.Representation;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 import org.w3c.dom.NodeList;
+import org.xml.sax.SAXException;
 
 import com.noelios.restlet.ClientHelper;
 import com.noelios.restlet.Factory;
@@ -128,142 +135,178 @@ public abstract class JavaMailClientHelper extends ClientHelper
 			int smtpPort = smtpURI.getPort();
 			// String smtpUserInfo = smtpURI.getUserInfo();
 
-			if (smtpPort == -1)
+			Protocol defaultProtocol = getClient().getProtocols().get(0);
+
+			if (defaultProtocol != null)
 			{
-				if ((getClient().getProtocols().equals(Protocol.SMTP))
-						|| (getClient().getProtocols().equals(Protocol.SMTP_STARTTLS)))
+				if (smtpPort == -1)
 				{
-					// Use the default SMTP port
-					smtpPort = 25;
-				}
-				else if (getClient().getProtocols().equals(Protocol.SMTPS))
-				{
-					smtpPort = 465;
-				}
-			}
-
-			if ((smtpHost == null) || (smtpHost.equals("")))
-			{
-				throw new IllegalArgumentException("Invalid SMTP host specified");
-			}
-
-			// Parse the email to extract necessary info
-			DocumentBuilder docBuilder = DocumentBuilderFactory.newInstance()
-					.newDocumentBuilder();
-			Document email = docBuilder.parse(request.getEntity().getStream());
-
-			Element root = (Element) email.getElementsByTagName("email").item(0);
-			Element header = (Element) root.getElementsByTagName("head").item(0);
-			String subject = header.getElementsByTagName("subject").item(0).getTextContent();
-			String from = header.getElementsByTagName("from").item(0).getTextContent();
-
-			NodeList toList = header.getElementsByTagName("to");
-			String[] to = new String[toList.getLength()];
-			for (int i = 0; i < toList.getLength(); i++)
-			{
-				to[i] = toList.item(i).getTextContent();
-			}
-
-			NodeList ccList = header.getElementsByTagName("cc");
-			String[] cc = new String[ccList.getLength()];
-			for (int i = 0; i < ccList.getLength(); i++)
-			{
-				cc[i] = ccList.item(i).getTextContent();
-			}
-
-			NodeList bccList = header.getElementsByTagName("bcc");
-			String[] bcc = new String[bccList.getLength()];
-			for (int i = 0; i < bccList.getLength(); i++)
-			{
-				bcc[i] = bccList.item(i).getTextContent();
-			}
-
-			String text = root.getElementsByTagName("body").item(0).getTextContent();
-
-			// Prepare the connection to the SMTP server
-			Session session = null;
-			Transport transport = null;
-			Properties props = System.getProperties();
-
-			// Check if authentication required
-			boolean authenticate = ((getLogin(request) != null) && (getPassword(request) != null));
-
-			// Connect to the SMTP server
-			if (getClient().getProtocols().equals(Protocol.SMTP)
-					|| getClient().getProtocols().equals(Protocol.SMTP_STARTTLS))
-			{
-				props.put("mail.smtp.host", smtpHost);
-				props.put("mail.smtp.port", Integer.toString(smtpPort));
-				props.put("mail.smtp.auth", Boolean.toString(authenticate).toLowerCase());
-				props.put("mail.smtp.starttls.enable", Boolean.toString(
-						getClient().getProtocols().equals(Protocol.SMTP_STARTTLS))
-						.toLowerCase());
-				session = Session.getDefaultInstance(props);
-				// session.setDebug(true);
-				transport = session.getTransport("smtp");
-			}
-			else if (getClient().getProtocols().equals(Protocol.SMTPS))
-			{
-				props.put("mail.smtps.host", smtpHost);
-				props.put("mail.smtps.port", Integer.toString(smtpPort));
-				props.put("mail.smtps.auth", Boolean.toString(authenticate).toLowerCase());
-				session = Session.getDefaultInstance(props);
-				// session.setDebug(true);
-				transport = session.getTransport("smtps");
-			}
-
-			// Check if authentication is needed
-			if (authenticate)
-			{
-				transport.connect(smtpHost, getLogin(request), getPassword(request));
-			}
-			else
-			{
-				transport.connect();
-			}
-
-			// Actually send the message
-			if (transport.isConnected())
-			{
-				getLogger()
-						.info(
-								"JavaMail client connection successfully established. Attempting to send the message");
-
-				// Create a new message
-				Message msg = new MimeMessage(session);
-
-				// Set the FROM and TO fields
-				msg.setFrom(new InternetAddress(from));
-
-				for (String element : to)
-				{
-					msg.addRecipient(Message.RecipientType.TO, new InternetAddress(element));
+					if ((defaultProtocol.equals(Protocol.SMTP))
+							|| (defaultProtocol.equals(Protocol.SMTP_STARTTLS)))
+					{
+						// Use the default SMTP port
+						smtpPort = 25;
+					}
+					else if (defaultProtocol.equals(Protocol.SMTPS))
+					{
+						smtpPort = 465;
+					}
 				}
 
-				for (String element : cc)
+				if ((smtpHost == null) || (smtpHost.equals("")))
 				{
-					msg.addRecipient(Message.RecipientType.CC, new InternetAddress(element));
+					throw new IllegalArgumentException("Invalid SMTP host specified");
 				}
 
-				for (String element : bcc)
+				// Parse the email to extract necessary info
+				DocumentBuilder docBuilder = DocumentBuilderFactory.newInstance()
+						.newDocumentBuilder();
+				Document email = docBuilder.parse(request.getEntity().getStream());
+
+				Element root = (Element) email.getElementsByTagName("email").item(0);
+				Element header = (Element) root.getElementsByTagName("head").item(0);
+				String subject = header.getElementsByTagName("subject").item(0)
+						.getTextContent();
+				String from = header.getElementsByTagName("from").item(0).getTextContent();
+
+				NodeList toList = header.getElementsByTagName("to");
+				String[] to = new String[toList.getLength()];
+				for (int i = 0; i < toList.getLength(); i++)
 				{
-					msg.addRecipient(Message.RecipientType.BCC, new InternetAddress(element));
+					to[i] = toList.item(i).getTextContent();
 				}
 
-				// Set the subject and content text
-				msg.setSubject(subject);
-				msg.setText(text);
-				msg.setSentDate(new Date());
-				msg.saveChanges();
+				NodeList ccList = header.getElementsByTagName("cc");
+				String[] cc = new String[ccList.getLength()];
+				for (int i = 0; i < ccList.getLength(); i++)
+				{
+					cc[i] = ccList.item(i).getTextContent();
+				}
 
-				// Send the message
-				transport.sendMessage(msg, msg.getAllRecipients());
-				transport.close();
+				NodeList bccList = header.getElementsByTagName("bcc");
+				String[] bcc = new String[bccList.getLength()];
+				for (int i = 0; i < bccList.getLength(); i++)
+				{
+					bcc[i] = bccList.item(i).getTextContent();
+				}
 
-				getLogger().info("JavaMail client successfully sent the message.");
+				String text = root.getElementsByTagName("body").item(0).getTextContent();
+
+				// Prepare the connection to the SMTP server
+				Session session = null;
+				Transport transport = null;
+				Properties props = System.getProperties();
+
+				// Check if authentication required
+				boolean authenticate = ((getLogin(request) != null) && (getPassword(request) != null));
+
+				// Connect to the SMTP server
+				if (defaultProtocol.equals(Protocol.SMTP)
+						|| defaultProtocol.equals(Protocol.SMTP_STARTTLS))
+				{
+					props.put("mail.smtp.host", smtpHost);
+					props.put("mail.smtp.port", Integer.toString(smtpPort));
+					props.put("mail.smtp.auth", Boolean.toString(authenticate).toLowerCase());
+					props.put("mail.smtp.starttls.enable", Boolean.toString(
+							getClient().getProtocols().get(0).equals(Protocol.SMTP_STARTTLS))
+							.toLowerCase());
+					session = Session.getDefaultInstance(props);
+					// session.setDebug(true);
+					transport = session.getTransport("smtp");
+				}
+				else if (defaultProtocol.equals(Protocol.SMTPS))
+				{
+					props.put("mail.smtps.host", smtpHost);
+					props.put("mail.smtps.port", Integer.toString(smtpPort));
+					props.put("mail.smtps.auth", Boolean.toString(authenticate).toLowerCase());
+					session = Session.getDefaultInstance(props);
+					// session.setDebug(true);
+					transport = session.getTransport("smtps");
+				}
+
+				if (transport != null)
+				{
+					// Check if authentication is needed
+					if (authenticate)
+					{
+						transport.connect(smtpHost, getLogin(request), getPassword(request));
+					}
+					else
+					{
+						transport.connect();
+					}
+
+					// Actually send the message
+					if (transport.isConnected())
+					{
+						getLogger()
+								.info(
+										"JavaMail client connection successfully established. Attempting to send the message");
+
+						// Create a new message
+						Message msg = new MimeMessage(session);
+
+						// Set the FROM and TO fields
+						msg.setFrom(new InternetAddress(from));
+
+						for (String element : to)
+						{
+							msg.addRecipient(Message.RecipientType.TO, new InternetAddress(
+									element));
+						}
+
+						for (String element : cc)
+						{
+							msg.addRecipient(Message.RecipientType.CC, new InternetAddress(
+									element));
+						}
+
+						for (String element : bcc)
+						{
+							msg.addRecipient(Message.RecipientType.BCC, new InternetAddress(
+									element));
+						}
+
+						// Set the subject and content text
+						msg.setSubject(subject);
+						msg.setText(text);
+						msg.setSentDate(new Date());
+						msg.saveChanges();
+
+						// Send the message
+						transport.sendMessage(msg, msg.getAllRecipients());
+						transport.close();
+
+						getLogger().info("JavaMail client successfully sent the message.");
+					}
+				}
 			}
 		}
-		catch (Exception e)
+		catch (IOException e)
+		{
+			getLogger().log(Level.WARNING, "JavaMail client error", e);
+		}
+		catch (NoSuchProviderException e)
+		{
+			getLogger().log(Level.WARNING, "JavaMail client error", e);
+		}
+		catch (AddressException e)
+		{
+			getLogger().log(Level.WARNING, "JavaMail client error", e);
+		}
+		catch (MessagingException e)
+		{
+			getLogger().log(Level.WARNING, "JavaMail client error", e);
+		}
+		catch (SAXException e)
+		{
+			getLogger().log(Level.WARNING, "JavaMail client error", e);
+		}
+		catch (URISyntaxException e)
+		{
+			getLogger().log(Level.WARNING, "JavaMail client error", e);
+		}
+		catch (ParserConfigurationException e)
 		{
 			getLogger().log(Level.WARNING, "JavaMail client error", e);
 		}

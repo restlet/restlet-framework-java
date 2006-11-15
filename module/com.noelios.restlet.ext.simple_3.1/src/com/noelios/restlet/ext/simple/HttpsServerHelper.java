@@ -102,8 +102,8 @@ public class HttpsServerHelper extends SimpleServerHelper
 	{
 		// Initialize the SSL context
 		KeyStore keyStore = KeyStore.getInstance(getKeystoreType());
-		keyStore.load(new FileInputStream(getKeystorePath()), getKeystorePassword()
-				.toCharArray());
+		FileInputStream fis = new FileInputStream(getKeystorePath());
+		keyStore.load(fis, getKeystorePassword().toCharArray());
 		KeyManagerFactory keyManagerFactory = KeyManagerFactory
 				.getInstance(getCertAlgorithm());
 		keyManagerFactory.init(keyStore, getKeyPassword().toCharArray());
@@ -112,6 +112,7 @@ public class HttpsServerHelper extends SimpleServerHelper
 		setSocket(sslContext.getServerSocketFactory().createServerSocket(
 				getServer().getPort()));
 		getSocket().setSoTimeout(60000);
+		fis.close();
 
 		// Complete initialization
 		setConfidential(true);

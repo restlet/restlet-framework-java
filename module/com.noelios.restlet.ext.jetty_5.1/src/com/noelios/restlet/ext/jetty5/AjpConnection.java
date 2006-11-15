@@ -34,8 +34,6 @@ import org.mortbay.http.HttpRequest;
 import org.mortbay.http.HttpResponse;
 import org.mortbay.http.ajp.AJP13Connection;
 
-import com.noelios.restlet.http.HttpServerCall;
-
 /**
  * Jetty AJP connection.
  * @author Jerome Louvel (contact@noelios.com)

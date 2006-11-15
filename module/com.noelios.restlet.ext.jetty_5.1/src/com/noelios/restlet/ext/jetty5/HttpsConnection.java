@@ -33,8 +33,6 @@ import org.mortbay.http.HttpException;
 import org.mortbay.http.HttpRequest;
 import org.mortbay.http.HttpResponse;
 
-import com.noelios.restlet.http.HttpServerCall;
-
 /**
  * Jetty HTTPS connection.
  * @author Jerome Louvel (contact@noelios.com)

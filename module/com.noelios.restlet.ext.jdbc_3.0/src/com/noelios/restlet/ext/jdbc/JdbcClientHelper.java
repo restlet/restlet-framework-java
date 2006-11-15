@@ -22,6 +22,7 @@
 
 package com.noelios.restlet.ext.jdbc;
 
+import java.io.IOException;
 import java.sql.Connection;
 import java.sql.DriverManager;
 import java.sql.SQLException;
@@ -33,6 +34,7 @@ import java.util.logging.Level;
 
 import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
+import javax.xml.parsers.ParserConfigurationException;
 
 import org.apache.commons.dbcp.ConnectionFactory;
 import org.apache.commons.dbcp.DriverManagerConnectionFactory;
@@ -51,6 +53,7 @@ import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 import org.w3c.dom.Node;
 import org.w3c.dom.NodeList;
+import org.xml.sax.SAXException;
 
 import com.noelios.restlet.ClientHelper;
 import com.noelios.restlet.Factory;
@@ -182,8 +185,21 @@ public class JdbcClientHelper extends ClientHelper
 				throw new IllegalArgumentException("Only the POST method is supported");
 			}
 		}
-		catch (Exception e)
+		catch (SQLException se)
 		{
+			getLogger().log(Level.WARNING, "Error while processing the SQL request", se);
+		}
+		catch (ParserConfigurationException pce)
+		{
+			getLogger().log(Level.WARNING, "Error with XML parser configuration", pce);
+		}
+		catch (SAXException se)
+		{
+			getLogger().log(Level.WARNING, "Error while parsing the XML document", se);
+		}
+		catch (IOException e)
+		{
+			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
 		finally
@@ -303,9 +319,11 @@ public class JdbcClientHelper extends ClientHelper
 		// Create the PoolableConnectionFactory, which wraps the "real"
 		// Connections created by the ConnectionFactory with
 		// the classes that implement the pooling functionality.
-		@SuppressWarnings("unused")
 		PoolableConnectionFactory poolableConnectionFactory = new PoolableConnectionFactory(
 				connectionFactory, result, null, null, false, false);
+		
+		// To remove warnings
+		poolableConnectionFactory.getPool();
 
 		return result;
 	}
@@ -313,7 +331,7 @@ public class JdbcClientHelper extends ClientHelper
 	/**
 	 * Pooling data source which remembers its connection properties and URI.
 	 */
-	class ConnectionSource extends PoolingDataSource
+	private static class ConnectionSource extends PoolingDataSource
 	{
 		/** The connection URI. */
 		protected String uri;

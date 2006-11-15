@@ -205,7 +205,7 @@ public abstract class JettyServerHelper extends com.noelios.restlet.http.HttpSer
 	 * Jetty server wrapped by a parent Restlet HTTP server connector.
 	 * @author Jerome Louvel (contact@noelios.com)
 	 */
-	private class WrappedServer extends org.mortbay.jetty.Server
+	private static class WrappedServer extends org.mortbay.jetty.Server
 	{
 		JettyServerHelper helper;
 

@@ -94,7 +94,7 @@ public class ServerServlet extends HttpServlet
 	private static final long serialVersionUID = 1L;
 
 	/** The associated HTTP server helper. */
-	private HttpServerHelper helper;
+	private transient HttpServerHelper helper;
 
 	/**
 	 * Constructor.

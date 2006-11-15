@@ -160,12 +160,13 @@ public class SimpleCall extends HttpServerCall
 		response.setCode(getStatusCode());
 		response.setText(getReasonPhrase());
 
-		// Send the response entity
-		if (response == null)
+		// To ensure that Simple doesn't switch to chunked encoding
+		if (restletResponse.getEntity() == null)
 		{
 			response.setContentLength(0);
 		}
 
+		// Send the response entity
 		super.sendResponse(restletResponse);
 	}
 

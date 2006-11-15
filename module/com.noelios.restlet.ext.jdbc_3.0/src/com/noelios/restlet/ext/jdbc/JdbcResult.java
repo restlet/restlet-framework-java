@@ -36,7 +36,7 @@ public class JdbcResult implements Serializable
 	private static final long serialVersionUID = 1L;
 
 	/** The JDBC statement. */
-	private Statement statement;
+	private transient Statement statement;
 
 	/**
 	 * Constructor.
