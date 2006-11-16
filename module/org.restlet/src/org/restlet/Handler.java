@@ -22,13 +22,16 @@
 
 package org.restlet;
 
+import java.lang.reflect.InvocationTargetException;
 import java.util.List;
+import java.util.logging.Level;
 
 import org.restlet.data.Language;
 import org.restlet.data.Method;
 import org.restlet.data.ReferenceList;
 import org.restlet.data.Request;
 import org.restlet.data.Response;
+import org.restlet.resource.Result;
 import org.restlet.data.Status;
 import org.restlet.resource.Representation;
 import org.restlet.resource.Resource;
@@ -40,13 +43,14 @@ import org.restlet.resource.Resource;
  * <br/>
  * It is comparable to an HttpServlet class as it provides facility methods to handle the most common 
  * method names. The calls are then automatically dispatched to the appropriate handle*() method (where 
- * the '*' character corresponds to the method name, or to the handleOthers() method.<br/> 
+ * the '*' character corresponds to the method name, or to the defaultHandle() method.<br/> 
  * <br/>
- * The handleGet(), handlePost(), handlePut(), handleDelete() and handleHead() have a useful 
- * implementation which is based on the target resource. See each method for details. 
+ * The handleGet(), handlePost(), handlePut(), handleDelete() and handleHead() have a default implementation 
+ * in this class, but the dispatching can a done dynamically for other methods. For example, if you want to
+ * support a MOVE method for a WebDAV server, you just have to add a handleMove(Request, Response) method in your
+ * subclass of Handler and it will be automatically be used at runtime.<br/> 
  * <br/>
- * The other handle*() methods simply invoke the defaultHandle() method which simply set the status to 
- * SERVER_ERROR_NOT_IMPLEMENTED). 
+ * If not matching handle*() method is found, then the defaultHandle() method is invoked. 
  * @author Jerome Louvel (contact@noelios.com)
  */
 public class Handler extends Restlet
@@ -76,8 +80,8 @@ public class Handler extends Restlet
 	}
 
 	/**
-	 * Default implementation for all the handle*() methods that simply returns a client error 
-	 * indicating that the method is not allowed. 
+	 * Default implementation invoke when no matching handle*() method was found for the request. The default
+	 * implementation simply set the {@link org.restlet.data.Status.SERVER_ERROR_NOT_IMPLEMENTED} status.
 	 * @param request The request to handle.
 	 * @param response The response to update.
 	 */
@@ -122,11 +126,15 @@ public class Handler extends Restlet
 
 			if (method == null)
 			{
-				handleOthers(request, response);
+				defaultHandle(request, response);
 			}
 			else if (method.equals(Method.GET))
 			{
 				handleGet(request, response);
+			}
+			else if (method.equals(Method.HEAD))
+			{
+				handleHead(request, response);
 			}
 			else if (method.equals(Method.POST))
 			{
@@ -140,55 +148,74 @@ public class Handler extends Restlet
 			{
 				handleDelete(request, response);
 			}
-			else if (method.equals(Method.HEAD))
-			{
-				handleHead(request, response);
-			}
-			else if (method.equals(Method.CONNECT))
-			{
-				handleConnect(request, response);
-			}
-			else if (method.equals(Method.OPTIONS))
-			{
-				handleOptions(request, response);
-			}
-			else if (method.equals(Method.TRACE))
-			{
-				handleTrace(request, response);
-			}
-			else if (method.equals(Method.COPY))
-			{
-				handleCopy(request, response);
-			}
-			else if (method.equals(Method.MOVE))
-			{
-				handleMove(request, response);
-			}
 			else
 			{
-				handleOthers(request, response);
+				java.lang.reflect.Method handleMethod = getHandleMethod(method);
+
+				if (handleMethod != null)
+				{
+					try
+					{
+						handleMethod.invoke(this, request, response);
+					}
+					catch (IllegalArgumentException e)
+					{
+						getLogger().log(Level.WARNING,
+								"Couldn't invoke the handle method for \"" + method + "\"", e);
+					}
+					catch (IllegalAccessException e)
+					{
+						getLogger().log(Level.WARNING,
+								"Couldn't access the handle method for \"" + method + "\"", e);
+					}
+					catch (InvocationTargetException e)
+					{
+						getLogger().log(Level.WARNING,
+								"Couldn't invoke the handle method for \"" + method + "\"", e);
+					}
+				}
+				else
+				{
+					defaultHandle(request, response);
+				}
 			}
 		}
 	}
 
 	/**
-	 * Handles a CONNECT call.
-	 * @param request The request to handle.
-	 * @param response The response to update.
+	 * Returns the handle method matching the given method name.
+	 * @param method The method to match.
+	 * @return The handle method matching the given method name.
 	 */
-	protected void handleConnect(Request request, Response response)
+	private java.lang.reflect.Method getHandleMethod(Method method)
 	{
-		defaultHandle(request, response);
-	}
+		java.lang.reflect.Method result = null;
+		StringBuilder sb = new StringBuilder();
+		String methodName = method.getName().toLowerCase();
 
-	/**
-	 * Handles a COPY call.
-	 * @param request The request to handle.
-	 * @param response The response to update.
-	 */
-	protected void handleCopy(Request request, Response response)
-	{
-		defaultHandle(request, response);
+		if ((methodName != null) && (methodName.length() > 0))
+		{
+			sb.append("handle");
+			sb.append(Character.toUpperCase(methodName.charAt(0)));
+			sb.append(methodName.substring(1));
+		}
+
+		try
+		{
+			result = getClass().getMethod(sb.toString(), Request.class, Response.class);
+		}
+		catch (SecurityException e)
+		{
+			getLogger().log(Level.WARNING,
+					"Couldn't access the handle method for \"" + method + "\"", e);
+		}
+		catch (NoSuchMethodException e)
+		{
+			getLogger().log(Level.WARNING,
+					"Couldn't find the handle method for \"" + method + "\"", e);
+		}
+
+		return result;
 	}
 
 	/**
@@ -205,7 +232,9 @@ public class Handler extends Restlet
 		{
 			if (target.allowDelete())
 			{
-				response.setStatus(target.delete().getStatus());
+				Result result = target.delete();
+				response.setStatus(result.getStatus());
+				response.setRedirectRef(result.getRedirectionRef());
 			}
 			else
 			{
@@ -303,30 +332,12 @@ public class Handler extends Restlet
 	}
 
 	/**
-	 * Handles a MOVE call.
-	 * @param request The request to handle.
-	 * @param response The response to update.
-	 */
-	protected void handleMove(Request request, Response response)
-	{
-		defaultHandle(request, response);
-	}
-
-	/**
-	 * Handles a OPTIONS call.
-	 * @param request The request to handle.
-	 * @param response The response to update.
-	 */
-	protected void handleOptions(Request request, Response response)
-	{
-		defaultHandle(request, response);
-	}
-
-	/**
 	 * Handles a call with a method that is not directly supported by a special handle*() method.
 	 * @param request The request to handle.
 	 * @param response The response to update.
+	 * @deprecated Override the defaultHandle() method instead. Could conflict with a method named OTHERS in the future.
 	 */
+	@Deprecated
 	protected void handleOthers(Request request, Response response)
 	{
 		defaultHandle(request, response);
@@ -347,7 +358,9 @@ public class Handler extends Restlet
 			{
 				if (request.isEntityAvailable())
 				{
-					response.setStatus(target.post(request.getEntity()).getStatus());
+					Result result = target.post(request.getEntity());
+					response.setStatus(result.getStatus());
+					response.setRedirectRef(result.getRedirectionRef());
 				}
 				else
 				{
@@ -381,7 +394,9 @@ public class Handler extends Restlet
 			{
 				if (request.isEntityAvailable())
 				{
-					response.setStatus(target.put(request.getEntity()).getStatus());
+					Result result = target.put(request.getEntity());
+					response.setStatus(result.getStatus());
+					response.setRedirectRef(result.getRedirectionRef());
 				}
 				else
 				{
@@ -398,16 +413,6 @@ public class Handler extends Restlet
 		{
 			defaultHandle(request, response);
 		}
-	}
-
-	/**
-	 * Handles a TRACE call.
-	 * @param request The request to handle.
-	 * @param response The response to update.
-	 */
-	protected void handleTrace(Request request, Response response)
-	{
-		defaultHandle(request, response);
 	}
 
 	/** 

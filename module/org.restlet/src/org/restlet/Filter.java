@@ -24,6 +24,7 @@ package org.restlet;
 
 import org.restlet.data.Request;
 import org.restlet.data.Response;
+import org.restlet.data.Status;
 
 /**
  * Chainer to an attached Restlet that filters calls. The purpose is to do some pre-processing or 
@@ -94,7 +95,15 @@ public class Filter extends Chainer
 	protected void doHandle(Request request, Response response)
 	{
 		// Reuse the chainer's logic
-		super.handle(request, response);
+		Restlet next = getNext(request, response);
+		if (next != null)
+		{
+			next.handle(request, response);
+		}
+		else
+		{
+			response.setStatus(Status.CLIENT_ERROR_NOT_FOUND);
+		}
 	}
 
 	/**
