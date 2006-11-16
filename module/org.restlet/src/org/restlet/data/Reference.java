@@ -304,8 +304,22 @@ public class Reference
 	@Override
 	public boolean equals(Object object)
 	{
-		return (object instanceof Reference)
-				&& (((Reference) object).hashCode() == hashCode());
+		if (object instanceof Reference)
+		{
+			Reference ref = (Reference) object;
+			if (this.internalRef == null)
+			{
+				return ref.internalRef == null;
+			}
+			else
+			{
+				return this.internalRef.equals(ref.internalRef);
+			}
+		}
+		else
+		{
+			return false;
+		}
 	}
 
 	/**

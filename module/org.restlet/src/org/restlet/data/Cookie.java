@@ -86,9 +86,49 @@ public class Cookie extends Parameter
 
 	/** {@inheritDoc} */
 	@Override
-	public boolean equals(Object object)
+	public boolean equals(Object obj)
 	{
-		return (object instanceof Cookie) && (((Cookie) object).hashCode() == hashCode());
+		boolean result = (obj == this);
+
+		//if obj == this no need to go further
+		if (!result)
+		{
+			// test for equality at Parameter level i.e. name and value.
+			if (super.equals(obj))
+			{
+				// if obj isn't a cookie or is null don't evaluate further
+				if ((obj instanceof Cookie) && obj != null)
+				{
+					Cookie that = (Cookie) obj;
+					result = (this.version == that.version);
+					if (result) // if versions are equal test domains
+					{
+						if (!(this.domain == null)) // compare domains taking care of nulls
+						{
+							result = (this.domain.equals(that.domain));
+						}
+						else
+						{
+							result = (that.domain == null);
+						}
+
+						if (result) //if domains are equal test the paths
+						{
+							if (!(this.path == null)) // compare paths taking care of nulls
+							{
+								result = (this.path.equals(that.path));
+							}
+							else
+							{
+								result = (that.path == null);
+							}
+						}
+					}
+				}
+			}
+		}
+
+		return result;
 	}
 
 	/**

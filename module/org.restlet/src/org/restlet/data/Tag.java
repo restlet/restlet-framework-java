@@ -94,7 +94,7 @@ public class Tag
 	@Override
 	public boolean equals(Object object)
 	{
-		return (object instanceof Tag) && (((Tag) object).hashCode() == hashCode());
+		return (object instanceof Tag) && getName().equals(((Tag) object).getName());
 	}
 
 	/**

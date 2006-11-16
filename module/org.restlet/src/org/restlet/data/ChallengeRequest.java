@@ -53,10 +53,46 @@ public class ChallengeRequest
 
 	/** {@inheritDoc} */
 	@Override
-	public boolean equals(Object object)
+	public boolean equals(Object obj)
 	{
-		return (object instanceof ChallengeRequest)
-				&& (((ChallengeRequest) object).hashCode() == hashCode());
+		boolean result = (obj == this);
+
+		//if obj == this no need to go further
+		if (!result)
+		{
+			// if obj isn't a challenge request or is null don't evaluate further
+			if ((obj instanceof ChallengeRequest) && obj != null)
+			{
+				ChallengeRequest that = (ChallengeRequest) obj;
+				result = (this.getParameters().equals(that.getParameters()));
+
+				if (result)
+				{
+					if (getRealm() != null)
+					{
+						result = getRealm().equals(that.getRealm());
+					}
+					else
+					{
+						result = (that.getRealm() == null);
+					}
+					
+					if(result)
+					{
+						if (getScheme() != null)
+						{
+							result = getScheme().equals(that.getScheme());
+						}
+						else
+						{
+							result = (that.getScheme() == null);
+						}
+					}
+				}
+			}
+		}
+
+		return result;
 	}
 
 	/**

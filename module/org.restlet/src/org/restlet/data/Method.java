@@ -190,7 +190,7 @@ public class Method extends Metadata
 	@Override
 	public boolean equals(Object object)
 	{
-		return (object instanceof Method) && (((Method) object).hashCode() == hashCode());
+		return (object instanceof Method) && ((Method) object).getName().equals(getName());
 	}
 
 	/**

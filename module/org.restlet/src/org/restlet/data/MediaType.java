@@ -348,10 +348,26 @@ public class MediaType extends Metadata
 
 	/** {@inheritDoc} */
 	@Override
-	public boolean equals(Object object)
+	public boolean equals(Object obj)
 	{
-		return (object instanceof MediaType)
-				&& (((MediaType) object).hashCode() == hashCode());
+		boolean result = (obj == this);
+
+		//if obj == this no need to go further
+		if (!result)
+		{
+			// test for equality at Metadata level i.e. name and value.
+			if (super.equals(obj))
+			{
+				// if obj isn't a mediatype or is null don't evaluate further
+				if ((obj instanceof MediaType) && obj != null)
+				{
+					MediaType that = (MediaType)obj;
+					result = (this.getParameters().equals(that.getParameters()));
+				}
+			}
+		}
+		
+		return result;
 	}
 
 	/**

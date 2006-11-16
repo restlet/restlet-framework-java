@@ -103,7 +103,7 @@ public class Language extends Metadata
 	public boolean equals(Object object)
 	{
 		return (object instanceof Language)
-				&& (((Language) object).hashCode() == hashCode());
+				&& getName().equalsIgnoreCase(((Language) object).getName());
 	}
 
 	/**

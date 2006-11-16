@@ -113,7 +113,7 @@ public class CharacterSet extends Metadata
 	public boolean equals(Object object)
 	{
 		return (object instanceof CharacterSet)
-				&& (((CharacterSet) object).hashCode() == hashCode());
+				&& getName().equalsIgnoreCase(((CharacterSet) object).getName());
 	}
 
 	/** {@inheritDoc} */

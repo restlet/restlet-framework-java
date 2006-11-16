@@ -71,10 +71,66 @@ public class ChallengeResponse
 
 	/** {@inheritDoc} */
 	@Override
-	public boolean equals(Object object)
+	public boolean equals(Object obj)
 	{
-		return (object instanceof ChallengeResponse)
-				&& (((ChallengeResponse) object).hashCode() == hashCode());
+		boolean result = (obj == this);
+
+		//if obj == this no need to go further
+		if (!result)
+		{
+			// if obj isn't a challenge request or is null don't evaluate further
+			if ((obj instanceof ChallengeResponse) && obj != null)
+			{
+				ChallengeResponse that = (ChallengeResponse) obj;
+
+				if (getCredentials() != null)
+				{
+					result = getCredentials().equals(that.getCredentials());
+				}
+				else
+				{
+					result = (that.getCredentials() == null);
+				}
+
+				if (result)
+				{
+					if (getIdentifier() != null)
+					{
+						result = getIdentifier().equals(that.getIdentifier());
+					}
+					else
+					{
+						result = (that.getIdentifier() == null);
+					}
+
+					if (result)
+					{
+						if (getScheme() != null)
+						{
+							result = getScheme().equals(that.getScheme());
+						}
+						else
+						{
+							result = (that.getScheme() == null);
+						}
+
+						if (result)
+						{
+							if (getSecret() != null)
+							{
+								result = getSecret().equals(that.getSecret());
+							}
+							else
+							{
+								result = (that.getSecret() == null);
+							}
+						}
+					}
+				}
+			}
+		}
+
+		return result;
 	}
 
 	/**
@@ -117,7 +173,8 @@ public class ChallengeResponse
 	@Override
 	public int hashCode()
 	{
-		return Factory.hashCode(getScheme(), getIdentifier(), getSecret(), getCredentials());
+		return Factory
+				.hashCode(getScheme(), getIdentifier(), getSecret(), getCredentials());
 	}
 
 	/**

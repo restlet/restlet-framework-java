@@ -105,7 +105,7 @@ public class Encoding extends Metadata
 	public boolean equals(Object object)
 	{
 		return (object instanceof Encoding)
-				&& (((Encoding) object).hashCode() == hashCode());
+				&& getName().equalsIgnoreCase(((Encoding) object).getName());
 	}
 
 	/** {@inheritDoc} */

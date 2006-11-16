@@ -70,10 +70,42 @@ public class Parameter implements Comparable<Parameter>
 
 	/** {@inheritDoc} */
 	@Override
-	public boolean equals(Object object)
+	public boolean equals(Object obj)
 	{
-		return (object instanceof Parameter)
-				&& (((Parameter) object).hashCode() == hashCode());
+		boolean result = (obj == this);
+
+		//if obj == this no need to go further
+		if (!result)
+		{
+			// if obj isn't a parameter or is null don't evaluate further
+			if ((obj instanceof Parameter) && obj != null)
+			{
+				Parameter that = (Parameter) obj;
+
+				if (!(this.name == null)) // compare names taking care of nulls
+				{
+					result = (this.name.equals(that.name));
+				}
+				else
+				{
+					result = (that.name == null);
+				}
+
+				if (result) //if names are equal test the values
+				{
+					if (!(this.value == null)) // compare values taking care of nulls
+					{
+						result = (this.value.equals(that.value));
+					}
+					else
+					{
+						result = (that.value == null);
+					}
+				}
+			}
+		}
+		
+		return result;
 	}
 
 	/**

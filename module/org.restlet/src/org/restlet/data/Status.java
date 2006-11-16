@@ -517,7 +517,7 @@ public class Status extends Metadata
 	@Override
 	public boolean equals(Object object)
 	{
-		return (object instanceof Status) && (((Status) object).hashCode() == hashCode());
+		return (object instanceof Status) && (this.code == ((Status) object).getCode());
 	}
 
 	/**

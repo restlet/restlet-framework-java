@@ -150,7 +150,7 @@ public class Protocol extends Metadata
 	public boolean equals(Object object)
 	{
 		return (object instanceof Protocol)
-				&& (((Protocol) object).hashCode() == hashCode());
+				&& getName().equalsIgnoreCase(((Protocol) object).getName());
 	}
 
 	/**

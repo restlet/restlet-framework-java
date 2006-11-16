@@ -66,7 +66,7 @@ public class Metadata
 	public boolean equals(Object object)
 	{
 		return (object instanceof Metadata)
-				&& (((Metadata) object).hashCode() == hashCode());
+				&& ((Metadata) object).getName().equals(getName());
 	}
 
 	/**
