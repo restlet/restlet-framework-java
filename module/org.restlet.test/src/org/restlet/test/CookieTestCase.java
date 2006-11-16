@@ -37,18 +37,31 @@ public class CookieTestCase extends RestletTestCase
 	{
 		Cookie c1 = new Cookie(1, "name1", "value1", "path1", "domain1");
 		Cookie c2 = new Cookie(1, "name1", "value1", "path1", "domain1");
+		
 		assertTrue(c1.equals(c2));
+		assertTrue(c1.hashCode() == c2.hashCode());
 		assertEquals(c1, c2);
+		
+		assertTrue(c1.equals(c1));
+		assertEquals(c1, c1);
 	}
 
 	/**
-	 * Test references that are unequal. 
+	 * Unequality tests. 
 	 */
 	public void testUnEquals() throws Exception
 	{
 		Cookie c1 = new Cookie(1, "name1", "value1", "path1", "domain1");
 		Cookie c2 = new Cookie(2, "name2", "value2", "path2", "domain2");
 		assertFalse(c1.equals(c2));
+		assertFalse(c1.hashCode() == c2.hashCode());
+		assertFalse(c1.equals(null));
+		assertFalse(c2.equals(null));
+
+		c1 = new Cookie(1, "name", "value", "path", "domain");
+		c2 = new Cookie(2, "name", "value", "path", "domain");
+		assertFalse(c1.equals(c2));
+		assertFalse(c1.hashCode() == c2.hashCode());
 	}
 
 }

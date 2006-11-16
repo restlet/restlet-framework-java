@@ -16,6 +16,7 @@ Changes log
  - Moved org.restlet.data.Result to org.restlet.resource.Result (deprecation used).
  - Replaced ConnectorService.get*Protocols() methods by just getClientProtocols() and getServerProtocols().
  - Refactored the TunnelService a bit and added better Javadocs.
+ - DateUtils formats are lists now instead of arrays. Trying to modify system set dates will yield UnsupportedOperationException. Piyush Purang.
  
 [Enhancements] 
  - HTTP calls now try to use the channel aspect of a representation before its stream aspect. Suggested by Lars Heuer.

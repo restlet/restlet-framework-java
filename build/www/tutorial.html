@@ -202,7 +202,7 @@
 
 <h3><a name="part08">8. Displaying error pages</a></h3>
 <p>
-   Another common requirement is the ability to customize the status pages returned when something didn't go as expected during the call handling. Maybe a resource was not found or an acceptable representation isn't available? In this case, or when any unhandled exception must be intercepted, the Application or the Container will automatically provide a default status page for you. This service is associated to the org.restlet.util.LogService class, which is accessible as an Application and Container property called "logService".
+   Another common requirement is the ability to customize the status pages returned when something didn't go as expected during the call handling. Maybe a resource was not found or an acceptable representation isn't available? In this case, or when any unhandled exception must be intercepted, the Application or the Container will automatically provide a default status page for you. This service is associated to the org.restlet.util.StatusService class, which is accessible as an Application and Container property called "statusService".
 </p>
 <p>
    In order to customize the default messages, you will simply need to create a subclass of LogService and override the getRepresentation(Status, Request, Response) method. Then just set an instance of you custom service to the appropriate "logService" property.
@@ -414,7 +414,7 @@
 <br/>
 
 <small>
-   Last modified on 2006-11-10. Copyright &copy; 2005-2006 <a href="mailto:contact@noelios.com">J&eacute;r&ocirc;me Louvel</a>. Restlet is a registered trademark of <a target="_top" href="http://www.noelios.com">Noelios Consulting</a>.
+   Last modified on 2006-11-16. Copyright &copy; 2005-2006 <a href="mailto:contact@noelios.com">J&eacute;r&ocirc;me Louvel</a>. Restlet is a registered trademark of <a target="_top" href="http://www.noelios.com">Noelios Consulting</a>.
 </small>
 
 </body>
