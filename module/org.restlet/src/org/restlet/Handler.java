@@ -81,7 +81,7 @@ public class Handler extends Restlet
 
 	/**
 	 * Default implementation invoke when no matching handle*() method was found for the request. The default
-	 * implementation simply set the {@link org.restlet.data.Status.SERVER_ERROR_NOT_IMPLEMENTED} status.
+	 * implementation simply set the Status.SERVER_ERROR_NOT_IMPLEMENTED status.
 	 * @param request The request to handle.
 	 * @param response The response to update.
 	 */
