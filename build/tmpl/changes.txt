@@ -18,7 +18,7 @@ Changes log
  - Replaced ConnectorService.get*Protocols() methods by just getClientProtocols() and getServerProtocols().
  - Refactored the TunnelService a bit and added better Javadocs.
  - DateUtils formats are lists now instead of arrays. Trying to modify system set dates will yield UnsupportedOperationException. Piyush Purang.
- - Handler now supports dynamic dispatching to handle*() method based on the request's method name. Only common method are statically provided (handleGet/Head/Post/Put/Delete). handleMove/Copy/Options/Trace are removed from base Handler class (their default implementation did nothing useful anyway).
+ - Handler now supports dynamic dispatching to handle*() methods based on the request's method name. Only common methods are statically provided (handleGet/Head/Post/Put/Delete). handleMove/Copy/Options/Trace are removed from base Handler class (their default implementation did nothing useful anyway).
  
 [Enhancements] 
  - HTTP calls now try to use the channel aspect of a representation before its stream aspect. Suggested by Lars Heuer.
