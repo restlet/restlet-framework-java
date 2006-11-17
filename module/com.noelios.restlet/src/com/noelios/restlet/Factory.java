@@ -80,7 +80,7 @@ public class Factory extends org.restlet.util.Factory
 	public static final String VERSION_HEADER = "Noelios-Restlet-Engine/" + VERSION_SHORT;
 
 	/**
-	 * Registers the Noelios Restlet Engine
+	 * Registers a new Noelios Restlet Engine.
 	 */
 	public static void register()
 	{
@@ -94,135 +94,165 @@ public class Factory extends org.restlet.util.Factory
 	private List<ConnectorHelper> registeredServers;
 
 	/**
-	 * Constructor.
+	 * Constructor that will automatically attempt to discover connectors.
 	 */
 	@SuppressWarnings("unchecked")
 	public Factory()
 	{
-		this.registeredClients = new ArrayList<ConnectorHelper>();
-		this.registeredServers = new ArrayList<ConnectorHelper>();
-
-		// Find the factory class name
-		String line = null;
-		String provider = null;
-
-		// Find the factory class name
-		ClassLoader cl = org.restlet.util.Factory.getClassLoader();
-		URL configURL;
-
-		// Register the client connector providers
-		try
+		this(true);
+	}
+	
+	/**
+	 * Constructor.
+	 * @param discoverConnectors True if connectors should be automatically discovered.
+	 */
+	@SuppressWarnings("unchecked")
+	public Factory(boolean discoverConnectors)
+	{
+		if(discoverConnectors)
 		{
-			for (Enumeration<URL> configUrls = cl
-					.getResources("META-INF/services/com.noelios.restlet.ClientHelper"); configUrls
-					.hasMoreElements();)
+			// Find the factory class name
+			String line = null;
+			String provider = null;
+	
+			// Find the factory class name
+			ClassLoader cl = org.restlet.util.Factory.getClassLoader();
+			URL configURL;
+	
+			// Register the client connector providers
+			try
 			{
-				configURL = configUrls.nextElement();
-
-				BufferedReader reader = null;
-				try
+				for (Enumeration<URL> configUrls = cl
+						.getResources("META-INF/services/com.noelios.restlet.ClientHelper"); configUrls
+						.hasMoreElements();)
 				{
-					reader = new BufferedReader(new InputStreamReader(configURL.openStream(),
-							"utf-8"));
-					line = reader.readLine();
-
-					while (line != null)
+					configURL = configUrls.nextElement();
+	
+					BufferedReader reader = null;
+					try
 					{
-						provider = getProviderClassName(line);
-
-						if ((provider != null) && (!provider.equals("")))
-						{
-							// Instantiate the factory
-							try
-							{
-								Class<? extends ConnectorHelper> providerClass = (Class<? extends ConnectorHelper>) Class
-										.forName(provider);
-								this.registeredClients.add(providerClass.getConstructor(
-										Client.class).newInstance((Client) null));
-							}
-							catch (Exception e)
-							{
-								logger.log(Level.SEVERE,
-										"Unable to register the client connector " + provider, e);
-							}
-						}
-
+						reader = new BufferedReader(new InputStreamReader(configURL.openStream(),
+								"utf-8"));
 						line = reader.readLine();
+	
+						while (line != null)
+						{
+							provider = getProviderClassName(line);
+	
+							if ((provider != null) && (!provider.equals("")))
+							{
+								// Instantiate the factory
+								try
+								{
+									Class<? extends ConnectorHelper> providerClass = (Class<? extends ConnectorHelper>) Class
+											.forName(provider);
+									getRegisteredClients().add(providerClass.getConstructor(
+											Client.class).newInstance((Client) null));
+								}
+								catch (Exception e)
+								{
+									logger.log(Level.SEVERE,
+											"Unable to register the client connector " + provider, e);
+								}
+							}
+	
+							line = reader.readLine();
+						}
+					}
+					catch (IOException e)
+					{
+						logger.log(Level.SEVERE, "Unable to read the provider descriptor: "
+								+ configURL.toString());
+					}
+					finally
+					{
+						if (reader != null) reader.close();
 					}
 				}
-				catch (IOException e)
-				{
-					logger.log(Level.SEVERE, "Unable to read the provider descriptor: "
-							+ configURL.toString());
-				}
-				finally
-				{
-					if (reader != null) reader.close();
-				}
 			}
-		}
-		catch (IOException ioe)
-		{
-			logger
-					.log(Level.SEVERE, "Exception while detecting the client connectors.", ioe);
-		}
-
-		// Register the server connector providers
-		try
-		{
-			for (Enumeration<URL> configUrls = cl
-					.getResources("META-INF/services/com.noelios.restlet.ServerHelper"); configUrls
-					.hasMoreElements();)
+			catch (IOException ioe)
 			{
-				configURL = configUrls.nextElement();
-
-				BufferedReader reader = null;
-				try
+				logger
+						.log(Level.SEVERE, "Exception while detecting the client connectors.", ioe);
+			}
+	
+			// Register the server connector providers
+			try
+			{
+				for (Enumeration<URL> configUrls = cl
+						.getResources("META-INF/services/com.noelios.restlet.ServerHelper"); configUrls
+						.hasMoreElements();)
 				{
-					reader = new BufferedReader(new InputStreamReader(configURL.openStream(),
-							"utf-8"));
-					line = reader.readLine();
-
-					while (line != null)
+					configURL = configUrls.nextElement();
+	
+					BufferedReader reader = null;
+					try
 					{
-						provider = getProviderClassName(line);
-
-						if ((provider != null) && (!provider.equals("")))
-						{
-							// Instantiate the factory
-							try
-							{
-								Class<? extends ConnectorHelper> providerClass = (Class<? extends ConnectorHelper>) Class
-										.forName(provider);
-								this.registeredServers.add(providerClass.getConstructor(
-										Server.class).newInstance((Server) null));
-							}
-							catch (Exception e)
-							{
-								logger.log(Level.SEVERE,
-										"Unable to register the server connector " + provider, e);
-							}
-						}
-
+						reader = new BufferedReader(new InputStreamReader(configURL.openStream(),
+								"utf-8"));
 						line = reader.readLine();
+	
+						while (line != null)
+						{
+							provider = getProviderClassName(line);
+	
+							if ((provider != null) && (!provider.equals("")))
+							{
+								// Instantiate the factory
+								try
+								{
+									Class<? extends ConnectorHelper> providerClass = (Class<? extends ConnectorHelper>) Class
+											.forName(provider);
+									getRegisteredServers().add(providerClass.getConstructor(
+											Server.class).newInstance((Server) null));
+								}
+								catch (Exception e)
+								{
+									logger.log(Level.SEVERE,
+											"Unable to register the server connector " + provider, e);
+								}
+							}
+	
+							line = reader.readLine();
+						}
+					}
+					catch (IOException e)
+					{
+						logger.log(Level.SEVERE, "Unable to read the provider descriptor: "
+								+ configURL.toString());
+					}
+					finally
+					{
+						if (reader != null) reader.close();
 					}
 				}
-				catch (IOException e)
-				{
-					logger.log(Level.SEVERE, "Unable to read the provider descriptor: "
-							+ configURL.toString());
-				}
-				finally
-				{
-					if (reader != null) reader.close();
-				}
+			}
+			catch (IOException ioe)
+			{
+				logger
+						.log(Level.SEVERE, "Exception while detecting the client connectors.", ioe);
 			}
 		}
-		catch (IOException ioe)
-		{
-			logger
-					.log(Level.SEVERE, "Exception while detecting the client connectors.", ioe);
-		}
+	}
+
+	/** 
+	 * Returns the list of available client connectors.
+	 * @return The list of available client connectors.
+	 */
+	public List<ConnectorHelper> getRegisteredClients()
+	{
+		if(this.registeredClients == null) this.registeredClients = new ArrayList<ConnectorHelper>();
+		return this.registeredClients;
+	}
+
+	/** 
+	 * Returns the list of available server connectors.
+	 * @return The list of available server connectors.
+	 */
+	public List<ConnectorHelper> getRegisteredServers()
+	{
+		if(this.registeredServers == null) this.registeredServers = new ArrayList<ConnectorHelper>();
+		return this.registeredServers;
 	}
 
 	/**

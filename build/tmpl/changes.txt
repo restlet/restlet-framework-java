@@ -6,36 +6,50 @@ Changes log
 
 @version-full@ (@release-date@)
 [Bugs fixed]
- - Fixed potential NPE when some JAR files are missing (no API implementation, no connector found, etc.). Reported by Dave Pawson.
- - Renabled the content negotiation by default for Directory instances. This prevented the correct serving of index files in tutorial. Reported by Dave Pawson.
- - Fixed ServerServlet which forgot to set the proper Servlet Context on the Application. Reported by Evan DiBiase.
+ - Fixed potential NPE when some JAR files are missing (no API implementation, no connector found, etc.). 
+   Reported by Dave Pawson.
+ - Reenabled the content negotiation by default for Directory instances. This prevented the correct serving of
+   index files in tutorial. Reported by Dave Pawson.
+ - Fixed ServerServlet which forgot to set the proper Servlet Context on the Application. Reported by Evan 
+   DiBiase.
  - Fixed NPE in Guard when no challenge response is set. Reported by Dave Pawson.
  - Integrated patches and bug fixes (few NPEs) detected by FindBugs. Contributed by Piyush Purang.
- - Fixed Handler which didn't copy the "redirectRef" from the Result instance returned by post/put/delete methods on Resource. Reported by Chris Grindstaff.
+ - Fixed Handler which didn't copy the "redirectRef" from the Result instance returned by post/put/delete
+   methods on Resource. Reported by Chris Grindstaff.
  - Fixed NRE Container which didn't start the attached applications. Reported by Sumit Lohia.
   
 [API changes]
  - Moved org.restlet.data.Result to org.restlet.resource.Result (deprecation used).
  - Replaced ConnectorService.get*Protocols() methods by just getClientProtocols() and getServerProtocols().
  - Refactored the TunnelService a bit and added better Javadocs.
- - DateUtils formats are lists now instead of arrays. Trying to modify system set dates will yield UnsupportedOperationException. Piyush Purang.
- - Handler now supports dynamic dispatching to handle*() methods based on the request's method name. Only common methods are statically provided (handleGet/Head/Post/Put/Delete). handleMove/Copy/Options/Trace are removed from base Handler class (their default implementation did nothing useful anyway).
+ - DateUtils formats are lists now instead of arrays. Trying to modify system set dates will yield 
+   UnsupportedOperationException. Piyush Purang.
+ - Handler now supports dynamic dispatching to handle*() methods based on the request's method name. Only common 
+   methods are statically provided (handleGet/Head/Post/Put/Delete). handleMove/Copy/Options/Trace are removed 
+   from base Handler class (their default implementation did nothing useful anyway).
  - Renamed Form.getWebForm() into getWebRepresentation() to make space for a future getMultiPartRepresentation().
 
 [Enhancements] 
- - HTTP calls now try to use the channel aspect of a representation before its stream aspect. Suggested by Lars Heuer.
+ - HTTP calls now try to use the channel aspect of a representation before its stream aspect. 
+   Suggested by Lars Heuer.
  - Added source path to JSON external plugin. Suggested by Chris Grindstaff.
  - Added support for FindBugs in the Ant build script. Suggested by Piyush Purang.
- - Added "verify" target to build script to provide a shorter cycle for developpers. Contributed by Piyush Purang.
+ - Added "verify" target to build script to provide a shorter cycle for developpers. 
+   Contributed by Piyush Purang.
  - Slightly updated Eclipse code template file. Please re-import it if possible.
  - NRE now checks that each application has the required connectors available when starting it.
  - Added org.restlet.util.ImmutableDate.
  - Shortened author's info by removing the URI.
- - Refactored all hashCode() and equals() methods in classes of org.restlet.data package. Help from Piyush Purang.
+ - Refactored all hashCode() and equals() methods in classes of org.restlet.data package. 
+   Help from Piyush Purang.
  - Added Cookie test case for complex equality/hash code verification.
- - Limited AWS patch to JDK 5.0 update 9 and lower as this should be fixed in update 10 and already works in JDK 6.0.
- - Filter.doHandle() method now directly dispatch the call to the next Restlet instead of calling the super class. This prevents double call to initialize() and reduces the stack trace depth. Reported by Dave Pawson.
+ - Limited AWS patch to JDK 5.0 update 9 and lower as this should be fixed in update 10 and already works in 
+   JDK 6.0.
+ - Filter.doHandle() method now directly dispatch the call to the next Restlet instead of calling the super 
+   class. This prevents double call to initialize() and reduces the stack trace depth. Reported by Dave Pawson.
  - Added new HTTP client connector based on Jakarta Commons HTTP Client. Allow multi-threaded connection reuse.
+ - Added new constructor and methods on com.noelios.restlet.Factory to turn off auto-discovery of connectors. 
+   See the getRegisteredClients() and getRegisteredServers() methods. Suggested by Mike Moran   
   
 1.0 beta 20 (2006-11-08)
 [Bugs fixed]
@@ -846,37 +860,45 @@ Changes log
  - Added CookieUtils to support formatting of cookies and cookie settings
  - Moved CookieReader, HeaderReader and PreferenceReader to com.noelios.restlet.util package
  - Extracted HeaderUtils from HeaderReader and added some formatting methods
- - Added PreferenceUtils to support preference formatting
- - Added unit tests for Cookies and HTTP authentication
- - Major improvements to the HttpClientImpl (default HTTP client connector): cookies, conditions and preferences sending,
-   output representation metadata, redirection reference, server name extraction, basic HTTP authentication support
+ - Added PreferenceUtils to support preference formatting.
+ - Added unit tests for Cookies and HTTP authentication.
+ - Major improvements to the HttpClientImpl (default HTTP client connector): cookies, conditions and preferences 
+   sending, output representation metadata, redirection reference, server name extraction, basic HTTP 
+   authentication support
  - Added SecurityUtils to parse and format challenge request and responses (Basic HTTP authentication)
  - Improved cookie parsing and formatting
  - Improved automatic server-side negotiation when no preferences are provided by the client
  
 0.19 beta (2006-01-10)
- - Added a Samples application page detailling the source code of the Restlet and Noelios Consulting Web sites (suggested by Michael Mayer)
- - Added "conditions" property to UniformCall and a Conditions interface to support conditional REST methods.
-   This is currently used by the server-side negotiation logic to prevent sending again an unmodified representation.
- - Added getBestVariant() to UniformCall and related classes. Logic was internally used by the setBestOutput() method before.
+ - Added a Samples application page detailling the source code of the Restlet and Noelios Consulting Web sites 
+   (suggested by Michael Mayer)
+ - Added "conditions" property to UniformCall and a Conditions interface to support conditional REST methods. 
+   This is currently used by the server-side negotiation logic to prevent sending again an unmodified 
+   representation.
+ - Added getBestVariant() to UniformCall and related classes. Logic was internally used by the setBestOutput() 
+   method before.
  - Fixed bugs in Tutoria11 example (reported by Roger Menday)
  - Added isStarted and isStopped methods to connectors and components interfaces (suggested by Roger Menday)
  - The Maplet.delegate method now returns a boolean to indicate if the delegation suceeded
  - Updated Jetty connectors to versions 5.1.10 and 6.0 beta 5
- - Added HTTP server connector based on Servlet API 2.4 to allow deployment of Restlets within existing Web container instead 
-   of using the standalone mode based on the much lighter Jetty HTTP server connectors. Added ServerServlet and ServletCall classes.
-   Be advised that there is a performance cost for the extra Servlet layer.
+ - Added HTTP server connector based on Servlet API 2.4 to allow deployment of Restlets within existing Web 
+   container instead of using the standalone mode based on the much lighter Jetty HTTP server connectors. 
+   Added ServerServlet and ServletCall classes. Be advised that there is a performance cost for the extra 
+   Servlet layer.
  - Refactored all HTTP server connectors to use a common base HttpCall class. Removed JettyCookie classes
- - Renamed HttpClient.doGet, doPost, doPut and deDelete methods into HttpClient.get, post, put and delete for simplification purpose
+ - Renamed HttpClient.doGet, doPost, doPut and deDelete methods into HttpClient.get, post, put and delete for 
+   simplification purpose
  - Removed duplicate UniformCallImpl.setReferrer method
- - Added a "timeToLive" property on FileRestlet and DirectoryRestlet to allow automatic setting of an expiration date
+ - Added a "timeToLive" property on FileRestlet and DirectoryRestlet to allow automatic setting of an 
+   expiration date
  - Added DateUtils class to provide date comparison with only second precision (useful to compare with HTTP dates)
  
 0.18 beta (2006-01-02)
  - Added a GuardChainlet providing support for the HTTP basic authentication.
  - Added coverage of GuardChainlet in the tutorial
- - Added org.restlet.data.Security, ChallengeRequest, ChallengeResponse and ChallengeScheme interfaces to provide security support 
-   (authentication and confidentiality information). Added implementation classes in com.noelios.restlet.data package.
+ - Added org.restlet.data.Security, ChallengeRequest, ChallengeResponse and ChallengeScheme interfaces to provide 
+   security support (authentication and confidentiality information). Added implementation classes in 
+   com.noelios.restlet.data package.
  - Fixed NPE when no language preference was provided by the client (Jetty 5.1 and Jetty 6.0 connectors)
  - A home page link can now be displayed on status pages
  - Fixed issue in MediaTypeImpl when clients send invalid media types (with no subtype for example)
@@ -893,10 +915,12 @@ Changes log
  - DirectoryRestlet now correctly set the call status to SUCCESS_OK (200)
  - Fixed AbstractChainlet and used it as super class of LoggerChainlet and StatusChainlet
  - UniformCall.setTemporaryRedirect was renamed in setRedirect with a new "permanent" parameter
- - A default value to return can now be specified in RestletCallModel. Ex: return "-" is variable is null for logs
+ - A default value to return can now be specified in RestletCallModel. Ex: return "-" is variable is null 
+   for logs
  - Cookies.readCookies was renamed to getCookies and getFirstCookie method was added
  - CookiesReader.readCookie was renamed to readNextCookie and readFirstCookie method was added
- - Form.readParameter was renamed to getParameter, readParameters to getParameters and getFirstParameter was added
+ - Form.readParameter was renamed to getParameter, readParameters to getParameters and getFirstParameter 
+   was added.
  - Added Status.isInfo, isSuccess, isRedirection, isClientError, isServerError, isError methods
  - Manager.createChainlet is now a static method
 
@@ -940,7 +964,6 @@ Changes log
  - Added normalizePath to StringUtils issues with file separators different between Unix and Windows 
  - OriginServerImpl renamed ComponentImpl to follow the interfaces changes in 0.13beta
  - Fixed issue in getPath(index, strip) method of RestletCallImpl not passing on the index parameter (0 instead)
- 
 
 0.13 beta (2005-12-03)
  - Added a detailled tutorial (draft version)
@@ -955,72 +978,80 @@ Changes log
  - JettyConnection now sets the Last-Modified header when a modification date is defined
  - Added getMethods() method to org.restlet.Resource and FileResource, to return allowed methods
  - Added setResource() and getResource() to the Representation interface and AbstractRepresentation class
- - Moved connector handling methods from OriginServer to Component as other components (proxies, user agents, etc.) can have connectors attached to them
-
+ - Moved connector handling methods from OriginServer to Component as other components (proxies, user agents, 
+   etc.) can have connectors attached to them
 
 0.12 beta (2005-12-01)
  - Distribution license changed from GPL to CDDL (similar to Mozilla Public License).
  - Added createCharacterSet() to Factory interface, Manager and Engine classes.
  - HttpClient now correctly sets the output media type and character set when available.
- 
 
 0.11 beta (2005-11-29)
  - Renamed JettyConnector to JettyServer
  - Removed unnecessary HttpServer interface
  - Replaced many RestletException by IOException in non Restlet specific classes and interfaces
  - TemplateRepresentation no longer load the template upon creation as recommanded for performance reasons
- - Completed the separation between the Resltet API and the implementations: added org.restlet.Factory interface and org.restlet.Manager class.
- - Restlet API implementations must register their implementation of org.restlet.Factory with the org.restlet.Manager before usage.
+ - Completed the separation between the Resltet API and the implementations: added org.restlet.Factory interface 
+   and org.restlet.Manager class.
+ - Restlet API implementations must register their implementation of org.restlet.Factory with the 
+   org.restlet.Manager before usage.
  - Renamed CallImpl to UniformCallImpl
  - Added setter methods to UniformCall for request field (useful when preparing a call for a client connector)
- - Added org.restlet.component.DefaultRestletServer and DefaultRestletContainer for easy subclassing by developpers
+ - Added org.restlet.component.DefaultRestletServer and DefaultRestletContainer for easy subclassing by 
+   developpers
  - Added client HTTP connector in NRE
-
 
 0.10 beta (2005-11-17)
  - Renamed all Default* classes in com.noelios.restlet into *Impl for clarity purpose.
  - Added Status.getUri() method and improved Status.getDescription().
  - Removed the NONE values from Status and Method enumerations, null is doing a better job.
- - Added a DirectoryRestlet that behaves like a regular Web server. In addition, automatic media type, language and character set detection 
-   and setting is available in a way that hides technical names and extensions, allowing a clean content negotiation.
+ - Added a DirectoryRestlet that behaves like a regular Web server. In addition, automatic media type, language 
+   and character set detection and setting is available in a way that hides technical names and extensions, 
+   allowing a clean content negotiation.
  - Fixed issue with character encoding in the TemplateRepresentation (FreeMarker integration).
  - Moved FileResource and FileRestlet to com.noelios.restlet
- - Refactored the Jetty HTTP server connector to bypass their HTTP handler layer. Now we directly work out of the Jetty SocketListener and 
-   HttpConnection class. This will improve performances and reduce the memory consumed. Note that version 5.1.5 of Jetty is required as it 
-   contains a necessary fix.
- - Moved classes in com.noelios.restlet.ext.jse into com.noelios.restlet (restlets, FileResource), com.noelios.restlet.data (representations 
-   and readers) or com.noelios.restlet.ext.jee (JDBC).
- - Refactored com.noelios.restelt.RestletMappings into com.noelios.MapletImpl and used it as a delegate in org.restlet.DefaultMaplet.
- - Added factory methods to the OriginServer and RestletContainer interface to let the developer override some default implementations and 
-   to prevent direct references to specific restlet API implementations.
+ - Refactored the Jetty HTTP server connector to bypass their HTTP handler layer. Now we directly work out of the
+   Jetty SocketListener and HttpConnection class. This will improve performances and reduce the memory consumed. 
+   Note that version 5.1.5 of Jetty is required as it contains a necessary fix.
+ - Moved classes in com.noelios.restlet.ext.jse into com.noelios.restlet (restlets, FileResource), 
+   com.noelios.restlet.data (representations and readers) or com.noelios.restlet.ext.jee (JDBC).
+ - Refactored com.noelios.restelt.RestletMappings into com.noelios.MapletImpl and used it as a delegate in 
+   org.restlet.DefaultMaplet.
+ - Added factory methods to the OriginServer and RestletContainer interface to let the developer override some 
+   default implementations and to prevent direct references to specific restlet API implementations.
  - Added proper getName() and getDescription() implementations to Method enums
  - Separated Method into Method, Methods and DefaultMethod to allow any method. Added getUri() method.
  - Separated CharacterSet into CharacterSet and CharacterSets.
  - Separated Language into Language and Languages.
  - Added all HTTP and WebDAV methods in Methods.
  - Separated Status into Status, Statuses and Default Status to allow any status. 
- - Variant interface was renamed RepresentationMetadata to remove ambiguity. Also added "expirationDate", "modificationDate" and "tag" properties.
+ - Variant interface was renamed RepresentationMetadata to remove ambiguity. Also added "expirationDate", 
+   "modificationDate" and "tag" properties.
  - Added Tag interface and TagImpl for cache validation purpose.
- - Instead of deriving Variant, Representation now has a getMetadata() method returning an instance of RepresentationMetadata.
+ - Instead of deriving Variant, Representation now has a getMetadata() method returning an instance of 
+   RepresentationMetadata.
  - Added all existing HTTP and WebDAV statuses in Statuses.
  - Added a setTemporaryRedirect() method to UniformCall.
  - Upgraded the JDBC Client to support multiple databases, drivers and connection pools.
-
 
 0.9 beta (2005-11-01)
  - Moved com.restlet into com.noelios.restlet
  - Moved  net.restlet into org.restlet
  - Added a readParameter(String parameterName) method to Form and FormReader and their default implementations
- - Allowed multiple invocations of the DefaultForm.getFormReader() method when it is possible to reset the underlying input stream.
+ - Allowed multiple invocations of the DefaultForm.getFormReader() method when it is possible to reset the 
+   underlying input stream.
  - Added a logging in com.noelios.restlet.ext.jetty.RestletHandler using java.util.logging mechanism.
  - Refactored all code to use J2SE 5.0 language features (generics, enums)
  - Added Status and Method enumerations in org.restlet.data
  - Renamed Call to UniformCall
- - Added a RestletCall interface which extends UniformCall with a flexible way to get the path of each restlet in the stack of restlets that handled 
-   the call so far.
- - Added a org.restlet.data.Reference interface to work around the limitation of java.net.URI which is not a mutable class.
+ - Added a RestletCall interface which extends UniformCall with a flexible way to get the path of each restlet 
+   in the stack of restlets that handled the call so far.
+ - Added a org.restlet.data.Reference interface to work around the limitation of java.net.URI which is not a 
+   mutable class.
  - Moved Resource and Restlet interfaces at the root level (org.restlet). 
- - Refactored the UniformInterface. Many methods where moved to the Reference interface. Added "referrerURI" and "resourceURI" properties.
- - Separated the Restlet interface into Maplet and Restlet. Maplets are specialized restlets capable of delegating restlet calls to child restlets. 
-   RestletContainer now extends Maplet.
+ - Refactored the UniformInterface. Many methods where moved to the Reference interface. Added "referrerURI" and
+   "resourceURI" properties.
+ - Separated the Restlet interface into Maplet and Restlet. Maplets are specialized restlets capable of 
+   delegating restlet calls to child restlets. 
+ - RestletContainer now extends Maplet.
  - Renamed DefaultRestlet into AbstractRestlet.
