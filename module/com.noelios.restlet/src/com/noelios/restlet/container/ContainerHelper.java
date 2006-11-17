@@ -131,46 +131,17 @@ public class ContainerHelper implements Helper
 		Filter lastFilter = null;
 
 		// Checking if all applications have proper connectors
-		boolean missingConnector = false;
-		for (VirtualHost host : getContainer().getHosts())
+		boolean success = checkVirtualHost(getContainer().getDefaultHost());
+		if(success)
 		{
-			for (Scorer scorer : host.getScorers())
+			for (VirtualHost host : getContainer().getHosts())
 			{
-				Restlet next = scorer.getNext();
-
-				if (next instanceof Application)
-				{
-					Application application = (Application) next;
-
-					for (Protocol clientProtocol : application.getConnectorService()
-							.getClientProtocols())
-					{
-						if (!getContainer().getClients().contains(clientProtocol))
-						{
-							getContainer().getLogger().severe(
-									"Unable to start the application \"" + application.getName()
-											+ "\". Client connector for protocol "
-											+ clientProtocol.getName() + " is missing.");
-							missingConnector = true;
-						}
-					}
-
-					for (Protocol serverProtocol : application.getConnectorService()
-							.getServerProtocols())
-					{
-						if (!getContainer().getServers().contains(serverProtocol))
-						{
-							getContainer().getLogger().severe(
-									"Unable to start the application \"" + application.getName()
-											+ "\". Server connector for protocol "
-											+ serverProtocol.getName() + " is missing.");
-							missingConnector = true;
-						}
-					}
-				}
+				success = success && checkVirtualHost(host);
 			}
 		}
-		if (missingConnector)
+
+		// Let's actually start the container
+		if (!success)
 		{
 			getContainer().stop();
 		}
@@ -207,6 +178,63 @@ public class ContainerHelper implements Helper
 	}
 
 	/**
+	 * Check the applications attached to a virtual host.
+	 * @param host The parent virtual host. 
+	 * @return True if the check succeeded.
+	 * @throws Exception
+	 */
+	private boolean checkVirtualHost(VirtualHost host) throws Exception
+	{
+		boolean result = true;
+
+		if(host != null)
+		{
+			for (Scorer scorer : host.getScorers())
+			{
+				Restlet next = scorer.getNext();
+	
+				if (next instanceof Application)
+				{
+					Application application = (Application) next;
+	
+					for (Protocol clientProtocol : application.getConnectorService()
+							.getClientProtocols())
+					{
+						if (!getContainer().getClients().contains(clientProtocol))
+						{
+							getContainer().getLogger().severe(
+									"Unable to start the application \"" + application.getName()
+											+ "\". Client connector for protocol "
+											+ clientProtocol.getName() + " is missing.");
+							result = false;
+						}
+					}
+	
+					for (Protocol serverProtocol : application.getConnectorService()
+							.getServerProtocols())
+					{
+						if (!getContainer().getServers().contains(serverProtocol))
+						{
+							getContainer().getLogger().severe(
+									"Unable to start the application \"" + application.getName()
+											+ "\". Server connector for protocol "
+											+ serverProtocol.getName() + " is missing.");
+							result = false;
+						}
+					}
+	
+					if (result && application.isStopped())
+					{
+						application.start();
+					}
+				}
+			}
+		}
+		
+		return result;
+	}
+
+	/**
 	 * Creates a new log filter. Allows overriding.
 	 * @param context The context.
 	 * @param logName The log name to used in the logging.properties file.
@@ -231,6 +259,24 @@ public class ContainerHelper implements Helper
 	/** Stop callback. */
 	public void stop() throws Exception
 	{
+		// Stop all applications 
+		for (VirtualHost host : getContainer().getHosts())
+		{
+			for (Scorer scorer : host.getScorers())
+			{
+				Restlet next = scorer.getNext();
+
+				if (next instanceof Application)
+				{
+					Application application = (Application) next;
+
+					if (application.isStarted())
+					{
+						application.stop();
+					}
+				}
+			}
+		}
 	}
 
 	/**
