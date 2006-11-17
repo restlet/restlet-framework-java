@@ -270,12 +270,12 @@ public abstract class Factory
 			List<Representation> variants, Language fallbackLanguage);
 
 	/**
-	 * Parses an URL encoded Web form.
+	 * Parses a representation into a form.
 	 * @param logger The logger to use.
 	 * @param form The target form.
-	 * @param webForm The posted form.
+	 * @param representation The representation to parse.
 	 */
-	public abstract void parse(Logger logger, Form form, Representation webForm);
+	public abstract void parse(Logger logger, Form form, Representation representation);
 
 	/**
 	 * Parses an URL encoded query string into a given form.

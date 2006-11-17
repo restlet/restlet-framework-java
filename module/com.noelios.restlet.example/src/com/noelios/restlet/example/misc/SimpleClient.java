@@ -53,7 +53,7 @@ public class SimpleClient
 		form.add("name", "John D. Mitchell");
 		form.add("email", "john@bob.net");
 		form.add("email2", "joe@bob.net");
-		request.setEntity(form.getWebForm());
+		request.setEntity(form.getWebRepresentation());
 
 		// Prepare HTTP client connector.
 		Client client = new Client(Protocol.HTTP);
