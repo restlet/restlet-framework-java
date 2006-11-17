@@ -118,7 +118,8 @@ public class HttpClientHelper extends com.noelios.restlet.http.HttpClientHelper
 		// Create the internal client connector
 		this.httpClient = new HttpClient(connectionManager);
 		getHttpClient().getParams().setAuthenticationPreemptive(false);
-		getHttpClient().getParams().setConnectionManagerTimeout(getConnectionManagerTimeout());
+		getHttpClient().getParams().setConnectionManagerTimeout(
+				getConnectionManagerTimeout());
 		getHttpClient().getParams().setCookiePolicy(CookiePolicy.IGNORE_COOKIES);
 		getHttpClient().getParams().setSoTimeout(getReadTimeout());
 	}

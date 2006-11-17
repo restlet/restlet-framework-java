@@ -48,6 +48,10 @@
 	<property name="lib-backport-version" value="2.2" />
 	<property name="lib-backport-id" value="${lib-backport-package}_${lib-backport-version}" />
 
+	<property name="lib-codec-package" value="org.apache.commons.codec" />
+	<property name="lib-codec-version" value="1.3" />
+	<property name="lib-codec-id" value="${lib-codec-package}_${lib-codec-version}" />
+
 	<property name="lib-collections-package" value="org.apache.commons.collections" />
 	<property name="lib-collections-version" value="3.2" />
 	<property name="lib-collections-id" value="${lib-collections-package}_${lib-collections-version}" />
@@ -67,6 +71,10 @@
 	<property name="lib-freemarker-package" value="org.freemarker" />
 	<property name="lib-freemarker-version" value="2.3" />
 	<property name="lib-freemarker-id" value="${lib-freemarker-package}_${lib-freemarker-version}" />
+
+	<property name="lib-httpclient-package" value="org.apache.commons.httpclient" />
+	<property name="lib-httpclient-version" value="3.1" />
+	<property name="lib-httpclient-id" value="${lib-httpclient-package}_${lib-httpclient-version}" />
 
 	<property name="lib-javamail-package" value="javax.mail" />
 	<property name="lib-javamail-version" value="1.4" />
@@ -156,6 +164,10 @@
 	<property name="mod-freemarker-package" value="org.restlet.ext.freemarker" />
 	<property name="mod-freemarker-version" value="${lib-freemarker-version}" />
 	<property name="mod-freemarker-id" value="${mod-freemarker-package}_${mod-freemarker-version}" />
+
+	<property name="mod-httpclient-package" value="com.noelios.restlet.ext.httpclient" />
+	<property name="mod-httpclient-version" value="${lib-httpclient-version}" />
+	<property name="mod-httpclient-id" value="${mod-httpclient-package}_${mod-httpclient-version}" />
 
 	<property name="mod-javamail-package" value="com.noelios.restlet.ext.javamail" />
 	<property name="mod-javamail-version" value="${lib-javamail-version}" />
@@ -293,6 +305,14 @@
 		<fileset dir="${lib}/${lib-freemarker-id}" includes="*.jar" />
 	</path>
 
+	<path id="mod-httpclient-path">
+		<path refid="mod-ri-path" />
+		<pathelement path="${classes}/${mod-ri-id}" />
+		<fileset dir="${lib}/${lib-httpclient-id}" includes="*.jar" />
+		<fileset dir="${lib}/${lib-logging-id}" includes="*.jar" />
+		<fileset dir="${lib}/${lib-codec-id}" includes="*.jar" />
+	</path>
+
 	<path id="mod-javamail-path">
 		<path refid="mod-ri-path" />
 		<pathelement path="${classes}/${mod-ri-id}" />
@@ -360,8 +380,9 @@
 		<pathelement path="${classes}/${mod-api-id}" />
 		<pathelement path="${classes}/${mod-ri-id}" />
 		<pathelement path="${classes}/${mod-asyncweb-id}" />
-		<pathelement path="${classes}/${mod-freemarker-id}" />
 		<pathelement path="${classes}/${mod-fileupload-id}" />
+		<pathelement path="${classes}/${mod-freemarker-id}" />
+		<pathelement path="${classes}/${mod-httpclient-id}" />
 		<pathelement path="${classes}/${mod-javamail-id}" />
 		<pathelement path="${classes}/${mod-jdbc-id}" />
 		<pathelement path="${classes}/${mod-jetty5-id}" />
@@ -372,8 +393,9 @@
 		<pathelement path="${classes}/${mod-servlet-id}" />
 		<pathelement path="${classes}/${mod-velocity-id}" />
 		<path refid="mod-asyncweb-path" />
-		<path refid="mod-freemarker-path" />
 		<path refid="mod-fileupload-path" />
+		<path refid="mod-freemarker-path" />
+		<path refid="mod-httpclient-path" />
 		<path refid="mod-javamail-path" />
 		<path refid="mod-jdbc-path" />
 		<path refid="mod-jetty5-path" />
@@ -598,6 +620,7 @@
 		<compileModule name="atom" />
 		<compileModule name="fileupload" />
 		<compileModule name="freemarker" />
+		<compileModule name="httpclient" />
 		<compileModule name="javamail" />
 		<compileModule name="jdbc" />
 		<compileModule name="jetty5" />
@@ -707,11 +730,13 @@
 
 		<!-- Packages libraries -->
 		<packageLibrary name="asyncweb" />
+		<packageLibrary name="codec" />
 		<packageLibrary name="collections" />
 		<packageLibrary name="concurrent" />
 		<packageLibrary name="dbcp" />
 		<packageLibrary name="fileupload" />
 		<packageLibrary name="freemarker" />
+		<packageLibrary name="httpclient" />
 		<packageLibrary name="javamail" />
 		<packageLibrary name="jetty5" />
 		<packageLibrary name="jetty6" />
@@ -733,11 +758,12 @@
 		<packageModule name="atom" />
 		<packageModule name="fileupload" />
 		<packageModule name="freemarker" />
+		<packageModule name="httpclient" />
 		<packageModule name="javamail" />
 		<packageModule name="jdbc" />
 		<packageModule name="jetty5" />
 		<packageModule name="jetty6" />
-		<packageModule name="jmx" />
+<!-- disabled for 1.0  <packageModule name="jmx" /> -->
 		<packageModule name="json" />
 		<packageModule name="net" />
 		<packageModule name="servlet" />
@@ -758,6 +784,7 @@
 		<findbugsModule name="atom" />
 		<findbugsModule name="fileupload" />
 		<findbugsModule name="freemarker" />
+		<findbugsModule name="httpclient" />
 		<findbugsModule name="javamail" />
 		<findbugsModule name="jdbc" />
 		<findbugsModule name="jetty5" />
@@ -843,6 +870,7 @@
 				<pathelement path="${mod}/${mod-freemarker-id}/src/" />
 				<pathelement path="${mod}/${mod-json-id}/src/" />
 				<pathelement path="${mod}/${mod-asyncweb-id}/src/" />
+				<pathelement path="${mod}/${mod-httpclient-id}/src/" />
 				<pathelement path="${mod}/${mod-javamail-id}/src/" />
 				<pathelement path="${mod}/${mod-jdbc-id}/src/" />
 				<pathelement path="${mod}/${mod-jetty5-id}/src/" />
@@ -864,8 +892,10 @@
 			</group>
 
 			<link href="http://freemarker.org/docs/api/" />
+			<link href="http://jakarta.apache.org/commons/codec/apidocs/" />
 			<link href="http://jakarta.apache.org/commons/collections/api-release/" />
 			<link href="http://jakarta.apache.org/commons/fileupload/apidocs/" />
+			<link href="http://jakarta.apache.org/commons/httpclient/apidocs/" />
 			<link href="http://jakarta.apache.org/velocity/docs/api/" />
 			<link href="http://java.sun.com/j2se/1.5.0/docs/api/" />
 			<link href="http://java.sun.com/products/javamail/javadocs/" />

@@ -43,14 +43,11 @@ import org.restlet.resource.Representation;
 import com.noelios.restlet.http.HttpClientCall;
 
 /**
- * HTTP client connector call based on JDK's java.net.HttpUrlConnection class.
+ * HTTP client connector call based on JDK's java.net.HttpURLConnection class.
  * @author Jerome Louvel (contact@noelios.com)
  */
 public class HttpUrlConnectionCall extends HttpClientCall
 {
-	/** The associated HTTP client. */
-	private HttpClientHelper clientHelper;
-
 	/** The wrapped HTTP URL connection. */
 	private HttpURLConnection connection;
 
@@ -59,28 +56,27 @@ public class HttpUrlConnectionCall extends HttpClientCall
 
 	/**
 	 * Constructor.
-	 * @param client The client connector.
+	 * @param helper The parent HTTP client helper.
 	 * @param method The method name.
 	 * @param requestUri The request URI.
 	 * @param hasEntity Indicates if the call will have an entity to send to the server.
 	 * @throws IOException
 	 */
-	public HttpUrlConnectionCall(HttpClientHelper client, String method,
+	public HttpUrlConnectionCall(HttpClientHelper helper, String method,
 			String requestUri, boolean hasEntity) throws IOException
 	{
-		super(method, requestUri);
-		this.clientHelper = client;
+		super(helper, method, requestUri);
 
 		if (requestUri.startsWith("http"))
 		{
 			URL url = new URL(requestUri);
 			this.connection = (HttpURLConnection) url.openConnection();
-			this.connection.setConnectTimeout(client.getConnectTimeout());
-			this.connection.setReadTimeout(client.getReadTimeout());
-			this.connection.setAllowUserInteraction(client.isAllowUserInteraction());
+			this.connection.setConnectTimeout(getHelper().getConnectTimeout());
+			this.connection.setReadTimeout(getHelper().getReadTimeout());
+			this.connection.setAllowUserInteraction(getHelper().isAllowUserInteraction());
 			this.connection.setDoOutput(hasEntity);
-			this.connection.setInstanceFollowRedirects(client.isFollowRedirects());
-			this.connection.setUseCaches(client.isUseCaches());
+			this.connection.setInstanceFollowRedirects(getHelper().isFollowRedirects());
+			this.connection.setUseCaches(getHelper().isUseCaches());
 			this.responseHeadersAdded = false;
 			setConfidential(this.connection instanceof HttpsURLConnection);
 		}
@@ -89,6 +85,15 @@ public class HttpUrlConnectionCall extends HttpClientCall
 			throw new IllegalArgumentException(
 					"Only HTTP or HTTPS resource URIs are allowed here");
 		}
+	}
+
+	/**
+	 * Returns the HTTP client helper.
+	 * @return The HTTP client helper.
+	 */
+	public HttpClientHelper getHelper()
+	{
+		return (HttpClientHelper) super.getHelper();
 	}
 
 	/**
@@ -106,7 +111,7 @@ public class HttpUrlConnectionCall extends HttpClientCall
 	 * @param request The high-level request.
 	 * @return The result status.
 	 */
-	public Status sendRequest(Request request) throws IOException
+	public Status sendRequest(Request request)
 	{
 		Status result = null;
 
@@ -125,11 +130,10 @@ public class HttpUrlConnectionCall extends HttpClientCall
 				else
 				{
 					// The size of the entity is not known in advance
-					if (this.clientHelper.getChunkLength() >= 0)
+					if (getHelper().getChunkLength() >= 0)
 					{
 						// Use chunked encoding
-						getConnection().setChunkedStreamingMode(
-								this.clientHelper.getChunkLength());
+						getConnection().setChunkedStreamingMode(getHelper().getChunkLength());
 					}
 					else
 					{
@@ -155,14 +159,14 @@ public class HttpUrlConnectionCall extends HttpClientCall
 		}
 		catch (ConnectException ce)
 		{
-			this.clientHelper.getLogger().log(Level.FINE,
+			getHelper().getLogger().log(Level.FINE,
 					"An error occured during the connection to the remote HTTP server.", ce);
 			result = new Status(Status.CONNECTOR_ERROR_CONNECTION,
 					"Unable to connect to the remote server. " + ce.getMessage());
 		}
 		catch (SocketTimeoutException ste)
 		{
-			this.clientHelper
+			getHelper()
 					.getLogger()
 					.log(
 							Level.FINE,
@@ -174,7 +178,7 @@ public class HttpUrlConnectionCall extends HttpClientCall
 		}
 		catch (FileNotFoundException fnfe)
 		{
-			this.clientHelper.getLogger().log(Level.FINE,
+			getHelper().getLogger().log(Level.FINE,
 					"An unexpected error occured during the sending of the HTTP request.",
 					fnfe);
 			result = new Status(Status.CONNECTOR_ERROR_INTERNAL,
@@ -182,7 +186,7 @@ public class HttpUrlConnectionCall extends HttpClientCall
 		}
 		catch (IOException ioe)
 		{
-			this.clientHelper.getLogger().log(Level.FINE,
+			getHelper().getLogger().log(Level.FINE,
 					"An error occured during the communication with the remote HTTP server.",
 					ioe);
 			result = new Status(Status.CONNECTOR_ERROR_COMMUNICATION,
@@ -191,7 +195,7 @@ public class HttpUrlConnectionCall extends HttpClientCall
 		}
 		catch (Exception e)
 		{
-			this.clientHelper.getLogger().log(Level.FINE,
+			getHelper().getLogger().log(Level.FINE,
 					"An unexpected error occured during the sending of the HTTP request.", e);
 			result = new Status(Status.CONNECTOR_ERROR_INTERNAL,
 					"Unable to send the HTTP request. " + e.getMessage());

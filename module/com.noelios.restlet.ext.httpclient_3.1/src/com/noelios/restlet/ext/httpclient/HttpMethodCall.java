@@ -22,9 +22,11 @@
 
 package com.noelios.restlet.ext.httpclient;
 
+import java.io.FilterInputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
+import java.util.logging.Level;
 
 import org.apache.commons.httpclient.ConnectMethod;
 import org.apache.commons.httpclient.Header;
@@ -68,17 +70,17 @@ public class HttpMethodCall extends HttpClientCall
 
 	/**
 	 * Constructor.
-	 * @param client The client connector.
+	 * @param helper The parent HTTP client helper.
 	 * @param method The method name.
 	 * @param requestUri The request URI.
 	 * @param hasEntity Indicates if the call will have an entity to send to the server.
 	 * @throws IOException
 	 */
-	public HttpMethodCall(HttpClientHelper client, final String method, String requestUri,
+	public HttpMethodCall(HttpClientHelper helper, final String method, String requestUri,
 			boolean hasEntity) throws IOException
 	{
-		super(method, requestUri);
-		this.clientHelper = client;
+		super(helper, method, requestUri);
+		this.clientHelper = helper;
 
 		if (requestUri.startsWith("http"))
 		{
@@ -157,50 +159,72 @@ public class HttpMethodCall extends HttpClientCall
 	 * @return The result status.
 	 */
 	@Override
-	public Status sendRequest(Request request) throws IOException
+	public Status sendRequest(Request request)
 	{
 		Status result = null;
-		final Representation entity = request.getEntity();
 
-		// Set the request headers
-		for (Parameter header : getRequestHeaders())
+		try
 		{
-			getHttpMethod().setRequestHeader(header.getName(), header.getValue());
-		}
+			final Representation entity = request.getEntity();
 
-		// For those method that accept enclosing entites, provide it
-		if ((entity != null) && (getHttpMethod() instanceof EntityEnclosingMethod))
-		{
-			EntityEnclosingMethod eem = (EntityEnclosingMethod) getHttpMethod();
-			eem.setRequestEntity(new RequestEntity()
+			// Set the request headers
+			for (Parameter header : getRequestHeaders())
 			{
-				public long getContentLength()
-				{
-					return entity.getSize();
-				}
+				getHttpMethod().setRequestHeader(header.getName(), header.getValue());
+			}
 
-				public String getContentType()
+			// For those method that accept enclosing entites, provide it
+			if ((entity != null) && (getHttpMethod() instanceof EntityEnclosingMethod))
+			{
+				EntityEnclosingMethod eem = (EntityEnclosingMethod) getHttpMethod();
+				eem.setRequestEntity(new RequestEntity()
 				{
-					return entity.getMediaType().toString();
-				}
+					public long getContentLength()
+					{
+						return entity.getSize();
+					}
 
-				public boolean isRepeatable()
-				{
-					return !entity.isTransient();
-				}
+					public String getContentType()
+					{
+						return entity.getMediaType().toString();
+					}
 
-				public void writeRequest(OutputStream os) throws IOException
-				{
-					entity.write(os);
-				}
-			});
+					public boolean isRepeatable()
+					{
+						return !entity.isTransient();
+					}
+
+					public void writeRequest(OutputStream os) throws IOException
+					{
+						entity.write(os);
+					}
+				});
+			}
+
+			// Ensure that the connections is active
+			this.clientHelper.getHttpClient().executeMethod(getHttpMethod());
+			
+			// Now we can access the status code, this MUST happen after closing any open request stream.
+			result = new Status(getStatusCode(), null, getReasonPhrase(), null);
+
+			// If there is not response body, immediatly release the connection
+			if(getHttpMethod().getResponseBodyAsStream() == null)
+			{
+				getHttpMethod().releaseConnection();
+			}
 		}
+		catch (IOException ioe)
+		{
+			this.clientHelper.getLogger().log(Level.FINE,
+					"An error occured during the communication with the remote HTTP server.",
+					ioe);
+			result = new Status(Status.CONNECTOR_ERROR_COMMUNICATION,
+					"Unable to complete the HTTP call due to a communication error with the remote server. "
+							+ ioe.getMessage());
 
-		// Ensure that the connections is active
-		this.clientHelper.getHttpClient().executeMethod(getHttpMethod());
-
-		// Now we can access the status code, this MUST happen after closing any open request stream.
-		result = new Status(getStatusCode(), null, getReasonPhrase(), null);
+			// Release the connection
+			getHttpMethod().releaseConnection();
+		}
 
 		return result;
 	}
@@ -271,7 +295,15 @@ public class HttpMethodCall extends HttpClientCall
 
 		try
 		{
-			result = getHttpMethod().getResponseBodyAsStream();
+			// Return a wrapper filter that will release the connection when needed 
+			result = new FilterInputStream(getHttpMethod().getResponseBodyAsStream())
+			{
+				public void close() throws IOException
+				{
+					super.close();
+					getHttpMethod().releaseConnection();
+				}
+			};
 		}
 		catch (IOException ioe)
 		{

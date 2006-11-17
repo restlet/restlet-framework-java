@@ -29,6 +29,7 @@ import java.net.InetAddress;
 import java.net.UnknownHostException;
 import java.nio.channels.ReadableByteChannel;
 import java.nio.channels.WritableByteChannel;
+import java.util.logging.Level;
 
 import org.restlet.data.Encoding;
 import org.restlet.data.Language;
@@ -48,16 +49,30 @@ import org.restlet.service.ConnectorService;
  */
 public class HttpClientCall extends HttpCall
 {
+	/** The parent HTTP client helper. */
+	private HttpClientHelper helper;
+
 	/**
 	 * Constructor setting the request address to the local host.
+	 * @param helper The parent HTTP client helper.
 	 * @param method The method name.
 	 * @param requestUri The request URI.
 	 */
-	public HttpClientCall(String method, String requestUri)
+	public HttpClientCall(HttpClientHelper helper, String method, String requestUri)
 	{
+		this.helper = helper;
 		setMethod(method);
 		setRequestUri(requestUri);
 		setClientAddress(getLocalAddress());
+	}
+
+	/**
+	 * Returns the HTTP client helper.
+	 * @return The HTTP client helper.
+	 */
+	public HttpClientHelper getHelper()
+	{
+		return this.helper;
 	}
 
 	/**
@@ -99,53 +114,67 @@ public class HttpClientCall extends HttpCall
 	 * send them over the network. 
 	 * @param request The high-level request.
 	 */
-	public Status sendRequest(Request request) throws IOException
+	public Status sendRequest(Request request)
 	{
-		Representation entity = request.isEntityAvailable() ? request.getEntity() : null;
+		Status result = null;
 
-		if (entity != null)
+		try
 		{
-			// Get the connector service to callback
-			ConnectorService connectorService = getConnectorService(request);
-			if (connectorService != null) connectorService.beforeSend(entity);
+			Representation entity = request.isEntityAvailable() ? request.getEntity() : null;
 
-			// In order to workaround bug #6472250, it is very important to reuse that exact same
-			// "rs" reference when manipulating the request stream, otherwise "infufficient data sent" exceptions
-			// will occur in "fixedLengthMode"
-			OutputStream rs = getRequestStream();
-			WritableByteChannel wbc = getRequestChannel();
-			if (wbc != null)
+			if (entity != null)
 			{
-				if (entity != null)
+				// Get the connector service to callback
+				ConnectorService connectorService = getConnectorService(request);
+				if (connectorService != null) connectorService.beforeSend(entity);
+
+				// In order to workaround bug #6472250, it is very important to reuse that exact same
+				// "rs" reference when manipulating the request stream, otherwise "infufficient data sent" exceptions
+				// will occur in "fixedLengthMode"
+				OutputStream rs = getRequestStream();
+				WritableByteChannel wbc = getRequestChannel();
+				if (wbc != null)
 				{
-					entity.write(wbc);
+					if (entity != null)
+					{
+						entity.write(wbc);
+					}
+				}
+				else if (rs != null)
+				{
+					if (entity != null)
+					{
+						entity.write(rs);
+					}
+
+					rs.flush();
+				}
+
+				// Call-back after writing
+				if (connectorService != null) connectorService.afterSend(entity);
+
+				if (rs != null)
+				{
+					rs.close();
+				}
+				else if (wbc != null)
+				{
+					wbc.close();
 				}
 			}
-			else if (rs != null)
-			{
-				if (entity != null)
-				{
-					entity.write(rs);
-				}
 
-				rs.flush();
-			}
-
-			// Call-back after writing
-			if (connectorService != null) connectorService.afterSend(entity);
-
-			if (rs != null)
-			{
-				rs.close();
-			}
-			else if (wbc != null)
-			{
-				wbc.close();
-			}
+			// Now we can access the status code, this MUST happen after closing any open request stream.
+			result = new Status(getStatusCode(), null, getReasonPhrase(), null);
 		}
-
-		// Now we can access the status code, this MUST happen after closing any open request stream.
-		Status result = new Status(getStatusCode(), null, getReasonPhrase(), null);
+		catch (IOException ioe)
+		{
+			getHelper().getLogger().log(Level.FINE,
+					"An error occured during the communication with the remote HTTP server.",
+					ioe);
+			result = new Status(Status.CONNECTOR_ERROR_COMMUNICATION,
+					"Unable to complete the HTTP call due to a communication error with the remote server. "
+							+ ioe.getMessage());
+		}
 
 		return result;
 	}

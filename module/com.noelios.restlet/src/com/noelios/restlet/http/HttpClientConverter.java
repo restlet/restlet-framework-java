@@ -91,24 +91,17 @@ public class HttpClientConverter extends HttpConverter
 	 */
 	public void commit(HttpClientCall httpCall, Request request, Response response)
 	{
-		try
-		{
-			// Send the request to the client
-			response.setStatus(httpCall.sendRequest(request));
+		// Send the request to the client
+		response.setStatus(httpCall.sendRequest(request));
 
-			// Get the server address
-			response.getServerInfo().setAddress(httpCall.getServerAddress());
+		// Get the server address
+		response.getServerInfo().setAddress(httpCall.getServerAddress());
 
-			// Read the response headers
-			readResponseHeaders(httpCall, response);
+		// Read the response headers
+		readResponseHeaders(httpCall, response);
 
-			// Set the entity
-			response.setEntity(httpCall.getResponseEntity());
-		}
-		catch (Exception e)
-		{
-			getLogger().log(Level.INFO, "Exception intercepted", e);
-		}
+		// Set the entity
+		response.setEntity(httpCall.getResponseEntity());
 	}
 
 	/**
