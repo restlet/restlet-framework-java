@@ -77,6 +77,15 @@ com.noelios.restlet.ext.asyncweb_0.8 (AsyncWeb server HTTP connector)
  - org.slf4j_1.0
 
 
+com.noelios.restlet.ext.httpclient_3.1 (HTTP client connector based on Apache Commons HTTP Client)
+------------------------------------
+ - com.noelios.restlet
+ - org.apache.commons.codec
+ - org.apache.commons.httpclient
+ - org.apache.commons.logging
+ - org.restlet
+
+
 com.noelios.restlet.ext.javamail_1.4 (SMTP client connector based on JavaMail)
 ------------------------------------
  - com.noelios.restlet
