@@ -130,16 +130,17 @@ public class StringTemplateRepresentation extends StreamRepresentation
 	 */
 	public InputStream getStream() throws IOException
 	{
-		if (getValue() != null)
+		String value = getValue();
+
+		if (value != null)
 		{
 			if (getCharacterSet() != null)
 			{
-				return new ByteArrayInputStream(getValue().getBytes(
-						getCharacterSet().getName()));
+				return new ByteArrayInputStream(value.getBytes(getCharacterSet().getName()));
 			}
 			else
 			{
-				return new ByteArrayInputStream(getValue().getBytes());
+				return new ByteArrayInputStream(value.getBytes());
 			}
 		}
 		else
@@ -167,7 +168,9 @@ public class StringTemplateRepresentation extends StreamRepresentation
 	 */
 	public void write(OutputStream outputStream) throws IOException
 	{
-		if (getValue() != null)
+		String value = getValue();
+
+		if (value != null)
 		{
 			OutputStreamWriter osw = null;
 
@@ -180,7 +183,7 @@ public class StringTemplateRepresentation extends StreamRepresentation
 				osw = new OutputStreamWriter(outputStream);
 			}
 
-			osw.write(getValue());
+			osw.write(value);
 			osw.flush();
 		}
 	}

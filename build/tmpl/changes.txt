@@ -17,7 +17,9 @@ Changes log
  - Fixed Handler which didn't copy the "redirectRef" from the Result instance returned by post/put/delete
    methods on Resource. Reported by Chris Grindstaff.
  - Fixed NRE Container which didn't start the attached applications. Reported by Sumit Lohia.
-  
+ - Fixed inneficiency issue in StringTemplateRepresentation which was reevaluating the same template multiple
+   times. Reported by Chris Grindstaff.
+   
 [API changes]
  - Moved org.restlet.data.Result to org.restlet.resource.Result (deprecation used).
  - Replaced ConnectorService.get*Protocols() methods by just getClientProtocols() and getServerProtocols().
