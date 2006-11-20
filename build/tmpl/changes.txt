@@ -59,9 +59,8 @@ Changes log
    See the getRegisteredClients() and getRegisteredServers() methods. Suggested by Mike Moran.
  - Upgraded Apache MINA to 0.8.4 used by AsyncWeb HTTP server connector. Suggested by Lars Heuer.
  - Upgraded Jetty 6 to 6.1 pre2 which adds support for APJ and HTTPS/NIO in the Jetty 6-.x series.
- - Added ServletServerConverter to automatically add a "org.restlet.http.servlet.context" to each Restlet request.
-   This will allow easier and more portable integration with Spring for example. Initial issue reported 
-   by Marcel Schepers.
+ - Renamed NRE's ServletContext into ServletContextAdapter and replaced the private getServlet() method by 
+   a public getServletContext() one.
    
 1.0 beta 20 (2006-11-08)
 [Bugs fixed]

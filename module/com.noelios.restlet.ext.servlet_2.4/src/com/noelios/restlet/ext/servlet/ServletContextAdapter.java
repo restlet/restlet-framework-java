@@ -25,6 +25,7 @@ package com.noelios.restlet.ext.servlet;
 import java.util.Enumeration;
 
 import javax.servlet.Servlet;
+import javax.servlet.ServletContext;
 
 import org.restlet.Application;
 import org.restlet.Context;
@@ -36,10 +37,10 @@ import com.noelios.restlet.application.ApplicationContext;
  * adding the Servlet's initialization parameters to the context's parameters.
  * @author Jerome Louvel (contact@noelios.com)
  */
-public class ServletContext extends ApplicationContext
+public class ServletContextAdapter extends ApplicationContext
 {
-	/** The parent servlet. */
-	private Servlet servlet;
+	/** The Servlet context. */
+	private ServletContext servletContext;
 
 	/**
 	 * Constructor.
@@ -47,11 +48,12 @@ public class ServletContext extends ApplicationContext
 	 * @param parentContext The parent context.
 	 * @param application The parent application.
 	 */
-	public ServletContext(Servlet servlet, Application application, Context parentContext)
+	public ServletContextAdapter(Servlet servlet, Application application,
+			Context parentContext)
 	{
 		super(application, parentContext, new ServletLogger(servlet.getServletConfig()
 				.getServletContext()));
-		this.servlet = servlet;
+		this.servletContext = servlet.getServletConfig().getServletContext();
 
 		// Set the special WAR client
 		setWarClient(new ServletWarClient(parentContext, servlet.getServletConfig()
@@ -61,7 +63,7 @@ public class ServletContext extends ApplicationContext
 		String initParam;
 
 		// Copy all the Web Container initialization parameters
-		javax.servlet.ServletConfig servletConfig = getServlet().getServletConfig();
+		javax.servlet.ServletConfig servletConfig = servlet.getServletConfig();
 		for (Enumeration enum1 = servletConfig.getInitParameterNames(); enum1
 				.hasMoreElements();)
 		{
@@ -70,23 +72,21 @@ public class ServletContext extends ApplicationContext
 		}
 
 		// Copy all the Web Application initialization parameters
-		javax.servlet.ServletContext servletContext = getServlet().getServletConfig()
-				.getServletContext();
-		for (Enumeration enum1 = servletContext.getInitParameterNames(); enum1
+		for (Enumeration enum1 = getServletContext().getInitParameterNames(); enum1
 				.hasMoreElements();)
 		{
 			initParam = (String) enum1.nextElement();
-			getParameters().add(initParam, servletContext.getInitParameter(initParam));
+			getParameters().add(initParam, getServletContext().getInitParameter(initParam));
 		}
 	}
 
 	/**
-	 * Returns the parent servlet.
-	 * @return The parent servlet.
+	 * Returns the Servlet context.
+	 * @return The Servlet context.
 	 */
-	private Servlet getServlet()
+	public ServletContext getServletContext()
 	{
-		return this.servlet;
+		return this.servletContext;
 	}
 
 }
