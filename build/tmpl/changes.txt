@@ -61,6 +61,8 @@ Changes log
  - Upgraded Jetty 6 to 6.1 pre2 which adds support for APJ and HTTPS/NIO in the Jetty 6-.x series.
  - Renamed NRE's ServletContext into ServletContextAdapter and replaced the private getServlet() method by 
    a public getServletContext() one.
+ - Added new Restlet extension supporting Spring 2.0 via a custom Spring's ApplicationContext and a Spring's 
+   Resource implementation. It allows loading of bean definitions via properties or XML representations.
    
 1.0 beta 20 (2006-11-08)
 [Bugs fixed]

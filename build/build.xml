@@ -128,6 +128,10 @@
 	<property name="lib-slf4j-version" value="1.0" />
 	<property name="lib-slf4j-id" value="${lib-slf4j-package}_${lib-slf4j-version}" />
 
+	<property name="lib-spring-package" value="org.springframework" />
+	<property name="lib-spring-version" value="2.0" />
+	<property name="lib-spring-id" value="${lib-spring-package}_${lib-spring-version}" />
+
 	<property name="lib-velocity-package" value="org.apache.velocity" />
 	<property name="lib-velocity-version" value="1.4" />
 	<property name="lib-velocity-id" value="${lib-velocity-package}_${lib-velocity-version}" />
@@ -212,6 +216,10 @@
 	<property name="mod-simple-package" value="com.noelios.restlet.ext.simple" />
 	<property name="mod-simple-version" value="${lib-simple-version}" />
 	<property name="mod-simple-id" value="${mod-simple-package}_${mod-simple-version}" />
+
+	<property name="mod-spring-package" value="org.restlet.ext.spring" />
+	<property name="mod-spring-version" value="${lib-spring-version}" />
+	<property name="mod-spring-id" value="${mod-spring-package}_${mod-spring-version}" />
 
 	<property name="mod-velocity-package" value="org.restlet.ext.velocity" />
 	<property name="mod-velocity-version" value="${lib-velocity-version}" />
@@ -370,6 +378,12 @@
 		<fileset dir="${lib}/${lib-simple-id}" includes="*.jar" />
 	</path>
 
+	<path id="mod-spring-path">
+		<path refid="mod-ri-path" />
+		<pathelement path="${classes}/${mod-ri-id}" />
+		<fileset dir="${lib}/${lib-spring-id}" includes="*.jar" />
+	</path>
+
 	<path id="mod-velocity-path">
 		<path refid="mod-ri-path" />
 		<pathelement path="${classes}/${mod-ri-id}" />
@@ -391,6 +405,7 @@
 		<pathelement path="${classes}/${mod-json-id}" />
 		<pathelement path="${classes}/${mod-net-id}" />
 		<pathelement path="${classes}/${mod-servlet-id}" />
+		<pathelement path="${classes}/${mod-spring-id}" />
 		<pathelement path="${classes}/${mod-velocity-id}" />
 		<path refid="mod-asyncweb-path" />
 		<path refid="mod-fileupload-path" />
@@ -405,6 +420,7 @@
 		<path refid="mod-net-path" />
 		<path refid="mod-servlet-path" />
 		<path refid="mod-simple-path" />
+		<path refid="mod-spring-path" />
 		<path refid="mod-velocity-path" />
 	</path>
 
@@ -630,6 +646,7 @@
 		<compileModule name="net" />
 		<compileModule name="servlet" />
 		<compileModule name="simple" />
+		<compileModule name="spring" />
 		<compileModule name="velocity" />
 		<compileModule name="example" />
 		<compileModule name="api-test" />
@@ -748,6 +765,7 @@
 		<packageLibrary name="servlet5" />
 		<packageLibrary name="simple" />
 		<packageLibrary name="slf4j" />
+		<packageLibrary name="spring" />
 		<packageLibrary name="velocity" />
 		<packageLibrary name="wrapper" />
 
@@ -768,6 +786,7 @@
 		<packageModule name="net" />
 		<packageModule name="servlet" />
 		<packageModule name="simple" />
+		<packageModule name="spring" />
 		<packageModule name="velocity" />
 		<packageModule name="example" />
 
@@ -794,6 +813,7 @@
 		<findbugsModule name="net" />
 		<findbugsModule name="servlet" />
 		<findbugsModule name="simple" />
+		<findbugsModule name="spring" />
 		<findbugsModule name="velocity" />
 		<findbugsModule name="example" />
 	</target>
@@ -879,6 +899,7 @@
 				<pathelement path="${mod}/${mod-net-id}/src/" />
 				<pathelement path="${mod}/${mod-servlet-id}/src/" />
 				<pathelement path="${mod}/${mod-simple-id}/src/" />
+				<pathelement path="${mod}/${mod-spring-id}/src/" />
 				<pathelement path="${mod}/${mod-velocity-id}/src/" />
 			</sourcepath>
 
@@ -901,6 +922,7 @@
 			<link href="http://java.sun.com/javaee/5/docs/api/" />
 			<link href="http://java.sun.com/products/javamail/javadocs/" />
 			<link href="http://jetty.mortbay.org/apidocs/" />
+			<link href="http://static.springframework.org/spring/docs/2.0.x/api/" />
 			<link href="http://www.json.org/javadoc/" />
 			<link href="http://www.restlet.org/docs/api/" packagelistLoc="${docs-api}" offline="true" />
 			<link href="http://www.restlet.org/docs/nre/" packagelistLoc="${docs-nre}" offline="true" />
