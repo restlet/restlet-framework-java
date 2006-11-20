@@ -51,7 +51,8 @@ Changes log
    class. This prevents double call to initialize() and reduces the stack trace depth. Reported by Dave Pawson.
  - Added new HTTP client connector based on Jakarta Commons HTTP Client. Allow multi-threaded connection reuse.
  - Added new constructor and methods on com.noelios.restlet.Factory to turn off auto-discovery of connectors. 
-   See the getRegisteredClients() and getRegisteredServers() methods. Suggested by Mike Moran   
+   See the getRegisteredClients() and getRegisteredServers() methods. Suggested by Mike Moran.
+ - Updated Apache MINA to 0.8.4 used by AsyncWeb HTTP server connector. Suggested by Lars Heuer.
   
 1.0 beta 20 (2006-11-08)
 [Bugs fixed]
