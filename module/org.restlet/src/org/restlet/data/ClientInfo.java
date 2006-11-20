@@ -144,26 +144,23 @@ public class ClientInfo
 	/**
 	 * Returns the best variant representation for a given resource according the the client preferences.
 	 * @param variants The list of variants to compare.
-	 * @param fallbackLanguage The language to use if no preference matches.
 	 * @return The best variant representation.
 	 * @see <a href="http://httpd.apache.org/docs/2.2/en/content-negotiation.html#algorithm">Apache content negotiation algorithm</a>
 	 */
-	public Representation getPreferredVariant(List<Representation> variants,
-			Language fallbackLanguage)
+	public Representation getPreferredVariant(List<Representation> variants)
 	{
-		return Factory.getInstance().getBestVariant(this, variants, fallbackLanguage);
+		return Factory.getInstance().getBestVariant(this, variants);
 	}
 
 	/**
 	 * Returns the best variant representation for a given resource according the the client preferences.
 	 * @param resource The resource for which the best representation needs to be set.
-	 * @param fallbackLanguage The language to use if no preference matches.
 	 * @return The best variant representation.
 	 * @see <a href="http://httpd.apache.org/docs/2.2/en/content-negotiation.html#algorithm">Apache content negotiation algorithm</a>
 	 */
-	public Representation getPreferredVariant(Resource resource, Language fallbackLanguage)
+	public Representation getPreferredVariant(Resource resource)
 	{
-		return getPreferredVariant(resource.getVariants(), fallbackLanguage);
+		return getPreferredVariant(resource.getVariants());
 	}
 
 	/**

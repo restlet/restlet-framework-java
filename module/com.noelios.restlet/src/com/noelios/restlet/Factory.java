@@ -101,7 +101,7 @@ public class Factory extends org.restlet.util.Factory
 	{
 		this(true);
 	}
-	
+
 	/**
 	 * Constructor.
 	 * @param discoverConnectors True if connectors should be automatically discovered.
@@ -109,16 +109,16 @@ public class Factory extends org.restlet.util.Factory
 	@SuppressWarnings("unchecked")
 	public Factory(boolean discoverConnectors)
 	{
-		if(discoverConnectors)
+		if (discoverConnectors)
 		{
 			// Find the factory class name
 			String line = null;
 			String provider = null;
-	
+
 			// Find the factory class name
 			ClassLoader cl = org.restlet.util.Factory.getClassLoader();
 			URL configURL;
-	
+
 			// Register the client connector providers
 			try
 			{
@@ -127,18 +127,18 @@ public class Factory extends org.restlet.util.Factory
 						.hasMoreElements();)
 				{
 					configURL = configUrls.nextElement();
-	
+
 					BufferedReader reader = null;
 					try
 					{
-						reader = new BufferedReader(new InputStreamReader(configURL.openStream(),
-								"utf-8"));
+						reader = new BufferedReader(new InputStreamReader(configURL
+								.openStream(), "utf-8"));
 						line = reader.readLine();
-	
+
 						while (line != null)
 						{
 							provider = getProviderClassName(line);
-	
+
 							if ((provider != null) && (!provider.equals("")))
 							{
 								// Instantiate the factory
@@ -146,16 +146,19 @@ public class Factory extends org.restlet.util.Factory
 								{
 									Class<? extends ConnectorHelper> providerClass = (Class<? extends ConnectorHelper>) Class
 											.forName(provider);
-									getRegisteredClients().add(providerClass.getConstructor(
-											Client.class).newInstance((Client) null));
+									getRegisteredClients().add(
+											providerClass.getConstructor(Client.class).newInstance(
+													(Client) null));
 								}
 								catch (Exception e)
 								{
-									logger.log(Level.SEVERE,
-											"Unable to register the client connector " + provider, e);
+									logger
+											.log(Level.SEVERE,
+													"Unable to register the client connector "
+															+ provider, e);
 								}
 							}
-	
+
 							line = reader.readLine();
 						}
 					}
@@ -172,10 +175,10 @@ public class Factory extends org.restlet.util.Factory
 			}
 			catch (IOException ioe)
 			{
-				logger
-						.log(Level.SEVERE, "Exception while detecting the client connectors.", ioe);
+				logger.log(Level.SEVERE, "Exception while detecting the client connectors.",
+						ioe);
 			}
-	
+
 			// Register the server connector providers
 			try
 			{
@@ -184,18 +187,18 @@ public class Factory extends org.restlet.util.Factory
 						.hasMoreElements();)
 				{
 					configURL = configUrls.nextElement();
-	
+
 					BufferedReader reader = null;
 					try
 					{
-						reader = new BufferedReader(new InputStreamReader(configURL.openStream(),
-								"utf-8"));
+						reader = new BufferedReader(new InputStreamReader(configURL
+								.openStream(), "utf-8"));
 						line = reader.readLine();
-	
+
 						while (line != null)
 						{
 							provider = getProviderClassName(line);
-	
+
 							if ((provider != null) && (!provider.equals("")))
 							{
 								// Instantiate the factory
@@ -203,16 +206,19 @@ public class Factory extends org.restlet.util.Factory
 								{
 									Class<? extends ConnectorHelper> providerClass = (Class<? extends ConnectorHelper>) Class
 											.forName(provider);
-									getRegisteredServers().add(providerClass.getConstructor(
-											Server.class).newInstance((Server) null));
+									getRegisteredServers().add(
+											providerClass.getConstructor(Server.class).newInstance(
+													(Server) null));
 								}
 								catch (Exception e)
 								{
-									logger.log(Level.SEVERE,
-											"Unable to register the server connector " + provider, e);
+									logger
+											.log(Level.SEVERE,
+													"Unable to register the server connector "
+															+ provider, e);
 								}
 							}
-	
+
 							line = reader.readLine();
 						}
 					}
@@ -229,8 +235,8 @@ public class Factory extends org.restlet.util.Factory
 			}
 			catch (IOException ioe)
 			{
-				logger
-						.log(Level.SEVERE, "Exception while detecting the client connectors.", ioe);
+				logger.log(Level.SEVERE, "Exception while detecting the client connectors.",
+						ioe);
 			}
 		}
 	}
@@ -241,7 +247,8 @@ public class Factory extends org.restlet.util.Factory
 	 */
 	public List<ConnectorHelper> getRegisteredClients()
 	{
-		if(this.registeredClients == null) this.registeredClients = new ArrayList<ConnectorHelper>();
+		if (this.registeredClients == null)
+			this.registeredClients = new ArrayList<ConnectorHelper>();
 		return this.registeredClients;
 	}
 
@@ -251,7 +258,8 @@ public class Factory extends org.restlet.util.Factory
 	 */
 	public List<ConnectorHelper> getRegisteredServers()
 	{
-		if(this.registeredServers == null) this.registeredServers = new ArrayList<ConnectorHelper>();
+		if (this.registeredServers == null)
+			this.registeredServers = new ArrayList<ConnectorHelper>();
 		return this.registeredServers;
 	}
 
@@ -386,12 +394,10 @@ public class Factory extends org.restlet.util.Factory
 	 * Returns the best variant representation for a given resource according the the client preferences.
 	 * @param client The client preferences.
 	 * @param variants The list of variants to compare.
-	 * @param fallbackLanguage The language to use if no preference matches.
 	 * @return The best variant representation.
 	 * @see <a href="http://httpd.apache.org/docs/2.2/en/content-negotiation.html#algorithm">Apache content negotiation algorithm</a>
 	 */
-	public Representation getBestVariant(ClientInfo client, List<Representation> variants,
-			Language fallbackLanguage)
+	public Representation getBestVariant(ClientInfo client, List<Representation> variants)
 	{
 		if (variants == null)
 		{
@@ -503,8 +509,7 @@ public class Factory extends org.restlet.util.Factory
 				}
 
 				// Are the preferences compatible with the current variant language?
-				compatibleLanguage = (variantLanguage == null) || (bestLanguagePref != null)
-						|| (variantLanguage.equals(fallbackLanguage));
+				compatibleLanguage = (variantLanguage == null) || (bestLanguagePref != null);
 
 				// If no media type preference is defined, assume that all media types are acceptable 
 				List<Preference<MediaType>> mediaTypePrefs = client.getAcceptedMediaTypes();
@@ -590,8 +595,7 @@ public class Factory extends org.restlet.util.Factory
 					{
 						currentQuality += (bestLanguagePref.getQuality() * 10F);
 					}
-					else if ((variantLanguage != null)
-							&& variantLanguage.equals(fallbackLanguage))
+					else if (variantLanguage != null)
 					{
 						currentQuality += 0.1F * 10F;
 					}
@@ -691,11 +695,9 @@ public class Factory extends org.restlet.util.Factory
 	 * @param request The request containing the client preferences.
 	 * @param response The response to update with the best entity.
 	 * @param resource The resource for which the best representation needs to be set.
-	 * @param fallbackLanguage The language to use if no preference matches.
 	 * @see <a href="http://httpd.apache.org/docs/2.2/en/content-negotiation.html#algorithm">Apache content negotiation algorithm</a>
 	 */
-	public void setResponseEntity(Request request, Response response, Resource resource,
-			Language fallbackLanguage)
+	public void setResponseEntity(Request request, Response response, Resource resource)
 	{
 		List<Representation> variants = resource.getVariants();
 
@@ -714,7 +716,7 @@ public class Factory extends org.restlet.util.Factory
 
 			// Compute the best variant
 			Representation bestVariant = request.getClientInfo().getPreferredVariant(
-					variants, fallbackLanguage);
+					variants);
 
 			if (bestVariant == null)
 			{

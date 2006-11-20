@@ -35,6 +35,7 @@ Changes log
  - Renamed Form.getWebForm() into getWebRepresentation() to make space for a future getMultiPartRepresentation().
  - Replaced Tag(httpTag) constructor by a static parse(httpTag) method and renamed getName() into format().
    Suggested by Chris Grindstaff. I have also added a default constructor.
+ - Removed the unused "fallbackLanguage" property/parameter from Handler, Factory, Response, ClientInfo, etc.
 
 [Enhancements] 
  - HTTP calls now try to use the channel aspect of a representation before its stream aspect. 

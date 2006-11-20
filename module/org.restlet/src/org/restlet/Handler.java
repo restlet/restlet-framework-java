@@ -105,7 +105,9 @@ public class Handler extends Restlet
 	/**
 	 * Returns the language to use if content negotiation fails.
 	 * @return The language to use if content negotiation fails.
+	 * @deprecated Rely on MetadataService instead.
 	 */
+	@Deprecated
 	public Language getFallbackLanguage()
 	{
 		return this.fallbackLanguage;
@@ -266,7 +268,7 @@ public class Handler extends Restlet
 			{
 				if (isNegotiateContent())
 				{
-					response.setEntity(target, getFallbackLanguage());
+					response.setEntity(target);
 				}
 				else
 				{
@@ -427,7 +429,9 @@ public class Handler extends Restlet
 	/**
 	 * Sets the language to use if content negotiation fails.
 	 * @param fallbackLanguage The language to use if content negotiation fails.
+	 * @deprecated Rely on MetadataService instead.
 	 */
+	@Deprecated
 	public void setFallbackLanguage(Language fallbackLanguage)
 	{
 		this.fallbackLanguage = fallbackLanguage;

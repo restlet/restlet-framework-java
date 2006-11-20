@@ -41,7 +41,6 @@ import org.restlet.Scorer;
 import org.restlet.Server;
 import org.restlet.data.ClientInfo;
 import org.restlet.data.Form;
-import org.restlet.data.Language;
 import org.restlet.data.Request;
 import org.restlet.data.Response;
 import org.restlet.resource.Representation;
@@ -262,12 +261,11 @@ public abstract class Factory
 	 * Returns the best variant representation for a given resource according the the client preferences.
 	 * @param client The client preferences.
 	 * @param variants The list of variants to compare.
-	 * @param fallbackLanguage The language to use if no preference matches.
 	 * @return The best variant representation.
 	 * @see <a href="http://httpd.apache.org/docs/2.2/en/content-negotiation.html#algorithm">Apache content negotiation algorithm</a>
 	 */
 	public abstract Representation getBestVariant(ClientInfo client,
-			List<Representation> variants, Language fallbackLanguage);
+			List<Representation> variants);
 
 	/**
 	 * Parses a representation into a form.
@@ -292,10 +290,9 @@ public abstract class Factory
 	 * @param request The request containing the client preferences.
 	 * @param response The response to update with the best entity.
 	 * @param resource The resource for which the best representation needs to be set.
-	 * @param fallbackLanguage The language to use if no preference matches.
 	 * @see <a href="http://httpd.apache.org/docs/2.2/en/content-negotiation.html#algorithm">Apache content negotiation algorithm</a>
 	 */
 	public abstract void setResponseEntity(Request request, Response response,
-			Resource resource, Language fallbackLanguage);
+			Resource resource);
 
 }
