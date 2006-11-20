@@ -1,19 +1,21 @@
 Manifest-Version: 1.0
 Bundle-ManifestVersion: 2
-Bundle-Name: Jetty HTTP server 6
-Bundle-SymbolicName: org.mortbay.jetty6
-Bundle-Version: 6.0.1
+Bundle-Name: Jetty HTTP server 6.1
+Bundle-SymbolicName: org.mortbay.jetty
+Bundle-Version: 6.1.0
 Bundle-ClassPath: org.mortbay.jetty.util.jar,
- org.mortbay.jetty.jar
+ org.mortbay.jetty.jar, org.mortbay.jetty.ajp.jar, org.mortbay.jetty.https.jar
 Bundle-Vendor: Mortbay Consulting
 Bundle-Localization: plugin
+Require-Bundle: javax.servlet5
 Export-Package: org.mortbay.component,
  org.mortbay.io,
  org.mortbay.io.bio,
  org.mortbay.io.nio,
- org.mortbay.io.tx,
  org.mortbay.jetty,
+ org.mortbay.jetty.ajp,
  org.mortbay.jetty.bio,
+ org.mortbay.jetty.deployer,
  org.mortbay.jetty.handler,
  org.mortbay.jetty.nio,
  org.mortbay.jetty.security,
@@ -26,4 +28,3 @@ Export-Package: org.mortbay.component,
  org.mortbay.util,
  org.mortbay.util.ajax,
  org.mortbay.xml
-Require-Bundle: javax.servlet5

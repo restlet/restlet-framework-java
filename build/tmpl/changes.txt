@@ -57,7 +57,8 @@ Changes log
  - Added new HTTP client connector based on Jakarta Commons HTTP Client. Allow multi-threaded connection reuse.
  - Added new constructor and methods on com.noelios.restlet.Factory to turn off auto-discovery of connectors. 
    See the getRegisteredClients() and getRegisteredServers() methods. Suggested by Mike Moran.
- - Updated Apache MINA to 0.8.4 used by AsyncWeb HTTP server connector. Suggested by Lars Heuer.
+ - Upgraded Apache MINA to 0.8.4 used by AsyncWeb HTTP server connector. Suggested by Lars Heuer.
+ - Upgraded Jetty 6 to 6.1 pre2 which adds support for APJ and HTTPS/NIO in the Jetty 6-.x series.
   
 1.0 beta 20 (2006-11-08)
 [Bugs fixed]

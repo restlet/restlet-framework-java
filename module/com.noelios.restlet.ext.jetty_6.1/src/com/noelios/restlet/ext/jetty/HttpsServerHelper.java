@@ -25,6 +25,7 @@ package com.noelios.restlet.ext.jetty;
 import java.io.File;
 
 import org.mortbay.jetty.AbstractConnector;
+import org.mortbay.jetty.security.SslSelectChannelConnector;
 import org.mortbay.jetty.security.SslSocketConnector;
 import org.restlet.Server;
 import org.restlet.data.Protocol;
@@ -96,7 +97,15 @@ import org.restlet.data.Protocol;
  * 		<td>wantClientAuthentication</td>
  * 		<td>boolean</td>
  * 		<td>false</td>
- * 		<td>Indicates if we would like client certificate authentication.</td>
+ * 		<td>Indicates if we would like client certificate authentication (only for the BIO connector type).</td>
+ * 	</tr>
+ * 	<tr>
+ * 		<td>type</td>
+ * 		<td>int</td>
+ * 		<td>1</td>
+ * 		<td>The type of Jetty connector to use.<br/>
+ * 1 : Selecting NIO connector (Jetty's SslSelectChannelConnector class).<br/>
+ * 2 : Blocking BIO connector (Jetty's SslSocketConnector class).</td>
  * 	</tr>
  * </table>
  * @see <a href="http://jetty.mortbay.org/jetty/faq?s=400-Security&t=ssl">FAQ - Configuring SSL for Jetty</a>
@@ -120,22 +129,45 @@ public class HttpsServerHelper extends JettyServerHelper
 	 */
 	protected AbstractConnector createConnector()
 	{
-		// Create and configure the Jetty HTTP connector
-		SslSocketConnector result = new SslSocketConnector();
+		AbstractConnector result = null;
 
-		// Continue configuration with HTTPS specific parameters
-		result.setKeyPassword(getKeyPassword());
-		result.setKeystore(getKeystorePath());
-		result.setKeystoreType(getKeystoreType());
-		result.setNeedClientAuth(isNeedClientAuthentication());
-		result.setPassword(getKeystorePassword());
-		result.setProtocol(getSslProtocol());
-		result.setProvider(getSecurityProvider());
-		result.setSecureRandomAlgorithm(getSecureRandomAlgorithm());
-		result.setSslKeyManagerFactoryAlgorithm(getCertAlgorithm());
-		result.setSslTrustManagerFactoryAlgorithm(getCertAlgorithm());
-		result.setTrustPassword(getKeystorePassword());
-		result.setWantClientAuth(isWantClientAuthentication());
+		// Create and configure the Jetty HTTP connector
+		switch (getType())
+		{
+			case 1:
+				// Selecting NIO connector
+				SslSelectChannelConnector nioResult = new SslSelectChannelConnector();
+				nioResult.setKeyPassword(getKeyPassword());
+				nioResult.setKeystore(getKeystorePath());
+				nioResult.setKeystoreType(getKeystoreType());
+				nioResult.setNeedClientAuth(isNeedClientAuthentication());
+				nioResult.setPassword(getKeystorePassword());
+				nioResult.setProtocol(getSslProtocol());
+				nioResult.setProvider(getSecurityProvider());
+				nioResult.setSecureRandomAlgorithm(getSecureRandomAlgorithm());
+				nioResult.setSslKeyManagerFactoryAlgorithm(getCertAlgorithm());
+				nioResult.setSslTrustManagerFactoryAlgorithm(getCertAlgorithm());
+				nioResult.setTrustPassword(getKeystorePassword());
+				result = nioResult;
+			break;
+			case 2:
+				// Blocking BIO connector
+				SslSocketConnector bioResult = new SslSocketConnector();
+				bioResult.setKeyPassword(getKeyPassword());
+				bioResult.setKeystore(getKeystorePath());
+				bioResult.setKeystoreType(getKeystoreType());
+				bioResult.setNeedClientAuth(isNeedClientAuthentication());
+				bioResult.setPassword(getKeystorePassword());
+				bioResult.setProtocol(getSslProtocol());
+				bioResult.setProvider(getSecurityProvider());
+				bioResult.setSecureRandomAlgorithm(getSecureRandomAlgorithm());
+				bioResult.setSslKeyManagerFactoryAlgorithm(getCertAlgorithm());
+				bioResult.setSslTrustManagerFactoryAlgorithm(getCertAlgorithm());
+				bioResult.setTrustPassword(getKeystorePassword());
+				bioResult.setWantClientAuth(isWantClientAuthentication());
+				result = bioResult;
+			break;
+		}
 
 		return result;
 	}
@@ -231,6 +263,24 @@ public class HttpsServerHelper extends JettyServerHelper
 	{
 		return Boolean.parseBoolean(getParameters().getFirstValue(
 				"wantClientAuthentication", "false"));
+	}
+
+	/**
+	 * Indicates if we would use the NIO-based connector instead of the BIO one.
+	 * @return True if we would use the NIO-based connector instead of the BIO one.
+	 */
+	public boolean isUseNio()
+	{
+		return Boolean.parseBoolean(getParameters().getFirstValue("useNio", "true"));
+	}
+
+	/**
+	 * Returns the type of Jetty connector to use.
+	 * @return The type of Jetty connector to use.
+	 */
+	public int getType()
+	{
+		return Integer.parseInt(getParameters().getFirstValue("type", "1"));
 	}
 
 }
