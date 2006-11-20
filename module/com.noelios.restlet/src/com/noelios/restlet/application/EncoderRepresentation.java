@@ -72,6 +72,29 @@ public class EncoderRepresentation extends WrapperRepresentation
 	}
 
 	/**
+	 * Returns the size of the encoded representation which is unkown for in bytes if known, UNKNOWN_SIZE (-1) otherwise.
+	 * @return The size in bytes if known, UNKNOWN_SIZE (-1) otherwise.
+	 */
+	public long getSize()
+	{
+		long result = -1;
+
+		if (canEncode())
+		{
+			if (getEncoding().equals(Encoding.IDENTITY))
+			{
+				result = getWrappedRepresentation().getSize();
+			}
+		}
+		else
+		{
+			result = getWrappedRepresentation().getSize();
+		}
+
+		return result;
+	}
+
+	/**
 	 * Returns the encoding or null if identity encoding applies.
 	 * @return The encoding or null if identity encoding applies.
 	 */

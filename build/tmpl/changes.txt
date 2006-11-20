@@ -20,6 +20,8 @@ Changes log
  - Fixed inneficiency issue in StringTemplateRepresentation which was reevaluating the same template multiple
    times. Reported by Chris Grindstaff.
  - Fixed NPE in Representation when creating an EncoderRepresentation. Reported by Chris Grindstaff.
+ - Fixed bug in EncoderRepresentation returning the original size instead of the size of the encoded 
+   representation (or -1 when no known). That was causing truncation of the output in browsers.
    
 [API changes]
  - Moved org.restlet.data.Result to org.restlet.resource.Result (deprecation used).
