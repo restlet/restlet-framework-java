@@ -84,9 +84,9 @@
 	<property name="lib-jetty5-version" value="5.1" />
 	<property name="lib-jetty5-id" value="${lib-jetty5-package}_${lib-jetty5-version}" />
 
-	<property name="lib-jetty6-package" value="org.mortbay.jetty" />
-	<property name="lib-jetty6-version" value="6.0" />
-	<property name="lib-jetty6-id" value="${lib-jetty6-package}_${lib-jetty6-version}" />
+	<property name="lib-jetty-package" value="org.mortbay.jetty" />
+	<property name="lib-jetty-version" value="6.1" />
+	<property name="lib-jetty-id" value="${lib-jetty-package}_${lib-jetty-version}" />
 
 	<property name="lib-json-package" value="org.json" />
 	<property name="lib-json-version" value="2.0" />
@@ -181,9 +181,9 @@
 	<property name="mod-jetty5-version" value="${lib-jetty5-version}" />
 	<property name="mod-jetty5-id" value="${mod-jetty5-package}_${mod-jetty5-version}" />
 
-	<property name="mod-jetty6-package" value="com.noelios.restlet.ext.jetty" />
-	<property name="mod-jetty6-version" value="${lib-jetty6-version}" />
-	<property name="mod-jetty6-id" value="${mod-jetty6-package}_${mod-jetty6-version}" />
+	<property name="mod-jetty-package" value="com.noelios.restlet.ext.jetty" />
+	<property name="mod-jetty-version" value="${lib-jetty-version}" />
+	<property name="mod-jetty-id" value="${mod-jetty-package}_${mod-jetty-version}" />
 
 	<property name="mod-jmx-package" value="com.noelios.restlet.ext.jmx" />
 	<property name="mod-jmx-version" value="1.2" />
@@ -335,11 +335,11 @@
 		<fileset dir="${lib}/${lib-jetty5-id}" includes="*.jar" />
 	</path>
 
-	<path id="mod-jetty6-path">
+	<path id="mod-jetty-path">
 		<path refid="mod-ri-path" />
 		<pathelement path="${classes}/${mod-ri-id}" />
 		<fileset dir="${lib}/${lib-servlet5-id}" includes="*.jar" />
-		<fileset dir="${lib}/${lib-jetty6-id}" includes="*.jar" />
+		<fileset dir="${lib}/${lib-jetty-id}" includes="*.jar" />
 	</path>
 
 	<path id="mod-jmx-path">
@@ -386,7 +386,7 @@
 		<pathelement path="${classes}/${mod-javamail-id}" />
 		<pathelement path="${classes}/${mod-jdbc-id}" />
 		<pathelement path="${classes}/${mod-jetty5-id}" />
-		<pathelement path="${classes}/${mod-jetty6-id}" />
+		<pathelement path="${classes}/${mod-jetty-id}" />
 		<pathelement path="${classes}/${mod-jmx-id}" />
 		<pathelement path="${classes}/${mod-json-id}" />
 		<pathelement path="${classes}/${mod-net-id}" />
@@ -399,7 +399,7 @@
 		<path refid="mod-javamail-path" />
 		<path refid="mod-jdbc-path" />
 		<path refid="mod-jetty5-path" />
-		<path refid="mod-jetty6-path" />
+		<path refid="mod-jetty-path" />
 		<path refid="mod-jmx-path" />
 		<path refid="mod-json-path" />
 		<path refid="mod-net-path" />
@@ -624,7 +624,7 @@
 		<compileModule name="javamail" />
 		<compileModule name="jdbc" />
 		<compileModule name="jetty5" />
-		<compileModule name="jetty6" />
+		<compileModule name="jetty" />
 		<compileModule name="jmx" />
 		<compileModule name="json" />
 		<compileModule name="net" />
@@ -739,7 +739,7 @@
 		<packageLibrary name="httpclient" />
 		<packageLibrary name="javamail" />
 		<packageLibrary name="jetty5" />
-		<packageLibrary name="jetty6" />
+		<packageLibrary name="jetty" />
 		<packageLibrary name="json" />
 		<packageLibrary name="logging" />
 		<packageLibrary name="mina" />
@@ -762,7 +762,7 @@
 		<packageModule name="javamail" />
 		<packageModule name="jdbc" />
 		<packageModule name="jetty5" />
-		<packageModule name="jetty6" />
+		<packageModule name="jetty" />
 <!-- disabled for 1.0  <packageModule name="jmx" /> -->
 		<packageModule name="json" />
 		<packageModule name="net" />
@@ -788,8 +788,8 @@
 		<findbugsModule name="javamail" />
 		<findbugsModule name="jdbc" />
 		<findbugsModule name="jetty5" />
-		<findbugsModule name="jetty6" />
-		<findbugsModule name="jmx" />
+		<findbugsModule name="jetty" />
+<!-- disabled for 1.0   <findbugsModule name="jmx" /> -->
 		<findbugsModule name="json" />
 		<findbugsModule name="net" />
 		<findbugsModule name="servlet" />
@@ -874,7 +874,7 @@
 				<pathelement path="${mod}/${mod-javamail-id}/src/" />
 				<pathelement path="${mod}/${mod-jdbc-id}/src/" />
 				<pathelement path="${mod}/${mod-jetty5-id}/src/" />
-				<pathelement path="${mod}/${mod-jetty6-id}/src/" />
+				<pathelement path="${mod}/${mod-jetty-id}/src/" />
 				<pathelement path="${mod}/${mod-jmx-id}/src/" />
 				<pathelement path="${mod}/${mod-net-id}/src/" />
 				<pathelement path="${mod}/${mod-servlet-id}/src/" />
@@ -898,8 +898,9 @@
 			<link href="http://jakarta.apache.org/commons/httpclient/apidocs/" />
 			<link href="http://jakarta.apache.org/velocity/docs/api/" />
 			<link href="http://java.sun.com/j2se/1.5.0/docs/api/" />
+			<link href="http://java.sun.com/javaee/5/docs/api/" />
 			<link href="http://java.sun.com/products/javamail/javadocs/" />
-			<!-- <link href="http://jetty.mortbay.org/jetty6/apidocs/" /> -->
+			<link href="http://jetty.mortbay.org/apidocs/" />
 			<link href="http://www.json.org/javadoc/" />
 			<link href="http://www.restlet.org/docs/api/" packagelistLoc="${docs-api}" offline="true" />
 			<link href="http://www.restlet.org/docs/nre/" packagelistLoc="${docs-nre}" offline="true" />

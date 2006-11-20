@@ -175,6 +175,7 @@ public class ServerServlet extends HttpServlet
 									(List<Protocol>) null, request.getLocalAddr(), request
 											.getLocalPort(), container);
 							result = new HttpServerHelper(server);
+							result.setConverter(new ServletServerConverter(container.getContext(), getServletContext()));
 							getServletContext().setAttribute(NAME_SERVER_ATTRIBUTE, result);
 
 							if (container != null)
