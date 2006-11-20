@@ -56,6 +56,7 @@ public class DecoderRepresentation extends WrapperRepresentation
 		super(wrappedRepresentation);
 		this.canDecode = getSupportedEncodings().contains(
 				wrappedRepresentation.getEncoding());
+      getVariants().add(this);
 	}
 
 	/**
@@ -191,6 +192,29 @@ public class DecoderRepresentation extends WrapperRepresentation
 		else
 		{
 			result = getWrappedRepresentation().getValue();
+		}
+
+		return result;
+	}
+
+	/**
+	 * Returns the size in bytes of the decoded representation if known, UNKNOWN_SIZE (-1) otherwise.
+	 * @return The size in bytes if known, UNKNOWN_SIZE (-1) otherwise.
+	 */
+	public long getSize()
+	{
+		long result = -1;
+
+		if (canDecode())
+		{
+			if (getEncoding().equals(Encoding.IDENTITY))
+			{
+				result = getWrappedRepresentation().getSize();
+			}
+		}
+		else
+		{
+			result = getWrappedRepresentation().getSize();
 		}
 
 		return result;

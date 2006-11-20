@@ -60,6 +60,7 @@ public class EncoderRepresentation extends WrapperRepresentation
 		super(wrappedRepresentation);
 		this.canEncode = getSupportedEncodings().contains(encoding);
 		this.encoding = encoding;
+      getVariants().add(this);
 	}
 
 	/**
@@ -72,7 +73,7 @@ public class EncoderRepresentation extends WrapperRepresentation
 	}
 
 	/**
-	 * Returns the size of the encoded representation which is unkown for in bytes if known, UNKNOWN_SIZE (-1) otherwise.
+	 * Returns the size in bytes of the encoded representation if known, UNKNOWN_SIZE (-1) otherwise.
 	 * @return The size in bytes if known, UNKNOWN_SIZE (-1) otherwise.
 	 */
 	public long getSize()
