@@ -30,6 +30,8 @@ Changes log
    methods are statically provided (handleGet/Head/Post/Put/Delete). handleMove/Copy/Options/Trace are removed 
    from base Handler class (their default implementation did nothing useful anyway).
  - Renamed Form.getWebForm() into getWebRepresentation() to make space for a future getMultiPartRepresentation().
+ - Replaced Tag(httpTag) constructor by a static parse(httpTag) method and renamed getName() into format().
+   Suggested by Chris Grindstaff. I have also added a default constructor.
 
 [Enhancements] 
  - HTTP calls now try to use the channel aspect of a representation before its stream aspect. 

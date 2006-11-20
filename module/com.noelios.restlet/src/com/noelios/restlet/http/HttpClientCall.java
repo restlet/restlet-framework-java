@@ -258,7 +258,7 @@ public class HttpClientCall extends HttpCall
 				}
 				else if (header.getName().equalsIgnoreCase(HttpConstants.HEADER_ETAG))
 				{
-					result.setTag(new Tag(header.getValue()));
+					result.setTag(Tag.parse(header.getValue()));
 				}
 				else if (header.getName().equalsIgnoreCase(
 						HttpConstants.HEADER_CONTENT_LOCATION))

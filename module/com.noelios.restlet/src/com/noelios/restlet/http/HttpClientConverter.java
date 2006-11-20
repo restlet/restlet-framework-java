@@ -154,7 +154,7 @@ public class HttpClientConverter extends HttpConverter
 			for (int i = 0; i < condition.getMatch().size(); i++)
 			{
 				if (i > 0) value.append(", ");
-				value.append(condition.getMatch().get(i).getName());
+				value.append(condition.getMatch().get(i).format());
 			}
 
 			httpCall.getRequestHeaders()
@@ -175,7 +175,7 @@ public class HttpClientConverter extends HttpConverter
 			for (int i = 0; i < condition.getNoneMatch().size(); i++)
 			{
 				if (i > 0) value.append(", ");
-				value.append(condition.getNoneMatch().get(i).getName());
+				value.append(condition.getNoneMatch().get(i).format());
 			}
 
 			requestHeaders.add(HttpConstants.HEADER_IF_NONE_MATCH, value.toString());

@@ -37,55 +37,103 @@ public class Tag
 	/** Tag matching any other tag, used in call's condition data. */
 	public static final Tag ALL = new Tag("*");
 
+	/**
+	 * Parses a tag formatted as defined by the HTTP standard.
+	 * @param httpTag The HTTP tag string; if it starts with a 'W' the tag will be marked as weak and the data 
+	 * following the 'W' used as the tag; otherwise it should be surrounded with quotes (e.g., "sometag").
+	 * @return A new tag instance.
+	 * @see <a href="http://www.w3.org/Protocols/rfc2616/rfc2616-sec3.html#sec3.11">HTTP Entity Tags</a>
+	 */
+	public static Tag parse(String httpTag)
+	{
+		Tag result = new Tag();
+		
+		if (httpTag.startsWith("W"))
+		{
+			result.setWeak(true);
+			httpTag = httpTag.substring(1);
+		}
+		else
+		{
+			result.setWeak(false);
+		}
+
+		if (httpTag.startsWith("\"") && httpTag.endsWith("\""))
+		{
+			result.setOpaqueTag(httpTag.substring(1, httpTag.length() - 1));
+		}
+		else if (httpTag.equals("*"))
+		{
+			result.setOpaqueTag("*");
+		}
+		else
+		{
+			throw new IllegalArgumentException("Invalid tag format detected: " + httpTag);
+		}
+		
+		return result;
+	}
+
 	/** The opaque tag string. */
-	private String tag;
+	private String opaqueTag;
 
 	/** The tag weakness. */
 	private boolean weak;
+	
+	/**
+	 * Default constructor. 
+	 * The opaque tag is set to null and the weakness indicator is set to true.
+	 */
+	public Tag()
+	{
+		this(null, true);
+	}
 
 	/**
 	 * Constructor.
-	 * @param name The tag name similar to the HTTP tag string; if it starts with a 'W'
-	 * the tag will be marked as weak and the data following the 'W' used as the tag;
-	 * otherwise it should be surrounded with quotes (e.g., "sometag")
+	 * @param httpTag The HTTP tag string; if it starts with a 'W' the tag will be marked as weak and the data 
+	 * following the 'W' used as the tag; otherwise it should be surrounded with quotes (e.g., "sometag").
+	 * @deprecated Use the static parse() method instead.
 	 */
-	public Tag(String name)
+	@Deprecated
+	public Tag(String httpTag)
 	{
-		if (name.startsWith("W"))
+		if (httpTag.startsWith("W"))
 		{
 			this.weak = true;
-			name = name.substring(1);
+			httpTag = httpTag.substring(1);
 		}
 		else
 		{
 			this.weak = false;
 		}
 
-		if (name.startsWith("\"") && name.endsWith("\""))
+		if (httpTag.startsWith("\"") && httpTag.endsWith("\""))
 		{
-			this.tag = name.substring(1, name.length() - 1);
+			this.opaqueTag = httpTag.substring(1, httpTag.length() - 1);
 		}
-		else if (name.equals("*"))
+		else if (httpTag.equals("*"))
 		{
-			this.tag = "*";
+			this.opaqueTag = "*";
 		}
 		else
 		{
-			throw new IllegalArgumentException("Invalid tag format detected: " + name);
+			throw new IllegalArgumentException("Invalid tag format detected: " + httpTag);
 		}
+
 	}
 
 	/**
 	 * Constructor.
-	 * @param tag The tag value.
+	 * @param opaqueTag The tag value.
 	 * @param weak The weakness indicator.
 	 */
-	public Tag(String tag, boolean weak)
+	public Tag(String opaqueTag, boolean weak)
 	{
-		this.tag = tag;
+		this.opaqueTag = opaqueTag;
 		this.weak = weak;
 	}
-
+	
 	/**
 	 * Indicates if both tags are equal.
 	 * @param object The object to compare to.
@@ -95,6 +143,25 @@ public class Tag
 	public boolean equals(Object object)
 	{
 		return (object instanceof Tag) && getName().equals(((Tag) object).getName());
+	}
+
+	/**
+	 * Returns tag formatted as an HTTP tag string.
+	 * @return The formatted HTTP tag string.
+	 * @see <a href="http://www.w3.org/Protocols/rfc2616/rfc2616-sec3.html#sec3.11">HTTP Entity Tags</a>
+	 */
+	public String format()
+	{
+		if (getOpaqueTag().equals("*"))
+		{
+			return "*";
+		}
+		else
+		{
+			StringBuilder sb = new StringBuilder();
+			if (isWeak()) sb.append("W/");
+			return sb.append('"').append(getOpaqueTag()).append('"').toString();
+		}
 	}
 
 	/**
@@ -110,7 +177,9 @@ public class Tag
 	 * Returns the equivalent HTTP string.
 	 * @return The equivalent HTTP string.
 	 * @see <a href="http://www.w3.org/Protocols/rfc2616/rfc2616-sec3.html#sec3.11">HTTP Entity Tags</a>
+	 * @deprecated Use the format() method instead.
 	 */
+	@Deprecated
 	public String getName()
 	{
 		if (getOpaqueTag().equals("*"))
@@ -131,7 +200,7 @@ public class Tag
 	 */
 	public String getOpaqueTag()
 	{
-		return tag;
+		return opaqueTag;
 	}
 
 	/** {@inheritDoc} */
@@ -152,11 +221,11 @@ public class Tag
 
 	/**
 	 * Sets the opaque tag string.
-	 * @param tag The opaque tag string.
+	 * @param opaqueTag The opaque tag string.
 	 */
-	public void setOpaqueTag(String tag)
+	public void setOpaqueTag(String opaqueTag)
 	{
-		this.tag = tag;
+		this.opaqueTag = opaqueTag;
 	}
 
 	/**

@@ -218,7 +218,7 @@ public class HttpServerConverter extends HttpConverter
 
 				if (entity.getTag() != null)
 				{
-					responseHeaders.add(HttpConstants.HEADER_ETAG, entity.getTag().getName());
+					responseHeaders.add(HttpConstants.HEADER_ETAG, entity.getTag().format());
 				}
 
 				if (response.getEntity().getSize() != Representation.UNKNOWN_SIZE)

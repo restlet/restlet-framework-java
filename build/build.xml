@@ -814,9 +814,9 @@
 		<!-- Archive the content of the project, except for some generated directories -->
 		<mkdir dir="${arc}" />
 		<zip destfile="${arc}/Restlet ${DSTAMP}.zip"
-		     basedir=""
+		     basedir=".."
 		     includes="**/*"
-		     excludes="${arc}/** ${temp}/** ${dist}/** ${dist-zip}/** ${docs-api}/** ${docs-nre}/** ${docs-ext}/**  ${plugins}/internal/**/*.class" />
+		     excludes="build/**" />
 	</target>
 
 	<!-- Javadocs Target -->
