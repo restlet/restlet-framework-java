@@ -122,7 +122,7 @@ public class Representation extends Resource
 
 		// A representation is also a resource whose only 
 		// variant is the representation itself
-		getVariants().add(this);
+		if(getVariants() != null) getVariants().add(this);
 	}
 
 	/**

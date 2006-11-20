@@ -19,6 +19,7 @@ Changes log
  - Fixed NRE Container which didn't start the attached applications. Reported by Sumit Lohia.
  - Fixed inneficiency issue in StringTemplateRepresentation which was reevaluating the same template multiple
    times. Reported by Chris Grindstaff.
+ - Fixed NPE in Representation when creating an EncoderRepresentation. Reported by Chris Grindstaff.
    
 [API changes]
  - Moved org.restlet.data.Result to org.restlet.resource.Result (deprecation used).

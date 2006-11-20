@@ -277,7 +277,7 @@ public class WrapperRepresentation extends Representation
 	 */
 	public List<Representation> getVariants()
 	{
-		return getWrappedRepresentation().getVariants();
+		return (getWrappedRepresentation() == null) ? null : getWrappedRepresentation().getVariants();
 	}
 
 	/**
