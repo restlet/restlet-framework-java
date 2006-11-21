@@ -54,7 +54,7 @@ import org.restlet.resource.Representation;
 import com.noelios.restlet.http.HttpClientCall;
 
 /**
- * HTTP client connector call based on JDK's java.net.HttpUrlConnection class.
+ * HTTP client connector call based on Apache HTTP Client's HttpMethod class.
  * @author Jerome Louvel (contact@noelios.com)
  */
 public class HttpMethodCall extends HttpClientCall

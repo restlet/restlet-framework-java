@@ -35,7 +35,8 @@ import org.restlet.data.Request;
 import com.noelios.restlet.http.HttpClientCall;
 
 /**
- * HTTP client connector using the HttpUrlConnectionCall. Here is the list of parameters that are supported:
+ * HTTP client connector using the HttpMethodCall and Apache HTTP Client project. Here is the list of 
+ * parameters that are supported:
  * <table>
  * 	<tr>
  * 		<th>Parameter name</th>
