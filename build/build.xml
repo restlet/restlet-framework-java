@@ -26,6 +26,9 @@
 	<property name="bin" value="bin" />
 	<property name="temp" value="temp" />
 	<property name="classes" value="${temp}/classes" />
+	<property name="dist-base" value="dist" />
+	<property name="dist-path" value="restlet-${version-compact}" />
+	<property name="dist" value="${dist-base}/${dist-path}" />
 	<property name="lib" value="../library" />
 	<property name="mod" value="../module" />
 	<property name="tmpl" value="tmpl" />
@@ -792,7 +795,7 @@
 		<packageModule name="example" />
 
 		<!-- Create the final zip file -->
-		<zip destfile="${dist-zip}/restlet-${version-compact}.zip" basedir="${dist}" includes="**/*" />
+		<zip destfile="${dist-zip}/restlet-${version-compact}.zip" basedir="${dist-base}" includes="${dist-path}/**/*" />
 	</target>
   
 	<!-- Finding bugs -->

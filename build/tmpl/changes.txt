@@ -68,6 +68,7 @@ Changes log
  - Separated content negotiation from conditional handling. Added Conditions.isModified() method. Fixes RFE #183.
  - Added org.restlet.data.Dimension and Response."dimensions" property. 
  - Now autoredirects directory URIs without a leading slash character (#113). Contributed by Thierry Boileau.
+ - The distribution Zip file now contains a root directory named "restlet-1.xx". Suggested by Manuel Simoni.
  
 1.0 beta 20 (2006-11-08)
 [Bugs fixed]
