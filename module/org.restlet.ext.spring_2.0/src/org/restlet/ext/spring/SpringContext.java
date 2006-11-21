@@ -40,10 +40,10 @@ public class SpringContext extends GenericApplicationContext
 	/** The parent Restlet context. */
 	private Context restletContext;
 
-	/** The list of configuration URIs for bean definition via properties. */
+	/** The modifiable list of configuration URIs for bean definition via properties. */
 	private List<String> propertyConfigRefs;
 
-	/** The list of configuration URIs for XML definition via properties. */
+	/** The modifiable list of configuration URIs for XML definition via properties. */
 	private List<String> xmlConfigRefs;
 
 	/** Indicates if the context was already loaded. */
@@ -71,8 +71,8 @@ public class SpringContext extends GenericApplicationContext
 	}
 
 	/**
-	 * Returns the list of configuration URIs for XML definition via properties.
-	 * @return The list of configuration URIs for XML definition via properties.
+	 * Returns the modifiable list of configuration URIs for XML definition via properties.
+	 * @return The modifiable list of configuration URIs for XML definition via properties.
 	 */
 	public List<String> getPropertyConfigRefs()
 	{
@@ -82,8 +82,8 @@ public class SpringContext extends GenericApplicationContext
 	}
 
 	/**
-	 * Returns the list of configuration URIs for bean definition via properties.
-	 * @return The list of configuration URIs for bean definition via properties.
+	 * Returns the modifiable list of configuration URIs for bean definition via properties.
+	 * @return The modifiable list of configuration URIs for bean definition via properties.
 	 */
 	public List<String> getXmlConfigRefs()
 	{
