@@ -168,22 +168,29 @@ public class Response extends Message
 	}
 
 	/**
-	 * Sets the entity representation. If the request conditions are matched, the status is set to 
-	 * REDIRECTION_NOT_MODIFIED, otherwise the entity is set.
+	 * Sets the entity representation. If the current status is SUCCESS_OK and the request conditions are matched, 
+	 * then the status is set to REDIRECTION_NOT_MODIFIED. In all other cases, the status is untouched and the 
+	 * entity is simply set.
 	 * @param entity The entity representation.
 	 */
 	public void setEntity(Representation entity)
 	{
-		if (getRequest().getConditions().isModified(entity))
+		if(getStatus().equals(Status.SUCCESS_OK))
 		{
-			// Send the representation as the response entity
-			setStatus(Status.SUCCESS_OK);
-			super.setEntity(entity);
+			if (getRequest().getConditions().isModified(entity))
+			{
+				// Send the representation as the response entity
+				super.setEntity(entity);
+			}
+			else
+			{
+				// Indicates to the client that he already has the best representation 
+				setStatus(Status.REDIRECTION_NOT_MODIFIED);
+			}
 		}
 		else
 		{
-			// Indicates to the client that he already has the best representation 
-			setStatus(Status.REDIRECTION_NOT_MODIFIED);
+			super.setEntity(entity);
 		}
 	}
 
