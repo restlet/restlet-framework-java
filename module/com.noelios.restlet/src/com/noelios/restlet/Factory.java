@@ -27,7 +27,6 @@ import java.io.IOException;
 import java.io.InputStreamReader;
 import java.net.URL;
 import java.util.ArrayList;
-import java.util.Date;
 import java.util.Enumeration;
 import java.util.Iterator;
 import java.util.List;
@@ -51,12 +50,8 @@ import org.restlet.data.Parameter;
 import org.restlet.data.Preference;
 import org.restlet.data.Protocol;
 import org.restlet.data.Request;
-import org.restlet.data.Response;
-import org.restlet.data.Status;
-import org.restlet.data.Tag;
 import org.restlet.resource.Representation;
 import org.restlet.resource.Resource;
-import org.restlet.util.DateUtils;
 import org.restlet.util.Helper;
 
 import com.noelios.restlet.application.ApplicationHelper;
@@ -391,13 +386,14 @@ public class Factory extends org.restlet.util.Factory
 	}
 
 	/**
-	 * Returns the best variant representation for a given resource according the the client preferences.
+	 * Returns the preferred variant representation for a given resource according the the client preferences.
 	 * @param client The client preferences.
 	 * @param variants The list of variants to compare.
 	 * @return The best variant representation.
 	 * @see <a href="http://httpd.apache.org/docs/2.2/en/content-negotiation.html#algorithm">Apache content negotiation algorithm</a>
 	 */
-	public Representation getBestVariant(ClientInfo client, List<Representation> variants)
+	public Representation getPreferredVariant(ClientInfo client,
+			List<Representation> variants)
 	{
 		if (variants == null)
 		{
@@ -685,91 +681,6 @@ public class Factory extends org.restlet.util.Factory
 		if ((queryString != null) && !queryString.equals(""))
 		{
 			FormUtils.parseQuery(logger, form, queryString);
-		}
-	}
-
-	/**
-	 * Sets the best representation of a given resource according to the client preferences.<br/>
-	 * If no representation is found, sets the status to "Not found".<br/>
-	 * If no acceptable representation is available, sets the status to "Not acceptable".<br/>
-	 * @param request The request containing the client preferences.
-	 * @param response The response to update with the best entity.
-	 * @param resource The resource for which the best representation needs to be set.
-	 * @see <a href="http://httpd.apache.org/docs/2.2/en/content-negotiation.html#algorithm">Apache content negotiation algorithm</a>
-	 */
-	public void setResponseEntity(Request request, Response response, Resource resource)
-	{
-		List<Representation> variants = resource.getVariants();
-
-		if ((variants == null) || (variants.size() < 1))
-		{
-			// Resource not found
-			response.setStatus(Status.CLIENT_ERROR_NOT_FOUND);
-		}
-		else
-		{
-			// Set the variants' resource
-			for (Representation variant : variants)
-			{
-				variant.setResource(resource);
-			}
-
-			// Compute the best variant
-			Representation bestVariant = request.getClientInfo().getPreferredVariant(
-					variants);
-
-			if (bestVariant == null)
-			{
-				// No variant was found matching the client preferences
-				response.setStatus(Status.CLIENT_ERROR_NOT_ACCEPTABLE);
-			}
-			else
-			{
-				// Will indicates if we must send the representation to the client
-				boolean send = true;
-
-				// Check the tag conditions 
-				if ((request.getConditions().getNoneMatch() != null)
-						&& (request.getConditions().getNoneMatch().size() > 0))
-				{
-					boolean matched = false;
-
-					// If a tag exists
-					if (bestVariant.getTag() != null)
-					{
-						// Check if it matches one of the representations already cached by the client
-						Tag tag;
-						for (Iterator<Tag> iter = request.getConditions().getNoneMatch()
-								.iterator(); !matched && iter.hasNext();)
-						{
-							tag = iter.next();
-							matched = tag.equals(bestVariant.getTag()) || tag.equals(Tag.ALL);
-						}
-					}
-
-					send = !matched;
-				}
-				else
-				{
-					// Was the representation modified since the last client call?
-					Date modifiedSince = request.getConditions().getModifiedSince();
-					send = ((modifiedSince == null)
-							|| (bestVariant.getModificationDate() == null) || DateUtils.after(
-							modifiedSince, bestVariant.getModificationDate()));
-				}
-
-				if (send)
-				{
-					// Send the best representation as the response entity
-					response.setEntity(bestVariant);
-					response.setStatus(Status.SUCCESS_OK);
-				}
-				else
-				{
-					// Indicates to the client that he already has the best representation 
-					response.setStatus(Status.REDIRECTION_NOT_MODIFIED);
-				}
-			}
 		}
 	}
 

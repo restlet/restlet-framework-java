@@ -85,6 +85,9 @@ public class DirectoryResource extends Resource
 	/** Indicates if the target resource is a directory or a file. */
 	private boolean targetDirectory;
 
+	/** Indicates if the target resource is a directory with an index. */
+	private boolean targetIndex;
+
 	/** The context's directory URI. For example, "file:///c:/dir/" or "context://webapp/dir/". */
 	private String directoryUri;
 
@@ -94,8 +97,14 @@ public class DirectoryResource extends Resource
 	/** The base set of extensions. */
 	private Set<String> baseExtensions;
 
+	/** The unique representation of the target URI, if it exists. */
+	private Reference uniqueReference;
+
 	/** If the resource is a directory, this contains its content. */
 	private ReferenceList directoryContent;
+
+	/** If the resource is a directory, the non-trailing slash caracter leads to redirection. */
+	private boolean directoryRedirection;
 
 	/**
 	 * Constructor.
@@ -136,16 +145,19 @@ public class DirectoryResource extends Resource
 
 			if (!this.targetUri.endsWith("/"))
 			{
+				this.directoryRedirection = true; //all request will be automatically redirected
 				this.targetUri += "/";
 				this.relativePart += "/";
 			}
 
 			// Append the index name
-			if (getMetadataService(request).getIndexName() != null)
+			if (getMetadataService(request).getIndexName() != null
+					&& getMetadataService(request).getIndexName().length() > 0)
 			{
 				this.directoryUri = this.targetUri;
 				this.baseName = getMetadataService(request).getIndexName();
 				this.targetUri = this.directoryUri + this.baseName;
+				this.targetIndex = true;
 			}
 			else
 			{
@@ -177,7 +189,7 @@ public class DirectoryResource extends Resource
 			}
 		}
 
-		if (this.directory.isNegotiateContent())
+		if (this.baseName != null)
 		{
 			// Remove the extensions from the base name
 			int firstDotIndex = this.baseName.indexOf('.');
@@ -189,6 +201,7 @@ public class DirectoryResource extends Resource
 				// Remove stored extensions from the base name
 				this.baseName = this.baseName.substring(0, firstDotIndex);
 			}
+
 		}
 
 		// Log results
@@ -222,6 +235,13 @@ public class DirectoryResource extends Resource
 	{
 		Status status;
 
+		if (directoryRedirection && !targetIndex)
+		{
+			Result result = new Result(Status.REDIRECTION_SEE_OTHER);
+			result.setRedirectionRef(new Reference(this.targetUri));
+			return result;
+		}
+
 		// We allow the transfer of the PUT calls only if the readOnly flag is not set
 		if (!getDirectory().isModifiable())
 		{
@@ -232,6 +252,72 @@ public class DirectoryResource extends Resource
 			Request contextRequest = new Request(Method.DELETE, this.targetUri);
 			Response contextResponse = new Response(contextRequest);
 
+			if (targetDirectory && !targetIndex)
+			{
+				contextRequest.setResourceRef(this.targetUri);
+				getDispatcher().handle(contextRequest, contextResponse);
+			}
+			else
+			{
+				//Check if there is only one representation
+
+				//Try to get the unique representation of the resource
+				ReferenceList references = getVariantsReferences();
+				if (!references.isEmpty())
+				{
+					if (uniqueReference != null)
+					{
+						contextRequest.setResourceRef(uniqueReference);
+						getDispatcher().handle(contextRequest, contextResponse);
+					}
+					else
+					{
+						// We found variants, but not the right one
+						contextResponse
+								.setStatus(new Status(
+										Status.CLIENT_ERROR_UNAUTHORIZED,
+										"Unable to process properly the request. Several variants exist but none of them suits precisely. "));
+					}
+				}
+				else
+				{
+					contextResponse.setStatus(Status.CLIENT_ERROR_NOT_FOUND);
+				}
+			}
+
+			status = contextResponse.getStatus();
+		}
+
+		return new Result(status);
+	}
+
+	/**
+	 * Puts a variant representation in the resource.
+	 * @param variant A new or updated variant representation. 
+	 * @return The result information.
+	 */
+	public Result put(Representation variant)
+	{
+		Status status;
+
+		if (directoryRedirection && !targetIndex)
+		{
+			Result result = new Result(Status.REDIRECTION_SEE_OTHER);
+			result.setRedirectionRef(new Reference(this.targetUri));
+			return result;
+		}
+
+		// We allow the transfer of the PUT calls only if the readOnly flag is not set
+		if (!getDirectory().isModifiable())
+		{
+			status = Status.CLIENT_ERROR_FORBIDDEN;
+		}
+		else
+		{
+			Request contextRequest = new Request(Method.PUT, this.targetUri);
+			contextRequest.setEntity(variant);
+			Response contextResponse = new Response(contextRequest);
+
 			if (targetDirectory)
 			{
 				contextRequest.setResourceRef(this.targetUri);
@@ -239,17 +325,8 @@ public class DirectoryResource extends Resource
 			}
 			else
 			{
-				//Try to get the unique representation of the resource
-				ReferenceList references = getVariantsReferences(true);
-				if (!references.isEmpty())
-				{
-					contextRequest.setResourceRef(references.get(0));
-					getDispatcher().handle(contextRequest, contextResponse);
-				}
-				else
-				{
-					contextResponse.setStatus(Status.CLIENT_ERROR_NOT_FOUND);
-				}
+				contextRequest.setResourceRef(this.targetUri);
+				getDispatcher().handle(contextRequest, contextResponse);
 			}
 
 			status = contextResponse.getStatus();
@@ -339,7 +416,7 @@ public class DirectoryResource extends Resource
 		{
 			if (this.baseName != null)
 			{
-				for (Reference ref : getVariantsReferences(false))
+				for (Reference ref : getVariantsReferences())
 				{
 					//Add the new variant to the result list
 					Response contextResponse = getDispatcher().get(ref.toString());
@@ -388,11 +465,11 @@ public class DirectoryResource extends Resource
 	/**
 	 * Returns the references of the representations of the target resource
 	 * according to the directory handler property
-	 * @param unique tells wether looking or not for the unique reference
 	 * @return The list of variants references
 	 */
-	private ReferenceList getVariantsReferences(boolean unique)
+	private ReferenceList getVariantsReferences()
 	{
+		uniqueReference = null;
 		ReferenceList result = new ReferenceList(0);
 		try
 		{
@@ -417,14 +494,11 @@ public class DirectoryResource extends Resource
 							.substring(lastSlashIndex + 1);
 					baseEntryName = fullEntryName;
 
-					if (this.directory.isNegotiateContent())
+					// Remove the extensions from the base name
+					firstDotIndex = fullEntryName.indexOf('.');
+					if (firstDotIndex != -1)
 					{
-						// Remove the extensions from the base name
-						firstDotIndex = fullEntryName.indexOf('.');
-						if (firstDotIndex != -1)
-						{
-							baseEntryName = fullEntryName.substring(0, firstDotIndex);
-						}
+						baseEntryName = fullEntryName.substring(0, firstDotIndex);
 					}
 
 					// Check if the current file is a valid variant
@@ -432,17 +506,16 @@ public class DirectoryResource extends Resource
 					{
 						boolean validVariant = true;
 
-						if (this.directory.isNegotiateContent())
+						// Verify that the extensions are compatible
+						extensions = getExtensions(fullEntryName);
+						validVariant = (((extensions == null) && (this.baseExtensions == null))
+								|| (this.baseExtensions == null) || extensions
+								.containsAll(this.baseExtensions));
+
+						if (validVariant && this.baseExtensions.containsAll(extensions))
 						{
-							// Verify that the extensions are compatible
-							extensions = getExtensions(fullEntryName);
-							validVariant = (((extensions == null) && (this.baseExtensions == null))
-									|| (this.baseExtensions == null) || extensions
-									.containsAll(this.baseExtensions));
-							if (unique && validVariant)
-							{
-								validVariant = this.baseExtensions.containsAll(extensions);
-							}
+							//The unique reference has been found.
+							uniqueReference = ref;
 						}
 
 						if (validVariant)
@@ -459,53 +532,6 @@ public class DirectoryResource extends Resource
 		}
 
 		return result;
-	}
-
-	/**
-	 * Puts a variant representation in the resource.
-	 * @param variant A new or updated variant representation. 
-	 * @return The result information.
-	 */
-	public Result put(Representation variant)
-	{
-		Status status;
-
-		// We allow the transfer of the PUT calls only if the readOnly flag is not set
-		if (!getDirectory().isModifiable())
-		{
-			status = Status.CLIENT_ERROR_FORBIDDEN;
-		}
-		else
-		{
-			Request contextRequest = new Request(Method.PUT, this.targetUri);
-			Response contextResponse = new Response(contextRequest);
-
-			contextRequest.setEntity(variant);
-			if (targetDirectory)
-			{
-				contextRequest.setResourceRef(this.targetUri);
-				getDispatcher().handle(contextRequest, contextResponse);
-			}
-			else
-			{
-				//Try to get the unique representation of the resource, if any
-				ReferenceList references = getVariantsReferences(true);
-				if (!references.isEmpty())
-				{
-					contextRequest.setResourceRef(references.get(0));
-					getDispatcher().handle(contextRequest, contextResponse);
-				}
-				else
-				{
-					contextRequest.setResourceRef(this.targetUri);
-					getDispatcher().handle(contextRequest, contextResponse);
-				}
-			}
-
-			status = contextResponse.getStatus();
-		}
-
-		return new Result(status);
 	}
 
 	/**

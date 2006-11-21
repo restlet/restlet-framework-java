@@ -23,10 +23,12 @@
 package org.restlet.data;
 
 import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 
+import org.restlet.resource.Representation;
 import org.restlet.resource.Resource;
-import org.restlet.util.Factory;
 
 /**
  * Generic response sent by server connectors. It is then received by client connectors. Responses 
@@ -42,6 +44,9 @@ public class Response extends Message
 
 	/** The cookie settings provided by the server. */
 	private List<CookieSetting> cookieSettings;
+
+	/** The set of dimensions on which the response entity may vary. */
+	private Set<Dimension> dimensions;
 
 	/** The redirection reference. */
 	private Reference redirectRef;
@@ -63,6 +68,7 @@ public class Response extends Message
 	{
 		this.challengeRequest = null;
 		this.cookieSettings = null;
+		this.dimensions = null;
 		this.redirectRef = null;
 		this.request = request;
 		this.serverInfo = null;
@@ -87,6 +93,17 @@ public class Response extends Message
 		if (this.cookieSettings == null)
 			this.cookieSettings = new ArrayList<CookieSetting>();
 		return this.cookieSettings;
+	}
+
+	/** 
+	 * Returns the set of selecting dimensions on which the response entity may vary. If some server-side 
+	 * content negotiation is done, this set should be properly updated, other it can be left empty. 
+	 * @return The set of dimensions on which the response entity may vary.
+	 */
+	public Set<Dimension> getDimensions()
+	{
+		if (this.dimensions == null) this.dimensions = new HashSet<Dimension>();
+		return this.dimensions;
 	}
 
 	/**
@@ -147,11 +164,31 @@ public class Response extends Message
 	@Deprecated
 	public void setEntity(Resource resource, Language fallbackLanguage)
 	{
-		Factory.getInstance().setResponseEntity(getRequest(), this, resource);
+		setEntity(resource);
 	}
 
 	/**
-	 * Sets the entity with the best representation of a resource, according to the client preferences.
+	 * Sets the entity representation. If the request conditions are matched, the status is set to 
+	 * REDIRECTION_NOT_MODIFIED, otherwise the entity is set.
+	 * @param entity The entity representation.
+	 */
+	public void setEntity(Representation entity)
+	{
+		if (getRequest().getConditions().isModified(entity))
+		{
+			// Send the representation as the response entity
+			setStatus(Status.SUCCESS_OK);
+			super.setEntity(entity);
+		}
+		else
+		{
+			// Indicates to the client that he already has the best representation 
+			setStatus(Status.REDIRECTION_NOT_MODIFIED);
+		}
+	}
+
+	/**
+	 * Sets the entity with the preferred representation of a resource, according to the client preferences.
 	 * <br/> If no representation is found, sets the status to "Not found".<br/>
 	 * If no acceptable representation is available, sets the status to "Not acceptable".<br/>
 	 * @param resource The resource for which the best representation needs to be set.
@@ -159,7 +196,35 @@ public class Response extends Message
 	 */
 	public void setEntity(Resource resource)
 	{
-		Factory.getInstance().setResponseEntity(getRequest(), this, resource);
+		List<Representation> variants = resource.getVariants();
+
+		if ((variants == null) || (variants.size() < 1))
+		{
+			// Resource not found
+			setStatus(Status.CLIENT_ERROR_NOT_FOUND);
+		}
+		else
+		{
+			// Set the variants' resource
+			for (Representation variant : variants)
+			{
+				variant.setResource(resource);
+			}
+
+			// Compute the preferred variant
+			Representation preferredVariant = getRequest().getClientInfo()
+					.getPreferredVariant(variants);
+
+			if (preferredVariant == null)
+			{
+				// No variant was found matching the client preferences
+				setStatus(Status.CLIENT_ERROR_NOT_ACCEPTABLE);
+			}
+			else
+			{
+				setEntity(preferredVariant);
+			}
+		}
 	}
 
 	/**

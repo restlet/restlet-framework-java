@@ -149,7 +149,7 @@ public class ClientInfo
 	 */
 	public Representation getPreferredVariant(List<Representation> variants)
 	{
-		return Factory.getInstance().getBestVariant(this, variants);
+		return Factory.getInstance().getPreferredVariant(this, variants);
 	}
 
 	/**

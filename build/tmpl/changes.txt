@@ -22,6 +22,7 @@ Changes log
  - Fixed NPE in Representation when creating an EncoderRepresentation. Reported by Chris Grindstaff.
  - Fixed bug in EncoderRepresentation returning the original size instead of the size of the encoded 
    representation (or -1 when no known). That was causing truncation of the output in browsers.
+ - Fixed several issues related to the FILE client connector (#182 and #39). Contributed by Thierry Boileau.
    
 [API changes]
  - Moved org.restlet.data.Result to org.restlet.resource.Result (deprecation used).
@@ -64,7 +65,10 @@ Changes log
    a public getServletContext() one.
  - Added new Restlet extension supporting Spring 2.0 via a custom Spring's ApplicationContext and a Spring's 
    Resource implementation. It allows loading of bean definitions via properties or XML representations.
-   
+ - Separated content negotiation from conditional handling. Added Conditions.isModified() method. Fixes RFE #183.
+ - Added org.restlet.data.Dimension and Response."dimensions" property. 
+ - Now autoredirects directory URIs without a leading slash character (#113). Contributed by Thierry Boileau.
+ 
 1.0 beta 20 (2006-11-08)
 [Bugs fixed]
  - Fixed bug causing the ServerServlet to create an extra HTTP server connector if one is available on the classpath. Reported by Sean Landis.
