@@ -37,7 +37,9 @@ Changes log
  - Replaced Tag(httpTag) constructor by a static parse(httpTag) method and renamed getName() into format().
    Suggested by Chris Grindstaff. I have also added a default constructor.
  - Removed the unused "fallbackLanguage" property/parameter from Handler, Factory, Response, ClientInfo, etc.
-
+ - Renamed Status.REDIRECTION_MOVE_TEMPORARILY to REDIRECTION_TEMPORARY.
+ - Renamed Status.REDIRECTION_MOVE_PERMANENTLY to REDIRECTION_PERMANENT.
+ 
 [Enhancements] 
  - HTTP calls now try to use the channel aspect of a representation before its stream aspect. 
    Suggested by Lars Heuer.
@@ -71,6 +73,7 @@ Changes log
  - The distribution Zip file now contains a root directory named "restlet-1.xx". Suggested by Manuel Simoni.
  - Added support for generation and parsing of the Vary header from/to the Response.dimensions property (#109).
  - Added a readValue() to HeaderReader which improves the parsing of multi-values headers.
+ - Added Response.redirectPermanent(), redirectSeeOther() and redirectTemporary() methods.
   
 1.0 beta 20 (2006-11-08)
 [Bugs fixed]

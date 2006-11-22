@@ -42,7 +42,7 @@ public class Redirector extends Restlet
 {
 	/**
 	 * In this mode, the client is permanently redirected to the URI generated from the target URI pattern.<br/>
-	 * See org.restlet.data.Status.REDIRECTION_MOVED_PERMANENTLY.  
+	 * See org.restlet.data.Status.REDIRECTION_PERMANENT.  
 	 */
 	public static final int MODE_CLIENT_PERMANENT = 1;
 
@@ -53,10 +53,16 @@ public class Redirector extends Restlet
 	public static final int MODE_CLIENT_FOUND = 2;
 
 	/**
-	 * In this mode, the client is temporarily redirected to the URI generated from the target URI pattern.<br/>
-	 * See org.restlet.data.Status.REDIRECTION_MOVED_TEMPORARILY.  
+	 * In this mode, the client is simply redirected to the URI generated from the target URI pattern.<br/>
+	 * See org.restlet.data.Status.REDIRECTION_SEE_OTHER.
 	 */
-	public static final int MODE_CLIENT_TEMPORARY = 3;
+	public static final int MODE_CLIENT_SEE_OTHER = 3;
+
+	/**
+	 * In this mode, the client is temporarily redirected to the URI generated from the target URI pattern.<br/>
+	 * See org.restlet.data.Status.REDIRECTION_TEMPORARY.  
+	 */
+	public static final int MODE_CLIENT_TEMPORARY = 4;
 
 	/**
 	 * In this mode, the call is sent to the connector indicated by the "connectorName" property. 
@@ -65,14 +71,16 @@ public class Redirector extends Restlet
 	 * Remember to attach the connector you want to use to the parent Restlet container, using the exact same
 	 * name as the one you provided to the setConnectorName method. 
 	 */
-	public static final int MODE_CONNECTOR = 4;
+	public static final int MODE_CONNECTOR = 5;
 
 	/**
 	 * In this mode, the call is internally redirected within the owner component. This is useful when 
 	 * there are multiple ways to access to the same resource.<br/>
 	 * Be careful when specifying the target pattern or infinite loops may occur.
+	 * @deprecated Not implemented, use MODE_CONNECTOR instead.
 	 */
-	public static final int MODE_INTERNAL = 5;
+	@Deprecated
+	public static final int MODE_INTERNAL = 6;
 
 	/** The target URI pattern. */
 	protected String targetPattern;
@@ -122,35 +130,33 @@ public class Redirector extends Restlet
 
 		// Create the template data model
 		String targetUri = te.format(new CallModel(request, response, ""));
-		Reference target = new Reference(targetUri);
+		Reference targetRef = new Reference(targetUri);
 
 		switch (this.mode)
 		{
 			case MODE_CLIENT_PERMANENT:
 				getLogger()
 						.log(Level.INFO, "Permanently redirecting client to: " + targetUri);
-				response.setRedirectRef(target);
-				response.setStatus(Status.REDIRECTION_MOVED_PERMANENTLY);
+				response.redirectPermanent(targetRef);
 			break;
 
 			case MODE_CLIENT_FOUND:
 				getLogger().log(Level.INFO,
 						"Redirecting client to found location: " + targetUri);
-				response.setRedirectRef(target);
+				response.setRedirectRef(targetRef);
 				response.setStatus(Status.REDIRECTION_FOUND);
 			break;
 
 			case MODE_CLIENT_TEMPORARY:
 				getLogger()
 						.log(Level.INFO, "Temporarily redirecting client to: " + targetUri);
-				response.setRedirectRef(target);
-				response.setStatus(Status.REDIRECTION_MOVED_TEMPORARILY);
+				response.redirectTemporary(targetRef);
 			break;
 
 			case MODE_CONNECTOR:
 				getLogger().log(Level.INFO,
 						"Redirecting via client connector to: " + targetUri);
-				request.setResourceRef(target);
+				request.setResourceRef(targetRef);
 				getContext().getDispatcher().handle(request, response);
 			break;
 		}

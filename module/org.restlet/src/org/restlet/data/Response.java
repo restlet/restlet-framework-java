@@ -144,6 +144,71 @@ public class Response extends Message
 	}
 
 	/**
+	 * Permanently redirects the client to a target URI. 
+	 * The client is expected to reuse the same method for the new request.
+	 * @param targetUri The target URI.
+	 */
+	public void redirectPermanent(String targetUri)
+	{
+		redirectPermanent(new Reference(targetUri));
+	}
+
+	/**
+	 * Permanently redirects the client to a target URI. 
+	 * The client is expected to reuse the same method for the new request.
+	 * @param targetRef The target URI reference.
+	 */
+	public void redirectPermanent(Reference targetRef)
+	{
+		setRedirectRef(targetRef);
+		setStatus(Status.REDIRECTION_PERMANENT);
+	}
+
+	/**
+	 * Redirects the client to a different URI that SHOULD be retrieved using a GET method on that resource. 
+	 * This method exists primarily to allow the output of a POST-activated script to redirect the user agent to a 
+	 * selected resource. The new URI is not a substitute reference for the originally requested resource.
+	 * @param targetUri The target URI.
+	 */
+	public void redirectSeeOther(String targetUri)
+	{
+		redirectSeeOther(new Reference(targetUri));
+	}
+
+	/**
+	 * Redirects the client to a different URI that SHOULD be retrieved using a GET method on that resource. 
+	 * This method exists primarily to allow the output of a POST-activated script to redirect the user agent to a 
+	 * selected resource. The new URI is not a substitute reference for the originally requested resource.
+	 * @param targetUri The target URI.
+	 */
+	public void redirectSeeOther(Reference targetRef)
+	{
+		setRedirectRef(targetRef);
+		setStatus(Status.REDIRECTION_SEE_OTHER);
+	}
+
+	/**
+	 * Temporarily redirects the client to a target URI. 
+	 * The client is expected to reuse the same method for the new request.
+	 * @param targetUri The target URI.
+	 */
+	public void redirectTemporary(String targetUri)
+	{
+		redirectTemporary(new Reference(targetUri));
+	}
+
+	/**
+	 * Temporarily redirects the client to a target URI. 
+	 * The client is expected to reuse the same method for the new request.
+	 * @param targetUri The target URI.
+	 */
+	public void redirectTemporary(Reference targetRef)
+	{
+		setRedirectRef(targetRef);
+		setStatus(Status.REDIRECTION_TEMPORARY);
+	}
+
+	/**
 	 * Sets the authentication request sent by an origin server to a client.
 	 * @param request The authentication request sent by an origin server to a client.
 	 */
@@ -175,7 +240,7 @@ public class Response extends Message
 	 */
 	public void setEntity(Representation entity)
 	{
-		if(getStatus().equals(Status.SUCCESS_OK))
+		if (getStatus().equals(Status.SUCCESS_OK))
 		{
 			if (getRequest().getConditions().isModified(entity))
 			{

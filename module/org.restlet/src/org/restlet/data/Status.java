@@ -58,7 +58,13 @@ public class Status extends Metadata
 
 	public static final Status REDIRECTION_MULTIPLE_CHOICES = new Status(300);
 
+	/**
+	 * @deprecated Use REDIRECTION_PERMANENT instead.
+	 */
+	@Deprecated
 	public static final Status REDIRECTION_MOVED_PERMANENTLY = new Status(301);
+
+	public static final Status REDIRECTION_PERMANENT = new Status(301);
 
 	public static final Status REDIRECTION_FOUND = new Status(302);
 
@@ -68,7 +74,13 @@ public class Status extends Metadata
 
 	public static final Status REDIRECTION_USE_PROXY = new Status(305);
 
+	/**
+	 * @deprecated Use REDIRECTION_TEMPORARY instead.
+	 */
+	@Deprecated
 	public static final Status REDIRECTION_MOVED_TEMPORARILY = new Status(307);
+
+	public static final Status REDIRECTION_TEMPORARY = new Status(307);
 
 	public static final Status CLIENT_ERROR_BAD_REQUEST = new Status(400);
 
