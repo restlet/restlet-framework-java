@@ -36,6 +36,7 @@ public class NoeliosTestSuite extends TestSuite
 	{
 		addTestSuite(CookiesTestCase.class);
 		addTestSuite(FormTestCase.class);
+		addTestSuite(HeaderTestCase.class);
 		addTestSuite(PreferencesTestCase.class);
 		addTestSuite(SecurityTestCase.class);
 	}

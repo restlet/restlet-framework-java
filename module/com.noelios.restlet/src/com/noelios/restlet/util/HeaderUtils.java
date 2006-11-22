@@ -24,6 +24,7 @@ package com.noelios.restlet.util;
 
 import java.io.IOException;
 
+import org.restlet.data.Parameter;
 import org.restlet.data.Reference;
 
 /**
@@ -68,6 +69,26 @@ public class HeaderUtils
 
 		destination.append(')');
 		return destination;
+	}
+
+	/**
+	 * Creates a parameter.
+	 * @param name The parameter name buffer.
+	 * @param value The parameter value buffer (can be null).
+	 * @return The created parameter.
+	 * @throws IOException
+	 */
+	public static Parameter createParameter(CharSequence name, CharSequence value)
+			throws IOException
+	{
+		if (value != null)
+		{
+			return new Parameter(name.toString(), value.toString());
+		}
+		else
+		{
+			return new Parameter(name.toString(), null);
+		}
 	}
 
 	/**
@@ -331,5 +352,4 @@ public class HeaderUtils
 
 		return true;
 	}
-
 }

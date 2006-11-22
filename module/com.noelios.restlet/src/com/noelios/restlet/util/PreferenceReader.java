@@ -156,7 +156,7 @@ public class PreferenceReader<T extends Metadata> extends HeaderReader
 					if (paramNameBuffer.length() > 0)
 					{
 						// End of parameters section
-						parameters.add(createParameter(paramNameBuffer, null));
+						parameters.add(HeaderUtils.createParameter(paramNameBuffer, null));
 						result = createPreference(metadataBuffer, parameters);
 					}
 					else
@@ -167,7 +167,7 @@ public class PreferenceReader<T extends Metadata> extends HeaderReader
 				else if (nextChar == ';')
 				{
 					// End of parameter
-					parameters.add(createParameter(paramNameBuffer, null));
+					parameters.add(HeaderUtils.createParameter(paramNameBuffer, null));
 					paramNameBuffer = new StringBuilder();
 					readingParamName = true;
 					readingParamValue = false;
@@ -193,7 +193,7 @@ public class PreferenceReader<T extends Metadata> extends HeaderReader
 					if (paramValueBuffer.length() > 0)
 					{
 						// End of parameters section
-						parameters.add(createParameter(paramNameBuffer, paramValueBuffer));
+						parameters.add(HeaderUtils.createParameter(paramNameBuffer, paramValueBuffer));
 						result = createPreference(metadataBuffer, parameters);
 					}
 					else
@@ -204,7 +204,7 @@ public class PreferenceReader<T extends Metadata> extends HeaderReader
 				else if (nextChar == ';')
 				{
 					// End of parameter
-					parameters.add(createParameter(paramNameBuffer, paramValueBuffer));
+					parameters.add(HeaderUtils.createParameter(paramNameBuffer, paramValueBuffer));
 					paramNameBuffer = new StringBuilder();
 					readingParamName = true;
 					readingParamValue = false;

@@ -41,6 +41,7 @@ import org.restlet.data.Tag;
 import org.restlet.resource.Representation;
 
 import com.noelios.restlet.util.CookieReader;
+import com.noelios.restlet.util.HeaderReader;
 import com.noelios.restlet.util.PreferenceUtils;
 import com.noelios.restlet.util.SecurityUtils;
 
@@ -232,20 +233,24 @@ public class HttpRequest extends Request
 			{
 				try
 				{
-					String[] tags = ifMatchHeader.split(",");
-					for (String element : tags)
+					HeaderReader hr = new HeaderReader(ifMatchHeader);
+					String value = hr.readValue();
+					while(value != null)
 					{
-						current = Tag.parse(element);
-
+						current = Tag.parse(value);
+	
 						// Is it the first tag?
 						if (match == null)
 						{
 							match = new ArrayList<Tag>();
 							result.setMatch(match);
 						}
-
+	
 						// Add the new tag
 						match.add(current);
+	
+						// Read the next token
+						value = hr.readValue();
 					}
 				}
 				catch (Exception e)
@@ -261,10 +266,11 @@ public class HttpRequest extends Request
 			{
 				try
 				{
-					String[] tags = ifNoneMatchHeader.split(",");
-					for (String element : tags)
+					HeaderReader hr = new HeaderReader(ifNoneMatchHeader);
+					String value = hr.readValue();
+					while(value != null)
 					{
-						current = Tag.parse(element);
+						current = Tag.parse(value);
 
 						// Is it the first tag?
 						if (noneMatch == null)
@@ -274,6 +280,9 @@ public class HttpRequest extends Request
 						}
 
 						noneMatch.add(current);
+						
+						// Read the next token
+						value = hr.readValue();
 					}
 				}
 				catch (Exception e)

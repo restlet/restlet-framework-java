@@ -142,7 +142,8 @@ public class ClientInfo
 	}
 
 	/**
-	 * Returns the best variant representation for a given resource according the the client preferences.
+	 * Returns the best variant representation for a given resource according the the client preferences:
+	 * accepted languages, accepted character sets, accepted media types and accepted encodings.
 	 * @param variants The list of variants to compare.
 	 * @return The best variant representation.
 	 * @see <a href="http://httpd.apache.org/docs/2.2/en/content-negotiation.html#algorithm">Apache content negotiation algorithm</a>

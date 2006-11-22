@@ -315,7 +315,7 @@ public class CookieReader extends HeaderReader
 							if (nameBuffer.length() > 0)
 							{
 								// End of pair with no value
-								result = createParameter(nameBuffer, null);
+								result = HeaderUtils.createParameter(nameBuffer, null);
 							}
 							else if (nextChar == -1)
 							{
@@ -351,7 +351,7 @@ public class CookieReader extends HeaderReader
 						else if ((nextChar == -1) || (nextChar == ';'))
 						{
 							// End of pair
-							result = createParameter(nameBuffer, valueBuffer);
+							result = HeaderUtils.createParameter(nameBuffer, valueBuffer);
 						}
 						else if ((nextChar == '"') && (valueBuffer.length() == 0))
 						{

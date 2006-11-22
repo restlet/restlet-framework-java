@@ -24,10 +24,12 @@ package com.noelios.restlet.http;
 
 import java.util.Date;
 import java.util.List;
+import java.util.Set;
 import java.util.logging.Level;
 
 import org.restlet.Context;
 import org.restlet.data.CookieSetting;
+import org.restlet.data.Dimension;
 import org.restlet.data.Encoding;
 import org.restlet.data.Method;
 import org.restlet.data.ParameterList;
@@ -232,6 +234,60 @@ public class HttpServerConverter extends HttpConverter
 					responseHeaders.add(HttpConstants.HEADER_CONTENT_LOCATION, response
 							.getEntity().getIdentifier().toString());
 				}
+			}
+
+			// Add the Vary header if content negotiation was used
+			Set<Dimension> dimensions = response.getDimensions();
+			if (!dimensions.isEmpty())
+			{
+				StringBuilder sb = new StringBuilder();
+				boolean first = true;
+
+				if (dimensions.contains(Dimension.CLIENT_ADDRESS)
+						|| dimensions.contains(Dimension.TIME)
+						|| dimensions.contains(Dimension.UNSPECIFIED))
+				{
+					// From an HTTP point of view the representations can vary in unspecified ways
+					responseHeaders.add(HttpConstants.HEADER_VARY, "*");
+				}
+				else
+				{
+					for (Dimension dim : response.getDimensions())
+					{
+						if (first)
+						{
+							first = false;
+						}
+						else
+						{
+							sb.append(", ");
+						}
+
+						if (dim == Dimension.CHARACTER_SET)
+						{
+							sb.append(HttpConstants.HEADER_ACCEPT_CHARSET);
+						}
+						else if (dim == Dimension.CLIENT_AGENT)
+						{
+							sb.append(HttpConstants.HEADER_USER_AGENT);
+						}
+						else if (dim == Dimension.ENCODING)
+						{
+							sb.append(HttpConstants.HEADER_ACCEPT_ENCODING);
+						}
+						else if (dim == Dimension.LANGUAGE)
+						{
+							sb.append(HttpConstants.HEADER_ACCEPT_LANGUAGE);
+						}
+						else if (dim == Dimension.MEDIA_TYPE)
+						{
+							sb.append(HttpConstants.HEADER_ACCEPT);
+						}
+					}
+
+					responseHeaders.add(HttpConstants.HEADER_VARY, sb.toString());
+				}
+
 			}
 
 			// Add user-defined extension headers

@@ -24,7 +24,7 @@ package com.noelios.restlet.http;
 
 import java.io.IOException;
 import java.util.List;
-import java.util.StringTokenizer;
+import java.util.Set;
 import java.util.logging.Level;
 
 import org.restlet.Context;
@@ -32,6 +32,7 @@ import org.restlet.data.ChallengeRequest;
 import org.restlet.data.ChallengeResponse;
 import org.restlet.data.ClientInfo;
 import org.restlet.data.Conditions;
+import org.restlet.data.Dimension;
 import org.restlet.data.MediaType;
 import org.restlet.data.Method;
 import org.restlet.data.Parameter;
@@ -44,6 +45,7 @@ import org.restlet.util.DateUtils;
 import com.noelios.restlet.Factory;
 import com.noelios.restlet.util.CookieReader;
 import com.noelios.restlet.util.CookieUtils;
+import com.noelios.restlet.util.HeaderReader;
 import com.noelios.restlet.util.PreferenceUtils;
 import com.noelios.restlet.util.SecurityUtils;
 
@@ -349,12 +351,49 @@ public class HttpClientConverter extends HttpConverter
 				}
 				else if (header.getName().equalsIgnoreCase(HttpConstants.HEADER_ALLOW))
 				{
-					StringTokenizer st = new StringTokenizer(header.getValue(), ",\\s");
+					HeaderReader hr = new HeaderReader(header.getValue());
+					String value = hr.readValue();
 					List<Method> allowedMethods = response.getEntity().getResource()
-							.getAllowedMethods();
-					while (st.hasMoreTokens())
+					.getAllowedMethods();
+					while(value != null)
 					{
-						allowedMethods.add(Method.valueOf(st.nextToken()));
+						allowedMethods.add(Method.valueOf(value));
+						value = hr.readValue();
+					}
+				}
+				else if (header.getName().equalsIgnoreCase(HttpConstants.HEADER_VARY))
+				{
+					HeaderReader hr = new HeaderReader(header.getValue());
+					String value = hr.readValue();
+					Set<Dimension> dimensions = response.getDimensions();
+					while(value != null)
+					{
+						if(value.equalsIgnoreCase(HttpConstants.HEADER_ACCEPT))
+						{
+							dimensions.add(Dimension.MEDIA_TYPE);
+						}
+						else if(value.equalsIgnoreCase(HttpConstants.HEADER_ACCEPT_CHARSET))
+						{
+							dimensions.add(Dimension.CHARACTER_SET);
+						}
+						else if(value.equalsIgnoreCase(HttpConstants.HEADER_ACCEPT_ENCODING))
+						{
+							dimensions.add(Dimension.ENCODING);
+						}
+						else if(value.equalsIgnoreCase(HttpConstants.HEADER_ACCEPT_LANGUAGE))
+						{
+							dimensions.add(Dimension.LANGUAGE);
+						}
+						else if(value.equalsIgnoreCase(HttpConstants.HEADER_USER_AGENT))
+						{
+							dimensions.add(Dimension.CLIENT_AGENT);
+						}
+						else if(value.equals("*"))
+						{
+							dimensions.add(Dimension.UNSPECIFIED);
+						}
+						
+						value = hr.readValue();
 					}
 				}
 			}

@@ -24,8 +24,6 @@ package com.noelios.restlet.util;
 
 import java.io.IOException;
 
-import org.restlet.data.Parameter;
-
 /**
  * HTTP-style header reader.
  * @author Jerome Louvel (contact@noelios.com)
@@ -63,6 +61,45 @@ public class HeaderReader
 		}
 
 		return result;
+	}
+
+	/**
+	 * Read the next value of a multi-value header. It skips separator commas and spaces.
+	 * @see <a href="http://www.w3.org/Protocols/rfc2616/rfc2616-sec2.html#sec2">HTTP parsing rule</a>
+	 * @return The next value or null.
+	 * @throws IOException
+	 */
+	public String readValue() throws IOException
+	{
+		StringBuilder sb = null;
+		int next = read();
+
+		// Skip leading separators
+		while ((next != -1) && isValueSeparator(next))
+		{
+			next = read();
+		}
+
+		while ((next != -1) && !isValueSeparator(next))
+		{
+			if(sb == null) sb = new StringBuilder();
+			sb.append((char)next);
+			next = read();
+		}
+
+		return (sb == null) ? null : sb.toString();
+	}
+
+	/**
+	 * Indicates if the given character is a value separator.
+	 * @param character The character to test.
+	 * @return True if the given character is a value separator.
+	 */
+	private boolean isValueSeparator(int character)
+	{
+		return (HeaderUtils.isCarriageReturn(character) || HeaderUtils.isSpace(character)
+				|| HeaderUtils.isLineFeed(character)
+				|| HeaderUtils.isHorizontalTab(character) || (character == ','));
 	}
 
 	/**
@@ -125,26 +162,6 @@ public class HeaderReader
 				throw new IOException(
 						"Invalid character detected in quoted string. Please check your value");
 			}
-		}
-	}
-
-	/**
-	 * Creates a parameter.
-	 * @param name The parameter name buffer.
-	 * @param value The parameter value buffer (can be null).
-	 * @return The created parameter.
-	 * @throws IOException
-	 */
-	public static Parameter createParameter(CharSequence name, CharSequence value)
-			throws IOException
-	{
-		if (value != null)
-		{
-			return new Parameter(name.toString(), value.toString());
-		}
-		else
-		{
-			return new Parameter(name.toString(), null);
 		}
 	}
 

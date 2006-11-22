@@ -222,6 +222,12 @@ public class Response extends Message
 			Representation preferredVariant = getRequest().getClientInfo()
 					.getPreferredVariant(variants);
 
+			// Update the variant dimensions used for content negotiation
+			getDimensions().add(Dimension.CHARACTER_SET);
+			getDimensions().add(Dimension.ENCODING);
+			getDimensions().add(Dimension.LANGUAGE);
+			getDimensions().add(Dimension.MEDIA_TYPE);
+
 			if (preferredVariant == null)
 			{
 				// No variant was found matching the client preferences
