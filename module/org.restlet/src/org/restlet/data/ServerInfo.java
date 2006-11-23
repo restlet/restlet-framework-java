@@ -71,8 +71,8 @@ public class ServerInfo
 
 	/**
 	 * Returns the domain name that received the call. This will often be similar to the host name specified 
-	 * in the Call's target resource but it may diverge in specific cases, for exampl when a resource is 
-	 * identifed by an URN and retrieved by HTTP.  
+	 * in the Request's resource reference but it may diverge in specific cases, for example when a resource 
+	 * is identifed by an URN and retrieved by HTTP.  
 	 * @return The host name that received the call. 
 	 */
 	public String getDomain()

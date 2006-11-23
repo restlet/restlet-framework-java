@@ -179,7 +179,7 @@ public class Response extends Message
 	 * Redirects the client to a different URI that SHOULD be retrieved using a GET method on that resource. 
 	 * This method exists primarily to allow the output of a POST-activated script to redirect the user agent to a 
 	 * selected resource. The new URI is not a substitute reference for the originally requested resource.
-	 * @param targetUri The target URI.
+	 * @param targetRef The target reference.
 	 */
 	public void redirectSeeOther(Reference targetRef)
 	{
@@ -200,7 +200,7 @@ public class Response extends Message
 	/**
 	 * Temporarily redirects the client to a target URI. 
 	 * The client is expected to reuse the same method for the new request.
-	 * @param targetUri The target URI.
+	 * @param targetRef The target reference.
 	 */
 	public void redirectTemporary(Reference targetRef)
 	{
