@@ -23,7 +23,8 @@ Changes log
  - Fixed bug in EncoderRepresentation returning the original size instead of the size of the encoded 
    representation (or -1 when no known). That was causing truncation of the output in browsers.
  - Fixed several issues related to the FILE client connector (#182 and #39). Contributed by Thierry Boileau.
-   
+ - Fixed bug in Message preventing the sending of entities with an unknown size (-1). Reported by Mitch Stewart.
+    
 [API changes]
  - Moved org.restlet.data.Result to org.restlet.resource.Result (deprecation used).
  - Replaced ConnectorService.get*Protocols() methods by just getClientProtocols() and getServerProtocols().

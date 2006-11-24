@@ -159,7 +159,7 @@ public abstract class Message
 	 */
 	public boolean isEntityAvailable()
 	{
-		return (getEntity() != null) && (getEntity().getSize() > 0)
+		return (getEntity() != null) && (getEntity().getSize() != 0)
 				&& getEntity().isAvailable();
 	}
 
