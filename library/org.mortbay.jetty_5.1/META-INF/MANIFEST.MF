@@ -2,7 +2,7 @@ Manifest-Version: 1.0
 Bundle-ManifestVersion: 2
 Bundle-Name: Jetty HTTP server 5
 Bundle-SymbolicName: org.mortbay.jetty5
-Bundle-Version: 5.1.11
+Bundle-Version: 5.1.12
 Bundle-ClassPath: org.mortbay.jetty.jar
 Bundle-Vendor: Mortbay Consulting
 Bundle-Localization: plugin

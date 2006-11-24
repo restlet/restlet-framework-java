@@ -63,7 +63,8 @@ Changes log
  - Added new constructor and methods on com.noelios.restlet.Factory to turn off auto-discovery of connectors. 
    See the getRegisteredClients() and getRegisteredServers() methods. Suggested by Mike Moran.
  - Upgraded Apache MINA to 0.8.4 used by AsyncWeb HTTP server connector. Suggested by Lars Heuer.
- - Upgraded Jetty 6 to 6.1 pre2 which adds support for APJ and HTTPS/NIO in the Jetty 6-.x series.
+ - Upgraded Jetty 6 to 6.1 pre3 which adds support for APJ and HTTPS/NIO in the Jetty 6-.x series.
+ - Upgraded Jetty 5 to 5.1.12. NOTE: we plan to remove this older Jetty 5 connector in the next beta release.
  - Renamed NRE's ServletContext into ServletContextAdapter and replaced the private getServlet() method by 
    a public getServletContext() one.
  - Added new Restlet extension supporting Spring 2.0 via a custom Spring's ApplicationContext and a Spring's 
