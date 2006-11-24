@@ -76,7 +76,8 @@ Changes log
  - Added support for generation and parsing of the Vary header from/to the Response.dimensions property (#109).
  - Added a readValue() to HeaderReader which improves the parsing of multi-values headers.
  - Added Response.redirectPermanent(), redirectSeeOther() and redirectTemporary() methods.
-  
+ - Added new org.restlet.Transformer filter that easily apply an XSLT transform sheet. Fixes #112.
+   
 1.0 beta 20 (2006-11-08)
 [Bugs fixed]
  - Fixed bug causing the ServerServlet to create an extra HTTP server connector if one is available on the classpath. Reported by Sean Landis.
