@@ -42,6 +42,7 @@ Changes log
  - Removed the unused "fallbackLanguage" property/parameter from Handler, Factory, Response, ClientInfo, etc.
  - Renamed Status.REDIRECTION_MOVE_TEMPORARILY to REDIRECTION_TEMPORARY.
  - Renamed Status.REDIRECTION_MOVE_PERMANENTLY to REDIRECTION_PERMANENT.
+ - Deprecated Request.setProtocol() method and ServerInfo.domain property. We now rely on Request.baseRef property.
  
 [Enhancements] 
  - HTTP calls now try to use the channel aspect of a representation before its stream aspect. 

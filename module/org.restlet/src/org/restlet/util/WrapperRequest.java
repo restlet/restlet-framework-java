@@ -113,7 +113,9 @@ public class WrapperRequest extends Request
 	 * the implementation will attempt to guess it by looking at a scheme protocol associated with the 
 	 * target resource reference. 
 	 * @return The protocol or null if not available.
+	 * @deprecated Use getClientInfo().getProtocol() instead.
 	 */
+	@Deprecated
 	public Protocol getProtocol()
 	{
 		return getWrappedRequest().getProtocol();
@@ -236,7 +238,9 @@ public class WrapperRequest extends Request
 	 * when sending a call, the implementation will attempt to guess it by looking at a scheme protocol 
 	 * associated with the target resource reference. 
 	 * @param protocol The protocol to set.
+	 * @deprecated Use Request.baseRef property instead.
 	 */
+	@Deprecated
 	public void setProtocol(Protocol protocol)
 	{
 		getWrappedRequest().setProtocol(protocol);

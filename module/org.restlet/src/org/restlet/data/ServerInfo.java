@@ -34,9 +34,6 @@ public class ServerInfo
 	/** The agent name. */
 	private String agent;
 
-	/** The domain name. */
-	private String domain;
-
 	/** The port number. */
 	private Integer port;
 
@@ -47,7 +44,6 @@ public class ServerInfo
 	{
 		this.address = null;
 		this.agent = null;
-		this.domain = null;
 		this.port = null;
 	}
 
@@ -73,11 +69,13 @@ public class ServerInfo
 	 * Returns the domain name that received the call. This will often be similar to the host name specified 
 	 * in the Request's resource reference but it may diverge in specific cases, for example when a resource 
 	 * is identifed by an URN and retrieved by HTTP.  
-	 * @return The host name that received the call. 
+	 * @return The host name that received the call.
+	 * @deprecated Use request.baseRef.getHostDomain() instead
 	 */
+	@Deprecated
 	public String getDomain()
 	{
-		return this.domain;
+		return null;
 	}
 
 	/**
@@ -109,11 +107,12 @@ public class ServerInfo
 
 	/**
 	 * Sets the domain name that received the call.
-	 * @param domain The domain name that received the call. 
+	 * @param domain The domain name that received the call.
+	 * @deprecated Use request.baseRef.setHostDomain() instead
 	 */
+	@Deprecated
 	public void setDomain(String domain)
 	{
-		this.domain = domain;
 	}
 
 	/**

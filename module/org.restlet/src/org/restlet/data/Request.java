@@ -58,9 +58,6 @@ public class Request extends Message
 	/** The method. */
 	private Method method;
 
-	/** The protocol. */
-	private Protocol protocol;
-
 	/** The referrer reference. */
 	private Reference referrerRef;
 
@@ -177,15 +174,22 @@ public class Request extends Message
 	}
 
 	/**
-	 * Returns the protocol. It can either indicate the protocol used by a server connector to receive 
-	 * or the one that must be used to send. If the protocol is not specified when sending a request, 
-	 * the implementation will attempt to guess it by looking at a scheme protocol associated with the 
-	 * target resource reference. 
+	 * Returns the protocol by first returning the baseRef.schemeProtocol property if it is set, or the 
+	 * resourceRef.schemeProtocol property otherwise.
 	 * @return The protocol or null if not available.
 	 */
 	public Protocol getProtocol()
 	{
-		return this.protocol;
+		Protocol result = (getBaseRef() != null) ? getBaseRef().getSchemeProtocol() : null;
+	
+		if (result == null)
+		{
+			// Attempt to guess the protocol to use
+			// from the target reference scheme
+			result = (getResourceRef() != null) ? getResourceRef().getSchemeProtocol() : null;
+		}
+		
+		return result;
 	}
 
 	/**
@@ -198,7 +202,7 @@ public class Request extends Message
 	}
 
 	/**
-	 * Returns the part of the resource path relative to the current base reference. Note that the optional
+	 * Returns the part of the resource path relative to the base reference. Note that the optional
 	 * query string and fragment are not returned by this method, you need to use the getResourceRef()
 	 * method instead. 
 	 * @return The relative resource part.
@@ -217,7 +221,7 @@ public class Request extends Message
 	}
 
 	/**
-	 * Returns the resource reference relative to the context's base reference.
+	 * Returns the resource reference relative to the base reference.
 	 * @return The relative resource reference.
 	 */
 	public Reference getRelativeRef()
@@ -326,10 +330,11 @@ public class Request extends Message
 	 * when sending a call, the implementation will attempt to guess it by looking at a scheme protocol 
 	 * associated with the target resource reference. 
 	 * @param protocol The protocol to set.
+	 * @deprecated Use Request.baseRef property instead.
 	 */
+	@Deprecated
 	public void setProtocol(Protocol protocol)
 	{
-		this.protocol = protocol;
 	}
 
 	/**
