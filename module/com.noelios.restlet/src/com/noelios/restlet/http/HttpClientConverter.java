@@ -123,7 +123,7 @@ public class HttpClientConverter extends HttpConverter
 		{
 			String host;
 
-			if (response.getServerInfo().getPort() != null)
+			if ((response.getServerInfo().getPort() != null) && (response.getServerInfo().getPort() != request.getProtocol().getDefaultPort()))
 			{
 				host = response.getServerInfo().getDomain() + ':'
 						+ response.getServerInfo().getPort();

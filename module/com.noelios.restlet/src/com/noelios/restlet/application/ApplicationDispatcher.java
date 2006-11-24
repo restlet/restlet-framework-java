@@ -54,12 +54,6 @@ public class ApplicationDispatcher extends Dispatcher
 	public void handle(Request request, Response response)
 	{
 		Protocol protocol = request.getProtocol();
-		if (protocol == null)
-		{
-			// Attempt to guess the protocol to use
-			// from the target reference scheme
-			protocol = request.getResourceRef().getSchemeProtocol();
-		}
 
 		if (protocol == null)
 		{
