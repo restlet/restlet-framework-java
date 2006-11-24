@@ -177,8 +177,11 @@ public class JdbcClientHelper extends ClientHelper
 				JdbcResult result = new JdbcResult(statement);
 				response.setEntity(new ObjectRepresentation(result));
 
-				// Commit any changes to the database
-				connection.commit();
+				//	Commit any changes to the database
+				if (!connection.getAutoCommit())
+				{
+					connection.commit();
+				}
 			}
 			else
 			{
@@ -197,22 +200,9 @@ public class JdbcClientHelper extends ClientHelper
 		{
 			getLogger().log(Level.WARNING, "Error while parsing the XML document", se);
 		}
-		catch (IOException e)
+		catch (IOException ioe)
 		{
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		}
-		finally
-		{
-			try
-			{
-				if (connection != null) connection.close();
-			}
-			catch (SQLException se)
-			{
-				getLogger().log(Level.WARNING,
-						"An error occured while trying to close a database connection", se);
-			}
+			getLogger().log(Level.WARNING, "Input/Output exception", ioe);
 		}
 	}
 
@@ -321,7 +311,7 @@ public class JdbcClientHelper extends ClientHelper
 		// the classes that implement the pooling functionality.
 		PoolableConnectionFactory poolableConnectionFactory = new PoolableConnectionFactory(
 				connectionFactory, result, null, null, false, false);
-		
+
 		// To remove warnings
 		poolableConnectionFactory.getPool();
 
