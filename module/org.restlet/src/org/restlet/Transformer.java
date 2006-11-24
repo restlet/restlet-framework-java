@@ -134,6 +134,9 @@ public class Transformer extends Filter
 		}
 	}
 
+	/** Mode where the developer manually applies transformations by calling the transform() method. */
+	public static final int MODE_MANUAL = 0;
+
 	/** Mode that transforms request entities before their handling by the attached Restlet. */
 	public static final int MODE_REQUEST = 1;
 
@@ -154,6 +157,16 @@ public class Transformer extends Filter
 
 	/** The character set of the result representation. The default value is null. */
 	private CharacterSet resultCharacterSet;
+
+	/**
+	 * Constructor.
+	 * @param mode The transformation mode.
+	 * @param transformSheet The XSLT transform sheet to apply to message entities.
+	 */
+	public Transformer(Representation transformSheet)
+	{
+		this(MODE_MANUAL, transformSheet);
+	}
 
 	/**
 	 * Constructor.
