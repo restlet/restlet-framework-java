@@ -26,7 +26,7 @@ Changes log
  - Fixed bug in Message preventing the sending of entities with an unknown size (-1). Reported by Mitch Stewart.
  - Fixed bug in JdbcClientHelper causing a premature close of the connection. Reported by Kyrre Kristiansen.
  - Fixed bug in JdbcClientHelper causing a commit even if autoCommit is enabled. Reported by Thierry Boileau.
-    
+
 [API changes]
  - Moved org.restlet.data.Result to org.restlet.resource.Result (deprecation used).
  - Replaced ConnectorService.get*Protocols() methods by just getClientProtocols() and getServerProtocols().
@@ -43,6 +43,8 @@ Changes log
  - Renamed Status.REDIRECTION_MOVE_TEMPORARILY to REDIRECTION_TEMPORARY.
  - Renamed Status.REDIRECTION_MOVE_PERMANENTLY to REDIRECTION_PERMANENT.
  - Deprecated Request.setProtocol() method and ServerInfo.domain property. We now rely on Request.baseRef property.
+ - Refactored the HTTP connectors to cleanly separate the server address, port from the baseRef and resourceRef properties.
+ - Improved virtual hosting by using regex patterns in VirtualHost class.
  
 [Enhancements] 
  - HTTP calls now try to use the channel aspect of a representation before its stream aspect. 

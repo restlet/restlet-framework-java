@@ -322,7 +322,7 @@ public class DirectoryTestCase extends TestCase
 	 * Internal class used for test purpose
 	 * @author Thierry Boileau
 	 */
-	private class MyApplication extends Application
+	private static class MyApplication extends Application
 	{
 		File testDirectory;
 

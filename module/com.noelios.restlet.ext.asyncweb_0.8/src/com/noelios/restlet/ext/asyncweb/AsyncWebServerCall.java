@@ -26,8 +26,8 @@ import java.io.InputStream;
 import java.io.OutputStream;
 import java.nio.channels.ReadableByteChannel;
 import java.nio.channels.WritableByteChannel;
-import java.util.logging.Logger;
 
+import org.restlet.Server;
 import org.restlet.data.Parameter;
 import org.restlet.data.ParameterList;
 import org.safehaus.asyncweb.http.HttpRequest;
@@ -58,21 +58,19 @@ public class AsyncWebServerCall extends HttpServerCall
 
 	/**
 	 * Constructor.
-	 * @param logger The logger to use.
+	 * @param server The parent server connector.
 	 * @param request The AsyncWebRequest.
 	 * @param response The AsyncWebResponse.
 	 * @param confidential Indicates if the server is acting in HTTPS mode.
-	 * @param address IP address of the server.
 	 */
-	public AsyncWebServerCall(Logger logger, HttpRequest request, HttpResponse response,
-			boolean confidential, String address)
+	public AsyncWebServerCall(Server server, HttpRequest request, HttpResponse response,
+			boolean confidential)
 	{
-		super(logger);
+		super(server);
 		this.request = (Request) request;
 		this.requestHeadersAdded = false;
 		this.response = (Response) response;
 		setConfidential(confidential);
-		setServerAddress(address);
 	}
 
 	@Override

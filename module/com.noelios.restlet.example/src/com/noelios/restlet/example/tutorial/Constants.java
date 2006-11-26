@@ -28,5 +28,5 @@ package com.noelios.restlet.example.tutorial;
  */
 public interface Constants
 {
-	public static final String ROOT_URI = "file:///D:/Restlet/www/docs/api/";
+	public static final String ROOT_URI = "file:///D:/Restlet/build/www/docs/api/";
 }

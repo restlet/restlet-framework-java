@@ -38,25 +38,25 @@ import org.restlet.util.Helper;
 public class ConnectorHelper implements Helper
 {
 	/** The protocols simultaneously supported. */
-	private List<Protocol> supportedProtocols;
+	private List<Protocol> protocols;
 
 	/**
 	 * Constructor.
 	 */
 	public ConnectorHelper()
 	{
-		this.supportedProtocols = null;
+		this.protocols = null;
 	}
 
 	/**
 	 * Returns the protocols simultaneously supported.
 	 * @return The protocols simultaneously supported.
 	 */
-	public List<Protocol> getSupportedProtocols()
+	public List<Protocol> getProtocols()
 	{
-		if (this.supportedProtocols == null)
-			this.supportedProtocols = new ArrayList<Protocol>();
-		return this.supportedProtocols;
+		if (this.protocols == null)
+			this.protocols = new ArrayList<Protocol>();
+		return this.protocols;
 	}
 
 	/**

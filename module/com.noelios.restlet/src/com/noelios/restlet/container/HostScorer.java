@@ -23,12 +23,11 @@
 package com.noelios.restlet.container;
 
 import java.util.logging.Level;
+import java.util.regex.Pattern;
 
 import org.restlet.Router;
 import org.restlet.Scorer;
 import org.restlet.VirtualHost;
-import org.restlet.data.Protocol;
-import org.restlet.data.Reference;
 import org.restlet.data.Request;
 import org.restlet.data.Response;
 
@@ -75,86 +74,35 @@ public class HostScorer extends Scorer
 	public float score(Request request, Response response)
 	{
 		float result = 0F;
-		boolean incompatible = false;
 
-		// Add the protocol score
-		Protocol protocol = request.getProtocol();
-		if (protocol == null)
+		String baseDomain = "";
+		String basePort = "";
+		String baseScheme = "";
+
+		if (request.getBaseRef() != null)
 		{
-			// Attempt to guess the protocol to use
-			// from the target reference scheme
-			protocol = request.getResourceRef().getSchemeProtocol();
+			baseDomain = request.getBaseRef().getHostDomain();
+			basePort = request.getBaseRef().getHostPort().toString();
+			baseScheme = request.getBaseRef().getScheme();
 		}
 
-		if (protocol == null)
+		String resourceDomain = request.getResourceRef().getHostDomain();
+		String resourcePort = request.getResourceRef().getHostPort().toString();
+		String resourceScheme = request.getResourceRef().getScheme();
+
+		String serverAddress = response.getServerInfo().getAddress();
+		String serverPort = response.getServerInfo().getPort().toString();
+
+		if (Pattern.matches(getHost().getBaseDomain(), baseDomain)
+				&& Pattern.matches(getHost().getBasePort(), basePort)
+				&& Pattern.matches(getHost().getBaseScheme(), baseScheme)
+				&& Pattern.matches(getHost().getResourceDomain(), resourceDomain)
+				&& Pattern.matches(getHost().getResourcePort(), resourcePort)
+				&& Pattern.matches(getHost().getResourceScheme(), resourceScheme)
+				&& Pattern.matches(getHost().getServerAddress(), serverAddress)
+				&& Pattern.matches(getHost().getServerPort(), serverPort))
 		{
-			getLogger().warning("Unable to determine the protocol to use for this call.");
-			incompatible = true;
-		}
-		else
-		{
-			if (getHost().getAllowedProtocols().contains(protocol)
-					|| getHost().getAllowedProtocols().contains(Protocol.ALL))
-			{
-				result += 0.25F;
-			}
-			else
-			{
-				incompatible = true;
-			}
-		}
-
-		// Add the port score
-		if (!incompatible)
-		{
-			Integer port = response.getServerInfo().getPort();
-
-			if (getHost().getAllowedPorts().contains(VirtualHost.ALL_PORTS)
-					|| ((port != null) && getHost().getAllowedPorts().contains(port)))
-			{
-				result += 0.25F;
-			}
-			else
-			{
-				incompatible = true;
-			}
-		}
-
-		// Add the address score
-		if (!incompatible)
-		{
-			String address = response.getServerInfo().getAddress();
-
-			if (getHost().getAllowedAddresses().contains(VirtualHost.ALL_ADDRESSES)
-					|| ((address != null) && getHost().getAllowedAddresses().contains(address)))
-			{
-				result += 0.25F;
-			}
-			else
-			{
-				incompatible = true;
-			}
-		}
-
-		// Add the domain score
-		if (!incompatible)
-		{
-			String domain = response.getServerInfo().getDomain();
-
-			if (getHost().getAllowedDomains().contains(VirtualHost.ALL_DOMAINS)
-					|| ((domain != null) && getHost().getAllowedDomains().contains(domain)))
-			{
-				result += 0.25F;
-			}
-			else
-			{
-				incompatible = true;
-			}
-		}
-
-		if (incompatible)
-		{
-			result = 0F;
+			result = 1F;
 		}
 
 		if (getLogger().isLoggable(Level.FINER))
@@ -173,10 +121,6 @@ public class HostScorer extends Scorer
 	 */
 	protected void beforeHandle(Request request, Response response)
 	{
-		request.setBaseRef(new Reference(request.getProtocol().getSchemeName(), response
-				.getServerInfo().getDomain(), response.getServerInfo().getPort(), null, null,
-				null));
-
 		if (getLogger().isLoggable(Level.FINE))
 		{
 			getLogger().fine("New base URI: " + request.getBaseRef());

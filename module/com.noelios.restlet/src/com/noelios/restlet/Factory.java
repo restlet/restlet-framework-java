@@ -291,7 +291,7 @@ public class Factory extends org.restlet.util.Factory
 	{
 		for (ConnectorHelper registeredClient : this.registeredClients)
 		{
-			if (registeredClient.getSupportedProtocols().containsAll(client.getProtocols()))
+			if (registeredClient.getProtocols().containsAll(client.getProtocols()))
 			{
 				try
 				{
@@ -337,7 +337,7 @@ public class Factory extends org.restlet.util.Factory
 		{
 			for (ConnectorHelper registeredServer : this.registeredServers)
 			{
-				if (registeredServer.getSupportedProtocols().containsAll(
+				if (registeredServer.getProtocols().containsAll(
 						server.getProtocols()))
 				{
 					try

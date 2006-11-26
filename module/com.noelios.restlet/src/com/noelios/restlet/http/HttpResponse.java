@@ -77,7 +77,6 @@ public class HttpResponse extends Response
 		{
 			result.setAddress(httpCall.getServerAddress());
 			result.setAgent(Factory.VERSION_HEADER);
-			result.setDomain(httpCall.getServerDomain());
 			result.setPort(httpCall.getServerPort());
 			this.serverAdded = true;
 		}

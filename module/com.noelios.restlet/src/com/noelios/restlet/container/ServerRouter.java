@@ -49,6 +49,7 @@ public class ServerRouter extends Router
 	{
 		super(container.getContext());
 		this.container = container;
+		setRoutingMode(FIRST);
 	}
 
 	/** Starts the Restlet. */

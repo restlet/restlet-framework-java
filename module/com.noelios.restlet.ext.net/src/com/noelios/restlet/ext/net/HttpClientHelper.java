@@ -89,8 +89,8 @@ public class HttpClientHelper extends com.noelios.restlet.http.HttpClientHelper
 	public HttpClientHelper(Client client)
 	{
 		super(client);
-		getSupportedProtocols().add(Protocol.HTTP);
-		getSupportedProtocols().add(Protocol.HTTPS);
+		getProtocols().add(Protocol.HTTP);
+		getProtocols().add(Protocol.HTTPS);
 	}
 
 	/**

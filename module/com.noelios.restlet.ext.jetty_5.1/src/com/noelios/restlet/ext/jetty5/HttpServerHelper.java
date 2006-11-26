@@ -48,7 +48,7 @@ public class HttpServerHelper extends JettyServerHelper
 	public HttpServerHelper(Server server)
 	{
 		super(server);
-		getSupportedProtocols().add(Protocol.HTTP);
+		getProtocols().add(Protocol.HTTP);
 	}
 
 	/** Start hook. */

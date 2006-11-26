@@ -84,9 +84,9 @@ public abstract class JavaMailClientHelper extends ClientHelper
 	public JavaMailClientHelper(Client client)
 	{
 		super(client);
-		getSupportedProtocols().add(Protocol.SMTP);
-		getSupportedProtocols().add(Protocol.SMTP_STARTTLS);
-		getSupportedProtocols().add(Protocol.SMTPS);
+		getProtocols().add(Protocol.SMTP);
+		getProtocols().add(Protocol.SMTP_STARTTLS);
+		getProtocols().add(Protocol.SMTPS);
 	}
 
 	/**

@@ -77,7 +77,7 @@ public class HttpsListener extends SslListener
 	 */
 	protected HttpsConnection createConnection(Socket socket) throws IOException
 	{
-		return new HttpsConnection(getHelper().getLogger(), this, socket.getInetAddress(),
+		return new HttpsConnection(this, socket.getInetAddress(),
 				socket.getInputStream(), socket.getOutputStream(), socket);
 	}
 

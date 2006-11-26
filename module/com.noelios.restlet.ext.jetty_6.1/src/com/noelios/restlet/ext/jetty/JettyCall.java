@@ -30,9 +30,9 @@ import java.nio.channels.WritableByteChannel;
 import java.util.Enumeration;
 import java.util.Iterator;
 import java.util.logging.Level;
-import java.util.logging.Logger;
 
 import org.mortbay.jetty.HttpConnection;
+import org.restlet.Server;
 import org.restlet.data.Parameter;
 import org.restlet.data.ParameterList;
 import org.restlet.data.Response;
@@ -54,12 +54,12 @@ public class JettyCall extends HttpServerCall
 
 	/**
 	 * Constructor.
-	 * @param logger The logger to use.
+	 * @param server The parent server.
 	 * @param connection The wrapped Jetty HTTP connection.
 	 */
-	public JettyCall(Logger logger, HttpConnection connection)
+	public JettyCall(Server server, HttpConnection connection)
 	{
-		super(logger);
+		super(server);
 		this.connection = connection;
 		this.requestHeadersAdded = false;
 	}

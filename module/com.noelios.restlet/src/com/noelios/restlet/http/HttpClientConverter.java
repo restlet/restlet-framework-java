@@ -37,6 +37,7 @@ import org.restlet.data.MediaType;
 import org.restlet.data.Method;
 import org.restlet.data.Parameter;
 import org.restlet.data.ParameterList;
+import org.restlet.data.Reference;
 import org.restlet.data.Request;
 import org.restlet.data.Response;
 import org.restlet.data.Status;
@@ -68,17 +69,15 @@ public class HttpClientConverter extends HttpConverter
 	 * Converts a low-level HTTP call into a high-level uniform call.
 	 * @param client The HTTP client that will handle the call.
 	 * @param request The high-level request.
-	 * @param response The high-level response.
 	 * @return A new high-level uniform call.
 	 */
-	public HttpClientCall toSpecific(HttpClientHelper client, Request request,
-			Response response)
+	public HttpClientCall toSpecific(HttpClientHelper client, Request request)
 	{
 		// Create the low-level HTTP client call
 		HttpClientCall result = client.create(request);
 
 		// Add the request headers
-		addRequestHeaders(result, request, response);
+		addRequestHeaders(result, request);
 
 		return result;
 	}
@@ -110,27 +109,24 @@ public class HttpClientConverter extends HttpConverter
 	 * Adds the request headers of a uniform call to a HTTP client call.  
 	 * @param httpCall The HTTP client call.
 	 * @param request The high-level request.
-	 * @param response The high-level response.
 	 */
-	protected void addRequestHeaders(HttpClientCall httpCall, Request request,
-			Response response)
+	protected void addRequestHeaders(HttpClientCall httpCall, Request request)
 	{
 		ParameterList requestHeaders = httpCall.getRequestHeaders();
 
 		// Manually add the host name and port when it is potentially different
 		// from the one specified in the target resource reference.
-		if (response.getServerInfo().getDomain() != null)
-		{
-			String host;
+		Reference hostRef = (request.getBaseRef() != null) ? request.getBaseRef() : request
+				.getResourceRef();
 
-			if ((response.getServerInfo().getPort() != null) && (response.getServerInfo().getPort() != request.getProtocol().getDefaultPort()))
+		if (hostRef.getHostDomain() != null)
+		{
+			String host = hostRef.getHostDomain();
+
+			if ((hostRef.getHostPort() != null)
+					&& (hostRef.getHostPort() != request.getProtocol().getDefaultPort()))
 			{
-				host = response.getServerInfo().getDomain() + ':'
-						+ response.getServerInfo().getPort();
-			}
-			else
-			{
-				host = response.getServerInfo().getDomain();
+				host = host + ':' + hostRef.getHostPort();
 			}
 
 			requestHeaders.add(HttpConstants.HEADER_HOST, host);
@@ -354,8 +350,8 @@ public class HttpClientConverter extends HttpConverter
 					HeaderReader hr = new HeaderReader(header.getValue());
 					String value = hr.readValue();
 					List<Method> allowedMethods = response.getEntity().getResource()
-					.getAllowedMethods();
-					while(value != null)
+							.getAllowedMethods();
+					while (value != null)
 					{
 						allowedMethods.add(Method.valueOf(value));
 						value = hr.readValue();
@@ -366,33 +362,33 @@ public class HttpClientConverter extends HttpConverter
 					HeaderReader hr = new HeaderReader(header.getValue());
 					String value = hr.readValue();
 					Set<Dimension> dimensions = response.getDimensions();
-					while(value != null)
+					while (value != null)
 					{
-						if(value.equalsIgnoreCase(HttpConstants.HEADER_ACCEPT))
+						if (value.equalsIgnoreCase(HttpConstants.HEADER_ACCEPT))
 						{
 							dimensions.add(Dimension.MEDIA_TYPE);
 						}
-						else if(value.equalsIgnoreCase(HttpConstants.HEADER_ACCEPT_CHARSET))
+						else if (value.equalsIgnoreCase(HttpConstants.HEADER_ACCEPT_CHARSET))
 						{
 							dimensions.add(Dimension.CHARACTER_SET);
 						}
-						else if(value.equalsIgnoreCase(HttpConstants.HEADER_ACCEPT_ENCODING))
+						else if (value.equalsIgnoreCase(HttpConstants.HEADER_ACCEPT_ENCODING))
 						{
 							dimensions.add(Dimension.ENCODING);
 						}
-						else if(value.equalsIgnoreCase(HttpConstants.HEADER_ACCEPT_LANGUAGE))
+						else if (value.equalsIgnoreCase(HttpConstants.HEADER_ACCEPT_LANGUAGE))
 						{
 							dimensions.add(Dimension.LANGUAGE);
 						}
-						else if(value.equalsIgnoreCase(HttpConstants.HEADER_USER_AGENT))
+						else if (value.equalsIgnoreCase(HttpConstants.HEADER_USER_AGENT))
 						{
 							dimensions.add(Dimension.CLIENT_AGENT);
 						}
-						else if(value.equals("*"))
+						else if (value.equals("*"))
 						{
 							dimensions.add(Dimension.UNSPECIFIED);
 						}
-						
+
 						value = hr.readValue();
 					}
 				}

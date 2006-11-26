@@ -34,7 +34,6 @@ import org.restlet.data.Conditions;
 import org.restlet.data.Cookie;
 import org.restlet.data.Method;
 import org.restlet.data.Parameter;
-import org.restlet.data.Protocol;
 import org.restlet.data.Reference;
 import org.restlet.data.Request;
 import org.restlet.data.Tag;
@@ -93,7 +92,6 @@ public class HttpRequest extends Request
 
 		// Set the properties
 		setMethod(Method.valueOf(httpCall.getMethod()));
-		setProtocol(httpCall.isConfidential() ? Protocol.HTTPS : Protocol.HTTP);
 
 		if (getHttpCall().isConfidential())
 		{
@@ -105,24 +103,23 @@ public class HttpRequest extends Request
 			// Because that will by the default value of this property if read by someone.
 		}
 
-		// Set the resource reference
-		Reference resource = new Reference(httpCall.getRequestUri());
-		if (resource.isRelative())
+		// Set the base reference
+		StringBuilder sb = new StringBuilder();
+		sb.append(httpCall.getServerProtocol().getSchemeName()).append("://");
+		sb.append(httpCall.getBaseDomain());
+		if (httpCall.getBasePort() != httpCall.getServerProtocol().getDefaultPort())
 		{
-			// Let's reconstruct the client's target URI
-			StringBuilder sb = new StringBuilder();
-			sb.append(getProtocol().getSchemeName()).append("://");
-			sb.append(httpCall.getServerDomain());
-			if (httpCall.getServerPort() != getProtocol().getDefaultPort())
-			{
-				sb.append(':').append(httpCall.getServerPort());
-			}
-
-			resource.setBaseRef(new Reference(sb.toString()));
-			resource = resource.getTargetRef();
+			sb.append(':').append(httpCall.getServerPort());
 		}
+		setBaseRef(sb.toString());
 
-		setResourceRef(resource);
+		// Set the resource reference
+		setResourceRef(new Reference(httpCall.getRequestUri()));
+		if (getResourceRef().isRelative())
+		{
+			getResourceRef().setBaseRef(getBaseRef());
+			setResourceRef(getResourceRef().getTargetRef());
+		}
 	}
 
 	/**
@@ -235,20 +232,20 @@ public class HttpRequest extends Request
 				{
 					HeaderReader hr = new HeaderReader(ifMatchHeader);
 					String value = hr.readValue();
-					while(value != null)
+					while (value != null)
 					{
 						current = Tag.parse(value);
-	
+
 						// Is it the first tag?
 						if (match == null)
 						{
 							match = new ArrayList<Tag>();
 							result.setMatch(match);
 						}
-	
+
 						// Add the new tag
 						match.add(current);
-	
+
 						// Read the next token
 						value = hr.readValue();
 					}
@@ -268,7 +265,7 @@ public class HttpRequest extends Request
 				{
 					HeaderReader hr = new HeaderReader(ifNoneMatchHeader);
 					String value = hr.readValue();
-					while(value != null)
+					while (value != null)
 					{
 						current = Tag.parse(value);
 
@@ -280,7 +277,7 @@ public class HttpRequest extends Request
 						}
 
 						noneMatch.add(current);
-						
+
 						// Read the next token
 						value = hr.readValue();
 					}

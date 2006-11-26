@@ -91,7 +91,7 @@ public class JdbcClientHelper extends ClientHelper
 	{
 		super(client);
 
-		getSupportedProtocols().add(Protocol.JDBC);
+		getProtocols().add(Protocol.JDBC);
 
 		// Set up the list of factories
 		this.connectionSources = new ArrayList<ConnectionSource>();

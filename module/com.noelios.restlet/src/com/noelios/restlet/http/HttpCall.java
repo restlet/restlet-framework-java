@@ -26,6 +26,7 @@ import java.util.Date;
 
 import org.restlet.Application;
 import org.restlet.data.ParameterList;
+import org.restlet.data.Protocol;
 import org.restlet.data.Request;
 import org.restlet.service.ConnectorService;
 import org.restlet.util.DateUtils;
@@ -36,6 +37,12 @@ import org.restlet.util.DateUtils;
  */
 public class HttpCall
 {
+	/** The baseRef domain. */
+	private String baseDomain;
+
+	/** The baseRef port. */
+	private Integer basePort;
+
 	/** Indicates if the call is confidential. */
 	private boolean confidential;
 
@@ -60,11 +67,11 @@ public class HttpCall
 	/** The server IP address. */
 	private String serverAddress;
 
-	/** The server domain. */
-	private String serverDomain;
-
 	/** The server port. */
 	private Integer serverPort;
+
+	/** The server protocol. */
+	private Protocol serverProtocol;
 
 	/** The status code. */
 	private int statusCode;
@@ -74,8 +81,10 @@ public class HttpCall
 	 */
 	public HttpCall()
 	{
-		this.confidential = false;
+		this.baseDomain = null;
+		this.basePort = null;
 		this.clientAddress = null;
+		this.confidential = false;
 		this.method = null;
 		this.reasonPhrase = "";
 		this.requestHeaders = null;
@@ -83,7 +92,54 @@ public class HttpCall
 		this.responseHeaders = null;
 		this.serverAddress = null;
 		this.serverPort = null;
+		this.serverProtocol = null;
 		this.statusCode = 200;
+	}
+
+	/**
+	 * Formats a date as a header string.
+	 * @param date The date to format.
+	 * @param cookie Indicates if the date should be in the cookie format.
+	 * @return The formatted date.
+	 */
+	public String formatDate(Date date, boolean cookie)
+	{
+		if (cookie)
+		{
+			return DateUtils.format(date, DateUtils.FORMAT_RFC_1036.get(0));
+		}
+		else
+		{
+			return DateUtils.format(date, DateUtils.FORMAT_RFC_1123.get(0));
+		}
+	}
+
+	/** 
+	 * Returns the server domain.
+	 * @return The server domain.
+	 */
+	public String getBaseDomain()
+	{
+		return this.baseDomain;
+	}
+
+	/** 
+	 * Returns the baseRef port.
+	 * @return The baseRef port.
+	 */
+	public Integer getBasePort()
+	{
+		return this.basePort;
+	}
+
+	/**
+	 * Returns the request address.<br/>
+	 * Corresponds to the IP address of the requesting client.
+	 * @return The request address.
+	 */
+	public String getClientAddress()
+	{
+		return this.clientAddress;
 	}
 
 	/**
@@ -107,34 +163,6 @@ public class HttpCall
 		}
 
 		return result;
-	}
-
-	/**
-	 * Formats a date as a header string.
-	 * @param date The date to format.
-	 * @param cookie Indicates if the date should be in the cookie format.
-	 * @return The formatted date.
-	 */
-	public String formatDate(Date date, boolean cookie)
-	{
-		if (cookie)
-		{
-			return DateUtils.format(date, DateUtils.FORMAT_RFC_1036.get(0));
-		}
-		else
-		{
-			return DateUtils.format(date, DateUtils.FORMAT_RFC_1123.get(0));
-		}
-	}
-
-	/**
-	 * Returns the request address.<br/>
-	 * Corresponds to the IP address of the requesting client.
-	 * @return The request address.
-	 */
-	public String getClientAddress()
-	{
-		return this.clientAddress;
 	}
 
 	/**
@@ -195,21 +223,21 @@ public class HttpCall
 	}
 
 	/** 
-	 * Returns the server domain.
-	 * @return The server domain.
-	 */
-	public String getServerDomain()
-	{
-		return this.serverDomain;
-	}
-
-	/** 
 	 * Returns the server port.
 	 * @return The server port.
 	 */
 	public Integer getServerPort()
 	{
 		return this.serverPort;
+	}
+
+	/** 
+	 * Returns the server protocol.
+	 * @return The server protocol.
+	 */
+	public Protocol getServerProtocol()
+	{
+		return this.serverProtocol;
 	}
 
 	/**
@@ -246,6 +274,24 @@ public class HttpCall
 		{
 			return DateUtils.parse(date, DateUtils.FORMAT_RFC_1123);
 		}
+	}
+
+	/** 
+	 * Sets the baseRef domain name.
+	 * @param baseDomain The baseRef domain name.
+	 */
+	public void setBaseDomain(String baseDomain)
+	{
+		this.baseDomain = baseDomain;
+	}
+
+	/** 
+	 * Sets the baseRef port.
+	 * @param basePort The baseRef port.
+	 */
+	public void setBasePort(Integer basePort)
+	{
+		this.basePort = basePort;
 	}
 
 	/**
@@ -304,21 +350,21 @@ public class HttpCall
 	}
 
 	/** 
-	 * Sets the server domain name.
-	 * @param serverDomain The server domain name.
-	 */
-	public void setServerDomain(String serverDomain)
-	{
-		this.serverDomain = serverDomain;
-	}
-
-	/** 
 	 * Sets the server port.
 	 * @param serverPort The server port.
 	 */
 	public void setServerPort(Integer serverPort)
 	{
 		this.serverPort = serverPort;
+	}
+
+	/** 
+	 * Sets the server protocol.
+	 * @param serverProtocol The server protocol.
+	 */
+	public void setServerProtocol(Protocol serverProtocol)
+	{
+		this.serverProtocol = serverProtocol;
 	}
 
 	/**

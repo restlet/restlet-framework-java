@@ -45,7 +45,7 @@ public class HttpServerHelper extends SimpleServerHelper
 	public HttpServerHelper(Server server)
 	{
 		super(server);
-		getSupportedProtocols().add(Protocol.HTTP);
+		getProtocols().add(Protocol.HTTP);
 	}
 
 	/** Starts the Restlet. */

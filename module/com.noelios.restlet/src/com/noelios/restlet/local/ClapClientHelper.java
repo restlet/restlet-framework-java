@@ -49,7 +49,7 @@ public class ClapClientHelper extends LocalClientHelper
 	public ClapClientHelper(Client client)
 	{
 		super(client);
-		getSupportedProtocols().add(Protocol.CLAP);
+		getProtocols().add(Protocol.CLAP);
 	}
 
 	/**

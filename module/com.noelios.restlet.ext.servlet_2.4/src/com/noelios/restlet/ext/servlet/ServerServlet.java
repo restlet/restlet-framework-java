@@ -116,7 +116,7 @@ public class ServerServlet extends HttpServlet
 
 		if (helper != null)
 		{
-			helper.handle(new ServletCall(helper.getLogger(), request, response));
+			helper.handle(new ServletCall(helper.getServer(), request, response));
 		}
 		else
 		{

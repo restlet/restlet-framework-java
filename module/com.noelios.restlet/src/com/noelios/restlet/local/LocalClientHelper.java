@@ -131,6 +131,17 @@ public class LocalClientHelper extends ClientHelper
 					representation.setLanguage((Language) current);
 			}
 		}
+
+		//For textual representation, if no language is defines, take the default language
+		if (representation.getMediaType() != null
+				&& representation.getMediaType().getMainType().equals("text"))
+		{
+			if (representation.getLanguage() == null)
+			{
+				representation.setLanguage(metadataService.getDefaultLanguage());
+			}
+
+		}
 	}
 
 	/**

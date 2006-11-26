@@ -62,7 +62,7 @@ public class FileClientHelper extends LocalClientHelper
 	public FileClientHelper(Client client)
 	{
 		super(client);
-		getSupportedProtocols().add(Protocol.FILE);
+		getProtocols().add(Protocol.FILE);
 	}
 
 	/**
@@ -330,6 +330,7 @@ public class FileClientHelper extends LocalClientHelper
 
 						if (file.exists())
 						{
+							FileOutputStream fos = null;
 							// Replace the content of the file
 							// First, create a temporary file
 							try
@@ -338,9 +339,8 @@ public class FileClientHelper extends LocalClientHelper
 
 								if (request.isEntityAvailable())
 								{
-									FileOutputStream fos = new FileOutputStream(tmp);
+									fos = new FileOutputStream(tmp);
 									ByteUtils.write(request.getEntity().getStream(), fos);
-									fos.close();
 								}
 							}
 							catch (IOException ioe)
@@ -349,6 +349,20 @@ public class FileClientHelper extends LocalClientHelper
 										"Unable to create the temporary file", ioe);
 								response.setStatus(new Status(Status.SERVER_ERROR_INTERNAL,
 										"Unable to create a temporary file"));
+							}
+							finally
+							{
+								try
+								{
+									if (fos != null) fos.close();
+								}
+								catch (IOException ioe)
+								{
+									getLogger().log(Level.WARNING,
+											"Unable to close the temporary file", ioe);
+									response.setStatus(new Status(Status.SERVER_ERROR_INTERNAL,
+											"Unable to close a temporary file"));
+								}
 							}
 
 							// Then delete the existing file
@@ -401,7 +415,7 @@ public class FileClientHelper extends LocalClientHelper
 									}
 								}
 							}
-
+							FileOutputStream fos = null;
 							// Create the new file
 							try
 							{
@@ -413,9 +427,8 @@ public class FileClientHelper extends LocalClientHelper
 									}
 									else
 									{
-										FileOutputStream fos = new FileOutputStream(file);
+										fos = new FileOutputStream(file);
 										ByteUtils.write(request.getEntity().getStream(), fos);
-										fos.close();
 										response.setStatus(Status.SUCCESS_CREATED);
 									}
 								}
@@ -440,6 +453,20 @@ public class FileClientHelper extends LocalClientHelper
 										ioe);
 								response.setStatus(new Status(Status.SERVER_ERROR_INTERNAL,
 										"Unable to create the new file"));
+							}
+							finally
+							{
+								try
+								{
+									if (fos != null) fos.close();
+								}
+								catch (IOException ioe)
+								{
+									getLogger().log(Level.WARNING,
+											"Unable to close the temporary file", ioe);
+									response.setStatus(new Status(Status.SERVER_ERROR_INTERNAL,
+											"Unable to close a temporary file"));
+								}
 							}
 						}
 					}
@@ -537,7 +564,7 @@ public class FileClientHelper extends LocalClientHelper
 	 * @param fileName The name of the resource
 	 * @param metadataService metadata helper
 	 * @param representation the provided representation
-	 * @return true if the metadata of the representation are comptaible with the metadata extracted from the filename 
+	 * @return true if the metadata of the representation are compatible with the metadata extracted from the filename 
 	 */
 	private boolean checkMetadataConsistency(String fileName,
 			MetadataService metadataService, Representation representation)

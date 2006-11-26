@@ -81,7 +81,7 @@ public abstract class HttpClientHelper extends ClientHelper
 	{
 		try
 		{
-			HttpClientCall httpCall = getConverter().toSpecific(this, request, response);
+			HttpClientCall httpCall = getConverter().toSpecific(this, request);
 			getConverter().commit(httpCall, request, response);
 		}
 		catch (Exception e)
@@ -109,31 +109,38 @@ public abstract class HttpClientHelper extends ClientHelper
 			}
 			catch (IllegalArgumentException e)
 			{
-				getLogger().log(Level.SEVERE, "Unable to create the HTTP server converter", e);
+				getLogger()
+						.log(Level.SEVERE, "Unable to create the HTTP server converter", e);
 			}
 			catch (SecurityException e)
 			{
-				getLogger().log(Level.SEVERE, "Unable to create the HTTP server converter", e);
+				getLogger()
+						.log(Level.SEVERE, "Unable to create the HTTP server converter", e);
 			}
 			catch (InstantiationException e)
 			{
-				getLogger().log(Level.SEVERE, "Unable to create the HTTP server converter", e);
+				getLogger()
+						.log(Level.SEVERE, "Unable to create the HTTP server converter", e);
 			}
 			catch (IllegalAccessException e)
 			{
-				getLogger().log(Level.SEVERE, "Unable to create the HTTP server converter", e);
+				getLogger()
+						.log(Level.SEVERE, "Unable to create the HTTP server converter", e);
 			}
 			catch (InvocationTargetException e)
 			{
-				getLogger().log(Level.SEVERE, "Unable to create the HTTP server converter", e);
+				getLogger()
+						.log(Level.SEVERE, "Unable to create the HTTP server converter", e);
 			}
 			catch (NoSuchMethodException e)
 			{
-				getLogger().log(Level.SEVERE, "Unable to create the HTTP server converter", e);
+				getLogger()
+						.log(Level.SEVERE, "Unable to create the HTTP server converter", e);
 			}
 			catch (ClassNotFoundException e)
 			{
-				getLogger().log(Level.SEVERE, "Unable to create the HTTP server converter", e);
+				getLogger()
+						.log(Level.SEVERE, "Unable to create the HTTP server converter", e);
 			}
 		}
 

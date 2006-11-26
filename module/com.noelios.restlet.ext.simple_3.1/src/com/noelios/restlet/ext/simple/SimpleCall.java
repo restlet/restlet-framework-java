@@ -27,8 +27,8 @@ import java.io.InputStream;
 import java.io.OutputStream;
 import java.nio.channels.ReadableByteChannel;
 import java.nio.channels.WritableByteChannel;
-import java.util.logging.Logger;
 
+import org.restlet.Server;
 import org.restlet.data.Parameter;
 import org.restlet.data.ParameterList;
 
@@ -65,16 +65,16 @@ public class SimpleCall extends HttpServerCall
 	/**
 	 * Constructs this class with the specified {@link simple.http.Request}
 	 * and {@link simple.http.Response}.
-	 * @param logger The logger to use.
+	 * @param server The parent server.
 	 * @param request Request to wrap.
 	 * @param response Response to wrap.
 	 * @param confidential Inidicates if this call is acting in HTTP or HTTPS mode.
 	 * @param hostPort The listening port used.
 	 */
-	SimpleCall(Logger logger, Request request, Response response, boolean confidential,
+	SimpleCall(Server server, Request request, Response response, boolean confidential,
 			int hostPort)
 	{
-		super(logger);
+		super(server);
 		this.request = request;
 		this.response = response;
 		setConfidential(confidential);

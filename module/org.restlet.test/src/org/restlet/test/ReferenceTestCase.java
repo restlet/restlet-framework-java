@@ -32,9 +32,9 @@ import org.restlet.data.Reference;
  */
 public class ReferenceTestCase extends RestletTestCase
 {
-	protected static String DEFAULT_SCHEME = "http";
+	protected final static String DEFAULT_SCHEME = "http";
 
-	protected static String DEFAULT_SCHEMEPART = "//";
+	protected final static String DEFAULT_SCHEMEPART = "//";
 
 	/**
 	 * Tests the URI parsing.

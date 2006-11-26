@@ -126,8 +126,8 @@ public abstract class AsyncWebServerHelper extends HttpServerHelper implements
 	public void dispatchRequest(AsyncWebRequest request)
 	{
 		HttpResponse response = request.createHttpResponse();
-		HttpServerCall call = new AsyncWebServerCall(getServer().getLogger(), request,
-				response, confidential, getServer().getAddress());
+		HttpServerCall call = new AsyncWebServerCall(getServer(), request, response,
+				confidential);
 		handle(call);
 		request.commitResponse(response);
 	}

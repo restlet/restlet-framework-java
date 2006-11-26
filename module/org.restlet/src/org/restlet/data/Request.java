@@ -273,17 +273,6 @@ public class Request extends Message
 	 */
 	public void setBaseRef(Reference baseRef)
 	{
-		if (getResourceRef() == null)
-		{
-			throw new IllegalArgumentException(
-					"You must specify a resource reference before setting a base reference");
-		}
-		else if ((baseRef != null) && !baseRef.isParent(getResourceRef()))
-		{
-			throw new IllegalArgumentException(
-					"You must specify a base reference that is a parent of the resource reference");
-		}
-
 		this.baseRef = baseRef;
 	}
 
@@ -374,9 +363,6 @@ public class Request extends Message
 				this.resourceRef = resourceRef.normalize();
 			}
 		}
-
-		// Reset the context's base reference
-		setBaseRef((Reference) null);
 	}
 
 	/**

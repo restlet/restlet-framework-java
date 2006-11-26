@@ -42,7 +42,7 @@ import org.restlet.resource.OutputRepresentation;
 import org.restlet.resource.Representation;
 
 /**
- * Filter that can transform request or response XML entities by applying an XSLT transform sheet.
+ * Filter that can transform XML representations by applying an XSLT transform sheet.
  * @author Jerome Louvel (contact@noelios.com) <a href="http://www.noelios.com/">Noelios Consulting</a>
  */
 public class Transformer extends Filter
@@ -51,7 +51,7 @@ public class Transformer extends Filter
 	 * Result representation able to apply an XSLT transformation.
 	 * @author Jerome Louvel (contact@noelios.com) <a href="http://www.noelios.com/">Noelios Consulting</a>
 	 */
-	private final class ResultRepresentation extends OutputRepresentation
+	private final static class ResultRepresentation extends OutputRepresentation
 	{
 		/** The parent transformer. */
 		private Transformer transformer;
@@ -160,7 +160,6 @@ public class Transformer extends Filter
 
 	/**
 	 * Constructor.
-	 * @param mode The transformation mode.
 	 * @param transformSheet The XSLT transform sheet to apply to message entities.
 	 */
 	public Transformer(Representation transformSheet)

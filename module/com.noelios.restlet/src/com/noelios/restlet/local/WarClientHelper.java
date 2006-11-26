@@ -72,8 +72,8 @@ public class WarClientHelper extends FileClientHelper
 	public WarClientHelper(Client client)
 	{
 		super(client);
-		getSupportedProtocols().clear();
-		getSupportedProtocols().add(Protocol.WAR);
+		getProtocols().clear();
+		getProtocols().add(Protocol.WAR);
 		this.webAppPath = null;
 		this.webAppArchive = false;
 		this.warEntries = null;

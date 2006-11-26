@@ -70,7 +70,7 @@ public class Container extends Component
 			{
 				setContext(this.helper.createContext());
 				this.hosts = null;
-				this.defaultHost = VirtualHost.createDefaultHost(getContext());
+				this.defaultHost = new VirtualHost(getContext());
 				this.logService = null;
 				this.statusService = null;
 			}

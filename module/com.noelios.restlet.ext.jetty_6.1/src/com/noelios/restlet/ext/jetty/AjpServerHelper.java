@@ -41,7 +41,7 @@ public class AjpServerHelper extends JettyServerHelper
 	public AjpServerHelper(Server server)
 	{
 		super(server);
-		getSupportedProtocols().add(Protocol.AJP);
+		getProtocols().add(Protocol.AJP);
 	}
 
 	/**

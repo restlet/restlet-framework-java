@@ -24,73 +24,27 @@ package org.restlet;
 
 import java.net.InetAddress;
 import java.net.UnknownHostException;
-import java.util.ArrayList;
 import java.util.List;
 
 import org.restlet.data.Protocol;
 
 /**
- * Router of calls from server Connectors to attached Restlets. The attached Restlets are typically
- * Applications.
+ * Router of calls from virtual servers to attached Restlets. The attached Restlets are typically
+ * Application instances.
  * @author Jerome Louvel (contact@noelios.com)
  */
 public class VirtualHost extends Router
 {
-	public static final String ALL_ADDRESSES = "0.0.0.0";
-
-	public static final String ALL_DOMAINS = "*";
-
-	public static final Integer ALL_PORTS = -1;
-
-	/**
-	 * Creates a new default virtual host. Accepts all incoming calls. 
-	 * @param context The context.
-	 * @return A new default virtual host.
-	 */
-	public static VirtualHost createDefaultHost(Context context)
-	{
-		VirtualHost result = new VirtualHost(context);
-
-		// Add allowed IP addresses
-		result.getAllowedAddresses().add(ALL_ADDRESSES);
-
-		// Add allowed domain names
-		result.getAllowedDomains().add(ALL_DOMAINS);
-
-		// Add allowed port numbers (all by default)
-		result.getAllowedPorts().add(ALL_PORTS);
-
-		// Add allowed protocols (all by default)
-		result.getAllowedProtocols().add(Protocol.ALL);
-
-		return result;
-	}
-
 	/**
 	 * Creates a new local virtual host. Accepts incoming calls to the local host name or IP address. 
 	 * @param context The context.
 	 * @return A new local virtual host.
+	 * @deprecated Use the default constructor instead which matches all requests.
 	 */
+	@Deprecated
 	public static VirtualHost createLocalHost(Context context)
 	{
-		VirtualHost result = new VirtualHost(context);
-
-		// Add allowed IP addresses
-		result.getAllowedAddresses().add("127.0.0.1");
-		result.getAllowedAddresses().add(getLocalHostAddress());
-
-		// Add allowed domain names
-		result.getAllowedDomains().add("localhost");
-		result.getAllowedDomains().add("127.0.0.1");
-		result.getAllowedDomains().add(getLocalHostName());
-
-		// Add allowed port numbers (all by default)
-		result.getAllowedPorts().add(ALL_PORTS);
-
-		// Add allowed protocols (all by default)
-		result.getAllowedProtocols().add(Protocol.ALL);
-
-		return result;
+		return null;
 	}
 
 	/**
@@ -154,29 +108,29 @@ public class VirtualHost extends Router
 	/** The display name. */
 	private String name;
 
-	/** 
-	 * The modifiable list of allowed IP addresses. 
-	 * You can add the ALL_ADDRESSES (-1) to allow any IP address. 
-	 */
-	private List<String> allowedAddresses;
+	/** The baseRef host domain pattern to match. */
+	private String baseDomain;
 
-	/** 
-	 * The modifiable list of allowed domain names. 
-	 * You can add the ALL_NAMES ("*") to allow any domain name. 
-	 */
-	private List<String> allowedDomains;
+	/** The baseRef host port pattern to match. */
+	private String basePort;
 
-	/**
-	 * The modifiable list of allowed port numbers.
-	 * You can add the ALL_PORTS (-1) to allow any port number. 
-	 */
-	private List<Integer> allowedPorts;
+	/** The baseRef scheme pattern to match. */
+	private String baseScheme;
 
-	/** 
-	 * The modifiable list of allowed protocols. 
-	 * You can add the Protocol.ALL to allow any protocol. 
-	 */
-	private List<Protocol> allowedProtocols;
+	/** The resourceRef host domain pattern to match. */
+	private String resourceDomain;
+
+	/** The resourceRef host port pattern to match. */
+	private String resourcePort;
+
+	/** The resourceRef scheme pattern to match. */
+	private String resourceScheme;
+
+	/** The listening server address pattern to match. */
+	private String serverAddress;
+
+	/** The listening server port pattern to match. */
+	private String serverPort;
 
 	/**
 	 * Constructor.
@@ -187,56 +141,117 @@ public class VirtualHost extends Router
 	}
 
 	/**
-	 * Constructor.
+	 * Constructor. Accepts all incoming requests by default, use the set methods to restrict the matchable 
+	 * patterns.
 	 * @param context The context.
 	 */
 	public VirtualHost(Context context)
 	{
+		this(context, ".*", ".*", ".*", ".*", ".*", ".*", ".*", ".*");
+	}
+
+	/**
+	 * Constructor.
+	 * @param context The context.
+	 * @param baseDomain The baseRef host domain pattern to match.
+	 * @param basePort The baseRef host port pattern to match.
+	 * @param baseScheme The baseRef scheme protocol pattern to match.
+	 * @param resourceDomain The resourceRef host domain pattern to match.
+	 * @param resourcePort The resourceRef host port pattern to match.
+	 * @param resourceScheme The resourceRef scheme protocol pattern to match.
+	 * @param serverAddress The listening server address pattern to match.
+	 * @param serverPort The listening server port pattern to match.
+	 */
+	public VirtualHost(Context context, String baseDomain, String basePort,
+			String baseScheme, String resourceDomain, String resourcePort,
+			String resourceScheme, String serverAddress, String serverPort)
+	{
 		super(context);
-		this.allowedAddresses = new ArrayList<String>();
-		this.allowedDomains = new ArrayList<String>();
-		this.allowedPorts = new ArrayList<Integer>();
-		this.allowedProtocols = new ArrayList<Protocol>();
+		this.baseDomain = baseDomain;
+		this.basePort = basePort;
+		this.baseScheme = baseScheme;
+
+		this.resourceDomain = resourceDomain;
+		this.resourcePort = resourcePort;
+		this.resourceScheme = resourceScheme;
+
+		this.serverAddress = serverAddress;
+		this.serverPort = serverPort;
 	}
 
 	/**
 	 * Returns the modifiable list of allowed IP addresses. 
 	 * You can add the ALL_ADDRESSES (-1) to allow any IP address. 
 	 * @return The modifiable list of allowed IP addresses.
+	 * @deprecated Use add() methods instead.
 	 */
+	@Deprecated
 	public List<String> getAllowedAddresses()
 	{
-		return this.allowedAddresses;
+		return null;
 	}
 
 	/**
 	 * Returns the modifiable list of allowed domain names. 
 	 * You can add the ALL_NAMES ("*") to allow any domain name. 
 	 * @return The modifiable list of allowed domain names.
+	 * @deprecated Use add() methods instead.
 	 */
+	@Deprecated
 	public List<String> getAllowedDomains()
 	{
-		return this.allowedDomains;
+		return null;
 	}
 
 	/**
 	 * Returns the modifiable list of allowed port numbers.
 	 * You can add the ALL_PORTS (-1) to allow any port number. 
 	 * @return The modifiable list of allowed port numbers.
+	 * @deprecated Use add() methods instead.
 	 */
+	@Deprecated
 	public List<Integer> getAllowedPorts()
 	{
-		return this.allowedPorts;
+		return null;
 	}
 
 	/**
 	 * Returns the modifiable list of allowed protocols. 
 	 * You can add the Protocol.ALL to allow any protocol. 
 	 * @return The modifiable list of allowed protocols.
+	 * @deprecated Use add() methods instead.
 	 */
+	@Deprecated
 	public List<Protocol> getAllowedProtocols()
 	{
-		return this.allowedProtocols;
+		return null;
+	}
+
+	/**
+	 * Returns the baseRef host domain to match. Uses patterns in java.util.regex.
+	 * @return The baseRef host domain to match.
+	 */
+	public String getBaseDomain()
+	{
+		return this.baseDomain;
+	}
+
+	/**
+	 * Returns the baseRef host port to match. Uses patterns in java.util.regex.
+	 * @return The baseRef host port to match.
+	 */
+	public String getBasePort()
+	{
+		return this.basePort;
+	}
+
+	/**
+	 * Returns the baseRef scheme to match. Uses patterns in java.util.regex.
+	 * @return The baseRef scheme to match.
+	 */
+	public String getBaseScheme()
+	{
+		return this.baseScheme;
 	}
 
 	/**
@@ -249,12 +264,129 @@ public class VirtualHost extends Router
 	}
 
 	/**
-	 * Sets the display name.
+	 * Returns the resourceRef host domain to match. Uses patterns in java.util.regex.
+	 * @return The resourceRef host domain to match.
+	 */
+	public String getResourceDomain()
+	{
+		return this.resourceDomain;
+	}
+
+	/**
+	 * Returns the resourceRef host port to match. Uses patterns in java.util.regex.
+	 * @return The resourceRef host port to match.
+	 */
+	public String getResourcePort()
+	{
+		return this.resourcePort;
+	}
+
+	/**
+	 * Returns the resourceRef scheme to match. Uses patterns in java.util.regex.
+	 * @return The resourceRef scheme to match.
+	 */
+	public String getResourceScheme()
+	{
+		return this.resourceScheme;
+	}
+
+	/**
+	 * Returns the listening server address. Uses patterns in java.util.regex.
+	 * @return The listening server address.
+	 */
+	public String getServerAddress()
+	{
+		return this.serverAddress;
+	}
+
+	/**
+	 * Returns the listening server port. Uses patterns in java.util.regex.
+	 * @return The listening server port.
+	 */
+	public String getServerPort()
+	{
+		return this.serverPort;
+	}
+
+	/**
+	 * Sets the baseRef host domain to match. Uses patterns in java.util.regex.
+	 * @param baseDomain The baseRef host domain to match.
+	 */
+	public void setBaseDomain(String baseDomain)
+	{
+		this.baseDomain = baseDomain;
+	}
+
+	/**
+	 * Sets the baseRef host port to match. Uses patterns in java.util.regex.
+	 * @param basePort The baseRef host port to match.
+	 */
+	public void setBasePort(String basePort)
+	{
+		this.basePort = basePort;
+	}
+
+	/**
+	 * Sets the baseRef scheme to match. Uses patterns in java.util.regex.
+	 * @param baseScheme The baseRef scheme to match.
+	 */
+	public void setBaseScheme(String baseScheme)
+	{
+		this.baseScheme = baseScheme;
+	}
+
+	/**
+	 * Sets the display name. 
 	 * @param name The display name.
 	 */
 	public void setName(String name)
 	{
 		this.name = name;
+	}
+
+	/**
+	 * Sets the resourceRef host domain to match. Uses patterns in java.util.regex.
+	 * @param resourceDomain The resourceRef host domain to match.
+	 */
+	public void setResourceDomain(String resourceDomain)
+	{
+		this.resourceDomain = resourceDomain;
+	}
+
+	/**
+	 * Sets the resourceRef host port to match. Uses patterns in java.util.regex.
+	 * @param resourcePort The resourceRef host port to match.
+	 */
+	public void setResourcePort(String resourcePort)
+	{
+		this.resourcePort = resourcePort;
+	}
+
+	/**
+	 * Sets the resourceRef scheme to match. Uses patterns in java.util.regex.
+	 * @param resourceScheme The resourceRef scheme to match.
+	 */
+	public void setResourceScheme(String resourceScheme)
+	{
+		this.resourceScheme = resourceScheme;
+	}
+
+	/**
+	 * Sets the listening server address. Uses patterns in java.util.regex.
+	 * @param serverAddress The listening server address.
+	 */
+	public void setServerAddress(String serverAddress)
+	{
+		this.serverAddress = serverAddress;
+	}
+
+	/**
+	 * Sets the listening server port. Uses patterns in java.util.regex.
+	 * @param serverPort The listening server port.
+	 */
+	public void setServerPort(String serverPort)
+	{
+		this.serverPort = serverPort;
 	}
 
 }

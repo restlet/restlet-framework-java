@@ -29,6 +29,7 @@ import java.nio.channels.ReadableByteChannel;
 import java.nio.channels.WritableByteChannel;
 import java.util.logging.Logger;
 
+import org.restlet.Server;
 import org.restlet.data.Encoding;
 import org.restlet.data.Language;
 import org.restlet.data.MediaType;
@@ -55,11 +56,14 @@ public abstract class HttpServerCall extends HttpCall
 
 	/**
 	 * Constructor.
-	 * @param logger The logger to use.
+	 * @param server The parent server connector.
 	 */
-	public HttpServerCall(Logger logger)
+	public HttpServerCall(Server server)
 	{
-		this.logger = logger;
+		setLogger(server.getLogger());
+		setServerAddress(server.getAddress());
+		setServerPort(server.getPort());
+		setServerProtocol(server.getProtocols().get(0)); // Assumes that server connectors support only one protocol
 		this.hostParsed = false;
 	}
 
@@ -148,20 +152,20 @@ public abstract class HttpServerCall extends HttpCall
 	}
 
 	/** 
-	 * Returns the server domain name.
-	 * @return The server domain name.
+	 * Returns the baseRef domain name.
+	 * @return The baseRef domain name.
 	 */
-	public String getServerDomain()
+	public String getBaseDomain()
 	{
 		if (!hostParsed) parseHost();
-		return super.getServerDomain();
+		return super.getBaseDomain();
 	}
 
 	/** 
-	 * Returns the server port.
-	 * @return The server port.
+	 * Returns the baseRef port.
+	 * @return The baseRef port.
 	 */
-	public Integer getServerPort()
+	public Integer getBasePort()
 	{
 		if (!hostParsed) parseHost();
 		return super.getServerPort();
@@ -180,12 +184,12 @@ public abstract class HttpServerCall extends HttpCall
 
 			if (colonIndex != -1)
 			{
-				super.setServerDomain(host.substring(0, colonIndex));
-				super.setServerPort(Integer.valueOf(host.substring(colonIndex + 1)));
+				super.setBaseDomain(host.substring(0, colonIndex));
+				super.setBasePort(Integer.valueOf(host.substring(colonIndex + 1)));
 			}
 			else
 			{
-				super.setServerDomain(host);
+				super.setBaseDomain(host);
 
 				if (isConfidential())
 				{

@@ -224,7 +224,7 @@ public abstract class JettyServerHelper extends com.noelios.restlet.http.HttpSer
 		 */
 		public void handle(HttpConnection connection) throws IOException, ServletException
 		{
-			helper.handle(new JettyCall(helper.getLogger(), connection));
+			helper.handle(new JettyCall(helper.getServer(), connection));
 		}
 	};
 

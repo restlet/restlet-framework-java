@@ -30,13 +30,14 @@ import java.nio.channels.WritableByteChannel;
 import java.util.Enumeration;
 import java.util.Iterator;
 import java.util.logging.Level;
-import java.util.logging.Logger;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
+import org.restlet.Server;
 import org.restlet.data.Parameter;
 import org.restlet.data.ParameterList;
+import org.restlet.data.Protocol;
 import org.restlet.data.Response;
 import org.restlet.data.Status;
 
@@ -59,43 +60,25 @@ public class ServletCall extends HttpServerCall
 
 	/**
 	 * Constructor.
-	 * @param logger The logger to use.
+	 * @param server The parent server.
 	 * @param request The HTTP Servlet request to wrap.
 	 * @param response The HTTP Servlet response to wrap.
 	 */
-	public ServletCall(Logger logger, HttpServletRequest request,
+	public ServletCall(Server server, HttpServletRequest request,
 			HttpServletResponse response)
 	{
-		super(logger);
+		super(server);
 		this.request = request;
 		this.response = response;
 	}
 
-	/**
-	 * Returns the HTTP Servlet request.
-	 * @return The HTTP Servlet request.
+	/** 
+	 * Returns the server domain name.
+	 * @return The server domain name.
 	 */
-	public HttpServletRequest getRequest()
+	public String getBaseDomain()
 	{
-		return this.request;
-	}
-
-	/**
-	 * Returns the HTTP Servlet response.
-	 * @return The HTTP Servlet response.
-	 */
-	public HttpServletResponse getResponse()
-	{
-		return this.response;
-	}
-
-	/**
-	 * Indicates if the request was made using a confidential mean.<br/>
-	 * @return True if the request was made using a confidential mean.<br/>
-	 */
-	public boolean isConfidential()
-	{
-		return getRequest().isSecure();
+		return getRequest().getServerName();
 	}
 
 	/**
@@ -118,21 +101,22 @@ public class ServletCall extends HttpServerCall
 	}
 
 	/**
-	 * Returns the full request URI. 
-	 * @return The full request URI.
+	 * Returns the HTTP Servlet request.
+	 * @return The HTTP Servlet request.
 	 */
-	public String getRequestUri()
+	public HttpServletRequest getRequest()
 	{
-		String queryString = getRequest().getQueryString();
+		return this.request;
+	}
 
-		if ((queryString == null) || (queryString.equals("")))
-		{
-			return getRequest().getRequestURI();
-		}
-		else
-		{
-			return getRequest().getRequestURI() + '?' + queryString;
-		}
+	/**
+	 * Returns the request entity channel if it exists.
+	 * @return The request entity channel if it exists.
+	 */
+	public ReadableByteChannel getRequestChannel()
+	{
+		// Can't do anything
+		return null;
 	}
 
 	/**
@@ -164,16 +148,6 @@ public class ServletCall extends HttpServerCall
 	}
 
 	/**
-	 * Returns the request entity channel if it exists.
-	 * @return The request entity channel if it exists.
-	 */
-	public ReadableByteChannel getRequestChannel()
-	{
-		// Can't do anything
-		return null;
-	}
-
-	/**
 	 * Returns the request entity stream if it exists.
 	 * @return The request entity stream if it exists.
 	 */
@@ -182,6 +156,59 @@ public class ServletCall extends HttpServerCall
 		try
 		{
 			return getRequest().getInputStream();
+		}
+		catch (IOException e)
+		{
+			return null;
+		}
+	}
+
+	/**
+	 * Returns the full request URI. 
+	 * @return The full request URI.
+	 */
+	public String getRequestUri()
+	{
+		String queryString = getRequest().getQueryString();
+
+		if ((queryString == null) || (queryString.equals("")))
+		{
+			return getRequest().getRequestURI();
+		}
+		else
+		{
+			return getRequest().getRequestURI() + '?' + queryString;
+		}
+	}
+
+	/**
+	 * Returns the HTTP Servlet response.
+	 * @return The HTTP Servlet response.
+	 */
+	public HttpServletResponse getResponse()
+	{
+		return this.response;
+	}
+
+	/**
+	 * Returns the response channel if it exists.
+	 * @return The response channel if it exists.
+	 */
+	public WritableByteChannel getResponseChannel()
+	{
+		// Can't do anything
+		return null;
+	}
+
+	/**
+	 * Returns the response stream if it exists.
+	 * @return The response stream if it exists.
+	 */
+	public OutputStream getResponseStream()
+	{
+		try
+		{
+			return getResponse().getOutputStream();
 		}
 		catch (IOException e)
 		{
@@ -200,21 +227,30 @@ public class ServletCall extends HttpServerCall
 	}
 
 	/** 
-	 * Returns the server domain name.
-	 * @return The server domain name.
-	 */
-	public String getServerDomain()
-	{
-		return getRequest().getServerName();
-	}
-
-	/** 
 	 * Returns the server port.
 	 * @return The server port.
 	 */
 	public Integer getServerPort()
 	{
 		return getRequest().getServerPort();
+	}
+
+	/** 
+	 * Returns the server protocol.
+	 * @return The server protocol.
+	 */
+	public Protocol getServerProtocol()
+	{
+		return Protocol.valueOf(getRequest().getScheme());
+	}
+
+	/**
+	 * Indicates if the request was made using a confidential mean.<br/>
+	 * @return True if the request was made using a confidential mean.<br/>
+	 */
+	public boolean isConfidential()
+	{
+		return getRequest().isSecure();
 	}
 
 	/**
@@ -252,32 +288,6 @@ public class ServletCall extends HttpServerCall
 			// Send the response entity
 			getResponse().setStatus(getStatusCode());
 			super.sendResponse(response);
-		}
-	}
-
-	/**
-	 * Returns the response channel if it exists.
-	 * @return The response channel if it exists.
-	 */
-	public WritableByteChannel getResponseChannel()
-	{
-		// Can't do anything
-		return null;
-	}
-
-	/**
-	 * Returns the response stream if it exists.
-	 * @return The response stream if it exists.
-	 */
-	public OutputStream getResponseStream()
-	{
-		try
-		{
-			return getResponse().getOutputStream();
-		}
-		catch (IOException e)
-		{
-			return null;
 		}
 	}
 
