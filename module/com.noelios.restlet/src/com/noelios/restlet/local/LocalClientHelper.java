@@ -100,47 +100,50 @@ public class LocalClientHelper extends ClientHelper
 	public void updateMetadata(MetadataService metadataService, String entryName,
 			Representation representation)
 	{
-		String[] tokens = entryName.split("\\.");
-		Metadata current;
-
-		// We found a potential variant
-		for (int j = 1; j < tokens.length; j++)
+		if (representation != null)
 		{
-			current = metadataService.getMetadata(tokens[j]);
-			if (current != null)
+			String[] tokens = entryName.split("\\.");
+			Metadata current;
+
+			// We found a potential variant
+			for (int j = 1; j < tokens.length; j++)
 			{
-				// Metadata extension detected 
-				if (current instanceof MediaType)
-					representation.setMediaType((MediaType) current);
-				if (current instanceof CharacterSet)
-					representation.setCharacterSet((CharacterSet) current);
-				if (current instanceof Encoding)
-					representation.setEncoding((Encoding) current);
-				if (current instanceof Language)
-					representation.setLanguage((Language) current);
+				current = metadataService.getMetadata(tokens[j]);
+				if (current != null)
+				{
+					// Metadata extension detected 
+					if (current instanceof MediaType)
+						representation.setMediaType((MediaType) current);
+					if (current instanceof CharacterSet)
+						representation.setCharacterSet((CharacterSet) current);
+					if (current instanceof Encoding)
+						representation.setEncoding((Encoding) current);
+					if (current instanceof Language)
+						representation.setLanguage((Language) current);
+				}
+
+				int dashIndex = tokens[j].indexOf('-');
+				if (dashIndex != -1)
+				{
+					// We found a language extension with a region area specified
+					// Try to find a language matching the primary part of the extension
+					String primaryPart = tokens[j].substring(0, dashIndex);
+					current = metadataService.getMetadata(primaryPart);
+					if (current instanceof Language)
+						representation.setLanguage((Language) current);
+				}
 			}
 
-			int dashIndex = tokens[j].indexOf('-');
-			if ((representation != null) && (dashIndex != -1))
+			//For textual representation, if no language is defines, take the default language
+			if (representation.getMediaType() != null
+					&& representation.getMediaType().getMainType().equals("text"))
 			{
-				// We found a language extension with a region area specified
-				// Try to find a language matching the primary part of the extension
-				String primaryPart = tokens[j].substring(0, dashIndex);
-				current = metadataService.getMetadata(primaryPart);
-				if (current instanceof Language)
-					representation.setLanguage((Language) current);
-			}
-		}
+				if (representation.getLanguage() == null)
+				{
+					representation.setLanguage(metadataService.getDefaultLanguage());
+				}
 
-		//For textual representation, if no language is defines, take the default language
-		if (representation.getMediaType() != null
-				&& representation.getMediaType().getMainType().equals("text"))
-		{
-			if (representation.getLanguage() == null)
-			{
-				representation.setLanguage(metadataService.getDefaultLanguage());
 			}
-
 		}
 	}
 
