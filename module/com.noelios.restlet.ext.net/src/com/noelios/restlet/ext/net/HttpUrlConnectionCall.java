@@ -117,10 +117,10 @@ public class HttpUrlConnectionCall extends HttpClientCall
 
 		try
 		{
-			Representation entity = request.getEntity();
-
-			if (entity != null)
+			if (request.isEntityAvailable())
 			{
+				Representation entity = request.getEntity();
+
 				// Adjust the streaming mode
 				if (entity.getSize() > 0)
 				{
@@ -268,8 +268,10 @@ public class HttpUrlConnectionCall extends HttpClientCall
 		{
 			return getConnection().getResponseCode();
 		}
-		catch (IOException e)
+		catch (IOException ioe)
 		{
+			getHelper().getLogger().log(Level.WARNING, "Unable to get the response code",
+					ioe);
 			return -1;
 		}
 	}

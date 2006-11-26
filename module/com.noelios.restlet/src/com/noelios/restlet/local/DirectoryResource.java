@@ -512,7 +512,8 @@ public class DirectoryResource extends Resource
 								|| (this.baseExtensions == null) || extensions
 								.containsAll(this.baseExtensions));
 
-						if (validVariant && this.baseExtensions.containsAll(extensions))
+						if (validVariant && (this.baseExtensions != null)
+								&& this.baseExtensions.containsAll(extensions))
 						{
 							//The unique reference has been found.
 							uniqueReference = ref;
