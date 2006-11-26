@@ -289,28 +289,25 @@ public class Factory extends org.restlet.util.Factory
 	 */
 	public Helper createHelper(Client client)
 	{
-		if(this.registeredClients != null)
+		for (ConnectorHelper registeredClient : getRegisteredClients())
 		{
-			for (ConnectorHelper registeredClient : this.registeredClients)
+			if (registeredClient.getProtocols().containsAll(client.getProtocols()))
 			{
-				if (registeredClient.getProtocols().containsAll(client.getProtocols()))
+				try
 				{
-					try
-					{
-						return registeredClient.getClass().getConstructor(Client.class)
-								.newInstance(client);
-					}
-					catch (Exception e)
-					{
-						logger.log(Level.SEVERE,
-								"Exception while instantiation the client connector.", e);
-					}
-	
-					return registeredClient;
+					return registeredClient.getClass().getConstructor(Client.class)
+							.newInstance(client);
 				}
+				catch (Exception e)
+				{
+					logger.log(Level.SEVERE,
+							"Exception while instantiation the client connector.", e);
+				}
+
+				return registeredClient;
 			}
 		}
-		
+
 		logger.log(Level.WARNING,
 				"No available client connector supports the required protocols: "
 						+ client.getProtocols());
@@ -338,23 +335,19 @@ public class Factory extends org.restlet.util.Factory
 
 		if (server.getProtocols().size() > 0)
 		{
-			if(this.registeredServers != null)
+			for (ConnectorHelper registeredServer : getRegisteredServers())
 			{
-				for (ConnectorHelper registeredServer : this.registeredServers)
+				if (registeredServer.getProtocols().containsAll(server.getProtocols()))
 				{
-					if (registeredServer.getProtocols().containsAll(
-							server.getProtocols()))
+					try
 					{
-						try
-						{
-							result = registeredServer.getClass().getConstructor(Server.class)
-									.newInstance(server);
-						}
-						catch (Exception e)
-						{
-							logger.log(Level.SEVERE,
-									"Exception while instantiation the server connector.", e);
-						}
+						result = registeredServer.getClass().getConstructor(Server.class)
+								.newInstance(server);
+					}
+					catch (Exception e)
+					{
+						logger.log(Level.SEVERE,
+								"Exception while instantiation the server connector.", e);
 					}
 				}
 			}
