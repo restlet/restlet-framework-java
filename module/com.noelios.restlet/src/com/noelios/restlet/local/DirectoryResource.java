@@ -317,18 +317,8 @@ public class DirectoryResource extends Resource
 			Request contextRequest = new Request(Method.PUT, this.targetUri);
 			contextRequest.setEntity(variant);
 			Response contextResponse = new Response(contextRequest);
-
-			if (targetDirectory)
-			{
-				contextRequest.setResourceRef(this.targetUri);
-				getDispatcher().handle(contextRequest, contextResponse);
-			}
-			else
-			{
-				contextRequest.setResourceRef(this.targetUri);
-				getDispatcher().handle(contextRequest, contextResponse);
-			}
-
+			contextRequest.setResourceRef(this.targetUri);
+			getDispatcher().handle(contextRequest, contextResponse);
 			status = contextResponse.getStatus();
 		}
 
