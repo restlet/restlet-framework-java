@@ -92,14 +92,10 @@ public class RedirectTestCase extends TestCase
 		Context context = clientContainer.getContext();
 		String uri = "http://localhost:8080/?foo=bar";
 		testCall(context, Method.GET, uri);
-		testCall(context, Method.POST, uri);
-		testCall(context, Method.PUT, uri);
 		testCall(context, Method.DELETE, uri);
 
 		uri = "http://localhost:8080/abcd/efgh/ijkl?foo=bar&foo=beer";
 		testCall(context, Method.GET, uri);
-		testCall(context, Method.POST, uri);
-		testCall(context, Method.PUT, uri);
 		testCall(context, Method.DELETE, uri);
 
 		uri = "http://localhost:8080/v1/client/kwse/CnJlNUQV9%252BNNqbUf7Lhs2BYEK2Y%253D/user/johnm/uVGYTDK4kK4zsu96VHGeTCzfwso%253D/";

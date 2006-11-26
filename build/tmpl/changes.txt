@@ -28,6 +28,8 @@ Changes log
  - Fixed bug in JdbcClientHelper causing a commit even if autoCommit is enabled. Reported by Thierry Boileau.
  - Fixed bug in HttpUrlConnection setting a transfer mode for GET, when the entity existed but was empty.
  - Fixed potential NPE in HttpMethodCall : Apache HTTP client.
+ - Redirector now clear the HTTP headers attributes in requests and responses forwarded.
+ - Removed POST and PUT methods from RedirectTestCase: was blocking the RedirectTestCase.
  
 [API changes]
  - Moved org.restlet.data.Result to org.restlet.resource.Result (deprecation used).
