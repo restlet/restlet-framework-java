@@ -97,6 +97,7 @@ public class HttpClientConverter extends HttpConverter
 
 		// Get the server address
 		response.getServerInfo().setAddress(httpCall.getServerAddress());
+		response.getServerInfo().setPort(httpCall.getServerPort());
 
 		// Read the response headers
 		readResponseHeaders(httpCall, response);

@@ -186,7 +186,7 @@ public class HttpMethodCall extends HttpClientCall
 
 					public String getContentType()
 					{
-						return entity.getMediaType().toString();
+						return (entity.getMediaType() != null) ? entity.getMediaType().toString() : null;
 					}
 
 					public boolean isRepeatable()
@@ -215,7 +215,7 @@ public class HttpMethodCall extends HttpClientCall
 		}
 		catch (IOException ioe)
 		{
-			this.clientHelper.getLogger().log(Level.FINE,
+			this.clientHelper.getLogger().log(Level.WARNING,
 					"An error occured during the communication with the remote HTTP server.",
 					ioe);
 			result = new Status(Status.CONNECTOR_ERROR_COMMUNICATION,

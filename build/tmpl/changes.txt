@@ -27,7 +27,8 @@ Changes log
  - Fixed bug in JdbcClientHelper causing a premature close of the connection. Reported by Kyrre Kristiansen.
  - Fixed bug in JdbcClientHelper causing a commit even if autoCommit is enabled. Reported by Thierry Boileau.
  - Fixed bug in HttpUrlConnection setting a transfer mode for GET, when the entity existed but was empty.
-
+ - Fixed potential NPE in HttpMethodCall : Apache HTTP client.
+ 
 [API changes]
  - Moved org.restlet.data.Result to org.restlet.resource.Result (deprecation used).
  - Replaced ConnectorService.get*Protocols() methods by just getClientProtocols() and getServerProtocols().
