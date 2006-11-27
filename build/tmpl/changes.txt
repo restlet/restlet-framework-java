@@ -9,7 +9,8 @@ Changes log
  - 
  
 [API changes]
- - 
+ - Removed Jetty 5 connector from the distribution. Use Jetty 6 connector instead. 
+   Source code still available in SVN. Fixes #180.
  
 [Enhancements] 
  - Add new constructor to Tag for weak tags taking an unquoted opaque value. Fixes #201. 

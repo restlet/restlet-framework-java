@@ -759,7 +759,7 @@
 		<packageLibrary name="freemarker" />
 		<packageLibrary name="httpclient" />
 		<packageLibrary name="javamail" />
-		<packageLibrary name="jetty5" />
+<!-- disabled for 1.0	<packageLibrary name="jetty5" /> -->
 		<packageLibrary name="jetty" />
 		<packageLibrary name="json" />
 		<packageLibrary name="logging" />
@@ -783,7 +783,7 @@
 		<packageModule name="httpclient" />
 		<packageModule name="javamail" />
 		<packageModule name="jdbc" />
-		<packageModule name="jetty5" />
+<!-- disabled for 1.0  <packageModule name="jetty5" /> -->
 		<packageModule name="jetty" />
 <!-- disabled for 1.0  <packageModule name="jmx" /> -->
 		<packageModule name="json" />
@@ -810,7 +810,7 @@
 		<findbugsModule name="httpclient" />
 		<findbugsModule name="javamail" />
 		<findbugsModule name="jdbc" />
-		<findbugsModule name="jetty5" />
+<!-- disabled for 1.0	<findbugsModule name="jetty5" /> -->
 		<findbugsModule name="jetty" />
 <!-- disabled for 1.0   <findbugsModule name="jmx" /> -->
 		<findbugsModule name="json" />
@@ -897,7 +897,6 @@
 				<pathelement path="${mod}/${mod-httpclient-id}/src/" />
 				<pathelement path="${mod}/${mod-javamail-id}/src/" />
 				<pathelement path="${mod}/${mod-jdbc-id}/src/" />
-				<pathelement path="${mod}/${mod-jetty5-id}/src/" />
 				<pathelement path="${mod}/${mod-jetty-id}/src/" />
 				<pathelement path="${mod}/${mod-jmx-id}/src/" />
 				<pathelement path="${mod}/${mod-net-id}/src/" />
