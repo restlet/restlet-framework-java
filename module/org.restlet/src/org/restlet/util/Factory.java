@@ -55,11 +55,11 @@ public abstract class Factory
 	private static Logger logger = Logger.getLogger(Factory.class.getCanonicalName());
 
 	/** Common version info. */
-	public static final String BETA_NUMBER = "21";
+	public static final String BETA_NUMBER = "1";
 
-	public static final String VERSION_LONG = "1.0 beta " + BETA_NUMBER;
+	public static final String VERSION_LONG = "1.0 RC " + BETA_NUMBER;
 
-	public static final String VERSION_SHORT = "1.0b" + BETA_NUMBER;
+	public static final String VERSION_SHORT = "1.0rc" + BETA_NUMBER;
 
 	/** The registered factory. */
 	private static Factory instance = null;

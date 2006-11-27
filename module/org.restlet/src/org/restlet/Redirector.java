@@ -73,15 +73,6 @@ public class Redirector extends Restlet
 	 */
 	public static final int MODE_CONNECTOR = 5;
 
-	/**
-	 * In this mode, the call is internally redirected within the owner component. This is useful when 
-	 * there are multiple ways to access to the same resource.<br/>
-	 * Be careful when specifying the target pattern or infinite loops may occur.
-	 * @deprecated Not implemented, use MODE_CONNECTOR instead.
-	 */
-	@Deprecated
-	public static final int MODE_INTERNAL = 6;
-
 	/** The target URI pattern. */
 	protected String targetPattern;
 

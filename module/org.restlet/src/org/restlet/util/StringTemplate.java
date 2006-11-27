@@ -446,18 +446,6 @@ public class StringTemplate
 	}
 
 	/**
-	 * Formats the template using the given data model.
-	 * @param model The template model to use.
-	 * @return The generated string.
-	 * @deprecated Use format() method instead.
-	 */
-	@Deprecated
-	public String process(Model model)
-	{
-		return format(model);
-	}
-
-	/**
 	 * Processes an instruction token.
 	 * @param textState The current text state. (see TEXT_* constants).
 	 * @param tokenStart The start index of the token to process.

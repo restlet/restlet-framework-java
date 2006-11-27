@@ -29,7 +29,6 @@ import org.restlet.data.ClientInfo;
 import org.restlet.data.Conditions;
 import org.restlet.data.Cookie;
 import org.restlet.data.Method;
-import org.restlet.data.Protocol;
 import org.restlet.data.Reference;
 import org.restlet.data.Request;
 
@@ -105,20 +104,6 @@ public class WrapperRequest extends Request
 	public Method getMethod()
 	{
 		return getWrappedRequest().getMethod();
-	}
-
-	/**
-	 * Returns the protocol. It can either indicate the protocol used by a server connector to receive 
-	 * or the one that must be used to send. If the protocol is not specified when sending a request, 
-	 * the implementation will attempt to guess it by looking at a scheme protocol associated with the 
-	 * target resource reference. 
-	 * @return The protocol or null if not available.
-	 * @deprecated Use getClientInfo().getProtocol() instead.
-	 */
-	@Deprecated
-	public Protocol getProtocol()
-	{
-		return getWrappedRequest().getProtocol();
 	}
 
 	/**
@@ -230,20 +215,6 @@ public class WrapperRequest extends Request
 	public void setMethod(Method method)
 	{
 		getWrappedRequest().setMethod(method);
-	}
-
-	/**
-	 * Sets the protocol used by the call. It can either indicate the protocol used by a server connector
-	 * to receive the call or the one that must be used to send the call. If the protocol is not specified 
-	 * when sending a call, the implementation will attempt to guess it by looking at a scheme protocol 
-	 * associated with the target resource reference. 
-	 * @param protocol The protocol to set.
-	 * @deprecated Use Request.baseRef property instead.
-	 */
-	@Deprecated
-	public void setProtocol(Protocol protocol)
-	{
-		getWrappedRequest().setProtocol(protocol);
 	}
 
 	/**

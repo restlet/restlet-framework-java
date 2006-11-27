@@ -26,7 +26,6 @@ import java.util.List;
 
 import org.restlet.data.ChallengeRequest;
 import org.restlet.data.CookieSetting;
-import org.restlet.data.Language;
 import org.restlet.data.Reference;
 import org.restlet.data.Request;
 import org.restlet.data.Response;
@@ -125,21 +124,6 @@ public class WrapperResponse extends Response
 	public void setChallengeRequest(ChallengeRequest request)
 	{
 		getWrappedResponse().setChallengeRequest(request);
-	}
-
-	/**
-	 * Sets the entity with the best representation of a resource, according to the client preferences.
-	 * <br/> If no representation is found, sets the status to "Not found".<br/>
-	 * If no acceptable representation is available, sets the status to "Not acceptable".<br/>
-	 * @param resource The resource for which the best representation needs to be set.
-	 * @param fallbackLanguage The language to use if no preference matches.
-	 * @see <a href="http://httpd.apache.org/docs/2.2/en/content-negotiation.html#algorithm">Apache content negotiation algorithm</a>
-	 * @deprecated Use other setEntity method.
-	 */
-	@Deprecated
-	public void setEntity(Resource resource, Language fallbackLanguage)
-	{
-		getWrappedResponse().setEntity(resource, fallbackLanguage);
 	}
 
 	/**

@@ -314,19 +314,6 @@ public class Request extends Message
 	}
 
 	/**
-	 * Sets the protocol used by the call. It can either indicate the protocol used by a server connector
-	 * to receive the call or the one that must be used to send the call. If the protocol is not specified 
-	 * when sending a call, the implementation will attempt to guess it by looking at a scheme protocol 
-	 * associated with the target resource reference. 
-	 * @param protocol The protocol to set.
-	 * @deprecated Use Request.baseRef property instead.
-	 */
-	@Deprecated
-	public void setProtocol(Protocol protocol)
-	{
-	}
-
-	/**
 	 * Sets the referrer reference if available.
 	 * @param referrerRef The referrer reference.
 	 */

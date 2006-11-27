@@ -102,17 +102,6 @@ public class Form extends ParameterList
 	}
 
 	/**
-	 * Returns the formatted query corresponding to the current list of parameters.
-	 * @return The formatted query.
-	 * @deprecated Use getRepresentation() instead.
-	 */
-	@Deprecated
-	public Representation getWebForm()
-	{
-		return getWebRepresentation();
-	}
-
-	/**
 	 * Returns the form as a Web representation (MediaType.APPLICATION_WWW_FORM).
 	 * @return The form as a Web representation.
 	 */

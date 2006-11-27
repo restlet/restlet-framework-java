@@ -48,15 +48,6 @@ public class Guard extends Filter
 	private String realm;
 
 	/**
-	 * @deprecated Please use the new constructor, authentication now done at the connector level.
-	 */
-	@Deprecated
-	public Guard(Context context, boolean authenticate, ChallengeScheme scheme,
-			String realm, boolean authorize)
-	{
-	}
-
-	/**
 	 * Constructor.
 	 * @param context The context.
 	 * @param scheme The authentication scheme to use. 

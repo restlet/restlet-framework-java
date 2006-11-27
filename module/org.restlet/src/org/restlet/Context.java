@@ -70,17 +70,6 @@ public class Context
 	/**
 	 * Returns a call dispatcher.
 	 * @return A call dispatcher.
-	 * @deprecated Use getDispatcher() instead.
-	 */
-	@Deprecated
-	public Dispatcher getClient()
-	{
-		return getDispatcher();
-	}
-
-	/**
-	 * Returns a call dispatcher.
-	 * @return A call dispatcher.
 	 */
 	public Dispatcher getDispatcher()
 	{

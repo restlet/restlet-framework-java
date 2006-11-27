@@ -26,15 +26,14 @@ import java.lang.reflect.InvocationTargetException;
 import java.util.List;
 import java.util.logging.Level;
 
-import org.restlet.data.Language;
 import org.restlet.data.Method;
 import org.restlet.data.ReferenceList;
 import org.restlet.data.Request;
 import org.restlet.data.Response;
-import org.restlet.resource.Result;
 import org.restlet.data.Status;
 import org.restlet.resource.Representation;
 import org.restlet.resource.Resource;
+import org.restlet.resource.Result;
 
 /**
  * Restlet capable of handling calls using a target resource. At this point in the processing, all the 
@@ -55,9 +54,6 @@ import org.restlet.resource.Resource;
  */
 public class Handler extends Restlet
 {
-	/** The language to use if content negotiation fails. */
-	private Language fallbackLanguage;
-
 	/** Indicates if the best content is automatically negotiated. */
 	private boolean negotiateContent;
 
@@ -100,17 +96,6 @@ public class Handler extends Restlet
 	public Resource findTarget(Request request, Response response)
 	{
 		return null;
-	}
-
-	/**
-	 * Returns the language to use if content negotiation fails.
-	 * @return The language to use if content negotiation fails.
-	 * @deprecated Rely on MetadataService instead.
-	 */
-	@Deprecated
-	public Language getFallbackLanguage()
-	{
-		return this.fallbackLanguage;
 	}
 
 	/**
@@ -334,18 +319,6 @@ public class Handler extends Restlet
 	}
 
 	/**
-	 * Handles a call with a method that is not directly supported by a special handle*() method.
-	 * @param request The request to handle.
-	 * @param response The response to update.
-	 * @deprecated Override the defaultHandle() method instead. Could conflict with a method named OTHERS in the future.
-	 */
-	@Deprecated
-	protected void handleOthers(Request request, Response response)
-	{
-		defaultHandle(request, response);
-	}
-
-	/**
 	 * Handles a POST call invoking the 'post' method of the target resource (as provided by the 'findTarget' method).
 	 * @param request The request to handle.
 	 * @param response The response to update.
@@ -424,17 +397,6 @@ public class Handler extends Restlet
 	public boolean isNegotiateContent()
 	{
 		return this.negotiateContent;
-	}
-
-	/**
-	 * Sets the language to use if content negotiation fails.
-	 * @param fallbackLanguage The language to use if content negotiation fails.
-	 * @deprecated Rely on MetadataService instead.
-	 */
-	@Deprecated
-	public void setFallbackLanguage(Language fallbackLanguage)
-	{
-		this.fallbackLanguage = fallbackLanguage;
 	}
 
 	/** 

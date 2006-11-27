@@ -218,21 +218,6 @@ public class Response extends Message
 	}
 
 	/**
-	 * Sets the entity with the best representation of a resource, according to the client preferences.
-	 * <br/> If no representation is found, sets the status to "Not found".<br/>
-	 * If no acceptable representation is available, sets the status to "Not acceptable".<br/>
-	 * @param resource The resource for which the best representation needs to be set.
-	 * @param fallbackLanguage The language to use if no preference matches.
-	 * @see <a href="http://httpd.apache.org/docs/2.2/en/content-negotiation.html#algorithm">Apache content negotiation algorithm</a>
-	 * @deprecated Use other setEntity method.
-	 */
-	@Deprecated
-	public void setEntity(Resource resource, Language fallbackLanguage)
-	{
-		setEntity(resource);
-	}
-
-	/**
 	 * Sets the entity representation. If the current status is SUCCESS_OK and the request conditions are matched, 
 	 * then the status is set to REDIRECTION_NOT_MODIFIED. In all other cases, the status is untouched and the 
 	 * entity is simply set.

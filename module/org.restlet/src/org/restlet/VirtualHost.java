@@ -24,9 +24,6 @@ package org.restlet;
 
 import java.net.InetAddress;
 import java.net.UnknownHostException;
-import java.util.List;
-
-import org.restlet.data.Protocol;
 
 /**
  * Router of calls from virtual servers to attached Restlets. The attached Restlets are typically
@@ -35,18 +32,6 @@ import org.restlet.data.Protocol;
  */
 public class VirtualHost extends Router
 {
-	/**
-	 * Creates a new local virtual host. Accepts incoming calls to the local host name or IP address. 
-	 * @param context The context.
-	 * @return A new local virtual host.
-	 * @deprecated Use the default constructor instead which matches all requests.
-	 */
-	@Deprecated
-	public static VirtualHost createLocalHost(Context context)
-	{
-		return null;
-	}
-
 	/**
 	 * Returns the IP address of a given domain name.
 	 * @param domain The domain name.
@@ -177,54 +162,6 @@ public class VirtualHost extends Router
 
 		this.serverAddress = serverAddress;
 		this.serverPort = serverPort;
-	}
-
-	/**
-	 * Returns the modifiable list of allowed IP addresses. 
-	 * You can add the ALL_ADDRESSES (-1) to allow any IP address. 
-	 * @return The modifiable list of allowed IP addresses.
-	 * @deprecated Use add() methods instead.
-	 */
-	@Deprecated
-	public List<String> getAllowedAddresses()
-	{
-		return null;
-	}
-
-	/**
-	 * Returns the modifiable list of allowed domain names. 
-	 * You can add the ALL_NAMES ("*") to allow any domain name. 
-	 * @return The modifiable list of allowed domain names.
-	 * @deprecated Use add() methods instead.
-	 */
-	@Deprecated
-	public List<String> getAllowedDomains()
-	{
-		return null;
-	}
-
-	/**
-	 * Returns the modifiable list of allowed port numbers.
-	 * You can add the ALL_PORTS (-1) to allow any port number. 
-	 * @return The modifiable list of allowed port numbers.
-	 * @deprecated Use add() methods instead.
-	 */
-	@Deprecated
-	public List<Integer> getAllowedPorts()
-	{
-		return null;
-	}
-
-	/**
-	 * Returns the modifiable list of allowed protocols. 
-	 * You can add the Protocol.ALL to allow any protocol. 
-	 * @return The modifiable list of allowed protocols.
-	 * @deprecated Use add() methods instead.
-	 */
-	@Deprecated
-	public List<Protocol> getAllowedProtocols()
-	{
-		return null;
 	}
 
 	/**

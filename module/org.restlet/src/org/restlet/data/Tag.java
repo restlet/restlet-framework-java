@@ -35,7 +35,7 @@ package org.restlet.data;
 public class Tag
 {
 	/** Tag matching any other tag, used in call's condition data. */
-	public static final Tag ALL = new Tag("*");
+	public static final Tag ALL = Tag.parse("*");
 
 	/**
 	 * Parses a tag formatted as defined by the HTTP standard.
@@ -47,7 +47,7 @@ public class Tag
 	public static Tag parse(String httpTag)
 	{
 		Tag result = new Tag();
-		
+
 		if (httpTag.startsWith("W"))
 		{
 			result.setWeak(true);
@@ -70,7 +70,7 @@ public class Tag
 		{
 			throw new IllegalArgumentException("Invalid tag format detected: " + httpTag);
 		}
-		
+
 		return result;
 	}
 
@@ -79,7 +79,7 @@ public class Tag
 
 	/** The tag weakness. */
 	private boolean weak;
-	
+
 	/**
 	 * Default constructor. 
 	 * The opaque tag is set to null and the weakness indicator is set to true.
@@ -87,40 +87,6 @@ public class Tag
 	public Tag()
 	{
 		this(null, true);
-	}
-
-	/**
-	 * Constructor.
-	 * @param httpTag The HTTP tag string; if it starts with a 'W' the tag will be marked as weak and the data 
-	 * following the 'W' used as the tag; otherwise it should be surrounded with quotes (e.g., "sometag").
-	 * @deprecated Use the static parse() method instead.
-	 */
-	@Deprecated
-	public Tag(String httpTag)
-	{
-		if (httpTag.startsWith("W"))
-		{
-			this.weak = true;
-			httpTag = httpTag.substring(1);
-		}
-		else
-		{
-			this.weak = false;
-		}
-
-		if (httpTag.startsWith("\"") && httpTag.endsWith("\""))
-		{
-			this.opaqueTag = httpTag.substring(1, httpTag.length() - 1);
-		}
-		else if (httpTag.equals("*"))
-		{
-			this.opaqueTag = "*";
-		}
-		else
-		{
-			throw new IllegalArgumentException("Invalid tag format detected: " + httpTag);
-		}
-
 	}
 
 	/**
@@ -133,7 +99,7 @@ public class Tag
 		this.opaqueTag = opaqueTag;
 		this.weak = weak;
 	}
-	
+
 	/**
 	 * Indicates if both tags are equal.
 	 * @param object The object to compare to.
@@ -142,7 +108,24 @@ public class Tag
 	@Override
 	public boolean equals(Object object)
 	{
-		return (object instanceof Tag) && getName().equals(((Tag) object).getName());
+		boolean result = (object != null) && (object instanceof Tag);
+
+		if (result)
+		{
+			Tag that = (Tag) object;
+			result = (that.isWeak() == isWeak());
+
+			if (getOpaqueTag() == null)
+			{
+				result = (that.getOpaqueTag() == null);
+			}
+			else
+			{
+				result = getOpaqueTag().equals(that.getOpaqueTag());
+			}
+		}
+
+		return result;
 	}
 
 	/**
@@ -174,27 +157,6 @@ public class Tag
 	}
 
 	/**
-	 * Returns the equivalent HTTP string.
-	 * @return The equivalent HTTP string.
-	 * @see <a href="http://www.w3.org/Protocols/rfc2616/rfc2616-sec3.html#sec3.11">HTTP Entity Tags</a>
-	 * @deprecated Use the format() method instead.
-	 */
-	@Deprecated
-	public String getName()
-	{
-		if (getOpaqueTag().equals("*"))
-		{
-			return "*";
-		}
-		else
-		{
-			StringBuilder sb = new StringBuilder();
-			if (isWeak()) sb.append("W/");
-			return sb.append('"').append(getOpaqueTag()).append('"').toString();
-		}
-	}
-
-	/**
 	 * Returns the opaque tag string.
 	 * @return The opaque tag string.
 	 */
@@ -207,7 +169,7 @@ public class Tag
 	@Override
 	public int hashCode()
 	{
-		return (getName() == null) ? 0 : getName().hashCode();
+		return format().hashCode();
 	}
 
 	/**

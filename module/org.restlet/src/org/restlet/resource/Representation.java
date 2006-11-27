@@ -29,7 +29,6 @@ import java.io.OutputStream;
 import java.nio.channels.ReadableByteChannel;
 import java.nio.channels.WritableByteChannel;
 import java.util.Date;
-import java.util.logging.Level;
 import java.util.logging.Logger;
 
 import org.restlet.data.CharacterSet;
@@ -383,31 +382,6 @@ public class Representation extends Resource
 	public void setTransient(boolean isTransient)
 	{
 		this.contentTransient = isTransient;
-	}
-
-	/**
-	 * @deprecated Use getValue() instead.
-	 */
-	@Deprecated
-	public final String toString()
-	{
-		String result = null;
-
-		try
-		{
-			result = getValue();
-		}
-		catch (IOException e)
-		{
-			Logger
-					.getAnonymousLogger()
-					.log(
-							Level.WARNING,
-							"Unexcepted exception while getting the representation content as a string",
-							e);
-		}
-
-		return result;
 	}
 
 	/**

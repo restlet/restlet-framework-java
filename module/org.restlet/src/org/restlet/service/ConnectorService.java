@@ -78,50 +78,6 @@ public class ConnectorService
 	}
 
 	/**
-	 * Returns the list of optional client protocols. 
-	 * @return The list of optional client protocols.
-	 * @deprecated Use getClientProtocols instead
-	 */
-	@Deprecated
-	public List<Protocol> getOptionalClientProtocols()
-	{
-		return getClientProtocols();
-	}
-
-	/**
-	 * Returns the list of optional server protocols. 
-	 * @return The list of optional server protocols.
-	 * @deprecated Use getServerProtocols instead
-	 */
-	@Deprecated
-	public List<Protocol> getOptionalServerProtocols()
-	{
-		return getServerProtocols();
-	}
-
-	/**
-	 * Returns the list of required client protocols. 
-	 * @return The list of required client protocols.
-	 * @deprecated Use getClientProtocols instead
-	 */
-	@Deprecated
-	public List<Protocol> getRequiredClientProtocols()
-	{
-		return getClientProtocols();
-	}
-
-	/**
-	 * Returns the list of required server protocols. 
-	 * @return The list of required server protocols.
-	 * @deprecated Use getServerProtocols instead
-	 */
-	@Deprecated
-	public List<Protocol> getRequiredServerProtocols()
-	{
-		return getServerProtocols();
-	}
-
-	/**
 	 * Returns the list of required server protocols. 
 	 * @return The list of required server protocols.
 	 */

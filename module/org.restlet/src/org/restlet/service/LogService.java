@@ -80,24 +80,6 @@ public class LogService
 	}
 
 	/**
-	 * @deprecated Use getAccessLogFormat() instead.
-	 */
-	@Deprecated
-	public String getFormat()
-	{
-		return getAccessLogFormat();
-	}
-
-	/**
-	 * @deprecated Use getAccessLoggerName() instead.
-	 */
-	@Deprecated
-	public String getLoggerName()
-	{
-		return getAccessLoggerName();
-	}
-
-	/**
 	 * Indicates if the service should be enabled.
 	 * @return True if the service should be enabled.
 	 */
@@ -141,24 +123,6 @@ public class LogService
 	public void setEnabled(boolean enabled)
 	{
 		this.enabled = enabled;
-	}
-
-	/**
-	 * @deprecated Use setAccessLogFormat() instead.
-	 */
-	@Deprecated
-	public void setFormat(String format)
-	{
-		setAccessLogFormat(format);
-	}
-
-	/**
-	 * @deprecated Use setAccessLoggerName() instead.
-	 */
-	@Deprecated
-	public void setLoggerName(String name)
-	{
-		setAccessLoggerName(name);
 	}
 
 }

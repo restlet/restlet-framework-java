@@ -180,44 +180,6 @@ public class DateUtils
 	}
 
 	/**
-	 * Parses a formatted date into a Date object.
-	 * @param date The date to parse.
-	 * @param formats The date formats to use sorted by completeness.
-	 * @return The parsed date.
-	 * @deprecated use instead {@link #parse(String, List)} to be removed in release 22
-	 */
-	public static Date parse(String date, String[] formats)
-	{
-		Date result = null;
-
-		if (date == null)
-		{
-			throw new IllegalArgumentException("Date is null");
-		}
-		else
-		{
-			String format = null;
-			for (int i = 0; (result == null) && (i < formats.length); i++)
-			{
-				format = formats[i];
-				SimpleDateFormat parser = new SimpleDateFormat(format, Locale.US);
-				parser.setTimeZone(TIMEZONE_GMT);
-
-				try
-				{
-					result = parser.parse(date);
-				}
-				catch (ParseException e)
-				{
-					// Ignore error as the next format may work better
-				}
-			}
-		}
-
-		return result;
-	}
-
-	/**
 	 * Helper method to help initialize this class by providing unmodifiable lists based on arrays.
 	 * 
 	 * @param <T> Any valid java object
