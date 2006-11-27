@@ -32,25 +32,23 @@ import org.restlet.data.Protocol;
 
 /**
  * Guard access to a Restlet.
+ * 
  * @author Jerome Louvel (contact@noelios.com)
  */
-public class Part09a implements Constants
-{
-	public static void main(String[] args) throws Exception
-	{
+public class Part09a implements Constants {
+	public static void main(String[] args) throws Exception {
 		// Create a container
 		Container container = new Container();
 		container.getServers().add(Protocol.HTTP, 8182);
 		container.getClients().add(Protocol.FILE);
 
 		// Create an application
-		Application application = new Application(container)
-		{
+		Application application = new Application(container) {
 			@Override
-			public Restlet createRoot()
-			{
+			public Restlet createRoot() {
 				// Create a Guard
-				Guard guard = new Guard(getContext(), ChallengeScheme.HTTP_BASIC, "Tutorial");
+				Guard guard = new Guard(getContext(),
+						ChallengeScheme.HTTP_BASIC, "Tutorial");
 				guard.getAuthorizations().put("scott", "tiger");
 
 				// Create a Directory able to return a deep hierarchy of files

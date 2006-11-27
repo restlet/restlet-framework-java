@@ -39,15 +39,14 @@ import com.noelios.restlet.util.CookieUtils;
 
 /**
  * Unit tests for the Cookie related classes.
+ * 
  * @author Jerome Louvel (contact@noelios.com)
  */
-public class CookiesTestCase extends TestCase
-{
+public class CookiesTestCase extends TestCase {
 	/**
 	 * Tests the cookies parsing.
 	 */
-	public void testParsing() throws IOException
-	{
+	public void testParsing() throws IOException {
 		// Netscape speficiation
 		testCookie("CUSTOMER=WILE_E_COYOTE");
 		testCookie("CUSTOMER=WILE_E_COYOTE; PART_NUMBER=ROCKET_LAUNCHER_0001");
@@ -67,12 +66,17 @@ public class CookiesTestCase extends TestCase
 		testCookie("$Version=\"1\"; Customer=\"WILE_E_COYOTE\"; $Path=\"/acme\"; Part_Number=\"Rocket_Launcher_0001\"; $Path=\"/acme\"; Shipping=\"FedEx\"; $Path=\"/acme\"");
 		testCookie("$Version=\"1\"; Part_Number=\"Riding_Rocket_0023\"; $Path=\"/acme/ammo\"; Part_Number=\"Rocket_Launcher_0001\"; $Path=\"/acme\"");
 
-		testCookieSetting("Customer=\"WILE_E_COYOTE\"; Version=\"1\"; Path=\"/acme\"", true);
 		testCookieSetting(
-				"Part_Number=\"Rocket_Launcher_0001\"; Version=\"1\"; Path=\"/acme\"", true);
-		testCookieSetting("Shipping=\"FedEx\"; Version=\"1\"; Path=\"/acme\"", true);
+				"Customer=\"WILE_E_COYOTE\"; Version=\"1\"; Path=\"/acme\"",
+				true);
 		testCookieSetting(
-				"Part_Number=\"Rocket_Launcher_0001\"; Version=\"1\"; Path=\"/acme\"", true);
+				"Part_Number=\"Rocket_Launcher_0001\"; Version=\"1\"; Path=\"/acme\"",
+				true);
+		testCookieSetting("Shipping=\"FedEx\"; Version=\"1\"; Path=\"/acme\"",
+				true);
+		testCookieSetting(
+				"Part_Number=\"Rocket_Launcher_0001\"; Version=\"1\"; Path=\"/acme\"",
+				true);
 		testCookieSetting(
 				"Part_Number=\"Riding_Rocket_0023\"; Version=\"1\"; Path=\"/acme/ammo\"",
 				true);
@@ -85,18 +89,19 @@ public class CookiesTestCase extends TestCase
 
 	/**
 	 * Test one cookie header.
-	 * @param headerValue The cookie header value.
+	 * 
+	 * @param headerValue
+	 *            The cookie header value.
 	 * @throws IOException
 	 */
-	private void testCookie(String headerValue) throws IOException
-	{
-		CookieReader cr = new CookieReader(Logger.getLogger(CookiesTestCase.class
-				.getCanonicalName()), headerValue);
+	private void testCookie(String headerValue) throws IOException {
+		CookieReader cr = new CookieReader(Logger
+				.getLogger(CookiesTestCase.class.getCanonicalName()),
+				headerValue);
 		List<Cookie> cookies = new ArrayList<Cookie>();
 		Cookie cookie = cr.readCookie();
 
-		while (cookie != null)
-		{
+		while (cookie != null) {
 			cookies.add(cookie);
 			cookie = cr.readCookie();
 		}
@@ -110,22 +115,26 @@ public class CookiesTestCase extends TestCase
 
 	/**
 	 * Test one set cookie header.
-	 * @param headerValue The set cookie header value.
-	 * @param compare Indicates if the new header should be compared with the old one.
+	 * 
+	 * @param headerValue
+	 *            The set cookie header value.
+	 * @param compare
+	 *            Indicates if the new header should be compared with the old
+	 *            one.
 	 * @throws IOException
 	 */
-	private void testCookieSetting(String headerValue, boolean compare) throws IOException
-	{
-		CookieReader cr = new CookieReader(Logger.getLogger(CookiesTestCase.class
-				.getCanonicalName()), headerValue);
+	private void testCookieSetting(String headerValue, boolean compare)
+			throws IOException {
+		CookieReader cr = new CookieReader(Logger
+				.getLogger(CookiesTestCase.class.getCanonicalName()),
+				headerValue);
 		CookieSetting cookie = cr.readCookieSetting();
 
 		// Rewrite the header
 		String newHeaderValue = CookieUtils.format(cookie);
 
 		// Compare initial and new headers
-		if (compare)
-		{
+		if (compare) {
 			boolean result = newHeaderValue.toLowerCase().startsWith(
 					headerValue.toLowerCase());
 			assertTrue(result);
@@ -134,15 +143,17 @@ public class CookiesTestCase extends TestCase
 
 	/**
 	 * Test a cookie date value.
-	 * @param headerValue The cookie date value.
+	 * 
+	 * @param headerValue
+	 *            The cookie date value.
 	 * @throws IOException
 	 */
-	private void testCookieDate(String dateValue) throws IOException
-	{
+	private void testCookieDate(String dateValue) throws IOException {
 		Date date = DateUtils.parse(dateValue, DateUtils.FORMAT_RFC_1036);
 
 		// Rewrite the date
-		String newDateValue = DateUtils.format(date, DateUtils.FORMAT_RFC_1036.get(0));
+		String newDateValue = DateUtils.format(date, DateUtils.FORMAT_RFC_1036
+				.get(0));
 
 		// Compare initial and new headers
 		assertEquals(dateValue, newDateValue);

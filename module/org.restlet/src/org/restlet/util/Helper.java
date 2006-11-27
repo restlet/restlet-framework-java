@@ -27,21 +27,25 @@ import org.restlet.data.Request;
 import org.restlet.data.Response;
 
 /**
- * Delegate used by API classes to get support from the implementation classes.  
+ * Delegate used by API classes to get support from the implementation classes.
+ * 
  * @author Jerome Louvel (contact@noelios.com)
  */
-public interface Helper
-{
+public interface Helper {
 	/**
 	 * Creates a new context.
+	 * 
 	 * @return The new context.
 	 */
 	public Context createContext();
 
 	/**
 	 * Handles a call.
-	 * @param request The request to handle.
-	 * @param response The response to update.
+	 * 
+	 * @param request
+	 *            The request to handle.
+	 * @param response
+	 *            The response to update.
 	 */
 	public void handle(Request request, Response response);
 

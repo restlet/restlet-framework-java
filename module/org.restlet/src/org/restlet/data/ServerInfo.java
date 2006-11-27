@@ -24,10 +24,10 @@ package org.restlet.data;
 
 /**
  * Server specific data related to a call.
+ * 
  * @author Jerome Louvel (contact@noelios.com)
  */
-public class ServerInfo
-{
+public class ServerInfo {
 	/** The IP address. */
 	private String address;
 
@@ -40,8 +40,7 @@ public class ServerInfo
 	/**
 	 * Constructor.
 	 */
-	public ServerInfo()
-	{
+	public ServerInfo() {
 		this.address = null;
 		this.agent = null;
 		this.port = null;
@@ -49,55 +48,58 @@ public class ServerInfo
 
 	/**
 	 * Returns the IP address.
+	 * 
 	 * @return The IP address.
 	 */
-	public String getAddress()
-	{
+	public String getAddress() {
 		return this.address;
 	}
 
 	/**
 	 * Returns the agent name (ex: "Noelios Restlet Engine/1.0").
+	 * 
 	 * @return The agent name.
 	 */
-	public String getAgent()
-	{
+	public String getAgent() {
 		return this.agent;
 	}
 
 	/**
 	 * Returns the port number which received the call.
+	 * 
 	 * @return The port number which received the call.
 	 */
-	public Integer getPort()
-	{
+	public Integer getPort() {
 		return this.port;
 	}
 
 	/**
 	 * Sets the IP address which received the call.
-	 * @param address The IP address which received the call.
+	 * 
+	 * @param address
+	 *            The IP address which received the call.
 	 */
-	public void setAddress(String address)
-	{
+	public void setAddress(String address) {
 		this.address = address;
 	}
 
 	/**
 	 * Sets the agent name (ex: "Noelios Restlet Engine/1.0").
-	 * @param agent The agent name.
+	 * 
+	 * @param agent
+	 *            The agent name.
 	 */
-	public void setAgent(String agent)
-	{
+	public void setAgent(String agent) {
 		this.agent = agent;
 	}
 
 	/**
 	 * Sets the port number which received the call.
-	 * @param port The port number which received the call.
+	 * 
+	 * @param port
+	 *            The port number which received the call.
 	 */
-	public void setPort(Integer port)
-	{
+	public void setPort(Integer port) {
 		this.port = port;
 	}
 

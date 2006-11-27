@@ -31,32 +31,37 @@ import org.restlet.util.ByteUtils;
 
 /**
  * Transient representation based on a BIO input stream.
+ * 
  * @author Jerome Louvel (contact@noelios.com)
  */
-public class InputRepresentation extends StreamRepresentation
-{
+public class InputRepresentation extends StreamRepresentation {
 	/** The representation's stream. */
 	private InputStream inputStream;
 
 	/**
 	 * Constructor.
-	 * @param inputStream The representation's stream.
-	 * @param mediaType The representation's media type.
+	 * 
+	 * @param inputStream
+	 *            The representation's stream.
+	 * @param mediaType
+	 *            The representation's media type.
 	 */
-	public InputRepresentation(InputStream inputStream, MediaType mediaType)
-	{
+	public InputRepresentation(InputStream inputStream, MediaType mediaType) {
 		this(inputStream, mediaType, UNKNOWN_SIZE);
 	}
 
 	/**
 	 * Constructor.
-	 * @param inputStream The representation's stream.
-	 * @param mediaType The representation's media type.
-	 * @param expectedSize The expected input stream size.
+	 * 
+	 * @param inputStream
+	 *            The representation's stream.
+	 * @param mediaType
+	 *            The representation's media type.
+	 * @param expectedSize
+	 *            The expected input stream size.
 	 */
 	public InputRepresentation(InputStream inputStream, MediaType mediaType,
-			long expectedSize)
-	{
+			long expectedSize) {
 		super(mediaType);
 		setSize(expectedSize);
 		this.inputStream = inputStream;
@@ -66,10 +71,10 @@ public class InputRepresentation extends StreamRepresentation
 
 	/**
 	 * Returns a stream with the representation's content.
+	 * 
 	 * @return A stream with the representation's content.
 	 */
-	public synchronized InputStream getStream() throws IOException
-	{
+	public synchronized InputStream getStream() throws IOException {
 		InputStream result = this.inputStream;
 		this.inputStream = null;
 		setAvailable(false);
@@ -77,21 +82,23 @@ public class InputRepresentation extends StreamRepresentation
 	}
 
 	/**
-	 * Converts the representation to a string value. Be careful when using this method as the conversion of 
-	 * large content to a string fully stored in memory can result in OutOfMemoryErrors being thrown.
+	 * Converts the representation to a string value. Be careful when using this
+	 * method as the conversion of large content to a string fully stored in
+	 * memory can result in OutOfMemoryErrors being thrown.
+	 * 
 	 * @return The representation as a string value.
 	 */
-	public String getValue() throws IOException
-	{
+	public String getValue() throws IOException {
 		return ByteUtils.toString(getStream());
 	}
 
 	/**
 	 * Writes the representation to a byte stream.
-	 * @param outputStream The output stream.
+	 * 
+	 * @param outputStream
+	 *            The output stream.
 	 */
-	public void write(OutputStream outputStream) throws IOException
-	{
+	public void write(OutputStream outputStream) throws IOException {
 		ByteUtils.write(getStream(), outputStream);
 	}
 

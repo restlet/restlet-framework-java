@@ -44,10 +44,10 @@ import org.restlet.service.ConnectorService;
 
 /**
  * Abstract HTTP server connector call.
+ * 
  * @author Jerome Louvel (contact@noelios.com)
  */
-public abstract class HttpServerCall extends HttpCall
-{
+public abstract class HttpServerCall extends HttpCall {
 	/** The logger to use. */
 	private Logger logger;
 
@@ -56,93 +56,91 @@ public abstract class HttpServerCall extends HttpCall
 
 	/**
 	 * Constructor.
-	 * @param server The parent server connector.
+	 * 
+	 * @param server
+	 *            The parent server connector.
 	 */
-	public HttpServerCall(Server server)
-	{
+	public HttpServerCall(Server server) {
 		setLogger(server.getLogger());
 		setServerAddress(server.getAddress());
 		setServerPort(server.getPort());
-		setServerProtocol(server.getProtocols().get(0)); // Assumes that server connectors support only one protocol
+		setServerProtocol(server.getProtocols().get(0)); // Assumes that
+															// server connectors
+															// support only one
+															// protocol
 		this.hostParsed = false;
 	}
 
 	/**
 	 * Returns the request entity channel if it exists.
+	 * 
 	 * @return The request entity channel if it exists.
 	 */
 	public abstract ReadableByteChannel getRequestChannel();
 
 	/**
 	 * Returns the request entity stream if it exists.
+	 * 
 	 * @return The request entity stream if it exists.
 	 */
 	public abstract InputStream getRequestStream();
 
 	/**
 	 * Returns the response channel if it exists.
+	 * 
 	 * @return The response channel if it exists.
 	 */
 	public abstract WritableByteChannel getResponseChannel();
 
 	/**
 	 * Returns the response stream if it exists.
+	 * 
 	 * @return The response stream if it exists.
 	 */
 	public abstract OutputStream getResponseStream();
 
 	/**
 	 * Returns the request entity if available.
+	 * 
 	 * @return The request entity if available.
 	 */
-	public Representation getRequestEntity()
-	{
+	public Representation getRequestEntity() {
 		Representation result = null;
 		InputStream requestStream = getRequestStream();
 		ReadableByteChannel requestChannel = getRequestChannel();
 
-		if (((requestStream != null) || (requestChannel != null)))
-		{
+		if (((requestStream != null) || (requestChannel != null))) {
 			// Extract the header values
 			Encoding contentEncoding = null;
 			Language contentLanguage = null;
 			MediaType contentType = null;
 			long contentLength = -1L;
 
-			for (Parameter header : getRequestHeaders())
-			{
-				if (header.getName().equalsIgnoreCase(HttpConstants.HEADER_CONTENT_ENCODING))
-				{
+			for (Parameter header : getRequestHeaders()) {
+				if (header.getName().equalsIgnoreCase(
+						HttpConstants.HEADER_CONTENT_ENCODING)) {
 					contentEncoding = new Encoding(header.getValue());
-				}
-				else if (header.getName().equalsIgnoreCase(
-						HttpConstants.HEADER_CONTENT_LANGUAGE))
-				{
+				} else if (header.getName().equalsIgnoreCase(
+						HttpConstants.HEADER_CONTENT_LANGUAGE)) {
 					contentLanguage = new Language(header.getValue());
-				}
-				else if (header.getName().equalsIgnoreCase(HttpConstants.HEADER_CONTENT_TYPE))
-				{
+				} else if (header.getName().equalsIgnoreCase(
+						HttpConstants.HEADER_CONTENT_TYPE)) {
 					contentType = new MediaType(header.getValue());
-				}
-				else if (header.getName().equalsIgnoreCase(
-						HttpConstants.HEADER_CONTENT_LENGTH))
-				{
+				} else if (header.getName().equalsIgnoreCase(
+						HttpConstants.HEADER_CONTENT_LENGTH)) {
 					contentLength = Long.parseLong(header.getValue());
 				}
 			}
 
-			if (requestStream != null)
-			{
-				result = new InputRepresentation(requestStream, contentType, contentLength);
-			}
-			else if (requestChannel != null)
-			{
-				result = new ReadableRepresentation(requestChannel, contentType,
+			if (requestStream != null) {
+				result = new InputRepresentation(requestStream, contentType,
 						contentLength);
+			} else if (requestChannel != null) {
+				result = new ReadableRepresentation(requestChannel,
+						contentType, contentLength);
 			}
 
-			if (result != null)
-			{
+			if (result != null) {
 				result.setEncoding(contentEncoding);
 				result.setLanguage(contentLanguage);
 			}
@@ -151,97 +149,92 @@ public abstract class HttpServerCall extends HttpCall
 		return result;
 	}
 
-	/** 
+	/**
 	 * Returns the baseRef domain name.
+	 * 
 	 * @return The baseRef domain name.
 	 */
-	public String getBaseDomain()
-	{
-		if (!hostParsed) parseHost();
+	public String getBaseDomain() {
+		if (!hostParsed)
+			parseHost();
 		return super.getBaseDomain();
 	}
 
-	/** 
+	/**
 	 * Returns the baseRef port.
+	 * 
 	 * @return The baseRef port.
 	 */
-	public Integer getBasePort()
-	{
-		if (!hostParsed) parseHost();
+	public Integer getBasePort() {
+		if (!hostParsed)
+			parseHost();
 		return super.getServerPort();
 	}
 
 	/**
 	 * Parses the "host" header to set the server host and port properties.
 	 */
-	private void parseHost()
-	{
-		String host = getRequestHeaders().getFirstValue(HttpConstants.HEADER_HOST);
+	private void parseHost() {
+		String host = getRequestHeaders().getFirstValue(
+				HttpConstants.HEADER_HOST);
 
-		if (host != null)
-		{
+		if (host != null) {
 			int colonIndex = host.indexOf(':');
 
-			if (colonIndex != -1)
-			{
+			if (colonIndex != -1) {
 				super.setBaseDomain(host.substring(0, colonIndex));
-				super.setBasePort(Integer.valueOf(host.substring(colonIndex + 1)));
-			}
-			else
-			{
+				super.setBasePort(Integer.valueOf(host
+						.substring(colonIndex + 1)));
+			} else {
 				super.setBaseDomain(host);
 
-				if (isConfidential())
-				{
+				if (isConfidential()) {
 					super.setServerPort(Protocol.HTTPS.getDefaultPort());
-				}
-				else
-				{
+				} else {
 					super.setServerPort(Protocol.HTTP.getDefaultPort());
 				}
 			}
-		}
-		else
-		{
-			this.logger.warning("Couldn't find the mandatory \"Host\" HTTP header.");
+		} else {
+			this.logger
+					.warning("Couldn't find the mandatory \"Host\" HTTP header.");
 		}
 
 		this.hostParsed = true;
 	}
 
 	/**
-	 * Sends the response back to the client. Commits the status, headers and optional entity and send them over 
-	 * the network. The default implementation only writes the response entity on the reponse stream or channel. 
-	 * Subclasses will probably also copy the response headers and status.
-	 * @param response The high-level response.
+	 * Sends the response back to the client. Commits the status, headers and
+	 * optional entity and send them over the network. The default
+	 * implementation only writes the response entity on the reponse stream or
+	 * channel. Subclasses will probably also copy the response headers and
+	 * status.
+	 * 
+	 * @param response
+	 *            The high-level response.
 	 */
-	public void sendResponse(Response response) throws IOException
-	{
-		if (response != null)
-		{
+	public void sendResponse(Response response) throws IOException {
+		if (response != null) {
 			Representation entity = response.getEntity();
 
-			if ((entity != null) && !getMethod().equals(Method.HEAD.getName()))
-			{
+			if ((entity != null) && !getMethod().equals(Method.HEAD.getName())) {
 				// Get the connector service to callback
-				ConnectorService connectorService = getConnectorService(response.getRequest());
-				if (connectorService != null) connectorService.beforeSend(entity);
+				ConnectorService connectorService = getConnectorService(response
+						.getRequest());
+				if (connectorService != null)
+					connectorService.beforeSend(entity);
 
 				// Send the entity to the client
-				if (getResponseChannel() != null)
-				{
+				if (getResponseChannel() != null) {
 					entity.write(getResponseChannel());
-				}
-				else if (getResponseStream() != null)
-				{
+				} else if (getResponseStream() != null) {
 					entity.write(getResponseStream());
 				}
 
-				if (connectorService != null) connectorService.afterSend(entity);
+				if (connectorService != null)
+					connectorService.afterSend(entity);
 			}
 
-			if (getResponseStream() != null)
-			{
+			if (getResponseStream() != null) {
 				getResponseStream().flush();
 			}
 		}
@@ -249,19 +242,20 @@ public abstract class HttpServerCall extends HttpCall
 
 	/**
 	 * Returns the logger to use.
+	 * 
 	 * @return The logger to use.
 	 */
-	public Logger getLogger()
-	{
+	public Logger getLogger() {
 		return this.logger;
 	}
 
 	/**
 	 * Sets the logger to use.
-	 * @param logger The logger to use.
+	 * 
+	 * @param logger
+	 *            The logger to use.
 	 */
-	public void setLogger(Logger logger)
-	{
+	public void setLogger(Logger logger) {
 		this.logger = logger;
 	}
 

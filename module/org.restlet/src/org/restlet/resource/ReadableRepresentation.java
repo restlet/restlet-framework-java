@@ -31,32 +31,38 @@ import org.restlet.util.ByteUtils;
 
 /**
  * Transient representation based on a readable NIO byte channel.
+ * 
  * @author Jerome Louvel (contact@noelios.com)
  */
-public class ReadableRepresentation extends ChannelRepresentation
-{
+public class ReadableRepresentation extends ChannelRepresentation {
 	/** The representation's input stream. */
 	private ReadableByteChannel readableChannel;
 
 	/**
 	 * Constructor.
-	 * @param readableChannel The representation's channel.
-	 * @param mediaType The representation's media type.
+	 * 
+	 * @param readableChannel
+	 *            The representation's channel.
+	 * @param mediaType
+	 *            The representation's media type.
 	 */
-	public ReadableRepresentation(ReadableByteChannel readableChannel, MediaType mediaType)
-	{
+	public ReadableRepresentation(ReadableByteChannel readableChannel,
+			MediaType mediaType) {
 		this(readableChannel, mediaType, UNKNOWN_SIZE);
 	}
 
 	/**
 	 * Constructor.
-	 * @param readableChannel The representation's channel.
-	 * @param mediaType The representation's media type.
-	 * @param expectedSize The expected stream size. 
+	 * 
+	 * @param readableChannel
+	 *            The representation's channel.
+	 * @param mediaType
+	 *            The representation's media type.
+	 * @param expectedSize
+	 *            The expected stream size.
 	 */
 	public ReadableRepresentation(ReadableByteChannel readableChannel,
-			MediaType mediaType, long expectedSize)
-	{
+			MediaType mediaType, long expectedSize) {
 		super(mediaType);
 		setSize(expectedSize);
 		this.readableChannel = readableChannel;
@@ -65,12 +71,12 @@ public class ReadableRepresentation extends ChannelRepresentation
 	}
 
 	/**
-	 * Returns a readable byte channel. If it is supported by a file a read-only instance of FileChannel is
-	 * returned.
+	 * Returns a readable byte channel. If it is supported by a file a read-only
+	 * instance of FileChannel is returned.
+	 * 
 	 * @return A readable byte channel.
 	 */
-	public synchronized ReadableByteChannel getChannel() throws IOException
-	{
+	public synchronized ReadableByteChannel getChannel() throws IOException {
 		ReadableByteChannel result = this.readableChannel;
 		this.readableChannel = null;
 		setAvailable(false);
@@ -79,10 +85,11 @@ public class ReadableRepresentation extends ChannelRepresentation
 
 	/**
 	 * Writes the representation to a byte channel.
-	 * @param writableChannel A writable byte channel.
+	 * 
+	 * @param writableChannel
+	 *            A writable byte channel.
 	 */
-	public void write(WritableByteChannel writableChannel) throws IOException
-	{
+	public void write(WritableByteChannel writableChannel) throws IOException {
 		ByteUtils.write(getChannel(), writableChannel);
 	}
 

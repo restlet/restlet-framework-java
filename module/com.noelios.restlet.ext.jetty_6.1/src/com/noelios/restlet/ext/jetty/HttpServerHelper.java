@@ -30,61 +30,61 @@ import org.restlet.Server;
 import org.restlet.data.Protocol;
 
 /**
- * Jetty HTTP server connector. Here is the list of additional parameters that are supported:
- * <table>
- * 	<tr>
- * 		<th>Parameter name</th>
- * 		<th>Value type</th>
- * 		<th>Default value</th>
- * 		<th>Description</th>
- * 	</tr>
- * 	<tr>
- * 		<td>type</td>
- * 		<td>int</td>
- * 		<td>1</td>
- * 		<td>The type of Jetty connector to use.<br/>
- * 1 : Selecting NIO connector (Jetty's SelectChannelConnector class).<br/>
- * 2 : Blocking NIO connector (Jetty's BlockingChannelConnector class).<br/>
- * 3 : Blocking BIO connector (Jetty's SocketConnector class).</td>
- * 	</tr>
+ * Jetty HTTP server connector. Here is the list of additional parameters that
+ * are supported: <table>
+ * <tr>
+ * <th>Parameter name</th>
+ * <th>Value type</th>
+ * <th>Default value</th>
+ * <th>Description</th>
+ * </tr>
+ * <tr>
+ * <td>type</td>
+ * <td>int</td>
+ * <td>1</td>
+ * <td>The type of Jetty connector to use.<br/> 1 : Selecting NIO connector
+ * (Jetty's SelectChannelConnector class).<br/> 2 : Blocking NIO connector
+ * (Jetty's BlockingChannelConnector class).<br/> 3 : Blocking BIO connector
+ * (Jetty's SocketConnector class).</td>
+ * </tr>
  * </table>
+ * 
  * @see <a href="http://jetty.mortbay.org/jetty6/">Jetty home page</a>
  * @author Jerome Louvel (contact@noelios.com)
  */
-public class HttpServerHelper extends JettyServerHelper
-{
+public class HttpServerHelper extends JettyServerHelper {
 	/**
 	 * Constructor.
-	 * @param server The server to help.
+	 * 
+	 * @param server
+	 *            The server to help.
 	 */
-	public HttpServerHelper(Server server)
-	{
+	public HttpServerHelper(Server server) {
 		super(server);
 		getProtocols().add(Protocol.HTTP);
 	}
 
 	/**
 	 * Creates a new internal Jetty connector.
+	 * 
 	 * @return A new internal Jetty connector.
 	 */
-	protected AbstractConnector createConnector()
-	{
+	protected AbstractConnector createConnector() {
 		AbstractConnector result = null;
 
 		// Create and configure the Jetty HTTP connector
-		switch (getType())
-		{
-			case 1:
-				// Selecting NIO connector
-				result = new SelectChannelConnector();
+		switch (getType()) {
+		case 1:
+			// Selecting NIO connector
+			result = new SelectChannelConnector();
 			break;
-			case 2:
-				// Blocking NIO connector
-				result = new BlockingChannelConnector();
+		case 2:
+			// Blocking NIO connector
+			result = new BlockingChannelConnector();
 			break;
-			case 3:
-				// Blocking BIO connector
-				result = new SocketConnector();
+		case 3:
+			// Blocking BIO connector
+			result = new SocketConnector();
 			break;
 		}
 
@@ -93,10 +93,10 @@ public class HttpServerHelper extends JettyServerHelper
 
 	/**
 	 * Returns the type of Jetty connector to use.
+	 * 
 	 * @return The type of Jetty connector to use.
 	 */
-	public int getType()
-	{
+	public int getType() {
 		return Integer.parseInt(getParameters().getFirstValue("type", "1"));
 	}
 

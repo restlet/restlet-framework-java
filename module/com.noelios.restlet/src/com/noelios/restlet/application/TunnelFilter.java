@@ -36,60 +36,62 @@ import org.restlet.data.Request;
 import org.restlet.data.Response;
 
 /**
- * Filter tunnelling browser calls into full REST calls. The request method can be changed (via POST requests
- * only) as well as the accepted media types, languages, encodings and character sets.  
+ * Filter tunnelling browser calls into full REST calls. The request method can
+ * be changed (via POST requests only) as well as the accepted media types,
+ * languages, encodings and character sets.
+ * 
  * @author Jerome Louvel (contact@noelios.com)
  */
-public class TunnelFilter extends Filter
-{
+public class TunnelFilter extends Filter {
 	/** The application. */
 	private Application application;
 
 	/**
 	 * Constructor.
-	 * @param application The parent application.
+	 * 
+	 * @param application
+	 *            The parent application.
 	 */
-	public TunnelFilter(Application application)
-	{
+	public TunnelFilter(Application application) {
 		super(application.getContext());
 		this.application = application;
 	}
 
 	/**
 	 * Returns the application.
+	 * 
 	 * @return The application.
 	 */
-	public Application getApplication()
-	{
+	public Application getApplication() {
 		return this.application;
 	}
 
 	/**
-	 * Allows filtering before its handling by the target Restlet. Does nothing by default.
-	 * @param request The request to handle.
-	 * @param response The response to update.
+	 * Allows filtering before its handling by the target Restlet. Does nothing
+	 * by default.
+	 * 
+	 * @param request
+	 *            The request to handle.
+	 * @param response
+	 *            The response to update.
 	 */
-	public void beforeHandle(Request request, Response response)
-	{
+	public void beforeHandle(Request request, Response response) {
 		super.beforeHandle(request, response);
 		Form query = request.getResourceRef().getQueryAsForm();
 
 		// Tunnels the extracted attributes into the proper call objects.
 		if (getApplication().getTunnelService().isMethodTunnel()
-				&& request.getMethod().equals(Method.POST))
-		{
+				&& request.getMethod().equals(Method.POST)) {
 			String methodName = query.getFirstValue(getApplication()
 					.getTunnelService().getMethodParameter());
 
-			if (methodName != null)
-			{
+			if (methodName != null) {
 				request.setMethod(Method.valueOf(methodName));
 			}
 		}
 
 		if (request.getMethod().equals(Method.GET)
-				&& getApplication().getTunnelService().isPreferencesTunnel())
-		{
+				&& getApplication().getTunnelService().isPreferencesTunnel()) {
 			// Extract the header values
 			String acceptCharset = query.getFirstValue(getApplication()
 					.getTunnelService().getCharacterSetAttribute());
@@ -102,48 +104,45 @@ public class TunnelFilter extends Filter
 
 			// Parse the headers and update the call preferences
 			Metadata metadata = null;
-			if (acceptCharset != null)
-			{
-				metadata = getApplication().getMetadataService().getMetadata(acceptCharset);
+			if (acceptCharset != null) {
+				metadata = getApplication().getMetadataService().getMetadata(
+						acceptCharset);
 
-				if (metadata instanceof CharacterSet)
-				{
+				if (metadata instanceof CharacterSet) {
 					request.getClientInfo().getAcceptedCharacterSets().clear();
 					request.getClientInfo().getAcceptedCharacterSets().add(
-							new Preference<CharacterSet>((CharacterSet) metadata));
+							new Preference<CharacterSet>(
+									(CharacterSet) metadata));
 				}
 			}
 
-			if (acceptEncoding != null)
-			{
-				metadata = getApplication().getMetadataService().getMetadata(acceptEncoding);
+			if (acceptEncoding != null) {
+				metadata = getApplication().getMetadataService().getMetadata(
+						acceptEncoding);
 
-				if (metadata instanceof Encoding)
-				{
+				if (metadata instanceof Encoding) {
 					request.getClientInfo().getAcceptedEncodings().clear();
 					request.getClientInfo().getAcceptedEncodings().add(
 							new Preference<Encoding>((Encoding) metadata));
 				}
 			}
 
-			if (acceptLanguage != null)
-			{
-				metadata = getApplication().getMetadataService().getMetadata(acceptLanguage);
+			if (acceptLanguage != null) {
+				metadata = getApplication().getMetadataService().getMetadata(
+						acceptLanguage);
 
-				if (metadata instanceof Language)
-				{
+				if (metadata instanceof Language) {
 					request.getClientInfo().getAcceptedLanguages().clear();
 					request.getClientInfo().getAcceptedLanguages().add(
 							new Preference<Language>((Language) metadata));
 				}
 			}
 
-			if (acceptMediaType != null)
-			{
-				metadata = getApplication().getMetadataService().getMetadata(acceptMediaType);
+			if (acceptMediaType != null) {
+				metadata = getApplication().getMetadataService().getMetadata(
+						acceptMediaType);
 
-				if (metadata instanceof MediaType)
-				{
+				if (metadata instanceof MediaType) {
 					request.getClientInfo().getAcceptedMediaTypes().clear();
 					request.getClientInfo().getAcceptedMediaTypes().add(
 							new Preference<MediaType>((MediaType) metadata));

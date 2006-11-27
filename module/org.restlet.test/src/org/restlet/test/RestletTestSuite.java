@@ -27,13 +27,12 @@ import junit.framework.TestSuite;
 
 /**
  * Suite of unit tests for the Restlet RI.
+ * 
  * @author Jerome Louvel (contact@noelios.com)
  */
-public class RestletTestSuite extends TestSuite
-{
+public class RestletTestSuite extends TestSuite {
 	/** Constructor. */
-	public RestletTestSuite()
-	{
+	public RestletTestSuite() {
 		addTestSuite(CallTestCase.class);
 		addTestSuite(CookieTestCase.class);
 		addTestSuite(DirectoryTestCase.class);
@@ -51,10 +50,10 @@ public class RestletTestSuite extends TestSuite
 
 	/**
 	 * JUnit constructor.
+	 * 
 	 * @return The unit test.
 	 */
-	public static Test suite()
-	{
+	public static Test suite() {
 		return new RestletTestSuite();
 	}
 

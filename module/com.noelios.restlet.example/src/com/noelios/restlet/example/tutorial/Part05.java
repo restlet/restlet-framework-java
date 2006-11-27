@@ -31,26 +31,24 @@ import org.restlet.data.Response;
 
 /**
  * Restlets containers.
+ * 
  * @author Jerome Louvel (contact@noelios.com)
  */
-public class Part05
-{
-	public static void main(String[] args) throws Exception
-	{
+public class Part05 {
+	public static void main(String[] args) throws Exception {
 		// Create a new Restlet container and add a HTTP server connector to it
 		Container container = new Container();
 		container.getServers().add(Protocol.HTTP, 8182);
 
 		// Create a new Restlet that will display some path information.
-		Restlet restlet = new Restlet()
-		{
+		Restlet restlet = new Restlet() {
 			@Override
-			public void handle(Request request, Response response)
-			{
+			public void handle(Request request, Response response) {
 				// Print the requested URI path
-				String message = "Resource URI:  " + request.getResourceRef() + '\n'
-						+ "Base URI:      " + request.getBaseRef() + '\n' + "Relative path: "
-						+ request.getRelativePart() + '\n' + "Query string:  "
+				String message = "Resource URI:  " + request.getResourceRef()
+						+ '\n' + "Base URI:      " + request.getBaseRef()
+						+ '\n' + "Relative path: " + request.getRelativePart()
+						+ '\n' + "Query string:  "
 						+ request.getResourceRef().getQuery();
 				response.setEntity(message, MediaType.TEXT_PLAIN);
 			}

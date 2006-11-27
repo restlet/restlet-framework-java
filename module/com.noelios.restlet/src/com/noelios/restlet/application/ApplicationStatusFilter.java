@@ -32,47 +32,53 @@ import com.noelios.restlet.StatusFilter;
 
 /**
  * Status filter that tries to obtain ouput representation from an application.
+ * 
  * @author Jerome Louvel (contact@noelios.com)
  */
-public class ApplicationStatusFilter extends StatusFilter
-{
+public class ApplicationStatusFilter extends StatusFilter {
 	/** The application. */
 	private Application application;
 
 	/**
 	 * Constructor.
-	 * @param application The application.
+	 * 
+	 * @param application
+	 *            The application.
 	 */
-	public ApplicationStatusFilter(Application application)
-	{
-		super(application.getContext(), application.getStatusService().isOverwrite(),
-				application.getStatusService().getContactEmail(), "/");
+	public ApplicationStatusFilter(Application application) {
+		super(application.getContext(), application.getStatusService()
+				.isOverwrite(), application.getStatusService()
+				.getContactEmail(), "/");
 		this.application = application;
 	}
 
 	/**
 	 * Returns the application.
+	 * 
 	 * @return The application.
 	 */
-	public Application getApplication()
-	{
+	public Application getApplication() {
 		return this.application;
 	}
 
 	/**
-	 * Returns a representation for the given status.<br/> In order to customize the 
-	 * default representation, this method can be overriden. 
-	 * @param status The status to represent.
-	 * @param request The request handled.
-	 * @param response The response updated.
+	 * Returns a representation for the given status.<br/> In order to
+	 * customize the default representation, this method can be overriden.
+	 * 
+	 * @param status
+	 *            The status to represent.
+	 * @param request
+	 *            The request handled.
+	 * @param response
+	 *            The response updated.
 	 * @return The representation of the given status.
 	 */
 	public Representation getRepresentation(Status status, Request request,
-			Response response)
-	{
-		Representation result = getApplication().getStatusService().getRepresentation(
-				status, request, response);
-		if (result == null) result = super.getRepresentation(status, request, response);
+			Response response) {
+		Representation result = getApplication().getStatusService()
+				.getRepresentation(status, request, response);
+		if (result == null)
+			result = super.getRepresentation(status, request, response);
 		return result;
 	}
 

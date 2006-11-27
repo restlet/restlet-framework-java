@@ -27,22 +27,18 @@ import org.restlet.ext.atom.Service;
 
 /**
  * Unit test case for the Atom extension.
+ * 
  * @author Jerome Louvel (contact@noelios.com)
  */
-public class AtomTest
-{
-	public static void main(String[] args)
-	{
-		try
-		{
+public class AtomTest {
+	public static void main(String[] args) {
+		try {
 			Service atomService = new Service(
 					"http://bitworking.org/projects/pyapp/collection.cgi?introspection=1");
-			Feed atomFeed = atomService.getWorkspaces().get(0).getCollections().get(0)
-					.getFeed();
+			Feed atomFeed = atomService.getWorkspaces().get(0).getCollections()
+					.get(0).getFeed();
 			atomFeed.write(System.out);
-		}
-		catch (Exception e)
-		{
+		} catch (Exception e) {
 			e.printStackTrace();
 		}
 	}

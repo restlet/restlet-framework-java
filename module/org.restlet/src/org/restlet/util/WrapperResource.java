@@ -33,188 +33,202 @@ import org.restlet.resource.Resource;
 import org.restlet.resource.Result;
 
 /**
- * Resource wrapper. Useful for application developer who need to enrich the resource
- * with application related properties and behavior.
- * @see <a href="http://c2.com/cgi/wiki?DecoratorPattern">The decorator (aka wrapper) pattern</a>
+ * Resource wrapper. Useful for application developer who need to enrich the
+ * resource with application related properties and behavior.
+ * 
+ * @see <a href="http://c2.com/cgi/wiki?DecoratorPattern">The decorator (aka
+ *      wrapper) pattern</a>
  * @author Jerome Louvel (contact@noelios.com)
  */
-public class WrapperResource extends Resource
-{
+public class WrapperResource extends Resource {
 	/** The wrapped resource. */
 	private Resource wrappedResource;
 
 	/**
 	 * Constructor.
-	 * @param wrappedResource The wrapped resource.
+	 * 
+	 * @param wrappedResource
+	 *            The wrapped resource.
 	 */
-	public WrapperResource(Resource wrappedResource)
-	{
+	public WrapperResource(Resource wrappedResource) {
 		this.wrappedResource = wrappedResource;
 	}
 
 	/**
-	 * Indicates if it is allowed to delete the resource. The default value is false. 
+	 * Indicates if it is allowed to delete the resource. The default value is
+	 * false.
+	 * 
 	 * @return True if the method is allowed.
 	 */
-	public boolean allowDelete()
-	{
+	public boolean allowDelete() {
 		return getWrappedResource().allowDelete();
 	}
 
 	/**
-	 * Indicates if it is allowed to get the variants. The default value is true. 
+	 * Indicates if it is allowed to get the variants. The default value is
+	 * true.
+	 * 
 	 * @return True if the method is allowed.
 	 */
-	public boolean allowGet()
-	{
+	public boolean allowGet() {
 		return getWrappedResource().allowGet();
 	}
 
 	/**
-	 * Indicates if it is allowed to post to the resource. The default value is false. 
+	 * Indicates if it is allowed to post to the resource. The default value is
+	 * false.
+	 * 
 	 * @return True if the method is allowed.
 	 */
-	public boolean allowPost()
-	{
+	public boolean allowPost() {
 		return getWrappedResource().allowPost();
 	}
 
 	/**
-	 * Indicates if it is allowed to put to the resource. The default value is false. 
+	 * Indicates if it is allowed to put to the resource. The default value is
+	 * false.
+	 * 
 	 * @return True if the method is allowed.
 	 */
-	public boolean allowPut()
-	{
+	public boolean allowPut() {
 		return getWrappedResource().allowPut();
 	}
 
 	/**
 	 * Asks the resource to delete itself and all its representations.
-	 * @return The result information. 
+	 * 
+	 * @return The result information.
 	 */
-	public Result delete()
-	{
+	public Result delete() {
 		return getWrappedResource().delete();
 	}
 
 	/**
 	 * Returns the list of methods allowed on the requested resource.
+	 * 
 	 * @return The list of allowed methods.
 	 */
-	public List<Method> getAllowedMethods()
-	{
+	public List<Method> getAllowedMethods() {
 		return getWrappedResource().getAllowedMethods();
 	}
 
 	/**
 	 * Returns the official identifier.
+	 * 
 	 * @return The official identifier.
 	 */
-	public Reference getIdentifier()
-	{
+	public Reference getIdentifier() {
 		return getWrappedResource().getIdentifier();
 	}
 
 	/**
-	 * Returns the list of all the identifiers for the resource. The list is composed of the official identifier
-	 * followed by all the alias identifiers.
+	 * Returns the list of all the identifiers for the resource. The list is
+	 * composed of the official identifier followed by all the alias
+	 * identifiers.
+	 * 
 	 * @return The list of all the identifiers for the resource.
 	 */
-	public ReferenceList getIdentifiers()
-	{
+	public ReferenceList getIdentifiers() {
 		return getWrappedResource().getIdentifiers();
 	}
 
 	/**
 	 * Returns the logger to use.
+	 * 
 	 * @return The logger to use.
 	 */
-	public Logger getLogger()
-	{
+	public Logger getLogger() {
 		return getWrappedResource().getLogger();
 	}
 
 	/**
-	 * Returns the list of variants. Each variant is described by metadata and can provide several instances 
-	 * of the variant's representation.
+	 * Returns the list of variants. Each variant is described by metadata and
+	 * can provide several instances of the variant's representation.
+	 * 
 	 * @return The list of variants.
 	 */
-	public List<Representation> getVariants()
-	{
+	public List<Representation> getVariants() {
 		return getWrappedResource().getVariants();
 	}
 
 	/**
 	 * Returns the wrapped Resource.
+	 * 
 	 * @return The wrapped Resource.
 	 */
-	protected Resource getWrappedResource()
-	{
+	protected Resource getWrappedResource() {
 		return this.wrappedResource;
 	}
 
 	/**
 	 * Posts a variant representation in the resource.
-	 * @param entity The posted entity. 
+	 * 
+	 * @param entity
+	 *            The posted entity.
 	 * @return The result information.
 	 */
-	public Result post(Representation entity)
-	{
+	public Result post(Representation entity) {
 		return getWrappedResource().post(entity);
 	}
 
 	/**
 	 * Puts a variant representation in the resource.
-	 * @param variant A new or updated variant representation. 
+	 * 
+	 * @param variant
+	 *            A new or updated variant representation.
 	 * @return The result information.
 	 */
-	public Result put(Representation variant)
-	{
+	public Result put(Representation variant) {
 		return getWrappedResource().put(variant);
 	}
 
 	/**
 	 * Sets the official identifier.
-	 * @param identifier The official identifier.
+	 * 
+	 * @param identifier
+	 *            The official identifier.
 	 */
-	public void setIdentifier(Reference identifier)
-	{
+	public void setIdentifier(Reference identifier) {
 		getWrappedResource().setIdentifier(identifier);
 	}
 
 	/**
 	 * Sets the official identifier from a URI string.
-	 * @param identifierUri The official identifier to parse.
+	 * 
+	 * @param identifierUri
+	 *            The official identifier to parse.
 	 */
-	public void setIdentifier(String identifierUri)
-	{
+	public void setIdentifier(String identifierUri) {
 		getWrappedResource().setIdentifier(identifierUri);
 	}
 
 	/**
-	 * Sets a new list of all the identifiers for the resource.  
-	 * @param identifiers The new list of identifiers. 
+	 * Sets a new list of all the identifiers for the resource.
+	 * 
+	 * @param identifiers
+	 *            The new list of identifiers.
 	 */
-	public void setIdentifiers(ReferenceList identifiers)
-	{
+	public void setIdentifiers(ReferenceList identifiers) {
 		getWrappedResource().setIdentifiers(identifiers);
 	}
 
 	/**
 	 * Sets the logger to use.
-	 * @param logger The logger to use.
+	 * 
+	 * @param logger
+	 *            The logger to use.
 	 */
-	public void setLogger(Logger logger)
-	{
+	public void setLogger(Logger logger) {
 		getWrappedResource().setLogger(logger);
 	}
 
 	/**
-	 * Sets a new list of variants. 
-	 * @param variants The new list of variants.
+	 * Sets a new list of variants.
+	 * 
+	 * @param variants
+	 *            The new list of variants.
 	 */
-	public void setVariants(List<Representation> variants)
-	{
+	public void setVariants(List<Representation> variants) {
 		getWrappedResource().setVariants(variants);
 	}
 

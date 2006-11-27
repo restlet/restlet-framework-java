@@ -35,11 +35,12 @@ import org.restlet.data.ParameterList;
 import org.restlet.data.Preference;
 
 /**
- * Preference header reader. Works for character sets, encodings, languages or media types.
+ * Preference header reader. Works for character sets, encodings, languages or
+ * media types.
+ * 
  * @author Jerome Louvel (contact@noelios.com)
  */
-public class PreferenceReader<T extends Metadata> extends HeaderReader
-{
+public class PreferenceReader<T extends Metadata> extends HeaderReader {
 	public static final int TYPE_CHARACTER_SET = 1;
 
 	public static final int TYPE_ENCODING = 2;
@@ -53,21 +54,23 @@ public class PreferenceReader<T extends Metadata> extends HeaderReader
 
 	/**
 	 * Constructor.
-	 * @param type The type of metadata read.
-	 * @param header The header to read.
+	 * 
+	 * @param type
+	 *            The type of metadata read.
+	 * @param header
+	 *            The header to read.
 	 */
-	public PreferenceReader(int type, String header)
-	{
+	public PreferenceReader(int type, String header) {
 		super(header);
 		this.type = type;
 	}
 
 	/**
 	 * Read the next preference.
+	 * 
 	 * @return The next preference.
 	 */
-	public Preference<T> readPreference() throws IOException
-	{
+	public Preference<T> readPreference() throws IOException {
 		Preference<T> result = null;
 
 		boolean readingMetadata = true;
@@ -81,144 +84,97 @@ public class PreferenceReader<T extends Metadata> extends HeaderReader
 		ParameterList parameters = null;
 		int nextChar = 0;
 
-		while ((result == null) && (nextChar != -1))
-		{
+		while ((result == null) && (nextChar != -1)) {
 			nextChar = read();
 
-			if (readingMetadata)
-			{
-				if ((nextChar == ',') || (nextChar == -1))
-				{
-					if (metadataBuffer.length() > 0)
-					{
+			if (readingMetadata) {
+				if ((nextChar == ',') || (nextChar == -1)) {
+					if (metadataBuffer.length() > 0) {
 						// End of metadata section
 						// No parameters detected
 						result = createPreference(metadataBuffer, null);
 						paramNameBuffer = new StringBuilder();
-					}
-					else if (nextChar == -1)
-					{
+					} else if (nextChar == -1) {
 						// Do nothing return null preference
-					}
-					else
-					{
+					} else {
 						// Ignore empty metadata name
 					}
-				}
-				else if (nextChar == ';')
-				{
-					if (metadataBuffer.length() > 0)
-					{
+				} else if (nextChar == ';') {
+					if (metadataBuffer.length() > 0) {
 						// End of metadata section
 						// Parameters detected
 						readingMetadata = false;
 						readingParamName = true;
 						paramNameBuffer = new StringBuilder();
 						parameters = new ParameterList();
-					}
-					else
-					{
+					} else {
 						throw new IOException("Empty metadata name detected.");
 					}
-				}
-				else if (nextChar == ' ')
-				{
+				} else if (nextChar == ' ') {
 					// Ignore white spaces
-				}
-				else if (HeaderUtils.isText(nextChar))
-				{
+				} else if (HeaderUtils.isText(nextChar)) {
 					metadataBuffer.append((char) nextChar);
-				}
-				else
-				{
+				} else {
 					throw new IOException(
 							"Control characters are not allowed within a metadata name.");
 				}
-			}
-			else if (readingParamName)
-			{
-				if (nextChar == '=')
-				{
-					if (paramNameBuffer.length() > 0)
-					{
+			} else if (readingParamName) {
+				if (nextChar == '=') {
+					if (paramNameBuffer.length() > 0) {
 						// End of parameter name section
 						readingParamName = false;
 						readingParamValue = true;
 						paramValueBuffer = new StringBuilder();
-					}
-					else
-					{
+					} else {
 						throw new IOException("Empty parameter name detected.");
 					}
-				}
-				else if ((nextChar == ',') || (nextChar == -1))
-				{
-					if (paramNameBuffer.length() > 0)
-					{
+				} else if ((nextChar == ',') || (nextChar == -1)) {
+					if (paramNameBuffer.length() > 0) {
 						// End of parameters section
-						parameters.add(HeaderUtils.createParameter(paramNameBuffer, null));
+						parameters.add(HeaderUtils.createParameter(
+								paramNameBuffer, null));
 						result = createPreference(metadataBuffer, parameters);
-					}
-					else
-					{
+					} else {
 						throw new IOException("Empty parameter name detected.");
 					}
-				}
-				else if (nextChar == ';')
-				{
+				} else if (nextChar == ';') {
 					// End of parameter
-					parameters.add(HeaderUtils.createParameter(paramNameBuffer, null));
+					parameters.add(HeaderUtils.createParameter(paramNameBuffer,
+							null));
 					paramNameBuffer = new StringBuilder();
 					readingParamName = true;
 					readingParamValue = false;
-				}
-				else if ((nextChar == ' ') && (paramNameBuffer.length() == 0))
-				{
+				} else if ((nextChar == ' ') && (paramNameBuffer.length() == 0)) {
 					// Ignore white spaces
-				}
-				else if (HeaderUtils.isTokenChar(nextChar))
-				{
+				} else if (HeaderUtils.isTokenChar(nextChar)) {
 					paramNameBuffer.append((char) nextChar);
-				}
-				else
-				{
+				} else {
 					throw new IOException(
 							"Separator and control characters are not allowed within a token.");
 				}
-			}
-			else if (readingParamValue)
-			{
-				if ((nextChar == ',') || (nextChar == -1))
-				{
-					if (paramValueBuffer.length() > 0)
-					{
+			} else if (readingParamValue) {
+				if ((nextChar == ',') || (nextChar == -1)) {
+					if (paramValueBuffer.length() > 0) {
 						// End of parameters section
-						parameters.add(HeaderUtils.createParameter(paramNameBuffer, paramValueBuffer));
+						parameters.add(HeaderUtils.createParameter(
+								paramNameBuffer, paramValueBuffer));
 						result = createPreference(metadataBuffer, parameters);
-					}
-					else
-					{
+					} else {
 						throw new IOException("Empty parameter value detected");
 					}
-				}
-				else if (nextChar == ';')
-				{
+				} else if (nextChar == ';') {
 					// End of parameter
-					parameters.add(HeaderUtils.createParameter(paramNameBuffer, paramValueBuffer));
+					parameters.add(HeaderUtils.createParameter(paramNameBuffer,
+							paramValueBuffer));
 					paramNameBuffer = new StringBuilder();
 					readingParamName = true;
 					readingParamValue = false;
-				}
-				else if ((nextChar == '"') && (paramValueBuffer.length() == 0))
-				{
+				} else if ((nextChar == '"')
+						&& (paramValueBuffer.length() == 0)) {
 					paramValueBuffer.append(readQuotedString());
-				}
-				else if (HeaderUtils.isTokenChar(nextChar))
-				{
+				} else if (HeaderUtils.isTokenChar(nextChar)) {
 					paramValueBuffer.append((char) nextChar);
-				}
-				else
-				{
+				} else {
 					throw new IOException(
 							"Separator and control characters are not allowed within a token");
 				}
@@ -229,30 +185,28 @@ public class PreferenceReader<T extends Metadata> extends HeaderReader
 	}
 
 	/**
-	 * Extract the media parameters. Only leaveas the quality parameter if found. Modifies the parameters list.
-	 * @param parameters All the preference parameters.
+	 * Extract the media parameters. Only leaveas the quality parameter if
+	 * found. Modifies the parameters list.
+	 * 
+	 * @param parameters
+	 *            All the preference parameters.
 	 * @return The media parameters.
 	 */
-	protected ParameterList extractMediaParams(ParameterList parameters)
-	{
+	protected ParameterList extractMediaParams(ParameterList parameters) {
 		ParameterList result = null;
 		boolean qualityFound = false;
 		Parameter param = null;
 
-		if (parameters != null)
-		{
+		if (parameters != null) {
 			result = new ParameterList();
 
-			for (Iterator iter = parameters.iterator(); !qualityFound && iter.hasNext();)
-			{
+			for (Iterator iter = parameters.iterator(); !qualityFound
+					&& iter.hasNext();) {
 				param = (Parameter) iter.next();
 
-				if (param.getName().equals("q"))
-				{
+				if (param.getName().equals("q")) {
 					qualityFound = true;
-				}
-				else
-				{
+				} else {
 					iter.remove();
 					result.add(param);
 				}
@@ -264,22 +218,21 @@ public class PreferenceReader<T extends Metadata> extends HeaderReader
 
 	/**
 	 * Extract the quality value. If the value is not found, 1 is returned.
-	 * @param parameters The preference parameters.
+	 * 
+	 * @param parameters
+	 *            The preference parameters.
 	 * @return The quality value.
 	 */
-	protected float extractQuality(ParameterList parameters)
-	{
+	protected float extractQuality(ParameterList parameters) {
 		float result = 1F;
 		boolean found = false;
 
-		if (parameters != null)
-		{
+		if (parameters != null) {
 			Parameter param = null;
-			for (Iterator iter = parameters.iterator(); !found && iter.hasNext();)
-			{
+			for (Iterator iter = parameters.iterator(); !found
+					&& iter.hasNext();) {
 				param = (Parameter) iter.next();
-				if (param.getName().equals("q"))
-				{
+				if (param.getName().equals("q")) {
 					result = PreferenceUtils.parseQuality(param.getValue());
 					found = true;
 
@@ -295,61 +248,59 @@ public class PreferenceReader<T extends Metadata> extends HeaderReader
 
 	/**
 	 * Creates a new preference.
-	 * @param metadata The metadata name.
-	 * @param parameters The parameters list.
+	 * 
+	 * @param metadata
+	 *            The metadata name.
+	 * @param parameters
+	 *            The parameters list.
 	 * @return The new preference.
 	 */
 	@SuppressWarnings("unchecked")
 	protected Preference<T> createPreference(CharSequence metadata,
-			ParameterList parameters)
-	{
+			ParameterList parameters) {
 		Preference<T> result;
 
-		if (parameters == null)
-		{
+		if (parameters == null) {
 			result = new Preference<T>();
 
-			switch (type)
-			{
-				case TYPE_CHARACTER_SET:
-					result.setMetadata((T) new CharacterSet(metadata.toString()));
+			switch (type) {
+			case TYPE_CHARACTER_SET:
+				result.setMetadata((T) new CharacterSet(metadata.toString()));
 				break;
 
-				case TYPE_ENCODING:
-					result.setMetadata((T) new Encoding(metadata.toString()));
+			case TYPE_ENCODING:
+				result.setMetadata((T) new Encoding(metadata.toString()));
 				break;
 
-				case TYPE_LANGUAGE:
-					result.setMetadata((T) new Language(metadata.toString()));
+			case TYPE_LANGUAGE:
+				result.setMetadata((T) new Language(metadata.toString()));
 				break;
 
-				case TYPE_MEDIA_TYPE:
-					result.setMetadata((T) new MediaType(metadata.toString()));
+			case TYPE_MEDIA_TYPE:
+				result.setMetadata((T) new MediaType(metadata.toString()));
 				break;
 			}
-		}
-		else
-		{
+		} else {
 			ParameterList mediaParams = extractMediaParams(parameters);
 			float quality = extractQuality(parameters);
 			result = new Preference<T>(null, quality, parameters);
 
-			switch (type)
-			{
-				case TYPE_CHARACTER_SET:
-					result.setMetadata((T) new CharacterSet(metadata.toString()));
+			switch (type) {
+			case TYPE_CHARACTER_SET:
+				result.setMetadata((T) new CharacterSet(metadata.toString()));
 				break;
 
-				case TYPE_ENCODING:
-					result.setMetadata((T) new Encoding(metadata.toString()));
+			case TYPE_ENCODING:
+				result.setMetadata((T) new Encoding(metadata.toString()));
 				break;
 
-				case TYPE_LANGUAGE:
-					result.setMetadata((T) new Language(metadata.toString()));
+			case TYPE_LANGUAGE:
+				result.setMetadata((T) new Language(metadata.toString()));
 				break;
 
-				case TYPE_MEDIA_TYPE:
-					result.setMetadata((T) new MediaType(metadata.toString(), mediaParams));
+			case TYPE_MEDIA_TYPE:
+				result.setMetadata((T) new MediaType(metadata.toString(),
+						mediaParams));
 				break;
 			}
 		}

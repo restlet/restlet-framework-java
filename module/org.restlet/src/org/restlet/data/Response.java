@@ -31,14 +31,15 @@ import org.restlet.resource.Representation;
 import org.restlet.resource.Resource;
 
 /**
- * Generic response sent by server connectors. It is then received by client connectors. Responses 
- * are uniform across all types of connectors, protocols and components.
+ * Generic response sent by server connectors. It is then received by client
+ * connectors. Responses are uniform across all types of connectors, protocols
+ * and components.
+ * 
  * @see org.restlet.data.Request
  * @see org.restlet.Restlet
  * @author Jerome Louvel (contact@noelios.com)
  */
-public class Response extends Message
-{
+public class Response extends Message {
 	/** The authentication request sent by an origin server to a client. */
 	private ChallengeRequest challengeRequest;
 
@@ -62,10 +63,11 @@ public class Response extends Message
 
 	/**
 	 * Constructor.
-	 * @param request The request associated to this response.
+	 * 
+	 * @param request
+	 *            The request associated to this response.
 	 */
-	public Response(Request request)
-	{
+	public Response(Request request) {
 		this.challengeRequest = null;
 		this.cookieSettings = null;
 		this.dimensions = null;
@@ -77,194 +79,208 @@ public class Response extends Message
 
 	/**
 	 * Returns the authentication request sent by an origin server to a client.
+	 * 
 	 * @return The authentication request sent by an origin server to a client.
 	 */
-	public ChallengeRequest getChallengeRequest()
-	{
+	public ChallengeRequest getChallengeRequest() {
 		return this.challengeRequest;
 	}
 
 	/**
 	 * Returns the cookie settings provided by the server.
+	 * 
 	 * @return The cookie settings provided by the server.
 	 */
-	public List<CookieSetting> getCookieSettings()
-	{
+	public List<CookieSetting> getCookieSettings() {
 		if (this.cookieSettings == null)
 			this.cookieSettings = new ArrayList<CookieSetting>();
 		return this.cookieSettings;
 	}
 
-	/** 
-	 * Returns the set of selecting dimensions on which the response entity may vary. If some server-side 
-	 * content negotiation is done, this set should be properly updated, other it can be left empty. 
+	/**
+	 * Returns the set of selecting dimensions on which the response entity may
+	 * vary. If some server-side content negotiation is done, this set should be
+	 * properly updated, other it can be left empty.
+	 * 
 	 * @return The set of dimensions on which the response entity may vary.
 	 */
-	public Set<Dimension> getDimensions()
-	{
-		if (this.dimensions == null) this.dimensions = new HashSet<Dimension>();
+	public Set<Dimension> getDimensions() {
+		if (this.dimensions == null)
+			this.dimensions = new HashSet<Dimension>();
 		return this.dimensions;
 	}
 
 	/**
-	 * Returns the reference that the client should follow for redirections or resource creations.
+	 * Returns the reference that the client should follow for redirections or
+	 * resource creations.
+	 * 
 	 * @return The redirection reference.
 	 */
-	public Reference getRedirectRef()
-	{
+	public Reference getRedirectRef() {
 		return this.redirectRef;
 	}
 
 	/**
 	 * Returns the associated request
+	 * 
 	 * @return The associated request
 	 */
-	public Request getRequest()
-	{
+	public Request getRequest() {
 		return request;
 	}
 
 	/**
 	 * Returns the server-specific information.
+	 * 
 	 * @return The server-specific information.
 	 */
-	public ServerInfo getServerInfo()
-	{
-		if (this.serverInfo == null) this.serverInfo = new ServerInfo();
+	public ServerInfo getServerInfo() {
+		if (this.serverInfo == null)
+			this.serverInfo = new ServerInfo();
 		return this.serverInfo;
 	}
 
 	/**
 	 * Returns the status.
+	 * 
 	 * @return The status.
 	 */
-	public Status getStatus()
-	{
+	public Status getStatus() {
 		return this.status;
 	}
 
 	/**
-	 * Permanently redirects the client to a target URI. 
-	 * The client is expected to reuse the same method for the new request.
-	 * @param targetUri The target URI.
+	 * Permanently redirects the client to a target URI. The client is expected
+	 * to reuse the same method for the new request.
+	 * 
+	 * @param targetUri
+	 *            The target URI.
 	 */
-	public void redirectPermanent(String targetUri)
-	{
+	public void redirectPermanent(String targetUri) {
 		redirectPermanent(new Reference(targetUri));
 	}
 
 	/**
-	 * Permanently redirects the client to a target URI. 
-	 * The client is expected to reuse the same method for the new request.
-	 * @param targetRef The target URI reference.
+	 * Permanently redirects the client to a target URI. The client is expected
+	 * to reuse the same method for the new request.
+	 * 
+	 * @param targetRef
+	 *            The target URI reference.
 	 */
-	public void redirectPermanent(Reference targetRef)
-	{
+	public void redirectPermanent(Reference targetRef) {
 		setRedirectRef(targetRef);
 		setStatus(Status.REDIRECTION_PERMANENT);
 	}
 
 	/**
-	 * Redirects the client to a different URI that SHOULD be retrieved using a GET method on that resource. 
-	 * This method exists primarily to allow the output of a POST-activated script to redirect the user agent to a 
-	 * selected resource. The new URI is not a substitute reference for the originally requested resource.
-	 * @param targetUri The target URI.
+	 * Redirects the client to a different URI that SHOULD be retrieved using a
+	 * GET method on that resource. This method exists primarily to allow the
+	 * output of a POST-activated script to redirect the user agent to a
+	 * selected resource. The new URI is not a substitute reference for the
+	 * originally requested resource.
+	 * 
+	 * @param targetUri
+	 *            The target URI.
 	 */
-	public void redirectSeeOther(String targetUri)
-	{
+	public void redirectSeeOther(String targetUri) {
 		redirectSeeOther(new Reference(targetUri));
 	}
 
 	/**
-	 * Redirects the client to a different URI that SHOULD be retrieved using a GET method on that resource. 
-	 * This method exists primarily to allow the output of a POST-activated script to redirect the user agent to a 
-	 * selected resource. The new URI is not a substitute reference for the originally requested resource.
-	 * @param targetRef The target reference.
+	 * Redirects the client to a different URI that SHOULD be retrieved using a
+	 * GET method on that resource. This method exists primarily to allow the
+	 * output of a POST-activated script to redirect the user agent to a
+	 * selected resource. The new URI is not a substitute reference for the
+	 * originally requested resource.
+	 * 
+	 * @param targetRef
+	 *            The target reference.
 	 */
-	public void redirectSeeOther(Reference targetRef)
-	{
+	public void redirectSeeOther(Reference targetRef) {
 		setRedirectRef(targetRef);
 		setStatus(Status.REDIRECTION_SEE_OTHER);
 	}
 
 	/**
-	 * Temporarily redirects the client to a target URI. 
-	 * The client is expected to reuse the same method for the new request.
-	 * @param targetUri The target URI.
+	 * Temporarily redirects the client to a target URI. The client is expected
+	 * to reuse the same method for the new request.
+	 * 
+	 * @param targetUri
+	 *            The target URI.
 	 */
-	public void redirectTemporary(String targetUri)
-	{
+	public void redirectTemporary(String targetUri) {
 		redirectTemporary(new Reference(targetUri));
 	}
 
 	/**
-	 * Temporarily redirects the client to a target URI. 
-	 * The client is expected to reuse the same method for the new request.
-	 * @param targetRef The target reference.
+	 * Temporarily redirects the client to a target URI. The client is expected
+	 * to reuse the same method for the new request.
+	 * 
+	 * @param targetRef
+	 *            The target reference.
 	 */
-	public void redirectTemporary(Reference targetRef)
-	{
+	public void redirectTemporary(Reference targetRef) {
 		setRedirectRef(targetRef);
 		setStatus(Status.REDIRECTION_TEMPORARY);
 	}
 
 	/**
 	 * Sets the authentication request sent by an origin server to a client.
-	 * @param request The authentication request sent by an origin server to a client.
+	 * 
+	 * @param request
+	 *            The authentication request sent by an origin server to a
+	 *            client.
 	 */
-	public void setChallengeRequest(ChallengeRequest request)
-	{
+	public void setChallengeRequest(ChallengeRequest request) {
 		this.challengeRequest = request;
 	}
 
 	/**
-	 * Sets the entity representation. If the current status is SUCCESS_OK and the request conditions are matched, 
-	 * then the status is set to REDIRECTION_NOT_MODIFIED. In all other cases, the status is untouched and the 
-	 * entity is simply set.
-	 * @param entity The entity representation.
+	 * Sets the entity representation. If the current status is SUCCESS_OK and
+	 * the request conditions are matched, then the status is set to
+	 * REDIRECTION_NOT_MODIFIED. In all other cases, the status is untouched and
+	 * the entity is simply set.
+	 * 
+	 * @param entity
+	 *            The entity representation.
 	 */
-	public void setEntity(Representation entity)
-	{
-		if (getStatus().equals(Status.SUCCESS_OK))
-		{
-			if (getRequest().getConditions().isModified(entity))
-			{
+	public void setEntity(Representation entity) {
+		if (getStatus().equals(Status.SUCCESS_OK)) {
+			if (getRequest().getConditions().isModified(entity)) {
 				// Send the representation as the response entity
 				super.setEntity(entity);
-			}
-			else
-			{
-				// Indicates to the client that he already has the best representation 
+			} else {
+				// Indicates to the client that he already has the best
+				// representation
 				setStatus(Status.REDIRECTION_NOT_MODIFIED);
 			}
-		}
-		else
-		{
+		} else {
 			super.setEntity(entity);
 		}
 	}
 
 	/**
-	 * Sets the entity with the preferred representation of a resource, according to the client preferences.
-	 * <br/> If no representation is found, sets the status to "Not found".<br/>
-	 * If no acceptable representation is available, sets the status to "Not acceptable".<br/>
-	 * @param resource The resource for which the best representation needs to be set.
-	 * @see <a href="http://httpd.apache.org/docs/2.2/en/content-negotiation.html#algorithm">Apache content negotiation algorithm</a>
+	 * Sets the entity with the preferred representation of a resource,
+	 * according to the client preferences. <br/> If no representation is found,
+	 * sets the status to "Not found".<br/> If no acceptable representation is
+	 * available, sets the status to "Not acceptable".<br/>
+	 * 
+	 * @param resource
+	 *            The resource for which the best representation needs to be
+	 *            set.
+	 * @see <a
+	 *      href="http://httpd.apache.org/docs/2.2/en/content-negotiation.html#algorithm">Apache
+	 *      content negotiation algorithm</a>
 	 */
-	public void setEntity(Resource resource)
-	{
+	public void setEntity(Resource resource) {
 		List<Representation> variants = resource.getVariants();
 
-		if ((variants == null) || (variants.size() < 1))
-		{
+		if ((variants == null) || (variants.size() < 1)) {
 			// Resource not found
 			setStatus(Status.CLIENT_ERROR_NOT_FOUND);
-		}
-		else
-		{
+		} else {
 			// Set the variants' resource
-			for (Representation variant : variants)
-			{
+			for (Representation variant : variants) {
 				variant.setResource(resource);
 			}
 
@@ -278,61 +294,67 @@ public class Response extends Message
 			getDimensions().add(Dimension.LANGUAGE);
 			getDimensions().add(Dimension.MEDIA_TYPE);
 
-			if (preferredVariant == null)
-			{
+			if (preferredVariant == null) {
 				// No variant was found matching the client preferences
 				setStatus(Status.CLIENT_ERROR_NOT_ACCEPTABLE);
-			}
-			else
-			{
+			} else {
 				setEntity(preferredVariant);
 			}
 		}
 	}
 
 	/**
-	 * Sets the reference that the client should follow for redirections or resource creations.
-	 * @param redirectRef The redirection reference.
+	 * Sets the reference that the client should follow for redirections or
+	 * resource creations.
+	 * 
+	 * @param redirectRef
+	 *            The redirection reference.
 	 */
-	public void setRedirectRef(Reference redirectRef)
-	{
+	public void setRedirectRef(Reference redirectRef) {
 		this.redirectRef = redirectRef;
 	}
 
 	/**
-	 * Sets the reference that the client should follow for redirections or resource creations.
-	 * @param redirectUri The redirection URI.
+	 * Sets the reference that the client should follow for redirections or
+	 * resource creations.
+	 * 
+	 * @param redirectUri
+	 *            The redirection URI.
 	 */
-	public void setRedirectRef(String redirectUri)
-	{
-		setRedirectRef(new Reference(getRequest().getBaseRef(), redirectUri).getTargetRef());
+	public void setRedirectRef(String redirectUri) {
+		setRedirectRef(new Reference(getRequest().getBaseRef(), redirectUri)
+				.getTargetRef());
 	}
 
 	/**
 	 * Sets the associated request.
-	 * @param request The associated request
+	 * 
+	 * @param request
+	 *            The associated request
 	 */
-	public void setRequest(Request request)
-	{
+	public void setRequest(Request request) {
 		this.request = request;
 	}
 
 	/**
 	 * Sets the status.
-	 * @param status The status to set.
+	 * 
+	 * @param status
+	 *            The status to set.
 	 */
-	public void setStatus(Status status)
-	{
+	public void setStatus(Status status) {
 		this.status = status;
 	}
 
 	/**
 	 * Sets the status.
-	 * @param status The status to set.
-	 * @param message The status message.
+	 * 
+	 * @param status
+	 *            The status to set.
+	 * @param message
+	 *            The status message.
 	 */
-	public void setStatus(Status status, String message)
-	{
+	public void setStatus(Status status, String message) {
 		setStatus(new Status(status, message));
 	}
 

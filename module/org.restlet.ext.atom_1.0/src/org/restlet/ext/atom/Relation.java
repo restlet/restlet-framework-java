@@ -24,120 +24,103 @@ package org.restlet.ext.atom;
 
 /**
  * Enumeration of relation types.
+ * 
  * @author Jerome Louvel (contact@noelios.com)
  */
-public enum Relation
-{
+public enum Relation {
 	/**
-	 * Signifies that the IRI in the value of the href attribute identifies an alternate version 
-	 * of the resource described by the containing element.
+	 * Signifies that the IRI in the value of the href attribute identifies an
+	 * alternate version of the resource described by the containing element.
 	 */
 	ALTERNATE,
 
 	/**
-	 * Signifies that the IRI in the value of the href attribute identifies a resource that is able
-	 * to edit the current resource.
+	 * Signifies that the IRI in the value of the href attribute identifies a
+	 * resource that is able to edit the current resource.
 	 */
 	EDIT,
 
 	/**
-	 * Signifies that the IRI in the value of the href attribute identifies a related resource that 
-	 * is potentially large in size and might require special handling.  For atom:link elements with 
-	 * rel="enclosure", the length attribute SHOULD be provided.
+	 * Signifies that the IRI in the value of the href attribute identifies a
+	 * related resource that is potentially large in size and might require
+	 * special handling. For atom:link elements with rel="enclosure", the length
+	 * attribute SHOULD be provided.
 	 */
 	ENCLOSURE,
 
 	/**
-	 * Signifies that the IRI in the value of the href attribute identifies the first resource 
-	 * in a series including the current resource.
+	 * Signifies that the IRI in the value of the href attribute identifies the
+	 * first resource in a series including the current resource.
 	 */
 	FIRST,
 
 	/**
-	 * Signifies that the IRI in the value of the href attribute identifies the last resource 
-	 * in a series including the current resource.
+	 * Signifies that the IRI in the value of the href attribute identifies the
+	 * last resource in a series including the current resource.
 	 */
 	LAST,
 
 	/**
-	 * Signifies that the IRI in the value of the href attribute identifies the next resource 
-	 * in a series including the current resource.
+	 * Signifies that the IRI in the value of the href attribute identifies the
+	 * next resource in a series including the current resource.
 	 */
 	NEXT,
 
 	/**
-	 * Signifies that the IRI in the value of the href attribute identifies the previous resource 
-	 * in a series including the current resource.
+	 * Signifies that the IRI in the value of the href attribute identifies the
+	 * previous resource in a series including the current resource.
 	 */
 	PREVIOUS,
 
 	/**
-	 * Signifies that the IRI in the value of the href attribute identifies a resource related 
-	 * to the resource described by the containing element.
+	 * Signifies that the IRI in the value of the href attribute identifies a
+	 * resource related to the resource described by the containing element.
 	 */
 	RELATED,
 
 	/**
-	 * Signifies that the IRI in the value of the href attribute identifies a resource equivalent 
-	 * to the containing element.
+	 * Signifies that the IRI in the value of the href attribute identifies a
+	 * resource equivalent to the containing element.
 	 */
 	SELF,
 
 	/**
-	 * Signifies that the IRI in the value of the href attribute identifies a resource that is the 
-	 * source of the information provided in the containing element.
+	 * Signifies that the IRI in the value of the href attribute identifies a
+	 * resource that is the source of the information provided in the containing
+	 * element.
 	 */
 	VIA;
 
 	/**
 	 * Parses a relation name into the equivalent enumeration item.
-	 * @param rel The relation name to parse.
+	 * 
+	 * @param rel
+	 *            The relation name to parse.
 	 * @return The equivalent enumeration item.
 	 */
-	public static Relation parse(String rel)
-	{
+	public static Relation parse(String rel) {
 		Relation result = ALTERNATE;
 
-		if (rel != null)
-		{
-			if (rel.equalsIgnoreCase("alternate"))
-			{
+		if (rel != null) {
+			if (rel.equalsIgnoreCase("alternate")) {
 				result = ALTERNATE;
-			}
-			else if (rel.equalsIgnoreCase("edit"))
-			{
+			} else if (rel.equalsIgnoreCase("edit")) {
 				result = EDIT;
-			}
-			else if (rel.equalsIgnoreCase("enclosure"))
-			{
+			} else if (rel.equalsIgnoreCase("enclosure")) {
 				result = ENCLOSURE;
-			}
-			else if (rel.equalsIgnoreCase("first"))
-			{
+			} else if (rel.equalsIgnoreCase("first")) {
 				result = FIRST;
-			}
-			else if (rel.equalsIgnoreCase("last"))
-			{
+			} else if (rel.equalsIgnoreCase("last")) {
 				result = LAST;
-			}
-			else if (rel.equalsIgnoreCase("next"))
-			{
+			} else if (rel.equalsIgnoreCase("next")) {
 				result = NEXT;
-			}
-			else if (rel.equalsIgnoreCase("previous"))
-			{
+			} else if (rel.equalsIgnoreCase("previous")) {
 				result = PREVIOUS;
-			}
-			else if (rel.equalsIgnoreCase("related"))
-			{
+			} else if (rel.equalsIgnoreCase("related")) {
 				result = RELATED;
-			}
-			else if (rel.equalsIgnoreCase("self"))
-			{
+			} else if (rel.equalsIgnoreCase("self")) {
 				result = SELF;
-			}
-			else if (rel.equalsIgnoreCase("via"))
-			{
+			} else if (rel.equalsIgnoreCase("via")) {
 				result = VIA;
 			}
 		}

@@ -30,10 +30,10 @@ import org.mortbay.util.InetAddrPort;
 
 /**
  * Jetty HTTPS listener.
+ * 
  * @author Jerome Louvel (contact@noelios.com)
  */
-public class HttpsListener extends SslListener
-{
+public class HttpsListener extends SslListener {
 	/** Serial version identifier. */
 	private static final long serialVersionUID = 1L;
 
@@ -42,43 +42,48 @@ public class HttpsListener extends SslListener
 
 	/**
 	 * Constructor.
-	 * @param server The parent Jetty server.
+	 * 
+	 * @param server
+	 *            The parent Jetty server.
 	 */
-	public HttpsListener(JettyServerHelper server)
-	{
+	public HttpsListener(JettyServerHelper server) {
 		this.helper = server;
 	}
 
 	/**
 	 * Constructor.
-	 * @param server The parent Jetty server.
-	 * @param address The listening address.
+	 * 
+	 * @param server
+	 *            The parent Jetty server.
+	 * @param address
+	 *            The listening address.
 	 */
-	public HttpsListener(JettyServerHelper server, InetAddrPort address)
-	{
+	public HttpsListener(JettyServerHelper server, InetAddrPort address) {
 		super(address);
 		this.helper = server;
 	}
 
 	/**
 	 * Returns the parent Jetty server.
+	 * 
 	 * @return The parent Jetty server.
 	 */
-	public JettyServerHelper getHelper()
-	{
+	public JettyServerHelper getHelper() {
 		return this.helper;
 	}
 
-	/** 
-	 * Creates a HTTP connection instance. 
-	 * This method can be used to override the connection instance.
-	 * @param socket The underlying socket.
+	/**
+	 * Creates a HTTP connection instance. This method can be used to override
+	 * the connection instance.
+	 * 
+	 * @param socket
+	 *            The underlying socket.
 	 * @return The created connection.
 	 */
-	protected HttpsConnection createConnection(Socket socket) throws IOException
-	{
-		return new HttpsConnection(this, socket.getInetAddress(),
-				socket.getInputStream(), socket.getOutputStream(), socket);
+	protected HttpsConnection createConnection(Socket socket)
+			throws IOException {
+		return new HttpsConnection(this, socket.getInetAddress(), socket
+				.getInputStream(), socket.getOutputStream(), socket);
 	}
 
 }

@@ -24,9 +24,9 @@ package org.restlet.ext.atom;
 
 /**
  * Collection member types.
+ * 
  * @author Jerome Louvel (contact@noelios.com)
  */
-public enum MemberType
-{
+public enum MemberType {
 	ENTRY, MEDIA;
 }

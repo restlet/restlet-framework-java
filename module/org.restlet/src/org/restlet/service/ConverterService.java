@@ -25,28 +25,33 @@ package org.restlet.service;
 import org.restlet.resource.Representation;
 
 /**
- * Service providing conversion between message entities and higher-level objects.
+ * Service providing conversion between message entities and higher-level
+ * objects.
+ * 
  * @author Jerome Louvel (contact@noelios.com)
  */
-public class ConverterService
-{
+public class ConverterService {
 	/**
-	 * Converts a representation into a higher-level object. Returns null by default. 
-	 * @param representation The representation to convert. 
+	 * Converts a representation into a higher-level object. Returns null by
+	 * default.
+	 * 
+	 * @param representation
+	 *            The representation to convert.
 	 * @return A higher-level object.
 	 */
-	public Object toObject(Representation representation)
-	{
+	public Object toObject(Representation representation) {
 		return null;
 	}
 
 	/**
-	 * Converts a higher-level object into a representation. Returns null by default.
-	 * @param object The higher-level object.
+	 * Converts a higher-level object into a representation. Returns null by
+	 * default.
+	 * 
+	 * @param object
+	 *            The higher-level object.
 	 * @return A representation.
 	 */
-	public Representation toRepresentation(Object object)
-	{
+	public Representation toRepresentation(Object object) {
 		return null;
 	}
 

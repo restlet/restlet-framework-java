@@ -27,42 +27,40 @@ import org.restlet.Server;
 import org.restlet.data.Protocol;
 
 /**
- * Jetty HTTP server connector. Here is the list of additional parameters that are supported:
- * <table>
- * 	<tr>
- * 		<td>lowResourcePersistTimeMs</td>
- * 		<td>int</td>
- * 		<td>2000</td>
- * 		<td>Time in ms that connections will persist if listener is low on resources.</td>
- * 	</tr>
+ * Jetty HTTP server connector. Here is the list of additional parameters that
+ * are supported: <table>
+ * <tr>
+ * <td>lowResourcePersistTimeMs</td>
+ * <td>int</td>
+ * <td>2000</td>
+ * <td>Time in ms that connections will persist if listener is low on
+ * resources.</td>
+ * </tr>
  * </table>
+ * 
  * @see <a href="http://jetty.mortbay.com/">Jetty home page</a>
  * @author Jerome Louvel (contact@noelios.com)
  */
-public class HttpServerHelper extends JettyServerHelper
-{
+public class HttpServerHelper extends JettyServerHelper {
 	/**
 	 * Constructor.
-	 * @param server The server to help.
+	 * 
+	 * @param server
+	 *            The server to help.
 	 */
-	public HttpServerHelper(Server server)
-	{
+	public HttpServerHelper(Server server) {
 		super(server);
 		getProtocols().add(Protocol.HTTP);
 	}
 
 	/** Start hook. */
-	public void start() throws Exception
-	{
+	public void start() throws Exception {
 		HttpListener listener;
 
-		if (getServer().getAddress() != null)
-		{
-			listener = new HttpListener(this, new InetAddrPort(getServer().getAddress(),
-					getServer().getPort()));
-		}
-		else
-		{
+		if (getServer().getAddress() != null) {
+			listener = new HttpListener(this, new InetAddrPort(getServer()
+					.getAddress(), getServer().getPort()));
+		} else {
 			listener = new HttpListener(this);
 			listener.setPort(getServer().getPort());
 		}
@@ -78,13 +76,15 @@ public class HttpServerHelper extends JettyServerHelper
 	}
 
 	/**
-	 * Returns time in ms that connections will persist if listener is low on resources.
-	 * @return Time in ms that connections will persist if listener is low on resources.
+	 * Returns time in ms that connections will persist if listener is low on
+	 * resources.
+	 * 
+	 * @return Time in ms that connections will persist if listener is low on
+	 *         resources.
 	 */
-	public int getLowResourcePersistTimeMs()
-	{
-		return Integer.parseInt(getParameters().getFirstValue("lowResourcePersistTimeMs",
-				"2000"));
+	public int getLowResourcePersistTimeMs() {
+		return Integer.parseInt(getParameters().getFirstValue(
+				"lowResourcePersistTimeMs", "2000"));
 	}
 
 }

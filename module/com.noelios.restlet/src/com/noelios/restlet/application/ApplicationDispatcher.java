@@ -30,52 +30,50 @@ import org.restlet.data.Response;
 
 /**
  * Application dispatcher.
+ * 
  * @author Jerome Louvel (contact@noelios.com)
  */
-public class ApplicationDispatcher extends Dispatcher
-{
+public class ApplicationDispatcher extends Dispatcher {
 	/** The parent context. */
 	private ApplicationContext applicationContext;
 
 	/**
 	 * Constructor.
-	 * @param applicationContext The parent application context.
+	 * 
+	 * @param applicationContext
+	 *            The parent application context.
 	 */
-	public ApplicationDispatcher(ApplicationContext applicationContext)
-	{
+	public ApplicationDispatcher(ApplicationContext applicationContext) {
 		this.applicationContext = applicationContext;
 	}
 
 	/**
 	 * Handles a call.
-	 * @param request The request to handle.
-	 * @param response The response to update.
+	 * 
+	 * @param request
+	 *            The request to handle.
+	 * @param response
+	 *            The response to update.
 	 */
-	public void handle(Request request, Response response)
-	{
+	public void handle(Request request, Response response) {
 		Protocol protocol = request.getProtocol();
 
-		if (protocol == null)
-		{
+		if (protocol == null) {
 			throw new UnsupportedOperationException(
 					"Unable to determine the protocol to use for this call.");
-		}
-		else
-		{
-			// Add the application in request and response attributes 
+		} else {
+			// Add the application in request and response attributes
 			request.getAttributes().put(Application.class.getCanonicalName(),
 					this.applicationContext.getApplication());
 			response.getAttributes().put(Application.class.getCanonicalName(),
 					this.applicationContext.getApplication());
 
-			if (protocol.equals(Protocol.WAR))
-			{
-				this.applicationContext.getWarClient().handle(request, response);
-			}
-			else
-			{
-				this.applicationContext.getParentContext().getDispatcher().handle(request,
-						response);
+			if (protocol.equals(Protocol.WAR)) {
+				this.applicationContext.getWarClient()
+						.handle(request, response);
+			} else {
+				this.applicationContext.getParentContext().getDispatcher()
+						.handle(request, response);
 			}
 		}
 	}

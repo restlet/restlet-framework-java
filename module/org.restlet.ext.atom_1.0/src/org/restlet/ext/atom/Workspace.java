@@ -27,10 +27,10 @@ import java.util.List;
 
 /**
  * Workspace containing collections of members entries.
+ * 
  * @author Jerome Louvel (contact@noelios.com)
  */
-public class Workspace
-{
+public class Workspace {
 	/**
 	 * The parent service.
 	 */
@@ -48,68 +48,72 @@ public class Workspace
 
 	/**
 	 * Constructor.
-	 * @param service The parent service.
+	 * 
+	 * @param service
+	 *            The parent service.
 	 */
-	public Workspace(Service service)
-	{
+	public Workspace(Service service) {
 		this(service, null);
 	}
 
 	/**
 	 * Constructor.
-	 * @param service The parent service.
-	 * @param title The title.
+	 * 
+	 * @param service
+	 *            The parent service.
+	 * @param title
+	 *            The title.
 	 */
-	public Workspace(Service service, String title)
-	{
+	public Workspace(Service service, String title) {
 		this.service = service;
 		this.title = title;
 	}
 
 	/**
 	 * Returns the parent service.
+	 * 
 	 * @return The parent service.
 	 */
-	public Service getService()
-	{
+	public Service getService() {
 		return this.service;
 	}
 
 	/**
 	 * Sets the parent service.
-	 * @param service The parent service.
+	 * 
+	 * @param service
+	 *            The parent service.
 	 */
-	public void setService(Service service)
-	{
+	public void setService(Service service) {
 		this.service = service;
 	}
 
 	/**
 	 * Returns the title.
+	 * 
 	 * @return The title.
 	 */
-	public String getTitle()
-	{
+	public String getTitle() {
 		return this.title;
 	}
 
 	/**
 	 * Sets the title.
-	 * @param title The title.
+	 * 
+	 * @param title
+	 *            The title.
 	 */
-	public void setTitle(String title)
-	{
+	public void setTitle(String title) {
 		this.title = title;
 	}
 
 	/**
 	 * Returns the list of collections.
+	 * 
 	 * @return The list of collections.
 	 */
-	public List<Collection> getCollections()
-	{
-		if (this.collections == null)
-		{
+	public List<Collection> getCollections() {
+		if (this.collections == null) {
 			this.collections = new ArrayList<Collection>();
 		}
 

@@ -42,10 +42,10 @@ import com.noelios.restlet.http.HttpServerCall;
 
 /**
  * Call that is used by the Jetty 6 HTTP server connector.
+ * 
  * @author Jerome Louvel (contact@noelios.com)
  */
-public class JettyCall extends HttpServerCall
-{
+public class JettyCall extends HttpServerCall {
 	/** The wrapped Jetty HTTP connection. */
 	private HttpConnection connection;
 
@@ -54,11 +54,13 @@ public class JettyCall extends HttpServerCall
 
 	/**
 	 * Constructor.
-	 * @param server The parent server.
-	 * @param connection The wrapped Jetty HTTP connection.
+	 * 
+	 * @param server
+	 *            The parent server.
+	 * @param connection
+	 *            The wrapped Jetty HTTP connection.
 	 */
-	public JettyCall(Server server, HttpConnection connection)
-	{
+	public JettyCall(Server server, HttpConnection connection) {
 		super(server);
 		this.connection = connection;
 		this.requestHeadersAdded = false;
@@ -66,70 +68,68 @@ public class JettyCall extends HttpServerCall
 
 	/**
 	 * Returns the wrapped Jetty HTTP connection.
+	 * 
 	 * @return The wrapped Jetty HTTP connection.
 	 */
-	public HttpConnection getConnection()
-	{
+	public HttpConnection getConnection() {
 		return this.connection;
 	}
 
 	/**
 	 * Indicates if the request was made using a confidential mean.<br/>
+	 * 
 	 * @return True if the request was made using a confidential mean.<br/>
 	 */
-	public boolean isConfidential()
-	{
+	public boolean isConfidential() {
 		return getConnection().getRequest().isSecure();
 	}
 
 	/**
-	 * Returns the request address.<br/>
-	 * Corresponds to the IP address of the requesting client.
+	 * Returns the request address.<br/> Corresponds to the IP address of the
+	 * requesting client.
+	 * 
 	 * @return The request address.
 	 */
-	public String getClientAddress()
-	{
+	public String getClientAddress() {
 		return getConnection().getRequest().getRemoteAddr();
 	}
 
 	/**
 	 * Returns the request method.
+	 * 
 	 * @return The request method.
 	 */
-	public String getMethod()
-	{
+	public String getMethod() {
 		return getConnection().getRequest().getMethod();
 	}
 
 	/**
-	 * Returns the URI on the request line (most like a relative reference, but not necessarily). 
+	 * Returns the URI on the request line (most like a relative reference, but
+	 * not necessarily).
+	 * 
 	 * @return The URI on the request line.
 	 */
-	public String getRequestUri()
-	{
+	public String getRequestUri() {
 		return getConnection().getRequest().getUri().toString();
 	}
 
 	/**
 	 * Returns the list of request headers.
+	 * 
 	 * @return The list of request headers.
 	 */
-	public ParameterList getRequestHeaders()
-	{
+	public ParameterList getRequestHeaders() {
 		ParameterList result = super.getRequestHeaders();
 
-		if (!requestHeadersAdded)
-		{
+		if (!requestHeadersAdded) {
 			// Copy the headers from the request object
 			String headerName;
 			String headerValue;
-			for (Enumeration names = getConnection().getRequest().getHeaderNames(); names
-					.hasMoreElements();)
-			{
+			for (Enumeration names = getConnection().getRequest()
+					.getHeaderNames(); names.hasMoreElements();) {
 				headerName = (String) names.nextElement();
-				for (Enumeration values = getConnection().getRequest().getHeaders(headerName); values
-						.hasMoreElements();)
-				{
+				for (Enumeration values = getConnection().getRequest()
+						.getHeaders(headerName); values.hasMoreElements();) {
 					headerValue = (String) values.nextElement();
 					result.add(new Parameter(headerName, headerValue));
 				}
@@ -142,104 +142,97 @@ public class JettyCall extends HttpServerCall
 	}
 
 	/**
-	 * Returns the response address.<br/>
-	 * Corresponds to the IP address of the responding server.
+	 * Returns the response address.<br/> Corresponds to the IP address of the
+	 * responding server.
+	 * 
 	 * @return The response address.
 	 */
-	public String getServerAddress()
-	{
+	public String getServerAddress() {
 		return getConnection().getRequest().getLocalAddr();
 	}
 
 	/**
 	 * Returns the request entity channel if it exists.
+	 * 
 	 * @return The request entity channel if it exists.
 	 */
-	public ReadableByteChannel getRequestChannel()
-	{
+	public ReadableByteChannel getRequestChannel() {
 		return null;
 	}
 
 	/**
 	 * Returns the request entity stream if it exists.
+	 * 
 	 * @return The request entity stream if it exists.
 	 */
-	public InputStream getRequestStream()
-	{
-		try
-		{
+	public InputStream getRequestStream() {
+		try {
 			return getConnection().getRequest().getInputStream();
-		}
-		catch (IOException e)
-		{
+		} catch (IOException e) {
 			return null;
 		}
 	}
 
 	/**
-	 * Sends the response back to the client. Commits the status, headers and optional entity and 
-	 * send them on the network. 
-	 * @param response The high-level response.
+	 * Sends the response back to the client. Commits the status, headers and
+	 * optional entity and send them on the network.
+	 * 
+	 * @param response
+	 *            The high-level response.
 	 */
-	public void sendResponse(Response response) throws IOException
-	{
+	public void sendResponse(Response response) throws IOException {
 		// Add call headers
 		Parameter header;
-		for (Iterator<Parameter> iter = getResponseHeaders().iterator(); iter.hasNext();)
-		{
+		for (Iterator<Parameter> iter = getResponseHeaders().iterator(); iter
+				.hasNext();) {
 			header = iter.next();
-			getConnection().getResponse().addHeader(header.getName(), header.getValue());
+			getConnection().getResponse().addHeader(header.getName(),
+					header.getValue());
 		}
 
-		// Set the status code in the response. We do this after adding the headers because 
-		// when we have to rely on the 'sendError' method, the Servlet containers are expected
+		// Set the status code in the response. We do this after adding the
+		// headers because
+		// when we have to rely on the 'sendError' method, the Servlet
+		// containers are expected
 		// to commit their response.
-		if (Status.isError(getStatusCode()))
-		{
-			try
-			{
-				getConnection().getResponse().sendError(getStatusCode(), getReasonPhrase());
+		if (Status.isError(getStatusCode())) {
+			try {
+				getConnection().getResponse().sendError(getStatusCode(),
+						getReasonPhrase());
+			} catch (IOException ioe) {
+				getLogger().log(Level.WARNING,
+						"Unable to set the response error status", ioe);
 			}
-			catch (IOException ioe)
-			{
-				getLogger()
-						.log(Level.WARNING, "Unable to set the response error status", ioe);
-			}
-		}
-		else
-		{
+		} else {
 			getConnection().getResponse().setStatus(getStatusCode());
 		}
 
 		// Send the response entity
 		super.sendResponse(response);
 
-		// Fully complete and commit the response 
+		// Fully complete and commit the response
 		this.connection.completeResponse();
 		this.connection.commitResponse(true);
 	}
 
 	/**
 	 * Returns the response channel if it exists.
+	 * 
 	 * @return The response channel if it exists.
 	 */
-	public WritableByteChannel getResponseChannel()
-	{
+	public WritableByteChannel getResponseChannel() {
 		return null;
 	}
 
 	/**
 	 * Returns the response stream if it exists.
+	 * 
 	 * @return The response stream if it exists.
 	 */
-	public OutputStream getResponseStream()
-	{
-		try
-		{
+	public OutputStream getResponseStream() {
+		try {
 			return getConnection().getResponse().getOutputStream();
-		}
-		catch (IOException e)
-		{
+		} catch (IOException e) {
 			return null;
 		}
 	}

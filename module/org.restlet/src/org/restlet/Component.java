@@ -26,15 +26,16 @@ import org.restlet.util.ClientList;
 import org.restlet.util.ServerList;
 
 /**
- * Restlet managing a set of Clients, Servers and other Restlets. "A component is an abstract unit of 
- * software instructions and internal state that provides a transformation of data via its interface." 
- * Roy T. Fielding
- * @see <a href="http://www.ics.uci.edu/~fielding/pubs/dissertation/software_arch.htm#sec_1_2_1">Source
- * dissertation</a>
+ * Restlet managing a set of Clients, Servers and other Restlets. "A component
+ * is an abstract unit of software instructions and internal state that provides
+ * a transformation of data via its interface." Roy T. Fielding
+ * 
+ * @see <a
+ *      href="http://www.ics.uci.edu/~fielding/pubs/dissertation/software_arch.htm#sec_1_2_1">Source
+ *      dissertation</a>
  * @author Jerome Louvel (contact@noelios.com)
  */
-public abstract class Component extends Restlet
-{
+public abstract class Component extends Restlet {
 	/** The modifiable list of client connectors. */
 	private ClientList clients;
 
@@ -44,57 +45,54 @@ public abstract class Component extends Restlet
 	/**
 	 * Constructor.
 	 */
-	public Component()
-	{
+	public Component() {
 		this(null);
 	}
 
 	/**
 	 * Constructor.
-	 * @param context The context.
+	 * 
+	 * @param context
+	 *            The context.
 	 */
-	public Component(Context context)
-	{
+	public Component(Context context) {
 		super(context);
 	}
 
 	/**
 	 * Returns the modifiable list of client connectors.
+	 * 
 	 * @return The modifiable list of client connectors.
 	 */
-	public ClientList getClients()
-	{
-		if (this.clients == null) this.clients = new ClientList(getContext());
+	public ClientList getClients() {
+		if (this.clients == null)
+			this.clients = new ClientList(getContext());
 		return this.clients;
 	}
 
 	/**
 	 * Returns the modifiable list of server connectors.
+	 * 
 	 * @return The modifiable list of server connectors.
 	 */
-	public ServerList getServers()
-	{
-		if (this.servers == null) this.servers = new ServerList(getContext(), this);
+	public ServerList getServers() {
+		if (this.servers == null)
+			this.servers = new ServerList(getContext(), this);
 		return this.servers;
 	}
 
 	/**
 	 * Start hook. Starts all connectors.
 	 */
-	public void start() throws Exception
-	{
-		if (this.clients != null)
-		{
-			for (Client client : this.clients)
-			{
+	public void start() throws Exception {
+		if (this.clients != null) {
+			for (Client client : this.clients) {
 				client.start();
 			}
 		}
 
-		if (this.servers != null)
-		{
-			for (Server server : this.servers)
-			{
+		if (this.servers != null) {
+			for (Server server : this.servers) {
 				server.start();
 			}
 		}
@@ -105,22 +103,17 @@ public abstract class Component extends Restlet
 	/**
 	 * Stop hook. Stops all connectors.
 	 */
-	public void stop() throws Exception
-	{
+	public void stop() throws Exception {
 		super.stop();
 
-		if (this.clients != null)
-		{
-			for (Client client : this.clients)
-			{
+		if (this.clients != null) {
+			for (Client client : this.clients) {
 				client.stop();
 			}
 		}
 
-		if (this.servers != null)
-		{
-			for (Server server : this.servers)
-			{
+		if (this.servers != null) {
+			for (Server server : this.servers) {
 				server.stop();
 			}
 		}

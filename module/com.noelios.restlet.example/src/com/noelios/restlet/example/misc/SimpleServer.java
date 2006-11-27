@@ -33,14 +33,12 @@ import org.restlet.data.Response;
 
 /**
  * Simple HTTP server invoked by the simple client.
+ * 
  * @author Jerome Louvel (contact@noelios.com)
  */
-public class SimpleServer
-{
-	public static void main(String[] args)
-	{
-		try
-		{
+public class SimpleServer {
+	public static void main(String[] args) {
+		try {
 			// Create a new Restlet container
 			Container container = new Container();
 
@@ -50,19 +48,16 @@ public class SimpleServer
 			container.getServers().add(Protocol.HTTP, 9876);
 
 			// Prepare and attach a test Handler
-			Handler handler = new Handler(container.getContext())
-			{
+			Handler handler = new Handler(container.getContext()) {
 				@Override
-				public void handlePut(Request request, Response response)
-				{
+				public void handlePut(Request request, Response response) {
 					System.out.println("Handling the call...");
 					System.out.println("Trying to get the entity as a form...");
 					Form form = request.getEntityAsForm();
 
 					System.out.println("Trying to getParameters...");
 					StringBuffer sb = new StringBuffer("foo");
-					for (Parameter p : form)
-					{
+					for (Parameter p : form) {
 						System.out.println(p);
 
 						sb.append("field name = ");
@@ -82,9 +77,7 @@ public class SimpleServer
 
 			// Now, start the container
 			container.start();
-		}
-		catch (Exception e)
-		{
+		} catch (Exception e) {
 			e.printStackTrace();
 		}
 	}

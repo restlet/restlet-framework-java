@@ -24,15 +24,16 @@ package org.restlet.data;
 
 /**
  * Language used in representations and preferences.
+ * 
  * @author Jerome Louvel (contact@noelios.com)
  */
-public class Language extends Metadata
-{
+public class Language extends Metadata {
 	/** All languages acceptable. */
 	public static final Language ALL = new Language("*", "All languages");
 
 	/** English language. */
-	public static final Language ENGLISH = new Language("en", "English language");
+	public static final Language ENGLISH = new Language("en",
+			"English language");
 
 	/** English language spoken in USA. */
 	public static final Language ENGLISH_US = new Language("en-us",
@@ -46,20 +47,21 @@ public class Language extends Metadata
 			"French language in France");
 
 	/** Spanish language. */
-	public static final Language SPANISH = new Language("es", "Spanish language");
+	public static final Language SPANISH = new Language("es",
+			"Spanish language");
 
 	/**
-	 * Returns the language associated to a name. If an existing constant exists then it is 
-	 * returned, otherwise a new instance is created.
-	 * @param name The name.
+	 * Returns the language associated to a name. If an existing constant exists
+	 * then it is returned, otherwise a new instance is created.
+	 * 
+	 * @param name
+	 *            The name.
 	 * @return The associated language.
 	 */
-	public static Language valueOf(String name)
-	{
+	public static Language valueOf(String name) {
 		Language result = null;
 
-		if (name != null)
-		{
+		if (name != null) {
 			if (name.equalsIgnoreCase(ALL.getName()))
 				result = ALL;
 			else if (name.equalsIgnoreCase(ENGLISH.getName()))
@@ -81,71 +83,66 @@ public class Language extends Metadata
 
 	/**
 	 * Constructor.
-	 * @param name The name.
+	 * 
+	 * @param name
+	 *            The name.
 	 */
-	public Language(String name)
-	{
+	public Language(String name) {
 		this(name, "Language or range of languages");
 	}
 
 	/**
 	 * Constructor.
-	 * @param name The name.
-	 * @param description The description. 
+	 * 
+	 * @param name
+	 *            The name.
+	 * @param description
+	 *            The description.
 	 */
-	public Language(String name, String description)
-	{
+	public Language(String name, String description) {
 		super(name, description);
 	}
 
 	/** {@inheritDoc} */
 	@Override
-	public boolean equals(Object object)
-	{
+	public boolean equals(Object object) {
 		return (object instanceof Language)
 				&& getName().equalsIgnoreCase(((Language) object).getName());
 	}
 
 	/**
 	 * Returns the main tag.
+	 * 
 	 * @return The main tag.
 	 */
-	public String getMainTag()
-	{
+	public String getMainTag() {
 		int separator = getName().indexOf('-');
 
-		if (separator == -1)
-		{
+		if (separator == -1) {
 			return getName();
-		}
-		else
-		{
+		} else {
 			return getName().substring(0, separator);
 		}
 	}
 
 	/**
 	 * Returns the sub tag.
+	 * 
 	 * @return The sub tag.
 	 */
-	public String getSubTag()
-	{
+	public String getSubTag() {
 		int separator = getName().indexOf('-');
 
-		if (separator == -1)
-		{
+		if (separator == -1) {
 			return null;
-		}
-		else
-		{
+		} else {
 			return getName().substring(separator + 1);
 		}
 	}
 
 	/** {@inheritDoc} */
 	@Override
-	public int hashCode()
-	{
+	public int hashCode() {
 		return (getName() == null) ? 0 : getName().toLowerCase().hashCode();
 	}
 }

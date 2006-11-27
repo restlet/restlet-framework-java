@@ -31,18 +31,15 @@ import org.restlet.data.Response;
 
 /**
  * Listening to Web browsers.
+ * 
  * @author Jerome Louvel (contact@noelios.com)
  */
-public class Part03
-{
-	public static void main(String[] args) throws Exception
-	{
+public class Part03 {
+	public static void main(String[] args) throws Exception {
 		// Creating a minimal Restlet returning "Hello World"
-		Restlet restlet = new Restlet()
-		{
+		Restlet restlet = new Restlet() {
 			@Override
-			public void handle(Request request, Response response)
-			{
+			public void handle(Request request, Response response) {
 				response.setEntity("Hello World!", MediaType.TEXT_PLAIN);
 			}
 		};

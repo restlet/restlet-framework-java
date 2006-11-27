@@ -31,11 +31,12 @@ import org.restlet.util.DateUtils;
 import org.restlet.util.ImmutableDate;
 
 /**
- * Set of conditions applying to a request. This is equivalent to the HTTP conditional headers.  
+ * Set of conditions applying to a request. This is equivalent to the HTTP
+ * conditional headers.
+ * 
  * @author Jerome Louvel (contact@noelios.com)
  */
-public class Conditions
-{
+public class Conditions {
 	/** The "if-modified-since" condition */
 	private ImmutableDate modifiedSince;
 
@@ -51,82 +52,79 @@ public class Conditions
 	/**
 	 * Constructor.
 	 */
-	public Conditions()
-	{
+	public Conditions() {
 	}
 
 	/**
 	 * Returns the "if-match" condition.
+	 * 
 	 * @return The "if-match" condition.
 	 */
-	public List<Tag> getMatch()
-	{
+	public List<Tag> getMatch() {
 		return this.match;
 	}
 
 	/**
 	 * Returns the "if-modified-since" condition.
+	 * 
 	 * @return The "if-modified-since" condition.
 	 */
-	public Date getModifiedSince()
-	{
+	public Date getModifiedSince() {
 		return this.modifiedSince;
 	}
 
 	/**
 	 * Returns the "if-none-match" condition.
+	 * 
 	 * @return The "if-none-match" condition.
 	 */
-	public List<Tag> getNoneMatch()
-	{
+	public List<Tag> getNoneMatch() {
 		return this.noneMatch;
 	}
 
 	/**
 	 * Returns the "if-unmodified-since" condition.
+	 * 
 	 * @return The "if-unmodified-since" condition.
 	 */
-	public Date getUnmodifiedSince()
-	{
+	public Date getUnmodifiedSince() {
 		return this.unmodifiedSince;
 	}
 
 	/**
 	 * Indicates if a representation should be sent as a response entity.<br/>
-	 * @param representation The representation to set.
+	 * 
+	 * @param representation
+	 *            The representation to set.
 	 */
-	public boolean isModified(Representation representation)
-	{
+	public boolean isModified(Representation representation) {
 		// Indicate if we must send the representation to the client
 		boolean send = true;
 
-		// Check the tag conditions 
-		if ((getNoneMatch() != null) && (getNoneMatch().size() > 0))
-		{
+		// Check the tag conditions
+		if ((getNoneMatch() != null) && (getNoneMatch().size() > 0)) {
 			boolean matched = false;
 
 			// If a tag exists
-			if (representation.getTag() != null)
-			{
-				// Check if it matches one of the representations already cached by the client
+			if (representation.getTag() != null) {
+				// Check if it matches one of the representations already cached
+				// by the client
 				Tag tag;
 				for (Iterator<Tag> iter = getNoneMatch().iterator(); !matched
-						&& iter.hasNext();)
-				{
+						&& iter.hasNext();) {
 					tag = iter.next();
-					matched = tag.equals(representation.getTag()) || tag.equals(Tag.ALL);
+					matched = tag.equals(representation.getTag())
+							|| tag.equals(Tag.ALL);
 				}
 			}
 
 			send = !matched;
-		}
-		else
-		{
+		} else {
 			// Was the representation modified since the last client call?
 			Date modifiedSince = getModifiedSince();
 			send = ((modifiedSince == null)
-					|| (representation.getModificationDate() == null) || DateUtils.after(
-					modifiedSince, representation.getModificationDate()));
+					|| (representation.getModificationDate() == null) || DateUtils
+					.after(modifiedSince, representation.getModificationDate()));
 		}
 
 		return send;
@@ -134,37 +132,41 @@ public class Conditions
 
 	/**
 	 * Sets the "if-match" condition.
-	 * @param tags The "if-match" condition.
+	 * 
+	 * @param tags
+	 *            The "if-match" condition.
 	 */
-	public void setMatch(List<Tag> tags)
-	{
+	public void setMatch(List<Tag> tags) {
 		this.match = tags;
 	}
 
 	/**
 	 * Sets the "if-modified-since" condition.
-	 * @param date The "if-modified-since" condition.
+	 * 
+	 * @param date
+	 *            The "if-modified-since" condition.
 	 */
-	public void setModifiedSince(Date date)
-	{
+	public void setModifiedSince(Date date) {
 		this.modifiedSince = ImmutableDate.valueOf(date);
 	}
 
 	/**
 	 * Sets the "if-none-match" condition.
-	 * @param tags The "if-none-match" condition.
+	 * 
+	 * @param tags
+	 *            The "if-none-match" condition.
 	 */
-	public void setNoneMatch(List<Tag> tags)
-	{
+	public void setNoneMatch(List<Tag> tags) {
 		this.noneMatch = tags;
 	}
 
 	/**
 	 * Sets the "if-unmodified-since" condition.
-	 * @param date The "if-unmodified-since" condition.
+	 * 
+	 * @param date
+	 *            The "if-unmodified-since" condition.
 	 */
-	public void setUnmodifiedSince(Date date)
-	{
+	public void setUnmodifiedSince(Date date) {
 		this.unmodifiedSince = ImmutableDate.valueOf(date);
 	}
 

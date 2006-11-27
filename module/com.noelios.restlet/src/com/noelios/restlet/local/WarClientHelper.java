@@ -42,35 +42,39 @@ import org.restlet.resource.InputRepresentation;
 import org.restlet.resource.Representation;
 
 /**
- * Connector to the WAR resources. Here is the list of parameters that are supported:
- * <table>
- * 	<tr>
- * 		<td>webAppPath</td>
- * 		<td>String</td>
- * 		<td>${user.home}/restlet.war</td>
- * 		<td>Path to the Web Application WAR file or directory.</td>
- * 	</tr>
- *	</table>
+ * Connector to the WAR resources. Here is the list of parameters that are
+ * supported: <table>
+ * <tr>
+ * <td>webAppPath</td>
+ * <td>String</td>
+ * <td>${user.home}/restlet.war</td>
+ * <td>Path to the Web Application WAR file or directory.</td>
+ * </tr>
+ * </table>
+ * 
  * @author Jerome Louvel (contact@noelios.com)
  */
-public class WarClientHelper extends FileClientHelper
-{
+public class WarClientHelper extends FileClientHelper {
 	/** The location of the Web Application archive file or directory path. */
 	private String webAppPath;
 
-	/** Indicates if the Web Application path corresponds to an archive file or a directory path. */
+	/**
+	 * Indicates if the Web Application path corresponds to an archive file or a
+	 * directory path.
+	 */
 	private boolean webAppArchive;
 
 	/** Cache of all the WAR file entries to improve directory listing time. */
 	private List<String> warEntries;
 
 	/**
-	 * Constructor. Note that the common list of metadata associations based on extensions is added, see
-	 * the addCommonExtensions() method.
-	 * @param client The client to help.
+	 * Constructor. Note that the common list of metadata associations based on
+	 * extensions is added, see the addCommonExtensions() method.
+	 * 
+	 * @param client
+	 *            The client to help.
 	 */
-	public WarClientHelper(Client client)
-	{
+	public WarClientHelper(Client client) {
 		super(client);
 		getProtocols().clear();
 		getProtocols().add(Protocol.WAR);
@@ -81,52 +85,51 @@ public class WarClientHelper extends FileClientHelper
 
 	/**
 	 * Handles a call.
-	 * @param request The request to handle.
-	 * @param response The response to update.
+	 * 
+	 * @param request
+	 *            The request to handle.
+	 * @param response
+	 *            The response to update.
 	 */
-	public void handle(Request request, Response response)
-	{
+	public void handle(Request request, Response response) {
 		String scheme = request.getResourceRef().getScheme();
 
 		// Ensure that all ".." and "." are normalized into the path
 		// to preven unauthorized access to user directories.
 		request.getResourceRef().normalize();
 
-		if (scheme.equalsIgnoreCase("war"))
-		{
+		if (scheme.equalsIgnoreCase("war")) {
 			handleWar(request, response);
-		}
-		else
-		{
-			throw new IllegalArgumentException("Protocol \"" + scheme
-					+ "\" not supported by the connector. Only WAR is supported.");
+		} else {
+			throw new IllegalArgumentException(
+					"Protocol \""
+							+ scheme
+							+ "\" not supported by the connector. Only WAR is supported.");
 		}
 	}
 
 	/**
 	 * Handles a call using the current Web Application.
-	 * @param request The request to handle.
-	 * @param response The response to update.
+	 * 
+	 * @param request
+	 *            The request to handle.
+	 * @param response
+	 *            The response to update.
 	 */
-	protected void handleWar(Request request, Response response)
-	{
-		if (this.webAppArchive)
-		{
-			try
-			{
+	protected void handleWar(Request request, Response response) {
+		if (this.webAppArchive) {
+			try {
 				String path = request.getResourceRef().getPath();
 				JarFile war = new JarFile(getWebAppPath());
 				JarEntry entry = war.getJarEntry(path);
 
-				if (entry.isDirectory())
-				{
-					if (warEntries == null)
-					{
-						// Cache of all the WAR file entries to improve directory listing time.
+				if (entry.isDirectory()) {
+					if (warEntries == null) {
+						// Cache of all the WAR file entries to improve
+						// directory listing time.
 						warEntries = new ArrayList<String>();
 						for (Enumeration<JarEntry> entries = war.entries(); entries
-								.hasMoreElements();)
-						{
+								.hasMoreElements();) {
 							warEntries.add(entries.nextElement().getName());
 						}
 					}
@@ -135,54 +138,42 @@ public class WarClientHelper extends FileClientHelper
 					ReferenceList rl = new ReferenceList();
 					rl.setListRef(request.getResourceRef());
 
-					for (String warEntry : warEntries)
-					{
-						if (warEntry.startsWith(path))
-						{
+					for (String warEntry : warEntries) {
+						if (warEntry.startsWith(path)) {
 							rl.add(new Reference(warEntry));
 						}
 					}
 
 					response.setEntity(rl.getRepresentation());
 					response.setStatus(Status.SUCCESS_OK);
-				}
-				else
-				{
+				} else {
 					// Return the file content
-					Representation output = new InputRepresentation(war.getInputStream(entry),
-							null);
+					Representation output = new InputRepresentation(war
+							.getInputStream(entry), null);
 					updateMetadata(getMetadataService(request), path, output);
 					response.setEntity(output);
 					response.setStatus(Status.SUCCESS_OK);
 				}
-			}
-			catch (IOException e)
-			{
-				getLogger().log(Level.WARNING, "Unable to access to the WAR file", e);
+			} catch (IOException e) {
+				getLogger().log(Level.WARNING,
+						"Unable to access to the WAR file", e);
 				response.setStatus(Status.SERVER_ERROR_INTERNAL);
 			}
 
-		}
-		else
-		{
+		} else {
 			String path = request.getResourceRef().getPath();
 
-			if (path.toUpperCase().startsWith("/WEB-INF/"))
-			{
+			if (path.toUpperCase().startsWith("/WEB-INF/")) {
 				getLogger().warning(
 						"Forbidden access to the WEB-INF directory detected. Path requested: "
 								+ path);
 				response.setStatus(Status.CLIENT_ERROR_NOT_FOUND);
-			}
-			else if (path.toUpperCase().startsWith("/META-INF/"))
-			{
+			} else if (path.toUpperCase().startsWith("/META-INF/")) {
 				getLogger().warning(
 						"Forbidden access to the META-INF directory detected. Path requested: "
 								+ path);
 				response.setStatus(Status.CLIENT_ERROR_NOT_FOUND);
-			}
-			else
-			{
+			} else {
 				path = getWebAppPath() + path;
 				handleFile(request, response, path);
 			}
@@ -191,34 +182,29 @@ public class WarClientHelper extends FileClientHelper
 
 	/**
 	 * Returns the Web Application archive file or directory path.
+	 * 
 	 * @return The Web Application archive file or directory path.
 	 */
-	public String getWebAppPath()
-	{
-		if (this.webAppPath == null)
-		{
-			this.webAppPath = getParameters().getFirstValue("webAppPath",
-					System.getProperty("user.home") + File.separator + "restlet.war");
+	public String getWebAppPath() {
+		if (this.webAppPath == null) {
+			this.webAppPath = getParameters().getFirstValue(
+					"webAppPath",
+					System.getProperty("user.home") + File.separator
+							+ "restlet.war");
 			File file = new File(this.webAppPath);
 
-			if (file.exists())
-			{
-				if (file.isDirectory())
-				{
+			if (file.exists()) {
+				if (file.isDirectory()) {
 					this.webAppArchive = false;
 
 					// Adjust the archive directory path if necessary
 					if (webAppPath.endsWith("/"))
 						this.webAppPath = this.webAppPath.substring(0,
 								this.webAppPath.length() - 1);
-				}
-				else
-				{
+				} else {
 					this.webAppArchive = true;
 				}
-			}
-			else
-			{
+			} else {
 				getLogger().warning(
 						"Unable to find an existing directory or archive at: "
 								+ this.webAppPath);

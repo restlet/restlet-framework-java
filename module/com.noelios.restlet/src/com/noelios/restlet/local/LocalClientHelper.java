@@ -36,55 +36,54 @@ import org.restlet.service.MetadataService;
 import com.noelios.restlet.ClientHelper;
 
 /**
- * Connector to the local resources accessible via file system, class loaders and similar mechanisms.
- * Here is the list of parameters that are supported:
+ * Connector to the local resources accessible via file system, class loaders
+ * and similar mechanisms. Here is the list of parameters that are supported:
  * <table>
- * 	<tr>
- * 		<th>Parameter name</th>
- * 		<th>Value type</th>
- * 		<th>Default value</th>
- * 		<th>Description</th>
- * 	</tr>
- * 	<tr>
- * 		<td>timeToLive</td>
- * 		<td>int</td>
- * 		<td>600</td>
- * 		<td>Time to live for a file representation before it expires (in seconds).</td>
- * 	</tr>
- *	</table>
+ * <tr>
+ * <th>Parameter name</th>
+ * <th>Value type</th>
+ * <th>Default value</th>
+ * <th>Description</th>
+ * </tr>
+ * <tr>
+ * <td>timeToLive</td>
+ * <td>int</td>
+ * <td>600</td>
+ * <td>Time to live for a file representation before it expires (in seconds).</td>
+ * </tr>
+ * </table>
+ * 
  * @see org.restlet.data.LocalReference
  * @author Jerome Louvel (contact@noelios.com)
  * @author Thierry Boileau
  */
-public class LocalClientHelper extends ClientHelper
-{
+public class LocalClientHelper extends ClientHelper {
 	/**
-	 * Constructor. Note that the common list of metadata associations based on extensions is added, see
-	 * the addCommonExtensions() method.
-	 * @param client The client to help.
+	 * Constructor. Note that the common list of metadata associations based on
+	 * extensions is added, see the addCommonExtensions() method.
+	 * 
+	 * @param client
+	 *            The client to help.
 	 */
-	public LocalClientHelper(Client client)
-	{
+	public LocalClientHelper(Client client) {
 		super(client);
 	}
 
 	/**
 	 * Returns the metadata service associated to a request.
-	 * @param request The request to lookup. 
+	 * 
+	 * @param request
+	 *            The request to lookup.
 	 * @return The metadata service associated to a request.
 	 */
-	public MetadataService getMetadataService(Request request)
-	{
+	public MetadataService getMetadataService(Request request) {
 		MetadataService result = null;
 		Application application = (Application) request.getAttributes().get(
 				Application.class.getCanonicalName());
 
-		if (application != null)
-		{
+		if (application != null) {
 			result = application.getMetadataService();
-		}
-		else
-		{
+		} else {
 			result = new MetadataService();
 		}
 
@@ -92,26 +91,27 @@ public class LocalClientHelper extends ClientHelper
 	}
 
 	/**
-	 * Updates some representation metadata based on a given entry name with extensions.
-	 * @param metadataService The parent metadata service. 
-	 * @param entryName The entry name with extensions.
-	 * @param representation The representation to update.
+	 * Updates some representation metadata based on a given entry name with
+	 * extensions.
+	 * 
+	 * @param metadataService
+	 *            The parent metadata service.
+	 * @param entryName
+	 *            The entry name with extensions.
+	 * @param representation
+	 *            The representation to update.
 	 */
-	public void updateMetadata(MetadataService metadataService, String entryName,
-			Representation representation)
-	{
-		if (representation != null)
-		{
+	public void updateMetadata(MetadataService metadataService,
+			String entryName, Representation representation) {
+		if (representation != null) {
 			String[] tokens = entryName.split("\\.");
 			Metadata current;
 
 			// We found a potential variant
-			for (int j = 1; j < tokens.length; j++)
-			{
+			for (int j = 1; j < tokens.length; j++) {
 				current = metadataService.getMetadata(tokens[j]);
-				if (current != null)
-				{
-					// Metadata extension detected 
+				if (current != null) {
+					// Metadata extension detected
 					if (current instanceof MediaType)
 						representation.setMediaType((MediaType) current);
 					if (current instanceof CharacterSet)
@@ -123,10 +123,11 @@ public class LocalClientHelper extends ClientHelper
 				}
 
 				int dashIndex = tokens[j].indexOf('-');
-				if (dashIndex != -1)
-				{
-					// We found a language extension with a region area specified
-					// Try to find a language matching the primary part of the extension
+				if (dashIndex != -1) {
+					// We found a language extension with a region area
+					// specified
+					// Try to find a language matching the primary part of the
+					// extension
 					String primaryPart = tokens[j].substring(0, dashIndex);
 					current = metadataService.getMetadata(primaryPart);
 					if (current instanceof Language)
@@ -134,13 +135,14 @@ public class LocalClientHelper extends ClientHelper
 				}
 			}
 
-			//For textual representation, if no language is defines, take the default language
+			// For textual representation, if no language is defines, take the
+			// default language
 			if (representation.getMediaType() != null
-					&& representation.getMediaType().getMainType().equals("text"))
-			{
-				if (representation.getLanguage() == null)
-				{
-					representation.setLanguage(metadataService.getDefaultLanguage());
+					&& representation.getMediaType().getMainType().equals(
+							"text")) {
+				if (representation.getLanguage() == null) {
+					representation.setLanguage(metadataService
+							.getDefaultLanguage());
 				}
 
 			}
@@ -148,12 +150,15 @@ public class LocalClientHelper extends ClientHelper
 	}
 
 	/**
-	 * Returns the time to live for a file representation before it expires (in seconds).
-	 * @return The time to live for a file representation before it expires (in seconds).
+	 * Returns the time to live for a file representation before it expires (in
+	 * seconds).
+	 * 
+	 * @return The time to live for a file representation before it expires (in
+	 *         seconds).
 	 */
-	public int getTimeToLive()
-	{
-		return Integer.parseInt(getParameters().getFirstValue("timeToLive", "600"));
+	public int getTimeToLive() {
+		return Integer.parseInt(getParameters().getFirstValue("timeToLive",
+				"600"));
 	}
 
 }

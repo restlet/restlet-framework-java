@@ -33,35 +33,35 @@ import org.restlet.util.StringTemplate;
 
 /**
  * Unit tests for the StringTemplate class.
+ * 
  * @author Jerome Louvel (contact@noelios.com)
  */
-public class StringTemplateTestCase extends TestCase
-{
+public class StringTemplateTestCase extends TestCase {
 	/** Tests the interpolation feature. */
-	public void testInterpolation()
-	{
+	public void testInterpolation() {
 		Model dataModel = new MapModel();
 		dataModel.put("number", Integer.toString(12345));
 		dataModel.put("string", "abcdef");
 
 		StringTemplate st = new StringTemplate(
 				"The number is ${number} and the string is ${string}");
-		assertEquals("The number is 12345 and the string is abcdef", st.format(dataModel));
+		assertEquals("The number is 12345 and the string is abcdef", st
+				.format(dataModel));
 
 		st = new StringTemplate(
 				"The number is ${foo?exists} and the string is ${string?exists}");
-		assertEquals("The number is  and the string is abcdef", st.format(dataModel));
+		assertEquals("The number is  and the string is abcdef", st
+				.format(dataModel));
 
 		st = new StringTemplate(
 				"The number is $$$ {{{${number}${number} and the string is ${string}$${string}$i{ng}");
 		assertEquals(
-				"The number is $$$ {{{1234512345 and the string is abcdef$abcdef$i{ng}", st
-						.format(dataModel));
+				"The number is $$$ {{{1234512345 and the string is abcdef$abcdef$i{ng}",
+				st.format(dataModel));
 	}
 
 	/** Tests the conditions feature. */
-	public void testConditions()
-	{
+	public void testConditions() {
 		Model dataModel = new MapModel();
 		dataModel.put("number", Integer.toString(12345));
 		dataModel.put("string", "abcdef");
@@ -75,8 +75,7 @@ public class StringTemplateTestCase extends TestCase
 	}
 
 	/** Test URI patterns based on the CallModel and StringTemplate. */
-	public void testUriPattern()
-	{
+	public void testUriPattern() {
 		// Create a test call
 		Request request = new Request();
 		Response response = new Response(request);

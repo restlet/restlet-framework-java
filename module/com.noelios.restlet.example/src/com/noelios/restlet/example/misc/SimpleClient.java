@@ -31,12 +31,11 @@ import org.restlet.data.Response;
 
 /**
  * Simple HTTP client calling the simple server.
+ * 
  * @author Jerome Louvel (contact@noelios.com)
  */
-public class SimpleClient
-{
-	public static void main(String[] args) throws Exception
-	{
+public class SimpleClient {
+	public static void main(String[] args) throws Exception {
 		// Prepare the REST call.
 		Request request = new Request();
 
@@ -61,14 +60,11 @@ public class SimpleClient
 		// Make the call.
 		Response response = client.handle(request);
 
-		if (response.getStatus().isSuccess())
-		{
+		if (response.getStatus().isSuccess()) {
 			// Output the response entity on the JVM console
 			response.getEntity().write(System.out);
 			System.out.println("client: success!");
-		}
-		else
-		{
+		} else {
 			System.out.println("client: failure!");
 			System.out.println(response.getStatus().getDescription());
 		}

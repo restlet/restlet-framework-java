@@ -30,22 +30,24 @@ import org.restlet.data.Response;
 import org.restlet.data.Status;
 
 /**
- * Base class exposing a uniform REST interface.<br/>
- * <br/>
- * "The central feature that distinguishes the REST architectural style from other network-based styles is 
- * its emphasis on a uniform interface between components. By applying the software engineering principle of 
- * generality to the component interface, the overall system architecture is simplified and the visibility 
- * of interactions is improved. Implementations are decoupled from the services they provide, which 
- * encourages independent evolvability." Roy T. Fielding<br/>
- * <br/>
- * It has many subclasses that focus on a specific ways to handle calls like filtering, routing or finding 
- * a target resource. The context property is typically provided by a parent container as a way to give 
- * access to features such as logging and client connectors. 
- * @see <a href="http://www.ics.uci.edu/~fielding/pubs/dissertation/rest_arch_style.htm#sec_5_1_5">Source dissertation</a>
+ * Base class exposing a uniform REST interface.<br/> <br/> "The central
+ * feature that distinguishes the REST architectural style from other
+ * network-based styles is its emphasis on a uniform interface between
+ * components. By applying the software engineering principle of generality to
+ * the component interface, the overall system architecture is simplified and
+ * the visibility of interactions is improved. Implementations are decoupled
+ * from the services they provide, which encourages independent evolvability."
+ * Roy T. Fielding<br/> <br/> It has many subclasses that focus on a specific
+ * ways to handle calls like filtering, routing or finding a target resource.
+ * The context property is typically provided by a parent container as a way to
+ * give access to features such as logging and client connectors.
+ * 
+ * @see <a
+ *      href="http://www.ics.uci.edu/~fielding/pubs/dissertation/rest_arch_style.htm#sec_5_1_5">Source
+ *      dissertation</a>
  * @author Jerome Louvel (contact@noelios.com)
  */
-public class Restlet
-{
+public class Restlet {
 	/** Error message. */
 	private static final String UNABLE_TO_START = "Unable to start the Restlet";
 
@@ -58,27 +60,27 @@ public class Restlet
 	/**
 	 * Constructor.
 	 */
-	public Restlet()
-	{
+	public Restlet() {
 		this(null);
 	}
 
 	/**
 	 * Constructor.
-	 * @param context The context.
+	 * 
+	 * @param context
+	 *            The context.
 	 */
-	public Restlet(Context context)
-	{
+	public Restlet(Context context) {
 		this.context = context;
 		this.started = false;
 	}
 
 	/**
 	 * Returns the context.
+	 * 
 	 * @return The context.
 	 */
-	public Context getContext()
-	{
+	public Context getContext() {
 		if (this.context == null)
 			this.context = new Context(getClass().getCanonicalName());
 		return this.context;
@@ -86,52 +88,50 @@ public class Restlet
 
 	/**
 	 * Returns the context's logger.
+	 * 
 	 * @return The context's logger.
 	 */
-	public Logger getLogger()
-	{
+	public Logger getLogger() {
 		return (getContext() != null) ? getContext().getLogger() : null;
 	}
 
 	/**
 	 * Handles a call.
-	 * @param request The request to handle.
-	 * @param response The response to update.
+	 * 
+	 * @param request
+	 *            The request to handle.
+	 * @param response
+	 *            The response to update.
 	 */
-	public void handle(Request request, Response response)
-	{
+	public void handle(Request request, Response response) {
 		init(request, response);
 	}
 
 	/**
 	 * Initialize the Restlet by attemting to start it.
-	 * @param request The request to handle.
-	 * @param response The response to update.
+	 * 
+	 * @param request
+	 *            The request to handle.
+	 * @param response
+	 *            The response to update.
 	 */
-	protected void init(Request request, Response response)
-	{
+	protected void init(Request request, Response response) {
 		// Check if the Restlet was started
-		if (isStopped())
-		{
-			try
-			{
+		if (isStopped()) {
+			try {
 				start();
-			}
-			catch (Exception e)
-			{
+			} catch (Exception e) {
 				// Occurred while starting the Restlet
 				getContext().getLogger().log(Level.WARNING, UNABLE_TO_START, e);
 				response.setStatus(Status.SERVER_ERROR_INTERNAL);
 			}
 
-			if (isStarted())
-			{
+			if (isStarted()) {
 				// Everything went fine, no exception raised
 				response.setStatus(Status.SUCCESS_OK);
-			}
-			else
-			{
-				// No exception raised but the Restlet somehow couldn't be started
+			} else {
+				// No exception raised but the Restlet somehow couldn't be
+				// started
 				getContext().getLogger().log(Level.WARNING, UNABLE_TO_START);
 				response.setStatus(Status.SERVER_ERROR_INTERNAL);
 			}
@@ -140,40 +140,39 @@ public class Restlet
 
 	/**
 	 * Indicates if the Restlet is started.
+	 * 
 	 * @return True if the Restlet is started.
 	 */
-	public boolean isStarted()
-	{
+	public boolean isStarted() {
 		return this.started;
 	}
 
 	/**
 	 * Indicates if the Restlet is stopped.
+	 * 
 	 * @return True if the Restlet is stopped.
 	 */
-	public boolean isStopped()
-	{
+	public boolean isStopped() {
 		return !this.started;
 	}
 
 	/**
 	 * Sets the context.
-	 * @param context The context.
+	 * 
+	 * @param context
+	 *            The context.
 	 */
-	public void setContext(Context context)
-	{
+	public void setContext(Context context) {
 		this.context = context;
 	}
 
 	/** Starts the Restlet. */
-	public void start() throws Exception
-	{
+	public void start() throws Exception {
 		this.started = true;
 	}
 
 	/** Stops the Restlet. */
-	public void stop() throws Exception
-	{
+	public void stop() throws Exception {
 		this.started = false;
 	}
 

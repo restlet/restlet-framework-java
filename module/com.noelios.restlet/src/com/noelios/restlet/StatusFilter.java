@@ -34,16 +34,18 @@ import org.restlet.resource.Representation;
 import org.restlet.resource.StringRepresentation;
 
 /**
- * Filter associating a response entity based on the status. In order to customize the default representation,
- * just subclass this class and override the "getRepresentation" method.<br/> 
- * If any exception occurs during the call handling, a "server internal error" status is automatically 
- * associated to the call. Of course, you can personalize the representation of this error. Also, if no 
- * status is set (null), then the "success ok" status is assumed.<br/> 
- * @see <a href="http://www.restlet.org/tutorial#part08">Tutorial: Displaying error pages</a>
+ * Filter associating a response entity based on the status. In order to
+ * customize the default representation, just subclass this class and override
+ * the "getRepresentation" method.<br/> If any exception occurs during the call
+ * handling, a "server internal error" status is automatically associated to the
+ * call. Of course, you can personalize the representation of this error. Also,
+ * if no status is set (null), then the "success ok" status is assumed.<br/>
+ * 
+ * @see <a href="http://www.restlet.org/tutorial#part08">Tutorial: Displaying
+ *      error pages</a>
  * @author Jerome Louvel (contact@noelios.com)
  */
-public class StatusFilter extends Filter
-{
+public class StatusFilter extends Filter {
 	/** Indicates whether an existing representation should be overwritten. */
 	private boolean overwrite;
 
@@ -55,13 +57,20 @@ public class StatusFilter extends Filter
 
 	/**
 	 * Constructor.
-	 * @param context The context.
-	 * @param overwrite Indicates whether an existing representation should be overwritten.
-	 * @param email Email address of the administrator to contact in case of error.
-	 * @param homeUri The home URI to propose in case of error.
+	 * 
+	 * @param context
+	 *            The context.
+	 * @param overwrite
+	 *            Indicates whether an existing representation should be
+	 *            overwritten.
+	 * @param email
+	 *            Email address of the administrator to contact in case of
+	 *            error.
+	 * @param homeUri
+	 *            The home URI to propose in case of error.
 	 */
-	public StatusFilter(Context context, boolean overwrite, String email, String homeUri)
-	{
+	public StatusFilter(Context context, boolean overwrite, String email,
+			String homeUri) {
 		super(context);
 		this.overwrite = overwrite;
 		this.email = email;
@@ -69,57 +78,63 @@ public class StatusFilter extends Filter
 	}
 
 	/**
-	 * Handles the call by distributing it to the next Restlet. 
-	 * @param request The request to handle.
-	 * @param response The response to update.
+	 * Handles the call by distributing it to the next Restlet.
+	 * 
+	 * @param request
+	 *            The request to handle.
+	 * @param response
+	 *            The response to update.
 	 */
-	public void doHandle(Request request, Response response)
-	{
+	public void doHandle(Request request, Response response) {
 		// Normally handle the call
-		try
-		{
+		try {
 			super.doHandle(request, response);
-		}
-		catch (Throwable t)
-		{
-			getLogger().log(Level.SEVERE, "Unhandled exception or error intercepted", t);
+		} catch (Throwable t) {
+			getLogger().log(Level.SEVERE,
+					"Unhandled exception or error intercepted", t);
 			response.setStatus(Status.SERVER_ERROR_INTERNAL);
 		}
 	}
 
 	/**
-	 * Allows filtering after its handling by the target Restlet. Does nothing by default.
-	 * @param request The request to handle.
-	 * @param response The response to update.
+	 * Allows filtering after its handling by the target Restlet. Does nothing
+	 * by default.
+	 * 
+	 * @param request
+	 *            The request to handle.
+	 * @param response
+	 *            The response to update.
 	 */
-	public void afterHandle(Request request, Response response)
-	{
+	public void afterHandle(Request request, Response response) {
 		// If no status is set, then the "success ok" status is assumed.
-		if (response.getStatus() == null)
-		{
+		if (response.getStatus() == null) {
 			response.setStatus(Status.SUCCESS_OK);
 		}
 
 		// Do we need to get a representation for the current status?
 		if (!response.getStatus().equals(Status.SUCCESS_OK)
-				&& !response.getStatus().equals(Status.REDIRECTION_NOT_MODIFIED)
-				&& ((response.getEntity() == null) || overwrite))
-		{
-			response.setEntity(getRepresentation(response.getStatus(), request, response));
+				&& !response.getStatus()
+						.equals(Status.REDIRECTION_NOT_MODIFIED)
+				&& ((response.getEntity() == null) || overwrite)) {
+			response.setEntity(getRepresentation(response.getStatus(), request,
+					response));
 		}
 	}
 
 	/**
-	 * Returns a representation for the given status.<br/> In order to customize the 
-	 * default representation, this method can be overriden. 
-	 * @param status The status to represent.
-	 * @param request The request handled.
-	 * @param response The response updated.
+	 * Returns a representation for the given status.<br/> In order to
+	 * customize the default representation, this method can be overriden.
+	 * 
+	 * @param status
+	 *            The status to represent.
+	 * @param request
+	 *            The request handled.
+	 * @param response
+	 *            The response updated.
 	 * @return The representation of the given status.
 	 */
 	public Representation getRepresentation(Status status, Request request,
-			Response response)
-	{
+			Response response) {
 		StringBuilder sb = new StringBuilder();
 		sb.append("<html>\n");
 		sb.append("<head>\n");
@@ -128,12 +143,9 @@ public class StatusFilter extends Filter
 		sb.append("<body>\n");
 
 		sb.append("<h3>");
-		if (status.getDescription() != null)
-		{
+		if (status.getDescription() != null) {
 			sb.append(status.getDescription());
-		}
-		else
-		{
+		} else {
 			sb.append("No description available for this result status");
 		}
 		sb.append("</h3>");
@@ -141,15 +153,14 @@ public class StatusFilter extends Filter
 		sb.append(status.getUri());
 		sb.append("\">here</a>.<br/>\n");
 
-		if (email != null)
-		{
-			sb.append("For further assistance, you can contact the <a href=\"mailto:");
+		if (email != null) {
+			sb
+					.append("For further assistance, you can contact the <a href=\"mailto:");
 			sb.append(email);
 			sb.append("\">administrator</a>.<br/>\n");
 		}
 
-		if (homeURI != null)
-		{
+		if (homeURI != null) {
 			sb.append("Please continue your visit at our <a href=\"");
 			sb.append(homeURI);
 			sb.append("\">home page</a>.\n");

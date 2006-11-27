@@ -37,12 +37,13 @@ import org.restlet.resource.OutputRepresentation;
 import org.restlet.util.MapModel;
 
 /**
- * FreeMarker template representation. Useful for dynamic string-based representations.
+ * FreeMarker template representation. Useful for dynamic string-based
+ * representations.
+ * 
  * @see <a href="http://freemarker.org/">FreeMarker home page</a>
  * @author Jerome Louvel (contact@noelios.com)
  */
-public class TemplateRepresentation extends OutputRepresentation
-{
+public class TemplateRepresentation extends OutputRepresentation {
 	/** The template's name. */
 	private String templateName;
 
@@ -54,23 +55,30 @@ public class TemplateRepresentation extends OutputRepresentation
 
 	/**
 	 * Constructor.
-	 * @param templateName The FreeMarker template's name. The full path is resolved by the configuration.
-	 * @param mediaType The representation's media type.
+	 * 
+	 * @param templateName
+	 *            The FreeMarker template's name. The full path is resolved by
+	 *            the configuration.
+	 * @param mediaType
+	 *            The representation's media type.
 	 */
-	public TemplateRepresentation(String templateName, MediaType mediaType)
-	{
+	public TemplateRepresentation(String templateName, MediaType mediaType) {
 		this(templateName, new MapModel(), mediaType);
 	}
 
 	/**
 	 * Constructor.
-	 * @param templateName The FreeMarker template's name. The full path is resolved by the configuration.
-	 * @param dataModel The FreeMarker template's data model.
-	 * @param mediaType The representation's media type.
+	 * 
+	 * @param templateName
+	 *            The FreeMarker template's name. The full path is resolved by
+	 *            the configuration.
+	 * @param dataModel
+	 *            The FreeMarker template's data model.
+	 * @param mediaType
+	 *            The representation's media type.
 	 */
-	public TemplateRepresentation(String templateName, Map<String, Object> dataModel,
-			MediaType mediaType)
-	{
+	public TemplateRepresentation(String templateName,
+			Map<String, Object> dataModel, MediaType mediaType) {
 		super(mediaType);
 		this.engine = new VelocityEngine();
 		this.dataModel = dataModel;
@@ -79,45 +87,47 @@ public class TemplateRepresentation extends OutputRepresentation
 
 	/**
 	 * Returns the Velocity engine.
+	 * 
 	 * @return The Velocity engine.
 	 */
-	public VelocityEngine getEngine()
-	{
+	public VelocityEngine getEngine() {
 		return this.engine;
 	}
 
 	/**
 	 * Returns the template's data model.
+	 * 
 	 * @return The template's data model.
 	 */
-	public Map<String, Object> getDataModel()
-	{
+	public Map<String, Object> getDataModel() {
 		return this.dataModel;
 	}
 
 	/**
 	 * Sets the template's data model.
-	 * @param dataModel The template's data model.
+	 * 
+	 * @param dataModel
+	 *            The template's data model.
 	 * @return The template's data model.
 	 */
-	public Map<String, Object> setDataModel(Map<String, Object> dataModel)
-	{
+	public Map<String, Object> setDataModel(Map<String, Object> dataModel) {
 		this.dataModel = dataModel;
 		return dataModel;
 	}
 
 	/**
 	 * Writes the datum as a stream of bytes.
-	 * @param outputStream The stream to use when writing.
+	 * 
+	 * @param outputStream
+	 *            The stream to use when writing.
 	 */
-	public void write(OutputStream outputStream) throws IOException
-	{
+	public void write(OutputStream outputStream) throws IOException {
 		Writer tmplWriter = null;
 
-		try
-		{
+		try {
 			// Initialize the log system
-			getEngine().setProperty("runtime.log.logsystem", new JdkLogSystem());
+			getEngine()
+					.setProperty("runtime.log.logsystem", new JdkLogSystem());
 
 			// Initialize the engine
 			getEngine().init();
@@ -127,24 +137,20 @@ public class TemplateRepresentation extends OutputRepresentation
 
 			// Load the template
 			Template template = engine.getTemplate(templateName);
-			if (getCharacterSet() != null)
-			{
-				tmplWriter = new BufferedWriter(new OutputStreamWriter(outputStream,
-						getCharacterSet().getName()));
-			}
-			else
-			{
-				tmplWriter = new BufferedWriter(new OutputStreamWriter(outputStream, template
-						.getEncoding()));
+			if (getCharacterSet() != null) {
+				tmplWriter = new BufferedWriter(new OutputStreamWriter(
+						outputStream, getCharacterSet().getName()));
+			} else {
+				tmplWriter = new BufferedWriter(new OutputStreamWriter(
+						outputStream, template.getEncoding()));
 			}
 
 			// Process the template
 			template.merge(context, tmplWriter);
 			tmplWriter.flush();
-		}
-		catch (Exception e)
-		{
-			throw new IOException("Template processing error. " + e.getMessage());
+		} catch (Exception e) {
+			throw new IOException("Template processing error. "
+					+ e.getMessage());
 		}
 	}
 

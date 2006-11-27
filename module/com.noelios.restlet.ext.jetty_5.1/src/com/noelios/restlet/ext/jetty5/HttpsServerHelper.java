@@ -29,65 +29,64 @@ import org.restlet.Server;
 import org.restlet.data.Protocol;
 
 /**
- * Jetty HTTPS server connector. Here is the list of additional parameters that are supported:
- * <table>
- * 	<tr>
- * 		<th>Parameter name</th>
- * 		<th>Value type</th>
- * 		<th>Default value</th>
- * 		<th>Description</th>
- * 	</tr>
- * 	<tr>
- * 		<td>lowResourcePersistTimeMs</td>
- * 		<td>int</td>
- * 		<td>2000</td>
- * 		<td>Time in ms that connections will persist if listener is low on resources.</td>
- * 	</tr>
- * 	<tr>
- * 		<td>keystorePath</td>
- * 		<td>String</td>
- * 		<td>${user.home}/.keystore</td>
- * 		<td>The SSL keystore path.</td>
- * 	</tr>
- * 	<tr>
- * 		<td>keystorePassword</td>
- * 		<td>String</td>
- * 		<td></td>
- * 		<td>The SSL keystore password.</td>
- * 	</tr>
- * 	<tr>
- * 		<td>keyPassword</td>
- * 		<td>String</td>
- * 		<td></td>
- * 		<td>The SSL key password.</td>
- * 	</tr>
+ * Jetty HTTPS server connector. Here is the list of additional parameters that
+ * are supported: <table>
+ * <tr>
+ * <th>Parameter name</th>
+ * <th>Value type</th>
+ * <th>Default value</th>
+ * <th>Description</th>
+ * </tr>
+ * <tr>
+ * <td>lowResourcePersistTimeMs</td>
+ * <td>int</td>
+ * <td>2000</td>
+ * <td>Time in ms that connections will persist if listener is low on
+ * resources.</td>
+ * </tr>
+ * <tr>
+ * <td>keystorePath</td>
+ * <td>String</td>
+ * <td>${user.home}/.keystore</td>
+ * <td>The SSL keystore path.</td>
+ * </tr>
+ * <tr>
+ * <td>keystorePassword</td>
+ * <td>String</td>
+ * <td></td>
+ * <td>The SSL keystore password.</td>
+ * </tr>
+ * <tr>
+ * <td>keyPassword</td>
+ * <td>String</td>
+ * <td></td>
+ * <td>The SSL key password.</td>
+ * </tr>
  * </table>
- * @see <a href="http://jetty.mortbay.org/jetty/faq?s=400-Security&t=ssl">FAQ - Configuring SSL for Jetty</a>
+ * 
+ * @see <a href="http://jetty.mortbay.org/jetty/faq?s=400-Security&t=ssl">FAQ -
+ *      Configuring SSL for Jetty</a>
  * @author Jerome Louvel (contact@noelios.com)
  */
-public class HttpsServerHelper extends JettyServerHelper
-{
+public class HttpsServerHelper extends JettyServerHelper {
 	/**
 	 * Constructor.
-	 * @param server The server to help.
+	 * 
+	 * @param server
+	 *            The server to help.
 	 */
-	public HttpsServerHelper(Server server)
-	{
+	public HttpsServerHelper(Server server) {
 		super(server);
 		getProtocols().add(Protocol.HTTPS);
 	}
 
 	/** Start hook. */
-	public void start() throws Exception
-	{
+	public void start() throws Exception {
 		HttpsListener listener = null;
-		if (getServer().getAddress() != null)
-		{
-			listener = new HttpsListener(this, new InetAddrPort(getServer().getAddress(),
-					getServer().getPort()));
-		}
-		else
-		{
+		if (getServer().getAddress() != null) {
+			listener = new HttpsListener(this, new InetAddrPort(getServer()
+					.getAddress(), getServer().getPort()));
+		} else {
 			listener = new HttpsListener(this);
 			listener.setPort(getServer().getPort());
 		}
@@ -107,40 +106,42 @@ public class HttpsServerHelper extends JettyServerHelper
 
 	/**
 	 * Returns the SSL keystore path.
+	 * 
 	 * @return The SSL keystore path.
 	 */
-	public String getKeystorePath()
-	{
+	public String getKeystorePath() {
 		return getParameters().getFirstValue("keystorePath",
 				System.getProperty("user.home") + File.separator + ".keystore");
 	}
 
 	/**
 	 * Returns the SSL keystore password.
+	 * 
 	 * @return The SSL keystore password.
 	 */
-	public String getKeystorePassword()
-	{
+	public String getKeystorePassword() {
 		return getParameters().getFirstValue("keystorePassword", "");
 	}
 
 	/**
 	 * Returns the SSL key password.
+	 * 
 	 * @return The SSL key password.
 	 */
-	public String getKeyPassword()
-	{
+	public String getKeyPassword() {
 		return getParameters().getFirstValue("keyPassword", "");
 	}
 
 	/**
-	 * Returns time in ms that connections will persist if listener is low on resources.
-	 * @return Time in ms that connections will persist if listener is low on resources.
+	 * Returns time in ms that connections will persist if listener is low on
+	 * resources.
+	 * 
+	 * @return Time in ms that connections will persist if listener is low on
+	 *         resources.
 	 */
-	public int getLowResourcePersistTimeMs()
-	{
-		return Integer.parseInt(getParameters().getFirstValue("lowResourcePersistTimeMs",
-				"2000"));
+	public int getLowResourcePersistTimeMs() {
+		return Integer.parseInt(getParameters().getFirstValue(
+				"lowResourcePersistTimeMs", "2000"));
 	}
 
 }

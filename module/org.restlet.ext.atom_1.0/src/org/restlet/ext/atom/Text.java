@@ -25,13 +25,13 @@ package org.restlet.ext.atom;
 import org.restlet.data.MediaType;
 
 /**
- * A Text construct contains human-readable text, usually in small quantities.  
+ * A Text construct contains human-readable text, usually in small quantities.
  * The content of Text constructs is Language-Sensitive.
+ * 
  * @author Jerome Louvel (contact@noelios.com)
  */
-public class Text
-{
-	/** 
+public class Text {
+	/**
 	 * The content type.
 	 */
 	private MediaType type;
@@ -43,57 +43,62 @@ public class Text
 
 	/**
 	 * Constructor.
-	 * @param type The content type.
-	 * @param content The content.
+	 * 
+	 * @param type
+	 *            The content type.
+	 * @param content
+	 *            The content.
 	 */
-	public Text(MediaType type, String content)
-	{
+	public Text(MediaType type, String content) {
 		this.type = type;
 		this.content = content;
 	}
 
 	/**
 	 * Constructor.
-	 * @param type The content type.
+	 * 
+	 * @param type
+	 *            The content type.
 	 */
-	public Text(MediaType type)
-	{
+	public Text(MediaType type) {
 		this(type, null);
 	}
 
 	/**
 	 * Returns the content type.
+	 * 
 	 * @return The content type.
 	 */
-	public MediaType getType()
-	{
+	public MediaType getType() {
 		return this.type;
 	}
 
 	/**
 	 * Sets the content type.
-	 * @param type The content type.
+	 * 
+	 * @param type
+	 *            The content type.
 	 */
-	public void setType(MediaType type)
-	{
+	public void setType(MediaType type) {
 		this.type = type;
 	}
 
 	/**
 	 * Returns the content.
+	 * 
 	 * @return The content.
 	 */
-	public String getContent()
-	{
+	public String getContent() {
 		return this.content;
 	}
 
 	/**
 	 * Sets the content.
-	 * @param content The content.
+	 * 
+	 * @param content
+	 *            The content.
 	 */
-	public void setContent(String content)
-	{
+	public void setContent(String content) {
 		this.content = content;
 	}
 

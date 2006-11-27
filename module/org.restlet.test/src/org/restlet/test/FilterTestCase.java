@@ -29,38 +29,33 @@ import org.restlet.data.Response;
 /**
  * Test {@link org.restlet.Filter}.
  * 
- * @author Lars Heuer (heuer[at]semagia.com) <a href="http://www.semagia.com/">Semagia</a>
+ * @author Lars Heuer (heuer[at]semagia.com) <a
+ *         href="http://www.semagia.com/">Semagia</a>
  * @version $Rev:$ - $Date:$
  */
-public class FilterTestCase extends AbstractFilterTestCase
-{
+public class FilterTestCase extends AbstractFilterTestCase {
 	@Override
-	protected Filter getFilter()
-	{
+	protected Filter getFilter() {
 		return new MockFilter(null);
 	}
 
 	@Override
-	protected Request getRequest()
-	{
+	protected Request getRequest() {
 		return new Request();
 	}
 
 	@Override
-	protected Response getResponse(Request request)
-	{
+	protected Response getResponse(Request request) {
 		return new Response(request);
 	}
 
 	@Override
-	protected Restlet getRestlet()
-	{
+	protected Restlet getRestlet() {
 		return new MockRestlet(null);
 	}
 
 	@Override
-	protected Class getRestletClass()
-	{
+	protected Class getRestletClass() {
 		return MockRestlet.class;
 	}
 

@@ -12,24 +12,19 @@ import org.restlet.ext.freemarker.TemplateRepresentation;
 
 import freemarker.template.Configuration;
 
-public class FreeMarkerTestCase extends TestCase
-{
-	public static void main(String[] args)
-	{
-		try
-		{
+public class FreeMarkerTestCase extends TestCase {
+	public static void main(String[] args) {
+		try {
 			new FreeMarkerTestCase().testTemplate();
-		}
-		catch (Exception e)
-		{
+		} catch (Exception e) {
 			e.printStackTrace();
 		}
 	}
 
-	public void testTemplate() throws Exception
-	{
+	public void testTemplate() throws Exception {
 		// Create a temporary directory for the tests
-		File testDir = new File(System.getProperty("java.io.tmpdir"), "FreeMarkerTestCase");
+		File testDir = new File(System.getProperty("java.io.tmpdir"),
+				"FreeMarkerTestCase");
 		testDir.mkdir();
 
 		// Create a temporary template file
@@ -43,8 +38,8 @@ public class FreeMarkerTestCase extends TestCase
 		Map<String, Object> map = new TreeMap<String, Object>();
 		map.put("value", "myValue");
 
-		String result = new TemplateRepresentation(testFile.getName(), fmc, map,
-				MediaType.TEXT_PLAIN).getValue();
+		String result = new TemplateRepresentation(testFile.getName(), fmc,
+				map, MediaType.TEXT_PLAIN).getValue();
 		assertEquals("Value=myValue", result);
 
 		// Clean-up

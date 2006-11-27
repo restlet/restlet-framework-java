@@ -25,19 +25,18 @@ import org.restlet.data.MediaType;
 
 /**
  * Test {@link org.restlet.data.MediaType}.
+ * 
  * @author Jerome Louvel (contact@noelios.com)
  */
-public class MediaTypeTestCase extends RestletTestCase
-{
+public class MediaTypeTestCase extends RestletTestCase {
 	protected final static String DEFAULT_SCHEME = "http";
 
 	protected final static String DEFAULT_SCHEMEPART = "//";
 
 	/**
-	 * Equality tests. 
+	 * Equality tests.
 	 */
-	public void testEquals() throws Exception
-	{
+	public void testEquals() throws Exception {
 		MediaType mt1 = new MediaType("application/xml");
 		MediaType mt2 = MediaType.APPLICATION_XML;
 		assertTrue(mt1.equals(mt2));
@@ -50,10 +49,9 @@ public class MediaTypeTestCase extends RestletTestCase
 	}
 
 	/**
-	 * Test references that are unequal. 
+	 * Test references that are unequal.
 	 */
-	public void testUnEquals() throws Exception
-	{
+	public void testUnEquals() throws Exception {
 		MediaType mt1 = new MediaType("application/xml");
 		MediaType mt2 = new MediaType("application/xml2");
 		assertFalse(mt1.equals(mt2));
@@ -66,8 +64,7 @@ public class MediaTypeTestCase extends RestletTestCase
 	/**
 	 * Test inclusion.
 	 */
-	public void testIncludes() throws Exception
-	{
+	public void testIncludes() throws Exception {
 		MediaType mt1 = MediaType.APPLICATION_ALL;
 		MediaType mt2 = MediaType.APPLICATION_XML;
 		assertTrue(mt1.includes(mt1));

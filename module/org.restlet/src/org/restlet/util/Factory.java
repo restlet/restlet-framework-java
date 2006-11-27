@@ -47,12 +47,13 @@ import org.restlet.resource.Resource;
 
 /**
  * Factory and registration service for Restlet API implementations.
+ * 
  * @author Jerome Louvel (contact@noelios.com)
  */
-public abstract class Factory
-{
+public abstract class Factory {
 	/** Obtain a suitable logger. */
-	private static Logger logger = Logger.getLogger(Factory.class.getCanonicalName());
+	private static Logger logger = Logger.getLogger(Factory.class
+			.getCanonicalName());
 
 	/** Common version info. */
 	public static final String BETA_NUMBER = "1";
@@ -71,11 +72,11 @@ public abstract class Factory
 	private static ClassLoader classloader = Factory.class.getClassLoader();
 
 	/**
-	 * Returns a the class loader to use when creating instantiating implementation classes.
-	 * By default, it reused the classloader of this Factory's class.
+	 * Returns a the class loader to use when creating instantiating
+	 * implementation classes. By default, it reused the classloader of this
+	 * Factory's class.
 	 */
-	public static ClassLoader getClassLoader()
-	{
+	public static ClassLoader getClassLoader() {
 		return classloader;
 	}
 
@@ -84,12 +85,10 @@ public abstract class Factory
 	 * 
 	 * @return The factory of the Restlet implementation.
 	 */
-	public static Factory getInstance()
-	{
+	public static Factory getInstance() {
 		Factory result = instance;
 
-		if (result == null)
-		{
+		if (result == null) {
 			// Find the factory class name
 			String factoryClassName = null;
 
@@ -97,50 +96,38 @@ public abstract class Factory
 			ClassLoader cl = getClassLoader();
 			URL configURL = cl.getResource(providerResource);
 
-			if (configURL == null)
-			{
+			if (configURL == null) {
 				// Try the current thread's classloader
 				cl = Thread.currentThread().getContextClassLoader();
 				configURL = cl.getResource(providerResource);
 			}
 
-			if (configURL == null)
-			{
+			if (configURL == null) {
 				// Try the system classloader
 				cl = ClassLoader.getSystemClassLoader();
 				configURL = cl.getResource(providerResource);
 			}
 
-			if (configURL != null)
-			{
+			if (configURL != null) {
 				BufferedReader reader = null;
-				try
-				{
-					reader = new BufferedReader(new InputStreamReader(configURL.openStream(),
-							"utf-8"));
+				try {
+					reader = new BufferedReader(new InputStreamReader(configURL
+							.openStream(), "utf-8"));
 					String providerName = reader.readLine();
 
 					if (providerName != null)
-						factoryClassName = providerName.substring(0, providerName.indexOf('#'))
-								.trim();
-				}
-				catch (IOException e)
-				{
+						factoryClassName = providerName.substring(0,
+								providerName.indexOf('#')).trim();
+				} catch (IOException e) {
 					logger
 							.log(
 									Level.SEVERE,
 									"Unable to register the Restlet API implementation. Please check that the JAR file is in your classpath.");
-				}
-				finally
-				{
-					if (reader != null)
-					{
-						try
-						{
+				} finally {
+					if (reader != null) {
+						try {
 							reader.close();
-						}
-						catch (IOException e)
-						{
+						} catch (IOException e) {
 							logger
 									.warning("IOException encountered while closing an open BufferedReader"
 											+ e.getMessage());
@@ -150,15 +137,16 @@ public abstract class Factory
 				}
 
 				// Instantiate the factory
-				try
-				{
-					instance = (Factory) Class.forName(factoryClassName).newInstance();
+				try {
+					instance = (Factory) Class.forName(factoryClassName)
+							.newInstance();
 					result = instance;
-				}
-				catch (Exception e)
-				{
-					logger.log(Level.SEVERE,
-							"Unable to register the Restlet API implementation", e);
+				} catch (Exception e) {
+					logger
+							.log(
+									Level.SEVERE,
+									"Unable to register the Restlet API implementation",
+									e);
 					throw new RuntimeException(
 							"Unable to register the Restlet API implementation");
 				}
@@ -170,17 +158,16 @@ public abstract class Factory
 	}
 
 	/**
-	 * Computes the hash code of a set of objects. Follows the algorithm specified in List.hasCode().
+	 * Computes the hash code of a set of objects. Follows the algorithm
+	 * specified in List.hasCode().
+	 * 
 	 * @return The hash code of a set of objects.
 	 */
-	public static int hashCode(Object... objects)
-	{
+	public static int hashCode(Object... objects) {
 		int result = 1;
 
-		if (objects != null)
-		{
-			for (Object obj : objects)
-			{
+		if (objects != null) {
+			for (Object obj : objects) {
 				result = 31 * result + (obj == null ? 0 : obj.hashCode());
 			}
 		}
@@ -189,96 +176,134 @@ public abstract class Factory
 	}
 
 	/**
-	 * Sets a new class loader to use when creating instantiating implementation classes.
-	 * @param newClassloader The new class loader to use.
+	 * Sets a new class loader to use when creating instantiating implementation
+	 * classes.
+	 * 
+	 * @param newClassloader
+	 *            The new class loader to use.
 	 */
-	public static void setClassLoader(ClassLoader newClassloader)
-	{
+	public static void setClassLoader(ClassLoader newClassloader) {
 		classloader = newClassloader;
 	}
 
 	/**
 	 * Sets the factory of the Restlet implementation.
-	 * @param factory The factory to register.
+	 * 
+	 * @param factory
+	 *            The factory to register.
 	 */
-	public static void setInstance(Factory factory)
-	{
+	public static void setInstance(Factory factory) {
 		instance = factory;
 	}
 
 	/**
 	 * Creates a directory resource.
-	 * @param handler The parent directory handler.
-	 * @param request The handled call.
+	 * 
+	 * @param handler
+	 *            The parent directory handler.
+	 * @param request
+	 *            The handled call.
 	 * @return A new directory resource.
-	 * @throws IOException 
+	 * @throws IOException
 	 */
-	public abstract Resource createDirectoryResource(Directory handler, Request request)
-			throws IOException;
+	public abstract Resource createDirectoryResource(Directory handler,
+			Request request) throws IOException;
 
 	/**
 	 * Creates a new helper for a given container.
-	 * @param application The application to help.
-	 * @param parentContext The parent context, typically the container's context.
+	 * 
+	 * @param application
+	 *            The application to help.
+	 * @param parentContext
+	 *            The parent context, typically the container's context.
 	 * @return The new helper.
 	 */
-	public abstract Helper createHelper(Application application, Context parentContext);
+	public abstract Helper createHelper(Application application,
+			Context parentContext);
 
 	/**
 	 * Creates a new helper for a given client connector.
-	 * @param client The client to help.
+	 * 
+	 * @param client
+	 *            The client to help.
 	 * @return The new helper.
 	 */
 	public abstract Helper createHelper(Client client);
 
 	/**
 	 * Creates a new helper for a given container.
-	 * @param container The container to help.
+	 * 
+	 * @param container
+	 *            The container to help.
 	 * @return The new helper.
 	 */
 	public abstract Helper createHelper(Container container);
 
 	/**
 	 * Creates a new helper for a given server connector.
-	 * @param server The server to help.
+	 * 
+	 * @param server
+	 *            The server to help.
 	 * @return The new helper.
 	 */
 	public abstract Helper createHelper(Server server);
 
 	/**
-	 * Creates a URI-based Restlet attachment that will score chained instance shared by all calls.
-	 * The score will be proportional to the number of chararacters matched by the pattern, from the start
-	 * of the context resource path.
-	 * @param router The parent router.
-	 * @param uriPattern The URI pattern used to map calls (see {@link java.util.regex.Pattern} for the syntax).
-	 * @param target The target Restlet to attach.
+	 * Creates a URI-based Restlet attachment that will score chained instance
+	 * shared by all calls. The score will be proportional to the number of
+	 * chararacters matched by the pattern, from the start of the context
+	 * resource path.
+	 * 
+	 * @param router
+	 *            The parent router.
+	 * @param uriPattern
+	 *            The URI pattern used to map calls (see
+	 *            {@link java.util.regex.Pattern} for the syntax).
+	 * @param target
+	 *            The target Restlet to attach.
 	 * @see java.util.regex.Pattern
 	 */
-	public abstract Scorer createScorer(Router router, String uriPattern, Restlet target);
+	public abstract Scorer createScorer(Router router, String uriPattern,
+			Restlet target);
 
 	/**
-	 * Returns the best variant representation for a given resource according the the client preferences.
-	 * @param client The client preferences.
-	 * @param variants The list of variants to compare.
+	 * Returns the best variant representation for a given resource according
+	 * the the client preferences.
+	 * 
+	 * @param client
+	 *            The client preferences.
+	 * @param variants
+	 *            The list of variants to compare.
 	 * @return The best variant representation.
-	 * @see <a href="http://httpd.apache.org/docs/2.2/en/content-negotiation.html#algorithm">Apache content negotiation algorithm</a>
+	 * @see <a
+	 *      href="http://httpd.apache.org/docs/2.2/en/content-negotiation.html#algorithm">Apache
+	 *      content negotiation algorithm</a>
 	 */
 	public abstract Representation getPreferredVariant(ClientInfo client,
 			List<Representation> variants);
 
 	/**
 	 * Parses a representation into a form.
-	 * @param logger The logger to use.
-	 * @param form The target form.
-	 * @param representation The representation to parse.
+	 * 
+	 * @param logger
+	 *            The logger to use.
+	 * @param form
+	 *            The target form.
+	 * @param representation
+	 *            The representation to parse.
 	 */
-	public abstract void parse(Logger logger, Form form, Representation representation);
+	public abstract void parse(Logger logger, Form form,
+			Representation representation);
 
 	/**
 	 * Parses an URL encoded query string into a given form.
-	 * @param logger The logger to use.
-	 * @param form The target form.
-	 * @param queryString Query string.
+	 * 
+	 * @param logger
+	 *            The logger to use.
+	 * @param form
+	 *            The target form.
+	 * @param queryString
+	 *            Query string.
 	 */
 	public abstract void parse(Logger logger, Form form, String queryString);
 

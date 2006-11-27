@@ -34,24 +34,27 @@ import org.restlet.resource.Representation;
 
 /**
  * Test the Amazon Web Service authentication.
+ * 
  * @author Jerome Louvel (contact@noelios.com)
  */
-public class AwsTest
-{
-	public static void main(String[] args) throws Exception
-	{
+public class AwsTest {
+	public static void main(String[] args) throws Exception {
 		// Prepare the request
-		Request request = new Request(Method.GET, "http://s3.amazonaws.com/quotes/nelson");
-		request.setChallengeResponse(new ChallengeResponse(ChallengeScheme.HTTP_AWS,
-				"44CF9590006BF252F707", "OtxrzxIsfpFjA7SwPzILwy8Bw21TLhquhboDYROV"));
+		Request request = new Request(Method.GET,
+				"http://s3.amazonaws.com/quotes/nelson");
+		request.setChallengeResponse(new ChallengeResponse(
+				ChallengeScheme.HTTP_AWS, "44CF9590006BF252F707",
+				"OtxrzxIsfpFjA7SwPzILwy8Bw21TLhquhboDYROV"));
 
 		// Add some extra headers
 		ParameterList extraHeaders = new ParameterList();
 		extraHeaders.add("X-Amz-Meta-Author", "foo@bar.com");
 		extraHeaders.add("X-Amz-Magic", "abracadabra");
 
-		// For the test we hard coded a special date header. Normally you don't need this as the 
-		// HTTP client connector will automatically provide an accurate Date header and use it 
+		// For the test we hard coded a special date header. Normally you don't
+		// need this as the
+		// HTTP client connector will automatically provide an accurate Date
+		// header and use it
 		// for authentication.
 		// extraHeaders.add("X-Amz-Date", "Thu, 17 Nov 2005 18:49:58 GMT");
 

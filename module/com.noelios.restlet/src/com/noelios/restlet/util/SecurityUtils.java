@@ -50,17 +50,18 @@ import com.noelios.restlet.http.HttpConstants;
 
 /**
  * Security data manipulation utilities.
+ * 
  * @author Jerome Louvel (contact@noelios.com)
  */
-public class SecurityUtils
-{
+public class SecurityUtils {
 	/**
 	 * Formats a challenge request as a HTTP header value.
-	 * @param request The challenge request to format.
+	 * 
+	 * @param request
+	 *            The challenge request to format.
 	 * @return The authenticate header value.
 	 */
-	public static String format(ChallengeRequest request)
-	{
+	public static String format(ChallengeRequest request) {
 		StringBuilder sb = new StringBuilder();
 		sb.append(request.getScheme().getTechnicalName());
 		sb.append(" realm=\"").append(request.getRealm()).append('"');
@@ -69,79 +70,74 @@ public class SecurityUtils
 
 	/**
 	 * Formats a challenge response as raw credentials.
-	 * @param challenge The challenge response to format.
-	 * @param request The parent request.
-	 * @param httpHeaders The current request HTTP headers.
+	 * 
+	 * @param challenge
+	 *            The challenge response to format.
+	 * @param request
+	 *            The parent request.
+	 * @param httpHeaders
+	 *            The current request HTTP headers.
 	 * @return The authorization header value.
 	 */
 	public static String format(ChallengeResponse challenge, Request request,
-			ParameterList httpHeaders)
-	{
+			ParameterList httpHeaders) {
 		StringBuilder sb = new StringBuilder();
 		sb.append(challenge.getScheme().getTechnicalName()).append(' ');
 
-		if (challenge.getCredentials() != null)
-		{
+		if (challenge.getCredentials() != null) {
 			sb.append(challenge.getCredentials());
-		}
-		else if (challenge.getScheme().equals(ChallengeScheme.HTTP_AWS))
-		{
+		} else if (challenge.getScheme().equals(ChallengeScheme.HTTP_AWS)) {
 			// Setup the method name
 			String methodName = request.getMethod().getName();
 
 			// Setup the Date header
 			String date = "";
 
-			if (httpHeaders.getFirstValue("X-Amz-Date", true) == null)
-			{
-				//	X-Amz-Date header didn't override the standard Date header
-				date = httpHeaders.getFirstValue(HttpConstants.HEADER_DATE, true);
-				if (date == null)
-				{
+			if (httpHeaders.getFirstValue("X-Amz-Date", true) == null) {
+				// X-Amz-Date header didn't override the standard Date header
+				date = httpHeaders.getFirstValue(HttpConstants.HEADER_DATE,
+						true);
+				if (date == null) {
 					// Add a fresh Date header
-					date = DateUtils.format(new Date(), DateUtils.FORMAT_RFC_1123.get(0));
+					date = DateUtils.format(new Date(),
+							DateUtils.FORMAT_RFC_1123.get(0));
 					httpHeaders.add(HttpConstants.HEADER_DATE, date);
 				}
 			}
 
 			// Setup the ContentType header
-			String contentMd5 = httpHeaders.getFirstValue(HttpConstants.HEADER_CONTENT_MD5,
-					true);
-			if (contentMd5 == null) contentMd5 = "";
+			String contentMd5 = httpHeaders.getFirstValue(
+					HttpConstants.HEADER_CONTENT_MD5, true);
+			if (contentMd5 == null)
+				contentMd5 = "";
 
 			// Setup the ContentType header
 			String contentType = httpHeaders
 					.getFirstValue(HttpConstants.HEADER_CONTENT_TYPE);
-			if (contentType == null)
-			{
+			if (contentType == null) {
 				String javaVersion = System.getProperty("java.version");
 
 				boolean applyPatch = false;
 
-				if (javaVersion.startsWith("1.3") || javaVersion.startsWith("1.4"))
-				{
+				if (javaVersion.startsWith("1.3")
+						|| javaVersion.startsWith("1.4")) {
 					applyPatch = true;
-				}
-				else if (javaVersion.startsWith("1.5"))
-				{
-					int minorVersion = Integer.parseInt(javaVersion.substring(javaVersion
-							.indexOf('_') + 1));
+				} else if (javaVersion.startsWith("1.5")) {
+					int minorVersion = Integer.parseInt(javaVersion
+							.substring(javaVersion.indexOf('_') + 1));
 
 					// Sun is supposed to fix it in update 10
 					applyPatch = (minorVersion < 10);
 				}
 
-				if (applyPatch && !request.getMethod().equals(Method.PUT))
-				{
+				if (applyPatch && !request.getMethod().equals(Method.PUT)) {
 					contentType = "application/x-www-form-urlencoded";
-				}
-				else
-				{
+				} else {
 					contentType = "";
 				}
 			}
 
-			// Setup the canonicalized AmzHeaders 
+			// Setup the canonicalized AmzHeaders
 			String canonicalizedAmzHeaders = getCanonicalizedAmzHeaders(httpHeaders);
 
 			// Setup the canonicalized resource name
@@ -150,43 +146,34 @@ public class SecurityUtils
 
 			// Setup the message part
 			StringBuilder rest = new StringBuilder();
-			rest.append(methodName).append('\n').append(contentMd5).append('\n').append(
-					contentType).append('\n').append(date).append('\n').append(
-					canonicalizedAmzHeaders).append(canonicalizedResource);
+			rest.append(methodName).append('\n').append(contentMd5)
+					.append('\n').append(contentType).append('\n').append(date)
+					.append('\n').append(canonicalizedAmzHeaders).append(
+							canonicalizedResource);
 
-			// Append the AWS credentials 
+			// Append the AWS credentials
 			sb.append(challenge.getIdentifier()).append(':').append(
-					Base64.encodeBytes(toHMac(rest.toString(), challenge.getSecret())));
-		}
-		else if (challenge.getScheme().equals(ChallengeScheme.HTTP_BASIC))
-		{
-			try
-			{
-				String credentials = challenge.getIdentifier() + ':' + challenge.getSecret();
+					Base64.encodeBytes(toHMac(rest.toString(), challenge
+							.getSecret())));
+		} else if (challenge.getScheme().equals(ChallengeScheme.HTTP_BASIC)) {
+			try {
+				String credentials = challenge.getIdentifier() + ':'
+						+ challenge.getSecret();
 				sb.append(Base64.encodeBytes(credentials.getBytes("US-ASCII")));
-			}
-			catch (UnsupportedEncodingException e)
-			{
+			} catch (UnsupportedEncodingException e) {
 				throw new RuntimeException(
 						"Unsupported encoding, unable to encode credentials");
 			}
-		}
-		else if (challenge.getScheme().equals(ChallengeScheme.SMTP_PLAIN))
-		{
-			try
-			{
+		} else if (challenge.getScheme().equals(ChallengeScheme.SMTP_PLAIN)) {
+			try {
 				String credentials = "^@" + challenge.getIdentifier() + "^@"
 						+ challenge.getSecret();
 				sb.append(Base64.encodeBytes(credentials.getBytes("US-ASCII")));
-			}
-			catch (UnsupportedEncodingException e)
-			{
+			} catch (UnsupportedEncodingException e) {
 				throw new RuntimeException(
 						"Unsupported encoding, unable to encode credentials");
 			}
-		}
-		else
-		{
+		} else {
 			throw new IllegalArgumentException(
 					"Challenge scheme not supported by this implementation, or credentials not set for custom schemes.");
 		}
@@ -196,31 +183,31 @@ public class SecurityUtils
 
 	/**
 	 * Returns the canonicalized AMZ headers.
-	 * @param requestHeaders The list of request headers.
+	 * 
+	 * @param requestHeaders
+	 *            The list of request headers.
 	 * @return The canonicalized AMZ headers.
 	 */
-	private static String getCanonicalizedAmzHeaders(ParameterList requestHeaders)
-	{
+	private static String getCanonicalizedAmzHeaders(
+			ParameterList requestHeaders) {
 		// Filter out all the AMZ headers required for AWS authentication
 		SortedMap<String, String> amzHeaders = new TreeMap<String, String>();
 		String headerName;
-		for (Parameter param : requestHeaders)
-		{
+		for (Parameter param : requestHeaders) {
 			headerName = param.getName().toLowerCase();
-			if (headerName.startsWith("x-amz-"))
-			{
-				if (!amzHeaders.containsKey(headerName))
-				{
-					amzHeaders.put(headerName, requestHeaders.getValues(headerName));
+			if (headerName.startsWith("x-amz-")) {
+				if (!amzHeaders.containsKey(headerName)) {
+					amzHeaders.put(headerName, requestHeaders
+							.getValues(headerName));
 				}
 			}
 		}
 
 		// Concatenate all AMZ headers
 		StringBuilder sb = new StringBuilder();
-		for (Entry<String, String> entry : amzHeaders.entrySet())
-		{
-			sb.append(entry.getKey()).append(':').append(entry.getValue()).append("\n");
+		for (Entry<String, String> entry : amzHeaders.entrySet()) {
+			sb.append(entry.getKey()).append(':').append(entry.getValue())
+					.append("\n");
 		}
 
 		return sb.toString();
@@ -228,21 +215,19 @@ public class SecurityUtils
 
 	/**
 	 * Returns the canonicalized resource name.
-	 * @param resourceRef The resource reference.
+	 * 
+	 * @param resourceRef
+	 *            The resource reference.
 	 * @return The canonicalized resource name.
 	 */
-	private static String getCanonicalizedResourceName(Reference resourceRef)
-	{
+	private static String getCanonicalizedResourceName(Reference resourceRef) {
 		StringBuilder sb = new StringBuilder();
 		sb.append(resourceRef.getPath());
 
 		Form query = resourceRef.getQueryAsForm();
-		if (query.getFirst("acl", true) != null)
-		{
+		if (query.getFirst("acl", true) != null) {
 			sb.append("?acl");
-		}
-		else if (query.getFirst("torrent", true) != null)
-		{
+		} else if (query.getFirst("torrent", true) != null) {
 			sb.append("?torrent");
 		}
 
@@ -251,25 +236,25 @@ public class SecurityUtils
 
 	/**
 	 * Parses an authenticate header into a challenge request.
-	 * @param header The HTTP header value to parse.
+	 * 
+	 * @param header
+	 *            The HTTP header value to parse.
 	 * @return The parsed challenge request.
 	 */
-	public static ChallengeRequest parseRequest(String header)
-	{
+	public static ChallengeRequest parseRequest(String header) {
 		ChallengeRequest result = null;
 
-		if (header != null)
-		{
+		if (header != null) {
 			int space = header.indexOf(' ');
 
-			if (space != -1)
-			{
+			if (space != -1) {
 				String scheme = header.substring(0, space);
 				String realm = header.substring(space + 1);
 				int equals = realm.indexOf('=');
-				String realmValue = realm.substring(equals + 2, realm.length() - 1);
-				result = new ChallengeRequest(new ChallengeScheme("HTTP_" + scheme, scheme),
-						realmValue);
+				String realmValue = realm.substring(equals + 2,
+						realm.length() - 1);
+				result = new ChallengeRequest(new ChallengeScheme("HTTP_"
+						+ scheme, scheme), realmValue);
 			}
 		}
 
@@ -278,67 +263,66 @@ public class SecurityUtils
 
 	/**
 	 * Parses an authorization header into a challenge response.
-	 * @param request The request.
-	 * @param logger The logger to use.
-	 * @param header The header value to parse.
+	 * 
+	 * @param request
+	 *            The request.
+	 * @param logger
+	 *            The logger to use.
+	 * @param header
+	 *            The header value to parse.
 	 * @return The parsed challenge response.
 	 */
-	public static ChallengeResponse parseResponse(Request request, Logger logger,
-			String header)
-	{
+	public static ChallengeResponse parseResponse(Request request,
+			Logger logger, String header) {
 		ChallengeResponse result = null;
 
-		if (header != null)
-		{
+		if (header != null) {
 			int space = header.indexOf(' ');
 
-			if (space != -1)
-			{
+			if (space != -1) {
 				String scheme = header.substring(0, space);
 				String credentials = header.substring(space + 1);
-				result = new ChallengeResponse(new ChallengeScheme("HTTP_" + scheme, scheme),
-						credentials);
+				result = new ChallengeResponse(new ChallengeScheme("HTTP_"
+						+ scheme, scheme), credentials);
 
-				if (result.getScheme().equals(ChallengeScheme.HTTP_BASIC))
-				{
-					try
-					{
-						credentials = new String(Base64.decode(result.getCredentials()),
-								"US-ASCII");
+				if (result.getScheme().equals(ChallengeScheme.HTTP_BASIC)) {
+					try {
+						credentials = new String(Base64.decode(result
+								.getCredentials()), "US-ASCII");
 						int separator = credentials.indexOf(':');
 
-						if (separator == -1)
-						{
+						if (separator == -1) {
 							// Log the blocking
-							logger.warning("Invalid credentials given by client with IP: "
-									+ ((request != null) ? request.getClientInfo().getAddress()
-											: "?"));
-						}
-						else
-						{
-							result.setIdentifier(credentials.substring(0, separator));
-							result.setSecret(credentials.substring(separator + 1));
+							logger
+									.warning("Invalid credentials given by client with IP: "
+											+ ((request != null) ? request
+													.getClientInfo()
+													.getAddress() : "?"));
+						} else {
+							result.setIdentifier(credentials.substring(0,
+									separator));
+							result.setSecret(credentials
+									.substring(separator + 1));
 
 							// Log the authentication result
-							if (logger != null)
-							{
-								logger.info("Basic HTTP authentication succeeded: identifier="
-										+ result.getIdentifier() + ".");
+							if (logger != null) {
+								logger
+										.info("Basic HTTP authentication succeeded: identifier="
+												+ result.getIdentifier() + ".");
 							}
 						}
+					} catch (UnsupportedEncodingException e) {
+						logger.log(Level.WARNING, "Unsupported encoding error",
+								e);
 					}
-					catch (UnsupportedEncodingException e)
-					{
-						logger.log(Level.WARNING, "Unsupported encoding error", e);
-					}
-				}
-				else
-				{
+				} else {
 					// Authentication failed, scheme not supported
-					logger.log(Level.WARNING,
-							"Authentication failed: unsupported scheme used: "
-									+ result.getScheme().getName()
-									+ ". Please override the authenticate method.");
+					logger
+							.log(
+									Level.WARNING,
+									"Authentication failed: unsupported scheme used: "
+											+ result.getScheme().getName()
+											+ ". Please override the authenticate method.");
 				}
 			}
 		}
@@ -348,18 +332,20 @@ public class SecurityUtils
 
 	/**
 	 * Converts a source string to its HMAC/SHA-1 value.
-	 * @param source The source string to convert.
-	 * @param secretKey The secret key to use for conversion.
+	 * 
+	 * @param source
+	 *            The source string to convert.
+	 * @param secretKey
+	 *            The secret key to use for conversion.
 	 * @return The HMac value of the source string.
 	 */
-	public static byte[] toHMac(String source, String secretKey)
-	{
+	public static byte[] toHMac(String source, String secretKey) {
 		byte[] result = null;
 
-		try
-		{
+		try {
 			// Create the HMAC/SHA1 key
-			SecretKeySpec signingKey = new SecretKeySpec(secretKey.getBytes(), "HmacSHA1");
+			SecretKeySpec signingKey = new SecretKeySpec(secretKey.getBytes(),
+					"HmacSHA1");
 
 			// Create the message authentication code (MAC)
 			Mac mac = Mac.getInstance("HmacSHA1");
@@ -367,16 +353,14 @@ public class SecurityUtils
 
 			// Compute the HMAC value
 			result = mac.doFinal(source.getBytes());
-		}
-		catch (NoSuchAlgorithmException nsae)
-		{
+		} catch (NoSuchAlgorithmException nsae) {
 			throw new RuntimeException(
-					"Could not find the SHA-1 algorithm. HMac conversion failed.", nsae);
-		}
-		catch (InvalidKeyException ike)
-		{
+					"Could not find the SHA-1 algorithm. HMac conversion failed.",
+					nsae);
+		} catch (InvalidKeyException ike) {
 			throw new RuntimeException(
-					"Invalid key exception detected. HMac conversion failed.", ike);
+					"Invalid key exception detected. HMac conversion failed.",
+					ike);
 		}
 
 		return result;

@@ -27,29 +27,24 @@ import org.restlet.data.Request;
 import org.restlet.data.Response;
 
 /**
- * Thin layer around an AbstractFilter.
- * Takes care about being started and having a target when it should handle
- * a call.
+ * Thin layer around an AbstractFilter. Takes care about being started and
+ * having a target when it should handle a call.
  * 
- * @author Lars Heuer (heuer[at]semagia.com) <a href="http://www.semagia.com/">Semagia</a>
+ * @author Lars Heuer (heuer[at]semagia.com) <a
+ *         href="http://www.semagia.com/">Semagia</a>
  * @version $Rev:$ - $Date:$
  */
-public class MockFilter extends Filter
-{
-	public MockFilter(Context context)
-	{
+public class MockFilter extends Filter {
+	public MockFilter(Context context) {
 		super(context);
 	}
 
 	@Override
-	protected void beforeHandle(Request request, Response response)
-	{
-		if (!super.isStarted())
-		{
+	protected void beforeHandle(Request request, Response response) {
+		if (!super.isStarted()) {
 			throw new IllegalStateException("Filter is not started");
 		}
-		if (!super.hasNext())
-		{
+		if (!super.hasNext()) {
 			throw new IllegalStateException("Target is not set");
 		}
 	}

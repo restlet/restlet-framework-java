@@ -39,14 +39,16 @@ import org.restlet.data.Status;
 import com.noelios.restlet.util.ReferenceTemplate;
 
 /**
- * Router scorer based on a URI pattern. Note that the matching is case sensitive unless some inline modifiers
- * were used in the pattern using the "(?i)" inline flag.
+ * Router scorer based on a URI pattern. Note that the matching is case
+ * sensitive unless some inline modifiers were used in the pattern using the
+ * "(?i)" inline flag.
+ * 
  * @see java.util.regex.Pattern
- * @see <a href="http://javaalmanac.com/egs/java.util.regex/pkg.html">Java Almanac on the Regex package</a>
+ * @see <a href="http://javaalmanac.com/egs/java.util.regex/pkg.html">Java
+ *      Almanac on the Regex package</a>
  * @author Jerome Louvel (contact@noelios.com)
  */
-public class PatternScorer extends Scorer
-{
+public class PatternScorer extends Scorer {
 	/** The URI pattern. */
 	private Pattern pattern;
 
@@ -55,12 +57,15 @@ public class PatternScorer extends Scorer
 
 	/**
 	 * Constructor.
-	 * @param router The parent router.
-	 * @param pattern The URI pattern.
-	 * @param target The target Restlet.
+	 * 
+	 * @param router
+	 *            The parent router.
+	 * @param pattern
+	 *            The URI pattern.
+	 * @param target
+	 *            The target Restlet.
 	 */
-	public PatternScorer(Router router, String pattern, Restlet target)
-	{
+	public PatternScorer(Router router, String pattern, Restlet target) {
 		super(router, target);
 		this.variables = new ArrayList<String>();
 		this.pattern = compile(pattern);
@@ -68,11 +73,12 @@ public class PatternScorer extends Scorer
 
 	/**
 	 * Compiles the URI pattern into a Regex pattern.
-	 * @param uriPattern The URI pattern.
+	 * 
+	 * @param uriPattern
+	 *            The URI pattern.
 	 * @return The Regex pattern.
 	 */
-	protected Pattern compile(String uriPattern)
-	{
+	protected Pattern compile(String uriPattern) {
 		ReferenceTemplate rt = new ReferenceTemplate(uriPattern, getVariables());
 		String regex = rt.toRegex();
 		return Pattern.compile(regex);
@@ -80,87 +86,84 @@ public class PatternScorer extends Scorer
 
 	/**
 	 * Returns the URI pattern.
+	 * 
 	 * @return The URI pattern.
 	 */
-	public Pattern getPattern()
-	{
+	public Pattern getPattern() {
 		return this.pattern;
 	}
 
 	/**
 	 * Returns the URI variables.
+	 * 
 	 * @return The URI variables.
 	 */
-	public List<String> getVariables()
-	{
+	public List<String> getVariables() {
 		return this.variables;
 	}
 
 	/**
 	 * Returns the score for a given call (between 0 and 1.0).
-	 * @param request The request to score.
-	 * @param response The response to score.
+	 * 
+	 * @param request
+	 *            The request to score.
+	 * @param response
+	 *            The response to score.
 	 * @return The score for a given call (between 0 and 1.0).
 	 */
-	public float score(Request request, Response response)
-	{
+	public float score(Request request, Response response) {
 		float result = 0F;
 		String remainingRef = request.getRelativePart();
 		Matcher matcher = getPattern().matcher(remainingRef);
 		boolean matched = matcher.lookingAt();
 
-		if (matched)
-		{
+		if (matched) {
 			float totalLength = remainingRef.length();
 
-			if (totalLength > 0.0F)
-			{
+			if (totalLength > 0.0F) {
 				float matchedLength = matcher.end();
 				result = getRouter().getRequiredScore()
 						+ (1.0F - getRouter().getRequiredScore())
 						* (matchedLength / totalLength);
-			}
-			else
-			{
+			} else {
 				result = 1.0F;
 			}
 		}
 
-		if (getLogger().isLoggable(Level.FINER))
-		{
+		if (getLogger().isLoggable(Level.FINER)) {
 			getLogger().finer(
-					"Call score for the \"" + getPattern().toString() + "\" URI pattern: "
-							+ result);
+					"Call score for the \"" + getPattern().toString()
+							+ "\" URI pattern: " + result);
 		}
 
 		return result;
 	}
 
 	/**
-	 * Allows filtering before processing by the next Restlet. Set the base reference. 
-	 * @param request The request to handle.
-	 * @param response The response to update.
+	 * Allows filtering before processing by the next Restlet. Set the base
+	 * reference.
+	 * 
+	 * @param request
+	 *            The request to handle.
+	 * @param response
+	 *            The response to update.
 	 */
-	public void beforeHandle(Request request, Response response)
-	{
+	public void beforeHandle(Request request, Response response) {
 		String remainingRef = request.getRelativePart();
 		Matcher matcher = getPattern().matcher(remainingRef);
 		boolean matched = matcher.lookingAt();
 
-		if (getLogger().isLoggable(Level.FINER))
-		{
+		if (getLogger().isLoggable(Level.FINER)) {
 			getLogger().finer(
-					"Attempting to match this pattern: " + getPattern().toString() + " >> "
-							+ matched);
+					"Attempting to match this pattern: "
+							+ getPattern().toString() + " >> " + matched);
 		}
 
-		if (matched)
-		{
+		if (matched) {
 			// Update the attributes with the variables value
 			String attributeName = null;
 			String attributeValue = null;
-			for (int i = 0; i < getVariables().size(); i++)
-			{
+			for (int i = 0; i < getVariables().size(); i++) {
 				attributeName = getVariables().get(i);
 				attributeValue = matcher.group(i + 1);
 				request.getAttributes().put(attributeName, attributeValue);
@@ -170,30 +173,25 @@ public class PatternScorer extends Scorer
 			String matchedPart = remainingRef.substring(0, matcher.end());
 			Reference baseRef = request.getBaseRef();
 
-			if (baseRef == null)
-			{
+			if (baseRef == null) {
 				baseRef = new Reference(matchedPart);
-			}
-			else
-			{
-				baseRef = new Reference(baseRef.toString(false, false) + matchedPart);
+			} else {
+				baseRef = new Reference(baseRef.toString(false, false)
+						+ matchedPart);
 			}
 
 			request.setBaseRef(baseRef);
 
-			if (getLogger().isLoggable(Level.FINE))
-			{
+			if (getLogger().isLoggable(Level.FINE)) {
 				getLogger().fine("New base URI: " + request.getBaseRef());
-				getLogger().fine("New relative part: " + request.getRelativePart());
+				getLogger().fine(
+						"New relative part: " + request.getRelativePart());
 			}
 
-			if (getLogger().isLoggable(Level.FINE))
-			{
+			if (getLogger().isLoggable(Level.FINE)) {
 				getLogger().fine("Delegating the call to the target Restlet");
 			}
-		}
-		else
-		{
+		} else {
 			response.setStatus(Status.CLIENT_ERROR_NOT_FOUND);
 		}
 	}

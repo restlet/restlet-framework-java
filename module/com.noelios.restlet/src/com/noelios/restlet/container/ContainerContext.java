@@ -30,57 +30,62 @@ import org.restlet.Dispatcher;
 
 /**
  * Context allowing access to the container's connectors.
+ * 
  * @author Jerome Louvel (contact@noelios.com)
  */
-public class ContainerContext extends Context
-{
+public class ContainerContext extends Context {
 	/** The container helper. */
 	private ContainerHelper containerHelper;
 
 	/**
-	 * Constructor. 
-	 * @param containerHelper The container helper.
+	 * Constructor.
+	 * 
+	 * @param containerHelper
+	 *            The container helper.
 	 */
-	public ContainerContext(ContainerHelper containerHelper)
-	{
-		this(containerHelper, Logger.getLogger(Container.class.getCanonicalName()));
+	public ContainerContext(ContainerHelper containerHelper) {
+		this(containerHelper, Logger.getLogger(Container.class
+				.getCanonicalName()));
 	}
 
 	/**
-	 * Constructor. 
-	 * @param containerHelper The container helper.
-	 * @param logger The logger instance of use.
+	 * Constructor.
+	 * 
+	 * @param containerHelper
+	 *            The container helper.
+	 * @param logger
+	 *            The logger instance of use.
 	 */
-	public ContainerContext(ContainerHelper containerHelper, Logger logger)
-	{
+	public ContainerContext(ContainerHelper containerHelper, Logger logger) {
 		super(logger);
 		this.containerHelper = containerHelper;
 	}
 
 	/**
 	 * Returns a call dispatcher.
+	 * 
 	 * @return A call dispatcher.
 	 */
-	public Dispatcher getDispatcher()
-	{
+	public Dispatcher getDispatcher() {
 		return new ContainerDispatcher(this);
 	}
 
 	/**
 	 * Returns the container helper.
+	 * 
 	 * @return The container helper.
 	 */
-	protected ContainerHelper getContainerHelper()
-	{
+	protected ContainerHelper getContainerHelper() {
 		return this.containerHelper;
 	}
 
 	/**
 	 * Sets the container helper.
-	 * @param containerHelper The container helper.
+	 * 
+	 * @param containerHelper
+	 *            The container helper.
 	 */
-	protected void setContainerHelper(ContainerHelper containerHelper)
-	{
+	protected void setContainerHelper(ContainerHelper containerHelper) {
 		this.containerHelper = containerHelper;
 	}
 }

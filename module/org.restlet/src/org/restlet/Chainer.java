@@ -27,54 +27,57 @@ import org.restlet.data.Response;
 import org.restlet.data.Status;
 
 /**
- * Restlet part of a processing chain. In addition to handling incoming calls like any Restlet, a Chainer
- * can also resolve, either statically or dynamically, the next Restlet that will continue the processing 
- * chain. Subclasses only have to implement the getNext() method.
+ * Restlet part of a processing chain. In addition to handling incoming calls
+ * like any Restlet, a Chainer can also resolve, either statically or
+ * dynamically, the next Restlet that will continue the processing chain.
+ * Subclasses only have to implement the getNext() method.
+ * 
  * @author Jerome Louvel (contact@noelios.com)
  */
-public abstract class Chainer extends Restlet
-{
+public abstract class Chainer extends Restlet {
 	/**
 	 * Constructor.
 	 */
-	public Chainer()
-	{
+	public Chainer() {
 		this(null);
 	}
 
 	/**
 	 * Constructor.
-	 * @param context The context.
+	 * 
+	 * @param context
+	 *            The context.
 	 */
-	public Chainer(Context context)
-	{
+	public Chainer(Context context) {
 		super(context);
 	}
 
 	/**
 	 * Returns the next Restlet if available.
-	 * @param request The request to handle.
-	 * @param response The response to update.
+	 * 
+	 * @param request
+	 *            The request to handle.
+	 * @param response
+	 *            The response to update.
 	 * @return The next Restlet if available or null.
 	 */
 	public abstract Restlet getNext(Request request, Response response);
 
 	/**
 	 * Handles a call by invoking the next Restlet if it is available.
-	 * @param request The request to handle.
-	 * @param response The response to update.
+	 * 
+	 * @param request
+	 *            The request to handle.
+	 * @param response
+	 *            The response to update.
 	 */
-	public void handle(Request request, Response response)
-	{
+	public void handle(Request request, Response response) {
 		init(request, response);
 
 		Restlet next = getNext(request, response);
-		if (next != null)
-		{
+		if (next != null) {
 			next.handle(request, response);
-		}
-		else
-		{
+		} else {
 			response.setStatus(Status.CLIENT_ERROR_NOT_FOUND);
 		}
 	}

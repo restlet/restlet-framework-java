@@ -32,21 +32,24 @@ import org.restlet.data.Response;
 import org.restlet.util.Helper;
 
 /**
- * Connector acting as a WAR client for a Servlet Application. 
- * It internally uses one of the available connectors registered with the current Restlet implementation.
+ * Connector acting as a WAR client for a Servlet Application. It internally
+ * uses one of the available connectors registered with the current Restlet
+ * implementation.
+ * 
  * @author Jerome Louvel (contact@noelios.com)
  */
-public class ServletWarClient extends Client
-{
+public class ServletWarClient extends Client {
 	/** The helper provided by the implementation. */
 	private Helper helper;
 
 	/**
 	 * Constructor.
-	 * @param context The context.
+	 * 
+	 * @param context
+	 *            The context.
 	 */
-	public ServletWarClient(Context context, javax.servlet.ServletContext servletContext)
-	{
+	public ServletWarClient(Context context,
+			javax.servlet.ServletContext servletContext) {
 		super(context, (List<Protocol>) null);
 		getProtocols().add(Protocol.WAR);
 		this.helper = new ServletWarClientHelper(this, servletContext);
@@ -54,34 +57,34 @@ public class ServletWarClient extends Client
 
 	/**
 	 * Returns the helper provided by the implementation.
+	 * 
 	 * @return The helper provided by the implementation.
 	 */
-	private Helper getHelper()
-	{
+	private Helper getHelper() {
 		return this.helper;
 	}
 
 	/**
 	 * Handles a call.
-	 * @param request The request to handle.
-	 * @param response The response to update.
+	 * 
+	 * @param request
+	 *            The request to handle.
+	 * @param response
+	 *            The response to update.
 	 */
-	public void handle(Request request, Response response)
-	{
+	public void handle(Request request, Response response) {
 		init(request, response);
 		getHelper().handle(request, response);
 	}
 
 	/** Start callback. */
-	public void start() throws Exception
-	{
+	public void start() throws Exception {
 		super.start();
 		getHelper().start();
 	}
 
 	/** Stop callback. */
-	public void stop() throws Exception
-	{
+	public void stop() throws Exception {
 		getHelper().stop();
 		super.stop();
 	}

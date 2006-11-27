@@ -29,70 +29,66 @@ import org.apache.commons.fileupload.RequestContext;
 import org.restlet.resource.Representation;
 
 /**
- * Provides access to the representation information needed by the FileUpload processor.  
+ * Provides access to the representation information needed by the FileUpload
+ * processor.
+ * 
  * @author Jerome Louvel (contact@noelios.com)
  */
-public class RepresentationContext implements RequestContext
-{
+public class RepresentationContext implements RequestContext {
 	/** The representation to adapt. */
 	private Representation multipartForm;
 
 	/**
 	 * Constructor.
-	 * @param multipartForm The multipart form to parse.
+	 * 
+	 * @param multipartForm
+	 *            The multipart form to parse.
 	 */
-	public RepresentationContext(Representation multipartForm)
-	{
+	public RepresentationContext(Representation multipartForm) {
 		this.multipartForm = multipartForm;
 	}
 
 	/**
 	 * Returns the character encoding for the form.
+	 * 
 	 * @return The character encoding for the form.
 	 */
-	public String getCharacterEncoding()
-	{
-		if (this.multipartForm.getEncoding() != null)
-		{
+	public String getCharacterEncoding() {
+		if (this.multipartForm.getEncoding() != null) {
 			return this.multipartForm.getEncoding().getName();
-		}
-		else
-		{
+		} else {
 			return null;
 		}
 	}
 
 	/**
 	 * Returns the content length of the form.
+	 * 
 	 * @return The content length of the form.
 	 */
-	public int getContentLength()
-	{
+	public int getContentLength() {
 		return (int) this.multipartForm.getSize();
 	}
 
 	/**
 	 * Returns the content type of the form.
+	 * 
 	 * @return The content type of the form.
 	 */
-	public String getContentType()
-	{
-		if (this.multipartForm.getMediaType() != null)
-		{
+	public String getContentType() {
+		if (this.multipartForm.getMediaType() != null) {
 			return this.multipartForm.getMediaType().getName();
-		}
-		else
-		{
+		} else {
 			return null;
 		}
 	}
 
 	/**
 	 * Returns the input stream.
+	 * 
 	 * @return The input stream.
 	 */
-	public InputStream getInputStream() throws IOException
-	{
+	public InputStream getInputStream() throws IOException {
 		return this.multipartForm.getStream();
 	}
 

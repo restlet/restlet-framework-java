@@ -34,28 +34,28 @@ import org.restlet.util.Factory;
 import org.restlet.util.Helper;
 
 /**
- * Connector acting as a generic client. It internally uses one of the available connectors registered 
- * with the current Restlet implementation.
+ * Connector acting as a generic client. It internally uses one of the available
+ * connectors registered with the current Restlet implementation.
+ * 
  * @author Jerome Louvel (contact@noelios.com)
  */
-public class Client extends Connector
-{
+public class Client extends Connector {
 	/** The helper provided by the implementation. */
 	private Helper helper;
 
 	/**
 	 * Constructor.
-	 * @param context The context.
-	 * @param protocols The connector protocols.
+	 * 
+	 * @param context
+	 *            The context.
+	 * @param protocols
+	 *            The connector protocols.
 	 */
-	public Client(Context context, List<Protocol> protocols)
-	{
+	public Client(Context context, List<Protocol> protocols) {
 		super(context, protocols);
 
-		if ((protocols != null) && (protocols.size() > 0))
-		{
-			if (Factory.getInstance() != null)
-			{
+		if ((protocols != null) && (protocols.size() > 0)) {
+			if (Factory.getInstance() != null) {
 				this.helper = Factory.getInstance().createHelper(this);
 			}
 		}
@@ -63,68 +63,75 @@ public class Client extends Connector
 
 	/**
 	 * Constructor.
-	 * @param context The context.
-	 * @param protocol The connector protocol.
+	 * 
+	 * @param context
+	 *            The context.
+	 * @param protocol
+	 *            The connector protocol.
 	 */
-	public Client(Context context, Protocol protocol)
-	{
+	public Client(Context context, Protocol protocol) {
 		this(context, Arrays.asList(protocol));
 	}
 
 	/**
 	 * Constructor.
-	 * @param protocols The connector protocols.
+	 * 
+	 * @param protocols
+	 *            The connector protocols.
 	 */
-	public Client(List<Protocol> protocols)
-	{
+	public Client(List<Protocol> protocols) {
 		this(null, protocols);
 	}
 
 	/**
 	 * Constructor.
-	 * @param protocol The connector protocol.
+	 * 
+	 * @param protocol
+	 *            The connector protocol.
 	 */
-	public Client(Protocol protocol)
-	{
+	public Client(Protocol protocol) {
 		this(null, protocol);
 	}
 
 	/**
 	 * Deletes the identified resource.
-	 * @param resourceUri The URI of the resource to delete.
+	 * 
+	 * @param resourceUri
+	 *            The URI of the resource to delete.
 	 * @return The response.
 	 */
-	public Response delete(String resourceUri)
-	{
+	public Response delete(String resourceUri) {
 		return handle(new Request(Method.DELETE, resourceUri));
 	}
 
 	/**
 	 * Gets the identified resource.
-	 * @param resourceUri The URI of the resource to get.
+	 * 
+	 * @param resourceUri
+	 *            The URI of the resource to get.
 	 * @return The response.
 	 */
-	public Response get(String resourceUri)
-	{
+	public Response get(String resourceUri) {
 		return handle(new Request(Method.GET, resourceUri));
 	}
 
 	/**
 	 * Returns the helper provided by the implementation.
+	 * 
 	 * @return The helper provided by the implementation.
 	 */
-	private Helper getHelper()
-	{
+	private Helper getHelper() {
 		return this.helper;
 	}
 
 	/**
 	 * Handles a call.
-	 * @param request The request to handle.
+	 * 
+	 * @param request
+	 *            The request to handle.
 	 * @return The returned response.
 	 */
-	public Response handle(Request request)
-	{
+	public Response handle(Request request) {
 		Response response = new Response(request);
 		handle(request, response);
 		return response;
@@ -132,78 +139,88 @@ public class Client extends Connector
 
 	/**
 	 * Handles a call.
-	 * @param request The request to handle.
-	 * @param response The response to update.
+	 * 
+	 * @param request
+	 *            The request to handle.
+	 * @param response
+	 *            The response to update.
 	 */
-	public void handle(Request request, Response response)
-	{
+	public void handle(Request request, Response response) {
 		init(request, response);
-		if (getHelper() != null) getHelper().handle(request, response);
+		if (getHelper() != null)
+			getHelper().handle(request, response);
 	}
 
 	/**
 	 * Gets the identified resource without its representation's content.
-	 * @param resourceUri The URI of the resource to get.
+	 * 
+	 * @param resourceUri
+	 *            The URI of the resource to get.
 	 * @return The response.
 	 */
-	public Response head(String resourceUri)
-	{
+	public Response head(String resourceUri) {
 		return handle(new Request(Method.HEAD, resourceUri));
 	}
 
 	/**
 	 * Gets the options for the identified resource.
-	 * @param resourceUri The URI of the resource to get.
+	 * 
+	 * @param resourceUri
+	 *            The URI of the resource to get.
 	 * @return The response.
 	 */
-	public Response options(String resourceUri)
-	{
+	public Response options(String resourceUri) {
 		return handle(new Request(Method.OPTIONS, resourceUri));
 	}
 
 	/**
 	 * Posts a representation to the identified resource.
-	 * @param resourceUri The URI of the resource to post to.
-	 * @param entity The entity representation to post.
+	 * 
+	 * @param resourceUri
+	 *            The URI of the resource to post to.
+	 * @param entity
+	 *            The entity representation to post.
 	 * @return The response.
 	 */
-	public Response post(String resourceUri, Representation entity)
-	{
+	public Response post(String resourceUri, Representation entity) {
 		return handle(new Request(Method.POST, resourceUri, entity));
 	}
 
 	/**
 	 * Puts a representation in the identified resource.
-	 * @param resourceUri The URI of the resource to modify.
-	 * @param entity The entity representation to put.
+	 * 
+	 * @param resourceUri
+	 *            The URI of the resource to modify.
+	 * @param entity
+	 *            The entity representation to put.
 	 * @return The response.
 	 */
-	public Response put(String resourceUri, Representation entity)
-	{
+	public Response put(String resourceUri, Representation entity) {
 		return handle(new Request(Method.PUT, resourceUri, entity));
 	}
 
 	/** Start callback. */
-	public void start() throws Exception
-	{
+	public void start() throws Exception {
 		super.start();
-		if (getHelper() != null) getHelper().start();
+		if (getHelper() != null)
+			getHelper().start();
 	}
 
 	/** Stop callback. */
-	public void stop() throws Exception
-	{
-		if (getHelper() != null) getHelper().stop();
+	public void stop() throws Exception {
+		if (getHelper() != null)
+			getHelper().stop();
 		super.stop();
 	}
 
 	/**
 	 * Tests the identified resource.
-	 * @param resourceUri The URI of the resource to delete.
+	 * 
+	 * @param resourceUri
+	 *            The URI of the resource to delete.
 	 * @return The response.
 	 */
-	public Response trace(String resourceUri)
-	{
+	public Response trace(String resourceUri) {
 		return handle(new Request(Method.TRACE, resourceUri));
 	}
 

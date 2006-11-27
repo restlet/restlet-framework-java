@@ -42,87 +42,86 @@ import org.restlet.service.MetadataService;
 import com.noelios.restlet.local.WarClientHelper;
 
 /**
- * Local client connector based on a Servlet context (JEE Web application context).
+ * Local client connector based on a Servlet context (JEE Web application
+ * context).
+ * 
  * @author Jerome Louvel (contact@noelios.com)
  */
-public class ServletWarClientHelper extends WarClientHelper
-{
+public class ServletWarClientHelper extends WarClientHelper {
 	/** The Servlet context to use. */
 	private ServletContext servletContext;
 
 	/**
 	 * Constructor.
-	 * @param client The client to help.
-	 * @param servletContext The Servlet context
+	 * 
+	 * @param client
+	 *            The client to help.
+	 * @param servletContext
+	 *            The Servlet context
 	 */
-	public ServletWarClientHelper(Client client, ServletContext servletContext)
-	{
+	public ServletWarClientHelper(Client client, ServletContext servletContext) {
 		super(client);
 		this.servletContext = servletContext;
 	}
 
 	/**
 	 * Returns the Servlet context.
+	 * 
 	 * @return The Servlet context.
 	 */
-	public ServletContext getServletContext()
-	{
+	public ServletContext getServletContext() {
 		return this.servletContext;
 	}
 
 	/**
 	 * Handles a call using the current Web Application.
-	 * @param request The request to handle.
-	 * @param response The response to update.
+	 * 
+	 * @param request
+	 *            The request to handle.
+	 * @param response
+	 *            The response to update.
 	 */
-	protected void handleWebApp(Request request, Response response)
-	{
+	protected void handleWebApp(Request request, Response response) {
 		if (request.getMethod().equals(Method.GET)
-				|| request.getMethod().equals(Method.HEAD))
-		{
+				|| request.getMethod().equals(Method.HEAD)) {
 			String basePath = request.getResourceRef().toString();
 			int lastSlashIndex = basePath.lastIndexOf('/');
 			String entry = (lastSlashIndex == -1) ? basePath : basePath
 					.substring(lastSlashIndex + 1);
 			Representation output = null;
 
-			if (basePath.endsWith("/"))
-			{
+			if (basePath.endsWith("/")) {
 				// Return the directory listing
 				Set entries = getServletContext().getResourcePaths(basePath);
 				ReferenceList rl = new ReferenceList(entries.size());
 				rl.setListRef(request.getResourceRef());
 
-				for (Iterator iter = entries.iterator(); iter.hasNext();)
-				{
+				for (Iterator iter = entries.iterator(); iter.hasNext();) {
 					entry = (String) iter.next();
-					rl.add(new Reference(basePath + entry.substring(basePath.length())));
+					rl.add(new Reference(basePath
+							+ entry.substring(basePath.length())));
 				}
 
 				output = rl.getRepresentation();
-			}
-			else
-			{
+			} else {
 				// Return the entry content
 				MetadataService metadataService = getMetadataService(request);
-				output = new InputRepresentation(getServletContext().getResourceAsStream(
-						basePath), metadataService.getDefaultMediaType());
+				output = new InputRepresentation(getServletContext()
+						.getResourceAsStream(basePath), metadataService
+						.getDefaultMediaType());
 				updateMetadata(metadataService, entry, output);
 
 				// See if the Servlet context specified a particular Mime Type
 				String mediaType = getServletContext().getMimeType(basePath);
 
-				if (mediaType != null)
-				{
+				if (mediaType != null) {
 					output.setMediaType(new MediaType(mediaType));
 				}
 			}
 
 			response.setEntity(output);
 			response.setStatus(Status.SUCCESS_OK);
-		}
-		else
-		{
+		} else {
 			response.setStatus(Status.CLIENT_ERROR_METHOD_NOT_ALLOWED);
 		}
 	}

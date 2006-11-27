@@ -33,28 +33,31 @@ import simple.http.connect.ConnectionFactory;
 
 /**
  * Simple HTTPS server connector.
- * @author Lars Heuer (heuer[at]semagia.com) <a href="http://semagia.com/">Semagia</a>
- * @author Jerome Louvel (contact@noelios.com) <a href="http://www.noelios.com">Noelios Consulting</a>
+ * 
+ * @author Lars Heuer (heuer[at]semagia.com) <a
+ *         href="http://semagia.com/">Semagia</a>
+ * @author Jerome Louvel (contact@noelios.com) <a
+ *         href="http://www.noelios.com">Noelios Consulting</a>
  */
-public class HttpServerHelper extends SimpleServerHelper
-{
+public class HttpServerHelper extends SimpleServerHelper {
 	/**
 	 * Constructor.
-	 * @param server The server to help.
+	 * 
+	 * @param server
+	 *            The server to help.
 	 */
-	public HttpServerHelper(Server server)
-	{
+	public HttpServerHelper(Server server) {
 		super(server);
 		getProtocols().add(Protocol.HTTP);
 	}
 
 	/** Starts the Restlet. */
-	public void start() throws Exception
-	{
+	public void start() throws Exception {
 		setSocket(new ServerSocket(getServer().getPort()));
 		setConfidential(false);
-		setHandler(PipelineHandlerFactory.getInstance(new SimpleProtocolHandler(this),
-				getDefaultThreads(), getMaxWaitTimeMs()));
+		setHandler(PipelineHandlerFactory.getInstance(
+				new SimpleProtocolHandler(this), getDefaultThreads(),
+				getMaxWaitTimeMs()));
 		setConnection(ConnectionFactory.getConnection(getHandler(),
 				new BufferedPipelineFactory()));
 		getConnection().connect(getSocket());

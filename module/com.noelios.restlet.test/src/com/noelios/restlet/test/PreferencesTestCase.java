@@ -35,15 +35,14 @@ import com.noelios.restlet.util.PreferenceUtils;
 
 /**
  * Unit tests for the Preference related classes.
+ * 
  * @author Jerome Louvel (contact@noelios.com)
  */
-public class PreferencesTestCase extends TestCase
-{
+public class PreferencesTestCase extends TestCase {
 	/**
 	 * Tests the preferences parsing.
 	 */
-	public void testParsing() throws IOException
-	{
+	public void testParsing() throws IOException {
 		testMediaType(
 				"text/*;q=0.3, text/html;q=0.7, text/html;level=1, text/html;LEVEL=2;q=0.4;ext1, */*;q=0.5",
 				true);
@@ -54,17 +53,18 @@ public class PreferencesTestCase extends TestCase
 
 	/**
 	 * Tests the parsing of a single preference header.
-	 * @param headerValue The preference header.
+	 * 
+	 * @param headerValue
+	 *            The preference header.
 	 */
-	private void testMediaType(String headerValue, boolean testEquals) throws IOException
-	{
-		PreferenceReader pr = new PreferenceReader(PreferenceReader.TYPE_MEDIA_TYPE,
-				headerValue);
+	private void testMediaType(String headerValue, boolean testEquals)
+			throws IOException {
+		PreferenceReader pr = new PreferenceReader(
+				PreferenceReader.TYPE_MEDIA_TYPE, headerValue);
 		List<Preference> prefs = new ArrayList<Preference>();
 		Preference pref = pr.readPreference();
 
-		while (pref != null)
-		{
+		while (pref != null) {
 			prefs.add(pref);
 			pref = pr.readPreference();
 		}
@@ -72,8 +72,7 @@ public class PreferencesTestCase extends TestCase
 		// Rewrite the header
 		String newHeaderValue = PreferenceUtils.format(prefs);
 
-		if (testEquals)
-		{
+		if (testEquals) {
 			// Compare initial and new headers
 			assertEquals(headerValue, newHeaderValue);
 		}

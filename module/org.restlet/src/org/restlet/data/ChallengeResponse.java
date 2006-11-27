@@ -26,10 +26,10 @@ import org.restlet.util.Factory;
 
 /**
  * Authentication response sent by client to an origin server.
+ * 
  * @author Jerome Louvel (contact@noelios.com)
  */
-public class ChallengeResponse
-{
+public class ChallengeResponse {
 	/** The challenge scheme. */
 	private ChallengeScheme scheme;
 
@@ -44,11 +44,14 @@ public class ChallengeResponse
 
 	/**
 	 * Constructor.
-	 * @param scheme The challenge scheme.
-	 * @param credentials The raw credentials for custom challenge schemes.
+	 * 
+	 * @param scheme
+	 *            The challenge scheme.
+	 * @param credentials
+	 *            The raw credentials for custom challenge schemes.
 	 */
-	public ChallengeResponse(ChallengeScheme scheme, String credentials)
-	{
+	public ChallengeResponse(final ChallengeScheme scheme,
+			final String credentials) {
 		this.scheme = scheme;
 		this.credentials = credentials;
 		this.identifier = null;
@@ -57,12 +60,16 @@ public class ChallengeResponse
 
 	/**
 	 * Constructor.
-	 * @param scheme The challenge scheme.
-	 * @param identifier The user identifier, such as a login name or an access key.
-	 * @param secret The user secret, such as a password or a secret key.
+	 * 
+	 * @param scheme
+	 *            The challenge scheme.
+	 * @param identifier
+	 *            The user identifier, such as a login name or an access key.
+	 * @param secret
+	 *            The user secret, such as a password or a secret key.
 	 */
-	public ChallengeResponse(ChallengeScheme scheme, String identifier, String secret)
-	{
+	public ChallengeResponse(final ChallengeScheme scheme,
+			final String identifier, String secret) {
 		this.scheme = scheme;
 		this.credentials = null;
 		this.identifier = identifier;
@@ -71,57 +78,40 @@ public class ChallengeResponse
 
 	/** {@inheritDoc} */
 	@Override
-	public boolean equals(Object obj)
-	{
+	public boolean equals(Object obj) {
 		boolean result = (obj == this);
 
-		//if obj == this no need to go further
-		if (!result)
-		{
-			// if obj isn't a challenge request or is null don't evaluate further
-			if ((obj instanceof ChallengeResponse) && obj != null)
-			{
+		// if obj == this no need to go further
+		if (!result) {
+			// if obj isn't a challenge request or is null don't evaluate
+			// further
+			if ((obj instanceof ChallengeResponse) && obj != null) {
 				ChallengeResponse that = (ChallengeResponse) obj;
 
-				if (getCredentials() != null)
-				{
+				if (getCredentials() != null) {
 					result = getCredentials().equals(that.getCredentials());
-				}
-				else
-				{
+				} else {
 					result = (that.getCredentials() == null);
 				}
 
-				if (result)
-				{
-					if (getIdentifier() != null)
-					{
+				if (result) {
+					if (getIdentifier() != null) {
 						result = getIdentifier().equals(that.getIdentifier());
-					}
-					else
-					{
+					} else {
 						result = (that.getIdentifier() == null);
 					}
 
-					if (result)
-					{
-						if (getScheme() != null)
-						{
+					if (result) {
+						if (getScheme() != null) {
 							result = getScheme().equals(that.getScheme());
-						}
-						else
-						{
+						} else {
 							result = (that.getScheme() == null);
 						}
 
-						if (result)
-						{
-							if (getSecret() != null)
-							{
+						if (result) {
+							if (getSecret() != null) {
 								result = getSecret().equals(that.getSecret());
-							}
-							else
-							{
+							} else {
 								result = (that.getSecret() == null);
 							}
 						}
@@ -135,81 +125,84 @@ public class ChallengeResponse
 
 	/**
 	 * Returns the credentials.
+	 * 
 	 * @return The credentials.
 	 */
-	public String getCredentials()
-	{
+	public String getCredentials() {
 		return this.credentials;
 	}
 
 	/**
 	 * Returns the user identifier, such as a login name or an access key.
+	 * 
 	 * @return The user identifier, such as a login name or an access key.
 	 */
-	public String getIdentifier()
-	{
+	public String getIdentifier() {
 		return this.identifier;
 	}
 
 	/**
 	 * Returns the scheme used.
+	 * 
 	 * @return The scheme used.
 	 */
-	public ChallengeScheme getScheme()
-	{
+	public ChallengeScheme getScheme() {
 		return this.scheme;
 	}
 
 	/**
 	 * Returns the user secret, such as a password or a secret key.
+	 * 
 	 * @return The user secret, such as a password or a secret key.
 	 */
-	public String getSecret()
-	{
+	public String getSecret() {
 		return this.secret;
 	}
 
 	/** {@inheritDoc} */
 	@Override
-	public int hashCode()
-	{
-		return Factory
-				.hashCode(getScheme(), getIdentifier(), getSecret(), getCredentials());
+	public int hashCode() {
+		return Factory.hashCode(getScheme(), getIdentifier(), getSecret(),
+				getCredentials());
 	}
 
 	/**
 	 * Sets the credentials.
-	 * @param credentials The credentials.
+	 * 
+	 * @param credentials
+	 *            The credentials.
 	 */
-	public void setCredentials(String credentials)
-	{
+	public void setCredentials(String credentials) {
 		this.credentials = credentials;
 	}
 
 	/**
 	 * Sets the user identifier, such as a login name or an access key.
-	 * @param identifier The user identifier, such as a login name or an access key.
+	 * 
+	 * @param identifier
+	 *            The user identifier, such as a login name or an access key.
 	 */
-	public void setIdentifier(String identifier)
-	{
+	public void setIdentifier(String identifier) {
 		this.identifier = identifier;
 	}
 
 	/**
 	 * Sets the scheme used.
-	 * @param scheme The scheme used.
+	 * 
+	 * @param scheme
+	 *            The scheme used.
 	 */
-	public void setScheme(ChallengeScheme scheme)
-	{
+	public void setScheme(ChallengeScheme scheme) {
 		this.scheme = scheme;
 	}
 
 	/**
 	 * Sets the user secret, such as a password or a secret key.
-	 * @param secret The user secret, such as a password or a secret key.
+	 * 
+	 * @param secret
+	 *            The user secret, such as a password or a secret key.
 	 */
-	public void setSecret(String secret)
-	{
+	public void setSecret(String secret) {
 		this.secret = secret;
 	}
 

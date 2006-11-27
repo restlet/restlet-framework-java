@@ -29,51 +29,55 @@ import org.restlet.util.StringTemplate;
 
 /**
  * Reference template capable of converting a URI template into a Regex pattern.
+ * 
  * @see java.util.regex.Pattern
- * @see <a href="http://bitworking.org/projects/URI-Templates/draft-gregorio-uritemplate-00.html">INTERNET DRAFT - URI Template</a>
+ * @see <a
+ *      href="http://bitworking.org/projects/URI-Templates/draft-gregorio-uritemplate-00.html">INTERNET
+ *      DRAFT - URI Template</a>
  * @author Jerome Louvel (contact@noelios.com)
  */
-public class ReferenceTemplate extends StringTemplate
-{
+public class ReferenceTemplate extends StringTemplate {
 	private List<String> variables;
 
-	public ReferenceTemplate(CharSequence pattern, List<String> variables)
-	{
+	public ReferenceTemplate(CharSequence pattern, List<String> variables) {
 		super(pattern, "{", "}", "#[", "]");
 		this.variables = variables;
 	}
 
 	/**
-	 * Converts the URI template into a Regex pattern. 
+	 * Converts the URI template into a Regex pattern.
+	 * 
 	 * @return The Regex pattern.
 	 */
-	public String toRegex()
-	{
+	public String toRegex() {
 		return format(null);
 	}
 
 	/**
 	 * Returns the list of variables.
+	 * 
 	 * @return The list of variables.
 	 */
-	public List<String> getVariables()
-	{
+	public List<String> getVariables() {
 		return this.variables;
 	}
 
 	/**
 	 * Processes a variable token.
-	 * @param textState The current text state. (see TEXT_* constants).
-	 * @param variable The variable.
-	 * @param buffer The string buffer containing the template result.
-	 * @param model The template model to use.
+	 * 
+	 * @param textState
+	 *            The current text state. (see TEXT_* constants).
+	 * @param variable
+	 *            The variable.
+	 * @param buffer
+	 *            The string buffer containing the template result.
+	 * @param model
+	 *            The template model to use.
 	 * @return The state after processing.
 	 */
-	protected int processVariable(int textState, String variable, StringBuilder buffer,
-			Model model)
-	{
-		if (textState == TEXT_APPEND)
-		{
+	protected int processVariable(int textState, String variable,
+			StringBuilder buffer, Model model) {
+		if (textState == TEXT_APPEND) {
 			getVariables().add(variable);
 			buffer.append("([a-zA-Z0-9\\-\\.\\_\\~]*)");
 		}

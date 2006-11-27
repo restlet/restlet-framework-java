@@ -33,226 +33,242 @@ import org.restlet.data.Reference;
 import org.restlet.data.Request;
 
 /**
- * Request wrapper. Useful for application developer who need to enrich the request
- * with application related properties and behavior.
- * @see <a href="http://c2.com/cgi/wiki?DecoratorPattern">The decorator (aka wrapper) pattern</a>
+ * Request wrapper. Useful for application developer who need to enrich the
+ * request with application related properties and behavior.
+ * 
+ * @see <a href="http://c2.com/cgi/wiki?DecoratorPattern">The decorator (aka
+ *      wrapper) pattern</a>
  * @author Jerome Louvel (contact@noelios.com)
  */
-public class WrapperRequest extends Request
-{
+public class WrapperRequest extends Request {
 	/** The wrapped request. */
 	private Request wrappedRequest;
 
 	/**
 	 * Constructor.
-	 * @param wrappedRequest The wrapped request.
+	 * 
+	 * @param wrappedRequest
+	 *            The wrapped request.
 	 */
-	public WrapperRequest(Request wrappedRequest)
-	{
+	public WrapperRequest(Request wrappedRequest) {
 		this.wrappedRequest = wrappedRequest;
 	}
 
 	/**
 	 * Returns the base reference.
+	 * 
 	 * @return The base reference.
 	 */
-	public Reference getBaseRef()
-	{
+	public Reference getBaseRef() {
 		return getWrappedRequest().getBaseRef();
 	}
 
 	/**
 	 * Returns the authentication response sent by a client to an origin server.
+	 * 
 	 * @return The authentication response sent by a client to an origin server.
 	 */
-	public ChallengeResponse getChallengeResponse()
-	{
+	public ChallengeResponse getChallengeResponse() {
 		return getWrappedRequest().getChallengeResponse();
 	}
 
 	/**
 	 * Returns the client-specific information.
+	 * 
 	 * @return The client-specific information.
 	 */
-	public ClientInfo getClientInfo()
-	{
+	public ClientInfo getClientInfo() {
 		return getWrappedRequest().getClientInfo();
 	}
 
 	/**
 	 * Returns the conditions applying to this call.
+	 * 
 	 * @return The conditions applying to this call.
 	 */
-	public Conditions getConditions()
-	{
+	public Conditions getConditions() {
 		return getWrappedRequest().getConditions();
 	}
 
 	/**
 	 * Returns the cookies provided by the client.
+	 * 
 	 * @return The cookies provided by the client.
 	 */
-	public List<Cookie> getCookies()
-	{
+	public List<Cookie> getCookies() {
 		return getWrappedRequest().getCookies();
 	}
 
 	/**
 	 * Returns the method.
+	 * 
 	 * @return The method.
 	 */
-	public Method getMethod()
-	{
+	public Method getMethod() {
 		return getWrappedRequest().getMethod();
 	}
 
 	/**
 	 * Returns the referrer reference if available.
+	 * 
 	 * @return The referrer reference.
 	 */
-	public Reference getReferrerRef()
-	{
+	public Reference getReferrerRef() {
 		return getWrappedRequest().getReferrerRef();
 	}
 
 	/**
 	 * Returns the resource path relative to the context's base reference.
+	 * 
 	 * @return The relative resource path .
 	 */
-	public String getRelativePart()
-	{
+	public String getRelativePart() {
 		return getWrappedRequest().getRelativePart();
 	}
 
 	/**
 	 * Returns the resource reference relative to the context's base reference.
+	 * 
 	 * @return The relative resource reference.
 	 */
-	public Reference getRelativeRef()
-	{
+	public Reference getRelativeRef() {
 		return getWrappedRequest().getRelativeRef();
 	}
 
 	/**
 	 * Returns the reference of the target resource.
+	 * 
 	 * @return The reference of the target resource.
 	 */
-	public Reference getResourceRef()
-	{
+	public Reference getResourceRef() {
 		return getWrappedRequest().getResourceRef();
 	}
 
 	/**
 	 * Returns the wrapped request.
+	 * 
 	 * @return The wrapped request.
 	 */
-	protected Request getWrappedRequest()
-	{
+	protected Request getWrappedRequest() {
 		return this.wrappedRequest;
 	}
 
 	/**
-	 * Indicates if the call came over a confidential channel
-	 * such as an SSL-secured connection.
+	 * Indicates if the call came over a confidential channel such as an
+	 * SSL-secured connection.
+	 * 
 	 * @return True if the call came over a confidential channel.
 	 */
-	public boolean isConfidential()
-	{
+	public boolean isConfidential() {
 		return getWrappedRequest().isConfidential();
 	}
 
 	/**
-	 * Indicates if a content is available and can be sent. Several conditions must be met: the method 
-	 * must allow the sending of content, the content must exists and have some available data.
+	 * Indicates if a content is available and can be sent. Several conditions
+	 * must be met: the method must allow the sending of content, the content
+	 * must exists and have some available data.
+	 * 
 	 * @return True if a content is available and can be sent.
 	 */
-	public boolean isEntityAvailable()
-	{
+	public boolean isEntityAvailable() {
 		return getWrappedRequest().isEntityAvailable();
 	}
 
 	/**
-	 * Sets the base reference that will serve to compute relative resource references.
-	 * @param baseRef The base reference.
+	 * Sets the base reference that will serve to compute relative resource
+	 * references.
+	 * 
+	 * @param baseRef
+	 *            The base reference.
 	 */
-	public void setBaseRef(Reference baseRef)
-	{
+	public void setBaseRef(Reference baseRef) {
 		getWrappedRequest().setBaseRef(baseRef);
 	}
 
 	/**
-	 * Sets the base reference that will serve to compute relative resource references.
-	 * @param baseUri The base absolute URI.
+	 * Sets the base reference that will serve to compute relative resource
+	 * references.
+	 * 
+	 * @param baseUri
+	 *            The base absolute URI.
 	 */
-	public void setBaseRef(String baseUri)
-	{
+	public void setBaseRef(String baseUri) {
 		getWrappedRequest().setBaseRef(baseUri);
 	}
 
 	/**
 	 * Sets the authentication response sent by a client to an origin server.
-	 * @param response The authentication response sent by a client to an origin server.
+	 * 
+	 * @param response
+	 *            The authentication response sent by a client to an origin
+	 *            server.
 	 */
-	public void setChallengeResponse(ChallengeResponse response)
-	{
+	public void setChallengeResponse(ChallengeResponse response) {
 		getWrappedRequest().setChallengeResponse(response);
 	}
 
 	/**
-	 * Indicates if the call came over a confidential channel
-	 * such as an SSL-secured connection.
-	 * @param confidential True if the call came over a confidential channel.
+	 * Indicates if the call came over a confidential channel such as an
+	 * SSL-secured connection.
+	 * 
+	 * @param confidential
+	 *            True if the call came over a confidential channel.
 	 */
-	public void setConfidential(boolean confidential)
-	{
+	public void setConfidential(boolean confidential) {
 		getWrappedRequest().setConfidential(confidential);
 	}
 
 	/**
 	 * Sets the method called.
-	 * @param method The method called.
+	 * 
+	 * @param method
+	 *            The method called.
 	 */
-	public void setMethod(Method method)
-	{
+	public void setMethod(Method method) {
 		getWrappedRequest().setMethod(method);
 	}
 
 	/**
 	 * Sets the referrer reference if available.
-	 * @param referrerRef The referrer reference.
+	 * 
+	 * @param referrerRef
+	 *            The referrer reference.
 	 */
-	public void setReferrerRef(Reference referrerRef)
-	{
+	public void setReferrerRef(Reference referrerRef) {
 		getWrappedRequest().setReferrerRef(referrerRef);
 	}
 
 	/**
 	 * Sets the referrer reference if available using an URI string.
-	 * @param referrerUri The referrer URI.
+	 * 
+	 * @param referrerUri
+	 *            The referrer URI.
 	 */
-	public void setReferrerRef(String referrerUri)
-	{
+	public void setReferrerRef(String referrerUri) {
 		getWrappedRequest().setReferrerRef(referrerUri);
 	}
 
 	/**
-	 * Sets the target resource reference. If the reference is relative, it will be resolved as an
-	 * absolute reference. Also, the context's base reference will be reset. Finally, the reference
-	 * will be normalized to ensure a consistent handling of the call.
-	 * @param resourceRef The resource reference.
+	 * Sets the target resource reference. If the reference is relative, it will
+	 * be resolved as an absolute reference. Also, the context's base reference
+	 * will be reset. Finally, the reference will be normalized to ensure a
+	 * consistent handling of the call.
+	 * 
+	 * @param resourceRef
+	 *            The resource reference.
 	 */
-	public void setResourceRef(Reference resourceRef)
-	{
+	public void setResourceRef(Reference resourceRef) {
 		getWrappedRequest().setResourceRef(resourceRef);
 	}
 
 	/**
-	 * Sets the target resource reference using an URI string. Note that the URI can be either
-	 * absolute or relative to the context's base reference.
-	 * @param resourceUri The resource URI.
+	 * Sets the target resource reference using an URI string. Note that the URI
+	 * can be either absolute or relative to the context's base reference.
+	 * 
+	 * @param resourceUri
+	 *            The resource URI.
 	 */
-	public void setResourceRef(String resourceUri)
-	{
+	public void setResourceRef(String resourceUri) {
 		getWrappedRequest().setResourceRef(resourceUri);
 	}
 

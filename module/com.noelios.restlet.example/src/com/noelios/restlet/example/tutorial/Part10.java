@@ -30,25 +30,23 @@ import org.restlet.data.Protocol;
 
 /**
  * URI rewriting and redirection.
+ * 
  * @author Jerome Louvel (contact@noelios.com)
  */
-public class Part10
-{
-	public static void main(String[] args) throws Exception
-	{
+public class Part10 {
+	public static void main(String[] args) throws Exception {
 		// Create a container
 		Container container = new Container();
 		container.getServers().add(Protocol.HTTP, 8182);
 
 		// Create an application
-		Application application = new Application(container)
-		{
+		Application application = new Application(container) {
 			@Override
-			public Restlet createRoot()
-			{
+			public Restlet createRoot() {
 				// Create a Redirector to Google search service
 				String target = "http://www.google.com/search?q=site:mysite.org+${query('q')}";
-				return new Redirector(getContext(), target, Redirector.MODE_CLIENT_TEMPORARY);
+				return new Redirector(getContext(), target,
+						Redirector.MODE_CLIENT_TEMPORARY);
 			}
 		};
 

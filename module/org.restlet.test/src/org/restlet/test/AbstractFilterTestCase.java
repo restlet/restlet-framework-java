@@ -28,47 +28,53 @@ import org.restlet.data.Response;
 
 /**
  * Tests where every Filter should run through.
- * @author Lars Heuer (heuer[at]semagia.com) <a href="http://www.semagia.com/">Semagia</a>
+ * 
+ * @author Lars Heuer (heuer[at]semagia.com) <a
+ *         href="http://www.semagia.com/">Semagia</a>
  * @version $Rev:$ - $Date:$
  */
-public abstract class AbstractFilterTestCase extends RestletTestCase
-{
+public abstract class AbstractFilterTestCase extends RestletTestCase {
 	/**
-	 * Returns a Filter to be used for the tests. 
+	 * Returns a Filter to be used for the tests.
+	 * 
 	 * @return Filter instance.
 	 */
 	protected abstract Filter getFilter();
 
 	/**
-	 * Returns a request. 
+	 * Returns a request.
+	 * 
 	 * @return Request instance.
 	 */
 	protected abstract Request getRequest();
 
 	/**
-	 * Returns a response. 
-	 * @param request The associated request.
+	 * Returns a response.
+	 * 
+	 * @param request
+	 *            The associated request.
 	 * @return Response instance.
 	 */
 	protected abstract Response getResponse(Request request);
 
 	/**
-	 * Returns a restlet. 
+	 * Returns a restlet.
+	 * 
 	 * @return Restlet instance.
 	 */
 	protected abstract Restlet getRestlet();
 
 	/**
-	 * Returns a restlet class. 
+	 * Returns a restlet class.
+	 * 
 	 * @return Restlet class.
 	 */
 	protected abstract Class getRestletClass();
 
 	/**
-	 * Test Restlet instance attaching/detaching. 
+	 * Test Restlet instance attaching/detaching.
 	 */
-	public void testAttachDetachInstance() throws Exception
-	{
+	public void testAttachDetachInstance() throws Exception {
 		Filter filter = getFilter();
 		assertFalse(filter.hasNext());
 		filter.setNext(getRestlet());
@@ -84,10 +90,9 @@ public abstract class AbstractFilterTestCase extends RestletTestCase
 	}
 
 	/**
-	 * Test with null target. 
+	 * Test with null target.
 	 */
-	public void testIllegalTarget() throws Exception
-	{
+	public void testIllegalTarget() throws Exception {
 		Filter filter = getFilter();
 		filter.start();
 		assertTrue(filter.isStarted());
@@ -95,22 +100,18 @@ public abstract class AbstractFilterTestCase extends RestletTestCase
 		assertFalse(filter.hasNext());
 		Request request = getRequest();
 		Response response = getResponse(request);
-		try
-		{
+		try {
 			filter.handle(request, response);
 			fail("Filter handles call without a target");
-		}
-		catch (Exception ex)
-		{
+		} catch (Exception ex) {
 			// noop.
 		}
 	}
 
 	/**
-	 * Test not started Filter. 
+	 * Test not started Filter.
 	 */
-	public void testIllegalStartedState() throws Exception
-	{
+	public void testIllegalStartedState() throws Exception {
 		Filter filter = getFilter();
 		filter.setNext(getRestlet());
 		assertTrue(filter.hasNext());
@@ -118,17 +119,13 @@ public abstract class AbstractFilterTestCase extends RestletTestCase
 		assertTrue(filter.isStopped());
 		Request request = getRequest();
 		Response response = getResponse(request);
-		try
-		{
+		try {
 			filter.handle(request, response);
 
-			if (!filter.isStarted())
-			{
+			if (!filter.isStarted()) {
 				fail("Filter handles call without being started");
 			}
-		}
-		catch (Exception ex)
-		{
+		} catch (Exception ex) {
 			// noop.
 		}
 	}

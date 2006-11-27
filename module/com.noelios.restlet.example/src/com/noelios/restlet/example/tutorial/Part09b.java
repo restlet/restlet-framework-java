@@ -33,38 +33,36 @@ import org.restlet.data.Status;
 
 /**
  * Authenticating to an HTTP server.
+ * 
  * @author Jerome Louvel (contact@noelios.com)
  */
-public class Part09b
-{
-	public static void main(String[] args) throws Exception
-	{
+public class Part09b {
+	public static void main(String[] args) throws Exception {
 		// Prepare the request
 		Request request = new Request(Method.GET, "http://localhost:8182/");
 
-		// Add the client authentication to the call 
+		// Add the client authentication to the call
 		ChallengeScheme scheme = ChallengeScheme.HTTP_BASIC;
-		ChallengeResponse authentication = new ChallengeResponse(scheme, "scott", "tiger");
+		ChallengeResponse authentication = new ChallengeResponse(scheme,
+				"scott", "tiger");
 		request.setChallengeResponse(authentication);
 
 		// Ask to the HTTP client connector to handle the call
 		Client client = new Client(Protocol.HTTP);
 		Response response = client.handle(request);
 
-		if (response.getStatus().isSuccess())
-		{
+		if (response.getStatus().isSuccess()) {
 			// Output the response entity on the JVM console
 			response.getEntity().write(System.out);
-		}
-		else if (response.getStatus().equals(Status.CLIENT_ERROR_UNAUTHORIZED))
-		{
+		} else if (response.getStatus()
+				.equals(Status.CLIENT_ERROR_UNAUTHORIZED)) {
 			// Unauthorized access
-			System.out.println("Access authorized by the server, check your credentials");
-		}
-		else
-		{
+			System.out
+					.println("Access authorized by the server, check your credentials");
+		} else {
 			// Unexpected status
-			System.out.println("An unexpected status was returned: " + response.getStatus());
+			System.out.println("An unexpected status was returned: "
+					+ response.getStatus());
 		}
 	}
 

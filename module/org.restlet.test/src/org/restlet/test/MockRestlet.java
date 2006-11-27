@@ -27,26 +27,23 @@ import org.restlet.data.Request;
 import org.restlet.data.Response;
 
 /**
- * Thin layer around an AbstractRestlet.
- * Takes care about being started when it should handle a call.
+ * Thin layer around an AbstractRestlet. Takes care about being started when it
+ * should handle a call.
  * 
- * @author Lars Heuer (heuer[at]semagia.com) <a href="http://www.semagia.com/">Semagia</a>
+ * @author Lars Heuer (heuer[at]semagia.com) <a
+ *         href="http://www.semagia.com/">Semagia</a>
  * @version $Rev:$ - $Date:$
  */
-public class MockRestlet extends Restlet
-{
-	public MockRestlet(Context context)
-	{
+public class MockRestlet extends Restlet {
+	public MockRestlet(Context context) {
 		super(context);
 	}
 
 	@Override
-	public void handle(Request request, Response response)
-	{
+	public void handle(Request request, Response response) {
 		super.handle(request, response);
 
-		if (!super.isStarted())
-		{
+		if (!super.isStarted()) {
 			throw new IllegalStateException("Restlet was not started");
 		}
 	}

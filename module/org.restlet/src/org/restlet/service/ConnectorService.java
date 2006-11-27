@@ -30,10 +30,10 @@ import org.restlet.resource.Representation;
 
 /**
  * Service providing client and server connectors.
+ * 
  * @author Jerome Louvel (contact@noelios.com)
  */
-public class ConnectorService
-{
+public class ConnectorService {
 	/** The list of required client protocols. */
 	private List<Protocol> clientProtocols;
 
@@ -43,47 +43,52 @@ public class ConnectorService
 	/**
 	 * Constructor.
 	 */
-	public ConnectorService()
-	{
+	public ConnectorService() {
 	}
 
 	/**
-	 * Call-back method invoked by the client or server connectors just after sending the entity to 
-	 * the target component. The default implementation does nothing.
-	 * @param entity The entity about to be committed.
+	 * Call-back method invoked by the client or server connectors just after
+	 * sending the entity to the target component. The default implementation
+	 * does nothing.
+	 * 
+	 * @param entity
+	 *            The entity about to be committed.
 	 */
-	public void afterSend(Representation entity)
-	{
-		// Do nothing by default. 
+	public void afterSend(Representation entity) {
+		// Do nothing by default.
 	}
 
 	/**
-	 * Call-back method invoked by the client or server connectors just before sending the entity to 
-	 * the target component. The default implementation does nothing.
-	 * @param entity The entity about to be committed.
+	 * Call-back method invoked by the client or server connectors just before
+	 * sending the entity to the target component. The default implementation
+	 * does nothing.
+	 * 
+	 * @param entity
+	 *            The entity about to be committed.
 	 */
-	public void beforeSend(Representation entity)
-	{
-		// Do nothing by default. 
+	public void beforeSend(Representation entity) {
+		// Do nothing by default.
 	}
 
 	/**
-	 * Returns the list of required client protocols. 
+	 * Returns the list of required client protocols.
+	 * 
 	 * @return The list of required client protocols.
 	 */
-	public List<Protocol> getClientProtocols()
-	{
-		if (this.clientProtocols == null) this.clientProtocols = new ArrayList<Protocol>();
+	public List<Protocol> getClientProtocols() {
+		if (this.clientProtocols == null)
+			this.clientProtocols = new ArrayList<Protocol>();
 		return this.clientProtocols;
 	}
 
 	/**
-	 * Returns the list of required server protocols. 
+	 * Returns the list of required server protocols.
+	 * 
 	 * @return The list of required server protocols.
 	 */
-	public List<Protocol> getServerProtocols()
-	{
-		if (this.serverProtocols == null) this.serverProtocols = new ArrayList<Protocol>();
+	public List<Protocol> getServerProtocols() {
+		if (this.serverProtocols == null)
+			this.serverProtocols = new ArrayList<Protocol>();
 		return this.serverProtocols;
 	}
 

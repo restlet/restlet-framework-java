@@ -32,18 +32,25 @@ import org.springframework.beans.factory.xml.XmlBeanDefinitionReader;
 import org.springframework.context.support.GenericApplicationContext;
 
 /**
- * Spring application context based on a Restlet context. 
- * @author Jerome Louvel (contact@noelios.com) <a href="http://www.noelios.com/">Noelios Consulting</a>
+ * Spring application context based on a Restlet context.
+ * 
+ * @author Jerome Louvel (contact@noelios.com) <a
+ *         href="http://www.noelios.com/">Noelios Consulting</a>
  */
-public class SpringContext extends GenericApplicationContext
-{
+public class SpringContext extends GenericApplicationContext {
 	/** The parent Restlet context. */
 	private Context restletContext;
 
-	/** The modifiable list of configuration URIs for bean definition via properties. */
+	/**
+	 * The modifiable list of configuration URIs for bean definition via
+	 * properties.
+	 */
 	private List<String> propertyConfigRefs;
 
-	/** The modifiable list of configuration URIs for XML definition via properties. */
+	/**
+	 * The modifiable list of configuration URIs for XML definition via
+	 * properties.
+	 */
 	private List<String> xmlConfigRefs;
 
 	/** Indicates if the context was already loaded. */
@@ -51,10 +58,11 @@ public class SpringContext extends GenericApplicationContext
 
 	/**
 	 * Constructor.
-	 * @param restletContext The parent Restlet context.
+	 * 
+	 * @param restletContext
+	 *            The parent Restlet context.
 	 */
-	public SpringContext(Context restletContext)
-	{
+	public SpringContext(Context restletContext) {
 		this.restletContext = restletContext;
 		this.propertyConfigRefs = null;
 		this.xmlConfigRefs = null;
@@ -63,50 +71,53 @@ public class SpringContext extends GenericApplicationContext
 
 	/**
 	 * Returns the parent Restlet context.
+	 * 
 	 * @return The parent Restlet context.
 	 */
-	public Context getRestletContext()
-	{
+	public Context getRestletContext() {
 		return this.restletContext;
 	}
 
 	/**
-	 * Returns the modifiable list of configuration URIs for XML definition via properties.
-	 * @return The modifiable list of configuration URIs for XML definition via properties.
+	 * Returns the modifiable list of configuration URIs for XML definition via
+	 * properties.
+	 * 
+	 * @return The modifiable list of configuration URIs for XML definition via
+	 *         properties.
 	 */
-	public List<String> getPropertyConfigRefs()
-	{
+	public List<String> getPropertyConfigRefs() {
 		if (this.propertyConfigRefs == null)
 			this.propertyConfigRefs = new ArrayList<String>();
 		return this.propertyConfigRefs;
 	}
 
 	/**
-	 * Returns the modifiable list of configuration URIs for bean definition via properties.
-	 * @return The modifiable list of configuration URIs for bean definition via properties.
+	 * Returns the modifiable list of configuration URIs for bean definition via
+	 * properties.
+	 * 
+	 * @return The modifiable list of configuration URIs for bean definition via
+	 *         properties.
 	 */
-	public List<String> getXmlConfigRefs()
-	{
-		if (this.xmlConfigRefs == null) this.xmlConfigRefs = new ArrayList<String>();
+	public List<String> getXmlConfigRefs() {
+		if (this.xmlConfigRefs == null)
+			this.xmlConfigRefs = new ArrayList<String>();
 		return this.xmlConfigRefs;
 	}
 
 	@Override
-	public void refresh()
-	{
-		// If this context hasn't been loaded yet, read all the configurations registered 
-		if (!this.loaded)
-		{
+	public void refresh() {
+		// If this context hasn't been loaded yet, read all the configurations
+		// registered
+		if (!this.loaded) {
 			Representation config = null;
 
 			// First, read the bean definitions from properties representations
 			PropertiesBeanDefinitionReader propReader = null;
-			for (String ref : getPropertyConfigRefs())
-			{
-				config = getRestletContext().getDispatcher().get(ref).getEntity();
+			for (String ref : getPropertyConfigRefs()) {
+				config = getRestletContext().getDispatcher().get(ref)
+						.getEntity();
 
-				if (config != null)
-				{
+				if (config != null) {
 					propReader = new PropertiesBeanDefinitionReader(this);
 					propReader.loadBeanDefinitions(new SpringResource(config));
 				}
@@ -114,12 +125,11 @@ public class SpringContext extends GenericApplicationContext
 
 			// Then, read the bean definitions from XML representations
 			XmlBeanDefinitionReader xmlReader = null;
-			for (String ref : getXmlConfigRefs())
-			{
-				config = getRestletContext().getDispatcher().get(ref).getEntity();
+			for (String ref : getXmlConfigRefs()) {
+				config = getRestletContext().getDispatcher().get(ref)
+						.getEntity();
 
-				if (config != null)
-				{
+				if (config != null) {
 					xmlReader = new XmlBeanDefinitionReader(this);
 					xmlReader.loadBeanDefinitions(new SpringResource(config));
 				}

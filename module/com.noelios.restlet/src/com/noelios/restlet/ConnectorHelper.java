@@ -32,28 +32,27 @@ import org.restlet.data.Response;
 import org.restlet.util.Helper;
 
 /**
- * Base connector helper.  
+ * Base connector helper.
+ * 
  * @author Jerome Louvel (contact@noelios.com)
  */
-public class ConnectorHelper implements Helper
-{
+public class ConnectorHelper implements Helper {
 	/** The protocols simultaneously supported. */
 	private List<Protocol> protocols;
 
 	/**
 	 * Constructor.
 	 */
-	public ConnectorHelper()
-	{
+	public ConnectorHelper() {
 		this.protocols = null;
 	}
 
 	/**
 	 * Returns the protocols simultaneously supported.
+	 * 
 	 * @return The protocols simultaneously supported.
 	 */
-	public List<Protocol> getProtocols()
-	{
+	public List<Protocol> getProtocols() {
 		if (this.protocols == null)
 			this.protocols = new ArrayList<Protocol>();
 		return this.protocols;
@@ -61,30 +60,30 @@ public class ConnectorHelper implements Helper
 
 	/**
 	 * Creates a new context.
+	 * 
 	 * @return The new context.
 	 */
-	public Context createContext()
-	{
+	public Context createContext() {
 		return null;
 	}
 
 	/**
 	 * Handles a call.
-	 * @param request The request to handle.
-	 * @param response The response to update.
+	 * 
+	 * @param request
+	 *            The request to handle.
+	 * @param response
+	 *            The response to update.
 	 */
-	public void handle(Request request, Response response)
-	{
+	public void handle(Request request, Response response) {
 	}
 
 	/** Start hook. */
-	public void start() throws Exception
-	{
+	public void start() throws Exception {
 	}
 
 	/** Stop callback. */
-	public void stop() throws Exception
-	{
+	public void stop() throws Exception {
 	}
 
 }

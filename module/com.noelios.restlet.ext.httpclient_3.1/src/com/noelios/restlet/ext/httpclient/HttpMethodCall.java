@@ -55,10 +55,10 @@ import com.noelios.restlet.http.HttpClientCall;
 
 /**
  * HTTP client connector call based on Apache HTTP Client's HttpMethod class.
+ * 
  * @author Jerome Louvel (contact@noelios.com)
  */
-public class HttpMethodCall extends HttpClientCall
-{
+public class HttpMethodCall extends HttpClientCall {
 	/** The associated HTTP client. */
 	private HttpClientHelper clientHelper;
 
@@ -70,74 +70,58 @@ public class HttpMethodCall extends HttpClientCall
 
 	/**
 	 * Constructor.
-	 * @param helper The parent HTTP client helper.
-	 * @param method The method name.
-	 * @param requestUri The request URI.
-	 * @param hasEntity Indicates if the call will have an entity to send to the server.
+	 * 
+	 * @param helper
+	 *            The parent HTTP client helper.
+	 * @param method
+	 *            The method name.
+	 * @param requestUri
+	 *            The request URI.
+	 * @param hasEntity
+	 *            Indicates if the call will have an entity to send to the
+	 *            server.
 	 * @throws IOException
 	 */
-	public HttpMethodCall(HttpClientHelper helper, final String method, String requestUri,
-			boolean hasEntity) throws IOException
-	{
+	public HttpMethodCall(HttpClientHelper helper, final String method,
+			String requestUri, boolean hasEntity) throws IOException {
 		super(helper, method, requestUri);
 		this.clientHelper = helper;
 
-		if (requestUri.startsWith("http"))
-		{
-			if (method.equalsIgnoreCase(Method.GET.getName()))
-			{
+		if (requestUri.startsWith("http")) {
+			if (method.equalsIgnoreCase(Method.GET.getName())) {
 				this.httpMethod = new GetMethod(requestUri);
-			}
-			else if (method.equalsIgnoreCase(Method.POST.getName()))
-			{
+			} else if (method.equalsIgnoreCase(Method.POST.getName())) {
 				this.httpMethod = new PostMethod(requestUri);
-			}
-			else if (method.equalsIgnoreCase(Method.PUT.getName()))
-			{
+			} else if (method.equalsIgnoreCase(Method.PUT.getName())) {
 				this.httpMethod = new PutMethod(requestUri);
-			}
-			else if (method.equalsIgnoreCase(Method.HEAD.getName()))
-			{
+			} else if (method.equalsIgnoreCase(Method.HEAD.getName())) {
 				this.httpMethod = new HeadMethod(requestUri);
-			}
-			else if (method.equalsIgnoreCase(Method.DELETE.getName()))
-			{
+			} else if (method.equalsIgnoreCase(Method.DELETE.getName())) {
 				this.httpMethod = new DeleteMethod(requestUri);
-			}
-			else if (method.equalsIgnoreCase(Method.CONNECT.getName()))
-			{
+			} else if (method.equalsIgnoreCase(Method.CONNECT.getName())) {
 				HostConfiguration host = new HostConfiguration();
 				host.setHost(new URI(requestUri, false));
 				this.httpMethod = new ConnectMethod(host);
-			}
-			else if (method.equalsIgnoreCase(Method.OPTIONS.getName()))
-			{
+			} else if (method.equalsIgnoreCase(Method.OPTIONS.getName())) {
 				this.httpMethod = new OptionsMethod(requestUri);
-			}
-			else if (method.equalsIgnoreCase(Method.TRACE.getName()))
-			{
+			} else if (method.equalsIgnoreCase(Method.TRACE.getName())) {
 				this.httpMethod = new TraceMethod(requestUri);
-			}
-			else
-			{
-				this.httpMethod = new EntityEnclosingMethod(requestUri)
-				{
-					public String getName()
-					{
+			} else {
+				this.httpMethod = new EntityEnclosingMethod(requestUri) {
+					public String getName() {
 						return method;
 					}
 				};
 			}
 
-			this.httpMethod.setFollowRedirects(this.clientHelper.isFollowRedirects());
+			this.httpMethod.setFollowRedirects(this.clientHelper
+					.isFollowRedirects());
 			this.httpMethod.setDoAuthentication(false);
 
 			this.responseHeadersAdded = false;
-			setConfidential(this.httpMethod.getURI().getScheme().equalsIgnoreCase(
-					Protocol.HTTPS.getSchemeName()));
-		}
-		else
-		{
+			setConfidential(this.httpMethod.getURI().getScheme()
+					.equalsIgnoreCase(Protocol.HTTPS.getSchemeName()));
+		} else {
 			throw new IllegalArgumentException(
 					"Only HTTP or HTTPS resource URIs are allowed here");
 		}
@@ -145,57 +129,54 @@ public class HttpMethodCall extends HttpClientCall
 
 	/**
 	 * Returns the HTTP method.
+	 * 
 	 * @return The HTTP method.
 	 */
-	public HttpMethod getHttpMethod()
-	{
+	public HttpMethod getHttpMethod() {
 		return this.httpMethod;
 	}
 
 	/**
-	 * Sends the request to the client. Commits the request line, headers and optional entity and 
-	 * send them over the network. 
-	 * @param request The high-level request.
+	 * Sends the request to the client. Commits the request line, headers and
+	 * optional entity and send them over the network.
+	 * 
+	 * @param request
+	 *            The high-level request.
 	 * @return The result status.
 	 */
 	@Override
-	public Status sendRequest(Request request)
-	{
+	public Status sendRequest(Request request) {
 		Status result = null;
 
-		try
-		{
+		try {
 			final Representation entity = request.getEntity();
 
 			// Set the request headers
-			for (Parameter header : getRequestHeaders())
-			{
-				getHttpMethod().setRequestHeader(header.getName(), header.getValue());
+			for (Parameter header : getRequestHeaders()) {
+				getHttpMethod().setRequestHeader(header.getName(),
+						header.getValue());
 			}
 
 			// For those method that accept enclosing entites, provide it
-			if ((entity != null) && (getHttpMethod() instanceof EntityEnclosingMethod))
-			{
+			if ((entity != null)
+					&& (getHttpMethod() instanceof EntityEnclosingMethod)) {
 				EntityEnclosingMethod eem = (EntityEnclosingMethod) getHttpMethod();
-				eem.setRequestEntity(new RequestEntity()
-				{
-					public long getContentLength()
-					{
+				eem.setRequestEntity(new RequestEntity() {
+					public long getContentLength() {
 						return entity.getSize();
 					}
 
-					public String getContentType()
-					{
-						return (entity.getMediaType() != null) ? entity.getMediaType().toString() : null;
+					public String getContentType() {
+						return (entity.getMediaType() != null) ? entity
+								.getMediaType().toString() : null;
 					}
 
-					public boolean isRepeatable()
-					{
+					public boolean isRepeatable() {
 						return !entity.isTransient();
 					}
 
-					public void writeRequest(OutputStream os) throws IOException
-					{
+					public void writeRequest(OutputStream os)
+							throws IOException {
 						entity.write(os);
 					}
 				});
@@ -203,22 +184,24 @@ public class HttpMethodCall extends HttpClientCall
 
 			// Ensure that the connections is active
 			this.clientHelper.getHttpClient().executeMethod(getHttpMethod());
-			
-			// Now we can access the status code, this MUST happen after closing any open request stream.
+
+			// Now we can access the status code, this MUST happen after closing
+			// any open request stream.
 			result = new Status(getStatusCode(), null, getReasonPhrase(), null);
 
 			// If there is not response body, immediatly release the connection
-			if(getHttpMethod().getResponseBodyAsStream() == null)
-			{
+			if (getHttpMethod().getResponseBodyAsStream() == null) {
 				getHttpMethod().releaseConnection();
 			}
-		}
-		catch (IOException ioe)
-		{
-			this.clientHelper.getLogger().log(Level.WARNING,
-					"An error occured during the communication with the remote HTTP server.",
-					ioe);
-			result = new Status(Status.CONNECTOR_ERROR_COMMUNICATION,
+		} catch (IOException ioe) {
+			this.clientHelper
+					.getLogger()
+					.log(
+							Level.WARNING,
+							"An error occured during the communication with the remote HTTP server.",
+							ioe);
+			result = new Status(
+					Status.CONNECTOR_ERROR_COMMUNICATION,
 					"Unable to complete the HTTP call due to a communication error with the remote server. "
 							+ ioe.getMessage());
 
@@ -230,34 +213,29 @@ public class HttpMethodCall extends HttpClientCall
 	}
 
 	/**
-	 * Returns the response address.<br/>
-	 * Corresponds to the IP address of the responding server.
+	 * Returns the response address.<br/> Corresponds to the IP address of the
+	 * responding server.
+	 * 
 	 * @return The response address.
 	 */
-	public String getServerAddress()
-	{
-		try
-		{
+	public String getServerAddress() {
+		try {
 			return getHttpMethod().getURI().getHost();
-		}
-		catch (URIException e)
-		{
+		} catch (URIException e) {
 			return null;
 		}
 	}
 
 	/**
 	 * Returns the modifiable list of response headers.
+	 * 
 	 * @return The modifiable list of response headers.
 	 */
-	public ParameterList getResponseHeaders()
-	{
+	public ParameterList getResponseHeaders() {
 		ParameterList result = super.getResponseHeaders();
 
-		if (!this.responseHeadersAdded)
-		{
-			for (Header header : getHttpMethod().getResponseHeaders())
-			{
+		if (!this.responseHeadersAdded) {
+			for (Header header : getHttpMethod().getResponseHeaders()) {
 				result.add(header.getName(), header.getValue());
 			}
 
@@ -269,44 +247,41 @@ public class HttpMethodCall extends HttpClientCall
 
 	/**
 	 * Returns the response status code.
+	 * 
 	 * @return The response status code.
 	 */
-	public int getStatusCode()
-	{
+	public int getStatusCode() {
 		return getHttpMethod().getStatusCode();
 	}
 
 	/**
 	 * Returns the response reason phrase.
+	 * 
 	 * @return The response reason phrase.
 	 */
-	public String getReasonPhrase()
-	{
+	public String getReasonPhrase() {
 		return getHttpMethod().getStatusText();
 	}
 
 	/**
 	 * Returns the response stream if it exists.
+	 * 
 	 * @return The response stream if it exists.
 	 */
-	public InputStream getResponseStream()
-	{
+	public InputStream getResponseStream() {
 		InputStream result = null;
 
-		try
-		{
-			// Return a wrapper filter that will release the connection when needed 
-			result = new FilterInputStream(getHttpMethod().getResponseBodyAsStream())
-			{
-				public void close() throws IOException
-				{
+		try {
+			// Return a wrapper filter that will release the connection when
+			// needed
+			result = new FilterInputStream(getHttpMethod()
+					.getResponseBodyAsStream()) {
+				public void close() throws IOException {
 					super.close();
 					getHttpMethod().releaseConnection();
 				}
 			};
-		}
-		catch (IOException ioe)
-		{
+		} catch (IOException ioe) {
 			result = null;
 		}
 

@@ -31,34 +31,36 @@ import org.restlet.util.ByteUtils;
 
 /**
  * Representation based on a NIO byte channel.
+ * 
  * @author Jerome Louvel (contact@noelios.com)
  */
-public abstract class ChannelRepresentation extends Representation
-{
+public abstract class ChannelRepresentation extends Representation {
 	/**
 	 * Constructor.
-	 * @param mediaType The media type.
+	 * 
+	 * @param mediaType
+	 *            The media type.
 	 */
-	public ChannelRepresentation(MediaType mediaType)
-	{
+	public ChannelRepresentation(MediaType mediaType) {
 		super(mediaType);
 	}
 
 	/**
 	 * Returns a stream with the representation's content.
+	 * 
 	 * @return A stream with the representation's content.
 	 */
-	public InputStream getStream() throws IOException
-	{
+	public InputStream getStream() throws IOException {
 		return ByteUtils.getStream(getChannel());
 	}
 
 	/**
 	 * Writes the representation to a byte stream.
-	 * @param outputStream The output stream.
+	 * 
+	 * @param outputStream
+	 *            The output stream.
 	 */
-	public void write(OutputStream outputStream) throws IOException
-	{
+	public void write(OutputStream outputStream) throws IOException {
 		write(ByteUtils.getChannel(outputStream));
 	}
 }

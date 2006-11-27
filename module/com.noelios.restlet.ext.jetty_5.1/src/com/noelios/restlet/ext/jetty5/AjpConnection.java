@@ -35,41 +35,50 @@ import org.mortbay.http.ajp.AJP13Connection;
 
 /**
  * Jetty AJP connection.
+ * 
  * @author Jerome Louvel (contact@noelios.com)
  */
-public class AjpConnection extends AJP13Connection
-{
+public class AjpConnection extends AJP13Connection {
 	/** Serial version identifier. */
 	private static final long serialVersionUID = 1L;
 
 	/**
 	 * Constructor.
-	 * @param listener The parent AJP listener.
-	 * @param in Input stream to read the request from.
-	 * @param out Output stream to write the response to.
-	 * @param socket The listening socket.
-	 * @param bufferSize The buffer size.
+	 * 
+	 * @param listener
+	 *            The parent AJP listener.
+	 * @param in
+	 *            Input stream to read the request from.
+	 * @param out
+	 *            Output stream to write the response to.
+	 * @param socket
+	 *            The listening socket.
+	 * @param bufferSize
+	 *            The buffer size.
 	 */
 	public AjpConnection(AjpListener listener, InputStream in,
-			OutputStream out, Socket socket, int bufferSize) throws IOException
-	{
+			OutputStream out, Socket socket, int bufferSize) throws IOException {
 		super(listener, in, out, socket, bufferSize);
 	}
 
 	/**
 	 * Handle Jetty HTTP calls.
-	 * @param request The HttpRequest request.
-	 * @param response The HttpResponse response.
+	 * 
+	 * @param request
+	 *            The HttpRequest request.
+	 * @param response
+	 *            The HttpResponse response.
 	 * @return The HttpContext that completed handling of the request or null.
 	 * @exception HttpException
 	 * @exception IOException
 	 */
 	protected HttpContext service(HttpRequest request, HttpResponse response)
-			throws HttpException, IOException
-	{
-		getJettyServer().handle(new JettyCall(getJettyServer().getServer(), request, response));
+			throws HttpException, IOException {
+		getJettyServer().handle(
+				new JettyCall(getJettyServer().getServer(), request, response));
 
-		// Commit the response and ensures that all data is flushed out to the caller
+		// Commit the response and ensures that all data is flushed out to the
+		// caller
 		response.commit();
 
 		// Indicates that the request fully handled
@@ -80,10 +89,10 @@ public class AjpConnection extends AJP13Connection
 
 	/**
 	 * Returns the Jetty connector.
+	 * 
 	 * @return The Jetty connector.
 	 */
-	private JettyServerHelper getJettyServer()
-	{
+	private JettyServerHelper getJettyServer() {
 		return ((AjpListener) getListener()).getHelper();
 	}
 

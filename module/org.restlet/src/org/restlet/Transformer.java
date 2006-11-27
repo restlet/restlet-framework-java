@@ -42,17 +42,21 @@ import org.restlet.resource.OutputRepresentation;
 import org.restlet.resource.Representation;
 
 /**
- * Filter that can transform XML representations by applying an XSLT transform sheet.
- * @author Jerome Louvel (contact@noelios.com) <a href="http://www.noelios.com/">Noelios Consulting</a>
+ * Filter that can transform XML representations by applying an XSLT transform
+ * sheet.
+ * 
+ * @author Jerome Louvel (contact@noelios.com) <a
+ *         href="http://www.noelios.com/">Noelios Consulting</a>
  */
-public class Transformer extends Filter
-{
+public class Transformer extends Filter {
 	/**
 	 * Result representation able to apply an XSLT transformation.
-	 * @author Jerome Louvel (contact@noelios.com) <a href="http://www.noelios.com/">Noelios Consulting</a>
+	 * 
+	 * @author Jerome Louvel (contact@noelios.com) <a
+	 *         href="http://www.noelios.com/">Noelios Consulting</a>
 	 */
-	private final static class ResultRepresentation extends OutputRepresentation
-	{
+	private final static class ResultRepresentation extends
+			OutputRepresentation {
 		/** The parent transformer. */
 		private Transformer transformer;
 
@@ -61,18 +65,19 @@ public class Transformer extends Filter
 
 		/**
 		 * Constructor.
-		 * @param transformer The parent transformer.
-		 * @param sourceRepresentation The source representation to transform.
+		 * 
+		 * @param transformer
+		 *            The parent transformer.
+		 * @param sourceRepresentation
+		 *            The source representation to transform.
 		 */
 		public ResultRepresentation(Transformer transformer,
-				Representation sourceRepresentation)
-		{
+				Representation sourceRepresentation) {
 			super(null);
 			this.transformer = transformer;
 			this.sourceRepresentation = sourceRepresentation;
 
-			if (transformer != null)
-			{
+			if (transformer != null) {
 				setCharacterSet(transformer.getResultCharacterSet());
 				setLanguage(transformer.getResultLanguage());
 				setMediaType(transformer.getResultMediaType());
@@ -81,66 +86,67 @@ public class Transformer extends Filter
 
 		/**
 		 * Returns the source representation to transform.
+		 * 
 		 * @return The source representation to transform.
 		 */
-		public Representation getSourceRepresentation()
-		{
+		public Representation getSourceRepresentation() {
 			return this.sourceRepresentation;
 		}
 
-		/** 
+		/**
 		 * Returns the parent transformer.
+		 * 
 		 * @return The parent transformer.
 		 */
-		public Transformer getTransformer()
-		{
+		public Transformer getTransformer() {
 			return this.transformer;
 		}
 
 		@Override
-		public void write(OutputStream outputStream) throws IOException
-		{
+		public void write(OutputStream outputStream) throws IOException {
 			// Prepare the XSLT transformer documents
-			StreamSource sourceDocument = new StreamSource(getSourceRepresentation()
-					.getStream());
+			StreamSource sourceDocument = new StreamSource(
+					getSourceRepresentation().getStream());
 			StreamSource transformSheet = new StreamSource(getTransformer()
 					.getTransformSheet().getStream());
 			StreamResult resultDocument = new StreamResult(outputStream);
 
-			try
-			{
+			try {
 				// Create a new transformer as they are not thread safe
 				javax.xml.transform.Transformer transformer = TransformerFactory
 						.newInstance().newTransformer(transformSheet);
 
 				// Generates the result of the transformation
 				transformer.transform(sourceDocument, resultDocument);
-			}
-			catch (TransformerConfigurationException tce)
-			{
+			} catch (TransformerConfigurationException tce) {
 				getTransformer().getContext().getLogger().log(Level.WARNING,
 						"Transformer configuration exception", tce);
-			}
-			catch (TransformerFactoryConfigurationError tfce)
-			{
+			} catch (TransformerFactoryConfigurationError tfce) {
 				getTransformer().getContext().getLogger().log(Level.WARNING,
 						"Transformer factory configuration exception", tfce);
-			}
-			catch (TransformerException te)
-			{
+			} catch (TransformerException te) {
 				getTransformer().getContext().getLogger().log(Level.WARNING,
 						"Transformer exception", te);
 			}
 		}
 	}
 
-	/** Mode where the developer manually applies transformations by calling the transform() method. */
+	/**
+	 * Mode where the developer manually applies transformations by calling the
+	 * transform() method.
+	 */
 	public static final int MODE_MANUAL = 0;
 
-	/** Mode that transforms request entities before their handling by the attached Restlet. */
+	/**
+	 * Mode that transforms request entities before their handling by the
+	 * attached Restlet.
+	 */
 	public static final int MODE_REQUEST = 1;
 
-	/** Mode that transforms response entities after their handling by the attached Restlet. */
+	/**
+	 * Mode that transforms response entities after their handling by the
+	 * attached Restlet.
+	 */
 	public static final int MODE_RESPONSE = 2;
 
 	/** The transformation mode. */
@@ -149,31 +155,40 @@ public class Transformer extends Filter
 	/** The XSLT transform sheet to apply to message entities. */
 	private Representation transformSheet;
 
-	/** The media type of the result representation. MediaType.APPLICATION_XML by default. */
+	/**
+	 * The media type of the result representation. MediaType.APPLICATION_XML by
+	 * default.
+	 */
 	private MediaType resultMediaType;
 
 	/** The language of the result representation. The default value is null. */
 	private Language resultLanguage;
 
-	/** The character set of the result representation. The default value is null. */
+	/**
+	 * The character set of the result representation. The default value is
+	 * null.
+	 */
 	private CharacterSet resultCharacterSet;
 
 	/**
 	 * Constructor.
-	 * @param transformSheet The XSLT transform sheet to apply to message entities.
+	 * 
+	 * @param transformSheet
+	 *            The XSLT transform sheet to apply to message entities.
 	 */
-	public Transformer(Representation transformSheet)
-	{
+	public Transformer(Representation transformSheet) {
 		this(MODE_MANUAL, transformSheet);
 	}
 
 	/**
 	 * Constructor.
-	 * @param mode The transformation mode.
-	 * @param transformSheet The XSLT transform sheet to apply to message entities.
+	 * 
+	 * @param mode
+	 *            The transformation mode.
+	 * @param transformSheet
+	 *            The XSLT transform sheet to apply to message entities.
 	 */
-	public Transformer(int mode, Representation transformSheet)
-	{
+	public Transformer(int mode, Representation transformSheet) {
 		this.mode = mode;
 		this.transformSheet = transformSheet;
 		this.resultMediaType = MediaType.APPLICATION_XML;
@@ -182,120 +197,126 @@ public class Transformer extends Filter
 	}
 
 	@Override
-	protected void afterHandle(Request request, Response response)
-	{
-		if (getMode() == MODE_RESPONSE)
-		{
+	protected void afterHandle(Request request, Response response) {
+		if (getMode() == MODE_RESPONSE) {
 			response.setEntity(transform(response.getEntity()));
 		}
 	}
 
 	@Override
-	protected void beforeHandle(Request request, Response response)
-	{
-		if (getMode() == MODE_REQUEST)
-		{
+	protected void beforeHandle(Request request, Response response) {
+		if (getMode() == MODE_REQUEST) {
 			request.setEntity(transform(request.getEntity()));
 		}
 	}
 
 	/**
 	 * Returns the transformation mode. See MODE_* constants.
+	 * 
 	 * @return The transformation mode.
 	 */
-	public int getMode()
-	{
+	public int getMode() {
 		return this.mode;
 	}
 
-	/** 
-	 * Returns the character set of the result representation. The default value is null.
+	/**
+	 * Returns the character set of the result representation. The default value
+	 * is null.
+	 * 
 	 * @return The character set of the result representation.
 	 */
-	public CharacterSet getResultCharacterSet()
-	{
+	public CharacterSet getResultCharacterSet() {
 		return this.resultCharacterSet;
 	}
 
-	/** 
-	 * Returns the language of the result representation. The default value is null.
+	/**
+	 * Returns the language of the result representation. The default value is
+	 * null.
+	 * 
 	 * @return The language of the result representation.
 	 */
-	public Language getResultLanguage()
-	{
+	public Language getResultLanguage() {
 		return this.resultLanguage;
 	}
 
-	/** 
-	 * Returns the media type of the result representation. The default value is MediaType.APPLICATION_XML.
+	/**
+	 * Returns the media type of the result representation. The default value is
+	 * MediaType.APPLICATION_XML.
+	 * 
 	 * @return The media type of the result representation.
 	 */
-	public MediaType getResultMediaType()
-	{
+	public MediaType getResultMediaType() {
 		return this.resultMediaType;
 	}
 
 	/**
 	 * Returns the XSLT transform sheet to apply to message entities.
+	 * 
 	 * @return The XSLT transform sheet to apply to message entities.
 	 */
-	public Representation getTransformSheet()
-	{
+	public Representation getTransformSheet() {
 		return this.transformSheet;
 	}
 
 	/**
 	 * Sets the transformation mode. See MODE_* constants.
-	 * @param mode The transformation mode.
+	 * 
+	 * @param mode
+	 *            The transformation mode.
 	 */
-	public void setMode(int mode)
-	{
+	public void setMode(int mode) {
 		this.mode = mode;
 	}
 
-	/** 
+	/**
 	 * Sets the character set of the result representation.
-	 * @param resultCharacterSet The character set of the result representation.
+	 * 
+	 * @param resultCharacterSet
+	 *            The character set of the result representation.
 	 */
-	public void setResultCharacterSet(CharacterSet resultCharacterSet)
-	{
+	public void setResultCharacterSet(CharacterSet resultCharacterSet) {
 		this.resultCharacterSet = resultCharacterSet;
 	}
 
-	/** 
+	/**
 	 * Sets the language of the result representation.
-	 * @param resultLanguage The language of the result representation.
+	 * 
+	 * @param resultLanguage
+	 *            The language of the result representation.
 	 */
-	public void setResultLanguage(Language resultLanguage)
-	{
+	public void setResultLanguage(Language resultLanguage) {
 		this.resultLanguage = resultLanguage;
 	}
 
-	/** 
+	/**
 	 * Sets the media type of the result representation.
-	 * @param resultMediaType The media type of the result representation.
+	 * 
+	 * @param resultMediaType
+	 *            The media type of the result representation.
 	 */
-	public void setResultMediaType(MediaType resultMediaType)
-	{
+	public void setResultMediaType(MediaType resultMediaType) {
 		this.resultMediaType = resultMediaType;
 	}
 
 	/**
 	 * Sets the XSLT transform sheet to apply to message entities.
-	 * @param transformSheet The XSLT transform sheet to apply to message entities.
+	 * 
+	 * @param transformSheet
+	 *            The XSLT transform sheet to apply to message entities.
 	 */
-	public void setTransformSheet(Representation transformSheet)
-	{
+	public void setTransformSheet(Representation transformSheet) {
 		this.transformSheet = transformSheet;
 	}
 
 	/**
-	 * Transforms a source XML representation by applying an XSLT transform sheet to it.
-	 * @param source The source XML representation.
+	 * Transforms a source XML representation by applying an XSLT transform
+	 * sheet to it.
+	 * 
+	 * @param source
+	 *            The source XML representation.
 	 * @return The generated result representation.
 	 */
-	public Representation transform(Representation source)
-	{
+	public Representation transform(Representation source) {
 		return new ResultRepresentation(this, source);
 	}
 

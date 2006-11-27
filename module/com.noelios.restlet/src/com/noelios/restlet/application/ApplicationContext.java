@@ -31,12 +31,13 @@ import org.restlet.Dispatcher;
 import org.restlet.data.Protocol;
 
 /**
- * Context based on a parent container's context but dedicated to an application. This is important to allow
- * contextual access to application's resources.
+ * Context based on a parent container's context but dedicated to an
+ * application. This is important to allow contextual access to application's
+ * resources.
+ * 
  * @author Jerome Louvel (contact@noelios.com)
  */
-public class ApplicationContext extends Context
-{
+public class ApplicationContext extends Context {
 	/** The WAR client. */
 	private Client warClient;
 
@@ -48,12 +49,16 @@ public class ApplicationContext extends Context
 
 	/**
 	 * Constructor.
-	 * @param application The application.
-	 * @param parentContext The parent context.
-	 * @param logger The logger instance of use.
+	 * 
+	 * @param application
+	 *            The application.
+	 * @param parentContext
+	 *            The parent context.
+	 * @param logger
+	 *            The logger instance of use.
 	 */
-	public ApplicationContext(Application application, Context parentContext, Logger logger)
-	{
+	public ApplicationContext(Application application, Context parentContext,
+			Logger logger) {
 		super(Application.class.getCanonicalName());
 		this.application = application;
 		this.parentContext = parentContext;
@@ -62,30 +67,29 @@ public class ApplicationContext extends Context
 
 	/**
 	 * Returns a call dispatcher.
+	 * 
 	 * @return A call dispatcher.
 	 */
-	public Dispatcher getDispatcher()
-	{
+	public Dispatcher getDispatcher() {
 		return new ApplicationDispatcher(this);
 	}
 
 	/**
 	 * Returns the application.
+	 * 
 	 * @return the application.
 	 */
-	public Application getApplication()
-	{
+	public Application getApplication() {
 		return this.application;
 	}
 
 	/**
 	 * Returns the WAR client.
+	 * 
 	 * @return the WAR client.
 	 */
-	protected Client getWarClient()
-	{
-		if (this.warClient == null)
-		{
+	protected Client getWarClient() {
+		if (this.warClient == null) {
 			this.warClient = new Client(Protocol.WAR);
 		}
 
@@ -94,19 +98,20 @@ public class ApplicationContext extends Context
 
 	/**
 	 * Sets the WAR client.
-	 * @param warClient the WAR client.
+	 * 
+	 * @param warClient
+	 *            the WAR client.
 	 */
-	protected void setWarClient(Client warClient)
-	{
+	protected void setWarClient(Client warClient) {
 		this.warClient = warClient;
 	}
 
 	/**
 	 * Returns the parent context.
+	 * 
 	 * @return The parent context.
 	 */
-	public Context getParentContext()
-	{
+	public Context getParentContext() {
 		return this.parentContext;
 	}
 

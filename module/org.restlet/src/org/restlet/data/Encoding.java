@@ -23,12 +23,12 @@
 package org.restlet.data;
 
 /**
- * Modifier of a representation's media type. Useful to apply compression without losing the 
- * identity of the underlying media type.
+ * Modifier of a representation's media type. Useful to apply compression
+ * without losing the identity of the underlying media type.
+ * 
  * @author Jerome Louvel (contact@noelios.com)
  */
-public class Encoding extends Metadata
-{
+public class Encoding extends Metadata {
 	/** All encodings acceptable. */
 	public static final Encoding ALL = new Encoding("*", "All encodings");
 
@@ -51,17 +51,17 @@ public class Encoding extends Metadata
 			"The default encoding with no transformation");
 
 	/**
-	 * Returns the encoding associated to a name. If an existing constant exists then it is 
-	 * returned, otherwise a new instance is created.
-	 * @param name The name.
+	 * Returns the encoding associated to a name. If an existing constant exists
+	 * then it is returned, otherwise a new instance is created.
+	 * 
+	 * @param name
+	 *            The name.
 	 * @return The associated encoding.
 	 */
-	public static Encoding valueOf(String name)
-	{
+	public static Encoding valueOf(String name) {
 		Encoding result = null;
 
-		if (name != null)
-		{
+		if (name != null) {
 			if (name.equalsIgnoreCase(ALL.getName()))
 				result = ALL;
 			else if (name.equalsIgnoreCase(GZIP.getName()))
@@ -83,35 +83,36 @@ public class Encoding extends Metadata
 
 	/**
 	 * Constructor.
-	 * @param name The name.
+	 * 
+	 * @param name
+	 *            The name.
 	 */
-	public Encoding(String name)
-	{
+	public Encoding(String name) {
 		this(name, "Encoding applied to a representation");
 	}
 
 	/**
 	 * Constructor.
-	 * @param name The name.
-	 * @param description The description. 
+	 * 
+	 * @param name
+	 *            The name.
+	 * @param description
+	 *            The description.
 	 */
-	public Encoding(String name, String description)
-	{
+	public Encoding(String name, String description) {
 		super(name, description);
 	}
 
 	/** {@inheritDoc} */
 	@Override
-	public boolean equals(Object object)
-	{
+	public boolean equals(Object object) {
 		return (object instanceof Encoding)
 				&& getName().equalsIgnoreCase(((Encoding) object).getName());
 	}
 
 	/** {@inheritDoc} */
 	@Override
-	public int hashCode()
-	{
+	public int hashCode() {
 		return (getName() == null) ? 0 : getName().toLowerCase().hashCode();
 	}
 }

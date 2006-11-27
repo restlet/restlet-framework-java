@@ -29,10 +29,10 @@ import org.restlet.data.Protocol;
 
 /**
  * Modifiable list of server connectors.
+ * 
  * @author Jerome Louvel (contact@noelios.com)
  */
-public class ServerList extends WrapperList<Server>
-{
+public class ServerList extends WrapperList<Server> {
 	/** The context. */
 	private Context context;
 
@@ -41,79 +41,92 @@ public class ServerList extends WrapperList<Server>
 
 	/**
 	 * Constructor.
-	 * @param context The context.
-	 * @param target The target Restlet of added servers.
+	 * 
+	 * @param context
+	 *            The context.
+	 * @param target
+	 *            The target Restlet of added servers.
 	 */
-	public ServerList(Context context, Restlet target)
-	{
+	public ServerList(Context context, Restlet target) {
 		this.context = context;
 		this.target = target;
 	}
 
 	/**
 	 * Adds a new server connector in the map supporting the given protocol.
-	 * @param protocol The connector protocol.
+	 * 
+	 * @param protocol
+	 *            The connector protocol.
 	 * @return The added server.
 	 */
-	public Server add(Protocol protocol)
-	{
-		Server result = new Server(getContext(), protocol, null, protocol.getDefaultPort(),
+	public Server add(Protocol protocol) {
+		Server result = new Server(getContext(), protocol, null, protocol
+				.getDefaultPort(), getTarget());
+		add(result);
+		return result;
+	}
+
+	/**
+	 * Adds a new server connector in the map supporting the given protocol on
+	 * the specified port.
+	 * 
+	 * @param protocol
+	 *            The connector protocol.
+	 * @param port
+	 *            The listening port.
+	 * @return The added server.
+	 */
+	public Server add(Protocol protocol, int port) {
+		Server result = new Server(getContext(), protocol, null, port,
 				getTarget());
 		add(result);
 		return result;
 	}
 
 	/**
-	 * Adds a new server connector in the map supporting the given protocol on the specified port.
-	 * @param protocol The connector protocol.
-	 * @param port The listening port.
+	 * Adds a new server connector in the map supporting the given protocol on
+	 * the specified IP address and port.
+	 * 
+	 * @param protocol
+	 *            The connector protocol.
+	 * @param address
+	 *            The optional listening IP address (useful if multiple IP
+	 *            addresses available).
+	 * @param port
+	 *            The listening port.
 	 * @return The added server.
 	 */
-	public Server add(Protocol protocol, int port)
-	{
-		Server result = new Server(getContext(), protocol, null, port, getTarget());
-		add(result);
-		return result;
-	}
-
-	/**
-	 * Adds a new server connector in the map supporting the given protocol on the specified IP address and port.
-	 * @param protocol The connector protocol.
-	 * @param address The optional listening IP address (useful if multiple IP addresses available).
-	 * @param port The listening port.
-	 * @return The added server.
-	 */
-	public Server add(Protocol protocol, String address, int port)
-	{
-		Server result = new Server(getContext(), protocol, address, port, getTarget());
+	public Server add(Protocol protocol, String address, int port) {
+		Server result = new Server(getContext(), protocol, address, port,
+				getTarget());
 		add(result);
 		return result;
 	}
 
 	/**
 	 * Adds a server at the end of the list.
+	 * 
 	 * @return True (as per the general contract of the Collection.add method).
 	 */
-	public boolean add(Server server)
-	{
+	public boolean add(Server server) {
 		return super.add(server);
 	}
 
 	/**
 	 * Returns the context.
+	 * 
 	 * @return The context.
 	 */
-	public Context getContext()
-	{
+	public Context getContext() {
 		return this.context;
 	}
 
 	/**
 	 * Returns the target Restlet.
+	 * 
 	 * @return The target Restlet.
 	 */
-	public Restlet getTarget()
-	{
+	public Restlet getTarget() {
 		return this.target;
 	}
 

@@ -39,11 +39,12 @@ import com.noelios.restlet.http.HttpServerCall;
 
 /**
  * Call that is used by the Simple HTTP server.
- * @author Lars Heuer (heuer[at]semagia.com) <a href="http://semagia.com/">Semagia</a>
+ * 
+ * @author Lars Heuer (heuer[at]semagia.com) <a
+ *         href="http://semagia.com/">Semagia</a>
  * @author Jerome Louvel (contact@noelios.com)
  */
-public class SimpleCall extends HttpServerCall
-{
+public class SimpleCall extends HttpServerCall {
 	/**
 	 * Simple Request.
 	 */
@@ -63,17 +64,22 @@ public class SimpleCall extends HttpServerCall
 	private boolean requestHeadersAdded;
 
 	/**
-	 * Constructs this class with the specified {@link simple.http.Request}
-	 * and {@link simple.http.Response}.
-	 * @param server The parent server.
-	 * @param request Request to wrap.
-	 * @param response Response to wrap.
-	 * @param confidential Inidicates if this call is acting in HTTP or HTTPS mode.
-	 * @param hostPort The listening port used.
+	 * Constructs this class with the specified {@link simple.http.Request} and
+	 * {@link simple.http.Response}.
+	 * 
+	 * @param server
+	 *            The parent server.
+	 * @param request
+	 *            Request to wrap.
+	 * @param response
+	 *            Response to wrap.
+	 * @param confidential
+	 *            Inidicates if this call is acting in HTTP or HTTPS mode.
+	 * @param hostPort
+	 *            The listening port used.
 	 */
-	SimpleCall(Server server, Request request, Response response, boolean confidential,
-			int hostPort)
-	{
+	SimpleCall(Server server, Request request, Response response,
+			boolean confidential, int hostPort) {
 		super(server);
 		this.request = request;
 		this.response = response;
@@ -83,57 +89,56 @@ public class SimpleCall extends HttpServerCall
 	}
 
 	/**
-	 * Returns the full request URI. 
+	 * Returns the full request URI.
+	 * 
 	 * @return The full request URI.
 	 */
-	public String getRequestUri()
-	{
+	public String getRequestUri() {
 		return request.getURI();
 	}
 
 	/**
-	 * Returns the request method. 
+	 * Returns the request method.
+	 * 
 	 * @return The request method.
 	 */
-	public String getMethod()
-	{
+	public String getMethod() {
 		return request.getMethod();
 	}
 
 	/**
-	 * Returns the request address.<br/>
-	 * Corresponds to the IP address of the requesting client.
+	 * Returns the request address.<br/> Corresponds to the IP address of the
+	 * requesting client.
+	 * 
 	 * @return The request address.
 	 */
-	public String getClientAddress()
-	{
+	public String getClientAddress() {
 		return request.getInetAddress().getHostAddress();
 	}
 
 	/**
-	 * Returns the response address.<br/>
-	 * Corresponds to the IP address of the responding server.
+	 * Returns the response address.<br/> Corresponds to the IP address of the
+	 * responding server.
+	 * 
 	 * @return The response address.
 	 */
-	public String getServerAddress()
-	{
+	public String getServerAddress() {
 		return response.getInetAddress().getHostAddress();
 	}
 
 	/**
 	 * Returns the list of request headers.
+	 * 
 	 * @return The list of request headers.
 	 */
-	public ParameterList getRequestHeaders()
-	{
+	public ParameterList getRequestHeaders() {
 		ParameterList result = super.getRequestHeaders();
 
-		if (!this.requestHeadersAdded)
-		{
+		if (!this.requestHeadersAdded) {
 			int headerCount = request.headerCount();
-			for (int i = 0; i < headerCount; i++)
-			{
-				result.add(new Parameter(request.getName(i), request.getValue(i)));
+			for (int i = 0; i < headerCount; i++) {
+				result.add(new Parameter(request.getName(i), request
+						.getValue(i)));
 			}
 
 			this.requestHeadersAdded = true;
@@ -143,16 +148,17 @@ public class SimpleCall extends HttpServerCall
 	}
 
 	/**
-	 * Sends the response back to the client. Commits the status, headers and optional entity and 
-	 * send them on the network. 
-	 * @param restletResponse The high-level response.
+	 * Sends the response back to the client. Commits the status, headers and
+	 * optional entity and send them on the network.
+	 * 
+	 * @param restletResponse
+	 *            The high-level response.
 	 */
-	public void sendResponse(org.restlet.data.Response restletResponse) throws IOException
-	{
+	public void sendResponse(org.restlet.data.Response restletResponse)
+			throws IOException {
 		// Set the response headers
 		response.clear();
-		for (Parameter header : getResponseHeaders())
-		{
+		for (Parameter header : getResponseHeaders()) {
 			response.add(header.getName(), header.getValue());
 		}
 
@@ -161,8 +167,7 @@ public class SimpleCall extends HttpServerCall
 		response.setText(getReasonPhrase());
 
 		// To ensure that Simple doesn't switch to chunked encoding
-		if (restletResponse.getEntity() == null)
-		{
+		if (restletResponse.getEntity() == null) {
 			response.setContentLength(0);
 		}
 
@@ -172,71 +177,66 @@ public class SimpleCall extends HttpServerCall
 
 	/**
 	 * Returns the request entity channel if it exists.
+	 * 
 	 * @return The request entity channel if it exists.
 	 */
-	public ReadableByteChannel getRequestChannel()
-	{
+	public ReadableByteChannel getRequestChannel() {
 		// Unsupported.
 		return null;
 	}
 
 	/**
 	 * Returns the request entity stream if it exists.
+	 * 
 	 * @return The request entity stream if it exists.
 	 */
-	public InputStream getRequestStream()
-	{
-		try
-		{
+	public InputStream getRequestStream() {
+		try {
 			return request.getInputStream();
-		}
-		catch (IOException ex)
-		{
+		} catch (IOException ex) {
 			return null;
 		}
 	}
 
 	/**
 	 * Returns the response channel if it exists.
+	 * 
 	 * @return The response channel if it exists.
 	 */
-	public WritableByteChannel getResponseChannel()
-	{
+	public WritableByteChannel getResponseChannel() {
 		// Unsupported.
 		return null;
 	}
 
 	/**
 	 * Returns the response stream if it exists.
+	 * 
 	 * @return The response stream if it exists.
 	 */
-	public OutputStream getResponseStream()
-	{
-		try
-		{
+	public OutputStream getResponseStream() {
+		try {
 			return response.getOutputStream();
-		}
-		catch (IOException ex)
-		{
+		} catch (IOException ex) {
 			return null;
 		}
 	}
 
 	/**
 	 * Sets the listening port used.
-	 * @param hostPort The listening port used.
+	 * 
+	 * @param hostPort
+	 *            The listening port used.
 	 */
-	private void setHostPort(int hostPort)
-	{
+	private void setHostPort(int hostPort) {
 		this.hostPort = hostPort;
 	}
 
 	/**
 	 * Returns the listening port used.
+	 * 
 	 * @return The listening port used.
 	 */
-	protected int getHostPort()
-	{
+	protected int getHostPort() {
 		return hostPort;
 	}
 }

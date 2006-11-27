@@ -26,15 +26,15 @@ import org.restlet.util.Factory;
 
 /**
  * Media type used in representations and preferences.
+ * 
  * @see <a href="http://en.wikipedia.org/wiki/MIME">MIME types on Wikipedia</a>
  * @author Jerome Louvel (contact@noelios.com)
  */
-public class MediaType extends Metadata
-{
+public class MediaType extends Metadata {
 	public static final MediaType ALL = new MediaType("*/*", "All media");
 
-	public static final MediaType APPLICATION_ALL = new MediaType("application/*",
-			"All application documents");
+	public static final MediaType APPLICATION_ALL = new MediaType(
+			"application/*", "All application documents");
 
 	public static final MediaType APPLICATION_ATOM_XML = new MediaType(
 			"application/atom+xml", "Atom syndication documents");
@@ -66,14 +66,14 @@ public class MediaType extends Metadata
 	public static final MediaType APPLICATION_JAVASCRIPT = new MediaType(
 			"application/x-javascript", "Javascript document");
 
-	public static final MediaType APPLICATION_JSON = new MediaType("application/json",
-			"JavaScript Object Notation document");
+	public static final MediaType APPLICATION_JSON = new MediaType(
+			"application/json", "JavaScript Object Notation document");
 
 	public static final MediaType APPLICATION_OCTET_STREAM = new MediaType(
 			"application/octet-stream", "Raw octet stream");
 
-	public static final MediaType APPLICATION_PDF = new MediaType("application/pdf",
-			"Adobe PDF document");
+	public static final MediaType APPLICATION_PDF = new MediaType(
+			"application/pdf", "Adobe PDF document");
 
 	public static final MediaType APPLICATION_POSTSCRIPT = new MediaType(
 			"application/postscript", "Postscript document");
@@ -84,20 +84,20 @@ public class MediaType extends Metadata
 	public static final MediaType APPLICATION_PROJECT = new MediaType(
 			"application/vnd.ms-project", "Microsoft Project document");
 
-	public static final MediaType APPLICATION_RDF = new MediaType("application/rdf-xml",
-			"Resource Description Framework document");
+	public static final MediaType APPLICATION_RDF = new MediaType(
+			"application/rdf-xml", "Resource Description Framework document");
 
-	public static final MediaType APPLICATION_RTF = new MediaType("application/rtf",
-			"Rich Text Format document");
+	public static final MediaType APPLICATION_RTF = new MediaType(
+			"application/rtf", "Rich Text Format document");
 
 	public static final MediaType APPLICATION_STUFFIT = new MediaType(
 			"application/x-stuffit", "Stuffit archive");
 
-	public static final MediaType APPLICATION_TAR = new MediaType("application/x-tar",
-			"Tar archive");
+	public static final MediaType APPLICATION_TAR = new MediaType(
+			"application/x-tar", "Tar archive");
 
-	public static final MediaType APPLICATION_WORD = new MediaType("application/msword",
-			"Microsoft Word document");
+	public static final MediaType APPLICATION_WORD = new MediaType(
+			"application/msword", "Microsoft Word document");
 
 	public static final MediaType APPLICATION_WWW_FORM = new MediaType(
 			"application/x-www-form-urlencoded", "Web form (URL encoded)");
@@ -105,42 +105,50 @@ public class MediaType extends Metadata
 	public static final MediaType APPLICATION_XHTML_XML = new MediaType(
 			"application/xhtml+xml", "XHTML document");
 
-	public static final MediaType APPLICATION_XML = new MediaType("application/xml",
-			"XML document");
+	public static final MediaType APPLICATION_XML = new MediaType(
+			"application/xml", "XML document");
 
-	public static final MediaType APPLICATION_ZIP = new MediaType("application/zip",
-			"Zip archive");
+	public static final MediaType APPLICATION_ZIP = new MediaType(
+			"application/zip", "Zip archive");
 
-	public static final MediaType AUDIO_ALL = new MediaType("audio/*", "All audios");
+	public static final MediaType AUDIO_ALL = new MediaType("audio/*",
+			"All audios");
 
 	public static final MediaType AUDIO_MPEG = new MediaType("audio/mpeg",
 			"MPEG audio (MP3)");
 
-	public static final MediaType AUDIO_REAL = new MediaType("audio/x-pn-realaudio",
-			"Real audio");
+	public static final MediaType AUDIO_REAL = new MediaType(
+			"audio/x-pn-realaudio", "Real audio");
 
 	public static final MediaType AUDIO_WAV = new MediaType("audio/x-wav",
 			"Waveform audio");
 
-	public static final MediaType IMAGE_ALL = new MediaType("image/*", "All images");
+	public static final MediaType IMAGE_ALL = new MediaType("image/*",
+			"All images");
 
-	public static final MediaType IMAGE_BMP = new MediaType("image/bmp", "Windows bitmap");
+	public static final MediaType IMAGE_BMP = new MediaType("image/bmp",
+			"Windows bitmap");
 
-	public static final MediaType IMAGE_GIF = new MediaType("image/gif", "GIF image");
+	public static final MediaType IMAGE_GIF = new MediaType("image/gif",
+			"GIF image");
 
 	public static final MediaType IMAGE_ICON = new MediaType("image/x-icon",
 			"Windows icon (Favicon)");
 
-	public static final MediaType IMAGE_JPEG = new MediaType("image/jpeg", "JPEG image");
+	public static final MediaType IMAGE_JPEG = new MediaType("image/jpeg",
+			"JPEG image");
 
-	public static final MediaType IMAGE_PNG = new MediaType("image/png", "PNG image");
+	public static final MediaType IMAGE_PNG = new MediaType("image/png",
+			"PNG image");
 
 	public static final MediaType IMAGE_SVG = new MediaType("image/svg+xml",
 			"Scalable Vector Graphics");
 
-	public static final MediaType MESSAGE_ALL = new MediaType("message/*", "All messages");
+	public static final MediaType MESSAGE_ALL = new MediaType("message/*",
+			"All messages");
 
-	public static final MediaType MODEL_ALL = new MediaType("model/*", "All models");
+	public static final MediaType MODEL_ALL = new MediaType("model/*",
+			"All models");
 
 	public static final MediaType MULTIPART_ALL = new MediaType("multipart/*",
 			"All multipart data");
@@ -148,45 +156,54 @@ public class MediaType extends Metadata
 	public static final MediaType MULTIPART_FORM_DATA = new MediaType(
 			"multipart/form-data", "Multipart form data");
 
-	public static final MediaType TEXT_ALL = new MediaType("text/*", "All texts");
+	public static final MediaType TEXT_ALL = new MediaType("text/*",
+			"All texts");
 
-	public static final MediaType TEXT_CSS = new MediaType("text/css", "CSS stylesheet");
+	public static final MediaType TEXT_CSS = new MediaType("text/css",
+			"CSS stylesheet");
 
-	public static final MediaType TEXT_HTML = new MediaType("text/html", "HTML document");
+	public static final MediaType TEXT_HTML = new MediaType("text/html",
+			"HTML document");
 
-	public static final MediaType TEXT_PLAIN = new MediaType("text/plain", "Plain text");
+	public static final MediaType TEXT_PLAIN = new MediaType("text/plain",
+			"Plain text");
 
-	public static final MediaType TEXT_URI_LIST = new MediaType("text/uri-list",
-			"List of URIs");
+	public static final MediaType TEXT_URI_LIST = new MediaType(
+			"text/uri-list", "List of URIs");
 
-	public static final MediaType TEXT_VCARD = new MediaType("text/x-vcard", "vCard");
+	public static final MediaType TEXT_VCARD = new MediaType("text/x-vcard",
+			"vCard");
 
-	public static final MediaType TEXT_XML = new MediaType("text/xml", "XML text");
+	public static final MediaType TEXT_XML = new MediaType("text/xml",
+			"XML text");
 
-	public static final MediaType VIDEO_ALL = new MediaType("video/*", "All videos");
+	public static final MediaType VIDEO_ALL = new MediaType("video/*",
+			"All videos");
 
-	public static final MediaType VIDEO_AVI = new MediaType("video/x-msvideo", "AVI video");
+	public static final MediaType VIDEO_AVI = new MediaType("video/x-msvideo",
+			"AVI video");
 
-	public static final MediaType VIDEO_MPEG = new MediaType("video/mpeg", "MPEG video");
+	public static final MediaType VIDEO_MPEG = new MediaType("video/mpeg",
+			"MPEG video");
 
-	public static final MediaType VIDEO_QUICKTIME = new MediaType("video/quicktime",
-			"Quicktime video");
+	public static final MediaType VIDEO_QUICKTIME = new MediaType(
+			"video/quicktime", "Quicktime video");
 
 	public static final MediaType VIDEO_WMV = new MediaType("video/x-ms-wmv",
 			"Windows movie");
 
 	/**
-	 * Returns the media type associated to a name. If an existing constant exists then it is 
-	 * returned, otherwise a new instance is created.
-	 * @param name The name.
+	 * Returns the media type associated to a name. If an existing constant
+	 * exists then it is returned, otherwise a new instance is created.
+	 * 
+	 * @param name
+	 *            The name.
 	 * @return The associated media type.
 	 */
-	public static MediaType valueOf(String name)
-	{
+	public static MediaType valueOf(String name) {
 		MediaType result = null;
 
-		if (name != null)
-		{
+		if (name != null) {
 			if (name.equals(ALL.getName()))
 				result = ALL;
 			else if (name.equals(APPLICATION_ALL.getName()))
@@ -307,93 +324,92 @@ public class MediaType extends Metadata
 
 	/**
 	 * Constructor.
-	 * @param name The name.
+	 * 
+	 * @param name
+	 *            The name.
 	 */
-	public MediaType(String name)
-	{
+	public MediaType(String name) {
 		this(name, null, "Media type or range of media types");
 	}
 
 	/**
 	 * Constructor.
-	 * @param name The name.
-	 * @param parameters The list of parameters.
+	 * 
+	 * @param name
+	 *            The name.
+	 * @param parameters
+	 *            The list of parameters.
 	 */
-	public MediaType(String name, ParameterList parameters)
-	{
+	public MediaType(String name, ParameterList parameters) {
 		this(name, parameters, "Media type or range of media types");
 	}
 
 	/**
 	 * Constructor.
-	 * @param name The name.
-	 * @param parameters The list of parameters.
-	 * @param description The description.
+	 * 
+	 * @param name
+	 *            The name.
+	 * @param parameters
+	 *            The list of parameters.
+	 * @param description
+	 *            The description.
 	 */
-	public MediaType(String name, ParameterList parameters, String description)
-	{
+	public MediaType(String name, ParameterList parameters, String description) {
 		super((name == null) ? null : name, description);
 		this.parameters = parameters;
 	}
 
 	/**
 	 * Constructor.
-	 * @param name The name.
-	 * @param description The description. 
+	 * 
+	 * @param name
+	 *            The name.
+	 * @param description
+	 *            The description.
 	 */
-	public MediaType(String name, String description)
-	{
+	public MediaType(String name, String description) {
 		this(name, null, description);
 	}
 
 	/** {@inheritDoc} */
 	@Override
-	public boolean equals(Object obj)
-	{
+	public boolean equals(Object obj) {
 		boolean result = (obj == this);
 
-		//if obj == this no need to go further
-		if (!result)
-		{
+		// if obj == this no need to go further
+		if (!result) {
 			// test for equality at Metadata level i.e. name and value.
-			if (super.equals(obj))
-			{
+			if (super.equals(obj)) {
 				// if obj isn't a mediatype or is null don't evaluate further
-				if ((obj instanceof MediaType) && obj != null)
-				{
-					MediaType that = (MediaType)obj;
+				if ((obj instanceof MediaType) && obj != null) {
+					MediaType that = (MediaType) obj;
 					result = (this.getParameters().equals(that.getParameters()));
 				}
 			}
 		}
-		
+
 		return result;
 	}
 
 	/**
 	 * Returns the main type.
+	 * 
 	 * @return The main type.
 	 */
-	public String getMainType()
-	{
+	public String getMainType() {
 		String result = null;
 
-		if (getName() != null)
-		{
+		if (getName() != null) {
 			int index = getName().indexOf('/');
 
 			// Some clients appear to use name types without subtypes
-			if (index == -1)
-			{
+			if (index == -1) {
 				index = getName().indexOf(';');
 			}
 
-			if (index == -1)
-			{
+			if (index == -1) {
 				result = getName();
-			}
-			else
-			{
+			} else {
 				result = getName().substring(0, index);
 			}
 		}
@@ -403,40 +419,34 @@ public class MediaType extends Metadata
 
 	/**
 	 * Returns the list of parameters.
+	 * 
 	 * @return The list of parameters.
 	 */
-	public ParameterList getParameters()
-	{
-		if (this.parameters == null) this.parameters = new ParameterList();
+	public ParameterList getParameters() {
+		if (this.parameters == null)
+			this.parameters = new ParameterList();
 		return this.parameters;
 	}
 
 	/**
 	 * Returns the sub-type.
+	 * 
 	 * @return The sub-type.
 	 */
-	public String getSubType()
-	{
+	public String getSubType() {
 		String result = null;
 
-		if (getName() != null)
-		{
+		if (getName() != null) {
 			int slash = getName().indexOf('/');
 
-			if (slash == -1)
-			{
+			if (slash == -1) {
 				// No subtype found, assume that all subtypes are accepted
 				result = "*";
-			}
-			else
-			{
+			} else {
 				int separator = getName().indexOf(';');
-				if (separator == -1)
-				{
+				if (separator == -1) {
 					result = getName().substring(slash + 1);
-				}
-				else
-				{
+				} else {
 					result = getName().substring(slash + 1, separator);
 				}
 			}
@@ -447,48 +457,40 @@ public class MediaType extends Metadata
 
 	/** {@inheritDoc} */
 	@Override
-	public int hashCode()
-	{
+	public int hashCode() {
 		return Factory.hashCode(super.hashCode(), getParameters());
 	}
 
 	/**
-	 * Indicates if a given media type is included in the current one.
-	 * The test is true if both types are equal or if the given media type is within the range of the 
-	 * current one. For example, @link{ALL} includes all media types. 
-	 * Parameters are ignored for this comparison. 
-	 * @param included The media type to test for inclusion.
+	 * Indicates if a given media type is included in the current one. The test
+	 * is true if both types are equal or if the given media type is within the
+	 * range of the current one. For example, ALL includes all media types.
+	 * Parameters are ignored for this comparison.
+	 * 
+	 * @param included
+	 *            The media type to test for inclusion.
 	 * @return True if the given media type is included in the current one.
 	 */
-	public boolean includes(MediaType included)
-	{
+	public boolean includes(MediaType included) {
 		boolean result = equals(ALL);
 
-		if (result)
-		{
+		if (result) {
 			// The ALL media type includes all other types.
-		}
-		else
-		{
+		} else {
 			result = equals(included);
 
-			if (result)
-			{
+			if (result) {
 				// Both media types are equal
-			}
-			else
-			{
+			} else {
 				result = getMainType().equals(included.getMainType())
-						&& (getSubType().equals(included.getSubType()) || getSubType().equals(
-								"*"));
+						&& (getSubType().equals(included.getSubType()) || getSubType()
+								.equals("*"));
 
-				if (result)
-				{
+				if (result) {
 					// Both media types have the same main type
-					// and the subtype of current media type includes all subtypes. 
-				}
-				else
-				{
+					// and the subtype of current media type includes all
+					// subtypes.
+				} else {
 					// Both media types are not equal
 				}
 			}

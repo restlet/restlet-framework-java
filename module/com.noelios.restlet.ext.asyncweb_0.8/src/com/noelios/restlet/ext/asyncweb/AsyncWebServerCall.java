@@ -41,10 +41,11 @@ import com.noelios.restlet.http.HttpServerCall;
 
 /**
  * HttpServerCall implementation used by the AsyncServer.
- * @author Lars Heuer (heuer[at]semagia.com) <a href="http://www.semagia.com/">Semagia</a>
+ * 
+ * @author Lars Heuer (heuer[at]semagia.com) <a
+ *         href="http://www.semagia.com/">Semagia</a>
  */
-public class AsyncWebServerCall extends HttpServerCall
-{
+public class AsyncWebServerCall extends HttpServerCall {
 	/** AsyncWeb request. */
 	private Request request;
 
@@ -58,14 +59,18 @@ public class AsyncWebServerCall extends HttpServerCall
 
 	/**
 	 * Constructor.
-	 * @param server The parent server connector.
-	 * @param request The AsyncWebRequest.
-	 * @param response The AsyncWebResponse.
-	 * @param confidential Indicates if the server is acting in HTTPS mode.
+	 * 
+	 * @param server
+	 *            The parent server connector.
+	 * @param request
+	 *            The AsyncWebRequest.
+	 * @param response
+	 *            The AsyncWebResponse.
+	 * @param confidential
+	 *            Indicates if the server is acting in HTTPS mode.
 	 */
-	public AsyncWebServerCall(Server server, HttpRequest request, HttpResponse response,
-			boolean confidential)
-	{
+	public AsyncWebServerCall(Server server, HttpRequest request,
+			HttpResponse response, boolean confidential) {
 		super(server);
 		this.request = (Request) request;
 		this.requestHeadersAdded = false;
@@ -74,36 +79,30 @@ public class AsyncWebServerCall extends HttpServerCall
 	}
 
 	@Override
-	public String getClientAddress()
-	{
+	public String getClientAddress() {
 		return request.getRemoteAddress();
 	}
 
 	@Override
-	public String getRequestUri()
-	{
+	public String getRequestUri() {
 		return request.getRequestURI();
 	}
 
 	@Override
-	public String getMethod()
-	{
+	public String getMethod() {
 		return request.getMethod().getName();
 	}
 
 	@Override
-	public ParameterList getRequestHeaders()
-	{
+	public ParameterList getRequestHeaders() {
 		ParameterList result = super.getRequestHeaders();
 
-		if (!this.requestHeadersAdded)
-		{
+		if (!this.requestHeadersAdded) {
 			HttpHeaders headers = request.getHeaders();
 			int headerCount = headers.getSize();
-			for (int i = 0; i < headerCount; i++)
-			{
-				result.add(headers.getHeaderName(i).getValue(), headers.getHeaderValue(i)
-						.getValue());
+			for (int i = 0; i < headerCount; i++) {
+				result.add(headers.getHeaderName(i).getValue(), headers
+						.getHeaderValue(i).getValue());
 			}
 
 			this.requestHeadersAdded = true;
@@ -113,18 +112,20 @@ public class AsyncWebServerCall extends HttpServerCall
 	}
 
 	/**
-	 * Sends the response back to the client. Commits the status, headers and optional entity and 
-	 * send them on the network. 
-	 * @param restletResponse The high-level response.
+	 * Sends the response back to the client. Commits the status, headers and
+	 * optional entity and send them on the network.
+	 * 
+	 * @param restletResponse
+	 *            The high-level response.
 	 */
-	public void sendResponse(org.restlet.data.Response restletResponse) throws IOException
-	{
-		response.setStatus(ResponseStatus.forId(getStatusCode()), getReasonPhrase());
+	public void sendResponse(org.restlet.data.Response restletResponse)
+			throws IOException {
+		response.setStatus(ResponseStatus.forId(getStatusCode()),
+				getReasonPhrase());
 
 		// Ensure that headers are empty
 		response.getHeaders().dispose();
-		for (Parameter header : super.getResponseHeaders())
-		{
+		for (Parameter header : super.getResponseHeaders()) {
 			response.addHeader(header.getName(), header.getValue());
 		}
 
@@ -133,28 +134,24 @@ public class AsyncWebServerCall extends HttpServerCall
 	}
 
 	@Override
-	public ReadableByteChannel getRequestChannel()
-	{
+	public ReadableByteChannel getRequestChannel() {
 		// Unsupported.
 		return null;
 	}
 
 	@Override
-	public InputStream getRequestStream()
-	{
+	public InputStream getRequestStream() {
 		return request.getInputStream();
 	}
 
 	@Override
-	public WritableByteChannel getResponseChannel()
-	{
+	public WritableByteChannel getResponseChannel() {
 		// Unsupported.
 		return null;
 	}
 
 	@Override
-	public OutputStream getResponseStream()
-	{
+	public OutputStream getResponseStream() {
 		return response.getOutputStream();
 	}
 

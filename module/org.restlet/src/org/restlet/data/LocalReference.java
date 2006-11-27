@@ -26,109 +26,129 @@ import java.io.File;
 import java.io.IOException;
 
 /**
- * Reference to a local resource. It has helper methods for the three following schemes: CLAP, FILE and JAR.<br/>
- * <br/>
- * CLAP (ClassLoader Access Protocol) is a custom scheme to access to representations via classloaders. Exemple 
- * URI: "clap://thread/org/restlet/Restlet.class".<br/>
- * <br/>
- * JAR is a common scheme to access to representations inside Java ARchives. Exemple URI: 
- * "jar:http://www.foo.com/bar/baz.jar!/COM/foo/Quux.class".<br/>
- * <br/>
- * FILE is a standard scheme to access to representations stored in the file system (locally most of the time).
- * Example URI: "file:///D/root/index.html".
+ * Reference to a local resource. It has helper methods for the three following
+ * schemes: CLAP, FILE and JAR.<br/> <br/> CLAP (ClassLoader Access Protocol)
+ * is a custom scheme to access to representations via classloaders. Exemple
+ * URI: "clap://thread/org/restlet/Restlet.class".<br/> <br/> JAR is a common
+ * scheme to access to representations inside Java ARchives. Exemple URI:
+ * "jar:http://www.foo.com/bar/baz.jar!/COM/foo/Quux.class".<br/> <br/> FILE is
+ * a standard scheme to access to representations stored in the file system
+ * (locally most of the time). Example URI: "file:///D/root/index.html".
+ * 
  * @author Jerome Louvel (contact@noelios.com)
  */
-public class LocalReference extends Reference
-{
+public class LocalReference extends Reference {
 	/**
-	 * The resources will be resolved from the classloader associated with the local class. Examples:
-	 * clap://class/rootPkg/subPkg/myClass.class or clap://class/rootPkg/file.html
-	 * @see java.lang.Class#getClassLoader() 
+	 * The resources will be resolved from the classloader associated with the
+	 * local class. Examples: clap://class/rootPkg/subPkg/myClass.class or
+	 * clap://class/rootPkg/file.html
+	 * 
+	 * @see java.lang.Class#getClassLoader()
 	 */
 	public static final int CLAP_CLASS = 2;
 
 	/**
 	 * The resources will be resolved from the system's classloader. Examples:
-	 * clap://system/rootPkg/subPkg/myClass.class or clap://system/rootPkg/file.html
-	 * @see java.lang.ClassLoader#getSystemClassLoader() 
+	 * clap://system/rootPkg/subPkg/myClass.class or
+	 * clap://system/rootPkg/file.html
+	 * 
+	 * @see java.lang.ClassLoader#getSystemClassLoader()
 	 */
 	public static final int CLAP_SYSTEM = 3;
 
 	/**
-	 * The resources will be resolved from the current thread's classloader. Examples:
-	 * clap://thread/rootPkg/subPkg/myClass.class or clap://thread/rootPkg/file.html
-	 * @see java.lang.Thread#getContextClassLoader() 
+	 * The resources will be resolved from the current thread's classloader.
+	 * Examples: clap://thread/rootPkg/subPkg/myClass.class or
+	 * clap://thread/rootPkg/file.html
+	 * 
+	 * @see java.lang.Thread#getContextClassLoader()
 	 */
 	public static final int CLAP_THREAD = 4;
 
 	/**
 	 * Constructor.
-	 * @param authorityType The authority type for the resource path.
-	 * @param path The resource path.
+	 * 
+	 * @param authorityType
+	 *            The authority type for the resource path.
+	 * @param path
+	 *            The resource path.
 	 */
-	public static LocalReference createClapReference(int authorityType, String path)
-	{
-		return new LocalReference("clap://" + getAuthorityName(authorityType) + path);
+	public static LocalReference createClapReference(int authorityType,
+			String path) {
+		return new LocalReference("clap://" + getAuthorityName(authorityType)
+				+ path);
 	}
 
 	/**
 	 * Constructor.
-	 * @param file The file whose path must be used.
+	 * 
+	 * @param file
+	 *            The file whose path must be used.
 	 * @throws IOException
 	 */
-	public static LocalReference createFileReference(File file) throws IOException
-	{
+	public static LocalReference createFileReference(File file)
+			throws IOException {
 		return createFileReference(file.getCanonicalPath());
 	}
 
 	/**
 	 * Constructor.
-	 * @param filePath The local file path.
+	 * 
+	 * @param filePath
+	 *            The local file path.
 	 */
-	public static LocalReference createFileReference(String filePath)
-	{
+	public static LocalReference createFileReference(String filePath) {
 		return createFileReference("", filePath);
 	}
 
 	/**
 	 * Constructor.
-	 * @param hostName The authority (can be a host name or the special "localhost" or an empty value).
-	 * @param filePath The file path.
+	 * 
+	 * @param hostName
+	 *            The authority (can be a host name or the special "localhost"
+	 *            or an empty value).
+	 * @param filePath
+	 *            The file path.
 	 */
-	public static LocalReference createFileReference(String hostName, String filePath)
-	{
-		return new LocalReference("file://" + hostName + "/" + normalizePath(filePath));
+	public static LocalReference createFileReference(String hostName,
+			String filePath) {
+		return new LocalReference("file://" + hostName + "/"
+				+ normalizePath(filePath));
 	}
 
 	/**
 	 * Constructor.
-	 * @param jarFile The JAR file reference.
-	 * @param entryPath The entry path inside the JAR file.
+	 * 
+	 * @param jarFile
+	 *            The JAR file reference.
+	 * @param entryPath
+	 *            The entry path inside the JAR file.
 	 */
-	public static LocalReference createJarReference(Reference jarFile, String entryPath)
-	{
-		return new LocalReference("jar:" + jarFile.toString() + "!/" + entryPath);
+	public static LocalReference createJarReference(Reference jarFile,
+			String entryPath) {
+		return new LocalReference("jar:" + jarFile.toString() + "!/"
+				+ entryPath);
 	}
 
 	/**
-	 * Returns an authority name. 
-	 * @param authority The authority.
+	 * Returns an authority name.
+	 * 
+	 * @param authority
+	 *            The authority.
 	 * @return The name.
 	 */
-	public static String getAuthorityName(int authority)
-	{
+	public static String getAuthorityName(int authority) {
 		String result = null;
 
-		switch (authority)
-		{
-			case CLAP_CLASS:
-				result = "class";
+		switch (authority) {
+		case CLAP_CLASS:
+			result = "class";
 			break;
-			case CLAP_SYSTEM:
-				result = "system";
+		case CLAP_SYSTEM:
+			result = "system";
 			break;
-			case CLAP_THREAD:
-				result = "thread";
+		case CLAP_THREAD:
+			result = "thread";
 			break;
 		}
 
@@ -136,24 +156,23 @@ public class LocalReference extends Reference
 	}
 
 	/**
-	 * Localize a path by converting all the separator characters to the system-dependant separator character.
-	 * @param path The path to localize.
+	 * Localize a path by converting all the separator characters to the
+	 * system-dependant separator character.
+	 * 
+	 * @param path
+	 *            The path to localize.
 	 * @return The localized path.
 	 */
-	public static String localizePath(String path)
-	{
+	public static String localizePath(String path) {
 		StringBuilder result = new StringBuilder();
 		char nextChar;
-		for (int i = 0; i < path.length(); i++)
-		{
+		for (int i = 0; i < path.length(); i++) {
 			nextChar = path.charAt(i);
-			if ((nextChar == '/') || (nextChar == '\\'))
-			{
-				// Convert the URI separator to the system dependent path separator
+			if ((nextChar == '/') || (nextChar == '\\')) {
+				// Convert the URI separator to the system dependent path
+				// separator
 				result.append(File.separatorChar);
-			}
-			else
-			{
+			} else {
 				result.append(nextChar);
 			}
 		}
@@ -162,25 +181,23 @@ public class LocalReference extends Reference
 	}
 
 	/**
-	 * Normalize a path by converting all the system-dependant separator characters to the standard '/' 
-	 * separator character.
-	 * @param path The path to normalize.
+	 * Normalize a path by converting all the system-dependant separator
+	 * characters to the standard '/' separator character.
+	 * 
+	 * @param path
+	 *            The path to normalize.
 	 * @return The normalize path.
 	 */
-	public static String normalizePath(String path)
-	{
+	public static String normalizePath(String path) {
 		StringBuilder result = new StringBuilder();
 		char nextChar;
-		for (int i = 0; i < path.length(); i++)
-		{
+		for (int i = 0; i < path.length(); i++) {
 			nextChar = path.charAt(i);
-			if ((nextChar == '\\'))
-			{
-				// Convert the Windows style path separator to the standard path separator
+			if ((nextChar == '\\')) {
+				// Convert the Windows style path separator to the standard path
+				// separator
 				result.append('/');
-			}
-			else
-			{
+			} else {
 				result.append(nextChar);
 			}
 		}
@@ -190,46 +207,43 @@ public class LocalReference extends Reference
 
 	/**
 	 * Constructor.
-	 * @param localRef The local reference.
+	 * 
+	 * @param localRef
+	 *            The local reference.
 	 */
-	public LocalReference(Reference localRef)
-	{
+	public LocalReference(Reference localRef) {
 		super(localRef.toString());
 	}
 
 	/**
 	 * Constructor.
-	 * @param localUri The local URI.
+	 * 
+	 * @param localUri
+	 *            The local URI.
 	 */
-	public LocalReference(String localUri)
-	{
+	public LocalReference(String localUri) {
 		super(localUri);
 	}
 
 	/**
 	 * Returns the type of authority.
+	 * 
 	 * @return The type of authority.
 	 */
-	public int getClapAuthorityType()
-	{
+	public int getClapAuthorityType() {
 		int result = 0;
 
-		if (getSchemeProtocol().equals(Protocol.CLAP))
-		{
+		if (getSchemeProtocol().equals(Protocol.CLAP)) {
 			String authority = getAuthority();
 
-			if (authority != null)
-			{
-				if (authority.equalsIgnoreCase(getAuthorityName(CLAP_CLASS)))
-				{
+			if (authority != null) {
+				if (authority.equalsIgnoreCase(getAuthorityName(CLAP_CLASS))) {
 					result = CLAP_CLASS;
-				}
-				else if (authority.equalsIgnoreCase(getAuthorityName(CLAP_SYSTEM)))
-				{
+				} else if (authority
+						.equalsIgnoreCase(getAuthorityName(CLAP_SYSTEM))) {
 					result = CLAP_SYSTEM;
-				}
-				else if (authority.equalsIgnoreCase(getAuthorityName(CLAP_THREAD)))
-				{
+				} else if (authority
+						.equalsIgnoreCase(getAuthorityName(CLAP_THREAD))) {
 					result = CLAP_THREAD;
 				}
 			}
@@ -239,27 +253,24 @@ public class LocalReference extends Reference
 	}
 
 	/**
-	 * Gets the local file corresponding to the reference. Only URIs referring to the "localhost" or to an empty
-	 * authority are supported.
+	 * Gets the local file corresponding to the reference. Only URIs referring
+	 * to the "localhost" or to an empty authority are supported.
+	 * 
 	 * @return The local file corresponding to the reference.
 	 */
-	public File getFile()
-	{
+	public File getFile() {
 		File result = null;
 
-		if (getSchemeProtocol().equals(Protocol.FILE))
-		{
+		if (getSchemeProtocol().equals(Protocol.FILE)) {
 			String hostName = getAuthority();
 
 			if ((hostName == null) || hostName.equals("")
-					|| hostName.equalsIgnoreCase("localhost"))
-			{
+					|| hostName.equalsIgnoreCase("localhost")) {
 				String filePath = getPath();
 				result = new File(filePath);
-			}
-			else
-			{
-				throw new RuntimeException("Can't resolve files on remote host machines");
+			} else {
+				throw new RuntimeException(
+						"Can't resolve files on remote host machines");
 			}
 		}
 
@@ -267,23 +278,20 @@ public class LocalReference extends Reference
 	}
 
 	/**
-	 * Returns the JAR entry path. 
+	 * Returns the JAR entry path.
+	 * 
 	 * @return The JAR entry path.
 	 */
-	public String getJarEntryPath()
-	{
+	public String getJarEntryPath() {
 		String result = null;
 
-		if (getSchemeProtocol().equals(Protocol.JAR))
-		{
+		if (getSchemeProtocol().equals(Protocol.JAR)) {
 			String ssp = getSchemeSpecificPart();
 
-			if (ssp != null)
-			{
+			if (ssp != null) {
 				int separatorIndex = ssp.indexOf("!/");
 
-				if (separatorIndex != -1)
-				{
+				if (separatorIndex != -1) {
 					result = ssp.substring(separatorIndex + 2);
 				}
 			}
@@ -294,22 +302,19 @@ public class LocalReference extends Reference
 
 	/**
 	 * Returns the JAR file reference.
+	 * 
 	 * @return The JAR file reference.
 	 */
-	public Reference getJarFileRef()
-	{
+	public Reference getJarFileRef() {
 		Reference result = null;
 
-		if (getSchemeProtocol().equals(Protocol.JAR))
-		{
+		if (getSchemeProtocol().equals(Protocol.JAR)) {
 			String ssp = getSchemeSpecificPart();
 
-			if (ssp != null)
-			{
+			if (ssp != null) {
 				int separatorIndex = ssp.indexOf("!/");
 
-				if (separatorIndex != -1)
-				{
+				if (separatorIndex != -1) {
 					result = new Reference(ssp.substring(0, separatorIndex));
 				}
 			}

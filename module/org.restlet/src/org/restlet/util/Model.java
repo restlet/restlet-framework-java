@@ -23,54 +23,70 @@
 package org.restlet.util;
 
 /**
- * Simple data model that can be provided to the StringTemplate class. If this model is read-only, some methods will throw an
- * UnsupportedOperationException exception. It is similar to the JDK's Map interface but has a narrower scope
- * which makes it more suitable for dynamic models and easier to be implemented by domain classes.
+ * Simple data model that can be provided to the StringTemplate class. If this
+ * model is read-only, some methods will throw an UnsupportedOperationException
+ * exception. It is similar to the JDK's Map interface but has a narrower scope
+ * which makes it more suitable for dynamic models and easier to be implemented
+ * by domain classes.
+ * 
  * @see org.restlet.util.StringTemplate
  * @author Jerome Louvel (contact@noelios.com)
  */
-public interface Model
-{
+public interface Model {
 	/**
 	 * Removes all the model values.
-	 * @throws UnsupportedOperationException if the map is read-only.
+	 * 
+	 * @throws UnsupportedOperationException
+	 *             if the map is read-only.
 	 */
 	public void clear();
 
 	/**
 	 * Indicates if the model contains a value for a given key.
-	 * @param key The key to look-up.
+	 * 
+	 * @param key
+	 *            The key to look-up.
 	 * @return True if the model contains a value for the given key.
 	 */
 	public boolean containsKey(String key);
 
 	/**
 	 * Returns the model value for a given key.
-	 * @param key The key to look-up.
+	 * 
+	 * @param key
+	 *            The key to look-up.
 	 * @return The model value for the given key.
 	 */
 	public Object get(String key);
 
 	/**
 	 * Indicates if this model cannot be modified.
+	 * 
 	 * @return True if this model cannot be modified.
 	 */
 	public boolean isReadOnly();
 
 	/**
 	 * Puts the model value for a given name.
-	 * @param key The key to look-up.
-	 * @param value The value to put.
+	 * 
+	 * @param key
+	 *            The key to look-up.
+	 * @param value
+	 *            The value to put.
 	 * @return The old value or null.
-	 * @throws UnsupportedOperationException if the map is read-only.
+	 * @throws UnsupportedOperationException
+	 *             if the map is read-only.
 	 */
 	public Object put(String key, Object value);
 
 	/**
 	 * Removes a model value for a given key.
-	 * @param key The key to look-up.
+	 * 
+	 * @param key
+	 *            The key to look-up.
 	 * @return The old value removed.
-	 * @throws UnsupportedOperationException if the map is read-only.
+	 * @throws UnsupportedOperationException
+	 *             if the map is read-only.
 	 */
 	public Object remove(String key);
 }

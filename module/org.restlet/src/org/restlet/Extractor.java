@@ -34,18 +34,18 @@ import org.restlet.data.Status;
 import org.restlet.util.CallModel;
 
 /**
- * Filter extracting some attributes from a call. Multiple extractions can be defined, based on the query 
- * string of the resource reference, on the request form (posted from a browser), on the base URI matches 
- * or on the request or response data model.
+ * Filter extracting some attributes from a call. Multiple extractions can be
+ * defined, based on the query string of the resource reference, on the request
+ * form (posted from a browser), on the base URI matches or on the request or
+ * response data model.
+ * 
  * @author Jerome Louvel (contact@noelios.com)
  */
-public class Extractor extends Filter
-{
+public class Extractor extends Filter {
 	/**
 	 * Internal class holding extraction information.
 	 */
-	private static final class ExtractInfo
-	{
+	private static final class ExtractInfo {
 		/**
 		 * Holds the attribute name.
 		 */
@@ -68,11 +68,11 @@ public class Extractor extends Filter
 
 		/**
 		 * Constructor.
+		 * 
 		 * @param attribute
 		 * @param index
 		 */
-		public ExtractInfo(String attribute, int index)
-		{
+		public ExtractInfo(String attribute, int index) {
 			this.attribute = attribute;
 			this.value = null;
 			this.multiple = false;
@@ -81,11 +81,11 @@ public class Extractor extends Filter
 
 		/**
 		 * Constructor.
+		 * 
 		 * @param attribute
 		 * @param value
 		 */
-		public ExtractInfo(String attribute, String value)
-		{
+		public ExtractInfo(String attribute, String value) {
 			this.attribute = attribute;
 			this.value = value;
 			this.multiple = false;
@@ -94,12 +94,12 @@ public class Extractor extends Filter
 
 		/**
 		 * Constructor.
+		 * 
 		 * @param attribute
 		 * @param value
 		 * @param multiple
 		 */
-		public ExtractInfo(String attribute, String value, boolean multiple)
-		{
+		public ExtractInfo(String attribute, String value, boolean multiple) {
 			this.attribute = attribute;
 			this.value = value;
 			this.multiple = multiple;
@@ -129,10 +129,11 @@ public class Extractor extends Filter
 
 	/**
 	 * Constructor.
-	 * @param context The context.
+	 * 
+	 * @param context
+	 *            The context.
 	 */
-	public Extractor(Context context)
-	{
+	public Extractor(Context context) {
 		super(context);
 		this.queryExtracts = null;
 		this.entityExtracts = null;
@@ -141,96 +142,84 @@ public class Extractor extends Filter
 	}
 
 	/**
-	 * Allows filtering before its handling by the target Restlet. Does nothing by default.
-	 * @param request The request to filter.
-	 * @param response The response to filter.
+	 * Allows filtering before its handling by the target Restlet. Does nothing
+	 * by default.
+	 * 
+	 * @param request
+	 *            The request to filter.
+	 * @param response
+	 *            The response to filter.
 	 */
-	public void beforeHandle(Request request, Response response)
-	{
-		try
-		{
+	public void beforeHandle(Request request, Response response) {
+		try {
 			extractAttributes(request, response);
-		}
-		catch (Exception e)
-		{
+		} catch (Exception e) {
 			getLogger().log(Level.SEVERE, "Unhandled error intercepted", e);
 			response.setStatus(Status.SERVER_ERROR_INTERNAL);
 		}
 	}
 
 	/**
-	 * Extracts the attributes value from the request. 
-	 * @param request The request to process.
-	 * @param response The response to process.
+	 * Extracts the attributes value from the request.
+	 * 
+	 * @param request
+	 *            The request to process.
+	 * @param response
+	 *            The response to process.
 	 * @throws IOException
 	 */
 	protected void extractAttributes(Request request, Response response)
-			throws IOException
-	{
+			throws IOException {
 		// Extract the query parameters
-		if (this.queryExtracts != null)
-		{
+		if (this.queryExtracts != null) {
 			Form form = request.getResourceRef().getQueryAsForm();
 
-			if (form != null)
-			{
-				for (ExtractInfo qe : getQueryExtracts())
-				{
-					if (qe.multiple)
-					{
-						request.getAttributes().put(qe.attribute, form.subList(qe.value));
-					}
-					else
-					{
-						request.getAttributes().put(qe.attribute, form.getFirst(qe.value));
+			if (form != null) {
+				for (ExtractInfo qe : getQueryExtracts()) {
+					if (qe.multiple) {
+						request.getAttributes().put(qe.attribute,
+								form.subList(qe.value));
+					} else {
+						request.getAttributes().put(qe.attribute,
+								form.getFirst(qe.value));
 					}
 				}
 			}
 		}
 
 		// Extract the request entity parameters
-		if (this.entityExtracts != null)
-		{
+		if (this.entityExtracts != null) {
 			Form form = request.getEntityAsForm();
 
-			if (form != null)
-			{
-				for (ExtractInfo ie : getEntityExtracts())
-				{
-					if (ie.multiple)
-					{
-						request.getAttributes().put(ie.attribute, form.subList(ie.value));
-					}
-					else
-					{
-						request.getAttributes().put(ie.attribute, form.getFirst(ie.value));
+			if (form != null) {
+				for (ExtractInfo ie : getEntityExtracts()) {
+					if (ie.multiple) {
+						request.getAttributes().put(ie.attribute,
+								form.subList(ie.value));
+					} else {
+						request.getAttributes().put(ie.attribute,
+								form.getFirst(ie.value));
 					}
 				}
 			}
 		}
 
 		// Extract the model patterns
-		if (this.modelExtracts != null)
-		{
+		if (this.modelExtracts != null) {
 			CallModel model = new CallModel(request, response, null);
-			for (ExtractInfo me : getModelExtracts())
-			{
+			for (ExtractInfo me : getModelExtracts()) {
 				request.getAttributes().put(me.attribute, model.get(me.value));
 			}
 		}
 
 		// Extract the segments
-		if (this.segmentExtracts != null)
-		{
+		if (this.segmentExtracts != null) {
 			List<String> segments = request.getBaseRef().getSegments();
-			for (ExtractInfo me : getSegmentExtracts())
-			{
-				if (me.index >= 0)
-				{
-					request.getAttributes().put(me.attribute, segments.get(me.index));
-				}
-				else if (me.index < 0)
-				{
+			for (ExtractInfo me : getSegmentExtracts()) {
+				if (me.index >= 0) {
+					request.getAttributes().put(me.attribute,
+							segments.get(me.index));
+				} else if (me.index < 0) {
 					request.getAttributes().put(me.attribute,
 							segments.get(segments.size() + me.index));
 				}
@@ -239,89 +228,109 @@ public class Extractor extends Filter
 	}
 
 	/**
-	 * Extracts an attribute from the request entity form. Only the first occurrence
-	 * of a query string parameter is set.
-	 * @param attributeName The name of the call attribute to set.
-	 * @param parameterName The name of the entity form parameter to extract.
+	 * Extracts an attribute from the request entity form. Only the first
+	 * occurrence of a query string parameter is set.
+	 * 
+	 * @param attributeName
+	 *            The name of the call attribute to set.
+	 * @param parameterName
+	 *            The name of the entity form parameter to extract.
 	 * @return The current Filter.
 	 */
-	public Extractor fromEntity(String attributeName, String parameterName)
-	{
+	public Extractor fromEntity(String attributeName, String parameterName) {
 		return fromEntity(attributeName, parameterName, false);
 	}
 
 	/**
 	 * Extracts an attribute from the request entity form.
-	 * @param attributeName The name of the call attribute to set.
-	 * @param parameterName The name of the entity form parameter to extract.
-	 * @param multiple Indicates if the parameters should be set as a List in the attribute value. Useful for repeating parameters.
+	 * 
+	 * @param attributeName
+	 *            The name of the call attribute to set.
+	 * @param parameterName
+	 *            The name of the entity form parameter to extract.
+	 * @param multiple
+	 *            Indicates if the parameters should be set as a List in the
+	 *            attribute value. Useful for repeating parameters.
 	 * @return The current Filter.
 	 */
 	public Extractor fromEntity(String attributeName, String parameterName,
-			boolean multiple)
-	{
-		getEntityExtracts().add(new ExtractInfo(attributeName, parameterName, multiple));
+			boolean multiple) {
+		getEntityExtracts().add(
+				new ExtractInfo(attributeName, parameterName, multiple));
 		return this;
 	}
 
 	/**
 	 * Extracts an attribute from the call's model.
-	 * @param attributeName The name of the call attribute to set.
-	 * @param pattern The model pattern to resolve.
+	 * 
+	 * @param attributeName
+	 *            The name of the call attribute to set.
+	 * @param pattern
+	 *            The model pattern to resolve.
 	 * @return The current Filter.
 	 * @see org.restlet.util.CallModel
 	 */
-	public Extractor fromModel(String attributeName, String pattern)
-	{
+	public Extractor fromModel(String attributeName, String pattern) {
 		getModelExtracts().add(new ExtractInfo(attributeName, pattern));
 		return this;
 	}
 
 	/**
-	 * Extracts an attribute from the query string of the resource reference. Only the first occurrence
-	 * of a query string parameter is set.
-	 * @param attributeName The name of the call attribute to set.
-	 * @param parameterName The name of the query string parameter to extract.
+	 * Extracts an attribute from the query string of the resource reference.
+	 * Only the first occurrence of a query string parameter is set.
+	 * 
+	 * @param attributeName
+	 *            The name of the call attribute to set.
+	 * @param parameterName
+	 *            The name of the query string parameter to extract.
 	 * @return The current Filter.
 	 */
-	public Extractor fromQuery(String attributeName, String parameterName)
-	{
+	public Extractor fromQuery(String attributeName, String parameterName) {
 		return fromQuery(attributeName, parameterName, false);
 	}
 
 	/**
 	 * Extracts an attribute from the query string of the resource reference.
-	 * @param attributeName The name of the call attribute to set.
-	 * @param parameterName The name of the query string parameter to extract.
-	 * @param multiple Indicates if the parameters should be set as a List in the attribute value. Useful for repeating parameters.
+	 * 
+	 * @param attributeName
+	 *            The name of the call attribute to set.
+	 * @param parameterName
+	 *            The name of the query string parameter to extract.
+	 * @param multiple
+	 *            Indicates if the parameters should be set as a List in the
+	 *            attribute value. Useful for repeating parameters.
 	 * @return The current Filter.
 	 */
-	public Extractor fromQuery(String attributeName, String parameterName, boolean multiple)
-	{
-		getQueryExtracts().add(new ExtractInfo(attributeName, parameterName, multiple));
+	public Extractor fromQuery(String attributeName, String parameterName,
+			boolean multiple) {
+		getQueryExtracts().add(
+				new ExtractInfo(attributeName, parameterName, multiple));
 		return this;
 	}
 
 	/**
-	 * Extracts a segment from the request's base reference. If the offset is equal to zero 
-	 * or positive, it corresponds to the index of a start segment. If the offset is
-	 * negative, it corresponds to an end segment (index == size + offset).
-	 * @param attributeName The name of the call attribute to set.
-	 * @param offset The position of the segment.
+	 * Extracts a segment from the request's base reference. If the offset is
+	 * equal to zero or positive, it corresponds to the index of a start
+	 * segment. If the offset is negative, it corresponds to an end segment
+	 * (index == size + offset).
+	 * 
+	 * @param attributeName
+	 *            The name of the call attribute to set.
+	 * @param offset
+	 *            The position of the segment.
 	 * @return The current Filter.
 	 */
-	public Extractor fromSegment(String attributeName, int offset)
-	{
+	public Extractor fromSegment(String attributeName, int offset) {
 		getSegmentExtracts().add(new ExtractInfo(attributeName, offset));
 		return this;
 	}
 
 	/**
 	 * Returns the list of query extracts.
+	 * 
 	 * @return The list of query extracts.
 	 */
-	private List<ExtractInfo> getEntityExtracts()
-	{
+	private List<ExtractInfo> getEntityExtracts() {
 		if (this.entityExtracts == null)
 			this.entityExtracts = new ArrayList<ExtractInfo>();
 		return this.entityExtracts;
@@ -329,30 +338,32 @@ public class Extractor extends Filter
 
 	/**
 	 * Returns the list of query extracts.
+	 * 
 	 * @return The list of query extracts.
 	 */
-	private List<ExtractInfo> getModelExtracts()
-	{
-		if (this.modelExtracts == null) this.modelExtracts = new ArrayList<ExtractInfo>();
+	private List<ExtractInfo> getModelExtracts() {
+		if (this.modelExtracts == null)
+			this.modelExtracts = new ArrayList<ExtractInfo>();
 		return this.modelExtracts;
 	}
 
 	/**
 	 * Returns the list of query extracts.
+	 * 
 	 * @return The list of query extracts.
 	 */
-	private List<ExtractInfo> getQueryExtracts()
-	{
-		if (this.queryExtracts == null) this.queryExtracts = new ArrayList<ExtractInfo>();
+	private List<ExtractInfo> getQueryExtracts() {
+		if (this.queryExtracts == null)
+			this.queryExtracts = new ArrayList<ExtractInfo>();
 		return this.queryExtracts;
 	}
 
 	/**
 	 * Returns the list of segment extracts.
+	 * 
 	 * @return The list of segment extracts.
 	 */
-	private List<ExtractInfo> getSegmentExtracts()
-	{
+	private List<ExtractInfo> getSegmentExtracts() {
 		if (this.segmentExtracts == null)
 			this.segmentExtracts = new ArrayList<ExtractInfo>();
 		return this.segmentExtracts;

@@ -34,42 +34,51 @@ import org.mortbay.http.HttpResponse;
 
 /**
  * Jetty HTTPS connection.
+ * 
  * @author Jerome Louvel (contact@noelios.com)
  */
-public class HttpsConnection extends org.mortbay.http.HttpConnection
-{
+public class HttpsConnection extends org.mortbay.http.HttpConnection {
 	/** Serial version identifier. */
 	private static final long serialVersionUID = 1L;
 
 	/**
 	 * Constructor.
-	 * @param listener The parent HTTP listener.
-	 * @param remoteAddress The address of the remote end or null.
-	 * @param in Input stream to read the request from.
-	 * @param out Output stream to write the response to.
-	 * @param connection The underlying connection object.
+	 * 
+	 * @param listener
+	 *            The parent HTTP listener.
+	 * @param remoteAddress
+	 *            The address of the remote end or null.
+	 * @param in
+	 *            Input stream to read the request from.
+	 * @param out
+	 *            Output stream to write the response to.
+	 * @param connection
+	 *            The underlying connection object.
 	 */
 	public HttpsConnection(org.mortbay.http.HttpListener listener,
-			InetAddress remoteAddress, InputStream in, OutputStream out, Object connection)
-	{
+			InetAddress remoteAddress, InputStream in, OutputStream out,
+			Object connection) {
 		super(listener, remoteAddress, in, out, connection);
 	}
 
 	/**
 	 * Handle Jetty HTTP calls.
-	 * @param request The HttpRequest request.
-	 * @param response The HttpResponse response.
+	 * 
+	 * @param request
+	 *            The HttpRequest request.
+	 * @param response
+	 *            The HttpResponse response.
 	 * @return The HttpContext that completed handling of the request or null.
 	 * @exception HttpException
 	 * @exception IOException
 	 */
 	protected HttpContext service(HttpRequest request, HttpResponse response)
-			throws HttpException, IOException
-	{
+			throws HttpException, IOException {
 		getJettyServer().handle(
 				new JettyCall(getJettyServer().getServer(), request, response));
 
-		// Commit the response and ensures that all data is flushed out to the caller
+		// Commit the response and ensures that all data is flushed out to the
+		// caller
 		response.commit();
 
 		// Indicates that the request fully handled
@@ -80,10 +89,10 @@ public class HttpsConnection extends org.mortbay.http.HttpConnection
 
 	/**
 	 * Returns the Jetty connector.
+	 * 
 	 * @return The Jetty connector.
 	 */
-	private JettyServerHelper getJettyServer()
-	{
+	private JettyServerHelper getJettyServer() {
 		return ((HttpsListener) getListener()).getHelper();
 	}
 

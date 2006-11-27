@@ -37,42 +37,39 @@ import org.restlet.data.Response;
 
 /**
  * Routers and hierarchical URIs
+ * 
  * @author Jerome Louvel (contact@noelios.com)
  */
-public class Part11 implements Constants
-{
-	public static void main(String[] args) throws Exception
-	{
+public class Part11 implements Constants {
+	public static void main(String[] args) throws Exception {
 		// Create a container
 		Container container = new Container();
 		container.getServers().add(Protocol.HTTP, 8182);
 		container.getClients().add(Protocol.FILE);
 
 		// Create an application
-		Application application = new Application(container)
-		{
+		Application application = new Application(container) {
 			@Override
-			public Restlet createRoot()
-			{
+			public Restlet createRoot() {
 				// Create a root Router
 				Router router = new Router(getContext());
 
-				// Attach a Guard to secure access to the chained directory handler
-				Guard guard = new Guard(getContext(), ChallengeScheme.HTTP_BASIC,
-						"Restlet tutorial");
+				// Attach a Guard to secure access to the chained directory
+				// handler
+				Guard guard = new Guard(getContext(),
+						ChallengeScheme.HTTP_BASIC, "Restlet tutorial");
 				guard.getAuthorizations().put("scott", "tiger");
 				router.attach("/docs/", guard);
 
-				// Create a Directory able to return a deep hierarchy of Web files
+				// Create a Directory able to return a deep hierarchy of Web
+				// files
 				Directory directory = new Directory(getContext(), ROOT_URI);
 				guard.setNext(directory);
 
 				// Create the Account Handler
-				Handler account = new Handler()
-				{
+				Handler account = new Handler() {
 					@Override
-					public void handleGet(Request request, Response response)
-					{
+					public void handleGet(Request request, Response response) {
 						// Print the requested URI path
 						String message = "Account of user \""
 								+ request.getAttributes().get("user") + "\"";
@@ -81,11 +78,9 @@ public class Part11 implements Constants
 				};
 
 				// Create the Orders Handler
-				Handler orders = new Handler(getContext())
-				{
+				Handler orders = new Handler(getContext()) {
 					@Override
-					public void handleGet(Request request, Response response)
-					{
+					public void handleGet(Request request, Response response) {
 						// Print the user name of the requested orders
 						String message = "Orders of user \""
 								+ request.getAttributes().get("user") + "\"";
@@ -94,14 +89,14 @@ public class Part11 implements Constants
 				};
 
 				// Create the Order Handler
-				Handler order = new Handler(getContext())
-				{
+				Handler order = new Handler(getContext()) {
 					@Override
-					public void handleGet(Request request, Response response)
-					{
+					public void handleGet(Request request, Response response) {
 						// Print the user name of the requested orders
-						String message = "Order \"" + request.getAttributes().get("order")
-								+ "\" for user \"" + request.getAttributes().get("user") + "\"";
+						String message = "Order \""
+								+ request.getAttributes().get("order")
+								+ "\" for user \""
+								+ request.getAttributes().get("user") + "\"";
 						response.setEntity(message, MediaType.TEXT_PLAIN);
 					}
 				};

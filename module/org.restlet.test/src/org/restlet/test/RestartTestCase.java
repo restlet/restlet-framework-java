@@ -7,13 +7,12 @@ import org.restlet.data.Protocol;
 
 /**
  * Test the ability of a connector to be restarted.
+ * 
  * @author Jerome Louvel (contact@noelios.com)
  */
-public class RestartTestCase extends TestCase
-{
+public class RestartTestCase extends TestCase {
 
-	public void testRestart() throws Exception
-	{
+	public void testRestart() throws Exception {
 		int waitTime = 100;
 
 		Server connector = new Server(Protocol.HTTP, 8182, null);

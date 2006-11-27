@@ -26,18 +26,20 @@ import java.util.logging.Formatter;
 import java.util.logging.LogRecord;
 
 /**
- * Log record formatter which simply outputs the message on a new line. Useful for Web-style logs.
+ * Log record formatter which simply outputs the message on a new line. Useful
+ * for Web-style logs.
+ * 
  * @author Jerome Louvel (contact@noelios.com)
  */
-public class AccessLogFormatter extends Formatter
-{
+public class AccessLogFormatter extends Formatter {
 	/**
 	 * Format the given log record and return the formatted string.
-	 * @param logRecord The log record to be formatted.
+	 * 
+	 * @param logRecord
+	 *            The log record to be formatted.
 	 * @return The formatted log record.
 	 */
-	public String format(LogRecord logRecord)
-	{
+	public String format(LogRecord logRecord) {
 		return logRecord.getMessage() + '\n';
 	}
 

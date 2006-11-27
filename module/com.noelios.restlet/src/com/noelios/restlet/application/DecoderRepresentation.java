@@ -39,105 +39,98 @@ import org.restlet.util.ByteUtils;
 import org.restlet.util.WrapperRepresentation;
 
 /**
- * Representation that decodes a wrapped representation if its encoding is supported. 
+ * Representation that decodes a wrapped representation if its encoding is
+ * supported.
+ * 
  * @author Jerome Louvel (contact@noelios.com)
  */
-public class DecoderRepresentation extends WrapperRepresentation
-{
+public class DecoderRepresentation extends WrapperRepresentation {
 	/** Indicates if the decoding can happen. */
 	private boolean canDecode;
 
 	/**
 	 * Constructor.
-	 * @param wrappedRepresentation The wrapped representation.
+	 * 
+	 * @param wrappedRepresentation
+	 *            The wrapped representation.
 	 */
-	public DecoderRepresentation(Representation wrappedRepresentation)
-	{
+	public DecoderRepresentation(Representation wrappedRepresentation) {
 		super(wrappedRepresentation);
 		this.canDecode = getSupportedEncodings().contains(
 				wrappedRepresentation.getEncoding());
-      getVariants().add(this);
+		getVariants().add(this);
 	}
 
 	/**
 	 * Indicates if the decoding can happen.
+	 * 
 	 * @return True if the decoding can happen.
 	 */
-	public boolean canDecode()
-	{
+	public boolean canDecode() {
 		return this.canDecode;
 	}
 
 	/**
 	 * Returns the encoding or null if identity encoding applies.
+	 * 
 	 * @return The encoding or null if identity encoding applies.
 	 */
-	public Encoding getEncoding()
-	{
-		if (canDecode())
-		{
+	public Encoding getEncoding() {
+		if (canDecode()) {
 			return null;
-		}
-		else
-		{
+		} else {
 			return getWrappedRepresentation().getEncoding();
 		}
 	}
 
 	/**
 	 * Sets the encoding or null if identity encoding applies.
-	 * @param encoding The encoding or null if identity encoding applies.
+	 * 
+	 * @param encoding
+	 *            The encoding or null if identity encoding applies.
 	 */
-	public void setEncoding(Encoding encoding)
-	{
+	public void setEncoding(Encoding encoding) {
 		throw new IllegalArgumentException(
 				"The encoding can't be changed for a decoder representation");
 	}
 
 	/**
-	 * Returns a readable byte channel. If it is supported by a file a read-only instance of 
-	 * FileChannel is returned.
+	 * Returns a readable byte channel. If it is supported by a file a read-only
+	 * instance of FileChannel is returned.
+	 * 
 	 * @return A readable byte channel.
 	 */
-	public ReadableByteChannel getChannel() throws IOException
-	{
-		if (canDecode())
-		{
+	public ReadableByteChannel getChannel() throws IOException {
+		if (canDecode()) {
 			return ByteUtils.getChannel(getStream());
-		}
-		else
-		{
+		} else {
 			return getWrappedRepresentation().getChannel();
 		}
 	}
 
 	/**
 	 * Returns a stream with the representation's content.
+	 * 
 	 * @return A stream with the representation's content.
 	 */
-	public InputStream getStream() throws IOException
-	{
+	public InputStream getStream() throws IOException {
 		InputStream result = null;
 
-		if (canDecode())
-		{
+		if (canDecode()) {
 			Encoding we = getWrappedRepresentation().getEncoding();
 
-			if (we.equals(Encoding.GZIP))
-			{
-				result = new GZIPInputStream(getWrappedRepresentation().getStream());
-			}
-			else if (we.equals(Encoding.DEFLATE))
-			{
-				result = new InflaterInputStream(getWrappedRepresentation().getStream());
-			}
-			else if (we.equals(Encoding.ZIP))
-			{
-				result = new ZipInputStream(getWrappedRepresentation().getStream());
-			}
-			else if (we.equals(Encoding.IDENTITY))
-			{
-				throw new IOException("Decoder unecessary for identity decoding");
+			if (we.equals(Encoding.GZIP)) {
+				result = new GZIPInputStream(getWrappedRepresentation()
+						.getStream());
+			} else if (we.equals(Encoding.DEFLATE)) {
+				result = new InflaterInputStream(getWrappedRepresentation()
+						.getStream());
+			} else if (we.equals(Encoding.ZIP)) {
+				result = new ZipInputStream(getWrappedRepresentation()
+						.getStream());
+			} else if (we.equals(Encoding.IDENTITY)) {
+				throw new IOException(
+						"Decoder unecessary for identity decoding");
 			}
 		}
 
@@ -146,51 +139,45 @@ public class DecoderRepresentation extends WrapperRepresentation
 
 	/**
 	 * Writes the representation to a byte channel.
-	 * @param writableChannel A writable byte channel.
+	 * 
+	 * @param writableChannel
+	 *            A writable byte channel.
 	 */
-	public void write(WritableByteChannel writableChannel) throws IOException
-	{
-		if (canDecode())
-		{
+	public void write(WritableByteChannel writableChannel) throws IOException {
+		if (canDecode()) {
 			write(ByteUtils.getStream(writableChannel));
-		}
-		else
-		{
+		} else {
 			getWrappedRepresentation().write(writableChannel);
 		}
 	}
 
 	/**
 	 * Writes the representation to a byte stream.
-	 * @param outputStream The output stream.
+	 * 
+	 * @param outputStream
+	 *            The output stream.
 	 */
-	public void write(OutputStream outputStream) throws IOException
-	{
-		if (canDecode())
-		{
+	public void write(OutputStream outputStream) throws IOException {
+		if (canDecode()) {
 			ByteUtils.write(getStream(), outputStream);
-		}
-		else
-		{
+		} else {
 			getWrappedRepresentation().write(outputStream);
 		}
 	}
 
 	/**
-	 * Converts the representation to a string value. Be careful when using this method as the conversion of 
-	 * large content to a string fully stored in memory can result in OutOfMemoryErrors being thrown.
+	 * Converts the representation to a string value. Be careful when using this
+	 * method as the conversion of large content to a string fully stored in
+	 * memory can result in OutOfMemoryErrors being thrown.
+	 * 
 	 * @return The representation as a string value.
 	 */
-	public String getValue() throws IOException
-	{
+	public String getValue() throws IOException {
 		String result = null;
 
-		if (canDecode())
-		{
+		if (canDecode()) {
 			result = ByteUtils.toString(getStream());
-		}
-		else
-		{
+		} else {
 			result = getWrappedRepresentation().getValue();
 		}
 
@@ -198,22 +185,19 @@ public class DecoderRepresentation extends WrapperRepresentation
 	}
 
 	/**
-	 * Returns the size in bytes of the decoded representation if known, UNKNOWN_SIZE (-1) otherwise.
+	 * Returns the size in bytes of the decoded representation if known,
+	 * UNKNOWN_SIZE (-1) otherwise.
+	 * 
 	 * @return The size in bytes if known, UNKNOWN_SIZE (-1) otherwise.
 	 */
-	public long getSize()
-	{
+	public long getSize() {
 		long result = -1;
 
-		if (canDecode())
-		{
-			if (getEncoding().equals(Encoding.IDENTITY))
-			{
+		if (canDecode()) {
+			if (getEncoding().equals(Encoding.IDENTITY)) {
 				result = getWrappedRepresentation().getSize();
 			}
-		}
-		else
-		{
+		} else {
 			result = getWrappedRepresentation().getSize();
 		}
 
@@ -222,11 +206,11 @@ public class DecoderRepresentation extends WrapperRepresentation
 
 	/**
 	 * Returns the list of supported encodings.
+	 * 
 	 * @return The list of supported encodings.
 	 */
-	public static List<Encoding> getSupportedEncodings()
-	{
-		return Arrays.<Encoding> asList(Encoding.GZIP, Encoding.DEFLATE, Encoding.ZIP,
-				Encoding.IDENTITY);
+	public static List<Encoding> getSupportedEncodings() {
+		return Arrays.<Encoding> asList(Encoding.GZIP, Encoding.DEFLATE,
+				Encoding.ZIP, Encoding.IDENTITY);
 	}
 }

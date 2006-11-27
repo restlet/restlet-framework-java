@@ -27,14 +27,15 @@ import java.util.logging.Logger;
 import org.restlet.data.ParameterList;
 
 /**
- * Contextual data and services provided to a Restlet. The context is the means by which a Restlet may access 
- * the software environment within the framework. It is typically provided by the immediate parent Restlet 
- * (Container and Application are the most common cases). The services provided are access to a logger, access 
- * to configuration parameters and to a request dispatcher.
+ * Contextual data and services provided to a Restlet. The context is the means
+ * by which a Restlet may access the software environment within the framework.
+ * It is typically provided by the immediate parent Restlet (Container and
+ * Application are the most common cases). The services provided are access to a
+ * logger, access to configuration parameters and to a request dispatcher.
+ * 
  * @author Jerome Louvel (contact@noelios.com)
  */
-public class Context
-{
+public class Context {
 	/** The modifiable list of parameters. */
 	private ParameterList parameters;
 
@@ -44,54 +45,56 @@ public class Context
 	/**
 	 * Constructor. Writes log messages to "org.restlet".
 	 */
-	public Context()
-	{
+	public Context() {
 		this("org.restlet");
 	}
 
 	/**
 	 * Constructor.
-	 * @param logger The logger instance of use.
+	 * 
+	 * @param logger
+	 *            The logger instance of use.
 	 */
-	public Context(Logger logger)
-	{
+	public Context(Logger logger) {
 		this.logger = logger;
 	}
 
 	/**
 	 * Constructor.
-	 * @param loggerName The name of the logger to use.
+	 * 
+	 * @param loggerName
+	 *            The name of the logger to use.
 	 */
-	public Context(String loggerName)
-	{
+	public Context(String loggerName) {
 		this(Logger.getLogger(loggerName));
 	}
 
 	/**
 	 * Returns a call dispatcher.
+	 * 
 	 * @return A call dispatcher.
 	 */
-	public Dispatcher getDispatcher()
-	{
+	public Dispatcher getDispatcher() {
 		return null;
 	}
 
 	/**
 	 * Returns the logger.
+	 * 
 	 * @return The logger.
 	 */
-	public Logger getLogger()
-	{
+	public Logger getLogger() {
 		return this.logger;
 	}
 
 	/**
 	 * Returns the modifiable list of parameters.
+	 * 
 	 * @return The modifiable list of parameters.
 	 */
-	public ParameterList getParameters()
-	{
-		if (this.parameters == null) this.parameters = new ParameterList();
+	public ParameterList getParameters() {
+		if (this.parameters == null)
+			this.parameters = new ParameterList();
 		return this.parameters;
 	}
 }

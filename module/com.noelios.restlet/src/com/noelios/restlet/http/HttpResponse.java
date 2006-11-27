@@ -31,10 +31,10 @@ import com.noelios.restlet.Factory;
 
 /**
  * Response wrapper for server HTTP calls.
+ * 
  * @author Jerome Louvel (contact@noelios.com)
  */
-public class HttpResponse extends Response
-{
+public class HttpResponse extends Response {
 	/** The low-level HTTP call. */
 	private HttpCall httpCall;
 
@@ -43,11 +43,13 @@ public class HttpResponse extends Response
 
 	/**
 	 * Constructor.
-	 * @param httpCall The low-level HTTP server call.
-	 * @param request The associated high-level request.
+	 * 
+	 * @param httpCall
+	 *            The low-level HTTP server call.
+	 * @param request
+	 *            The associated high-level request.
 	 */
-	public HttpResponse(HttpServerCall httpCall, Request request)
-	{
+	public HttpResponse(HttpServerCall httpCall, Request request) {
 		super(request);
 		this.serverAdded = false;
 		this.httpCall = httpCall;
@@ -58,23 +60,22 @@ public class HttpResponse extends Response
 
 	/**
 	 * Returns the low-level HTTP call.
+	 * 
 	 * @return The low-level HTTP call.
 	 */
-	public HttpCall getHttpCall()
-	{
+	public HttpCall getHttpCall() {
 		return this.httpCall;
 	}
 
 	/**
 	 * Returns the server-specific information.
+	 * 
 	 * @return The server-specific information.
 	 */
-	public ServerInfo getServerInfo()
-	{
+	public ServerInfo getServerInfo() {
 		ServerInfo result = super.getServerInfo();
 
-		if (!this.serverAdded)
-		{
+		if (!this.serverAdded) {
 			result.setAddress(httpCall.getServerAddress());
 			result.setAgent(Factory.VERSION_HEADER);
 			result.setPort(httpCall.getServerPort());

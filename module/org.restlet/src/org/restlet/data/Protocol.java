@@ -23,17 +23,19 @@
 package org.restlet.data;
 
 /**
- * Protocol used by client and server connectors. Connectors enable the communication between components
- * by implementing standard protocols.
+ * Protocol used by client and server connectors. Connectors enable the
+ * communication between components by implementing standard protocols.
+ * 
  * @author Jerome Louvel (contact@noelios.com)
  */
-public class Protocol extends Metadata
-{
+public class Protocol extends Metadata {
 	/** All protocols wildcard. */
 	public static final Protocol ALL = new Protocol("all", "ALL",
 			"Wildcard for all protocols", -1);
 
-	/** AJP 1.3 protocol to communicate with Apache HTTP server or Microsoft IIS. */
+	/**
+	 * AJP 1.3 protocol to communicate with Apache HTTP server or Microsoft IIS.
+	 */
 	public static final Protocol AJP = new Protocol("ajp", "AJP",
 			"Apache Jakarta Protocol", 8009);
 
@@ -62,7 +64,8 @@ public class Protocol extends Metadata
 			"HyperText Transport Protocol (Secure)", 443);
 
 	/** JAR protocol. */
-	public static final Protocol JAR = new Protocol("jar", "JAR", "Java ARchive", -1);
+	public static final Protocol JAR = new Protocol("jar", "JAR",
+			"Java ARchive", -1);
 
 	/** JDBC protocol. */
 	public static final Protocol JDBC = new Protocol("jdbc", "JDBC",
@@ -73,7 +76,8 @@ public class Protocol extends Metadata
 			"Simple Mail Transfer Protocol", 25);
 
 	/** SMTP with STARTTLS protocol (started with a plain socket). */
-	public static final Protocol SMTP_STARTTLS = new Protocol("smtp", "SMTP_STARTTLS",
+	public static final Protocol SMTP_STARTTLS = new Protocol("smtp",
+			"SMTP_STARTTLS",
 			"Simple Mail Transfer Protocol (starting a TLS encryption)", 25);
 
 	/** SMTPS protocol (via SSL/TLS socket). */
@@ -81,17 +85,17 @@ public class Protocol extends Metadata
 			"Simple Mail Transfer Protocol (Secure)", 465);
 
 	/**
-	 * Creates the protocol associated to a URI scheme name. If an existing constant exists then it is returned,
-	 * otherwise a new instance is created.
-	 * @param schemeName The scheme name.
+	 * Creates the protocol associated to a URI scheme name. If an existing
+	 * constant exists then it is returned, otherwise a new instance is created.
+	 * 
+	 * @param schemeName
+	 *            The scheme name.
 	 * @return The associated protocol.
 	 */
-	public static Protocol valueOf(String schemeName)
-	{
+	public static Protocol valueOf(String schemeName) {
 		Protocol result = null;
 
-		if (schemeName != null)
-		{
+		if (schemeName != null) {
 			if (schemeName.equalsIgnoreCase(AJP.getSchemeName()))
 				result = AJP;
 			else if (schemeName.equalsIgnoreCase(WAR.getSchemeName()))
@@ -123,23 +127,29 @@ public class Protocol extends Metadata
 
 	/**
 	 * Constructor.
-	 * @param schemeName The scheme name.
+	 * 
+	 * @param schemeName
+	 *            The scheme name.
 	 */
-	public Protocol(String schemeName)
-	{
-		this(schemeName, schemeName.toUpperCase(), schemeName.toUpperCase() + " Protocol",
-				-1);
+	public Protocol(String schemeName) {
+		this(schemeName, schemeName.toUpperCase(), schemeName.toUpperCase()
+				+ " Protocol", -1);
 	}
 
 	/**
 	 * Constructor.
-	 * @param schemeName The scheme name.
-	 * @param name The unique name.
-	 * @param description The description.
-	 * @param defaultPort The default port.
+	 * 
+	 * @param schemeName
+	 *            The scheme name.
+	 * @param name
+	 *            The unique name.
+	 * @param description
+	 *            The description.
+	 * @param defaultPort
+	 *            The default port.
 	 */
-	public Protocol(String schemeName, String name, String description, int defaultPort)
-	{
+	public Protocol(String schemeName, String name, String description,
+			int defaultPort) {
 		super(name, description);
 		this.schemeName = schemeName;
 		this.defaultPort = defaultPort;
@@ -147,34 +157,32 @@ public class Protocol extends Metadata
 
 	/** {@inheritDoc} */
 	@Override
-	public boolean equals(Object object)
-	{
+	public boolean equals(Object object) {
 		return (object instanceof Protocol)
 				&& getName().equalsIgnoreCase(((Protocol) object).getName());
 	}
 
 	/**
 	 * Returns the default port number.
+	 * 
 	 * @return The default port number.
 	 */
-	public int getDefaultPort()
-	{
+	public int getDefaultPort() {
 		return this.defaultPort;
 	}
 
 	/**
-	 * Returns the URI scheme name. 
+	 * Returns the URI scheme name.
+	 * 
 	 * @return The URI scheme name.
 	 */
-	public String getSchemeName()
-	{
+	public String getSchemeName() {
 		return this.schemeName;
 	}
 
 	/** {@inheritDoc} */
 	@Override
-	public int hashCode()
-	{
+	public int hashCode() {
 		return (getName() == null) ? 0 : getName().toLowerCase().hashCode();
 	}
 }

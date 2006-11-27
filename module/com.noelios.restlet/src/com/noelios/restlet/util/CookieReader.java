@@ -35,10 +35,10 @@ import org.restlet.util.DateUtils;
 
 /**
  * Cookie header reader.
+ * 
  * @author Jerome Louvel (contact@noelios.com)
  */
-public class CookieReader extends HeaderReader
-{
+public class CookieReader extends HeaderReader {
 	private static final String NAME_VERSION = "$Version";
 
 	private static final String NAME_PATH = "$Path";
@@ -76,11 +76,13 @@ public class CookieReader extends HeaderReader
 
 	/**
 	 * Constructor.
-	 * @param logger The logger to use.
-	 * @param header The header to read.
+	 * 
+	 * @param logger
+	 *            The logger to use.
+	 * @param header
+	 *            The header to read.
 	 */
-	public CookieReader(Logger logger, String header)
-	{
+	public CookieReader(Logger logger, String header) {
 		super(header);
 		this.logger = logger;
 		this.cachedPair = null;
@@ -89,62 +91,48 @@ public class CookieReader extends HeaderReader
 
 	/**
 	 * Reads the next cookie available or null.
+	 * 
 	 * @return The next cookie available or null.
 	 */
-	public Cookie readCookie() throws IOException
-	{
+	public Cookie readCookie() throws IOException {
 		Cookie result = null;
 		Parameter pair = readPair();
 
-		if (this.globalVersion == -1)
-		{
+		if (this.globalVersion == -1) {
 			// Cookies version not yet detected
-			if (pair.getName().equalsIgnoreCase(NAME_VERSION))
-			{
-				if (pair.getValue() != null)
-				{
+			if (pair.getName().equalsIgnoreCase(NAME_VERSION)) {
+				if (pair.getValue() != null) {
 					this.globalVersion = Integer.parseInt(pair.getValue());
-				}
-				else
-				{
+				} else {
 					throw new IOException(
 							"Empty cookies version attribute detected. Please check your cookie header");
 				}
-			}
-			else
-			{
+			} else {
 				// Set the default version for old Netscape cookies
 				this.globalVersion = 0;
 			}
 		}
 
-		while ((pair != null) && (pair.getName().charAt(0) == '$'))
-		{
+		while ((pair != null) && (pair.getName().charAt(0) == '$')) {
 			// Unexpected special attribute
 			// Silently ignore it as it may have been introduced by new
 			// specifications
 			pair = readPair();
 		}
 
-		if (pair != null)
-		{
+		if (pair != null) {
 			// Set the cookie name and value
-			result = new Cookie(this.globalVersion, pair.getName(), pair.getValue());
+			result = new Cookie(this.globalVersion, pair.getName(), pair
+					.getValue());
 			pair = readPair();
 		}
 
-		while ((pair != null) && (pair.getName().charAt(0) == '$'))
-		{
-			if (pair.getName().equalsIgnoreCase(NAME_PATH))
-			{
+		while ((pair != null) && (pair.getName().charAt(0) == '$')) {
+			if (pair.getName().equalsIgnoreCase(NAME_PATH)) {
 				result.setPath(pair.getValue());
-			}
-			else if (pair.getName().equalsIgnoreCase(NAME_DOMAIN))
-			{
+			} else if (pair.getName().equalsIgnoreCase(NAME_DOMAIN)) {
 				result.setDomain(pair.getValue());
-			}
-			else
-			{
+			} else {
 				// Unexpected special attribute
 				// Silently ignore it as it may have been introduced by new
 				// specifications
@@ -153,8 +141,7 @@ public class CookieReader extends HeaderReader
 			pair = readPair();
 		}
 
-		if (pair != null)
-		{
+		if (pair != null) {
 			// We started to read the next cookie
 			// So let's put it back into the stream
 			this.cachedPair = pair;
@@ -165,106 +152,77 @@ public class CookieReader extends HeaderReader
 
 	/**
 	 * Reads the next cookie setting available or null.
+	 * 
 	 * @return The next cookie setting available or null.
 	 */
-	public CookieSetting readCookieSetting() throws IOException
-	{
+	public CookieSetting readCookieSetting() throws IOException {
 		CookieSetting result = null;
 		Parameter pair = readPair();
 
-		while ((pair != null) && (pair.getName().charAt(0) == '$'))
-		{
+		while ((pair != null) && (pair.getName().charAt(0) == '$')) {
 			// Unexpected special attribute
 			// Silently ignore it as it may have been introduced by new
 			// specifications
 			pair = readPair();
 		}
 
-		if (pair != null)
-		{
+		if (pair != null) {
 			// Set the cookie name and value
 			result = new CookieSetting(pair.getName(), pair.getValue());
 			pair = readPair();
 		}
 
-		while (pair != null)
-		{
-			if (pair.getName().equalsIgnoreCase(NAME_SET_PATH))
-			{
+		while (pair != null) {
+			if (pair.getName().equalsIgnoreCase(NAME_SET_PATH)) {
 				result.setPath(pair.getValue());
-			}
-			else if (pair.getName().equalsIgnoreCase(NAME_SET_DOMAIN))
-			{
+			} else if (pair.getName().equalsIgnoreCase(NAME_SET_DOMAIN)) {
 				result.setDomain(pair.getValue());
-			}
-			else if (pair.getName().equalsIgnoreCase(NAME_SET_COMMENT))
-			{
+			} else if (pair.getName().equalsIgnoreCase(NAME_SET_COMMENT)) {
 				result.setComment(pair.getValue());
-			}
-			else if (pair.getName().equalsIgnoreCase(NAME_SET_COMMENT_URL))
-			{
+			} else if (pair.getName().equalsIgnoreCase(NAME_SET_COMMENT_URL)) {
 				// No yet supported
-			}
-			else if (pair.getName().equalsIgnoreCase(NAME_SET_DISCARD))
-			{
+			} else if (pair.getName().equalsIgnoreCase(NAME_SET_DISCARD)) {
 				result.setMaxAge(-1);
-			}
-			else if (pair.getName().equalsIgnoreCase(NAME_SET_EXPIRES))
-			{
+			} else if (pair.getName().equalsIgnoreCase(NAME_SET_EXPIRES)) {
 				Date current = new Date(System.currentTimeMillis());
-				Date expires = DateUtils.parse(pair.getValue(), DateUtils.FORMAT_RFC_1036);
+				Date expires = DateUtils.parse(pair.getValue(),
+						DateUtils.FORMAT_RFC_1036);
 
-				if (expires == null)
-				{
-					expires = DateUtils.parse(pair.getValue(), DateUtils.FORMAT_RFC_1123);
+				if (expires == null) {
+					expires = DateUtils.parse(pair.getValue(),
+							DateUtils.FORMAT_RFC_1123);
 				}
 
-				if (expires == null)
-				{
-					expires = DateUtils.parse(pair.getValue(), DateUtils.FORMAT_ASC_TIME);
+				if (expires == null) {
+					expires = DateUtils.parse(pair.getValue(),
+							DateUtils.FORMAT_ASC_TIME);
 				}
 
-				if (expires != null)
-				{
-					if (DateUtils.after(current, expires))
-					{
-						result
-								.setMaxAge((int) ((expires.getTime() - current.getTime()) / 1000));
-					}
-					else
-					{
+				if (expires != null) {
+					if (DateUtils.after(current, expires)) {
+						result.setMaxAge((int) ((expires.getTime() - current
+								.getTime()) / 1000));
+					} else {
 						result.setMaxAge(0);
 					}
-				}
-				else
-				{
+				} else {
 					// Ignore the expires header
 					this.logger.log(Level.WARNING,
 							"Ignoring cookie setting expiration date. Unable to parse the date: "
 									+ pair.getValue());
 				}
-			}
-			else if (pair.getName().equalsIgnoreCase(NAME_SET_MAX_AGE))
-			{
+			} else if (pair.getName().equalsIgnoreCase(NAME_SET_MAX_AGE)) {
 				result.setMaxAge(Integer.valueOf(pair.getValue()));
-			}
-			else if (pair.getName().equalsIgnoreCase(NAME_SET_PORT))
-			{
+			} else if (pair.getName().equalsIgnoreCase(NAME_SET_PORT)) {
 				// No yet supported
-			}
-			else if (pair.getName().equalsIgnoreCase(NAME_SET_SECURE))
-			{
-				if ((pair.getValue() == null) || (pair.getValue().length() == 0))
-				{
+			} else if (pair.getName().equalsIgnoreCase(NAME_SET_SECURE)) {
+				if ((pair.getValue() == null)
+						|| (pair.getValue().length() == 0)) {
 					result.setSecure(true);
 				}
-			}
-			else if (pair.getName().equalsIgnoreCase(NAME_SET_VERSION))
-			{
+			} else if (pair.getName().equalsIgnoreCase(NAME_SET_VERSION)) {
 				result.setVersion(Integer.valueOf(pair.getValue()));
-			}
-			else
-			{
+			} else {
 				// Unexpected special attribute
 				// Silently ignore it as it may have been introduced by new
 				// specifications
@@ -278,99 +236,74 @@ public class CookieReader extends HeaderReader
 
 	/**
 	 * Reads the next pair as a parameter.
+	 * 
 	 * @return The next pair as a parameter.
 	 * @throws IOException
 	 */
-	private Parameter readPair() throws IOException
-	{
+	private Parameter readPair() throws IOException {
 		Parameter result = null;
 
-		if (cachedPair != null)
-		{
+		if (cachedPair != null) {
 			result = cachedPair;
 			cachedPair = null;
-		}
-		else
-		{
-			try
-			{
+		} else {
+			try {
 				boolean readingName = true;
 				boolean readingValue = false;
 				StringBuilder nameBuffer = new StringBuilder();
 				StringBuilder valueBuffer = new StringBuilder();
 
 				int nextChar = 0;
-				while ((result == null) && (nextChar != -1))
-				{
+				while ((result == null) && (nextChar != -1)) {
 					nextChar = read();
 
-					if (readingName)
-					{
-						if ((HeaderUtils.isSpace(nextChar)) && (nameBuffer.length() == 0))
-						{
+					if (readingName) {
+						if ((HeaderUtils.isSpace(nextChar))
+								&& (nameBuffer.length() == 0)) {
 							// Skip spaces
-						}
-						else if ((nextChar == -1) || (nextChar == ';') || (nextChar == ','))
-						{
-							if (nameBuffer.length() > 0)
-							{
+						} else if ((nextChar == -1) || (nextChar == ';')
+								|| (nextChar == ',')) {
+							if (nameBuffer.length() > 0) {
 								// End of pair with no value
-								result = HeaderUtils.createParameter(nameBuffer, null);
-							}
-							else if (nextChar == -1)
-							{
+								result = HeaderUtils.createParameter(
+										nameBuffer, null);
+							} else if (nextChar == -1) {
 								// Do nothing return null preference
-							}
-							else
-							{
+							} else {
 								throw new IOException(
 										"Empty cookie name detected. Please check your cookies");
 							}
-						}
-						else if (nextChar == '=')
-						{
+						} else if (nextChar == '=') {
 							readingName = false;
 							readingValue = true;
-						}
-						else if (HeaderUtils.isTokenChar(nextChar) || (this.globalVersion < 1))
-						{
+						} else if (HeaderUtils.isTokenChar(nextChar)
+								|| (this.globalVersion < 1)) {
 							nameBuffer.append((char) nextChar);
-						}
-						else
-						{
+						} else {
 							throw new IOException(
 									"Separator and control characters are not allowed within a token. Please check your cookie header");
 						}
-					}
-					else if (readingValue)
-					{
-						if ((HeaderUtils.isSpace(nextChar)) && (valueBuffer.length() == 0))
-						{
+					} else if (readingValue) {
+						if ((HeaderUtils.isSpace(nextChar))
+								&& (valueBuffer.length() == 0)) {
 							// Skip spaces
-						}
-						else if ((nextChar == -1) || (nextChar == ';'))
-						{
+						} else if ((nextChar == -1) || (nextChar == ';')) {
 							// End of pair
-							result = HeaderUtils.createParameter(nameBuffer, valueBuffer);
-						}
-						else if ((nextChar == '"') && (valueBuffer.length() == 0))
-						{
+							result = HeaderUtils.createParameter(nameBuffer,
+									valueBuffer);
+						} else if ((nextChar == '"')
+								&& (valueBuffer.length() == 0)) {
 							valueBuffer.append(readQuotedString());
-						}
-						else if (HeaderUtils.isTokenChar(nextChar) || (this.globalVersion < 1))
-						{
+						} else if (HeaderUtils.isTokenChar(nextChar)
+								|| (this.globalVersion < 1)) {
 							valueBuffer.append((char) nextChar);
-						}
-						else
-						{
+						} else {
 							throw new IOException(
 									"Separator and control characters are not allowed within a token. Please check your cookie header");
 						}
 					}
 				}
-			}
-			catch (UnsupportedEncodingException uee)
-			{
+			} catch (UnsupportedEncodingException uee) {
 				throw new IOException(
 						"Unsupported encoding. Please contact the administrator");
 			}

@@ -30,22 +30,20 @@ import com.noelios.restlet.util.HeaderReader;
 
 /**
  * Unit tests for the header.
+ * 
  * @author Jerome Louvel (contact@noelios.com)
  */
-public class HeaderTestCase extends TestCase
-{
+public class HeaderTestCase extends TestCase {
 	/**
 	 * Tests the parsing.
 	 */
-	public void testParsing() throws IOException
-	{
+	public void testParsing() throws IOException {
 		String header1 = "Accept-Encoding,User-Agent";
 		String header2 = "Accept-Encoding , User-Agent";
 		String header3 = "Accept-Encoding,\r\tUser-Agent";
 		String header4 = "Accept-Encoding,\r User-Agent";
 		String header5 = "Accept-Encoding, \r \t User-Agent";
-		String[] values = new String[]
-		{ "Accept-Encoding", "User-Agent" };
+		String[] values = new String[] { "Accept-Encoding", "User-Agent" };
 		testValues(header1, values);
 		testValues(header2, values);
 		testValues(header3, values);
@@ -54,34 +52,31 @@ public class HeaderTestCase extends TestCase
 
 		header1 = "Accept-Encoding, Accept-Language, Accept";
 		header2 = "Accept-Encoding,Accept-Language,Accept";
-		values = new String[]
-		{ "Accept-Encoding", "Accept-Language", "Accept" };
+		values = new String[] { "Accept-Encoding", "Accept-Language", "Accept" };
 		testValues(header1, values);
 		testValues(header2, values);
 	}
 
 	/**
 	 * Test that the parsing of a header returns the given array of values.
-	 * @param header The header value to parse.
-	 * @param values The parsed values.
+	 * 
+	 * @param header
+	 *            The header value to parse.
+	 * @param values
+	 *            The parsed values.
 	 */
-	public void testValues(String header, String[] values)
-	{
-		try
-		{
+	public void testValues(String header, String[] values) {
+		try {
 			HeaderReader hr = new HeaderReader(header);
 			String value = hr.readValue();
 			int index = 0;
-			while (value != null)
-			{
+			while (value != null) {
 				assertEquals(value, values[index]);
 				index++;
 				value = hr.readValue();
 			}
 
-		}
-		catch (IOException e)
-		{
+		} catch (IOException e) {
 			e.printStackTrace();
 		}
 	}

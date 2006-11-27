@@ -30,10 +30,10 @@ import org.restlet.resource.Representation;
 
 /**
  * Service providing status representation setting.
+ * 
  * @author Jerome Louvel (contact@noelios.com)
  */
-public class StatusService
-{
+public class StatusService {
 	/** Indicates if the service has been enabled. */
 	private boolean enabled;
 
@@ -48,101 +48,110 @@ public class StatusService
 
 	/**
 	 * Constructor.
-	 * @param enabled True if the service has been enabled.
+	 * 
+	 * @param enabled
+	 *            True if the service has been enabled.
 	 */
-	public StatusService(boolean enabled)
-	{
+	public StatusService(boolean enabled) {
 		this.enabled = enabled;
 		this.contactEmail = null;
 		this.homeRef = null;
 		this.overwrite = false;
 	}
 
-	/** 
-	 * Returns the email address to contact in case of error. 
-	 * This is typically used when creating the status representations.
+	/**
+	 * Returns the email address to contact in case of error. This is typically
+	 * used when creating the status representations.
+	 * 
 	 * @return The email address to contact in case of error.
 	 */
-	public String getContactEmail()
-	{
+	public String getContactEmail() {
 		return this.contactEmail;
 	}
 
-	/** 
+	/**
 	 * Returns the home URI to propose in case of error.
+	 * 
 	 * @return The home URI to propose in case of error.
 	 */
-	public Reference getHomeRef()
-	{
+	public Reference getHomeRef() {
 		return this.homeRef;
 	}
 
 	/**
-	 * Returns a representation for the given status.<br/> In order to customize the 
-	 * default representation, this method can be overriden. It returns null by default.
-	 * @param status The status to represent.
-	 * @param request The request handled.
-	 * @param response The response updated.
+	 * Returns a representation for the given status.<br/> In order to
+	 * customize the default representation, this method can be overriden. It
+	 * returns null by default.
+	 * 
+	 * @param status
+	 *            The status to represent.
+	 * @param request
+	 *            The request handled.
+	 * @param response
+	 *            The response updated.
 	 * @return The representation of the given status.
 	 */
 	public Representation getRepresentation(Status status, Request request,
-			Response response)
-	{
+			Response response) {
 		return null;
 	}
 
 	/**
 	 * Indicates if the service should be enabled.
+	 * 
 	 * @return True if the service should be enabled.
 	 */
-	public boolean isEnabled()
-	{
+	public boolean isEnabled() {
 		return this.enabled;
 	}
 
-	/** 
+	/**
 	 * Indicates if an existing entity should be overwritten. False by default.
+	 * 
 	 * @return True if an existing entity should be overwritten.
 	 */
-	public boolean isOverwrite()
-	{
+	public boolean isOverwrite() {
 		return this.overwrite;
 	}
 
-	/** 
-	 * Sets the email address to contact in case of error. 
-	 * This is typically used when creating the status representations.
-	 * @param contactEmail The email address to contact in case of error.
+	/**
+	 * Sets the email address to contact in case of error. This is typically
+	 * used when creating the status representations.
+	 * 
+	 * @param contactEmail
+	 *            The email address to contact in case of error.
 	 */
-	public void setContactEmail(String contactEmail)
-	{
+	public void setContactEmail(String contactEmail) {
 		this.contactEmail = contactEmail;
 	}
 
 	/**
 	 * Indicates if the service should be enabled.
-	 * @param enabled True if the service should be enabled.
+	 * 
+	 * @param enabled
+	 *            True if the service should be enabled.
 	 */
-	public void setEnabled(boolean enabled)
-	{
+	public void setEnabled(boolean enabled) {
 		this.enabled = enabled;
 	}
 
-	/** 
+	/**
 	 * Sets the home URI to propose in case of error.
-	 * @param homeRef The home URI to propose in case of error.
+	 * 
+	 * @param homeRef
+	 *            The home URI to propose in case of error.
 	 */
-	public void setHomeRef(Reference homeRef)
-	{
+	public void setHomeRef(Reference homeRef) {
 		this.homeRef = homeRef;
 	}
 
-	/** 
-	 * Indicates if an existing entity should be overwritten. 
-	 * @param overwrite True if an existing entity should be overwritten.
+	/**
+	 * Indicates if an existing entity should be overwritten.
+	 * 
+	 * @param overwrite
+	 *            True if an existing entity should be overwritten.
 	 */
-	public void setOverwrite(boolean overwrite)
-	{
+	public void setOverwrite(boolean overwrite) {
 		this.overwrite = overwrite;
 	}
 

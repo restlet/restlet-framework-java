@@ -24,17 +24,17 @@ package org.restlet.data;
 
 /**
  * Method to execute when handling a call.
+ * 
  * @author Jerome Louvel (contact@noelios.com)
  */
-public class Method extends Metadata
-{
+public class Method extends Metadata {
 	private static final String BASE_HTTP = "http://www.w3.org/Protocols/rfc2616/rfc2616-sec9.html";
 
 	private static final String BASE_WEBDAV = "http://www.webdav.org/specs/rfc2518.html";
 
 	public static final Method CONNECT = new Method("CONNECT",
-			"Used with a proxy that can dynamically switch to being a tunnel", BASE_HTTP
-					+ "#sec9.9");
+			"Used with a proxy that can dynamically switch to being a tunnel",
+			BASE_HTTP + "#sec9.9");
 
 	public static final Method COPY = new Method(
 			"COPY",
@@ -61,7 +61,8 @@ public class Method extends Metadata
 					+ "#METHOD_LOCK");
 
 	public static final Method MKCOL = new Method("MKCOL",
-			"Used to create a new collection (WebDAV)", BASE_WEBDAV + "#METHOD_MKCOL");
+			"Used to create a new collection (WebDAV)", BASE_WEBDAV
+					+ "#METHOD_MKCOL");
 
 	public static final Method MOVE = new Method(
 			"MOVE",
@@ -78,7 +79,8 @@ public class Method extends Metadata
 			"Request that the origin server accept the entity enclosed in the request as a new subordinate of the resource identified by the request URI",
 			BASE_HTTP + "#sec9.5");
 
-	public static final Method PROPFIND = new Method("PROPFIND",
+	public static final Method PROPFIND = new Method(
+			"PROPFIND",
 			"Retrieve properties defined on the resource identified by the request URI",
 			BASE_WEBDAV + "#METHOD_PROPFIND");
 
@@ -87,11 +89,13 @@ public class Method extends Metadata
 			"Process instructions specified in the request body to set and/or remove properties defined on the resource identified by the request URI",
 			BASE_WEBDAV + "#METHOD_PROPPATCH");
 
-	public static final Method PUT = new Method("PUT",
+	public static final Method PUT = new Method(
+			"PUT",
 			"Request that the enclosed entity be stored under the supplied request URI",
 			BASE_HTTP + "#sec9.6");
 
-	public static final Method TRACE = new Method("TRACE",
+	public static final Method TRACE = new Method(
+			"TRACE",
 			"Used to invoke a remote, application-layer loop-back of the request message",
 			BASE_HTTP + "#sec9.8");
 
@@ -101,17 +105,17 @@ public class Method extends Metadata
 			BASE_WEBDAV + "#METHOD_UNLOCK");
 
 	/**
-	 * Returns the method associated to a given method name. If an existing constant exists then it is returned,
-	 * otherwise a new instance is created.
-	 * @param methodName The method name.
+	 * Returns the method associated to a given method name. If an existing
+	 * constant exists then it is returned, otherwise a new instance is created.
+	 * 
+	 * @param methodName
+	 *            The method name.
 	 * @return The associated method.
 	 */
-	public static Method valueOf(String methodName)
-	{
+	public static Method valueOf(String methodName) {
 		Method result = null;
 
-		if (methodName != null)
-		{
+		if (methodName != null) {
 			if (methodName.equalsIgnoreCase(GET.getName()))
 				result = GET;
 			else if (methodName.equalsIgnoreCase(POST.getName()))
@@ -154,58 +158,63 @@ public class Method extends Metadata
 
 	/**
 	 * Constructor.
-	 * @param name The technical name of the method.
+	 * 
+	 * @param name
+	 *            The technical name of the method.
 	 * @see org.restlet.data.Method#valueOf(String)
 	 */
-	public Method(String name)
-	{
+	public Method(String name) {
 		this(name, null, null);
 	}
 
 	/**
 	 * Constructor.
-	 * @param name The technical name of the method.
-	 * @param description The description.
+	 * 
+	 * @param name
+	 *            The technical name of the method.
+	 * @param description
+	 *            The description.
 	 * @see org.restlet.data.Method#valueOf(String)
 	 */
-	public Method(String name, String description)
-	{
+	public Method(String name, String description) {
 		this(name, description, null);
 	}
 
 	/**
 	 * Constructor.
-	 * @param name The technical name.
-	 * @param description The description.
-	 * @param uri The URI of the specification describing the method.
+	 * 
+	 * @param name
+	 *            The technical name.
+	 * @param description
+	 *            The description.
+	 * @param uri
+	 *            The URI of the specification describing the method.
 	 * @see org.restlet.data.Method#valueOf(String)
 	 */
-	public Method(String name, String description, String uri)
-	{
+	public Method(String name, String description, String uri) {
 		super(name, description);
 		this.uri = uri;
 	}
 
 	/** {@inheritDoc} */
 	@Override
-	public boolean equals(Object object)
-	{
-		return (object instanceof Method) && ((Method) object).getName().equals(getName());
+	public boolean equals(Object object) {
+		return (object instanceof Method)
+				&& ((Method) object).getName().equals(getName());
 	}
 
 	/**
 	 * Returns the URI of the specification describing the method.
+	 * 
 	 * @return The URI of the specification describing the method.
 	 */
-	public String getUri()
-	{
+	public String getUri() {
 		return this.uri;
 	}
 
 	/** {@inheritDoc} */
 	@Override
-	public int hashCode()
-	{
+	public int hashCode() {
 		return (getName() == null) ? 0 : getName().hashCode();
 	}
 }

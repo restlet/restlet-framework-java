@@ -24,10 +24,10 @@ package org.restlet.service;
 
 /**
  * Service providing access logging.
+ * 
  * @author Jerome Louvel (contact@noelios.com)
  */
-public class LogService
-{
+public class LogService {
 	/** Indicates if the service has been enabled. */
 	private boolean enabled;
 
@@ -42,10 +42,11 @@ public class LogService
 
 	/**
 	 * Constructor.
-	 * @param enabled True if the service has been enabled.
+	 * 
+	 * @param enabled
+	 *            True if the service has been enabled.
 	 */
-	public LogService(boolean enabled)
-	{
+	public LogService(boolean enabled) {
 		this.accessLoggerName = null;
 		this.contextLoggerName = null;
 		this.enabled = enabled;
@@ -54,74 +55,81 @@ public class LogService
 
 	/**
 	 * Returns the format used.
+	 * 
 	 * @return The format used, or null if the default one is used.
 	 */
-	public String getAccessLogFormat()
-	{
+	public String getAccessLogFormat() {
 		return this.format;
 	}
 
 	/**
 	 * Returns the name of the JDK's logger to use when logging calls.
+	 * 
 	 * @return The name of the JDK's logger to use when logging calls.
 	 */
-	public String getAccessLoggerName()
-	{
+	public String getAccessLoggerName() {
 		return this.accessLoggerName;
 	}
 
 	/**
-	 * Returns the name of the JDK's logger to use when logging context messages.
-	 * @return The name of the JDK's logger to use when logging context messages.
+	 * Returns the name of the JDK's logger to use when logging context
+	 * messages.
+	 * 
+	 * @return The name of the JDK's logger to use when logging context
+	 *         messages.
 	 */
-	public String getContextLoggerName()
-	{
+	public String getContextLoggerName() {
 		return this.contextLoggerName;
 	}
 
 	/**
 	 * Indicates if the service should be enabled.
+	 * 
 	 * @return True if the service should be enabled.
 	 */
-	public boolean isEnabled()
-	{
+	public boolean isEnabled() {
 		return this.enabled;
 	}
 
 	/**
-	 * Sets the format to use when logging calls. The default format matches the one of IIS 6.
-	 * See com.noelios.restlet.util.CallModel for format details.
-	 * @param format The format to use when loggin calls. 
+	 * Sets the format to use when logging calls. The default format matches the
+	 * one of IIS 6. See com.noelios.restlet.util.CallModel for format details.
+	 * 
+	 * @param format
+	 *            The format to use when loggin calls.
 	 */
-	public void setAccessLogFormat(String format)
-	{
+	public void setAccessLogFormat(String format) {
 		this.format = format;
 	}
 
 	/**
 	 * Sets the name of the JDK's logger to use when logging calls.
-	 * @param name The name of the JDK's logger to use when logging calls.
+	 * 
+	 * @param name
+	 *            The name of the JDK's logger to use when logging calls.
 	 */
-	public void setAccessLoggerName(String name)
-	{
+	public void setAccessLoggerName(String name) {
 		this.accessLoggerName = name;
 	}
 
 	/**
 	 * Sets the name of the JDK's logger to use when logging context messages.
-	 * @param name The name of the JDK's logger to use when logging context messages.
+	 * 
+	 * @param name
+	 *            The name of the JDK's logger to use when logging context
+	 *            messages.
 	 */
-	public void setContextLoggerName(String name)
-	{
+	public void setContextLoggerName(String name) {
 		this.contextLoggerName = name;
 	}
 
 	/**
 	 * Indicates if the service should be enabled.
-	 * @param enabled True if the service should be enabled.
+	 * 
+	 * @param enabled
+	 *            True if the service should be enabled.
 	 */
-	public void setEnabled(boolean enabled)
-	{
+	public void setEnabled(boolean enabled) {
 		this.enabled = enabled;
 	}
 

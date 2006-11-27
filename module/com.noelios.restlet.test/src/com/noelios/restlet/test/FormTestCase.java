@@ -32,15 +32,14 @@ import com.noelios.restlet.util.FormReader;
 
 /**
  * Unit tests for the Form class.
+ * 
  * @author Jerome Louvel (contact@noelios.com)
  */
-public class FormTestCase extends TestCase
-{
+public class FormTestCase extends TestCase {
 	/**
 	 * Tests the cookies parsing.
 	 */
-	public void testParsing() throws IOException
-	{
+	public void testParsing() throws IOException {
 		Form form = new Form();
 		form.add("name", "John D. Mitchell");
 		form.add("email", "john@bob.net");

@@ -27,38 +27,40 @@ import java.util.logging.Logger;
 
 /**
  * Logger that wraps the logging methods of javax.servlet.ServletContext.
+ * 
  * @author Jerome Louvel (contact@noelios.com)
  */
-public class ServletLogger extends Logger
-{
+public class ServletLogger extends Logger {
 	/** The Servlet context to use for logging. */
 	private javax.servlet.ServletContext context;
 
 	/**
 	 * Constructor.
-	 * @param context The Servlet context to use.
+	 * 
+	 * @param context
+	 *            The Servlet context to use.
 	 */
-	public ServletLogger(javax.servlet.ServletContext context)
-	{
+	public ServletLogger(javax.servlet.ServletContext context) {
 		super(null, null);
 		this.context = context;
 	}
 
 	/**
 	 * Log a LogRecord.
-	 * @param record The LogRecord to be published
+	 * 
+	 * @param record
+	 *            The LogRecord to be published
 	 */
-	public void log(LogRecord record)
-	{
+	public void log(LogRecord record) {
 		getContext().log(record.getMessage(), record.getThrown());
 	}
 
 	/**
 	 * Returns the Servlet context to use for logging.
+	 * 
 	 * @return The Servlet context to use for logging.
 	 */
-	private javax.servlet.ServletContext getContext()
-	{
+	private javax.servlet.ServletContext getContext() {
 		return this.context;
 	}
 

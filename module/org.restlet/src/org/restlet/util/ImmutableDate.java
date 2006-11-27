@@ -26,15 +26,19 @@ import java.util.Date;
 import java.util.WeakHashMap;
 
 /**
- * Class acting as an immutable date class based on the {@link java.util.Date} class.
+ * Class acting as an immutable date class based on the {@link java.util.Date}
+ * class.
  * 
- * Throws {@link UnsupportedOperationException} when muttable methopds are invoked.
+ * Throws {@link UnsupportedOperationException} when muttable methopds are
+ * invoked.
+ * 
  * @author Piyush Purang
  * @see java.util.Date
- * @see <a href="http://discuss.fogcreek.com/joelonsoftware3/default.asp?cmd=show&ixPost=73959&ixReplies=24">Immutable Date</a>
+ * @see <a
+ *      href="http://discuss.fogcreek.com/joelonsoftware3/default.asp?cmd=show&ixPost=73959&ixReplies=24">Immutable
+ *      Date</a>
  */
-public final class ImmutableDate extends Date
-{
+public final class ImmutableDate extends Date {
 	// TODO Are we serializable?
 	private static final long serialVersionUID = -5946186780670229206L;
 
@@ -42,13 +46,13 @@ public final class ImmutableDate extends Date
 
 	/**
 	 * Returns an ImmutableDate object wrapping the given date.
-	 * @param date object to be made immutable
+	 * 
+	 * @param date
+	 *            object to be made immutable
 	 * @return an immutable date object
 	 */
-	public static ImmutableDate valueOf(Date date)
-	{
-		if (!CACHE.containsKey(date))
-		{
+	public static ImmutableDate valueOf(Date date) {
+		if (!CACHE.containsKey(date)) {
 			CACHE.put(date, new ImmutableDate(date));
 		}
 		return CACHE.get(date);
@@ -59,203 +63,179 @@ public final class ImmutableDate extends Date
 
 	/**
 	 * Private constructor. A factory method is provided.
-	 * @param date date to be made immutable
+	 * 
+	 * @param date
+	 *            date to be made immutable
 	 */
-	private ImmutableDate(Date date)
-	{
+	private ImmutableDate(Date date) {
 		this.delegate = (Date) date.clone();
 	}
 
-	/**{@inheritDoc}*/
+	/** {@inheritDoc} */
 	@Override
-	public boolean after(Date when)
-	{
+	public boolean after(Date when) {
 		return delegate.after(when);
 	}
 
-	/**{@inheritDoc}*/
+	/** {@inheritDoc} */
 	@Override
-	public boolean before(Date when)
-	{
+	public boolean before(Date when) {
 		return delegate.before(when);
 	}
 
-	/**{@inheritDoc}*/
+	/** {@inheritDoc} */
 	@Override
-	public Object clone()
-	{
+	public Object clone() {
 		throw new UnsupportedOperationException("ImmutableDate is immutable");
 	}
 
-	/**{@inheritDoc}*/
+	/** {@inheritDoc} */
 	@Override
-	public int compareTo(Date anotherDate)
-	{
+	public int compareTo(Date anotherDate) {
 		return delegate.compareTo(anotherDate);
 	}
 
-	/**{@inheritDoc}*/
+	/** {@inheritDoc} */
 	@Override
-	public boolean equals(Object obj)
-	{
+	public boolean equals(Object obj) {
 		return delegate.equals(obj);
 	}
 
-	/**{@inheritDoc}*/
+	/** {@inheritDoc} */
 	@Override
 	@Deprecated
-	public int getDate()
-	{
+	public int getDate() {
 		return delegate.getDate();
 	}
 
-	/**{@inheritDoc}*/
+	/** {@inheritDoc} */
 	@Override
 	@Deprecated
-	public int getDay()
-	{
+	public int getDay() {
 		return delegate.getDay();
 	}
 
-	/**{@inheritDoc}*/
+	/** {@inheritDoc} */
 	@Override
 	@Deprecated
-	public int getHours()
-	{
+	public int getHours() {
 		return delegate.getHours();
 	}
 
-	/**{@inheritDoc}*/
+	/** {@inheritDoc} */
 	@Override
 	@Deprecated
-	public int getMinutes()
-	{
+	public int getMinutes() {
 		return delegate.getMinutes();
 	}
 
-	/**{@inheritDoc}*/
+	/** {@inheritDoc} */
 	@Override
 	@Deprecated
-	public int getMonth()
-	{
+	public int getMonth() {
 		return delegate.getMonth();
 	}
 
-	/**{@inheritDoc}*/
+	/** {@inheritDoc} */
 	@Override
 	@Deprecated
-	public int getSeconds()
-	{
+	public int getSeconds() {
 
 		return delegate.getSeconds();
 	}
 
-	/**{@inheritDoc}*/
+	/** {@inheritDoc} */
 	@Override
-	public long getTime()
-	{
+	public long getTime() {
 		return delegate.getTime();
 	}
 
-	/**{@inheritDoc}*/
+	/** {@inheritDoc} */
 	@Override
 	@Deprecated
-	public int getTimezoneOffset()
-	{
+	public int getTimezoneOffset() {
 		return delegate.getTimezoneOffset();
 	}
 
-	/**{@inheritDoc}*/
+	/** {@inheritDoc} */
 	@Override
 	@Deprecated
-	public int getYear()
-	{
+	public int getYear() {
 		return delegate.getYear();
 	}
 
-	/**{@inheritDoc}*/
+	/** {@inheritDoc} */
 	@Override
-	public int hashCode()
-	{
+	public int hashCode() {
 		return delegate.hashCode();
 	}
 
-	/**{@inheritDoc}*/
+	/** {@inheritDoc} */
 	@Override
 	@Deprecated
-	public void setDate(int date)
-	{
+	public void setDate(int date) {
 		throw new UnsupportedOperationException("ImmutableDate is immutable");
 	}
 
-	/**{@inheritDoc}*/
+	/** {@inheritDoc} */
 	@Override
 	@Deprecated
-	public void setHours(int hours)
-	{
+	public void setHours(int hours) {
 		throw new UnsupportedOperationException("ImmutableDate is immutable");
 	}
 
-	/**{@inheritDoc}*/
+	/** {@inheritDoc} */
 	@Override
 	@Deprecated
-	public void setMinutes(int minutes)
-	{
+	public void setMinutes(int minutes) {
 		throw new UnsupportedOperationException("ImmutableDate is immutable");
 	}
 
-	/**{@inheritDoc}*/
+	/** {@inheritDoc} */
 	@Override
 	@Deprecated
-	public void setMonth(int month)
-	{
+	public void setMonth(int month) {
 		throw new UnsupportedOperationException("ImmutableDate is immutable");
 	}
 
-	/**{@inheritDoc}*/
+	/** {@inheritDoc} */
 	@Override
 	@Deprecated
-	public void setSeconds(int seconds)
-	{
+	public void setSeconds(int seconds) {
 		throw new UnsupportedOperationException("ImmutableDate is immutable");
 	}
 
-	/**{@inheritDoc}*/
+	/** {@inheritDoc} */
 	@Override
 	@Deprecated
-	public void setTime(long time)
-	{
+	public void setTime(long time) {
 		throw new UnsupportedOperationException("ImmutableDate is immutable");
 	}
 
-	/**{@inheritDoc}*/
+	/** {@inheritDoc} */
 	@Override
 	@Deprecated
-	public void setYear(int year)
-	{
+	public void setYear(int year) {
 		throw new UnsupportedOperationException("ImmutableDate is immutable");
 	}
 
-	/**{@inheritDoc}*/
+	/** {@inheritDoc} */
 	@Override
 	@Deprecated
-	public String toGMTString()
-	{
+	public String toGMTString() {
 		return delegate.toGMTString();
 	}
 
-	/**{@inheritDoc}*/
+	/** {@inheritDoc} */
 	@Override
 	@Deprecated
-	public String toLocaleString()
-	{
+	public String toLocaleString() {
 		return delegate.toLocaleString();
 	}
 
-	/**{@inheritDoc}*/
+	/** {@inheritDoc} */
 	@Override
-	public String toString()
-	{
+	public String toString() {
 		return delegate.toString();
 	}
 }

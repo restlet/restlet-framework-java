@@ -29,35 +29,39 @@ import org.restlet.data.Response;
 
 /**
  * Default call dispatcher.
+ * 
  * @author Jerome Louvel (contact@noelios.com)
  */
-public abstract class DefaultDispatcher extends Dispatcher
-{
+public abstract class DefaultDispatcher extends Dispatcher {
 	/**
 	 * Handles a call.
-	 * @param request The request to handle.
-	 * @param response The response to update.
+	 * 
+	 * @param request
+	 *            The request to handle.
+	 * @param response
+	 *            The response to update.
 	 */
-	public void handle(Request request, Response response)
-	{
+	public void handle(Request request, Response response) {
 		Protocol protocol = request.getProtocol();
 
-		if (protocol == null)
-		{
+		if (protocol == null) {
 			throw new UnsupportedOperationException(
 					"Unable to determine the protocol to use for this call.");
-		}
-		else
-		{
+		} else {
 			handle(protocol, request, response);
 		}
 	}
 
 	/**
 	 * Handles a call.
-	 * @param protocol The protocol to use for the handling.
-	 * @param request The request to handle.
-	 * @param response The response to update.
+	 * 
+	 * @param protocol
+	 *            The protocol to use for the handling.
+	 * @param request
+	 *            The request to handle.
+	 * @param response
+	 *            The response to update.
 	 */
-	public abstract void handle(Protocol protocol, Request request, Response response);
+	public abstract void handle(Protocol protocol, Request request,
+			Response response);
 }

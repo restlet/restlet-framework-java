@@ -36,54 +36,55 @@ import com.noelios.restlet.http.HttpServerCall;
 import com.noelios.restlet.http.HttpServerHelper;
 
 /**
- * Abstract AsyncWeb server connector. Here is the list of parameters that are supported:
- * <table>
- * 	<tr>
- * 		<th>Parameter name</th>
- * 		<th>Value type</th>
- * 		<th>Default value</th>
- * 		<th>Description</th>
- * 	</tr>
- * 	<tr>
- * 		<td>ioWorkerCount</td>
- * 		<td>int</td>
- * 		<td>2</td>
- * 		<td>Number of worker threads to employ.</td>
- * 	</tr>
- * 	<tr>
- * 		<td>converter</td>
- * 		<td>String</td>
- * 		<td>com.noelios.restlet.http.HttpServerConverter</td>
- * 		<td>Class name of the converter of low-level HTTP calls into high level requests and responses.</td>
- * 	</tr>
- * 	<tr>
- * 		<td>useForwardedForHeader</td>
- * 		<td>boolean</td>
- * 		<td>false</td>
- * 		<td>Lookup the "X-Forwarded-For" header supported by popular proxies and caches and uses it to populate 
- * the Request.getClientAddresses() method result. This information is only safe for intermediary components 
- * within your local network. Other addresses could easily be changed by setting a fake header and should not
- * be trusted for serious security checks.</td>
- * 	</tr>
- *	</table>
- *	<br/> 
- * This implementation passes by all of AsyncWeb ServiceContainer, 
- * HttpServiceHandler etc. mechanisms and implements a 
- * {@link com.noelios.restlet.http.HttpServerHelper} and a 
+ * Abstract AsyncWeb server connector. Here is the list of parameters that are
+ * supported: <table>
+ * <tr>
+ * <th>Parameter name</th>
+ * <th>Value type</th>
+ * <th>Default value</th>
+ * <th>Description</th>
+ * </tr>
+ * <tr>
+ * <td>ioWorkerCount</td>
+ * <td>int</td>
+ * <td>2</td>
+ * <td>Number of worker threads to employ.</td>
+ * </tr>
+ * <tr>
+ * <td>converter</td>
+ * <td>String</td>
+ * <td>com.noelios.restlet.http.HttpServerConverter</td>
+ * <td>Class name of the converter of low-level HTTP calls into high level
+ * requests and responses.</td>
+ * </tr>
+ * <tr>
+ * <td>useForwardedForHeader</td>
+ * <td>boolean</td>
+ * <td>false</td>
+ * <td>Lookup the "X-Forwarded-For" header supported by popular proxies and
+ * caches and uses it to populate the Request.getClientAddresses() method
+ * result. This information is only safe for intermediary components within your
+ * local network. Other addresses could easily be changed by setting a fake
+ * header and should not be trusted for serious security checks.</td>
+ * </tr>
+ * </table> <br/> This implementation passes by all of AsyncWeb
+ * ServiceContainer, HttpServiceHandler etc. mechanisms and implements a
+ * {@link com.noelios.restlet.http.HttpServerHelper} and a
  * {@link org.safehaus.asyncweb.container.ServiceContainer} directly. It takes
- * care about setting up a {@link org.safehaus.asyncweb.transport.nio.NIOTransport}.
+ * care about setting up a
+ * {@link org.safehaus.asyncweb.transport.nio.NIOTransport}.
  * <p>
- * Note: This implementation is not usable inside an AsyncWeb standard 
+ * Note: This implementation is not usable inside an AsyncWeb standard
  * environment because it represents a container and not a handler; it takes
  * full control over the container lifecycle.
  * </p>
  * 
- * @author Lars Heuer (heuer[at]semagia.com) <a href="http://www.semagia.com/">Semagia</a>
+ * @author Lars Heuer (heuer[at]semagia.com) <a
+ *         href="http://www.semagia.com/">Semagia</a>
  * @author Jerome Louvel (contact@noelios.com)
  */
 public abstract class AsyncWebServerHelper extends HttpServerHelper implements
-		ServiceContainer
-{
+		ServiceContainer {
 	/**
 	 * Indicates if the server is acting in HTTPS mode.
 	 */
@@ -96,58 +97,59 @@ public abstract class AsyncWebServerHelper extends HttpServerHelper implements
 
 	/**
 	 * Constructor.
-	 * @param server The server to help.
+	 * 
+	 * @param server
+	 *            The server to help.
 	 */
-	public AsyncWebServerHelper(Server server)
-	{
+	public AsyncWebServerHelper(Server server) {
 		super(server);
 	}
 
-	/* (non-Javadoc)
+	/*
+	 * (non-Javadoc)
+	 * 
 	 * @see org.safehaus.asyncweb.container.ServiceContainer#addServiceHandler(org.safehaus.asyncweb.container.ServiceHandler)
 	 */
-	public void addServiceHandler(ServiceHandler serviceHandler)
-	{
+	public void addServiceHandler(ServiceHandler serviceHandler) {
 		throw new UnsupportedOperationException(
 				"This container accepts no service handlers");
 	}
 
-	/* (non-Javadoc)
+	/*
+	 * (non-Javadoc)
+	 * 
 	 * @see org.safehaus.asyncweb.container.ServiceContainer#addTransport(org.safehaus.asyncweb.transport.Transport)
 	 */
-	public void addTransport(Transport transport)
-	{
-		throw new UnsupportedOperationException("This container is bound to a transport");
+	public void addTransport(Transport transport) {
+		throw new UnsupportedOperationException(
+				"This container is bound to a transport");
 	}
 
-	/* (non-Javadoc)
+	/*
+	 * (non-Javadoc)
+	 * 
 	 * @see org.safehaus.asyncweb.container.ServiceContainer#dispatchRequest(org.safehaus.asyncweb.request.AsyncWebRequest)
 	 */
-	public void dispatchRequest(AsyncWebRequest request)
-	{
+	public void dispatchRequest(AsyncWebRequest request) {
 		HttpResponse response = request.createHttpResponse();
-		HttpServerCall call = new AsyncWebServerCall(getServer(), request, response,
-				confidential);
+		HttpServerCall call = new AsyncWebServerCall(getServer(), request,
+				response, confidential);
 		handle(call);
 		request.commitResponse(response);
 	}
 
 	/** Starts the Connector. */
 	@SuppressWarnings("unchecked")
-	public void start() throws ContainerLifecycleException
-	{
-		try
-		{
+	public void start() throws ContainerLifecycleException {
+		try {
 			getTransport().start();
-		}
-		catch (TransportException ex)
-		{
+		} catch (TransportException ex) {
 			getLogger().log(Level.WARNING, "Failed to start the transport", ex);
-			throw new ContainerLifecycleException("Failed to start the transport", ex);
-		}
-		catch (Exception e)
-		{
-			getLogger().log(Level.WARNING, "Failed to start the AsyncWeb HTTP Server", e);
+			throw new ContainerLifecycleException(
+					"Failed to start the transport", ex);
+		} catch (Exception e) {
+			getLogger().log(Level.WARNING,
+					"Failed to start the AsyncWeb HTTP Server", e);
 			throw new ContainerLifecycleException(
 					"Failed to start the AsyncWeb HTTP Server", e);
 		}
@@ -155,46 +157,43 @@ public abstract class AsyncWebServerHelper extends HttpServerHelper implements
 
 	/** Stops the Connector. */
 	@SuppressWarnings("unchecked")
-	public void stop()
-	{
-		try
-		{
+	public void stop() {
+		try {
 			getTransport().stop();
-		}
-		catch (TransportException ex)
-		{
+		} catch (TransportException ex) {
 			getLogger().log(Level.WARNING, "Failed to stop transport", ex);
-		}
-		catch (Exception e)
-		{
-			getLogger().log(Level.WARNING, "Failed to start the AsyncWeb HTTP Server", e);
+		} catch (Exception e) {
+			getLogger().log(Level.WARNING,
+					"Failed to start the AsyncWeb HTTP Server", e);
 		}
 	}
 
 	/**
 	 * Returns the number of worker threads to employ.
+	 * 
 	 * @return The number of worker threads to employ.
 	 */
-	public int getIoWorkerCount()
-	{
-		return Integer.parseInt(getParameters().getFirstValue("ioWorkerCount", "2"));
+	public int getIoWorkerCount() {
+		return Integer.parseInt(getParameters().getFirstValue("ioWorkerCount",
+				"2"));
 	}
 
 	/**
 	 * Sets the AsyncWeb transport layer.
-	 * @param transport The AsyncWeb transport layer.
+	 * 
+	 * @param transport
+	 *            The AsyncWeb transport layer.
 	 */
-	protected void setTransport(Transport transport)
-	{
+	protected void setTransport(Transport transport) {
 		this.transport = transport;
 	}
 
 	/**
 	 * Returns the AsyncWeb transport layer.
+	 * 
 	 * @return The AsyncWeb transport layer.
 	 */
-	protected Transport getTransport()
-	{
+	protected Transport getTransport() {
 		return this.transport;
 	}
 

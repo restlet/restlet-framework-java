@@ -28,33 +28,30 @@ import org.restlet.data.Protocol;
 
 /**
  * Jetty AJP server connector.
+ * 
  * @see <a href="http://jetty.mortbay.com/">Jetty home page</a>
  * @author Jerome Louvel (contact@noelios.com)
  */
-public class AjpServerHelper extends JettyServerHelper
-{
+public class AjpServerHelper extends JettyServerHelper {
 	/**
 	 * Constructor.
-	 * @param server The server to help.
+	 * 
+	 * @param server
+	 *            The server to help.
 	 */
-	public AjpServerHelper(Server server)
-	{
+	public AjpServerHelper(Server server) {
 		super(server);
 		getProtocols().add(Protocol.AJP);
 	}
 
 	/** Start hook. */
-	public void start() throws Exception
-	{
+	public void start() throws Exception {
 		AjpListener listener;
 
-		if (getServer().getAddress() != null)
-		{
-			listener = new AjpListener(this, new InetAddrPort(getServer().getAddress(),
-					getServer().getPort()));
-		}
-		else
-		{
+		if (getServer().getAddress() != null) {
+			listener = new AjpListener(this, new InetAddrPort(getServer()
+					.getAddress(), getServer().getPort()));
+		} else {
 			listener = new AjpListener(this);
 			listener.setPort(getServer().getPort());
 		}

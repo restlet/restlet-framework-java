@@ -31,69 +31,73 @@ import org.restlet.data.Request;
 import org.restlet.data.Response;
 
 /**
- * Server connector helper.  
+ * Server connector helper.
+ * 
  * @author Jerome Louvel (contact@noelios.com)
  */
-public class ServerHelper extends ConnectorHelper
-{
+public class ServerHelper extends ConnectorHelper {
 	/** The server to help. */
 	private Server server;
 
 	/**
 	 * Constructor.
-	 * @param server The client to help.
+	 * 
+	 * @param server
+	 *            The client to help.
 	 */
-	public ServerHelper(Server server)
-	{
+	public ServerHelper(Server server) {
 		this.server = server;
 	}
 
 	/**
 	 * Returns the server to help.
+	 * 
 	 * @return The server to help.
 	 */
-	public Server getServer()
-	{
+	public Server getServer() {
 		return this.server;
 	}
 
 	/**
 	 * Returns the server parameters.
+	 * 
 	 * @return The server parameters.
 	 */
-	public ParameterList getParameters()
-	{
+	public ParameterList getParameters() {
 		ParameterList result = (getServer() != null) ? getServer().getContext()
 				.getParameters() : null;
-		if (result == null) result = new ParameterList();
+		if (result == null)
+			result = new ParameterList();
 		return result;
 	}
 
 	/**
 	 * Returns the server logger.
+	 * 
 	 * @return The server logger.
 	 */
-	public Logger getLogger()
-	{
+	public Logger getLogger() {
 		return getServer().getLogger();
 	}
 
 	/**
 	 * Returns the server context.
+	 * 
 	 * @return The server context.
 	 */
-	public Context getContext()
-	{
+	public Context getContext() {
 		return getServer().getContext();
 	}
 
 	/**
 	 * Handles a call.
-	 * @param request The request to handle.
-	 * @param response The response to update.
+	 * 
+	 * @param request
+	 *            The request to handle.
+	 * @param response
+	 *            The response to update.
 	 */
-	public void handle(Request request, Response response)
-	{
+	public void handle(Request request, Response response) {
 		getServer().handle(request, response);
 	}
 

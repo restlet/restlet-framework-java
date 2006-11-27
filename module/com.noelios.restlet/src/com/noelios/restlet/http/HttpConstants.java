@@ -24,12 +24,12 @@ package com.noelios.restlet.http;
 
 /**
  * Constants related to the HTTP protocol.
+ * 
  * @author Jerome Louvel (contact@noelios.com)
  */
-public final class HttpConstants
-{
+public final class HttpConstants {
 	// ---------------------
-	// ---  Status codes ---
+	// --- Status codes ---
 	// ---------------------
 
 	public static final int STATUS_INFO_CONTINUE = 100;
@@ -125,7 +125,7 @@ public final class HttpConstants
 	public static final int STATUS_SERVER_ERROR_INSUFFICIENT_STORAGE = 507;
 
 	// ---------------------
-	// ---  Header names ---
+	// --- Header names ---
 	// ---------------------
 
 	public static final String HEADER_ACCEPT = "Accept";
@@ -233,7 +233,7 @@ public final class HttpConstants
 	public static final String HEADER_X_HTTP_METHOD_OVERRIDE = "X-HTTP-Method-Override";
 
 	// -------------------------
-	// ---  Attribute names  ---
+	// --- Attribute names ---
 	// -------------------------
 
 	public static final String ATTRIBUTE_HEADERS = "org.restlet.http.headers";

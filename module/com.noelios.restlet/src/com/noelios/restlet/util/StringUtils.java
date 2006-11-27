@@ -24,58 +24,57 @@ package com.noelios.restlet.util;
 
 /**
  * String manipulation utilities.
+ * 
  * @author Jerome Louvel (contact@noelios.com)
  */
-public class StringUtils
-{
+public class StringUtils {
 	/**
 	 * Strips a delimiter character from both ends of the source string.
-	 * @param source The source string to strip.
-	 * @param delimiter The character to remove.
+	 * 
+	 * @param source
+	 *            The source string to strip.
+	 * @param delimiter
+	 *            The character to remove.
 	 * @return The stripped string.
 	 */
-	public static String strip(String source, char delimiter)
-	{
+	public static String strip(String source, char delimiter) {
 		return strip(source, delimiter, true, true);
 	}
 
 	/**
 	 * Strips a delimiter character from a source string.
-	 * @param source The source string to strip.
-	 * @param delimiter The character to remove.
-	 * @param start Indicates if start of source should be stripped.
-	 * @param end Indicates if end of source should be stripped.
+	 * 
+	 * @param source
+	 *            The source string to strip.
+	 * @param delimiter
+	 *            The character to remove.
+	 * @param start
+	 *            Indicates if start of source should be stripped.
+	 * @param end
+	 *            Indicates if end of source should be stripped.
 	 * @return The stripped source string.
 	 */
-	public static String strip(String source, char delimiter, boolean start, boolean end)
-	{
+	public static String strip(String source, char delimiter, boolean start,
+			boolean end) {
 		int beginIndex = 0;
 		int endIndex = source.length();
 		boolean stripping = true;
 
 		// Strip beginning
-		while (stripping && (beginIndex < endIndex))
-		{
-			if (source.charAt(beginIndex) == delimiter)
-			{
+		while (stripping && (beginIndex < endIndex)) {
+			if (source.charAt(beginIndex) == delimiter) {
 				beginIndex++;
-			}
-			else
-			{
+			} else {
 				stripping = false;
 			}
 		}
 
 		// Strip end
 		stripping = true;
-		while (stripping && (beginIndex < endIndex - 1))
-		{
-			if (source.charAt(endIndex - 1) == delimiter)
-			{
+		while (stripping && (beginIndex < endIndex - 1)) {
+			if (source.charAt(endIndex - 1) == delimiter) {
 				endIndex--;
-			}
-			else
-			{
+			} else {
 				stripping = false;
 			}
 		}

@@ -29,27 +29,28 @@ import org.restlet.data.Protocol;
 
 /**
  * Jetty AJP server connector.
+ * 
  * @see <a href="http://jetty.mortbay.org/jetty6/">Jetty home page</a>
  * @author Jerome Louvel (contact@noelios.com)
  */
-public class AjpServerHelper extends JettyServerHelper
-{
+public class AjpServerHelper extends JettyServerHelper {
 	/**
 	 * Constructor.
-	 * @param server The server to help.
+	 * 
+	 * @param server
+	 *            The server to help.
 	 */
-	public AjpServerHelper(Server server)
-	{
+	public AjpServerHelper(Server server) {
 		super(server);
 		getProtocols().add(Protocol.AJP);
 	}
 
 	/**
 	 * Creates a new internal Jetty connector.
+	 * 
 	 * @return A new internal Jetty connector.
 	 */
-	protected AbstractConnector createConnector()
-	{
+	protected AbstractConnector createConnector() {
 		return new Ajp13SocketConnector();
 	}
 

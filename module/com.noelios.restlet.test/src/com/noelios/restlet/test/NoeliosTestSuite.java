@@ -27,13 +27,12 @@ import junit.framework.TestSuite;
 
 /**
  * Suite of unit tests for the Noelios Restlet Engine.
+ * 
  * @author Jerome Louvel (contact@noelios.com)
  */
-public class NoeliosTestSuite extends TestSuite
-{
+public class NoeliosTestSuite extends TestSuite {
 	/** Constructor. */
-	public NoeliosTestSuite()
-	{
+	public NoeliosTestSuite() {
 		addTestSuite(CookiesTestCase.class);
 		addTestSuite(FormTestCase.class);
 		addTestSuite(HeaderTestCase.class);
@@ -43,10 +42,10 @@ public class NoeliosTestSuite extends TestSuite
 
 	/**
 	 * JUnit constructor.
+	 * 
 	 * @return The unit test.
 	 */
-	public static Test suite()
-	{
+	public static Test suite() {
 		return new NoeliosTestSuite();
 	}
 }

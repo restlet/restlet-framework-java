@@ -30,10 +30,10 @@ import org.mortbay.util.InetAddrPort;
 
 /**
  * Jetty HTTP listener.
+ * 
  * @author Jerome Louvel (contact@noelios.com)
  */
-public class HttpListener extends SocketListener
-{
+public class HttpListener extends SocketListener {
 	/** Serial version identifier. */
 	private static final long serialVersionUID = 1L;
 
@@ -42,43 +42,47 @@ public class HttpListener extends SocketListener
 
 	/**
 	 * Constructor.
-	 * @param server The parent Jetty server.
+	 * 
+	 * @param server
+	 *            The parent Jetty server.
 	 */
-	public HttpListener(JettyServerHelper server)
-	{
+	public HttpListener(JettyServerHelper server) {
 		this.helper = server;
 	}
 
 	/**
 	 * Constructor.
-	 * @param server The parent Jetty server.
-	 * @param address The listening address.
+	 * 
+	 * @param server
+	 *            The parent Jetty server.
+	 * @param address
+	 *            The listening address.
 	 */
-	public HttpListener(JettyServerHelper server, InetAddrPort address)
-	{
+	public HttpListener(JettyServerHelper server, InetAddrPort address) {
 		super(address);
 		this.helper = server;
 	}
 
 	/**
 	 * Returns the parent Jetty server.
+	 * 
 	 * @return The parent Jetty server.
 	 */
-	public JettyServerHelper getHelper()
-	{
+	public JettyServerHelper getHelper() {
 		return this.helper;
 	}
 
-	/** 
-	 * Creates an AJP13Connection instance. 
-	 * This method can be used to override the connection instance.
-	 * @param socket The underlying socket.
+	/**
+	 * Creates an AJP13Connection instance. This method can be used to override
+	 * the connection instance.
+	 * 
+	 * @param socket
+	 *            The underlying socket.
 	 * @return The created connection.
 	 */
-	protected HttpConnection createConnection(Socket socket) throws IOException
-	{
-		return new HttpConnection(this, socket.getInetAddress(),
-				socket.getInputStream(), socket.getOutputStream(), socket);
+	protected HttpConnection createConnection(Socket socket) throws IOException {
+		return new HttpConnection(this, socket.getInetAddress(), socket
+				.getInputStream(), socket.getOutputStream(), socket);
 	}
 
 }

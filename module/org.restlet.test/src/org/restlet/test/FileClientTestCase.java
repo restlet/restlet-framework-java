@@ -14,20 +14,20 @@ import org.restlet.resource.StringRepresentation;
 
 /**
  * Unit test case for the File client connector.
+ * 
  * @author Jerome Louvel (contact@noelios.com)
  */
-public class FileClientTestCase extends TestCase
-{
+public class FileClientTestCase extends TestCase {
 
-	public void testFileClient() throws IOException
-	{
+	public void testFileClient() throws IOException {
 		String text = "Test content\r\nLine 2\r\nLine2";
 		Client fc = new Client(Protocol.FILE);
-		LocalReference fr = LocalReference.createFileReference(File.createTempFile(
-				"Restlet", ".txt"));
+		LocalReference fr = LocalReference.createFileReference(File
+				.createTempFile("Restlet", ".txt"));
 
 		// Write the text to temporary file
-		Response response = fc.put(fr.toString(), new StringRepresentation(text));
+		Response response = fc.put(fr.toString(),
+				new StringRepresentation(text));
 		assertTrue(response.getStatus().equals(Status.SUCCESS_OK));
 
 		// Get the text and compare to the original

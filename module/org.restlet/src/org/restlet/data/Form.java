@@ -31,96 +31,100 @@ import org.restlet.util.Factory;
 
 /**
  * Form which is a specialized modifiable list of parameters.
+ * 
  * @author Jerome Louvel (contact@noelios.com)
  */
-public class Form extends ParameterList
-{
+public class Form extends ParameterList {
 	/**
 	 * Empty constructor.
 	 */
-	public Form()
-	{
+	public Form() {
 		super();
 	}
 
 	/**
 	 * Constructor.
-	 * @param logger The logger to use.
-	 * @param representation The representation to parse (URL encoded Web form supported).
+	 * 
+	 * @param logger
+	 *            The logger to use.
+	 * @param representation
+	 *            The representation to parse (URL encoded Web form supported).
 	 * @throws IOException
 	 */
-	public Form(Logger logger, Representation representation)
-	{
+	public Form(Logger logger, Representation representation) {
 		Factory.getInstance().parse(logger, this, representation);
 	}
 
 	/**
 	 * Constructor.
-	 * @param logger The logger to use.
-	 * @param queryString The Web form parameters as a string.
-	 * @throws IOException 
+	 * 
+	 * @param logger
+	 *            The logger to use.
+	 * @param queryString
+	 *            The Web form parameters as a string.
+	 * @throws IOException
 	 */
-	public Form(Logger logger, String queryString)
-	{
+	public Form(Logger logger, String queryString) {
 		Factory.getInstance().parse(logger, this, queryString);
 	}
 
 	/**
 	 * Constructor.
-	 * @param webForm The URL encoded Web form.
+	 * 
+	 * @param webForm
+	 *            The URL encoded Web form.
 	 * @throws IOException
 	 */
-	public Form(Representation webForm)
-	{
+	public Form(Representation webForm) {
 		this(Logger.getLogger(Form.class.getCanonicalName()), webForm);
 	}
 
 	/**
 	 * Constructor.
-	 * @param queryString The Web form parameters as a string.
-	 * @throws IOException 
+	 * 
+	 * @param queryString
+	 *            The Web form parameters as a string.
+	 * @throws IOException
 	 */
-	public Form(String queryString)
-	{
+	public Form(String queryString) {
 		this(Logger.getLogger(Form.class.getCanonicalName()), queryString);
 	}
 
 	/**
-	 * Formats the form as a query string. 
+	 * Formats the form as a query string.
+	 * 
 	 * @return The form as a query string.
 	 */
-	public String getQueryString()
-	{
-		try
-		{
+	public String getQueryString() {
+		try {
 			return urlEncode();
-		}
-		catch (IOException ioe)
-		{
+		} catch (IOException ioe) {
 			return null;
 		}
 	}
 
 	/**
-	 * Returns the form as a Web representation (MediaType.APPLICATION_WWW_FORM).
+	 * Returns the form as a Web representation
+	 * (MediaType.APPLICATION_WWW_FORM).
+	 * 
 	 * @return The form as a Web representation.
 	 */
-	public Representation getWebRepresentation()
-	{
-		return new StringRepresentation(getQueryString(), MediaType.APPLICATION_WWW_FORM);
+	public Representation getWebRepresentation() {
+		return new StringRepresentation(getQueryString(),
+				MediaType.APPLICATION_WWW_FORM);
 	}
 
 	/**
-	 * URL encodes the form. 
+	 * URL encodes the form.
+	 * 
 	 * @return The encoded form.
 	 * @throws IOException
 	 */
-	public String urlEncode() throws IOException
-	{
+	public String urlEncode() throws IOException {
 		StringBuilder sb = new StringBuilder();
-		for (int i = 0; i < size(); i++)
-		{
-			if (i > 0) sb.append('&');
+		for (int i = 0; i < size(); i++) {
+			if (i > 0)
+				sb.append('&');
 			get(i).urlEncode(sb);
 		}
 		return sb.toString();

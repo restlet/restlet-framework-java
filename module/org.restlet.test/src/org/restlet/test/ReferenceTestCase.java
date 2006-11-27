@@ -27,11 +27,12 @@ import org.restlet.data.Reference;
 
 /**
  * Test {@link org.restlet.data.Reference}.
+ * 
  * @author Jerome Louvel (contact@noelios.com)
- * @author Lars Heuer (heuer[at]semagia.com) <a href="http://www.semagia.com/">Semagia</a>
+ * @author Lars Heuer (heuer[at]semagia.com) <a
+ *         href="http://www.semagia.com/">Semagia</a>
  */
-public class ReferenceTestCase extends RestletTestCase
-{
+public class ReferenceTestCase extends RestletTestCase {
 	protected final static String DEFAULT_SCHEME = "http";
 
 	protected final static String DEFAULT_SCHEMEPART = "//";
@@ -39,8 +40,7 @@ public class ReferenceTestCase extends RestletTestCase
 	/**
 	 * Tests the URI parsing.
 	 */
-	public void testParsing() throws IOException
-	{
+	public void testParsing() throws IOException {
 		String base = "http://a/b/c/d;p?q";
 
 		String uri01 = "g:h";
@@ -124,9 +124,10 @@ public class ReferenceTestCase extends RestletTestCase
 				"example.com:8042", "/over/there", "name=ferret", "nose");
 		testRef0("urn:example:animal:ferret:nose", "urn", null,
 				"example:animal:ferret:nose", null, null);
-		testRef0("mailto:fred@example.com", "mailto", null, "fred@example.com", null, null);
-		testRef0("foo://info.example.com?fred", "foo", "info.example.com", null, "fred",
-				null);
+		testRef0("mailto:fred@example.com", "mailto", null, "fred@example.com",
+				null, null);
+		testRef0("foo://info.example.com?fred", "foo", "info.example.com",
+				null, "fred", null);
 		testRef0("*", null, null, "*", null, null);
 
 		// Test the resolution of relative references
@@ -188,6 +189,7 @@ public class ReferenceTestCase extends RestletTestCase
 
 	/**
 	 * Tests the parsing of a reference into its components
+	 * 
 	 * @param reference
 	 * @param scheme
 	 * @param authority
@@ -195,9 +197,8 @@ public class ReferenceTestCase extends RestletTestCase
 	 * @param query
 	 * @param fragment
 	 */
-	private void testRef0(String reference, String scheme, String authority, String path,
-			String query, String fragment)
-	{
+	private void testRef0(String reference, String scheme, String authority,
+			String path, String query, String fragment) {
 		Reference ref = new Reference(reference);
 		assertEquals(scheme, ref.getScheme());
 		assertEquals(authority, ref.getAuthority());
@@ -208,12 +209,13 @@ public class ReferenceTestCase extends RestletTestCase
 
 	/**
 	 * Test the resolution of relative references.
+	 * 
 	 * @param baseUri
 	 * @param relativeUri
 	 * @param expectedAbsoluteUri
 	 */
-	private void testRef1(String baseUri, String relativeUri, String expectedAbsoluteUri)
-	{
+	private void testRef1(String baseUri, String relativeUri,
+			String expectedAbsoluteUri) {
 		Reference baseRef = new Reference(baseUri);
 		Reference relativeRef = new Reference(baseRef, relativeUri);
 		Reference absoluteRef = relativeRef.getTargetRef();
@@ -222,12 +224,13 @@ public class ReferenceTestCase extends RestletTestCase
 
 	/**
 	 * Test the relativization of absolute references
+	 * 
 	 * @param baseUri
 	 * @param absoluteUri
 	 * @param expectedRelativeUri
 	 */
-	private void testRef2(String baseUri, String absoluteUri, String expectedRelativeUri)
-	{
+	private void testRef2(String baseUri, String absoluteUri,
+			String expectedRelativeUri) {
 		Reference baseRef = new Reference(baseUri);
 		Reference absoluteRef = new Reference(absoluteUri);
 		Reference relativeRef = absoluteRef.getRelativeRef(baseRef);
@@ -236,11 +239,10 @@ public class ReferenceTestCase extends RestletTestCase
 
 	/**
 	 * Returns a reference with uri == http://
-	 *
+	 * 
 	 * @return Reference instance.
 	 */
-	protected Reference getReference()
-	{
+	protected Reference getReference() {
 		Reference ref = new Reference();
 		ref.setScheme(DEFAULT_SCHEME);
 		ref.setSchemeSpecificPart(DEFAULT_SCHEMEPART);
@@ -249,21 +251,19 @@ public class ReferenceTestCase extends RestletTestCase
 
 	/**
 	 * Returns a reference that is initialized with http://www.restlet.org.
-	 *
+	 * 
 	 * @return Reference instance.
 	 */
-	protected Reference getDefaultReference()
-	{
+	protected Reference getDefaultReference() {
 		Reference ref = getReference();
 		ref.setHostDomain("www.restlet.org");
 		return ref;
 	}
 
 	/**
-	 * Equality tests. 
+	 * Equality tests.
 	 */
-	public void testEquals() throws Exception
-	{
+	public void testEquals() throws Exception {
 		Reference ref1 = getDefaultReference();
 		Reference ref2 = getDefaultReference();
 		assertTrue(ref1.equals(ref2));
@@ -271,10 +271,9 @@ public class ReferenceTestCase extends RestletTestCase
 	}
 
 	/**
-	 * Test references that are unequal. 
+	 * Test references that are unequal.
 	 */
-	public void testUnEquals() throws Exception
-	{
+	public void testUnEquals() throws Exception {
 		String uri1 = "http://www.restlet.org/";
 		String uri2 = "http://www.restlet.net/";
 		Reference ref1 = new Reference(uri1);
@@ -286,8 +285,7 @@ public class ReferenceTestCase extends RestletTestCase
 	/**
 	 * Test hostname getting/setting.
 	 */
-	public void testHostName() throws Exception
-	{
+	public void testHostName() throws Exception {
 		Reference ref = getReference();
 		String host = "www.restlet.org";
 		ref.setHostDomain(host);
@@ -298,10 +296,9 @@ public class ReferenceTestCase extends RestletTestCase
 	}
 
 	/**
-	 * Test port getting/setting. 
+	 * Test port getting/setting.
 	 */
-	public void testPort() throws Exception
-	{
+	public void testPort() throws Exception {
 		Reference ref = getDefaultReference();
 		int port = 8080;
 		ref.setHostPort(port);
@@ -312,10 +309,9 @@ public class ReferenceTestCase extends RestletTestCase
 	}
 
 	/**
-	 * Test scheme getting/setting. 
+	 * Test scheme getting/setting.
 	 */
-	public void testScheme() throws Exception
-	{
+	public void testScheme() throws Exception {
 		Reference ref = getDefaultReference();
 		assertEquals(DEFAULT_SCHEME, ref.getScheme());
 		String scheme = "https";
@@ -326,10 +322,9 @@ public class ReferenceTestCase extends RestletTestCase
 	}
 
 	/**
-	 * Test scheme specific part getting/setting. 
+	 * Test scheme specific part getting/setting.
 	 */
-	public void testSchemeSpecificPart() throws Exception
-	{
+	public void testSchemeSpecificPart() throws Exception {
 		Reference ref = getDefaultReference();
 		String part = "//www.restlet.org";
 		assertEquals(part, ref.getSchemeSpecificPart());

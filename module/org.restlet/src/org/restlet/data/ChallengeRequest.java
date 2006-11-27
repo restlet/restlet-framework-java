@@ -26,10 +26,10 @@ import org.restlet.util.Factory;
 
 /**
  * Authentication challenge sent by an origin server to a client.
+ * 
  * @author Jerome Louvel (contact@noelios.com)
  */
-public class ChallengeRequest
-{
+public class ChallengeRequest {
 	/** The challenge scheme. */
 	private ChallengeScheme scheme;
 
@@ -41,11 +41,13 @@ public class ChallengeRequest
 
 	/**
 	 * Constructor.
-	 * @param scheme The challenge scheme.
-	 * @param realm The authentication realm.
+	 * 
+	 * @param scheme
+	 *            The challenge scheme.
+	 * @param realm
+	 *            The authentication realm.
 	 */
-	public ChallengeRequest(ChallengeScheme scheme, String realm)
-	{
+	public ChallengeRequest(ChallengeScheme scheme, String realm) {
 		this.scheme = scheme;
 		this.realm = realm;
 		this.parameters = null;
@@ -53,38 +55,28 @@ public class ChallengeRequest
 
 	/** {@inheritDoc} */
 	@Override
-	public boolean equals(Object obj)
-	{
+	public final boolean equals(final Object obj) {
 		boolean result = (obj == this);
 
-		//if obj == this no need to go further
-		if (!result)
-		{
-			// if obj isn't a challenge request or is null don't evaluate further
-			if ((obj instanceof ChallengeRequest) && obj != null)
-			{
+		// if obj == this no need to go further
+		if (!result) {
+			// if obj isn't a challenge request or is null don't evaluate
+			// further
+			if ((obj instanceof ChallengeRequest) && obj != null) {
 				ChallengeRequest that = (ChallengeRequest) obj;
 				result = (this.getParameters().equals(that.getParameters()));
 
-				if (result)
-				{
-					if (getRealm() != null)
-					{
+				if (result) {
+					if (getRealm() != null) {
 						result = getRealm().equals(that.getRealm());
-					}
-					else
-					{
+					} else {
 						result = (that.getRealm() == null);
 					}
-					
-					if(result)
-					{
-						if (getScheme() != null)
-						{
+
+					if (result) {
+						if (getScheme() != null) {
 							result = getScheme().equals(that.getScheme());
-						}
-						else
-						{
+						} else {
 							result = (that.getScheme() == null);
 						}
 					}
@@ -97,54 +89,56 @@ public class ChallengeRequest
 
 	/**
 	 * Returns the scheme parameters.
+	 * 
 	 * @return The scheme parameters.
 	 */
-	public ParameterList getParameters()
-	{
-		if (this.parameters == null) this.parameters = new ParameterList();
+	public ParameterList getParameters() {
+		if (this.parameters == null)
+			this.parameters = new ParameterList();
 		return this.parameters;
 	}
 
 	/**
 	 * Returns the realm name.
+	 * 
 	 * @return The realm name.
 	 */
-	public String getRealm()
-	{
+	public String getRealm() {
 		return this.realm;
 	}
 
 	/**
 	 * Returns the scheme used.
+	 * 
 	 * @return The scheme used.
 	 */
-	public ChallengeScheme getScheme()
-	{
+	public ChallengeScheme getScheme() {
 		return this.scheme;
 	}
 
 	/** {@inheritDoc} */
 	@Override
-	public int hashCode()
-	{
+	public int hashCode() {
 		return Factory.hashCode(getScheme(), getRealm(), getParameters());
 	}
 
 	/**
 	 * Sets the realm name.
-	 * @param realm The realm name.
+	 * 
+	 * @param realm
+	 *            The realm name.
 	 */
-	public void setRealm(String realm)
-	{
+	public void setRealm(String realm) {
 		this.realm = realm;
 	}
 
 	/**
 	 * Sets the scheme used.
-	 * @param scheme The scheme used.
+	 * 
+	 * @param scheme
+	 *            The scheme used.
 	 */
-	public void setScheme(ChallengeScheme scheme)
-	{
+	public void setScheme(ChallengeScheme scheme) {
 		this.scheme = scheme;
 	}
 

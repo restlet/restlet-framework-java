@@ -31,10 +31,10 @@ import org.mortbay.util.InetAddrPort;
 
 /**
  * Jetty AJP listener.
+ * 
  * @author Jerome Louvel (contact@noelios.com)
  */
-public class AjpListener extends AJP13Listener
-{
+public class AjpListener extends AJP13Listener {
 	/** Serial version identifier. */
 	private static final long serialVersionUID = 1L;
 
@@ -43,43 +43,48 @@ public class AjpListener extends AJP13Listener
 
 	/**
 	 * Constructor.
-	 * @param server The parent Jetty server.
+	 * 
+	 * @param server
+	 *            The parent Jetty server.
 	 */
-	public AjpListener(JettyServerHelper server)
-	{
+	public AjpListener(JettyServerHelper server) {
 		this.helper = server;
 	}
 
 	/**
 	 * Constructor.
-	 * @param server The parent Jetty server.
-	 * @param address The listening address.
+	 * 
+	 * @param server
+	 *            The parent Jetty server.
+	 * @param address
+	 *            The listening address.
 	 */
-	public AjpListener(JettyServerHelper server, InetAddrPort address)
-	{
+	public AjpListener(JettyServerHelper server, InetAddrPort address) {
 		super(address);
 		this.helper = server;
 	}
 
 	/**
 	 * Returns the parent Jetty server helper.
+	 * 
 	 * @return The parent Jetty server helper.
 	 */
-	public JettyServerHelper getHelper()
-	{
+	public JettyServerHelper getHelper() {
 		return this.helper;
 	}
 
-	/** 
-	 * Creates an AJP13Connection instance. 
-	 * This method can be used to override the connection instance.
-	 * @param socket The underlying socket.
+	/**
+	 * Creates an AJP13Connection instance. This method can be used to override
+	 * the connection instance.
+	 * 
+	 * @param socket
+	 *            The underlying socket.
 	 * @return The created connection.
 	 */
-	protected AJP13Connection createConnection(Socket socket) throws IOException
-	{
-		return new AjpConnection(this, socket.getInputStream(),
-				socket.getOutputStream(), socket, getBufferSize());
+	protected AJP13Connection createConnection(Socket socket)
+			throws IOException {
+		return new AjpConnection(this, socket.getInputStream(), socket
+				.getOutputStream(), socket, getBufferSize());
 	}
 
 }

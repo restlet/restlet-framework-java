@@ -24,9 +24,9 @@ package com.noelios.restlet.example.tutorial;
 
 /**
  * Constants for the tutorial examples.
+ * 
  * @author Jerome Louvel (contact@noelios.com)
  */
-public interface Constants
-{
+public interface Constants {
 	public static final String ROOT_URI = "file:///D:/Restlet/build/www/docs/api/";
 }

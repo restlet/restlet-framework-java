@@ -37,15 +37,14 @@ import org.restlet.resource.StringRepresentation;
 
 /**
  * Unit tests for the RedirectRestlet.
+ * 
  * @author Jerome Louvel (contact@noelios.com)
  */
-public class RedirectTestCase extends TestCase
-{
+public class RedirectTestCase extends TestCase {
 	/**
 	 * Tests the cookies parsing.
 	 */
-	public void testRedirect() throws Exception
-	{
+	public void testRedirect() throws Exception {
 		// Create containers
 		Container clientContainer = new Container();
 		Container proxyContainer = new Container();
@@ -61,17 +60,17 @@ public class RedirectTestCase extends TestCase
 				Redirector.MODE_CONNECTOR);
 
 		// Create a new Restlet that will display some path information.
-		Restlet trace = new Restlet(originContainer.getContext())
-		{
-			public void handle(Request request, Response response)
-			{
+		Restlet trace = new Restlet(originContainer.getContext()) {
+			public void handle(Request request, Response response) {
 				// Print the requested URI path
-				String message = "Resource URI:  " + request.getResourceRef() + '\n'
-						+ "Base URI:      " + request.getBaseRef() + '\n' + "Relative path: "
-						+ request.getRelativePart() + '\n' + "Query string:  "
-						+ request.getResourceRef().getQuery() + '\n' + "Method name:   "
-						+ request.getMethod() + '\n';
-				response.setEntity(new StringRepresentation(message, MediaType.TEXT_PLAIN));
+				String message = "Resource URI:  " + request.getResourceRef()
+						+ '\n' + "Base URI:      " + request.getBaseRef()
+						+ '\n' + "Relative path: " + request.getRelativePart()
+						+ '\n' + "Query string:  "
+						+ request.getResourceRef().getQuery() + '\n'
+						+ "Method name:   " + request.getMethod() + '\n';
+				response.setEntity(new StringRepresentation(message,
+						MediaType.TEXT_PLAIN));
 			}
 		};
 
@@ -107,9 +106,10 @@ public class RedirectTestCase extends TestCase
 		proxyContainer.stop();
 	}
 
-	private void testCall(Context context, Method method, String uri) throws Exception
-	{
-		Response response = context.getDispatcher().handle(new Request(method, uri));
+	private void testCall(Context context, Method method, String uri)
+			throws Exception {
+		Response response = context.getDispatcher().handle(
+				new Request(method, uri));
 		assertNotNull(response.getEntity());
 		response.getEntity().write(System.out);
 	}

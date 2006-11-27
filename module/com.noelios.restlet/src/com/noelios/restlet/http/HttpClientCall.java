@@ -45,21 +45,25 @@ import org.restlet.service.ConnectorService;
 
 /**
  * Low-level HTTP client call.
+ * 
  * @author Jerome Louvel (contact@noelios.com)
  */
-public class HttpClientCall extends HttpCall
-{
+public class HttpClientCall extends HttpCall {
 	/** The parent HTTP client helper. */
 	private HttpClientHelper helper;
 
 	/**
 	 * Constructor setting the request address to the local host.
-	 * @param helper The parent HTTP client helper.
-	 * @param method The method name.
-	 * @param requestUri The request URI.
+	 * 
+	 * @param helper
+	 *            The parent HTTP client helper.
+	 * @param method
+	 *            The method name.
+	 * @param requestUri
+	 *            The request URI.
 	 */
-	public HttpClientCall(HttpClientHelper helper, String method, String requestUri)
-	{
+	public HttpClientCall(HttpClientHelper helper, String method,
+			String requestUri) {
 		this.helper = helper;
 		setMethod(method);
 		setRequestUri(requestUri);
@@ -68,82 +72,77 @@ public class HttpClientCall extends HttpCall
 
 	/**
 	 * Returns the HTTP client helper.
+	 * 
 	 * @return The HTTP client helper.
 	 */
-	public HttpClientHelper getHelper()
-	{
+	public HttpClientHelper getHelper() {
 		return this.helper;
 	}
 
 	/**
 	 * Returns the local IP address or 127.0.0.1 if the resolution fails.
+	 * 
 	 * @return The local IP address or 127.0.0.1 if the resolution fails.
 	 */
-	public static String getLocalAddress()
-	{
-		try
-		{
+	public static String getLocalAddress() {
+		try {
 			return InetAddress.getLocalHost().getHostAddress();
-		}
-		catch (UnknownHostException e)
-		{
+		} catch (UnknownHostException e) {
 			return "127.0.0.1";
 		}
 	}
 
 	/**
 	 * Returns the request entity channel if it exists.
+	 * 
 	 * @return The request entity channel if it exists.
 	 */
-	public WritableByteChannel getRequestChannel()
-	{
+	public WritableByteChannel getRequestChannel() {
 		return null;
 	}
 
 	/**
 	 * Returns the request entity stream if it exists.
+	 * 
 	 * @return The request entity stream if it exists.
 	 */
-	public OutputStream getRequestStream()
-	{
+	public OutputStream getRequestStream() {
 		return null;
 	}
 
 	/**
-	 * Sends the request to the client. Commits the request line, headers and optional entity and 
-	 * send them over the network. 
-	 * @param request The high-level request.
+	 * Sends the request to the client. Commits the request line, headers and
+	 * optional entity and send them over the network.
+	 * 
+	 * @param request
+	 *            The high-level request.
 	 */
-	public Status sendRequest(Request request)
-	{
+	public Status sendRequest(Request request) {
 		Status result = null;
 
-		try
-		{
-			Representation entity = request.isEntityAvailable() ? request.getEntity() : null;
+		try {
+			Representation entity = request.isEntityAvailable() ? request
+					.getEntity() : null;
 
-			if (entity != null)
-			{
+			if (entity != null) {
 				// Get the connector service to callback
 				ConnectorService connectorService = getConnectorService(request);
-				if (connectorService != null) connectorService.beforeSend(entity);
+				if (connectorService != null)
+					connectorService.beforeSend(entity);
 
-				// In order to workaround bug #6472250, it is very important to reuse that exact same
-				// "rs" reference when manipulating the request stream, otherwise "infufficient data sent" exceptions
+				// In order to workaround bug #6472250, it is very important to
+				// reuse that exact same
+				// "rs" reference when manipulating the request stream,
+				// otherwise "infufficient data sent" exceptions
 				// will occur in "fixedLengthMode"
 				OutputStream rs = getRequestStream();
 				WritableByteChannel wbc = getRequestChannel();
-				if (wbc != null)
-				{
-					if (entity != null)
-					{
+				if (wbc != null) {
+					if (entity != null) {
 						entity.write(wbc);
 					}
-				}
-				else if (rs != null)
-				{
-					if (entity != null)
-					{
+				} else if (rs != null) {
+					if (entity != null) {
 						entity.write(rs);
 					}
 
@@ -151,27 +150,28 @@ public class HttpClientCall extends HttpCall
 				}
 
 				// Call-back after writing
-				if (connectorService != null) connectorService.afterSend(entity);
+				if (connectorService != null)
+					connectorService.afterSend(entity);
 
-				if (rs != null)
-				{
+				if (rs != null) {
 					rs.close();
-				}
-				else if (wbc != null)
-				{
+				} else if (wbc != null) {
 					wbc.close();
 				}
 			}
 
-			// Now we can access the status code, this MUST happen after closing any open request stream.
+			// Now we can access the status code, this MUST happen after closing
+			// any open request stream.
 			result = new Status(getStatusCode(), null, getReasonPhrase(), null);
-		}
-		catch (IOException ioe)
-		{
-			getHelper().getLogger().log(Level.FINE,
-					"An error occured during the communication with the remote HTTP server.",
-					ioe);
-			result = new Status(Status.CONNECTOR_ERROR_COMMUNICATION,
+		} catch (IOException ioe) {
+			getHelper()
+					.getLogger()
+					.log(
+							Level.FINE,
+							"An error occured during the communication with the remote HTTP server.",
+							ioe);
+			result = new Status(
+					Status.CONNECTOR_ERROR_COMMUNICATION,
 					"Unable to complete the HTTP call due to a communication error with the remote server. "
 							+ ioe.getMessage());
 		}
@@ -181,88 +181,71 @@ public class HttpClientCall extends HttpCall
 
 	/**
 	 * Returns the response channel if it exists.
+	 * 
 	 * @return The response channel if it exists.
 	 */
-	public ReadableByteChannel getResponseChannel()
-	{
+	public ReadableByteChannel getResponseChannel() {
 		return null;
 	}
 
 	/**
 	 * Returns the response stream if it exists.
+	 * 
 	 * @return The response stream if it exists.
 	 */
-	public InputStream getResponseStream()
-	{
+	public InputStream getResponseStream() {
 		return null;
 	}
 
 	/**
-	 * Returns the response entity if available. Note that no metadata is associated by default, 
-	 * you have to manually set them from your headers.
+	 * Returns the response entity if available. Note that no metadata is
+	 * associated by default, you have to manually set them from your headers.
+	 * 
 	 * @return The response entity if available.
 	 */
-	public Representation getResponseEntity()
-	{
+	public Representation getResponseEntity() {
 		Representation result = null;
 
-		if (getResponseStream() != null)
-		{
+		if (getResponseStream() != null) {
 			result = new InputRepresentation(getResponseStream(), null);
-		}
-		else if (getResponseChannel() != null)
-		{
+		} else if (getResponseChannel() != null) {
 			result = new ReadableRepresentation(getResponseChannel(), null);
-		}
-		else if (getMethod().equals(Method.HEAD.getName()))
-		{
+		} else if (getMethod().equals(Method.HEAD.getName())) {
 			result = new Representation();
 		}
 
-		if (result != null)
-		{
-			for (Parameter header : getResponseHeaders())
-			{
-				if (header.getName().equalsIgnoreCase(HttpConstants.HEADER_CONTENT_TYPE))
-				{
+		if (result != null) {
+			for (Parameter header : getResponseHeaders()) {
+				if (header.getName().equalsIgnoreCase(
+						HttpConstants.HEADER_CONTENT_TYPE)) {
 					ContentType contentType = new ContentType(header.getValue());
-					if (contentType != null)
-					{
+					if (contentType != null) {
 						result.setMediaType(contentType.getMediaType());
 						result.setCharacterSet(contentType.getCharacterSet());
 					}
-				}
-				else if (header.getName().equalsIgnoreCase(
-						HttpConstants.HEADER_CONTENT_LENGTH))
-				{
+				} else if (header.getName().equalsIgnoreCase(
+						HttpConstants.HEADER_CONTENT_LENGTH)) {
 					result.setSize(Long.parseLong(header.getValue()));
-				}
-				else if (header.getName().equalsIgnoreCase(HttpConstants.HEADER_EXPIRES))
-				{
-					result.setExpirationDate(parseDate(header.getValue(), false));
-				}
-				else if (header.getName().equalsIgnoreCase(
-						HttpConstants.HEADER_CONTENT_ENCODING))
-				{
+				} else if (header.getName().equalsIgnoreCase(
+						HttpConstants.HEADER_EXPIRES)) {
+					result
+							.setExpirationDate(parseDate(header.getValue(),
+									false));
+				} else if (header.getName().equalsIgnoreCase(
+						HttpConstants.HEADER_CONTENT_ENCODING)) {
 					result.setEncoding(new Encoding(header.getValue()));
-				}
-				else if (header.getName().equalsIgnoreCase(
-						HttpConstants.HEADER_CONTENT_LANGUAGE))
-				{
+				} else if (header.getName().equalsIgnoreCase(
+						HttpConstants.HEADER_CONTENT_LANGUAGE)) {
 					result.setLanguage(new Language(header.getValue()));
-				}
-				else if (header.getName()
-						.equalsIgnoreCase(HttpConstants.HEADER_LAST_MODIFIED))
-				{
-					result.setModificationDate(parseDate(header.getValue(), false));
-				}
-				else if (header.getName().equalsIgnoreCase(HttpConstants.HEADER_ETAG))
-				{
+				} else if (header.getName().equalsIgnoreCase(
+						HttpConstants.HEADER_LAST_MODIFIED)) {
+					result.setModificationDate(parseDate(header.getValue(),
+							false));
+				} else if (header.getName().equalsIgnoreCase(
+						HttpConstants.HEADER_ETAG)) {
 					result.setTag(Tag.parse(header.getValue()));
-				}
-				else if (header.getName().equalsIgnoreCase(
-						HttpConstants.HEADER_CONTENT_LOCATION))
-				{
+				} else if (header.getName().equalsIgnoreCase(
+						HttpConstants.HEADER_CONTENT_LOCATION)) {
 					result.setIdentifier(header.getValue());
 				}
 			}
