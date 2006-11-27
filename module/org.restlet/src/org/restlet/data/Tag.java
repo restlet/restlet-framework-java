@@ -90,6 +90,15 @@ public class Tag
 	}
 
 	/**
+	 * Constructor of weak tags.
+	 * @param opaqueTag The tag value.
+	 */
+	public Tag(String opaqueTag)
+	{
+		this(opaqueTag, true);
+	}
+
+	/**
 	 * Constructor.
 	 * @param opaqueTag The tag value.
 	 * @param weak The weakness indicator.
