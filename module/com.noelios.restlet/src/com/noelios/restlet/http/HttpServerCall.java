@@ -64,10 +64,14 @@ public abstract class HttpServerCall extends HttpCall {
 		setLogger(server.getLogger());
 		setServerAddress(server.getAddress());
 		setServerPort(server.getPort());
-		setServerProtocol(server.getProtocols().get(0)); // Assumes that
-															// server connectors
-															// support only one
-															// protocol
+
+		if ((server.getProtocols() != null)
+				&& (server.getProtocols().size() > 0)) {
+			// Assumes that server connectors support only one protocol at the
+			// same time
+			setServerProtocol(server.getProtocols().get(0));
+		}
+
 		this.hostParsed = false;
 	}
 

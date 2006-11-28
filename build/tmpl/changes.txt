@@ -6,7 +6,7 @@ Changes log
 
 @version-full@ (@release-date@)
 [Bugs fixed]
- - 
+ - Fixed IndexOutOfBoundsException in HttpServerCall causing ServerServlet to fail. Reported by Steffen Eichenberg.
  
 [API changes]
  - Removed Jetty 5 connector from the distribution. Use Jetty 6 connector instead. 
