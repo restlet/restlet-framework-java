@@ -53,7 +53,7 @@ public class HttpServerHelper extends AsyncWebServerHelper {
 	 *            The server to help.
 	 */
 	public HttpServerHelper(Server server) {
-		super(server);
+		super(server, false);
 		getProtocols().add(Protocol.HTTP);
 	}
 

@@ -100,9 +100,12 @@ public abstract class AsyncWebServerHelper extends HttpServerHelper implements
 	 * 
 	 * @param server
 	 *            The server to help.
+	 * @param confidential
+	 *            Indicates if the server is acting in HTTPS mode.
 	 */
-	public AsyncWebServerHelper(Server server) {
+	public AsyncWebServerHelper(Server server, boolean confidential) {
 		super(server);
+		this.confidential = confidential;
 	}
 
 	/*
