@@ -47,7 +47,7 @@ import org.restlet.data.Method;
 import org.restlet.data.Protocol;
 import org.restlet.data.Request;
 import org.restlet.data.Response;
-import org.restlet.resource.ObjectRepresentation;
+import org.restlet.data.Status;
 import org.restlet.resource.Representation;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
@@ -59,18 +59,18 @@ import com.noelios.restlet.ClientHelper;
 import com.noelios.restlet.Factory;
 
 /**
- * Client connector to a JDBC database. To send a request to the server create a
- * new instance of JdbcCall and invoke the handle() method. Alteratively you can
- * create a new Call with the JDBC URI as the resource reference and use an XML
- * request as the entity.<br/><br/> Database connections are optionally pooled
- * using Apache Commons DBCP. In this case, a different connection pool is
- * created for each unique combination of JDBC URI and connection properties.<br/><br/>
- * Do not forget to register your JDBC drivers before using this client. See <a
+ * Client connector to a JDBC database.<br/> To send a request to the server,
+ * create a new instance of a client supporting the JDBC Protocol and invoke the
+ * handle() method.<br/> Alternatively, you can create a new Call with the JDBC
+ * URI as the resource reference and use an XML request as the entity.<br/><br/>
+ * Database connections are optionally pooled using Apache Commons DBCP. In this
+ * case, a different connection pool is created for each unique combination of
+ * JDBC URI and connection properties.<br/><br/> Do not forget to register
+ * your JDBC drivers before using this client. See <a
  * href="http://java.sun.com/j2se/1.5.0/docs/api/java/sql/DriverManager.html">
- * JDBC DriverManager API</a> for details<br/> <br/> Sample XML request:<br/>
- * <br/> {@code <?xml version="1.0" encoding="ISO-8859-1" ?>}<br/>
- * {@code <request>}<br/> &nbsp;&nbsp;{@code <header>}<br/>
- * &nbsp;&nbsp;&nbsp;&nbsp;{@code <connection>}<br/>
+ * JDBC DriverManager API</a> for details<br/><br/> Sample XML request:<br/><br/>
+ * {@code <?xml version="1.0" encoding="ISO-8859-1" ?>}<br/> {@code <request>}<br/>
+ * &nbsp;&nbsp;{@code <header>}<br/> &nbsp;&nbsp;&nbsp;&nbsp;{@code <connection>}<br/>
  * &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;{@code <usePooling>true</usePooling>}<br/>
  * &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;{@code <property name="user">scott</property >}<br/>
  * &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;{@code <property name="password">tiger</property >}<br/>
@@ -78,10 +78,16 @@ import com.noelios.restlet.Factory;
  * &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;{@code <property name="...">true</property >}<br/>
  * &nbsp;&nbsp;&nbsp;&nbsp;{@code </connection>}<br/> &nbsp;&nbsp;&nbsp;&nbsp;{@code <returnGeneratedKeys>true</returnGeneratedKeys>}<br/>
  * &nbsp;&nbsp;{@code </header>}<br/> &nbsp;&nbsp;{@code <body>}<br/>
- * &nbsp;&nbsp;&nbsp;&nbsp;{@code SELECT * FROM customers}<br/> &nbsp;&nbsp;{@code </body>}<br/>
- * {@code </request>}
+ * &nbsp;&nbsp;&nbsp;&nbsp;{@code <statement>UPDATE myTable SET myField1="value1" </statement>}<br/>
+ * &nbsp;&nbsp;&nbsp;&nbsp;{@code <statement>SELECT msField1, myField2 FROM myTable</statement>}<br/>
+ * &nbsp;&nbsp;{@code </body>}<br/> {@code </request>}<br/><br/>Several SQL Statements
+ * can be specified.<br/> A RowSetRepresentation of the last correctly executed
+ * SQL request is returned to the Client.</br>
+ * 
+ * @see com.noelios.restlet.ext.jdbc.RowSetRepresentation
  * 
  * @author Jerome Louvel (contact@noelios.com)
+ * @author Thierry Boileau
  */
 public class JdbcClientHelper extends ClientHelper {
 	/** Map of connection factories. */
@@ -131,87 +137,136 @@ public class JdbcClientHelper extends ClientHelper {
 	public void handle(Request request, Response response) {
 		Connection connection = null;
 
-		try {
-			// Parse the JDBC URI
-			String connectionURI = request.getResourceRef().toString();
+		if (request.getMethod().equals(Method.POST)) {
+			try {
+				// Parse the JDBC URI
+				String connectionURI = request.getResourceRef().toString();
 
-			// Parse the request to extract necessary info
-			DocumentBuilder docBuilder = DocumentBuilderFactory.newInstance()
-					.newDocumentBuilder();
-			Document requestDoc = docBuilder.parse(request.getEntity()
-					.getStream());
+				// Parse the request to extract necessary info
+				DocumentBuilder docBuilder = DocumentBuilderFactory
+						.newInstance().newDocumentBuilder();
+				Document requestDoc = docBuilder.parse(request.getEntity()
+						.getStream());
 
-			Element rootElt = (Element) requestDoc.getElementsByTagName(
-					"request").item(0);
-			Element headerElt = (Element) rootElt
-					.getElementsByTagName("header").item(0);
-			Element connectionElt = (Element) headerElt.getElementsByTagName(
-					"connection").item(0);
+				Element rootElt = (Element) requestDoc.getElementsByTagName(
+						"request").item(0);
+				Element headerElt = (Element) rootElt.getElementsByTagName(
+						"header").item(0);
+				Element connectionElt = (Element) headerElt
+						.getElementsByTagName("connection").item(0);
 
-			// Read the connection pooling setting
-			Node usePoolingNode = connectionElt.getElementsByTagName(
-					"usePooling").item(0);
-			boolean usePooling = usePoolingNode.getTextContent().equals("true") ? true
-					: false;
+				// Read the connection pooling setting
+				Node usePoolingNode = connectionElt.getElementsByTagName(
+						"usePooling").item(0);
+				boolean usePooling = usePoolingNode.getTextContent().equals(
+						"true") ? true : false;
 
-			// Read the connection properties
-			NodeList propertyNodes = connectionElt
-					.getElementsByTagName("property");
-			Node propertyNode = null;
-			Properties properties = null;
-			String name = null;
-			String value = null;
-			for (int i = 0; i < propertyNodes.getLength(); i++) {
-				propertyNode = propertyNodes.item(i);
+				// Read the connection properties
+				NodeList propertyNodes = connectionElt
+						.getElementsByTagName("property");
+				Node propertyNode = null;
+				Properties properties = null;
+				String name = null;
+				String value = null;
+				for (int i = 0; i < propertyNodes.getLength(); i++) {
+					propertyNode = propertyNodes.item(i);
 
-				if (properties == null)
-					properties = new Properties();
-				name = propertyNode.getAttributes().getNamedItem("name")
-						.getTextContent();
-				value = propertyNode.getTextContent();
-				properties.setProperty(name, value);
-			}
+					if (properties == null)
+						properties = new Properties();
+					name = propertyNode.getAttributes().getNamedItem("name")
+							.getTextContent();
+					value = propertyNode.getTextContent();
+					properties.setProperty(name, value);
+				}
 
-			Node returnGeneratedKeysNode = headerElt.getElementsByTagName(
-					"returnGeneratedKeys").item(0);
-			boolean returnGeneratedKeys = returnGeneratedKeysNode
-					.getTextContent().equals("true") ? true : false;
+				Node returnGeneratedKeysNode = headerElt.getElementsByTagName(
+						"returnGeneratedKeys").item(0);
+				boolean returnGeneratedKeys = returnGeneratedKeysNode
+						.getTextContent().equals("true") ? true : false;
 
-			// Read the SQL body
-			Node sqlRequestNode = rootElt.getElementsByTagName("body").item(0);
-			String sqlRequest = sqlRequestNode.getTextContent();
+				// Read the SQL body and get the list of sql statements
+				Element bodyElt = (Element) rootElt
+						.getElementsByTagName("body").item(0);
+				NodeList statementNodes = bodyElt
+						.getElementsByTagName("statement");
+				List<String> sqlRequests = new ArrayList<String>();
+				for (int i = 0; i < statementNodes.getLength(); i++) {
+					String sqlRequest = statementNodes.item(i).getTextContent();
+					sqlRequests.add(sqlRequest);
+				}
 
-			if (request.getMethod().equals(Method.POST)) {
-				// Execute the SQL request
+				// Execute the List of SQL requests
 				connection = getConnection(connectionURI, properties,
 						usePooling);
-				Statement statement = connection.createStatement();
+				JdbcResult result = handleSqlRequests(connection,
+						returnGeneratedKeys, sqlRequests);
+				response.setEntity(new RowSetRepresentation(result));
+
+			} catch (SQLException se) {
+				getLogger().log(Level.WARNING,
+						"Error while processing the SQL request", se);
+				response.setStatus(new Status(Status.SERVER_ERROR_INTERNAL,
+						"Error while processing the SQL request"));
+			} catch (ParserConfigurationException pce) {
+				getLogger().log(Level.WARNING,
+						"Error with XML parser configuration", pce);
+				response.setStatus(new Status(Status.CLIENT_ERROR_BAD_REQUEST,
+						"Error with XML parser configuration"));
+			} catch (SAXException se) {
+				getLogger().log(Level.WARNING,
+						"Error while parsing the XML document", se);
+				response.setStatus(new Status(Status.CLIENT_ERROR_BAD_REQUEST,
+						"Error while parsing the XML document"));
+			} catch (IOException ioe) {
+				getLogger().log(Level.WARNING, "Input/Output exception", ioe);
+				response.setStatus(new Status(Status.SERVER_ERROR_INTERNAL,
+						"Input/Output exception"));
+			}
+		} else {
+			throw new IllegalArgumentException(
+					"Only the POST method is supported");
+		}
+	}
+
+	/**
+	 * Helper
+	 * 
+	 * @param connection
+	 * @param returnGeneratedKeys
+	 * @param sqlRequests
+	 * @return the result of the last executed SQL request
+	 */
+	private JdbcResult handleSqlRequests(Connection connection,
+			boolean returnGeneratedKeys, List<String> sqlRequests) {
+		JdbcResult result = null;
+		try {
+			connection.setAutoCommit(true);
+			Statement statement = connection.createStatement();
+			for (String sqlRequest : sqlRequests) {
 				statement.execute(sqlRequest,
 						returnGeneratedKeys ? Statement.RETURN_GENERATED_KEYS
 								: Statement.NO_GENERATED_KEYS);
-				JdbcResult result = new JdbcResult(statement);
-				response.setEntity(new ObjectRepresentation(result));
+				result = new JdbcResult(statement);
+			}
 
-				// Commit any changes to the database
-				if (!connection.getAutoCommit()) {
-					connection.commit();
-				}
-			} else {
-				throw new IllegalArgumentException(
-						"Only the POST method is supported");
+			// Commit any changes to the database
+			if (!connection.getAutoCommit()) {
+				connection.commit();
 			}
 		} catch (SQLException se) {
 			getLogger().log(Level.WARNING,
-					"Error while processing the SQL request", se);
-		} catch (ParserConfigurationException pce) {
-			getLogger().log(Level.WARNING,
-					"Error with XML parser configuration", pce);
-		} catch (SAXException se) {
-			getLogger().log(Level.WARNING,
-					"Error while parsing the XML document", se);
-		} catch (IOException ioe) {
-			getLogger().log(Level.WARNING, "Input/Output exception", ioe);
+					"Error while processing the SQL requests", se);
+			try {
+				if (!connection.getAutoCommit()) {
+					connection.rollback();
+				}
+			} catch (SQLException se2) {
+				getLogger().log(Level.WARNING,
+						"Error while rollbacking the transaction", se);
+			}
 		}
+		return result;
+
 	}
 
 	/**
@@ -241,8 +296,8 @@ public class JdbcClientHelper extends ClientHelper {
 					for (Object key : c.getProperties().keySet()) {
 						if (equal && properties.containsKey(key)) {
 							equal = equal
-									&& (properties.get(key) == c
-											.getProperties().get(key));
+									&& (properties.get(key).equals(c
+											.getProperties().get(key)));
 						} else {
 							equal = false;
 						}
@@ -364,5 +419,4 @@ public class JdbcClientHelper extends ClientHelper {
 			return properties;
 		}
 	}
-
 }
