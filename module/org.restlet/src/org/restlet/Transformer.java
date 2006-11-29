@@ -26,16 +26,19 @@ import java.io.IOException;
 import java.io.OutputStream;
 import java.util.logging.Level;
 
+import javax.xml.transform.Source;
 import javax.xml.transform.TransformerConfigurationException;
 import javax.xml.transform.TransformerException;
 import javax.xml.transform.TransformerFactory;
 import javax.xml.transform.TransformerFactoryConfigurationError;
+import javax.xml.transform.URIResolver;
 import javax.xml.transform.stream.StreamResult;
 import javax.xml.transform.stream.StreamSource;
 
 import org.restlet.data.CharacterSet;
 import org.restlet.data.Language;
 import org.restlet.data.MediaType;
+import org.restlet.data.Reference;
 import org.restlet.data.Request;
 import org.restlet.data.Response;
 import org.restlet.resource.OutputRepresentation;
@@ -63,6 +66,9 @@ public class Transformer extends Filter {
 		/** The source representation to transform. */
 		private Representation sourceRepresentation;
 
+		/** The URI resolver. */
+		private URIResolver uriResolver;
+
 		/**
 		 * Constructor.
 		 * 
@@ -70,12 +76,15 @@ public class Transformer extends Filter {
 		 *            The parent transformer.
 		 * @param sourceRepresentation
 		 *            The source representation to transform.
+		 * @param uriResolver
+		 *            The URI resolver.
 		 */
 		public ResultRepresentation(Transformer transformer,
-				Representation sourceRepresentation) {
+				Representation sourceRepresentation, URIResolver uriResolver) {
 			super(null);
 			this.transformer = transformer;
 			this.sourceRepresentation = sourceRepresentation;
+			this.uriResolver = uriResolver;
 
 			if (transformer != null) {
 				setCharacterSet(transformer.getResultCharacterSet());
@@ -102,6 +111,15 @@ public class Transformer extends Filter {
 			return this.transformer;
 		}
 
+		/**
+		 * Returns the URI resolver.
+		 * 
+		 * @return The URI resolver.
+		 */
+		public URIResolver getURIResolver() {
+			return this.uriResolver;
+		}
+
 		@Override
 		public void write(OutputStream outputStream) throws IOException {
 			// Prepare the XSLT transformer documents
@@ -116,6 +134,9 @@ public class Transformer extends Filter {
 				javax.xml.transform.Transformer transformer = TransformerFactory
 						.newInstance().newTransformer(transformSheet);
 
+				// Set the URI resolver
+				transformer.setURIResolver(getURIResolver());
+
 				// Generates the result of the transformation
 				transformer.transform(sourceDocument, resultDocument);
 			} catch (TransformerConfigurationException tce) {
@@ -128,6 +149,66 @@ public class Transformer extends Filter {
 				getTransformer().getContext().getLogger().log(Level.WARNING,
 						"Transformer exception", te);
 			}
+		}
+	}
+
+	/**
+	 * URI resolver based on a Restlet Context instance.
+	 * 
+	 * @author Jerome Louvel (contact@noelios.com)
+	 */
+	private final static class ContextResolver implements URIResolver {
+		/** The Restlet context. */
+		private Context context;
+
+		/**
+		 * Constructor.
+		 * 
+		 * @param context
+		 *            The Restlet context.
+		 */
+		public ContextResolver(Context context) {
+			this.context = context;
+		}
+
+		/**
+		 * Resolves a target reference into a Source document.
+		 * 
+		 * @see javax.xml.transform.URIResolver#resolve(java.lang.String,
+		 *      java.lang.String)
+		 */
+		public Source resolve(String href, String base)
+				throws TransformerException {
+			Source result = null;
+
+			if (this.context != null) {
+				Reference targetRef = null;
+
+				if (base != null) {
+					// Potentially a relative reference
+					Reference baseRef = new Reference(base);
+					targetRef = new Reference(baseRef, href);
+				} else {
+					// No base, assume "href" is an absolute URI
+					targetRef = new Reference(href);
+				}
+
+				Response response = this.context.getDispatcher().get(
+						targetRef.toString());
+				if (response.getStatus().isSuccess()
+						&& response.isEntityAvailable()) {
+					try {
+						result = new StreamSource(response.getEntity()
+								.getStream());
+					} catch (IOException e) {
+						this.context.getLogger().log(Level.WARNING,
+								"I/O error while getting the response stream",
+								e);
+					}
+				}
+			}
+
+			return result;
 		}
 	}
 
@@ -317,7 +398,8 @@ public class Transformer extends Filter {
 	 * @return The generated result representation.
 	 */
 	public Representation transform(Representation source) {
-		return new ResultRepresentation(this, source);
+		return new ResultRepresentation(this, source, new ContextResolver(
+				getContext()));
 	}
 
 }

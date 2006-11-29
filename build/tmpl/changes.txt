@@ -18,6 +18,8 @@ Changes log
  - Updated Spring library to 2.0.1
  - Refactored the JdbcClient to return XML result sets (using a new RowSetRepresentation class). In addition, the
    XML request can now contain several SQL statements to be executed as a batch. Contributed by Thierry Boileau. 
+ - Added an URI resolver to the Transformer based on the context's dispatcher. That will allow the usage of
+   the "document()" XPath methods and other imports to be defined in XSLT stylesheets. Fixes #125.
  
 1.0 beta 21 (2006-11-26)
 [Bugs fixed]
