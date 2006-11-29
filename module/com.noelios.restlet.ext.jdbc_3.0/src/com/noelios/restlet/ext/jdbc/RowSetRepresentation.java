@@ -24,6 +24,7 @@ package com.noelios.restlet.ext.jdbc;
 
 import java.io.IOException;
 import java.io.OutputStream;
+import java.sql.ResultSet;
 import java.sql.SQLException;
 
 import javax.sql.rowset.WebRowSet;
@@ -50,16 +51,16 @@ public class RowSetRepresentation extends OutputRepresentation {
 	/**
 	 * Creates a WebRowSet from a JdbcResult.
 	 * 
-	 * @param jdbcResult
-	 *            The JdbcResult instance to wrap.
+	 * @param resultSet
+	 *            The result set to use to populate the Web row set.
 	 * @return A WebRowSet from a JdbcResult.
 	 * @throws SQLException
 	 */
-	private static WebRowSet create(JdbcResult jdbcResult) throws SQLException {
+	private static WebRowSet create(ResultSet resultSet) throws SQLException {
 		WebRowSet result = new WebRowSetImpl();
 
-		if (jdbcResult.getResultSet() != null) {
-			result.populate(jdbcResult.getResultSet());
+		if (resultSet != null) {
+			result.populate(resultSet);
 		}
 
 		return result;
@@ -79,8 +80,19 @@ public class RowSetRepresentation extends OutputRepresentation {
 	 * @throws SQLException
 	 */
 	public RowSetRepresentation(JdbcResult jdbcResult) throws SQLException {
-		this(create(jdbcResult));
+		this(create((jdbcResult == null) ? null : jdbcResult.getResultSet()));
 		this.jdbcResult = jdbcResult;
+	}
+
+	/**
+	 * Constructor.
+	 * 
+	 * @param resultSet
+	 *            The result set to use to populate the Web row set.
+	 * @throws SQLException
+	 */
+	public RowSetRepresentation(ResultSet resultSet) throws SQLException {
+		this(create(resultSet));
 	}
 
 	/**
