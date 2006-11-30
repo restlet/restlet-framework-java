@@ -802,7 +802,7 @@
 		<packageModule name="api" />
 		<packageModule name="ri" />
 		<packageModule name="asyncweb" />
-		<packageModule name="atom" />
+<!-- disabled for 1.0  <packageModule name="atom" /> -->
 		<packageModule name="fileupload" />
 		<packageModule name="freemarker" />
 		<packageModule name="httpclient" />
@@ -829,7 +829,7 @@
 		<findbugsModule name="api" /> 
 		<findbugsModule name="ri" />
 		<findbugsModule name="asyncweb" />
-		<findbugsModule name="atom" />
+<!-- disabled for 1.0	<findbugsModule name="atom" /> -->
 		<findbugsModule name="fileupload" />
 		<findbugsModule name="freemarker" />
 		<findbugsModule name="httpclient" />
@@ -859,9 +859,9 @@
 		<checkstyleModule name="httpclient" />
 		<checkstyleModule name="javamail" />
 		<checkstyleModule name="jdbc" />
-<!-- disabled for 1.0	<checkstyleModule name="jetty5" /> -->
+		<checkstyleModule name="jetty5" />
 		<checkstyleModule name="jetty" />
-<!-- disabled for 1.0   <findbugsModule name="jmx" /> -->
+		<checkstyleModule name="jmx" />
 		<checkstyleModule name="json" />
 		<checkstyleModule name="net" />
 		<checkstyleModule name="servlet" />
@@ -938,7 +938,7 @@
 		         overview="${tmpl}/overview-ext.html"
 		         verbose="${verbose}">
 			<sourcepath>
-				<pathelement path="${mod}/${mod-atom-id}/src/" />
+<!-- disabled for 1.0	<pathelement path="${mod}/${mod-atom-id}/src/" /> -->
 				<pathelement path="${mod}/${mod-fileupload-id}/src/" />
 				<pathelement path="${mod}/${mod-freemarker-id}/src/" />
 				<pathelement path="${mod}/${mod-json-id}/src/" />

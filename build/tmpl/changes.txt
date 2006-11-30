@@ -11,6 +11,7 @@ Changes log
 [API changes]
  - Removed Jetty 5 connector from the distribution. Use Jetty 6 connector instead. 
    Source code still available in SVN. Fixes #180.
+ - Disabled Atom extension for 1.0 RC1. Postponed for completion in 1.1.
  
 [Enhancements] 
  - Add new constructor to Tag for weak tags taking an unquoted opaque value. Fixes #201. 
