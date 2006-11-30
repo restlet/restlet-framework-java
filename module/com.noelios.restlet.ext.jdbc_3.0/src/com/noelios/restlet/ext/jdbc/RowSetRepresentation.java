@@ -64,8 +64,6 @@ public class RowSetRepresentation extends OutputRepresentation {
 			result.populate(resultSet);
 		}
 
-		result.release();
-
 		return result;
 	}
 
