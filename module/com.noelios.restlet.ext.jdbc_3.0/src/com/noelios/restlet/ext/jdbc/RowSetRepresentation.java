@@ -26,6 +26,7 @@ import java.io.IOException;
 import java.io.OutputStream;
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.util.logging.Level;
 
 import javax.sql.rowset.WebRowSet;
 
@@ -49,11 +50,11 @@ import com.sun.rowset.WebRowSetImpl;
  */
 public class RowSetRepresentation extends OutputRepresentation {
 	/**
-	 * Creates a WebRowSet from a JdbcResult.
+	 * Creates a WebRowSet from a ResultSet.
 	 * 
 	 * @param resultSet
 	 *            The result set to use to populate the Web row set.
-	 * @return A WebRowSet from a JdbcResult.
+	 * @return A WebRowSet from a ResultSet.
 	 * @throws SQLException
 	 */
 	private static WebRowSet create(ResultSet resultSet) throws SQLException {
@@ -62,6 +63,8 @@ public class RowSetRepresentation extends OutputRepresentation {
 		if (resultSet != null) {
 			result.populate(resultSet);
 		}
+
+		result.release();
 
 		return result;
 	}
@@ -130,6 +133,31 @@ public class RowSetRepresentation extends OutputRepresentation {
 			webRowSet.writeXml(outputStream);
 		} catch (SQLException se) {
 			throw new IOException(se.getMessage());
+		}
+
+		try {
+			if (this.jdbcResult != null) {
+				this.jdbcResult.release();
+			}
+		} catch (SQLException se) {
+			getLogger()
+					.log(
+							Level.WARNING,
+							"Error while releasing the JdbcResult instance after writing the representation",
+							se);
+		}
+
+		try {
+			if (this.webRowSet != null) {
+				this.webRowSet.release();
+				this.webRowSet.close();
+			}
+		} catch (SQLException se) {
+			getLogger()
+					.log(
+							Level.WARNING,
+							"Error while releasing the WebRowSet instance after writing the representation",
+							se);
 		}
 	}
 }

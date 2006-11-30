@@ -55,6 +55,9 @@ public class JdbcResult implements Serializable {
 	 * @throws SQLException
 	 */
 	public void release() throws SQLException {
+		//One connection per jdbcResult
+		//releasing the instance means releasing the connection too
+		//and not only the statement.
 		statement.getConnection().close();
 	}
 
