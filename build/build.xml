@@ -441,11 +441,18 @@
 		</classpath>
 	</taskdef>
 
-  <taskdef name="findbugs" classname="edu.umd.cs.findbugs.anttask.FindBugsTask">
+	<taskdef name="findbugs" classname="edu.umd.cs.findbugs.anttask.FindBugsTask">
 		<classpath>
 			<pathelement location="tools/findbugs/lib/findbugs-ant.jar" />
 		</classpath>
-  </taskdef>
+	</taskdef>
+
+	<taskdef resource="checkstyletask.properties">
+		<classpath>
+			<pathelement location="tools/checkstyle/checkstyle-all-4.2.jar" />
+		</classpath>
+	</taskdef>
+	
 
 	<!-- ==================== -->
 	<!-- ===  Ant Macros  === -->
@@ -535,6 +542,19 @@
 		</sequential>
 	</macrodef>
 
+	<!-- Check style of a module -->
+	<macrodef name="checkstyleModule">
+		<attribute name="name" />
+		<sequential>
+			<checkstyle config="checks.xml">
+				<fileset dir="${mod}/${mod-@{name}-id}/src" includes="**/*.java"/>
+				
+				<!-- Location of cache-file. Something that is project specific -->
+				<property key="checkstyle.cache.file" file="${temp}/checkstyle/cachefile"/>
+			</checkstyle>
+		</sequential>
+	</macrodef>
+
 	<!-- Packages a library -->
 	<macrodef name="packageLibrary">
 		<!-- Package a library -->
@@ -556,8 +576,8 @@
 	<!-- ===================== -->
 
 	<!-- Initialization Target -->
-	<target name="all" depends="test, generate, javadoc, package, findbugs" description="Full build"/>
-	<target name="verify" depends="test, package, findbugs" description="Verify build"/>
+	<target name="all" depends="test, generate, javadoc, package, findbugs, checkstyle" description="Full build"/>
+	<target name="verify" depends="test, package, findbugs, checkstyle" description="Verify build"/>
 
 	<!-- Initialization Target -->
 	<target name="init" description="Initialize some properties">
@@ -579,6 +599,11 @@
 		<!-- Set the property that will enable the FindBugs target -->
 		<condition property="do-findbugs">
 			<istrue value="${findbugs}" />
+		</condition>
+		
+		<!-- Set the property that will enable the CheckStyle target -->
+		<condition property="do-checkstyle">
+			<istrue value="${checkstyle}" />
 		</condition>
 
 		<!-- Set the property that will enable the generation of the Javadoc of implementation classes -->
@@ -821,7 +846,31 @@
 		<findbugsModule name="velocity" />
 		<findbugsModule name="example" />
 	</target>
-
+	  
+	<!-- Check style -->
+	<target name="checkstyle" depends="init" if="do-checkstyle" description="Check the style of the code">
+		<mkdir dir="${temp}/checkstyle" />
+		<checkstyleModule name="api" /> 
+		<checkstyleModule name="ri" />
+		<checkstyleModule name="asyncweb" />
+		<checkstyleModule name="atom" />
+		<checkstyleModule name="fileupload" />
+		<checkstyleModule name="freemarker" />
+		<checkstyleModule name="httpclient" />
+		<checkstyleModule name="javamail" />
+		<checkstyleModule name="jdbc" />
+<!-- disabled for 1.0	<checkstyleModule name="jetty5" /> -->
+		<checkstyleModule name="jetty" />
+<!-- disabled for 1.0   <findbugsModule name="jmx" /> -->
+		<checkstyleModule name="json" />
+		<checkstyleModule name="net" />
+		<checkstyleModule name="servlet" />
+		<checkstyleModule name="simple" />
+		<checkstyleModule name="spring" />
+		<checkstyleModule name="velocity" />
+		<checkstyleModule name="example" />
+	</target>
+	
 	<!-- Cleaning Target -->
 	<target name="clean" description="Clean up the classes and Javadoc">
 		<!-- Delete the classes and Javadoc directories -->

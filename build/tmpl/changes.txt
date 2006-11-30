@@ -20,7 +20,9 @@ Changes log
    XML request can now contain several SQL statements to be executed as a batch. Contributed by Thierry Boileau. 
  - Added an URI resolver to the Transformer based on the context's dispatcher. That will allow the usage of
    the "document()" XPath methods and other imports to be defined in XSLT stylesheets. Fixes #125.
- 
+ - Added support for CheckStyle (disabled by default). The CheckStyle configuration file is "build/checks.xml", 
+   currently a clone of sun_checks.xml. Suggested by Piyush Purang.
+
 1.0 beta 21 (2006-11-26)
 [Bugs fixed]
  - Fixed potential NPE when some JAR files are missing (no API implementation, no connector found, etc.). 
