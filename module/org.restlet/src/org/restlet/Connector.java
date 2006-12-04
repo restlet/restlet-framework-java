@@ -1,22 +1,18 @@
 /*
  * Copyright 2005-2006 Noelios Consulting.
- *
- * The contents of this file are subject to the terms
- * of the Common Development and Distribution License
- * (the "License").  You may not use this file except
- * in compliance with the License.
- *
+ * 
+ * The contents of this file are subject to the terms of the Common Development
+ * and Distribution License (the "License"). You may not use this file except in
+ * compliance with the License.
+ * 
  * You can obtain a copy of the license at
- * http://www.opensource.org/licenses/cddl1.txt
- * See the License for the specific language governing
- * permissions and limitations under the License.
- *
- * When distributing Covered Code, include this CDDL
- * HEADER in each file and include the License file at
- * http://www.opensource.org/licenses/cddl1.txt
- * If applicable, add the following below this CDDL
- * HEADER, with the fields enclosed by brackets "[]"
- * replaced with your own identifying information:
+ * http://www.opensource.org/licenses/cddl1.txt See the License for the specific
+ * language governing permissions and limitations under the License.
+ * 
+ * When distributing Covered Code, include this CDDL HEADER in each file and
+ * include the License file at http://www.opensource.org/licenses/cddl1.txt If
+ * applicable, add the following below this CDDL HEADER, with the fields
+ * enclosed by brackets "[]" replaced with your own identifying information:
  * Portions Copyright [yyyy] [name of copyright owner]
  */
 
@@ -47,41 +43,41 @@ import org.restlet.data.Protocol;
  * @author Jerome Louvel (contact@noelios.com)
  */
 public abstract class Connector extends Restlet {
-	/** The list of protocols simultaneously supported. */
-	private List<Protocol> protocols;
+    /** The list of protocols simultaneously supported. */
+    private List<Protocol> protocols;
 
-	/**
-	 * Constructor.
-	 * 
-	 * @param context
-	 *            The context.
-	 */
-	public Connector(Context context) {
-		this(context, null);
-	}
+    /**
+     * Constructor.
+     * 
+     * @param context
+     *            The context.
+     */
+    public Connector(Context context) {
+        this(context, null);
+    }
 
-	/**
-	 * Constructor.
-	 * 
-	 * @param context
-	 *            The context.
-	 * @param protocols
-	 *            The supported protocols.
-	 */
-	public Connector(Context context, List<Protocol> protocols) {
-		super(context);
-		this.protocols = protocols;
-	}
+    /**
+     * Constructor.
+     * 
+     * @param context
+     *            The context.
+     * @param protocols
+     *            The supported protocols.
+     */
+    public Connector(Context context, List<Protocol> protocols) {
+        super(context);
+        this.protocols = protocols;
+    }
 
-	/**
-	 * Returns the protocols simultaneously supported.
-	 * 
-	 * @return The protocols simultaneously supported.
-	 */
-	public List<Protocol> getProtocols() {
-		if (this.protocols == null)
-			this.protocols = new ArrayList<Protocol>();
-		return this.protocols;
-	}
+    /**
+     * Returns the protocols simultaneously supported.
+     * 
+     * @return The protocols simultaneously supported.
+     */
+    public List<Protocol> getProtocols() {
+        if (this.protocols == null)
+            this.protocols = new ArrayList<Protocol>();
+        return this.protocols;
+    }
 
 }

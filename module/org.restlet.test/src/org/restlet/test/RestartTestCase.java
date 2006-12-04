@@ -12,25 +12,25 @@ import org.restlet.data.Protocol;
  */
 public class RestartTestCase extends TestCase {
 
-	public void testRestart() throws Exception {
-		int waitTime = 100;
+    public void testRestart() throws Exception {
+        int waitTime = 100;
 
-		Server connector = new Server(Protocol.HTTP, 8182, null);
+        Server connector = new Server(Protocol.HTTP, 8182, null);
 
-		System.out.print("Starting connector... ");
-		connector.start();
-		System.out.println("done");
-		Thread.sleep(waitTime);
+        System.out.print("Starting connector... ");
+        connector.start();
+        System.out.println("done");
+        Thread.sleep(waitTime);
 
-		System.out.print("Stopping connector... ");
-		connector.stop();
-		System.out.println("done");
-		Thread.sleep(waitTime);
+        System.out.print("Stopping connector... ");
+        connector.stop();
+        System.out.println("done");
+        Thread.sleep(waitTime);
 
-		System.out.print("Restarting connector... ");
-		connector.start();
-		System.out.println("done");
-		Thread.sleep(waitTime);
-	}
+        System.out.print("Restarting connector... ");
+        connector.start();
+        System.out.println("done");
+        Thread.sleep(waitTime);
+    }
 
 }

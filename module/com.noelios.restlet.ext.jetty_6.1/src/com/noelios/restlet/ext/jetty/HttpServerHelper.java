@@ -1,22 +1,18 @@
 /*
  * Copyright 2005-2006 Noelios Consulting.
- *
- * The contents of this file are subject to the terms
- * of the Common Development and Distribution License
- * (the "License").  You may not use this file except
- * in compliance with the License.
- *
+ * 
+ * The contents of this file are subject to the terms of the Common Development
+ * and Distribution License (the "License"). You may not use this file except in
+ * compliance with the License.
+ * 
  * You can obtain a copy of the license at
- * http://www.opensource.org/licenses/cddl1.txt
- * See the License for the specific language governing
- * permissions and limitations under the License.
- *
- * When distributing Covered Code, include this CDDL
- * HEADER in each file and include the License file at
- * http://www.opensource.org/licenses/cddl1.txt
- * If applicable, add the following below this CDDL
- * HEADER, with the fields enclosed by brackets "[]"
- * replaced with your own identifying information:
+ * http://www.opensource.org/licenses/cddl1.txt See the License for the specific
+ * language governing permissions and limitations under the License.
+ * 
+ * When distributing Covered Code, include this CDDL HEADER in each file and
+ * include the License file at http://www.opensource.org/licenses/cddl1.txt If
+ * applicable, add the following below this CDDL HEADER, with the fields
+ * enclosed by brackets "[]" replaced with your own identifying information:
  * Portions Copyright [yyyy] [name of copyright owner]
  */
 
@@ -53,51 +49,51 @@ import org.restlet.data.Protocol;
  * @author Jerome Louvel (contact@noelios.com)
  */
 public class HttpServerHelper extends JettyServerHelper {
-	/**
-	 * Constructor.
-	 * 
-	 * @param server
-	 *            The server to help.
-	 */
-	public HttpServerHelper(Server server) {
-		super(server);
-		getProtocols().add(Protocol.HTTP);
-	}
+    /**
+     * Constructor.
+     * 
+     * @param server
+     *            The server to help.
+     */
+    public HttpServerHelper(Server server) {
+        super(server);
+        getProtocols().add(Protocol.HTTP);
+    }
 
-	/**
-	 * Creates a new internal Jetty connector.
-	 * 
-	 * @return A new internal Jetty connector.
-	 */
-	protected AbstractConnector createConnector() {
-		AbstractConnector result = null;
+    /**
+     * Creates a new internal Jetty connector.
+     * 
+     * @return A new internal Jetty connector.
+     */
+    protected AbstractConnector createConnector() {
+        AbstractConnector result = null;
 
-		// Create and configure the Jetty HTTP connector
-		switch (getType()) {
-		case 1:
-			// Selecting NIO connector
-			result = new SelectChannelConnector();
-			break;
-		case 2:
-			// Blocking NIO connector
-			result = new BlockingChannelConnector();
-			break;
-		case 3:
-			// Blocking BIO connector
-			result = new SocketConnector();
-			break;
-		}
+        // Create and configure the Jetty HTTP connector
+        switch (getType()) {
+        case 1:
+            // Selecting NIO connector
+            result = new SelectChannelConnector();
+            break;
+        case 2:
+            // Blocking NIO connector
+            result = new BlockingChannelConnector();
+            break;
+        case 3:
+            // Blocking BIO connector
+            result = new SocketConnector();
+            break;
+        }
 
-		return result;
-	}
+        return result;
+    }
 
-	/**
-	 * Returns the type of Jetty connector to use.
-	 * 
-	 * @return The type of Jetty connector to use.
-	 */
-	public int getType() {
-		return Integer.parseInt(getParameters().getFirstValue("type", "1"));
-	}
+    /**
+     * Returns the type of Jetty connector to use.
+     * 
+     * @return The type of Jetty connector to use.
+     */
+    public int getType() {
+        return Integer.parseInt(getParameters().getFirstValue("type", "1"));
+    }
 
 }

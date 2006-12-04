@@ -1,22 +1,18 @@
 /*
  * Copyright 2005-2006 Noelios Consulting.
- *
- * The contents of this file are subject to the terms
- * of the Common Development and Distribution License
- * (the "License").  You may not use this file except
- * in compliance with the License.
- *
+ * 
+ * The contents of this file are subject to the terms of the Common Development
+ * and Distribution License (the "License"). You may not use this file except in
+ * compliance with the License.
+ * 
  * You can obtain a copy of the license at
- * http://www.opensource.org/licenses/cddl1.txt
- * See the License for the specific language governing
- * permissions and limitations under the License.
- *
- * When distributing Covered Code, include this CDDL
- * HEADER in each file and include the License file at
- * http://www.opensource.org/licenses/cddl1.txt
- * If applicable, add the following below this CDDL
- * HEADER, with the fields enclosed by brackets "[]"
- * replaced with your own identifying information:
+ * http://www.opensource.org/licenses/cddl1.txt See the License for the specific
+ * language governing permissions and limitations under the License.
+ * 
+ * When distributing Covered Code, include this CDDL HEADER in each file and
+ * include the License file at http://www.opensource.org/licenses/cddl1.txt If
+ * applicable, add the following below this CDDL HEADER, with the fields
+ * enclosed by brackets "[]" replaced with your own identifying information:
  * Portions Copyright [yyyy] [name of copyright owner]
  */
 
@@ -49,113 +45,113 @@ import com.sun.rowset.WebRowSetImpl;
  * @author Jerome Louvel (contact@noelios.com)
  */
 public class RowSetRepresentation extends OutputRepresentation {
-	/**
-	 * Creates a WebRowSet from a ResultSet.
-	 * 
-	 * @param resultSet
-	 *            The result set to use to populate the Web row set.
-	 * @return A WebRowSet from a ResultSet.
-	 * @throws SQLException
-	 */
-	private static WebRowSet create(ResultSet resultSet) throws SQLException {
-		WebRowSet result = new WebRowSetImpl();
+    /**
+     * Creates a WebRowSet from a ResultSet.
+     * 
+     * @param resultSet
+     *            The result set to use to populate the Web row set.
+     * @return A WebRowSet from a ResultSet.
+     * @throws SQLException
+     */
+    private static WebRowSet create(ResultSet resultSet) throws SQLException {
+        WebRowSet result = new WebRowSetImpl();
 
-		if (resultSet != null) {
-			result.populate(resultSet);
-		}
+        if (resultSet != null) {
+            result.populate(resultSet);
+        }
 
-		return result;
-	}
+        return result;
+    }
 
-	/** Inner WebRowSet Instance. */
-	private WebRowSet webRowSet;
+    /** Inner WebRowSet Instance. */
+    private WebRowSet webRowSet;
 
-	/** JdbcResult instance that gives access to the resultSet. */
-	private JdbcResult jdbcResult;
+    /** JdbcResult instance that gives access to the resultSet. */
+    private JdbcResult jdbcResult;
 
-	/**
-	 * Constructor.
-	 * 
-	 * @param jdbcResult
-	 *            The inner JdbcResult.
-	 * @throws SQLException
-	 */
-	public RowSetRepresentation(JdbcResult jdbcResult) throws SQLException {
-		this(create((jdbcResult == null) ? null : jdbcResult.getResultSet()));
-		this.jdbcResult = jdbcResult;
-	}
+    /**
+     * Constructor.
+     * 
+     * @param jdbcResult
+     *            The inner JdbcResult.
+     * @throws SQLException
+     */
+    public RowSetRepresentation(JdbcResult jdbcResult) throws SQLException {
+        this(create((jdbcResult == null) ? null : jdbcResult.getResultSet()));
+        this.jdbcResult = jdbcResult;
+    }
 
-	/**
-	 * Constructor.
-	 * 
-	 * @param resultSet
-	 *            The result set to use to populate the Web row set.
-	 * @throws SQLException
-	 */
-	public RowSetRepresentation(ResultSet resultSet) throws SQLException {
-		this(create(resultSet));
-	}
+    /**
+     * Constructor.
+     * 
+     * @param resultSet
+     *            The result set to use to populate the Web row set.
+     * @throws SQLException
+     */
+    public RowSetRepresentation(ResultSet resultSet) throws SQLException {
+        this(create(resultSet));
+    }
 
-	/**
-	 * Constructor.
-	 * 
-	 * @param webRowSet
-	 *            The inner WebRowSet.
-	 */
-	public RowSetRepresentation(WebRowSet webRowSet) {
-		super(MediaType.TEXT_XML);
-		this.webRowSet = webRowSet;
-	}
+    /**
+     * Constructor.
+     * 
+     * @param webRowSet
+     *            The inner WebRowSet.
+     */
+    public RowSetRepresentation(WebRowSet webRowSet) {
+        super(MediaType.TEXT_XML);
+        this.webRowSet = webRowSet;
+    }
 
-	/**
-	 * Returns the inner JdbcResult instance or null.
-	 * 
-	 * @return The inner JdbcResult instance or null.
-	 */
-	public JdbcResult getJdbcResult() {
-		return jdbcResult;
-	}
+    /**
+     * Returns the inner JdbcResult instance or null.
+     * 
+     * @return The inner JdbcResult instance or null.
+     */
+    public JdbcResult getJdbcResult() {
+        return jdbcResult;
+    }
 
-	/**
-	 * Returns the inner WebRowSet instance.
-	 * 
-	 * @return The inner WebRowSet instance.
-	 */
-	public WebRowSet getWebRowSet() {
-		return this.webRowSet;
-	}
+    /**
+     * Returns the inner WebRowSet instance.
+     * 
+     * @return The inner WebRowSet instance.
+     */
+    public WebRowSet getWebRowSet() {
+        return this.webRowSet;
+    }
 
-	@Override
-	public void write(OutputStream outputStream) throws IOException {
-		try {
-			webRowSet.writeXml(outputStream);
-		} catch (SQLException se) {
-			throw new IOException(se.getMessage());
-		}
+    @Override
+    public void write(OutputStream outputStream) throws IOException {
+        try {
+            webRowSet.writeXml(outputStream);
+        } catch (SQLException se) {
+            throw new IOException(se.getMessage());
+        }
 
-		try {
-			if (this.jdbcResult != null) {
-				this.jdbcResult.release();
-			}
-		} catch (SQLException se) {
-			getLogger()
-					.log(
-							Level.WARNING,
-							"Error while releasing the JdbcResult instance after writing the representation",
-							se);
-		}
+        try {
+            if (this.jdbcResult != null) {
+                this.jdbcResult.release();
+            }
+        } catch (SQLException se) {
+            getLogger()
+                    .log(
+                            Level.WARNING,
+                            "Error while releasing the JdbcResult instance after writing the representation",
+                            se);
+        }
 
-		try {
-			if (this.webRowSet != null) {
-				this.webRowSet.release();
-				this.webRowSet.close();
-			}
-		} catch (SQLException se) {
-			getLogger()
-					.log(
-							Level.WARNING,
-							"Error while releasing the WebRowSet instance after writing the representation",
-							se);
-		}
-	}
+        try {
+            if (this.webRowSet != null) {
+                this.webRowSet.release();
+                this.webRowSet.close();
+            }
+        } catch (SQLException se) {
+            getLogger()
+                    .log(
+                            Level.WARNING,
+                            "Error while releasing the WebRowSet instance after writing the representation",
+                            se);
+        }
+    }
 }

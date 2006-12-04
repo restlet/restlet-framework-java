@@ -1,22 +1,18 @@
 /*
  * Copyright 2005-2006 Noelios Consulting.
- *
- * The contents of this file are subject to the terms
- * of the Common Development and Distribution License
- * (the "License").  You may not use this file except
- * in compliance with the License.
- *
+ * 
+ * The contents of this file are subject to the terms of the Common Development
+ * and Distribution License (the "License"). You may not use this file except in
+ * compliance with the License.
+ * 
  * You can obtain a copy of the license at
- * http://www.opensource.org/licenses/cddl1.txt
- * See the License for the specific language governing
- * permissions and limitations under the License.
- *
- * When distributing Covered Code, include this CDDL
- * HEADER in each file and include the License file at
- * http://www.opensource.org/licenses/cddl1.txt
- * If applicable, add the following below this CDDL
- * HEADER, with the fields enclosed by brackets "[]"
- * replaced with your own identifying information:
+ * http://www.opensource.org/licenses/cddl1.txt See the License for the specific
+ * language governing permissions and limitations under the License.
+ * 
+ * When distributing Covered Code, include this CDDL HEADER in each file and
+ * include the License file at http://www.opensource.org/licenses/cddl1.txt If
+ * applicable, add the following below this CDDL HEADER, with the fields
+ * enclosed by brackets "[]" replaced with your own identifying information:
  * Portions Copyright [yyyy] [name of copyright owner]
  */
 
@@ -69,79 +65,79 @@ import org.restlet.data.Protocol;
  * @author Jerome Louvel (contact@noelios.com)
  */
 public class HttpsServerHelper extends JettyServerHelper {
-	/**
-	 * Constructor.
-	 * 
-	 * @param server
-	 *            The server to help.
-	 */
-	public HttpsServerHelper(Server server) {
-		super(server);
-		getProtocols().add(Protocol.HTTPS);
-	}
+    /**
+     * Constructor.
+     * 
+     * @param server
+     *            The server to help.
+     */
+    public HttpsServerHelper(Server server) {
+        super(server);
+        getProtocols().add(Protocol.HTTPS);
+    }
 
-	/** Start hook. */
-	public void start() throws Exception {
-		HttpsListener listener = null;
-		if (getServer().getAddress() != null) {
-			listener = new HttpsListener(this, new InetAddrPort(getServer()
-					.getAddress(), getServer().getPort()));
-		} else {
-			listener = new HttpsListener(this);
-			listener.setPort(getServer().getPort());
-		}
+    /** Start hook. */
+    public void start() throws Exception {
+        HttpsListener listener = null;
+        if (getServer().getAddress() != null) {
+            listener = new HttpsListener(this, new InetAddrPort(getServer()
+                    .getAddress(), getServer().getPort()));
+        } else {
+            listener = new HttpsListener(this);
+            listener.setPort(getServer().getPort());
+        }
 
-		// Configure the listener
-		listener.setMinThreads(getMinThreads());
-		listener.setMaxThreads(getMaxThreads());
-		listener.setMaxIdleTimeMs(getMaxIdleTimeMs());
-		listener.setLowResourcePersistTimeMs(getLowResourcePersistTimeMs());
-		listener.setKeystore(getKeystorePath());
-		listener.setPassword(getKeystorePassword());
-		listener.setKeyPassword(getKeyPassword());
-		setListener(listener);
+        // Configure the listener
+        listener.setMinThreads(getMinThreads());
+        listener.setMaxThreads(getMaxThreads());
+        listener.setMaxIdleTimeMs(getMaxIdleTimeMs());
+        listener.setLowResourcePersistTimeMs(getLowResourcePersistTimeMs());
+        listener.setKeystore(getKeystorePath());
+        listener.setPassword(getKeystorePassword());
+        listener.setKeyPassword(getKeyPassword());
+        setListener(listener);
 
-		super.start();
-	}
+        super.start();
+    }
 
-	/**
-	 * Returns the SSL keystore path.
-	 * 
-	 * @return The SSL keystore path.
-	 */
-	public String getKeystorePath() {
-		return getParameters().getFirstValue("keystorePath",
-				System.getProperty("user.home") + File.separator + ".keystore");
-	}
+    /**
+     * Returns the SSL keystore path.
+     * 
+     * @return The SSL keystore path.
+     */
+    public String getKeystorePath() {
+        return getParameters().getFirstValue("keystorePath",
+                System.getProperty("user.home") + File.separator + ".keystore");
+    }
 
-	/**
-	 * Returns the SSL keystore password.
-	 * 
-	 * @return The SSL keystore password.
-	 */
-	public String getKeystorePassword() {
-		return getParameters().getFirstValue("keystorePassword", "");
-	}
+    /**
+     * Returns the SSL keystore password.
+     * 
+     * @return The SSL keystore password.
+     */
+    public String getKeystorePassword() {
+        return getParameters().getFirstValue("keystorePassword", "");
+    }
 
-	/**
-	 * Returns the SSL key password.
-	 * 
-	 * @return The SSL key password.
-	 */
-	public String getKeyPassword() {
-		return getParameters().getFirstValue("keyPassword", "");
-	}
+    /**
+     * Returns the SSL key password.
+     * 
+     * @return The SSL key password.
+     */
+    public String getKeyPassword() {
+        return getParameters().getFirstValue("keyPassword", "");
+    }
 
-	/**
-	 * Returns time in ms that connections will persist if listener is low on
-	 * resources.
-	 * 
-	 * @return Time in ms that connections will persist if listener is low on
-	 *         resources.
-	 */
-	public int getLowResourcePersistTimeMs() {
-		return Integer.parseInt(getParameters().getFirstValue(
-				"lowResourcePersistTimeMs", "2000"));
-	}
+    /**
+     * Returns time in ms that connections will persist if listener is low on
+     * resources.
+     * 
+     * @return Time in ms that connections will persist if listener is low on
+     *         resources.
+     */
+    public int getLowResourcePersistTimeMs() {
+        return Integer.parseInt(getParameters().getFirstValue(
+                "lowResourcePersistTimeMs", "2000"));
+    }
 
 }

@@ -19,24 +19,24 @@ import org.restlet.resource.StringRepresentation;
  */
 public class FileClientTestCase extends TestCase {
 
-	public void testFileClient() throws IOException {
-		String text = "Test content\r\nLine 2\r\nLine2";
-		Client fc = new Client(Protocol.FILE);
-		LocalReference fr = LocalReference.createFileReference(File
-				.createTempFile("Restlet", ".txt"));
+    public void testFileClient() throws IOException {
+        String text = "Test content\r\nLine 2\r\nLine2";
+        Client fc = new Client(Protocol.FILE);
+        LocalReference fr = LocalReference.createFileReference(File
+                .createTempFile("Restlet", ".txt"));
 
-		// Write the text to temporary file
-		Response response = fc.put(fr.toString(),
-				new StringRepresentation(text));
-		assertTrue(response.getStatus().equals(Status.SUCCESS_OK));
+        // Write the text to temporary file
+        Response response = fc.put(fr.toString(),
+                new StringRepresentation(text));
+        assertTrue(response.getStatus().equals(Status.SUCCESS_OK));
 
-		// Get the text and compare to the original
-		response = fc.get(fr.toString());
-		assertTrue(response.getStatus().equals(Status.SUCCESS_OK));
+        // Get the text and compare to the original
+        response = fc.get(fr.toString());
+        assertTrue(response.getStatus().equals(Status.SUCCESS_OK));
 
-		// Delete the file
-		response = fc.delete(fr.toString());
-		assertTrue(response.getStatus().equals(Status.SUCCESS_NO_CONTENT));
-	}
+        // Delete the file
+        response = fc.delete(fr.toString());
+        assertTrue(response.getStatus().equals(Status.SUCCESS_NO_CONTENT));
+    }
 
 }

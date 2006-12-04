@@ -1,22 +1,18 @@
 /*
  * Copyright 2005-2006 Noelios Consulting.
- *
- * The contents of this file are subject to the terms
- * of the Common Development and Distribution License
- * (the "License").  You may not use this file except
- * in compliance with the License.
- *
+ * 
+ * The contents of this file are subject to the terms of the Common Development
+ * and Distribution License (the "License"). You may not use this file except in
+ * compliance with the License.
+ * 
  * You can obtain a copy of the license at
- * http://www.opensource.org/licenses/cddl1.txt
- * See the License for the specific language governing
- * permissions and limitations under the License.
- *
- * When distributing Covered Code, include this CDDL
- * HEADER in each file and include the License file at
- * http://www.opensource.org/licenses/cddl1.txt
- * If applicable, add the following below this CDDL
- * HEADER, with the fields enclosed by brackets "[]"
- * replaced with your own identifying information:
+ * http://www.opensource.org/licenses/cddl1.txt See the License for the specific
+ * language governing permissions and limitations under the License.
+ * 
+ * When distributing Covered Code, include this CDDL HEADER in each file and
+ * include the License file at http://www.opensource.org/licenses/cddl1.txt If
+ * applicable, add the following below this CDDL HEADER, with the fields
+ * enclosed by brackets "[]" replaced with your own identifying information:
  * Portions Copyright [yyyy] [name of copyright owner]
  */
 
@@ -92,139 +88,139 @@ import com.noelios.restlet.http.HttpClientCall;
  * @author Jerome Louvel (contact@noelios.com)
  */
 public class HttpClientHelper extends com.noelios.restlet.http.HttpClientHelper {
-	private HttpClient httpClient;
+    private HttpClient httpClient;
 
-	/**
-	 * Constructor.
-	 * 
-	 * @param client
-	 *            The client to help.
-	 */
-	public HttpClientHelper(Client client) {
-		super(client);
-		this.httpClient = null;
-		getProtocols().add(Protocol.HTTP);
-		getProtocols().add(Protocol.HTTPS);
-	}
+    /**
+     * Constructor.
+     * 
+     * @param client
+     *            The client to help.
+     */
+    public HttpClientHelper(Client client) {
+        super(client);
+        this.httpClient = null;
+        getProtocols().add(Protocol.HTTP);
+        getProtocols().add(Protocol.HTTPS);
+    }
 
-	public HttpClient getHttpClient() {
-		return this.httpClient;
-	}
+    public HttpClient getHttpClient() {
+        return this.httpClient;
+    }
 
-	@Override
-	public void start() throws Exception {
-		super.start();
+    @Override
+    public void start() throws Exception {
+        super.start();
 
-		// Create the multi-threaded connection manager and configure it
-		MultiThreadedHttpConnectionManager connectionManager = new MultiThreadedHttpConnectionManager();
-		connectionManager.getParams().setDefaultMaxConnectionsPerHost(
-				getMaxConnectionsPerHost());
-		connectionManager.getParams().setMaxTotalConnections(
-				getMaxTotalConnections());
+        // Create the multi-threaded connection manager and configure it
+        MultiThreadedHttpConnectionManager connectionManager = new MultiThreadedHttpConnectionManager();
+        connectionManager.getParams().setDefaultMaxConnectionsPerHost(
+                getMaxConnectionsPerHost());
+        connectionManager.getParams().setMaxTotalConnections(
+                getMaxTotalConnections());
 
-		// Create the internal client connector
-		this.httpClient = new HttpClient(connectionManager);
-		getHttpClient().getParams().setAuthenticationPreemptive(false);
-		getHttpClient().getParams().setConnectionManagerTimeout(
-				getConnectionManagerTimeout());
-		getHttpClient().getParams()
-				.setCookiePolicy(CookiePolicy.IGNORE_COOKIES);
-		getHttpClient().getParams().setSoTimeout(getReadTimeout());
-	}
+        // Create the internal client connector
+        this.httpClient = new HttpClient(connectionManager);
+        getHttpClient().getParams().setAuthenticationPreemptive(false);
+        getHttpClient().getParams().setConnectionManagerTimeout(
+                getConnectionManagerTimeout());
+        getHttpClient().getParams()
+                .setCookiePolicy(CookiePolicy.IGNORE_COOKIES);
+        getHttpClient().getParams().setSoTimeout(getReadTimeout());
+    }
 
-	@Override
-	public void stop() throws Exception {
-		getHttpClient().getHttpConnectionManager().closeIdleConnections(
-				getStopIdleTimeout());
-	}
+    @Override
+    public void stop() throws Exception {
+        getHttpClient().getHttpConnectionManager().closeIdleConnections(
+                getStopIdleTimeout());
+    }
 
-	/**
-	 * Creates a low-level HTTP client call from a high-level uniform call.
-	 * 
-	 * @param request
-	 *            The high-level request.
-	 * @return A low-level HTTP client call.
-	 */
-	public HttpClientCall create(Request request) {
-		HttpClientCall result = null;
+    /**
+     * Creates a low-level HTTP client call from a high-level uniform call.
+     * 
+     * @param request
+     *            The high-level request.
+     * @return A low-level HTTP client call.
+     */
+    public HttpClientCall create(Request request) {
+        HttpClientCall result = null;
 
-		try {
-			result = new HttpMethodCall(this, request.getMethod().toString(),
-					request.getResourceRef().toString(), request
-							.isEntityAvailable());
-		} catch (IOException ioe) {
-			getLogger().log(Level.WARNING,
-					"Unable to create the HTTP client call", ioe);
-		}
+        try {
+            result = new HttpMethodCall(this, request.getMethod().toString(),
+                    request.getResourceRef().toString(), request
+                            .isEntityAvailable());
+        } catch (IOException ioe) {
+            getLogger().log(Level.WARNING,
+                    "Unable to create the HTTP client call", ioe);
+        }
 
-		return result;
-	}
+        return result;
+    }
 
-	/**
-	 * Indicates if the protocol will automatically follow redirects.
-	 * 
-	 * @return True if the protocol will automatically follow redirects.
-	 */
-	public boolean isFollowRedirects() {
-		return Boolean.parseBoolean(getParameters().getFirstValue(
-				"followRedirects", "false"));
-	}
+    /**
+     * Indicates if the protocol will automatically follow redirects.
+     * 
+     * @return True if the protocol will automatically follow redirects.
+     */
+    public boolean isFollowRedirects() {
+        return Boolean.parseBoolean(getParameters().getFirstValue(
+                "followRedirects", "false"));
+    }
 
-	/**
-	 * Returns the maximum number of connections that will be created for any
-	 * particular host.
-	 * 
-	 * @return The maximum number of connections that will be created for any
-	 *         particular host.
-	 */
-	public int getMaxConnectionsPerHost() {
-		return Integer.parseInt(getParameters().getFirstValue(
-				"maxConnectionsPerHost", "2"));
-	}
+    /**
+     * Returns the maximum number of connections that will be created for any
+     * particular host.
+     * 
+     * @return The maximum number of connections that will be created for any
+     *         particular host.
+     */
+    public int getMaxConnectionsPerHost() {
+        return Integer.parseInt(getParameters().getFirstValue(
+                "maxConnectionsPerHost", "2"));
+    }
 
-	/**
-	 * Returns the maximum number of active connections.
-	 * 
-	 * @return The maximum number of active connections.
-	 */
-	public int getMaxTotalConnections() {
-		return Integer.parseInt(getParameters().getFirstValue(
-				"maxTotalConnections", "20"));
-	}
+    /**
+     * Returns the maximum number of active connections.
+     * 
+     * @return The maximum number of active connections.
+     */
+    public int getMaxTotalConnections() {
+        return Integer.parseInt(getParameters().getFirstValue(
+                "maxTotalConnections", "20"));
+    }
 
-	/**
-	 * Returns the timeout in milliseconds used when retrieving an HTTP
-	 * connection from the HTTP connection manager.
-	 * 
-	 * @return The timeout in milliseconds used when retrieving an HTTP
-	 *         connection from the HTTP connection manager.
-	 */
-	public int getConnectionManagerTimeout() {
-		return Integer.parseInt(getParameters().getFirstValue(
-				"connectionManagerTimeout", "0"));
-	}
+    /**
+     * Returns the timeout in milliseconds used when retrieving an HTTP
+     * connection from the HTTP connection manager.
+     * 
+     * @return The timeout in milliseconds used when retrieving an HTTP
+     *         connection from the HTTP connection manager.
+     */
+    public int getConnectionManagerTimeout() {
+        return Integer.parseInt(getParameters().getFirstValue(
+                "connectionManagerTimeout", "0"));
+    }
 
-	/**
-	 * Returns the minimum idle time, in milliseconds, for connections to be
-	 * closed when stopping the connector.
-	 * 
-	 * @return The minimum idle time, in milliseconds, for connections to be
-	 *         closed when stopping the connector.
-	 */
-	public int getStopIdleTimeout() {
-		return Integer.parseInt(getParameters().getFirstValue(
-				"stopIdleTimeout", "1000"));
-	}
+    /**
+     * Returns the minimum idle time, in milliseconds, for connections to be
+     * closed when stopping the connector.
+     * 
+     * @return The minimum idle time, in milliseconds, for connections to be
+     *         closed when stopping the connector.
+     */
+    public int getStopIdleTimeout() {
+        return Integer.parseInt(getParameters().getFirstValue(
+                "stopIdleTimeout", "1000"));
+    }
 
-	/**
-	 * Returns the read timeout value. A timeout of zero is interpreted as an
-	 * infinite timeout.
-	 * 
-	 * @return The read timeout value.
-	 */
-	public int getReadTimeout() {
-		return Integer.parseInt(getParameters().getFirstValue("readTimeout",
-				"0"));
-	}
+    /**
+     * Returns the read timeout value. A timeout of zero is interpreted as an
+     * infinite timeout.
+     * 
+     * @return The read timeout value.
+     */
+    public int getReadTimeout() {
+        return Integer.parseInt(getParameters().getFirstValue("readTimeout",
+                "0"));
+    }
 
 }

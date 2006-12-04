@@ -1,22 +1,18 @@
 /*
  * Copyright 2005-2006 Noelios Consulting.
- *
- * The contents of this file are subject to the terms
- * of the Common Development and Distribution License
- * (the "License").  You may not use this file except
- * in compliance with the License.
- *
+ * 
+ * The contents of this file are subject to the terms of the Common Development
+ * and Distribution License (the "License"). You may not use this file except in
+ * compliance with the License.
+ * 
  * You can obtain a copy of the license at
- * http://www.opensource.org/licenses/cddl1.txt
- * See the License for the specific language governing
- * permissions and limitations under the License.
- *
- * When distributing Covered Code, include this CDDL
- * HEADER in each file and include the License file at
- * http://www.opensource.org/licenses/cddl1.txt
- * If applicable, add the following below this CDDL
- * HEADER, with the fields enclosed by brackets "[]"
- * replaced with your own identifying information:
+ * http://www.opensource.org/licenses/cddl1.txt See the License for the specific
+ * language governing permissions and limitations under the License.
+ * 
+ * When distributing Covered Code, include this CDDL HEADER in each file and
+ * include the License file at http://www.opensource.org/licenses/cddl1.txt If
+ * applicable, add the following below this CDDL HEADER, with the fields
+ * enclosed by brackets "[]" replaced with your own identifying information:
  * Portions Copyright [yyyy] [name of copyright owner]
  */
 
@@ -90,105 +86,105 @@ import com.noelios.restlet.http.HttpClientCall;
  * @author Jerome Louvel (contact@noelios.com)
  */
 public class HttpClientHelper extends com.noelios.restlet.http.HttpClientHelper {
-	/**
-	 * Constructor.
-	 * 
-	 * @param client
-	 *            The client to help.
-	 */
-	public HttpClientHelper(Client client) {
-		super(client);
-		getProtocols().add(Protocol.HTTP);
-		getProtocols().add(Protocol.HTTPS);
-	}
+    /**
+     * Constructor.
+     * 
+     * @param client
+     *            The client to help.
+     */
+    public HttpClientHelper(Client client) {
+        super(client);
+        getProtocols().add(Protocol.HTTP);
+        getProtocols().add(Protocol.HTTPS);
+    }
 
-	/**
-	 * Creates a low-level HTTP client call from a high-level uniform call.
-	 * 
-	 * @param request
-	 *            The high-level request.
-	 * @return A low-level HTTP client call.
-	 */
-	@Override
-	public HttpClientCall create(Request request) {
-		HttpClientCall result = null;
+    /**
+     * Creates a low-level HTTP client call from a high-level uniform call.
+     * 
+     * @param request
+     *            The high-level request.
+     * @return A low-level HTTP client call.
+     */
+    @Override
+    public HttpClientCall create(Request request) {
+        HttpClientCall result = null;
 
-		try {
-			result = new HttpUrlConnectionCall(this, request.getMethod()
-					.toString(), request.getResourceRef().toString(), request
-					.isEntityAvailable());
-		} catch (IOException ioe) {
-			getLogger().log(Level.WARNING,
-					"Unable to create the HTTP client call", ioe);
-		}
+        try {
+            result = new HttpUrlConnectionCall(this, request.getMethod()
+                    .toString(), request.getResourceRef().toString(), request
+                    .isEntityAvailable());
+        } catch (IOException ioe) {
+            getLogger().log(Level.WARNING,
+                    "Unable to create the HTTP client call", ioe);
+        }
 
-		return result;
-	}
+        return result;
+    }
 
-	/**
-	 * Returns the chunk-length when using chunked encoding streaming mode for
-	 * response entities. A value of -1 means chunked encoding is disabled for
-	 * response entities.
-	 * 
-	 * @return The chunk-length when using chunked encoding streaming mode for
-	 *         response entities.
-	 */
-	public int getChunkLength() {
-		return Integer.parseInt(getParameters().getFirstValue("chunkLength",
-				"0"));
-	}
+    /**
+     * Returns the chunk-length when using chunked encoding streaming mode for
+     * response entities. A value of -1 means chunked encoding is disabled for
+     * response entities.
+     * 
+     * @return The chunk-length when using chunked encoding streaming mode for
+     *         response entities.
+     */
+    public int getChunkLength() {
+        return Integer.parseInt(getParameters().getFirstValue("chunkLength",
+                "0"));
+    }
 
-	/**
-	 * Indicates if the protocol will automatically follow redirects.
-	 * 
-	 * @return True if the protocol will automatically follow redirects.
-	 */
-	public boolean isFollowRedirects() {
-		return Boolean.parseBoolean(getParameters().getFirstValue(
-				"followRedirects", "false"));
-	}
+    /**
+     * Indicates if the protocol will automatically follow redirects.
+     * 
+     * @return True if the protocol will automatically follow redirects.
+     */
+    public boolean isFollowRedirects() {
+        return Boolean.parseBoolean(getParameters().getFirstValue(
+                "followRedirects", "false"));
+    }
 
-	/**
-	 * Indicates if this URL is being examined in a context in which it makes
-	 * sense to allow user interactions such as popping up an authentication
-	 * dialog.
-	 * 
-	 * @return True if it makes sense to allow user interactions.
-	 */
-	public boolean isAllowUserInteraction() {
-		return Boolean.parseBoolean(getParameters().getFirstValue(
-				"allowUserInteraction", "false"));
-	}
+    /**
+     * Indicates if this URL is being examined in a context in which it makes
+     * sense to allow user interactions such as popping up an authentication
+     * dialog.
+     * 
+     * @return True if it makes sense to allow user interactions.
+     */
+    public boolean isAllowUserInteraction() {
+        return Boolean.parseBoolean(getParameters().getFirstValue(
+                "allowUserInteraction", "false"));
+    }
 
-	/**
-	 * Indicates if the protocol is allowed to use caching whenever it can.
-	 * 
-	 * @return True if the protocol is allowed to use caching whenever it can.
-	 */
-	public boolean isUseCaches() {
-		return Boolean.parseBoolean(getParameters().getFirstValue("useCaches",
-				"false"));
-	}
+    /**
+     * Indicates if the protocol is allowed to use caching whenever it can.
+     * 
+     * @return True if the protocol is allowed to use caching whenever it can.
+     */
+    public boolean isUseCaches() {
+        return Boolean.parseBoolean(getParameters().getFirstValue("useCaches",
+                "false"));
+    }
 
-	/**
-	 * Returns the timeout value, in milliseconds, to be used when opening a
-	 * communications link to the resource referenced. 0 means infinite timeout.
-	 * 
-	 * @return The connection timeout value.
-	 */
-	public int getConnectTimeout() {
-		return Integer.parseInt(getParameters().getFirstValue("connectTimeout",
-				"0"));
-	}
+    /**
+     * Returns the timeout value, in milliseconds, to be used when opening a
+     * communications link to the resource referenced. 0 means infinite timeout.
+     * 
+     * @return The connection timeout value.
+     */
+    public int getConnectTimeout() {
+        return Integer.parseInt(getParameters().getFirstValue("connectTimeout",
+                "0"));
+    }
 
-	/**
-	 * Returns the read timeout value. A timeout of zero is interpreted as an
-	 * infinite timeout.
-	 * 
-	 * @return The read timeout value.
-	 */
-	public int getReadTimeout() {
-		return Integer.parseInt(getParameters().getFirstValue("readTimeout",
-				"0"));
-	}
+    /**
+     * Returns the read timeout value. A timeout of zero is interpreted as an
+     * infinite timeout.
+     * 
+     * @return The read timeout value.
+     */
+    public int getReadTimeout() {
+        return Integer.parseInt(getParameters().getFirstValue("readTimeout",
+                "0"));
+    }
 }
