@@ -41,7 +41,7 @@ import com.noelios.restlet.StatusFilter;
  * 
  * @author Jerome Louvel (contact@noelios.com)
  */
-public class ContainerHelper implements Helper {
+public class ContainerHelper extends Helper {
     /** The helped container. */
     private Container container;
 

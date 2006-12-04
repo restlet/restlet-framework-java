@@ -12,7 +12,9 @@ Changes log
  - Removed Jetty 5 connector from the distribution. Use Jetty 6 connector instead. 
    Source code still available in SVN. Fixes #180.
  - Disabled Atom extension for 1.0 RC1. Postponed for completion in 1.1.
- 
+ - Changed Helper SPI interface into an abstract SPI class.
+ - MapModel now derives from WrapperMap instead of TreeMap.
+
 [Enhancements] 
  - Add new constructor to Tag for weak tags taking an unquoted opaque value. Fixes #201. 
    Suggested by Chris Grindstaff

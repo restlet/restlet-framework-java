@@ -26,7 +26,7 @@ import java.util.TreeMap;
  * 
  * @author Jerome Louvel (contact@noelios.com)
  */
-public class MapModel extends TreeMap<String, Object> implements Model {
+public class MapModel extends WrapperMap<String, Object> implements Model {
     private static final long serialVersionUID = 4508869056441847319L;
 
     /**
@@ -38,7 +38,7 @@ public class MapModel extends TreeMap<String, Object> implements Model {
      * Constructor.
      */
     public MapModel() {
-        this.readOnly = false;
+        this(false);
     }
 
     /**
@@ -48,7 +48,7 @@ public class MapModel extends TreeMap<String, Object> implements Model {
      *            True if the wrapped map shouldn't be modified.
      */
     public MapModel(boolean readOnly) {
-        this.readOnly = readOnly;
+        this(new TreeMap<String, Object>(), readOnly);
     }
 
     /**

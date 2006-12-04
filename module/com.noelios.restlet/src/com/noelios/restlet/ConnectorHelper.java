@@ -32,7 +32,7 @@ import org.restlet.util.Helper;
  * 
  * @author Jerome Louvel (contact@noelios.com)
  */
-public class ConnectorHelper implements Helper {
+public class ConnectorHelper extends Helper {
     /** The protocols simultaneously supported. */
     private List<Protocol> protocols;
 

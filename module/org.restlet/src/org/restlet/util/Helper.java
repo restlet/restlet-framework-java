@@ -27,13 +27,13 @@ import org.restlet.data.Response;
  * 
  * @author Jerome Louvel (contact@noelios.com)
  */
-public interface Helper {
+public abstract class Helper {
     /**
      * Creates a new context.
      * 
      * @return The new context.
      */
-    public Context createContext();
+    public abstract Context createContext();
 
     /**
      * Handles a call.
@@ -43,11 +43,11 @@ public interface Helper {
      * @param response
      *            The response to update.
      */
-    public void handle(Request request, Response response);
+    public abstract void handle(Request request, Response response);
 
     /** Start callback. */
-    public void start() throws Exception;
+    public abstract void start() throws Exception;
 
     /** Stop callback. */
-    public void stop() throws Exception;
+    public abstract void stop() throws Exception;
 }

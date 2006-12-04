@@ -60,7 +60,9 @@ import org.restlet.data.Response;
  * </ul>
  * 
  * @author Jerome Louvel (contact@noelios.com)
+ * @deprecated Use GenericModel instead.
  */
+@Deprecated
 public class CallModel implements Model {
     public static final String NAME_ATTRIBUTE = "attribute";
 

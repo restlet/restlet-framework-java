@@ -37,7 +37,7 @@ import com.noelios.restlet.LogFilter;
  * 
  * @author Jerome Louvel (contact@noelios.com)
  */
-public class ApplicationHelper implements Helper {
+public class ApplicationHelper extends Helper {
     /** The application to help. */
     private Application application;
 
