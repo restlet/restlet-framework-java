@@ -23,7 +23,8 @@ Changes log
    the "document()" XPath methods and other imports to be defined in XSLT stylesheets. Fixes #125.
  - Added support for CheckStyle (disabled by default). The CheckStyle configuration file is "build/checks.xml", 
    currently a clone of sun_checks.xml. Suggested by Piyush Purang.
-
+ - Improved CheckStyle Ant task: not failing for style violations and HTML reports for each module. Contributed by Piyush Purang.
+ 
 1.0 beta 21 (2006-11-26)
 [Bugs fixed]
  - Fixed potential NPE when some JAR files are missing (no API implementation, no connector found, etc.). 

@@ -546,12 +546,14 @@
 	<macrodef name="checkstyleModule">
 		<attribute name="name" />
 		<sequential>
-			<checkstyle config="checks.xml">
+			<checkstyle config="checks.xml" failOnViolation="false">
 				<fileset dir="${mod}/${mod-@{name}-id}/src" includes="**/*.java"/>
-				
 				<!-- Location of cache-file. Something that is project specific -->
 				<property key="checkstyle.cache.file" file="${temp}/checkstyle/cachefile"/>
+				<formatter type="xml" tofile="${temp}/checkstyle/${mod-@{name}-id}-cs.xml"/>
 			</checkstyle>
+	        <style in="${temp}/checkstyle/${mod-@{name}-id}-cs.xml" out="${temp}/checkstyle/${mod-@{name}-id}-cs.html"
+	               style="checks.xsl"/>			
 		</sequential>
 	</macrodef>
 
