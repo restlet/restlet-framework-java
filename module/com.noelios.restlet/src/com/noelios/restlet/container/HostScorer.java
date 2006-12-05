@@ -82,15 +82,17 @@ public class HostScorer extends Scorer {
 
         if (request.getBaseRef() != null) {
             baseDomain = request.getBaseRef().getHostDomain();
-            basePort = request.getBaseRef().getHostPort().toString();
+            Integer basePortValue = request.getBaseRef().getHostPort();
+            if(basePortValue == null) basePortValue = request.getBaseRef().getSchemeProtocol().getDefaultPort();
+            basePort = basePortValue.toString();
             baseScheme = request.getBaseRef().getScheme();
         }
 
         String resourceDomain = request.getResourceRef().getHostDomain();
         String resourceScheme = request.getResourceRef().getScheme();
-        Integer hostPort = request.getResourceRef().getHostPort();
-        if(hostPort == null) hostPort = request.getResourceRef().getSchemeProtocol().getDefaultPort();
-        String resourcePort = hostPort.toString();
+        Integer resourcePortValue = request.getResourceRef().getHostPort();
+        if(resourcePortValue == null) resourcePortValue = request.getResourceRef().getSchemeProtocol().getDefaultPort();
+        String resourcePort = resourcePortValue.toString();
 
         String serverAddress = response.getServerInfo().getAddress();
         String serverPort = response.getServerInfo().getPort().toString();
