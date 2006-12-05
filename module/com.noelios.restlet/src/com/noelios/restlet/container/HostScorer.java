@@ -87,8 +87,10 @@ public class HostScorer extends Scorer {
         }
 
         String resourceDomain = request.getResourceRef().getHostDomain();
-        String resourcePort = request.getResourceRef().getHostPort().toString();
         String resourceScheme = request.getResourceRef().getScheme();
+        Integer hostPort = request.getResourceRef().getHostPort();
+        if(hostPort == null) hostPort = request.getResourceRef().getSchemeProtocol().getDefaultPort();
+        String resourcePort = hostPort.toString();
 
         String serverAddress = response.getServerInfo().getAddress();
         String serverPort = response.getServerInfo().getPort().toString();
