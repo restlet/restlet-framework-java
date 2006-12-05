@@ -33,7 +33,7 @@ package org.restlet.data;
  *      Entity Tag Cache Validators</a>
  * @author Jerome Louvel (contact@noelios.com)
  */
-public class Tag {
+public final class Tag {
     /** Tag matching any other tag, used in call's condition data. */
     public static final Tag ALL = Tag.parse("*");
 
@@ -50,23 +50,23 @@ public class Tag {
      *      href="http://www.w3.org/Protocols/rfc2616/rfc2616-sec3.html#sec3.11">HTTP
      *      Entity Tags</a>
      */
-    public static Tag parse(String httpTag) {
+    public static Tag parse(final String httpTag) {
         Tag result = new Tag();
-
-        if (httpTag.startsWith("W")) {
-            result.setWeak(true);
-            httpTag = httpTag.substring(1);
+        String httpTagCopy = httpTag;
+        if (httpTagCopy.startsWith("W")) {
+            result.weak = true;
+            httpTagCopy = httpTagCopy.substring(1);
         } else {
-            result.setWeak(false);
+            result.weak = false;
         }
 
-        if (httpTag.startsWith("\"") && httpTag.endsWith("\"")) {
-            result.setOpaqueTag(httpTag.substring(1, httpTag.length() - 1));
-        } else if (httpTag.equals("*")) {
-            result.setOpaqueTag("*");
+        if (httpTagCopy.startsWith("\"") && httpTagCopy.endsWith("\"")) {
+            result.opaqueTag = httpTagCopy.substring(1, httpTagCopy.length() - 1);
+        } else if (httpTagCopy.equals("*")) {
+            result.opaqueTag = "*";
         } else {
             throw new IllegalArgumentException("Invalid tag format detected: "
-                    + httpTag);
+                    + httpTagCopy);
         }
 
         return result;
@@ -92,7 +92,7 @@ public class Tag {
      * @param opaqueTag
      *            The tag value.
      */
-    public Tag(String opaqueTag) {
+    public Tag(final String opaqueTag) {
         this(opaqueTag, true);
     }
 
@@ -104,7 +104,7 @@ public class Tag {
      * @param weak
      *            The weakness indicator.
      */
-    public Tag(String opaqueTag, boolean weak) {
+    public Tag(final String opaqueTag, boolean weak) {
         this.opaqueTag = opaqueTag;
         this.weak = weak;
     }
@@ -117,7 +117,7 @@ public class Tag {
      * @return True if both tags are equal.
      */
     @Override
-    public boolean equals(Object object) {
+    public boolean equals(final Object object) {
         boolean result = (object != null) && (object instanceof Tag);
 
         if (result) {
@@ -185,25 +185,4 @@ public class Tag {
     public boolean isWeak() {
         return weak;
     }
-
-    /**
-     * Sets the opaque tag string.
-     * 
-     * @param opaqueTag
-     *            The opaque tag string.
-     */
-    public void setOpaqueTag(String opaqueTag) {
-        this.opaqueTag = opaqueTag;
-    }
-
-    /**
-     * Sets the tag weakness.
-     * 
-     * @param weak
-     *            True if the tag is weak, false if the tag is strong.
-     */
-    public void setWeak(boolean weak) {
-        this.weak = weak;
-    }
-
 }

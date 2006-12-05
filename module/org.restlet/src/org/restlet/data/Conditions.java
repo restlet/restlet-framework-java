@@ -32,7 +32,7 @@ import org.restlet.util.ImmutableDate;
  * 
  * @author Jerome Louvel (contact@noelios.com)
  */
-public class Conditions {
+public final class Conditions {
     /** The "if-modified-since" condition */
     private ImmutableDate modifiedSince;
 

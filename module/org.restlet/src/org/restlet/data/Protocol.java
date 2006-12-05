@@ -24,7 +24,7 @@ package org.restlet.data;
  * 
  * @author Jerome Louvel (contact@noelios.com)
  */
-public class Protocol extends Metadata {
+public final class Protocol extends Metadata {
     /** All protocols wildcard. */
     public static final Protocol ALL = new Protocol("all", "ALL",
             "Wildcard for all protocols", -1);
@@ -88,7 +88,7 @@ public class Protocol extends Metadata {
      *            The scheme name.
      * @return The associated protocol.
      */
-    public static Protocol valueOf(String schemeName) {
+    public static Protocol valueOf(final String schemeName) {
         Protocol result = null;
 
         if (schemeName != null) {
@@ -127,7 +127,7 @@ public class Protocol extends Metadata {
      * @param schemeName
      *            The scheme name.
      */
-    public Protocol(String schemeName) {
+    public Protocol(final String schemeName) {
         this(schemeName, schemeName.toUpperCase(), schemeName.toUpperCase()
                 + " Protocol", -1);
     }
@@ -144,7 +144,7 @@ public class Protocol extends Metadata {
      * @param defaultPort
      *            The default port.
      */
-    public Protocol(String schemeName, String name, String description,
+    public Protocol(final String schemeName, final String name, final String description,
             int defaultPort) {
         super(name, description);
         this.schemeName = schemeName;
@@ -153,7 +153,7 @@ public class Protocol extends Metadata {
 
     /** {@inheritDoc} */
     @Override
-    public boolean equals(Object object) {
+    public boolean equals(final Object object) {
         return (object instanceof Protocol)
                 && getName().equalsIgnoreCase(((Protocol) object).getName());
     }

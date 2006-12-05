@@ -32,7 +32,7 @@ import java.util.TimeZone;
  * 
  * @author Jerome Louvel (contact@noelios.com)
  */
-public class DateUtils {
+public final class DateUtils {
     /** Preferred HTTP date format (RFC 1123). */
     public static final List<String> FORMAT_RFC_1123 = unmodifiableList("EEE, dd MMM yyyy HH:mm:ss zzz");
 
@@ -64,7 +64,7 @@ public class DateUtils {
      *            The date supposed to be after.
      * @return True if the afterDate is indeed after the baseDate.
      */
-    public static boolean after(Date baseDate, Date afterDate) {
+    public static boolean after(final Date baseDate, final Date afterDate) {
         if ((baseDate == null) || (afterDate == null)) {
             throw new IllegalArgumentException(
                     "Can't compare the dates, at least one of them is null");
@@ -84,7 +84,7 @@ public class DateUtils {
      *            The date supposed to be before.
      * @return True if the beforeDate is indeed before the baseDate.
      */
-    public static boolean before(Date baseDate, Date beforeDate) {
+    public static boolean before(final Date baseDate, final Date beforeDate) {
         if ((baseDate == null) || (beforeDate == null)) {
             throw new IllegalArgumentException(
                     "Can't compare the dates, at least one of them is null");
@@ -104,7 +104,7 @@ public class DateUtils {
      *            The other date supposed to be equals.
      * @return True if both dates are equals.
      */
-    public static boolean equals(Date baseDate, Date otherDate) {
+    public static boolean equals(final Date baseDate, final Date otherDate) {
         if ((baseDate == null) || (otherDate == null)) {
             throw new IllegalArgumentException(
                     "Can't compare the dates, at least one of them is null");
@@ -124,7 +124,7 @@ public class DateUtils {
      *            The date format to use.
      * @return The formatted date.
      */
-    public static String format(Date date, String format) {
+    public static String format(final Date date, final String format) {
         if (date == null) {
             throw new IllegalArgumentException("Date is null");
         } else {
@@ -143,7 +143,7 @@ public class DateUtils {
      *            The date formats to use sorted by completeness.
      * @return The parsed date.
      */
-    public static Date parse(String date, List<String> formats) {
+    public static Date parse(final String date, final List<String> formats) {
         Date result = null;
 
         if (date == null) {
@@ -178,7 +178,7 @@ public class DateUtils {
      *            to be convereted into an unmodifiable list
      * @return unmodifiable list based on the provided array
      */
-    private static <T> List<T> unmodifiableList(T... array) {
+    private static <T> List<T> unmodifiableList(final T... array) {
         return Collections.unmodifiableList(Arrays.asList(array));
     }
 

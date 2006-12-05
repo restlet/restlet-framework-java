@@ -30,7 +30,7 @@ import org.restlet.util.Factory;
  * 
  * @author Jerome Louvel (contact@noelios.com)
  */
-public class ClientInfo {
+public final class ClientInfo {
     /** The IP addresses. */
     private List<String> addresses;
 

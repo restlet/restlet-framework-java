@@ -23,7 +23,7 @@ package org.restlet.data;
  * 
  * @author Jerome Louvel (contact@noelios.com)
  */
-public class Language extends Metadata {
+public final class Language extends Metadata {
     /** All languages acceptable. */
     public static final Language ALL = new Language("*", "All languages");
 
@@ -54,7 +54,7 @@ public class Language extends Metadata {
      *            The name.
      * @return The associated language.
      */
-    public static Language valueOf(String name) {
+    public static Language valueOf(final String name) {
         Language result = null;
 
         if (name != null) {
@@ -83,7 +83,7 @@ public class Language extends Metadata {
      * @param name
      *            The name.
      */
-    public Language(String name) {
+    public Language(final String name) {
         this(name, "Language or range of languages");
     }
 
@@ -95,13 +95,13 @@ public class Language extends Metadata {
      * @param description
      *            The description.
      */
-    public Language(String name, String description) {
+    public Language(final String name, final String description) {
         super(name, description);
     }
 
     /** {@inheritDoc} */
     @Override
-    public boolean equals(Object object) {
+    public boolean equals(final Object object) {
         return (object instanceof Language)
                 && getName().equalsIgnoreCase(((Language) object).getName());
     }

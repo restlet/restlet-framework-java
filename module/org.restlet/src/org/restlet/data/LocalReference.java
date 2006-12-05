@@ -33,7 +33,7 @@ import java.io.IOException;
  * 
  * @author Jerome Louvel (contact@noelios.com)
  */
-public class LocalReference extends Reference {
+public final class LocalReference extends Reference {
     /**
      * The resources will be resolved from the classloader associated with the
      * local class. Examples: clap://class/rootPkg/subPkg/myClass.class or

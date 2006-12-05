@@ -26,7 +26,7 @@ import org.restlet.util.Factory;
  * @see <a href="http://en.wikipedia.org/wiki/MIME">MIME types on Wikipedia</a>
  * @author Jerome Louvel (contact@noelios.com)
  */
-public class MediaType extends Metadata {
+public final class MediaType extends Metadata {
     public static final MediaType ALL = new MediaType("*/*", "All media");
 
     public static final MediaType APPLICATION_ALL = new MediaType(

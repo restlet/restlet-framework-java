@@ -23,7 +23,7 @@ package org.restlet.data;
  * 
  * @author Jerome Louvel (contact@noelios.com)
  */
-public class ChallengeScheme extends Metadata {
+public final class ChallengeScheme extends Metadata {
     /** Custom scheme based on IP address or cookies or query params, etc. */
     public static final ChallengeScheme CUSTOM = new ChallengeScheme("CUSTOM",
             "Custom", "Custom authentication");
@@ -105,14 +105,14 @@ public class ChallengeScheme extends Metadata {
      * @param description
      *            The description.
      */
-    public ChallengeScheme(String name, String technicalName, String description) {
+    public ChallengeScheme(final String name, final String technicalName, final String description) {
         super(name, description);
         this.technicalName = technicalName;
     }
 
     /** {@inheritDoc} */
     @Override
-    public boolean equals(Object object) {
+    public boolean equals(final Object object) {
         return (object instanceof ChallengeScheme)
                 && ((ChallengeScheme) object).getName().equalsIgnoreCase(
                         getName());

@@ -23,7 +23,7 @@ package org.restlet.data;
  * 
  * @author Jerome Louvel (contact@noelios.com)
  */
-public class CharacterSet extends Metadata {
+public final class CharacterSet extends Metadata {
     /** All character sets acceptable. */
     public static final CharacterSet ALL = new CharacterSet("*",
             "All character sets");
@@ -68,7 +68,7 @@ public class CharacterSet extends Metadata {
      *            The name.
      * @return The associated character set.
      */
-    public static CharacterSet valueOf(String name) {
+    public static CharacterSet valueOf(final String name) {
         CharacterSet result = null;
 
         if (name != null) {
@@ -95,7 +95,7 @@ public class CharacterSet extends Metadata {
      * @param name
      *            The name.
      */
-    public CharacterSet(String name) {
+    public CharacterSet(final String name) {
         this(name == null ? null : name.toUpperCase(),
                 "Character set or range of character sets");
     }
@@ -108,13 +108,13 @@ public class CharacterSet extends Metadata {
      * @param description
      *            The description.
      */
-    public CharacterSet(String name, String description) {
+    public CharacterSet(final String name, final String description) {
         super(name == null ? null : name.toUpperCase(), description);
     }
 
     /** {@inheritDoc} */
     @Override
-    public boolean equals(Object object) {
+    public boolean equals(final Object object) {
         return (object instanceof CharacterSet)
                 && getName()
                         .equalsIgnoreCase(((CharacterSet) object).getName());

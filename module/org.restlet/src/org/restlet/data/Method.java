@@ -23,7 +23,7 @@ package org.restlet.data;
  * 
  * @author Jerome Louvel (contact@noelios.com)
  */
-public class Method extends Metadata {
+public final class Method extends Metadata {
     private static final String BASE_HTTP = "http://www.w3.org/Protocols/rfc2616/rfc2616-sec9.html";
 
     private static final String BASE_WEBDAV = "http://www.webdav.org/specs/rfc2518.html";
@@ -108,7 +108,7 @@ public class Method extends Metadata {
      *            The method name.
      * @return The associated method.
      */
-    public static Method valueOf(String methodName) {
+    public static Method valueOf(final String methodName) {
         Method result = null;
 
         if (methodName != null) {
@@ -159,7 +159,7 @@ public class Method extends Metadata {
      *            The technical name of the method.
      * @see org.restlet.data.Method#valueOf(String)
      */
-    public Method(String name) {
+    public Method(final String name) {
         this(name, null, null);
     }
 
@@ -172,7 +172,7 @@ public class Method extends Metadata {
      *            The description.
      * @see org.restlet.data.Method#valueOf(String)
      */
-    public Method(String name, String description) {
+    public Method(final String name, final String description) {
         this(name, description, null);
     }
 
@@ -187,14 +187,14 @@ public class Method extends Metadata {
      *            The URI of the specification describing the method.
      * @see org.restlet.data.Method#valueOf(String)
      */
-    public Method(String name, String description, String uri) {
+    public Method(final String name, final String description, final String uri) {
         super(name, description);
         this.uri = uri;
     }
 
     /** {@inheritDoc} */
     @Override
-    public boolean equals(Object object) {
+    public boolean equals(final Object object) {
         return (object instanceof Method)
                 && ((Method) object).getName().equals(getName());
     }

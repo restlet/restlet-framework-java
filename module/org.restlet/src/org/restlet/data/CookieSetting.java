@@ -25,7 +25,7 @@ import org.restlet.util.Factory;
  * 
  * @author Jerome Louvel (contact@noelios.com)
  */
-public class CookieSetting extends Cookie {
+public final class CookieSetting extends Cookie {
     /** The user's comment. */
     private String comment;
 

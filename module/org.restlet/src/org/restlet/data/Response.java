@@ -19,7 +19,7 @@
 package org.restlet.data;
 
 import java.util.ArrayList;
-import java.util.HashSet;
+import java.util.EnumSet;
 import java.util.List;
 import java.util.Set;
 
@@ -102,7 +102,7 @@ public class Response extends Message {
      */
     public Set<Dimension> getDimensions() {
         if (this.dimensions == null)
-            this.dimensions = new HashSet<Dimension>();
+            this.dimensions = EnumSet.noneOf(Dimension.class);
         return this.dimensions;
     }
 

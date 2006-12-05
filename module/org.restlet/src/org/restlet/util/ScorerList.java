@@ -40,7 +40,7 @@ import org.restlet.data.Response;
  * @see java.util.Collections
  * @see java.util.List
  */
-public class ScorerList extends WrapperList<Scorer> {
+public final class ScorerList extends WrapperList<Scorer> {
     /** The parent router. */
     private Router router;
 

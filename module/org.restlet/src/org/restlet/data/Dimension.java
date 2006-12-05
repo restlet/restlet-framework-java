@@ -20,32 +20,20 @@ package org.restlet.data;
 
 /**
  * Dimension on which the representations of a resource may vary.
- * 
+ *
+ * @author Piyush Purang (ppurang@gmail.com)
+ * @author Jerome Louvel (contact@noelios.com)
  * @see <a
  *      href="http://www.w3.org/Protocols/rfc2616/rfc2616-sec14.html#sec14.44">HTTP
  *      Vary header</a>
- * @author Jerome Louvel (contact@noelios.com)
  */
-public class Dimension {
-    public static final Dimension CHARACTER_SET = new Dimension();
-
-    public static final Dimension CLIENT_ADDRESS = new Dimension();
-
-    public static final Dimension CLIENT_AGENT = new Dimension();
-
-    public static final Dimension UNSPECIFIED = new Dimension();
-
-    public static final Dimension ENCODING = new Dimension();
-
-    public static final Dimension LANGUAGE = new Dimension();
-
-    public static final Dimension MEDIA_TYPE = new Dimension();
-
-    public static final Dimension TIME = new Dimension();
-
-    /**
-     * Constructor.
-     */
-    private Dimension() {
-    }
+public enum Dimension {
+    CHARACTER_SET,
+    CLIENT_ADDRESS,
+    CLIENT_AGENT,
+    UNSPECIFIED,
+    ENCODING,
+    LANGUAGE,
+    MEDIA_TYPE,
+    TIME,
 }

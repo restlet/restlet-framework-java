@@ -23,7 +23,7 @@ package org.restlet.data;
  * 
  * @author Jerome Louvel (contact@noelios.com)
  */
-public class Preference<T extends Metadata> {
+public final class Preference<T extends Metadata> {
     /** The metadata associated with this preference. */
     private T metadata;
 

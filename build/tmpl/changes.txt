@@ -14,6 +14,8 @@ Changes log
  - Disabled Atom extension for 1.0 RC1. Postponed for completion in 1.1.
  - Changed Helper SPI interface into an abstract SPI class.
  - MapModel now derives from WrapperMap instead of TreeMap.
+ - Finalized many classes in order to be explicit about what is intended to be subclassed or not. Contributed by Piyush Purang.
+ - org.restlet.util.PipeStream was moved inside ByteUtils as a private class.
 
 [Enhancements] 
  - Add new constructor to Tag for weak tags taking an unquoted opaque value. Fixes #201. 

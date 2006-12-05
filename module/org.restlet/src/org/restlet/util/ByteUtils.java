@@ -26,6 +26,8 @@ import java.nio.channels.Channels;
 import java.nio.channels.Pipe;
 import java.nio.channels.ReadableByteChannel;
 import java.nio.channels.WritableByteChannel;
+import java.util.concurrent.ArrayBlockingQueue;
+import java.util.concurrent.BlockingQueue;
 
 import org.restlet.resource.Representation;
 
@@ -34,7 +36,7 @@ import org.restlet.resource.Representation;
  * 
  * @author Jerome Louvel (contact@noelios.com)
  */
-public class ByteUtils {
+public final class ByteUtils {
     /**
      * Returns a readable byte channel based on a given inputstream. If it is
      * supported by a file a read-only instance of FileChannel is returned.
@@ -223,4 +225,65 @@ public class ByteUtils {
     private ByteUtils() {
 
     }
+    
+    /**
+     * Pipe stream that pipes output streams into input streams. Implementation
+     * based on a shared synchronized queue.
+     * 
+     * @author Jerome Louvel (contact@noelios.com)
+     */
+    private final static class PipeStream {
+        /** The supporting synchronized queue. */
+        private final BlockingQueue<Integer> queue;
+
+        /** Constructor. */
+        public PipeStream() {
+            this.queue = new ArrayBlockingQueue<Integer>(1024);
+        }
+
+        /**
+         * Returns a new input stream that can read from the pipe.
+         * 
+         * @return A new input stream that can read from the pipe.
+         */
+        public InputStream getInputStream() {
+            return new InputStream() {
+                private boolean endReached = false;
+
+                public int read() throws IOException {
+                    try {
+                        if (endReached)
+                            return -1;
+                        int value = queue.take();
+                        endReached = (value == -1);
+                        return value;
+                    } catch (InterruptedException ie) {
+                        throw new IOException(
+                                "Interruption occurred while writing in the queue");
+                    }
+                }
+            };
+        }
+
+        /**
+         * Returns a new output stream that can write into the pipe.
+         * 
+         * @return A new output stream that can write into the pipe.
+         */
+        public OutputStream getOutputStream() {
+            return new OutputStream() {
+                public void write(int b) throws IOException {
+                    try {
+                        queue.put(b);
+                    } catch (InterruptedException ie) {
+                        throw new IOException(
+                                "Interruption occurred while writing in the queue");
+                    }
+                }
+            };
+        }
+
+    }
+    
 }
+

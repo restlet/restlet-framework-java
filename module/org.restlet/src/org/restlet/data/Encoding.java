@@ -24,7 +24,7 @@ package org.restlet.data;
  * 
  * @author Jerome Louvel (contact@noelios.com)
  */
-public class Encoding extends Metadata {
+public final class Encoding extends Metadata {
     /** All encodings acceptable. */
     public static final Encoding ALL = new Encoding("*", "All encodings");
 
@@ -54,7 +54,7 @@ public class Encoding extends Metadata {
      *            The name.
      * @return The associated encoding.
      */
-    public static Encoding valueOf(String name) {
+    public static Encoding valueOf(final String name) {
         Encoding result = null;
 
         if (name != null) {
@@ -83,7 +83,7 @@ public class Encoding extends Metadata {
      * @param name
      *            The name.
      */
-    public Encoding(String name) {
+    public Encoding(final String name) {
         this(name, "Encoding applied to a representation");
     }
 
@@ -95,13 +95,13 @@ public class Encoding extends Metadata {
      * @param description
      *            The description.
      */
-    public Encoding(String name, String description) {
+    public Encoding(final String name, final String description) {
         super(name, description);
     }
 
     /** {@inheritDoc} */
     @Override
-    public boolean equals(Object object) {
+    public boolean equals(final Object object) {
         return (object instanceof Encoding)
                 && getName().equalsIgnoreCase(((Encoding) object).getName());
     }

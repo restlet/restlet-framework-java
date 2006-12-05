@@ -23,7 +23,7 @@ package org.restlet.data;
  * 
  * @author Jerome Louvel (contact@noelios.com)
  */
-public class Status extends Metadata {
+public final class Status extends Metadata {
     private static final String BASE_HTTP = "http://www.w3.org/Protocols/rfc2616/rfc2616-sec10.html";
 
     private static final String BASE_WEBDAV = "http://www.webdav.org/specs/rfc2518.html";
@@ -504,7 +504,7 @@ public class Status extends Metadata {
      * @param uri
      *            The URI of the specification describing the method.
      */
-    public Status(int code, String name, String description, String uri) {
+    public Status(int code, final String name, final String description, final String uri) {
         super(name, description);
         this.code = code;
         this.uri = uri;
@@ -518,7 +518,7 @@ public class Status extends Metadata {
      * @param description
      *            The description to associate.
      */
-    public Status(Status status, String description) {
+    public Status(final Status status, final String description) {
         this(status.getCode(), status.getName(), description, status.getUri());
     }
 
@@ -530,7 +530,7 @@ public class Status extends Metadata {
      * @return True if the status is equal to a given one.
      */
     @Override
-    public boolean equals(Object object) {
+    public boolean equals(final Object object) {
         return (object instanceof Status)
                 && (this.code == ((Status) object).getCode());
     }

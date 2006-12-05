@@ -25,7 +25,7 @@ import org.restlet.util.Factory;
  * 
  * @author Jerome Louvel (contact@noelios.com)
  */
-public class ChallengeResponse {
+public final class ChallengeResponse {
     /** The challenge scheme. */
     private ChallengeScheme scheme;
 

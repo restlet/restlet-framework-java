@@ -23,7 +23,7 @@ package org.restlet.data;
  * 
  * @author Jerome Louvel (contact@noelios.com)
  */
-public class ServerInfo {
+public final class ServerInfo {
     /** The IP address. */
     private String address;
 

@@ -27,7 +27,7 @@ import org.restlet.resource.Representation;
  * 
  * @author Jerome Louvel (contact@noelios.com)
  */
-public class Result {
+public final class Result {
     /** The optional entity. */
     private Representation entity;
 

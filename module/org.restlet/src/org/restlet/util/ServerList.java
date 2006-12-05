@@ -28,7 +28,7 @@ import org.restlet.data.Protocol;
  * 
  * @author Jerome Louvel (contact@noelios.com)
  */
-public class ServerList extends WrapperList<Server> {
+public final class ServerList extends WrapperList<Server> {
     /** The context. */
     private Context context;
 
