@@ -92,7 +92,9 @@ public final class ScorerList extends WrapperList<Scorer> {
      *            The target Restlet to attach.
      * @see java.util.regex.Pattern
      * @return True (as per the general contract of the Collection.add method).
+     * @deprecated Use Router.attach method instead.
      */
+    @Deprecated
     public boolean add(String uriPattern, Restlet target) {
         return add(Factory.getInstance().createScorer(this.router, uriPattern,
                 target));
@@ -110,7 +112,9 @@ public final class ScorerList extends WrapperList<Scorer> {
      * @param index
      *            The insertion position in the list of attachments.
      * @see java.util.regex.Pattern
+     * @deprecated Use Router.attach method instead.
      */
+    @Deprecated
     public void add(String uriPattern, Restlet target, int index) {
         add(index, Factory.getInstance().createScorer(this.router, uriPattern,
                 target));

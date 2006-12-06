@@ -23,7 +23,7 @@ import java.util.Date;
 import java.util.List;
 
 import org.restlet.data.Reference;
-import org.restlet.util.ImmutableDate;
+import org.restlet.util.DateUtils;
 
 /**
  * Source feed's metadata for entries copied from another feed.
@@ -65,7 +65,7 @@ public class Source {
     private Text title;
 
     /** Most recent moment when the entry was modified in a significant way. */
-    private ImmutableDate updated;
+    private Date updated;
 
     /**
      * Constructor.
@@ -283,7 +283,7 @@ public class Source {
      *            significant way.
      */
     public void setUpdated(Date updated) {
-        this.updated = ImmutableDate.valueOf(updated);
+        this.updated = DateUtils.unmodifiable(updated);
     }
 
 }

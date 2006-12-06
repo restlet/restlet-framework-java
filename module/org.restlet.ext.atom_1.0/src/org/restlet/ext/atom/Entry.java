@@ -23,7 +23,7 @@ import java.util.Date;
 import java.util.Iterator;
 import java.util.List;
 
-import org.restlet.util.ImmutableDate;
+import org.restlet.util.DateUtils;
 
 /**
  * Represents an individual entry, acting as a container for metadata and data
@@ -51,7 +51,7 @@ public class Entry {
     private List<Link> links;
 
     /** Moment associated with an event early in the life cycle of the entry. */
-    private ImmutableDate published;
+    private Date published;
 
     /** Information about rights held in and over an entry. */
     private Text rights;
@@ -66,7 +66,7 @@ public class Entry {
     private Text title;
 
     /** Most recent moment when the entry was modified in a significant way. */
-    private ImmutableDate updated;
+    private Date updated;
 
     /**
      * Constructor.
@@ -211,7 +211,7 @@ public class Entry {
      *            the entry.
      */
     public void setPublished(Date published) {
-        this.published = ImmutableDate.valueOf(published);
+        this.published = DateUtils.unmodifiable(published);
     }
 
     /**
@@ -314,7 +314,7 @@ public class Entry {
      *            significant way.
      */
     public void setUpdated(Date updated) {
-        this.updated = ImmutableDate.valueOf(updated);
+        this.updated = DateUtils.unmodifiable(updated);
     }
 
 }

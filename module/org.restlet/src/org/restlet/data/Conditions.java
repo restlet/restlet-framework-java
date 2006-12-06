@@ -24,7 +24,6 @@ import java.util.List;
 
 import org.restlet.resource.Representation;
 import org.restlet.util.DateUtils;
-import org.restlet.util.ImmutableDate;
 
 /**
  * Set of conditions applying to a request. This is equivalent to the HTTP
@@ -34,10 +33,10 @@ import org.restlet.util.ImmutableDate;
  */
 public final class Conditions {
     /** The "if-modified-since" condition */
-    private ImmutableDate modifiedSince;
+    private Date modifiedSince;
 
     /** The "if-unmodified-since" condition */
-    private ImmutableDate unmodifiedSince;
+    private Date unmodifiedSince;
 
     /** The "if-match" condition */
     private List<Tag> match;
@@ -143,7 +142,7 @@ public final class Conditions {
      *            The "if-modified-since" condition.
      */
     public void setModifiedSince(Date date) {
-        this.modifiedSince = ImmutableDate.valueOf(date);
+        this.modifiedSince = DateUtils.unmodifiable(date);
     }
 
     /**
@@ -163,7 +162,7 @@ public final class Conditions {
      *            The "if-unmodified-since" condition.
      */
     public void setUnmodifiedSince(Date date) {
-        this.unmodifiedSince = ImmutableDate.valueOf(date);
+        this.unmodifiedSince = DateUtils.unmodifiable(date);
     }
 
 }

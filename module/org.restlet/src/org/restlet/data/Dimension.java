@@ -21,8 +21,8 @@ package org.restlet.data;
 /**
  * Dimension on which the representations of a resource may vary.
  *
- * @author Piyush Purang (ppurang@gmail.com)
  * @author Jerome Louvel (contact@noelios.com)
+ * @author Piyush Purang (ppurang@gmail.com)
  * @see <a
  *      href="http://www.w3.org/Protocols/rfc2616/rfc2616-sec14.html#sec14.44">HTTP
  *      Vary header</a>

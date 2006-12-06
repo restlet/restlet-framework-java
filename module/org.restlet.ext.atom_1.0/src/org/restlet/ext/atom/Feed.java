@@ -30,7 +30,6 @@ import org.restlet.resource.Representation;
 import org.restlet.resource.SaxRepresentation;
 import org.restlet.resource.StringRepresentation;
 import org.restlet.util.DateUtils;
-import org.restlet.util.ImmutableDate;
 import org.restlet.util.XmlWriter;
 import org.xml.sax.Attributes;
 import org.xml.sax.SAXException;
@@ -83,7 +82,7 @@ public class Feed extends SaxRepresentation {
     private Text title;
 
     /** Most recent moment when the entry was modified in a significant way. */
-    private ImmutableDate updated;
+    private Date updated;
 
     /**
      * Individual entries, acting as a containers for associated metadata and
@@ -332,7 +331,7 @@ public class Feed extends SaxRepresentation {
      *            significant way.
      */
     public void setUpdated(Date updated) {
-        this.updated = ImmutableDate.valueOf(updated);
+        this.updated = DateUtils.unmodifiable(updated);
     }
 
     /**
