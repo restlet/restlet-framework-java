@@ -19,7 +19,6 @@ Changes log
  - Finalized many classes in order to be explicit about what is intended to be subclassed or not. Contributed by Piyush Purang.
  - org.restlet.util.PipeStream was moved inside ByteUtils as a private class.
  - Merged ImmutableDate into DateUtils as an inner private class. Added an "unmodifiable" static method to DateUtils instead.
- - Deprecated ScorerList.add(uriTemplate, ...) methods. Use the Router.attach() methods instead on directly the new Route class.
 
 [Enhancements] 
  - Add new constructor to Tag for weak tags taking an unquoted opaque value. Fixes #201. 
