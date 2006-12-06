@@ -176,7 +176,7 @@ public abstract class HttpServerCall extends HttpCall {
      */
     private void parseHost() {
         String host = getRequestHeaders().getFirstValue(
-                HttpConstants.HEADER_HOST);
+                HttpConstants.HEADER_HOST, true);
 
         if (host != null) {
             int colonIndex = host.indexOf(':');

@@ -109,7 +109,7 @@ public class SecurityUtils {
 
             // Setup the ContentType header
             String contentType = httpHeaders
-                    .getFirstValue(HttpConstants.HEADER_CONTENT_TYPE);
+                    .getFirstValue(HttpConstants.HEADER_CONTENT_TYPE, true);
             if (contentType == null) {
                 String javaVersion = System.getProperty("java.version");
 
