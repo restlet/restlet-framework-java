@@ -74,9 +74,11 @@ public class ApplicationHelper extends Helper {
                 .getContextLoggerName();
 
         if (loggerName == null) {
+            String applicationName = (getApplication().getName() == null) ? Integer
+                    .toString(getApplication().hashCode())
+                    : getApplication().getName();
             loggerName = Application.class.getCanonicalName() + "."
-                    + getApplication().getName() + "("
-                    + getApplication().hashCode() + ")";
+                    + applicationName;
         }
 
         return new ApplicationContext(getApplication(), getParentContext(),
