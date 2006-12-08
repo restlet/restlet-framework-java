@@ -437,7 +437,7 @@ public class Factory extends org.restlet.util.Factory {
                     currentScore = 0;
 
                     // 1) Compare the main tag
-                    if (variantLanguage.getMainTag().equals(
+                    if (variantLanguage.getMainTag().equalsIgnoreCase(
                             currentLanguage.getMainTag())) {
                         currentScore += 100;
                     } else if (!currentLanguage.getMainTag().equals("*")) {
@@ -460,7 +460,7 @@ public class Factory extends org.restlet.util.Factory {
                             } else {
                                 // Don't change the score
                             }
-                        } else if (currentLanguage.getSubTag().equals(
+                        } else if (currentLanguage.getSubTag().equalsIgnoreCase(
                                 variantLanguage.getSubTag())) {
                             currentScore += 10;
                         } else {
