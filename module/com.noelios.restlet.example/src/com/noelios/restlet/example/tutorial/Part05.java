@@ -43,9 +43,7 @@ public class Part05 {
                 // Print the requested URI path
                 String message = "Resource URI:  " + request.getResourceRef()
                         + '\n' + "Base URI:      " + request.getBaseRef()
-                        + '\n' + "Relative path: " + request.getRelativePart()
-                        + '\n' + "Query string:  "
-                        + request.getResourceRef().getQuery();
+                        + '\n' + "Relative part: " + request.getRelativePart();
                 response.setEntity(message, MediaType.TEXT_PLAIN);
             }
         };

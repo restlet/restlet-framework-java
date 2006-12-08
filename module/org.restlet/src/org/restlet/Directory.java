@@ -114,7 +114,8 @@ public class Directory extends Handler {
 
     /**
      * Returns the variant representations of a directory. This method can be
-     * subclassed in order to provide alternative representations.
+     * subclassed in order to provide alternative representations. By default it
+     * returns a simple HTML document and a textual URI list as variants.
      * 
      * @param directoryContent
      *            The list of references contained in the directory.
@@ -147,6 +148,9 @@ public class Directory extends Handler {
         result
                 .add(new StringRepresentation(sb.toString(),
                         MediaType.TEXT_HTML));
+
+        // Add the alternative "text/uri-list" representation
+        result.add(directoryContent.getTextRepresentation());
         return result;
     }
 

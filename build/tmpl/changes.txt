@@ -32,6 +32,9 @@ Changes log
  - Extractor was deprecated and replaced by the new Route class.
  - Renamed ReferenceList.getRepresentation() to getTextRepresentation().
  - Tag now extends Metadata, getOpaqueTag() was deprecated, use getName() instead.
+ - The query part of request's resource reference is now routable. WARNING: you may have
+   to revisit your router URI patterns, especially to remove the ending "$" characters.
+ - Directory.getDirectoryVariants() now returns a textual list in addition of a HTML doc.
  
 [Enhancements] 
  - Add new constructor to Tag for weak tags taking an unquoted opaque value. Fixes #201. 
