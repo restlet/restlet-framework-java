@@ -64,7 +64,7 @@ public class DirectoryResource extends Resource {
         Set<String> result = new TreeSet<String>();
         String[] tokens = entryName.split("\\.");
         for (int i = 1; i < tokens.length; i++) {
-            result.add(tokens[i]);
+            result.add(tokens[i].toLowerCase());
         }
         return result;
     }
