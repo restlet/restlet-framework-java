@@ -20,9 +20,13 @@ package com.noelios.restlet.test;
 
 import java.io.IOException;
 
+import org.restlet.data.ClientInfo;
+import org.restlet.data.Encoding;
+
 import junit.framework.TestCase;
 
 import com.noelios.restlet.util.HeaderReader;
+import com.noelios.restlet.util.PreferenceUtils;
 
 /**
  * Unit tests for the header.
@@ -51,6 +55,21 @@ public class HeaderTestCase extends TestCase {
         values = new String[] { "Accept-Encoding", "Accept-Language", "Accept" };
         testValues(header1, values);
         testValues(header2, values);
+
+        header1 = "gzip;q=1.0, identity;q=0.5 , *;q=0";
+        ClientInfo clientInfo = new ClientInfo();
+        PreferenceUtils.parseEncodings(header1, clientInfo);
+        assertEquals(clientInfo.getAcceptedEncodings().get(0).getMetadata(),
+                Encoding.GZIP);
+        assertEquals(clientInfo.getAcceptedEncodings().get(0).getQuality(),
+                1.0F);
+        assertEquals(clientInfo.getAcceptedEncodings().get(1).getMetadata(),
+                Encoding.IDENTITY);
+        assertEquals(clientInfo.getAcceptedEncodings().get(1).getQuality(),
+                0.5F);
+        assertEquals(clientInfo.getAcceptedEncodings().get(2).getMetadata(),
+                Encoding.ALL);
+        assertEquals(clientInfo.getAcceptedEncodings().get(2).getQuality(), 0F);
     }
 
     /**

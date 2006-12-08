@@ -82,20 +82,42 @@ public class HostScorer extends Scorer {
 
         if (request.getBaseRef() != null) {
             baseDomain = request.getBaseRef().getHostDomain();
+            if (baseDomain == null)
+                baseDomain = "";
+
             Integer basePortValue = request.getBaseRef().getHostPort();
-            if(basePortValue == null) basePortValue = request.getBaseRef().getSchemeProtocol().getDefaultPort();
+            if (basePortValue == null)
+                basePortValue = request.getBaseRef().getSchemeProtocol()
+                        .getDefaultPort();
             basePort = basePortValue.toString();
+
             baseScheme = request.getBaseRef().getScheme();
+            if (baseScheme == null)
+                baseScheme = "";
         }
 
         String resourceDomain = request.getResourceRef().getHostDomain();
-        String resourceScheme = request.getResourceRef().getScheme();
+        if (resourceDomain == null)
+            resourceDomain = "";
+
         Integer resourcePortValue = request.getResourceRef().getHostPort();
-        if(resourcePortValue == null) resourcePortValue = request.getResourceRef().getSchemeProtocol().getDefaultPort();
+        if (resourcePortValue == null)
+            resourcePortValue = request.getResourceRef().getSchemeProtocol()
+                    .getDefaultPort();
         String resourcePort = resourcePortValue.toString();
 
+        String resourceScheme = request.getResourceRef().getScheme();
+        if (resourceScheme == null)
+            resourceScheme = "";
+
         String serverAddress = response.getServerInfo().getAddress();
-        String serverPort = response.getServerInfo().getPort().toString();
+        if (serverAddress == null)
+            serverAddress = "";
+
+        String serverPort = "";
+        Integer serverPortValue = response.getServerInfo().getPort();
+        if (serverPortValue != null)
+            serverPort = serverPortValue.toString();
 
         if (Pattern.matches(getHost().getBaseDomain(), baseDomain)
                 && Pattern.matches(getHost().getBasePort(), basePort)

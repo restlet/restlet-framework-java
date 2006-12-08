@@ -96,7 +96,7 @@ public class HeaderReader {
      *            The character to test.
      * @return True if the given character is a value separator.
      */
-    private boolean isValueSeparator(int character) {
+    protected boolean isValueSeparator(int character) {
         return (HeaderUtils.isCarriageReturn(character)
                 || HeaderUtils.isSpace(character)
                 || HeaderUtils.isLineFeed(character)

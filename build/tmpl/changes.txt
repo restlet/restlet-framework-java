@@ -11,7 +11,9 @@ Changes log
  - Fixed issue with header name comparison not ignoring the case. Reported by Sean Landis.
  - Fixed several documentation typos. Reported by John D. Mitchell.
  - Fixed issue with "sub-tagged" Language metadata (like "en-us"), sub-tag comparison must ignore the case. Reported by Jeff Walter and Andrew Barnes. Contributed by Thierry Boileau.
- 
+ - Improved parsing of "accept-encoding" HTTP headers. Added unit test.
+ - Fixed potential NPE in HostScorer.
+
 [API changes]
  - Removed Jetty 5 connector from the distribution. Use Jetty 6 connector instead. 
    Source code still available in SVN. Fixes #180.

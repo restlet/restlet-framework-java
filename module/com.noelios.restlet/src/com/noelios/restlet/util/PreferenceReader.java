@@ -78,102 +78,113 @@ public class PreferenceReader<T extends Metadata> extends HeaderReader {
         StringBuilder paramValueBuffer = null;
 
         ParameterList parameters = null;
-        int nextChar = 0;
 
-        while ((result == null) && (nextChar != -1)) {
-            nextChar = read();
+        String nextValue = readValue();
+        int nextIndex = 0;
 
-            if (readingMetadata) {
-                if ((nextChar == ',') || (nextChar == -1)) {
-                    if (metadataBuffer.length() > 0) {
-                        // End of metadata section
-                        // No parameters detected
-                        result = createPreference(metadataBuffer, null);
-                        paramNameBuffer = new StringBuilder();
+        if (nextValue != null) {
+            int nextChar = nextValue.charAt(nextIndex++);
+
+            while (result == null) {
+                if (readingMetadata) {
+                    if (nextChar == -1) {
+                        if (metadataBuffer.length() > 0) {
+                            // End of metadata section
+                            // No parameters detected
+                            result = createPreference(metadataBuffer, null);
+                            paramNameBuffer = new StringBuilder();
+                        } else {
+                            // Ignore empty metadata name
+                        }
+                    } else if (nextChar == ';') {
+                        if (metadataBuffer.length() > 0) {
+                            // End of metadata section
+                            // Parameters detected
+                            readingMetadata = false;
+                            readingParamName = true;
+                            paramNameBuffer = new StringBuilder();
+                            parameters = new ParameterList();
+                        } else {
+                            throw new IOException(
+                                    "Empty metadata name detected.");
+                        }
+                    } else if (HeaderUtils.isSpace(nextChar)) {
+                        // Ignore spaces
+                    } else if (HeaderUtils.isText(nextChar)) {
+                        metadataBuffer.append((char) nextChar);
+                    } else {
+                        throw new IOException(
+                                "Control characters are not allowed within a metadata name.");
+                    }
+                } else if (readingParamName) {
+                    if (nextChar == '=') {
+                        if (paramNameBuffer.length() > 0) {
+                            // End of parameter name section
+                            readingParamName = false;
+                            readingParamValue = true;
+                            paramValueBuffer = new StringBuilder();
+                        } else {
+                            throw new IOException(
+                                    "Empty parameter name detected.");
+                        }
                     } else if (nextChar == -1) {
-                        // Do nothing return null preference
-                    } else {
-                        // Ignore empty metadata name
-                    }
-                } else if (nextChar == ';') {
-                    if (metadataBuffer.length() > 0) {
-                        // End of metadata section
-                        // Parameters detected
-                        readingMetadata = false;
-                        readingParamName = true;
-                        paramNameBuffer = new StringBuilder();
-                        parameters = new ParameterList();
-                    } else {
-                        throw new IOException("Empty metadata name detected.");
-                    }
-                } else if (nextChar == ' ') {
-                    // Ignore white spaces
-                } else if (HeaderUtils.isText(nextChar)) {
-                    metadataBuffer.append((char) nextChar);
-                } else {
-                    throw new IOException(
-                            "Control characters are not allowed within a metadata name.");
-                }
-            } else if (readingParamName) {
-                if (nextChar == '=') {
-                    if (paramNameBuffer.length() > 0) {
-                        // End of parameter name section
-                        readingParamName = false;
-                        readingParamValue = true;
-                        paramValueBuffer = new StringBuilder();
-                    } else {
-                        throw new IOException("Empty parameter name detected.");
-                    }
-                } else if ((nextChar == ',') || (nextChar == -1)) {
-                    if (paramNameBuffer.length() > 0) {
-                        // End of parameters section
+                        if (paramNameBuffer.length() > 0) {
+                            // End of parameters section
+                            parameters.add(HeaderUtils.createParameter(
+                                    paramNameBuffer, null));
+                            result = createPreference(metadataBuffer,
+                                    parameters);
+                        } else {
+                            throw new IOException(
+                                    "Empty parameter name detected.");
+                        }
+                    } else if (nextChar == ';') {
+                        // End of parameter
                         parameters.add(HeaderUtils.createParameter(
                                 paramNameBuffer, null));
-                        result = createPreference(metadataBuffer, parameters);
+                        paramNameBuffer = new StringBuilder();
+                        readingParamName = true;
+                        readingParamValue = false;
+                    } else if (HeaderUtils.isSpace(nextChar)
+                            && (paramNameBuffer.length() == 0)) {
+                        // Ignore white spaces
+                    } else if (HeaderUtils.isTokenChar(nextChar)) {
+                        paramNameBuffer.append((char) nextChar);
                     } else {
-                        throw new IOException("Empty parameter name detected.");
+                        throw new IOException(
+                                "Separator and control characters are not allowed within a token.");
                     }
-                } else if (nextChar == ';') {
-                    // End of parameter
-                    parameters.add(HeaderUtils.createParameter(paramNameBuffer,
-                            null));
-                    paramNameBuffer = new StringBuilder();
-                    readingParamName = true;
-                    readingParamValue = false;
-                } else if ((nextChar == ' ') && (paramNameBuffer.length() == 0)) {
-                    // Ignore white spaces
-                } else if (HeaderUtils.isTokenChar(nextChar)) {
-                    paramNameBuffer.append((char) nextChar);
-                } else {
-                    throw new IOException(
-                            "Separator and control characters are not allowed within a token.");
-                }
-            } else if (readingParamValue) {
-                if ((nextChar == ',') || (nextChar == -1)) {
-                    if (paramValueBuffer.length() > 0) {
-                        // End of parameters section
+                } else if (readingParamValue) {
+                    if (nextChar == -1) {
+                        if (paramValueBuffer.length() > 0) {
+                            // End of parameters section
+                            parameters.add(HeaderUtils.createParameter(
+                                    paramNameBuffer, paramValueBuffer));
+                            result = createPreference(metadataBuffer,
+                                    parameters);
+                        } else {
+                            throw new IOException(
+                                    "Empty parameter value detected");
+                        }
+                    } else if (nextChar == ';') {
+                        // End of parameter
                         parameters.add(HeaderUtils.createParameter(
                                 paramNameBuffer, paramValueBuffer));
-                        result = createPreference(metadataBuffer, parameters);
+                        paramNameBuffer = new StringBuilder();
+                        readingParamName = true;
+                        readingParamValue = false;
+                    } else if ((nextChar == '"')
+                            && (paramValueBuffer.length() == 0)) {
+                        paramValueBuffer.append(readQuotedString());
+                    } else if (HeaderUtils.isTokenChar(nextChar)) {
+                        paramValueBuffer.append((char) nextChar);
                     } else {
-                        throw new IOException("Empty parameter value detected");
+                        throw new IOException(
+                                "Separator and control characters are not allowed within a token");
                     }
-                } else if (nextChar == ';') {
-                    // End of parameter
-                    parameters.add(HeaderUtils.createParameter(paramNameBuffer,
-                            paramValueBuffer));
-                    paramNameBuffer = new StringBuilder();
-                    readingParamName = true;
-                    readingParamValue = false;
-                } else if ((nextChar == '"')
-                        && (paramValueBuffer.length() == 0)) {
-                    paramValueBuffer.append(readQuotedString());
-                } else if (HeaderUtils.isTokenChar(nextChar)) {
-                    paramValueBuffer.append((char) nextChar);
-                } else {
-                    throw new IOException(
-                            "Separator and control characters are not allowed within a token");
                 }
+
+                nextChar = (nextIndex < nextValue.length()) ? nextValue.charAt(nextIndex++) : -1;
             }
         }
 
