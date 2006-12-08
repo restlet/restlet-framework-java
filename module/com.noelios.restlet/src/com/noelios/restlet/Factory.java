@@ -460,8 +460,8 @@ public class Factory extends org.restlet.util.Factory {
                             } else {
                                 // Don't change the score
                             }
-                        } else if (currentLanguage.getSubTag().equalsIgnoreCase(
-                                variantLanguage.getSubTag())) {
+                        } else if (currentLanguage.getSubTag()
+                                .equalsIgnoreCase(variantLanguage.getSubTag())) {
                             currentScore += 10;
                         } else {
                             // SubTags are different
