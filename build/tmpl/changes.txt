@@ -10,6 +10,7 @@ Changes log
  - Fixed NPE in HostScorer when using URIs with default ports. Reported by Jeff Walter.
  - Fixed issue with header name comparison not ignoring the case. Reported by Sean Landis.
  - Fixed several documentation typos. Reported by John D. Mitchell.
+ - Fixed issue with "sub-tagged" Language metadata (like "en-us"), sub-tag comparison must ignore the case. Reported by Jeff Walter and Andrew Barnes. Contributed by Thierry Boileau.
  
 [API changes]
  - Removed Jetty 5 connector from the distribution. Use Jetty 6 connector instead. 
