@@ -42,6 +42,7 @@ Changes log
  - Added support for CheckStyle (disabled by default). The CheckStyle configuration file is "build/checks.xml", 
    currently a clone of sun_checks.xml. Suggested by Piyush Purang.
  - Improved CheckStyle Ant task: not failing for style violations and HTML reports for each module. Contributed by Piyush Purang.
+ - Updated Jetty 6.1 to RC0 version.
  
 1.0 beta 21 (2006-11-26)
 [Bugs fixed]
