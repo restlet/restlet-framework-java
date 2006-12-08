@@ -260,7 +260,7 @@ public class Handler extends Restlet {
                             // Return the list of variants
                             response
                                     .setStatus(Status.REDIRECTION_MULTIPLE_CHOICES);
-                            response.setEntity(variantRefs.getRepresentation());
+                            response.setEntity(variantRefs.getTextRepresentation());
                         } else {
                             response.setStatus(Status.CLIENT_ERROR_NOT_FOUND);
                         }

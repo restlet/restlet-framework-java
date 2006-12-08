@@ -122,8 +122,19 @@ public class ReferenceList extends WrapperList<Reference> {
      * Returns a representation of the list in the "text/uri-list" format.
      * 
      * @return A representation of the list in the "text/uri-list" format.
+     * @deprecated Use getTextRepresentation() instead.
      */
+    @Deprecated
     public Representation getRepresentation() {
+        return getTextRepresentation();
+    }
+    
+    /**
+     * Returns a representation of the list in the "text/uri-list" format.
+     * 
+     * @return A representation of the list in the "text/uri-list" format.
+     */
+    public Representation getTextRepresentation() {
         StringBuilder sb = new StringBuilder();
 
         if (getListRef() != null) {

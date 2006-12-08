@@ -132,7 +132,7 @@ public class FileClientHelper extends LocalClientHelper {
                                 "Unable to create file reference", ioe);
                     }
                 }
-                output = rl.getRepresentation();
+                output = rl.getTextRepresentation();
             } else {
                 if ((file != null) && file.exists()) {
                     if (file.isDirectory()) {
@@ -151,7 +151,7 @@ public class FileClientHelper extends LocalClientHelper {
                             }
                         }
 
-                        output = rl.getRepresentation();
+                        output = rl.getTextRepresentation();
                     } else {
                         // Return the file content
                         output = new FileRepresentation(file, metadataService

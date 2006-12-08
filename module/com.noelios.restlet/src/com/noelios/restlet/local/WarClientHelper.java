@@ -140,7 +140,7 @@ public class WarClientHelper extends FileClientHelper {
                         }
                     }
 
-                    response.setEntity(rl.getRepresentation());
+                    response.setEntity(rl.getTextRepresentation());
                     response.setStatus(Status.SUCCESS_OK);
                 } else {
                     // Return the file content

@@ -33,7 +33,7 @@ package org.restlet.data;
  *      Entity Tag Cache Validators</a>
  * @author Jerome Louvel (contact@noelios.com)
  */
-public final class Tag {
+public final class Tag extends Metadata {
     /** Tag matching any other tag, used in call's condition data. */
     public static final Tag ALL = Tag.parse("*");
 
@@ -51,19 +51,20 @@ public final class Tag {
      *      Entity Tags</a>
      */
     public static Tag parse(final String httpTag) {
-        Tag result = new Tag();
+        Tag result = null;
+        boolean weak = false;
         String httpTagCopy = httpTag;
+        
         if (httpTagCopy.startsWith("W")) {
-            result.weak = true;
+            weak = true;
             httpTagCopy = httpTagCopy.substring(1);
-        } else {
-            result.weak = false;
         }
 
         if (httpTagCopy.startsWith("\"") && httpTagCopy.endsWith("\"")) {
-            result.opaqueTag = httpTagCopy.substring(1, httpTagCopy.length() - 1);
+            result = new Tag(
+                    httpTagCopy.substring(1, httpTagCopy.length() - 1), weak);
         } else if (httpTagCopy.equals("*")) {
-            result.opaqueTag = "*";
+            result = new Tag("*", weak);
         } else {
             throw new IllegalArgumentException("Invalid tag format detected: "
                     + httpTagCopy);
@@ -71,9 +72,6 @@ public final class Tag {
 
         return result;
     }
-
-    /** The opaque tag string. */
-    private String opaqueTag;
 
     /** The tag weakness. */
     private boolean weak;
@@ -105,7 +103,7 @@ public final class Tag {
      *            The weakness indicator.
      */
     public Tag(final String opaqueTag, boolean weak) {
-        this.opaqueTag = opaqueTag;
+        super(opaqueTag);
         this.weak = weak;
     }
 
@@ -159,16 +157,27 @@ public final class Tag {
      * @return The description.
      */
     public String getDescription() {
-        return "Validation tag equivalent to the HTTP entity tag";
+        return "Validation tag equivalent to an HTTP entity tag";
+    }
+
+    /**
+     * Returns the name, corresponding to an HTTP opaque tag value.
+     * 
+     * @return The name, corresponding to an HTTP opaque tag value.
+     */
+    public String getName() {
+        return super.getName();
     }
 
     /**
      * Returns the opaque tag string.
      * 
      * @return The opaque tag string.
+     * @deprecated Use getName() instead.
      */
+    @Deprecated
     public String getOpaqueTag() {
-        return opaqueTag;
+        return getName();
     }
 
     /** {@inheritDoc} */
@@ -183,6 +192,6 @@ public final class Tag {
      * @return True if the tag is weak, false if the tag is strong.
      */
     public boolean isWeak() {
-        return weak;
+        return this.weak;
     }
 }

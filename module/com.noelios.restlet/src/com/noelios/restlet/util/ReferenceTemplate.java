@@ -31,7 +31,9 @@ import org.restlet.util.StringTemplate;
  *      href="http://bitworking.org/projects/URI-Templates/draft-gregorio-uritemplate-00.html">INTERNET
  *      DRAFT - URI Template</a>
  * @author Jerome Louvel (contact@noelios.com)
+ * @deprecated
  */
+@Deprecated
 public class ReferenceTemplate extends StringTemplate {
     private List<String> variables;
 

@@ -98,7 +98,7 @@ public class ServletWarClientHelper extends WarClientHelper {
                             + entry.substring(basePath.length())));
                 }
 
-                output = rl.getRepresentation();
+                output = rl.getTextRepresentation();
             } else {
                 // Return the entry content
                 MetadataService metadataService = getMetadataService(request);
