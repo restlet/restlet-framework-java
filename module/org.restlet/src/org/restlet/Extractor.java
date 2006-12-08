@@ -36,7 +36,9 @@ import org.restlet.util.CallModel;
  * response data model.
  * 
  * @author Jerome Louvel (contact@noelios.com)
+ * @deprecated Use the Route class instead.
  */
+@Deprecated
 public class Extractor extends Filter {
     /**
      * Internal class holding extraction information.

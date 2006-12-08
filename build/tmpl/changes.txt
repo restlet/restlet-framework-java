@@ -6,12 +6,14 @@ Changes log
 
 @version-full@ (@release-date@)
 [Bugs fixed]
- - Fixed IndexOutOfBoundsException in HttpServerCall causing ServerServlet to fail. Reported by Steffen Eichenberg.
+ - Fixed IndexOutOfBoundsException in HttpServerCall causing ServerServlet to fail. 
+   Reported by Steffen Eichenberg.
  - Fixed NPE in HostScorer when using URIs with default ports. Reported by Jeff Walter.
  - Fixed issue with header name comparison not ignoring the case. Reported by Sean Landis.
  - Fixed several documentation typos. Reported by John D. Mitchell.
- - Fixed issue with "sub-tagged" Language metadata (like "en-us"), sub-tag comparison must ignore the case. Reported by Jeff Walter and Andrew Barnes. Contributed by Thierry Boileau.
- - Improved parsing of "accept-encoding" HTTP headers. Added unit test.
+ - Fixed issue with "sub-tagged" Language metadata (like "en-us"), sub-tag comparison must
+   ignore the case. Reported by Jeff Walter and Andrew Barnes. Contributed by Thierry Boileau.
+ - Fixed/improved parsing of "accept-encoding" HTTP headers. Added unit test.
  - Fixed potential NPE in HostScorer.
 
 [API changes]
@@ -24,6 +26,10 @@ Changes log
  - org.restlet.util.PipeStream was moved inside ByteUtils as a private class.
  - Merged ImmutableDate into DateUtils as an inner private class. Added an "unmodifiable" static method to DateUtils instead.
  - Added attachDefault(Restlet) method to Router class. The detach() method now also detaches the default scorer.
+ - Deprecated the StringTemplate mechanism, replaced by a more seamless ReferenceTemplate approach,
+   less intrusive. The following classes were deprecated and will be removed in the next
+   release: StringTemplate, StringTemplateRepresentation, CallModel, Model, MapModel.
+ - Extractor was deprecated and replaced by the new Route class.
  
 [Enhancements] 
  - Add new constructor to Tag for weak tags taking an unquoted opaque value. Fixes #201. 

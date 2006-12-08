@@ -18,11 +18,13 @@
 
 package org.restlet.data;
 
+import java.util.Map;
+import java.util.TreeMap;
+
 import org.restlet.Application;
 import org.restlet.resource.Representation;
 import org.restlet.resource.StringRepresentation;
 import org.restlet.service.ConverterService;
-import org.restlet.util.MapModel;
 
 /**
  * Generic message exchanged between client and server connectors.
@@ -31,7 +33,7 @@ import org.restlet.util.MapModel;
  */
 public abstract class Message {
     /** The modifiable attributes map. */
-    private MapModel attributes;
+    private Map<String, Object> attributes;
 
     /** The payload of the message. */
     private Representation entity;
@@ -84,9 +86,9 @@ public abstract class Message {
      * 
      * @return The modifiable attributes map.
      */
-    public MapModel getAttributes() {
+    public Map<String, Object> getAttributes() {
         if (this.attributes == null) {
-            this.attributes = new MapModel();
+            this.attributes = new TreeMap<String, Object>();
         }
 
         return this.attributes;

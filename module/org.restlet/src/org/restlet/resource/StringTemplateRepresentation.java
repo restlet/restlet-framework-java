@@ -35,7 +35,11 @@ import org.restlet.util.StringTemplate;
  * is dynamically computed, each time it is accessed.
  * 
  * @author Jerome Louvel (contact@noelios.com)
+ * @deprecated For dynamic representations use the Velocity or FreeMarker
+ *             extensions. For dynamic URIs/References, use the
+ *             ReferenceTemplate and associated Route class.
  */
+@Deprecated
 public class StringTemplateRepresentation extends StreamRepresentation {
     /** The string template. */
     private StringTemplate template;

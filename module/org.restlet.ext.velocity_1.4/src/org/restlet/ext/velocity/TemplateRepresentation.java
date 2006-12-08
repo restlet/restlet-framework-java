@@ -24,13 +24,13 @@ import java.io.OutputStream;
 import java.io.OutputStreamWriter;
 import java.io.Writer;
 import java.util.Map;
+import java.util.TreeMap;
 
 import org.apache.velocity.Template;
 import org.apache.velocity.VelocityContext;
 import org.apache.velocity.app.VelocityEngine;
 import org.restlet.data.MediaType;
 import org.restlet.resource.OutputRepresentation;
-import org.restlet.util.MapModel;
 
 /**
  * FreeMarker template representation. Useful for dynamic string-based
@@ -59,7 +59,7 @@ public class TemplateRepresentation extends OutputRepresentation {
      *            The representation's media type.
      */
     public TemplateRepresentation(String templateName, MediaType mediaType) {
-        this(templateName, new MapModel(), mediaType);
+        this(templateName, new TreeMap<String, Object>(), mediaType);
     }
 
     /**

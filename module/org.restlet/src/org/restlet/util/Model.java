@@ -27,7 +27,11 @@ package org.restlet.util;
  * 
  * @see org.restlet.util.StringTemplate
  * @author Jerome Louvel (contact@noelios.com)
+ * @deprecated For dynamic representations use the Velocity or FreeMarker
+ *             extensions. For dynamic URIs/References, use the
+ *             ReferenceTemplate and associated Route class.
  */
+@Deprecated
 public interface Model {
     /**
      * Removes all the model values.

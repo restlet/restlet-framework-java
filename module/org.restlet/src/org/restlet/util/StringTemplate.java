@@ -35,7 +35,11 @@ import java.util.logging.Logger;
  * the insertion only happens if the model contains such a variable.
  * 
  * @author Jerome Louvel (contact@noelios.com)
+ * @deprecated For dynamic representations use the Velocity or FreeMarker
+ *             extensions. For dynamic URIs/References, use the
+ *             ReferenceTemplate and associated Route class.
  */
+@Deprecated
 public class StringTemplate {
     private static final int STATE_INSTRUCTION = 1;
 

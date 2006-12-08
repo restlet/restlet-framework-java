@@ -32,6 +32,7 @@ import org.restlet.util.StringTemplate;
  * 
  * @author Jerome Louvel (contact@noelios.com)
  */
+@SuppressWarnings("deprecation")
 public class StringTemplateTestCase extends TestCase {
     /** Tests the interpolation feature. */
     public void testInterpolation() {

@@ -60,7 +60,11 @@ import org.restlet.data.Response;
  * </ul>
  * 
  * @author Jerome Louvel (contact@noelios.com)
+ * @deprecated For dynamic representations use the Velocity or FreeMarker
+ *             extensions. For dynamic URIs/References, use the
+ *             ReferenceTemplate and associated Route class.
  */
+@Deprecated
 public class CallModel implements Model {
     public static final String NAME_ATTRIBUTE = "attribute";
 

@@ -25,7 +25,11 @@ import java.util.TreeMap;
  * Simple model based on a map.
  * 
  * @author Jerome Louvel (contact@noelios.com)
+ * @deprecated For dynamic representations use the Velocity or FreeMarker
+ *             extensions. For dynamic URIs/References, use the
+ *             ReferenceTemplate and associated Route class.
  */
+@Deprecated
 public class MapModel extends WrapperMap<String, Object> implements Model {
     private static final long serialVersionUID = 4508869056441847319L;
 
