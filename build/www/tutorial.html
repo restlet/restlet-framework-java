@@ -54,25 +54,25 @@
    As we mentioned in the <a target="_top" href="http://www.restlet.org/introduction">introduction paper</a>, the Restlet framework is at the same time a client and a server framework. For example, NRE can easily work with remote resources using its HTTP client connector. A connector in REST is a software element that enables the communication between components, typically by implementing one side of a network protocol. Here we will get the representation of an existing resource and output it in the JVM console:
 </p>
 <pre>
-      // Outputting the content of a Web page
-      Client client = new Client(Protocol.HTTP);
-      client.get("http://www.restlet.org").getEntity().write(System.out);
+        // Outputting the content of a Web page
+        Client client = new Client(Protocol.HTTP);
+        client.get("http://www.restlet.org").getEntity().write(System.out);
 </pre>
 <p>
    Note that the example above uses a simplified way to issue calls via the generic Client class. A more flexible way is to create a new Request object and to ask the Client to handle it. The example below illustrate how to set some preferences in your call, like a referrer URI or the languages and media types you prefer to receive as a response:
 </p>
 <pre>
-      // Prepare the request
-      Request request = new Request(Method.GET, "http://www.restlet.org");
-      request.setReferrerRef("http://www.mysite.org");
+        // Prepare the request
+        Request request = new Request(Method.GET, "http://www.restlet.org");
+        request.setReferrerRef("http://www.mysite.org");
 
-      // Handle it using an HTTP client connector
-      Client client = new Client(Protocol.HTTP);
-      Response response = client.handle(request);
+        // Handle it using an HTTP client connector
+        Client client = new Client(Protocol.HTTP);
+        Response response = client.handle(request);
 
-      // Write the response entity on the console
-      Representation output = response.getEntity();
-      output.write(System.out);
+        // Write the response entity on the console
+        Representation output = response.getEntity();
+        output.write(System.out);
 </pre>
 
 <h3><a name="part03">3. Listening to Web browsers</a></h3>
@@ -81,18 +81,16 @@
    Now, we want to see how the Restlet framework can listen to client requests and reply to them. We will use one of the NRE HTTP server connectors (supported by Mortbay's Jetty HTTP listener) and return a simple string representation "Hello World!" as plain text. Note that in a more realistic application, we would probably create a separate class extending the Restlet instead of relying on an anonymous inner class. Also, if you need to handle only a specific method, you should use Handler as your base class.
 </p>
 <pre>
-      // Creating a minimal Restlet returning "Hello World"
-      Restlet restlet = new Restlet()
-      {
-         @Override
-         public void handle(Request request, Response response)
-         {
-            response.setEntity("Hello World!", MediaType.TEXT_PLAIN);
-         }
-      };
+        // Creating a minimal Restlet returning "Hello World"
+        Restlet restlet = new Restlet() {
+            @Override
+            public void handle(Request request, Response response) {
+                response.setEntity("Hello World!", MediaType.TEXT_PLAIN);
+            }
+        };
 
-      // Create the HTTP server and listen on port 8182
-      new Server(Protocol.HTTP, 8182, restlet).start();
+        // Create the HTTP server and listen on port 8182
+        new Server(Protocol.HTTP, 8182, restlet).start();
 </pre>
 <p>
    If you run this code and launch your server, you can open a Web browser and hit the <a target="_top" href="http://localhost:8182">http://localhost:8182</a>. Actually, any URI will work, try also <a target="_top" href="http://localhost:8182/test/tutorial">http://localhost:8182/test/tutorial</a>. Note that if you test your server from a different machine, you need to replace "localhost" by either the IP address of your server or its domain name. The handler that we created is very primitive. We will see later how to take more advantage of the Restlet framework.
@@ -120,31 +118,30 @@
    In order to illustrate these classes, let's examine a simple example. He we create a Container, then add an HTTP server to it, listening on port 8182. Then we create a simple trace Restlet and attach it to the defaut VirtualHost of the Container. This default host is catching any request that wasn't already routed to a declared VirtualHost (see the "hosts" property on Container for details). In a later example, we will also introduce the usage of the Application class. Note that for now you don't see any access log displayed in the console.
 </p>
 <pre>
-      // Create a new Restlet container and add a HTTP server connector to it
-      Container container = new Container();
-      container.getServers().add(Protocol.HTTP, 8182);
+        // Create a new Restlet container and add a HTTP server connector to it
+        Container container = new Container();
+        container.getServers().add(Protocol.HTTP, 8182);
 
-      // Create a new Restlet that will display some path information.
-      Restlet restlet = new Restlet()
-      {
-         @Override
-         public void handle(Request request, Response response)
-         {
-            // Print the requested URI path
-            String message = "Resource URI:  " + request.getResourceRef() + '\n'
-                           + "Base URI:      " + request.getBaseRef() + '\n'
-                           + "Relative path: " + request.getRelativePart() + '\n'
-                           + "Query string:  " + request.getResourceRef().getQuery();
-            response.setEntity(message, MediaType.TEXT_PLAIN);
-         }
-      };
+        // Create a new Restlet that will display some path information.
+        Restlet restlet = new Restlet() {
+            @Override
+            public void handle(Request request, Response response) {
+                // Print the requested URI path
+                String message = "Resource URI:  " + request.getResourceRef()
+                        + '\n' + "Base URI:      " + request.getBaseRef()
+                        + '\n' + "Relative path: " + request.getRelativePart()
+                        + '\n' + "Query string:  "
+                        + request.getResourceRef().getQuery();
+                response.setEntity(message, MediaType.TEXT_PLAIN);
+            }
+        };
 
-      // Then attach it to the local host
-      container.getDefaultHost().attach("/trace", restlet);
+        // Then attach it to the local host
+        container.getDefaultHost().attach("/trace", restlet);
 
-      // Now, let's start the container!
-      // Note that the HTTP server connector is also automatically started.
-      container.start();
+        // Now, let's start the container!
+        // Note that the HTTP server connector is also automatically started.
+        container.start();
 </pre>
 <p>
    Now let's test it by entering <a href="http://localhost:8182/trace/abc/def?param=123">http://localhost:8182/trace/abc/def?param=123</a> in a Web browser. Here is the result that you will get:
@@ -161,26 +158,22 @@
    Do you have a part of your web application that serves static pages like Javadocs? Well, no need to setup an Apache server just for that, the Noelios Restlet Engine provides a dedicated Restlet called DirectoryRestlet. See how simple it is to use it:
 </p>
 <pre>
-      // Create a container
-      Container container = new Container();
-      container.getServers().add(Protocol.HTTP, 8182);
-      container.getClients().add(Protocol.FILE);
+        // Create a container
+        Container container = new Container();
+        container.getServers().add(Protocol.HTTP, 8182);
+        container.getClients().add(Protocol.FILE);
 
-      // Create an application
-      Application application = new Application(container)
-      {
-         @Override
-         public Restlet createRoot()
-         {
-            Directory directory = new Directory(getContext(), ROOT_URI);
-            directory.setNegotiateContent(true);
-            return directory;
-         }
-      };
+        // Create an application
+        Application application = new Application(container) {
+            @Override
+            public Restlet createRoot() {
+                return new Directory(getContext(), ROOT_URI);
+            }
+        };
 
-      // Attach the application to the container and start it
-      container.getDefaultHost().attach("", application);
-      container.start();
+        // Attach the application to the container and start it
+        container.getDefaultHost().attach("", application);
+        container.start();
 </pre>
 <p>
    In order to run this example, you need to specify a valid value for ROOT_URI, depending on the location of your Restlet installation. By default, it is set to "file:///D:/Restlet/www/docs/api/". Note that no additional configuration is needed. If you want to customize the mapping between file extensions and metadata (media type, language or encoding) or if you want to specify a differen index name, you can use the Application's <a href="http://www.restlet.org/docs/api/org/restlet/service/MetadataService.html">"metadataService"</a> property.
@@ -216,15 +209,14 @@
    Also, there is another way based on the standard HTTP authentication mechanism. The Restlet framework currently supports the basic HTTP authentication scheme via the GuardFilter. Filters are specialized Restlets that filter calls passed to them, without modifying the requested resource URI. If you are familiar with the Servlet API, the concept is similar to the <a href="http://java.sun.com/j2ee/1.4/docs/api/javax/servlet/Filter.html">Filter</a> interface. See below how we would modify the previous example to secure the access to the DirectoryHandler:
 </p>
 <pre>
-      // Create a Guard
-      Guard guard = new Guard(getContext(), ChallengeScheme.HTTP_BASIC, "Tutorial");
-      guard.getAuthorizations().put("scott", "tiger");
+          // Create a Guard
+          Guard guard = new Guard(getContext(),
+                  ChallengeScheme.HTTP_BASIC, "Tutorial");
+          guard.getAuthorizations().put("scott", "tiger");
 
-      // Create a Directory able to return a deep hierarchy of files
-      Directory directory = new Directory(getContext(), ROOT_URI);
-      directory.setNegotiateContent(true);
-      guard.setNext(directory);
-      return guard;
+          // Create a Directory able to return a deep hierarchy of files
+          Directory directory = new Directory(getContext(), ROOT_URI);
+          guard.setNext(directory);
 </pre>
 <p align="middle">
    <img src="images/tutorial09" alt="Call handling flow"/><br/>
@@ -233,33 +225,32 @@
    Note that the authorization decision is fully customizable via the authorize method. Any mechanism can be used to check whether the given credentials are valid. Here we simply hard-coded the only valid user and password. In order to test this authentication mechanism, let's use the client-side Restlet API:
 </p>
 <pre>
-      // Prepare the request
-      Request request = new Request(Method.GET, "http://localhost:8182/");
+        // Prepare the request
+        Request request = new Request(Method.GET, "http://localhost:8182/");
 
-      // Add the client authentication to the call
-      ChallengeScheme scheme = ChallengeScheme.HTTP_BASIC;
-      ChallengeResponse authentication = new ChallengeResponse(scheme, "scott", "tiger");
-      request.setChallengeResponse(authentication);
+        // Add the client authentication to the call
+        ChallengeScheme scheme = ChallengeScheme.HTTP_BASIC;
+        ChallengeResponse authentication = new ChallengeResponse(scheme,
+                "scott", "tiger");
+        request.setChallengeResponse(authentication);
 
-      // Ask to the HTTP client connector to handle the call
-      Client client = new Client(Protocol.HTTP);
-      Response response = client.handle(request);
+        // Ask to the HTTP client connector to handle the call
+        Client client = new Client(Protocol.HTTP);
+        Response response = client.handle(request);
 
-      if (response.getStatus().isSuccess())
-      {
-         // Output the response entity on the JVM console
-         response.getEntity().write(System.out);
-      }
-      else if (response.getStatus().equals(Status.CLIENT_ERROR_UNAUTHORIZED))
-      {
-         // Unauthorized access
-         System.out.println("Access authorized by the server, check your credentials");
-      }
-      else
-      {
-         // Unexpected status
-         System.out.println("An unexpected status was returned: " + response.getStatus());
-      }
+        if (response.getStatus().isSuccess()) {
+            // Output the response entity on the JVM console
+            response.getEntity().write(System.out);
+        } else if (response.getStatus()
+                .equals(Status.CLIENT_ERROR_UNAUTHORIZED)) {
+            // Unauthorized access
+            System.out
+                    .println("Access authorized by the server, check your credentials");
+        } else {
+            // Unexpected status
+            System.out.println("An unexpected status was returned: "
+                    + response.getStatus());
+        }
 </pre>
 <p>
    You can change the user ID or password sent by this test client in order to check the response returned by the server. Remember to launch the previous Restlet server before starting your client. Note that if you test your server from a different machine, you need to replace "localhost" by either the IP address of your server or its domain name when typing the URI in the browser. The server won't need any adjustment due to the usage of the HostRouter which accepts all types of URI by default.
@@ -267,15 +258,16 @@
 
 <h3><a name="part10">10. URI rewriting and redirection</a></h3>
 <p>
-   One of the advantages of the Restlet framework is the built-in support for <a href="http://www.w3.org/Provider/Style/URI">cool URIs</a>. Another good description of the importance of proper URI design is given by Jacob Nielsen in his <a href="http://www.useit.com/alertbox/990321.html">AlertBox</a>. The first tool available is the RedirectRestlet, which allows the rewriting of a cool URI to another URI, followed by an automatic redirection. Several types of redirection are supported, the external redirection via the client/browser, the internal redirection at the container level and the connector redirection for proxy-like behavior. In the example below, we will define a search service for our web site (named "mysite.org") based on Google. The "/search" relative URI identifies the search service, accepting some keywords via the "q" parameter:
+   One of the advantages of the Restlet framework is the built-in support for <a href="http://www.w3.org/Provider/Style/URI">cool URIs</a>. Another good description of the importance of proper URI design is given by Jacob Nielsen in his <a href="http://www.useit.com/alertbox/990321.html">AlertBox</a>. The first tool available is the Redirector, which allows the rewriting of a cool URI to another URI, followed by an automatic redirection. Several types of redirection are supported, the external redirection via the client/browser, the internal redirection at the container level and the connector redirection for proxy-like behavior. In the example below, we will define a search service for our web site (named "mysite.org") based on Google. The "/search" relative URI identifies the search service, accepting some keywords via the "q" parameter:
 </p>
 <pre>
-      // Create a Redirector to Google search service
-      String target = "http://www.google.com/search?q=site:mysite.org+${query('q')}";
-      return new Redirector(getContext(), target, Redirector.MODE_CLIENT_TEMPORARY);
+          // Create a Redirector to Google search service
+          String target = "http://www.google.com/search?q=site:mysite.org+${query('q')}";
+          return new Redirector(getContext(), target,
+                  Redirector.MODE_CLIENT_TEMPORARY);
 </pre>
 <p>
-   Note that the RedirectRestlet needs two parameters only. The first one defines how the URI rewriting should be done, based on a URI template. This template will be processed by the <a href="http://www.restlet.org/docs/api/org/restlet/util/StringTemplate.html">StringTemplate</a> class and the URI data model provided by the <a href="http://www.restlet.org/docs/api/org/restlet/util/CallModel.html">RestletCallModel</a> class. The second parameter defines the type of redirection; here we chose the client redirection, for simplicity purpose.
+   Note that the Redirector needs three parameters only. The first is the parent context, the second one defines how the URI rewriting should be done, based on a URI template. This template will be processed by the <a href="http://www.restlet.org/docs/api/org/restlet/util/StringTemplate.html">StringTemplate</a> class and the URI data model provided by the <a href="http://www.restlet.org/docs/api/org/restlet/util/CallModel.html">CallModel</a> class. The second parameter defines the type of redirection; here we chose the client redirection, for simplicity purpose.
 </p>
 
 <h3><a name="part11">11. Routers and hierarchical URIs</a></h3>
@@ -302,83 +294,78 @@
    See the implementation code below. In a real application, you will probably want to create separate subclasses instead of the anonymous ones we use here:
 </p>
 <pre>
-      // Create a container
-      Container container = new Container();
-      container.getServers().add(Protocol.HTTP, 8182);
-      container.getClients().add(Protocol.FILE);
+        // Create a container
+        Container container = new Container();
+        container.getServers().add(Protocol.HTTP, 8182);
+        container.getClients().add(Protocol.FILE);
 
-      // Create an application
-      Application application = new Application(container)
-      {
-         @Override
-         public Restlet createRoot()
-         {
-            // Create a root Router
-            Router router = new Router(getContext());
+        // Create an application
+        Application application = new Application(container) {
+            @Override
+            public Restlet createRoot() {
+                // Create a root Router
+                Router router = new Router(getContext());
 
-            // Attach a Guard to secure access to the chained directory handler
-            Guard guard = new Guard(getContext(), ChallengeScheme.HTTP_BASIC,
-                  "Restlet tutorial");
-            guard.getAuthorizations().put("scott", "tiger");
-            router.attach("/docs/", guard);
+                // Attach a Guard to secure access to the chained directory
+                // handler
+                Guard guard = new Guard(getContext(),
+                        ChallengeScheme.HTTP_BASIC, "Restlet tutorial");
+                guard.getAuthorizations().put("scott", "tiger");
+                router.attach("/docs/", guard);
 
-            // Create a Directory able to return a deep hierarchy of Web files
-            Directory directory = new Directory(getContext(), ROOT_URI);
-            directory.setNegotiateContent(true);
-            guard.setNext(directory);
+                // Create a Directory able to return a deep hierarchy of Web
+                // files
+                Directory directory = new Directory(getContext(), ROOT_URI);
+                guard.setNext(directory);
 
-            // Create the Account Handler
-            Handler account = new Handler()
-            {
-               @Override
-               public void handleGet(Request request, Response response)
-               {
-                  // Print the requested URI path
-                  String message = "Account of user \""
-                        + request.getAttributes().get("user") + "\"";
-                  response.setEntity(message, MediaType.TEXT_PLAIN);
-               }
-            };
+                // Create the Account Handler
+                Handler account = new Handler() {
+                    @Override
+                    public void handleGet(Request request, Response response) {
+                        // Print the requested URI path
+                        String message = "Account of user \""
+                                + request.getAttributes().get("user") + "\"";
+                        response.setEntity(message, MediaType.TEXT_PLAIN);
+                    }
+                };
 
-            // Create the Orders Handler
-            Handler orders = new Handler(getContext())
-            {
-               @Override
-               public void handleGet(Request request, Response response)
-               {
-                  // Print the user name of the requested orders
-                  String message = "Orders of user \""
-                        + request.getAttributes().get("user") + "\"";
-                  response.setEntity(message, MediaType.TEXT_PLAIN);
-               }
-            };
+                // Create the Orders Handler
+                Handler orders = new Handler(getContext()) {
+                    @Override
+                    public void handleGet(Request request, Response response) {
+                        // Print the user name of the requested orders
+                        String message = "Orders of user \""
+                                + request.getAttributes().get("user") + "\"";
+                        response.setEntity(message, MediaType.TEXT_PLAIN);
+                    }
+                };
 
-            // Create the Order Handler
-            Handler order = new Handler(getContext())
-            {
-               @Override
-               public void handleGet(Request request, Response response)
-               {
-                  // Print the user name of the requested orders
-                  String message = "Order \"" + request.getAttributes().get("order")
-                        + "\" for user \"" + request.getAttributes().get("user") + "\"";
-                  response.setEntity(message, MediaType.TEXT_PLAIN);
-               }
-            };
+                // Create the Order Handler
+                Handler order = new Handler(getContext()) {
+                    @Override
+                    public void handleGet(Request request, Response response) {
+                        // Print the user name of the requested orders
+                        String message = "Order \""
+                                + request.getAttributes().get("order")
+                                + "\" for user \""
+                                + request.getAttributes().get("user") + "\"";
+                        response.setEntity(message, MediaType.TEXT_PLAIN);
+                    }
+                };
 
-            // Attach the Handlers to the Router
-            router.attach("/users/{user}$", account);
-            router.attach("/users/{user}/orders$", orders);
-            router.attach("/users/{user}/orders/{order}$", order);
+                // Attach the Handlers to the Router
+                router.attach("/users/{user}$", account);
+                router.attach("/users/{user}/orders$", orders);
+                router.attach("/users/{user}/orders/{order}$", order);
 
-            // Return the root router
-            return router;
-         }
-      };
+                // Return the root router
+                return router;
+            }
+        };
 
-      // Attach the application to the container and start it
-      container.getDefaultHost().attach("", application);
-      container.start();
+        // Attach the application to the container and start it
+        container.getDefaultHost().attach("", application);
+        container.start();
 </pre>
 
 <h3><a name="conclusion">Conclusion</a></h3>
@@ -414,7 +401,7 @@
 <br/>
 
 <small>
-   Last modified on 2006-11-28. Copyright &copy; 2005-2006 <a href="mailto:contact@noelios.com">J&eacute;r&ocirc;me Louvel</a>. Restlet is a registered trademark of <a target="_top" href="http://www.noelios.com">Noelios Consulting</a>.
+   Last modified on 2006-12-07. Copyright &copy; 2005-2006 <a href="mailto:contact@noelios.com">J&eacute;r&ocirc;me Louvel</a>. Restlet is a registered trademark of <a target="_top" href="http://www.noelios.com">Noelios Consulting</a>.
 </small>
 
 </body>

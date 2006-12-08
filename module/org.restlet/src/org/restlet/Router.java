@@ -155,14 +155,29 @@ public class Router extends Chainer {
     }
 
     /**
+     * Attaches a Restlet to this router as the default target to invoke when no
+     * scorer matches. It actually sets a default scorer that scores all calls
+     * to 1.0.
+     * 
+     * @param defaultTarget
+     *            The Restlet to use as the default target.
+     */
+    public void attachDefault(Restlet defaultTarget) {
+        setDefaultScorer(new Scorer(this, defaultTarget));
+    }
+
+    /**
      * Detaches the target from this router. All scorers routing to this target
-     * Restlet are removed from the list of scorers.
+     * Restlet are removed from the list of scorers and the default scorer is
+     * set to null.
      * 
      * @param target
      *            The target Restlet to detach.
      */
     public void detach(Restlet target) {
         getScorers().removeAll(target);
+        if (getDefaultScorer().getNext() == target)
+            setDefaultScorer(null);
     }
 
     /**

@@ -9,6 +9,7 @@ Changes log
  - Fixed IndexOutOfBoundsException in HttpServerCall causing ServerServlet to fail. Reported by Steffen Eichenberg.
  - Fixed NPE in HostScorer when using URIs with default ports. Reported by Jeff Walter.
  - Fixed issue with header name comparison not ignoring the case. Reported by Sean Landis.
+ - Fixed several documentation typos. Reported by John D. Mitchell.
  
 [API changes]
  - Removed Jetty 5 connector from the distribution. Use Jetty 6 connector instead. 
@@ -19,7 +20,8 @@ Changes log
  - Finalized many classes in order to be explicit about what is intended to be subclassed or not. Contributed by Piyush Purang.
  - org.restlet.util.PipeStream was moved inside ByteUtils as a private class.
  - Merged ImmutableDate into DateUtils as an inner private class. Added an "unmodifiable" static method to DateUtils instead.
-
+ - Added attachDefault(Restlet) method to Router class. The detach() method now also detaches the default scorer.
+ 
 [Enhancements] 
  - Add new constructor to Tag for weak tags taking an unquoted opaque value. Fixes #201. 
    Suggested by Chris Grindstaff
