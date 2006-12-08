@@ -74,8 +74,8 @@ public class HeaderReader {
         StringBuilder sb = null;
         int next = read();
 
-        // Skip leading separators
-        while ((next != -1) && isValueSeparator(next)) {
+        // Skip leading spaces
+        while ((next != -1) && isLinearWhiteSpace(next)) {
             next = read();
         }
 
@@ -86,6 +86,15 @@ public class HeaderReader {
             next = read();
         }
 
+        // Remove trailing spaces
+        if(sb != null)
+        {
+            for (int i = sb.length() - 1; (i >= 0)
+                    && isLinearWhiteSpace(sb.charAt(i)); i--) {
+                sb.deleteCharAt(i);
+            }
+        }
+        
         return (sb == null) ? null : sb.toString();
     }
 
@@ -97,10 +106,21 @@ public class HeaderReader {
      * @return True if the given character is a value separator.
      */
     protected boolean isValueSeparator(int character) {
+        return (character == ',');
+    }
+
+    /**
+     * Indicates if the given character is a value separator.
+     * 
+     * @param character
+     *            The character to test.
+     * @return True if the given character is a value separator.
+     */
+    protected boolean isLinearWhiteSpace(int character) {
         return (HeaderUtils.isCarriageReturn(character)
                 || HeaderUtils.isSpace(character)
-                || HeaderUtils.isLineFeed(character)
-                || HeaderUtils.isHorizontalTab(character) || (character == ','));
+                || HeaderUtils.isLineFeed(character) || HeaderUtils
+                .isHorizontalTab(character));
     }
 
     /**

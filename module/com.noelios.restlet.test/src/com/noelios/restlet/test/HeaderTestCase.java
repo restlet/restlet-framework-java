@@ -22,6 +22,7 @@ import java.io.IOException;
 
 import org.restlet.data.ClientInfo;
 import org.restlet.data.Encoding;
+import org.restlet.data.MediaType;
 
 import junit.framework.TestCase;
 
@@ -56,6 +57,7 @@ public class HeaderTestCase extends TestCase {
         testValues(header1, values);
         testValues(header2, values);
 
+        // Test the parsing of a "Accept-encoding" header
         header1 = "gzip;q=1.0, identity;q=0.5 , *;q=0";
         ClientInfo clientInfo = new ClientInfo();
         PreferenceUtils.parseEncodings(header1, clientInfo);
@@ -70,6 +72,31 @@ public class HeaderTestCase extends TestCase {
         assertEquals(clientInfo.getAcceptedEncodings().get(2).getMetadata(),
                 Encoding.ALL);
         assertEquals(clientInfo.getAcceptedEncodings().get(2).getQuality(), 0F);
+
+        // Test the parsing of a "Accept" header
+        header1 = "text/html, image/gif, image/jpeg, *; q=.2, */*; q=.2";
+        clientInfo = new ClientInfo();
+        PreferenceUtils.parseMediaTypes(header1, clientInfo);
+        assertEquals(clientInfo.getAcceptedMediaTypes().get(0).getMetadata(),
+                MediaType.TEXT_HTML);
+        assertEquals(clientInfo.getAcceptedMediaTypes().get(0).getQuality(),
+                1.0F);
+        assertEquals(clientInfo.getAcceptedMediaTypes().get(1).getMetadata(),
+                MediaType.IMAGE_GIF);
+        assertEquals(clientInfo.getAcceptedMediaTypes().get(1).getQuality(),
+                1.0F);
+        assertEquals(clientInfo.getAcceptedMediaTypes().get(2).getMetadata(),
+                MediaType.IMAGE_JPEG);
+        assertEquals(clientInfo.getAcceptedMediaTypes().get(2).getQuality(),
+                1.0F);
+        assertEquals(clientInfo.getAcceptedMediaTypes().get(3).getMetadata(),
+                new MediaType("*"));
+        assertEquals(clientInfo.getAcceptedMediaTypes().get(3).getQuality(),
+                0.2F);
+        assertEquals(clientInfo.getAcceptedMediaTypes().get(4).getMetadata(),
+                MediaType.ALL);
+        assertEquals(clientInfo.getAcceptedMediaTypes().get(4).getQuality(),
+                0.2F);
     }
 
     /**

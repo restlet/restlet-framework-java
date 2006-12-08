@@ -13,7 +13,8 @@ Changes log
  - Fixed several documentation typos. Reported by John D. Mitchell.
  - Fixed issue with "sub-tagged" Language metadata (like "en-us"), sub-tag comparison must
    ignore the case. Reported by Jeff Walter and Andrew Barnes. Contributed by Thierry Boileau.
- - Fixed/improved parsing of "accept-encoding" HTTP headers. Added unit test.
+ - Fixed issues in parsing of "accept*" HTTP headers. Added unit tests. Reported by AJ Barnes 
+   and Jeff Walter.
  - Fixed potential NPE in HostScorer.
 
 [API changes]
