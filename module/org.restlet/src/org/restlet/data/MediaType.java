@@ -81,7 +81,7 @@ public final class MediaType extends Metadata {
             "application/vnd.ms-project", "Microsoft Project document");
 
     public static final MediaType APPLICATION_RDF = new MediaType(
-            "application/rdf-xml", "Resource Description Framework document");
+            "application/rdf+xml", "Resource Description Framework document");
 
     public static final MediaType APPLICATION_RTF = new MediaType(
             "application/rtf", "Rich Text Format document");

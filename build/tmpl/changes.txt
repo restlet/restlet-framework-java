@@ -16,6 +16,7 @@ Changes log
  - Fixed issues in parsing of "accept*" HTTP headers. Added unit tests. Reported by AJ Barnes 
    and Jeff Walter.
  - Fixed potential NPE in HostScorer.
+ - Fixed RDF media type from "application/rdf-xml" to "application/rdf+xml". Reported by Aldo Bucchi.
 
 [API changes]
  - Removed Jetty 5 connector from the distribution. Use Jetty 6 connector instead. 
