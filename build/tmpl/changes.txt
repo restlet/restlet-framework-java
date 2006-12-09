@@ -37,7 +37,8 @@ Changes log
  - The query part of request's resource reference is now routable. WARNING: you may have
    to revisit your router URI patterns, especially to remove the ending "$" characters.
  - Directory.getDirectoryVariants() now returns a textual list in addition of a HTML doc.
- 
+ - org.restlet.Restlet class now overrides org.restlet.Dispatcher to facilate client-side invocation of filters such as Redirector.
+
 [Enhancements] 
  - Add new constructor to Tag for weak tags taking an unquoted opaque value. Fixes #201. 
    Suggested by Chris Grindstaff
