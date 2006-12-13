@@ -18,8 +18,22 @@
 
 package org.restlet.data;
 
+import java.util.ArrayList;
+import java.util.List;
+
 /**
- * Language used in representations and preferences.
+ * Language used in representations and preferences. A language tag is composed
+ * of 1 or more parts: A primary language tag and a possibly empty series of
+ * subtags:
+ * <ul>
+ * <li>language-tag = primary-tag *( "-" subtag )
+ * <li>primary-tag = 1*8ALPHA
+ * <li>subtag = 1*8ALPHA
+ * </ul>
+ * 
+ * @see <a
+ *      href="http://www.w3.org/Protocols/rfc2616/rfc2616-sec3.html#sec3.10">HTTP
+ *      1.1 Protocol parameters</a>
  * 
  * @author Jerome Louvel (contact@noelios.com)
  */
@@ -45,6 +59,12 @@ public final class Language extends Metadata {
     /** Spanish language. */
     public static final Language SPANISH = new Language("es",
             "Spanish language");
+
+    /** The metadata main tag taken from the metadata name like "en" for "en-us". */
+    private String primaryTag;
+
+    /** The metadata main list of subtags taken from the metadata name. */
+    private List<String> subTags;
 
     /**
      * Returns the language associated to a name. If an existing constant exists
@@ -97,6 +117,15 @@ public final class Language extends Metadata {
      */
     public Language(final String name, final String description) {
         super(name, description);
+        String[] tags = getName().split("-");
+        subTags = new ArrayList<String>();
+
+        if (tags.length > 0) {
+            primaryTag = tags[0];
+            for (int i = 1; i < tags.length; i++) {
+                subTags.add(tags[i]);
+            }
+        }
     }
 
     /** {@inheritDoc} */
@@ -107,33 +136,21 @@ public final class Language extends Metadata {
     }
 
     /**
-     * Returns the main tag.
+     * Returns the primary tag.
      * 
-     * @return The main tag.
+     * @return The primary tag.
      */
-    public String getMainTag() {
-        int separator = getName().indexOf('-');
-
-        if (separator == -1) {
-            return getName();
-        } else {
-            return getName().substring(0, separator);
-        }
+    public String getPrimaryTag() {
+        return this.primaryTag;
     }
 
     /**
-     * Returns the sub tag.
+     * Returns the possibly empty list of subtags.
      * 
-     * @return The sub tag.
+     * @return The list of subtags for this language Tag.
      */
-    public String getSubTag() {
-        int separator = getName().indexOf('-');
-
-        if (separator == -1) {
-            return null;
-        } else {
-            return getName().substring(separator + 1);
-        }
+    public List<String> getSubTags() {
+        return subTags;
     }
 
     /** {@inheritDoc} */
