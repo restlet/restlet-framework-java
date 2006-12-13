@@ -437,12 +437,12 @@ public class Factory extends org.restlet.util.Factory {
                     currentScore = 0;
 
                     // 1) Compare the main tag
-                    if (variantLanguage.getMainTag().equalsIgnoreCase(
-                            currentLanguage.getMainTag())) {
+                    if (variantLanguage.getPrimaryTag().equalsIgnoreCase(
+                            currentLanguage.getPrimaryTag())) {
                         currentScore += 100;
-                    } else if (!currentLanguage.getMainTag().equals("*")) {
+                    } else if (!currentLanguage.getPrimaryTag().equals("*")) {
                         compatiblePref = false;
-                    } else if (currentLanguage.getSubTag() != null) {
+                    } else if (!currentLanguage.getSubTags().isEmpty()) {
                         // Only "*" is an acceptable language range
                         compatiblePref = false;
                     } else {
@@ -452,22 +452,30 @@ public class Factory extends org.restlet.util.Factory {
 
                     if (compatiblePref) {
                         // 2) Compare the sub tags
-                        if ((currentLanguage.getSubTag() == null)
-                                || (variantLanguage.getSubTag() == null)) {
-                            if (variantLanguage.getSubTag() == currentLanguage
-                                    .getSubTag()) {
+                        if ((currentLanguage.getSubTags().isEmpty())
+                                || (variantLanguage.getSubTags().isEmpty())) {
+                            if (variantLanguage.getSubTags().isEmpty()
+                                    && currentLanguage.getSubTags().isEmpty()) {
                                 currentScore += 10;
                             } else {
                                 // Don't change the score
                             }
-                        } else if (currentLanguage.getSubTag()
-                                .equalsIgnoreCase(variantLanguage.getSubTag())) {
-                            currentScore += 10;
                         } else {
-                            // SubTags are different
-                            compatiblePref = false;
+                            int maxSize = Math.min(currentLanguage.getSubTags()
+                                    .size(), variantLanguage.getSubTags()
+                                    .size());
+                            for (int i = 0; i < maxSize && compatiblePref; i++) {
+                                if (currentLanguage.getSubTags().get(i)
+                                        .equalsIgnoreCase(
+                                                variantLanguage.getSubTags()
+                                                        .get(i))) {
+                                    currentScore += Math.pow(10, 1 - i);
+                                } else {
+                                    // SubTags are different
+                                    compatiblePref = false;
+                                }
+                            }
                         }
-
                         // 3) Do we have a better preference?
                         // currentScore *= currentPref.getQuality();
                         if (compatiblePref
