@@ -60,9 +60,6 @@ public final class Language extends Metadata {
     public static final Language SPANISH = new Language("es",
             "Spanish language");
 
-    /** The metadata main tag taken from the metadata name like "en" for "en-us". */
-    private String primaryTag;
-
     /** The metadata main list of subtags taken from the metadata name. */
     private List<String> subTags;
 
@@ -117,15 +114,7 @@ public final class Language extends Metadata {
      */
     public Language(final String name, final String description) {
         super(name, description);
-        String[] tags = getName().split("-");
-        subTags = new ArrayList<String>();
-
-        if (tags.length > 0) {
-            primaryTag = tags[0];
-            for (int i = 1; i < tags.length; i++) {
-                subTags.add(tags[i]);
-            }
-        }
+        this.subTags = null;
     }
 
     /** {@inheritDoc} */
@@ -141,7 +130,29 @@ public final class Language extends Metadata {
      * @return The primary tag.
      */
     public String getPrimaryTag() {
-        return this.primaryTag;
+        int separator = getName().indexOf('-');
+
+        if (separator == -1) {
+            return getName();
+        } else {
+            return getName().substring(0, separator);
+        }
+    }
+
+    /**
+     * Returns the main tag.
+     * 
+     * @return The main tag.
+     */
+    @Deprecated
+    public String getMainTag() {
+        int separator = getName().indexOf('-');
+
+        if (separator == -1) {
+            return getName();
+        } else {
+            return getName().substring(0, separator);
+        }
     }
 
     /**
@@ -150,6 +161,17 @@ public final class Language extends Metadata {
      * @return The list of subtags for this language Tag.
      */
     public List<String> getSubTags() {
+        if (subTags == null) {
+            String[] tags = getName().split("-");
+            subTags = new ArrayList<String>();
+
+            if (tags.length > 0) {
+                for (int i = 1; i < tags.length; i++) {
+                    subTags.add(tags[i]);
+                }
+            }
+        }
+
         return subTags;
     }
 
