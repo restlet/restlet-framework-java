@@ -469,6 +469,8 @@ public class Factory extends org.restlet.util.Factory {
                                         .equalsIgnoreCase(
                                                 variantLanguage.getSubTags()
                                                         .get(i))) {
+                                    // Each subtag contribution to the score is
+                                    // getting less and less important
                                     currentScore += Math.pow(10, 1 - i);
                                 } else {
                                     // SubTags are different
