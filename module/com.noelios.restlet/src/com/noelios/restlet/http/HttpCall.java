@@ -48,6 +48,9 @@ public class HttpCall {
     /** The method. */
     private String method;
 
+    /** The exact protocol. */
+    private Protocol protocol;
+
     /** The reason phrase. */
     private String reasonPhrase;
 
@@ -66,11 +69,11 @@ public class HttpCall {
     /** The server port. */
     private Integer serverPort;
 
-    /** The server protocol. */
-    private Protocol serverProtocol;
-
     /** The status code. */
     private int statusCode;
+
+    /** The protocol version. */
+    private String version;
 
     /**
      * Constructor.
@@ -81,14 +84,15 @@ public class HttpCall {
         this.clientAddress = null;
         this.confidential = false;
         this.method = null;
+        this.protocol = null;
         this.reasonPhrase = "";
         this.requestHeaders = null;
         this.requestUri = null;
         this.responseHeaders = null;
         this.serverAddress = null;
         this.serverPort = null;
-        this.serverProtocol = null;
         this.statusCode = 200;
+        this.version = null;
     }
 
     /**
@@ -106,24 +110,6 @@ public class HttpCall {
         } else {
             return DateUtils.format(date, DateUtils.FORMAT_RFC_1123.get(0));
         }
-    }
-
-    /**
-     * Returns the host domain.
-     * 
-     * @return The host domain.
-     */
-    public String getHostDomain() {
-        return this.hostDomain;
-    }
-
-    /**
-     * Returns the host port.
-     * 
-     * @return The host port.
-     */
-    public Integer getHostPort() {
-        return this.hostPort;
     }
 
     /**
@@ -158,12 +144,41 @@ public class HttpCall {
     }
 
     /**
+     * Returns the host domain.
+     * 
+     * @return The host domain.
+     */
+    public String getHostDomain() {
+        return this.hostDomain;
+    }
+
+    /**
+     * Returns the host port.
+     * 
+     * @return The host port.
+     */
+    public Integer getHostPort() {
+        return this.hostPort;
+    }
+
+    /**
      * Returns the request method.
      * 
      * @return The request method.
      */
     public String getMethod() {
         return this.method;
+    }
+
+    /**
+     * Returns the exact protocol (HTTP or HTTPS).
+     * 
+     * @return The exact protocol (HTTP or HTTPS).
+     */
+    public Protocol getProtocol() {
+        if (this.protocol == null)
+            this.protocol = isConfidential() ? Protocol.HTTPS : Protocol.HTTP;
+        return this.protocol;
     }
 
     /**
@@ -227,21 +242,21 @@ public class HttpCall {
     }
 
     /**
-     * Returns the server protocol.
-     * 
-     * @return The server protocol.
-     */
-    public Protocol getServerProtocol() {
-        return this.serverProtocol;
-    }
-
-    /**
      * Returns the status code.
      * 
      * @return The status code.
      */
     public int getStatusCode() {
         return this.statusCode;
+    }
+
+    /**
+     * Returns the protocol version used.
+     * 
+     * @return The protocol version used.
+     */
+    public String getVersion() {
+        return this.version;
     }
 
     /**
@@ -271,26 +286,6 @@ public class HttpCall {
     }
 
     /**
-     * Sets the host domain name.
-     * 
-     * @param hostDomain
-     *            The baseRef domain name.
-     */
-    public void setHostDomain(String hostDomain) {
-        this.hostDomain = hostDomain;
-    }
-
-    /**
-     * Sets the host port.
-     * 
-     * @param hostPort
-     *            The host port.
-     */
-    public void setHostPort(Integer hostPort) {
-        this.hostPort = hostPort;
-    }
-
-    /**
      * Sets the request address.
      * 
      * @param requestAddress
@@ -312,6 +307,26 @@ public class HttpCall {
     }
 
     /**
+     * Sets the host domain name.
+     * 
+     * @param hostDomain
+     *            The baseRef domain name.
+     */
+    public void setHostDomain(String hostDomain) {
+        this.hostDomain = hostDomain;
+    }
+
+    /**
+     * Sets the host port.
+     * 
+     * @param hostPort
+     *            The host port.
+     */
+    public void setHostPort(Integer hostPort) {
+        this.hostPort = hostPort;
+    }
+
+    /**
      * Sets the request method.
      * 
      * @param method
@@ -319,6 +334,16 @@ public class HttpCall {
      */
     protected void setMethod(String method) {
         this.method = method;
+    }
+
+    /**
+     * Sets the exact protocol used (HTTP or HTTPS).
+     * 
+     * @param protocol
+     *            The protocol.
+     */
+    public void setProtocol(Protocol protocol) {
+        this.protocol = protocol;
     }
 
     /**
@@ -363,16 +388,6 @@ public class HttpCall {
     }
 
     /**
-     * Sets the server protocol.
-     * 
-     * @param serverProtocol
-     *            The server protocol.
-     */
-    public void setServerProtocol(Protocol serverProtocol) {
-        this.serverProtocol = serverProtocol;
-    }
-
-    /**
      * Sets the status code.
      * 
      * @param code
@@ -381,4 +396,15 @@ public class HttpCall {
     public void setStatusCode(int code) {
         this.statusCode = code;
     }
+
+    /**
+     * Sets the protocol version used.
+     * 
+     * @param version
+     *            The protocol version used.
+     */
+    public void setProtocol(String version) {
+        this.version = version;
+    }
+
 }

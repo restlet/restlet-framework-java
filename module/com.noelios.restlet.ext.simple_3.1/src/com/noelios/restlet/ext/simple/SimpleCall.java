@@ -80,12 +80,13 @@ public class SimpleCall extends HttpServerCall {
     }
 
     /**
-     * Returns the full request URI.
+     * Returns the request address.<br/> Corresponds to the IP address of the
+     * requesting client.
      * 
-     * @return The full request URI.
+     * @return The request address.
      */
-    public String getRequestUri() {
-        return request.getURI();
+    public String getClientAddress() {
+        return request.getInetAddress().getHostAddress();
     }
 
     /**
@@ -98,23 +99,13 @@ public class SimpleCall extends HttpServerCall {
     }
 
     /**
-     * Returns the request address.<br/> Corresponds to the IP address of the
-     * requesting client.
+     * Returns the request entity channel if it exists.
      * 
-     * @return The request address.
+     * @return The request entity channel if it exists.
      */
-    public String getClientAddress() {
-        return request.getInetAddress().getHostAddress();
-    }
-
-    /**
-     * Returns the response address.<br/> Corresponds to the IP address of the
-     * responding server.
-     * 
-     * @return The response address.
-     */
-    public String getServerAddress() {
-        return response.getInetAddress().getHostAddress();
+    public ReadableByteChannel getRequestChannel() {
+        // Unsupported.
+        return null;
     }
 
     /**
@@ -136,6 +127,66 @@ public class SimpleCall extends HttpServerCall {
         }
 
         return result;
+    }
+
+    /**
+     * Returns the request entity stream if it exists.
+     * 
+     * @return The request entity stream if it exists.
+     */
+    public InputStream getRequestStream() {
+        try {
+            return request.getInputStream();
+        } catch (IOException ex) {
+            return null;
+        }
+    }
+
+    /**
+     * Returns the full request URI.
+     * 
+     * @return The full request URI.
+     */
+    public String getRequestUri() {
+        return request.getURI();
+    }
+
+    /**
+     * Returns the response channel if it exists.
+     * 
+     * @return The response channel if it exists.
+     */
+    public WritableByteChannel getResponseChannel() {
+        // Unsupported.
+        return null;
+    }
+
+    /**
+     * Returns the response stream if it exists.
+     * 
+     * @return The response stream if it exists.
+     */
+    public OutputStream getResponseStream() {
+        try {
+            return response.getOutputStream();
+        } catch (IOException ex) {
+            return null;
+        }
+    }
+
+    /**
+     * Returns the response address.<br/> Corresponds to the IP address of the
+     * responding server.
+     * 
+     * @return The response address.
+     */
+    public String getServerAddress() {
+        return response.getInetAddress().getHostAddress();
+    }
+
+    @Override
+    public String getVersion() {
+        return request.getMajor() + "." + request.getMinor();
     }
 
     /**
@@ -164,51 +215,5 @@ public class SimpleCall extends HttpServerCall {
 
         // Send the response entity
         super.sendResponse(restletResponse);
-    }
-
-    /**
-     * Returns the request entity channel if it exists.
-     * 
-     * @return The request entity channel if it exists.
-     */
-    public ReadableByteChannel getRequestChannel() {
-        // Unsupported.
-        return null;
-    }
-
-    /**
-     * Returns the request entity stream if it exists.
-     * 
-     * @return The request entity stream if it exists.
-     */
-    public InputStream getRequestStream() {
-        try {
-            return request.getInputStream();
-        } catch (IOException ex) {
-            return null;
-        }
-    }
-
-    /**
-     * Returns the response channel if it exists.
-     * 
-     * @return The response channel if it exists.
-     */
-    public WritableByteChannel getResponseChannel() {
-        // Unsupported.
-        return null;
-    }
-
-    /**
-     * Returns the response stream if it exists.
-     * 
-     * @return The response stream if it exists.
-     */
-    public OutputStream getResponseStream() {
-        try {
-            return response.getOutputStream();
-        } catch (IOException ex) {
-            return null;
-        }
     }
 }

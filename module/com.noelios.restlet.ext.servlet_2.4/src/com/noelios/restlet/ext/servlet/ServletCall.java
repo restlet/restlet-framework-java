@@ -72,15 +72,6 @@ public class ServletCall extends HttpServerCall {
     }
 
     /**
-     * Returns the server domain name.
-     * 
-     * @return The server domain name.
-     */
-    public String getHostDomain() {
-        return getRequest().getServerName();
-    }
-
-    /**
      * Returns the request address.<br/> Corresponds to the IP address of the
      * requesting client.
      * 
@@ -91,12 +82,30 @@ public class ServletCall extends HttpServerCall {
     }
 
     /**
+     * Returns the server domain name.
+     * 
+     * @return The server domain name.
+     */
+    public String getHostDomain() {
+        return getRequest().getServerName();
+    }
+
+    /**
      * Returns the request method.
      * 
      * @return The request method.
      */
     public String getMethod() {
         return getRequest().getMethod();
+    }
+
+    /**
+     * Returns the server protocol.
+     * 
+     * @return The server protocol.
+     */
+    public Protocol getProtocol() {
+        return Protocol.valueOf(getRequest().getScheme());
     }
 
     /**
@@ -224,13 +233,16 @@ public class ServletCall extends HttpServerCall {
         return getRequest().getServerPort();
     }
 
-    /**
-     * Returns the server protocol.
-     * 
-     * @return The server protocol.
-     */
-    public Protocol getServerProtocol() {
-        return Protocol.valueOf(getRequest().getScheme());
+    @Override
+    public String getVersion() {
+        String result = null;
+        int index = getRequest().getProtocol().indexOf('/');
+
+        if (index != -1) {
+            result = getRequest().getProtocol().substring(index + 1);
+        }
+
+        return result;
     }
 
     /**

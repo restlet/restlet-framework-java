@@ -63,24 +63,6 @@ public class JettyCall extends HttpServerCall {
     }
 
     /**
-     * Returns the wrapped Jetty HTTP connection.
-     * 
-     * @return The wrapped Jetty HTTP connection.
-     */
-    public HttpConnection getConnection() {
-        return this.connection;
-    }
-
-    /**
-     * Indicates if the request was made using a confidential mean.<br/>
-     * 
-     * @return True if the request was made using a confidential mean.<br/>
-     */
-    public boolean isConfidential() {
-        return getConnection().getRequest().isSecure();
-    }
-
-    /**
      * Returns the request address.<br/> Corresponds to the IP address of the
      * requesting client.
      * 
@@ -88,6 +70,15 @@ public class JettyCall extends HttpServerCall {
      */
     public String getClientAddress() {
         return getConnection().getRequest().getRemoteAddr();
+    }
+
+    /**
+     * Returns the wrapped Jetty HTTP connection.
+     * 
+     * @return The wrapped Jetty HTTP connection.
+     */
+    public HttpConnection getConnection() {
+        return this.connection;
     }
 
     /**
@@ -100,13 +91,12 @@ public class JettyCall extends HttpServerCall {
     }
 
     /**
-     * Returns the URI on the request line (most like a relative reference, but
-     * not necessarily).
+     * Returns the request entity channel if it exists.
      * 
-     * @return The URI on the request line.
+     * @return The request entity channel if it exists.
      */
-    public String getRequestUri() {
-        return getConnection().getRequest().getUri().toString();
+    public ReadableByteChannel getRequestChannel() {
+        return null;
     }
 
     /**
@@ -138,25 +128,6 @@ public class JettyCall extends HttpServerCall {
     }
 
     /**
-     * Returns the response address.<br/> Corresponds to the IP address of the
-     * responding server.
-     * 
-     * @return The response address.
-     */
-    public String getServerAddress() {
-        return getConnection().getRequest().getLocalAddr();
-    }
-
-    /**
-     * Returns the request entity channel if it exists.
-     * 
-     * @return The request entity channel if it exists.
-     */
-    public ReadableByteChannel getRequestChannel() {
-        return null;
-    }
-
-    /**
      * Returns the request entity stream if it exists.
      * 
      * @return The request entity stream if it exists.
@@ -167,6 +138,57 @@ public class JettyCall extends HttpServerCall {
         } catch (IOException e) {
             return null;
         }
+    }
+
+    /**
+     * Returns the URI on the request line (most like a relative reference, but
+     * not necessarily).
+     * 
+     * @return The URI on the request line.
+     */
+    public String getRequestUri() {
+        return getConnection().getRequest().getUri().toString();
+    }
+
+    /**
+     * Returns the response channel if it exists.
+     * 
+     * @return The response channel if it exists.
+     */
+    public WritableByteChannel getResponseChannel() {
+        return null;
+    }
+
+    /**
+     * Returns the response stream if it exists.
+     * 
+     * @return The response stream if it exists.
+     */
+    public OutputStream getResponseStream() {
+        try {
+            return getConnection().getResponse().getOutputStream();
+        } catch (IOException e) {
+            return null;
+        }
+    }
+
+    /**
+     * Returns the response address.<br/> Corresponds to the IP address of the
+     * responding server.
+     * 
+     * @return The response address.
+     */
+    public String getServerAddress() {
+        return getConnection().getRequest().getLocalAddr();
+    }
+
+    /**
+     * Indicates if the request was made using a confidential mean.<br/>
+     * 
+     * @return True if the request was made using a confidential mean.<br/>
+     */
+    public boolean isConfidential() {
+        return getConnection().getRequest().isSecure();
     }
 
     /**
@@ -209,28 +231,6 @@ public class JettyCall extends HttpServerCall {
         // Fully complete and commit the response
         this.connection.completeResponse();
         this.connection.commitResponse(true);
-    }
-
-    /**
-     * Returns the response channel if it exists.
-     * 
-     * @return The response channel if it exists.
-     */
-    public WritableByteChannel getResponseChannel() {
-        return null;
-    }
-
-    /**
-     * Returns the response stream if it exists.
-     * 
-     * @return The response stream if it exists.
-     */
-    public OutputStream getResponseStream() {
-        try {
-            return getConnection().getResponse().getOutputStream();
-        } catch (IOException e) {
-            return null;
-        }
     }
 
 }

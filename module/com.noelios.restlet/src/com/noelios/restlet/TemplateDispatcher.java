@@ -40,10 +40,13 @@ public class TemplateDispatcher extends Dispatcher {
     /**
      * Constructor.
      * 
+     * @param context
+     *            The parent context.
      * @param helper
      *            The helper dispatcher.
      */
     public TemplateDispatcher(Context context, Dispatcher helper) {
+        this.context = context;
         this.helper = helper;
     }
 

@@ -65,6 +65,12 @@ public class HttpServerConverter extends HttpConverter {
         Request result = new HttpRequest(getContext(), httpCall);
         result.getAttributes().put(HttpConstants.ATTRIBUTE_HEADERS,
                 httpCall.getRequestHeaders());
+
+        if (httpCall.getVersion() != null) {
+            result.getAttributes().put(HttpConstants.ATTRIBUTE_VERSION,
+                    httpCall.getVersion());
+        }
+
         return result;
     }
 

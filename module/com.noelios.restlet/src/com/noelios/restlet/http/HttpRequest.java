@@ -100,15 +100,14 @@ public class HttpRequest extends Request {
             // by someone.
         }
 
-        // Set the base reference
+        // Set the host reference
         StringBuilder sb = new StringBuilder();
-        sb.append(httpCall.getServerProtocol().getSchemeName()).append("://");
+        sb.append(httpCall.getProtocol().getSchemeName()).append("://");
         sb.append(httpCall.getHostDomain());
-        if (httpCall.getHostPort() != httpCall.getServerProtocol()
-                .getDefaultPort()) {
+        if (httpCall.getHostPort() != httpCall.getProtocol().getDefaultPort()) {
             sb.append(':').append(httpCall.getServerPort());
         }
-        getResourceRef().setBaseRef(new Reference(sb.toString()));
+        setHostRef(new Reference(sb.toString()));
 
         // Set the resource reference
         setResourceRef(new Reference(httpCall.getRequestUri()));
