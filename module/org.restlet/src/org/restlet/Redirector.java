@@ -69,7 +69,7 @@ public class Redirector extends Restlet {
      * "connectorName" property. Once the connector has completed the call
      * handling, the call is normally returned to the client. In this case, you
      * can view the Redirector as acting as a proxy Restlet.<br/> Remember to
-     * attach the connector you want to use to the parent Restlet container,
+     * attach the connector you want to use to the parent Restlet component,
      * using the exact same name as the one you provided to the setConnectorName
      * method.
      */

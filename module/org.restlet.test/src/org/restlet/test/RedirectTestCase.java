@@ -72,7 +72,7 @@ public class RedirectTestCase extends TestCase {
             }
         };
 
-        // Set the container roots
+        // Set the component roots
         proxyComponent.getDefaultHost().attach("", proxy);
         originComponent.getDefaultHost().attach("", trace);
 
@@ -80,7 +80,7 @@ public class RedirectTestCase extends TestCase {
         proxyComponent.getServers().add(Protocol.HTTP, 8080);
         originComponent.getServers().add(Protocol.HTTP, 9090);
 
-        // Now, let's start the containers!
+        // Now, let's start the components!
         originComponent.start();
         proxyComponent.start();
         clientComponent.start();
@@ -98,7 +98,7 @@ public class RedirectTestCase extends TestCase {
         uri = "http://localhost:8080/v1/client/kwse/CnJlNUQV9%252BNNqbUf7Lhs2BYEK2Y%253D/user/johnm/uVGYTDK4kK4zsu96VHGeTCzfwso%253D/";
         testCall(context, Method.GET, uri);
 
-        // Stop the containers
+        // Stop the components
         clientComponent.stop();
         originComponent.stop();
         proxyComponent.stop();

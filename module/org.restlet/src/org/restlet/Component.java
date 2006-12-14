@@ -36,7 +36,7 @@ import org.restlet.util.ServerList;
  * a transformation of data via its interface." Roy T. Fielding
  * 
  * Component managing a set of VirtualHosts and Applications. Applications are
- * expected to be directly attached to VirtualHosts. Containers are also
+ * expected to be directly attached to VirtualHosts. Components are also
  * exposing a number of services in order to control several operational
  * features in a portable way, like access log and status setting.
  * 

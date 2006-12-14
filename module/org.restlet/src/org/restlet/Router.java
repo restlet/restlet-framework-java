@@ -41,7 +41,7 @@ import org.restlet.util.RouteList;
  * <br/> Note that for routes using URI patterns will update the resource
  * reference's base reference during the routing if they are selected. If you
  * are using hierarchical paths, remember to directly attach the child routers
- * to their parent router instead of the top level Restlet container. Also,
+ * to their parent router instead of the top level Restlet component. Also,
  * remember to manually handle the path separator characters in your path
  * patterns otherwise the delegation will not work as expected.<br/> <br/>
  * Finally, you can modify the routes list while handling incoming calls as the

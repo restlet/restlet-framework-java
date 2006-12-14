@@ -27,36 +27,36 @@ import org.restlet.Dispatcher;
 import com.noelios.restlet.TemplateDispatcher;
 
 /**
- * Context allowing access to the container's connectors.
+ * Context allowing access to the component's connectors.
  * 
  * @author Jerome Louvel (contact@noelios.com)
  */
-public class ContainerContext extends Context {
-    /** The container helper. */
-    private ContainerHelper containerHelper;
+public class ComponentContext extends Context {
+    /** The component helper. */
+    private ComponentHelper componentHelper;
 
     /**
      * Constructor.
      * 
-     * @param containerHelper
-     *            The container helper.
+     * @param componentHelper
+     *            The component helper.
      */
-    public ContainerContext(ContainerHelper containerHelper) {
-        this(containerHelper, Logger.getLogger(Component.class
+    public ComponentContext(ComponentHelper componentHelper) {
+        this(componentHelper, Logger.getLogger(Component.class
                 .getCanonicalName()));
     }
 
     /**
      * Constructor.
      * 
-     * @param containerHelper
-     *            The container helper.
+     * @param componentHelper
+     *            The component helper.
      * @param logger
      *            The logger instance of use.
      */
-    public ContainerContext(ContainerHelper containerHelper, Logger logger) {
+    public ComponentContext(ComponentHelper componentHelper, Logger logger) {
         super(logger);
-        this.containerHelper = containerHelper;
+        this.componentHelper = componentHelper;
     }
 
     /**
@@ -65,25 +65,25 @@ public class ContainerContext extends Context {
      * @return A call dispatcher.
      */
     public Dispatcher getDispatcher() {
-        return new TemplateDispatcher(getContainerHelper().getClientRouter());
+        return new TemplateDispatcher(getComponentHelper().getClientRouter());
     }
 
     /**
-     * Returns the container helper.
+     * Returns the component helper.
      * 
-     * @return The container helper.
+     * @return The component helper.
      */
-    protected ContainerHelper getContainerHelper() {
-        return this.containerHelper;
+    protected ComponentHelper getComponentHelper() {
+        return this.componentHelper;
     }
 
     /**
-     * Sets the container helper.
+     * Sets the component helper.
      * 
-     * @param containerHelper
-     *            The container helper.
+     * @param componentHelper
+     *            The component helper.
      */
-    protected void setContainerHelper(ContainerHelper containerHelper) {
-        this.containerHelper = containerHelper;
+    protected void setComponentHelper(ComponentHelper componentHelper) {
+        this.componentHelper = componentHelper;
     }
 }

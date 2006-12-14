@@ -47,7 +47,7 @@ public class ApplicationHelper extends Helper {
     /** The last Filter. */
     private Filter last;
 
-    /** The parent context, typically the container's context. */
+    /** The parent context, typically the component's context. */
     private Context parentContext;
 
     /**
@@ -56,7 +56,7 @@ public class ApplicationHelper extends Helper {
      * @param application
      *            The application to help.
      * @param parentContext
-     *            The parent context, typically the container's context.
+     *            The parent context, typically the component's context.
      */
     public ApplicationHelper(Application application, Context parentContext) {
         this.application = application;
@@ -122,7 +122,7 @@ public class ApplicationHelper extends Helper {
     }
 
     /**
-     * Returns the parent context, typically the container's context.
+     * Returns the parent context, typically the component's context.
      * 
      * @return The parent context.
      */

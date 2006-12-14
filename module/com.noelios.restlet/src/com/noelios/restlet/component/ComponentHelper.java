@@ -41,7 +41,7 @@ import com.noelios.restlet.StatusFilter;
  * 
  * @author Jerome Louvel (contact@noelios.com)
  */
-public class ContainerHelper extends Helper {
+public class ComponentHelper extends Helper {
     /** The helped component. */
     private Component component;
 
@@ -60,7 +60,7 @@ public class ContainerHelper extends Helper {
      * @param component
      *            The helper component.
      */
-    public ContainerHelper(Component component) {
+    public ComponentHelper(Component component) {
         this.component = component;
         this.first = null;
         this.clientRouter = new ClientRouter(getComponent());
@@ -73,7 +73,7 @@ public class ContainerHelper extends Helper {
      * @return The new context.
      */
     public Context createContext() {
-        return new ContainerContext(this);
+        return new ComponentContext(this);
     }
 
     /**
@@ -119,7 +119,7 @@ public class ContainerHelper extends Helper {
             getComponent()
                     .getLogger()
                     .log(Level.SEVERE,
-                            "The container wasn't properly started, it can't handle calls.");
+                            "The component wasn't properly started, it can't handle calls.");
         }
     }
 
@@ -136,7 +136,7 @@ public class ContainerHelper extends Helper {
             }
         }
 
-        // Let's actually start the container
+        // Let's actually start the component
         if (!success) {
             getComponent().stop();
         } else {
@@ -247,7 +247,7 @@ public class ContainerHelper extends Helper {
      * Creates a new status filter. Allows overriding.
      * 
      * @param component
-     *            The parent container.
+     *            The parent component.
      * @return The new status filter.
      */
     protected StatusFilter createStatusFilter(Component component) {

@@ -48,7 +48,7 @@ import org.restlet.resource.Resource;
 import org.restlet.util.Helper;
 
 import com.noelios.restlet.application.ApplicationHelper;
-import com.noelios.restlet.component.ContainerHelper;
+import com.noelios.restlet.component.ComponentHelper;
 import com.noelios.restlet.local.DirectoryResource;
 import com.noelios.restlet.util.FormUtils;
 
@@ -249,12 +249,12 @@ public class Factory extends org.restlet.util.Factory {
     }
 
     /**
-     * Creates a new helper for a given container.
+     * Creates a new helper for a given component.
      * 
      * @param application
      *            The application to help.
      * @param parentContext
-     *            The parent context, typically the container's context.
+     *            The parent context, typically the component's context.
      * @return The new helper.
      */
     public Helper createHelper(Application application, Context parentContext) {
@@ -301,7 +301,7 @@ public class Factory extends org.restlet.util.Factory {
      * @return The new helper.
      */
     public Helper createHelper(Component component) {
-        return new ContainerHelper(component);
+        return new ComponentHelper(component);
     }
 
     /**

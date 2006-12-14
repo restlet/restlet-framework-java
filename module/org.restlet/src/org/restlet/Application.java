@@ -100,7 +100,7 @@ public abstract class Application extends Restlet {
      * Constructor.
      * 
      * @param parentContext
-     *            The parent context. Typically the container's context.
+     *            The parent context. Typically the component's context.
      */
     public Application(Context parentContext) {
         super(null);

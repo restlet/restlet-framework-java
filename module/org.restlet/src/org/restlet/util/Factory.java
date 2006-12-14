@@ -203,12 +203,12 @@ public abstract class Factory {
             Request request) throws IOException;
 
     /**
-     * Creates a new helper for a given container.
+     * Creates a new helper for a given component.
      * 
      * @param application
      *            The application to help.
      * @param parentContext
-     *            The parent context, typically the container's context.
+     *            The parent context, typically the component's context.
      * @return The new helper.
      */
     public abstract Helper createHelper(Application application,

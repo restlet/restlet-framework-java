@@ -33,7 +33,7 @@ import org.restlet.resource.Representation;
  * from the services they provide, which encourages independent evolvability."
  * Roy T. Fielding<br/> <br/> It has many subclasses that focus on a specific
  * ways to handle calls like filtering, routing or finding a target resource.
- * The context property is typically provided by a parent container as a way to
+ * The context property is typically provided by a parent component as a way to
  * give access to features such as logging and client connectors.
  * 
  * @see <a

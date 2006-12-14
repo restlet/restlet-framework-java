@@ -26,7 +26,7 @@ import org.restlet.data.Request;
 import org.restlet.data.Response;
 
 /**
- * Restlets containers.
+ * Restlets components.
  * 
  * @author Jerome Louvel (contact@noelios.com)
  */

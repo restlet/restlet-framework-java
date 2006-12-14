@@ -29,7 +29,7 @@ import org.restlet.Context;
 import com.noelios.restlet.application.ApplicationContext;
 
 /**
- * Context allowing access to the container's connectors, reusing the Servlet's
+ * Context allowing access to the component's connectors, reusing the Servlet's
  * logging mechanism and adding the Servlet's initialization parameters to the
  * context's parameters.
  * 
@@ -62,7 +62,7 @@ public class ServletContextAdapter extends ApplicationContext {
         // Copy all the servlet parameters into the context
         String initParam;
 
-        // Copy all the Web Container initialization parameters
+        // Copy all the Web component initialization parameters
         javax.servlet.ServletConfig servletConfig = servlet.getServletConfig();
         for (Enumeration enum1 = servletConfig.getInitParameterNames(); enum1
                 .hasMoreElements();) {

@@ -36,7 +36,7 @@ import org.xml.sax.SAXException;
 import org.xml.sax.helpers.DefaultHandler;
 
 /**
- * Atom Feed Document, acting as a container for metadata and data associated
+ * Atom Feed Document, acting as a component for metadata and data associated
  * with the feed.
  * 
  * @author Jerome Louvel (contact@noelios.com)
@@ -85,7 +85,7 @@ public class Feed extends SaxRepresentation {
     private Date updated;
 
     /**
-     * Individual entries, acting as a containers for associated metadata and
+     * Individual entries, acting as a components for associated metadata and
      * data.
      */
     private List<Entry> entries;
@@ -335,10 +335,10 @@ public class Feed extends SaxRepresentation {
     }
 
     /**
-     * Returns the individual entries, acting as a containers for associated
+     * Returns the individual entries, acting as a components for associated
      * metadata and data.
      * 
-     * @return The individual entries, acting as a containers for associated
+     * @return The individual entries, acting as a components for associated
      *         metadata and data.
      */
     public List<Entry> getEntries() {

@@ -60,26 +60,26 @@ public class DirectoryTestCase extends TestCase {
                     "DirectoryTestCase");
             testDir.mkdir();
 
-            // Create a new Restlet container
-            Component clientContainer = new Component();
-            clientContainer.getClients().add(Protocol.FILE);
+            // Create a new Restlet component
+            Component clientComponent = new Component();
+            clientComponent.getClients().add(Protocol.FILE);
 
             // Create an application
-            MyApplication application = new MyApplication(clientContainer,
+            MyApplication application = new MyApplication(clientComponent,
                     testDir);
-            // Attach the application to the container and start it
-            clientContainer.getDefaultHost().attach("", application);
+            // Attach the application to the component and start it
+            clientComponent.getDefaultHost().attach("", application);
 
-            // Now, let's start the container!
-            clientContainer.start();
+            // Now, let's start the component!
+            clientComponent.start();
 
             // Test the directory Restlet with an index name
             testDirectory(application, application.getDirectory(), "index");
             // Test the directory Restlet with no index name
             testDirectory(application, application.getDirectory(), "");
 
-            // Now, let's stop the container!
-            clientContainer.stop();
+            // Now, let's stop the component!
+            clientComponent.stop();
         } catch (Exception e) {
             e.printStackTrace();
         }

@@ -26,7 +26,7 @@ import java.util.List;
 import org.restlet.util.DateUtils;
 
 /**
- * Represents an individual entry, acting as a container for metadata and data
+ * Represents an individual entry, acting as a component for metadata and data
  * associated with the entry.
  * 
  * @author Jerome Louvel (contact@noelios.com)

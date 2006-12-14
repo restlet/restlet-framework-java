@@ -39,7 +39,7 @@ public class ComponentStatusFilter extends StatusFilter {
      * Constructor.
      * 
      * @param component
-     *            The container.
+     *            The component.
      */
     public ComponentStatusFilter(Component component) {
         super(component.getContext(), component.getStatusService()
@@ -49,9 +49,9 @@ public class ComponentStatusFilter extends StatusFilter {
     }
 
     /**
-     * Returns the container.
+     * Returns the component.
      * 
-     * @return The container.
+     * @return The component.
      */
     public Component getComponent() {
         return this.component;

@@ -41,7 +41,7 @@ public class SimpleServer {
             Component component = new Component();
 
             // Create the HTTP server connector, then add it as a server
-            // connector to the Restlet container. Note that the container
+            // connector to the Restlet component. Note that the component
             // is the call restlet.
             component.getServers().add(Protocol.HTTP, 9876);
 
@@ -78,7 +78,7 @@ public class SimpleServer {
 
             component.getDefaultHost().attach("/test", handler);
 
-            // Now, start the container
+            // Now, start the component
             component.start();
         } catch (Exception e) {
             e.printStackTrace();

@@ -25,7 +25,7 @@ import org.restlet.data.ParameterList;
 /**
  * Contextual data and services provided to a Restlet. The context is the means
  * by which a Restlet may access the software environment within the framework.
- * It is typically provided by the immediate parent Restlet (Container and
+ * It is typically provided by the immediate parent Restlet (Component and
  * Application are the most common cases). The services provided are access to a
  * logger, access to configuration parameters and to a request dispatcher.
  * 

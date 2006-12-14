@@ -199,7 +199,7 @@ public class ServerServlet extends HttpServlet {
                                 // Starts the target Restlet
                                 result.start();
                             } else {
-                                log("[Noelios Restlet Engine] - The Restlet container couldn't be instantiated.");
+                                log("[Noelios Restlet Engine] - The Restlet component couldn't be instantiated.");
                             }
                         } catch (ClassNotFoundException e) {
                             log(
