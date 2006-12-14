@@ -377,6 +377,11 @@ public class Request extends Message {
      */
     public void setReferrerRef(Reference referrerRef) {
         this.referrerRef = referrerRef;
+
+        // A referrer reference must not include a fragment.
+        if ((this.referrerRef != null)
+                && (this.referrerRef.getFragment() != null))
+            this.referrerRef.setFragment(null);
     }
 
     /**

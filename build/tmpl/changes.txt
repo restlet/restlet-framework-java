@@ -13,6 +13,7 @@ Changes log
  - Fixed potential NPE in HostScorer.
  - Fixed RDF media type from "application/rdf-xml" to "application/rdf+xml". Reported by Aldo Bucchi.
  - Made VirtualHost-based routing case-insensitive. Suggested by Thierry Boileau.
+ - The Request class now ensures that a referrer reference don't include a fragment. Reported by Thierry Boileau.
  
 [API changes]
  - Added attachDefault(Restlet) method to Router class. The detach() method now also detaches the default scorer.
