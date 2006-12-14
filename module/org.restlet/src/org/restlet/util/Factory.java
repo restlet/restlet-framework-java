@@ -31,9 +31,6 @@ import org.restlet.Client;
 import org.restlet.Container;
 import org.restlet.Context;
 import org.restlet.Directory;
-import org.restlet.Restlet;
-import org.restlet.Router;
-import org.restlet.Scorer;
 import org.restlet.Server;
 import org.restlet.data.ClientInfo;
 import org.restlet.data.Form;
@@ -243,24 +240,6 @@ public abstract class Factory {
      * @return The new helper.
      */
     public abstract Helper createHelper(Server server);
-
-    /**
-     * Creates a URI-based Restlet attachment that will score chained instance
-     * shared by all calls. The score will be proportional to the number of
-     * chararacters matched by the pattern, from the start of the context
-     * resource path.
-     * 
-     * @param router
-     *            The parent router.
-     * @param uriPattern
-     *            The URI pattern used to map calls (see
-     *            {@link java.util.regex.Pattern} for the syntax).
-     * @param target
-     *            The target Restlet to attach.
-     * @see java.util.regex.Pattern
-     */
-    public abstract Scorer createScorer(Router router, String uriPattern,
-            Restlet target);
 
     /**
      * Returns the best variant representation for a given resource according

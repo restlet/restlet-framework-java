@@ -33,11 +33,11 @@ import org.restlet.util.DateUtils;
  * @author Jerome Louvel (contact@noelios.com)
  */
 public class HttpCall {
-    /** The baseRef domain. */
-    private String baseDomain;
+    /** The hostRef domain. */
+    private String hostDomain;
 
-    /** The baseRef port. */
-    private Integer basePort;
+    /** The hostRef port. */
+    private Integer hostPort;
 
     /** Indicates if the call is confidential. */
     private boolean confidential;
@@ -76,8 +76,8 @@ public class HttpCall {
      * Constructor.
      */
     public HttpCall() {
-        this.baseDomain = null;
-        this.basePort = null;
+        this.hostDomain = null;
+        this.hostPort = null;
         this.clientAddress = null;
         this.confidential = false;
         this.method = null;
@@ -109,21 +109,21 @@ public class HttpCall {
     }
 
     /**
-     * Returns the server domain.
+     * Returns the host domain.
      * 
-     * @return The server domain.
+     * @return The host domain.
      */
-    public String getBaseDomain() {
-        return this.baseDomain;
+    public String getHostDomain() {
+        return this.hostDomain;
     }
 
     /**
-     * Returns the baseRef port.
+     * Returns the host port.
      * 
-     * @return The baseRef port.
+     * @return The host port.
      */
-    public Integer getBasePort() {
-        return this.basePort;
+    public Integer getHostPort() {
+        return this.hostPort;
     }
 
     /**
@@ -271,23 +271,23 @@ public class HttpCall {
     }
 
     /**
-     * Sets the baseRef domain name.
+     * Sets the host domain name.
      * 
-     * @param baseDomain
+     * @param hostDomain
      *            The baseRef domain name.
      */
-    public void setBaseDomain(String baseDomain) {
-        this.baseDomain = baseDomain;
+    public void setHostDomain(String hostDomain) {
+        this.hostDomain = hostDomain;
     }
 
     /**
-     * Sets the baseRef port.
+     * Sets the host port.
      * 
-     * @param basePort
-     *            The baseRef port.
+     * @param hostPort
+     *            The host port.
      */
-    public void setBasePort(Integer basePort) {
-        this.basePort = basePort;
+    public void setHostPort(Integer hostPort) {
+        this.hostPort = hostPort;
     }
 
     /**

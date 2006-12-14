@@ -25,8 +25,7 @@ import org.restlet.Context;
 import org.restlet.Filter;
 import org.restlet.data.Request;
 import org.restlet.data.Response;
-import org.restlet.util.CallModel;
-import org.restlet.util.StringTemplate;
+import org.restlet.util.Template;
 
 /**
  * Filter logging all calls after their handling by the target Restlet. The
@@ -41,13 +40,8 @@ public class LogFilter extends Filter {
     /** Obtain a suitable logger. */
     private Logger logger;
 
-    /**
-     * The log template to use.
-     * 
-     * @see org.restlet.ext.model.CallModel
-     * @see org.restlet.ext.model.StringTemplate
-     */
-    protected StringTemplate logTemplate;
+    /** The log template to use. */
+    protected Template logTemplate;
 
     /**
      * Constructor using the default format. Here is the default format using
@@ -71,15 +65,14 @@ public class LogFilter extends Filter {
      * @param logName
      *            The log name to used in the logging.properties file.
      * @param logFormat
-     *            The log format to use.
-     * @see org.restlet.ext.model.CallModel
-     * @see org.restlet.ext.model.StringTemplate
+     *            The log format to use. See {@link org.restlet.util.Template}
+     *            for syntax details.
      */
     public LogFilter(Context context, String logName, String logFormat) {
         super(context);
         this.logger = Logger.getLogger(logName);
-        this.logTemplate = (logFormat == null) ? null : new StringTemplate(
-                logFormat);
+        this.logTemplate = (logFormat == null) ? null : new Template(
+                getLogger(), logFormat);
     }
 
     /**
@@ -211,7 +204,7 @@ public class LogFilter extends Filter {
      * @return The formatted log entry.
      */
     protected String format(Request request, Response response) {
-        return this.logTemplate.format(new CallModel(request, response, "-"));
+        return this.logTemplate.format(request, response);
     }
 
 }

@@ -108,9 +108,7 @@ public class StatusFilter extends Filter {
         }
 
         // Do we need to get a representation for the current status?
-        if (!response.getStatus().equals(Status.SUCCESS_OK)
-                && !response.getStatus()
-                        .equals(Status.REDIRECTION_NOT_MODIFIED)
+        if (response.getStatus().isError()
                 && ((response.getEntity() == null) || overwrite)) {
             response.setEntity(getRepresentation(response.getStatus(), request,
                     response));

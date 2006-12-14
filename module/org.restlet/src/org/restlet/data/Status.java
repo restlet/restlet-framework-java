@@ -627,7 +627,7 @@ public final class Status extends Metadata {
                 result = "The server has not found anything matching the request URI";
                 break;
             case 405:
-                result = "The method specified in the Request-Line is not allowed for the resource identified by the request URI";
+                result = "The method specified in the request is not allowed for the resource identified by the request URI";
                 break;
             case 406:
                 result = "The resource identified by the request is only capable of generating response entities which have content characteristics not acceptable according to the accept headers sent in the request";

@@ -103,17 +103,17 @@ public class HttpRequest extends Request {
         // Set the base reference
         StringBuilder sb = new StringBuilder();
         sb.append(httpCall.getServerProtocol().getSchemeName()).append("://");
-        sb.append(httpCall.getBaseDomain());
-        if (httpCall.getBasePort() != httpCall.getServerProtocol()
+        sb.append(httpCall.getHostDomain());
+        if (httpCall.getHostPort() != httpCall.getServerProtocol()
                 .getDefaultPort()) {
             sb.append(':').append(httpCall.getServerPort());
         }
-        setBaseRef(sb.toString());
+        getResourceRef().setBaseRef(new Reference(sb.toString()));
 
         // Set the resource reference
         setResourceRef(new Reference(httpCall.getRequestUri()));
         if (getResourceRef().isRelative()) {
-            getResourceRef().setBaseRef(getBaseRef());
+            getResourceRef().setBaseRef(getResourceRef().getBaseRef());
             setResourceRef(getResourceRef().getTargetRef());
         }
     }

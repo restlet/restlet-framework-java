@@ -25,7 +25,7 @@ import org.restlet.Container;
 import org.restlet.Context;
 import org.restlet.Filter;
 import org.restlet.Restlet;
-import org.restlet.Scorer;
+import org.restlet.Route;
 import org.restlet.VirtualHost;
 import org.restlet.data.Protocol;
 import org.restlet.data.Request;
@@ -176,8 +176,8 @@ public class ContainerHelper extends Helper {
         boolean result = true;
 
         if (host != null) {
-            for (Scorer scorer : host.getScorers()) {
-                Restlet next = scorer.getNext();
+            for (Route route : host.getRoutes()) {
+                Restlet next = route.getNext();
 
                 if (next instanceof Application) {
                     Application application = (Application) next;
@@ -255,8 +255,8 @@ public class ContainerHelper extends Helper {
     public void stop() throws Exception {
         // Stop all applications
         for (VirtualHost host : getContainer().getHosts()) {
-            for (Scorer scorer : host.getScorers()) {
-                Restlet next = scorer.getNext();
+            for (Route route : host.getRoutes()) {
+                Restlet next = route.getNext();
 
                 if (next instanceof Application) {
                     Application application = (Application) next;

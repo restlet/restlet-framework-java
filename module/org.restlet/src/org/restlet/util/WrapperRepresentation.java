@@ -31,7 +31,6 @@ import org.restlet.data.CharacterSet;
 import org.restlet.data.Encoding;
 import org.restlet.data.Language;
 import org.restlet.data.MediaType;
-import org.restlet.data.Method;
 import org.restlet.data.Reference;
 import org.restlet.data.ReferenceList;
 import org.restlet.data.Tag;
@@ -112,15 +111,6 @@ public class WrapperRepresentation extends Representation {
      */
     public Result delete() {
         return getWrappedRepresentation().delete();
-    }
-
-    /**
-     * Returns the list of methods allowed on the requested resource.
-     * 
-     * @return The list of allowed methods.
-     */
-    public List<Method> getAllowedMethods() {
-        return getWrappedRepresentation().getAllowedMethods();
     }
 
     /**
@@ -225,7 +215,9 @@ public class WrapperRepresentation extends Representation {
      * Returns the represented resource if available.
      * 
      * @return The represented resource if available.
+     * @deprecated Not needed anymore for now.
      */
+    @Deprecated
     public Resource getResource() {
         return getWrappedRepresentation().getResource();
     }
@@ -459,7 +451,9 @@ public class WrapperRepresentation extends Representation {
      * 
      * @param resource
      *            The represented resource.
+     * @deprecated Not needed anymore for now.
      */
+    @Deprecated
     public void setResource(Resource resource) {
         getWrappedRepresentation().setResource(resource);
     }

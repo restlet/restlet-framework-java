@@ -6,27 +6,14 @@ Changes log
 
 @version-full@ (@release-date@)
 [Bugs fixed]
- - Fixed IndexOutOfBoundsException in HttpServerCall causing ServerServlet to fail. 
-   Reported by Steffen Eichenberg.
- - Fixed NPE in HostScorer when using URIs with default ports. Reported by Jeff Walter.
- - Fixed issue with header name comparison not ignoring the case. Reported by Sean Landis.
- - Fixed several documentation typos. Reported by John D. Mitchell.
+ - Fixed several documentation typos. Reported by John D. Mitchell and Peter Murray.
  - Fixed issue with "sub-tagged" Language metadata (like "en-us"), sub-tag comparison must
    ignore the case. Reported by Jeff Walter and Andrew Barnes. Contributed by Thierry Boileau.
- - Fixed issues in parsing of "accept*" HTTP headers. Added unit tests. Reported by AJ Barnes 
-   and Jeff Walter.
+ - Fixed issues in parsing of "accept*" HTTP headers. Added unit tests. Reported by AJ Barnes and Jeff Walter.
  - Fixed potential NPE in HostScorer.
  - Fixed RDF media type from "application/rdf-xml" to "application/rdf+xml". Reported by Aldo Bucchi.
 
 [API changes]
- - Removed Jetty 5 connector from the distribution. Use Jetty 6 connector instead. 
-   Source code still available in SVN. Fixes #180.
- - Disabled Atom extension for 1.0 RC1. Postponed for completion in 1.1.
- - Changed Helper SPI interface into an abstract SPI class.
- - MapModel now derives from WrapperMap instead of TreeMap.
- - Finalized many classes in order to be explicit about what is intended to be subclassed or not. Contributed by Piyush Purang.
- - org.restlet.util.PipeStream was moved inside ByteUtils as a private class.
- - Merged ImmutableDate into DateUtils as an inner private class. Added an "unmodifiable" static method to DateUtils instead.
  - Added attachDefault(Restlet) method to Router class. The detach() method now also detaches the default scorer.
  - Deprecated the StringTemplate mechanism, replaced by a more seamless ReferenceTemplate approach,
    less intrusive. The following classes were deprecated and will be removed in the next
@@ -38,6 +25,42 @@ Changes log
    to revisit your router URI patterns, especially to remove the ending "$" characters.
  - Directory.getDirectoryVariants() now returns a textual list in addition of a HTML doc.
  - org.restlet.Restlet class now overrides org.restlet.Dispatcher to facilate client-side invocation of filters such as Redirector.
+ - Language class now supports several sub-tags. "MainTag" property renamed to "PrimaryTag". Contributed by Thierry Boileau.
+ - Improved and expanded support for the "Allow" HTTP header all over the API and NRE.
+ - The LogService, Redirector, Route and context Dispatcher are all based on the same template mechanism and syntax provided by org.restlet.util.Template.
+ - Removed Chainer class and spread logic in Filter and Router classes.
+ - Added getRemainingPart() method to Reference, reusing the getRelativePart() logic previously in Request.
+ - Moved Request.baseRef and relativeRef properties to resourceRef.baseRef and resourceRef.relativeRef.
+ - Added Request.hostRef property carrying the HTTP Host header info or equivalent.
+ - Moved Resource.allowedMethods property to Response.allowedMethods.
+ - Refactored Handler to simplify support of additional methods. Made abstract to force overriding of findTarget() method. 
+   Added introspection of target resource's allow* methods to populate Response.allowedMethods. Removed defaultHandle() method.
+ - Removed Representation.resource property, not used anymore.
+ - Removed Result.set* methods to make it more obvious that it is not intended to be modified.
+ - Removed Extractor and Scorer classes, added Route class as a unified replacement.
+ - Renamed Router.*scorer* properties to *route*.
+ - Renamed ScorerList to RouteList.
+ - Renamed VirtualHost.base* properties to host*.
+
+[Enhancements] 
+ - Updated Jetty 6.1 to RC0 version.
+ - Added a root "docs" directory with the UML diagrams (using StarUML), the Joint Copyright Assignment for contributors.
+
+1.0 beta 22 (2006-12-07)
+[Bugs fixed]
+ - Fixed IndexOutOfBoundsException in HttpServerCall causing ServerServlet to fail. Reported by Steffen Eichenberg.
+ - Fixed NPE in HostScorer when using URIs with default ports. Reported by Jeff Walter.
+ - Fixed issue with header name comparison not ignoring the case. Reported by Sean Landis.
+ 
+[API changes]
+ - Removed Jetty 5 connector from the distribution. Use Jetty 6 connector instead. 
+   Source code still available in SVN. Fixes #180.
+ - Disabled Atom extension for 1.0 RC1. Postponed for completion in 1.1.
+ - Changed Helper SPI interface into an abstract SPI class.
+ - MapModel now derives from WrapperMap instead of TreeMap.
+ - Finalized many classes in order to be explicit about what is intended to be subclassed or not. Contributed by Piyush Purang.
+ - org.restlet.util.PipeStream was moved inside ByteUtils as a private class.
+ - Merged ImmutableDate into DateUtils as an inner private class. Added an "unmodifiable" static method to DateUtils instead.
 
 [Enhancements] 
  - Add new constructor to Tag for weak tags taking an unquoted opaque value. Fixes #201. 
@@ -50,7 +73,6 @@ Changes log
  - Added support for CheckStyle (disabled by default). The CheckStyle configuration file is "build/checks.xml", 
    currently a clone of sun_checks.xml. Suggested by Piyush Purang.
  - Improved CheckStyle Ant task: not failing for style violations and HTML reports for each module. Contributed by Piyush Purang.
- - Updated Jetty 6.1 to RC0 version.
  
 1.0 beta 21 (2006-11-26)
 [Bugs fixed]

@@ -20,6 +20,7 @@ package org.restlet.data;
 
 import java.util.ArrayList;
 import java.util.EnumSet;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
@@ -36,6 +37,9 @@ import org.restlet.resource.Resource;
  * @author Jerome Louvel (contact@noelios.com)
  */
 public class Response extends Message {
+    /** The set of methods allowed on the requested resource. */
+    private Set<Method> allowedMethods;
+
     /** The authentication request sent by an origin server to a client. */
     private ChallengeRequest challengeRequest;
 
@@ -64,6 +68,7 @@ public class Response extends Message {
      *            The request associated to this response.
      */
     public Response(Request request) {
+        this.allowedMethods = null;
         this.challengeRequest = null;
         this.cookieSettings = null;
         this.dimensions = null;
@@ -71,6 +76,19 @@ public class Response extends Message {
         this.request = request;
         this.serverInfo = null;
         this.status = Status.SUCCESS_OK;
+    }
+
+    /**
+     * Returns the set of methods allowed on the requested resource. This
+     * property only has to be updated when a status
+     * CLIENT_ERROR_METHOD_NOT_ALLOWED is set.
+     * 
+     * @return The list of allowed methods.
+     */
+    public Set<Method> getAllowedMethods() {
+        if (this.allowedMethods == null)
+            this.allowedMethods = new HashSet<Method>();
+        return this.allowedMethods;
     }
 
     /**
@@ -275,11 +293,6 @@ public class Response extends Message {
             // Resource not found
             setStatus(Status.CLIENT_ERROR_NOT_FOUND);
         } else {
-            // Set the variants' resource
-            for (Representation variant : variants) {
-                variant.setResource(resource);
-            }
-
             // Compute the preferred variant
             Representation preferredVariant = getRequest().getClientInfo()
                     .getPreferredVariant(variants);
@@ -318,8 +331,10 @@ public class Response extends Message {
      *            The redirection URI.
      */
     public void setRedirectRef(String redirectUri) {
-        setRedirectRef(new Reference(getRequest().getBaseRef(), redirectUri)
-                .getTargetRef());
+        Reference baseRef = (getRequest().getResourceRef() != null) ? getRequest()
+                .getResourceRef().getBaseRef()
+                : null;
+        setRedirectRef(new Reference(baseRef, redirectUri).getTargetRef());
     }
 
     /**

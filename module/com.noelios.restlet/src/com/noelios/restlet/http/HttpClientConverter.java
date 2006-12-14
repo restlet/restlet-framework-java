@@ -19,7 +19,6 @@
 package com.noelios.restlet.http;
 
 import java.io.IOException;
-import java.util.List;
 import java.util.Set;
 import java.util.logging.Level;
 
@@ -123,8 +122,9 @@ public class HttpClientConverter extends HttpConverter {
 
         // Manually add the host name and port when it is potentially different
         // from the one specified in the target resource reference.
-        Reference hostRef = (request.getBaseRef() != null) ? request
-                .getBaseRef() : request.getResourceRef();
+        Reference hostRef = (request.getResourceRef().getBaseRef() != null) ? request
+                .getResourceRef().getBaseRef()
+                : request.getResourceRef();
 
         if (hostRef.getHostDomain() != null) {
             String host = hostRef.getHostDomain();
@@ -328,8 +328,7 @@ public class HttpClientConverter extends HttpConverter {
                         HttpConstants.HEADER_ALLOW)) {
                     HeaderReader hr = new HeaderReader(header.getValue());
                     String value = hr.readValue();
-                    List<Method> allowedMethods = response.getEntity()
-                            .getResource().getAllowedMethods();
+                    Set<Method> allowedMethods = response.getAllowedMethods();
                     while (value != null) {
                         allowedMethods.add(Method.valueOf(value));
                         value = hr.readValue();

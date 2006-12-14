@@ -21,8 +21,8 @@ package com.noelios.restlet.container;
 import java.util.logging.Level;
 
 import org.restlet.Client;
+import org.restlet.Route;
 import org.restlet.Router;
-import org.restlet.Scorer;
 import org.restlet.data.Protocol;
 import org.restlet.data.Request;
 import org.restlet.data.Response;
@@ -32,7 +32,7 @@ import org.restlet.data.Response;
  * 
  * @author Jerome Louvel (contact@noelios.com)
  */
-public class ClientScorer extends Scorer {
+public class ClientRoute extends Route {
     /**
      * Constructor.
      * 
@@ -41,8 +41,8 @@ public class ClientScorer extends Scorer {
      * @param target
      *            The target client.
      */
-    public ClientScorer(Router router, Client target) {
-        super(router, target);
+    public ClientRoute(Router router, Client target) {
+        super(router, "", target);
     }
 
     /**

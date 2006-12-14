@@ -24,8 +24,7 @@ import org.restlet.data.Reference;
 import org.restlet.data.Request;
 import org.restlet.data.Response;
 import org.restlet.data.Status;
-import org.restlet.util.CallModel;
-import org.restlet.util.StringTemplate;
+import org.restlet.util.Template;
 
 /**
  * Rewrites URIs then redirects the call or the client to a new destination.
@@ -69,15 +68,15 @@ public class Redirector extends Restlet {
      * In this mode, the call is sent to the connector indicated by the
      * "connectorName" property. Once the connector has completed the call
      * handling, the call is normally returned to the client. In this case, you
-     * can view the Redirector as acting as a proxy Restlet.<br/> Remember
-     * to attach the connector you want to use to the parent Restlet container,
+     * can view the Redirector as acting as a proxy Restlet.<br/> Remember to
+     * attach the connector you want to use to the parent Restlet container,
      * using the exact same name as the one you provided to the setConnectorName
      * method.
      */
     public static final int MODE_CONNECTOR = 5;
 
     /** The target URI pattern. */
-    protected String targetPattern;
+    protected String targetTemplate;
 
     /** The redirection mode. */
     protected int mode;
@@ -87,16 +86,12 @@ public class Redirector extends Restlet {
      * 
      * @param context
      *            The context.
-     * @param targetPattern
-     *            The pattern to build the target URI (using StringTemplate
-     *            syntax and the CallModel for variables).
-     * @see org.restlet.util.StringTemplate
-     * @see org.restlet.util.CallModel
+     * @param targetTemplate
+     *            The template to build the target URI.
+     * @see org.restlet.util.Template
      */
-    public Redirector(Context context, String targetPattern) {
-        super(context);
-        this.targetPattern = targetPattern;
-        this.mode = MODE_CONNECTOR;
+    public Redirector(Context context, String targetTemplate) {
+        this(context, targetTemplate, MODE_CONNECTOR);
     }
 
     /**
@@ -109,12 +104,10 @@ public class Redirector extends Restlet {
      *            syntax and the CallModel for variables).
      * @param mode
      *            The redirection mode.
-     * @see org.restlet.util.StringTemplate
-     * @see org.restlet.util.CallModel
      */
     public Redirector(Context context, String targetPattern, int mode) {
         super(context);
-        this.targetPattern = targetPattern;
+        this.targetTemplate = targetPattern;
         this.mode = mode;
     }
 
@@ -127,12 +120,11 @@ public class Redirector extends Restlet {
      *            The response to update.
      */
     public void handle(Request request, Response response) {
-        // Create the template engine
-        StringTemplate te = new StringTemplate(this.targetPattern);
-        te.setLogger(getLogger());
+        // Create the template
+        Template rt = new Template(getLogger(), this.targetTemplate);
 
-        // Create the template data model
-        String targetUri = te.format(new CallModel(request, response, ""));
+        // Format the target URI
+        String targetUri = rt.format(request, response);
         Reference targetRef = new Reference(targetUri);
 
         switch (this.mode) {

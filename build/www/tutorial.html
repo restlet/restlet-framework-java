@@ -198,7 +198,7 @@
    Another common requirement is the ability to customize the status pages returned when something didn't go as expected during the call handling. Maybe a resource was not found or an acceptable representation isn't available? In this case, or when any unhandled exception must be intercepted, the Application or the Container will automatically provide a default status page for you. This service is associated to the org.restlet.util.StatusService class, which is accessible as an Application and Container property called "statusService".
 </p>
 <p>
-   In order to customize the default messages, you will simply need to create a subclass of LogService and override the getRepresentation(Status, Request, Response) method. Then just set an instance of you custom service to the appropriate "logService" property.
+   In order to customize the default messages, you will simply need to create a subclass of StatusService and override the getRepresentation(Status, Request, Response) method. Then just set an instance of your custom service to the appropriate "statusService" property.
 </p>
 
 <h3><a name="part09">9. Guarding access to sensitive resources</a></h3>
@@ -394,14 +394,14 @@
 <p>
    <ul>
       <li>I encourage you to run the examples. The full source code is available in the latest release.
-      <li>Thanks to <a target="_top" href="http://www.figer.com/">Jean-Paul Figer</a>, Christian Jensen, Jim Ancona, Roger Menday, John D. Mitchell, J&eacute;r&ocirc;me Bernard and Dave Pawson for the feed-back on this tutorial.</li>
+      <li>Thanks to <a target="_top" href="http://www.figer.com/">Jean-Paul Figer</a>, Christian Jensen, Jim Ancona, Roger Menday, John D. Mitchell, J&eacute;r&ocirc;me Bernard, Dave Pawson and Peter Murray for the feed-back on this tutorial.</li>
    </ul>
 </p>
 
 <br/>
 
 <small>
-   Last modified on 2006-12-07. Copyright &copy; 2005-2006 <a href="mailto:contact@noelios.com">J&eacute;r&ocirc;me Louvel</a>. Restlet is a registered trademark of <a target="_top" href="http://www.noelios.com">Noelios Consulting</a>.
+   Last modified on 2006-12-13. Copyright &copy; 2005-2006 <a href="mailto:contact@noelios.com">J&eacute;r&ocirc;me Louvel</a>. Restlet is a registered trademark of <a target="_top" href="http://www.noelios.com">Noelios Consulting</a>.
 </small>
 
 </body>

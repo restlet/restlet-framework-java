@@ -150,25 +150,25 @@ public abstract class HttpServerCall extends HttpCall {
     }
 
     /**
-     * Returns the baseRef domain name.
+     * Returns the host domain name.
      * 
-     * @return The baseRef domain name.
+     * @return The host domain name.
      */
-    public String getBaseDomain() {
+    public String getHostDomain() {
         if (!hostParsed)
             parseHost();
-        return super.getBaseDomain();
+        return super.getHostDomain();
     }
 
     /**
-     * Returns the baseRef port.
+     * Returns the host port.
      * 
-     * @return The baseRef port.
+     * @return The host port.
      */
-    public Integer getBasePort() {
+    public Integer getHostPort() {
         if (!hostParsed)
             parseHost();
-        return super.getServerPort();
+        return super.getHostPort();
     }
 
     /**
@@ -182,11 +182,11 @@ public abstract class HttpServerCall extends HttpCall {
             int colonIndex = host.indexOf(':');
 
             if (colonIndex != -1) {
-                super.setBaseDomain(host.substring(0, colonIndex));
-                super.setBasePort(Integer.valueOf(host
+                super.setHostDomain(host.substring(0, colonIndex));
+                super.setHostPort(Integer.valueOf(host
                         .substring(colonIndex + 1)));
             } else {
-                super.setBaseDomain(host);
+                super.setHostDomain(host);
 
                 if (isConfidential()) {
                     super.setServerPort(Protocol.HTTPS.getDefaultPort());

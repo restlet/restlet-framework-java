@@ -51,11 +51,6 @@ public class SimpleCall extends HttpServerCall {
      */
     private Response response;
 
-    /**
-     * The listening port used.
-     */
-    private int hostPort;
-
     /** Indicates if the request headers were parsed and added. */
     private boolean requestHeadersAdded;
 
@@ -215,24 +210,5 @@ public class SimpleCall extends HttpServerCall {
         } catch (IOException ex) {
             return null;
         }
-    }
-
-    /**
-     * Sets the listening port used.
-     * 
-     * @param hostPort
-     *            The listening port used.
-     */
-    private void setHostPort(int hostPort) {
-        this.hostPort = hostPort;
-    }
-
-    /**
-     * Returns the listening port used.
-     * 
-     * @return The listening port used.
-     */
-    protected int getHostPort() {
-        return hostPort;
     }
 }

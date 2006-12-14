@@ -37,9 +37,6 @@ public class Request extends Message {
     /** The authentication response sent by a client to an origin server. */
     private ChallengeResponse challengeResponse;
 
-    /** The base reference. */
-    private Reference baseRef;
-
     /** The client-specific information. */
     private ClientInfo clientInfo;
 
@@ -51,6 +48,9 @@ public class Request extends Message {
 
     /** The cookies provided by the client. */
     private List<Cookie> cookies;
+
+    /** The host reference. */
+    private Reference hostRef;
 
     /** The method. */
     private Method method;
@@ -126,9 +126,11 @@ public class Request extends Message {
      * Returns the base reference.
      * 
      * @return The base reference.
+     * @deprecated Use getResourceRef().getBaseRef() instead.
      */
+    @Deprecated
     public Reference getBaseRef() {
-        return this.baseRef;
+        return getResourceRef().getBaseRef();
     }
 
     /**
@@ -174,6 +176,17 @@ public class Request extends Message {
     }
 
     /**
+     * Returns the host reference. This may be different from the resourceRef's
+     * host, for example for URNs and other URIs that don't contain host
+     * information.
+     * 
+     * @return The host reference.
+     */
+    public Reference getHostRef() {
+        return this.hostRef;
+    }
+
+    /**
      * Returns the method.
      * 
      * @return The method.
@@ -190,8 +203,9 @@ public class Request extends Message {
      * @return The protocol or null if not available.
      */
     public Protocol getProtocol() {
-        Protocol result = (getBaseRef() != null) ? getBaseRef()
-                .getSchemeProtocol() : null;
+        Protocol result = (getResourceRef().getBaseRef() != null) ? getResourceRef()
+                .getBaseRef().getSchemeProtocol()
+                : null;
 
         if (result == null) {
             // Attempt to guess the protocol to use
@@ -214,11 +228,13 @@ public class Request extends Message {
 
     /**
      * Returns the part of the resource path relative to the base reference.
-     * Note that the optional fragment is not returned by this method, you need 
+     * Note that the optional fragment is not returned by this method, you need
      * to use the getResourceRef() method instead.
      * 
      * @return The relative resource part.
+     * @deprecated Use getRelativeRef().getRemainingPart()
      */
+    @Deprecated
     public String getRelativePart() {
         if (getBaseRef() != null) {
             return getResourceRef().toString(true, false).substring(
@@ -232,9 +248,11 @@ public class Request extends Message {
      * Returns the resource reference relative to the base reference.
      * 
      * @return The relative resource reference.
+     * @deprecated Use getResourceRef().getRelativeRef()
      */
+    @Deprecated
     public Reference getRelativeRef() {
-        return getResourceRef().getRelativeRef(getBaseRef());
+        return getResourceRef().getRelativeRef();
     }
 
     /**
@@ -279,9 +297,11 @@ public class Request extends Message {
      * 
      * @param baseRef
      *            The base reference.
+     * @deprecated Use getResourceRef().setBaseRef() instead.
      */
+    @Deprecated
     public void setBaseRef(Reference baseRef) {
-        this.baseRef = baseRef;
+        getResourceRef().setBaseRef(baseRef);
     }
 
     /**
@@ -290,7 +310,9 @@ public class Request extends Message {
      * 
      * @param baseUri
      *            The base absolute URI.
+     * @deprecated Use getResourceRef().setBaseRef() instead.
      */
+    @Deprecated
     public void setBaseRef(String baseUri) {
         setBaseRef(new Reference(baseUri));
     }
@@ -315,6 +337,26 @@ public class Request extends Message {
      */
     public void setConfidential(boolean confidential) {
         this.confidential = confidential;
+    }
+
+    /**
+     * Sets the host reference.
+     * 
+     * @param hostRef
+     *            The host reference.
+     */
+    public void setHostRef(Reference hostRef) {
+        this.hostRef = hostRef;
+    }
+
+    /**
+     * Sets the host reference using an URI string.
+     * 
+     * @param hostUri
+     *            The host URI.
+     */
+    public void setHostRef(String hostUri) {
+        setHostRef(new Reference(hostUri));
     }
 
     /**
@@ -357,13 +399,8 @@ public class Request extends Message {
      *            The resource reference.
      */
     public void setResourceRef(Reference resourceRef) {
-        if (resourceRef != null) {
-            if (resourceRef.isRelative() && (resourceRef.getBaseRef() != null)) {
-                this.resourceRef = resourceRef.getTargetRef();
-            } else {
-                this.resourceRef = resourceRef.normalize();
-            }
-        }
+        this.resourceRef = (resourceRef == null) ? null : resourceRef
+                .getTargetRef();
     }
 
     /**
@@ -374,7 +411,13 @@ public class Request extends Message {
      *            The resource URI.
      */
     public void setResourceRef(String resourceUri) {
-        setResourceRef(new Reference(getBaseRef(), resourceUri));
+        if (getResourceRef() != null) {
+            // Allow usage of URIs relative to the current base reference
+            setResourceRef(new Reference(getResourceRef().getBaseRef(),
+                    resourceUri));
+        } else {
+            setResourceRef(new Reference(resourceUri));
+        }
     }
 
 }

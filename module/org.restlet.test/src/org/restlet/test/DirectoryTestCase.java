@@ -316,7 +316,7 @@ public class DirectoryTestCase extends TestCase {
         Request request = new Request();
         Response response = new Response(request);
         request.setResourceRef(resourceRef);
-        request.setBaseRef(baseRef);
+        request.getResourceRef().setBaseRef(baseRef);
         request.setMethod(method);
         if (Method.PUT.equals(method)) {
             request.setEntity(entity);

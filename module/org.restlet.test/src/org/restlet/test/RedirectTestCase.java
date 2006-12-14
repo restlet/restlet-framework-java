@@ -60,9 +60,11 @@ public class RedirectTestCase extends TestCase {
             public void handle(Request request, Response response) {
                 // Print the requested URI path
                 String message = "Resource URI:  " + request.getResourceRef()
-                        + '\n' + "Base URI:      " + request.getBaseRef()
-                        + '\n' + "Relative path: " + request.getRelativePart()
-                        + '\n' + "Query string:  "
+                        + '\n' + "Base URI:      "
+                        + request.getResourceRef().getBaseRef() + '\n'
+                        + "Relative path: "
+                        + request.getResourceRef().getRemainingPart() + '\n'
+                        + "Query string:  "
                         + request.getResourceRef().getQuery() + '\n'
                         + "Method name:   " + request.getMethod() + '\n';
                 response.setEntity(new StringRepresentation(message,

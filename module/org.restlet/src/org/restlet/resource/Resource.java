@@ -131,14 +131,18 @@ public class Resource {
      * @return The result information.
      */
     public Result delete() {
-        return new Result(Status.SERVER_ERROR_NOT_IMPLEMENTED);
+        return new Result(Status.SERVER_ERROR_INTERNAL);
     }
 
     /**
      * Returns the list of methods allowed on the requested resource.
      * 
      * @return The list of allowed methods.
+     * @deprecated The Handler class now dynamically detect the allow* methods
+     *             and the Response class contains this "allowedMethods"
+     *             property.
      */
+    @Deprecated
     public List<Method> getAllowedMethods() {
         if (this.allowedMethods == null) {
             this.allowedMethods = new ArrayList<Method>();
@@ -209,25 +213,25 @@ public class Resource {
     }
 
     /**
-     * Posts a variant representation in the resource.
+     * Posts a representation to the resource.
      * 
      * @param entity
      *            The posted entity.
      * @return The result information.
      */
     public Result post(Representation entity) {
-        return new Result(Status.SERVER_ERROR_NOT_IMPLEMENTED);
+        return new Result(Status.SERVER_ERROR_INTERNAL);
     }
 
     /**
-     * Puts a variant representation in the resource.
+     * Puts a representation in the resource.
      * 
-     * @param variant
-     *            A new or updated variant representation.
+     * @param entity
+     *            A new or updated representation.
      * @return The result information.
      */
-    public Result put(Representation variant) {
-        return new Result(Status.SERVER_ERROR_NOT_IMPLEMENTED);
+    public Result put(Representation entity) {
+        return new Result(Status.SERVER_ERROR_INTERNAL);
     }
 
     /**

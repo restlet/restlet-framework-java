@@ -21,15 +21,15 @@ package org.restlet;
 import org.restlet.data.Request;
 import org.restlet.data.Response;
 import org.restlet.data.Status;
-import org.restlet.util.ScorerList;
+import org.restlet.util.RouteList;
 
 /**
- * Chainer routing calls to one of the attached scorers. Each scorer represents
- * a potential route that can compute an affinity score for each call depending
- * on various criteria. The attach() method allow the creation of scorers based
- * on URI patterns matching the beginning of a the relative resource part.<br/>
- * <br/> In addition, several routing modes are supported, implementing various
- * algorithms like:
+ * Restlet routing calls to one of the attached routes. Each route can compute
+ * an affinity score for each call depending on various criteria. The attach()
+ * method allow the creation of routes based on URI patterns matching the
+ * beginning of a the resource reference's remaining part.<br/> <br/> In
+ * addition, several routing modes are supported, implementing various
+ * algorithms:
  * <ul>
  * <li>Best match (default)</li>
  * <li>First match</li>
@@ -38,54 +38,54 @@ import org.restlet.util.ScorerList;
  * <li>Round robin</li>
  * <li>Custom</li>
  * </ul>
- * <br/> Note that for scorers using URI patterns will update the resource base
- * reference during the routing if they are selected. If you are using
- * hierarchical paths, remember to directly attach the child routers to their
- * parent router instead of the top level Restlet container. Also, remember to
- * manually handle the path separator characters in your path patterns otherwise
- * the delegation will not work as expected.<br/> <br/> Finally, you can modify
- * the scorers list while handling incoming calls as the delegation code is
- * ensured to be thread-safe.
+ * <br/> Note that for routes using URI patterns will update the resource
+ * reference's base reference during the routing if they are selected. If you
+ * are using hierarchical paths, remember to directly attach the child routers
+ * to their parent router instead of the top level Restlet container. Also,
+ * remember to manually handle the path separator characters in your path
+ * patterns otherwise the delegation will not work as expected.<br/> <br/>
+ * Finally, you can modify the routes list while handling incoming calls as the
+ * delegation code is ensured to be thread-safe.
  * 
  * @see <a href="http://www.restlet.org/tutorial#part11">Tutorial: Routers and
  *      hierarchical URIs</a>
  * @author Jerome Louvel (contact@noelios.com)
  */
-public class Router extends Chainer {
+public class Router extends Restlet {
     /**
-     * Each call will be routed to the scorer with the best score, if the
+     * Each call will be routed to the route with the best score, if the
      * required score is reached.
      */
     public static final int BEST = 1;
 
     /**
-     * Each call is routed to the first scorer if the required score is reached.
-     * If the required score is not reached, then the scorer is skipped and the
+     * Each call is routed to the first route if the required score is reached.
+     * If the required score is not reached, then the route is skipped and the
      * next one is considered.
      */
     public static final int FIRST = 2;
 
     /**
-     * Each call will be routed to the last scorer if the required score is
-     * reached. If the required score is not reached, then the scorer is skipped
+     * Each call will be routed to the last route if the required score is
+     * reached. If the required score is not reached, then the route is skipped
      * and the previous one is considered.
      */
     public static final int LAST = 3;
 
     /**
-     * Each call is be routed to the next scorer target if the required score is
-     * reached. The next scorer is relative to the previous call routed (round
-     * robin mode). If the required score is not reached, then the scorer is
-     * skipped and the next one is considered. If the last scorer is reached,
-     * the first scorer will be considered.
+     * Each call is be routed to the next route target if the required score is
+     * reached. The next route is relative to the previous call routed (round
+     * robin mode). If the required score is not reached, then the route is
+     * skipped and the next one is considered. If the last route is reached, the
+     * first route will be considered.
      */
     public static final int NEXT = 4;
 
     /**
-     * Each call will be randomly routed to one of the scorers that reached the
-     * required score. If the random scorer selected is not a match then the
-     * immediate next scorer is evaluated until one matching scorer is found. If
-     * we get back to the inital random scorer selected with no match, then we
+     * Each call will be randomly routed to one of the routes that reached the
+     * required score. If the random route selected is not a match then the
+     * immediate next route is evaluated until one matching route is found. If
+     * we get back to the inital random route selected with no match, then we
      * return null.
      */
     public static final int RANDOM = 5;
@@ -95,11 +95,11 @@ public class Router extends Chainer {
      */
     public static final int CUSTOM = 6;
 
-    /** The modifiable list of scorers. */
-    private ScorerList scorers;
+    /** The modifiable list of routes. */
+    private RouteList routes;
 
-    /** The default scorer tested if no other one was available. */
-    private Scorer defaultScorer;
+    /** The default route tested if no other one was available. */
+    private Route defaultRoute;
 
     /** The routing mode. */
     private int routingMode;
@@ -131,8 +131,8 @@ public class Router extends Chainer {
      */
     public Router(Context context) {
         super(context);
-        this.scorers = null;
-        this.defaultScorer = null;
+        this.routes = null;
+        this.defaultRoute = null;
         this.routingMode = BEST;
         this.requiredScore = 0.5F;
         this.maxAttempts = 1;
@@ -141,7 +141,7 @@ public class Router extends Chainer {
 
     /**
      * Attaches a target to this router based on a given URI pattern. A new
-     * scorer will be added routing to the target when calls with a URI matching
+     * route will be added routing to the target when calls with a URI matching
      * the pattern will be received.
      * 
      * @param uriPattern
@@ -151,37 +151,37 @@ public class Router extends Chainer {
      *            The target Restlet to attach.
      */
     public void attach(String uriPattern, Restlet target) {
-        getScorers().add(uriPattern, target);
+        getRoutes().add(new Route(this, uriPattern, target));
     }
 
     /**
      * Attaches a Restlet to this router as the default target to invoke when no
-     * scorer matches. It actually sets a default scorer that scores all calls
-     * to 1.0.
+     * route matches. It actually sets a default route that scores all calls to
+     * 1.0.
      * 
      * @param defaultTarget
      *            The Restlet to use as the default target.
      */
     public void attachDefault(Restlet defaultTarget) {
-        setDefaultScorer(new Scorer(this, defaultTarget));
+        setDefaultRoute(new Route(this, "", defaultTarget));
     }
 
     /**
-     * Detaches the target from this router. All scorers routing to this target
-     * Restlet are removed from the list of scorers and the default scorer is
-     * set to null.
+     * Detaches the target from this router. All routes routing to this target
+     * Restlet are removed from the list of routes and the default route is set
+     * to null.
      * 
      * @param target
      *            The target Restlet to detach.
      */
     public void detach(Restlet target) {
-        getScorers().removeAll(target);
-        if (getDefaultScorer().getNext() == target)
-            setDefaultScorer(null);
+        getRoutes().removeAll(target);
+        if (getDefaultRoute().getNext() == target)
+            setDefaultRoute(null);
     }
 
     /**
-     * Returns the matched scorer according to a custom algorithm. To use in
+     * Returns the matched route according to a custom algorithm. To use in
      * combination of the RouterMode.CUSTOM enumeration. The default
      * implementation (to be overriden), returns null.
      * 
@@ -189,20 +189,32 @@ public class Router extends Chainer {
      *            The request to handle.
      * @param response
      *            The response to update.
-     * @return The matched scorer if available or null.
+     * @return The matched route if available or null.
      */
-    protected Scorer getCustom(Request request, Response response) {
+    protected Route getCustom(Request request, Response response) {
         return null;
     }
 
     /**
-     * Returns the default scorer to test if no other one was available after
+     * Returns the default route to test if no other one was available after
      * retying the maximum number of attemps.
      * 
-     * @return The default scorer tested if no other one was available.
+     * @return The default route tested if no other one was available.
+     * @deprecated Use getDefaultRoute() method instead.
      */
-    public Scorer getDefaultScorer() {
-        return this.defaultScorer;
+    @Deprecated
+    public Route getDefaultScorer() {
+        return this.defaultRoute;
+    }
+
+    /**
+     * Returns the default route to test if no other one was available after
+     * retying the maximum number of attemps.
+     * 
+     * @return The default route tested if no other one was available.
+     */
+    public Route getDefaultRoute() {
+        return this.defaultRoute;
     }
 
     /**
@@ -228,7 +240,7 @@ public class Router extends Chainer {
      * @return The next Restlet if available or null.
      */
     public Restlet getNext(Request request, Response response) {
-        Scorer result = null;
+        Route result = null;
 
         for (int i = 0; (result == null) && (i < getMaxAttempts()); i++) {
             if (i > 0) {
@@ -240,31 +252,31 @@ public class Router extends Chainer {
                 }
             }
 
-            if (this.scorers != null) {
+            if (this.routes != null) {
                 // Select the routing mode
                 switch (getRoutingMode()) {
                 case BEST:
-                    result = getScorers().getBest(request, response,
+                    result = getRoutes().getBest(request, response,
                             getRequiredScore());
                     break;
 
                 case FIRST:
-                    result = getScorers().getFirst(request, response,
+                    result = getRoutes().getFirst(request, response,
                             getRequiredScore());
                     break;
 
                 case LAST:
-                    result = getScorers().getLast(request, response,
+                    result = getRoutes().getLast(request, response,
                             getRequiredScore());
                     break;
 
                 case NEXT:
-                    result = getScorers().getNext(request, response,
+                    result = getRoutes().getNext(request, response,
                             getRequiredScore());
                     break;
 
                 case RANDOM:
-                    result = getScorers().getRandom(request, response,
+                    result = getRoutes().getRandom(request, response,
                             getRequiredScore());
                     break;
 
@@ -276,11 +288,11 @@ public class Router extends Chainer {
         }
 
         if (result == null) {
-            // If nothing matched in the scorers list, check the default
-            // scorer
-            if ((getDefaultScorer() != null)
-                    && (getDefaultScorer().score(request, response) >= getRequiredScore())) {
-                result = getDefaultScorer();
+            // If nothing matched in the routes list, check the default
+            // route
+            if ((getDefaultRoute() != null)
+                    && (getDefaultRoute().score(request, response) >= getRequiredScore())) {
+                result = getDefaultRoute();
             } else {
                 // No route could be found
                 response.setStatus(Status.CLIENT_ERROR_NOT_FOUND);
@@ -319,24 +331,68 @@ public class Router extends Chainer {
     }
 
     /**
-     * Returns the modifiable list of scorers.
+     * Returns the modifiable list of routes.
      * 
-     * @return The modifiable list of scorers.
+     * @return The modifiable list of routes.
      */
-    public ScorerList getScorers() {
-        if (this.scorers == null)
-            this.scorers = new ScorerList(this);
-        return this.scorers;
+    public RouteList getRoutes() {
+        if (this.routes == null)
+            this.routes = new RouteList();
+        return this.routes;
     }
 
     /**
-     * Sets the default scorer tested if no other one was available.
+     * Returns the modifiable list of routes.
      * 
-     * @param defaultScorer
-     *            The default scorer tested if no other one was available.
+     * @return The modifiable list of routes.
+     * @deprecated Use getRoutes() instead.
      */
-    public void setDefaultScorer(Scorer defaultScorer) {
-        this.defaultScorer = defaultScorer;
+    @Deprecated
+    public RouteList getScorers() {
+        if (this.routes == null)
+            this.routes = new RouteList();
+        return this.routes;
+    }
+
+    /**
+     * Handles a call by invoking the next Restlet if it is available.
+     * 
+     * @param request
+     *            The request to handle.
+     * @param response
+     *            The response to update.
+     */
+    public void handle(Request request, Response response) {
+        init(request, response);
+
+        Restlet next = getNext(request, response);
+        if (next != null) {
+            next.handle(request, response);
+        } else {
+            response.setStatus(Status.CLIENT_ERROR_NOT_FOUND);
+        }
+    }
+
+    /**
+     * Sets the default route tested if no other one was available.
+     * 
+     * @param defaultRoute
+     *            The default route tested if no other one was available.
+     */
+    public void setDefaultRoute(Route defaultRoute) {
+        this.defaultRoute = defaultRoute;
+    }
+
+    /**
+     * Sets the default route tested if no other one was available.
+     * 
+     * @param defaultRoute
+     *            The default route tested if no other one was available.
+     * @deprecated Use setDefaultRoute instead.
+     */
+    @Deprecated
+    public void setDefaultScorer(Route defaultRoute) {
+        this.defaultRoute = defaultRoute;
     }
 
     /**

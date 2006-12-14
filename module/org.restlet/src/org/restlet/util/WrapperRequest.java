@@ -54,7 +54,9 @@ public class WrapperRequest extends Request {
      * Returns the base reference.
      * 
      * @return The base reference.
+     * @deprecated Use getResourceRef().getBaseRef() instead.
      */
+    @Deprecated
     public Reference getBaseRef() {
         return getWrappedRequest().getBaseRef();
     }
@@ -117,7 +119,9 @@ public class WrapperRequest extends Request {
      * Returns the resource path relative to the context's base reference.
      * 
      * @return The relative resource path .
+     * @deprecated
      */
+    @Deprecated
     public String getRelativePart() {
         return getWrappedRequest().getRelativePart();
     }
@@ -126,7 +130,9 @@ public class WrapperRequest extends Request {
      * Returns the resource reference relative to the context's base reference.
      * 
      * @return The relative resource reference.
+     * @deprecated
      */
+    @Deprecated
     public Reference getRelativeRef() {
         return getWrappedRequest().getRelativeRef();
     }
@@ -176,7 +182,9 @@ public class WrapperRequest extends Request {
      * 
      * @param baseRef
      *            The base reference.
+     * @deprecated Use getResourceRef().setBaseRef() instead.
      */
+    @Deprecated
     public void setBaseRef(Reference baseRef) {
         getWrappedRequest().setBaseRef(baseRef);
     }
@@ -187,7 +195,9 @@ public class WrapperRequest extends Request {
      * 
      * @param baseUri
      *            The base absolute URI.
+     * @deprecated Use getResourceRef().setBaseRef() instead.
      */
+    @Deprecated
     public void setBaseRef(String baseUri) {
         getWrappedRequest().setBaseRef(baseUri);
     }

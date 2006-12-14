@@ -26,6 +26,8 @@ import org.restlet.Context;
 import org.restlet.Dispatcher;
 import org.restlet.data.Protocol;
 
+import com.noelios.restlet.TemplateDispatcher;
+
 /**
  * Context based on a parent container's context but dedicated to an
  * application. This is important to allow contextual access to application's
@@ -67,7 +69,7 @@ public class ApplicationContext extends Context {
      * @return A call dispatcher.
      */
     public Dispatcher getDispatcher() {
-        return new ApplicationDispatcher(this);
+        return new TemplateDispatcher(new ApplicationDispatcher(this));
     }
 
     /**

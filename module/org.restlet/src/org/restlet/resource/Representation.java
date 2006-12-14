@@ -203,7 +203,9 @@ public class Representation extends Resource {
      * Returns the represented resource if available.
      * 
      * @return The represented resource if available.
+     * @deprecated Not needed anymore for now.
      */
+    @Deprecated
     public Resource getResource() {
         return this.resource;
     }
@@ -365,7 +367,9 @@ public class Representation extends Resource {
      * 
      * @param resource
      *            The represented resource.
+     * @deprecated Not needed anymore for now.
      */
+    @Deprecated
     public void setResource(Resource resource) {
         this.resource = resource;
     }

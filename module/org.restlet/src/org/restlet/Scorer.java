@@ -27,7 +27,9 @@ import org.restlet.data.Response;
  * Restlet for a given call.
  * 
  * @author Jerome Louvel (contact@noelios.com)
+ * @deprecated Use Route class instead.
  */
+@Deprecated
 public class Scorer extends Filter {
     /** The parent router. */
     private Router router;

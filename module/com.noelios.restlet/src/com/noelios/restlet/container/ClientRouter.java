@@ -46,7 +46,7 @@ public class ClientRouter extends Router {
     /** Starts the Restlet. */
     public void start() throws Exception {
         for (Client client : getContainer().getClients()) {
-            getScorers().add(new ClientScorer(this, client));
+            getRoutes().add(new ClientRoute(this, client));
         }
 
         super.start();

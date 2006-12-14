@@ -21,7 +21,6 @@ package org.restlet.util;
 import java.util.List;
 import java.util.logging.Logger;
 
-import org.restlet.data.Method;
 import org.restlet.data.Reference;
 import org.restlet.data.ReferenceList;
 import org.restlet.resource.Representation;
@@ -97,15 +96,6 @@ public class WrapperResource extends Resource {
      */
     public Result delete() {
         return getWrappedResource().delete();
-    }
-
-    /**
-     * Returns the list of methods allowed on the requested resource.
-     * 
-     * @return The list of allowed methods.
-     */
-    public List<Method> getAllowedMethods() {
-        return getWrappedResource().getAllowedMethods();
     }
 
     /**

@@ -240,36 +240,14 @@ public class CallTestCase extends RestletTestCase {
         assertEquals(resourceRef, request.getResourceRef());
         String uri = "http://www.restlet.org/path";
         Reference reference = getReference(uri);
-        request.setBaseRef(uri);
-        assertEquals(uri, request.getBaseRef().toString());
-        assertEquals(reference, request.getBaseRef());
+        request.getResourceRef().setBaseRef(uri);
+        assertEquals(uri, request.getResourceRef().getBaseRef().toString());
+        assertEquals(reference, request.getResourceRef().getBaseRef());
         uri = "http://www.restlet.org/path/to";
         reference = getReference(uri);
-        request.setBaseRef(uri);
-        assertEquals(uri, request.getBaseRef().toString());
-        assertEquals(reference, request.getBaseRef());
-    }
-
-    /**
-     * Tests illegal context path setting.
-     */
-    public void testInvalidContextPath() throws Exception {
-        // Call call = getCall();
-        // String resourceRefURI = "http://www.restlet.org/something";
-        // Reference resourceRef = getReference(resourceRefURI);
-        // call.setResourceRef(resourceRefURI);
-        // assertEquals(resourceRef, call.getResourceRef());
-        // String uri = "http://www.restlet.org/cannot-match";
-        // try
-        // {
-        // call.setContextPath(uri);
-        // fail("Call accepts invalid context path. Resource path: '"
-        // + resourceRefURI + "' Context path: '" + uri + "'");
-        // }
-        // catch (Exception ex)
-        // {
-        // // noop.
-        // }
+        request.getResourceRef().setBaseRef(uri);
+        assertEquals(uri, request.getResourceRef().getBaseRef().toString());
+        assertEquals(reference, request.getResourceRef().getBaseRef());
     }
 
 }

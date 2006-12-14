@@ -20,6 +20,7 @@ package org.restlet;
 
 import java.lang.reflect.InvocationTargetException;
 import java.util.List;
+import java.util.Set;
 import java.util.logging.Level;
 
 import org.restlet.data.Method;
@@ -38,19 +39,19 @@ import org.restlet.resource.Result;
  * required method on it.<br/> <br/> It is comparable to an HttpServlet class
  * as it provides facility methods to handle the most common method names. The
  * calls are then automatically dispatched to the appropriate handle*() method
- * (where the '*' character corresponds to the method name, or to the
- * defaultHandle() method.<br/> <br/> The handleGet(), handlePost(),
- * handlePut(), handleDelete() and handleHead() have a default implementation in
- * this class, but the dispatching can a done dynamically for other methods. For
- * example, if you want to support a MOVE method for a WebDAV server, you just
- * have to add a handleMove(Request, Response) method in your subclass of
- * Handler and it will be automatically be used at runtime.<br/> <br/> If not
- * matching handle*() method is found, then the defaultHandle() method is
- * invoked.
+ * (where the '*' character corresponds to the method name).<br/> <br/> The
+ * handleGet(), handlePost(), handlePut(), handleDelete()n handleOptions() and
+ * handleHead() methods have a default implementation in this class, but the
+ * dispatching is dynamically done for all other methods. For example, if you
+ * want to support a MOVE method for a WebDAV server, you just have to add a
+ * handleMove(Resource, Request, Response) method in your subclass of Handler
+ * and it will be automatically be used at runtime.<br/> <br/> If no matching
+ * handle*() method is found, then a Status.CLIENT_ERROR_METHOD_NOT_ALLOWED is
+ * returned.
  * 
  * @author Jerome Louvel (contact@noelios.com)
  */
-public class Handler extends Restlet {
+public abstract class Handler extends Restlet {
     /** Indicates if the best content is automatically negotiated. */
     private boolean negotiateContent;
 
@@ -81,7 +82,10 @@ public class Handler extends Restlet {
      *            The request to handle.
      * @param response
      *            The response to update.
+     * @deprecated Will be remove, please explicitely set thet status of the
+     *             response depending on the context
      */
+    @Deprecated
     protected void defaultHandle(Request request, Response response) {
         response.setStatus(Status.SERVER_ERROR_NOT_IMPLEMENTED);
     }
@@ -96,9 +100,7 @@ public class Handler extends Restlet {
      *            The response to update.
      * @return The target resource if available or null.
      */
-    public Resource findTarget(Request request, Response response) {
-        return null;
-    }
+    public abstract Resource findTarget(Request request, Response response);
 
     /**
      * Handles a call.
@@ -112,44 +114,105 @@ public class Handler extends Restlet {
         init(request, response);
 
         if (isStarted()) {
-            Method method = request.getMethod();
+            Resource target = findTarget(request, response);
 
-            if (method == null) {
-                defaultHandle(request, response);
-            } else if (method.equals(Method.GET)) {
-                handleGet(request, response);
-            } else if (method.equals(Method.HEAD)) {
-                handleHead(request, response);
-            } else if (method.equals(Method.POST)) {
-                handlePost(request, response);
-            } else if (method.equals(Method.PUT)) {
-                handlePut(request, response);
-            } else if (method.equals(Method.DELETE)) {
-                handleDelete(request, response);
+            if (target == null) {
+                response.setStatus(Status.CLIENT_ERROR_NOT_FOUND);
             } else {
-                java.lang.reflect.Method handleMethod = getHandleMethod(method);
+                Method method = request.getMethod();
 
-                if (handleMethod != null) {
-                    try {
-                        handleMethod.invoke(this, request, response);
-                    } catch (IllegalArgumentException e) {
-                        getLogger().log(
-                                Level.WARNING,
-                                "Couldn't invoke the handle method for \""
-                                        + method + "\"", e);
-                    } catch (IllegalAccessException e) {
-                        getLogger().log(
-                                Level.WARNING,
-                                "Couldn't access the handle method for \""
-                                        + method + "\"", e);
-                    } catch (InvocationTargetException e) {
-                        getLogger().log(
-                                Level.WARNING,
-                                "Couldn't invoke the handle method for \""
-                                        + method + "\"", e);
-                    }
+                if (method == null) {
+                    response.setStatus(Status.CLIENT_ERROR_BAD_REQUEST,
+                            "No method specified");
                 } else {
-                    defaultHandle(request, response);
+                    if (!allowMethod(method, target)) {
+                        response
+                                .setStatus(Status.CLIENT_ERROR_METHOD_NOT_ALLOWED);
+                        updateAllowedMethods(response, target);
+                    } else {
+                        if (method.equals(Method.GET)) {
+                            handleGet(target, request, response);
+                        } else if (method.equals(Method.HEAD)) {
+                            handleHead(target, request, response);
+                        } else if (method.equals(Method.POST)) {
+                            handlePost(target, request, response);
+                        } else if (method.equals(Method.PUT)) {
+                            handlePut(target, request, response);
+                        } else if (method.equals(Method.DELETE)) {
+                            handleDelete(target, request, response);
+                        } else if (method.equals(Method.OPTIONS)) {
+                            handleOptions(target, request, response);
+                        } else {
+                            java.lang.reflect.Method handleMethod = getHandleMethod(method);
+                            if (handleMethod != null) {
+                                invoke(this, handleMethod, request, response);
+                            } else {
+                                response
+                                        .setStatus(Status.CLIENT_ERROR_METHOD_NOT_ALLOWED);
+                            }
+                        }
+                    }
+                }
+            }
+        }
+    }
+
+    /**
+     * Indicates if a method is allowed on a target resource.
+     * 
+     * @param method
+     *            The method to test.
+     * @param target
+     *            The target resource.
+     * @return True if a method is allowed on a target resource.
+     */
+    private boolean allowMethod(Method method, Resource target) {
+        boolean result = false;
+
+        if (target != null) {
+            if (method.equals(Method.GET) || method.equals(Method.HEAD)) {
+                result = target.allowGet();
+            } else if (method.equals(Method.POST)) {
+                result = target.allowPost();
+            } else if (method.equals(Method.PUT)) {
+                result = target.allowPut();
+            } else if (method.equals(Method.DELETE)) {
+                result = target.allowDelete();
+            } else if (method.equals(Method.OPTIONS)) {
+                result = true;
+            } else {
+                // Dynamically introspect the target resource to detect a
+                // matching "allow" method.
+                java.lang.reflect.Method allowMethod = getAllowMethod(method,
+                        target);
+                if (allowMethod != null) {
+                    result = (Boolean) invoke(target, allowMethod);
+                }
+            }
+        }
+
+        return result;
+    }
+
+    /**
+     * Updates the set of allowed methods on the response based on a target
+     * resource.
+     * 
+     * @param response
+     *            The response to update.
+     * @param target
+     *            The target resource.
+     */
+    private void updateAllowedMethods(Response response, Resource target) {
+        Set<Method> allowedMethods = response.getAllowedMethods();
+        for (java.lang.reflect.Method classMethod : target.getClass()
+                .getMethods()) {
+            if (classMethod.getName().startsWith("allow")
+                    && (classMethod.getParameterTypes().length == 0)) {
+                if ((Boolean) invoke(target, classMethod)) {
+                    Method allowedMethod = Method.valueOf(classMethod.getName()
+                            .substring(5));
+                    allowedMethods.add(allowedMethod);
                 }
             }
         }
@@ -163,6 +226,34 @@ public class Handler extends Restlet {
      * @return The handle method matching the given method name.
      */
     private java.lang.reflect.Method getHandleMethod(Method method) {
+        return getMethod("handle", method, this, Request.class, Response.class);
+    }
+
+    /**
+     * Returns the allow method matching the given method name.
+     * 
+     * @param method
+     *            The method to match.
+     * @param target
+     *            The target resource.
+     * @return The allow method matching the given method name.
+     */
+    private java.lang.reflect.Method getAllowMethod(Method method,
+            Resource target) {
+        return getMethod("allow", method, target);
+    }
+
+    /**
+     * Returns the method matching the given prefix and method name.
+     * 
+     * @param prefix
+     *            The method prefix to match (ex: "allow" or "handle").
+     * @param method
+     *            The method to match.
+     * @return The method matching the given prefix and method name.
+     */
+    private java.lang.reflect.Method getMethod(String prefix, Method method,
+            Object target, Class... classes) {
         java.lang.reflect.Method result = null;
         StringBuilder sb = new StringBuilder();
         String methodName = method.getName().toLowerCase();
@@ -174,18 +265,56 @@ public class Handler extends Restlet {
         }
 
         try {
-            result = getClass().getMethod(sb.toString(), Request.class,
-                    Response.class);
+            result = target.getClass().getMethod(sb.toString(), classes);
         } catch (SecurityException e) {
-            getLogger().log(Level.WARNING,
-                    "Couldn't access the handle method for \"" + method + "\"",
-                    e);
+            getLogger().log(
+                    Level.WARNING,
+                    "Couldn't access the " + prefix + " method for \"" + method
+                            + "\"", e);
         } catch (NoSuchMethodException e) {
-            getLogger()
-                    .log(
-                            Level.WARNING,
-                            "Couldn't find the handle method for \"" + method
-                                    + "\"", e);
+            getLogger().log(
+                    Level.WARNING,
+                    "Couldn't find the " + prefix + " method for \"" + method
+                            + "\"", e);
+        }
+
+        return result;
+    }
+
+    /**
+     * Invokes a method with the given arguments.
+     * 
+     * @param target
+     *            The target object.
+     * @param method
+     *            The method to invoke.
+     * @param args
+     *            The arguments to pass.
+     * @return Invocation result.
+     */
+    private Object invoke(Object target, java.lang.reflect.Method method,
+            Object... args) {
+        Object result = null;
+
+        if (method != null) {
+            try {
+                result = method.invoke(target, args);
+            } catch (IllegalArgumentException e) {
+                getLogger().log(
+                        Level.WARNING,
+                        "Couldn't invoke the handle method for \"" + method
+                                + "\"", e);
+            } catch (IllegalAccessException e) {
+                getLogger().log(
+                        Level.WARNING,
+                        "Couldn't access the handle method for \"" + method
+                                + "\"", e);
+            } catch (InvocationTargetException e) {
+                getLogger().log(
+                        Level.WARNING,
+                        "Couldn't invoke the handle method for \"" + method
+                                + "\"", e);
+            }
         }
 
         return result;
@@ -195,25 +324,18 @@ public class Handler extends Restlet {
      * Handles a DELETE call invoking the 'delete' method of the target resource
      * (as provided by the 'findTarget' method).
      * 
+     * @param target
+     *            The target resource (never null).
      * @param request
      *            The request to handle.
      * @param response
      *            The response to update.
      */
-    protected void handleDelete(Request request, Response response) {
-        Resource target = findTarget(request, response);
-
-        if (target != null) {
-            if (target.allowDelete()) {
-                Result result = target.delete();
-                response.setStatus(result.getStatus());
-                response.setRedirectRef(result.getRedirectionRef());
-            } else {
-                response.setStatus(Status.CLIENT_ERROR_METHOD_NOT_ALLOWED);
-            }
-        } else {
-            defaultHandle(request, response);
-        }
+    protected void handleDelete(Resource target, Request request,
+            Response response) {
+        Result result = target.delete();
+        response.setStatus(result.getStatus());
+        response.setRedirectRef(result.getRedirectionRef());
     }
 
     /**
@@ -225,95 +347,99 @@ public class Handler extends Restlet {
      * resource, then a 300 (Multiple Choices) status will be returned with the
      * list of variants URI if available.
      * 
+     * @param target
+     *            The target resource (never null).
      * @param request
      *            The request to handle.
      * @param response
      *            The response to update.
      */
-    protected void handleGet(Request request, Response response) {
-        Resource target = findTarget(request, response);
+    protected void handleGet(Resource target, Request request, Response response) {
+        if (isNegotiateContent()) {
+            response.setEntity(target);
+        } else {
+            List<Representation> variants = target.getVariants();
+            if (variants.size() == 0) {
+                response.setStatus(Status.CLIENT_ERROR_NOT_FOUND);
+            } else if (variants.size() == 1) {
+                response.setEntity(variants.get(0));
+            } else {
+                ReferenceList variantRefs = new ReferenceList();
 
-        if (target != null) {
-            if (target.allowGet()) {
-                if (isNegotiateContent()) {
-                    response.setEntity(target);
-                } else {
-                    List<Representation> variants = target.getVariants();
-                    if (variants.size() == 0) {
-                        response.setStatus(Status.CLIENT_ERROR_NOT_FOUND);
-                    } else if (variants.size() == 1) {
-                        response.setEntity(variants.get(0));
+                for (Representation variant : variants) {
+                    if (variant.getIdentifier() != null) {
+                        variantRefs.add(variant.getIdentifier());
                     } else {
-                        ReferenceList variantRefs = new ReferenceList();
-
-                        for (Representation variant : variants) {
-                            if (variant.getIdentifier() != null) {
-                                variantRefs.add(variant.getIdentifier());
-                            } else {
-                                getLogger()
-                                        .warning(
-                                                "A resource with multiple variants should provide and identifier for each variants when content negotiation is turned off");
-                            }
-                        }
-
-                        if (variantRefs.size() > 0) {
-                            // Return the list of variants
-                            response
-                                    .setStatus(Status.REDIRECTION_MULTIPLE_CHOICES);
-                            response.setEntity(variantRefs.getTextRepresentation());
-                        } else {
-                            response.setStatus(Status.CLIENT_ERROR_NOT_FOUND);
-                        }
+                        getLogger()
+                                .warning(
+                                        "A resource with multiple variants should provide and identifier for each variants when content negotiation is turned off");
                     }
                 }
-            } else {
-                response.setStatus(Status.CLIENT_ERROR_METHOD_NOT_ALLOWED);
+
+                if (variantRefs.size() > 0) {
+                    // Return the list of variants
+                    response.setStatus(Status.REDIRECTION_MULTIPLE_CHOICES);
+                    response.setEntity(variantRefs.getTextRepresentation());
+                } else {
+                    response.setStatus(Status.CLIENT_ERROR_NOT_FOUND);
+                }
             }
-        } else {
-            defaultHandle(request, response);
         }
     }
 
     /**
      * Handles a HEAD call, using a logic similat to the handleGet method.
      * 
+     * @param target
+     *            The target resource (never null).
      * @param request
      *            The request to handle.
      * @param response
      *            The response to update.
      */
-    protected void handleHead(Request request, Response response) {
-        handleGet(request, response);
+    protected void handleHead(Resource target, Request request,
+            Response response) {
+        handleGet(target, request, response);
+    }
+
+    /**
+     * Handles an OPTIONS call introspecting the target resource (as provided by
+     * the 'findTarget' method).
+     * 
+     * @param target
+     *            The target resource (never null).
+     * @param request
+     *            The request to handle.
+     * @param response
+     *            The response to update.
+     */
+    protected void handleOptions(Resource target, Request request,
+            Response response) {
+        // HTTP spec says that OPTIONS should return the list of allowed methods
+        updateAllowedMethods(response, target);
+        response.setStatus(Status.SUCCESS_OK);
     }
 
     /**
      * Handles a POST call invoking the 'post' method of the target resource (as
      * provided by the 'findTarget' method).
      * 
+     * @param target
+     *            The target resource (never null).
      * @param request
      *            The request to handle.
      * @param response
      *            The response to update.
      */
-    protected void handlePost(Request request, Response response) {
-        Resource target = findTarget(request, response);
-
-        if (target != null) {
-            if (target.allowPost()) {
-                if (request.isEntityAvailable()) {
-                    Result result = target.post(request.getEntity());
-                    response.setStatus(result.getStatus());
-                    response.setRedirectRef(result.getRedirectionRef());
-                } else {
-                    response.setStatus(new Status(
-                            Status.CLIENT_ERROR_NOT_ACCEPTABLE,
-                            "Missing request entity"));
-                }
-            } else {
-                response.setStatus(Status.CLIENT_ERROR_METHOD_NOT_ALLOWED);
-            }
+    protected void handlePost(Resource target, Request request,
+            Response response) {
+        if (request.isEntityAvailable()) {
+            Result result = target.post(request.getEntity());
+            response.setStatus(result.getStatus());
+            response.setRedirectRef(result.getRedirectionRef());
         } else {
-            defaultHandle(request, response);
+            response.setStatus(new Status(Status.CLIENT_ERROR_BAD_REQUEST,
+                    "Missing request entity"));
         }
     }
 
@@ -321,30 +447,24 @@ public class Handler extends Restlet {
      * Handles a PUT call invoking the 'put' method of the target resource (as
      * provided by the 'findTarget' method).
      * 
+     * @param target
+     *            The target resource (never null).
      * @param request
      *            The request to handle.
      * @param response
      *            The response to update.
      */
-    protected void handlePut(Request request, Response response) {
-        Resource target = findTarget(request, response);
+    protected void handlePut(Resource target, Request request, Response response) {
+        if (request.isEntityAvailable()) {
+            Result result = target.put(request.getEntity());
+            response.setStatus(result.getStatus());
+            response.setRedirectRef(result.getRedirectionRef());
 
-        if (target != null) {
-            if (target.allowPut()) {
-                if (request.isEntityAvailable()) {
-                    Result result = target.put(request.getEntity());
-                    response.setStatus(result.getStatus());
-                    response.setRedirectRef(result.getRedirectionRef());
-                } else {
-                    response.setStatus(new Status(
-                            Status.CLIENT_ERROR_NOT_ACCEPTABLE,
-                            "Missing request entity"));
-                }
-            } else {
-                response.setStatus(Status.CLIENT_ERROR_METHOD_NOT_ALLOWED);
-            }
+            // HTTP spec says that PUT may return the list of allowed methods
+            updateAllowedMethods(response, target);
         } else {
-            defaultHandle(request, response);
+            response.setStatus(new Status(Status.CLIENT_ERROR_BAD_REQUEST,
+                    "Missing request entity"));
         }
     }
 

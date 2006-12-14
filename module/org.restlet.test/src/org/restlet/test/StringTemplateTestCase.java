@@ -31,8 +31,10 @@ import org.restlet.util.StringTemplate;
  * Unit tests for the StringTemplate class.
  * 
  * @author Jerome Louvel (contact@noelios.com)
+ * @deprecated To be removed in next release.
  */
 @SuppressWarnings("deprecation")
+@Deprecated
 public class StringTemplateTestCase extends TestCase {
     /** Tests the interpolation feature. */
     public void testInterpolation() {

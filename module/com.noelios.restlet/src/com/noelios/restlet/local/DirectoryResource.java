@@ -133,7 +133,7 @@ public class DirectoryResource extends Resource {
         // Update the member variables
         this.directory = directory;
         this.request = request;
-        this.relativePart = request.getRelativePart();
+        this.relativePart = request.getResourceRef().getRemainingPart();
 
         if (this.relativePart.startsWith("/")) {
             // We enforce the leading slash on the root URI
@@ -241,8 +241,8 @@ public class DirectoryResource extends Resource {
         Status status;
 
         if (directoryRedirection && !targetIndex) {
-            Result result = new Result(Status.REDIRECTION_SEE_OTHER);
-            result.setRedirectionRef(new Reference(this.targetUri));
+            Result result = new Result(Status.REDIRECTION_SEE_OTHER, null,
+                    new Reference(this.targetUri));
             return result;
         }
 
@@ -295,8 +295,8 @@ public class DirectoryResource extends Resource {
         Status status;
 
         if (directoryRedirection && !targetIndex) {
-            Result result = new Result(Status.REDIRECTION_SEE_OTHER);
-            result.setRedirectionRef(new Reference(this.targetUri));
+            Result result = new Result(Status.REDIRECTION_SEE_OTHER, null,
+                    new Reference(this.targetUri));
             return result;
         }
 
@@ -415,8 +415,8 @@ public class DirectoryResource extends Resource {
 
                     // Compute the base reference (from a call's client point of
                     // view)
-                    String baseRef = this.request.getBaseRef().toString(false,
-                            false);
+                    String baseRef = this.request.getResourceRef().getBaseRef()
+                            .toString(false, false);
                     if (!baseRef.endsWith("/")) {
                         baseRef += "/";
                     }

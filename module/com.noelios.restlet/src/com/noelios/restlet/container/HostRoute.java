@@ -21,8 +21,8 @@ package com.noelios.restlet.container;
 import java.util.logging.Level;
 import java.util.regex.Pattern;
 
+import org.restlet.Route;
 import org.restlet.Router;
-import org.restlet.Scorer;
 import org.restlet.VirtualHost;
 import org.restlet.data.Request;
 import org.restlet.data.Response;
@@ -32,7 +32,7 @@ import org.restlet.data.Response;
  * 
  * @author Jerome Louvel (contact@noelios.com)
  */
-public class HostScorer extends Scorer {
+public class HostRoute extends Route {
     /**
      * Constructor.
      * 
@@ -41,8 +41,8 @@ public class HostScorer extends Scorer {
      * @param target
      *            The target virtual host.
      */
-    public HostScorer(Router router, VirtualHost target) {
-        super(router, target);
+    public HostRoute(Router router, VirtualHost target) {
+        super(router, "", target);
     }
 
     /**
@@ -50,7 +50,7 @@ public class HostScorer extends Scorer {
      * 
      * @return The target virtual host.
      */
-    public VirtualHost getHost() {
+    public VirtualHost getVirtualHost() {
         return (VirtualHost) getNext();
     }
 
@@ -80,18 +80,19 @@ public class HostScorer extends Scorer {
         String basePort = "";
         String baseScheme = "";
 
-        if (request.getBaseRef() != null) {
-            baseDomain = request.getBaseRef().getHostDomain();
+        if (request.getResourceRef().getBaseRef() != null) {
+            baseDomain = request.getResourceRef().getBaseRef().getHostDomain();
             if (baseDomain == null)
                 baseDomain = "";
 
-            Integer basePortValue = request.getBaseRef().getHostPort();
+            Integer basePortValue = request.getResourceRef().getBaseRef()
+                    .getHostPort();
             if (basePortValue == null)
-                basePortValue = request.getBaseRef().getSchemeProtocol()
-                        .getDefaultPort();
+                basePortValue = request.getResourceRef().getBaseRef()
+                        .getSchemeProtocol().getDefaultPort();
             basePort = basePortValue.toString();
 
-            baseScheme = request.getBaseRef().getScheme();
+            baseScheme = request.getResourceRef().getBaseRef().getScheme();
             if (baseScheme == null)
                 baseScheme = "";
         }
@@ -119,23 +120,27 @@ public class HostScorer extends Scorer {
         if (serverPortValue != null)
             serverPort = serverPortValue.toString();
 
-        if (Pattern.matches(getHost().getBaseDomain(), baseDomain)
-                && Pattern.matches(getHost().getBasePort(), basePort)
-                && Pattern.matches(getHost().getBaseScheme(), baseScheme)
-                && Pattern.matches(getHost().getResourceDomain(),
+        if (Pattern.matches(getVirtualHost().getHostDomain(), baseDomain)
+                && Pattern.matches(getVirtualHost().getHostPort(), basePort)
+                && Pattern
+                        .matches(getVirtualHost().getHostScheme(), baseScheme)
+                && Pattern.matches(getVirtualHost().getResourceDomain(),
                         resourceDomain)
-                && Pattern.matches(getHost().getResourcePort(), resourcePort)
-                && Pattern.matches(getHost().getResourceScheme(),
+                && Pattern.matches(getVirtualHost().getResourcePort(),
+                        resourcePort)
+                && Pattern.matches(getVirtualHost().getResourceScheme(),
                         resourceScheme)
-                && Pattern.matches(getHost().getServerAddress(), serverAddress)
-                && Pattern.matches(getHost().getServerPort(), serverPort)) {
+                && Pattern.matches(getVirtualHost().getServerAddress(),
+                        serverAddress)
+                && Pattern
+                        .matches(getVirtualHost().getServerPort(), serverPort)) {
             result = 1F;
         }
 
         if (getLogger().isLoggable(Level.FINER)) {
             getLogger().finer(
-                    "Call score for the \"" + getHost().getName() + "\" host: "
-                            + result);
+                    "Call score for the \"" + getVirtualHost().getName()
+                            + "\" host: " + result);
         }
 
         return result;
@@ -152,8 +157,11 @@ public class HostScorer extends Scorer {
      */
     protected void beforeHandle(Request request, Response response) {
         if (getLogger().isLoggable(Level.FINE)) {
-            getLogger().fine("New base URI: " + request.getBaseRef());
-            getLogger().fine("New relative part: " + request.getRelativePart());
+            getLogger().fine(
+                    "New base URI: " + request.getResourceRef().getBaseRef());
+            getLogger().fine(
+                    "New relative part: "
+                            + request.getResourceRef().getRemainingPart());
         }
     }
 }

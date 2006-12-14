@@ -19,13 +19,15 @@
 package com.noelios.restlet.example.misc;
 
 import org.restlet.Container;
-import org.restlet.Handler;
+import org.restlet.Restlet;
 import org.restlet.data.Form;
 import org.restlet.data.MediaType;
+import org.restlet.data.Method;
 import org.restlet.data.Parameter;
 import org.restlet.data.Protocol;
 import org.restlet.data.Request;
 import org.restlet.data.Response;
+import org.restlet.data.Status;
 
 /**
  * Simple HTTP server invoked by the simple client.
@@ -44,28 +46,33 @@ public class SimpleServer {
             container.getServers().add(Protocol.HTTP, 9876);
 
             // Prepare and attach a test Handler
-            Handler handler = new Handler(container.getContext()) {
+            Restlet handler = new Restlet(container.getContext()) {
                 @Override
-                public void handlePut(Request request, Response response) {
-                    System.out.println("Handling the call...");
-                    System.out.println("Trying to get the entity as a form...");
-                    Form form = request.getEntityAsForm();
+                public void handle(Request request, Response response) {
+                    if (request.getMethod().equals(Method.PUT)) {
+                        System.out.println("Handling the call...");
+                        System.out
+                                .println("Trying to get the entity as a form...");
+                        Form form = request.getEntityAsForm();
 
-                    System.out.println("Trying to getParameters...");
-                    StringBuffer sb = new StringBuffer("foo");
-                    for (Parameter p : form) {
-                        System.out.println(p);
+                        System.out.println("Trying to getParameters...");
+                        StringBuffer sb = new StringBuffer("foo");
+                        for (Parameter p : form) {
+                            System.out.println(p);
 
-                        sb.append("field name = ");
-                        sb.append(p.getName());
-                        sb.append("value = ");
-                        sb.append(p.getValue());
-                        sb.append("\n");
-                        System.out.println(sb.toString());
+                            sb.append("field name = ");
+                            sb.append(p.getName());
+                            sb.append("value = ");
+                            sb.append(p.getValue());
+                            sb.append("\n");
+                            System.out.println(sb.toString());
+                        }
+
+                        response.setEntity(sb.toString(), MediaType.TEXT_PLAIN);
+                        System.out.println("Done!");
+                    } else {
+                        response.setStatus(Status.SERVER_ERROR_NOT_IMPLEMENTED);
                     }
-
-                    response.setEntity(sb.toString(), MediaType.TEXT_PLAIN);
-                    System.out.println("Done!");
                 }
             };
 

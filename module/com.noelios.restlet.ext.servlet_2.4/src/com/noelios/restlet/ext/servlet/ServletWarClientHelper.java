@@ -119,6 +119,8 @@ public class ServletWarClientHelper extends WarClientHelper {
             response.setStatus(Status.SUCCESS_OK);
         } else {
             response.setStatus(Status.CLIENT_ERROR_METHOD_NOT_ALLOWED);
+            response.getAllowedMethods().add(Method.GET);
+            response.getAllowedMethods().add(Method.HEAD);
         }
     }
 

@@ -42,8 +42,10 @@ public class Part05 {
             public void handle(Request request, Response response) {
                 // Print the requested URI path
                 String message = "Resource URI:  " + request.getResourceRef()
-                        + '\n' + "Base URI:      " + request.getBaseRef()
-                        + '\n' + "Relative part: " + request.getRelativePart();
+                        + '\n' + "Base URI:      "
+                        + request.getResourceRef().getBaseRef() + '\n'
+                        + "Remaining part: "
+                        + request.getResourceRef().getRemainingPart();
                 response.setEntity(message, MediaType.TEXT_PLAIN);
             }
         };

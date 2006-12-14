@@ -22,8 +22,8 @@ import java.net.InetAddress;
 import java.net.UnknownHostException;
 
 /**
- * Router of calls from virtual servers to attached Restlets. The attached
- * Restlets are typically Application instances.
+ * Router of calls from Server connectors to Restlets. The attached Restlets are
+ * typically Applications.
  * 
  * @author Jerome Louvel (contact@noelios.com)
  */
@@ -81,14 +81,14 @@ public class VirtualHost extends Router {
     /** The display name. */
     private String name;
 
-    /** The baseRef host domain pattern to match. */
-    private String baseDomain;
+    /** The hostRef host domain pattern to match. */
+    private String hostDomain;
 
-    /** The baseRef host port pattern to match. */
-    private String basePort;
+    /** The hostRef host port pattern to match. */
+    private String hostPort;
 
-    /** The baseRef scheme pattern to match. */
-    private String baseScheme;
+    /** The hostRef scheme pattern to match. */
+    private String hostScheme;
 
     /** The resourceRef host domain pattern to match. */
     private String resourceDomain;
@@ -128,12 +128,12 @@ public class VirtualHost extends Router {
      * 
      * @param context
      *            The context.
-     * @param baseDomain
-     *            The baseRef host domain pattern to match.
-     * @param basePort
-     *            The baseRef host port pattern to match.
-     * @param baseScheme
-     *            The baseRef scheme protocol pattern to match.
+     * @param hostDomain
+     *            The hostRef host domain pattern to match.
+     * @param hostPort
+     *            The hostRef host port pattern to match.
+     * @param hostScheme
+     *            The hostRef scheme protocol pattern to match.
      * @param resourceDomain
      *            The resourceRef host domain pattern to match.
      * @param resourcePort
@@ -145,13 +145,13 @@ public class VirtualHost extends Router {
      * @param serverPort
      *            The listening server port pattern to match.
      */
-    public VirtualHost(Context context, String baseDomain, String basePort,
-            String baseScheme, String resourceDomain, String resourcePort,
+    public VirtualHost(Context context, String hostDomain, String hostPort,
+            String hostScheme, String resourceDomain, String resourcePort,
             String resourceScheme, String serverAddress, String serverPort) {
         super(context);
-        this.baseDomain = baseDomain;
-        this.basePort = basePort;
-        this.baseScheme = baseScheme;
+        this.hostDomain = hostDomain;
+        this.hostPort = hostPort;
+        this.hostScheme = hostScheme;
 
         this.resourceDomain = resourceDomain;
         this.resourcePort = resourcePort;
@@ -162,31 +162,65 @@ public class VirtualHost extends Router {
     }
 
     /**
-     * Returns the baseRef host domain to match. Uses patterns in
+     * Returns the hostRef host domain to match. Uses patterns in
      * java.util.regex.
      * 
-     * @return The baseRef host domain to match.
+     * @return The hostRef host domain to match.
+     * @deprecated Use getHostDomain instead.
      */
+    @Deprecated
     public String getBaseDomain() {
-        return this.baseDomain;
+        return this.hostDomain;
     }
 
     /**
-     * Returns the baseRef host port to match. Uses patterns in java.util.regex.
+     * Returns the hostRef host port to match. Uses patterns in java.util.regex.
      * 
-     * @return The baseRef host port to match.
+     * @return The hostRef host port to match.
+     * @deprecated Use getHostDomain instead.
      */
+    @Deprecated
     public String getBasePort() {
-        return this.basePort;
+        return this.hostPort;
     }
 
     /**
-     * Returns the baseRef scheme to match. Uses patterns in java.util.regex.
+     * Returns the hostRef scheme to match. Uses patterns in java.util.regex.
      * 
-     * @return The baseRef scheme to match.
+     * @return The hostRef scheme to match.
+     * @deprecated Use getHostDomain instead.
      */
+    @Deprecated
     public String getBaseScheme() {
-        return this.baseScheme;
+        return this.hostScheme;
+    }
+
+    /**
+     * Returns the hostRef host domain to match. Uses patterns in
+     * java.util.regex.
+     * 
+     * @return The hostRef host domain to match.
+     */
+    public String getHostDomain() {
+        return this.hostDomain;
+    }
+
+    /**
+     * Returns the hostRef host port to match. Uses patterns in java.util.regex.
+     * 
+     * @return The hostRef host port to match.
+     */
+    public String getHostPort() {
+        return this.hostPort;
+    }
+
+    /**
+     * Returns the hostRef scheme to match. Uses patterns in java.util.regex.
+     * 
+     * @return The hostRef scheme to match.
+     */
+    public String getHostScheme() {
+        return this.hostScheme;
     }
 
     /**
@@ -253,7 +287,7 @@ public class VirtualHost extends Router {
      *            The baseRef host domain to match.
      */
     public void setBaseDomain(String baseDomain) {
-        this.baseDomain = baseDomain;
+        this.hostDomain = baseDomain;
     }
 
     /**
@@ -263,7 +297,7 @@ public class VirtualHost extends Router {
      *            The baseRef host port to match.
      */
     public void setBasePort(String basePort) {
-        this.basePort = basePort;
+        this.hostPort = basePort;
     }
 
     /**
@@ -273,7 +307,7 @@ public class VirtualHost extends Router {
      *            The baseRef scheme to match.
      */
     public void setBaseScheme(String baseScheme) {
-        this.baseScheme = baseScheme;
+        this.hostScheme = baseScheme;
     }
 
     /**

@@ -28,7 +28,20 @@ import org.restlet.data.Response;
  * 
  * @author Jerome Louvel (contact@noelios.com)
  */
-public abstract class DefaultDispatcher extends Dispatcher {
+public class TemplateDispatcher extends Dispatcher {
+    /** The helper dispatcher. */
+    private Dispatcher helper;
+
+    /**
+     * Constructor.
+     * 
+     * @param helper
+     *            The helper dispatcher.
+     */
+    public TemplateDispatcher(Dispatcher helper) {
+        this.helper = helper;
+    }
+
     /**
      * Handles a call.
      * 
@@ -44,20 +57,17 @@ public abstract class DefaultDispatcher extends Dispatcher {
             throw new UnsupportedOperationException(
                     "Unable to determine the protocol to use for this call.");
         } else {
-            handle(protocol, request, response);
+            // Create the template
+//            TemplateReference rt = new TemplateReference(request
+//                    .getResourceRef().toString(true, false));
+
+            // Format the target URI
+//            String targetUri = rt.format(request).toString();
+//            request.setResourceRef(targetUri);
+
+            // Actually dispatch the formatted URI
+            this.helper.handle(request, response);
         }
     }
 
-    /**
-     * Handles a call.
-     * 
-     * @param protocol
-     *            The protocol to use for the handling.
-     * @param request
-     *            The request to handle.
-     * @param response
-     *            The response to update.
-     */
-    public abstract void handle(Protocol protocol, Request request,
-            Response response);
 }

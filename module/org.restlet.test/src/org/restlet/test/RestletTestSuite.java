@@ -28,6 +28,7 @@ import junit.framework.TestSuite;
  */
 public class RestletTestSuite extends TestSuite {
     /** Constructor. */
+    @SuppressWarnings("deprecation")
     public RestletTestSuite() {
         addTestSuite(CallTestCase.class);
         addTestSuite(CookieTestCase.class);

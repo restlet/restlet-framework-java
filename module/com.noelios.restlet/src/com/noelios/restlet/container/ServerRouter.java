@@ -20,8 +20,8 @@ package com.noelios.restlet.container;
 
 import org.restlet.Container;
 import org.restlet.Restlet;
+import org.restlet.Route;
 import org.restlet.Router;
-import org.restlet.Scorer;
 import org.restlet.VirtualHost;
 import org.restlet.data.Request;
 import org.restlet.data.Response;
@@ -53,13 +53,13 @@ public class ServerRouter extends Router {
     public void start() throws Exception {
         // Attach all virtual hosts
         for (VirtualHost host : getContainer().getHosts()) {
-            getScorers().add(new HostScorer(this, host));
+            getRoutes().add(new HostRoute(this, host));
         }
 
         // Also attach the local host if it exists
         if (getContainer().getDefaultHost() != null) {
-            getScorers().add(
-                    new HostScorer(this, getContainer().getDefaultHost()));
+            getRoutes().add(
+                    new HostRoute(this, getContainer().getDefaultHost()));
         }
 
         // If no host matches, display and error page with a precise message
@@ -69,7 +69,7 @@ public class ServerRouter extends Router {
                         "No virtual host could handle the request");
             }
         };
-        setDefaultScorer(new Scorer(this, noHostMatched));
+        setDefaultRoute(new Route(this, "", noHostMatched));
 
         // Start the router
         super.start();

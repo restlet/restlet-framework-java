@@ -107,7 +107,9 @@ public final class Result {
      * 
      * @param entity
      *            The entity.
+     * @deprecated Not needed.
      */
+    @Deprecated
     public void setEntity(Representation entity) {
         this.entity = entity;
     }
@@ -117,7 +119,9 @@ public final class Result {
      * 
      * @param redirectionRef
      *            The redirection reference.
+     * @deprecated Not needed.
      */
+    @Deprecated
     public void setRedirectionRef(Reference redirectionRef) {
         this.redirectionRef = redirectionRef;
     }
@@ -127,7 +131,9 @@ public final class Result {
      * 
      * @param status
      *            The status.
+     * @deprecated Not needed.
      */
+    @Deprecated
     public void setStatus(Status status) {
         this.status = status;
     }

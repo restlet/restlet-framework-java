@@ -23,17 +23,17 @@ import org.restlet.data.Response;
 import org.restlet.data.Status;
 
 /**
- * Chainer to an attached Restlet that filters calls. The purpose is to do some
- * pre-processing or post-processing on the calls going through it before or
- * after they are actually handled by an attached Restlet. Also note that you
- * can attach and detach targets while handling incoming calls as the filter is
- * ensured to be thread-safe.
+ * Restlet filtering calls before passing them to an attached Restlet. The
+ * purpose is to do some pre-processing or post-processing on the calls going
+ * through it before or after they are actually handled by an attached Restlet.
+ * Also note that you can attach and detach targets while handling incoming
+ * calls as the filter is ensured to be thread-safe.
  * 
  * @see <a href="http://www.restlet.org/tutorial#part07">Tutorial: Filters and
  *      call logging</a>
  * @author Jerome Louvel (contact@noelios.com)
  */
-public class Filter extends Chainer {
+public abstract class Filter extends Restlet {
     /** The next Restlet. */
     private Restlet next;
 
@@ -102,10 +102,8 @@ public class Filter extends Chainer {
      *            The response to update.
      */
     protected void doHandle(Request request, Response response) {
-        // Reuse the chainer's logic
-        Restlet next = getNext(request, response);
-        if (next != null) {
-            next.handle(request, response);
+        if (getNext() != null) {
+            getNext().handle(request, response);
         } else {
             response.setStatus(Status.CLIENT_ERROR_NOT_FOUND);
         }
@@ -118,19 +116,6 @@ public class Filter extends Chainer {
      */
     public Restlet getNext() {
         return this.next;
-    }
-
-    /**
-     * Returns the next Restlet if available.
-     * 
-     * @param request
-     *            The request to handle.
-     * @param response
-     *            The response to update.
-     * @return The next Restlet if available or null.
-     */
-    public final Restlet getNext(Request request, Response response) {
-        return getNext();
     }
 
     /**

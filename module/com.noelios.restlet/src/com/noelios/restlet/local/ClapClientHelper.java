@@ -116,6 +116,8 @@ public class ClapClientHelper extends LocalClientHelper {
             }
         } else {
             response.setStatus(Status.CLIENT_ERROR_METHOD_NOT_ALLOWED);
+            response.getAllowedMethods().add(Method.GET);
+            response.getAllowedMethods().add(Method.HEAD);
         }
     }
 

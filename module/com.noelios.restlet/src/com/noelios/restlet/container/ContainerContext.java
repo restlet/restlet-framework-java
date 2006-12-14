@@ -24,6 +24,8 @@ import org.restlet.Container;
 import org.restlet.Context;
 import org.restlet.Dispatcher;
 
+import com.noelios.restlet.TemplateDispatcher;
+
 /**
  * Context allowing access to the container's connectors.
  * 
@@ -63,7 +65,7 @@ public class ContainerContext extends Context {
      * @return A call dispatcher.
      */
     public Dispatcher getDispatcher() {
-        return new ContainerDispatcher(this);
+        return new TemplateDispatcher(getContainerHelper().getClientRouter());
     }
 
     /**

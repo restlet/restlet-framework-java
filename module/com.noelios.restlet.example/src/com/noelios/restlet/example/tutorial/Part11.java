@@ -22,7 +22,6 @@ import org.restlet.Application;
 import org.restlet.Container;
 import org.restlet.Directory;
 import org.restlet.Guard;
-import org.restlet.Handler;
 import org.restlet.Restlet;
 import org.restlet.Router;
 import org.restlet.data.ChallengeScheme;
@@ -63,9 +62,9 @@ public class Part11 implements Constants {
                 guard.setNext(directory);
 
                 // Create the Account Handler
-                Handler account = new Handler() {
+                Restlet account = new Restlet() {
                     @Override
-                    public void handleGet(Request request, Response response) {
+                    public void handle(Request request, Response response) {
                         // Print the requested URI path
                         String message = "Account of user \""
                                 + request.getAttributes().get("user") + "\"";
@@ -74,9 +73,9 @@ public class Part11 implements Constants {
                 };
 
                 // Create the Orders Handler
-                Handler orders = new Handler(getContext()) {
+                Restlet orders = new Restlet(getContext()) {
                     @Override
-                    public void handleGet(Request request, Response response) {
+                    public void handle(Request request, Response response) {
                         // Print the user name of the requested orders
                         String message = "Orders of user \""
                                 + request.getAttributes().get("user") + "\"";
@@ -85,9 +84,9 @@ public class Part11 implements Constants {
                 };
 
                 // Create the Order Handler
-                Handler order = new Handler(getContext()) {
+                Restlet order = new Restlet(getContext()) {
                     @Override
-                    public void handleGet(Request request, Response response) {
+                    public void handle(Request request, Response response) {
                         // Print the user name of the requested orders
                         String message = "Order \""
                                 + request.getAttributes().get("order")

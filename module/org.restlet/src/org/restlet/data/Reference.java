@@ -33,21 +33,21 @@ import java.util.logging.Logger;
  * conforms to the RFC 3986 specifying URIs and follow its naming conventions.<br/>
  * 
  * <pre>
- *           	URI reference        = absolute-reference | relative-reference
- *           
- *           	absolute-reference   = scheme &quot;:&quot; scheme-specific-part [ &quot;#&quot; fragment ]
- *           	scheme-specific-part = ( hierarchical-part [ &quot;?&quot; query ] ) | opaque-part
- *           	hierarchical-part    = ( &quot;//&quot; authority path-abempty ) | path-absolute | path-rootless | path-empty
- *           	authority            = [ user-info &quot;@&quot; ] host-domain [ &quot;:&quot; host-port ]
- *           
- *           	relative-reference   = relative-part [ &quot;?&quot; query ] [ &quot;#&quot; fragment ]
- *           	relative-part        = ( &quot;//&quot; authority path-abempty ) | path-absolute | path-noscheme | path-empty
- *           
- *           	path-abempty         = begins with &quot;/&quot; or is empty
- *           	path-absolute        = begins with &quot;/&quot; but not &quot;//&quot;
- *           	path-noscheme        = begins with a non-colon segment
- *           	path-rootless        = begins with a segment
- *           	path-empty           = zero characters
+ *                                   	URI reference        = absolute-reference | relative-reference
+ *                                   
+ *                                   	absolute-reference   = scheme &quot;:&quot; scheme-specific-part [ &quot;#&quot; fragment ]
+ *                                   	scheme-specific-part = ( hierarchical-part [ &quot;?&quot; query ] ) | opaque-part
+ *                                   	hierarchical-part    = ( &quot;//&quot; authority path-abempty ) | path-absolute | path-rootless | path-empty
+ *                                   	authority            = [ user-info &quot;@&quot; ] host-domain [ &quot;:&quot; host-port ]
+ *                                   
+ *                                   	relative-reference   = relative-part [ &quot;?&quot; query ] [ &quot;#&quot; fragment ]
+ *                                   	relative-part        = ( &quot;//&quot; authority path-abempty ) | path-absolute | path-noscheme | path-empty
+ *                                   
+ *                                   	path-abempty         = begins with &quot;/&quot; or is empty
+ *                                   	path-absolute        = begins with &quot;/&quot; but not &quot;//&quot;
+ *                                   	path-noscheme        = begins with a non-colon segment
+ *                                   	path-rootless        = begins with a segment
+ *                                   	path-empty           = zero characters
  * </pre>
  * 
  * Note that this class doesn't encode or decode the reserved characters. It
@@ -643,15 +643,14 @@ public class Reference {
     }
 
     /**
-     * Returns the relative part for relative references only.
+     * Returns the relative part. Note that the optional query and fragment are
+     * not returned by this method.
      * 
-     * @return The relative part for relative references only.
+     * @return The relative part.
      */
     public String getRelativePart() {
         String result = null;
-
-        if (schemeIndex == -1) {
-            // This is a relative reference, no scheme found
+        if (isRelative()) {
             if (queryIndex != -1) {
                 // Query found
                 result = this.internalRef.substring(0, queryIndex);
@@ -664,13 +663,46 @@ public class Reference {
                     result = this.internalRef;
                 }
             }
+        } else {
+            result = getRelativeRef().getRelativePart();
         }
 
         return result;
     }
 
     /**
-     * Returns the current reference relatively to a base reference.
+     * Returns the part of the resource identifier remaining after the base
+     * reference. Note that the optional fragment is not returned by this
+     * method.
+     * 
+     * @return The remaining resource part.
+     */
+    public String getRemainingPart() {
+        if (getBaseRef() != null) {
+            return toString(true, false).substring(
+                    getBaseRef().toString(true, false).length());
+        } else {
+            return toString(true, false);
+        }
+    }
+
+    /**
+     * Returns the current reference as a relative reference to the current base
+     * reference. This method should only be invoked for absolute references,
+     * otherwise an IllegalArgumentException will be raised.
+     * 
+     * @return The current reference as a relative reference to the current base
+     *         reference.
+     * @see #getRelativeRef(Reference)
+     */
+    public Reference getRelativeRef() {
+        return getRelativeRef(getBaseRef());
+    }
+
+    /**
+     * Returns the current reference relatively to a base reference. This method
+     * should only be invoked for absolute references, otherwise an
+     * IllegalArgumentException will be raised.
      * 
      * @param base
      *            The base reference to use.
@@ -1283,6 +1315,16 @@ public class Reference {
         } else {
             setRelativePart(newPart);
         }
+    }
+
+    /**
+     * Sets the base reference for relative references.
+     * 
+     * @param baseUri
+     *            The base URI for relative references.
+     */
+    public void setBaseRef(String baseUri) {
+        setBaseRef(new Reference(baseUri));
     }
 
     /**

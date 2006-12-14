@@ -29,7 +29,9 @@ import org.restlet.data.Status;
  * Subclasses only have to implement the getNext() method.
  * 
  * @author Jerome Louvel (contact@noelios.com)
+ * @deprecated Filter and Router now directly subclass Restlet
  */
+@Deprecated
 public abstract class Chainer extends Restlet {
     /**
      * Constructor.

@@ -106,27 +106,21 @@ public class HttpServerConverter extends HttpConverter {
             ParameterList responseHeaders = httpCall.getResponseHeaders();
 
             if (response.getStatus().equals(
-                    Status.CLIENT_ERROR_METHOD_NOT_ALLOWED)
-                    || response.getRequest().getMethod().equals(Method.PUT)) {
-                if ((response.getEntity() != null)
-                        && (response.getEntity().getResource() != null)) {
-                    // Format the "Allow" header
-                    StringBuilder sb = new StringBuilder();
-                    boolean first = true;
-                    for (Method method : response.getEntity().getResource()
-                            .getAllowedMethods()) {
-                        if (first) {
-                            first = false;
-                        } else {
-                            sb.append(", ");
-                        }
-
-                        sb.append(method.getName());
+                    Status.CLIENT_ERROR_METHOD_NOT_ALLOWED)) {
+                // Format the "Allow" header
+                StringBuilder sb = new StringBuilder();
+                boolean first = true;
+                for (Method method : response.getAllowedMethods()) {
+                    if (first) {
+                        first = false;
+                    } else {
+                        sb.append(", ");
                     }
 
-                    responseHeaders.add(HttpConstants.HEADER_ALLOW, sb
-                            .toString());
+                    sb.append(method.getName());
                 }
+
+                responseHeaders.add(HttpConstants.HEADER_ALLOW, sb.toString());
             }
 
             // Add the date
