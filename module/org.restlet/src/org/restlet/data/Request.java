@@ -404,8 +404,7 @@ public class Request extends Message {
      *            The resource reference.
      */
     public void setResourceRef(Reference resourceRef) {
-        this.resourceRef = (resourceRef == null) ? null : resourceRef
-                .getTargetRef();
+        this.resourceRef = resourceRef;
     }
 
     /**

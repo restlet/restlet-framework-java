@@ -132,6 +132,8 @@ public class Route extends Filter {
      * 
      * @param router
      *            The parent router.
+     * @param uriTemplate
+     *            The URI template.
      * @param next
      *            The next Restlet.
      */
@@ -143,7 +145,7 @@ public class Route extends Filter {
         this.entityExtracts = null;
         this.formExtracts = null;
         this.modelExtracts = null;
-        this.template = null;
+        this.template = new Template(getLogger(), uriTemplate);
     }
 
     /**

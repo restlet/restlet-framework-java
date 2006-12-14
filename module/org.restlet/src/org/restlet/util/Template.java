@@ -652,8 +652,14 @@ public class Template {
     public int match(String formattedString) {
         int result = 0;
         Matcher matcher = getRegexPattern().matcher(formattedString);
-        if (matcher.matches())
+
+        if ((getMatchingMode() == MODE_EQUALS) && matcher.matches()) {
             result = matcher.end();
+        } else if ((getMatchingMode() == MODE_STARTS_WITH)
+                && matcher.lookingAt()) {
+            result = matcher.end();
+        }
+
         return result;
     }
 

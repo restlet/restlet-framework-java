@@ -192,7 +192,14 @@ public class JettyCall extends HttpServerCall {
 
     @Override
     public String getVersion() {
-        return getRequest().getVersion();
+        String result = null;
+        int index = getRequest().getVersion().indexOf('/');
+
+        if (index != -1) {
+            result = getRequest().getVersion().substring(index + 1);
+        }
+
+        return result;
     }
 
     /**
