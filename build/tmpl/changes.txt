@@ -12,7 +12,8 @@ Changes log
  - Fixed issues in parsing of "accept*" HTTP headers. Added unit tests. Reported by AJ Barnes and Jeff Walter.
  - Fixed potential NPE in HostScorer.
  - Fixed RDF media type from "application/rdf-xml" to "application/rdf+xml". Reported by Aldo Bucchi.
-
+ - Made VirtualHost-based routing case-insensitive. Suggested by Thierry Boileau.
+ 
 [API changes]
  - Added attachDefault(Restlet) method to Router class. The detach() method now also detaches the default scorer.
  - Deprecated the StringTemplate mechanism, replaced by a more seamless ReferenceTemplate approach,
@@ -43,7 +44,8 @@ Changes log
  - Renamed VirtualHost.base* properties to host*.
  - Merged Container into Component as Component was almost never used separately.
    Retained the Component name for the final class as it is the REST terminology.
-
+ - Renamed Directory.rootUri to rootRef for consistency purpose.
+ 
 [Enhancements] 
  - Updated Jetty 6.1 to RC1 version.
  - Added a root "docs" directory with the UML diagrams (using StarUML), the Joint Copyright Assignment for contributors.

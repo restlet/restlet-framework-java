@@ -52,9 +52,10 @@ public class Directory extends Handler {
     private boolean deeplyAccessible;
 
     /**
-     * The absolute root URI, including the "file://" or "context://" scheme.
+     * The absolute root reference, including the "file://" or "context://"
+     * scheme.
      */
-    private String rootUri;
+    private Reference rootRef;
 
     /**
      * Indicates if modifications to context resources are allowed (false by
@@ -81,11 +82,11 @@ public class Directory extends Handler {
         super(context);
 
         if (rootUri.endsWith("/")) {
-            this.rootUri = rootUri;
+            this.rootRef = new Reference(rootUri);
         } else {
             // We don't take the risk of exposing directory "file:///C:/AA"
             // if only "file:///C:/A" was intended
-            this.rootUri = rootUri + "/";
+            this.rootRef = new Reference(rootUri + "/");
         }
 
         this.deeplyAccessible = true;
@@ -158,9 +159,20 @@ public class Directory extends Handler {
      * Returns the root URI.
      * 
      * @return The root URI.
+     * @deprecated Use getRootRef() instead.
      */
+    @Deprecated
     public String getRootUri() {
-        return rootUri;
+        return getRootRef().toString();
+    }
+
+    /**
+     * Returns the root URI.
+     * 
+     * @return The root URI.
+     */
+    public Reference getRootRef() {
+        return this.rootRef;
     }
 
     /**

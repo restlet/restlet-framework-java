@@ -28,7 +28,7 @@ import org.restlet.data.Request;
 import org.restlet.data.Response;
 
 /**
- * Router scorer based on a target VirtualHost.
+ * Route based on a target VirtualHost.
  * 
  * @author Jerome Louvel (contact@noelios.com)
  */
@@ -76,25 +76,25 @@ public class HostRoute extends Route {
     public float score(Request request, Response response) {
         float result = 0F;
 
-        String baseDomain = "";
-        String basePort = "";
-        String baseScheme = "";
+        // Prepare the value to be matched
+        String hostDomain = "";
+        String hostPort = "";
+        String hostScheme = "";
 
-        if (request.getResourceRef().getBaseRef() != null) {
-            baseDomain = request.getResourceRef().getBaseRef().getHostDomain();
-            if (baseDomain == null)
-                baseDomain = "";
+        if (request.getHostRef() != null) {
+            hostDomain = request.getHostRef().getHostDomain();
+            if (hostDomain == null)
+                hostDomain = "";
 
-            Integer basePortValue = request.getResourceRef().getBaseRef()
-                    .getHostPort();
+            Integer basePortValue = request.getHostRef().getHostPort();
             if (basePortValue == null)
-                basePortValue = request.getResourceRef().getBaseRef()
-                        .getSchemeProtocol().getDefaultPort();
-            basePort = basePortValue.toString();
+                basePortValue = request.getHostRef().getSchemeProtocol()
+                        .getDefaultPort();
+            hostPort = basePortValue.toString();
 
-            baseScheme = request.getResourceRef().getBaseRef().getScheme();
-            if (baseScheme == null)
-                baseScheme = "";
+            hostScheme = request.getHostRef().getScheme();
+            if (hostScheme == null)
+                hostScheme = "";
         }
 
         String resourceDomain = request.getResourceRef().getHostDomain();
@@ -120,23 +120,19 @@ public class HostRoute extends Route {
         if (serverPortValue != null)
             serverPort = serverPortValue.toString();
 
-        if (Pattern.matches(getVirtualHost().getHostDomain(), baseDomain)
-                && Pattern.matches(getVirtualHost().getHostPort(), basePort)
-                && Pattern
-                        .matches(getVirtualHost().getHostScheme(), baseScheme)
-                && Pattern.matches(getVirtualHost().getResourceDomain(),
-                        resourceDomain)
-                && Pattern.matches(getVirtualHost().getResourcePort(),
-                        resourcePort)
-                && Pattern.matches(getVirtualHost().getResourceScheme(),
-                        resourceScheme)
-                && Pattern.matches(getVirtualHost().getServerAddress(),
-                        serverAddress)
-                && Pattern
-                        .matches(getVirtualHost().getServerPort(), serverPort)) {
+        // Check if all the criterias match
+        if (matches(getVirtualHost().getHostDomain(), hostDomain)
+                && matches(getVirtualHost().getHostPort(), hostPort)
+                && matches(getVirtualHost().getHostScheme(), hostScheme)
+                && matches(getVirtualHost().getResourceDomain(), resourceDomain)
+                && matches(getVirtualHost().getResourcePort(), resourcePort)
+                && matches(getVirtualHost().getResourceScheme(), resourceScheme)
+                && matches(getVirtualHost().getServerAddress(), serverAddress)
+                && matches(getVirtualHost().getServerPort(), serverPort)) {
             result = 1F;
         }
 
+        // Log the result of the matching
         if (getLogger().isLoggable(Level.FINER)) {
             getLogger().finer(
                     "Call score for the \"" + getVirtualHost().getName()
@@ -144,6 +140,21 @@ public class HostRoute extends Route {
         }
 
         return result;
+    }
+
+    /**
+     * Matches a formatted string against a regex pattern, in a case insensitive
+     * manner.
+     * 
+     * @param regex
+     *            The pattern to use.
+     * @param formattedString
+     *            The formatted string to match.
+     * @return True if the formatted string matched the pattern.
+     */
+    private boolean matches(String regex, String formattedString) {
+        return Pattern.compile(regex, Pattern.CASE_INSENSITIVE).matcher(
+                formattedString).matches();
     }
 
     /**

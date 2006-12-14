@@ -140,11 +140,11 @@ public class DirectoryResource extends Resource {
             this.relativePart = this.relativePart.substring(1);
         }
 
-        this.targetUri = new Reference(directory.getRootUri()
+        this.targetUri = new Reference(directory.getRootRef().toString()
                 + this.relativePart).normalize().toString();
-        if (!this.targetUri.startsWith(directory.getRootUri())) {
+        if (!this.targetUri.startsWith(directory.getRootRef().toString())) {
             // Prevent the client from accessing resources in upper directories
-            this.targetUri = directory.getRootUri();
+            this.targetUri = directory.getRootRef().toString();
         }
 
         // Try to detect the presence of a directory
