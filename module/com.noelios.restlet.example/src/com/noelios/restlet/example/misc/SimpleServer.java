@@ -18,7 +18,7 @@
 
 package com.noelios.restlet.example.misc;
 
-import org.restlet.Container;
+import org.restlet.Component;
 import org.restlet.Restlet;
 import org.restlet.data.Form;
 import org.restlet.data.MediaType;
@@ -37,16 +37,16 @@ import org.restlet.data.Status;
 public class SimpleServer {
     public static void main(String[] args) {
         try {
-            // Create a new Restlet container
-            Container container = new Container();
+            // Create a new Restlet component
+            Component component = new Component();
 
             // Create the HTTP server connector, then add it as a server
             // connector to the Restlet container. Note that the container
             // is the call restlet.
-            container.getServers().add(Protocol.HTTP, 9876);
+            component.getServers().add(Protocol.HTTP, 9876);
 
             // Prepare and attach a test Handler
-            Restlet handler = new Restlet(container.getContext()) {
+            Restlet handler = new Restlet(component.getContext()) {
                 @Override
                 public void handle(Request request, Response response) {
                     if (request.getMethod().equals(Method.PUT)) {
@@ -76,10 +76,10 @@ public class SimpleServer {
                 }
             };
 
-            container.getDefaultHost().attach("/test", handler);
+            component.getDefaultHost().attach("/test", handler);
 
             // Now, start the container
-            container.start();
+            component.start();
         } catch (Exception e) {
             e.printStackTrace();
         }

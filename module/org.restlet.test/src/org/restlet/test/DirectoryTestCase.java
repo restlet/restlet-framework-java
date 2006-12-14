@@ -24,7 +24,7 @@ import java.io.IOException;
 import junit.framework.TestCase;
 
 import org.restlet.Application;
-import org.restlet.Container;
+import org.restlet.Component;
 import org.restlet.Directory;
 import org.restlet.Restlet;
 import org.restlet.data.Method;
@@ -61,7 +61,7 @@ public class DirectoryTestCase extends TestCase {
             testDir.mkdir();
 
             // Create a new Restlet container
-            Container clientContainer = new Container();
+            Component clientContainer = new Component();
             clientContainer.getClients().add(Protocol.FILE);
 
             // Create an application
@@ -364,21 +364,21 @@ public class DirectoryTestCase extends TestCase {
         /**
          * Constructor.
          * 
-         * @param container
-         *            The container.
+         * @param component
+         *            The component.
          */
-        public MyApplication(Container container) {
-            super(container);
+        public MyApplication(Component component) {
+            super(component);
         }
 
         /**
          * Constructor.
          * 
-         * @param container
-         *            The container.
+         * @param component
+         *            The component.
          */
-        public MyApplication(Container container, File testDirectory) {
-            super(container);
+        public MyApplication(Component component, File testDirectory) {
+            super(component);
             this.setTestDirectory(testDirectory);
             // Create a DirectoryHandler that manages a local Directory
             this.directory = new Directory(getContext(), getTestDirectory()

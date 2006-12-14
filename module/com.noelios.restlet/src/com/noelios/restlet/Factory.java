@@ -31,7 +31,7 @@ import java.util.logging.Logger;
 
 import org.restlet.Application;
 import org.restlet.Client;
-import org.restlet.Container;
+import org.restlet.Component;
 import org.restlet.Context;
 import org.restlet.Directory;
 import org.restlet.Server;
@@ -48,7 +48,7 @@ import org.restlet.resource.Resource;
 import org.restlet.util.Helper;
 
 import com.noelios.restlet.application.ApplicationHelper;
-import com.noelios.restlet.container.ContainerHelper;
+import com.noelios.restlet.component.ContainerHelper;
 import com.noelios.restlet.local.DirectoryResource;
 import com.noelios.restlet.util.FormUtils;
 
@@ -294,14 +294,14 @@ public class Factory extends org.restlet.util.Factory {
     }
 
     /**
-     * Creates a new helper for a given container.
+     * Creates a new helper for a given component.
      * 
-     * @param container
-     *            The container to help.
+     * @param component
+     *            The component to help.
      * @return The new helper.
      */
-    public Helper createHelper(Container container) {
-        return new ContainerHelper(container);
+    public Helper createHelper(Component component) {
+        return new ContainerHelper(component);
     }
 
     /**

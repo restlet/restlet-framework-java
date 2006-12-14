@@ -16,10 +16,10 @@
  * Portions Copyright [yyyy] [name of copyright owner]
  */
 
-package com.noelios.restlet.container;
+package com.noelios.restlet.component;
 
 import org.restlet.Client;
-import org.restlet.Container;
+import org.restlet.Component;
 import org.restlet.Router;
 
 /**
@@ -29,23 +29,23 @@ import org.restlet.Router;
  * @author Jerome Louvel (contact@noelios.com)
  */
 public class ClientRouter extends Router {
-    /** The parent container. */
-    private Container container;
+    /** The parent component. */
+    private Component component;
 
     /**
      * Constructor.
      * 
-     * @param container
-     *            The parent container.
+     * @param component
+     *            The parent component.
      */
-    public ClientRouter(Container container) {
-        super(container.getContext());
-        this.container = container;
+    public ClientRouter(Component component) {
+        super(component.getContext());
+        this.component = component;
     }
 
     /** Starts the Restlet. */
     public void start() throws Exception {
-        for (Client client : getContainer().getClients()) {
+        for (Client client : getComponent().getClients()) {
             getRoutes().add(new ClientRoute(this, client));
         }
 
@@ -53,11 +53,11 @@ public class ClientRouter extends Router {
     }
 
     /**
-     * Returns the parent container.
+     * Returns the parent component.
      * 
-     * @return The parent container.
+     * @return The parent component.
      */
-    private Container getContainer() {
-        return container;
+    private Component getComponent() {
+        return this.component;
     }
 }

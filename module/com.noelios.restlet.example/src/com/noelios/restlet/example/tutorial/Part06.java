@@ -19,7 +19,7 @@
 package com.noelios.restlet.example.tutorial;
 
 import org.restlet.Application;
-import org.restlet.Container;
+import org.restlet.Component;
 import org.restlet.Directory;
 import org.restlet.Restlet;
 import org.restlet.data.Protocol;
@@ -31,22 +31,22 @@ import org.restlet.data.Protocol;
  */
 public class Part06 implements Constants {
     public static void main(String[] args) throws Exception {
-        // Create a container
-        Container container = new Container();
-        container.getServers().add(Protocol.HTTP, 8182);
-        container.getClients().add(Protocol.FILE);
+        // Create a component
+        Component component = new Component();
+        component.getServers().add(Protocol.HTTP, 8182);
+        component.getClients().add(Protocol.FILE);
 
         // Create an application
-        Application application = new Application(container) {
+        Application application = new Application(component) {
             @Override
             public Restlet createRoot() {
                 return new Directory(getContext(), ROOT_URI);
             }
         };
 
-        // Attach the application to the container and start it
-        container.getDefaultHost().attach("", application);
-        container.start();
+        // Attach the application to the component and start it
+        component.getDefaultHost().attach("", application);
+        component.start();
     }
 
 }

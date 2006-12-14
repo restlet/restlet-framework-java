@@ -28,7 +28,7 @@ import java.util.logging.Logger;
 
 import org.restlet.Application;
 import org.restlet.Client;
-import org.restlet.Container;
+import org.restlet.Component;
 import org.restlet.Context;
 import org.restlet.Directory;
 import org.restlet.Server;
@@ -224,13 +224,13 @@ public abstract class Factory {
     public abstract Helper createHelper(Client client);
 
     /**
-     * Creates a new helper for a given container.
+     * Creates a new helper for a given component.
      * 
-     * @param container
-     *            The container to help.
+     * @param component
+     *            The component to help.
      * @return The new helper.
      */
-    public abstract Helper createHelper(Container container);
+    public abstract Helper createHelper(Component component);
 
     /**
      * Creates a new helper for a given server connector.

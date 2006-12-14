@@ -16,9 +16,9 @@
  * Portions Copyright [yyyy] [name of copyright owner]
  */
 
-package com.noelios.restlet.container;
+package com.noelios.restlet.component;
 
-import org.restlet.Container;
+import org.restlet.Component;
 import org.restlet.Restlet;
 import org.restlet.Route;
 import org.restlet.Router;
@@ -34,36 +34,36 @@ import org.restlet.data.Status;
  * @author Jerome Louvel (contact@noelios.com)
  */
 public class ServerRouter extends Router {
-    /** The parent container. */
-    private Container container;
+    /** The parent component. */
+    private Component component;
 
     /**
      * Constructor.
      * 
-     * @param container
-     *            The parent container.
+     * @param component
+     *            The parent component.
      */
-    public ServerRouter(Container container) {
-        super(container.getContext());
-        this.container = container;
+    public ServerRouter(Component component) {
+        super(component.getContext());
+        this.component = component;
         setRoutingMode(FIRST);
     }
 
     /** Starts the Restlet. */
     public void start() throws Exception {
         // Attach all virtual hosts
-        for (VirtualHost host : getContainer().getHosts()) {
+        for (VirtualHost host : getComponent().getHosts()) {
             getRoutes().add(new HostRoute(this, host));
         }
 
         // Also attach the local host if it exists
-        if (getContainer().getDefaultHost() != null) {
+        if (getComponent().getDefaultHost() != null) {
             getRoutes().add(
-                    new HostRoute(this, getContainer().getDefaultHost()));
+                    new HostRoute(this, getComponent().getDefaultHost()));
         }
 
         // If no host matches, display and error page with a precise message
-        Restlet noHostMatched = new Restlet(getContainer().getContext()) {
+        Restlet noHostMatched = new Restlet(getComponent().getContext()) {
             public void handle(Request request, Response response) {
                 response.setStatus(Status.CLIENT_ERROR_NOT_FOUND,
                         "No virtual host could handle the request");
@@ -76,11 +76,11 @@ public class ServerRouter extends Router {
     }
 
     /**
-     * Returns the parent container.
+     * Returns the parent component.
      * 
-     * @return The parent container.
+     * @return The parent component.
      */
-    private Container getContainer() {
-        return container;
+    private Component getComponent() {
+        return this.component;
     }
 }

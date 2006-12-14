@@ -18,7 +18,7 @@
 
 package com.noelios.restlet.example.tutorial;
 
-import org.restlet.Container;
+import org.restlet.Component;
 import org.restlet.Restlet;
 import org.restlet.data.MediaType;
 import org.restlet.data.Protocol;
@@ -32,9 +32,9 @@ import org.restlet.data.Response;
  */
 public class Part05 {
     public static void main(String[] args) throws Exception {
-        // Create a new Restlet container and add a HTTP server connector to it
-        Container container = new Container();
-        container.getServers().add(Protocol.HTTP, 8182);
+        // Create a new Restlet component and add a HTTP server connector to it
+        Component component = new Component();
+        component.getServers().add(Protocol.HTTP, 8182);
 
         // Create a new Restlet that will display some path information.
         Restlet restlet = new Restlet() {
@@ -51,11 +51,11 @@ public class Part05 {
         };
 
         // Then attach it to the local host
-        container.getDefaultHost().attach("/trace", restlet);
+        component.getDefaultHost().attach("/trace", restlet);
 
-        // Now, let's start the container!
+        // Now, let's start the component!
         // Note that the HTTP server connector is also automatically started.
-        container.start();
+        component.start();
     }
 
 }

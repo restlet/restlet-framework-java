@@ -89,11 +89,11 @@ public abstract class Application extends Restlet {
     /**
      * Constructor.
      * 
-     * @param container
-     *            The container.
+     * @param component
+     *            The component.
      */
-    public Application(Container container) {
-        this(container.getContext());
+    public Application(Component component) {
+        this(component.getContext());
     }
 
     /**

@@ -41,6 +41,8 @@ Changes log
  - Renamed Router.*scorer* properties to *route*.
  - Renamed ScorerList to RouteList.
  - Renamed VirtualHost.base* properties to host*.
+ - Merged Container into Component as Component was almost never used separately.
+   Retained the Component name for the final class as it is the REST terminology.
 
 [Enhancements] 
  - Updated Jetty 6.1 to RC0 version.

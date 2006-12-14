@@ -16,11 +16,11 @@
  * Portions Copyright [yyyy] [name of copyright owner]
  */
 
-package com.noelios.restlet.container;
+package com.noelios.restlet.component;
 
 import java.util.logging.Logger;
 
-import org.restlet.Container;
+import org.restlet.Component;
 import org.restlet.Context;
 import org.restlet.Dispatcher;
 
@@ -42,7 +42,7 @@ public class ContainerContext extends Context {
      *            The container helper.
      */
     public ContainerContext(ContainerHelper containerHelper) {
-        this(containerHelper, Logger.getLogger(Container.class
+        this(containerHelper, Logger.getLogger(Component.class
                 .getCanonicalName()));
     }
 

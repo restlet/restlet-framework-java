@@ -20,7 +20,7 @@ package org.restlet.test;
 
 import junit.framework.TestCase;
 
-import org.restlet.Container;
+import org.restlet.Component;
 import org.restlet.Context;
 import org.restlet.Redirector;
 import org.restlet.Restlet;
@@ -41,22 +41,22 @@ public class RedirectTestCase extends TestCase {
      * Tests the cookies parsing.
      */
     public void testRedirect() throws Exception {
-        // Create containers
-        Container clientContainer = new Container();
-        Container proxyContainer = new Container();
-        Container originContainer = new Container();
+        // Create components
+        Component clientComponent = new Component();
+        Component proxyComponent = new Component();
+        Component originComponent = new Component();
 
         // Create the client connectors
-        clientContainer.getClients().add(Protocol.HTTP);
-        proxyContainer.getClients().add(Protocol.HTTP);
+        clientComponent.getClients().add(Protocol.HTTP);
+        proxyComponent.getClients().add(Protocol.HTTP);
 
         // Create the proxy Restlet
         String target = "http://localhost:9090${path}#[if query]?${query}#[end]";
-        Redirector proxy = new Redirector(proxyContainer.getContext(), target,
+        Redirector proxy = new Redirector(proxyComponent.getContext(), target,
                 Redirector.MODE_CONNECTOR);
 
         // Create a new Restlet that will display some path information.
-        Restlet trace = new Restlet(originContainer.getContext()) {
+        Restlet trace = new Restlet(originComponent.getContext()) {
             public void handle(Request request, Response response) {
                 // Print the requested URI path
                 String message = "Resource URI:  " + request.getResourceRef()
@@ -73,20 +73,20 @@ public class RedirectTestCase extends TestCase {
         };
 
         // Set the container roots
-        proxyContainer.getDefaultHost().attach("", proxy);
-        originContainer.getDefaultHost().attach("", trace);
+        proxyComponent.getDefaultHost().attach("", proxy);
+        originComponent.getDefaultHost().attach("", trace);
 
         // Create the server connectors
-        proxyContainer.getServers().add(Protocol.HTTP, 8080);
-        originContainer.getServers().add(Protocol.HTTP, 9090);
+        proxyComponent.getServers().add(Protocol.HTTP, 8080);
+        originComponent.getServers().add(Protocol.HTTP, 9090);
 
         // Now, let's start the containers!
-        originContainer.start();
-        proxyContainer.start();
-        clientContainer.start();
+        originComponent.start();
+        proxyComponent.start();
+        clientComponent.start();
 
         // Tests
-        Context context = clientContainer.getContext();
+        Context context = clientComponent.getContext();
         String uri = "http://localhost:8080/?foo=bar";
         testCall(context, Method.GET, uri);
         testCall(context, Method.DELETE, uri);
@@ -99,9 +99,9 @@ public class RedirectTestCase extends TestCase {
         testCall(context, Method.GET, uri);
 
         // Stop the containers
-        clientContainer.stop();
-        originContainer.stop();
-        proxyContainer.stop();
+        clientComponent.stop();
+        originComponent.stop();
+        proxyComponent.stop();
     }
 
     private void testCall(Context context, Method method, String uri)

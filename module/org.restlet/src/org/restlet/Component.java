@@ -18,7 +18,16 @@
 
 package org.restlet;
 
+import java.util.ArrayList;
+import java.util.List;
+
+import org.restlet.data.Request;
+import org.restlet.data.Response;
+import org.restlet.service.LogService;
+import org.restlet.service.StatusService;
 import org.restlet.util.ClientList;
+import org.restlet.util.Factory;
+import org.restlet.util.Helper;
 import org.restlet.util.ServerList;
 
 /**
@@ -26,17 +35,37 @@ import org.restlet.util.ServerList;
  * is an abstract unit of software instructions and internal state that provides
  * a transformation of data via its interface." Roy T. Fielding
  * 
+ * Component managing a set of VirtualHosts and Applications. Applications are
+ * expected to be directly attached to VirtualHosts. Containers are also
+ * exposing a number of services in order to control several operational
+ * features in a portable way, like access log and status setting.
+ * 
  * @see <a
  *      href="http://www.ics.uci.edu/~fielding/pubs/dissertation/software_arch.htm#sec_1_2_1">Source
  *      dissertation</a>
  * @author Jerome Louvel (contact@noelios.com)
  */
-public abstract class Component extends Restlet {
+public class Component extends Restlet {
     /** The modifiable list of client connectors. */
     private ClientList clients;
 
     /** The modifiable list of server connectors. */
     private ServerList servers;
+
+    /** The modifiable list of virtual hosts. */
+    private List<VirtualHost> hosts;
+
+    /** The default host. */
+    private VirtualHost defaultHost;
+
+    /** The helper provided by the implementation. */
+    private Helper helper;
+
+    /** The log service. */
+    private LogService logService;
+
+    /** The status service. */
+    private StatusService statusService;
 
     /**
      * Constructor.
@@ -53,6 +82,16 @@ public abstract class Component extends Restlet {
      */
     public Component(Context context) {
         super(context);
+        if (Factory.getInstance() != null) {
+            this.helper = Factory.getInstance().createHelper(this);
+            if (this.helper != null) {
+                setContext(this.helper.createContext());
+                this.hosts = null;
+                this.defaultHost = new VirtualHost(getContext());
+                this.logService = null;
+                this.statusService = null;
+            }
+        }
     }
 
     /**
@@ -93,6 +132,9 @@ public abstract class Component extends Restlet {
             }
         }
 
+        if (getHelper() != null)
+            getHelper().start();
+
         super.start();
     }
 
@@ -100,7 +142,8 @@ public abstract class Component extends Restlet {
      * Stop hook. Stops all connectors.
      */
     public void stop() throws Exception {
-        super.stop();
+        if (getHelper() != null)
+            getHelper().stop();
 
         if (this.clients != null) {
             for (Client client : this.clients) {
@@ -113,6 +156,107 @@ public abstract class Component extends Restlet {
                 server.stop();
             }
         }
+
+        super.stop();
+    }
+
+    /**
+     * Returns the default virtual host.
+     * 
+     * @return The default virtual host.
+     */
+    public VirtualHost getDefaultHost() {
+        return this.defaultHost;
+    }
+
+    /**
+     * Returns the helper provided by the implementation.
+     * 
+     * @return The helper provided by the implementation.
+     */
+    private Helper getHelper() {
+        return this.helper;
+    }
+
+    /**
+     * Returns the modifiable list of host routers.
+     * 
+     * @return The modifiable list of host routers.
+     */
+    public List<VirtualHost> getHosts() {
+        if (this.hosts == null)
+            this.hosts = new ArrayList<VirtualHost>();
+        return this.hosts;
+    }
+
+    /**
+     * Returns the log service. This service is disabled by default.
+     * 
+     * @return The log service.
+     */
+    public LogService getLogService() {
+        if (this.logService == null) {
+            this.logService = new LogService(false);
+            this.logService.setAccessLoggerName(getClass().getCanonicalName()
+                    + " (" + hashCode() + ")");
+        }
+
+        return this.logService;
+    }
+
+    /**
+     * Returns the status service. This service is enabled by default.
+     * 
+     * @return The status service.
+     */
+    public StatusService getStatusService() {
+        if (this.statusService == null)
+            this.statusService = new StatusService(true);
+        return this.statusService;
+    }
+
+    /**
+     * Handles a call.
+     * 
+     * @param request
+     *            The request to handle.
+     * @param response
+     *            The response to update.
+     */
+    public void handle(Request request, Response response) {
+        init(request, response);
+        if (getHelper() != null)
+            getHelper().handle(request, response);
+    }
+
+    /**
+     * Sets the default virtual host.
+     * 
+     * @param defaultHost
+     *            The default virtual host.
+     */
+    public void setDefaultHost(VirtualHost defaultHost) {
+        this.defaultHost = defaultHost;
+    }
+
+    /**
+     * Sets the log service.
+     * 
+     * @param logService
+     *            The log service.
+     */
+    public void setLogService(LogService logService) {
+        this.logService = logService;
+    }
+
+    /**
+     * Sets the status service.
+     * 
+     * @param statusService
+     *            The status service.
+     */
+    public void setStatusService(StatusService statusService) {
+        this.statusService = statusService;
     }
 
 }

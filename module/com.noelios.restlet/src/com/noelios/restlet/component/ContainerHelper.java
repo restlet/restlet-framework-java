@@ -16,12 +16,12 @@
  * Portions Copyright [yyyy] [name of copyright owner]
  */
 
-package com.noelios.restlet.container;
+package com.noelios.restlet.component;
 
 import java.util.logging.Level;
 
 import org.restlet.Application;
-import org.restlet.Container;
+import org.restlet.Component;
 import org.restlet.Context;
 import org.restlet.Filter;
 import org.restlet.Restlet;
@@ -37,13 +37,13 @@ import com.noelios.restlet.LogFilter;
 import com.noelios.restlet.StatusFilter;
 
 /**
- * Container helper.
+ * Component helper.
  * 
  * @author Jerome Louvel (contact@noelios.com)
  */
 public class ContainerHelper extends Helper {
-    /** The helped container. */
-    private Container container;
+    /** The helped component. */
+    private Component component;
 
     /** The first Restlet. */
     private Restlet first;
@@ -56,12 +56,15 @@ public class ContainerHelper extends Helper {
 
     /**
      * Constructor.
+     * 
+     * @param component
+     *            The helper component.
      */
-    public ContainerHelper(Container container) {
-        this.container = container;
+    public ContainerHelper(Component component) {
+        this.component = component;
         this.first = null;
-        this.clientRouter = new ClientRouter(getContainer());
-        this.serverRouter = new ServerRouter(getContainer());
+        this.clientRouter = new ClientRouter(getComponent());
+        this.serverRouter = new ServerRouter(getComponent());
     }
 
     /**
@@ -83,12 +86,12 @@ public class ContainerHelper extends Helper {
     }
 
     /**
-     * Returns the helped container.
+     * Returns the helped component.
      * 
-     * @return The helped container.
+     * @return The helped component.
      */
-    protected Container getContainer() {
-        return this.container;
+    protected Component getComponent() {
+        return this.component;
     }
 
     /**
@@ -113,7 +116,7 @@ public class ContainerHelper extends Helper {
             getFirst().handle(request, response);
         } else {
             response.setStatus(Status.SERVER_ERROR_INTERNAL);
-            getContainer()
+            getComponent()
                     .getLogger()
                     .log(Level.SEVERE,
                             "The container wasn't properly started, it can't handle calls.");
@@ -126,28 +129,28 @@ public class ContainerHelper extends Helper {
         Filter lastFilter = null;
 
         // Checking if all applications have proper connectors
-        boolean success = checkVirtualHost(getContainer().getDefaultHost());
+        boolean success = checkVirtualHost(getComponent().getDefaultHost());
         if (success) {
-            for (VirtualHost host : getContainer().getHosts()) {
+            for (VirtualHost host : getComponent().getHosts()) {
                 success = success && checkVirtualHost(host);
             }
         }
 
         // Let's actually start the container
         if (!success) {
-            getContainer().stop();
+            getComponent().stop();
         } else {
             // Logging of calls
-            if (getContainer().getLogService().isEnabled()) {
-                lastFilter = createLogFilter(getContainer().getContext(),
-                        getContainer().getLogService().getAccessLoggerName(),
-                        getContainer().getLogService().getAccessLogFormat());
+            if (getComponent().getLogService().isEnabled()) {
+                lastFilter = createLogFilter(getComponent().getContext(),
+                        getComponent().getLogService().getAccessLoggerName(),
+                        getComponent().getLogService().getAccessLogFormat());
                 setFirst(lastFilter);
             }
 
             // Addition of status pages
-            if (getContainer().getStatusService().isEnabled()) {
-                Filter statusFilter = createStatusFilter(getContainer());
+            if (getComponent().getStatusService().isEnabled()) {
+                Filter statusFilter = createStatusFilter(getComponent());
                 if (lastFilter != null)
                     lastFilter.setNext(statusFilter);
                 if (getFirst() == null)
@@ -184,9 +187,9 @@ public class ContainerHelper extends Helper {
 
                     for (Protocol clientProtocol : application
                             .getConnectorService().getClientProtocols()) {
-                        if (!getContainer().getClients().contains(
+                        if (!getComponent().getClients().contains(
                                 clientProtocol)) {
-                            getContainer()
+                            getComponent()
                                     .getLogger()
                                     .severe(
                                             "Unable to start the application \""
@@ -200,9 +203,9 @@ public class ContainerHelper extends Helper {
 
                     for (Protocol serverProtocol : application
                             .getConnectorService().getServerProtocols()) {
-                        if (!getContainer().getServers().contains(
+                        if (!getComponent().getServers().contains(
                                 serverProtocol)) {
-                            getContainer()
+                            getComponent()
                                     .getLogger()
                                     .severe(
                                             "Unable to start the application \""
@@ -243,18 +246,18 @@ public class ContainerHelper extends Helper {
     /**
      * Creates a new status filter. Allows overriding.
      * 
-     * @param container
+     * @param component
      *            The parent container.
      * @return The new status filter.
      */
-    protected StatusFilter createStatusFilter(Container container) {
-        return new ContainerStatusFilter(container);
+    protected StatusFilter createStatusFilter(Component component) {
+        return new ComponentStatusFilter(component);
     }
 
     /** Stop callback. */
     public void stop() throws Exception {
         // Stop all applications
-        for (VirtualHost host : getContainer().getHosts()) {
+        for (VirtualHost host : getComponent().getHosts()) {
             for (Route route : host.getRoutes()) {
                 Restlet next = route.getNext();
 

@@ -27,7 +27,7 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
 import org.restlet.Application;
-import org.restlet.Container;
+import org.restlet.Component;
 import org.restlet.Context;
 import org.restlet.Server;
 import org.restlet.data.Protocol;
@@ -40,29 +40,29 @@ import com.noelios.restlet.http.HttpServerHelper;
  * configuration for your Restlet webapp:
  * 
  * <pre>
- *   &lt;?xml version=&quot;1.0&quot; encoding=&quot;ISO-8859-1&quot;?&gt;
- *   &lt;!DOCTYPE web-app PUBLIC &quot;-//Sun Microsystems, Inc.//DTD Web Application 2.3//EN&quot; &quot;http://java.sun.com/dtd/web-app_2_3.dtd&quot;&gt;
- *   &lt;web-app&gt;
- *   	&lt;display-name&gt;Restlet adapter&lt;/display-name&gt;
- *   
- *   	&lt;!-- Your application class name --&gt;
- *   	&lt;context-param&gt;
- *   		&lt;param-name&gt;org.restlet.application&lt;/param-name&gt;
- *   		&lt;param-value&gt;com.noelios.restlet.test.TraceApplication&lt;/param-value&gt;
- *   	&lt;/context-param&gt;
- *   
- *   	&lt;!-- Restlet adapter --&gt;
- *   	&lt;servlet&gt;
- *   		&lt;servlet-name&gt;ServerServlet&lt;/servlet-name&gt;
- *   		&lt;servlet-class&gt;com.noelios.restlet.ext.servlet.ServerServlet&lt;/servlet-class&gt;
- *   	&lt;/servlet&gt;
- *   
- *   	&lt;!-- Catch all requests --&gt;
- *   	&lt;servlet-mapping&gt;
- *   		&lt;servlet-name&gt;ServerServlet&lt;/servlet-name&gt;
- *   		&lt;url-pattern&gt;/*&lt;/url-pattern&gt;
- *   	&lt;/servlet-mapping&gt;
- *   &lt;/web-app&gt;}
+ *    &lt;?xml version=&quot;1.0&quot; encoding=&quot;ISO-8859-1&quot;?&gt;
+ *    &lt;!DOCTYPE web-app PUBLIC &quot;-//Sun Microsystems, Inc.//DTD Web Application 2.3//EN&quot; &quot;http://java.sun.com/dtd/web-app_2_3.dtd&quot;&gt;
+ *    &lt;web-app&gt;
+ *    	&lt;display-name&gt;Restlet adapter&lt;/display-name&gt;
+ *    
+ *    	&lt;!-- Your application class name --&gt;
+ *    	&lt;context-param&gt;
+ *    		&lt;param-name&gt;org.restlet.application&lt;/param-name&gt;
+ *    		&lt;param-value&gt;com.noelios.restlet.test.TraceApplication&lt;/param-value&gt;
+ *    	&lt;/context-param&gt;
+ *    
+ *    	&lt;!-- Restlet adapter --&gt;
+ *    	&lt;servlet&gt;
+ *    		&lt;servlet-name&gt;ServerServlet&lt;/servlet-name&gt;
+ *    		&lt;servlet-class&gt;com.noelios.restlet.ext.servlet.ServerServlet&lt;/servlet-class&gt;
+ *    	&lt;/servlet&gt;
+ *    
+ *    	&lt;!-- Catch all requests --&gt;
+ *    	&lt;servlet-mapping&gt;
+ *    		&lt;servlet-name&gt;ServerServlet&lt;/servlet-name&gt;
+ *    		&lt;url-pattern&gt;/*&lt;/url-pattern&gt;
+ *    	&lt;/servlet-mapping&gt;
+ *    &lt;/web-app&gt;}
  * </pre>
  * 
  * The enumeration of initParameters of your Servlet will be copied to the
@@ -167,33 +167,33 @@ public class ServerServlet extends HttpServlet {
                             Class targetClass = Class
                                     .forName(applicationClassName);
 
-                            // First, let's locate the closest container
-                            Container container = new Container();
-                            Server server = new Server(container.getContext(),
+                            // First, let's locate the closest component
+                            Component component = new Component();
+                            Server server = new Server(component.getContext(),
                                     (List<Protocol>) null, request
                                             .getLocalAddr(), request
-                                            .getLocalPort(), container);
+                                            .getLocalPort(), component);
                             result = new HttpServerHelper(server);
                             getServletContext().setAttribute(
                                     NAME_SERVER_ATTRIBUTE, result);
 
-                            if (container != null) {
+                            if (component != null) {
                                 // Create a new instance of the application
                                 // class
                                 Application application = (Application) targetClass
                                         .getConstructor(Context.class)
-                                        .newInstance(container.getContext());
+                                        .newInstance(component.getContext());
 
                                 // Set the Servlet context
                                 application
                                         .setContext(new ServletContextAdapter(
-                                                this, application, container
+                                                this, application, component
                                                         .getContext()));
 
                                 // Attach the application
                                 String uriPattern = request.getContextPath()
                                         + request.getServletPath();
-                                container.getDefaultHost().attach(uriPattern,
+                                component.getDefaultHost().attach(uriPattern,
                                         application);
 
                                 // Starts the target Restlet

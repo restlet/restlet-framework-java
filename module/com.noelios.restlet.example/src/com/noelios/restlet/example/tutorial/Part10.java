@@ -19,7 +19,7 @@
 package com.noelios.restlet.example.tutorial;
 
 import org.restlet.Application;
-import org.restlet.Container;
+import org.restlet.Component;
 import org.restlet.Redirector;
 import org.restlet.Restlet;
 import org.restlet.data.Protocol;
@@ -31,12 +31,12 @@ import org.restlet.data.Protocol;
  */
 public class Part10 {
     public static void main(String[] args) throws Exception {
-        // Create a container
-        Container container = new Container();
-        container.getServers().add(Protocol.HTTP, 8182);
+        // Create a component
+        Component component = new Component();
+        component.getServers().add(Protocol.HTTP, 8182);
 
         // Create an application
-        Application application = new Application(container) {
+        Application application = new Application(component) {
             @Override
             public Restlet createRoot() {
                 // Create a Redirector to Google search service
@@ -46,9 +46,9 @@ public class Part10 {
             }
         };
 
-        // Attach the application to the container and start it
-        container.getDefaultHost().attach("/search", application);
-        container.start();
+        // Attach the application to the component and start it
+        component.getDefaultHost().attach("/search", application);
+        component.start();
     }
 
 }

@@ -16,7 +16,7 @@
  * Portions Copyright [yyyy] [name of copyright owner]
  */
 
-package com.noelios.restlet.container;
+package com.noelios.restlet.component;
 
 import java.util.logging.Level;
 import java.util.regex.Pattern;
