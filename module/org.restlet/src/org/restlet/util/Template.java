@@ -26,14 +26,235 @@ import java.util.logging.Logger;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
+import org.restlet.data.Reference;
 import org.restlet.data.Request;
 import org.restlet.data.Response;
 
 /**
  * String template with a model is based on a request. Supports both formatting
  * and parsing. The template variables can be inserted using the "{name}" syntax
- * where the "name" string can be a sequence of characters taken from: ALPHA,
- * DIGIT, "-", ".", "_", "~" (corresponding to URI unreserved characters).
+ * and described using the modifiable map of variable descriptors. When no
+ * descriptor is found for a given variable, the template logic uses its default
+ * variable property initialized using the default {@link Variable} constructor.
+ * 
+ * <table>
+ * <tr>
+ * <th>Model property</th>
+ * <th>Variable name</th>
+ * <th>Content type</th>
+ * </tr>
+ * <tr>
+ * <td>request.confidential</td>
+ * <td>c</td>
+ * <td>boolean (true|false)</td>
+ * </tr>
+ * <tr>
+ * <td>request.clientInfo.address</td>
+ * <td>cia</td>
+ * <td>String</td>
+ * </tr>
+ * <tr>
+ * <td>request.clientInfo.agent</td>
+ * <td>cig</td>
+ * <td>String</td>
+ * </tr>
+ * <tr>
+ * <td>request.challengeResponse.identifier</td>
+ * <td>cri</td>
+ * <td>String</td>
+ * </tr>
+ * <tr>
+ * <td>request.challengeResponse.scheme</td>
+ * <td>crs</td>
+ * <td>String</td>
+ * </tr>
+ * <tr>
+ * <td>request.entity.characterSet</td>
+ * <td>ecs</td>
+ * <td>String</td>
+ * </tr>
+ * <tr>
+ * <td>response.entity.characterSet</td>
+ * <td>ECS</td>
+ * <td>String</td>
+ * </tr>
+ * <tr>
+ * <td>request.entity.encoding</td>
+ * <td>ee</td>
+ * <td>String</td>
+ * </tr>
+ * <tr>
+ * <td>response.entity.encoding</td>
+ * <td>EE</td>
+ * <td>String</td>
+ * </tr>
+ * <tr>
+ * <td>request.entity.expirationDate</td>
+ * <td>eed</td>
+ * <td>Date (HTTP format)</td>
+ * </tr>
+ * <tr>
+ * <td>response.entity.expirationDate</td>
+ * <td>EED</td>
+ * <td>Date (HTTP format)</td>
+ * </tr>
+ * <tr>
+ * <td>request.entity.language</td>
+ * <td>el</td>
+ * <td>String</td>
+ * </tr>
+ * <tr>
+ * <td>response.entity.language</td>
+ * <td>EL</td>
+ * <td>String</td>
+ * </tr>
+ * <tr>
+ * <td>request.entity.modificationDate</td>
+ * <td>emd</td>
+ * <td>Date (HTTP format)</td>
+ * </tr>
+ * <tr>
+ * <td>response.entity.modificationDate</td>
+ * <td>EMD</td>
+ * <td>Date (HTTP format)</td>
+ * </tr>
+ * <tr>
+ * <td>request.entity.mediaType</td>
+ * <td>emt</td>
+ * <td>String</td>
+ * </tr>
+ * <tr>
+ * <td>response.entity.mediaType</td>
+ * <td>EMT</td>
+ * <td>String</td>
+ * </tr>
+ * <tr>
+ * <td>request.entity.size</td>
+ * <td>es</td>
+ * <td>Integer</td>
+ * </tr>
+ * <tr>
+ * <td>response.entity.size</td>
+ * <td>ES</td>
+ * <td>Integer</td>
+ * </tr>
+ * <tr>
+ * <td>request.entity.tag</td>
+ * <td>et</td>
+ * <td>String</td>
+ * </tr>
+ * <tr>
+ * <td>response.entity.tag</td>
+ * <td>ET</td>
+ * <td>String</td>
+ * </tr>
+ * <tr>
+ * <td>request.referrerRef</td>
+ * <td>f*</td>
+ * <td>Reference (see table below variable name sub-parts)</td>
+ * </tr>
+ * <tr>
+ * <td>request.hostRef</td>
+ * <td>h*</td>
+ * <td>Reference (see table below variable name sub-parts)</td>
+ * </tr>
+ * <tr>
+ * <td>request.method</td>
+ * <td>m</td>
+ * <td>String</td>
+ * </tr>
+ * <tr>
+ * <td>request.protocol</td>
+ * <td>p</td>
+ * <td>String</td>
+ * </tr>
+ * <tr>
+ * <td>request.resourceRef</td>
+ * <td>r*</td>
+ * <td>Reference (see table below variable name sub-parts)</td>
+ * </tr>
+ * <tr>
+ * <td>response.redirectRef</td>
+ * <td>R*</td>
+ * <td>Reference (see table below variable name sub-parts)</td>
+ * </tr>
+ * <tr>
+ * <td>response.status</td>
+ * <td>S</td>
+ * <td>Integer</td>
+ * </tr>
+ * <tr>
+ * <td>response.serverInfo.address</td>
+ * <td>SIA</td>
+ * <td>String</td>
+ * </tr>
+ * <tr>
+ * <td>response.serverInfo.agent</td>
+ * <td>SIG</td>
+ * <td>String</td>
+ * </tr>
+ * <tr>
+ * <td>response.serverInfo.port</td>
+ * <td>SIP</td>
+ * <td>Integer</td>
+ * </tr>
+ * </table> <br/>
+ * 
+ * Below is the list of name sub-parts, for Reference variables, that can
+ * replace the asterix in the variable names above:<br/><br/>
+ * 
+ * <table>
+ * <tr>
+ * <th>Reference property</th>
+ * <th>Sub-part name</th>
+ * <th>Content type</th>
+ * </tr>
+ * <tr>
+ * <td>authority</td>
+ * <td>a</td>
+ * <td>String</td>
+ * </tr>
+ * <tr>
+ * <td>baseRef</td>
+ * <td>b*</td>
+ * <td>Reference</td>
+ * </tr>
+ * <tr>
+ * <td>relativePart</td>
+ * <td>e</td>
+ * <td>String</td>
+ * </tr>
+ * <tr>
+ * <td>fragment</td>
+ * <td>f</td>
+ * <td>String</td>
+ * </tr>
+ * <tr>
+ * <td>hostIdentifier</td>
+ * <td>h</td>
+ * <td>String</td>
+ * </tr>
+ * <tr>
+ * <td>identifier</td>
+ * <td>i</td>
+ * <td>String</td>
+ * </tr>
+ * <tr>
+ * <td>path</td>
+ * <td>p</td>
+ * <td>String</td>
+ * </tr>
+ * <tr>
+ * <td>query</td>
+ * <td>q</td>
+ * <td>String</td>
+ * </tr>
+ * <tr>
+ * <td>remainingPart</td>
+ * <td>r</td>
+ * <td>String</td>
+ * </tr>
+ * </table>
  * 
  * @author Jerome Louvel (contact@noelios.com)
  */
@@ -154,7 +375,7 @@ public class Template {
         this.pattern = pattern;
         this.defaultVariable = new Variable(defaultType, defaultDefaultValue,
                 defaultRequired, defaultFixed);
-        this.matchingMode = MODE_STARTS_WITH;
+        this.matchingMode = matchingMode;
         this.variables = new TreeMap<String, Variable>();
         this.regexPattern = null;
         this.regexVariables = null;
@@ -431,6 +652,12 @@ public class Template {
                             && (request.getEntity().getTag() != null)) {
                         result = request.getEntity().getTag().getName();
                     }
+                } else if (variableName.startsWith("f")) {
+                    result = getReferenceContent(variableName.substring(1),
+                            request.getReferrerRef());
+                } else if (variableName.startsWith("h")) {
+                    result = getReferenceContent(variableName.substring(1),
+                            request.getHostRef());
                 } else if (variableName.equals("m")) {
                     if (request.getMethod() != null) {
                         result = request.getMethod().getName();
@@ -439,6 +666,9 @@ public class Template {
                     if (request.getProtocol() != null) {
                         result = request.getProtocol().getName();
                     }
+                } else if (variableName.startsWith("r")) {
+                    result = getReferenceContent(variableName.substring(1),
+                            request.getResourceRef());
                 }
             }
 
@@ -488,9 +718,13 @@ public class Template {
                             && (response.getEntity().getTag() != null)) {
                         result = response.getEntity().getTag().getName();
                     }
+                } else if (variableName.startsWith("R")) {
+                    result = getReferenceContent(variableName.substring(1),
+                            response.getRedirectRef());
                 } else if (variableName.equals("S")) {
                     if (response.getStatus() != null) {
-                        result = response.getStatus().getName();
+                        result = Integer.toString(response.getStatus()
+                                .getCode());
                     }
                 } else if (variableName.equals("SIA")) {
                     result = response.getServerInfo().getAddress();
@@ -507,6 +741,44 @@ public class Template {
         if (result == null) {
             // Use the default value instead
             result = var.getDefaultValue();
+        }
+
+        return result;
+    }
+
+    /**
+     * Returns the content corresponding to a reference property.
+     * 
+     * @param partName
+     *            The variable sub-part name.
+     * @param reference
+     *            The reference to use as a model.
+     * @return The content corresponding to a reference property.
+     */
+    private String getReferenceContent(String partName, Reference reference) {
+        String result = null;
+
+        if (reference != null) {
+            if (partName.equals("a")) {
+                result = reference.getAuthority();
+            } else if (partName.startsWith("b")) {
+                result = getReferenceContent(partName.substring(1), reference
+                        .getBaseRef());
+            } else if (partName.equals("e")) {
+                result = reference.getRelativePart();
+            } else if (partName.equals("f")) {
+                result = reference.getFragment();
+            } else if (partName.equals("h")) {
+                result = reference.getHostIdentifier();
+            } else if (partName.equals("i")) {
+                result = reference.getIdentifier();
+            } else if (partName.equals("p")) {
+                result = reference.getPath();
+            } else if (partName.equals("q")) {
+                result = reference.getQuery();
+            } else if (partName.equals("r")) {
+                result = reference.getRemainingPart();
+            }
         }
 
         return result;

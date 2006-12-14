@@ -23,17 +23,8 @@ import java.util.List;
 
 /**
  * Language used in representations and preferences. A language tag is composed
- * of 1 or more parts: A primary language tag and a possibly empty series of
- * subtags:
- * <ul>
- * <li>language-tag = primary-tag *( "-" subtag )
- * <li>primary-tag = 1*8ALPHA
- * <li>subtag = 1*8ALPHA
- * </ul>
- * 
- * @see <a
- *      href="http://www.w3.org/Protocols/rfc2616/rfc2616-sec3.html#sec3.10">HTTP
- *      1.1 Protocol parameters</a>
+ * of one or more parts: A primary language tag and a possibly empty series of
+ * subtags. When formatted as a string, parts are seperated by hyphens.
  * 
  * @author Jerome Louvel (contact@noelios.com)
  */
