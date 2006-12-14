@@ -306,6 +306,14 @@ public class Response extends Message {
             if (preferredVariant == null) {
                 // No variant was found matching the client preferences
                 setStatus(Status.CLIENT_ERROR_NOT_ACCEPTABLE);
+                // The list of all variants is transmitted to the client
+                ReferenceList refs = new ReferenceList(variants.size());
+                for (Representation variant : variants) {
+                    if (variant.getIdentifier() != null) {
+                        refs.add(variant.getIdentifier());
+                    }
+                }
+                this.setEntity(refs.getTextRepresentation());
             } else {
                 setEntity(preferredVariant);
             }
