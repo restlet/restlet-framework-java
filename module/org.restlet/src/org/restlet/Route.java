@@ -128,6 +128,16 @@ public class Route extends Filter {
     private Template template;
 
     /**
+     * Constructor behaving as a simple extractor filter.
+     * 
+     * @param next
+     *            The next Restlet.
+     */
+    public Route(Restlet next) {
+        this(null, null, next);
+    }
+
+    /**
      * Constructor.
      * 
      * @param router
@@ -202,7 +212,7 @@ public class Route extends Filter {
             }
         }
 
-        // Now
+        // Now extract attributes
         extractAttributes(request, response);
     }
 
@@ -290,8 +300,8 @@ public class Route extends Filter {
      *            a List instance might be set in the attribute value.
      * @return The current Filter.
      */
-    public Route extractEntityParameter(String attributeName,
-            String parameterName, boolean first) {
+    public Route extractEntity(String attributeName, String parameterName,
+            boolean first) {
         getEntityExtracts().add(
                 new ExtractInfo(attributeName, parameterName, first));
         return this;
@@ -310,8 +320,8 @@ public class Route extends Filter {
      *            a List instance might be set in the attribute value.
      * @return The current Filter.
      */
-    public Route extractFormParameter(String attributeName,
-            String parameterName, boolean first) {
+    public Route extractForm(String attributeName, String parameterName,
+            boolean first) {
         getFormExtracts().add(
                 new ExtractInfo(attributeName, parameterName, first));
         return this;
@@ -329,8 +339,8 @@ public class Route extends Filter {
      *            a List instance might be set in the attribute value.
      * @return The current Filter.
      */
-    public Route extractQueryParameter(String attributeName,
-            String parameterName, boolean first) {
+    public Route extractQuery(String attributeName, String parameterName,
+            boolean first) {
         getQueryExtracts().add(
                 new ExtractInfo(attributeName, parameterName, first));
         return this;
@@ -347,7 +357,7 @@ public class Route extends Filter {
      * @return The current Filter.
      * @see org.restlet.util.Template
      */
-    public Route extractVariable(String attributeName, String variableName) {
+    public Route extractRequest(String attributeName, String variableName) {
         getRequestExtracts().add(new ExtractInfo(attributeName, variableName));
         return this;
     }
@@ -437,7 +447,8 @@ public class Route extends Filter {
     public float score(Request request, Response response) {
         float result = 0F;
 
-        if ((request.getResourceRef() != null) && (getTemplate() != null)) {
+        if ((getRouter() != null) && (request.getResourceRef() != null)
+                && (getTemplate() != null)) {
             String remainingPart = request.getResourceRef().getRemainingPart();
             int matchedLength = getTemplate().match(remainingPart);
 
@@ -452,12 +463,12 @@ public class Route extends Filter {
                     result = 1.0F;
                 }
             }
-        }
 
-        if (getLogger().isLoggable(Level.FINER)) {
-            getLogger().finer(
-                    "Call score for the \"" + getTemplate().getPattern()
-                            + "\" URI pattern: " + result);
+            if (getLogger().isLoggable(Level.FINER)) {
+                getLogger().finer(
+                        "Call score for the \"" + getTemplate().getPattern()
+                                + "\" URI pattern: " + result);
+            }
         }
 
         return result;

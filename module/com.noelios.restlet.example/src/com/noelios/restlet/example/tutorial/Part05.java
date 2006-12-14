@@ -41,8 +41,8 @@ public class Part05 {
             @Override
             public void handle(Request request, Response response) {
                 // Print the requested URI path
-                String message = "Resource URI:  " + request.getResourceRef()
-                        + '\n' + "Base URI:      "
+                String message = "Resource URI:   " + request.getResourceRef()
+                        + '\n' + "Routed part:    "
                         + request.getResourceRef().getBaseRef() + '\n'
                         + "Remaining part: "
                         + request.getResourceRef().getRemainingPart();

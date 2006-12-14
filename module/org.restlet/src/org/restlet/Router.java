@@ -149,9 +149,12 @@ public class Router extends Restlet {
      *            resource URI.
      * @param target
      *            The target Restlet to attach.
+     * @return The created route.
      */
-    public void attach(String uriPattern, Restlet target) {
-        getRoutes().add(new Route(this, uriPattern, target));
+    public Route attach(String uriPattern, Restlet target) {
+        Route result = new Route(this, uriPattern, target);
+        getRoutes().add(result);
+        return result;
     }
 
     /**
@@ -161,9 +164,12 @@ public class Router extends Restlet {
      * 
      * @param defaultTarget
      *            The Restlet to use as the default target.
+     * @return The created route.
      */
-    public void attachDefault(Restlet defaultTarget) {
-        setDefaultRoute(new Route(this, "", defaultTarget));
+    public Route attachDefault(Restlet defaultTarget) {
+        Route result = new Route(this, "", defaultTarget);
+        setDefaultRoute(result);
+        return result;
     }
 
     /**

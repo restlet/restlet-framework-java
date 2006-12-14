@@ -22,6 +22,7 @@ import org.restlet.Application;
 import org.restlet.Component;
 import org.restlet.Redirector;
 import org.restlet.Restlet;
+import org.restlet.Route;
 import org.restlet.data.Protocol;
 
 /**
@@ -40,14 +41,19 @@ public class Part10 {
             @Override
             public Restlet createRoot() {
                 // Create a Redirector to Google search service
-                String target = "http://www.google.com/search?q=site:mysite.org+${query('q')}";
+                String target = "http://www.google.com/search?q=site:mysite.org+{terms}";
                 return new Redirector(getContext(), target,
                         Redirector.MODE_CLIENT_TEMPORARY);
             }
         };
 
-        // Attach the application to the component and start it
-        component.getDefaultHost().attach("/search", application);
+        // Attach the application to the component's default host
+        Route route = component.getDefaultHost().attach("/search", application);
+
+        // While routing requests to the application, extract a query parameter
+        route.extractQuery("terms", "q", true);
+
+        // Start the component
         component.start();
     }
 

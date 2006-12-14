@@ -20,7 +20,6 @@ Changes log
  - Deprecated the StringTemplate mechanism, replaced by a more seamless ReferenceTemplate approach,
    less intrusive. The following classes were deprecated and will be removed in the next
    release: StringTemplate, StringTemplateRepresentation, CallModel, Model, MapModel.
- - Extractor was deprecated and replaced by the new Route class.
  - Renamed ReferenceList.getRepresentation() to getTextRepresentation().
  - Tag now extends Metadata, getOpaqueTag() was deprecated, use getName() instead.
  - The query part of request's resource reference is now routable. WARNING: you may have
@@ -48,6 +47,7 @@ Changes log
  - Renamed Directory.rootUri to rootRef for consistency purpose.
  - Renamed ReferenceList.listRef into identifier
  - Renamed Result.redirectionRef into redirectRef
+ - Router.attach*() methods now return the created Route instance.
 
 [Enhancements] 
  - Updated Jetty 6.1 to RC1 version.
