@@ -18,10 +18,12 @@
 
 package com.noelios.restlet;
 
+import org.restlet.Context;
 import org.restlet.Dispatcher;
 import org.restlet.data.Protocol;
 import org.restlet.data.Request;
 import org.restlet.data.Response;
+import org.restlet.util.Template;
 
 /**
  * Default call dispatcher.
@@ -32,14 +34,26 @@ public class TemplateDispatcher extends Dispatcher {
     /** The helper dispatcher. */
     private Dispatcher helper;
 
+    /** The parent context. */
+    private Context context;
+
     /**
      * Constructor.
      * 
      * @param helper
      *            The helper dispatcher.
      */
-    public TemplateDispatcher(Dispatcher helper) {
+    public TemplateDispatcher(Context context, Dispatcher helper) {
         this.helper = helper;
+    }
+
+    /**
+     * Returns the parent context.
+     * 
+     * @return The parent context.
+     */
+    public Context getContext() {
+        return this.context;
     }
 
     /**
@@ -57,17 +71,19 @@ public class TemplateDispatcher extends Dispatcher {
             throw new UnsupportedOperationException(
                     "Unable to determine the protocol to use for this call.");
         } else {
-            // Create the template
-//            TemplateReference rt = new TemplateReference(request
-//                    .getResourceRef().toString(true, false));
+            String targetUri = request.getResourceRef().toString(true, false);
 
-            // Format the target URI
-//            String targetUri = rt.format(request).toString();
-//            request.setResourceRef(targetUri);
+            if (targetUri.contains("{")) {
+                // Template URI detected, create the template
+                Template template = new Template(getContext().getLogger(),
+                        targetUri);
+
+                // Set the formatted target URI
+                request.setResourceRef(template.format(request, response));
+            }
 
             // Actually dispatch the formatted URI
             this.helper.handle(request, response);
         }
     }
-
 }

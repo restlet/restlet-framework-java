@@ -129,17 +129,17 @@ public class Directory extends Handler {
         sb.append("<html><body>\n");
 
         sb.append("<h1>Listing of directory \""
-                + directoryContent.getListRef().getPath() + "\"</h1>\n");
+                + directoryContent.getIdentifier().getPath() + "\"</h1>\n");
 
-        Reference parentRef = directoryContent.getListRef().getParentRef();
+        Reference parentRef = directoryContent.getIdentifier().getParentRef();
 
-        if (!parentRef.equals(directoryContent.getListRef())) {
+        if (!parentRef.equals(directoryContent.getIdentifier())) {
             sb.append("<a href=\"" + parentRef + "\">..</a><br/>\n");
         }
 
         for (Reference ref : directoryContent) {
             sb.append("<a href=\"" + ref.toString() + "\">"
-                    + ref.getRelativeRef(directoryContent.getListRef())
+                    + ref.getRelativeRef(directoryContent.getIdentifier())
                     + "</a><br/>\n");
         }
         sb.append("</body></html>\n");

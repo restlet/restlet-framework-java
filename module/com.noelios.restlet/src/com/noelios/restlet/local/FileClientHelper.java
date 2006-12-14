@@ -120,7 +120,7 @@ public class FileClientHelper extends LocalClientHelper {
                 // 2- loooking for resources with the same base name
                 File[] files = file.getParentFile().listFiles();
                 ReferenceList rl = new ReferenceList(files.length);
-                rl.setListRef(request.getResourceRef());
+                rl.setIdentifier(request.getResourceRef());
 
                 for (File entry : files) {
                     try {
@@ -139,7 +139,7 @@ public class FileClientHelper extends LocalClientHelper {
                         // Return the directory listing
                         File[] files = file.listFiles();
                         ReferenceList rl = new ReferenceList(files.length);
-                        rl.setListRef(request.getResourceRef());
+                        rl.setIdentifier(request.getResourceRef());
 
                         for (File entry : files) {
                             try {

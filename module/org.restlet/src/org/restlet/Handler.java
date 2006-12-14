@@ -335,7 +335,7 @@ public abstract class Handler extends Restlet {
             Response response) {
         Result result = target.delete();
         response.setStatus(result.getStatus());
-        response.setRedirectRef(result.getRedirectionRef());
+        response.setRedirectRef(result.getRedirectRef());
     }
 
     /**
@@ -436,7 +436,7 @@ public abstract class Handler extends Restlet {
         if (request.isEntityAvailable()) {
             Result result = target.post(request.getEntity());
             response.setStatus(result.getStatus());
-            response.setRedirectRef(result.getRedirectionRef());
+            response.setRedirectRef(result.getRedirectRef());
         } else {
             response.setStatus(new Status(Status.CLIENT_ERROR_BAD_REQUEST,
                     "Missing request entity"));
@@ -458,7 +458,7 @@ public abstract class Handler extends Restlet {
         if (request.isEntityAvailable()) {
             Result result = target.put(request.getEntity());
             response.setStatus(result.getStatus());
-            response.setRedirectRef(result.getRedirectionRef());
+            response.setRedirectRef(result.getRedirectRef());
 
             // HTTP spec says that PUT may return the list of allowed methods
             updateAllowedMethods(response, target);

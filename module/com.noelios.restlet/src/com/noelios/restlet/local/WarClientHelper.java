@@ -132,7 +132,7 @@ public class WarClientHelper extends FileClientHelper {
 
                     // Return the directory listing
                     ReferenceList rl = new ReferenceList();
-                    rl.setListRef(request.getResourceRef());
+                    rl.setIdentifier(request.getResourceRef());
 
                     for (String warEntry : warEntries) {
                         if (warEntry.startsWith(path)) {

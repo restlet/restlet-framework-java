@@ -34,8 +34,8 @@ import org.restlet.util.WrapperList;
  * @author Jerome Louvel (contact@noelios.com)
  */
 public class ReferenceList extends WrapperList<Reference> {
-    /** The list reference. */
-    private Reference listRef;
+    /** The list identifier. */
+    private Reference identifier;
 
     /**
      * Constructor.
@@ -113,9 +113,20 @@ public class ReferenceList extends WrapperList<Reference> {
      * Returns the list reference.
      * 
      * @return The list reference.
+     * @deprecated Use getIdentifier() instead.
      */
+    @Deprecated
     public Reference getListRef() {
-        return this.listRef;
+        return getIdentifier();
+    }
+
+    /**
+     * Returns the list identifier.
+     * 
+     * @return The list identifier.
+     */
+    public Reference getIdentifier() {
+        return this.identifier;
     }
 
     /**
@@ -128,7 +139,7 @@ public class ReferenceList extends WrapperList<Reference> {
     public Representation getRepresentation() {
         return getTextRepresentation();
     }
-    
+
     /**
      * Returns a representation of the list in the "text/uri-list" format.
      * 
@@ -137,8 +148,8 @@ public class ReferenceList extends WrapperList<Reference> {
     public Representation getTextRepresentation() {
         StringBuilder sb = new StringBuilder();
 
-        if (getListRef() != null) {
-            sb.append("# ").append(getListRef().toString()).append("\r\n");
+        if (getIdentifier() != null) {
+            sb.append("# ").append(getIdentifier().toString()).append("\r\n");
         }
 
         for (Reference ref : this) {
@@ -153,9 +164,11 @@ public class ReferenceList extends WrapperList<Reference> {
      * 
      * @param listRef
      *            The list reference.
+     * @deprecated Use setIdentifier() instead.
      */
+    @Deprecated
     public void setListRef(Reference listRef) {
-        this.listRef = listRef;
+        this.identifier = listRef;
     }
 
     /**
@@ -163,9 +176,31 @@ public class ReferenceList extends WrapperList<Reference> {
      * 
      * @param listUri
      *            The list reference as a URI.
+     * @deprecated Use setIdentifier() instead.
      */
+    @Deprecated
     public void setListRef(String listUri) {
         setListRef(new Reference(listUri));
+    }
+
+    /**
+     * Sets the list reference.
+     * 
+     * @param identifier
+     *            The list identifier.
+     */
+    public void setIdentifier(Reference identifier) {
+        this.identifier = identifier;
+    }
+
+    /**
+     * Sets the list reference.
+     * 
+     * @param identifier
+     *            The list identifier as a URI.
+     */
+    public void setIdentifier(String identifier) {
+        setListRef(new Reference(identifier));
     }
 
     /**

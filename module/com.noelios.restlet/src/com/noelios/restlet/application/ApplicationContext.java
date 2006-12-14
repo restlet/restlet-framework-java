@@ -69,7 +69,7 @@ public class ApplicationContext extends Context {
      * @return A call dispatcher.
      */
     public Dispatcher getDispatcher() {
-        return new TemplateDispatcher(new ApplicationDispatcher(this));
+        return new TemplateDispatcher(this, new ApplicationDispatcher(this));
     }
 
     /**

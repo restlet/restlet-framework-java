@@ -422,8 +422,8 @@ public class DirectoryResource extends Resource {
                     }
                     baseRef += this.relativePart;
 
-                    // Set the list base reference
-                    userList.setListRef(baseRef);
+                    // Set the list identifier
+                    userList.setIdentifier(baseRef);
 
                     String filePath;
                     int rootLength = getDirectoryUri().length();

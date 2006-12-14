@@ -90,7 +90,7 @@ public class ServletWarClientHelper extends WarClientHelper {
                 // Return the directory listing
                 Set entries = getServletContext().getResourcePaths(basePath);
                 ReferenceList rl = new ReferenceList(entries.size());
-                rl.setListRef(request.getResourceRef());
+                rl.setIdentifier(request.getResourceRef());
 
                 for (Iterator iter = entries.iterator(); iter.hasNext();) {
                     entry = (String) iter.next();

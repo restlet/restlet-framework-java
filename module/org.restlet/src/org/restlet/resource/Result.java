@@ -35,7 +35,7 @@ public final class Result {
     private Status status;
 
     /** The optional redirection reference. */
-    private Reference redirectionRef;
+    private Reference redirectRef;
 
     /**
      * Constructor.
@@ -72,7 +72,7 @@ public final class Result {
     public Result(Status status, Representation entity, Reference redirectionRef) {
         this.entity = entity;
         this.status = status;
-        this.redirectionRef = redirectionRef;
+        this.redirectRef = redirectionRef;
     }
 
     /**
@@ -88,9 +88,20 @@ public final class Result {
      * Returns the redirection reference.
      * 
      * @return the redirection reference or null.
+     * @deprecated Use getRedirectRef() instead.
      */
+    @Deprecated
     public Reference getRedirectionRef() {
-        return this.redirectionRef;
+        return getRedirectRef();
+    }
+
+    /**
+     * Returns the redirection reference.
+     * 
+     * @return the redirection reference or null.
+     */
+    public Reference getRedirectRef() {
+        return this.redirectRef;
     }
 
     /**
@@ -123,7 +134,7 @@ public final class Result {
      */
     @Deprecated
     public void setRedirectionRef(Reference redirectionRef) {
-        this.redirectionRef = redirectionRef;
+        this.redirectRef = redirectionRef;
     }
 
     /**

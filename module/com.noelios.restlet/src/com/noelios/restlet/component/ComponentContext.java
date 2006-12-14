@@ -65,7 +65,7 @@ public class ComponentContext extends Context {
      * @return A call dispatcher.
      */
     public Dispatcher getDispatcher() {
-        return new TemplateDispatcher(getComponentHelper().getClientRouter());
+        return new TemplateDispatcher(this, getComponentHelper().getClientRouter());
     }
 
     /**
