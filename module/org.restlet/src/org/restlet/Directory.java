@@ -23,6 +23,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.logging.Level;
 
+import org.restlet.data.LocalReference;
 import org.restlet.data.MediaType;
 import org.restlet.data.Reference;
 import org.restlet.data.ReferenceList;
@@ -87,6 +88,30 @@ public class Directory extends Handler {
             // We don't take the risk of exposing directory "file:///C:/AA"
             // if only "file:///C:/A" was intended
             this.rootRef = new Reference(rootUri + "/");
+        }
+
+        this.deeplyAccessible = true;
+        this.modifiable = false;
+        this.listingAllowed = false;
+    }
+    
+    /**
+     * Constructor.
+     * 
+     * @param context
+     *            The context.
+     * @param rootLocalReference
+     *            The root Uri.
+     */
+    public Directory(Context context, LocalReference rootLocalReference) {
+        super(context);
+
+        if (rootLocalReference.getIdentifier().endsWith("/")) {
+            this.rootRef = new Reference(rootLocalReference.getIdentifier());
+        } else {
+            // We don't take the risk of exposing directory "file:///C:/AA"
+            // if only "file:///C:/A" was intended
+            this.rootRef = new Reference(rootLocalReference.getIdentifier() + "/");
         }
 
         this.deeplyAccessible = true;
