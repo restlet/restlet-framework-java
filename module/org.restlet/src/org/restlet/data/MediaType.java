@@ -19,6 +19,7 @@
 package org.restlet.data;
 
 import org.restlet.util.Factory;
+import org.restlet.util.Series;
 
 /**
  * Media type used in representations and preferences.
@@ -316,7 +317,7 @@ public final class MediaType extends Metadata {
     }
 
     /** The list of parameters. */
-    private ParameterList parameters;
+    private Series<Parameter> parameters;
 
     /**
      * Constructor.
@@ -336,7 +337,7 @@ public final class MediaType extends Metadata {
      * @param parameters
      *            The list of parameters.
      */
-    public MediaType(String name, ParameterList parameters) {
+    public MediaType(String name, Series<Parameter> parameters) {
         this(name, parameters, "Media type or range of media types");
     }
 
@@ -350,7 +351,7 @@ public final class MediaType extends Metadata {
      * @param description
      *            The description.
      */
-    public MediaType(String name, ParameterList parameters, String description) {
+    public MediaType(String name, Series<Parameter> parameters, String description) {
         super((name == null) ? null : name, description);
         this.parameters = parameters;
     }
@@ -418,9 +419,9 @@ public final class MediaType extends Metadata {
      * 
      * @return The list of parameters.
      */
-    public ParameterList getParameters() {
+    public Series<Parameter> getParameters() {
         if (this.parameters == null)
-            this.parameters = new ParameterList();
+            this.parameters = new Form();
         return this.parameters;
     }
 

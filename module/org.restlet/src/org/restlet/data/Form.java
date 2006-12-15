@@ -19,23 +19,46 @@
 package org.restlet.data;
 
 import java.io.IOException;
+import java.util.List;
 import java.util.logging.Logger;
 
 import org.restlet.resource.Representation;
 import org.restlet.resource.StringRepresentation;
+import org.restlet.util.AbstractSeries;
 import org.restlet.util.Factory;
+import org.restlet.util.Series;
 
 /**
  * Form which is a specialized modifiable list of parameters.
  * 
  * @author Jerome Louvel (contact@noelios.com)
  */
-public class Form extends ParameterList {
+public class Form extends AbstractSeries<Parameter> {
     /**
      * Empty constructor.
      */
     public Form() {
         super();
+    }
+
+    /**
+     * Constructor.
+     * 
+     * @param initialCapacity
+     *            The initial list capacity.
+     */
+    public Form(int initialCapacity) {
+        super(initialCapacity);
+    }
+
+    /**
+     * Constructor.
+     * 
+     * @param delegate
+     *            The delegate list.
+     */
+    public Form(List<Parameter> delegate) {
+        super(delegate);
     }
 
     /**
@@ -84,6 +107,19 @@ public class Form extends ParameterList {
      */
     public Form(String queryString) {
         this(Logger.getLogger(Form.class.getCanonicalName()), queryString);
+    }
+
+    @Override
+    public Parameter createEntry(String name, String value) {
+        return new Parameter();
+    }
+
+    @Override
+    public Series<Parameter> createSeries(List<Parameter> delegate) {
+        if (delegate != null)
+            return new Form(delegate);
+        else
+            return new Form();
     }
 
     /**

@@ -18,10 +18,11 @@
 
 package org.restlet.data;
 
-import java.util.ArrayList;
 import java.util.List;
 
 import org.restlet.resource.Representation;
+import org.restlet.util.AbstractSeries;
+import org.restlet.util.Series;
 
 /**
  * Generic request sent by client connectors. It is then received by server
@@ -47,7 +48,7 @@ public class Request extends Message {
     private boolean confidential;
 
     /** The cookies provided by the client. */
-    private List<Cookie> cookies;
+    private Series<Cookie> cookies;
 
     /** The host reference. */
     private Reference hostRef;
@@ -169,9 +170,9 @@ public class Request extends Message {
      * 
      * @return The cookies provided by the client.
      */
-    public List<Cookie> getCookies() {
+    public Series<Cookie> getCookies() {
         if (this.cookies == null)
-            this.cookies = new ArrayList<Cookie>();
+            this.cookies = new CookieSeries();
         return this.cookies;
     }
 
@@ -424,4 +425,41 @@ public class Request extends Message {
         }
     }
 
+    /**
+     * Private cookie series.
+     * 
+     * @author Jerome Louvel (contact@noelios.com)
+     */
+    private static class CookieSeries extends AbstractSeries<Cookie> {
+        /**
+         * Constructor.
+         */
+        public CookieSeries() {
+            super();
+        }
+
+        /**
+         * Constructor.
+         * 
+         * @param delegate
+         *            The delegate list.
+         */
+        public CookieSeries(List<Cookie> delegate) {
+            super(delegate);
+        }
+
+        @Override
+        public Cookie createEntry(String name, String value) {
+            return new Cookie(name, value);
+        }
+
+        @Override
+        public Series<Cookie> createSeries(List<Cookie> delegate) {
+            if (delegate != null)
+                return new CookieSeries(delegate);
+            else
+                return new CookieSeries();
+        }
+    }
+    
 }

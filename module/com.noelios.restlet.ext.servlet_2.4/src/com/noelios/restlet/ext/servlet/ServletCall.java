@@ -31,11 +31,12 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
 import org.restlet.Server;
+import org.restlet.data.Form;
 import org.restlet.data.Parameter;
-import org.restlet.data.ParameterList;
 import org.restlet.data.Protocol;
 import org.restlet.data.Response;
 import org.restlet.data.Status;
+import org.restlet.util.Series;
 
 import com.noelios.restlet.http.HttpServerCall;
 
@@ -52,7 +53,7 @@ public class ServletCall extends HttpServerCall {
     private HttpServletResponse response;
 
     /** The request headers. */
-    private ParameterList requestHeaders;
+    private Series<Parameter> requestHeaders;
 
     /**
      * Constructor.
@@ -132,9 +133,9 @@ public class ServletCall extends HttpServerCall {
      * 
      * @return The list of request headers.
      */
-    public ParameterList getRequestHeaders() {
+    public Series<Parameter> getRequestHeaders() {
         if (this.requestHeaders == null) {
-            this.requestHeaders = new ParameterList();
+            this.requestHeaders = new Form();
 
             // Copy the headers from the request object
             String headerName;

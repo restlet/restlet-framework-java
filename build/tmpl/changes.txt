@@ -48,6 +48,8 @@ Changes log
  - Renamed ReferenceList.listRef into identifier
  - Renamed Result.redirectionRef into redirectRef
  - Router.attach*() methods now return the created Route instance.
+ - Added Series a generic interface extending List to handle series of Parameter, Cookie and CookieSetting instances.
+ - Added AbstractSeries based on previous ParameterList logic.
 
 [Enhancements] 
  - Updated Jetty 6.1 to RC1 version.

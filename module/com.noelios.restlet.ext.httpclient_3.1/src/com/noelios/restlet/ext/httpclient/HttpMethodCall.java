@@ -41,11 +41,11 @@ import org.apache.commons.httpclient.methods.RequestEntity;
 import org.apache.commons.httpclient.methods.TraceMethod;
 import org.restlet.data.Method;
 import org.restlet.data.Parameter;
-import org.restlet.data.ParameterList;
 import org.restlet.data.Protocol;
 import org.restlet.data.Request;
 import org.restlet.data.Status;
 import org.restlet.resource.Representation;
+import org.restlet.util.Series;
 
 import com.noelios.restlet.http.HttpClientCall;
 
@@ -227,8 +227,8 @@ public class HttpMethodCall extends HttpClientCall {
      * 
      * @return The modifiable list of response headers.
      */
-    public ParameterList getResponseHeaders() {
-        ParameterList result = super.getResponseHeaders();
+    public Series<Parameter> getResponseHeaders() {
+        Series<Parameter> result = super.getResponseHeaders();
 
         if (!this.responseHeadersAdded) {
             for (Header header : getHttpMethod().getResponseHeaders()) {

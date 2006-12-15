@@ -22,7 +22,7 @@ import java.util.logging.Logger;
 
 import org.restlet.Context;
 import org.restlet.data.Parameter;
-import org.restlet.data.ParameterList;
+import org.restlet.util.Series;
 
 /**
  * Converter between high-level and low-level HTTP calls.
@@ -69,8 +69,8 @@ public class HttpConverter {
      * @param additionalHeaders
      *            The headers to add.
      */
-    public void addAdditionalHeaders(ParameterList existingHeaders,
-            ParameterList additionalHeaders) {
+    public void addAdditionalHeaders(Series<Parameter> existingHeaders,
+            Series<Parameter> additionalHeaders) {
         if (additionalHeaders != null) {
             for (Parameter param : additionalHeaders) {
                 if (param.getName().equalsIgnoreCase(

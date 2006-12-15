@@ -37,10 +37,10 @@ import org.restlet.data.ChallengeScheme;
 import org.restlet.data.Form;
 import org.restlet.data.Method;
 import org.restlet.data.Parameter;
-import org.restlet.data.ParameterList;
 import org.restlet.data.Reference;
 import org.restlet.data.Request;
 import org.restlet.util.DateUtils;
+import org.restlet.util.Series;
 
 import com.noelios.restlet.http.HttpConstants;
 
@@ -76,7 +76,7 @@ public class SecurityUtils {
      * @return The authorization header value.
      */
     public static String format(ChallengeResponse challenge, Request request,
-            ParameterList httpHeaders) {
+            Series<Parameter> httpHeaders) {
         StringBuilder sb = new StringBuilder();
         sb.append(challenge.getScheme().getTechnicalName()).append(' ');
 
@@ -185,7 +185,7 @@ public class SecurityUtils {
      * @return The canonicalized AMZ headers.
      */
     private static String getCanonicalizedAmzHeaders(
-            ParameterList requestHeaders) {
+            Series<Parameter> requestHeaders) {
         // Filter out all the AMZ headers required for AWS authentication
         SortedMap<String, String> amzHeaders = new TreeMap<String, String>();
         String headerName;

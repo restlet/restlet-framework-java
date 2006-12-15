@@ -18,7 +18,6 @@
 
 package org.restlet.data;
 
-import java.util.ArrayList;
 import java.util.EnumSet;
 import java.util.HashSet;
 import java.util.List;
@@ -26,6 +25,8 @@ import java.util.Set;
 
 import org.restlet.resource.Representation;
 import org.restlet.resource.Resource;
+import org.restlet.util.AbstractSeries;
+import org.restlet.util.Series;
 
 /**
  * Generic response sent by server connectors. It is then received by client
@@ -44,7 +45,7 @@ public class Response extends Message {
     private ChallengeRequest challengeRequest;
 
     /** The cookie settings provided by the server. */
-    private List<CookieSetting> cookieSettings;
+    private Series<CookieSetting> cookieSettings;
 
     /** The set of dimensions on which the response entity may vary. */
     private Set<Dimension> dimensions;
@@ -105,9 +106,9 @@ public class Response extends Message {
      * 
      * @return The cookie settings provided by the server.
      */
-    public List<CookieSetting> getCookieSettings() {
+    public Series<CookieSetting> getCookieSettings() {
         if (this.cookieSettings == null)
-            this.cookieSettings = new ArrayList<CookieSetting>();
+            this.cookieSettings = new CookieSettingSeries();
         return this.cookieSettings;
     }
 
@@ -375,6 +376,44 @@ public class Response extends Message {
      */
     public void setStatus(Status status, String message) {
         setStatus(new Status(status, message));
+    }
+
+    /**
+     * Private cookie setting series.
+     * 
+     * @author Jerome Louvel (contact@noelios.com)
+     */
+    private static class CookieSettingSeries extends
+            AbstractSeries<CookieSetting> {
+        /**
+         * Constructor.
+         */
+        public CookieSettingSeries() {
+            super();
+        }
+
+        /**
+         * Constructor.
+         * 
+         * @param delegate
+         *            The delegate list.
+         */
+        public CookieSettingSeries(List<CookieSetting> delegate) {
+            super(delegate);
+        }
+
+        @Override
+        public CookieSetting createEntry(String name, String value) {
+            return new CookieSetting(name, value);
+        }
+
+        @Override
+        public Series<CookieSetting> createSeries(List<CookieSetting> delegate) {
+            if (delegate != null)
+                return new CookieSettingSeries(delegate);
+            else
+                return new CookieSettingSeries();
+        }
     }
 
 }

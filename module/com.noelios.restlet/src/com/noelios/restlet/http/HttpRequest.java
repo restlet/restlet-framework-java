@@ -34,6 +34,7 @@ import org.restlet.data.Reference;
 import org.restlet.data.Request;
 import org.restlet.data.Tag;
 import org.restlet.resource.Representation;
+import org.restlet.util.Series;
 
 import com.noelios.restlet.util.CookieReader;
 import com.noelios.restlet.util.HeaderReader;
@@ -294,8 +295,8 @@ public class HttpRequest extends Request {
      * 
      * @return The cookies provided by the client.
      */
-    public List<Cookie> getCookies() {
-        List<Cookie> result = super.getCookies();
+    public Series<Cookie> getCookies() {
+        Series<Cookie> result = super.getCookies();
 
         if (!cookiesAdded) {
             String cookiesValue = getHttpCall().getRequestHeaders().getValues(

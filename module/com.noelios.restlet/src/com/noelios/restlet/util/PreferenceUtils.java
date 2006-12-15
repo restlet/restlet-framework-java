@@ -71,6 +71,7 @@ public class PreferenceUtils {
      *            The appendable destination.
      * @throws IOException
      */
+    @SuppressWarnings("unchecked")
     public static void format(Preference pref, Appendable destination)
             throws IOException {
         destination.append(pref.getMetadata().getName());

@@ -23,11 +23,13 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.logging.Level;
 
+import org.restlet.data.Cookie;
 import org.restlet.data.Form;
 import org.restlet.data.Reference;
 import org.restlet.data.Request;
 import org.restlet.data.Response;
 import org.restlet.data.Status;
+import org.restlet.util.Series;
 import org.restlet.util.Template;
 
 /**
@@ -255,6 +257,23 @@ public class Route extends Filter {
                     } else {
                         request.getAttributes().put(ie.attribute,
                                 form.getFirst(ie.value));
+                    }
+                }
+            }
+        }
+
+        // Extract the cookie parameters
+        if (this.cookieExtracts != null) {
+            Series<Cookie> cookies = request.getCookies();
+
+            if (cookies != null) {
+                for (ExtractInfo qe : getCookieExtracts()) {
+                    if (qe.first) {
+                        request.getAttributes().put(qe.attribute,
+                                cookies.subList(qe.value));
+                    } else {
+                        request.getAttributes().put(qe.attribute,
+                                cookies.getFirst(qe.value));
                     }
                 }
             }

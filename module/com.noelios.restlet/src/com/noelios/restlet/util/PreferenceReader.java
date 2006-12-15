@@ -23,12 +23,13 @@ import java.util.Iterator;
 
 import org.restlet.data.CharacterSet;
 import org.restlet.data.Encoding;
+import org.restlet.data.Form;
 import org.restlet.data.Language;
 import org.restlet.data.MediaType;
 import org.restlet.data.Metadata;
 import org.restlet.data.Parameter;
-import org.restlet.data.ParameterList;
 import org.restlet.data.Preference;
+import org.restlet.util.Series;
 
 /**
  * Preference header reader. Works for character sets, encodings, languages or
@@ -77,7 +78,7 @@ public class PreferenceReader<T extends Metadata> extends HeaderReader {
         StringBuilder paramNameBuffer = null;
         StringBuilder paramValueBuffer = null;
 
-        ParameterList parameters = null;
+        Series<Parameter> parameters = null;
 
         String nextValue = readValue();
         int nextIndex = 0;
@@ -103,7 +104,7 @@ public class PreferenceReader<T extends Metadata> extends HeaderReader {
                             readingMetadata = false;
                             readingParamName = true;
                             paramNameBuffer = new StringBuilder();
-                            parameters = new ParameterList();
+                            parameters = new Form();
                         } else {
                             throw new IOException(
                                     "Empty metadata name detected.");
@@ -184,7 +185,8 @@ public class PreferenceReader<T extends Metadata> extends HeaderReader {
                     }
                 }
 
-                nextChar = (nextIndex < nextValue.length()) ? nextValue.charAt(nextIndex++) : -1;
+                nextChar = (nextIndex < nextValue.length()) ? nextValue
+                        .charAt(nextIndex++) : -1;
             }
         }
 
@@ -199,13 +201,13 @@ public class PreferenceReader<T extends Metadata> extends HeaderReader {
      *            All the preference parameters.
      * @return The media parameters.
      */
-    protected ParameterList extractMediaParams(ParameterList parameters) {
-        ParameterList result = null;
+    protected Series<Parameter> extractMediaParams(Series<Parameter> parameters) {
+        Series<Parameter> result = null;
         boolean qualityFound = false;
         Parameter param = null;
 
         if (parameters != null) {
-            result = new ParameterList();
+            result = new Form();
 
             for (Iterator iter = parameters.iterator(); !qualityFound
                     && iter.hasNext();) {
@@ -230,7 +232,7 @@ public class PreferenceReader<T extends Metadata> extends HeaderReader {
      *            The preference parameters.
      * @return The quality value.
      */
-    protected float extractQuality(ParameterList parameters) {
+    protected float extractQuality(Series<Parameter> parameters) {
         float result = 1F;
         boolean found = false;
 
@@ -264,7 +266,7 @@ public class PreferenceReader<T extends Metadata> extends HeaderReader {
      */
     @SuppressWarnings("unchecked")
     protected Preference<T> createPreference(CharSequence metadata,
-            ParameterList parameters) {
+            Series<Parameter> parameters) {
         Preference<T> result;
 
         if (parameters == null) {
@@ -288,7 +290,7 @@ public class PreferenceReader<T extends Metadata> extends HeaderReader {
                 break;
             }
         } else {
-            ParameterList mediaParams = extractMediaParams(parameters);
+            Series<Parameter> mediaParams = extractMediaParams(parameters);
             float quality = extractQuality(parameters);
             result = new Preference<T>(null, quality, parameters);
 

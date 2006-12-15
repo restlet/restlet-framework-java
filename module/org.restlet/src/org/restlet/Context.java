@@ -20,7 +20,9 @@ package org.restlet;
 
 import java.util.logging.Logger;
 
-import org.restlet.data.ParameterList;
+import org.restlet.data.Form;
+import org.restlet.data.Parameter;
+import org.restlet.util.Series;
 
 /**
  * Contextual data and services provided to a Restlet. The context is the means
@@ -32,8 +34,8 @@ import org.restlet.data.ParameterList;
  * @author Jerome Louvel (contact@noelios.com)
  */
 public class Context {
-    /** The modifiable list of parameters. */
-    private ParameterList parameters;
+    /** The modifiable series of parameters. */
+    private Series<Parameter> parameters;
 
     /** The logger instance to use. */
     private Logger logger;
@@ -84,13 +86,13 @@ public class Context {
     }
 
     /**
-     * Returns the modifiable list of parameters.
+     * Returns the modifiable series of parameters.
      * 
-     * @return The modifiable list of parameters.
+     * @return The modifiable series of parameters.
      */
-    public ParameterList getParameters() {
+    public Series<Parameter> getParameters() {
         if (this.parameters == null)
-            this.parameters = new ParameterList();
+            this.parameters = new Form();
         return this.parameters;
     }
 }

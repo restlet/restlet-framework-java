@@ -31,12 +31,12 @@ import org.restlet.data.Dimension;
 import org.restlet.data.MediaType;
 import org.restlet.data.Method;
 import org.restlet.data.Parameter;
-import org.restlet.data.ParameterList;
 import org.restlet.data.Reference;
 import org.restlet.data.Request;
 import org.restlet.data.Response;
 import org.restlet.data.Status;
 import org.restlet.util.DateUtils;
+import org.restlet.util.Series;
 
 import com.noelios.restlet.Factory;
 import com.noelios.restlet.util.CookieReader;
@@ -117,8 +117,9 @@ public class HttpClientConverter extends HttpConverter {
      * @param request
      *            The high-level request.
      */
+    @SuppressWarnings("unchecked")
     protected void addRequestHeaders(HttpClientCall httpCall, Request request) {
-        ParameterList requestHeaders = httpCall.getRequestHeaders();
+        Series<Parameter> requestHeaders = httpCall.getRequestHeaders();
 
         // Manually add the host name and port when it is potentially different
         // from the one specified in the target resource reference.
@@ -265,7 +266,7 @@ public class HttpClientConverter extends HttpConverter {
         }
 
         // Add user-defined extension headers
-        ParameterList additionalHeaders = (ParameterList) request
+        Series<Parameter> additionalHeaders = (Series<Parameter>) request
                 .getAttributes().get(HttpConstants.ATTRIBUTE_HEADERS);
         addAdditionalHeaders(requestHeaders, additionalHeaders);
 

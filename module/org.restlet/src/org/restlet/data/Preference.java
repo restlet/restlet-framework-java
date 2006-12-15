@@ -18,6 +18,8 @@
 
 package org.restlet.data;
 
+import org.restlet.util.Series;
+
 /**
  * Metadata preference definition.
  * 
@@ -31,7 +33,7 @@ public final class Preference<T extends Metadata> {
     private float quality;
 
     /** The modifiable list of parameters. */
-    private ParameterList parameters;
+    private Series<Parameter> parameters;
 
     /**
      * Constructor.
@@ -72,7 +74,7 @@ public final class Preference<T extends Metadata> {
      * @param parameters
      *            The list of parameters.
      */
-    public Preference(T metadata, float quality, ParameterList parameters) {
+    public Preference(T metadata, float quality, Series<Parameter> parameters) {
         this.metadata = metadata;
         this.quality = quality;
         this.parameters = parameters;
@@ -92,9 +94,9 @@ public final class Preference<T extends Metadata> {
      * 
      * @return The modifiable list of parameters.
      */
-    public ParameterList getParameters() {
+    public Series<Parameter> getParameters() {
         if (this.parameters == null)
-            this.parameters = new ParameterList();
+            this.parameters = new Form();
         return this.parameters;
     }
 

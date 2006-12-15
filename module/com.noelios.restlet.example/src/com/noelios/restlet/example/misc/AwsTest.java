@@ -21,12 +21,13 @@ package com.noelios.restlet.example.misc;
 import org.restlet.Client;
 import org.restlet.data.ChallengeResponse;
 import org.restlet.data.ChallengeScheme;
+import org.restlet.data.Form;
 import org.restlet.data.Method;
-import org.restlet.data.ParameterList;
 import org.restlet.data.Protocol;
 import org.restlet.data.Request;
 import org.restlet.data.Response;
 import org.restlet.resource.Representation;
+import org.restlet.util.Series;
 
 /**
  * Test the Amazon Web Service authentication.
@@ -43,7 +44,7 @@ public class AwsTest {
                 "OtxrzxIsfpFjA7SwPzILwy8Bw21TLhquhboDYROV"));
 
         // Add some extra headers
-        ParameterList extraHeaders = new ParameterList();
+        Series extraHeaders = new Form();
         extraHeaders.add("X-Amz-Meta-Author", "foo@bar.com");
         extraHeaders.add("X-Amz-Magic", "abracadabra");
 

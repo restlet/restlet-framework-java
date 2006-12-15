@@ -30,8 +30,8 @@ import org.mortbay.http.HttpRequest;
 import org.mortbay.http.HttpResponse;
 import org.restlet.Server;
 import org.restlet.data.Parameter;
-import org.restlet.data.ParameterList;
 import org.restlet.data.Response;
+import org.restlet.util.Series;
 
 import com.noelios.restlet.http.HttpServerCall;
 
@@ -110,8 +110,8 @@ public class JettyCall extends HttpServerCall {
      * 
      * @return The list of request headers.
      */
-    public ParameterList getRequestHeaders() {
-        ParameterList result = super.getRequestHeaders();
+    public Series<Parameter> getRequestHeaders() {
+        Series<Parameter> result = super.getRequestHeaders();
 
         if (!requestHeadersAdded) {
             // Copy the headers from the request object

@@ -21,11 +21,13 @@ package com.noelios.restlet.http;
 import java.util.Date;
 
 import org.restlet.Application;
-import org.restlet.data.ParameterList;
+import org.restlet.data.Form;
+import org.restlet.data.Parameter;
 import org.restlet.data.Protocol;
 import org.restlet.data.Request;
 import org.restlet.service.ConnectorService;
 import org.restlet.util.DateUtils;
+import org.restlet.util.Series;
 
 /**
  * Low-level call for the HTTP connectors.
@@ -55,13 +57,13 @@ public class HttpCall {
     private String reasonPhrase;
 
     /** The request headers. */
-    private ParameterList requestHeaders;
+    private Series<Parameter> requestHeaders;
 
     /** The request URI. */
     private String requestUri;
 
     /** The response headers. */
-    private ParameterList responseHeaders;
+    private Series<Parameter> responseHeaders;
 
     /** The server IP address. */
     private String serverAddress;
@@ -195,9 +197,9 @@ public class HttpCall {
      * 
      * @return The modifiable list of request headers.
      */
-    public ParameterList getRequestHeaders() {
+    public Series<Parameter> getRequestHeaders() {
         if (this.requestHeaders == null)
-            this.requestHeaders = new ParameterList();
+            this.requestHeaders = new Form();
         return this.requestHeaders;
     }
 
@@ -216,9 +218,9 @@ public class HttpCall {
      * 
      * @return The modifiable list of server headers.
      */
-    public ParameterList getResponseHeaders() {
+    public Series<Parameter> getResponseHeaders() {
         if (this.responseHeaders == null)
-            this.responseHeaders = new ParameterList();
+            this.responseHeaders = new Form();
         return this.responseHeaders;
     }
 

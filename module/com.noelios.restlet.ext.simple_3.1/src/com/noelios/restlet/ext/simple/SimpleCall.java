@@ -26,7 +26,7 @@ import java.nio.channels.WritableByteChannel;
 
 import org.restlet.Server;
 import org.restlet.data.Parameter;
-import org.restlet.data.ParameterList;
+import org.restlet.util.Series;
 
 import simple.http.Request;
 import simple.http.Response;
@@ -113,8 +113,8 @@ public class SimpleCall extends HttpServerCall {
      * 
      * @return The list of request headers.
      */
-    public ParameterList getRequestHeaders() {
-        ParameterList result = super.getRequestHeaders();
+    public Series<Parameter> getRequestHeaders() {
+        Series<Parameter> result = super.getRequestHeaders();
 
         if (!this.requestHeadersAdded) {
             int headerCount = request.headerCount();

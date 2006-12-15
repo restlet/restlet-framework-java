@@ -18,8 +18,6 @@
 
 package org.restlet.util;
 
-import java.util.List;
-
 import org.restlet.data.ChallengeResponse;
 import org.restlet.data.ClientInfo;
 import org.restlet.data.Conditions;
@@ -93,7 +91,7 @@ public class WrapperRequest extends Request {
      * 
      * @return The cookies provided by the client.
      */
-    public List<Cookie> getCookies() {
+    public Series<Cookie> getCookies() {
         return getWrappedRequest().getCookies();
     }
 

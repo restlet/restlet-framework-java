@@ -19,6 +19,7 @@
 package org.restlet.data;
 
 import org.restlet.util.Factory;
+import org.restlet.util.Series;
 
 /**
  * Authentication challenge sent by an origin server to a client.
@@ -33,7 +34,7 @@ public final class ChallengeRequest {
     private String realm;
 
     /** The scheme parameters. */
-    private ParameterList parameters;
+    private Series<Parameter> parameters;
 
     /**
      * Constructor.
@@ -88,9 +89,9 @@ public final class ChallengeRequest {
      * 
      * @return The scheme parameters.
      */
-    public ParameterList getParameters() {
+    public Series<Parameter> getParameters() {
         if (this.parameters == null)
-            this.parameters = new ParameterList();
+            this.parameters = new Form();
         return this.parameters;
     }
 

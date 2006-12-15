@@ -25,7 +25,7 @@ import java.nio.channels.WritableByteChannel;
 
 import org.restlet.Server;
 import org.restlet.data.Parameter;
-import org.restlet.data.ParameterList;
+import org.restlet.util.Series;
 import org.safehaus.asyncweb.http.HttpRequest;
 import org.safehaus.asyncweb.http.HttpResponse;
 import org.safehaus.asyncweb.http.ResponseStatus;
@@ -90,8 +90,8 @@ public class AsyncWebServerCall extends HttpServerCall {
     }
 
     @Override
-    public ParameterList getRequestHeaders() {
-        ParameterList result = super.getRequestHeaders();
+    public Series<Parameter> getRequestHeaders() {
+        Series<Parameter> result = super.getRequestHeaders();
 
         if (!this.requestHeadersAdded) {
             HttpHeaders headers = request.getHeaders();

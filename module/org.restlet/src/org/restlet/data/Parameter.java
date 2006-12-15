@@ -21,13 +21,14 @@ package org.restlet.data;
 import java.io.IOException;
 
 import org.restlet.util.Factory;
+import org.restlet.util.Series.Entry;
 
 /**
  * Multi-usage parameter.
  * 
  * @author Jerome Louvel (contact@noelios.com)
  */
-public class Parameter implements Comparable<Parameter> {
+public class Parameter implements Comparable<Parameter>, Entry {
     /** The name. */
     private String name;
 

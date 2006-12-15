@@ -20,11 +20,12 @@ package com.noelios.restlet.example.misc;
 
 import org.restlet.Restlet;
 import org.restlet.Server;
+import org.restlet.data.Form;
 import org.restlet.data.MediaType;
-import org.restlet.data.ParameterList;
 import org.restlet.data.Protocol;
 import org.restlet.data.Request;
 import org.restlet.data.Response;
+import org.restlet.util.Series;
 
 /**
  * Display the HTTP accept header sent by the Web browsers.
@@ -39,7 +40,7 @@ public class HeadersTest {
                 // ------------------------------
                 // Getting an HTTP request header
                 // ------------------------------
-                ParameterList headers = (ParameterList) request.getAttributes()
+                Series headers = (Series) request.getAttributes()
                         .get("org.restlet.http.headers");
 
                 // The headers list contains all received HTTP headers, in raw
@@ -52,7 +53,7 @@ public class HeadersTest {
                 // -----------------------
                 // Adding response headers
                 // -----------------------
-                headers = new ParameterList();
+                headers = new Form();
 
                 // Non-standard headers are allowed
                 headers.add("X-Test", "Test value");

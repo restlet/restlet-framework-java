@@ -37,7 +37,9 @@ import org.restlet.util.WrapperList;
  * @author Jerome Louvel (contact@noelios.com)
  * @see java.util.Collections
  * @see java.util.List
+ * @deprecated Use Form and AbstractSeries instead.
  */
+@Deprecated
 public class ParameterList extends WrapperList<Parameter> {
     /**
      * A marker for empty values to differentiate from non existing values

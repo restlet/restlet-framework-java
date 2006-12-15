@@ -18,8 +18,6 @@
 
 package org.restlet.util;
 
-import java.util.List;
-
 import org.restlet.data.ChallengeRequest;
 import org.restlet.data.CookieSetting;
 import org.restlet.data.Reference;
@@ -66,7 +64,7 @@ public class WrapperResponse extends Response {
      * 
      * @return The cookie settings provided by the server.
      */
-    public List<CookieSetting> getCookieSettings() {
+    public Series<CookieSetting> getCookieSettings() {
         return getWrappedResponse().getCookieSettings();
     }
 

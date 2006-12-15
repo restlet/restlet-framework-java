@@ -31,10 +31,10 @@ import java.util.logging.Level;
 import javax.net.ssl.HttpsURLConnection;
 
 import org.restlet.data.Parameter;
-import org.restlet.data.ParameterList;
 import org.restlet.data.Request;
 import org.restlet.data.Status;
 import org.restlet.resource.Representation;
+import org.restlet.util.Series;
 
 import com.noelios.restlet.http.HttpClientCall;
 
@@ -234,8 +234,8 @@ public class HttpUrlConnectionCall extends HttpClientCall {
      * 
      * @return The modifiable list of response headers.
      */
-    public ParameterList getResponseHeaders() {
-        ParameterList result = super.getResponseHeaders();
+    public Series<Parameter> getResponseHeaders() {
+        Series<Parameter> result = super.getResponseHeaders();
 
         if (!this.responseHeadersAdded) {
             // Read the response headers

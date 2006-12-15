@@ -28,12 +28,13 @@ import org.restlet.data.CookieSetting;
 import org.restlet.data.Dimension;
 import org.restlet.data.Encoding;
 import org.restlet.data.Method;
-import org.restlet.data.ParameterList;
+import org.restlet.data.Parameter;
 import org.restlet.data.Request;
 import org.restlet.data.Response;
 import org.restlet.data.Status;
 import org.restlet.resource.Representation;
 import org.restlet.util.DateUtils;
+import org.restlet.util.Series;
 
 import com.noelios.restlet.util.CookieUtils;
 import com.noelios.restlet.util.SecurityUtils;
@@ -106,10 +107,11 @@ public class HttpServerConverter extends HttpConverter {
      * @param response
      *            The response returned.
      */
+    @SuppressWarnings("unchecked")
     protected void addResponseHeaders(HttpServerCall httpCall, Response response) {
         try {
             // Add all the necessary response headers
-            ParameterList responseHeaders = httpCall.getResponseHeaders();
+            Series<Parameter> responseHeaders = httpCall.getResponseHeaders();
 
             if (response.getStatus().equals(
                     Status.CLIENT_ERROR_METHOD_NOT_ALLOWED)) {
@@ -259,7 +261,7 @@ public class HttpServerConverter extends HttpConverter {
             }
 
             // Add user-defined extension headers
-            ParameterList additionalHeaders = (ParameterList) response
+            Series<Parameter> additionalHeaders = (Series<Parameter>) response
                     .getAttributes().get(HttpConstants.ATTRIBUTE_HEADERS);
             addAdditionalHeaders(responseHeaders, additionalHeaders);
         } catch (Exception e) {

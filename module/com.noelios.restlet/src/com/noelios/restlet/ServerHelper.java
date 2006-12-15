@@ -22,9 +22,11 @@ import java.util.logging.Logger;
 
 import org.restlet.Context;
 import org.restlet.Server;
-import org.restlet.data.ParameterList;
+import org.restlet.data.Form;
+import org.restlet.data.Parameter;
 import org.restlet.data.Request;
 import org.restlet.data.Response;
+import org.restlet.util.Series;
 
 /**
  * Server connector helper.
@@ -59,11 +61,11 @@ public class ServerHelper extends ConnectorHelper {
      * 
      * @return The server parameters.
      */
-    public ParameterList getParameters() {
-        ParameterList result = (getServer() != null) ? getServer().getContext()
+    public Series<Parameter> getParameters() {
+        Series<Parameter> result = (getServer() != null) ? getServer().getContext()
                 .getParameters() : null;
         if (result == null)
-            result = new ParameterList();
+            result = new Form();
         return result;
     }
 
