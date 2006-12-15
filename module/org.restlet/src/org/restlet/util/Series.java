@@ -30,7 +30,7 @@ import java.util.Set;
  */
 public interface Series<E extends Series.Entry> extends List<E> {
     /**
-     * A sequence entry.
+     * A named series entry.
      * 
      * @author Jerome Louvel (contact@noelios.com)
      */

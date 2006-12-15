@@ -111,7 +111,7 @@ public class Form extends AbstractSeries<Parameter> {
 
     @Override
     public Parameter createEntry(String name, String value) {
-        return new Parameter();
+        return new Parameter(name, value);
     }
 
     @Override
