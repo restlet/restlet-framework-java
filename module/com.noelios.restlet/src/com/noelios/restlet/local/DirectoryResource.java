@@ -395,15 +395,32 @@ public class DirectoryResource extends Resource {
         List<Representation> result = super.getVariants();
         getLogger().info("Getting variants for : " + getTargetUri());
 
+        // Compute the base reference (from a call's client point of view)
+        String baseRef = this.request.getResourceRef().getBaseRef().toString(
+                false, false);
+        if (!baseRef.endsWith("/")) {
+            baseRef += "/";
+        }
+        int lastIndex = this.relativePart.lastIndexOf("/");
+        if (lastIndex != -1) {
+            baseRef += this.relativePart.substring(0, lastIndex);
+        }
+        int rootLength = getDirectoryUri().length();
+
         if (this.directoryContent != null) {
             if (this.baseName != null) {
+                String filePath;
                 for (Reference ref : getVariantsReferences()) {
                     // Add the new variant to the result list
                     Response contextResponse = getDispatcher().get(
                             ref.toString());
                     if (contextResponse.getStatus().isSuccess()
                             && (contextResponse.getEntity() != null)) {
-                        result.add(contextResponse.getEntity());
+                        filePath = ref.toString(false, false).substring(
+                                rootLength);
+                        Representation rep = contextResponse.getEntity();
+                        rep.setIdentifier(baseRef + filePath);
+                        result.add(rep);
                     }
                 }
             }
@@ -412,22 +429,10 @@ public class DirectoryResource extends Resource {
                 if (this.targetDirectory && getDirectory().isListingAllowed()) {
                     ReferenceList userList = new ReferenceList(
                             this.directoryContent.size());
-
-                    // Compute the base reference (from a call's client point of
-                    // view)
-                    String baseRef = this.request.getResourceRef().getBaseRef()
-                            .toString(false, false);
-                    if (!baseRef.endsWith("/")) {
-                        baseRef += "/";
-                    }
-                    baseRef += this.relativePart;
-
                     // Set the list identifier
                     userList.setIdentifier(baseRef);
 
                     String filePath;
-                    int rootLength = getDirectoryUri().length();
-
                     for (Reference ref : this.directoryContent) {
                         filePath = ref.toString(false, false).substring(
                                 rootLength);
