@@ -27,6 +27,7 @@ import org.restlet.Application;
 import org.restlet.Component;
 import org.restlet.Directory;
 import org.restlet.Restlet;
+import org.restlet.data.LocalReference;
 import org.restlet.data.Method;
 import org.restlet.data.Protocol;
 import org.restlet.data.Request;
@@ -377,12 +378,11 @@ public class DirectoryTestCase extends TestCase {
          * @param component
          *            The component.
          */
-        public MyApplication(Component component, File testDirectory) {
+        public MyApplication(Component component, File testDirectory) throws IOException {
             super(component);
             this.setTestDirectory(testDirectory);
             // Create a DirectoryHandler that manages a local Directory
-            this.directory = new Directory(getContext(), getTestDirectory()
-                    .toURI().toString());
+            this.directory = new Directory(getContext(), LocalReference.createFileReference(getTestDirectory()));
             this.directory.setNegotiateContent(true);
         }
 
