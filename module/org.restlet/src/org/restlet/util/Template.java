@@ -890,7 +890,17 @@ public class Template {
      */
     private void appendClass(StringBuilder pattern, String content,
             boolean required) {
-        pattern.append("([").append(content).append(']');
+
+        pattern.append("(");
+
+        if (content.equals(".")) {
+            // Special case for the TYPE_ALL variable type because the
+            // dot looses its meaning inside a character class
+            pattern.append(content);
+        } else {
+            pattern.append("[").append(content).append(']');
+
+        }
 
         if (required) {
             pattern.append("+");
