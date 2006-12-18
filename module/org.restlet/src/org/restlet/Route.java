@@ -31,6 +31,7 @@ import org.restlet.data.Response;
 import org.restlet.data.Status;
 import org.restlet.util.Series;
 import org.restlet.util.Template;
+import org.restlet.util.Variable;
 
 /**
  * Filter scoring the affinity of calls with the attached Restlet. The score is
@@ -158,7 +159,8 @@ public class Route extends Filter {
         this.formExtracts = null;
         this.modelExtracts = null;
         this.template = new Template(getLogger(), uriTemplate,
-                Template.MODE_STARTS_WITH);
+                Template.MODE_STARTS_WITH, Variable.TYPE_URI_SEGMENT, "", true,
+                false);
     }
 
     /**
