@@ -51,7 +51,11 @@ public class Part10 {
         Route route = component.getDefaultHost().attach("/search", application);
 
         // While routing requests to the application, extract a query parameter
-        route.extractQuery("keywords", "q", true);
+        // For instance :
+        // http://localhost:8182/search?kwd=myKeyword1+myKeyword2
+        // will be routed to
+        // http://www.google.com/search?q=site:mysite.org+myKeyword1%20myKeyword2
+        route.extractQuery("keywords", "kwd", true);
 
         // Start the component
         component.start();
