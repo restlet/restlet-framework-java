@@ -600,9 +600,9 @@ public class Template {
             var = getDefaultVariable();
 
         // Check for a matching request attribute
-        if ((request != null)
-                && request.getAttributes().containsKey(variableName)) {
-            result = request.getAttributes().get(variableName).toString();
+        Object variable = request.getAttributes().get(variableName);
+        if ((request != null) && (variable != null)) {
+            result = variable.toString();
         }
 
         // Check for a matching response attribute
@@ -872,6 +872,8 @@ public class Template {
                 appendGroup(coreRegex, PCHAR, variable.isRequired());
                 break;
             }
+
+            result = coreRegex.toString();
         }
 
         return result;
