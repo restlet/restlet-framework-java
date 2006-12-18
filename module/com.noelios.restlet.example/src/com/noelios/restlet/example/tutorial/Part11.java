@@ -97,9 +97,9 @@ public class Part11 implements Constants {
                 };
 
                 // Attach the Handlers to the Router
-                router.attach("/users/{user}$", account);
-                router.attach("/users/{user}/orders$", orders);
-                router.attach("/users/{user}/orders/{order}$", order);
+                router.attach("/users/{user}", account);
+                router.attach("/users/{user}/orders", orders);
+                router.attach("/users/{user}/orders/{order}", order);
 
                 // Return the root router
                 return router;
