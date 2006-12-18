@@ -157,7 +157,8 @@ public class Route extends Filter {
         this.entityExtracts = null;
         this.formExtracts = null;
         this.modelExtracts = null;
-        this.template = new Template(getLogger(), uriTemplate);
+        this.template = new Template(getLogger(), uriTemplate,
+                Template.MODE_STARTS_WITH);
     }
 
     /**
@@ -181,7 +182,7 @@ public class Route extends Filter {
                                 + matchedLength);
             }
 
-            if (matchedLength > 0) {
+            if (matchedLength != -1) {
                 // Updates the context
                 String matchedPart = remainingPart.substring(0, matchedLength);
                 Reference baseRef = request.getResourceRef().getBaseRef();
@@ -233,13 +234,13 @@ public class Route extends Filter {
             Form form = request.getResourceRef().getQueryAsForm();
 
             if (form != null) {
-                for (ExtractInfo qe : getQueryExtracts()) {
-                    if (qe.first) {
-                        request.getAttributes().put(qe.attribute,
-                                form.subList(qe.value));
+                for (ExtractInfo ei : getQueryExtracts()) {
+                    if (ei.first) {
+                        request.getAttributes().put(ei.attribute,
+                                form.getFirstValue(ei.value));
                     } else {
-                        request.getAttributes().put(qe.attribute,
-                                form.getFirst(qe.value));
+                        request.getAttributes().put(ei.attribute,
+                                form.subList(ei.value));
                     }
                 }
             }
@@ -250,13 +251,13 @@ public class Route extends Filter {
             Form form = request.getEntityAsForm();
 
             if (form != null) {
-                for (ExtractInfo ie : getEntityExtracts()) {
-                    if (ie.first) {
-                        request.getAttributes().put(ie.attribute,
-                                form.subList(ie.value));
+                for (ExtractInfo ei : getEntityExtracts()) {
+                    if (ei.first) {
+                        request.getAttributes().put(ei.attribute,
+                                form.getFirstValue(ei.value));
                     } else {
-                        request.getAttributes().put(ie.attribute,
-                                form.getFirst(ie.value));
+                        request.getAttributes().put(ei.attribute,
+                                form.subList(ei.value));
                     }
                 }
             }
@@ -267,13 +268,13 @@ public class Route extends Filter {
             Series<Cookie> cookies = request.getCookies();
 
             if (cookies != null) {
-                for (ExtractInfo qe : getCookieExtracts()) {
-                    if (qe.first) {
-                        request.getAttributes().put(qe.attribute,
-                                cookies.subList(qe.value));
+                for (ExtractInfo ei : getCookieExtracts()) {
+                    if (ei.first) {
+                        request.getAttributes().put(ei.attribute,
+                                cookies.getFirstValue(ei.value));
                     } else {
-                        request.getAttributes().put(qe.attribute,
-                                cookies.getFirst(qe.value));
+                        request.getAttributes().put(ei.attribute,
+                                cookies.subList(ei.value));
                     }
                 }
             }
@@ -471,7 +472,7 @@ public class Route extends Filter {
             String remainingPart = request.getResourceRef().getRemainingPart();
             int matchedLength = getTemplate().match(remainingPart);
 
-            if (matchedLength > 0) {
+            if (matchedLength != -1) {
                 float totalLength = remainingPart.length();
 
                 if (totalLength > 0.0F) {

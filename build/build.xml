@@ -876,10 +876,16 @@
 	<!-- Cleaning Target -->
 	<target name="clean" description="Clean up the classes and Javadoc">
 		<!-- Delete the classes and Javadoc directories -->
-		<delete includeEmptyDirs="true" verbose="false" quiet="true">
+		<delete includeEmptyDirs="true" verbose="false" quiet="false"  failonerror="false">
 			<fileset dir="${temp}" />
+		</delete>
+		<delete includeEmptyDirs="true" verbose="false" quiet="false"  failonerror="false">
 			<fileset dir="${docs-api}" excludes="**/.svn" />
+		</delete>
+		<delete includeEmptyDirs="true" verbose="false" quiet="false"  failonerror="false">
 			<fileset dir="${docs-nre}" excludes="**/.svn" />
+		</delete>
+		<delete includeEmptyDirs="true" verbose="false" quiet="false"  failonerror="false">
 			<fileset dir="${docs-ext}" excludes="**/.svn" />
 		</delete>
 	</target>

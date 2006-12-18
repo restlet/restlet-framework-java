@@ -51,7 +51,7 @@ public class RedirectTestCase extends TestCase {
         proxyComponent.getClients().add(Protocol.HTTP);
 
         // Create the proxy Restlet
-        String target = "http://localhost:9090${path}#[if query]?${query}#[end]";
+        String target = "http://localhost:9090{rr}";
         Redirector proxy = new Redirector(proxyComponent.getContext(), target,
                 Redirector.MODE_CONNECTOR);
 
@@ -62,10 +62,8 @@ public class RedirectTestCase extends TestCase {
                 String message = "Resource URI:  " + request.getResourceRef()
                         + '\n' + "Base URI:      "
                         + request.getResourceRef().getBaseRef() + '\n'
-                        + "Relative path: "
+                        + "Remaining part: "
                         + request.getResourceRef().getRemainingPart() + '\n'
-                        + "Query string:  "
-                        + request.getResourceRef().getQuery() + '\n'
                         + "Method name:   " + request.getMethod() + '\n';
                 response.setEntity(new StringRepresentation(message,
                         MediaType.TEXT_PLAIN));

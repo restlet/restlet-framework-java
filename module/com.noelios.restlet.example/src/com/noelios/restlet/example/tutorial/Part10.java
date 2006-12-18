@@ -41,7 +41,7 @@ public class Part10 {
             @Override
             public Restlet createRoot() {
                 // Create a Redirector to Google search service
-                String target = "http://www.google.com/search?q=site:mysite.org+{terms}";
+                String target = "http://www.google.com/search?q=site:mysite.org+{keywords}";
                 return new Redirector(getContext(), target,
                         Redirector.MODE_CLIENT_TEMPORARY);
             }
@@ -51,7 +51,7 @@ public class Part10 {
         Route route = component.getDefaultHost().attach("/search", application);
 
         // While routing requests to the application, extract a query parameter
-        route.extractQuery("terms", "q", true);
+        route.extractQuery("keywords", "q", true);
 
         // Start the component
         component.start();

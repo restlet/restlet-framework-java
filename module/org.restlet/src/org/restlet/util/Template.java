@@ -363,10 +363,30 @@ public class Template {
      *            The logger to use.
      * @param pattern
      *            The pattern to use for formatting or parsing.
-     * @param defaultType
-     *            The default type of variables with no descriptor.
      * @param matchingMode
      *            The matching mode to use when parsing a formatted reference.
+     */
+    public Template(Logger logger, String pattern, int matchingMode) {
+        this(logger, pattern, matchingMode, Variable.TYPE_ALL, "", true, false);
+    }
+
+    /**
+     * Constructor.
+     * 
+     * @param logger
+     *            The logger to use.
+     * @param pattern
+     *            The pattern to use for formatting or parsing.
+     * @param matchingMode
+     *            The matching mode to use when parsing a formatted reference.
+     * @param defaultType
+     *            The default type of variables with no descriptor.
+     * @param defaultDefaultValue
+     *            The default value for null variables with no descriptor.
+     * @param defaultRequired
+     *            The default required flag for variables with no descriptor.
+     * @param defaultFixed
+     *            The default fixed value for variables with no descriptor.
      */
     public Template(Logger logger, String pattern, int matchingMode,
             int defaultType, String defaultDefaultValue,
@@ -919,10 +939,10 @@ public class Template {
      * 
      * @param formattedString
      *            The formatted string to match.
-     * @return The number of matched characters.
+     * @return The number of matched characters or -1 if the match failed.
      */
     public int match(String formattedString) {
-        int result = 0;
+        int result = -1;
         Matcher matcher = getRegexPattern().matcher(formattedString);
 
         if ((getMatchingMode() == MODE_EQUALS) && matcher.matches()) {
@@ -943,10 +963,10 @@ public class Template {
      *            The string to parse.
      * @param request
      *            The request to update.
-     * @return The number of matched characters.
+     * @return The number of matched characters or -1 if no character matched.
      */
     public int parse(String formattedString, Request request) {
-        int result = 0;
+        int result = -1;
         Matcher matcher = getRegexPattern().matcher(formattedString);
         boolean matched = ((getMatchingMode() == MODE_EQUALS) && matcher
                 .matches())
