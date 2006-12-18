@@ -566,8 +566,7 @@ public class Template {
 
             this.regexPattern = Pattern.compile(patternBuffer.toString());
         }
-        System.out.println("this"+this);
-        System.out.println("this.regexPattern="+this.regexPattern);
+
         return this.regexPattern;
     }
 
