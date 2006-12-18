@@ -436,6 +436,7 @@ public class Template {
                         // Reset the variable name buffer
                         varBuffer = new StringBuilder();
                     }
+                    inVariable = false;
                 } else {
                     getLogger().warning(
                             "An invalid character was detected inside a pattern variable : "
@@ -542,6 +543,8 @@ public class Template {
                             // Reset the variable name buffer
                             varBuffer = new StringBuilder();
                         }
+                        inVariable = false;
+
                     } else {
                         getLogger().warning(
                                 "An invalid character was detected inside a pattern variable : "
@@ -563,7 +566,8 @@ public class Template {
 
             this.regexPattern = Pattern.compile(patternBuffer.toString());
         }
-
+        System.out.println("this"+this);
+        System.out.println("this.regexPattern="+this.regexPattern);
         return this.regexPattern;
     }
 
