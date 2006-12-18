@@ -97,6 +97,17 @@ public class HeaderTestCase extends TestCase {
                 MediaType.ALL);
         assertEquals(clientInfo.getAcceptedMediaTypes().get(4).getQuality(),
                 0.2F);
+
+        // Test a more complex header
+        header1 = "text/html, application/vnd.wap.xhtml+xml, "
+                + "application/xhtml+xml; profile=\"http://www.wapforum.org/xhtml\", "
+                + "image/gif, image/jpeg, image/pjpeg, audio/amr, */*";
+        clientInfo = new ClientInfo();
+        PreferenceUtils.parseMediaTypes(header1, clientInfo);
+        assertEquals(clientInfo.getAcceptedMediaTypes().get(0).getMetadata(),
+                MediaType.TEXT_HTML);
+        assertEquals(clientInfo.getAcceptedMediaTypes().get(0).getQuality(),
+                1.0F);
     }
 
     /**

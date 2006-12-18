@@ -36,12 +36,10 @@ import org.restlet.util.Variable;
 /**
  * Filter scoring the affinity of calls with the attached Restlet. The score is
  * used by an associated Router in order to determine the most appropriate
- * Restlet for a given call.
- * 
- * Scorer based of a reference template. It also supports the extraction of some
- * attributes from a call. Multiple extractions can be defined, based on the
- * query string of the resource reference, on the request form (posted from a
- * browser), on the base URI matches or on the request or response data model.
+ * Restlet for a given call. The routing is based on a reference template. It
+ * also supports the extraction of some attributes from a call. Multiple
+ * extractions can be defined, based on the query string of the resource
+ * reference, on the request form (ex: posted from a browser) or on cookies.
  * 
  * @author Jerome Louvel (contact@noelios.com)
  */
@@ -121,12 +119,6 @@ public class Route extends Filter {
     /** List of request entity parameters to extract. */
     private List<ExtractInfo> entityExtracts;
 
-    /** List of request form parameters (query or entity parameters) to extract. */
-    private List<ExtractInfo> formExtracts;
-
-    /** List of request's model attributes to extract. */
-    private List<ExtractInfo> modelExtracts;
-
     /** The reference template to match. */
     private Template template;
 
@@ -156,8 +148,6 @@ public class Route extends Filter {
         this.cookieExtracts = null;
         this.queryExtracts = null;
         this.entityExtracts = null;
-        this.formExtracts = null;
-        this.modelExtracts = null;
         this.template = new Template(getLogger(), uriTemplate,
                 Template.MODE_STARTS_WITH, Variable.TYPE_URI_SEGMENT, "", true,
                 false);
@@ -281,14 +271,6 @@ public class Route extends Filter {
                 }
             }
         }
-
-        // Extract the model patterns
-        if (this.modelExtracts != null) {
-            // CallModel model = new CallModel(request, response, null);
-            // for (ExtractInfo me : getModelExtracts()) {
-            // request.getAttributes().put(me.attribute, model.get(me.value));
-            // }
-        }
     }
 
     /**
@@ -330,26 +312,6 @@ public class Route extends Filter {
     }
 
     /**
-     * Extracts an attribute from the request query form or, if not found, from
-     * the entity form.
-     * 
-     * @param attributeName
-     *            The name of the request attribute to set.
-     * @param parameterName
-     *            The name of the entity form parameter to extract.
-     * @param first
-     *            Indicates if only the first cookie should be set. Otherwise as
-     *            a List instance might be set in the attribute value.
-     * @return The current Filter.
-     */
-    public Route extractForm(String attributeName, String parameterName,
-            boolean first) {
-        getFormExtracts().add(
-                new ExtractInfo(attributeName, parameterName, first));
-        return this;
-    }
-
-    /**
      * Extracts an attribute from the query string of the resource reference.
      * 
      * @param attributeName
@@ -365,22 +327,6 @@ public class Route extends Filter {
             boolean first) {
         getQueryExtracts().add(
                 new ExtractInfo(attributeName, parameterName, first));
-        return this;
-    }
-
-    /**
-     * Extracts an attribute from the request's model.
-     * 
-     * @param attributeName
-     *            The name of the request attribute to set.
-     * @param variableName
-     *            The variable name to resolve (see
-     *            {@link org.restlet.util.Template} for details.
-     * @return The current Filter.
-     * @see org.restlet.util.Template
-     */
-    public Route extractRequest(String attributeName, String variableName) {
-        getRequestExtracts().add(new ExtractInfo(attributeName, variableName));
         return this;
     }
 
@@ -407,17 +353,6 @@ public class Route extends Filter {
     }
 
     /**
-     * Returns the list of form extracts.
-     * 
-     * @return The list of form extracts.
-     */
-    private List<ExtractInfo> getFormExtracts() {
-        if (this.formExtracts == null)
-            this.formExtracts = new ArrayList<ExtractInfo>();
-        return this.formExtracts;
-    }
-
-    /**
      * Returns the list of query extracts.
      * 
      * @return The list of query extracts.
@@ -426,17 +361,6 @@ public class Route extends Filter {
         if (this.queryExtracts == null)
             this.queryExtracts = new ArrayList<ExtractInfo>();
         return this.queryExtracts;
-    }
-
-    /**
-     * Returns the list of query extracts.
-     * 
-     * @return The list of query extracts.
-     */
-    private List<ExtractInfo> getRequestExtracts() {
-        if (this.modelExtracts == null)
-            this.modelExtracts = new ArrayList<ExtractInfo>();
-        return this.modelExtracts;
     }
 
     /**

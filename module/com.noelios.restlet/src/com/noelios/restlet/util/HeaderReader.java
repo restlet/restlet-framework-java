@@ -87,14 +87,13 @@ public class HeaderReader {
         }
 
         // Remove trailing spaces
-        if(sb != null)
-        {
+        if (sb != null) {
             for (int i = sb.length() - 1; (i >= 0)
                     && isLinearWhiteSpace(sb.charAt(i)); i--) {
                 sb.deleteCharAt(i);
             }
         }
-        
+
         return (sb == null) ? null : sb.toString();
     }
 

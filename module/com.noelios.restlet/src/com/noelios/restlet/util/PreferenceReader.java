@@ -176,7 +176,36 @@ public class PreferenceReader<T extends Metadata> extends HeaderReader {
                         readingParamValue = false;
                     } else if ((nextChar == '"')
                             && (paramValueBuffer.length() == 0)) {
-                        paramValueBuffer.append(readQuotedString());
+                        // Parse the quoted string
+                        boolean done = false;
+                        boolean quotedPair = false;
+
+                        while ((!done) && (nextChar != -1)) {
+                            nextChar = (nextIndex < nextValue.length()) ? nextValue
+                                    .charAt(nextIndex++) : -1;
+
+                            if (quotedPair) {
+                                // End of quoted pair (escape sequence)
+                                if (HeaderUtils.isText(nextChar)) {
+                                    paramValueBuffer.append((char) nextChar);
+                                    quotedPair = false;
+                                } else {
+                                    throw new IOException(
+                                            "Invalid character detected in quoted string. Please check your value");
+                                }
+                            } else if (HeaderUtils.isDoubleQuote(nextChar)) {
+                                // End of quoted string
+                                done = true;
+                            } else if (nextChar == '\\') {
+                                // Begin of quoted pair (escape sequence)
+                                quotedPair = true;
+                            } else if (HeaderUtils.isText(nextChar)) {
+                                paramValueBuffer.append((char) nextChar);
+                            } else {
+                                throw new IOException(
+                                        "Invalid character detected in quoted string. Please check your value");
+                            }
+                        }
                     } else if (HeaderUtils.isTokenChar(nextChar)) {
                         paramValueBuffer.append((char) nextChar);
                     } else {
