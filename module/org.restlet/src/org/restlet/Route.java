@@ -129,7 +129,7 @@ public class Route extends Filter {
      *            The next Restlet.
      */
     public Route(Restlet next) {
-        this(null, null, next);
+        this(null, (String) null, next);
     }
 
     /**
@@ -143,14 +143,28 @@ public class Route extends Filter {
      *            The next Restlet.
      */
     public Route(Router router, String uriTemplate, Restlet next) {
+        this(router, new Template(router.getLogger(), uriTemplate,
+                Template.MODE_STARTS_WITH, Variable.TYPE_URI_SEGMENT, "", true,
+                false), next);
+    }
+
+    /**
+     * Constructor.
+     * 
+     * @param router
+     *            The parent router.
+     * @param template
+     *            The URI template.
+     * @param next
+     *            The next Restlet.
+     */
+    public Route(Router router, Template template, Restlet next) {
         super(router == null ? null : router.getContext(), next);
         this.router = router;
         this.cookieExtracts = null;
         this.queryExtracts = null;
         this.entityExtracts = null;
-        this.template = new Template(getLogger(), uriTemplate,
-                Template.MODE_STARTS_WITH, Variable.TYPE_URI_SEGMENT, "", true,
-                false);
+        this.template = template;
     }
 
     /**

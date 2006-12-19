@@ -17,6 +17,7 @@ Changes log
    is not required and complicated the API and the Javadocs understanding.
  - Replaced Series and AbstractSeries by a single Series class.
  - Added a setMatchingMode() method on Template.
+ - Added new constructor to Route taking a custom instance of Template.
  
 [Enhancements] 
  -  
