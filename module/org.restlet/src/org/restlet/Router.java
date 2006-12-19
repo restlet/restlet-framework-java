@@ -140,6 +140,18 @@ public class Router extends Restlet {
     }
 
     /**
+     * Attaches a target to this router with an empty URI pattern. A new route
+     * will be added routing to the target when any call is received.
+     * 
+     * @param target
+     *            The target Restlet to attach.
+     * @return The created route.
+     */
+    public Route attach(Restlet target) {
+        return attach("", target);
+    }
+
+    /**
      * Attaches a target to this router based on a given URI pattern. A new
      * route will be added routing to the target when calls with a URI matching
      * the pattern will be received.

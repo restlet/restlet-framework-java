@@ -6,6 +6,16 @@ Changes log
 
 @version-full@ (@release-date@)
 [Bugs fixed]
+ - 
+
+[API changes]
+ - 
+
+[Enhancements] 
+ -  
+ 
+1.0 beta 23 (2006-12-19)
+[Bugs fixed]
  - Fixed several documentation typos. Reported by John D. Mitchell and Peter Murray.
  - Fixed issue with "sub-tagged" Language metadata (like "en-us"), sub-tag comparison must
    ignore the case. Reported by Jeff Walter and Andrew Barnes. Contributed by Thierry Boileau.

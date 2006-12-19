@@ -256,6 +256,8 @@ import org.restlet.data.Response;
  * </tr>
  * </table>
  * 
+ * @see <a href="http://bitworking.org/projects/URI-Templates/">URI Template
+ *      specification</a>
  * @author Jerome Louvel (contact@noelios.com)
  */
 public class Template {

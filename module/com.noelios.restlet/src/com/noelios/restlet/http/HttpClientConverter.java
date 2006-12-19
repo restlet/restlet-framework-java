@@ -280,9 +280,7 @@ public class HttpClientConverter extends HttpConverter {
             addAdditionalHeaders(requestHeaders, additionalHeaders);
 
             // Add the security headers. NOTE: This must stay at the end because
-            // the
-            // AWS challenge
-            // scheme requires access to all HTTP headers
+            // the AWS challenge scheme requires access to all HTTP headers
             ChallengeResponse challengeResponse = request
                     .getChallengeResponse();
             if (challengeResponse != null) {

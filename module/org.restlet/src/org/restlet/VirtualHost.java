@@ -285,7 +285,9 @@ public class VirtualHost extends Router {
      * 
      * @param baseDomain
      *            The baseRef host domain to match.
+     * @deprecated Use the setHost* methods instead.
      */
+    @Deprecated
     public void setBaseDomain(String baseDomain) {
         this.hostDomain = baseDomain;
     }
@@ -295,7 +297,9 @@ public class VirtualHost extends Router {
      * 
      * @param basePort
      *            The baseRef host port to match.
+     * @deprecated Use the setHost* methods instead.
      */
+    @Deprecated
     public void setBasePort(String basePort) {
         this.hostPort = basePort;
     }
@@ -305,9 +309,41 @@ public class VirtualHost extends Router {
      * 
      * @param baseScheme
      *            The baseRef scheme to match.
+     * @deprecated Use the setHost* methods instead.
      */
+    @Deprecated
     public void setBaseScheme(String baseScheme) {
         this.hostScheme = baseScheme;
+    }
+
+    /**
+     * Sets the hostRef host domain to match. Uses patterns in java.util.regex.
+     * 
+     * @param hostDomain
+     *            The hostRef host domain to match.
+     */
+    public void setHostDomain(String hostDomain) {
+        this.hostDomain = hostDomain;
+    }
+
+    /**
+     * Sets the hostRef host port to match. Uses patterns in java.util.regex.
+     * 
+     * @param hostPort
+     *            The hostRef host port to match.
+     */
+    public void setHostPort(String hostPort) {
+        this.hostPort = hostPort;
+    }
+
+    /**
+     * Sets the hostRef scheme to match. Uses patterns in java.util.regex.
+     * 
+     * @param hostScheme
+     *            The hostRef scheme to match.
+     */
+    public void setHostScheme(String hostScheme) {
+        this.hostScheme = hostScheme;
     }
 
     /**

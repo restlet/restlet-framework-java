@@ -159,7 +159,7 @@ such as access logging and status page setting.
 <p align="middle"><img src="images/tutorial05"
 	alt="Restlet components, virtual hosts and applications" /></p>
 <p>In order to illustrate these classes, let's examine a simple
-example. He we create a Component, then add an HTTP server to it,
+example. Here we create a Component, then add an HTTP server to it,
 listening on port 8182. Then we create a simple trace Restlet and attach
 it to the defaut VirtualHost of the Component. This default host is
 catching any request that wasn't already routed to a declared
@@ -231,7 +231,7 @@ for ROOT_URI, depending on the location of your Restlet installation. By
 default, it is set to "file:///D:/Restlet/www/docs/api/". Note that no
 additional configuration is needed. If you want to customize the mapping
 between file extensions and metadata (media type, language or encoding)
-or if you want to specify a differen index name, you can use the
+or if you want to specify a different index name, you can use the
 Application's <a
 	href="http://www.restlet.org/docs/api/org/restlet/service/MetadataService.html">"metadataService"</a>
 property.</p>
@@ -363,12 +363,28 @@ client/browser, the internal redirection at the container level and the
 connector redirection for proxy-like behavior. In the example below, we
 will define a search service for our web site (named "mysite.org") based
 on Google. The "/search" relative URI identifies the search service,
-accepting some keywords via the "q" parameter:</p>
+accepting some keywords via the "kwd" parameter:</p>
 <pre>
-          // Create a Redirector to Google search service
-          String target = "http://www.google.com/search?q=site:mysite.org+{keywords}";
-          return new Redirector(getContext(), target,
-                  Redirector.MODE_CLIENT_TEMPORARY);
+       // Create an application
+       Application application = new Application(component) {
+           @Override
+           public Restlet createRoot() {
+               // Create a Redirector to Google search service
+               String target = "http://www.google.com/search?q=site:mysite.org+{keywords}";
+               return new Redirector(getContext(), target,
+                       Redirector.MODE_CLIENT_TEMPORARY);
+           }
+       };
+
+       // Attach the application to the component's default host
+       Route route = component.getDefaultHost().attach("/search", application);
+
+       // While routing requests to the application, extract a query parameter
+       // For instance :
+       // http://localhost:8182/search?kwd=myKeyword1+myKeyword2
+       // will be routed to
+       // http://www.google.com/search?q=site:mysite.org+myKeyword1%20myKeyword2
+       route.extractQuery("keywords", "kwd", true);
 </pre>
 <p>Note that the Redirector needs three parameters only. The first
 is the parent context, the second one defines how the URI rewriting
@@ -377,14 +393,19 @@ by the <a
 	href="http://www.restlet.org/docs/api/org/restlet/util/Template.html">Template</a>
 class. The second parameter defines the type of redirection; here we
 chose the client redirection, for simplicity purpose.</p>
+<p>Also, we are relying on the Route class to extract the query
+parameter "kwd" from the initial request while the call is routed to the
+application. If the parameter is found, it is copied into the request
+attribute named "keywords", ready to be used by the Redirector when
+formatting its target URIs.</p>
 
 <h3><a name="part11">11. Routers and hierarchical URIs</a></h3>
 <p>In addition to the Redirector, we have another tool to manage
 cool URIs: Routers. They are specialized Restlets that can have other
-Restlets (Handlers, Routers and Filters for example) attached to them
-and that can automatically delegate calls based on a URI pattern (a
-regular expression). In general, you will set a Router as the root
-Restlet of your Application.</p>
+Restlets (Handlers and Filters for example) attached to them and that
+can automatically delegate calls based on a <a
+	href="http://bitworking.org/projects/URI-Templates/">URI template</a>.
+In general, you will set a Router as the root of your Application.</p>
 <p>Here we want to explain how to handle the following URI patterns:</p>
 <ol>
 	<li>/docs/ to display static files</li>
@@ -396,15 +417,11 @@ Restlet of your Application.</p>
 <p>The fact that these URIs contain some dynamic parts (variables
 between accolades) and that no file extension is used makes it harder to
 handle them in a typical Web container. With Restlets, you just need to
-attach target Restlets to a Router using the URI pattern. At runtime,
-the route that best matches the request URI will get the request
-dispatched to its target Restlet. At the same time, the request's
+attach target Restlets to a Router using the URI template. At runtime,
+the route that best matches the request URI will received the call and
+be able to invoke its attached Restlet. At the same time, the request's
 attributes map will be automatically updated with the value of the URI
-pattern variables!</p>
-<p>URI patterns can contain valid Regex expressions outside the
-variable declaration. This can be used to add a "$" at the end, meaning
-the the remaining resource path should be empty in order to have a
-successful match.</p>
+template variables!</p>
 <p align="middle"><img src="images/tutorial11"
 	alt="Call handling flow" /><br />
 </p>

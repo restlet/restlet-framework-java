@@ -152,8 +152,8 @@ public class Redirector extends Restlet {
                     "Redirecting via client connector to: " + targetUri);
             request.setResourceRef(targetRef);
             request.getAttributes().remove("org.restlet.http.headers");
-            response.getAttributes().remove("org.restlet.http.headers");
             getContext().getDispatcher().handle(request, response);
+            response.getAttributes().remove("org.restlet.http.headers");
             break;
         }
     }
