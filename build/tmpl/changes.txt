@@ -13,6 +13,8 @@ Changes log
 
 [API changes]
  - Removed all deprecated classes and methods.
+ - Replaced inner Series.Entry interface by the Parameter classes as the extra flexibility
+   is not required and complicated the API and the Javadocs understanding.
 
 [Enhancements] 
  -  

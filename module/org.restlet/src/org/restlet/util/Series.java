@@ -22,42 +22,15 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
+import org.restlet.data.Parameter;
+
 /**
  * List of entries where each entry is named. It is differen from a standard Map
  * because the same named entry can occur several times and the order matter.
  * 
  * @author Jerome Louvel (contact@noelios.com)
  */
-public interface Series<E extends Series.Entry> extends List<E> {
-    /**
-     * A named series entry.
-     * 
-     * @author Jerome Louvel (contact@noelios.com)
-     */
-    public interface Entry {
-        /**
-         * Returns the name of this parameter.
-         * 
-         * @return The name of this parameter.
-         */
-        public String getName();
-
-        /**
-         * Returns the value.
-         * 
-         * @return The value.
-         */
-        public String getValue();
-
-        /**
-         * Sets the value.
-         * 
-         * @param value
-         *            The value.
-         */
-        public void setValue(String value);
-    }
-
+public interface Series<E extends Parameter> extends List<E> {
     /**
      * A marker for empty values to differentiate from non existing values
      * (null).

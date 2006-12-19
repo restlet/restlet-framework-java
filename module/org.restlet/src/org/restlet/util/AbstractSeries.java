@@ -25,6 +25,8 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
+import org.restlet.data.Parameter;
+
 /**
  * Modifiable list of entries with many helper methods. Note that this class
  * implements the org.restlet.util.Series interface using the E interface as the
@@ -36,7 +38,7 @@ import java.util.Set;
  * @see java.util.Collections
  * @see java.util.List
  */
-public abstract class AbstractSeries<E extends Series.Entry> extends
+public abstract class AbstractSeries<E extends Parameter> extends
         WrapperList<E> implements Series<E> {
     /**
      * Constructor.
@@ -101,7 +103,7 @@ public abstract class AbstractSeries<E extends Series.Entry> extends
      */
     @SuppressWarnings("unchecked")
     public void copyTo(Map<String, Object> params) {
-        Entry param;
+        Parameter param;
         Object currentValue = null;
         for (Iterator<E> iter = iterator(); iter.hasNext();) {
             param = iter.next();
@@ -218,7 +220,7 @@ public abstract class AbstractSeries<E extends Series.Entry> extends
     public String getFirstValue(String name, boolean ignoreCase,
             String defaultValue) {
         String result = defaultValue;
-        Entry param = getFirst(name, ignoreCase);
+        Parameter param = getFirst(name, ignoreCase);
 
         if (param != null) {
             result = param.getValue();
@@ -245,7 +247,7 @@ public abstract class AbstractSeries<E extends Series.Entry> extends
     public Set<String> getNames() {
         Set<String> result = new HashSet<String>();
 
-        for (Entry param : this) {
+        for (Parameter param : this) {
             result.add(param.getName());
         }
 
@@ -310,7 +312,7 @@ public abstract class AbstractSeries<E extends Series.Entry> extends
      */
     public boolean removeAll(String name, boolean ignoreCase) {
         boolean changed = false;
-        Entry param = null;
+        Parameter param = null;
 
         for (Iterator<E> iter = iterator(); iter.hasNext();) {
             param = iter.next();
