@@ -131,22 +131,6 @@ public final class Language extends Metadata {
     }
 
     /**
-     * Returns the main tag.
-     * 
-     * @return The main tag.
-     */
-    @Deprecated
-    public String getMainTag() {
-        int separator = getName().indexOf('-');
-
-        if (separator == -1) {
-            return getName();
-        } else {
-            return getName().substring(0, separator);
-        }
-    }
-
-    /**
      * Returns the possibly empty list of subtags.
      * 
      * @return The list of subtags for this language Tag.

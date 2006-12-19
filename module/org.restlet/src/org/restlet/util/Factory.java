@@ -49,11 +49,11 @@ public abstract class Factory {
             .getCanonicalName());
 
     /** Common version info. */
-    public static final String BETA_NUMBER = "23";
+    public static final String MINOR_NUMBER = "1";
 
-    public static final String VERSION_LONG = "1.0 beta " + BETA_NUMBER;
+    public static final String VERSION_LONG = "1.0 RC" + MINOR_NUMBER;
 
-    public static final String VERSION_SHORT = "1.0b" + BETA_NUMBER;
+    public static final String VERSION_SHORT = "1.0rc" + MINOR_NUMBER;
 
     /** The registered factory. */
     private static Factory instance = null;

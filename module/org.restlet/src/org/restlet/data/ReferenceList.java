@@ -80,7 +80,7 @@ public class ReferenceList extends WrapperList<Reference> {
 
             // Check if the list reference is specified as the first comment
             if ((line != null) && line.startsWith("#")) {
-                setListRef(new Reference(line.substring(1).trim()));
+                setIdentifier(new Reference(line.substring(1).trim()));
                 line = br.readLine();
             }
 
@@ -110,34 +110,12 @@ public class ReferenceList extends WrapperList<Reference> {
     }
 
     /**
-     * Returns the list reference.
-     * 
-     * @return The list reference.
-     * @deprecated Use getIdentifier() instead.
-     */
-    @Deprecated
-    public Reference getListRef() {
-        return getIdentifier();
-    }
-
-    /**
      * Returns the list identifier.
      * 
      * @return The list identifier.
      */
     public Reference getIdentifier() {
         return this.identifier;
-    }
-
-    /**
-     * Returns a representation of the list in the "text/uri-list" format.
-     * 
-     * @return A representation of the list in the "text/uri-list" format.
-     * @deprecated Use getTextRepresentation() instead.
-     */
-    @Deprecated
-    public Representation getRepresentation() {
-        return getTextRepresentation();
     }
 
     /**
@@ -162,30 +140,6 @@ public class ReferenceList extends WrapperList<Reference> {
     /**
      * Sets the list reference.
      * 
-     * @param listRef
-     *            The list reference.
-     * @deprecated Use setIdentifier() instead.
-     */
-    @Deprecated
-    public void setListRef(Reference listRef) {
-        this.identifier = listRef;
-    }
-
-    /**
-     * Sets the list reference.
-     * 
-     * @param listUri
-     *            The list reference as a URI.
-     * @deprecated Use setIdentifier() instead.
-     */
-    @Deprecated
-    public void setListRef(String listUri) {
-        setListRef(new Reference(listUri));
-    }
-
-    /**
-     * Sets the list reference.
-     * 
      * @param identifier
      *            The list identifier.
      */
@@ -200,7 +154,7 @@ public class ReferenceList extends WrapperList<Reference> {
      *            The list identifier as a URI.
      */
     public void setIdentifier(String identifier) {
-        setListRef(new Reference(identifier));
+        setIdentifier(new Reference(identifier));
     }
 
     /**

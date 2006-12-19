@@ -124,17 +124,6 @@ public class Request extends Message {
     }
 
     /**
-     * Returns the base reference.
-     * 
-     * @return The base reference.
-     * @deprecated Use getResourceRef().getBaseRef() instead.
-     */
-    @Deprecated
-    public Reference getBaseRef() {
-        return getResourceRef().getBaseRef();
-    }
-
-    /**
      * Returns the authentication response sent by a client to an origin server.
      * 
      * @return The authentication response sent by a client to an origin server.
@@ -228,35 +217,6 @@ public class Request extends Message {
     }
 
     /**
-     * Returns the part of the resource path relative to the base reference.
-     * Note that the optional fragment is not returned by this method, you need
-     * to use the getResourceRef() method instead.
-     * 
-     * @return The relative resource part.
-     * @deprecated Use getRelativeRef().getRemainingPart()
-     */
-    @Deprecated
-    public String getRelativePart() {
-        if (getBaseRef() != null) {
-            return getResourceRef().toString(true, false).substring(
-                    getBaseRef().toString().length());
-        } else {
-            return getResourceRef().toString(true, false);
-        }
-    }
-
-    /**
-     * Returns the resource reference relative to the base reference.
-     * 
-     * @return The relative resource reference.
-     * @deprecated Use getResourceRef().getRelativeRef()
-     */
-    @Deprecated
-    public Reference getRelativeRef() {
-        return getResourceRef().getRelativeRef();
-    }
-
-    /**
      * Returns the reference of the target resource.
      * 
      * @return The reference of the target resource.
@@ -290,32 +250,6 @@ public class Request extends Message {
         } else {
             return super.isEntityAvailable();
         }
-    }
-
-    /**
-     * Sets the base reference that will serve to compute relative resource
-     * references.
-     * 
-     * @param baseRef
-     *            The base reference.
-     * @deprecated Use getResourceRef().setBaseRef() instead.
-     */
-    @Deprecated
-    public void setBaseRef(Reference baseRef) {
-        getResourceRef().setBaseRef(baseRef);
-    }
-
-    /**
-     * Sets the base reference that will serve to compute relative resource
-     * references.
-     * 
-     * @param baseUri
-     *            The base absolute URI.
-     * @deprecated Use getResourceRef().setBaseRef() instead.
-     */
-    @Deprecated
-    public void setBaseRef(String baseUri) {
-        setBaseRef(new Reference(baseUri));
     }
 
     /**

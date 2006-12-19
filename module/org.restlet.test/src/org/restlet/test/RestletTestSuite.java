@@ -40,7 +40,6 @@ public class RestletTestSuite extends TestSuite {
         addTestSuite(RedirectTestCase.class);
         addTestSuite(ReferenceTestCase.class);
         addTestSuite(RestartTestCase.class);
-        addTestSuite(StringTemplateTestCase.class);
         addTestSuite(TransformerTestCase.class);
         addTestSuite(VelocityTestCase.class);
     }

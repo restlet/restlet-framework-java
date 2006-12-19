@@ -90,9 +90,6 @@ public class Representation extends Resource {
     /** The modification date. */
     private Date modificationDate;
 
-    /** The represented resource, if available. */
-    private Resource resource;
-
     /** The tag. */
     private Tag tag;
 
@@ -120,7 +117,6 @@ public class Representation extends Resource {
         this.language = null;
         this.mediaType = mediaType;
         this.modificationDate = null;
-        this.resource = null;
         this.tag = null;
 
         // A representation is also a resource whose only
@@ -197,17 +193,6 @@ public class Representation extends Resource {
      */
     public Date getModificationDate() {
         return this.modificationDate;
-    }
-
-    /**
-     * Returns the represented resource if available.
-     * 
-     * @return The represented resource if available.
-     * @deprecated Not needed anymore for now.
-     */
-    @Deprecated
-    public Resource getResource() {
-        return this.resource;
     }
 
     /**
@@ -360,18 +345,6 @@ public class Representation extends Resource {
      */
     public void setModificationDate(Date modificationDate) {
         this.modificationDate = DateUtils.unmodifiable(modificationDate);
-    }
-
-    /**
-     * Sets the represented resource.
-     * 
-     * @param resource
-     *            The represented resource.
-     * @deprecated Not needed anymore for now.
-     */
-    @Deprecated
-    public void setResource(Resource resource) {
-        this.resource = resource;
     }
 
     /**

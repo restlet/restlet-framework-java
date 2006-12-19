@@ -33,6 +33,7 @@ import org.restlet.data.Method;
 import org.restlet.data.Parameter;
 import org.restlet.data.Protocol;
 import org.restlet.data.Response;
+import org.restlet.data.Status;
 import org.restlet.resource.InputRepresentation;
 import org.restlet.resource.ReadableRepresentation;
 import org.restlet.resource.Representation;
@@ -208,7 +209,11 @@ public abstract class HttpServerCall extends HttpCall {
         if (response != null) {
             Representation entity = response.getEntity();
 
-            if ((entity != null) && !getMethod().equals(Method.HEAD.getName())) {
+            if ((entity != null)
+                    && !response.getRequest().getMethod().equals(Method.HEAD)
+                    && !response.getStatus().equals(Status.SUCCESS_NO_CONTENT)
+                    && !response.getStatus().equals(
+                            Status.SUCCESS_RESET_CONTENT)) {
                 // Get the connector service to callback
                 ConnectorService connectorService = getConnectorService(response
                         .getRequest());

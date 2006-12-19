@@ -184,17 +184,6 @@ public class Directory extends Handler {
      * Returns the root URI.
      * 
      * @return The root URI.
-     * @deprecated Use getRootRef() instead.
-     */
-    @Deprecated
-    public String getRootUri() {
-        return getRootRef().toString();
-    }
-
-    /**
-     * Returns the root URI.
-     * 
-     * @return The root URI.
      */
     public Reference getRootRef() {
         return this.rootRef;

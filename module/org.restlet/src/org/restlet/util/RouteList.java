@@ -72,41 +72,6 @@ public final class RouteList extends WrapperList<Route> {
     }
 
     /**
-     * Creates then adds a route at the end of the list. Adds a target option
-     * based on an URI pattern at the end of the list of options.
-     * 
-     * @param uriPattern
-     *            The URI pattern used to map calls (see
-     *            {@link java.util.regex.Pattern} for the syntax).
-     * @param target
-     *            The target Restlet to attach.
-     * @see java.util.regex.Pattern
-     * @return True (as per the general contract of the Collection.add method).
-     * @deprecated Use Router.attach method instead.
-     */
-    @Deprecated
-    public boolean add(String uriPattern, Restlet target) {
-        return false;
-    }
-
-    /**
-     * Creates then adds a route based on an URI pattern at a specific position.
-     * 
-     * @param uriPattern
-     *            The URI pattern used to map calls (see
-     *            {@link java.util.regex.Pattern} for the syntax).
-     * @param target
-     *            The target Restlet to attach.
-     * @param index
-     *            The insertion position in the list of attachments.
-     * @see java.util.regex.Pattern
-     * @deprecated Use Router.attach method instead.
-     */
-    @Deprecated
-    public void add(String uriPattern, Restlet target, int index) {
-    }
-
-    /**
      * Returns the best route match for a given call.
      * 
      * @param request

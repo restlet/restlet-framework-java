@@ -6,10 +6,13 @@ Changes log
 
 @version-full@ (@release-date@)
 [Bugs fixed]
- - 
+ - Handler now sets the response entity from the Result instance returned for the DELETE,
+   POST and PUT methods. Reported by Randy Layman.
+ - If the status is SUCCESS_NO_CONTENT or SUCCESS_RESET_CONTENT, the response entity is 
+   not sent back to the client by HTTP server connectors.
 
 [API changes]
- - 
+ - Removed all deprecated classes and methods.
 
 [Enhancements] 
  -  

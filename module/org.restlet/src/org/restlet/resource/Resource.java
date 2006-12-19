@@ -22,7 +22,6 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.logging.Logger;
 
-import org.restlet.data.Method;
 import org.restlet.data.Reference;
 import org.restlet.data.ReferenceList;
 import org.restlet.data.Status;
@@ -53,9 +52,6 @@ import org.restlet.data.Status;
  * @author Jerome Louvel (contact@noelios.com)
  */
 public class Resource {
-    /** The list of methods allowed on the requested resource. */
-    private List<Method> allowedMethods;
-
     /** The logger to use. */
     private Logger logger;
 
@@ -79,7 +75,6 @@ public class Resource {
      *            The logger to use.
      */
     public Resource(Logger logger) {
-        this.allowedMethods = null;
         this.logger = logger;
         this.identifiers = null;
         this.variants = null;
@@ -132,35 +127,6 @@ public class Resource {
      */
     public Result delete() {
         return new Result(Status.SERVER_ERROR_INTERNAL);
-    }
-
-    /**
-     * Returns the list of methods allowed on the requested resource.
-     * 
-     * @return The list of allowed methods.
-     * @deprecated The Handler class now dynamically detect the allow* methods
-     *             and the Response class contains this "allowedMethods"
-     *             property.
-     */
-    @Deprecated
-    public List<Method> getAllowedMethods() {
-        if (this.allowedMethods == null) {
-            this.allowedMethods = new ArrayList<Method>();
-
-            // Introspect the resource for allowed methods
-            if (allowGet()) {
-                this.allowedMethods.add(Method.HEAD);
-                this.allowedMethods.add(Method.GET);
-            }
-            if (allowDelete())
-                this.allowedMethods.add(Method.DELETE);
-            if (allowPost())
-                this.allowedMethods.add(Method.POST);
-            if (allowPut())
-                this.allowedMethods.add(Method.PUT);
-        }
-
-        return this.allowedMethods;
     }
 
     /**

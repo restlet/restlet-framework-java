@@ -35,7 +35,6 @@ import org.restlet.data.Reference;
 import org.restlet.data.ReferenceList;
 import org.restlet.data.Tag;
 import org.restlet.resource.Representation;
-import org.restlet.resource.Resource;
 import org.restlet.resource.Result;
 
 /**
@@ -209,17 +208,6 @@ public class WrapperRepresentation extends Representation {
      */
     public Date getModificationDate() {
         return getWrappedRepresentation().getModificationDate();
-    }
-
-    /**
-     * Returns the represented resource if available.
-     * 
-     * @return The represented resource if available.
-     * @deprecated Not needed anymore for now.
-     */
-    @Deprecated
-    public Resource getResource() {
-        return getWrappedRepresentation().getResource();
     }
 
     /**
@@ -444,18 +432,6 @@ public class WrapperRepresentation extends Representation {
      */
     public void setModificationDate(Date modificationDate) {
         getWrappedRepresentation().setModificationDate(modificationDate);
-    }
-
-    /**
-     * Sets the represented resource.
-     * 
-     * @param resource
-     *            The represented resource.
-     * @deprecated Not needed anymore for now.
-     */
-    @Deprecated
-    public void setResource(Resource resource) {
-        getWrappedRepresentation().setResource(resource);
     }
 
     /**

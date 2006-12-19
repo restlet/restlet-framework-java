@@ -29,8 +29,7 @@ import org.restlet.util.Template;
 /**
  * Rewrites URIs then redirects the call or the client to a new destination.
  * 
- * @see org.restlet.util.StringTemplate
- * @see org.restlet.util.CallModel
+ * @see org.restlet.util.Template
  * @see <a href="http://www.restlet.org/tutorial#part10">Tutorial: URI rewriting
  *      and redirection</a>
  * @author Jerome Louvel (contact@noelios.com)

@@ -74,23 +74,6 @@ public abstract class Handler extends Restlet {
     }
 
     /**
-     * Default implementation invoke when no matching handle*() method was found
-     * for the request. The default implementation simply set the
-     * Status.SERVER_ERROR_NOT_IMPLEMENTED status.
-     * 
-     * @param request
-     *            The request to handle.
-     * @param response
-     *            The response to update.
-     * @deprecated Will be remove, please explicitely set thet status of the
-     *             response depending on the context
-     */
-    @Deprecated
-    protected void defaultHandle(Request request, Response response) {
-        response.setStatus(Status.SERVER_ERROR_NOT_IMPLEMENTED);
-    }
-
-    /**
      * Finds the target Resource if available. The default value is null, but
      * this method is intended to be overriden in subclasses.
      * 
@@ -336,6 +319,7 @@ public abstract class Handler extends Restlet {
         Result result = target.delete();
         response.setStatus(result.getStatus());
         response.setRedirectRef(result.getRedirectRef());
+        response.setEntity(result.getEntity());
     }
 
     /**
@@ -437,6 +421,7 @@ public abstract class Handler extends Restlet {
             Result result = target.post(request.getEntity());
             response.setStatus(result.getStatus());
             response.setRedirectRef(result.getRedirectRef());
+            response.setEntity(result.getEntity());
         } else {
             response.setStatus(new Status(Status.CLIENT_ERROR_BAD_REQUEST,
                     "Missing request entity"));
@@ -459,6 +444,7 @@ public abstract class Handler extends Restlet {
             Result result = target.put(request.getEntity());
             response.setStatus(result.getStatus());
             response.setRedirectRef(result.getRedirectRef());
+            response.setEntity(result.getEntity());
 
             // HTTP spec says that PUT may return the list of allowed methods
             updateAllowedMethods(response, target);

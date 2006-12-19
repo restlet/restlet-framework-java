@@ -88,17 +88,6 @@ public final class Result {
      * Returns the redirection reference.
      * 
      * @return the redirection reference or null.
-     * @deprecated Use getRedirectRef() instead.
-     */
-    @Deprecated
-    public Reference getRedirectionRef() {
-        return getRedirectRef();
-    }
-
-    /**
-     * Returns the redirection reference.
-     * 
-     * @return the redirection reference or null.
      */
     public Reference getRedirectRef() {
         return this.redirectRef;
@@ -111,42 +100,6 @@ public final class Result {
      */
     public Status getStatus() {
         return this.status;
-    }
-
-    /**
-     * Sets the entity.
-     * 
-     * @param entity
-     *            The entity.
-     * @deprecated Not needed.
-     */
-    @Deprecated
-    public void setEntity(Representation entity) {
-        this.entity = entity;
-    }
-
-    /**
-     * Sets the redirection reference.
-     * 
-     * @param redirectionRef
-     *            The redirection reference.
-     * @deprecated Not needed.
-     */
-    @Deprecated
-    public void setRedirectionRef(Reference redirectionRef) {
-        this.redirectRef = redirectionRef;
-    }
-
-    /**
-     * Sets the status.
-     * 
-     * @param status
-     *            The status.
-     * @deprecated Not needed.
-     */
-    @Deprecated
-    public void setStatus(Status status) {
-        this.status = status;
     }
 
 }

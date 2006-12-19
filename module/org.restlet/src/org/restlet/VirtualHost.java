@@ -166,40 +166,6 @@ public class VirtualHost extends Router {
      * java.util.regex.
      * 
      * @return The hostRef host domain to match.
-     * @deprecated Use getHostDomain instead.
-     */
-    @Deprecated
-    public String getBaseDomain() {
-        return this.hostDomain;
-    }
-
-    /**
-     * Returns the hostRef host port to match. Uses patterns in java.util.regex.
-     * 
-     * @return The hostRef host port to match.
-     * @deprecated Use getHostDomain instead.
-     */
-    @Deprecated
-    public String getBasePort() {
-        return this.hostPort;
-    }
-
-    /**
-     * Returns the hostRef scheme to match. Uses patterns in java.util.regex.
-     * 
-     * @return The hostRef scheme to match.
-     * @deprecated Use getHostDomain instead.
-     */
-    @Deprecated
-    public String getBaseScheme() {
-        return this.hostScheme;
-    }
-
-    /**
-     * Returns the hostRef host domain to match. Uses patterns in
-     * java.util.regex.
-     * 
-     * @return The hostRef host domain to match.
      */
     public String getHostDomain() {
         return this.hostDomain;
@@ -278,42 +244,6 @@ public class VirtualHost extends Router {
      */
     public String getServerPort() {
         return this.serverPort;
-    }
-
-    /**
-     * Sets the baseRef host domain to match. Uses patterns in java.util.regex.
-     * 
-     * @param baseDomain
-     *            The baseRef host domain to match.
-     * @deprecated Use the setHost* methods instead.
-     */
-    @Deprecated
-    public void setBaseDomain(String baseDomain) {
-        this.hostDomain = baseDomain;
-    }
-
-    /**
-     * Sets the baseRef host port to match. Uses patterns in java.util.regex.
-     * 
-     * @param basePort
-     *            The baseRef host port to match.
-     * @deprecated Use the setHost* methods instead.
-     */
-    @Deprecated
-    public void setBasePort(String basePort) {
-        this.hostPort = basePort;
-    }
-
-    /**
-     * Sets the baseRef scheme to match. Uses patterns in java.util.regex.
-     * 
-     * @param baseScheme
-     *            The baseRef scheme to match.
-     * @deprecated Use the setHost* methods instead.
-     */
-    @Deprecated
-    public void setBaseScheme(String baseScheme) {
-        this.hostScheme = baseScheme;
     }
 
     /**

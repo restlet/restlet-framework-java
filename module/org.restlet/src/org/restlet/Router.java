@@ -218,18 +218,6 @@ public class Router extends Restlet {
      * retying the maximum number of attemps.
      * 
      * @return The default route tested if no other one was available.
-     * @deprecated Use getDefaultRoute() method instead.
-     */
-    @Deprecated
-    public Route getDefaultScorer() {
-        return this.defaultRoute;
-    }
-
-    /**
-     * Returns the default route to test if no other one was available after
-     * retying the maximum number of attemps.
-     * 
-     * @return The default route tested if no other one was available.
      */
     public Route getDefaultRoute() {
         return this.defaultRoute;
@@ -360,19 +348,6 @@ public class Router extends Restlet {
     }
 
     /**
-     * Returns the modifiable list of routes.
-     * 
-     * @return The modifiable list of routes.
-     * @deprecated Use getRoutes() instead.
-     */
-    @Deprecated
-    public RouteList getScorers() {
-        if (this.routes == null)
-            this.routes = new RouteList();
-        return this.routes;
-    }
-
-    /**
      * Handles a call by invoking the next Restlet if it is available.
      * 
      * @param request
@@ -398,18 +373,6 @@ public class Router extends Restlet {
      *            The default route tested if no other one was available.
      */
     public void setDefaultRoute(Route defaultRoute) {
-        this.defaultRoute = defaultRoute;
-    }
-
-    /**
-     * Sets the default route tested if no other one was available.
-     * 
-     * @param defaultRoute
-     *            The default route tested if no other one was available.
-     * @deprecated Use setDefaultRoute instead.
-     */
-    @Deprecated
-    public void setDefaultScorer(Route defaultRoute) {
         this.defaultRoute = defaultRoute;
     }
 
