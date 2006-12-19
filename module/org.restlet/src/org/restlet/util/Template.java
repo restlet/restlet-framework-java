@@ -605,9 +605,11 @@ public class Template {
             var = getDefaultVariable();
 
         // Check for a matching request attribute
-        Object variable = request.getAttributes().get(variableName);
-        if ((request != null) && (variable != null)) {
-            result = variable.toString();
+        if (request != null) {
+            Object variable = request.getAttributes().get(variableName);
+            if (variable != null) {
+                result = variable.toString();
+            }
         }
 
         // Check for a matching response attribute

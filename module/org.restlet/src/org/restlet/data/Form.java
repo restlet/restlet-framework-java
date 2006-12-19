@@ -24,7 +24,6 @@ import java.util.logging.Logger;
 
 import org.restlet.resource.Representation;
 import org.restlet.resource.StringRepresentation;
-import org.restlet.util.AbstractSeries;
 import org.restlet.util.Factory;
 import org.restlet.util.Series;
 
@@ -33,7 +32,7 @@ import org.restlet.util.Series;
  * 
  * @author Jerome Louvel (contact@noelios.com)
  */
-public class Form extends AbstractSeries<Parameter> {
+public class Form extends Series<Parameter> {
     /**
      * Empty constructor.
      */

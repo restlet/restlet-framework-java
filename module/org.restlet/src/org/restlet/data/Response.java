@@ -25,7 +25,6 @@ import java.util.Set;
 
 import org.restlet.resource.Representation;
 import org.restlet.resource.Resource;
-import org.restlet.util.AbstractSeries;
 import org.restlet.util.Series;
 
 /**
@@ -383,8 +382,7 @@ public class Response extends Message {
      * 
      * @author Jerome Louvel (contact@noelios.com)
      */
-    private static class CookieSettingSeries extends
-            AbstractSeries<CookieSetting> {
+    private static class CookieSettingSeries extends Series<CookieSetting> {
         /**
          * Constructor.
          */
