@@ -1019,4 +1019,14 @@ public class Template {
         this.pattern = pattern;
     }
 
+    /**
+     * Sets the matching mode to use when parsing a formatted reference.
+     * 
+     * @param matchingMode
+     *            The matching mode to use when parsing a formatted reference.
+     */
+    public void setMatchingMode(int matchingMode) {
+        this.matchingMode = matchingMode;
+    }
+
 }

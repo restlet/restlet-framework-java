@@ -16,6 +16,7 @@ Changes log
  - Replaced inner Series.Entry interface by the Parameter classes as the extra flexibility
    is not required and complicated the API and the Javadocs understanding.
  - Replaced Series and AbstractSeries by a single Series class.
+ - Added a setMatchingMode() method on Template.
  
 [Enhancements] 
  -  
