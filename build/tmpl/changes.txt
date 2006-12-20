@@ -18,7 +18,9 @@ Changes log
  - Replaced Series and AbstractSeries by a single Series class.
  - Added a setMatchingMode() method on Template.
  - Added new constructor to Route taking a custom instance of Template.
- 
+ - Added protected getTargetRef(Req, Resp) and rewrite(Repr) methods to Redirector to allow 
+   more customization.
+  
 [Enhancements] 
  -  
  

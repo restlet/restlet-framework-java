@@ -24,6 +24,7 @@ import org.restlet.data.Reference;
 import org.restlet.data.Request;
 import org.restlet.data.Response;
 import org.restlet.data.Status;
+import org.restlet.resource.Representation;
 import org.restlet.util.Template;
 
 /**
@@ -119,42 +120,69 @@ public class Redirector extends Restlet {
      *            The response to update.
      */
     public void handle(Request request, Response response) {
-        // Create the template
-        Template rt = new Template(getLogger(), this.targetTemplate);
-
-        // Format the target URI
-        String targetUri = rt.format(request, response);
-        Reference targetRef = new Reference(targetUri);
+        // Generate the target reference
+        Reference targetRef = getTargetRef(request, response);
 
         switch (this.mode) {
         case MODE_CLIENT_PERMANENT:
             getLogger().log(Level.INFO,
-                    "Permanently redirecting client to: " + targetUri);
+                    "Permanently redirecting client to: " + targetRef);
             response.redirectPermanent(targetRef);
             break;
 
         case MODE_CLIENT_FOUND:
             getLogger().log(Level.INFO,
-                    "Redirecting client to found location: " + targetUri);
+                    "Redirecting client to found location: " + targetRef);
             response.setRedirectRef(targetRef);
             response.setStatus(Status.REDIRECTION_FOUND);
             break;
 
         case MODE_CLIENT_TEMPORARY:
             getLogger().log(Level.INFO,
-                    "Temporarily redirecting client to: " + targetUri);
+                    "Temporarily redirecting client to: " + targetRef);
             response.redirectTemporary(targetRef);
             break;
 
         case MODE_CONNECTOR:
             getLogger().log(Level.INFO,
-                    "Redirecting via client connector to: " + targetUri);
+                    "Redirecting via client connector to: " + targetRef);
             request.setResourceRef(targetRef);
             request.getAttributes().remove("org.restlet.http.headers");
             getContext().getDispatcher().handle(request, response);
+            response.setEntity(rewrite(response.getEntity()));
             response.getAttributes().remove("org.restlet.http.headers");
             break;
         }
+    }
+
+    /**
+     * Returns the target reference to redirect to.
+     * 
+     * @param request
+     *            The request to handle.
+     * @param response
+     *            The response to update.
+     * @return The target reference to redirect to.
+     */
+    protected Reference getTargetRef(Request request, Response response) {
+        // Create the template
+        Template rt = new Template(getLogger(), this.targetTemplate);
+
+        // Return the formatted target URI
+        return new Reference(rt.format(request, response));
+    }
+
+    /**
+     * Optionnaly rewrites the response entity returned in the MODE_CONNECTOR
+     * mode. By default, it just returns the initial entity without any
+     * modification.
+     * 
+     * @param initialEntity
+     *            The initial entity returned.
+     * @return The rewritten entity.
+     */
+    protected Representation rewrite(Representation initialEntity) {
+        return initialEntity;
     }
 
 }
