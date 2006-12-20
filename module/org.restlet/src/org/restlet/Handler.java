@@ -31,6 +31,7 @@ import org.restlet.data.Status;
 import org.restlet.resource.Representation;
 import org.restlet.resource.Resource;
 import org.restlet.resource.Result;
+import org.restlet.util.Series;
 
 /**
  * Restlet capable of handling calls using a target resource. At this point in
@@ -440,17 +441,34 @@ public abstract class Handler extends Restlet {
      *            The response to update.
      */
     protected void handlePut(Resource target, Request request, Response response) {
-        if (request.isEntityAvailable()) {
-            Result result = target.put(request.getEntity());
-            response.setStatus(result.getStatus());
-            response.setRedirectRef(result.getRedirectRef());
-            response.setEntity(result.getEntity());
+        boolean bContinue = true;
+        // Check the Content-Range HTTP Header in order to prevent use of
+        // partial PUTs
+        Object oHeaders = request.getAttributes().get(
+                "org.restlet.http.headers");
+        if (oHeaders != null) {
+            Series headers = (Series) oHeaders;
+            if (headers.getFirst("Content-Range", true) != null) {
+                response.setStatus(new Status(
+                        Status.SERVER_ERROR_NOT_IMPLEMENTED,
+                        "the Content-Range header is not understood"));
+                bContinue = false;
+            }
+        }
+        if (bContinue) {
+            if (request.isEntityAvailable()) {
+                Result result = target.put(request.getEntity());
+                response.setStatus(result.getStatus());
+                response.setRedirectRef(result.getRedirectRef());
+                response.setEntity(result.getEntity());
 
-            // HTTP spec says that PUT may return the list of allowed methods
-            updateAllowedMethods(response, target);
-        } else {
-            response.setStatus(new Status(Status.CLIENT_ERROR_BAD_REQUEST,
-                    "Missing request entity"));
+                // HTTP spec says that PUT may return the list of allowed
+                // methods
+                updateAllowedMethods(response, target);
+            } else {
+                response.setStatus(new Status(Status.CLIENT_ERROR_BAD_REQUEST,
+                        "Missing request entity"));
+            }
         }
     }
 
