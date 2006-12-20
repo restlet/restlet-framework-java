@@ -214,7 +214,7 @@ protocol-neutral way to manipulate the information contained in standard
 HTTP headers, it is sometimes necessary to access to the raw header
 values or to add non-standard headers. For this purpose, we use special
 request and response attributes, see details in Javadocs of the <a
-	href="http://www.restlet.org/docs/api/index.html?org/restlet/data/Message.html#getAttributes()">Message.getAttributes()
+	href="http://www.restlet.org/docs/api/org/restlet/data/Message.html#getAttributes()">Message.getAttributes()
 method</a>. There is also a sample code in the distribution that illustrates
 how to get raw headers and how to add non-standard ones, see the
 com.noelios.restlet.example.misc.HeadersTest class in the "src"
@@ -227,7 +227,7 @@ Servlet container?</a></h3>
 standalone HTTP connectors provided in the Noelios Restlet Engine, you
 can still use the ServerServlet connector which is an adapter between
 the Servlet API and the Restlet API. See the <a
-	href="http://www.restlet.org/docs/ext/index.html?com/noelios/restlet/ext/servlet/ServerServlet.html">
+	href="http://www.restlet.org/docs/ext/com/noelios/restlet/ext/servlet/ServerServlet.html">
 ServerServlet Javadocs</a> for details on how to configure your Servlet
 container.</p>
 
@@ -293,7 +293,7 @@ server?</a></h3>
 <p>Currently, the Noelios Restlet Engine supports Basic HTTP and
 Amazon Web Services authentication schemes. You order to leverage them,
 use the <a
-	href="http://www.restlet.org/docs/api/index.html?org/restlet/Guard.html">Guard</a>
+	href="http://www.restlet.org/docs/api/org/restlet/Guard.html">Guard</a>
 Filter. For details on how to use this Filter, please check the <a
 	href="http://www.restlet.org/tutorial#part09">part 9 of the
 tutorial</a>.</p>
@@ -477,10 +477,10 @@ Restlets?</a></h3>
 
 <p>To receive large files, from browsers for example, you can rely
 on the Apache FileUpload project which was integrated as a <a
-	href="http://www.restlet.org/docs/ext/index.html?org/restlet/ext/fileupload/package-summary.html">Restlet
+	href="http://www.restlet.org/docs/ext/org/restlet/ext/fileupload/package-summary.html">Restlet
 Extension</a>. To send a file using the HTTP client connector, just create a
 new <a
-	href="http://www.restlet.org/docs/api/index.html?org/restlet/resource/FileRepresentation.html">FileRepresentation</a>
+	href="http://www.restlet.org/docs/api/org/restlet/resource/FileRepresentation.html">FileRepresentation</a>
 and set is as the input of your call.</p>
 
 <h3><a name="24">24. How can I make PUT or DELETE calls from
@@ -488,7 +488,7 @@ browsers?</a></h3>
 
 <p>There are two solutions to this problem. The first one is to
 tunnel the PUT or DELETE calls through regular POST calls. There is a <a
-	href="http://www.restlet.org/docs/api/index.html?org/restlet/service/TunnelService.html">TunnelService</a>
+	href="http://www.restlet.org/docs/api/org/restlet/service/TunnelService.html">TunnelService</a>
 associated with each Application that automatically takes care of it.
 Also, in the <a href="http://www.onlamp.com/lpt/a/6480">Using REST
 with Ajax</a> article, the author explains how to directly build the PUT and
