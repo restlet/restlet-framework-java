@@ -120,20 +120,12 @@ public final class Tag extends Metadata {
     }
 
     /**
-     * 
-     * 
-     * @param object
-     *            The object to compare to.
-     * @return True if both tags are equal.
-     */
-
-    /**
      * Indicates if both tags are equal.
      * 
      * @param object
      *            The object to compare to.
      * @param checkWeakness
-     *            the equality test takes care or not of the weakness
+     *            the equality test takes care or not of the weakness.
      * 
      * @return True if both tags are equal.
      */
