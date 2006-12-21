@@ -147,6 +147,7 @@ public class HttpRequest extends Request {
             result.setAgent(getHttpCall().getRequestHeaders().getValues(
                     HttpConstants.HEADER_USER_AGENT));
             result.setAddress(getHttpCall().getClientAddress());
+            result.setPort(getHttpCall().getClientPort());
 
             // Special handling for the non standard but common
             // "X-Forwarded-For" header.

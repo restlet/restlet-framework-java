@@ -27,6 +27,8 @@ import org.restlet.data.Request;
 import org.restlet.data.Response;
 import org.restlet.util.Template;
 
+import com.noelios.restlet.util.IdentClient;
+
 /**
  * Filter logging all calls after their handling by the target Restlet. The
  * current format is similar to IIS 6 logs. The logging is based on the
@@ -190,6 +192,14 @@ public class LogFilter extends Filter {
         // Append the duration
         sb.append('\t');
         sb.append(duration);
+
+        // Append the user identification (via IDENT protocol)
+        sb.append('\t');
+        IdentClient ic = new IdentClient(getLogger(), request.getClientInfo()
+                .getAddress(), request.getClientInfo().getPort(), response
+                .getServerInfo().getPort());
+        sb.append((ic.getUserIdentifier() == null) ? "-" : ic
+                .getUserIdentifier());
 
         return sb.toString();
     }

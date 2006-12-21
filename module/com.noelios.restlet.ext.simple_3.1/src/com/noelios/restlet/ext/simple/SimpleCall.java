@@ -79,14 +79,14 @@ public class SimpleCall extends HttpServerCall {
         this.requestHeadersAdded = false;
     }
 
-    /**
-     * Returns the request address.<br/> Corresponds to the IP address of the
-     * requesting client.
-     * 
-     * @return The request address.
-     */
+    @Override
     public String getClientAddress() {
         return request.getInetAddress().getHostAddress();
+    }
+
+    @Override
+    public Integer getClientPort() {
+        return null;
     }
 
     /**

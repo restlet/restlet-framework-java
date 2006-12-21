@@ -22,9 +22,11 @@ Changes log
  - Added new constructor to Route taking a custom instance of Template.
  - Added protected getTargetRef(Req, Resp) and rewrite(Repr) methods to Redirector to allow 
    more customization.
+ - Added "port" property to the ClientInfo class.
   
 [Enhancements] 
- -  
+ - Added support for the IDENT protocol (see RFC 1413) in order to log more info about users.
+   This is especially useful when a pool of computers shares the same IP address.
  
 1.0 beta 23 (2006-12-19)
 [Bugs fixed]

@@ -62,14 +62,14 @@ public class JettyCall extends HttpServerCall {
         this.requestHeadersAdded = false;
     }
 
-    /**
-     * Returns the request address.<br/> Corresponds to the IP address of the
-     * requesting client.
-     * 
-     * @return The request address.
-     */
+    @Override
     public String getClientAddress() {
         return getConnection().getRequest().getRemoteAddr();
+    }
+
+    @Override
+    public Integer getClientPort() {
+        return getConnection().getRequest().getRemotePort();
     }
 
     /**

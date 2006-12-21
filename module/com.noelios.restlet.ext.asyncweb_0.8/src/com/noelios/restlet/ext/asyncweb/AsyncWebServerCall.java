@@ -80,6 +80,11 @@ public class AsyncWebServerCall extends HttpServerCall {
     }
 
     @Override
+    public Integer getClientPort() {
+        return request.getRemotePort();
+    }
+
+    @Override
     public String getRequestUri() {
         return request.getRequestURI();
     }

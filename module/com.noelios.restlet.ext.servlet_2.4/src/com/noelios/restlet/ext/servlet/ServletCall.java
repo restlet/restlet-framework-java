@@ -72,14 +72,14 @@ public class ServletCall extends HttpServerCall {
         this.response = response;
     }
 
-    /**
-     * Returns the request address.<br/> Corresponds to the IP address of the
-     * requesting client.
-     * 
-     * @return The request address.
-     */
+    @Override
     public String getClientAddress() {
         return getRequest().getRemoteAddr();
+    }
+
+    @Override
+    public Integer getClientPort() {
+        return getRequest().getRemotePort();
     }
 
     /**

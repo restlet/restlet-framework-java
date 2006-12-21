@@ -47,6 +47,9 @@ public class HttpCall {
     /** The client IP address. */
     private String clientAddress;
 
+    /** The client port. */
+    private Integer clientPort;
+
     /** The method. */
     private String method;
 
@@ -84,6 +87,7 @@ public class HttpCall {
         this.hostDomain = null;
         this.hostPort = null;
         this.clientAddress = null;
+        this.clientPort = null;
         this.confidential = false;
         this.method = null;
         this.protocol = null;
@@ -115,13 +119,23 @@ public class HttpCall {
     }
 
     /**
-     * Returns the request address.<br/> Corresponds to the IP address of the
+     * Returns the client address.<br/> Corresponds to the IP address of the
      * requesting client.
      * 
-     * @return The request address.
+     * @return The client address.
      */
     public String getClientAddress() {
         return this.clientAddress;
+    }
+
+    /**
+     * Returns the client port.<br/> Corresponds to the TCP/IP port of the
+     * requesting client.
+     * 
+     * @return The client port.
+     */
+    public Integer getClientPort() {
+        return this.clientPort;
     }
 
     /**
@@ -288,13 +302,23 @@ public class HttpCall {
     }
 
     /**
-     * Sets the request address.
+     * Sets the client address.
      * 
-     * @param requestAddress
-     *            The request address.
+     * @param clientAddress
+     *            The client address.
      */
-    protected void setClientAddress(String requestAddress) {
-        this.clientAddress = requestAddress;
+    protected void setClientAddress(String clientAddress) {
+        this.clientAddress = clientAddress;
+    }
+
+    /**
+     * Sets the client port.
+     * 
+     * @param clientPort
+     *            The client port.
+     */
+    protected void setClientPort(Integer clientPort) {
+        this.clientPort = clientPort;
     }
 
     /**

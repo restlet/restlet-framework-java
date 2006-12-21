@@ -37,6 +37,9 @@ public final class ClientInfo {
     /** The agent name. */
     private String agent;
 
+    /** The port number. */
+    private Integer port;
+
     /** The character set preferences. */
     private List<Preference<CharacterSet>> characterSetPrefs;
 
@@ -53,6 +56,9 @@ public final class ClientInfo {
      * Constructor.
      */
     public ClientInfo() {
+        this.addresses = null;
+        this.agent = null;
+        this.port = null;
         this.characterSetPrefs = null;
         this.encodingPrefs = null;
         this.languagePrefs = null;
@@ -139,6 +145,15 @@ public final class ClientInfo {
     }
 
     /**
+     * Returns the port number which sent the call.
+     * 
+     * @return The port number which sent the call.
+     */
+    public Integer getPort() {
+        return this.port;
+    }
+
+    /**
      * Returns the best variant representation for a given resource according
      * the the client preferences: accepted languages, accepted character sets,
      * accepted media types and accepted encodings.
@@ -192,6 +207,16 @@ public final class ClientInfo {
      */
     public void setAgent(String agent) {
         this.agent = agent;
+    }
+
+    /**
+     * Sets the port number which sent the call.
+     * 
+     * @param port
+     *            The port number which sent the call.
+     */
+    public void setPort(Integer port) {
+        this.port = port;
     }
 
 }
