@@ -561,7 +561,7 @@ public class Template {
                                 "An invalid character was detected inside a pattern variable : "
                                         + this.regexPattern);
                     } else {
-                        patternBuffer.append(next);
+                        patternBuffer.append(quote(next));
                     }
                 }
             }
@@ -570,6 +570,53 @@ public class Template {
         }
 
         return this.regexPattern;
+    }
+
+    /**
+     * Quotes special characters that could be taken for special Regex
+     * characters.
+     * 
+     * @param character
+     *            The character to quote if necessary.
+     * @return The quoted character.
+     */
+    private String quote(char character) {
+        switch (character) {
+        case '[':
+            return "\\[";
+        case ']':
+            return "\\]";
+        case '.':
+            return "\\.";
+        case '\\':
+            return "\\\\";
+        case '$':
+            return "\\$";
+        case '^':
+            return "\\^";
+        case '?':
+            return "\\?";
+        case '*':
+            return "\\*";
+        case '|':
+            return "\\|";
+        case '(':
+            return "\\(";
+        case ')':
+            return "\\)";
+        case ':':
+            return "\\:";
+        case '-':
+            return "\\-";
+        case '!':
+            return "\\!";
+        case '<':
+            return "\\<";
+        case '>':
+            return "\\>";
+        default:
+            return Character.toString(character);
+        }
     }
 
     /**

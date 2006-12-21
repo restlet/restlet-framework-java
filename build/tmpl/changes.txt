@@ -10,6 +10,8 @@ Changes log
    POST and PUT methods. Reported by Randy Layman.
  - If the status is SUCCESS_NO_CONTENT or SUCCESS_RESET_CONTENT, the response entity is 
    not sent back to the client by HTTP server connectors.
+ - Special characters in Template instance could conflict with special internal characters 
+   (Regex). They are now quoted properly.
 
 [API changes]
  - Removed all deprecated classes and methods.
