@@ -54,7 +54,7 @@ public final class Tag extends Metadata {
         Tag result = null;
         boolean weak = false;
         String httpTagCopy = httpTag;
-        
+
         if (httpTagCopy.startsWith("W")) {
             weak = true;
             httpTagCopy = httpTagCopy.substring(1);
@@ -116,16 +116,40 @@ public final class Tag extends Metadata {
      */
     @Override
     public boolean equals(final Object object) {
+        return equals(object, true);
+    }
+
+    /**
+     * 
+     * 
+     * @param object
+     *            The object to compare to.
+     * @return True if both tags are equal.
+     */
+
+    /**
+     * Indicates if both tags are equal.
+     * 
+     * @param object
+     *            The object to compare to.
+     * @param checkWeakness
+     *            the equality test takes care or not of the weakness
+     * 
+     * @return True if both tags are equal.
+     */
+    public boolean equals(final Object object, boolean checkWeakness) {
         boolean result = (object != null) && (object instanceof Tag);
 
         if (result) {
             Tag that = (Tag) object;
-            result = (that.isWeak() == isWeak());
+            if (checkWeakness) {
+                result = (that.isWeak() == isWeak());
+            }
 
-            if (getOpaqueTag() == null) {
-                result = (that.getOpaqueTag() == null);
+            if (getName() == null) {
+                result = (that.getName() == null);
             } else {
-                result = getOpaqueTag().equals(that.getOpaqueTag());
+                result = getName().equals(that.getName());
             }
         }
 
@@ -141,13 +165,13 @@ public final class Tag extends Metadata {
      *      Entity Tags</a>
      */
     public String format() {
-        if (getOpaqueTag().equals("*")) {
+        if (getName().equals("*")) {
             return "*";
         } else {
             StringBuilder sb = new StringBuilder();
             if (isWeak())
                 sb.append("W/");
-            return sb.append('"').append(getOpaqueTag()).append('"').toString();
+            return sb.append('"').append(getName()).append('"').toString();
         }
     }
 
