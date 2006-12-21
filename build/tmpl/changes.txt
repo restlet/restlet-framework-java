@@ -23,6 +23,8 @@ Changes log
  - Added protected getTargetRef(Req, Resp) and rewrite(Repr) methods to Redirector to allow 
    more customization.
  - Added "port" property to the ClientInfo class.
+ - Added methods on Dispatcher for each main method (get, put, post, delete, options and head) taking an instance of Reference. Following a remark from Alex Combs.
+ - Deprecated the trace() method from Dispatcher.
   
 [Enhancements] 
  - Added support for the IDENT protocol (see RFC 1413) in order to log more info about users.

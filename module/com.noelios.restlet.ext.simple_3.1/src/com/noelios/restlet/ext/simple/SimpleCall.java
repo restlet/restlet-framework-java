@@ -21,6 +21,7 @@ package com.noelios.restlet.ext.simple;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
+import java.net.Socket;
 import java.nio.channels.ReadableByteChannel;
 import java.nio.channels.WritableByteChannel;
 
@@ -86,7 +87,9 @@ public class SimpleCall extends HttpServerCall {
 
     @Override
     public Integer getClientPort() {
-        return null;
+        Socket sock = (Socket) request
+                .getAttribute(SimplePipelineFactory.PROPERTY_SOCKET);
+        return (sock != null) ? sock.getPort() : null;
     }
 
     /**

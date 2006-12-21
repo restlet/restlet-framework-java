@@ -19,6 +19,7 @@
 package org.restlet;
 
 import org.restlet.data.Method;
+import org.restlet.data.Reference;
 import org.restlet.data.Request;
 import org.restlet.data.Response;
 import org.restlet.resource.Representation;
@@ -54,6 +55,17 @@ public abstract class Dispatcher {
     }
 
     /**
+     * Deletes the identified resource.
+     * 
+     * @param resourceRef
+     *            The reference of the resource to delete.
+     * @return The response.
+     */
+    public Response delete(Reference resourceRef) {
+        return handle(new Request(Method.DELETE, resourceRef));
+    }
+
+    /**
      * Gets the identified resource.
      * 
      * @param resourceUri
@@ -62,6 +74,17 @@ public abstract class Dispatcher {
      */
     public Response get(String resourceUri) {
         return handle(new Request(Method.GET, resourceUri));
+    }
+
+    /**
+     * Gets the identified resource.
+     * 
+     * @param resourceRef
+     *            The reference of the resource to get.
+     * @return The response.
+     */
+    public Response get(Reference resourceRef) {
+        return handle(new Request(Method.GET, resourceRef));
     }
 
     /**
@@ -99,6 +122,17 @@ public abstract class Dispatcher {
     }
 
     /**
+     * Gets the identified resource without its representation's content.
+     * 
+     * @param resourceRef
+     *            The reference of the resource to get.
+     * @return The response.
+     */
+    public Response head(Reference resourceRef) {
+        return handle(new Request(Method.HEAD, resourceRef));
+    }
+
+    /**
      * Gets the options for the identified resource.
      * 
      * @param resourceUri
@@ -107,6 +141,17 @@ public abstract class Dispatcher {
      */
     public Response options(String resourceUri) {
         return handle(new Request(Method.OPTIONS, resourceUri));
+    }
+
+    /**
+     * Gets the options for the identified resource.
+     * 
+     * @param resourceRef
+     *            The reference of the resource to get.
+     * @return The response.
+     */
+    public Response options(Reference resourceRef) {
+        return handle(new Request(Method.OPTIONS, resourceRef));
     }
 
     /**
@@ -123,6 +168,19 @@ public abstract class Dispatcher {
     }
 
     /**
+     * Posts a representation to the identified resource.
+     * 
+     * @param resourceRef
+     *            The reference of the resource to post to.
+     * @param entity
+     *            The entity to post.
+     * @return The response.
+     */
+    public Response post(Reference resourceRef, Representation entity) {
+        return handle(new Request(Method.POST, resourceRef, entity));
+    }
+
+    /**
      * Puts a representation in the identified resource.
      * 
      * @param resourceUri
@@ -136,12 +194,27 @@ public abstract class Dispatcher {
     }
 
     /**
+     * Puts a representation in the identified resource.
+     * 
+     * @param resourceRef
+     *            The reference of the resource to modify.
+     * @param entity
+     *            The entity to put.
+     * @return The response.
+     */
+    public Response put(Reference resourceRef, Representation entity) {
+        return handle(new Request(Method.PUT, resourceRef, entity));
+    }
+
+    /**
      * Tests the identified resource.
      * 
      * @param resourceUri
      *            The URI of the resource to delete.
      * @return The response.
+     * @deprecated Use the handle() methods if really needed.
      */
+    @Deprecated
     public Response trace(String resourceUri) {
         return handle(new Request(Method.TRACE, resourceUri));
     }

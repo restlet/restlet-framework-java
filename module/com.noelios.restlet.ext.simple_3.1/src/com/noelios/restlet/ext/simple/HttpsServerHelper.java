@@ -28,7 +28,6 @@ import javax.net.ssl.SSLContext;
 import org.restlet.Server;
 import org.restlet.data.Protocol;
 
-import simple.http.BufferedPipelineFactory;
 import simple.http.PipelineHandlerFactory;
 import simple.http.connect.ConnectionFactory;
 
@@ -118,7 +117,7 @@ public class HttpsServerHelper extends SimpleServerHelper {
                 new SimpleProtocolHandler(this), getDefaultThreads(),
                 getMaxWaitTimeMs()));
         setConnection(ConnectionFactory.getConnection(getHandler(),
-                new BufferedPipelineFactory()));
+                new SimplePipelineFactory()));
         getConnection().connect(getSocket());
         super.start();
     }
