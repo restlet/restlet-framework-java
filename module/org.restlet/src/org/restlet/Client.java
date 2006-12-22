@@ -21,11 +21,9 @@ package org.restlet;
 import java.util.Arrays;
 import java.util.List;
 
-import org.restlet.data.Method;
 import org.restlet.data.Protocol;
 import org.restlet.data.Request;
 import org.restlet.data.Response;
-import org.restlet.resource.Representation;
 import org.restlet.util.Factory;
 import org.restlet.util.Helper;
 
@@ -90,47 +88,12 @@ public class Client extends Connector {
     }
 
     /**
-     * Deletes the identified resource.
-     * 
-     * @param resourceUri
-     *            The URI of the resource to delete.
-     * @return The response.
-     */
-    public Response delete(String resourceUri) {
-        return handle(new Request(Method.DELETE, resourceUri));
-    }
-
-    /**
-     * Gets the identified resource.
-     * 
-     * @param resourceUri
-     *            The URI of the resource to get.
-     * @return The response.
-     */
-    public Response get(String resourceUri) {
-        return handle(new Request(Method.GET, resourceUri));
-    }
-
-    /**
      * Returns the helper provided by the implementation.
      * 
      * @return The helper provided by the implementation.
      */
     private Helper getHelper() {
         return this.helper;
-    }
-
-    /**
-     * Handles a call.
-     * 
-     * @param request
-     *            The request to handle.
-     * @return The returned response.
-     */
-    public Response handle(Request request) {
-        Response response = new Response(request);
-        handle(request, response);
-        return response;
     }
 
     /**
@@ -147,54 +110,6 @@ public class Client extends Connector {
             getHelper().handle(request, response);
     }
 
-    /**
-     * Gets the identified resource without its representation's content.
-     * 
-     * @param resourceUri
-     *            The URI of the resource to get.
-     * @return The response.
-     */
-    public Response head(String resourceUri) {
-        return handle(new Request(Method.HEAD, resourceUri));
-    }
-
-    /**
-     * Gets the options for the identified resource.
-     * 
-     * @param resourceUri
-     *            The URI of the resource to get.
-     * @return The response.
-     */
-    public Response options(String resourceUri) {
-        return handle(new Request(Method.OPTIONS, resourceUri));
-    }
-
-    /**
-     * Posts a representation to the identified resource.
-     * 
-     * @param resourceUri
-     *            The URI of the resource to post to.
-     * @param entity
-     *            The entity representation to post.
-     * @return The response.
-     */
-    public Response post(String resourceUri, Representation entity) {
-        return handle(new Request(Method.POST, resourceUri, entity));
-    }
-
-    /**
-     * Puts a representation in the identified resource.
-     * 
-     * @param resourceUri
-     *            The URI of the resource to modify.
-     * @param entity
-     *            The entity representation to put.
-     * @return The response.
-     */
-    public Response put(String resourceUri, Representation entity) {
-        return handle(new Request(Method.PUT, resourceUri, entity));
-    }
-
     /** Start callback. */
     public void start() throws Exception {
         super.start();
@@ -207,17 +122,6 @@ public class Client extends Connector {
         if (getHelper() != null)
             getHelper().stop();
         super.stop();
-    }
-
-    /**
-     * Tests the identified resource.
-     * 
-     * @param resourceUri
-     *            The URI of the resource to delete.
-     * @return The response.
-     */
-    public Response trace(String resourceUri) {
-        return handle(new Request(Method.TRACE, resourceUri));
     }
 
 }

@@ -28,6 +28,7 @@ import org.restlet.Restlet;
 import org.restlet.data.Request;
 import org.restlet.data.Response;
 import org.restlet.data.Status;
+import org.restlet.service.LogService;
 import org.restlet.util.Helper;
 
 import com.noelios.restlet.LogFilter;
@@ -140,8 +141,7 @@ public class ApplicationHelper extends Helper {
         // Logging of calls
         if (getApplication().getLogService().isEnabled()) {
             addFilter(createLogFilter(getApplication().getContext(),
-                    getApplication().getLogService().getAccessLoggerName(),
-                    getApplication().getLogService().getAccessLogFormat()));
+                    getApplication().getLogService()));
         }
 
         // Addition of status pages
@@ -183,15 +183,12 @@ public class ApplicationHelper extends Helper {
      * 
      * @param context
      *            The context.
-     * @param logName
-     *            The log name to used in the logging.properties file.
-     * @param logFormat
-     *            The log format to use.
+     * @param logService
+     *            The log service descriptor.
      * @return The new log filter.
      */
-    protected Filter createLogFilter(Context context, String logName,
-            String logFormat) {
-        return new LogFilter(context, logName, logFormat);
+    protected Filter createLogFilter(Context context, LogService logService) {
+        return new LogFilter(context, logService);
     }
 
     /**

@@ -31,6 +31,7 @@ import org.restlet.data.Protocol;
 import org.restlet.data.Request;
 import org.restlet.data.Response;
 import org.restlet.data.Status;
+import org.restlet.service.LogService;
 import org.restlet.util.Helper;
 
 import com.noelios.restlet.LogFilter;
@@ -143,8 +144,7 @@ public class ComponentHelper extends Helper {
             // Logging of calls
             if (getComponent().getLogService().isEnabled()) {
                 lastFilter = createLogFilter(getComponent().getContext(),
-                        getComponent().getLogService().getAccessLoggerName(),
-                        getComponent().getLogService().getAccessLogFormat());
+                        getComponent().getLogService());
                 setFirst(lastFilter);
             }
 
@@ -232,15 +232,12 @@ public class ComponentHelper extends Helper {
      * 
      * @param context
      *            The context.
-     * @param logName
-     *            The log name to used in the logging.properties file.
-     * @param logFormat
-     *            The log format to use.
+     * @param logService
+     *            The log service descriptor.
      * @return The new log filter.
      */
-    protected LogFilter createLogFilter(Context context, String logName,
-            String logFormat) {
-        return new LogFilter(context, logName, logFormat);
+    protected LogFilter createLogFilter(Context context, LogService logService) {
+        return new LogFilter(context, logService);
     }
 
     /**

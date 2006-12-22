@@ -36,6 +36,9 @@ public class LogService {
     /** The format. */
     private String format;
 
+    /** Indicates if the identity check (as specified by RFC1413) is enabled. */
+    private boolean identityCheck;
+
     /**
      * Constructor.
      * 
@@ -47,12 +50,39 @@ public class LogService {
         this.contextLoggerName = null;
         this.enabled = enabled;
         this.format = null;
+        this.identityCheck = false;
     }
 
     /**
      * Returns the format used.
      * 
+     * 
+     * Here is the default format using the <a
+     * href="http://analog.cx/docs/logfmt.html">Analog syntax</a>:
+     * %Y-%m-%d\t%h:%n:%j\t%j\t%r\t%u\t%s\t%j\t%B\t%f\t%c\t%b\t%q\t%v\t%T<br/>
+     * 
+     * Now here is the same format expresses using the
+     * {@link org.restlet.util.Template} syntax:
+     * {}\t{}\t{}\t{}\t{}\t{}\t{}\t{}\t{}\t{}\t{}\t{}\t{}\t{}
+     * 
+     * <ol>
+     * <li>Date (YYYY-MM-DD)</li>
+     * <li>Time (HH:MM:SS)</li>
+     * <li>Client address (IP address)</li>
+     * <li>Method (GET|POST|...)</li>
+     * <li>Resource path (including the leading slash)</li>
+     * <li>Remote client identifier (see RFC 1413)</li>
+     * <li></li>
+     * <li>Client agent name</li>
+     * <li></li>
+     * <li></li>
+     * <li></li>
+     * <li></li>
+     * <li></li>
+     * </ol>
+     * 
      * @return The format used, or null if the default one is used.
+     * @see org.restlet.util.Template for format syntax and variables.
      */
     public String getAccessLogFormat() {
         return this.format;
@@ -88,11 +118,22 @@ public class LogService {
     }
 
     /**
+     * Indicates if the identity check (as specified by RFC1413) is enabled.
+     * Default value is false.
+     * 
+     * @return True if the identity check is enabled.
+     */
+    public boolean isIdentityCheck() {
+        return this.identityCheck;
+    }
+
+    /**
      * Sets the format to use when logging calls. The default format matches the
-     * one of IIS 6. See com.noelios.restlet.util.CallModel for format details.
+     * one of IIS 6.
      * 
      * @param format
      *            The format to use when loggin calls.
+     * @see org.restlet.util.Template for format syntax and variables.
      */
     public void setAccessLogFormat(String format) {
         this.format = format;
@@ -127,6 +168,16 @@ public class LogService {
      */
     public void setEnabled(boolean enabled) {
         this.enabled = enabled;
+    }
+
+    /**
+     * Indicates if the identity check (as specified by RFC1413) is enabled.
+     * 
+     * @param enabled
+     *            True if the identity check is enabled.
+     */
+    public void setIdentityCheck(boolean enabled) {
+        this.identityCheck = enabled;
     }
 
 }

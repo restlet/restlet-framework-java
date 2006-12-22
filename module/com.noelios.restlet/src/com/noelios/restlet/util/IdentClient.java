@@ -21,6 +21,7 @@ package com.noelios.restlet.util;
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
+import java.net.InetSocketAddress;
 import java.net.Socket;
 import java.util.StringTokenizer;
 import java.util.logging.Level;
@@ -62,8 +63,9 @@ public class IdentClient {
                 String request = sb.toString();
 
                 // Send the request to the remote server
-                socket = new Socket(clientAddress, 113);
-                socket.setSoTimeout(5000);
+                socket = new Socket();
+                socket.setSoTimeout(1000);
+                socket.connect(new InetSocketAddress(clientAddress, 113), 100);
                 socket.getOutputStream().write(request.getBytes());
 
                 // Read the response

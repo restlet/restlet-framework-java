@@ -25,6 +25,7 @@ import org.restlet.Context;
 import org.restlet.Filter;
 import org.restlet.data.Request;
 import org.restlet.data.Response;
+import org.restlet.service.LogService;
 import org.restlet.util.Template;
 
 import com.noelios.restlet.util.IdentClient;
@@ -45,36 +46,26 @@ public class LogFilter extends Filter {
     /** The log template to use. */
     protected Template logTemplate;
 
-    /**
-     * Constructor using the default format. Here is the default format using
-     * the <a href="http://analog.cx/docs/logfmt.html">Analog syntax</a>:
-     * %Y-%m-%d\t%h:%n:%j\t%j\t%r\t%u\t%s\t%j\t%B\t%f\t%c\t%b\t%q\t%v\t%T
-     * 
-     * @param context
-     *            The context.
-     * @param logName
-     *            The log name to used in the logging.properties file.
-     */
-    public LogFilter(Context context, String logName) {
-        this(context, logName, null);
-    }
+    /** The log service. */
+    protected LogService logService;
 
     /**
      * Constructor.
      * 
      * @param context
      *            The context.
-     * @param logName
-     *            The log name to used in the logging.properties file.
-     * @param logFormat
-     *            The log format to use. See {@link org.restlet.util.Template}
-     *            for syntax details.
+     * @param logService
+     *            The log service descriptor.
      */
-    public LogFilter(Context context, String logName, String logFormat) {
+    public LogFilter(Context context, LogService logService) {
         super(context);
-        this.logger = Logger.getLogger(logName);
-        this.logTemplate = (logFormat == null) ? null : new Template(
-                getLogger(), logFormat);
+        this.logService = logService;
+
+        if (logService != null) {
+            this.logger = Logger.getLogger(logService.getAccessLoggerName());
+            this.logTemplate = (logService.getAccessLogFormat() == null) ? null
+                    : new Template(getLogger(), logService.getAccessLogFormat());
+        }
     }
 
     /**
@@ -121,21 +112,50 @@ public class LogFilter extends Filter {
      * @param response
      *            The response to log.
      * @param duration
-     *            The call duration.
+     *            The call duration (in milliseconds).
      * @return The formatted log entry.
      */
     protected String formatDefault(Request request, Response response,
             int duration) {
         StringBuilder sb = new StringBuilder();
-
-        // Append the time stamp
         long currentTime = System.currentTimeMillis();
+
+        // Append the date of the request
         sb.append(String.format("%tF", currentTime));
         sb.append('\t');
+
+        // Append the time of the request
         sb.append(String.format("%tT", currentTime));
+        sb.append('\t');
+
+        // Append the client IP address
+        String clientAddress = request.getClientInfo().getAddress();
+        sb.append((clientAddress == null) ? "-" : clientAddress);
+        sb.append('\t');
+
+        // Append the user name (via IDENT protocol)
+        if (this.logService.isIdentityCheck()) {
+            IdentClient ic = new IdentClient(getLogger(), request
+                    .getClientInfo().getAddress(), request.getClientInfo()
+                    .getPort(), response.getServerInfo().getPort());
+            sb.append((ic.getUserIdentifier() == null) ? "-" : ic
+                    .getUserIdentifier());
+        } else {
+            sb.append('-');
+        }
+        sb.append('\t');
+
+        // Append the server IP address
+        String serverAddress = response.getServerInfo().getAddress();
+        sb.append((serverAddress == null) ? "-" : serverAddress);
+        sb.append('\t');
+
+        // Append the server port
+        Integer serverport = response.getServerInfo().getPort();
+        sb.append((serverport == null) ? "-" : serverport.toString());
+        sb.append('\t');
 
         // Append the method name
-        sb.append('\t');
         String methodName = request.getMethod().getName();
         sb.append((methodName == null) ? "-" : methodName);
 
@@ -144,26 +164,10 @@ public class LogFilter extends Filter {
         String resourcePath = request.getResourceRef().getPath();
         sb.append((resourcePath == null) ? "-" : resourcePath);
 
-        // Append the user name
-        sb.append("\t-");
-
-        // Append the client IP address
+        // Append the resource query
         sb.append('\t');
-        String clientAddress = request.getClientInfo().getAddress();
-        sb.append((clientAddress == null) ? "-" : clientAddress);
-
-        // Append the version
-        sb.append("\t-");
-
-        // Append the agent name
-        sb.append('\t');
-        String agentName = request.getClientInfo().getAgent();
-        sb.append((agentName == null) ? "-" : agentName);
-
-        // Append the referrer
-        sb.append('\t');
-        sb.append((request.getReferrerRef() == null) ? "-" : request
-                .getReferrerRef().getIdentifier());
+        String resourceQuery = request.getResourceRef().getQuery();
+        sb.append((resourceQuery == null) ? "-" : resourceQuery);
 
         // Append the status code
         sb.append('\t');
@@ -179,27 +183,33 @@ public class LogFilter extends Filter {
                     .toString(response.getEntity().getSize()));
         }
 
-        // Append the resource query
+        // Append the received size
         sb.append('\t');
-        String query = request.getResourceRef().getQuery();
-        sb.append((query == null) ? "-" : query);
-
-        // Append the virtual name
-        sb.append('\t');
-        sb.append((request.getResourceRef() == null) ? "-" : request
-                .getResourceRef().getHostIdentifier());
+        if (request.getEntity() == null) {
+            sb.append('0');
+        } else {
+            sb.append((request.getEntity().getSize() == -1) ? "-" : Long
+                    .toString(request.getEntity().getSize()));
+        }
 
         // Append the duration
         sb.append('\t');
         sb.append(duration);
 
-        // Append the user identification (via IDENT protocol)
+        // Append the host reference
         sb.append('\t');
-        IdentClient ic = new IdentClient(getLogger(), request.getClientInfo()
-                .getAddress(), request.getClientInfo().getPort(), response
-                .getServerInfo().getPort());
-        sb.append((ic.getUserIdentifier() == null) ? "-" : ic
-                .getUserIdentifier());
+        sb.append((request.getHostRef() == null) ? "-" : request.getHostRef()
+                .toString());
+
+        // Append the agent name
+        sb.append('\t');
+        String agentName = request.getClientInfo().getAgent();
+        sb.append((agentName == null) ? "-" : agentName);
+
+        // Append the referrer
+        sb.append('\t');
+        sb.append((request.getReferrerRef() == null) ? "-" : request
+                .getReferrerRef().getIdentifier());
 
         return sb.toString();
     }

@@ -12,6 +12,7 @@ Changes log
    not sent back to the client by HTTP server connectors.
  - Special characters in Template instance could conflict with special internal characters 
    (Regex). They are now quoted properly.
+ - The Simple HTTP connector returned in invalid server address.
 
 [API changes]
  - Removed all deprecated classes and methods.
@@ -23,13 +24,20 @@ Changes log
  - Added protected getTargetRef(Req, Resp) and rewrite(Repr) methods to Redirector to allow 
    more customization.
  - Added "port" property to the ClientInfo class.
- - Added methods on Dispatcher for each main method (get, put, post, delete, options and head) taking an instance of Reference. Following a remark from Alex Combs.
+ - Added methods on Dispatcher for each main method (get, put, post, delete, options and head) 
+   taking an instance of Reference. Following a remark from Alex Combs.
  - Deprecated the trace() method from Dispatcher.
+ - Added an "identityCheck" property on LogService to turn on the IDENT identification 
+   (RFC 1413). This would allow the default log format to display it.
+ - Refactored com.noelios.restlet.LogFilter to make the default format follow more stricly
+   the W3C Extended Log File Format with most of the default fields of Microsoft IIS 6.0.
   
 [Enhancements] 
  - Added support for the IDENT protocol (see RFC 1413) in order to log more info about users.
    This is especially useful when a pool of computers shares the same IP address.
  - Updated Jetty to version 6.1 RC2.
+ - Added a com.noelios.restlet.util.DefaultAccessLogFormatter adding a log format header.
+ - Removed unecessary logic from org.restlet.Client.
  
 1.0 beta 23 (2006-12-19)
 [Bugs fixed]

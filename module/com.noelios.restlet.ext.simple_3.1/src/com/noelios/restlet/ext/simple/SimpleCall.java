@@ -177,16 +177,6 @@ public class SimpleCall extends HttpServerCall {
         }
     }
 
-    /**
-     * Returns the response address.<br/> Corresponds to the IP address of the
-     * responding server.
-     * 
-     * @return The response address.
-     */
-    public String getServerAddress() {
-        return response.getInetAddress().getHostAddress();
-    }
-
     @Override
     public String getVersion() {
         return request.getMajor() + "." + request.getMinor();
