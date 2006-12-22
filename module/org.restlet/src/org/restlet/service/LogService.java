@@ -19,7 +19,30 @@
 package org.restlet.service;
 
 /**
- * Service providing access logging.
+ * Service providing logging to a component or an application. The default
+ * access log format follows the <a href="http://www.w3.org/TR/WD-logfile.html">
+ * W3C Extended Log File Format</a> with the following fields used: <br/>
+ * <ol>
+ * <li>Date (YYYY-MM-DD)</li>
+ * <li>Time (HH:MM:SS)</li>
+ * <li>Client address (IP)</li>
+ * <li>Remote user identifier (see RFC 1413)</li>
+ * <li>Server address (IP)</li>
+ * <li>Server port</li>
+ * <li>Method (GET|POST|...)</li>
+ * <li>Resource reference path (including the leading slash)</li>
+ * <li>Resource reference query (excluding the leading question mark)</li>
+ * <li>Response status code</li>
+ * <li>Number of bytes sent</li>
+ * <li>Number of bytes received</li>
+ * <li>Time to serve the request (in milliseconds)</li>
+ * <li>Host reference</li>
+ * <li>Client agent name</li>
+ * <li>Referrer reference</li>
+ * </ol>
+ * 
+ * For custom access log format, see the syntax to use and the list of available
+ * variable names in {@link org.restlet.util.Template}.
  * 
  * @author Jerome Louvel (contact@noelios.com)
  */
@@ -34,7 +57,7 @@ public class LogService {
     private String contextLoggerName;
 
     /** The format. */
-    private String format;
+    private String accessLogFormat;
 
     /** Indicates if the identity check (as specified by RFC1413) is enabled. */
     private boolean identityCheck;
@@ -49,43 +72,18 @@ public class LogService {
         this.accessLoggerName = null;
         this.contextLoggerName = null;
         this.enabled = enabled;
-        this.format = null;
+        this.accessLogFormat = null;
         this.identityCheck = false;
     }
 
     /**
      * Returns the format used.
      * 
-     * 
-     * Here is the default format using the <a
-     * href="http://analog.cx/docs/logfmt.html">Analog syntax</a>:
-     * %Y-%m-%d\t%h:%n:%j\t%j\t%r\t%u\t%s\t%j\t%B\t%f\t%c\t%b\t%q\t%v\t%T<br/>
-     * 
-     * Now here is the same format expresses using the
-     * {@link org.restlet.util.Template} syntax:
-     * {}\t{}\t{}\t{}\t{}\t{}\t{}\t{}\t{}\t{}\t{}\t{}\t{}\t{}
-     * 
-     * <ol>
-     * <li>Date (YYYY-MM-DD)</li>
-     * <li>Time (HH:MM:SS)</li>
-     * <li>Client address (IP address)</li>
-     * <li>Method (GET|POST|...)</li>
-     * <li>Resource path (including the leading slash)</li>
-     * <li>Remote client identifier (see RFC 1413)</li>
-     * <li></li>
-     * <li>Client agent name</li>
-     * <li></li>
-     * <li></li>
-     * <li></li>
-     * <li></li>
-     * <li></li>
-     * </ol>
-     * 
      * @return The format used, or null if the default one is used.
      * @see org.restlet.util.Template for format syntax and variables.
      */
     public String getAccessLogFormat() {
-        return this.format;
+        return this.accessLogFormat;
     }
 
     /**
@@ -136,7 +134,7 @@ public class LogService {
      * @see org.restlet.util.Template for format syntax and variables.
      */
     public void setAccessLogFormat(String format) {
-        this.format = format;
+        this.accessLogFormat = format;
     }
 
     /**
