@@ -31,6 +31,8 @@ Changes log
    (RFC 1413). This would allow the default log format to display it.
  - Refactored com.noelios.restlet.LogFilter to make the default format follow more stricly
    the W3C Extended Log File Format with most of the default fields of Microsoft IIS 6.0.
+ - Deprecated Conditions.isModified() method. Logic moved to Handler. 
+ - Deprecated Response.setEntity(Resource) method.
   
 [Enhancements] 
  - Added support for the IDENT protocol (see RFC 1413) in order to log more info about users.
@@ -38,6 +40,8 @@ Changes log
  - Updated Jetty to version 6.1 RC2.
  - Added a com.noelios.restlet.util.DefaultAccessLogFormatter adding a log format header.
  - Removed unecessary logic from org.restlet.Client.
+ - Improved support for conditional methods - issue 219. Support improved for methods 
+   GET, HEAD, PUT, DELETE. Reported and fixed by Thierry Boileau.
  
 1.0 beta 23 (2006-12-19)
 [Bugs fixed]

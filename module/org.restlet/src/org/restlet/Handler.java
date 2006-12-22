@@ -609,12 +609,11 @@ public abstract class Handler extends Restlet {
     }
 
     /**
-     * Indicates if the preconditions test must be done or not.
+     * Indicates if the preconditions test must be done.
      * 
-     * @return
+     * @return True if the preconditions test must be done.
      */
-    public boolean hasPreconditions(Conditions conditions) {
-
+    private boolean hasPreconditions(Conditions conditions) {
         return ((conditions.getMatch() != null && conditions.getMatch().size() != 0)
                 || (conditions.getNoneMatch() != null && conditions
                         .getNoneMatch().size() != 0)

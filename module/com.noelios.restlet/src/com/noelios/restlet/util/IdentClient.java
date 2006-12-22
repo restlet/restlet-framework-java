@@ -33,6 +33,12 @@ import java.util.logging.Logger;
  * @author Jerome Louvel (contact@noelios.com)
  */
 public class IdentClient {
+    /** The timeout while attempting to connect to the Ident server. */
+    private static final int CONNECT_TIMEOUT = 100;
+
+    /** The timeout while communicating with the Ident server. */
+    private static final int SO_TIMEOUT = 500;
+
     /** The remote host type. */
     private String hostType;
 
@@ -64,8 +70,9 @@ public class IdentClient {
 
                 // Send the request to the remote server
                 socket = new Socket();
-                socket.setSoTimeout(1000);
-                socket.connect(new InetSocketAddress(clientAddress, 113), 100);
+                socket.setSoTimeout(SO_TIMEOUT);
+                socket.connect(new InetSocketAddress(clientAddress, 113),
+                        CONNECT_TIMEOUT);
                 socket.getOutputStream().write(request.getBytes());
 
                 // Read the response

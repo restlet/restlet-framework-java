@@ -91,8 +91,9 @@ public final class Conditions {
      * 
      * @param representation
      *            The representation to set.
-     * @deprecated Must not be used.
+     * @deprecated Must not be used. Logic moved to Handler.
      */
+    @Deprecated
     public boolean isModified(Representation representation) {
         // Indicate if we must send the representation to the client
         boolean send = true;

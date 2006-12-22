@@ -250,31 +250,6 @@ public class Response extends Message {
     }
 
     /**
-     * Sets the entity representation. If the current status is SUCCESS_OK and
-     * the request conditions are matched, then the status is set to
-     * REDIRECTION_NOT_MODIFIED. In all other cases, the status is untouched and
-     * the entity is simply set.
-     * 
-     * @param entity
-     *            The entity representation.
-     */
-    public void setEntity(Representation entity) {
-        // if (getStatus().equals(Status.SUCCESS_OK)) {
-        // if (getRequest().getConditions().isModified(entity)) {
-        // // Send the representation as the response entity
-        // super.setEntity(entity);
-        // } else {
-        // // Indicates to the client that he already has the best
-        // // representation
-        // setStatus(Status.REDIRECTION_NOT_MODIFIED);
-        // }
-        // } else {
-        // super.setEntity(entity);
-        // }
-        super.setEntity(entity);
-    }
-
-    /**
      * Sets the entity with the preferred representation of a resource,
      * according to the client preferences. <br/> If no representation is found,
      * sets the status to "Not found".<br/> If no acceptable representation is
@@ -286,9 +261,10 @@ public class Response extends Message {
      * @see <a
      *      href="http://httpd.apache.org/docs/2.2/en/content-negotiation.html#algorithm">Apache
      *      content negotiation algorithm</a>
-     * @deprecated This method has been moved to the Handler class in order to
+     * @deprecated The logic has been moved to the Handler class in order to
      *             keep the Response class as simple as possible.
      */
+    @Deprecated
     public void setEntity(Resource resource) {
         List<Representation> variants = resource.getVariants();
 
