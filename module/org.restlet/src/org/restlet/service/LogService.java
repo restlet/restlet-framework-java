@@ -19,9 +19,16 @@
 package org.restlet.service;
 
 /**
- * Service providing logging to a component or an application. The default
- * access log format follows the <a href="http://www.w3.org/TR/WD-logfile.html">
- * W3C Extended Log File Format</a> with the following fields used: <br/>
+ * Service providing logging to a component or an application. Note that
+ * contrary to the other services, the logService class associated to an
+ * application is not intended to be modified by the application itself but
+ * rather by the parent component as the logging is a task typically handled by
+ * an administrator in ways that can vary for the same application deployed in
+ * different environments.<br/>
+ * 
+ * <br/> The default access log format follows the <a
+ * href="http://www.w3.org/TR/WD-logfile.html"> W3C Extended Log File Format</a>
+ * with the following fields used: <br/>
  * <ol>
  * <li>Date (YYYY-MM-DD)</li>
  * <li>Time (HH:MM:SS)</li>
@@ -40,6 +47,13 @@ package org.restlet.service;
  * <li>Client agent name</li>
  * <li>Referrer reference</li>
  * </ol>
+ * <br/>
+ * 
+ * <br/> If you use <a href="http://www.analog.cx">Analog</a> to generate your
+ * log reports, and if you use the default log format, then you can simply
+ * specify this string as a value of the LOGFORMAT command:
+ * (%Y-%m-%d\t%h:%n:%j\t%S\t%u\t%j\t%j\t%j\t%r\t%q\t%c\t%b\t%j\t%T\t%v\t%B\t%f)<br/>
+ * <br/>
  * 
  * For custom access log format, see the syntax to use and the list of available
  * variable names in {@link org.restlet.util.Template}.
