@@ -137,6 +137,7 @@ public class WrapperResponse extends Response {
      * @see <a
      *      href="http://httpd.apache.org/docs/2.2/en/content-negotiation.html#algorithm">Apache
      *      content negotiation algorithm</a>
+     * @deprecated This code has been moved to the Handler.
      */
     public void setEntity(Resource resource) {
         getWrappedResponse().setEntity(resource);

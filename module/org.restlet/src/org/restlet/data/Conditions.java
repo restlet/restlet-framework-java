@@ -91,6 +91,7 @@ public final class Conditions {
      * 
      * @param representation
      *            The representation to set.
+     * @deprecated Must not be used.
      */
     public boolean isModified(Representation representation) {
         // Indicate if we must send the representation to the client

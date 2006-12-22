@@ -19,18 +19,24 @@
 package org.restlet;
 
 import java.lang.reflect.InvocationTargetException;
+import java.util.Date;
+import java.util.Iterator;
 import java.util.List;
 import java.util.Set;
 import java.util.logging.Level;
 
+import org.restlet.data.Conditions;
+import org.restlet.data.Dimension;
 import org.restlet.data.Method;
 import org.restlet.data.ReferenceList;
 import org.restlet.data.Request;
 import org.restlet.data.Response;
 import org.restlet.data.Status;
+import org.restlet.data.Tag;
 import org.restlet.resource.Representation;
 import org.restlet.resource.Resource;
 import org.restlet.resource.Result;
+import org.restlet.util.DateUtils;
 import org.restlet.util.Series;
 
 /**
@@ -317,10 +323,42 @@ public abstract class Handler extends Restlet {
      */
     protected void handleDelete(Resource target, Request request,
             Response response) {
-        Result result = target.delete();
-        response.setStatus(result.getStatus());
-        response.setRedirectRef(result.getRedirectRef());
-        response.setEntity(result.getEntity());
+        boolean bContinue = true;
+        if (hasPreconditions(request.getConditions())) {
+            Representation representation = null;
+
+            if (isNegotiateContent()) {
+                List<Representation> variants = target.getVariants();
+                if ((variants != null) && (!variants.isEmpty())) {
+                    // Compute the preferred variant
+                    representation = response.getRequest().getClientInfo()
+                            .getPreferredVariant(variants);
+                }
+            } else {
+                List<Representation> variants = target.getVariants();
+
+                if (variants.size() == 1) {
+                    representation = variants.get(0);
+                } else {
+                    response.setStatus(Status.CLIENT_ERROR_PRECONDITION_FAILED);
+                    bContinue = false;
+                }
+            }
+            if (representation != null && bContinue) {
+                Status status = getConditionalStatus(request.getConditions(),
+                        request.getMethod(), representation);
+                if (status != null) {
+                    response.setStatus(status);
+                    bContinue = false;
+                }
+            }
+        }
+        if (bContinue) {
+            Result result = target.delete();
+            response.setStatus(result.getStatus());
+            response.setRedirectRef(result.getRedirectRef());
+            response.setEntity(result.getEntity());
+        }
     }
 
     /**
@@ -340,14 +378,49 @@ public abstract class Handler extends Restlet {
      *            The response to update.
      */
     protected void handleGet(Resource target, Request request, Response response) {
+        // the representation that may need to meet the request conditions
+        Representation representation = null;
         if (isNegotiateContent()) {
-            response.setEntity(target);
+            List<Representation> variants = target.getVariants();
+
+            if ((variants == null) || (variants.isEmpty())) {
+                // Resource not found
+                response.setStatus(Status.CLIENT_ERROR_NOT_FOUND);
+            } else {
+                // Compute the preferred variant
+                Representation preferredVariant = response.getRequest()
+                        .getClientInfo().getPreferredVariant(variants);
+
+                // Update the variant dimensions used for content negotiation
+                response.getDimensions().add(Dimension.CHARACTER_SET);
+                response.getDimensions().add(Dimension.ENCODING);
+                response.getDimensions().add(Dimension.LANGUAGE);
+                response.getDimensions().add(Dimension.MEDIA_TYPE);
+
+                if (preferredVariant == null) {
+                    // No variant was found matching the client preferences
+                    response.setStatus(Status.CLIENT_ERROR_NOT_ACCEPTABLE);
+                    // The list of all variants is transmitted to the client
+                    ReferenceList refs = new ReferenceList(variants.size());
+                    for (Representation variant : variants) {
+                        if (variant.getIdentifier() != null) {
+                            refs.add(variant.getIdentifier());
+                        }
+                    }
+                    response.setEntity(refs.getTextRepresentation());
+                } else {
+                    response.setEntity(preferredVariant);
+                    representation = preferredVariant;
+                }
+            }
+            representation = response.getEntity();
         } else {
             List<Representation> variants = target.getVariants();
-            if (variants.size() == 0) {
+            if (variants.isEmpty()) {
                 response.setStatus(Status.CLIENT_ERROR_NOT_FOUND);
             } else if (variants.size() == 1) {
                 response.setEntity(variants.get(0));
+                representation = response.getEntity();
             } else {
                 ReferenceList variantRefs = new ReferenceList();
 
@@ -370,10 +443,21 @@ public abstract class Handler extends Restlet {
                 }
             }
         }
+        // The given representation (if any) must meet the request conditions
+        // (if any).
+        if (representation != null && hasPreconditions(request.getConditions())) {
+            Status status = getConditionalStatus(request.getConditions(),
+                    request.getMethod(), representation);
+            if (status != null) {
+                response.setStatus(status);
+                // TODO Must the entity be erased?
+                response.setEntity(null);
+            }
+        }
     }
 
     /**
-     * Handles a HEAD call, using a logic similat to the handleGet method.
+     * Handles a HEAD call, using a logic similar to the handleGet method.
      * 
      * @param target
      *            The target resource (never null).
@@ -442,17 +526,48 @@ public abstract class Handler extends Restlet {
      */
     protected void handlePut(Resource target, Request request, Response response) {
         boolean bContinue = true;
-        // Check the Content-Range HTTP Header in order to prevent use of
-        // partial PUTs
-        Object oHeaders = request.getAttributes().get(
-                "org.restlet.http.headers");
-        if (oHeaders != null) {
-            Series headers = (Series) oHeaders;
-            if (headers.getFirst("Content-Range", true) != null) {
-                response.setStatus(new Status(
-                        Status.SERVER_ERROR_NOT_IMPLEMENTED,
-                        "the Content-Range header is not understood"));
-                bContinue = false;
+        if (hasPreconditions(request.getConditions())) {
+            Representation representation = null;
+
+            if (isNegotiateContent()) {
+                List<Representation> variants = target.getVariants();
+                if ((variants != null) && (!variants.isEmpty())) {
+                    // Compute the preferred variant
+                    representation = response.getRequest().getClientInfo()
+                            .getPreferredVariant(variants);
+                }
+            } else {
+                List<Representation> variants = target.getVariants();
+
+                if (variants.size() == 1) {
+                    representation = variants.get(0);
+                } else {
+                    response.setStatus(Status.CLIENT_ERROR_PRECONDITION_FAILED);
+                    bContinue = false;
+                }
+            }
+            if (representation != null && bContinue) {
+                Status status = getConditionalStatus(request.getConditions(),
+                        request.getMethod(), representation);
+                if (status != null) {
+                    response.setStatus(status);
+                    bContinue = false;
+                }
+            }
+        }
+        if (bContinue) {
+            // Check the Content-Range HTTP Header in order to prevent usage of
+            // partial PUTs
+            Object oHeaders = request.getAttributes().get(
+                    "org.restlet.http.headers");
+            if (oHeaders != null) {
+                Series headers = (Series) oHeaders;
+                if (headers.getFirst("Content-Range", true) != null) {
+                    response.setStatus(new Status(
+                            Status.SERVER_ERROR_NOT_IMPLEMENTED,
+                            "the Content-Range header is not understood"));
+                    bContinue = false;
+                }
             }
         }
         if (bContinue) {
@@ -491,6 +606,124 @@ public abstract class Handler extends Restlet {
      */
     public void setNegotiateContent(boolean negotiateContent) {
         this.negotiateContent = negotiateContent;
+    }
+
+    /**
+     * Indicates if the preconditions test must be done or not.
+     * 
+     * @return
+     */
+    public boolean hasPreconditions(Conditions conditions) {
+
+        return ((conditions.getMatch() != null && conditions.getMatch().size() != 0)
+                || (conditions.getNoneMatch() != null && conditions
+                        .getNoneMatch().size() != 0)
+                || (conditions.getModifiedSince() != null) || (conditions
+                .getUnmodifiedSince() != null));
+    }
+
+    /**
+     * Indicates if the representation meets the the request conditions.
+     * 
+     * @param conditions
+     *            The conditions to be supported.
+     * @param method
+     *            The request method.
+     * @param representation
+     *            The representation whose entity tag or date of modification
+     *            will be tested
+     * @return Null if the requested method can be performed, the status of the
+     *         response otherwise.
+     */
+    private Status getConditionalStatus(Conditions conditions, Method method,
+            Representation representation) {
+        Status result = null;
+
+        // Is the "if-Match" rule followed or not?
+        if (conditions.getMatch() != null && conditions.getMatch().size() != 0) {
+            boolean matched = false;
+
+            if (representation != null) {
+                // If a tag exists
+                if (representation.getTag() != null) {
+                    // Check if it matches one of the representations already
+                    // cached by the client
+                    Tag tag;
+                    for (Iterator<Tag> iter = conditions.getMatch().iterator(); !matched
+                            && iter.hasNext();) {
+                        tag = iter.next();
+                        matched = tag.equals(representation.getTag(), false);
+                    }
+                }
+            } else {
+                matched = conditions.getMatch().get(0).equals(Tag.ALL);
+            }
+            if (!matched) {
+                result = Status.CLIENT_ERROR_PRECONDITION_FAILED;
+            }
+        }
+
+        // Is the "if-None-Match" rule followed or not?
+        if (result == null && conditions.getNoneMatch() != null
+                && conditions.getNoneMatch().size() != 0) {
+            boolean matched = false;
+            if (representation != null) {
+                // If a tag exists
+                if (representation.getTag() != null) {
+                    // Check if it matches one of the representations
+                    // already cached by the client
+                    Tag tag;
+                    for (Iterator<Tag> iter = conditions.getNoneMatch()
+                            .iterator(); !matched && iter.hasNext();) {
+                        tag = iter.next();
+                        matched = tag.equals(representation.getTag(),
+                                (Method.GET.equals(method) || Method.HEAD
+                                        .equals(method)));
+                    }
+                    if (!matched) {
+                        Date modifiedSince = conditions.getModifiedSince();
+                        matched = ((modifiedSince == null)
+                                || (representation.getModificationDate() == null) || DateUtils
+                                .after(modifiedSince, representation
+                                        .getModificationDate()));
+                    }
+                }
+            } else {
+                matched = conditions.getNoneMatch().get(0).equals(Tag.ALL);
+            }
+            if (matched) {
+                if (Method.GET.equals(method) || Method.HEAD.equals(method)) {
+                    result = Status.REDIRECTION_NOT_MODIFIED;
+                } else {
+                    result = Status.CLIENT_ERROR_PRECONDITION_FAILED;
+                }
+            }
+        }
+
+        // Is the "if-Modified-Since" rule followed or not?
+        if (result == null && conditions.getModifiedSince() != null) {
+            Date modifiedSince = conditions.getModifiedSince();
+            boolean isModifiedSince = ((modifiedSince == null)
+                    || (representation.getModificationDate() == null) || DateUtils
+                    .after(modifiedSince, representation.getModificationDate()));
+            if (!isModifiedSince) {
+                result = Status.REDIRECTION_NOT_MODIFIED;
+            }
+        }
+
+        // Is the "if-Unmodified-Since" rule followed or not?
+        if (result == null && conditions.getUnmodifiedSince() != null) {
+            Date unModifiedSince = conditions.getUnmodifiedSince();
+            boolean isUnModifiedSince = ((unModifiedSince == null)
+                    || (representation.getModificationDate() == null) || DateUtils
+                    .after(representation.getModificationDate(),
+                            unModifiedSince));
+            if (!isUnModifiedSince) {
+                result = Status.CLIENT_ERROR_PRECONDITION_FAILED;
+            }
+        }
+
+        return result;
     }
 
 }

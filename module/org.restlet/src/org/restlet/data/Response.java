@@ -259,18 +259,19 @@ public class Response extends Message {
      *            The entity representation.
      */
     public void setEntity(Representation entity) {
-        if (getStatus().equals(Status.SUCCESS_OK)) {
-            if (getRequest().getConditions().isModified(entity)) {
-                // Send the representation as the response entity
-                super.setEntity(entity);
-            } else {
-                // Indicates to the client that he already has the best
-                // representation
-                setStatus(Status.REDIRECTION_NOT_MODIFIED);
-            }
-        } else {
-            super.setEntity(entity);
-        }
+        // if (getStatus().equals(Status.SUCCESS_OK)) {
+        // if (getRequest().getConditions().isModified(entity)) {
+        // // Send the representation as the response entity
+        // super.setEntity(entity);
+        // } else {
+        // // Indicates to the client that he already has the best
+        // // representation
+        // setStatus(Status.REDIRECTION_NOT_MODIFIED);
+        // }
+        // } else {
+        // super.setEntity(entity);
+        // }
+        super.setEntity(entity);
     }
 
     /**
@@ -285,6 +286,8 @@ public class Response extends Message {
      * @see <a
      *      href="http://httpd.apache.org/docs/2.2/en/content-negotiation.html#algorithm">Apache
      *      content negotiation algorithm</a>
+     * @deprecated This method has been moved to the Handler class in order to
+     *             keep the Response class as simple as possible.
      */
     public void setEntity(Resource resource) {
         List<Representation> variants = resource.getVariants();
