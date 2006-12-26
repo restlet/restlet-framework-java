@@ -18,10 +18,10 @@
 
 package org.restlet;
 
-import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.logging.Level;
+import java.util.regex.Pattern;
 
 import org.restlet.data.Cookie;
 import org.restlet.data.Form;
@@ -46,77 +46,73 @@ import org.restlet.util.Variable;
 public class Route extends Filter {
     /** Internal class holding extraction information. */
     private static final class ExtractInfo {
-        /**
-         * Holds the attribute name.
-         */
+        /** Target attribute name. */
         protected String attribute;
 
-        /**
-         * Holds information to extract the attribute value.
-         */
-        protected String value;
+        /** Name of the parameter to look for. */
+        protected String parameter;
 
-        /**
-         * Holds indicator on how to handle repeating values.
-         */
+        /** Indicates how to handle repeating values. */
         protected boolean first;
 
         /**
-         * Holds information to extract the attribute value.
-         */
-        protected int index;
-
-        /**
          * Constructor.
          * 
          * @param attribute
-         * @param index
-         */
-        public ExtractInfo(String attribute, int index) {
-            this.attribute = attribute;
-            this.value = null;
-            this.first = true;
-            this.index = index;
-        }
-
-        /**
-         * Constructor.
-         * 
-         * @param attribute
-         * @param value
-         */
-        public ExtractInfo(String attribute, String value) {
-            this.attribute = attribute;
-            this.value = value;
-            this.first = true;
-            this.index = -1;
-        }
-
-        /**
-         * Constructor.
-         * 
-         * @param attribute
-         * @param value
+         *            Target attribute name.
+         * @param parameter
+         *            Name of the parameter to look for.
          * @param first
+         *            Indicates how to handle repeating values.
          */
-        public ExtractInfo(String attribute, String value, boolean first) {
+        public ExtractInfo(String attribute, String parameter, boolean first) {
             this.attribute = attribute;
-            this.value = value;
+            this.parameter = parameter;
             this.first = first;
-            this.index = -1;
+        }
+    }
+
+    /** Internal class holding validation information. */
+    private static final class ValidateInfo {
+        /** Name of the attribute to look for. */
+        protected String attribute;
+
+        /** Indicates if the attribute presence is required. */
+        protected boolean required;
+
+        /** Format of the attribute value, using Regex pattern syntax. */
+        protected String format;
+
+        /**
+         * Constructor.
+         * 
+         * @param attribute
+         *            Name of the attribute to look for.
+         * @param required
+         *            Indicates if the attribute presence is required.
+         * @param format
+         *            Format of the attribute value, using Regex pattern syntax.
+         */
+        public ValidateInfo(String attribute, boolean required, String format) {
+            this.attribute = attribute;
+            this.required = required;
+            this.format = format;
         }
     }
 
     /** The parent router. */
     private Router router;
 
-    /** List of cookies to extract. */
+    /** The list of attribute validations. */
+    private List<ValidateInfo> validations;
+
+    /** The list of cookies to extract. */
     private List<ExtractInfo> cookieExtracts;
 
-    /** List of query parameters to extract. */
+    /** The list of query parameters to extract. */
     private List<ExtractInfo> queryExtracts;
 
-    /** List of request entity parameters to extract. */
+    /** The list of request entity parameters to extract. */
     private List<ExtractInfo> entityExtracts;
 
     /** The reference template to match. */
@@ -129,7 +125,7 @@ public class Route extends Filter {
      *            The next Restlet.
      */
     public Route(Restlet next) {
-        this(null, (String) null, next);
+        this(null, (Template) null, next);
     }
 
     /**
@@ -165,6 +161,7 @@ public class Route extends Filter {
         this.queryExtracts = null;
         this.entityExtracts = null;
         this.template = template;
+        this.validations = null;
     }
 
     /**
@@ -177,6 +174,7 @@ public class Route extends Filter {
      *            The response to filter.
      */
     protected void beforeHandle(Request request, Response response) {
+        // 1 - Parse the template variables and adjust the base reference
         if (getTemplate() != null) {
             String remainingPart = request.getResourceRef().getRemainingPart();
             int matchedLength = getTemplate().parse(remainingPart, request);
@@ -221,8 +219,12 @@ public class Route extends Filter {
             }
         }
 
-        // Now extract attributes
+        // 2 - Extract the attributes from form parameters (query, cookies,
+        // entity).
         extractAttributes(request, response);
+
+        // 3 - Validate the attributes extracted (or others)
+        validateAttributes(request, response);
     }
 
     /**
@@ -232,7 +234,6 @@ public class Route extends Filter {
      *            The request to process.
      * @param response
      *            The response to process.
-     * @throws IOException
      */
     private void extractAttributes(Request request, Response response) {
         // Extract the query parameters
@@ -243,10 +244,10 @@ public class Route extends Filter {
                 for (ExtractInfo ei : getQueryExtracts()) {
                     if (ei.first) {
                         request.getAttributes().put(ei.attribute,
-                                form.getFirstValue(ei.value));
+                                form.getFirstValue(ei.parameter));
                     } else {
                         request.getAttributes().put(ei.attribute,
-                                form.subList(ei.value));
+                                form.subList(ei.parameter));
                     }
                 }
             }
@@ -260,10 +261,10 @@ public class Route extends Filter {
                 for (ExtractInfo ei : getEntityExtracts()) {
                     if (ei.first) {
                         request.getAttributes().put(ei.attribute,
-                                form.getFirstValue(ei.value));
+                                form.getFirstValue(ei.parameter));
                     } else {
                         request.getAttributes().put(ei.attribute,
-                                form.subList(ei.value));
+                                form.subList(ei.parameter));
                     }
                 }
             }
@@ -277,10 +278,10 @@ public class Route extends Filter {
                 for (ExtractInfo ei : getCookieExtracts()) {
                     if (ei.first) {
                         request.getAttributes().put(ei.attribute,
-                                cookies.getFirstValue(ei.value));
+                                cookies.getFirstValue(ei.parameter));
                     } else {
                         request.getAttributes().put(ei.attribute,
-                                cookies.subList(ei.value));
+                                cookies.subList(ei.parameter));
                     }
                 }
             }
@@ -290,7 +291,7 @@ public class Route extends Filter {
     /**
      * Extracts an attribute from the request cookies.
      * 
-     * @param attributeName
+     * @param attribute
      *            The name of the request attribute to set.
      * @param cookieName
      *            The name of the cookies to extract.
@@ -299,48 +300,43 @@ public class Route extends Filter {
      *            a List instance might be set in the attribute value.
      * @return The current Filter.
      */
-    public Route extractCookie(String attributeName, String cookieName,
+    public Route extractCookie(String attribute, String cookieName,
             boolean first) {
-        getCookieExtracts().add(
-                new ExtractInfo(attributeName, cookieName, first));
+        getCookieExtracts().add(new ExtractInfo(attribute, cookieName, first));
         return this;
     }
 
     /**
      * Extracts an attribute from the request entity form.
      * 
-     * @param attributeName
+     * @param attribute
      *            The name of the request attribute to set.
-     * @param parameterName
+     * @param parameter
      *            The name of the entity form parameter to extract.
      * @param first
      *            Indicates if only the first cookie should be set. Otherwise as
      *            a List instance might be set in the attribute value.
      * @return The current Filter.
      */
-    public Route extractEntity(String attributeName, String parameterName,
-            boolean first) {
-        getEntityExtracts().add(
-                new ExtractInfo(attributeName, parameterName, first));
+    public Route extractEntity(String attribute, String parameter, boolean first) {
+        getEntityExtracts().add(new ExtractInfo(attribute, parameter, first));
         return this;
     }
 
     /**
      * Extracts an attribute from the query string of the resource reference.
      * 
-     * @param attributeName
+     * @param attribute
      *            The name of the request attribute to set.
-     * @param parameterName
+     * @param parameter
      *            The name of the query string parameter to extract.
      * @param first
      *            Indicates if only the first cookie should be set. Otherwise as
      *            a List instance might be set in the attribute value.
      * @return The current Filter.
      */
-    public Route extractQuery(String attributeName, String parameterName,
-            boolean first) {
-        getQueryExtracts().add(
-                new ExtractInfo(attributeName, parameterName, first));
+    public Route extractQuery(String attribute, String parameter, boolean first) {
+        getQueryExtracts().add(new ExtractInfo(attribute, parameter, first));
         return this;
     }
 
@@ -396,6 +392,17 @@ public class Route extends Filter {
     }
 
     /**
+     * Returns the list of attribute validations.
+     * 
+     * @return The list of attribute validations.
+     */
+    private List<ValidateInfo> getValidations() {
+        if (this.validations == null)
+            this.validations = new ArrayList<ValidateInfo>();
+        return this.validations;
+    }
+
+    /**
      * Returns the score for a given call (between 0 and 1.0).
      * 
      * @param request
@@ -444,4 +451,66 @@ public class Route extends Filter {
         this.template = template;
     }
 
+    /**
+     * Checks the request attributes for presence, format, etc. If the check
+     * fails, then a response status {@link Status.CLIENT_ERROR_BAD_REQUEST} is
+     * returned with the proper status description.
+     * 
+     * @param attribute
+     *            Name of the attribute to look for.
+     * @param required
+     *            Indicates if the attribute presence is required.
+     * @param format
+     *            Format of the attribute value, using Regex pattern syntax.
+     */
+    public void validate(String attribute, boolean required, String format) {
+        getValidations().add(new ValidateInfo(attribute, required, format));
+    }
+
+    /**
+     * Validates the attributes from the request.
+     * 
+     * @param request
+     *            The request to process.
+     * @param response
+     *            The response to process.
+     */
+    private void validateAttributes(Request request, Response response) {
+        if (this.validations != null) {
+            for (ValidateInfo validate : getValidations()) {
+                if (validate.required
+                        && !request.getAttributes().containsKey(
+                                validate.attribute)) {
+                    response
+                            .setStatus(
+                                    Status.CLIENT_ERROR_BAD_REQUEST,
+                                    "Unable to find the \""
+                                            + validate.attribute
+                                            + "\" attribute in the request. Please check your request.");
+                } else if (validate.format != null) {
+                    Object value = request.getAttributes().get(
+                            validate.attribute);
+                    if (value == null) {
+                        response
+                                .setStatus(
+                                        Status.CLIENT_ERROR_BAD_REQUEST,
+                                        "Unable to validate the \""
+                                                + validate.attribute
+                                                + "\" attribute with a null value. Please check your request.");
+                    } else {
+                        if (!Pattern.matches(validate.format, value.toString())) {
+                            response
+                                    .setStatus(
+                                            Status.CLIENT_ERROR_BAD_REQUEST,
+                                            "Unable to validate the value of the \""
+                                                    + validate.attribute
+                                                    + "\" attribute. The expected format is: "
+                                                    + validate.format
+                                                    + " (Java Regex). Please check your request.");
+                        }
+                    }
+                }
+            }
+        }
+    }
 }

@@ -6,6 +6,10 @@ Changes log
 
 @version-full@ (@release-date@)
 [Bugs fixed]
+ - 
+
+1.0 RC1 (2006-12-26)
+[Bugs fixed]
  - Handler now sets the response entity from the Result instance returned for the DELETE,
    POST and PUT methods. Reported by Randy Layman.
  - If the status is SUCCESS_NO_CONTENT or SUCCESS_RESET_CONTENT, the response entity is 
@@ -42,6 +46,7 @@ Changes log
  - Removed Application.set*Service methods.
  - Added warning when an application uses and undeclared client protocol.
  - Clarified ConnectorService Javadocs for the lists of client and server protocols used.
+ - Added Router.validate method to validate the presence and format of request attributes.
  
 [Enhancements] 
  - Added support for the IDENT protocol (see RFC 1413) in order to log more info about users.
