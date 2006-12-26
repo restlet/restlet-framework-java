@@ -129,7 +129,9 @@ public class ReferenceTestCase extends RestletTestCase {
         testRef0("http://localhost#?query", "http", "localhost", null, null, "?query");
         testRef0("http://localhost/?query", "http", "localhost", "/", "query", null);
         testRef0("http://localhost/#?query", "http", "localhost", "/", null, "?query");
-
+        testRef0("http://localhost/path#frag/ment", "http", "localhost", "/path", null, "frag/ment");
+        testRef0("http://localhost/path?qu/ery", "http", "localhost", "/path", "qu/ery", null);
+        
         // Test the resolution of relative references
         testRef1(base, uri01, uri101);
         testRef1(base, uri02, uri102);
