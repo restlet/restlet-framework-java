@@ -40,7 +40,9 @@ Changes log
  - Removed unecessary Component.setDefaultHost, setLogService, setStatusService method.
  - Removed Application constructor based on Component. Use the one base on a parent Context instance instead.
  - Removed Application.set*Service methods.
-
+ - Added warning when an application uses and undeclared client protocol.
+ - Clarified ConnectorService Javadocs for the lists of client and server protocols used.
+ 
 [Enhancements] 
  - Added support for the IDENT protocol (see RFC 1413) in order to log more info about users.
    This is especially useful when a pool of computers shares the same IP address.

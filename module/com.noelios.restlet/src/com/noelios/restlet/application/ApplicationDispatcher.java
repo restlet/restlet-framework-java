@@ -68,6 +68,16 @@ public class ApplicationDispatcher extends Dispatcher {
                 this.applicationContext.getWarClient()
                         .handle(request, response);
             } else {
+                if (this.applicationContext.getApplication()
+                        .getConnectorService().getClientProtocols().contains(
+                                protocol)) {
+                    this.applicationContext
+                            .getLogger()
+                            .warning(
+                                    "The protocol used by this request is not declared in the application's connector service. "
+                                            + "Please update your list of client connectors and restart your application.");
+                }
+
                 this.applicationContext.getParentContext().getDispatcher()
                         .handle(request, response);
             }

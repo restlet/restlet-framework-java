@@ -37,7 +37,7 @@ public class Part10 {
         component.getServers().add(Protocol.HTTP, 8182);
 
         // Create an application
-        Application application = new Application(component) {
+        Application application = new Application(component.getContext()) {
             @Override
             public Restlet createRoot() {
                 // Create a Redirector to Google search service

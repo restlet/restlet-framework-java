@@ -67,7 +67,10 @@ public class ConnectorService {
     }
 
     /**
-     * Returns the list of required client protocols.
+     * Returns the list of required client protocols. Note that the Protocol.WAR
+     * doesn't need to be declared as it is always supported. You need to update
+     * this list if you need the parent component to provide additional client
+     * connectors.
      * 
      * @return The list of required client protocols.
      */
@@ -78,7 +81,9 @@ public class ConnectorService {
     }
 
     /**
-     * Returns the list of required server protocols.
+     * Returns the list of required server protocols. An empty list means that
+     * all protocols are potentially supported (default case). You should update
+     * this list to restrict the actual protocols supported by your application.
      * 
      * @return The list of required server protocols.
      */

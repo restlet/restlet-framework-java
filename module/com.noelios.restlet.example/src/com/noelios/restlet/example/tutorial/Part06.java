@@ -37,7 +37,7 @@ public class Part06 implements Constants {
         component.getClients().add(Protocol.FILE);
 
         // Create an application
-        Application application = new Application(component) {
+        Application application = new Application(component.getContext()) {
             @Override
             public Restlet createRoot() {
                 return new Directory(getContext(), ROOT_URI);

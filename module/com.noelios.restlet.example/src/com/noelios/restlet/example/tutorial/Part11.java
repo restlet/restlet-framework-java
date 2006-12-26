@@ -43,7 +43,7 @@ public class Part11 implements Constants {
         component.getClients().add(Protocol.FILE);
 
         // Create an application
-        Application application = new Application(component) {
+        Application application = new Application(component.getContext()) {
             @Override
             public Restlet createRoot() {
                 // Create a root Router
