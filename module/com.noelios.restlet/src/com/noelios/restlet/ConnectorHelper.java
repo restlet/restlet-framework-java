@@ -57,9 +57,11 @@ public class ConnectorHelper extends Helper {
     /**
      * Creates a new context.
      * 
+     * @param loggerName
+     *            The JDK's logger name to use for contextual logging.
      * @return The new context.
      */
-    public Context createContext() {
+    public Context createContext(String loggerName) {
         return null;
     }
 

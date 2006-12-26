@@ -109,10 +109,7 @@ public class Restlet extends Dispatcher {
                 response.setStatus(Status.SERVER_ERROR_INTERNAL);
             }
 
-            if (isStarted()) {
-                // Everything went fine, no exception raised
-                response.setStatus(Status.SUCCESS_OK);
-            } else {
+            if (!isStarted()) {
                 // No exception raised but the Restlet somehow couldn't be
                 // started
                 getContext().getLogger().log(Level.WARNING, UNABLE_TO_START);

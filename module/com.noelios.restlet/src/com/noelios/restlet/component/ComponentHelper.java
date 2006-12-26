@@ -19,6 +19,7 @@
 package com.noelios.restlet.component;
 
 import java.util.logging.Level;
+import java.util.logging.Logger;
 
 import org.restlet.Application;
 import org.restlet.Component;
@@ -31,10 +32,8 @@ import org.restlet.data.Protocol;
 import org.restlet.data.Request;
 import org.restlet.data.Response;
 import org.restlet.data.Status;
-import org.restlet.service.LogService;
-import org.restlet.util.Helper;
 
-import com.noelios.restlet.LogFilter;
+import com.noelios.restlet.ChainHelper;
 import com.noelios.restlet.StatusFilter;
 
 /**
@@ -42,12 +41,9 @@ import com.noelios.restlet.StatusFilter;
  * 
  * @author Jerome Louvel (contact@noelios.com)
  */
-public class ComponentHelper extends Helper {
+public class ComponentHelper extends ChainHelper {
     /** The helped component. */
     private Component component;
-
-    /** The first Restlet. */
-    private Restlet first;
 
     /** The internal client router. */
     private ClientRouter clientRouter;
@@ -62,8 +58,8 @@ public class ComponentHelper extends Helper {
      *            The helper component.
      */
     public ComponentHelper(Component component) {
+        super(null);
         this.component = component;
-        this.first = null;
         this.clientRouter = new ClientRouter(getComponent());
         this.serverRouter = new ServerRouter(getComponent());
     }
@@ -71,10 +67,12 @@ public class ComponentHelper extends Helper {
     /**
      * Creates a new context.
      * 
+     * @param loggerName
+     *            The JDK's logger name to use for contextual logging.
      * @return The new context.
      */
-    public Context createContext() {
-        return new ComponentContext(this);
+    public Context createContext(String loggerName) {
+        return new ComponentContext(this, Logger.getLogger(loggerName));
     }
 
     /**
@@ -228,19 +226,6 @@ public class ComponentHelper extends Helper {
     }
 
     /**
-     * Creates a new log filter. Allows overriding.
-     * 
-     * @param context
-     *            The context.
-     * @param logService
-     *            The log service descriptor.
-     * @return The new log filter.
-     */
-    protected LogFilter createLogFilter(Context context, LogService logService) {
-        return new LogFilter(context, logService);
-    }
-
-    /**
      * Creates a new status filter. Allows overriding.
      * 
      * @param component
@@ -267,25 +252,6 @@ public class ComponentHelper extends Helper {
                 }
             }
         }
-    }
-
-    /**
-     * Returns the first Restlet.
-     * 
-     * @return the first Restlet.
-     */
-    private Restlet getFirst() {
-        return this.first;
-    }
-
-    /**
-     * Sets the first Restlet.
-     * 
-     * @param first
-     *            The first Restlet.
-     */
-    private void setFirst(Restlet first) {
-        this.first = first;
     }
 
 }

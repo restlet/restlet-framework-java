@@ -85,7 +85,8 @@ public class Component extends Restlet {
         if (Factory.getInstance() != null) {
             this.helper = Factory.getInstance().createHelper(this);
             if (this.helper != null) {
-                setContext(this.helper.createContext());
+                setContext(this.helper.createContext(getClass()
+                        .getCanonicalName()));
                 this.hosts = null;
                 this.defaultHost = new VirtualHost(getContext());
                 this.logService = null;
@@ -190,14 +191,14 @@ public class Component extends Restlet {
     }
 
     /**
-     * Returns the log service. This service is disabled by default.
+     * Returns the global log service. This service is enabled by default.
      * 
-     * @return The log service.
+     * @return The global log service.
      */
     public LogService getLogService() {
         if (this.logService == null) {
-            this.logService = new LogService(false);
-            this.logService.setAccessLoggerName(getClass().getCanonicalName()
+            this.logService = new LogService(true);
+            this.logService.setLoggerName(getClass().getCanonicalName()
                     + " (" + hashCode() + ")");
         }
 
@@ -227,36 +228,6 @@ public class Component extends Restlet {
         init(request, response);
         if (getHelper() != null)
             getHelper().handle(request, response);
-    }
-
-    /**
-     * Sets the default virtual host.
-     * 
-     * @param defaultHost
-     *            The default virtual host.
-     */
-    public void setDefaultHost(VirtualHost defaultHost) {
-        this.defaultHost = defaultHost;
-    }
-
-    /**
-     * Sets the log service.
-     * 
-     * @param logService
-     *            The log service.
-     */
-    public void setLogService(LogService logService) {
-        this.logService = logService;
-    }
-
-    /**
-     * Sets the status service.
-     * 
-     * @param statusService
-     *            The status service.
-     */
-    public void setStatusService(StatusService statusService) {
-        this.statusService = statusService;
     }
 
 }

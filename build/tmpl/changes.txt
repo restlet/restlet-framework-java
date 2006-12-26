@@ -13,6 +13,8 @@ Changes log
  - Special characters in Template instance could conflict with special internal characters 
    (Regex). They are now quoted properly.
  - The Simple HTTP connector returned in invalid server address.
+ - When a Restlet is normally initialized, the current response doesn't reset its "status" 
+   property anymore.
 
 [API changes]
  - Removed all deprecated classes and methods.
@@ -33,7 +35,12 @@ Changes log
    the W3C Extended Log File Format with most of the default fields of Microsoft IIS 6.0.
  - Deprecated Conditions.isModified() method. Logic moved to Handler. 
  - Deprecated Response.setEntity(Resource) method.
-  
+ - Refactored the LogService class. Now only responsible of access logging.
+ - Component.logService is now activated by default. Application.logService has been deprecated.
+ - Removed unecessary Component.setDefaultHost, setLogService, setStatusService method.
+ - Removed Application constructor based on Component. Use the one base on a parent Context instance instead.
+ - Removed Application.set*Service methods.
+
 [Enhancements] 
  - Added support for the IDENT protocol (see RFC 1413) in order to log more info about users.
    This is especially useful when a pool of computers shares the same IP address.

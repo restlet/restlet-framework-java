@@ -19,12 +19,7 @@
 package org.restlet.service;
 
 /**
- * Service providing logging to a component or an application. Note that
- * contrary to the other services, the logService class associated to an
- * application is not intended to be modified by the application itself but
- * rather by the parent component as the logging is a task typically handled by
- * an administrator in ways that can vary for the same application deployed in
- * different environments.<br/>
+ * Service providing access logging service.
  * 
  * <br/> The default access log format follows the <a
  * href="http://www.w3.org/TR/WD-logfile.html"> W3C Extended Log File Format</a>
@@ -65,13 +60,10 @@ public class LogService {
     private boolean enabled;
 
     /** The access logger name. */
-    private String accessLoggerName;
+    private String loggerName;
 
-    /** The context logger name. */
-    private String contextLoggerName;
-
-    /** The format. */
-    private String accessLogFormat;
+    /** The log entry format. */
+    private String logFormat;
 
     /** Indicates if the identity check (as specified by RFC1413) is enabled. */
     private boolean identityCheck;
@@ -83,10 +75,9 @@ public class LogService {
      *            True if the service has been enabled.
      */
     public LogService(boolean enabled) {
-        this.accessLoggerName = null;
-        this.contextLoggerName = null;
+        this.loggerName = null;
         this.enabled = enabled;
-        this.accessLogFormat = null;
+        this.logFormat = null;
         this.identityCheck = false;
     }
 
@@ -96,8 +87,8 @@ public class LogService {
      * @return The format used, or null if the default one is used.
      * @see org.restlet.util.Template for format syntax and variables.
      */
-    public String getAccessLogFormat() {
-        return this.accessLogFormat;
+    public String getLogFormat() {
+        return this.logFormat;
     }
 
     /**
@@ -105,19 +96,8 @@ public class LogService {
      * 
      * @return The name of the JDK's logger to use when logging calls.
      */
-    public String getAccessLoggerName() {
-        return this.accessLoggerName;
-    }
-
-    /**
-     * Returns the name of the JDK's logger to use when logging context
-     * messages.
-     * 
-     * @return The name of the JDK's logger to use when logging context
-     *         messages.
-     */
-    public String getContextLoggerName() {
-        return this.contextLoggerName;
+    public String getLoggerName() {
+        return this.loggerName;
     }
 
     /**
@@ -147,8 +127,8 @@ public class LogService {
      *            The format to use when loggin calls.
      * @see org.restlet.util.Template for format syntax and variables.
      */
-    public void setAccessLogFormat(String format) {
-        this.accessLogFormat = format;
+    public void setLogFormat(String format) {
+        this.logFormat = format;
     }
 
     /**
@@ -157,19 +137,8 @@ public class LogService {
      * @param name
      *            The name of the JDK's logger to use when logging calls.
      */
-    public void setAccessLoggerName(String name) {
-        this.accessLoggerName = name;
-    }
-
-    /**
-     * Sets the name of the JDK's logger to use when logging context messages.
-     * 
-     * @param name
-     *            The name of the JDK's logger to use when logging context
-     *            messages.
-     */
-    public void setContextLoggerName(String name) {
-        this.contextLoggerName = name;
+    public void setLoggerName(String name) {
+        this.loggerName = name;
     }
 
     /**

@@ -62,9 +62,9 @@ public class LogFilter extends Filter {
         this.logService = logService;
 
         if (logService != null) {
-            this.logger = Logger.getLogger(logService.getAccessLoggerName());
-            this.logTemplate = (logService.getAccessLogFormat() == null) ? null
-                    : new Template(getLogger(), logService.getAccessLogFormat());
+            this.logger = Logger.getLogger(logService.getLoggerName());
+            this.logTemplate = (logService.getLogFormat() == null) ? null
+                    : new Template(getLogger(), logService.getLogFormat());
         }
     }
 

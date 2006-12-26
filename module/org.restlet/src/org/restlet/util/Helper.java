@@ -31,9 +31,11 @@ public abstract class Helper {
     /**
      * Creates a new context.
      * 
+     * @param loggerName
+     *            The JDK's logger name to use for contextual logging.
      * @return The new context.
      */
-    public abstract Context createContext();
+    public abstract Context createContext(String loggerName);
 
     /**
      * Handles a call.

@@ -68,20 +68,11 @@ public class ApplicationHelper extends Helper {
     /**
      * Creates a new context.
      * 
+     * @param loggerName
+     *            The JDK's logger name to use for contextual logging.
      * @return The new context.
      */
-    public Context createContext() {
-        String loggerName = getApplication().getLogService()
-                .getContextLoggerName();
-
-        if (loggerName == null) {
-            String applicationName = (getApplication().getName() == null) ? Integer
-                    .toString(getApplication().hashCode())
-                    : getApplication().getName();
-            loggerName = Application.class.getCanonicalName() + "."
-                    + applicationName;
-        }
-
+    public Context createContext(String loggerName) {
         return new ApplicationContext(getApplication(), getParentContext(),
                 Logger.getLogger(loggerName));
     }
@@ -136,12 +127,6 @@ public class ApplicationHelper extends Helper {
         // Addition of tunnel filter
         if (getApplication().getTunnelService().isEnabled()) {
             addFilter(createTunnelFilter(getApplication()));
-        }
-
-        // Logging of calls
-        if (getApplication().getLogService().isEnabled()) {
-            addFilter(createLogFilter(getApplication().getContext(),
-                    getApplication().getLogService()));
         }
 
         // Addition of status pages
