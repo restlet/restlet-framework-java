@@ -49,7 +49,7 @@ public abstract class Factory {
             .getCanonicalName());
 
     /** Common version info. */
-    public static final String MINOR_NUMBER = "1";
+    public static final String MINOR_NUMBER = "2";
 
     public static final String VERSION_LONG = "1.0 RC" + MINOR_NUMBER;
 
