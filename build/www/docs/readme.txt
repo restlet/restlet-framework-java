@@ -24,7 +24,7 @@ Features
 
 Dependencies
     * For all applications: Java SE 5.0 or above. JDK 1.4 support is also available via Retroweaver.
-    * For standalone HTTP servers: AsyncWeb 0.8, Jetty 5.1, Jetty 6.0 and Simple 3.1
+    * For standalone HTTP servers: AsyncWeb 0.8, Jetty 6.1 and Simple 3.1
     * For embedded HTTP servers: Servlet 2.4 containers like Apache Tomcat
     * For dynamic documents: FreeMarker 2.3, Velocity 1.4, JSON 2.0
     * For uploading large files: Apache FileUpload 1.1
