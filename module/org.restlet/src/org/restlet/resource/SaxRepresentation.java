@@ -21,6 +21,7 @@ package org.restlet.resource;
 import java.io.IOException;
 import java.io.OutputStream;
 
+import javax.xml.namespace.QName;
 import javax.xml.transform.Result;
 import javax.xml.transform.Source;
 import javax.xml.transform.TransformerConfigurationException;
@@ -30,28 +31,31 @@ import javax.xml.transform.TransformerFactoryConfigurationError;
 import javax.xml.transform.dom.DOMSource;
 import javax.xml.transform.sax.SAXResult;
 import javax.xml.transform.stream.StreamSource;
+import javax.xml.xpath.XPath;
+import javax.xml.xpath.XPathFactory;
 
 import org.restlet.data.MediaType;
+import org.restlet.util.XmlWriter;
 import org.w3c.dom.Document;
 import org.xml.sax.ContentHandler;
-
-import org.restlet.util.XmlWriter;
+import org.xml.sax.InputSource;
 
 /**
- * Abstract representation based on SAX events processing. The purpose is to
- * create a streamable content based on a custom Java object model instead of a
- * neutral DOM tree. This domain object can then be directly modified and
- * efficiently serialized at a later time.<br/> Subclasses only need to
- * override the ContentHandler methods required for the reading and also the
- * write(XmlWriter writer) method when serialization is requested.<br/>
+ * XML representation for SAX events processing. The purpose is to create a
+ * streamable content based on a custom Java object model instead of a neutral
+ * DOM tree. This domain object can then be directly modified and efficiently
+ * serialized at a later time.<br/> Subclasses only need to override the
+ * ContentHandler methods required for the reading and also the write(XmlWriter
+ * writer) method when serialization is requested.<br/>
  * 
  * @author Jerome Louvel (contact@noelios.com)
  */
-public abstract class SaxRepresentation extends OutputRepresentation {
-    /**
-     * The source to parse.
-     */
-    private Source source;
+public class SaxRepresentation extends XmlRepresentation {
+    /** The wrapped DOM document to parse. */
+    private Document xmlDocument;
+
+    /** The wrapped XML representation. */
+    private Representation xmlRepresentation;
 
     /**
      * Constructor.
@@ -73,7 +77,7 @@ public abstract class SaxRepresentation extends OutputRepresentation {
      */
     public SaxRepresentation(MediaType mediaType, Document xmlDocument) {
         super(mediaType);
-        this.source = new DOMSource(xmlDocument);
+        this.xmlDocument = xmlDocument;
     }
 
     /**
@@ -85,7 +89,7 @@ public abstract class SaxRepresentation extends OutputRepresentation {
     public SaxRepresentation(Representation xmlRepresentation)
             throws IOException {
         super(xmlRepresentation.getMediaType());
-        this.source = new StreamSource(xmlRepresentation.getStream());
+        this.xmlRepresentation = xmlRepresentation;
     }
 
     /**
@@ -97,9 +101,17 @@ public abstract class SaxRepresentation extends OutputRepresentation {
     public void parse(ContentHandler contentHandler) throws IOException {
         if (contentHandler != null) {
             try {
+                Source source = null;
+
+                if (this.xmlDocument != null) {
+                    source = new DOMSource(xmlDocument);
+                } else {
+                    source = new StreamSource(xmlRepresentation.getStream());
+                }
+
                 Result result = new SAXResult(contentHandler);
                 TransformerFactory.newInstance().newTransformer().transform(
-                        this.source, result);
+                        source, result);
             } catch (TransformerConfigurationException tce) {
                 throw new IOException(
                         "Couldn't parse the source representation: "
@@ -131,12 +143,32 @@ public abstract class SaxRepresentation extends OutputRepresentation {
     }
 
     /**
-     * Writes the representation to a XML writer.
+     * Writes the representation to a XML writer. The default implementation
+     * does nothing and is intended to be overriden.
      * 
      * @param writer
      *            The XML writer to write to.
      * @throws IOException
      */
-    public abstract void write(XmlWriter writer) throws IOException;
+    public void write(XmlWriter writer) throws IOException {
+        // Do nothing by default.
+    }
+
+    @Override
+    public Object evaluate(String expression, QName returnType) throws Exception {
+        Object result = null;
+        XPath xpath = XPathFactory.newInstance().newXPath();
+        xpath.setNamespaceContext(this);
+
+        if (this.xmlDocument != null) {
+            result = xpath.evaluate(expression, this.xmlDocument, returnType);
+        } else if (this.xmlRepresentation != null) {
+            InputSource source = new InputSource(this.xmlRepresentation
+                    .getStream());
+            result = xpath.evaluate(expression, source, returnType);
+        }
+
+        return result;
+    }
 
 }

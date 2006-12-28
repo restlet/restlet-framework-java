@@ -21,6 +21,7 @@ package org.restlet.resource;
 import java.io.IOException;
 import java.io.OutputStream;
 
+import javax.xml.namespace.QName;
 import javax.xml.parsers.DocumentBuilderFactory;
 import javax.xml.parsers.ParserConfigurationException;
 import javax.xml.transform.TransformerConfigurationException;
@@ -29,18 +30,21 @@ import javax.xml.transform.TransformerFactory;
 import javax.xml.transform.TransformerFactoryConfigurationError;
 import javax.xml.transform.dom.DOMSource;
 import javax.xml.transform.stream.StreamResult;
+import javax.xml.xpath.XPath;
+import javax.xml.xpath.XPathExpressionException;
+import javax.xml.xpath.XPathFactory;
 
 import org.restlet.data.MediaType;
 import org.w3c.dom.Document;
 import org.xml.sax.SAXException;
 
 /**
- * Representation based on a DOM document. DOM is a standard XML object model
- * defined by the W3C.
+ * XML representation based on a DOM document. DOM is a standard XML object
+ * model defined by the W3C.
  * 
  * @author Jerome Louvel (contact@noelios.com)
  */
-public class DomRepresentation extends OutputRepresentation {
+public class DomRepresentation extends XmlRepresentation {
     /**
      * The wrapped DOM document.
      */
@@ -84,10 +88,37 @@ public class DomRepresentation extends OutputRepresentation {
      *            The representation's media type.
      * @param xmlRepresentation
      *            A source XML representation to parse.
+     * @deprecated Use the other constructor instead.
      */
+    @Deprecated
     public DomRepresentation(MediaType mediaType,
             Representation xmlRepresentation) throws IOException {
         super(mediaType);
+
+        try {
+            this.dom = DocumentBuilderFactory.newInstance()
+                    .newDocumentBuilder().parse(xmlRepresentation.getStream());
+        } catch (SAXException se) {
+            throw new IOException("Couldn't read the XML representation: "
+                    + se.getMessage());
+        } catch (IOException ioe) {
+            throw new IOException("Couldn't read the XML representation: "
+                    + ioe.getMessage());
+        } catch (ParserConfigurationException pce) {
+            throw new IOException("Couldn't read the XML representation: "
+                    + pce.getMessage());
+        }
+    }
+
+    /**
+     * Constructor.
+     * 
+     * @param xmlRepresentation
+     *            A source XML representation to parse.
+     */
+    public DomRepresentation(Representation xmlRepresentation)
+            throws IOException {
+        super(xmlRepresentation.getMediaType());
 
         try {
             this.dom = DocumentBuilderFactory.newInstance()
@@ -145,4 +176,11 @@ public class DomRepresentation extends OutputRepresentation {
         }
     }
 
+    @Override
+    public Object evaluate(String expression, QName returnType)
+            throws XPathExpressionException {
+        XPath xpath = XPathFactory.newInstance().newXPath();
+        xpath.setNamespaceContext(this);
+        return xpath.evaluate(expression, getDocument(), returnType);
+    }
 }

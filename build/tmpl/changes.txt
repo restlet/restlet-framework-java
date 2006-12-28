@@ -9,8 +9,11 @@ Changes log
  - 
 
 [API changes]
- - 
-
+ - Added an XmlRepresentation, super class of DomRepresentation and SaxRepresentation
+   that faciliates the evaluation of XPath expression and manages a context namespace.
+ - Added Message.getEntityAsSax() and getEntityAsDom() methods.
+ - Added org.restlet.util.NodeSet that facilitates the iteration over a DOM NodeList.
+ 
 1.0 RC1 (2006-12-26)
 [Bugs fixed]
  - Handler now sets the response entity from the Result instance returned for the DELETE,

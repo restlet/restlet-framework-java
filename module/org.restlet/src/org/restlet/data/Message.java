@@ -18,11 +18,14 @@
 
 package org.restlet.data;
 
+import java.io.IOException;
 import java.util.Map;
 import java.util.TreeMap;
 
 import org.restlet.Application;
+import org.restlet.resource.DomRepresentation;
 import org.restlet.resource.Representation;
+import org.restlet.resource.SaxRepresentation;
 import org.restlet.resource.StringRepresentation;
 import org.restlet.service.ConverterService;
 
@@ -123,6 +126,22 @@ public abstract class Message {
     }
 
     /**
+     * Returns the entity as a DOM representation.<br/> Note that this triggers
+     * the parsing of the entity into a reusable DOM document stored in memory.<br/>
+     * This method and the related getEntity*() methods can only be invoked
+     * once.
+     * 
+     * @return The entity as a DOM representation.
+     */
+    public DomRepresentation getEntityAsDom() {
+        try {
+            return new DomRepresentation(getEntity());
+        } catch (IOException e) {
+            return null;
+        }
+    }
+
+    /**
      * Returns the entity as a form.<br/> Note that this triggers the parsing
      * of the entity.<br/> This method and the related getEntity*() methods can
      * only be invoked once.
@@ -142,10 +161,27 @@ public abstract class Message {
      * parsing of the entity.<br/> This method and the related getEntity*()
      * methods can only be invoked once.
      * 
-     * @return The entity as a form.
+     * @return The entity as a higher-level object.
      */
     public Object getEntityAsObject() {
         return getConverterService().toObject(getEntity());
+    }
+
+    /**
+     * Returns the entity as a SAX representation.<br/> Note that this kind of
+     * representation can only be parsed once. If you evaluate an XPath
+     * expression, it can also only be done once. If you need to reuse the
+     * entity multiple times, consider using the getEntityAsDom() method
+     * instead.
+     * 
+     * @return The entity as a SAX representation.
+     */
+    public SaxRepresentation getEntityAsSax() {
+        try {
+            return new SaxRepresentation(getEntity());
+        } catch (IOException e) {
+            return null;
+        }
     }
 
     /**
