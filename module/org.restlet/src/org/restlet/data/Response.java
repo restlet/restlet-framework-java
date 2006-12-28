@@ -23,8 +23,6 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
-import org.restlet.resource.Representation;
-import org.restlet.resource.Resource;
 import org.restlet.util.Series;
 
 /**
@@ -247,56 +245,6 @@ public class Response extends Message {
      */
     public void setChallengeRequest(ChallengeRequest request) {
         this.challengeRequest = request;
-    }
-
-    /**
-     * Sets the entity with the preferred representation of a resource,
-     * according to the client preferences. <br/> If no representation is found,
-     * sets the status to "Not found".<br/> If no acceptable representation is
-     * available, sets the status to "Not acceptable".<br/>
-     * 
-     * @param resource
-     *            The resource for which the best representation needs to be
-     *            set.
-     * @see <a
-     *      href="http://httpd.apache.org/docs/2.2/en/content-negotiation.html#algorithm">Apache
-     *      content negotiation algorithm</a>
-     * @deprecated The logic has been moved to the Handler class in order to
-     *             keep the Response class as simple as possible.
-     */
-    @Deprecated
-    public void setEntity(Resource resource) {
-        List<Representation> variants = resource.getVariants();
-
-        if ((variants == null) || (variants.size() < 1)) {
-            // Resource not found
-            setStatus(Status.CLIENT_ERROR_NOT_FOUND);
-        } else {
-            // Compute the preferred variant
-            Representation preferredVariant = getRequest().getClientInfo()
-                    .getPreferredVariant(variants);
-
-            // Update the variant dimensions used for content negotiation
-            getDimensions().add(Dimension.CHARACTER_SET);
-            getDimensions().add(Dimension.ENCODING);
-            getDimensions().add(Dimension.LANGUAGE);
-            getDimensions().add(Dimension.MEDIA_TYPE);
-
-            if (preferredVariant == null) {
-                // No variant was found matching the client preferences
-                setStatus(Status.CLIENT_ERROR_NOT_ACCEPTABLE);
-                // The list of all variants is transmitted to the client
-                ReferenceList refs = new ReferenceList(variants.size());
-                for (Representation variant : variants) {
-                    if (variant.getIdentifier() != null) {
-                        refs.add(variant.getIdentifier());
-                    }
-                }
-                this.setEntity(refs.getTextRepresentation());
-            } else {
-                setEntity(preferredVariant);
-            }
-        }
     }
 
     /**

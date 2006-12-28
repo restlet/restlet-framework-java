@@ -185,17 +185,6 @@ public final class Tag extends Metadata {
         return super.getName();
     }
 
-    /**
-     * Returns the opaque tag string.
-     * 
-     * @return The opaque tag string.
-     * @deprecated Use getName() instead.
-     */
-    @Deprecated
-    public String getOpaqueTag() {
-        return getName();
-    }
-
     /** {@inheritDoc} */
     @Override
     public int hashCode() {

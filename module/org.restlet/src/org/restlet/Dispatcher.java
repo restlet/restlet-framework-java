@@ -206,17 +206,4 @@ public abstract class Dispatcher {
         return handle(new Request(Method.PUT, resourceRef, entity));
     }
 
-    /**
-     * Tests the identified resource.
-     * 
-     * @param resourceUri
-     *            The URI of the resource to delete.
-     * @return The response.
-     * @deprecated Use the handle() methods if really needed.
-     */
-    @Deprecated
-    public Response trace(String resourceUri) {
-        return handle(new Request(Method.TRACE, resourceUri));
-    }
-
 }

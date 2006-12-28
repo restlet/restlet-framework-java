@@ -19,10 +19,8 @@
 package org.restlet.data;
 
 import java.util.Date;
-import java.util.Iterator;
 import java.util.List;
 
-import org.restlet.resource.Representation;
 import org.restlet.util.DateUtils;
 
 /**
@@ -84,47 +82,6 @@ public final class Conditions {
      */
     public Date getUnmodifiedSince() {
         return this.unmodifiedSince;
-    }
-
-    /**
-     * Indicates if a representation should be sent as a response entity.<br/>
-     * 
-     * @param representation
-     *            The representation to set.
-     * @deprecated Must not be used. Logic moved to Handler.
-     */
-    @Deprecated
-    public boolean isModified(Representation representation) {
-        // Indicate if we must send the representation to the client
-        boolean send = true;
-
-        // Check the tag conditions
-        if ((getNoneMatch() != null) && (getNoneMatch().size() > 0)) {
-            boolean matched = false;
-
-            // If a tag exists
-            if (representation.getTag() != null) {
-                // Check if it matches one of the representations already cached
-                // by the client
-                Tag tag;
-                for (Iterator<Tag> iter = getNoneMatch().iterator(); !matched
-                        && iter.hasNext();) {
-                    tag = iter.next();
-                    matched = tag.equals(representation.getTag())
-                            || tag.equals(Tag.ALL);
-                }
-            }
-
-            send = !matched;
-        } else {
-            // Was the representation modified since the last client call?
-            Date modifiedSince = getModifiedSince();
-            send = ((modifiedSince == null)
-                    || (representation.getModificationDate() == null) || DateUtils
-                    .after(modifiedSince, representation.getModificationDate()));
-        }
-
-        return send;
     }
 
     /**

@@ -25,7 +25,6 @@ import org.restlet.data.Request;
 import org.restlet.data.Response;
 import org.restlet.data.ServerInfo;
 import org.restlet.data.Status;
-import org.restlet.resource.Resource;
 
 /**
  * Request wrapper. Useful for application developer who need to enrich the
@@ -123,25 +122,6 @@ public class WrapperResponse extends Response {
      */
     public void setChallengeRequest(ChallengeRequest request) {
         getWrappedResponse().setChallengeRequest(request);
-    }
-
-    /**
-     * Sets the entity with the best representation of a resource, according to
-     * the client preferences. <br/> If no representation is found, sets the
-     * status to "Not found".<br/> If no acceptable representation is
-     * available, sets the status to "Not acceptable".<br/>
-     * 
-     * @param resource
-     *            The resource for which the best representation needs to be
-     *            set.
-     * @see <a
-     *      href="http://httpd.apache.org/docs/2.2/en/content-negotiation.html#algorithm">Apache
-     *      content negotiation algorithm</a>
-     * @deprecated The logic has been moved to the Handler class.
-     */
-    @Deprecated
-    public void setEntity(Resource resource) {
-        getWrappedResponse().setEntity(resource);
     }
 
     /**

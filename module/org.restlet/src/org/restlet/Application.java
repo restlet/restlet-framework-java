@@ -23,7 +23,6 @@ import org.restlet.data.Response;
 import org.restlet.service.ConnectorService;
 import org.restlet.service.ConverterService;
 import org.restlet.service.DecoderService;
-import org.restlet.service.LogService;
 import org.restlet.service.MetadataService;
 import org.restlet.service.StatusService;
 import org.restlet.service.TunnelService;
@@ -81,19 +80,6 @@ public abstract class Application extends Restlet {
      */
     public Application() {
         this((Context) null);
-    }
-
-    /**
-     * Constructor.
-     * 
-     * @param component
-     *            The component.
-     * @deprecated An application shouldn't directly know about its parent
-     *             Component. Use the other constructor instead.
-     */
-    @Deprecated
-    public Application(Component component) {
-        this(component.getContext());
     }
 
     /**
@@ -199,17 +185,6 @@ public abstract class Application extends Restlet {
      */
     private Helper getHelper() {
         return this.helper;
-    }
-
-    /**
-     * Returns the log service.
-     * 
-     * @return The log service.
-     * @deprecated Use the log service on the Component instead.
-     */
-    @Deprecated
-    public LogService getLogService() {
-        return null;
     }
 
     /**
