@@ -27,6 +27,10 @@ import org.restlet.resource.Representation;
 /**
  * Service providing client and server connectors.
  * 
+ * Implementation note: the parent component will ensure that client connectors
+ * won't automatically follow redirections. This will ensure a consistent
+ * behavior and portability of applications.
+ * 
  * @author Jerome Louvel (contact@noelios.com)
  */
 public class ConnectorService {

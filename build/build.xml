@@ -300,7 +300,9 @@
 
 	<path id="mod-example-path">
 		<path refid="mod-ri-path" />
+		<path refid="mod-json-path" />
 		<pathelement path="${classes}/${mod-ri-id}" />
+		<pathelement path="${classes}/${mod-json-id}" />
 	</path>
 
 	<path id="mod-fileupload-path">
