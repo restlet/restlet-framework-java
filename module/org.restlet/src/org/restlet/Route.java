@@ -453,8 +453,7 @@ public class Route extends Filter {
 
     /**
      * Checks the request attributes for presence, format, etc. If the check
-     * fails, then a response status
-     * {@link org.restlet.data.Status.CLIENT_ERROR_BAD_REQUEST} is returned with
+     * fails, then a response status CLIENT_ERROR_BAD_REQUEST is returned with
      * the proper status description.
      * 
      * @param attribute

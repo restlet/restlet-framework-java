@@ -23,8 +23,23 @@ import java.net.UnknownHostException;
 
 /**
  * Router of calls from Server connectors to Restlets. The attached Restlets are
- * typically Applications.
+ * typically Applications.<br/><br/>
  * 
+ * A virtual host is defined along three properties:
+ * <ul>
+ * <li>request's "hostRef"</li>
+ * <li>request's "resourceRef"</li>
+ * <li>response's "serverInfo"</li>
+ * </ul>
+ * When creating a new instance, you can define regular expressions that must
+ * match subpart of each property like the domain name, port, scheme for
+ * references or IP address and port number for server information. The default
+ * values match everything.
+ * 
+ * @see <a href="http://en.wikipedia.org/wiki/Virtual_hosting">Wikipedia -
+ *      Virtual Hosting</a>
+ * @see <a href="http://httpd.apache.org/docs/2.2/vhosts/">Apache - Virtual
+ *      Hosting</a>
  * @author Jerome Louvel (contact@noelios.com)
  */
 public class VirtualHost extends Router {

@@ -8,6 +8,9 @@ Changes log
 [Bugs fixed]
  - 
 
+[API changes]
+ - 
+
 1.0 RC1 (2006-12-26)
 [Bugs fixed]
  - Handler now sets the response entity from the Result instance returned for the DELETE,
