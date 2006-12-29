@@ -12,7 +12,7 @@ Changes log
 
 [API changes]
  - Added an XmlRepresentation, super class of DomRepresentation and SaxRepresentation
-   that faciliates the evaluation of XPath expression and manages a context namespace.
+   that faciliates the evaluation of XPath expressions and manages a context namespaces.
  - Added Message.getEntityAsSax() and getEntityAsDom() methods.
  - Added org.restlet.util.NodeSet that facilitates the iteration over a DOM NodeList.
  - Split Representation class into a new Variant class (containing all metadata 
