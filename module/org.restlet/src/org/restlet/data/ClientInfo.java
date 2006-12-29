@@ -21,8 +21,8 @@ package org.restlet.data;
 import java.util.ArrayList;
 import java.util.List;
 
-import org.restlet.resource.Representation;
 import org.restlet.resource.Resource;
+import org.restlet.resource.Variant;
 import org.restlet.util.Factory;
 
 /**
@@ -154,34 +154,34 @@ public final class ClientInfo {
     }
 
     /**
-     * Returns the best variant representation for a given resource according
-     * the the client preferences: accepted languages, accepted character sets,
-     * accepted media types and accepted encodings.
+     * Returns the best variant for a given resource according the the client
+     * preferences: accepted languages, accepted character sets, accepted media
+     * types and accepted encodings.
      * 
      * @param variants
      *            The list of variants to compare.
-     * @return The best variant representation.
+     * @return The best variant.
      * @see <a
      *      href="http://httpd.apache.org/docs/2.2/en/content-negotiation.html#algorithm">Apache
      *      content negotiation algorithm</a>
      */
-    public Representation getPreferredVariant(List<Representation> variants) {
+    public Variant getPreferredVariant(List<Variant> variants) {
         return Factory.getInstance().getPreferredVariant(this, variants);
     }
 
     /**
-     * Returns the best variant representation for a given resource according
-     * the the client preferences.
+     * Returns the best variant for a given resource according the the client
+     * preferences.
      * 
      * @param resource
      *            The resource for which the best representation needs to be
      *            set.
-     * @return The best variant representation.
+     * @return The best variant.
      * @see <a
      *      href="http://httpd.apache.org/docs/2.2/en/content-negotiation.html#algorithm">Apache
      *      content negotiation algorithm</a>
      */
-    public Representation getPreferredVariant(Resource resource) {
+    public Variant getPreferredVariant(Resource resource) {
         return getPreferredVariant(resource.getVariants());
     }
 

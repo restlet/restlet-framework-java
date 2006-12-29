@@ -125,7 +125,7 @@ public class FileRepresentation extends Representation {
      * 
      * @return The representation as a string value.
      */
-    public String getValue() throws IOException {
+    public String getText() throws IOException {
         return ByteUtils.toString(getStream());
     }
 

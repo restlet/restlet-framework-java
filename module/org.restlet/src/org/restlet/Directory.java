@@ -29,9 +29,9 @@ import org.restlet.data.Reference;
 import org.restlet.data.ReferenceList;
 import org.restlet.data.Request;
 import org.restlet.data.Response;
-import org.restlet.resource.Representation;
 import org.restlet.resource.Resource;
 import org.restlet.resource.StringRepresentation;
+import org.restlet.resource.Variant;
 import org.restlet.util.Factory;
 
 /**
@@ -94,7 +94,7 @@ public class Directory extends Handler {
         this.modifiable = false;
         this.listingAllowed = false;
     }
-    
+
     /**
      * Constructor.
      * 
@@ -111,7 +111,8 @@ public class Directory extends Handler {
         } else {
             // We don't take the risk of exposing directory "file:///C:/AA"
             // if only "file:///C:/A" was intended
-            this.rootRef = new Reference(rootLocalReference.getIdentifier() + "/");
+            this.rootRef = new Reference(rootLocalReference.getIdentifier()
+                    + "/");
         }
 
         this.deeplyAccessible = true;
@@ -147,8 +148,7 @@ public class Directory extends Handler {
      *            The list of references contained in the directory.
      * @return The variant representations of a directory.
      */
-    public List<Representation> getDirectoryVariants(
-            ReferenceList directoryContent) {
+    public List<Variant> getDirectoryVariants(ReferenceList directoryContent) {
         // Create a simple HTML list
         StringBuilder sb = new StringBuilder();
         sb.append("<html><body>\n");
@@ -170,7 +170,7 @@ public class Directory extends Handler {
         sb.append("</body></html>\n");
 
         // Create the variants list
-        List<Representation> result = new ArrayList<Representation>();
+        List<Variant> result = new ArrayList<Variant>();
         result
                 .add(new StringRepresentation(sb.toString(),
                         MediaType.TEXT_HTML));

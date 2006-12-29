@@ -37,65 +37,65 @@ import org.restlet.data.MediaType;
  * @author Jerome Louvel (contact@noelios.com)
  */
 public class StringRepresentation extends StreamRepresentation {
-    private String value;
+    private String text;
 
     /**
      * Constructor. The following metadata are used by default: "text/plain"
      * media type, no language and the ISO-8859-1 character set.
      * 
-     * @param value
+     * @param text
      *            The string value.
      */
-    public StringRepresentation(String value) {
-        this(value, MediaType.TEXT_PLAIN);
+    public StringRepresentation(String text) {
+        this(text, MediaType.TEXT_PLAIN);
     }
 
     /**
      * Constructor. The following metadata are used by default: "text/plain"
      * media type, no language and the ISO-8859-1 character set.
      * 
-     * @param value
+     * @param text
      *            The string value.
      * @param language
      *            The language.
      */
-    public StringRepresentation(String value, Language language) {
-        this(value, MediaType.TEXT_PLAIN, language);
+    public StringRepresentation(String text, Language language) {
+        this(text, MediaType.TEXT_PLAIN, language);
     }
 
     /**
      * Constructor. The following metadata are used by default: no language and
      * the ISO-8859-1 character set.
      * 
-     * @param value
+     * @param text
      *            The string value.
      * @param mediaType
      *            The media type.
      */
-    public StringRepresentation(String value, MediaType mediaType) {
-        this(value, mediaType, null);
+    public StringRepresentation(String text, MediaType mediaType) {
+        this(text, mediaType, null);
     }
 
     /**
      * Constructor. The following metadata are used by default: ISO-8859-1
      * character set.
      * 
-     * @param value
+     * @param text
      *            The string value.
      * @param mediaType
      *            The media type.
      * @param language
      *            The language.
      */
-    public StringRepresentation(String value, MediaType mediaType,
+    public StringRepresentation(String text, MediaType mediaType,
             Language language) {
-        this(value, mediaType, language, CharacterSet.ISO_8859_1);
+        this(text, mediaType, language, CharacterSet.ISO_8859_1);
     }
 
     /**
      * Constructor.
      * 
-     * @param value
+     * @param text
      *            The string value.
      * @param mediaType
      *            The media type.
@@ -104,10 +104,10 @@ public class StringRepresentation extends StreamRepresentation {
      * @param characterSet
      *            The character set.
      */
-    public StringRepresentation(String value, MediaType mediaType,
+    public StringRepresentation(String text, MediaType mediaType,
             Language language, CharacterSet characterSet) {
         super(mediaType);
-        this.value = value;
+        this.text = text;
         setMediaType(mediaType);
         setLanguage(language);
         setCharacterSet(characterSet);
@@ -123,12 +123,12 @@ public class StringRepresentation extends StreamRepresentation {
      * @throws IOException
      */
     public InputStream getStream() throws IOException {
-        if (getValue() != null) {
+        if (getText() != null) {
             if (getCharacterSet() != null) {
-                return new ByteArrayInputStream(getValue().getBytes(
+                return new ByteArrayInputStream(getText().getBytes(
                         getCharacterSet().getName()));
             } else {
-                return new ByteArrayInputStream(getValue().getBytes());
+                return new ByteArrayInputStream(getText().getBytes());
             }
         } else {
             return null;
@@ -142,18 +142,30 @@ public class StringRepresentation extends StreamRepresentation {
      * 
      * @return The representation as a string value.
      */
-    public String getValue() {
-        return this.value;
+    public String getText() {
+        return this.text;
     }
 
     /**
      * Sets the string value.
      * 
-     * @param value
+     * @param text
+     *            The string value.
+     * @deprecated Use setText instead.
+     */
+    @Deprecated
+    public void setValue(String text) {
+        setText(text);
+    }
+
+    /**
+     * Sets the string value.
+     * 
+     * @param text
      *            The string value.
      */
-    public void setValue(String value) {
-        this.value = value;
+    public void setText(String text) {
+        this.text = text;
         updateSize();
     }
 
@@ -161,12 +173,12 @@ public class StringRepresentation extends StreamRepresentation {
      * Updates the expected size according to the current string value.
      */
     protected void updateSize() {
-        if (getValue() != null) {
+        if (getText() != null) {
             try {
                 if (getCharacterSet() != null) {
-                    setSize(getValue().getBytes(getCharacterSet().getName()).length);
+                    setSize(getText().getBytes(getCharacterSet().getName()).length);
                 } else {
-                    setSize(getValue().getBytes().length);
+                    setSize(getText().getBytes().length);
                 }
             } catch (UnsupportedEncodingException e) {
                 Logger.getLogger(StringRepresentation.class.getCanonicalName());
@@ -187,7 +199,7 @@ public class StringRepresentation extends StreamRepresentation {
      * @throws IOException
      */
     public void write(OutputStream outputStream) throws IOException {
-        if (getValue() != null) {
+        if (getText() != null) {
             OutputStreamWriter osw = null;
 
             if (getCharacterSet() != null) {
@@ -197,7 +209,7 @@ public class StringRepresentation extends StreamRepresentation {
                 osw = new OutputStreamWriter(outputStream);
             }
 
-            osw.write(getValue());
+            osw.write(getText());
             osw.flush();
         }
     }

@@ -32,7 +32,7 @@ public class TransformerTestCase extends TestCase {
                         + "</xsl:template>" + "</xsl:transform>");
 
         Transformer transformer = new Transformer(xslt);
-        String result = transformer.transform(source).getValue();
+        String result = transformer.transform(source).getText();
 
         assertEquals(
                 "<?xml version=\"1.0\" encoding=\"UTF-8\"?><buyer>cust123</buyer>23.45",

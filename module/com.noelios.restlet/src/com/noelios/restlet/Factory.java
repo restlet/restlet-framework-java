@@ -45,6 +45,7 @@ import org.restlet.data.Protocol;
 import org.restlet.data.Request;
 import org.restlet.resource.Representation;
 import org.restlet.resource.Resource;
+import org.restlet.resource.Variant;
 import org.restlet.util.Helper;
 
 import com.noelios.restlet.application.ApplicationHelper;
@@ -356,13 +357,12 @@ public class Factory extends org.restlet.util.Factory {
      *            The client preferences.
      * @param variants
      *            The list of variants to compare.
-     * @return The best variant representation.
+     * @return The preferred variant.
      * @see <a
      *      href="http://httpd.apache.org/docs/2.2/en/content-negotiation.html#algorithm">Apache
      *      content negotiation algorithm</a>
      */
-    public Representation getPreferredVariant(ClientInfo client,
-            List<Representation> variants) {
+    public Variant getPreferredVariant(ClientInfo client, List<Variant> variants) {
         if (variants == null) {
             return null;
         } else {

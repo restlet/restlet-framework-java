@@ -38,6 +38,7 @@ import org.restlet.data.Status;
 import org.restlet.resource.Representation;
 import org.restlet.resource.Resource;
 import org.restlet.resource.Result;
+import org.restlet.resource.Variant;
 import org.restlet.service.MetadataService;
 
 /**
@@ -391,8 +392,8 @@ public class DirectoryResource extends Resource {
      * 
      * @return The representation variants.
      */
-    public List<Representation> getVariants() {
-        List<Representation> result = super.getVariants();
+    public List<Variant> getVariants() {
+        List<Variant> result = super.getVariants();
         getLogger().info("Getting variants for : " + getTargetUri());
 
         // Compute the base reference (from a call's client point of view)

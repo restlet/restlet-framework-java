@@ -705,7 +705,7 @@ public class Feed extends SaxRepresentation {
                         if (currentEntry.getContent().isInline()) {
                             StringRepresentation sr = (StringRepresentation) currentEntry
                                     .getContent().getInlineContent();
-                            sr.setValue(contentBuffer.toString());
+                            sr.setText(contentBuffer.toString());
                         }
 
                         state = State.FEED_ENTRY;

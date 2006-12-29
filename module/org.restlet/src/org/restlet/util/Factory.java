@@ -37,6 +37,7 @@ import org.restlet.data.Form;
 import org.restlet.data.Request;
 import org.restlet.resource.Representation;
 import org.restlet.resource.Resource;
+import org.restlet.resource.Variant;
 
 /**
  * Factory and registration service for Restlet API implementations.
@@ -249,13 +250,13 @@ public abstract class Factory {
      *            The client preferences.
      * @param variants
      *            The list of variants to compare.
-     * @return The best variant representation.
+     * @return The preferred variant.
      * @see <a
      *      href="http://httpd.apache.org/docs/2.2/en/content-negotiation.html#algorithm">Apache
      *      content negotiation algorithm</a>
      */
-    public abstract Representation getPreferredVariant(ClientInfo client,
-            List<Representation> variants);
+    public abstract Variant getPreferredVariant(ClientInfo client,
+            List<Variant> variants);
 
     /**
      * Parses a representation into a form.

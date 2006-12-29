@@ -43,7 +43,7 @@ public class JsonRepresentation extends StringRepresentation {
      */
     public JsonRepresentation(Representation jsonRepresentation)
             throws IOException {
-        super(jsonRepresentation.getValue(), MediaType.APPLICATION_JSON);
+        super(jsonRepresentation.getText(), MediaType.APPLICATION_JSON);
     }
 
     /**
@@ -83,7 +83,7 @@ public class JsonRepresentation extends StringRepresentation {
      * @throws JSONException
      */
     public JSONObject toJsonObject() throws JSONException {
-        return new JSONObject(getValue());
+        return new JSONObject(getText());
     }
 
     /**
@@ -93,7 +93,7 @@ public class JsonRepresentation extends StringRepresentation {
      * @throws JSONException
      */
     public JSONArray toJsonArray() throws JSONException {
-        return new JSONArray(getValue());
+        return new JSONArray(getText());
     }
 
 }

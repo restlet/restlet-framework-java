@@ -39,7 +39,7 @@ public class FreeMarkerTestCase extends TestCase {
         map.put("value", "myValue");
 
         String result = new TemplateRepresentation(testFile.getName(), fmc,
-                map, MediaType.TEXT_PLAIN).getValue();
+                map, MediaType.TEXT_PLAIN).getText();
         assertEquals("Value=myValue", result);
 
         // Clean-up

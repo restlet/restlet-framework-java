@@ -24,15 +24,8 @@ import java.io.InputStream;
 import java.io.OutputStream;
 import java.nio.channels.ReadableByteChannel;
 import java.nio.channels.WritableByteChannel;
-import java.util.Date;
-import java.util.logging.Logger;
 
-import org.restlet.data.CharacterSet;
-import org.restlet.data.Encoding;
-import org.restlet.data.Language;
 import org.restlet.data.MediaType;
-import org.restlet.data.Tag;
-import org.restlet.util.DateUtils;
 
 /**
  * Current or intended state of a resource. For performance purpose, it is
@@ -52,46 +45,12 @@ import org.restlet.util.DateUtils;
  *      dissertation</a>
  * @author Jerome Louvel (contact@noelios.com)
  */
-public class Representation extends Resource {
-    /**
-     * Inidicates that the size of the representation can't be known in advance.
-     */
-    public static final long UNKNOWN_SIZE = -1L;
-
-    /** The character set or null if not applicable. */
-    private CharacterSet characterSet;
-
+public class Representation extends Variant {
     /** Indicates if the representation's content is available. */
     private boolean contentAvailable;
 
     /** Indicates if the representation's content is transient. */
     private boolean contentTransient;
-
-    /** The encoding or null if not identity encoding applies. */
-    private Encoding encoding;
-
-    /**
-     * The expected size. Dynamic representations can have any size, but
-     * sometimes we can know in advance the expected size. If this expected size
-     * is specified by the user, it has a higher priority than any size that can
-     * be guessed by the representation (like a file size).
-     */
-    private long size;
-
-    /** The expiration date. */
-    private Date expirationDate;
-
-    /** The language or null if not applicable. */
-    private Language language;
-
-    /** The media type. */
-    private MediaType mediaType;
-
-    /** The modification date. */
-    private Date modificationDate;
-
-    /** The tag. */
-    private Tag tag;
 
     /**
      * Default constructor.
@@ -107,23 +66,9 @@ public class Representation extends Resource {
      *            The media type.
      */
     public Representation(MediaType mediaType) {
-        super((Logger) null);
-        this.characterSet = null;
+        super(mediaType);
         this.contentAvailable = true;
         this.contentTransient = false;
-        this.encoding = null;
-        this.size = UNKNOWN_SIZE;
-        this.expirationDate = null;
-        this.language = null;
-        this.mediaType = mediaType;
-        this.modificationDate = null;
-        this.tag = null;
-
-        // A representation is also a resource whose only
-        // variant is the representation itself
-        if ((getVariants() != null) && !getVariants().contains(this)) {
-            getVariants().add(this);
-        }
     }
 
     /**
@@ -140,71 +85,6 @@ public class Representation extends Resource {
     }
 
     /**
-     * Returns the character set or null if not applicable.
-     * 
-     * @return The character set or null if not applicable.
-     */
-    public CharacterSet getCharacterSet() {
-        return this.characterSet;
-    }
-
-    /**
-     * Returns the encoding or null if identity encoding applies.
-     * 
-     * @return The encoding or null if identity encoding applies.
-     */
-    public Encoding getEncoding() {
-        return this.encoding;
-    }
-
-    /**
-     * Returns the future date when this representation expire. If this
-     * information is not known, returns null.
-     * 
-     * @return The expiration date.
-     */
-    public Date getExpirationDate() {
-        return this.expirationDate;
-    }
-
-    /**
-     * Returns the language or null if not applicable.
-     * 
-     * @return The language or null if not applicable.
-     */
-    public Language getLanguage() {
-        return this.language;
-    }
-
-    /**
-     * Returns the media type.
-     * 
-     * @return The media type.
-     */
-    public MediaType getMediaType() {
-        return this.mediaType;
-    }
-
-    /**
-     * Returns the last date when this representation was modified. If this
-     * information is not known, returns null.
-     * 
-     * @return The modification date.
-     */
-    public Date getModificationDate() {
-        return this.modificationDate;
-    }
-
-    /**
-     * Returns the size in bytes if known, UNKNOWN_SIZE (-1) otherwise.
-     * 
-     * @return The size in bytes if known, UNKNOWN_SIZE (-1) otherwise.
-     */
-    public long getSize() {
-        return this.size;
-    }
-
-    /**
      * Returns a stream with the representation's content. This method is
      * ensured to return a fresh stream for each invocation unless it is a
      * transient representation, in which case null is returned.
@@ -217,22 +97,13 @@ public class Representation extends Resource {
     }
 
     /**
-     * Returns the tag.
-     * 
-     * @return The tag.
-     */
-    public Tag getTag() {
-        return this.tag;
-    }
-
-    /**
      * Converts the representation to a string value. Be careful when using this
      * method as the conversion of large content to a string fully stored in
      * memory can result in OutOfMemoryErrors being thrown.
      * 
      * @return The representation as a string value.
      */
-    public String getValue() throws IOException {
+    public String getText() throws IOException {
         String result = null;
 
         if (isAvailable()) {
@@ -247,6 +118,19 @@ public class Representation extends Resource {
         }
 
         return result;
+    }
+
+    /**
+     * Converts the representation to a string value. Be careful when using this
+     * method as the conversion of large content to a string fully stored in
+     * memory can result in OutOfMemoryErrors being thrown.
+     * 
+     * @return The representation as a string value.
+     * @deprecated Use getText instead.
+     */
+    @Deprecated
+    public String getValue() throws IOException {
+        return getText();
     }
 
     /**
@@ -283,88 +167,6 @@ public class Representation extends Resource {
      */
     public void setAvailable(boolean available) {
         this.contentAvailable = available;
-    }
-
-    /**
-     * Sets the character set or null if not applicable.
-     * 
-     * @param characterSet
-     *            The character set or null if not applicable.
-     */
-    public void setCharacterSet(CharacterSet characterSet) {
-        this.characterSet = characterSet;
-    }
-
-    /**
-     * Sets the encoding or null if identity encoding applies.
-     * 
-     * @param encoding
-     *            The encoding or null if identity encoding applies.
-     */
-    public void setEncoding(Encoding encoding) {
-        this.encoding = encoding;
-    }
-
-    /**
-     * Sets the future date when this representation expire. If this information
-     * is not known, pass null.
-     * 
-     * @param expirationDate
-     *            The expiration date.
-     */
-    public void setExpirationDate(Date expirationDate) {
-        this.expirationDate = DateUtils.unmodifiable(expirationDate);
-    }
-
-    /**
-     * Sets the language or null if not applicable.
-     * 
-     * @param language
-     *            The language or null if not applicable.
-     */
-    public void setLanguage(Language language) {
-        this.language = language;
-    }
-
-    /**
-     * Sets the media type.
-     * 
-     * @param mediaType
-     *            The media type.
-     */
-    public void setMediaType(MediaType mediaType) {
-        this.mediaType = mediaType;
-    }
-
-    /**
-     * Sets the last date when this representation was modified. If this
-     * information is not known, pass null.
-     * 
-     * @param modificationDate
-     *            The modification date.
-     */
-    public void setModificationDate(Date modificationDate) {
-        this.modificationDate = DateUtils.unmodifiable(modificationDate);
-    }
-
-    /**
-     * Sets the expected size in bytes if known, -1 otherwise.
-     * 
-     * @param expectedSize
-     *            The expected size in bytes if known, -1 otherwise.
-     */
-    public void setSize(long expectedSize) {
-        this.size = expectedSize;
-    }
-
-    /**
-     * Sets the tag.
-     * 
-     * @param tag
-     *            The tag.
-     */
-    public void setTag(Tag tag) {
-        this.tag = tag;
     }
 
     /**

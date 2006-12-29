@@ -39,7 +39,7 @@ public class VelocityTestCase extends TestCase {
         tr.getEngine().setProperty("file.resource.loader.path",
                 testDir.getAbsolutePath());
 
-        String result = tr.getValue();
+        String result = tr.getText();
         assertEquals("Value=myValue", result);
 
         // Clean-up

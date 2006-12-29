@@ -16,7 +16,7 @@
  * Portions Copyright [yyyy] [name of copyright owner]
  */
 
-package com.noelios.restlet.example.book;
+package com.noelios.restlet.example.book.ch2;
 
 import org.restlet.Client;
 import org.restlet.data.ChallengeResponse;

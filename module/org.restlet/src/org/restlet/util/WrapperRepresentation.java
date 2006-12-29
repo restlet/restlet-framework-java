@@ -36,6 +36,7 @@ import org.restlet.data.ReferenceList;
 import org.restlet.data.Tag;
 import org.restlet.resource.Representation;
 import org.restlet.resource.Result;
+import org.restlet.resource.Variant;
 
 /**
  * Representation wrapper. Useful for application developer who need to enrich
@@ -251,17 +252,55 @@ public class WrapperRepresentation extends Representation {
      * 
      * @return The representation as a string value.
      */
+    public String getText() throws IOException {
+        return getWrappedRepresentation().getText();
+    }
+
+    /**
+     * Converts the representation to a string value. Be careful when using this
+     * method as the conversion of large content to a string fully stored in
+     * memory can result in OutOfMemoryErrors being thrown.
+     * 
+     * @return The representation as a string value.
+     * @deprecated Use getText instead
+     */
+    @Deprecated
     public String getValue() throws IOException {
         return getWrappedRepresentation().getValue();
     }
 
     /**
-     * Returns the list of variants. Each variant is described by metadata and
-     * can provide several instances of the variant's representation.
+     * Returns a full representation for a given variant previously returned via
+     * the getVariants() method. The default implementation directly returns the
+     * variant in case the variants are already full representations. In all
+     * other cases, you will need to override this method in order to provide
+     * your own implementation. <br/><br/>
+     * 
+     * This method is very useful for content negotiation when it is too costly
+     * to initilize all the potential representations. It allows a resource to
+     * simply expose the available variants via the getVariants() method and to
+     * actually server the one selected via this method.
+     * 
+     * @param variant
+     *            The variant whose full representation must be returned.
+     * @return The full representation for the variant.
+     * @see #getVariants()
+     */
+    public Representation getRepresentation(Variant variant) {
+        return (getWrappedRepresentation() == null) ? null
+                : getWrappedRepresentation().getRepresentation(variant);
+    }
+
+    /**
+     * Returns the list of variants. A variant can be a purely descriptive
+     * representation, with no actual content that can be served. It can also be
+     * a full representation in case a resource has only one variant or if the
+     * initialization cost is very low.
      * 
      * @return The list of variants.
+     * @see #getRepresentation(Variant)
      */
-    public List<Representation> getVariants() {
+    public List<Variant> getVariants() {
         return (getWrappedRepresentation() == null) ? null
                 : getWrappedRepresentation().getVariants();
     }
@@ -470,7 +509,7 @@ public class WrapperRepresentation extends Representation {
      * @param variants
      *            The new list of variants.
      */
-    public void setVariants(List<Representation> variants) {
+    public void setVariants(List<Variant> variants) {
         getWrappedRepresentation().setVariants(variants);
     }
 

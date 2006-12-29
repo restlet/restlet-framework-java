@@ -168,13 +168,13 @@ public class DecoderRepresentation extends WrapperRepresentation {
      * 
      * @return The representation as a string value.
      */
-    public String getValue() throws IOException {
+    public String getText() throws IOException {
         String result = null;
 
         if (canDecode()) {
             result = ByteUtils.toString(getStream());
         } else {
-            result = getWrappedRepresentation().getValue();
+            result = getWrappedRepresentation().getText();
         }
 
         return result;
