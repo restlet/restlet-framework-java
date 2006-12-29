@@ -19,6 +19,7 @@
 package com.noelios.restlet.example.book.ch3;
 
 import org.restlet.data.Reference;
+import org.restlet.data.Status;
 import org.restlet.resource.Representation;
 import org.restlet.resource.Variant;
 
@@ -59,9 +60,22 @@ public class S3Object extends S3Authorized {
         return authorizedGet(getUri()).getEntity();
     }
 
-    public void save(Representation value) {
+    /**
+     * Store this object on S3 with a given value.
+     * 
+     * @param value
+     *            The value of the object to store.
+     */
+    public Status save(Representation value) {
         this.metadata = value;
-        authorizedPut(getUri(), value);
+        return authorizedPut(getUri(), value).getStatus();
+    }
+
+    /**
+     * Deletes this bucket.
+     */
+    public Status delete() {
+        return authorizedDelete(getUri()).getStatus();
     }
 
     public String getUri() {

@@ -22,6 +22,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import org.restlet.data.Response;
+import org.restlet.data.Status;
 import org.restlet.resource.DomRepresentation;
 import org.w3c.dom.Node;
 
@@ -44,16 +45,15 @@ public class S3Bucket extends S3Authorized {
      * Stores this bucket on S3. Analagous to ActiveRecord::Base#save, which
      * stores an object in the database.
      */
-    public void save() {
-        authorizedPut(getUri(), null);
+    public Status save() {
+        return authorizedPut(getUri(), null).getStatus();
     }
 
     /**
-     * Deletes this bucket. Fails with status code ("Conflict") unless the
-     * bucket is empty.
+     * Deletes this bucket.
      */
-    public void delete() {
-        authorizedDelete(getUri());
+    public Status delete() {
+        return authorizedDelete(getUri()).getStatus();
     }
 
     /**
