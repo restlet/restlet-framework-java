@@ -22,7 +22,7 @@ import org.restlet.Client;
 import org.restlet.data.Protocol;
 import org.restlet.data.Reference;
 import org.restlet.data.Response;
-import org.restlet.resource.SaxRepresentation;
+import org.restlet.resource.DomRepresentation;
 import org.w3c.dom.Node;
 
 /**
@@ -41,13 +41,12 @@ public class Example2_1 {
             String term = Reference.encode(args[0]);
             String uri = BASE_URI + "?appid=restbook&query=" + term;
             Response response = new Client(Protocol.HTTP).get(uri);
-            SaxRepresentation document = response.getEntityAsSax();
+            DomRepresentation document = response.getEntityAsDom();
 
             // Use XPath to find the interesting parts of the data structure
-            String expr = "/y:ResultSet/y:Result/y:Title/text()";
-            document.putNamespace("y", "urn:yahoo:srch");
+            String expr = "/ResultSet/Result/Title";
             for (Node node : document.getNodes(expr)) {
-                System.out.println(node.getNodeValue());
+                System.out.println(node.getTextContent());
             }
         }
     }
