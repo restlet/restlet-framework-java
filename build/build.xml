@@ -589,6 +589,10 @@
 		<tstamp>
 			<format property="release-date" pattern="yyyy-MM-dd" />
 		</tstamp>
+		
+		<condition property="ant-ok">
+		  <antversion atleast="1.7"/>
+		</condition>
 
 		<!-- Set the property that will enable the Weave target -->
 		<condition property="do-backport">
@@ -659,6 +663,11 @@
 			</and>
 		</condition>
 	</target>
+	
+	<target name="verifyAnt" depends="init" description="Check the Ant version for potential issues with JUnit" unless="ant-ok">
+		<echo message="For better integration with JUnit, please upgrade to at least Ant 1.7."/>
+		<echo message="Current version: ${ant.version}"/>
+	</target>
 
 	<!-- Compilation Target -->
 	<target name="compile" depends="init" description="Compile the Java source files">
@@ -700,7 +709,7 @@
 	</target>
 
 	<!-- Testing Target -->
-	<target name="test" depends="retroweave" description="Execute the test suites">
+	<target name="test" depends="verifyAnt, retroweave" description="Execute the test suites">
 		<mkdir dir="${temp}/test"/>
 		<junit printsummary="true"
 		       fork="true"

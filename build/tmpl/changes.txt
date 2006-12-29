@@ -25,6 +25,10 @@ Changes log
    representation (instance of Representation class). Suggested by Sumit Lohia.
  - Renamed Representation.getValue() into getText() to be more precise about intent.
  
+[Enhancements] 
+ - The Ant script now check Ant's version and recommend upgrade to at least 1.7 for
+   better integration with JUnit. Suggested by Dave Pawson.
+ 
 1.0 RC1 (2006-12-26)
 [Bugs fixed]
  - Handler now sets the response entity from the Result instance returned for the DELETE,
