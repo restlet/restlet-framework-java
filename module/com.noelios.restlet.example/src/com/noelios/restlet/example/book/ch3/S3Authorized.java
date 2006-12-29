@@ -25,6 +25,7 @@ import org.restlet.data.Method;
 import org.restlet.data.Protocol;
 import org.restlet.data.Request;
 import org.restlet.data.Response;
+import org.restlet.resource.Representation;
 
 /**
  * Amazon S3 client. Support class handling authorized requests.
@@ -38,11 +39,28 @@ public class S3Authorized {
 
     public static String HOST = "https://s3.amazonaws.com/";
 
-    public static Response handleAuthorized(Method method, String uri) {
+    private static Response handleAuthorized(Method method, String uri,
+            Representation entity) {
         // Send an authenticated request
-        Request request = new Request(method, HOST);
+        Request request = new Request(method, HOST, entity);
         request.setChallengeResponse(new ChallengeResponse(
                 ChallengeScheme.HTTP_AWS, PUBLIC_KEY, PRIVATE_KEY));
         return new Client(Protocol.HTTPS).handle(request);
+    }
+
+    public static Response authorizedHead(String uri) {
+        return handleAuthorized(Method.HEAD, uri, null);
+    }
+
+    public static Response authorizedGet(String uri) {
+        return handleAuthorized(Method.GET, uri, null);
+    }
+
+    public static Response authorizedPut(String uri, Representation entity) {
+        return handleAuthorized(Method.PUT, uri, entity);
+    }
+
+    public static Response authorizedDelete(String uri) {
+        return handleAuthorized(Method.DELETE, uri, null);
     }
 }

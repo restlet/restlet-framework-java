@@ -21,7 +21,6 @@ package com.noelios.restlet.example.book.ch3;
 import java.util.ArrayList;
 import java.util.List;
 
-import org.restlet.data.Method;
 import org.restlet.data.Response;
 import org.restlet.resource.DomRepresentation;
 import org.w3c.dom.Node;
@@ -46,7 +45,7 @@ public class S3Bucket extends S3Authorized {
      * stores an object in the database.
      */
     public void save() {
-        handleAuthorized(Method.PUT, getUri());
+        authorizedPut(getUri(), null);
     }
 
     /**
@@ -54,7 +53,7 @@ public class S3Bucket extends S3Authorized {
      * bucket is empty.
      */
     public void delete() {
-        handleAuthorized(Method.DELETE, getUri());
+        authorizedDelete(getUri());
     }
 
     /**
@@ -94,7 +93,7 @@ public class S3Bucket extends S3Authorized {
         }
 
         // Make the request and parse the document.
-        Response response = handleAuthorized(Method.GET, uri.toString());
+        Response response = authorizedGet(uri.toString());
         DomRepresentation document = response.getEntityAsDom();
 
         // Update the truncated flag

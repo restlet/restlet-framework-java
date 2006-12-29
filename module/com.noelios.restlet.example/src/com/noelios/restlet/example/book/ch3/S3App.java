@@ -21,7 +21,6 @@ package com.noelios.restlet.example.book.ch3;
 import java.util.ArrayList;
 import java.util.List;
 
-import org.restlet.data.Method;
 import org.restlet.data.Response;
 import org.restlet.resource.DomRepresentation;
 import org.w3c.dom.Node;
@@ -41,7 +40,7 @@ public class S3App extends S3Authorized {
         List<S3Bucket> result = new ArrayList<S3Bucket>();
 
         // Fetch a resource: an XML document with our list of buckets
-        Response response = handleAuthorized(Method.GET, HOST);
+        Response response = authorizedGet(HOST);
         DomRepresentation document = response.getEntityAsDom();
 
         // Use XPath to find the bucket names

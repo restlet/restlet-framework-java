@@ -18,13 +18,66 @@
 
 package com.noelios.restlet.example.book.ch3;
 
+import org.restlet.data.Reference;
+import org.restlet.resource.Representation;
+import org.restlet.resource.Variant;
+
 /**
  * @author Jerome Louvel (contact@noelios.com)
  */
 public class S3Object extends S3Authorized {
 
-    public S3Object(S3Bucket bucket, String key) {
+    private S3Bucket bucket;
 
+    private Variant metadata;
+
+    private String name;
+
+    public S3Object(S3Bucket bucket, String name) {
+        this.bucket = bucket;
+        this.name = name;
+    }
+
+    /**
+     * Retrieves the metadata hash for this object, possibly fetchingit from S3.
+     * 
+     * @return The metadata hash for this object, possibly fetchingit from S3.
+     */
+    public Variant getMetadata() {
+        if (this.metadata == null)
+            this.metadata = authorizedHead(getUri()).getEntity();
+        return this.metadata;
+    }
+
+    /**
+     * Retrieves the value of this object, always fetching it (along with the
+     * metadata) from S3.
+     * 
+     * @return The value of this object.
+     */
+    public Representation getValue() {
+        return authorizedGet(getUri()).getEntity();
+    }
+
+    public void save(Representation value) {
+        this.metadata = value;
+        authorizedPut(getUri(), value);
+    }
+
+    public String getUri() {
+        return getBucket().getUri() + "/" + Reference.encode(getName());
+    }
+
+    public S3Bucket getBucket() {
+        return this.bucket;
+    }
+
+    public String getName() {
+        return this.name;
+    }
+
+    public void setName(String name) {
+        this.name = name;
     }
 
 }
