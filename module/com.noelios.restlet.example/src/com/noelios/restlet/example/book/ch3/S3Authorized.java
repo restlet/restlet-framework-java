@@ -18,37 +18,31 @@
 
 package com.noelios.restlet.example.book.ch3;
 
-import java.util.ArrayList;
-import java.util.List;
-
+import org.restlet.Client;
+import org.restlet.data.ChallengeResponse;
+import org.restlet.data.ChallengeScheme;
 import org.restlet.data.Method;
+import org.restlet.data.Protocol;
+import org.restlet.data.Request;
 import org.restlet.data.Response;
-import org.restlet.resource.DomRepresentation;
-import org.w3c.dom.Node;
 
 /**
- * Amazon S3 client application. Returns a list of buckets.
+ * Amazon S3 client. Support class handling authorized requests.
  * 
  * @author Jerome Louvel (contact@noelios.com)
  */
-public class S3App extends S3Authorized {
+public class S3Authorized {
+    public static String PUBLIC_KEY = "0F9DBXKB5274JKTJ8DG2";
 
-    public static void main(String... args) {
-        new S3App().getBuckets();
-    }
+    public static String PRIVATE_KEY = "GuUHQ086WawbwvVl3JPl9JIk4VOtLcllkvIb0b7w";
 
-    public List<S3Bucket> getBuckets() {
-        List<S3Bucket> result = new ArrayList<S3Bucket>();
+    public static String HOST = "https://s3.amazonaws.com/";
 
-        // Fetch a resource: an XML document with our list of buckets
-        Response response = handleAuthorized(Method.GET, HOST);
-        DomRepresentation document = response.getEntityAsDom();
-
-        // Use XPath to find the bucket names
-        for (Node node : document.getNodes("//Bucket/Name")) {
-            result.add(new S3Bucket(node.getTextContent()));
-        }
-
-        return result;
+    public static Response handleAuthorized(Method method, String uri) {
+        // Send an authenticated request
+        Request request = new Request(method, HOST);
+        request.setChallengeResponse(new ChallengeResponse(
+                ChallengeScheme.HTTP_AWS, PUBLIC_KEY, PRIVATE_KEY));
+        return new Client(Protocol.HTTPS).handle(request);
     }
 }

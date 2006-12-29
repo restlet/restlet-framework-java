@@ -21,15 +21,9 @@ package com.noelios.restlet.example.book.ch3;
 import java.util.ArrayList;
 import java.util.List;
 
-import org.restlet.Client;
-import org.restlet.data.ChallengeResponse;
-import org.restlet.data.ChallengeScheme;
 import org.restlet.data.Method;
-import org.restlet.data.Protocol;
-import org.restlet.data.Request;
 import org.restlet.data.Response;
 import org.restlet.resource.DomRepresentation;
-import org.restlet.resource.SaxRepresentation;
 import org.w3c.dom.Node;
 
 /**
@@ -37,9 +31,11 @@ import org.w3c.dom.Node;
  * 
  * @author Jerome Louvel (contact@noelios.com)
  */
-public class S3Bucket {
+public class S3Bucket extends S3Authorized {
 
     private String name;
+
+    private boolean truncated;
 
     public S3Bucket(String name) {
         this.name = name;
@@ -50,7 +46,7 @@ public class S3Bucket {
      * stores an object in the database.
      */
     public void save() {
-
+        handleAuthorized(Method.PUT, getUri());
     }
 
     /**
@@ -58,7 +54,7 @@ public class S3Bucket {
      * bucket is empty.
      */
     public void delete() {
-
+        handleAuthorized(Method.DELETE, getUri());
     }
 
     /**
@@ -73,42 +69,48 @@ public class S3Bucket {
      * 
      * @return The objects in this nucket.
      */
-    public List<S3Object> getObjects() {
+    public List<S3Object> getObjects(String prefix, String marker,
+            String delimiter, Integer maxKeys) {
         List<S3Object> result = new ArrayList<S3Object>();
 
+        // Construct the request URI by appending optional listing keys
         StringBuilder uri = new StringBuilder().append(getUri());
         String suffix = "?";
-
-        // options.each do |param, value|
-        // if GET_OPTIONS.member? :param
-        // uri << suffix << param.to_s << '=' << value
-        // suffix = '&'
-        // end
-        // end
-
-        // there_are_more = REXML::XPath.first(doc, "//IsTruncated").text ==
-        // "true"
-        // objects = []
-        // REXML::XPath.each(doc, "//Contents/Key") do |e|
-        // objects << Object.new(self, e.text) if e.text
-        // end
-        // return objects, there_are_more
-        // end
-        // GET_OPTIONS = [:Prefix, :Marker, :Delimiter, :MaxKeys]
-
-        // Create a authenticated request
-        Request request = new Request(Method.GET, uri.toString());
-        request.setChallengeResponse(new ChallengeResponse(
-                ChallengeScheme.HTTP_AWS, S3App.PUBLIC_KEY, S3App.PRIVATE_KEY));
+        if (prefix != null) {
+            uri.append(suffix).append("prefix=").append(prefix);
+            suffix = "&";
+        }
+        if (marker != null) {
+            uri.append(suffix).append("marker=").append(marker);
+            suffix = "&";
+        }
+        if (delimiter != null) {
+            uri.append(suffix).append("delimiter=").append(delimiter);
+            suffix = "&";
+        }
+        if (maxKeys != null) {
+            uri.append(suffix).append("maxKeys=").append(maxKeys);
+            suffix = "&";
+        }
 
         // Make the request and parse the document.
-        Response response = new Client(Protocol.HTTPS).handle(request);
+        Response response = handleAuthorized(Method.GET, uri.toString());
         DomRepresentation document = response.getEntityAsDom();
-        for (Node node : document.getNodes("//Bucket/Name")) {
-            // result.add(new S3Bucket(node.getTextContent()));
+
+        // Update the truncated flag
+        this.truncated = document.getNodes("//IsTruncated").get(0)
+                .getTextContent().equals("true");
+
+        // Browse the list of object keys
+        for (Node node : document.getNodes("//Contents/Key")) {
+            result.add(new S3Object(this, node.getTextContent()));
         }
 
         return result;
+    }
+
+    public boolean isTruncated() {
+        return this.truncated;
     }
 
     public String getUri() {
