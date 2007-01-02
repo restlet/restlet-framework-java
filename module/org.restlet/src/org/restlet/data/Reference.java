@@ -33,21 +33,21 @@ import java.util.logging.Logger;
  * conforms to the RFC 3986 specifying URIs and follow its naming conventions.<br/>
  * 
  * <pre>
- *        URI reference        = absolute-reference | relative-reference
- *     
- *        absolute-reference   = scheme &quot;:&quot; scheme-specific-part [ &quot;#&quot; fragment ]
- *        scheme-specific-part = ( hierarchical-part [ &quot;?&quot; query ] ) | opaque-part
- *        hierarchical-part    = ( &quot;//&quot; authority path-abempty ) | path-absolute | path-rootless | path-empty
- *        authority            = [ user-info &quot;@&quot; ] host-domain [ &quot;:&quot; host-port ]
- *                                       
- *        relative-reference   = relative-part [ &quot;?&quot; query ] [ &quot;#&quot; fragment ]
- *        relative-part        = ( &quot;//&quot; authority path-abempty ) | path-absolute | path-noscheme | path-empty
- *                                       
- *        path-abempty         = begins with &quot;/&quot; or is empty
- *        path-absolute        = begins with &quot;/&quot; but not &quot;//&quot;
- *        path-noscheme        = begins with a non-colon segment
- *        path-rootless        = begins with a segment
- *        path-empty           = zero characters
+ *          URI reference        = absolute-reference | relative-reference
+ *       
+ *          absolute-reference   = scheme &quot;:&quot; scheme-specific-part [ &quot;#&quot; fragment ]
+ *          scheme-specific-part = ( hierarchical-part [ &quot;?&quot; query ] ) | opaque-part
+ *          hierarchical-part    = ( &quot;//&quot; authority path-abempty ) | path-absolute | path-rootless | path-empty
+ *          authority            = [ user-info &quot;@&quot; ] host-domain [ &quot;:&quot; host-port ]
+ *                                         
+ *          relative-reference   = relative-part [ &quot;?&quot; query ] [ &quot;#&quot; fragment ]
+ *          relative-part        = ( &quot;//&quot; authority path-abempty ) | path-absolute | path-noscheme | path-empty
+ *                                         
+ *          path-abempty         = begins with &quot;/&quot; or is empty
+ *          path-absolute        = begins with &quot;/&quot; but not &quot;//&quot;
+ *          path-noscheme        = begins with a non-colon segment
+ *          path-rootless        = begins with a segment
+ *          path-empty           = zero characters
  * </pre>
  * 
  * Note that this class doesn't encode or decode the reserved characters. It
@@ -121,7 +121,7 @@ public class Reference {
      * @param query
      *            The optional query component for hierarchical identifiers.
      * @param fragment
-     *            The optionale fragment identifier.
+     *            The optional fragment identifier.
      */
     public static String toString(String scheme, String hostName,
             Integer hostPort, String path, String query, String fragment) {
@@ -146,7 +146,7 @@ public class Reference {
      * @param query
      *            The optional query component for hierarchical identifiers.
      * @param fragment
-     *            The optionale fragment identifier.
+     *            The optional fragment identifier.
      */
     public static String toString(String relativePart, String query,
             String fragment) {
@@ -183,7 +183,7 @@ public class Reference {
      * @param query
      *            The optional query component for hierarchical identifiers.
      * @param fragment
-     *            The optionale fragment identifier.
+     *            The optional fragment identifier.
      */
     public static String toString(String scheme, String host, String path,
             String query, String fragment) {
@@ -270,7 +270,7 @@ public class Reference {
      * @param query
      *            The optional query component for hierarchical identifiers.
      * @param fragment
-     *            The optionale fragment identifier.
+     *            The optional fragment identifier.
      */
     public Reference(Reference baseRef, String relativePart, String query,
             String fragment) {
@@ -313,7 +313,7 @@ public class Reference {
      * @param query
      *            The optional query component for hierarchical identifiers.
      * @param fragment
-     *            The optionale fragment identifier.
+     *            The optional fragment identifier.
      */
     public Reference(String scheme, String hostName, int hostPort, String path,
             String query, String fragment) {
@@ -839,9 +839,8 @@ public class Reference {
                         }
                     }
                 } else {
-                    // We found a junction point,
-                    // we need to add enough ".." in the relative path
-                    // and append the rest of the local path
+                    // We found a junction point, we need to add enough ".." in
+                    // the relative path and append the rest of the local path
                     // the local path is a direct subpath of the base path
                     StringBuilder sb = new StringBuilder();
                     boolean canAdd = false;
@@ -1202,12 +1201,10 @@ public class Reference {
                 input.delete(1, 2);
             }
 
-            // C. if the input buffer begins with a prefix of "/../" or
-            // "/..",
-            // where ".." is a complete path segment, then replace that
-            // prefix with "/" in the input buffer and remove the last
-            // segment and its preceding "/" (if any) from the output
-            // buffer; otherwise,
+            // C. if the input buffer begins with a prefix of "/../" or "/..",
+            // where ".." is a complete path segment, then replace that prefix
+            // with "/" in the input buffer and remove the last segment and its
+            // preceding "/" (if any) from the output buffer; otherwise,
             else if ((input.length() >= 4)
                     && input.substring(0, 4).equals("/../")) {
                 input.delete(0, 3);
@@ -1218,8 +1215,7 @@ public class Reference {
                 removeLastSegment(output);
             }
 
-            // D. if the input buffer consists only of "." or "..", then
-            // remove
+            // D. if the input buffer consists only of "." or "..", then remove
             // that from the input buffer; otherwise,
             else if ((input.length() == 1) && input.substring(0, 1).equals(".")) {
                 input.delete(0, 1);
@@ -1228,11 +1224,10 @@ public class Reference {
                 input.delete(0, 2);
             }
 
-            // E. move the first path segment in the input buffer to the end
-            // of
-            // the output buffer, including the initial "/" character (if
-            // any) and any subsequent characters up to, but not including,
-            // the next "/" character or the end of the input buffer.
+            // E. move the first path segment in the input buffer to the end of
+            // the output buffer, including the initial "/" character (if any)
+            // and any subsequent characters up to, but not including, the next
+            // "/" character or the end of the input buffer.
             else {
                 int max = -1;
                 for (int i = 1; (max == -1) && (i < input.length()); i++) {
@@ -1796,7 +1791,11 @@ public class Reference {
                 if (queryIndex != -1) {
                     return this.internalRef.substring(0, queryIndex);
                 } else {
-                    return this.internalRef;
+                    if (fragmentIndex != -1) {
+                        return this.internalRef.substring(0, fragmentIndex);
+                    } else {
+                        return this.internalRef;
+                    }
                 }
             }
         }
@@ -1812,9 +1811,8 @@ public class Reference {
 
             if ((firstSlashIndex != -1) && (this.schemeIndex > firstSlashIndex)) {
                 // We are in the rare case of a relative reference where one of
-                // the path segments
-                // contains a colon character. In this case, we ignore the colon
-                // as a valid scheme index.
+                // the path segments contains a colon character. In this case,
+                // we ignore the colon as a valid scheme index.
                 // Note that this colon can't be in the first segment as it is
                 // forbidden by the URI RFC.
                 this.schemeIndex = -1;
@@ -1822,11 +1820,15 @@ public class Reference {
 
             this.queryIndex = this.internalRef.indexOf('?');
             this.fragmentIndex = this.internalRef.indexOf('#');
+            if ((this.queryIndex != -1) && (this.fragmentIndex != -1)
+                    && (this.queryIndex > this.fragmentIndex)) {
+                // Query sign inside fragment
+                this.queryIndex = -1;
+            }
         } else {
             this.schemeIndex = -1;
             this.queryIndex = -1;
             this.fragmentIndex = -1;
         }
     }
-
 }
