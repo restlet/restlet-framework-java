@@ -3,7 +3,13 @@
 Changes log  
 ===========
 
+@version-full@ (@release-date@)
+[Bugs fixed]
+ - Fixed bug with the directory listing generation in the method "getVariants" of class DirectoryResource. 
+   Contributed by Sean Landis.
 
+
+1.0 RC2 (2006-12-29)
 @version-full@ (@release-date@)
 [Bugs fixed]
  - Fixed minor bug with the URI parsing (query sign "?" inside fragment). 
