@@ -215,7 +215,7 @@ public class Router extends Restlet {
 
     /**
      * Returns the default route to test if no other one was available after
-     * retying the maximum number of attemps.
+     * retrying the maximum number of attemps.
      * 
      * @return The default route tested if no other one was available.
      */
