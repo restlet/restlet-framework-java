@@ -1022,7 +1022,7 @@ public class Template {
     }
 
     /**
-     * Attempts to parse a formatted reference. If the parsing suceeds, the
+     * Attempts to parse a formatted reference. If the parsing succeeds, the
      * given request's attributes are updated.
      * 
      * @param formattedString
