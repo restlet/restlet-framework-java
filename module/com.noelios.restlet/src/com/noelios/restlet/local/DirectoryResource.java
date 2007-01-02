@@ -433,10 +433,15 @@ public class DirectoryResource extends Resource {
                     // Set the list identifier
                     userList.setIdentifier(baseRef);
 
-                    String filePath;
                     for (Reference ref : this.directoryContent) {
-                        filePath = ref.toString(false, false).substring(
+                        String filePart = ref.toString(false, false).substring(
                                 rootLength);
+                        StringBuilder filePath = new StringBuilder();
+                        if ((!baseRef.endsWith("/"))
+                                && (!filePart.startsWith("/"))) {
+                            filePath.append('/');
+                        }
+                        filePath.append(filePart);
                         userList.add(baseRef + filePath);
                     }
 
