@@ -187,6 +187,28 @@ public class ReferenceTestCase extends RestletTestCase {
         testRef2(base, uri120, uri20);
         testRef2(base, uri121, uri21);
         testRef2(base, uri123, uri23);
+        
+        // Test the toString method with or without query/fragment
+        testRef3("http://localhost/path#fragment", true, true, "http://localhost/path#fragment");
+        testRef3("http://localhost/path#fragment", true, false, "http://localhost/path");
+        testRef3("http://localhost/path#fragment", false, true, "http://localhost/path#fragment");
+        testRef3("http://localhost/path#fragment", false, false, "http://localhost/path");
+
+        testRef3("http://localhost/path?query", true, true, "http://localhost/path?query");
+        testRef3("http://localhost/path?query", true, false, "http://localhost/path?query");
+        testRef3("http://localhost/path?query", false, true, "http://localhost/path");
+        testRef3("http://localhost/path?query", false, false, "http://localhost/path");
+
+        testRef3("http://localhost/path?query#fragment", true, true, "http://localhost/path?query#fragment");
+        testRef3("http://localhost/path?query#fragment", true, false, "http://localhost/path?query");
+        testRef3("http://localhost/path?query#fragment", false, true, "http://localhost/path#fragment");
+        testRef3("http://localhost/path?query#fragment", false, false, "http://localhost/path");
+
+        testRef3("http://localhost/path#fragment?query", true, true, "http://localhost/path#fragment?query");
+        testRef3("http://localhost/path#fragment?query", true, false, "http://localhost/path");
+        testRef3("http://localhost/path#fragment?query", false, true, "http://localhost/path#fragment?query");
+        testRef3("http://localhost/path#fragment?query", false, false, "http://localhost/path");
+        
     }
 
     /**
@@ -237,6 +259,19 @@ public class ReferenceTestCase extends RestletTestCase {
         Reference absoluteRef = new Reference(absoluteUri);
         Reference relativeRef = absoluteRef.getRelativeRef(baseRef);
         assertEquals(expectedRelativeUri, relativeRef.toString());
+    }
+
+    /**
+     * Test the toString method with or without query/fragment
+     * 
+     * @param reference
+     * @param query
+     * @param fragment
+     * @param toString
+     */
+    private void testRef3(String reference, boolean query, boolean fragment, String toString) {
+        Reference ref = new Reference(reference);
+        assertEquals(ref.toString(query, fragment), toString);
     }
 
     /**
