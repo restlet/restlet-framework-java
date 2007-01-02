@@ -35,7 +35,7 @@ public class SimpleClient {
         // Prepare the REST call.
         Request request = new Request();
 
-        // Identify oursevles.
+        // Identify ourselves.
         request.setReferrerRef("http://www.foo.com/");
 
         // Target resource.
