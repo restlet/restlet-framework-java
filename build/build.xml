@@ -1,7 +1,7 @@
 <?xml version="1.0"?>
 
 <!-- ========================================================
-     Restlet build file  -  Copyright 2005-2006 Jerome LOUVEL
+     Restlet build file  -  Copyright 2005-2007 Jerome LOUVEL
      ======================================================== -->
 
 <project name="Restlet" default="all">
@@ -935,7 +935,7 @@
 			</sourcepath>
 
 			<bottom>
-				<![CDATA[<i>Copyright &#169; 2005-2006 J&eacute;r&ocirc;me Louvel. Restlet is a trademark and service mark of <a target="_top" href="http://www.noelios.com">Noelios Consulting</a>.</i>]]>
+				<![CDATA[<i>Copyright &#169; 2005-2007 J&eacute;r&ocirc;me Louvel. Restlet is a trademark and service mark of <a target="_top" href="http://www.noelios.com">Noelios Consulting</a>.</i>]]>
 			</bottom>
 
 			<group title="${restlet-api}">
@@ -975,7 +975,7 @@
 			</sourcepath>
 
 			<bottom>
-				<![CDATA[<i>Copyright &#169; 2005-2006 J&eacute;r&ocirc;me Louvel. Restlet is a trademark and service mark of <a target="_top" href="http://www.noelios.com">Noelios Consulting</a>.</i>]]>
+				<![CDATA[<i>Copyright &#169; 2005-2007 J&eacute;r&ocirc;me Louvel. Restlet is a trademark and service mark of <a target="_top" href="http://www.noelios.com">Noelios Consulting</a>.</i>]]>
 			</bottom>
 
 			<group title="${restlet-ext}">
@@ -1016,7 +1016,7 @@
 			</sourcepath>
 	
 			<bottom>
-				<![CDATA[<i>Copyright &#169; 2005-2006 J&eacute;r&ocirc;me Louvel. Restlet is a trademark and service mark of <a target="_top" href="http://www.noelios.com">Noelios Consulting</a>.</i>]]>
+				<![CDATA[<i>Copyright &#169; 2005-2007 J&eacute;r&ocirc;me Louvel. Restlet is a trademark and service mark of <a target="_top" href="http://www.noelios.com">Noelios Consulting</a>.</i>]]>
 			</bottom>
 	
 			<group title="${restlet-nre-impl}">
