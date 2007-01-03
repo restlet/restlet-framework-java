@@ -30,6 +30,9 @@ Changes log
  - Added MediaType.equals(Object, boolean ignoreParameters) to allow comparison without
    taking into account the parameters (useful for multipart forms for example, because
    they have a varying "boundary" parameter. Reported by Randy Layman.
+ - The character set of request entities is now parsed and set. 
+ - PreferenceReader class (used for entity metadata headers parsing) now attempts to reuse 
+   constants (MediaType, CharacterSet, etc.) when possible. Suggested by Randy Layman.
  
 [Enhancements] 
  - The Ant script now check Ant's version and recommend upgrade to at least 1.7 for

@@ -26,6 +26,7 @@ import java.nio.channels.WritableByteChannel;
 import java.util.logging.Logger;
 
 import org.restlet.Server;
+import org.restlet.data.CharacterSet;
 import org.restlet.data.Encoding;
 import org.restlet.data.Language;
 import org.restlet.data.MediaType;
@@ -106,19 +107,26 @@ public abstract class HttpServerCall extends HttpCall {
             // Extract the header values
             Encoding contentEncoding = null;
             Language contentLanguage = null;
-            MediaType contentType = null;
+            MediaType contentMediaType = null;
+            CharacterSet contentCharacterSet = null;
             long contentLength = -1L;
 
             for (Parameter header : getRequestHeaders()) {
                 if (header.getName().equalsIgnoreCase(
                         HttpConstants.HEADER_CONTENT_ENCODING)) {
-                    contentEncoding = new Encoding(header.getValue());
+                    contentEncoding = Encoding.valueOf(header.getValue());
                 } else if (header.getName().equalsIgnoreCase(
                         HttpConstants.HEADER_CONTENT_LANGUAGE)) {
-                    contentLanguage = new Language(header.getValue());
+                    contentLanguage = Language.valueOf(header.getValue());
                 } else if (header.getName().equalsIgnoreCase(
                         HttpConstants.HEADER_CONTENT_TYPE)) {
-                    contentType = new MediaType(header.getValue());
+                    ContentType contentType = new ContentType(header.getValue());
+                    if (contentType != null) {
+                        contentMediaType = contentType.getMediaType();
+                        contentCharacterSet = contentType.getCharacterSet();
+                    }
+
+                    contentMediaType = MediaType.valueOf(header.getValue());
                 } else if (header.getName().equalsIgnoreCase(
                         HttpConstants.HEADER_CONTENT_LENGTH)) {
                     contentLength = Long.parseLong(header.getValue());
@@ -126,16 +134,17 @@ public abstract class HttpServerCall extends HttpCall {
             }
 
             if (requestStream != null) {
-                result = new InputRepresentation(requestStream, contentType,
-                        contentLength);
+                result = new InputRepresentation(requestStream,
+                        contentMediaType, contentLength);
             } else if (requestChannel != null) {
                 result = new ReadableRepresentation(requestChannel,
-                        contentType, contentLength);
+                        contentMediaType, contentLength);
             }
 
             if (result != null) {
                 result.setEncoding(contentEncoding);
                 result.setLanguage(contentLanguage);
+                result.setCharacterSet(contentCharacterSet);
             }
         }
 

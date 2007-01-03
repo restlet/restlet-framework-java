@@ -46,7 +46,7 @@ public class ContentType {
      * Constructor.
      * 
      * @param headerValue
-     *            The content-type header to parse.
+     *            The "Content-type" header to parse.
      */
     public ContentType(String headerValue) {
         try {

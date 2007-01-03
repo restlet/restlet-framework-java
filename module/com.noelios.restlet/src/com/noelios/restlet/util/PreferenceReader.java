@@ -182,7 +182,8 @@ public class PreferenceReader<T extends Metadata> extends HeaderReader {
 
                         while ((!done) && (nextChar != -1)) {
                             nextChar = (nextIndex < nextValue.length()) ? nextValue
-                                    .charAt(nextIndex++) : -1;
+                                    .charAt(nextIndex++)
+                                    : -1;
 
                             if (quotedPair) {
                                 // End of quoted pair (escape sequence)
@@ -303,19 +304,20 @@ public class PreferenceReader<T extends Metadata> extends HeaderReader {
 
             switch (type) {
             case TYPE_CHARACTER_SET:
-                result.setMetadata((T) new CharacterSet(metadata.toString()));
+                result.setMetadata((T) CharacterSet
+                        .valueOf(metadata.toString()));
                 break;
 
             case TYPE_ENCODING:
-                result.setMetadata((T) new Encoding(metadata.toString()));
+                result.setMetadata((T) Encoding.valueOf(metadata.toString()));
                 break;
 
             case TYPE_LANGUAGE:
-                result.setMetadata((T) new Language(metadata.toString()));
+                result.setMetadata((T) Language.valueOf(metadata.toString()));
                 break;
 
             case TYPE_MEDIA_TYPE:
-                result.setMetadata((T) new MediaType(metadata.toString()));
+                result.setMetadata((T) MediaType.valueOf(metadata.toString()));
                 break;
             }
         } else {
