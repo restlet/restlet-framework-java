@@ -38,6 +38,7 @@ Changes log
  - The Ant script now check Ant's version and recommend upgrade to at least 1.7 for
    better integration with JUnit. Suggested by Dave Pawson.
  - Updated Jetty to 6.1 RC3.
+ - Slighty clarified the warning message for missing connectors. Suggested by Dave Pawson.
  
 1.0 RC1 (2006-12-26)
 [Bugs fixed]

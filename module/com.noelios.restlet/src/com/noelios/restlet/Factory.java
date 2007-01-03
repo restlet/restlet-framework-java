@@ -270,28 +270,45 @@ public class Factory extends org.restlet.util.Factory {
      * @return The new helper.
      */
     public Helper createHelper(Client client) {
-        for (ConnectorHelper registeredClient : getRegisteredClients()) {
-            if (registeredClient.getProtocols().containsAll(
-                    client.getProtocols())) {
-                try {
-                    return registeredClient.getClass().getConstructor(
-                            Client.class).newInstance(client);
-                } catch (Exception e) {
-                    logger
-                            .log(
-                                    Level.SEVERE,
-                                    "Exception while instantiation the client connector.",
-                                    e);
+        Helper result = null;
+
+        if (client.getProtocols().size() > 0) {
+            for (ConnectorHelper connector : getRegisteredClients()) {
+                if (connector.getProtocols().containsAll(client.getProtocols())) {
+                    try {
+                        return connector.getClass()
+                                .getConstructor(Client.class).newInstance(
+                                        client);
+                    } catch (Exception e) {
+                        logger
+                                .log(
+                                        Level.SEVERE,
+                                        "Exception while instantiation the client connector.",
+                                        e);
+                    }
+
+                    result = connector;
+                }
+            }
+
+            if (result == null) {
+                // Couldn't find a matching connector
+                StringBuilder sb = new StringBuilder();
+                sb
+                        .append("No available client connector supports the required protocols: ");
+
+                for (Protocol p : client.getProtocols()) {
+                    sb.append(p.getName()).append(" ");
                 }
 
-                return registeredClient;
+                sb
+                        .append(". Please add the JAR of a matching connector to your classpath.");
+
+                logger.log(Level.WARNING, sb.toString());
             }
         }
 
-        logger.log(Level.WARNING,
-                "No available client connector supports the required protocols: "
-                        + client.getProtocols());
-        return null;
+        return result;
     }
 
     /**
@@ -316,11 +333,10 @@ public class Factory extends org.restlet.util.Factory {
         Helper result = null;
 
         if (server.getProtocols().size() > 0) {
-            for (ConnectorHelper registeredServer : getRegisteredServers()) {
-                if (registeredServer.getProtocols().containsAll(
-                        server.getProtocols())) {
+            for (ConnectorHelper connector : getRegisteredServers()) {
+                if (connector.getProtocols().containsAll(server.getProtocols())) {
                     try {
-                        result = registeredServer.getClass().getConstructor(
+                        result = connector.getClass().getConstructor(
                                 Server.class).newInstance(server);
                     } catch (Exception e) {
                         logger
@@ -341,6 +357,9 @@ public class Factory extends org.restlet.util.Factory {
                 for (Protocol p : server.getProtocols()) {
                     sb.append(p.getName()).append(" ");
                 }
+
+                sb
+                        .append(". Please add the JAR of a matching connector to your classpath.");
 
                 logger.log(Level.WARNING, sb.toString());
             }
