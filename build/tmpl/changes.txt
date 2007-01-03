@@ -5,16 +5,11 @@ Changes log
 
 @version-full@ (@release-date@)
 [Bugs fixed]
- - Fixed bug with the directory listing generation in the method "getVariants" of class DirectoryResource. 
-   Contributed by Sean Landis.
-
-
-1.0 RC2 (2006-12-29)
-@version-full@ (@release-date@)
-[Bugs fixed]
  - Fixed minor bug with the URI parsing (query sign "?" inside fragment). 
    Contributed by Thierry Boileau.
  - Fixed bug in the dynamic invocation of custom handle*() methods in the Handler class.
+ - Fixed bug with the directory listing generation in the method "getVariants" of class DirectoryResource. 
+   Contributed by Sean Landis.
 
 [API changes]
  - Added an XmlRepresentation, super class of DomRepresentation and SaxRepresentation
@@ -34,6 +29,7 @@ Changes log
 [Enhancements] 
  - The Ant script now check Ant's version and recommend upgrade to at least 1.7 for
    better integration with JUnit. Suggested by Dave Pawson.
+ - Updated Jetty to 6.1 RC3.
  
 1.0 RC1 (2006-12-26)
 [Bugs fixed]
