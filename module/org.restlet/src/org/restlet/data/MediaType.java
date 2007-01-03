@@ -351,7 +351,8 @@ public final class MediaType extends Metadata {
      * @param description
      *            The description.
      */
-    public MediaType(String name, Series<Parameter> parameters, String description) {
+    public MediaType(String name, Series<Parameter> parameters,
+            String description) {
         super((name == null) ? null : name, description);
         this.parameters = parameters;
     }
@@ -371,6 +372,20 @@ public final class MediaType extends Metadata {
     /** {@inheritDoc} */
     @Override
     public boolean equals(Object obj) {
+        return equals(obj, false);
+    }
+
+    /**
+     * Test the equality of two media type, with the possibility to ignore the
+     * parameters.
+     * 
+     * @param obj
+     *            The object to compare to.
+     * @param ignoreParameters
+     *            Indicates if parameters should be ignored during comparison.
+     * @return True if both media types are equal.
+     */
+    public boolean equals(Object obj, boolean ignoreParameters) {
         boolean result = (obj == this);
 
         // if obj == this no need to go further
@@ -380,7 +395,9 @@ public final class MediaType extends Metadata {
                 // if obj isn't a mediatype or is null don't evaluate further
                 if ((obj instanceof MediaType) && obj != null) {
                     MediaType that = (MediaType) obj;
-                    result = (this.getParameters().equals(that.getParameters()));
+                    result = !ignoreParameters
+                            && (this.getParameters().equals(that
+                                    .getParameters()));
                 }
             }
         }

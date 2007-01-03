@@ -26,7 +26,10 @@ Changes log
    representation (instance of Representation class). Suggested by Sumit Lohia.
  - Renamed Representation.getValue() into getText() to be more precise about intent.
  - Handler.handle() now set the response status to 404 (Not Found) only if the target
-   resource is null *and* if the response status is a success.
+   resource is null *and* if the response status is a success. Reported by Chris Battey.
+ - Added MediaType.equals(Object, boolean ignoreParameters) to allow comparison without
+   taking into account the parameters (useful for multipart forms for example, because
+   they have a varying "boundary" parameter. Reported by Randy Layman.
  
 [Enhancements] 
  - The Ant script now check Ant's version and recommend upgrade to at least 1.7 for
