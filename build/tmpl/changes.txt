@@ -25,6 +25,8 @@ Changes log
    for a variant. By default, it will return 'variant' in case it is already a  
    representation (instance of Representation class). Suggested by Sumit Lohia.
  - Renamed Representation.getValue() into getText() to be more precise about intent.
+ - Handler.handle() now set the response status to 404 (Not Found) only if the target
+   resource is null *and* if the response status is a success.
  
 [Enhancements] 
  - The Ant script now check Ant's version and recommend upgrade to at least 1.7 for

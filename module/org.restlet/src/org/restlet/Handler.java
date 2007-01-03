@@ -315,7 +315,10 @@ public abstract class Handler extends Restlet {
         if (isStarted()) {
             Resource target = findTarget(request, response);
 
-            if (target == null) {
+            if ((target == null) && response.getStatus().isSuccess()) {
+                // If the currrent status is a success but we couldn't find the
+                // target resource for the request's resource URI, then we set
+                // the response status to 404 (Not Found).
                 response.setStatus(Status.CLIENT_ERROR_NOT_FOUND);
             } else {
                 Method method = request.getMethod();
