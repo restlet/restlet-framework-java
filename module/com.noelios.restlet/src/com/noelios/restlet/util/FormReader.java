@@ -28,6 +28,7 @@ import java.util.Map;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
+import org.restlet.data.CharacterSet;
 import org.restlet.data.Form;
 import org.restlet.data.Parameter;
 import org.restlet.resource.Representation;
@@ -45,8 +46,12 @@ public class FormReader {
     /** The logger to use. */
     private Logger logger;
 
+    /** The encoding to use. */
+    private CharacterSet characterSet;
+
     /**
-     * Constructor.
+     * Constructor.<br/>In case the representation does not define a character
+     * set, the UTF-8 character set is used.
      * 
      * @param logger
      *            The logger.
@@ -57,6 +62,11 @@ public class FormReader {
             throws IOException {
         this.logger = logger;
         this.stream = representation.getStream();
+        if (representation.getCharacterSet() != null) {
+            this.characterSet = representation.getCharacterSet();
+        } else {
+            this.characterSet = CharacterSet.UTF_8;
+        }
     }
 
     /**
@@ -66,10 +76,32 @@ public class FormReader {
      *            The logger.
      * @param query
      *            The query string.
+     * @deprecated Use the FormReader(Logger,String,CharacterSet) constructor to
+     *             specify the encoding.
      */
+    @Deprecated
     public FormReader(Logger logger, String query) throws IOException {
         this.logger = logger;
         this.stream = new ByteArrayInputStream(query.getBytes());
+        this.characterSet = CharacterSet.UTF_8;
+
+    }
+
+    /**
+     * Constructor.
+     * 
+     * @param logger
+     *            The logger.
+     * @param query
+     *            The query string.
+     * @param characterSet
+     *            The supported character encoding.
+     */
+    public FormReader(Logger logger, String query, CharacterSet characterSet)
+            throws IOException {
+        this.logger = logger;
+        this.stream = new ByteArrayInputStream(query.getBytes());
+        this.characterSet = characterSet;
     }
 
     /**
@@ -185,8 +217,7 @@ public class FormReader {
                     }
                 } else {
                     if (param.getValue() == null) {
-                        parameters.put(param.getName(),
-                                Series.EMPTY_VALUE);
+                        parameters.put(param.getName(), Series.EMPTY_VALUE);
                     } else {
                         parameters.put(param.getName(), param.getValue());
                     }
@@ -228,7 +259,8 @@ public class FormReader {
                         }
                     } else if ((nextChar == '&') || (nextChar == -1)) {
                         if (nameBuffer.length() > 0) {
-                            result = FormUtils.create(nameBuffer, null);
+                            result = FormUtils.create(nameBuffer, null,
+                                    characterSet);
                         } else if (nextChar == -1) {
                             // Do nothing return null preference
                         } else {
@@ -241,9 +273,11 @@ public class FormReader {
                 } else if (readingValue) {
                     if ((nextChar == '&') || (nextChar == -1)) {
                         if (valueBuffer.length() > 0) {
-                            result = FormUtils.create(nameBuffer, valueBuffer);
+                            result = FormUtils.create(nameBuffer, valueBuffer,
+                                    characterSet);
                         } else {
-                            result = FormUtils.create(nameBuffer, null);
+                            result = FormUtils.create(nameBuffer, null,
+                                    characterSet);
                         }
                     } else {
                         valueBuffer.append((char) nextChar);

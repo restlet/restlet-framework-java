@@ -35,6 +35,7 @@ import org.restlet.Component;
 import org.restlet.Context;
 import org.restlet.Directory;
 import org.restlet.Server;
+import org.restlet.data.CharacterSet;
 import org.restlet.data.ClientInfo;
 import org.restlet.data.Form;
 import org.restlet.data.Language;
@@ -659,10 +660,30 @@ public class Factory extends org.restlet.util.Factory {
      *            The target form.
      * @param queryString
      *            Query string.
+     * @deprecated Use the parse(Logger,String,CharacterSet) method to specify
+     *             the encoding. This method uses the UTF-8 character set.
      */
+    @Deprecated
     public void parse(Logger logger, Form form, String queryString) {
+        parse(logger, form, queryString, CharacterSet.UTF_8);
+    }
+
+    /**
+     * Parses an URL encoded query string into a given form.
+     * 
+     * @param logger
+     *            The logger to use.
+     * @param form
+     *            The target form.
+     * @param queryString
+     *            Query string.
+     * @param characterSet
+     *            The supported character encoding.
+     */
+    public void parse(Logger logger, Form form, String queryString,
+            CharacterSet characterSet) {
         if ((queryString != null) && !queryString.equals("")) {
-            FormUtils.parseQuery(logger, form, queryString);
+            FormUtils.parseQuery(logger, form, queryString, characterSet);
         }
     }
 

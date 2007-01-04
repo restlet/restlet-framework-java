@@ -20,6 +20,7 @@ package com.noelios.restlet.util;
 
 import java.io.IOException;
 
+import org.restlet.data.CharacterSet;
 import org.restlet.data.Parameter;
 import org.restlet.data.Reference;
 
@@ -118,10 +119,32 @@ public class HeaderUtils {
      * @param destination
      *            The appendable destination.
      * @throws IOException
+     * @deprecated Use the
+     *             appendUriEncoded(CharSequence,Appendable,CharacterSet) method
+     *             to specify the encoding. This method uses the UTF-8 character
+     *             set.
      */
+    @Deprecated
     public static Appendable appendUriEncoded(CharSequence source,
             Appendable destination) throws IOException {
-        destination.append(Reference.encode(source.toString()));
+        return appendUriEncoded(source, destination, CharacterSet.UTF_8);
+    }
+
+    /**
+     * Appends a source string as an URI encoded string.
+     * 
+     * @param source
+     *            The source string to format.
+     * @param destination
+     *            The appendable destination.
+     * @param characterSet
+     *            The supported character encoding.
+     * @throws IOException
+     */
+    public static Appendable appendUriEncoded(CharSequence source,
+            Appendable destination, CharacterSet characterSet)
+            throws IOException {
+        destination.append(Reference.encode(source.toString(), characterSet));
         return destination;
     }
 

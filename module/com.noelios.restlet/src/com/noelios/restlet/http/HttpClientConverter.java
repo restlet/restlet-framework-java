@@ -125,8 +125,8 @@ public class HttpClientConverter extends HttpConverter {
             Series<Parameter> requestHeaders = httpCall.getRequestHeaders();
 
             // Manually add the host name and port when it is potentially
-            // different
-            // from the one specified in the target resource reference.
+            // different from the one specified in the target resource
+            // reference.
             Reference hostRef = (request.getResourceRef().getBaseRef() != null) ? request
                     .getResourceRef().getBaseRef()
                     : request.getResourceRef();

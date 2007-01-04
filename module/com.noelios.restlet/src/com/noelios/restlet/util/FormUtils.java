@@ -23,6 +23,7 @@ import java.util.Map;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
+import org.restlet.data.CharacterSet;
 import org.restlet.data.Form;
 import org.restlet.data.Parameter;
 import org.restlet.data.Reference;
@@ -43,11 +44,32 @@ public class FormUtils {
      *            The target form.
      * @param query
      *            Query string.
+     * @deprecated Use the parseQuery(Logger,Form, String,CharacterSet) method
+     *             to specify the encoding. This method uses the UTF-8 character
+     *             set.
      */
+    @Deprecated
     public static void parseQuery(Logger logger, Form form, String query) {
+        parseQuery(logger, form, query, CharacterSet.UTF_8);
+    }
+
+    /**
+     * Parses a query into a given form.
+     * 
+     * @param logger
+     *            The logger.
+     * @param form
+     *            The target form.
+     * @param query
+     *            Query string.
+     * @param characterSet
+     *            The supported character encoding.
+     */
+    public static void parseQuery(Logger logger, Form form, String query,
+            CharacterSet characterSet) {
         FormReader fr = null;
         try {
-            fr = new FormReader(logger, query);
+            fr = new FormReader(logger, query, characterSet);
         } catch (IOException ioe) {
             if (logger != null)
                 logger
@@ -101,10 +123,34 @@ public class FormUtils {
      *            The query string.
      * @param parameters
      *            The parameters map controlling the reading.
+     * @deprecated Use the getParameters(Logger,String,Map<String,
+     *             Object>,CharacterSet) method to specify the encoding. This
+     *             method uses the UTF-8 character set.
      */
+    @Deprecated
     public static void getParameters(Logger logger, String query,
             Map<String, Object> parameters) throws IOException {
-        new FormReader(logger, query).readParameters(parameters);
+        getParameters(logger, query, parameters, CharacterSet.UTF_8);
+    }
+
+    /**
+     * Reads the parameters whose name is a key in the given map.<br/> If a
+     * matching parameter is found, its value is put in the map.<br/> If
+     * multiple values are found, a list is created and set in the map.
+     * 
+     * @param logger
+     *            The logger.
+     * @param query
+     *            The query string.
+     * @param parameters
+     *            The parameters map controlling the reading.
+     * @param characterSet
+     *            The supported character encoding.
+     */
+    public static void getParameters(Logger logger, String query,
+            Map<String, Object> parameters, CharacterSet characterSet)
+            throws IOException {
+        new FormReader(logger, query, characterSet).readParameters(parameters);
     }
 
     /**
@@ -135,10 +181,34 @@ public class FormUtils {
      *            The parameter name to match.
      * @return The parameter.
      * @throws IOException
+     * @deprecated Use the getFirstParameter(Logger,String,String,CharacterSet)
+     *             method to specify the encoding. This method uses the UTF-8
+     *             character set.
      */
+    @Deprecated
     public static Parameter getFirstParameter(Logger logger, String query,
             String name) throws IOException {
-        return new FormReader(logger, query).readFirstParameter(name);
+        return getFirstParameter(logger, query, name, CharacterSet.UTF_8);
+    }
+
+    /**
+     * Reads the first parameter with the given name.
+     * 
+     * @param logger
+     *            The logger.
+     * @param query
+     *            The query string.
+     * @param name
+     *            The parameter name to match.
+     * @param characterSet
+     *            The supported character encoding.
+     * @return The parameter.
+     * @throws IOException
+     */
+    public static Parameter getFirstParameter(Logger logger, String query,
+            String name, CharacterSet characterSet) throws IOException {
+        return new FormReader(logger, query, characterSet)
+                .readFirstParameter(name);
     }
 
     /**
@@ -169,10 +239,33 @@ public class FormUtils {
      * @param name
      *            The parameter name to match.
      * @return The parameter value or list of values.
+     * @deprecated Use the getParameter(Logger,String,String,CharacterSet)
+     *             method to specify the encoding. This method uses the UTF-8
+     *             character set.
      */
+    @Deprecated
     public static Object getParameter(Logger logger, String query, String name)
             throws IOException {
-        return new FormReader(logger, query).readParameter(name);
+        return getParameter(logger, query, name, CharacterSet.UTF_8);
+    }
+
+    /**
+     * Reads the parameters with the given name.<br/> If multiple values are
+     * found, a list is returned created.
+     * 
+     * @param logger
+     *            The logger.
+     * @param query
+     *            The query string.
+     * @param name
+     *            The parameter name to match.
+     * @param characterSet
+     *            The supported character encoding.
+     * @return The parameter value or list of values.
+     */
+    public static Object getParameter(Logger logger, String query, String name,
+            CharacterSet characterSet) throws IOException {
+        return new FormReader(logger, query, characterSet).readParameter(name);
     }
 
     /**
@@ -199,23 +292,45 @@ public class FormUtils {
      *            The parameter name buffer.
      * @param value
      *            The parameter value buffer (can be null).
+     * @param characterSet
+     *            The supported character encoding.
      * @return The created parameter.
      * @throws IOException
      */
-    public static Parameter create(CharSequence name, CharSequence value)
-            throws IOException {
+    public static Parameter create(CharSequence name, CharSequence value,
+            CharacterSet characterSet) throws IOException {
         Parameter result = null;
 
         if (name != null) {
             if (value != null) {
-                result = new Parameter(Reference.decode(name.toString()),
-                        Reference.decode(value.toString()));
+                result = new Parameter(Reference.decode(name.toString(),
+                        characterSet), Reference.decode(value.toString(),
+                        characterSet));
             } else {
-                result = new Parameter(Reference.decode(name.toString()), null);
+                result = new Parameter(Reference.decode(name.toString(),
+                        characterSet), null);
             }
         }
 
         return result;
+    }
+
+    /**
+     * Creates a parameter.
+     * 
+     * @param name
+     *            The parameter name buffer.
+     * @param value
+     *            The parameter value buffer (can be null).
+     * @return The created parameter.
+     * @throws IOException
+     * @Deprecated Use the create(CharSequence,CharSequence,CharacterSet) method
+     *             instead. This method uses the UTF-8 character set.
+     */
+    @Deprecated
+    public static Parameter create(CharSequence name, CharSequence value)
+            throws IOException {
+        return create(name, value, CharacterSet.UTF_8);
     }
 
 }
