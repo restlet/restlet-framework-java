@@ -22,6 +22,8 @@ import java.io.IOException;
 import java.util.logging.Logger;
 
 import junit.framework.TestCase;
+
+import org.restlet.data.CharacterSet;
 import org.restlet.data.Form;
 
 import com.noelios.restlet.util.FormReader;
@@ -41,10 +43,10 @@ public class FormTestCase extends TestCase {
         form.add("email", "john@bob.net");
         form.add("email2", "joe@bob.net");
 
-        String query = form.urlEncode();
+        String query = form.urlEncode(CharacterSet.UTF_8);
         Form newForm = new FormReader(Logger.getLogger(FormTestCase.class
-                .getCanonicalName()), query).read();
-        String newQuery = newForm.urlEncode();
+                .getCanonicalName()), query, CharacterSet.UTF_8).read();
+        String newQuery = newForm.urlEncode(CharacterSet.UTF_8);
         assertEquals(query, newQuery);
     }
 }

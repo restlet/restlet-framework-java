@@ -24,11 +24,11 @@ import java.util.Date;
 import java.util.List;
 import java.util.logging.Logger;
 
+import junit.framework.TestCase;
+
 import org.restlet.data.Cookie;
 import org.restlet.data.CookieSetting;
 import org.restlet.util.DateUtils;
-
-import junit.framework.TestCase;
 
 import com.noelios.restlet.util.CookieReader;
 import com.noelios.restlet.util.CookieUtils;
