@@ -81,9 +81,28 @@ public class Form extends Series<Parameter> {
      * @param queryString
      *            The Web form parameters as a string.
      * @throws IOException
+     * @deprecated Use the Form(Logger,String,CharacterSet) constructor to
+     *             specify the encoding. This method uses the UTF-8 character
+     *             set.
      */
+    @Deprecated
     public Form(Logger logger, String queryString) {
         Factory.getInstance().parse(logger, this, queryString);
+    }
+
+    /**
+     * Constructor.
+     * 
+     * @param logger
+     *            The logger to use.
+     * @param queryString
+     *            The Web form parameters as a string.
+     * @param characterSet
+     *            The supported character encoding.
+     * @throws IOException
+     */
+    public Form(Logger logger, String queryString, CharacterSet characterSet) {
+        Factory.getInstance().parse(logger, this, queryString, characterSet);
     }
 
     /**
@@ -125,10 +144,24 @@ public class Form extends Series<Parameter> {
      * Formats the form as a query string.
      * 
      * @return The form as a query string.
+     * @deprecated Use the getQueryString(CharacterSet) method to specify the
+     *             encoding. This method uses the UTF-8 character set.
      */
+    @Deprecated
     public String getQueryString() {
+        return getQueryString(CharacterSet.UTF_8);
+    }
+
+    /**
+     * Formats the form as a query string.
+     * 
+     * @param characterSet
+     *            The supported character encoding.
+     * @return The form as a query string.
+     */
+    public String getQueryString(CharacterSet characterSet) {
         try {
-            return urlEncode();
+            return urlEncode(characterSet);
         } catch (IOException ioe) {
             return null;
         }
@@ -139,9 +172,24 @@ public class Form extends Series<Parameter> {
      * (MediaType.APPLICATION_WWW_FORM).
      * 
      * @return The form as a Web representation.
+     * @deprecated Use the getWebRepresentation(CharacterSet) method to specify
+     *             the encoding. This method uses the UTF-8 character set.
      */
+    @Deprecated
     public Representation getWebRepresentation() {
-        return new StringRepresentation(getQueryString(),
+        return getWebRepresentation(CharacterSet.UTF_8);
+    }
+
+    /**
+     * Returns the form as a Web representation
+     * (MediaType.APPLICATION_WWW_FORM).
+     * 
+     * @param characterSet
+     *            The supported character encoding.
+     * @return The form as a Web representation.
+     */
+    public Representation getWebRepresentation(CharacterSet characterSet) {
+        return new StringRepresentation(getQueryString(characterSet),
                 MediaType.APPLICATION_WWW_FORM);
     }
 
@@ -150,13 +198,28 @@ public class Form extends Series<Parameter> {
      * 
      * @return The encoded form.
      * @throws IOException
+     * @deprecated Use the urlEncode(CharacterSet) method to specify the
+     *             encoding. This method uses the UTF-8 character set.
      */
+    @Deprecated
     public String urlEncode() throws IOException {
+        return urlEncode(CharacterSet.UTF_8);
+    }
+
+    /**
+     * URL encodes the form.
+     * 
+     * @param characterSet
+     *            The supported character encoding.
+     * @return The encoded form.
+     * @throws IOException
+     */
+    public String urlEncode(CharacterSet characterSet) throws IOException {
         StringBuilder sb = new StringBuilder();
         for (int i = 0; i < size(); i++) {
             if (i > 0)
                 sb.append('&');
-            get(i).urlEncode(sb);
+            get(i).urlEncode(sb, characterSet);
         }
         return sb.toString();
     }

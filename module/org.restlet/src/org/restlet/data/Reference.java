@@ -33,21 +33,21 @@ import java.util.logging.Logger;
  * conforms to the RFC 3986 specifying URIs and follow its naming conventions.<br/>
  * 
  * <pre>
- *          URI reference        = absolute-reference | relative-reference
- *       
- *          absolute-reference   = scheme &quot;:&quot; scheme-specific-part [ &quot;#&quot; fragment ]
- *          scheme-specific-part = ( hierarchical-part [ &quot;?&quot; query ] ) | opaque-part
- *          hierarchical-part    = ( &quot;//&quot; authority path-abempty ) | path-absolute | path-rootless | path-empty
- *          authority            = [ user-info &quot;@&quot; ] host-domain [ &quot;:&quot; host-port ]
- *                                         
- *          relative-reference   = relative-part [ &quot;?&quot; query ] [ &quot;#&quot; fragment ]
- *          relative-part        = ( &quot;//&quot; authority path-abempty ) | path-absolute | path-noscheme | path-empty
- *                                         
- *          path-abempty         = begins with &quot;/&quot; or is empty
- *          path-absolute        = begins with &quot;/&quot; but not &quot;//&quot;
- *          path-noscheme        = begins with a non-colon segment
- *          path-rootless        = begins with a segment
- *          path-empty           = zero characters
+ *                  URI reference        = absolute-reference | relative-reference
+ *               
+ *                  absolute-reference   = scheme &quot;:&quot; scheme-specific-part [ &quot;#&quot; fragment ]
+ *                  scheme-specific-part = ( hierarchical-part [ &quot;?&quot; query ] ) | opaque-part
+ *                  hierarchical-part    = ( &quot;//&quot; authority path-abempty ) | path-absolute | path-rootless | path-empty
+ *                  authority            = [ user-info &quot;@&quot; ] host-domain [ &quot;:&quot; host-port ]
+ *                                                 
+ *                  relative-reference   = relative-part [ &quot;?&quot; query ] [ &quot;#&quot; fragment ]
+ *                  relative-part        = ( &quot;//&quot; authority path-abempty ) | path-absolute | path-noscheme | path-empty
+ *                                                 
+ *                  path-abempty         = begins with &quot;/&quot; or is empty
+ *                  path-absolute        = begins with &quot;/&quot; but not &quot;//&quot;
+ *                  path-noscheme        = begins with a non-colon segment
+ *                  path-rootless        = begins with a segment
+ *                  path-empty           = zero characters
  * </pre>
  * 
  * Note that this class doesn't encode or decode the reserved characters. It
@@ -59,13 +59,17 @@ import java.util.logging.Logger;
  * @see <a href="http://www.faqs.org/rfcs/rfc3986.html">RFC 3986</a>
  */
 public class Reference {
+
     /**
-     * Dencodes a given string using the standard URI encoding mechanism.
+     * Decodes a given string using the standard URI encoding mechanism.
      * 
      * @param toDecode
      *            The string to decode.
      * @return The decoded string.
+     * @deprecated Use the decode(String,CharacterSet) method to specify the
+     *             encoding. Currently decode with the UTF-8 character set.
      */
+    @Deprecated
     public static String decode(String toDecode) {
         String result = null;
 
@@ -89,7 +93,10 @@ public class Reference {
      * @param toEncode
      *            The string to encode.
      * @return The encoded string.
+     * @deprecated Use the encode(String,CharacterSet) method to specify the
+     *             encoding. Currently encode with the UTF-8 character set.
      */
+    @Deprecated
     public static String encode(String toEncode) {
         String result = null;
 
@@ -101,6 +108,70 @@ public class Reference {
                     .log(
                             Level.WARNING,
                             "Unable to encode the string with the UTF-8 character set.",
+                            uee);
+        }
+
+        return result;
+    }
+
+    /**
+     * Encodes a given string using the standard URI encoding mechanism.
+     * 
+     * <em><strong>Note:</strong> The <a
+     * href="http://www.w3.org/TR/html40/appendix/notes.html#non-ascii-chars">
+     * World Wide Web Consortium Recommendation</a> states that UTF-8 should be
+     * used. Not doing so may introduce incompatibilites.</em>
+     * 
+     * @param toEncode
+     *            The string to encode.
+     * @param characterSet
+     *            The supported character encoding.
+     * @return The encoded string or null if the named character encoding is not
+     *         supported.
+     */
+    public static String encode(String toEncode, CharacterSet characterSet) {
+        String result = null;
+
+        try {
+            result = URLEncoder.encode(toEncode, characterSet.getName());
+        } catch (UnsupportedEncodingException uee) {
+            Logger
+                    .getLogger(Reference.class.getCanonicalName())
+                    .log(
+                            Level.WARNING,
+                            "Unable to encode the string with the UTF-8 character set.",
+                            uee);
+        }
+
+        return result;
+    }
+
+    /**
+     * Decodes a given string using the standard URI encoding mechanism.
+     * 
+     * <em><strong>Note:</strong> The <a
+     * href="http://www.w3.org/TR/html40/appendix/notes.html#non-ascii-chars">
+     * World Wide Web Consortium Recommendation</a> states that UTF-8 should be
+     * used. Not doing so may introduce incompatibilites.</em>
+     * 
+     * @param toDecode
+     *            The string to decode.
+     * @param characterSet
+     *            The name of a supported character encoding.
+     * @return The decoded string or null if the named character encoding is not
+     *         supported.
+     */
+    public static String decode(String toDecode, CharacterSet characterSet) {
+        String result = null;
+
+        try {
+            result = URLDecoder.decode(toDecode, characterSet.getName());
+        } catch (UnsupportedEncodingException uee) {
+            Logger
+                    .getLogger(Reference.class.getCanonicalName())
+                    .log(
+                            Level.WARNING,
+                            "Unable to decode the string with the UTF-8 character set.",
                             uee);
         }
 

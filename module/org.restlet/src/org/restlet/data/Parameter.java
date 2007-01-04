@@ -150,11 +150,12 @@ public class Parameter implements Comparable<Parameter> {
      * 
      * @return The encoded string.
      * @throws IOException
+     * @deprecated Use the urlEncode(CharacterSet) method to specify the
+     *             encoding. This method uses the UTF-8 character set.
      */
+    @Deprecated
     public String urlEncode() throws IOException {
-        StringBuilder sb = new StringBuilder();
-        urlEncode(sb);
-        return sb.toString();
+        return urlEncode(CharacterSet.UTF_8);
     }
 
     /**
@@ -163,14 +164,45 @@ public class Parameter implements Comparable<Parameter> {
      * @param buffer
      *            The buffer to append.
      * @throws IOException
+     * @deprecated Use the urlEncode(Appendable,CharacterSet) method to specify
+     *             the encoding. This method uses the UTF-8 character set.
      */
+    @Deprecated
     public void urlEncode(Appendable buffer) throws IOException {
+        urlEncode(buffer, CharacterSet.UTF_8);
+    }
+
+    /**
+     * Encodes the parameter.
+     * 
+     * @param characterSet
+     *            The supported character encoding.
+     * @return The encoded string.
+     * @throws IOException
+     */
+    public String urlEncode(CharacterSet characterSet) throws IOException {
+        StringBuilder sb = new StringBuilder();
+        urlEncode(sb, characterSet);
+        return sb.toString();
+    }
+
+    /**
+     * Encodes the parameter and append the result to the given buffer.
+     * 
+     * @param buffer
+     *            The buffer to append.
+     * @param characterSet
+     *            The supported character encoding
+     * @throws IOException
+     */
+    public void urlEncode(Appendable buffer, CharacterSet characterSet)
+            throws IOException {
         if (getName() != null) {
-            buffer.append(Reference.encode(getName()));
+            buffer.append(Reference.encode(getName(), characterSet));
 
             if (getValue() != null) {
                 buffer.append('=');
-                buffer.append(Reference.encode(getValue()));
+                buffer.append(Reference.encode(getValue(), characterSet));
             }
         }
     }

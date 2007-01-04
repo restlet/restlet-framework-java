@@ -32,6 +32,7 @@ import org.restlet.Component;
 import org.restlet.Context;
 import org.restlet.Directory;
 import org.restlet.Server;
+import org.restlet.data.CharacterSet;
 import org.restlet.data.ClientInfo;
 import org.restlet.data.Form;
 import org.restlet.data.Request;
@@ -280,7 +281,24 @@ public abstract class Factory {
      *            The target form.
      * @param queryString
      *            Query string.
+     * @deprecated Use the parse(Logger,String,CharacterSet) method to
+     *             specify the encoding.
      */
+    @Deprecated
     public abstract void parse(Logger logger, Form form, String queryString);
+
+    /**
+     * Parses an URL encoded query string into a given form.
+     * 
+     * @param logger
+     *            The logger to use.
+     * @param form
+     *            The target form.
+     * @param queryString
+     *            Query string.
+     * @param characterSet
+     *            The supported character encoding.
+     */
+    public abstract void parse(Logger logger, Form form, String queryString, CharacterSet characterSet);
 
 }
