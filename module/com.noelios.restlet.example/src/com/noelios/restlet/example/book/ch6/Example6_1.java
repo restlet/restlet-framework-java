@@ -19,6 +19,7 @@
 package com.noelios.restlet.example.book.ch6;
 
 import org.restlet.Client;
+import org.restlet.data.CharacterSet;
 import org.restlet.data.Form;
 import org.restlet.data.Protocol;
 import org.restlet.data.Reference;
@@ -35,9 +36,9 @@ public class Example6_1 {
         input.add("password", password);
 
         // Create the target URI, encoding the user name
-        String uri = "https://maps.example.com/user/" + Reference.encode(user);
+        String uri = "https://maps.example.com/user/" + Reference.encode(user, CharacterSet.UTF_8);
 
         // Invoke the web service
-        new Client(Protocol.HTTP).put(uri, input.getWebRepresentation());
+        new Client(Protocol.HTTP).put(uri, input.getWebRepresentation(CharacterSet.UTF_8));
     }
 }

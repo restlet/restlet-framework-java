@@ -19,6 +19,7 @@
 package com.noelios.restlet.example.book.ch2;
 
 import org.restlet.Client;
+import org.restlet.data.CharacterSet;
 import org.restlet.data.Protocol;
 import org.restlet.data.Reference;
 import org.restlet.data.Response;
@@ -38,7 +39,7 @@ public class Example2_1 {
             System.err.println("You need to pass a term to search");
         } else {
             // Fetch a resource: an XML document full of search results
-            String term = Reference.encode(args[0]);
+            String term = Reference.encode(args[0], CharacterSet.UTF_8);
             String uri = BASE_URI + "?appid=restbook&query=" + term;
             Response response = new Client(Protocol.HTTP).get(uri);
             DomRepresentation document = response.getEntityAsDom();

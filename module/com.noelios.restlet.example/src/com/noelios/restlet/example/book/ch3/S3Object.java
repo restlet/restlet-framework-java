@@ -18,6 +18,7 @@
 
 package com.noelios.restlet.example.book.ch3;
 
+import org.restlet.data.CharacterSet;
 import org.restlet.data.Reference;
 import org.restlet.data.Status;
 import org.restlet.resource.Representation;
@@ -79,7 +80,7 @@ public class S3Object extends S3Authorized {
     }
 
     public String getUri() {
-        return getBucket().getUri() + "/" + Reference.encode(getName());
+        return getBucket().getUri() + "/" + Reference.encode(getName(), CharacterSet.UTF_8);
     }
 
     public S3Bucket getBucket() {

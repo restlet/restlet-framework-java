@@ -19,6 +19,7 @@
 package com.noelios.restlet.example.misc;
 
 import org.restlet.Client;
+import org.restlet.data.CharacterSet;
 import org.restlet.data.Form;
 import org.restlet.data.Method;
 import org.restlet.data.Protocol;
@@ -48,7 +49,7 @@ public class SimpleClient {
         form.add("name", "John D. Mitchell");
         form.add("email", "john@bob.net");
         form.add("email2", "joe@bob.net");
-        request.setEntity(form.getWebRepresentation());
+        request.setEntity(form.getWebRepresentation(CharacterSet.UTF_8));
 
         // Prepare HTTP client connector.
         Client client = new Client(Protocol.HTTP);

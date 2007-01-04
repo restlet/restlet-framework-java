@@ -21,6 +21,7 @@ package com.noelios.restlet.example.book.ch2;
 import org.json.JSONArray;
 import org.json.JSONObject;
 import org.restlet.Client;
+import org.restlet.data.CharacterSet;
 import org.restlet.data.Protocol;
 import org.restlet.data.Reference;
 import org.restlet.data.Response;
@@ -39,7 +40,7 @@ public class Example2_9 {
             System.err.println("You need to pass a term to search");
         } else {
             // Fetch a resource: a JSON document full of search results
-            String term = Reference.encode(args[0]);
+            String term = Reference.encode(args[0], CharacterSet.UTF_8);
             String uri = BASE_URI + "?appid=restbook&output=json&query=" + term;
             Response response = new Client(Protocol.HTTP).get(uri);
             JSONObject json = new JsonRepresentation(response.getEntity())
