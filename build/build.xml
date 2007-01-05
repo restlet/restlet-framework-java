@@ -160,7 +160,7 @@
 	<property name="mod-atom-version" value="1.0" />
 	<property name="mod-atom-id" value="${mod-atom-package}_${mod-atom-version}" />
 
-	<property name="mod-example-package" value="com.noelios.restlet.example" />
+	<property name="mod-example-package" value="org.restlet.example" />
 	<property name="mod-example-version" value="${version-base}" />
 	<property name="mod-example-id" value="${mod-example-package}" />
 
