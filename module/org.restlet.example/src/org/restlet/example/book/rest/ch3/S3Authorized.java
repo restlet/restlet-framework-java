@@ -33,11 +33,11 @@ import org.restlet.resource.Representation;
  * @author Jerome Louvel (contact@noelios.com)
  */
 public class S3Authorized {
-    public static String PUBLIC_KEY = "0F9DBXKB5274JKTJ8DG2";
+    public final static String PUBLIC_KEY = "0F9DBXKB5274JKTJ8DG2";
 
-    public static String PRIVATE_KEY = "GuUHQ086WawbwvVl3JPl9JIk4VOtLcllkvIb0b7w";
+    public final static String PRIVATE_KEY = "GuUHQ086WawbwvVl3JPl9JIk4VOtLcllkvIb0b7w";
 
-    public static String HOST = "https://s3.amazonaws.com/";
+    public final static String HOST = "https://s3.amazonaws.com/";
 
     private static Response handleAuthorized(Method method, String uri,
             Representation entity) {
