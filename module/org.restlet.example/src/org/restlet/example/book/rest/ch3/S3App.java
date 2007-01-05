@@ -33,7 +33,9 @@ import org.w3c.dom.Node;
 public class S3App extends S3Authorized {
 
     public static void main(String... args) {
-        new S3App().getBuckets();
+        for (S3Bucket bucket : new S3App().getBuckets()) {
+            System.out.println(bucket.getName() + " : " + bucket.getUri());
+        }
     }
 
     public List<S3Bucket> getBuckets() {
