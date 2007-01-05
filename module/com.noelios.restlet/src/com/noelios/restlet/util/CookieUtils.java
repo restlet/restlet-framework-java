@@ -26,7 +26,6 @@ import java.util.Map;
 
 import org.restlet.data.Cookie;
 import org.restlet.data.CookieSetting;
-import org.restlet.data.Reference;
 import org.restlet.util.DateUtils;
 
 /**
@@ -248,7 +247,7 @@ public class CookieUtils {
     private static Appendable appendValue(CharSequence value, int version,
             Appendable destination) throws IOException {
         if (version == 0) {
-            destination.append(Reference.encode(value.toString()));
+            destination.append(value.toString());
         } else {
             HeaderUtils.appendQuote(value, destination);
         }
