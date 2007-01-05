@@ -43,10 +43,10 @@ public class FormTestCase extends TestCase {
         form.add("email", "john@bob.net");
         form.add("email2", "joe@bob.net");
 
-        String query = form.urlEncode(CharacterSet.UTF_8);
+        String query = form.encode(CharacterSet.UTF_8);
         Form newForm = new FormReader(Logger.getLogger(FormTestCase.class
                 .getCanonicalName()), query, CharacterSet.UTF_8).read();
-        String newQuery = newForm.urlEncode(CharacterSet.UTF_8);
+        String newQuery = newForm.encode(CharacterSet.UTF_8);
         assertEquals(query, newQuery);
     }
 }

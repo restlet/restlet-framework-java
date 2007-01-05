@@ -155,7 +155,7 @@ public class Parameter implements Comparable<Parameter> {
      */
     @Deprecated
     public String urlEncode() throws IOException {
-        return urlEncode(CharacterSet.UTF_8);
+        return encode(CharacterSet.UTF_8);
     }
 
     /**
@@ -169,25 +169,26 @@ public class Parameter implements Comparable<Parameter> {
      */
     @Deprecated
     public void urlEncode(Appendable buffer) throws IOException {
-        urlEncode(buffer, CharacterSet.UTF_8);
+        encode(buffer, CharacterSet.UTF_8);
     }
 
     /**
-     * Encodes the parameter.
+     * Encodes the parameter using the standard URI encoding mechanism.
      * 
      * @param characterSet
      *            The supported character encoding.
      * @return The encoded string.
      * @throws IOException
      */
-    public String urlEncode(CharacterSet characterSet) throws IOException {
+    public String encode(CharacterSet characterSet) throws IOException {
         StringBuilder sb = new StringBuilder();
-        urlEncode(sb, characterSet);
+        encode(sb, characterSet);
         return sb.toString();
     }
 
     /**
-     * Encodes the parameter and append the result to the given buffer.
+     * Encodes the parameter and append the result to the given buffer. Uses the
+     * standard URI encoding mechanism.
      * 
      * @param buffer
      *            The buffer to append.
@@ -195,7 +196,7 @@ public class Parameter implements Comparable<Parameter> {
      *            The supported character encoding
      * @throws IOException
      */
-    public void urlEncode(Appendable buffer, CharacterSet characterSet)
+    public void encode(Appendable buffer, CharacterSet characterSet)
             throws IOException {
         if (getName() != null) {
             buffer.append(Reference.encode(getName(), characterSet));

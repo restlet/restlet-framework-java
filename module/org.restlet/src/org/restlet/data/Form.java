@@ -141,13 +141,11 @@ public class Form extends Series<Parameter> {
     }
 
     /**
-     * Formats the form as a query string.
+     * Formats the form as a query string. Uses UTF-8 as the character set for
+     * encoding non-ASCII characters.
      * 
      * @return The form as a query string.
-     * @deprecated Use the getQueryString(CharacterSet) method to specify the
-     *             encoding. This method uses the UTF-8 character set.
      */
-    @Deprecated
     public String getQueryString() {
         return getQueryString(CharacterSet.UTF_8);
     }
@@ -161,7 +159,7 @@ public class Form extends Series<Parameter> {
      */
     public String getQueryString(CharacterSet characterSet) {
         try {
-            return urlEncode(characterSet);
+            return encode(characterSet);
         } catch (IOException ioe) {
             return null;
         }
@@ -169,13 +167,11 @@ public class Form extends Series<Parameter> {
 
     /**
      * Returns the form as a Web representation
-     * (MediaType.APPLICATION_WWW_FORM).
+     * (MediaType.APPLICATION_WWW_FORM). Uses UTF-8 as the character set for
+     * encoding non-ASCII characters.
      * 
      * @return The form as a Web representation.
-     * @deprecated Use the getWebRepresentation(CharacterSet) method to specify
-     *             the encoding. This method uses the UTF-8 character set.
      */
-    @Deprecated
     public Representation getWebRepresentation() {
         return getWebRepresentation(CharacterSet.UTF_8);
     }
@@ -190,7 +186,7 @@ public class Form extends Series<Parameter> {
      */
     public Representation getWebRepresentation(CharacterSet characterSet) {
         return new StringRepresentation(getQueryString(characterSet),
-                MediaType.APPLICATION_WWW_FORM);
+                MediaType.APPLICATION_WWW_FORM, null, characterSet);
     }
 
     /**
@@ -203,7 +199,18 @@ public class Form extends Series<Parameter> {
      */
     @Deprecated
     public String urlEncode() throws IOException {
-        return urlEncode(CharacterSet.UTF_8);
+        return encode(CharacterSet.UTF_8);
+    }
+
+    /**
+     * Encodes the form using the standard URI encoding mechanism and the UTF-8
+     * character set.
+     * 
+     * @return The encoded form.
+     * @throws IOException
+     */
+    public String encode() throws IOException {
+        return encode(CharacterSet.UTF_8);
     }
 
     /**
@@ -214,12 +221,12 @@ public class Form extends Series<Parameter> {
      * @return The encoded form.
      * @throws IOException
      */
-    public String urlEncode(CharacterSet characterSet) throws IOException {
+    public String encode(CharacterSet characterSet) throws IOException {
         StringBuilder sb = new StringBuilder();
         for (int i = 0; i < size(); i++) {
             if (i > 0)
                 sb.append('&');
-            get(i).urlEncode(sb, characterSet);
+            get(i).encode(sb, characterSet);
         }
         return sb.toString();
     }

@@ -33,21 +33,21 @@ import java.util.logging.Logger;
  * conforms to the RFC 3986 specifying URIs and follow its naming conventions.<br/>
  * 
  * <pre>
- *                  URI reference        = absolute-reference | relative-reference
- *               
- *                  absolute-reference   = scheme &quot;:&quot; scheme-specific-part [ &quot;#&quot; fragment ]
- *                  scheme-specific-part = ( hierarchical-part [ &quot;?&quot; query ] ) | opaque-part
- *                  hierarchical-part    = ( &quot;//&quot; authority path-abempty ) | path-absolute | path-rootless | path-empty
- *                  authority            = [ user-info &quot;@&quot; ] host-domain [ &quot;:&quot; host-port ]
- *                                                 
- *                  relative-reference   = relative-part [ &quot;?&quot; query ] [ &quot;#&quot; fragment ]
- *                  relative-part        = ( &quot;//&quot; authority path-abempty ) | path-absolute | path-noscheme | path-empty
- *                                                 
- *                  path-abempty         = begins with &quot;/&quot; or is empty
- *                  path-absolute        = begins with &quot;/&quot; but not &quot;//&quot;
- *                  path-noscheme        = begins with a non-colon segment
- *                  path-rootless        = begins with a segment
- *                  path-empty           = zero characters
+ *                     URI reference        = absolute-reference | relative-reference
+ *                  
+ *                     absolute-reference   = scheme &quot;:&quot; scheme-specific-part [ &quot;#&quot; fragment ]
+ *                     scheme-specific-part = ( hierarchical-part [ &quot;?&quot; query ] ) | opaque-part
+ *                     hierarchical-part    = ( &quot;//&quot; authority path-abempty ) | path-absolute | path-rootless | path-empty
+ *                     authority            = [ user-info &quot;@&quot; ] host-domain [ &quot;:&quot; host-port ]
+ *                                                    
+ *                     relative-reference   = relative-part [ &quot;?&quot; query ] [ &quot;#&quot; fragment ]
+ *                     relative-part        = ( &quot;//&quot; authority path-abempty ) | path-absolute | path-noscheme | path-empty
+ *                                                    
+ *                     path-abempty         = begins with &quot;/&quot; or is empty
+ *                     path-absolute        = begins with &quot;/&quot; but not &quot;//&quot;
+ *                     path-noscheme        = begins with a non-colon segment
+ *                     path-rootless        = begins with a segment
+ *                     path-empty           = zero characters
  * </pre>
  * 
  * Note that this class doesn't encode or decode the reserved characters. It
@@ -61,15 +61,13 @@ import java.util.logging.Logger;
 public class Reference {
 
     /**
-     * Decodes a given string using the standard URI encoding mechanism.
+     * Decodes a given string using the standard URI encoding mechanism and the
+     * UTF-8 character set.
      * 
      * @param toDecode
      *            The string to decode.
      * @return The decoded string.
-     * @deprecated Use the decode(String,CharacterSet) method to specify the
-     *             encoding. Currently decode with the UTF-8 character set.
      */
-    @Deprecated
     public static String decode(String toDecode) {
         String result = null;
 
@@ -88,15 +86,13 @@ public class Reference {
     }
 
     /**
-     * Encodes a given string using the standard URI encoding mechanism.
+     * Encodes a given string using the standard URI encoding mechanism and the
+     * UTF-8 character set.
      * 
      * @param toEncode
      *            The string to encode.
      * @return The encoded string.
-     * @deprecated Use the encode(String,CharacterSet) method to specify the
-     *             encoding. Currently encode with the UTF-8 character set.
      */
-    @Deprecated
     public static String encode(String toEncode) {
         String result = null;
 
