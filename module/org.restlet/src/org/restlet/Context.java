@@ -68,11 +68,11 @@ public class Context {
     }
 
     /**
-     * Returns a call dispatcher.
+     * Returns a request dispatcher to available client connectors.
      * 
-     * @return A call dispatcher.
+     * @return A request dispatcher to available client connectors.
      */
-    public Dispatcher getDispatcher() {
+    public Uniform getDispatcher() {
         return null;
     }
 

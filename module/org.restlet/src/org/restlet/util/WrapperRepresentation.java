@@ -169,7 +169,9 @@ public class WrapperRepresentation extends Representation {
      * identifiers.
      * 
      * @return The list of all the identifiers for the resource.
+     * @deprecated No obvious usage. More the role of Handler to map URIs.
      */
+    @Deprecated
     public ReferenceList getIdentifiers() {
         return getWrappedRepresentation().getIdentifiers();
     }
@@ -427,7 +429,9 @@ public class WrapperRepresentation extends Representation {
      * 
      * @param identifiers
      *            The new list of identifiers.
+     * @deprecated No obvious usage. More the role of Handler to map URIs.
      */
+    @Deprecated
     public void setIdentifiers(ReferenceList identifiers) {
         getWrappedRepresentation().setIdentifiers(identifiers);
     }

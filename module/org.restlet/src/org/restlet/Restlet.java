@@ -26,11 +26,14 @@ import org.restlet.data.Response;
 import org.restlet.data.Status;
 
 /**
- * Dispatcher that provides a context and life cycle support.
+ * Uniform class that provides a context and life cycle support. It has many
+ * subclasses that focus on specific ways to process calls. The context property
+ * is typically provided by a parent Component as a way to encapsulate access to
+ * shared features such as logging and client connectors.
  * 
  * @author Jerome Louvel (contact@noelios.com)
  */
-public class Restlet extends Dispatcher {
+public class Restlet extends Uniform {
     /** Error message. */
     private static final String UNABLE_TO_START = "Unable to start the Restlet";
 

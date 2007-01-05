@@ -23,7 +23,7 @@ import java.util.logging.Logger;
 import org.restlet.Application;
 import org.restlet.Client;
 import org.restlet.Context;
-import org.restlet.Dispatcher;
+import org.restlet.Uniform;
 import org.restlet.data.Protocol;
 
 import com.noelios.restlet.TemplateDispatcher;
@@ -68,7 +68,7 @@ public class ApplicationContext extends Context {
      * 
      * @return A call dispatcher.
      */
-    public Dispatcher getDispatcher() {
+    public Uniform getDispatcher() {
         return new TemplateDispatcher(this, new ApplicationDispatcher(this));
     }
 

@@ -19,7 +19,7 @@
 package com.noelios.restlet;
 
 import org.restlet.Context;
-import org.restlet.Dispatcher;
+import org.restlet.Uniform;
 import org.restlet.data.Protocol;
 import org.restlet.data.Request;
 import org.restlet.data.Response;
@@ -30,9 +30,9 @@ import org.restlet.util.Template;
  * 
  * @author Jerome Louvel (contact@noelios.com)
  */
-public class TemplateDispatcher extends Dispatcher {
+public class TemplateDispatcher extends Uniform {
     /** The helper dispatcher. */
-    private Dispatcher helper;
+    private Uniform helper;
 
     /** The parent context. */
     private Context context;
@@ -45,7 +45,7 @@ public class TemplateDispatcher extends Dispatcher {
      * @param helper
      *            The helper dispatcher.
      */
-    public TemplateDispatcher(Context context, Dispatcher helper) {
+    public TemplateDispatcher(Context context, Uniform helper) {
         this.context = context;
         this.helper = helper;
     }

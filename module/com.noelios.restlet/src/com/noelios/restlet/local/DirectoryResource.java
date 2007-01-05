@@ -26,7 +26,7 @@ import java.util.logging.Level;
 
 import org.restlet.Application;
 import org.restlet.Directory;
-import org.restlet.Dispatcher;
+import org.restlet.Uniform;
 import org.restlet.data.MediaType;
 import org.restlet.data.Method;
 import org.restlet.data.Preference;
@@ -352,7 +352,7 @@ public class DirectoryResource extends Resource {
      * 
      * @return A call dispatcher.
      */
-    private Dispatcher getDispatcher() {
+    private Uniform getDispatcher() {
         return getDirectory().getContext().getDispatcher();
     }
 

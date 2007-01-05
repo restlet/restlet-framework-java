@@ -25,24 +25,22 @@ import org.restlet.data.Response;
 import org.restlet.resource.Representation;
 
 /**
- * Base class exposing a uniform REST interface.<br/> <br/> "The central
- * feature that distinguishes the REST architectural style from other
- * network-based styles is its emphasis on a uniform interface between
+ * Base class exposing the uniform REST interface.<br/> <br/>
+ * 
+ * "The central feature that distinguishes the REST architectural style from
+ * other network-based styles is its emphasis on a uniform interface between
  * components. By applying the software engineering principle of generality to
  * the component interface, the overall system architecture is simplified and
  * the visibility of interactions is improved. Implementations are decoupled
  * from the services they provide, which encourages independent evolvability."
- * Roy T. Fielding<br/> <br/> It has many subclasses that focus on a specific
- * ways to handle calls like filtering, routing or finding a target resource.
- * The context property is typically provided by a parent component as a way to
- * give access to features such as logging and client connectors.
+ * Roy T. Fielding<br/> <br/>
  * 
  * @see <a
  *      href="http://www.ics.uci.edu/~fielding/pubs/dissertation/rest_arch_style.htm#sec_5_1_5">Source
  *      dissertation</a>
  * @author Jerome Louvel (contact@noelios.com)
  */
-public abstract class Dispatcher {
+public abstract class Uniform {
     /**
      * Deletes the identified resource.
      * 
@@ -50,7 +48,7 @@ public abstract class Dispatcher {
      *            The URI of the resource to delete.
      * @return The response.
      */
-    public Response delete(String resourceUri) {
+    public final Response delete(String resourceUri) {
         return handle(new Request(Method.DELETE, resourceUri));
     }
 
@@ -61,7 +59,7 @@ public abstract class Dispatcher {
      *            The reference of the resource to delete.
      * @return The response.
      */
-    public Response delete(Reference resourceRef) {
+    public final Response delete(Reference resourceRef) {
         return handle(new Request(Method.DELETE, resourceRef));
     }
 
@@ -72,7 +70,7 @@ public abstract class Dispatcher {
      *            The URI of the resource to get.
      * @return The response.
      */
-    public Response get(String resourceUri) {
+    public final Response get(String resourceUri) {
         return handle(new Request(Method.GET, resourceUri));
     }
 
@@ -83,7 +81,7 @@ public abstract class Dispatcher {
      *            The reference of the resource to get.
      * @return The response.
      */
-    public Response get(Reference resourceRef) {
+    public final Response get(Reference resourceRef) {
         return handle(new Request(Method.GET, resourceRef));
     }
 
@@ -94,7 +92,7 @@ public abstract class Dispatcher {
      *            The request to handle.
      * @return The returned response.
      */
-    public Response handle(Request request) {
+    public final Response handle(Request request) {
         Response response = new Response(request);
         handle(request, response);
         return response;
@@ -117,7 +115,7 @@ public abstract class Dispatcher {
      *            The URI of the resource to get.
      * @return The response.
      */
-    public Response head(String resourceUri) {
+    public final Response head(String resourceUri) {
         return handle(new Request(Method.HEAD, resourceUri));
     }
 
@@ -128,7 +126,7 @@ public abstract class Dispatcher {
      *            The reference of the resource to get.
      * @return The response.
      */
-    public Response head(Reference resourceRef) {
+    public final Response head(Reference resourceRef) {
         return handle(new Request(Method.HEAD, resourceRef));
     }
 
@@ -139,7 +137,7 @@ public abstract class Dispatcher {
      *            The URI of the resource to get.
      * @return The response.
      */
-    public Response options(String resourceUri) {
+    public final Response options(String resourceUri) {
         return handle(new Request(Method.OPTIONS, resourceUri));
     }
 
@@ -150,7 +148,7 @@ public abstract class Dispatcher {
      *            The reference of the resource to get.
      * @return The response.
      */
-    public Response options(Reference resourceRef) {
+    public final Response options(Reference resourceRef) {
         return handle(new Request(Method.OPTIONS, resourceRef));
     }
 
@@ -163,7 +161,7 @@ public abstract class Dispatcher {
      *            The entity to post.
      * @return The response.
      */
-    public Response post(String resourceUri, Representation entity) {
+    public final Response post(String resourceUri, Representation entity) {
         return handle(new Request(Method.POST, resourceUri, entity));
     }
 
@@ -176,7 +174,7 @@ public abstract class Dispatcher {
      *            The entity to post.
      * @return The response.
      */
-    public Response post(Reference resourceRef, Representation entity) {
+    public final Response post(Reference resourceRef, Representation entity) {
         return handle(new Request(Method.POST, resourceRef, entity));
     }
 
@@ -189,7 +187,7 @@ public abstract class Dispatcher {
      *            The entity to put.
      * @return The response.
      */
-    public Response put(String resourceUri, Representation entity) {
+    public final Response put(String resourceUri, Representation entity) {
         return handle(new Request(Method.PUT, resourceUri, entity));
     }
 
@@ -202,7 +200,7 @@ public abstract class Dispatcher {
      *            The entity to put.
      * @return The response.
      */
-    public Response put(Reference resourceRef, Representation entity) {
+    public final Response put(Reference resourceRef, Representation entity) {
         return handle(new Request(Method.PUT, resourceRef, entity));
     }
 

@@ -114,7 +114,10 @@ public class WrapperResource extends Resource {
      * identifiers.
      * 
      * @return The list of all the identifiers for the resource.
+     * @deprecated The URIs should only be managed by the application routers
+     *             and handlers.
      */
+    @Deprecated
     public ReferenceList getIdentifiers() {
         return getWrappedResource().getIdentifiers();
     }
@@ -219,7 +222,10 @@ public class WrapperResource extends Resource {
      * 
      * @param identifiers
      *            The new list of identifiers.
+     * @deprecated The URIs should only be managed by the application routers
+     *             and handlers.
      */
+    @Deprecated
     public void setIdentifiers(ReferenceList identifiers) {
         getWrappedResource().setIdentifiers(identifiers);
     }

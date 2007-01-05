@@ -33,6 +33,8 @@ Changes log
  - The character set of request entities is now parsed and set. 
  - PreferenceReader class (used for entity metadata headers parsing) now attempts to reuse 
    constants (MediaType, CharacterSet, etc.) when possible. Suggested by Randy Layman.
+ - Renamed Dispatcher into Uniform to better match with REST terminology. No impact on existing code.
+ - Deprecated Resource.getIdentifiers() and setIdentifiers() method. No obvious usage. More the role of Handler to map/select URIs.
  
 [Enhancements] 
  - The Ant script now check Ant's version and recommend upgrade to at least 1.7 for

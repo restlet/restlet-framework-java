@@ -55,6 +55,9 @@ public class Resource {
     /** The logger to use. */
     private Logger logger;
 
+    /** The identifier. */
+    private Reference identifier;
+
     /** The modifiable list of identifiers. */
     private ReferenceList identifiers;
 
@@ -76,6 +79,7 @@ public class Resource {
      */
     public Resource(Logger logger) {
         this.logger = logger;
+        this.identifier = null;
         this.identifiers = null;
         this.variants = null;
     }
@@ -135,11 +139,7 @@ public class Resource {
      * @return The official identifier.
      */
     public Reference getIdentifier() {
-        if (getIdentifiers().isEmpty()) {
-            return null;
-        } else {
-            return getIdentifiers().get(0);
-        }
+        return this.identifier;
     }
 
     /**
@@ -148,7 +148,9 @@ public class Resource {
      * identifiers.
      * 
      * @return The list of all the identifiers for the resource.
+     * @deprecated No obvious usage. More the role of Handler to map URIs.
      */
+    @Deprecated
     public ReferenceList getIdentifiers() {
         if (this.identifiers == null)
             this.identifiers = new ReferenceList();
@@ -189,7 +191,7 @@ public class Resource {
         if (variant instanceof Representation) {
             result = (Representation) variant;
         }
-        
+
         return result;
     }
 
@@ -237,11 +239,7 @@ public class Resource {
      *            The official identifier.
      */
     public void setIdentifier(Reference identifier) {
-        if (getIdentifiers().isEmpty()) {
-            getIdentifiers().add(identifier);
-        } else {
-            getIdentifiers().set(0, identifier);
-        }
+        this.identifier = identifier;
     }
 
     /**
@@ -259,7 +257,9 @@ public class Resource {
      * 
      * @param identifiers
      *            The new list of identifiers.
+     * @deprecated No obvious usage. More the role of Handler to map URIs.
      */
+    @Deprecated
     public void setIdentifiers(ReferenceList identifiers) {
         this.identifiers = identifiers;
     }

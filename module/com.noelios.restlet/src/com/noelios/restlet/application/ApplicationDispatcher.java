@@ -19,7 +19,7 @@
 package com.noelios.restlet.application;
 
 import org.restlet.Application;
-import org.restlet.Dispatcher;
+import org.restlet.Uniform;
 import org.restlet.data.Protocol;
 import org.restlet.data.Request;
 import org.restlet.data.Response;
@@ -29,7 +29,7 @@ import org.restlet.data.Response;
  * 
  * @author Jerome Louvel (contact@noelios.com)
  */
-public class ApplicationDispatcher extends Dispatcher {
+public class ApplicationDispatcher extends Uniform {
     /** The parent context. */
     private ApplicationContext applicationContext;
 
