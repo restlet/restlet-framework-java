@@ -16,7 +16,7 @@
  * Portions Copyright [yyyy] [name of copyright owner]
  */
 
-package org.restlet.example.book.ch6;
+package org.restlet.example.book.rest.ch6;
 
 import org.restlet.Client;
 import org.restlet.data.Form;

@@ -16,37 +16,46 @@
  * Portions Copyright [yyyy] [name of copyright owner]
  */
 
-package org.restlet.example.book.ch2;
+package org.restlet.example.book.rest.ch2;
 
 import org.restlet.Client;
+import org.restlet.data.ChallengeResponse;
+import org.restlet.data.ChallengeScheme;
+import org.restlet.data.Method;
 import org.restlet.data.Protocol;
-import org.restlet.data.Reference;
+import org.restlet.data.Request;
 import org.restlet.data.Response;
 import org.restlet.resource.DomRepresentation;
+import org.w3c.dom.NamedNodeMap;
 import org.w3c.dom.Node;
 
 /**
- * Searching the web with Yahoo!'s web service using XML
+ * Getting your list of recent bookmarks on del.icio.us
  * 
  * @author Jerome Louvel (contact@noelios.com)
  */
-public class Example2_1 {
-    static final String BASE_URI = "http://api.search.yahoo.com/WebSearchService/V1/webSearch";
-
+public class Example2_3 {
     public static void main(String[] args) throws Exception {
-        if (args.length != 1) {
-            System.err.println("You need to pass a term to search");
+        if (args.length != 2) {
+            System.err
+                    .println("You need to pass your del.icio.us user name and password");
         } else {
-            // Fetch a resource: an XML document full of search results
-            String term = Reference.encode(args[0]);
-            String uri = BASE_URI + "?appid=restbook&query=" + term;
-            Response response = new Client(Protocol.HTTP).get(uri);
+            // Create a authenticated request
+            Request request = new Request(Method.GET,
+                    "https://api.del.icio.us/v1/posts/recent");
+            request.setChallengeResponse(new ChallengeResponse(
+                    ChallengeScheme.HTTP_BASIC, args[0], args[1]));
+
+            // Fetch a resource: an XML document with your recent posts
+            Response response = new Client(Protocol.HTTPS).handle(request);
             DomRepresentation document = response.getEntityAsDom();
 
             // Use XPath to find the interesting parts of the data structure
-            String expr = "/ResultSet/Result/Title";
-            for (Node node : document.getNodes(expr)) {
-                System.out.println(node.getTextContent());
+            for (Node node : document.getNodes("/posts/post")) {
+                NamedNodeMap attrs = node.getAttributes();
+                String desc = attrs.getNamedItem("description").getNodeValue();
+                String href = attrs.getNamedItem("href").getNodeValue();
+                System.out.println(desc + ": " + href);
             }
         }
     }

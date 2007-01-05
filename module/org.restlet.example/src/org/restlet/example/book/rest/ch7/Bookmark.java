@@ -16,7 +16,7 @@
  * Portions Copyright [yyyy] [name of copyright owner]
  */
 
-package org.restlet.example.book.ch7;
+package org.restlet.example.book.rest.ch7;
 
 import java.util.ArrayList;
 import java.util.Date;
