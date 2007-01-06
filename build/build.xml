@@ -454,6 +454,12 @@
 			<pathelement location="tools/checkstyle/checkstyle-all-4.2.jar" />
 		</classpath>
 	</taskdef>
+
+	<taskdef name="nsis" classname="net.sf.nsisant.Task">
+		<classpath>
+			<pathelement location="tools/nsis/nsisant-1.2.jar" />
+	    </classpath>
+	</taskdef>
 	
 
 	<!-- ==================== -->
@@ -614,6 +620,11 @@
 			<istrue value="${checkstyle}" />
 		</condition>
 
+		<!-- Set the property that will enable the Nsis target -->
+		<condition property="do-nsis">
+			<istrue value="${nsis}" />
+		</condition>
+
 		<!-- Set the property that will enable the generation of the Javadoc of implementation classes -->
 		<condition property="exclude-packages" value="**.internal.*" else="">
 			<istrue value="${javadoc-hide}" />
@@ -748,6 +759,17 @@
 		<replace file="${docs}/changes.txt" token="@release-date@" value="${release-date}" />
 		<replace file="${docs}/changes.txt" token="@version-full@" value="${version-full}" />
 		<replace file="${docs}/changes.txt" token="@version-compact@" value="${version-compact}" />
+
+		<!-- Generate the NSIS file -->
+		<copy file="tmpl/setup.nsi" todir="${temp}" overwrite="true" />
+		<replace file="${temp}/setup.nsi" token="@version-full@" value="${version-full}" />
+		<replace file="${temp}/setup.nsi" token="@version-compact@" value="${version-compact}" />
+		<replace file="${temp}/setup.nsi" token="@version-base@" value="${version-base}" />
+		<replace file="${temp}/setup.nsi" token="@www@" value="../${www}" />
+		<replace file="${temp}/setup.nsi" token="@images-dir@" value="../${www}/images" />
+		<replace file="${temp}/setup.nsi" token="@license-dir@" value="../${docs}" />
+		<replace file="${temp}/setup.nsi" token="@dist@" value="../${dist}" />
+		<replace file="${temp}/setup.nsi" token="@dist-base@" value="../${dist-base}" />
 	</target>
 
 	<!-- Packaging Target -->
@@ -1030,6 +1052,11 @@
 			<link href="http://www.restlet.org/docs/api/" packagelistLoc="${docs-api}" offline="true" />
 			<link href="http://java.sun.com/j2se/1.5.0/docs/api/" />
 		</javadoc>
+	</target>
+
+	<!-- NSIS target (generation of windows installer) -->
+	<target name="nsis" if="do-nsis" depends="package" description="Generate the windows installer">
+		<nsis script="${temp}/setup.nsi"/>
 	</target>
 
 </project>
