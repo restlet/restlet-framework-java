@@ -262,11 +262,11 @@ implementation of the API, the core Noelios Restlet Engine contained in
 requests. You need to add to your classpath the JAR file of each
 additional connector needed by your application. Check the
 "/lib/README.txt" file in the distribution for a detailled list of all
-the required dependencies. If you want to act as an HTTP server, you can
-choose between several connectors: four standalone ones based on Jetty,
-Simple Framework and AsyncWeb, and one embedded if you want to use an
-existing Servlet container like Tomcat.</p>
-<p>There are other extensions to the NRE, like SMTP and JDBC
+the required dependencies for each extension JAR. If you want to act as
+an HTTP server, you can choose between several connectors: standalone
+ones based on Jetty, Simple Framework and AsyncWeb, and one embedded if
+you want to use an existing Servlet container like Tomcat.</p>
+<p>There are other extensions to the NRE, like HTTP, SMTP and JDBC
 clients. Each one corresponds to a seperate Java package under
 com.noelios.restlet.ext.* and is packaged as a separate JAR file
 available under the "lib" directory. For example, if you need to send
@@ -292,8 +292,7 @@ server?</a></h3>
 
 <p>Currently, the Noelios Restlet Engine supports Basic HTTP and
 Amazon Web Services authentication schemes. You order to leverage them,
-use the <a
-	href="http://www.restlet.org/docs/api/org/restlet/Guard.html">Guard</a>
+use the <a href="http://www.restlet.org/docs/api/org/restlet/Guard.html">Guard</a>
 Filter. For details on how to use this Filter, please check the <a
 	href="http://www.restlet.org/tutorial#part09">part 9 of the
 tutorial</a>.</p>
@@ -553,7 +552,7 @@ Louvel</a> (<a target="_top" href="http://blog.noelios.com">blog</a>)<br />
 
 <br />
 
-<small> Last modified on 2006-12-18. Copyright &copy; 2005-2007
+<small> Last modified on 2007-01-06. Copyright &copy; 2005-2007
 <a href="mailto:contact@noelios.com">J&eacute;r&ocirc;me Louvel</a>.
 Restlet is a registered trademark of <a target="_top"
 	href="http://www.noelios.com">Noelios Consulting</a>. </small>
