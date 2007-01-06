@@ -26,11 +26,12 @@ import org.restlet.resource.DomRepresentation;
 import org.w3c.dom.Node;
 
 /**
- * Searching the web with Yahoo!'s web service using XML
+ * Searching the web with Yahoo!'s web service using XML.
+ * This version uses a DOM parser and ignores namespaces.
  * 
  * @author Jerome Louvel (contact@noelios.com)
  */
-public class Example2_1 {
+public class Example2_1a {
     static final String BASE_URI = "http://api.search.yahoo.com/WebSearchService/V1/webSearch";
 
     public static void main(String[] args) throws Exception {

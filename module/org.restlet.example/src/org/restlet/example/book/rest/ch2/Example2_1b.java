@@ -18,38 +18,39 @@
 
 package org.restlet.example.book.rest.ch2;
 
-import org.json.JSONArray;
-import org.json.JSONObject;
 import org.restlet.Client;
 import org.restlet.data.Protocol;
 import org.restlet.data.Reference;
 import org.restlet.data.Response;
-import org.restlet.ext.json.JsonRepresentation;
+import org.restlet.resource.SaxRepresentation;
+import org.w3c.dom.Node;
 
 /**
- * Searching the web with Yahoo!'s web service using JSON.
+ * Searching the web with Yahoo!'s web service using XML
+ * This version uses a SAX parser and uses namespaces.
  * 
  * @author Jerome Louvel (contact@noelios.com)
  */
-public class Example2_9 {
+public class Example2_1b {
     static final String BASE_URI = "http://api.search.yahoo.com/WebSearchService/V1/webSearch";
 
     public static void main(String[] args) throws Exception {
         if (args.length != 1) {
             System.err.println("You need to pass a term to search");
         } else {
-            // Fetch a resource: a JSON document full of search results
+            // Fetch a resource: an XML document full of search results
             String term = Reference.encode(args[0]);
-            String uri = BASE_URI + "?appid=restbook&output=json&query=" + term;
+            String uri = BASE_URI + "?appid=restbook&query=" + term;
             Response response = new Client(Protocol.HTTP).get(uri);
-            JSONObject json = new JsonRepresentation(response.getEntity())
-                    .toJsonObject();
+            SaxRepresentation document = response.getEntityAsSax();
 
-            // Navigate within the JSON document to display the titles
-            JSONObject resultSet = json.getJSONObject("ResultSet");
-            JSONArray results = resultSet.getJSONArray("Result");
-            for (int i = 0; i < results.length(); i++) {
-                System.out.println(results.getJSONObject(i).getString("Title"));
+            // Associate the namespace with the prefix y
+            document.putNamespace("y", "urn:yahoo:srch");
+
+            // Use XPath to find the interesting parts of the data structure
+            String expr = "/y:ResultSet/y:Result/y:Title/text()";
+            for (Node node : document.getNodes(expr)) {
+                System.out.println(node.getTextContent());
             }
         }
     }

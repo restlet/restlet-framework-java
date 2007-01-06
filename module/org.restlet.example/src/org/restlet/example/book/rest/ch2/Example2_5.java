@@ -30,7 +30,7 @@ import org.w3c.dom.NamedNodeMap;
 import org.w3c.dom.Node;
 
 /**
- * Getting your list of recent bookmarks on del.icio.us
+ * Getting your list of recent bookmarks on del.icio.us.
  * 
  * @author Jerome Louvel (contact@noelios.com)
  */
