@@ -34,7 +34,7 @@ import org.w3c.dom.Node;
  * 
  * @author Jerome Louvel (contact@noelios.com)
  */
-public class Example2_3 {
+public class Example2_5 {
     public static void main(String[] args) throws Exception {
         if (args.length != 2) {
             System.err
