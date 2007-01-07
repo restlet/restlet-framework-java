@@ -135,6 +135,7 @@ Section -post SEC0001
     !insertmacro MUI_STARTMENU_WRITE_BEGIN Application
     SetOutPath $SMPROGRAMS\$StartMenuGroup
     CreateShortcut "$SMPROGRAMS\$StartMenuGroup\Uninstall $(^Name)${VERSION}.lnk" $INSTDIR\uninstall${VERSION}.exe
+    CreateShortcut "$SMPROGRAMS\$StartMenuGroup\www.restlet.org.lnk" "http://www.restlet.org" "" "$INSTDIR\uninstall${VERSION}.exe"
     !insertmacro MUI_STARTMENU_WRITE_END
     WriteRegStr HKLM "SOFTWARE\Microsoft\Windows\CurrentVersion\Uninstall\$(^Name)${VERSION}" DisplayName "Noelios Restlet Engine @version-full@"
     WriteRegStr HKLM "SOFTWARE\Microsoft\Windows\CurrentVersion\Uninstall\$(^Name)${VERSION}" DisplayVersion "${VERSION}"
@@ -167,6 +168,7 @@ SectionEnd
 Section un.post UNSEC0001
     DeleteRegKey HKLM "SOFTWARE\Microsoft\Windows\CurrentVersion\Uninstall\$(^Name)${VERSION}"
     Delete /REBOOTOK "$SMPROGRAMS\$StartMenuGroup\Uninstall $(^Name)${VERSION}.lnk"
+    Delete "$SMPROGRAMS\$StartMenuGroup\www.restlet.org.lnk"
     Delete /REBOOTOK $INSTDIR\uninstall${VERSION}.exe
     DeleteRegValue HKLM "${REGKEY}" StartMenuGroup
     DeleteRegValue HKLM "${REGKEY}" Path
