@@ -1061,7 +1061,7 @@
 	</target>
 
 	<!-- PACKAGE-NSIS target (generation of windows installer) -->
-	<target name="package-nsis" if="do-nsis" description="Generate the windows installer">
+	<target name="package-nsis" depends="init" if="do-nsis" description="Generate the windows installer">
 			<nsis script="${temp}/setup.nsi"/>
 	</target>
 
