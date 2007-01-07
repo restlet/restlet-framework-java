@@ -22,12 +22,12 @@ import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 
-import org.restlet.resource.Resource;
-
 /**
+ * URI saved and annotated by a user.
+ * 
  * @author Jerome Louvel (contact@noelios.com)
  */
-public class Bookmark extends Resource {
+public class Bookmark {
 
     private User user;
 

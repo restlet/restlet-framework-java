@@ -18,28 +18,47 @@
 
 package org.restlet.example.book.rest.ch7;
 
+import java.util.List;
+
+import org.restlet.resource.Representation;
+import org.restlet.resource.Resource;
+import org.restlet.resource.Result;
+import org.restlet.resource.Variant;
+
 /**
- * Label used to categorize and share bookmarks.
- * 
  * @author Jerome Louvel (contact@noelios.com)
  */
-public class Tag {
+public class UserResource extends Resource {
 
-    private String name;
+    private User user;
 
-    /**
-     * @return the name
-     */
-    public String getName() {
-        return this.name;
+    public UserResource(User user) {
+        this.user = user;
     }
 
-    /**
-     * @param name
-     *            the name to set
-     */
-    public void setName(String name) {
-        this.name = name;
+    @Override
+    public boolean allowDelete() {
+        return true;
+    }
+
+    @Override
+    public boolean allowPut() {
+        return true;
+    }
+
+    @Override
+    public Result delete() {
+        return null;
+    }
+
+    @Override
+    public List<Variant> getVariants() {
+        return super.getVariants();
+    }
+
+    @Override
+    public Result put(Representation entity) {
+        return null;
     }
 
 }

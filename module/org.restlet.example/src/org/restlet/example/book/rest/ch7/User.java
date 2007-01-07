@@ -18,12 +18,12 @@
 
 package org.restlet.example.book.rest.ch7;
 
-import org.restlet.resource.Resource;
-
 /**
+ * User account.
+ * 
  * @author Jerome Louvel (contact@noelios.com)
  */
-public class User extends Resource {
+public class User {
 
     private String name;
 
