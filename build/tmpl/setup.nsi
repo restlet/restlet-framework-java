@@ -102,8 +102,6 @@ Var StartMenuGroup
 !insertmacro MUI_LANGUAGE TradChinese
 !insertmacro MUI_LANGUAGE Turkish
 !insertmacro MUI_LANGUAGE Ukrainian
-!insertmacro MUI_LANGUAGE Uzbek
-!insertmacro MUI_LANGUAGE Valencian
 !insertmacro MUI_LANGUAGE Welsh
 
 # Installer attributes
