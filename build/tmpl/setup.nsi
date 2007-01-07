@@ -161,7 +161,6 @@ done${UNSECTION_ID}:
 
 # Uninstaller sections
 Section /o un.Main UNSEC0000
-    Delete /REBOOTOK $INSTDIR\restlet-${VERSION}.zip
     DeleteRegValue HKLM "${REGKEY}\Components" Main
 SectionEnd
 
@@ -174,7 +173,7 @@ Section un.post UNSEC0001
     DeleteRegKey /IfEmpty HKLM "${REGKEY}\Components"
     DeleteRegKey /IfEmpty HKLM "${REGKEY}"
     RmDir /REBOOTOK $SMPROGRAMS\$StartMenuGroup
-    RmDir /REBOOTOK $INSTDIR
+    RmDir /r /REBOOTOK $INSTDIR
 SectionEnd
 
 # Installer functions
