@@ -22,6 +22,9 @@ import java.io.IOException;
 import java.io.OutputStream;
 
 import javax.xml.namespace.QName;
+import javax.xml.parsers.DocumentBuilder;
+import javax.xml.parsers.DocumentBuilderFactory;
+import javax.xml.parsers.ParserConfigurationException;
 import javax.xml.transform.Result;
 import javax.xml.transform.Source;
 import javax.xml.transform.TransformerConfigurationException;
@@ -38,7 +41,6 @@ import org.restlet.data.MediaType;
 import org.restlet.util.XmlWriter;
 import org.w3c.dom.Document;
 import org.xml.sax.ContentHandler;
-import org.xml.sax.InputSource;
 
 /**
  * XML representation for SAX events processing. The purpose is to create a
@@ -154,18 +156,41 @@ public class SaxRepresentation extends XmlRepresentation {
         // Do nothing by default.
     }
 
+    /**
+     * Returns a document builder properly configured.
+     * 
+     * @return A document builder properly configured.
+     */
+    private DocumentBuilder getDocumentBuilder() throws IOException {
+        try {
+            DocumentBuilderFactory dbf = DocumentBuilderFactory.newInstance();
+            dbf.setNamespaceAware(isNamespaceAware());
+            dbf.setValidating(false);
+            return dbf.newDocumentBuilder();
+        } catch (ParserConfigurationException pce) {
+            throw new IOException("Couldn't create the empty document: "
+                    + pce.getMessage());
+        }
+    }
+
     @Override
-    public Object evaluate(String expression, QName returnType) throws Exception {
+    public Object evaluate(String expression, QName returnType)
+            throws Exception {
         Object result = null;
         XPath xpath = XPathFactory.newInstance().newXPath();
         xpath.setNamespaceContext(this);
 
+        if (this.xmlDocument == null) {
+            this.xmlDocument = getDocumentBuilder().parse(
+                    this.xmlRepresentation.getStream());
+        }
+
         if (this.xmlDocument != null) {
             result = xpath.evaluate(expression, this.xmlDocument, returnType);
-        } else if (this.xmlRepresentation != null) {
-            InputSource source = new InputSource(this.xmlRepresentation
-                    .getStream());
-            result = xpath.evaluate(expression, source, returnType);
+        } else {
+            getLogger().warning(
+                    "Unable to obtain a DOM document for the SAX representation. "
+                            + "XPath evaluation cancelled.");
         }
 
         return result;

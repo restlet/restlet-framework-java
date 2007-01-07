@@ -134,11 +134,7 @@ public abstract class Message {
      * @return The entity as a DOM representation.
      */
     public DomRepresentation getEntityAsDom() {
-        try {
-            return new DomRepresentation(getEntity());
-        } catch (IOException e) {
-            return null;
-        }
+        return new DomRepresentation(getEntity());
     }
 
     /**

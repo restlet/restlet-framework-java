@@ -22,12 +22,12 @@ import org.restlet.Client;
 import org.restlet.data.Protocol;
 import org.restlet.data.Reference;
 import org.restlet.data.Response;
-import org.restlet.resource.SaxRepresentation;
+import org.restlet.resource.DomRepresentation;
 import org.w3c.dom.Node;
 
 /**
- * Searching the web with Yahoo!'s web service using XML
- * This version uses a SAX parser and uses namespaces.
+ * Searching the web with Yahoo!'s web service using XML This version uses a SAX
+ * parser and uses namespaces.
  * 
  * @author Jerome Louvel (contact@noelios.com)
  */
@@ -42,9 +42,10 @@ public class Example2_1b {
             String term = Reference.encode(args[0]);
             String uri = BASE_URI + "?appid=restbook&query=" + term;
             Response response = new Client(Protocol.HTTP).get(uri);
-            SaxRepresentation document = response.getEntityAsSax();
+            DomRepresentation document = response.getEntityAsDom();
 
             // Associate the namespace with the prefix y
+            document.setNamespaceAware(true);
             document.putNamespace("y", "urn:yahoo:srch");
 
             // Use XPath to find the interesting parts of the data structure

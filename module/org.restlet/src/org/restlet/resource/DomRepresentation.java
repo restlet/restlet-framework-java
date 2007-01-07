@@ -20,8 +20,10 @@ package org.restlet.resource;
 
 import java.io.IOException;
 import java.io.OutputStream;
+import java.util.logging.Level;
 
 import javax.xml.namespace.QName;
+import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
 import javax.xml.parsers.ParserConfigurationException;
 import javax.xml.transform.TransformerConfigurationException;
@@ -45,10 +47,11 @@ import org.xml.sax.SAXException;
  * @author Jerome Louvel (contact@noelios.com)
  */
 public class DomRepresentation extends XmlRepresentation {
-    /**
-     * The wrapped DOM document.
-     */
+    /** The wrapped DOM document. */
     private Document dom;
+
+    /** The source XML representation. */
+    private Representation xmlRepresentation;
 
     /**
      * Constructor for an empty document.
@@ -58,10 +61,20 @@ public class DomRepresentation extends XmlRepresentation {
      */
     public DomRepresentation(MediaType mediaType) throws IOException {
         super(mediaType);
+        getDocumentBuilder().newDocument();
+    }
 
+    /**
+     * Returns a document builder properly configured.
+     * 
+     * @return A document builder properly configured.
+     */
+    private DocumentBuilder getDocumentBuilder() throws IOException {
         try {
-            this.dom = DocumentBuilderFactory.newInstance()
-                    .newDocumentBuilder().newDocument();
+            DocumentBuilderFactory dbf = DocumentBuilderFactory.newInstance();
+            dbf.setNamespaceAware(isNamespaceAware());
+            dbf.setValidating(false);
+            return dbf.newDocumentBuilder();
         } catch (ParserConfigurationException pce) {
             throw new IOException("Couldn't create the empty document: "
                     + pce.getMessage());
@@ -92,22 +105,9 @@ public class DomRepresentation extends XmlRepresentation {
      */
     @Deprecated
     public DomRepresentation(MediaType mediaType,
-            Representation xmlRepresentation) throws IOException {
+            Representation xmlRepresentation) {
         super(mediaType);
-
-        try {
-            this.dom = DocumentBuilderFactory.newInstance()
-                    .newDocumentBuilder().parse(xmlRepresentation.getStream());
-        } catch (SAXException se) {
-            throw new IOException("Couldn't read the XML representation: "
-                    + se.getMessage());
-        } catch (IOException ioe) {
-            throw new IOException("Couldn't read the XML representation: "
-                    + ioe.getMessage());
-        } catch (ParserConfigurationException pce) {
-            throw new IOException("Couldn't read the XML representation: "
-                    + pce.getMessage());
-        }
+        this.xmlRepresentation = xmlRepresentation;
     }
 
     /**
@@ -116,23 +116,9 @@ public class DomRepresentation extends XmlRepresentation {
      * @param xmlRepresentation
      *            A source XML representation to parse.
      */
-    public DomRepresentation(Representation xmlRepresentation)
-            throws IOException {
+    public DomRepresentation(Representation xmlRepresentation) {
         super(xmlRepresentation.getMediaType());
-
-        try {
-            this.dom = DocumentBuilderFactory.newInstance()
-                    .newDocumentBuilder().parse(xmlRepresentation.getStream());
-        } catch (SAXException se) {
-            throw new IOException("Couldn't read the XML representation: "
-                    + se.getMessage());
-        } catch (IOException ioe) {
-            throw new IOException("Couldn't read the XML representation: "
-                    + ioe.getMessage());
-        } catch (ParserConfigurationException pce) {
-            throw new IOException("Couldn't read the XML representation: "
-                    + pce.getMessage());
-        }
+        this.xmlRepresentation = xmlRepresentation;
     }
 
     /**
@@ -141,6 +127,19 @@ public class DomRepresentation extends XmlRepresentation {
      * @return The wrapped DOM document.
      */
     public Document getDocument() {
+        if ((this.dom == null) && (this.xmlRepresentation != null)) {
+            try {
+                this.dom = getDocumentBuilder().parse(
+                        xmlRepresentation.getStream());
+            } catch (SAXException se) {
+                getLogger().log(Level.WARNING,
+                        "Couldn't read the XML representation", se);
+            } catch (IOException ioe) {
+                getLogger().log(Level.WARNING,
+                        "Couldn't read the XML representation", ioe);
+            }
+        }
+
         return this.dom;
     }
 

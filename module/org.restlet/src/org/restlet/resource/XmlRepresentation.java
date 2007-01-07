@@ -43,7 +43,11 @@ import org.w3c.dom.NodeList;
  */
 public abstract class XmlRepresentation extends OutputRepresentation implements
         NamespaceContext {
+    /** Internal map of namespaces. */
     private Map<String, String> namespaces;
+
+    /** Indicates if processing is namespace aware. */
+    private boolean namespaceAware;
 
     /**
      * Constructor.
@@ -54,6 +58,7 @@ public abstract class XmlRepresentation extends OutputRepresentation implements
     public XmlRepresentation(MediaType mediaType) {
         super(mediaType);
         this.namespaces = null;
+        this.namespaceAware = false;
     }
 
     /**
@@ -67,6 +72,30 @@ public abstract class XmlRepresentation extends OutputRepresentation implements
     public XmlRepresentation(MediaType mediaType, long expectedSize) {
         super(mediaType, expectedSize);
         this.namespaces = null;
+        this.namespaceAware = false;
+    }
+
+    /**
+     * Evaluates an XPath expression and returns the result as in the given
+     * return type.
+     * 
+     * @param returnType
+     *            The qualified name of the return type.
+     * @return The evaluation result.
+     * @see javax.xml.xpath.XPathException
+     * @see javax.xml.xpath.XPathConstants
+     */
+    public abstract Object evaluate(String expression, QName returnType)
+            throws Exception;
+
+    /**
+     * Evaluates an XPath expression as a boolean. If the evaluation fails, null
+     * will be returned.
+     * 
+     * @return The evaluation result.
+     */
+    public Boolean getBoolean(String expression) {
+        return (Boolean) internalEval(expression, XPathConstants.BOOLEAN);
     }
 
     /**
@@ -85,85 +114,6 @@ public abstract class XmlRepresentation extends OutputRepresentation implements
      */
     public String getNamespaceURI(String prefix) {
         return this.namespaces.get(prefix);
-    }
-
-    /**
-     * {@inheritDoc javax.xml.namespace.NamespaceContext#getPrefix(java.lang.String}
-     */
-    public String getPrefix(String namespaceURI) {
-        String result = null;
-
-        for (Entry<String, String> entry : getNamespaces().entrySet()) {
-            if ((result == null) && entry.getValue().equals(namespaceURI))
-                result = entry.getKey();
-        }
-
-        return result;
-    }
-
-    /**
-     * {@inheritDoc javax.xml.namespace.NamespaceContext#getPrefixes(java.lang.String}
-     */
-    public Iterator getPrefixes(String namespaceURI) {
-        List<String> result = new ArrayList<String>();
-
-        for (Entry<String, String> entry : getNamespaces().entrySet()) {
-            if (entry.getValue().equals(namespaceURI))
-                result.add(entry.getKey());
-        }
-
-        return Collections.unmodifiableList(result).iterator();
-    }
-
-    /**
-     * Puts a new mapping between a prefix and a namespace URI.
-     * 
-     * @param prefix
-     *            The namespace prefix.
-     * @param namespaceURI
-     *            The namespace URI.
-     */
-    public void putNamespace(String prefix, String namespaceURI) {
-        getNamespaces().put(prefix, namespaceURI);
-    }
-
-    /**
-     * Evaluates an XPath expression and returns the result as in the given
-     * return type.
-     * 
-     * @param returnType
-     *            The qualified name of the return type.
-     * @return The evaluation result.
-     * @see javax.xml.xpath.XPathException
-     * @see javax.xml.xpath.XPathConstants
-     */
-    public abstract Object evaluate(String expression, QName returnType)
-            throws Exception;
-
-    /**
-     * Evaluates an XPath expression and returns the result as in the given
-     * return type.
-     * 
-     * @param returnType
-     *            The qualified name of the return type.
-     * @return The evaluation result.
-     */
-    private Object internalEval(String expression, QName returnType) {
-        try {
-            return evaluate(expression, returnType);
-        } catch (Exception e) {
-            return null;
-        }
-    }
-
-    /**
-     * Evaluates an XPath expression as a boolean. If the evaluation fails, null
-     * will be returned.
-     * 
-     * @return The evaluation result.
-     */
-    public Boolean getBoolean(String expression) {
-        return (Boolean) internalEval(expression, XPathConstants.BOOLEAN);
     }
 
     /**
@@ -199,12 +149,87 @@ public abstract class XmlRepresentation extends OutputRepresentation implements
     }
 
     /**
+     * {@inheritDoc javax.xml.namespace.NamespaceContext#getPrefix(java.lang.String}
+     */
+    public String getPrefix(String namespaceURI) {
+        String result = null;
+
+        for (Entry<String, String> entry : getNamespaces().entrySet()) {
+            if ((result == null) && entry.getValue().equals(namespaceURI))
+                result = entry.getKey();
+        }
+
+        return result;
+    }
+
+    /**
+     * {@inheritDoc javax.xml.namespace.NamespaceContext#getPrefixes(java.lang.String}
+     */
+    public Iterator getPrefixes(String namespaceURI) {
+        List<String> result = new ArrayList<String>();
+
+        for (Entry<String, String> entry : getNamespaces().entrySet()) {
+            if (entry.getValue().equals(namespaceURI))
+                result.add(entry.getKey());
+        }
+
+        return Collections.unmodifiableList(result).iterator();
+    }
+
+    /**
      * Evaluates an XPath expression as a string.
      * 
      * @return The evaluation result.
      */
     public String getText(String expression) {
         return (String) internalEval(expression, XPathConstants.STRING);
+    }
+
+    /**
+     * Evaluates an XPath expression and returns the result as in the given
+     * return type.
+     * 
+     * @param returnType
+     *            The qualified name of the return type.
+     * @return The evaluation result.
+     */
+    private Object internalEval(String expression, QName returnType) {
+        try {
+            return evaluate(expression, returnType);
+        } catch (Exception e) {
+            return null;
+        }
+    }
+
+    /**
+     * Indicates if processing is namespace aware.
+     * 
+     * @return True if processing is namespace aware.
+     */
+    public boolean isNamespaceAware() {
+        return this.namespaceAware;
+    }
+
+    /**
+     * Puts a new mapping between a prefix and a namespace URI.
+     * 
+     * @param prefix
+     *            The namespace prefix.
+     * @param namespaceURI
+     *            The namespace URI.
+     */
+    public void putNamespace(String prefix, String namespaceURI) {
+        getNamespaces().put(prefix, namespaceURI);
+    }
+
+    /**
+     * Indicates if processing is namespace aware.
+     * 
+     * @param namespaceAware
+     *            Indicates if processing is namespace aware.
+     */
+    public void setNamespaceAware(boolean namespaceAware) {
+        this.namespaceAware = namespaceAware;
     }
 
 }
