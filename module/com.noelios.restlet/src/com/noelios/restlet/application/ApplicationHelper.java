@@ -92,6 +92,9 @@ public class ApplicationHelper extends Helper {
             // like the ConnectorService
             request.getAttributes().put(Application.class.getCanonicalName(),
                     getApplication());
+            
+            // Set the request's root reference 
+            request.setRootRef(request.getResourceRef().getBaseRef());
 
             // Dispatch the call to the first Restlet
             getFirst().handle(request, response);

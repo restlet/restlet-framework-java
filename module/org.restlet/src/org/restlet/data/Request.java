@@ -61,6 +61,9 @@ public class Request extends Message {
     /** The resource reference. */
     private Reference resourceRef;
 
+    /** The application root reference. */
+    private Reference rootRef;
+
     /**
      * Constructor.
      */
@@ -225,6 +228,15 @@ public class Request extends Message {
     }
 
     /**
+     * Returns the application root reference.
+     * 
+     * @return The application root reference.
+     */
+    public Reference getRootRef() {
+        return this.rootRef;
+    }
+
+    /**
      * Indicates if the call came over a confidential channel such as an
      * SSL-secured connection.
      * 
@@ -359,6 +371,16 @@ public class Request extends Message {
     }
 
     /**
+     * Sets the application root reference.
+     * 
+     * @param rootRef
+     *            The application root reference.
+     */
+    public void setRootRef(Reference rootRef) {
+        this.rootRef = rootRef;
+    }
+
+    /**
      * Private cookie series.
      * 
      * @author Jerome Louvel (contact@noelios.com)
@@ -394,5 +416,5 @@ public class Request extends Message {
                 return new CookieSeries();
         }
     }
-    
+
 }

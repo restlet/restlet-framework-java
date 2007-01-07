@@ -171,7 +171,7 @@ public class HostRoute extends Route {
             getLogger().fine(
                     "New base URI: " + request.getResourceRef().getBaseRef());
             getLogger().fine(
-                    "New relative part: "
+                    "New remaining part: "
                             + request.getResourceRef().getRemainingPart());
         }
     }

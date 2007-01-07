@@ -37,6 +37,9 @@ Changes log
  - Deprecated Resource.getIdentifiers() and setIdentifiers() method. No obvious usage. More the role of Handler to map/select URIs.
  - Renamed "com.noelios.restlet.example" to "org.restlet.example" as no more direct dependency on NRE exists in code.
  - Added new constructor to Variable, taking only a variable type.
+ - Added a Request.rootRef property storing the reference of the application root. This 
+   is be very important when generating URI that must be independent of the application's
+   deployment context.
   
 [Enhancements] 
  - The Ant script now check Ant's version and recommend upgrade to at least 1.7 for
