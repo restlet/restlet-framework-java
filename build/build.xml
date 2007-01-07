@@ -595,9 +595,11 @@
 		<tstamp>
 			<format property="release-date" pattern="yyyy-MM-dd" />
 		</tstamp>
-		
-		<condition property="ant-ok">
-		  <antversion atleast="1.7"/>
+
+		<condition property="ant-old">
+			<not>
+		  		<contains string="${ant.version}" substring="Ant version 1.7"/>
+			</not>
 		</condition>
 
 		<!-- Set the property that will enable the Weave target -->
@@ -626,7 +628,10 @@
 		</condition>
 
 		<!-- Set the property that will enable the generation of the Javadoc of implementation classes -->
-		<condition property="exclude-packages" value="**.internal.*" else="">
+		<condition property="exclude-packages" value="">
+			<isfalse value="${javadoc-hide}" />
+		</condition>
+		<condition property="exclude-packages" value="**.internal.*">
 			<istrue value="${javadoc-hide}" />
 		</condition>
 
@@ -675,8 +680,9 @@
 		</condition>
 	</target>
 	
-	<target name="verifyAnt" depends="init" description="Check the Ant version for potential issues with JUnit" unless="ant-ok">
+	<target name="verify-ant" if="ant-old" depends="init" description="Check the Ant version for potential issues with JUnit">
 		<echo message="For better integration with JUnit, please upgrade to at least Ant 1.7."/>
+		<echo message="Otherwise, make sure that you have JUnit's JAR into you Ant's lib directory."/>
 		<echo message="Current version: ${ant.version}"/>
 	</target>
 
@@ -720,7 +726,7 @@
 	</target>
 
 	<!-- Testing Target -->
-	<target name="test" depends="verifyAnt, retroweave" description="Execute the test suites">
+	<target name="test" depends="verify-ant, retroweave" description="Execute the test suites">
 		<mkdir dir="${temp}/test"/>
 		<junit printsummary="true"
 		       fork="true"
