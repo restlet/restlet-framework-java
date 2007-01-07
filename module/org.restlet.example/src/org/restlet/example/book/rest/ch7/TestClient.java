@@ -18,22 +18,31 @@
 
 package org.restlet.example.book.rest.ch7;
 
-import org.restlet.Handler;
-import org.restlet.data.Request;
+import org.restlet.Client;
+import org.restlet.data.Form;
+import org.restlet.data.Protocol;
 import org.restlet.data.Response;
-import org.restlet.resource.Resource;
 
 /**
- * Handler of user resources.
- * 
  * @author Jerome Louvel (contact@noelios.com)
  */
-public class UserHandler extends Handler {
+public class TestClient {
 
-    @Override
-    public Resource findTarget(final Request request, Response response) {
-        String userName = (String) request.getAttributes().get("username");
-        User user = UserResource.findUser(userName);
-        return (user == null) ? null : new UserResource(user);
+    public static void main(String... args) {
+        createNewUser();
     }
+
+    public static void createNewUser() {
+        Form form = new Form();
+        form.add("user[email]", "contact@noelios.com");
+        form.add("user[full_name]", "Jerome Louvel");
+        form.add("user[name]", "jlouvel");
+        form.add("user[password]", "myPassword");
+
+        Response resp = new Client(Protocol.HTTP).post("http://localhost:3000/v1/users",
+                form.getWebRepresentation());
+
+        System.out.println(resp.getStatus() + " : " + resp.getRedirectRef());
+    }
+
 }

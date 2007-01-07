@@ -18,6 +18,8 @@
 
 package org.restlet.example.book.rest.ch7;
 
+import java.io.File;
+
 import org.restlet.Component;
 import org.restlet.Restlet;
 import org.restlet.Route;
@@ -36,8 +38,9 @@ import com.db4o.ObjectContainer;
 public class Application extends org.restlet.Application {
 
     /** Open and keep the db4o object container. */
-    public static ObjectContainer CONTAINER = Db4o
-            .openFile("org.restlet.example.book.rest.ch7.dbo");
+    public static ObjectContainer CONTAINER = Db4o.openFile(System
+            .getProperty("user.home")
+            + File.separator + "restbook.dbo");
 
     public static void main(String... args) throws Exception {
         // Create a component with an HTTP server connector
@@ -55,6 +58,9 @@ public class Application extends org.restlet.Application {
     @Override
     public Restlet createRoot() {
         Router router = new Router();
+
+        // Add a route for users
+        router.attach("/users", new UsersHandler());
 
         // Add a route for user resources
         router.attach("/users/{username}", new UserHandler());
@@ -94,7 +100,7 @@ public class Application extends org.restlet.Application {
         // Add a route for bundle resources
         router.attach("/users/{username}/bundles/{bundle}", null);
 
-        return null;
+        return router;
     }
 
 }

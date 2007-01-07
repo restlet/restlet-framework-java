@@ -52,6 +52,18 @@ public final class Result {
      * 
      * @param status
      *            The status.
+     * @param redirectionRef
+     *            The redirection reference.
+     */
+    public Result(Status status, Reference redirectionRef) {
+        this(status, null, redirectionRef);
+    }
+
+    /**
+     * Constructor.
+     * 
+     * @param status
+     *            The status.
      * @param entity
      *            The entity.
      */

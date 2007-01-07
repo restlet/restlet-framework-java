@@ -24,16 +24,15 @@ import org.restlet.data.Response;
 import org.restlet.resource.Resource;
 
 /**
- * Handler of user resources.
+ * Handler for users resources.
  * 
  * @author Jerome Louvel (contact@noelios.com)
  */
-public class UserHandler extends Handler {
+public class UsersHandler extends Handler {
 
     @Override
     public Resource findTarget(final Request request, Response response) {
-        String userName = (String) request.getAttributes().get("username");
-        User user = UserResource.findUser(userName);
-        return (user == null) ? null : new UserResource(user);
+        return new UsersResource(request.getResourceRef().getBaseRef());
     }
+
 }

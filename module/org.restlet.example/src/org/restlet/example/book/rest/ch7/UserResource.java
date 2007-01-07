@@ -25,10 +25,36 @@ import org.restlet.resource.Resource;
 import org.restlet.resource.Result;
 import org.restlet.resource.Variant;
 
+import com.db4o.query.Predicate;
+
 /**
  * @author Jerome Louvel (contact@noelios.com)
  */
 public class UserResource extends Resource {
+
+    public static User findUser(final String userName) {
+        User result = null;
+
+        if (userName != null) {
+            // Create the query predicate
+            Predicate<User> predicate = new Predicate<User>() {
+                private static final long serialVersionUID = 1L;
+
+                @Override
+                public boolean match(User candidate) {
+                    return userName.equals(candidate.getName());
+                }
+            };
+
+            // Query the database and get the first result
+            List<User> users = Application.CONTAINER.query(predicate);
+            if ((users != null) && (users.size() > 0)) {
+                result = users.get(0);
+            }
+        }
+
+        return result;
+    }
 
     private User user;
 

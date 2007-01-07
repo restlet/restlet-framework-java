@@ -4,6 +4,6 @@
 	<classpathentry kind="con" path="org.eclipse.jdt.launching.JRE_CONTAINER"/>
 	<classpathentry kind="con" path="org.eclipse.pde.core.requiredPlugins"/>
 	<classpathentry kind="lib" path="C:/Tools/Db4o/db4o6.0/lib/db4o-6.0-nqopt.jar"/>
-	<classpathentry kind="lib" path="C:/Tools/Db4o/db4o6.0/lib/db4o-6.0-java5.jar" sourcepath="C:/Tools/Db4o/db4o6.0/src/db4ojdk5/core/src"/>
+	<classpathentry kind="lib" path="C:/Tools/Db4o/db4o6.0/lib/db4o-6.0-java5.jar" sourcepath="C:/Tools/Db4o/db4o6.0/src/db4oj/core/src"/>
 	<classpathentry kind="output" path="bin"/>
 </classpath>
