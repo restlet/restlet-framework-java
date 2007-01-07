@@ -681,7 +681,7 @@
 	</target>
 	
 	<target name="verify-ant" if="ant-old" depends="init" description="Check the Ant version for potential issues with JUnit">
-		<echo message="For better integration with JUnit, please upgrade to at least Ant 1.7."/>
+		<echo message="For easier integration with JUnit, we recommand usage of Ant 1.7."/>
 		<echo message="Otherwise, make sure that you have JUnit's JAR into you Ant's lib directory."/>
 		<echo message="Current version: ${ant.version}"/>
 	</target>
