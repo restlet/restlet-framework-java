@@ -324,7 +324,7 @@ public class FormUtils {
      *            The parameter value buffer (can be null).
      * @return The created parameter.
      * @throws IOException
-     * @Deprecated Use the create(CharSequence,CharSequence,CharacterSet) method
+     * @deprecated Use the create(CharSequence,CharSequence,CharacterSet) method
      *             instead. This method uses the UTF-8 character set.
      */
     @Deprecated

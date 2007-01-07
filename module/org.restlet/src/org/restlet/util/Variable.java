@@ -82,6 +82,16 @@ public final class Variable {
     }
 
     /**
+     * Constructor. Default value is "", required is true and fixed is false.
+     * 
+     * @param type
+     *            The type of variable. See TYPE_* constants.
+     */
+    public Variable(int type) {
+        this(type, "", true, false);
+    }
+
+    /**
      * Constructor.
      * 
      * @param type

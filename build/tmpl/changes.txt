@@ -36,6 +36,7 @@ Changes log
  - Renamed Dispatcher into Uniform to better match with REST terminology. No impact on existing code.
  - Deprecated Resource.getIdentifiers() and setIdentifiers() method. No obvious usage. More the role of Handler to map/select URIs.
  - Renamed "com.noelios.restlet.example" to "org.restlet.example" as no more direct dependency on NRE exists in code.
+ - Added new constructor to Variable, taking only a variable type.
   
 [Enhancements] 
  - The Ant script now check Ant's version and recommend upgrade to at least 1.7 for
