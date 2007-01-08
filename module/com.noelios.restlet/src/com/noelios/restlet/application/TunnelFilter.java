@@ -83,6 +83,9 @@ public class TunnelFilter extends Filter {
 
             if (methodName != null) {
                 request.setMethod(Method.valueOf(methodName));
+                // The method parameter is removed from the list of parameters
+                query.removeFirst("method");
+                request.getResourceRef().setQuery(query.getQueryString());
             }
         }
 
