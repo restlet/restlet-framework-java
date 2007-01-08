@@ -16,11 +16,13 @@
  * Portions Copyright [yyyy] [name of copyright owner]
  */
 
-package org.restlet.example.book.rest.ch7;
+package org.restlet.example.book.rest.ch7.resource;
 
 import java.util.List;
 
 import org.restlet.data.Status;
+import org.restlet.example.book.rest.ch7.Application;
+import org.restlet.example.book.rest.ch7.domain.User;
 import org.restlet.resource.Representation;
 import org.restlet.resource.Resource;
 import org.restlet.resource.Result;

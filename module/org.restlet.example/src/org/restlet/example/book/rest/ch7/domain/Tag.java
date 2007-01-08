@@ -16,52 +16,16 @@
  * Portions Copyright [yyyy] [name of copyright owner]
  */
 
-package org.restlet.example.book.rest.ch7;
+package org.restlet.example.book.rest.ch7.domain;
 
 /**
- * User account.
+ * Label used to categorize and share bookmarks.
  * 
  * @author Jerome Louvel (contact@noelios.com)
  */
-public class User {
+public class Tag {
 
     private String name;
-
-    private String fullName;
-
-    private String email;
-
-    private String password;
-
-    /**
-     * @return the email
-     */
-    public String getEmail() {
-        return this.email;
-    }
-
-    /**
-     * @param email
-     *            the email to set
-     */
-    public void setEmail(String email) {
-        this.email = email;
-    }
-
-    /**
-     * @return the fullName
-     */
-    public String getFullName() {
-        return this.fullName;
-    }
-
-    /**
-     * @param fullName
-     *            the fullName to set
-     */
-    public void setFullName(String fullName) {
-        this.fullName = fullName;
-    }
 
     /**
      * @return the name
@@ -76,21 +40,6 @@ public class User {
      */
     public void setName(String name) {
         this.name = name;
-    }
-
-    /**
-     * @return the password
-     */
-    public String getPassword() {
-        return this.password;
-    }
-
-    /**
-     * @param password
-     *            the password to set
-     */
-    public void setPassword(String password) {
-        this.password = password;
     }
 
 }

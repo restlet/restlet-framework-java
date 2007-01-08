@@ -16,18 +16,23 @@
  * Portions Copyright [yyyy] [name of copyright owner]
  */
 
-package org.restlet.example.book.rest.ch7;
+package org.restlet.example.book.rest.ch7.handler;
 
 import java.util.List;
 
 import org.restlet.Handler;
 import org.restlet.data.Request;
 import org.restlet.data.Response;
+import org.restlet.example.book.rest.ch7.Application;
+import org.restlet.example.book.rest.ch7.domain.User;
+import org.restlet.example.book.rest.ch7.resource.UserResource;
 import org.restlet.resource.Resource;
 
 import com.db4o.query.Predicate;
 
 /**
+ * Handler for tag resources.
+ * 
  * @author Jerome Louvel (contact@noelios.com)
  */
 public class TagHandler extends Handler {

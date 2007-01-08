@@ -25,6 +25,8 @@ import org.restlet.Restlet;
 import org.restlet.Route;
 import org.restlet.Router;
 import org.restlet.data.Protocol;
+import org.restlet.example.book.rest.ch7.handler.UsersHandler;
+import org.restlet.example.book.rest.ch7.handler.UserHandler;
 import org.restlet.util.Variable;
 
 import com.db4o.Db4o;
@@ -60,7 +62,7 @@ public class Application extends org.restlet.Application {
         Router router = new Router();
 
         // Add a route for users
-        router.attach("/users", new ManagerHandler());
+        router.attach("/users", new UsersHandler());
 
         // Add a route for user resources
         router.attach("/users/{username}", new UserHandler());

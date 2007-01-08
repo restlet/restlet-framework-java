@@ -16,23 +16,26 @@
  * Portions Copyright [yyyy] [name of copyright owner]
  */
 
-package org.restlet.example.book.rest.ch7;
+package org.restlet.example.book.rest.ch7.handler;
 
 import org.restlet.Handler;
 import org.restlet.data.Request;
 import org.restlet.data.Response;
+import org.restlet.example.book.rest.ch7.domain.User;
+import org.restlet.example.book.rest.ch7.resource.UserResource;
 import org.restlet.resource.Resource;
 
 /**
- * Handler for users resources.
+ * Handler of user resources.
  * 
  * @author Jerome Louvel (contact@noelios.com)
  */
-public class ManagerHandler extends Handler {
+public class UserHandler extends Handler {
 
     @Override
     public Resource findTarget(final Request request, Response response) {
-        return new ManagerResource(request.getResourceRef().getBaseRef());
+        String userName = (String) request.getAttributes().get("username");
+        User user = UserResource.findUser(userName);
+        return (user == null) ? null : new UserResource(user);
     }
-
 }

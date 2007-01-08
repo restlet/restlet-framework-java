@@ -16,12 +16,14 @@
  * Portions Copyright [yyyy] [name of copyright owner]
  */
 
-package org.restlet.example.book.rest.ch7;
+package org.restlet.example.book.rest.ch7.resource;
 
 import org.restlet.data.Form;
 import org.restlet.data.MediaType;
 import org.restlet.data.Reference;
 import org.restlet.data.Status;
+import org.restlet.example.book.rest.ch7.Application;
+import org.restlet.example.book.rest.ch7.domain.User;
 import org.restlet.resource.Representation;
 import org.restlet.resource.Resource;
 import org.restlet.resource.Result;
@@ -31,11 +33,11 @@ import org.restlet.resource.Result;
  * 
  * @author Jerome Louvel (contact@noelios.com)
  */
-public class ManagerResource extends Resource {
+public class UsersResource extends Resource {
 
     private Reference baseRef;
 
-    public ManagerResource(Reference baseRef) {
+    public UsersResource(Reference baseRef) {
         this.baseRef = baseRef;
     }
 

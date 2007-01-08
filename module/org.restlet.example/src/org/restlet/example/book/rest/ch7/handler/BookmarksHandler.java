@@ -16,30 +16,26 @@
  * Portions Copyright [yyyy] [name of copyright owner]
  */
 
-package org.restlet.example.book.rest.ch7;
+package org.restlet.example.book.rest.ch7.handler;
+
+import org.restlet.Handler;
+import org.restlet.data.Request;
+import org.restlet.data.Response;
+import org.restlet.example.book.rest.ch7.domain.User;
+import org.restlet.example.book.rest.ch7.resource.UserResource;
+import org.restlet.resource.Resource;
 
 /**
- * Label used to categorize and share bookmarks.
+ * Handler of bookmarks list resources.
  * 
  * @author Jerome Louvel (contact@noelios.com)
  */
-public class Tag {
+public class BookmarksHandler extends Handler {
 
-    private String name;
-
-    /**
-     * @return the name
-     */
-    public String getName() {
-        return this.name;
+    @Override
+    public Resource findTarget(final Request request, Response response) {
+        String userName = (String) request.getAttributes().get("username");
+        User user = UserResource.findUser(userName);
+        return (user == null) ? null : new UserResource(user);
     }
-
-    /**
-     * @param name
-     *            the name to set
-     */
-    public void setName(String name) {
-        this.name = name;
-    }
-
 }
