@@ -63,6 +63,10 @@
 	<property name="lib-concurrent-version" value="1.3" />
 	<property name="lib-concurrent-id" value="${lib-concurrent-package}_${lib-concurrent-version}" />
 
+	<property name="lib-db4o-package" value="com.db4o" />
+	<property name="lib-db4o-version" value="6.0" />
+	<property name="lib-db4o-id" value="${lib-db4o-package}_${lib-db4o-version}" />
+
 	<property name="lib-dbcp-package" value="org.apache.commons.dbcp" />
 	<property name="lib-dbcp-version" value="1.2" />
 	<property name="lib-dbcp-id" value="${lib-dbcp-package}_${lib-dbcp-version}" />
@@ -303,6 +307,7 @@
 		<path refid="mod-json-path" />
 		<pathelement path="${classes}/${mod-ri-id}" />
 		<pathelement path="${classes}/${mod-json-id}" />
+		<fileset dir="${lib}/${lib-db4o-id}" includes="*.jar" />
 	</path>
 
 	<path id="mod-fileupload-path">
@@ -585,11 +590,9 @@
 	<!-- ===  Ant Targets  === -->
 	<!-- ===================== -->
 
-	<!-- Initialization Target -->
+	<!-- GENERAL targets -->
 	<target name="all" depends="test, generate, javadoc, package, findbugs, checkstyle" description="Full build"/>
 	<target name="verify" depends="test, package, findbugs, checkstyle" description="Verify build"/>
-
-	<!-- Initialization Target -->
 	<target name="init" description="Initialize some properties">
 		<!-- Create the time stamp -->
 		<tstamp>
@@ -686,7 +689,7 @@
 		<echo message="Current version: ${ant.version}"/>
 	</target>
 
-	<!-- Compilation Target -->
+	<!-- COMPILE target -->
 	<target name="compile" depends="init" description="Compile the Java source files">
 		<mkdir dir="${classes}" />
 		<compileModule name="api" />
@@ -712,7 +715,7 @@
 		<compileModule name="ri-test" />
 	</target>
 
-	<!-- Retroweaving Target -->
+	<!-- RETROWEAVE target -->
 	<target name="retroweave"
 	        if="do-backport"
 	        depends="compile"
@@ -725,7 +728,7 @@
 		</retroweave>
 	</target>
 
-	<!-- Testing Target -->
+	<!-- TEST target -->
 	<target name="test" depends="verify-ant, retroweave" description="Execute the test suites">
 		<mkdir dir="${temp}/test"/>
 		<junit printsummary="true"
@@ -743,7 +746,7 @@
 		</junit>
 	</target>
   
-	<!-- Generation Target -->
+	<!-- GENERATE target -->
 	<target name="generate" depends="init" description="Generate template-based files">
 		<!-- Generate the DOAP file -->
 		<copy file="tmpl/doap.rdf" todir="${www}" overwrite="true" />
@@ -778,10 +781,10 @@
 		<replace file="${temp}/setup.nsi" token="@dist-base@" value="../${dist-base}" />
 	</target>
 
-	<!-- Packaging Target -->
+	<!-- PACKAGE target -->
 	<target name="package" depends="package-dist, package-zip, package-nsis" description="Generate the distribution"/>
   
-	<!-- Finding bugs -->
+	<!-- FINDBUGS target -->
 	<target name="findbugs" depends="init" if="do-findbugs" description="Attempts to find bugs">
 		<mkdir dir="${temp}/findbugs" />
 		<findbugsModule name="api" /> 
@@ -805,7 +808,7 @@
 		<findbugsModule name="example" />
 	</target>
 	  
-	<!-- Check style -->
+	<!-- CHECKSTYLE target -->
 	<target name="checkstyle" depends="init" if="do-checkstyle" description="Check the style of the code">
 		<mkdir dir="${temp}/checkstyle" />
 		<checkstyleModule name="api" /> 
@@ -829,7 +832,7 @@
 		<checkstyleModule name="example" />
 	</target>
 	
-	<!-- Cleaning Target -->
+	<!-- CLEAN target -->
 	<target name="clean" description="Clean up the classes and Javadoc">
 		<!-- Delete the classes and Javadoc directories -->
 		<delete includeEmptyDirs="true" verbose="false" quiet="false"  failonerror="false">
@@ -846,7 +849,7 @@
 		</delete>
 	</target>
 
-	<!-- Archiving Target -->
+	<!-- ARCHIVE target -->
 	<target name="archive" depends="init" description="Archive the content of the project">
 		<!-- Archive the content of the project, except for some generated directories -->
 		<mkdir dir="${arc}" />
@@ -856,7 +859,7 @@
 		     excludes="build/**" />
 	</target>
 
-	<!-- Javadocs Target -->
+	<!-- JAVADOC target -->
 	<target name="javadoc" if="do-javadoc" depends="compile" description="Generate the Javadoc">
 		<delete includeEmptyDirs="true" verbose="false" quiet="true">
 			<fileset dir="${docs-api}" excludes="**/.svn" />
@@ -1006,20 +1009,21 @@
 		</copy>
 
 		<!-- Copy text notes -->
-		<copy file="${docs}/changes.txt" tofile="${dist}/CHANGES.txt" />
-		<copy file="${docs}/copyright.txt" tofile="${dist}/COPYRIGHT.txt" />
-		<copy file="${docs}/dependencies.txt" tofile="${dist}/lib/README.txt" />
-		<copy file="${docs}/docs.txt" tofile="${dist}/docs/README.txt" />
-		<copy file="${docs}/src.txt" tofile="${dist}/src/README.txt" />
-		<copy file="${docs}/license.txt" tofile="${dist}/LICENSE.txt" />
-		<copy file="${docs}/readme.txt" tofile="${dist}/README.txt" />
-		<copy file="${docs}/trademarks.txt" tofile="${dist}/TRADEMARKS.txt" />
+		<copy file="${docs}/changes.txt" tofile="${dist}/changes.txt" />
+		<copy file="${docs}/copyright.txt" tofile="${dist}/copyright.txt" />
+		<copy file="${docs}/dependencies.txt" tofile="${dist}/lib/readme.txt" />
+		<copy file="${docs}/docs.txt" tofile="${dist}/docs/readme.txt" />
+		<copy file="${docs}/src.txt" tofile="${dist}/src/readme.txt" />
+		<copy file="${docs}/license.txt" tofile="${dist}/license.txt" />
+		<copy file="${docs}/readme.txt" tofile="${dist}/readme.txt" />
+		<copy file="${docs}/trademarks.txt" tofile="${dist}/trademarks.txt" />
 
 		<!-- Packages libraries -->
 		<packageLibrary name="asyncweb" />
 		<packageLibrary name="codec" />
 		<packageLibrary name="collections" />
 		<packageLibrary name="concurrent" />
+		<packageLibrary name="db4o" />
 		<packageLibrary name="dbcp" />
 		<packageLibrary name="fileupload" />
 		<packageLibrary name="freemarker" />
@@ -1061,12 +1065,12 @@
 		<packageModule name="example" />
 	</target>
 
-	<!-- PACKAGE-ZIP target (generation of final zip file) -->
+	<!-- PACKAGE-ZIP target (generation of final Zip file) -->
 	<target name="package-zip" description="Generate the final zip file">
 		<zip destfile="${dist-zip}/restlet-${version-compact}.zip" basedir="${dist-base}" includes="${dist-path}/**/*" />
 	</target>
 
-	<!-- PACKAGE-NSIS target (generation of windows installer) -->
+	<!-- PACKAGE-NSIS target (generation of Windows installer) -->
 	<target name="package-nsis" depends="init" if="do-nsis" description="Generate the windows installer">
 			<nsis script="${temp}/setup.nsi" verbosity="2"/>
 	</target>
