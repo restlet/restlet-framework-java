@@ -180,8 +180,7 @@ Section un.post UNSEC0001
     Delete /REBOOTOK $INSTDIR\uninstall${VERSION}.exe
     DeleteRegValue HKLM "${REGKEY}" StartMenuGroup
     DeleteRegValue HKLM "${REGKEY}" Path
-    ;DeleteRegValue HKLM "${REGKEY}" Version
-    WriteRegStr HKLM "${REGKEY}" Version "$SMPROGRAMS\$StartMenuGroup"
+    DeleteRegValue HKLM "${REGKEY}" Version
     DeleteRegKey /IfEmpty HKLM "${REGKEY}\Components"
     DeleteRegKey /IfEmpty HKLM "${REGKEY}"
     RmDir /REBOOTOK $SMPROGRAMS\$StartMenuGroup
