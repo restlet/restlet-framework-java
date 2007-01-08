@@ -22,6 +22,7 @@ import org.restlet.Handler;
 import org.restlet.data.Request;
 import org.restlet.data.Response;
 import org.restlet.example.book.rest.ch7.domain.User;
+import org.restlet.example.book.rest.ch7.resource.BookmarksResource;
 import org.restlet.example.book.rest.ch7.resource.UserResource;
 import org.restlet.resource.Resource;
 
@@ -36,6 +37,6 @@ public class BookmarksHandler extends Handler {
     public Resource findTarget(final Request request, Response response) {
         String userName = (String) request.getAttributes().get("username");
         User user = UserResource.findUser(userName);
-        return (user == null) ? null : new UserResource(user);
+        return (user == null) ? null : new BookmarksResource(user);
     }
 }

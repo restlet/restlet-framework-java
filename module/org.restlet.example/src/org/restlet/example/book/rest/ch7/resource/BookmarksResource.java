@@ -32,5 +32,4 @@ public class BookmarksResource extends Resource {
         this.user = user;
     }
 
-
 }

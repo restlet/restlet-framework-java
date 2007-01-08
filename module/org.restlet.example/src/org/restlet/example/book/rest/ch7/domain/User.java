@@ -38,6 +38,15 @@ public class User {
 
     private List<Bookmark> bookmarks;
 
+    public Bookmark getBookmark(String uri) {
+        for (Bookmark bookmark : getBookmarks()) {
+            if (bookmark.getUri().equals(uri))
+                return bookmark;
+        }
+
+        return null;
+    }
+
     /**
      * @return the modifiable list of bookmarks
      */
