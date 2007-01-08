@@ -301,25 +301,70 @@ public abstract class Series<E extends Parameter> extends WrapperList<E> {
         return result;
     }
 
-    /*
-     * (non-Javadoc)
+    /**
+     * Removes from this list all the entries whose name equals the specified
+     * name ignoring the case.
      * 
-     * @see org.restlet.data.PList#removeAll(java.lang.String)
+     * @param name
+     *            The name of the entries to be removed.
+     * @return false if no entry has been removed, true otherwise.
      */
     public boolean removeAll(String name) {
         return removeAll(name, false);
     }
 
-    /*
-     * (non-Javadoc)
+    /**
+     * Removes from this list all the entries whose name equals the specified
+     * name ignoring the case or not.
      * 
-     * @see org.restlet.data.PList#removeAll(java.lang.String, boolean)
+     * @param name
+     *            The name of the entries to be removed.
+     * @param ignoreCase
+     *            true if the comparison ignores the case, false otherwise.
+     * @return false if no entry has been removed, true otherwise.
      */
     public boolean removeAll(String name, boolean ignoreCase) {
         boolean changed = false;
         Parameter param = null;
 
         for (Iterator<E> iter = iterator(); iter.hasNext();) {
+            param = iter.next();
+            if (equals(param.getName(), name, ignoreCase)) {
+                iter.remove();
+                changed = true;
+            }
+        }
+
+        return changed;
+    }
+
+    /**
+     * Removes from this list the first entry whose name equals the specified
+     * name ignoring the case.
+     * 
+     * @param name
+     *            The name of the entries to be removed.
+     * @return false if no entry has been removed, true otherwise.
+     */
+    public boolean removeFirst(String name) {
+        return removeFirst(name, false);
+    }
+
+    /**
+     * Removes from this list the first entry whose name equals the specified
+     * name ignoring the case or not.
+     * 
+     * @param name
+     *            The name of the entries to be removed.
+     * @param ignoreCase
+     *            true if the comparison ignores the case, false otherwise.
+     * @return false if no entry has been removed, true otherwise.
+     */
+    public boolean removeFirst(String name, boolean ignoreCase) {
+        boolean changed = false;
+        Parameter param = null;
+
+        for (Iterator<E> iter = iterator(); iter.hasNext() && !changed;) {
             param = iter.next();
             if (equals(param.getName(), name, ignoreCase)) {
                 iter.remove();
