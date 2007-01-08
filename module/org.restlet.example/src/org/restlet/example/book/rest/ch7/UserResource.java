@@ -94,9 +94,8 @@ public class UserResource extends Resource {
         sb.append("------------\n");
         sb.append("User details\n");
         sb.append("------------\n\n");
-        sb.append("Name:      ").append(this.user.getName());
-        sb.append("Full name: ").append(this.user.getFullName());
-        sb.append("Email:     ").append(this.user.getEmail());
+        sb.append("Name:  ").append(this.user.getFullName()).append('\n');
+        sb.append("Email: ").append(this.user.getEmail()).append('\n');
 
         // Add it to the list of variants
         result.add(new StringRepresentation(sb));

@@ -31,8 +31,7 @@ public class TestClient {
     public static void main(String... args) throws Exception {
         createNewUser("jlouvel", "myPassword", "Jerome Louvel",
                 "contact@noelios.com");
-        Thread.sleep(1000);
-        deleteUser("jlouvel");
+        // deleteUser("jlouvel");
     }
 
     public static void createNewUser(String name, String password,
