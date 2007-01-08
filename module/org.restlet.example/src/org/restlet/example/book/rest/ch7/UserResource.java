@@ -20,6 +20,7 @@ package org.restlet.example.book.rest.ch7;
 
 import java.util.List;
 
+import org.restlet.data.Status;
 import org.restlet.resource.Representation;
 import org.restlet.resource.Resource;
 import org.restlet.resource.Result;
@@ -74,7 +75,13 @@ public class UserResource extends Resource {
 
     @Override
     public Result delete() {
-        return null;
+        if (this.user != null) {
+            Application.CONTAINER.delete(this.user);
+            Application.CONTAINER.commit();
+            return new Result(Status.SUCCESS_OK);
+        } else {
+            return new Result(Status.SERVER_ERROR_INTERNAL);
+        }
     }
 
     @Override

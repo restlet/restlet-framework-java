@@ -28,20 +28,29 @@ import org.restlet.data.Response;
  */
 public class TestClient {
 
-    public static void main(String... args) {
-        createNewUser();
+    public static void main(String... args) throws Exception {
+        createNewUser("jlouvel", "myPassword", "Jerome Louvel",
+                "contact@noelios.com");
+        Thread.sleep(1000);
+        deleteUser("jlouvel");
     }
 
-    public static void createNewUser() {
+    public static void createNewUser(String name, String password,
+            String fullName, String email) {
         Form form = new Form();
-        form.add("user[email]", "contact@noelios.com");
-        form.add("user[full_name]", "Jerome Louvel");
-        form.add("user[name]", "jlouvel");
-        form.add("user[password]", "myPassword");
+        form.add("user[name]", name);
+        form.add("user[password]", password);
+        form.add("user[full_name]", fullName);
+        form.add("user[email]", email);
 
-        Response resp = new Client(Protocol.HTTP).post("http://localhost:3000/v1/users",
-                form.getWebRepresentation());
+        Response resp = new Client(Protocol.HTTP).post(
+                "http://localhost:3000/v1/users", form.getWebRepresentation());
+        System.out.println(resp.getStatus() + " : " + resp.getRedirectRef());
+    }
 
+    public static void deleteUser(String name) {
+        Response resp = new Client(Protocol.HTTP)
+                .delete("http://localhost:3000/v1/users/" + name);
         System.out.println(resp.getStatus() + " : " + resp.getRedirectRef());
     }
 
