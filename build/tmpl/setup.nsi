@@ -19,7 +19,7 @@ BrandingText " "
 !define MUI_FINISHPAGE_NOAUTOCLOSE
 !define MUI_STARTMENUPAGE_REGISTRY_ROOT HKLM
 !define MUI_STARTMENUPAGE_NODISABLE
-!define MUI_STARTMENUPAGE_REGISTRY_KEY "Software\Noelios"
+!define MUI_STARTMENUPAGE_REGISTRY_KEY "Software\Noelios\$(^Name)"
 !define MUI_STARTMENUPAGE_REGISTRY_VALUENAME StartMenuGroup
 !define MUI_UNICON @www@/favicon.ico
 !define MUI_UNFINISHPAGE_NOAUTOCLOSE
@@ -48,7 +48,6 @@ BrandingText " "
 Var StartMenuGroup
 
 # Installer pages
-;No more welcome page
 !insertmacro MUI_PAGE_WELCOME
 !insertmacro MUI_PAGE_LICENSE @license-dir@/LICENSE.txt
 !insertmacro MUI_PAGE_DIRECTORY
@@ -177,11 +176,12 @@ SectionEnd
 Section un.post UNSEC0001
     DeleteRegKey HKLM "SOFTWARE\Microsoft\Windows\CurrentVersion\Uninstall\$(^Name)${VERSION}"
     Delete /REBOOTOK "$SMPROGRAMS\$StartMenuGroup\Uninstall $(^Name)${VERSION}.lnk"
-    Delete "$SMPROGRAMS\$StartMenuGroup\www.restlet.org.lnk"
+    Delete /REBOOTOK "$SMPROGRAMS\$StartMenuGroup\www.restlet.org.lnk"
     Delete /REBOOTOK $INSTDIR\uninstall${VERSION}.exe
     DeleteRegValue HKLM "${REGKEY}" StartMenuGroup
     DeleteRegValue HKLM "${REGKEY}" Path
-    DeleteRegValue HKLM "${REGKEY}" Version
+    ;DeleteRegValue HKLM "${REGKEY}" Version
+    WriteRegStr HKLM "${REGKEY}" Version "$SMPROGRAMS\$StartMenuGroup"
     DeleteRegKey /IfEmpty HKLM "${REGKEY}\Components"
     DeleteRegKey /IfEmpty HKLM "${REGKEY}"
     RmDir /REBOOTOK $SMPROGRAMS\$StartMenuGroup
