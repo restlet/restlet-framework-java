@@ -46,6 +46,7 @@ Changes log
    better integration with JUnit. Suggested by Dave Pawson.
  - Updated Jetty to 6.1.0.
  - Slighty clarified the warning message for missing connectors. Suggested by Dave Pawson.
+ - Added db4o 6.0 as a library. Used as an object database engine for some examples.
  
 1.0 RC1 (2006-12-26)
 [Bugs fixed]
