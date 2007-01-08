@@ -24,6 +24,7 @@ import org.restlet.data.Status;
 import org.restlet.resource.Representation;
 import org.restlet.resource.Resource;
 import org.restlet.resource.Result;
+import org.restlet.resource.StringRepresentation;
 import org.restlet.resource.Variant;
 
 import com.db4o.query.Predicate;
@@ -86,7 +87,20 @@ public class UserResource extends Resource {
 
     @Override
     public List<Variant> getVariants() {
-        return super.getVariants();
+        List<Variant> result = super.getVariants();
+
+        // Creates a text representation
+        StringBuilder sb = new StringBuilder();
+        sb.append("------------\n");
+        sb.append("User details\n");
+        sb.append("------------\n\n");
+        sb.append("Name:      ").append(this.user.getName());
+        sb.append("Full name: ").append(this.user.getFullName());
+        sb.append("Email:     ").append(this.user.getEmail());
+
+        // Add it to the list of variants
+        result.add(new StringRepresentation(sb));
+        return result;
     }
 
     @Override

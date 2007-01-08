@@ -40,6 +40,8 @@ Changes log
  - Added a Request.rootRef property storing the reference of the application root. This 
    is be very important when generating URI that must be independent of the application's
    deployment context.
+ - StringRepresentation constructors now accept CharSequence instances and not just String
+   instances. This plays nicer with StringBuilder, CharBuffer and StringBuffer classes.
   
 [Enhancements] 
  - The Ant script now check Ant's version and recommend upgrade to at least 1.7 for

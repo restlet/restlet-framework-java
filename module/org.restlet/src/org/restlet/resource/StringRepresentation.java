@@ -37,7 +37,7 @@ import org.restlet.data.MediaType;
  * @author Jerome Louvel (contact@noelios.com)
  */
 public class StringRepresentation extends StreamRepresentation {
-    private String text;
+    private CharSequence text;
 
     /**
      * Constructor. The following metadata are used by default: "text/plain"
@@ -46,7 +46,7 @@ public class StringRepresentation extends StreamRepresentation {
      * @param text
      *            The string value.
      */
-    public StringRepresentation(String text) {
+    public StringRepresentation(CharSequence text) {
         this(text, MediaType.TEXT_PLAIN);
     }
 
@@ -59,7 +59,7 @@ public class StringRepresentation extends StreamRepresentation {
      * @param language
      *            The language.
      */
-    public StringRepresentation(String text, Language language) {
+    public StringRepresentation(CharSequence text, Language language) {
         this(text, MediaType.TEXT_PLAIN, language);
     }
 
@@ -72,7 +72,7 @@ public class StringRepresentation extends StreamRepresentation {
      * @param mediaType
      *            The media type.
      */
-    public StringRepresentation(String text, MediaType mediaType) {
+    public StringRepresentation(CharSequence text, MediaType mediaType) {
         this(text, mediaType, null);
     }
 
@@ -87,7 +87,7 @@ public class StringRepresentation extends StreamRepresentation {
      * @param language
      *            The language.
      */
-    public StringRepresentation(String text, MediaType mediaType,
+    public StringRepresentation(CharSequence text, MediaType mediaType,
             Language language) {
         this(text, mediaType, language, CharacterSet.ISO_8859_1);
     }
@@ -104,7 +104,7 @@ public class StringRepresentation extends StreamRepresentation {
      * @param characterSet
      *            The character set.
      */
-    public StringRepresentation(String text, MediaType mediaType,
+    public StringRepresentation(CharSequence text, MediaType mediaType,
             Language language, CharacterSet characterSet) {
         super(mediaType);
         this.text = text;
@@ -143,7 +143,7 @@ public class StringRepresentation extends StreamRepresentation {
      * @return The representation as a string value.
      */
     public String getText() {
-        return this.text;
+        return (this.text == null) ? null : this.text.toString();
     }
 
     /**
