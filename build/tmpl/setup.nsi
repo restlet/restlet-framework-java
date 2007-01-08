@@ -19,21 +19,29 @@ BrandingText " "
 !define MUI_FINISHPAGE_NOAUTOCLOSE
 !define MUI_STARTMENUPAGE_REGISTRY_ROOT HKLM
 !define MUI_STARTMENUPAGE_NODISABLE
-!define MUI_STARTMENUPAGE_REGISTRY_KEY "Software\Restlet"
+!define MUI_STARTMENUPAGE_REGISTRY_KEY "Software\Noelios"
 !define MUI_STARTMENUPAGE_REGISTRY_VALUENAME StartMenuGroup
-!define MUI_STARTMENUPAGE_DEFAULT_FOLDER "Restlet"
 !define MUI_UNICON @www@/favicon.ico
 !define MUI_UNFINISHPAGE_NOAUTOCLOSE
+!define MUI_WELCOMEFINISHPAGE_BITMAP_NOSTRETCH
 !define MUI_WELCOMEFINISHPAGE_BITMAP @images-dir@\installer.bmp
 !define MUI_HEADERIMAGE
 !define MUI_HEADERIMAGE_BITMAP @images-dir@\logo150.bmp
 !define MUI_LANGDLL_REGISTRY_ROOT HKLM
-!define MUI_STARTMENUPAGE_DEFAULTFOLDER Noelios
+!define MUI_STARTMENUPAGE_DEFAULTFOLDER "Noelios"
 
 # Included files
 !include Sections.nsh
 !include MUI.nsh
 
+!include LogicLib.nsh
+!include TextFunc.nsh
+
+!insertmacro un.LineFind
+!insertmacro un.TrimNewLines
+
+#Include library from Mozilla foundation
+!include common.nsh
 # Reserved Files
 
 # Variables
@@ -130,6 +138,7 @@ Section -Main SEC0000
 SectionEnd
 
 Section -post SEC0001
+    WriteRegStr HKLM "${REGKEY}" Version ${VERSION}
     WriteRegStr HKLM "${REGKEY}" Path $INSTDIR
     WriteUninstaller $INSTDIR\uninstall${VERSION}.exe
     !insertmacro MUI_STARTMENU_WRITE_BEGIN Application
@@ -172,10 +181,28 @@ Section un.post UNSEC0001
     Delete /REBOOTOK $INSTDIR\uninstall${VERSION}.exe
     DeleteRegValue HKLM "${REGKEY}" StartMenuGroup
     DeleteRegValue HKLM "${REGKEY}" Path
+    DeleteRegValue HKLM "${REGKEY}" Version
     DeleteRegKey /IfEmpty HKLM "${REGKEY}\Components"
     DeleteRegKey /IfEmpty HKLM "${REGKEY}"
     RmDir /REBOOTOK $SMPROGRAMS\$StartMenuGroup
-    RmDir /r /REBOOTOK $INSTDIR
+
+    ; Remove files. If we don't have a log file skip
+    ${If} ${FileExists} "$INSTDIR\uninstall.log"
+        ; Copy the uninstall log file to a temporary file
+        CopyFiles "$INSTDIR\uninstall.log" "$INSTDIR\uninstall.log.bak"
+
+       ; Delete files
+       ${un.LineFind} "$INSTDIR\uninstall.log.bak" "/NUL" "1:-1" "un.RemoveFilesCallback"
+
+       ; Remove empty directories
+       ${un.LineFind} "$INSTDIR\uninstall.log.bak" "/NUL" "1:-1" "un.RemoveDirsCallback"
+
+       ; Delete the temporary uninstall log file
+       ${DeleteFile} "$INSTDIR\uninstall.log.bak"
+
+	   ; Remove the installation directory if it is empty
+       ${RemoveDir} "$INSTDIR"
+    ${EndIf}
 SectionEnd
 
 # Installer functions
@@ -191,3 +218,55 @@ Function un.onInit
     !insertmacro SELECT_UNSECTION Main ${UNSEC0000}
 FunctionEnd
 
+################################################################################
+# Helper Functions
+
+Function un.RemoveFilesCallback
+	${un.TrimNewLines} "$R9" "$R9"
+    StrCpy $R1 "$INSTDIR\$R9"
+    ${deleteFile} "$R1"
+
+	ClearErrors
+	Push 0
+FunctionEnd
+
+; Using locate will leave file handles open to some of the directories which
+; will prevent the deletion of these directories. This parses the uninstall.log
+; and uses the file entries to find / remove empty directories.
+Function un.RemoveDirsCallback
+	${un.TrimNewLines} "$R9" "$R9"
+	StrCpy $R2 "$INSTDIR"
+	StrCpy $R1 "$INSTDIR\$R9"
+    loop:
+	   Push $R1
+	   ${GetParentDir}
+	   Pop $R0
+	   GetFullPathName $R1 "$R0"
+	   ; We only try to remove empty directories but the Desktop, StartMenu, and
+	   ; QuickLaunch directories can be empty so guard against removing them.
+	   ${If} "$R2" != "$INSTDIR"
+	       SetShellVarContext all
+	       ${If} $R1 == "$DESKTOP"
+	       ${OrIf} $R1 == "$STARTMENU"
+	           GoTo end
+	       ${EndIf}
+	       SetShellVarContext current
+	       ${If} $R1 == "$QUICKLAUNCH"
+	       ${OrIf} $R1 == "$DESKTOP"
+	       ${OrIf} $R1 == "$STARTMENU"
+	           GoTo end
+	       ${EndIf}
+	   ${ElseIf} "$R1" == "$INSTDIR"
+	       GoTo end
+	   ${EndIf}
+	   ${RemoveDir} "$R1"
+
+	   ${If} ${Errors}
+	   ${OrIf} "$R2" != "$INSTDIR"
+	       GoTo end
+	   ${EndIf}
+	   GoTo loop
+	end:
+	ClearErrors
+    Push 0
+FunctionEnd
