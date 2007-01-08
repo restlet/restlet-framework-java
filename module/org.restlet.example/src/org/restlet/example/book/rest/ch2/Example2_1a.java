@@ -27,7 +27,6 @@ import org.w3c.dom.Node;
 
 /**
  * Searching the web with Yahoo!'s web service using XML.
- * This version uses a DOM parser and ignores namespaces.
  * 
  * @author Jerome Louvel (contact@noelios.com)
  */
