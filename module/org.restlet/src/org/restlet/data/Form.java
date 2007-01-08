@@ -117,7 +117,8 @@ public class Form extends Series<Parameter> {
     }
 
     /**
-     * Constructor.
+     * Constructor. Uses UTF-8 as the character set for encoding non-ASCII
+     * characters.
      * 
      * @param queryString
      *            The Web form parameters as a string.
@@ -125,6 +126,20 @@ public class Form extends Series<Parameter> {
      */
     public Form(String queryString) {
         this(Logger.getLogger(Form.class.getCanonicalName()), queryString);
+    }
+
+    /**
+     * Constructor.
+     * 
+     * @param queryString
+     *            The Web form parameters as a string.
+     * @param characterSet
+     *            The supported character encoding.
+     * @throws IOException
+     */
+    public Form(String queryString, CharacterSet characterSet) {
+        this(Logger.getLogger(Form.class.getCanonicalName()), queryString,
+                characterSet);
     }
 
     @Override

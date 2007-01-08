@@ -33,21 +33,21 @@ import java.util.logging.Logger;
  * conforms to the RFC 3986 specifying URIs and follow its naming conventions.<br/>
  * 
  * <pre>
- *                     URI reference        = absolute-reference | relative-reference
- *                  
- *                     absolute-reference   = scheme &quot;:&quot; scheme-specific-part [ &quot;#&quot; fragment ]
- *                     scheme-specific-part = ( hierarchical-part [ &quot;?&quot; query ] ) | opaque-part
- *                     hierarchical-part    = ( &quot;//&quot; authority path-abempty ) | path-absolute | path-rootless | path-empty
- *                     authority            = [ user-info &quot;@&quot; ] host-domain [ &quot;:&quot; host-port ]
- *                                                    
- *                     relative-reference   = relative-part [ &quot;?&quot; query ] [ &quot;#&quot; fragment ]
- *                     relative-part        = ( &quot;//&quot; authority path-abempty ) | path-absolute | path-noscheme | path-empty
- *                                                    
- *                     path-abempty         = begins with &quot;/&quot; or is empty
- *                     path-absolute        = begins with &quot;/&quot; but not &quot;//&quot;
- *                     path-noscheme        = begins with a non-colon segment
- *                     path-rootless        = begins with a segment
- *                     path-empty           = zero characters
+ *                       URI reference        = absolute-reference | relative-reference
+ *                    
+ *                       absolute-reference   = scheme &quot;:&quot; scheme-specific-part [ &quot;#&quot; fragment ]
+ *                       scheme-specific-part = ( hierarchical-part [ &quot;?&quot; query ] ) | opaque-part
+ *                       hierarchical-part    = ( &quot;//&quot; authority path-abempty ) | path-absolute | path-rootless | path-empty
+ *                       authority            = [ user-info &quot;@&quot; ] host-domain [ &quot;:&quot; host-port ]
+ *                                                      
+ *                       relative-reference   = relative-part [ &quot;?&quot; query ] [ &quot;#&quot; fragment ]
+ *                       relative-part        = ( &quot;//&quot; authority path-abempty ) | path-absolute | path-noscheme | path-empty
+ *                                                      
+ *                       path-abempty         = begins with &quot;/&quot; or is empty
+ *                       path-absolute        = begins with &quot;/&quot; but not &quot;//&quot;
+ *                       path-noscheme        = begins with a non-colon segment
+ *                       path-rootless        = begins with a segment
+ *                       path-empty           = zero characters
  * </pre>
  * 
  * Note that this class doesn't encode or decode the reserved characters. It
@@ -129,7 +129,8 @@ public class Reference {
         String result = null;
 
         try {
-            result = URLEncoder.encode(toEncode, characterSet.getName());
+            result = (characterSet == null) ? toEncode : URLEncoder.encode(
+                    toEncode, characterSet.getName());
         } catch (UnsupportedEncodingException uee) {
             Logger
                     .getLogger(Reference.class.getCanonicalName())
@@ -161,7 +162,8 @@ public class Reference {
         String result = null;
 
         try {
-            result = URLDecoder.decode(toDecode, characterSet.getName());
+            result = (characterSet == null) ? toDecode : URLDecoder.decode(
+                    toDecode, characterSet.getName());
         } catch (UnsupportedEncodingException uee) {
             Logger
                     .getLogger(Reference.class.getCanonicalName())
@@ -711,6 +713,18 @@ public class Reference {
      */
     public Form getQueryAsForm() {
         return new Form(getQuery());
+    }
+
+    /**
+     * Returns the optional query component as a form submission.
+     * 
+     * @param characterSet
+     *            The supported character encoding.
+     * @return The optional query component as a form submission.
+     * @throws IOException
+     */
+    public Form getQueryAsForm(CharacterSet characterSet) {
+        return new Form(getQuery(), characterSet);
     }
 
     /**
