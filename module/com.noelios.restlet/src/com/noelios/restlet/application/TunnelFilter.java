@@ -73,7 +73,7 @@ public class TunnelFilter extends Filter {
      */
     public void beforeHandle(Request request, Response response) {
         super.beforeHandle(request, response);
-        Form query = request.getResourceRef().getQueryAsForm();
+        Form query = request.getResourceRef().getQueryAsForm(null);
 
         // Tunnels the extracted attributes into the proper call objects.
         if (getApplication().getTunnelService().isMethodTunnel()
@@ -85,7 +85,7 @@ public class TunnelFilter extends Filter {
                 request.setMethod(Method.valueOf(methodName));
                 // The method parameter is removed from the list of parameters
                 query.removeFirst("method");
-                request.getResourceRef().setQuery(query.getQueryString());
+                request.getResourceRef().setQuery(query.getQueryString(null));
             }
         }
 
