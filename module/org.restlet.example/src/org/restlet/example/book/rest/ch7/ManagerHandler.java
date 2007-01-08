@@ -28,11 +28,11 @@ import org.restlet.resource.Resource;
  * 
  * @author Jerome Louvel (contact@noelios.com)
  */
-public class UsersHandler extends Handler {
+public class ManagerHandler extends Handler {
 
     @Override
     public Resource findTarget(final Request request, Response response) {
-        return new UsersResource(request.getResourceRef().getBaseRef());
+        return new ManagerResource(request.getResourceRef().getBaseRef());
     }
 
 }

@@ -60,7 +60,7 @@ public class Application extends org.restlet.Application {
         Router router = new Router();
 
         // Add a route for users
-        router.attach("/users", new UsersHandler());
+        router.attach("/users", new ManagerHandler());
 
         // Add a route for user resources
         router.attach("/users/{username}", new UserHandler());

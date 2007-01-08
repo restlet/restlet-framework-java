@@ -31,11 +31,11 @@ import org.restlet.resource.Result;
  * 
  * @author Jerome Louvel (contact@noelios.com)
  */
-public class UsersResource extends Resource {
+public class ManagerResource extends Resource {
 
     private Reference baseRef;
 
-    public UsersResource(Reference baseRef) {
+    public ManagerResource(Reference baseRef) {
         this.baseRef = baseRef;
     }
 
