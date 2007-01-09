@@ -111,7 +111,8 @@ public class Reference {
     }
 
     /**
-     * Encodes a given string using the standard URI encoding mechanism.
+     * Encodes a given string using the standard URI encoding mechanism. If the
+     * provided character set is null, the string is returned but not encoded.
      * 
      * <em><strong>Note:</strong> The <a
      * href="http://www.w3.org/TR/html40/appendix/notes.html#non-ascii-chars">
@@ -144,8 +145,8 @@ public class Reference {
     }
 
     /**
-     * Decodes a given string using the standard URI encoding mechanism.
-     * 
+     * Decodes a given string using the standard URI encoding mechanism. If the
+     * provided character set is null, the string is returned but not decoded.
      * <em><strong>Note:</strong> The <a
      * href="http://www.w3.org/TR/html40/appendix/notes.html#non-ascii-chars">
      * World Wide Web Consortium Recommendation</a> states that UTF-8 should be
