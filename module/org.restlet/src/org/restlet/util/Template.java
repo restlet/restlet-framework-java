@@ -413,6 +413,28 @@ public class Template {
      * @return The formatted string.
      */
     public String format(Request request, Response response) {
+        return format(new CallVariableResolver(request, response));
+    }
+
+    /**
+     * Creates a formatted string based on the given request.
+     * 
+     * @param variables
+     *            The variables to use when formatting.
+     * @return The formatted string.
+     */
+    public String format(Map<String, Object> variables) {
+        return format(new MapVariableResolver(variables));
+    }
+
+    /**
+     * Creates a formatted string based on the given variable resolver.
+     * 
+     * @param resolver
+     *            The variable resolver to use.
+     * @return The formatted string.
+     */
+    private String format(VariableResolver resolver) {
         StringBuilder result = new StringBuilder();
         StringBuilder varBuffer = null;
         char next;
@@ -432,8 +454,7 @@ public class Template {
                                         + this.regexPattern);
                     } else {
                         String varName = varBuffer.toString();
-                        result.append(getVariableContent(varName, request,
-                                response));
+                        result.append(resolver.resolve(varName));
 
                         // Reset the variable name buffer
                         varBuffer = new StringBuilder();
@@ -630,194 +651,6 @@ public class Template {
         if (this.regexVariables == null)
             this.regexVariables = new ArrayList<String>();
         return this.regexVariables;
-    }
-
-    /**
-     * Returns the content corresponding to a variable.
-     * 
-     * @param variableName
-     *            The variable name.
-     * @param request
-     *            The request to use as a model.
-     * @param response
-     *            The response to use as a model.
-     * @return The content corresponding to a variable.
-     */
-    private String getVariableContent(String variableName, Request request,
-            Response response) {
-        String result = null;
-
-        Variable var = getVariables().get(variableName);
-        if (var == null)
-            var = getDefaultVariable();
-
-        // Check for a matching request attribute
-        if (request != null) {
-            Object variable = request.getAttributes().get(variableName);
-            if (variable != null) {
-                result = variable.toString();
-            }
-        }
-
-        // Check for a matching response attribute
-        if ((result == null) && (response != null)
-                && response.getAttributes().containsKey(variableName)) {
-            result = response.getAttributes().get(variableName).toString();
-        }
-
-        // Check for a matching request or response property
-        if (result == null) {
-            if (request != null) {
-                if (variableName.equals("c")) {
-                    result = Boolean.toString(request.isConfidential());
-                } else if (variableName.equals("cia")) {
-                    result = request.getClientInfo().getAddress();
-                } else if (variableName.equals("cig")) {
-                    result = request.getClientInfo().getAgent();
-                } else if (variableName.equals("cri")) {
-                    result = request.getChallengeResponse().getIdentifier();
-                } else if (variableName.equals("crs")) {
-                    if (request.getChallengeResponse().getScheme() != null) {
-                        result = request.getChallengeResponse().getScheme()
-                                .getTechnicalName();
-                    }
-                } else if (variableName.equals("ecs")) {
-                    if ((request.getEntity() != null)
-                            && (request.getEntity().getCharacterSet() != null)) {
-                        result = request.getEntity().getCharacterSet()
-                                .getName();
-                    }
-                } else if (variableName.equals("ee")) {
-                    if ((request.getEntity() != null)
-                            && (request.getEntity().getEncoding() != null)) {
-                        result = request.getEntity().getEncoding().getName();
-                    }
-                } else if (variableName.equals("eed")) {
-                    if ((request.getEntity() != null)
-                            && (request.getEntity().getExpirationDate() != null)) {
-                        result = DateUtils.format(request.getEntity()
-                                .getExpirationDate(), DateUtils.FORMAT_RFC_1123
-                                .get(0));
-                    }
-                } else if (variableName.equals("el")) {
-                    if ((request.getEntity() != null)
-                            && (request.getEntity().getLanguage() != null)) {
-                        result = request.getEntity().getLanguage().getName();
-                    }
-                } else if (variableName.equals("emd")) {
-                    if ((request.getEntity() != null)
-                            && (request.getEntity().getModificationDate() != null)) {
-                        result = DateUtils.format(request.getEntity()
-                                .getModificationDate(),
-                                DateUtils.FORMAT_RFC_1123.get(0));
-                    }
-                } else if (variableName.equals("emt")) {
-                    if ((request.getEntity() != null)
-                            && (request.getEntity().getMediaType() != null)) {
-                        result = request.getEntity().getMediaType().getName();
-                    }
-                } else if (variableName.equals("es")) {
-                    if ((request.getEntity() != null)
-                            && (request.getEntity().getSize() != -1)) {
-                        result = Long.toString(request.getEntity().getSize());
-                    }
-                } else if (variableName.equals("et")) {
-                    if ((request.getEntity() != null)
-                            && (request.getEntity().getTag() != null)) {
-                        result = request.getEntity().getTag().getName();
-                    }
-                } else if (variableName.startsWith("f")) {
-                    result = getReferenceContent(variableName.substring(1),
-                            request.getReferrerRef());
-                } else if (variableName.startsWith("h")) {
-                    result = getReferenceContent(variableName.substring(1),
-                            request.getHostRef());
-                } else if (variableName.equals("m")) {
-                    if (request.getMethod() != null) {
-                        result = request.getMethod().getName();
-                    }
-                } else if (variableName.equals("p")) {
-                    if (request.getProtocol() != null) {
-                        result = request.getProtocol().getName();
-                    }
-                } else if (variableName.startsWith("r")) {
-                    result = getReferenceContent(variableName.substring(1),
-                            request.getResourceRef());
-                }
-            }
-
-            if ((result == null) && (response != null)) {
-                if (variableName.equals("ECS")) {
-                    if ((response.getEntity() != null)
-                            && (response.getEntity().getCharacterSet() != null)) {
-                        result = response.getEntity().getCharacterSet()
-                                .getName();
-                    }
-                } else if (variableName.equals("EE")) {
-                    if ((response.getEntity() != null)
-                            && (response.getEntity().getEncoding() != null)) {
-                        result = response.getEntity().getEncoding().getName();
-                    }
-                } else if (variableName.equals("EED")) {
-                    if ((response.getEntity() != null)
-                            && (response.getEntity().getExpirationDate() != null)) {
-                        result = DateUtils.format(response.getEntity()
-                                .getExpirationDate(), DateUtils.FORMAT_RFC_1123
-                                .get(0));
-                    }
-                } else if (variableName.equals("EL")) {
-                    if ((response.getEntity() != null)
-                            && (response.getEntity().getLanguage() != null)) {
-                        result = response.getEntity().getLanguage().getName();
-                    }
-                } else if (variableName.equals("EMD")) {
-                    if ((response.getEntity() != null)
-                            && (response.getEntity().getModificationDate() != null)) {
-                        result = DateUtils.format(response.getEntity()
-                                .getModificationDate(),
-                                DateUtils.FORMAT_RFC_1123.get(0));
-                    }
-                } else if (variableName.equals("EMT")) {
-                    if ((response.getEntity() != null)
-                            && (response.getEntity().getMediaType() != null)) {
-                        result = response.getEntity().getMediaType().getName();
-                    }
-                } else if (variableName.equals("ES")) {
-                    if ((response.getEntity() != null)
-                            && (response.getEntity().getSize() != -1)) {
-                        result = Long.toString(response.getEntity().getSize());
-                    }
-                } else if (variableName.equals("ET")) {
-                    if ((response.getEntity() != null)
-                            && (response.getEntity().getTag() != null)) {
-                        result = response.getEntity().getTag().getName();
-                    }
-                } else if (variableName.startsWith("R")) {
-                    result = getReferenceContent(variableName.substring(1),
-                            response.getRedirectRef());
-                } else if (variableName.equals("S")) {
-                    if (response.getStatus() != null) {
-                        result = Integer.toString(response.getStatus()
-                                .getCode());
-                    }
-                } else if (variableName.equals("SIA")) {
-                    result = response.getServerInfo().getAddress();
-                } else if (variableName.equals("SIG")) {
-                    result = response.getServerInfo().getAgent();
-                } else if (variableName.equals("SIP")) {
-                    if (response.getServerInfo().getPort() != null) {
-                        result = response.getServerInfo().getPort().toString();
-                    }
-                }
-            }
-        }
-
-        if (result == null) {
-            // Use the default value instead
-            result = var.getDefaultValue();
-        }
-
-        return result;
     }
 
     /**
@@ -1032,6 +865,20 @@ public class Template {
      * @return The number of matched characters or -1 if no character matched.
      */
     public int parse(String formattedString, Request request) {
+        return parse(formattedString, request.getAttributes());
+    }
+
+    /**
+     * Attempts to parse a formatted reference. If the parsing succeeds, the
+     * given request's attributes are updated.
+     * 
+     * @param formattedString
+     *            The string to parse.
+     * @param variables
+     *            The map of variables to update.
+     * @return The number of matched characters or -1 if no character matched.
+     */
+    public int parse(String formattedString, Map<String, Object> variables) {
         int result = -1;
         Matcher matcher = getRegexPattern().matcher(formattedString);
         boolean matched = ((getMatchingMode() == MODE_EQUALS) && matcher
@@ -1049,7 +896,7 @@ public class Template {
             for (int i = 0; i < getRegexVariables().size(); i++) {
                 attributeName = getRegexVariables().get(i);
                 attributeValue = matcher.group(i + 1);
-                request.getAttributes().put(attributeName, attributeValue);
+                variables.put(attributeName, attributeValue);
             }
         }
 
@@ -1074,6 +921,253 @@ public class Template {
      */
     public void setMatchingMode(int matchingMode) {
         this.matchingMode = matchingMode;
+    }
+
+    /**
+     * Resolves variable values.
+     * 
+     * @author Jerome Louvel (contact@noelios.com)
+     */
+    private abstract class VariableResolver {
+        public abstract String resolve(String variableName);
+    }
+
+    /**
+     * Resolves variable values based on a request and a response.
+     * 
+     * @author Jerome Louvel (contact@noelios.com)
+     */
+    private class CallVariableResolver extends VariableResolver {
+        /** The request to use as a model. */
+        private Request request;
+
+        /** The response to use as a model. */
+        private Response response;
+
+        /**
+         * Constructor.
+         * 
+         * @param request
+         *            The request to use as a model.
+         * @param response
+         *            The response to use as a model.
+         */
+        public CallVariableResolver(Request request, Response response) {
+            this.request = request;
+            this.response = response;
+        }
+
+        @Override
+        public String resolve(String variableName) {
+            String result = null;
+
+            Variable var = getVariables().get(variableName);
+            if (var == null)
+                var = getDefaultVariable();
+
+            // Check for a matching request attribute
+            if (request != null) {
+                Object variable = request.getAttributes().get(variableName);
+                if (variable != null) {
+                    result = variable.toString();
+                }
+            }
+
+            // Check for a matching response attribute
+            if ((result == null) && (response != null)
+                    && response.getAttributes().containsKey(variableName)) {
+                result = response.getAttributes().get(variableName).toString();
+            }
+
+            // Check for a matching request or response property
+            if (result == null) {
+                if (request != null) {
+                    if (variableName.equals("c")) {
+                        result = Boolean.toString(request.isConfidential());
+                    } else if (variableName.equals("cia")) {
+                        result = request.getClientInfo().getAddress();
+                    } else if (variableName.equals("cig")) {
+                        result = request.getClientInfo().getAgent();
+                    } else if (variableName.equals("cri")) {
+                        result = request.getChallengeResponse().getIdentifier();
+                    } else if (variableName.equals("crs")) {
+                        if (request.getChallengeResponse().getScheme() != null) {
+                            result = request.getChallengeResponse().getScheme()
+                                    .getTechnicalName();
+                        }
+                    } else if (variableName.equals("ecs")) {
+                        if ((request.getEntity() != null)
+                                && (request.getEntity().getCharacterSet() != null)) {
+                            result = request.getEntity().getCharacterSet()
+                                    .getName();
+                        }
+                    } else if (variableName.equals("ee")) {
+                        if ((request.getEntity() != null)
+                                && (request.getEntity().getEncoding() != null)) {
+                            result = request.getEntity().getEncoding()
+                                    .getName();
+                        }
+                    } else if (variableName.equals("eed")) {
+                        if ((request.getEntity() != null)
+                                && (request.getEntity().getExpirationDate() != null)) {
+                            result = DateUtils.format(request.getEntity()
+                                    .getExpirationDate(),
+                                    DateUtils.FORMAT_RFC_1123.get(0));
+                        }
+                    } else if (variableName.equals("el")) {
+                        if ((request.getEntity() != null)
+                                && (request.getEntity().getLanguage() != null)) {
+                            result = request.getEntity().getLanguage()
+                                    .getName();
+                        }
+                    } else if (variableName.equals("emd")) {
+                        if ((request.getEntity() != null)
+                                && (request.getEntity().getModificationDate() != null)) {
+                            result = DateUtils.format(request.getEntity()
+                                    .getModificationDate(),
+                                    DateUtils.FORMAT_RFC_1123.get(0));
+                        }
+                    } else if (variableName.equals("emt")) {
+                        if ((request.getEntity() != null)
+                                && (request.getEntity().getMediaType() != null)) {
+                            result = request.getEntity().getMediaType()
+                                    .getName();
+                        }
+                    } else if (variableName.equals("es")) {
+                        if ((request.getEntity() != null)
+                                && (request.getEntity().getSize() != -1)) {
+                            result = Long.toString(request.getEntity()
+                                    .getSize());
+                        }
+                    } else if (variableName.equals("et")) {
+                        if ((request.getEntity() != null)
+                                && (request.getEntity().getTag() != null)) {
+                            result = request.getEntity().getTag().getName();
+                        }
+                    } else if (variableName.startsWith("f")) {
+                        result = getReferenceContent(variableName.substring(1),
+                                request.getReferrerRef());
+                    } else if (variableName.startsWith("h")) {
+                        result = getReferenceContent(variableName.substring(1),
+                                request.getHostRef());
+                    } else if (variableName.equals("m")) {
+                        if (request.getMethod() != null) {
+                            result = request.getMethod().getName();
+                        }
+                    } else if (variableName.equals("p")) {
+                        if (request.getProtocol() != null) {
+                            result = request.getProtocol().getName();
+                        }
+                    } else if (variableName.startsWith("r")) {
+                        result = getReferenceContent(variableName.substring(1),
+                                request.getResourceRef());
+                    }
+                }
+
+                if ((result == null) && (response != null)) {
+                    if (variableName.equals("ECS")) {
+                        if ((response.getEntity() != null)
+                                && (response.getEntity().getCharacterSet() != null)) {
+                            result = response.getEntity().getCharacterSet()
+                                    .getName();
+                        }
+                    } else if (variableName.equals("EE")) {
+                        if ((response.getEntity() != null)
+                                && (response.getEntity().getEncoding() != null)) {
+                            result = response.getEntity().getEncoding()
+                                    .getName();
+                        }
+                    } else if (variableName.equals("EED")) {
+                        if ((response.getEntity() != null)
+                                && (response.getEntity().getExpirationDate() != null)) {
+                            result = DateUtils.format(response.getEntity()
+                                    .getExpirationDate(),
+                                    DateUtils.FORMAT_RFC_1123.get(0));
+                        }
+                    } else if (variableName.equals("EL")) {
+                        if ((response.getEntity() != null)
+                                && (response.getEntity().getLanguage() != null)) {
+                            result = response.getEntity().getLanguage()
+                                    .getName();
+                        }
+                    } else if (variableName.equals("EMD")) {
+                        if ((response.getEntity() != null)
+                                && (response.getEntity().getModificationDate() != null)) {
+                            result = DateUtils.format(response.getEntity()
+                                    .getModificationDate(),
+                                    DateUtils.FORMAT_RFC_1123.get(0));
+                        }
+                    } else if (variableName.equals("EMT")) {
+                        if ((response.getEntity() != null)
+                                && (response.getEntity().getMediaType() != null)) {
+                            result = response.getEntity().getMediaType()
+                                    .getName();
+                        }
+                    } else if (variableName.equals("ES")) {
+                        if ((response.getEntity() != null)
+                                && (response.getEntity().getSize() != -1)) {
+                            result = Long.toString(response.getEntity()
+                                    .getSize());
+                        }
+                    } else if (variableName.equals("ET")) {
+                        if ((response.getEntity() != null)
+                                && (response.getEntity().getTag() != null)) {
+                            result = response.getEntity().getTag().getName();
+                        }
+                    } else if (variableName.startsWith("R")) {
+                        result = getReferenceContent(variableName.substring(1),
+                                response.getRedirectRef());
+                    } else if (variableName.equals("S")) {
+                        if (response.getStatus() != null) {
+                            result = Integer.toString(response.getStatus()
+                                    .getCode());
+                        }
+                    } else if (variableName.equals("SIA")) {
+                        result = response.getServerInfo().getAddress();
+                    } else if (variableName.equals("SIG")) {
+                        result = response.getServerInfo().getAgent();
+                    } else if (variableName.equals("SIP")) {
+                        if (response.getServerInfo().getPort() != null) {
+                            result = response.getServerInfo().getPort()
+                                    .toString();
+                        }
+                    }
+                }
+            }
+
+            if (result == null) {
+                // Use the default value instead
+                result = var.getDefaultValue();
+            }
+
+            return result;
+        }
+    }
+
+    /**
+     * Resolves variable values based on a map.
+     * 
+     * @author Jerome Louvel (contact@noelios.com)
+     */
+    private class MapVariableResolver extends VariableResolver {
+        /** The variables to use when formatting. */
+        private Map<String, Object> map;
+
+        /**
+         * Constructor.
+         * 
+         * @param map
+         *            The variables to use when formatting.
+         */
+        public MapVariableResolver(Map<String, Object> map) {
+            this.map = map;
+        }
+
+        @Override
+        public String resolve(String variableName) {
+            Object value = this.map.get(variableName);
+            return (value == null) ? null : value.toString();
+        }
     }
 
 }

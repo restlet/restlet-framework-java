@@ -42,6 +42,7 @@ Changes log
    deployment context.
  - StringRepresentation constructors now accept CharSequence instances and not just String
    instances. This plays nicer with StringBuilder, CharBuffer and StringBuffer classes.
+ - Template can now also parse and format using a map to hold variables. Suggested by Ryan Daum.
   
 [Enhancements] 
  - The Ant script now check Ant's version and recommend upgrade to at least 1.7 for
