@@ -5,7 +5,7 @@ Name "Restlet"
 SetCompressor lzma
 
 # Defines
-!define VERSION @version-compact@
+!define VERSION "@version-full@"
 !define REGKEY "SOFTWARE\Noelios\$(^Name)"
 !define COMPANY "Noelios Consulting"
 !define URL http://www.restlet.org
@@ -110,13 +110,13 @@ Var StartMenuGroup
 !insertmacro MUI_LANGUAGE Welsh
 
 # Installer attributes
-OutFile @dist-base@/restlet-${VERSION}.exe
+OutFile @dist-base@/restlet-@version-compact@.exe
 InstallDir "$PROGRAMFILES\Noelios\Restlet-@version-base@"
 CRCCheck on
 XPStyle on
 ShowInstDetails hide
 ShowUnInstDetails hide
-VIProductVersion @version-base@.0.0
+VIProductVersion "@version-base@.0.0"
 VIAddVersionKey ProductName "Restlet"
 VIAddVersionKey ProductVersion "${VERSION}"
 VIAddVersionKey CompanyName "${COMPANY}"
@@ -135,14 +135,14 @@ Section -Main SEC0000
 SectionEnd
 
 Section -post SEC0001
-    WriteRegStr HKLM "${REGKEY}" Version ${VERSION}
+    WriteRegStr HKLM "${REGKEY}" Version "${VERSION}"
     WriteRegStr HKLM "${REGKEY}" Path $INSTDIR
-    WriteUninstaller $INSTDIR\uninstall${VERSION}.exe
+    WriteUninstaller $INSTDIR\uninstall.exe
     !insertmacro MUI_STARTMENU_WRITE_BEGIN Application
     SetOutPath $SMPROGRAMS\$StartMenuGroup
     CreateDirectory "$SMPROGRAMS\$StartMenuGroup\Restlet ${VERSION}"
-    CreateShortcut "$SMPROGRAMS\$StartMenuGroup\Restlet ${VERSION}\Uninstall $(^Name)${VERSION}.lnk" $INSTDIR\uninstall${VERSION}.exe
-    CreateShortcut "$SMPROGRAMS\$StartMenuGroup\Restlet ${VERSION}\Home page.lnk" "http://www.restlet.org" "" "$INSTDIR\uninstall${VERSION}.exe"
+    CreateShortcut "$SMPROGRAMS\$StartMenuGroup\Restlet ${VERSION}\Uninstall.lnk" $INSTDIR\uninstall.exe
+    CreateShortcut "$SMPROGRAMS\$StartMenuGroup\Restlet ${VERSION}\Home page.lnk" "http://www.restlet.org"
     CreateShortcut "$SMPROGRAMS\$StartMenuGroup\Restlet ${VERSION}\Restlet API (javadocs).lnk" "$INSTDIR\docs\api\index.html"
     CreateShortcut "$SMPROGRAMS\$StartMenuGroup\Restlet ${VERSION}\Restlet Extensions (javadocs).lnk" "$INSTDIR\docs\ext\index.html"
     CreateShortcut "$SMPROGRAMS\$StartMenuGroup\Restlet ${VERSION}\Noelios Restlet Engine (javadocs).lnk" "$INSTDIR\docs\nre\index.html"
@@ -151,8 +151,8 @@ Section -post SEC0001
     WriteRegStr HKLM "SOFTWARE\Microsoft\Windows\CurrentVersion\Uninstall\$(^Name)${VERSION}" DisplayVersion "${VERSION}"
     WriteRegStr HKLM "SOFTWARE\Microsoft\Windows\CurrentVersion\Uninstall\$(^Name)${VERSION}" Publisher "${COMPANY}"
     WriteRegStr HKLM "SOFTWARE\Microsoft\Windows\CurrentVersion\Uninstall\$(^Name)${VERSION}" URLInfoAbout "${URL}"
-    WriteRegStr HKLM "SOFTWARE\Microsoft\Windows\CurrentVersion\Uninstall\$(^Name)${VERSION}" DisplayIcon $INSTDIR\uninstall${VERSION}.exe
-    WriteRegStr HKLM "SOFTWARE\Microsoft\Windows\CurrentVersion\Uninstall\$(^Name)${VERSION}" UninstallString $INSTDIR\uninstall${VERSION}.exe
+    WriteRegStr HKLM "SOFTWARE\Microsoft\Windows\CurrentVersion\Uninstall\$(^Name)${VERSION}" DisplayIcon $INSTDIR\uninstall.exe
+    WriteRegStr HKLM "SOFTWARE\Microsoft\Windows\CurrentVersion\Uninstall\$(^Name)${VERSION}" UninstallString $INSTDIR\uninstall.exe
     WriteRegDWORD HKLM "SOFTWARE\Microsoft\Windows\CurrentVersion\Uninstall\$(^Name)${VERSION}" NoModify 1
     WriteRegDWORD HKLM "SOFTWARE\Microsoft\Windows\CurrentVersion\Uninstall\$(^Name)${VERSION}" NoRepair 1
 SectionEnd
@@ -177,13 +177,14 @@ SectionEnd
 
 Section un.post UNSEC0001
     DeleteRegKey HKLM "SOFTWARE\Microsoft\Windows\CurrentVersion\Uninstall\$(^Name)${VERSION}"
-    Delete /REBOOTOK "$SMPROGRAMS\$StartMenuGroup\Restlet ${VERSION}\Uninstall $(^Name)${VERSION}.lnk"
+    Delete /REBOOTOK "$SMPROGRAMS\$StartMenuGroup\Restlet ${VERSION}\Uninstall.lnk"
     Delete /REBOOTOK "$SMPROGRAMS\$StartMenuGroup\Restlet ${VERSION}\Home page.lnk"
     Delete /REBOOTOK "$SMPROGRAMS\$StartMenuGroup\Restlet ${VERSION}\Restlet API (javadocs).lnk"
     Delete /REBOOTOK "$SMPROGRAMS\$StartMenuGroup\Restlet ${VERSION}\Restlet Extensions (javadocs).lnk"
     Delete /REBOOTOK "$SMPROGRAMS\$StartMenuGroup\Restlet ${VERSION}\Noelios Restlet Engine (javadocs).lnk"
+    RmDir  /REBOOTOK "$SMPROGRAMS\$StartMenuGroup\Restlet ${VERSION}"
 
-    Delete /REBOOTOK $INSTDIR\uninstall${VERSION}.exe
+    Delete /REBOOTOK $INSTDIR\uninstall.exe
     DeleteRegValue HKLM "${REGKEY}" StartMenuGroup
     DeleteRegValue HKLM "${REGKEY}" Path
     DeleteRegValue HKLM "${REGKEY}" Version
