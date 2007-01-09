@@ -51,7 +51,7 @@ public abstract class Factory {
             .getCanonicalName());
 
     /** Common version info. */
-    public static final String MINOR_NUMBER = "2";
+    public static final String MINOR_NUMBER = "3";
 
     public static final String VERSION_LONG = "1.0 RC" + MINOR_NUMBER;
 
@@ -271,21 +271,6 @@ public abstract class Factory {
      */
     public abstract void parse(Logger logger, Form form,
             Representation representation);
-
-    /**
-     * Parses an URL encoded query string into a given form.
-     * 
-     * @param logger
-     *            The logger to use.
-     * @param form
-     *            The target form.
-     * @param queryString
-     *            Query string.
-     * @deprecated Use the parse(Logger,String,CharacterSet) method to
-     *             specify the encoding.
-     */
-    @Deprecated
-    public abstract void parse(Logger logger, Form form, String queryString);
 
     /**
      * Parses an URL encoded query string into a given form.

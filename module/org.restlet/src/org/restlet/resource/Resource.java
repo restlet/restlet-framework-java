@@ -23,7 +23,6 @@ import java.util.List;
 import java.util.logging.Logger;
 
 import org.restlet.data.Reference;
-import org.restlet.data.ReferenceList;
 import org.restlet.data.Status;
 
 /**
@@ -58,9 +57,6 @@ public class Resource {
     /** The identifier. */
     private Reference identifier;
 
-    /** The modifiable list of identifiers. */
-    private ReferenceList identifiers;
-
     /** The modifiable list of variants. */
     private List<Variant> variants;
 
@@ -80,7 +76,6 @@ public class Resource {
     public Resource(Logger logger) {
         this.logger = logger;
         this.identifier = null;
-        this.identifiers = null;
         this.variants = null;
     }
 
@@ -140,21 +135,6 @@ public class Resource {
      */
     public Reference getIdentifier() {
         return this.identifier;
-    }
-
-    /**
-     * Returns the list of all the identifiers for the resource. The list is
-     * composed of the official identifier followed by all the alias
-     * identifiers.
-     * 
-     * @return The list of all the identifiers for the resource.
-     * @deprecated No obvious usage. More the role of Handler to map URIs.
-     */
-    @Deprecated
-    public ReferenceList getIdentifiers() {
-        if (this.identifiers == null)
-            this.identifiers = new ReferenceList();
-        return this.identifiers;
     }
 
     /**
@@ -250,18 +230,6 @@ public class Resource {
      */
     public void setIdentifier(String identifierUri) {
         setIdentifier(new Reference(identifierUri));
-    }
-
-    /**
-     * Sets a new list of all the identifiers for the resource.
-     * 
-     * @param identifiers
-     *            The new list of identifiers.
-     * @deprecated No obvious usage. More the role of Handler to map URIs.
-     */
-    @Deprecated
-    public void setIdentifiers(ReferenceList identifiers) {
-        this.identifiers = identifiers;
     }
 
     /**

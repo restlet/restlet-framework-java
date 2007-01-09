@@ -118,25 +118,6 @@ public class HeaderUtils {
      *            The source string to format.
      * @param destination
      *            The appendable destination.
-     * @throws IOException
-     * @deprecated Use the
-     *             appendUriEncoded(CharSequence,Appendable,CharacterSet) method
-     *             to specify the encoding. This method uses the UTF-8 character
-     *             set.
-     */
-    @Deprecated
-    public static Appendable appendUriEncoded(CharSequence source,
-            Appendable destination) throws IOException {
-        return appendUriEncoded(source, destination, CharacterSet.UTF_8);
-    }
-
-    /**
-     * Appends a source string as an URI encoded string.
-     * 
-     * @param source
-     *            The source string to format.
-     * @param destination
-     *            The appendable destination.
      * @param characterSet
      *            The supported character encoding.
      * @throws IOException

@@ -5,6 +5,11 @@ Changes log
 
 @version-full@ (@release-date@)
 [Bugs fixed]
+[API changes]
+[Enhancements] 
+
+1.0 RC2 (2007-01-09)
+[Bugs fixed]
  - Fixed minor bug with the URI parsing (query sign "?" inside fragment). 
    Contributed by Thierry Boileau.
  - Fixed bug in the dynamic invocation of custom handle*() methods in the Handler class.

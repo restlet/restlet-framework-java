@@ -146,33 +146,6 @@ public class Parameter implements Comparable<Parameter> {
     }
 
     /**
-     * Encodes the parameter.
-     * 
-     * @return The encoded string.
-     * @throws IOException
-     * @deprecated Use the urlEncode(CharacterSet) method to specify the
-     *             encoding. This method uses the UTF-8 character set.
-     */
-    @Deprecated
-    public String urlEncode() throws IOException {
-        return encode(CharacterSet.UTF_8);
-    }
-
-    /**
-     * Encodes the parameter and append the result to the given buffer.
-     * 
-     * @param buffer
-     *            The buffer to append.
-     * @throws IOException
-     * @deprecated Use the urlEncode(Appendable,CharacterSet) method to specify
-     *             the encoding. This method uses the UTF-8 character set.
-     */
-    @Deprecated
-    public void urlEncode(Appendable buffer) throws IOException {
-        encode(buffer, CharacterSet.UTF_8);
-    }
-
-    /**
      * Encodes the parameter using the standard URI encoding mechanism.
      * 
      * @param characterSet

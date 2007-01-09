@@ -76,24 +76,6 @@ public class FormReader {
      *            The logger.
      * @param query
      *            The query string.
-     * @deprecated Use the FormReader(Logger,String,CharacterSet) constructor to
-     *             specify the encoding.
-     */
-    @Deprecated
-    public FormReader(Logger logger, String query) throws IOException {
-        this.logger = logger;
-        this.stream = new ByteArrayInputStream(query.getBytes());
-        this.characterSet = CharacterSet.UTF_8;
-
-    }
-
-    /**
-     * Constructor.
-     * 
-     * @param logger
-     *            The logger.
-     * @param query
-     *            The query string.
      * @param characterSet
      *            The supported character encoding.
      */

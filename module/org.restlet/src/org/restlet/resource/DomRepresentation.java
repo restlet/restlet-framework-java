@@ -97,22 +97,6 @@ public class DomRepresentation extends XmlRepresentation {
     /**
      * Constructor.
      * 
-     * @param mediaType
-     *            The representation's media type.
-     * @param xmlRepresentation
-     *            A source XML representation to parse.
-     * @deprecated Use the other constructor instead.
-     */
-    @Deprecated
-    public DomRepresentation(MediaType mediaType,
-            Representation xmlRepresentation) {
-        super(mediaType);
-        this.xmlRepresentation = xmlRepresentation;
-    }
-
-    /**
-     * Constructor.
-     * 
      * @param xmlRepresentation
      *            A source XML representation to parse.
      */

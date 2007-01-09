@@ -32,7 +32,6 @@ import org.restlet.data.Encoding;
 import org.restlet.data.Language;
 import org.restlet.data.MediaType;
 import org.restlet.data.Reference;
-import org.restlet.data.ReferenceList;
 import org.restlet.data.Tag;
 import org.restlet.resource.Representation;
 import org.restlet.resource.Result;
@@ -164,19 +163,6 @@ public class WrapperRepresentation extends Representation {
     }
 
     /**
-     * Returns the list of all the identifiers for the resource. The list is
-     * composed of the official identifier followed by all the alias
-     * identifiers.
-     * 
-     * @return The list of all the identifiers for the resource.
-     * @deprecated No obvious usage. More the role of Handler to map URIs.
-     */
-    @Deprecated
-    public ReferenceList getIdentifiers() {
-        return getWrappedRepresentation().getIdentifiers();
-    }
-
-    /**
      * Returns the language or null if not applicable.
      * 
      * @return The language or null if not applicable.
@@ -256,19 +242,6 @@ public class WrapperRepresentation extends Representation {
      */
     public String getText() throws IOException {
         return getWrappedRepresentation().getText();
-    }
-
-    /**
-     * Converts the representation to a string value. Be careful when using this
-     * method as the conversion of large content to a string fully stored in
-     * memory can result in OutOfMemoryErrors being thrown.
-     * 
-     * @return The representation as a string value.
-     * @deprecated Use getText instead
-     */
-    @Deprecated
-    public String getValue() throws IOException {
-        return getWrappedRepresentation().getValue();
     }
 
     /**
@@ -422,18 +395,6 @@ public class WrapperRepresentation extends Representation {
      */
     public void setIdentifier(String identifierUri) {
         getWrappedRepresentation().setIdentifier(identifierUri);
-    }
-
-    /**
-     * Sets a new list of all the identifiers for the resource.
-     * 
-     * @param identifiers
-     *            The new list of identifiers.
-     * @deprecated No obvious usage. More the role of Handler to map URIs.
-     */
-    @Deprecated
-    public void setIdentifiers(ReferenceList identifiers) {
-        getWrappedRepresentation().setIdentifiers(identifiers);
     }
 
     /**

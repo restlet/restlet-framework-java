@@ -44,24 +44,6 @@ public class FormUtils {
      *            The target form.
      * @param query
      *            Query string.
-     * @deprecated Use the parseQuery(Logger,Form, String,CharacterSet) method
-     *             to specify the encoding. This method uses the UTF-8 character
-     *             set.
-     */
-    @Deprecated
-    public static void parseQuery(Logger logger, Form form, String query) {
-        parseQuery(logger, form, query, CharacterSet.UTF_8);
-    }
-
-    /**
-     * Parses a query into a given form.
-     * 
-     * @param logger
-     *            The logger.
-     * @param form
-     *            The target form.
-     * @param query
-     *            Query string.
      * @param characterSet
      *            The supported character encoding.
      */
@@ -123,27 +105,6 @@ public class FormUtils {
      *            The query string.
      * @param parameters
      *            The parameters map controlling the reading.
-     * @deprecated Use the getParameters(Logger,String,Map<String,
-     *             Object>,CharacterSet) method to specify the encoding. This
-     *             method uses the UTF-8 character set.
-     */
-    @Deprecated
-    public static void getParameters(Logger logger, String query,
-            Map<String, Object> parameters) throws IOException {
-        getParameters(logger, query, parameters, CharacterSet.UTF_8);
-    }
-
-    /**
-     * Reads the parameters whose name is a key in the given map.<br/> If a
-     * matching parameter is found, its value is put in the map.<br/> If
-     * multiple values are found, a list is created and set in the map.
-     * 
-     * @param logger
-     *            The logger.
-     * @param query
-     *            The query string.
-     * @param parameters
-     *            The parameters map controlling the reading.
      * @param characterSet
      *            The supported character encoding.
      */
@@ -168,27 +129,6 @@ public class FormUtils {
     public static void getParameters(Logger logger, Representation post,
             Map<String, Object> parameters) throws IOException {
         new FormReader(logger, post).readParameters(parameters);
-    }
-
-    /**
-     * Reads the first parameter with the given name.
-     * 
-     * @param logger
-     *            The logger.
-     * @param query
-     *            The query string.
-     * @param name
-     *            The parameter name to match.
-     * @return The parameter.
-     * @throws IOException
-     * @deprecated Use the getFirstParameter(Logger,String,String,CharacterSet)
-     *             method to specify the encoding. This method uses the UTF-8
-     *             character set.
-     */
-    @Deprecated
-    public static Parameter getFirstParameter(Logger logger, String query,
-            String name) throws IOException {
-        return getFirstParameter(logger, query, name, CharacterSet.UTF_8);
     }
 
     /**
@@ -226,27 +166,6 @@ public class FormUtils {
     public static Parameter getFirstParameter(Logger logger,
             Representation post, String name) throws IOException {
         return new FormReader(logger, post).readFirstParameter(name);
-    }
-
-    /**
-     * Reads the parameters with the given name.<br/> If multiple values are
-     * found, a list is returned created.
-     * 
-     * @param logger
-     *            The logger.
-     * @param query
-     *            The query string.
-     * @param name
-     *            The parameter name to match.
-     * @return The parameter value or list of values.
-     * @deprecated Use the getParameter(Logger,String,String,CharacterSet)
-     *             method to specify the encoding. This method uses the UTF-8
-     *             character set.
-     */
-    @Deprecated
-    public static Object getParameter(Logger logger, String query, String name)
-            throws IOException {
-        return getParameter(logger, query, name, CharacterSet.UTF_8);
     }
 
     /**
@@ -314,23 +233,4 @@ public class FormUtils {
 
         return result;
     }
-
-    /**
-     * Creates a parameter.
-     * 
-     * @param name
-     *            The parameter name buffer.
-     * @param value
-     *            The parameter value buffer (can be null).
-     * @return The created parameter.
-     * @throws IOException
-     * @deprecated Use the create(CharSequence,CharSequence,CharacterSet) method
-     *             instead. This method uses the UTF-8 character set.
-     */
-    @Deprecated
-    public static Parameter create(CharSequence name, CharSequence value)
-            throws IOException {
-        return create(name, value, CharacterSet.UTF_8);
-    }
-
 }

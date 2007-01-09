@@ -151,18 +151,6 @@ public class StringRepresentation extends StreamRepresentation {
      * 
      * @param text
      *            The string value.
-     * @deprecated Use setText instead.
-     */
-    @Deprecated
-    public void setValue(String text) {
-        setText(text);
-    }
-
-    /**
-     * Sets the string value.
-     * 
-     * @param text
-     *            The string value.
      */
     public void setText(String text) {
         this.text = text;

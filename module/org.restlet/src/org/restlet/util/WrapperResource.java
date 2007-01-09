@@ -22,7 +22,6 @@ import java.util.List;
 import java.util.logging.Logger;
 
 import org.restlet.data.Reference;
-import org.restlet.data.ReferenceList;
 import org.restlet.resource.Representation;
 import org.restlet.resource.Resource;
 import org.restlet.resource.Result;
@@ -106,20 +105,6 @@ public class WrapperResource extends Resource {
      */
     public Reference getIdentifier() {
         return getWrappedResource().getIdentifier();
-    }
-
-    /**
-     * Returns the list of all the identifiers for the resource. The list is
-     * composed of the official identifier followed by all the alias
-     * identifiers.
-     * 
-     * @return The list of all the identifiers for the resource.
-     * @deprecated The URIs should only be managed by the application routers
-     *             and handlers.
-     */
-    @Deprecated
-    public ReferenceList getIdentifiers() {
-        return getWrappedResource().getIdentifiers();
     }
 
     /**
@@ -215,19 +200,6 @@ public class WrapperResource extends Resource {
      */
     public void setIdentifier(String identifierUri) {
         getWrappedResource().setIdentifier(identifierUri);
-    }
-
-    /**
-     * Sets a new list of all the identifiers for the resource.
-     * 
-     * @param identifiers
-     *            The new list of identifiers.
-     * @deprecated The URIs should only be managed by the application routers
-     *             and handlers.
-     */
-    @Deprecated
-    public void setIdentifiers(ReferenceList identifiers) {
-        getWrappedResource().setIdentifiers(identifiers);
     }
 
     /**
