@@ -5,7 +5,6 @@ Name "Restlet"
 SetCompressor lzma
 
 # Defines
-;Version compacte pour les fichiers
 !define VERSION @version-compact@
 !define REGKEY "SOFTWARE\Noelios\$(^Name)"
 !define COMPANY "Noelios Consulting"
@@ -33,7 +32,6 @@ BrandingText " "
 # Included files
 !include Sections.nsh
 !include MUI.nsh
-
 !include LogicLib.nsh
 !include TextFunc.nsh
 
@@ -142,8 +140,12 @@ Section -post SEC0001
     WriteUninstaller $INSTDIR\uninstall${VERSION}.exe
     !insertmacro MUI_STARTMENU_WRITE_BEGIN Application
     SetOutPath $SMPROGRAMS\$StartMenuGroup
-    CreateShortcut "$SMPROGRAMS\$StartMenuGroup\Uninstall $(^Name)${VERSION}.lnk" $INSTDIR\uninstall${VERSION}.exe
-    CreateShortcut "$SMPROGRAMS\$StartMenuGroup\www.restlet.org.lnk" "http://www.restlet.org" "" "$INSTDIR\uninstall${VERSION}.exe"
+    CreateDirectory "$SMPROGRAMS\$StartMenuGroup\Restlet ${VERSION}"
+    CreateShortcut "$SMPROGRAMS\$StartMenuGroup\Restlet ${VERSION}\Uninstall $(^Name)${VERSION}.lnk" $INSTDIR\uninstall${VERSION}.exe
+    CreateShortcut "$SMPROGRAMS\$StartMenuGroup\Restlet ${VERSION}\Home page.lnk" "http://www.restlet.org" "" "$INSTDIR\uninstall${VERSION}.exe"
+    CreateShortcut "$SMPROGRAMS\$StartMenuGroup\Restlet ${VERSION}\Restlet API (javadocs).lnk" "$INSTDIR\docs\api\index.html"
+    CreateShortcut "$SMPROGRAMS\$StartMenuGroup\Restlet ${VERSION}\Restlet Extensions (javadocs).lnk" "$INSTDIR\docs\ext\index.html"
+    CreateShortcut "$SMPROGRAMS\$StartMenuGroup\Restlet ${VERSION}\Noelios Restlet Engine (javadocs).lnk" "$INSTDIR\docs\nre\index.html"
     !insertmacro MUI_STARTMENU_WRITE_END
     WriteRegStr HKLM "SOFTWARE\Microsoft\Windows\CurrentVersion\Uninstall\$(^Name)${VERSION}" DisplayName "Noelios Restlet Engine @version-full@"
     WriteRegStr HKLM "SOFTWARE\Microsoft\Windows\CurrentVersion\Uninstall\$(^Name)${VERSION}" DisplayVersion "${VERSION}"
@@ -175,8 +177,12 @@ SectionEnd
 
 Section un.post UNSEC0001
     DeleteRegKey HKLM "SOFTWARE\Microsoft\Windows\CurrentVersion\Uninstall\$(^Name)${VERSION}"
-    Delete /REBOOTOK "$SMPROGRAMS\$StartMenuGroup\Uninstall $(^Name)${VERSION}.lnk"
-    Delete /REBOOTOK "$SMPROGRAMS\$StartMenuGroup\www.restlet.org.lnk"
+    Delete /REBOOTOK "$SMPROGRAMS\$StartMenuGroup\Restlet ${VERSION}\Uninstall $(^Name)${VERSION}.lnk"
+    Delete /REBOOTOK "$SMPROGRAMS\$StartMenuGroup\Restlet ${VERSION}\Home page.lnk"
+    Delete /REBOOTOK "$SMPROGRAMS\$StartMenuGroup\Restlet ${VERSION}\Restlet API (javadocs).lnk"
+    Delete /REBOOTOK "$SMPROGRAMS\$StartMenuGroup\Restlet ${VERSION}\Restlet Extensions (javadocs).lnk"
+    Delete /REBOOTOK "$SMPROGRAMS\$StartMenuGroup\Restlet ${VERSION}\Noelios Restlet Engine (javadocs).lnk"
+
     Delete /REBOOTOK $INSTDIR\uninstall${VERSION}.exe
     DeleteRegValue HKLM "${REGKEY}" StartMenuGroup
     DeleteRegValue HKLM "${REGKEY}" Path
@@ -201,6 +207,11 @@ Section un.post UNSEC0001
 
 	   ; Remove the installation directory if it is empty
        ${RemoveDir} "$INSTDIR"
+
+       ;Remove the Noelios directory (if so) if it is empty
+       StrCmp "$INSTDIR" "$PROGRAMFILES\Noelios\Restlet-@version-base@" 0 +2
+       ${RemoveDir} "$PROGRAMFILES\Noelios"
+       
     ${EndIf}
 SectionEnd
 
