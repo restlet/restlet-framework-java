@@ -416,17 +416,13 @@ public class Factory extends org.restlet.util.Factory {
                 currentVariant = (Representation) iter1.next();
                 variantLanguage = currentVariant.getLanguage();
                 variantMediaType = currentVariant.getMediaType();
-                Preference<Language> fallBackLanguagePref = null;
-                // If no language preference is defined, assume that all
+               // If no language preference is defined, assume that all
                 // languages are acceptable
                 List<Preference<Language>> languagePrefs = client
                         .getAcceptedLanguages();
                 if (languagePrefs.isEmpty()){
                     languagePrefs.add(new Preference<Language>(Language.ALL));                    
-                } else {
-                    fallBackLanguagePref = languagePrefs.get(0);
                 }
-
 
                 // For each language preference defined in the call
                 // Calculate the score and remember the best scoring preference
@@ -488,10 +484,6 @@ public class Factory extends org.restlet.util.Factory {
                             bestLanguageScore = currentScore;
                         }
                     }
-                }
-                //Fix Issue 39
-                if (bestLanguagePref==null){
-                    bestLanguagePref = fallBackLanguagePref;
                 }
 
                 // Are the preferences compatible with the current variant
