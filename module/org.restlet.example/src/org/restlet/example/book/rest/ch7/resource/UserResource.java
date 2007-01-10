@@ -22,7 +22,6 @@ import java.util.List;
 
 import org.restlet.data.Form;
 import org.restlet.data.MediaType;
-import org.restlet.data.Reference;
 import org.restlet.data.Status;
 import org.restlet.example.book.rest.ch7.Application;
 import org.restlet.example.book.rest.ch7.domain.User;
@@ -65,14 +64,17 @@ public class UserResource extends Resource {
         return result;
     }
 
-    private Reference userRef;
+    private String userName;
 
     private User user;
 
-    public UserResource(User user, Reference userRef) {
-        this.user = user;
-        this.userRef = userRef;
-        getVariants().add(new Variant(MediaType.TEXT_PLAIN));
+    public UserResource(String userName) {
+        this.userName = userName;
+        this.user = findUser(userName);
+
+        if (user != null) {
+            getVariants().add(new Variant(MediaType.TEXT_PLAIN));
+        }
     }
 
     @Override
@@ -87,8 +89,8 @@ public class UserResource extends Resource {
 
     @Override
     public Result delete() {
-        if (this.user != null) {
-            Application.CONTAINER.delete(this.user);
+        if (this.userName != null) {
+            Application.CONTAINER.delete(this.userName);
             Application.CONTAINER.commit();
             return new Result(Status.SUCCESS_OK);
         } else {
@@ -123,23 +125,22 @@ public class UserResource extends Resource {
             Form form = new Form(entity);
 
             // Create a new user
-            User newUser = new User();
-            newUser.setEmail(form.getFirstValue("user[email]"));
-            newUser.setFullName(form.getFirstValue("user[full_name]"));
-            newUser.setName(form.getFirstValue("user[name]"));
-            newUser.setPassword(form.getFirstValue("user[password]"));
+            this.user = new User();
+            this.user.setName(this.userName);
+            this.user.setEmail(form.getFirstValue("user[email]"));
+            this.user.setFullName(form.getFirstValue("user[full_name]"));
+            this.user.setPassword(form.getFirstValue("user[password]"));
 
             // Test if user already exists
-            if (UserResource.findUser(newUser.getName()) != null) {
+            if (UserResource.findUser(this.user.getName()) != null) {
                 result = new Result(Status.CLIENT_ERROR_CONFLICT);
             } else {
                 // Save the new user
-                Application.CONTAINER.set(newUser);
+                Application.CONTAINER.set(this.user);
                 Application.CONTAINER.commit();
 
                 // Update the result
-                result = new Result(Status.SUCCESS_CREATED, new Reference(
-                        this.userRef.toString() + "/" + newUser.getName()));
+                result = new Result(Status.SUCCESS_CREATED);
             }
         }
 

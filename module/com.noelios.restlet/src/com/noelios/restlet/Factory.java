@@ -396,8 +396,8 @@ public class Factory extends org.restlet.util.Factory {
             boolean compatibleLanguage = false;
             boolean compatibleMediaType = false;
 
-            Representation currentVariant = null;
-            Representation bestVariant = null;
+            Variant currentVariant = null;
+            Variant bestVariant = null;
 
             Preference<Language> currentLanguagePref = null;
             Preference<Language> bestLanguagePref = null;
@@ -412,8 +412,8 @@ public class Factory extends org.restlet.util.Factory {
             // For each available variant, we will compute the negotiation score
             // which is dependant on the language score and on the media type
             // score
-            for (Iterator iter1 = variants.iterator(); iter1.hasNext();) {
-                currentVariant = (Representation) iter1.next();
+            for (Iterator<Variant> iter1 = variants.iterator(); iter1.hasNext();) {
+                currentVariant = iter1.next();
                 variantLanguage = currentVariant.getLanguage();
                 variantMediaType = currentVariant.getMediaType();
 
@@ -422,11 +422,13 @@ public class Factory extends org.restlet.util.Factory {
                 // Based on experience, it appears that browsers are often
                 // misconfigured and don't expose all the languages actually
                 // understood by end users.
-                List<Preference<Language>> languagePrefs = client.getAcceptedLanguages();
+                List<Preference<Language>> languagePrefs = client
+                        .getAcceptedLanguages();
                 if (languagePrefs.isEmpty()) {
                     languagePrefs.add(new Preference<Language>(Language.ALL));
                 } else {
-                    languagePrefs.add(new Preference<Language>(Language.ALL, 0.001F));
+                    languagePrefs.add(new Preference<Language>(Language.ALL,
+                            0.001F));
                 }
 
                 // For each language preference defined in the call

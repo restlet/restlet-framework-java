@@ -7,6 +7,8 @@ Changes log
 [Bugs fixed]
  - Fixed bug with the uri parsing in the DirectoryResource class. The query part of the resource uri
    is removed before sending request to the file connector.
+ - The content negotiation was throwing class cast exceptions when a resource was 
+   returning simple Variant instance via getVariants().
  
 [API changes]
  - Added ReferenceList.getWebRepresentation() method, using exsiting logic from Directory.

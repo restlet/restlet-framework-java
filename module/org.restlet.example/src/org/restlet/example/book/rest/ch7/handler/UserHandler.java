@@ -21,7 +21,6 @@ package org.restlet.example.book.rest.ch7.handler;
 import org.restlet.Handler;
 import org.restlet.data.Request;
 import org.restlet.data.Response;
-import org.restlet.example.book.rest.ch7.domain.User;
 import org.restlet.example.book.rest.ch7.resource.UserResource;
 import org.restlet.resource.Resource;
 
@@ -34,13 +33,8 @@ public class UserHandler extends Handler {
 
     @Override
     public Resource findTarget(final Request request, Response response) {
-        // Find the user domain object
         String userName = (String) request.getAttributes().get("username");
-        User user = UserResource.findUser(userName);
-
-        // Return a resource wrapping the user
-        return (user == null) ? null : new UserResource(user, request
-                .getResourceRef());
+        return new UserResource(userName);
     }
 
 }

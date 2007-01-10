@@ -40,14 +40,14 @@ public class TestClient {
     public static void createNewUser(String name, String password,
             String fullName, String email) {
         Form form = new Form();
-        form.add("user[name]", name);
         form.add("user[password]", password);
         form.add("user[full_name]", fullName);
         form.add("user[email]", email);
 
-        Response resp = new Client(Protocol.HTTP).post(
-                "http://localhost:3000/v1/users", form.getWebRepresentation());
-        System.out.println(resp.getStatus() + " : " + resp.getRedirectRef());
+        Response resp = new Client(Protocol.HTTP).put(
+                "http://localhost:3000/v1/users/" + name, form
+                        .getWebRepresentation());
+        System.out.println(resp.getStatus());
     }
 
     public static void deleteUser(String name) {
