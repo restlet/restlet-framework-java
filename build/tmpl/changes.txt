@@ -5,8 +5,17 @@ Changes log
 
 @version-full@ (@release-date@)
 [Bugs fixed]
+ - 
+ 
 [API changes]
+ - Added ReferenceList.getWebRepresentation() method, using exsiting logic from Directory.
+ - Deprecated Directory.getDirectoryVariants() method and added getIndexVariants() + 
+   getIndexRepresentation() method to follow recent refactoring in Resource.
+
 [Enhancements] 
+ - The content negotiation algorithm is now more flexible about languages. It will try
+   to satisfy the client languages preferences, but will always return a representation
+   if the media type is accepted, even if the language is not explicitely accepted. 
 
 1.0 RC2 (2007-01-09)
 [Bugs fixed]

@@ -416,12 +416,17 @@ public class Factory extends org.restlet.util.Factory {
                 currentVariant = (Representation) iter1.next();
                 variantLanguage = currentVariant.getLanguage();
                 variantMediaType = currentVariant.getMediaType();
-               // If no language preference is defined, assume that all
-                // languages are acceptable
-                List<Preference<Language>> languagePrefs = client
-                        .getAcceptedLanguages();
-                if (languagePrefs.isEmpty()){
-                    languagePrefs.add(new Preference<Language>(Language.ALL));                    
+
+                // If no language preference is defined or even none matches, we
+                // want to make sure that at least a variant can be returned.
+                // Based on experience, it appears that browsers are often
+                // misconfigured and don't expose all the languages actually
+                // understood by end users.
+                List<Preference<Language>> languagePrefs = client.getAcceptedLanguages();
+                if (languagePrefs.isEmpty()) {
+                    languagePrefs.add(new Preference<Language>(Language.ALL));
+                } else {
+                    languagePrefs.add(new Preference<Language>(Language.ALL, 0.001F));
                 }
 
                 // For each language preference defined in the call

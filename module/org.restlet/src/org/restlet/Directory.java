@@ -29,8 +29,8 @@ import org.restlet.data.Reference;
 import org.restlet.data.ReferenceList;
 import org.restlet.data.Request;
 import org.restlet.data.Response;
+import org.restlet.resource.Representation;
 import org.restlet.resource.Resource;
-import org.restlet.resource.StringRepresentation;
 import org.restlet.resource.Variant;
 import org.restlet.util.Factory;
 
@@ -147,36 +147,50 @@ public class Directory extends Handler {
      * @param directoryContent
      *            The list of references contained in the directory.
      * @return The variant representations of a directory.
+     * @deprecated Use getIndexVariants() and getIndexRepresentation() instead.
      */
+    @Deprecated
     public List<Variant> getDirectoryVariants(ReferenceList directoryContent) {
-        // Create a simple HTML list
-        StringBuilder sb = new StringBuilder();
-        sb.append("<html><body>\n");
-
-        sb.append("<h1>Listing of directory \""
-                + directoryContent.getIdentifier().getPath() + "\"</h1>\n");
-
-        Reference parentRef = directoryContent.getIdentifier().getParentRef();
-
-        if (!parentRef.equals(directoryContent.getIdentifier())) {
-            sb.append("<a href=\"" + parentRef + "\">..</a><br/>\n");
-        }
-
-        for (Reference ref : directoryContent) {
-            sb.append("<a href=\"" + ref.toString() + "\">"
-                    + ref.getRelativeRef(directoryContent.getIdentifier())
-                    + "</a><br/>\n");
-        }
-        sb.append("</body></html>\n");
-
         // Create the variants list
         List<Variant> result = new ArrayList<Variant>();
-        result
-                .add(new StringRepresentation(sb.toString(),
-                        MediaType.TEXT_HTML));
-
-        // Add the alternative "text/uri-list" representation
+        result.add(directoryContent.getWebRepresentation());
         result.add(directoryContent.getTextRepresentation());
+        return result;
+    }
+
+    /**
+     * Returns the variant representations of a directory index. This method can
+     * be subclassed in order to provide alternative representations. By default
+     * it returns a simple HTML document and a textual URI list as variants.
+     * 
+     * @param indexContent
+     *            The list of references contained in the directory index.
+     * @return The variant representations of a directory.
+     */
+    public List<Variant> getIndexVariants(ReferenceList indexContent) {
+        List<Variant> result = new ArrayList<Variant>();
+        result.add(new Variant(MediaType.TEXT_URI_LIST));
+        result.add(new Variant(MediaType.TEXT_HTML));
+        return result;
+    }
+
+    /**
+     * Returns an actual index representation for a given variant.
+     * 
+     * @param variant
+     *            The selected variant.
+     * @param indexContent
+     *            The directory index to represent.
+     * @return The actual index representation.
+     */
+    public Representation getIndexRepresentation(Variant variant,
+            ReferenceList indexContent) {
+        Representation result = null;
+        if (variant.getMediaType().equals(MediaType.TEXT_HTML)) {
+            result = indexContent.getWebRepresentation();
+        } else if (variant.getMediaType().equals(MediaType.TEXT_URI_LIST)) {
+            result = indexContent.getTextRepresentation();
+        }
         return result;
     }
 

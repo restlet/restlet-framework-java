@@ -18,10 +18,17 @@
 
 package org.restlet.example.book.rest.ch7.resource;
 
+import org.restlet.data.MediaType;
+import org.restlet.data.ReferenceList;
+import org.restlet.example.book.rest.ch7.domain.Bookmark;
 import org.restlet.example.book.rest.ch7.domain.User;
+import org.restlet.resource.Representation;
 import org.restlet.resource.Resource;
+import org.restlet.resource.Variant;
 
 /**
+ * Resource for a user's list of bookmarks.
+ * 
  * @author Jerome Louvel (contact@noelios.com)
  */
 public class BookmarksResource extends Resource {
@@ -30,6 +37,24 @@ public class BookmarksResource extends Resource {
 
     public BookmarksResource(User user) {
         this.user = user;
+        getVariants().add(new Variant(MediaType.TEXT_HTML));
+    }
+
+    @Override
+    public Representation getRepresentation(Variant variant) {
+        Representation result = null;
+
+        if (variant.getMediaType().equals(MediaType.TEXT_HTML)) {
+            ReferenceList rl = new ReferenceList();
+
+            for (Bookmark bookmark : user.getBookmarks()) {
+                rl.add(bookmark.getUri());
+            }
+
+            result = rl.getWebRepresentation();
+        }
+
+        return result;
     }
 
 }

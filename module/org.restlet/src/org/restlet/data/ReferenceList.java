@@ -138,6 +138,33 @@ public class ReferenceList extends WrapperList<Reference> {
     }
 
     /**
+     * Returns a representation of the list in the "text/uri-list" format.
+     * 
+     * @return A representation of the list in the "text/uri-list" format.
+     */
+    public Representation getWebRepresentation() {
+        // Create a simple HTML list
+        StringBuilder sb = new StringBuilder();
+        sb.append("<html><body>\n");
+        sb
+                .append("<h1>Listing of \"" + getIdentifier().getPath()
+                        + "\"</h1>\n");
+        Reference parentRef = getIdentifier().getParentRef();
+
+        if (!parentRef.equals(getIdentifier())) {
+            sb.append("<a href=\"" + parentRef + "\">..</a><br/>\n");
+        }
+
+        for (Reference ref : this) {
+            sb.append("<a href=\"" + ref.toString() + "\">"
+                    + ref.getRelativeRef(getIdentifier()) + "</a><br/>\n");
+        }
+        sb.append("</body></html>\n");
+
+        return new StringRepresentation(sb.toString(), MediaType.TEXT_HTML);
+    }
+
+    /**
      * Sets the list reference.
      * 
      * @param identifier

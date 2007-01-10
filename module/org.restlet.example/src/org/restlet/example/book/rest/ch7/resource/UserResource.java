@@ -20,6 +20,9 @@ package org.restlet.example.book.rest.ch7.resource;
 
 import java.util.List;
 
+import org.restlet.data.Form;
+import org.restlet.data.MediaType;
+import org.restlet.data.Reference;
 import org.restlet.data.Status;
 import org.restlet.example.book.rest.ch7.Application;
 import org.restlet.example.book.rest.ch7.domain.User;
@@ -60,10 +63,14 @@ public class UserResource extends Resource {
         return result;
     }
 
+    private Reference baseRef;
+
     private User user;
 
-    public UserResource(User user) {
+    public UserResource(User user, Reference baseRef) {
         this.user = user;
+        this.baseRef = baseRef;
+        getVariants().add(new Variant(MediaType.TEXT_PLAIN));
     }
 
     @Override
@@ -88,25 +95,53 @@ public class UserResource extends Resource {
     }
 
     @Override
-    public List<Variant> getVariants() {
-        List<Variant> result = super.getVariants();
+    public Representation getRepresentation(Variant variant) {
+        Representation result = null;
 
-        // Creates a text representation
-        StringBuilder sb = new StringBuilder();
-        sb.append("------------\n");
-        sb.append("User details\n");
-        sb.append("------------\n\n");
-        sb.append("Name:  ").append(this.user.getFullName()).append('\n');
-        sb.append("Email: ").append(this.user.getEmail()).append('\n');
+        if (variant.getMediaType().equals(MediaType.TEXT_PLAIN)) {
+            // Creates a text representation
+            StringBuilder sb = new StringBuilder();
+            sb.append("------------\n");
+            sb.append("User details\n");
+            sb.append("------------\n\n");
+            sb.append("Name:  ").append(this.user.getFullName()).append('\n');
+            sb.append("Email: ").append(this.user.getEmail()).append('\n');
+            result = new StringRepresentation(sb);
+        }
 
-        // Add it to the list of variants
-        result.add(new StringRepresentation(sb));
         return result;
     }
 
     @Override
     public Result put(Representation entity) {
-        return null;
+        Result result = null;
+
+        if (entity.getMediaType().equals(MediaType.APPLICATION_WWW_FORM)) {
+            // Parse the entity as a web form
+            Form form = new Form(entity);
+
+            // Create a new user
+            User newUser = new User();
+            newUser.setEmail(form.getFirstValue("user[email]"));
+            newUser.setFullName(form.getFirstValue("user[full_name]"));
+            newUser.setName(form.getFirstValue("user[name]"));
+            newUser.setPassword(form.getFirstValue("user[password]"));
+
+            // Test if user already exists
+            if (UserResource.findUser(newUser.getName()) != null) {
+                result = new Result(Status.CLIENT_ERROR_CONFLICT);
+            } else {
+                // Save the new user
+                Application.CONTAINER.set(newUser);
+                Application.CONTAINER.commit();
+
+                // Update the result
+                result = new Result(Status.SUCCESS_CREATED, new Reference(
+                        this.baseRef.toString() + "/" + newUser.getName()));
+            }
+        }
+
+        return result;
     }
 
 }
