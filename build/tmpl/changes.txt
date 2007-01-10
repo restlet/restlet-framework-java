@@ -5,7 +5,8 @@ Changes log
 
 @version-full@ (@release-date@)
 [Bugs fixed]
- - 
+ - Fixed bug with the uri parsing in the DirectoryResource class. The query part of the resource uri
+   is removed before sending request to the file connector.
  
 [API changes]
  - Added ReferenceList.getWebRepresentation() method, using exsiting logic from Directory.
