@@ -124,24 +124,22 @@ public class UserResource extends Resource {
             // Parse the entity as a web form
             Form form = new Form(entity);
 
-            // Create a new user
-            this.user = new User();
-            this.user.setName(this.userName);
+            // If the user doesn't exist, create it
+            if (this.user == null) {
+                this.user = new User();
+                this.user.setName(this.userName);
+                result = new Result(Status.SUCCESS_CREATED);
+            } else {
+                result = new Result(Status.SUCCESS_NO_CONTENT);
+            }
+
             this.user.setEmail(form.getFirstValue("user[email]"));
             this.user.setFullName(form.getFirstValue("user[full_name]"));
             this.user.setPassword(form.getFirstValue("user[password]"));
 
-            // Test if user already exists
-            if (UserResource.findUser(this.user.getName()) != null) {
-                result = new Result(Status.CLIENT_ERROR_CONFLICT);
-            } else {
-                // Save the new user
-                Application.CONTAINER.set(this.user);
-                Application.CONTAINER.commit();
-
-                // Update the result
-                result = new Result(Status.SUCCESS_CREATED);
-            }
+            // Commit the changes
+            Application.CONTAINER.set(this.user);
+            Application.CONTAINER.commit();
         }
 
         return result;
