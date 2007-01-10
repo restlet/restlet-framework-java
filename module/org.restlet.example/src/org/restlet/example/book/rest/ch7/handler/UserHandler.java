@@ -34,8 +34,13 @@ public class UserHandler extends Handler {
 
     @Override
     public Resource findTarget(final Request request, Response response) {
+        // Find the user domain object
         String userName = (String) request.getAttributes().get("username");
         User user = UserResource.findUser(userName);
-        return (user == null) ? null : new UserResource(user);
+
+        // Return a resource wrapping the user
+        return (user == null) ? null : new UserResource(user, request
+                .getResourceRef());
     }
+
 }

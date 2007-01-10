@@ -21,19 +21,34 @@ package org.restlet.example.book.rest.ch7.handler;
 import org.restlet.Handler;
 import org.restlet.data.Request;
 import org.restlet.data.Response;
-import org.restlet.example.book.rest.ch7.resource.UsersResource;
+import org.restlet.example.book.rest.ch7.domain.Bookmark;
+import org.restlet.example.book.rest.ch7.domain.User;
+import org.restlet.example.book.rest.ch7.resource.BookmarkResource;
+import org.restlet.example.book.rest.ch7.resource.UserResource;
 import org.restlet.resource.Resource;
 
 /**
- * Handler for users list resources.
+ * Handler of bookmark resources.
  * 
  * @author Jerome Louvel (contact@noelios.com)
  */
-public class UsersHandler extends Handler {
+public class BookmarkHandler extends Handler {
 
     @Override
     public Resource findTarget(final Request request, Response response) {
-        return new UsersResource(request.getResourceRef().getBaseRef());
-    }
+        Resource result = null;
 
+        // Find the user owning the bookmark
+        String userName = (String) request.getAttributes().get("username");
+        User user = UserResource.findUser(userName);
+
+        if (user != null) {
+            // Find the bookmark
+            String uri = (String) request.getAttributes().get("URI");
+            Bookmark bookmark = user.getBookmark(uri);
+            result = (bookmark == null) ? null : new BookmarkResource(bookmark);
+        }
+
+        return result;
+    }
 }

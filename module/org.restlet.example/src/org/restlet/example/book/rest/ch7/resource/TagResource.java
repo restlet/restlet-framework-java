@@ -18,28 +18,59 @@
 
 package org.restlet.example.book.rest.ch7.resource;
 
+import java.util.List;
+
 import org.restlet.data.MediaType;
 import org.restlet.data.Status;
 import org.restlet.example.book.rest.ch7.Application;
-import org.restlet.example.book.rest.ch7.domain.Bookmark;
 import org.restlet.example.book.rest.ch7.domain.Tag;
+import org.restlet.example.book.rest.ch7.domain.User;
 import org.restlet.resource.Representation;
 import org.restlet.resource.Resource;
 import org.restlet.resource.Result;
 import org.restlet.resource.StringRepresentation;
 import org.restlet.resource.Variant;
 
+import com.db4o.query.Predicate;
+
 /**
- * Resource for a user's bookmark.
+ * Resource for a user's usage of a tag.
  * 
  * @author Jerome Louvel (contact@noelios.com)
  */
-public class BookmarkResource extends Resource {
+public class TagResource extends Resource {
 
-    private Bookmark bookmark;
+    public static Tag findTag(final String tagName) {
+        Tag result = null;
 
-    public BookmarkResource(Bookmark bookmark) {
-        this.bookmark = bookmark;
+        if (tagName != null) {
+            // Create the query predicate
+            Predicate<Tag> predicate = new Predicate<Tag>() {
+                private static final long serialVersionUID = 1L;
+
+                @Override
+                public boolean match(Tag candidate) {
+                    return tagName.equals(candidate.getName());
+                }
+            };
+
+            // Query the database and get the first result
+            List<Tag> tags = Application.CONTAINER.query(predicate);
+            if ((tags != null) && (tags.size() > 0)) {
+                result = tags.get(0);
+            }
+        }
+
+        return result;
+    }
+
+    private User user;
+
+    private Tag tag;
+
+    public TagResource(User user, Tag tag) {
+        this.user = user;
+        this.tag = tag;
         getVariants().add(new Variant(MediaType.TEXT_PLAIN));
     }
 
@@ -55,8 +86,8 @@ public class BookmarkResource extends Resource {
 
     @Override
     public Result delete() {
-        if (this.bookmark != null) {
-            Application.CONTAINER.delete(this.bookmark);
+        if (this.tag != null) {
+            Application.CONTAINER.delete(this.tag);
             Application.CONTAINER.commit();
             return new Result(Status.SUCCESS_OK);
         } else {
@@ -72,34 +103,14 @@ public class BookmarkResource extends Resource {
             // Creates a text representation
             StringBuilder sb = new StringBuilder();
             sb.append("----------------\n");
-            sb.append("Bookmark details\n");
+            sb.append("User tag details\n");
             sb.append("----------------\n\n");
-            sb.append("User:  ").append(this.bookmark.getUser().getName())
-                    .append('\n');
-            sb.append("URI:   ").append(this.bookmark.getUri()).append('\n');
-            sb.append("Short: ").append(this.bookmark.getShortDescription())
-                    .append('\n');
-            sb.append("Long:  ").append(this.bookmark.getLongDescription())
-                    .append('\n');
-            sb.append("Date:  ").append(this.bookmark.getDateTime()).append(
-                    '\n');
-            sb.append("Restrict:  ").append(
-                    Boolean.toString(this.bookmark.isRestrict())).append('\n');
-            sb.append("Tags:  ");
-            for (Tag tag : this.bookmark.getTags()) {
-                sb.append(tag.getName()).append(' ');
-            }
-            sb.append('\n');
-
+            sb.append("User name: ").append(this.user.getName()).append('\n');
+            sb.append("Tag name:  ").append(this.tag.getName()).append('\n');
             result = new StringRepresentation(sb);
         }
 
         return result;
-    }
-
-    @Override
-    public Result put(Representation entity) {
-        return null;
     }
 
 }

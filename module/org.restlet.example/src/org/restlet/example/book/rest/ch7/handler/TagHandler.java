@@ -18,17 +18,14 @@
 
 package org.restlet.example.book.rest.ch7.handler;
 
-import java.util.List;
-
 import org.restlet.Handler;
 import org.restlet.data.Request;
 import org.restlet.data.Response;
-import org.restlet.example.book.rest.ch7.Application;
+import org.restlet.example.book.rest.ch7.domain.Tag;
 import org.restlet.example.book.rest.ch7.domain.User;
+import org.restlet.example.book.rest.ch7.resource.TagResource;
 import org.restlet.example.book.rest.ch7.resource.UserResource;
 import org.restlet.resource.Resource;
-
-import com.db4o.query.Predicate;
 
 /**
  * Handler for tag resources.
@@ -41,23 +38,17 @@ public class TagHandler extends Handler {
     public Resource findTarget(final Request request, Response response) {
         Resource result = null;
 
-        // Create the query predicate
-        Predicate<User> predicate = new Predicate<User>() {
-            private static final long serialVersionUID = 1L;
+        // Find the user domain object
+        String userName = (String) request.getAttributes().get("username");
+        User user = UserResource.findUser(userName);
 
-            @Override
-            public boolean match(User candidate) {
-                String userName = (String) request.getAttributes().get(
-                        "username");
-                return (userName != null)
-                        && (userName.equals(candidate.getName()));
-            }
-        };
+        if (user != null) {
+            // Find the tag domain object
+            String tagName = (String) request.getAttributes().get("tag");
+            Tag tag = TagResource.findTag(tagName);
 
-        // Query the database and get the first result
-        List<User> users = Application.CONTAINER.query(predicate);
-        if ((users != null) && (users.size() > 0)) {
-            result = new UserResource(users.get(0));
+            // Return a resource wrapping the user
+            result = (tag == null) ? null : new TagResource(user, tag);
         }
 
         return result;

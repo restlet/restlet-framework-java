@@ -25,7 +25,9 @@ import org.restlet.Restlet;
 import org.restlet.Route;
 import org.restlet.Router;
 import org.restlet.data.Protocol;
-import org.restlet.example.book.rest.ch7.handler.UsersHandler;
+import org.restlet.example.book.rest.ch7.handler.BookmarkHandler;
+import org.restlet.example.book.rest.ch7.handler.BookmarksHandler;
+import org.restlet.example.book.rest.ch7.handler.TagHandler;
 import org.restlet.example.book.rest.ch7.handler.UserHandler;
 import org.restlet.util.Variable;
 
@@ -33,7 +35,7 @@ import com.db4o.Db4o;
 import com.db4o.ObjectContainer;
 
 /**
- * Main Web application.
+ * The main Web application.
  * 
  * @author Jerome Louvel (contact@noelios.com)
  */
@@ -61,18 +63,15 @@ public class Application extends org.restlet.Application {
     public Restlet createRoot() {
         Router router = new Router();
 
-        // Add a route for users
-        router.attach("/users", new UsersHandler());
-
         // Add a route for user resources
         router.attach("/users/{username}", new UserHandler());
 
         // Add a route for user's bookmarks resources
-        router.attach("/users/{username}/bookmarks", null);
+        router.attach("/users/{username}/bookmarks", new BookmarksHandler());
 
         // Add a route for bookmark resources
         Route uriRoute = router.attach("/users/{username}/bookmarks/{URI}",
-                null);
+                new BookmarkHandler());
         uriRoute.getTemplate().getVariables().put("URI",
                 new Variable(Variable.TYPE_URI_ALL));
 
@@ -80,7 +79,7 @@ public class Application extends org.restlet.Application {
         router.attach("/users/{username}/tags", null);
 
         // Add a route for tag resources
-        router.attach("/users/{username}/tags/{tag}", null);
+        router.attach("/users/{username}/tags/{tag}", new TagHandler());
 
         // Add a route for user's calendar resources
         router.attach("/users/{username}/calendar", null);

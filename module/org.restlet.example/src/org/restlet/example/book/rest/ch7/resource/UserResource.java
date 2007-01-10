@@ -35,6 +35,8 @@ import org.restlet.resource.Variant;
 import com.db4o.query.Predicate;
 
 /**
+ * Resource for a user.
+ * 
  * @author Jerome Louvel (contact@noelios.com)
  */
 public class UserResource extends Resource {
@@ -63,13 +65,13 @@ public class UserResource extends Resource {
         return result;
     }
 
-    private Reference baseRef;
+    private Reference userRef;
 
     private User user;
 
-    public UserResource(User user, Reference baseRef) {
+    public UserResource(User user, Reference userRef) {
         this.user = user;
-        this.baseRef = baseRef;
+        this.userRef = userRef;
         getVariants().add(new Variant(MediaType.TEXT_PLAIN));
     }
 
@@ -137,7 +139,7 @@ public class UserResource extends Resource {
 
                 // Update the result
                 result = new Result(Status.SUCCESS_CREATED, new Reference(
-                        this.baseRef.toString() + "/" + newUser.getName()));
+                        this.userRef.toString() + "/" + newUser.getName()));
             }
         }
 
