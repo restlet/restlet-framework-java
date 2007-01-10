@@ -140,9 +140,10 @@ public class DirectoryResource extends Resource {
             // We enforce the leading slash on the root URI
             this.relativePart = this.relativePart.substring(1);
         }
-
+        // The target uri does not take into account the query and fragment
+        // parts of the resource.
         this.targetUri = new Reference(directory.getRootRef().toString()
-                + this.relativePart).normalize().toString();
+                + this.relativePart).normalize().toString(false, false);
         if (!this.targetUri.startsWith(directory.getRootRef().toString())) {
             // Prevent the client from accessing resources in upper directories
             this.targetUri = directory.getRootRef().toString();
