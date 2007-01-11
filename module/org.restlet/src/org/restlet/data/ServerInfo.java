@@ -31,7 +31,7 @@ public final class ServerInfo {
     private String agent;
 
     /** The port number. */
-    private Integer port;
+    private int port;
 
     /**
      * Constructor.
@@ -39,7 +39,7 @@ public final class ServerInfo {
     public ServerInfo() {
         this.address = null;
         this.agent = null;
-        this.port = null;
+        this.port = -1;
     }
 
     /**
@@ -61,11 +61,12 @@ public final class ServerInfo {
     }
 
     /**
-     * Returns the port number which received the call.
+     * Returns the port number which received the call. If no port is specified,
+     * -1 is returned.
      * 
      * @return The port number which received the call.
      */
-    public Integer getPort() {
+    public int getPort() {
         return this.port;
     }
 
@@ -95,7 +96,7 @@ public final class ServerInfo {
      * @param port
      *            The port number which received the call.
      */
-    public void setPort(Integer port) {
+    public void setPort(int port) {
         this.port = port;
     }
 

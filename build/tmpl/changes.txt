@@ -9,11 +9,13 @@ Changes log
    is removed before sending request to the file connector.
  - The content negotiation was throwing class cast exceptions when a resource was 
    returning simple Variant instance via getVariants().
+ - Fixed potential NPE in HttpRequest due to autoboxing. Reported by Valdis Rigdon.
  
 [API changes]
  - Added ReferenceList.getWebRepresentation() method, using exsiting logic from Directory.
  - Deprecated Directory.getDirectoryVariants() method and added getIndexVariants() + 
    getIndexRepresentation() method to follow recent refactoring in Resource.
+ - ClientInfo.port and ServerInfo.port are now 'int' instead of 'Integer' to prevent autoboxing issues.
 
 [Enhancements] 
  - The content negotiation algorithm is now more flexible about languages. It will try

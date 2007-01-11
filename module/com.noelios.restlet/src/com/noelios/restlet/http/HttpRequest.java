@@ -105,7 +105,9 @@ public class HttpRequest extends Request {
         StringBuilder sb = new StringBuilder();
         sb.append(httpCall.getProtocol().getSchemeName()).append("://");
         sb.append(httpCall.getHostDomain());
-        if (httpCall.getHostPort() != httpCall.getProtocol().getDefaultPort()) {
+        if ((httpCall.getHostPort() != -1)
+                && (httpCall.getHostPort() != httpCall.getProtocol()
+                        .getDefaultPort())) {
             sb.append(':').append(httpCall.getServerPort());
         }
         setHostRef(new Reference(sb.toString()));

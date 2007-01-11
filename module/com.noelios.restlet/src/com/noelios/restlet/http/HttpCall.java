@@ -39,7 +39,7 @@ public class HttpCall {
     private String hostDomain;
 
     /** The hostRef port. */
-    private Integer hostPort;
+    private int hostPort;
 
     /** Indicates if the call is confidential. */
     private boolean confidential;
@@ -48,7 +48,7 @@ public class HttpCall {
     private String clientAddress;
 
     /** The client port. */
-    private Integer clientPort;
+    private int clientPort;
 
     /** The method. */
     private String method;
@@ -72,7 +72,7 @@ public class HttpCall {
     private String serverAddress;
 
     /** The server port. */
-    private Integer serverPort;
+    private int serverPort;
 
     /** The status code. */
     private int statusCode;
@@ -85,9 +85,9 @@ public class HttpCall {
      */
     public HttpCall() {
         this.hostDomain = null;
-        this.hostPort = null;
+        this.hostPort = -1;
         this.clientAddress = null;
-        this.clientPort = null;
+        this.clientPort = -1;
         this.confidential = false;
         this.method = null;
         this.protocol = null;
@@ -96,7 +96,7 @@ public class HttpCall {
         this.requestUri = null;
         this.responseHeaders = null;
         this.serverAddress = null;
-        this.serverPort = null;
+        this.serverPort = -1;
         this.statusCode = 200;
         this.version = null;
     }
@@ -134,7 +134,7 @@ public class HttpCall {
      * 
      * @return The client port.
      */
-    public Integer getClientPort() {
+    public int getClientPort() {
         return this.clientPort;
     }
 
@@ -173,7 +173,7 @@ public class HttpCall {
      * 
      * @return The host port.
      */
-    public Integer getHostPort() {
+    public int getHostPort() {
         return this.hostPort;
     }
 
@@ -253,7 +253,7 @@ public class HttpCall {
      * 
      * @return The server port.
      */
-    public Integer getServerPort() {
+    public int getServerPort() {
         return this.serverPort;
     }
 
@@ -317,7 +317,7 @@ public class HttpCall {
      * @param clientPort
      *            The client port.
      */
-    protected void setClientPort(Integer clientPort) {
+    protected void setClientPort(int clientPort) {
         this.clientPort = clientPort;
     }
 
@@ -348,7 +348,7 @@ public class HttpCall {
      * @param hostPort
      *            The host port.
      */
-    public void setHostPort(Integer hostPort) {
+    public void setHostPort(int hostPort) {
         this.hostPort = hostPort;
     }
 
@@ -409,7 +409,7 @@ public class HttpCall {
      * @param serverPort
      *            The server port.
      */
-    public void setServerPort(Integer serverPort) {
+    public void setServerPort(int serverPort) {
         this.serverPort = serverPort;
     }
 

@@ -86,10 +86,10 @@ public class SimpleCall extends HttpServerCall {
     }
 
     @Override
-    public Integer getClientPort() {
+    public int getClientPort() {
         Socket sock = (Socket) request
                 .getAttribute(SimplePipelineFactory.PROPERTY_SOCKET);
-        return (sock != null) ? sock.getPort() : null;
+        return (sock != null) ? sock.getPort() : -1;
     }
 
     /**

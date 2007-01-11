@@ -38,7 +38,7 @@ public final class ClientInfo {
     private String agent;
 
     /** The port number. */
-    private Integer port;
+    private int port;
 
     /** The character set preferences. */
     private List<Preference<CharacterSet>> characterSetPrefs;
@@ -58,7 +58,7 @@ public final class ClientInfo {
     public ClientInfo() {
         this.addresses = null;
         this.agent = null;
-        this.port = null;
+        this.port = -1;
         this.characterSetPrefs = null;
         this.encodingPrefs = null;
         this.languagePrefs = null;
@@ -145,11 +145,12 @@ public final class ClientInfo {
     }
 
     /**
-     * Returns the port number which sent the call.
+     * Returns the port number which sent the call. If no port is specified, -1
+     * is returned.
      * 
      * @return The port number which sent the call.
      */
-    public Integer getPort() {
+    public int getPort() {
         return this.port;
     }
 
@@ -215,7 +216,7 @@ public final class ClientInfo {
      * @param port
      *            The port number which sent the call.
      */
-    public void setPort(Integer port) {
+    public void setPort(int port) {
         this.port = port;
     }
 

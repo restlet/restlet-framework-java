@@ -167,7 +167,7 @@ public abstract class HttpServerCall extends HttpCall {
      * 
      * @return The host port.
      */
-    public Integer getHostPort() {
+    public int getHostPort() {
         if (!hostParsed)
             parseHost();
         return super.getHostPort();

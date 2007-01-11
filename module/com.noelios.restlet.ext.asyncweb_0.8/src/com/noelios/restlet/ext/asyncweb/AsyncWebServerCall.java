@@ -80,7 +80,7 @@ public class AsyncWebServerCall extends HttpServerCall {
     }
 
     @Override
-    public Integer getClientPort() {
+    public int getClientPort() {
         return request.getRemotePort();
     }
 

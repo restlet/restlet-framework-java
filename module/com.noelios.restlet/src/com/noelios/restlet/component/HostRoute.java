@@ -116,9 +116,8 @@ public class HostRoute extends Route {
             serverAddress = "";
 
         String serverPort = "";
-        Integer serverPortValue = response.getServerInfo().getPort();
-        if (serverPortValue != null)
-            serverPort = serverPortValue.toString();
+        if (response.getServerInfo().getPort() != -1)
+            serverPort = Integer.toString(response.getServerInfo().getPort());
 
         // Check if all the criterias match
         if (matches(getVirtualHost().getHostDomain(), hostDomain)

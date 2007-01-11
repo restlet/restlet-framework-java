@@ -78,7 +78,7 @@ public class ServletCall extends HttpServerCall {
     }
 
     @Override
-    public Integer getClientPort() {
+    public int getClientPort() {
         return getRequest().getRemotePort();
     }
 
@@ -230,7 +230,7 @@ public class ServletCall extends HttpServerCall {
      * 
      * @return The server port.
      */
-    public Integer getServerPort() {
+    public int getServerPort() {
         return getRequest().getServerPort();
     }
 

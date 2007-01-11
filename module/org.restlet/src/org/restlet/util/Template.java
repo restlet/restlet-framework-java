@@ -1127,9 +1127,9 @@ public class Template {
                     } else if (variableName.equals("SIG")) {
                         result = response.getServerInfo().getAgent();
                     } else if (variableName.equals("SIP")) {
-                        if (response.getServerInfo().getPort() != null) {
-                            result = response.getServerInfo().getPort()
-                                    .toString();
+                        if (response.getServerInfo().getPort() != -1) {
+                            result = Integer.toString(response.getServerInfo()
+                                    .getPort());
                         }
                     }
                 }

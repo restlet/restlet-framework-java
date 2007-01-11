@@ -55,12 +55,12 @@ public class IdentClient {
      * @param serverPort
      *            The server port (local).
      */
-    public IdentClient(Logger logger, String clientAddress, Integer clientPort,
-            Integer serverPort) {
+    public IdentClient(Logger logger, String clientAddress, int clientPort,
+            int serverPort) {
         Socket socket = null;
 
-        if ((logger != null) && (clientAddress != null) && (clientPort != null)
-                && (serverPort != null)) {
+        if ((logger != null) && (clientAddress != null) && (clientPort != -1)
+                && (serverPort != -1)) {
             try {
                 // Compose the IDENT request
                 StringBuilder sb = new StringBuilder();

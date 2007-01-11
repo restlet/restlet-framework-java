@@ -73,7 +73,7 @@ public class JettyCall extends HttpServerCall {
     }
 
     @Override
-    public Integer getClientPort() {
+    public int getClientPort() {
         return getRequest().getHttpConnection().getRemotePort();
     }
 
