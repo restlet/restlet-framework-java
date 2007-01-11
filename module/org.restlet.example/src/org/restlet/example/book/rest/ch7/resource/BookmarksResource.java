@@ -21,9 +21,7 @@ package org.restlet.example.book.rest.ch7.resource;
 import org.restlet.data.MediaType;
 import org.restlet.data.ReferenceList;
 import org.restlet.example.book.rest.ch7.domain.Bookmark;
-import org.restlet.example.book.rest.ch7.domain.User;
 import org.restlet.resource.Representation;
-import org.restlet.resource.Resource;
 import org.restlet.resource.Variant;
 
 /**
@@ -31,12 +29,10 @@ import org.restlet.resource.Variant;
  * 
  * @author Jerome Louvel (contact@noelios.com)
  */
-public class BookmarksResource extends Resource {
+public class BookmarksResource extends UserResource {
 
-    private User user;
-
-    public BookmarksResource(User user) {
-        this.user = user;
+    public BookmarksResource(String userName, String login, String password) {
+        super(userName, login, password);
         getVariants().add(new Variant(MediaType.TEXT_HTML));
     }
 
@@ -48,7 +44,7 @@ public class BookmarksResource extends Resource {
             ReferenceList rl = new ReferenceList();
 
             // Copy the bookmark URIs into a reference list
-            for (Bookmark bookmark : user.getBookmarks()) {
+            for (Bookmark bookmark : getUser().getBookmarks()) {
                 rl.add(bookmark.getUri());
             }
 

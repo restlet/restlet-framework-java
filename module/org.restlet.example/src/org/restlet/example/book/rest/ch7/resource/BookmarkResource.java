@@ -27,9 +27,7 @@ import org.restlet.data.Status;
 import org.restlet.example.book.rest.ch7.Application;
 import org.restlet.example.book.rest.ch7.domain.Bookmark;
 import org.restlet.example.book.rest.ch7.domain.Tag;
-import org.restlet.example.book.rest.ch7.domain.User;
 import org.restlet.resource.Representation;
-import org.restlet.resource.Resource;
 import org.restlet.resource.StringRepresentation;
 import org.restlet.resource.Variant;
 
@@ -38,18 +36,17 @@ import org.restlet.resource.Variant;
  * 
  * @author Jerome Louvel (contact@noelios.com)
  */
-public class BookmarkResource extends Resource {
+public class BookmarkResource extends UserResource {
 
     private Bookmark bookmark;
 
-    private User user;
-
     private String uri;
 
-    public BookmarkResource(User user, String uri) {
-        this.user = user;
+    public BookmarkResource(String userName, String login, String password,
+            String uri) {
+        super(userName, login, password);
         this.uri = uri;
-        this.bookmark = user.getBookmark(uri);
+        this.bookmark = getUser().getBookmark(uri);
 
         if (this.bookmark != null) {
             getVariants().add(new Variant(MediaType.TEXT_PLAIN));
@@ -121,7 +118,7 @@ public class BookmarkResource extends Resource {
             // If the bookmark doesn't exist, create it
             if (this.bookmark == null) {
                 this.bookmark = new Bookmark();
-                this.user.getBookmarks().add(this.bookmark);
+                getUser().getBookmarks().add(this.bookmark);
                 this.bookmark.setUri(this.uri);
                 result = new Response(Status.SUCCESS_CREATED);
             } else {
@@ -138,7 +135,7 @@ public class BookmarkResource extends Resource {
 
             // Commit the changes
             Application.CONTAINER.set(this.bookmark);
-            Application.CONTAINER.set(this.user);
+            Application.CONTAINER.set(getUser());
             Application.CONTAINER.commit();
         }
 

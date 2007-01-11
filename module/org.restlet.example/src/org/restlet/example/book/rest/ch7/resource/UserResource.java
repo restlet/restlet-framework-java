@@ -187,4 +187,18 @@ public class UserResource extends Resource {
 
         return result;
     }
+
+    /**
+     * @return the user
+     */
+    public User getUser() {
+        return this.user;
+    }
+
+    /**
+     * @param user the user to set
+     */
+    public void setUser(User user) {
+        this.user = user;
+    }
 }
