@@ -37,7 +37,6 @@ import org.restlet.data.Response;
 import org.restlet.data.Status;
 import org.restlet.resource.Representation;
 import org.restlet.resource.Resource;
-import org.restlet.resource.Result;
 import org.restlet.resource.Variant;
 import org.restlet.service.MetadataService;
 
@@ -239,11 +238,11 @@ public class DirectoryResource extends Resource {
      * 
      * @return The result information.
      */
-    public Result delete() {
+    public Response delete() {
         Status status;
 
         if (directoryRedirection && !targetIndex) {
-            Result result = new Result(Status.REDIRECTION_SEE_OTHER, null,
+            Response result = new Response(Status.REDIRECTION_SEE_OTHER, null,
                     new Reference(this.targetUri));
             return result;
         }
@@ -283,7 +282,7 @@ public class DirectoryResource extends Resource {
             status = contextResponse.getStatus();
         }
 
-        return new Result(status);
+        return new Response(status);
     }
 
     /**
@@ -293,11 +292,11 @@ public class DirectoryResource extends Resource {
      *            A new or updated variant representation.
      * @return The result information.
      */
-    public Result put(Representation variant) {
+    public Response put(Representation variant) {
         Status status;
 
         if (directoryRedirection && !targetIndex) {
-            Result result = new Result(Status.REDIRECTION_SEE_OTHER, null,
+            Response result = new Response(Status.REDIRECTION_SEE_OTHER, null,
                     new Reference(this.targetUri));
             return result;
         }
@@ -315,7 +314,7 @@ public class DirectoryResource extends Resource {
             status = contextResponse.getStatus();
         }
 
-        return new Result(status);
+        return new Response(status);
     }
 
     /**

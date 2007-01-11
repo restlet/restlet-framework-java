@@ -19,8 +19,10 @@
 package org.restlet.data;
 
 import java.util.Date;
+import java.util.Iterator;
 import java.util.List;
 
+import org.restlet.resource.Variant;
 import org.restlet.util.DateUtils;
 
 /**
@@ -76,12 +78,122 @@ public final class Conditions {
     }
 
     /**
+     * Returns the conditional status of a variant using a given method.
+     * 
+     * @param method
+     *            The request method.
+     * @param variant
+     *            The representation whose entity tag or date of modification
+     *            will be tested
+     * @return Null if the requested method can be performed, the status of the
+     *         response otherwise.
+     */
+    public Status getStatus(Method method, Variant variant) {
+        Status result = null;
+
+        // Is the "if-Match" rule followed or not?
+        if (getMatch() != null && getMatch().size() != 0) {
+            boolean matched = false;
+
+            if (variant != null) {
+                // If a tag exists
+                if (variant.getTag() != null) {
+                    // Check if it matches one of the representations already
+                    // cached by the client
+                    Tag tag;
+                    for (Iterator<Tag> iter = getMatch().iterator(); !matched
+                            && iter.hasNext();) {
+                        tag = iter.next();
+                        matched = tag.equals(variant.getTag(), false);
+                    }
+                }
+            } else {
+                matched = getMatch().get(0).equals(Tag.ALL);
+            }
+            if (!matched) {
+                result = Status.CLIENT_ERROR_PRECONDITION_FAILED;
+            }
+        }
+
+        // Is the "if-None-Match" rule followed or not?
+        if (result == null && getNoneMatch() != null
+                && getNoneMatch().size() != 0) {
+            boolean matched = false;
+            if (variant != null) {
+                // If a tag exists
+                if (variant.getTag() != null) {
+                    // Check if it matches one of the representations
+                    // already cached by the client
+                    Tag tag;
+                    for (Iterator<Tag> iter = getNoneMatch().iterator(); !matched
+                            && iter.hasNext();) {
+                        tag = iter.next();
+                        matched = tag.equals(variant.getTag(), (Method.GET
+                                .equals(method) || Method.HEAD.equals(method)));
+                    }
+                    if (!matched) {
+                        Date modifiedSince = getModifiedSince();
+                        matched = ((modifiedSince == null)
+                                || (variant.getModificationDate() == null) || DateUtils
+                                .after(modifiedSince, variant
+                                        .getModificationDate()));
+                    }
+                }
+            } else {
+                matched = getNoneMatch().get(0).equals(Tag.ALL);
+            }
+            if (matched) {
+                if (Method.GET.equals(method) || Method.HEAD.equals(method)) {
+                    result = Status.REDIRECTION_NOT_MODIFIED;
+                } else {
+                    result = Status.CLIENT_ERROR_PRECONDITION_FAILED;
+                }
+            }
+        }
+
+        // Is the "if-Modified-Since" rule followed or not?
+        if (result == null && getModifiedSince() != null) {
+            Date modifiedSince = getModifiedSince();
+            boolean isModifiedSince = ((modifiedSince == null)
+                    || (variant.getModificationDate() == null) || DateUtils
+                    .after(modifiedSince, variant.getModificationDate()));
+            if (!isModifiedSince) {
+                result = Status.REDIRECTION_NOT_MODIFIED;
+            }
+        }
+
+        // Is the "if-Unmodified-Since" rule followed or not?
+        if (result == null && getUnmodifiedSince() != null) {
+            Date unModifiedSince = getUnmodifiedSince();
+            boolean isUnModifiedSince = ((unModifiedSince == null)
+                    || (variant.getModificationDate() == null) || DateUtils
+                    .after(variant.getModificationDate(), unModifiedSince));
+            if (!isUnModifiedSince) {
+                result = Status.CLIENT_ERROR_PRECONDITION_FAILED;
+            }
+        }
+
+        return result;
+    }
+
+    /**
      * Returns the "if-unmodified-since" condition.
      * 
      * @return The "if-unmodified-since" condition.
      */
     public Date getUnmodifiedSince() {
         return this.unmodifiedSince;
+    }
+
+    /**
+     * Indicates if there are some conditions set.
+     * 
+     * @return True if there are some conditions set.
+     */
+    public boolean hasSome() {
+        return ((getMatch() != null && !getMatch().isEmpty())
+                || (getNoneMatch() != null && !getNoneMatch().isEmpty())
+                || (getModifiedSince() != null) || (getUnmodifiedSince() != null));
     }
 
     /**

@@ -23,6 +23,7 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
+import org.restlet.resource.Representation;
 import org.restlet.util.Series;
 
 /**
@@ -60,6 +61,65 @@ public class Response extends Message {
     private Status status;
 
     /**
+     * Default constructor.
+     */
+    public Response() {
+        this((Request) null);
+    }
+
+    /**
+     * Constructor.
+     * 
+     * @param status
+     *            The status.
+     */
+    public Response(Status status) {
+        this(status, null, null);
+    }
+
+    /**
+     * Constructor.
+     * 
+     * @param status
+     *            The status.
+     * @param redirectionRef
+     *            The redirection reference.
+     */
+    public Response(Status status, Reference redirectionRef) {
+        this(status, null, redirectionRef);
+    }
+
+    /**
+     * Constructor.
+     * 
+     * @param status
+     *            The status.
+     * @param entity
+     *            The entity.
+     */
+    public Response(Status status, Representation entity) {
+        this(status, entity, null);
+    }
+
+    /**
+     * Constructor.
+     * 
+     * @param status
+     *            The status.
+     * @param entity
+     *            The entity.
+     * @param redirectionRef
+     *            The redirection reference.
+     */
+    public Response(Status status, Representation entity,
+            Reference redirectionRef) {
+        this((Request) null);
+        setEntity(entity);
+        setStatus(status);
+        setRedirectRef(redirectionRef);
+    }
+
+    /**
      * Constructor.
      * 
      * @param request
@@ -74,6 +134,35 @@ public class Response extends Message {
         this.request = request;
         this.serverInfo = null;
         this.status = Status.SUCCESS_OK;
+    }
+
+    /**
+     * Reset the current response and copy the properties from the sample
+     * response.
+     * 
+     * @param sample
+     *            The sample response to copy.
+     */
+    public void copyFrom(Response sample) {
+        if ((sample != null) && (sample != this)) {
+            setChallengeRequest(sample.getChallengeRequest());
+            setEntity(sample.getEntity());
+            setRedirectRef(sample.getRedirectRef());
+            setRequest(sample.getRequest());
+            setStatus(sample.getStatus());
+
+            getAllowedMethods().clear();
+            getAllowedMethods().addAll(sample.getAllowedMethods());
+
+            getAttributes().clear();
+            getAttributes().putAll(sample.getAttributes());
+
+            getCookieSettings().clear();
+            getCookieSettings().addAll(sample.getCookieSettings());
+
+            getDimensions().clear();
+            getDimensions().addAll(sample.getDimensions());
+        }
     }
 
     /**

@@ -22,9 +22,9 @@ import java.util.List;
 import java.util.logging.Logger;
 
 import org.restlet.data.Reference;
+import org.restlet.data.Response;
 import org.restlet.resource.Representation;
 import org.restlet.resource.Resource;
-import org.restlet.resource.Result;
 import org.restlet.resource.Variant;
 
 /**
@@ -92,9 +92,9 @@ public class WrapperResource extends Resource {
     /**
      * Asks the resource to delete itself and all its representations.
      * 
-     * @return The result information.
+     * @return The response.
      */
-    public Result delete() {
+    public Response delete() {
         return getWrappedResource().delete();
     }
 
@@ -165,9 +165,9 @@ public class WrapperResource extends Resource {
      * 
      * @param entity
      *            The posted entity.
-     * @return The result information.
+     * @return The response.
      */
-    public Result post(Representation entity) {
+    public Response post(Representation entity) {
         return getWrappedResource().post(entity);
     }
 
@@ -176,9 +176,9 @@ public class WrapperResource extends Resource {
      * 
      * @param variant
      *            A new or updated variant representation.
-     * @return The result information.
+     * @return The response.
      */
-    public Result put(Representation variant) {
+    public Response put(Representation variant) {
         return getWrappedResource().put(variant);
     }
 

@@ -21,13 +21,13 @@ package org.restlet.example.book.rest.ch7.resource;
 import java.util.List;
 
 import org.restlet.data.MediaType;
+import org.restlet.data.Response;
 import org.restlet.data.Status;
 import org.restlet.example.book.rest.ch7.Application;
 import org.restlet.example.book.rest.ch7.domain.Tag;
 import org.restlet.example.book.rest.ch7.domain.User;
 import org.restlet.resource.Representation;
 import org.restlet.resource.Resource;
-import org.restlet.resource.Result;
 import org.restlet.resource.StringRepresentation;
 import org.restlet.resource.Variant;
 
@@ -85,13 +85,13 @@ public class TagResource extends Resource {
     }
 
     @Override
-    public Result delete() {
+    public Response delete() {
         if (this.tag != null) {
             Application.CONTAINER.delete(this.tag);
             Application.CONTAINER.commit();
-            return new Result(Status.SUCCESS_OK);
+            return new Response(Status.SUCCESS_OK);
         } else {
-            return new Result(Status.SERVER_ERROR_INTERNAL);
+            return new Response(Status.SERVER_ERROR_INTERNAL);
         }
     }
 

@@ -19,24 +19,18 @@
 package org.restlet;
 
 import java.lang.reflect.InvocationTargetException;
-import java.util.Date;
-import java.util.Iterator;
 import java.util.List;
 import java.util.Set;
 import java.util.logging.Level;
 
-import org.restlet.data.Conditions;
 import org.restlet.data.Dimension;
 import org.restlet.data.Method;
 import org.restlet.data.ReferenceList;
 import org.restlet.data.Request;
 import org.restlet.data.Response;
 import org.restlet.data.Status;
-import org.restlet.data.Tag;
 import org.restlet.resource.Resource;
-import org.restlet.resource.Result;
 import org.restlet.resource.Variant;
-import org.restlet.util.DateUtils;
 import org.restlet.util.Series;
 
 /**
@@ -149,109 +143,6 @@ public abstract class Handler extends Restlet {
     }
 
     /**
-     * Returns the conditional status of a variant based on given conditions and
-     * method.
-     * 
-     * @param conditions
-     *            The conditions to be supported.
-     * @param method
-     *            The request method.
-     * @param variant
-     *            The representation whose entity tag or date of modification
-     *            will be tested
-     * @return Null if the requested method can be performed, the status of the
-     *         response otherwise.
-     */
-    private Status getConditionalStatus(Conditions conditions, Method method,
-            Variant variant) {
-        Status result = null;
-
-        // Is the "if-Match" rule followed or not?
-        if (conditions.getMatch() != null && conditions.getMatch().size() != 0) {
-            boolean matched = false;
-
-            if (variant != null) {
-                // If a tag exists
-                if (variant.getTag() != null) {
-                    // Check if it matches one of the representations already
-                    // cached by the client
-                    Tag tag;
-                    for (Iterator<Tag> iter = conditions.getMatch().iterator(); !matched
-                            && iter.hasNext();) {
-                        tag = iter.next();
-                        matched = tag.equals(variant.getTag(), false);
-                    }
-                }
-            } else {
-                matched = conditions.getMatch().get(0).equals(Tag.ALL);
-            }
-            if (!matched) {
-                result = Status.CLIENT_ERROR_PRECONDITION_FAILED;
-            }
-        }
-
-        // Is the "if-None-Match" rule followed or not?
-        if (result == null && conditions.getNoneMatch() != null
-                && conditions.getNoneMatch().size() != 0) {
-            boolean matched = false;
-            if (variant != null) {
-                // If a tag exists
-                if (variant.getTag() != null) {
-                    // Check if it matches one of the representations
-                    // already cached by the client
-                    Tag tag;
-                    for (Iterator<Tag> iter = conditions.getNoneMatch()
-                            .iterator(); !matched && iter.hasNext();) {
-                        tag = iter.next();
-                        matched = tag.equals(variant.getTag(), (Method.GET
-                                .equals(method) || Method.HEAD.equals(method)));
-                    }
-                    if (!matched) {
-                        Date modifiedSince = conditions.getModifiedSince();
-                        matched = ((modifiedSince == null)
-                                || (variant.getModificationDate() == null) || DateUtils
-                                .after(modifiedSince, variant
-                                        .getModificationDate()));
-                    }
-                }
-            } else {
-                matched = conditions.getNoneMatch().get(0).equals(Tag.ALL);
-            }
-            if (matched) {
-                if (Method.GET.equals(method) || Method.HEAD.equals(method)) {
-                    result = Status.REDIRECTION_NOT_MODIFIED;
-                } else {
-                    result = Status.CLIENT_ERROR_PRECONDITION_FAILED;
-                }
-            }
-        }
-
-        // Is the "if-Modified-Since" rule followed or not?
-        if (result == null && conditions.getModifiedSince() != null) {
-            Date modifiedSince = conditions.getModifiedSince();
-            boolean isModifiedSince = ((modifiedSince == null)
-                    || (variant.getModificationDate() == null) || DateUtils
-                    .after(modifiedSince, variant.getModificationDate()));
-            if (!isModifiedSince) {
-                result = Status.REDIRECTION_NOT_MODIFIED;
-            }
-        }
-
-        // Is the "if-Unmodified-Since" rule followed or not?
-        if (result == null && conditions.getUnmodifiedSince() != null) {
-            Date unModifiedSince = conditions.getUnmodifiedSince();
-            boolean isUnModifiedSince = ((unModifiedSince == null)
-                    || (variant.getModificationDate() == null) || DateUtils
-                    .after(variant.getModificationDate(), unModifiedSince));
-            if (!isUnModifiedSince) {
-                result = Status.CLIENT_ERROR_PRECONDITION_FAILED;
-            }
-        }
-
-        return result;
-    }
-
-    /**
      * Returns the handle method matching the given method name.
      * 
      * @param method
@@ -347,7 +238,12 @@ public abstract class Handler extends Restlet {
                         } else {
                             java.lang.reflect.Method handleMethod = getHandleMethod(method);
                             if (handleMethod != null) {
-                                invoke(this, handleMethod, request, response);
+                                Object result = invoke(this, handleMethod,
+                                        request, response);
+                                if (result instanceof Response) {
+                                    response.copyFrom((Response) result);
+                                    response.setRequest(request);
+                                }
                             } else {
                                 response
                                         .setStatus(Status.CLIENT_ERROR_METHOD_NOT_ALLOWED);
@@ -373,7 +269,7 @@ public abstract class Handler extends Restlet {
     protected void handleDelete(Resource target, Request request,
             Response response) {
         boolean bContinue = true;
-        if (hasPreconditions(request.getConditions())) {
+        if (request.getConditions().hasSome()) {
             Variant preferredVariant = null;
 
             if (isNegotiateContent()) {
@@ -394,7 +290,7 @@ public abstract class Handler extends Restlet {
                 }
             }
             if (preferredVariant != null && bContinue) {
-                Status status = getConditionalStatus(request.getConditions(),
+                Status status = request.getConditions().getStatus(
                         request.getMethod(), preferredVariant);
                 if (status != null) {
                     response.setStatus(status);
@@ -403,10 +299,8 @@ public abstract class Handler extends Restlet {
             }
         }
         if (bContinue) {
-            Result result = target.delete();
-            response.setStatus(result.getStatus());
-            response.setRedirectRef(result.getRedirectRef());
-            response.setEntity(result.getEntity());
+            response.copyFrom(target.delete());
+            response.setRequest(request);
         }
     }
 
@@ -496,9 +390,8 @@ public abstract class Handler extends Restlet {
 
         // The given representation (if any) must meet the request conditions
         // (if any).
-        if (selectedVariant != null
-                && hasPreconditions(request.getConditions())) {
-            Status status = getConditionalStatus(request.getConditions(),
+        if (selectedVariant != null && request.getConditions().hasSome()) {
+            Status status = request.getConditions().getStatus(
                     request.getMethod(), selectedVariant);
             if (status != null) {
                 response.setStatus(status);
@@ -555,10 +448,8 @@ public abstract class Handler extends Restlet {
     protected void handlePost(Resource target, Request request,
             Response response) {
         if (request.isEntityAvailable()) {
-            Result result = target.post(request.getEntity());
-            response.setStatus(result.getStatus());
-            response.setRedirectRef(result.getRedirectRef());
-            response.setEntity(result.getEntity());
+            response.copyFrom(target.post(request.getEntity()));
+            response.setRequest(request);
         } else {
             response.setStatus(new Status(Status.CLIENT_ERROR_BAD_REQUEST,
                     "Missing request entity"));
@@ -578,7 +469,8 @@ public abstract class Handler extends Restlet {
      */
     protected void handlePut(Resource target, Request request, Response response) {
         boolean bContinue = true;
-        if (hasPreconditions(request.getConditions())) {
+
+        if (request.getConditions().hasSome()) {
             Variant preferredVariant = null;
 
             if (isNegotiateContent()) {
@@ -599,7 +491,7 @@ public abstract class Handler extends Restlet {
                 }
             }
             if (preferredVariant != null && bContinue) {
-                Status status = getConditionalStatus(request.getConditions(),
+                Status status = request.getConditions().getStatus(
                         request.getMethod(), preferredVariant);
                 if (status != null) {
                     response.setStatus(status);
@@ -607,6 +499,7 @@ public abstract class Handler extends Restlet {
                 }
             }
         }
+
         if (bContinue) {
             // Check the Content-Range HTTP Header in order to prevent usage of
             // partial PUTs
@@ -622,12 +515,11 @@ public abstract class Handler extends Restlet {
                 }
             }
         }
+
         if (bContinue) {
             if (request.isEntityAvailable()) {
-                Result result = target.put(request.getEntity());
-                response.setStatus(result.getStatus());
-                response.setRedirectRef(result.getRedirectRef());
-                response.setEntity(result.getEntity());
+                response.copyFrom(target.put(request.getEntity()));
+                response.setRequest(request);
 
                 // HTTP spec says that PUT may return the list of allowed
                 // methods
@@ -637,19 +529,6 @@ public abstract class Handler extends Restlet {
                         "Missing request entity"));
             }
         }
-    }
-
-    /**
-     * Indicates if the preconditions test must be done.
-     * 
-     * @return True if the preconditions test must be done.
-     */
-    private boolean hasPreconditions(Conditions conditions) {
-        return ((conditions.getMatch() != null && conditions.getMatch().size() != 0)
-                || (conditions.getNoneMatch() != null && conditions
-                        .getNoneMatch().size() != 0)
-                || (conditions.getModifiedSince() != null) || (conditions
-                .getUnmodifiedSince() != null));
     }
 
     /**

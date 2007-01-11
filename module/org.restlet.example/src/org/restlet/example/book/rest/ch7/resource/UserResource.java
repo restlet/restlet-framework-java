@@ -22,12 +22,12 @@ import java.util.List;
 
 import org.restlet.data.Form;
 import org.restlet.data.MediaType;
+import org.restlet.data.Response;
 import org.restlet.data.Status;
 import org.restlet.example.book.rest.ch7.Application;
 import org.restlet.example.book.rest.ch7.domain.User;
 import org.restlet.resource.Representation;
 import org.restlet.resource.Resource;
-import org.restlet.resource.Result;
 import org.restlet.resource.StringRepresentation;
 import org.restlet.resource.Variant;
 
@@ -117,20 +117,20 @@ public class UserResource extends Resource {
     }
 
     @Override
-    public Result delete() {
-        Result result = null;
+    public Response delete() {
+        Response result = null;
 
         switch (checkAuthorization()) {
         case 1:
             Application.CONTAINER.delete(this.user);
             Application.CONTAINER.commit();
-            result = new Result(Status.SUCCESS_OK);
+            result = new Response(Status.SUCCESS_OK);
         case 0:
             // No authentication provided
-            result = new Result(Status.CLIENT_ERROR_CONFLICT);
+            result = new Response(Status.CLIENT_ERROR_CONFLICT);
         case -1:
             // Wrong authenticaiton provided
-            result = new Result(Status.CLIENT_ERROR_UNAUTHORIZED);
+            result = new Response(Status.CLIENT_ERROR_UNAUTHORIZED);
         }
 
         return result;
@@ -155,8 +155,8 @@ public class UserResource extends Resource {
     }
 
     @Override
-    public Result put(Representation entity) {
-        Result result = null;
+    public Response put(Representation entity) {
+        Response result = null;
 
         if (entity.getMediaType().equals(MediaType.APPLICATION_WWW_FORM)) {
             boolean canSet = true;
@@ -165,11 +165,11 @@ public class UserResource extends Resource {
                 // The user doesn't exist, create it
                 this.user = new User();
                 this.user.setName(this.userName);
-                result = new Result(Status.SUCCESS_CREATED);
+                result = new Response(Status.SUCCESS_CREATED);
             } else {
                 // The user already exists, check the authentication
 
-                result = new Result(Status.SUCCESS_NO_CONTENT);
+                result = new Response(Status.SUCCESS_NO_CONTENT);
             }
 
             if (canSet) {

@@ -19,6 +19,7 @@
 package org.restlet.resource;
 
 import org.restlet.data.Reference;
+import org.restlet.data.Response;
 import org.restlet.data.Status;
 import org.restlet.resource.Representation;
 
@@ -26,17 +27,10 @@ import org.restlet.resource.Representation;
  * Contains the results information returned by some methods in Resource.
  * 
  * @author Jerome Louvel (contact@noelios.com)
+ * @deprecated Use Response instead
  */
-public final class Result {
-    /** The optional entity. */
-    private Representation entity;
-
-    /** The status. */
-    private Status status;
-
-    /** The optional redirection reference. */
-    private Reference redirectRef;
-
+@Deprecated
+public final class Result extends Response {
     /**
      * Constructor.
      * 
@@ -82,36 +76,7 @@ public final class Result {
      *            The redirection reference.
      */
     public Result(Status status, Representation entity, Reference redirectionRef) {
-        this.entity = entity;
-        this.status = status;
-        this.redirectRef = redirectionRef;
-    }
-
-    /**
-     * Returns the entity.
-     * 
-     * @return the entity or null.
-     */
-    public Representation getEntity() {
-        return this.entity;
-    }
-
-    /**
-     * Returns the redirection reference.
-     * 
-     * @return the redirection reference or null.
-     */
-    public Reference getRedirectRef() {
-        return this.redirectRef;
-    }
-
-    /**
-     * Returns the status.
-     * 
-     * @return the status.
-     */
-    public Status getStatus() {
-        return this.status;
+        super(status, entity, redirectionRef);
     }
 
 }

@@ -32,9 +32,9 @@ import org.restlet.data.Encoding;
 import org.restlet.data.Language;
 import org.restlet.data.MediaType;
 import org.restlet.data.Reference;
+import org.restlet.data.Response;
 import org.restlet.data.Tag;
 import org.restlet.resource.Representation;
-import org.restlet.resource.Result;
 import org.restlet.resource.Variant;
 
 /**
@@ -106,9 +106,9 @@ public class WrapperRepresentation extends Representation {
     /**
      * Asks the resource to delete itself and all its representations.
      * 
-     * @return The result information.
+     * @return The response.
      */
-    public Result delete() {
+    public Response delete() {
         return getWrappedRepresentation().delete();
     }
 
@@ -319,9 +319,9 @@ public class WrapperRepresentation extends Representation {
      * 
      * @param entity
      *            The posted entity.
-     * @return The result information.
+     * @return The response.
      */
-    public Result post(Representation entity) {
+    public Response post(Representation entity) {
         return getWrappedRepresentation().post(entity);
     }
 
@@ -330,9 +330,9 @@ public class WrapperRepresentation extends Representation {
      * 
      * @param variant
      *            A new or updated variant representation.
-     * @return The result information.
+     * @return The response.
      */
-    public Result put(Representation variant) {
+    public Response put(Representation variant) {
         return getWrappedRepresentation().put(variant);
     }
 

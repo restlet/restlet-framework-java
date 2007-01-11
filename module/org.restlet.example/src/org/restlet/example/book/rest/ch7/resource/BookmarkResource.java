@@ -22,6 +22,7 @@ import java.util.Date;
 
 import org.restlet.data.Form;
 import org.restlet.data.MediaType;
+import org.restlet.data.Response;
 import org.restlet.data.Status;
 import org.restlet.example.book.rest.ch7.Application;
 import org.restlet.example.book.rest.ch7.domain.Bookmark;
@@ -29,7 +30,6 @@ import org.restlet.example.book.rest.ch7.domain.Tag;
 import org.restlet.example.book.rest.ch7.domain.User;
 import org.restlet.resource.Representation;
 import org.restlet.resource.Resource;
-import org.restlet.resource.Result;
 import org.restlet.resource.StringRepresentation;
 import org.restlet.resource.Variant;
 
@@ -67,13 +67,13 @@ public class BookmarkResource extends Resource {
     }
 
     @Override
-    public Result delete() {
+    public Response delete() {
         if (this.bookmark != null) {
             Application.CONTAINER.delete(this.bookmark);
             Application.CONTAINER.commit();
-            return new Result(Status.SUCCESS_OK);
+            return new Response(Status.SUCCESS_OK);
         } else {
-            return new Result(Status.CLIENT_ERROR_NOT_FOUND);
+            return new Response(Status.CLIENT_ERROR_NOT_FOUND);
         }
     }
 
@@ -111,8 +111,8 @@ public class BookmarkResource extends Resource {
     }
 
     @Override
-    public Result put(Representation entity) {
-        Result result = null;
+    public Response put(Representation entity) {
+        Response result = null;
 
         if (entity.getMediaType().equals(MediaType.APPLICATION_WWW_FORM)) {
             // Parse the entity as a web form
@@ -123,9 +123,9 @@ public class BookmarkResource extends Resource {
                 this.bookmark = new Bookmark();
                 this.user.getBookmarks().add(this.bookmark);
                 this.bookmark.setUri(this.uri);
-                result = new Result(Status.SUCCESS_CREATED);
+                result = new Response(Status.SUCCESS_CREATED);
             } else {
-                result = new Result(Status.SUCCESS_NO_CONTENT);
+                result = new Response(Status.SUCCESS_NO_CONTENT);
             }
 
             this.bookmark.setShortDescription(form
