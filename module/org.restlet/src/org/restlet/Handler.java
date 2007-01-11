@@ -24,6 +24,7 @@ import java.util.Set;
 import java.util.logging.Level;
 
 import org.restlet.data.Dimension;
+import org.restlet.data.Language;
 import org.restlet.data.Method;
 import org.restlet.data.ReferenceList;
 import org.restlet.data.Request;
@@ -276,8 +277,19 @@ public abstract class Handler extends Restlet {
                 List<Variant> variants = target.getVariants();
                 if ((variants != null) && (!variants.isEmpty())) {
                     // Compute the preferred variant
+                    // Get the default language preference from the Application
+                    // (if any)
+                    Language language = null;
+                    if (response.getRequest().getAttributes().get(
+                            Application.class.getCanonicalName()) != null) {
+                        Application application = (Application) response
+                                .getRequest().getAttributes().get(
+                                        Application.class.getCanonicalName());
+                        language = application.getMetadataService()
+                                .getDefaultLanguage();
+                    }
                     preferredVariant = response.getRequest().getClientInfo()
-                            .getPreferredVariant(variants);
+                            .getPreferredVariant(variants, language);
                 }
             } else {
                 List<Variant> variants = target.getVariants();
@@ -331,8 +343,20 @@ public abstract class Handler extends Restlet {
                 response.setStatus(Status.CLIENT_ERROR_NOT_FOUND);
             } else {
                 // Compute the preferred variant
+                // Get the default language preference from the Application (if
+                // any)
+                Language language = null;
+                if (response.getRequest().getAttributes().get(
+                        Application.class.getCanonicalName()) != null) {
+                    Application application = (Application) response
+                            .getRequest().getAttributes().get(
+                                    Application.class.getCanonicalName());
+                    language = application.getMetadataService()
+                            .getDefaultLanguage();
+                }
                 Variant preferredVariant = response.getRequest()
-                        .getClientInfo().getPreferredVariant(variants);
+                        .getClientInfo()
+                        .getPreferredVariant(variants, language);
 
                 // Update the variant dimensions used for content negotiation
                 response.getDimensions().add(Dimension.CHARACTER_SET);
@@ -477,8 +501,19 @@ public abstract class Handler extends Restlet {
                 List<Variant> variants = target.getVariants();
                 if ((variants != null) && (!variants.isEmpty())) {
                     // Compute the preferred variant
+                    // Get the default language preference from the Application
+                    // (if any)
+                    Language language = null;
+                    if (response.getRequest().getAttributes().get(
+                            Application.class.getCanonicalName()) != null) {
+                        Application application = (Application) response
+                                .getRequest().getAttributes().get(
+                                        Application.class.getCanonicalName());
+                        language = application.getMetadataService()
+                                .getDefaultLanguage();
+                    }
                     preferredVariant = response.getRequest().getClientInfo()
-                            .getPreferredVariant(variants);
+                            .getPreferredVariant(variants, language);
                 }
             } else {
                 List<Variant> variants = target.getVariants();

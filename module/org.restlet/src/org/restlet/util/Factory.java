@@ -35,6 +35,7 @@ import org.restlet.Server;
 import org.restlet.data.CharacterSet;
 import org.restlet.data.ClientInfo;
 import org.restlet.data.Form;
+import org.restlet.data.Language;
 import org.restlet.data.Request;
 import org.restlet.resource.Representation;
 import org.restlet.resource.Resource;
@@ -255,9 +256,32 @@ public abstract class Factory {
      * @see <a
      *      href="http://httpd.apache.org/docs/2.2/en/content-negotiation.html#algorithm">Apache
      *      content negotiation algorithm</a>
+     * @deprecated Use the getPreferredVariant(ClientInfo,List<Variant>,Language)
+     *             to specify the default language.
+     */
+    @Deprecated
+    public Variant getPreferredVariant(ClientInfo client, List<Variant> variants) {
+        return getPreferredVariant(client, variants, null);
+    }
+
+    /**
+     * Returns the best variant representation for a given resource according
+     * the the client preferences.<br/>A default language is provided in case
+     * the variants don't match the client preferences.
+     * 
+     * @param client
+     *            The client preferences.
+     * @param variants
+     *            The list of variants to compare.
+     * @param defaultLanguage
+     *            The default language.
+     * @return The preferred variant.
+     * @see <a
+     *      href="http://httpd.apache.org/docs/2.2/en/content-negotiation.html#algorithm">Apache
+     *      content negotiation algorithm</a>
      */
     public abstract Variant getPreferredVariant(ClientInfo client,
-            List<Variant> variants);
+            List<Variant> variants, Language defaultLanguage);
 
     /**
      * Parses a representation into a form.
@@ -284,6 +308,7 @@ public abstract class Factory {
      * @param characterSet
      *            The supported character encoding.
      */
-    public abstract void parse(Logger logger, Form form, String queryString, CharacterSet characterSet);
+    public abstract void parse(Logger logger, Form form, String queryString,
+            CharacterSet characterSet);
 
 }
