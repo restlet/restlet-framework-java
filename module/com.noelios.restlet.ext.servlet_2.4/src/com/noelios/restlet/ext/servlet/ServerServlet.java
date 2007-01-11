@@ -21,6 +21,8 @@ package com.noelios.restlet.ext.servlet;
 import java.io.IOException;
 import java.util.List;
 
+import java.lang.reflect.InvocationTargetException;
+
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
@@ -40,29 +42,29 @@ import com.noelios.restlet.http.HttpServerHelper;
  * configuration for your Restlet webapp:
  * 
  * <pre>
- *    &lt;?xml version=&quot;1.0&quot; encoding=&quot;ISO-8859-1&quot;?&gt;
- *    &lt;!DOCTYPE web-app PUBLIC &quot;-//Sun Microsystems, Inc.//DTD Web Application 2.3//EN&quot; &quot;http://java.sun.com/dtd/web-app_2_3.dtd&quot;&gt;
- *    &lt;web-app&gt;
- *    	&lt;display-name&gt;Restlet adapter&lt;/display-name&gt;
- *    
- *    	&lt;!-- Your application class name --&gt;
- *    	&lt;context-param&gt;
- *    		&lt;param-name&gt;org.restlet.application&lt;/param-name&gt;
- *    		&lt;param-value&gt;com.noelios.restlet.test.TraceApplication&lt;/param-value&gt;
- *    	&lt;/context-param&gt;
- *    
- *    	&lt;!-- Restlet adapter --&gt;
- *    	&lt;servlet&gt;
- *    		&lt;servlet-name&gt;ServerServlet&lt;/servlet-name&gt;
- *    		&lt;servlet-class&gt;com.noelios.restlet.ext.servlet.ServerServlet&lt;/servlet-class&gt;
- *    	&lt;/servlet&gt;
- *    
- *    	&lt;!-- Catch all requests --&gt;
- *    	&lt;servlet-mapping&gt;
- *    		&lt;servlet-name&gt;ServerServlet&lt;/servlet-name&gt;
- *    		&lt;url-pattern&gt;/*&lt;/url-pattern&gt;
- *    	&lt;/servlet-mapping&gt;
- *    &lt;/web-app&gt;}
+ *               &lt;?xml version=&quot;1.0&quot; encoding=&quot;ISO-8859-1&quot;?&gt;
+ *               &lt;!DOCTYPE web-app PUBLIC &quot;-//Sun Microsystems, Inc.//DTD Web Application 2.3//EN&quot; &quot;http://java.sun.com/dtd/web-app_2_3.dtd&quot;&gt;
+ *               &lt;web-app&gt;
+ *               	&lt;display-name&gt;Restlet adapter&lt;/display-name&gt;
+ *               
+ *               	&lt;!-- Your application class name --&gt;
+ *               	&lt;context-param&gt;
+ *               		&lt;param-name&gt;org.restlet.application&lt;/param-name&gt;
+ *               		&lt;param-value&gt;com.noelios.restlet.test.TraceApplication&lt;/param-value&gt;
+ *               	&lt;/context-param&gt;
+ *               
+ *               	&lt;!-- Restlet adapter --&gt;
+ *               	&lt;servlet&gt;
+ *               		&lt;servlet-name&gt;ServerServlet&lt;/servlet-name&gt;
+ *               		&lt;servlet-class&gt;com.noelios.restlet.ext.servlet.ServerServlet&lt;/servlet-class&gt;
+ *               	&lt;/servlet&gt;
+ *               
+ *               	&lt;!-- Catch all requests --&gt;
+ *               	&lt;servlet-mapping&gt;
+ *               		&lt;servlet-name&gt;ServerServlet&lt;/servlet-name&gt;
+ *               		&lt;url-pattern&gt;/*&lt;/url-pattern&gt;
+ *               	&lt;/servlet-mapping&gt;
+ *               &lt;/web-app&gt;}
  * </pre>
  * 
  * The enumeration of initParameters of your Servlet will be copied to the
@@ -142,7 +144,7 @@ public class ServerServlet extends HttpServlet {
      *            The HTTP Servlet request.
      * @return The HTTP server handling calls.
      */
-    public HttpServerHelper getServer(HttpServletRequest request) {
+    protected HttpServerHelper getServer(HttpServletRequest request) {
         HttpServerHelper result = this.helper;
 
         if (result == null) {
@@ -156,63 +158,11 @@ public class ServerServlet extends HttpServlet {
                         serverAttributeName);
 
                 if (result == null) {
-                    // Try to instantiate a new target application
-                    // First, find the application class name
-                    String applicationClassName = getInitParameter(
-                            NAME_APPLICATION_CLASS, null);
-                    if (applicationClassName != null) {
+                    result = createServer(request);
+                    if (result != null) {
+                        // Starts the target Restlet
                         try {
-                            // Load the application class using the given class
-                            // name
-                            Class targetClass = Class
-                                    .forName(applicationClassName);
-
-                            // First, let's locate the closest component
-                            Component component = new Component();
-                            Server server = new Server(component.getContext(),
-                                    (List<Protocol>) null, request
-                                            .getLocalAddr(), request
-                                            .getLocalPort(), component);
-                            result = new HttpServerHelper(server);
-                            getServletContext().setAttribute(
-                                    NAME_SERVER_ATTRIBUTE, result);
-
-                            if (component != null) {
-                                // Create a new instance of the application
-                                // class
-                                Application application = (Application) targetClass
-                                        .getConstructor(Context.class)
-                                        .newInstance(component.getContext());
-
-                                // Set the Servlet context
-                                application
-                                        .setContext(new ServletContextAdapter(
-                                                this, application, component
-                                                        .getContext()));
-
-                                // Attach the application
-                                String uriPattern = request.getContextPath()
-                                        + request.getServletPath();
-                                component.getDefaultHost().attach(uriPattern,
-                                        application);
-
-                                // Starts the target Restlet
-                                result.start();
-                            } else {
-                                log("[Noelios Restlet Engine] - The Restlet component couldn't be instantiated.");
-                            }
-                        } catch (ClassNotFoundException e) {
-                            log(
-                                    "[Noelios Restlet Engine] - The ServerServlet couldn't find the target class. Please check that your classpath includes "
-                                            + applicationClassName, e);
-                        } catch (InstantiationException e) {
-                            log(
-                                    "[Noelios Restlet Engine] - The ServerServlet couldn't instantiate the target class. Please check this class has an empty constructor "
-                                            + applicationClassName, e);
-                        } catch (IllegalAccessException e) {
-                            log(
-                                    "[Noelios Restlet Engine] - The ServerServlet couldn't instantiate the target class. Please check that you have to proper access rights to "
-                                            + applicationClassName, e);
+                            result.start();
                         } catch (Exception e) {
                             log(
                                     "[Noelios Restlet Engine] - The ServerServlet couldn't start the target Restlet.",
@@ -223,12 +173,93 @@ public class ServerServlet extends HttpServlet {
                                 + NAME_APPLICATION_CLASS);
                     }
                 }
-
                 this.helper = result;
             }
         }
 
         return result;
+    }
+
+    /**
+     * Creates the associated HTTP server handling calls.
+     * 
+     * @param request
+     *            The HTTP Servlet request.
+     * @return The new HTTP server handling calls.
+     * @see #getServer()
+     */
+    protected HttpServerHelper createServer(HttpServletRequest request) {
+        HttpServerHelper result = null;
+
+        Component component = new Component();
+        Application application = createApplication(component.getContext());
+        if (application != null) {
+            // First, let's locate the closest component
+            Server server = new Server(component.getContext(),
+                    (List<Protocol>) null, request.getLocalAddr(), request
+                            .getLocalPort(), component);
+            result = new HttpServerHelper(server);
+            getServletContext().setAttribute(NAME_SERVER_ATTRIBUTE, result);
+
+            // Set the Servlet context
+            application.setContext(new ServletContextAdapter(this, application,
+                    component.getContext()));
+
+            // Attach the application
+            String uriPattern = request.getContextPath()
+                    + request.getServletPath();
+            component.getDefaultHost().attach(uriPattern, application);
+
+        }
+        return result;
+    }
+
+    /**
+     * Creates the single Application used by this Servlet.
+     * 
+     * @param context
+     *            The Context for the Application
+     * 
+     * @return The newly created Application or null if unable to create
+     */
+    protected Application createApplication(Context context) {
+        // Try to instantiate a new target application
+        // First, find the application class name
+        String applicationClassName = getInitParameter(NAME_APPLICATION_CLASS,
+                null);
+
+        // Load the application class using the given class name
+        if (applicationClassName != null) {
+            try {
+                Class targetClass = Class.forName(applicationClassName);
+
+                // Create a new instance of the application class
+                return (Application) targetClass.getConstructor(Context.class)
+                        .newInstance(context);
+            } catch (ClassNotFoundException e) {
+                log(
+                        "[Noelios Restlet Engine] - The ServerServlet couldn't find the target class. Please check that your classpath includes "
+                                + applicationClassName, e);
+            } catch (InstantiationException e) {
+                log(
+                        "[Noelios Restlet Engine] - The ServerServlet couldn't instantiate the target class. Please check this class has an empty constructor "
+                                + applicationClassName, e);
+            } catch (IllegalAccessException e) {
+                log(
+                        "[Noelios Restlet Engine] - The ServerServlet couldn't instantiate the target class. Please check that you have to proper access rights to "
+                                + applicationClassName, e);
+            } catch (NoSuchMethodException e) {
+                log(
+                        "[Noelios Restlet Engine] - The ServerServlet couldn't invoke the constructor of the target class. Please check this class has a constructor with a single parameter of Context "
+                                + applicationClassName, e);
+            } catch (InvocationTargetException e) {
+                log(
+                        "[Noelios Restlet Engine] - The ServerServlet couldn't instantiate the target class. An exception was thrown while creating "
+                                + applicationClassName, e);
+            }
+        }
+
+        return null;
     }
 
     /**
@@ -241,7 +272,7 @@ public class ServerServlet extends HttpServlet {
      *            The default to use in case the parameter is not found.
      * @return The value of the parameter or null.
      */
-    public String getInitParameter(String name, String defaultValue) {
+    protected String getInitParameter(String name, String defaultValue) {
         String result = getServletConfig().getInitParameter(name);
 
         if (result == null) {
