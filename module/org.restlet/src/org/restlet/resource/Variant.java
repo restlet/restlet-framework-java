@@ -29,6 +29,7 @@ import org.restlet.data.Language;
 import org.restlet.data.MediaType;
 import org.restlet.data.Tag;
 import org.restlet.util.DateUtils;
+import org.restlet.util.WrapperList;
 
 /**
  * Descriptor for available representations of a resource. It containts all the
@@ -151,7 +152,28 @@ public class Variant extends Resource {
      */
     public List<Language> getLanguages() {
         if (languages == null)
-            languages = new ArrayList<Language>();
+            languages = new WrapperList<Language>() {
+
+                @Override
+                public void add(int index, Language element) {
+                    if (element == null) {
+                        throw new IllegalArgumentException(
+                                "Cannot add a null language.");
+                    } else {
+                        super.add(index, element);
+                    }
+                }
+
+                @Override
+                public boolean add(Language element) {
+                    if (element == null) {
+                        throw new IllegalArgumentException(
+                                "Cannot add a null language.");
+                    } else {
+                        return super.add(element);
+                    }
+                }
+            };
         return this.languages;
     }
 
