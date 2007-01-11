@@ -444,8 +444,13 @@ public class DirectoryResource extends Resource {
                         filePath.append(filePart);
                         userList.add(baseRef + filePath);
                     }
+                    List<Variant> list = getDirectory().getIndexVariants(
+                            userList);
+                    for (Variant variant : list) {
+                        result.add(getDirectory().getIndexRepresentation(
+                                variant, userList));
+                    }
 
-                    result = getDirectory().getDirectoryVariants(userList);
                 }
             }
         }
