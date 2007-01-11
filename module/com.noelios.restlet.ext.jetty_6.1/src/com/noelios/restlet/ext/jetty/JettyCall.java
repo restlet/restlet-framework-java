@@ -209,11 +209,9 @@ public class JettyCall extends HttpServerCall {
         }
 
         // Set the status code in the response. We do this after adding the
-        // headers because
-        // when we have to rely on the 'sendError' method, the Servlet
-        // containers are expected
-        // to commit their response.
-        if (Status.isError(getStatusCode())) {
+        // headers because when we have to rely on the 'sendError' method,
+        // the Servlet containers are expected to commit their response.
+        if (Status.isError(getStatusCode()) && (response == null)) {
             try {
                 getConnection().getResponse().sendError(getStatusCode(),
                         getReasonPhrase());
@@ -222,7 +220,9 @@ public class JettyCall extends HttpServerCall {
                         "Unable to set the response error status", ioe);
             }
         } else {
+            // Send the response entity
             getConnection().getResponse().setStatus(getStatusCode());
+            super.sendResponse(response);
         }
 
         // Send the response entity

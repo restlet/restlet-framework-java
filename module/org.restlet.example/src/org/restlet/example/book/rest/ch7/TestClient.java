@@ -19,6 +19,8 @@
 package org.restlet.example.book.rest.ch7;
 
 import org.restlet.Client;
+import org.restlet.data.ChallengeResponse;
+import org.restlet.data.ChallengeScheme;
 import org.restlet.data.Form;
 import org.restlet.data.Method;
 import org.restlet.data.Protocol;
@@ -54,8 +56,8 @@ public class TestClient {
         // the user's private area
         Request request = new Request(Method.PUT,
                 getBookmarkUri(userName, uri), form.getWebRepresentation());
-        request.getChallengeResponse().setIdentifier(userName);
-        request.getChallengeResponse().setSecret(password);
+        request.setChallengeResponse(new ChallengeResponse(
+                ChallengeScheme.HTTP_BASIC, userName, password));
 
         // Invoke the client HTTP connector
         Response resp = new Client(Protocol.HTTP).handle(request);
