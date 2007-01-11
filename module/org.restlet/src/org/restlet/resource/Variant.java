@@ -19,7 +19,9 @@
 package org.restlet.resource;
 
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.Date;
+import java.util.Iterator;
 import java.util.List;
 import java.util.logging.Logger;
 
@@ -173,6 +175,39 @@ public class Variant extends Resource {
                         return super.add(element);
                     }
                 }
+
+                @Override
+                public boolean addAll(Collection<? extends Language> elements) {
+                    boolean addNull = (elements == null);
+                    if (!addNull){
+                        for (Iterator<? extends Language> iterator = elements.iterator(); !addNull && iterator.hasNext();) {
+                            addNull = (iterator.next() == null);
+                        }
+                    }
+                    if (addNull) {
+                        throw new IllegalArgumentException(
+                        "Cannot add a null language.");
+                    } else {
+                        return super.addAll(elements);
+                    }
+                }
+
+                @Override
+                public boolean addAll(int index, Collection<? extends Language> elements) {
+                    boolean addNull = (elements == null);
+                    if (!addNull){
+                        for (Iterator<? extends Language> iterator = elements.iterator(); !addNull && iterator.hasNext();) {
+                            addNull = (iterator.next() == null);
+                        }
+                    }
+                    if (addNull) {
+                        throw new IllegalArgumentException(
+                        "Cannot add a null language.");
+                    } else {
+                        return super.addAll(index, elements);
+                    }
+                }
+                
             };
         return this.languages;
     }
