@@ -47,6 +47,7 @@ public class BookmarksResource extends Resource {
         if (variant.getMediaType().equals(MediaType.TEXT_HTML)) {
             ReferenceList rl = new ReferenceList();
 
+            // Copy the bookmark URIs into a reference list
             for (Bookmark bookmark : user.getBookmarks()) {
                 rl.add(bookmark.getUri());
             }

@@ -18,11 +18,15 @@
 
 package org.restlet.example.book.rest.ch7.resource;
 
+import java.util.Date;
+
+import org.restlet.data.Form;
 import org.restlet.data.MediaType;
 import org.restlet.data.Status;
 import org.restlet.example.book.rest.ch7.Application;
 import org.restlet.example.book.rest.ch7.domain.Bookmark;
 import org.restlet.example.book.rest.ch7.domain.Tag;
+import org.restlet.example.book.rest.ch7.domain.User;
 import org.restlet.resource.Representation;
 import org.restlet.resource.Resource;
 import org.restlet.resource.Result;
@@ -38,9 +42,18 @@ public class BookmarkResource extends Resource {
 
     private Bookmark bookmark;
 
-    public BookmarkResource(Bookmark bookmark) {
-        this.bookmark = bookmark;
-        getVariants().add(new Variant(MediaType.TEXT_PLAIN));
+    private User user;
+
+    private String uri;
+
+    public BookmarkResource(User user, String uri) {
+        this.user = user;
+        this.uri = uri;
+        this.bookmark = user.getBookmark(uri);
+
+        if (this.bookmark != null) {
+            getVariants().add(new Variant(MediaType.TEXT_PLAIN));
+        }
     }
 
     @Override
@@ -60,7 +73,7 @@ public class BookmarkResource extends Resource {
             Application.CONTAINER.commit();
             return new Result(Status.SUCCESS_OK);
         } else {
-            return new Result(Status.SERVER_ERROR_INTERNAL);
+            return new Result(Status.CLIENT_ERROR_NOT_FOUND);
         }
     }
 
@@ -99,7 +112,37 @@ public class BookmarkResource extends Resource {
 
     @Override
     public Result put(Representation entity) {
-        return null;
+        Result result = null;
+
+        if (entity.getMediaType().equals(MediaType.APPLICATION_WWW_FORM)) {
+            // Parse the entity as a web form
+            Form form = new Form(entity);
+
+            // If the bookmark doesn't exist, create it
+            if (this.bookmark == null) {
+                this.bookmark = new Bookmark();
+                this.user.getBookmarks().add(this.bookmark);
+                this.bookmark.setUri(this.uri);
+                result = new Result(Status.SUCCESS_CREATED);
+            } else {
+                result = new Result(Status.SUCCESS_NO_CONTENT);
+            }
+
+            this.bookmark.setShortDescription(form
+                    .getFirstValue("bookmark[short_description]"));
+            this.bookmark.setLongDescription(form
+                    .getFirstValue("bookmark[long_description]"));
+            this.bookmark.setDateTime(new Date());
+            this.bookmark.setRestrict(new Boolean(form
+                    .getFirstValue("bookmark[restrict]")));
+
+            // Commit the changes
+            Application.CONTAINER.set(this.bookmark);
+            Application.CONTAINER.set(this.user);
+            Application.CONTAINER.commit();
+        }
+
+        return result;
     }
 
 }

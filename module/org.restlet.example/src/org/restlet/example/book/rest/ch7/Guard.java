@@ -16,37 +16,45 @@
  * Portions Copyright [yyyy] [name of copyright owner]
  */
 
-package org.restlet.example.book.rest.ch7.handler;
+package org.restlet.example.book.rest.ch7;
 
-import org.restlet.Handler;
+import org.restlet.Context;
+import org.restlet.data.ChallengeScheme;
 import org.restlet.data.Request;
-import org.restlet.data.Response;
 import org.restlet.example.book.rest.ch7.domain.User;
-import org.restlet.example.book.rest.ch7.resource.BookmarkResource;
 import org.restlet.example.book.rest.ch7.resource.UserResource;
-import org.restlet.resource.Resource;
 
 /**
- * Handler of bookmark resources.
+ * Customized guard that check passwords against the users database.
  * 
  * @author Jerome Louvel (contact@noelios.com)
  */
-public class BookmarkHandler extends Handler {
+public class Guard extends org.restlet.Guard {
+
+    public Guard(Context context, ChallengeScheme scheme, String realm) {
+        super(context, scheme, realm);
+    }
 
     @Override
-    public Resource findTarget(final Request request, Response response) {
-        Resource result = null;
+    protected int authorize(Request request) {
+        int result = 0;
 
-        // Find the user owning the bookmark
-        String userName = (String) request.getAttributes().get("username");
-        User user = UserResource.findUser(userName);
+        if (request.getChallengeResponse() != null) {
+            String identifier = request.getChallengeResponse().getIdentifier();
+            String secret = request.getChallengeResponse().getSecret();
 
-        if (user != null) {
-            // Find the bookmark
-            String uri = (String) request.getAttributes().get("URI");
-            result = new BookmarkResource(user, uri);
+            if ((identifier != null) && (secret != null)) {
+                User user = UserResource.findUser(identifier);
+
+                if ((user != null) && secret.equals(user.getPassword())) {
+                    result = 1;
+                } else {
+                    result = -1;
+                }
+            }
         }
 
         return result;
     }
+
 }

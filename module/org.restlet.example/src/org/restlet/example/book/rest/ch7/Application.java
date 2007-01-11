@@ -52,7 +52,7 @@ public class Application extends org.restlet.Application {
         comp.getServers().add(Protocol.HTTP, 3000);
 
         // Attach the application to the default host and start it
-        comp.getDefaultHost().attach("/v1", new Application());
+        comp.getDefaultHost().route("/v1", new Application());
         comp.start();
     }
 
@@ -61,47 +61,41 @@ public class Application extends org.restlet.Application {
 
     @Override
     public Restlet createRoot() {
-        Router router = new Router();
+        Router root = new Router(getContext());
 
         // Add a route for user resources
-        router.attach("/users/{username}", new UserHandler());
+        root.route("/users/{username}", new UserHandler());
 
         // Add a route for user's bookmarks resources
-        router.attach("/users/{username}/bookmarks", new BookmarksHandler());
+        root.route("/users/{username}/bookmarks", new BookmarksHandler());
 
         // Add a route for bookmark resources
-        Route uriRoute = router.attach("/users/{username}/bookmarks/{URI}",
+        Route uriRoute = root.route("/users/{username}/bookmarks/{URI}",
                 new BookmarkHandler());
         uriRoute.getTemplate().getVariables().put("URI",
                 new Variable(Variable.TYPE_URI_ALL));
 
         // Add a route for user's tags resources
-        router.attach("/users/{username}/tags", null);
+        root.route("/users/{username}/tags", null);
 
         // Add a route for tag resources
-        router.attach("/users/{username}/tags/{tag}", new TagHandler());
+        root.route("/users/{username}/tags/{tag}", new TagHandler());
 
         // Add a route for user's calendar resources
-        router.attach("/users/{username}/calendar", null);
+        root.route("/users/{username}/calendar", null);
 
         // Add a route for URI resources
-        uriRoute = router.attach("/uris/{URI}", null);
+        uriRoute = root.route("/uris/{URI}", null);
         uriRoute.getTemplate().getVariables().put("URI",
                 new Variable(Variable.TYPE_URI_ALL));
 
         // Add a route for the recent bookmarks resource
-        router.attach("/recent", null);
+        root.route("/recent", null);
 
         // Add a route for recent tag resources
-        router.attach("/recent/{tag}", null);
+        root.route("/recent/{tag}", null);
 
-        // Add a route for user's bundles resources
-        router.attach("/users/{username}/bundles", null);
-
-        // Add a route for bundle resources
-        router.attach("/users/{username}/bundles/{bundle}", null);
-
-        return router;
+        return root;
     }
 
 }

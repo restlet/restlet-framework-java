@@ -34,7 +34,10 @@ public class UserHandler extends Handler {
     @Override
     public Resource findTarget(final Request request, Response response) {
         String userName = (String) request.getAttributes().get("username");
-        return new UserResource(userName);
+
+        String login = request.getChallengeResponse().getIdentifier();
+        String password = request.getChallengeResponse().getSecret();
+        return new UserResource(userName, login, password);
     }
 
 }

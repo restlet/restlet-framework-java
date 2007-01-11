@@ -86,10 +86,11 @@ public class Guard extends Filter {
      * should contain a valid login, password and optionnaly a role name.<br/>
      * The application should take care of the authorization logic, based on
      * custom criteria such as checking whether the current user has the proper
-     * role or access rights.<br/> By default, a call is authorized if the
-     * call's login/password couple is available in the map of authorizations.
-     * Of course, this method is meant to be overriden by subclasses requiring a
-     * custom authorization mechanism.
+     * role or access rights.<br/>
+     * 
+     * By default, a call is authorized if the call's login/password couple is
+     * available in the map of authorizations. Of course, this method is meant
+     * to be overriden by subclasses requiring a custom authorization mechanism.
      * 
      * @param request
      *            The request to authorize.

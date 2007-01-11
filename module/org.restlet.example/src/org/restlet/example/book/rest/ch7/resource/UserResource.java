@@ -66,15 +66,44 @@ public class UserResource extends Resource {
 
     private String userName;
 
+    private String login;
+
+    private String password;
+
     private User user;
 
-    public UserResource(String userName) {
+    public UserResource(String userName, String login, String password) {
         this.userName = userName;
+        this.login = login;
+        this.password = password;
         this.user = findUser(userName);
 
         if (user != null) {
             getVariants().add(new Variant(MediaType.TEXT_PLAIN));
         }
+    }
+
+    /**
+     * Check the authorization credentials.
+     * 
+     * @return 1 if authentication ok, 0 if it is missing, -1 if it is wrong
+     */
+    public int checkAuthorization() {
+        int result = 0;
+
+        if (this.user != null) {
+            if ((this.login != null) && (this.password != null)) {
+                // Credentials provided
+                if (this.userName.equals(this.login)
+                        && this.password.equals(this.user.getPassword())) {
+                    result = 1;
+                } else {
+                    result = -1;
+                }
+            }
+        }
+
+        return result;
     }
 
     @Override
@@ -89,13 +118,22 @@ public class UserResource extends Resource {
 
     @Override
     public Result delete() {
-        if (this.userName != null) {
-            Application.CONTAINER.delete(this.userName);
+        Result result = null;
+
+        switch (checkAuthorization()) {
+        case 1:
+            Application.CONTAINER.delete(this.user);
             Application.CONTAINER.commit();
-            return new Result(Status.SUCCESS_OK);
-        } else {
-            return new Result(Status.SERVER_ERROR_INTERNAL);
+            result = new Result(Status.SUCCESS_OK);
+        case 0:
+            // No authentication provided
+            result = new Result(Status.CLIENT_ERROR_CONFLICT);
+        case -1:
+            // Wrong authenticaiton provided
+            result = new Result(Status.CLIENT_ERROR_UNAUTHORIZED);
         }
+
+        return result;
     }
 
     @Override
@@ -121,28 +159,34 @@ public class UserResource extends Resource {
         Result result = null;
 
         if (entity.getMediaType().equals(MediaType.APPLICATION_WWW_FORM)) {
-            // Parse the entity as a web form
-            Form form = new Form(entity);
-
-            // If the user doesn't exist, create it
+            boolean canSet = true;
+            
             if (this.user == null) {
+                // The user doesn't exist, create it
                 this.user = new User();
                 this.user.setName(this.userName);
                 result = new Result(Status.SUCCESS_CREATED);
             } else {
+                // The user already exists, check the authentication
+                if()
+                
                 result = new Result(Status.SUCCESS_NO_CONTENT);
             }
 
-            this.user.setEmail(form.getFirstValue("user[email]"));
-            this.user.setFullName(form.getFirstValue("user[full_name]"));
-            this.user.setPassword(form.getFirstValue("user[password]"));
-
-            // Commit the changes
-            Application.CONTAINER.set(this.user);
-            Application.CONTAINER.commit();
+            if(canSet)
+            {
+                // Parse the entity as a web form
+                Form form = new Form(entity);
+                this.user.setEmail(form.getFirstValue("user[email]"));
+                this.user.setFullName(form.getFirstValue("user[full_name]"));
+                this.user.setPassword(form.getFirstValue("user[password]"));
+    
+                // Commit the changes
+                Application.CONTAINER.set(this.user);
+                Application.CONTAINER.commit();
+            }
         }
 
         return result;
     }
-
 }

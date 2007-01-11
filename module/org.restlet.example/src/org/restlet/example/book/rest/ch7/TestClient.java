@@ -20,7 +20,9 @@ package org.restlet.example.book.rest.ch7;
 
 import org.restlet.Client;
 import org.restlet.data.Form;
+import org.restlet.data.Method;
 import org.restlet.data.Protocol;
+import org.restlet.data.Request;
 import org.restlet.data.Response;
 
 /**
@@ -35,7 +37,29 @@ public class TestClient {
 
     public static void main(String... args) throws Exception {
         putUser("jlouvel", "myPassword", "Jerome Louvel", "contact@noelios.com");
+        putBookmark("jlouvel", "myPassword", "http://www.restlet.org",
+                "Restlet", "Lightweight framework for Java", false);
         // deleteUser("jlouvel");
+    }
+
+    public static void putBookmark(String userName, String password,
+            String uri, String shortDescription, String longDescription,
+            boolean restrict) {
+        Form form = new Form();
+        form.add("bookmark[short_description]", shortDescription);
+        form.add("bookmark[long_description]", longDescription);
+        form.add("bookmark[restrict]", Boolean.toString(restrict));
+
+        // Create an authenticated request as a bookmark is in
+        // the user's private area
+        Request request = new Request(Method.PUT,
+                getBookmarkUri(userName, uri), form.getWebRepresentation());
+        request.getChallengeResponse().setIdentifier(userName);
+        request.getChallengeResponse().setSecret(password);
+
+        // Invoke the client HTTP connector
+        Response resp = new Client(Protocol.HTTP).handle(request);
+        System.out.println(resp.getStatus());
     }
 
     public static void putUser(String name, String password, String fullName,
@@ -50,13 +74,17 @@ public class TestClient {
         System.out.println(resp.getStatus());
     }
 
-    public static void deleteUser(String name) {
+    public static void deleteUser(String name, String password) {
         Response resp = new Client(Protocol.HTTP).delete(getUserUri(name));
         System.out.println(resp.getStatus() + " : " + resp.getRedirectRef());
     }
 
     public static String getUserUri(String name) {
         return APPLICATION_URI + "/users/" + name;
+    }
+
+    public static String getBookmarkUri(String userName, String uri) {
+        return APPLICATION_URI + "/users/" + userName + "/bookmarks/" + uri;
     }
 
 }
