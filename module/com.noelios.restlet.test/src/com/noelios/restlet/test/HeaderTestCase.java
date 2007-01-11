@@ -119,18 +119,13 @@ public class HeaderTestCase extends TestCase {
      *            The parsed values.
      */
     public void testValues(String header, String[] values) {
-        try {
-            HeaderReader hr = new HeaderReader(header);
-            String value = hr.readValue();
-            int index = 0;
-            while (value != null) {
-                assertEquals(value, values[index]);
-                index++;
-                value = hr.readValue();
-            }
-
-        } catch (IOException e) {
-            e.printStackTrace();
+        HeaderReader hr = new HeaderReader(header);
+        String value = hr.readValue();
+        int index = 0;
+        while (value != null) {
+            assertEquals(value, values[index]);
+            index++;
+            value = hr.readValue();
         }
     }
 
