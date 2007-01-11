@@ -97,7 +97,7 @@ public class Guard extends Filter {
      * @return -1 if the given credentials were invalid, 0 if no credentials
      *         were found and 1 otherwise.
      */
-    protected int authorize(Request request) {
+    public int authorize(Request request) {
         int result = 0;
 
         if (request.getChallengeResponse() != null) {
@@ -105,7 +105,7 @@ public class Guard extends Filter {
             String secret = request.getChallengeResponse().getSecret();
 
             if ((identifier != null) && (secret != null)) {
-                if (secret.equals(getAuthorizations().get(identifier))) {
+                if (secret.equals(getSecret(identifier))) {
                     result = 1;
                 } else {
                     result = -1;
@@ -146,6 +146,18 @@ public class Guard extends Filter {
     }
 
     /**
+     * Returns the secret associated to a given identifier. By default it looks
+     * up into the authorizations map, but this behavior can be overriden.
+     * 
+     * @param identifier
+     *            The identifier to lookup.
+     * @return The secret associated to the identifier or null.
+     */
+    protected String getSecret(String identifier) {
+        return getAuthorizations().get(identifier);
+    }
+
+    /**
      * Rejects the call call due to a failed authentication or authorization.
      * This can be overriden to change the defaut behavior, for example to
      * display an error page. By default, if authentication is required, the
@@ -157,7 +169,7 @@ public class Guard extends Filter {
      * @param challenge
      *            Indicates if the client should be challenged.
      */
-    protected void reject(Response response, boolean challenge) {
+    public void reject(Response response, boolean challenge) {
         if (challenge) {
             response.setStatus(Status.CLIENT_ERROR_UNAUTHORIZED);
             response.setChallengeRequest(new ChallengeRequest(this.scheme,
