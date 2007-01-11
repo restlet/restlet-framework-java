@@ -92,7 +92,7 @@ public class Variant extends Resource {
         this.encoding = null;
         this.size = UNKNOWN_SIZE;
         this.expirationDate = null;
-        this.languages = new ArrayList<Language>();
+        this.languages = null;
         this.mediaType = mediaType;
         this.modificationDate = null;
         this.tag = null;
@@ -228,23 +228,13 @@ public class Variant extends Resource {
      * 
      * @param language
      *            The language or null if not applicable.
-     * @deprecated Use getLanguages method or setLanguages(List<Language>) in
-     *             order to update the languages list.
+     * @deprecated Use getLanguages method in order to update the languages
+     *             list.
      */
     @Deprecated
     public void setLanguage(Language language) {
         this.languages = new ArrayList<Language>();
         this.languages.add(language);
-    }
-
-    /**
-     * Sets a new list of languages.
-     * 
-     * @param languages
-     *            The new list of languages.
-     */
-    public void setLanguages(List<Language> languages) {
-        this.languages = languages;
     }
 
     /**
