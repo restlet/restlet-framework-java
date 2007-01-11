@@ -84,7 +84,7 @@ public class Transformer extends Filter {
 
             if (transformer != null) {
                 setCharacterSet(transformer.getResultCharacterSet());
-                setLanguage(transformer.getResultLanguage());
+                getLanguages().add(transformer.getResultLanguage());
                 setMediaType(transformer.getResultMediaType());
             }
         }

@@ -1016,9 +1016,17 @@ public class Template {
                         }
                     } else if (variableName.equals("el")) {
                         if ((request.getEntity() != null)
-                                && (request.getEntity().getLanguage() != null)) {
-                            result = request.getEntity().getLanguage()
-                                    .getName();
+                                && (!request.getEntity().getLanguages()
+                                        .isEmpty())) {
+                            StringBuilder value = new StringBuilder();
+                            for (int i = 0; i < request.getEntity()
+                                    .getLanguages().size(); i++) {
+                                if (i > 0)
+                                    value.append(", ");
+                                value.append(request.getEntity().getLanguages()
+                                        .get(i).getName());
+                            }
+                            result = value.toString();
                         }
                     } else if (variableName.equals("emd")) {
                         if ((request.getEntity() != null)
@@ -1086,9 +1094,17 @@ public class Template {
                         }
                     } else if (variableName.equals("EL")) {
                         if ((response.getEntity() != null)
-                                && (response.getEntity().getLanguage() != null)) {
-                            result = response.getEntity().getLanguage()
-                                    .getName();
+                                && (!response.getEntity().getLanguages()
+                                        .isEmpty())) {
+                            StringBuilder value = new StringBuilder();
+                            for (int i = 0; i < response.getEntity()
+                                    .getLanguages().size(); i++) {
+                                if (i > 0)
+                                    value.append(", ");
+                                value.append(response.getEntity()
+                                        .getLanguages().get(i).getName());
+                            }
+                            result = value.toString();
                         }
                     } else if (variableName.equals("EMD")) {
                         if ((response.getEntity() != null)

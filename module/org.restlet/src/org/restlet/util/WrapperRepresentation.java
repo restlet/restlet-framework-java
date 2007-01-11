@@ -166,11 +166,22 @@ public class WrapperRepresentation extends Representation {
      * Returns the language or null if not applicable.
      * 
      * @return The language or null if not applicable.
+     * @deprecated Use getLanguages instead.
      */
+    @Deprecated
     public Language getLanguage() {
         return getWrappedRepresentation().getLanguage();
     }
-
+    
+    /**
+     * Returns the list of languages.
+     * 
+     * @return The list of languages.
+     */
+    public List<Language> getLanguages() {
+        return getWrappedRepresentation().getLanguages();
+    }
+    
     /**
      * Returns the logger to use.
      * 
@@ -402,9 +413,22 @@ public class WrapperRepresentation extends Representation {
      * 
      * @param language
      *            The language or null if not applicable.
-     */
+    * @deprecated Use getLanguages method or setLanguages(List<Language>) in
+    *             order to update the languages list.
+    */
+   @Deprecated
     public void setLanguage(Language language) {
         getWrappedRepresentation().setLanguage(language);
+    }
+
+   /**
+    * Sets a new list of languages.
+    * 
+    * @param languages
+    *            The new list of languages.
+    */
+    public void setLanguages(List<Language> languages) {
+        getWrappedRepresentation().setLanguages(languages);
     }
 
     /**

@@ -109,7 +109,7 @@ public class StringRepresentation extends StreamRepresentation {
         super(mediaType);
         this.text = text;
         setMediaType(mediaType);
-        setLanguage(language);
+        getLanguages().add(language);
         setCharacterSet(characterSet);
         updateSize();
     }

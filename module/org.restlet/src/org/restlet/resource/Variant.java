@@ -18,7 +18,9 @@
 
 package org.restlet.resource;
 
+import java.util.ArrayList;
 import java.util.Date;
+import java.util.List;
 import java.util.logging.Logger;
 
 import org.restlet.data.CharacterSet;
@@ -59,8 +61,8 @@ public class Variant extends Resource {
     /** The expiration date. */
     private Date expirationDate;
 
-    /** The language or null if not applicable. */
-    private Language language;
+    /** The natural language(s) of the intended audience for this variant. */
+    private List<Language> languages;
 
     /** The media type. */
     private MediaType mediaType;
@@ -90,7 +92,7 @@ public class Variant extends Resource {
         this.encoding = null;
         this.size = UNKNOWN_SIZE;
         this.expirationDate = null;
-        this.language = null;
+        this.languages = new ArrayList<Language>();
         this.mediaType = mediaType;
         this.modificationDate = null;
         this.tag = null;
@@ -133,10 +135,24 @@ public class Variant extends Resource {
     /**
      * Returns the language or null if not applicable.
      * 
-     * @return The language or null if not applicable.
+     * @return The first language of the list of languages or null if not
+     *         applicable.
+     * @deprecated Use getLanguages instead.
      */
+    @Deprecated
     public Language getLanguage() {
-        return this.language;
+        return (getLanguages().isEmpty() ? null : getLanguages().get(0));
+    }
+
+    /**
+     * Returns the list of languages.
+     * 
+     * @return The list of languages.
+     */
+    public List<Language> getLanguages() {
+        if (languages == null)
+            languages = new ArrayList<Language>();
+        return this.languages;
     }
 
     /**
@@ -212,9 +228,23 @@ public class Variant extends Resource {
      * 
      * @param language
      *            The language or null if not applicable.
+     * @deprecated Use getLanguages method or setLanguages(List<Language>) in
+     *             order to update the languages list.
      */
+    @Deprecated
     public void setLanguage(Language language) {
-        this.language = language;
+        this.languages = new ArrayList<Language>();
+        this.languages.add(language);
+    }
+
+    /**
+     * Sets a new list of languages.
+     * 
+     * @param languages
+     *            The new list of languages.
+     */
+    public void setLanguages(List<Language> languages) {
+        this.languages = languages;
     }
 
     /**
