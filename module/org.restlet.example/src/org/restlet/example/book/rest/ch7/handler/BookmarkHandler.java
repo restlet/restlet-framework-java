@@ -19,6 +19,7 @@
 package org.restlet.example.book.rest.ch7.handler;
 
 import org.restlet.Handler;
+import org.restlet.data.ChallengeResponse;
 import org.restlet.data.Request;
 import org.restlet.data.Response;
 import org.restlet.example.book.rest.ch7.resource.BookmarkResource;
@@ -34,8 +35,9 @@ public class BookmarkHandler extends Handler {
     @Override
     public Resource findTarget(final Request request, Response response) {
         String userName = (String) request.getAttributes().get("username");
-        String login = request.getChallengeResponse().getIdentifier();
-        String password = request.getChallengeResponse().getSecret();
+        ChallengeResponse cr = request.getChallengeResponse();
+        String login = (cr != null) ? cr.getIdentifier() : null;
+        String password = (cr != null) ? cr.getSecret() : null;
         String uri = (String) request.getAttributes().get("URI");
         return new BookmarkResource(userName, login, password, uri);
     }

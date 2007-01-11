@@ -146,13 +146,17 @@ public class ReferenceList extends WrapperList<Reference> {
         // Create a simple HTML list
         StringBuilder sb = new StringBuilder();
         sb.append("<html><body>\n");
-        sb
-                .append("<h1>Listing of \"" + getIdentifier().getPath()
-                        + "\"</h1>\n");
-        Reference parentRef = getIdentifier().getParentRef();
 
-        if (!parentRef.equals(getIdentifier())) {
-            sb.append("<a href=\"" + parentRef + "\">..</a><br/>\n");
+        if (getIdentifier() != null) {
+            sb.append("<h2>Listing of \"" + getIdentifier().getPath()
+                    + "\"</h2>\n");
+            Reference parentRef = getIdentifier().getParentRef();
+
+            if (!parentRef.equals(getIdentifier())) {
+                sb.append("<a href=\"" + parentRef + "\">..</a><br/>\n");
+            }
+        } else {
+            sb.append("<h2>List of references</h2>\n");
         }
 
         for (Reference ref : this) {
