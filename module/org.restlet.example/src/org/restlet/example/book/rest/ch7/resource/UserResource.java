@@ -160,7 +160,7 @@ public class UserResource extends Resource {
 
         if (entity.getMediaType().equals(MediaType.APPLICATION_WWW_FORM)) {
             boolean canSet = true;
-            
+
             if (this.user == null) {
                 // The user doesn't exist, create it
                 this.user = new User();
@@ -168,19 +168,17 @@ public class UserResource extends Resource {
                 result = new Result(Status.SUCCESS_CREATED);
             } else {
                 // The user already exists, check the authentication
-                if()
-                
+
                 result = new Result(Status.SUCCESS_NO_CONTENT);
             }
 
-            if(canSet)
-            {
+            if (canSet) {
                 // Parse the entity as a web form
                 Form form = new Form(entity);
                 this.user.setEmail(form.getFirstValue("user[email]"));
                 this.user.setFullName(form.getFirstValue("user[full_name]"));
                 this.user.setPassword(form.getFirstValue("user[password]"));
-    
+
                 // Commit the changes
                 Application.CONTAINER.set(this.user);
                 Application.CONTAINER.commit();
