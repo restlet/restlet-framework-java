@@ -247,8 +247,11 @@ public class FileClientHelper extends LocalClientHelper {
                             updateMetadata(metadataService, file.getName(),
                                     request.getEntity());
                             if (request.getEntity().getLanguages().isEmpty()) {
-                                request.getEntity().getLanguages().add(
-                                        metadataService.getDefaultLanguage());
+                                if (metadataService.getDefaultLanguage() != null) {
+                                    request.getEntity().getLanguages().add(
+                                            metadataService
+                                                    .getDefaultLanguage());
+                                }
                             }
                             if (request.getEntity().getMediaType() == null) {
                                 request.getEntity().setMediaType(

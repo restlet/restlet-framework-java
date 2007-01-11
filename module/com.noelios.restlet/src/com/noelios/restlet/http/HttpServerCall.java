@@ -143,7 +143,9 @@ public abstract class HttpServerCall extends HttpCall {
 
             if (result != null) {
                 result.setEncoding(contentEncoding);
-                result.getLanguages().add(contentLanguage);
+                if (contentLanguage != null) {
+                    result.getLanguages().add(contentLanguage);
+                }
                 result.setCharacterSet(contentCharacterSet);
             }
         }

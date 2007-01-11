@@ -237,8 +237,7 @@ public class HttpClientCall extends HttpCall {
                     HeaderReader hr = new HeaderReader(header.getValue());
                     String value = hr.readValue();
                     while (value != null) {
-                        result.getLanguages().add(
-                                new Language(header.getValue()));
+                        result.getLanguages().add(new Language(value));
                         value = hr.readValue();
                     }
                 } else if (header.getName().equalsIgnoreCase(
