@@ -22,7 +22,7 @@ Changes log
    to satisfy the client languages preferences, but will always return a representation
    if the media type is accepted, even if the language is not explicitely accepted. 
  - Upgraded Jetty to 6.1.1 RC0.
- - Added a dual licensing for GPL in addition to CDDL.
+ - Added a dual licensing for GPL (with a Classpath exception) in addition to CDDL.
 
 1.0 RC2 (2007-01-09)
 [Bugs fixed]
