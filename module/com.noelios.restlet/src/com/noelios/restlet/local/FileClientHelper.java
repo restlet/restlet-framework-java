@@ -30,6 +30,7 @@ import java.util.TreeSet;
 import java.util.logging.Level;
 
 import org.restlet.Client;
+import org.restlet.data.Language;
 import org.restlet.data.LocalReference;
 import org.restlet.data.MediaType;
 import org.restlet.data.Method;
@@ -245,8 +246,8 @@ public class FileClientHelper extends LocalClientHelper {
                             // Complete it with the default metadata
                             updateMetadata(metadataService, file.getName(),
                                     request.getEntity());
-                            if (request.getEntity().getLanguage() == null) {
-                                request.getEntity().setLanguage(
+                            if (request.getEntity().getLanguages().isEmpty()) {
+                                request.getEntity().getLanguages().add(
                                         metadataService.getDefaultLanguage());
                             }
                             if (request.getEntity().getMediaType() == null) {
@@ -265,11 +266,13 @@ public class FileClientHelper extends LocalClientHelper {
                                         + metadataService.getExtension(request
                                                 .getEntity().getMediaType()));
                             }
-                            if (metadataService.getExtension(request
-                                    .getEntity().getLanguage()) != null) {
-                                fileName.append("."
-                                        + metadataService.getExtension(request
-                                                .getEntity().getLanguage()));
+                            for (Language language : request.getEntity()
+                                    .getLanguages()) {
+                                if (metadataService.getExtension(language) != null) {
+                                    fileName.append("."
+                                            + metadataService
+                                                    .getExtension(language));
+                                }
                             }
                             if (metadataService.getExtension(request
                                     .getEntity().getEncoding()) != null) {
@@ -500,7 +503,7 @@ public class FileClientHelper extends LocalClientHelper {
     }
 
     /**
-     * Checks that the URI and the representation are compatible The whole set
+     * Checks that the URI and the representation are compatible. The whole set
      * of metadata of the representation must be included in the set of those of
      * the URI
      * 
@@ -520,8 +523,9 @@ public class FileClientHelper extends LocalClientHelper {
             Representation rep = new Representation();
             updateMetadata(metadataService, fileName, rep);
             // "rep" contains the theorical correct metadata
-            if (representation.getLanguage() != null
-                    && !representation.getLanguage().equals(rep.getLanguage())) {
+            if (!representation.getLanguages().isEmpty()
+                    && !rep.getLanguages().contains(
+                            representation.getLanguages())) {
                 result = false;
             }
             if (representation.getMediaType() != null

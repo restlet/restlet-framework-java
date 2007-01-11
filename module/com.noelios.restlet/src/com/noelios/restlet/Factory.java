@@ -382,13 +382,13 @@ public class Factory extends org.restlet.util.Factory {
      *      href="http://httpd.apache.org/docs/2.2/en/content-negotiation.html#algorithm">Apache
      *      content negotiation algorithm</a>
      */
-    public Variant getPreferredVariant(ClientInfo client, List<Variant> variants) {
+    public Variant getPreferredVariant(ClientInfo client, List<Variant> variants, Language defaultLanguage) {
         if (variants == null) {
             return null;
         } else {
             Parameter currentParam = null;
             Language currentLanguage = null;
-            Language variantLanguage = null;
+            List<Language> variantLanguages = null;
             MediaType currentMediaType = null;
             MediaType variantMediaType = null;
 
@@ -414,88 +414,90 @@ public class Factory extends org.restlet.util.Factory {
             // score
             for (Iterator<Variant> iter1 = variants.iterator(); iter1.hasNext();) {
                 currentVariant = iter1.next();
-                variantLanguage = currentVariant.getLanguage();
+                variantLanguages = currentVariant.getLanguages();
                 variantMediaType = currentVariant.getMediaType();
 
-                // If no language preference is defined or even none matches, we
-                // want to make sure that at least a variant can be returned.
-                // Based on experience, it appears that browsers are often
-                // misconfigured and don't expose all the languages actually
-                // understood by end users.
-                List<Preference<Language>> languagePrefs = client
-                        .getAcceptedLanguages();
-                if (languagePrefs.isEmpty()) {
-                    languagePrefs.add(new Preference<Language>(Language.ALL));
-                } else {
-                    languagePrefs.add(new Preference<Language>(Language.ALL,
-                            0.001F));
-                }
-
-                // For each language preference defined in the call
-                // Calculate the score and remember the best scoring preference
-                for (Iterator<Preference<Language>> iter2 = languagePrefs
-                        .iterator(); (variantLanguage != null)
-                        && iter2.hasNext();) {
-                    currentLanguagePref = iter2.next();
-                    currentLanguage = currentLanguagePref.getMetadata();
-                    compatiblePref = true;
-                    currentScore = 0;
-
-                    // 1) Compare the main tag
-                    if (variantLanguage.getPrimaryTag().equalsIgnoreCase(
-                            currentLanguage.getPrimaryTag())) {
-                        currentScore += 100;
-                    } else if (!currentLanguage.getPrimaryTag().equals("*")) {
-                        compatiblePref = false;
-                    } else if (!currentLanguage.getSubTags().isEmpty()) {
-                        // Only "*" is an acceptable language range
-                        compatiblePref = false;
+                for (Language variantLanguage : variantLanguages) {
+                    // If no language preference is defined or even none matches, we
+                    // want to make sure that at least a variant can be returned.
+                    // Based on experience, it appears that browsers are often
+                    // misconfigured and don't expose all the languages actually
+                    // understood by end users.
+                    List<Preference<Language>> languagePrefs = client
+                            .getAcceptedLanguages();
+                    if (languagePrefs.isEmpty()) {
+                        languagePrefs.add(new Preference<Language>(Language.ALL));
                     } else {
-                        // The valid "*" range has the lowest valid score
-                        currentScore++;
+                        languagePrefs.add(new Preference<Language>(Language.ALL,
+                                0.001F));
                     }
 
-                    if (compatiblePref) {
-                        // 2) Compare the sub tags
-                        if ((currentLanguage.getSubTags().isEmpty())
-                                || (variantLanguage.getSubTags().isEmpty())) {
-                            if (variantLanguage.getSubTags().isEmpty()
-                                    && currentLanguage.getSubTags().isEmpty()) {
-                                currentScore += 10;
-                            } else {
-                                // Don't change the score
-                            }
+                    // For each language preference defined in the call
+                    // Calculate the score and remember the best scoring preference
+                    for (Iterator<Preference<Language>> iter2 = languagePrefs
+                            .iterator(); (variantLanguage != null)
+                            && iter2.hasNext();) {
+                        currentLanguagePref = iter2.next();
+                        currentLanguage = currentLanguagePref.getMetadata();
+                        compatiblePref = true;
+                        currentScore = 0;
+
+                        // 1) Compare the main tag
+                        if (variantLanguage.getPrimaryTag().equalsIgnoreCase(
+                                currentLanguage.getPrimaryTag())) {
+                            currentScore += 100;
+                        } else if (!currentLanguage.getPrimaryTag().equals("*")) {
+                            compatiblePref = false;
+                        } else if (!currentLanguage.getSubTags().isEmpty()) {
+                            // Only "*" is an acceptable language range
+                            compatiblePref = false;
                         } else {
-                            int maxSize = Math.min(currentLanguage.getSubTags()
-                                    .size(), variantLanguage.getSubTags()
-                                    .size());
-                            for (int i = 0; i < maxSize && compatiblePref; i++) {
-                                if (currentLanguage.getSubTags().get(i)
-                                        .equalsIgnoreCase(
-                                                variantLanguage.getSubTags()
-                                                        .get(i))) {
-                                    // Each subtag contribution to the score is
-                                    // getting less and less important
-                                    currentScore += Math.pow(10, 1 - i);
+                            // The valid "*" range has the lowest valid score
+                            currentScore++;
+                        }
+
+                        if (compatiblePref) {
+                            // 2) Compare the sub tags
+                            if ((currentLanguage.getSubTags().isEmpty())
+                                    || (variantLanguage.getSubTags().isEmpty())) {
+                                if (variantLanguage.getSubTags().isEmpty()
+                                        && currentLanguage.getSubTags().isEmpty()) {
+                                    currentScore += 10;
                                 } else {
-                                    // SubTags are different
-                                    compatiblePref = false;
+                                    // Don't change the score
+                                }
+                            } else {
+                                int maxSize = Math.min(currentLanguage.getSubTags()
+                                        .size(), variantLanguage.getSubTags()
+                                        .size());
+                                for (int i = 0; i < maxSize && compatiblePref; i++) {
+                                    if (currentLanguage.getSubTags().get(i)
+                                            .equalsIgnoreCase(
+                                                    variantLanguage.getSubTags()
+                                                            .get(i))) {
+                                        // Each subtag contribution to the score is
+                                        // getting less and less important
+                                        currentScore += Math.pow(10, 1 - i);
+                                    } else {
+                                        // SubTags are different
+                                        compatiblePref = false;
+                                    }
                                 }
                             }
+                            // 3) Do we have a better preference?
+                            // currentScore *= currentPref.getQuality();
+                            if (compatiblePref
+                                    && ((bestLanguagePref == null) || (currentScore > bestLanguageScore))) {
+                                bestLanguagePref = currentLanguagePref;
+                                bestLanguageScore = currentScore;
+                            }
                         }
-                        // 3) Do we have a better preference?
-                        // currentScore *= currentPref.getQuality();
-                        if (compatiblePref
-                                && ((bestLanguagePref == null) || (currentScore > bestLanguageScore))) {
-                            bestLanguagePref = currentLanguagePref;
-                            bestLanguageScore = currentScore;
-                        }
-                    }
+                    }                    
                 }
 
                 // Are the preferences compatible with the current variant
                 // language?
-                compatibleLanguage = (variantLanguage == null)
+                compatibleLanguage = (variantLanguages.isEmpty())
                         || (bestLanguagePref != null);
 
                 // If no media type preference is defined, assume that all media
@@ -575,7 +577,7 @@ public class Factory extends org.restlet.util.Factory {
                     float currentQuality = 0;
                     if (bestLanguagePref != null) {
                         currentQuality += (bestLanguagePref.getQuality() * 10F);
-                    } else if (variantLanguage != null) {
+                    } else if (!variantLanguages.isEmpty()) {
                         currentQuality += 0.1F * 10F;
                     }
 

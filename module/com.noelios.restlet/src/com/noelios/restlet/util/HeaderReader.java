@@ -68,9 +68,8 @@ public class HeaderReader {
      *      href="http://www.w3.org/Protocols/rfc2616/rfc2616-sec2.html#sec2">HTTP
      *      parsing rule</a>
      * @return The next value or null.
-     * @throws IOException
      */
-    public String readValue() throws IOException {
+    public String readValue() {
         StringBuilder sb = null;
         int next = read();
 

@@ -39,6 +39,8 @@ import org.restlet.resource.ReadableRepresentation;
 import org.restlet.resource.Representation;
 import org.restlet.service.ConnectorService;
 
+import com.noelios.restlet.util.HeaderReader;
+
 /**
  * Low-level HTTP client call.
  * 
@@ -232,7 +234,13 @@ public class HttpClientCall extends HttpCall {
                     result.setEncoding(new Encoding(header.getValue()));
                 } else if (header.getName().equalsIgnoreCase(
                         HttpConstants.HEADER_CONTENT_LANGUAGE)) {
-                    result.setLanguage(new Language(header.getValue()));
+                    HeaderReader hr = new HeaderReader(header.getValue());
+                    String value = hr.readValue();
+                    while (value != null) {
+                        result.getLanguages().add(
+                                new Language(header.getValue()));
+                        value = hr.readValue();
+                    }
                 } else if (header.getName().equalsIgnoreCase(
                         HttpConstants.HEADER_LAST_MODIFIED)) {
                     result.setModificationDate(parseDate(header.getValue(),

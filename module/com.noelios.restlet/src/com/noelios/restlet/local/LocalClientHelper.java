@@ -115,7 +115,7 @@ public class LocalClientHelper extends ClientHelper {
                     if (current instanceof Encoding)
                         representation.setEncoding((Encoding) current);
                     if (current instanceof Language)
-                        representation.setLanguage((Language) current);
+                        representation.getLanguages().add((Language) current);
                 }
 
                 int dashIndex = tokens[j].indexOf('-');
@@ -127,14 +127,14 @@ public class LocalClientHelper extends ClientHelper {
                     String primaryPart = tokens[j].substring(0, dashIndex);
                     current = metadataService.getMetadata(primaryPart);
                     if (current instanceof Language)
-                        representation.setLanguage((Language) current);
+                        representation.getLanguages().add((Language) current);
                 }
             }
 
             // If no language is defines, take the default language
-            if (representation.getLanguage() == null) {
-                representation
-                        .setLanguage(metadataService.getDefaultLanguage());
+            if (representation.getLanguages().isEmpty()) {
+                representation.getLanguages().add(
+                        metadataService.getDefaultLanguage());
             }
         }
     }

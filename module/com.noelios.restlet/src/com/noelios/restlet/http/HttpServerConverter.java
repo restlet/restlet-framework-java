@@ -180,9 +180,15 @@ public class HttpServerConverter extends HttpConverter {
                             entity.getEncoding().getName());
                 }
 
-                if (entity.getLanguage() != null) {
+                if (!entity.getLanguages().isEmpty()) {
+                    StringBuilder value = new StringBuilder();
+                    for (int i = 0; i < entity.getLanguages().size(); i++) {
+                        if (i > 0)
+                            value.append(", ");
+                        value.append(entity.getLanguages().get(i).getName());
+                    }
                     responseHeaders.add(HttpConstants.HEADER_CONTENT_LANGUAGE,
-                            entity.getLanguage().getName());
+                            value.toString());
                 }
 
                 if (entity.getMediaType() != null) {
