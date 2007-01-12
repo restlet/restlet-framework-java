@@ -24,7 +24,6 @@ import org.restlet.Component;
 import org.restlet.Restlet;
 import org.restlet.Route;
 import org.restlet.Router;
-import org.restlet.data.ChallengeScheme;
 import org.restlet.data.Protocol;
 import org.restlet.example.book.rest.ch7.handler.BookmarkHandler;
 import org.restlet.example.book.rest.ch7.handler.BookmarksHandler;
@@ -55,12 +54,9 @@ public class Application extends org.restlet.Application {
     /** Open and keep the db4o object container. */
     private ObjectContainer container;
 
-    private Guard guard;
-
     public Application() {
         this.container = Db4o.openFile(System.getProperty("user.home")
                 + File.separator + "restbook.dbo");
-        this.guard = new Guard(this, ChallengeScheme.HTTP_BASIC, "Restlet");
     }
 
     @Override
@@ -102,10 +98,6 @@ public class Application extends org.restlet.Application {
         router.attach("/recent/{tag}", null);
 
         return router;
-    }
-
-    public Guard getGuard() {
-        return this.guard;
     }
 
     /**

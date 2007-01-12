@@ -35,6 +35,8 @@ public class BookmarksResource extends UserResource {
     public BookmarksResource(Application application, String userName,
             String login, String password) {
         super(application, userName, login, password);
+        
+        
         getVariants().add(new Variant(MediaType.TEXT_HTML));
     }
 

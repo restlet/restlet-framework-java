@@ -20,6 +20,8 @@ package org.restlet.example.book.rest.ch7.resource;
 
 import java.util.List;
 
+import org.restlet.data.ChallengeRequest;
+import org.restlet.data.ChallengeScheme;
 import org.restlet.data.Form;
 import org.restlet.data.MediaType;
 import org.restlet.data.Response;
@@ -108,6 +110,13 @@ public class UserResource extends BaseResource {
         return result;
     }
 
+    public Response getChallengeResponse() {
+        Response result = new Response(Status.CLIENT_ERROR_CONFLICT);
+        result.setChallengeRequest(new ChallengeRequest(
+                ChallengeScheme.HTTP_BASIC, "Restlet"));
+        return result;
+    }
+
     @Override
     public boolean allowDelete() {
         return true;
@@ -129,7 +138,7 @@ public class UserResource extends BaseResource {
             result = new Response(Status.SUCCESS_OK);
         case 0:
             // No authentication provided
-            result = new Response(Status.CLIENT_ERROR_CONFLICT);
+            result = getChallengeResponse();
         case -1:
             // Wrong authenticaiton provided
             result = new Response(Status.CLIENT_ERROR_UNAUTHORIZED);
@@ -170,8 +179,18 @@ public class UserResource extends BaseResource {
                 result = new Response(Status.SUCCESS_CREATED);
             } else {
                 // The user already exists, check the authentication
-
-                result = new Response(Status.SUCCESS_NO_CONTENT);
+                switch (checkAuthorization()) {
+                case 1:
+                    result = new Response(Status.SUCCESS_NO_CONTENT);
+                case 0:
+                    // No authentication provided
+                    result = getChallengeResponse();
+                    canSet = false;
+                case -1:
+                    // Wrong authenticaiton provided
+                    result = new Response(Status.CLIENT_ERROR_UNAUTHORIZED);
+                    canSet = false;
+                }
             }
 
             if (canSet) {

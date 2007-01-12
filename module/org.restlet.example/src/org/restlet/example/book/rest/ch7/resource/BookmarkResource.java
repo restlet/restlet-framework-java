@@ -49,7 +49,15 @@ public class BookmarkResource extends UserResource {
         this.bookmark = getUser().getBookmark(uri);
 
         if (this.bookmark != null) {
-            getVariants().add(new Variant(MediaType.TEXT_PLAIN));
+//            if(checkAuthorization() == 1) {
+                getVariants().add(new Variant(MediaType.TEXT_PLAIN));
+//            case 0:
+//                // No authentication provided
+//                result = getChallengeResponse();
+//            case -1:
+//                // Wrong authenticaiton provided
+//                result = new Response(Status.CLIENT_ERROR_UNAUTHORIZED);
+//            }
         }
     }
 
@@ -112,31 +120,41 @@ public class BookmarkResource extends UserResource {
         Response result = null;
 
         if (entity.getMediaType().equals(MediaType.APPLICATION_WWW_FORM)) {
-            // Parse the entity as a web form
-            Form form = new Form(entity);
 
-            // If the bookmark doesn't exist, create it
-            if (this.bookmark == null) {
-                this.bookmark = new Bookmark();
-                getUser().getBookmarks().add(this.bookmark);
-                this.bookmark.setUri(this.uri);
-                result = new Response(Status.SUCCESS_CREATED);
-            } else {
-                result = new Response(Status.SUCCESS_NO_CONTENT);
+            switch (checkAuthorization()) {
+            case 1:
+                // Parse the entity as a web form
+                Form form = new Form(entity);
+
+                // If the bookmark doesn't exist, create it
+                if (this.bookmark == null) {
+                    this.bookmark = new Bookmark();
+                    getUser().getBookmarks().add(this.bookmark);
+                    this.bookmark.setUri(this.uri);
+                    result = new Response(Status.SUCCESS_CREATED);
+                } else {
+                    result = new Response(Status.SUCCESS_NO_CONTENT);
+                }
+
+                this.bookmark.setShortDescription(form
+                        .getFirstValue("bookmark[short_description]"));
+                this.bookmark.setLongDescription(form
+                        .getFirstValue("bookmark[long_description]"));
+                this.bookmark.setDateTime(new Date());
+                this.bookmark.setRestrict(new Boolean(form
+                        .getFirstValue("bookmark[restrict]")));
+
+                // Commit the changes
+                getContainer().set(this.bookmark);
+                getContainer().set(getUser());
+                getContainer().commit();
+            case 0:
+                // No authentication provided
+                result = getChallengeResponse();
+            case -1:
+                // Wrong authenticaiton provided
+                result = new Response(Status.CLIENT_ERROR_UNAUTHORIZED);
             }
-
-            this.bookmark.setShortDescription(form
-                    .getFirstValue("bookmark[short_description]"));
-            this.bookmark.setLongDescription(form
-                    .getFirstValue("bookmark[long_description]"));
-            this.bookmark.setDateTime(new Date());
-            this.bookmark.setRestrict(new Boolean(form
-                    .getFirstValue("bookmark[restrict]")));
-
-            // Commit the changes
-            getContainer().set(this.bookmark);
-            getContainer().set(getUser());
-            getContainer().commit();
         }
 
         return result;
