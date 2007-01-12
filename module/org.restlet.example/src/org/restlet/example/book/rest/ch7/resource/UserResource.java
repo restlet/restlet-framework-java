@@ -27,10 +27,10 @@ import org.restlet.data.Status;
 import org.restlet.example.book.rest.ch7.Application;
 import org.restlet.example.book.rest.ch7.domain.User;
 import org.restlet.resource.Representation;
-import org.restlet.resource.Resource;
 import org.restlet.resource.StringRepresentation;
 import org.restlet.resource.Variant;
 
+import com.db4o.ObjectContainer;
 import com.db4o.query.Predicate;
 
 /**
@@ -38,9 +38,9 @@ import com.db4o.query.Predicate;
  * 
  * @author Jerome Louvel (contact@noelios.com)
  */
-public class UserResource extends Resource {
+public class UserResource extends ApplicationResource {
 
-    public static User findUser(final String userName) {
+    public static User findUser(ObjectContainer container, final String userName) {
         User result = null;
 
         if (userName != null) {
@@ -55,7 +55,7 @@ public class UserResource extends Resource {
             };
 
             // Query the database and get the first result
-            List<User> users = Application.CONTAINER.query(predicate);
+            List<User> users = container.query(predicate);
             if ((users != null) && (users.size() > 0)) {
                 result = users.get(0);
             }
@@ -72,11 +72,13 @@ public class UserResource extends Resource {
 
     private User user;
 
-    public UserResource(String userName, String login, String password) {
+    public UserResource(Application application, String userName, String login,
+            String password) {
+        super(application);
         this.userName = userName;
         this.login = login;
         this.password = password;
-        this.user = findUser(userName);
+        this.user = findUser(getContainer(), userName);
 
         if (user != null) {
             getVariants().add(new Variant(MediaType.TEXT_PLAIN));
@@ -122,8 +124,8 @@ public class UserResource extends Resource {
 
         switch (checkAuthorization()) {
         case 1:
-            Application.CONTAINER.delete(this.user);
-            Application.CONTAINER.commit();
+            getContainer().delete(this.user);
+            getContainer().commit();
             result = new Response(Status.SUCCESS_OK);
         case 0:
             // No authentication provided
@@ -180,8 +182,8 @@ public class UserResource extends Resource {
                 this.user.setPassword(form.getFirstValue("user[password]"));
 
                 // Commit the changes
-                Application.CONTAINER.set(this.user);
-                Application.CONTAINER.commit();
+                getContainer().set(this.user);
+                getContainer().commit();
             }
         }
 
@@ -196,7 +198,8 @@ public class UserResource extends Resource {
     }
 
     /**
-     * @param user the user to set
+     * @param user
+     *            the user to set
      */
     public void setUser(User user) {
         this.user = user;

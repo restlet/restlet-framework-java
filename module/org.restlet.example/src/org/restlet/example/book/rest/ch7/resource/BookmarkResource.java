@@ -42,9 +42,9 @@ public class BookmarkResource extends UserResource {
 
     private String uri;
 
-    public BookmarkResource(String userName, String login, String password,
-            String uri) {
-        super(userName, login, password);
+    public BookmarkResource(Application application, String userName,
+            String login, String password, String uri) {
+        super(application, userName, login, password);
         this.uri = uri;
         this.bookmark = getUser().getBookmark(uri);
 
@@ -66,8 +66,8 @@ public class BookmarkResource extends UserResource {
     @Override
     public Response delete() {
         if (this.bookmark != null) {
-            Application.CONTAINER.delete(this.bookmark);
-            Application.CONTAINER.commit();
+            getContainer().delete(this.bookmark);
+            getContainer().commit();
             return new Response(Status.SUCCESS_OK);
         } else {
             return new Response(Status.CLIENT_ERROR_NOT_FOUND);
@@ -134,9 +134,9 @@ public class BookmarkResource extends UserResource {
                     .getFirstValue("bookmark[restrict]")));
 
             // Commit the changes
-            Application.CONTAINER.set(this.bookmark);
-            Application.CONTAINER.set(getUser());
-            Application.CONTAINER.commit();
+            getContainer().set(this.bookmark);
+            getContainer().set(getUser());
+            getContainer().commit();
         }
 
         return result;

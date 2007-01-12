@@ -75,7 +75,7 @@ public class Guard extends Filter {
      * @param response
      *            The response to accept.
      */
-    protected void accept(Request request, Response response) {
+    public void accept(Request request, Response response) {
         // Invoke the chained Restlet
         super.doHandle(request, response);
     }

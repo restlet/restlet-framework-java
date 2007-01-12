@@ -24,6 +24,7 @@ import org.restlet.Component;
 import org.restlet.Restlet;
 import org.restlet.Route;
 import org.restlet.Router;
+import org.restlet.data.ChallengeScheme;
 import org.restlet.data.Protocol;
 import org.restlet.example.book.rest.ch7.handler.BookmarkHandler;
 import org.restlet.example.book.rest.ch7.handler.BookmarksHandler;
@@ -41,11 +42,6 @@ import com.db4o.ObjectContainer;
  */
 public class Application extends org.restlet.Application {
 
-    /** Open and keep the db4o object container. */
-    public static ObjectContainer CONTAINER = Db4o.openFile(System
-            .getProperty("user.home")
-            + File.separator + "restbook.dbo");
-
     public static void main(String... args) throws Exception {
         // Create a component with an HTTP server connector
         Component comp = new Component();
@@ -56,7 +52,15 @@ public class Application extends org.restlet.Application {
         comp.start();
     }
 
+    /** Open and keep the db4o object container. */
+    private ObjectContainer container;
+
+    private Guard guard;
+
     public Application() {
+        this.container = Db4o.openFile(System.getProperty("user.home")
+                + File.separator + "restbook.dbo");
+        this.guard = new Guard(this, ChallengeScheme.HTTP_BASIC, "Restlet");
     }
 
     @Override
@@ -64,14 +68,16 @@ public class Application extends org.restlet.Application {
         Router router = new Router(getContext());
 
         // Add a route for user resources
-        router.attach("/users/{username}", new UserHandler());
+        router.attach("/users/{username}", new UserHandler(this));
 
         // Add a route for user's bookmarks resources
-        router.attach("/users/{username}/bookmarks", new BookmarksHandler());
+        router
+                .attach("/users/{username}/bookmarks", new BookmarksHandler(
+                        this));
 
         // Add a route for bookmark resources
         Route uriRoute = router.attach("/users/{username}/bookmarks/{URI}",
-                new BookmarkHandler());
+                new BookmarkHandler(this));
         uriRoute.getTemplate().getVariables().put("URI",
                 new Variable(Variable.TYPE_URI_ALL));
 
@@ -79,7 +85,7 @@ public class Application extends org.restlet.Application {
         router.attach("/users/{username}/tags", null);
 
         // Add a route for tag resources
-        router.attach("/users/{username}/tags/{tag}", new TagHandler());
+        router.attach("/users/{username}/tags/{tag}", new TagHandler(this));
 
         // Add a route for user's calendar resources
         router.attach("/users/{username}/calendar", null);
@@ -96,6 +102,19 @@ public class Application extends org.restlet.Application {
         router.attach("/recent/{tag}", null);
 
         return router;
+    }
+
+    public Guard getGuard() {
+        return this.guard;
+    }
+
+    /**
+     * Returns the database container.
+     * 
+     * @return the database container.
+     */
+    public ObjectContainer getContainer() {
+        return this.container;
     }
 
 }

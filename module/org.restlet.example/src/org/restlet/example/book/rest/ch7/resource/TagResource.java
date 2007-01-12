@@ -27,10 +27,10 @@ import org.restlet.example.book.rest.ch7.Application;
 import org.restlet.example.book.rest.ch7.domain.Tag;
 import org.restlet.example.book.rest.ch7.domain.User;
 import org.restlet.resource.Representation;
-import org.restlet.resource.Resource;
 import org.restlet.resource.StringRepresentation;
 import org.restlet.resource.Variant;
 
+import com.db4o.ObjectContainer;
 import com.db4o.query.Predicate;
 
 /**
@@ -38,9 +38,9 @@ import com.db4o.query.Predicate;
  * 
  * @author Jerome Louvel (contact@noelios.com)
  */
-public class TagResource extends Resource {
+public class TagResource extends ApplicationResource {
 
-    public static Tag findTag(final String tagName) {
+    public static Tag findTag(ObjectContainer container, final String tagName) {
         Tag result = null;
 
         if (tagName != null) {
@@ -55,7 +55,7 @@ public class TagResource extends Resource {
             };
 
             // Query the database and get the first result
-            List<Tag> tags = Application.CONTAINER.query(predicate);
+            List<Tag> tags = container.query(predicate);
             if ((tags != null) && (tags.size() > 0)) {
                 result = tags.get(0);
             }
@@ -68,7 +68,8 @@ public class TagResource extends Resource {
 
     private Tag tag;
 
-    public TagResource(User user, Tag tag) {
+    public TagResource(Application application, User user, Tag tag) {
+        super(application);
         this.user = user;
         this.tag = tag;
         getVariants().add(new Variant(MediaType.TEXT_PLAIN));
@@ -87,8 +88,8 @@ public class TagResource extends Resource {
     @Override
     public Response delete() {
         if (this.tag != null) {
-            Application.CONTAINER.delete(this.tag);
-            Application.CONTAINER.commit();
+            getContainer().delete(this.tag);
+            getContainer().commit();
             return new Response(Status.SUCCESS_OK);
         } else {
             return new Response(Status.SERVER_ERROR_INTERNAL);

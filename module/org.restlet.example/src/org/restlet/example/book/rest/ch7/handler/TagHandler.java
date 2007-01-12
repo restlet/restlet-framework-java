@@ -18,9 +18,9 @@
 
 package org.restlet.example.book.rest.ch7.handler;
 
-import org.restlet.Handler;
 import org.restlet.data.Request;
 import org.restlet.data.Response;
+import org.restlet.example.book.rest.ch7.Application;
 import org.restlet.example.book.rest.ch7.domain.Tag;
 import org.restlet.example.book.rest.ch7.domain.User;
 import org.restlet.example.book.rest.ch7.resource.TagResource;
@@ -32,7 +32,11 @@ import org.restlet.resource.Resource;
  * 
  * @author Jerome Louvel (contact@noelios.com)
  */
-public class TagHandler extends Handler {
+public class TagHandler extends ApplicationHandler {
+
+    public TagHandler(Application application) {
+        super(application);
+    }
 
     @Override
     public Resource findTarget(final Request request, Response response) {
@@ -40,15 +44,16 @@ public class TagHandler extends Handler {
 
         // Find the user domain object
         String userName = (String) request.getAttributes().get("username");
-        User user = UserResource.findUser(userName);
+        User user = UserResource.findUser(getContainer(), userName);
 
         if (user != null) {
             // Find the tag domain object
             String tagName = (String) request.getAttributes().get("tag");
-            Tag tag = TagResource.findTag(tagName);
+            Tag tag = TagResource.findTag(getContainer(), tagName);
 
             // Return a resource wrapping the user
-            result = (tag == null) ? null : new TagResource(user, tag);
+            result = (tag == null) ? null : new TagResource(getApplication(),
+                    user, tag);
         }
 
         return result;

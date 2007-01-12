@@ -20,6 +20,7 @@ package org.restlet.example.book.rest.ch7.resource;
 
 import org.restlet.data.MediaType;
 import org.restlet.data.ReferenceList;
+import org.restlet.example.book.rest.ch7.Application;
 import org.restlet.example.book.rest.ch7.domain.Bookmark;
 import org.restlet.resource.Representation;
 import org.restlet.resource.Variant;
@@ -31,8 +32,9 @@ import org.restlet.resource.Variant;
  */
 public class BookmarksResource extends UserResource {
 
-    public BookmarksResource(String userName, String login, String password) {
-        super(userName, login, password);
+    public BookmarksResource(Application application, String userName,
+            String login, String password) {
+        super(application, userName, login, password);
         getVariants().add(new Variant(MediaType.TEXT_HTML));
     }
 

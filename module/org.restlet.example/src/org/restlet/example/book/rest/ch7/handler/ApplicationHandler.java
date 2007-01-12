@@ -18,30 +18,38 @@
 
 package org.restlet.example.book.rest.ch7.handler;
 
-import org.restlet.data.ChallengeResponse;
-import org.restlet.data.Request;
-import org.restlet.data.Response;
+import org.restlet.Handler;
 import org.restlet.example.book.rest.ch7.Application;
-import org.restlet.example.book.rest.ch7.resource.UserResource;
-import org.restlet.resource.Resource;
+
+import com.db4o.ObjectContainer;
 
 /**
- * Handler of user resources.
- * 
  * @author Jerome Louvel (contact@noelios.com)
  */
-public class UserHandler extends ApplicationHandler {
+public abstract class ApplicationHandler extends Handler {
 
-    public UserHandler(Application application) {
-        super(application);
+    private Application application;
+
+    public ApplicationHandler(Application application) {
+        this.application = application;
     }
 
-    @Override
-    public Resource findTarget(final Request request, Response response) {
-        String userName = (String) request.getAttributes().get("username");
-        ChallengeResponse cr = request.getChallengeResponse();
-        String login = (cr != null) ? cr.getIdentifier() : null;
-        String password = (cr != null) ? cr.getSecret() : null;
-        return new UserResource(getApplication(), userName, login, password);
+    /**
+     * Returns the parent application.
+     * 
+     * @return the parent application.
+     */
+    public Application getApplication() {
+        return this.application;
     }
+
+    /**
+     * Returns the database container.
+     * 
+     * @return the database container.
+     */
+    public ObjectContainer getContainer() {
+        return getApplication().getContainer();
+    }
+
 }
