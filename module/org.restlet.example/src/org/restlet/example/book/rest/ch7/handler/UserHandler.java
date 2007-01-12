@@ -30,7 +30,7 @@ import org.restlet.resource.Resource;
  * 
  * @author Jerome Louvel (contact@noelios.com)
  */
-public class UserHandler extends ApplicationHandler {
+public class UserHandler extends BaseHandler {
 
     public UserHandler(Application application) {
         super(application);

@@ -30,7 +30,7 @@ import org.restlet.resource.Resource;
  * 
  * @author Jerome Louvel (contact@noelios.com)
  */
-public class BookmarksHandler extends ApplicationHandler {
+public class BookmarksHandler extends BaseHandler {
 
     public BookmarksHandler(Application application) {
         super(application);

@@ -32,7 +32,7 @@ import org.restlet.resource.Resource;
  * 
  * @author Jerome Louvel (contact@noelios.com)
  */
-public class TagHandler extends ApplicationHandler {
+public class TagHandler extends BaseHandler {
 
     public TagHandler(Application application) {
         super(application);

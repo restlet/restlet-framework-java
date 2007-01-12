@@ -30,7 +30,7 @@ import org.restlet.resource.Resource;
  * 
  * @author Jerome Louvel (contact@noelios.com)
  */
-public class BookmarkHandler extends ApplicationHandler {
+public class BookmarkHandler extends BaseHandler {
 
     public BookmarkHandler(Application application) {
         super(application);
@@ -43,6 +43,7 @@ public class BookmarkHandler extends ApplicationHandler {
         String login = (cr != null) ? cr.getIdentifier() : null;
         String password = (cr != null) ? cr.getSecret() : null;
         String uri = (String) request.getAttributes().get("URI");
+
         return new BookmarkResource(getApplication(), userName, login,
                 password, uri);
     }

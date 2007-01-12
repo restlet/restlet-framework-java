@@ -38,7 +38,7 @@ import com.db4o.query.Predicate;
  * 
  * @author Jerome Louvel (contact@noelios.com)
  */
-public class UserResource extends ApplicationResource {
+public class UserResource extends BaseResource {
 
     public static User findUser(ObjectContainer container, final String userName) {
         User result = null;

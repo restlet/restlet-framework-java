@@ -16,21 +16,30 @@
  * Portions Copyright [yyyy] [name of copyright owner]
  */
 
-package org.restlet.example.book.rest.ch7.handler;
+package org.restlet.example.book.rest.ch7.resource;
 
-import org.restlet.Handler;
 import org.restlet.example.book.rest.ch7.Application;
+import org.restlet.resource.Resource;
 
 import com.db4o.ObjectContainer;
 
 /**
+ * Base application resource.
+ * 
  * @author Jerome Louvel (contact@noelios.com)
  */
-public abstract class ApplicationHandler extends Handler {
+public abstract class BaseResource extends Resource {
 
+    /** The parent application. */
     private Application application;
 
-    public ApplicationHandler(Application application) {
+    /**
+     * Constructor.
+     * 
+     * @param application
+     *            The parent application.
+     */
+    public BaseResource(Application application) {
         this.application = application;
     }
 

@@ -38,7 +38,7 @@ import com.db4o.query.Predicate;
  * 
  * @author Jerome Louvel (contact@noelios.com)
  */
-public class TagResource extends ApplicationResource {
+public class TagResource extends BaseResource {
 
     public static Tag findTag(ObjectContainer container, final String tagName) {
         Tag result = null;
