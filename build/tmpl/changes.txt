@@ -11,7 +11,8 @@ Changes log
    returning simple Variant instance via getVariants().
  - Fixed potential NPE in HttpRequest due to autoboxing. Reported by Valdis Rigdon.
  - Fixed bug preventing the Jetty connector from returning error status representations.
- 
+ - Fixed bug in DomRepresentation when outputting an instance based on a XML representation.
+  
 [API changes]
  - Added ReferenceList.getWebRepresentation() method, using exsiting logic from Directory.
  - Deprecated Directory.getDirectoryVariants() method and added getIndexVariants() + 

@@ -333,60 +333,55 @@ public abstract class Handler extends Restlet {
      *            The response to update.
      */
     protected void handleGet(Resource target, Request request, Response response) {
-        // the variant that may need to meet the request conditions
+        List<Variant> variants = target.getVariants();
+
+        // The variant that may need to meet the request conditions
         Variant selectedVariant = null;
-        if (isNegotiateContent()) {
-            List<Variant> variants = target.getVariants();
 
-            if ((variants == null) || (variants.isEmpty())) {
-                // Resource not found
-                response.setStatus(Status.CLIENT_ERROR_NOT_FOUND);
-            } else {
-                // Compute the preferred variant
-                // Get the default language preference from the Application (if
-                // any)
-                Language language = null;
-                if (response.getRequest().getAttributes().get(
-                        Application.class.getCanonicalName()) != null) {
-                    Application application = (Application) response
-                            .getRequest().getAttributes().get(
-                                    Application.class.getCanonicalName());
-                    language = application.getMetadataService()
-                            .getDefaultLanguage();
-                }
-                Variant preferredVariant = response.getRequest()
-                        .getClientInfo()
-                        .getPreferredVariant(variants, language);
+        if ((variants == null) || (variants.isEmpty())) {
+            // Resource not found
+            response.setStatus(Status.CLIENT_ERROR_NOT_FOUND);
+        } else if (isNegotiateContent()) {
+            // Compute the preferred variant
+            // Get the default language preference from the Application (if
+            // any)
+            Language language = null;
+            if (response.getRequest().getAttributes().get(
+                    Application.class.getCanonicalName()) != null) {
+                Application application = (Application) response.getRequest()
+                        .getAttributes().get(
+                                Application.class.getCanonicalName());
+                language = application.getMetadataService()
+                        .getDefaultLanguage();
+            }
+            
+            Variant preferredVariant = response.getRequest().getClientInfo()
+                    .getPreferredVariant(variants, language);
 
-                // Update the variant dimensions used for content negotiation
-                response.getDimensions().add(Dimension.CHARACTER_SET);
-                response.getDimensions().add(Dimension.ENCODING);
-                response.getDimensions().add(Dimension.LANGUAGE);
-                response.getDimensions().add(Dimension.MEDIA_TYPE);
+            // Update the variant dimensions used for content negotiation
+            response.getDimensions().add(Dimension.CHARACTER_SET);
+            response.getDimensions().add(Dimension.ENCODING);
+            response.getDimensions().add(Dimension.LANGUAGE);
+            response.getDimensions().add(Dimension.MEDIA_TYPE);
 
-                if (preferredVariant == null) {
-                    // No variant was found matching the client preferences
-                    response.setStatus(Status.CLIENT_ERROR_NOT_ACCEPTABLE);
-                    // The list of all variants is transmitted to the client
-                    ReferenceList refs = new ReferenceList(variants.size());
-                    for (Variant variant : variants) {
-                        if (variant.getIdentifier() != null) {
-                            refs.add(variant.getIdentifier());
-                        }
+            if (preferredVariant == null) {
+                // No variant was found matching the client preferences
+                response.setStatus(Status.CLIENT_ERROR_NOT_ACCEPTABLE);
+                // The list of all variants is transmitted to the client
+                ReferenceList refs = new ReferenceList(variants.size());
+                for (Variant variant : variants) {
+                    if (variant.getIdentifier() != null) {
+                        refs.add(variant.getIdentifier());
                     }
-                    response.setEntity(refs.getTextRepresentation());
-                } else {
-                    response.setEntity(target
-                            .getRepresentation(preferredVariant));
-                    selectedVariant = preferredVariant;
                 }
+                response.setEntity(refs.getTextRepresentation());
+            } else {
+                response.setEntity(target.getRepresentation(preferredVariant));
+                selectedVariant = preferredVariant;
             }
             selectedVariant = response.getEntity();
         } else {
-            List<Variant> variants = target.getVariants();
-            if (variants.isEmpty()) {
-                response.setStatus(Status.CLIENT_ERROR_NOT_FOUND);
-            } else if (variants.size() == 1) {
+            if (variants.size() == 1) {
                 response.setEntity(variants.get(0));
                 selectedVariant = response.getEntity();
             } else {

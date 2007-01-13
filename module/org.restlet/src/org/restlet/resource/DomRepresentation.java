@@ -65,23 +65,6 @@ public class DomRepresentation extends XmlRepresentation {
     }
 
     /**
-     * Returns a document builder properly configured.
-     * 
-     * @return A document builder properly configured.
-     */
-    private DocumentBuilder getDocumentBuilder() throws IOException {
-        try {
-            DocumentBuilderFactory dbf = DocumentBuilderFactory.newInstance();
-            dbf.setNamespaceAware(isNamespaceAware());
-            dbf.setValidating(false);
-            return dbf.newDocumentBuilder();
-        } catch (ParserConfigurationException pce) {
-            throw new IOException("Couldn't create the empty document: "
-                    + pce.getMessage());
-        }
-    }
-
-    /**
      * Constructor from an existing DOM document.
      * 
      * @param mediaType
@@ -103,6 +86,14 @@ public class DomRepresentation extends XmlRepresentation {
     public DomRepresentation(Representation xmlRepresentation) {
         super(xmlRepresentation.getMediaType());
         this.xmlRepresentation = xmlRepresentation;
+    }
+
+    @Override
+    public Object evaluate(String expression, QName returnType)
+            throws XPathExpressionException {
+        XPath xpath = XPathFactory.newInstance().newXPath();
+        xpath.setNamespaceContext(this);
+        return xpath.evaluate(expression, getDocument(), returnType);
     }
 
     /**
@@ -128,6 +119,23 @@ public class DomRepresentation extends XmlRepresentation {
     }
 
     /**
+     * Returns a document builder properly configured.
+     * 
+     * @return A document builder properly configured.
+     */
+    private DocumentBuilder getDocumentBuilder() throws IOException {
+        try {
+            DocumentBuilderFactory dbf = DocumentBuilderFactory.newInstance();
+            dbf.setNamespaceAware(isNamespaceAware());
+            dbf.setValidating(false);
+            return dbf.newDocumentBuilder();
+        } catch (ParserConfigurationException pce) {
+            throw new IOException("Couldn't create the empty document: "
+                    + pce.getMessage());
+        }
+    }
+
+    /**
      * Sets the wrapped DOM document.
      * 
      * @param dom
@@ -146,7 +154,7 @@ public class DomRepresentation extends XmlRepresentation {
     public void write(OutputStream outputStream) throws IOException {
         try {
             TransformerFactory.newInstance().newTransformer().transform(
-                    new DOMSource(this.dom), new StreamResult(outputStream));
+                    new DOMSource(getDocument()), new StreamResult(outputStream));
         } catch (TransformerConfigurationException tce) {
             throw new IOException("Couldn't write the XML representation: "
                     + tce.getMessage());
@@ -157,13 +165,5 @@ public class DomRepresentation extends XmlRepresentation {
             throw new IOException("Couldn't write the XML representation: "
                     + tfce.getMessage());
         }
-    }
-
-    @Override
-    public Object evaluate(String expression, QName returnType)
-            throws XPathExpressionException {
-        XPath xpath = XPathFactory.newInstance().newXPath();
-        xpath.setNamespaceContext(this);
-        return xpath.evaluate(expression, getDocument(), returnType);
     }
 }
