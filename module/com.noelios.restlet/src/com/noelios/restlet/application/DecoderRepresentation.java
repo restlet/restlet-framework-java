@@ -113,21 +113,35 @@ public class DecoderRepresentation extends WrapperRepresentation {
         InputStream result = null;
 
         if (canDecode()) {
-            Encoding we = getWrappedRepresentation().getEncoding();
+            result = getDecodedStream(getWrappedRepresentation().getEncoding(),
+                    getWrappedRepresentation().getStream());
+        }
 
-            if (we.equals(Encoding.GZIP)) {
-                result = new GZIPInputStream(getWrappedRepresentation()
-                        .getStream());
-            } else if (we.equals(Encoding.DEFLATE)) {
-                result = new InflaterInputStream(getWrappedRepresentation()
-                        .getStream());
-            } else if (we.equals(Encoding.ZIP)) {
-                result = new ZipInputStream(getWrappedRepresentation()
-                        .getStream());
-            } else if (we.equals(Encoding.IDENTITY)) {
-                throw new IOException(
-                        "Decoder unecessary for identity decoding");
-            }
+        return result;
+    }
+
+    /**
+     * Returns a decoded stream for a given encoding and coded representation.
+     * 
+     * @param encoding
+     *            The encoding to use.
+     * @param encodedStream
+     *            The encoded stream.
+     * @return The decoded stream.
+     * @throws IOException
+     */
+    private InputStream getDecodedStream(Encoding encoding,
+            InputStream encodedStream) throws IOException {
+        InputStream result = null;
+
+        if (encoding.equals(Encoding.GZIP)) {
+            result = new GZIPInputStream(encodedStream);
+        } else if (encoding.equals(Encoding.DEFLATE)) {
+            result = new InflaterInputStream(encodedStream);
+        } else if (encoding.equals(Encoding.ZIP)) {
+            result = new ZipInputStream(encodedStream);
+        } else if (encoding.equals(Encoding.IDENTITY)) {
+            throw new IOException("Decoder unecessary for identity decoding");
         }
 
         return result;
