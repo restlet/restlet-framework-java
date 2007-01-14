@@ -132,12 +132,15 @@ public class UserResource extends Resource {
             // Commit the changes
             getContainer().commit();
             getResponse().setStatus(Status.SUCCESS_OK);
+            break;
         case 0:
             // No authentication provided
             challenge();
+            break;
         case -1:
             // Wrong authenticaiton provided
             getResponse().setStatus(Status.CLIENT_ERROR_UNAUTHORIZED);
+            break;
         }
     }
 
@@ -231,14 +234,17 @@ public class UserResource extends Resource {
                 switch (checkAuthorization()) {
                 case 1:
                     getResponse().setStatus(Status.SUCCESS_NO_CONTENT);
+                    break;
                 case 0:
                     // No authentication provided
                     challenge();
                     canSet = false;
+                    break;
                 case -1:
                     // Wrong authenticaiton provided
                     getResponse().setStatus(Status.CLIENT_ERROR_UNAUTHORIZED);
                     canSet = false;
+                    break;
                 }
             }
 
