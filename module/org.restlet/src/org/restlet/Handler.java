@@ -278,18 +278,12 @@ public abstract class Handler extends Restlet {
             if (isNegotiateContent()) {
                 List<Variant> variants = target.getVariants();
                 if ((variants != null) && (!variants.isEmpty())) {
-                    // Compute the preferred variant
-                    // Get the default language preference from the Application
-                    // (if any)
-                    Language language = null;
-                    if (response.getRequest().getAttributes().get(
-                            Application.class.getCanonicalName()) != null) {
-                        Application application = (Application) response
-                                .getRequest().getAttributes().get(
-                                        Application.class.getCanonicalName());
-                        language = application.getMetadataService()
-                                .getDefaultLanguage();
-                    }
+                    // Compute the preferred variant. Get the default language
+                    // preference from the Application (if any)
+                    Application app = (Application) getContext()
+                            .getAttributes().get("org.restlet.application");
+                    Language language = app.getMetadataService()
+                            .getDefaultLanguage();
                     preferredVariant = response.getRequest().getClientInfo()
                             .getPreferredVariant(variants, language);
                 }
@@ -345,19 +339,11 @@ public abstract class Handler extends Restlet {
             // Resource not found
             response.setStatus(Status.CLIENT_ERROR_NOT_FOUND);
         } else if (isNegotiateContent()) {
-            // Compute the preferred variant
-            // Get the default language preference from the Application (if
-            // any)
-            Language language = null;
-            if (response.getRequest().getAttributes().get(
-                    Application.class.getCanonicalName()) != null) {
-                Application application = (Application) response.getRequest()
-                        .getAttributes().get(
-                                Application.class.getCanonicalName());
-                language = application.getMetadataService()
-                        .getDefaultLanguage();
-            }
-
+            // Compute the preferred variant. Get the default language
+            // preference from the Application (if any)
+            Application app = (Application) getContext().getAttributes().get(
+                    "org.restlet.application");
+            Language language = app.getMetadataService().getDefaultLanguage();
             Variant preferredVariant = response.getRequest().getClientInfo()
                     .getPreferredVariant(variants, language);
 
@@ -501,18 +487,12 @@ public abstract class Handler extends Restlet {
             if (isNegotiateContent()) {
                 List<Variant> variants = target.getVariants();
                 if ((variants != null) && (!variants.isEmpty())) {
-                    // Compute the preferred variant
-                    // Get the default language preference from the Application
-                    // (if any)
-                    Language language = null;
-                    if (response.getRequest().getAttributes().get(
-                            Application.class.getCanonicalName()) != null) {
-                        Application application = (Application) response
-                                .getRequest().getAttributes().get(
-                                        Application.class.getCanonicalName());
-                        language = application.getMetadataService()
-                                .getDefaultLanguage();
-                    }
+                    // Compute the preferred variant. Get the default language
+                    // preference from the Application (if any)
+                    Application app = (Application) getContext()
+                            .getAttributes().get("org.restlet.application");
+                    Language language = app.getMetadataService()
+                            .getDefaultLanguage();
                     preferredVariant = response.getRequest().getClientInfo()
                             .getPreferredVariant(variants, language);
                 }

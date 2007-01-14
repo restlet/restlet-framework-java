@@ -161,10 +161,10 @@ public class DirectoryResource extends Resource {
             }
 
             // Append the index name
-            if (getMetadataService(request).getIndexName() != null
-                    && getMetadataService(request).getIndexName().length() > 0) {
+            if (getMetadataService().getIndexName() != null
+                    && getMetadataService().getIndexName().length() > 0) {
                 this.directoryUri = this.targetUri;
-                this.baseName = getMetadataService(request).getIndexName();
+                this.baseName = getMetadataService().getIndexName();
                 this.targetUri = this.directoryUri + this.baseName;
                 this.targetIndex = true;
             } else {
@@ -354,14 +354,12 @@ public class DirectoryResource extends Resource {
     /**
      * Returns the metadata service.
      * 
-     * @param request
-     *            The request to lookup.
      * @return The metadata service.
      */
-    public MetadataService getMetadataService(Request request) {
+    public MetadataService getMetadataService() {
         MetadataService result = null;
-        Application application = (Application) request.getAttributes().get(
-                Application.class.getCanonicalName());
+        Application application = (Application) getContext().getAttributes()
+                .get("org.restlet.application");
 
         if (application != null) {
             result = application.getMetadataService();

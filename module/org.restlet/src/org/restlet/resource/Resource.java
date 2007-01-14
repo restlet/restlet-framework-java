@@ -93,19 +93,6 @@ public class Resource {
     /**
      * Constructor.
      * 
-     * @param logger
-     *            The logger to use.
-     * @deprecated Used the other constructor based on a Context instance.
-     */
-    @Deprecated
-    public Resource(Logger logger) {
-        this.logger = logger;
-        this.variants = null;
-    }
-
-    /**
-     * Constructor.
-     * 
      * @param context
      *            The parent context.
      * @param request
@@ -119,6 +106,19 @@ public class Resource {
         this.negotiateContent = true;
         this.request = request;
         this.response = response;
+        this.variants = null;
+    }
+
+    /**
+     * Constructor.
+     * 
+     * @param logger
+     *            The logger to use.
+     * @deprecated Used the other constructor based on a Context instance.
+     */
+    @Deprecated
+    public Resource(Logger logger) {
+        this.logger = logger;
         this.variants = null;
     }
 
@@ -192,6 +192,34 @@ public class Resource {
     }
 
     /**
+     * Returns the preferred variant according to the client preferences
+     * specified in the associated request.
+     * 
+     * @return The preferred variant.
+     */
+    public Variant getPreferredVariant() {
+        Variant result = null;
+        List<Variant> variants = getVariants();
+
+        if ((variants != null) && (!variants.isEmpty())) {
+
+            // Compute the preferred variant. Get the default language
+            // preference from the Application (if any)
+            Object app = getContext().getAttributes().get(
+                    "org.restlet.application");
+
+            if (app instanceof Application) {
+                Language language = ((Application) app).getMetadataService()
+                        .getDefaultLanguage();
+                result = getRequest().getClientInfo().getPreferredVariant(
+                        getVariants(), language);
+            }
+        }
+
+        return result;
+    }
+
+    /**
      * Returns a full representation for a given variant previously returned via
      * the getVariants() method. The default implementation directly returns the
      * variant in case the variants are already full representations. In all
@@ -261,26 +289,7 @@ public class Resource {
             Variant preferredVariant = null;
 
             if (isNegotiateContent()) {
-                List<Variant> variants = getVariants();
-
-                if ((variants != null) && (!variants.isEmpty())) {
-                    // Compute the preferred variant
-                    // Get the default language preference from the Application
-                    // (if any)
-                    Language language = null;
-
-                    if (getRequest().getAttributes().get(
-                            Application.class.getCanonicalName()) != null) {
-                        Application application = (Application) getRequest()
-                                .getAttributes().get(
-                                        Application.class.getCanonicalName());
-                        language = application.getMetadataService()
-                                .getDefaultLanguage();
-                    }
-
-                    preferredVariant = getRequest().getClientInfo()
-                            .getPreferredVariant(variants, language);
-                }
+                preferredVariant = getPreferredVariant();
             } else {
                 List<Variant> variants = getVariants();
 
@@ -329,21 +338,7 @@ public class Resource {
             // Resource not found
             getResponse().setStatus(Status.CLIENT_ERROR_NOT_FOUND);
         } else if (isNegotiateContent()) {
-            // Compute the preferred variant
-            // Get the default language preference from the Application (if
-            // any)
-            Language language = null;
-            if (getRequest().getAttributes().get(
-                    Application.class.getCanonicalName()) != null) {
-                Application application = (Application) getRequest()
-                        .getAttributes().get(
-                                Application.class.getCanonicalName());
-                language = application.getMetadataService()
-                        .getDefaultLanguage();
-            }
-
-            Variant preferredVariant = getRequest().getClientInfo()
-                    .getPreferredVariant(variants, language);
+            Variant preferredVariant = getPreferredVariant();
 
             // Update the variant dimensions used for content negotiation
             getResponse().getDimensions().add(Dimension.CHARACTER_SET);
@@ -453,23 +448,7 @@ public class Resource {
             Variant preferredVariant = null;
 
             if (isNegotiateContent()) {
-                List<Variant> variants = getVariants();
-                if ((variants != null) && (!variants.isEmpty())) {
-                    // Compute the preferred variant
-                    // Get the default language preference from the Application
-                    // (if any)
-                    Language language = null;
-                    if (getRequest().getAttributes().get(
-                            Application.class.getCanonicalName()) != null) {
-                        Application application = (Application) getRequest()
-                                .getAttributes().get(
-                                        Application.class.getCanonicalName());
-                        language = application.getMetadataService()
-                                .getDefaultLanguage();
-                    }
-                    preferredVariant = getRequest().getClientInfo()
-                            .getPreferredVariant(variants, language);
-                }
+                preferredVariant = getPreferredVariant();
             } else {
                 List<Variant> variants = getVariants();
 
@@ -585,7 +564,10 @@ public class Resource {
      * 
      * @param logger
      *            The logger to use.
+     * @deprecated To be removed as the logger is now provided by the context
+     *             property.
      */
+    @Deprecated
     public void setLogger(Logger logger) {
         this.logger = logger;
     }
@@ -606,6 +588,9 @@ public class Resource {
      * 
      * @param variants
      *            The new list of variants.
+     * @deprecated To be removed to be consistent with the rest of the API when
+     *             dealing with repeating properties. Use getVariants().clear()
+     *             then getVariants().addAll() instead.
      */
     public void setVariants(List<Variant> variants) {
         this.variants = variants;
