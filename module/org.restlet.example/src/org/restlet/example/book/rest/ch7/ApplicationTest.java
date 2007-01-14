@@ -34,14 +34,79 @@ import org.restlet.data.Response;
  * @author Jerome Louvel (contact@noelios.com)
  */
 public class ApplicationTest {
-
+    /** Base application URI. */
     public static final String APPLICATION_URI = "http://localhost:3000/v1";
 
+    public static void deleteBookmark(String userName, String password,
+            String uri) {
+        Request request = getAuthenticatedRequest(Method.DELETE,
+                getBookmarkUri(userName, uri), userName, password);
+        Response resp = new Client(Protocol.HTTP).handle(request);
+        System.out.println(resp.getStatus() + " : " + resp.getRedirectRef());
+    }
+
+    public static void deleteUser(String userName, String password) {
+        Request request = getAuthenticatedRequest(Method.DELETE,
+                getUserUri(userName), userName, password);
+        Response resp = new Client(Protocol.HTTP).handle(request);
+        System.out.println(resp.getStatus() + " : " + resp.getRedirectRef());
+    }
+
+    /**
+     * Creates an authenticated request.
+     * 
+     * @param method
+     *            The request method.
+     * @param uri
+     *            The target resource URI.
+     * @param login
+     *            The login name.
+     * @param password
+     *            The password.
+     * @return The authenticated request to use.
+     */
+    public static Request getAuthenticatedRequest(Method method, String uri,
+            String login, String password) {
+        Request request = new Request(method, uri);
+        request.setChallengeResponse(new ChallengeResponse(
+                ChallengeScheme.HTTP_BASIC, login, password));
+        return request;
+    }
+
+    public static String getBookmarkUri(String userName, String uri) {
+        return APPLICATION_URI + "/users/" + userName + "/bookmarks/" + uri;
+    }
+
+    public static String getUserUri(String name) {
+        return APPLICATION_URI + "/users/" + name;
+    }
+
+    /**
+     * Main method to use for testing.
+     * 
+     * @param args
+     *            The arguments or nothing for a usage description.
+     */
     public static void main(String... args) throws Exception {
-        putUser("jlouvel", "myPassword", "Jerome Louvel", "contact@noelios.com");
-        putBookmark("jlouvel", "myPassword", "http://www.restlet.org",
-                "Restlet", "Lightweight framework for Java", false);
-        // deleteUser("jlouvel");
+        if (args.length == 0) {
+            System.out.println("Usage depends on the number of arguments:");
+            System.out.println(" - Deletes a user     : userName, password");
+            System.out
+                    .println(" - Deletes a bookmark : userName, password, URI");
+            System.out
+                    .println(" - Adds a new user    : userName, password, \"full name\", email");
+            System.out
+                    .println(" - Adds a new bookmark: userName, password, URI, shortDescription, longDescription, restrict");
+        } else if (args.length == 2) {
+            deleteUser(args[0], args[1]);
+        } else if (args.length == 3) {
+            deleteBookmark(args[0], args[1], args[2]);
+        } else if (args.length == 4) {
+            putUser(args[0], args[1], args[2], args[3]);
+        } else if (args.length == 6) {
+            putBookmark(args[0], args[1], args[2], args[3], args[4], Boolean
+                    .valueOf(args[5]));
+        }
     }
 
     public static void putBookmark(String userName, String password,
@@ -54,39 +119,25 @@ public class ApplicationTest {
 
         // Create an authenticated request as a bookmark is in
         // the user's private area
-        Request request = new Request(Method.PUT,
-                getBookmarkUri(userName, uri), form.getWebRepresentation());
-        request.setChallengeResponse(new ChallengeResponse(
-                ChallengeScheme.HTTP_BASIC, userName, password));
+        Request request = getAuthenticatedRequest(Method.PUT, getBookmarkUri(
+                userName, uri), userName, password);
+        request.setEntity(form.getWebRepresentation());
 
         // Invoke the client HTTP connector
         Response resp = new Client(Protocol.HTTP).handle(request);
         System.out.println(resp.getStatus());
     }
 
-    public static void putUser(String name, String password, String fullName,
-            String email) {
+    public static void putUser(String userName, String password,
+            String fullName, String email) {
         Form form = new Form();
         form.add("user[password]", password);
         form.add("user[full_name]", fullName);
         form.add("user[email]", email);
 
-        Response resp = new Client(Protocol.HTTP).put(getUserUri(name), form
-                .getWebRepresentation());
+        Response resp = new Client(Protocol.HTTP).put(getUserUri(userName),
+                form.getWebRepresentation());
         System.out.println(resp.getStatus());
-    }
-
-    public static void deleteUser(String name, String password) {
-        Response resp = new Client(Protocol.HTTP).delete(getUserUri(name));
-        System.out.println(resp.getStatus() + " : " + resp.getRedirectRef());
-    }
-
-    public static String getUserUri(String name) {
-        return APPLICATION_URI + "/users/" + name;
-    }
-
-    public static String getBookmarkUri(String userName, String uri) {
-        return APPLICATION_URI + "/users/" + userName + "/bookmarks/" + uri;
     }
 
 }

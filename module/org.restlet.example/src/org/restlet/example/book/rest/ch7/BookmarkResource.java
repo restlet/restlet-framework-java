@@ -64,8 +64,9 @@ public class BookmarkResource extends UserResource {
                     getResponse().setStatus(Status.CLIENT_ERROR_NOT_FOUND);
                 }
             } else {
-                // Bookmark not found
-                getResponse().setStatus(Status.CLIENT_ERROR_NOT_FOUND);
+                // Bookmark not found, remove the variant added by the super
+                // class (UserResource).
+                getVariants().clear();
             }
         } else {
             // User not found
@@ -87,7 +88,9 @@ public class BookmarkResource extends UserResource {
     public void delete() {
         if ((this.bookmark != null) && (checkAuthorization() == 1)) {
             // Delete the bookmark
+            getUser().getBookmarks().remove(this.bookmark);
             getContainer().delete(this.bookmark);
+            getContainer().set(getUser());
             getContainer().commit();
             getResponse().setStatus(Status.SUCCESS_OK);
         } else {
@@ -106,16 +109,16 @@ public class BookmarkResource extends UserResource {
             sb.append("----------------\n");
             sb.append("Bookmark details\n");
             sb.append("----------------\n\n");
-            sb.append("User:  ").append(this.bookmark.getUser().getName())
+            sb.append("User:     ").append(this.bookmark.getUser().getName())
                     .append('\n');
-            sb.append("URI:   ").append(this.bookmark.getUri()).append('\n');
-            sb.append("Short: ").append(this.bookmark.getShortDescription())
+            sb.append("URI:      ").append(this.bookmark.getUri()).append('\n');
+            sb.append("Short:    ").append(this.bookmark.getShortDescription())
                     .append('\n');
-            sb.append("Long:  ").append(this.bookmark.getLongDescription())
+            sb.append("Long:     ").append(this.bookmark.getLongDescription())
                     .append('\n');
-            sb.append("Date:  ").append(this.bookmark.getDateTime()).append(
+            sb.append("Date:     ").append(this.bookmark.getDateTime()).append(
                     '\n');
-            sb.append("Restrict:  ").append(
+            sb.append("Restrict: ").append(
                     Boolean.toString(this.bookmark.isRestrict())).append('\n');
             result = new StringRepresentation(sb);
         }

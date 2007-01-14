@@ -121,7 +121,15 @@ public class UserResource extends Resource {
     public void delete() {
         switch (checkAuthorization()) {
         case 1:
+            // Delete all associated bookmarks
+            for (Bookmark bookmark : this.user.getBookmarks()) {
+                getContainer().delete(bookmark);
+            }
+
+            // Delete the parent user
             getContainer().delete(this.user);
+
+            // Commit the changes
             getContainer().commit();
             getResponse().setStatus(Status.SUCCESS_OK);
         case 0:
