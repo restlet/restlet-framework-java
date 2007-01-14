@@ -22,7 +22,6 @@ import java.io.IOException;
 import java.io.OutputStream;
 import java.sql.ResultSet;
 import java.sql.SQLException;
-import java.util.logging.Level;
 
 import javax.sql.rowset.WebRowSet;
 
@@ -134,11 +133,9 @@ public class RowSetRepresentation extends OutputRepresentation {
                 this.jdbcResult.release();
             }
         } catch (SQLException se) {
-            getLogger()
-                    .log(
-                            Level.WARNING,
-                            "Error while releasing the JdbcResult instance after writing the representation",
-                            se);
+            throw new IOException(
+                    "SQL exception while releasing the JdbcResult instance after writing the representation. "
+                            + se.getMessage());
         }
 
         try {
@@ -147,11 +144,9 @@ public class RowSetRepresentation extends OutputRepresentation {
                 this.webRowSet.close();
             }
         } catch (SQLException se) {
-            getLogger()
-                    .log(
-                            Level.WARNING,
-                            "Error while releasing the WebRowSet instance after writing the representation",
-                            se);
+            throw new IOException(
+                    "Error while releasing the WebRowSet instance after writing the representation. "
+                            + se.getMessage());
         }
     }
 }

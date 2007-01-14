@@ -188,7 +188,7 @@ public class SaxRepresentation extends XmlRepresentation {
         if (this.xmlDocument != null) {
             result = xpath.evaluate(expression, this.xmlDocument, returnType);
         } else {
-            getLogger().warning(
+            throw new Exception(
                     "Unable to obtain a DOM document for the SAX representation. "
                             + "XPath evaluation cancelled.");
         }

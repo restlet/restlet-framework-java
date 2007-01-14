@@ -25,6 +25,7 @@ Changes log
  - Added Guard.getSecret() method for easier customization of the authentication system.
  - Guard.reject() is now public to allow standalone usage, without filtering.
  - Moved Resource.identifier property to Variant class.
+ - Variant and Representation don't derive from Resource anymore.
  
 [Enhancements] 
  - The content negotiation algorithm is now more flexible about languages. It will try

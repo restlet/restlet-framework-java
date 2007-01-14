@@ -20,7 +20,6 @@ package org.restlet.resource;
 
 import java.io.IOException;
 import java.io.OutputStream;
-import java.util.logging.Level;
 
 import javax.xml.namespace.QName;
 import javax.xml.parsers.DocumentBuilder;
@@ -33,7 +32,6 @@ import javax.xml.transform.TransformerFactoryConfigurationError;
 import javax.xml.transform.dom.DOMSource;
 import javax.xml.transform.stream.StreamResult;
 import javax.xml.xpath.XPath;
-import javax.xml.xpath.XPathExpressionException;
 import javax.xml.xpath.XPathFactory;
 
 import org.restlet.data.MediaType;
@@ -90,7 +88,7 @@ public class DomRepresentation extends XmlRepresentation {
 
     @Override
     public Object evaluate(String expression, QName returnType)
-            throws XPathExpressionException {
+            throws Exception {
         XPath xpath = XPathFactory.newInstance().newXPath();
         xpath.setNamespaceContext(this);
         return xpath.evaluate(expression, getDocument(), returnType);
@@ -101,17 +99,14 @@ public class DomRepresentation extends XmlRepresentation {
      * 
      * @return The wrapped DOM document.
      */
-    public Document getDocument() {
+    public Document getDocument() throws IOException {
         if ((this.dom == null) && (this.xmlRepresentation != null)) {
             try {
                 this.dom = getDocumentBuilder().parse(
                         xmlRepresentation.getStream());
             } catch (SAXException se) {
-                getLogger().log(Level.WARNING,
-                        "Couldn't read the XML representation", se);
-            } catch (IOException ioe) {
-                getLogger().log(Level.WARNING,
-                        "Couldn't read the XML representation", ioe);
+                throw new IOException("Couldn't read the XML representation. "
+                        + se.getMessage());
             }
         }
 
@@ -154,7 +149,8 @@ public class DomRepresentation extends XmlRepresentation {
     public void write(OutputStream outputStream) throws IOException {
         try {
             TransformerFactory.newInstance().newTransformer().transform(
-                    new DOMSource(getDocument()), new StreamResult(outputStream));
+                    new DOMSource(getDocument()),
+                    new StreamResult(outputStream));
         } catch (TransformerConfigurationException tce) {
             throw new IOException("Couldn't write the XML representation: "
                     + tce.getMessage());

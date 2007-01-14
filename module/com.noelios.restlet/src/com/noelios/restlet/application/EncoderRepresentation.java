@@ -59,7 +59,6 @@ public class EncoderRepresentation extends WrapperRepresentation {
         super(wrappedRepresentation);
         this.canEncode = getSupportedEncodings().contains(encoding);
         this.encoding = encoding;
-        getVariants().add(this);
     }
 
     /**

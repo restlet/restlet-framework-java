@@ -25,17 +25,14 @@ import java.nio.channels.ReadableByteChannel;
 import java.nio.channels.WritableByteChannel;
 import java.util.Date;
 import java.util.List;
-import java.util.logging.Logger;
 
 import org.restlet.data.CharacterSet;
 import org.restlet.data.Encoding;
 import org.restlet.data.Language;
 import org.restlet.data.MediaType;
 import org.restlet.data.Reference;
-import org.restlet.data.Response;
 import org.restlet.data.Tag;
 import org.restlet.resource.Representation;
-import org.restlet.resource.Variant;
 
 /**
  * Representation wrapper. Useful for application developer who need to enrich
@@ -57,59 +54,6 @@ public class WrapperRepresentation extends Representation {
      */
     public WrapperRepresentation(Representation wrappedRepresentation) {
         this.wrappedRepresentation = wrappedRepresentation;
-    }
-
-    /**
-     * Indicates if it is allowed to delete the resource. The default value is
-     * false.
-     * 
-     * @return True if the method is allowed.
-     */
-    public boolean allowDelete() {
-        return getWrappedRepresentation().allowDelete();
-    }
-
-    // ----------------
-    // Resource methods
-    // ----------------
-
-    /**
-     * Indicates if it is allowed to get the variants. The default value is
-     * true.
-     * 
-     * @return True if the method is allowed.
-     */
-    public boolean allowGet() {
-        return getWrappedRepresentation().allowGet();
-    }
-
-    /**
-     * Indicates if it is allowed to post to the resource. The default value is
-     * false.
-     * 
-     * @return True if the method is allowed.
-     */
-    public boolean allowPost() {
-        return getWrappedRepresentation().allowPost();
-    }
-
-    /**
-     * Indicates if it is allowed to put to the resource. The default value is
-     * false.
-     * 
-     * @return True if the method is allowed.
-     */
-    public boolean allowPut() {
-        return getWrappedRepresentation().allowPut();
-    }
-
-    /**
-     * Asks the resource to delete itself and all its representations.
-     * 
-     * @return The response.
-     */
-    public Response delete() {
-        return getWrappedRepresentation().delete();
     }
 
     /**
@@ -183,15 +127,6 @@ public class WrapperRepresentation extends Representation {
     }
 
     /**
-     * Returns the logger to use.
-     * 
-     * @return The logger to use.
-     */
-    public Logger getLogger() {
-        return getWrappedRepresentation().getLogger();
-    }
-
-    /**
      * Returns the media type.
      * 
      * @return The media type.
@@ -256,42 +191,6 @@ public class WrapperRepresentation extends Representation {
     }
 
     /**
-     * Returns a full representation for a given variant previously returned via
-     * the getVariants() method. The default implementation directly returns the
-     * variant in case the variants are already full representations. In all
-     * other cases, you will need to override this method in order to provide
-     * your own implementation. <br/><br/>
-     * 
-     * This method is very useful for content negotiation when it is too costly
-     * to initilize all the potential representations. It allows a resource to
-     * simply expose the available variants via the getVariants() method and to
-     * actually server the one selected via this method.
-     * 
-     * @param variant
-     *            The variant whose full representation must be returned.
-     * @return The full representation for the variant.
-     * @see #getVariants()
-     */
-    public Representation getRepresentation(Variant variant) {
-        return (getWrappedRepresentation() == null) ? null
-                : getWrappedRepresentation().getRepresentation(variant);
-    }
-
-    /**
-     * Returns the list of variants. A variant can be a purely descriptive
-     * representation, with no actual content that can be served. It can also be
-     * a full representation in case a resource has only one variant or if the
-     * initialization cost is very low.
-     * 
-     * @return The list of variants.
-     * @see #getRepresentation(Variant)
-     */
-    public List<Variant> getVariants() {
-        return (getWrappedRepresentation() == null) ? null
-                : getWrappedRepresentation().getVariants();
-    }
-
-    /**
      * Returns the wrapped representation.
      * 
      * @return The wrapped representation.
@@ -323,28 +222,6 @@ public class WrapperRepresentation extends Representation {
      */
     public boolean isTransient() {
         return getWrappedRepresentation().isTransient();
-    }
-
-    /**
-     * Posts a variant representation in the resource.
-     * 
-     * @param entity
-     *            The posted entity.
-     * @return The response.
-     */
-    public Response post(Representation entity) {
-        return getWrappedRepresentation().post(entity);
-    }
-
-    /**
-     * Puts a variant representation in the resource.
-     * 
-     * @param variant
-     *            A new or updated variant representation.
-     * @return The response.
-     */
-    public Response put(Representation variant) {
-        return getWrappedRepresentation().put(variant);
     }
 
     /**
@@ -422,16 +299,6 @@ public class WrapperRepresentation extends Representation {
     }
 
     /**
-     * Sets the logger to use.
-     * 
-     * @param logger
-     *            The logger to use.
-     */
-    public void setLogger(Logger logger) {
-        getWrappedRepresentation().setLogger(logger);
-    }
-
-    /**
      * Sets the media type.
      * 
      * @param mediaType
@@ -480,16 +347,6 @@ public class WrapperRepresentation extends Representation {
      */
     public void setTransient(boolean isTransient) {
         getWrappedRepresentation().setTransient(isTransient);
-    }
-
-    /**
-     * Sets a new list of variants.
-     * 
-     * @param variants
-     *            The new list of variants.
-     */
-    public void setVariants(List<Variant> variants) {
-        getWrappedRepresentation().setVariants(variants);
     }
 
     /**

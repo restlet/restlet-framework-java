@@ -22,7 +22,6 @@ import java.util.Collection;
 import java.util.Date;
 import java.util.Iterator;
 import java.util.List;
-import java.util.logging.Logger;
 
 import org.restlet.data.CharacterSet;
 import org.restlet.data.Encoding;
@@ -41,7 +40,7 @@ import org.restlet.util.WrapperList;
  * 
  * @author Jerome Louvel (contact@noelios.com)
  */
-public class Variant extends Resource {
+public class Variant {
     /**
      * Inidicates that the size of the representation can't be known in advance.
      */
@@ -77,7 +76,7 @@ public class Variant extends Resource {
     private Tag tag;
 
     /**
-     * The identifier. 
+     * The identifier.
      */
     private Reference identifier;
 
@@ -95,7 +94,6 @@ public class Variant extends Resource {
      *            The media type.
      */
     public Variant(MediaType mediaType) {
-        super((Logger) null);
         this.characterSet = null;
         this.encoding = null;
         this.size = UNKNOWN_SIZE;
@@ -105,12 +103,6 @@ public class Variant extends Resource {
         this.modificationDate = null;
         this.tag = null;
         this.identifier = null;
-
-        // A representation is also a resource whose only
-        // variant is the representation itself
-        if ((getVariants() != null) && !getVariants().contains(this)) {
-            getVariants().add(this);
-        }
     }
 
     /**

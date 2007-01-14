@@ -54,7 +54,6 @@ public class DecoderRepresentation extends WrapperRepresentation {
         super(wrappedRepresentation);
         this.canDecode = getSupportedEncodings().contains(
                 wrappedRepresentation.getEncoding());
-        getVariants().add(this);
     }
 
     /**
