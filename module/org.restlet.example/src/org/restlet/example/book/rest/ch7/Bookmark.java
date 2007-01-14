@@ -39,6 +39,15 @@ public class Bookmark {
 
     private boolean restrict;
 
+    public Bookmark(User user, String uri) {
+        this.user = user;
+        this.uri = uri;
+        this.restrict = true;
+        this.dateTime = null;
+        this.shortDescription = null;
+        this.longDescription = null;
+    }
+
     /**
      * @return the dateTime
      */

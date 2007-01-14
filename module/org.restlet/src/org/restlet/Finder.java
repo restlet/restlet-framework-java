@@ -130,7 +130,12 @@ public class Finder extends Restlet {
         if (isStarted()) {
             Resource target = findTarget(request, response);
 
-            if ((target == null) && response.getStatus().isSuccess()) {
+            if (!response.getStatus().equals(Status.SUCCESS_OK)) {
+                // Probably during the instantiation of the target resource, or
+                // earlier
+                // the status was changed from the default one. Don't go
+                // further.
+            } else if (target == null) {
                 // If the currrent status is a success but we couldn't find the
                 // target resource for the request's resource URI, then we set
                 // the response status to 404 (Not Found).

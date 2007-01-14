@@ -45,6 +45,7 @@ public class BookmarksResource extends UserResource {
      */
     public BookmarksResource(Context context, Request request, Response response) {
         super(context, request, response);
+        getVariants().clear();
         getVariants().add(new Variant(MediaType.TEXT_HTML));
     }
 
@@ -53,11 +54,15 @@ public class BookmarksResource extends UserResource {
         Representation result = null;
 
         if (variant.getMediaType().equals(MediaType.TEXT_HTML)) {
+            int code = checkAuthorization();
             ReferenceList rl = new ReferenceList();
 
-            // Copy the bookmark URIs into a reference list
+            // Copy the bookmark URIs into a reference list. Make sure that we
+            // only expose public bookmarks if the client isn't the owner.
             for (Bookmark bookmark : getUser().getBookmarks()) {
-                rl.add(bookmark.getUri());
+                if (!bookmark.isRestrict() || (code == 1)) {
+                    rl.add(bookmark.getUri());
+                }
             }
 
             result = rl.getWebRepresentation();

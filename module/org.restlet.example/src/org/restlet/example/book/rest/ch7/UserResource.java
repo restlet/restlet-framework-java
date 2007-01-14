@@ -38,43 +38,19 @@ import com.db4o.ObjectContainer;
 import com.db4o.query.Predicate;
 
 /**
- * Resource for a user.
+ * Resource for a persistent user.
  * 
  * @author Jerome Louvel (contact@noelios.com)
  */
 public class UserResource extends Resource {
-
-    public static User findUser(ObjectContainer container, final String userName) {
-        User result = null;
-
-        if (userName != null) {
-            // Create the query predicate
-            Predicate<User> predicate = new Predicate<User>() {
-                private static final long serialVersionUID = 1L;
-
-                @Override
-                public boolean match(User candidate) {
-                    return userName.equals(candidate.getName());
-                }
-            };
-
-            // Query the database and get the first result
-            List<User> users = container.query(predicate);
-            if ((users != null) && (users.size() > 0)) {
-                result = users.get(0);
-            }
-        }
-
-        return result;
-    }
-
-    private String userName;
 
     private String login;
 
     private String password;
 
     private User user;
+
+    private String userName;
 
     /**
      * Constructor.
@@ -92,7 +68,7 @@ public class UserResource extends Resource {
         ChallengeResponse cr = request.getChallengeResponse();
         this.login = (cr != null) ? cr.getIdentifier() : null;
         this.password = (cr != null) ? cr.getSecret() : null;
-        this.user = findUser(getContainer(), userName);
+        this.user = findUser();
 
         if (user != null) {
             getVariants().add(new Variant(MediaType.TEXT_PLAIN));
@@ -107,6 +83,15 @@ public class UserResource extends Resource {
     @Override
     public boolean allowPut() {
         return true;
+    }
+
+    /**
+     * Updates the response to challenge the client for credentials.
+     */
+    public void challenge() {
+        getResponse().setStatus(Status.CLIENT_ERROR_CONFLICT);
+        getResponse().setChallengeRequest(
+                new ChallengeRequest(ChallengeScheme.HTTP_BASIC, "Restlet"));
     }
 
     /**
@@ -141,11 +126,40 @@ public class UserResource extends Resource {
             getResponse().setStatus(Status.SUCCESS_OK);
         case 0:
             // No authentication provided
-            setChallengeResponse();
+            challenge();
         case -1:
             // Wrong authenticaiton provided
             getResponse().setStatus(Status.CLIENT_ERROR_UNAUTHORIZED);
         }
+    }
+
+    /**
+     * Finds the associated user.
+     * 
+     * @return The user found or null.
+     */
+    public User findUser() {
+        User result = null;
+
+        if (userName != null) {
+            // Create the query predicate
+            Predicate<User> predicate = new Predicate<User>() {
+                private static final long serialVersionUID = 1L;
+
+                @Override
+                public boolean match(User candidate) {
+                    return userName.equals(candidate.getName());
+                }
+            };
+
+            // Query the database and get the first result
+            List<User> users = getContainer().query(predicate);
+            if ((users != null) && (users.size() > 0)) {
+                result = users.get(0);
+            }
+        }
+
+        return result;
     }
 
     /**
@@ -186,7 +200,9 @@ public class UserResource extends Resource {
     }
 
     /**
-     * @return the user
+     * Returns the associated user.
+     * 
+     * @return The associated user.
      */
     public User getUser() {
         return this.user;
@@ -197,10 +213,10 @@ public class UserResource extends Resource {
         if (entity.getMediaType().equals(MediaType.APPLICATION_WWW_FORM)) {
             boolean canSet = true;
 
-            if (this.user == null) {
+            if (getUser() == null) {
                 // The user doesn't exist, create it
-                this.user = new User();
-                this.user.setName(this.userName);
+                setUser(new User());
+                getUser().setName(this.userName);
                 getResponse().setStatus(Status.SUCCESS_CREATED);
             } else {
                 // The user already exists, check the authentication
@@ -209,7 +225,7 @@ public class UserResource extends Resource {
                     getResponse().setStatus(Status.SUCCESS_NO_CONTENT);
                 case 0:
                     // No authentication provided
-                    setChallengeResponse();
+                    challenge();
                     canSet = false;
                 case -1:
                     // Wrong authenticaiton provided
@@ -221,28 +237,25 @@ public class UserResource extends Resource {
             if (canSet) {
                 // Parse the entity as a web form
                 Form form = new Form(entity);
-                this.user.setEmail(form.getFirstValue("user[email]"));
-                this.user.setFullName(form.getFirstValue("user[full_name]"));
-                this.user.setPassword(form.getFirstValue("user[password]"));
+                getUser().setEmail(form.getFirstValue("user[email]"));
+                getUser().setFullName(form.getFirstValue("user[full_name]"));
+                getUser().setPassword(form.getFirstValue("user[password]"));
 
                 // Commit the changes
-                getContainer().set(this.user);
+                getContainer().set(getUser());
                 getContainer().commit();
             }
         }
     }
 
-    public void setChallengeResponse() {
-        getResponse().setStatus(Status.CLIENT_ERROR_CONFLICT);
-        getResponse().setChallengeRequest(
-                new ChallengeRequest(ChallengeScheme.HTTP_BASIC, "Restlet"));
-    }
-
     /**
+     * Sets the associated user.
+     * 
      * @param user
-     *            the user to set
+     *            The user to set.
      */
     public void setUser(User user) {
         this.user = user;
     }
+
 }

@@ -53,19 +53,23 @@ public class BookmarkResource extends UserResource {
      */
     public BookmarkResource(Context context, Request request, Response response) {
         super(context, request, response);
-        this.uri = (String) request.getAttributes().get("URI");
-        this.bookmark = getUser().getBookmark(uri);
 
-        if (this.bookmark != null) {
-            // if(checkAuthorization() == 1) {
-            getVariants().add(new Variant(MediaType.TEXT_PLAIN));
-            // case 0:
-            // // No authentication provided
-            // result = getChallengeResponse();
-            // case -1:
-            // // Wrong authenticaiton provided
-            // result = new Response(Status.CLIENT_ERROR_UNAUTHORIZED);
-            // }
+        if (getUser() != null) {
+            this.uri = (String) request.getAttributes().get("URI");
+            this.bookmark = getUser().getBookmark(this.uri);
+
+            if (this.bookmark != null) {
+                if ((checkAuthorization() != 1) && this.bookmark.isRestrict()) {
+                    // Intentionnally hide the bookmark existence
+                    getResponse().setStatus(Status.CLIENT_ERROR_NOT_FOUND);
+                }
+            } else {
+                // Bookmark not found
+                getResponse().setStatus(Status.CLIENT_ERROR_NOT_FOUND);
+            }
+        } else {
+            // User not found
+            getResponse().setStatus(Status.CLIENT_ERROR_NOT_FOUND);
         }
     }
 
@@ -81,11 +85,13 @@ public class BookmarkResource extends UserResource {
 
     @Override
     public void delete() {
-        if (this.bookmark != null) {
+        if ((this.bookmark != null) && (checkAuthorization() == 1)) {
+            // Delete the bookmark
             getContainer().delete(this.bookmark);
             getContainer().commit();
             getResponse().setStatus(Status.SUCCESS_OK);
         } else {
+            // Intentionnally hide the bookmark existence
             getResponse().setStatus(Status.CLIENT_ERROR_NOT_FOUND);
         }
     }
@@ -119,23 +125,21 @@ public class BookmarkResource extends UserResource {
 
     @Override
     public void put(Representation entity) {
-        if (entity.getMediaType().equals(MediaType.APPLICATION_WWW_FORM)) {
-
-            switch (checkAuthorization()) {
-            case 1:
+        if (checkAuthorization() == 1) {
+            if (entity.getMediaType().equals(MediaType.APPLICATION_WWW_FORM)) {
                 // Parse the entity as a web form
                 Form form = new Form(entity);
 
                 // If the bookmark doesn't exist, create it
                 if (this.bookmark == null) {
-                    this.bookmark = new Bookmark();
+                    this.bookmark = new Bookmark(getUser(), this.uri);
                     getUser().getBookmarks().add(this.bookmark);
-                    this.bookmark.setUri(this.uri);
                     getResponse().setStatus(Status.SUCCESS_CREATED);
                 } else {
                     getResponse().setStatus(Status.SUCCESS_NO_CONTENT);
                 }
 
+                // Update the bookmark
                 this.bookmark.setShortDescription(form
                         .getFirstValue("bookmark[short_description]"));
                 this.bookmark.setLongDescription(form
@@ -148,13 +152,10 @@ public class BookmarkResource extends UserResource {
                 getContainer().set(this.bookmark);
                 getContainer().set(getUser());
                 getContainer().commit();
-            case 0:
-                // No authentication provided
-                setChallengeResponse();
-            case -1:
-                // Wrong authenticaiton provided
-                getResponse().setStatus(Status.CLIENT_ERROR_UNAUTHORIZED);
             }
+        } else {
+            // Intentionnally hide the bookmark existence
+            getResponse().setStatus(Status.CLIENT_ERROR_NOT_FOUND);
         }
     }
 
