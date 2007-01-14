@@ -337,29 +337,29 @@ public class Variant {
     }
 
     /**
-     * Returns the official identifier.
+     * Returns the identifier.
      * 
-     * @return The official identifier.
+     * @return The identifier.
      */
     public Reference getIdentifier() {
         return this.identifier;
     }
 
     /**
-     * Sets the official identifier.
+     * Sets the identifier.
      * 
      * @param identifier
-     *            The official identifier.
+     *            The identifier.
      */
     public void setIdentifier(Reference identifier) {
         this.identifier = identifier;
     }
 
     /**
-     * Sets the official identifier from a URI string.
+     * Sets the identifier from a URI string.
      * 
      * @param identifierUri
-     *            The official identifier to parse.
+     *            The identifier to parse.
      */
     public void setIdentifier(String identifierUri) {
         setIdentifier(new Reference(identifierUri));
