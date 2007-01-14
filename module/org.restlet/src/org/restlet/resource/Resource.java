@@ -197,7 +197,7 @@ public class Resource {
      * 
      * @return The preferred variant.
      */
-    public Variant getPreferredVariant() {
+    private Variant getPreferredVariant() {
         Variant result = null;
         List<Variant> variants = getVariants();
 
@@ -329,11 +329,10 @@ public class Resource {
      * list of variants URI if available.
      */
     public void handleGet() {
-        List<Variant> variants = getVariants();
-
         // The variant that may need to meet the request conditions
         Variant selectedVariant = null;
 
+        List<Variant> variants = getVariants();
         if ((variants == null) || (variants.isEmpty())) {
             // Resource not found
             getResponse().setStatus(Status.CLIENT_ERROR_NOT_FOUND);

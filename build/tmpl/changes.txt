@@ -35,7 +35,6 @@ Changes log
  - Deprecated WrapperResource class.
  - Added Context.attributes property as a way to share objects between all Restlets
    of an application. Automatically includes the parent application if any.
- - Added Resource.getPreferredVariant() method and deprecated setLogger() and setVariants().
  
 [Enhancements] 
  - The content negotiation algorithm is now more flexible about languages. It will try
