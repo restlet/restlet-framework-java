@@ -26,14 +26,11 @@ import org.restlet.resource.Resource;
 import com.db4o.ObjectContainer;
 
 /**
- * Base application resource.
+ * Base resource.
  * 
  * @author Jerome Louvel (contact@noelios.com)
  */
 public abstract class BaseResource extends Resource {
-
-    /** The parent application. */
-    private Application application;
 
     /**
      * Constructor.
@@ -55,7 +52,8 @@ public abstract class BaseResource extends Resource {
      * @return the parent application.
      */
     public Application getApplication() {
-        return this.application;
+        return (Application) getContext().getAttributes().get(
+                "org.restlet.application");
     }
 
     /**

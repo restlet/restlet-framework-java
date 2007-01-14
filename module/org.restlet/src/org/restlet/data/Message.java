@@ -63,10 +63,12 @@ public abstract class Message {
      * Returns a modifiable attributes map that can be used by developers to
      * save information relative to the message. This is an easier alternative
      * to the creation of a wrapper instance around the whole message.<br/>
-     * <br/> In addition, this map is a shared space between the developer and
-     * the connectors. In this case, it is used to exchange information that is
-     * not uniform across all protocols and couldn't therefore be directly
-     * included in the API. For this purpose, all attribute names starting with
+     * <br/>
+     * 
+     * In addition, this map is a shared space between the developer and the
+     * connectors. In this case, it is used to exchange information that is not
+     * uniform across all protocols and couldn't therefore be directly included
+     * in the API. For this purpose, all attribute names starting with
      * "org.restlet" are reserved. Currently the following attributes are used:
      * <table>
      * <tr>

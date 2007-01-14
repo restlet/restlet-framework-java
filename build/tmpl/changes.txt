@@ -33,6 +33,8 @@ Changes log
    a Route to a Finder creating new instance of a given target Resource class.
  - Deprecated Result class not used anymore.
  - Deprecated WrapperResource class.
+ - Added Context.attributes property as a way to share objects between all Restlets
+   of an application. Automatically includes the parent application if any.
  
 [Enhancements] 
  - The content negotiation algorithm is now more flexible about languages. It will try

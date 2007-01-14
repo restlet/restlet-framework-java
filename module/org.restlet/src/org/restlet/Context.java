@@ -18,6 +18,8 @@
 
 package org.restlet;
 
+import java.util.Map;
+import java.util.TreeMap;
 import java.util.logging.Logger;
 
 import org.restlet.data.Form;
@@ -34,6 +36,9 @@ import org.restlet.util.Series;
  * @author Jerome Louvel (contact@noelios.com)
  */
 public class Context {
+    /** The modifiable attributes map. */
+    private Map<String, Object> attributes;
+
     /** The modifiable series of parameters. */
     private Series<Parameter> parameters;
 
@@ -65,6 +70,38 @@ public class Context {
      */
     public Context(String loggerName) {
         this(Logger.getLogger(loggerName));
+    }
+
+    /**
+     * Returns a modifiable attributes map that can be used by developers to
+     * save information relative to the context. This is a convenient mean to
+     * provide common objects to all the Restlets composing an Application.<br/>
+     * <br/>
+     * 
+     * In addition, this map is a shared space between the developer and the
+     * Restlet implementation. For this purpose, all attribute names starting
+     * with "org.restlet" are reserved. Currently the following attributes are
+     * used: <table>
+     * <tr>
+     * <th>Attribute name</th>
+     * <th>Class name</th>
+     * <th>Description</th>
+     * </tr>
+     * <tr>
+     * <td>org.restlet.application</td>
+     * <td>org.restlet.Application</td>
+     * <td>The parent application providing this context, if any. </td>
+     * </tr>
+     * </table></td>
+     * 
+     * @return The modifiable attributes map.
+     */
+    public Map<String, Object> getAttributes() {
+        if (this.attributes == null) {
+            this.attributes = new TreeMap<String, Object>();
+        }
+
+        return this.attributes;
     }
 
     /**

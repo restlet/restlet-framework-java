@@ -61,6 +61,11 @@ public class ApplicationContext extends Context {
         this.application = application;
         this.parentContext = parentContext;
         this.warClient = null;
+
+        // Set the application as an attribute for usage by other services
+        // like the ConnectorService
+        getAttributes().put(Application.class.getCanonicalName(), application);
+
     }
 
     /**
@@ -77,7 +82,7 @@ public class ApplicationContext extends Context {
      * 
      * @return the application.
      */
-    public Application getApplication() {
+    protected Application getApplication() {
         return this.application;
     }
 
@@ -109,7 +114,7 @@ public class ApplicationContext extends Context {
      * 
      * @return The parent context.
      */
-    public Context getParentContext() {
+    protected Context getParentContext() {
         return this.parentContext;
     }
 
