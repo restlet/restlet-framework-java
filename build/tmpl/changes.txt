@@ -19,13 +19,20 @@ Changes log
    getIndexRepresentation() method to follow recent refactoring in Resource.
  - ClientInfo.port and ServerInfo.port are now 'int' instead of 'Integer' to prevent autoboxing issues.
  - Added getStatus(Method, Variant) and hasSome() methods to Conditions. Logic moved from private Handler methods.
- - Added constructors to Response to match those from Result.
- - Deprecated Result class and made it extend Response to smoothen transition to Response.
- - Added copyFrom(Response) method to the Response class.
  - Added Guard.getSecret() method for easier customization of the authentication system.
  - Guard.reject() is now public to allow standalone usage, without filtering.
  - Moved Resource.identifier property to Variant class.
  - Variant and Representation don't derive from Resource anymore.
+ - Replaced Handler & Resource couple by a more flexible Finder & Resource couple. Based 
+   on real implementation experience, it became clear that a Resource should have full
+   access to the request and response object. As a side effect, the Finder class can now
+   dynamically instantiate the target resources without needing a subclass. The Resource
+   class now contains handle*() methods, with no parameters but with the same logic as
+   the deprecated Handler.handle*(Resource,Request,Response) methods. 
+ - Added convenience attach() and attachDefault() methods on Router to add in a single call
+   a Route to a Finder creating new instance of a given target Resource class.
+ - Deprecated Result class not used anymore.
+ - Deprecated WrapperResource class.
  
 [Enhancements] 
  - The content negotiation algorithm is now more flexible about languages. It will try

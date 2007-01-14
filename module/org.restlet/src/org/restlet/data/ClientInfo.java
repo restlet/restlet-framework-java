@@ -190,7 +190,8 @@ public final class ClientInfo {
      */
     public Variant getPreferredVariant(List<Variant> variants,
             Language defaultLanguage) {
-        return Factory.getInstance().getPreferredVariant(this, variants, defaultLanguage);
+        return Factory.getInstance().getPreferredVariant(this, variants,
+                defaultLanguage);
     }
 
     /**
@@ -214,8 +215,8 @@ public final class ClientInfo {
 
     /**
      * Returns the best variant for a given resource according the the client
-     * preferences.<br/>A default language is provided in case
-     * the resource's variants don't match the client preferences.
+     * preferences.<br/>A default language is provided in case the resource's
+     * variants don't match the client preferences.
      * 
      * @param resource
      *            The resource for which the best representation needs to be
@@ -227,8 +228,9 @@ public final class ClientInfo {
      *      href="http://httpd.apache.org/docs/2.2/en/content-negotiation.html#algorithm">Apache
      *      content negotiation algorithm</a>
      */
-    public Variant getPreferredVariant(Resource resource, Language language) {
-        return getPreferredVariant(resource.getVariants(), language);
+    public Variant getPreferredVariant(Resource resource,
+            Language defaultLanguage) {
+        return getPreferredVariant(resource.getVariants(), defaultLanguage);
     }
 
     /**

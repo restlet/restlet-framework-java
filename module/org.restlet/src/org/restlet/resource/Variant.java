@@ -33,7 +33,7 @@ import org.restlet.util.DateUtils;
 import org.restlet.util.WrapperList;
 
 /**
- * Descriptor for available representations of a resource. It containts all the
+ * Descriptor for available representations of a resource. It contains all the
  * important metadata about a representation but is not able to actually serve
  * the representation's content itself. For this you need to use the
  * Representation subclass.

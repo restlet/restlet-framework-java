@@ -20,11 +20,12 @@ package org.restlet.example.book.rest.ch7.resource;
 
 import java.util.Date;
 
+import org.restlet.Context;
 import org.restlet.data.Form;
 import org.restlet.data.MediaType;
+import org.restlet.data.Request;
 import org.restlet.data.Response;
 import org.restlet.data.Status;
-import org.restlet.example.book.rest.ch7.Application;
 import org.restlet.example.book.rest.ch7.domain.Bookmark;
 import org.restlet.example.book.rest.ch7.domain.Tag;
 import org.restlet.resource.Representation;
@@ -42,22 +43,31 @@ public class BookmarkResource extends UserResource {
 
     private String uri;
 
-    public BookmarkResource(Application application, String userName,
-            String login, String password, String uri) {
-        super(application, userName, login, password);
-        this.uri = uri;
+    /**
+     * Constructor.
+     * 
+     * @param context
+     *            The parent context.
+     * @param request
+     *            The request to handle.
+     * @param response
+     *            The response to return.
+     */
+    public BookmarkResource(Context context, Request request, Response response) {
+        super(context, request, response);
+        this.uri = (String) request.getAttributes().get("URI");
         this.bookmark = getUser().getBookmark(uri);
 
         if (this.bookmark != null) {
-//            if(checkAuthorization() == 1) {
-                getVariants().add(new Variant(MediaType.TEXT_PLAIN));
-//            case 0:
-//                // No authentication provided
-//                result = getChallengeResponse();
-//            case -1:
-//                // Wrong authenticaiton provided
-//                result = new Response(Status.CLIENT_ERROR_UNAUTHORIZED);
-//            }
+            // if(checkAuthorization() == 1) {
+            getVariants().add(new Variant(MediaType.TEXT_PLAIN));
+            // case 0:
+            // // No authentication provided
+            // result = getChallengeResponse();
+            // case -1:
+            // // Wrong authenticaiton provided
+            // result = new Response(Status.CLIENT_ERROR_UNAUTHORIZED);
+            // }
         }
     }
 
@@ -72,13 +82,13 @@ public class BookmarkResource extends UserResource {
     }
 
     @Override
-    public Response delete() {
+    public void delete() {
         if (this.bookmark != null) {
             getContainer().delete(this.bookmark);
             getContainer().commit();
-            return new Response(Status.SUCCESS_OK);
+            getResponse().setStatus(Status.SUCCESS_OK);
         } else {
-            return new Response(Status.CLIENT_ERROR_NOT_FOUND);
+            getResponse().setStatus(Status.CLIENT_ERROR_NOT_FOUND);
         }
     }
 
@@ -116,9 +126,7 @@ public class BookmarkResource extends UserResource {
     }
 
     @Override
-    public Response put(Representation entity) {
-        Response result = null;
-
+    public void put(Representation entity) {
         if (entity.getMediaType().equals(MediaType.APPLICATION_WWW_FORM)) {
 
             switch (checkAuthorization()) {
@@ -131,9 +139,9 @@ public class BookmarkResource extends UserResource {
                     this.bookmark = new Bookmark();
                     getUser().getBookmarks().add(this.bookmark);
                     this.bookmark.setUri(this.uri);
-                    result = new Response(Status.SUCCESS_CREATED);
+                    getResponse().setStatus(Status.SUCCESS_CREATED);
                 } else {
-                    result = new Response(Status.SUCCESS_NO_CONTENT);
+                    getResponse().setStatus(Status.SUCCESS_NO_CONTENT);
                 }
 
                 this.bookmark.setShortDescription(form
@@ -150,14 +158,12 @@ public class BookmarkResource extends UserResource {
                 getContainer().commit();
             case 0:
                 // No authentication provided
-                result = getChallengeResponse();
+                setChallengeResponse();
             case -1:
                 // Wrong authenticaiton provided
-                result = new Response(Status.CLIENT_ERROR_UNAUTHORIZED);
+                getResponse().setStatus(Status.CLIENT_ERROR_UNAUTHORIZED);
             }
         }
-
-        return result;
     }
 
 }

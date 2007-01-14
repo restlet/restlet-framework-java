@@ -20,10 +20,11 @@ package org.restlet.example.book.rest.ch7.resource;
 
 import java.util.List;
 
+import org.restlet.Context;
 import org.restlet.data.MediaType;
+import org.restlet.data.Request;
 import org.restlet.data.Response;
 import org.restlet.data.Status;
-import org.restlet.example.book.rest.ch7.Application;
 import org.restlet.example.book.rest.ch7.domain.Tag;
 import org.restlet.example.book.rest.ch7.domain.User;
 import org.restlet.resource.Representation;
@@ -68,10 +69,29 @@ public class TagResource extends BaseResource {
 
     private Tag tag;
 
-    public TagResource(Application application, User user, Tag tag) {
-        super(application);
-        this.user = user;
-        this.tag = tag;
+    /**
+     * Constructor.
+     * 
+     * @param context
+     *            The parent context.
+     * @param request
+     *            The request to handle.
+     * @param response
+     *            The response to return.
+     */
+    public TagResource(Context context, Request request, Response response) {
+        super(context, request, response);
+
+        // Find the user domain object
+        String userName = (String) request.getAttributes().get("username");
+        this.user = UserResource.findUser(null, userName);
+
+        if (this.user != null) {
+            // Find the tag domain object
+            String tagName = (String) request.getAttributes().get("tag");
+            this.tag = TagResource.findTag(null, tagName);
+        }
+
         getVariants().add(new Variant(MediaType.TEXT_PLAIN));
     }
 
@@ -86,13 +106,13 @@ public class TagResource extends BaseResource {
     }
 
     @Override
-    public Response delete() {
+    public void delete() {
         if (this.tag != null) {
             getContainer().delete(this.tag);
             getContainer().commit();
-            return new Response(Status.SUCCESS_OK);
+            getResponse().setStatus(Status.SUCCESS_OK);
         } else {
-            return new Response(Status.SERVER_ERROR_INTERNAL);
+            getResponse().setStatus(Status.SERVER_ERROR_INTERNAL);
         }
     }
 

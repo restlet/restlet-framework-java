@@ -57,7 +57,9 @@ import org.restlet.util.Series;
  * 
  * @author Jerome Louvel (contact@noelios.com)
  * @author Thierry Boileau (thboileau@gmail.com)
+ * @deprecated Use the new Finder class instead.
  */
+@Deprecated
 public abstract class Handler extends Restlet {
     /** Indicates if the best content is automatically negotiated. */
     private boolean negotiateContent;
@@ -242,7 +244,7 @@ public abstract class Handler extends Restlet {
                                 Object result = invoke(this, handleMethod,
                                         request, response);
                                 if (result instanceof Response) {
-                                    response.copyFrom((Response) result);
+                                    // response.copyFrom((Response) result);
                                     response.setRequest(request);
                                 }
                             } else {
@@ -311,7 +313,8 @@ public abstract class Handler extends Restlet {
             }
         }
         if (bContinue) {
-            response.copyFrom(target.delete());
+            target.delete();
+            // response.copyFrom(target.delete());
             response.setRequest(request);
         }
     }
@@ -354,7 +357,7 @@ public abstract class Handler extends Restlet {
                 language = application.getMetadataService()
                         .getDefaultLanguage();
             }
-            
+
             Variant preferredVariant = response.getRequest().getClientInfo()
                     .getPreferredVariant(variants, language);
 
@@ -367,7 +370,7 @@ public abstract class Handler extends Restlet {
             if (preferredVariant == null) {
                 // No variant was found matching the client preferences
                 response.setStatus(Status.CLIENT_ERROR_NOT_ACCEPTABLE);
-                
+
                 // The list of all variants is transmitted to the client
                 ReferenceList refs = new ReferenceList(variants.size());
                 for (Variant variant : variants) {
@@ -375,7 +378,7 @@ public abstract class Handler extends Restlet {
                         refs.add(variant.getIdentifier());
                     }
                 }
-                
+
                 response.setEntity(refs.getTextRepresentation());
             } else {
                 response.setEntity(target.getRepresentation(preferredVariant));
@@ -469,7 +472,8 @@ public abstract class Handler extends Restlet {
     protected void handlePost(Resource target, Request request,
             Response response) {
         if (request.isEntityAvailable()) {
-            response.copyFrom(target.post(request.getEntity()));
+            target.post(request.getEntity());
+            // response.copyFrom(target.post(request.getEntity()));
             response.setRequest(request);
         } else {
             response.setStatus(new Status(Status.CLIENT_ERROR_BAD_REQUEST,
@@ -550,7 +554,8 @@ public abstract class Handler extends Restlet {
 
         if (bContinue) {
             if (request.isEntityAvailable()) {
-                response.copyFrom(target.put(request.getEntity()));
+                target.put(request.getEntity());
+                // response.copyFrom(target.put(request.getEntity()));
                 response.setRequest(request);
 
                 // HTTP spec says that PUT may return the list of allowed

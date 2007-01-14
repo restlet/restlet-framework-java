@@ -69,9 +69,6 @@ public class DirectoryResource extends Resource {
         return result;
     }
 
-    /** The handled request. */
-    private Request request;
-
     /** The parent directory handler. */
     private Directory directory;
 
@@ -126,13 +123,12 @@ public class DirectoryResource extends Resource {
      *            The handled call.
      * @throws IOException
      */
-    public DirectoryResource(Directory directory, Request request)
-            throws IOException {
-        super(directory.getLogger());
+    public DirectoryResource(Directory directory, Request request,
+            Response response) throws IOException {
+        super(directory.getContext(), request, response);
 
         // Update the member variables
         this.directory = directory;
-        this.request = request;
         this.relativePart = request.getResourceRef().getRemainingPart();
 
         if (this.relativePart.startsWith("/")) {
@@ -235,54 +231,55 @@ public class DirectoryResource extends Resource {
 
     /**
      * Asks the resource to delete itself and all its representations.
-     * 
-     * @return The result information.
      */
-    public Response delete() {
+    public void delete() {
         Status status;
 
         if (directoryRedirection && !targetIndex) {
-            Response result = new Response(Status.REDIRECTION_SEE_OTHER, null,
-                    new Reference(this.targetUri));
-            return result;
-        }
-
-        // We allow the transfer of the PUT calls only if the readOnly flag is
-        // not set
-        if (!getDirectory().isModifiable()) {
-            status = Status.CLIENT_ERROR_FORBIDDEN;
+            getResponse().setStatus(Status.REDIRECTION_SEE_OTHER);
+            getResponse().setRedirectRef(this.targetUri);
         } else {
-            Request contextRequest = new Request(Method.DELETE, this.targetUri);
-            Response contextResponse = new Response(contextRequest);
-
-            if (targetDirectory && !targetIndex) {
-                contextRequest.setResourceRef(this.targetUri);
-                getDispatcher().handle(contextRequest, contextResponse);
+            // We allow the transfer of the PUT calls only if the readOnly flag
+            // is
+            // not set
+            if (!getDirectory().isModifiable()) {
+                status = Status.CLIENT_ERROR_FORBIDDEN;
             } else {
-                // Check if there is only one representation
+                Request contextRequest = new Request(Method.DELETE,
+                        this.targetUri);
+                Response contextResponse = new Response(contextRequest);
 
-                // Try to get the unique representation of the resource
-                ReferenceList references = getVariantsReferences();
-                if (!references.isEmpty()) {
-                    if (uniqueReference != null) {
-                        contextRequest.setResourceRef(uniqueReference);
-                        getDispatcher().handle(contextRequest, contextResponse);
-                    } else {
-                        // We found variants, but not the right one
-                        contextResponse
-                                .setStatus(new Status(
-                                        Status.CLIENT_ERROR_UNAUTHORIZED,
-                                        "Unable to process properly the request. Several variants exist but none of them suits precisely. "));
-                    }
+                if (targetDirectory && !targetIndex) {
+                    contextRequest.setResourceRef(this.targetUri);
+                    getDispatcher().handle(contextRequest, contextResponse);
                 } else {
-                    contextResponse.setStatus(Status.CLIENT_ERROR_NOT_FOUND);
+                    // Check if there is only one representation
+
+                    // Try to get the unique representation of the resource
+                    ReferenceList references = getVariantsReferences();
+                    if (!references.isEmpty()) {
+                        if (uniqueReference != null) {
+                            contextRequest.setResourceRef(uniqueReference);
+                            getDispatcher().handle(contextRequest,
+                                    contextResponse);
+                        } else {
+                            // We found variants, but not the right one
+                            contextResponse
+                                    .setStatus(new Status(
+                                            Status.CLIENT_ERROR_UNAUTHORIZED,
+                                            "Unable to process properly the request. Several variants exist but none of them suits precisely. "));
+                        }
+                    } else {
+                        contextResponse
+                                .setStatus(Status.CLIENT_ERROR_NOT_FOUND);
+                    }
                 }
+
+                status = contextResponse.getStatus();
             }
 
-            status = contextResponse.getStatus();
+            getResponse().setStatus(status);
         }
-
-        return new Response(status);
     }
 
     /**
@@ -290,15 +287,13 @@ public class DirectoryResource extends Resource {
      * 
      * @param variant
      *            A new or updated variant representation.
-     * @return The result information.
      */
-    public Response put(Representation variant) {
+    public void put(Representation variant) {
         Status status;
 
         if (directoryRedirection && !targetIndex) {
-            Response result = new Response(Status.REDIRECTION_SEE_OTHER, null,
-                    new Reference(this.targetUri));
-            return result;
+            getResponse().setStatus(Status.REDIRECTION_SEE_OTHER);
+            getResponse().setRedirectRef(this.targetUri);
         }
 
         // We allow the transfer of the PUT calls only if the readOnly flag is
@@ -314,7 +309,7 @@ public class DirectoryResource extends Resource {
             status = contextResponse.getStatus();
         }
 
-        return new Response(status);
+        getResponse().setStatus(status);
     }
 
     /**
@@ -397,7 +392,7 @@ public class DirectoryResource extends Resource {
         getLogger().info("Getting variants for : " + getTargetUri());
 
         // Compute the base reference (from a call's client point of view)
-        String baseRef = this.request.getResourceRef().getBaseRef().toString(
+        String baseRef = getRequest().getResourceRef().getBaseRef().toString(
                 false, false);
         if (!baseRef.endsWith("/")) {
             baseRef += "/";

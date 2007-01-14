@@ -21,6 +21,7 @@ package org.restlet;
 import org.restlet.data.Request;
 import org.restlet.data.Response;
 import org.restlet.data.Status;
+import org.restlet.resource.Resource;
 import org.restlet.util.RouteList;
 
 /**
@@ -140,8 +141,8 @@ public class Router extends Restlet {
     }
 
     /**
-     * Attaches a target to this router with an empty URI pattern. A new route
-     * will be added routing to the target when any call is received.
+     * Attaches a target Restlet to this router with an empty URI pattern. A new
+     * route will be added routing to the target when any call is received.
      * 
      * @param target
      *            The target Restlet to attach.
@@ -152,9 +153,9 @@ public class Router extends Restlet {
     }
 
     /**
-     * Attaches a target to this router based on a given URI pattern. A new
-     * route will be added routing to the target when calls with a URI matching
-     * the pattern will be received.
+     * Attaches a target Restlet to this router based on a given URI pattern. A
+     * new route will be added routing to the target when calls with a URI
+     * matching the pattern will be received.
      * 
      * @param uriPattern
      *            The URI pattern that must match the relative part of the
@@ -170,6 +171,22 @@ public class Router extends Restlet {
     }
 
     /**
+     * Attaches a target Resource class to this router based on a given URI
+     * pattern. A new route will be added routing to the target when calls with
+     * a URI matching the pattern will be received.
+     * 
+     * @param uriPattern
+     *            The URI pattern that must match the relative part of the
+     *            resource URI.
+     * @param targetClass
+     *            The target Resource class to attach.
+     * @return The created route.
+     */
+    public Route attach(String uriPattern, Class<? extends Resource> targetClass) {
+        return attach(uriPattern, new Finder(getContext(), targetClass));
+    }
+
+    /**
      * Attaches a Restlet to this router as the default target to invoke when no
      * route matches. It actually sets a default route that scores all calls to
      * 1.0.
@@ -182,6 +199,19 @@ public class Router extends Restlet {
         Route result = new Route(this, "", defaultTarget);
         setDefaultRoute(result);
         return result;
+    }
+
+    /**
+     * Attaches a Resource class to this router as the default target to invoke
+     * when no route matches. It actually sets a default route that scores all
+     * calls to 1.0.
+     * 
+     * @param defaultTargetClass
+     *            The target Resource class to attach.
+     * @return The created route.
+     */
+    public Route attachDefault(Class<? extends Resource> defaultTargetClass) {
+        return attachDefault(new Finder(getContext(), defaultTargetClass));
     }
 
     /**

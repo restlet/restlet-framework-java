@@ -20,13 +20,15 @@ package org.restlet.example.book.rest.ch7.resource;
 
 import java.util.List;
 
+import org.restlet.Context;
 import org.restlet.data.ChallengeRequest;
+import org.restlet.data.ChallengeResponse;
 import org.restlet.data.ChallengeScheme;
 import org.restlet.data.Form;
 import org.restlet.data.MediaType;
+import org.restlet.data.Request;
 import org.restlet.data.Response;
 import org.restlet.data.Status;
-import org.restlet.example.book.rest.ch7.Application;
 import org.restlet.example.book.rest.ch7.domain.User;
 import org.restlet.resource.Representation;
 import org.restlet.resource.StringRepresentation;
@@ -74,12 +76,22 @@ public class UserResource extends BaseResource {
 
     private User user;
 
-    public UserResource(Application application, String userName, String login,
-            String password) {
-        super(application);
-        this.userName = userName;
-        this.login = login;
-        this.password = password;
+    /**
+     * Constructor.
+     * 
+     * @param context
+     *            The parent context.
+     * @param request
+     *            The request to handle.
+     * @param response
+     *            The response to return.
+     */
+    public UserResource(Context context, Request request, Response response) {
+        super(context, request, response);
+        this.userName = (String) request.getAttributes().get("username");
+        ChallengeResponse cr = request.getChallengeResponse();
+        this.login = (cr != null) ? cr.getIdentifier() : null;
+        this.password = (cr != null) ? cr.getSecret() : null;
         this.user = findUser(getContainer(), userName);
 
         if (user != null) {
@@ -110,11 +122,10 @@ public class UserResource extends BaseResource {
         return result;
     }
 
-    public Response getChallengeResponse() {
-        Response result = new Response(Status.CLIENT_ERROR_CONFLICT);
-        result.setChallengeRequest(new ChallengeRequest(
-                ChallengeScheme.HTTP_BASIC, "Restlet"));
-        return result;
+    public void setChallengeResponse() {
+        getResponse().setStatus(Status.CLIENT_ERROR_CONFLICT);
+        getResponse().setChallengeRequest(
+                new ChallengeRequest(ChallengeScheme.HTTP_BASIC, "Restlet"));
     }
 
     @Override
@@ -128,23 +139,19 @@ public class UserResource extends BaseResource {
     }
 
     @Override
-    public Response delete() {
-        Response result = null;
-
+    public void delete() {
         switch (checkAuthorization()) {
         case 1:
             getContainer().delete(this.user);
             getContainer().commit();
-            result = new Response(Status.SUCCESS_OK);
+            getResponse().setStatus(Status.SUCCESS_OK);
         case 0:
             // No authentication provided
-            result = getChallengeResponse();
+            setChallengeResponse();
         case -1:
             // Wrong authenticaiton provided
-            result = new Response(Status.CLIENT_ERROR_UNAUTHORIZED);
+            getResponse().setStatus(Status.CLIENT_ERROR_UNAUTHORIZED);
         }
-
-        return result;
     }
 
     @Override
@@ -166,9 +173,7 @@ public class UserResource extends BaseResource {
     }
 
     @Override
-    public Response put(Representation entity) {
-        Response result = null;
-
+    public void put(Representation entity) {
         if (entity.getMediaType().equals(MediaType.APPLICATION_WWW_FORM)) {
             boolean canSet = true;
 
@@ -176,19 +181,19 @@ public class UserResource extends BaseResource {
                 // The user doesn't exist, create it
                 this.user = new User();
                 this.user.setName(this.userName);
-                result = new Response(Status.SUCCESS_CREATED);
+                getResponse().setStatus(Status.SUCCESS_CREATED);
             } else {
                 // The user already exists, check the authentication
                 switch (checkAuthorization()) {
                 case 1:
-                    result = new Response(Status.SUCCESS_NO_CONTENT);
+                    getResponse().setStatus(Status.SUCCESS_NO_CONTENT);
                 case 0:
                     // No authentication provided
-                    result = getChallengeResponse();
+                    setChallengeResponse();
                     canSet = false;
                 case -1:
                     // Wrong authenticaiton provided
-                    result = new Response(Status.CLIENT_ERROR_UNAUTHORIZED);
+                    getResponse().setStatus(Status.CLIENT_ERROR_UNAUTHORIZED);
                     canSet = false;
                 }
             }
@@ -205,8 +210,6 @@ public class UserResource extends BaseResource {
                 getContainer().commit();
             }
         }
-
-        return result;
     }
 
     /**

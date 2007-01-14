@@ -18,9 +18,11 @@
 
 package org.restlet.example.book.rest.ch7.resource;
 
+import org.restlet.Context;
 import org.restlet.data.MediaType;
 import org.restlet.data.ReferenceList;
-import org.restlet.example.book.rest.ch7.Application;
+import org.restlet.data.Request;
+import org.restlet.data.Response;
 import org.restlet.example.book.rest.ch7.domain.Bookmark;
 import org.restlet.resource.Representation;
 import org.restlet.resource.Variant;
@@ -32,11 +34,18 @@ import org.restlet.resource.Variant;
  */
 public class BookmarksResource extends UserResource {
 
-    public BookmarksResource(Application application, String userName,
-            String login, String password) {
-        super(application, userName, login, password);
-        
-        
+    /**
+     * Constructor.
+     * 
+     * @param context
+     *            The parent context.
+     * @param request
+     *            The request to handle.
+     * @param response
+     *            The response to return.
+     */
+    public BookmarksResource(Context context, Request request, Response response) {
+        super(context, request, response);
         getVariants().add(new Variant(MediaType.TEXT_HTML));
     }
 

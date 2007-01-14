@@ -21,7 +21,6 @@ package org.restlet.util;
 import java.util.List;
 import java.util.logging.Logger;
 
-import org.restlet.data.Response;
 import org.restlet.resource.Representation;
 import org.restlet.resource.Resource;
 import org.restlet.resource.Variant;
@@ -33,7 +32,10 @@ import org.restlet.resource.Variant;
  * @see <a href="http://c2.com/cgi/wiki?DecoratorPattern">The decorator (aka
  *      wrapper) pattern</a>
  * @author Jerome Louvel (contact@noelios.com)
+ * @deprecated No clear usage. Uncomplete due to the dynamic resolution of
+ *             allow* and handle* methods. To be removed.
  */
+@Deprecated
 public class WrapperResource extends Resource {
     /** The wrapped resource. */
     private Resource wrappedResource;
@@ -90,11 +92,9 @@ public class WrapperResource extends Resource {
 
     /**
      * Asks the resource to delete itself and all its representations.
-     * 
-     * @return The response.
      */
-    public Response delete() {
-        return getWrappedResource().delete();
+    public void delete() {
+        getWrappedResource().delete();
     }
 
     /**
@@ -155,10 +155,9 @@ public class WrapperResource extends Resource {
      * 
      * @param entity
      *            The posted entity.
-     * @return The response.
      */
-    public Response post(Representation entity) {
-        return getWrappedResource().post(entity);
+    public void post(Representation entity) {
+        getWrappedResource().post(entity);
     }
 
     /**
@@ -166,10 +165,9 @@ public class WrapperResource extends Resource {
      * 
      * @param variant
      *            A new or updated variant representation.
-     * @return The response.
      */
-    public Response put(Representation variant) {
-        return getWrappedResource().put(variant);
+    public void put(Representation variant) {
+        getWrappedResource().put(variant);
     }
 
     /**

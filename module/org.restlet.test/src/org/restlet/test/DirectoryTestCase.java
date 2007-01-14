@@ -60,6 +60,7 @@ public class DirectoryTestCase extends TestCase {
             // Create a temporary directory for the tests
             testDir = new File(System.getProperty("java.io.tmpdir"),
                     "DirectoryTestCase");
+            deleteDir(testDir);
             testDir.mkdir();
 
             // Create a new Restlet component
@@ -139,7 +140,7 @@ public class DirectoryTestCase extends TestCase {
         // only
         directory.setModifiable(false);
         response = handle(application, webSiteURL, baseFileUrl, Method.PUT,
-                new StringRepresentation("this is a test"), "3a");
+                new StringRepresentation("this is test 3a"), "3a");
         assertTrue(response.getStatus().equals(
                 Status.CLIENT_ERROR_METHOD_NOT_ALLOWED));
 
@@ -147,7 +148,7 @@ public class DirectoryTestCase extends TestCase {
         // read only
         directory.setModifiable(true);
         response = handle(application, webSiteURL, baseFileUrl, Method.PUT,
-                new StringRepresentation("this is a test"), "3b");
+                new StringRepresentation("this is test 3b"), "3b");
         assertTrue(response.getStatus().equals(Status.SUCCESS_CREATED));
 
         // Test 4 : Try to get the representation of the new file
@@ -391,5 +392,27 @@ public class DirectoryTestCase extends TestCase {
         public void setDirectory(Directory directory) {
             this.directory = directory;
         }
+    }
+
+    /**
+     * Recursively delete a directory.
+     * 
+     * @param dir
+     *            The directory to delete.
+     */
+    private void deleteDir(File dir) {
+        if (dir.exists()) {
+            File[] entries = dir.listFiles();
+
+            for (int i = 0; i < entries.length; i++) {
+                if (entries[i].isDirectory()) {
+                    deleteDir(entries[i]);
+                }
+
+                entries[i].delete();
+            }
+        }
+
+        dir.delete();
     }
 }

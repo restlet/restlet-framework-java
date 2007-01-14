@@ -35,7 +35,7 @@ import org.restlet.resource.Variant;
 import org.restlet.util.Factory;
 
 /**
- * Handler mapping a directory of local resources. Those resources have
+ * Finder mapping a directory of local resources. Those resources have
  * representations accessed by the file system, the WAR context or the class
  * loaders. An automatic content negotiation mechanism (similar to the one in
  * Apache HTTP server) is used to select the best representation of a resource
@@ -46,10 +46,11 @@ import org.restlet.util.Factory;
  *      context resources</a>
  * @author Jerome Louvel (contact@noelios.com)
  */
-public class Directory extends Handler {
-    /**
-     * Indicates if the subdirectories are deeply accessible (true by default).
-     */
+public class Directory extends Finder {
+    /** Indicates if the best content is automatically negotiated. */
+    private boolean negotiateContent;
+
+    /** Indicates if the subdirectories are deeply accessible (true by default). */
     private boolean deeplyAccessible;
 
     /**
@@ -131,7 +132,8 @@ public class Directory extends Handler {
      */
     public Resource findTarget(Request request, Response response) {
         try {
-            return Factory.getInstance().createDirectoryResource(this, request);
+            return Factory.getInstance().createDirectoryResource(this, request,
+                    response);
         } catch (IOException ioe) {
             getLogger().log(Level.WARNING,
                     "Unable to find the directory's resource", ioe);
@@ -233,6 +235,16 @@ public class Directory extends Handler {
     }
 
     /**
+     * Indicates if the best content is automatically negotiated. Default value
+     * is true.
+     * 
+     * @return True if the best content is automatically negotiated.
+     */
+    public boolean isNegotiateContent() {
+        return this.negotiateContent;
+    }
+
+    /**
      * Indicates if the subdirectories are deeply accessible (true by default).
      * 
      * @param deeplyAccessible
@@ -262,6 +274,17 @@ public class Directory extends Handler {
      */
     public void setModifiable(boolean modifiable) {
         this.modifiable = modifiable;
+    }
+
+    /**
+     * Indicates if the best content is automatically negotiated. Default value
+     * is true.
+     * 
+     * @param negotiateContent
+     *            True if the best content is automatically negotiated.
+     */
+    public void setNegotiateContent(boolean negotiateContent) {
+        this.negotiateContent = negotiateContent;
     }
 
 }

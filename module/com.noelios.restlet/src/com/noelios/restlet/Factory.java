@@ -44,6 +44,7 @@ import org.restlet.data.Parameter;
 import org.restlet.data.Preference;
 import org.restlet.data.Protocol;
 import org.restlet.data.Request;
+import org.restlet.data.Response;
 import org.restlet.resource.Representation;
 import org.restlet.resource.Resource;
 import org.restlet.resource.Variant;
@@ -241,13 +242,15 @@ public class Factory extends org.restlet.util.Factory {
      * @param handler
      *            The parent directory handler.
      * @param request
-     *            The handled call.
+     *            The request to handle.
+     * @param response
+     *            The response to return.
      * @return A new directory resource.
      * @throws IOException
      */
-    public Resource createDirectoryResource(Directory handler, Request request)
-            throws IOException {
-        return new DirectoryResource(handler, request);
+    public Resource createDirectoryResource(Directory handler, Request request,
+            Response response) throws IOException {
+        return new DirectoryResource(handler, request, response);
     }
 
     /**

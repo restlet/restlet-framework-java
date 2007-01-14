@@ -18,6 +18,9 @@
 
 package org.restlet.example.book.rest.ch7.resource;
 
+import org.restlet.Context;
+import org.restlet.data.Request;
+import org.restlet.data.Response;
 import org.restlet.example.book.rest.ch7.Application;
 import org.restlet.resource.Resource;
 
@@ -36,11 +39,15 @@ public abstract class BaseResource extends Resource {
     /**
      * Constructor.
      * 
-     * @param application
-     *            The parent application.
+     * @param context
+     *            The parent context.
+     * @param request
+     *            The request to handle.
+     * @param response
+     *            The response to return.
      */
-    public BaseResource(Application application) {
-        this.application = application;
+    public BaseResource(Context context, Request request, Response response) {
+        super(context, request, response);
     }
 
     /**

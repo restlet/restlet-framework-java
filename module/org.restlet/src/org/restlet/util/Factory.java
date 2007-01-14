@@ -37,6 +37,7 @@ import org.restlet.data.ClientInfo;
 import org.restlet.data.Form;
 import org.restlet.data.Language;
 import org.restlet.data.Request;
+import org.restlet.data.Response;
 import org.restlet.resource.Representation;
 import org.restlet.resource.Resource;
 import org.restlet.resource.Variant;
@@ -198,12 +199,14 @@ public abstract class Factory {
      * @param handler
      *            The parent directory handler.
      * @param request
-     *            The handled call.
+     *            The request to handle.
+     * @param response
+     *            The response to return.
      * @return A new directory resource.
      * @throws IOException
      */
     public abstract Resource createDirectoryResource(Directory handler,
-            Request request) throws IOException;
+            Request request, Response response) throws IOException;
 
     /**
      * Creates a new helper for a given component.

@@ -25,10 +25,10 @@ import org.restlet.Restlet;
 import org.restlet.Route;
 import org.restlet.Router;
 import org.restlet.data.Protocol;
-import org.restlet.example.book.rest.ch7.handler.BookmarkHandler;
-import org.restlet.example.book.rest.ch7.handler.BookmarksHandler;
-import org.restlet.example.book.rest.ch7.handler.TagHandler;
-import org.restlet.example.book.rest.ch7.handler.UserHandler;
+import org.restlet.example.book.rest.ch7.resource.BookmarkResource;
+import org.restlet.example.book.rest.ch7.resource.BookmarksResource;
+import org.restlet.example.book.rest.ch7.resource.TagResource;
+import org.restlet.example.book.rest.ch7.resource.UserResource;
 import org.restlet.util.Variable;
 
 import com.db4o.Db4o;
@@ -64,38 +64,36 @@ public class Application extends org.restlet.Application {
         Router router = new Router(getContext());
 
         // Add a route for user resources
-        router.attach("/users/{username}", new UserHandler(this));
+        router.attach("/users/{username}", UserResource.class);
 
         // Add a route for user's bookmarks resources
-        router
-                .attach("/users/{username}/bookmarks", new BookmarksHandler(
-                        this));
+        router.attach("/users/{username}/bookmarks", BookmarksResource.class);
 
         // Add a route for bookmark resources
         Route uriRoute = router.attach("/users/{username}/bookmarks/{URI}",
-                new BookmarkHandler(this));
+                BookmarkResource.class);
         uriRoute.getTemplate().getVariables().put("URI",
                 new Variable(Variable.TYPE_URI_ALL));
 
         // Add a route for user's tags resources
-        router.attach("/users/{username}/tags", null);
+        //router.attach("/users/{username}/tags", null);
 
         // Add a route for tag resources
-        router.attach("/users/{username}/tags/{tag}", new TagHandler(this));
+        router.attach("/users/{username}/tags/{tag}", TagResource.class);
 
         // Add a route for user's calendar resources
-        router.attach("/users/{username}/calendar", null);
+        //router.attach("/users/{username}/calendar", null);
 
         // Add a route for URI resources
-        uriRoute = router.attach("/uris/{URI}", null);
+        //uriRoute = router.attach("/uris/{URI}", null);
         uriRoute.getTemplate().getVariables().put("URI",
                 new Variable(Variable.TYPE_URI_ALL));
 
         // Add a route for the recent bookmarks resource
-        router.attach("/recent", null);
+        //router.attach("/recent", null);
 
         // Add a route for recent tag resources
-        router.attach("/recent/{tag}", null);
+        //router.attach("/recent/{tag}", null);
 
         return router;
     }

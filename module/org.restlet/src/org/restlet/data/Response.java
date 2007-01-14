@@ -63,6 +63,7 @@ public class Response extends Message {
     /**
      * Default constructor.
      */
+    @Deprecated
     public Response() {
         this((Request) null);
     }
@@ -73,6 +74,7 @@ public class Response extends Message {
      * @param status
      *            The status.
      */
+    @Deprecated
     public Response(Status status) {
         this(status, null, null);
     }
@@ -85,6 +87,7 @@ public class Response extends Message {
      * @param redirectionRef
      *            The redirection reference.
      */
+    @Deprecated
     public Response(Status status, Reference redirectionRef) {
         this(status, null, redirectionRef);
     }
@@ -97,6 +100,7 @@ public class Response extends Message {
      * @param entity
      *            The entity.
      */
+    @Deprecated
     public Response(Status status, Representation entity) {
         this(status, entity, null);
     }
@@ -111,6 +115,7 @@ public class Response extends Message {
      * @param redirectionRef
      *            The redirection reference.
      */
+    @Deprecated
     public Response(Status status, Representation entity,
             Reference redirectionRef) {
         this((Request) null);
@@ -134,35 +139,6 @@ public class Response extends Message {
         this.request = request;
         this.serverInfo = null;
         this.status = Status.SUCCESS_OK;
-    }
-
-    /**
-     * Reset the current response and copy the properties from the sample
-     * response.
-     * 
-     * @param sample
-     *            The sample response to copy.
-     */
-    public void copyFrom(Response sample) {
-        if ((sample != null) && (sample != this)) {
-            setChallengeRequest(sample.getChallengeRequest());
-            setEntity(sample.getEntity());
-            setRedirectRef(sample.getRedirectRef());
-            setRequest(sample.getRequest());
-            setStatus(sample.getStatus());
-
-            getAllowedMethods().clear();
-            getAllowedMethods().addAll(sample.getAllowedMethods());
-
-            getAttributes().clear();
-            getAttributes().putAll(sample.getAttributes());
-
-            getCookieSettings().clear();
-            getCookieSettings().addAll(sample.getCookieSettings());
-
-            getDimensions().clear();
-            getDimensions().addAll(sample.getDimensions());
-        }
     }
 
     /**

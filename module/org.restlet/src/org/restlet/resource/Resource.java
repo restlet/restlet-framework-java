@@ -20,10 +20,20 @@ package org.restlet.resource;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Set;
+import java.util.logging.Level;
 import java.util.logging.Logger;
 
+import org.restlet.Application;
+import org.restlet.Context;
+import org.restlet.data.Dimension;
+import org.restlet.data.Language;
+import org.restlet.data.Method;
+import org.restlet.data.ReferenceList;
+import org.restlet.data.Request;
 import org.restlet.data.Response;
 import org.restlet.data.Status;
+import org.restlet.util.Series;
 
 /**
  * Intended conceptual target of a hypertext reference. "Any information that
@@ -49,17 +59,33 @@ import org.restlet.data.Status;
  * @see org.restlet.resource.Representation
  * @see org.restlet.data.Reference
  * @author Jerome Louvel (contact@noelios.com)
+ * @author Thierry Boileau (thboileau@gmail.com)
  */
 public class Resource {
+    /** The parent context. */
+    private Context context;
+
     /** The logger to use. */
     private Logger logger;
+
+    /** Indicates if the best content is automatically negotiated. */
+    private boolean negotiateContent;
+
+    /** The handled request. */
+    private Request request;
+
+    /** The returned response. */
+    private Response response;
 
     /** The modifiable list of variants. */
     private List<Variant> variants;
 
     /**
      * Constructor.
+     * 
+     * @deprecated Used the other constructor based on a Context instance.
      */
+    @Deprecated
     public Resource() {
         this((Logger) null);
     }
@@ -69,9 +95,30 @@ public class Resource {
      * 
      * @param logger
      *            The logger to use.
+     * @deprecated Used the other constructor based on a Context instance.
      */
+    @Deprecated
     public Resource(Logger logger) {
         this.logger = logger;
+        this.variants = null;
+    }
+
+    /**
+     * Constructor.
+     * 
+     * @param context
+     *            The parent context.
+     * @param request
+     *            The request to handle.
+     * @param response
+     *            The response to return.
+     */
+    public Resource(Context context, Request request, Response response) {
+        this.context = context;
+        this.logger = (context != null) ? context.getLogger() : null;
+        this.negotiateContent = true;
+        this.request = request;
+        this.response = response;
         this.variants = null;
     }
 
@@ -117,11 +164,20 @@ public class Resource {
 
     /**
      * Asks the resource to delete itself and all its representations.
-     * 
-     * @return The response.
      */
-    public Response delete() {
-        return new Response(Status.SERVER_ERROR_INTERNAL);
+    public void delete() {
+        getResponse().setStatus(Status.SERVER_ERROR_INTERNAL);
+    }
+
+    /**
+     * Returns the context.
+     * 
+     * @return The context.
+     */
+    public Context getContext() {
+        if (this.context == null)
+            this.context = new Context(getClass().getCanonicalName());
+        return this.context;
     }
 
     /**
@@ -131,7 +187,7 @@ public class Resource {
      */
     public Logger getLogger() {
         if (this.logger == null)
-            this.logger = Logger.getLogger(Resource.class.getCanonicalName());
+            this.logger = getContext().getLogger();
         return this.logger;
     }
 
@@ -163,6 +219,24 @@ public class Resource {
     }
 
     /**
+     * Returns the request.
+     * 
+     * @return the request.
+     */
+    public Request getRequest() {
+        return this.request;
+    }
+
+    /**
+     * Returns the response.
+     * 
+     * @return the response.
+     */
+    public Response getResponse() {
+        return this.response;
+    }
+
+    /**
      * Returns the list of variants. A variant can be a purely descriptive
      * representation, with no actual content that can be served. It can also be
      * a full representation in case a resource has only one variant or if the
@@ -178,14 +252,322 @@ public class Resource {
     }
 
     /**
+     * Handles a DELETE call invoking the 'delete' method of the target resource
+     * (as provided by the 'findTarget' method).
+     */
+    public void handleDelete() {
+        boolean bContinue = true;
+        if (getRequest().getConditions().hasSome()) {
+            Variant preferredVariant = null;
+
+            if (isNegotiateContent()) {
+                List<Variant> variants = getVariants();
+
+                if ((variants != null) && (!variants.isEmpty())) {
+                    // Compute the preferred variant
+                    // Get the default language preference from the Application
+                    // (if any)
+                    Language language = null;
+
+                    if (getRequest().getAttributes().get(
+                            Application.class.getCanonicalName()) != null) {
+                        Application application = (Application) getRequest()
+                                .getAttributes().get(
+                                        Application.class.getCanonicalName());
+                        language = application.getMetadataService()
+                                .getDefaultLanguage();
+                    }
+
+                    preferredVariant = getRequest().getClientInfo()
+                            .getPreferredVariant(variants, language);
+                }
+            } else {
+                List<Variant> variants = getVariants();
+
+                if (variants.size() == 1) {
+                    preferredVariant = variants.get(0);
+                } else {
+                    getResponse().setStatus(
+                            Status.CLIENT_ERROR_PRECONDITION_FAILED);
+                    bContinue = false;
+                }
+            }
+
+            if (preferredVariant != null && bContinue) {
+                Status status = getRequest().getConditions().getStatus(
+                        getRequest().getMethod(), preferredVariant);
+
+                if (status != null) {
+                    getResponse().setStatus(status);
+                    bContinue = false;
+                }
+            }
+        }
+
+        if (bContinue) {
+            delete();
+        }
+
+    }
+
+    /**
+     * Handles a GET call by automatically returning the best entity available
+     * from the target resource (as provided by the 'findTarget' method). The
+     * content negotiation is based on the client's preferences available in the
+     * handled call and can be turned off using the "negotiateContent" property.
+     * If it is disabled and multiple variants are available for the target
+     * resource, then a 300 (Multiple Choices) status will be returned with the
+     * list of variants URI if available.
+     */
+    public void handleGet() {
+        List<Variant> variants = getVariants();
+
+        // The variant that may need to meet the request conditions
+        Variant selectedVariant = null;
+
+        if ((variants == null) || (variants.isEmpty())) {
+            // Resource not found
+            getResponse().setStatus(Status.CLIENT_ERROR_NOT_FOUND);
+        } else if (isNegotiateContent()) {
+            // Compute the preferred variant
+            // Get the default language preference from the Application (if
+            // any)
+            Language language = null;
+            if (getRequest().getAttributes().get(
+                    Application.class.getCanonicalName()) != null) {
+                Application application = (Application) getRequest()
+                        .getAttributes().get(
+                                Application.class.getCanonicalName());
+                language = application.getMetadataService()
+                        .getDefaultLanguage();
+            }
+
+            Variant preferredVariant = getRequest().getClientInfo()
+                    .getPreferredVariant(variants, language);
+
+            // Update the variant dimensions used for content negotiation
+            getResponse().getDimensions().add(Dimension.CHARACTER_SET);
+            getResponse().getDimensions().add(Dimension.ENCODING);
+            getResponse().getDimensions().add(Dimension.LANGUAGE);
+            getResponse().getDimensions().add(Dimension.MEDIA_TYPE);
+
+            if (preferredVariant == null) {
+                // No variant was found matching the client preferences
+                getResponse().setStatus(Status.CLIENT_ERROR_NOT_ACCEPTABLE);
+
+                // The list of all variants is transmitted to the client
+                ReferenceList refs = new ReferenceList(variants.size());
+                for (Variant variant : variants) {
+                    if (variant.getIdentifier() != null) {
+                        refs.add(variant.getIdentifier());
+                    }
+                }
+
+                getResponse().setEntity(refs.getTextRepresentation());
+            } else {
+                getResponse().setEntity(getRepresentation(preferredVariant));
+                selectedVariant = preferredVariant;
+            }
+            selectedVariant = getResponse().getEntity();
+        } else {
+            if (variants.size() == 1) {
+                getResponse().setEntity(variants.get(0));
+                selectedVariant = getResponse().getEntity();
+            } else {
+                ReferenceList variantRefs = new ReferenceList();
+
+                for (Variant variant : variants) {
+                    if (variant.getIdentifier() != null) {
+                        variantRefs.add(variant.getIdentifier());
+                    } else {
+                        getLogger()
+                                .warning(
+                                        "A resource with multiple variants should provide and identifier for each variants when content negotiation is turned off");
+                    }
+                }
+
+                if (variantRefs.size() > 0) {
+                    // Return the list of variants
+                    getResponse()
+                            .setStatus(Status.REDIRECTION_MULTIPLE_CHOICES);
+                    getResponse()
+                            .setEntity(variantRefs.getTextRepresentation());
+                } else {
+                    getResponse().setStatus(Status.CLIENT_ERROR_NOT_FOUND);
+                }
+            }
+        }
+
+        // The given representation (if any) must meet the request conditions
+        // (if any).
+        if (selectedVariant != null && getRequest().getConditions().hasSome()) {
+            Status status = getRequest().getConditions().getStatus(
+                    getRequest().getMethod(), selectedVariant);
+            if (status != null) {
+                getResponse().setStatus(status);
+                // TODO Must the entity be erased?
+                getResponse().setEntity(null);
+            }
+        }
+    }
+
+    /**
+     * Handles a HEAD call, using a logic similar to the handleGet method.
+     */
+    public void handleHead() {
+        handleGet();
+    }
+
+    /**
+     * Handles an OPTIONS call introspecting the target resource (as provided by
+     * the 'findTarget' method).
+     */
+    public void handleOptions() {
+        // HTTP spec says that OPTIONS should return the list of allowed methods
+        updateAllowedMethods();
+        getResponse().setStatus(Status.SUCCESS_OK);
+    }
+
+    /**
+     * Handles a POST call invoking the 'post' method of the target resource (as
+     * provided by the 'findTarget' method).
+     */
+    public void handlePost() {
+        if (getRequest().isEntityAvailable()) {
+            post(getRequest().getEntity());
+        } else {
+            getResponse().setStatus(
+                    new Status(Status.CLIENT_ERROR_BAD_REQUEST,
+                            "Missing request entity"));
+        }
+    }
+
+    /**
+     * Handles a PUT call invoking the 'put' method of the target resource (as
+     * provided by the 'findTarget' method).
+     */
+    public void handlePut() {
+        boolean bContinue = true;
+
+        if (getRequest().getConditions().hasSome()) {
+            Variant preferredVariant = null;
+
+            if (isNegotiateContent()) {
+                List<Variant> variants = getVariants();
+                if ((variants != null) && (!variants.isEmpty())) {
+                    // Compute the preferred variant
+                    // Get the default language preference from the Application
+                    // (if any)
+                    Language language = null;
+                    if (getRequest().getAttributes().get(
+                            Application.class.getCanonicalName()) != null) {
+                        Application application = (Application) getRequest()
+                                .getAttributes().get(
+                                        Application.class.getCanonicalName());
+                        language = application.getMetadataService()
+                                .getDefaultLanguage();
+                    }
+                    preferredVariant = getRequest().getClientInfo()
+                            .getPreferredVariant(variants, language);
+                }
+            } else {
+                List<Variant> variants = getVariants();
+
+                if (variants.size() == 1) {
+                    preferredVariant = variants.get(0);
+                } else {
+                    getResponse().setStatus(
+                            Status.CLIENT_ERROR_PRECONDITION_FAILED);
+                    bContinue = false;
+                }
+            }
+            if (preferredVariant != null && bContinue) {
+                Status status = getRequest().getConditions().getStatus(
+                        getRequest().getMethod(), preferredVariant);
+                if (status != null) {
+                    getResponse().setStatus(status);
+                    bContinue = false;
+                }
+            }
+        }
+
+        if (bContinue) {
+            // Check the Content-Range HTTP Header in order to prevent usage of
+            // partial PUTs
+            Object oHeaders = getRequest().getAttributes().get(
+                    "org.restlet.http.headers");
+            if (oHeaders != null) {
+                Series headers = (Series) oHeaders;
+                if (headers.getFirst("Content-Range", true) != null) {
+                    getResponse()
+                            .setStatus(
+                                    new Status(
+                                            Status.SERVER_ERROR_NOT_IMPLEMENTED,
+                                            "the Content-Range header is not understood"));
+                    bContinue = false;
+                }
+            }
+        }
+
+        if (bContinue) {
+            if (getRequest().isEntityAvailable()) {
+                put(getRequest().getEntity());
+
+                // HTTP spec says that PUT may return the list of allowed
+                // methods
+                updateAllowedMethods();
+            } else {
+                getResponse().setStatus(
+                        new Status(Status.CLIENT_ERROR_BAD_REQUEST,
+                                "Missing request entity"));
+            }
+        }
+    }
+
+    /**
+     * Invokes a method with the given arguments.
+     * 
+     * @param method
+     *            The method to invoke.
+     * @param args
+     *            The arguments to pass.
+     * @return Invocation result.
+     */
+    private Object invoke(java.lang.reflect.Method method, Object... args) {
+        Object result = null;
+
+        if (method != null) {
+            try {
+                result = method.invoke(this, args);
+            } catch (Exception e) {
+                getLogger().log(
+                        Level.WARNING,
+                        "Couldn't invoke the handle method for \"" + method
+                                + "\"", e);
+            }
+        }
+
+        return result;
+    }
+
+    /**
+     * Indicates if the best content is automatically negotiated. Default value
+     * is true.
+     * 
+     * @return True if the best content is automatically negotiated.
+     */
+    public boolean isNegotiateContent() {
+        return this.negotiateContent;
+    }
+
+    /**
      * Posts a representation to the resource.
      * 
      * @param entity
      *            The posted entity.
-     * @return The response.
      */
-    public Response post(Representation entity) {
-        return new Response(Status.SERVER_ERROR_INTERNAL);
+    public void post(Representation entity) {
+        getResponse().setStatus(Status.SERVER_ERROR_INTERNAL);
     }
 
     /**
@@ -193,10 +575,9 @@ public class Resource {
      * 
      * @param entity
      *            A new or updated representation.
-     * @return The response.
      */
-    public Response put(Representation entity) {
-        return new Response(Status.SERVER_ERROR_INTERNAL);
+    public void put(Representation entity) {
+        getResponse().setStatus(Status.SERVER_ERROR_INTERNAL);
     }
 
     /**
@@ -210,6 +591,17 @@ public class Resource {
     }
 
     /**
+     * Indicates if the best content is automatically negotiated. Default value
+     * is true.
+     * 
+     * @param negotiateContent
+     *            True if the best content is automatically negotiated.
+     */
+    public void setNegotiateContent(boolean negotiateContent) {
+        this.negotiateContent = negotiateContent;
+    }
+
+    /**
      * Sets a new list of variants.
      * 
      * @param variants
@@ -217,6 +609,23 @@ public class Resource {
      */
     public void setVariants(List<Variant> variants) {
         this.variants = variants;
+    }
+
+    /**
+     * Updates the set of allowed methods on the response.
+     */
+    private void updateAllowedMethods() {
+        Set<Method> allowedMethods = getResponse().getAllowedMethods();
+        for (java.lang.reflect.Method classMethod : getClass().getMethods()) {
+            if (classMethod.getName().startsWith("allow")
+                    && (classMethod.getParameterTypes().length == 0)) {
+                if ((Boolean) invoke(classMethod)) {
+                    Method allowedMethod = Method.valueOf(classMethod.getName()
+                            .substring(5));
+                    allowedMethods.add(allowedMethod);
+                }
+            }
+        }
     }
 
 }
