@@ -225,9 +225,6 @@ public class JettyCall extends HttpServerCall {
             super.sendResponse(response);
         }
 
-        // Send the response entity
-        super.sendResponse(response);
-
         // Fully complete and commit the response
         this.connection.completeResponse();
         this.connection.commitResponse(true);
