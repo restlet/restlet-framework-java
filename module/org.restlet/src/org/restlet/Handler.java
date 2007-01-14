@@ -367,6 +367,7 @@ public abstract class Handler extends Restlet {
             if (preferredVariant == null) {
                 // No variant was found matching the client preferences
                 response.setStatus(Status.CLIENT_ERROR_NOT_ACCEPTABLE);
+                
                 // The list of all variants is transmitted to the client
                 ReferenceList refs = new ReferenceList(variants.size());
                 for (Variant variant : variants) {
@@ -374,6 +375,7 @@ public abstract class Handler extends Restlet {
                         refs.add(variant.getIdentifier());
                     }
                 }
+                
                 response.setEntity(refs.getTextRepresentation());
             } else {
                 response.setEntity(target.getRepresentation(preferredVariant));

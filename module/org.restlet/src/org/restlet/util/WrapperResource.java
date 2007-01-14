@@ -21,7 +21,6 @@ package org.restlet.util;
 import java.util.List;
 import java.util.logging.Logger;
 
-import org.restlet.data.Reference;
 import org.restlet.data.Response;
 import org.restlet.resource.Representation;
 import org.restlet.resource.Resource;
@@ -99,15 +98,6 @@ public class WrapperResource extends Resource {
     }
 
     /**
-     * Returns the official identifier.
-     * 
-     * @return The official identifier.
-     */
-    public Reference getIdentifier() {
-        return getWrappedResource().getIdentifier();
-    }
-
-    /**
      * Returns the logger to use.
      * 
      * @return The logger to use.
@@ -180,26 +170,6 @@ public class WrapperResource extends Resource {
      */
     public Response put(Representation variant) {
         return getWrappedResource().put(variant);
-    }
-
-    /**
-     * Sets the official identifier.
-     * 
-     * @param identifier
-     *            The official identifier.
-     */
-    public void setIdentifier(Reference identifier) {
-        getWrappedResource().setIdentifier(identifier);
-    }
-
-    /**
-     * Sets the official identifier from a URI string.
-     * 
-     * @param identifierUri
-     *            The official identifier to parse.
-     */
-    public void setIdentifier(String identifierUri) {
-        getWrappedResource().setIdentifier(identifierUri);
     }
 
     /**

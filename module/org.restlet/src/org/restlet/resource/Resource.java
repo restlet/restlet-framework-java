@@ -22,7 +22,6 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.logging.Logger;
 
-import org.restlet.data.Reference;
 import org.restlet.data.Response;
 import org.restlet.data.Status;
 
@@ -55,9 +54,6 @@ public class Resource {
     /** The logger to use. */
     private Logger logger;
 
-    /** The identifier. */
-    private Reference identifier;
-
     /** The modifiable list of variants. */
     private List<Variant> variants;
 
@@ -76,7 +72,6 @@ public class Resource {
      */
     public Resource(Logger logger) {
         this.logger = logger;
-        this.identifier = null;
         this.variants = null;
     }
 
@@ -127,15 +122,6 @@ public class Resource {
      */
     public Response delete() {
         return new Response(Status.SERVER_ERROR_INTERNAL);
-    }
-
-    /**
-     * Returns the official identifier.
-     * 
-     * @return The official identifier.
-     */
-    public Reference getIdentifier() {
-        return this.identifier;
     }
 
     /**
@@ -211,26 +197,6 @@ public class Resource {
      */
     public Response put(Representation entity) {
         return new Response(Status.SERVER_ERROR_INTERNAL);
-    }
-
-    /**
-     * Sets the official identifier.
-     * 
-     * @param identifier
-     *            The official identifier.
-     */
-    public void setIdentifier(Reference identifier) {
-        this.identifier = identifier;
-    }
-
-    /**
-     * Sets the official identifier from a URI string.
-     * 
-     * @param identifierUri
-     *            The official identifier to parse.
-     */
-    public void setIdentifier(String identifierUri) {
-        setIdentifier(new Reference(identifierUri));
     }
 
     /**

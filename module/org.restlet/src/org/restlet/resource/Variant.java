@@ -28,6 +28,7 @@ import org.restlet.data.CharacterSet;
 import org.restlet.data.Encoding;
 import org.restlet.data.Language;
 import org.restlet.data.MediaType;
+import org.restlet.data.Reference;
 import org.restlet.data.Tag;
 import org.restlet.util.DateUtils;
 import org.restlet.util.WrapperList;
@@ -76,6 +77,11 @@ public class Variant extends Resource {
     private Tag tag;
 
     /**
+     * The identifier. 
+     */
+    private Reference identifier;
+
+    /**
      * Default constructor.
      */
     public Variant() {
@@ -98,6 +104,7 @@ public class Variant extends Resource {
         this.mediaType = mediaType;
         this.modificationDate = null;
         this.tag = null;
+        this.identifier = null;
 
         // A representation is also a resource whose only
         // variant is the representation itself
@@ -335,6 +342,35 @@ public class Variant extends Resource {
      */
     public void setTag(Tag tag) {
         this.tag = tag;
+    }
+
+    /**
+     * Returns the official identifier.
+     * 
+     * @return The official identifier.
+     */
+    public Reference getIdentifier() {
+        return this.identifier;
+    }
+
+    /**
+     * Sets the official identifier.
+     * 
+     * @param identifier
+     *            The official identifier.
+     */
+    public void setIdentifier(Reference identifier) {
+        this.identifier = identifier;
+    }
+
+    /**
+     * Sets the official identifier from a URI string.
+     * 
+     * @param identifierUri
+     *            The official identifier to parse.
+     */
+    public void setIdentifier(String identifierUri) {
+        setIdentifier(new Reference(identifierUri));
     }
 
 }
