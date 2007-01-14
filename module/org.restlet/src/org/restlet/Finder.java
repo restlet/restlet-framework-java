@@ -34,6 +34,18 @@ import org.restlet.resource.Resource;
  * resource with the call's context, request and response without requiring the
  * usage of a subclass.
  * 
+ * Once the target resource has been found, the call is automatically dispatched
+ * to the appropriate handle*() method (where the '*' character corresponds to
+ * the method name) if the corresponding allow*() method returns true.<br/>
+ * <br/>
+ * 
+ * For example, if you want to support a MOVE method for a WebDAV server, you
+ * just have to add a handleMove() method in your subclass of Resource and it
+ * will be automatically be used by the Finder instance at runtime.<br/> <br/>
+ * 
+ * If no matching handle*() method is found, then a
+ * Status.CLIENT_ERROR_METHOD_NOT_ALLOWED is returned.
+ * 
  * @author Jerome Louvel (contact@noelios.com)
  */
 public class Finder extends Restlet {

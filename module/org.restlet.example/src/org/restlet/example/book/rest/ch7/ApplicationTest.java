@@ -33,7 +33,7 @@ import org.restlet.data.Response;
  * 
  * @author Jerome Louvel (contact@noelios.com)
  */
-public class TestClient {
+public class ApplicationTest {
 
     public static final String APPLICATION_URI = "http://localhost:3000/v1";
 

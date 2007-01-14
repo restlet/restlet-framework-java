@@ -30,6 +30,7 @@ import org.restlet.data.Request;
 import org.restlet.data.Response;
 import org.restlet.data.Status;
 import org.restlet.resource.Representation;
+import org.restlet.resource.Resource;
 import org.restlet.resource.StringRepresentation;
 import org.restlet.resource.Variant;
 
@@ -41,7 +42,7 @@ import com.db4o.query.Predicate;
  * 
  * @author Jerome Louvel (contact@noelios.com)
  */
-public class UserResource extends BaseResource {
+public class UserResource extends Resource {
 
     public static User findUser(ObjectContainer container, final String userName) {
         User result = null;
@@ -98,6 +99,16 @@ public class UserResource extends BaseResource {
         }
     }
 
+    @Override
+    public boolean allowDelete() {
+        return true;
+    }
+
+    @Override
+    public boolean allowPut() {
+        return true;
+    }
+
     /**
      * Check the authorization credentials.
      * 
@@ -121,22 +132,6 @@ public class UserResource extends BaseResource {
         return result;
     }
 
-    public void setChallengeResponse() {
-        getResponse().setStatus(Status.CLIENT_ERROR_CONFLICT);
-        getResponse().setChallengeRequest(
-                new ChallengeRequest(ChallengeScheme.HTTP_BASIC, "Restlet"));
-    }
-
-    @Override
-    public boolean allowDelete() {
-        return true;
-    }
-
-    @Override
-    public boolean allowPut() {
-        return true;
-    }
-
     @Override
     public void delete() {
         switch (checkAuthorization()) {
@@ -151,6 +146,25 @@ public class UserResource extends BaseResource {
             // Wrong authenticaiton provided
             getResponse().setStatus(Status.CLIENT_ERROR_UNAUTHORIZED);
         }
+    }
+
+    /**
+     * Returns the parent application.
+     * 
+     * @return the parent application.
+     */
+    public Application getApplication() {
+        return (Application) getContext().getAttributes().get(
+                "org.restlet.application");
+    }
+
+    /**
+     * Returns the database container.
+     * 
+     * @return the database container.
+     */
+    public ObjectContainer getContainer() {
+        return getApplication().getContainer();
     }
 
     @Override
@@ -169,6 +183,13 @@ public class UserResource extends BaseResource {
         }
 
         return result;
+    }
+
+    /**
+     * @return the user
+     */
+    public User getUser() {
+        return this.user;
     }
 
     @Override
@@ -211,11 +232,10 @@ public class UserResource extends BaseResource {
         }
     }
 
-    /**
-     * @return the user
-     */
-    public User getUser() {
-        return this.user;
+    public void setChallengeResponse() {
+        getResponse().setStatus(Status.CLIENT_ERROR_CONFLICT);
+        getResponse().setChallengeRequest(
+                new ChallengeRequest(ChallengeScheme.HTTP_BASIC, "Restlet"));
     }
 
     /**

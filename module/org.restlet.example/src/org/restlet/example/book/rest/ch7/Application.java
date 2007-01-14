@@ -71,26 +71,6 @@ public class Application extends org.restlet.Application {
         uriRoute.getTemplate().getVariables().put("URI",
                 new Variable(Variable.TYPE_URI_ALL));
 
-        // Add a route for user's tags resources
-        //router.attach("/users/{username}/tags", null);
-
-        // Add a route for tag resources
-        router.attach("/users/{username}/tags/{tag}", TagResource.class);
-
-        // Add a route for user's calendar resources
-        //router.attach("/users/{username}/calendar", null);
-
-        // Add a route for URI resources
-        //uriRoute = router.attach("/uris/{URI}", null);
-        uriRoute.getTemplate().getVariables().put("URI",
-                new Variable(Variable.TYPE_URI_ALL));
-
-        // Add a route for the recent bookmarks resource
-        //router.attach("/recent", null);
-
-        // Add a route for recent tag resources
-        //router.attach("/recent/{tag}", null);
-
         return router;
     }
 

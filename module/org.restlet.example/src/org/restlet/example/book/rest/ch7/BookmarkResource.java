@@ -111,12 +111,6 @@ public class BookmarkResource extends UserResource {
                     '\n');
             sb.append("Restrict:  ").append(
                     Boolean.toString(this.bookmark.isRestrict())).append('\n');
-            sb.append("Tags:  ");
-            for (Tag tag : this.bookmark.getTags()) {
-                sb.append(tag.getName()).append(' ');
-            }
-            sb.append('\n');
-
             result = new StringRepresentation(sb);
         }
 

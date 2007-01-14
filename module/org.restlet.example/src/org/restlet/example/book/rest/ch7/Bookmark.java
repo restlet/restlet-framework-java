@@ -18,9 +18,7 @@
 
 package org.restlet.example.book.rest.ch7;
 
-import java.util.ArrayList;
 import java.util.Date;
-import java.util.List;
 
 /**
  * URI saved and annotated by a user.
@@ -40,8 +38,6 @@ public class Bookmark {
     private Date dateTime;
 
     private boolean restrict;
-
-    private List<Tag> tags;
 
     /**
      * @return the dateTime
@@ -63,15 +59,6 @@ public class Bookmark {
      */
     public String getLongDescription() {
         return this.longDescription;
-    }
-
-    /**
-     * @return the modifiable list of tags
-     */
-    public List<Tag> getTags() {
-        if (this.tags == null)
-            this.tags = new ArrayList<Tag>();
-        return this.tags;
     }
 
     /**
