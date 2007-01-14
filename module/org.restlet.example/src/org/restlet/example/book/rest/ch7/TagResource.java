@@ -16,7 +16,7 @@
  * Portions Copyright [yyyy] [name of copyright owner]
  */
 
-package org.restlet.example.book.rest.ch7.resource;
+package org.restlet.example.book.rest.ch7;
 
 import java.util.List;
 
@@ -25,8 +25,6 @@ import org.restlet.data.MediaType;
 import org.restlet.data.Request;
 import org.restlet.data.Response;
 import org.restlet.data.Status;
-import org.restlet.example.book.rest.ch7.domain.Tag;
-import org.restlet.example.book.rest.ch7.domain.User;
 import org.restlet.resource.Representation;
 import org.restlet.resource.StringRepresentation;
 import org.restlet.resource.Variant;

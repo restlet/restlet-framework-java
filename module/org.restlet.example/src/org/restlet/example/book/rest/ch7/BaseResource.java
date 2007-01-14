@@ -16,12 +16,11 @@
  * Portions Copyright [yyyy] [name of copyright owner]
  */
 
-package org.restlet.example.book.rest.ch7.resource;
+package org.restlet.example.book.rest.ch7;
 
 import org.restlet.Context;
 import org.restlet.data.Request;
 import org.restlet.data.Response;
-import org.restlet.example.book.rest.ch7.Application;
 import org.restlet.resource.Resource;
 
 import com.db4o.ObjectContainer;

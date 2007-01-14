@@ -25,10 +25,6 @@ import org.restlet.Restlet;
 import org.restlet.Route;
 import org.restlet.Router;
 import org.restlet.data.Protocol;
-import org.restlet.example.book.rest.ch7.resource.BookmarkResource;
-import org.restlet.example.book.rest.ch7.resource.BookmarksResource;
-import org.restlet.example.book.rest.ch7.resource.TagResource;
-import org.restlet.example.book.rest.ch7.resource.UserResource;
 import org.restlet.util.Variable;
 
 import com.db4o.Db4o;
