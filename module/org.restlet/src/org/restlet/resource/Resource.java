@@ -202,18 +202,19 @@ public class Resource {
         List<Variant> variants = getVariants();
 
         if ((variants != null) && (!variants.isEmpty())) {
-
+            Language language = null;
             // Compute the preferred variant. Get the default language
             // preference from the Application (if any)
             Object app = getContext().getAttributes().get(
                     "org.restlet.application");
 
             if (app instanceof Application) {
-                Language language = ((Application) app).getMetadataService()
+                language = ((Application) app).getMetadataService()
                         .getDefaultLanguage();
-                result = getRequest().getClientInfo().getPreferredVariant(
-                        getVariants(), language);
             }
+            result = getRequest().getClientInfo().getPreferredVariant(
+                    getVariants(), language);
+
         }
 
         return result;
