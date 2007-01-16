@@ -42,7 +42,7 @@ Changes log
  - The content negotiation algorithm is now more flexible about languages. It will try
    to satisfy the client languages preferences, but will always return a representation
    if the media type is accepted, even if the language is not explicitely accepted. 
- - Upgraded Jetty to 6.1.1 RC0.
+ - Upgraded Jetty to 6.1.1.
  - Added a dual licensing for GPL (with a Classpath exception) in addition to CDDL.
  - The ServerServlet now allows easier customization of the creation of Application
    instances. Based on a patch from Valdis Rigdon.
