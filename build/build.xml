@@ -883,16 +883,6 @@
 		</delete>
 	</target>
 
-	<!-- ARCHIVE target -->
-	<target name="archive" depends="init" description="Archive the content of the project">
-		<!-- Archive the content of the project, except for some generated directories -->
-		<mkdir dir="${arc}" />
-		<zip destfile="${arc}/Restlet ${DSTAMP}.zip"
-		     basedir=".."
-		     includes="**/*"
-		     excludes="build/**" />
-	</target>
-
 	<!-- JAVADOC target -->
 	<target name="javadoc" if="do-javadoc" depends="compile" description="Generate the Javadoc">
 		<delete includeEmptyDirs="true" verbose="false" quiet="true">
