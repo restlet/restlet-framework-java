@@ -230,6 +230,63 @@ the Servlet API and the Restlet API. See the <a
 	href="http://www.restlet.org/docs/ext/com/noelios/restlet/ext/servlet/ServerServlet.html">
 ServerServlet Javadocs</a> for details on how to configure your Servlet
 container.</p>
+Here is the description of a concrete simple Web application. All sources are available <a
+	href="http://www.restlet.org/dist/testServlet.zip">here</a>.<br>
+Imagine your simple application is only composed of one package and one class :<br>
+<ul>
+ <li>Package "com.testServlet"
+ <li>Class "com.testServlet.TestServletApplication"
+</ul>
+Your application's root restlet is very simple and is in charge of displaying some data taken from the client in an HTML format.
+Your application contains also a "main" method in order to provide the standalone mode.
+<br>
+In standalone mode, the following jars are required in the classpath :
+<ul>
+ <li><strong>The standard Restlet API</strong> : "org.restlet.jar"</li>
+ <li><strong>The core Noelios Restlet Engine</strong> : "com.noelios.restlet.jar"</li>
+ <li>One server connector that supports the HTTP Protocols. For example, use the Simple HTTP Connector : "com.noelios.restlet.ext.simple_3.1.jar" and "org.simpleframework.jar".</li>
+</ul>
+<br>
+
+If you want to deploy your application in a servlet container such as Tomcat, the following jar files are required in your deployment package :
+<ul>
+ <li><strong>The standard Restlet API</strong> : "org.restlet.jar"</li>
+ <li><strong>The core Noelios Restlet Engine</strong> : "com.noelios.restlet.jar"</li>
+ <li><strong>The servlet connector</strong> : "com.noelios.restlet.ext.servlet_2.4.jar"</li>
+</ul>
+
+Then organize your application as follows before generating the Web Application aRchive (e.g. in a <a href="http://www.restlet.org/dist/testServlet.war">WAR file</a>) :
+<ul>
+<li><strong>/WEB-INF/classes/</strong> - your package and the compiled classes.</li>
+<li><strong>/WEB-INF/lib/</strong> - the required jar files.</li>
+<li><strong>/WEB-INF/web.xml</strong> - The <em>Web Application Deployment Descriptor</em> for your application.</li>
+</ul>
+
+Here is a sample configuration of such web.xml file for our simple Restlet webapp :
+<pre>
+    &lt;?xml version=&quot;1.0&quot; encoding=&quot;ISO-8859-1&quot;?&gt;
+    &lt;!DOCTYPE web-app PUBLIC &quot;-//Sun Microsystems, Inc.//DTD Web Application 2.3//EN&quot; &quot;http://java.sun.com/dtd/web-app_2_3.dtd&quot;&gt;
+    &lt;web-app&gt;
+        &lt;display-name&gt;Test servlet&lt;/display-name&gt;
+        &lt;context-param&gt;
+                &lt;param-name&gt;org.restlet.application&lt;/param-name&gt;
+                &lt;param-value&gt;com.testServlet.TestServletApplication&lt;/param-value&gt;
+        &lt;/context-param&gt;
+    
+        &lt;!-- Restlet adapter --&gt;
+        &lt;servlet&gt;
+                &lt;servlet-name&gt;ServerServlet&lt;/servlet-name&gt;
+                &lt;servlet-class&gt;com.noelios.restlet.ext.servlet.ServerServlet&lt;/servlet-class&gt;
+        &lt;/servlet&gt;
+    
+        &lt;!-- Catch all requests --&gt;
+        &lt;servlet-mapping&gt;
+                &lt;servlet-name&gt;ServerServlet&lt;/servlet-name&gt;
+                &lt;url-pattern&gt;/*&lt;/url-pattern&gt;
+        &lt;/servlet-mapping&gt;
+    &lt;/web-app&gt;
+ </pre>
+
 
 <h3><a name="07">7. Can the Restlets composing a site be
 defined in an XML file?</a></h3>
