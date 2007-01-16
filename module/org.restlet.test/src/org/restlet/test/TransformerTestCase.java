@@ -31,7 +31,8 @@ public class TransformerTestCase extends TestCase {
                         + "<buyer><xsl:value-of select=\"@db\"/></buyer>"
                         + "</xsl:template>" + "</xsl:transform>");
 
-        Transformer transformer = new Transformer(xslt);
+        Transformer transformer = new Transformer(Transformer.MODE_REQUEST,
+                xslt);
         String result = transformer.transform(source).getText();
 
         assertEquals(

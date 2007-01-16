@@ -18,27 +18,17 @@
 
 package org.restlet;
 
-import java.io.IOException;
-import java.io.OutputStream;
-import java.util.logging.Level;
-
-import javax.xml.transform.Source;
-import javax.xml.transform.TransformerConfigurationException;
-import javax.xml.transform.TransformerException;
-import javax.xml.transform.TransformerFactory;
-import javax.xml.transform.TransformerFactoryConfigurationError;
-import javax.xml.transform.URIResolver;
-import javax.xml.transform.stream.StreamResult;
-import javax.xml.transform.stream.StreamSource;
+import java.util.ArrayList;
+import java.util.List;
 
 import org.restlet.data.CharacterSet;
+import org.restlet.data.Encoding;
 import org.restlet.data.Language;
 import org.restlet.data.MediaType;
-import org.restlet.data.Reference;
 import org.restlet.data.Request;
 import org.restlet.data.Response;
-import org.restlet.resource.OutputRepresentation;
 import org.restlet.resource.Representation;
+import org.restlet.resource.TransformRepresentation;
 
 /**
  * Filter that can transform XML representations by applying an XSLT transform
@@ -48,174 +38,6 @@ import org.restlet.resource.Representation;
  *         href="http://www.noelios.com/">Noelios Consulting</a>
  */
 public class Transformer extends Filter {
-    /**
-     * Result representation able to apply an XSLT transformation.
-     * 
-     * @author Jerome Louvel (contact@noelios.com) <a
-     *         href="http://www.noelios.com/">Noelios Consulting</a>
-     */
-    private final static class ResultRepresentation extends
-            OutputRepresentation {
-        /** The parent transformer. */
-        private Transformer transformer;
-
-        /** The source representation to transform. */
-        private Representation sourceRepresentation;
-
-        /** The URI resolver. */
-        private URIResolver uriResolver;
-
-        /**
-         * Constructor.
-         * 
-         * @param transformer
-         *            The parent transformer.
-         * @param sourceRepresentation
-         *            The source representation to transform.
-         * @param uriResolver
-         *            The URI resolver.
-         */
-        public ResultRepresentation(Transformer transformer,
-                Representation sourceRepresentation, URIResolver uriResolver) {
-            super(null);
-            this.transformer = transformer;
-            this.sourceRepresentation = sourceRepresentation;
-            this.uriResolver = uriResolver;
-
-            if (transformer != null) {
-                setCharacterSet(transformer.getResultCharacterSet());
-                if (transformer.getResultLanguage() != null) {
-                    getLanguages().add(transformer.getResultLanguage());
-                }
-                setMediaType(transformer.getResultMediaType());
-            }
-        }
-
-        /**
-         * Returns the source representation to transform.
-         * 
-         * @return The source representation to transform.
-         */
-        public Representation getSourceRepresentation() {
-            return this.sourceRepresentation;
-        }
-
-        /**
-         * Returns the parent transformer.
-         * 
-         * @return The parent transformer.
-         */
-        public Transformer getTransformer() {
-            return this.transformer;
-        }
-
-        /**
-         * Returns the URI resolver.
-         * 
-         * @return The URI resolver.
-         */
-        public URIResolver getURIResolver() {
-            return this.uriResolver;
-        }
-
-        @Override
-        public void write(OutputStream outputStream) throws IOException {
-            // Prepare the XSLT transformer documents
-            StreamSource sourceDocument = new StreamSource(
-                    getSourceRepresentation().getStream());
-            StreamSource transformSheet = new StreamSource(getTransformer()
-                    .getTransformSheet().getStream());
-            StreamResult resultDocument = new StreamResult(outputStream);
-
-            try {
-                // Create a new transformer as they are not thread safe
-                javax.xml.transform.Transformer transformer = TransformerFactory
-                        .newInstance().newTransformer(transformSheet);
-
-                // Set the URI resolver
-                transformer.setURIResolver(getURIResolver());
-
-                // Generates the result of the transformation
-                transformer.transform(sourceDocument, resultDocument);
-            } catch (TransformerConfigurationException tce) {
-                getTransformer().getContext().getLogger().log(Level.WARNING,
-                        "Transformer configuration exception", tce);
-            } catch (TransformerFactoryConfigurationError tfce) {
-                getTransformer().getContext().getLogger().log(Level.WARNING,
-                        "Transformer factory configuration exception", tfce);
-            } catch (TransformerException te) {
-                getTransformer().getContext().getLogger().log(Level.WARNING,
-                        "Transformer exception", te);
-            }
-        }
-    }
-
-    /**
-     * URI resolver based on a Restlet Context instance.
-     * 
-     * @author Jerome Louvel (contact@noelios.com)
-     */
-    private final static class ContextResolver implements URIResolver {
-        /** The Restlet context. */
-        private Context context;
-
-        /**
-         * Constructor.
-         * 
-         * @param context
-         *            The Restlet context.
-         */
-        public ContextResolver(Context context) {
-            this.context = context;
-        }
-
-        /**
-         * Resolves a target reference into a Source document.
-         * 
-         * @see javax.xml.transform.URIResolver#resolve(java.lang.String,
-         *      java.lang.String)
-         */
-        public Source resolve(String href, String base)
-                throws TransformerException {
-            Source result = null;
-
-            if (this.context != null) {
-                Reference targetRef = null;
-
-                if (base != null) {
-                    // Potentially a relative reference
-                    Reference baseRef = new Reference(base);
-                    targetRef = new Reference(baseRef, href);
-                } else {
-                    // No base, assume "href" is an absolute URI
-                    targetRef = new Reference(href);
-                }
-
-                Response response = this.context.getDispatcher().get(
-                        targetRef.toString());
-                if (response.getStatus().isSuccess()
-                        && response.isEntityAvailable()) {
-                    try {
-                        result = new StreamSource(response.getEntity()
-                                .getStream());
-                    } catch (IOException e) {
-                        this.context.getLogger().log(Level.WARNING,
-                                "I/O error while getting the response stream",
-                                e);
-                    }
-                }
-            }
-
-            return result;
-        }
-    }
-
-    /**
-     * Mode where the developer manually applies transformations by calling the
-     * transform() method.
-     */
-    public static final int MODE_MANUAL = 0;
-
     /**
      * Mode that transforms request entities before their handling by the
      * attached Restlet.
@@ -235,29 +57,24 @@ public class Transformer extends Filter {
     private Representation transformSheet;
 
     /**
-     * The media type of the result representation. MediaType.APPLICATION_XML by
-     * default.
-     */
-    private MediaType resultMediaType;
-
-    /** The language of the result representation. The default value is null. */
-    private Language resultLanguage;
-
-    /**
      * The character set of the result representation. The default value is
      * null.
      */
     private CharacterSet resultCharacterSet;
 
     /**
-     * Constructor.
-     * 
-     * @param transformSheet
-     *            The XSLT transform sheet to apply to message entities.
+     * The encoding of the result representation. The default value is null.
      */
-    public Transformer(Representation transformSheet) {
-        this(MODE_MANUAL, transformSheet);
-    }
+    private Encoding resultEncoding;
+
+    /** The language of the result representation. The default value is null. */
+    private List<Language> resultLanguages;
+
+    /**
+     * The media type of the result representation. MediaType.APPLICATION_XML by
+     * default.
+     */
+    private MediaType resultMediaType;
 
     /**
      * Constructor.
@@ -271,7 +88,7 @@ public class Transformer extends Filter {
         this.mode = mode;
         this.transformSheet = transformSheet;
         this.resultMediaType = MediaType.APPLICATION_XML;
-        this.resultLanguage = null;
+        this.resultLanguages = null;
         this.resultCharacterSet = null;
     }
 
@@ -309,13 +126,24 @@ public class Transformer extends Filter {
     }
 
     /**
-     * Returns the language of the result representation. The default value is
+     * Returns the encoding of the result representation. The default value is
      * null.
+     * 
+     * @return The encoding of the result representation.
+     */
+    public Encoding getResultEncoding() {
+        return this.resultEncoding;
+    }
+
+    /**
+     * Returns the languages of the result representation.
      * 
      * @return The language of the result representation.
      */
-    public Language getResultLanguage() {
-        return this.resultLanguage;
+    public List<Language> getResultLanguages() {
+        if (this.resultLanguages == null)
+            this.resultLanguages = new ArrayList<Language>();
+        return this.resultLanguages;
     }
 
     /**
@@ -358,13 +186,13 @@ public class Transformer extends Filter {
     }
 
     /**
-     * Sets the language of the result representation.
+     * Sets the encoding of the result representation.
      * 
-     * @param resultLanguage
-     *            The language of the result representation.
+     * @param resultEncoding
+     *            The encoding of the result representation.
      */
-    public void setResultLanguage(Language resultLanguage) {
-        this.resultLanguage = resultLanguage;
+    public void setResultEncoding(Encoding resultEncoding) {
+        this.resultEncoding = resultEncoding;
     }
 
     /**
@@ -396,8 +224,17 @@ public class Transformer extends Filter {
      * @return The generated result representation.
      */
     public Representation transform(Representation source) {
-        return new ResultRepresentation(this, source, new ContextResolver(
-                getContext()));
+        Representation result = new TransformRepresentation(getContext(),
+                source, getTransformSheet());
+
+        if (this.resultLanguages != null) {
+            result.getLanguages().addAll(getResultLanguages());
+        }
+
+        result.setCharacterSet(getResultCharacterSet());
+        result.setEncoding(getResultEncoding());
+        result.setMediaType(getResultMediaType());
+        return result;
     }
 
 }
