@@ -81,7 +81,7 @@ public abstract class AbstractFilterTestCase extends RestletTestCase {
         Response response = getResponse(request);
         filter.handle(request, response);
         assertTrue(filter.hasNext());
-        filter.setNext(null);
+        filter.setNext((Restlet) null);
         assertFalse(filter.hasNext());
     }
 

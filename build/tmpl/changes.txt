@@ -37,6 +37,8 @@ Changes log
  - Deprecated WrapperResource class.
  - Added Context.attributes property as a way to share objects between all Restlets
    of an application. Automatically includes the parent application if any.
+ - Added Filter.setNext() method taking a Resource class as parameter and automatically
+   creating an associated Finder instance.
  
 [Enhancements] 
  - The content negotiation algorithm is now more flexible about languages. It will try

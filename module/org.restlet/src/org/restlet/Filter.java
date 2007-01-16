@@ -21,6 +21,7 @@ package org.restlet;
 import org.restlet.data.Request;
 import org.restlet.data.Response;
 import org.restlet.data.Status;
+import org.restlet.resource.Resource;
 
 /**
  * Restlet filtering calls before passing them to an attached Restlet. The
@@ -154,4 +155,17 @@ public abstract class Filter extends Restlet {
     public void setNext(Restlet next) {
         this.next = next;
     }
+
+    /**
+     * Sets the next Restlet as a Finder for a given Resource class. When the
+     * call is delegated to the Finder instance, a new instance of the Resource
+     * class will be created and will actually handle the request.
+     * 
+     * @param targetClass
+     *            The target Resource class to attach.
+     */
+    public void setNext(Class<? extends Resource> targetClass) {
+        setNext(new Finder(getContext(), targetClass));
+    }
+
 }
