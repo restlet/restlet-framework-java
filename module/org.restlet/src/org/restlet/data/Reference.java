@@ -558,17 +558,17 @@ public class Reference {
      * identifiers.
      * 
      * @return The optional port number for server based hierarchical
-     *         identifiers.
+     *         identifiers or -1 if the port number does not exist.
      */
-    public Integer getHostPort() {
-        Integer result = null;
+    public int getHostPort() {
+        int result = -1;
         String authority = getAuthority();
 
         if (authority != null) {
             int index = authority.indexOf(':');
 
             if (index != -1) {
-                result = Integer.valueOf(authority.substring(index + 1));
+                result = Integer.parseInt(authority.substring(index + 1));
             }
         }
 
